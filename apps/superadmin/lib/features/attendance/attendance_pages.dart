@@ -1129,8 +1129,8 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
     await showDialog<void>(
       context: context,
       builder: (_) => _AttendanceCorrectionDialog(
-        participant: call.participants.first,
-        onSubmit: (state, reason) async {
+        participants: call.participants,
+        onSubmit: (participant, state, reason) async {
           if (!mounted) return false;
           if (!_isCurrentCorrectionContext(contextGeneration, repository, callId)) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -1141,7 +1141,7 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
           return _applyCall(
             () => repository.correctParticipant(
               callId: call.id,
-              participantId: call.participants.first.id,
+              participantId: participant.id,
               state: state,
               reason: reason,
               expectedVersion: call.version,
@@ -1164,10 +1164,15 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
 }
 
 final class _AttendanceCorrectionDialog extends StatefulWidget {
-  const _AttendanceCorrectionDialog({required this.participant, required this.onSubmit});
+  const _AttendanceCorrectionDialog({required this.participants, required this.onSubmit});
 
-  final AttendanceParticipant participant;
-  final Future<bool> Function(AttendancePresenceState state, String reason) onSubmit;
+  final List<AttendanceParticipant> participants;
+  final Future<bool> Function(
+    AttendanceParticipant participant,
+    AttendancePresenceState state,
+    String reason,
+  )
+  onSubmit;
 
   @override
   State<_AttendanceCorrectionDialog> createState() => _AttendanceCorrectionDialogState();
@@ -1175,7 +1180,8 @@ final class _AttendanceCorrectionDialog extends StatefulWidget {
 
 final class _AttendanceCorrectionDialogState extends State<_AttendanceCorrectionDialog> {
   final _reason = TextEditingController();
-  late var _state = widget.participant.state;
+  late var _participant = widget.participants.first;
+  late var _state = _participant.state;
   var _submitting = false;
 
   @override
@@ -1188,7 +1194,7 @@ final class _AttendanceCorrectionDialogState extends State<_AttendanceCorrection
     final reason = _reason.text.trim();
     if (reason.isEmpty || _submitting) return;
     setState(() => _submitting = true);
-    final succeeded = await widget.onSubmit(_state, reason);
+    final succeeded = await widget.onSubmit(_participant, _state, reason);
     if (!mounted) return;
     if (succeeded) {
       Navigator.of(context).pop();
@@ -1203,20 +1209,37 @@ final class _AttendanceCorrectionDialogState extends State<_AttendanceCorrection
     body: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
+        CoeloAdminSingleSelectField<AttendanceParticipant>(
+          key: const Key('attendance-correction-participant'),
+          label: 'Participante',
+          value: _participant,
+          options: widget.participants,
+          optionLabel: (value) => value.name,
+          enabled: !_submitting,
+          onChanged: (value) => setState(() {
+            _participant = value;
+            _state = value.state;
+          }),
+        ),
+        const SizedBox(height: CoeloSpacing.space4),
         CoeloAdminSingleSelectField<AttendancePresenceState>(
-          label: 'Novo estado de ${widget.participant.name}',
+          key: const Key('attendance-correction-state'),
+          label: 'Novo estado de ${_participant.name}',
           value: _state,
           options: AttendancePresenceState.values
               .where((item) => item != AttendancePresenceState.unmarked)
               .toList(),
           optionLabel: (value) => value.label,
+          enabled: !_submitting,
           onChanged: (value) => setState(() => _state = value),
         ),
         const SizedBox(height: CoeloSpacing.space4),
         CoeloFormTextField(
           controller: _reason,
+          fieldKey: const Key('attendance-correction-reason'),
           labelText: 'Motivo da correção',
           prefixIcon: Icons.edit_note_outlined,
+          enabled: !_submitting,
         ),
       ],
     ),

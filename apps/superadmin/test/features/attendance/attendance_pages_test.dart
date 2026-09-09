@@ -1396,6 +1396,98 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('correction applies to the participant selected in the dialog', (tester) async {
+    final repository = FakeAttendanceRepository.seeded();
+    addTearDown(repository.dispose);
+
+    await tester.pumpWidget(
+      _app(
+        AttendanceCallPage(
+          repository: repository,
+          callId: 'call-completed',
+          permissions: const AttendancePermissions.owner(),
+          logout: unavailableSuperadminLogout,
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Corrigir chamada'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('attendance-correction-participant')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Tom Vale').last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('attendance-correction-state')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Saída antecipada').last);
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byKey(const Key('attendance-correction-reason')),
+      'Saída conferida',
+    );
+    await tester.tap(find.widgetWithText(FilledButton, 'Registrar correção'));
+    await tester.pumpAndSettle();
+
+    final call = await repository.fetchCall('call-completed');
+    expect(call!.revisions.single.participantId, 'participant-2');
+    expect(call.revisions.single.reason, 'Saída conferida');
+    expect(call.participants[0].state, AttendancePresenceState.present);
+    expect(call.participants[1].state, AttendancePresenceState.earlyDeparture);
+  });
+
+  testWidgets('correction fields stay locked while the command is in flight', (tester) async {
+    final repository = _DelayedCorrectionRepository();
+    addTearDown(repository.dispose);
+
+    await tester.pumpWidget(
+      _app(
+        AttendanceCallPage(
+          repository: repository,
+          callId: 'call-completed',
+          permissions: const AttendancePermissions.owner(),
+          logout: unavailableSuperadminLogout,
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Corrigir chamada'));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byKey(const Key('attendance-correction-reason')),
+      'Motivo em envio',
+    );
+    await tester.tap(find.widgetWithText(FilledButton, 'Registrar correção'));
+    await tester.pump();
+
+    expect(
+      tester
+          .widget<CoeloAdminSingleSelectField<AttendanceParticipant>>(
+            find.byKey(const Key('attendance-correction-participant')),
+          )
+          .enabled,
+      isFalse,
+    );
+    expect(
+      tester
+          .widget<CoeloAdminSingleSelectField<AttendancePresenceState>>(
+            find.byKey(const Key('attendance-correction-state')),
+          )
+          .enabled,
+      isFalse,
+    );
+    expect(
+      tester.widget<TextFormField>(find.byKey(const Key('attendance-correction-reason'))).enabled,
+      isFalse,
+    );
+    expect(tester.widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Cancelar')).onPressed, isNull);
+
+    repository.complete();
+    await tester.pumpAndSettle();
+  });
+
   testWidgets('participant list preserves Coelo radius and clipping', (tester) async {
     final repository = FakeAttendanceRepository.seeded();
     addTearDown(repository.dispose);
@@ -1562,6 +1654,38 @@ final class _FailOnceCorrectionRepository implements AttendanceRepository {
     if (attempts == 1) {
       return Future.error(const AttendanceVersionConflictException());
     }
+    return _delegate.correctParticipant(
+      callId: callId,
+      participantId: participantId,
+      state: state,
+      reason: reason,
+      expectedVersion: expectedVersion,
+    );
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+final class _DelayedCorrectionRepository implements AttendanceRepository {
+  final FakeAttendanceRepository _delegate = FakeAttendanceRepository.seeded();
+  final Completer<void> _gate = Completer<void>();
+
+  void dispose() => _delegate.dispose();
+  void complete() => _gate.complete();
+
+  @override
+  Future<AttendanceCall?> fetchCall(String callId) => _delegate.fetchCall(callId);
+
+  @override
+  Future<AttendanceCall> correctParticipant({
+    required String callId,
+    required String participantId,
+    required AttendancePresenceState state,
+    required String reason,
+    required int expectedVersion,
+  }) async {
+    await _gate.future;
     return _delegate.correctParticipant(
       callId: callId,
       participantId: participantId,
