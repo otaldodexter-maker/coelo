@@ -33,6 +33,7 @@ import '../../features/activities/domain/activity_command.dart';
 import '../../features/activities/domain/activity_directory.dart';
 import '../../features/activities/domain/activity_read_detail.dart';
 import '../../features/activities/presentation/activity_read_detail_page.dart';
+import '../../features/activities/presentation/activity_catalogued_location_section.dart';
 import '../../features/activities/domain/activity_profile_about_repository.dart';
 import '../../features/activities/presentation/activity_detail_page.dart';
 import '../../features/activities/presentation/activity_directory_page.dart';
@@ -266,6 +267,7 @@ GoRouter createSuperadminRouter({
   UnitDirectoryRepository unitDirectoryRepository = const UnavailableUnitDirectoryRepository(),
   UnitBackendCommandsGateway unitBackendCommands = const UnavailableUnitBackendCommandsGateway(),
   bool enableStructureMutations = false,
+  bool enableActivityLocationCreate = false,
   AccessProfileRepository accessProfileRepository = const UnavailableAccessProfileRepository(),
   PlatformUserRepository? platformUserRepository,
   ResetPasswordAction resetPassword = unavailableResetPassword,
@@ -1718,6 +1720,27 @@ GoRouter createSuperadminRouter({
                     initialTemplateId: state.uri.queryParameters['templateId'],
                     initialInstitutionId: state.uri.queryParameters['institutionId'],
                     initialUnitId: state.uri.queryParameters['unitId'],
+                    locationSelectionBuilder: (context, controller) => ListenableBuilder(
+                      listenable: session,
+                      builder: (context, _) => ActivityCataloguedLocationSection(
+                        scopes: [
+                          if (controller.selectedInstitutionId case final institutionId?) ...[
+                            (scope: LocationScope.institution(institutionId: institutionId), label: 'Locais da institui\u00e7\u00e3o'),
+                            for (final unit in controller.units.where((unit) => controller.selectedUnitIds.contains(unit.id)))
+                              (scope: LocationScope.unit(institutionId: institutionId, unitId: unit.id), label: unit.name),
+                          ],
+                        ],
+                        reader: locationCatalogReader,
+                        selection: controller.cataloguedLocationSelection,
+                        onChanged: controller.selectCataloguedLocation,
+                        sessionAvailable: session.isAuthenticated && !session.isPasswordRecovery,
+                        contextRevision: session.authorizationInvalidationRevision,
+                        available: enableActivityLocationCreate && session.authContext?.permissionCodes.containsAll({
+                          'activities.create', 'activities.read', 'activities.link_units',
+                          'activities.link_groups', 'activities.assign_people', 'activities.manage_permissions', 'locations.read',
+                        }) == true,
+                      ),
+                    ),
                     aboutRepository: productionActivityAboutRepository,
                     logout: logout,
                     onCancel: () => _returnToOr(context, state, SuperadminRoutes.activitiesName),
@@ -5838,7 +5861,7 @@ ActivitySaveCommand _activitySaveCommand(
   activityId: activityId,
   templateId: activityId == null ? draft.template?.id : null,
   expectedVersion: draft.expectedManagementVersion,
-  pedagogicalConfiguration: draft.pedagogicalConfiguration.toJson(),
+  pedagogicalConfiguration: draft.pedagogicalConfiguration.toAggregateCommandJson(),
   expectedAssessmentVersion: draft.pedagogicalConfiguration.expectedVersion,
   assessmentChangeJustification: draft.pedagogicalConfiguration.changeJustification,
   name: draft.name,
@@ -5851,6 +5874,8 @@ ActivitySaveCommand _activitySaveCommand(
   taxonomyOtherDescription: draft.taxonomy?.isOther == true ? draft.taxonomyOtherDescription : '',
   governance: draft.governance,
   institutionId: draft.institutionId,
+  locationSelection: draft.locationSelection,
+  reservation: draft.reservation,
   unitIds: draft.unitIds,
   groupIds: draft.groupIds,
   groupParticipation: draft.groupParticipation,
