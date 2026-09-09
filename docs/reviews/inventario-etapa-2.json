@@ -2,15 +2,15 @@
   "sourceCommit": "19b8f574",
   "generatedAt": "2026-09-08",
   "counts": {
-    "mvp": 189,
+    "mvp": 200,
     "gate-formal-mvp": 3,
     "flutter-only": 5,
     "deferred-post-mvp": 22
   },
   "layerCounts": {
-    "frontendApplicable": 219,
-    "backendApplicable": 212,
-    "integratedActiveApplicable": 187,
+    "frontendApplicable": 230,
+    "backendApplicable": 223,
+    "integratedActiveApplicable": 198,
     "backendNotApplicable": 7,
     "integratedNotApplicable": 7
   },
@@ -20,18 +20,25 @@
       "family": "auth",
       "screen": "Auth / Login",
       "scope": "mvp",
-      "done": "Guards, recovery confinado, single-flight e limpeza de sessão integrados. Lifecycle Auth local registrado; não implica SMTP ou token remoto comprovado. C01I017 integrado90de1968/f7230db9; Error contido e resultado seguro, senha confirmada/cleanupfalho diferenciados, sessão nova preservada. C00122testes PASS/analyzer6limpo.",
+      "done": "Guards, recovery confinado, single-flight e limpeza de sessão integrados. Lifecycle Auth local registrado; não implica SMTP ou token remoto comprovado. C01I017 integrado90de1968/f7230db9; Error contido e resultado seguro, senha confirmada/cleanupfalho diferenciados, sessão nova preservada. C00122testes PASS/analyzer6limpo. R02 D01: geometria aprovada do controle de sessão restaurada sem alterar goldens;386ad474→b8abfd59,21 testes Login PASS na base5908a330. Três goldens históricos resolvidos; browser/provedor permanecem separados.",
       "fe": "Conferir regressão visual, foco, rotas e lifecycle da ação; reutilizar guards já integrados. C01I017 corrigiu Error nas fronteiras; preservar demais aceites visuais/lifecycle e prova real, sem reimplementar o corretivo.",
       "be": "Provar a operação nominal no provedor: sessão/revogação e, para recuperar/reset, SMTP, redirect, token e senha. Respeitar AAL1 do MVP. I021 não finalizada: WIP27f7bbab contém rascunho Pester; qualificação SQL/COMMIT e bridge não implementadas. Personas remotas e cenários A/B ainda exigem pacote nominal autorizado.",
-      "evidence": "decisions/0019-superadmin-internal-identity.md; evidence/etapa-2/identidade-acessos/; R01/17:40 r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.; etapa-2-operacao/reports/R01-delta-2005.md (C06r16/C00fonte); etapa-2-operacao/reports/R01-delta-2005.md (I017integrado122PASS); Fechamento R01 C01/r51; C01r51 final, I021WIP; provas offline77 não equivalem Auth real; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "decisions/0019-superadmin-internal-identity.md; evidence/etapa-2/identidade-acessos/; R01/17:40 r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.; etapa-2-operacao/reports/R01-delta-2005.md (C06r16/C00fonte); etapa-2-operacao/reports/R01-delta-2005.md (I017integrado122PASS); Fechamento R01 C01/r51; C01r51 final, I021WIP; provas offline77 não equivalem Auth real; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
       "frontendStatus": "pending-verification",
       "backendStatus": "pending-verification",
       "integratedStatus": "pending-verification",
-      "lastEvidenceAt": "2026-09-09T08:22:35-03:00",
+      "lastEvidenceAt": "2026-09-09T13:19:23.171934-03:00",
       "lastHandoffRevision": 51,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "roundLocalAcceptance": {
+        "round": "R02",
+        "revision": "e9fdd88d19304f9be05d1539a77f103a5b66ea27",
+        "recordedAt": "2026-09-09T13:19:23.171934-03:00",
+        "note": "R02 D01: geometria aprovada do controle de sessão restaurada sem alterar goldens;386ad474→b8abfd59,21 testes Login PASS na base5908a330. Três goldens históricos resolvidos; browser/provedor permanecem separados.",
+        "certifiesWholeAction": false
+      }
     },
     {
       "id": "auth.recover",
@@ -56,23 +63,23 @@
       "family": "auth",
       "screen": "Auth / Redefinir senha",
       "scope": "mvp",
-      "done": "Guards, recovery confinado, single-flight e limpeza de sessão integrados. Lifecycle Auth local registrado; não implica SMTP ou token remoto comprovado. C01I017 integrado90de1968/f7230db9; Error contido e resultado seguro, senha confirmada/cleanupfalho diferenciados, sessão nova preservada. C00122testes PASS/analyzer6limpo. R02 D01: retorno ao login mostra falha de revogação e mantém recuperação confinada; db1ade40 integrado bf04a9a6, 14 recovery PASS na base conjunta588d38eb.",
+      "done": "Guards, recovery confinado, single-flight e limpeza de sessão integrados. Lifecycle Auth local registrado; não implica SMTP ou token remoto comprovado. C01I017 integrado90de1968/f7230db9; Error contido e resultado seguro, senha confirmada/cleanupfalho diferenciados, sessão nova preservada. C00122testes PASS/analyzer6limpo. R02 D01: retorno ao login mostra falha de revogação e mantém recuperação confinada; db1ade40 integrado bf04a9a6, 14 recovery PASS na base conjunta588d38eb. R02 D01:953ce9d3→5908a330,3 negativas OTP simuladas PASS; nenhum PUT de senha/logout após recusa. Expiração/reuso reais e SMTP não provados.",
       "fe": "Conferir regressão visual, foco, rotas e lifecycle da ação; reutilizar guards já integrados. C01I017 corrigiu Error nas fronteiras; preservar demais aceites visuais/lifecycle e prova real, sem reimplementar o corretivo.",
       "be": "Provar a operação nominal no provedor: sessão/revogação e, para recuperar/reset, SMTP, redirect, token e senha. Respeitar AAL1 do MVP. I021 não finalizada: WIP27f7bbab contém rascunho Pester; qualificação SQL/COMMIT e bridge não implementadas. Personas remotas e cenários A/B ainda exigem pacote nominal autorizado.",
-      "evidence": "decisions/0019-superadmin-internal-identity.md; evidence/etapa-2/identidade-acessos/; R01/17:40 r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.; etapa-2-operacao/reports/R01-delta-2005.md (C06r16/C00fonte); etapa-2-operacao/reports/R01-delta-2005.md (I017integrado122PASS); Fechamento R01 C01/r51; C01r51 final, I021WIP; provas offline77 não equivalem Auth real; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest.json",
+      "evidence": "decisions/0019-superadmin-internal-identity.md; evidence/etapa-2/identidade-acessos/; R01/17:40 r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.; etapa-2-operacao/reports/R01-delta-2005.md (C06r16/C00fonte); etapa-2-operacao/reports/R01-delta-2005.md (I017integrado122PASS); Fechamento R01 C01/r51; C01r51 final, I021WIP; provas offline77 não equivalem Auth real; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest.json; evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
       "frontendStatus": "pending-verification",
       "backendStatus": "pending-verification",
       "integratedStatus": "pending-verification",
-      "lastEvidenceAt": "2026-09-09T13:06:20.876471-03:00",
+      "lastEvidenceAt": "2026-09-09T13:19:23.171934-03:00",
       "lastHandoffRevision": 51,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "roundLocalAcceptance": {
         "round": "R02",
-        "revision": "588d38ebe7b05bf67e1013f215f3234c3102033c",
-        "recordedAt": "2026-09-09T13:06:20.876471-03:00",
-        "note": "R02 D01: retorno ao login mostra falha de revogação e mantém recuperação confinada; db1ade40 integrado bf04a9a6, 14 recovery PASS na base conjunta588d38eb.",
+        "revision": "e9fdd88d19304f9be05d1539a77f103a5b66ea27",
+        "recordedAt": "2026-09-09T13:19:23.171934-03:00",
+        "note": "R02 D01:953ce9d3→5908a330,3 negativas OTP simuladas PASS; nenhum PUT de senha/logout após recusa. Expiração/reuso reais e SMTP não provados.",
         "certifiesWholeAction": false
       }
     },
@@ -280,10 +287,10 @@
       "family": "institutions",
       "screen": "Editar Instituição",
       "scope": "mvp",
-      "done": "Diretório e formulários locais, snapshot autorizado e lifecycle de save protegidos; não é CRUD remoto certificado. C04/r13 04c2fc93 acrescenta purga de bytes/ticket em recarga e dispose do consumidor de marca. Sete testes com builder injetado passam; caminho real de cache/rede NÃO tem prova automatizada. R01/16h: C04r15–17 entregou acessibilidade/estados e consumidor UnitDetail opt-in84a05151; pacote ainda em revisão.",
+      "done": "Diretório e formulários locais, snapshot autorizado e lifecycle de save protegidos; não é CRUD remoto certificado. C04/r13 04c2fc93 acrescenta purga de bytes/ticket em recarga e dispose do consumidor de marca. Sete testes com builder injetado passam; caminho real de cache/rede NÃO tem prova automatizada. R01/16h: C04r15–17 entregou acessibilidade/estados e consumidor UnitDetail opt-in84a05151; pacote ainda em revisão. R02 D02:c3fb1d2c→b648379b recusa alterações fora spec042 antes da escrita e preserva rascunho/retry;35 repository+6 lifecycle PASS na basee9fdd88d. Writer não ampliado.",
       "fe": "Revalidar o aceite específico desta ação: Carga/edição/erro/abandono, 375–1440, 200% e golden exato. Revisar evicção real, expiração enquanto tela permanece aberta e revogação; upload/consumidor completo ainda dependem do núcleo C02. R01/16h: 18form/7Locais/9brand/4fences relatados; conjunto410PASS/8goldenFAIL. R17 retirou causa atribuída apenas ao footer: cabeçalho, cartão criar ausente e fixtures/paginação divergem; precisa revisão nominal. UnitDetail depende wiring C00. Medição C04: edit transporta14/39strings,25descartadas e3fail-closed; criar/editar bloqueados pela composição. Detalhe reutiliza formulário bloqueado; mapa parcial. institutions.files continua ativa, apesar do D no resumo C04.",
       "be": "Conferir contrato interno nominal da ação, RLS, conflitos/auditoria e reload. Mídia usa Gateway e R2 privado. R01/16h: Editar/status, cópia e agenda Locais receberam nomes locais I008; criação20260908031000 já candidata. Sem replay/apply. Não destruir activity_locations nem criar catálogo paralelo. Mutation gates/OQ032/OQ043 e provedores ausentes permanecem; não tratar ausência de autorização remota como falta de todo código local.",
-      "evidence": "evidence/etapa-2/estruturas/; evidence/etapa-2/coordenador/rodada-2026-09-07.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C04r15–17;f147f6aa/621c2202/728feff9/d8741c60/84a05151;C04I008; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C04/r61; C04 estado47 medido02:00 e finalr61; conflito registrado; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "evidence/etapa-2/estruturas/; evidence/etapa-2/coordenador/rodada-2026-09-07.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C04r15–17;f147f6aa/621c2202/728feff9/d8741c60/84a05151;C04I008; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C04/r61; C04 estado47 medido02:00 e finalr61; conflito registrado; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
       "frontendStatus": "pending-verification",
@@ -291,7 +298,14 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 61,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T05:41:00-03:00"
+      "lastEvidenceAt": "2026-09-09T13:19:23.171934-03:00",
+      "roundLocalAcceptance": {
+        "round": "R02",
+        "revision": "e9fdd88d19304f9be05d1539a77f103a5b66ea27",
+        "recordedAt": "2026-09-09T13:19:23.171934-03:00",
+        "note": "R02 D02:c3fb1d2c→b648379b recusa alterações fora spec042 antes da escrita e preserva rascunho/retry;35 repository+6 lifecycle PASS na basee9fdd88d. Writer não ampliado.",
+        "certifiesWholeAction": false
+      }
     },
     {
       "id": "institutions.status",
@@ -686,10 +700,10 @@
       "family": "groups",
       "screen": "Criar Turma",
       "scope": "mvp",
-      "done": "Detalhe READ com adapter, página, rota/DI e logout D01 já composto; diretório, membros e writes têm gates próprios.",
+      "done": "Detalhe READ com adapter, página, rota/DI e logout D01 já composto; diretório, membros e writes têm gates próprios. R02 D02:2e563e8a→b185a481 confirma só uma etapa agregada real;3 testes repository PASS na base conjuntae9fdd88d. Persistência real não certificada.",
       "fe": "Revalidar o aceite específico desta ação: Criar/validar/salvar local provado; não declarar CRUD produtivo/remoto. Diretório recebe Unavailable; ausência honesta de localização não satisfaz groups.location. GroupDirectorySaveResult pode transformar1success em5 e ignorar skipped; sobrescrita da seleção de membros ainda demanda correção.",
       "be": "Conferir gateway nominal interno da ação e hierarquia/tenant. Provar membros, conflitos e reload conforme o comando. Provedores/composição de Grupos continuam incompletos; cliente não autoriza mutação.",
-      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/estruturas/2026-09-07-detail-logout-followup.md; Fechamento R01 C04/r61; C04estado47/r61; não promover E como concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/estruturas/2026-09-07-detail-logout-followup.md; Fechamento R01 C04/r61; C04estado47/r61; não promover E como concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
       "frontendStatus": "pending-verification",
@@ -697,17 +711,24 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 61,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T05:41:00-03:00"
+      "lastEvidenceAt": "2026-09-09T13:19:23.171934-03:00",
+      "roundLocalAcceptance": {
+        "round": "R02",
+        "revision": "e9fdd88d19304f9be05d1539a77f103a5b66ea27",
+        "recordedAt": "2026-09-09T13:19:23.171934-03:00",
+        "note": "R02 D02:2e563e8a→b185a481 confirma só uma etapa agregada real;3 testes repository PASS na base conjuntae9fdd88d. Persistência real não certificada.",
+        "certifiesWholeAction": false
+      }
     },
     {
       "id": "groups.edit",
       "family": "groups",
       "screen": "Turmas / Detalhe-editar",
       "scope": "mvp",
-      "done": "Detalhe READ com adapter, página, rota/DI e logout D01 já composto; diretório, membros e writes têm gates próprios.",
+      "done": "Detalhe READ com adapter, página, rota/DI e logout D01 já composto; diretório, membros e writes têm gates próprios. R02 D02:2e563e8a→b185a481 confirma só uma etapa agregada real;mesmos3 testes repository, sem duplicar casos. Persistência real não certificada.",
       "fe": "Revalidar o aceite específico desta ação: Abrir/editar/cancelar local; depois gateway nominal e prova remota classificada. Diretório recebe Unavailable; ausência honesta de localização não satisfaz groups.location. GroupDirectorySaveResult pode transformar1success em5 e ignorar skipped; sobrescrita da seleção de membros ainda demanda correção.",
       "be": "Conferir gateway nominal interno da ação e hierarquia/tenant. Provar membros, conflitos e reload conforme o comando. Provedores/composição de Grupos continuam incompletos; cliente não autoriza mutação.",
-      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/estruturas/2026-09-07-detail-logout-followup.md; Fechamento R01 C04/r61; C04estado47/r61; não promover E como concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/estruturas/2026-09-07-detail-logout-followup.md; Fechamento R01 C04/r61; C04estado47/r61; não promover E como concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
       "frontendStatus": "pending-verification",
@@ -715,7 +736,14 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 61,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T05:41:00-03:00"
+      "lastEvidenceAt": "2026-09-09T13:19:23.171934-03:00",
+      "roundLocalAcceptance": {
+        "round": "R02",
+        "revision": "e9fdd88d19304f9be05d1539a77f103a5b66ea27",
+        "recordedAt": "2026-09-09T13:19:23.171934-03:00",
+        "note": "R02 D02:2e563e8a→b185a481 confirma só uma etapa agregada real;mesmos3 testes repository, sem duplicar casos. Persistência real não certificada.",
+        "certifiesWholeAction": false
+      }
     },
     {
       "id": "groups.members",
@@ -1311,10 +1339,10 @@
       "family": "assessments",
       "screen": "Avaliações / Lançamento",
       "scope": "mvp",
-      "done": "Migration interna v2 20260901182838 já existe (831fb5a8); erros/contexto/fechamento do cliente receberam correções. C00 integrou recuperação de Error no decode/fila de fechamento (0c74648d/3f0bf140).",
-      "fe": "Conferir páginas, estados e goldens restantes da ação; manter guards de fechamento integrados. Configuração de avaliação ainda tem fronteira de save limitada a Exception conforme RED aberto C03r33.",
+      "done": "Migration interna v2 20260901182838 já existe (831fb5a8); erros/contexto/fechamento do cliente receberam correções. C00 integrou recuperação de Error no decode/fila de fechamento (0c74648d/3f0bf140). R02 D02: dependência comum Configuração recupera Error e libera salvar;5d77b506→1c09cb7a,4 testes PASS na basee9fdd88d, contados uma vez. Não certifica esta ação integral.",
+      "fe": "Conferir páginas, estados e goldens restantes da ação; manter guards de fechamento integrados. RED de Configuração C03r33 resolvido na R02; demais critérios próprios da ação permanecem abertos.",
       "be": "Comparar RPCs consumidos pelo adapter com v2 existente, compatibilidade039, replay e runtime nominal. Não implementar backend do zero por diagnóstico antigo.",
-      "evidence": "commit831fb5a8; commit8f9d5123; packages/coelo_database/migrations/20260901182838_superadmin_assessments_internal_v2.sql; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; Fechamento R01 C03/r33; C00 suíte conjunta74PASS; executor41AssessmentsPASS, não somados; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "commit831fb5a8; commit8f9d5123; packages/coelo_database/migrations/20260901182838_superadmin_assessments_internal_v2.sql; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; Fechamento R01 C03/r33; C00 suíte conjunta74PASS; executor41AssessmentsPASS, não somados; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json",
       "historicalFrontend": "audited",
       "historicalBackend": "local-green",
       "frontendStatus": "pending-verification",
@@ -1322,17 +1350,24 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:14-03:00"
+      "lastEvidenceAt": "2026-09-09T13:19:23.171934-03:00",
+      "roundLocalAcceptance": {
+        "round": "R02",
+        "revision": "e9fdd88d19304f9be05d1539a77f103a5b66ea27",
+        "recordedAt": "2026-09-09T13:19:23.171934-03:00",
+        "note": "R02 D02: dependência comum Configuração recupera Error e libera salvar;5d77b506→1c09cb7a,4 testes PASS na basee9fdd88d, contados uma vez. Não certifica esta ação integral.",
+        "certifiesWholeAction": false
+      }
     },
     {
       "id": "assessments.gradebook",
       "family": "assessments",
       "screen": "Avaliações / Diário",
       "scope": "mvp",
-      "done": "Migration interna v2 20260901182838 já existe (831fb5a8); erros/contexto/fechamento do cliente receberam correções. C00 integrou recuperação de Error no decode/fila de fechamento (0c74648d/3f0bf140).",
-      "fe": "Conferir páginas, estados e goldens restantes da ação; manter guards de fechamento integrados. Configuração de avaliação ainda tem fronteira de save limitada a Exception conforme RED aberto C03r33.",
+      "done": "Migration interna v2 20260901182838 já existe (831fb5a8); erros/contexto/fechamento do cliente receberam correções. C00 integrou recuperação de Error no decode/fila de fechamento (0c74648d/3f0bf140). R02 D02: dependência comum Configuração recupera Error e libera salvar;5d77b506→1c09cb7a,4 testes PASS na basee9fdd88d, contados uma vez. Não certifica esta ação integral.",
+      "fe": "Conferir páginas, estados e goldens restantes da ação; manter guards de fechamento integrados. RED de Configuração C03r33 resolvido na R02; demais critérios próprios da ação permanecem abertos.",
       "be": "Comparar RPCs consumidos pelo adapter com v2 existente, compatibilidade039, replay e runtime nominal. Não implementar backend do zero por diagnóstico antigo.",
-      "evidence": "commit831fb5a8; commit8f9d5123; packages/coelo_database/migrations/20260901182838_superadmin_assessments_internal_v2.sql; R01/C00 2026-09-08T19:00:55-03:00 428e14b7: Gradebook rejeita identidade e escopo divergentes. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; Fechamento R01 C03/r33; C00 suíte conjunta74PASS; executor41AssessmentsPASS, não somados; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "commit831fb5a8; commit8f9d5123; packages/coelo_database/migrations/20260901182838_superadmin_assessments_internal_v2.sql; R01/C00 2026-09-08T19:00:55-03:00 428e14b7: Gradebook rejeita identidade e escopo divergentes. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; Fechamento R01 C03/r33; C00 suíte conjunta74PASS; executor41AssessmentsPASS, não somados; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json",
       "historicalFrontend": "audited",
       "historicalBackend": "local-green",
       "frontendStatus": "pending-verification",
@@ -1340,17 +1375,24 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:14-03:00"
+      "lastEvidenceAt": "2026-09-09T13:19:23.171934-03:00",
+      "roundLocalAcceptance": {
+        "round": "R02",
+        "revision": "e9fdd88d19304f9be05d1539a77f103a5b66ea27",
+        "recordedAt": "2026-09-09T13:19:23.171934-03:00",
+        "note": "R02 D02: dependência comum Configuração recupera Error e libera salvar;5d77b506→1c09cb7a,4 testes PASS na basee9fdd88d, contados uma vez. Não certifica esta ação integral.",
+        "certifiesWholeAction": false
+      }
     },
     {
       "id": "assessments.close",
       "family": "assessments",
       "screen": "Avaliações / Fechar",
       "scope": "mvp",
-      "done": "Migration interna v2 20260901182838 já existe (831fb5a8); erros/contexto/fechamento do cliente receberam correções. C00 integrou recuperação de Error no decode/fila de fechamento (0c74648d/3f0bf140).",
-      "fe": "Conferir páginas, estados e goldens restantes da ação; manter guards de fechamento integrados. Configuração de avaliação ainda tem fronteira de save limitada a Exception conforme RED aberto C03r33.",
+      "done": "Migration interna v2 20260901182838 já existe (831fb5a8); erros/contexto/fechamento do cliente receberam correções. C00 integrou recuperação de Error no decode/fila de fechamento (0c74648d/3f0bf140). R02 D02: dependência comum Configuração recupera Error e libera salvar;5d77b506→1c09cb7a,4 testes PASS na basee9fdd88d, contados uma vez. Não certifica esta ação integral.",
+      "fe": "Conferir páginas, estados e goldens restantes da ação; manter guards de fechamento integrados. RED de Configuração C03r33 resolvido na R02; demais critérios próprios da ação permanecem abertos.",
       "be": "Comparar RPCs consumidos pelo adapter com v2 existente, compatibilidade039, replay e runtime nominal. Não implementar backend do zero por diagnóstico antigo.",
-      "evidence": "commit831fb5a8; commit8f9d5123; packages/coelo_database/migrations/20260901182838_superadmin_assessments_internal_v2.sql; Fechamento R01 C03/r33; C00 suíte conjunta74PASS; executor41AssessmentsPASS, não somados; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "commit831fb5a8; commit8f9d5123; packages/coelo_database/migrations/20260901182838_superadmin_assessments_internal_v2.sql; Fechamento R01 C03/r33; C00 suíte conjunta74PASS; executor41AssessmentsPASS, não somados; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json",
       "historicalFrontend": "audited",
       "historicalBackend": "local-green",
       "frontendStatus": "pending-verification",
@@ -1358,17 +1400,24 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:14-03:00"
+      "lastEvidenceAt": "2026-09-09T13:19:23.171934-03:00",
+      "roundLocalAcceptance": {
+        "round": "R02",
+        "revision": "e9fdd88d19304f9be05d1539a77f103a5b66ea27",
+        "recordedAt": "2026-09-09T13:19:23.171934-03:00",
+        "note": "R02 D02: dependência comum Configuração recupera Error e libera salvar;5d77b506→1c09cb7a,4 testes PASS na basee9fdd88d, contados uma vez. Não certifica esta ação integral.",
+        "certifiesWholeAction": false
+      }
     },
     {
       "id": "assessments.reopen",
       "family": "assessments",
       "screen": "Avaliações / Reabrir",
       "scope": "mvp",
-      "done": "Migration interna v2 20260901182838 já existe (831fb5a8); erros/contexto/fechamento do cliente receberam correções. C00 integrou recuperação de Error no decode/fila de fechamento (0c74648d/3f0bf140).",
-      "fe": "Conferir páginas, estados e goldens restantes da ação; manter guards de fechamento integrados. Configuração de avaliação ainda tem fronteira de save limitada a Exception conforme RED aberto C03r33.",
+      "done": "Migration interna v2 20260901182838 já existe (831fb5a8); erros/contexto/fechamento do cliente receberam correções. C00 integrou recuperação de Error no decode/fila de fechamento (0c74648d/3f0bf140). R02 D02: dependência comum Configuração recupera Error e libera salvar;5d77b506→1c09cb7a,4 testes PASS na basee9fdd88d, contados uma vez. Não certifica esta ação integral.",
+      "fe": "Conferir páginas, estados e goldens restantes da ação; manter guards de fechamento integrados. RED de Configuração C03r33 resolvido na R02; demais critérios próprios da ação permanecem abertos.",
       "be": "Comparar RPCs consumidos pelo adapter com v2 existente, compatibilidade039, replay e runtime nominal. Não implementar backend do zero por diagnóstico antigo.",
-      "evidence": "commit831fb5a8; commit8f9d5123; packages/coelo_database/migrations/20260901182838_superadmin_assessments_internal_v2.sql; Fechamento R01 C03/r33; C00 suíte conjunta74PASS; executor41AssessmentsPASS, não somados; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "commit831fb5a8; commit8f9d5123; packages/coelo_database/migrations/20260901182838_superadmin_assessments_internal_v2.sql; Fechamento R01 C03/r33; C00 suíte conjunta74PASS; executor41AssessmentsPASS, não somados; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json",
       "historicalFrontend": "audited",
       "historicalBackend": "local-green",
       "frontendStatus": "pending-verification",
@@ -1376,17 +1425,24 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:14-03:00"
+      "lastEvidenceAt": "2026-09-09T13:19:23.171934-03:00",
+      "roundLocalAcceptance": {
+        "round": "R02",
+        "revision": "e9fdd88d19304f9be05d1539a77f103a5b66ea27",
+        "recordedAt": "2026-09-09T13:19:23.171934-03:00",
+        "note": "R02 D02: dependência comum Configuração recupera Error e libera salvar;5d77b506→1c09cb7a,4 testes PASS na basee9fdd88d, contados uma vez. Não certifica esta ação integral.",
+        "certifiesWholeAction": false
+      }
     },
     {
       "id": "assessments.detail",
       "family": "assessments",
       "screen": "Avaliação / Detalhe",
       "scope": "mvp",
-      "done": "Migration interna v2 20260901182838 já existe (831fb5a8); erros/contexto/fechamento do cliente receberam correções. C00 integrou recuperação de Error no decode/fila de fechamento (0c74648d/3f0bf140).",
-      "fe": "Conferir páginas, estados e goldens restantes da ação; manter guards de fechamento integrados. Configuração de avaliação ainda tem fronteira de save limitada a Exception conforme RED aberto C03r33.",
+      "done": "Migration interna v2 20260901182838 já existe (831fb5a8); erros/contexto/fechamento do cliente receberam correções. C00 integrou recuperação de Error no decode/fila de fechamento (0c74648d/3f0bf140). R02 D02: dependência comum Configuração recupera Error e libera salvar;5d77b506→1c09cb7a,4 testes PASS na basee9fdd88d, contados uma vez. Não certifica esta ação integral.",
+      "fe": "Conferir páginas, estados e goldens restantes da ação; manter guards de fechamento integrados. RED de Configuração C03r33 resolvido na R02; demais critérios próprios da ação permanecem abertos.",
       "be": "Comparar RPCs consumidos pelo adapter com v2 existente, compatibilidade039, replay e runtime nominal. Não implementar backend do zero por diagnóstico antigo.",
-      "evidence": "commit831fb5a8; commit8f9d5123; packages/coelo_database/migrations/20260901182838_superadmin_assessments_internal_v2.sql; Fechamento R01 C03/r33; C00 suíte conjunta74PASS; executor41AssessmentsPASS, não somados; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "commit831fb5a8; commit8f9d5123; packages/coelo_database/migrations/20260901182838_superadmin_assessments_internal_v2.sql; Fechamento R01 C03/r33; C00 suíte conjunta74PASS; executor41AssessmentsPASS, não somados; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json",
       "historicalFrontend": "audited",
       "historicalBackend": "local-green",
       "frontendStatus": "pending-verification",
@@ -1394,7 +1450,14 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:14-03:00"
+      "lastEvidenceAt": "2026-09-09T13:19:23.171934-03:00",
+      "roundLocalAcceptance": {
+        "round": "R02",
+        "revision": "e9fdd88d19304f9be05d1539a77f103a5b66ea27",
+        "recordedAt": "2026-09-09T13:19:23.171934-03:00",
+        "note": "R02 D02: dependência comum Configuração recupera Error e libera salvar;5d77b506→1c09cb7a,4 testes PASS na basee9fdd88d, contados uma vez. Não certifica esta ação integral.",
+        "certifiesWholeAction": false
+      }
     },
     {
       "id": "students.list",
@@ -1543,17 +1606,25 @@
       "family": "attendance",
       "screen": "Assiduidade / Corrigir",
       "scope": "mvp",
-      "done": "55 testes funcionais e dois goldens históricos; overflow da chamada corrigido em0fbdef95 com38 testes e quatro novos goldens registrados.",
+      "done": "55 testes funcionais e dois goldens históricos; overflow da chamada corrigido em0fbdef95 com38 testes e quatro novos goldens registrados. R02 D03:58e1d0fe→e9fdd88d corrige participante selecionado e bloqueia campos durante envio;6 casos correction PASS na base conjunta. Backend real permanece aberto.",
       "fe": "Revalidar o aceite específico desta ação: Corrigir/validar/conflito/falhar e reload.",
       "be": "Resolver contrato interno específico OQ040/spec048, capability, escopo/DTO e cutover; legado people-based não prova backend039. Depois runtime/reload.",
-      "evidence": "commit0fbdef95; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/2026-09-07-deferred-exports.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01-delta-1815: C03r23 b592dc4b corrige perda de draft de6504610a;65testes relatados. Par ainda RETIDO: C00 encontrou lookup ScaffoldMessenger usando context da página descartada no ramo em que mounted=false. Correção e cenário dialog sobrevivendo dispose pedidos nominalmente C03. Sem afirmar reprodução runtime desse achado estático.; Recibo18:23: retenção de código resolvida por69324bc4, conjunto integrado4de7b59f/a141b430/c33e4160/a2388ec8;45PASS C00, sem promoção.",
+      "evidence": "commit0fbdef95; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/2026-09-07-deferred-exports.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01-delta-1815: C03r23 b592dc4b corrige perda de draft de6504610a;65testes relatados. Par ainda RETIDO: C00 encontrou lookup ScaffoldMessenger usando context da página descartada no ramo em que mounted=false. Correção e cenário dialog sobrevivendo dispose pedidos nominalmente C03. Sem afirmar reprodução runtime desse achado estático.; Recibo18:23: retenção de código resolvida por69324bc4, conjunto integrado4de7b59f/a141b430/c33e4160/a2388ec8;45PASS C00, sem promoção.; evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
       "frontendStatus": "pending-verification",
       "backendStatus": "pending-verification",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "lastEvidenceAt": "2026-09-09T13:19:23.171934-03:00",
+      "roundLocalAcceptance": {
+        "round": "R02",
+        "revision": "e9fdd88d19304f9be05d1539a77f103a5b66ea27",
+        "recordedAt": "2026-09-09T13:19:23.171934-03:00",
+        "note": "R02 D03:58e1d0fe→e9fdd88d corrige participante selecionado e bloqueia campos durante envio;6 casos correction PASS na base conjunta. Backend real permanece aberto.",
+        "certifiesWholeAction": false
+      }
     },
     {
       "id": "attendance.finish",
@@ -3940,9 +4011,251 @@
       "lastEvidenceAt": "2026-09-09T05:41:00-03:00",
       "lastHandoffRevision": 61,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+    },
+    {
+      "id": "circulars.list",
+      "family": "circulars",
+      "screen": "Circulares / Diretório",
+      "scope": "mvp",
+      "done": "Mapeamento R02 recebido de L01; existência parcial observada, sem aceite integral. Página existe e é montada em produção",
+      "fe": "Completar e provar Lista, tabela desktop, cards compacto, paginação. Preservar família Principal e shell Superadmin web/mobile; estados e negativas da spec037.",
+      "be": "Validar contrato autorizado, tenant/escopo real, versão, RLS e auditoria. RPC `superadmin_circular_directory_v2`",
+      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md",
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification",
+      "lastEvidenceAt": "2026-09-09T13:20:58.702584-03:00",
+      "mappingSource": {
+        "round": "R02",
+        "owner": "L01",
+        "approvedBy": "D00",
+        "sourceSha256": "db41ccba27a41c81df774e7379ad46b7441b7c3e9750a0693b9dacbc848acb65",
+        "substate": "Lista, tabela desktop, cards compacto, paginação",
+        "observationOnly": true
+      }
+    },
+    {
+      "id": "circulars.filter",
+      "family": "circulars",
+      "screen": "Circulares / Tabs, busca e filtro de contexto",
+      "scope": "mvp",
+      "done": "Mapeamento R02 recebido de L01; existência parcial observada, sem aceite integral. Enum de tabs e busca implementados",
+      "fe": "Completar e provar `Todas / Rascunhos / Agendadas / Publicadas / Encerradas`, busca, filtro `Todos`. Preservar família Principal e shell Superadmin web/mobile; estados e negativas da spec037.",
+      "be": "Validar contrato autorizado, tenant/escopo real, versão, RLS e auditoria. `superadmin_circular_directory_v2` aceita `search` e `statuses`",
+      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md",
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification",
+      "lastEvidenceAt": "2026-09-09T13:20:58.702584-03:00",
+      "mappingSource": {
+        "round": "R02",
+        "owner": "L01",
+        "approvedBy": "D00",
+        "sourceSha256": "db41ccba27a41c81df774e7379ad46b7441b7c3e9750a0693b9dacbc848acb65",
+        "substate": "`Todas / Rascunhos / Agendadas / Publicadas / Encerradas`, busca, filtro `Todos`",
+        "observationOnly": true
+      }
+    },
+    {
+      "id": "circulars.create",
+      "family": "circulars",
+      "screen": "Criar Circular",
+      "scope": "mvp",
+      "done": "Mapeamento R02 recebido de L01; existência parcial observada, sem aceite integral. `SuperadminCircularComposerPage` montada via `ProductionCircularComposerHost`",
+      "fe": "Completar e provar Composer: título, blocos de texto/mídia/pergunta, rascunho. Preservar família Principal e shell Superadmin web/mobile; estados e negativas da spec037.",
+      "be": "Validar contrato autorizado, tenant/escopo real, versão, RLS e auditoria. RPCs `superadmin_circular_load_draft_v2` e `superadmin_circular_save_draft_v2`; capacidade `circulars.circulars.create`",
+      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md",
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification",
+      "lastEvidenceAt": "2026-09-09T13:20:58.702584-03:00",
+      "mappingSource": {
+        "round": "R02",
+        "owner": "L01",
+        "approvedBy": "D00",
+        "sourceSha256": "db41ccba27a41c81df774e7379ad46b7441b7c3e9750a0693b9dacbc848acb65",
+        "substate": "Composer: título, blocos de texto/mídia/pergunta, rascunho",
+        "observationOnly": true
+      }
+    },
+    {
+      "id": "circulars.edit",
+      "family": "circulars",
+      "screen": "Editar Circular",
+      "scope": "mvp",
+      "done": "Mapeamento R02 recebido de L01; existência parcial observada, sem aceite integral. Rota montada, reaproveita o mesmo composer com `circularId`",
+      "fe": "Completar e provar Correção que cria nova revisão. Preservar família Principal e shell Superadmin web/mobile; estados e negativas da spec037.",
+      "be": "Validar contrato autorizado, tenant/escopo real, versão, RLS e auditoria. `superadmin_circular_save_draft_v2` (mesmo RPC do rascunho). **Sem RPC específico de nova revisão publicada** no gateway v2",
+      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md",
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification",
+      "lastEvidenceAt": "2026-09-09T13:20:58.702584-03:00",
+      "mappingSource": {
+        "round": "R02",
+        "owner": "L01",
+        "approvedBy": "D00",
+        "sourceSha256": "db41ccba27a41c81df774e7379ad46b7441b7c3e9750a0693b9dacbc848acb65",
+        "substate": "Correção que cria nova revisão",
+        "observationOnly": true
+      }
+    },
+    {
+      "id": "circulars.detail",
+      "family": "circulars",
+      "screen": "Circular / Detalhe",
+      "scope": "mvp",
+      "done": "Mapeamento R02 recebido de L01; existência parcial observada, sem aceite integral. `SuperadminCircularDetailPage`, com ação `Editar circular`",
+      "fe": "Completar e provar Leitor com conteúdo, contexto e resumo de respostas. Preservar família Principal e shell Superadmin web/mobile; estados e negativas da spec037.",
+      "be": "Validar contrato autorizado, tenant/escopo real, versão, RLS e auditoria. RPCs `superadmin_circular_detail_v2` e `superadmin_circular_response_summary_v2`",
+      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md",
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification",
+      "lastEvidenceAt": "2026-09-09T13:20:58.702584-03:00",
+      "mappingSource": {
+        "round": "R02",
+        "owner": "L01",
+        "approvedBy": "D00",
+        "sourceSha256": "db41ccba27a41c81df774e7379ad46b7441b7c3e9750a0693b9dacbc848acb65",
+        "substate": "Leitor com conteúdo, contexto e resumo de respostas",
+        "observationOnly": true
+      }
+    },
+    {
+      "id": "circulars.schedule",
+      "family": "circulars",
+      "screen": "Circulares / Agendar",
+      "scope": "mvp",
+      "done": "Mapeamento R02 recebido de L01; existência parcial observada, sem aceite integral. Seletor de agendamento e rótulo `Agendar circular`",
+      "fe": "Completar e provar Escolha de data/hora antes de publicar. Preservar família Principal e shell Superadmin web/mobile; estados e negativas da spec037.",
+      "be": "Validar contrato autorizado, tenant/escopo real, versão, RLS e auditoria. `superadmin_circular_publish_v2(..., timestamptz)` e `public.publish_circular(..., p_publish_at)`",
+      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md",
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification",
+      "lastEvidenceAt": "2026-09-09T13:20:58.702584-03:00",
+      "mappingSource": {
+        "round": "R02",
+        "owner": "L01",
+        "approvedBy": "D00",
+        "sourceSha256": "db41ccba27a41c81df774e7379ad46b7441b7c3e9750a0693b9dacbc848acb65",
+        "substate": "Escolha de data/hora antes de publicar",
+        "observationOnly": true
+      }
+    },
+    {
+      "id": "circulars.publish",
+      "family": "circulars",
+      "screen": "Circulares / Publicar",
+      "scope": "mvp",
+      "done": "Mapeamento R02 recebido de L01; existência parcial observada, sem aceite integral. Ação primária do composer",
+      "fe": "Completar e provar Publicação imediata com versão otimista. Preservar família Principal e shell Superadmin web/mobile; estados e negativas da spec037.",
+      "be": "Validar contrato autorizado, tenant/escopo real, versão, RLS e auditoria. `superadmin_circular_publish_v2` / `public.publish_circular`; capacidade `circulars.circulars.publish`",
+      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md",
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification",
+      "lastEvidenceAt": "2026-09-09T13:20:58.702584-03:00",
+      "mappingSource": {
+        "round": "R02",
+        "owner": "L01",
+        "approvedBy": "D00",
+        "sourceSha256": "db41ccba27a41c81df774e7379ad46b7441b7c3e9750a0693b9dacbc848acb65",
+        "substate": "Publicação imediata com versão otimista",
+        "observationOnly": true
+      }
+    },
+    {
+      "id": "circulars.close",
+      "family": "circulars",
+      "screen": "Circulares / Encerrar respostas",
+      "scope": "mvp",
+      "done": "Mapeamento R02 recebido de L01; existência parcial observada, sem aceite integral. **Sem affordance de UI.** Só o método de repositório existe",
+      "fe": "Completar e provar Encerramento manual auditado. Preservar família Principal e shell Superadmin web/mobile; estados e negativas da spec037.",
+      "be": "Validar contrato autorizado, tenant/escopo real, versão, RLS e auditoria. `superadmin_circular_close_v2` e `public.close_circular_responses`; capacidade `circulars.circulars.manage`",
+      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md",
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification",
+      "lastEvidenceAt": "2026-09-09T13:20:58.702584-03:00",
+      "mappingSource": {
+        "round": "R02",
+        "owner": "L01",
+        "approvedBy": "D00",
+        "sourceSha256": "db41ccba27a41c81df774e7379ad46b7441b7c3e9750a0693b9dacbc848acb65",
+        "substate": "Encerramento manual auditado",
+        "observationOnly": true
+      }
+    },
+    {
+      "id": "circulars.delete",
+      "family": "circulars",
+      "screen": "Circulares / Excluir",
+      "scope": "mvp",
+      "done": "Mapeamento R02 recebido de L01; existência parcial observada, sem aceite integral. **Sem affordance de UI.** Nenhum botão `Excluir` no diretório ou no detalhe",
+      "fe": "Completar e provar Exclusão lógica quando existir histórico. Preservar família Principal e shell Superadmin web/mobile; estados e negativas da spec037.",
+      "be": "Validar contrato autorizado, tenant/escopo real, versão, RLS e auditoria. RPC `public.delete_circular` existe e é chamado só pelo repositório do Principal. **Ausente no gateway v2** usado em produção",
+      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md",
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification",
+      "lastEvidenceAt": "2026-09-09T13:20:58.702584-03:00",
+      "mappingSource": {
+        "round": "R02",
+        "owner": "L01",
+        "approvedBy": "D00",
+        "sourceSha256": "db41ccba27a41c81df774e7379ad46b7441b7c3e9750a0693b9dacbc848acb65",
+        "substate": "Exclusão lógica quando existir histórico",
+        "observationOnly": true
+      }
+    },
+    {
+      "id": "circulars.respond",
+      "family": "circulars",
+      "screen": "Responder Circular",
+      "scope": "mvp",
+      "done": "Mapeamento R02 recebido de L01; existência parcial observada, sem aceite integral. `PrincipalCircularReader` implementa seleção e envio, mas `PrincipalCircularDetailPage` **não é montado em nenhuma rota** do `lib`",
+      "fe": "Completar e provar Rascunho parcial, envio, conflito de versão, estado `Encerrada`. Preservar família Principal e shell Superadmin web/mobile; estados e negativas da spec037.",
+      "be": "Validar contrato autorizado, tenant/escopo real, versão, RLS e auditoria. RPCs `save_circular_response_draft` e `submit_circular_response`; capacidade `circulars.circulars.respond`. **Ausentes no gateway v2**",
+      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md",
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification",
+      "lastEvidenceAt": "2026-09-09T13:20:58.702584-03:00",
+      "mappingSource": {
+        "round": "R02",
+        "owner": "L01",
+        "approvedBy": "D00",
+        "sourceSha256": "db41ccba27a41c81df774e7379ad46b7441b7c3e9750a0693b9dacbc848acb65",
+        "substate": "Rascunho parcial, envio, conflito de versão, estado `Encerrada`",
+        "observationOnly": true
+      }
+    },
+    {
+      "id": "circulars.attach",
+      "family": "circulars",
+      "screen": "Circular / Anexos",
+      "scope": "mvp",
+      "done": "Mapeamento R02 recebido de L01; existência parcial observada, sem aceite integral. Lista de anexos e contador `n/4` renderizam, mas o **seletor de arquivos está desabilitado em produção** com aviso honesto",
+      "fe": "Completar e provar Upload, limite de 4 arquivos, MIME/tamanho, leitura assinada, remoção. Preservar família Principal e shell Superadmin web/mobile; estados e negativas da spec037.",
+      "be": "Completar gateway/plataforma R2 privada comum; catálogo Postgres, MIME/bytes/checksum, autorização de entrega e auditoria. Gateway Supabase Storage antigo não atende ADR0032 para mídia nova.",
+      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md",
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification",
+      "lastEvidenceAt": "2026-09-09T13:20:58.702584-03:00",
+      "mappingSource": {
+        "round": "R02",
+        "owner": "L01",
+        "approvedBy": "D00",
+        "sourceSha256": "db41ccba27a41c81df774e7379ad46b7441b7c3e9750a0693b9dacbc848acb65",
+        "substate": "Upload, limite de 4 arquivos, MIME/tamanho, leitura assinada, remoção",
+        "observationOnly": true
+      }
     }
   ],
-  "updatedAt": "2026-09-09T08:41:13-03:00",
+  "updatedAt": "2026-09-09T13:20:58.702584-03:00",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,
@@ -3953,5 +4266,6 @@
     "C06": 53,
     "C07": 12
   },
-  "closureEvidence": "etapa-2-operacao/reports/R01-fechamento-20260909.md"
+  "closureEvidence": "etapa-2-operacao/reports/R01-fechamento-20260909.md",
+  "mappingRevision": "R02-circulars-r1"
 }

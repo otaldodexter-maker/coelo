@@ -7,7 +7,7 @@
   "createdAt": "2026-09-09",
   "integrationOwner": "D00",
   "observedPreparationHead": "fb2d07d34a74c91ec1f65aff361048393e590729",
-  "runtimeBaselineSha": "588d38ebe7b05bf67e1013f215f3234c3102033c",
+  "runtimeBaselineSha": "e9fdd88d19304f9be05d1539a77f103a5b66ea27",
   "roles": [
     {
       "id": "D00",
@@ -20,12 +20,12 @@
       "scope": "Coordenação, dependências compartilhadas, integração final em dev e relatório do Owner.",
       "worktree": "C:/Users/adrie/Documents/Coelo",
       "branch": "dev",
-      "status": "active-preparing",
+      "status": "active-integrating",
       "threadId": "01a086d5-7bd9-7b12-8537-d29236b2e6ca",
       "plannedWorktree": "C:/Users/adrie/Documents/Coelo",
       "coordinator": null,
       "baselineSha": "fb2d07d34a74c91ec1f65aff361048393e590729",
-      "headSha": "87390aefa395b7c530d269e4e04dcb10d103e8ff",
+      "headSha": "e9fdd88d19304f9be05d1539a77f103a5b66ea27",
       "plannedAssignmentPath": null,
       "assignmentPath": null,
       "plannedHandoffPath": "C:/Users/adrie/Documents/Coelo/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D00.md",
@@ -128,7 +128,12 @@
       "worktreeOrigin": "D00 git worktree add",
       "sourceVerification": "Eight required skill files match canonical content; documentary base ancestor verified",
       "scopeRevision": "ADENDO-LOCAIS.md; quatro locations.* adicionados; 42 E2E MVP",
-      "scopeExpansionExecutionStatus": "Adendo exige comando do Owner; D02 já ativo no recorte original. Confirmação de leitura/comando da ampliação ainda pendente."
+      "scopeExpansionExecutionStatus": "Adendo exige comando do Owner; D02 já ativo no recorte original. Confirmação de leitura/comando da ampliação ainda pendente.",
+      "scopeExpansion": {
+        "status": "active-owner-command-received",
+        "source": "handoff D02 r4",
+        "reportedAt": "2026-09-09T13:05:16-03:00"
+      }
     },
     {
       "id": "D03",
@@ -321,8 +326,8 @@
       "apps/superadmin/test/features/auth/presentation/screens/failures/superadmin_login_light_testImage.png"
     ]
   },
-  "runtimeBaselineLimit": "Application code includes Auth and routine candidate integrations; focal verification in progress, coordinator documentary WIP separate.",
-  "scopeRevision": "ADENDO-LOCAIS: 136 selecionados, 120 MVP E2E; Circulares e granularidade abertos",
+  "runtimeBaselineLimit": "Focal application campaigns103PASS across588d38eb,5908a330,e9fdd88d; documentary WIP separate. No whole-action/remote/E2E certification.",
+  "scopeRevision": "R02 Circulares r1:147 selecionados,131 MVP E2E; global230/198; Home/granularidade explícitos",
   "sharedReservations": [
     {
       "owner": "D01",
@@ -348,6 +353,62 @@
       "region": "two UnitFormPage create/edit builders, authorizationInvalidationRevision only",
       "release": "apt SHA",
       "status": "active"
+    },
+    {
+      "owner": "D03",
+      "path": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart",
+      "region": "CHILD reader composition only; no new route or UnitForm hunks",
+      "status": "active",
+      "release": "apt SHA"
+    },
+    {
+      "owner": "D03",
+      "path": "apps/superadmin/lib/main.dart",
+      "region": "CHILD reader composition only; no new route or UnitForm hunks",
+      "status": "active",
+      "release": "apt SHA"
+    },
+    {
+      "owner": "D03",
+      "path": "apps/superadmin/lib/app/superadmin_app.dart",
+      "region": "CHILD reader composition only; no new route or UnitForm hunks",
+      "status": "active",
+      "release": "apt SHA"
+    },
+    {
+      "owner": "D03",
+      "path": "apps/superadmin/lib/app/router/superadmin_router.dart",
+      "region": "CHILD reader composition only; no new route or UnitForm hunks",
+      "status": "active",
+      "release": "apt SHA"
+    },
+    {
+      "owner": "D03",
+      "path": "packages/coelo_database/scripts/Prepare-SafeMigrationReplay.ps1",
+      "region": "ChildDirectoryEnvelope allowlist/dispatch/materialization only",
+      "status": "active",
+      "release": "apt SHA"
+    },
+    {
+      "owner": "D03",
+      "path": "packages/coelo_database/scripts/Invoke-SafeLocalMigrationReplay.ps1",
+      "region": "ChildDirectoryEnvelope allowlist/dispatch/materialization only",
+      "status": "active",
+      "release": "apt SHA"
+    },
+    {
+      "owner": "D02",
+      "path": "packages/coelo_database/scripts/Test-ActivityV2Concurrency.ps1",
+      "region": "two actual lock-wait session/membership negative scenarios",
+      "status": "active",
+      "release": "apt SHA"
+    },
+    {
+      "owner": "D02",
+      "path": "packages/coelo_database/scripts/tests/Test-ActivityV2Concurrency.Tests.ps1",
+      "region": "two actual lock-wait session/membership negative scenarios",
+      "status": "active",
+      "release": "apt SHA"
     }
   ],
   "claudeContinuity": {
@@ -364,22 +425,28 @@
     "cutoff": "2026-09-09T16:45:00-03:00"
   },
   "integrationRunner": {
-    "sessionId": 65392,
-    "base": "588d38eb",
-    "worktree": "C:/Users/adrie/Documents/Coelo",
     "status": "passed",
-    "campaigns": [
-      "Auth recovery 14 cases expected",
-      "Routine directory 11 cases expected"
+    "sessions": [
+      65392,
+      4592,
+      12881
     ],
-    "limit": "counts expected, not yet results; sequential Flutter commands",
-    "results": {
-      "P": 25,
-      "F": 0,
-      "B": 0,
-      "S": 0,
-      "U": 0,
-      "scope": "two focal campaigns, not whole app plan"
-    }
+    "P": 103,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0,
+    "limit": "Six focal campaigns, author reruns excluded; not total app plan",
+    "manifests": [
+      "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest.json",
+      "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json"
+    ]
+  },
+  "localSqlSlot": {
+    "owner": "D02",
+    "assignmentRevision": 6,
+    "status": "granted-after-D03-cleanup",
+    "next": "D03 after reviewed profile and explicit release",
+    "foreignContainer": "coelo-l01-circ-sqlcheck untouched"
   }
 }

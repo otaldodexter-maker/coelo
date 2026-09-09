@@ -8,22 +8,20 @@ updated_at: "2026-09-09"
 
 # Perguntas abertas e conflitos
 
-## R02 — alcance do shell nos viewers Principal — 2026-09-09
+## R02 — alcance do shell nos viewers Principal — resolvido em 09/09/2026
 
-O Owner reforçou que o Coelo (Principal) deve ocupar o contêiner ao lado
-do shell/menu do Superadmin. A spec050 e a referência
-`.agents/skills/coelo-ui/references/principal-visual-surfaces.md` permitem
-suspender temporariamente o chrome em viewers imersivos de Agora/Momentos.
-Na leitura focal de Circulares de 09/09, a spec037 também prevê detalhe
-fullscreen no compacto sem cabeçalho/dock global. Agrupar esse caso na mesma
-confirmação visual; não reabrir decisões funcionais já aprovadas de Circulares.
-Foi perguntado nesta tarefa se a instrução atual também elimina essa exceção;
-não há resposta registrada neste momento. Não presumir aprovação pelo silêncio.
+Decisão final do Owner nesta tarefa: preservar o shell/menu no Superadmin web
+E mobile, inclusive em Agora, Momentos e na leitura de Circular. Essas
+superfícies permanecem no contêiner de conteúdo, seguindo a navegação responsiva.
+A confirmação final substitui a resposta intermediária de que seria apenas web.
+A regra é exclusiva do hospedeiro Superadmin; não determina o app Principal independente.
 
-O [contrato visual R02](reviews/etapa-2-operacao/next-round/R02-20260909/PRINCIPAL.md)
-preserva o contêiner e a composição Principal nas telas normais. Somente a
-alteração/certificação dessa exceção aguarda o esclarecimento; os demais
-fluxos independentes continuam quando a execução for iniciada pelo Owner.
+Foram alinhadas specs/050-principal-ui-ux-closure.md,
+specs/037-principal-circulars.md, a referência da skill coelo-ui e o
+[contrato visual R02](reviews/etapa-2-operacao/next-round/R02-20260909/PRINCIPAL.md).
+A antiga exceção genérica de fullscreen não autoriza remover o shell nesse
+hospedeiro. A frente deve implementar/verificar o delta, sem pedir nova decisão
+ou tratar a confirmação documental como certificação de produto.
 
 ## Reconciliação do fechamento R01 — 2026-09-09
 

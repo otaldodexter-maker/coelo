@@ -27,14 +27,27 @@
     {
       "owner": "D02",
       "sourceSha": "2e563e8a",
-      "status": "reviewed-diff-awaiting-executor-evidence",
+      "status": "integrated-verified-partial",
       "actions": [
         "groups.create",
         "groups.edit"
       ],
       "finding": "Reports one aggregate RPC success instead of fabricating success for five stages; no blocker found in focal client review.",
-      "required": "Executor focal test result and apt SHA handoff; integration verification on combined base.",
-      "testsExecutedByD00": false
+      "required": "Whole-action runtime/persistence acceptance remains open.",
+      "testsExecutedByD00": true,
+      "integratedSha": "b185a481"
+    },
+    {
+      "owner": "D02",
+      "sourceSha": "85f82c88",
+      "status": "review-blocked-not-integrated",
+      "actions": [
+        "units.list"
+      ],
+      "finding": "Repository replacement retains table display but fresh VM uses pageSize11 instead of table8.",
+      "required": "Align page size/display and test table repository replacement.",
+      "testsExecutedByD00": false,
+      "communicatedVia": "assignments/D02.md r7"
     }
   ]
 }

@@ -68,11 +68,11 @@ Não foi encontrada decisão funcional específica de Circulares em aberto nesta
 leitura focal. Título/texto, anexos/perguntas, políticas de resposta, revisão,
 agendamento, público e composições principais já estão definidos.
 
-A única confirmação visual relacionada à conversa atual deve ser agrupada à
-pergunta já pendente dos viewers: a spec037 permite detalhe de Circular
-fullscreen em compacto, sem cabeçalho/dock global, com retorno contextual.
-Esclarecer se o pedido de preservar o shell também elimina essa exceção, como
-nos viewers de Agora/Momentos. Não bloquear as demais ações independentes.
+A confirmação visual foi resolvida pelo Owner em 09/09/2026: no Superadmin,
+o shell/menu permanece no web e no mobile, inclusive na leitura de Circular
+e nos viewers de Agora/Momentos. A imersão fica no contêiner de conteúdo;
+a regra se aplica apenas ao hospedeiro Superadmin. Não manter essa pergunta
+como bloqueio, nem pedir nova confirmação. Fontes037/050 e PRINCIPAL.md atualizadas.
 
 Uma autorização remota ainda ausente só será solicitada após preparar o pacote
 nominal concreto, respeitando autorizações existentes. Isso não exige nova

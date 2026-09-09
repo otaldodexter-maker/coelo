@@ -1,0 +1,215 @@
+{
+  "source": "D00 source review and integrated test runs4592/12881",
+  "status": "partial-local-acceptance",
+  "generatedAt": "2026-09-09T13:19:23.171934-03:00",
+  "revision": "e9fdd88d19304f9be05d1539a77f103a5b66ea27",
+  "commits": [
+    {
+      "owner": "D01",
+      "source": "386ad474",
+      "destination": "b8abfd59",
+      "actions": [
+        "auth.login"
+      ]
+    },
+    {
+      "owner": "D01",
+      "source": "953ce9d3",
+      "destination": "5908a330",
+      "actions": [
+        "auth.reset"
+      ]
+    },
+    {
+      "owner": "D02",
+      "source": "2e563e8a",
+      "destination": "b185a481",
+      "actions": [
+        "groups.create",
+        "groups.edit"
+      ]
+    },
+    {
+      "owner": "D02",
+      "source": "c3fb1d2c",
+      "destination": "b648379b",
+      "actions": [
+        "institutions.edit"
+      ]
+    },
+    {
+      "owner": "D02",
+      "source": "5d77b506",
+      "destination": "1c09cb7a",
+      "actions": [
+        "assessments.entry"
+      ]
+    },
+    {
+      "owner": "D03",
+      "source": "58e1d0f",
+      "destination": "e9fdd88d",
+      "actions": [
+        "attendance.correct"
+      ]
+    }
+  ],
+  "campaigns": [
+    {
+      "campaign_id": "R02-D00-login-5908a330",
+      "revision": "5908a330",
+      "layer": "FE",
+      "environment": "Windows Flutter local; synthetic repositories/HTTP; no provider mutation",
+      "P": 21,
+      "F": 0,
+      "B": 0,
+      "S": 0,
+      "U": 0,
+      "action_ids": [
+        "auth.login"
+      ],
+      "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/login-5908a330.txt",
+      "sha256": "2564279d083ec9f3a45986cc97f3a99b9f2c4c1d26cf969ee84b881c803fd600",
+      "emittedUniqueCaseNames": [
+        "test/features/auth/presentation/screens/superadmin_login_screen_test.dart: renders the private access context and form",
+        "test/features/auth/presentation/screens/superadmin_login_screen_test.dart: matches the approved light login anatomy and semantic colors",
+        "test/features/auth/presentation/screens/superadmin_login_screen_test.dart: keeps the login header compact with semantic spacing tokens",
+        "test/features/auth/presentation/screens/superadmin_login_screen_test.dart: underlines password recovery on hover without a background overlay",
+        "test/features/auth/presentation/screens/superadmin_login_screen_test.dart: uses a darker semantic primary hover in light and dark themes",
+        "test/features/auth/presentation/screens/superadmin_login_screen_test.dart: uses the semantic Peach hover state on light login fields",
+        "test/features/auth/presentation/screens/superadmin_login_screen_test.dart: validates empty fields and malformed email",
+        "test/features/auth/presentation/screens/superadmin_login_golden_test.dart: renders the light desktop login reference",
+        "test/features/auth/presentation/screens/superadmin_login_screen_test.dart: exposes one checkbox semantic target and a visible keyboard focus ring",
+        "test/features/auth/presentation/screens/superadmin_login_golden_test.dart: renders the light mobile login reference",
+        "test/features/auth/presentation/screens/superadmin_login_screen_test.dart: shows loading and safe authentication feedback",
+        "test/features/auth/presentation/screens/superadmin_login_screen_test.dart: forwards form values and leaves session transition to the login action",
+        "test/features/auth/presentation/screens/superadmin_login_screen_test.dart: delegates password recovery navigation",
+        "test/features/auth/presentation/screens/superadmin_login_screen_test.dart: does not overflow on a compact window with enlarged text",
+        "test/features/auth/presentation/screens/superadmin_login_screen_test.dart: keeps the session control usable across the V1 responsive matrix",
+        "test/features/auth/presentation/screens/superadmin_login_screen_test.dart: renders from the Coelo dark theme",
+        "test/features/auth/presentation/screens/superadmin_login_screen_test.dart: does not expose theme switching from the login screen"
+      ],
+      "caseIdentityLimit": "Expanded concurrent reporter may omit/interleave case names. PASS total is runner result; do not count duplicate progress lines. No rerun added for reporting."
+    },
+    {
+      "campaign_id": "R02-D00-recovery-otp-5908a330",
+      "revision": "5908a330",
+      "layer": "FE",
+      "environment": "Windows Flutter local; synthetic repositories/HTTP; no provider mutation",
+      "P": 3,
+      "F": 0,
+      "B": 0,
+      "S": 0,
+      "U": 0,
+      "action_ids": [
+        "auth.reset"
+      ],
+      "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/recovery-otp-5908a330.txt",
+      "sha256": "cf02de0931693a7362a474d6411845c8cb05830fc599ef5612330ec53234adbe",
+      "emittedUniqueCaseNames": [
+        "rejected recovery OTP cannot enable password updates: invalid",
+        "rejected recovery OTP cannot enable password updates: expired",
+        "rejected recovery OTP cannot enable password updates: reused"
+      ],
+      "caseIdentityLimit": "Expanded concurrent reporter may omit/interleave case names. PASS total is runner result; do not count duplicate progress lines. No rerun added for reporting."
+    },
+    {
+      "campaign_id": "R02-D00-structure-e9fdd88d",
+      "revision": "e9fdd88d",
+      "layer": "FE",
+      "environment": "Windows Flutter local; synthetic repositories/HTTP; no provider mutation",
+      "P": 48,
+      "F": 0,
+      "B": 0,
+      "S": 0,
+      "U": 0,
+      "action_ids": [
+        "groups.create",
+        "groups.edit",
+        "institutions.edit",
+        "assessments.entry"
+      ],
+      "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/structure-e9fdd88d.txt",
+      "sha256": "dbdbfa193a60e3df41b43b5d2d1c0d60b7c0a337609879eac144a59e7bdc2cf5",
+      "emittedUniqueCaseNames": [
+        "test/features/groups/data/supabase_group_directory_repository_test.dart: uses the protected group directory RPC with real search and pagination",
+        "test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported documentType without a partial write",
+        "test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported document without a partial write",
+        "test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported slug without a partial write",
+        "test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported primaryDomain without a partial write",
+        "test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported contactPhone without a partial write",
+        "test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported contactMobilePhone without a partial write",
+        "test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported websiteUrl without a partial write",
+        "test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported whatsappNumber without a partial write",
+        "test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported ownerFirstName without a partial write",
+        "test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported ownerLastName without a partial write",
+        "test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported ownerDisplayName without a partial write",
+        "test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported ownerEmail without a partial write",
+        "test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported ownerMobilePhone without a partial write",
+        "test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported brandDisplayName without a partial write",
+        "test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported profileBio without a partial write",
+        "test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported accentColor without a partial write",
+        "test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported secondaryColor without a partial write",
+        "test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported tertiaryColor without a partial write",
+        "test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported textColor without a partial write",
+        "test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported secondaryTextColor without a partial write",
+        "test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported tertiaryTextColor without a partial write",
+        "test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported surfaceColor without a partial write",
+        "test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported subscriptionJustification without a partial write",
+        "test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported typeName without a partial write",
+        "test/features/institutions/data/supabase_institution_directory_repository_test.dart: retry does not discard a newly changed type label",
+        "test/features/institutions/data/supabase_institution_directory_repository_test.dart: does not discard contact edits while reporting core save success",
+        "test/features/institutions/data/supabase_institution_directory_repository_test.dart: keeps existing non-core values while editing approved core fields",
+        "test/features/institutions/data/supabase_institution_directory_repository_test.dart: terminal reload denial clears the pending edit request",
+        "test/features/institutions/data/supabase_institution_directory_repository_test.dart: retry after accepted edit and transient reload failure retains request ID",
+        "test/features/institutions/data/supabase_institution_directory_repository_test.dart: lists through the internal v2 envelope with server pagination",
+        "test/features/institutions/data/supabase_institution_directory_repository_test.dart: splits the optional 500 item page into backend-safe chunks",
+        "test/features/institutions/data/supabase_institution_directory_repository_test.dart: reads detail through the approved internal v2 gateway",
+        "test/features/institutions/data/supabase_institution_directory_repository_test.dart: loads cascading filters through the internal options gateway",
+        "test/features/institutions/data/supabase_institution_directory_repository_test.dart: updates approved core fields then reloads authoritative detail",
+        "test/features/institutions/data/supabase_institution_directory_repository_test.dart: fails closed for unapproved create and maps v2 authorization errors",
+        "test/features/institutions/presentation/screens/institution_form_save_lifecycle_test.dart: unsupported edit preserves draft and never shows save success",
+        "test/features/assessments/assessment_configuration_page_test.dart: configuration reenables actions after a successful save",
+        "test/features/institutions/presentation/screens/institution_form_save_lifecycle_test.dart: saved snapshot replaces original and values while preserving step",
+        "test/features/institutions/presentation/screens/institution_form_save_lifecycle_test.dart: pending save blocks pointer keyboard navigation and duplicate submission",
+        "test/features/institutions/presentation/screens/institution_form_save_lifecycle_test.dart: switching institution ignores stale save failure=false",
+        "test/features/institutions/presentation/screens/institution_form_save_lifecycle_test.dart: switching institution ignores stale save failure=true",
+        "test/features/institutions/presentation/screens/institution_form_save_lifecycle_test.dart: dispose during save ignores completion without notifying disposed state"
+      ],
+      "caseIdentityLimit": "Expanded concurrent reporter may omit/interleave case names. PASS total is runner result; do not count duplicate progress lines. No rerun added for reporting."
+    },
+    {
+      "campaign_id": "R02-D00-attendance-e9fdd88d",
+      "revision": "e9fdd88d",
+      "layer": "FE",
+      "environment": "Windows Flutter local; synthetic repositories/HTTP; no provider mutation",
+      "P": 6,
+      "F": 0,
+      "B": 0,
+      "S": 0,
+      "U": 0,
+      "action_ids": [
+        "attendance.correct"
+      ],
+      "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/attendance-e9fdd88d.txt",
+      "sha256": "15e0d823401b53c33f720dc20c3d5c1dc0d7ce5ba53da28b0fd37e8e322b01ab",
+      "emittedUniqueCaseNames": [
+        "completed empty call does not expose participant correction",
+        "correction dialog does not write through a replacement repository",
+        "correction dialog does not use a removed call page context",
+        "failed correction keeps its draft open and retries successfully",
+        "correction applies to the participant selected in the dialog",
+        "correction fields stay locked while the command is in flight"
+      ],
+      "caseIdentityLimit": "Expanded concurrent reporter may omit/interleave case names. PASS total is runner result; do not count duplicate progress lines. No rerun added for reporting."
+    }
+  ],
+  "totals": {
+    "P": 78,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0
+  },
+  "limits": "Four disjoint focal campaigns. Author reruns excluded. No whole-action or remote/E2E certification."
+}

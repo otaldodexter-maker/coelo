@@ -1,0 +1,29 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:106
++ ... -20260909'; rtk proxy flutter test --no-pub test/features/auth/presen ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+00:00 +0: loading C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/screens/superadmin_login_screen_test.dart
+00:00 +0: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/screens/superadmin_login_screen_test.dart: renders the private access context and form
+00:00 +1: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/screens/superadmin_login_screen_test.dart: matches the approved light login anatomy and semantic colors
+00:01 +2: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/screens/superadmin_login_screen_test.dart: keeps the login header compact with semantic spacing tokens
+00:01 +3: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/screens/superadmin_login_screen_test.dart: underlines password recovery on hover without a background overlay
+00:01 +4: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/screens/superadmin_login_screen_test.dart: uses a darker semantic primary hover in light and dark themes
+00:01 +5: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/screens/superadmin_login_screen_test.dart: uses the semantic Peach hover state on light login fields
+00:01 +6: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/screens/superadmin_login_screen_test.dart: validates empty fields and malformed email
+00:01 +7: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/screens/superadmin_login_golden_test.dart: renders the light desktop login reference
+00:02 +8: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/screens/superadmin_login_golden_test.dart: renders the light desktop login reference
+00:02 +9: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/screens/superadmin_login_golden_test.dart: renders the light desktop login reference
+00:03 +10: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/screens/superadmin_login_golden_test.dart: renders the light desktop login reference
+00:03 +11: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/screens/superadmin_login_screen_test.dart: exposes one checkbox semantic target and a visible keyboard focus ring
+00:03 +12: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/screens/superadmin_login_screen_test.dart: exposes one checkbox semantic target and a visible keyboard focus ring
+00:03 +13: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/screens/superadmin_login_golden_test.dart: renders the light mobile login reference
+00:03 +14: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/screens/superadmin_login_screen_test.dart: shows loading and safe authentication feedback
+00:04 +15: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/screens/superadmin_login_screen_test.dart: forwards form values and leaves session transition to the login action
+00:04 +16: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/screens/superadmin_login_screen_test.dart: delegates password recovery navigation
+00:04 +17: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/screens/superadmin_login_screen_test.dart: does not overflow on a compact window with enlarged text
+00:05 +18: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/screens/superadmin_login_screen_test.dart: keeps the session control usable across the V1 responsive matrix
+00:05 +19: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/screens/superadmin_login_screen_test.dart: renders from the Coelo dark theme
+00:06 +20: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/auth/presentation/screens/superadmin_login_screen_test.dart: does not expose theme switching from the login screen
+00:07 +21: All tests passed!

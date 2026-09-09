@@ -1,0 +1,56 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:106
++ ... -20260909'; rtk proxy flutter test --no-pub test/features/groups/data ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+00:00 +0: loading C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/groups/data/supabase_group_directory_repository_test.dart
+00:00 +0: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/groups/data/supabase_group_directory_repository_test.dart: uses the protected group directory RPC with real search and pagination
+00:00 +1: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported documentType without a partial write
+00:01 +2: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported documentType without a partial write
+00:01 +3: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported documentType without a partial write
+00:01 +4: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported document without a partial write
+00:01 +5: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported slug without a partial write
+00:01 +6: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported primaryDomain without a partial write
+00:01 +7: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported contactPhone without a partial write
+00:01 +8: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported contactMobilePhone without a partial write
+00:01 +9: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported websiteUrl without a partial write
+00:01 +10: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported whatsappNumber without a partial write
+00:01 +11: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported ownerFirstName without a partial write
+00:01 +12: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported ownerLastName without a partial write
+00:01 +13: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported ownerDisplayName without a partial write
+00:01 +14: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported ownerEmail without a partial write
+00:01 +15: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported ownerMobilePhone without a partial write
+00:01 +16: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported brandDisplayName without a partial write
+00:01 +17: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported profileBio without a partial write
+00:01 +18: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported accentColor without a partial write
+00:01 +19: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported secondaryColor without a partial write
+00:01 +20: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported tertiaryColor without a partial write
+00:01 +21: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported textColor without a partial write
+00:01 +22: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported secondaryTextColor without a partial write
+00:01 +23: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported tertiaryTextColor without a partial write
+00:01 +24: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported surfaceColor without a partial write
+00:01 +25: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported subscriptionJustification without a partial write
+00:01 +26: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/data/supabase_institution_directory_repository_test.dart: rejects unsupported typeName without a partial write
+00:01 +27: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/data/supabase_institution_directory_repository_test.dart: retry does not discard a newly changed type label
+00:01 +28: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/data/supabase_institution_directory_repository_test.dart: does not discard contact edits while reporting core save success
+00:01 +29: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/data/supabase_institution_directory_repository_test.dart: keeps existing non-core values while editing approved core fields
+00:01 +30: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/data/supabase_institution_directory_repository_test.dart: terminal reload denial clears the pending edit request
+00:01 +31: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/data/supabase_institution_directory_repository_test.dart: retry after accepted edit and transient reload failure retains request ID
+00:01 +32: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/data/supabase_institution_directory_repository_test.dart: lists through the internal v2 envelope with server pagination
+00:01 +33: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/data/supabase_institution_directory_repository_test.dart: splits the optional 500 item page into backend-safe chunks
+00:01 +34: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/data/supabase_institution_directory_repository_test.dart: reads detail through the approved internal v2 gateway
+00:01 +35: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/data/supabase_institution_directory_repository_test.dart: loads cascading filters through the internal options gateway
+00:01 +36: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/data/supabase_institution_directory_repository_test.dart: updates approved core fields then reloads authoritative detail
+00:01 +37: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/data/supabase_institution_directory_repository_test.dart: fails closed for unapproved create and maps v2 authorization errors
+00:07 +38: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/presentation/screens/institution_form_save_lifecycle_test.dart: unsupported edit preserves draft and never shows save success
+00:09 +39: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/presentation/screens/institution_form_save_lifecycle_test.dart: unsupported edit preserves draft and never shows save success
+00:09 +40: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/presentation/screens/institution_form_save_lifecycle_test.dart: unsupported edit preserves draft and never shows save success
+00:10 +41: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/assessments/assessment_configuration_page_test.dart: configuration reenables actions after a successful save
+00:10 +42: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/presentation/screens/institution_form_save_lifecycle_test.dart: saved snapshot replaces original and values while preserving step
+00:10 +43: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/presentation/screens/institution_form_save_lifecycle_test.dart: saved snapshot replaces original and values while preserving step
+00:12 +44: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/presentation/screens/institution_form_save_lifecycle_test.dart: pending save blocks pointer keyboard navigation and duplicate submission
+00:14 +45: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/presentation/screens/institution_form_save_lifecycle_test.dart: switching institution ignores stale save failure=false
+00:19 +46: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/presentation/screens/institution_form_save_lifecycle_test.dart: switching institution ignores stale save failure=true
+00:21 +47: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/institutions/presentation/screens/institution_form_save_lifecycle_test.dart: dispose during save ignores completion without notifying disposed state
+00:23 +48: All tests passed!

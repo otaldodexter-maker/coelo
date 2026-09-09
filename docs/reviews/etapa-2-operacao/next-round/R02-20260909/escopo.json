@@ -1,18 +1,18 @@
 {
   "round": "E2-R02-20260909",
-  "status": "prepared-not-started",
+  "status": "active-r02-circulars-mapped",
   "source": "docs/reviews/inventario-etapa-2.json",
   "sourceUpdatedAt": "2026-09-09T08:41:13-03:00",
   "sourceClosureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "preparationHead": "fb2d07d34a74c91ec1f65aff361048393e590729",
   "selected": {
-    "total": 136,
+    "total": 147,
     "scopes": {
-      "mvp": 120,
+      "mvp": 131,
       "gate-formal-mvp": 2,
       "deferred-post-mvp": 14
     },
-    "activeE2E": 120,
+    "activeE2E": 131,
     "certifiedActiveE2E": 0
   },
   "remaining": {
@@ -27,14 +27,14 @@
     "certifiedActiveE2E": 0
   },
   "global": {
-    "total": 219,
+    "total": 230,
     "scopes": {
-      "mvp": 189,
+      "mvp": 200,
       "gate-formal-mvp": 3,
       "flutter-only": 5,
       "deferred-post-mvp": 22
     },
-    "activeE2E": 187,
+    "activeE2E": 198,
     "certifiedActiveE2E": 0
   },
   "countsByOwner": {
@@ -76,11 +76,11 @@
       "certifiedActiveE2E": 0
     },
     "L01": {
-      "total": 12,
+      "total": 23,
       "scopes": {
-        "mvp": 12
+        "mvp": 23
       },
-      "activeE2E": 12,
+      "activeE2E": 23,
       "certifiedActiveE2E": 0
     },
     "L02": {
@@ -105,7 +105,8 @@
       "context": "Circulares",
       "owner": "L01",
       "integrationOwner": "D00",
-      "detail": "Spec037 tem diretório, criação/publicação, detalhe e edição sem IDs próprios suficientes; principal.profile-view cobre apenas projeção no Perfil. Mapear/reconciliar antes de certificar o contexto ou publicar percentual completo."
+      "detail": "11 IDs Circulares reconciliados por D00. Projeção no Acontece é subaceite obrigatório de acontece.feed; aba Perfil é subaceite de principal.profile-view. Estados erro/acesso-negado/reload ligados às ações, sem IDs adicionais. Implementação não certificada.",
+      "mappingStatus": "reconciled-not-certified"
     },
     {
       "context": "Home",
@@ -2788,6 +2789,138 @@
       "snapshotFrontendStatus": "pending-verification",
       "snapshotBackendStatus": "pending-verification",
       "snapshotIntegratedStatus": "pending-verification"
+    },
+    {
+      "id": "circulars.list",
+      "family": "circulars",
+      "screen": "Circulares / Diretório",
+      "scope": "mvp",
+      "owner": "L01",
+      "selected": true,
+      "e2eActiveApplicable": true,
+      "snapshotFrontendStatus": "pending-verification",
+      "snapshotBackendStatus": "pending-verification",
+      "snapshotIntegratedStatus": "pending-verification"
+    },
+    {
+      "id": "circulars.filter",
+      "family": "circulars",
+      "screen": "Circulares / Tabs, busca e filtro de contexto",
+      "scope": "mvp",
+      "owner": "L01",
+      "selected": true,
+      "e2eActiveApplicable": true,
+      "snapshotFrontendStatus": "pending-verification",
+      "snapshotBackendStatus": "pending-verification",
+      "snapshotIntegratedStatus": "pending-verification"
+    },
+    {
+      "id": "circulars.create",
+      "family": "circulars",
+      "screen": "Criar Circular",
+      "scope": "mvp",
+      "owner": "L01",
+      "selected": true,
+      "e2eActiveApplicable": true,
+      "snapshotFrontendStatus": "pending-verification",
+      "snapshotBackendStatus": "pending-verification",
+      "snapshotIntegratedStatus": "pending-verification"
+    },
+    {
+      "id": "circulars.edit",
+      "family": "circulars",
+      "screen": "Editar Circular",
+      "scope": "mvp",
+      "owner": "L01",
+      "selected": true,
+      "e2eActiveApplicable": true,
+      "snapshotFrontendStatus": "pending-verification",
+      "snapshotBackendStatus": "pending-verification",
+      "snapshotIntegratedStatus": "pending-verification"
+    },
+    {
+      "id": "circulars.detail",
+      "family": "circulars",
+      "screen": "Circular / Detalhe",
+      "scope": "mvp",
+      "owner": "L01",
+      "selected": true,
+      "e2eActiveApplicable": true,
+      "snapshotFrontendStatus": "pending-verification",
+      "snapshotBackendStatus": "pending-verification",
+      "snapshotIntegratedStatus": "pending-verification"
+    },
+    {
+      "id": "circulars.schedule",
+      "family": "circulars",
+      "screen": "Circulares / Agendar",
+      "scope": "mvp",
+      "owner": "L01",
+      "selected": true,
+      "e2eActiveApplicable": true,
+      "snapshotFrontendStatus": "pending-verification",
+      "snapshotBackendStatus": "pending-verification",
+      "snapshotIntegratedStatus": "pending-verification"
+    },
+    {
+      "id": "circulars.publish",
+      "family": "circulars",
+      "screen": "Circulares / Publicar",
+      "scope": "mvp",
+      "owner": "L01",
+      "selected": true,
+      "e2eActiveApplicable": true,
+      "snapshotFrontendStatus": "pending-verification",
+      "snapshotBackendStatus": "pending-verification",
+      "snapshotIntegratedStatus": "pending-verification"
+    },
+    {
+      "id": "circulars.close",
+      "family": "circulars",
+      "screen": "Circulares / Encerrar respostas",
+      "scope": "mvp",
+      "owner": "L01",
+      "selected": true,
+      "e2eActiveApplicable": true,
+      "snapshotFrontendStatus": "pending-verification",
+      "snapshotBackendStatus": "pending-verification",
+      "snapshotIntegratedStatus": "pending-verification"
+    },
+    {
+      "id": "circulars.delete",
+      "family": "circulars",
+      "screen": "Circulares / Excluir",
+      "scope": "mvp",
+      "owner": "L01",
+      "selected": true,
+      "e2eActiveApplicable": true,
+      "snapshotFrontendStatus": "pending-verification",
+      "snapshotBackendStatus": "pending-verification",
+      "snapshotIntegratedStatus": "pending-verification"
+    },
+    {
+      "id": "circulars.respond",
+      "family": "circulars",
+      "screen": "Responder Circular",
+      "scope": "mvp",
+      "owner": "L01",
+      "selected": true,
+      "e2eActiveApplicable": true,
+      "snapshotFrontendStatus": "pending-verification",
+      "snapshotBackendStatus": "pending-verification",
+      "snapshotIntegratedStatus": "pending-verification"
+    },
+    {
+      "id": "circulars.attach",
+      "family": "circulars",
+      "screen": "Circular / Anexos",
+      "scope": "mvp",
+      "owner": "L01",
+      "selected": true,
+      "e2eActiveApplicable": true,
+      "snapshotFrontendStatus": "pending-verification",
+      "snapshotBackendStatus": "pending-verification",
+      "snapshotIntegratedStatus": "pending-verification"
     }
   ],
   "scopeAmendments": [
@@ -2801,9 +2934,31 @@
         "locations.detail-links",
         "locations.schedule"
       ],
-      "authorization": "Owner autorizou incluir no prompt; execução da D02 aguarda seu comando",
+      "authorization": "Owner comandou releitura/execução da ampliação Locais; D02 handoff r4 às13:05:16 confirma início.",
       "selectedActiveE2EBefore": 116,
       "selectedActiveE2EAfter": 120
+    },
+    {
+      "id": "d00-circulars-mapping-r1",
+      "source": "CIRCULARES-MAPEAMENTO-ACEITO.md",
+      "owner": "L01",
+      "actionIds": [
+        "circulars.list",
+        "circulars.filter",
+        "circulars.create",
+        "circulars.edit",
+        "circulars.detail",
+        "circulars.schedule",
+        "circulars.publish",
+        "circulars.close",
+        "circulars.delete",
+        "circulars.respond",
+        "circulars.attach"
+      ],
+      "selectedActiveE2EBefore": 120,
+      "selectedActiveE2EAfter": 131,
+      "authorization": "Reconciliação técnica exigida pelo prompt D00; spec037 aprovada, sem escopo funcional novo."
     }
-  ]
+  ],
+  "updatedAt": "2026-09-09T13:20:58.702584-03:00"
 }

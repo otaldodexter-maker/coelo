@@ -1,0 +1,14 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:541
++ ... STEXITCODE; rtk proxy flutter test --no-pub test/features/attendance/ ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+00:00 +0: loading C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/attendance/attendance_pages_test.dart
+00:00 +0: completed empty call does not expose participant correction
+00:00 +1: correction dialog does not write through a replacement repository
+00:01 +2: correction dialog does not use a removed call page context
+00:02 +3: failed correction keeps its draft open and retries successfully
+00:03 +4: correction applies to the participant selected in the dialog
+00:06 +5: correction fields stay locked while the command is in flight
+00:08 +6: All tests passed!
