@@ -1800,8 +1800,10 @@
       "fc092aad"
     ],
     "joint_toggle_tests": "7 frame + 7 central PASS C00",
-    "push": "pending",
+    "push": "verified origin/dev and origin/C00",
     "docker_support_i003": "healthy, no running containers, 2026-09-08T21:01:38-03:00",
-    "heartbeat": "native view ACTIVE; next scheduled21:10 BRT"
+    "heartbeat": "native view ACTIVE; next scheduled21:10 BRT",
+    "delivery_sha": "aba29322c2a34c033d08c3442046c2520d0df9ff",
+    "delivery_verified_at": "2026-09-08T21:05:14-03:00"
   }
 }
