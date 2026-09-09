@@ -38,7 +38,7 @@ subaceites locais; nenhuma ação inteira foi promovida por D02.
 | Instituição-Unidade / Locais / catálogo-detalhe | institutions.locations-map, units.locations-map, units.copy-institution-location, locations.list, locations.create-edit, locations.detail-links | 1345af29f quatro rotas owner-scoped + parâmetros app/main + links de formulário; 7 casos únicos com prova incremental. Granularidade capability/footer7d68+9131 e guardas modal7777+192+b5a+42ad. | Catálogo57 aplicado; 165P0F0B no plano local, conforme r31. Mídia/vínculos completos e deploy remoto continuam pendentes. |
 | Locais / mapa-fotos / detalhe | locations.create-edit, locations.detail-links | cd03b9e30 seção de mapas; 80f28824 identifica prévia ilustrativa e indisponibilidade de mídia real. | Binding de location-map/photo no gateway/R2 privado compartilhado, conforme e92f4220. |
 | Locais / horário semanal | locations.schedule | 3b4f982a seletor administrativo, 19 P e gate visual P. | Janela semanal não equivale a reserva datada. |
-| Locais / reservas datadas | locations.schedule, groups.location, activities.location | Domínio3e97048a (13 P), DTO753fbd33 (21 P), gateway34d2 (7 P), painel4ac+9cad+d2f (16 casos únicos com provas incrementais; sucessor r30 publicado para revisão). Motor7dae/TAP49/perfil64 preparados com correção r24. | SQL64 aplicado, 49TAP e 2 causais PASS na base integrada535b, cleanupzero. Composição dos consumidores e atomicidade com seus saves ainda abertas. |
+| Locais / reservas datadas | locations.schedule, groups.location, activities.location | Domínio3e97048a (13 P), DTO753fbd33 (21 P), gateway34d2 (7 P), painel4ac+9cad+d2f (16 casos únicos com provas incrementais; cadeia integrada2252d508/c8edcd3f/c1b2a076). Motor7dae/TAP49/perfil64 preparados com correção r24. | SQL64 aplicado, 49TAP e 2 causais PASS na base integrada535b, cleanupzero. Composição dos consumidores e atomicidade com seus saves ainda abertas. |
 
 ## Testes e métricas
 
@@ -91,8 +91,9 @@ projeção artificial de conhecimento.
 
 ## Próximo passo e critério de parada
 
-O próximo gate concreto é a revisão/integração de d2f8ecce0 pelo D00,
-fechando as retenções conhecidas do painel r30. Isso não injeta o painel nem amplia
+O próximo gate concreto é integrar cd03b9e30, 1345af29f e42ad0467 na base
+central. Painel4ac/9cad/d2f já integrado e retenções r30 fechadas. Isso não
+injeta o painel em um consumidor real nem amplia
 contratos de Group/Activity. Readers atuais não fornecem binding canônico
 suficiente, e save+reserva exige transação backend única.
 
