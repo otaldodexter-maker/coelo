@@ -1761,7 +1761,18 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     if (!widget.development) {
       final api = widget.api;
       final definition = _definition;
-      if (api == null || definition == null || !_canPublish) return;
+      if (api == null || definition == null || !_canPublish) {
+        // A publication that cannot proceed says why. Silence here reads as a
+        // broken button: the form is never published and nothing explains it.
+        setState(
+          () => _feedback = switch ((api, definition)) {
+            (null, _) => 'O serviço de Formulários não está disponível.',
+            (_, null) => 'Salve o rascunho antes de publicar.',
+            _ => 'Você não tem permissão para publicar este formulário.',
+          },
+        );
+        return;
+      }
       setState(() => _saving = true);
       try {
         final published = await api.publish(

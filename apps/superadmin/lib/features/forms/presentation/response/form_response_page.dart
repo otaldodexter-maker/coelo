@@ -976,7 +976,8 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
   String _numberValue(String itemId) => switch (_answers[itemId]?.value) {
     FormIntegerValue(:final value) => '$value',
     FormDecimalValue(:final value) => '$value',
-    FormMoneyValue(:final minorUnits) => '${minorUnits / 100}',
+    // Money is stored in minor units; show it the way the author declared it.
+    FormMoneyValue(:final minorUnits) => FormNumericLimits.format(FormItemKind.money, minorUnits),
     _ => '',
   };
   String? _dateValue(String itemId) => switch (_answers[itemId]?.value) {
@@ -1210,7 +1211,7 @@ String _answerLabel(FormAnswer answer) => switch (answer.value) {
   FormShortTextValue(:final value) => value,
   FormIntegerValue(:final value) => '$value',
   FormDecimalValue(:final value) => '$value',
-  FormMoneyValue(:final minorUnits) => '${minorUnits / 100}',
+  FormMoneyValue(:final minorUnits) => FormNumericLimits.format(FormItemKind.money, minorUnits),
   FormDateValue(:final value) => '${value.day}/${value.month}/${value.year}',
   FormYesNoValue(:final value) => value ? 'Sim' : 'Não',
   FormChoiceValue(:final optionIds) => optionIds.join(', '),

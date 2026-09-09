@@ -1820,6 +1820,71 @@ void main() {
       },
     );
   }
+  // Residual C02/R01, forms.publish: um formulario novo ainda nao salvo tem
+  // _definition nulo, entao _openPublishDialog retornava em silencio depois da
+  // confirmacao. O botao fica habilitado porque _canPublish nao depende de
+  // _definition, entao a pessoa confirmava e nada acontecia, sem explicacao.
+  testWidgets('publishing a form that was never saved says why instead of doing nothing', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 1100));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final api = _EditorApi();
+    await tester.pumpWidget(_app(api, null));
+    await tester.pumpAndSettle();
+    // Um formulario novo e vazio ja e barrado antes pelo validador de titulo e
+    // ordem. O caso deste teste e o que passa nessa validacao e mesmo assim
+    // nunca foi salvo, entao _definition continua nulo.
+    await tester.enterText(find.byWidget(_title(tester)), 'Formulário válido');
+    await tester.pumpAndSettle();
+    await _openOverlay(tester, 'publish');
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('forms-editor-confirm-publish')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('forms-editor-confirm-publish')));
+    await tester.pumpAndSettle();
+
+    expect(api.publishCommands, isEmpty);
+    expect(find.text('Salve o rascunho antes de publicar.'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('a form saved first can then be published', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 1100));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final api = _EditorApi();
+    await tester.pumpWidget(_app(api, null));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byWidget(_title(tester)), 'Formulário válido');
+    await tester.pumpAndSettle();
+    final save = find.widgetWithText(OutlinedButton, 'Salvar rascunho');
+    await tester.ensureVisible(save);
+    await tester.tap(save);
+    await tester.pumpAndSettle();
+    await _openOverlay(tester, 'publish');
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('forms-editor-confirm-publish')));
+    await tester.pumpAndSettle();
+
+    expect(api.publishCommands, hasLength(1));
+    expect(find.text('Salve o rascunho antes de publicar.'), findsNothing);
+  });
+
+  testWidgets('a publication refused by capability says so instead of doing nothing', (
+    tester,
+  ) async {
+    final api = _EditorApi(canPublish: false);
+    await tester.pumpWidget(_app(api, 'form-1'));
+    await tester.pumpAndSettle();
+    // O botao ja fica desabilitado; o contrato aqui e que nao exista caminho
+    // silencioso, nem pelo botao nem pela confirmacao.
+    expect(
+      tester
+          .widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Publicar ou agendar'))
+          .onPressed,
+      isNull,
+    );
+    expect(api.publishCommands, isEmpty);
+  });
 }
 
 Widget _app(FormsApi api, String? formId) => _host(FormsEditorPage(api: api, formId: formId));
@@ -2066,7 +2131,9 @@ final class _EditorApi implements FormsApi, FormsEditorContextApi {
     publishCommands.add(command);
     if (publishGate != null) await publishGate;
     return definition(
-      requestedForms.last,
+      // Um formulario criado na propria sessao nunca passou por getEditor,
+      // entao requestedForms fica vazio: o recibo usa o ID do comando.
+      requestedForms.isEmpty ? command.payload.formId : requestedForms.last,
       version: command.expectedVersion + 1,
       confirmedTitle: publishedTitle,
     );
