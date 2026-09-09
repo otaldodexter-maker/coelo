@@ -1,0 +1,40 @@
+{
+  "round": "E2-R02-20260909",
+  "source": "D00 direct review and bounded helper; exact git commits",
+  "generatedAt": "2026-09-09T12:58:23.712134-03:00",
+  "candidates": [
+    {
+      "owner": "L02",
+      "coordinator": "L00",
+      "sourceSha": "63704da1",
+      "status": "review-blocked-not-integrated",
+      "actions": [
+        "chat.edit",
+        "chat.revoke"
+      ],
+      "finding": "Replay hash omits conversation_id; prior branch reads message only by prior.message_id after authorizing separately supplied conversation. Cross-context replay may return prior message body/metadata.",
+      "path": "packages/coelo_database/migrations/20260909130000_superadmin_internal_chat_receipts_edit_revoke_v2.sql",
+      "lines": [
+        210,
+        268
+      ],
+      "required": "Bind replay hash/receipt/target to authorized conversation; negative test after actor scope change A to B; same-context replay remains idempotent.",
+      "testsExecutedByD00": false,
+      "remoteApplied": false,
+      "communicatedVia": "assignments/L00.md revision 5",
+      "receiptPending": true
+    },
+    {
+      "owner": "D02",
+      "sourceSha": "2e563e8a",
+      "status": "reviewed-diff-awaiting-executor-evidence",
+      "actions": [
+        "groups.create",
+        "groups.edit"
+      ],
+      "finding": "Reports one aggregate RPC success instead of fabricating success for five stages; no blocker found in focal client review.",
+      "required": "Executor focal test result and apt SHA handoff; integration verification on combined base.",
+      "testsExecutedByD00": false
+    }
+  ]
+}

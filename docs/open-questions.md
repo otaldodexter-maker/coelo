@@ -14,6 +14,9 @@ O Owner reforçou que o Coelo (Principal) deve ocupar o contêiner ao lado
 do shell/menu do Superadmin. A spec050 e a referência
 `.agents/skills/coelo-ui/references/principal-visual-surfaces.md` permitem
 suspender temporariamente o chrome em viewers imersivos de Agora/Momentos.
+Na leitura focal de Circulares de 09/09, a spec037 também prevê detalhe
+fullscreen no compacto sem cabeçalho/dock global. Agrupar esse caso na mesma
+confirmação visual; não reabrir decisões funcionais já aprovadas de Circulares.
 Foi perguntado nesta tarefa se a instrução atual também elimina essa exceção;
 não há resposta registrada neste momento. Não presumir aprovação pelo silêncio.
 

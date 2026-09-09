@@ -113,7 +113,7 @@
       "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d02-estrutura",
       "branch": "codex/e2-r02-d02-estrutura",
       "status": "active",
-      "threadId": null,
+      "threadId": "01a086d7-ffa5-7593-99e7-0c2729e0ce59",
       "plannedWorktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d02-estrutura",
       "coordinator": "D00",
       "baselineSha": "56eb3f19de23e364ea5f7e4f73a6fbd9a851e230",
@@ -122,7 +122,7 @@
       "assignmentPath": "C:/Users/adrie/Documents/Coelo/docs/reviews/etapa-2-operacao/next-round/R02-20260909/assignments/D02.md",
       "plannedHandoffPath": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d02-estrutura/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D02.md",
       "handoffPath": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d02-estrutura/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D02.md",
-      "receivedRevision": 1,
+      "receivedRevision": 2,
       "communicationVerified": true,
       "handoffExists": false,
       "worktreeOrigin": "D00 git worktree add",
@@ -322,5 +322,41 @@
     ]
   },
   "runtimeBaselineLimit": "Application Auth paths match HEAD after selective reconciliation; documentary coordinator WIP remains. No runtime test has yet used this baseline.",
-  "scopeRevision": "ADENDO-LOCAIS: 136 selecionados, 120 MVP E2E; Circulares e granularidade abertos"
+  "scopeRevision": "ADENDO-LOCAIS: 136 selecionados, 120 MVP E2E; Circulares e granularidade abertos",
+  "sharedReservations": [
+    {
+      "owner": "D01",
+      "path": "apps/superadmin/lib/app/router/superadmin_router.dart",
+      "region": "Auth recovery return-to-login callback",
+      "release": "first apt SHA",
+      "status": "active"
+    },
+    {
+      "owner": "D01",
+      "path": "apps/superadmin/test/app/router/superadmin_router_test.dart",
+      "region": "recovery error test",
+      "release": "first apt SHA",
+      "status": "active"
+    },
+    {
+      "owner": "D02",
+      "path": "apps/superadmin/lib/app/router/superadmin_router.dart",
+      "region": "two UnitFormPage create/edit builders, authorizationInvalidationRevision only",
+      "release": "apt SHA",
+      "status": "active"
+    }
+  ],
+  "claudeContinuity": {
+    "source": "L00 handoff r2",
+    "sessionRef": "d0e41a",
+    "firstJobId": "4f90ed66",
+    "reportedFirstFire": "2026-09-09T12:54:08-03:00",
+    "remainingJobs": [
+      "9c8a34b9",
+      "d8291be4",
+      "f6b70aa1"
+    ],
+    "limit": "session-only, REPL idle; no Codex-to-Claude native wake tool available",
+    "cutoff": "2026-09-09T16:45:00-03:00"
+  }
 }
