@@ -32,6 +32,7 @@ import '../features/locations/domain/location_capabilities.dart';
 import '../features/locations/domain/location_catalog_reader.dart';
 import '../features/locations/domain/location_catalog_writer.dart';
 import '../features/locations/domain/location_reservation_gateway.dart';
+import '../features/locations/domain/location_consumer_bindings_reader.dart';
 import '../features/units/data/unavailable_unit_composition.dart';
 import '../features/units/domain/unit_backend_commands.dart';
 import '../features/units/domain/unit_directory.dart';
@@ -114,6 +115,7 @@ class SuperadminApp extends StatefulWidget {
     this.groupDetailRepository = const UnavailableGroupDetailRepository(),
     this.unitDetailRepository = const UnavailableUnitDetailRepository(),
     this.locationCatalogReader = const UnavailableLocationCatalogReader(),
+    this.locationConsumerBindingsReader = const UnavailableLocationConsumerBindingsReader(),
     this.locationCatalogWriter = const UnavailableLocationCatalogWriter(),
     this.locationReservationGateway = const UnavailableLocationReservationGateway(),
     this.locationCapabilities = _noLocationCapabilities,
@@ -173,6 +175,7 @@ class SuperadminApp extends StatefulWidget {
   final GroupDetailRepository groupDetailRepository;
   final UnitDetailRepository unitDetailRepository;
   final LocationCatalogReader locationCatalogReader;
+  final LocationConsumerBindingsReader locationConsumerBindingsReader;
   final LocationCatalogWriter locationCatalogWriter;
   final LocationReservationGateway locationReservationGateway;
   final LocationCapabilities Function(SuperadminAuthContext?) locationCapabilities;
@@ -256,6 +259,7 @@ class _SuperadminAppState extends State<SuperadminApp> {
       groupDetailRepository: widget.groupDetailRepository,
       unitDetailRepository: widget.unitDetailRepository,
       locationCatalogReader: widget.locationCatalogReader,
+      locationConsumerBindingsReader: widget.locationConsumerBindingsReader,
       locationCatalogWriter: widget.locationCatalogWriter,
       locationReservationGateway: widget.locationReservationGateway,
       locationCapabilities: widget.locationCapabilities,

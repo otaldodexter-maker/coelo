@@ -12,6 +12,8 @@ import 'features/locations/domain/location_capabilities.dart';
 import 'features/locations/domain/location_catalog_reader.dart';
 import 'features/locations/domain/location_catalog_writer.dart';
 import 'features/locations/domain/location_reservation_gateway.dart';
+import 'features/locations/domain/location_consumer_bindings_reader.dart';
+import 'features/locations/data/supabase_location_consumer_bindings_reader.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,6 +39,7 @@ Future<void> main() async {
       locationCatalogReader: _locationCatalogReader(),
       locationCatalogWriter: _locationCatalogWriter(),
       locationReservationGateway: _locationReservationGateway(),
+      locationConsumerBindingsReader: _locationConsumerBindingsReader(),
       locationCapabilities: _locationCapabilities,
       activityDirectoryRepository: authScope.activityDirectoryRepository,
       activityCommandRepository: authScope.activityCommandRepository,
@@ -110,5 +113,13 @@ LocationReservationGateway _locationReservationGateway() {
     return SupabaseLocationReservationGateway(Supabase.instance.client);
   } on Object {
     return const UnavailableLocationReservationGateway();
+  }
+}
+
+LocationConsumerBindingsReader _locationConsumerBindingsReader() {
+  try {
+    return SupabaseLocationConsumerBindingsReader(Supabase.instance.client);
+  } on Object {
+    return const UnavailableLocationConsumerBindingsReader();
   }
 }
