@@ -1285,8 +1285,12 @@ final class _OriginalResponseAnswers extends StatelessWidget {
       FormShortTextValue(:final value) => value,
       FormIntegerValue(:final value) => '$value',
       FormDecimalValue(:final value) => '$value',
-      FormMoneyValue(:final minorUnits) =>
-        '${minorUnits < 0 ? '-' : ''}${minorUnits.abs() ~/ 100},${(minorUnits.abs() % 100).toString().padLeft(2, '0')}',
+      // Same shared formatter the editor and the response use, so money
+      // cannot read differently depending on which surface shows it.
+      FormMoneyValue(:final minorUnits) => FormNumericLimits.format(
+        FormItemKind.money,
+        minorUnits,
+      ),
       FormDateValue(:final value) => MaterialLocalizations.of(context).formatFullDate(value),
       FormYesNoValue(:final value) => value ? 'Sim' : 'Não',
       FormChoiceValue(:final optionIds) =>
