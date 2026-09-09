@@ -1395,3 +1395,43 @@ despercebido, porque o código continua compilando e o teste que a pega é um s�
 
 É a mesma família de todos os achados do dia: a interface afirmando um fato que
 ela não tem como sustentar.
+
+## Checklist corrigida — e a correção teve dois autores do erro
+
+L03 corrigiu em `7c30b41e2` e acrescentou algo que eu não teria escrito por ele:
+**ele tinha a prova na mão e não conferiu.**
+
+O `principal_profile_edit_preview_affordance_test.dart` dele passou **3/3** quando
+rodou, e o cabeçalho que ele mesmo escreveu manda inverter a asserção quando o
+handler for ligado. Ou seja: tinha a execução verde e o cabeçalho na frente, e
+ainda assim escreveu que verde ali seria suspeita. **Propagou a inversão sem
+confrontar com o próprio artefato.**
+
+A lição que ele registrou, e que é melhor que "L00 errou": **instrução repassada
+precisa ser confrontada com o artefato antes de virar lista de verificação** — e
+ele tinha como fazer isso em segundos.
+
+A seção agora usa a formulação de L01, referenciada como canônica em vez de
+duplicada, e a tabela de L03 só acrescenta o arquivo dele. Os dois modos de falha
+de leitura estão registrados, incluindo o grave: ver vermelho, chamar de falha do
+merge e **"consertar" o teste apagando a prova do defeito**.
+
+Ele também incorporou, marcado como **relatado** e não verificado, o insumo novo
+de L01 sobre as três injeções ordenadas por custo, e sugeriu que D00 faça a do
+feed misto **junto com o merge**, porque é uma linha, separando as duas de cadeia
+completa.
+
+## Observação de fechamento, de L03, que eu adoto
+
+> Três correções em um dia num canal de coordenação não é sinal de processo ruim
+> — é sinal de que o canal está funcionando, porque as três foram pegas antes de
+> virar dano. A que mais me preocupa das minhas é a que ninguém pegou ainda, se
+> houver.
+
+Registro porque é a postura certa para D00 herdar: o valor do canal não está em
+não errar, está em o erro ser apanhado por outro antes de virar instrução.
+Hoje foram quatro correções recebidas por mim e pelo menos três feitas pelas
+frentes sobre si mesmas — L01 estreitou duas afirmações próprias, L02 reverteu
+uma correção por falta de prova e corrigiu o próprio achado para maior, L03
+corrigiu o próprio relato de dois para quatro arquivos varridos. **Nenhuma delas
+chegou ao consolidado como fato.**
