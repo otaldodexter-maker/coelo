@@ -11,6 +11,79 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  for (final scenario in ['invalid', 'expired', 'reused']) {
+    test('rejected recovery OTP cannot enable password updates: $scenario', () async {
+      final requests = <Request>[];
+      var consumed = false;
+      final transport = MockClient((request) async {
+        requests.add(request);
+        final isVerify = request.method == 'POST' && request.url.path.endsWith('/verify');
+        if (isVerify && scenario == 'reused' && !consumed) {
+          consumed = true;
+          return Response(
+            jsonEncode(_session(1)),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }
+        return Response(
+          jsonEncode({
+            'code': 403,
+            'error_code': 'otp_expired',
+            'msg': 'Token has expired or is invalid',
+          }),
+          403,
+          headers: {'content-type': 'application/json'},
+        );
+      });
+      SupabaseClient createClient() => SupabaseClient(
+        'https://example.supabase.co',
+        'publishable-test',
+        authOptions: const AuthClientOptions(autoRefreshToken: false),
+        httpClient: transport,
+      );
+      final tokenHash = 'synthetic-$scenario-recovery-hash';
+      if (scenario == 'reused') {
+        final firstClient = createClient();
+        final first = await firstClient.auth.verifyOTP(
+          type: OtpType.recovery,
+          tokenHash: tokenHash,
+        );
+        expect(first.session, isNotNull);
+        await firstClient.dispose();
+      }
+      final client = createClient();
+      addTearDown(client.dispose);
+      final gateway = SupabaseCoeloAuthGateway(client, sessionPersistence: _Persistence());
+      addTearDown(gateway.dispose);
+      final states = <CoeloAuthSessionState>[];
+      final subscription = gateway.authSessionStateChanges.listen(states.add);
+      addTearDown(subscription.cancel);
+
+      await expectLater(
+        client.auth.verifyOTP(type: OtpType.recovery, tokenHash: tokenHash),
+        throwsA(isA<AuthException>()),
+      );
+      await Future<void>.delayed(Duration.zero);
+      expect(client.auth.currentSession, isNull);
+      expect(gateway.currentSessionState.kind, CoeloAuthSessionKind.signedOut);
+      expect(states.where((state) => state.isPasswordRecovery || state.isAuthenticated), isEmpty);
+      final reset = await gateway.updatePassword(password: 'must-not-be-sent');
+      expect(reset.isSuccess, isFalse);
+      expect(reset.message, CoeloAuthPasswordUpdateResult.genericFailureMessage);
+      expect(requests, hasLength(scenario == 'reused' ? 2 : 1));
+      for (final request in requests) {
+        expect(request.method, 'POST');
+        expect(request.url.path, '/auth/v1/verify');
+        final body = jsonDecode(request.body) as Map<String, dynamic>;
+        expect(body['token_hash'], tokenHash);
+        expect(body['type'], 'recovery');
+      }
+      expect(requests.where((request) => request.method == 'PUT'), isEmpty);
+      expect(requests.where((request) => request.url.path.endsWith('/logout')), isEmpty);
+    });
+  }
+
   for (final sameUser in [false, true]) {
     test(
       'external SDK session replacement survives an older recovery response: sameUser=$sameUser',
