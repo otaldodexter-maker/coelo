@@ -113,6 +113,121 @@ void main() {
     );
   });
 
+  for (final sample in <({String name, Map<String, Object?> payload})>[
+    // O ativo redimido tem de ser o que o descritor declarou. Sem esta
+    // conferencia, o gateway poderia devolver outro ativo — de outro tipo, de
+    // outra publicacao — e o cliente renderizaria sem perceber a troca.
+    (
+      name: 'MIME diferente do declarado',
+      payload: {
+        'signed_url': 'https://signed.test/object?token=x',
+        'mime_type': 'image/png',
+        'expires_in': 60,
+      },
+    ),
+    // Credenciais embutidas transformariam a URL assinada num portador de
+    // segredo, que vazaria em log, referer e historico.
+    (
+      name: 'credenciais embutidas na URL',
+      payload: {
+        'signed_url': 'https://user:secret@signed.test/object',
+        'mime_type': 'image/webp',
+        'expires_in': 60,
+      },
+    ),
+    // TTL nao positivo nao e "expira logo": e um contrato quebrado, e tratar
+    // como valido esconderia isso do chamador.
+    (
+      name: 'TTL zero',
+      payload: {
+        'signed_url': 'https://signed.test/object',
+        'mime_type': 'image/webp',
+        'expires_in': 0,
+      },
+    ),
+    (
+      name: 'TTL negativo',
+      payload: {
+        'signed_url': 'https://signed.test/object',
+        'mime_type': 'image/webp',
+        'expires_in': -1,
+      },
+    ),
+  ]) {
+    test('recusa um resgate com ${sample.name}', () async {
+      final client = SupabaseClient(
+        'https://coelo.test',
+        'publishable-key',
+        httpClient: MockClient(
+          (request) async => http.Response(
+            jsonEncode(sample.payload),
+            200,
+            headers: {'content-type': 'application/json'},
+            request: request,
+          ),
+        ),
+      );
+      addTearDown(client.dispose);
+
+      await expectLater(
+        SupabasePrincipalNowFeedRepository(client, now: () => now).resolveMedia(
+          scope: scope,
+          publicationId: 'active',
+          media: const PrincipalNowMediaDescriptor(
+            readTicket: 'ticket-active',
+            mimeType: 'image/webp',
+            kind: PrincipalNowMediaKind.media,
+          ),
+        ),
+        throwsA(isA<PrincipalNowFeedUnavailable>()),
+      );
+    });
+  }
+
+  test('uma publicacao ambigua e recusada em vez de resolvida pela primeira', () async {
+    // Dois itens vigentes com o mesmo id nao sao um duplicado inofensivo: o
+    // resgate teria de escolher um, e escolher em silencio significa entregar
+    // midia de uma publicacao que o operador nao pediu.
+    final client = SupabaseClient(
+      'https://coelo.test',
+      'publishable-key',
+      httpClient: MockClient(
+        (request) async => http.Response(
+          jsonEncode([
+            _row(
+              id: 'active',
+              publishedAt: now.subtract(const Duration(hours: 2)),
+              expiresAt: now.add(const Duration(hours: 22)),
+            ),
+            _row(
+              id: 'active',
+              publishedAt: now.subtract(const Duration(hours: 1)),
+              expiresAt: now.add(const Duration(hours: 23)),
+              ticketSuffix: 'clone',
+            ),
+          ]),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        ),
+      ),
+    );
+    addTearDown(client.dispose);
+
+    await expectLater(
+      SupabasePrincipalNowFeedRepository(client, now: () => now).resolveMedia(
+        scope: scope,
+        publicationId: 'active',
+        media: const PrincipalNowMediaDescriptor(
+          readTicket: 'ticket-active',
+          mimeType: 'image/webp',
+          kind: PrincipalNowMediaKind.media,
+        ),
+      ),
+      throwsA(isA<PrincipalNowFeedUnavailable>()),
+    );
+  });
+
   test('falha fechado quando a RPC nega o contexto', () async {
     final client = SupabaseClient(
       'https://coelo.test',
