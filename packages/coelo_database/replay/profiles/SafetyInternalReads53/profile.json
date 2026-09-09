@@ -8,7 +8,7 @@
     "inherited_preflight_count": 2,
     "boundary": "20260901200206"
   },
-  "target_version": "20260909190000",
+  "target_version": "20260909193000",
   "canonical_additions": [
     {
       "file": "20260812002000_child_safety_schema.sql",
@@ -27,7 +27,7 @@
       "sha256_crlf_utf8": "c9991fdc9cf3414f4461608ff3f10d56cb494006ef868be628e0b96d8f8dc759"
     },
     {
-      "file": "20260909190000_d04_child_safety_internal_reads.sql",
+      "file": "20260909193000_d04_child_safety_internal_reads.sql",
       "sha256_crlf_utf8": "601e7819412d6c5a5e1b63c8d715ec8f213f40e08f5977321c0ae0bcf5d302d8"
     }
   ],
@@ -36,7 +36,7 @@
       "file": "20260908051499_child_directory_error_envelope_bridge.sql",
       "sha256_crlf_utf8": "6f9342ccad9ce145158e1667a84c5bd58e4577af022204194280b4d8cfaad17a",
       "after": "20260901200206_defer_superadmin_internal_mfa_until_mvp_go_live.sql",
-      "before": "20260909190000_d04_child_safety_internal_reads.sql",
+      "before": "20260909193000_d04_child_safety_internal_reads.sql",
       "source_note": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/notes/child-envelope-prerequisite.sql",
       "source_note_sha256_crlf_utf8": "6f9342ccad9ce145158e1667a84c5bd58e4577af022204194280b4d8cfaad17a",
       "approved_helper_source": "packages/coelo_database/migrations/20260827235500_superadmin_internal_institution_list_filter.sql",

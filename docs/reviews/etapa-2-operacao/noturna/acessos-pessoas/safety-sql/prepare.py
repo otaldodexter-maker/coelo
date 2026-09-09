@@ -10,7 +10,7 @@ from pglast import parse_sql
 out = Path(__file__).resolve().parent
 root = next(parent for parent in out.parents if (parent / 'AGENTS.md').is_file())
 db = root / 'packages/coelo_database'
-candidate = db / 'migrations/20260909190000_d04_child_safety_internal_reads.sql'
+candidate = db / 'migrations/20260909193000_d04_child_safety_internal_reads.sql'
 manifest_file = db / 'replay/foundation-migrations.sha256'
 
 def normalized_hash(path):

@@ -1,5 +1,5 @@
 [CmdletBinding()]
-param([string]$TargetVersion = '20260909190000')
+param([string]$TargetVersion = '20260909193000')
 
 $ErrorActionPreference = 'Stop'
 $packageRoot = Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $PSScriptRoot))
@@ -45,12 +45,12 @@ function Get-SafetyReadsBodyMd5([string]$Path) {
 }
 
 $descriptorFile = Assert-SafetyReadsFile (Join-Path $PSScriptRoot 'profile.json')
-if ((Get-SafetyReadsHash $descriptorFile.FullName) -cne '15eeec5f353243bf7c509181a89ba0b7f886748d7b85c978551e7a35a757d6c1') {
+if ((Get-SafetyReadsHash $descriptorFile.FullName) -cne '8336114691c93d545fa80f00ea4bcdec7ffddb382c8836ca14e33710a8734b5e') {
   throw 'SafetyInternalReads53 descriptor hash mismatch'
 }
 $descriptor = [IO.File]::ReadAllText($descriptorFile.FullName) | ConvertFrom-Json
 if ($descriptor.id -cne 'SafetyInternalReads53' -or $TargetVersion -cne $descriptor.target_version) {
-  throw "SafetyInternalReads53 requires target 20260909190000; received $TargetVersion"
+  throw "SafetyInternalReads53 requires target 20260909193000; received $TargetVersion"
 }
 
 $manifestFile = Assert-SafetyReadsFile (Join-Path $packageRoot 'replay\foundation-migrations.sha256')
@@ -99,7 +99,7 @@ if ($canonicalEntries.Count -ne $descriptor.planned_counts.canonical -or
     $bridgeVersion -le $descriptor.base.boundary -or
     $bridgeVersion -ge $descriptor.target_version -or
     $bridgeEntries[0].after -cne '20260901200206_defer_superadmin_internal_mfa_until_mvp_go_live.sql' -or
-    $bridgeEntries[0].before -cne '20260909190000_d04_child_safety_internal_reads.sql' -or
+    $bridgeEntries[0].before -cne '20260909193000_d04_child_safety_internal_reads.sql' -or
     @(Get-ChildItem -LiteralPath (Join-Path $packageRoot 'replay') -File -Filter '*.sql').Count -ne 2) {
   throw 'SafetyInternalReads53 requires 50 canonical migrations, one ordered bridge and two inherited preflights'
 }

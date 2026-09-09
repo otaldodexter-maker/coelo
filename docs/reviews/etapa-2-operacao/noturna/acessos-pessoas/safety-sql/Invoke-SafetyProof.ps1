@@ -12,4 +12,4 @@ $tests = @(
   'child_safety_production_test.sql'
 ) | ForEach-Object { Join-Path 'packages/coelo_database/supabase/tests' $_ }
 & ./packages/coelo_database/scripts/Invoke-SafeLocalMigrationReplay.ps1 `
-  -TargetVersion 20260909190000 -NominalProfile SafetyInternalReads53 -TestPath $tests
+  -TargetVersion 20260909193000 -NominalProfile SafetyInternalReads53 -TestPath $tests
