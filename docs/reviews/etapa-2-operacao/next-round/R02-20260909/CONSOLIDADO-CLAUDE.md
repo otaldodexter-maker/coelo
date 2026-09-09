@@ -474,3 +474,59 @@ ele a repetiu para as duas.
 Números de L03 no fim da auditoria: **210 P / 10 F**, as mesmas 10 goldens
 preexistentes; nenhum teste novo alterou a contagem de falhas; `flutter analyze
 lib` limpo.
+
+## Defeito achado, correção pronta, deliberadamente NÃO entregue — L02
+
+**Conflito de versão em Avisos é beco sem saída.** Quando uma ação de ciclo de
+vida falha com `NoticeConflictException`, o diretório mostra a mensagem — que é
+literalmente *"O aviso foi alterado. Recarregue e tente novamente"* — e **não
+recarrega**. A lista segue exibindo a versão antiga, quem tenta de novo repete a
+`managementVersion` obsoleta e bate no mesmo conflito **indefinidamente**.
+**A tela promete uma recarga que não faz.**
+
+Mesma família do zero silencioso e da tela indistinguível: a interface afirmando
+algo que não corresponde ao que ela faz.
+
+Detalhe que torna a correção segura e que merece constar: `_actionIntentKey`
+**já inclui** `managementVersion`, então recarregar gera chave de intenção nova e
+a próxima tentativa não reusa o id de idempotência anterior. Quem escreveu pensou
+na concorrência; faltou o recarregamento. A correção é de **uma linha** —
+`_refresh` em vez de `_feedback`, só para `Conflict` e `NotFound`.
+
+**L02 implementou e reverteu deliberadamente**, por não conseguir dirigir o
+flyout de ações em teste de widget no tempo restante: o alvo é encontrado, o
+toque não abre o menu naquele harness, e a ação nunca aparece. Sem prova, seria
+mudança de comportamento entregue no escuro perto do corte — exatamente o que ele
+já havia recusado em `chat.attach` e no Realtime. **Árvore limpa, nada commitado.**
+
+Registro com destaque porque é a decisão mais difícil do dia: correção óbvia,
+defeito claro, incentivo todo apontando para entregar e escrever "coberta por
+inspeção". Ele não fez, e manteve o mesmo critério que aplicou o dia inteiro.
+**Fica como defeito registrado com correção pronta**, para quem tiver janela e
+conseguir o harness.
+
+## Realtime: recusa fundamentada de fabricar teste
+
+L02 recusou escrever os estados de Realtime, e concordo. Testar "a autorização de
+Realtime nega" exigiria simular um gatilho que **não existe**: `refreshAfterRealtime`
+não tem caller, e `postgres_changes` nunca entregaria evento ao realm interno,
+porque as policies resolvem por `current_person_id()` e a identidade interna não
+tem linha em `people`. Seria **teste verde sobre caminho morto** — pior que
+ausência de teste, porque criaria confiança falsa.
+
+## Verificações de L02 com prova, nesta janela
+
+**Rotas de Avisos** (`notice_routes_capability_test.dart`, 2 casos verdes): com
+repositório autorizado, `/notices` recebe `onCreate`, `onEdit` e
+`canManageLifecycle`; `/notices/new` monta o formulário com o mesmo repositório; e
+`/notices/:id/edit` **leva o id adiante** — sem isso **uma edição viraria aviso
+novo**, e esse é o tipo de defeito que só aparece exercendo a rota. Sem
+repositório autorizado, o diretório não oferece o que o servidor negaria e
+`/notices/new` responde com `production-mutation-capability-unavailable` em vez de
+montar formulário mudo. Confirma minha hipótese de que `/notices` não cai na
+guarda que deixou a rota de L03 inalcançável.
+
+**Vazio por permissão versus por ausência no Chat** (`principal_chat_page_test.dart`,
+18 casos): conversa vazia **autorizada** mostra o estado vazio e **mantém o
+composer**; conversa **negada** purga o instantâneo privado, composer incluído, e
+mostra o painel de sem permissão. Distinguíveis, como exigido.
