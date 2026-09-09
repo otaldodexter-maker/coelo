@@ -3,7 +3,7 @@ title: "Circulares privadas e versionadas no Principal"
 source: "PRDs App, Auth Multi-tenant, Permissões, LGPD/Segurança/Mídia e Modelo de Dados; referência visual aprovada em 2026-08-21"
 status: approved
 generated_at: "2026-08-21"
-updated_at: "2026-09-09"
+updated_at: "2026-08-31"
 ---
 
 # Circulares privadas e versionadas no Principal
@@ -61,27 +61,17 @@ do cliente. RPCs e projeções não revelam existência fora do escopo autorizad
 
 ## Mídia privada
 
-Pela decisão do Owner de 2026-09-03, registrada na ADR 0032, toda mídia nova
-de Circulares usa a plataforma R2 privada comum do MVP. A exceção Supabase da
-ADR 0027 está superada. Imagens e masters de vídeo pertencem a
-`coelo-media-prod`, documentos como PDF a `coelo-documents-prod` e uploads ainda
-não finalizados/quarentena a `coelo-transient-prod`, conforme a finalidade.
-Nenhum desses buckets é público; Circulares não cria bucket próprio.
+Por decisão explícita do Owner em 2026-08-21, Circulares usa o bucket privado
+Supabase `coelo-circulars-private` conforme ADR 0027. A exceção é exclusiva de
+Circulares e não altera Acontece, Agora ou Momentos.
 
-Upload e leitura passam pelo Media Gateway server-side, inicialmente Edge
-Function Supabase. O gateway valida sessão, tenant, capacidade e audiência,
-emite chave opaca segundo a hierarquia comum da ADR 0032 e presigned PUT/GET
-curto, finaliza de forma idempotente, limpa órfãos e audita. A chave nunca
-autoriza acesso. MIME real, bytes, dimensões/pixels quando aplicável, checksum
-e limites por finalidade são validados no servidor. PDF também exige validação
-de assinatura, estrutura, conteúdo ativo e malware; viewer e download são
-reautorizados. O limite específico de PDF desta spec permanece em 5 MiB.
-
-Postgres é o catálogo autoritativo de ativos, variantes, vínculos, ownership,
-permissões, retenção e auditoria. O master permanece no R2; PDF nunca usa
-Stream. Nenhuma credencial R2 ou `service_role` entra no cliente. Os prazos do
-token de upload Supabase da regra anterior não definem o contrato R2: sua
-entrega segue o gateway comum da ADR 0032, sem presumir TTL específico aqui.
+Upload e leitura passam por Edge Function autenticada: intenção autorizada,
+caminho opaco gerado no servidor, upload assinado, validação de extensão, MIME,
+assinatura real, tamanho e checksum, finalização idempotente e URL de leitura de
+120 segundos. O token nativo de upload assinado do Supabase expira em duas
+horas; a UI não o persiste, o objeto usa chave opaca exclusiva e a finalização
+server-side usa ticket adicional de dois minutos. Metadados, ownership, estado
+e auditoria ficam no Postgres.
 
 ## UX e estados
 
@@ -99,13 +89,10 @@ O contrato visual dessas duas projeções foi aprovado em 2026-08-31. No web, a
 prévia de como a Circular aparece no Acontece não ocupa coluna lateral nem nasce
 aberta: uma ação explícita abre a prévia em popup contextual, devolvendo a
 largura principal ao Perfil. O popup usa superfície neutra, barreira, corpo
-rolável e fechamento acessível conforme o contrato Coelo de overlays.
-Esclarecimento do Owner de 09/09/2026: quando hospedado no Superadmin, o detalhe
-preserva o shell/menu no web e no mobile e ocupa sua área de conteúdo, com
-retorno contextual `‹ Circular`. A regra antiga de fullscreen sem cabeçalho
-ou dock global não autoriza ocultar o shell do Superadmin no compacto; esta
-restrição é específica desse hospedeiro. Fechar ou usar Escape devolve foco ao
-gatilho e preserva o ponto de origem. Esta regra
+rolável e fechamento acessível conforme o contrato Coelo de overlays. Em
+compacto, o detalhe usa viewer fullscreen sem cabeçalho ou dock global, com
+retorno contextual `‹ Circular`. Fechar ou usar Escape devolve foco ao gatilho
+e preserva o ponto de origem. Esta regra
 não altera o preview lateral aprovado dos composers de publicação.
 
 O editor pertence ao fluxo de publicação do Principal, ao lado de Publicar no
@@ -130,5 +117,4 @@ resposta parcial, respondida, conflito e limites excedidos.
 - testes Dart cobrem domínio, codec, repositories, widgets e 375/768/1024/1440;
 - pgTAP cobre constraints, grants, RLS, capacidades, idempotência, cross-tenant,
   cross-context e IDOR/BOLA;
-- testes Deno cobrem validação, finalização idempotente e gateway R2 privado,
-  incluindo negativas cross-tenant, IDOR, sessão revogada e entrega expirada.
+- testes Deno cobrem validação e gateway de Storage privado.
