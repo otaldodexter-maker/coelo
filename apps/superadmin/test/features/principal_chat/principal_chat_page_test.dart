@@ -262,6 +262,32 @@ void main() {
     expect(repository.threadQueries.last.cursor?.id, 'message-1');
   });
 
+  testWidgets('swapping the repository leaves no trace of the previous actor', (tester) async {
+    final first = _PrincipalChatRepository();
+    await tester.pumpWidget(
+      MaterialApp(home: PrincipalChatPage(chatRepository: first, onBack: () {})),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('principal-chat-conversation-conversation-1')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('principal-chat-composer')), 'rascunho privado');
+    await tester.enterText(find.byKey(const Key('principal-chat-search')), 'girassol');
+    await tester.pump();
+
+    // Trocar o repositório troca o ator autorizado: nada do contexto anterior
+    // pode sobreviver, nem rascunho, nem busca, nem thread aberta.
+    final second = _PrincipalChatRepository(inbox: const ChatInboxPage(items: [], totalUnread: 0));
+    await tester.pumpWidget(
+      MaterialApp(home: PrincipalChatPage(chatRepository: second, onBack: () {})),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('rascunho privado'), findsNothing);
+    expect(find.text('girassol'), findsNothing);
+    expect(find.text('Bom dia'), findsNothing);
+    expect(find.byKey(const Key('principal-chat-inbox-empty')), findsOneWidget);
+  });
+
   testWidgets('lays out without overflow across canonical breakpoints', (tester) async {
     for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
       await tester.binding.setSurfaceSize(Size(width, 900));
