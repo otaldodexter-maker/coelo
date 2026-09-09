@@ -119,6 +119,37 @@ antes de qualquer lote desta rodada.
 | 3 | `test/app/router/principal_real_route_test.dart` |
 | 2 | `test/features/circulars/presentation/circular_directory_golden_test.dart` |
 
+
+## Golden contra nao-golden
+
+Das 182 falhas, **144 estao em suites de golden** e **38 nao**. Essa separacao
+importa mais que o total: a parte de golden depende de uma decisao de rebaseline
+do Owner e nao de codigo, enquanto as 38 restantes sao o que de fato pode
+esconder defeito funcional.
+
+Os 38 nao-golden concentram-se em poucos arquivos, e boa parte ja tem causa
+conhecida — dez deles foram recuperados depois desta medicao, pela linha
+`allowDevelopmentPreview` que voltou a ser necessaria em construcoes de router
+desde `b20a9c205`.
+
+| Casos | Arquivo nao-golden |
+| ---: | --- |
+| 6 | `test/app/router/institution_directory_routes_test.dart` |
+| 4 | `test/features/institutions/presentation/screens/institution_form_page_test.dart` |
+| 3 | `test/app/router/principal_real_route_test.dart` |
+| 2 | `test/app/router/forms_composition_sanitization_source_test.dart` |
+| 2 | `test/app/router/unit_routes_test.dart` |
+| 2 | `test/core/config/composition_root_sanitization_test.dart` |
+| 2 | `test/core/config/unit_fail_closed_composition_source_test.dart` |
+| 2 | `test/shared/presentation/widgets/superadmin_form_action_footer_adoption_test.dart` |
+| 1 | quinze arquivos com um caso cada |
+
+## Verificacao independente do coordenador
+
+Conferi por conta propria a afirmacao de que Suporte nao tem camada de dados:
+`apps/superadmin/lib/features/support/` contem apenas `README.md`, `domain` e
+`presentation`. Nao ha `data/`. A afirmacao procede.
+
 ## Como ler
 
 O roteamento acima e por caminho de arquivo e serve para dirigir atencao, nao
