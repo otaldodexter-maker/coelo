@@ -161,6 +161,8 @@ import '../../features/notices/presentation/notice_directory_page.dart';
 import '../../features/notices/presentation/notice_form_page.dart';
 import '../../features/principal_chat/presentation/principal_chat_page.dart';
 import '../../features/principal_circulars/domain/principal_happens_mixed_feed.dart';
+import '../../features/principal_circulars/presentation/principal_circular_detail_page.dart';
+import '../../features/principal_moments/domain/principal_moments_feed_repository.dart';
 import '../../features/plans/data/fake_plan_catalog_repository.dart';
 import '../../features/plans/domain/plan_catalog_repository.dart';
 import '../../features/plans/presentation/plan_directory_page.dart';
@@ -310,6 +312,11 @@ GoRouter createSuperadminRouter({
   CircularRepository? principalCircularRepository,
   PrincipalHappensFeedRepository? principalHappensFeedRepository,
   PrincipalMixedFeedRepository? principalMixedFeedRepository,
+  CircularRepository? principalCircularRepository,
+  CircularResponseRepository? principalCircularResponseRepository,
+  CircularMediaRepository? principalCircularMediaRepository,
+  PrincipalMomentsFeedRepository? principalMomentsFeedRepository,
+  PrincipalMomentsWithdrawalRepository? principalMomentsWithdrawalRepository,
   HappensPublicationRepository? happensPublicationRepository,
   PrincipalNowFeedRepository? principalNowFeedRepository,
   MomentsPublicationRepository? momentsPublicationRepository,
@@ -318,6 +325,10 @@ GoRouter createSuperadminRouter({
   bool allowDevelopmentPreview = SuperadminAppConfig.allowDevelopmentPreview,
   required ValueChanged<ThemeMode> onThemeModeChanged,
 }) {
+  // Publicar e ler Momentos sao rotas distintas; o sinal compartilhado deixa a
+  // leitura recarregar pelo repositorio autorizado apos uma publicacao
+  // confirmada, sem tratar o recibo do publicador como dado de feed.
+  final momentsFeedRefreshSignal = PrincipalMomentsFeedRefreshSignal();
   final accessHealthFixtures = DevelopmentAccessHealthFixtureCatalog.standard();
   final resolvedChildSafetyController =
       childSafetyController ?? ChildSafetyController(const UnavailableChildSafetyRepository());
@@ -879,9 +890,23 @@ GoRouter createSuperadminRouter({
                     unitId: runtimeContext.unitId,
                     groupId: runtimeContext.groupId,
                   ),
-                  onOpenCircular: (_) => ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('A leitura de circulares ainda não está disponível neste contexto.')),
-                  ),
+                  // Com a capacidade de leitura composta, a Circular abre no
+                  // leitor da familia Principal. Sem ela, a acao continua
+                  // informando indisponibilidade em vez de virar toque morto.
+                  onOpenCircular: (circularId) =>
+                      principalCircularRepository == null ||
+                          principalCircularResponseRepository == null
+                      ? ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'A leitura de circulares ainda não está disponível neste contexto.',
+                            ),
+                          ),
+                        )
+                      : context.pushNamed(
+                          SuperadminRoutes.principalHappensCircularName,
+                          pathParameters: {'circularId': circularId},
+                        ),
                   data: PrincipalHappensPreviewData.empty,
                   embedded: true,
                   onCreatePost: () => context.goNamed(SuperadminRoutes.principalHappensPublishName),
@@ -893,6 +918,38 @@ GoRouter createSuperadminRouter({
               },
             ),
             ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.principalHappensCircular,
+            name: SuperadminRoutes.principalHappensCircularName,
+            builder: (context, state) {
+              final circularId = state.pathParameters['circularId'];
+              final repository = principalCircularRepository;
+              final responseRepository = principalCircularResponseRepository;
+              if (circularId == null || circularId.isEmpty || repository == null || responseRepository == null) {
+                return _unavailableCompositionRootRoute(context);
+              }
+              return ListenableBuilder(
+                listenable: session,
+                builder: (context, _) => !session.isAuthenticated || session.isPasswordRecovery
+                    ? _unavailableCompositionRootRoute(context)
+                    : PrincipalCircularDetailPage(
+                        // A leitura pertence à revisão de autorização vigente: se
+                        // ela mudar, o leitor recarrega em vez de manter conteúdo
+                        // obtido sob um contexto que já não vale.
+                        key: ValueKey(
+                          'principal-circular-$circularId-${session.authorizationInvalidationRevision}',
+                        ),
+                        circularId: circularId,
+                        repository: repository,
+                        responseRepository: responseRepository,
+                        mediaRepository: principalCircularMediaRepository,
+                        embedded: true,
+                        onReturn: () =>
+                            context.canPop() ? context.pop() : context.goNamed(SuperadminRoutes.principalHappensName),
+                      ),
+              );
+            },
           ),
           GoRoute(
             path: SuperadminRoutes.principalHappensPublish,
@@ -1021,7 +1078,10 @@ GoRouter createSuperadminRouter({
                     groupName: groupName,
                   ),
                   onClose: () => context.goNamed(SuperadminRoutes.principalHappensName),
-                  onPublished: (_) => context.goNamed(SuperadminRoutes.principalMomentsName),
+                  onPublished: (publication) {
+                    momentsFeedRefreshSignal.markPublished(publication.id);
+                    context.goNamed(SuperadminRoutes.principalMomentsName);
+                  },
                 );
               },
             ),
@@ -1061,9 +1121,35 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.principalMoments,
             name: SuperadminRoutes.principalMomentsName,
-            builder: (context, state) => PrincipalRuntimeContextRoute(
+            builder: (context, state) => ListenableBuilder(
+              listenable: session,
+              builder: (context, _) => !session.isAuthenticated || session.isPasswordRecovery
+                  ? _unavailableCompositionRootRoute(context)
+                  : PrincipalRuntimeContextRoute(
+              key: ValueKey('principal-moments-${session.authorizationInvalidationRevision}'),
               repository: principalRuntimeContextRepository,
-              builder: (context, _) => _unavailableCompositionRootRoute(context),
+              builder: (context, runtimeContext) {
+                final repository = principalMomentsFeedRepository;
+                if (repository == null) return _unavailableCompositionRootRoute(context);
+                return PrincipalMomentsPreviewPage(
+                  embedded: true,
+                  feedRepository: repository,
+                  feedScope: PrincipalMomentsFeedScope(
+                    institutionId: runtimeContext.institutionId,
+                    unitId: runtimeContext.unitId,
+                    groupId: runtimeContext.groupId,
+                  ),
+                  withdrawalRepository: principalMomentsWithdrawalRepository,
+                  refreshSignal: momentsFeedRefreshSignal,
+                  onOpenHappens: () => context.goNamed(SuperadminRoutes.principalHappensName),
+                  onOpenHome: () => context.goNamed(SuperadminRoutes.principalHappensName),
+                  onCreateMoment: () =>
+                      context.goNamed(SuperadminRoutes.principalMomentsPublishName),
+                  onPublishNow: () =>
+                      context.goNamed(SuperadminRoutes.principalNowPublicationName),
+                );
+              },
+            ),
             ),
           ),
           GoRoute(

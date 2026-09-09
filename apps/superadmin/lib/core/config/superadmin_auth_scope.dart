@@ -34,6 +34,12 @@ import '../../features/invites/data/supabase_invite_repository.dart';
 import '../../features/invites/domain/platform_invite.dart';
 import '../../features/notices/data/supabase_notice_repository.dart';
 import '../../features/notices/domain/notice_repository.dart';
+import '../../features/principal_moments/data/supabase_principal_moments_feed_repository.dart';
+import '../../features/principal_moments/domain/principal_moments_feed_repository.dart';
+import '../../features/principal_circulars/data/supabase_circular_auxiliary_repositories.dart';
+import '../../features/principal_circulars/data/supabase_circular_repository.dart';
+import '../../features/principal_circulars/domain/circular_repository.dart'
+    show CircularMediaRepository, CircularRepository, CircularResponseRepository;
 import '../../features/principal_circulars/data/supabase_principal_mixed_feed_repository.dart';
 import '../../features/principal_circulars/domain/principal_happens_mixed_feed.dart';
 import '../../features/principal_happens/data/supabase_principal_happens_feed_repository.dart';
@@ -161,6 +167,11 @@ final class SuperadminAuthScope {
     this.principalCircularRepository,
     this.principalHappensFeedRepository,
     this.principalMixedFeedRepository,
+    this.principalCircularRepository,
+    this.principalCircularResponseRepository,
+    this.principalCircularMediaRepository,
+    this.principalMomentsFeedRepository,
+    this.principalMomentsWithdrawalRepository,
     this.happensPublicationRepository,
     this.principalNowFeedRepository,
     this.momentsPublicationRepository,
@@ -219,6 +230,11 @@ final class SuperadminAuthScope {
   final CircularRepository? principalCircularRepository;
   final PrincipalHappensFeedRepository? principalHappensFeedRepository;
   final PrincipalMixedFeedRepository? principalMixedFeedRepository;
+  final CircularRepository? principalCircularRepository;
+  final CircularResponseRepository? principalCircularResponseRepository;
+  final CircularMediaRepository? principalCircularMediaRepository;
+  final PrincipalMomentsFeedRepository? principalMomentsFeedRepository;
+  final PrincipalMomentsWithdrawalRepository? principalMomentsWithdrawalRepository;
   final HappensPublicationRepository? happensPublicationRepository;
   final PrincipalNowFeedRepository? principalNowFeedRepository;
   final MomentsPublicationRepository? momentsPublicationRepository;
@@ -264,6 +280,9 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
     final authContext = createAuthContextGateway(client);
     final initialState = auth.currentSessionState;
     final platformUsers = SupabasePlatformUserRepository(client);
+    // Ler e retirar Momentos compartilham a mesma implementacao autorizada;
+    // uma instancia so evita dois clientes divergentes para o mesmo dominio.
+    final momentsFeed = SupabasePrincipalMomentsFeedRepository(client);
     SuperadminMediaScope? ownedMediaScope;
     final session = SuperadminSession(
       isPasswordRecovery: initialState.isPasswordRecovery,
@@ -384,6 +403,11 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       principalCircularRepository: SupabaseCircularRepository(client),
       principalHappensFeedRepository: SupabasePrincipalHappensFeedRepository(client),
       principalMixedFeedRepository: SupabasePrincipalMixedFeedRepository(client),
+      principalCircularRepository: SupabaseCircularRepository(client),
+      principalCircularResponseRepository: SupabaseCircularResponseRepository(client),
+      principalCircularMediaRepository: SupabaseCircularMediaRepository(client),
+      principalMomentsFeedRepository: momentsFeed,
+      principalMomentsWithdrawalRepository: momentsFeed,
       happensPublicationRepository: SupabaseHappensPublicationRepository(client),
       principalNowFeedRepository: SupabasePrincipalNowFeedRepository(client),
       momentsPublicationRepository: SupabaseMomentsPublicationRepository(client),
@@ -454,6 +478,11 @@ SuperadminAuthScope _createUnavailableScope(CoeloAuthLifecycleGateway auth) {
     principalCircularRepository: null,
     principalHappensFeedRepository: null,
     principalMixedFeedRepository: null,
+    principalCircularRepository: null,
+    principalCircularResponseRepository: null,
+    principalCircularMediaRepository: null,
+    principalMomentsFeedRepository: null,
+    principalMomentsWithdrawalRepository: null,
     happensPublicationRepository: null,
     principalNowFeedRepository: null,
     momentsPublicationRepository: null,

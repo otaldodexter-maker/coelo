@@ -24,7 +24,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 /// Verificação de composição do Acontece pela ROTA REAL.
 ///
-/// The first case now proves the READ fix. Historical description: DOCUMENTA um defeito; o segundo documenta uma divergência entre a
+/// O primeiro caso prova a correcao do READ: a Circular do feed misto abre o
+/// leitor Principal quando a capacidade existe e permanece honestamente
+/// indisponivel quando nao existe. O segundo documenta uma divergência entre a
 /// composição e o domínio, que precisa de decisão antes de virar defeito ou
 /// estreitamento declarado. Nenhum dos dois aprova o comportamento atual. Os dois vivem
 /// em `superadmin_router.dart`, que é arquivo reservado ao coordenador de
@@ -65,11 +67,18 @@ void main() {
       expect(mixed.calls.single.unitId, 'unit-real');
       expect(mixed.calls.single.groupId, 'group-real');
       expect(find.text('Circular autorizada'), findsOneWidget);
+      // Teste INVERTIDO apos a correcao do leitor: sem a capacidade de leitura
+      // composta a acao continua honestamente indisponivel, sem navegar para o
+      // detalhe administrativo e sem virar um toque morto.
       final card = tester.widget<PrincipalCircularFeedCard>(find.byType(PrincipalCircularFeedCard));
       card.onOpen();
       await tester.pump();
-      expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.principalHappens);
+      expect(
+        router.routerDelegate.currentConfiguration.uri.path,
+        SuperadminRoutes.principalHappens,
+      );
       expect(find.byType(SnackBar), findsOneWidget);
+      expect(find.textContaining('ainda não está disponível'), findsOneWidget);
       session.authorize(
         const SuperadminAuthContext(platformRoleCode: 'test-role', scopeKind: SuperadminAuthScopeKind.platform,
           permissionCodes: {'platform.read'}, aal: 'aal2'),
