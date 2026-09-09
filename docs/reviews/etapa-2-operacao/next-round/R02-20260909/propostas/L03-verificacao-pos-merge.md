@@ -111,23 +111,60 @@ lado apaga a porta de mídia. O lote de publicação de Momentos de L01 é o que
 pega. **Não verifiquei este ponto**: é fora do meu recorte e não tenho o arquivo
 na minha base.
 
-## Testes que documentam defeito e NÃO devem passar
+## Testes que documentam defeito — semântica TROCADA
+
+> **CORREÇÃO em 09/09/2026.** A primeira versão desta seção dizia que estes
+> testes "não devem passar" e que verde neles seria suspeita. **Estava
+> invertida.** L01 apanhou o erro, L00 o repassou e eu o havia propagado sem
+> conferir contra o meu próprio arquivo — que passa hoje, e eu tinha a execução
+> em mãos. Fica registrado porque a instrução errada estava a caminho de virar
+> operacional.
 
 Estes arquivos existem para **prender** defeitos conhecidos e não corrigidos.
-Eles passam hoje porque asserem o comportamento defeituoso.
+Eles **asseveram o comportamento defeituoso de hoje**:
 
 | Arquivo | Frente | O que prende |
 | --- | --- | --- |
-| `principal_happens_composition_gaps_test.dart` | L01 (relatado) | lacunas de composição do Acontece |
-| `principal_now_real_route_test.dart` | L01 (relatado) | rota real do Agora |
-| `principal_profile_edit_preview_affordance_test.dart` | L03 (verificado) | botão "Pré-visualizar" desabilitado abaixo de 1120 px |
+| `test/app/router/principal_happens_composition_gaps_test.dart` | L01 | lacunas de composição do Acontece |
+| `test/app/router/principal_now_real_route_test.dart` (em parte) | L01 | rota real do Agora |
+| `test/features/principal_profile/presentation/principal_profile_edit_preview_affordance_test.dart` | L03 | botão "Pré-visualizar" desabilitado abaixo de 1120 px |
 
-**Verde inesperado nesses arquivos é suspeita, não sucesso.** Se um deles passar
-depois de alguém ter *invertido* a asserção, ótimo — significa que a composição
-foi ligada. Mas se passar sem que ninguém tenha ligado nada, o que aconteceu foi
-que a asserção **foi relaxada** em vez de invertida, e o defeito voltou a ficar
-invisível. Cada um dos três traz no cabeçalho a instrução de inverter, não
-relaxar. Na dúvida, leia o cabeçalho antes de aceitar o verde.
+A semântica correta, na formulação de L01, que é mais precisa que a minha
+primeira tentativa:
+
+- **Verde é o esperado** enquanto o defeito existir. Verde **não** é suspeito.
+- **Vermelho significa que alguém corrigiu a composição** — e aí o teste deve ser
+  **invertido, não apagado**, conforme o cabeçalho de cada um.
+
+Um teste que documenta defeito tem a **semântica trocada** em relação a um teste
+comum, e é fácil ler ao contrário numa lista de verificação pós-merge. Por isso
+ele precisa estar **marcado como tal** em qualquer lista — que é o motivo desta
+seção existir separada das outras.
+
+O risco de ler ao contrário é concreto e tem dois modos. O leve: ver verde e
+abrir investigação à toa. O grave, que não tem volta: ver vermelho, concluir que
+é falha do merge e "consertar" o teste **apagando a prova do defeito**. Se um
+destes ficar vermelho, leia o cabeçalho do arquivo antes de tocar nele — os três
+trazem a instrução de inverter.
+
+A seção de L01 sobre isto está em
+`propostas/L01-resolucao-conflitos-dev.md`, SHA `80fa94750`, e é a referência
+canônica; esta tabela apenas acrescenta o arquivo de L03 à lista dele.
+
+## Injeções pendentes de L01, por custo — relatado
+
+L01 entregou blocos prontos em `propostas/L01-resolucao-conflitos-dev.md`
+(`80fa94750`) e ordenou as três injeções que faltam por relação
+custo-benefício. **Relatado, não verificado por mim.**
+
+| Injeção | Custo relatado | Retorno |
+| --- | --- | --- |
+| Feed misto | **sítio único**: a cadeia já está inteira em `dev`, só o builder não usa | fecha o subaceite obrigatório de `acontece.feed` — a melhor das três |
+| Momentos | cadeia completa de quatro passos | — |
+| Mídia de Circulares | cadeia completa de quatro passos | — |
+
+Vale a D00 fazer a do feed misto junto com o merge, porque é uma linha e fecha
+aceite; as outras duas são trabalho de cadeia e podem ser separadas.
 
 ## Ordem de verificação, do mais barato ao mais caro
 
