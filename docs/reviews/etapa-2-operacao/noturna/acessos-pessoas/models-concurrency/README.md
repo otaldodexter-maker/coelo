@@ -102,3 +102,7 @@ decide o comportamento desta cadeia concreta, conforme a
 Gate de memoria: no-op. Nenhuma regra de produto nova aprovada; a exigencia de
 reautorizacao server-side ja consta em AGENTS.md. Nenhum rastreador central ou
 arquivo `../models/` foi alterado por este filho.
+
+## Bloqueio da retomada e entrega
+
+Em19:18 BRT Docker voltou a responder sem reinício comandado por este grupo: probe175ms/exit0/Server29.7.2, conforme docker-health-01.json. A inspeção posterior encontrou zero containers, volumes e networks do projeto anterior. A retomada do filho foi rejeitada pela revisão automática por possível risco de cibersegurança, antes de produzir uma segunda tentativa SQL. O procedimento acima permanece apenas como histórico preparado, não como instrução de contornar o bloqueio. P0/F0/U12 preservados; nenhuma vulnerabilidade runtime afirmada e nenhuma correção especulativa. Pendência encaminhada ao coordenador; slot local liberado para critérios independentes.
