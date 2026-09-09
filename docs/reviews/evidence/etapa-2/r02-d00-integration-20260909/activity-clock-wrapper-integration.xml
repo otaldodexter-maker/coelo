@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="8" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-09-09" time="15:04:52">
+  <environment user="adrie" machine-name="LAPTOP-67A8F4LK" cwd="C:\Users\adrie\Documents\Coelo" user-domain="LAPTOP-67A8F4LK" platform="Microsoft Windows 11 Home|C:\WINDOWS|\Device\Harddisk0\Partition3" nunit-version="2.5.8.0" os-version="10.0.26200" clr-version="4.0.30319.42000" />
+  <culture-info current-culture="pt-BR" current-uiculture="pt-BR" />
+  <test-suite type="Powershell" name="Pester" executed="True" result="Success" success="True" time="5.5151" asserts="0">
+    <results>
+      <test-suite type="TestFixture" name="ActivityAggregateConcurrencyClock closed successor" executed="True" result="Success" success="True" time="3.5699" asserts="0" description="ActivityAggregateConcurrencyClock closed successor">
+        <results>
+          <test-case description="adds only the already integrated clock to the unchanged historical56" name="ActivityAggregateConcurrencyClock closed successor.adds only the already integrated clock to the unchanged historical56" time="3.2235" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="rejects the historical target instead of silently broadening it" name="ActivityAggregateConcurrencyClock closed successor.rejects the historical target instead of silently broadening it" time="0.3212" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="pins the exact existing clock bytes with declared CRLF UTF8 normalization" name="ActivityAggregateConcurrencyClock closed successor.pins the exact existing clock bytes with declared CRLF UTF8 normalization" time="0.0252" asserts="0" success="True" result="Success" executed="True" />
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="ActivityAggregateConcurrency wrapper integration" executed="True" result="Success" success="True" time="1.5264" asserts="0" description="ActivityAggregateConcurrency wrapper integration">
+        <results>
+          <test-case description="materializes exactly the 56 reviewed SQL files without starting services" name="ActivityAggregateConcurrency wrapper integration.materializes exactly the 56 reviewed SQL files without starting services" time="1.1471" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="rejects concurrency outside the closed profile before creating resources" name="ActivityAggregateConcurrency wrapper integration.rejects concurrency outside the closed profile before creating resources" time="0.3793" asserts="0" success="True" result="Success" executed="True" />
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="Closed ActivityAggregateConcurrency replay selector" executed="True" result="Success" success="True" time="0.4188" asserts="0" description="Closed ActivityAggregateConcurrency replay selector">
+        <results>
+          <test-case description="derives base55 and adds only the current aggregate migration" name="Closed ActivityAggregateConcurrency replay selector.derives base55 and adds only the current aggregate migration" time="0.3312" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="pins the aggregate and both parent artifacts by normalized hash" name="Closed ActivityAggregateConcurrency replay selector.pins the aggregate and both parent artifacts by normalized hash" time="0.0353" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="rejects every target except the aggregate migration" name="Closed ActivityAggregateConcurrency replay selector.rejects every target except the aggregate migration" time="0.0523" asserts="0" success="True" result="Success" executed="True" />
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>
