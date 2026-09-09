@@ -176,11 +176,17 @@ select ok(
 insert into auth.users(id,aud,role,email,email_confirmed_at,created_at,updated_at) values
  ('81100000-0000-4000-8000-000000000001','authenticated','authenticated','audit-owner@test.invalid',now(),now(),now()),
  ('81100000-0000-4000-8000-000000000002','authenticated','authenticated','audit-denied@test.invalid',now(),now(),now()),
- ('81100000-0000-4000-8000-000000000003','authenticated','authenticated','audit-scoped@test.invalid',now(),now(),now());
+ ('81100000-0000-4000-8000-000000000003','authenticated','authenticated','audit-scoped@test.invalid',now(),now(),now()),
+ ('81120000-0000-4000-8000-000000000001','authenticated','authenticated','audit-internal-owner@test.invalid',now(),now(),now()),
+ ('81120000-0000-4000-8000-000000000002','authenticated','authenticated','audit-internal-denied@test.invalid',now(),now(),now()),
+ ('81120000-0000-4000-8000-000000000003','authenticated','authenticated','audit-internal-scoped@test.invalid',now(),now(),now());
 insert into auth.sessions(id,user_id,created_at,updated_at,aal,not_after) values
  ('81110000-0000-4000-8000-000000000001','81100000-0000-4000-8000-000000000001',now(),now(),'aal1',now()+interval '1 hour'),
  ('81110000-0000-4000-8000-000000000002','81100000-0000-4000-8000-000000000002',now(),now(),'aal1',now()+interval '1 hour'),
- ('81110000-0000-4000-8000-000000000003','81100000-0000-4000-8000-000000000003',now(),now(),'aal1',now()+interval '1 hour');
+ ('81110000-0000-4000-8000-000000000003','81100000-0000-4000-8000-000000000003',now(),now(),'aal1',now()+interval '1 hour'),
+ ('81130000-0000-4000-8000-000000000001','81120000-0000-4000-8000-000000000001',now(),now(),'aal1',now()+interval '1 hour'),
+ ('81130000-0000-4000-8000-000000000002','81120000-0000-4000-8000-000000000002',now(),now(),'aal1',now()+interval '1 hour'),
+ ('81130000-0000-4000-8000-000000000003','81120000-0000-4000-8000-000000000003',now(),now(),'aal1',now()+interval '1 hour');
 insert into public.people(id,person_type,first_name,last_name,display_name,status) values
  ('81200000-0000-4000-8000-000000000001','adult','Audit','Owner','Audit Owner','active'),
  ('81200000-0000-4000-8000-000000000002','adult','Audit','Denied','Audit Denied','active'),
@@ -228,9 +234,9 @@ insert into app_private.superadmin_internal_identities(id) values
  ('81310000-0000-4000-8000-000000000003');
 insert into app_private.superadmin_internal_auth_links(
   id,internal_identity_id,auth_user_id,status,revoked_at) values
- ('81320000-0000-4000-8000-000000000001','81310000-0000-4000-8000-000000000001','81100000-0000-4000-8000-000000000001','active',null),
- ('81320000-0000-4000-8000-000000000002','81310000-0000-4000-8000-000000000002','81100000-0000-4000-8000-000000000002','active',null),
- ('81320000-0000-4000-8000-000000000003','81310000-0000-4000-8000-000000000003','81100000-0000-4000-8000-000000000003','active',null);
+ ('81320000-0000-4000-8000-000000000001','81310000-0000-4000-8000-000000000001','81120000-0000-4000-8000-000000000001','active',null),
+ ('81320000-0000-4000-8000-000000000002','81310000-0000-4000-8000-000000000002','81120000-0000-4000-8000-000000000002','active',null),
+ ('81320000-0000-4000-8000-000000000003','81310000-0000-4000-8000-000000000003','81120000-0000-4000-8000-000000000003','active',null);
 insert into app_private.superadmin_internal_memberships(
   id,internal_identity_id,platform_role_id,scope_kind,scope_institution_id,status,revoked_at)
 select fixture.id,fixture.identity_id,role_record.id,
@@ -264,8 +270,8 @@ select throws_ok(
 reset role;
 
 set local role authenticated;
-select set_config('request.jwt.claim.sub','81100000-0000-4000-8000-000000000002',true);
-select set_config('request.jwt.claims','{"sub":"81100000-0000-4000-8000-000000000002","session_id":"81110000-0000-4000-8000-000000000002","aal":"aal1","role":"authenticated"}',true);
+select set_config('request.jwt.claim.sub','81120000-0000-4000-8000-000000000002',true);
+select set_config('request.jwt.claims','{"sub":"81120000-0000-4000-8000-000000000002","session_id":"81130000-0000-4000-8000-000000000002","aal":"aal1","role":"authenticated"}',true);
 select is(
   public.audit_list_events_for_superadmin()#>>'{error,code}',
   'SAI_PERMISSION_DENIED', 'internal actor without capability cannot list'
@@ -273,8 +279,8 @@ select is(
 reset role;
 
 set local role authenticated;
-select set_config('request.jwt.claim.sub','81100000-0000-4000-8000-000000000003',true);
-select set_config('request.jwt.claims','{"sub":"81100000-0000-4000-8000-000000000003","session_id":"81110000-0000-4000-8000-000000000003","aal":"aal1","role":"authenticated"}',true);
+select set_config('request.jwt.claim.sub','81120000-0000-4000-8000-000000000003',true);
+select set_config('request.jwt.claims','{"sub":"81120000-0000-4000-8000-000000000003","session_id":"81130000-0000-4000-8000-000000000003","aal":"aal1","role":"authenticated"}',true);
 select ok(
   not exists(select 1 from jsonb_array_elements(public.audit_list_events_for_superadmin()->'items') item
     where item->'institution'->>'id' is distinct from '81500000-0000-4000-8000-000000000001'),
@@ -304,6 +310,7 @@ select throws_ok(
   '42501',null,'institution-scoped clients cannot start a deferred export'
 );
 reset role;
+select set_config('request.jwt.claim.sub','81100000-0000-4000-8000-000000000003',true);
 select set_config('request.jwt.claims',
   '{"sub":"81100000-0000-4000-8000-000000000003","aal":"aal2","role":"authenticated"}',true);
 do $$begin
@@ -352,8 +359,8 @@ select throws_ok(
 reset role;
 
 set local role authenticated;
-select set_config('request.jwt.claim.sub','81100000-0000-4000-8000-000000000001',true);
-select set_config('request.jwt.claims','{"sub":"81100000-0000-4000-8000-000000000001","session_id":"81110000-0000-4000-8000-000000000001","aal":"aal1","role":"authenticated"}',true);
+select set_config('request.jwt.claim.sub','81120000-0000-4000-8000-000000000001',true);
+select set_config('request.jwt.claims','{"sub":"81120000-0000-4000-8000-000000000001","session_id":"81130000-0000-4000-8000-000000000001","aal":"aal1","role":"authenticated"}',true);
 select throws_ok(
   $$select public.audit_start_export_for_superadmin('csv','{}','81400000-0000-4000-8000-000000000001')$$,
   '42501',null,'deferred export is sealed independently of AAL'
@@ -361,8 +368,8 @@ select throws_ok(
 reset role;
 
 set local role authenticated;
-select set_config('request.jwt.claim.sub','81100000-0000-4000-8000-000000000001',true);
-select set_config('request.jwt.claims','{"sub":"81100000-0000-4000-8000-000000000001","session_id":"81110000-0000-4000-8000-000000000001","aal":"aal1","role":"authenticated"}',true);
+select set_config('request.jwt.claim.sub','81120000-0000-4000-8000-000000000001',true);
+select set_config('request.jwt.claims','{"sub":"81120000-0000-4000-8000-000000000001","session_id":"81130000-0000-4000-8000-000000000001","aal":"aal1","role":"authenticated"}',true);
 select is(
   public.audit_list_events_for_superadmin(
     p_cursor_occurred_at=>now(),p_cursor_id=>null)#>>'{error,code}',
@@ -409,6 +416,7 @@ select throws_ok(
   '42501',null,'authenticated clients cannot reach export idempotency state'
 );
 reset role;
+select set_config('request.jwt.claim.sub','81100000-0000-4000-8000-000000000001',true);
 select set_config('request.jwt.claims',
   '{"sub":"81100000-0000-4000-8000-000000000001","aal":"aal2","role":"authenticated"}',true);
 do $$begin
@@ -441,9 +449,11 @@ select ok(
     where request_id='81400000-0000-4000-8000-000000000002'),
   'export metadata truthfully classifies actor and contextual identifiers as PII'
 );
+reset role;
 insert into app_private.audit_export_snapshot_rows(export_job_id,ordinal,audit_log_id,row_payload)
 select id,1,'81900000-0000-4000-8000-000000000005','{}'::jsonb from public.import_jobs
 where request_id='81400000-0000-4000-8000-000000000002';
+set local role authenticated;
 select throws_ok(
   $$select public.audit_get_export_job_for_superadmin(
     (select id from public.import_jobs where request_id='81400000-0000-4000-8000-000000000002'))$$,
@@ -454,8 +464,8 @@ reset role;
 insert into audit.audit_logs(id,action_code) values
   ('81900000-0000-4000-8000-000000000099','audit_test.null_resource');
 set local role authenticated;
-select set_config('request.jwt.claim.sub','81100000-0000-4000-8000-000000000001',true);
-select set_config('request.jwt.claims','{"sub":"81100000-0000-4000-8000-000000000001","session_id":"81110000-0000-4000-8000-000000000001","aal":"aal1","role":"authenticated"}',true);
+select set_config('request.jwt.claim.sub','81120000-0000-4000-8000-000000000001',true);
+select set_config('request.jwt.claims','{"sub":"81120000-0000-4000-8000-000000000001","session_id":"81130000-0000-4000-8000-000000000001","aal":"aal1","role":"authenticated"}',true);
 select ok(
   (select item ? 'object_type' and item->'object_type'='null'::jsonb
       and item ? 'object_id' and item->'object_id'='null'::jsonb
