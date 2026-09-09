@@ -114,8 +114,14 @@ void main() {
   // `data: PrincipalHappensPreviewData.empty`, cujo `nowItems` é vazio. O
   // trilho "Agora" da Acontece é alimentado por esse fixture e nunca pelo
   // `principalNowFeedRepository`, então nenhum `_NowCard` é construído e o
-  // callback `onOpenNow` — a ÚNICA ligação para `principalNowName` em todo o
-  // app — jamais dispara. `/principal-now` só existe como deep link.
+  // callback `onOpenNow` jamais dispara: a Acontece real nunca lê o feed do
+  // Agora, e o carrossel exigido pela spec050 aparece vazio.
+  //
+  // CORREÇÃO DE ESCOPO desta afirmação: o `/principal-now` NÃO é inalcançável.
+  // O menu do hospedeiro expõe o destino `principal-now` em
+  // `app/navigation/superadmin_navigation.dart`, e o despachante de navegação
+  // do router o converte em `goNamed`. O defeito é a ausência da entrada
+  // dentro do feed e do carrossel, não a ausência de qualquer entrada.
   //
   // Este teste registra o comportamento ATUAL. Ele deve ser invertido quando a
   // Acontece real passar a projetar as histórias do Agora.
