@@ -1,0 +1,15 @@
+--- a/packages/coelo_database/supabase/tests/child_safety_production_test.sql
++++ b/packages/coelo_database/supabase/tests/child_safety_production_test.sql
+@@ -81,8 +81,10 @@
+ select ok((select bool_and(not p.prosecdef) from pg_proc p join pg_namespace n on n.oid=p.pronamespace
+   where n.nspname='public' and (p.proname like 'child_safety_%'
+     or p.proname like 'superadmin_child_safety_%'
+-    or p.proname='superadmin_request_child_safety_export')),
+-  'public gateways are security invoker');
++    or p.proname='superadmin_request_child_safety_export')
++    and p.proname not in ('superadmin_child_safety_directory_v2',
++      'superadmin_child_safety_search_children_v2','superadmin_child_safety_get_v2')),
++  'legacy public gateways remain security invoker; v2 ACL tested separately');
+ select ok(not has_function_privilege('anon',
+   'public.child_safety_request_authorization(uuid,jsonb)','EXECUTE')
+   and has_function_privilege('authenticated',

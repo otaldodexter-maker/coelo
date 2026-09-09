@@ -1,6 +1,6 @@
 ---
 source: "R02 D04 assignment r3; specs/030-superadmin-child-safety-production.md; R01-fechamento-integracao.json; git 720f739e"
-status: "local-corrections-tested; visual-gate-open"
+status: "local-corrections-tested; visual-gate-open; internal-read-sql-candidate-unexecuted"
 generated_at: "2026-09-09"
 ---
 
@@ -61,3 +61,11 @@ Comparação somente leitura dos pixels: 35.525 divergentes = 31.895 nos interio
 Assim, reduzir localmente a caixa para satisfazer a imagem antiga violaria o contrato de acessibilidade. Reintroduzir IntrinsicHeight já demonstrou crash. Wrap mantém composição e bounds externos; nenhuma correção local adicional é indicada. Evidência quantitativa em D04-safety-golden-diagnosis.json; imagens finais preservadas em D04-safety-visual-evidence/. Nenhuma baseline atualizada.
 
 Manifesto final SHA256: 811a7734570897811b263eb87682e27105beeb9b15210019135d1492aab35027. Rechecados 17 arquivos Dart, 0 alterados desde o manifesto da revisão testada. Recursos próprios encerrados; sem slot Flutter retido. Commit/publicação held-golden será realizada pelo pai; não declarada realizada pelo filho.
+
+### Retomada nominal de leitura interna — revisão 5, 15:37 BRT
+
+Owner/pai ampliou explicitamente o recorte para preparar pacote SQL local independente. A exclusão de SQL descrita no contrato inicial aplica-se à revisão anterior, não a esta retomada. Preparados `20260909190000_d04_child_safety_internal_reads.sql` e `d04_child_safety_internal_reads_test.sql`: três RPCs v2 com guard interno por capacidade, plataforma global, AAL1 vigente, audit tipado, allowlists, pre/postflights e legado preservado. Nenhuma alteração nova em Flutter, rotas, bootstrap ou golden.
+
+Contrato, aceites e lacunas exatas estão em [D04-child-safety-internal-reads.md](D04-child-safety-internal-reads.md). Hashes e parse estático estão em [D04-safety-internal-reads-static.json](D04-safety-internal-reads-static.json). Plano SQL distinto: P0/F0/B0/S0/U43. Sem slot SQL próprio, sem Docker, testes de banco ou nova execução Flutter. O parse estático não prova compilação, grants efetivos nem runtime. Resultado Flutter anterior P111/F1 permanece separado e não é usado para certificar o pacote novo.
+
+Primeiros gates: revisão independente do delta, replay SQL serializado, compatibilidade da assertion histórica de wrappers invoker, contrato coerente de limite nome/cursor, autorização nominal remota e ativação FE posterior com indisponibilidade honesta das mutações legadas. Lookup adulto e cutover de escrita continuam separados por FKs de atores/receipts People. Nenhuma ponte entre realms, política nova, conta real ou chamada remota foi criada. Nenhuma ação foi promovida a FE/BE/E2E concluída.

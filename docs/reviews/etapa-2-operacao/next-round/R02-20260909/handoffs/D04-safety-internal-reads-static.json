@@ -1,0 +1,53 @@
+{
+  "source": "D04 nominal internal-read package; specs030+039; ADR0019",
+  "status": "independent-static-review-complete; SQL runtime U",
+  "generated_at": "2026-09-09T18:40:44.755052+00:00",
+  "files": [
+    {
+      "path": "packages/coelo_database/migrations/20260909190000_d04_child_safety_internal_reads.sql",
+      "sha256": "0e451a3b6d0c0f398ac4efa243d4c1896f4925d12a50a0d3638bd22a6c3bca51",
+      "sql_statements": 16,
+      "lines": 393
+    },
+    {
+      "path": "packages/coelo_database/supabase/tests/d04_child_safety_internal_reads_test.sql",
+      "sha256": "c4ab2c919dfc18e55c0d513658cf9f8df0e4e4edf7364a3418a14ef1cb2a0e50",
+      "sql_statements": 107,
+      "lines": 187
+    }
+  ],
+  "plpgsql": [
+    {
+      "function": "app_private.d04_child_safety_directory_data_v2",
+      "result": "static syntax parsed"
+    },
+    {
+      "function": "app_private.d04_child_safety_search_children_data_v2",
+      "result": "static syntax parsed"
+    },
+    {
+      "function": "app_private.d04_child_safety_get_data_v2",
+      "result": "static syntax parsed"
+    },
+    {
+      "function": "app_private.d04_child_safety_internal_read_v2",
+      "result": "U: parser namespace limitation",
+      "detail": "Not implemented (LookupExplicitNamespace only supports pg_catalog and public)"
+    }
+  ],
+  "review": {
+    "reviewer": "/root/profiles_models",
+    "result": "no additional static blocker; runtime unexecuted"
+  },
+  "parent_complementary_parse": {
+    "parsed_blocks": 8,
+    "dispatcher": "namespace parser limitation; body not substituted"
+  },
+  "sql_test_plan": {
+    "P": 0,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 43
+  }
+}
