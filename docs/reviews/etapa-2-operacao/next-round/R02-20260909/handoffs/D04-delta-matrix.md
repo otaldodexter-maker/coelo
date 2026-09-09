@@ -7,7 +7,7 @@ timezone: "America/Sao_Paulo"
 
 # Delta nominal D04 para o escritor central
 
-Base56eb3f19, revisão3 de16:10 BRT; HEAD publicado4bfbbddfe. App único: apps/superadmin.
+Base56eb3f19, revisão3 de16:04 BRT; HEAD publicado4bfbbddfe. App único: apps/superadmin.
 Menu Acessos para todas as linhas exceto invites.*, em Comunicação.
 As provas locais não encerram FE/BE/E2E de nenhum dos31IDs ativos.
 Patches de rotas são propostas não aplicadas, sem reserva D00.
