@@ -54,7 +54,8 @@
       "failed_current_cases": 0
     },
     "infrastructure": {
-      "pester_unique_cases": 32,
+      "pester_unique_cases": 40,
+      "pester_console_report_only_cases": 8,
       "failed": 0,
       "blocked": 0,
       "skipped": 0,
@@ -391,6 +392,32 @@
   ],
   "infrastructure_campaigns": [
     {
+      "id": "infra.child-directory-http-structure",
+      "status": "pass-reported-console-only",
+      "unique_cases": 8,
+      "case_id_origin": "source declarations; execution total reported by subagent from console",
+      "case_ids": [
+        "exists and parses without errors",
+        "accepts only the owned disposable replay project",
+        "derives a loopback HTTP environment without exposing credentials",
+        "creates isolated owner fixtures without weakening lifecycle guards",
+        "checks two pages and reload using the five-field CHILD DTO",
+        "makes cross-tenant and unknown identifiers indistinguishable denials",
+        "revokes the membership version and retries with the same token",
+        "bounds local operations and owns cleanup"
+      ],
+      "test_sha256": "CC0C100A97035E8E32DCD69B7F9C184B6C48A257FC8833798C5DDCF9ABD37A95",
+      "harness_sha256": "3F81CA9AE729C57642BA9DC4057079B976850B73B5A04C227C7D5C34AB252396",
+      "evidence": [{
+        "path": null,
+        "sha256": null,
+        "availability": "subagent-console-report-only",
+        "result": "P8/F0/B0/S0/U0; Invoke-Pester -PassThru; no XML or raw log preserved",
+        "note_path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/notes/child-http-plan.md"
+      }],
+      "product_acceptance_credit": 0
+    },
+    {
       "id": "infra.child-concurrency-invoke-patch",
       "status": "pass-candidate-patch-only",
       "unique_cases": 8,
@@ -576,6 +603,15 @@
       "sha256": "6561DF4DBEB1E11407569663F3A6D39C99A752A978D0C99A6BA5F096ED5F9EF7",
       "result": "Existing D00 integrated run: 49 SQL, TAP45 PASS, concurrency3 PASS, exit0 and zero residual resources"
     }
+  },
+  "http_child": {
+    "status": "prepared-not-executed",
+    "planned_scenarios": 4,
+    "executed_scenarios": 0,
+    "passed_scenarios": 0,
+    "failed_scenarios": 0,
+    "blocked_scenarios": 4,
+    "blocker": "Requires nominal D00 approval of the shared HTTP runner mode and serialized local window. No HTTP, Docker or remote mutation executed for this harness."
   },
   "memory": {
     "status": "no-op",
