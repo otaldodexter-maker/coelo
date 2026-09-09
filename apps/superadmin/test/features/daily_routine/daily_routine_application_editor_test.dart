@@ -66,6 +66,53 @@ void main() {
     expect(repository.savedApplication?.id, 'created-application');
   });
 
+  for (final kind in [RoutineEntryKind.model, RoutineEntryKind.application]) {
+    testWidgets('rejects an empty id returned while creating ${kind.name}', (tester) async {
+      final repository = _BlankCreatedIdRoutineRepository();
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoeloTheme.light,
+          home: DailyRoutineWizardPage(
+            repository: repository,
+            logout: unavailableSuperadminLogout,
+            entryKind: kind,
+            applicationFromModelId: kind == RoutineEntryKind.application ? 'source-model' : null,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      if (kind == RoutineEntryKind.model) {
+        await tester.enterText(find.byKey(const Key('daily-routine-name')), 'Modelo criado');
+        await tester.enterText(
+          find.byKey(const Key('daily-routine-model-institution')),
+          'institution',
+        );
+      }
+      await tester.tap(
+        find.byKey(
+          kind == RoutineEntryKind.model
+              ? const Key('daily-routine-save')
+              : const Key('daily-routine-application-save'),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text(
+          kind == RoutineEntryKind.model
+              ? 'O modelo salvo não pôde ser validado.'
+              : 'A rotina aplicada salva não pôde ser validada.',
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.text(kind == RoutineEntryKind.model ? 'Modelo salvo.' : 'Rotina aplicada salva.'),
+        findsNothing,
+      );
+    });
+  }
+
   testWidgets('ignores a late application load after the editor context changes', (tester) async {
     final repository = _DelayedRoutineRepository();
 
@@ -473,4 +520,15 @@ final class _TamperedRoutineRepository extends _RoutineRepository {
   @override
   Future<String> saveModel(RoutineModel model, {required String requestId}) async =>
       'another-model';
+}
+
+final class _BlankCreatedIdRoutineRepository extends _RoutineRepository {
+  @override
+  Future<String> saveApplication(
+    RoutineApplication application, {
+    required String requestId,
+  }) async => ' ';
+
+  @override
+  Future<String> saveModel(RoutineModel model, {required String requestId}) async => ' ';
 }

@@ -50,3 +50,49 @@ SELECT-only não contém RPC pública de Rotina diária. O estado produtivo
 `UnavailableRoutineRepository` continua correto até contrato interno 039 e
 pacote nominal aprovados. Nenhum backend, composição comum ou remoto foi
 alterado; FE completo, BE e E2E permanecem abertos.
+
+## `daily-routine.create` — recibo vazio de criação
+
+Os fluxos de criação de modelo e rotina aplicada aceitavam o identificador
+vazio ou composto apenas por espaços devolvido pelo repository. A interface
+mostrava sucesso, mantinha a entidade sem identidade válida e permitia uma nova
+criação no clique seguinte.
+
+O RED cobriu os dois fluxos:
+
+```text
+rtk flutter test test/features/daily_routine/daily_routine_application_editor_test.dart --plain-name "rejects an empty id returned while creating"
+```
+
+Resultado antes da correção: `0 PASS / 2 FAIL`. O transcript foi salvo em
+`C:/Users/adrie/AppData/Local/Temp/coelo-d03-daily-routine-empty-id-red.log`.
+
+Correção mínima: ambos os saves agora rejeitam `id.trim().isEmpty` antes de
+mostrar sucesso ou atualizar o estado local. O erro específico permanece no
+tratamento existente de `FormatException`; nenhum formato adicional de ID foi
+imposto ao contrato.
+
+Verificação focal após a correção: `2 PASS / 0 FAIL`, com transcript em
+`C:/Users/adrie/AppData/Local/Temp/coelo-d03-daily-routine-empty-id-green.log`.
+Uma primeira tentativa intermediária falhou somente porque as expectativas
+novas tinham sido gravadas com mojibake; as duas strings do fixture foram
+corrigidas para o texto Unicode já emitido pela implementação.
+
+Verificação serializada do arquivo completo:
+
+```text
+rtk flutter test test/features/daily_routine/daily_routine_application_editor_test.dart
+```
+
+Resultado: `14 PASS / 0 FAIL`, exit code 0. Transcript em
+`C:/Users/adrie/AppData/Local/Temp/coelo-d03-daily-routine-application-editor-full-serialized.log`.
+Uma execução anterior também passou `14/14`, mas coincidiu com o início de um
+lote de Attendance e não foi usada como evidência nominal.
+
+```text
+rtk flutter analyze lib/features/daily_routine/daily_routine_form_sections.dart test/features/daily_routine/daily_routine_application_editor_test.dart
+```
+
+Resultado: `No issues found`, exit code 0. Transcript em
+`C:/Users/adrie/AppData/Local/Temp/coelo-d03-daily-routine-empty-id-analyze.log`.
+`dart format` alterou zero arquivos e `git diff --check` permaneceu limpo.
