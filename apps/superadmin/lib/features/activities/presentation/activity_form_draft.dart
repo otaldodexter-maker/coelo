@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:coelo_domain/profile_about.dart';
+import 'package:coelo_domain/locations.dart';
+import '../domain/activity_command.dart';
 
 import '../domain/activity_directory.dart';
 import 'activity_pedagogical_configuration_draft.dart';
@@ -108,6 +110,8 @@ final class ActivityFormDraft {
     required this.groupIds,
     required this.assignments,
     this.locationId,
+    this.locationSelection,
+    this.reservation,
     this.imageName,
     this.imageBytes,
     this.identityInitials = '',
@@ -136,6 +140,8 @@ final class ActivityFormDraft {
   final String institutionId;
   final Set<String> unitIds;
   final String? locationId;
+  final CataloguedLocationSelection? locationSelection;
+  final ActivityCreateReservationIntent? reservation;
   final Set<String> groupIds;
   final List<ActivityProfessionalAssignment> assignments;
   final String? imageName;
