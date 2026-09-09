@@ -197,6 +197,12 @@
           "result": "7 pass / 0 fail"
         },
         {
+          "kind": "flutter_test_green_focal",
+          "path": "C:/Users/adrie/AppData/Local/Temp/d03-attendance-correction-required-reason-green.log",
+          "sha256": "2EB194482235DD7DD4571C3BC3973AA793BFEE2DD6D4CE697482F0EE5043D69A",
+          "result": "1 pass / 0 fail after the final semantic assertion was added; overlaps the seven-case campaign and does not add a case"
+        },
+        {
           "kind": "flutter_analyze",
           "path": "C:/Users/adrie/AppData/Local/Temp/d03-attendance-correction-required-reason-analyze.log",
           "sha256": "14CA337A541222740667AEAC33AB48BC7391A898BE62649C81998AA6E0D9F7D4",
