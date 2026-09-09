@@ -56,3 +56,6 @@ Consulta somente catálogo pg_proc/pg_namespace, projeto evvbomzejfijozbtgvpt, s
 | public.superadmin_auth_resolve_institution_context(uuid) | e16a3b61cffba4230c7fb4235da9382d |2093|
 
 Os pins coincidem com a definição canônica20260901190927. Esta leitura não aplica a correção, não comprova comportamento remoto e não autoriza escrita. Successor173100 em preparação após falha TAP35 local.
+## Histórico remoto nominal somente leitura — 15:52 BRT
+
+Consulta agregada ao supabase_migrations.schema_migrations no mesmo projetoexato, via execute_sql somenteSELECT:116versões aplicadas; máximo20260901200206; zero registros para20260909173000/20260909173100; todas as versões aplicadas anteriores ao primeirocandidato. Não houve CLIlink/fetch/dry-run, criação de role, unban, DDL ou leitura de credenciais. Ausência de colisão qualificada neste instante; revalidar histórico na janela, sem transferir isso como autorização ou snapshot imutável de staging.

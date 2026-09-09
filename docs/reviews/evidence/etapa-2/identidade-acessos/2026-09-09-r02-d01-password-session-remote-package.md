@@ -1,11 +1,13 @@
 ---
 title: "D01 — pacote remoto proposto para exigir sessão password no contexto interno"
 source: "packages/coelo_database/migrations/20260909173000_superadmin_password_session_context.sql; r02-d01-20260909/password-session-context-local-package.md; r02-d01-20260909/password-session-remote-schema-readonly.md; r02-d01-20260909/local-auth-recovery-boundary-receipt.md"
-status: "proposed-not-authorized-not-executed; final-hashes-and-local-proof-pending"
+status: "superseded-by-v2; not-authorized-not-executed"
 generated_at: "2026-09-09"
 ---
 
-# Pacote nominal proposto
+# Pacote nominal proposto (histórico)
+
+Substituído por [pacote v2](2026-09-09-r02-d01-password-session-remote-package-v2.md), com173000+173100 e gate explícito de atomicidadeDDL/histórico. Este v1 não é executável; seus comandos não constituem transporte final aprovado.
 
 **D01-PASSWORD-SESSION-CONTEXT-20260909173000-v1**, exclusivamente para o
 projeto Supabase Coelo `evvbomzejfijozbtgvpt`, **produção**. Etapa 2 →
