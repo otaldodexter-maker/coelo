@@ -10,6 +10,25 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 const _inviteId = '50000000-0000-4000-8000-000000000001';
 
 void main() {
+  for (final authority in ['viewer@app.coelo.me', 'app.coelo.me:8443']) {
+    test('rejects one-time links with unexpected authority $authority', () async {
+      final client = _client(
+        (request) async => _success(request, {
+          'invite': _invite(),
+          'replayed': false,
+          'link': 'https://$authority/convites/${'a' * 64}',
+        }),
+      );
+      addTearDown(client.dispose);
+      await expectLater(
+        SupabaseInviteRepository(client).resend(
+          const InviteResendCommand(inviteId: _inviteId, requestId: 'request', expectedVersion: 4),
+        ),
+        throwsA(isA<InviteUnavailableException>()),
+      );
+    });
+  }
+
   test('invitation operations accept canonical casing of a requested UUID', () async {
     const id = 'aaaaaaaa-0000-4000-8000-000000000001';
     final client = _client((request) async {
