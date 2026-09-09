@@ -668,188 +668,6 @@ GoRouter createSuperadminRouter({
         builder: (context, state) => blockedProductionMutationPage(context),
       ),
       GoRoute(
-        path: SuperadminRoutes.principalHappens,
-        name: SuperadminRoutes.principalHappensName,
-        builder: (context, state) => PrincipalRuntimeContextRoute(
-          repository: principalRuntimeContextRepository,
-          builder: (context, runtimeContext) {
-            final repository = principalHappensFeedRepository;
-            if (repository == null) return _unavailableCompositionRootRoute(context);
-            return PrincipalHappensPreviewPage(
-              feedRepository: repository,
-              feedScope: PrincipalHappensFeedScope(
-                institutionId: runtimeContext.institutionId,
-                unitId: runtimeContext.unitId,
-                groupId: runtimeContext.groupId,
-              ),
-              data: PrincipalHappensPreviewData.empty,
-              embedded: false,
-              onCreatePost: () => context.goNamed(SuperadminRoutes.principalHappensPublishName),
-              onOpenNow: () => context.pushNamed(SuperadminRoutes.principalNowName),
-              onPublishNow: () => context.goNamed(SuperadminRoutes.principalNowPublicationName),
-              onOpenMessages: () => context.goNamed(
-                SuperadminRoutes.conversationsName,
-                queryParameters: const {'from': 'principal'},
-              ),
-            );
-          },
-        ),
-      ),
-      GoRoute(
-        path: SuperadminRoutes.principalHappensPublish,
-        name: SuperadminRoutes.principalHappensPublishName,
-        builder: (context, state) => PrincipalRuntimeContextRoute(
-          repository: principalRuntimeContextRepository,
-          builder: (context, runtimeContext) {
-            final repository = happensPublicationRepository;
-            final unitId = runtimeContext.unitId;
-            final unitName = runtimeContext.unitName;
-            final groupId = runtimeContext.groupId;
-            final groupName = runtimeContext.groupName;
-            if (repository == null ||
-                unitId == null ||
-                unitName == null ||
-                groupId == null ||
-                groupName == null) {
-              return _unavailableCompositionRootRoute(context);
-            }
-            return PrincipalHappensPublicationPage(
-              repository: repository,
-              publicationContext: HappensPublicationContext(
-                institutionId: runtimeContext.institutionId,
-                institutionName: runtimeContext.institutionName,
-                unitId: unitId,
-                unitName: unitName,
-                groupId: groupId,
-                groupName: groupName,
-              ),
-              embedded: false,
-              onClose: () => context.goNamed(SuperadminRoutes.principalHappensName),
-              onCompleted: (_) => context.goNamed(SuperadminRoutes.principalHappensName),
-            );
-          },
-        ),
-      ),
-      GoRoute(
-        path: SuperadminRoutes.principalNow,
-        name: SuperadminRoutes.principalNowName,
-        builder: (context, state) => PrincipalRuntimeContextRoute(
-          repository: principalRuntimeContextRepository,
-          builder: (context, runtimeContext) {
-            final repository = principalNowFeedRepository;
-            if (repository == null) return _unavailableCompositionRootRoute(context);
-            return PrincipalNowPreviewPage.authorized(
-              feedRepository: repository,
-              feedScope: PrincipalNowFeedScope(
-                institutionId: runtimeContext.institutionId,
-                unitId: runtimeContext.unitId,
-                groupId: runtimeContext.groupId,
-              ),
-              onClose: () => context.goNamed(SuperadminRoutes.principalHappensName),
-              onOpenHappens: () => context.goNamed(SuperadminRoutes.principalHappensName),
-              onCreate: () => context.goNamed(SuperadminRoutes.principalNowPublicationName),
-            );
-          },
-        ),
-      ),
-      GoRoute(
-        path: SuperadminRoutes.principalNowPublication,
-        name: SuperadminRoutes.principalNowPublicationName,
-        builder: (context, state) => PrincipalRuntimeContextRoute(
-          repository: principalRuntimeContextRepository,
-          builder: (context, runtimeContext) {
-            final repository = nowPublicationRepository;
-            final unitId = runtimeContext.unitId;
-            final unitName = runtimeContext.unitName;
-            final groupId = runtimeContext.groupId;
-            final groupName = runtimeContext.groupName;
-            if (repository == null ||
-                unitId == null ||
-                unitName == null ||
-                groupId == null ||
-                groupName == null) {
-              return _unavailableCompositionRootRoute(context);
-            }
-            return PrincipalNowPublicationPage(
-              repository: repository,
-              publicationContext: NowPublicationContext(
-                tenantId: runtimeContext.institutionId,
-                institutionId: runtimeContext.institutionId,
-                unitId: unitId,
-                groupId: groupId,
-                institutionName: runtimeContext.institutionName,
-                unitName: unitName,
-                groupName: groupName,
-                // Keep the client surface at the narrow baseline until the
-                // runtime-context RPC projects server-authorized audiences.
-                allowedAudiences: const {NowAudience.families},
-              ),
-              embedded: false,
-              onClose: () => context.goNamed(SuperadminRoutes.principalHappensName),
-              onCompleted: (_) => context.goNamed(SuperadminRoutes.principalNowName),
-            );
-          },
-        ),
-      ),
-      GoRoute(
-        path: SuperadminRoutes.principalMomentsPublish,
-        name: SuperadminRoutes.principalMomentsPublishName,
-        builder: (context, state) => PrincipalRuntimeContextRoute(
-          repository: principalRuntimeContextRepository,
-          builder: (context, runtimeContext) {
-            final repository = momentsPublicationRepository;
-            final unitId = runtimeContext.unitId;
-            final unitName = runtimeContext.unitName;
-            final groupId = runtimeContext.groupId;
-            final groupName = runtimeContext.groupName;
-            if (repository == null ||
-                unitId == null ||
-                unitName == null ||
-                groupId == null ||
-                groupName == null) {
-              return _unavailableCompositionRootRoute(context);
-            }
-            return PrincipalMomentsPublicationRoute(
-              repository: repository,
-              publicationContext: MomentsPublicationContext(
-                institutionId: runtimeContext.institutionId,
-                institutionName: runtimeContext.institutionName,
-                unitId: unitId,
-                unitName: unitName,
-                groupId: groupId,
-                groupName: groupName,
-              ),
-              onClose: () => context.goNamed(SuperadminRoutes.principalHappensName),
-              onPublished: (_) => context.goNamed(SuperadminRoutes.principalMomentsName),
-            );
-          },
-        ),
-      ),
-      GoRoute(
-        path: SuperadminRoutes.principalForYou,
-        name: SuperadminRoutes.principalForYouName,
-        builder: (context, state) => PrincipalRuntimeContextRoute(
-          repository: principalRuntimeContextRepository,
-          builder: (context, _) => _unavailableCompositionRootRoute(context),
-        ),
-      ),
-      GoRoute(
-        path: SuperadminRoutes.principalMoments,
-        name: SuperadminRoutes.principalMomentsName,
-        builder: (context, state) => PrincipalRuntimeContextRoute(
-          repository: principalRuntimeContextRepository,
-          builder: (context, _) => _unavailableCompositionRootRoute(context),
-        ),
-      ),
-      GoRoute(
-        path: SuperadminRoutes.principalProfile,
-        name: SuperadminRoutes.principalProfileName,
-        builder: (context, state) => PrincipalRuntimeContextRoute(
-          repository: principalRuntimeContextRepository,
-          builder: (context, _) => _unavailableCompositionRootRoute(context),
-        ),
-      ),
-      GoRoute(
         path: SuperadminRoutes.devPrincipalNow,
         name: SuperadminRoutes.devPrincipalNowName,
         builder: (context, state) => PrincipalNowPreviewPage(
@@ -971,6 +789,190 @@ GoRouter createSuperadminRouter({
           );
         },
         routes: [
+          GoRoute(
+            path: SuperadminRoutes.principalHappens,
+            name: SuperadminRoutes.principalHappensName,
+            builder: (context, state) => PrincipalRuntimeContextRoute(
+              repository: principalRuntimeContextRepository,
+              builder: (context, runtimeContext) {
+                final repository = principalHappensFeedRepository;
+                if (repository == null) return _unavailableCompositionRootRoute(context);
+                return PrincipalHappensPreviewPage(
+                  feedRepository: repository,
+                  feedScope: PrincipalHappensFeedScope(
+                    institutionId: runtimeContext.institutionId,
+                    unitId: runtimeContext.unitId,
+                    groupId: runtimeContext.groupId,
+                  ),
+                  data: PrincipalHappensPreviewData.empty,
+                  embedded: true,
+                  onCreatePost: () => context.goNamed(SuperadminRoutes.principalHappensPublishName),
+                  onOpenNow: () => context.pushNamed(SuperadminRoutes.principalNowName),
+                  onPublishNow: () => context.goNamed(SuperadminRoutes.principalNowPublicationName),
+                  onOpenMessages: () => context.goNamed(
+                    SuperadminRoutes.conversationsName,
+                    queryParameters: const {'from': 'principal'},
+                  ),
+                );
+              },
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.principalHappensPublish,
+            name: SuperadminRoutes.principalHappensPublishName,
+            builder: (context, state) => PrincipalRuntimeContextRoute(
+              repository: principalRuntimeContextRepository,
+              builder: (context, runtimeContext) {
+                final repository = happensPublicationRepository;
+                final unitId = runtimeContext.unitId;
+                final unitName = runtimeContext.unitName;
+                final groupId = runtimeContext.groupId;
+                final groupName = runtimeContext.groupName;
+                if (repository == null ||
+                    unitId == null ||
+                    unitName == null ||
+                    groupId == null ||
+                    groupName == null) {
+                  return _unavailableCompositionRootRoute(context);
+                }
+                return PrincipalHappensPublicationPage(
+                  repository: repository,
+                  publicationContext: HappensPublicationContext(
+                    institutionId: runtimeContext.institutionId,
+                    institutionName: runtimeContext.institutionName,
+                    unitId: unitId,
+                    unitName: unitName,
+                    groupId: groupId,
+                    groupName: groupName,
+                  ),
+                  embedded: true,
+                  onClose: () => context.goNamed(SuperadminRoutes.principalHappensName),
+                  onCompleted: (_) => context.goNamed(SuperadminRoutes.principalHappensName),
+                );
+              },
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.principalNow,
+            name: SuperadminRoutes.principalNowName,
+            builder: (context, state) => PrincipalRuntimeContextRoute(
+              repository: principalRuntimeContextRepository,
+              builder: (context, runtimeContext) {
+                final repository = principalNowFeedRepository;
+                if (repository == null) return _unavailableCompositionRootRoute(context);
+                return PrincipalNowPreviewPage.authorized(
+                  embedded: true,
+                  feedRepository: repository,
+                  feedScope: PrincipalNowFeedScope(
+                    institutionId: runtimeContext.institutionId,
+                    unitId: runtimeContext.unitId,
+                    groupId: runtimeContext.groupId,
+                  ),
+                  onClose: () => context.goNamed(SuperadminRoutes.principalHappensName),
+                  onOpenHappens: () => context.goNamed(SuperadminRoutes.principalHappensName),
+                  onCreate: () => context.goNamed(SuperadminRoutes.principalNowPublicationName),
+                );
+              },
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.principalNowPublication,
+            name: SuperadminRoutes.principalNowPublicationName,
+            builder: (context, state) => PrincipalRuntimeContextRoute(
+              repository: principalRuntimeContextRepository,
+              builder: (context, runtimeContext) {
+                final repository = nowPublicationRepository;
+                final unitId = runtimeContext.unitId;
+                final unitName = runtimeContext.unitName;
+                final groupId = runtimeContext.groupId;
+                final groupName = runtimeContext.groupName;
+                if (repository == null ||
+                    unitId == null ||
+                    unitName == null ||
+                    groupId == null ||
+                    groupName == null) {
+                  return _unavailableCompositionRootRoute(context);
+                }
+                return PrincipalNowPublicationPage(
+                  repository: repository,
+                  publicationContext: NowPublicationContext(
+                    tenantId: runtimeContext.institutionId,
+                    institutionId: runtimeContext.institutionId,
+                    unitId: unitId,
+                    groupId: groupId,
+                    institutionName: runtimeContext.institutionName,
+                    unitName: unitName,
+                    groupName: groupName,
+                    // Keep the client surface at the narrow baseline until the
+                    // runtime-context RPC projects server-authorized audiences.
+                    allowedAudiences: const {NowAudience.families},
+                  ),
+                  embedded: true,
+                  onClose: () => context.goNamed(SuperadminRoutes.principalHappensName),
+                  onCompleted: (_) => context.goNamed(SuperadminRoutes.principalNowName),
+                );
+              },
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.principalMomentsPublish,
+            name: SuperadminRoutes.principalMomentsPublishName,
+            builder: (context, state) => PrincipalRuntimeContextRoute(
+              repository: principalRuntimeContextRepository,
+              builder: (context, runtimeContext) {
+                final repository = momentsPublicationRepository;
+                final unitId = runtimeContext.unitId;
+                final unitName = runtimeContext.unitName;
+                final groupId = runtimeContext.groupId;
+                final groupName = runtimeContext.groupName;
+                if (repository == null ||
+                    unitId == null ||
+                    unitName == null ||
+                    groupId == null ||
+                    groupName == null) {
+                  return _unavailableCompositionRootRoute(context);
+                }
+                return PrincipalMomentsPublicationRoute(
+                  embedded: true,
+                  repository: repository,
+                  publicationContext: MomentsPublicationContext(
+                    institutionId: runtimeContext.institutionId,
+                    institutionName: runtimeContext.institutionName,
+                    unitId: unitId,
+                    unitName: unitName,
+                    groupId: groupId,
+                    groupName: groupName,
+                  ),
+                  onClose: () => context.goNamed(SuperadminRoutes.principalHappensName),
+                  onPublished: (_) => context.goNamed(SuperadminRoutes.principalMomentsName),
+                );
+              },
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.principalForYou,
+            name: SuperadminRoutes.principalForYouName,
+            builder: (context, state) => PrincipalRuntimeContextRoute(
+              repository: principalRuntimeContextRepository,
+              builder: (context, _) => _unavailableCompositionRootRoute(context),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.principalMoments,
+            name: SuperadminRoutes.principalMomentsName,
+            builder: (context, state) => PrincipalRuntimeContextRoute(
+              repository: principalRuntimeContextRepository,
+              builder: (context, _) => _unavailableCompositionRootRoute(context),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.principalProfile,
+            name: SuperadminRoutes.principalProfileName,
+            builder: (context, state) => PrincipalRuntimeContextRoute(
+              repository: principalRuntimeContextRepository,
+              builder: (context, _) => _unavailableCompositionRootRoute(context),
+            ),
+          ),
           GoRoute(
             path: SuperadminRoutes.login,
             name: SuperadminRoutes.loginName,

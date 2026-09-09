@@ -11,10 +11,12 @@ final class PrincipalMomentsPublicationRoute extends StatefulWidget {
     required this.publicationContext,
     this.onClose,
     this.onPublished,
+    this.embedded = false,
     super.key,
   });
 
   final MomentsPublicationRepository repository;
+  final bool embedded;
   final MomentsPublicationContext publicationContext;
   final VoidCallback? onClose;
   final ValueChanged<MomentsPublication>? onPublished;
@@ -59,7 +61,7 @@ final class _PrincipalMomentsPublicationRouteState extends State<PrincipalMoment
   @override
   Widget build(BuildContext context) => PrincipalMomentsPublicationPage(
     controller: _controller,
-    embedded: false,
+    embedded: widget.embedded,
     onClose: widget.onClose,
     onPublished: widget.onPublished,
   );

@@ -10,6 +10,7 @@ import '../domain/principal_now_preview_data.dart';
 
 final class PrincipalNowPreviewPage extends StatefulWidget {
   const PrincipalNowPreviewPage({
+    this.embedded = false,
     this.onClose,
     this.onOpenHappens,
     this.onCreate,
@@ -23,6 +24,7 @@ final class PrincipalNowPreviewPage extends StatefulWidget {
   });
 
   const PrincipalNowPreviewPage.authorized({
+    this.embedded = false,
     required this.feedRepository,
     required this.feedScope,
     this.onClose,
@@ -37,6 +39,7 @@ final class PrincipalNowPreviewPage extends StatefulWidget {
        data = const PrincipalNowPreviewData(stories: []);
 
   final VoidCallback? onClose;
+  final bool embedded;
   final VoidCallback? onOpenHappens;
   final VoidCallback? onCreate;
   final ValueChanged<String>? onReply;
@@ -492,8 +495,8 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
                     backgroundColor: CoeloPalette.neutral950,
                     body: compact
                         ? _buildCompact(context, compact: true)
-                        : SafeArea(
-                            child: desktop
+                        : _hostSafeArea(
+                            desktop
                                 ? _buildDesktop(context)
                                 : _buildCompact(context, compact: false),
                           ),
@@ -504,14 +507,16 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
     );
   }
 
+  Widget _hostSafeArea(Widget child) => widget.embedded ? child : SafeArea(child: child);
+
   Widget _buildFeedState(BuildContext context) {
     final invalid = _feedConfigurationInvalid;
     final unauthorized = _feedFailure is PrincipalNowFeedUnauthorized;
     final empty = !_feedLoading && _feedFailure == null;
     return Scaffold(
       backgroundColor: CoeloPalette.neutral950,
-      body: SafeArea(
-        child: Stack(
+      body: _hostSafeArea(
+        Stack(
           children: [
             Center(
               child: ConstrainedBox(

@@ -8,12 +8,70 @@ import 'package:coelo_superadmin/features/auth/domain/password_recovery.dart';
 import 'package:coelo_superadmin/features/principal_happens/domain/principal_happens_feed_repository.dart';
 import 'package:coelo_superadmin/features/principal_happens/domain/principal_happens_preview_data.dart';
 import 'package:coelo_superadmin/features/principal_happens/presentation/principal_happens_preview_page.dart';
+import 'package:coelo_superadmin/features/principal_now/domain/principal_now_feed_repository.dart';
+import 'package:coelo_superadmin/features/principal_now/presentation/principal_now_preview_page.dart';
 import 'package:coelo_superadmin/features/principal_shared/domain/principal_runtime_context.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final size in const [Size(1440, 900), Size(390, 844)]) {
+    testWidgets('production Principal keeps its host at $size', (tester) async {
+      await tester.binding.setSurfaceSize(size);
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final session = SuperadminSession()..signInForTesting();
+      final router = createSuperadminRouter(
+        session: session,
+        login: unavailableSuperadminLogin,
+        logout: unavailableSuperadminLogout,
+        requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+        mealPlanImageRepository: const UnavailableMealPlanImageRepository(),
+        principalRuntimeContextRepository: const _ContextRepository(),
+        principalHappensFeedRepository: _RecordingFeedRepository(),
+        principalNowFeedRepository: _EmptyNowRepository(),
+        onThemeModeChanged: (_) {},
+      );
+      addTearDown(router.dispose);
+      addTearDown(session.dispose);
+      router.go(SuperadminRoutes.principalHappens);
+      await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+      await tester.pumpAndSettle();
+      final host = find.byKey(const Key('superadmin-persistent-shell'));
+      expect(host, findsOneWidget);
+      final hostElement = tester.element(host);
+      expect(
+        tester
+            .widget<PrincipalHappensPreviewPage>(find.byType(PrincipalHappensPreviewPage))
+            .embedded,
+        isTrue,
+      );
+      for (final path in const [
+        SuperadminRoutes.principalNow,
+        SuperadminRoutes.principalNowPublication,
+        SuperadminRoutes.principalHappensPublish,
+        SuperadminRoutes.principalMomentsPublish,
+        SuperadminRoutes.principalForYou,
+        SuperadminRoutes.principalMoments,
+        SuperadminRoutes.principalProfile,
+        SuperadminRoutes.principalHappens,
+      ]) {
+        router.go(path);
+        await tester.pumpAndSettle();
+        expect(router.routeInformationProvider.value.uri.path, path);
+        expect(host, findsOneWidget);
+        expect(tester.element(host), same(hostElement));
+        if (path == SuperadminRoutes.principalNow) {
+          expect(
+            tester.widget<PrincipalNowPreviewPage>(find.byType(PrincipalNowPreviewPage)).embedded,
+            isTrue,
+          );
+          expect(find.text('Nada novo no Agora'), findsOneWidget);
+        }
+        expect(tester.takeException(), isNull);
+      }
+    });
+  }
   testWidgets('real Acontece resolves authenticated context and never uses demo fixtures', (
     tester,
   ) async {
@@ -44,7 +102,7 @@ void main() {
     expect(feed.lastScope?.unitId, 'unit-real');
     expect(feed.lastScope?.groupId, 'group-real');
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.principalHappens);
-    expect(find.byKey(const Key('superadmin-persistent-shell')), findsNothing);
+    expect(find.byKey(const Key('superadmin-persistent-shell')), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('principal-happens-publish-now-action')));
     await tester.pumpAndSettle();
@@ -96,6 +154,19 @@ void main() {
     expect(find.text('Selecione um contexto'), findsOneWidget);
     expect(find.byType(PrincipalHappensPreviewPage), findsNothing);
   });
+}
+
+final class _EmptyNowRepository implements PrincipalNowFeedRepository {
+  @override
+  Future<List<PrincipalNowFeedItem>> listVisibleStories(PrincipalNowFeedScope scope) async =>
+      const [];
+
+  @override
+  Future<PrincipalNowMediaRead> resolveMedia({
+    required PrincipalNowFeedScope scope,
+    required String publicationId,
+    required PrincipalNowMediaDescriptor media,
+  }) => throw UnimplementedError();
 }
 
 final class _ContextRepository implements PrincipalRuntimeContextRepository {
