@@ -936,3 +936,61 @@ Dois desses commits tocam território Principal:
    `/principal-moments` — que L01 dizia ser maior que mover a rota — foi coberta.
 
 **Nenhuma frente deve integrar `dev`.** Isso é de D00 e eu não pedi a ninguém.
+
+## ALERTA DE INTEGRAÇÃO — a hospedagem em dev NÃO ligou as composições
+
+**Verifiquei eu mesmo no `superadmin_router.dart` de `origin/dev`**, depois do
+commit de hospedagem `f5e5d8dfc`. É o achado mais importante desta análise e é
+exatamente o risco que eu havia registrado antes de ele acontecer: hospedar uma
+rota que continua resolvendo para a tela de indisponível **parece progresso sem
+ser**.
+
+### O que a hospedagem entregou
+
+As rotas Principal estão dentro do `ShellRoute` (linha 755): `principalHappens`
+(789), `principalNow` (852), `principalForYou` (949), `principalMoments` (957) e
+`principalProfile` (965). O shell do hospedeiro passa a ser construído para elas —
+que é o que a decisão do Owner exigia.
+
+### O que a hospedagem NÃO entregou
+
+**1. Três rotas continuam resolvendo incondicionalmente para a tela de
+indisponível**, agora hospedadas: `principalForYou` (949), `principalMoments`
+(957) e `principalProfile` (965). O builder das três é
+`builder: (context, _) => _unavailableCompositionRootRoute(context)` — destino
+fixo, não `fail-closed` por repositório nulo. **O usuário passa a ver o menu do
+hospedeiro em volta de uma tela que diz que a composição está indisponível.**
+
+**2. O feed misto continua nunca sendo consultado.** `principalMixedFeedRepository`
+aparece **uma única vez** no router de dev, na linha 282, **só a declaração do
+parâmetro**. O builder de `principalHappens` (789) usa
+`principalHappensFeedRepository` com `fail-closed` correto, mas **não** o feed
+misto. Como `circulars.happens-card` é subaceite obrigatório de `acontece.feed`,
+**esse ID continua sem poder fechar**, mesmo com a hospedagem feita.
+
+### O que isso significa para a leitura do progresso
+
+**Hospedagem e composição são duas coisas diferentes e só uma foi feita.**
+Quem olhar o commit de hospedagem e concluir "Principal hospedado" estará certo
+sobre o shell e errado sobre o produto: três das cinco telas continuam mostrando
+indisponível dentro do shell novo.
+
+**O trabalho que corrige duas das três já existe e não foi integrado.** L03 ligou
+as composições reais de `principalProfile`, `principalProfileEdit` e
+`principalForYou` na branch dele, com `profileAboutRepository` atravessando auth
+scope, app e main. D00 levou de L03 apenas o cherry-pick do filtro de audiência
+(`7271f4a39`), **não** a composition root. É por isso que a branch de L03
+conflita em cinco arquivos e não em um.
+
+`principalMoments` depende de L01, que declarou precisar da cadeia completa por
+auth scope, app e main, porque `PrincipalMomentsFeedRepository` não aparece em
+`app/` nem em `core/`.
+
+### Recomendação a D00
+
+Tratar a hospedagem como **primeira metade** e a composição como segunda, e não
+declarar nenhuma ação Principal fechada por causa do movimento de hospedagem.
+Os testes que L01 prendeu documentam o defeito do feed misto e **continuam
+válidos contra dev** — não devem ser apagados como obsoletos. Integrar a
+composition root de L03 fecha duas das três telas; `principalMoments` exige a
+cadeia de L01.
