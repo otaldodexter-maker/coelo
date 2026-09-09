@@ -7,8 +7,10 @@ select has_function('public','superadmin_location_create_v2',array['jsonb','uuid
 select has_function('public','superadmin_location_detail_v2',array['uuid']);
 select has_function('public','superadmin_location_directory_v2',
   array['text','uuid','uuid','text','integer','integer']);
-select has_column('public','activity_locations','scope_kind');
-select has_column('public','activity_locations','created_by_internal_identity_id');
+select has_column('public','activity_locations','scope_kind',
+  'catalog stores its explicit owner scope');
+select has_column('public','activity_locations','created_by_internal_identity_id',
+  'catalog stores the internal creator provenance');
 select ok(not has_table_privilege('authenticated','public.activity_locations','SELECT'),
   'authenticated cannot read the catalog directly');
 select ok(not has_table_privilege('anon','public.activity_locations','SELECT'),
