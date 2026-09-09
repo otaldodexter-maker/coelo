@@ -30,6 +30,104 @@ Sincronizados **C01r51, C02r48, C03r33, C04r61, C05final, C06r53 e C07r12**. Fon
 - [Relatório e fila retida](etapa-2-operacao/reports/R01-fechamento-20260909.md):33commits de executores integrados seletivamente nesta manhã e1correção de teste C00; candidatos/WIP permanecem preservados com motivo. Sem deploy/aplicação remota; localhost encerrado.
 - Janela Owner termina16/09/2026 12:20 BRT. ETA total permanece desconhecida: provedores/composição, mídia e critérios reais ainda determinam o término. Nenhuma nova atribuição R02 antes do alinhamento solicitado.
 
+<!-- stage2-dashboard:start -->
+## Painel por tela — exame e conclusão separados
+
+Cálculo conferido em **2026-09-09T09:03:41-03:00** a partir de IDs únicos e evidências de R01. Sem novos testes ou certificações nesta apresentação. [IDs, denominadores e faltas por ação](etapa-2-operacao/reports/R01-painel-por-tela.json).
+
+**Examinado = pelo menos um critério revisado ou testado**, inclusive com falha; não significa todos os testes executados. O BE inclui análise estática e20ações com SQL local dentro das63 examinadas. **Integração exercitada** conta tentativas registradas pela UI normal com backend real, mesmo se falharem; não é merge de Git. No registro atual,0/187. Ausência de registro não prova ausência de código ou que ninguém nunca abriu a tela.
+
+**FE concluído** = todos os critérios próprios do cliente. **BE concluído** = todos os critérios e provedores próprios do backend. **E2E concluído** = UI normal + backend real + persistência/reload + negativas aplicáveis. E2E é o nome da cadeia completa, não um segundo nome para concluir uma camada isolada.
+
+¹ Colunas de conclusão mostram apenas ações **ativas**: FE0/194, BE0/187, E2E0/187. A auditoria mantém os denominadores totais FE219 eBE212 para comparação com o fechamento. Há22adiadas e3gates formais separados;7açõesN/A ao backend. As únicas2certificações FE históricas são a indisponibilidade de `profile-files.import/export`, ambas adiadas; não aumentam a conclusão ativa. N/A não é0%; Adiado não é concluído.
+
+Uma linha agrega uma família de telas/ações. São **38 famílias e219ações/superfícies**, não38testes. O detalhe de cada ação, inclusive o que falta, está no [painel completo](etapa-2-operacao/reports/R01-painel-por-tela.md) e na matriz oficial abaixo. Os contadores não medem percentual de código incorporado em Git: commits selecionados/publicação estão nos manifestos de integração; WIP/candidatos preservados podem ainda estar fora de dev.
+
+| Tela / módulo | FE examinado | BE examinado | Integração exercitada | FE concluído¹ | BE concluído¹ | E2E concluído¹ |
+| --- | --- | --- | --- | --- | --- | --- |
+| Entrada e recuperação | 4/5 — **80,0%** | 0/5 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
+| Navegação e contexto | 1/5 — **20,0%** | N/A | N/A | 0/5 — **0,0%** | N/A | N/A |
+| Instituições | 13/13 — **100,0%** | 6/13 — **46,2%** | 0/11 — **0,0%** | 0/11 — **0,0%** | 0/11 — **0,0%** | 0/11 — **0,0%** |
+| Unidades | 13/13 — **100,0%** | 5/13 — **38,5%** | 0/10 — **0,0%** | 0/10 — **0,0%** | 0/10 — **0,0%** | 0/10 — **0,0%** |
+| Turmas | 7/7 — **100,0%** | 4/7 — **57,1%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
+| Pessoas | 5/5 — **100,0%** | 4/5 — **80,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
+| Perfis de acesso | 5/6 — **83,3%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
+| Modelos de acesso | 6/6 — **100,0%** | 3/6 — **50,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
+| Convites | 5/5 — **100,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
+| Atividades | 7/7 — **100,0%** | 5/7 — **71,4%** | 0/7 — **0,0%** | 0/7 — **0,0%** | 0/7 — **0,0%** | 0/7 — **0,0%** |
+| Avaliações | 5/5 — **100,0%** | 5/5 — **100,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
+| Alunos | 5/5 — **100,0%** | 1/5 — **20,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
+| Assiduidade | 6/6 — **100,0%** | 0/6 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
+| Rotina diária | 5/5 — **100,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
+| Agenda | 3/7 — **42,9%** | 1/7 — **14,3%** | 0/7 — **0,0%** | 0/7 — **0,0%** | 0/7 — **0,0%** | 0/7 — **0,0%** |
+| Chat | 7/7 — **100,0%** | 1/7 — **14,3%** | 0/7 — **0,0%** | 0/7 — **0,0%** | 0/7 — **0,0%** | 0/7 — **0,0%** |
+| Avisos / Comunicados | 6/6 — **100,0%** | 1/6 — **16,7%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
+| Formulários — editor | 5/7 — **71,4%** | 3/7 — **42,9%** | 0/7 — **0,0%** | 0/7 — **0,0%** | 0/7 — **0,0%** | 0/7 — **0,0%** |
+| Formulários — respostas | 6/6 — **100,0%** | 5/6 — **83,3%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
+| Formulários — arquivos | 5/5 — **100,0%** | 5/5 — **100,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
+| Acontece | 4/4 — **100,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
+| Agora | 4/4 — **100,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
+| Momentos | 4/4 — **100,0%** | 1/4 — **25,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
+| Principal — Para Você e perfil | 3/3 — **100,0%** | 0/3 — **0,0%** | 0/3 — **0,0%** | 0/3 — **0,0%** | 0/3 — **0,0%** | 0/3 — **0,0%** |
+| Segurança infantil | 4/5 — **80,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
+| Perfis de cuidado | 4/4 — **100,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
+| Medicação | 3/5 — **60,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
+| Importações gerais | 7/7 — **100,0%** | 0/7 — **0,0%** | Adiado | Adiado | Adiado | Adiado |
+| Arquivos de perfil | 6/6 — **100,0%** | 0/6 — **0,0%** | Adiado | Adiado | Adiado | Adiado |
+| Auditoria | 4/4 — **100,0%** | 4/4 — **100,0%** | 0/3 — **0,0%** | 0/3 — **0,0%** | 0/3 — **0,0%** | 0/3 — **0,0%** |
+| Suporte | 6/6 — **100,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
+| Minha conta | 3/6 — **50,0%** | 0/4 — **0,0%** | 0/3 — **0,0%** | 0/5 — **0,0%** | 0/3 — **0,0%** | 0/3 — **0,0%** |
+| Catálogo | 3/4 — **75,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
+| Planos | 4/5 — **80,0%** | 5/5 — **100,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
+| Cardápios | 6/6 — **100,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
+| Usuários internos | 4/5 — **80,0%** | 0/5 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
+| Páginas de erro | 6/6 — **100,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
+| Locais | 4/4 — **100,0%** | 4/4 — **100,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
+
+### Entregas parciais e trabalho restante
+
+| Tela / módulo | Já entregue (parcial) | Para finalizar |
+| --- | --- | --- |
+| Entrada e recuperação | Proteções de sessão, recuperação e logout corrigidas. | Validar visual/navegação e Auth/SMTP reais; qualificação local I021 pendente. |
+| Navegação e contexto | Shell e controles compartilhados receberam correções. | Completar navegação, permissões, troca de contexto, foco e regressões do cliente. |
+| Instituições | Diretório, mapa e correções locais existentes. | Criação/edição bloqueadas; 25 de 39 strings descartadas na edição; status, arquivos e visuais pendentes. |
+| Unidades | Formulários e correções de estado existentes. | Composição indisponível e 15 RPCs ausentes; mapa/cópia/status e aceites completos. |
+| Turmas | Cliente, formulários e leituras locais existentes. | Composição, localização, seleção de membros e contagem correta dos resultados de gravação. |
+| Pessoas | Correções de busca, teclado, dados inventados e identidade integradas. | Filtros sem servidor, criação/edição, vínculos e correção de avatar retida. |
+| Perfis de acesso | Erros seguros e correlação de perfil/contexto integrados. | Atribuição e critérios completos de cliente, autorização e persistência. |
+| Modelos de acesso | Correlação, busca e adiamento de MFA tratados; prova SQL local existente. | Concluir critérios visuais, concorrência e provedores reais por ação. |
+| Convites | Identidade, busca e descarte de respostas antigas corrigidos. | Entrega de convite/SMTP, revogação e negativas reais; aceites visuais restantes. |
+| Atividades | Correções de cliente e replay SQL local de 46 assertivas integrados. | Composição/adapters candidatos, localização e prova com duas conexões reais. |
+| Avaliações | Recuperação de erros e fila de fechamento corrigidas. | Erro no save de configuração, critérios visuais e persistência/negativas reais. |
+| Alunos | Leitura CHILD e correção de erro do acompanhamento existentes. | Vincular, transferir, editar e revogar continuam sem implementação; composição do acompanhamento. |
+| Assiduidade | Correções de lifecycle e controles locais existentes. | Critérios reais de chamada, correção, encerramento e isolamento; exportação geral adiada. |
+| Rotina diária | Cliente e preservação de paginação existentes. | Erro no diretório, composição produtiva e validação das operações reais. |
+| Agenda | Rotas existentes e WIP identificado e preservado. | Revisar/integrar WIP, calendário produtivo, comandos, localização e visuais. |
+| Chat | Clientes e anexos candidatos; escrita de recibos e contador existentes. | Projetar/exibir recibos, editar/revogar, consumidor real de mídia e integração/visuais. |
+| Avisos / Comunicados | Cliente e correção de layout compacto integrados. | Aceites visuais abertos, agendamento/publicação/arquivo reais e negativas. |
+| Formulários — editor | Editor, galeria e datas civis receberam correções. | Mídia de pergunta, limites numéricos/texto, Visão geral/Publicar/Testar/Local e aceites completos. |
+| Formulários — respostas | Leituras internas, resposta e XLSX têm lotes implementados/testados. | Limites numéricos, WIP de data/texto, respostas com mídia/local, versões e ciclo completo do XLSX. |
+| Formulários — arquivos | Núcleo comum de upload, reader e parte da composição integrados. | Consumidores reais, question-image I021, expiração, exclusão física e órfãos no R2. |
+| Acontece | Cliente, teclado e recuperação de erro integrados; candidatos preservados. | Remoção real, mídia/composição e falhas de aceitação visual. |
+| Agora | Cliente e recuperação de erro/retry integrados. | Composição visual aprovada, expiração, mídia R2/Stream aplicável e reverificação conjunta. |
+| Momentos | Cliente e recuperação de erro integrados; mídia candidata existente. | Remoção real, retenção/purga de originais, contrato de mídia e feed real. |
+| Principal — Para Você e perfil | Clientes existentes; edição de perfil cobre biografia. | Demais campos/contrato de perfil, feed e circulação de dados reais. |
+| Segurança infantil | Cadeia de correções Safety preservada; executor relata testes locais. | Revisar/integrar cadeia completa e validar ações/negações com persistência real. |
+| Perfis de cuidado | Correções locais e contratos existentes. | Qualificação care049, permissões internas e CRUD completo comprovado. |
+| Medicação | Correções locais preservadas. | Fluxos completos, permissões e evidências reais de medicação. |
+| Importações gerais | Indisponibilidade honesta prevista no MVP. | Implementação real adiada; manter botões e mensagem sem iniciar operação. |
+| Arquivos de perfil | Importar/exportar têm indisponibilidade do cliente certificada. | Demais aceites da indisponibilidade; execução real permanece adiada. |
+| Auditoria | Cliente, erros, paginação e bloqueio da exportação geral integrados. | SQL Audit ainda 0/145 executados; qualificação real e critérios visuais. |
+| Suporte | Cliente e status idêntico como operação sem efeito integrados. | Contrato produtivo, respostas/fechamento reais e visuais pendentes. |
+| Minha conta | Preferências locais e correções de logout existentes. | Perfil/sessões, aceites visuais e lifecycle; MFA permanece gate formal. |
+| Catálogo | Ferramentas e host existentes; auditoria parcial registrada. | Conferir fingerprints/publicação e decidir aplicabilidade real de backend sem inventar provedor. |
+| Planos | Cliente e correções de contexto/idempotência existentes. | Erro no diretório, identidade 039/051, semântica arquivar/restaurar e vínculos somente leitura. |
+| Cardápios | Cliente e recuperação de erro no diretório integrados. | Publicação idempotente retida, mídia e operações reais; visuais restantes. |
+| Usuários internos | Correlação de identidade e descarte de busca antiga integrados. | Critérios completos de criação/edição/suspensão; MFA no gate formal. |
+| Páginas de erro | Telas e ações de erro com provas parciais existentes. | Completar mensagens seguras, foco, acessibilidade, retry e contratos aplicáveis. |
+| Locais | Pacote seletivo, leitor e correções locais integrados. | Ligação nas superfícies, capacidades por ação, filtros, vínculos e agenda/reservas. |
+<!-- stage2-dashboard:end -->
+
 ## Matriz vigente por ação
 
 | Família / tela / subtela | action_id | Escopo | Feito e limite da prova | Próximo passo Front-end | Próximo passo Back-end | Estado E2E | Fonte |

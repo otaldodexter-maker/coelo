@@ -3249,5 +3249,27 @@
     "c06_I015_ack": "r53 received; watchdog ended, no additional product delta",
     "support_archive": "4069 files verified individually SHA256/bytes; original worktree evidence retained"
   },
-  "operational_precedence": "closure, tracker_sync and current_shared_file_reservations supersede all timestamped historical checkpoint/reservation fields; no old R01 instruction is executable"
+  "operational_precedence": "closure, tracker_sync and current_shared_file_reservations supersede all timestamped historical checkpoint/reservation fields; no old R01 instruction is executable",
+  "measurement_dashboard": {
+    "at": "2026-09-09T09:06:23-03:00",
+    "path": "reports/R01-painel-por-tela.md",
+    "data": "reports/R01-painel-por-tela.json",
+    "generator": "build-stage2-dashboard.py",
+    "new_certifications": false,
+    "measurement_unit": "action_id; any named criterion examined, not all tests; completion separately"
+  },
+  "original_checkout_reconciliation": {
+    "status": "Owner scope answer pending",
+    "branch": "dev",
+    "local_head": "84985b5485247df6a8dc7270e33d18601aca0421",
+    "tracked_modified_files": 37,
+    "untracked_present": true,
+    "original_untouched": true,
+    "reason": "Pre-R01 skills/documentation/config work differs from clean round worktrees; cannot claim all unified"
+  },
+  "support_status": {
+    "native_status": "idle",
+    "last_completed_at": "2026-09-09T08:55:26-03:00",
+    "role": "preservation only; no product percentage change"
+  }
 }
