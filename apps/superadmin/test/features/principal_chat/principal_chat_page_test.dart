@@ -246,6 +246,22 @@ void main() {
     expect(find.text('Turma Girassol'), findsNothing);
   });
 
+  testWidgets('reaches older messages in a long conversation', (tester) async {
+    final repository = _PrincipalChatRepository(pagedThread: true);
+    await _pump(tester, repository);
+    await tester.tap(find.byKey(const ValueKey('principal-chat-conversation-conversation-1')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Mensagem antiga'), findsNothing);
+    await tester.tap(find.byKey(const Key('principal-chat-load-older')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Bom dia'), findsOneWidget);
+    expect(find.text('Mensagem antiga'), findsOneWidget);
+    expect(find.byKey(const Key('principal-chat-load-older')), findsNothing);
+    expect(repository.threadQueries.last.cursor?.id, 'message-1');
+  });
+
   testWidgets('lays out without overflow across canonical breakpoints', (tester) async {
     for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
       await tester.binding.setSurfaceSize(Size(width, 900));
@@ -286,6 +302,7 @@ final class _PrincipalChatRepository implements ChatRepository {
     this.readOnly = false,
     this.withReceipts = true,
     this.continuationError,
+    this.pagedThread = false,
   }) : inbox = inbox ?? _defaultInbox(readOnly: readOnly);
 
   ChatInboxPage inbox;
@@ -294,7 +311,9 @@ final class _PrincipalChatRepository implements ChatRepository {
   final bool readOnly;
   final bool withReceipts;
   final Object? continuationError;
+  final bool pagedThread;
 
+  final List<ChatThreadQuery> threadQueries = [];
   ChatInboxPage? nextInbox;
   final List<ChatInboxQuery> inboxQueries = [];
   var threadFetches = 0;
@@ -334,8 +353,27 @@ final class _PrincipalChatRepository implements ChatRepository {
   @override
   Future<ChatThreadPage> fetchThread(ChatThreadQuery query) async {
     if (threadError != null) throw threadError!;
+    threadQueries.add(query);
     threadFetches++;
+    if (query.cursor != null) {
+      return ChatThreadPage(
+        items: [
+          ChatMessage(
+            id: 'message-0',
+            conversationId: query.conversationId,
+            body: 'Mensagem antiga',
+            authorName: 'Coordenacao',
+            sentAt: DateTime.utc(2026, 9, 9, 8),
+            isMine: false,
+            kind: 'text',
+          ),
+        ],
+      );
+    }
     return ChatThreadPage(
+      nextCursor: pagedThread
+          ? ChatCursor(DateTime.utc(2026, 9, 9, 10), 'message-1')
+          : null,
       items: [
         ChatMessage(
           id: 'message-1',
