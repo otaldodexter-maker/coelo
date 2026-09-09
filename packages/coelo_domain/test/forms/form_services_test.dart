@@ -32,6 +32,34 @@ void main() {
     expect(normalized, isNot(contains('hidden')));
   });
 
+  for (final kind in [FormItemKind.photo, FormItemKind.gallery]) {
+    test('normalizer omits empty assets and preserves other values $kind', () {
+      FormAnswer media(String id, List<String> ids) => kind == FormItemKind.photo
+          ? FormAnswer.photo(itemId: id, assetIds: ids)
+          : FormAnswer.gallery(itemId: id, assetIds: ids);
+      final populated = media('populated', ['asset-a', 'asset-b']);
+      final choice = FormAnswer.multipleChoice(itemId: 'choice', optionIds: {});
+      final negative = FormAnswer.yesNo(itemId: 'negative', value: false);
+      final zero = FormAnswer.integer(itemId: 'zero', value: 0);
+      final normalized = const FormAnswerNormalizer().normalize(
+        answers: {
+          'empty': media('empty', []),
+          'populated': populated,
+          'choice': choice,
+          'negative': negative,
+          'zero': zero,
+        },
+        visibleItemIds: {'empty', 'populated', 'choice', 'negative', 'zero'},
+      );
+      expect(normalized.keys, ['populated', 'choice', 'negative', 'zero']);
+      expect(normalized['populated'], same(populated));
+      expect((normalized['populated']!.value as FormAssetValue).assetIds, ['asset-a', 'asset-b']);
+      expect(normalized['choice'], same(choice));
+      expect(normalized['negative'], same(negative));
+      expect(normalized['zero'], same(zero));
+    });
+  }
+
   test('weekly schedule is deterministic and carries its IANA timezone', () {
     final schedule = FormSchedule(
       startsAtLocal: DateTime(2026, 10, 30, 9),

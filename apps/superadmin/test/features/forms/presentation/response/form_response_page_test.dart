@@ -56,6 +56,184 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  for (final required in [true, false]) {
+    for (final count in [1, 2, 5, 6]) {
+      testWidgets('gallery bounds restored count $count required $required', (tester) async {
+        final ids = List.generate(count, (index) => 'asset-$index');
+        final api = _ResponseApi(
+          items: [
+            FormItem(
+              id: 'item-1',
+              kind: FormItemKind.gallery,
+              label: 'Gallery',
+              position: 0,
+              isRequired: required,
+              config: const FormItemConfig(minImages: 2, maxImages: 5),
+            ),
+          ],
+          initialAnswers: {'item-1': FormAnswer.gallery(itemId: 'item-1', assetIds: ids)},
+        );
+        await tester.binding.setSurfaceSize(const Size(1000, 1100));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+        await open(tester, api);
+        await tester.tap(find.byKey(const Key('form-response-review')));
+        await tester.pumpAndSettle();
+        if (count < 2 || count > 5) {
+          expect(find.text('Revisão da resposta'), findsNothing);
+          expect(find.text('Esta galeria exige entre 2 e 5 imagens.'), findsOneWidget);
+          expect(find.byKey(const Key('form-response-submit')), findsNothing);
+          expect(api.submitCommand, isNull);
+        } else {
+          expect(find.text('Revisão da resposta'), findsOneWidget);
+          await tester.tap(find.byKey(const Key('form-response-submit')));
+          await tester.pumpAndSettle();
+          expect(
+            (api.submitCommand!.payload.answers['item-1']!.value as FormAssetValue).assetIds,
+            ids,
+          );
+        }
+        expect(tester.takeException(), isNull);
+      });
+    }
+  }
+
+  for (final imageKind in [FormItemKind.photo, FormItemKind.gallery]) {
+    for (final required in [true, false]) {
+      testWidgets('empty assets omitted from incomplete save $imageKind required $required', (
+        tester,
+      ) async {
+        await tester.binding.setSurfaceSize(const Size(1000, 1100));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+        final api = _ResponseApi(
+          items: [
+            FormItem(
+              id: 'item-1',
+              kind: imageKind,
+              label: 'Image',
+              position: 0,
+              isRequired: required,
+              config: const FormItemConfig(minImages: 2, maxImages: 5),
+            ),
+          ],
+          initialAnswers: {
+            'item-1': imageKind == FormItemKind.photo
+                ? FormAnswer.photo(itemId: 'item-1', assetIds: [])
+                : FormAnswer.gallery(itemId: 'item-1', assetIds: []),
+          },
+        );
+        await open(tester, api);
+        await tester.tap(find.byKey(const Key('form-response-save-draft')));
+        await tester.pumpAndSettle();
+        expect(api.saveCommand!.payload.answers, isEmpty);
+        await tester.tap(find.byKey(const Key('form-response-review')));
+        await tester.pumpAndSettle();
+        if (required) {
+          expect(find.text('Revisão da resposta'), findsNothing);
+          expect(
+            find.text(
+              'Este formulário exige anexo e o envio protegido ainda não está disponível nesta superfície.',
+            ),
+            findsOneWidget,
+          );
+          expect(api.submitCommand, isNull);
+        } else {
+          expect(find.text('Revisão da resposta'), findsOneWidget);
+          await tester.tap(find.byKey(const Key('form-response-submit')));
+          await tester.pumpAndSettle();
+          expect(api.submitCommand!.payload.answers, isEmpty);
+        }
+        expect(tester.takeException(), isNull);
+      });
+    }
+  }
+
+  testWidgets('gallery bounds ignore hidden restored answer', (tester) async {
+    final api = _ResponseApi(
+      items: [
+        FormItem(id: 'source', kind: FormItemKind.yesNo, label: 'Show gallery', position: 0),
+        FormItem(
+          id: 'item-1',
+          kind: FormItemKind.gallery,
+          label: 'Gallery',
+          position: 1,
+          isRequired: true,
+          config: const FormItemConfig(minImages: 2, maxImages: 5),
+          conditions: const [FormCondition.yesNo(sourceItemId: 'source', expected: true)],
+        ),
+      ],
+      initialAnswers: {
+        'source': FormAnswer.yesNo(itemId: 'source', value: false),
+        'item-1': FormAnswer.gallery(itemId: 'item-1', assetIds: ['asset-a']),
+      },
+    );
+    await open(tester, api);
+    expect(find.text('Anexo indisponível'), findsNothing);
+    await tester.tap(find.byKey(const Key('form-response-review')));
+    await tester.pumpAndSettle();
+    expect(find.text('Revisão da resposta'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('form-response-submit')));
+    await tester.pumpAndSettle();
+    expect(api.submitCommand!.payload.answers.keys, ['source']);
+    expect(tester.takeException(), isNull);
+  });
+
+  for (final imageKind in [FormItemKind.photo, FormItemKind.gallery]) {
+    testWidgets('optional empty assets omitted from direct submit $imageKind', (tester) async {
+      final api = _ResponseApi(
+        items: [
+          FormItem(
+            id: 'item-1',
+            kind: imageKind,
+            label: 'Image',
+            position: 0,
+            config: const FormItemConfig(minImages: 2, maxImages: 5),
+          ),
+        ],
+        initialAnswers: {
+          'item-1': imageKind == FormItemKind.photo
+              ? FormAnswer.photo(itemId: 'item-1', assetIds: [])
+              : FormAnswer.gallery(itemId: 'item-1', assetIds: []),
+        },
+      );
+      await tester.binding.setSurfaceSize(const Size(1000, 1100));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      await open(tester, api);
+      await tester.tap(find.byKey(const Key('form-response-review')));
+      await tester.pumpAndSettle();
+      expect(find.text('Revisão da resposta'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('form-response-submit')));
+      await tester.pumpAndSettle();
+      expect(api.saveCalls, isEmpty);
+      expect(api.submitCommand!.payload.answers, isEmpty);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('empty required gallery omitted from incomplete autosave', (tester) async {
+    final api = _ResponseApi(
+      items: [
+        FormItem(id: 'note', kind: FormItemKind.shortText, label: 'Note', position: 0),
+        FormItem(
+          id: 'item-1',
+          kind: FormItemKind.gallery,
+          label: 'Gallery',
+          position: 1,
+          isRequired: true,
+          config: const FormItemConfig(minImages: 2, maxImages: 5),
+        ),
+      ],
+      initialAnswers: {'item-1': FormAnswer.gallery(itemId: 'item-1', assetIds: [])},
+    );
+    await open(tester, api);
+    await tester.enterText(find.byKey(const Key('form-response-item-note')), 'Draft');
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pump();
+    expect(api.saveCalls, hasLength(1));
+    expect(api.saveCalls.single.payload.answers.keys, ['note']);
+    expect(api.submitCommand, isNull);
+    expect(tester.takeException(), isNull);
+  });
+
   for (final imageKind in [FormItemKind.photo, FormItemKind.gallery]) {
     testWidgets('review restored required media can be reviewed $imageKind', (tester) async {
       final ids = List.generate(

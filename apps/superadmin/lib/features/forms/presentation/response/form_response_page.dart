@@ -1009,6 +1009,16 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
 
   String? _itemValidationMessage(FormItem item) {
     if (_invalidNumericIds.contains(item.id)) return 'Revise os valores numéricos antes de salvar.';
+    if (item.kind == FormItemKind.gallery) {
+      final value = _answers[item.id]?.value;
+      if (value is FormAssetValue && value.assetIds.isNotEmpty) {
+        final minimum = item.config.minImages ?? 1;
+        final maximum = item.config.maxImages ?? 5;
+        if (value.assetIds.length < minimum || value.assetIds.length > maximum) {
+          return 'Esta galeria exige entre $minimum e $maximum imagens.';
+        }
+      }
+    }
     if (!item.isRequired || item.kind == FormItemKind.information) return null;
     if (item.kind == FormItemKind.photo || item.kind == FormItemKind.gallery) {
       final value = _answers[item.id]?.value;
