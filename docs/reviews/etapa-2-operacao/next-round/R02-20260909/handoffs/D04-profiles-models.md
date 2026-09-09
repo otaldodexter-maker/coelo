@@ -6,7 +6,7 @@ generated_at: "2026-09-09"
 timezone: "America/Sao_Paulo"
 ---
 
-Rodada E2-R02-20260909; subagente `/root/profiles_models`; revisão 7;
+Rodada E2-R02-20260909; subagente `/root/profiles_models`; revisão 9;
 instrução processada: pai D04, ownership exclusivo feature access_profiles e
 testes; novos arquivos SQL nominais reservados via pai; sem commits próprios.
 Início observado: 14:18 BRT. Modelo requerido: gpt-6-astra, medium; runtime
@@ -334,3 +334,89 @@ Nenhum golden oficial, código de app ou referência aprovada mudou por captura.
 Não somar reruns a4; não repetir lotes funcionais. Estado capturado é editar
 após confirmação; criação e demais cenários explicitamente fora. Slot liberado;
 nenhum processo próprio ativo. Pai fará revisão das imagens finais.
+
+## Reserva D00 r4 recebida16:19: composição normal Models/Convites
+
+Assignment canônica r4 de16:15 explicitamente reservou LOCAL os hunks de
+routerprofileModelDuplicate/onDuplicate com Owner/capacidade/contexto real e
+routerInviteDetailPageallowCommands conforme contrato existente, sem Auth.
+Pai delegou único writer router a este subagente; Invites escreveu teste próprio
+e pai navigation. Ambos patches propostos passaram apply --check e foram
+aplicados; router57inserções/1remoção no delta conjunto, sem abertura global.
+Convites replica exatamente allowCommands !Unavailable do diretório; permissão
+por ação continua autoritativa na resposta e backend. Pai publicouNav/Invite
+separados emef1927f2d antes do corte.
+
+Modelos normal: guardOwner+scopeplatform+sessão válida+domínio allowlisted+
+read/create do domínio+readplatformcatalog; callbacklista abre rota normal,
+duplicate responde inativo e retorna com releitura. Diretamente semcreate,
+escopoinstitution e domínio inválido são negados sem RPC de dados.
+Teste novo test/app/router/d04_model_duplicate_routes_test.dart **P4/F0**;
+params p_request_idUUID, source_model_id, reason e statusinactive também
+verificados no positivo rerun1, sem somar ao4. Plano original8 agora
+**P4/F0/B0/S0/U4**: revogação carga/comando, repoausente/demo e RPCdenied
+ficam para consolidação, não proclamar U0. Logs D04-models-router-green4.log
+e D04-models-router-params-green1.log. Testecriado apósREDcallbacknull.
+
+Lote compartilhado anterior comprovou17navigation+4internal_user_routes+
+5invite_command_routes =26 verdes. Logfinalparcial honesto em
+D04-router-first-green-partial.log: positivoModels falhou em fixturedetail e
+teardown aguardou fakeasync; runner foi encerrado semcertificar Model. Corrigida
+fixtureResponse(request:request), construçãoSupabaseClient/tearDownAll fora do
+testWidgets; Model4 final verde. Nenhuma mudançaapp para corrigir fixture.
+Não somar3negativas/RED/reruns ao4final. NavRED isolado está emD04-navigation-red.log.
+
+Router SHA256 `475c1f3c068e2f789bb70ae58af7e978bc4e8bdef233bbe0a27cd15a6735f4d8`;
+testeModels `721fe94deb03b0899161228a4832b83de3559cd7c5a012d1cbe112872241f30b`.
+Diffcheck limpo; analyzer3 router+2testes novos concluído exit0,41.1s.
+Pai recebeu resultado após snapshot; D04-router-analyzer3.log preserva resultado.
+Pai publicou Models em1ac0a364a; snapshot16:30 preservou P4/U4. Nenhum remoto/deploy realizado.
+CSVmultiscope continua exigir apply nominal anterior ao deployFrontend.
+
+## Consolidação autorizada do plano de duplicação: P8/U0 e negativa segura
+
+Após snapshot16:30 o pai autorizou somente concluir quatro casos do plano já
+aberto, até17:15. Slot encerrado antes16:40. Teste de rota agora tem9casos:
+8 originais +1 controle adicional de validação. Revogação durante carga descarta
+resposta antes do catálogo; durante comando impede callback/releitura tardios;
+repositórios ausente e demo são rejeitados; RPCdenied é negada sem navegação.
+
+Review independente Invites encontrou que a página preservava fonte, motivo,
+nome e requestId após AccessProfileUnauthorizedException. Pai confirmou e
+autorizou correção concreta nesta consolidação. RED1 reproduziu motivo retido.
+Corrigenda do plano antigo: o caso8 que pedia rascunho preservado para qualquer
+denied era incorreto. Negativa de autorização agora limpa dados/recibo local,
+invalida geração e remove formulário/submit; erro comum de validação mantém
+rascunho e possibilidade de correção. Isso aplica invariantes existentes de
+negação de acesso; não altera regra de domínio nem política AAL1.
+
+Arquivos aptos, sem alteração adicional de router:
+
+- lib/features/access_profiles/presentation/access_profile_duplicate_page.dart:
+  `ac5287b259bd120dd5b453d58ed4b9ae84d8cb05017c1de0befcf4e2e01667be`.
+- test/app/router/d04_model_duplicate_routes_test.dart:
+  `2d7da52647d68c81ddf7109450858767c160b3f83255696eb8e95f256570983c`.
+- test/features/access_profiles/presentation/model_command_consumer_test.dart:
+  `3ddfdafefa22bcd7d3af76410bbabd4a6e06afc67b45cc6ce2d338c3444ab908`.
+
+Comando final, de apps/superadmin:
+`flutter test test/app/router/d04_model_duplicate_routes_test.dart test/features/access_profiles/presentation/model_command_consumer_test.dart --no-pub --reporter expanded`.
+**P18/F0/B0/S0/U0** =9router+9consumer. Consumer já estava nos37 originais;
+não somar rerun. Delta líquido do pai é **+5IDs únicos**,429→434P e F1baseline
+visual mantido, conforme reconciliação do writer. Plano8 original agoraP8/U0.
+access_profile_duplicate_context_test3 também passou na execução intermediária;
+nenhuma necessidade de rerun sem mudança de código posterior.
+
+Regressão intermediária única era a asserção antiga duplicate-denied do
+consumer que exigia preservar rascunho mesmo sem autorização. Ajustada somente
+essa expectativa, preservadas as demais; lote final inteiro verde. Uma tentativa
+de selecionar dois testes por dois --plain-name não encontrou testes (AND);
+não somar como execução de casos. Logs finais completos:
+D04-models-authorization-denial-red.log,
+D04-models-consolidation-green18.log,
+D04-models-consolidation-analyzer3.log. Analyzer3 limpo14.7s; format/check limpos.
+
+Pai notificou publicação anterior1ac0a364a e snapshot54e910ffb; este delta final
+aguarda commit/push serializado. SlotFlutter liberado diretamente paraInvites;
+nenhum processo/recurso próprio ativo. Memória no-op: aplicação de invariantes
+existentes, sem novo conhecimento durável. Nenhuma nova certificação E2E/remota.

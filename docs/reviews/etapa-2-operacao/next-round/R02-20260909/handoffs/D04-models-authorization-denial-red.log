@@ -1,0 +1,48 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart
+00:00 +0: normal model duplicate route rpc-denied
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: no matching candidates
+  Actual: _TextWidgetFinder:<Found 1 widget with text "Revisão nominal D04": [
+            EditableText-[LabeledGlobalKey<EditableTextState>#b5eb1](controller:
+TextEditingController#8d312(TextEditingValue(text: ┤Revisão nominal D04├, selection:
+TextSelection.collapsed(offset: 19, affinity: TextAffinity.downstream, isDirectional: false),
+composing: TextRange(start: -1, end: -1))), focusNode: FocusNode#08779([PRIMARY FOCUS]),
+autocorrect: true, debugLabel: ((englishLike bodyLarge 2021).merge((((blackMountainView
+bodyLarge).apply).apply).merge(unknown))).merge(unknown), inherit: false, color: Color(alpha:
+1.0000, red: 0.1098, green: 0.1255, blue: 0.1333, colorSpace: ColorSpace.sRGB), family: Nunito Sans,
+size: 16.0, weight: 400, letterSpacing: 0.0, baseline: alphabetic, height: 1.5x,
+leadingDistribution: even, decoration: Color(alpha: 1.0000, red: 0.1098, green: 0.1255, blue:
+0.1333, colorSpace: ColorSpace.sRGB) TextDecoration.none, textAlign: start, maxLines: 3,
+keyboardType: TextInputType(name: TextInputType.multiline, signed: null, decimal: null),
+spellCheckConfiguration: SpellCheckConfiguration(disabled, service: null, text style: null, toolbar
+builder: null), dependencies: [Directionality, MediaQuery, _EffectiveTickerMode, _ViewScope], state:
+EditableTextState#2054f(tickers: tracking 1 ticker)),
+          ]>
+   Which: means one was found but none were expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart:189:9)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart line 189
+The test description was:
+  normal model duplicate route rpc-denied
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:02 +0 -1: normal model duplicate route rpc-denied [E]
+  Test failed. See exception logs above.
+  The test description was: normal model duplicate route rpc-denied
+
+00:02 +0 -1: (tearDownAll)
+00:02 +0 -1: Some tests failed.
+
+Failing tests:
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart: normal model duplicate route rpc-denied

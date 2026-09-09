@@ -1,0 +1,21 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart
+00:00 +0: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart: normal model duplicate route allowed
+00:02 +1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: create SQL envelope reaches UI denied=false
+00:03 +2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: create SQL envelope reaches UI denied=false
+00:03 +3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: create SQL envelope reaches UI denied=false
+00:03 +4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: create SQL envelope reaches UI denied=false
+00:04 +5: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart: normal model duplicate route revoked-load
+00:04 +6: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: create SQL envelope reaches UI denied=true
+00:05 +7: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: create SQL envelope reaches UI denied=true
+00:05 +8: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart: normal model duplicate route rpc-denied
+00:06 +9: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: update SQL envelope reaches UI denied=false
+00:07 +10: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: update SQL envelope reaches UI denied=false
+00:07 +11: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart: normal model duplicate rejects missing and demo repositories
+00:07 +12: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: update SQL envelope reaches UI denied=true
+00:09 +13: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: duplicate SQL envelope reaches UI denied=false
+00:09 +14: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: duplicate SQL envelope reaches UI denied=true
+00:10 +15: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: delete SQL envelope reaches UI denied=false
+00:10 +16: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: delete SQL envelope reaches UI denied=true
+00:11 +17: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: update envelope conflict offers reference reload without save callback
+00:13 +18: All tests passed!

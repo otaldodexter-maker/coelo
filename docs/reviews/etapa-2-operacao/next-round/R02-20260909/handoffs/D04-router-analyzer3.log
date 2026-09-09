@@ -1,0 +1,7 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Analyzing 3 items...
+No issues found! (ran in 41.1s)
+
+Command: flutter analyze --no-pub lib/app/router/superadmin_router.dart test/app/router/d04_model_duplicate_routes_test.dart test/app/router/d04_invite_command_routes_test.dart
+Exit code: 0
+Final result received by parent after cutoff snapshot; no precise pre-cutoff completion claim.
