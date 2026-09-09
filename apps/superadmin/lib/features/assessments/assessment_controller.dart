@@ -82,7 +82,7 @@ final class AssessmentController extends ChangeNotifier {
     } on AssessmentOfflineException {
       if (!_isCurrentLoad(generation)) return;
       _emit(const AssessmentOffline());
-    } on Exception catch (error) {
+    } on Object catch (error) {
       if (!_isCurrentLoad(generation)) return;
       _emit(AssessmentFailure(error));
     }
@@ -106,7 +106,7 @@ final class AssessmentController extends ChangeNotifier {
     } on AssessmentOfflineException {
       if (!_isCurrentLoad(generation)) return;
       _emit(const AssessmentOffline());
-    } on Exception catch (error) {
+    } on Object catch (error) {
       if (!_isCurrentLoad(generation)) return;
       _emit(AssessmentFailure(error));
     }
