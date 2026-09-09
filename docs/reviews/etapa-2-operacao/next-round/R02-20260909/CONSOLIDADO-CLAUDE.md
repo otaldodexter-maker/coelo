@@ -1291,3 +1291,72 @@ L03 marcou, item a item, **o que verificou em código e o que veio relatado** �
 incluindo declarar que **não** conferiu o perigo de Momentos, porque o arquivo
 não existe na base dele. Misturar as duas coisas é o que faz o integrador confiar
 demais numa peça e de menos noutra.
+
+---
+
+# CORREÇÃO DE L00 — eu inverti a semântica dos testes que documentam defeito
+
+Erro meu, apanhado por L01 antes de virar instrução operacional. **É a correção
+mais consequente que recebi hoje**, porque estava a caminho da checklist que D00
+usaria no merge.
+
+**O que eu escrevi, errado:** que `principal_happens_composition_gaps_test.dart`,
+`principal_now_real_route_test.dart` e
+`principal_profile_edit_preview_affordance_test.dart` **não devem passar** depois
+do merge, e que verde inesperado neles seria suspeita.
+
+**O correto:** esses testes **asseveram o comportamento defeituoso de hoje**.
+
+- **VERDE é o esperado** enquanto o defeito existir. É o estado normal.
+- **VERMELHO significa que alguém corrigiu a composição** — e aí o teste precisa
+  ser **INVERTIDO, não apagado**, como o cabeçalho de cada um manda.
+
+**O risco da minha versão errada era concreto**, e L01 nomeou os dois modos de
+falha: alguém vê verde e abre investigação à toa; ou, pior, vê vermelho, conclui
+que é falha e **"conserta" o teste apagando a prova do defeito**. O segundo não
+tem volta.
+
+**A raiz do erro, que vale como regra:** teste que documenta defeito tem
+**semântica trocada** em relação a um teste comum, e por isso precisa estar
+marcado como tal em qualquer lista de verificação. Foi exatamente o tipo de coisa
+que se lê ao contrário — eu li ao contrário **enquanto escrevia a instrução**.
+Pedi a L03 que corrija a checklist e referencie a formulação de L01, publicada em
+`propostas/L01-resolucao-conflitos-dev.md` (`80fa94750`).
+
+## Blocos prontos para colar de L01 — `80fa94750`
+
+**Conflito perigoso, `principal_moments_publication_route.dart`:** o arquivo
+resolvido **inteiro**, com a união dos dois lados, mais a lista das diferenças em
+relação a `dev` para conferência rápida — o import de `file_picker`, o parâmetro
+`this.mediaPicker`, o campo, a linha
+`mediaPicker: widget.mediaPicker ?? pickMomentsMediaFiles` no `build`, e as duas
+funções de apoio. Todo o resto idêntico a `dev`, **inclusive
+`embedded: widget.embedded`**, que substitui o `embedded: false` da branch dele.
+Verificação após aplicar: **88 aprovados**.
+
+**Conflito benigno, `principal_now_preview_page.dart`:** ficar integralmente com
+`dev`. Os comentários de L01 ficam como reaproveitamento opcional, porque
+registram **por que** a flag existe — e esse porquê some no código de `dev`.
+
+### As três injeções, com uma surpresa boa
+
+**A do feed misto é um SÍTIO ÚNICO.** L01 verificou que a cadeia já está inteira
+em `dev` — instanciado no auth scope, declarado, `null` no caminho sem sessão,
+repassado no app e no main, chegando ao parâmetro do router — e **só o builder
+não usa**. O bloco entregue usa o construtor `.mixed` quando o repositório
+existir, mantendo o caminho atual como exceção.
+
+Cuidado não óbvio que ele registrou: **`.mixed` fixa `feedScope = null`**, então
+a página passa a ler **só** o feed misto. É o desejado, porque a RPC já devolve
+publicações e Circulares, mas **muda o caminho de leitura**.
+
+**Momentos e mídia de Circulares exigem a cadeia completa de quatro passos** —
+auth scope, app, main e router — com as linhas de `dev` como âncora. Nenhuma das
+duas classes aparece em qualquer ponto da composição de `dev`. **Aplicação
+parcial não compila**, e o analisador pega.
+
+### Prioridade recomendada por L01, se D00 tiver tempo para uma só
+
+**A injeção do feed misto.** Um sítio, cadeia pronta, e fecha o subaceite
+obrigatório `circulars.happens-card` de `acontece.feed` — hoje o que impede
+aquele ID de fechar. Melhor relação custo-benefício das três.
