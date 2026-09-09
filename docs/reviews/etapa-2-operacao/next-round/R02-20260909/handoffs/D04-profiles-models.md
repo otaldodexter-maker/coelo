@@ -6,7 +6,7 @@ generated_at: "2026-09-09"
 timezone: "America/Sao_Paulo"
 ---
 
-Rodada E2-R02-20260909; subagente `/root/profiles_models`; revisão 5;
+Rodada E2-R02-20260909; subagente `/root/profiles_models`; revisão 6;
 instrução processada: pai D04, ownership exclusivo feature access_profiles e
 testes; novos arquivos SQL nominais reservados via pai; sem commits próprios.
 Início observado: 14:18 BRT. Modelo requerido: gpt-6-astra, medium; runtime
@@ -273,3 +273,50 @@ sem rerun sem mudança visual. FE/BE/E2E novos0; catálogo remoto/ACL e decisõe
 de Perfis não estão certificados por estes testes de VM. Slot Flutter liberado
 para Convites, nenhum processo próprio ativo. Memória: correção de execução de
 estado existente, nenhuma nova regra durável; não criar artigo de atividade.
+
+## Atribuição adicional do pai: Pessoas, continuação após gravação confirmada
+
+Pai delegou dois arquivos de Pessoas explicitamente, sem ownership de VM/shared:
+`apps/superadmin/lib/features/people/presentation/person_form_page.dart` e novo
+`apps/superadmin/test/features/people/presentation/d04_person_form_confirmed_save_test.dart`.
+Recorte apps/superadmin -> Acessos -> Pessoas -> criar/editar -> confirmação,
+IDs people.create/edit. Causa demonstrada: callback onSaved lançado após ack
+caía no catch de persistência, informava falha de gravação e retry executava
+segundo create/update. Callback também era lido somente após await.
+
+Correção captura callback original; guarda continuação somente após receipt
+válido no contexto/identidade; retry reentrega somente navegação. Confirmação
+substitui seção por painel de sucesso e congela passos/edição; footer oferece
+Voltar e Continuar. Erro de navegação tem mensagem própria, sem fingir
+falha da gravação. Troca de pessoa/repository e dispose limpam continuação;
+guards de geração/identidade/vínculos descartam respostas obsoletas existentes.
+Contrato callback continua síncrono ValueChanged; erros futuros de callbacks
+async não são cobertos por esse contrato.
+
+RED3/F3 correto; GREEN **P14/F0/B0/S0/U0** =3 novos create/update/replacement
+mais11 existentes person_form_page_save_lifecycle_test. Não somar11 regressões
+ao total D04 do pai se já contadas. Comando:
+`flutter test test/features/people/presentation/d04_person_form_confirmed_save_test.dart test/features/people/presentation/person_form_page_save_lifecycle_test.dart --no-pub --reporter expanded`.
+Analyzer2 limpo; format2; diff --check limpo. Logs finais (trecho inicial omitido
+explicitamente): D04-people-confirmed-save-red.log e D04-people-confirmed-save-green.log.
+SHA256 page final `0369a109452403105136e72221b849f8bd0dc142b854262b9c7e8ba1e0d0fb61`;
+teste `812a4a315813814f35a531eaeafa79e7c4c0b4f4665500b358433c5248e4f285`.
+Review do pai sem bloqueio funcional; ajuste editorial posterior autorizado:
+footer Continuar e painel 'O cadastro foi confirmado. Continue para concluir.'.
+Format/check limpos, sem rerun14 conforme orientação explícita do pai. Hash
+anterior aos dois textos:3d9a6d9ff92910493837870657b60291e7e6ffba34c3d70b5a9aff6149709642.
+Slot Flutter liberado e pai informado. Pacote catálogo anterior publicado pelo
+pai216d38c8 (confirmação recebida); este pacote Pessoas aguarda serialização.
+Nenhuma certificação E2E nem alteração de regra de produto/memória durável.
+
+## Review independente nominal Safety, somente leitura
+
+A pedido do pai, revisada candidata20260909190000 + teste próprio do Safety.
+Achados iniciais bounds arrays/cursor, allowlist dados e preflight/minimização
+foram enviados ao autor, que corrigiu arrays100/tipos/chaves, allowlists,
+preflight helpers/RLS/ACL/triggers e postflight legado/owner/grants. Cursor.name
+vem People sem máximo físico: preservado roundtrip sem limite120 arbitrário.
+Rereview do delta não identificou novo bloqueante estático. Autorização antes
+lookup, scope platform/capability/AAL1, audit interno e ausência de bridge
+preservados. **Runtime Safety continua U43**, nenhum SQL/Docker executado por
+este revisor; parse não certifica app/segurança. Hash final é do autor Safety.

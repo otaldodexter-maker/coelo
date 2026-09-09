@@ -1,0 +1,12 @@
+Output final do runner; trecho inicial anterior ao polling não incluído. RED total3; GREEN total14.
+00:02 +4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_save_lifecycle_test.dart: disposed page discards error
+00:03 +5: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/d04_person_form_confirmed_save_test.dart: repository replacement clears confirmed navigation and unlocks new form
+00:03 +6: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_save_lifecycle_test.dart: replacement person resets state and drops old receipt
+00:04 +7: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_save_lifecycle_test.dart: replacement repository resets state and drops old receipt
+00:05 +8: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_save_lifecycle_test.dart: newer identity edit suppresses old save callback without losing text
+00:06 +9: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_save_lifecycle_test.dart: failed save releases page retry and emits one later success
+00:07 +10: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_save_lifecycle_test.dart: replacement ignores stale save error
+00:08 +11: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_save_lifecycle_test.dart: new contextual patch suppresses earlier receipt and remains intact
+00:09 +12: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_save_lifecycle_test.dart: replacement ignores old filter option success
+00:10 +13: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/people/presentation/person_form_page_save_lifecycle_test.dart: replacement ignores old filter option failure
+00:11 +14: All tests passed!
