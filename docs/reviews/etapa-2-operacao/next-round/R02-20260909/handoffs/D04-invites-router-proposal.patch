@@ -1,0 +1,12 @@
+diff --git a/apps/superadmin/lib/app/router/superadmin_router.dart b/apps/superadmin/lib/app/router/superadmin_router.dart
+--- a/apps/superadmin/lib/app/router/superadmin_router.dart
++++ b/apps/superadmin/lib/app/router/superadmin_router.dart
+@@ -4209,7 +4209,8 @@
+             name: SuperadminRoutes.inviteDetailName,
+             builder: (context, state) => InviteDetailPage(
+               repository: inviteRepository,
+               inviteId: state.pathParameters['inviteId']!,
++              allowCommands: inviteRepository is! UnavailableInviteRepository,
+               logout: logout,
+               onDestinationSelected: (value) => _navigateFromPersistentShell(context, value),
+             ),

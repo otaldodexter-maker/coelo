@@ -6,7 +6,7 @@ generated_at: "2026-09-09"
 timezone: "America/Sao_Paulo"
 ---
 
-Rodada E2-R02-20260909; subagente `/root/profiles_models`; revisão 3;
+Rodada E2-R02-20260909; subagente `/root/profiles_models`; revisão 4;
 instrução processada: pai D04, ownership exclusivo feature access_profiles e
 testes; novos arquivos SQL nominais reservados via pai; sem commits próprios.
 Início observado: 14:18 BRT. Modelo requerido: gpt-6-astra, medium; runtime
@@ -186,3 +186,55 @@ executada com -Root explícito. Projeção `team/superadmin-access-profiles.md`
 ainda tem Principal somente catálogo e MFA obrigatório, superados pelo aditivo
 spec018 de 2026-09-01 e política vigente AAL1. Pai informado; atualização por
 writer central, sem nova regra de produto. Não criar artigo de atividade.
+
+## Proposta concreta de composição normal para D00, sem aplicação
+
+Arquivo `D04-models-router-proposal.patch`: patch textual do router compartilhado,
+preparado a pedido do pai e **não aplicado**. Base observada
+`78d81cb591333647de3feb32f187f0a72d466b7c`; SHA256 do router de origem
+`47dbef916e73064809f2fadd98f6283021e680b495481c3bff00ee9d8c7a774f`;
+SHA256 do patch
+`aa584c2242c39511f004065ee5b1e8ce94baeaa68a5db31282de20e65f3953c3`.
+`git apply --check` aprovado na worktree; isso não comprova compilação,
+renderização nem E2E. Nenhum Flutter executado para esta proposta.
+
+O delta adiciona callback da lista normal e builder normal de duplicação,
+reutilizando AccessProfileDuplicatePage e adapter existentes. Guards locais:
+sessão autenticada com sessionId, fora de recuperação, domínio exatamente
+allowlisted, Owner com escopo platform, capacidades do domínio read/create
+e platform.role_models.read. Esta última é necessária ao catálogo carregado
+pelo adapter: o wrapper atual do catálogo autoriza domínio platform. Não
+introduz AAL2. Repositório ausente/demo continua indisponível. O builder
+observa session e usa authorizationInvalidationRevision na chave; domínio
+inválido é negado antes do helper que historicamente faz fallback platform.
+O callback pode existir se algum domínio for permitido; cada destino revalida
+o domínio real. A autorização backend continua obrigatória para toda RPC.
+
+Teste proposto, ainda não criado nem executado:
+`apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart`,
+reutilizando harness de `model_save_completion_routes_test.dart` com router
+real, MockClient e repositório Supabase, em caminho normal. Plano separado
+dos 60 testes verdes: **P0/F0/B0/S0/U8**.
+
+1. Owner global AAL1 com read/create do domínio e read do catálogo: botão da
+   lista abre rota normal, carrega origem/catálogo, envia duplicação, recebe
+   modelo inativo e retorna à lista com nova leitura.
+2. Sem create do domínio: deep link negado sem RPC de dados.
+3. Owner em escopo institucional: negado sem RPC de dados.
+4. Domínio desconhecido: negado sem fallback platform.
+5. Revogação durante carga: resposta tardia descartada.
+6. Revogação durante comando: nenhuma navegação ou recarga tardia no novo contexto.
+7. Repositório ausente/demo: composição indisponível sem fixture de sucesso.
+8. Envelope denied da RPC: erro honesto, rascunho preservado e nenhum retorno de sucesso.
+
+Capturar detail/catalog/duplicate/cursor, requestId/reason/sourceModelId nas
+provas pertinentes; UUIDs sintéticos válidos e nenhum ator remoto. O contexto
+positivo antigo do harness tem apenas read: o novo teste deve conceder create
+explicitamente, sem relaxar o guard para reutilizar fixture insuficiente.
+
+Dependências: reserva D00 de router; revisão/aplicação na base integrada atual;
+testes propostos, analyzer e validador visual; prova runtime com ator qualificado.
+Não requer mudança em constantes, bootstrap, sessão ou backend para aplicar
+este patch. O pacote nominal scope_filter continua obrigatório antes do deploy
+do FE CSV/multisseleção; integração Git não equivale a deploy. Enquanto essas
+provas não existirem, access-models.duplicate não ganha certificado FE/E2E.

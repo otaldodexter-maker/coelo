@@ -1,0 +1,89 @@
+--- a/apps/superadmin/lib/app/router/superadmin_router.dart
++++ b/apps/superadmin/lib/app/router/superadmin_router.dart
+@@ -82,6 +82,7 @@
+ import '../../features/auth/domain/logout_action.dart';
+ import '../../features/auth/domain/password_recovery.dart';
+ import '../../features/auth/domain/reset_password_action.dart';
++import '../../features/auth/domain/superadmin_auth_context.dart';
+ import '../../features/auth/presentation/screens/superadmin_forgot_password_screen.dart';
+ import '../../features/auth/presentation/screens/superadmin_login_screen.dart';
+ import '../../features/auth/presentation/screens/superadmin_reset_password_screen.dart';
+@@ -351,6 +352,20 @@
+           authorizationRevision: () => session.authorizationInvalidationRevision,
+         )
+       : null;
++  bool hasAccessModelDuplicateCapability(String? domain) {
++    final actor = session.authContext;
++    return session.isAuthenticated &&
++        !session.isPasswordRecovery &&
++        session.sessionId?.isNotEmpty == true &&
++        AccessProfileDomain.values.any((item) => item.databaseValue == domain) &&
++        actor != null &&
++        actor.platformRoleCode == 'owner' &&
++        actor.scopeKind == SuperadminAuthScopeKind.platform &&
++        actor.permissionCodes.contains('$domain.role_models.read') &&
++        actor.permissionCodes.contains('$domain.role_models.create') &&
++        actor.permissionCodes.contains('platform.role_models.read');
++  }
++
+   DevelopmentInviteRepository? cachedInvitePreviewRepository;
+   DevelopmentInviteRepository invitePreviewRepository() =>
+       cachedInvitePreviewRepository ??= DevelopmentInviteRepository();
+@@ -2303,6 +2318,17 @@
+                         SuperadminRoutes.profileModelEditName,
+                         pathParameters: {'domain': domain.databaseValue, 'modelId': modelId},
+                       ),
++                      onDuplicate: AccessProfileDomain.values.any(
++                        (domain) => hasAccessModelDuplicateCapability(domain.databaseValue),
++                      )
++                          ? (domain, modelId) => context.goNamed(
++                              SuperadminRoutes.profileModelDuplicateName,
++                              pathParameters: {
++                                'domain': domain.databaseValue,
++                                'modelId': modelId,
++                              },
++                            )
++                          : null,
+                       onDestinationSelected: (destination) =>
+                           _navigateFromPersistentShell(context, destination),
+                     ),
+@@ -2385,7 +2411,38 @@
+           GoRoute(
+             path: SuperadminRoutes.profileModelDuplicate,
+             name: SuperadminRoutes.profileModelDuplicateName,
+-            builder: (context, state) => _unavailableCompositionRootRoute(context),
++            builder: (context, state) => ListenableBuilder(
++              listenable: session,
++              builder: (context, _) {
++                final repository = productionAccessProfileModelScreens;
++                if (repository == null || accessProfileRepository.isDemo) {
++                  return _unavailableCompositionRootRoute(context);
++                }
++                final rawDomain = state.pathParameters['domain'];
++                if (!hasAccessModelDuplicateCapability(rawDomain)) {
++                  return SuperadminErrorScreen(
++                    key: const Key('access-model-duplicate-forbidden'),
++                    kind: SuperadminErrorKind.forbidden,
++                    actionLabel: 'Voltar aos modelos',
++                    onAction: () => context.goNamed(SuperadminRoutes.profileModelsName),
++                  );
++                }
++                return AccessProfileDuplicatePage(
++                  key: ValueKey(
++                    'model-duplicate-${state.pathParameters}-${session.authorizationInvalidationRevision}',
++                  ),
++                  repository: repository,
++                  duplicator: repository,
++                  logout: logout,
++                  domain: _accessProfileDomain(rawDomain),
++                  sourceProfileId: state.pathParameters['modelId']!,
++                  onCancel: () => context.goNamed(SuperadminRoutes.profileModelsName),
++                  onDuplicated: (_) => context.goNamed(SuperadminRoutes.profileModelsName),
++                  onDestinationSelected: (destination) =>
++                      _navigateFromPersistentShell(context, destination),
++                );
++              },
++            ),
+           ),
+           GoRoute(
+             path: SuperadminRoutes.profileCreate,

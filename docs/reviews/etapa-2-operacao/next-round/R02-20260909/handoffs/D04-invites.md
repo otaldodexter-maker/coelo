@@ -113,3 +113,38 @@ integração/composição D00; não executar novas suites sobrepostas sem delta.
 Pacote operacional de personas entregue em `D04-personas.md`, com seis telas,
 aliases e capabilities, helpers já existentes e gates People/Perfis/Safety/
 Usuários internos; nenhuma criação de conta ou nova regra.
+
+## Revisão 3 — proposta de composição, 14:54 BRT
+
+Pedido adicional do pai: preparar, sem aplicar, patch nominal de roteamento.
+Artefato próprio: `D04-invites-router-proposal.patch`. Inspeção confirmou que o
+builder normal do detalhe ainda omite `allowCommands`; o diretório normal usa
+`inviteRepository is! UnavailableInviteRepository`. O patch acrescenta somente
+esse mesmo argumento ao detalhe normal. Mantém repository injetado, logout,
+navegação, guard de sessão e autorização backend existentes. Não toca `/dev`
+nem cria fallback, capability ou exigência AAL2.
+
+`git apply --check` executado na worktree D04: exit 0. É apenas verificação de
+aplicabilidade textual; patch não aplicado, roteador compartilhado não editado,
+nenhum Flutter executado nesta proposta. D00 ainda é responsável pela reserva,
+aplicação, teste e integração.
+
+Teste mínimo de composição a executar após a reserva:
+
+- Reutilizar o harness de `test/app/router/internal_user_detail_routes_test.dart`
+  (sessão autorizada + `createSuperadminRouter` + `MaterialApp.router`) e os
+  contratos HTTP sintéticos de `test/features/invites/data/` para navegar à rota
+  normal `/invites/<id>` com `SupabaseInviteRepository` injetado. Convite pendente
+  elegível permite revogar; convite expirado permite reenviar. Antes do patch,
+  ambos os botões ficam ausentes. Confirmar ação em um único caso e verificar
+  RPC nominal/id/version, sem SMTP ou efeitos remotos.
+- Com `UnavailableInviteRepository`, verificar `InviteDetailPage.allowCommands`
+  falso e nenhuma ação de mutação; com repository cujo RPC nega autorização,
+  mostrar estado não autorizado e nenhum link/dado/comando remanescente.
+- Reutilizar `test/app/router/invite_production_routes_test.dart` para regressão
+  estrutural de repositório injetado e separação normal/preview. Seus asserts de
+  texto isolados não substituem o caso de rota normal acima.
+
+Estado da proposta: três cenários de composição U; fora do lote focal já verde
+de 25 casos. Não somar a aplicabilidade do patch aos testes do produto nem
+promover invites.detail/resend/revoke antes dessa verificação.

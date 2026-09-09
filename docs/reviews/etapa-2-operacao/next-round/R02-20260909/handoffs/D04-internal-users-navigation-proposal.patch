@@ -1,0 +1,25 @@
+diff --git a/apps/superadmin/lib/app/navigation/superadmin_navigation.dart b/apps/superadmin/lib/app/navigation/superadmin_navigation.dart
+--- a/apps/superadmin/lib/app/navigation/superadmin_navigation.dart
++++ b/apps/superadmin/lib/app/navigation/superadmin_navigation.dart
+@@ -130,7 +130,6 @@ final coeloSuperadminNavigation = <CoeloNavigationNode>[
+       'Usuários internos',
+       Icons.badge_outlined,
+       const [],
+-      availability: _developmentOnly,
+     ),
+     _screen('profiles', 'Perfis e permissões', Icons.admin_panel_settings_outlined, const []),
+   ]),
+diff --git a/apps/superadmin/test/app/navigation/superadmin_navigation_test.dart b/apps/superadmin/test/app/navigation/superadmin_navigation_test.dart
+--- a/apps/superadmin/test/app/navigation/superadmin_navigation_test.dart
++++ b/apps/superadmin/test/app/navigation/superadmin_navigation_test.dart
+@@ -186,8 +186,8 @@ void main() {
+       searchCoeloNavigation(
+         'usuários internos',
+         environment: CoeloNavigationEnvironment.production,
+-      ),
+-      isEmpty,
++      ).map((result) => result.node.id),
++      contains('internal-users'),
+     );
+   });
+ 
