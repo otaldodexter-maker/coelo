@@ -1,5 +1,5 @@
 {
-  "revision": 1,
+  "revision": 2,
   "round": "E2-NOTURNA-20260909",
   "role": "Coordenacao e Integracao - Claude",
   "writer": "coordenador-claude",
@@ -8,26 +8,34 @@
   "app": "Claude Code (VS Code)",
   "model": "claude-opus-5[1m]",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-09T18:10:00-03:00",
+  "updatedAt": "2026-09-09T18:12:00-03:00",
+  "clockCorrection": {
+    "referenceNow": "2026-09-09T18:09:02-03:00",
+    "measuredBy": "date no checkout integrador",
+    "warning": "Duas revisoes chegaram carimbadas 21:06 e 21:25 com sufixo -03:00. Isso e horario UTC rotulado como Brasilia. Reconferir o relogio local: faltam cerca de 5h ate o corte Codex 23:30 e cerca de 10h50 ate o corte Claude 05:00. Nao antecipar congelamento por leitura errada de relogio.",
+    "affected": ["chat-comunicacoes", "operacoes-sistema"]
+  },
   "exclusivity": {
     "soleIntegratorOfDev": true,
     "soleWriterOfTrackersAndInventory": true,
     "previousCoordination": "R02 D00 (Codex) e L00 (Claude) encerrados antecipadamente por ordem do Owner; registro.json marca no-automatic-resumption",
     "transferRegistered": true,
-    "otherActiveIntegratorObserved": "nenhum confirmado; sessoes pares checadas por ListAgents e nenhuma reivindicou dev",
+    "otherActiveIntegratorObserved": "nenhum. Oito grupos publicaram revisao propria e todos declararam coordinator=Claude.",
     "note": "Qualquer sessao que se declare integradora deve registrar no seu <grupo>.json antes de tocar dev."
   },
   "base": {
     "root": "C:/Users/adrie/Documents/Coelo",
     "branch": "dev",
-    "head": "d784462c168d22fdb7090b7de1ef7db554ad5107",
+    "head": "ee01a06e9",
+    "previousHead": "d784462c168d22fdb7090b7de1ef7db554ad5107",
     "upstream": "origin/dev",
     "divergence": "0/0",
     "workingTree": "clean",
     "stash": "empty",
+    "note": "ee01a06e9 e apenas o commit documental que abriu este canal. A base de codigo das worktrees continua d784462c1 e nao precisa de rebase.",
     "runtimeBaselinePreserved": "d019c109a",
     "documentaryReconciliation": "8954de221",
-    "verifiedAt": "2026-09-09T18:02:00-03:00"
+    "verifiedAt": "2026-09-09T18:10:00-03:00"
   },
   "cutoffs": {
     "codexFreeze": "2026-09-09T23:10:00-03:00",
@@ -41,9 +49,36 @@
     "root": "C:/Users/adrie/Documents/Coelo/docs/reviews/etapa-2-operacao/comunicacao/",
     "coordinatorFile": "coordenacao.json",
     "executorFilePattern": "<grupo>.json",
-    "rule": "Executor escreve SOMENTE o proprio <grupo>.json, de forma atomica. Coordenador escreve SOMENTE coordenacao.json. Arquivo escrito nao e mensagem recebida: o recibo nominal aparece em receipts.",
+    "rule": "Executor escreve SOMENTE o proprio <grupo>.json, de forma atomica. Coordenador escreve SOMENTE coordenacao.json. Arquivo escrito nao e mensagem recebida: o recibo nominal esta em receipts.",
+    "encoding": "Gravar UTF-8 sem BOM. acessos-pessoas.json chegou com BOM e quebra JSON.parse estrito; corrigir na proxima revisao.",
     "cadence": "Atualizar ao fechar correcao, publicar lote, mudar bloqueio, antes de comando longo e ao menos a cada 30 minutos ativo."
   },
+  "receipts": [
+    { "grupo": "estrutura", "revisao": 3, "lidoEm": "2026-09-09T18:11:00-03:00", "estado": "recebido e aceito", "nota": "Revisao estatica dos tres candidatos aceita. Aplicar cd03b9e30 e 42ad0467 na sua branch. Os hunks de router de 1345af29f NAO entram por voce: proponha o patch minimo e eu integro (ver reservations)." },
+    { "grupo": "acessos-pessoas", "revisao": 3, "lidoEm": "2026-09-09T18:11:00-03:00", "estado": "recebido e aceito", "nota": "Prepare o pacote nominal de Modelos com preflight, base e hashes. Slot SQL concedido em sqlQueue posicao 1; nenhuma aplicacao remota sem autorizacao nominal do Owner para o pacote exato." },
+    { "grupo": "publicacoes-midia", "revisao": 1, "lidoEm": "2026-09-09T18:11:00-03:00", "estado": "recebido e aceito", "nota": "Worktree e branch confirmadas. Voce e o escritor da plataforma comum de midia nesta rodada, sob minha reserva; formularios-cuidado consome e propoe." },
+    { "grupo": "chat-comunicacoes", "revisao": 1, "lidoEm": "2026-09-09T18:11:00-03:00", "estado": "recebido e aceito", "nota": "Worktree e branch atribuidas abaixo; comece agora. /principal-conversations depende de patch de router proposto por voce e aplicado por mim." },
+    { "grupo": "perfil-para-voce", "revisao": 1, "lidoEm": "2026-09-09T18:11:00-03:00", "estado": "recebido e aceito", "nota": "Worktree e branch atribuidas abaixo; escrita de produto liberada no seu recorte." },
+    { "grupo": "alunos-rotina", "revisao": 1, "lidoEm": "2026-09-09T18:11:00-03:00", "estado": "recebido e aceito; ATIVADO", "nota": "Worktree e branch atribuidas abaixo. Nao repetir CHILD 45+3+4 nem compositor 6." },
+    { "grupo": "formularios-cuidado", "revisao": 2, "lidoEm": "2026-09-09T18:11:00-03:00", "estado": "recebido e aceito; ATIVADO", "nota": "Sequencia 1 aprovada como descrita. Ver approvedSequences." },
+    { "grupo": "operacoes-sistema", "revisao": 3, "lidoEm": "2026-09-09T18:11:00-03:00", "estado": "recebido e aceito; ATIVADO", "nota": "Sequencia 1-2-3 aprovada com o limite descrito em approvedSequences." }
+  ],
+  "approvedSequences": [
+    {
+      "grupo": "formularios-cuidado",
+      "aprovado": "Sequencia 1: limites numericos e de texto em forms.create, forms.edit, forms.respond, forms.location-answer.",
+      "limite": "Contido em apps/superadmin/lib/features/forms/presentation/{editor,response} e testes de widget. Nao toca router/shell, migrations nem plataforma de midia.",
+      "exigencia": "A causa 2 (money gravado em unidades no editor e em minorUnits na resposta) e defeito de contrato de dados: corrigir numa unica representacao e provar com teste que reproduz 10,50 -> 1050 antes da correcao. Ponytail: uma guarda no ponto compartilhado, nao uma por chamador.",
+      "depois": "question-image (I021) so apos reserva nominal comigo, porque a plataforma de midia e escrita por publicacoes-midia."
+    },
+    {
+      "grupo": "operacoes-sistema",
+      "aprovado": "1) meal-plans.publish (candidato 932003b1); 2) Auditoria 145U parte LOCAL; 3) primeira acao executavel de Agenda ou Planos.",
+      "limite": "Item 2 sem qualquer execucao remota: o replay de 145 casos permanece 0/145 e depende de autorizacao nominal do Owner. Preparar o pacote ate revisavel e seguir para o item 3.",
+      "exigencia": "Em meal-plans.publish, o teste deve provar que o requestId sobrevive ao recibo divergente e que o retry reusa a mesma intencao. Nao alargar o catch: trate a divergencia como estado proprio.",
+      "nota": "Auth FE4 permanece certificado; nao reabrir."
+    }
+  ],
   "groups": [
     {
       "id": "estrutura",
@@ -52,11 +87,10 @@
       "branch": "work/etapa2-noturna-estrutura",
       "baseSha": "d784462c168d22fdb7090b7de1ef7db554ad5107",
       "worktreeReady": true,
-      "activation": "autorizado a iniciar",
+      "activation": "ATIVO",
       "families": ["institutions", "units", "groups", "activities", "assessments", "locations"],
       "ids": 49,
-      "sources": ["codex/e2-r02-d02-estrutura @ 40ec50d72", "candidatos cd03b9e30, 1345af29f, 42ad0467"],
-      "status": "aguardando revisao 1 do executor"
+      "lastRevisionRead": 3
     },
     {
       "id": "acessos-pessoas",
@@ -65,11 +99,10 @@
       "branch": "work/etapa2-noturna-acessos-pessoas",
       "baseSha": "d784462c168d22fdb7090b7de1ef7db554ad5107",
       "worktreeReady": true,
-      "activation": "autorizado a iniciar",
+      "activation": "ATIVO",
       "families": ["people", "access_profiles", "access_models", "invites", "internal_users", "child_safety", "profile_files"],
       "ids": 38,
-      "sources": ["codex/e2-r02-d04-acessos @ 375e0a62a"],
-      "status": "aguardando revisao 1 do executor"
+      "lastRevisionRead": 3
     },
     {
       "id": "publicacoes-midia",
@@ -78,11 +111,10 @@
       "branch": "work/etapa2-noturna-publicacoes-midia",
       "baseSha": "d784462c168d22fdb7090b7de1ef7db554ad5107",
       "worktreeReady": true,
-      "activation": "autorizado a iniciar",
+      "activation": "ATIVO",
       "families": ["acontece", "agora", "momentos", "circulars"],
       "ids": 23,
-      "sources": ["codex/e2-r02-l01-publicacoes @ 3697dd49e"],
-      "status": "aguardando revisao 1 do executor"
+      "lastRevisionRead": 1
     },
     {
       "id": "chat-comunicacoes",
@@ -91,11 +123,10 @@
       "branch": "work/etapa2-noturna-chat-comunicacoes",
       "baseSha": "d784462c168d22fdb7090b7de1ef7db554ad5107",
       "worktreeReady": true,
-      "activation": "autorizado a iniciar",
+      "activation": "ATIVO",
       "families": ["chat", "notices"],
       "ids": 13,
-      "sources": ["codex/e2-r02-l02-chat-comunicacoes @ 45d92b9c1", "9144f4efb"],
-      "status": "aguardando revisao 1 do executor"
+      "lastRevisionRead": 1
     },
     {
       "id": "perfil-para-voce",
@@ -104,11 +135,10 @@
       "branch": "work/etapa2-noturna-perfil-para-voce",
       "baseSha": "d784462c168d22fdb7090b7de1ef7db554ad5107",
       "worktreeReady": true,
-      "activation": "autorizado a iniciar",
+      "activation": "ATIVO",
       "families": ["principal_profile"],
       "ids": 3,
-      "sources": ["codex/e2-r02-l03-perfil-para-voce @ b209b4e0f"],
-      "status": "aguardando revisao 1 do executor"
+      "lastRevisionRead": 1
     },
     {
       "id": "alunos-rotina",
@@ -117,11 +147,10 @@
       "branch": "work/etapa2-noturna-alunos-rotina",
       "baseSha": "d784462c168d22fdb7090b7de1ef7db554ad5107",
       "worktreeReady": true,
-      "activation": "worktree pronta; escrever revisao 1 e aguardar ativacao nominal do coordenador antes de escrita de produto",
+      "activation": "ATIVO - escrita de produto liberada no recorte students, attendance, daily_routine",
       "families": ["students", "attendance", "daily_routine"],
       "ids": 16,
-      "sources": ["codex/e2-r02-d03-acompanhamento @ 0a2ecb34e"],
-      "status": "aguardando revisao 1 do executor"
+      "lastRevisionRead": 1
     },
     {
       "id": "formularios-cuidado",
@@ -130,11 +159,10 @@
       "branch": "work/etapa2-noturna-formularios-cuidado",
       "baseSha": "d784462c168d22fdb7090b7de1ef7db554ad5107",
       "worktreeReady": true,
-      "activation": "worktree pronta; escrever revisao 1 e aguardar ativacao nominal do coordenador antes de escrita de produto",
+      "activation": "ATIVO - sequencia 1 aprovada",
       "families": ["forms_authoring", "forms_responses", "forms_files", "health_care", "medication"],
       "ids": 27,
-      "sources": ["residual C02/R01"],
-      "status": "aguardando revisao 1 do executor"
+      "lastRevisionRead": 2
     },
     {
       "id": "operacoes-sistema",
@@ -143,47 +171,52 @@
       "branch": "work/etapa2-noturna-operacoes-sistema",
       "baseSha": "d784462c168d22fdb7090b7de1ef7db554ad5107",
       "worktreeReady": true,
-      "activation": "worktree pronta; escrever revisao 1 e aguardar ativacao nominal do coordenador antes de escrita de produto",
+      "activation": "ATIVO - sequencia 1-2-3 aprovada",
       "families": ["auth", "shell", "agenda", "imports", "audit", "support", "account", "catalog", "plans", "meal_plans", "error_pages"],
       "ids": 61,
-      "sources": ["codex/e2-r02-d01-autenticacao @ dc44df9e1"],
-      "status": "aguardando revisao 1 do executor"
+      "lastRevisionRead": 3
     }
   ],
   "reservations": [
     {
-      "scope": "router/shell/composition root do Superadmin (superadmin_routes.dart, superadmin_router.dart, main.dart)",
+      "scope": "router/shell/composition root do Superadmin: superadmin_routes.dart, superadmin_router.dart, main.dart",
       "writer": "coordenador-claude",
-      "rule": "Executores propoem hunks pequenos no proprio branch e registram no <grupo>.json; o coordenador resolve sobre a base conjunta. Nenhum executor substitui o arquivo inteiro."
+      "rule": "Dois grupos ja pediram rota nesta rodada (estrutura, pelos hunks de 1345af29f; chat-comunicacoes, por /principal-conversations). Por isso eu serializo. Cada grupo publica na sua branch um commit pequeno contendo APENAS o patch de router e aponta o SHA no seu <grupo>.json; eu aplico sobre a base conjunta. Ninguem substitui o arquivo inteiro nem copia snapshot antigo.",
+      "queue": ["estrutura (1345af29f, 4 rotas)", "chat-comunicacoes (/principal-conversations)"]
     },
     {
       "scope": "packages/coelo_database/migrations e replays SQL",
       "writer": "coordenador-claude",
-      "rule": "Candidatos locais podem ser criados na worktree do grupo; ordem, replay e qualquer aplicacao remota sao serializados pelo coordenador."
+      "rule": "Candidatos locais permitidos na worktree do grupo. Ordem, replay e qualquer aplicacao remota sao serializados por mim.",
+      "sqlQueue": ["acessos-pessoas (pacote Modelos)", "formularios-cuidado (forms I008, quando chegar)"]
     },
     {
-      "scope": "plataforma comum de midia (Media Gateway, catalogo de ativos R2)",
-      "writer": "coordenador-claude",
-      "rule": "publicacoes-midia e formularios-cuidado compartilham. Nao criar gateway, bucket ou catalogo por tela."
+      "scope": "plataforma comum de midia: Media Gateway, catalogo de ativos R2, mediaPicker/embedded",
+      "writer": "publicacoes-midia",
+      "coordinator": "coordenador-claude",
+      "rule": "publicacoes-midia escreve a plataforma comum nesta rodada. formularios-cuidado (question-image I021) e chat-comunicacoes (anexos R2) consomem o contrato e propoem delta pelo proprio <grupo>.json. Nao criar gateway, bucket ou catalogo por tela."
     },
     {
       "scope": "docs/reviews/inventario-etapa-2.json e os tres rastreadores",
       "writer": "coordenador-claude",
-      "rule": "Executores nao escrevem; enviam delta proposto no proprio <grupo>.json."
+      "rule": "Executores nao escrevem; enviam delta proposto no proprio <grupo>.json com action_id, camada, estado novo e evidencia."
     }
   ],
   "remoteAuthorization": {
-    "supabase": "Projeto coelo e PRODUCAO. Este round autoriza correcao local, Git e preparacao de pacote revisavel. Nenhuma migration ou mutacao remota sem autorizacao nominal do pacote exato.",
-    "cloudflare": "R2, Stream e Workers de producao. Mesma regra: preparar pacote e registrar a decisao necessaria.",
-    "escalation": "Executor prepara o pacote ate revisavel, registra em seu <grupo>.json o bloqueio nominal e continua o trabalho independente."
+    "supabase": "Projeto coelo e PRODUCAO. Esta rodada autoriza correcao local, Git e preparacao de pacote revisavel. Nenhuma migration ou mutacao remota sem autorizacao nominal do Owner para o pacote exato.",
+    "cloudflare": "R2, Stream e Workers de producao. Mesma regra.",
+    "escalation": "Preparar o pacote ate revisavel, registrar o bloqueio nominal no proprio <grupo>.json e continuar o trabalho independente. Bloqueio remoto retem apenas a acao dependente.",
+    "pendingNominalDecisions": [
+      "acessos-pessoas: replay do pacote Modelos",
+      "operacoes-sistema: replay Auditoria 145 casos (0/145)"
+    ]
   },
   "resumeMechanisms": {
-    "claudeToClaude": "SendMessage cross-session por nome de ListAgents; disponivel nesta sessao. Uso restrito a parada inesperada, bloqueio, conflito, entrega ou prazo.",
-    "claudeToCodex": "INDISPONIVEL. Nao ha ferramenta nativa desta sessao para acordar uma conversa Codex. Arquivo em disco nao desperta conversa Codex. Em parada confirmada antes do corte, o coordenador preserva a entrega e transfere o residual a um executor Claude, sem dois escritores.",
+    "claudeToClaude": "SendMessage cross-session verificado em uso real nesta rodada: operacoes-sistema (coelo-9e) e formularios-cuidado (coelo-1e) me alcancaram e eu respondo pelo mesmo canal.",
+    "claudeToCodex": "INDISPONIVEL. Nao ha ferramenta nativa desta sessao para acordar uma conversa Codex. Arquivo em disco nao desperta conversa Codex. Em parada confirmada antes do corte, eu preservo a entrega e transfiro o residual a um executor Claude, sem dois escritores.",
     "watch": "Leitura espacada do diretorio de comunicacao e do Git; sem loop segundo a segundo, sem ping continuo, sem agendamento apos os cortes.",
-    "limitation": "Se esta sessao do coordenador for encerrada pelo aplicativo ou pela cota, o acompanhamento para. Nenhuma promessa de vigilia alem da sessao."
+    "limitation": "Se esta sessao do coordenador for encerrada pelo aplicativo ou pela cota, o acompanhamento para. Nenhuma promessa de vigilia alem da sessao. Por isso: commit e push de lotes pequenos durante o trabalho, nao um unico salvamento no fim."
   },
-  "receipts": [],
   "blocks": [],
-  "nextStep": "Ler cada <grupo>.json assim que aparecer, publicar ACK nominal por revisao, e integrar continuamente os candidatos R02 preservados enquanto os grupos sobem."
+  "nextStep": "Integrar continuamente os lotes publicados por cada branch, comecando pelos primeiros commits de estrutura e formularios-cuidado, e atualizar inventario e rastreadores no mesmo ciclo."
 }

@@ -1,6 +1,6 @@
 {
-    "revision":  3,
-    "updated_at":  "2026-09-09T18:08:19.4840816-03:00",
+    "revision":  4,
+    "updated_at":  "2026-09-09T18:09:17.9029390-03:00",
     "group":  "estrutura",
     "task":  "/root",
     "model":  "GPT-6 (variante nao exposta)",
@@ -8,7 +8,7 @@
     "coordinator":  "Claude",
     "worktree":  "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura",
     "branch":  "work/etapa2-noturna-estrutura",
-    "head":  "d784462c168d22fdb7090b7de1ef7db554ad5107",
+    "head":  "fc8287c57",
     "upstream":  null,
     "base_observed":  "d784462c1",
     "scope":  [
@@ -20,7 +20,7 @@
                   "apps/superadmin -\u003e Locais"
               ],
     "action_ids_status":  "49 IDs confirmados no inventario: 42 MVP e 7 adiados. Recorte inicial institutions.locations-map,units.locations-map,units.copy-institution-location,locations.list,locations.create-edit,locations.detail-links; seguinte groups.location/activities.location/locations.schedule.",
-    "changed":  "Revisao estatica dos tres candidatos e dependencias atuais concluida. cd03 acrescenta secao de catalogo (midia explicitamente indisponivel); 1345 compoe quatro rotas com scope e revisao de sessao; 42ad impede segunda abertura do modal. Nenhum produto escrito.",
+    "changed":  "Tres candidatos aplicados seletivamente sem conflito: f87543b6c,4528c42df,fc8287c57. Diffcheck limpo; 13 paths. Iniciando prova conjunta focal, nao SQL.",
     "closed_criteria":  [
 
                         ],
@@ -37,7 +37,7 @@
                          "Migrations: candidatos locais permitidos; replay e remoto serializados Claude"
                      ],
     "blocker":  null,
-    "next_step":  "Aplicar cd03 e 42ad; integrar hunks 1345 na branch atribuida. Validar delta conjunto sem repetir SQL.",
+    "next_step":  "Executar testes de secao/mapa, rotas e guarda copia na base conjunta; analyzer/validador visual proporcionais. Publicar tres commits e evidencia apos verificacao.",
     "wip":  [
 
             ],
@@ -45,10 +45,15 @@
 
                   ],
     "children":  [
-
+                     {
+                         "scope":  "menor delta bindings/readers/save atomico",
+                         "task":  "/root/bindings_review",
+                         "deadline":  "15min; absoluto 23:30 BRT",
+                         "mode":  "read-only"
+                     }
                  ],
     "processes":  [
-
+                      "A iniciar Flutter focal local; nenhum servidor/SQL"
                   ],
     "ports":  [
 
