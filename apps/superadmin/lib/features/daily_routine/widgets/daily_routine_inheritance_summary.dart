@@ -31,7 +31,7 @@ final class DailyRoutineInheritanceSummary extends StatelessWidget {
     return Semantics(
       key: const Key('daily-routine-inheritance-summary'),
       container: true,
-      label: 'Heranca da rotina',
+      label: 'Herança da rotina',
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: colors.surface,
@@ -43,7 +43,7 @@ final class DailyRoutineInheritanceSummary extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text('Heranca', style: Theme.of(context).textTheme.titleMedium),
+              Text('Herança', style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: CoeloSpacing.space3),
               _SummaryLine(label: 'Origem', value: originLabel),
               _SummaryLine(label: 'Herdado', value: inheritedLabel),
