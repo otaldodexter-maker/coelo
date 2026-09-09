@@ -1724,3 +1724,66 @@ autoritativo de fechamento deste documento. `registro.json` é escrito por D00 e
 **Campos nulos e defasados significam "não registrado", não "não existe".**
 As quatro branches estão publicadas, sincronizadas com o remoto e com zero
 stashes. A defasagem é do registro, não do trabalho.
+
+---
+
+# CERTIFICAÇÃO DE QUE NADA SE PERDE — auditoria de L00 às 16:16
+
+O Owner determinou que nada pode ficar de fora nem se perder. Auditei as quatro
+worktrees Claude uma a uma. **Resultado: nenhum trabalho em risco.**
+
+| Frente | HEAD == origin | Stashes | Commits não publicados | Código não commitado |
+| --- | --- | ---: | ---: | ---: |
+| L00 | SIM | 0 | 0 | **0** |
+| L01 | SIM | 0 | 0 | **0** |
+| L02 | SIM | 0 | 0 | **0** |
+| L03 | SIM | 0 | 0 | **0** |
+
+**Tudo que foi feito está publicado em `origin`.** Se qualquer sessão morrer
+agora, nada se perde.
+
+## Os únicos arquivos não commitados, e por que são seguros
+
+São as fontes compartilhadas que **eu instruí** a preservar, e **verifiquei uma a
+uma que o conteúdo já está em `dev`**:
+
+| Frente | Arquivo | Verificação |
+| --- | --- | --- |
+| L01 | `specs/050-principal-ui-ux-closure.md` | **idêntico a `origin/dev`** |
+| L01 | `.agents/skills/coelo-ui/references/principal-visual-surfaces.md` | idêntico **ignorando fim de linha** — `diff --strip-trailing-cr` vazio |
+| L02 | `specs/037-principal-circulars.md` | **idêntico a `origin/dev`** |
+| L02 | `specs/050-principal-ui-ux-closure.md` | **idêntico a `origin/dev`** |
+| L02 | referência `coelo-ui` | mesma situação de EOL |
+
+**Conclusão: não há conteúdo exclusivo em nenhum arquivo não commitado.**
+A cópia canônica está em `dev` e eu também as commitei na minha branch.
+
+## Provas de preservação de L03 — publicadas, conferidas na árvore remota
+
+Os dois patches que provam que **nada foi destruído** nas duas varreduras
+acidentais do `git add -A` estão commitados e publicados:
+
+- `handoffs/L03-preserved-foreign-delta.patch`
+- `handoffs/L03-preserved-foreign-delta-specs.patch`
+- `handoffs/L03-package-for-you-read-rpc.md` (pacote SQL proposto, não aplicado)
+
+Se alguém questionar o que aconteceu com os quatro arquivos alheios e os 62 PNGs,
+**a resposta está versionada**, não na memória de ninguém.
+
+## O que existe, por onde D00 encontra
+
+**Doze propostas publicadas** nas worktrees das frentes: sete de L01 — incluindo
+o **pacote remoto nominal**, as negativas comportamentais, o mapeamento de
+Circulares, o contrato de mídia de chat e a resolução de conflitos; duas de L02 —
+o hunk do shell do chat Principal com o apêndice pronto para colar, e a
+materialização de notices; três de L03 — a análise dos cinco conflitos, os hunks
+de hospedagem marcados como superados na colocação, e a **verificação pós-merge
+do grupo**.
+
+**Três handoffs originais**, presentes e atualizados: L01 655 linhas, L02 897,
+L03 478. **Este consolidado** não os substitui — cada frente continua respondendo
+pela própria evidência.
+
+**Uma alteração de skill** em `.agents/skills/coelo-supabase/SKILL.md`, commitada
+na branch de L02 para viajar até D00, com a invariante durável sobre pacote
+revisável não ser pacote aplicável.
