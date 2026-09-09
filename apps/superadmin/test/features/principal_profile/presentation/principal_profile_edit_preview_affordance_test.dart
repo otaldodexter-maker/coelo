@@ -6,21 +6,22 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// Pins a REGISTERED, DELIBERATELY UNFIXED defect of `principal.profile-edit`.
+/// Guards the fix of a previously registered defect of `principal.profile-edit`.
 ///
-/// Below 1120 px the shared `ProfileAboutEditor` replaces its inline preview
-/// panel with a "Pré-visualizar" button whose handler is an optional parameter.
-/// This page does not supply one, so the button renders disabled with no
-/// explanation: an affordance that exists and does nothing.
+/// Below 1120 px `ProfileAboutEditor` trades its inline preview panel for a
+/// "Pré-visualizar" button whose handler is an optional parameter. This page
+/// supplies none, so the button used to render disabled with no explanation:
+/// an affordance that exists and does nothing. The audience selector beside it
+/// had the same problem, because it only steers a preview that was unreachable.
 ///
-/// It is not fixed here because the editor is shared with the Activities form
-/// and wiring a preview would compose a new surface without an approved visual
-/// contract. The test exists so the defect cannot be forgotten and so that
-/// whoever wires the handler is told what to change.
+/// Both are now rendered only where a preview is actually reachable. Hiding
+/// them is the honest degradation: wiring a preview surface here would compose
+/// a visual contract nobody has approved, and a disabled control is not a
+/// degraded state, it is a dead one.
 ///
-/// WHEN THE HANDLER IS WIRED: invert this file. The button must become enabled
-/// and open the projected About; delete the disabled assertion rather than
-/// relaxing it, and drop the narrow-screen exemption below.
+/// WHEN A PREVIEW SURFACE IS APPROVED AND WIRED: this file inverts. The button
+/// must appear enabled and open the projected About; replace the absence
+/// assertions rather than relaxing them.
 void main() {
   const context = PrincipalRuntimeContext(
     membershipId: 'membership-1',
@@ -44,32 +45,41 @@ void main() {
   }
 
   Finder previewButton() => find.widgetWithText(OutlinedButton, 'Pré-visualizar');
+  Finder audienceSelector() => find.ancestor(
+    of: find.textContaining('Prévia: '),
+    matching: find.byType(OutlinedButton),
+  );
 
-  testWidgets('below 1120 px the preview button renders disabled — registered defect', (
-    tester,
-  ) async {
+  testWidgets('below 1120 px no dead preview button reaches the user', (tester) async {
     await pumpEditor(tester, width: 375);
 
-    expect(previewButton(), findsOneWidget);
     expect(
-      tester.widget<OutlinedButton>(previewButton()).onPressed,
-      isNull,
+      previewButton(),
+      findsNothing,
       reason:
-          'Registered defect: PrincipalProfileEditPage supplies no onPreview, so '
-          'the shared editor shows a dead button on narrow screens. When the '
-          'handler is wired, invert this expectation instead of relaxing it.',
+          'This page supplies no onPreview. Rendering the button here would '
+          'show a disabled, unexplained control instead of degrading honestly.',
     );
   });
 
-  testWidgets('the dead affordance is confined to narrow screens', (tester) async {
-    // At 1120 px and above the editor shows its inline preview panel instead,
-    // so no disabled button reaches the user there.
+  testWidgets('below 1120 px the audience selector is not offered either', (tester) async {
+    // It only changes what the preview projects; with no preview reachable it
+    // would change nothing the user can see.
+    await pumpEditor(tester, width: 375);
+
+    expect(audienceSelector(), findsNothing);
+  });
+
+  testWidgets('at 1440 px the inline preview panel keeps the audience selector', (tester) async {
+    // Wide layouts show the preview panel, so steering its audience is real
+    // and the control stays exactly where the approved composition puts it.
     await pumpEditor(tester, width: 1440);
 
     expect(previewButton(), findsNothing);
+    expect(audienceSelector(), findsOneWidget);
   });
 
-  testWidgets('the save action stays enabled regardless of the preview defect', (tester) async {
+  testWidgets('the save action stays enabled at narrow widths', (tester) async {
     await pumpEditor(tester, width: 375);
 
     final save = find.byKey(const Key('principal-profile-edit-save'));

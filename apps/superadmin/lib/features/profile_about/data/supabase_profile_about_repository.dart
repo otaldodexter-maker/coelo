@@ -12,15 +12,23 @@ import '../domain/profile_about_repository.dart';
 /// `app_private.profile_about_command_receipts` and refuses the same
 /// `request_id` with a different payload.
 ///
-/// Reads have no published RPC. The only versioned migration of the domain,
-/// `20260825193131_final_review_profile_about_lint_hardening.sql`, exposes the
-/// write alone, so `load` reads `public.profile_about_pages`,
+/// Reads prefer `public.get_profile_about(p_subject_type, p_subject_id)`, the
+/// authorized read proposed in
+/// `packages/coelo_database/plans/2026-09-09-profile-about-read-rpc.sql`, where
+/// the actor, the subject scope and the published/visibility projection are all
+/// resolved on the server.
+///
+/// That function is a candidate and has not been applied remotely, so when the
+/// database answers that it does not exist — `42883`, or `PGRST202` from the
+/// schema cache — `load` falls back to the direct table read that has always
+/// been here: `public.profile_about_pages`,
 /// `public.profile_about_structured_fields` and `public.profile_about_sections`
-/// through PostgREST and leans entirely on RLS: no tenant filter is invented on
-/// the client beyond the requested subject, and any denial becomes
-/// [ProfileAboutUnauthorizedException]. If those tables turn out to be
-/// deny-by-default with revoked grants, this read fails closed until a
-/// `get_profile_about` exists.
+/// through PostgREST, leaning entirely on RLS, with no tenant filter invented on
+/// the client beyond the requested subject. The fallback covers the absence of
+/// the function and nothing else: a denial stays a denial and is never retried
+/// as a table read, so a revoked grant cannot be laundered into a direct select.
+/// Once the RPC is applied nominally the fallback stops being reached, and the
+/// deny-by-default risk of those tables stops mattering to this screen.
 ///
 /// Database tokens follow the snake_case of the domain enum names, the
 /// convention the RPC's own defaults confirm (`profile_access`, `manual`,
@@ -32,6 +40,36 @@ final class SupabaseProfileAboutRepository implements ProfileAboutRepository {
 
   @override
   Future<ProfileAboutPage?> load(
+    ProfileAboutSubjectRef subject, {
+    ProfileAboutAudience? preview,
+  }) async {
+    try {
+      final response = await _client.rpc<Object?>(
+        'get_profile_about',
+        params: <String, Object?>{
+          'p_subject_type': profileAboutSubjectTypeToken(subject.type),
+          'p_subject_id': subject.subjectId,
+        },
+      );
+      final page = parseProfileAboutReadResponse(subject: subject, response: response);
+      if (page == null) return null;
+      return preview == null ? page : page.project(preview);
+    } on PostgrestException catch (error) {
+      // Only "the function is not there yet" falls back. Anything else — a
+      // denial above all — keeps its meaning.
+      if (!isMissingProfileAboutReadFunction(error.code, error.message)) {
+        throw mapProfileAboutFailure(error.code, error.message);
+      }
+    } on FormatException {
+      throw ProfileAboutUnavailableException();
+    } on TypeError {
+      throw ProfileAboutUnavailableException();
+    }
+    return _loadFromTables(subject, preview: preview);
+  }
+
+  /// The read that exists while `public.get_profile_about` is not applied.
+  Future<ProfileAboutPage?> _loadFromTables(
     ProfileAboutSubjectRef subject, {
     ProfileAboutAudience? preview,
   }) async {
@@ -251,6 +289,44 @@ ProfileAboutSaveResult parseProfileAboutSaveResult(Object? response) {
     pageId: pageId,
     version: version.toInt(),
     official: List.unmodifiable(official),
+  );
+}
+
+/// True only when the database says `public.get_profile_about` does not exist.
+///
+/// `42883` is Postgres' `undefined_function`; `PGRST202` is PostgREST failing to
+/// find it in the schema cache. Neither is a denial, and nothing else here is
+/// treated as absence — mistaking a denial for absence would turn a revoked
+/// grant into a direct table read.
+bool isMissingProfileAboutReadFunction(String? code, String message) {
+  if (code == '42883' || code == 'PGRST202') return true;
+  if (code != null) return false;
+  final text = message.toLowerCase();
+  return text.contains('could not find the function') ||
+      (text.contains('get_profile_about') && text.contains('does not exist'));
+}
+
+/// Reads the jsonb of `public.get_profile_about`:
+/// `{page: null | {id, version, state}, fields: [...], sections: [...]}`.
+///
+/// The row keys are the same column names the table read already uses, so both
+/// sources land on [parseProfileAboutPage] and there is a single grammar for the
+/// About page. A null `page` means "no page for this subject", which the caller
+/// already distinguishes from denial and from failure.
+ProfileAboutPage? parseProfileAboutReadResponse({
+  required ProfileAboutSubjectRef subject,
+  required Object? response,
+}) {
+  if (response is! Map) throw const FormatException('invalid_read_response');
+  final json = Map<String, Object?>.from(response);
+  final page = json['page'];
+  if (page == null) return null;
+  if (page is! Map) throw const FormatException('invalid_read_response');
+  return parseProfileAboutPage(
+    subject: subject,
+    pageRow: Map<String, Object?>.from(page),
+    fieldRows: _asRows(json['fields'] ?? const <Object?>[]),
+    sectionRows: _asRows(json['sections'] ?? const <Object?>[]),
   );
 }
 

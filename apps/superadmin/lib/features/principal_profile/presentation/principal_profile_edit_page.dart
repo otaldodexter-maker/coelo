@@ -67,6 +67,8 @@ final class _PrincipalProfileEditPageState extends State<PrincipalProfileEditPag
   void didUpdateWidget(covariant PrincipalProfileEditPage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (identical(oldWidget.repository, widget.repository) &&
+        oldWidget.runtimeContext.membershipId == widget.runtimeContext.membershipId &&
+        oldWidget.runtimeContext.personId == widget.runtimeContext.personId &&
         oldWidget.runtimeContext.institutionId == widget.runtimeContext.institutionId &&
         oldWidget.runtimeContext.unitId == widget.runtimeContext.unitId &&
         oldWidget.runtimeContext.groupId == widget.runtimeContext.groupId) {
@@ -74,6 +76,12 @@ final class _PrincipalProfileEditPageState extends State<PrincipalProfileEditPag
     }
     // A changed or revoked context must not keep editing the previous subject's
     // draft: the page reloads and the stale controller goes away.
+    //
+    // Membership and person are compared as well as the scope. Two contexts can
+    // name the same institution, unit and group and still be a different actor
+    // or a different role, and the authorization to manage this About belongs
+    // to the membership, not to the scope. Reloading is the fail-closed side:
+    // the server answers again for whoever is now in context.
     _replace(const _Loading());
     _load();
   }

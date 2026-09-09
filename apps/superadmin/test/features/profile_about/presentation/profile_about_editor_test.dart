@@ -108,7 +108,11 @@ void main() {
   });
 
   testWidgets('selects the preview audience without changing field visibility', (tester) async {
-    await tester.binding.setSurfaceSize(const Size(800, 1200));
+    // 1440 px, not 800: the audience selector only steers the preview, so it is
+    // offered where a preview is reachable — the inline panel at 1120 px and
+    // above, or a caller that supplies onPreview. Below that it would change
+    // nothing the user can see, and a control that changes nothing is dead.
+    await tester.binding.setSurfaceSize(const Size(1440, 1200));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final controller = _controller(withSections: true);
     await tester.pumpWidget(_app(controller));
@@ -157,6 +161,48 @@ void main() {
       canUpdateOfficialData: false,
     );
     expect(withoutPermission, isEmpty);
+  });
+
+  testWidgets('names every field in Portuguese instead of leaking the enum identifier', (
+    tester,
+  ) async {
+    // Regression guard for a real defect: the editor labelled each field with
+    // `field.key.name`, so the person editing the About saw "displayAddress"
+    // and "preciseLocation" as the name of what they were editing. The
+    // assertion sweeps the whole enum, so a new key without a label is caught
+    // here as well as at compile time.
+    await tester.binding.setSurfaceSize(const Size(1440, 2400));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    final controller = ProfileAboutEditorController(
+      page: ProfileAboutPage(
+        subject: const ProfileAboutSubjectRef(
+          type: ProfileAboutSubjectType.institution,
+          institutionId: 'institution',
+        ),
+        version: 1,
+        fields: const [
+          ProfileAboutField(key: ProfileAboutFieldKey.displayName, value: 'Escola Coelo'),
+          ProfileAboutField(key: ProfileAboutFieldKey.displayAddress, value: 'Rua A, 100'),
+          ProfileAboutField(key: ProfileAboutFieldKey.serviceHours, value: '8h às 17h'),
+        ],
+        sections: const [],
+      ),
+    );
+    await tester.pumpWidget(_app(controller));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Nome exibido'), findsWidgets);
+    expect(find.text('Endereço exibido'), findsWidgets);
+    expect(find.text('Horário de atendimento'), findsWidgets);
+
+    for (final key in ProfileAboutFieldKey.values) {
+      expect(
+        find.text(key.name),
+        findsNothing,
+        reason: 'the enum identifier ${key.name} must never reach the interface',
+      );
+    }
   });
 }
 
