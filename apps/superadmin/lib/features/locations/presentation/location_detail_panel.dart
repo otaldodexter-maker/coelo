@@ -130,12 +130,13 @@ class _LocationDetailPanelState extends State<LocationDetailPanel> {
     if (writer == null || onCopied == null || !widget.capabilities.copy) return;
     final operationGeneration = ++_copyOperationGeneration;
     final contextRevision = widget.contextRevision;
-    final created = await showDialog<LocationCatalogEntry>(
+    final navigator = Navigator.of(context, rootNavigator: true);
+    final route = DialogRoute<LocationCatalogEntry>(
       context: context,
+      themes: InheritedTheme.capture(from: context, to: navigator.context),
       builder: (dialogContext) {
-        if (_copyOperationGeneration == operationGeneration) {
-          _copyDialogNavigator = Navigator.of(dialogContext);
-          _copyDialogRoute = ModalRoute.of(dialogContext);
+        if (_copyOperationGeneration != operationGeneration) {
+          return const SizedBox.shrink();
         }
         return LocationCopyDialog(
           source: item,
@@ -144,6 +145,9 @@ class _LocationDetailPanelState extends State<LocationDetailPanel> {
         );
       },
     );
+    _copyDialogNavigator = navigator;
+    _copyDialogRoute = route;
+    final created = await navigator.push(route);
     if (_copyOperationGeneration != operationGeneration) return;
     _copyDialogNavigator = null;
     _copyDialogRoute = null;

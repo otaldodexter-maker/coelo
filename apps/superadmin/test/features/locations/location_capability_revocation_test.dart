@@ -1,6 +1,8 @@
+import 'package:coelo_domain/locations.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/locations/domain/location_capabilities.dart';
 import 'package:coelo_superadmin/features/locations/domain/location_catalog_writer.dart';
+import 'package:coelo_superadmin/features/locations/presentation/location_detail_panel.dart';
 import 'package:coelo_superadmin/features/locations/presentation/locations_page.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +33,25 @@ const _bring = Key('locations-bring-from-institution');
 const _form = Key('locations-form');
 const _edit = Key('location-detail-edit');
 const _copy = Key('location-detail-copy');
+
+final class _CopyProbeWriter implements LocationCatalogWriter {
+  int copyCalls = 0;
+
+  @override
+  Future<LocationCatalogEntry> copy({
+    required String sourceId,
+    required String sourceInstitutionId,
+    required LocationScope targetScope,
+    required String name,
+    required String requestId,
+  }) async {
+    copyCalls++;
+    return locationFixture(id: locationB);
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
 
 void main() {
   late ControlledLocationReader reader;
@@ -155,6 +176,49 @@ void main() {
 
     expect(find.byKey(const Key('location-copy-dialog')), findsNothing);
     expect(find.byKey(Key('locations-detail-$locationA')), findsNothing);
+  });
+
+  testWidgets('revocation before the first dialog frame leaves no old writer action', (
+    tester,
+  ) async {
+    final writer = _CopyProbeWriter();
+    final revision = ValueNotifier(0);
+    addTearDown(revision.dispose);
+    await tester.binding.setSurfaceSize(const Size(1400, 2400));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    reader = ControlledLocationReader();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: ValueListenableBuilder<int>(
+          valueListenable: revision,
+          builder: (context, value, _) => LocationDetailPanel(
+            id: value == 0 ? locationA : locationB,
+            scope: scopeUnitA,
+            onBack: () {},
+            reader: reader,
+            writer: writer,
+            sessionAvailable: true,
+            contextRevision: value,
+            capabilities: value == 0
+                ? const LocationCapabilities(copy: true)
+                : LocationCapabilities.none,
+            onCopied: (_) {},
+          ),
+        ),
+      ),
+    );
+    await answer(tester);
+
+    await tester.tap(find.byKey(_copy));
+    // Keep the Navigator alive and invalidate the panel synchronously, before
+    // the dialog route receives its first frame.
+    revision.value = 1;
+    await answer(tester);
+
+    expect(find.byKey(const Key('location-copy-dialog')), findsNothing);
+    expect(find.byKey(const Key('location-copy-confirm')), findsNothing);
+    expect(writer.copyCalls, 0);
   });
 
   testWidgets('losing copy does not shut an edit someone is in the middle of', (tester) async {
