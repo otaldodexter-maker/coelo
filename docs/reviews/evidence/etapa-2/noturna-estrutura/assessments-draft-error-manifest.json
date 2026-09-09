@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-09-09T20:43:10.5727634-03:00",
+  "scope": "apps/superadmin -> Avaliacoes -> Lancamento/Diario -> Salvar rascunho",
+  "action_ids": [
+    "assessments.entry",
+    "assessments.gradebook"
+  ],
+  "status": "local-green; sem certificacao integral FE/BE/E2E",
+  "base_inspected": "ee2c35686b7e3b9f400181aa6bcfd8459e2d377e",
+  "source": "coelo-flutter-pendencias.md e coelo-flutter-integrado-supabase-pendencias.md linhas165-169; handoff R02 D02 encerrado",
+  "root_causes": [
+    "Footer entregava Future de saveDraft sem await/catch; controller emite estado e relanca negativas esperadas",
+    "updateStudent aceitava edicoes durante save; conclusao ou offline sobrescrevia edicao posterior com snapshot anterior; campos permaneciam interativos"
+  ],
+  "implementation": [
+    "Footer e retry offline usam o mesmo handler _saveDraft da pagina; negativas existentes continuam nos estados do controller",
+    "Controller rejeita updateStudent enquanto saving; nao faz merge de avaliacoes",
+    "Pagina bloqueia ponteiro/foco no corpo e navegacao durante saving, com aviso liveRegion; libera apos conclusao"
+  ],
+  "metrics": {
+    "S": 0,
+    "F": 0,
+    "N": 10,
+    "B": 0,
+    "U": 0,
+    "E": 10,
+    "P": 10
+  },
+  "runners": [
+    {
+      "chunks": [
+        "07f296",
+        "2800b8"
+      ],
+      "runner": 30224,
+      "command": "rtk proxy flutter test --no-pub --concurrency=1 test/features/assessments/assessment_entry_page_test.dart test/features/assessments/assessment_controller_test.dart --plain-name \"assessment draft guard\" --reporter expanded",
+      "result": "RED6F: clique offline/conflito/denied escapava; aviso ausente; controller aceitava During save em duas saidas",
+      "exit_code": 1
+    },
+    {
+      "runner": 85469,
+      "result": "Intermediario: Semantics nao aceita const; widget nao compilou,2controllerP; corrigido antes do GREENfinal",
+      "chunk": "37afdf",
+      "exit_code": 1
+    },
+    {
+      "runner": 87922,
+      "command": "rtk proxy flutter test --no-pub --concurrency=1 test/features/assessments/assessment_entry_page_test.dart test/features/assessments/assessment_controller_test.dart --plain-name \"assessment draft guard\" --reporter expanded",
+      "P": 6,
+      "chunk": "c0a054",
+      "exit_code": 0
+    },
+    {
+      "runner": 96705,
+      "command": "rtk proxy flutter test --no-pub --concurrency=1 test/features/assessments/assessment_entry_page_test.dart test/features/assessments/assessment_controller_test.dart --name \"entry remains stable across the responsive matrix|offline save keeps the edited draft|rejects a saved gradebook that crosses|dispose clears loaded PII\" --reporter expanded",
+      "P": 4,
+      "chunk": "d260d1",
+      "exit_code": 0
+    },
+    {
+      "runner": 83687,
+      "command": "rtk proxy dart analyze lib/features/assessments/assessment_pages.dart lib/features/assessments/assessment_controller.dart test/features/assessments/assessment_entry_page_test.dart test/features/assessments/assessment_controller_test.dart",
+      "issues": 0,
+      "chunk": "d93fd8",
+      "exit_code": 0
+    },
+    {
+      "chunk": "b060f7",
+      "command": "rtk git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "evidence": "Saidas factuais observadas via tools/runners; nenhum log bruto preservado ou fabricado. Reruns nao somados. Matriz responsiva conta como1ID, inclui375/768/1024/1440 e escala1/2.",
+  "limitations": [
+    "Repositorios de teste simulados; sem SQL, remoto, navegador real ou certificacao integral",
+    "Error de decoder em comando nao foi reproduzido nem ampliado; permanece residual separado",
+    "Sem alteracao de Auth/capacidades/router/shell/contratos; grants e transicoes permanecem existentes",
+    "Aviso visual usa texto generico Salvando alteracoes, pois controller tambem executa envio; nao implica resultado confirmado"
+  ],
+  "hashes": [
+    {
+      "sha256": "F1F1161A8E4C6682C3DB9677792421C7500E7B6D775414815B5B354678610D5C",
+      "path": "apps/superadmin/lib/features/assessments/assessment_pages.dart"
+    },
+    {
+      "sha256": "4EF0B1C23241B8B2D9F2286B951B32EE8820EE731108A376D07DA9151ACF653A",
+      "path": "apps/superadmin/lib/features/assessments/assessment_controller.dart"
+    },
+    {
+      "sha256": "059577FB617FE82F66DFCD8FFAAEB046218CC9F23EF5C7C7751603F6995DABA5",
+      "path": "apps/superadmin/test/features/assessments/assessment_entry_page_test.dart"
+    },
+    {
+      "sha256": "D207B2F7A95A1A415A9574EDC454B14832371A8E024D7CC34D509E459474D62C",
+      "path": "apps/superadmin/test/features/assessments/assessment_controller_test.dart"
+    }
+  ],
+  "root_review": "Root reviewed controller guard, shared page save handler, focus/pointer suppression, controller and widget causal assertions; hashes match qualified ten tests. No rerun of valid proof.",
+  "visual_static_gate": {
+    "command": "rtk proxy dart run tool/validate_admin_visual_contracts.dart C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura assets/admin-visual-contract-allowlist.json",
+    "cwd": "apps/catalog",
+    "chunk": "acaae7",
+    "exit_code": 0,
+    "limitation": "Static gate is not golden or browser certification."
+  }
+}

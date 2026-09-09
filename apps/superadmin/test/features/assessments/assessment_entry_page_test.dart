@@ -9,6 +9,65 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final scenario in [
+    (error: const AssessmentOfflineException(), title: 'Você está offline'),
+    (error: const AssessmentVersionConflictException(), title: 'Conflito de versão'),
+    (error: const AssessmentUnauthorizedException(), title: 'Acesso negado'),
+  ]) {
+    testWidgets('assessment draft guard contains ${scenario.title} from save click', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(const Size(1024, 1000));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final repository = _PageAssessmentRepository.immediate(_pageBook('book-a', 'Aluno'))
+        ..save = (_) async => throw scenario.error;
+      await tester.pumpWidget(_app(GlobalKey(), repository, 'book-a'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Salvar rascunho'));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      expect(find.text(scenario.title), findsOneWidget);
+    });
+  }
+  testWidgets('assessment draft guard visibly prevents editing while save is pending', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final book = _pageBook('book-a', 'Aluno');
+    final pending = Completer<AssessmentGradebook>();
+    final repository = _PageAssessmentRepository.immediate(book)..save = (_) => pending.future;
+    await tester.pumpWidget(_app(GlobalKey(), repository, 'book-a'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Comentários'));
+    await tester.pumpAndSettle();
+    final field = find.byWidgetPredicate(
+      (widget) =>
+          widget is TextField && widget.decoration?.labelText == 'Comentário visível à família',
+    );
+    await tester.ensureVisible(field);
+    await tester.tap(find.text('Salvar rascunho'));
+    await tester.pump();
+    try {
+      expect(find.text('Salvando alterações…'), findsOneWidget);
+      await tester.tap(field, warnIfMissed: false);
+      await tester.pump();
+      final editable = tester.widget<EditableText>(
+        find.descendant(of: field, matching: find.byType(EditableText)),
+      );
+      expect(editable.focusNode.hasFocus, isFalse);
+    } finally {
+      pending.complete(book.copyWith(version: 2));
+      await tester.pumpAndSettle();
+    }
+    expect(find.text('Salvando alterações…'), findsNothing);
+    await tester.tap(field);
+    await tester.pump();
+    final editable = tester.widget<EditableText>(
+      find.descendant(of: field, matching: find.byType(EditableText)),
+    );
+    expect(editable.focusNode.hasFocus, isTrue);
+  });
   testWidgets('closing decision inherits local dark theme', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -450,6 +509,11 @@ final class _PageAssessmentRepository implements AssessmentRepository {
   final gradebookRequests = <String>[];
   final transitions = <String>[];
   Completer<AssessmentGradebook>? pendingTransition;
+  Future<AssessmentGradebook> Function(AssessmentGradebook)? save;
+
+  @override
+  Future<AssessmentGradebook> saveGradebook(AssessmentGradebook book, {String? reason}) =>
+      save?.call(book) ?? Future.value(book);
 
   @override
   Future<AssessmentGradebook> transitionGradebook(
