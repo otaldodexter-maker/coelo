@@ -153,6 +153,38 @@ hash que prova que só o nome mudou.
   circulars. O repositório injetado é real, então o ramo abriria as rotas contra
   RPCs que não existem.
 
+## Duas decisões de componente e uma de segurança
+
+**Tabela administrativa redimensionável.** O `SingleChildScrollView` de
+`CoeloAdminResizableTable._tableBody` rola apenas na horizontal, então a coluna
+que empilha cabeçalho e linhas não tem para onde rolar na vertical. A aritmética
+fecha exatamente com o overflow relatado: 56 de cabeçalho mais 25 linhas de 65
+dá 1681, contra 612 de altura disponível, o que produz os 1069 pixels. **As
+linhas abaixo do corte não estão clipadas, estão inalcançáveis.** Não corrigi e
+proibi a alternativa barata de limitar as linhas da tela de Importações: fechar a
+suíte escondendo um defeito de acessibilidade real seria pior que a suíte
+vermelha. A correção verdadeira exige sincronizar dois eixos entre corpo e coluna
+fixada num Stack com posicionamento absoluto, atinge todos os diretórios
+administrativos e é autoridade de `coelo-ui`. É decisão sua.
+
+**Exposição de bucket e chave (severidade baixa, mas contraria a ADR 0032).**
+`public.authorize_circular_media_read` está no grant para `authenticated` e
+devolve `bucket_id` e `object_key`. Precisa ser chamável pelo usuário porque a
+Edge Function usa o cliente dele para autorizar antes de assinar. Não concede
+acesso — o bucket é privado e sem assinatura nada se lê — mas a ADR 0032 diz
+para nunca expor bucket, chave ou provedor ao cliente. A correção seria devolver
+um identificador opaco, o que muda o contrato entre a RPC e a Edge Function e
+entra na fila SQL com autorização nominal. Nada foi aplicado.
+
+**Redação corrigida no rastreador.** O inventário registrava
+`save_circular_response_draft`, `submit_circular_response` e `delete_circular`
+como ausentes no gateway. É verdade para o gateway administrativo v2 e falso
+para o caminho Principal: as nove RPCs que os repositórios do Principal chamam
+estão definidas em `20260821190000_circulars_production.sql`, com `revoke all`
+seguido de grant a `authenticated`, 28 funções `security definer` e 29 com
+`search_path` vazio. Isso prova **definição local, não aplicação remota** — a
+lacuna muda de redação, não de estado.
+
 ## Verificações positivas registradas
 
 O registro do que **não** é problema evita que o próximo revisor gaste o mesmo
