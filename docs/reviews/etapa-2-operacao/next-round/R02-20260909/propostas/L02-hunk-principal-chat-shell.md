@@ -1,7 +1,7 @@
 ---
 title: "L02 — Hunk para o movimento único das rotas Principal para dentro da ShellRoute"
 source: "Frente L02 (Chat e Comunicações), worktree e2-r02-l02-chat-comunicacoes; PRINCIPAL.md decisão final do Owner 09/09/2026; achado estrutural de L01 e L03"
-status: "hunk-pronto-para-o-movimento-coordenado-por-d00"
+status: "resolucao-de-conflito-para-d00-apos-f5e5d8df"
 generated_at: "2026-09-09"
 timezone: "America/Sao_Paulo"
 ---
@@ -126,3 +126,53 @@ Se o movimento exigir que o shell passe a construir conteúdo Principal com a
 navegação responsiva do hospedeiro, isso é implementação e prova da frente L01,
 conforme `PRINCIPAL.md`. Eu entrego a superfície pronta para ser hospedada e o
 hunk acima; não vou redesenhar o shell.
+
+
+---
+
+# Atualização — resolução do conflito com `dev` após o movimento único
+
+Escrito depois de D00 executar a hospedagem em `f5e5d8df`. Verifiquei `origin/dev` em
+**leitura pura** (`git show`, sem merge e sem integrar), na ponta `d7ce6976`.
+
+## O que mudou em `dev`
+
+- As rotas `/principal-*` **agora são filhas do `ShellRoute`**: o `ShellRoute` começa na linha 755 e
+  seu `routes:` na 787, com `principalHappens` na 788.
+- `embedded: true` já aparece **5 vezes** — o padrão que a minha composição também suporta.
+- `SuperadminShell.host` continua estruturalmente igual ao que eu editei: o parâmetro
+  `onDestinationSelected` segue sendo a âncora, então **minha inserção de 3 linhas aplica no mesmo
+  lugar**.
+- Os **três** destinos `?from=principal` continuam lá (linhas 699, 810 e 5468), porque o meu delta
+  não está em `dev`.
+- **`chatUnreadCountLoader` não aparece em `dev`.** Minha fiação do badge não sobreviveu porque
+  nunca esteve lá; ela vem com o meu merge.
+
+## Conflito: um só arquivo
+
+`apps/superadmin/lib/app/router/superadmin_router.dart`. Resolução, trecho a trecho:
+
+1. **Base:** o lado de `dev` prevalece em toda a estrutura de hospedagem. Não reverter o movimento.
+2. **Minha rota nova `/principal-conversations`:** deve **sobreviver e entrar dentro do `ShellRoute`**,
+   junto das irmãs, com `embedded: true` — não deixá-la de fora do shell. O corpo do builder é o que
+   está na seção anterior deste documento, com a falha fechada por
+   `_unavailableCompositionRootRoute` preservada.
+3. **`/dev/principal-conversations`:** mesmo tratamento, com `developmentChatRepository`.
+4. **As 4 constantes** em `superadmin_routes.dart` (`principalConversations`,
+   `principalConversationsName`, `devPrincipalConversations`, `devPrincipalConversationsName`):
+   não conflitam, apenas somam.
+5. **Os 3 destinos `?from=principal`** (linhas 699, 810 e 5468 em `dev`) devem passar a apontar para
+   as rotas novas, como no meu `5e0344f0`. Sem isso o launcher do Principal volta a abrir a página
+   administrativa e o movimento de hospedagem não resolve o defeito, só o reposiciona.
+6. **A fiação do badge** (`chatUnreadCountLoader`) deve entrar nos três shells que o router monta,
+   incluindo o `SuperadminShell.host` reescrito, **com a guarda `is UnavailableChatRepository`
+   intacta**. Sem a guarda o launcher afirmaria "nenhuma não lida" quando na verdade não sabe.
+7. **`mediaReader`/`mediaSession` em `/dev/conversations`:** somam, não conflitam.
+
+## O que eu não fiz, deliberadamente
+
+Não integrei `dev`, não fiz merge nem rebase, e não rodei minhas provas contra a composição
+integrada — isso exigiria materializar a base conjunta, que é do integrador. A verificação acima é
+de leitura. **Depois do merge, os arquivos a reexecutar são
+`principal_chat_route_test.dart`, `chat_unread_badge_wiring_test.dart` e `chat_routes_test.dart`**:
+são os que afirmam exatamente os pontos 2, 5 e 6 e, se a resolução perder algum deles, eles falham.
