@@ -1,0 +1,21 @@
+{
+    "Status":  "PASS",
+    "P":  7,
+    "F":  0,
+    "SqlExecuted":  false,
+    "DockerExecuted":  false,
+    "Canonical":  50,
+    "Preflight":  2,
+    "Bridge":  1,
+    "Total":  53,
+    "Checks":  [
+                   "three proposed PowerShell files parse",
+                   "50 canonical plus 2 preflight plus 1 inherited bridge",
+                   "requires target 20260909190000",
+                   "descriptor hash mismatch",
+                   "input hash mismatch",
+                   "all 53 output files exactly match manifest-after names and bytes",
+                   "reserved wrappers unchanged"
+               ],
+    "SandboxRemoved":  true
+}

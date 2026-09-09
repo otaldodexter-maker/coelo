@@ -67,6 +67,9 @@ rollback;
 """
 test_path = out / f'preflight-{phase}-test.sql'
 test_path.write_text(test, encoding='utf-8')
+if phase == 'after':
+    (db / 'supabase/tests/ap_safety_internal_preflight_test.sql').write_text(
+        test, encoding='utf-8', newline='\n')
 checks = [candidate, db / 'supabase/tests/d04_child_safety_internal_reads_test.sql', db / 'supabase/tests/child_safety_production_test.sql', test_path]
 report = {
     'status': 'prepared-not-executed-local-only',
