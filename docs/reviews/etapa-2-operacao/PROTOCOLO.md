@@ -167,10 +167,17 @@ Gerador C00: `rtk proxy python docs/reviews/etapa-2-operacao/build-stage2-dashbo
 Nomenclatura: E2 é Etapa2; R01 é rodada1; C00 identifica a conversa coordenadora e C01–C07 as conversas da rodada. Esses apelidos não substituem os IDs reais das sessões e não são porcentagens ou módulos do produto.
 
 
-## Regra vigente: percentual de aprovação — 09/09/2026
+## Critério de aprovação completa — 09/09/2026
 
 O Owner corrigiu a medida: 100% exige aprovação nos testes/aceites, não apenas exame. O painel usa **FE aprovado nos aceites**, **BE aprovado nos aceites** e **Integração E2E aprovada**. Cada action_id ativo só entra no numerador quando todos os critérios aplicáveis daquela camada estão comprovados como aprovados. O denominador são as ações ativas aplicáveis à camada, com adiadas, gates formais e N/A separados.
 
 Aprovação da camada e conclusão da camada são a mesma medição, evitando colunas duplicadas. FE não exige conclusão do backend; BE não exige UI; E2E exige cadeia real, persistência/reload e negativas. Revisões estáticas, testes parciais aprovados, falhas e critérios sem teste permanecem evidências, mas não aprovam a ação completa. Não calcular percentual de casos de teste sem um plano completo e reconciliado que defina seu denominador.
 
 As contagens históricas de exame permanecem preservadas como histórico, sem serem reutilizadas como percentual de aprovação. O painel por frente e por tela deve ser regenerado nos três rastreadores após atualização canônica das evidências. Esta regra prevalece sobre o padrão anterior de seis colunas.
+
+
+## Apresentação vigente do avanço — 09/09/2026
+
+O painel prioriza entregas concretas, testes aprovados com alcance e faltas por tela. Preserva a exigência do Owner de que 100% signifique aprovação de todos os critérios do recorte. Percentual de critérios aprovados exige uma lista completa e reconciliada de critérios exigidos e suas evidências por ação/camada; enquanto faltar, usar “ainda não calculável”, nunca zero ou estimativa inventada. Não usar quantidade de ações examinadas, commits ou testes de um lote como percentual de implementação.
+
+As contagens conhecidas de ações inteiramente certificadas permanecem em seção separada, com numerador e denominador. Zero nessa medida não apaga implementação ou testes parciais aprovados. Lotes locais aprovados mostram quantidade, falhas, ambiente, data, SHA e fonte; não somar lotes sobrepostos nem extrapolar seu alcance para a tela. O detalhe por ação mostra já feito, falta no cliente, falta no backend e estado E2E, preservando as evidências originais. Nenhuma promoção de status é autorizada pela mudança de apresentação.

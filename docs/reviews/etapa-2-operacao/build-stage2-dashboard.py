@@ -12,6 +12,8 @@ OP = ROOT / 'docs/reviews/etapa-2-operacao'
 METRICS = OP / 'reports/R01-fechamento-metricas.json'
 INVENTORY = ROOT / 'docs/reviews/inventario-etapa-2.json'
 OWNERSHIP = OP / 'assignments/ownership.json'
+INTEGRATION = OP / 'reports/R01-fechamento-integracao.json'
+OWNER_NAMES = {'C01': 'Identidade e acesso', 'C02': 'Forms, mídia e cuidado', 'C03': 'Operações', 'C04': 'Estruturas e pessoas', 'C05': 'Comunicação e Principal'}
 MARKER_START = '<!-- stage2-dashboard:start -->'
 MARKER_END = '<!-- stage2-dashboard:end -->'
 
@@ -70,7 +72,7 @@ def table(headers, rows):
  return '\n'.join(['| '+' | '.join(headers)+' |', '| '+' | '.join(['---']*len(headers))+' |'] + ['| '+' | '.join(cell(v) for v in row)+' |' for row in rows])
 
 def main(write=False):
- inv=load(INVENTORY); metric=load(METRICS); ownership=load(OWNERSHIP)
+ inv=load(INVENTORY); metric=load(METRICS); ownership=load(OWNERSHIP); integration=load(INTEGRATION)
  actions=inv['actions']; own={a['action_id']:a for a in ownership['actions']}
  all_ids={a['id'] for a in actions}; assert len(actions)==len(all_ids)==len(own)==219
  families=list(dict.fromkeys(a['family'] for a in actions)); assert set(families)==set(SUMMARIES)
@@ -92,44 +94,63 @@ def main(write=False):
   title,done,missing=SUMMARIES[family]
   classes=collections.Counter(own[i]['classification'] for i in ids)
   zero='Adiado' if classes['adiada']==len(ids) else 'N/A'
-  row=[title,ratio(len(fa&complete_fe),len(fa),zero),ratio(len(ba&complete_be),len(ba),zero),ratio(len(ea&complete_e2e),len(ea),zero)]
+  row=[title, ' / '.join(sorted({own[i]['executor'] for i in ids})),done,missing,'Adiado' if zero=='Adiado' else 'Ainda não calculável']
   rows.append(row)
   gaps.append([title,done,missing])
   records.append({'family':family,'name':title,'action_ids':sorted(ids),'classes':dict(classes),'frontend_examined_ids':sorted(ids&fe),'backend_examined_ids':sorted(ids&be),'backend_sql_local_ids':sorted(ids&sql),'integration_exercised_ids':sorted(ids&e2e),'frontend_completed_active_ids':sorted(fa&complete_fe),'backend_completed_active_ids':sorted(ba&complete_be),'e2e_completed_active_ids':sorted(ea&complete_e2e),'frontend_active_denominator':len(fa),'backend_active_denominator':len(ba),'e2e_active_denominator':len(ea),'frontend_completed_deferred_ids':sorted((ids-fa)&complete_fe),'done_summary':done,'missing_summary':missing})
+  records[-1]['criteria_approval_percentage']=None
+  records[-1]['criteria_percentage_unavailable_reason']='Required criteria and approved evidence are not yet fully reconciled by action and layer.'
   # Every action has its own actual screen label in the inventory (219 total).
   detailrows=[]
   for a in aa:
    i=a['id'];o=own[i];status='Adiada' if o['classification']=='adiada' else 'Gate formal' if o['classification']=='gate formal' else 'Ativa'
    e2e_status=('Exercitada e concluída' if i in complete_e2e else 'Exercitada parcialmente / não concluída' if i in e2e else 'Não exercitada / não concluída') if i in applicable_e2e else 'Adiada' if status=='Adiada' else 'Gate formal' if status=='Gate formal' else 'N/A'
-   detailrows.append([f"{a['screen']} (`{i}`)",status,'Sim, parcial' if i in fe else 'Sem registro nominal','N/A' if not o['backend_applicable'] else 'Sim, parcial' if i in be else 'Sem registro nominal','Concluído'+(' (indisponibilidade adiada)' if status=='Adiada' else '') if i in complete_fe else 'Pendente','N/A' if not o['backend_applicable'] else 'Concluído' if i in complete_be else status if status!='Ativa' else 'Pendente',e2e_status,a['fe'],a['be']])
+   detailrows.append([f"{a['screen']} (`{i}`)",status,a['done'],a['fe'],a['be'],e2e_status,a['evidence'],a.get('lastEvidenceAt','Sem data nominal')])
    details.append({'action_id':i,'screen':a['screen'],'family':family,'classification':o['classification'],'fe_examined':i in fe,'be_examined':i in be,'e2e_exercised':i in e2e,'fe_completed':i in complete_fe,'be_completed':i in complete_be,'e2e_completed':i in complete_e2e,'frontend_missing':a['fe'],'backend_missing':a['be'],'done':a['done'],'evidence':a['evidence'],'last_evidence_at':a.get('lastEvidenceAt'),'handoff_received_at':a.get('lastHandoffReceivedAt')})
-  records[-1]['details_markdown']=f'### {title}\n\n'+table(['Tela / ação','Escopo','Revisão FE (não é aprovação)','Revisão BE (não é aprovação)','FE aprovado','BE aprovado','Integração real / E2E','Falta no cliente','Falta no backend'],detailrows)
- headers=['Tela / módulo','FE aprovado nos aceites','BE aprovado nos aceites','Integração E2E aprovada']
+  records[-1]['details_markdown']=f'### {title}\n\n'+table(['Tela / ação','Escopo','Já feito / evidência registrada','Falta no front-end','Falta no back-end','Validação ponta a ponta','Fonte da evidência','Última evidência'],detailrows)
+ headers=['Tela / módulo','Frente','Já feito — alcance parcial','O que ainda falta','Percentual dos critérios aprovados']
  numeric=table(headers,rows)
  owner_rows=[];owner_records=[]
  for owner in sorted({o['executor'] for o in own.values()}):
   ids={i for i,o in own.items() if o['executor']==owner};fa=ids&active;ba=fa&applicable_be;ea=ids&applicable_e2e
-  owner_rows.append([owner,ratio(len(fa&complete_fe),len(fa)),ratio(len(ba&complete_be),len(ba)),ratio(len(ea&complete_e2e),len(ea))])
+  owner_rows.append([f'{OWNER_NAMES[owner]} ({owner})',len(fa),'Ainda não calculável','Ver entregas e faltas nas telas abaixo'])
   owner_records.append({'owner':owner,'frontend_approved_ids':sorted(fa&complete_fe),'frontend_active_ids':sorted(fa),'backend_approved_ids':sorted(ba&complete_be),'backend_active_ids':sorted(ba),'e2e_approved_ids':sorted(ea&complete_e2e),'e2e_active_ids':sorted(ea)})
- owner_table=table(['Frente',*headers[1:]],owner_rows)
+ owner_table=table(['Frente de implementação','Ações ativas atribuídas','Percentual dos critérios aprovados','Onde acompanhar'],owner_rows)
  gaps_md=table(['Tela / módulo','Já entregue (parcial)','Para finalizar'],gaps)
- legend=f'''Cálculo conferido em **{now}** a partir de IDs únicos e evidências de R01. Sem novos testes ou certificações nesta apresentação. [IDs, denominadores e faltas por ação](etapa-2-operacao/reports/R01-painel-por-tela.json).
+ tests=integration['tests']
+ test_rows=[]
+ for key,label in [('forms_client','Forms — cliente'),('forms_dto','Forms — conversão de dados'),('forms_domain','Forms — regras de domínio'),('operations_first_batch','Operações — primeiro lote')]:
+  result=tests[key]
+  test_rows.append([label,result['pass'],result['failed'],'Lote local; não cobre todos os aceites da tela'])
+ result=tests['identity_structures_communication_operations']
+ test_rows.append(['Identidade + estruturas + comunicação + operações',result['rerun_pass'],result['rerun_failed'],'Reexecução após correção; lote conjunto, não contagem por frente'])
+ tests_md=table(['Lote de testes','Passaram','Falharam','Alcance'],test_rows)
+ certification=table(['Conclusão completa registrada','Ações aprovadas / ativas aplicáveis'],[
+  ['Front-end — todos os aceites do cliente',ratio(len(complete_fe&active),len(active))],
+  ['Back-end — todos os aceites dos provedores',ratio(len(complete_be&active),len(active&applicable_be))],
+  ['Ponta a ponta — UI normal, backend real, persistência/reload e negativas',ratio(len(complete_e2e&active),len(applicable_e2e))]])
+ legend=f"""Apresentação atualizada em **{now}**. Evidências de fechamento: **{integration['generated_at']}**, código `{integration['code_head']}`. Esta atualização explica os registros existentes; não executou novos testes nem aprovou novas ações.
 
-**Regra corrigida pelo Owner em 09/09: percentual = ações aprovadas nos aceites / ações ativas aplicáveis.** Uma ação só entra no numerador quando todos os seus critérios aplicáveis daquela camada têm evidência de aprovação. 100% significa aprovação de todas as ações do recorte; falha, revisão estática isolada, teste apenas parcial ou falta de evidência não aprovam a ação. Resultados parciais continuam registrados como evidência, sem aumentar esse percentual. Não há percentual de casos de teste aprovados: não existe um plano global de testes com denominador completo que permita calculá-lo.
+**Houve avanço: existem correções entregues e testes aprovados. O aplicativo ainda tem implementação, integração e validação pendentes.** Leia a tabela por tela para distinguir essas partes.
 
-**FE aprovado** = todos os critérios próprios do cliente comprovados; independe da conclusão do backend. **BE aprovado** = todos os critérios e provedores próprios do backend comprovados; independe da UI. **E2E aprovado** = UI normal + backend real + persistência/reload + negativas aplicáveis comprovados. Essas aprovações correspondem à conclusão da respectiva camada; não duplicamos colunas com o mesmo cálculo.
+- **Já feito:** comportamento implementado ou corrigido; quando ainda é candidato/WIP, isso aparece no texto. Os commits efetivamente integrados e publicados estão no [manifesto de integração](etapa-2-operacao/reports/R01-fechamento-integracao.json).
+- **Testes que passaram:** prova limitada ao lote e ambiente indicados. Um lote passar não aprova automaticamente a tela inteira.
+- **O que falta:** critérios ainda abertos de implementação, integração ou validação. O detalhe separa front-end e back-end por ação.
+- **Percentual dos critérios aprovados: ainda não calculável.** Falta reconciliar a lista completa de critérios exigidos com as evidências de aprovação por ação e camada. Não é 0% de implementação. Só poderá chegar a 100% quando todos os critérios do recorte estiverem aprovados.
 
-Os percentuais atuais usam somente ações **ativas**: FE **0/194 — 0%**, BE **0/187 — 0%**, E2E **0/187 — 0%**. Isso significa que a aprovação completa das ações ativas ainda não está registrada; não significa que todos os testes falharam ou que nada foi implementado. As contagens antigas de revisão (198 ações FE e63 BE) ficam históricas e não representam aprovação. Há22adiadas e3gates formais separados;7açõesN/A ao backend. As únicas2certificações FE históricas são a indisponibilidade de `profile-files.import/export`, ambas adiadas; não aumentam a aprovação ativa. N/A não é0%; Adiado não é concluído.
+São **38 famílias de telas e 219 ações**, não 219 testes. Há **194 ações ativas, 22 adiadas e 3 gates formais** (dependem de decisão formal). Das ativas, 187 entram no backend/E2E e 7 não se aplicam ao backend. As contagens históricas de ações examinadas não representam aprovação.
 
-Uma linha agrega uma família de telas/ações. São **38 famílias e219ações/superfícies**, não38testes. O detalhe de cada ação, inclusive o que falta, está no [painel completo](etapa-2-operacao/reports/R01-painel-por-tela.md) e na matriz oficial abaixo. Os contadores não medem percentual de código incorporado em Git: commits selecionados/publicação estão nos manifestos de integração; WIP/candidatos preservados podem ainda estar fora de dev.
-'''
- panel='# Painel por tela da Etapa 2\n\n'+legend.replace('etapa-2-operacao/reports/','')+'\n## Aprovação por frente\n\n'+owner_table+'\n\n## Aprovação por tela\n\n'+numeric+'\n\n## O que falta em cada tela\n\n'+gaps_md+'\n\n## Todas as219ações/superfícies\n\nRevisões parciais aparecem somente como contexto textual. A coluna de aprovação é independente e exige todos os aceites aplicáveis. Fontes e datas estão no JSON correspondente e na matriz de pendências.\n\n'+'\n\n'.join(r.pop('details_markdown') for r in records)
- metadata=f'---\ntitle: "Painel por tela — Etapa 2"\nsource: "inventario-etapa-2.json; assignments/ownership.json; reports/R01-fechamento-metricas.json"\nstatus: "derived-measurement; no-new-certification"\ngenerated_at: "{now}"\n---\n\n'
- payload={'source':'canonical inventory + ownership + R01 final metric evidence','status':'approval-only-percentages; no-new-certification','generated_at':now,'percentage_policy':'All applicable criteria of the layer approved for an active action; partial audit/failure/not-tested does not count.','source_sha256':{str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in [INVENTORY,OWNERSHIP,METRICS]},'historical_review_only':{'frontend_reviewed_count':len(fe),'backend_reviewed_count':len(be),'backend_local_sql_count':len(sql),'integration_exercised_count':len(e2e),'use_as_approval_percentage':False},'totals':{'frontend_approved':len(complete_fe&active),'frontend_active':len(active),'backend_approved':len(complete_be&active),'backend_active':len(active&applicable_be),'e2e_approved':len(complete_e2e&active),'e2e_active':len(applicable_e2e)},'owners':owner_records,'families':records,'actions':details}
+**Como ler os nomes:** E2 = Etapa 2; R01 = rodada 1; C = identificador da conversa. C00 coordena, integra e atualiza as pendências; C01–C05 implementam; C06 coordena operacionalmente as frentes Claude; C07 apoia a validação visual. R02 identificará a próxima rodada. Esses códigos não são percentuais nem quantidades de testes.
+"""
+ proof_intro=f"Resultados registrados no fechamento de 09/09, ambiente local, código `{integration['code_head']}`. Os lotes podem se sobrepor: não somar seus números para calcular cobertura do app. O lote conjunto teve inicialmente 2 falhas; a reexecução abaixo passou após correção. Logs e hashes estão no [manifesto](etapa-2-operacao/reports/R01-fechamento-integracao.json)."
+ cert_intro='Esta é uma medida diferente: conta apenas ações com TODOS os aceites comprovados. Os zeros abaixo são de certificação completa registrada, não de trabalho realizado. Front-end pode ser aprovado sem backend; backend pode ser aprovado sem UI. As 2 aprovações históricas de indisponibilidade de importar/exportar arquivos de perfil estão entre as adiadas e não entram nas ações ativas.'
+ common='## Avanço da Etapa 2 — entregas, testes e faltas\n\n'+legend+'\n### Testes aprovados em lotes delimitados\n\n'+proof_intro+'\n\n'+tests_md+'\n\n### Frentes de implementação\n\n'+owner_table+'\n\n### O que foi feito e falta por tela\n\n'+numeric+'\n\n### Certificação completa — medida separada\n\n'+cert_intro+'\n\n'+certification
+ panel=common.replace('etapa-2-operacao/reports/','').replace('## Avanço da Etapa 2', '# Avanço da Etapa 2',1)+'\n\n## Detalhe das 219 ações\n\nO registro de trabalho e suas fontes não equivale à aprovação de todos os aceites. A evidência original e sua data permitem conferir o alcance.\n\n'+'\n\n'.join(r.pop('details_markdown') for r in records)
+ metadata=f'---\ntitle: "Painel por tela — Etapa 2"\nsource: "inventario-etapa-2.json; assignments/ownership.json; reports/R01-fechamento-metricas.json; reports/R01-fechamento-integracao.json"\nstatus: "derived-measurement; no-new-certification"\ngenerated_at: "{now}"\n---\n\n'
+ payload={'source':'canonical inventory + ownership + R01 final metric evidence','status':'deliveries-and-bounded-test-evidence; full-certification-separate','generated_at':now,'percentage_policy':'Criteria approval percentage is unavailable until the full required criteria ledger is reconciled; 100% requires all criteria approved. Known full-action certification counts remain separate.', 'criteria_approval_percentage':None, 'criteria_denominator':None, 'implementation_percentage':None, 'test_batches':tests, 'test_evidence_source':str(INTEGRATION.relative_to(ROOT)), 'test_code_baseline':integration['code_head'], 'test_evidence_at':integration['generated_at'],'source_sha256':{str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in [INVENTORY,OWNERSHIP,METRICS,INTEGRATION]},'historical_review_only':{'frontend_reviewed_count':len(fe),'backend_reviewed_count':len(be),'backend_local_sql_count':len(sql),'integration_exercised_count':len(e2e),'use_as_approval_percentage':False},'totals':{'frontend_approved':len(complete_fe&active),'frontend_active':len(active),'backend_approved':len(complete_be&active),'backend_active':len(active&applicable_be),'e2e_approved':len(complete_e2e&active),'e2e_active':len(applicable_e2e)},'owners':owner_records,'families':records,'actions':details}
  if write:
   (OP/'reports/R01-painel-por-tela.md').write_text(metadata+panel+'\n',encoding='utf-8')
   (OP/'reports/R01-painel-por-tela.json').write_text(json.dumps(payload,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
-  common='## Painel por tela — aprovação nos aceites\n\n'+legend+'\n### Aprovação por frente\n\n'+owner_table+'\n\n### Aprovação por tela\n\n'+numeric+'\n\n### Entregas parciais e trabalho restante\n\n'+gaps_md
   for name in ['coelo-flutter-pendencias.md','coelo-supabase-pendencias.md','coelo-flutter-integrado-supabase-pendencias.md']:
    path=ROOT/'docs/reviews'/name;s=path.read_text(encoding='utf-8')
    block=MARKER_START+'\n'+common+'\n'+MARKER_END+'\n\n'

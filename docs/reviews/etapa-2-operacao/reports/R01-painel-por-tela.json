@@ -1,12 +1,54 @@
 {
   "source": "canonical inventory + ownership + R01 final metric evidence",
-  "status": "approval-only-percentages; no-new-certification",
-  "generated_at": "2026-09-09T09:24:09-03:00",
-  "percentage_policy": "All applicable criteria of the layer approved for an active action; partial audit/failure/not-tested does not count.",
+  "status": "deliveries-and-bounded-test-evidence; full-certification-separate",
+  "generated_at": "2026-09-09T09:50:02-03:00",
+  "percentage_policy": "Criteria approval percentage is unavailable until the full required criteria ledger is reconciled; 100% requires all criteria approved. Known full-action certification counts remain separate.",
+  "criteria_approval_percentage": null,
+  "criteria_denominator": null,
+  "implementation_percentage": null,
+  "test_batches": {
+    "forms_client": {
+      "pass": 173,
+      "failed": 0
+    },
+    "forms_dto": {
+      "pass": 110,
+      "failed": 0
+    },
+    "forms_domain": {
+      "pass": 6,
+      "failed": 0
+    },
+    "operations_first_batch": {
+      "pass": 74,
+      "failed": 0
+    },
+    "identity_structures_communication_operations": {
+      "initial_pass": 286,
+      "initial_failed": 2,
+      "rerun_pass": 288,
+      "rerun_failed": 0,
+      "reason": "Agora test needed current Continuar step; counters and retry retained"
+    },
+    "flutter_analyze": {
+      "files": 34,
+      "issues": 0
+    },
+    "knowledge_articles": 54,
+    "knowledge_harness": {
+      "pass": 12,
+      "skip": 1,
+      "skip_reason": "host cannot create symlink"
+    }
+  },
+  "test_evidence_source": "docs\\reviews\\etapa-2-operacao\\reports\\R01-fechamento-integracao.json",
+  "test_code_baseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
+  "test_evidence_at": "2026-09-09T08:41:13-03:00",
   "source_sha256": {
     "docs\\reviews\\inventario-etapa-2.json": "5f55f75ac9ae8aa76251f866acb58051a31a82c2ffd6baf564ce3a3bbfe95c1b",
     "docs\\reviews\\etapa-2-operacao\\assignments\\ownership.json": "7749fc9f7f47f99b593bba641e00bf6d476ff6c5b44553db87bc706793e1f89e",
-    "docs\\reviews\\etapa-2-operacao\\reports\\R01-fechamento-metricas.json": "c12c1238aee76f063cbe7df0cfb3b4832097a80c23de4e2d7cb60fca7853ac35"
+    "docs\\reviews\\etapa-2-operacao\\reports\\R01-fechamento-metricas.json": "18da04c1e80bc3f9bdba4052e1a880ac9877c0e961cd28c95b571b214f3c2796",
+    "docs\\reviews\\etapa-2-operacao\\reports\\R01-fechamento-integracao.json": "bc92175145055ded101524f6395b92c2c50f0e5567a5085c71b9b11cfe022392"
   },
   "historical_review_only": {
     "frontend_reviewed_count": 198,
@@ -665,8 +707,8 @@
         "auth.reset"
       ],
       "classes": {
-        "gate formal": 1,
-        "ativa": 4
+        "ativa": 4,
+        "gate formal": 1
       },
       "frontend_examined_ids": [
         "auth.login",
@@ -685,7 +727,9 @@
       "e2e_active_denominator": 4,
       "frontend_completed_deferred_ids": [],
       "done_summary": "Proteções de sessão, recuperação e logout corrigidas.",
-      "missing_summary": "Validar visual/navegação e Auth/SMTP reais; qualificação local I021 pendente."
+      "missing_summary": "Validar visual/navegação e Auth/SMTP reais; qualificação local I021 pendente.",
+      "criteria_approval_percentage": null,
+      "criteria_percentage_unavailable_reason": "Required criteria and approved evidence are not yet fully reconciled by action and layer."
     },
     {
       "family": "shell",
@@ -714,7 +758,9 @@
       "e2e_active_denominator": 0,
       "frontend_completed_deferred_ids": [],
       "done_summary": "Shell e controles compartilhados receberam correções.",
-      "missing_summary": "Completar navegação, permissões, troca de contexto, foco e regressões do cliente."
+      "missing_summary": "Completar navegação, permissões, troca de contexto, foco e regressões do cliente.",
+      "criteria_approval_percentage": null,
+      "criteria_percentage_unavailable_reason": "Required criteria and approved evidence are not yet fully reconciled by action and layer."
     },
     {
       "family": "institutions",
@@ -771,7 +817,9 @@
       "e2e_active_denominator": 11,
       "frontend_completed_deferred_ids": [],
       "done_summary": "Diretório, mapa e correções locais existentes.",
-      "missing_summary": "Criação/edição bloqueadas; 25 de 39 strings descartadas na edição; status, arquivos e visuais pendentes."
+      "missing_summary": "Criação/edição bloqueadas; 25 de 39 strings descartadas na edição; status, arquivos e visuais pendentes.",
+      "criteria_approval_percentage": null,
+      "criteria_percentage_unavailable_reason": "Required criteria and approved evidence are not yet fully reconciled by action and layer."
     },
     {
       "family": "units",
@@ -827,7 +875,9 @@
       "e2e_active_denominator": 10,
       "frontend_completed_deferred_ids": [],
       "done_summary": "Formulários e correções de estado existentes.",
-      "missing_summary": "Composição indisponível e 15 RPCs ausentes; mapa/cópia/status e aceites completos."
+      "missing_summary": "Composição indisponível e 15 RPCs ausentes; mapa/cópia/status e aceites completos.",
+      "criteria_approval_percentage": null,
+      "criteria_percentage_unavailable_reason": "Required criteria and approved evidence are not yet fully reconciled by action and layer."
     },
     {
       "family": "groups",
@@ -870,7 +920,9 @@
       "e2e_active_denominator": 5,
       "frontend_completed_deferred_ids": [],
       "done_summary": "Cliente, formulários e leituras locais existentes.",
-      "missing_summary": "Composição, localização, seleção de membros e contagem correta dos resultados de gravação."
+      "missing_summary": "Composição, localização, seleção de membros e contagem correta dos resultados de gravação.",
+      "criteria_approval_percentage": null,
+      "criteria_percentage_unavailable_reason": "Required criteria and approved evidence are not yet fully reconciled by action and layer."
     },
     {
       "family": "people",
@@ -908,7 +960,9 @@
       "e2e_active_denominator": 5,
       "frontend_completed_deferred_ids": [],
       "done_summary": "Correções de busca, teclado, dados inventados e identidade integradas.",
-      "missing_summary": "Filtros sem servidor, criação/edição, vínculos e correção de avatar retida."
+      "missing_summary": "Filtros sem servidor, criação/edição, vínculos e correção de avatar retida.",
+      "criteria_approval_percentage": null,
+      "criteria_percentage_unavailable_reason": "Required criteria and approved evidence are not yet fully reconciled by action and layer."
     },
     {
       "family": "access_profiles",
@@ -942,7 +996,9 @@
       "e2e_active_denominator": 6,
       "frontend_completed_deferred_ids": [],
       "done_summary": "Erros seguros e correlação de perfil/contexto integrados.",
-      "missing_summary": "Atribuição e critérios completos de cliente, autorização e persistência."
+      "missing_summary": "Atribuição e critérios completos de cliente, autorização e persistência.",
+      "criteria_approval_percentage": null,
+      "criteria_percentage_unavailable_reason": "Required criteria and approved evidence are not yet fully reconciled by action and layer."
     },
     {
       "family": "access_models",
@@ -985,7 +1041,9 @@
       "e2e_active_denominator": 6,
       "frontend_completed_deferred_ids": [],
       "done_summary": "Correlação, busca e adiamento de MFA tratados; prova SQL local existente.",
-      "missing_summary": "Concluir critérios visuais, concorrência e provedores reais por ação."
+      "missing_summary": "Concluir critérios visuais, concorrência e provedores reais por ação.",
+      "criteria_approval_percentage": null,
+      "criteria_percentage_unavailable_reason": "Required criteria and approved evidence are not yet fully reconciled by action and layer."
     },
     {
       "family": "invites",
@@ -1018,7 +1076,9 @@
       "e2e_active_denominator": 5,
       "frontend_completed_deferred_ids": [],
       "done_summary": "Identidade, busca e descarte de respostas antigas corrigidos.",
-      "missing_summary": "Entrega de convite/SMTP, revogação e negativas reais; aceites visuais restantes."
+      "missing_summary": "Entrega de convite/SMTP, revogação e negativas reais; aceites visuais restantes.",
+      "criteria_approval_percentage": null,
+      "criteria_percentage_unavailable_reason": "Required criteria and approved evidence are not yet fully reconciled by action and layer."
     },
     {
       "family": "activities",
@@ -1066,7 +1126,9 @@
       "e2e_active_denominator": 7,
       "frontend_completed_deferred_ids": [],
       "done_summary": "Correções de cliente e replay SQL local de 46 assertivas integrados.",
-      "missing_summary": "Composição/adapters candidatos, localização e prova com duas conexões reais."
+      "missing_summary": "Composição/adapters candidatos, localização e prova com duas conexões reais.",
+      "criteria_approval_percentage": null,
+      "criteria_percentage_unavailable_reason": "Required criteria and approved evidence are not yet fully reconciled by action and layer."
     },
     {
       "family": "assessments",
@@ -1111,7 +1173,9 @@
       "e2e_active_denominator": 5,
       "frontend_completed_deferred_ids": [],
       "done_summary": "Recuperação de erros e fila de fechamento corrigidas.",
-      "missing_summary": "Erro no save de configuração, critérios visuais e persistência/negativas reais."
+      "missing_summary": "Erro no save de configuração, critérios visuais e persistência/negativas reais.",
+      "criteria_approval_percentage": null,
+      "criteria_percentage_unavailable_reason": "Required criteria and approved evidence are not yet fully reconciled by action and layer."
     },
     {
       "family": "students",
@@ -1146,7 +1210,9 @@
       "e2e_active_denominator": 5,
       "frontend_completed_deferred_ids": [],
       "done_summary": "Leitura CHILD e correção de erro do acompanhamento existentes.",
-      "missing_summary": "Vincular, transferir, editar e revogar continuam sem implementação; composição do acompanhamento."
+      "missing_summary": "Vincular, transferir, editar e revogar continuam sem implementação; composição do acompanhamento.",
+      "criteria_approval_percentage": null,
+      "criteria_percentage_unavailable_reason": "Required criteria and approved evidence are not yet fully reconciled by action and layer."
     },
     {
       "family": "attendance",
@@ -1160,8 +1226,8 @@
         "attendance.mark"
       ],
       "classes": {
-        "ativa": 5,
-        "adiada": 1
+        "adiada": 1,
+        "ativa": 5
       },
       "frontend_examined_ids": [
         "attendance.correct",
@@ -1182,7 +1248,9 @@
       "e2e_active_denominator": 5,
       "frontend_completed_deferred_ids": [],
       "done_summary": "Correções de lifecycle e controles locais existentes.",
-      "missing_summary": "Critérios reais de chamada, correção, encerramento e isolamento; exportação geral adiada."
+      "missing_summary": "Critérios reais de chamada, correção, encerramento e isolamento; exportação geral adiada.",
+      "criteria_approval_percentage": null,
+      "criteria_percentage_unavailable_reason": "Required criteria and approved evidence are not yet fully reconciled by action and layer."
     },
     {
       "family": "daily_routine",
@@ -1215,7 +1283,9 @@
       "e2e_active_denominator": 5,
       "frontend_completed_deferred_ids": [],
       "done_summary": "Cliente e preservação de paginação existentes.",
-      "missing_summary": "Erro no diretório, composição produtiva e validação das operações reais."
+      "missing_summary": "Erro no diretório, composição produtiva e validação das operações reais.",
+      "criteria_approval_percentage": null,
+      "criteria_percentage_unavailable_reason": "Required criteria and approved evidence are not yet fully reconciled by action and layer."
     },
     {
       "family": "agenda",
@@ -1250,7 +1320,9 @@
       "e2e_active_denominator": 7,
       "frontend_completed_deferred_ids": [],
       "done_summary": "Rotas existentes e WIP identificado e preservado.",
-      "missing_summary": "Revisar/integrar WIP, calendário produtivo, comandos, localização e visuais."
+      "missing_summary": "Revisar/integrar WIP, calendário produtivo, comandos, localização e visuais.",
+      "criteria_approval_percentage": null,
+      "criteria_percentage_unavailable_reason": "Required criteria and approved evidence are not yet fully reconciled by action and layer."
     },
     {
       "family": "chat",
@@ -1289,7 +1361,9 @@
       "e2e_active_denominator": 7,
       "frontend_completed_deferred_ids": [],
       "done_summary": "Clientes e anexos candidatos; escrita de recibos e contador existentes.",
-      "missing_summary": "Projetar/exibir recibos, editar/revogar, consumidor real de mídia e integração/visuais."
+      "missing_summary": "Projetar/exibir recibos, editar/revogar, consumidor real de mídia e integração/visuais.",
+      "criteria_approval_percentage": null,
+      "criteria_percentage_unavailable_reason": "Required criteria and approved evidence are not yet fully reconciled by action and layer."
     },
     {
       "family": "notices",
@@ -1326,7 +1400,9 @@
       "e2e_active_denominator": 6,
       "frontend_completed_deferred_ids": [],
       "done_summary": "Cliente e correção de layout compacto integrados.",
-      "missing_summary": "Aceites visuais abertos, agendamento/publicação/arquivo reais e negativas."
+      "missing_summary": "Aceites visuais abertos, agendamento/publicação/arquivo reais e negativas.",
+      "criteria_approval_percentage": null,
+      "criteria_percentage_unavailable_reason": "Required criteria and approved evidence are not yet fully reconciled by action and layer."
     },
     {
       "family": "forms_authoring",
@@ -1365,7 +1441,9 @@
       "e2e_active_denominator": 7,
       "frontend_completed_deferred_ids": [],
       "done_summary": "Editor, galeria e datas civis receberam correções.",
-      "missing_summary": "Mídia de pergunta, limites numéricos/texto, Visão geral/Publicar/Testar/Local e aceites completos."
+      "missing_summary": "Mídia de pergunta, limites numéricos/texto, Visão geral/Publicar/Testar/Local e aceites completos.",
+      "criteria_approval_percentage": null,
+      "criteria_percentage_unavailable_reason": "Required criteria and approved evidence are not yet fully reconciled by action and layer."
     },
     {
       "family": "forms_responses",
@@ -1412,7 +1490,9 @@
       "e2e_active_denominator": 6,
       "frontend_completed_deferred_ids": [],
       "done_summary": "Leituras internas, resposta e XLSX têm lotes implementados/testados.",
-      "missing_summary": "Limites numéricos, WIP de data/texto, respostas com mídia/local, versões e ciclo completo do XLSX."
+      "missing_summary": "Limites numéricos, WIP de data/texto, respostas com mídia/local, versões e ciclo completo do XLSX.",
+      "criteria_approval_percentage": null,
+      "criteria_percentage_unavailable_reason": "Required criteria and approved evidence are not yet fully reconciled by action and layer."
     },
     {
       "family": "forms_files",
@@ -1455,7 +1535,9 @@
       "e2e_active_denominator": 5,
       "frontend_completed_deferred_ids": [],
       "done_summary": "Núcleo comum de upload, reader e parte da composição integrados.",
-      "missing_summary": "Consumidores reais, question-image I021, expiração, exclusão física e órfãos no R2."
+      "missing_summary": "Consumidores reais, question-image I021, expiração, exclusão física e órfãos no R2.",
+      "criteria_approval_percentage": null,
+      "criteria_percentage_unavailable_reason": "Required criteria and approved evidence are not yet fully reconciled by action and layer."
     },
     {
       "family": "acontece",
@@ -1486,7 +1568,9 @@
       "e2e_active_denominator": 4,
       "frontend_completed_deferred_ids": [],
       "done_summary": "Cliente, teclado e recuperação de erro integrados; candidatos preservados.",
-      "missing_summary": "Remoção real, mídia/composição e falhas de aceitação visual."
+      "missing_summary": "Remoção real, mídia/composição e falhas de aceitação visual.",
+      "criteria_approval_percentage": null,
+      "criteria_percentage_unavailable_reason": "Required criteria and approved evidence are not yet fully reconciled by action and layer."
     },
     {
       "family": "agora",
@@ -1517,7 +1601,9 @@
       "e2e_active_denominator": 4,
       "frontend_completed_deferred_ids": [],
       "done_summary": "Cliente e recuperação de erro/retry integrados.",
-      "missing_summary": "Composição visual aprovada, expiração, mídia R2/Stream aplicável e reverificação conjunta."
+      "missing_summary": "Composição visual aprovada, expiração, mídia R2/Stream aplicável e reverificação conjunta.",
+      "criteria_approval_percentage": null,
+      "criteria_percentage_unavailable_reason": "Required criteria and approved evidence are not yet fully reconciled by action and layer."
     },
     {
       "family": "momentos",
@@ -1550,7 +1636,9 @@
       "e2e_active_denominator": 4,
       "frontend_completed_deferred_ids": [],
       "done_summary": "Cliente e recuperação de erro integrados; mídia candidata existente.",
-      "missing_summary": "Remoção real, retenção/purga de originais, contrato de mídia e feed real."
+      "missing_summary": "Remoção real, retenção/purga de originais, contrato de mídia e feed real.",
+      "criteria_approval_percentage": null,
+      "criteria_percentage_unavailable_reason": "Required criteria and approved evidence are not yet fully reconciled by action and layer."
     },
     {
       "family": "principal_profile",
@@ -1579,7 +1667,9 @@
       "e2e_active_denominator": 3,
       "frontend_completed_deferred_ids": [],
       "done_summary": "Clientes existentes; edição de perfil cobre biografia.",
-      "missing_summary": "Demais campos/contrato de perfil, feed e circulação de dados reais."
+      "missing_summary": "Demais campos/contrato de perfil, feed e circulação de dados reais.",
+      "criteria_approval_percentage": null,
+      "criteria_percentage_unavailable_reason": "Required criteria and approved evidence are not yet fully reconciled by action and layer."
     },
     {
       "family": "child_safety",
@@ -1611,7 +1701,9 @@
       "e2e_active_denominator": 5,
       "frontend_completed_deferred_ids": [],
       "done_summary": "Cadeia de correções Safety preservada; executor relata testes locais.",
-      "missing_summary": "Revisar/integrar cadeia completa e validar ações/negações com persistência real."
+      "missing_summary": "Revisar/integrar cadeia completa e validar ações/negações com persistência real.",
+      "criteria_approval_percentage": null,
+      "criteria_percentage_unavailable_reason": "Required criteria and approved evidence are not yet fully reconciled by action and layer."
     },
     {
       "family": "health_care",
@@ -1642,7 +1734,9 @@
       "e2e_active_denominator": 4,
       "frontend_completed_deferred_ids": [],
       "done_summary": "Correções locais e contratos existentes.",
-      "missing_summary": "Qualificação care049, permissões internas e CRUD completo comprovado."
+      "missing_summary": "Qualificação care049, permissões internas e CRUD completo comprovado.",
+      "criteria_approval_percentage": null,
+      "criteria_percentage_unavailable_reason": "Required criteria and approved evidence are not yet fully reconciled by action and layer."
     },
     {
       "family": "medication",
@@ -1673,7 +1767,9 @@
       "e2e_active_denominator": 5,
       "frontend_completed_deferred_ids": [],
       "done_summary": "Correções locais preservadas.",
-      "missing_summary": "Fluxos completos, permissões e evidências reais de medicação."
+      "missing_summary": "Fluxos completos, permissões e evidências reais de medicação.",
+      "criteria_approval_percentage": null,
+      "criteria_percentage_unavailable_reason": "Required criteria and approved evidence are not yet fully reconciled by action and layer."
     },
     {
       "family": "imports",
@@ -1710,7 +1806,9 @@
       "e2e_active_denominator": 0,
       "frontend_completed_deferred_ids": [],
       "done_summary": "Indisponibilidade honesta prevista no MVP.",
-      "missing_summary": "Implementação real adiada; manter botões e mensagem sem iniciar operação."
+      "missing_summary": "Implementação real adiada; manter botões e mensagem sem iniciar operação.",
+      "criteria_approval_percentage": null,
+      "criteria_percentage_unavailable_reason": "Required criteria and approved evidence are not yet fully reconciled by action and layer."
     },
     {
       "family": "profile_files",
@@ -1748,7 +1846,9 @@
         "profile-files.import"
       ],
       "done_summary": "Importar/exportar têm indisponibilidade do cliente certificada.",
-      "missing_summary": "Demais aceites da indisponibilidade; execução real permanece adiada."
+      "missing_summary": "Demais aceites da indisponibilidade; execução real permanece adiada.",
+      "criteria_approval_percentage": null,
+      "criteria_percentage_unavailable_reason": "Required criteria and approved evidence are not yet fully reconciled by action and layer."
     },
     {
       "family": "audit",
@@ -1760,8 +1860,8 @@
         "audit.list"
       ],
       "classes": {
-        "ativa": 3,
-        "adiada": 1
+        "adiada": 1,
+        "ativa": 3
       },
       "frontend_examined_ids": [
         "audit.detail",
@@ -1785,7 +1885,9 @@
       "e2e_active_denominator": 3,
       "frontend_completed_deferred_ids": [],
       "done_summary": "Cliente, erros, paginação e bloqueio da exportação geral integrados.",
-      "missing_summary": "SQL Audit ainda 0/145 executados; qualificação real e critérios visuais."
+      "missing_summary": "SQL Audit ainda 0/145 executados; qualificação real e critérios visuais.",
+      "criteria_approval_percentage": null,
+      "criteria_percentage_unavailable_reason": "Required criteria and approved evidence are not yet fully reconciled by action and layer."
     },
     {
       "family": "support",
@@ -1820,7 +1922,9 @@
       "e2e_active_denominator": 6,
       "frontend_completed_deferred_ids": [],
       "done_summary": "Cliente e status idêntico como operação sem efeito integrados.",
-      "missing_summary": "Contrato produtivo, respostas/fechamento reais e visuais pendentes."
+      "missing_summary": "Contrato produtivo, respostas/fechamento reais e visuais pendentes.",
+      "criteria_approval_percentage": null,
+      "criteria_percentage_unavailable_reason": "Required criteria and approved evidence are not yet fully reconciled by action and layer."
     },
     {
       "family": "account",
@@ -1853,7 +1957,9 @@
       "e2e_active_denominator": 3,
       "frontend_completed_deferred_ids": [],
       "done_summary": "Preferências locais e correções de logout existentes.",
-      "missing_summary": "Perfil/sessões, aceites visuais e lifecycle; MFA permanece gate formal."
+      "missing_summary": "Perfil/sessões, aceites visuais e lifecycle; MFA permanece gate formal.",
+      "criteria_approval_percentage": null,
+      "criteria_percentage_unavailable_reason": "Required criteria and approved evidence are not yet fully reconciled by action and layer."
     },
     {
       "family": "catalog",
@@ -1883,7 +1989,9 @@
       "e2e_active_denominator": 4,
       "frontend_completed_deferred_ids": [],
       "done_summary": "Ferramentas e host existentes; auditoria parcial registrada.",
-      "missing_summary": "Conferir fingerprints/publicação e decidir aplicabilidade real de backend sem inventar provedor."
+      "missing_summary": "Conferir fingerprints/publicação e decidir aplicabilidade real de backend sem inventar provedor.",
+      "criteria_approval_percentage": null,
+      "criteria_percentage_unavailable_reason": "Required criteria and approved evidence are not yet fully reconciled by action and layer."
     },
     {
       "family": "plans",
@@ -1921,7 +2029,9 @@
       "e2e_active_denominator": 5,
       "frontend_completed_deferred_ids": [],
       "done_summary": "Cliente e correções de contexto/idempotência existentes.",
-      "missing_summary": "Erro no diretório, identidade 039/051, semântica arquivar/restaurar e vínculos somente leitura."
+      "missing_summary": "Erro no diretório, identidade 039/051, semântica arquivar/restaurar e vínculos somente leitura.",
+      "criteria_approval_percentage": null,
+      "criteria_percentage_unavailable_reason": "Required criteria and approved evidence are not yet fully reconciled by action and layer."
     },
     {
       "family": "meal_plans",
@@ -1956,7 +2066,9 @@
       "e2e_active_denominator": 6,
       "frontend_completed_deferred_ids": [],
       "done_summary": "Cliente e recuperação de erro no diretório integrados.",
-      "missing_summary": "Publicação idempotente retida, mídia e operações reais; visuais restantes."
+      "missing_summary": "Publicação idempotente retida, mídia e operações reais; visuais restantes.",
+      "criteria_approval_percentage": null,
+      "criteria_percentage_unavailable_reason": "Required criteria and approved evidence are not yet fully reconciled by action and layer."
     },
     {
       "family": "internal_users",
@@ -1989,7 +2101,9 @@
       "e2e_active_denominator": 4,
       "frontend_completed_deferred_ids": [],
       "done_summary": "Correlação de identidade e descarte de busca antiga integrados.",
-      "missing_summary": "Critérios completos de criação/edição/suspensão; MFA no gate formal."
+      "missing_summary": "Critérios completos de criação/edição/suspensão; MFA no gate formal.",
+      "criteria_approval_percentage": null,
+      "criteria_percentage_unavailable_reason": "Required criteria and approved evidence are not yet fully reconciled by action and layer."
     },
     {
       "family": "error_pages",
@@ -2024,7 +2138,9 @@
       "e2e_active_denominator": 6,
       "frontend_completed_deferred_ids": [],
       "done_summary": "Telas e ações de erro com provas parciais existentes.",
-      "missing_summary": "Completar mensagens seguras, foco, acessibilidade, retry e contratos aplicáveis."
+      "missing_summary": "Completar mensagens seguras, foco, acessibilidade, retry e contratos aplicáveis.",
+      "criteria_approval_percentage": null,
+      "criteria_percentage_unavailable_reason": "Required criteria and approved evidence are not yet fully reconciled by action and layer."
     },
     {
       "family": "locations",
@@ -2060,7 +2176,9 @@
       "e2e_active_denominator": 4,
       "frontend_completed_deferred_ids": [],
       "done_summary": "Pacote seletivo, leitor e correções locais integrados.",
-      "missing_summary": "Ligação nas superfícies, capacidades por ação, filtros, vínculos e agenda/reservas."
+      "missing_summary": "Ligação nas superfícies, capacidades por ação, filtros, vínculos e agenda/reservas.",
+      "criteria_approval_percentage": null,
+      "criteria_percentage_unavailable_reason": "Required criteria and approved evidence are not yet fully reconciled by action and layer."
     }
   ],
   "actions": [

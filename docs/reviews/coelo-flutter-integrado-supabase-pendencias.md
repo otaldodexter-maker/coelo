@@ -25,119 +25,101 @@ Sincronizados **C01r51, C02r48, C03r33, C04r61, C05final, C06r53 e C07r12**. Fon
 
 - **219 ações**:194 ativas (189mvp+5shellcliente),22adiadas e3gates formais. Backend212 aplicáveis/7não aplicáveis; E2E187 ativas. IDs são ações, não quantidades de testes.
 - **Conclusão FE2/219**, exclusivamente `profile-files.import` e `profile-files.export`, ambas adiadas com indisponibilidade honesta; **FE ativa0/194**, **BE0/212**, **E2E0/187**. Nenhuma promoção nesta consolidação. Zero certificado não significa zero implementado.
-- **Percentual vigente: aprovação nos aceites**, conforme correção do Owner em09/09. A ação só conta após aprovação de todos os critérios aplicáveis da camada. [Painel corrigido por frente e tela](etapa-2-operacao/reports/R01-painel-por-tela.md). Contagens de auditoria parcial permanecem apenas históricas, sem compor esse percentual.
+- **Avanço: entregas, testes aprovados e faltas por tela.** O percentual de critérios aprovados ainda não é calculável sem reconciliar o conjunto completo de critérios. Os contadores de certificação completa abaixo não medem implementação parcial. [Painel legível por frente e tela](etapa-2-operacao/reports/R01-painel-por-tela.md).
 - `pending-verification` preserva implementação existente. FE/BE podem concluir seus critérios próprios separadamente; E2E requer UI normal+backendreal+persistência/reload+negativas. Fixtures e `/dev` não certificam E2E.
 - [Relatório e fila retida](etapa-2-operacao/reports/R01-fechamento-20260909.md):33commits de executores integrados seletivamente nesta manhã e1correção de teste C00; candidatos/WIP permanecem preservados com motivo. Sem deploy/aplicação remota; localhost encerrado.
 - Janela Owner termina16/09/2026 12:20 BRT. ETA total permanece desconhecida: provedores/composição, mídia e critérios reais ainda determinam o término. Nenhuma nova atribuição R02 antes do alinhamento solicitado.
 
 <!-- stage2-dashboard:start -->
-## Painel por tela — aprovação nos aceites
+## Avanço da Etapa 2 — entregas, testes e faltas
 
-Cálculo conferido em **2026-09-09T09:24:09-03:00** a partir de IDs únicos e evidências de R01. Sem novos testes ou certificações nesta apresentação. [IDs, denominadores e faltas por ação](etapa-2-operacao/reports/R01-painel-por-tela.json).
+Apresentação atualizada em **2026-09-09T09:50:02-03:00**. Evidências de fechamento: **2026-09-09T08:41:13-03:00**, código `af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0`. Esta atualização explica os registros existentes; não executou novos testes nem aprovou novas ações.
 
-**Regra corrigida pelo Owner em 09/09: percentual = ações aprovadas nos aceites / ações ativas aplicáveis.** Uma ação só entra no numerador quando todos os seus critérios aplicáveis daquela camada têm evidência de aprovação. 100% significa aprovação de todas as ações do recorte; falha, revisão estática isolada, teste apenas parcial ou falta de evidência não aprovam a ação. Resultados parciais continuam registrados como evidência, sem aumentar esse percentual. Não há percentual de casos de teste aprovados: não existe um plano global de testes com denominador completo que permita calculá-lo.
+**Houve avanço: existem correções entregues e testes aprovados. O aplicativo ainda tem implementação, integração e validação pendentes.** Leia a tabela por tela para distinguir essas partes.
 
-**FE aprovado** = todos os critérios próprios do cliente comprovados; independe da conclusão do backend. **BE aprovado** = todos os critérios e provedores próprios do backend comprovados; independe da UI. **E2E aprovado** = UI normal + backend real + persistência/reload + negativas aplicáveis comprovados. Essas aprovações correspondem à conclusão da respectiva camada; não duplicamos colunas com o mesmo cálculo.
+- **Já feito:** comportamento implementado ou corrigido; quando ainda é candidato/WIP, isso aparece no texto. Os commits efetivamente integrados e publicados estão no [manifesto de integração](etapa-2-operacao/reports/R01-fechamento-integracao.json).
+- **Testes que passaram:** prova limitada ao lote e ambiente indicados. Um lote passar não aprova automaticamente a tela inteira.
+- **O que falta:** critérios ainda abertos de implementação, integração ou validação. O detalhe separa front-end e back-end por ação.
+- **Percentual dos critérios aprovados: ainda não calculável.** Falta reconciliar a lista completa de critérios exigidos com as evidências de aprovação por ação e camada. Não é 0% de implementação. Só poderá chegar a 100% quando todos os critérios do recorte estiverem aprovados.
 
-Os percentuais atuais usam somente ações **ativas**: FE **0/194 — 0%**, BE **0/187 — 0%**, E2E **0/187 — 0%**. Isso significa que a aprovação completa das ações ativas ainda não está registrada; não significa que todos os testes falharam ou que nada foi implementado. As contagens antigas de revisão (198 ações FE e63 BE) ficam históricas e não representam aprovação. Há22adiadas e3gates formais separados;7açõesN/A ao backend. As únicas2certificações FE históricas são a indisponibilidade de `profile-files.import/export`, ambas adiadas; não aumentam a aprovação ativa. N/A não é0%; Adiado não é concluído.
+São **38 famílias de telas e 219 ações**, não 219 testes. Há **194 ações ativas, 22 adiadas e 3 gates formais** (dependem de decisão formal). Das ativas, 187 entram no backend/E2E e 7 não se aplicam ao backend. As contagens históricas de ações examinadas não representam aprovação.
 
-Uma linha agrega uma família de telas/ações. São **38 famílias e219ações/superfícies**, não38testes. O detalhe de cada ação, inclusive o que falta, está no [painel completo](etapa-2-operacao/reports/R01-painel-por-tela.md) e na matriz oficial abaixo. Os contadores não medem percentual de código incorporado em Git: commits selecionados/publicação estão nos manifestos de integração; WIP/candidatos preservados podem ainda estar fora de dev.
+**Como ler os nomes:** E2 = Etapa 2; R01 = rodada 1; C = identificador da conversa. C00 coordena, integra e atualiza as pendências; C01–C05 implementam; C06 coordena operacionalmente as frentes Claude; C07 apoia a validação visual. R02 identificará a próxima rodada. Esses códigos não são percentuais nem quantidades de testes.
 
-### Aprovação por frente
+### Testes aprovados em lotes delimitados
 
-| Frente | FE aprovado nos aceites | BE aprovado nos aceites | Integração E2E aprovada |
+Resultados registrados no fechamento de 09/09, ambiente local, código `af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0`. Os lotes podem se sobrepor: não somar seus números para calcular cobertura do app. O lote conjunto teve inicialmente 2 falhas; a reexecução abaixo passou após correção. Logs e hashes estão no [manifesto](etapa-2-operacao/reports/R01-fechamento-integracao.json).
+
+| Lote de testes | Passaram | Falharam | Alcance |
 | --- | --- | --- | --- |
-| C01 | 0/41 — **0,0%** | 0/34 — **0,0%** | 0/34 — **0,0%** |
-| C02 | 0/32 — **0,0%** | 0/32 — **0,0%** | 0/32 — **0,0%** |
-| C03 | 0/53 — **0,0%** | 0/53 — **0,0%** | 0/53 — **0,0%** |
-| C04 | 0/40 — **0,0%** | 0/40 — **0,0%** | 0/40 — **0,0%** |
-| C05 | 0/28 — **0,0%** | 0/28 — **0,0%** | 0/28 — **0,0%** |
+| Forms — cliente | 173 | 0 | Lote local; não cobre todos os aceites da tela |
+| Forms — conversão de dados | 110 | 0 | Lote local; não cobre todos os aceites da tela |
+| Forms — regras de domínio | 6 | 0 | Lote local; não cobre todos os aceites da tela |
+| Operações — primeiro lote | 74 | 0 | Lote local; não cobre todos os aceites da tela |
+| Identidade + estruturas + comunicação + operações | 288 | 0 | Reexecução após correção; lote conjunto, não contagem por frente |
 
-### Aprovação por tela
+### Frentes de implementação
 
-| Tela / módulo | FE aprovado nos aceites | BE aprovado nos aceites | Integração E2E aprovada |
+| Frente de implementação | Ações ativas atribuídas | Percentual dos critérios aprovados | Onde acompanhar |
 | --- | --- | --- | --- |
-| Entrada e recuperação | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
-| Navegação e contexto | 0/5 — **0,0%** | N/A | N/A |
-| Instituições | 0/11 — **0,0%** | 0/11 — **0,0%** | 0/11 — **0,0%** |
-| Unidades | 0/10 — **0,0%** | 0/10 — **0,0%** | 0/10 — **0,0%** |
-| Turmas | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
-| Pessoas | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
-| Perfis de acesso | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
-| Modelos de acesso | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
-| Convites | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
-| Atividades | 0/7 — **0,0%** | 0/7 — **0,0%** | 0/7 — **0,0%** |
-| Avaliações | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
-| Alunos | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
-| Assiduidade | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
-| Rotina diária | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
-| Agenda | 0/7 — **0,0%** | 0/7 — **0,0%** | 0/7 — **0,0%** |
-| Chat | 0/7 — **0,0%** | 0/7 — **0,0%** | 0/7 — **0,0%** |
-| Avisos / Comunicados | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
-| Formulários — editor | 0/7 — **0,0%** | 0/7 — **0,0%** | 0/7 — **0,0%** |
-| Formulários — respostas | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
-| Formulários — arquivos | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
-| Acontece | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
-| Agora | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
-| Momentos | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
-| Principal — Para Você e perfil | 0/3 — **0,0%** | 0/3 — **0,0%** | 0/3 — **0,0%** |
-| Segurança infantil | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
-| Perfis de cuidado | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
-| Medicação | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
-| Importações gerais | Adiado | Adiado | Adiado |
-| Arquivos de perfil | Adiado | Adiado | Adiado |
-| Auditoria | 0/3 — **0,0%** | 0/3 — **0,0%** | 0/3 — **0,0%** |
-| Suporte | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
-| Minha conta | 0/5 — **0,0%** | 0/3 — **0,0%** | 0/3 — **0,0%** |
-| Catálogo | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
-| Planos | 0/5 — **0,0%** | 0/5 — **0,0%** | 0/5 — **0,0%** |
-| Cardápios | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
-| Usuários internos | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
-| Páginas de erro | 0/6 — **0,0%** | 0/6 — **0,0%** | 0/6 — **0,0%** |
-| Locais | 0/4 — **0,0%** | 0/4 — **0,0%** | 0/4 — **0,0%** |
+| Identidade e acesso (C01) | 41 | Ainda não calculável | Ver entregas e faltas nas telas abaixo |
+| Forms, mídia e cuidado (C02) | 32 | Ainda não calculável | Ver entregas e faltas nas telas abaixo |
+| Operações (C03) | 53 | Ainda não calculável | Ver entregas e faltas nas telas abaixo |
+| Estruturas e pessoas (C04) | 40 | Ainda não calculável | Ver entregas e faltas nas telas abaixo |
+| Comunicação e Principal (C05) | 28 | Ainda não calculável | Ver entregas e faltas nas telas abaixo |
 
-### Entregas parciais e trabalho restante
+### O que foi feito e falta por tela
 
-| Tela / módulo | Já entregue (parcial) | Para finalizar |
-| --- | --- | --- |
-| Entrada e recuperação | Proteções de sessão, recuperação e logout corrigidas. | Validar visual/navegação e Auth/SMTP reais; qualificação local I021 pendente. |
-| Navegação e contexto | Shell e controles compartilhados receberam correções. | Completar navegação, permissões, troca de contexto, foco e regressões do cliente. |
-| Instituições | Diretório, mapa e correções locais existentes. | Criação/edição bloqueadas; 25 de 39 strings descartadas na edição; status, arquivos e visuais pendentes. |
-| Unidades | Formulários e correções de estado existentes. | Composição indisponível e 15 RPCs ausentes; mapa/cópia/status e aceites completos. |
-| Turmas | Cliente, formulários e leituras locais existentes. | Composição, localização, seleção de membros e contagem correta dos resultados de gravação. |
-| Pessoas | Correções de busca, teclado, dados inventados e identidade integradas. | Filtros sem servidor, criação/edição, vínculos e correção de avatar retida. |
-| Perfis de acesso | Erros seguros e correlação de perfil/contexto integrados. | Atribuição e critérios completos de cliente, autorização e persistência. |
-| Modelos de acesso | Correlação, busca e adiamento de MFA tratados; prova SQL local existente. | Concluir critérios visuais, concorrência e provedores reais por ação. |
-| Convites | Identidade, busca e descarte de respostas antigas corrigidos. | Entrega de convite/SMTP, revogação e negativas reais; aceites visuais restantes. |
-| Atividades | Correções de cliente e replay SQL local de 46 assertivas integrados. | Composição/adapters candidatos, localização e prova com duas conexões reais. |
-| Avaliações | Recuperação de erros e fila de fechamento corrigidas. | Erro no save de configuração, critérios visuais e persistência/negativas reais. |
-| Alunos | Leitura CHILD e correção de erro do acompanhamento existentes. | Vincular, transferir, editar e revogar continuam sem implementação; composição do acompanhamento. |
-| Assiduidade | Correções de lifecycle e controles locais existentes. | Critérios reais de chamada, correção, encerramento e isolamento; exportação geral adiada. |
-| Rotina diária | Cliente e preservação de paginação existentes. | Erro no diretório, composição produtiva e validação das operações reais. |
-| Agenda | Rotas existentes e WIP identificado e preservado. | Revisar/integrar WIP, calendário produtivo, comandos, localização e visuais. |
-| Chat | Clientes e anexos candidatos; escrita de recibos e contador existentes. | Projetar/exibir recibos, editar/revogar, consumidor real de mídia e integração/visuais. |
-| Avisos / Comunicados | Cliente e correção de layout compacto integrados. | Aceites visuais abertos, agendamento/publicação/arquivo reais e negativas. |
-| Formulários — editor | Editor, galeria e datas civis receberam correções. | Mídia de pergunta, limites numéricos/texto, Visão geral/Publicar/Testar/Local e aceites completos. |
-| Formulários — respostas | Leituras internas, resposta e XLSX têm lotes implementados/testados. | Limites numéricos, WIP de data/texto, respostas com mídia/local, versões e ciclo completo do XLSX. |
-| Formulários — arquivos | Núcleo comum de upload, reader e parte da composição integrados. | Consumidores reais, question-image I021, expiração, exclusão física e órfãos no R2. |
-| Acontece | Cliente, teclado e recuperação de erro integrados; candidatos preservados. | Remoção real, mídia/composição e falhas de aceitação visual. |
-| Agora | Cliente e recuperação de erro/retry integrados. | Composição visual aprovada, expiração, mídia R2/Stream aplicável e reverificação conjunta. |
-| Momentos | Cliente e recuperação de erro integrados; mídia candidata existente. | Remoção real, retenção/purga de originais, contrato de mídia e feed real. |
-| Principal — Para Você e perfil | Clientes existentes; edição de perfil cobre biografia. | Demais campos/contrato de perfil, feed e circulação de dados reais. |
-| Segurança infantil | Cadeia de correções Safety preservada; executor relata testes locais. | Revisar/integrar cadeia completa e validar ações/negações com persistência real. |
-| Perfis de cuidado | Correções locais e contratos existentes. | Qualificação care049, permissões internas e CRUD completo comprovado. |
-| Medicação | Correções locais preservadas. | Fluxos completos, permissões e evidências reais de medicação. |
-| Importações gerais | Indisponibilidade honesta prevista no MVP. | Implementação real adiada; manter botões e mensagem sem iniciar operação. |
-| Arquivos de perfil | Importar/exportar têm indisponibilidade do cliente certificada. | Demais aceites da indisponibilidade; execução real permanece adiada. |
-| Auditoria | Cliente, erros, paginação e bloqueio da exportação geral integrados. | SQL Audit ainda 0/145 executados; qualificação real e critérios visuais. |
-| Suporte | Cliente e status idêntico como operação sem efeito integrados. | Contrato produtivo, respostas/fechamento reais e visuais pendentes. |
-| Minha conta | Preferências locais e correções de logout existentes. | Perfil/sessões, aceites visuais e lifecycle; MFA permanece gate formal. |
-| Catálogo | Ferramentas e host existentes; auditoria parcial registrada. | Conferir fingerprints/publicação e decidir aplicabilidade real de backend sem inventar provedor. |
-| Planos | Cliente e correções de contexto/idempotência existentes. | Erro no diretório, identidade 039/051, semântica arquivar/restaurar e vínculos somente leitura. |
-| Cardápios | Cliente e recuperação de erro no diretório integrados. | Publicação idempotente retida, mídia e operações reais; visuais restantes. |
-| Usuários internos | Correlação de identidade e descarte de busca antiga integrados. | Critérios completos de criação/edição/suspensão; MFA no gate formal. |
-| Páginas de erro | Telas e ações de erro com provas parciais existentes. | Completar mensagens seguras, foco, acessibilidade, retry e contratos aplicáveis. |
-| Locais | Pacote seletivo, leitor e correções locais integrados. | Ligação nas superfícies, capacidades por ação, filtros, vínculos e agenda/reservas. |
+| Tela / módulo | Frente | Já feito — alcance parcial | O que ainda falta | Percentual dos critérios aprovados |
+| --- | --- | --- | --- | --- |
+| Entrada e recuperação | C01 | Proteções de sessão, recuperação e logout corrigidas. | Validar visual/navegação e Auth/SMTP reais; qualificação local I021 pendente. | Ainda não calculável |
+| Navegação e contexto | C01 | Shell e controles compartilhados receberam correções. | Completar navegação, permissões, troca de contexto, foco e regressões do cliente. | Ainda não calculável |
+| Instituições | C04 | Diretório, mapa e correções locais existentes. | Criação/edição bloqueadas; 25 de 39 strings descartadas na edição; status, arquivos e visuais pendentes. | Ainda não calculável |
+| Unidades | C04 | Formulários e correções de estado existentes. | Composição indisponível e 15 RPCs ausentes; mapa/cópia/status e aceites completos. | Ainda não calculável |
+| Turmas | C04 | Cliente, formulários e leituras locais existentes. | Composição, localização, seleção de membros e contagem correta dos resultados de gravação. | Ainda não calculável |
+| Pessoas | C04 | Correções de busca, teclado, dados inventados e identidade integradas. | Filtros sem servidor, criação/edição, vínculos e correção de avatar retida. | Ainda não calculável |
+| Perfis de acesso | C01 | Erros seguros e correlação de perfil/contexto integrados. | Atribuição e critérios completos de cliente, autorização e persistência. | Ainda não calculável |
+| Modelos de acesso | C01 | Correlação, busca e adiamento de MFA tratados; prova SQL local existente. | Concluir critérios visuais, concorrência e provedores reais por ação. | Ainda não calculável |
+| Convites | C01 | Identidade, busca e descarte de respostas antigas corrigidos. | Entrega de convite/SMTP, revogação e negativas reais; aceites visuais restantes. | Ainda não calculável |
+| Atividades | C03 | Correções de cliente e replay SQL local de 46 assertivas integrados. | Composição/adapters candidatos, localização e prova com duas conexões reais. | Ainda não calculável |
+| Avaliações | C03 | Recuperação de erros e fila de fechamento corrigidas. | Erro no save de configuração, critérios visuais e persistência/negativas reais. | Ainda não calculável |
+| Alunos | C04 | Leitura CHILD e correção de erro do acompanhamento existentes. | Vincular, transferir, editar e revogar continuam sem implementação; composição do acompanhamento. | Ainda não calculável |
+| Assiduidade | C03 | Correções de lifecycle e controles locais existentes. | Critérios reais de chamada, correção, encerramento e isolamento; exportação geral adiada. | Ainda não calculável |
+| Rotina diária | C03 | Cliente e preservação de paginação existentes. | Erro no diretório, composição produtiva e validação das operações reais. | Ainda não calculável |
+| Agenda | C03 | Rotas existentes e WIP identificado e preservado. | Revisar/integrar WIP, calendário produtivo, comandos, localização e visuais. | Ainda não calculável |
+| Chat | C05 | Clientes e anexos candidatos; escrita de recibos e contador existentes. | Projetar/exibir recibos, editar/revogar, consumidor real de mídia e integração/visuais. | Ainda não calculável |
+| Avisos / Comunicados | C05 | Cliente e correção de layout compacto integrados. | Aceites visuais abertos, agendamento/publicação/arquivo reais e negativas. | Ainda não calculável |
+| Formulários — editor | C02 | Editor, galeria e datas civis receberam correções. | Mídia de pergunta, limites numéricos/texto, Visão geral/Publicar/Testar/Local e aceites completos. | Ainda não calculável |
+| Formulários — respostas | C02 | Leituras internas, resposta e XLSX têm lotes implementados/testados. | Limites numéricos, WIP de data/texto, respostas com mídia/local, versões e ciclo completo do XLSX. | Ainda não calculável |
+| Formulários — arquivos | C02 | Núcleo comum de upload, reader e parte da composição integrados. | Consumidores reais, question-image I021, expiração, exclusão física e órfãos no R2. | Ainda não calculável |
+| Acontece | C05 | Cliente, teclado e recuperação de erro integrados; candidatos preservados. | Remoção real, mídia/composição e falhas de aceitação visual. | Ainda não calculável |
+| Agora | C05 | Cliente e recuperação de erro/retry integrados. | Composição visual aprovada, expiração, mídia R2/Stream aplicável e reverificação conjunta. | Ainda não calculável |
+| Momentos | C05 | Cliente e recuperação de erro integrados; mídia candidata existente. | Remoção real, retenção/purga de originais, contrato de mídia e feed real. | Ainda não calculável |
+| Principal — Para Você e perfil | C05 | Clientes existentes; edição de perfil cobre biografia. | Demais campos/contrato de perfil, feed e circulação de dados reais. | Ainda não calculável |
+| Segurança infantil | C02 | Cadeia de correções Safety preservada; executor relata testes locais. | Revisar/integrar cadeia completa e validar ações/negações com persistência real. | Ainda não calculável |
+| Perfis de cuidado | C02 | Correções locais e contratos existentes. | Qualificação care049, permissões internas e CRUD completo comprovado. | Ainda não calculável |
+| Medicação | C02 | Correções locais preservadas. | Fluxos completos, permissões e evidências reais de medicação. | Ainda não calculável |
+| Importações gerais | C03 | Indisponibilidade honesta prevista no MVP. | Implementação real adiada; manter botões e mensagem sem iniciar operação. | Adiado |
+| Arquivos de perfil | C03 | Importar/exportar têm indisponibilidade do cliente certificada. | Demais aceites da indisponibilidade; execução real permanece adiada. | Adiado |
+| Auditoria | C03 | Cliente, erros, paginação e bloqueio da exportação geral integrados. | SQL Audit ainda 0/145 executados; qualificação real e critérios visuais. | Ainda não calculável |
+| Suporte | C03 | Cliente e status idêntico como operação sem efeito integrados. | Contrato produtivo, respostas/fechamento reais e visuais pendentes. | Ainda não calculável |
+| Minha conta | C01 | Preferências locais e correções de logout existentes. | Perfil/sessões, aceites visuais e lifecycle; MFA permanece gate formal. | Ainda não calculável |
+| Catálogo | C03 | Ferramentas e host existentes; auditoria parcial registrada. | Conferir fingerprints/publicação e decidir aplicabilidade real de backend sem inventar provedor. | Ainda não calculável |
+| Planos | C03 | Cliente e correções de contexto/idempotência existentes. | Erro no diretório, identidade 039/051, semântica arquivar/restaurar e vínculos somente leitura. | Ainda não calculável |
+| Cardápios | C03 | Cliente e recuperação de erro no diretório integrados. | Publicação idempotente retida, mídia e operações reais; visuais restantes. | Ainda não calculável |
+| Usuários internos | C01 | Correlação de identidade e descarte de busca antiga integrados. | Critérios completos de criação/edição/suspensão; MFA no gate formal. | Ainda não calculável |
+| Páginas de erro | C01 | Telas e ações de erro com provas parciais existentes. | Completar mensagens seguras, foco, acessibilidade, retry e contratos aplicáveis. | Ainda não calculável |
+| Locais | C04 | Pacote seletivo, leitor e correções locais integrados. | Ligação nas superfícies, capacidades por ação, filtros, vínculos e agenda/reservas. | Ainda não calculável |
+
+### Certificação completa — medida separada
+
+Esta é uma medida diferente: conta apenas ações com TODOS os aceites comprovados. Os zeros abaixo são de certificação completa registrada, não de trabalho realizado. Front-end pode ser aprovado sem backend; backend pode ser aprovado sem UI. As 2 aprovações históricas de indisponibilidade de importar/exportar arquivos de perfil estão entre as adiadas e não entram nas ações ativas.
+
+| Conclusão completa registrada | Ações aprovadas / ativas aplicáveis |
+| --- | --- |
+| Front-end — todos os aceites do cliente | 0/194 — **0,0%** |
+| Back-end — todos os aceites dos provedores | 0/187 — **0,0%** |
+| Ponta a ponta — UI normal, backend real, persistência/reload e negativas | 0/187 — **0,0%** |
 <!-- stage2-dashboard:end -->
 
 ## Matriz vigente por ação

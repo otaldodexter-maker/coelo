@@ -2511,12 +2511,10 @@
     "E2E": "UI normal, backend real, persistência/reload, negativas aplicáveis."
   },
   "current_percentage_policy": {
-    "source": "Owner correction09/09",
-    "at": "2026-09-09T09:24:09-03:00",
-    "label": "Aprovado nos aceites",
-    "numerator": "Active action_ids with all applicable criteria of layer approved",
-    "denominator": "All active action_ids applicable to layer",
-    "partial_audit_counts_are_approval": false,
-    "current_dashboard": "R01-painel-por-tela.json"
+    "at": "2026-09-09T09:50:02-03:00",
+    "rule": "Mostrar entregas e testes delimitados. Percentual de critérios aprovados ainda não calculável até reconciliação completa; certificação de ações é medida separada. 100% exige todos os critérios aprovados.",
+    "dashboard": "R01-painel-por-tela.md",
+    "criteria_approval_percentage": null,
+    "new_certifications": false
   }
 }
