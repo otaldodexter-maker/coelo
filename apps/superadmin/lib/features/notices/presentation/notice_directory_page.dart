@@ -848,7 +848,16 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
       }
     } on NoticeRepositoryException catch (error) {
       if (_isCurrentCommand(generation, requestedRepository)) {
-        _feedback(error.safeMessage);
+        // Conflito de versão e ausência significam que o instantâneo local está
+        // velho. A mensagem já promete "recarregue"; recarregar de fato evita
+        // que o operador repita a mesma versão obsoleta indefinidamente. A
+        // chave de intenção inclui `managementVersion`, então a próxima
+        // tentativa nasce com id novo em vez de reusar o da versão anterior.
+        if (error is NoticeConflictException || error is NoticeNotFoundException) {
+          _refresh(error.safeMessage);
+        } else {
+          _feedback(error.safeMessage);
+        }
       }
     } on Object {
       if (_isCurrentCommand(generation, requestedRepository)) {
