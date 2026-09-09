@@ -28,6 +28,7 @@ void main() {
       login: unavailableSuperadminLogin,
       logout: unavailableSuperadminLogout,
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      allowDevelopmentPreview: true,
       institutionDirectoryRepository: FakeInstitutionDirectoryRepository(),
       onThemeModeChanged: (_) {},
     );
@@ -66,6 +67,7 @@ void main() {
       login: unavailableSuperadminLogin,
       logout: unavailableSuperadminLogout,
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      allowDevelopmentPreview: true,
       institutionDirectoryRepository: repository,
       onThemeModeChanged: (_) {},
     );

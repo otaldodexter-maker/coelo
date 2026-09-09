@@ -44,6 +44,7 @@ void main() {
       login: unavailableSuperadminLogin,
       logout: unavailableSuperadminLogout,
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      allowDevelopmentPreview: true,
       onThemeModeChanged: (_) {},
     );
     addTearDown(router.dispose);
@@ -69,6 +70,7 @@ void main() {
       login: unavailableSuperadminLogin,
       logout: unavailableSuperadminLogout,
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      allowDevelopmentPreview: true,
       activityDirectoryRepository: FakeActivityDirectoryRepository(),
       assessmentRepository: DevelopmentAssessmentRepository(),
       onThemeModeChanged: (_) {},
@@ -140,6 +142,7 @@ void main() {
       login: unavailableSuperadminLogin,
       logout: unavailableSuperadminLogout,
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      allowDevelopmentPreview: true,
       onThemeModeChanged: (_) {},
     );
     addTearDown(router.dispose);
