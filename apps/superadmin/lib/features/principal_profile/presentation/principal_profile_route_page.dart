@@ -99,7 +99,13 @@ final class _PrincipalProfileRoutePageState extends State<PrincipalProfileRouteP
   @override
   void didUpdateWidget(covariant PrincipalProfileRoutePage oldWidget) {
     super.didUpdateWidget(oldWidget);
+    // Membership and person, not only the scope: two contexts can name the same
+    // institution, unit and group and still be a different actor or a different
+    // role, and the server answers the About by the actor. Re-reading is the
+    // fail-closed side of that ambiguity.
     if (identical(oldWidget.aboutRepository, widget.aboutRepository) &&
+        oldWidget.runtimeContext.membershipId == widget.runtimeContext.membershipId &&
+        oldWidget.runtimeContext.personId == widget.runtimeContext.personId &&
         oldWidget.runtimeContext.institutionId == widget.runtimeContext.institutionId &&
         oldWidget.runtimeContext.unitId == widget.runtimeContext.unitId &&
         oldWidget.runtimeContext.groupId == widget.runtimeContext.groupId) {

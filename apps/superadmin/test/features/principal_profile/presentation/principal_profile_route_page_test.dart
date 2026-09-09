@@ -148,6 +148,42 @@ void main() {
     expect(find.text('Unidade Centro'), findsNothing);
   });
 
+  testWidgets('re-reads the About when only the membership changes inside the same scope', (
+    tester,
+  ) async {
+    // The server answers the About by the actor, not by the scope name. Two
+    // contexts can carry the same institution, unit and group and still be a
+    // different membership or role, so the page must ask again instead of
+    // keeping content authorized for the previous one.
+    final repository = _StubAboutRepository(page: null);
+    await pump(tester, repository: repository);
+    await tester.pumpAndSettle();
+    expect(repository.requested, hasLength(1));
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: PrincipalProfileRoutePage(
+          runtimeContext: const PrincipalRuntimeContext(
+            membershipId: 'membership-outra',
+            personId: 'person-1',
+            institutionId: 'institution-1',
+            institutionName: 'Instituição Autorizada',
+            roleCode: 'coordinator',
+            scopeKind: 'unit',
+            unitId: 'unit-1',
+            unitName: 'Unidade Centro',
+          ),
+          aboutRepository: repository,
+          onOpenAgenda: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(repository.requested, hasLength(2));
+  });
+
   testWidgets('never tells a real user the Perfil is a prototype', (tester) async {
     await pump(tester, repository: _StubAboutRepository(page: null));
     await tester.pumpAndSettle();
@@ -192,6 +228,37 @@ void main() {
     expect(repository.requested.single.type, ProfileAboutSubjectType.unit);
     expect(repository.requested.single.institutionId, 'institution-1');
     expect(repository.requested.single.unitId, 'unit-1');
+  });
+
+  testWidgets('does not offer "Ver mais" when there is no bio to expand', (tester) async {
+    // The bio is the authorized `description` field and can legitimately be
+    // absent. An empty paragraph followed by "Ver mais" offers to expand
+    // nothing, and on the real route that reads as content that failed to
+    // arrive rather than as content that does not exist.
+    await pump(tester, repository: _StubAboutRepository(page: null));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('principal-profile-content')), findsOneWidget);
+    expect(find.text('Ver mais'), findsNothing);
+  });
+
+  testWidgets('offers "Ver mais" once the authorized About carries a bio', (tester) async {
+    final page = ProfileAboutPage(
+      subject: subjectOf(context),
+      version: 1,
+      fields: const [
+        ProfileAboutField(
+          key: ProfileAboutFieldKey.description,
+          value: 'Somos uma unidade de educação infantil no centro.',
+        ),
+      ],
+      sections: const [],
+    );
+    await pump(tester, repository: _StubAboutRepository(page: page));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Somos uma unidade de educação infantil no centro.'), findsWidgets);
+    expect(find.text('Ver mais'), findsOneWidget);
   });
 }
 
