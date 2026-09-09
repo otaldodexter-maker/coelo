@@ -158,6 +158,7 @@ import '../../features/notices/domain/notice_repository.dart'
 import '../../features/notices/data/development_notice_repository.dart';
 import '../../features/notices/presentation/notice_directory_page.dart';
 import '../../features/notices/presentation/notice_form_page.dart';
+import '../../features/principal_chat/presentation/principal_chat_page.dart';
 import '../../features/principal_circulars/domain/principal_happens_mixed_feed.dart';
 import '../../features/plans/data/fake_plan_catalog_repository.dart';
 import '../../features/plans/domain/plan_catalog_repository.dart';
@@ -495,6 +496,7 @@ GoRouter createSuperadminRouter({
     subtitle: subtitle,
     currentDestination: destination,
     activityController: operationalActivities,
+    chatUnreadCountLoader: developmentChatRepository.fetchUnreadTotal,
     onDestinationSelected: (value) => _navigateFromDevelopmentShell(context, value),
     child: child,
   );
@@ -510,6 +512,13 @@ GoRouter createSuperadminRouter({
     subtitle: subtitle,
     currentDestination: destination,
     activityController: operationalActivities,
+    // O launcher só afirma contagem quando existe repositório autorizado.
+    // `UnavailableChatRepository.fetchUnreadTotal` devolve 0, e um zero
+    // silencioso é indistinguível de "não há não lidas": passar null faz o
+    // launcher não afirmar nada em vez de afirmar algo falso.
+    chatUnreadCountLoader: chatRepository is UnavailableChatRepository
+        ? null
+        : chatRepository.fetchUnreadTotal,
     onDestinationSelected: (value) => _navigateFromPersistentShell(context, value),
     child: child,
   );
@@ -740,10 +749,17 @@ GoRouter createSuperadminRouter({
           onOpenNow: () => context.pushNamed(SuperadminRoutes.devPrincipalNowName),
           onPublishNow: () => context.goNamed(SuperadminRoutes.devPrincipalNowPublicationName),
           onCreatePost: () => context.goNamed(SuperadminRoutes.devPrincipalHappensPublishName),
-          onOpenMessages: () => context.goNamed(
-            SuperadminRoutes.devConversationsName,
-            queryParameters: const {'from': 'principal'},
-          ),
+          onOpenMessages: () =>
+              context.goNamed(SuperadminRoutes.devPrincipalConversationsName),
+        ),
+      ),
+      GoRoute(
+        path: SuperadminRoutes.devPrincipalConversations,
+        name: SuperadminRoutes.devPrincipalConversationsName,
+        builder: (context, state) => PrincipalChatPage(
+          chatRepository: developmentChatRepository,
+          onBack: () => context.goNamed(SuperadminRoutes.devPrincipalHappensName),
+          onOpenProfile: () => context.goNamed(SuperadminRoutes.devPrincipalProfileName),
         ),
       ),
       GoRoute(
@@ -810,6 +826,13 @@ GoRouter createSuperadminRouter({
                   onDestinationSelected: (destination) => developmentPreview
                       ? _navigateFromDevelopmentShell(context, destination)
                       : _navigateFromPersistentShell(context, destination),
+                  // Mesma regra do shell de produção: sem repositório
+                  // autorizado o launcher não afirma contagem alguma.
+                  chatUnreadCountLoader: developmentPreview
+                      ? developmentChatRepository.fetchUnreadTotal
+                      : chatRepository is UnavailableChatRepository
+                      ? null
+                      : chatRepository.fetchUnreadTotal,
                   onBugReportSubmitted: developmentPreview
                       ? developmentSupportController.submitReport
                       : productionSupportController?.submitReport,
@@ -861,10 +884,8 @@ GoRouter createSuperadminRouter({
                   onCreatePost: () => context.goNamed(SuperadminRoutes.principalHappensPublishName),
                   onOpenNow: () => context.pushNamed(SuperadminRoutes.principalNowName),
                   onPublishNow: () => context.goNamed(SuperadminRoutes.principalNowPublicationName),
-                  onOpenMessages: () => context.goNamed(
-                    SuperadminRoutes.conversationsName,
-                    queryParameters: const {'from': 'principal'},
-                  ),
+                  onOpenMessages: () =>
+                      context.goNamed(SuperadminRoutes.principalConversationsName),
                 );
               },
             ),
@@ -1029,10 +1050,7 @@ GoRouter createSuperadminRouter({
                   onOpenAgenda: () => context.goNamed(SuperadminRoutes.agendaName),
                   onOpenProfile: () => context.goNamed(SuperadminRoutes.principalProfileName),
                   onOpenActivities: () => context.goNamed(SuperadminRoutes.activitiesName),
-                  onOpenMessages: () => context.goNamed(
-                    SuperadminRoutes.conversationsName,
-                    queryParameters: const {'from': 'principal'},
-                  ),
+                  onOpenMessages: () => context.goNamed(SuperadminRoutes.principalConversationsName),
                 );
               },
             ),
@@ -1069,14 +1087,8 @@ GoRouter createSuperadminRouter({
                 onOpenForYou: () => context.goNamed(SuperadminRoutes.principalForYouName),
                 onOpenMoments: () => context.pushNamed(SuperadminRoutes.principalMomentsName),
                 onPublishNow: () => context.goNamed(SuperadminRoutes.principalNowPublicationName),
-                onMessage: () => context.goNamed(
-                  SuperadminRoutes.conversationsName,
-                  queryParameters: const {'from': 'principal'},
-                ),
-                onOpenMessages: () => context.goNamed(
-                  SuperadminRoutes.conversationsName,
-                  queryParameters: const {'from': 'principal'},
-                ),
+                onMessage: () => context.goNamed(SuperadminRoutes.principalConversationsName),
+                onOpenMessages: () => context.goNamed(SuperadminRoutes.principalConversationsName),
               ),
             ),
           ),
@@ -1095,6 +1107,25 @@ GoRouter createSuperadminRouter({
                 );
               },
             ),
+          ),
+          // Chat contextual do Coelo (Principal): composicao propria da familia
+          // Principal sobre o ChatRepository compartilhado. Substitui o desvio
+          // para a pagina administrativa, onde `?from=principal` so trocava o
+          // botao voltar. Falha fechada quando a composicao nao injeta um
+          // repository produtivo, em vez de exibir uma superficie sem backend
+          // autorizado. Declarada dentro da ShellRoute para que o shell/menu
+          // hospedeiro seja preservado, como as demais rotas Principal.
+          GoRoute(
+            path: SuperadminRoutes.principalConversations,
+            name: SuperadminRoutes.principalConversationsName,
+            builder: (context, state) => chatRepository is UnavailableChatRepository
+                ? _unavailableCompositionRootRoute(context)
+                : PrincipalChatPage(
+                    chatRepository: chatRepository,
+                    embedded: true,
+                    onBack: () => context.goNamed(SuperadminRoutes.principalHappensName),
+                    onOpenProfile: () => context.goNamed(SuperadminRoutes.principalProfileName),
+                  ),
           ),
           GoRoute(
             path: SuperadminRoutes.login,
@@ -5009,6 +5040,11 @@ GoRouter createSuperadminRouter({
               return SuperadminChatPage(
                 logout: _previewLogout,
                 chatRepository: developmentChatRepository,
+                // A preview precisa exercer a mesma capacidade da rota real;
+                // sem estas dependências o tile de anexo nunca abre imagem e a
+                // preview vira evidência falsa de que está tudo bem.
+                mediaReader: mediaReader,
+                mediaSession: mediaSession,
                 currentDestination: origin == 'principal' ? 'principal-chat' : 'conversations',
                 onBack: () => context.goNamed(switch (origin) {
                   'home' => SuperadminRoutes.devHomeName,
@@ -5850,10 +5886,7 @@ void _navigateFromDevelopmentShell(BuildContext context, String destination) {
     case 'principal-now-publish':
       context.goNamed(SuperadminRoutes.devPrincipalNowPublicationName);
     case 'principal-chat':
-      context.goNamed(
-        SuperadminRoutes.devConversationsName,
-        queryParameters: const {'from': 'principal'},
-      );
+      context.goNamed(SuperadminRoutes.devPrincipalConversationsName);
     case 'principal-profile':
       context.goNamed(SuperadminRoutes.devPrincipalProfileName);
   }
