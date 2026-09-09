@@ -13,9 +13,9 @@ a auth.login/recover/reset/logout. Não é execução Auth real nem aceite E2E.
 ## Artefatos e prova atual
 
 - `packages/coelo_database/scripts/Test-R02AuthProofConcurrency.ps1`:
-  SHA256 `A59EBF2C9563E3327999ADE2AF070ECA85338376CC2A66DEFBA744D2B6F7D860`.
+  SHA256 `DD6B6336C967AB1A06491D0F01D6B04F2789F3898E2E696FE08131791CE8579E`.
 - `packages/coelo_database/scripts/tests/Test-R02AuthProofConcurrency.Tests.ps1`:
-  SHA256 `7DF7C05328B4B34722AD1A1E1626918FB1438082ED12C3F803A644303DDADF1C`.
+  SHA256 `B24F1B11B9BE85B2B5E5E1F35E16A880F99C942FB3C8E5115B96DDF163DBD10C`.
 - Dependência fixada, `r02-d01-auth-proof-executor.mjs`:
   SHA256 `8A5ABFBAECB1DC4134542F3F016837CC51521C3CCF1C6F61BD9DE84F45BC2E86`.
 
@@ -133,3 +133,9 @@ este lote. D00 mantém stage/commit, slot e qualificação final.
 Primeiro replay AuthOnly47 aplicou migrations e passou lifecycle real GoTrue/Mailpit/PostgREST. Concorrencia parou antes do primeiro cenario com ARGUMENTS_NOT_ALLOWED: Node-e posicionava executorPath em argv1, ativando a propria guarda CLI ao importar. Nao foi falha de autorizacao nem6testesexecutados. Session13406 exit1; teardown confirmado sem container/volume/network eTEMPproprioausente. Log auth-proof-first-replay-blocked.log.
 
 Harness corrigido sem alterar executor nominal: sentinelargv1, pathargv2, action/expiry slice3. Dois testes novos executam o generator real offline para provision/cleanup e exigem Nodeexit0, unicaJSON e SQLreal. RED8P2F; GREEN10P0F (8anteriores+2novos). Primeira saida shell1 foi warningRTK redirecionado; confirmacao explicita shell0 ja emcurso terminou sem aumentarcontagem. Logs/XML auth-proof-generator-{red,green,green-confirmed} preservados. SQL6 seguem bloqueados ate novo replay corrigido; dados ficticios permanecem locais e cleanup anterior confirmado.
+
+## Fixture terminal preservada - 2026-09-09T15:23:14-03:00
+
+Segundaexecucao33680: lifecyclePASS, erroSQLgenerico antesdeemitirresumosporcaso. Naoha resultadoindividualpreservado que permita certificar qualquer dos6; permanecemB. Cleanup confirmado para coelo_safe_575e12545cef49c383f0fecf36a43 (container/volume/networkausentes eTEMPfalse). Log auth-proof-second-replay-blocked.log. Inspecao encontrou reset de membershiprevogada, proibido pelo guardterminal canonico.
+
+Correcaosemrelaxarguards: ordenar session/JWT antesmembership; cleanup cria nova membership503 enquanto501permanece revogada e502mantem segundoOwner. Revogacao incrementaversao. Preflight inclui503 e papeisativos. Marcadoresporcaso trazem hashSQL e quantidadeconcluida; falhas trazemfase/caso/SQLSTATE e textoallowlisted, semSQL/DETAIL/tokens. TDDoffline10P3F->13P0F, shell0, logs/XMLauth-proof-terminal-red/green. TrezeIDs totais, nao13novos. SeisSQL aguardamterceiraexecucao aposAMR; executor8A5intacto. Ausenciadediagnosticoanteriornaoeprovafalhadeproduto.

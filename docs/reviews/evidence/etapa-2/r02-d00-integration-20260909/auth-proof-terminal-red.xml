@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="13" errors="0" failures="3" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-09-09" time="15:17:58">
+  <environment user="adrie" machine-name="LAPTOP-67A8F4LK" cwd="C:\Users\adrie\Documents\Coelo" user-domain="LAPTOP-67A8F4LK" platform="Microsoft Windows 11 Home|C:\WINDOWS|\Device\Harddisk0\Partition3" nunit-version="2.5.8.0" os-version="10.0.26200" clr-version="4.0.30319.42000" />
+  <culture-info current-culture="pt-BR" current-uiculture="pt-BR" />
+  <test-suite type="Powershell" name="Pester" executed="True" result="Failure" success="False" time="16.1899" asserts="0">
+    <results>
+      <test-suite type="TestFixture" name="R02 Auth proof concurrency local harness" executed="True" result="Failure" success="False" time="13.0963" asserts="0" description="R02 Auth proof concurrency local harness">
+        <results>
+          <test-case description="preserves terminal membership history and uses a fresh active membership for cleanup" name="R02 Auth proof concurrency local harness.preserves terminal membership history and uses a fresh active membership for cleanup" time="3.8844" asserts="0" success="False" result="Failure" executed="True">
+            <failure>
+              <message>Expected: {True}
+But was:  {False}</message>
+              <stack-trace>at line: 5 in C:\Users\adrie\Documents\Coelo\packages\coelo_database\scripts\tests\Test-R02AuthProofConcurrency.Tests.ps1
+5:     ($source -match "foreach \(\$scenario in @\('session','jwt','membership'\)\)") | Should Be $true</stack-trace>
+            </failure>
+          </test-case>
+          <test-case description="reports bounded SQLSTATE and known error text without SQL or token details" name="R02 Auth proof concurrency local harness.reports bounded SQLSTATE and known error text without SQL or token details" time="1.1785" asserts="0" success="False" result="Failure" executed="True">
+            <failure>
+              <message>Expected: {1}
+But was:  {0}</message>
+              <stack-trace>at line: 17 in C:\Users\adrie\Documents\Coelo\packages\coelo_database\scripts\tests\Test-R02AuthProofConcurrency.Tests.ps1
+17:     $definition.Count | Should Be 1</stack-trace>
+            </failure>
+          </test-case>
+          <test-case description="emits each completed case before the next and annotates local failures" name="R02 Auth proof concurrency local harness.emits each completed case before the next and annotates local failures" time="0.102" asserts="0" success="False" result="Failure" executed="True">
+            <failure>
+              <message>Expected: {True}
+But was:  {False}</message>
+              <stack-trace>at line: 27 in C:\Users\adrie\Documents\Coelo\packages\coelo_database\scripts\tests\Test-R02AuthProofConcurrency.Tests.ps1
+27:     ($source.Contains('AUTH_PROOF_CASE_PASS case=$case')) | Should Be $true</stack-trace>
+            </failure>
+          </test-case>
+          <test-case description="parses without errors" name="R02 Auth proof concurrency local harness.parses without errors" time="0.2078" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="describes exactly six distinct cases without resources" name="R02 Auth proof concurrency local harness.describes exactly six distinct cases without resources" time="0.6391" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="rejects a foreign project before Docker discovery" name="R02 Auth proof concurrency local harness.rejects a foreign project before Docker discovery" time="1.1947" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="rejects missing ownership marker before Docker discovery" name="R02 Auth proof concurrency local harness.rejects missing ownership marker before Docker discovery" time="1.405" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="rejects a stale executor hash before Docker discovery" name="R02 Auth proof concurrency local harness.rejects a stale executor hash before Docker discovery" time="1.1295" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="uses real generated SQL, observed blocking and strict negative receipts" name="R02 Auth proof concurrency local harness.uses real generated SQL, observed blocking and strict negative receipts" time="0.8713" asserts="0" success="True" result="Success" executed="True" />
+          <test-suite type="ParameterizedTest" name="R02 Auth proof concurrency local harness.generates real &lt;action&gt; SQL offline without invoking the executor CLI" executed="True" result="Success" success="True" time="2.484" asserts="0" description="generates real &lt;action&gt; SQL offline without invoking the executor CLI">
+            <results>
+              <test-case description="generates real provision SQL offline without invoking the executor CLI" name="R02 Auth proof concurrency local harness.generates real provision SQL offline without invoking the executor CLI" time="1.5429" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="generates real cleanup SQL offline without invoking the executor CLI" name="R02 Auth proof concurrency local harness.generates real cleanup SQL offline without invoking the executor CLI" time="0.9411" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="R02 Auth proof wrapper integration" executed="True" result="Success" success="True" time="3.0937" asserts="0" description="R02 Auth proof wrapper integration">
+        <results>
+          <test-case description="exposes a separate explicit proof switch" name="R02 Auth proof wrapper integration.exposes a separate explicit proof switch" time="1.2867" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="rejects incompatible combinations before starting resources" name="R02 Auth proof wrapper integration.rejects incompatible combinations before starting resources" time="1.807" asserts="0" success="True" result="Success" executed="True" />
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

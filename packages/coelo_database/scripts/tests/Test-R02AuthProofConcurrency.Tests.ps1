@@ -1,5 +1,35 @@
 $harnessPath = Join-Path $PSScriptRoot '..\Test-R02AuthProofConcurrency.ps1'
 Describe 'R02 Auth proof concurrency local harness' {
+  It 'preserves terminal membership history and uses a fresh active membership for cleanup' {
+    $source=[IO.File]::ReadAllText($harnessPath)
+    ($source.Contains('foreach ($scenario in @(''session'',''jwt'',''membership''))')) | Should Be $true
+    ($source.Contains("set status='active',revoked_at=null")) | Should Be $false
+    ($source.Contains("a9020000-0000-4000-8000-000000000503")) | Should Be $true
+    ($source -match "set status='revoked',revoked_at=clock_timestamp\(\),version=version\+1") | Should Be $true
+  }
+
+  It 'reports bounded SQLSTATE and known error text without SQL or token details' {
+    $tokens=$null; $errors=$null
+    $ast=[Management.Automation.Language.Parser]::ParseFile($harnessPath,[ref]$tokens,[ref]$errors)
+    $definition=@($ast.FindAll({param($node)
+      $node -is [Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -eq 'Get-SqlDiagnostic'
+    },$true))
+    $definition.Count | Should Be 1
+    . ([scriptblock]::Create($definition[0].Extent.Text))
+    $diagnostic=Get-SqlDiagnostic "ERROR:  55000: revoked internal access is terminal`nCONTEXT: SQL statement secret-token-and-whole-sql"
+    $diagnostic | Should Be 'sqlstate=55000 error=revoked internal access is terminal'
+    (Get-SqlDiagnostic 'ERROR: 23505: private-token-unknown-message') | Should Be 'sqlstate=23505 error=unclassified local database error'
+    ($diagnostic -match 'secret|CONTEXT|SQL statement') | Should Be $false
+  }
+
+  It 'emits each completed case before the next and annotates local failures' {
+    $source=[IO.File]::ReadAllText($harnessPath)
+    ($source.Contains('AUTH_PROOF_CASE_PASS case=$case')) | Should Be $true
+    ($source.Contains('AUTH_PROOF_CASE_FAIL phase=$proofPhase case=$proofCase completed=$($results.Count)')) | Should Be $true
+    ($source.Contains('Get-SqlDiagnostic $stderr')) | Should Be $true
+    ($source.Contains('--set VERBOSITY=verbose')) | Should Be $true
+  }
+
   It 'generates real <action> SQL offline without invoking the executor CLI' -TestCases @(
     @{action='provision'}, @{action='cleanup'}
   ) {
