@@ -30,7 +30,7 @@ ReservasD00r4 aplicadas em ef1927f2d/1ac0a364a; integração central pendente.
 | access-models.create | Principal mapeia group para child_context; menu limitado | Composição e persistência real |
 | access-models.detail | Capabilities não viram contagem de vínculos | Runtime autorizado e visual |
 | access-models.edit | Escopo Principal e contagem corrigidos | Persistência/recarga real por ator |
-| access-models.duplicate | Rota autorizada/callback em1ac0a364a;4P | Quatro casos restantes da consolidação; runtime real |
+| access-models.duplicate | Rota1ac0a364a+denial82f08af50;plano8P/U0 evalidation1P | Integração central do sucessor; runtime real |
 | invites.list | Debounce invalida retorno anterior;negação de leitura descarta comandos/overlays | Runtime do diretório com persona qualificada |
 | invites.create | Wizard invalida contexto e preserva seleção | Persona/SMTP e envio real nominal |
 | invites.detail | Link HTTPS/origem/token restritos | Flag normal aplicadaef1927f2d e5P; runtime real |
