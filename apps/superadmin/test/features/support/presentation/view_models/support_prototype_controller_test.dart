@@ -394,6 +394,22 @@ void main() {
     expect(created.requesterContext, same(sessionContext));
   });
 
+  test('same support status is a no-op', () {
+    final later = fixedNow.add(const Duration(minutes: 1));
+    final controller = SupportPrototypeController(
+      initialTickets: [ticket(id: 'SUP-1', status: SupportTicketStatus.newRequest)],
+      clock: () => later,
+    );
+    var notifications = 0;
+    controller.addListener(() => notifications += 1);
+    addTearDown(controller.dispose);
+
+    expect(controller.changeStatus('SUP-1', SupportTicketStatus.newRequest), isFalse);
+    expect(controller.tickets.single.updatedAt, fixedNow);
+    expect(controller.tickets.single.activities, isEmpty);
+    expect(notifications, 0);
+  });
+
   test('changes and closes a ticket status', () {
     final controller = SupportPrototypeController(
       initialTickets: [ticket(id: 'SUP-1', status: SupportTicketStatus.newRequest)],
