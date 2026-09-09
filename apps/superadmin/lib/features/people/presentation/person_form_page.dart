@@ -344,7 +344,6 @@ final class _PersonFormPageState extends State<PersonFormPage> {
           _viewModel.firstName,
           _viewModel.lastName,
           _viewModel.displayName,
-          _viewModel.legalName,
         ].any((value) => value.trim().isEmpty)) {
       setState(() => _identityError = 'Informe os campos obrigatórios.');
       return;
@@ -554,7 +553,7 @@ final class _PersonFormPageState extends State<PersonFormPage> {
     controller: _controllers[id]!,
     labelText: label,
     prefixIcon: Icons.badge_outlined,
-    errorText: _identityError != null && _controllers[id]!.text.trim().isEmpty
+    errorText: id != 'legalName' && _identityError != null && _controllers[id]!.text.trim().isEmpty
         ? 'Campo obrigatório'
         : null,
   );

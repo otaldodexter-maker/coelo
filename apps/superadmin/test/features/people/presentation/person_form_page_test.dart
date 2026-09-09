@@ -16,6 +16,33 @@ import 'package:go_router/go_router.dart';
 import '../../../support/people/fake_person_directory_repository.dart';
 
 void main() {
+  testWidgets('optional legal name does not prevent continuing or saving a person', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final repository = FakePersonDirectoryRepository(seed: const []);
+    await tester.pumpWidget(_app(repository: repository));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('person-form-continue')));
+    await tester.pumpAndSettle();
+    expect(find.text('Campo obrigatório'), findsNWidgets(3));
+    for (final entry in const {
+      'person-first-name-field': 'Nome',
+      'person-last-name-field': 'Sintético',
+      'person-display-name-field': 'Nome Sintético',
+    }.entries) {
+      await tester.enterText(find.byKey(Key(entry.key)), entry.value);
+    }
+    await tester.tap(find.byKey(const Key('person-form-continue')));
+    await tester.pumpAndSettle();
+    expect(find.text('Informe os campos obrigatórios.'), findsNothing);
+    await tester.tap(find.byKey(const Key('person-form-continue')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('person-form-save')));
+    await tester.pumpAndSettle();
+    expect(repository.people, hasLength(1));
+    expect(repository.people.single.displayName, 'Nome Sintético');
+  });
+
   testWidgets('person identity step includes the compact address map state', (tester) async {
     await tester.pumpWidget(_app());
     await tester.pumpAndSettle();
@@ -84,11 +111,7 @@ void main() {
 
     // A box that cannot answer must not invite an answer.
     for (final key in const ['person-adult-link-search', 'person-child-link-search']) {
-      expect(
-        tester.widget<CoeloSearchField>(find.byKey(Key(key))).enabled,
-        isFalse,
-        reason: key,
-      );
+      expect(tester.widget<CoeloSearchField>(find.byKey(Key(key))).enabled, isFalse, reason: key);
     }
   });
 

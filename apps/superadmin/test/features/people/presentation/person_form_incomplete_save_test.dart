@@ -35,7 +35,15 @@ void main() {
     await expectLater(viewModel.save(), completes);
   });
 
-  for (final field in const ['first', 'last', 'display', 'legal']) {
+  test('legal name is optional under spec019', () async {
+    final viewModel = model();
+    addTearDown(viewModel.dispose);
+    fill(viewModel);
+    viewModel.legalName = '';
+    await expectLater(viewModel.save(), completes);
+  });
+
+  for (final field in const ['first', 'last', 'display']) {
     test('clearing the $field name after filling it refuses with an Exception', () async {
       // The reachable path: the form was complete enough to advance, and the
       // field was emptied afterwards.
@@ -49,8 +57,6 @@ void main() {
           viewModel.lastName = '';
         case 'display':
           viewModel.displayName = '  ';
-        case 'legal':
-          viewModel.legalName = '';
       }
 
       await expectLater(
