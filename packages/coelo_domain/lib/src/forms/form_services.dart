@@ -31,8 +31,14 @@ final class FormAnswerNormalizer {
   }) {
     return Map.unmodifiable({
       for (final entry in answers.entries)
-        if (visibleItemIds.contains(entry.key)) entry.key: _normalizeAnswer(entry.value),
+        if (visibleItemIds.contains(entry.key) && !_hasEmptyAssets(entry.value))
+          entry.key: _normalizeAnswer(entry.value),
     });
+  }
+
+  bool _hasEmptyAssets(FormAnswer answer) {
+    final value = answer.value;
+    return value is FormAssetValue && value.assetIds.isEmpty;
   }
 
   FormAnswer _normalizeAnswer(FormAnswer answer) {
