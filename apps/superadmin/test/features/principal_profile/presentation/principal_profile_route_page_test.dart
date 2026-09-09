@@ -159,6 +159,30 @@ void main() {
     expect(find.textContaining('experiência completa'), findsNothing);
   });
 
+  testWidgets('an About without content is distinguishable from a failure', (tester) async {
+    // No published Sobre is not the same as a broken Sobre: the profile renders
+    // with its authorized identity and the tab says the content is pending.
+    await pump(tester, repository: _StubAboutRepository(page: null));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('principal-profile-content')), findsOneWidget);
+    expect(find.byKey(const Key('principal-profile-error')), findsNothing);
+    expect(find.byKey(const Key('principal-profile-unauthorized')), findsNothing);
+
+    await tester.tap(find.text('Sobre'));
+    await tester.pumpAndSettle();
+    expect(find.text('Sobre ainda não publicado'), findsOneWidget);
+  });
+
+  testWidgets('a failure never renders as a profile without content', (tester) async {
+    await pump(tester, repository: _StubAboutRepository(error: ProfileAboutUnavailableException()));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('principal-profile-error')), findsOneWidget);
+    expect(find.byKey(const Key('principal-profile-content')), findsNothing);
+    expect(find.text('Tentar novamente'), findsOneWidget);
+  });
+
   testWidgets('requests the About page for the authorized subject only', (tester) async {
     final repository = _StubAboutRepository(page: null);
     await pump(tester, repository: repository);

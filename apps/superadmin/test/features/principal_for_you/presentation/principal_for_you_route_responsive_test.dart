@@ -392,6 +392,50 @@ void main() {
     });
   });
 
+  group('context and state distinction', () {
+    testWidgets('an empty hub by audience is distinguishable from a failure', (tester) async {
+      // Nothing eligible for this actor: the hub is empty, not broken, and it
+      // keeps its shortcuts and context. A silent empty state that looks like a
+      // failure would be a defect of its own.
+      await pumpRoute(
+        tester,
+        surface: const Size(1440, 1400),
+        communications: [institutionCommunication()],
+        scope: const PrincipalForYouAudienceScope(institutionId: 'institution-b'),
+      );
+
+      expect(find.byKey(const Key('principal-for-you-empty')), findsOneWidget);
+      expect(find.byKey(const Key('principal-for-you-error')), findsNothing);
+      expect(find.byKey(const Key('principal-for-you-unauthorized')), findsNothing);
+      expect(find.text('Agenda'), findsOneWidget);
+    });
+
+    testWidgets('a failure is not presented as an empty hub', (tester) async {
+      await pumpRoute(
+        tester,
+        surface: const Size(1440, 1400),
+        error: NoticeUnavailableException(),
+      );
+
+      expect(find.byKey(const Key('principal-for-you-error')), findsOneWidget);
+      expect(find.byKey(const Key('principal-for-you-empty')), findsNothing);
+      expect(find.text('Tentar novamente'), findsOneWidget);
+    });
+
+    testWidgets('a denial is not presented as an empty hub and offers no retry', (tester) async {
+      await pumpRoute(
+        tester,
+        surface: const Size(1440, 1400),
+        error: NoticeUnauthorizedException(),
+      );
+
+      expect(find.byKey(const Key('principal-for-you-unauthorized')), findsOneWidget);
+      expect(find.byKey(const Key('principal-for-you-empty')), findsNothing);
+      expect(find.byKey(const Key('principal-for-you-error')), findsNothing);
+      expect(find.text('Tentar novamente'), findsNothing);
+    });
+  });
+
   group('accessibility', () {
     // KNOWN DEFECT (not a test problem): `textContrastGuideline` fails on the
     // loaded hub because the hero eyebrow chip paints white 11 px text
