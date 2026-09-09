@@ -163,7 +163,20 @@ Describe 'CHILD remote package offline guards' {
 
   AfterAll {
     foreach ($root in $fixtureRoots) {
-      Remove-Item -LiteralPath $root -Recurse -Force -ErrorAction SilentlyContinue
+      $resolved = [IO.Path]::GetFullPath($root)
+      $tempPrefix = [IO.Path]::GetFullPath([IO.Path]::GetTempPath()).TrimEnd(
+        [IO.Path]::DirectorySeparatorChar, [IO.Path]::AltDirectorySeparatorChar
+      ) + [IO.Path]::DirectorySeparatorChar
+      $leaf = Split-Path -Leaf $resolved
+      if (-not $resolved.StartsWith($tempPrefix, [StringComparison]::OrdinalIgnoreCase) -or
+          $leaf -cnotmatch '^child-package-guard-[a-f0-9]{32}$') {
+        throw 'test fixture cleanup path escaped its owned TEMP boundary'
+      }
+      $item = Get-Item -LiteralPath $resolved -Force -ErrorAction Stop
+      if (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
+        throw 'test fixture cleanup root is a reparse point'
+      }
+      Remove-Item -LiteralPath $resolved -Recurse -Force -ErrorAction Stop
     }
   }
 }

@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-09T16:12:59-03:00",
+  "generated_at": "2026-09-09T16:17:23-03:00",
   "timezone": "America/Sao_Paulo",
   "snapshot_head": "647c20b453222aef58027028e4367de954145f20",
   "snapshot_head_scope": "Flutter snapshot identified above. Current CHILD SQL evidence is the equivalent integrated tree f3e1f732f442b2e47a2f749cba1d927eb638d5be. Infrastructure candidate-patch and structure evidence retain their own hashes; none implies full product acceptance.",
   "scope": "R02 D03 focal evidence available before the 16:30 BRT consolidation cut",
   "preserved_evidence_manifest": {
     "path": "evidence/d03-acompanhamento/r02-20260909/manifest.json",
-    "sha256": "76096CC897B6BD41687A2C6AFB34E7B85276668E77CEE8D93F75D8E5FD6CC476",
+    "sha256": "2B39E6AF438BDAFB54FE4FA0A5CB3C3A2B7BC464D0ED86FC20D5B4187655BECC",
     "artifact_count": 31,
-    "bytes": 115085,
+    "bytes": 115225,
     "note": "Byte-for-byte copies, not new executions. Source paths remain for provenance; the manifest maps them to versioned copies. Its source-ledger hash describes the earlier extraction snapshot, not this evolving ledger."
   },
   "counting_rules": {
@@ -583,13 +583,13 @@
       ],
       "evidence": {
         "source_path": "packages/coelo_database/scripts/tests/Test-ChildRemotePackage.Tests.ps1",
-        "source_sha256": "DA17B754D41D5E338ACBFDA05002F15CEBC38C3FA6CABA25C7338B55614F5F24",
+        "source_sha256": "7B2398901B80FF6A4609153687FF67F74E9BBDCF1672B211046A82920294EE48",
         "xml_path": "evidence/d03-acompanhamento/r02-20260909/d03-child-remote-package-tests.xml",
-        "xml_sha256": "157394B6B6A50A4FAC23B4512D9309A81D907127364D43CDF170F66EE7077EB3",
+        "xml_sha256": "84A509AF13CD1B47F62354F400DE50CAD4FF43FB29F164A203B7150EA6EF8C75",
         "raw_log_path": "evidence/d03-acompanhamento/r02-20260909/d03-child-remote-package-tests.log.txt",
-        "raw_log_sha256": "F778FAF80F48C2894385377C2D01B958DC07A90DF3980E5EE6C6BF63B2FBBC15"
+        "raw_log_sha256": "6C0352EA2B3104164D08356C8E4B67D5E6E6C1FDC6B56974AB547A214CB6B0EC"
       },
-      "history": "Initial fixture resolver omitted 2 replay sources; fixed. Later fixture CRLF portability fixed and causal rerun passed. Unique total remains 8; harness 09720 unchanged; no Docker/SQL/HTTP."
+      "history": "Initial fixture resolver omitted 2 replay sources; fixed. Later fixture CRLF portability fixed and causal rerun passed. Unique total remains 8; harness 09720 unchanged; no Docker/SQL/HTTP. Final test-cleanup confinement correction qualified by the same 8-case causal rerun; zero fixture directories remained. No additional unique cases."
     }
   ],
   "sql": {

@@ -1,13 +1,13 @@
 ﻿**********************
 Início da transcrição do Windows PowerShell
-Hora de início: 20260909161155
+Hora de início: 20260909161550
 Nome de Usuário: LAPTOP-67A8F4LK\adrie
 Executar como Usuário: LAPTOP-67A8F4LK\adrie
 Nome da Configuração: 
 Computador: LAPTOP-67A8F4LK (Microsoft Windows NT 10.0.26200.0)
 Aplicativo Host: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -Command try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}
-$ErrorActionPreference='Stop'; $test='packages/coelo_database/scripts/tests/Test-ChildRemotePackage.Tests.ps1'; $harness='packages/coelo_database/scripts/Test-ChildRemotePackage.ps1'; if((Get-FileHash -Algorithm SHA256 $harness).Hash -cne '09720F6A9424C1C48441BB755E48C3752989B590101EB53B4A6C75D0D4A3E511'){throw 'Harness drift'}; $tokens=$null;$errors=$null;[System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path $test),[ref]$tokens,[ref]$errors)|Out-Null;if(@($errors).Count){throw (@($errors)-join "`n")}; git diff --check -- $test; $log=Join-Path $env:TEMP 'd03-child-remote-package-tests.log';$xml=Join-Path $env:TEMP 'd03-child-remote-package-tests.xml';Start-Transcript -LiteralPath $log -Force|Out-Null;try{$result=Invoke-Pester -Script $test -OutputFile $xml -OutputFormat NUnitXml -PassThru}finally{Stop-Transcript|Out-Null};if($result.FailedCount){exit 1};"PESTER_COUNTS Total=$($result.TotalCount) Passed=$($result.PassedCount) Failed=$($result.FailedCount) Skipped=$($result.SkippedCount)";Get-FileHash -Algorithm SHA256 $test,$xml,$log|%{"SHA256 $($_.Hash) $($_.Path)"}
-ID do Processo: 50384
+$ErrorActionPreference='Stop';$test='packages/coelo_database/scripts/tests/Test-ChildRemotePackage.Tests.ps1';$harness='packages/coelo_database/scripts/Test-ChildRemotePackage.ps1';if((Get-FileHash -Algorithm SHA256 $harness).Hash -cne '09720F6A9424C1C48441BB755E48C3752989B590101EB53B4A6C75D0D4A3E511'){throw 'Harness drift'};$tokens=$null;$errors=$null;[System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path $test),[ref]$tokens,[ref]$errors)|Out-Null;if(@($errors).Count){throw (@($errors)-join "`n")};git diff --check -- $test;$log=Join-Path $env:TEMP 'd03-child-remote-package-tests.log';$xml=Join-Path $env:TEMP 'd03-child-remote-package-tests.xml';Start-Transcript -LiteralPath $log -Force|Out-Null;try{$result=Invoke-Pester -Script $test -OutputFile $xml -OutputFormat NUnitXml -PassThru}finally{Stop-Transcript|Out-Null};if($result.FailedCount){exit 1};"PESTER_COUNTS Total=$($result.TotalCount) Passed=$($result.PassedCount) Failed=$($result.FailedCount) Skipped=$($result.SkippedCount)";Get-FileHash -Algorithm SHA256 $test,$xml,$log|%{"SHA256 $($_.Hash) $($_.Path)"};$left=@(Get-ChildItem -LiteralPath ([IO.Path]::GetTempPath()) -Directory -Filter 'child-package-guard-*');"TEMP_FIXTURES_REMAINING=$($left.Count)"
+ID do Processo: 50212
 PSVersion: 5.1.26100.9168
 PSEdition: Desktop
 PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9168
@@ -19,26 +19,26 @@ SerializationVersion: 1.1.0.1
 **********************
 
 Describing CHILD remote package offline guards
- [+] package.guard.parse parses and keeps cleanup command boundaries separate 584ms
+ [+] package.guard.parse parses and keeps cleanup command boundaries separate 631ms
 PS>TerminatingError(Test-ChildRemotePackage.ps1): "Não é possível validar o argumento no parâmetro 'ProjectId'. O argumento "unsafe-project" não corresponde ao padrão "^coelo_safe_[a-f0-9]{29}$". Forneça um argumento que corresponda a "^coelo_safe_[a-f0-9]{29}$" e tente o comando novamente."
- [+] package.guard.project-id rejects an invalid generated identity before Docker 284ms
+ [+] package.guard.project-id rejects an invalid generated identity before Docker 846ms
 PS>TerminatingError(): "CHILD package local requires the owned disposable replay project"
 PS>TerminatingError(): "CHILD package local requires the owned disposable replay project"
- [+] package.guard.marker rejects missing and incorrect ownership before Docker 243ms
+ [+] package.guard.marker rejects missing and incorrect ownership before Docker 755ms
 PS>TerminatingError(): "CHILD package local AuthOnly migration count differs from the reviewed base"
 PS>TerminatingError(): "CHILD package local AuthOnly migration order or normalized hash drifted"
 PS>TerminatingError(): "CHILD package local AuthOnly migration count differs from the reviewed base"
- [+] package.guard.auth-base rejects missing, drifted and extra migrations before Docker 370ms
+ [+] package.guard.auth-base rejects missing, drifted and extra migrations before Docker 1.32s
 PS>TerminatingError(): "CHILD_PACKAGE_TEST_DOCKER_SENTINEL"
- [+] package.guard.payload-crlf normalizes CRLF and reaches the Docker sentinel 1.32s
+ [+] package.guard.payload-crlf normalizes CRLF and reaches the Docker sentinel 1.77s
 PS>TerminatingError(): "CHILD package local payload must not contain a BOM"
- [+] package.guard.payload-bom rejects BOM before Docker 1.19s
+ [+] package.guard.payload-bom rejects BOM before Docker 1.99s
 PS>TerminatingError(): "CHILD package local payload differs from the reviewed LF candidate"
- [+] package.guard.payload-drift rejects changed normalized bytes before Docker 1.48s
- [+] package.guard.external-boundary keeps all tested failures before process creation 23ms
-Tests completed in 5.49s
+ [+] package.guard.payload-drift rejects changed normalized bytes before Docker 1.9s
+ [+] package.guard.external-boundary keeps all tested failures before process creation 75ms
+Tests completed in 9.28s
 Passed: 8 Failed: 0 Skipped: 0 Pending: 0 Inconclusive: 0
 **********************
 Fim da transcrição do Windows PowerShell
-Hora de término: 20260909161203
+Hora de término: 20260909161604
 **********************
