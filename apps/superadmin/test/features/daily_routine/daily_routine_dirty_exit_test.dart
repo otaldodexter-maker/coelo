@@ -5,6 +5,8 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:coelo_superadmin/app/shell/superadmin_shell.dart';
+
 import '../../support/fake_routine_repository.dart';
 
 const _model = RoutineModel(
@@ -61,6 +63,27 @@ Future<void> _requestExit(WidgetTester tester) async {
   await tester.pumpAndSettle();
 }
 
+Future<void> _openWithDestination(WidgetTester tester, List<String> taken) async {
+  await tester.pumpWidget(
+    MaterialApp(
+      theme: CoeloTheme.light,
+      home: DailyRoutineEditorPage(
+        repository: FakeRoutineRepository(models: const [_model], canManage: true),
+        logout: unavailableSuperadminLogout,
+        modelId: _model.id,
+        onDestinationSelected: taken.add,
+      ),
+    ),
+  );
+  await tester.pumpAndSettle();
+}
+
+Future<void> _selectAnotherDestination(WidgetTester tester) async {
+  final shell = tester.widget<SuperadminShell>(find.byType(SuperadminShell));
+  shell.onDestinationSelected!('attendance');
+  await tester.pumpAndSettle();
+}
+
 void main() {
   testWidgets('leaving an untouched routine editor needs no confirmation', (tester) async {
     await _openEditor(tester);
@@ -97,5 +120,31 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('daily-routine-model-editor')), findsNothing);
+  });
+
+  testWidgets('leaving through the shell asks before discarding the draft', (tester) async {
+    final taken = <String>[];
+    await _openWithDestination(tester, taken);
+    await _typeName(tester, 'Chegada e acolhimento revisado');
+
+    await _selectAnotherDestination(tester);
+
+    expect(find.byKey(const Key('daily-routine-exit-dialog')), findsOneWidget);
+    expect(taken, isEmpty);
+
+    await tester.tap(find.text('Sair sem salvar'));
+    await tester.pumpAndSettle();
+
+    expect(taken, ['attendance']);
+  });
+
+  testWidgets('leaving an untouched routine through the shell is immediate', (tester) async {
+    final taken = <String>[];
+    await _openWithDestination(tester, taken);
+
+    await _selectAnotherDestination(tester);
+
+    expect(find.byKey(const Key('daily-routine-exit-dialog')), findsNothing);
+    expect(taken, ['attendance']);
   });
 }

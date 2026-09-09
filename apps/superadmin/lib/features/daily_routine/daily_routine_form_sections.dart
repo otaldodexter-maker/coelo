@@ -22,6 +22,7 @@ final class DailyRoutineWizardPage extends StatefulWidget {
     this.duplicateFromModelId,
     this.applicationFromModelId,
     this.activityController,
+    this.onDestinationSelected,
     super.key,
   });
 
@@ -32,6 +33,7 @@ final class DailyRoutineWizardPage extends StatefulWidget {
   final String? duplicateFromModelId;
   final String? applicationFromModelId;
   final SuperadminActivityController? activityController;
+  final ValueChanged<String>? onDestinationSelected;
 
   @override
   State<DailyRoutineWizardPage> createState() => _DailyRoutineWizardPageState();
@@ -322,6 +324,7 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
   Widget build(BuildContext context) => SuperadminShell(
     logout: widget.logout,
     currentDestination: 'daily-routine',
+    onDestinationSelected: widget.onDestinationSelected == null ? null : _selectDestination,
     title: _title,
     subtitle: 'Configuração versionada e validada no servidor.',
     activityController: widget.activityController,
@@ -372,7 +375,19 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
   bool get _isDirty =>
       _canManage && !_saving && _baseline != null && _draftSignature() != _baseline;
 
-  Future<void> _confirmExit() async {
+  /// The shell can leave the editor without popping the route, so the same
+  /// confirmation has to guard it. Five other Superadmin forms do exactly this.
+  Future<void> _selectDestination(String destination) async {
+    final callback = widget.onDestinationSelected;
+    if (callback == null) return;
+    if (!_isDirty) {
+      callback(destination);
+      return;
+    }
+    if (await _confirmDiscard()) callback(destination);
+  }
+
+  Future<bool> _confirmDiscard() async {
     final discard = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => CoeloAdminDialogShell(
@@ -391,8 +406,12 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
         ),
       ),
     );
-    if (!(discard ?? false) || !mounted) return;
-    Navigator.of(context).pop();
+    return (discard ?? false) && mounted;
+  }
+
+  Future<void> _confirmExit() async {
+    final navigator = Navigator.of(context);
+    if (await _confirmDiscard()) navigator.pop();
   }
 
   String get _title => switch (widget.entryKind) {
