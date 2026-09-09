@@ -453,6 +453,7 @@ GoRouter createSuperadminRouter({
     subtitle: subtitle,
     currentDestination: destination,
     activityController: operationalActivities,
+    chatUnreadCountLoader: developmentChatRepository.fetchUnreadTotal,
     onDestinationSelected: (value) => _navigateFromDevelopmentShell(context, value),
     child: child,
   );
@@ -468,6 +469,13 @@ GoRouter createSuperadminRouter({
     subtitle: subtitle,
     currentDestination: destination,
     activityController: operationalActivities,
+    // O launcher só afirma contagem quando existe repositório autorizado.
+    // `UnavailableChatRepository.fetchUnreadTotal` devolve 0, e um zero
+    // silencioso é indistinguível de "não há não lidas": passar null faz o
+    // launcher não afirmar nada em vez de afirmar algo falso.
+    chatUnreadCountLoader: chatRepository is UnavailableChatRepository
+        ? null
+        : chatRepository.fetchUnreadTotal,
     onDestinationSelected: (value) => _navigateFromPersistentShell(context, value),
     child: child,
   );
@@ -970,6 +978,13 @@ GoRouter createSuperadminRouter({
                   onDestinationSelected: (destination) => developmentPreview
                       ? _navigateFromDevelopmentShell(context, destination)
                       : _navigateFromPersistentShell(context, destination),
+                  // Mesma regra do shell de produção: sem repositório
+                  // autorizado o launcher não afirma contagem alguma.
+                  chatUnreadCountLoader: developmentPreview
+                      ? developmentChatRepository.fetchUnreadTotal
+                      : chatRepository is UnavailableChatRepository
+                      ? null
+                      : chatRepository.fetchUnreadTotal,
                   onBugReportSubmitted: developmentPreview
                       ? developmentSupportController.submitReport
                       : productionSupportController?.submitReport,
@@ -4611,6 +4626,11 @@ GoRouter createSuperadminRouter({
               return SuperadminChatPage(
                 logout: _previewLogout,
                 chatRepository: developmentChatRepository,
+                // A preview precisa exercer a mesma capacidade da rota real;
+                // sem estas dependências o tile de anexo nunca abre imagem e a
+                // preview vira evidência falsa de que está tudo bem.
+                mediaReader: mediaReader,
+                mediaSession: mediaSession,
                 currentDestination: origin == 'principal' ? 'principal-chat' : 'conversations',
                 onBack: () => context.goNamed(switch (origin) {
                   'home' => SuperadminRoutes.devHomeName,
