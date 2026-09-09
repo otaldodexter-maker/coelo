@@ -200,6 +200,94 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('form-response-unavailable')), findsOneWidget);
   });
+
+  testWidgets('the preview stays overflow-free at responsive widths and 200% text', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
+      tester.view.physicalSize = Size(width, 1600);
+      await tester.pumpWidget(
+        app(
+          FormsTestPage(api: _TestDefinitionApi(), formId: 'form-7'),
+          textScaler: const TextScaler.linear(2),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull, reason: 'overflow at $width px');
+    }
+  });
+
+  testWidgets('every authored kind renders in the preview without crashing', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    tester.view.physicalSize = const Size(1024, 4000);
+    final api = _AllKindsApi();
+    await tester.pumpWidget(app(FormsTestPage(api: api, formId: 'form-9')));
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    for (final kind in FormItemKind.values) {
+      expect(find.text(_labelFor(kind)), findsOneWidget, reason: 'missing ${kind.name}');
+    }
+  });
+
+  testWidgets('the preview shows the authored limits in civil notation', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    tester.view.physicalSize = const Size(1024, 4000);
+    await tester.pumpWidget(app(FormsTestPage(api: _AllKindsApi(), formId: 'form-9')));
+    await tester.pumpAndSettle();
+
+    // money max 1050 minor units reads as 10,50 for the author.
+    expect(find.textContaining('máximo 10,50'), findsOneWidget);
+    expect(find.textContaining('até 140 caracteres'), findsOneWidget);
+  });
+}
+
+String _labelFor(FormItemKind kind) => 'Pergunta ${kind.name}';
+
+final class _AllKindsApi implements FormsApi {
+  @override
+  Future<FormEditorProjection> getEditor(String formId) async => FormEditorProjection(
+    definition: FormDefinition(
+      id: formId,
+      institutionId: 'institution-1',
+      kind: FormKind.form,
+      identityMode: FormIdentityMode.anonymous,
+      responseUnit: FormResponseUnit.person,
+      title: 'Todos os tipos',
+      sections: [
+        FormSection(
+          id: 'section-1',
+          title: 'Cobertura',
+          position: 0,
+          items: [
+            for (final (index, kind) in FormItemKind.values.indexed)
+              FormItem(
+                id: 'item-$index',
+                kind: kind,
+                label: _labelFor(kind),
+                position: index,
+                config: switch (kind) {
+                  FormItemKind.money => const FormItemConfig(maxValue: 1050),
+                  FormItemKind.shortText => const FormItemConfig(maxLength: 140),
+                  _ => const FormItemConfig(),
+                },
+                options: kind == FormItemKind.singleChoice || kind == FormItemKind.multipleChoice
+                    ? const [FormOption(id: 'option-1', label: 'Única opção', position: 0)]
+                    : const [],
+              ),
+          ],
+        ),
+      ],
+    ),
+  );
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 final class _TestDefinitionApi implements FormsApi {
