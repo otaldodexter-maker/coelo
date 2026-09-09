@@ -66,6 +66,10 @@ final class PersonDirectoryViewModel extends ChangeNotifier {
   void setSearch(String value) {
     _query = _copy(search: value);
     _searchTimer?.cancel();
+    ++_requestVersion;
+    _page = PersonDirectoryPage(items: const [], totalCount: 0, page: 0, pageSize: _query.pageSize);
+    _filterOptions = const PersonDirectoryFilterOptions();
+    _state = PersonDirectoryLoadState.loading;
     _searchTimer = Timer(searchDebounce, () => _load(_query));
     notifyListeners();
   }
@@ -302,6 +306,7 @@ final class PersonDirectoryViewModel extends ChangeNotifier {
   @override
   void dispose() {
     _searchTimer?.cancel();
+    ++_requestVersion;
     super.dispose();
   }
 }
