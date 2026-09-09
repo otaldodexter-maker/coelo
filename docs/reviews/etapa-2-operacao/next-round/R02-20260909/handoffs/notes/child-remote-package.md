@@ -246,3 +246,43 @@ mas não constitui ensaio local de falha do ledger nem prova remota deste pacote
 A qualificação local da composição e de rollback por drift continua pendente,
 conforme child-package-local-plan.md. Não reutilizar perfil já pós-CHILD nem
 somar o replay45+3 anterior a esses novos aceites.
+## Crosswalk de versionamento proposto — D00 r15
+
+A aplicação MCP proposta cria uma versão gerada pelo provedor. Isso **não**
+marca a migration canônica 20260908051500 como aplicada para a CLI e não autoriza tratá-la
+como pending seguro. O mapeamento nominal abaixo ainda exige aceite D00/Owner
+junto do recibo remoto real:
+
+| Campo | Valor proposto / estado |
+| --- | --- |
+| projeto | evvbomzejfijozbtgvpt |
+| nome remoto composto | r02_d03_child_directory_envelope_read01 |
+| versão remota gerada | pendente; preencher somente após leitura do ledger |
+| payload LF | 740057756FB2A7DFA5E8F2AB2D9908DF24968F2A3E78196A1FAA0D3B422C6C2C |
+| migration reader coberta semanticamente | 20260908051500_superadmin_child_context_directory_v2.sql, corpo preservado conforme proveniência acima |
+| corpo reader sem wrapper, SHA256 LF | E950A732811C7AAFC796AAE978C6666CA29B3FDA01D45FDE6DE5461374C817E8 |
+| dependência adicional coberta | somente a mudança pinada do helper descrita em child-envelope-prerequisite.sql; não a migration histórica 20260827235500 inteira |
+| adicional exclusivo do composto | guard final ACL/metadata e NOTIFY do cache |
+| autoridade do mapeamento | proposto, não aprovado nem aplicado |
+
+Até que o recibo remoto e esse crosswalk sejam aprovados e incorporados pelo
+escritor central ao inventário de recuperação, **bloquear qualquer deploy CLI
+para produção cujo conjunto pendente inclua 20260908051500 ou a reaplicação da
+ponte do helper**. Não executar db push geral, include-all, migration repair,
+upsert/INSERT manual de ledger ou uma segunda migration para fazer o histórico
+parecer alinhado. O preflight do reader também rejeita um gateway já existente,
+mas não substitui a conferência nominal do conjunto pendente antes de executar.
+
+Uma futura implantação CLI deve partir do histórico remoto realmente observado
+em um diretório LOCAL de preparação dedicado (sem criar ambiente remoto novo) e comparar o conjunto pendente exato com o crosswalk aprovado.
+A reconciliação precisa preservar a fonte canônica do replay local e registrar
+que o reader remoto veio do pacote composto/versionado pelo MCP. Nenhuma entrada
+local é removida ou renomeada por esta proposta. Se não houver mecanismo
+revisado que exclua a reaplicação, o próximo deploy CLI continua bloqueado; a
+aprovação do pacote CHILD não concede automaticamente aprovação desse mecanismo.
+
+Esta separação evita confundir equivalência dos corpos com equivalência dos
+ledgers. A leitura/execução local do candidato e os recibos 45+3+4 continuam sem
+poder aprovar esse crosswalk de produção.
+
+Limite operacional explícito: esta proposta registra uma condição obrigatória do runbook; ela ainda não instala um hook executável no deploy CLI. Enquanto esse mecanismo não for aprovado e integrado, nenhum deploy CLI com a migration 20260908051500 pendente está liberado. O executor deve conferir o conjunto pendente antes de qualquer mutação e interromper diante dessa versão. Ausência de automação não é licença para ignorar a condição, nem deve ser relatada como guard de CI implementado.

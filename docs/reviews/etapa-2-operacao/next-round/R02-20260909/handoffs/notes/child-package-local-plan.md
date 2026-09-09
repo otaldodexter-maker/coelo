@@ -101,3 +101,19 @@ IDs emitidos apenas após o respectivo aceite: package.prestate,
 package.default-acl-denied, package.negative-rollback, package.fixture-cleanup,
 package.positive-metadata, package.persisted-after-commit. Atualmente P0/F0/B6/S0/U0,
 com os seis bloqueados por hook/janela; não adicionar às provas45+3 anteriores.
+## PATCH nominal Invoke — D00 r15
+
+`child-package-invoke.patch` propõe RunChildRemotePackage restrito ao AuthOnly
+20260901200206, sem adicionais/nominal/TestPath/lint/outros modos. DB-only;
+cache dinâmico continua U. Não aplicar o antigo patch HTTP interrompido.
+
+- Fonte canônica observada: HEAD61d3720c88c6b488ee5fdbefbb630b168035db0f; wrapper raw9E2A367DE74F0BDFF758B6029E58AF43669686F7A1BB3E9E16B9A23601364ED9 e LFCB2449D3F6F621B25CFE090D065A5CF9D1435180D7AA52781E51CF31ADCE0CC1.
+- PATCH SHA256 LF651FACEB312B2597CCFFE56CD14F50F70AE281FB0DBF08D4A3665A4843EDD61D.
+- Teste exclusivo child-package-invoke-tests.ps1 SHA2569492C015DF0FF7BC451EFE6E8360881E5CA52B288C9E42E5F84EC84104B4B19E, exige RunnerPath para candidato.
+- Candidato TEMP d03-child-package-invoke-patched.ps1 SHA2563B3262AD774A3DD06D27A602106186FB88111558461F79F5976BD417FFC92BEF.
+- Seis casos Pester estruturais reportados PASS em console, sem XML/log bruto preservado. Não foram repetidos apenas para gerar arquivo.
+- git apply --check conferido por autor e pai contra a raiz atual, sem aplicação; D00 continua escritor/integrador do wrapper.
+
+Os seis Pester verificam estrutura do modo, não executam os seis aceites SQL do
+compositor. O snapshot da fonte tem modos que podem evoluir: D00 deve preservar
+novos switches/hunks próprios ao integrar; este patch não substitui o wrapper.

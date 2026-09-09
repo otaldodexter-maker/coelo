@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-09T16:04:33-03:00",
+  "generated_at": "2026-09-09T16:12:59-03:00",
   "timezone": "America/Sao_Paulo",
   "snapshot_head": "647c20b453222aef58027028e4367de954145f20",
   "snapshot_head_scope": "Flutter snapshot identified above. Current CHILD SQL evidence is the equivalent integrated tree f3e1f732f442b2e47a2f749cba1d927eb638d5be. Infrastructure candidate-patch and structure evidence retain their own hashes; none implies full product acceptance.",
   "scope": "R02 D03 focal evidence available before the 16:30 BRT consolidation cut",
   "preserved_evidence_manifest": {
     "path": "evidence/d03-acompanhamento/r02-20260909/manifest.json",
-    "sha256": "7B00170A87834003F8035584D38C7724EFC3B6CDA852E71E0C3C5C02BEBC6918",
-    "artifact_count": 29,
-    "bytes": 107666,
+    "sha256": "76096CC897B6BD41687A2C6AFB34E7B85276668E77CEE8D93F75D8E5FD6CC476",
+    "artifact_count": 31,
+    "bytes": 115085,
     "note": "Byte-for-byte copies, not new executions. Source paths remain for provenance; the manifest maps them to versioned copies. Its source-ledger hash describes the earlier extraction snapshot, not this evolving ledger."
   },
   "counting_rules": {
@@ -54,8 +54,8 @@
       "failed_current_cases": 0
     },
     "infrastructure": {
-      "pester_unique_cases": 40,
-      "pester_console_report_only_cases": 8,
+      "pester_unique_cases": 54,
+      "pester_console_report_only_cases": 14,
       "failed": 0,
       "blocked": 0,
       "skipped": 0,
@@ -528,6 +528,68 @@
         }
       ],
       "product_acceptance_credit": 0
+    },
+    {
+      "id": "infra.child-package-invoke-structure",
+      "status": "pass-reported-console-only",
+      "unique_cases": 6,
+      "case_ids": [
+        {
+          "name": "requires an existing candidate that parses",
+          "origin": "reviewed source; execution reported console-only"
+        },
+        {
+          "name": "adds the opt-in switch without removing existing modes",
+          "origin": "reviewed source; execution reported console-only"
+        },
+        {
+          "name": "rejects every non-AuthOnly package combination before the mutex",
+          "origin": "reviewed source; execution reported console-only"
+        },
+        {
+          "name": "selects the database-only service composition for the package",
+          "origin": "reviewed source; execution reported console-only"
+        },
+        {
+          "name": "dispatches the reviewed harness only after replay and the pgTAP gate",
+          "origin": "reviewed source; execution reported console-only"
+        },
+        {
+          "name": "keeps the existing Auth, CHILD, Activity and location dispatches",
+          "origin": "reviewed source; execution reported console-only"
+        }
+      ],
+      "evidence": {
+        "source_path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/notes/child-package-invoke-tests.ps1",
+        "source_sha256": "9492C015DF0FF7BC451EFE6E8360881E5CA52B288C9E42E5F84EC84104B4B19E",
+        "raw_log_path": null,
+        "xml_path": null,
+        "report": "attendance: 6 pass, 0 fail, 807ms; not rerun to manufacture artifacts"
+      }
+    },
+    {
+      "id": "infra.child-package-offline-guards",
+      "status": "pass",
+      "unique_cases": 8,
+      "case_ids": [
+        "CHILD remote package offline guards.package.guard.parse parses and keeps cleanup command boundaries separate",
+        "CHILD remote package offline guards.package.guard.project-id rejects an invalid generated identity before Docker",
+        "CHILD remote package offline guards.package.guard.marker rejects missing and incorrect ownership before Docker",
+        "CHILD remote package offline guards.package.guard.auth-base rejects missing, drifted and extra migrations before Docker",
+        "CHILD remote package offline guards.package.guard.payload-crlf normalizes CRLF and reaches the Docker sentinel",
+        "CHILD remote package offline guards.package.guard.payload-bom rejects BOM before Docker",
+        "CHILD remote package offline guards.package.guard.payload-drift rejects changed normalized bytes before Docker",
+        "CHILD remote package offline guards.package.guard.external-boundary keeps all tested failures before process creation"
+      ],
+      "evidence": {
+        "source_path": "packages/coelo_database/scripts/tests/Test-ChildRemotePackage.Tests.ps1",
+        "source_sha256": "DA17B754D41D5E338ACBFDA05002F15CEBC38C3FA6CABA25C7338B55614F5F24",
+        "xml_path": "evidence/d03-acompanhamento/r02-20260909/d03-child-remote-package-tests.xml",
+        "xml_sha256": "157394B6B6A50A4FAC23B4512D9309A81D907127364D43CDF170F66EE7077EB3",
+        "raw_log_path": "evidence/d03-acompanhamento/r02-20260909/d03-child-remote-package-tests.log.txt",
+        "raw_log_sha256": "F778FAF80F48C2894385377C2D01B958DC07A90DF3980E5EE6C6BF63B2FBBC15"
+      },
+      "history": "Initial fixture resolver omitted 2 replay sources; fixed. Later fixture CRLF portability fixed and causal rerun passed. Unique total remains 8; harness 09720 unchanged; no Docker/SQL/HTTP."
     }
   ],
   "sql": {
@@ -669,5 +731,16 @@
     "harness_path": "packages/coelo_database/scripts/Test-ChildRemotePackage.ps1",
     "harness_lf_sha256": "09720F6A9424C1C48441BB755E48C3752989B590101EB53B4A6C75D0D4A3E511",
     "qualification": "Independent static reviews and PowerShell AST passed; no psql/SQL/DB execution. Six future cases cover composer behavior only, not Management API ledger or dynamic PostgREST cache."
+  },
+  "schema_cache": {
+    "id": "cache.child-discovery-without-restart",
+    "status": "not-executed",
+    "planned_cases": 1,
+    "passed_cases": 0,
+    "failed_cases": 0,
+    "blocked_cases": 0,
+    "skipped_cases": 0,
+    "not_run_cases": 1,
+    "limitation": "Requires PostgREST alive before absent CHILD, transactional package commit and discovery/call after NOTIFY without restart. Existing 4 HTTP passes started after DDL and do not cover this case."
   }
 }

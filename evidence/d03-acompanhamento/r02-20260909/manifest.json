@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-09T15:55:05-03:00",
+  "generated_at": "2026-09-09T16:12:59-03:00",
   "timezone": "America/Sao_Paulo",
   "source_ledger": {
     "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/notes/d03-test-ledger.json",
@@ -10,16 +10,16 @@
     "mode": "byte-for-byte evidence reproduction",
     "new_test_or_database_execution": false,
     "deduplicated_by": "source_path",
-    "artifact_count": 29,
-    "total_bytes": 107666,
+    "artifact_count": 31,
+    "total_bytes": 115085,
     "ignored_artifact_count": 0,
-    "renamed_for_review": "21 .log copies renamed to .log.txt without byte changes",
+    "renamed_for_review": "Log copies use .log.txt names without byte changes; .gitattributes preserves source bytes.",
     "supplemental_artifacts": 4,
     "null_or_missing_references_copied": 0,
     "non_temp_artifacts": 3
   },
   "secret_scan": {
-    "performed_before_copy": true,
+    "performed_before_copy": false,
     "result": "no sensitive credential patterns found",
     "reported_values": false,
     "fixture_note": "Synthetic fixtures and identifiers are expected.",
@@ -30,7 +30,9 @@
       "private_key",
       "provider_secret",
       "credential_uri"
-    ]
+    ],
+    "performed_before_publication": true,
+    "timing": "Earlier artifacts scanned before copy; the latest two offline-guard artifacts scanned immediately after local copy and before staging/publication. No credential patterns found."
   },
   "artifacts": [
     {
@@ -360,6 +362,28 @@
       "provenance": "integrated-existing-evidence",
       "base_sha": "63e364300c062ca0b52bb79958cc465a9b16cd60",
       "result": "4 HTTP pass / 0 fail; 45 TAP rerun not added"
+    },
+    {
+      "source_path": "C:/Users/adrie/AppData/Local/Temp/d03-child-remote-package-tests.xml",
+      "preserved_path": "evidence/d03-acompanhamento/r02-20260909/d03-child-remote-package-tests.xml",
+      "sha256": "157394B6B6A50A4FAC23B4512D9309A81D907127364D43CDF170F66EE7077EB3",
+      "bytes": 3605,
+      "source_hash_verified": true,
+      "preserved_hash_verified": true,
+      "reproduction": "byte-for-byte evidence copy; no new execution",
+      "git_ignored": false,
+      "provenance": "local-offline-package-guard-tests"
+    },
+    {
+      "source_path": "C:/Users/adrie/AppData/Local/Temp/d03-child-remote-package-tests.log",
+      "preserved_path": "evidence/d03-acompanhamento/r02-20260909/d03-child-remote-package-tests.log.txt",
+      "sha256": "F778FAF80F48C2894385377C2D01B958DC07A90DF3980E5EE6C6BF63B2FBBC15",
+      "bytes": 3814,
+      "source_hash_verified": true,
+      "preserved_hash_verified": true,
+      "reproduction": "byte-for-byte evidence copy; no new execution",
+      "git_ignored": false,
+      "provenance": "local-offline-package-guard-tests"
     }
   ]
 }
