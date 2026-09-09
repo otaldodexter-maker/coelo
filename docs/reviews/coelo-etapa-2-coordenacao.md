@@ -8,6 +8,21 @@ updated_at: "2026-09-09"
 
 # Coelo — Coordenação da Etapa 2
 
+## R02 preparada — ainda não iniciada em 09/09/2026
+
+O Owner pediu prompts para duas coordenações e sete frentes por contexto.
+O [pacote R02](etapa-2-operacao/next-round/R02-20260909/README.md) contém os
+prompts, recorte, modelos, referências do Principal e cortes de hoje.
+A execução começa quando o Owner colar cada prompt; esta preparação não cria
+tarefas/worktrees, não ativa agendas e não certifica ações do aplicativo.
+
+D00 será o único integrador final em dev; L00 coordenará as três frentes
+Claude. Os IDs e caminhos reais ainda precisam ser registrados no início.
+Os horários, tarefas e responsáveis da R01 abaixo são históricos, inclusive
+trechos antigos que se intitulam vigentes. Não reativá-los por esta leitura.
+Há delta local não commitado de Auth do turno interrompido: o pacote identifica
+sua preservação e transferência futura a D01, sem considerá-lo parte do HEAD.
+
 ## Base de retomada — consolidação Git de 09/09/2026
 
 O Owner solicitou eliminar worktrees/commits soltos e consolidar as skills.

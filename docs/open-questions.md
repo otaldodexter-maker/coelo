@@ -8,6 +8,20 @@ updated_at: "2026-09-09"
 
 # Perguntas abertas e conflitos
 
+## R02 — alcance do shell nos viewers Principal — 2026-09-09
+
+O Owner reforçou que o Coelo (Principal) deve ocupar o contêiner ao lado
+do shell/menu do Superadmin. A spec050 e a referência
+`.agents/skills/coelo-ui/references/principal-visual-surfaces.md` permitem
+suspender temporariamente o chrome em viewers imersivos de Agora/Momentos.
+Foi perguntado nesta tarefa se a instrução atual também elimina essa exceção;
+não há resposta registrada neste momento. Não presumir aprovação pelo silêncio.
+
+O [contrato visual R02](reviews/etapa-2-operacao/next-round/R02-20260909/PRINCIPAL.md)
+preserva o contêiner e a composição Principal nas telas normais. Somente a
+alteração/certificação dessa exceção aguarda o esclarecimento; os demais
+fluxos independentes continuam quando a execução for iniciada pelo Owner.
+
 ## Reconciliação do fechamento R01 — 2026-09-09
 
 - C04/estado47 marca `institutions.files` como D, mas ownership e inventário vigentes mantêm a ação ativa. C00 preserva a classificação aprovada; não aplicar adiamento implícito.

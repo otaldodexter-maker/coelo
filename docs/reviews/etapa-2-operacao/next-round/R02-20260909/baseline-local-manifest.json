@@ -1,0 +1,49 @@
+{
+  "status": "local-uncommitted-not-product-certified",
+  "base": "fb2d07d34a74c91ec1f65aff361048393e590729",
+  "sourcePaths": [
+    {
+      "path": "apps/superadmin/lib/app/router/superadmin_router.dart",
+      "sha256": "8e3095da75c272627e9a1f743ca853cfa263cb1b61a3b2fe8be5413a3bdf00b6"
+    },
+    {
+      "path": "apps/superadmin/test/app/router/superadmin_router_test.dart",
+      "sha256": "4c85bef112cf1932a6dda4a98b9a5ae68085e8dc36aa03f727e749e5895c0883"
+    },
+    {
+      "path": "apps/superadmin/test/features/auth/presentation/screens/failures/superadmin_login_dark_isolatedDiff.png",
+      "sha256": "e3b2992211c3278c82ca18d5b3538e8e84380ad464e4982011e01bbfa9a13327"
+    },
+    {
+      "path": "apps/superadmin/test/features/auth/presentation/screens/failures/superadmin_login_dark_maskedDiff.png",
+      "sha256": "cb2e071fbc49063ee5b52192c48152c01086ab08107dfd7eadd9ac5d291e03e4"
+    },
+    {
+      "path": "apps/superadmin/test/features/auth/presentation/screens/failures/superadmin_login_dark_masterImage.png",
+      "sha256": "f19e857d18a4fdc0f3ee70e2cfe39551c58842eb944c11c44da2ffe7e5c6023b"
+    },
+    {
+      "path": "apps/superadmin/test/features/auth/presentation/screens/failures/superadmin_login_dark_testImage.png",
+      "sha256": "ca375d6ebea1d61a533184748729c91f0257560ca9a9bbf266eb35c43dd32590"
+    },
+    {
+      "path": "apps/superadmin/test/features/auth/presentation/screens/failures/superadmin_login_light_isolatedDiff.png",
+      "sha256": "1cfb4f8bca01215d58b0a8c2d0c80f7dd5a37e716ac96ad2b12497689e733ccd"
+    },
+    {
+      "path": "apps/superadmin/test/features/auth/presentation/screens/failures/superadmin_login_light_maskedDiff.png",
+      "sha256": "a6b1395521de6c9c92ca7b0e7bdb8bc7582ba7df6a5fae009821600e60af0b56"
+    },
+    {
+      "path": "apps/superadmin/test/features/auth/presentation/screens/failures/superadmin_login_light_masterImage.png",
+      "sha256": "f4d377c446762feb44d55c8b727c1d2154f9ea9356897442baddbe8f059ca3a1"
+    },
+    {
+      "path": "apps/superadmin/test/features/auth/presentation/screens/failures/superadmin_login_light_testImage.png",
+      "sha256": "6b56799223fb1784f4dbe992ce02c483583414f3170e34b768df97f160d35d97"
+    }
+  ],
+  "patchPath": "baseline-local-auth.patch",
+  "patchSha256": "a07ca26a7b2e7192b03f05c91564553af5374b07ed67223c86d199207b187279",
+  "note": "Imagens alteradas pelo teste estão no checkout original. Este manifesto identifica conteúdo; não equivale a backup dos binários. Preservar arquivos antes de qualquer reconciliação. Nenhuma fonte foi alterada por esta leitura."
+}

@@ -1,0 +1,31 @@
+diff --git a/apps/superadmin/lib/app/router/superadmin_router.dart b/apps/superadmin/lib/app/router/superadmin_router.dart
+index b20fe130..db09a4fc 100644
+--- a/apps/superadmin/lib/app/router/superadmin_router.dart
++++ b/apps/superadmin/lib/app/router/superadmin_router.dart
+@@ -999,7 +999,13 @@ GoRouter createSuperadminRouter({
+               onBackToLogin: () async {
+                 if (session.isPasswordRecovery) {
+                   final result = await logout();
+-                  if (!result.isSuccess) return;
++                  if (!context.mounted) return;
++                  if (!result.isSuccess) {
++                    ScaffoldMessenger.of(context).showSnackBar(
++                      SnackBar(content: Text(result.message ?? LogoutResult.genericFailureMessage)),
++                    );
++                    return;
++                  }
+                 }
+                 if (context.mounted) {
+                   context.goNamed(SuperadminRoutes.loginName);
+diff --git a/apps/superadmin/test/app/router/superadmin_router_test.dart b/apps/superadmin/test/app/router/superadmin_router_test.dart
+index 3c1f6c32..d5ffaaf0 100644
+--- a/apps/superadmin/test/app/router/superadmin_router_test.dart
++++ b/apps/superadmin/test/app/router/superadmin_router_test.dart
+@@ -491,6 +491,7 @@ void main() {
+     expect(session.isPasswordRecovery, isTrue);
+     expect(session.isAuthenticated, isFalse);
+     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.resetPassword);
++    expect(find.text(LogoutResult.genericFailureMessage), findsOneWidget);
+   });
+ 
+   testWidgets('confines a recovery session to reset when Home is requested', (tester) async {
