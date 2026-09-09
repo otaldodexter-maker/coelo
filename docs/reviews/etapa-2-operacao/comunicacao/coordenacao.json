@@ -1,5 +1,5 @@
 {
-  "revision": 2,
+  "revision": 3,
   "round": "E2-NOTURNA-20260909",
   "role": "Coordenacao e Integracao - Claude",
   "writer": "coordenador-claude",
@@ -8,12 +8,15 @@
   "app": "Claude Code (VS Code)",
   "model": "claude-opus-5[1m]",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-09T18:12:00-03:00",
+  "updatedAt": "2026-09-09T18:20:00-03:00",
   "clockCorrection": {
     "referenceNow": "2026-09-09T18:09:02-03:00",
     "measuredBy": "date no checkout integrador",
     "warning": "Duas revisoes chegaram carimbadas 21:06 e 21:25 com sufixo -03:00. Isso e horario UTC rotulado como Brasilia. Reconferir o relogio local: faltam cerca de 5h ate o corte Codex 23:30 e cerca de 10h50 ate o corte Claude 05:00. Nao antecipar congelamento por leitura errada de relogio.",
-    "affected": ["chat-comunicacoes", "operacoes-sistema"]
+    "affected": [
+      "chat-comunicacoes",
+      "operacoes-sistema"
+    ]
   },
   "exclusivity": {
     "soleIntegratorOfDev": true,
@@ -54,14 +57,62 @@
     "cadence": "Atualizar ao fechar correcao, publicar lote, mudar bloqueio, antes de comando longo e ao menos a cada 30 minutos ativo."
   },
   "receipts": [
-    { "grupo": "estrutura", "revisao": 3, "lidoEm": "2026-09-09T18:11:00-03:00", "estado": "recebido e aceito", "nota": "Revisao estatica dos tres candidatos aceita. Aplicar cd03b9e30 e 42ad0467 na sua branch. Os hunks de router de 1345af29f NAO entram por voce: proponha o patch minimo e eu integro (ver reservations)." },
-    { "grupo": "acessos-pessoas", "revisao": 3, "lidoEm": "2026-09-09T18:11:00-03:00", "estado": "recebido e aceito", "nota": "Prepare o pacote nominal de Modelos com preflight, base e hashes. Slot SQL concedido em sqlQueue posicao 1; nenhuma aplicacao remota sem autorizacao nominal do Owner para o pacote exato." },
-    { "grupo": "publicacoes-midia", "revisao": 1, "lidoEm": "2026-09-09T18:11:00-03:00", "estado": "recebido e aceito", "nota": "Worktree e branch confirmadas. Voce e o escritor da plataforma comum de midia nesta rodada, sob minha reserva; formularios-cuidado consome e propoe." },
-    { "grupo": "chat-comunicacoes", "revisao": 1, "lidoEm": "2026-09-09T18:11:00-03:00", "estado": "recebido e aceito", "nota": "Worktree e branch atribuidas abaixo; comece agora. /principal-conversations depende de patch de router proposto por voce e aplicado por mim." },
-    { "grupo": "perfil-para-voce", "revisao": 1, "lidoEm": "2026-09-09T18:11:00-03:00", "estado": "recebido e aceito", "nota": "Worktree e branch atribuidas abaixo; escrita de produto liberada no seu recorte." },
-    { "grupo": "alunos-rotina", "revisao": 1, "lidoEm": "2026-09-09T18:11:00-03:00", "estado": "recebido e aceito; ATIVADO", "nota": "Worktree e branch atribuidas abaixo. Nao repetir CHILD 45+3+4 nem compositor 6." },
-    { "grupo": "formularios-cuidado", "revisao": 2, "lidoEm": "2026-09-09T18:11:00-03:00", "estado": "recebido e aceito; ATIVADO", "nota": "Sequencia 1 aprovada como descrita. Ver approvedSequences." },
-    { "grupo": "operacoes-sistema", "revisao": 3, "lidoEm": "2026-09-09T18:11:00-03:00", "estado": "recebido e aceito; ATIVADO", "nota": "Sequencia 1-2-3 aprovada com o limite descrito em approvedSequences." }
+    {
+      "grupo": "estrutura",
+      "revisao": 3,
+      "lidoEm": "2026-09-09T18:11:00-03:00",
+      "estado": "recebido e aceito",
+      "nota": "Revisao estatica dos tres candidatos aceita. Aplicar cd03b9e30 e 42ad0467 na sua branch. Os hunks de router de 1345af29f NAO entram por voce: proponha o patch minimo e eu integro (ver reservations)."
+    },
+    {
+      "grupo": "acessos-pessoas",
+      "revisao": 3,
+      "lidoEm": "2026-09-09T18:11:00-03:00",
+      "estado": "recebido e aceito",
+      "nota": "Prepare o pacote nominal de Modelos com preflight, base e hashes. Slot SQL concedido em sqlQueue posicao 1; nenhuma aplicacao remota sem autorizacao nominal do Owner para o pacote exato."
+    },
+    {
+      "grupo": "publicacoes-midia",
+      "revisao": 1,
+      "lidoEm": "2026-09-09T18:11:00-03:00",
+      "estado": "recebido e aceito",
+      "nota": "Worktree e branch confirmadas. Voce e o escritor da plataforma comum de midia nesta rodada, sob minha reserva; formularios-cuidado consome e propoe."
+    },
+    {
+      "grupo": "chat-comunicacoes",
+      "revisao": 1,
+      "lidoEm": "2026-09-09T18:11:00-03:00",
+      "estado": "recebido e aceito",
+      "nota": "Worktree e branch atribuidas abaixo; comece agora. /principal-conversations depende de patch de router proposto por voce e aplicado por mim."
+    },
+    {
+      "grupo": "perfil-para-voce",
+      "revisao": 1,
+      "lidoEm": "2026-09-09T18:11:00-03:00",
+      "estado": "recebido e aceito",
+      "nota": "Worktree e branch atribuidas abaixo; escrita de produto liberada no seu recorte."
+    },
+    {
+      "grupo": "alunos-rotina",
+      "revisao": 1,
+      "lidoEm": "2026-09-09T18:11:00-03:00",
+      "estado": "recebido e aceito; ATIVADO",
+      "nota": "Worktree e branch atribuidas abaixo. Nao repetir CHILD 45+3+4 nem compositor 6."
+    },
+    {
+      "grupo": "formularios-cuidado",
+      "revisao": 2,
+      "lidoEm": "2026-09-09T18:11:00-03:00",
+      "estado": "recebido e aceito; ATIVADO",
+      "nota": "Sequencia 1 aprovada como descrita. Ver approvedSequences."
+    },
+    {
+      "grupo": "operacoes-sistema",
+      "revisao": 3,
+      "lidoEm": "2026-09-09T18:11:00-03:00",
+      "estado": "recebido e aceito; ATIVADO",
+      "nota": "Sequencia 1-2-3 aprovada com o limite descrito em approvedSequences."
+    }
   ],
   "approvedSequences": [
     {
@@ -88,9 +139,17 @@
       "baseSha": "d784462c168d22fdb7090b7de1ef7db554ad5107",
       "worktreeReady": true,
       "activation": "ATIVO",
-      "families": ["institutions", "units", "groups", "activities", "assessments", "locations"],
+      "families": [
+        "institutions",
+        "units",
+        "groups",
+        "activities",
+        "assessments",
+        "locations"
+      ],
       "ids": 49,
-      "lastRevisionRead": 3
+      "lastRevisionRead": 3,
+      "ackChannel": "somente arquivo (Codex nao alcancavel por ferramenta nativa)"
     },
     {
       "id": "acessos-pessoas",
@@ -100,9 +159,18 @@
       "baseSha": "d784462c168d22fdb7090b7de1ef7db554ad5107",
       "worktreeReady": true,
       "activation": "ATIVO",
-      "families": ["people", "access_profiles", "access_models", "invites", "internal_users", "child_safety", "profile_files"],
+      "families": [
+        "people",
+        "access_profiles",
+        "access_models",
+        "invites",
+        "internal_users",
+        "child_safety",
+        "profile_files"
+      ],
       "ids": 38,
-      "lastRevisionRead": 3
+      "lastRevisionRead": 3,
+      "ackChannel": "somente arquivo (Codex nao alcancavel por ferramenta nativa)"
     },
     {
       "id": "publicacoes-midia",
@@ -112,9 +180,18 @@
       "baseSha": "d784462c168d22fdb7090b7de1ef7db554ad5107",
       "worktreeReady": true,
       "activation": "ATIVO",
-      "families": ["acontece", "agora", "momentos", "circulars"],
+      "families": [
+        "acontece",
+        "agora",
+        "momentos",
+        "circulars"
+      ],
       "ids": 23,
-      "lastRevisionRead": 1
+      "lastRevisionRead": 1,
+      "sessionName": "coelo-ae",
+      "sessionId": "62702d09-b685-4298-8ef8-952d713409a8",
+      "ackSentAt": "2026-09-09T18:18:00-03:00",
+      "ackChannel": "SendMessage cross-session"
     },
     {
       "id": "chat-comunicacoes",
@@ -124,9 +201,16 @@
       "baseSha": "d784462c168d22fdb7090b7de1ef7db554ad5107",
       "worktreeReady": true,
       "activation": "ATIVO",
-      "families": ["chat", "notices"],
+      "families": [
+        "chat",
+        "notices"
+      ],
       "ids": 13,
-      "lastRevisionRead": 1
+      "lastRevisionRead": 1,
+      "sessionName": "coelo-64",
+      "sessionId": "4b8c15a3-0c77-4edd-a136-5b4dbb471fbf",
+      "ackSentAt": "2026-09-09T18:18:00-03:00",
+      "ackChannel": "SendMessage cross-session"
     },
     {
       "id": "perfil-para-voce",
@@ -136,9 +220,15 @@
       "baseSha": "d784462c168d22fdb7090b7de1ef7db554ad5107",
       "worktreeReady": true,
       "activation": "ATIVO",
-      "families": ["principal_profile"],
+      "families": [
+        "principal_profile"
+      ],
       "ids": 3,
-      "lastRevisionRead": 1
+      "lastRevisionRead": 1,
+      "sessionName": "coelo-65",
+      "sessionId": "a8f7f0b9-7ff3-4767-bd17-4a58e1f717a9",
+      "ackSentAt": "2026-09-09T18:18:00-03:00",
+      "ackChannel": "SendMessage cross-session"
     },
     {
       "id": "alunos-rotina",
@@ -148,9 +238,17 @@
       "baseSha": "d784462c168d22fdb7090b7de1ef7db554ad5107",
       "worktreeReady": true,
       "activation": "ATIVO - escrita de produto liberada no recorte students, attendance, daily_routine",
-      "families": ["students", "attendance", "daily_routine"],
+      "families": [
+        "students",
+        "attendance",
+        "daily_routine"
+      ],
       "ids": 16,
-      "lastRevisionRead": 1
+      "lastRevisionRead": 1,
+      "sessionName": "coelo-c4",
+      "sessionId": "b4d9315f-30e4-4ad8-bc11-9b14bd0c901d",
+      "ackSentAt": "2026-09-09T18:18:00-03:00",
+      "ackChannel": "SendMessage cross-session"
     },
     {
       "id": "formularios-cuidado",
@@ -160,9 +258,19 @@
       "baseSha": "d784462c168d22fdb7090b7de1ef7db554ad5107",
       "worktreeReady": true,
       "activation": "ATIVO - sequencia 1 aprovada",
-      "families": ["forms_authoring", "forms_responses", "forms_files", "health_care", "medication"],
+      "families": [
+        "forms_authoring",
+        "forms_responses",
+        "forms_files",
+        "health_care",
+        "medication"
+      ],
       "ids": 27,
-      "lastRevisionRead": 2
+      "lastRevisionRead": 2,
+      "sessionName": "coelo-1e",
+      "sessionId": "092d5dc9-a5c0-4fa1-8ddc-3461fc33d884",
+      "ackSentAt": "2026-09-09T18:18:00-03:00",
+      "ackChannel": "SendMessage cross-session"
     },
     {
       "id": "operacoes-sistema",
@@ -172,9 +280,25 @@
       "baseSha": "d784462c168d22fdb7090b7de1ef7db554ad5107",
       "worktreeReady": true,
       "activation": "ATIVO - sequencia 1-2-3 aprovada",
-      "families": ["auth", "shell", "agenda", "imports", "audit", "support", "account", "catalog", "plans", "meal_plans", "error_pages"],
+      "families": [
+        "auth",
+        "shell",
+        "agenda",
+        "imports",
+        "audit",
+        "support",
+        "account",
+        "catalog",
+        "plans",
+        "meal_plans",
+        "error_pages"
+      ],
       "ids": 61,
-      "lastRevisionRead": 3
+      "lastRevisionRead": 3,
+      "sessionName": "coelo-9e",
+      "sessionId": "fbcd5520-17b1-4f87-b819-b219bc5d2200",
+      "ackSentAt": "2026-09-09T18:18:00-03:00",
+      "ackChannel": "SendMessage cross-session"
     }
   ],
   "reservations": [
@@ -182,13 +306,19 @@
       "scope": "router/shell/composition root do Superadmin: superadmin_routes.dart, superadmin_router.dart, main.dart",
       "writer": "coordenador-claude",
       "rule": "Dois grupos ja pediram rota nesta rodada (estrutura, pelos hunks de 1345af29f; chat-comunicacoes, por /principal-conversations). Por isso eu serializo. Cada grupo publica na sua branch um commit pequeno contendo APENAS o patch de router e aponta o SHA no seu <grupo>.json; eu aplico sobre a base conjunta. Ninguem substitui o arquivo inteiro nem copia snapshot antigo.",
-      "queue": ["estrutura (1345af29f, 4 rotas)", "chat-comunicacoes (/principal-conversations)"]
+      "queue": [
+        "estrutura (1345af29f, 4 rotas)",
+        "chat-comunicacoes (/principal-conversations)"
+      ]
     },
     {
       "scope": "packages/coelo_database/migrations e replays SQL",
       "writer": "coordenador-claude",
       "rule": "Candidatos locais permitidos na worktree do grupo. Ordem, replay e qualquer aplicacao remota sao serializados por mim.",
-      "sqlQueue": ["acessos-pessoas (pacote Modelos)", "formularios-cuidado (forms I008, quando chegar)"]
+      "sqlQueue": [
+        "acessos-pessoas (pacote Modelos)",
+        "formularios-cuidado (forms I008, quando chegar)"
+      ]
     },
     {
       "scope": "plataforma comum de midia: Media Gateway, catalogo de ativos R2, mediaPicker/embedded",
@@ -215,8 +345,9 @@
     "claudeToClaude": "SendMessage cross-session verificado em uso real nesta rodada: operacoes-sistema (coelo-9e) e formularios-cuidado (coelo-1e) me alcancaram e eu respondo pelo mesmo canal.",
     "claudeToCodex": "INDISPONIVEL. Nao ha ferramenta nativa desta sessao para acordar uma conversa Codex. Arquivo em disco nao desperta conversa Codex. Em parada confirmada antes do corte, eu preservo a entrega e transfiro o residual a um executor Claude, sem dois escritores.",
     "watch": "Leitura espacada do diretorio de comunicacao e do Git; sem loop segundo a segundo, sem ping continuo, sem agendamento apos os cortes.",
-    "limitation": "Se esta sessao do coordenador for encerrada pelo aplicativo ou pela cota, o acompanhamento para. Nenhuma promessa de vigilia alem da sessao. Por isso: commit e push de lotes pequenos durante o trabalho, nao um unico salvamento no fim."
+    "limitation": "Se esta sessao do coordenador for encerrada pelo aplicativo ou pela cota, o acompanhamento para. Nenhuma promessa de vigilia alem da sessao. Por isso: commit e push de lotes pequenos durante o trabalho, nao um unico salvamento no fim.",
+    "claudeExecutorAddresses": "Fornecidos pelo Owner e verificados por envio real: as seis conversas Claude receberam ACK nominal por SendMessage em 18:18. Enderecos gravados em groups[].sessionName/sessionId para recuperacao."
   },
   "blocks": [],
-  "nextStep": "Integrar continuamente os lotes publicados por cada branch, comecando pelos primeiros commits de estrutura e formularios-cuidado, e atualizar inventario e rastreadores no mesmo ciclo."
+  "nextStep": "Integrar continuamente os lotes publicados por cada branch. Enquanto nenhum lote chega, o coordenador confirma acesso aos MCPs, le os tres rastreadores e prepara o ciclo de atualizacao de inventario."
 }

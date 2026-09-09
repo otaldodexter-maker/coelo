@@ -1,65 +1,109 @@
 {
-  "revision": 1,
-  "updated_at": "2026-09-09T18:20:00-03:00",
+  "revision": 2,
+  "updated_at": "2026-09-09T18:38:00-03:00",
   "group": "alunos-rotina",
   "task": "/root",
-  "model": "Claude Opus 5 (1M context) — claude-opus-5[1m]",
-  "status": "activation-requested; read-only-focal; no-product-write",
+  "model": "Claude Opus 5 (1M context) - claude-opus-5[1m]",
+  "status": "activation-requested; read-only-focal concluida; no-product-write",
   "coordinator": "Claude (Coordenacao e Integracao)",
   "worktree": null,
   "branch": null,
   "head": null,
   "upstream": null,
   "base_observed": "d784462c168d22fdb7090b7de1ef7db554ad5107 (dev, 0/0 com origin/dev)",
-  "scope": [
-    "apps/superadmin -> Alunos / Acompanhamento (students.list)",
-    "apps/superadmin -> Alunos / Vincular (students.link)",
-    "apps/superadmin -> Alunos / Transferir (students.transfer)",
-    "apps/superadmin -> Alunos / Editar (students.edit)",
-    "apps/superadmin -> Alunos / Revogar (students.revoke)",
-    "apps/superadmin -> Assiduidade / Dashboard (attendance.dashboard)",
-    "apps/superadmin -> Assiduidade / Nova chamada (attendance.create)",
-    "apps/superadmin -> Assiduidade / Marcar (attendance.mark)",
-    "apps/superadmin -> Assiduidade / Corrigir (attendance.correct)",
-    "apps/superadmin -> Assiduidade / Concluir (attendance.finish)",
-    "apps/superadmin -> Assiduidade / Exportar (attendance.export)",
-    "apps/superadmin -> Rotina diaria / Diretorio (daily-routine.list)",
-    "apps/superadmin -> Criar Rotina (daily-routine.create)",
-    "apps/superadmin -> Editar Rotina (daily-routine.edit)",
-    "apps/superadmin -> Rotina / Aplicar (daily-routine.apply)",
-    "apps/superadmin -> Rotina / Publicar (daily-routine.publish)"
+  "scope_summary": "16 IDs: students.list/link/transfer/edit/revoke; attendance.dashboard/create/mark/correct/finish/export; daily-routine.list/create/edit/apply/publish",
+  "changed": "Auditoria read-only do caminho de composicao real das 16 acoes concluida sobre d784462c1. Resultado em findings; nenhuma linha de produto escrita.",
+  "findings": [
+    {
+      "id": "F1",
+      "severity": "blocker-decision",
+      "actions": ["attendance.create", "attendance.mark", "attendance.correct", "attendance.finish"],
+      "fact": "apps/superadmin/lib/features/attendance/data/supabase_attendance_repository.dart chama RPCs superadmin_attendance_create_call, _call_detail, _directory, _context_options, _set_participant_state, _complete_call, _correct_participant e _undo_bulk. Nenhuma dessas funcoes existe em packages/coelo_database/migrations (173 arquivos). As migrations vivas de Assiduidade (20260724152731, 20260825171221) definem apenas a familia legada people-based attendance_dashboard_* mais confirm/revert_attendance_record e submit_attendance_notice. As RPCs esperadas aparecem somente em .recovery-archives, cadeia historica removida.",
+      "consequence": "O ciclo de chamada (criar/marcar/corrigir/concluir) nao tem backend no remoto de producao. Confirma a leitura do rastreador de que o legado people-based nao prova backend039.",
+      "gate": "OQ-040 esta ABERTA em docs/open-questions.md linha 235 e exige aprovar capability interna, matriz/AAL, scope, DTO e cutover antes do detalhe v2, com zero mutacao remota autorizada. Nao e resolvivel por este executor."
+    },
+    {
+      "id": "F2",
+      "severity": "informativo-importante",
+      "actions": ["attendance.create", "attendance.mark", "attendance.correct", "attendance.finish"],
+      "fact": "Em apps/superadmin/lib/app/router/superadmin_router.dart a rota /attendance passa onCreate: null e onOpenCall: null, e as rotas /attendance/create e /attendance/call/:id chamam hasAuthoritativeMutationCapability() sem argumento de location; essa funcao retorna false para tudo que nao comece por /invites, /notices ou /circulars. Origem: 2c0dbe84b, fix(superadmin) fail closed unavailable mutations.",
+      "consequence": "O fluxo esta duplamente fechado. Verificado que NAO deve ser aberto agora: com F1 em aberto, ligar a navegacao criaria acao falsa contra RPC inexistente. O fail-closed atual e o comportamento correto enquanto OQ-040 nao for decidida. Registrado para que nenhuma frente trate isso como bug a corrigir.",
+      "gate": "Depende de F1/OQ-040."
+    },
+    {
+      "id": "F3",
+      "severity": "gap-backend",
+      "actions": ["daily-routine.list", "daily-routine.create", "daily-routine.edit", "daily-routine.publish"],
+      "fact": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart compoe routineRepository como const UnavailableRoutineRepository(). As unicas RPCs de rotina nas migrations vivas sao superadmin_routine_save_application, superadmin_routine_correct_launch e superadmin_routine_revert_application; nao ha reader de diretorio nem comando de publicacao.",
+      "consequence": "Coerente com o rastreador (materializar reader ou comando nominal interno039). O diretorio /rotina roda fail-closed em producao; onCreateEntry e onEdit tambem sao null na rota.",
+      "gate": "Precisa de contrato aprovado e pacote nominal; nenhum aplicavel sem autorizacao remota."
+    },
+    {
+      "id": "F4",
+      "severity": "gap-composicao",
+      "actions": ["students.list"],
+      "fact": "superadmin_auth_scope.dart linha 358 compoe studentTrackingRepository como const UnavailableStudentTrackingRepository(), e main.dart nao repassa esse campo ao SuperadminApp. Ja childDirectoryRead recebe SupabaseChildDirectoryReader(client).fetchPage, real e integrado.",
+      "consequence": "Explica a nota do rastreador de que a composicao do acompanhamento permanece Unavailable: o diretorio CHILD e real, o snapshot de acompanhamento nao. Nao existe implementacao Supabase de StudentTrackingRepository no repo; o unico concreto e DevelopmentStudentTrackingRepository no dev_menu.",
+      "gate": "Backend de acompanhamento inexistente; aceite FE possivel apenas no estado Unavailable honesto."
+    },
+    {
+      "id": "F5",
+      "severity": "trabalho-executavel",
+      "actions": ["students.list", "attendance.dashboard", "attendance.create", "attendance.mark", "attendance.correct", "attendance.finish", "daily-routine.list", "daily-routine.create", "daily-routine.edit", "daily-routine.apply", "daily-routine.publish"],
+      "fact": "Existem 36 arquivos de teste Dart cobrindo as tres familias em apps/superadmin/test. O rastreador exige, por acao, revalidacao de aceites nominais: 375-1440, 200 por cento, teclado e toque, offline/unavailable, sem acao falsa, foco, reload e estado final.",
+      "consequence": "Ha trabalho FE local, executavel e independente de autorizacao remota: executar as suites por acao, confrontar com os aceites nominais do rastreador, corrigir lacunas reais e provar. E o caminho para mover FE ativo de 0/15.",
+      "gate": "Apenas ativacao e worktree do coordenador."
+    }
   ],
-  "action_ids_status": "16/16 IDs do contrato mapeados nominalmente em docs/reviews/inventario-etapa-2.json (families students, attendance, daily_routine). Sem duplicar ownership com estrutura/acessos-pessoas.",
-  "changed": "Conversa nova aberta. Contrato TRABALHO-ATUAL.md lido integralmente. Estado Git observado: dev d784462c1, upstream origin/dev 0/0, unica alteracao nao rastreada e a propria pasta comunicacao/. Worktree D03 localizada em C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d03-acompanhamento (codex/e2-r02-d03-acompanhamento, 0a2ecb34e) como fonte de reuso. coordenacao.json AINDA NAO EXISTE no caminho compartilhado; nenhum ACK possivel ate o coordenador publica-lo. Nenhuma escrita de produto realizada.",
   "closed_criteria": [],
   "tests": {
-    "note": "Nenhum teste executado nesta conversa. Provas a reusar sem repetir: CHILD 45 TAP + 3 concorrencia + 4 HTTP e compositor transacional 6 PASS (origem D03).",
-    "P": null,
-    "F": null,
-    "B": null,
-    "S": null,
-    "U": null
+    "note": "Nenhum teste executado nesta conversa. Provas reusadas sem repetir: CHILD 45 TAP mais 3 concorrencia mais 4 HTTP; compositor transacional 6 PASS; cache PostgREST 1 U.",
+    "P": 0,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0
+  },
+  "cache_postgrest_u1": {
+    "state": "nao executado (1U)",
+    "requisito_real": "Exige PostgREST ja ativo ANTES do DDL e disponibilidade posterior sem restart, apos NOTIFY pgrst reload schema. Modo DB-only nao certifica. Payload nominal 740057756FB2A7DFA5E8F2AB2D9908DF24968F2A3E78196A1FAA0D3B422C6C2C, 22280 bytes LF sem BOM, conforme D03 r20.",
+    "avaliacao": "Nao e executavel por este executor sem stack local DB mais Auth mais PostgREST mais Kong e sem a reserva/janela SQL que o contrato serializa no coordenador. Pedir decisao concreta em vez de repetir preparacao."
   },
   "reservations": [],
   "reservations_requested": [
-    "apps/superadmin (telas Alunos/Assiduidade/Rotina diaria) — escrita exclusiva do grupo",
-    "packages/coelo_database — SOMENTE proposta de pacote revisavel; replay/mutacao remota serializados pelo coordenador",
-    "Router/shell/navegacao — NAO solicitado; alteracao apenas por hunk proposto ao coordenador"
+    "apps/superadmin/lib/features/{student_tracking,attendance,daily_routine,children}/** - escrita exclusiva do grupo",
+    "apps/superadmin/test/features/{student_tracking,attendance,daily_routine,children}/** - escrita exclusiva do grupo",
+    "apps/superadmin/lib/app/router/superadmin_router.dart - NAO solicitado como exclusivo; qualquer alteracao sera proposta como hunk ao coordenador, por ser compartilhado com estrutura e operacoes-sistema",
+    "packages/coelo_database/** - NAO solicitado; sem pacote aplicavel enquanto OQ-040 estiver aberta"
   ],
-  "blocker": "Ativacao coordenada pendente: o contrato exige confirmacao de ativacao, worktree e reservas antes de escrita de produto. coordenacao.json ausente no caminho compartilhado.",
-  "next_step": "Aguardar coordenacao.json com ativacao/worktree/reservas. Enquanto isso, leitura focal read-only de D03 (0a2ecb34e), rastreadores e codigo de students/attendance/daily_routine para dimensionar o delta do cache PostgREST U1 e dos contratos/comandos restantes. Ao ativar: criar worktree C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-alunos-rotina, branch work/etapa2-noturna-alunos-rotina a partir de d784462c1.",
+  "blocker": "Ativacao coordenada pendente: coordenacao.json ainda ausente no caminho compartilhado as 18:38. Bloqueio de produto independente: OQ-040 aberta impede o backend do ciclo de chamada de Assiduidade; ausencia de reader/comando de Rotina e de repositorio de acompanhamento impede E2E dessas acoes.",
+  "next_step": "Ao receber ativacao: criar worktree C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-alunos-rotina e branch work/etapa2-noturna-alunos-rotina a partir de d784462c1; executar as suites FE das tres familias por action_id; confrontar com os aceites nominais do rastreador; corrigir lacunas reais e provar. Ordem: students.list, depois daily-routine list/create/edit/apply/publish, depois attendance dashboard/create/mark/correct/finish. attendance.export permanece informativo e ja certificado; nao sera reaberto.",
+  "decisions_needed_from_coordinator": [
+    "Ativacao, worktree e as reservas acima.",
+    "Confirmar que F2 NAO deve ser aberto: manter fail-closed de /attendance enquanto OQ-040 estiver aberta. Se outra frente propuser ligar onCreate/onOpenCall, isso conflita com este diagnostico.",
+    "Cache PostgREST U1: informar se ha janela e stack local com reserva SQL, ou manter 1U declarado. Sem isso nao ha execucao honesta."
+  ],
   "wip": [],
   "artifacts": [],
   "children": [],
   "processes": [],
   "ports": [],
   "ack": null,
-  "limitations": "Sem canal nativo verificado com o coordenador Claude nesta conversa; publicar este arquivo NAO comprova leitura. Autorizacao nominal para mutacao remota Supabase/Cloudflare nao concedida por este prompt. Exportacao geral permanece informativa (attendance.export e aceite FE de adiamento).",
+  "limitations": "Publicar este arquivo nao comprova leitura pelo coordenador. Sem autorizacao nominal para mutacao remota Supabase ou Cloudflare. A analise F1 a F4 e estatica sobre a base d784462c1, sem execucao de runtime nem chamada remota.",
   "deadline": "2026-09-10T05:00:00-03:00",
   "milestones": {
     "freeze_new_batches": "2026-09-10T04:40:00-03:00",
     "pre_delivery": "2026-09-10T04:50:00-03:00",
     "final_delivery": "2026-09-10T05:00:00-03:00"
   },
-  "eta": "Delta ainda nao inspecionado; estimativa somente apos leitura focal de D03 e do codigo das tres familias."
+  "opening_contract": {
+    "objective": "Fechar os proximos aceites FE executaveis de Alunos, Assiduidade e Rotina diaria reutilizando D03 e CHILD, sem reabrir provas validas",
+    "included": "16 action_ids das familias students, attendance e daily_routine em apps/superadmin",
+    "excluded": "Outros apps; exportacao geral informativa; Safety, que pertence a acessos-pessoas; mutacao remota sem pacote nominal; abertura do fluxo de chamada enquanto OQ-040 estiver aberta",
+    "order": "students.list, depois daily-routine, depois attendance",
+    "stop": "Recorte fechado, bloqueio sem trabalho independente, ou 04:40 e 05:00 BRT de 10/09",
+    "evidence": "Diff seletivo, execucao nominal das suites por action_id, logs com hash e SHAs publicados",
+    "eta": "Delta FE ainda nao medido por execucao; estimativa somente apos a primeira suite rodar na worktree atribuida."
+  },
+  "eta": "Nao calculavel ainda; nenhuma suite executada."
 }

@@ -1,6 +1,6 @@
 {
-    "revision":  4,
-    "updated_at":  "2026-09-09T18:09:17.9029390-03:00",
+    "revision":  5,
+    "updated_at":  "2026-09-09T18:12:11.9034899-03:00",
     "group":  "estrutura",
     "task":  "/root",
     "model":  "GPT-6 (variante nao exposta)",
@@ -20,24 +20,27 @@
                   "apps/superadmin -\u003e Locais"
               ],
     "action_ids_status":  "49 IDs confirmados no inventario: 42 MVP e 7 adiados. Recorte inicial institutions.locations-map,units.locations-map,units.copy-institution-location,locations.list,locations.create-edit,locations.detail-links; seguinte groups.location/activities.location/locations.schedule.",
-    "changed":  "Tres candidatos aplicados seletivamente sem conflito: f87543b6c,4528c42df,fc8287c57. Diffcheck limpo; 13 paths. Iniciando prova conjunta focal, nao SQL.",
+    "changed":  "36 testes Flutter P/0F0B0S0U na composicao candidata fc8287c57; analyzer 13 paths limpo. Validador visual em andamento.",
     "closed_criteria":  [
 
                         ],
     "tests":  {
-                  "note":  "Nenhum teste iniciado; preservar catalogo165, Clock46+3, reservas49+2",
-                  "S":  null,
-                  "F":  null,
-                  "B":  null,
-                  "U":  null,
-                  "P":  null
+                  "E":  36,
+                  "S":  0,
+                  "U":  0,
+                  "P":  36,
+                  "B":  0,
+                  "F":  0,
+                  "evidence":  "docs/reviews/evidence/etapa-2/noturna-estrutura/candidates-manifest.json",
+                  "revision":  "fc8287c57",
+                  "N":  36
               },
     "reservations":  [
                          "Router/composition: hunks pequenos na branch como proposta; integrador Claude",
                          "Migrations: candidatos locais permitidos; replay e remoto serializados Claude"
                      ],
     "blocker":  null,
-    "next_step":  "Executar testes de secao/mapa, rotas e guarda copia na base conjunta; analyzer/validador visual proporcionais. Publicar tres commits e evidencia apos verificacao.",
+    "next_step":  "Publicar f87543b6c e 4528c42df + proposta fc8287c57 apos validador visual. fc8287c57 contem somente hunks minimos de composicao (router/routes/app/main e teste proprio); foi materializado na branch para prova antes de ler r2, nunca em dev. Integracao permanece exclusivamente Claude; se r2 exige arquivo .patch em vez de commit de hunks, registrar no proximo recibo.",
     "wip":  [
 
             ],
@@ -53,12 +56,12 @@
                      }
                  ],
     "processes":  [
-                      "A iniciar Flutter focal local; nenhum servidor/SQL"
+                      "dart visual validator session local"
                   ],
     "ports":  [
 
               ],
-    "ack":  "coordenacao r1 lida; atribuicao autorizada, sem receipt nominal do executor ainda",
+    "ack":  "coordenacao r2 recibo estrutura r3 lido; escritor central preservado",
     "limitations":  "Sem canal nativo Claude verificado; arquivo publicado nao comprova leitura nem desperta conversa encerrada.",
     "deadline":  "2026-09-09T23:30:00-03:00",
     "eta":  "Delta de implementacao ainda nao inspecionado; espera de atribuicao indeterminada.",

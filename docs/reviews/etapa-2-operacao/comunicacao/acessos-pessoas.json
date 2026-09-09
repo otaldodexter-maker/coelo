@@ -1,6 +1,6 @@
-﻿{
-    "revision":  3,
-    "updated_at":  "2026-09-09T18:08:53.7377307-03:00",
+{
+    "revision":  4,
+    "updated_at":  "2026-09-09T18:11:32.9762882-03:00",
     "group":  "acessos-pessoas",
     "task_id":  "/root",
     "native_thread_id":  null,
@@ -29,8 +29,8 @@
     "reservations":  [
                          "SQL/replay/shared: coordenador; candidatos locais permitidos na worktree"
                      ],
-    "blocker":  "Replay SQL depende slot/ordem do coordenador; preparação local e visual independentes autorizados",
-    "next_step":  "Preparar pacote nominal Modelos com preflight/base/hashes e solicitar slotSQL; filho resolver Safety golden contra referências aprovadas. Coordenacao r1 lida, ativação/worktree verificadas; receipts ainda vazio.",
+    "blocker":  "Produção possui cursor legado, sem helper interno Modelos/receipts/permissões role_models; filtro174500 isolado não aplicável. Sem mutação remota.",
+    "next_step":  "Preparar cadeia nominal Models171731+193000+08021821+AAL1182839+CSV09174500 em transação com guardas/fechamento import-export adiados. Precisa slot replay nominal Auth45 sem defaults relaxados: coordenador executar pacote ou conceder slot explícito. Safety visual em runner focal do filho.",
     "wip":  [
 
             ],
@@ -46,7 +46,7 @@
                      }
                  ],
     "cutoff":  "2026-09-09T23:30:00-03:00",
-    "ack_observed":  false,
+    "ack_observed":  true,
     "historical_evidence":  {
                                 "source":  "R02 D04 r14/FECHAMENTO-OWNER",
                                 "held":  "Safety adc902eaf/48141c195/f84db0412/963796ddf",
@@ -68,5 +68,12 @@
                      "objective":  "Corrigir/provar ações restantes do grupo",
                      "excluded":  "outros apps, import/export adiados, MFA novo, produção sem pacote nominal"
                  },
-    "coordinator_revision_read":  1
+    "coordinator_revision_read":  2,
+    "requested_sql_slot":  {
+                               "scope":  "aplicação transacional local + rollback/ACL/persistência + contratos Models",
+                               "status":  "preparando materialização",
+                               "base":  "Auth45 20260901200206; labels NOT NULL sem bridge default ao aplicar pacote",
+                               "production":  "não autorizado; somente leitura catálogo realizada",
+                               "package":  "AP-MODELS-NOMINAL-20260909-v1"
+                           }
 }
