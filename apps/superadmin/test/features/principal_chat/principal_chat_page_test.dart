@@ -315,6 +315,44 @@ void main() {
     expect(find.byKey(const Key('principal-chat-composer')), findsNothing);
   });
 
+  testWidgets('reconciles the inbox after sending, without blanking it', (tester) async {
+    final repository = _PrincipalChatRepository();
+    await _pump(tester, repository);
+    await tester.tap(find.byKey(const ValueKey('principal-chat-conversation-conversation-1')));
+    await tester.pumpAndSettle();
+    final fetchesBeforeSend = repository.inboxQueries.length;
+
+    await tester.enterText(find.byKey(const Key('principal-chat-composer')), 'Nova mensagem');
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('principal-chat-send')));
+    await tester.pumpAndSettle();
+
+    // A lista mostra a última mensagem de cada conversa: sem reconciliar, o
+    // preview continuaria anterior ao que acabou de ser enviado.
+    expect(repository.inboxQueries.length, fetchesBeforeSend + 1);
+    // E a reconciliação é silenciosa: a inbox nunca vira painel de carregamento.
+    expect(find.byKey(const Key('principal-chat-inbox-loading')), findsNothing);
+    expect(find.byKey(const Key('principal-chat-inbox-list')), findsOneWidget);
+  });
+
+  testWidgets('a silent reconciliation failure keeps the list the reader already has', (
+    tester,
+  ) async {
+    final repository = _PrincipalChatRepository(failInboxAfterFirst: true);
+    await _pump(tester, repository);
+    await tester.tap(find.byKey(const ValueKey('principal-chat-conversation-conversation-1')));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byKey(const Key('principal-chat-composer')), 'Nova mensagem');
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('principal-chat-send')));
+    await tester.pumpAndSettle();
+
+    // Trocar uma lista válida por um painel de falha seria pior que mantê-la.
+    expect(find.byKey(const Key('principal-chat-inbox-failure')), findsNothing);
+    expect(find.byKey(const Key('principal-chat-inbox-list')), findsOneWidget);
+  });
+
   testWidgets('lays out without overflow across canonical breakpoints', (tester) async {
     for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
       await tester.binding.setSurfaceSize(Size(width, 900));
@@ -357,6 +395,7 @@ final class _PrincipalChatRepository implements ChatRepository {
     this.continuationError,
     this.pagedThread = false,
     this.emptyThread = false,
+    this.failInboxAfterFirst = false,
   }) : inbox = inbox ?? _defaultInbox(readOnly: readOnly);
 
   ChatInboxPage inbox;
@@ -367,6 +406,7 @@ final class _PrincipalChatRepository implements ChatRepository {
   final Object? continuationError;
   final bool pagedThread;
   final bool emptyThread;
+  final bool failInboxAfterFirst;
 
   final List<ChatThreadQuery> threadQueries = [];
   ChatInboxPage? nextInbox;
@@ -397,6 +437,9 @@ final class _PrincipalChatRepository implements ChatRepository {
   @override
   Future<ChatInboxPage> fetchInbox(ChatInboxQuery query) async {
     inboxQueries.add(query);
+    if (failInboxAfterFirst && inboxQueries.length > 1) {
+      throw const ChatFailureException();
+    }
     if (query.cursor != null) {
       if (continuationError != null) throw continuationError!;
       return nextInbox ?? const ChatInboxPage(items: [], totalUnread: 0);
