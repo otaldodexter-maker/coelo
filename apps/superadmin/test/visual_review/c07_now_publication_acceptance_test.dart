@@ -50,6 +50,15 @@ void main() {
   const tablet = Size(768, 1024);
   const desktop = Size(1440, 1000);
   const viewports = [mobile, tablet, desktop];
+///
+/// ATUALIZACAO 2026-09-08T22:00, conferida por mim nas duas pontas: esse
+/// conflito **caduca no baseline conjunto**. No meu baseline 4af42925 o teste
+/// de feature afirma `findsOneWidget` para a barra (linhas 120 e 670); no HEAD
+/// da C05 ele ja afirma `findsNothing` e exige `Sua publicacao` (linhas 122,
+/// 123, 673 e 675). A C05 corrigiu a pagina e o proprio teste dela. Portanto
+/// nao ha pendencia viva para o fechamento, e os 7 vermelhos deste arquivo
+/// devem virar verdes quando a C00 materializar o baseline conjunto. Se algum
+/// nao virar, e achado real e deve ser reportado.
 
   final composerFrame = find.byType(PrincipalPublicationFrame);
   final mediaStage = find.byKey(const Key('now-media-stage'));
