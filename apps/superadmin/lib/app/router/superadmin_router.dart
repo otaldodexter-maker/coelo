@@ -5613,6 +5613,14 @@ String _destinationForLocation(String location) {
   if (location.startsWith('/principal-now')) {
     return 'principal-now';
   }
+  if (location.startsWith('/principal-conversations')) {
+    // Sem este mapeamento o shell hospedeiro não sabe que está no Chat do
+    // Principal: continua desenhando o launcher flutuante que oferece abrir o
+    // chat por cima do próprio chat, e o menu não marca a folha ativa. O nome
+    // `principal-chat` já é a folha do menu e já está na lista de supressão do
+    // launcher, então reusá-lo resolve os dois de uma vez.
+    return 'principal-chat';
+  }
   if (location.startsWith('/principal-profile')) {
     return 'principal-profile';
   }
@@ -5721,6 +5729,10 @@ void _navigateFromPersistentShell(BuildContext context, String destination) {
       context.goNamed(SuperadminRoutes.principalNowName);
     case 'principal-now-publish':
       context.goNamed(SuperadminRoutes.principalNowPublicationName);
+    case 'principal-chat':
+      // A folha Chat do menu Principal existe em superadmin_navigation.dart,
+      // mas não tinha destino aqui: no shell de produção o item era inerte.
+      context.goNamed(SuperadminRoutes.principalConversationsName);
     case 'principal-profile':
       context.goNamed(SuperadminRoutes.principalProfileName);
     case 'institution-create':
