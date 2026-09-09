@@ -60,3 +60,26 @@ final class PrincipalMomentsFeedUnauthorized extends PrincipalMomentsFeedFailure
 final class PrincipalMomentsFeedUnavailable extends PrincipalMomentsFeedFailure {
   const PrincipalMomentsFeedUnavailable();
 }
+
+/// Author-only withdrawal seam for a published moment.
+///
+/// The client never decides who may withdraw. `can_withdraw` from the feed is a
+/// rendering hint; the backend re-authorizes actor, tenant, scope, permission
+/// and authorship on every call.
+abstract interface class PrincipalMomentsWithdrawalRepository {
+  Future<void> withdrawMoment(String publicationId, {String? reason});
+}
+
+sealed class PrincipalMomentsWithdrawalFailure implements Exception {
+  const PrincipalMomentsWithdrawalFailure();
+}
+
+/// The backend refused the withdrawal (permission, tenant, scope or authorship).
+final class PrincipalMomentsWithdrawalDenied extends PrincipalMomentsWithdrawalFailure {
+  const PrincipalMomentsWithdrawalDenied();
+}
+
+/// The withdrawal could not be completed and the moment state is unchanged.
+final class PrincipalMomentsWithdrawalUnavailable extends PrincipalMomentsWithdrawalFailure {
+  const PrincipalMomentsWithdrawalUnavailable();
+}

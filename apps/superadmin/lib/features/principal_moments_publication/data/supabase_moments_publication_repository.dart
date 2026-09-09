@@ -6,7 +6,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../domain/moments_publication.dart';
 
-final class SupabaseMomentsPublicationRepository implements MomentsPublicationRepository {
+final class SupabaseMomentsPublicationRepository
+    implements MomentsPublicationRepository, MomentsWithdrawalRepository {
   SupabaseMomentsPublicationRepository(
     this._client, {
     http.Client? httpClient,
@@ -133,6 +134,41 @@ final class SupabaseMomentsPublicationRepository implements MomentsPublicationRe
       return MomentsPublication(
         id: json['publication_id'] as String,
         status: MomentsStatus.values.byName(json['status'] as String),
+      );
+    } on PostgrestException catch (error) {
+      throw _map(error);
+    }
+  }
+
+  /// Soft withdrawal of a published moment. Authorship, tenant, scope and the
+  /// `moments.publications.remove` permission are enforced by the backend.
+  @override
+  Future<MomentsWithdrawal> withdraw(
+    String publicationId, {
+    int? expectedVersion,
+    String? reason,
+  }) async {
+    final withdrawKey = 'withdraw:$publicationId:${expectedVersion ?? '-'}';
+    final requestId = _requestIds.putIfAbsent(withdrawKey, _requestIdFactory);
+    try {
+      final data = await _client.rpc<Object>(
+        'withdraw_moment',
+        params: {
+          'p_request_id': requestId,
+          'p_publication_id': publicationId,
+          'p_expected_version': expectedVersion,
+          'p_reason': reason,
+        },
+      );
+      final json = Map<String, dynamic>.from(data as Map);
+      final withdrawnAt = DateTime.tryParse(json['withdrawn_at']?.toString() ?? '');
+      if (withdrawnAt == null) throw Exception('moments_backend_failure');
+      _requestIds.remove(withdrawKey);
+      return MomentsWithdrawal(
+        id: json['id'] as String,
+        status: MomentsStatus.values.byName(json['status'] as String),
+        withdrawnAt: withdrawnAt,
+        version: (json['version'] as num?)?.toInt() ?? 0,
       );
     } on PostgrestException catch (error) {
       throw _map(error);
