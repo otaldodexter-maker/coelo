@@ -215,7 +215,9 @@ final class _FailingNowGoldenRepository implements NowPublicationRepository {
   ) async => audio;
 
   @override
-  Future<NowPublication> publish(NowPublicationContext context, NowPublicationDraft draft) async =>
+  Future<NowPublication> publish(NowPublicationContext context, NowPublicationDraft draft, {
+    required String requestId,
+  }) async =>
       const NowPublication(id: 'unused', publishAt: null);
 }
 

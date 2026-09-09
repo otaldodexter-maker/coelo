@@ -146,7 +146,16 @@ abstract interface class HappensPublicationRepository {
   );
   Future<HappensMediaDraft> finalizeMedia(HappensUploadIntent intent, HappensMediaDraft media);
   Future<void> removeMedia(HappensPublicationContext context, HappensMediaDraft media);
-  Future<HappensPublication> publish(HappensPublicationContext context, HappensPostDraft draft);
+  /// Publica [draft] sob a chave de idempotencia [requestId].
+  ///
+  /// A chave pertence a intencao, nao a chamada: repetir a mesma tentativa
+  /// depois de uma falha deve reapresentar a MESMA chave, para que o servidor
+  /// possa reconhecer a repeticao em vez de publicar duas vezes para familias.
+  Future<HappensPublication> publish(
+    HappensPublicationContext context,
+    HappensPostDraft draft, {
+    required String requestId,
+  });
 }
 
 final class InMemoryHappensPublicationRepository implements HappensPublicationRepository {
@@ -201,8 +210,9 @@ final class InMemoryHappensPublicationRepository implements HappensPublicationRe
   @override
   Future<HappensPublication> publish(
     HappensPublicationContext context,
-    HappensPostDraft draft,
-  ) async {
+    HappensPostDraft draft, {
+    required String requestId,
+  }) async {
     final now = DateTime.now().toUtc();
     final at = draft.publishAt?.toUtc() ?? now;
     lastPublication = HappensPublication(

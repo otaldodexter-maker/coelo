@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 
+import '../../principal_shared/domain/principal_request_id.dart';
 import '../domain/happens_publication.dart';
 
 enum HappensPublicationFailureSource { load, operation }
@@ -52,6 +53,13 @@ final class HappensPublicationController extends ChangeNotifier {
   HappensPublicationState _state;
   Timer? _autosaveTimer;
   var _operationInFlight = false;
+
+  /// Chave de idempotencia da intencao de publicacao em curso.
+  ///
+  /// Retida entre tentativas para que repetir a MESMA publicacao apos uma
+  /// falha reapresente a mesma chave, em vez de virar uma publicacao nova para
+  /// as familias. Descartada quando a intencao muda ou e aceita.
+  String? _publishRequestId;
   var _loadGeneration = 0;
   var _disposed = false;
 
@@ -269,8 +277,14 @@ final class HappensPublicationController extends ChangeNotifier {
         preparedDraft = preparedDraft.copyWith(media: uploaded);
         _emit(_state.copyWith(draft: preparedDraft, phase: HappensPublicationPhase.uploading));
       }
-      final result = await repository.publish(context, preparedDraft);
+      final result = await repository.publish(
+        context,
+        preparedDraft,
+        requestId: _publishRequestId ??= newPrincipalRequestId(),
+      );
       if (!_isCurrent(generation)) return null;
+      // A intencao foi aceita; a proxima publicacao e outra intencao.
+      _publishRequestId = null;
       _emit(
         _state.copyWith(
           draft: preparedDraft,
@@ -311,6 +325,10 @@ final class HappensPublicationController extends ChangeNotifier {
 
   void _edit(HappensPostDraft draft) {
     if (!_canEdit) return;
+    // Editar o rascunho cria uma intencao NOVA de publicacao. A chave da
+    // tentativa anterior nao pode ser reaproveitada, senao o servidor
+    // reconheceria o conteudo novo como repeticao do antigo.
+    _publishRequestId = null;
     _emit(
       _state.copyWith(
         draft: draft,
