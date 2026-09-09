@@ -849,6 +849,8 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
   bool _reloadingConfirmedSave = false;
   bool _saveNeedsReload = false;
   bool _loadingContext = false;
+  bool _initialContextFailed = false;
+  bool _lookupDenied = false;
   static const labels = ['Criança', 'Pessoa autorizada', 'Validade e capacidades', 'Revisão'];
 
   @override
@@ -876,6 +878,7 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
   }
 
   bool get _contextUnavailable =>
+      _lookupDenied ||
       widget.controller.state == ChildSafetyLoadState.unauthorized ||
       widget.controller.state == ChildSafetyLoadState.error;
 
@@ -890,6 +893,8 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
     step = 0;
     searching = false;
     _loadingContext = false;
+    _initialContextFailed = false;
+    _lookupDenied = false;
     options = const [];
     child = null;
     childSearch.clear();
@@ -916,7 +921,13 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
           // hides its data. A denial still clears everything immediately.
           error = 'Não foi possível atualizar os dados. Recarregue para continuar.';
         } else {
+          final lookupDenied = _lookupDenied;
           _clearContext();
+          _lookupDenied = lookupDenied;
+          _initialContextFailed =
+              !lookupDenied &&
+              widget.childId != null &&
+              widget.controller.state == ChildSafetyLoadState.error;
           error = 'Não foi possível carregar o contexto solicitado.';
         }
       }
@@ -930,6 +941,8 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
     final authorizationId = widget.authorizationId;
     _loadingContext = true;
     try {
+      if (controller.state == ChildSafetyLoadState.error) await controller.retry();
+      if (!mounted || version != _contextVersion) return;
       final record = await controller.fetchChild(childId);
       if (!mounted || version != _contextVersion) return;
       if (record == null) throw const ChildSafetyNotFoundException();
@@ -961,6 +974,8 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
       }
       setState(() {
         child = option;
+        _initialContextFailed = false;
+        error = null;
         _saveNeedsReload = false;
         options = [option];
         childSearch.text = record.childName;
@@ -982,9 +997,23 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
           expectedVersion = authorization.version;
         }
       });
-    } on Exception {
+    } on ChildSafetyUnauthorizedException {
       if (mounted && version == _contextVersion) {
-        setState(() => error = 'Não foi possível carregar o contexto solicitado.');
+        setState(() {
+          _clearContext();
+          _lookupDenied = true;
+          error = 'Não foi possível carregar o contexto solicitado.';
+        });
+      }
+    } catch (_) {
+      if (mounted && version == _contextVersion) {
+        setState(() {
+          final needsReload = _saveNeedsReload;
+          _clearContext();
+          _saveNeedsReload = needsReload;
+          _initialContextFailed = !needsReload;
+          error = 'Não foi possível carregar o contexto solicitado.';
+        });
       }
     } finally {
       if (mounted && version == _contextVersion) setState(() => _loadingContext = false);
@@ -1052,6 +1081,7 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
     if (widget.controller.isSaving ||
         _contextUnavailable ||
         _loadingContext ||
+        _initialContextFailed ||
         searching ||
         _saveNeedsReload ||
         _confirmedSaveCommand != null) {
@@ -1119,10 +1149,11 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
       if (isCurrent()) {
         setState(() {
           _clearContext();
+          _lookupDenied = true;
           error = 'Não foi possível carregar o contexto solicitado.';
         });
       }
-    } on Exception {
+    } catch (_) {
       if (isCurrent()) {
         setState(() => error = 'Não foi possível atualizar os dados. Recarregue para continuar.');
       }
@@ -1165,7 +1196,9 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
             width: CoeloSize.touchMin,
             height: CoeloSize.touchMin,
           ),
-          onPressed: searching || _loadingContext || _contextUnavailable ? null : _search,
+          onPressed: searching || _loadingContext || _initialContextFailed || _contextUnavailable
+              ? null
+              : _search,
           icon: searching
               ? const SizedBox.square(
                   dimension: CoeloSize.iconSm,
@@ -1178,7 +1211,7 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
       for (final option in options) ...[
         CoeloAdminInteractiveCard(
           semanticLabel: 'Selecionar ${option.name}',
-          onPressed: () => setState(() => child = option),
+          onPressed: _selectChildAction(option),
           child: Padding(
             padding: const EdgeInsets.all(CoeloSpacing.space4),
             child: Row(
@@ -1330,9 +1363,53 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
           const SizedBox(height: CoeloSpacing.space3),
           _conflictReloadAction(),
         ],
+        if (_initialContextFailed &&
+            widget.childId != null &&
+            !_lookupDenied &&
+            widget.controller.state != ChildSafetyLoadState.unauthorized) ...[
+          const SizedBox(height: CoeloSpacing.space3),
+          _initialContextRetryAction(),
+        ],
       ],
     ),
   );
+  Widget _initialContextRetryAction() {
+    final version = _contextVersion;
+    return Align(
+      alignment: AlignmentDirectional.centerStart,
+      child: OutlinedButton(
+        onPressed: _loadingContext || widget.controller.isSaving
+            ? null
+            : () {
+                if (!mounted || version != _contextVersion || !_initialContextFailed) return;
+                setState(() {
+                  _initialContextFailed = false;
+                  _loadingContext = true;
+                  error = null;
+                });
+                unawaited(_loadInitialContext());
+              },
+        child: const Text('Recarregar contexto'),
+      ),
+    );
+  }
+
+  VoidCallback _selectChildAction(ChildSafetyChildOption option) {
+    final version = _contextVersion;
+    return () {
+      if (!mounted ||
+          version != _contextVersion ||
+          searching ||
+          _loadingContext ||
+          _initialContextFailed ||
+          _contextUnavailable ||
+          !options.any((candidate) => identical(candidate, option))) {
+        return;
+      }
+      setState(() => child = option);
+    };
+  }
+
   Widget _conflictReloadAction() {
     final version = _contextVersion;
     return Align(
@@ -1354,19 +1431,42 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
   }
 
   Future<void> _search() async {
-    if (_contextUnavailable || _loadingContext || searching) return;
-    final version = _contextVersion;
+    if (_contextUnavailable ||
+        _loadingContext ||
+        _initialContextFailed ||
+        searching ||
+        widget.controller.isSaving ||
+        _confirmedSaveCommand != null ||
+        _saveNeedsReload) {
+      return;
+    }
+    final version = ++_contextVersion;
     final controller = widget.controller;
     setState(() {
       searching = true;
+      options = const [];
+      child = null;
+      _pendingSaveCommand = null;
       error = null;
     });
     try {
       final result = await controller.searchChildren(childSearch.text);
       if (mounted && version == _contextVersion) setState(() => options = result);
-    } on Exception {
+    } on ChildSafetyUnauthorizedException {
       if (mounted && version == _contextVersion) {
-        setState(() => error = 'Não foi possível buscar crianças.');
+        setState(() {
+          _clearContext();
+          _lookupDenied = true;
+          error = 'Não foi possível buscar crianças.';
+        });
+      }
+    } catch (_) {
+      if (mounted && version == _contextVersion) {
+        setState(() {
+          options = const [];
+          child = null;
+          error = 'Não foi possível buscar crianças.';
+        });
       }
     } finally {
       if (mounted && version == _contextVersion) setState(() => searching = false);
@@ -1377,6 +1477,7 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
     if (!mounted ||
         _contextUnavailable ||
         _loadingContext ||
+        _initialContextFailed ||
         searching ||
         widget.controller.isSaving ||
         _saveNeedsReload ||
