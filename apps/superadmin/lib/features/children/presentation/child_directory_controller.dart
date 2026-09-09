@@ -5,13 +5,17 @@ typedef ChildDirectoryRead = Future<ChildDirectoryPage> Function(ChildDirectoryR
 
 enum ChildDirectoryState { loading, ready, empty, denied, unavailable }
 
-Future<ChildDirectoryPage> _unavailable(ChildDirectoryRequest _) =>
+/// Default read for any composition without an authorized session.
+///
+/// It fails instead of returning an empty page, so missing wiring can never be
+/// mistaken for "this actor has no children".
+Future<ChildDirectoryPage> unavailableChildDirectoryRead(ChildDirectoryRequest _) =>
     Future.error(StateError('Child directory unavailable'));
 
 /// Holds one page, never authority. The server must authorize every request.
 final class ChildDirectoryController extends ChangeNotifier {
   ChildDirectoryController({
-    ChildDirectoryRead read = _unavailable,
+    ChildDirectoryRead read = unavailableChildDirectoryRead,
     bool sessionAvailable = false,
     String? institutionId,
     int revision = 0,

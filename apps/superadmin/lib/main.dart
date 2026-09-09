@@ -49,6 +49,7 @@ Future<void> main() async {
       inviteRepository: authScope.inviteRepository,
       noticeRepository: authScope.noticeRepository,
       attendanceRepository: authScope.attendanceRepository,
+      childDirectoryRead: authScope.childDirectoryRead,
       attendancePermissions: authScope.attendancePermissions,
       routineRepository: authScope.routineRepository,
       childSafetyRepository: authScope.childSafetyRepository,

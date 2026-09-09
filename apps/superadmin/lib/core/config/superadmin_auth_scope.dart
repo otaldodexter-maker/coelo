@@ -11,6 +11,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../features/auth/domain/coelo_auth_login_action.dart';
 import '../../features/chat/data/supabase_chat_repository.dart';
 import '../../features/chat/domain/chat_repository.dart';
+import '../../features/children/data/supabase_child_directory_reader.dart';
+import '../../features/children/presentation/child_directory_controller.dart';
 import '../../features/circulars/data/supabase_superadmin_circular_repository.dart';
 import '../../features/circulars/domain/superadmin_circular_repository.dart';
 import '../../features/attendance/attendance.dart';
@@ -136,6 +138,7 @@ final class SuperadminAuthScope {
     required this.inviteRepository,
     required this.noticeRepository,
     required this.attendanceRepository,
+    this.childDirectoryRead = unavailableChildDirectoryRead,
     this.studentTrackingRepository = const UnavailableStudentTrackingRepository(),
     required this.attendancePermissions,
     required this.routineRepository,
@@ -187,6 +190,7 @@ final class SuperadminAuthScope {
   final InviteRepository inviteRepository;
   final NoticeRepository noticeRepository;
   final AttendanceRepository attendanceRepository;
+  final ChildDirectoryRead childDirectoryRead;
   final StudentTrackingRepository studentTrackingRepository;
   final AttendancePermissions attendancePermissions;
   final RoutineRepository routineRepository;
@@ -350,6 +354,7 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       inviteRepository: SupabaseInviteRepository(client),
       noticeRepository: SupabaseNoticeRepository(client),
       attendanceRepository: SupabaseAttendanceRepository(client),
+      childDirectoryRead: SupabaseChildDirectoryReader(client).fetchPage,
       studentTrackingRepository: const UnavailableStudentTrackingRepository(),
       attendancePermissions: const AttendancePermissions.backend(),
       routineRepository: const UnavailableRoutineRepository(),

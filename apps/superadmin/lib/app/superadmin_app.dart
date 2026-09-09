@@ -19,6 +19,7 @@ import '../features/auth/domain/logout_action.dart';
 import '../features/auth/domain/password_recovery.dart';
 import '../features/auth/domain/reset_password_action.dart';
 import '../features/chat/domain/chat_repository.dart';
+import '../features/children/presentation/child_directory_controller.dart';
 import '../features/circulars/domain/superadmin_circular_repository.dart';
 import '../features/attendance/attendance.dart';
 import '../features/attendance/data/supabase_attendance_repository.dart';
@@ -133,6 +134,7 @@ class SuperadminApp extends StatefulWidget {
     this.inviteRepository = const UnavailableInviteRepository(),
     this.noticeRepository = const UnavailableNoticeRepository(),
     this.attendanceRepository = const UnavailableAttendanceRepository(),
+    this.childDirectoryRead = unavailableChildDirectoryRead,
     this.attendancePermissions = const AttendancePermissions.readOnly(),
     this.routineRepository = const UnavailableRoutineRepository(),
     this.auditRepository = const UnavailableAuditRepository(),
@@ -187,6 +189,7 @@ class SuperadminApp extends StatefulWidget {
   final InviteRepository inviteRepository;
   final NoticeRepository noticeRepository;
   final AttendanceRepository attendanceRepository;
+  final ChildDirectoryRead childDirectoryRead;
   final AttendancePermissions attendancePermissions;
   final RoutineRepository routineRepository;
   final AuditRepository auditRepository;
@@ -265,6 +268,7 @@ class _SuperadminAppState extends State<SuperadminApp> {
       inviteRepository: widget.inviteRepository,
       noticeRepository: widget.noticeRepository,
       attendanceRepository: widget.attendanceRepository,
+      childDirectoryRead: widget.childDirectoryRead,
       attendancePermissions: widget.attendancePermissions,
       routineRepository: widget.routineRepository,
       auditRepository: widget.auditRepository,
