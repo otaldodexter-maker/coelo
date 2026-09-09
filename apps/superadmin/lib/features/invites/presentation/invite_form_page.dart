@@ -109,7 +109,9 @@ final class _InviteFormPageState extends State<InviteFormPage> {
   }
 
   Future<void> _loadOptions({bool showLoading = true}) async {
+    _searchDebounce?.cancel();
     final epoch = ++_optionsEpoch;
+    final recipientSearch = _step == 1;
     if (mounted) {
       setState(() {
         _refreshingOptions = true;
@@ -127,7 +129,7 @@ final class _InviteFormPageState extends State<InviteFormPage> {
       final scope = _scope?.scope;
       final options = await widget.repository.fetchOptions(
         InviteOptionsQuery(
-          search: _step == 1 ? _recipientSearchController.text : _contextSearchController.text,
+          search: recipientSearch ? _recipientSearchController.text : _contextSearchController.text,
           institutionId: scope?.institutionId,
           unitId: scope?.unitId,
           groupId: scope?.groupId,
@@ -136,13 +138,22 @@ final class _InviteFormPageState extends State<InviteFormPage> {
       );
       if (!mounted || epoch != _optionsEpoch) return;
       setState(() {
-        _options = options;
+        _options = recipientSearch
+            ? InviteFormOptions(
+                scopes: _options.scopes,
+                profiles: _options.profiles,
+                recipients: options.recipients,
+              )
+            : options;
         _optionsState = _OptionsState.ready;
         _refreshingOptions = false;
-        if (_profile != null && !options.profiles.any((value) => value.id == _profile!.id)) {
+        if (!recipientSearch &&
+            _profile != null &&
+            !options.profiles.any((value) => value.id == _profile!.id)) {
           _profile = null;
         }
-        if (_recipient != null &&
+        if (recipientSearch &&
+            _recipient != null &&
             !options.recipients.any((value) => value.personId == _recipient!.personId)) {
           _recipient = null;
         }
@@ -168,6 +179,8 @@ final class _InviteFormPageState extends State<InviteFormPage> {
 
   void _searchOptions(String _) {
     _searchDebounce?.cancel();
+    _optionsEpoch++;
+    setState(() => _refreshingOptions = true);
     _searchDebounce = Timer(
       const Duration(milliseconds: 300),
       () => unawaited(_loadOptions(showLoading: false)),
@@ -195,6 +208,7 @@ final class _InviteFormPageState extends State<InviteFormPage> {
   };
 
   void _continue() {
+    if (_submitting || _refreshingOptions || _result != null) return;
     if (!_stepValid(_step) || !(_formKey.currentState?.validate() ?? true)) {
       setState(() => _errorSteps.add(_step));
       return;
@@ -208,6 +222,19 @@ final class _InviteFormPageState extends State<InviteFormPage> {
       }
     });
     if (leavingScopeStep) unawaited(_loadOptions(showLoading: false));
+  }
+
+  void _selectStep(int index) {
+    if (_submitting || _refreshingOptions || _result != null || index > _furthestStep) return;
+    final invalidStep = [
+      for (var step = 0; step < index; step++)
+        if (!_stepValid(step)) step,
+    ].firstOrNull;
+    setState(() {
+      _step = invalidStep ?? index;
+      if (invalidStep != null) _errorSteps.add(invalidStep);
+    });
+    if (_step <= 1) unawaited(_loadOptions(showLoading: false));
   }
 
   Future<void> _issue() async {
@@ -337,22 +364,17 @@ final class _InviteFormPageState extends State<InviteFormPage> {
               : index < _furthestStep
               ? SuperadminFormStepStatus.complete
               : SuperadminFormStepStatus.incomplete,
-          enabled: !_submitting && _result == null && index <= _furthestStep,
+          enabled: !_submitting && !_refreshingOptions && _result == null && index <= _furthestStep,
         ),
     ],
     currentIndex: _step,
-    onStepSelected: (index) {
-      if (index <= _furthestStep && _result == null) {
-        setState(() => _step = index);
-        if (index <= 1) unawaited(_loadOptions(showLoading: false));
-      }
-    },
+    onStepSelected: _selectStep,
   );
 
   Widget _body() {
     final result = _result;
     if (result != null) return InviteDeliveryResult(result: result);
-    if (_step == 0 && _options.scopes.isEmpty) {
+    if (_step == 0 && _scope == null && _options.scopes.isEmpty) {
       final hasSearch = _contextSearchController.text.trim().isNotEmpty;
       return CoeloStatePanel(
         title: hasSearch ? 'Nenhum contexto encontrado' : 'Nenhum contexto disponível',
@@ -444,7 +466,7 @@ final class _InviteFormPageState extends State<InviteFormPage> {
           )
         : FilledButton(
             key: const Key('invite-form-continue'),
-            onPressed: _submitting ? null : _continue,
+            onPressed: _submitting || _refreshingOptions ? null : _continue,
             child: const Text('Continuar'),
           );
     return SuperadminFormActionFooter(
@@ -459,12 +481,7 @@ final class _InviteFormPageState extends State<InviteFormPage> {
         if (_step > 0)
           OutlinedButton(
             key: const Key('invite-form-previous'),
-            onPressed: _submitting
-                ? null
-                : () {
-                    setState(() => _step--);
-                    if (_step <= 1) unawaited(_loadOptions(showLoading: false));
-                  },
+            onPressed: _submitting || _refreshingOptions ? null : () => _selectStep(_step - 1),
             child: const Text('Anterior'),
           ),
         primary,

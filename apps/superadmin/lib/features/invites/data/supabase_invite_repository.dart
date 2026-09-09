@@ -289,6 +289,8 @@ Uri? _safeLink(Object? value) {
   if (uri == null ||
       uri.scheme != 'https' ||
       uri.host != 'app.coelo.me' ||
+      uri.userInfo.isNotEmpty ||
+      uri.port != 443 ||
       uri.query.isNotEmpty ||
       uri.fragment.isNotEmpty ||
       !RegExp(r'^/convites/[0-9a-f]{64}$').hasMatch(uri.path)) {

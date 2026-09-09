@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:coelo_superadmin/features/invites/domain/platform_invite.dart';
 import 'package:coelo_superadmin/features/invites/presentation/invite_form_page.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,117 @@ import 'package:flutter_test/flutter_test.dart';
 import 'invite_test_repository.dart';
 
 void main() {
+  testWidgets('new option search invalidates an older response before debounce completes', (
+    tester,
+  ) async {
+    final repository = _Repository();
+    await tester.pumpWidget(_page(repository));
+    await tester.pumpAndSettle();
+    tester
+        .widget<CoeloAdminSingleSelectField<InviteScopeOption?>>(
+          find.byKey(const Key('invite-scope-field')),
+        )
+        .onChanged(repository.delegate.options.scopes.single);
+    await tester.pumpAndSettle();
+    final oldOptions = Completer<InviteFormOptions>();
+    repository.optionsGate = oldOptions.future;
+    await tester.enterText(find.byKey(const Key('invite-options-search')), 'first');
+    await tester.pump(const Duration(milliseconds: 301));
+    await tester.enterText(find.byKey(const Key('invite-options-search')), 'second');
+    oldOptions.complete(repository.delegate.options);
+    await tester.pump();
+    expect(
+      tester
+          .widget<CoeloAdminSingleSelectField<InviteProfileOption?>>(
+            find.byKey(const Key('invite-profile-field')),
+          )
+          .isLoading,
+      isTrue,
+    );
+    repository.optionsGate = null;
+    await tester.pump(const Duration(milliseconds: 301));
+    await tester.pumpAndSettle();
+    expect(repository.delegate.lastOptionsQuery?.search, 'second');
+  });
+
+  testWidgets('profile search stays available inside the selected context', (tester) async {
+    final repository = _Repository();
+    await tester.pumpWidget(_page(repository));
+    await tester.pumpAndSettle();
+    tester
+        .widget<CoeloAdminSingleSelectField<InviteScopeOption?>>(
+          find.byKey(const Key('invite-scope-field')),
+        )
+        .onChanged(repository.delegate.options.scopes.single);
+    await tester.pumpAndSettle();
+    repository.delegate.options = InviteFormOptions(
+      scopes: const [],
+      profiles: repository.delegate.options.profiles,
+      recipients: const [],
+    );
+    await tester.enterText(find.byKey(const Key('invite-options-search')), 'Profissional');
+    await tester.pump(const Duration(milliseconds: 301));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('invite-profile-field')), findsOneWidget);
+    expect(find.text('Nenhum contexto encontrado'), findsNothing);
+  });
+
+  testWidgets('recipient search preserves the selected profile when profile results are filtered', (
+    tester,
+  ) async {
+    final repository = _Repository();
+    await tester.pumpWidget(_page(repository));
+    await tester.pumpAndSettle();
+    await _prepare(tester, repository.delegate.options);
+    tester
+        .widget<SuperadminFormStepNavigation>(find.byType(SuperadminFormStepNavigation))
+        .onStepSelected(1);
+    await tester.pumpAndSettle();
+    repository.delegate.options = InviteFormOptions(
+      scopes: const [],
+      profiles: const [],
+      recipients: repository.delegate.options.recipients,
+    );
+    await tester.enterText(find.byKey(const Key('invite-recipient-search')), 'Ana');
+    await tester.pump(const Duration(milliseconds: 301));
+    await tester.pumpAndSettle();
+    tester
+        .widget<SuperadminFormStepNavigation>(find.byType(SuperadminFormStepNavigation))
+        .onStepSelected(3);
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(find.byKey(const Key('invite-form-send')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('invite-form-send')));
+    await tester.pumpAndSettle();
+    expect(repository.delegate.lastIssue?.profileId, testInviteOptions().profiles.single.id);
+    expect(repository.issues, 1);
+  });
+
+  testWidgets('review cannot skip a profile cleared after returning to context', (tester) async {
+    final repository = _Repository();
+    await tester.pumpWidget(_page(repository));
+    await tester.pumpAndSettle();
+    await _prepare(tester, repository.delegate.options);
+    tester
+        .widget<SuperadminFormStepNavigation>(find.byType(SuperadminFormStepNavigation))
+        .onStepSelected(0);
+    await tester.pumpAndSettle();
+    tester
+        .widget<CoeloAdminSingleSelectField<InviteScopeOption?>>(
+          find.byKey(const Key('invite-scope-field')),
+        )
+        .onChanged(repository.delegate.options.scopes.single);
+    await tester.pumpAndSettle();
+    tester
+        .widget<SuperadminFormStepNavigation>(find.byType(SuperadminFormStepNavigation))
+        .onStepSelected(3);
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(find.byKey(const Key('invite-profile-field')), findsOneWidget);
+    expect(find.byKey(const Key('invite-form-send')), findsNothing);
+    expect(repository.issues, 0);
+  });
+
   testWidgets('repository replacement rejects previous options before showing the new denial', (
     tester,
   ) async {
@@ -113,7 +225,7 @@ Widget _page(InviteRepository repository) => MaterialApp(
 final class _Repository implements InviteRepository {
   _Repository({this.optionsGate, this.issueGate});
   final delegate = TestInviteRepository();
-  final Future<InviteFormOptions>? optionsGate;
+  Future<InviteFormOptions>? optionsGate;
   final Future<InviteCommandResult>? issueGate;
   int optionReads = 0;
   int issues = 0;
