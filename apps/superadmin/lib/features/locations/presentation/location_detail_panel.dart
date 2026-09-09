@@ -61,6 +61,8 @@ class LocationDetailPanel extends StatefulWidget {
 
 class _LocationDetailPanelState extends State<LocationDetailPanel> {
   late final LocationDetailController _controller;
+  NavigatorState? _copyDialogNavigator;
+  Route<dynamic>? _copyDialogRoute;
   @override
   void initState() {
     super.initState();
@@ -77,11 +79,17 @@ class _LocationDetailPanelState extends State<LocationDetailPanel> {
   @override
   void didUpdateWidget(covariant LocationDetailPanel oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.id != widget.id ||
+    final contextChanged =
+        oldWidget.id != widget.id ||
         !sameLocationScope(oldWidget.scope, widget.scope) ||
         !identical(oldWidget.reader, widget.reader) ||
+        !identical(oldWidget.writer, widget.writer) ||
         oldWidget.sessionAvailable != widget.sessionAvailable ||
-        oldWidget.contextRevision != widget.contextRevision) {
+        oldWidget.contextRevision != widget.contextRevision;
+    if (contextChanged || oldWidget.capabilities.copy && !widget.capabilities.copy) {
+      _dismissCopyDialog();
+    }
+    if (contextChanged) {
       unawaited(
         _controller.load(
           id: widget.id,
@@ -96,8 +104,20 @@ class _LocationDetailPanelState extends State<LocationDetailPanel> {
 
   @override
   void dispose() {
+    _dismissCopyDialog();
     _controller.dispose();
     super.dispose();
+  }
+
+  void _dismissCopyDialog() {
+    final navigator = _copyDialogNavigator;
+    final route = _copyDialogRoute;
+    _copyDialogNavigator = null;
+    _copyDialogRoute = null;
+    if (navigator == null || route == null) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (navigator.mounted && route.isActive) navigator.removeRoute(route);
+    });
   }
 
   Future<void> _copy(LocationCatalogEntry item) async {
@@ -106,12 +126,18 @@ class _LocationDetailPanelState extends State<LocationDetailPanel> {
     if (writer == null || onCopied == null || !widget.capabilities.copy) return;
     final created = await showDialog<LocationCatalogEntry>(
       context: context,
-      builder: (context) => LocationCopyDialog(
-        source: item,
-        writer: writer,
-        requestIdFactory: widget.requestIdFactory,
-      ),
+      builder: (dialogContext) {
+        _copyDialogNavigator = Navigator.of(dialogContext);
+        _copyDialogRoute = ModalRoute.of(dialogContext);
+        return LocationCopyDialog(
+          source: item,
+          writer: writer,
+          requestIdFactory: widget.requestIdFactory,
+        );
+      },
     );
+    _copyDialogNavigator = null;
+    _copyDialogRoute = null;
     if (!mounted || created == null) return;
     onCopied(created);
   }
