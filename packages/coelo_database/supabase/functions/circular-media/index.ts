@@ -1,13 +1,31 @@
 import { createClient } from "@supabase/supabase-js";
+import {
+  R2Client,
+  type R2Config,
+  R2TransportError,
+  validateR2Config,
+} from "../_shared/r2_s3.ts";
 
 import { validateCircularMediaEnvelope } from "./media_contract.ts";
 
 type Json = Record<string, unknown>;
 const maximumRequestBytes = 32_768;
+const uploadTtlSeconds = 300;
+const readTtlSeconds = 120;
+
+/** Bucket privado legado do Supabase Storage. Nenhum ativo novo nasce aqui;
+ * ele permanece somente para ler, apagar e coletar o acervo ja publicado. */
+const legacyBucket = "coelo-circulars-private";
+
+export type CircularMediaTransport = Pick<
+  R2Client,
+  "presignGet" | "presignPut" | "get" | "delete"
+>;
 
 export type CircularMediaDependencies = Readonly<{
   envGet: (name: string) => string | undefined;
   createClient: typeof createClient;
+  createR2?: (config: R2Config) => CircularMediaTransport;
 }>;
 
 const productionDependencies: CircularMediaDependencies = {
@@ -31,6 +49,43 @@ function allowedOrigins(dependencies: CircularMediaDependencies) {
   );
 }
 
+/** Credenciais R2 existem somente aqui, no servidor. Elas nunca entram em log,
+ * em corpo de resposta ou em qualquer superficie cliente; a unica coisa que
+ * atravessa a fronteira e uma URL assinada de vida curta. */
+function transportFor(
+  dependencies: CircularMediaDependencies,
+  bucket: string,
+): CircularMediaTransport {
+  const config = validateR2Config({
+    endpoint: dependencies.envGet("COELO_R2_ENDPOINT") ?? "",
+    region: dependencies.envGet("COELO_R2_REGION") ?? "auto",
+    accessKeyId: dependencies.envGet("COELO_R2_ACCESS_KEY_ID") ?? "",
+    secretAccessKey: dependencies.envGet("COELO_R2_SECRET_ACCESS_KEY") ?? "",
+    bucket,
+  });
+  return dependencies.createR2?.(config) ?? new R2Client(config);
+}
+
+/** Falha de transporte nunca revela bucket, chave, provedor ou existencia. */
+function opaqueTransport(error: unknown): never {
+  if (error instanceof R2TransportError) {
+    throw new Error("media_transport_failed");
+  }
+  throw error;
+}
+
+function usesR2(descriptor: Json) {
+  return descriptor.storage_provider === "r2";
+}
+
+function descriptorBucket(descriptor: Json) {
+  const bucket = descriptor.bucket_id;
+  if (typeof bucket !== "string" || !bucket) {
+    throw new Error("media_descriptor_invalid");
+  }
+  return bucket;
+}
+
 function reply(
   origins: ReadonlySet<string>,
   origin: string | null,
@@ -40,6 +95,8 @@ function reply(
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     "Cache-Control": "no-store",
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "no-referrer",
     "Vary": "Origin",
     "Access-Control-Allow-Headers": "authorization, apikey, content-type",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
@@ -61,6 +118,7 @@ function operationId(value: unknown) {
   return value;
 }
 
+/** MIME real conferido nos bytes armazenados, nunca no cabecalho declarado. */
 function validSignature(bytes: Uint8Array, mimeType: string) {
   if (mimeType === "image/jpeg") return bytes[0] === 0xff && bytes[1] === 0xd8;
   if (mimeType === "image/png") {
@@ -199,9 +257,14 @@ export async function handleCircularMediaRequest(
       if (claimed.error) throw new Error("cleanup_claim_failed");
       let deleted = 0;
       for (const raw of claimed.data as Json[]) {
-        const removal = await admin.storage.from("coelo-circulars-private")
-          .remove([String(raw.object_key)]);
-        if (removal.error) throw new Error("cleanup_storage_failed");
+        if (usesR2(raw)) {
+          await transportFor(dependencies, descriptorBucket(raw))
+            .delete(String(raw.object_key)).catch(opaqueTransport);
+        } else {
+          const removal = await admin.storage.from(legacyBucket)
+            .remove([String(raw.object_key)]);
+          if (removal.error) throw new Error("cleanup_storage_failed");
+        }
         const marked = await admin.rpc("mark_circular_media_deleted", {
           p_asset_id: raw.asset_id,
         });
@@ -229,13 +292,25 @@ export async function handleCircularMediaRequest(
         return respond(origin, 403, { error: "media_read_denied" });
       }
       const descriptor = authorized.data as Json;
+      if (usesR2(descriptor)) {
+        const signed = await transportFor(
+          dependencies,
+          descriptorBucket(descriptor),
+        ).presignGet(String(descriptor.object_key), readTtlSeconds)
+          .catch(opaqueTransport);
+        return respond(origin, 200, {
+          signed_url: signed.url.toString(),
+          mime_type: descriptor.mime_type,
+          expires_in: readTtlSeconds,
+        });
+      }
       const signed = await admin.storage.from(String(descriptor.bucket_id))
-        .createSignedUrl(String(descriptor.object_key), 120);
+        .createSignedUrl(String(descriptor.object_key), readTtlSeconds);
       if (signed.error) throw new Error("media_sign_failed");
       return respond(origin, 200, {
         signed_url: signed.data.signedUrl,
         mime_type: descriptor.mime_type,
-        expires_in: 120,
+        expires_in: readTtlSeconds,
       });
     }
 
@@ -248,9 +323,14 @@ export async function handleCircularMediaRequest(
         return respond(origin, 403, { error: "media_delete_denied" });
       }
       const descriptor = removed.data as Json;
-      const deletion = await admin.storage.from(String(descriptor.bucket_id))
-        .remove([String(descriptor.object_key)]);
-      if (deletion.error) throw new Error("media_delete_failed");
+      if (usesR2(descriptor)) {
+        await transportFor(dependencies, descriptorBucket(descriptor))
+          .delete(String(descriptor.object_key)).catch(opaqueTransport);
+      } else {
+        const deletion = await admin.storage.from(String(descriptor.bucket_id))
+          .remove([String(descriptor.object_key)]);
+        if (deletion.error) throw new Error("media_delete_failed");
+      }
       const marked = await admin.rpc("mark_circular_media_deleted", {
         p_asset_id: body.asset_id,
       });
@@ -280,6 +360,23 @@ export async function handleCircularMediaRequest(
           already_uploaded: true,
         });
       }
+      if (usesR2(descriptor)) {
+        const signed = await transportFor(
+          dependencies,
+          descriptorBucket(descriptor),
+        ).presignPut(
+          String(descriptor.object_key),
+          input.mimeType,
+          uploadTtlSeconds,
+        ).catch(opaqueTransport);
+        return respond(origin, 200, {
+          asset_id: descriptor.asset_id,
+          upload_url: signed.url.toString(),
+          required_headers: signed.requiredHeaders,
+          expires_at: new Date(Date.now() + uploadTtlSeconds * 1000)
+            .toISOString(),
+        });
+      }
       const signed = await admin.storage.from(String(descriptor.bucket_id))
         .createSignedUploadUrl(String(descriptor.object_key), {
           upsert: false,
@@ -304,16 +401,37 @@ export async function handleCircularMediaRequest(
           status: "ready",
         });
       }
-      const stored = await admin.storage.from(String(descriptor.bucket_id))
-        .download(String(descriptor.object_key));
-      if (stored.error) throw new Error("media_upload_incomplete");
-      const bytes = new Uint8Array(await stored.data.arrayBuffer());
+      const expectedBytes = Number(descriptor.expected_byte_size);
+      if (!Number.isSafeInteger(expectedBytes) || expectedBytes < 1) {
+        throw new Error("media_descriptor_invalid");
+      }
+      const objectKey = String(descriptor.object_key);
+      const usesR2Asset = usesR2(descriptor);
+      const bucket = usesR2Asset
+        ? descriptorBucket(descriptor)
+        : String(descriptor.bucket_id);
+      let bytes: Uint8Array;
+      if (usesR2Asset) {
+        bytes = await transportFor(dependencies, bucket)
+          .get(objectKey, expectedBytes).catch(() => {
+            throw new Error("media_upload_incomplete");
+          });
+      } else {
+        const stored = await admin.storage.from(bucket).download(objectKey);
+        if (stored.error) throw new Error("media_upload_incomplete");
+        bytes = new Uint8Array(await stored.data.arrayBuffer());
+      }
       if (
         bytes.length !== input.sizeBytes ||
+        bytes.length !== expectedBytes ||
         !validSignature(bytes, input.mimeType)
       ) {
-        await admin.storage.from(String(descriptor.bucket_id))
-          .remove([String(descriptor.object_key)]);
+        if (usesR2Asset) {
+          await transportFor(dependencies, bucket).delete(objectKey)
+            .catch(() => {});
+        } else {
+          await admin.storage.from(bucket).remove([objectKey]);
+        }
         throw new Error("invalid_media_signature");
       }
       const ticket = await user.rpc("authorize_circular_media_finalize", {
@@ -336,7 +454,11 @@ export async function handleCircularMediaRequest(
     return respond(origin, 400, { error: "invalid_request" });
   } catch (error) {
     return respond(origin, 422, {
-      error: error instanceof Error ? error.message : "media_gateway_failure",
+      error: error instanceof R2TransportError
+        ? "media_transport_failed"
+        : error instanceof Error
+        ? error.message
+        : "media_gateway_failure",
     });
   }
 }
