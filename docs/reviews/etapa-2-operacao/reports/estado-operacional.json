@@ -1347,12 +1347,13 @@
     "report": "reports/R01-checkpoint-1740.md"
   },
   "last_verified_delivery": {
-    "sha": "8b1e95c6d29ac59ad00d9b43c5b4a354da9c86c2",
-    "branch": "dev",
-    "coordinator_branch": "codex/e2-r01-c00-integration",
-    "at": "2026-09-08T20:36:22-03:00",
-    "verification": "git ls-remote both refs exact; atomic push successful",
-    "production": false
+    "sha": "5c5bf2951007ecef9ffc1df282efd6e81b148ee8",
+    "refs": [
+      "dev",
+      "codex/e2-r01-c00-integration"
+    ],
+    "verification": "atomic push and ls-remote",
+    "deploy": false
   },
   "validation_fronts": {
     "C07": {
@@ -1925,5 +1926,11 @@
     "C06": "I013 ACK verified; C07 I004 ACK; 21:31 checkpoint historical, recheck before materialization",
     "automation": "C00 ACTIVE; next nominal 21:50 BRT",
     "remote_applied": false
+  },
+  "C02_I021_ack": {
+    "received_at": "2026-09-08T21:44:52-03:00",
+    "channel": "native thread message",
+    "status": "accepted; finishing date/editor pair before media",
+    "runtime_authorized": false
   }
 }
