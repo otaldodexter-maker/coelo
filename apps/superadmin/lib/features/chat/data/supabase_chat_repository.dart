@@ -297,6 +297,17 @@ Map<String, dynamic> _data(Object? value) {
     if (code == 'CHAT_ALREADY_REVOKED') {
       throw const ChatConflictException(ChatConflictReason.alreadyRevoked);
     }
+    if (code == 'CHAT_READ_ONLY') {
+      // Conversa fechada para escrita é estado da conversa, não perda de
+      // acesso. As duas superfícies já escondem o composer quando
+      // `isReadOnly`, então esta recusa só chega quando a conversa fechou
+      // DEPOIS da leitura: instantâneo velho. Tratar como negação apagava
+      // inbox, thread, seleção e busca do operador porque UMA conversa
+      // deixou de aceitar escrita. `CHAT_NOT_FOUND` continua abaixo, como
+      // negação, porque o servidor pode responder ausência justamente para
+      // não revelar existência.
+      throw const ChatConflictException(ChatConflictReason.readOnly);
+    }
     if (code is String &&
         const {
           'SAI_AUTH_REQUIRED',
@@ -307,7 +318,6 @@ Map<String, dynamic> _data(Object? value) {
           'SAI_PERMISSION_DENIED',
           'SAI_MFA_REQUIRED',
           'CHAT_NOT_FOUND',
-          'CHAT_READ_ONLY',
           'CHAT_NOT_AUTHOR',
         }.contains(code)) {
       throw const ChatUnauthorizedException();

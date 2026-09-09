@@ -706,6 +706,41 @@ void main() {
     });
   }
 
+  test('reports CHAT_READ_ONLY on send as a state conflict, never as a lost session', () async {
+    // A conversa fechada para escrita nao e sessao perdida. As duas superficies
+    // ja escondem o composer quando `isReadOnly`, entao esta recusa so chega
+    // quando a conversa fechou DEPOIS da leitura: instantaneo velho. Mapear
+    // como negacao fazia a pagina apagar inbox, thread, selecao e busca do
+    // operador porque UMA conversa deixou de aceitar escrita.
+    final client = _client(
+      (request) async => _json({
+        'ok': false,
+        'data': null,
+        'error': {
+          'code': 'CHAT_READ_ONLY',
+          'message': 'A conversa nao aceita novas mensagens.',
+          'http_status': 409,
+        },
+      }, request),
+    );
+    addTearDown(client.dispose);
+    final repository = SupabaseChatRepository(client);
+
+    final error = await repository
+        .sendMessage(
+          const ChatSendMessageCommand(
+            conversationId: 'conversation-1',
+            body: 'Tudo bem?',
+            idempotencyKey: 'f5a4d4e8-8c4c-4f4e-9e4c-6b0a5f2f4a55',
+          ),
+        )
+        .then<Object?>((_) => null, onError: (Object it) => it);
+
+    expect(error, isA<ChatConflictException>());
+    expect((error! as ChatConflictException).reason, ChatConflictReason.readOnly);
+    expect(error, isNot(isA<ChatUnauthorizedException>()));
+  });
+
   test('treats CHAT_NOT_AUTHOR as unauthorized even inside an HTTP 200 envelope', () async {
     final client = _client(
       (request) async => _json({

@@ -269,6 +269,17 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
       if (_isCurrentSend(sendGeneration, requestedRepository, conversation.id)) {
         _denyAccess(error);
       }
+    } on ChatConflictException {
+      if (_isCurrentSend(sendGeneration, requestedRepository, conversation.id)) {
+        // A conversa recusou por estado proprio, nao por acesso: o instantaneo
+        // local esta velho. Sem reler, o operador repetiria a mesma intencao
+        // contra uma conversa que nunca vai aceita-la, e o composer continuaria
+        // oferecido. Recarregar traz `isReadOnly` do servidor e a affordance
+        // some sozinha. A sessao e o restante da tela permanecem.
+        _pendingSend = null;
+        _showNotice('A conversa nao aceita novas mensagens. A tela foi atualizada.');
+        unawaited(_loadInbox());
+      }
     } on ChatOfflineException {
       if (_isCurrentSend(sendGeneration, requestedRepository, conversation.id)) {
         _showNotice('Sem conexao. A mensagem nao foi enviada.');
