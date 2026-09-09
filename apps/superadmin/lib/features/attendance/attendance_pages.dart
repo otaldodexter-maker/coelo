@@ -1183,6 +1183,7 @@ final class _AttendanceCorrectionDialogState extends State<_AttendanceCorrection
   late var _participant = widget.participants.first;
   late var _state = _participant.state;
   var _submitting = false;
+  var _showReasonError = false;
 
   @override
   void dispose() {
@@ -1192,7 +1193,11 @@ final class _AttendanceCorrectionDialogState extends State<_AttendanceCorrection
 
   Future<void> _submit() async {
     final reason = _reason.text.trim();
-    if (reason.isEmpty || _submitting) return;
+    if (_submitting) return;
+    if (reason.isEmpty) {
+      setState(() => _showReasonError = true);
+      return;
+    }
     setState(() => _submitting = true);
     final succeeded = await widget.onSubmit(_participant, _state, reason);
     if (!mounted) return;
@@ -1240,6 +1245,12 @@ final class _AttendanceCorrectionDialogState extends State<_AttendanceCorrection
           labelText: 'Motivo da correção',
           prefixIcon: Icons.edit_note_outlined,
           enabled: !_submitting,
+          errorText: _showReasonError ? 'Motivo obrigatório' : null,
+          onChanged: (value) {
+            if (_showReasonError && value.trim().isNotEmpty) {
+              setState(() => _showReasonError = false);
+            }
+          },
         ),
       ],
     ),
