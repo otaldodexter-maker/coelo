@@ -1090,7 +1090,7 @@ final class _LegacyAssessmentConfigurationPrototypeState
           const SnackBar(content: Text('Você não tem permissão para configurar avaliações.')),
         );
       }
-    } on Exception {
+    } on Object {
       if (mounted && _isCurrentCommand(generation, repository, activityId, value)) {
         ScaffoldMessenger.of(
           context,
