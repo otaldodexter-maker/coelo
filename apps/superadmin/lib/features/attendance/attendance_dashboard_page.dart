@@ -22,6 +22,7 @@ class AttendanceDashboardPage extends StatefulWidget {
     required this.onOpenCall,
     this.dashboardRepository,
     this.activityController,
+    this.today,
     super.key,
   });
 
@@ -32,6 +33,7 @@ class AttendanceDashboardPage extends StatefulWidget {
   final VoidCallback? onCreate;
   final ValueChanged<String>? onOpenCall;
   final SuperadminActivityController? activityController;
+  final DateTime? today;
 
   @override
   State<AttendanceDashboardPage> createState() => _AttendanceDashboardPageState();
@@ -46,7 +48,7 @@ class _AttendanceDashboardPageState extends State<AttendanceDashboardPage> {
   @override
   void initState() {
     super.initState();
-    _today = DateUtils.dateOnly(DateTime.now());
+    _today = DateUtils.dateOnly(widget.today ?? DateTime.now());
     _replaceController(_resolveDashboardRepository(widget));
   }
 

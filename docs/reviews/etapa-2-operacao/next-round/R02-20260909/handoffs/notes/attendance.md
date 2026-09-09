@@ -59,3 +59,24 @@ rastreador global.
 
 Gate de conhecimento: `no-op`; o delta corrige a implementação de uma regra já
 registrada, sem criar nova regra durável.
+
+## Dashboard — `attendance.dashboard`
+
+O dashboard capturava `DateTime.now()` diretamente e seus testes também
+dependiam do relógio real, embora o rastreador exija clock determinístico. O
+widget agora aceita `today` opcional, normalizado como data civil; sem valor,
+preserva o comportamento produtivo baseado no dia atual. O teste fixa
+09/09/2026 e comprova período inicial em 01/09/2026, fim em 09/09/2026 e os
+limites `lastDate`/`currentDate` do seletor.
+
+- RED: compilação recusou o parâmetro `today` ausente, como esperado.
+- GREEN focal: 1/1 aprovado; análise dos dois arquivos: 0 issues.
+- Log RED `C:/Users/adrie/AppData/Local/Temp/d03-attendance-dashboard-clock-red.log`
+  — SHA-256 `3BE7555B5B59491D8E10BB1E93A69DDBEFD8DA74668FB387518410C8A9E7397B`.
+- Log GREEN `C:/Users/adrie/AppData/Local/Temp/d03-attendance-dashboard-clock-green.log`
+  — SHA-256 `495125FD1A726F989AA48211C0813A2874DC9C8C110A6C89B5E1FEC48AD6CAEC`.
+- Log analyze `C:/Users/adrie/AppData/Local/Temp/d03-attendance-dashboard-clock-analyze.log`
+  — SHA-256 `5E13AC301D0BC7E12517ECB893607A1D8CE43B63A1CFA058135326C121FBBD6D`.
+
+Este é avanço FE local. Backend, remoto e E2E do dashboard permanecem abertos
+pelos mesmos limites de OQ-040/spec 048 e pela migration local-only registrada.
