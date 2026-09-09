@@ -1257,8 +1257,8 @@
       "baseline": "f0763a657ca6e5422cc42fa61c0c3c4ca724e129",
       "handoff_path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r01-c06\\docs\\reviews\\etapa-2-operacao\\handoffs\\C06.md",
       "instruction_revision": 13,
-      "received_revision": 25,
-      "accepted_revision": 25,
+      "received_revision": 26,
+      "accepted_revision": 26,
       "status": "active-acknowledged",
       "operational_ack": "I011/I012 confirmed r24; I013 published awaiting next ack",
       "scope": [
@@ -1281,7 +1281,7 @@
       "instruction_acknowledgement": "I010 acknowledged; I011/I012 pending. r19–21 use older20:07receipt.",
       "last_evidence_basis": "r18 native dispatch receipt; timestamp claims preserved separately",
       "operational_gap": "No direct C00 Claude wake tool; session reported live, must read current assignment before dispatch",
-      "last_read_at": "2026-09-08T21:10:41-03:00"
+      "last_read_at": "2026-09-08T21:24:53-03:00"
     }
   },
   "operational_routing": {
@@ -1846,5 +1846,11 @@
     "exit_code": 0,
     "c00_verified_at": "2026-09-08T21:23:18-03:00",
     "stdout_sha256": "3168b6af340c0d092f6fb392336dc2666cb9e224c8baa7a6fe6f84c55228111f"
+  },
+  "safety_search_c07_delta": {
+    "source": "327be3b1",
+    "received_at": "2026-09-08T21:24:53-03:00",
+    "forwarded_to": "C02",
+    "status": "executor-reported RED; correction in progress; not integrated"
   }
 }
