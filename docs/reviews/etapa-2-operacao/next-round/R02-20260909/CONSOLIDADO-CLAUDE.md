@@ -1360,3 +1360,38 @@ parcial não compila**, e o analisador pega.
 **A injeção do feed misto.** Um sítio, cadeia pronta, e fecha o subaceite
 obrigatório `circulars.happens-card` de `acontece.feed` — hoje o que impede
 aquele ID de fechar. Melhor relação custo-benefício das três.
+
+## Blocos prontos para colar de L02 — `60d271ee`
+
+Apêndice de `propostas/L02-hunk-principal-chat-shell.md`. Trechos finais já
+reindentados para onde entram, ancorados em `origin/dev` `d7ce6976` lido **sem
+merge**:
+
+1. As **4 constantes** de `superadmin_routes.dart`, separadas entre `principal*`
+   e `devPrincipal*`.
+2. O import de `principal_chat_page.dart`.
+3. O `GoRoute` de `/principal-conversations` **com indentação de 10 espaços**,
+   igual às irmãs a partir da linha 788, com `embedded: true` e a falha fechada
+   preservada.
+4. O `GoRoute` de `/dev/principal-conversations`, mesma lista.
+5. Os **três destinos** com o "de/para" literal e as linhas de `dev`
+   identificadas: **697-700, 808-811 e 5465-5469**.
+6. As **três inserções** do `chatUnreadCountLoader`, incluindo a do
+   `SuperadminShell.host` reescrito, posicionada logo após `onDestinationSelected`.
+7. As duas linhas de mídia da preview `/dev/conversations`.
+
+Mais uma tabela dos **quatro perigos e qual teste pega cada um**: rota fora do
+`ShellRoute` → `principal_chat_route_test`; destino não trocado →
+`chat_routes_test` e `principal_chat_route_test`; guarda do badge perdida →
+`chat_unread_badge_wiring_test`; mídia da preview perdida → o mesmo.
+
+### O aviso que L02 destacou, e que eu repito porque é o mais fácil de perder
+
+**A guarda `is UnavailableChatRepository` NÃO é opcional.** Sem ela o shell chama
+o repositório fail-closed, cujo `fetchUnreadTotal` devolve `0`, e o launcher passa
+a afirmar **"não há não lidas" quando na verdade não sabe**. Perder essa condição
+no merge **transforma a correção no defeito que ela consertou** — e passa
+despercebido, porque o código continua compilando e o teste que a pega é um só.
+
+É a mesma família de todos os achados do dia: a interface afirmando um fato que
+ela não tem como sustentar.
