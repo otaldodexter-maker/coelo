@@ -1,0 +1,494 @@
+{
+  "status": "local-consolidation-prepared; remote-publication-pending",
+  "baseline": "ed37c04dbfb7a8722ba6cee312a206d6c52d5e3f",
+  "backup": "C:\\Users\\adrie\\Documents\\Coelo.preserved\\skills-consolidation-20260909",
+  "retiredWorktrees": [
+    {
+      "source": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-c00",
+      "archive": "C:\\Users\\adrie\\Documents\\Coelo.preserved\\skills-consolidation-20260909\\retired-checkouts\\e2-c00",
+      "head": "ed37c04dbfb7a8722ba6cee312a206d6c52d5e3f",
+      "pointerSha256": "70B06618146DB515C800D32EAB613609965CD0C3A42DDD22B985F2336B03529E",
+      "disposition": "Entire directory moved intact; Git pointer renamed; inactive archive"
+    },
+    {
+      "source": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r01-c01",
+      "archive": "C:\\Users\\adrie\\Documents\\Coelo.preserved\\skills-consolidation-20260909\\retired-checkouts\\e2-r01-c01",
+      "head": "8899f3c211555c252ed5da5374b48871c4fd5bd6",
+      "pointerSha256": "74F5EC117A1D9450B8B9E66FE244DE5EBDDE474A0A89A49118F0217E4AEAC979",
+      "disposition": "Entire directory moved intact; Git pointer renamed; inactive archive"
+    },
+    {
+      "source": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r01-c02",
+      "archive": "C:\\Users\\adrie\\Documents\\Coelo.preserved\\skills-consolidation-20260909\\retired-checkouts\\e2-r01-c02",
+      "head": "99f7283a20c78112c323786533975db5ce7947ce",
+      "pointerSha256": "331D34DC8B0476AD6DCB5039CAE101612FD34847617D0B8EC927AC155D8552A8",
+      "disposition": "Entire directory moved intact; Git pointer renamed; inactive archive"
+    },
+    {
+      "source": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r01-c03",
+      "archive": "C:\\Users\\adrie\\Documents\\Coelo.preserved\\skills-consolidation-20260909\\retired-checkouts\\e2-r01-c03",
+      "head": "bfdd5f0e6c0085f93ca32bcd812f32e91fe124a8",
+      "pointerSha256": "218ACBA83F43F465B789FD3494DBEB3A78A53C2390EDF431BDCFC0BF06AD8C77",
+      "disposition": "Entire directory moved intact; Git pointer renamed; inactive archive"
+    },
+    {
+      "source": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r01-c04",
+      "archive": "C:\\Users\\adrie\\Documents\\Coelo.preserved\\skills-consolidation-20260909\\retired-checkouts\\e2-r01-c04",
+      "head": "59867239c39afacdf6e6830334d1ae8503fa4984",
+      "pointerSha256": "EFB0014C6FFC4822D585322ED299366AFC15D5A239D7AD043868AC2CFE064A5B",
+      "disposition": "Entire directory moved intact; Git pointer renamed; inactive archive"
+    },
+    {
+      "source": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r01-c05",
+      "archive": "C:\\Users\\adrie\\Documents\\Coelo.preserved\\skills-consolidation-20260909\\retired-checkouts\\e2-r01-c05",
+      "head": "42f8ef995a3e41a8aa1999c325e085208d874946",
+      "pointerSha256": "E571723E531192168FF5D802569E51EB413AC8ADBB92186BFE5D07819E9B60F7",
+      "disposition": "Entire directory moved intact; Git pointer renamed; inactive archive"
+    },
+    {
+      "source": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r01-c06",
+      "archive": "C:\\Users\\adrie\\Documents\\Coelo.preserved\\skills-consolidation-20260909\\retired-checkouts\\e2-r01-c06",
+      "head": "27dfccf0525f789a50b2d1243bb79470a2018166",
+      "pointerSha256": "AF0FB028617A39630CB7333E2A0B4967DA56CD4C6E48AE32A44E9116B2D19660",
+      "disposition": "Entire directory moved intact; Git pointer renamed; inactive archive"
+    },
+    {
+      "source": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r01-c07",
+      "archive": "C:\\Users\\adrie\\Documents\\Coelo.preserved\\skills-consolidation-20260909\\retired-checkouts\\e2-r01-c07",
+      "head": "b9be43f438124be61ce4537b6db0a985ac1caaf3",
+      "pointerSha256": "88219B30CAF1357D249806AA9873184F33CB0E53AE50C345959571FF41814AF6",
+      "disposition": "All files preserved; source retains only empty directories held by an existing process; no Git pointer"
+    },
+    {
+      "source": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r01-c07-c04ro",
+      "archive": "C:\\Users\\adrie\\Documents\\Coelo.preserved\\skills-consolidation-20260909\\retired-checkouts\\e2-r01-c07-c04ro",
+      "head": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
+      "pointerSha256": "B5219A84328C94E7970B347C672658FCE8B400CFD4EAC1AC2E414D13F5C86F41",
+      "disposition": "Entire directory moved intact; Git pointer renamed; inactive archive"
+    }
+  ],
+  "archives": [
+    {
+      "source": "refs/heads/claude/e2-r01-c04-estruturas",
+      "sha": "59867239c39afacdf6e6830334d1ae8503fa4984",
+      "archive": "refs/tags/archive/2026-09-09/claude/e2-r01-c04-estruturas",
+      "kind": "closed-branch",
+      "comparisonToDeliveredBase": [
+        "233",
+        "144"
+      ]
+    },
+    {
+      "source": "refs/heads/claude/e2-r01-c05-comunicacao",
+      "sha": "42f8ef995a3e41a8aa1999c325e085208d874946",
+      "archive": "refs/tags/archive/2026-09-09/claude/e2-r01-c05-comunicacao",
+      "kind": "closed-branch",
+      "comparisonToDeliveredBase": [
+        "233",
+        "83"
+      ]
+    },
+    {
+      "source": "refs/heads/claude/e2-r01-c06-coordenacao",
+      "sha": "27dfccf0525f789a50b2d1243bb79470a2018166",
+      "archive": "refs/tags/archive/2026-09-09/claude/e2-r01-c06-coordenacao",
+      "kind": "closed-branch",
+      "comparisonToDeliveredBase": [
+        "171",
+        "61"
+      ]
+    },
+    {
+      "source": "refs/heads/claude/e2-r01-c07-validacao",
+      "sha": "cea29b1f881d806bdf1e88fa3a5fb416d8f0fb5c",
+      "archive": "refs/tags/archive/2026-09-09/claude/e2-r01-c07-validacao",
+      "kind": "closed-branch",
+      "comparisonToDeliveredBase": [
+        "233",
+        "39"
+      ]
+    },
+    {
+      "source": "refs/heads/claude/e2-r01-c07-validacao-visual",
+      "sha": "b9be43f438124be61ce4537b6db0a985ac1caaf3",
+      "archive": "refs/tags/archive/2026-09-09/claude/e2-r01-c07-validacao-visual",
+      "kind": "closed-branch",
+      "comparisonToDeliveredBase": [
+        "233",
+        "92"
+      ]
+    },
+    {
+      "source": "refs/heads/codex/e1-a01-client-20260908",
+      "sha": "f0be734ac3210c84523a61700f73feaba5150368",
+      "archive": "refs/tags/archive/2026-09-09/codex/e1-a01-client-20260908",
+      "kind": "closed-branch",
+      "comparisonToDeliveredBase": [
+        "516",
+        "50"
+      ]
+    },
+    {
+      "source": "refs/heads/codex/e1-replay-harness-20260907",
+      "sha": "97769124011c26d337a4dfb3921c15a875a69d9f",
+      "archive": "refs/tags/archive/2026-09-09/codex/e1-replay-harness-20260907",
+      "kind": "closed-branch",
+      "comparisonToDeliveredBase": [
+        "516",
+        "37"
+      ]
+    },
+    {
+      "source": "refs/heads/codex/e2-r01-c00-integration",
+      "sha": "ed37c04dbfb7a8722ba6cee312a206d6c52d5e3f",
+      "archive": "refs/tags/archive/2026-09-09/codex/e2-r01-c00-integration",
+      "kind": "closed-branch",
+      "comparisonToDeliveredBase": [
+        "0",
+        "0"
+      ]
+    },
+    {
+      "source": "refs/heads/codex/e2-r01-c01-identidade",
+      "sha": "8899f3c211555c252ed5da5374b48871c4fd5bd6",
+      "archive": "refs/tags/archive/2026-09-09/codex/e2-r01-c01-identidade",
+      "kind": "closed-branch",
+      "comparisonToDeliveredBase": [
+        "233",
+        "94"
+      ]
+    },
+    {
+      "source": "refs/heads/codex/e2-r01-c02-forms-midia",
+      "sha": "99f7283a20c78112c323786533975db5ce7947ce",
+      "archive": "refs/tags/archive/2026-09-09/codex/e2-r01-c02-forms-midia",
+      "kind": "closed-branch",
+      "comparisonToDeliveredBase": [
+        "234",
+        "135"
+      ]
+    },
+    {
+      "source": "refs/heads/codex/e2-r01-c03-operacoes",
+      "sha": "bfdd5f0e6c0085f93ca32bcd812f32e91fe124a8",
+      "archive": "refs/tags/archive/2026-09-09/codex/e2-r01-c03-operacoes",
+      "kind": "closed-branch",
+      "comparisonToDeliveredBase": [
+        "233",
+        "101"
+      ]
+    },
+    {
+      "source": "refs/heads/codex/e2e-agenda-operacoes",
+      "sha": "ca4c82abc6c1604db6798c35d6381af8e8e56403",
+      "archive": "refs/tags/archive/2026-09-09/codex/e2e-agenda-operacoes",
+      "kind": "closed-branch",
+      "comparisonToDeliveredBase": [
+        "516",
+        "62"
+      ]
+    },
+    {
+      "source": "refs/heads/codex/e2e-comunicacao-midia-principal",
+      "sha": "943a69aeec929b743c5477494ea7a2860410f4d6",
+      "archive": "refs/tags/archive/2026-09-09/codex/e2e-comunicacao-midia-principal",
+      "kind": "closed-branch",
+      "comparisonToDeliveredBase": [
+        "516",
+        "72"
+      ]
+    },
+    {
+      "source": "refs/heads/codex/e2e-estruturas-pessoas-locais",
+      "sha": "9e689374ec186b50bf38885a014a335844a6c4da",
+      "archive": "refs/tags/archive/2026-09-09/codex/e2e-estruturas-pessoas-locais",
+      "kind": "closed-branch",
+      "comparisonToDeliveredBase": [
+        "516",
+        "40"
+      ]
+    },
+    {
+      "source": "refs/heads/codex/e2e-formularios-cuidado",
+      "sha": "f84d1dd70f0aaa0e09558845341b65e4190aaa7c",
+      "archive": "refs/tags/archive/2026-09-09/codex/e2e-formularios-cuidado",
+      "kind": "closed-branch",
+      "comparisonToDeliveredBase": [
+        "516",
+        "39"
+      ]
+    },
+    {
+      "source": "refs/heads/codex/e2e-identidade-acessos",
+      "sha": "58ef983ad219c61721b0c64374ca05b17c878127",
+      "archive": "refs/tags/archive/2026-09-09/codex/e2e-identidade-acessos",
+      "kind": "closed-branch",
+      "comparisonToDeliveredBase": [
+        "516",
+        "68"
+      ]
+    },
+    {
+      "source": "refs/heads/codex/pre-consolidation-wip-20260908",
+      "sha": "07e6e837371a2fba3d29e9803866be9ddf43e071",
+      "archive": "refs/tags/archive/2026-09-09/codex/pre-consolidation-wip-20260908",
+      "kind": "closed-branch",
+      "comparisonToDeliveredBase": [
+        "241",
+        "1"
+      ]
+    },
+    {
+      "sha": "1e0738c428387efff988b3286942357b40dc7b50",
+      "archive": "refs/archive/2026-09-09/recovery/1e0738c428387efff988b3286942357b40dc7b50",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "ca0ed032900e8e8bb037e2a11dcc70caf9e7ee49",
+      "archive": "refs/archive/2026-09-09/recovery/ca0ed032900e8e8bb037e2a11dcc70caf9e7ee49",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "e3108cbf273a9ebaabd78327821a529f53893b5b",
+      "archive": "refs/archive/2026-09-09/recovery/e3108cbf273a9ebaabd78327821a529f53893b5b",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "1d2dcca137d0babb4598a3d8faa49ef6ea616128",
+      "archive": "refs/archive/2026-09-09/recovery/1d2dcca137d0babb4598a3d8faa49ef6ea616128",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "5131b0532bcf125972f4823b3dae17cf5b1255de",
+      "archive": "refs/archive/2026-09-09/recovery/5131b0532bcf125972f4823b3dae17cf5b1255de",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "3e347298b7e03f5a7ca53a922ce4efd6ee688d4c",
+      "archive": "refs/archive/2026-09-09/recovery/3e347298b7e03f5a7ca53a922ce4efd6ee688d4c",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "f335300ed8fc5aa141fd78d38d22855498c80b38",
+      "archive": "refs/archive/2026-09-09/recovery/f335300ed8fc5aa141fd78d38d22855498c80b38",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "f13f2e0fd714fcb270aef820a62a731cf0493800",
+      "archive": "refs/archive/2026-09-09/recovery/f13f2e0fd714fcb270aef820a62a731cf0493800",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "66639269e0bc4ee7ac899a095b5b90bdb4f122b2",
+      "archive": "refs/archive/2026-09-09/recovery/66639269e0bc4ee7ac899a095b5b90bdb4f122b2",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "7e6a92c2d361eb429aba00faf80e8e506a8cc1c8",
+      "archive": "refs/archive/2026-09-09/recovery/7e6a92c2d361eb429aba00faf80e8e506a8cc1c8",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "e3807c700901f8eda08b8f54ab35445f38ce0cd4",
+      "archive": "refs/archive/2026-09-09/recovery/e3807c700901f8eda08b8f54ab35445f38ce0cd4",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "5a8be68f561d138e3ab7a716a111a5891bf09db8",
+      "archive": "refs/archive/2026-09-09/recovery/5a8be68f561d138e3ab7a716a111a5891bf09db8",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "968cfe96cddd75a1ecb510a420af707a9f9cbbb3",
+      "archive": "refs/archive/2026-09-09/recovery/968cfe96cddd75a1ecb510a420af707a9f9cbbb3",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "78c2383312bbc591bfc348ecf832f64d3b1e53a7",
+      "archive": "refs/archive/2026-09-09/recovery/78c2383312bbc591bfc348ecf832f64d3b1e53a7",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "5ed466de28d0d9ab7eafe9661870e7ee2c2359ef",
+      "archive": "refs/archive/2026-09-09/recovery/5ed466de28d0d9ab7eafe9661870e7ee2c2359ef",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "bde38460a36f78dc7cc80524588680de4fddf229",
+      "archive": "refs/archive/2026-09-09/recovery/bde38460a36f78dc7cc80524588680de4fddf229",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "d7f80a5319e6e080f367ad102edd9d71437619fe",
+      "archive": "refs/archive/2026-09-09/recovery/d7f80a5319e6e080f367ad102edd9d71437619fe",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "a5fa3073b45f13e5e5f5b860c4800897da5e5997",
+      "archive": "refs/archive/2026-09-09/recovery/a5fa3073b45f13e5e5f5b860c4800897da5e5997",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "adfdd03ce91144a1477f4c24293ce162ebc6ef68",
+      "archive": "refs/archive/2026-09-09/recovery/adfdd03ce91144a1477f4c24293ce162ebc6ef68",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "5704c3b537f180d735f7514e3535ec08e0795f8a",
+      "archive": "refs/archive/2026-09-09/recovery/5704c3b537f180d735f7514e3535ec08e0795f8a",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "5021c7b69ff7bb496dd93d01d4932ca85207682a",
+      "archive": "refs/archive/2026-09-09/recovery/5021c7b69ff7bb496dd93d01d4932ca85207682a",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "cf272fd35fa3d0cac909b297b2e529562fb5e574",
+      "archive": "refs/archive/2026-09-09/recovery/cf272fd35fa3d0cac909b297b2e529562fb5e574",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "422de98d26d56053757ee74d53a93ba5764cf5bd",
+      "archive": "refs/archive/2026-09-09/recovery/422de98d26d56053757ee74d53a93ba5764cf5bd",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "362e274ad1380fa1604eddd23dd91b581c15852e",
+      "archive": "refs/archive/2026-09-09/recovery/362e274ad1380fa1604eddd23dd91b581c15852e",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "e2374319bf6e3689efbdacea8ea3ab8af729c350",
+      "archive": "refs/archive/2026-09-09/recovery/e2374319bf6e3689efbdacea8ea3ab8af729c350",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "7e3809286c552db8a2802514c0dfcef67ea56e39",
+      "archive": "refs/archive/2026-09-09/recovery/7e3809286c552db8a2802514c0dfcef67ea56e39",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "f9399723912d06093186bbe9dae185248df16e2b",
+      "archive": "refs/archive/2026-09-09/recovery/f9399723912d06093186bbe9dae185248df16e2b",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "5a3bf9dec150de55c08f3608470f9a84f9e88baf",
+      "archive": "refs/archive/2026-09-09/recovery/5a3bf9dec150de55c08f3608470f9a84f9e88baf",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "24474107d18799ee44c99a577d699ee516668b29",
+      "archive": "refs/archive/2026-09-09/recovery/24474107d18799ee44c99a577d699ee516668b29",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "5d4cc1336b232153539e8c62495baaa4a9835fc1",
+      "archive": "refs/archive/2026-09-09/recovery/5d4cc1336b232153539e8c62495baaa4a9835fc1",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "b754f7bdcda2da6589f089e4082e7e8321bfecb6",
+      "archive": "refs/archive/2026-09-09/recovery/b754f7bdcda2da6589f089e4082e7e8321bfecb6",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "9179a9aa8b464b88ebb1b4f6d768e8cf54f61891",
+      "archive": "refs/archive/2026-09-09/recovery/9179a9aa8b464b88ebb1b4f6d768e8cf54f61891",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "c1819968dc91b02854a0b44b2fe7bbab294f1c55",
+      "archive": "refs/archive/2026-09-09/recovery/c1819968dc91b02854a0b44b2fe7bbab294f1c55",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "888303633de76fdeb5a25973a8f59c1ffb0cbe02",
+      "archive": "refs/archive/2026-09-09/recovery/888303633de76fdeb5a25973a8f59c1ffb0cbe02",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "9d8f290d46f3ca7efff8113f910162a0da898430",
+      "archive": "refs/archive/2026-09-09/recovery/9d8f290d46f3ca7efff8113f910162a0da898430",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "e694f9f5d2e5039bc7afda790237773f19aee8f4",
+      "archive": "refs/archive/2026-09-09/recovery/e694f9f5d2e5039bc7afda790237773f19aee8f4",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "dd993ff62a94239e3c0eb1be1648ff001b54dc4b",
+      "archive": "refs/archive/2026-09-09/recovery/dd993ff62a94239e3c0eb1be1648ff001b54dc4b",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "6ca5c501508647a8823eaa201dfccb670685eaae",
+      "archive": "refs/archive/2026-09-09/recovery/6ca5c501508647a8823eaa201dfccb670685eaae",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "3cae053aeb86a53cf851583354e30239d0ac0667",
+      "archive": "refs/archive/2026-09-09/recovery/3cae053aeb86a53cf851583354e30239d0ac0667",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "b4b6956d43a232313928b873bbda9cba3b8849c1",
+      "archive": "refs/archive/2026-09-09/recovery/b4b6956d43a232313928b873bbda9cba3b8849c1",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "4cbcc1b8b46184f195393adfb97984e6bfefc67e",
+      "archive": "refs/archive/2026-09-09/recovery/4cbcc1b8b46184f195393adfb97984e6bfefc67e",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "31d0abf63dc42c82e1992f05c72163b766345059",
+      "archive": "refs/archive/2026-09-09/recovery/31d0abf63dc42c82e1992f05c72163b766345059",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "d4d0579aa063190d5cecf3f6fec3786866375ef8",
+      "archive": "refs/archive/2026-09-09/recovery/d4d0579aa063190d5cecf3f6fec3786866375ef8",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "68d1217d3d7b3028e64f16137c03b18c4e3c13e3",
+      "archive": "refs/archive/2026-09-09/recovery/68d1217d3d7b3028e64f16137c03b18c4e3c13e3",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "6ed31b630d6c608f90b44358094a776af0d0c374",
+      "archive": "refs/archive/2026-09-09/recovery/6ed31b630d6c608f90b44358094a776af0d0c374",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "4febf3a4488e0f5444f4995721fe38ce0f932728",
+      "archive": "refs/archive/2026-09-09/recovery/4febf3a4488e0f5444f4995721fe38ce0f932728",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "56f1f3b275c66d3628a18f1b1cb3f2d131301d4c",
+      "archive": "refs/archive/2026-09-09/recovery/56f1f3b275c66d3628a18f1b1cb3f2d131301d4c",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "sha": "0cfee325e8e5d9e8e9358f1afc2de4434b5bad55",
+      "archive": "refs/archive/2026-09-09/recovery/0cfee325e8e5d9e8e9358f1afc2de4434b5bad55",
+      "kind": "local-recovery-not-for-push"
+    },
+    {
+      "source": "refs/stash",
+      "sha": "2961c1a7dd6ae1de4922ea8b68a14c27d75a440a",
+      "archive": "refs/tags/archive/2026-09-09/stash-etapa2-denominadores",
+      "kind": "historical-stash"
+    },
+    {
+      "sha": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
+      "archive": "refs/tags/archive/2026-09-09/c07-c04ro",
+      "kind": "detached-checkout"
+    }
+  ],
+  "retainedWork": "Archived history includes WIP and patch-equivalent commits; no archive is an E2E or merge claim."
+}

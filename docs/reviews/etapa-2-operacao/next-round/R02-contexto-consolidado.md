@@ -7,6 +7,11 @@ generated_at: "2026-09-09"
 
 # Passagem para novas conversas
 
+> R01 encerrada; os caminhos de worktrees e reservas abaixo são históricos.
+> O Owner autorizou a consolidação do repositório em 09/09. Retomar pelo
+> [índice atual da Etapa 2](../../coelo-etapa-2-coordenacao.md), no checkout principal, sem recriar
+> worktrees ou reativar executores antigos por este documento.
+
 O Owner decidiu iniciar conversas novas, sem retomar a implementação nas antigas. Este arquivo preserva o ponto de partida; não concede uma reserva nem cria tarefa automaticamente. Os prompts completos dependem do próximo recorte alinhado.
 
 Código consolidado: `af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0`. O commit documental e seu push estão no recibo final de `../reports/R01-fechamento-20260909.md`. Confirmar o SHA da entrega antes de criar novas worktrees; nunca iniciar pelo HEAD de um executor sem revisar suas dependências.

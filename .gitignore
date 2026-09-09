@@ -12,7 +12,12 @@
 !.agents/skills/coelo-flutter-review/**
 !.agents/skills/coelo-flutter-supabase-review/
 !.agents/skills/coelo-flutter-supabase-review/**
+!.agents/skills/cloudflare-manager/
+.agents/skills/cloudflare-manager/*
+!.agents/skills/cloudflare-manager/SKILL.md
 .codex/
+.claude/
+supabase/.temp/
 .worktrees/
 .recovery-archives/
 

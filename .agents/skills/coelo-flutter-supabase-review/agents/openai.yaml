@@ -1,4 +1,4 @@
 interface:
   display_name: "Coelo Front-end + Back-end"
-  short_description: "Comprova cliente, Supabase e Cloudflare E2E"
-  default_prompt: "Use $coelo-frontend-backend para concluir o Coelo ponta a ponta entre Front-end, Supabase e Cloudflare."
+  short_description: "Resolve pendências ponta a ponta da Etapa 2"
+  default_prompt: "Use $coelo-frontend-backend para retomar e resolver as pendências da Etapa 2 por tela e subtela, corrigindo e comprovando a mesma ação do Front-end ao Back-end e ao reload."

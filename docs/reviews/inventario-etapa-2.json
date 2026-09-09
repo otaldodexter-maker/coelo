@@ -3009,7 +3009,15 @@
       "backendStatus": "deferred-post-mvp",
       "integratedStatus": "deferred-post-mvp",
       "lastHandoffRevision": 33,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/etapa-2-operacao/reports/R01-people-files-integracao-1655.md",
+          "revision": "e14ed9c0b549bed1dc2ba365b148908b7a8450f4",
+          "environment": "local; Flutter testes de pagina/estados/componente; callbacks produtivos nulos",
+          "recordedAt": "2026-09-08T16:52:41-03:00"
+        }
+      }
     },
     {
       "id": "profile-files.preview",
@@ -3077,7 +3085,15 @@
       "backendStatus": "deferred-post-mvp",
       "integratedStatus": "deferred-post-mvp",
       "lastHandoffRevision": 33,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/etapa-2-operacao/reports/R01-people-files-integracao-1655.md",
+          "revision": "e14ed9c0b549bed1dc2ba365b148908b7a8450f4",
+          "environment": "local; Flutter testes de pagina/estados/componente; callbacks produtivos nulos",
+          "recordedAt": "2026-09-08T16:52:41-03:00"
+        }
+      }
     },
     {
       "id": "profile-files.download",

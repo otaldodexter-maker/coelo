@@ -21,6 +21,8 @@ tracker_sync_revisions: "C01r51; C02r48; C03r33; C04r61; C05final; C06r53; C07r1
 
 ## Estado vigente — fechamento R01 em 2026-09-09T08:41:13-03:00
 
+Conclusão certificada no inventário: Front-end 2/219, backend 0/212 ações aplicáveis e integração 0/187 ativas (também 0/190 incluindo o gate formal). Metadados das duas certificações FE existentes reconciliados com a evidência nominal; nenhuma promoção de estado nesta manutenção.
+
 Sincronizados **C01r51, C02r48, C03r33, C04r61, C05final, C06r53 e C07r12**. Fontes originais, horários e hashes estão em [recibos](etapa-2-operacao/reports/R01-fechamento-fontes.json). Código integrado em `af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0`; publicação Git é estado separado no relatório final. Somente Superadmin e dependências, incluindo seu menu Coelo (Principal).
 
 - **219 ações**:194 ativas (189mvp+5shellcliente),22adiadas e3gates formais. Backend212 aplicáveis/7não aplicáveis; E2E187 ativas. IDs são ações, não quantidades de testes.

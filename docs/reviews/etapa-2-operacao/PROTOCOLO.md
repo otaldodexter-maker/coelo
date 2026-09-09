@@ -8,6 +8,11 @@ timezone: "America/Sao_Paulo"
 
 # Protocolo R01 — revisão 1
 
+> R01 encerrada; os caminhos de worktrees e reservas abaixo são históricos.
+> O Owner autorizou a consolidação do repositório em 09/09. Retomar pelo
+> [índice atual da Etapa 2](../coelo-etapa-2-coordenacao.md), no checkout principal, sem recriar
+> worktrees ou reativar executores antigos por este documento.
+
 Autoridade: C00, tarefa `01a0818b-2a34-7fa3-a9aa-f191fc91cc8d`, é o único integrador e escritor dos três rastreadores oficiais. Esta ordem do Owner prevalece sobre instruções antigas de múltiplos escritores ou atualização direta pelos executores. Histórico permanece no documento de coordenação, explicitamente histórico.
 
 ## Contrato e janela

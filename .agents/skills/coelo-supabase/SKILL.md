@@ -4,7 +4,7 @@ description: Use when a Coelo task involves backend, Supabase, Postgres, Auth, R
 metadata:
   source: "AGENTS.md; decisions/0032-mvp-private-media-r2.md; docs/reviews/coelo-supabase-pendencias.md"
   status: "active"
-  generated_at: "2026-09-08"
+  generated_at: "2026-09-09"
 ---
 
 # Coelo Back-end
@@ -12,6 +12,24 @@ metadata:
 > O caminho desta skill permanece `coelo-supabase/` por compatibilidade com
 > documentos e prompts antigos. O nome e o contrato canônicos são **Coelo
 > Back-end** (`coelo-backend`).
+
+## Chamada padrão: resolver pendências
+
+Invocar `$coelo-backend` para trabalhar no projeto significa **executar a
+resolução das pendências Backend da Etapa 2**, conforme o
+[ciclo de resolução](../coelo-flutter-supabase-review/references/review-scope.md#ciclo-de-resolução-de-pendências).
+Usar o recorte informado; sem recorte novo, retomar o pacote da subtela pendente
+do último checkpoint ou selecionar a próxima ação executável do inventário.
+Informar a escolha e corrigir/testar localmente dentro do escopo autorizado,
+sem exigir nova confirmação para esse trabalho. Pedido explícito de explicação,
+diagnóstico/review somente leitura ou manutenção da skill segue esse pedido.
+
+Levar implementação, replay/testes e pacote nominal até evidência revisável.
+Se faltar autorização remota, pedir somente a decisão concreta depois dessa
+preparação; autorização vigente para o mesmo pacote não é solicitada de novo.
+Documentação e plano sozinhos não resolvem a pendência. Backend `done` continua
+exigindo todos os seus provedores/gates; ausência de Front-end não impede
+concluir o backend da ação.
 
 ## Princípio e limite
 
@@ -28,8 +46,19 @@ Tratar o backend Coelo como a soma dos provedores realmente usados pela ação:
 Uma ação sem mídia não precisa de Cloudflare. Uma ação com mídia ou exportação
 não pode ser `done` apenas porque o Supabase está verde.
 
+## Etapa 2 por tela e subtela
+
+O consumidor atual é **apps/superadmin**, inclusive o menu Coelo (Principal).
+Admin, Principal e Site não entram no recorte. Identificar em abertura,
+checkpoint e entrega **Etapa 2 → app → menu → tela → subtela → action_id →
+provedores**. Ligar cada pacote backend às ações que desbloqueia; infraestrutura
+compartilhada aparece como dependência, sem multiplicar a mesma entrega.
+Usar o [contrato de métricas e testes](../../../docs/superpowers/specs/2026-09-01-coelo-review-progress-metrics-design.md).
+
 ## Leitura por recorte
 
+Confirmar a base integrada e o handoff antes de reutilizar estado local; seguir
+a retomada entre worktrees e o limite de repetição de testes do contrato comum.
 Ler `AGENTS.md` e o [contrato de recorte](../coelo-flutter-supabase-review/references/review-scope.md).
 Para backend, usar `docs/reviews/coelo-supabase-pendencias.md`; a leitura integral
 é obrigatória na auditoria/conclusão ampla, e o recorte usa as linhas afetadas
@@ -42,15 +71,27 @@ ADR 0032. Não buscar credenciais ou acessar produção para explicar uma regra.
 - Cloudflare: carregar a skill específica quando o provedor estiver em escopo;
   `wrangler` para CLI/config/deploy e Workers para código do Worker. Gerenciamento
   de vários serviços pode usar `cloudflare-manager`; não carregar tudo por nome.
+  Usar o plugin oficial instalado e descobrir seus MCPs antes de declarar
+  ferramenta indisponível. `cloudflare_api` oferece `docs`, `search` e `execute`:
+  consultar documentação/schema antes da operação. MCP atende operações de
+  conta/recursos; Wrangler e scripts reais do projeto atendem build/deploy de
+  código. A [skill manager local](../cloudflare-manager/SKILL.md) detalha esse
+  caminho sem exigir scripts ausentes, Bun ou chave global em `.env`.
+  Ferramenta disponível não comprova permissão na conta; conferir somente o
+  acesso necessário. Com pacote nominal já autorizado, implantar e verificar
+  dentro desse escopo; ausência de acesso requer bloqueio concreto, não outro
+  ciclo de testes locais sem mudança. Não transferir deploy ao Owner por padrão.
 - `coelo-frontend-backend` somente quando a alteração ou conclusão atravessar
   cliente e backend; backend isolado não ativa uma revisão de Front-end.
 - Usar `rtk` nos comandos e `coelo-knowledge` no gate de conhecimento durável.
   Reutilizar contexto já lido; dependências não reiniciam a cadeia de skills.
 
 Review, auditoria e diagnóstico sem pedido de correção são somente leitura.
-Correção local solicitada segue o recorte autorizado. Migration, deploy,
-configuração ou recurso remoto exigem autorização para o ambiente e o
-pacote exatos. O projeto Supabase `coelo` é produção; autorização anterior de
+Correção local solicitada segue o recorte autorizado. Criar, corrigir e testar
+migrations localmente segue o contrato/spec aprovado da ação; uma decisão de
+produto ainda aberta não é suprida por esta regra. Aplicar migrations, deploy,
+configuração ou alteração de recurso remoto exige autorização para o ambiente
+e o pacote exatos. O projeto Supabase `coelo` é produção; autorização anterior de
 outro pacote não se transfere. Todo recurso Supabase ou Cloudflare remoto do
 Coelo deve ser tratado como produção; não presumir DEV/homologação. Validar
 localmente primeiro e aplicar no remoto somente o pacote nominal, forward-only,
@@ -80,21 +121,22 @@ linha), RPC (função do banco), Edge Function/Worker (função no servidor),
 `remote-green` (provedores remotos aplicáveis comprovados) e `done` (fim do
 backend da ação).
 
-Calcular o progresso geral sobre todas as famílias e `action_id` do rastreador,
-e o recorte separadamente. Não inferir tempo usado pelo percentual. Se faltarem
-horários/evidências, usar `não calculável ainda` e registrar o próximo dado
-necessário.
+Calcular por `action_id` aplicável reconciliado, separando recorte, tela/subtela
+e geral conhecido da Etapa 2. Famílias e gates são coberturas separadas, nunca
+somados a ações. Preservar avanço local válido e distinguir `done` de E2E.
+Reutilizar o snapshot integrado datado para informar E2E conhecido, sem
+certificar Front-end numa tarefa Backend. Se faltarem horários/evidências, usar
+`não calculável ainda` e registrar o próximo dado necessário.
 
 ```text
-Progresso geral conhecido — Concluído: <IDs comprovados>/<IDs aplicáveis>
-Progresso geral conhecido — Restante: <IDs restantes>/<IDs aplicáveis>
-Tempo usado no trabalho geral concluído: ...
-Tempo estimado para finalizar o backlog geral: ...
-Progresso do recorte — Concluído: ...
-Progresso do recorte — Restante: ...
-Tempo usado no trabalho concluído no recorte: ...
-Tempo estimado para finalizar o recorte: ...
-Base do cálculo: IDs/gates, evidência, provedores e horário de referência.
+Etapa 2 | apps/superadmin | menu > tela > subtela | action_ids | provedores
+Avanço local comprovado: ...; Back-end done: C/N = ...%; restante: ...
+E2E certificado conhecido: C/N = ...% (snapshot/data ou não calculável).
+Testes Backend: aprovados P/E = ...%; falhos F/E = ...%; E = P + F.
+Plano: P/N aprovados; E/N executados; B bloqueados, S ignorados, U não executados.
+Campanha/revisão/ambiente/runner/evidência: ...; geral Etapa 2: ...
+Pacote e ações desbloqueadas: ...; primeiro gate e próximo passo: ...
+Tempo medido: ...; ETA do delta: ...; espera externa: ...
 ```
 
 ### Limite de `done` do Back-end
@@ -170,6 +212,11 @@ Para cada item de implementação autorizado (diagnóstico permanece leitura):
    minimizados e cleanup comprovado;
 6. atualizar o rastreador no mesmo turno com ação, estado, evidência, bloqueio
    e ETA.
+
+Priorizar o primeiro gate backend que permite fechar a subtela selecionada,
+reutilizando readers, migrations e provas já válidas. Preparar o pacote nominal
+até ficar revisável antes de pedir autorização remota que ainda falte; registrar
+o responsável pelo desbloqueio e continuar as ações locais independentes.
 
 Não habilitar RLS em lote sem policies e testes: a auditoria remota registrou
 achados de RLS em `app_private`; consultar a evidência datada e o rastreador

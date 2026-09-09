@@ -15,6 +15,11 @@ composição própria, cuja aprovação deve ser verificada na spec consumidora.
 
 ## Descoberta por ação
 
+Os [12 anexos originais preservados](../../../../docs/reviews/evidence/etapa-2/coelo-principal-superadmin/manifest.md)
+ligam cada imagem à tela e finalidade, incluindo Publicar no Acontece e Publicar
+em Momentos v1/v2. Abrir o item pertinente junto da spec; v2 é a referência final
+registrada de Momentos. Capturas de defeito não são baselines aprovadas.
+
 Os caminhos abaixo são relativos à raiz do repositório. Abrir a implementação,
 componentes importados, teste comportamental vizinho e golden do estado afetado.
 Ler a spec 050 e as fontes da feature antes de reaproveitar outro compositor.

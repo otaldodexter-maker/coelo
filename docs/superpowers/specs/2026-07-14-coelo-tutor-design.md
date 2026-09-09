@@ -3,7 +3,7 @@ title: "Coelo Tutor Design"
 source: "User-approved request; AGENTS.md; apps/superadmin/lib/README.md; apps/superadmin/lib/features/README.md; decisions/0007-flutter-app-structure.md; docs/contexts/superadmin-context.md"
 status: "approved-design"
 generated_at: "2026-07-14"
-updated_at: "2026-07-14"
+updated_at: "2026-09-08"
 ---
 
 # Coelo Tutor Design
@@ -29,7 +29,7 @@ nao podem ser presumidos como conhecidos.
 Usar uma skill versionada no repositorio, acompanhada por dois documentos de
 aprendizagem:
 
-- `.codex/skills/coelo-tutor/`: comportamento do tutor e metadados de
+- `.agents/skills/coelo-tutor/`: fonte única do comportamento e metadados de
   acionamento;
 - `docs/learning/curriculum.md`: ordem orientativa dos assuntos e motivos das
   dependencias entre eles;
@@ -199,3 +199,12 @@ atualizacao.
 - o curriculo inclui Dart, Flutter, arquitetura, Supabase, PostgreSQL e SQL;
 - nenhuma aula altera codigo ou sistemas externos sem pedido explicito;
 - documentos derivados usam frontmatter com fonte, status e data.
+
+## Ajuste de modos e descoberta — 2026-09-08
+
+Correção autorizada na auditoria das skills: `progresso` e `revise mudanças`
+consultam sem escrever memória. Aula/exercício/quiz registram somente conteúdo
+apresentado ou evidência efetiva, respeitando pedido explícito de somente leitura.
+Explicação pontual não obriga quiz. Git/GitHub integram a trilha conforme pedido
+registrado em 2026-07-15. `.codex/skills/coelo-tutor` conserva aviso de migração,
+sem outra SKILL.md descobrível; `.agents` é a fonte canônica atual.

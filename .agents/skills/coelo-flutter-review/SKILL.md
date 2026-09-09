@@ -4,13 +4,30 @@ description: Use when a Coelo task reviews, audits, corrects, implements, estima
 metadata:
   source: "AGENTS.md; docs/reviews/coelo-flutter-pendencias.md; specs/050-principal-ui-ux-closure.md"
   status: "active"
-  generated_at: "2026-09-08"
+  generated_at: "2026-09-09"
 ---
 
 # Coelo Front-end
 
 > O caminho `coelo-flutter-review/` foi mantido para compatibilidade. O nome e
 > o contrato canônicos são **Coelo Front-end** (`coelo-frontend`).
+
+## Chamada padrão: resolver pendências
+
+Invocar `$coelo-frontend` para trabalhar no projeto significa **executar a
+resolução das pendências Front-end da Etapa 2**, conforme o
+[ciclo de resolução](../coelo-flutter-supabase-review/references/review-scope.md#ciclo-de-resolução-de-pendências).
+Usar o recorte informado; sem recorte novo, retomar a subtela pendente do último
+checkpoint ou selecionar a próxima ação local executável do inventário.
+Informar a escolha e prosseguir sem perguntar novamente se pode corrigir.
+Conduzir até o aceite Front-end ou um bloqueio demonstrado, preservando os
+limites de autorização. Pedido explícito de explicação, diagnóstico/review
+somente leitura ou manutenção da própria skill segue esse pedido.
+
+A entrega deve trazer correção e prova, ou a prova de um aceite já atendido.
+Atualizar documentação/percentuais, produzir plano ou abrir uma tela não resolve
+por si só a pendência. Ausência de backend não impede fechar os aceites próprios
+do cliente; a dependência E2E permanece identificada.
 
 ## Princípio e superfícies
 
@@ -26,8 +43,16 @@ Todo contrato nomeia os apps incluídos. Na Etapa 2 atual, o único app é
 `apps/superadmin`; “Coelo (Principal)” é o menu dentro dele. `apps/admin`,
 `apps/principal` e `apps/site` permanecem fora.
 
+Em abertura, checkpoint e entrega, identificar **Etapa 2 → apps/superadmin →
+menu → tela → subtela/estado → action_id**. Para cada subtela trabalhada,
+mostrar avanço Front-end e a conclusão E2E conhecida, com base e data; uma
+subtela não herda o percentual da tela. Aplicar o
+[contrato de métricas e testes](../../../docs/superpowers/specs/2026-09-01-coelo-review-progress-metrics-design.md).
+
 ## Dependências por recorte
 
+Confirmar a base integrada e o handoff antes de reutilizar estado local; seguir
+a retomada entre worktrees e o limite de repetição de testes do contrato comum.
 Ler `AGENTS.md` e o [contrato de recorte](../coelo-flutter-supabase-review/references/review-scope.md).
 Usar `docs/reviews/coelo-flutter-pendencias.md` conforme a profundidade do pedido:
 ação localizada usa cabeçalho, linhas afetadas e dependências; auditoria ou
@@ -35,6 +60,9 @@ conclusão ampla exige leitura integral.
 
 - `coelo-ui` para composição e interação: distinguir família administrativa,
   Principal hospedado no Superadmin e Site. Não impor Instituições a todo app.
+  Abrir os manifestos de anexos indicados nas referências dessa skill e o item
+  da tela. Correções do Owner e sua integração têm prioridade no recorte;
+  preservação do anexo não comprova implementação nem aceite.
 - `rtk` para comandos; `coelo-knowledge` para conhecimento durável.
 - Em Flutter/Dart, revisão de código carrega `flutter-dart-code-review`;
   mudanças de layout carregam `flutter-build-responsive-layout`.
@@ -63,20 +91,21 @@ não significa que a implementação inexiste. Quando Astro entrar em escopo, cr
 denominador explícito por app ou ampliar o rastreador de forma reconciliada;
 nunca somar apps diferentes silenciosamente.
 
-Quando medir progresso, reportar geral e recorte separadamente, base de IDs,
-evidência e horário. Tempo usado é medido; se faltar, escrever `não calculável
-ainda`.
+Em trabalho de entrega, reportar o recorte por tela/subtela e o geral conhecido
+da Etapa 2 separadamente, com base de IDs, evidência e horário. Consulta de uma
+camada reutiliza o snapshot integrado datado; não inicia auditoria das demais.
+Se faltarem dados, indicar o dado necessário, sem inventar zero nem percentual.
+Tempo usado é medido; se faltar, escrever `não calculável ainda`.
 
 ```text
-Progresso geral conhecido — Concluído: ... (.../... unidades)
-Progresso geral conhecido — Restante: ... (.../... unidades)
-Tempo usado no trabalho geral concluído: ...
-Tempo estimado para finalizar o backlog geral: ...
-Progresso do recorte — Concluído: ...
-Progresso do recorte — Restante: ...
-Tempo usado no trabalho concluído no recorte: ...
-Tempo estimado para finalizar o recorte: ...
-Base do cálculo: action_ids/gates, app, evidência e horário.
+Etapa 2 | apps/superadmin | menu > tela > subtela | action_ids
+Avanço local comprovado: ...; Front-end verified: C/N = ...%; restante: ...
+E2E certificado conhecido: C/N = ...% (snapshot/data ou não calculável).
+Testes Front-end: aprovados P/E = ...%; falhos F/E = ...%; E = P + F.
+Plano: P/N aprovados; E/N executados; B bloqueados, S ignorados, U não executados.
+Campanha/revisão/ambiente/runner/evidência: ...; geral Etapa 2: ...
+Delta desde o checkpoint: ...; primeiro gate aberto e próximo passo: ...
+Tempo medido: ...; ETA do delta: ...; espera externa: ...
 ```
 
 ## Contrato de abertura
@@ -110,3 +139,6 @@ foco. Atualizar o rastreador após correção, regressão, bloqueio ou ETA novo.
 No checkpoint, informar app, tela/subtela/action, evidência, estado Front-end,
 dependência externa, primeiro gate aberto e ETA. Diferenciar atividade
 concluída, ação Front-end `verified` e produto pendente.
+Ao corrigir, avançar a subtela até o próximo aceite verificável do recorte;
+reabrir provas anteriores somente por mudança relevante, regressão ou evidência
+insuficiente identificada. Não repetir auditoria ampla a cada retomada.

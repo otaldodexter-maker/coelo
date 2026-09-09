@@ -3,7 +3,7 @@ title: "Curriculo do Tutor Coelo"
 source: "docs/superpowers/specs/2026-07-14-coelo-tutor-design.md; AGENTS.md; arquitetura e codigo do Coelo"
 status: "active-learning-path"
 generated_at: "2026-07-14"
-updated_at: "2026-07-14"
+updated_at: "2026-09-08"
 ---
 
 # Curriculo do Tutor Coelo
@@ -25,6 +25,19 @@ evidencia do usuario; exposicao ao tema nao basta.
 descrever o caminho inicial do aplicativo.
 
 **Por que primeiro:** sem o mapa, os exemplos posteriores parecem isolados.
+
+## Trilha de apoio — Git e GitHub
+
+Incluída a pedido do usuário em 2026-07-15, registrado em `progress.md`.
+Depois de reconhecer pasta, arquivo e repositório, introduzir status e diff;
+avançar para staging, commit, branch, remoto, pull/push, pull request e conflitos
+conforme a necessidade da aula. Distinguir Git (histórico local) e GitHub
+(hospedagem e colaboração). Começar por leitura do repositório real; praticar
+escrita em exemplo isolado quando solicitado, sem commit/push de mudanças alheias.
+
+**Evidência:** explicar o que mudou num diff, diferenciar alteração local de
+commit e de publicação remota. Incluir na trilha não marca nenhum tema como
+apresentado ou compreendido e não reinicia a fase atual.
 
 ## Fase 2 — Fundamentos de Dart
 

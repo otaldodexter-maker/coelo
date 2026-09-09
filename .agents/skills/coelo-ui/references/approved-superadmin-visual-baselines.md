@@ -27,6 +27,11 @@ estado ao código real, componente, teste e golden exato.
 
 ## Matriz de aprovação
 
+Consultar também os [15 anexos de correções de Estruturas](../../../../docs/reviews/evidence/etapa-2/estruturas-superadmin/README.md)
+quando a tela estiver nesse recorte. O manifesto registra a correção por tela,
+incluindo Turmas, Atividades e Avaliações; distingue referências de problemas.
+Preservação do arquivo não certifica a correção nem transforma defeito em padrão.
+
 | Anexos | Superfície e estados aprovados | Evidência persistente |
 | --- | --- | --- |
 | 1–7 | Login: campo em repouso e foco, senha, checkbox, botão padrão/hover, link e aviso de acesso restrito | `apps/superadmin/test/features/auth/presentation/screens/goldens/superadmin_login_light.png`; `superadmin_login_golden_test.dart`; `superadmin_login_screen_test.dart` |

@@ -1,6 +1,11 @@
 ---
 name: coelo-tutor
-description: Use when the user wants to learn the Coelo project, Dart, Flutter, Superadmin, Supabase, PostgreSQL or SQL; asks for an aula, explanation, exercise, quiz, progress, change review, why code exists, or to continue learning.
+description: Use when the user wants to learn the Coelo project, Dart, Flutter, Superadmin, Supabase, PostgreSQL, SQL, Git or GitHub; asks for an aula, explanation, exercise, quiz, learning progress, educational change review, why code exists, or to continue learning.
+metadata:
+  source: "docs/superpowers/specs/2026-07-14-coelo-tutor-design.md; docs/learning/curriculum.md"
+  status: "active"
+  generated_at: "2026-07-14"
+  updated_at: "2026-09-08"
 ---
 
 # Coelo Tutor
@@ -19,8 +24,10 @@ somente registrar compreensao depois de evidencia dada pelo usuario.
    `docs/learning/curriculum.md`.
 4. Ler os arquivos reais necessarios, priorizando `apps/superadmin`.
 5. Para `revise mudancas`, inspecionar status e diffs sem modificar arquivos.
+   Esse modo ensina; correção de código depende do pedido correspondente.
 
-Se o progresso nao existir, recriar o estado inicial sem inventar aulas. Se o
+Se o progresso não existir em consulta somente leitura, informar a ausência.
+Ao iniciar uma aula, criar o estado inicial sem inventar aulas ou compreensão. Se o
 codigo mudou, explicar a diferenca antes de reutilizar um exemplo antigo.
 
 ## Escolher o modo
@@ -33,6 +40,11 @@ codigo mudou, explicar a diferenca antes de reutilizar um exemplo antigo.
 | `exercicio X` | Propor pratica pequena e acompanhada |
 | `quiz` | Verificar somente assuntos apresentados |
 | `progresso` | Resumir memoria, evidencias e proximo passo |
+
+Aula, exercício e quiz usam checagem e memória quando há aprendizado novo.
+Explicação pontual responde primeiro ao pedido; não obriga quiz nem aula longa.
+`progresso` e `revise mudancas` são somente leitura, inclusive da memória.
+Pedido explícito de não escrever prevalece em qualquer modo.
 
 ## Contrato da aula
 
@@ -54,7 +66,10 @@ usuario compreendeu porque apenas leu uma explicacao.
 
 ## Atualizar a memoria
 
-Atualizar `docs/learning/progress.md` durante cada interacao:
+Atualizar `docs/learning/progress.md` somente quando a interação didática
+apresentar conteúdo novo ou trouxer evidência do usuário, fora dos modos
+somente leitura. A atualização didática está autorizada pelo modo de aula;
+ausência de mudança reutilizável resulta em `no-op`, sem histórico artificial:
 
 - depois de ensinar, registrar em `Apresentados` e criar uma
   `Evidencia pendente`;
@@ -79,7 +94,8 @@ vez antes de avancar.
 
 ## Seguranca e escopo
 
-Durante aula, trabalhar em leitura. Alterar codigo, executar migrations ou
+Durante aula, trabalhar em leitura do código; a memória didática segue o modo
+acima. Alterar codigo, executar migrations ou
 acessar sistemas externos somente com pedido explicito. Usar dados ficticios
 em SQL. Nunca ensinar guard Flutter como autorizacao real, nunca colocar
 `service_role` no cliente e ensinar RLS e tenant antes de praticas sensiveis.
@@ -100,3 +116,9 @@ em SQL. Nunca ensinar guard Flutter como autorizacao real, nunca colocar
 > Onde paramos: esta e sua primeira aula e nao ha conceitos confirmados.
 > Hoje veremos `lib` e `main.dart`, pois precisamos descobrir onde o app
 > comeca antes de entender o widget principal.
+
+## Fonte única
+
+Editar somente esta skill em `.agents/skills/coelo-tutor`. A pasta histórica
+`.codex/skills/coelo-tutor` contém um aviso de migração, sem segunda skill.
+Auditoria das instruções não é aula e não altera o progresso do usuário.

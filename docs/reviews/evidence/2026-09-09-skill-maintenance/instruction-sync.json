@@ -1,0 +1,108 @@
+{
+  "source": "C:\\Users\\adrie\\Documents\\Coelo",
+  "destination": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-c00",
+  "destinationHead": "ed37c04dbfb7a8722ba6cee312a206d6c52d5e3f",
+  "recordedAt": "2026-09-09T10:48:56.525278-03:00",
+  "scope": "14 instruction/reference files only; no product code, central trackers, old tasks, remote resources, commits or push",
+  "gitState": "local-uncommitted",
+  "files": [
+    {
+      "path": ".gitignore",
+      "sourceSha256": "82eef4e579bc66bf0a5771f409286d735fa1fb382f1d4a8b3f81450fbb79f42c",
+      "targetSha256": "3515e30dea1e308e5b3611f609b03d18fdd3a71ab7196a9faa63d98e4569d125",
+      "deltaPlus": 3,
+      "deltaMinus": 0
+    },
+    {
+      "path": "AGENTS.md",
+      "sourceSha256": "aa32d6cb0e726119eb99ff09773750c486af616ea8454475361f060738eb9f2f",
+      "targetSha256": "56f8d46e3b5dea8baa6b95736983abf92fd8172096a2d7a42c0fade4111ded59",
+      "deltaPlus": 41,
+      "deltaMinus": 0
+    },
+    {
+      "path": ".agents/skills/coelo-flutter-review/SKILL.md",
+      "sourceSha256": "7afb2fba7847282336aeef9971e06c158e828230d1d9397c53910720adcde66d",
+      "targetSha256": "95e9369f27275fb7febe6c61c13591af64d1642a0dc29f683e04ea683b1f8b2e",
+      "deltaPlus": 45,
+      "deltaMinus": 13
+    },
+    {
+      "path": ".agents/skills/coelo-flutter-review/agents/openai.yaml",
+      "sourceSha256": "f3e2a3b28c5dd7607d5b426ba801d7a9c10ed03248d525372ae3c389ed17fe12",
+      "targetSha256": "30ef4cbfc67b6ae6420a5659e8e3b621807d2befa28fe987098f4c9c08c4388e",
+      "deltaPlus": 2,
+      "deltaMinus": 2
+    },
+    {
+      "path": ".agents/skills/coelo-supabase/SKILL.md",
+      "sourceSha256": "f4705211ac2e3f5c99b8e3ee0a0d036067aa53091f851d04d4ab1044dd9ff484",
+      "targetSha256": "34fde88f5a026604bd6e7586f828f1a1884a97583df66526b02d40c7823b9027",
+      "deltaPlus": 64,
+      "deltaMinus": 17
+    },
+    {
+      "path": ".agents/skills/coelo-supabase/agents/openai.yaml",
+      "sourceSha256": "6c8b2dd232fa80e5019fbedba013adc3c0d9679fa2cd8ee478f6b41b5861e26b",
+      "targetSha256": "ebdae96d019132a9c2c084a74516eab17e93620de9e4db09b545ea006fb87a93",
+      "deltaPlus": 2,
+      "deltaMinus": 2
+    },
+    {
+      "path": ".agents/skills/coelo-flutter-supabase-review/SKILL.md",
+      "sourceSha256": "622349a1ae0cecda842e5394f651202cfd5d66d4b2bed538d1ea40c9b58c9247",
+      "targetSha256": "bc6af70d089913811ed370af05d6ce213a412c1fd26d64118a29168fd889a87c",
+      "deltaPlus": 55,
+      "deltaMinus": 6
+    },
+    {
+      "path": ".agents/skills/coelo-flutter-supabase-review/agents/openai.yaml",
+      "sourceSha256": "39c1c06a1f3d0951bb5a44b235419be1a4f64c6eb3ec7e5dad491585608b645d",
+      "targetSha256": "414dacc50d27a86640d1c2026d00101f689a9efb5f9529d31806b6fd3036c6b0",
+      "deltaPlus": 2,
+      "deltaMinus": 2
+    },
+    {
+      "path": ".agents/skills/coelo-flutter-supabase-review/references/review-scope.md",
+      "sourceSha256": "d6bae745f554885b9b87c34c8c2eb321ad0b438da8de4e40ff740d875cc31576",
+      "targetSha256": "830eec95ef8c7af131b343dea14131685b474b8987d2053eee46968eb0003ac5",
+      "deltaPlus": 104,
+      "deltaMinus": 1
+    },
+    {
+      "path": ".agents/skills/cloudflare-manager/SKILL.md",
+      "sourceSha256": "5c7c93d333c4dfe69c5e24b533ca68d316926a86ba0efaaf6f0efaee065ed3ee",
+      "targetSha256": null,
+      "deltaPlus": 84,
+      "deltaMinus": 0
+    },
+    {
+      "path": ".agents/skills/coelo-ui/references/principal-visual-surfaces.md",
+      "sourceSha256": "a47a6e54896318f67d2b0c34455f33173f4277752aa00d4379c0fa385f629638",
+      "targetSha256": "a7f28ef2a5bcd13e9fd7a2e51ffc613912d38d6fb36c198f90c5fbd66219d6bc",
+      "deltaPlus": 5,
+      "deltaMinus": 0
+    },
+    {
+      "path": ".agents/skills/coelo-ui/references/approved-superadmin-visual-baselines.md",
+      "sourceSha256": "2ec4e39f40864959fd345d2aa796d21428c8332018ea3f5234144fe7ad776c90",
+      "targetSha256": "4c404de4e1ada3948ac2c3902a3503db7648443dee7d291b28a5a576ddcaf941",
+      "deltaPlus": 5,
+      "deltaMinus": 0
+    },
+    {
+      "path": "docs/knowledge/team/coelo-review-scope.md",
+      "sourceSha256": "e6060118f1dd2debd6925036d4db991530237eb6b46e4415cc23f8d410f72ab0",
+      "targetSha256": "b977ce7c757a2fb00937a47c19308c0ccc38648022ca1c7395c09ed6722b2361",
+      "deltaPlus": 43,
+      "deltaMinus": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-09-01-coelo-review-progress-metrics-design.md",
+      "sourceSha256": "e61e3d6bf669513117089c93427024f68282f631e3209198ee16f6edda6d661e",
+      "targetSha256": "e43f66a1aaa37c1ed76d3995c1ba49cbb135d9b3af8aadd24afe86c4bbaf8e70",
+      "deltaPlus": 134,
+      "deltaMinus": 0
+    }
+  ]
+}

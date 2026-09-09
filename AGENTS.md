@@ -166,6 +166,59 @@ ja definido pelo usuario dispensa nova confirmacao ou pergunta de tempo.
 Estime o delta real apos inspecao, sem faixas fixas por tela ou contagem de
 acoes como substituto de horas. Seguranca e provas da conclusao permanecem.
 
+Na Etapa 2, cada abertura, checkpoint e entrega identifica
+`apps/superadmin -> menu -> tela -> subtela/estado -> action_id`.
+Coelo (Principal) e menu do Superadmin; outros apps ficam fora do recorte.
+Aplicar o contrato vigente em
+`docs/superpowers/specs/2026-09-01-coelo-review-progress-metrics-design.md`:
+separar avanco local, conclusao FE/BE/E2E e testes aprovados/falhos dos
+executados, junto da cobertura do plano e bloqueados/ignorados/nao executados.
+Percentuais usam IDs unicos, base, revisao, ambiente e data; historico nao vira
+resultado atual. Relatar por tela/subtela e recorte, com geral conhecido datado.
+Falta de mapeamento ou evidencia fica explicita. Retomadas fecham o primeiro
+gate aberto do recorte, reutilizando implementacao e provas validas.
+Atualizar inventario e matrizes juntos ao mudar estados; validacao documental
+nao certifica o app nem autoriza producao.
+
+Chamar `coelo-frontend`, `coelo-backend` ou `coelo-frontend-backend` para
+trabalhar no projeto tem modo padrao resolver pendencias: retomar o recorte ou
+selecionar a proxima acao executavel da Etapa 2, corrigir localmente, testar e
+registrar o aceite. Nao encerrar apenas com auditoria, plano ou percentuais
+quando a correcao autorizada ainda puder prosseguir. Pedidos explicitos de
+explicacao/review somente leitura e manutencao das skills mantem esse limite.
+Bloqueio remoto exige pacote revisavel e decisao nominal quando ainda faltar;
+continuar o trabalho independente. Seguir o ciclo de resolucao em review-scope.md.
+
+Antes de retomar, localizar worktrees, base integrada, protocolo/fechamento da
+rodada e handoff por revisao/data/SHA; o dev local pode estar desatualizado.
+Nao retomar rodada encerrada automaticamente. Reutilizar referencias e provas
+validas; materializar a base conjunta antes de verificar integracao. Respeitar
+o escritor central vigente: executores propoem deltas no proprio handoff.
+Alteracoes de skills devem chegar ao checkout de destino para valer ali;
+nao sobrescrever instrucoes divergentes nem confundir commit/push com deploy.
+Corrigir os pontos indicados pelo Owner nos anexos de cada tela/subtela e sua
+integracao, preservando referencias aprovadas. Anexo salvo nao e correcao pronta.
+Definir testes pertinentes aos aceites; depois de verdes, seguir ao proximo
+gate. Repetir/ampliar somente com motivo material ou verificacao obrigatoria
+na base integrada, sem somar reruns. Relatar falhas resolvidas/novas e aceite
+alcancado; nao rodar lotes duplicados. Estimar o delta inspecionado e calibrar
+pela execucao, sem horas fixas por tela ou estimativas historicas sem fundamento.
+Em Cloudflare, descobrir o MCP/plugin instalado e seguir a skill do produto e
+Wrangler quando aplicavel; disponibilidade de ferramenta nao prova acesso nem
+substitui autorizacao nominal. Pacote autorizado segue ate implantacao e prova.
+
+No fechamento que inclua integracao/publicacao, reconciliar commits, stash,
+alteracoes locais e divergencia com o remoto. Skills e referencias precisam
+estar na base entregue, nao somente na worktree do autor. Preservar e identificar
+WIP retido antes de arquivar/remover uma worktree encerrada; arquivo historico
+nao equivale a codigo integrado. Usar o checkout consolidado e criar isolamento
+somente quando necessario, com destino e responsavel de integracao definidos.
+Nao declarar entrega integrada enquanto commit/push autorizado continuar pendente.
+
+Skills orientam o agente tanto no trabalho local quanto na entrega do app real.
+A branch Git dev e a base atual de versionamento; nao e um ambiente de testes.
+As regras das skills tambem valem para producao no escopo remoto autorizado.
+
 `coelo-ui` permanece a autoridade visual em qualquer revisao de Front-end.
 Distinguir app hospedeiro de familia visual: administrativo Superadmin orienta
 Admin; Coelo (Principal) preserva suas composicoes aprovadas mesmo dentro do

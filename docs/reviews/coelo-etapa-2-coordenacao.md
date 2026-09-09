@@ -8,6 +8,20 @@ updated_at: "2026-09-09"
 
 # Coelo — Coordenação da Etapa 2
 
+## Base de retomada — consolidação Git de 09/09/2026
+
+O Owner solicitou eliminar worktrees/commits soltos e consolidar as skills.
+O checkout de trabalho volta a ser `C:/Users/adrie/Documents/Coelo`, branch
+`dev`, com a base publicada da R01 incorporada. A situação material, arquivos
+preservados e publicação estão no [recibo de consolidação](2026-09-09-consolidacao-git.md).
+Consultar os rastreadores neste checkout e o fechamento R01 para o residual.
+
+As worktrees e branches executoras da R01 foram retiradas de operação e
+arquivadas. Os blocos de ownership, caminhos C00 e agendas abaixo são históricos
+da rodada encerrada; não mandam reabrir conversas nem recriar aquelas worktrees.
+Esta consolidação não inicia R02 nem certifica telas. A próxima execução segue
+o novo recorte do Owner e a base consolidada, com um escritor por arquivo.
+
 > Fechamento publicado em dev/C00 `2b4f189a17146911cbe7d91ad653c67997db3610`; heartbeats R01 pausados em 2026-09-09T08:50:57-03:00. Worktrees limpas e preservadas; R01 parcial, novas conversas aguardam recorte.
 
 ## Fechamento vigente R01 — 2026-09-09T08:41:13-03:00

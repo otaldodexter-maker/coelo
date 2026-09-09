@@ -1,11 +1,15 @@
 ---
 source: "Refatoração e auditoria final de Convites do Superadmin"
-status: "completed"
+status: "historical-completed"
 generated_at: "2026-08-06"
 updated_at: "2026-08-06"
 ---
 
 # Handoff — Convites do Superadmin
+
+**Histórico de 06/08/2026.** Apesar do nome do arquivo, este não é o checkpoint
+atual da Etapa 2. Retomar pelo [índice de coordenação](../reviews/coelo-etapa-2-coordenacao.md)
+e seus rastreadores/fechamento. O conteúdo abaixo preserva aquela entrega.
 
 ## Resultado
 
