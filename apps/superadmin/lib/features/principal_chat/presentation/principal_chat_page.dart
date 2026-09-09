@@ -66,6 +66,7 @@ final class _PrincipalChatPageState extends State<PrincipalChatPage> {
   ChatThreadPage? _thread;
   Object? _threadError;
   var _sending = false;
+  var _loadingMore = false;
   String? _pendingIdempotencyKey;
   String? _pendingBody;
 
@@ -93,6 +94,7 @@ final class _PrincipalChatPageState extends State<PrincipalChatPage> {
     _thread = null;
     _threadError = null;
     _sending = false;
+    _loadingMore = false;
     _pendingIdempotencyKey = null;
     _pendingBody = null;
     _inboxState = const ChatInboxState.loading();
@@ -133,6 +135,49 @@ final class _PrincipalChatPageState extends State<PrincipalChatPage> {
 
   bool _isCurrentInbox(int generation, ChatRepository requested) =>
       mounted && generation == _inboxGeneration && identical(requested, _repository);
+
+  /// Acrescenta a próxima página ao final da lista, sem trocar a tela por um
+  /// painel de carregamento: quem já está lendo a inbox não perde o contexto.
+  /// A busca em curso viaja junto, senão a continuação traria outro conjunto.
+  Future<void> _loadMoreConversations() async {
+    final current = _inboxState.page;
+    final cursor = current?.nextCursor;
+    if (current == null || cursor == null || _loadingMore) return;
+    final generation = _inboxGeneration;
+    final requested = _repository;
+    final search = _search.text;
+    setState(() => _loadingMore = true);
+    try {
+      final next = await requested.fetchInbox(
+        ChatInboxQuery(search: search, cursor: cursor, pageSize: _pageSize),
+      );
+      if (!_isCurrentInbox(generation, requested) || _search.text != search) return;
+      setState(
+        () => _inboxState = ChatInboxState.loaded(
+          ChatInboxPage(
+            items: [...current.items, ...next.items],
+            totalUnread: next.totalUnread,
+            nextCursor: next.nextCursor,
+            totalCount: next.totalCount,
+            hasMore: next.hasMore,
+          ),
+          search: search,
+        ),
+      );
+    } on ChatUnauthorizedException catch (error) {
+      if (_isCurrentInbox(generation, requested)) _denyAccess(error);
+    } on ChatOfflineException {
+      if (_isCurrentInbox(generation, requested)) {
+        _notify('Sem conexão. Não foi possível carregar mais conversas.');
+      }
+    } catch (_) {
+      if (_isCurrentInbox(generation, requested)) {
+        _notify('Não foi possível carregar mais conversas.');
+      }
+    } finally {
+      if (mounted) setState(() => _loadingMore = false);
+    }
+  }
 
   bool _isCurrentThread(int generation, ChatRepository requested, String conversationId) =>
       mounted &&
@@ -246,6 +291,7 @@ final class _PrincipalChatPageState extends State<PrincipalChatPage> {
       _thread = null;
       _threadError = null;
       _sending = false;
+      _loadingMore = false;
       _pendingIdempotencyKey = null;
       _pendingBody = null;
       _inboxState = ChatInboxState.unauthorized(error);
@@ -418,18 +464,42 @@ final class _PrincipalChatPageState extends State<PrincipalChatPage> {
           onAction: _loadInbox,
         ),
       ),
-      ChatInboxLoadState.ready => ListView.separated(
-        key: const Key('principal-chat-inbox-list'),
-        padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
-        itemCount: state.page!.items.length,
-        separatorBuilder: (_, _) => const SizedBox(height: CoeloSpacing.space1),
-        itemBuilder: (context, index) {
-          final item = state.page!.items[index];
-          return _ConversationTile(
-            key: ValueKey('principal-chat-conversation-${item.id}'),
-            conversation: item,
-            selected: _selected?.id == item.id,
-            onOpen: () => _open(item),
+      ChatInboxLoadState.ready => Builder(
+        builder: (context) {
+          final page = state.page!;
+          final canLoadMore = page.nextCursor != null;
+          return ListView.separated(
+            key: const Key('principal-chat-inbox-list'),
+            padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
+            itemCount: page.items.length + (canLoadMore ? 1 : 0),
+            separatorBuilder: (_, _) => const SizedBox(height: CoeloSpacing.space1),
+            itemBuilder: (context, index) {
+              if (index == page.items.length) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space3),
+                  child: Center(
+                    child: _loadingMore
+                        ? const SizedBox(
+                            width: CoeloSize.iconSm,
+                            height: CoeloSize.iconSm,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : TextButton(
+                            key: const Key('principal-chat-load-more'),
+                            onPressed: _loadMoreConversations,
+                            child: const Text('Carregar mais conversas'),
+                          ),
+                  ),
+                );
+              }
+              final item = page.items[index];
+              return _ConversationTile(
+                key: ValueKey('principal-chat-conversation-${item.id}'),
+                conversation: item,
+                selected: _selected?.id == item.id,
+                onOpen: () => _open(item),
+              );
+            },
           );
         },
       ),

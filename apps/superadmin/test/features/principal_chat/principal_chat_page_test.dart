@@ -181,6 +181,71 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('reaches older conversations without losing the ones already read', (tester) async {
+    final repository = _PrincipalChatRepository(
+      inbox: ChatInboxPage(
+        totalUnread: 0,
+        nextCursor: ChatCursor(DateTime.utc(2026, 9, 9, 9), 'conversation-1'),
+        items: [_summary('conversation-1', 'Turma Girassol')],
+      ),
+    );
+    repository.nextInbox = ChatInboxPage(
+      totalUnread: 0,
+      items: [_summary('conversation-2', 'Turma Bem-te-vi')],
+    );
+    await _pump(tester, repository);
+
+    expect(find.text('Turma Bem-te-vi'), findsNothing);
+    await tester.tap(find.byKey(const Key('principal-chat-load-more')));
+    await tester.pumpAndSettle();
+
+    // A continuação acrescenta, não substitui.
+    expect(find.text('Turma Girassol'), findsWidgets);
+    expect(find.text('Turma Bem-te-vi'), findsOneWidget);
+    // Sem cursor novo, a afordância some em vez de prometer mais páginas.
+    expect(find.byKey(const Key('principal-chat-load-more')), findsNothing);
+    expect(repository.inboxQueries.last.cursor?.id, 'conversation-1');
+  });
+
+  testWidgets('carries the active search into the continuation', (tester) async {
+    final repository = _PrincipalChatRepository(
+      inbox: ChatInboxPage(
+        totalUnread: 0,
+        nextCursor: ChatCursor(DateTime.utc(2026, 9, 9, 9), 'conversation-1'),
+        items: [_summary('conversation-1', 'Turma Girassol')],
+      ),
+    );
+    repository.nextInbox = const ChatInboxPage(items: [], totalUnread: 0);
+    await _pump(tester, repository);
+
+    await tester.enterText(find.byKey(const Key('principal-chat-search')), 'girassol');
+    await tester.pump(const Duration(milliseconds: 350));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('principal-chat-load-more')));
+    await tester.pumpAndSettle();
+
+    // Continuar sem a busca traria outro conjunto de conversas.
+    expect(repository.inboxQueries.last.search, 'girassol');
+  });
+
+  testWidgets('a denied continuation purges the private snapshot', (tester) async {
+    final repository = _PrincipalChatRepository(
+      inbox: ChatInboxPage(
+        totalUnread: 0,
+        nextCursor: ChatCursor(DateTime.utc(2026, 9, 9, 9), 'conversation-1'),
+        items: [_summary('conversation-1', 'Turma Girassol')],
+      ),
+      continuationError: const ChatUnauthorizedException(),
+    );
+    await _pump(tester, repository);
+
+    await tester.tap(find.byKey(const Key('principal-chat-load-more')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('principal-chat-inbox-unauthorized')), findsOneWidget);
+    expect(find.text('Turma Girassol'), findsNothing);
+  });
+
   testWidgets('lays out without overflow across canonical breakpoints', (tester) async {
     for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
       await tester.binding.setSurfaceSize(Size(width, 900));
@@ -202,6 +267,17 @@ Future<void> _pump(
   await tester.pumpAndSettle();
 }
 
+ChatConversationSummary _summary(String id, String title) => ChatConversationSummary(
+  id: id,
+  title: title,
+  preview: 'Ultima mensagem',
+  contextLabel: 'Escola Horizonte',
+  kind: 'group',
+  unreadCount: 0,
+  updatedAt: DateTime.utc(2026, 9, 9, 10),
+  isReadOnly: false,
+);
+
 final class _PrincipalChatRepository implements ChatRepository {
   _PrincipalChatRepository({
     ChatInboxPage? inbox,
@@ -209,6 +285,7 @@ final class _PrincipalChatRepository implements ChatRepository {
     this.threadError,
     this.readOnly = false,
     this.withReceipts = true,
+    this.continuationError,
   }) : inbox = inbox ?? _defaultInbox(readOnly: readOnly);
 
   ChatInboxPage inbox;
@@ -216,7 +293,10 @@ final class _PrincipalChatRepository implements ChatRepository {
   final Object? threadError;
   final bool readOnly;
   final bool withReceipts;
+  final Object? continuationError;
 
+  ChatInboxPage? nextInbox;
+  final List<ChatInboxQuery> inboxQueries = [];
   var threadFetches = 0;
   final List<String> markedRead = [];
   final List<ChatSendMessageCommand> sent = [];
@@ -242,6 +322,11 @@ final class _PrincipalChatRepository implements ChatRepository {
 
   @override
   Future<ChatInboxPage> fetchInbox(ChatInboxQuery query) async {
+    inboxQueries.add(query);
+    if (query.cursor != null) {
+      if (continuationError != null) throw continuationError!;
+      return nextInbox ?? const ChatInboxPage(items: [], totalUnread: 0);
+    }
     if (inboxError != null) throw inboxError!;
     return inbox;
   }
