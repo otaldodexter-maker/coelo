@@ -31,6 +31,8 @@ import '../../features/activities/data/dev/dev_activity_session_store.dart';
 import '../../features/activities/application/activity_save_attempt_coordinator.dart';
 import '../../features/activities/domain/activity_command.dart';
 import '../../features/activities/domain/activity_directory.dart';
+import '../../features/activities/domain/activity_read_detail.dart';
+import '../../features/activities/presentation/activity_read_detail_page.dart';
 import '../../features/activities/domain/activity_profile_about_repository.dart';
 import '../../features/activities/presentation/activity_detail_page.dart';
 import '../../features/activities/presentation/activity_directory_page.dart';
@@ -251,6 +253,8 @@ GoRouter createSuperadminRouter({
       _noLocationCapabilities,
   ActivityDirectoryRepository activityDirectoryRepository =
       const UnavailableActivityDirectoryRepository(),
+  ActivityReadDetailRepository activityReadDetailRepository =
+      const UnavailableActivityReadDetailRepository(),
   ActivityCommandRepository activityCommandRepository =
       const UnavailableActivityCommandRepository(),
   AssessmentRepository assessmentRepository = const UnavailableAssessmentRepository(),
@@ -1768,23 +1772,45 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.activityDetail,
             name: SuperadminRoutes.activityDetailName,
-            builder: (context, state) => ActivityDetailPage(
-              activityId: state.pathParameters['activityId']!,
-              repository: activityDirectoryRepository,
-              logout: logout,
-              onBack: () => context.goNamed(SuperadminRoutes.activitiesName),
-              onEdit: () => context.goNamed(
-                SuperadminRoutes.activityEditName,
-                pathParameters: {'activityId': state.pathParameters['activityId']!},
+            builder: (context, state) => ListenableBuilder(
+              listenable: session,
+              builder: (context, _) => ActivityReadDetailPage(
+                activityId: state.pathParameters['activityId']!,
+                repository: activityReadDetailRepository,
+                sessionAvailable: session.isAuthenticated && !session.isPasswordRecovery,
+                canRead: session.authContext?.permissionCodes.contains('activities.read') == true,
+                contextRevision: session.authorizationInvalidationRevision,
+                logout: logout,
+                onBack: () => context.goNamed(SuperadminRoutes.activitiesName),
+                onAssessmentSettings: (detail) => context.goNamed(
+                  SuperadminRoutes.activityAssessmentSettingsName,
+                  pathParameters: {'activityId': detail.id},
+                  queryParameters: {'institutionId': detail.institutionId},
+                ),
+                reservationBuilder: (context, detail) => LocationConsumerReservations(
+                  consumer: LocationReservationConsumer(kind: LocationReservationConsumerKind.activity, id: detail.id),
+                  scopes: [
+                    (scope: LocationScope.institution(institutionId: detail.institutionId), label: 'Locais da instituição'),
+                    for (final unit in detail.units)
+                      (scope: LocationScope.unit(institutionId: detail.institutionId, unitId: unit.unitId), label: unit.name),
+                  ],
+                  reader: locationCatalogReader,
+                  bindingsReader: locationConsumerBindingsReader,
+                  gateway: locationReservationGateway,
+                  sessionAvailable: session.isAuthenticated && !session.isPasswordRecovery,
+                  contextRevision: session.authorizationInvalidationRevision,
+                  canRead: detail.status != 'archived' && session.authContext?.permissionCodes.containsAll({
+                    'activities.read', 'locations.read', 'locations.reservations.read',
+                  }) == true,
+                  canManage: session.authContext?.permissionCodes.containsAll({
+                    'activities.manage', 'locations.reservations.manage',
+                  }) == true,
+                  canOverride: session.authContext?.permissionCodes.contains('locations.reservations.override') == true,
+                ),
+                onDestinationSelected: (destination) =>
+                    _navigateFromPersistentShell(context, destination),
+                onBugReportSubmitted: productionSupportController?.submitReport,
               ),
-              onAssessmentSettings: (detail) => context.goNamed(
-                SuperadminRoutes.activityAssessmentSettingsName,
-                pathParameters: {'activityId': detail.item.id},
-                queryParameters: {'institutionId': detail.item.institutionId},
-              ),
-              onDestinationSelected: (destination) =>
-                  _navigateFromPersistentShell(context, destination),
-              onBugReportSubmitted: productionSupportController?.submitReport,
             ),
           ),
           GoRoute(
