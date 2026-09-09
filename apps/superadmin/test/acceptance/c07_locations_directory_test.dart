@@ -1,3 +1,21 @@
+// ERRATA MINHA, 2026-09-08T22:47, conferida por mim antes de escrever.
+//
+// Eu registrei que "os paineis de Locais nao tem consumidor de producao", sem o
+// qualificador de escopo. A afirmacao e verdadeira NESTA ARVORE e em origin/dev,
+// e FALSA na arvore da C04: la o router referencia LocationsPage nas linhas 1337
+// e 1366 e UnitLocationsGate nas 1395 e 1419, com as duas rotas registradas.
+// Conferi as tres pontas.
+//
+// A leitura correta: o fio EXISTE e falta INTEGRAR (o commit 567b3993 nao e
+// ancestral de origin/dev). Logo `locations.*` nao e certificavel como FE na
+// base integrada por PENDENCIA DE INTEGRACAO, e nao por ausencia de
+// implementacao. A diferenca importa: a primeira leitura custa uma integracao,
+// a segunda custaria escrever a tela.
+//
+// Registro contra mim porque e o mesmo formato de erro que venho apontando nos
+// outros: verificar uma propriedade num escopo e enuncia-la como geral. O que
+// este arquivo mede continua valido, porque mede os paineis diretamente.
+
 // C07 - Locais: aceitacao do fluxo real do catalogo (sem golden).
 //
 // O que existe no baseline, e so isso e exercitado aqui: dois paineis de

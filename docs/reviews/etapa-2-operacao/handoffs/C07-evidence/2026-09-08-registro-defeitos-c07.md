@@ -56,6 +56,14 @@ consultar a fonte. Atribuição errada propagada faria alguém editar arquivo de
 exatamente o que esta rodada vem tentando evitar. `students.*` continua **C04**, conferido na mesma
 consulta, então o defeito de Acompanhamento segue com dono correto.
 
+**Errata de escopo, 2026-09-08T22:47:** registrei que os painéis de Locais não têm consumidor de
+produção, sem qualificar o escopo. É verdade na minha árvore e em `origin/dev`, e **falso** na árvore
+da C04, onde o router referencia `LocationsPage` e `UnitLocationsGate` em quatro pontos. Conferi as
+três pontas eu mesma. A leitura correta é que **o fio existe e falta integrar**: `locations.*` não é
+certificável como FE na base integrada por **pendência de integração**, não por ausência de
+implementação. A diferença custa uma integração em vez de escrever a tela. Mesmo formato de erro que
+venho apontando nos outros: verificar num escopo e enunciar como geral.
+
 ## Quadro geral
 
 | # | Defeito | Dono | Estado | Prova |
