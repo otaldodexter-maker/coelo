@@ -510,7 +510,6 @@ void main() {
       governance: ActivityGovernance.optional,
       institutionId: 'institution-1',
       unitIds: {'institution-1-unit-1'},
-      locationId: 'institution-1-unit-1-location-1',
       groupIds: {'institution-1-group-1'},
       assignments: [
         ActivityProfessionalAssignment(
@@ -561,7 +560,7 @@ void main() {
     expect(savedDraft?.template, _englishTemplate);
     expect(savedDraft?.institutionId, 'institution-1');
     expect(savedDraft?.unitIds, {'institution-1-unit-1'});
-    expect(savedDraft?.locationId, 'institution-1-unit-1-location-1');
+    expect(savedDraft?.locationId, isNull);
     expect(savedDraft?.groupIds, {'institution-1-group-1'});
     expect(savedDraft?.assignments.single.professionalId, 'professional-1');
     expect(savedDraft?.assignments.single.permissions.now, ActivityProfessionalAccess.none);
@@ -569,6 +568,42 @@ void main() {
     expect(savedDraft?.imageName, 'atividade.png');
     expect(savedDraft?.identityStorageRef, initialDraft.identityStorageRef);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('does not report a save when the selected location has no command contract', (
+    tester,
+  ) async {
+    var saveCalls = 0;
+    const initialDraft = ActivityFormDraft(
+      name: 'Ingl\u00EAs avan\u00E7ado',
+      description: 'Conversa\u00E7\u00E3o para a Turma 1.',
+      taxonomy: _languagesTaxonomy,
+      subtype: null,
+      template: _englishTemplate,
+      taxonomyOtherDescription: '',
+      governance: ActivityGovernance.optional,
+      institutionId: 'institution-1',
+      unitIds: {'institution-1-unit-1'},
+      locationId: 'institution-1-unit-1-location-1',
+      groupIds: {'institution-1-group-1'},
+      assignments: [],
+    );
+
+    await tester.pumpWidget(
+      _app(
+        activityId: 'activity-1',
+        initialDraft: initialDraft,
+        onSaveDraft: (_) async => saveCalls++,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('activity-form-save-draft')));
+    await tester.pumpAndSettle();
+
+    expect(saveCalls, 0);
+    expect(find.byKey(const Key('activity-form-command-error')), findsOneWidget);
+    expect(find.text('N\u00E3o foi poss\u00EDvel salvar o rascunho.'), findsOneWidget);
   });
 
   testWidgets('stacks local selector and create action at full width on compact screens', (
