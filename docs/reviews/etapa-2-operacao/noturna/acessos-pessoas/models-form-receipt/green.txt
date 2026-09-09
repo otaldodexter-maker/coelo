@@ -1,0 +1,26 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:3 caractere:1
++ rtk proxy flutter test --no-pub test/features/access_profiles/present ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_form_receipt_test.dart
+00:00 +0: C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_form_receipt_test.dart: confirmed receipt prevents second write after callback failure editing=false
+00:08 +1: C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_form_context_test.dart: context change removes only the form-owned exit dialog
+00:15 +2: C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_form_context_test.dart: context change removes only the form-owned exit dialog
+00:16 +3: C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_form_continuation_test.dart: exit confirmation lifetime: destination=false disposed=false
+00:21 +4: C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_form_receipt_test.dart: confirmed receipt invalidated by replacement repository=false
+00:26 +5: C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_form_receipt_test.dart: confirmed receipt invalidated by replacement repository=false
+00:26 +6: C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_form_context_test.dart: context change dismisses an already visible conflict dialog
+00:27 +7: C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_form_continuation_test.dart: exit confirmation lifetime: destination=true disposed=false
+00:29 +8: C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_form_receipt_test.dart: confirmed receipt invalidated by replacement repository=true
+00:33 +9: C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_form_receipt_test.dart: confirmed receipt invalidated by replacement repository=true
+00:36 +10: C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_form_context_test.dart: old completion cannot release the replacement save lock
+00:41 +11: C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_form_continuation_test.dart: conflict reload respects form lifetime: disposed=false
+00:43 +12: C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_form_context_test.dart: form replaces context and discards old load denied=false
+00:44 +13: C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_form_continuation_test.dart: conflict reload respects form lifetime: disposed=true
+00:45 +14: C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_form_continuation_test.dart: conflict reload respects form lifetime: disposed=true
+00:46 +15: C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_form_context_test.dart: old save cannot complete in the replacement form conflict=false
+00:50 +16: C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_form_context_test.dart: old save cannot complete in the replacement form conflict=true
+01:01 +17: All tests passed!

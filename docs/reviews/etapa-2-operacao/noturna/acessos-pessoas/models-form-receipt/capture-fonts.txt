@@ -1,0 +1,12 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:4 caractere:1
++ rtk proxy flutter test --no-pub test/features/access_profiles/present ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_form_receipt_capture_test.dart
+00:00 +0: (setUpAll)
+00:00 +0: confirmed receipt prevents second write after callback failure editing=false
+00:01 +1: (tearDownAll)
+00:01 +1: All tests passed!
