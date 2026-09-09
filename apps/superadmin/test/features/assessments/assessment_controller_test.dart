@@ -46,6 +46,34 @@ void main() {
     expect(controller.selectedStudentIndex, 1);
   });
 
+  test('load and launch map decoding Errors to a failure state', () async {
+    for (final source in _AssessmentDecodingErrorSource.values) {
+      final controller = AssessmentController(_AssessmentDecodingErrorRepository(source));
+      addTearDown(controller.dispose);
+
+      if (source == _AssessmentDecodingErrorSource.load) {
+        await controller.loadGradebook('book-1');
+      } else {
+        await controller.start(
+          const AssessmentContext.sample(),
+          const AssessmentConfiguration(
+            id: 'configuration-1',
+            activityId: 'activity-1',
+            institutionId: 'institution-1',
+            periodicity: 'bimester',
+            scaleKind: AssessmentScaleKind.numeric0To10,
+            version: 1,
+            status: 'active',
+            instruments: [],
+            competencies: [],
+          ),
+        );
+      }
+
+      expect(controller.state, isA<AssessmentFailure>(), reason: source.name);
+    }
+  });
+
   test('version conflict is exposed as a dedicated state', () async {
     final controller = AssessmentController(_AssessmentRepositoryStub(conflict: true));
     await controller.loadGradebook('book-1');
@@ -277,6 +305,37 @@ final class _CreateAssessmentRepository implements AssessmentRepository {
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+enum _AssessmentDecodingErrorSource { load, launch }
+
+final class _AssessmentDecodingErrorRepository implements AssessmentRepository {
+  const _AssessmentDecodingErrorRepository(this.source);
+
+  final _AssessmentDecodingErrorSource source;
+
+  @override
+  Future<AssessmentGradebook?> fetchGradebook(String id) async {
+    if (source == _AssessmentDecodingErrorSource.load) {
+      return _assessmentDecodeWithRawCast<AssessmentGradebook>();
+    }
+    return null;
+  }
+
+  @override
+  Future<AssessmentGradebook> createOrResumeGradebook(
+    AssessmentContext context,
+    AssessmentConfiguration configuration,
+  ) async => _assessmentDecodeWithRawCast<AssessmentGradebook>();
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+T _assessmentDecodeWithRawCast<T>() {
+  final row = <String, Object?>{'id': 42};
+  final id = row['id']! as String;
+  throw StateError('expected a decoding cast error, got $id');
 }
 
 final class _AssessmentRepositoryStub implements AssessmentRepository {
