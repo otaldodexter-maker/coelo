@@ -3,7 +3,9 @@ import '../../domain/child_safety_contract.dart';
 import '../../domain/child_safety.dart';
 
 /// Stateful, deterministic repository used only by development previews.
-final class DevChildSafetyRepository implements ChildSafetyRepository {
+final class DevChildSafetyRepository implements ChildSafetyRepository, ChildSafetyMutationSupport {
+  @override
+  bool get mutationsEnabled => true;
   DevChildSafetyRepository({
     List<ChildSafetyRecord> records = const [],
     List<ChildSafetyChildOption> children = const [],

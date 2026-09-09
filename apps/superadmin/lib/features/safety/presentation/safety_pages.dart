@@ -1080,7 +1080,8 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
     ),
   );
   VoidCallback? _primaryAction() {
-    if (widget.controller.isSaving ||
+    if (!widget.controller.mutationsEnabled ||
+        widget.controller.isSaving ||
         _contextUnavailable ||
         _loadingContext ||
         _initialContextFailed ||
@@ -1671,14 +1672,16 @@ Future<void> _manage(
         if (authorization.status == PickupAuthorizationStatus.pending) ...[
           const SizedBox(height: CoeloSpacing.space4),
           FilledButton.icon(
-            onPressed: () => _transition(
-              dialogContext,
-              controller,
-              record,
-              authorization,
-              PickupAuthorizationStatus.approved,
-              'Documento e vínculo conferidos pela unidade',
-            ),
+            onPressed: !controller.mutationsEnabled
+                ? null
+                : () => _transition(
+                    dialogContext,
+                    controller,
+                    record,
+                    authorization,
+                    PickupAuthorizationStatus.approved,
+                    'Documento e vínculo conferidos pela unidade',
+                  ),
             icon: const Icon(Icons.check_rounded),
             label: const Text('Aprovar'),
           ),
@@ -1688,14 +1691,16 @@ Future<void> _manage(
               foregroundColor: Theme.of(context).colorScheme.error,
               side: BorderSide(color: Theme.of(context).colorScheme.error),
             ),
-            onPressed: () => _transition(
-              dialogContext,
-              controller,
-              record,
-              authorization,
-              PickupAuthorizationStatus.rejected,
-              'Solicitação rejeitada pela unidade',
-            ),
+            onPressed: !controller.mutationsEnabled
+                ? null
+                : () => _transition(
+                    dialogContext,
+                    controller,
+                    record,
+                    authorization,
+                    PickupAuthorizationStatus.rejected,
+                    'Solicitação rejeitada pela unidade',
+                  ),
             icon: const Icon(Icons.close_rounded),
             label: const Text('Rejeitar'),
           ),
@@ -1709,7 +1714,9 @@ Future<void> _manage(
               foregroundColor: Theme.of(context).colorScheme.error,
               side: BorderSide(color: Theme.of(context).colorScheme.error),
             ),
-            onPressed: () => _confirmSuspend(dialogContext, controller, record, authorization),
+            onPressed: !controller.mutationsEnabled
+                ? null
+                : () => _confirmSuspend(dialogContext, controller, record, authorization),
             icon: const Icon(Icons.pause_circle_outline_rounded),
             label: const Text('Suspender autorização'),
           ),
@@ -1719,10 +1726,12 @@ Future<void> _manage(
     secondaryAction: onEdit == null || authorization.status != PickupAuthorizationStatus.pending
         ? null
         : OutlinedButton(
-            onPressed: () {
-              Navigator.of(dialogContext).pop();
-              onEdit(authorization.id);
-            },
+            onPressed: !controller.mutationsEnabled
+                ? null
+                : () {
+                    Navigator.of(dialogContext).pop();
+                    onEdit(authorization.id);
+                  },
             child: const Text('Editar'),
           ),
     primaryAction: FilledButton(

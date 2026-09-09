@@ -307,7 +307,9 @@ Widget _wizard(ChildSafetyController controller, {String? childId, VoidCallback?
       ),
     );
 
-final class _Repository implements ChildSafetyRepository {
+final class _Repository implements ChildSafetyRepository, ChildSafetyMutationSupport {
+  @override
+  bool get mutationsEnabled => true;
   final queries = <String>[];
   Object? searchFailure, childFailure, directoryFailure;
   Future<List<ChildSafetyChildOption>>? searchResult;

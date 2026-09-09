@@ -418,7 +418,9 @@ void main() {
   });
 }
 
-final class _Repository implements ChildSafetyRepository {
+final class _Repository implements ChildSafetyRepository, ChildSafetyMutationSupport {
+  @override
+  bool get mutationsEnabled => true;
   int saves = 0;
   Object? saveFailure;
   final queries = <ChildSafetyDirectoryQuery>[];

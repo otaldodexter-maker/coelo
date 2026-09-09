@@ -1,0 +1,16 @@
+{
+  "apps\\superadmin\\lib\\features\\safety\\domain\\child_safety_contract.dart": "02c64b5626e197ad0369936f8cbc73f048d4b775d72971349610a4d6aed4e208",
+  "apps\\superadmin\\lib\\features\\safety\\application\\child_safety_controller.dart": "f695d7f037d2c82f69cfad52ad4408a8ad5650e6c33ef87ef5a7985abc459f7d",
+  "apps\\superadmin\\lib\\features\\safety\\presentation\\safety_pages.dart": "91ae18e1a4c0b236f48fc1a308f087db6149cc9b20679d06ee2372e555e1358f",
+  "apps\\superadmin\\lib\\features\\safety\\data\\dev\\dev_child_safety_repository.dart": "497c5302bbb8bb13814b950cf618820061c61f7ff7fcf5f72b86ad9854d64871",
+  "apps\\superadmin\\test\\features\\safety\\application\\child_safety_controller_test.dart": "8a1dbc2dd88ff00e5976bc85c5ad3083f0c6a7c4013d411d3b2549017c4ecb82",
+  "apps\\superadmin\\test\\features\\safety\\application\\child_safety_error_hang_test.dart": "d70a966435cf1dca0ecea36ad751801fc5bb513097f7a105c513b116cdbac7c0",
+  "apps\\superadmin\\test\\features\\safety\\application\\child_safety_read_only_composition_test.dart": "0a51d6c229ccaa072cf0c28bd25e8a117152065fa466dac3f0f8fe1bf3591be4",
+  "apps\\superadmin\\test\\features\\safety\\presentation\\safety_pages_test.dart": "613ae18b30a4f2c8d13026fc248fe303fad9e697bc5254a10796a66f6368ded9",
+  "apps\\superadmin\\test\\features\\safety\\presentation\\safety_page_context_test.dart": "fd443f3d852c01e58fca4fdd4bc97b9b004c8fb6392e5b020c1b1711a291fe47",
+  "apps\\superadmin\\test\\features\\safety\\presentation\\safety_unexpected_error_test.dart": "3b7e502d0030f1f9ec7fe3f58fe21560cf2f3d20fc1558578a19077e7e6ea36d",
+  "docs\\reviews\\etapa-2-operacao\\noturna\\acessos-pessoas\\safety-composition\\analyze.txt": "a274e6b632c89222a9fe76ec80fc54f96761615c75b526dd0a4c0e9701de8b8c",
+  "docs\\reviews\\etapa-2-operacao\\noturna\\acessos-pessoas\\safety-composition\\default-deny.txt": "e6b8355ca054148c7e6f5170e56def1661e7233182d7e7be4a7bca214998b254",
+  "docs\\reviews\\etapa-2-operacao\\noturna\\acessos-pessoas\\safety-composition\\green.txt": "8f38a05fd8d7e709a6fdfeb54e61a1fc367d64e4a52aacfa75de196658f80d95",
+  "docs\\reviews\\etapa-2-operacao\\noturna\\acessos-pessoas\\safety-composition\\red.txt": "f598464b7845ad8e03600bc08fd29a2e936b897962cdc320dee7bdb59368057c"
+}

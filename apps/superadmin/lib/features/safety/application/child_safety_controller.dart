@@ -34,7 +34,10 @@ final class ChildSafetyController extends ChangeNotifier {
   List<ChildSafetyRecord> get records => List.unmodifiable(_records);
   int get totalCount => _totalCount;
   ChildSafetyDirectoryQuery get query => _query;
-  bool get canCreate => _canCreate;
+  bool get mutationsEnabled =>
+      _repository is ChildSafetyMutationSupport &&
+      (_repository as ChildSafetyMutationSupport).mutationsEnabled;
+  bool get canCreate => mutationsEnabled && _canCreate;
   String? get errorMessage => _errorMessage;
   ChildSafetyCommandFailure? get commandFailure => _commandFailure;
   ChildSafetySegmentCounts get segmentCounts => _segmentCounts;
@@ -216,6 +219,7 @@ final class ChildSafetyController extends ChangeNotifier {
     _commandFailure = null;
     _notify();
     try {
+      if (!mutationsEnabled) throw const ChildSafetyUnavailableException();
       await command();
       if (_disposed) return false;
       onConfirmed?.call();

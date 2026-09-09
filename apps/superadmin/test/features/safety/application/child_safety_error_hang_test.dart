@@ -177,7 +177,9 @@ Future<void> _settleLoad(WidgetTester tester) async {
   }
 }
 
-final class _Repository implements ChildSafetyRepository {
+final class _Repository implements ChildSafetyRepository, ChildSafetyMutationSupport {
+  @override
+  bool get mutationsEnabled => true;
   final queries = <ChildSafetyDirectoryQuery>[];
 
   Object Function()? directoryFailure;

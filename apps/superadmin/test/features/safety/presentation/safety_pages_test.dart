@@ -12,6 +12,87 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('read-only composition disables edit transition and suspension', (tester) async {
+    final controller = ChildSafetyController(_Repository(mutationsEnabled: false));
+    addTearDown(controller.dispose);
+    await controller.load();
+    await tester.pumpWidget(
+      _app(
+        ChildSecurityPage(
+          childId: 'child-1',
+          controller: controller,
+          logout: _logout,
+          onBack: () {},
+          onEdit: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Gerenciar').first);
+    await tester.tap(find.text('Gerenciar').first);
+    await tester.pumpAndSettle();
+    expect(
+      tester
+          .widget<OutlinedButton>(find.byKey(const Key('safety-suspend-authorization')))
+          .onPressed,
+      isNull,
+    );
+    await tester.tap(find.text('Concluir'));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Gerenciar').last);
+    await tester.tap(find.text('Gerenciar').last);
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<FilledButton>(find.widgetWithText(FilledButton, 'Aprovar')).onPressed,
+      isNull,
+    );
+    expect(
+      tester.widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Rejeitar')).onPressed,
+      isNull,
+    );
+    expect(
+      tester.widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Editar')).onPressed,
+      isNull,
+    );
+  });
+
+  testWidgets('read-only composition blocks wizard deep link and command dispatch', (tester) async {
+    final repository = _Repository(editPending: true, mutationsEnabled: false);
+    final controller = ChildSafetyController(repository);
+    addTearDown(controller.dispose);
+    await controller.load();
+    await tester.pumpWidget(
+      _app(
+        ChildSafetyWizardPage(
+          childId: 'child-1',
+          authorizationId: 'auth-1',
+          controller: controller,
+          logout: _logout,
+          onCancel: () {},
+          onSaved: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<FilledButton>(find.byKey(const Key('safety-wizard-primary'))).onPressed,
+      isNull,
+    );
+    expect(
+      await controller.suspendAuthorization(
+        const SuspendPickupAuthorizationCommand(
+          requestId: 'request',
+          childId: 'child-1',
+          authorizationId: 'auth-1',
+          reason: 'test',
+        ),
+      ),
+      isFalse,
+    );
+    expect(repository.suspendedCommand, isNull);
+    expect(controller.commandFailure, ChildSafetyCommandFailure.unavailable);
+  });
+
   testWidgets('directory status keeps 48 px target and isolates touch and keyboard from card', (
     tester,
   ) async {
@@ -557,13 +638,16 @@ Widget _app(
 );
 Future<LogoutResult> _logout() async => const LogoutResult.success();
 
-final class _Repository implements ChildSafetyRepository {
+final class _Repository implements ChildSafetyRepository, ChildSafetyMutationSupport {
   _Repository({
     this.unauthorized = false,
     this.totalCount = 3,
     this.canCreate = true,
     this.editPending = false,
+    this.mutationsEnabled = true,
   });
+  @override
+  final bool mutationsEnabled;
   final bool editPending;
   bool unauthorized;
   final int totalCount;

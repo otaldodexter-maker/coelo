@@ -760,7 +760,9 @@ Widget _wizard(ChildSafetyController controller, String? childId, {VoidCallback?
       ),
     );
 
-final class _Repository implements ChildSafetyRepository {
+final class _Repository implements ChildSafetyRepository, ChildSafetyMutationSupport {
+  @override
+  bool get mutationsEnabled => true;
   _Repository(this.scope);
   final String scope;
   final childReads = <String>[];
