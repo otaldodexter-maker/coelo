@@ -1,15 +1,15 @@
 {
-  "revision": 4,
-  "updated_at": "2026-09-09T21:12:00-03:00",
+  "revision": 5,
+  "updated_at": "2026-09-09T18:52:00-03:00",
   "group": "operacoes-sistema",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) — claude-opus-5[1m]",
-  "status": "revisao-1-publicada; worktree atribuida pelo coordenador; AGUARDANDO ATIVACAO NOMINAL para escrita de produto",
+  "status": "ATIVO - item 1 entregue e publicado; seguindo para item 2",
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-operacoes-sistema",
   "branch": "work/etapa2-noturna-operacoes-sistema",
-  "head": null,
-  "upstream": null,
+  "head": "1ac657de6",
+  "upstream": "origin/work/etapa2-noturna-operacoes-sistema",
   "base_observed": "d784462c168d22fdb7090b7de1ef7db554ad5107",
   "scope": [
     "apps/superadmin -> Agenda",
@@ -26,14 +26,30 @@
   ],
   "action_ids_status": "61 IDs mapeados no inventario (base d784462c1): auth 5 (login/recover/reset/logout FE=verified; mfa gate-formal-mvp), shell 5 (flutter-only, FE=pending-verification), agenda 7, imports 7 (deferred-post-mvp), audit 4 (export deferred), support 6, account 6 (mfa gate), catalog 4, plans 5, meal_plans 6, error_pages 6. Nenhuma reauditoria do zero.",
   "changed": "TRABALHO-ATUAL.md lido integralmente (contrato comum, bloco Executores Claude e recorte operacoes-sistema). Git observado: dev d784462c1, limpo exceto comunicacao/ nao rastreada. Worktrees R02 e e2-noturna-publicacoes-midia localizadas. coordenacao.json ainda ausente no caminho compartilhado.",
-  "closed_criteria": [],
+  "closed_criteria": [
+    {
+      "action_ids": [
+        "meal-plans.publish"
+      ],
+      "screen": "apps/superadmin > Cardapios > Publicar",
+      "commit": "1ac657de6",
+      "branch": "work/etapa2-noturna-operacoes-sistema",
+      "what": "Intencao de escrita (requestId) passa a sobreviver ao recibo divergente. Divergencia virou estado proprio (_MealPlanReceiptMismatch), fora da hierarquia MealPlanRepositoryException. Validacao de recibo num unico ponto compartilhado por Publicar e Solicitar revisao, conforme voce exigiu: guarda no ponto compartilhado, nao uma por chamador.",
+      "root_cause_extra": "Alem do que 932003b1 cobria, dev gerava requestId novo tambem em submitForReview (linha 601). Os dois call sites foram corrigidos pelo mesmo helper.",
+      "reuse": "Padrao copiado de audit_controller.dart:180 (_exportIdempotencyKey ??=, limpo so em sucesso confirmado) e andaime de teste reusado de 932003b1.",
+      "proof": "flutter test meal_plan_directory_page_test.dart -> 10 PASS / 0 FAIL. O teste novo 'divergent publish receipt retry reuses the same operation id' foi executado contra a implementacao de 932003b1 e FALHOU; contra esta correcao PASSA. dart analyze no arquivo: No issues found.",
+      "level": "Front-end verified para o criterio de idempotencia do retry. Nao promove E2E: nao houve runtime remoto.",
+      "reserved_files_touched": "nenhum"
+    }
+  ],
   "tests": {
-    "P": 0,
+    "P": 10,
     "F": 0,
     "B": 0,
     "S": 0,
     "U": 0,
-    "note": "nenhum teste executado; escrita de produto retida ate ativacao"
+    "E": 10,
+    "note": "Suite meal_plan_directory_page_test.dart na worktree. Inclui a execucao negativa de controle contra 932003b1 (1 FAIL esperado), nao somada aos 10."
   },
   "reservations": [],
   "reservations_requested": [
@@ -46,13 +62,18 @@
     "Agenda e Planos conforme contrato"
   ],
   "blocker": "Ativacao nominal do coordenador (coordenacao.json rev1 exige 'ativacao nominal' para operacoes-sistema). Revisao 1 publicada as 21:10; solicitacao tambem enviada por SendMessage a coelo-73.",
-  "next_step": "Aguardando ACK nominal do coordenador (pedido enviado por SendMessage a coelo-73 as 21:10). Sequencia pequena pronta para executar assim que ativado: (1) meal-plans requestId idempotente nos dois call sites + validacao de recibo em publish + teste do caso divergente; (2) plans diretorio erro inesperado + teste; (3) parte local de Auditoria. Nenhum dos tres toca arquivo reservado. Enquanto aguardo, sigo em leitura focal de Auditoria e Agenda.",
+  "next_step": "Item 2: parte LOCAL da Auditoria. Ja verifiquei e descartei um falso positivo (o grant de audit_start_export_for_superadmin a authenticated e legitimo: app_private valida audit.export/audit.read internamente). Cliente de export ja e fail-closed honesto. Foco agora no cutover people-based -> principal 039 e no helper legado current_person_id. Depois item 3 (Planos: erro inesperado no diretorio).",
   "wip": [],
   "artifacts": [],
   "children": [],
   "processes": [],
   "ports": [],
-  "ack": null,
+  "ack": {
+    "from": "coelo-73",
+    "received": "rev3 ATIVADA, sequencia 1-2-3 aprovada",
+    "coordenacao_rev": 4,
+    "remote_policy": "NENHUMA aplicacao remota nesta noite; replay Auditoria 145 fica 0/145 BLOQUEADO ate o Owner voltar. Aceito: nao vou pedir decisao nem aguardar slot."
+  },
   "limitations": "Sem canal nativo verificado com o coordenador; publicar este arquivo nao comprova leitura nem desperta conversa. Shell/router e compartilhado com outros grupos: sem reserva registrada nao ha escrita segura nesses arquivos.",
   "deadline": "2026-09-10T05:00:00-03:00",
   "freeze": "2026-09-10T04:40:00-03:00",
@@ -127,5 +148,20 @@
     "packages/coelo_database/migrations e replays SQL -> escritor: coordenador-claude. Candidato local permitido na minha worktree; aplicacao remota serializada.",
     "inventario e tres rastreadores -> escritor: coordenador-claude. Enviarei deltas propostos neste arquivo."
   ],
-  "timestamp_note": "As revisoes 2 e 3 registraram 21:20/21:25 por estimativa; o relogio real era 21:07-21:09. Corrigido a partir da revisao 4, que usa relogio consultado."
+  "timestamp_note": "As revisoes 2 e 3 registraram 21:20/21:25 por estimativa; o relogio real era 21:07-21:09. Corrigido a partir da revisao 4, que usa relogio consultado.",
+  "clock_correction": "ACEITA. As revisoes 2-4 carimbaram horario UTC com sufixo -03:00. Relogio real conferido: a maquina ja esta em Brasilia. Corte 10/09 05:00 continua distante; nao vou congelar cedo.",
+  "divergence": "0/0",
+  "candidate_disposition": {
+    "932003b1": "SUPERADO. Nao integrar como esta: contem o defeito. 1ac657de6 cobre o que ele fazia de certo, corrige a perda de intencao e amplia para submitForReview. O andaime de teste dele foi preservado."
+  },
+  "blocked": [
+    {
+      "id": "Auditoria replay 145",
+      "state": "0/145 BLOQUEADO por decisao permanente da noite (sem aplicacao remota). Nao pedirei decisao nem slot."
+    },
+    {
+      "id": "plans.activate / plans.assign",
+      "state": "BLOQUEADO por decisao nominal de produto (spec 051). Nao implementar por inferencia."
+    }
+  ]
 }

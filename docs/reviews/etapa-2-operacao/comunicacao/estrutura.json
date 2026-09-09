@@ -1,6 +1,6 @@
 {
-    "revision":  5,
-    "updated_at":  "2026-09-09T18:12:11.9034899-03:00",
+    "revision":  6,
+    "updated_at":  "2026-09-09T18:15:46.3399919-03:00",
     "group":  "estrutura",
     "task":  "/root",
     "model":  "GPT-6 (variante nao exposta)",
@@ -8,8 +8,8 @@
     "coordinator":  "Claude",
     "worktree":  "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura",
     "branch":  "work/etapa2-noturna-estrutura",
-    "head":  "fc8287c57",
-    "upstream":  null,
+    "head":  "84662238122df2a7b85f5082ac9c5c8e93d8c69a",
+    "upstream":  "origin/work/etapa2-noturna-estrutura; HEAD igual; divergencia 0/0",
     "base_observed":  "d784462c1",
     "scope":  [
                   "apps/superadmin -\u003e Instituicoes",
@@ -20,9 +20,9 @@
                   "apps/superadmin -\u003e Locais"
               ],
     "action_ids_status":  "49 IDs confirmados no inventario: 42 MVP e 7 adiados. Recorte inicial institutions.locations-map,units.locations-map,units.copy-institution-location,locations.list,locations.create-edit,locations.detail-links; seguinte groups.location/activities.location/locations.schedule.",
-    "changed":  "36 testes Flutter P/0F0B0S0U na composicao candidata fc8287c57; analyzer 13 paths limpo. Validador visual em andamento.",
+    "changed":  "Lote publicado: f87543b6c (cd03),4528c42df (42ad),fc8287c57 (proposta hunks 1345),84662238 (evidencias). 36P, analyzer13 limpo, validador visual exit0. Nenhuma escrita dev/remoto.",
     "closed_criteria":  [
-
+                            "Candidatos qualificados sobre base d784; sem promocao de acao completa"
                         ],
     "tests":  {
                   "E":  36,
@@ -40,7 +40,7 @@
                          "Migrations: candidatos locais permitidos; replay e remoto serializados Claude"
                      ],
     "blocker":  null,
-    "next_step":  "Publicar f87543b6c e 4528c42df + proposta fc8287c57 apos validador visual. fc8287c57 contem somente hunks minimos de composicao (router/routes/app/main e teste proprio); foi materializado na branch para prova antes de ler r2, nunca em dev. Integracao permanece exclusivamente Claude; se r2 exige arquivo .patch em vez de commit de hunks, registrar no proximo recibo.",
+    "next_step":  "Implementar consumidor real do painel em detalhe de Atividade/Turma persistida: catalogo owner-scoped -\u003e escolha explicita -\u003e reservas daquela entidade/local, reutilizando LocationDirectoryPanel e LocationReservationPanel. Selecao apenas contexto de consulta, nao local salvo no formulario. Depois reader de bindings para descoberta/reabertura; save atomico Activity separado. Router somente proposta de hunks ao Claude.",
     "wip":  [
 
             ],
@@ -49,14 +49,13 @@
                   ],
     "children":  [
                      {
-                         "scope":  "menor delta bindings/readers/save atomico",
+                         "result":  "Nao ha selecao legada atual reutilizavel; location_names era join indevido ja fechado. Motor existente suporta reserva consumidor/local escolhido explicitamente.",
                          "task":  "/root/bindings_review",
-                         "deadline":  "15min; absoluto 23:30 BRT",
-                         "mode":  "read-only"
+                         "state":  "completed read-only"
                      }
                  ],
     "processes":  [
-                      "dart visual validator session local"
+
                   ],
     "ports":  [
 
@@ -90,5 +89,17 @@
                              "objective":  "Fechar proximo aceite executavel Estrutura reutilizando R02",
                              "order":  "Tres candidatos -\u003e consumidores e bindings -\u003e save atomico",
                              "excluded":  "Outros apps; adiados; Auth/CHILD/shell preservados; producao sem pacote nominal"
-                         }
+                         },
+    "commits":  [
+                    "f87543b6c",
+                    "4528c42df",
+                    "fc8287c57",
+                    "84662238"
+                ],
+    "coordinator_requests":  [
+                                 "Revisar/integrar lote publicado; fc8287 candidato de composicao restrito aos5paths, sem tocar dev.",
+                                 "Autorizar hunks de injecao de reservas em detalhes reais (serao propostos na branch); capabilities read/manage/override da sessao, sem liberar save legado Group.",
+                                 "Midia: publicacoes-midia e escritor; contrato locations/map-general/photo continua dependente, sem nova plataforma."
+                             ],
+    "owner_update":  "Owner ausente; pediu continuidade sem novas aprovacoes pessoais. Cortes originais mantidos; pacote remoto nominal continua exigido pelo contrato."
 }

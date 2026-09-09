@@ -1,6 +1,6 @@
 {
-    "revision":  4,
-    "updated_at":  "2026-09-09T18:11:32.9762882-03:00",
+    "revision":  7,
+    "updated_at":  "2026-09-09T18:23:01.2954217-03:00",
     "group":  "acessos-pessoas",
     "task_id":  "/root",
     "native_thread_id":  null,
@@ -8,34 +8,61 @@
     "status":  "active",
     "worktree":  "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas",
     "branch":  "work/etapa2-noturna-acessos-pessoas",
-    "head":  "d784462c168d22fdb7090b7de1ef7db554ad5107",
-    "upstream":  null,
+    "head":  "3a96ca5353490bb410541861632a3b9d890b965b",
+    "upstream":  "origin/work/etapa2-noturna-acessos-pessoas",
     "base_observed":  "d784462c1",
     "scope":  "apps/superadmin -\u003e Pessoas, Perfis, Modelos, Convites, Usuários internos, Segurança infantil, Arquivos de perfil",
     "action_ids_status":  "38 IDs reconciliados com matriz D04:31 ativos,6 adiados,1 gate MFA; nenhuma certificação nova",
     "changes":  [
-
+                    {
+                        "status":  "published-local-candidate-unexecuted",
+                        "commit":  "cc5d73bc74de652c91570061aef6ede95b3915a7",
+                        "manifest":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/manifest.json",
+                        "package":  "AP-MODELS-NOMINAL-20260909-v1"
+                    },
+                    {
+                        "commit":  "3a96ca5353490bb410541861632a3b9d890b965b",
+                        "actions":  [
+                                        "child-safety.list",
+                                        "child-safety.child",
+                                        "child-safety.create",
+                                        "child-safety.edit",
+                                        "child-safety.suspend"
+                                    ],
+                        "tests":  "18P0F atuais apresentação; analyzer Safety limpo; visual contracts PASS",
+                        "note":  "Reuso adc902eaf + teste alvo48/tap/Enter + golden revisado. Pai abriu actual e revisou evidência. No bootstrap/SQL/shared.",
+                        "evidence":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-visual/handoff.md",
+                        "status":  "published-ready-for-selective-integration"
+                    }
                 ],
     "criteria_closed":  [
-
+                            "child-safety.list: golden F1 resolvido por reconciliação nominal24/48+shell integrado; nenhum certificadoFE/BE/E2E novo"
                         ],
     "tests":  {
-                  "S":  null,
-                  "P":  null,
-                  "F":  null,
-                  "B":  null,
-                  "U":  null
+                  "note":  "Safety18P; Models95 bloqueados pela base nominal. Reporter efetivamente10SQL P1F9 dependentes de pacote não instalado, sem certificação.",
+                  "S":  0,
+                  "F":  0,
+                  "B":  95,
+                  "U":  0,
+                  "P":  18
               },
     "reservations":  [
                          "SQL/replay/shared: coordenador; candidatos locais permitidos na worktree"
                      ],
-    "blocker":  "Produção possui cursor legado, sem helper interno Modelos/receipts/permissões role_models; filtro174500 isolado não aplicável. Sem mutação remota.",
-    "next_step":  "Preparar cadeia nominal Models171731+193000+08021821+AAL1182839+CSV09174500 em transação com guardas/fechamento import-export adiados. Precisa slot replay nominal Auth45 sem defaults relaxados: coordenador executar pacote ou conceder slot explícito. Safety visual em runner focal do filho.",
+    "blocker":  "Replay02 interrompido no preflight: Auth45 cursores diferem dos corpos reais remotos. Guardas corretas preservadas; snapshot DDL somente catálogo inserido exclusivamente na fixture local. Nenhum objeto remoto alterado.",
+    "next_step":  "Reexecutar pacote95 com fixture dos dois cursores reais; hashes remotos e preflight não relaxados. Recursos replay02 zero após cleanup. Próximo logreplay03.",
     "wip":  [
 
             ],
     "processes":  [
-
+                      {
+                          "container":  "supabase_db_coelo_safe_2079c545aa8647bb8d657611cce32",
+                          "owner":  "/root",
+                          "type":  "SQL replay",
+                          "session":  65461,
+                          "state":  "running",
+                          "log":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/replay-02.log"
+                      }
                   ],
     "children":  [
                      {
@@ -68,10 +95,10 @@
                      "objective":  "Corrigir/provar ações restantes do grupo",
                      "excluded":  "outros apps, import/export adiados, MFA novo, produção sem pacote nominal"
                  },
-    "coordinator_revision_read":  2,
+    "coordinator_revision_read":  4,
     "requested_sql_slot":  {
                                "scope":  "aplicação transacional local + rollback/ACL/persistência + contratos Models",
-                               "status":  "preparando materialização",
+                               "status":  "granted-by-coordinator-r4-starting",
                                "base":  "Auth45 20260901200206; labels NOT NULL sem bridge default ao aplicar pacote",
                                "production":  "não autorizado; somente leitura catálogo realizada",
                                "package":  "AP-MODELS-NOMINAL-20260909-v1"

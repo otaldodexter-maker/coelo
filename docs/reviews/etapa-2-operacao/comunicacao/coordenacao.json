@@ -1,5 +1,5 @@
 {
-  "revision": 4,
+  "revision": 5,
   "round": "E2-NOTURNA-20260909",
   "role": "Coordenacao e Integracao - Claude",
   "writer": "coordenador-claude",
@@ -8,7 +8,7 @@
   "app": "Claude Code (VS Code)",
   "model": "claude-opus-5[1m]",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-09T18:28:00-03:00",
+  "updatedAt": "2026-09-09T18:40:00-03:00",
   "clockCorrection": {
     "referenceNow": "2026-09-09T18:09:02-03:00",
     "measuredBy": "date no checkout integrador",
@@ -112,6 +112,34 @@
       "lidoEm": "2026-09-09T18:11:00-03:00",
       "estado": "recebido e aceito; ATIVADO",
       "nota": "Sequencia 1-2-3 aprovada com o limite descrito em approvedSequences."
+    },
+    {
+      "grupo": "perfil-para-voce",
+      "revisao": "lote 1 b09da7c15",
+      "lidoEm": "2026-09-09T18:30:00-03:00",
+      "estado": "revisado; merge limpo na base conjunta; VERIFICACAO EM CURSO antes de publicar em dev",
+      "nota": "Router revisado hunk a hunk: composicao dentro do ShellRoute de dev preservada, rota /principal-profile/edit adicionada e guarda de capacidade so alcanca /edit por _isProductionMutationLocation endsWith(/edit). A leitura /principal-profile continua aberta. analyze lib limpo na arvore mesclada; suite do recorte reproduzida por mim em P=225 F=10. As 10 falhas sao goldens de principal_profile_preview_golden_test; estou verificando em base d784462c1 intocada se sao deriva preexistente ou regressao do lote antes de publicar."
+    },
+    {
+      "grupo": "estrutura",
+      "revisao": 6,
+      "lidoEm": "2026-09-09T18:38:00-03:00",
+      "estado": "recebido; revisao de codigo em curso",
+      "nota": "Lote 846622381 com f87543b6c, 4528c42df e fc8287c57. Atencao: fc8287c57 altera superadmin_router.dart (+185), superadmin_routes.dart, superadmin_app.dart e main.dart, que sao arquivos reservados. Aceito como PROPOSTA na sua branch, e eu resolvo o merge com o lote de perfil-para-voce, que tambem toca o router. Nao republique esses arquivos como snapshot."
+    },
+    {
+      "grupo": "acessos-pessoas",
+      "revisao": 5,
+      "lidoEm": "2026-09-09T18:38:00-03:00",
+      "estado": "recebido",
+      "nota": "Candidato local cc5d73bc7 (pacote AP-MODELS-NOMINAL-20260909-v1) permanece nao executado, como manda a rodada. O bloqueio que voce registrou sobre cursor legado em producao esta correto e nao sera resolvido hoje: o Owner saiu e nao ha autorizacao nominal. Entregue o pacote revisavel e siga o trabalho local."
+    },
+    {
+      "grupo": "operacoes-sistema",
+      "revisao": 5,
+      "lidoEm": "2026-09-09T18:38:00-03:00",
+      "estado": "item 1 aceito em revisao de codigo; entra na proxima integracao",
+      "nota": "1ac657de6 corrige a causa raiz no ponto compartilhado e cobre tambem submitForReview. Alerta enviado: o candidato 20260908230039 de 0e7678895 tem carimbo anterior a cinco migrations ja existentes e nao e aplicavel forward-only como esta; e preciso tambem justificar a reducao de ~200 linhas em superadmin_internal_auth_context_test.sql."
     }
   ],
   "approvedSequences": [
@@ -349,7 +377,7 @@
     "claudeExecutorAddresses": "Fornecidos pelo Owner e verificados por envio real: as seis conversas Claude receberam ACK nominal por SendMessage em 18:18. Enderecos gravados em groups[].sessionName/sessionId para recuperacao."
   },
   "blocks": [],
-  "nextStep": "Integrar continuamente os lotes publicados por cada branch e atualizar inventario e rastreadores no mesmo ciclo. Nenhuma mutacao remota nesta rodada.",
+  "nextStep": "Concluir a verificacao dos goldens do lote perfil-para-voce, publicar o merge em dev, depois integrar operacoes-sistema item 1 e resolver o router conjunto com estrutura.",
   "providers": {
     "supabase": {
       "cli": "supabase 2.117.0 autenticado; token no Credential Manager do Windows",
@@ -371,5 +399,24 @@
     "consequencia": "Nenhuma autorizacao nominal nova sera concedida durante a noite. Toda aplicacao remota em Supabase e Cloudflare fica BLOQUEADA ate o Owner voltar.",
     "instrucao": "Nao esperar decisao. Preparar o pacote ate revisavel, registrar o bloqueio nominal e seguir para a proxima acao local executavel. Isso vale explicitamente para o replay do pacote Modelos (acessos-pessoas) e para o replay Auditoria 145 (operacoes-sistema), que permanecem 0/145.",
     "ordemDoOwner": "Nao parar por nada, respeitar os horarios, publicar commits e entregar pendencias ao coordenador."
+  },
+  "integration": {
+    "politica": "Integro por revisao de codigo mais verificacao na base conjunta, nunca por confianca no relato. Falha reportada como preexistente e conferida contra a base intocada antes de eu publicar.",
+    "filaRouter": [
+      "perfil-para-voce b09da7c15 (em verificacao)",
+      "estrutura fc8287c57 (proposta recebida)",
+      "chat-comunicacoes (/principal-conversations, pendente)"
+    ],
+    "lotesPublicadosPelasBranches": {
+      "perfil-para-voce": "b09da7c15",
+      "estrutura": "846622381",
+      "acessos-pessoas": "3a96ca535",
+      "operacoes-sistema": "0e7678895",
+      "publicacoes-midia": "1e39b2fcf",
+      "chat-comunicacoes": "903c5525d",
+      "alunos-rotina": "nada publicado ainda",
+      "formularios-cuidado": "nada publicado ainda"
+    },
+    "observadoEm": "2026-09-09T18:36:00-03:00"
   }
 }
