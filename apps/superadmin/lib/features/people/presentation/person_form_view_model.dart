@@ -150,7 +150,7 @@ final class PersonFormViewModel extends ChangeNotifier {
     final pending = _pendingSave;
     if (pending != null) return pending;
     if (isReadOnly) return Future.error(const PersonDirectoryReadOnlyException());
-    if ([firstName, lastName, displayName, legalName].any((value) => value.trim().isEmpty)) {
+    if ([firstName, lastName, displayName].any((value) => value.trim().isEmpty)) {
       // An Exception, not an ArgumentError. An empty field is something a
       // person does, not a bug, and Error is not caught by `on Exception` -
       // which is exactly how this produced silence instead of a message.
