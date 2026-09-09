@@ -1,0 +1,60 @@
+{
+  "source": "Tool runner results from /root/bindings_review; existing public.superadmin_activity_detail_v2 contract",
+  "status": "local-qualified",
+  "recorded_at": "2026-09-09T19:18:09.4316489-03:00",
+  "timestamp_scope": "Actual manifest recording clock; exact wall-clock start/end of prior commands was not captured. Runner durations and session identifiers are preserved below.",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura",
+  "working_directory": "apps/superadmin",
+  "scope": "apps/superadmin -> Atividades -> detalhe read-only -> base projection reader/adapter; page/router excluded",
+  "evidence_transport": "Tool runner output/report retained in conversation. No raw output log file was retained; this manifest does not claim one exists.",
+  "tests": {
+    "command": "rtk proxy flutter test --no-pub test/features/activities/data/supabase_activity_read_detail_repository_test.dart --reporter expanded",
+    "runner": "tools.exec_command + tools.write_stdin",
+    "session_id": 91359,
+    "start_chunk_id": "f34c98",
+    "completion_chunk_id": "c665a8",
+    "reported_result": "00:01 +46: All tests passed!",
+    "exit_code": 0,
+    "N": 46,
+    "E": 46,
+    "P": 46,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0
+  },
+  "analyzer": {
+    "command": "rtk proxy dart analyze lib/features/activities/domain/activity_read_detail.dart lib/features/activities/data/supabase_activity_read_detail_repository.dart test/features/activities/data/supabase_activity_read_detail_repository_test.dart",
+    "runner": "tools.exec_command + tools.write_stdin",
+    "session_id": 78358,
+    "start_chunk_id": "25870d",
+    "completion_chunk_id": "5eb8be",
+    "reported_result": "No issues found!",
+    "exit_code": 0
+  },
+  "format": {
+    "command": "rtk proxy dart format lib/features/activities/domain/activity_read_detail.dart lib/features/activities/data/supabase_activity_read_detail_repository.dart test/features/activities/data/supabase_activity_read_detail_repository_test.dart",
+    "chunk_id": "ec4218",
+    "reported_result": "Formatted 3 files (0 changed) in 0.03 seconds.",
+    "exit_code": 0
+  },
+  "sha256": {
+    "apps/superadmin/lib/features/activities/domain/activity_read_detail.dart": "42BC780E64355F5A301E2CCE96EE85BC62AF05625BE778F38C9491D9BA2AC5F7",
+    "apps/superadmin/lib/features/activities/data/supabase_activity_read_detail_repository.dart": "315F6EB6EC3E937F36E748A1E153F4EEC1C60C66B9BF49683D227D975EFDCC8A",
+    "apps/superadmin/test/features/activities/data/supabase_activity_read_detail_repository_test.dart": "EEAA3CA71EE9877A40F720CAD5AD7AA47AA7B8DA243C943143B54AF288B91874"
+  },
+  "history": [
+    "Initial session 47781 ended exit 1 with 35 passed and 2 failed: the fixture activity map inferred non-null Object values and rejected assigning null; the fixture counts map inferred int values and rejected assigning a fractional count. Both maps were changed to Map<String,Object?>. These were fixture construction failures, not observed adapter failures.",
+    "Session 43958 then reported 37 passed, exit 0 (completion chunk 879541). These earlier passes are historical and are not added to the current total.",
+    "Root review required strict error fields code/message/correlation_id/http_status, HTTP status bounds 400..599, UUID validation, exception rethrow and sanitization of unknown Object failures. Eight malformed-error tests and one StateError transport test increased the unique plan from 37 to 46.",
+    "Initial scoped analyzer session 94291 reported 4 inference warnings and 3 braces infos. Explicit generic arguments and braces resolved these before successful session 78358."
+  ],
+  "limitations": [
+    "Local mocked HTTP repository tests; no remote RPC, SQL replay, deployment or production end-to-end validation.",
+    "Reader uses p_sections=[] and does not request participants, professionals or permissions details.",
+    "Unit/group status describes the source link; counts preserve RPC facts and do not invent per-group people counts, governance, origin, distribution or link dates.",
+    "Page/router integration remains parent-owned and is outside these 46 tests.",
+    "No additional tests were run to create this manifest. Hashes were read at recorded_at from the unchanged three files."
+  ],
+  "resources": "Both final test and analyzer runners completed with exit 0; no owned running process remains."
+}
