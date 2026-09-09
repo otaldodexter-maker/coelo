@@ -1,6 +1,6 @@
 ---
 title: "Circulares privadas e versionadas no Principal"
-source: "decisions/0032-mvp-private-media-r2.md; PRDs App, Auth Multi-tenant, Permissões, LGPD/Segurança/Mídia e Modelo de Dados; referência visual aprovada em 2026-08-21"
+source: "PRDs App, Auth Multi-tenant, Permissões, LGPD/Segurança/Mídia e Modelo de Dados; referência visual aprovada em 2026-08-21"
 status: approved
 generated_at: "2026-08-21"
 updated_at: "2026-09-09"
@@ -61,25 +61,27 @@ do cliente. RPCs e projeções não revelam existência fora do escopo autorizad
 
 ## Mídia privada
 
-Circulares usa a plataforma de mídia privada comum do MVP: R2 privado conforme
-ADR 0032. Imagem e vídeo ficam em `coelo-media-prod` e PDF em
-`coelo-documents-prod`, com chave opaca versionada por escopo, domínio,
-entidade, finalidade, ativo e rendição. PDF nunca usa Cloudflare Stream.
+Pela decisão do Owner de 2026-09-03, registrada na ADR 0032, toda mídia nova
+de Circulares usa a plataforma R2 privada comum do MVP. A exceção Supabase da
+ADR 0027 está superada. Imagens e masters de vídeo pertencem a
+`coelo-media-prod`, documentos como PDF a `coelo-documents-prod` e uploads ainda
+não finalizados/quarentena a `coelo-transient-prod`, conforme a finalidade.
+Nenhum desses buckets é público; Circulares não cria bucket próprio.
 
-A exceção de bucket privado Supabase `coelo-circulars-private`, decidida em
-2026-08-21 pela ADR 0027, está superada desde 2026-09-03: Circulares deixou de
-ter provedor de mídia próprio. Ativos já gravados no bucket antigo permanecem
-legíveis pelo caminho legado enquanto existirem; binarios novos vão para o R2
-privado. Nenhuma credencial de R2 ou `service_role` entra no cliente.
+Upload e leitura passam pelo Media Gateway server-side, inicialmente Edge
+Function Supabase. O gateway valida sessão, tenant, capacidade e audiência,
+emite chave opaca segundo a hierarquia comum da ADR 0032 e presigned PUT/GET
+curto, finaliza de forma idempotente, limpa órfãos e audita. A chave nunca
+autoriza acesso. MIME real, bytes, dimensões/pixels quando aplicável, checksum
+e limites por finalidade são validados no servidor. PDF também exige validação
+de assinatura, estrutura, conteúdo ativo e malware; viewer e download são
+reautorizados. O limite específico de PDF desta spec permanece em 5 MiB.
 
-Upload e leitura passam por Edge Function autenticada: intenção autorizada,
-caminho opaco gerado no servidor, upload assinado, validação de extensão, MIME,
-assinatura real, tamanho e checksum, finalização idempotente e URL de leitura de
-120 segundos. O token de upload assinado tem vida curta e a UI não o persiste;
-o objeto usa chave opaca exclusiva e a finalização
-server-side usa ticket adicional curto. Metadados, ownership, estado, retencao
-e auditoria ficam no Postgres, que continua sendo o catalogo autoritativo dos
-ativos, variantes, usos e entregas.
+Postgres é o catálogo autoritativo de ativos, variantes, vínculos, ownership,
+permissões, retenção e auditoria. O master permanece no R2; PDF nunca usa
+Stream. Nenhuma credencial R2 ou `service_role` entra no cliente. Os prazos do
+token de upload Supabase da regra anterior não definem o contrato R2: sua
+entrega segue o gateway comum da ADR 0032, sem presumir TTL específico aqui.
 
 ## UX e estados
 
@@ -97,10 +99,13 @@ O contrato visual dessas duas projeções foi aprovado em 2026-08-31. No web, a
 prévia de como a Circular aparece no Acontece não ocupa coluna lateral nem nasce
 aberta: uma ação explícita abre a prévia em popup contextual, devolvendo a
 largura principal ao Perfil. O popup usa superfície neutra, barreira, corpo
-rolável e fechamento acessível conforme o contrato Coelo de overlays. Em
-compacto, o detalhe usa viewer fullscreen sem cabeçalho ou dock global, com
-retorno contextual `‹ Circular`. Fechar ou usar Escape devolve foco ao gatilho
-e preserva o ponto de origem. Esta regra
+rolável e fechamento acessível conforme o contrato Coelo de overlays.
+Esclarecimento do Owner de 09/09/2026: quando hospedado no Superadmin, o detalhe
+preserva o shell/menu no web e no mobile e ocupa sua área de conteúdo, com
+retorno contextual `‹ Circular`. A regra antiga de fullscreen sem cabeçalho
+ou dock global não autoriza ocultar o shell do Superadmin no compacto; esta
+restrição é específica desse hospedeiro. Fechar ou usar Escape devolve foco ao
+gatilho e preserva o ponto de origem. Esta regra
 não altera o preview lateral aprovado dos composers de publicação.
 
 O editor pertence ao fluxo de publicação do Principal, ao lado de Publicar no
@@ -125,4 +130,5 @@ resposta parcial, respondida, conflito e limites excedidos.
 - testes Dart cobrem domínio, codec, repositories, widgets e 375/768/1024/1440;
 - pgTAP cobre constraints, grants, RLS, capacidades, idempotência, cross-tenant,
   cross-context e IDOR/BOLA;
-- testes Deno cobrem validação e gateway de Storage privado.
+- testes Deno cobrem validação, finalização idempotente e gateway R2 privado,
+  incluindo negativas cross-tenant, IDOR, sessão revogada e entrega expirada.
