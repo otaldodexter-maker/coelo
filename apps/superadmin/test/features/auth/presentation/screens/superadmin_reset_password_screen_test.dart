@@ -51,6 +51,36 @@ void main() {
     expect(tester.getSize(submit).height, greaterThanOrEqualTo(CoeloSize.touchMin));
   }
 
+  testWidgets('D01 keyboard reset advances to confirmation and submits once with done', (
+    tester,
+  ) async {
+    final requests = <String>[];
+    await pumpResetPassword(
+      tester,
+      resetPassword: (password) async {
+        requests.add(password);
+        return const ResetPasswordResult.success();
+      },
+    );
+    final password = find.byKey(const ValueKey('superadmin-reset-password'));
+    final confirmation = find.byKey(const ValueKey('superadmin-reset-password-confirmation'));
+    await tester.enterText(password, 'synthetic-new-password');
+    await tester.testTextInput.receiveAction(TextInputAction.next);
+    await tester.pump();
+    expect(
+      tester.widget<EditableText>(
+        find.descendant(of: confirmation, matching: find.byType(EditableText)),
+      ).focusNode.hasPrimaryFocus,
+      isTrue,
+    );
+    expect(requests, isEmpty);
+    await tester.enterText(confirmation, 'synthetic-new-password');
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.pumpAndSettle();
+    expect(requests, ['synthetic-new-password']);
+    expect(password, findsNothing);
+  });
+
   testWidgets('does not expose theme switching from new password', (tester) async {
     await pumpResetPassword(tester);
 

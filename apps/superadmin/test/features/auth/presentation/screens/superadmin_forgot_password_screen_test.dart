@@ -37,6 +37,25 @@ void main() {
     await tester.pump();
   }
 
+  testWidgets('D01 keyboard recovery submits the email once with done', (tester) async {
+    final requests = <String>[];
+    await pumpForgotPassword(
+      tester,
+      requestPasswordRecovery: (email) async {
+        requests.add(email);
+        return const PasswordRecoveryResult.success();
+      },
+    );
+    await tester.enterText(
+      find.byKey(const ValueKey('superadmin-forgot-password-email')),
+      'keyboard@example.invalid',
+    );
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.pumpAndSettle();
+    expect(requests, ['keyboard@example.invalid']);
+    expect(find.byKey(const ValueKey('superadmin-forgot-password-email')), findsNothing);
+  });
+
   testWidgets('does not expose theme switching from password recovery', (tester) async {
     await pumpForgotPassword(
       tester,
