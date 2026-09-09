@@ -8,7 +8,7 @@ param(
 
   [switch]$AuthOnly,
 
-  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'ModelAal1PhasePolicy', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived')]
+  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'ModelAal1PhasePolicy', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived', 'ActivityAggregateConcurrency')]
   [string]$NominalProfile,
 
   [string[]]$AdditionalMigration = @(),
@@ -91,9 +91,19 @@ function Get-DockerResources([string]$Identity) {
 if ($targetMigration.Count -ne 1) {
   throw "target version must identify exactly one canonical migration: $TargetVersion"
 }
+$activityAggregateConcurrencyRun =
+  $RunActivityV2Concurrency -and
+  $NominalProfile -ceq 'ActivityAggregateConcurrency' -and
+  $TargetVersion -ceq '20260908154257' -and
+  -not $FoundationOnly -and -not $AuthOnly -and
+  $AdditionalMigration.Count -eq 0 -and -not $RunAuthLifecycle
+if ($RunActivityV2Concurrency -and -not $activityAggregateConcurrencyRun) {
+  throw 'activity v2 concurrency requires nominal profile ActivityAggregateConcurrency at target 20260908154257 without additions'
+}
 if ($NominalProfile) {
   if ($FoundationOnly -or $AuthOnly -or $AdditionalMigration.Count -gt 0 -or
-      $RunAuthLifecycle -or $RunActivityV2Concurrency) {
+      $RunAuthLifecycle -or
+      ($RunActivityV2Concurrency -and -not $activityAggregateConcurrencyRun)) {
     throw 'nominal replay cannot be combined with other replay profiles, additions, Auth lifecycle or concurrency'
   }
   $nominalResolverRelative = switch ($NominalProfile) {
@@ -106,6 +116,7 @@ if ($NominalProfile) {
     'ModelAal1PhasePolicy' { 'replay\profiles\ModelAal1PhasePolicy\Resolve-ModelAal1PhasePolicy.ps1' }
     'A01DirectoryAuditRed' { 'replay\profiles\A01DirectoryAuditRed\Resolve-A01DirectoryAuditRed.ps1' }
     'A01DirectoryAuditGreen' { 'replay\profiles\A01DirectoryAuditGreen\Resolve-A01DirectoryAuditGreen.ps1' }
+    'ActivityAggregateConcurrency' { 'replay\profiles\ActivityAggregateConcurrency\Resolve-ActivityAggregateConcurrency.ps1' }
     'FReadDirectoryContractRedDerived' { 'replay\profiles\FReadDirectoryContractRedDerived\Resolve-FReadDirectoryContractRedDerived.ps1' }
     'FReadDirectoryContractGreenDerived' { 'replay\profiles\FReadDirectoryContractGreenDerived\Resolve-FReadDirectoryContractGreenDerived.ps1' }
   }

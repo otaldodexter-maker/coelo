@@ -8,7 +8,7 @@ param(
 
   [switch]$AuthOnly,
 
-  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'ModelAal1PhasePolicy', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived')]
+  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'ModelAal1PhasePolicy', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived', 'ActivityAggregateConcurrency')]
   [string]$NominalProfile,
 
   [string[]]$AdditionalMigration = @()
@@ -92,6 +92,7 @@ if ($NominalProfile) {
     'ModelAal1PhasePolicy' { 'profiles\ModelAal1PhasePolicy\Resolve-ModelAal1PhasePolicy.ps1' }
     'A01DirectoryAuditRed' { 'profiles\A01DirectoryAuditRed\Resolve-A01DirectoryAuditRed.ps1' }
     'A01DirectoryAuditGreen' { 'profiles\A01DirectoryAuditGreen\Resolve-A01DirectoryAuditGreen.ps1' }
+    'ActivityAggregateConcurrency' { 'profiles\ActivityAggregateConcurrency\Resolve-ActivityAggregateConcurrency.ps1' }
     'FReadDirectoryContractRedDerived' { 'profiles\FReadDirectoryContractRedDerived\Resolve-FReadDirectoryContractRedDerived.ps1' }
     'FReadDirectoryContractGreenDerived' { 'profiles\FReadDirectoryContractGreenDerived\Resolve-FReadDirectoryContractGreenDerived.ps1' }
   }
