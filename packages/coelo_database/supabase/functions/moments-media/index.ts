@@ -16,6 +16,10 @@ const productionDependencies: MomentsMediaDependencies = {
 
 let dependencies: MomentsMediaDependencies = productionDependencies;
 
+/// Matches the chat-media envelope. Nothing here needs a large body: the
+/// requests carry ids and tickets, not content.
+const maximumRequestBytes = 32_768;
+
 type Json = Record<string, unknown>;
 const allowedMimeTypes = new Set([
   "image/jpeg",
@@ -121,8 +125,28 @@ export async function handleMomentsMediaRequest(
     return reply(origin, 405, { error: "method_not_allowed" });
   }
 
+  let body: Json;
   try {
-    const body = await request.json() as Json;
+    const raw = await request.text();
+    // Same envelope the sibling chat-media enforces, and measured in bytes for
+    // the same reason: `raw.length` counts UTF-16 code units, so accented or
+    // emoji-heavy content would slip through at several times the cap.
+    if (new TextEncoder().encode(raw).length > maximumRequestBytes) {
+      return reply(origin, 413, { error: "request_too_large" });
+    }
+    const parsed = JSON.parse(raw) as unknown;
+    // A list, a bare string or null is not a request. Without this the first
+    // property read throws and the caller gets a generic gateway failure
+    // instead of being told the request itself was malformed.
+    if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) {
+      return reply(origin, 400, { error: "invalid_request" });
+    }
+    body = parsed as Json;
+  } catch {
+    return reply(origin, 400, { error: "invalid_request" });
+  }
+
+  try {
     const url = requiredSecret("SUPABASE_URL");
     const admin = dependencies.createClient(
       url,

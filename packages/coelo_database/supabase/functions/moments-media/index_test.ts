@@ -54,6 +54,37 @@ function readRequest(body: unknown) {
   });
 }
 
+Deno.test("the request envelope matches the sibling gateway", async () => {
+  const { dependencies } = readDependencies();
+
+  // Over the cap in bytes while under it in code units: 20000 accented
+  // characters are 20000 units and 40000 bytes. Measuring the string would let
+  // this through, and the gateway would buffer past what it agreed to accept.
+  const oversized = new Request("https://functions.invalid/moments-media", {
+    method: "POST",
+    headers: { authorization: "Bearer token", "content-type": "application/json" },
+    body: JSON.stringify({ action: "read", read_ticket: "á".repeat(20_000) }),
+  });
+  const tooLarge = await handleMomentsMediaRequest(oversized, dependencies);
+  assertEquals(tooLarge.status, 413);
+  assertEquals(await tooLarge.json(), { error: "request_too_large" });
+
+  // A list, a bare string or null is not a request. The caller is told the
+  // request was malformed instead of receiving a generic gateway failure.
+  for (const shape of ["[1,2,3]", '"read"', "null", "42", "{"]) {
+    const response = await handleMomentsMediaRequest(
+      new Request("https://functions.invalid/moments-media", {
+        method: "POST",
+        headers: { authorization: "Bearer token", "content-type": "application/json" },
+        body: shape,
+      }),
+      dependencies,
+    );
+    assertEquals(response.status, 400, `body ${shape} must be refused as invalid_request`);
+    assertEquals(await response.json(), { error: "invalid_request" });
+  }
+});
+
 Deno.test("a viewer ticket is redeemed, never resolved as an author asset", async () => {
   const { calls, dependencies } = readDependencies();
   const response = await handleMomentsMediaRequest(
