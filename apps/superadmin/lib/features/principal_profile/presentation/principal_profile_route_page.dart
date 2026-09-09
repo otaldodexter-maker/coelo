@@ -210,6 +210,15 @@ final class _PrincipalProfileRoutePageState extends State<PrincipalProfileRouteP
     );
   }
 
+  /// Stable forwarder for "open this circular".
+  ///
+  /// The route builder creates a fresh closure on every build, and the
+  /// Circulares tab reads a changed `onOpen` as a changed context and closes the
+  /// open preview. A tear-off of this method is equal across builds, so the
+  /// preview only closes when the context really changes. The callback the
+  /// router supplies is still the one that navigates.
+  void _openCircular(String circularId) => widget.onOpenCircular?.call(circularId);
+
   CircularScope get _circularScope => CircularScope(
     institutionId: widget.runtimeContext.institutionId,
     unitId: widget.runtimeContext.unitId,
@@ -250,7 +259,7 @@ final class _PrincipalProfileRoutePageState extends State<PrincipalProfileRouteP
       aboutPage: page,
       circularRepository: widget.circularRepository,
       circularScope: widget.circularRepository == null ? null : _circularScope,
-      onOpenCircular: widget.onOpenCircular,
+      onOpenCircular: widget.onOpenCircular == null ? null : _openCircular,
       onOpenAgenda: widget.onOpenAgenda,
       onMessage: widget.onMessage,
       onOpenEdit: widget.aboutRepository == null ? null : widget.onOpenEdit,

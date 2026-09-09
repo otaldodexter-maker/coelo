@@ -1032,12 +1032,17 @@ final class _TabContent extends StatelessWidget {
           : PrincipalProfileCircularsTab(
               repository: circularRepository!,
               scope: circularScope!,
-              onOpen: onOpenCircular ?? (_) {},
+              // A top-level tear-off, not a fresh `(_) {}` per build: the tab
+              // reads a changed `onOpen` as a changed context and closes the
+              // open preview.
+              onOpen: onOpenCircular ?? _ignoreCircular,
               embedded: true,
             ),
     _ProfileTab.about => _AboutContent(page: aboutPage, onOpenMap: onOpenAboutMap),
   };
 }
+
+void _ignoreCircular(String _) {}
 
 final class _ProfileHappensFeed extends StatelessWidget {
   const _ProfileHappensFeed();
