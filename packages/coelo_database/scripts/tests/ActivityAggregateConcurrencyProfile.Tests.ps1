@@ -14,6 +14,36 @@ function Get-NormalizedReplayHash([string]$Path) {
   } finally { $sha.Dispose() }
 }
 
+Describe 'ActivityAggregateConcurrency wrapper integration' {
+  It 'materializes exactly the 56 reviewed SQL files without starting services' {
+    $destination = Join-Path $TestDrive 'activity-aggregate'
+    New-Item -ItemType Directory -Path $destination | Out-Null
+    $prepare = Join-Path $packageRoot 'scripts\Prepare-SafeMigrationReplay.ps1'
+    $output = & $prepare -DestinationMigrationsRoot $destination -NominalProfile ActivityAggregateConcurrency
+    @((Get-ChildItem -LiteralPath $destination -Filter '*.sql')).Count | Should Be 56
+    $output | Should Match '54 canonical \+ 2 preflight'
+    Test-Path -LiteralPath (Join-Path $destination '20260908154257_superadmin_activity_save_v2.sql') | Should Be $true
+  }
+
+  It 'rejects concurrency outside the closed profile before creating resources' {
+    $invoke = Join-Path $packageRoot 'scripts\Invoke-SafeLocalMigrationReplay.ps1'
+    $invalidOptions = @(
+      @{},
+      @{ NominalProfile = 'A01DirectoryAuditGreen' },
+      @{ NominalProfile = 'ActivityAggregateConcurrency'; FoundationOnly = $true },
+      @{ NominalProfile = 'ActivityAggregateConcurrency'; AuthOnly = $true },
+      @{ NominalProfile = 'ActivityAggregateConcurrency'; RunAuthLifecycle = $true },
+      @{ NominalProfile = 'ActivityAggregateConcurrency'; AdditionalMigration = @('invalid') }
+    )
+    foreach ($options in $invalidOptions) {
+      { & $invoke -TargetVersion '20260908154257' -RunActivityV2Concurrency @options } |
+        Should Throw 'activity v2 concurrency requires nominal profile ActivityAggregateConcurrency'
+    }
+    { & $invoke -TargetVersion '20260907222911' -NominalProfile ActivityAggregateConcurrency -RunActivityV2Concurrency } |
+      Should Throw 'activity v2 concurrency requires nominal profile ActivityAggregateConcurrency'
+  }
+}
+
 Describe 'Closed ActivityAggregateConcurrency replay selector' {
   It 'derives base55 and adds only the current aggregate migration' {
     $result = & $resolverPath -TargetVersion '20260908154257'
