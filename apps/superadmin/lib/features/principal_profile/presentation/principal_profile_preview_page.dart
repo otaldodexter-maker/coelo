@@ -133,7 +133,12 @@ final class _PrincipalProfilePreviewPageState extends State<PrincipalProfilePrev
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          _ProfileHero(data: widget.data, compact: compact, wide: wide),
+                          _ProfileHero(
+                            data: widget.data,
+                            compact: compact,
+                            wide: wide,
+                            showFixtureMedia: widget.showPreviewFeeds,
+                          ),
                           SizedBox(height: compact ? CoeloSpacing.space3 : CoeloSpacing.space4),
                           if (wide)
                             Row(
@@ -317,11 +322,23 @@ final class _ProfileContextFact extends StatelessWidget {
 }
 
 final class _ProfileHero extends StatelessWidget {
-  const _ProfileHero({required this.data, required this.compact, required this.wide});
+  const _ProfileHero({
+    required this.data,
+    required this.compact,
+    required this.wide,
+    required this.showFixtureMedia,
+  });
 
   final PrincipalProfilePreviewData data;
   final bool compact;
   final bool wide;
+
+  /// Whether the local cover/crest fixtures may render.
+  ///
+  /// Cover and avatar are authorized media in private R2, reached through the
+  /// shared gateway. Until that descriptor exists for this surface a real route
+  /// shows a neutral brand placeholder instead of a fabricated campus photo.
+  final bool showFixtureMedia;
 
   @override
   Widget build(BuildContext context) {
@@ -344,13 +361,20 @@ final class _ProfileHero extends StatelessWidget {
             label: 'Campus do ${data.name}',
             child: ClipRRect(
               borderRadius: const BorderRadius.vertical(bottom: Radius.circular(CoeloRadius.lg)),
-              child: Image.asset(
-                'assets/principal_profile/institution-cover.png',
-                width: double.infinity,
-                height: coverHeight,
-                fit: BoxFit.cover,
-                alignment: compact ? const Alignment(.5, 0) : Alignment.center,
-              ),
+              child: showFixtureMedia
+                  ? Image.asset(
+                      'assets/principal_profile/institution-cover.png',
+                      width: double.infinity,
+                      height: coverHeight,
+                      fit: BoxFit.cover,
+                      alignment: compact ? const Alignment(.5, 0) : Alignment.center,
+                    )
+                  : Container(
+                      key: const Key('principal-profile-cover-placeholder'),
+                      width: double.infinity,
+                      height: coverHeight,
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    ),
             ),
           ),
           Positioned(
@@ -376,10 +400,22 @@ final class _ProfileHero extends StatelessWidget {
                   ],
                 ),
                 child: ClipOval(
-                  child: Image.asset(
-                    'assets/principal_profile/institution-crest.png',
-                    fit: BoxFit.contain,
-                  ),
+                  child: showFixtureMedia
+                      ? Image.asset(
+                          'assets/principal_profile/institution-crest.png',
+                          fit: BoxFit.contain,
+                        )
+                      : ColoredBox(
+                          key: const Key('principal-profile-avatar-placeholder'),
+                          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                          child: Center(
+                            child: Icon(
+                              Icons.apartment_outlined,
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              size: avatarSize * .45,
+                            ),
+                          ),
+                        ),
                 ),
               ),
             ),
