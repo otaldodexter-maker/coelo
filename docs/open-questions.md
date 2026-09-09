@@ -3,10 +3,21 @@ title: "Perguntas abertas e conflitos"
 source: "AGENTS.md; documentos oficiais, ADRs e specs citados em cada item"
 status: "open"
 generated_at: "2026-08-11"
-updated_at: "2026-09-08"
+updated_at: "2026-09-09"
 ---
 
 # Perguntas abertas e conflitos
+
+## Reconciliação do fechamento R01 — 2026-09-09
+
+- C04/estado47 marca `institutions.files` como D, mas ownership e inventário vigentes mantêm a ação ativa. C00 preserva a classificação aprovada; não aplicar adiamento implícito.
+- `students.link/transfer/edit/revoke` não foram implementadas segundo C04 final; permanecem ativas. O fechamento de horário não autoriza retirar esses critérios.
+- C04 marca indisponibilidade de `groups.location` como E e C05 usa “entregues” para clientes fail-closed. Isso é entrega de código/estado honesto, não certificação de comportamento ativo. FE pode ser certificado sem backend, desde que seus próprios critérios estejam completos.
+- C06 r47 repetia C07 123/112/11; fonte C07 r12 tem169/144PASS/25FAIL. São testes em baseline antigo;19 falhas eram potencialmente resolvidas na nova base e6 Notices/Happens ainda abertas. Sem reverificação conjunta, não subtrair19 do resultado medido.
+- C06 r49 observa retomada C00, mas supõe outra frente: os33 cherry-picks de09/09 são lotes finais R01, comprovados pelos trailers e manifesto. C00 atrasou a documentação e o prazo07:40; ausência de ack não invalida essa integração local, tampouco integração local prova publicação.
+- Cabeçalhos antigos dos rastreadores diziam FE0/219 apesar de inventário já certificar `profile-files.import/export` como indisponibilidade adiada. Corrigido resumo vigente para2/219 (ambas adiadas); ações ativas FE0/194, BE0/212, E2E0/187. Não houve promoção nova.
+- Planos039/051, semântica activate/assign e aplicabilidade backend de Catálogo permanecem questões anteriores sem decisão nova. Não inventar endpoint para fechar contador.
+
 
 ## Reconciliação operacional R01 — 2026-09-08
 

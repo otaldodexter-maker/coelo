@@ -1,0 +1,448 @@
+{
+  "source": "final handoffs and bounded C00 review",
+  "status": "synchronized-without-certification-promotion",
+  "generated_at": "2026-09-09T08:41:13-03:00",
+  "deltas": [
+    {
+      "ids": [
+        "internal-users.list",
+        "internal-users.create",
+        "internal-users.edit",
+        "internal-users.suspend"
+      ],
+      "done": "C00 integrou ef1dd82e→0fd1fe50 e 88e846b1→58a66741: correlação de identidade antes de cache/efeito e descarte de busca antiga durante debounce.",
+      "frontend_open": "",
+      "backend_open": "",
+      "evidence": "C00 lote pós-integração288PASS; fonteC01 r51"
+    },
+    {
+      "ids": [
+        "access-profiles.list",
+        "access-profiles.create",
+        "access-profiles.detail",
+        "access-profiles.edit",
+        "access-profiles.delete",
+        "access-models.list",
+        "access-models.filter",
+        "access-models.create",
+        "access-models.detail",
+        "access-models.edit",
+        "access-models.duplicate"
+      ],
+      "done": "C00 integrou sanitização de transporte, correlação de perfil/modelo e invalidação antes de debounce (00266adb/4074f306/6bd3cac8).",
+      "frontend_open": "",
+      "backend_open": "",
+      "evidence": "C00288PASS/analyzer34limpo; critérios locais, sem autorização remota certificada"
+    },
+    {
+      "ids": [
+        "invites.list",
+        "invites.create",
+        "invites.detail",
+        "invites.resend",
+        "invites.revoke"
+      ],
+      "done": "C00 integrou descarte de buscas antigas e UUID canônico (58a66741/19161a19).",
+      "frontend_open": "",
+      "backend_open": "",
+      "evidence": "C00288PASS conjunto; sem SMTP real"
+    },
+    {
+      "ids": [
+        "auth.mfa",
+        "account.mfa",
+        "internal-users.mfa"
+      ],
+      "done": "Texto cliente do gate formal corrigido em9d3efce2; adiamento formal preservado, sem fingir MFA implantado.",
+      "frontend_open": "",
+      "backend_open": "",
+      "evidence": "C01f58ac259; gate formal permanece"
+    },
+    {
+      "ids": [
+        "auth.login",
+        "auth.logout",
+        "auth.recover",
+        "auth.reset",
+        "shell.load"
+      ],
+      "done": "",
+      "frontend_open": "",
+      "backend_open": "I021 não finalizada: WIP27f7bbab contém rascunho Pester; qualificação SQL/COMMIT e bridge não implementadas. Personas remotas e cenários A/B ainda exigem pacote nominal autorizado.",
+      "evidence": "C01r51 final, I021WIP; provas offline77 não equivalem Auth real"
+    },
+    {
+      "ids": [
+        "forms.create",
+        "forms.edit"
+      ],
+      "done": "Integração C00: limites min/max de galeria preservados e editáveis (96a8f3d2/0fe89ded), datas civis canônicas e texto decodificados (194c7f25/54a01f43).",
+      "frontend_open": "Quatro RED numéricos relatados na r48: editor money10,50 vira10.5 em vez de1050; respostas integer11/max10, decimal10.5/max10 e money1100/max1000 aceitas. Falta controle maxLength no editor.",
+      "backend_open": "",
+      "evidence": "C00173Flutter+110DTO+6domínio PASS em suítes distintas; RED numéricos fora desses aceites"
+    },
+    {
+      "ids": [
+        "forms.respond"
+      ],
+      "done": "Galeria valida contagem e omite respostas vazias (57357cc8).",
+      "frontend_open": "Resposta civil/texto f002fb2a preservada como WIP; últimos ajustes UTC sem teste final. Limites numéricos ainda aceitam valores acima do máximo no repro C02r48.",
+      "backend_open": "",
+      "evidence": "C00173Flutter/110DTO; fonteC02r48 distingue teste anterior de SHA final"
+    },
+    {
+      "ids": [
+        "forms.responses.export"
+      ],
+      "done": "Mensagens de erros seguros do job XLSX integradas1b8462fe; schema313 e writer128Deno já integrados no histórico.",
+      "frontend_open": "",
+      "backend_open": "Permanecem versões sem respostas, jobs antigos, erro terminal/reconcile desconhecido, expiração e limpeza física R2. Não houve deploy/cutover.",
+      "evidence": "d8e6f841; r48; C00173Flutter; pgTAP313 histórico nominal, não rerun"
+    },
+    {
+      "ids": [
+        "forms.upload",
+        "forms.resolve-file",
+        "forms.download",
+        "forms.expire-file",
+        "forms.delete-file"
+      ],
+      "done": "",
+      "frontend_open": "",
+      "backend_open": "I021 de mídia question-image não implementada: migration/processor/adapter final ausentes. Núcleo upload/reader existente é reaproveitável; consumidor real, negativas e limpeza física/órfãos continuam abertos.",
+      "evidence": "C02r48 final; não contar núcleo comum como cada fluxo concluído"
+    },
+    {
+      "ids": [
+        "forms.overview",
+        "forms.publish",
+        "forms.test",
+        "forms.location-question",
+        "forms.location-answer"
+      ],
+      "done": "",
+      "frontend_open": "C02r48 mantém Overview/Publish/Test e Local pendentes por critérios próprios; não encerrados pelo lote de galeria/datas.",
+      "backend_open": "",
+      "evidence": "C02r48 final"
+    },
+    {
+      "ids": [
+        "child-safety.list",
+        "child-safety.child",
+        "child-safety.create",
+        "child-safety.edit",
+        "child-safety.suspend"
+      ],
+      "done": "Cadeia Safety até f8c83929/720f739e relatada103PASS na frente; candidato completo preservado.",
+      "frontend_open": "C00 ainda precisa revisar/integrar pré-requisitos da cadeia; não aplicar somente dois commits finais nem refazer como ausente.",
+      "backend_open": "",
+      "evidence": "C02r47/r48; held chain list no manifesto"
+    },
+    {
+      "ids": [
+        "health-care.list",
+        "health-care.create",
+        "health-care.detail",
+        "health-care.edit",
+        "medication.list",
+        "medication.create",
+        "medication.detail",
+        "medication.edit",
+        "medication.evidence"
+      ],
+      "done": "",
+      "frontend_open": "",
+      "backend_open": "C02r48 mantém qualificação care049, permissões internas e evidências reais abertas; correções locais existentes não certificam CRUD completo.",
+      "evidence": "2fe678e8/f3a36273/34f62128/1ccddb53/3ada3522 são entregas locais históricas; r48 final"
+    },
+    {
+      "ids": [
+        "assessments.entry",
+        "assessments.gradebook",
+        "assessments.close",
+        "assessments.reopen",
+        "assessments.detail"
+      ],
+      "done": "C00 integrou recuperação de Error no decode/fila de fechamento (0c74648d/3f0bf140).",
+      "frontend_open": "Configuração de avaliação ainda tem fronteira de save limitada a Exception conforme RED aberto C03r33.",
+      "backend_open": "",
+      "evidence": "C00 suíte conjunta74PASS; executor41AssessmentsPASS, não somados"
+    },
+    {
+      "ids": [
+        "support.table",
+        "support.kanban",
+        "support.detail",
+        "support.close"
+      ],
+      "done": "C00 integrou status idêntico como no-op59ee9601; evita escrita redundante.",
+      "frontend_open": "",
+      "backend_open": "",
+      "evidence": "C00 conjunto74PASS; executor60não-golden, dívida visual mantida"
+    },
+    {
+      "ids": [
+        "meal-plans.list"
+      ],
+      "done": "C00 integrou recuperação de erro de decode no diretório f4b65d8a.",
+      "frontend_open": "",
+      "backend_open": "",
+      "evidence": "C00 conjunto74PASS; executor102não-golden"
+    },
+    {
+      "ids": [
+        "meal-plans.publish"
+      ],
+      "done": "",
+      "frontend_open": "Candidato932003b1 retido: receipt divergente limpa requestId embora escrita possa ter ocorrido; retry idempotente precisa correção/revisão antes de integrar.",
+      "backend_open": "",
+      "evidence": "Review C00 no fechamento, sem execução remota"
+    },
+    {
+      "ids": [
+        "audit.list",
+        "audit.filter",
+        "audit.detail"
+      ],
+      "done": "C00 integrou recuperação de Error5ec75ba9 e paginação após troca de contexto1d108ea2.",
+      "frontend_open": "",
+      "backend_open": "Audit8b4dfb6a+89949f30 ainda candidato: I019 falhou antes do SQL, I020 não iniciada e lease devolvida sem consumo. Runtime0/145; nova lease necessária.",
+      "evidence": "C03r33 final; C0074+288 em suítes distintas, sem SQL Audit executado"
+    },
+    {
+      "ids": [
+        "activities.list",
+        "activities.detail"
+      ],
+      "done": "C00 integrou troca de repositório1816a0e8, catálogo assíncrono1ee3ac18 e correlação de sujeitoabcf96ca.",
+      "frontend_open": "",
+      "backend_open": "",
+      "evidence": "C00288PASS; C03r33 final"
+    },
+    {
+      "ids": [
+        "activities.create",
+        "activities.edit",
+        "activities.publish"
+      ],
+      "done": "",
+      "frontend_open": "",
+      "backend_open": "Replay local I01846/46 já integrado258593e4. Continua aberta a prova com duas conexões reais de revogação/expiração durante espera; não inferir dessa execução.",
+      "evidence": "C03r32/r33; 46assertivasnominais, source/hash no histórico"
+    },
+    {
+      "ids": [
+        "daily-routine.list"
+      ],
+      "done": "C00 integrou preservação do tamanho de página0637d0a9.",
+      "frontend_open": "Erro inesperado no diretório ainda relatado como RED aberto C03r33.",
+      "backend_open": "",
+      "evidence": "C00288PASS lote; C03r33"
+    },
+    {
+      "ids": [
+        "plans.list",
+        "plans.create",
+        "plans.edit"
+      ],
+      "done": "C00 integrou comparação por identidade do contexto do repositório60ae2b2a.",
+      "frontend_open": "Erro inesperado no diretório continua critério aberto C03r33.",
+      "backend_open": "",
+      "evidence": "C00288PASS; conflito039/051 mantido em open-questions"
+    },
+    {
+      "ids": [
+        "attendance.dashboard"
+      ],
+      "done": "C00 integrou bloqueio de leitura após dispose c962ae99.",
+      "frontend_open": "",
+      "backend_open": "",
+      "evidence": "C00288PASS; b7082644 origem"
+    },
+    {
+      "ids": [
+        "agenda.view",
+        "agenda.create",
+        "agenda.detail",
+        "agenda.edit",
+        "agenda.request",
+        "agenda.permissions",
+        "agenda.location"
+      ],
+      "done": "",
+      "frontend_open": "Agenda b049b163 permanece WIP preservado; separar rotas existentes e lacunas por ação, sem integrar automaticamente a view READ039 nem certificar seus goldens.",
+      "backend_open": "",
+      "evidence": "C03r33 final; contrato de localização/composição ainda aberto"
+    },
+    {
+      "ids": [
+        "institutions.create",
+        "institutions.edit",
+        "institutions.detail",
+        "institutions.status",
+        "institutions.locations-map",
+        "institutions.files"
+      ],
+      "done": "",
+      "frontend_open": "Medição C04: edit transporta14/39strings,25descartadas e3fail-closed; criar/editar bloqueados pela composição. Detalhe reutiliza formulário bloqueado; mapa parcial. institutions.files continua ativa, apesar do D no resumo C04.",
+      "backend_open": "Mutation gates/OQ032/OQ043 e provedores ausentes permanecem; não tratar ausência de autorização remota como falta de todo código local.",
+      "evidence": "C04 estado47 medido02:00 e finalr61; conflito registrado"
+    },
+    {
+      "ids": [
+        "units.list",
+        "units.filter",
+        "units.create",
+        "units.edit",
+        "units.status",
+        "units.error",
+        "units.access-denied",
+        "units.reload",
+        "units.locations-map",
+        "units.copy-institution-location"
+      ],
+      "done": "",
+      "frontend_open": "C04mediu composição Unavailable; status viaja no save genérico sem transição própria. Mapa/cópia/agenda ainda parciais.",
+      "backend_open": "Quinze RPCs ausentes no recorte Units informado pela medição C04, não apenas sete. Revisão/composição e qualificação de provedores pendentes.",
+      "evidence": "C04estado47/r61; patches/commits preservados"
+    },
+    {
+      "ids": [
+        "groups.list",
+        "groups.create",
+        "groups.edit",
+        "groups.members",
+        "groups.location"
+      ],
+      "done": "",
+      "frontend_open": "Diretório recebe Unavailable; ausência honesta de localização não satisfaz groups.location. GroupDirectorySaveResult pode transformar1success em5 e ignorar skipped; sobrescrita da seleção de membros ainda demanda correção.",
+      "backend_open": "Provedores/composição de Grupos continuam incompletos; cliente não autoriza mutação.",
+      "evidence": "C04estado47/r61; não promover E como concluído"
+    },
+    {
+      "ids": [
+        "people.list",
+        "people.create",
+        "people.edit",
+        "people.links",
+        "people.reload"
+      ],
+      "done": "C00 integrou teclado de status33fccac6, preservação de busca2b1664ae, remoção de dados inventados no formulário0ecc5955 e erro de identidade incompletaff5000ef.",
+      "frontend_open": "Quatro filtros (Atividade/UF/Cidade/Bairro) ainda sem encaminhamento servidor; create/edit bloqueados; links apresentam duas listas para leitura de um tipo. Avatar348f81ab retido por mounted após await.",
+      "backend_open": "",
+      "evidence": "C04estado47/r61; C00 conjunto288PASS/analyzer34limpo"
+    },
+    {
+      "ids": [
+        "students.list"
+      ],
+      "done": "C04 confirmou leitura CHILD real; C00 integrou recuperação do acompanhamento a5844cd8.",
+      "frontend_open": "",
+      "backend_open": "",
+      "evidence": "C04r61/estado47; C00288PASS; composição do acompanhamento permanece Unavailable"
+    },
+    {
+      "ids": [
+        "students.link",
+        "students.transfer",
+        "students.edit",
+        "students.revoke"
+      ],
+      "done": "",
+      "frontend_open": "Quatro ações não implementadas no recorte C04 final. Permanecem ativas no MVP; adiamento não autorizado pelo Owner.",
+      "backend_open": "",
+      "evidence": "C04estado47/r61; contradição de classificação registrada"
+    },
+    {
+      "ids": [
+        "locations.list",
+        "locations.create-edit",
+        "locations.detail-links",
+        "locations.schedule"
+      ],
+      "done": "",
+      "frontend_open": "Pacote seletivo Locais já integrado no histórico; ligação de superfície/router e capacidades por ação continuam pendentes. Agenda semanal não equivale a reservas datadas; não ampliar autorização do cliente por canCreate.",
+      "backend_open": "Cadeia de provedores/SQL candidato requer revisão e runtime nominal; perfil de capacidade precisa backend real.",
+      "evidence": "C04r61/estado47;188cf2ba histórico266Flutter+36DTO; não rerun"
+    },
+    {
+      "ids": [
+        "notices.list",
+        "notices.create",
+        "notices.edit",
+        "notices.schedule",
+        "notices.publish",
+        "notices.archive"
+      ],
+      "done": "C00 integrou layout compacto do status71b74dbe.",
+      "frontend_open": "Falhas visuais de aceitação C07/6Notices-Happens continuam sem prova de fechamento no baseline conjunto; preservadas sem aprovação de golden.",
+      "backend_open": "",
+      "evidence": "C05final/C07r12; C00288PASS apenas lote focal não-golden"
+    },
+    {
+      "ids": [
+        "acontece.create",
+        "acontece.publish",
+        "agora.create",
+        "agora.publish",
+        "momentos.create",
+        "momentos.publish"
+      ],
+      "done": "C00 integrou recuperação de Error dos compositores02c7456c; Agora teve teste adaptado ao passo Continuar af73c5f9, incluindo chamada real ao double, erro e retry.",
+      "frontend_open": "",
+      "backend_open": "",
+      "evidence": "C00 rerun288PASS; initial286PASS/2FAIL eram fluxo de teste desatualizado, não esconder histórico"
+    },
+    {
+      "ids": [
+        "acontece.create",
+        "acontece.publish"
+      ],
+      "done": "C00 integrou remoção de parada Tab duplicada nos chips b2c74128.",
+      "frontend_open": "",
+      "backend_open": "",
+      "evidence": "C05 428b62b0; C00288PASS"
+    },
+    {
+      "ids": [
+        "chat.edit",
+        "chat.revoke",
+        "acontece.remove",
+        "agora.expire",
+        "momentos.remove"
+      ],
+      "done": "",
+      "frontend_open": "",
+      "backend_open": "Cliente entregue em fail-closed, mas falta contrato/composição do comando real. Entrega local não conclui aceite ativo.",
+      "evidence": "C05final declara limites por ação; integração/contratos pendentes"
+    },
+    {
+      "ids": [
+        "chat.receipts"
+      ],
+      "done": "",
+      "frontend_open": "Escrita de recibo/contagem de não lidos testadas na frente; ainda falta exibição do recibo projetado na thread.",
+      "backend_open": "message_receipts existe, mas superadmin_chat_thread_v2 não projeta recibos. Não contornar o gateway com select direto.",
+      "evidence": "C05final; escrita e leitura têm estados separados"
+    },
+    {
+      "ids": [
+        "principal.profile-edit"
+      ],
+      "done": "",
+      "frontend_open": "Cliente cobre somente biografia; outros campos/contrato de Perfil institucional permanecem abertos.",
+      "backend_open": "",
+      "evidence": "C05final reconhece entrega parcial"
+    },
+    {
+      "ids": [
+        "momentos.create",
+        "momentos.publish"
+      ],
+      "done": "",
+      "frontend_open": "Consumidor Momentos ainda pode reter cinco originais de25MB; purga/buffer é dívida da frente, não apenas dependência C00.",
+      "backend_open": "",
+      "evidence": "C05final/reviewC00; não tratar tudo como bloqueio de integração"
+    }
+  ]
+}

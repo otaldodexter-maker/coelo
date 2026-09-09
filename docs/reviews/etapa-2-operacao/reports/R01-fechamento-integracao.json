@@ -1,0 +1,550 @@
+{
+  "source": "C00 cherry-pick trailers; independent bounded code reviews; preserved logs",
+  "status": "selective-integration-verified; retained-review-queue; pending-push",
+  "generated_at": "2026-09-09T08:41:13-03:00",
+  "baseline_before": "e9da072ac8af2979e95bc51c9f904ef4e42be201",
+  "code_head": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
+  "commits": [
+    {
+      "source": "b4a76c47250813b1b8c0f340ac8c3c957a5d8ac8",
+      "destination": "0c74648d7f5933061a2a4809e69e6e5096116c1d",
+      "subject": "fix(assessments): recover from decoding errors",
+      "files": [
+        "apps/superadmin/lib/features/assessments/assessment_controller.dart",
+        "apps/superadmin/test/features/assessments/assessment_controller_test.dart"
+      ],
+      "status": "integrated-local; tested; pending-push"
+    },
+    {
+      "source": "125b31edfc6e75a56975604ca707896cb12fe503",
+      "destination": "3f0bf140c8bfc76dd00f273dadbae53b447c8161",
+      "subject": "fix(assessments): recover closing queue errors",
+      "files": [
+        "apps/superadmin/lib/features/assessments/assessment_pages.dart",
+        "apps/superadmin/test/features/assessments/assessment_entry_page_test.dart"
+      ],
+      "status": "integrated-local; tested; pending-push"
+    },
+    {
+      "source": "3bd45694944ee411c1992a8de47ae28567297c84",
+      "destination": "59ee9601ece73475e2d4e732b02fa6d85a729968",
+      "subject": "fix(support): ignore unchanged status",
+      "files": [
+        "apps/superadmin/lib/features/support/presentation/view_models/support_prototype_controller.dart",
+        "apps/superadmin/test/features/support/presentation/view_models/support_prototype_controller_test.dart"
+      ],
+      "status": "integrated-local; tested; pending-push"
+    },
+    {
+      "source": "4bf767a4f68e8101f1e6dc3cd7ed12515c781338",
+      "destination": "f4b65d8a744fc077e80bd8c6a25fc73111c9739d",
+      "subject": "fix(meal-plans): recover directory decode errors",
+      "files": [
+        "apps/superadmin/lib/features/meal_plans/presentation/meal_plan_directory_page.dart",
+        "apps/superadmin/test/features/meal_plans/presentation/meal_plan_directory_page_test.dart"
+      ],
+      "status": "integrated-local; tested; pending-push"
+    },
+    {
+      "source": "a294684a4ffdb139f135a2332e16763056d01f9a",
+      "destination": "5ec75ba97adec28a5dd353a7bfb721bf49b54257",
+      "subject": "fix(audit): recover unexpected read errors",
+      "files": [
+        "apps/superadmin/lib/features/audit/presentation/audit_controller.dart",
+        "apps/superadmin/test/features/audit/presentation/audit_controller_test.dart"
+      ],
+      "status": "integrated-local; tested; pending-push"
+    },
+    {
+      "source": "d8e6f841272281eaf34d04683781e33a582ef824",
+      "destination": "1b8462fe5bbbcebb0971f18f4fa1c4983d180e17",
+      "subject": "fix(forms): show safe export failure messages in file jobs",
+      "files": [
+        "apps/superadmin/lib/features/forms/presentation/operations/forms_operations_page.dart",
+        "apps/superadmin/test/features/forms/presentation/operations/forms_xlsx_request_test.dart"
+      ],
+      "status": "integrated-local; tested; pending-push"
+    },
+    {
+      "source": "e9bf0a0ab91c5ce27a7340dfe8e2498d42979ed6",
+      "destination": "96a8f3d2f2b375779e3a2682328f1078ac9efba9",
+      "subject": "fix(forms): preserve approved gallery image bounds across editing",
+      "files": [
+        "apps/superadmin/lib/features/forms/presentation/editor/forms_editor_page.dart",
+        "apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart",
+        "packages/coelo_api/lib/src/forms/form_definition_dto.dart",
+        "packages/coelo_api/test/forms/form_definition_dto_test.dart",
+        "packages/coelo_domain/lib/src/forms/form_definition.dart"
+      ],
+      "status": "integrated-local; tested; pending-push"
+    },
+    {
+      "source": "3559141e3ae70cecb564c4540cd268c2ede5b2bd",
+      "destination": "57357cc8915cb99f84b1251bf7b8e4c5861740ac",
+      "subject": "fix(forms): validate gallery counts and omit empty media answers",
+      "files": [
+        "apps/superadmin/lib/features/forms/presentation/response/form_response_page.dart",
+        "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+        "packages/coelo_domain/lib/src/forms/form_services.dart",
+        "packages/coelo_domain/test/forms/form_services_test.dart"
+      ],
+      "status": "integrated-local; tested; pending-push"
+    },
+    {
+      "source": "eab7a9bdd5711416d0d4047682dec604bed1ce2d",
+      "destination": "0fe89ded197c6d0cc35d101b417a034df3069aac",
+      "subject": "feat(forms): edit approved gallery image limits",
+      "files": [
+        "apps/superadmin/lib/features/forms/presentation/editor/forms_editor_page.dart",
+        "apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart"
+      ],
+      "status": "integrated-local; tested; pending-push"
+    },
+    {
+      "source": "a9d880a704e6fc0b22801467c450f7ddef567567",
+      "destination": "194c7f25aa752e715b46bb4b0654c1dc85a55eeb",
+      "subject": "fix(forms): decode canonical civil dates and text length limits",
+      "files": [
+        "packages/coelo_api/lib/src/forms/form_definition_dto.dart",
+        "packages/coelo_api/test/forms/form_definition_dto_test.dart",
+        "packages/coelo_domain/lib/src/forms/form_definition.dart"
+      ],
+      "status": "integrated-local; tested; pending-push"
+    },
+    {
+      "source": "18cdd6bb580a7b8e8d7d64a4580e2f4c9b3ddade",
+      "destination": "54a01f43f4a13e6665bf182ad9a0195abf460841",
+      "subject": "fix(forms): preserve and edit canonical civil date constraints",
+      "files": [
+        "apps/superadmin/lib/features/forms/presentation/editor/forms_editor_page.dart",
+        "apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart"
+      ],
+      "status": "integrated-local; tested; pending-push"
+    },
+    {
+      "source": "ef1dd82ea47f4d5f79671a8cd1d8716052c130da",
+      "destination": "0fd1fe50ddc37c30a9f61f7755b540d755af73ac",
+      "subject": "fix(users): correlate detail and command identities before caching",
+      "files": [
+        "apps/superadmin/lib/features/platform_users/data/supabase_platform_user_repository.dart",
+        "apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart"
+      ],
+      "status": "integrated-local; tested; pending-push"
+    },
+    {
+      "source": "25f4dabd408f356790da014abd28bc4f7f1827ec",
+      "destination": "00266adb85927eec42f2ade5b1660c433628a83a",
+      "subject": "fix(access-profiles): sanitize transport failures at the repository boundary",
+      "files": [
+        "apps/superadmin/lib/features/access_profiles/data/supabase_access_profile_repository.dart",
+        "apps/superadmin/test/features/access_profiles/data/supabase_access_profile_repository_test.dart"
+      ],
+      "status": "integrated-local; tested; pending-push"
+    },
+    {
+      "source": "495b89c9bbe09f1293421ce50ff736096be1fd7a",
+      "destination": "4074f30612fb2ee12f565d865a369a45e81b4f5e",
+      "subject": "fix(access): correlate returned profile and model contexts",
+      "files": [
+        "apps/superadmin/lib/features/access_profiles/data/access_profile_model_repository_adapter.dart",
+        "apps/superadmin/lib/features/access_profiles/data/supabase_access_profile_repository.dart",
+        "apps/superadmin/test/features/access_profiles/data/access_profile_model_repository_adapter_test.dart",
+        "apps/superadmin/test/features/access_profiles/data/access_profile_models_read_envelope_test.dart",
+        "apps/superadmin/test/features/access_profiles/data/supabase_access_profile_repository_test.dart"
+      ],
+      "status": "integrated-local; tested; pending-push"
+    },
+    {
+      "source": "d606aac935c42a885f153d904a03c82323a0303d",
+      "destination": "6bd3cac8802dc4018a3c19e2a48b6c52460644cc",
+      "subject": "fix(access-models): invalidate stale results before search debounce",
+      "files": [
+        "apps/superadmin/lib/features/access_profiles/presentation/access_profile_view_model.dart",
+        "apps/superadmin/test/features/access_profiles/presentation/access_profile_view_model_test.dart"
+      ],
+      "status": "integrated-local; tested; pending-push"
+    },
+    {
+      "source": "88e846b1d8cf9f06401c04f7e205e74611bed4d8",
+      "destination": "58a6674143c56cabf0dcd1cf3a72e67ff697b789",
+      "subject": "fix(identity): discard directory responses during pending searches",
+      "files": [
+        "apps/superadmin/lib/features/invites/presentation/invite_directory_page.dart",
+        "apps/superadmin/lib/features/platform_users/presentation/platform_user_directory_page.dart",
+        "apps/superadmin/test/features/invites/invite_directory_page_test.dart",
+        "apps/superadmin/test/features/platform_users/presentation/platform_user_directory_page_test.dart"
+      ],
+      "status": "integrated-local; tested; pending-push"
+    },
+    {
+      "source": "45f6c68bf23963dccd73038ca7959b665aa9718c",
+      "destination": "19161a19e557dd1bc7c5f07d8752ba7c7bb5345d",
+      "subject": "fix(invites): preserve canonical UUID casing in response checks",
+      "files": [
+        "apps/superadmin/lib/features/invites/data/supabase_invite_repository.dart",
+        "apps/superadmin/test/features/invites/data/supabase_invite_repository_test.dart"
+      ],
+      "status": "integrated-local; tested; pending-push"
+    },
+    {
+      "source": "f58ac259fae131620161ae19064f98c579156ed3",
+      "destination": "9d3efce269f556c58915c631a0b76281b94a4504",
+      "subject": "fix(access): describe MFA as the formal MVP gate",
+      "files": [
+        "apps/superadmin/lib/features/access_profiles/presentation/access_profile_detail_page.dart",
+        "apps/superadmin/lib/features/access_profiles/presentation/access_profile_form_page.dart"
+      ],
+      "status": "integrated-local; tested; pending-push"
+    },
+    {
+      "source": "7d499cf299cb91a659b99552694cf6a056ea9213",
+      "destination": "a5844cd81c16ac5133ffdb40f513cd0145bc0853",
+      "subject": "fix(student-tracking): catch the Error that was hanging the screen",
+      "files": [
+        "apps/superadmin/lib/features/student_tracking/presentation/student_tracking_view_model.dart",
+        "apps/superadmin/test/features/student_tracking/student_tracking_error_escape_test.dart"
+      ],
+      "status": "integrated-local; tested; pending-push"
+    },
+    {
+      "source": "fa08a5c6f59dec4ad92d81da6a3139d818b153a5",
+      "destination": "33fccac6315f66f8f08487383315ff988869880d",
+      "subject": "fix(people): the status chip answers the keyboard it claims to accept",
+      "files": [
+        "apps/superadmin/lib/features/people/presentation/person_directory_page.dart",
+        "apps/superadmin/test/features/people/presentation/person_status_keyboard_test.dart"
+      ],
+      "status": "integrated-local; tested; pending-push"
+    },
+    {
+      "source": "8e71d4fb31fae61e6490835ab8759e5d17135946",
+      "destination": "2b1664aecbdb0ca97fb3ca3cd6737d0c50eb3b23",
+      "subject": "fix(people): a failure must not rewrite the question the operator asked",
+      "files": [
+        "apps/superadmin/lib/features/people/presentation/person_directory_page.dart",
+        "apps/superadmin/lib/features/people/presentation/person_directory_view_model.dart",
+        "apps/superadmin/test/features/people/presentation/person_directory_query_survival_test.dart"
+      ],
+      "status": "integrated-local; tested; pending-push"
+    },
+    {
+      "source": "82a3c7deff9f92838f956719dee3c71892d24130",
+      "destination": "0ecc5955629f7796f5273f2d69e396a16287e6f7",
+      "subject": "fix(people): stop shipping invented people inside the production form",
+      "files": [
+        "apps/superadmin/lib/features/people/presentation/person_form_page.dart",
+        "apps/superadmin/test/features/people/people_production_boundary_test.dart",
+        "apps/superadmin/test/features/people/presentation/person_form_page_test.dart"
+      ],
+      "status": "integrated-local; tested; pending-push"
+    },
+    {
+      "source": "5aae74bc3d5abf86f8ab30465f81c3c819009496",
+      "destination": "ff5000efb58628c6064d443e4e749df2395f4eef",
+      "subject": "fix(people): saving an incomplete identity says so instead of saying nothing",
+      "files": [
+        "apps/superadmin/lib/features/people/domain/person_directory.dart",
+        "apps/superadmin/lib/features/people/presentation/person_form_page.dart",
+        "apps/superadmin/lib/features/people/presentation/person_form_view_model.dart",
+        "apps/superadmin/test/features/people/presentation/person_form_incomplete_save_test.dart"
+      ],
+      "status": "integrated-local; tested; pending-push"
+    },
+    {
+      "source": "116231bd4102e411df37b35ac8454d4d3599e46e",
+      "destination": "71b74dbeb13df24c0d46a8550565ba4900f91c9b",
+      "subject": "fix(notices): keep the compact card title readable beside the 48px status",
+      "files": [
+        "apps/superadmin/lib/features/notices/presentation/notice_directory_page.dart",
+        "apps/superadmin/test/features/notices/notice_card_status_layout_test.dart"
+      ],
+      "status": "integrated-local; tested; pending-push"
+    },
+    {
+      "source": "428b62b04a88cc851ffc9a837bcc49c07df75554",
+      "destination": "b2c74128d095dca6d16299e585a5a25624c1b749",
+      "subject": "fix(acontece): remove a parada de Tab silenciosa nos chips de audiencia",
+      "files": [
+        "apps/superadmin/lib/features/principal_happens_publication/presentation/principal_happens_publication_page.dart",
+        "apps/superadmin/test/features/principal_happens_publication/presentation/principal_happens_publication_focus_test.dart"
+      ],
+      "status": "integrated-local; tested; pending-push"
+    },
+    {
+      "source": "61eab0011f7f27e318393ccd6d40f2e87ba3882d",
+      "destination": "02c7456c0fb585ee6cdfe06d1f7488b40399f1ef",
+      "subject": "fix(principal): compositores param de travar a tela quando um Error escapa",
+      "files": [
+        "apps/superadmin/lib/features/principal_happens_publication/application/happens_publication_controller.dart",
+        "apps/superadmin/lib/features/principal_moments_publication/application/moments_publication_controller.dart",
+        "apps/superadmin/lib/features/principal_now_publication/application/now_publication_controller.dart",
+        "apps/superadmin/test/features/principal_happens_publication/presentation/principal_happens_publication_error_recovery_test.dart",
+        "apps/superadmin/test/features/principal_moments_publication/presentation/principal_moments_publication_error_recovery_test.dart",
+        "apps/superadmin/test/features/principal_now_publication/presentation/principal_now_publication_error_recovery_test.dart"
+      ],
+      "status": "integrated-local; tested; pending-push"
+    },
+    {
+      "source": "d2ea1f36ea3b2a2eb564c9da7582754c327e25d1",
+      "destination": "1816a0e88f6145c575f1771959941f1db881aa84",
+      "subject": "fix(activities): reload directory after repository swap",
+      "files": [
+        "apps/superadmin/lib/features/activities/presentation/activity_directory_page.dart",
+        "apps/superadmin/test/features/activities/presentation/activity_directory_page_test.dart"
+      ],
+      "status": "integrated-local; tested; pending-push"
+    },
+    {
+      "source": "258376366f25d00d9ddba9dd428ef3827a9a3260",
+      "destination": "1d108ea2241143b463e3d2ff0b7aaebdd96c27d1",
+      "subject": "fix(audit): preserve page size across context swaps",
+      "files": [
+        "apps/superadmin/lib/features/audit/presentation/audit_directory_page.dart",
+        "apps/superadmin/test/features/audit/audit_directory_page_test.dart"
+      ],
+      "status": "integrated-local; tested; pending-push"
+    },
+    {
+      "source": "52f2075feaf8769b3d99647a20f73afe5222792c",
+      "destination": "60ae2b2a46b70369f8bcc387452303a5cbcacebd",
+      "subject": "fix(plans): compare repository contexts by identity",
+      "files": [
+        "apps/superadmin/lib/features/plans/presentation/plan_directory_page.dart",
+        "apps/superadmin/test/features/plans/plan_pages_test.dart"
+      ],
+      "status": "integrated-local; tested; pending-push"
+    },
+    {
+      "source": "7b09750226045c66d5176fd50ddbabeb5cc1a83b",
+      "destination": "1ee3ac186701f48a4205c3831679e6eb0543fc4b",
+      "subject": "fix(activities): isolate template catalog loads",
+      "files": [
+        "apps/superadmin/lib/features/activities/presentation/activity_directory_page.dart",
+        "apps/superadmin/test/features/activities/presentation/activity_directory_page_test.dart"
+      ],
+      "status": "integrated-local; tested; pending-push"
+    },
+    {
+      "source": "f9e681f80944694c82c03cb709f1d6716f1d3417",
+      "destination": "abcf96cab264beda2afca148333001be262f2efe",
+      "subject": "fix(activities): reject mismatched profile subjects",
+      "files": [
+        "apps/superadmin/lib/features/activities/presentation/activity_profile_about_section.dart",
+        "apps/superadmin/test/features/activities/presentation/activity_profile_about_section_test.dart"
+      ],
+      "status": "integrated-local; tested; pending-push"
+    },
+    {
+      "source": "36c44dc419fae8410ff40e0d62e196960882b9e6",
+      "destination": "0637d0a903bc5a81be78e5202603afb8d1fb8597",
+      "subject": "fix(daily-routine): preserve directory page size",
+      "files": [
+        "apps/superadmin/lib/features/daily_routine/daily_routine_pages.dart",
+        "apps/superadmin/test/features/daily_routine/daily_routine_production_page_test.dart"
+      ],
+      "status": "integrated-local; tested; pending-push"
+    },
+    {
+      "source": "b70826441a09f39c2748e7fcb5244495550fe392",
+      "destination": "c962ae997d911fd37b84d985db080fec7a6fb466",
+      "subject": "fix(attendance): stop dashboard reads after dispose",
+      "files": [
+        "apps/superadmin/lib/features/attendance/attendance_dashboard_controller.dart",
+        "apps/superadmin/test/features/attendance/attendance_dashboard_controller_test.dart"
+      ],
+      "status": "integrated-local; tested; pending-push"
+    },
+    {
+      "source": null,
+      "destination": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
+      "subject": "test(principal): exercise Agora recovery through current composer steps",
+      "files": [
+        "apps/superadmin/test/features/principal_now_publication/presentation/principal_now_publication_error_recovery_test.dart"
+      ],
+      "status": "integrated-local; tested; pending-push"
+    }
+  ],
+  "holds": [
+    {
+      "owner": "C01",
+      "shas": [
+        "5be8a92a",
+        "27f7bbab"
+      ],
+      "reason": "WIP de composição com RED e qualificação I021 somente rascunho Pester; runner/bridge/qualificador ausentes. Não executado."
+    },
+    {
+      "owner": "C02",
+      "shas": [
+        "f002fb2a"
+      ],
+      "reason": "WIP de resposta civil/texto; última alteração UTC sem reverificação no SHA final."
+    },
+    {
+      "owner": "C02",
+      "shas": [
+        "e2224800",
+        "0548c65f",
+        "7dd2deea",
+        "288171ca",
+        "27e48477",
+        "6c03563f",
+        "7aede603",
+        "f8c83929",
+        "720f739e"
+      ],
+      "reason": "Cadeia Safety preservada; não aplicar apenas últimos dois commits. Revisão/integração conjunta pendente; executor relata103PASS."
+    },
+    {
+      "owner": "C03",
+      "shas": [
+        "932003b1"
+      ],
+      "reason": "Review: receipt divergente em publicação Cardápios limpa requestId no catch embora servidor possa ter escrito; retry com nova intenção ainda inseguro."
+    },
+    {
+      "owner": "C03",
+      "shas": [
+        "8b4dfb6a",
+        "89949f30"
+      ],
+      "reason": "SQL Audit candidato; I019 falhou antes de SQL, I020 devolvida sem consumo. 0/145 runtime."
+    },
+    {
+      "owner": "C03",
+      "shas": [
+        "b049b163"
+      ],
+      "reason": "Agenda WIP isolado, sem composição produtiva e sem aprovação visual."
+    },
+    {
+      "owner": "C03",
+      "shas": [
+        "fd791a81",
+        "b5696cad",
+        "69b534c0",
+        "892e4316"
+      ],
+      "reason": "Adapters/candidatos preservados, revisão seletiva ainda pendente."
+    },
+    {
+      "owner": "C04",
+      "shas": [
+        "348f81ab"
+      ],
+      "reason": "Review: avatar aguarda codec/frame e catch chama setState sem mounted após fechamento. Hunk Groups não deve ser integrado junto sem correção/teste próprio."
+    },
+    {
+      "owner": "C04",
+      "shas": [
+        "9369f677",
+        "41dea4e9"
+      ],
+      "reason": "Hunks parcialmente aptos, mas commits inteiros carregam dependências Locais/unidade não revisadas."
+    },
+    {
+      "owner": "C04",
+      "shas": [
+        "27236a5a",
+        "ae7e8f5f",
+        "15516da9"
+      ],
+      "reason": "Candidatos SQL sem replay nominal; não promovidos ao runtime/produção."
+    },
+    {
+      "owner": "C05",
+      "shas": [
+        "3419a89e",
+        "2802d7fc",
+        "edded9bf",
+        "5f10c0b7",
+        "478a805e"
+      ],
+      "reason": "Composição Agora e bordas Chat requerem seleção/validação contra referência; 14 goldens Agora divergentes não aprovados."
+    },
+    {
+      "owner": "C05",
+      "shas": [
+        "5f0e7e29",
+        "71f745d5",
+        "6228296a",
+        "6c672709",
+        "c5916aa6",
+        "d4e13852"
+      ],
+      "reason": "SQL/contratos ainda candidatos sem runtime nominal."
+    },
+    {
+      "owner": "C07",
+      "shas": [
+        "b9be43f4"
+      ],
+      "reason": "Testes e evidências preservados em branch própria; reverificação conjunta0/1, baseline antigo não certifica código integrado."
+    }
+  ],
+  "tests": {
+    "forms_client": {
+      "pass": 173,
+      "failed": 0
+    },
+    "forms_dto": {
+      "pass": 110,
+      "failed": 0
+    },
+    "forms_domain": {
+      "pass": 6,
+      "failed": 0
+    },
+    "operations_first_batch": {
+      "pass": 74,
+      "failed": 0
+    },
+    "identity_structures_communication_operations": {
+      "initial_pass": 286,
+      "initial_failed": 2,
+      "rerun_pass": 288,
+      "rerun_failed": 0,
+      "reason": "Agora test needed current Continuar step; counters and retry retained"
+    },
+    "flutter_analyze": {
+      "files": 34,
+      "issues": 0
+    },
+    "knowledge_articles": 54,
+    "knowledge_harness": {
+      "pass": 12,
+      "skip": 1,
+      "skip_reason": "host cannot create symlink"
+    }
+  },
+  "evidence": [
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.preserved\\e2-r01-close-20260909-c00\\forms-client-tests.log",
+      "sha256": "2331df9da7ea2cb884be201d1a9357f6086c458cd32b21cf01fa9e5072225620",
+      "bytes": 36900
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.preserved\\e2-r01-close-20260909-c00\\forms-dto-tests.log",
+      "sha256": "93815aec2cb5fbb05302741ca833be68488d8c3c33e019f5159e68a758576619",
+      "bytes": 7612
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.preserved\\e2-r01-close-20260909-c00\\identity-structures-communication-operations-tests.log",
+      "sha256": "e7b11690e14c14f2ab5cbdfabd5594077624af30132d36fe59020ad9463a1718",
+      "bytes": 65140
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.preserved\\e2-r01-close-20260909-c00\\identity-structures-communication-operations-tests-rerun.log",
+      "sha256": "cb1c3653b7083b5ee297314dc608693f305c5bc667c224ab7d0ff32b88eda9b2",
+      "bytes": 60868
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.preserved\\e2-r01-close-20260909-c00\\integration-production-analyze.log",
+      "sha256": "d52b446bebf2faabd6ba77c4146a6c9e17e0c3d361b85e517f57a78296189b07",
+      "bytes": 178
+    }
+  ],
+  "remote_application": "none",
+  "deploy": "none",
+  "localhost": "closed; no persistent app server started in closure"
+}
