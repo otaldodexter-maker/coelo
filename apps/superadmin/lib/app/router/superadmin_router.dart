@@ -7,6 +7,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:coelo_api/coelo_api.dart';
+import 'package:coelo_domain/locations.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import '../../core/guards/superadmin_session.dart';
@@ -134,6 +135,13 @@ import '../../features/institutions/data/supabase_institution_directory_reposito
 import '../../features/institutions/domain/institution_directory_repository.dart';
 import '../../features/institutions/presentation/screens/institution_directory_page.dart';
 import '../../features/institutions/presentation/screens/institution_form_page.dart';
+import '../../features/locations/domain/location_capabilities.dart';
+import '../../features/locations/domain/location_catalog_reader.dart';
+import '../../features/locations/domain/location_catalog_writer.dart';
+import '../../features/locations/domain/location_reservation_gateway.dart';
+import '../../features/locations/presentation/location_consumer_reservations.dart';
+import '../../features/locations/presentation/locations_page.dart';
+import '../../features/locations/presentation/unit_locations_gate.dart';
 import '../../features/audit/presentation/audit_directory_page.dart';
 import '../../features/audit/presentation/audit_controller.dart';
 import '../../features/audit/domain/audit.dart';
@@ -226,6 +234,8 @@ void _returnToOr(
 
 SupportPrototypeController _createDevelopmentSupportController() => SupportPrototypeController();
 
+LocationCapabilities _noLocationCapabilities(SuperadminAuthContext? _) => LocationCapabilities.none;
+
 GoRouter createSuperadminRouter({
   required SuperadminSession session,
   required LoginAction login,
@@ -236,6 +246,12 @@ GoRouter createSuperadminRouter({
   GroupDirectoryRepository groupDirectoryRepository = const UnavailableGroupDirectoryRepository(),
   GroupDetailRepository groupDetailRepository = const UnavailableGroupDetailRepository(),
   UnitDetailRepository unitDetailRepository = const UnavailableUnitDetailRepository(),
+  LocationCatalogReader locationCatalogReader = const UnavailableLocationCatalogReader(),
+  LocationCatalogWriter locationCatalogWriter = const UnavailableLocationCatalogWriter(),
+  LocationReservationGateway locationReservationGateway =
+      const UnavailableLocationReservationGateway(),
+  LocationCapabilities Function(SuperadminAuthContext?) locationCapabilities =
+      _noLocationCapabilities,
   ActivityDirectoryRepository activityDirectoryRepository =
       const UnavailableActivityDirectoryRepository(),
   ActivityCommandRepository activityCommandRepository =
@@ -1195,6 +1211,12 @@ GoRouter createSuperadminRouter({
                 ? blockedProductionMutationPage(context)
                 : InstitutionFormPage(
                     repository: institutionDirectoryRepository,
+                    locationCatalogReader: locationCatalogReader,
+                    locationSessionAvailable:
+                        session.isAuthenticated &&
+                        !session.isPasswordRecovery &&
+                        session.authContext?.permissionCodes.contains('locations.read') == true,
+                    locationContextRevision: session.authorizationInvalidationRevision,
                     logout: logout,
                     onCancel: () => context.goNamed(SuperadminRoutes.institutionsName),
                     onSaved: (result) =>
@@ -1228,6 +1250,16 @@ GoRouter createSuperadminRouter({
                 : InstitutionFormPage(
                     repository: institutionDirectoryRepository,
                     institutionId: state.pathParameters['institutionId'],
+                    locationCatalogReader: locationCatalogReader,
+                    locationSessionAvailable:
+                        session.isAuthenticated &&
+                        !session.isPasswordRecovery &&
+                        session.authContext?.permissionCodes.contains('locations.read') == true,
+                    locationContextRevision: session.authorizationInvalidationRevision,
+                    onOpenLocations: () => context.goNamed(
+                      SuperadminRoutes.institutionLocationsName,
+                      pathParameters: {'institutionId': state.pathParameters['institutionId']!},
+                    ),
                     logout: logout,
                     onCancel: () => context.goNamed(SuperadminRoutes.institutionsName),
                     onSaved: (result) =>
@@ -1304,6 +1336,12 @@ GoRouter createSuperadminRouter({
                   : UnitFormPage(
                       key: ValueKey(session.authorizationInvalidationRevision),
                       repository: unitRepository,
+                      locationCatalogReader: locationCatalogReader,
+                      locationSessionAvailable:
+                          session.isAuthenticated &&
+                          !session.isPasswordRecovery &&
+                          session.authContext?.permissionCodes.contains('locations.read') == true,
+                      locationContextRevision: session.authorizationInvalidationRevision,
                       logout: logout,
                       onCreateGroup: (institutionId, unitId) => context.goNamed(
                         SuperadminRoutes.groupCreateName,
@@ -1361,6 +1399,16 @@ GoRouter createSuperadminRouter({
                       key: ValueKey(session.authorizationInvalidationRevision),
                       repository: unitRepository,
                       unitId: state.pathParameters['unitId'],
+                      locationCatalogReader: locationCatalogReader,
+                      locationSessionAvailable:
+                          session.isAuthenticated &&
+                          !session.isPasswordRecovery &&
+                          session.authContext?.permissionCodes.contains('locations.read') == true,
+                      locationContextRevision: session.authorizationInvalidationRevision,
+                      onOpenLocations: () => context.goNamed(
+                        SuperadminRoutes.unitLocationsName,
+                        pathParameters: {'unitId': state.pathParameters['unitId']!},
+                      ),
                       logout: logout,
                       onCreateGroup: (institutionId, unitId) => context.goNamed(
                         SuperadminRoutes.groupCreateName,
@@ -1405,6 +1453,147 @@ GoRouter createSuperadminRouter({
                         }
                       },
                     ),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.institutionLocations,
+            name: SuperadminRoutes.institutionLocationsName,
+            builder: (context, state) => ListenableBuilder(
+              listenable: session,
+              builder: (context, child) {
+                final capabilities = locationCapabilities(session.authContext);
+                final sessionAvailable =
+                    session.isAuthenticated &&
+                    !session.isPasswordRecovery &&
+                    session.authContext?.permissionCodes.contains('locations.read') == true;
+                return LocationsPage(
+                  key: ValueKey(session.authorizationInvalidationRevision),
+                  scope: LocationScope.institution(
+                    institutionId: state.pathParameters['institutionId']!,
+                  ),
+                  reader: locationCatalogReader,
+                  writer: capabilities.writesAnything
+                      ? locationCatalogWriter
+                      : const UnavailableLocationCatalogWriter(),
+                  capabilities: capabilities,
+                  sessionAvailable: sessionAvailable,
+                  contextRevision: session.authorizationInvalidationRevision,
+                  logout: logout,
+                  currentDestination: 'institutions',
+                  onLocationOpened: (id) => context.goNamed(
+                    SuperadminRoutes.institutionLocationDetailName,
+                    pathParameters: {
+                      'institutionId': state.pathParameters['institutionId']!,
+                      'locationId': id,
+                    },
+                  ),
+                  onDestinationSelected: (destination) =>
+                      _navigateFromPersistentShell(context, destination),
+                );
+              },
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.institutionLocationDetail,
+            name: SuperadminRoutes.institutionLocationDetailName,
+            builder: (context, state) => ListenableBuilder(
+              listenable: session,
+              builder: (context, child) {
+                final capabilities = locationCapabilities(session.authContext);
+                final sessionAvailable =
+                    session.isAuthenticated &&
+                    !session.isPasswordRecovery &&
+                    session.authContext?.permissionCodes.contains('locations.read') == true;
+                return LocationsPage(
+                  key: ValueKey(session.authorizationInvalidationRevision),
+                  scope: LocationScope.institution(
+                    institutionId: state.pathParameters['institutionId']!,
+                  ),
+                  reader: locationCatalogReader,
+                  writer: capabilities.writesAnything
+                      ? locationCatalogWriter
+                      : const UnavailableLocationCatalogWriter(),
+                  capabilities: capabilities,
+                  sessionAvailable: sessionAvailable,
+                  contextRevision: session.authorizationInvalidationRevision,
+                  selectedLocationId: state.pathParameters['locationId'],
+                  logout: logout,
+                  currentDestination: 'institutions',
+                  onLocationClosed: () => context.goNamed(
+                    SuperadminRoutes.institutionLocationsName,
+                    pathParameters: {'institutionId': state.pathParameters['institutionId']!},
+                  ),
+                  onDestinationSelected: (destination) =>
+                      _navigateFromPersistentShell(context, destination),
+                );
+              },
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.unitLocations,
+            name: SuperadminRoutes.unitLocationsName,
+            builder: (context, state) => ListenableBuilder(
+              listenable: session,
+              builder: (context, child) {
+                final capabilities = locationCapabilities(session.authContext);
+                final sessionAvailable =
+                    session.isAuthenticated &&
+                    !session.isPasswordRecovery &&
+                    session.authContext?.permissionCodes.contains('locations.read') == true;
+                return UnitLocationsGate(
+                  key: ValueKey(session.authorizationInvalidationRevision),
+                  unitId: state.pathParameters['unitId']!,
+                  unitDetailRepository: unitDetailRepository,
+                  reader: locationCatalogReader,
+                  writer: capabilities.writesAnything
+                      ? locationCatalogWriter
+                      : const UnavailableLocationCatalogWriter(),
+                  capabilities: capabilities,
+                  sessionAvailable: sessionAvailable,
+                  contextRevision: session.authorizationInvalidationRevision,
+                  logout: logout,
+                  onLocationOpened: (id) => context.goNamed(
+                    SuperadminRoutes.unitLocationDetailName,
+                    pathParameters: {'unitId': state.pathParameters['unitId']!, 'locationId': id},
+                  ),
+                  onDestinationSelected: (destination) =>
+                      _navigateFromPersistentShell(context, destination),
+                );
+              },
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.unitLocationDetail,
+            name: SuperadminRoutes.unitLocationDetailName,
+            builder: (context, state) => ListenableBuilder(
+              listenable: session,
+              builder: (context, child) {
+                final capabilities = locationCapabilities(session.authContext);
+                final sessionAvailable =
+                    session.isAuthenticated &&
+                    !session.isPasswordRecovery &&
+                    session.authContext?.permissionCodes.contains('locations.read') == true;
+                return UnitLocationsGate(
+                  key: ValueKey(session.authorizationInvalidationRevision),
+                  unitId: state.pathParameters['unitId']!,
+                  unitDetailRepository: unitDetailRepository,
+                  reader: locationCatalogReader,
+                  writer: capabilities.writesAnything
+                      ? locationCatalogWriter
+                      : const UnavailableLocationCatalogWriter(),
+                  capabilities: capabilities,
+                  sessionAvailable: sessionAvailable,
+                  contextRevision: session.authorizationInvalidationRevision,
+                  selectedLocationId: state.pathParameters['locationId'],
+                  logout: logout,
+                  onLocationClosed: () => context.goNamed(
+                    SuperadminRoutes.unitLocationsName,
+                    pathParameters: {'unitId': state.pathParameters['unitId']!},
+                  ),
+                  onDestinationSelected: (destination) =>
+                      _navigateFromPersistentShell(context, destination),
+                );
+              },
             ),
           ),
           GoRoute(
@@ -1492,6 +1681,46 @@ GoRouter createSuperadminRouter({
                       key: ValueKey(session.authorizationInvalidationRevision),
                       repository: groupDetailRepository,
                       id: state.pathParameters['groupId']!,
+                      reservationBuilder: (context, detail) => LocationConsumerReservations(
+                        consumer: LocationReservationConsumer(
+                          kind: LocationReservationConsumerKind.group,
+                          id: detail.id,
+                        ),
+                        scopes: [
+                          (
+                            scope: LocationScope.institution(institutionId: detail.institutionId),
+                            label: detail.institutionName,
+                          ),
+                          (
+                            scope: LocationScope.unit(
+                              institutionId: detail.institutionId,
+                              unitId: detail.unitId,
+                            ),
+                            label: detail.unitName,
+                          ),
+                        ],
+                        reader: locationCatalogReader,
+                        gateway: locationReservationGateway,
+                        sessionAvailable: session.isAuthenticated && !session.isPasswordRecovery,
+                        contextRevision: session.authorizationInvalidationRevision,
+                        canRead:
+                            session.authContext?.permissionCodes.containsAll({
+                              'groups.read',
+                              'locations.read',
+                              'locations.reservations.read',
+                            }) ==
+                            true,
+                        canManage:
+                            session.authContext?.permissionCodes.contains(
+                              'locations.reservations.manage',
+                            ) ==
+                            true,
+                        canOverride:
+                            session.authContext?.permissionCodes.contains(
+                              'locations.reservations.override',
+                            ) ==
+                            true,
+                      ),
                       logout: logout,
                       onBack: () => context.goNamed(SuperadminRoutes.groupsName),
                       onDestinationSelected: (destination) =>

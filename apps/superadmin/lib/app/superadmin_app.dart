@@ -14,6 +14,7 @@ import '../core/guards/superadmin_session.dart';
 import '../features/activities/domain/activity_command.dart';
 import '../features/activities/domain/activity_directory.dart';
 import '../features/assessments/assessment.dart';
+import '../features/auth/domain/superadmin_auth_context.dart';
 import '../features/auth/domain/login_request.dart';
 import '../features/auth/domain/logout_action.dart';
 import '../features/auth/domain/password_recovery.dart';
@@ -27,6 +28,10 @@ import '../features/account/data/user_preferences_repository.dart';
 import '../features/account/presentation/user_preferences_controller.dart';
 import '../features/institutions/data/supabase_institution_directory_repository.dart';
 import '../features/institutions/domain/institution_directory_repository.dart';
+import '../features/locations/domain/location_capabilities.dart';
+import '../features/locations/domain/location_catalog_reader.dart';
+import '../features/locations/domain/location_catalog_writer.dart';
+import '../features/locations/domain/location_reservation_gateway.dart';
 import '../features/units/data/unavailable_unit_composition.dart';
 import '../features/units/domain/unit_backend_commands.dart';
 import '../features/units/domain/unit_directory.dart';
@@ -83,6 +88,9 @@ final _superadminDarkTheme = CoeloTheme.dark.copyWith(
   pageTransitionsTheme: _instantPageTransitions,
 );
 
+LocationCapabilities _noLocationCapabilities(SuperadminAuthContext? _) =>
+    LocationCapabilities.none;
+
 final class _InstantPageTransitionsBuilder extends PageTransitionsBuilder {
   const _InstantPageTransitionsBuilder();
 
@@ -107,6 +115,10 @@ class SuperadminApp extends StatefulWidget {
     this.groupDirectoryRepository = const UnavailableGroupDirectoryRepository(),
     this.groupDetailRepository = const UnavailableGroupDetailRepository(),
     this.unitDetailRepository = const UnavailableUnitDetailRepository(),
+    this.locationCatalogReader = const UnavailableLocationCatalogReader(),
+    this.locationCatalogWriter = const UnavailableLocationCatalogWriter(),
+    this.locationReservationGateway = const UnavailableLocationReservationGateway(),
+    this.locationCapabilities = _noLocationCapabilities,
     this.activityDirectoryRepository = const UnavailableActivityDirectoryRepository(),
     this.activityCommandRepository = const UnavailableActivityCommandRepository(),
     this.assessmentRepository = const UnavailableAssessmentRepository(),
@@ -164,6 +176,10 @@ class SuperadminApp extends StatefulWidget {
   final GroupDirectoryRepository groupDirectoryRepository;
   final GroupDetailRepository groupDetailRepository;
   final UnitDetailRepository unitDetailRepository;
+  final LocationCatalogReader locationCatalogReader;
+  final LocationCatalogWriter locationCatalogWriter;
+  final LocationReservationGateway locationReservationGateway;
+  final LocationCapabilities Function(SuperadminAuthContext?) locationCapabilities;
   final ActivityDirectoryRepository activityDirectoryRepository;
   final ActivityCommandRepository activityCommandRepository;
   final AssessmentRepository assessmentRepository;
@@ -245,6 +261,10 @@ class _SuperadminAppState extends State<SuperadminApp> {
       groupDirectoryRepository: widget.groupDirectoryRepository,
       groupDetailRepository: widget.groupDetailRepository,
       unitDetailRepository: widget.unitDetailRepository,
+      locationCatalogReader: widget.locationCatalogReader,
+      locationCatalogWriter: widget.locationCatalogWriter,
+      locationReservationGateway: widget.locationReservationGateway,
+      locationCapabilities: widget.locationCapabilities,
       activityDirectoryRepository: widget.activityDirectoryRepository,
       activityCommandRepository: widget.activityCommandRepository,
       assessmentRepository: widget.assessmentRepository,

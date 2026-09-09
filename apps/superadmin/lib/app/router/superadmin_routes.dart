@@ -7,6 +7,10 @@ abstract final class SuperadminRoutes {
   static const institutionCreateName = 'institution-create';
   static const institutionEdit = '/institutions/:institutionId/edit';
   static const institutionEditName = 'institution-edit';
+  static const institutionLocations = '/institutions/:institutionId/locations';
+  static const institutionLocationsName = 'institution-locations';
+  static const institutionLocationDetail = '/institutions/:institutionId/locations/:locationId';
+  static const institutionLocationDetailName = 'institution-location-detail';
   static const units = '/units';
   static const unitsName = 'units';
   static const unitCreate = '/units/new';
@@ -15,6 +19,10 @@ abstract final class SuperadminRoutes {
   static const unitEditName = 'unit-edit';
   static const unitDetail = '/units/:unitId';
   static const unitDetailName = 'unit-detail';
+  static const unitLocations = '/units/:unitId/locations';
+  static const unitLocationsName = 'unit-locations';
+  static const unitLocationDetail = '/units/:unitId/locations/:locationId';
+  static const unitLocationDetailName = 'unit-location-detail';
   static const groups = '/groups';
   static const groupsName = 'groups';
   static const groupCreate = '/groups/new';
