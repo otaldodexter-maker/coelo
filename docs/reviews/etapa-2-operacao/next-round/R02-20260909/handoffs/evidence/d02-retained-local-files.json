@@ -1,0 +1,147 @@
+{
+  "round": "E2-R02-20260909",
+  "owner": "D02",
+  "generatedAt": "2026-09-09T16:11:33.357697-03:00",
+  "worktree": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r02-d02-estrutura",
+  "note": "Owned untracked historical snapshots, builders and review copies preserved in this worktree; not integrated code or acceptance. Tracked active edits are reported separately.",
+  "files": [
+    {
+      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-activities-concurrency/build-clock-patch.py",
+      "bytes": 2735,
+      "sha256": "2fbe252e879d278848106e58166f88d3b9cf9afc79f177af0cc644c608f689ca",
+      "status": "retained-local-auxiliary-not-integration"
+    },
+    {
+      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-activities-concurrency/replay.txt",
+      "bytes": 690,
+      "sha256": "af53dae2faf8de16b99de77b4277f395fda18c7ab81bfb699c2ee59deac88a07",
+      "status": "retained-local-auxiliary-not-integration"
+    },
+    {
+      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/0001-feat-db-copy-command-for-the-location-catalog-local-.patch",
+      "bytes": 24372,
+      "sha256": "e92d1059f737076dad95de6b008627df334f8c48fd9038097c7e71ab988ee2e6",
+      "status": "retained-local-auxiliary-not-integration"
+    },
+    {
+      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/0001-feat-db-edit-and-status-commands-for-the-location-ca.patch",
+      "bytes": 36399,
+      "sha256": "e698ff77a731400c7dc15fab65f703f478b71a6032068efa5a177f1e11c84f7e",
+      "status": "retained-local-auxiliary-not-integration"
+    },
+    {
+      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/0001-feat-db-weekly-availability-windows-for-the-location.patch",
+      "bytes": 35853,
+      "sha256": "ed8aebeb2d1e6169906d3cccb578daa6200e687647ae72c8cced9d23afd3352c",
+      "status": "retained-local-auxiliary-not-integration"
+    },
+    {
+      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/0001-feat-locations-publish-the-minimum-contract-for-rese.patch",
+      "bytes": 20273,
+      "sha256": "7cac6de98f3210d0ee51a955b79b508d1579dc1114363c708f6703a36ff1a18b",
+      "status": "retained-local-auxiliary-not-integration"
+    },
+    {
+      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/0001-test-locations-checkpoint-remote-snapshot-cutover-ca.patch",
+      "bytes": 47379,
+      "sha256": "43a615994f3ecd562b527e1f9b05d7ed6a455e4fbd06c1a04822449478d2efe9",
+      "status": "retained-local-auxiliary-not-integration"
+    },
+    {
+      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/Get-NormalizedReplayHash.ps1",
+      "bytes": 385,
+      "sha256": "cf3d00360dd5ac4fbd00b7a4ed1df46ab109c4c9f946fafb144058282128b6d4",
+      "status": "retained-local-auxiliary-not-integration"
+    },
+    {
+      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/Verify-LocationCatalogWrapperPatch.ps1",
+      "bytes": 2601,
+      "sha256": "4798c46f447b1d28a63d8062ffa4c906b8349fa436e69c49495480be6038349c",
+      "status": "retained-local-auxiliary-not-integration"
+    },
+    {
+      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/Verify-LocationReservationsWrapperPatch.ps1",
+      "bytes": 3047,
+      "sha256": "a6c2c4bd9cd40e3ddc816ec1f7f305e7278f9d472a3429e6242a9f88becab4f8",
+      "status": "retained-local-auxiliary-not-integration"
+    },
+    {
+      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/build-location-wrapper-patch.py",
+      "bytes": 3943,
+      "sha256": "ff6b27aa441a13011409ae4771d2a725cf09d97ecba2871fccc977a9ba06ffe4",
+      "status": "retained-local-auxiliary-not-integration"
+    },
+    {
+      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/build-reservation-wrapper-patch.py",
+      "bytes": 4635,
+      "sha256": "b40f7692ea4ae90d7beb4d629eaf9e3911e58ca9f4249dab7a17d25da4fa2dab",
+      "status": "retained-local-auxiliary-not-integration"
+    },
+    {
+      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/catalog01-snapshot-paths.md",
+      "bytes": 1455,
+      "sha256": "204da3b3379acb94954daa211830292ceca53f2c78f682b430b6cc1e88982432",
+      "status": "retained-local-auxiliary-not-integration"
+    },
+    {
+      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/catalog01-snapshot/2026-09-07-location-catalog-v2-local-contract.md",
+      "bytes": 12985,
+      "sha256": "4896963b063bbdb0ba5833c21bc0257b7b938f451852ef9b727bccc9e3662d5b",
+      "status": "retained-local-auxiliary-not-integration"
+    },
+    {
+      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/catalog01-snapshot/2026-09-08-location-remote-snapshot-cutover.md",
+      "bytes": 7452,
+      "sha256": "8b01136efa5a949034936887b84985969d61d60b938c4e97072f32c4927d5318",
+      "status": "retained-local-auxiliary-not-integration"
+    },
+    {
+      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/catalog01-snapshot/20260908031000_superadmin_location_catalog_v2.sql",
+      "bytes": 39134,
+      "sha256": "4c9500d9cb8c3f82b301796b71e83816142a941f0a0f63dec58e2ae04c2e5995",
+      "status": "retained-local-auxiliary-not-integration"
+    },
+    {
+      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/catalog01-snapshot/Test-LocationRemoteSnapshot.Tests.ps1",
+      "bytes": 5360,
+      "sha256": "2474d682bad391526399b6f501f06320692689453026e83572d3faa9ba222089",
+      "status": "retained-local-auxiliary-not-integration"
+    },
+    {
+      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/catalog01-snapshot/location_form_options_remote_snapshot_local.sql",
+      "bytes": 7388,
+      "sha256": "6c3002b500da4ecd623c3bd5e0ddd04950785b31c4bbcc858a702e5f3ff11c5e",
+      "status": "retained-local-auxiliary-not-integration"
+    },
+    {
+      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/catalog01-snapshot/superadmin_location_remote_options_cutover_test.sql",
+      "bytes": 16655,
+      "sha256": "9e68f0a3f69056bf18d73a9577419d0168680fa557f0600d802d32f81ac9171d",
+      "status": "retained-local-auxiliary-not-integration"
+    },
+    {
+      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/location-prepare-review-fixture.ps1",
+      "bytes": 18743,
+      "sha256": "283f74463bd90ced1847c33f156f45d557d26eac5ba1cb587cf1e8c0a91dfb7f",
+      "status": "retained-local-auxiliary-not-integration"
+    },
+    {
+      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/reservation-architecture.md",
+      "bytes": 6579,
+      "sha256": "615cb49054c08a376dd59974848ce3d0acc7ffe5a48cc7b3385651f79585789e",
+      "status": "retained-local-auxiliary-not-integration"
+    },
+    {
+      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/reservation-invoke-review-fixture.ps1",
+      "bytes": 23472,
+      "sha256": "b16a3ccecc2406516926efbd5ffc02caf54bfed779513d512f72acbb811912ca",
+      "status": "retained-local-auxiliary-not-integration"
+    },
+    {
+      "path": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/reservation-prepare-review-fixture.ps1",
+      "bytes": 19782,
+      "sha256": "65de1c64ca9d76d6cdbc924cb68824b80b212d9e08c69c23eb62d35399c98165",
+      "status": "retained-local-auxiliary-not-integration"
+    }
+  ]
+}
