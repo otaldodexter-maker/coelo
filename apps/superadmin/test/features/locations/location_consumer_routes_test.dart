@@ -1,4 +1,5 @@
 import 'package:coelo_domain/locations.dart';
+import 'package:coelo_superadmin/features/locations/domain/location_consumer_selection_reader.dart';
 import 'package:coelo_superadmin/app/router/superadmin_router.dart';
 import 'package:coelo_superadmin/core/guards/superadmin_session.dart';
 import 'package:coelo_superadmin/features/activities/domain/activity_read_detail.dart';
@@ -134,7 +135,113 @@ class _Activities implements ActivityReadDetailRepository {
   });
 }
 
+class _Selection implements LocationConsumerSelectionReader {
+  final consumers = <LocationReservationConsumer>[];
+  @override
+  bool get available => true;
+  @override
+  Future<LocationConsumerCurrentSelection> fetchSelection({
+    required LocationReservationConsumer consumer,
+  }) async {
+    consumers.add(consumer);
+    return LocationConsumerCurrentSelection(
+      consumer: consumer,
+      location: const LocationReferenceSnapshot(
+        id: locationA,
+        scope: scopeA,
+        kind: LocationKind.external,
+        label: 'Local atual gravado',
+      ),
+      status: LocationCatalogStatus.inactive,
+    );
+  }
+}
+
 void main() {
+  for (final kind in [
+    LocationReservationConsumerKind.group,
+    LocationReservationConsumerKind.activity,
+  ]) {
+    testWidgets(
+      'normal ${kind.name} current choice requires no reservation capability and clears on revocation',
+      (tester) async {
+        await tester.binding.setSurfaceSize(const Size(1440, 1100));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+        final readPermission = kind == LocationReservationConsumerKind.group
+            ? 'groups.read'
+            : 'activities.read';
+        final session = SuperadminSession()
+          ..authorize(
+            SuperadminAuthContext(
+              platformRoleCode: 'test',
+              scopeKind: SuperadminAuthScopeKind.platform,
+              permissionCodes: {readPermission, 'locations.read'},
+              aal: 'aal1',
+            ),
+            sessionId: 'selection-session',
+          );
+        final selection = _Selection();
+        final bindings = _Bindings();
+        final reservations = _Reservations();
+        final router = createSuperadminRouter(
+          session: session,
+          login: unavailableSuperadminLogin,
+          logout: unavailableSuperadminLogout,
+          requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+          groupDetailRepository: _Groups(),
+          activityReadDetailRepository: _Activities(),
+          locationConsumerSelectionReader: selection,
+          locationConsumerBindingsReader: bindings,
+          locationReservationGateway: reservations,
+          onThemeModeChanged: (_) {},
+        );
+        addTearDown(router.dispose);
+        addTearDown(session.dispose);
+        await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+        router.go(
+          kind == LocationReservationConsumerKind.group
+              ? '/groups/$groupId?institutionId=$institutionB'
+              : '/activities/$groupId?institutionId=$institutionB',
+        );
+        await tester.pumpAndSettle();
+        if (kind == LocationReservationConsumerKind.activity) {
+          await tester.scrollUntilVisible(
+            find.byKey(const Key('consumer-current-selection')),
+            250,
+            scrollable: find
+                .descendant(
+                  of: find.byKey(const Key('activity-read-scroll')),
+                  matching: find.byType(Scrollable),
+                )
+                .first,
+          );
+          await tester.pumpAndSettle();
+        }
+        expect(find.text('Local atual gravado'), findsOneWidget);
+        expect(selection.consumers.single, LocationReservationConsumer(kind: kind, id: groupId));
+        expect(bindings.consumers, isEmpty);
+        expect(reservations.consumers, isEmpty);
+        expect(find.byType(LocationReservationPanel), findsNothing);
+        final context = tester.widget<LocationConsumerReservations>(
+          find.byType(LocationConsumerReservations),
+        );
+        expect(context.canRead, isFalse);
+        session.authorize(
+          SuperadminAuthContext(
+            platformRoleCode: 'test',
+            scopeKind: SuperadminAuthScopeKind.platform,
+            permissionCodes: {readPermission},
+            aal: 'aal1',
+          ),
+          sessionId: 'selection-revoked',
+        );
+        await tester.pumpAndSettle();
+        expect(find.text('Local atual gravado'), findsNothing);
+        expect(selection.consumers, hasLength(1));
+      },
+    );
+  }
+
   testWidgets(
     'normal activity route derives reservation scopes from reader and clears on revocation',
     (tester) async {

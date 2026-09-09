@@ -6,10 +6,12 @@ import 'package:flutter/material.dart';
 
 import '../domain/location_catalog_reader.dart';
 import '../domain/location_consumer_bindings_reader.dart';
+import '../domain/location_consumer_selection_reader.dart';
 import '../domain/location_reservation_gateway.dart';
 import '../domain/location_selection_source.dart';
 import 'location_reservation_panel.dart';
 import 'location_consumer_bindings_section.dart';
+import 'location_consumer_selection_section.dart';
 import 'location_selection_field.dart';
 
 /// Reservation context for an already authorized, persisted consumer.
@@ -25,6 +27,8 @@ class LocationConsumerReservations extends StatefulWidget {
     this.bindingsReader = const UnavailableLocationConsumerBindingsReader(),
     this.gateway = const UnavailableLocationReservationGateway(),
     this.canRead = false,
+    this.selectionReader,
+    this.canReadSelection = false,
     this.canManage = false,
     this.canOverride = false,
     super.key,
@@ -38,6 +42,8 @@ class LocationConsumerReservations extends StatefulWidget {
   final bool sessionAvailable;
   final int contextRevision;
   final bool canRead;
+  final LocationConsumerSelectionReader? selectionReader;
+  final bool canReadSelection;
   final bool canManage;
   final bool canOverride;
 
@@ -92,6 +98,28 @@ class _LocationConsumerReservationsState extends State<LocationConsumerReservati
 
   @override
   Widget build(BuildContext context) {
+    final selectionReader = widget.selectionReader;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (selectionReader != null) ...[
+          LocationConsumerSelectionSection(
+            key: const Key('consumer-current-selection'),
+            consumer: widget.consumer,
+            scopes: widget.scopes.map((option) => option.scope).toList(),
+            reader: selectionReader,
+            sessionAvailable: widget.sessionAvailable,
+            canRead: widget.canReadSelection,
+            contextRevision: widget.contextRevision,
+          ),
+          const SizedBox(height: CoeloSpacing.space5),
+        ],
+        _buildReservations(context),
+      ],
+    );
+  }
+
+  Widget _buildReservations(BuildContext context) {
     if (!_allowed) {
       return const CoeloStatePanel(
         key: Key('consumer-reservations-denied'),

@@ -143,6 +143,7 @@ import '../../features/locations/domain/location_catalog_reader.dart';
 import '../../features/locations/domain/location_catalog_writer.dart';
 import '../../features/locations/domain/location_reservation_gateway.dart';
 import '../../features/locations/domain/location_consumer_bindings_reader.dart';
+import '../../features/locations/domain/location_consumer_selection_reader.dart';
 import '../../features/locations/presentation/location_consumer_reservations.dart';
 import '../../features/locations/presentation/locations_page.dart';
 import '../../features/locations/presentation/unit_locations_gate.dart';
@@ -256,6 +257,8 @@ GoRouter createSuperadminRouter({
   LocationCatalogReader locationCatalogReader = const UnavailableLocationCatalogReader(),
   LocationConsumerBindingsReader locationConsumerBindingsReader =
       const UnavailableLocationConsumerBindingsReader(),
+  LocationConsumerSelectionReader locationConsumerSelectionReader =
+      const UnavailableLocationConsumerSelectionReader(),
   LocationCatalogWriter locationCatalogWriter = const UnavailableLocationCatalogWriter(),
   LocationReservationGateway locationReservationGateway =
       const UnavailableLocationReservationGateway(),
@@ -1834,6 +1837,10 @@ GoRouter createSuperadminRouter({
                         reader: locationCatalogReader,
                         gateway: locationReservationGateway,
                         bindingsReader: locationConsumerBindingsReader,
+                        selectionReader: locationConsumerSelectionReader,
+                        canReadSelection: detail.status != 'archived' && session.authContext?.permissionCodes.containsAll({
+                          'groups.read', 'locations.read',
+                        }) == true,
                         sessionAvailable: session.isAuthenticated && !session.isPasswordRecovery,
                         contextRevision: session.authorizationInvalidationRevision,
                         canRead:
@@ -2026,6 +2033,10 @@ GoRouter createSuperadminRouter({
                   ],
                   reader: locationCatalogReader,
                   bindingsReader: locationConsumerBindingsReader,
+                  selectionReader: locationConsumerSelectionReader,
+                  canReadSelection: detail.status != 'archived' && session.authContext?.permissionCodes.containsAll({
+                    'activities.read', 'locations.read',
+                  }) == true,
                   gateway: locationReservationGateway,
                   sessionAvailable: session.isAuthenticated && !session.isPasswordRecovery,
                   contextRevision: session.authorizationInvalidationRevision,
