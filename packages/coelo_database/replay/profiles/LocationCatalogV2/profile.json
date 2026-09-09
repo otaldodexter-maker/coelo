@@ -1,0 +1,29 @@
+{
+  "id": "LocationCatalogV2",
+  "parent": {
+    "id": "FReadDirectoryContractGreenDerived",
+    "descriptor_sha256_crlf_utf8": "b6b1232c7e67e978747b784ba71de43afd8e85b3102645d91d53c66a457b2542",
+    "resolver_sha256_crlf_utf8": "d8caf37a298f8d92348613f21af79b3de4afb08224554736f3b802b51d66690b"
+  },
+  "target_version": "20260908190650",
+  "canonical_additions": [
+    {"file":"20260908031000_superadmin_location_catalog_v2.sql","sha256_crlf_utf8":"4c9500d9cb8c3f82b301796b71e83816142a941f0a0f63dec58e2ae04c2e5995"},
+    {"file":"20260908190646_superadmin_locations_update_status_v2.sql","sha256_crlf_utf8":"2b96f81408fa1c1b99678ddf0b70e071a519f98acda6d43a8670d6d8457aa061"},
+    {"file":"20260908190648_superadmin_locations_copy_v2.sql","sha256_crlf_utf8":"b7e21511d0a8db634aefdf7ecaa89c75616f941a82728a48a86c7a16a852fd76"},
+    {"file":"20260908190650_superadmin_locations_schedule_v2.sql","sha256_crlf_utf8":"ef3e84af397b1808c27573ea8eb0a75541f1d0d32330fd4507c3464997760ac3"}
+  ],
+  "location_bootstraps": [
+    {
+      "file": "20260908030958_location_form_options_remote_snapshot_local.sql",
+      "sha256_crlf_utf8": "99f3ad22a387d1f5c5d274fad5b294805842997386a1d147a486d48129e56d16",
+      "before": "20260908030959_location_catalog_v2_capability_bootstrap_local.sql"
+    },
+    {
+      "file": "20260908030959_location_catalog_v2_capability_bootstrap_local.sql",
+      "sha256_crlf_utf8": "4cfc607816d7be959fb24d365f6cb9b995460586eb7869d8a985d8e2a0115bed",
+      "before": "20260908031000_superadmin_location_catalog_v2.sql"
+    }
+  ],
+  "extra_bridges": [],
+  "planned_counts": {"canonical":53,"preflight":2,"bootstrap":2,"total":57}
+}
