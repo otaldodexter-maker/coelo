@@ -20,6 +20,7 @@ final class PrincipalProfileRoutePage extends StatefulWidget {
   const PrincipalProfileRoutePage({
     required this.runtimeContext,
     required this.onOpenAgenda,
+    this.embedded = false,
     this.circularRepository,
     this.aboutRepository,
     this.happensFeedRepository,
@@ -38,6 +39,12 @@ final class PrincipalProfileRoutePage extends StatefulWidget {
   });
 
   final PrincipalRuntimeContext runtimeContext;
+
+  /// Whether the Superadmin shell already provides the surrounding chrome.
+  ///
+  /// Hosted in the Superadmin container the Principal surface must not repeat
+  /// the header or the dock; it only fills the content container.
+  final bool embedded;
   final CircularRepository? circularRepository;
   final ProfileAboutRepository? aboutRepository;
   final PrincipalHappensFeedRepository? happensFeedRepository;
@@ -231,6 +238,7 @@ final class _PrincipalProfileRoutePageState extends State<PrincipalProfileRouteP
     _AboutReady(:final page) => PrincipalProfilePreviewPage(
       key: const Key('principal-profile-content'),
       data: _data,
+      embedded: widget.embedded,
       showPreviewFeeds: false,
       happensTab: _happensTab,
       aboutPage: page,

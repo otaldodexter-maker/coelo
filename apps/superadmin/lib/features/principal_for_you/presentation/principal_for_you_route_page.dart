@@ -15,6 +15,7 @@ final class PrincipalForYouRoutePage extends StatefulWidget {
     required this.repository,
     required this.supportingData,
     this.audienceScope,
+    this.embedded = false,
     this.now = DateTime.now,
     this.onOpenHappens,
     this.onOpenNow,
@@ -30,6 +31,9 @@ final class PrincipalForYouRoutePage extends StatefulWidget {
   /// Server-authorized scope of the actor. Audience eligibility is evaluated
   /// against it before any communication reaches the hub.
   final PrincipalForYouAudienceScope? audienceScope;
+
+  /// Whether the Superadmin shell already provides the surrounding chrome.
+  final bool embedded;
   final DateTime Function() now;
   final VoidCallback? onOpenHappens;
   final VoidCallback? onOpenNow;
@@ -232,6 +236,7 @@ final class _PrincipalForYouRoutePageState extends State<PrincipalForYouRoutePag
     _Loaded(:final data, :final empty) => KeyedSubtree(
       key: empty ? const Key('principal-for-you-empty') : null,
       child: PrincipalForYouPreviewPage(
+        embedded: widget.embedded,
         data: data,
         onOpenHappens: widget.onOpenHappens,
         onOpenNow: widget.onOpenNow,
