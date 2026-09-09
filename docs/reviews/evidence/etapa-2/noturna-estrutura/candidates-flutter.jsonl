@@ -1,0 +1,135 @@
+Resolving dependencies...
+Downloading packages...
+  clock 1.1.2 (1.1.3 available)
+  code_assets 1.2.1 (2.0.0 available)
+  cross_file 0.3.5+4 (0.3.5+5 available)
+  crypto 3.0.6 (3.0.7 available)
+  dbus 0.7.13 (0.7.15 available)
+  file_picker 10.3.10 (12.2.0 available)
+  flutter_svg 2.2.3 (2.3.0 available)
+  functions_client 2.6.4 (2.7.1 available)
+  go_router 16.3.0 (18.0.1 available)
+  gotrue 2.26.0 (2.27.2 available)
+  hooks 2.0.2 (2.2.0 available)
+  intl 0.20.2 (0.20.3 available)
+  matcher 0.12.19 (0.12.20 available)
+  material_color_utilities 0.13.0 (0.13.1 available)
+  meta 1.18.0 (1.19.0 available)
+  mime 2.0.0 (2.1.0 available)
+  objective_c 9.5.0 (9.6.0 available)
+  passkeys_platform_interface 2.8.0 (2.9.0 available)
+  platform 3.1.6 (3.2.0 available)
+  postgrest 2.8.0 (2.9.1 available)
+  realtime_client 2.11.0 (2.13.0 available)
+  record_use 0.6.0 (1.1.1 available)
+  shared_preferences_android 2.4.27 (2.4.28 available)
+  shared_preferences_foundation 2.5.6 (2.5.7 available)
+  stack_trace 1.12.1 (1.12.2 available)
+  storage_client 2.6.0 (2.8.0 available)
+  supabase 2.14.0 (2.16.1 available)
+  supabase_flutter 2.16.0 (2.17.2 available)
+  test_api 0.7.11 (0.7.14 available)
+  url_launcher_android 6.3.32 (6.3.33 available)
+  url_launcher_ios 6.4.1 (6.4.2 available)
+  url_launcher_linux 3.2.2 (3.2.3 available)
+  url_launcher_macos 3.2.5 (3.2.6 available)
+  url_launcher_windows 3.1.5 (3.1.6 available)
+  vector_graphics 1.2.2 (1.2.3 available)
+  vector_graphics_compiler 1.2.6 (1.3.0 available)
+  vector_math 2.2.0 (2.4.2 available)
+  vm_service 15.2.0 (15.3.0 available)
+  win32 5.15.0 (6.4.0 available)
+Got dependencies!
+39 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+{"protocolVersion":"0.1.1","runnerVersion":null,"pid":36492,"type":"start","time":0}
+{"suite":{"id":0,"platform":"vm","path":"C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_form_sections_integration_test.dart"},"type":"suite","time":0}
+{"test":{"id":1,"name":"loading C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_form_sections_integration_test.dart","suiteID":0,"groupIDs":[],"metadata":{"skip":false,"skipReason":null},"line":null,"column":null,"url":null},"type":"testStart","time":0}
+{"suite":{"id":2,"platform":"vm","path":"C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/locations_map_section_test.dart"},"type":"suite","time":3}
+{"test":{"id":3,"name":"loading C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/locations_map_section_test.dart","suiteID":2,"groupIDs":[],"metadata":{"skip":false,"skipReason":null},"line":null,"column":null,"url":null},"type":"testStart","time":3}
+{"suite":{"id":4,"platform":"vm","path":"C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_routes_test.dart"},"type":"suite","time":3}
+{"test":{"id":5,"name":"loading C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_routes_test.dart","suiteID":4,"groupIDs":[],"metadata":{"skip":false,"skipReason":null},"line":null,"column":null,"url":null},"type":"testStart","time":3}
+{"suite":{"id":6,"platform":"vm","path":"C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_capability_revocation_test.dart"},"type":"suite","time":4}
+{"test":{"id":7,"name":"loading C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_capability_revocation_test.dart","suiteID":6,"groupIDs":[],"metadata":{"skip":false,"skipReason":null},"line":null,"column":null,"url":null},"type":"testStart","time":4}
+{"count":4,"time":4,"type":"allSuites"}
+{"testID":1,"result":"success","skipped":false,"hidden":true,"type":"testDone","time":27870}
+{"group":{"id":8,"suiteID":0,"parentID":null,"name":"","metadata":{"skip":false,"skipReason":null},"testCount":2,"line":null,"column":null,"url":null},"type":"group","time":27874}
+{"test":{"id":9,"name":"institution form exposes the catalog from creation and scopes edit","suiteID":0,"groupIDs":[8],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":13,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_form_sections_integration_test.dart"},"type":"testStart","time":27875}
+{"testID":3,"result":"success","skipped":false,"hidden":true,"type":"testDone","time":28791}
+{"group":{"id":10,"suiteID":2,"parentID":null,"name":"","metadata":{"skip":false,"skipReason":null},"testCount":17,"line":null,"column":null,"url":null},"type":"group","time":28792}
+{"test":{"id":11,"name":"before the owner exists the section explains instead of reading","suiteID":2,"groupIDs":[10],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":37,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/locations_map_section_test.dart"},"type":"testStart","time":28792}
+{"testID":11,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":29757}
+{"test":{"id":12,"name":"a unit says its catalog is independent from the institution","suiteID":2,"groupIDs":[10],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":47,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/locations_map_section_test.dart"},"type":"testStart","time":29758}
+{"testID":12,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":29808}
+{"test":{"id":13,"name":"an existing owner summarizes its catalog","suiteID":2,"groupIDs":[10],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":56,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/locations_map_section_test.dart"},"type":"testStart","time":29809}
+{"testID":13,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":29979}
+{"test":{"id":14,"name":"a single location is counted in the singular","suiteID":2,"groupIDs":[10],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":67,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/locations_map_section_test.dart"},"type":"testStart","time":29979}
+{"testID":14,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":30049}
+{"test":{"id":15,"name":"the section never promises media it cannot store","suiteID":2,"groupIDs":[10],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":76,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/locations_map_section_test.dart"},"type":"testStart","time":30049}
+{"testID":15,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":30107}
+{"test":{"id":16,"name":"without a composed route the section offers no catalog link","suiteID":2,"groupIDs":[10],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":88,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/locations_map_section_test.dart"},"type":"testStart","time":30107}
+{"testID":16,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":30163}
+{"test":{"id":17,"name":"with a composed route the catalog link opens it","suiteID":2,"groupIDs":[10],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":97,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/locations_map_section_test.dart"},"type":"testStart","time":30164}
+{"testID":17,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":30368}
+{"test":{"id":18,"name":"without a session the section is denied and reads nothing","suiteID":2,"groupIDs":[10],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":109,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/locations_map_section_test.dart"},"type":"testStart","time":30369}
+{"testID":18,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":30423}
+{"test":{"id":19,"name":"a failed read says unavailable instead of showing zero locations","suiteID":2,"groupIDs":[10],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":118,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/locations_map_section_test.dart"},"type":"testStart","time":30423}
+{"testID":19,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":30492}
+{"test":{"id":20,"name":"the section lays out without overflow at 375 light 1.0x","suiteID":2,"groupIDs":[10],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":132,"root_column":9,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/locations_map_section_test.dart"},"type":"testStart","time":30492}
+{"testID":20,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":30577}
+{"test":{"id":21,"name":"the section lays out without overflow at 375 dark 1.0x","suiteID":2,"groupIDs":[10],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":132,"root_column":9,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/locations_map_section_test.dart"},"type":"testStart","time":30578}
+{"testID":21,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":30676}
+{"test":{"id":22,"name":"the section lays out without overflow at 375 light 2.0x","suiteID":2,"groupIDs":[10],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":132,"root_column":9,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/locations_map_section_test.dart"},"type":"testStart","time":30676}
+{"testID":22,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":30784}
+{"test":{"id":23,"name":"the section lays out without overflow at 375 dark 2.0x","suiteID":2,"groupIDs":[10],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":132,"root_column":9,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/locations_map_section_test.dart"},"type":"testStart","time":30784}
+{"testID":23,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":30858}
+{"test":{"id":24,"name":"the section lays out without overflow at 1440 light 1.0x","suiteID":2,"groupIDs":[10],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":132,"root_column":9,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/locations_map_section_test.dart"},"type":"testStart","time":30858}
+{"testID":24,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":30936}
+{"test":{"id":25,"name":"the section lays out without overflow at 1440 dark 1.0x","suiteID":2,"groupIDs":[10],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":132,"root_column":9,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/locations_map_section_test.dart"},"type":"testStart","time":30937}
+{"testID":25,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":31010}
+{"test":{"id":26,"name":"the section lays out without overflow at 1440 light 2.0x","suiteID":2,"groupIDs":[10],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":132,"root_column":9,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/locations_map_section_test.dart"},"type":"testStart","time":31011}
+{"testID":26,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":31077}
+{"test":{"id":27,"name":"the section lays out without overflow at 1440 dark 2.0x","suiteID":2,"groupIDs":[10],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":132,"root_column":9,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/locations_map_section_test.dart"},"type":"testStart","time":31077}
+{"testID":27,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":31143}
+{"testID":9,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":32333}
+{"test":{"id":28,"name":"unit form exposes an independent catalog and scopes edit","suiteID":0,"groupIDs":[8],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":37,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_form_sections_integration_test.dart"},"type":"testStart","time":32334}
+{"testID":28,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":34521}
+{"testID":5,"result":"success","skipped":false,"hidden":true,"type":"testDone","time":42333}
+{"group":{"id":29,"suiteID":4,"parentID":null,"name":"","metadata":{"skip":false,"skipReason":null},"testCount":8,"line":null,"column":null,"url":null},"type":"group","time":42333}
+{"test":{"id":30,"name":"location routes carry their owner and never expose a scope-less catalog","suiteID":4,"groupIDs":[29],"metadata":{"skip":false,"skipReason":null},"line":65,"column":3,"url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_routes_test.dart"},"type":"testStart","time":42333}
+{"testID":30,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":42352}
+{"test":{"id":31,"name":"the institution catalog reads the owner taken from the route","suiteID":4,"groupIDs":[29],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":126,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_routes_test.dart"},"type":"testStart","time":42352}
+{"testID":7,"result":"success","skipped":false,"hidden":true,"type":"testDone","time":42377}
+{"group":{"id":32,"suiteID":6,"parentID":null,"name":"","metadata":{"skip":false,"skipReason":null},"testCount":9,"line":null,"column":null,"url":null},"type":"group","time":42377}
+{"test":{"id":33,"name":"losing create closes the create form that was open","suiteID":6,"groupIDs":[32],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":143,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_capability_revocation_test.dart"},"type":"testStart","time":42377}
+{"testID":31,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":44967}
+{"test":{"id":34,"name":"a location link opens the detail of that id only","suiteID":4,"groupIDs":[29],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":139,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_routes_test.dart"},"type":"testStart","time":44968}
+{"testID":33,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":45009}
+{"test":{"id":35,"name":"losing copy closes the panel that brings one down","suiteID":6,"groupIDs":[32],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":154,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_capability_revocation_test.dart"},"type":"testStart","time":45010}
+{"testID":34,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":45645}
+{"test":{"id":36,"name":"a malformed owner in the route is denied without any read","suiteID":4,"groupIDs":[29],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":151,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_routes_test.dart"},"type":"testStart","time":45645}
+{"testID":35,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":45819}
+{"test":{"id":37,"name":"losing update closes the edit form of a location","suiteID":6,"groupIDs":[32],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":166,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_capability_revocation_test.dart"},"type":"testStart","time":45820}
+{"testID":36,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":46075}
+{"test":{"id":38,"name":"the unit catalog takes its institution from the authorized detail","suiteID":4,"groupIDs":[29],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":163,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_routes_test.dart"},"type":"testStart","time":46075}
+{"testID":37,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":46363}
+{"test":{"id":39,"name":"losing copy closes a duplication dialog that is already open","suiteID":6,"groupIDs":[32],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":176,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_capability_revocation_test.dart"},"type":"testStart","time":46364}
+{"testID":38,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":46530}
+{"test":{"id":40,"name":"a denied unit detail never reaches the catalog read","suiteID":4,"groupIDs":[29],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":179,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_routes_test.dart"},"type":"testStart","time":46531}
+{"testID":40,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":46884}
+{"test":{"id":41,"name":"a revoked authorization rebuilds the catalog instead of keeping data","suiteID":4,"groupIDs":[29],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":192,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_routes_test.dart"},"type":"testStart","time":46885}
+{"testID":39,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":46945}
+{"test":{"id":42,"name":"changing authorization context closes a duplication dialog","suiteID":6,"groupIDs":[32],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":189,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_capability_revocation_test.dart"},"type":"testStart","time":46946}
+{"testID":41,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":47302}
+{"test":{"id":43,"name":"reloading the same route reads again instead of serving stale data","suiteID":4,"groupIDs":[29],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":219,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_routes_test.dart"},"type":"testStart","time":47303}
+{"testID":42,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":47408}
+{"test":{"id":44,"name":"revocation before the first dialog frame leaves no old writer action","suiteID":6,"groupIDs":[32],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":203,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_capability_revocation_test.dart"},"type":"testStart","time":47409}
+{"testID":44,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":47616}
+{"test":{"id":45,"name":"a second copy activation before the first frame leaves no orphaned barrier","suiteID":6,"groupIDs":[32],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":246,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_capability_revocation_test.dart"},"type":"testStart","time":47616}
+{"testID":45,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":47771}
+{"test":{"id":46,"name":"losing copy does not shut an edit someone is in the middle of","suiteID":6,"groupIDs":[32],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":287,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_capability_revocation_test.dart"},"type":"testStart","time":47771}
+{"testID":43,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":47782}
+{"testID":46,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":48096}
+{"test":{"id":47,"name":"the grants that stay keep drawing what they always drew","suiteID":6,"groupIDs":[32],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":299,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_capability_revocation_test.dart"},"type":"testStart","time":48096}
+{"testID":47,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":48323}
+{"success":true,"type":"done","time":48386}
