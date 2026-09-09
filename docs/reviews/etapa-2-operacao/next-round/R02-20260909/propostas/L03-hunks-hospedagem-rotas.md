@@ -1,12 +1,19 @@
 ---
 title: "L03 — hunks de hospedagem das rotas Perfil e Para Você"
 source: "Decisão final do Owner de 09/09/2026 sobre shell; L00 revisão 3; achado L03 e L01"
-status: "proposto-nao-aplicado"
+status: "superada-na-colocacao"
 generated_at: "2026-09-09"
 timezone: "America/Sao_Paulo"
 ---
 
 # Hospedagem das rotas de L03 no ShellRoute
+
+> **SUPERADA NA COLOCAÇÃO em 09/09/2026.** D00 executou o movimento único em
+> `dev` (`f5e5d8dfc`): as rotas Principal já estão dentro do `ShellRoute`, e a
+> tabela de linhas abaixo não vale mais contra `dev`. O que continua válido é o
+> `embedded: true` em cada builder e o `GoRoute` de `/principal-profile/edit`,
+> que não existe em `dev`. Leia `L03-analise-conflitos-dev.md`, que substitui
+> este documento para efeito de integração.
 
 Formato equivalente a `propostas/L01-hunks-composicao.md`, para D00 montar o
 movimento único com as três frentes na mão.
