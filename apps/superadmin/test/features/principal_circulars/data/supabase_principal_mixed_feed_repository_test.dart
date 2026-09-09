@@ -62,4 +62,70 @@ void main() {
     expect(page.items.last, isA<PrincipalHappensCircularItem>());
     expect(page.nextCursor?.itemType, 'circular');
   });
+
+  for (final code in ['42501', 'PGRST301']) {
+    test('uma negacao de permissao nao vira indisponibilidade ($code)', () async {
+      // A diferenca importa para quem le a tela: "indisponivel" manda esperar
+      // ou tentar de novo; "nao autorizado" diz que aquele conteudo nao e para
+      // este ator. Confundir os dois esconde uma fronteira de autorizacao atras
+      // de um erro de infraestrutura.
+      final client = SupabaseClient(
+        'https://coelo.test',
+        'publishable-key',
+        httpClient: MockClient(
+          (request) async => http.Response(
+            jsonEncode({'code': code, 'message': 'denied', 'details': null, 'hint': null}),
+            403,
+            headers: {'content-type': 'application/json'},
+            request: request,
+          ),
+        ),
+      );
+      addTearDown(client.dispose);
+
+      await expectLater(
+        SupabasePrincipalMixedFeedRepository(
+          client,
+        ).list(const CircularScope(institutionId: 'institution-1'), limit: 2),
+        throwsA(isA<CircularUnauthorized>()),
+      );
+    });
+  }
+
+  for (final blank in ['', '   ']) {
+    test('um campo obrigatorio ${blank.isEmpty ? 'vazio' : 'so com espacos'} e recusado', () async {
+      final client = SupabaseClient(
+        'https://coelo.test',
+        'publishable-key',
+        httpClient: MockClient(
+          (request) async => http.Response(
+            jsonEncode([
+              {
+                'item_type': 'post',
+                'item_id': 'post-1',
+                'effective_published_at': '2026-08-21T12:00:00Z',
+                'payload': {
+                  'author_name': blank,
+                  'context_label': 'Turma',
+                  'caption': 'Acontece',
+                  'media': <Object?>[],
+                },
+              },
+            ]),
+            200,
+            headers: {'content-type': 'application/json'},
+            request: request,
+          ),
+        ),
+      );
+      addTearDown(client.dispose);
+
+      await expectLater(
+        SupabasePrincipalMixedFeedRepository(
+          client,
+        ).list(const CircularScope(institutionId: 'institution-1'), limit: 2),
+        throwsA(isA<CircularUnavailable>()),
+      );
+    });
+  }
 }
