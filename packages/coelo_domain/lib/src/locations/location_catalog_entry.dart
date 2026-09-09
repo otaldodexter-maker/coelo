@@ -1,5 +1,7 @@
 import 'location_selection.dart';
 
+export 'location_reservations.dart';
+
 /// Classification only; none of these values grants access to a reader.
 enum LocationVisibility { team, guardians, students, all }
 
