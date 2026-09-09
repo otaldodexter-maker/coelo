@@ -1,0 +1,9 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+OWNED_ATOMICITY_PROJECT coelo_safe_ec4cf710d28245cdaecde1f6987bf
+Local fixture SQL failed; raw output withheld
+No C:\Users\adrie\AppData\Local\Temp\coelo-r02-cli-atomic-runner-bea8b2be0dd24dcda99faf8d88e4f64b\Invoke-OwnedCliAtomic
+ity.ps1:141 caractere:31
++ if($null -ne $primaryFailure){throw $primaryFailure}
++                               ~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:) [], ParentContainsErrorRecordException
+    + FullyQualifiedErrorId : RuntimeException

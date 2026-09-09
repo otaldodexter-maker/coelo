@@ -1,0 +1,52 @@
+{
+  "source": "D00 session47872 exit0; independent cleanup tool7b0e22 reported by D00; canonical byte comparison",
+  "status": "local-transport-2-pass; remote-not-authorized-not-executed",
+  "generated_at": "2026-09-09",
+  "project_local": "coelo_safe_ff9d8b97720245f9a3ad1ae70ecf2",
+  "cli_version": "2.116.0",
+  "local_gates": {
+    "passed": 2,
+    "failed": 0,
+    "ids": [
+      "CLI_LEDGER_FAILURE_ROLLBACK_PASS",
+      "CLI_LEDGER_SUCCESS_CONTROL_PASS"
+    ]
+  },
+  "cleanup": "D00 independent three Docker resource searches empty and TEMP absent; tool7b0e22",
+  "log": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/cli-atomicity-second-replay.log",
+  "log_sha256": "60524a89234f94a7c048e0ef1b927bb67234416cd553b7cf793dca295643cf00",
+  "qualifier_sha256": "9b671f4c98fc1389e9f546ccd4db9b65ba43e94a2adbfbff2b8b037860fa4055",
+  "runner_sha256": "d6aafaff1363005a23b3d688d373028d6cc39473444dc940b420ccfde8fe959b",
+  "functional_evidence": {
+    "session": 78850,
+    "passed": 46,
+    "composition": "36 TAP + 9 HTTP + 1 cold",
+    "rerun": false,
+    "reuse_basis": "All canonical non-delimiter bytes including guards and function bodies unchanged; per-file CLI batch transport separately qualified with synthetic discriminating failure and positive control."
+  },
+  "atomicity": "per-file DDL+ledger; NOT joint atomicity across both files",
+  "files": [
+    {
+      "basename": "20260909173000_superadmin_password_session_context.sql",
+      "raw_sha256": "2cb80d4b9ab49715e21db515e15599f70a3db9d2ed73669f4ee56f737156d5ac",
+      "lf_sha256": "0b52cbd9b189076333356a83f2aea23cea3038d3fde1b867a0aec24589fadd92",
+      "equivalence": "Only top-level begin;/commit; removed; all other normalized bytes identical to HEAD",
+      "removed_lines": 2
+    },
+    {
+      "basename": "20260909173100_superadmin_password_session_denial_audit.sql",
+      "raw_sha256": "6af9068fd98fe840afae1d5e496a2608cf9ec8b33b025082c43038e1d84aec96",
+      "lf_sha256": "e53626a08ca558353bcbc3adc217ec14974176288efc18535275830ddd48f1a2",
+      "equivalence": "Only top-level begin;/commit; removed; all other normalized bytes identical to HEAD",
+      "removed_lines": 2
+    }
+  ],
+  "remote_pending": [
+    "Owner nominal approval for exact project/files/hashes/CLI",
+    "preprovisioned credential without fallback",
+    "fresh isolated staging/history inventory and exact two-file dry-run",
+    "live catalog preflight and serialized window",
+    "post-deploy catalog/ledger; authorized functional persona remains separate"
+  ],
+  "comparison_base_commit": "b7973b31f2b52febcf27c7c4aa3551fb2d0eaba0"
+}

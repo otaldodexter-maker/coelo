@@ -1,7 +1,7 @@
 ---
 title: "D01 — qualificação de versionamento para aplicação remota nominal"
 source: "packages/coelo_database/README.md; packages/coelo_database/scripts/Sync-SupabaseCliMigrations.ps1; packages/coelo_database/scripts/New-MigrationRecoveryManifest.ps1; docs/reviews/2026-07-24-contextual-migration-history-reconciliation.md; Supabase CLI 2.116.0 --help"
-status: "v2-command-proposal; final-payload-and-ledger-atomicity-pending; not-executed"
+status: "concrete-cli-sequence; local-atomicity-qualified; remote-not-authorized-not-executed"
 generated_at: "2026-09-09"
 ---
 
@@ -151,8 +151,42 @@ com esse histórico verificável. Restam os dados e gates concretos acima,
 sem necessidade de inventar approval, modificar migration antiga ou criar
 novo executor de produção. Knowledge: no-op nesta qualificação documental.
 
-## Gate material de atomicidade — atualização v2
+## Gate material de atomicidade concluido localmente
 
-A CLI2.116.0 executa arquivos com BEGIN/COMMIT próprios sequencialmente e insere ledger depois do COMMIT. Assim, os bytes atuais46PASS não são ledger-atômicos. A proposta revisa SOMENTE os delimitadores externos dos dois arquivos canônicos ainda não implantados, com novos hashes e prova. Nenhuma cópia de staging será transformada silenciosamente. [Proposta e fixture](transport-atomicity-proposal.md) registram a fonte oficial, patch não aplicado e dois gates locais pendentes; os26guards de ferramenta não provam atomicidade.
+D00 session47872: dois gates CLI PASS/exit0, rollback DDL+ledger na falha nominal do INSERT e persistencia de ambos no controle positivo. Cleanup independente zero. Canonicos revisados com somente quatro remocoes externas e equivalencia dos demais bytes; 46 testes funcionais reutilizados, sem rerun. [Manifesto final](cli-atomicity-final-manifest.json) e [recibo de transporte](transport-atomicity-proposal.md).
 
-O caminho batch oferece atomicidade por arquivo segundo código, ainda a qualificar. O pacote inteiro não é atômico:173000 pode ficar aplicada/registrada se173100 falhar. Esse estado parcial exige reconciliação e próximo passo forward-only nominal, nunca repair ou retirada automática da proteção. Os comandos acima permanecem NÃO APTOS para execução remota até payloadfinal, provaCLIledger, revisão, hashesnominais e janela/autorização. Nenhum link/fetch/dry-run/apply foi executado nesta preparação.
+Atomicidade por arquivo, nao pelo pacote inteiro. Se173000 persistir e173100 falhar, reconciliar catalogo/historico antes de qualquer retry; recuperacao forward-only nominal, nunca repair ou retirada automatica do guard. Link/fetch/dry-run/apply remoto continuam nao executados e exigem aprovacao nominal e gates da janela.
+
+## Preflight executavel e congelamento de bytes
+
+Antes dos comandos remotos acima, o operador D00 confere aprovacao nominal para projeto, dois arquivos/hashes e CLI2.116.0. Credencial deve estar preprovisionada pelo canal aprovado; apenas testar presenca, nunca imprimir conteudo. Nenhuma etapa solicita senha interativamente ou ativa fallback.
+
+```powershell
+if ([string]::IsNullOrEmpty($env:SUPABASE_DB_PASSWORD) -or
+    [string]::IsNullOrEmpty($env:SUPABASE_ACCESS_TOKEN)) {
+  throw 'Preprovisioned process credentials required; no fallback'
+}
+foreach ($D01Override in @('SUPABASE_WORKDIR','SUPABASE_PROFILE','SUPABASE_ENV',
+  'SUPABASE_EXPERIMENTAL','SUPABASE_DB_URL','SUPABASE_PROJECT_ID',
+  'SUPABASE_SERVICES_HOSTNAME','PGHOST','PGPORT','PGSERVICE','PGSERVICEFILE')) {
+  if (![string]::IsNullOrEmpty([Environment]::GetEnvironmentVariable($D01Override))) {
+    throw 'Unexpected environment override; no remote command permitted'
+  }
+}
+$D01ExpectedRaw = @{
+  '20260909173000_superadmin_password_session_context.sql' = '2CB80D4B9AB49715E21DB515E15599F70A3DB9D2ED73669F4EE56F737156D5AC'
+  '20260909173100_superadmin_password_session_denial_audit.sql' = '6AF9068FD98FE840AFAE1D5E496A2608CF9EC8B33B025082C43038E1D84AEC96'
+}
+foreach ($D01Name in $D01Names) {
+  $D01Sql = Join-Path $D01NominalWorkdir ('supabase/migrations/' + $D01Name)
+  if ((Get-FileHash -LiteralPath $D01Sql -Algorithm SHA256).Hash -cne $D01ExpectedRaw[$D01Name]) {
+    throw 'Final canonical byte mismatch'
+  }
+}
+```
+
+Executar o bloco de credencial/overrides antes de link/fetch/list/dry-run; o bloco de hashes somente depois da copia nominal e novamente imediatamente antes do push. Nao normalizar silenciosamente staging: os hashes RAW acima pinam bytes finais CRLF, e os LF no manifesto permitem revisar equivalencia sem substituir o pin RAW.
+
+D00 captura cada comando CLI com ErrorActionPreference Continue temporario, salva LASTEXITCODE e restaura a preferencia em finally; qualquer exit nao zero interrompe. Saida fica em memoria e apenas inventario/resultado sanitizados entram no recibo. Nao usar transcript indiscriminado ou imprimir SQL historico/segredos. A sequencia e operador-assistida: D00 compara conjuntos completos de basenames/versoes/hash antes da copia, no dry-run e imediatamente antes do push; nenhuma coincidencia parcial de texto conta como gate. Qualquer arquivo novo ou alterado depois de congelar staging interrompe e exige novo inventario/dry-run, sem executar apply.
+
+O comando final e exatamente o db push --skip-vault --linked --project-ref evvbomzejfijozbtgvpt fixado acima, no mesmo staging, sem include-all/seed/roles, sem CLI global e sem modo debug. CLI init/fetch nao reutilizam replay local. O operador revalida catalogo e ledger nominal imediatamente antes; depois exige as duas linhas e metadados/ACL/prosrc finais. Esses gates exigem acesso na janela autorizada, portanto nao sao evidencias ja obtidas.

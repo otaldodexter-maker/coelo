@@ -1,7 +1,6 @@
 -- source: D00 r14 real TAP35 failure; 20260901190927 wrappers; D01 Auth successor
 -- status: local-candidate; remote application requires nominal authorization
 -- generated_at: 2026-09-09
-begin;
 set local lock_timeout = '5s';
 set local statement_timeout = '60s';
 select pg_catalog.pg_advisory_xact_lock(
@@ -150,4 +149,3 @@ begin
   end loop;
 end
 $postconditions$;
-commit;

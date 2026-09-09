@@ -4,7 +4,6 @@
 -- generated_at: 2026-09-09
 -- Candidate for reserved name 20260909173000_superadmin_password_session_context.sql.
 -- Changes only the private context gateway; recovery Auth endpoints are unchanged.
-begin;
 
 set local lock_timeout = '5s';
 set local statement_timeout = '60s';
@@ -293,4 +292,3 @@ begin
 end
 $postconditions$;
 
-commit;
