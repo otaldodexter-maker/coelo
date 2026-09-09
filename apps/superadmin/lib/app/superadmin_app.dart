@@ -46,6 +46,7 @@ import '../features/principal_circulars/domain/circular_repository.dart'
     show CircularMediaRepository, CircularRepository, CircularResponseRepository;
 import '../features/principal_circulars/domain/principal_happens_mixed_feed.dart';
 import '../features/principal_happens/domain/principal_happens_feed_repository.dart';
+import '../features/principal_moments/domain/principal_moments_feed_repository.dart';
 import '../features/principal_happens_publication/domain/happens_publication.dart';
 import '../features/principal_moments_publication/domain/moments_publication.dart';
 import '../features/principal_now/domain/principal_now_feed_repository.dart';
@@ -148,6 +149,8 @@ class SuperadminApp extends StatefulWidget {
     this.principalCircularRepository,
     this.principalCircularResponseRepository,
     this.principalCircularMediaRepository,
+    this.principalMomentsFeedRepository,
+    this.principalMomentsWithdrawalRepository,
     this.happensPublicationRepository,
     this.principalNowFeedRepository,
     this.momentsPublicationRepository,
@@ -206,6 +209,8 @@ class SuperadminApp extends StatefulWidget {
   final CircularRepository? principalCircularRepository;
   final CircularResponseRepository? principalCircularResponseRepository;
   final CircularMediaRepository? principalCircularMediaRepository;
+  final PrincipalMomentsFeedRepository? principalMomentsFeedRepository;
+  final PrincipalMomentsWithdrawalRepository? principalMomentsWithdrawalRepository;
   final HappensPublicationRepository? happensPublicationRepository;
   final PrincipalNowFeedRepository? principalNowFeedRepository;
   final MomentsPublicationRepository? momentsPublicationRepository;
@@ -290,6 +295,8 @@ class _SuperadminAppState extends State<SuperadminApp> {
       principalCircularRepository: widget.principalCircularRepository,
       principalCircularResponseRepository: widget.principalCircularResponseRepository,
       principalCircularMediaRepository: widget.principalCircularMediaRepository,
+      principalMomentsFeedRepository: widget.principalMomentsFeedRepository,
+      principalMomentsWithdrawalRepository: widget.principalMomentsWithdrawalRepository,
       happensPublicationRepository: widget.happensPublicationRepository,
       principalNowFeedRepository: widget.principalNowFeedRepository,
       momentsPublicationRepository: widget.momentsPublicationRepository,

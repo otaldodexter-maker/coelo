@@ -147,6 +147,7 @@ import '../../features/notices/presentation/notice_directory_page.dart';
 import '../../features/notices/presentation/notice_form_page.dart';
 import '../../features/principal_circulars/domain/principal_happens_mixed_feed.dart';
 import '../../features/principal_circulars/presentation/principal_circular_detail_page.dart';
+import '../../features/principal_moments/domain/principal_moments_feed_repository.dart';
 import '../../features/plans/data/fake_plan_catalog_repository.dart';
 import '../../features/plans/domain/plan_catalog_repository.dart';
 import '../../features/plans/presentation/plan_directory_page.dart';
@@ -287,6 +288,8 @@ GoRouter createSuperadminRouter({
   CircularRepository? principalCircularRepository,
   CircularResponseRepository? principalCircularResponseRepository,
   CircularMediaRepository? principalCircularMediaRepository,
+  PrincipalMomentsFeedRepository? principalMomentsFeedRepository,
+  PrincipalMomentsWithdrawalRepository? principalMomentsWithdrawalRepository,
   HappensPublicationRepository? happensPublicationRepository,
   PrincipalNowFeedRepository? principalNowFeedRepository,
   MomentsPublicationRepository? momentsPublicationRepository,
@@ -295,6 +298,10 @@ GoRouter createSuperadminRouter({
   bool allowDevelopmentPreview = SuperadminAppConfig.allowDevelopmentPreview,
   required ValueChanged<ThemeMode> onThemeModeChanged,
 }) {
+  // Publicar e ler Momentos sao rotas distintas; o sinal compartilhado deixa a
+  // leitura recarregar pelo repositorio autorizado apos uma publicacao
+  // confirmada, sem tratar o recibo do publicador como dado de feed.
+  final momentsFeedRefreshSignal = PrincipalMomentsFeedRefreshSignal();
   final accessHealthFixtures = DevelopmentAccessHealthFixtureCatalog.standard();
   final resolvedChildSafetyController =
       childSafetyController ?? ChildSafetyController(const UnavailableChildSafetyRepository());
@@ -1018,7 +1025,10 @@ GoRouter createSuperadminRouter({
                     groupName: groupName,
                   ),
                   onClose: () => context.goNamed(SuperadminRoutes.principalHappensName),
-                  onPublished: (_) => context.goNamed(SuperadminRoutes.principalMomentsName),
+                  onPublished: (publication) {
+                    momentsFeedRefreshSignal.markPublished(publication.id);
+                    context.goNamed(SuperadminRoutes.principalMomentsName);
+                  },
                 );
               },
             ),
@@ -1034,9 +1044,35 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.principalMoments,
             name: SuperadminRoutes.principalMomentsName,
-            builder: (context, state) => PrincipalRuntimeContextRoute(
+            builder: (context, state) => ListenableBuilder(
+              listenable: session,
+              builder: (context, _) => !session.isAuthenticated || session.isPasswordRecovery
+                  ? _unavailableCompositionRootRoute(context)
+                  : PrincipalRuntimeContextRoute(
+              key: ValueKey('principal-moments-${session.authorizationInvalidationRevision}'),
               repository: principalRuntimeContextRepository,
-              builder: (context, _) => _unavailableCompositionRootRoute(context),
+              builder: (context, runtimeContext) {
+                final repository = principalMomentsFeedRepository;
+                if (repository == null) return _unavailableCompositionRootRoute(context);
+                return PrincipalMomentsPreviewPage(
+                  embedded: true,
+                  feedRepository: repository,
+                  feedScope: PrincipalMomentsFeedScope(
+                    institutionId: runtimeContext.institutionId,
+                    unitId: runtimeContext.unitId,
+                    groupId: runtimeContext.groupId,
+                  ),
+                  withdrawalRepository: principalMomentsWithdrawalRepository,
+                  refreshSignal: momentsFeedRefreshSignal,
+                  onOpenHappens: () => context.goNamed(SuperadminRoutes.principalHappensName),
+                  onOpenHome: () => context.goNamed(SuperadminRoutes.principalHappensName),
+                  onCreateMoment: () =>
+                      context.goNamed(SuperadminRoutes.principalMomentsPublishName),
+                  onPublishNow: () =>
+                      context.goNamed(SuperadminRoutes.principalNowPublicationName),
+                );
+              },
+            ),
             ),
           ),
           GoRoute(

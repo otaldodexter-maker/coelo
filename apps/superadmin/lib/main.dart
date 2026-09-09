@@ -59,6 +59,8 @@ Future<void> main() async {
       principalCircularRepository: authScope.principalCircularRepository,
       principalCircularResponseRepository: authScope.principalCircularResponseRepository,
       principalCircularMediaRepository: authScope.principalCircularMediaRepository,
+      principalMomentsFeedRepository: authScope.principalMomentsFeedRepository,
+      principalMomentsWithdrawalRepository: authScope.principalMomentsWithdrawalRepository,
       happensPublicationRepository: authScope.happensPublicationRepository,
       principalNowFeedRepository: authScope.principalNowFeedRepository,
       momentsPublicationRepository: authScope.momentsPublicationRepository,
