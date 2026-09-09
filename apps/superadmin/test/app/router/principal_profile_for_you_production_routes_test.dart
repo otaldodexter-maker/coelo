@@ -9,6 +9,8 @@ import 'package:coelo_superadmin/features/auth/domain/password_recovery.dart';
 import 'package:coelo_superadmin/features/errors/presentation/screens/superadmin_error_screen.dart';
 import 'package:coelo_superadmin/features/notices/domain/notice_repository.dart';
 import 'package:coelo_superadmin/features/notices/domain/platform_notice.dart';
+import 'package:coelo_superadmin/features/principal_circulars/domain/circular.dart';
+import 'package:coelo_superadmin/features/principal_circulars/domain/circular_repository.dart';
 import 'package:coelo_superadmin/features/principal_for_you/presentation/principal_for_you_preview_page.dart';
 import 'package:coelo_superadmin/features/principal_for_you/presentation/principal_for_you_route_page.dart';
 import 'package:coelo_superadmin/features/principal_profile/presentation/principal_profile_preview_page.dart';
@@ -29,6 +31,7 @@ void main() {
     PrincipalRuntimeContextRepository runtimeContextRepository = const _AuthorizedContextRepository(),
     ProfileAboutRepository? aboutRepository,
     FakeNoticeRepository? noticeRepository,
+    CircularRepository? principalCircularRepository,
     Size surface = const Size(1440, 1000),
   }) async {
     await tester.binding.setSurfaceSize(surface);
@@ -42,6 +45,7 @@ void main() {
       mealPlanImageRepository: const UnavailableMealPlanImageRepository(),
       principalRuntimeContextRepository: runtimeContextRepository,
       profileAboutRepository: aboutRepository,
+      principalCircularRepository: principalCircularRepository,
       noticeRepository: noticeRepository ?? const UnavailableNoticeRepository(),
       onThemeModeChanged: (_) {},
     );
@@ -69,6 +73,32 @@ void main() {
     // The production route must never borrow the preview fixture identity.
     expect(find.text('Colégio Horizonte'), findsNothing);
     expect(find.text('Turma Real'), findsWidgets);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('real /principal-profile reads circulars through the Principal projection', (
+    tester,
+  ) async {
+    // Regression guard: the Circulares tab once received the administrative
+    // repository, whose listProfile answers by Superadmin permission instead of
+    // the actor's Principal visibility. Widget tests never caught it because
+    // they inject the repository directly, so the guard lives at the route.
+    // The administrative repository stays unavailable: had the tab reached for
+    // it, listProfile would have failed instead of recording a Principal read.
+    final principal = _RecordingCircularRepository();
+    await pumpProductionRoute(
+      tester,
+      SuperadminRoutes.principalProfile,
+      aboutRepository: _EmptyAboutRepository(),
+      principalCircularRepository: principal,
+    );
+
+    await tester.ensureVisible(find.text('Circulares'));
+    await tester.tap(find.text('Circulares'));
+    await tester.pumpAndSettle();
+
+    expect(principal.scopes, isNotEmpty);
+    expect(principal.scopes.first.institutionId, 'institution-real');
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
@@ -253,4 +283,50 @@ final class _UnauthorizedAboutRepository implements ProfileAboutRepository {
     required String requestId,
     Map<ProfileAboutFieldKey, String> officialUpdates = const {},
   }) => throw UnimplementedError();
+}
+
+
+final class _RecordingCircularRepository implements CircularRepository {
+  final List<CircularScope> scopes = [];
+
+  @override
+  Future<PrincipalCursorPage<CircularSummary>> listProfile(
+    CircularScope scope, {
+    CircularCursor? cursor,
+    int limit = 20,
+  }) async {
+    scopes.add(scope);
+    return const PrincipalCursorPage(items: <CircularSummary>[], nextCursor: null);
+  }
+
+  @override
+  Future<CircularDetail> getVisible(String circularId, {String? childContextId}) => _unused();
+
+  @override
+  Future<CircularDraft?> loadDraft(CircularScope scope) => _unused();
+
+  @override
+  Future<CircularSaveResult> saveDraft({
+    required String requestId,
+    required CircularScope scope,
+    required CircularDraft draft,
+  }) => _unused();
+
+  @override
+  Future<CircularSaveResult> publish({
+    required String requestId,
+    required String circularId,
+    required int expectedVersion,
+    DateTime? publishAt,
+  }) => _unused();
+
+  @override
+  Future<CircularSaveResult> closeResponses({
+    required String requestId,
+    required String circularId,
+    required int expectedVersion,
+  }) => _unused();
+
+  Future<T> _unused<T>() =>
+      Future<T>.error(StateError('the Perfil projection only reads listProfile'));
 }
