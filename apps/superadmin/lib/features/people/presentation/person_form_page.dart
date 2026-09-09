@@ -177,6 +177,7 @@ final class _PersonFormPageState extends State<PersonFormPage> {
   double _footerHeight = 0;
   var _formGeneration = 0;
   var _saveGeneration = 0;
+  VoidCallback? _confirmedCompletion;
 
   List<PersonFilterOption> get _unitOptions => _options.units
       .where((option) => option.institutionId == _selectedInstitution.id)
@@ -251,6 +252,7 @@ final class _PersonFormPageState extends State<PersonFormPage> {
     }
     _formGeneration++;
     _saveGeneration++;
+    _confirmedCompletion = null;
     final previous = _viewModel;
     _viewModel = PersonFormViewModel(widget.repository, original: widget.original);
     if (widget.initialPersonType != null) _viewModel.type = widget.initialPersonType!;
@@ -276,6 +278,8 @@ final class _PersonFormPageState extends State<PersonFormPage> {
 
   @override
   void dispose() {
+    _saveGeneration++;
+    _confirmedCompletion = null;
     for (final controller in _controllers.values) {
       controller.dispose();
     }
@@ -338,6 +342,7 @@ final class _PersonFormPageState extends State<PersonFormPage> {
   }
 
   void _continue() {
+    if (_confirmedCompletion != null) return;
     _syncIdentity();
     if (_viewModel.step == PersonFormStep.identity &&
         [
@@ -353,7 +358,7 @@ final class _PersonFormPageState extends State<PersonFormPage> {
   }
 
   void _selectStep(PersonFormStep step) {
-    if (_viewModel.isReadOnly || step == _viewModel.step) return;
+    if (_confirmedCompletion != null || _viewModel.isReadOnly || step == _viewModel.step) return;
     final steps = _viewModel.steps;
     final currentIndex = steps.indexOf(_viewModel.step);
     final targetIndex = steps.indexOf(step);
@@ -367,8 +372,13 @@ final class _PersonFormPageState extends State<PersonFormPage> {
 
   Future<void> _save() async {
     if (!mounted || _viewModel.saving) return;
+    if (_confirmedCompletion != null) {
+      _finishConfirmedSave();
+      return;
+    }
     _syncIdentity();
     final viewModel = _viewModel;
+    final onSaved = widget.onSaved;
     final generation = ++_saveGeneration;
     final identity = _identityValues;
     final type = viewModel.type;
@@ -384,7 +394,13 @@ final class _PersonFormPageState extends State<PersonFormPage> {
         listEquals(contexts, viewModel.childContextChanges);
     try {
       final saved = await viewModel.save();
-      if (canDeliver()) widget.onSaved?.call(saved);
+      if (!canDeliver()) return;
+      setState(() {
+        _confirmedCompletion = () {
+          if (canDeliver()) onSaved?.call(saved);
+        };
+      });
+      _finishConfirmedSave();
     } on PersonDirectoryConflictException {
       if (mounted && canDeliver()) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -410,6 +426,21 @@ final class _PersonFormPageState extends State<PersonFormPage> {
     }
   }
 
+  void _finishConfirmedSave() {
+    if (!mounted) return;
+    final generation = _saveGeneration;
+    try {
+      _confirmedCompletion?.call();
+    } on Object {
+      if (!mounted || generation != _saveGeneration) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Pessoa salva. Não foi possível concluir a navegação. Tente novamente.'),
+        ),
+      );
+    }
+  }
+
   List<String> get _identityValues => [
     for (final key in ['firstName', 'lastName', 'displayName', 'legalName'])
       _controllers[key]!.text.trim(),
@@ -432,7 +463,14 @@ final class _PersonFormPageState extends State<PersonFormPage> {
         viewportWidth: MediaQuery.sizeOf(context).width,
         scrollKey: const Key('person-form-scroll'),
         navigation: _navigation(),
-        body: _section(),
+        body: _confirmedCompletion == null
+            ? _section()
+            : const CoeloStatePanel(
+                key: Key('person-form-confirmed-save'),
+                title: 'Pessoa salva',
+                message: 'O cadastro foi confirmado. Continue para concluir.',
+                icon: Icons.check_circle_outline_rounded,
+              ),
         footer: _footer(),
       ),
     ),
@@ -453,7 +491,7 @@ final class _PersonFormPageState extends State<PersonFormPage> {
                   : index < currentIndex
                   ? SuperadminFormStepStatus.complete
                   : SuperadminFormStepStatus.incomplete,
-              enabled: !_viewModel.isReadOnly,
+              enabled: !_viewModel.isReadOnly && _confirmedCompletion == null,
             ),
         ],
         currentIndex: currentIndex,
@@ -991,6 +1029,20 @@ final class _PersonFormPageState extends State<PersonFormPage> {
   );
 
   Widget _footer() {
+    if (_confirmedCompletion != null) {
+      return SuperadminFormActionFooter(
+        surfaceKey: const Key('person-form-footer-surface'),
+        onHeightChanged: _setFooterHeight,
+        tertiaryAction: TextButton(onPressed: widget.onCancel, child: const Text('Voltar')),
+        continuationActions: [
+          FilledButton(
+            key: const Key('person-form-complete'),
+            onPressed: _finishConfirmedSave,
+            child: const Text('Continuar'),
+          ),
+        ],
+      );
+    }
     if (_viewModel.isReadOnly) {
       return SuperadminFormActionFooter(
         surfaceKey: const Key('person-form-footer-surface'),
