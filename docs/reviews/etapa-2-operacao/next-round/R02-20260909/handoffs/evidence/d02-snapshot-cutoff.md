@@ -1,10 +1,14 @@
 ---
 title: "D02 — reporte do corte de 16:30"
 source: "prompts/D02.md; escopo.json canônico; handoff D02 r31; assignment D00 r36; commits e provas locais"
-status: "reported; consolidation-only-until-1715"
+status: "closed-owner-stop; local-acceptances-only"
 generated_at: "2026-09-09"
 timezone: "America/Sao_Paulo"
 ---
+
+**Encerramento antecipado:** Owner encerrou às 16:43:37 BRT; D02 recebeu às
+16:43:53. Nenhum lote novo após a instrução. As referências anteriores a
+17:15 abaixo são históricas e foram superadas. Recibo final no handoff D02.
 
 Reporte do corte materializado às 16:32 BRT. O snapshot estava publicado
 antes do corte; uma falha de quoting impediu a primeira atualização de status.
