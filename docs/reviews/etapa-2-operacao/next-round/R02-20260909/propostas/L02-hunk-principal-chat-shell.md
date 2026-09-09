@@ -344,3 +344,40 @@ No builder de `SuperadminChatPage` daquela rota, junto de `chatRepository`:
 | Algum dos 3 destinos não ser trocado | `chat_routes_test.dart`, `principal_chat_route_test.dart` |
 | Guarda do badge perdida | `chat_unread_badge_wiring_test.dart` |
 | Mídia da preview perdida | `chat_unread_badge_wiring_test.dart` |
+
+---
+
+# Medição do conflito real — o trabalho manual é bem menor do que a lista de 7 pontos
+
+Rodei `git merge-tree --write-tree HEAD origin/dev` em **leitura pura**, sem merge, sem rebase e sem
+integrar nada, e extraí o resultado com `git cat-file`. Base do merge: `56eb3f19`.
+
+**Um único arquivo conflita** e **uma única região**: `superadmin_router.dart`, linhas 676–874 do
+resultado. O lado de `dev` dessa região está **vazio** — ela contém todas as rotas `/principal-*` de
+produção como irmãs, e `dev` as moveu para dentro do `ShellRoute`. Ou seja, o conflito é do tipo
+"meu lado acrescenta num bloco que `dev` removeu", e não uma disputa linha a linha.
+
+## O que o git resolveu sozinho — verificado no resultado do merge
+
+| Delta meu | Estado |
+| --- | --- |
+| As 3 inserções de `chatUnreadCountLoader` | **auto-mesclaram** (3 ocorrências no resultado) |
+| A rota `/dev/principal-conversations` e suas constantes | **auto-mesclaram** |
+| O destino do menu de desenvolvimento (`case 'principal-chat'`) | **auto-mesclou** |
+| O destino de `/dev/principal-happens` | **auto-mesclou** |
+| `mediaReader`/`mediaSession` em `/dev/conversations` | **auto-mesclaram** |
+
+## O que sobra de manual — exatamente dois pontos
+
+1. **Reinserir a rota de produção `/principal-conversations` dentro do `ShellRoute` de `dev`**, com
+   `embedded: true`. O bloco pronto está na seção 3 do apêndice anterior. Resolver o conflito
+   ficando com o lado de `dev` **descarta essa rota**, porque ela vive dentro da região que `dev`
+   esvaziou. É o erro mais provável desta resolução.
+2. **Trocar o único `?from=principal` restante**, no resultado do merge por volta da linha 1030 — o
+   `onOpenMessages` de `/principal-happens` de produção, dentro do bloco que `dev` moveu. De
+   `conversationsName` com `queryParameters` para
+   `context.goNamed(SuperadminRoutes.principalConversationsName)`.
+
+Se esses dois forem feitos, os quatro perigos da tabela anterior ficam cobertos: os outros dois
+(guarda do badge e mídia da preview) já vieram automaticamente e só precisam **não ser desfeitos**
+durante a resolução manual.
