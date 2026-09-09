@@ -49,18 +49,21 @@ sem SQL; replay02 recusou corretamente a divergência Auth45/cursor remoto;
 replay03 expôs o conflito de nomes da assinatura. Nos dois últimos, a transação
 do pacote não instalou os contratos e os testes dependentes falharam (1P9F,
 85 não executados por tentativa). São causas corrigidas, não somadas ao verde.
-O rollback por falha tardia e a negativa concorrente de recibo ainda não estão
-provados. A revisão independente focal não encontrou bloqueante em montagem,
+O rollback por falha tardia está provado; a negativa concorrente de recibo
+ainda não foi executada. A revisão independente focal não encontrou bloqueante em montagem,
 labels, ACLs, assinatura e política AAL1; não cobriu concorrência.
 
 `build_rollback_test.py` gera `ap_models_nominal_rollback_test.sql` do hash exato
 do pacote. Os seis critérios preparados provocam exceção depois do postflight e
 conferem ausência de receipts/helpers/permissões e preservação de corpos,
 assinaturas, owners, grants e constraints. Parse estático:20 statements;
-runtime **U6**, aguardando próximo slot local. O teste usa a subtransação do
+runtime **6P/0F/0B/0S/0U**, `rollback-01.txt`, CLI2.116.0/Auth45, com
+snapshot de cursor remoto aplicado apenas na fixture. Runner confirmou zero
+recursos residuais. Comando `replay.ps1 -RollbackOnly`, sem rerun dos95.
+O teste usa a subtransação do
 pgTAP para exercer falha tardia, sem executar COMMIT/ROLLBACK dentro dela.
 
-Próximos gates: rollback negativo do pacote e recibo após espera de lock;
+Próximos gates: recibo após espera de lock;
 revisão coordenada;
 autorização nominal de produção; aplicação serializada; provas HTTP/UI normais
 com personas e cleanup. SQL verde não autoriza publicar o cliente nem promove

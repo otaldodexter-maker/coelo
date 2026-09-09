@@ -1,4 +1,5 @@
 # Local only; requires the coordinator's SQL slot. Existing runner owns cleanup.
+param([switch]$RollbackOnly)
 $ErrorActionPreference = 'Stop'
 $repo = $PSScriptRoot
 while (-not (Test-Path -LiteralPath (Join-Path $repo 'AGENTS.md'))) {
@@ -14,5 +15,8 @@ $tests = @(
   'access_profile_models_read_prelookup_regression_test.sql',
   'd04_access_models_scope_filter_test.sql'
 ) | ForEach-Object { Join-Path 'packages/coelo_database/supabase/tests' $_ }
+if ($RollbackOnly) {
+  $tests = @('packages/coelo_database/supabase/tests/ap_models_nominal_rollback_test.sql')
+}
 & ./packages/coelo_database/scripts/Invoke-SafeLocalMigrationReplay.ps1 `
   -TargetVersion 20260901200206 -AuthOnly -TestPath $tests
