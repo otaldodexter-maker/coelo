@@ -636,15 +636,26 @@ lugar dele achou um defeito no **próprio pacote** que o faria falhar em produç
 
 ### O defeito
 
-`module_label`, `screen_label` e `action_label` são **`NOT NULL` sem default** em
-`public.platform_permissions` desde `20260811215451_access_profile_management_v2.sql`.
-L02 confirmou no banco (`pg_attrdef` vazio para as três).
+**Linha do tempo exata, verificada por L01 e reconferida por L00 arquivo por
+arquivo.** A primeira descrição, de L02, dizia "NOT NULL sem default desde
+`20260811215451`". **Não é isso**, e a correção **fortalece** o diagnóstico:
 
-**Corroborei por leitura**, com uma nuance que reforça o diagnóstico: naquela
-migration as três colunas são acrescentadas **sem default** e recebem
-`alter column ... set not null` nas linhas 62-68, enquanto uma **tabela irmã**
-ganha `not null default 'Principal'` na linha 15. Ou seja, o padrão não é
-uniforme no próprio arquivo, o que explica o erro passar despercebido.
+1. `20260811215451_access_profile_management_v2.sql:62` torna os três rótulos
+   **`not null`** em `platform_permissions`, e o mesmo em `institution_permissions`
+   logo abaixo — **mas naquele momento havia default**.
+2. `20260831130726_reconcile_permission_labels_after_replay.sql` **remove os
+   defaults** das três colunas, nas duas tabelas. **Verifiquei o `alter column
+   ... drop default` para as três.**
+3. `20260901191921_superadmin_internal_circulars_v2.sql:109-111` insere em
+   `platform_permissions` com a lista
+   `code,module_code,screen_code,action_code,description,risk_level,requires_mfa,status`
+   — **os três rótulos ficam de fora**. **Verifiquei a lista de colunas.**
+
+**Por que a data importa:** qualquer `insert` sem rótulos escrito entre 11/08 e
+31/08 funcionava e passou a falhar em 31/08. O arquivo problemático é de
+**01/09** — **nasceu depois da remoção do default**, ou seja, foi escrito já
+quebrado, não quebrado por mudança posterior. Isso muda o julgamento de quem for
+avaliar se ele chegou a rodar em produção.
 
 Qualquer `insert` em `platform_permissions` que **omita os três** falha com
 `null value in column "module_label" ... violates not-null constraint`.
@@ -799,3 +810,35 @@ composição vazia do Agora e o retorno contextual.
 provou que a tela abre, que ela lê da fonte autorizada, nem que ela cabe na tela —
 os três só apareceram auditando o caminho de composição, o redirect da rota real e
 a matriz responsiva.
+
+## Verificação final do pacote remoto — o defeito NÃO alcança os blocos A e B
+
+Pergunta que ficou aberta quando o defeito apareceu: os pacotes que o Owner pode
+autorizar hoje estão contaminados? **Não.** L01 conferiu e **eu reconferi na
+branch dele**:
+
+- `20260909133000_happens_post_withdrawal_v1.sql` (semeia `happens.posts.remove`)
+  e `20260909136000_moments_feed_and_withdrawal_v1.sql` (semeia
+  `moments.publications.remove`) **trazem os três rótulos** — duas ocorrências de
+  `module_label` em cada, na lista de colunas e no `on conflict do update`.
+- As outras quatro migrations do pacote **não tocam tabela de permissão**.
+
+**Conclusão: o bloco A e o bloco B seguem aplicáveis** do ponto de vista deste
+defeito. O que continua condicionando a aplicação é a autorização nominal do
+Owner, o preflight de D00 e as pré-condições de cadeia já registradas.
+
+## O que ficou fechado e o que continua aberto no caso de `20260901191921`
+
+**Fechado:** a causa. Antes eu registrava "a única migration do território de L01
+que falha no replay", sem causa e com risco de alguém atribuir ao harness.
+**Não é harness** — são as três linhas acima.
+
+**Aberto, e nenhuma frente pode fechar:** se ela chegou a aplicar em produção, ou
+se foi ajustada fora do repositório. Exige acesso remoto que nenhuma frente tem e
+nenhuma pediu. Mesma estrutura do caso de `20260901101500` (chat), e ambos são
+preflight de D00 e decisão do Owner.
+
+**Nenhuma frente alterou essas migrations**, conforme determinei: são de 01/09,
+estado remoto desconhecido, e mexer em migration que possa já ter sido aplicada é
+decisão de D00. A correção de referência está registrada como **recomendação**,
+não como alteração.
