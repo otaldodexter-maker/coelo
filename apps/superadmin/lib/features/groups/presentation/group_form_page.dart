@@ -603,7 +603,11 @@ final class _GroupFormPageState extends State<GroupFormPage> {
         _saving = false;
       });
       widget.onSaved(original == null ? GroupFormSaveResult.created : GroupFormSaveResult.updated);
-    } on Exception {
+    } on Object {
+      // Takes Object, not Exception. An Error escaping here leaves `_saving`
+      // true, and the save button is disabled while that flag is set - so the
+      // operator presses save, nothing happens, and they can never press it
+      // again. A stuck button is worse than an error message.
       if (!mounted) return;
       setState(() {
         _saving = false;

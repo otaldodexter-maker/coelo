@@ -710,7 +710,9 @@ final class _AdministratorsSectionState extends State<_AdministratorsSection> {
         return;
       }
       controller.setAdministratorAvatar(administrator.id, bytes: file.bytes, fileName: file.name);
-    } on Exception {
+    } on Object {
+      // A malformed image can fail as an Error, and an Error here would leave
+      // the picker silent: no avatar and no explanation.
       if (context.mounted) {
         _showMessage(context, 'Não foi possível ler essa foto.');
       }
@@ -1220,7 +1222,8 @@ final class _PersonEditorDialogState extends State<_PersonEditorDialog> {
       final frame = await codec.getNextFrame();
       frame.image.dispose();
       codec.dispose();
-    } on Exception {
+    } on Object {
+      // Same reason as the picker above: decoding can fail as an Error.
       setState(() => _avatarError = 'Não foi possível ler essa foto.');
       return;
     }
