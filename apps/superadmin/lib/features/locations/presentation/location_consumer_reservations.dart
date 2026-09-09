@@ -5,9 +5,11 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../domain/location_catalog_reader.dart';
+import '../domain/location_consumer_bindings_reader.dart';
 import '../domain/location_reservation_gateway.dart';
 import '../domain/location_selection_source.dart';
 import 'location_reservation_panel.dart';
+import 'location_consumer_bindings_section.dart';
 import 'location_selection_field.dart';
 
 /// Reservation context for an already authorized, persisted consumer.
@@ -20,6 +22,7 @@ class LocationConsumerReservations extends StatefulWidget {
     required this.sessionAvailable,
     required this.contextRevision,
     this.reader = const UnavailableLocationCatalogReader(),
+    this.bindingsReader = const UnavailableLocationConsumerBindingsReader(),
     this.gateway = const UnavailableLocationReservationGateway(),
     this.canRead = false,
     this.canManage = false,
@@ -30,6 +33,7 @@ class LocationConsumerReservations extends StatefulWidget {
   final LocationReservationConsumer consumer;
   final List<({LocationScope scope, String label})> scopes;
   final LocationCatalogReader reader;
+  final LocationConsumerBindingsReader bindingsReader;
   final LocationReservationGateway gateway;
   final bool sessionAvailable;
   final int contextRevision;
@@ -61,6 +65,7 @@ class _LocationConsumerReservationsState extends State<LocationConsumerReservati
         oldWidget.sessionAvailable != widget.sessionAvailable ||
         oldWidget.canRead != widget.canRead ||
         !identical(oldWidget.reader, widget.reader) ||
+        !identical(oldWidget.bindingsReader, widget.bindingsReader) ||
         !identical(oldWidget.gateway, widget.gateway) ||
         _scopeKeys(oldWidget) != _scopeKeys(widget)) {
       _owner = null;
@@ -157,8 +162,41 @@ class _LocationConsumerReservationsState extends State<LocationConsumerReservati
             );
           },
         ),
+        const SizedBox(height: CoeloSpacing.space5),
+        LocationConsumerBindingsSection(
+          key: const Key('consumer-bindings-section'),
+          consumer: widget.consumer,
+          scopes: widget.scopes.map((option) => option.scope).toList(),
+          reader: widget.bindingsReader,
+          sessionAvailable: widget.sessionAvailable,
+          canRead: widget.canRead,
+          contextRevision: widget.contextRevision,
+          onSelected: (binding) {
+            if (!mounted ||
+                generation != _generation ||
+                !_allowed ||
+                !widget.scopes.any(
+                  (option) => sameLocationScope(option.scope, binding.location.scope),
+                )) {
+              return;
+            }
+            setState(() {
+              _owner = _ownerKey(binding.location.scope);
+              _location = binding.location;
+              ++_generation;
+            });
+          },
+        ),
         if (location != null) ...[
           const SizedBox(height: CoeloSpacing.space5),
+          Semantics(
+            header: true,
+            child: Text(
+              'Reservas em ${location.label}',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+          ),
+          const SizedBox(height: CoeloSpacing.space3),
           LocationReservationPanel(
             key: ValueKey('consumer-reservation-$generation-${location.id}'),
             locationId: location.id,
