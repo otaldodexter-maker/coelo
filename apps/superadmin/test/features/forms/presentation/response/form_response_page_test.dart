@@ -56,6 +56,138 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  for (final imageKind in [FormItemKind.photo, FormItemKind.gallery]) {
+    testWidgets('review restored required media can be reviewed $imageKind', (tester) async {
+      final ids = List.generate(
+        imageKind == FormItemKind.photo ? 1 : 5,
+        (index) => '00000000-0000-4000-8000-${index.toString().padLeft(12, '0')}',
+      );
+      final answer = imageKind == FormItemKind.photo
+          ? FormAnswer.photo(itemId: 'item-1', assetIds: ids)
+          : FormAnswer.gallery(itemId: 'item-1', assetIds: ids);
+      final api = _ResponseApi(kind: imageKind, initialAnswers: {'item-1': answer});
+      await tester.binding.setSurfaceSize(const Size(1000, 1100));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      await open(tester, api);
+      await tester.tap(find.byKey(const Key('form-response-review')));
+      await tester.pumpAndSettle();
+      expect(
+        find.text('Revisão da resposta'),
+        findsOneWidget,
+        reason:
+            'Server-restored media already satisfies the required answer without selecting a new upload.',
+      );
+      expect(find.textContaining('${ids.length} arquivo(s)'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('form-response-submit')));
+      await tester.pumpAndSettle();
+      expect((api.submitCommand!.payload.answers['item-1']!.value as FormAssetValue).assetIds, ids);
+      expect(find.text('Resposta enviada'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  }
+  for (final imageKind in [FormItemKind.photo, FormItemKind.gallery]) {
+    testWidgets('review restored empty required media remains unavailable $imageKind', (
+      tester,
+    ) async {
+      final answer = imageKind == FormItemKind.photo
+          ? FormAnswer.photo(itemId: 'item-1', assetIds: [])
+          : FormAnswer.gallery(itemId: 'item-1', assetIds: []);
+      final api = _ResponseApi(kind: imageKind, initialAnswers: {'item-1': answer});
+      await open(tester, api);
+      await tester.tap(find.byKey(const Key('form-response-review')));
+      await tester.pumpAndSettle();
+      expect(find.text('Revisão da resposta'), findsNothing);
+      expect(find.text('Anexo indisponível'), findsOneWidget);
+      expect(find.byKey(const Key('form-response-submit')), findsNothing);
+      expect(api.submitCommand, isNull);
+    });
+  }
+
+  testWidgets('review restored media never crosses to replacement context', (tester) async {
+    final first = _ResponseApi(
+      kind: FormItemKind.photo,
+      initialAnswers: {
+        'item-1': FormAnswerDto.fromJson({
+          'item_id': 'item-1',
+          'kind': 'photo',
+          'asset_ids': ['00000000-0000-4000-8000-000000000031'],
+          'text_value': null,
+          'integer_value': null,
+          'decimal_value': null,
+          'money_minor_units': null,
+          'date_value': null,
+          'yes_no_value': null,
+          'option_ids': <String>[],
+          'scale_value': null,
+        }).toDomain(),
+      },
+    );
+    final second = _ResponseApi(kind: FormItemKind.photo);
+    await open(tester, first);
+    final oldReview = tester
+        .widget<FilledButton>(find.byKey(const Key('form-response-review')))
+        .onPressed!;
+    await open(tester, second, occurrence: 'occurrence-2');
+    oldReview();
+    await tester.pumpAndSettle();
+    expect(find.text('Revisão da resposta'), findsNothing);
+    await tester.tap(find.byKey(const Key('form-response-review')));
+    await tester.pumpAndSettle();
+    expect(find.text('Revisão da resposta'), findsNothing);
+    await tester.tap(find.byKey(const Key('form-response-save-draft')));
+    await tester.pumpAndSettle();
+    expect(second.saveCommand?.payload.answers, isEmpty);
+    expect(second.saveCommand?.payload.occurrenceId, 'occurrence-2');
+    expect(first.submitCommand, isNull);
+    expect(second.submitCommand, isNull);
+  });
+
+  testWidgets('review restored submitted photo can cancel and confirm unchanged media', (
+    tester,
+  ) async {
+    final answer = FormAnswerDto.fromJson({
+      'item_id': 'item-1',
+      'kind': 'photo',
+      'asset_ids': ['00000000-0000-4000-8000-000000000032'],
+      'text_value': null,
+      'integer_value': null,
+      'decimal_value': null,
+      'money_minor_units': null,
+      'date_value': null,
+      'yes_no_value': null,
+      'option_ids': <String>[],
+      'scale_value': null,
+    }).toDomain();
+    final api = _ResponseApi(
+      kind: FormItemKind.photo,
+      initialAnswers: {'item-1': answer},
+      initialStatus: FormResponseDraftStatus.submitted,
+    );
+    await tester.binding.setSurfaceSize(const Size(1000, 1100));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await open(tester, api);
+    expect(find.textContaining('1 arquivo(s)'), findsOneWidget);
+    await tester.tap(find.text('Editar resposta'));
+    await tester.pumpAndSettle();
+    expect(find.text('Anexo indisponível'), findsOneWidget);
+    await tester.tap(find.text('Cancelar edição'));
+    await tester.pumpAndSettle();
+    expect(find.text('Resposta enviada'), findsOneWidget);
+    expect(api.editCommand, isNull);
+    await tester.tap(find.text('Editar resposta'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('form-response-review')));
+    await tester.pumpAndSettle();
+    expect(find.text('Revisão da resposta'), findsOneWidget);
+    await tester.ensureVisible(find.byKey(const Key('form-response-submit')));
+    await tester.tap(find.byKey(const Key('form-response-submit')));
+    await tester.pumpAndSettle();
+    expect((api.editCommand?.payload.answers['item-1']?.value as FormAssetValue).assetIds, [
+      '00000000-0000-4000-8000-000000000032',
+    ]);
+    expect(api.submitCommand, isNull);
+    expect(find.text('Resposta enviada'), findsOneWidget);
+  });
   testWidgets('response presents one section and preserves numeric text across navigation', (
     tester,
   ) async {
@@ -1336,6 +1468,7 @@ final class _ResponseApi implements FormsApi {
     this.items,
     this.sections,
     this.initialAnswers = const {},
+    this.initialStatus = FormResponseDraftStatus.draft,
     this.receiptAnswers,
     this.lostConfirmation,
   });
@@ -1349,6 +1482,7 @@ final class _ResponseApi implements FormsApi {
   final List<FormItem>? items;
   final List<FormSection>? sections;
   final Map<String, FormAnswer> initialAnswers;
+  final FormResponseDraftStatus initialStatus;
   final Map<String, FormAnswer>? receiptAnswers;
   final String? lostConfirmation;
   FormApiFailureKind? saveFailure;
@@ -1502,7 +1636,7 @@ final class _ResponseApi implements FormsApi {
   FormResponseDraft _draft(int version, String occurrenceId) => FormResponseDraft(
     id: 'response-$occurrenceId',
     occurrenceId: occurrenceId,
-    status: FormResponseDraftStatus.draft,
+    status: initialStatus,
     answers: initialAnswers,
     managementVersion: version,
   );
