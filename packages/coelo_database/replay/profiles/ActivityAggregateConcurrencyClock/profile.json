@@ -1,0 +1,20 @@
+{
+  "id": "ActivityAggregateConcurrencyClock",
+  "parent": {
+    "id": "ActivityAggregateConcurrency",
+    "descriptor_sha256_crlf_utf8": "4c836eb765c726c6cbcac342314230856df4b5611e82e085a2ff1f14e3690450",
+    "resolver_sha256_crlf_utf8": "408831ed44f0f00a1417edf448644e3560d21e301c9e137ae5c0fa449f2e2412"
+  },
+  "target_version": "20260908235110",
+  "canonical_addition": {
+    "file": "20260908235110_superadmin_activity_link_end_clock_v1.sql",
+    "sha256_crlf_utf8": "be66e47436dfaf61bc3655fa5c1bedbeb88725077912e5c8fb28155bbcb7b069",
+    "canonical_union_position": 55
+  },
+  "extra_bridges": [],
+  "planned_counts": {
+    "canonical": 55,
+    "preflight": 2,
+    "total": 57
+  }
+}
