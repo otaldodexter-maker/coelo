@@ -1056,8 +1056,9 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
       _applicationInheritance = mode;
       _saving = true;
     });
-    final updated = _applicationDraft(current);
     try {
+      final updated = _applicationDraft(current);
+      updated.validate();
       final id = await repository.saveApplication(
         updated,
         requestId: 'save-application-${DateTime.now().microsecondsSinceEpoch}',

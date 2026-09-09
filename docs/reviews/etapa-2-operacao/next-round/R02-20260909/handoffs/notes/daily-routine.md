@@ -141,5 +141,24 @@ Formatter alterou zero arquivos.
 Primeiro gate restante: decidir/reconciliar `abandonar` versus dirty-exit
 removido no FE, ou aprovar o contrato interno 039 para reader/commands e então
 compor as rotas normais. `daily-routine.publish` continua dependente de decisão
-nominal sobre o agregado/transição e do contrato de autorização/auditoria; não
-há outro bug feature-local independente comprovado neste corte.
+nominal sobre o agregado/transição e do contrato de autorização/auditoria. O
+segundo callsite da validação é tratado abaixo.
+
+### Segundo callsite: alteração da herança
+
+`_saveApplicationMode` também persistia o draft inteiro sem validação e o
+construía fora do tratamento de falhas. O RED editou o horário para `08:7` e
+alternou a herança: `0 PASS / 1 FAIL`, log
+`C:/Users/adrie/AppData/Local/Temp/coelo-d03-daily-routine-inheritance-validation-red.log`.
+
+O callsite agora constrói e valida o mesmo `RoutineApplication` dentro do
+`try`, antes do repository. O focal material incluiu o sucesso já existente da
+troca de modo e o novo negativo: `2 PASS / 0 FAIL`, log
+`C:/Users/adrie/AppData/Local/Temp/coelo-d03-daily-routine-inheritance-validation-green.log`.
+O negativo exige mensagem segura existente, nenhuma chamada ao repository e
+preservação do valor digitado. Analyzer dos dois arquivos: `No issues found`,
+log
+`C:/Users/adrie/AppData/Local/Temp/coelo-d03-daily-routine-inheritance-validation-analyze.log`.
+Não houve reexecução do lote de 16 casos, conforme corte focal definido.
+Depois dos dois callsites, não há outro bug feature-local independente
+comprovado neste corte.
