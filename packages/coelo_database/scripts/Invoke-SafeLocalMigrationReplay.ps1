@@ -8,7 +8,7 @@ param(
 
   [switch]$AuthOnly,
 
-  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'ModelAal1PhasePolicy', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived', 'ChildDirectoryEnvelope', 'ActivityAggregateConcurrency', 'ActivityAggregateConcurrencyClock', 'LocationCatalogV2')]
+  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'ModelAal1PhasePolicy', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived', 'ChildDirectoryEnvelope', 'ActivityAggregateConcurrency', 'ActivityAggregateConcurrencyClock', 'LocationCatalogV2', 'LocationReservationsV1')]
   [string]$NominalProfile,
 
   [string[]]$AdditionalMigration = @(),
@@ -29,7 +29,9 @@ param(
 
   [switch]$RunChildDirectoryHttp,
 
-  [switch]$RunActivityV2Concurrency
+  [switch]$RunActivityV2Concurrency,
+
+  [switch]$RunLocationReservationsAuditAuthorization
 )
 
 $ErrorActionPreference = 'Stop'
@@ -143,6 +145,15 @@ $activityAggregateConcurrencyRun =
 if ($RunActivityV2Concurrency -and -not $activityAggregateConcurrencyRun) {
   throw 'activity v2 concurrency requires nominal profile ActivityAggregateConcurrency at target 20260908154257 or ActivityAggregateConcurrencyClock at target 20260908235110 without additions'
 }
+if ($RunLocationReservationsAuditAuthorization -and (
+    $NominalProfile -cne 'LocationReservationsV1' -or
+    $TargetVersion -cne '20260909165000' -or
+    $FoundationOnly -or $AuthOnly -or $AdditionalMigration.Count -gt 0 -or
+    $RunAuthLifecycle -or $RunAuthRecoveryBoundary -or $AssertAuthRecoveryConfined -or
+    $RunR02AuthProofConcurrency -or $RunChildDirectoryConcurrency -or
+    $RunChildDirectoryHttp -or $RunActivityV2Concurrency -or $RunLint)) {
+  throw 'Location reservation audit proof requires exact LocationReservationsV1 target without other modes or additions'
+}
 if ($NominalProfile) {
   if ($FoundationOnly -or $AuthOnly -or $AdditionalMigration.Count -gt 0 -or
       $RunAuthLifecycle -or
@@ -165,6 +176,7 @@ if ($NominalProfile) {
     'FReadDirectoryContractRedDerived' { 'replay\profiles\FReadDirectoryContractRedDerived\Resolve-FReadDirectoryContractRedDerived.ps1' }
     'FReadDirectoryContractGreenDerived' { 'replay\profiles\FReadDirectoryContractGreenDerived\Resolve-FReadDirectoryContractGreenDerived.ps1' }
     'LocationCatalogV2' { 'replay\profiles\LocationCatalogV2\Resolve-LocationCatalogV2.ps1' }
+    'LocationReservationsV1' { 'replay\profiles\LocationReservationsV1\Resolve-LocationReservationsV1.ps1' }
   }
   $nominalResolver = Join-Path $packageRoot $nominalResolverRelative
   Assert-NoReparseAncestors $nominalResolver
@@ -260,6 +272,12 @@ if (($RunChildDirectoryConcurrency -or $RunChildDirectoryHttp) -and (
     $resolvedTestPaths.Count -ne 1 -or
     $resolvedTestPaths[0] -ine $expectedChildTap)) {
   throw 'CHILD concurrency or HTTP requires exactly the nominal CHILD TAP'
+}
+$expectedReservationTap = Join-Path $canonicalTestsRoot 'superadmin_location_reservations_v2_test.sql'
+if ($RunLocationReservationsAuditAuthorization -and (
+    $resolvedTestPaths.Count -ne 1 -or
+    $resolvedTestPaths[0] -ine $expectedReservationTap)) {
+  throw 'Location reservation audit proof requires exactly the nominal reservation TAP'
 }
 Assert-NoReparseAncestors $tempRoot
 if ($projectRoot -eq $repositoryFull -or
@@ -397,6 +415,11 @@ try {
     & (Join-Path $scriptRoot 'Test-LocalAuthRecoveryBoundary.ps1') `
       -ProjectRoot $projectRoot -ProjectId $projectId `
       -AssertConfined:$AssertAuthRecoveryConfined
+  }
+  if ($RunLocationReservationsAuditAuthorization) {
+    & (Join-Path $scriptRoot 'Test-LocationReservationsAuditAuthorization.ps1') `
+      -ProjectRoot $projectRoot `
+      -ProjectId $projectId
   }
   if ($RunActivityV2Concurrency) {
     & (Join-Path $scriptRoot 'Test-ActivityV2Concurrency.ps1') `

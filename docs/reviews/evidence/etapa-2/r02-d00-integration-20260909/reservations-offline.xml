@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="7" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-09-09" time="15:56:40">
+  <environment user="adrie" machine-name="LAPTOP-67A8F4LK" cwd="C:\Users\adrie\Documents\Coelo" user-domain="LAPTOP-67A8F4LK" platform="Microsoft Windows 11 Home|C:\WINDOWS|\Device\Harddisk0\Partition3" nunit-version="2.5.8.0" os-version="10.0.26200" clr-version="4.0.30319.42000" />
+  <culture-info current-culture="pt-BR" current-uiculture="pt-BR" />
+  <test-suite type="Powershell" name="Pester" executed="True" result="Success" success="True" time="5.3847" asserts="0">
+    <results>
+      <test-suite type="TestFixture" name="Location reservations audit nominal TAP gate" executed="True" result="Success" success="True" time="0.6147" asserts="0" description="Location reservations audit nominal TAP gate">
+        <results>
+          <test-case description="requires precisely the reservation TAP before allocating resources" name="Location reservations audit nominal TAP gate.requires precisely the reservation TAP before allocating resources" time="0.6147" asserts="0" success="True" result="Success" executed="True" />
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="LocationReservationsV1 nominal profile" executed="True" result="Success" success="True" time="4.77" asserts="0" description="LocationReservationsV1 nominal profile">
+        <results>
+          <test-case description="merges the six additions into the reviewed 64-file chain" name="LocationReservationsV1 nominal profile.merges the six additions into the reviewed 64-file chain" time="2.8647" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="orders Activities before the location cutover and the motor last" name="LocationReservationsV1 nominal profile.orders Activities before the location cutover and the motor last" time="0.5532" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="pins every new canonical input" name="LocationReservationsV1 nominal profile.pins every new canonical input" time="0.071" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="keeps the location snapshots and forms materialization from its parent" name="LocationReservationsV1 nominal profile.keeps the location snapshots and forms materialization from its parent" time="0.5099" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="adds three Owner-only capabilities without inventing an MFA gate" name="LocationReservationsV1 nominal profile.adds three Owner-only capabilities without inventing an MFA gate" time="0.5578" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="rejects a target other than the reserved motor version" name="LocationReservationsV1 nominal profile.rejects a target other than the reserved motor version" time="0.2133" asserts="0" success="True" result="Success" executed="True" />
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>
