@@ -381,3 +381,19 @@ produção como irmãs, e `dev` as moveu para dentro do `ShellRoute`. Ou seja, o
 Se esses dois forem feitos, os quatro perigos da tabela anterior ficam cobertos: os outros dois
 (guarda do badge e mídia da preview) já vieram automaticamente e só precisam **não ser desfeitos**
 durante a resolução manual.
+
+## Validação mecânica da resolução proposta
+
+Apliquei a minha própria instrução ao resultado do `merge-tree`, num arquivo de rascunho fora do
+controle de versão, e conferi a estrutura. Resultado:
+
+- âncora da inserção encontrada **exatamente uma vez**;
+- o `?from=principal` restante encontrado **exatamente uma vez**;
+- chaves e parênteses **balanceados** (delta 0) depois da resolução;
+- **zero** marcadores de conflito;
+- **zero** ocorrências de `?from=principal`;
+- **3** ocorrências de `chatUnreadCountLoader`, as três que devem sobreviver.
+
+Isso valida que os dois pontos manuais aplicam de forma mecânica e sem ambiguidade de âncora. O que
+**não** valida: tipos e compilação, porque analisar exigiria materializar a base conjunta, que é do
+integrador. O rascunho foi removido; nada disso ficou na worktree.
