@@ -164,3 +164,7 @@ R1–R6,L1,C1: bloqueados para execução funcional por mailbox controlada e
 autorização nominal ainda pendentes. São gates operacionais, não dez testes
 automatizados e não entram no153. Nenhuma conta, senha, email, SMTP ou
 configuração remota foi alterada. D00 serializa decisão e integração.
+
+## Ensaio candidato na base integrada — 15:25 BRT
+
+Recibo D00 assignment r14/session29307, migration8500 integrada36e8e4c0b:48migrations aplicadas; campanha46=P35/F1/B10/S0/U0. TAP35 falhou na razão auditada das três recusas AMR. HTTP9 e cold1 não executaram por dependência do TAP. Aprovação35/36=97,22%; falha1/36=2,78%; execução36/46=78,26%; aprovação do plano35/46=76,09%. Não somar essa variante cold ao plano cliente153, nem usar estes testes para promover FE/BE/E2E. Correção da allowlist de auditoria em preparação; nenhum rerun D01 paralelo.

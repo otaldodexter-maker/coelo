@@ -45,3 +45,14 @@ comparação com o corpo da migration canônica antes de fixar o preflight;
 o propósito é recusar substituição de uma função com alteração inesperada,
 mesmo que ainda contenha os nomes de verificações conhecidos. Nenhum corpo
 de sessão/usuário ou token foi lido.
+
+## Verificação nominal do successor de auditoria — 15:32 BRT
+
+Consulta somente catálogo pg_proc/pg_namespace, projeto evvbomzejfijozbtgvpt, sem leitura de pessoas/sessões nem execução de RPC de produto. Ambos wrappers: owner postgres, security definer true, volatile v, search_path vazio. Corpos normalizados CRLF→LF:
+
+| Função | MD5 | Caracteres |
+| --- | --- | ---: |
+| public.superadmin_auth_bootstrap_context() | cf411ecb47a0e3e42aeb4ee654f6b079 |1929|
+| public.superadmin_auth_resolve_institution_context(uuid) | e16a3b61cffba4230c7fb4235da9382d |2093|
+
+Os pins coincidem com a definição canônica20260901190927. Esta leitura não aplica a correção, não comprova comportamento remoto e não autoriza escrita. Successor173100 em preparação após falha TAP35 local.
