@@ -13,6 +13,7 @@ final class PrincipalCircularDetailPage extends StatefulWidget {
     required this.repository,
     required this.responseRepository,
     this.childContextId,
+    this.mediaRepository,
     this.onReturn,
     this.embedded = false,
     super.key,
@@ -22,6 +23,12 @@ final class PrincipalCircularDetailPage extends StatefulWidget {
   final String? childContextId;
   final CircularRepository repository;
   final CircularResponseRepository responseRepository;
+
+  /// Capacidade de leitura autorizada dos anexos, repassada ao leitor.
+  ///
+  /// Sem ela o leitor mantem os anexos honestamente fechados em vez de fingir
+  /// que a abertura e possivel. Quem compoe a rota decide se a fornece.
+  final CircularMediaRepository? mediaRepository;
   final VoidCallback? onReturn;
 
   /// Marks the reading surface as hosted inside the Superadmin shell content
@@ -232,6 +239,7 @@ final class _PrincipalCircularDetailPageState extends State<PrincipalCircularDet
       detail: _detail!,
       initialAnswers: _detail!.initialAnswers,
       onSubmit: _submit,
+      mediaRepository: widget.mediaRepository,
       embedded: widget.embedded,
     );
   }
