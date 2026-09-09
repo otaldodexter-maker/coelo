@@ -657,7 +657,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
         onChanged: (value) => update(
           value.trim().isEmpty ? null : FormAnswer.shortText(itemId: item.id, value: value),
         ),
-        validator: (_) => _requiredMessage(item),
+        validator: (_) => _dateAndTextValidationMessage(item) ?? _requiredMessage(item),
         decoration: const InputDecoration(border: OutlineInputBorder()),
       ),
       FormItemKind.integer || FormItemKind.decimal || FormItemKind.money => TextFormField(
@@ -962,16 +962,74 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
 
   Future<void> _pickDate(FormItem item) async {
     final generation = _loadGeneration;
-    final now = DateTime.now();
-    final selected = await showDatePicker(
+    final first = _civilDay(item.config.minDate ?? DateTime(1));
+    final last = _civilDay(item.config.maxDate ?? DateTime(9999, 12, 31));
+    final value = (_answers[item.id]?.value as FormDateValue?)?.value;
+    final day = value == null ? null : _civilDay(value);
+    final valid = day != null && !day.isBefore(first) && !day.isAfter(last);
+    final initial = valid ? DateTimeRange(start: day, end: day) : null;
+    final today = _civilDay(DateTime.now());
+    final anchor = today.isBefore(first)
+        ? first
+        : today.isAfter(last)
+        ? last
+        : today;
+    // A confirmed clear is distinct from dismissing an invalid restored value.
+    final result = await showDialog<({DateTimeRange? value})>(
       context: context,
-      initialDate: (_answers[item.id]?.value as FormDateValue?)?.value ?? now,
-      firstDate: DateTime(now.year - 120),
-      lastDate: DateTime(now.year + 20),
+      builder: (dialogContext) => Dialog(
+        backgroundColor: Theme.of(dialogContext).colorScheme.surface,
+        surfaceTintColor: Colors.transparent,
+        insetPadding: const EdgeInsets.all(CoeloSpacing.space4),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.lg)),
+        clipBehavior: Clip.antiAlias,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 760, maxHeight: 760),
+          child: CoeloDateRangePicker(
+            value: initial,
+            currentDate: anchor,
+            firstDate: first,
+            lastDate: last,
+            selectionMode: CoeloDateSelectionMode.single,
+            showQuickRanges: false,
+            onChanged: (value) => Navigator.of(dialogContext).pop((value: value)),
+            onDismiss: () => Navigator.of(dialogContext).pop(),
+          ),
+        ),
+      ),
     );
-    if (selected != null && _isCurrent(generation)) {
-      setState(() => _setAnswer(item, FormAnswer.date(itemId: item.id, value: selected)));
+    if (result == null || !_isCurrent(generation)) return;
+    final selected = result.value;
+    if (selected == null) {
+      _setAnswer(item, null);
+    } else {
+      final chosen = _civilDay(selected.start);
+      if (chosen.isBefore(first) || chosen.isAfter(last)) return;
+      _setAnswer(item, FormAnswer.date(itemId: item.id, value: chosen));
     }
+  }
+
+  DateTime _civilDay(DateTime value) => DateTime.utc(value.year, value.month, value.day);
+
+  String? _dateAndTextValidationMessage(FormItem item) {
+    final value = _answers[item.id]?.value;
+    if (item.kind == FormItemKind.shortText && value is FormShortTextValue) {
+      final maximum = item.config.maxLength ?? 1000;
+      // The outgoing normalizer trims; PostgreSQL char_length counts code points.
+      if (value.value.trim().runes.length > maximum) {
+        return 'Use no máximo $maximum caracteres nesta resposta.';
+      }
+    }
+    if (item.kind == FormItemKind.date && value is FormDateValue) {
+      final day = _civilDay(value.value);
+      final minimum = item.config.minDate;
+      final maximum = item.config.maxDate;
+      if ((minimum != null && day.isBefore(_civilDay(minimum))) ||
+          (maximum != null && day.isAfter(_civilDay(maximum)))) {
+        return 'Selecione uma data dentro dos limites desta pergunta.';
+      }
+    }
+    return null;
   }
 
   void _reviewResponse() {
@@ -1008,6 +1066,8 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
   }
 
   String? _itemValidationMessage(FormItem item) {
+    final contentMessage = _dateAndTextValidationMessage(item);
+    if (contentMessage != null) return contentMessage;
     if (_invalidNumericIds.contains(item.id)) return 'Revise os valores numéricos antes de salvar.';
     if (item.kind == FormItemKind.gallery) {
       final value = _answers[item.id]?.value;
@@ -1093,6 +1153,17 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
     if (_pendingCommand == null && _invalidNumericIds.isNotEmpty) {
       setState(() => _message = 'Revise os valores numéricos antes de salvar.');
       return;
+    }
+    if (_pendingCommand == null) {
+      final visible = _visibleItemIds;
+      for (final item in occurrence.version.sections.expand((section) => section.items)) {
+        if (!visible.contains(item.id)) continue;
+        final message = _dateAndTextValidationMessage(item);
+        if (message != null) {
+          setState(() => _message = message);
+          return;
+        }
+      }
     }
     if (automatic && _autosavePaused) return;
     if (!automatic) _autosavePaused = false;

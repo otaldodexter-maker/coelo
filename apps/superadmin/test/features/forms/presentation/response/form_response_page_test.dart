@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:coelo_api/coelo_api.dart';
 import 'package:coelo_domain/coelo_domain.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:coelo_superadmin/features/forms/presentation/response/form_response_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -55,6 +56,279 @@ void main() {
     );
     await tester.pumpAndSettle();
   }
+
+  for (final lowerOnly in [true, false]) {
+    testWidgets('civil picker unilateral bound outside old range lowerOnly $lowerOnly', (
+      tester,
+    ) async {
+      final bound = DateTime(lowerOnly ? 2200 : 1800, 9, 8);
+      final restored = DateTime.utc(lowerOnly ? 1700 : 2300, 9, 8, 23);
+      final api = _ResponseApi(
+        items: [
+          FormItem(
+            id: 'item-1',
+            kind: FormItemKind.date,
+            label: 'Data',
+            position: 0,
+            config: FormItemConfig(
+              minDate: lowerOnly ? bound : null,
+              maxDate: lowerOnly ? null : bound,
+            ),
+          ),
+        ],
+        initialAnswers: {'item-1': FormAnswer.date(itemId: 'item-1', value: restored)},
+      );
+      await open(tester, api);
+      final label = '08/09/${restored.year}';
+      await tester.tap(find.text(label));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      final picker = tester.widget<CoeloDateRangePicker>(find.byType(CoeloDateRangePicker));
+      expect(picker.selectionMode, CoeloDateSelectionMode.single);
+      expect(picker.value, isNull);
+      expect(picker.currentDate, bound);
+      expect(lowerOnly ? picker.firstDate : picker.lastDate, bound);
+      picker.onDismiss!();
+      await tester.pumpAndSettle();
+      expect(find.text(label), findsOneWidget);
+      expect(api.saveCalls, isEmpty);
+      await tester.tap(find.text(label));
+      await tester.pumpAndSettle();
+      final forbidden = lowerOnly ? 7 : 9;
+      expect(
+        tester
+            .widget<TextButton>(
+              find.byKey(ValueKey('coelo-date-${bound.year}-09-0$forbidden')).first,
+            )
+            .onPressed,
+        isNull,
+      );
+      await tester.tap(find.byKey(ValueKey('coelo-date-${bound.year}-09-08')).first);
+      await tester.pump();
+      await tester.tap(find.byKey(const ValueKey('coelo-date-range-apply')));
+      await tester.pumpAndSettle();
+      expect(find.text('08/09/${bound.year}'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('form-response-save-draft')));
+      await tester.pumpAndSettle();
+      final answer = api.saveCalls.single.payload.answers['item-1']!.value as FormDateValue;
+      expect((answer.value.year, answer.value.month, answer.value.day), (bound.year, 9, 8));
+    });
+  }
+
+  for (final validRestored in [true, false]) {
+    testWidgets('civil picker explicit clear differs from dismiss validRestored $validRestored', (
+      tester,
+    ) async {
+      final restored = DateTime.utc(validRestored ? 2026 : 1900, 9, 8, 23);
+      final api = _ResponseApi(
+        items: [
+          FormItem(
+            id: 'item-1',
+            kind: FormItemKind.date,
+            label: 'Data',
+            position: 0,
+            config: FormItemConfig(minDate: DateTime(2026, 9, 8), maxDate: DateTime(2026, 9, 10)),
+          ),
+        ],
+        initialAnswers: {'item-1': FormAnswer.date(itemId: 'item-1', value: restored)},
+      );
+      await open(tester, api);
+      await tester.tap(find.text('08/09/${restored.year}'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byTooltip('Fechar seletor de período'));
+      await tester.pumpAndSettle();
+      expect(find.text('08/09/${restored.year}'), findsOneWidget);
+      expect(api.saveCalls, isEmpty);
+      await tester.tap(find.text('08/09/${restored.year}'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('coelo-date-range-clear')));
+      await tester.pumpAndSettle();
+      expect(find.text('Selecionar data'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('form-response-review')));
+      await tester.pumpAndSettle();
+      expect(find.text('Revisão da resposta'), findsOneWidget);
+    });
+  }
+
+  for (final required in [true, false]) {
+    for (final day in [7, 8, 10, 11]) {
+      testWidgets('civil date restored day $day required $required respects configured bounds', (
+        tester,
+      ) async {
+        final api = _ResponseApi(
+          items: [
+            FormItem(
+              id: 'item-1',
+              kind: FormItemKind.date,
+              label: 'Data',
+              position: 0,
+              isRequired: required,
+              config: FormItemConfig(minDate: DateTime(2026, 9, 8), maxDate: DateTime(2026, 9, 10)),
+            ),
+          ],
+          initialAnswers: {
+            'item-1': FormAnswer.date(itemId: 'item-1', value: DateTime.utc(2026, 9, day, 23)),
+          },
+        );
+        await open(tester, api);
+        await tester.tap(find.byKey(const Key('form-response-review')));
+        await tester.pumpAndSettle();
+        final valid = day >= 8 && day <= 10;
+        expect(find.text('Revisão da resposta'), valid ? findsOneWidget : findsNothing);
+        if (!valid) {
+          expect(
+            find.text('Selecione uma data dentro dos limites desta pergunta.'),
+            findsOneWidget,
+          );
+          await tester.tap(find.byKey(const Key('form-response-save-draft')));
+          await tester.pumpAndSettle();
+          expect(api.saveCalls, isEmpty);
+        }
+        expect(tester.takeException(), isNull);
+      });
+    }
+    for (final value in ['  😀😀  ', 'e\u0301', '😀😀😀', 'e\u0301x']) {
+      testWidgets('short text codepoint bounds restored $value required $required', (tester) async {
+        final api = _ResponseApi(
+          items: [
+            FormItem(
+              id: 'item-1',
+              kind: FormItemKind.shortText,
+              label: 'Texto',
+              position: 0,
+              isRequired: required,
+              config: const FormItemConfig(maxLength: 2),
+            ),
+          ],
+          initialAnswers: {'item-1': FormAnswer.shortText(itemId: 'item-1', value: value)},
+        );
+        await open(tester, api);
+        await tester.tap(find.byKey(const Key('form-response-review')));
+        await tester.pumpAndSettle();
+        final valid = value.trim().runes.length <= 2;
+        expect(find.text('Revisão da resposta'), valid ? findsOneWidget : findsNothing);
+        if (!valid) {
+          expect(find.text('Use no máximo 2 caracteres nesta resposta.'), findsWidgets);
+          await tester.tap(find.byKey(const Key('form-response-save-draft')));
+          await tester.pumpAndSettle();
+          expect(api.saveCalls, isEmpty);
+        } else {
+          await tester.tap(find.byKey(const Key('form-response-submit')));
+          await tester.pumpAndSettle();
+          expect(
+            (api.submitCommand!.payload.answers['item-1']!.value as FormShortTextValue).value,
+            value.trim(),
+          );
+        }
+      });
+    }
+  }
+
+  testWidgets('short text default bounds prevent invalid autosave without truncating local text', (
+    tester,
+  ) async {
+    final api = _ResponseApi();
+    await open(tester, api);
+    final field = find.byKey(const Key('form-response-item-item-1'));
+    final long = '😀' * 1001;
+    await tester.enterText(field, long);
+    await tester.pump(const Duration(milliseconds: 900));
+    await tester.pumpAndSettle();
+    expect(api.saveCalls, isEmpty);
+    expect(
+      tester.widget<TextFormField>(field).controller?.text ??
+          tester.widget<TextFormField>(field).initialValue,
+      long,
+    );
+    expect(find.text('Use no máximo 1000 caracteres nesta resposta.'), findsWidgets);
+    await tester.enterText(field, '😀' * 1000);
+    await tester.pump(const Duration(milliseconds: 900));
+    await tester.pumpAndSettle();
+    expect(api.saveCalls, hasLength(1));
+    expect(
+      (api.saveCalls.single.payload.answers['item-1']!.value as FormShortTextValue)
+          .value
+          .runes
+          .length,
+      1000,
+    );
+  });
+
+  testWidgets('date and text absent required answers remain valid for incomplete autosave', (
+    tester,
+  ) async {
+    final api = _ResponseApi(
+      items: [
+        FormItem(
+          id: 'item-1',
+          kind: FormItemKind.shortText,
+          label: 'Texto',
+          position: 0,
+          isRequired: true,
+          config: FormItemConfig(maxLength: 2),
+        ),
+        FormItem(
+          id: 'date',
+          kind: FormItemKind.date,
+          label: 'Data',
+          position: 1,
+          isRequired: true,
+          config: FormItemConfig(minDate: DateTime(2026, 9, 8)),
+        ),
+      ],
+    );
+    await open(tester, api);
+    final field = find.byKey(const Key('form-response-item-item-1'));
+    await tester.enterText(field, 'a');
+    await tester.enterText(field, '');
+    await tester.pump(const Duration(milliseconds: 900));
+    await tester.pumpAndSettle();
+    expect(api.saveCalls, hasLength(1));
+    expect(api.saveCalls.single.payload.answers, isEmpty);
+    await tester.tap(find.byKey(const Key('form-response-review')));
+    await tester.pumpAndSettle();
+    expect(find.text('Revisão da resposta'), findsNothing);
+  });
+
+  testWidgets('hidden invalid date and text do not block review or leak into submission', (
+    tester,
+  ) async {
+    final api = _ResponseApi(
+      items: [
+        FormItem(id: 'gate', kind: FormItemKind.yesNo, label: 'Gate', position: 0),
+        FormItem(
+          id: 'text',
+          kind: FormItemKind.shortText,
+          label: 'Texto',
+          position: 1,
+          isRequired: true,
+          config: FormItemConfig(maxLength: 2),
+          conditions: [FormCondition.yesNo(sourceItemId: 'gate', expected: true)],
+        ),
+        FormItem(
+          id: 'date',
+          kind: FormItemKind.date,
+          label: 'Data',
+          position: 2,
+          isRequired: true,
+          config: FormItemConfig(minDate: DateTime(2026, 9, 8)),
+          conditions: const [FormCondition.yesNo(sourceItemId: 'gate', expected: true)],
+        ),
+      ],
+      initialAnswers: {
+        'gate': FormAnswer.yesNo(itemId: 'gate', value: false),
+        'text': FormAnswer.shortText(itemId: 'text', value: 'exceeds'),
+        'date': FormAnswer.date(itemId: 'date', value: DateTime(1900)),
+      },
+    );
+    await open(tester, api);
+    await tester.tap(find.byKey(const Key('form-response-review')));
+    await tester.pumpAndSettle();
+    expect(find.text('Revisão da resposta'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('form-response-submit')));
+    await tester.pumpAndSettle();
+    expect(api.submitCommand!.payload.answers.keys, ['gate']);
+  });
 
   for (final required in [true, false]) {
     for (final count in [1, 2, 5, 6]) {
@@ -1072,7 +1346,18 @@ void main() {
         case FormItemKind.date:
           await tester.tap(find.text('Selecionar data'));
           await tester.pumpAndSettle();
-          await tester.tap(find.text('OK'));
+          final today = DateTime.now();
+          await tester.tap(
+            find
+                .byKey(
+                  ValueKey(
+                    'coelo-date-${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}',
+                  ),
+                )
+                .first,
+          );
+          await tester.pump();
+          await tester.tap(find.text('Aplicar'));
         default:
           throw StateError('Unsupported test case');
       }
@@ -1401,14 +1686,15 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Selecionar data'));
     await tester.pumpAndSettle();
-    expect(find.byType(DatePickerDialog), findsOneWidget);
+    expect(find.byType(CoeloDateRangePicker), findsOneWidget);
+    final oldPicker = tester.widget<CoeloDateRangePicker>(find.byType(CoeloDateRangePicker));
     await tester.pumpWidget(
       MaterialApp(
         home: FormResponsePage(api: second, occurrenceId: 'occurrence-2'),
       ),
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text('OK'));
+    oldPicker.onChanged(DateTimeRange(start: DateTime(2026, 9, 8), end: DateTime(2026, 9, 8)));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('form-response-save-draft')));
     await tester.pumpAndSettle();
