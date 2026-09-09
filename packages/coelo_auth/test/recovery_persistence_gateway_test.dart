@@ -8,6 +8,41 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
   test(
+    'recovery persistence retry: refresh retries a failed purge in the same session',
+    () async {
+      final fixture = await _SdkFixture.create();
+      addTearDown(fixture.close);
+      final persistence = _RecordingPersistence(failuresRemaining: 1);
+      final gateway = fixture.gateway(persistence);
+      final errors = <Object>[];
+      final subscription = gateway.authSessionStateChanges.listen(
+        (_) {},
+        onError: (Object error) => errors.add(error),
+      );
+      addTearDown(subscription.cancel);
+
+      await fixture.recover();
+      expect(errors, hasLength(1));
+      expect(persistence.calls, [false]);
+      expect(persistence.persistedSession, isNotNull);
+      fixture.version++;
+      await fixture.client.auth.refreshSession();
+      await _settleEvents();
+
+      expect(gateway.currentSessionState.isPasswordRecovery, isTrue);
+      expect(
+        {
+          'purgeAttempts': persistence.calls.length,
+          'persisted': persistence.persistedSession != null,
+        },
+        {'purgeAttempts': 2, 'persisted': false},
+        reason:
+            'A failed purge must not be cached as successful for the same session.',
+      );
+    },
+  );
+
+  test(
     'recovery persistence: gateway created after SDK callback purges on replay',
     () async {
       final fixture = await _SdkFixture.create();
@@ -147,9 +182,10 @@ String _token(String sessionId, int version) {
 }
 
 final class _RecordingPersistence implements CoeloAuthSessionPersistence {
-  _RecordingPersistence({this.failSynchronously});
+  _RecordingPersistence({this.failSynchronously, this.failuresRemaining = 0});
 
   final bool? failSynchronously;
+  int failuresRemaining;
   final calls = <bool>[];
   bool enabled = true;
   String? persistedSession = 'synthetic-existing-session';
@@ -158,6 +194,10 @@ final class _RecordingPersistence implements CoeloAuthSessionPersistence {
   Future<void> setPersistenceEnabled({required bool value}) {
     calls.add(value);
     enabled = value;
+    if (failuresRemaining > 0) {
+      failuresRemaining--;
+      return Future<void>.error(StateError(_privateFailure));
+    }
     if (failSynchronously == true) throw StateError(_privateFailure);
     if (failSynchronously == false) {
       return Future<void>.error(StateError(_privateFailure));
