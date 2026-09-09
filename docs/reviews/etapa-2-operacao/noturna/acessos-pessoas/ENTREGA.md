@@ -23,7 +23,7 @@ Sao31 ativos,6 adiados e1 gate MFA. ADR0019/AAL1 permanece vigente.
 | Safety candidato read-only exige envelope compativel | 7ce41f86b | [SQL Safety](safety-sql/handoff.md):43+63+2 casos ainda nao executados; [adapter41P atual](safety-sql/adapter-shape.md), inativo |
 | Perfis de replay reservados e carimbo Safety alinhado ao integrador | b91f9206d,cb76f5968,fa3caddd2 | [Perfil atual](safety-sql/serialized-profile-proof.json):7P preparacao,53 arquivos exatos, sem SQL; target193000 conforme ecc8eae2b |
 
-Resultado atual unico: **396P,0F,0S,120U**. U120=Safety108+Modelos concorrencia12.
+Resultado atual unico: **401P,0F,0S,120U**. U120=Safety108+Modelos concorrencia12.
 Preparacao7P separada de testes do produto. Reruns e evidencias R02 nao somam
 cobertura. Nenhum resultado local promove FE/BE/E2E integralmente. Historico
 FE2/38 corresponde aos adiamentos; ativos FE0/31,BE0/31,E2E0/31.
@@ -63,3 +63,17 @@ Gate de memoria executado com Root explicito:PASS. Nenhuma regra nova de produto
 as projecoes historicas de MFA foram apontadas para reconciliacao central.
 Congelamento23:10, pre-entrega23:20, entrega final e parada23:30 BRT. Este indice
 e um checkpoint e sera atualizado se a sequencia SQL ou a integracao avancar.
+
+## Sucessores visuais e composicao (checkpoint20:58BRT)
+
+Composicao produtiva das sete familias respondida em [composicao-produtiva.md](composicao-produtiva.md), commit f4ac658fb; nao equivale a qualificacao do transporte.
+
+| Lote publicado | Prova focal | Evidencia |
+| --- | --- | --- |
+| c8c8b0fba formularioPerfis/Modelos | 1P,3renders,substitui F1 antigo | models-form-receipt/golden-reconciliation.md |
+| f60b2c2fe hoverPerfis | 1P,1render | profile-hover/handoff.md |
+| c76a0eb23 formularioPessoas | 2P,2renders e alcancefooter | people-form-visual/handoff.md |
+| 5ffce5441 diretorioPessoas | 1P,8renders | people-directory-visual/handoff.md |
+| 7956dda48 diretorioPerfis | 1P,16renders | profile-directory-visual/handoff.md |
+
+Todos aplicam regra nominal do coordenador: causas integradas especificas, inspecao individual antesupdate, caminhos/hashes. Nenhuma promocao. HEAD7956dda48 publicado0/0; WIP identificado people-status-target (correcao funcional de alvo48 pelo filho), pendente de revisao/publicacao. Comunicacao r35 envia22deltas ao escritor central; ultimo recibo observado continua nossa r15 na coordenacao r12. Publicado nao significa integrado.
