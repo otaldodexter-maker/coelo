@@ -9,7 +9,51 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
-  test('non-equivalent activity mutations fail closed before any legacy RPC', () async {
+  test('saves an activity snapshot through one aggregate v2 RPC', () async {
+    Request? captured;
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-key',
+      httpClient: MockClient((request) async {
+        captured = request;
+        return Response(
+          jsonEncode({
+            'ok': true,
+            'data': {
+              'activity_id': 'activity-created-1',
+              'management_version': 6,
+              'status': 'draft',
+              'correlation_id': 'correlation-1',
+              'replayed': false,
+            },
+            'error': null,
+          }),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        );
+      }),
+    );
+    addTearDown(client.dispose);
+
+    final result = await SupabaseActivityCommandRepository(client).save(_saveCommand);
+
+    expect(captured!.url.path, endsWith('/rpc/superadmin_activity_save_v2'));
+    final body = jsonDecode(captured!.body) as Map<String, dynamic>;
+    expect(body['p_request_id'], '8b200000-0000-4000-8000-000000000901');
+    expect(body['p_activity_id'], isNull);
+    expect(body['p_expected_version'], 0);
+    expect(body['p_publish'], isFalse);
+    final payload = body['p_payload'] as Map<String, dynamic>;
+    expect(payload['institution_id'], 'institution-1');
+    expect(payload['unit_ids'], ['unit-1']);
+    expect(payload['group_ids'], <Object?>[]);
+    expect(result.activityId, 'activity-created-1');
+    expect(result.managementVersion, 6);
+    expect(result.status, ActivityStatus.draft);
+  });
+
+  test('unsupported activity save variants fail closed before HTTP', () async {
     var requestCount = 0;
     final client = SupabaseClient(
       'https://example.supabase.co',
@@ -23,7 +67,7 @@ void main() {
     final repository = SupabaseActivityCommandRepository(client);
 
     await expectLater(
-      repository.save(_saveCommand),
+      repository.save(_unsupportedSaveCommand),
       throwsA(isA<ActivityCommandUnavailableException>()),
     );
     await expectLater(
@@ -53,6 +97,93 @@ void main() {
     );
 
     expect(requestCount, 0);
+  });
+
+  test('maps aggregate concurrency envelope without a second request', () async {
+    var requestCount = 0;
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-key',
+      httpClient: MockClient((request) async {
+        requestCount++;
+        return Response(
+          jsonEncode({
+            'ok': false,
+            'data': null,
+            'error': {
+              'code': 'SAI_CONCURRENT_CHANGE',
+              'message': 'O estado mudou.',
+              'http_status': 409,
+              'correlation_id': 'correlation-2',
+            },
+          }),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        );
+      }),
+    );
+    addTearDown(client.dispose);
+
+    await expectLater(
+      SupabaseActivityCommandRepository(client).save(_saveCommand),
+      throwsA(isA<ActivityCommandConflictException>()),
+    );
+    expect(requestCount, 1);
+  });
+
+  test('edits fail closed before HTTP until complete snapshots are available', () async {
+    var requestCount = 0;
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-key',
+      httpClient: MockClient((request) async {
+        requestCount++;
+        return Response('{}', 200, request: request);
+      }),
+    );
+    addTearDown(client.dispose);
+
+    await expectLater(
+      SupabaseActivityCommandRepository(client).save(_editSaveCommand),
+      throwsA(isA<ActivityCommandUnavailableException>()),
+    );
+    await expectLater(
+      SupabaseActivityCommandRepository(client).save(_publishSaveCommand),
+      throwsA(isA<ActivityCommandUnavailableException>()),
+    );
+    expect(requestCount, 0);
+  });
+
+  test('rejects a non-positive aggregate management version', () async {
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-key',
+      httpClient: MockClient(
+        (request) async => Response(
+          jsonEncode({
+            'ok': true,
+            'data': {
+              'activity_id': 'activity-created-1',
+              'management_version': 0,
+              'status': 'draft',
+              'correlation_id': 'correlation-invalid',
+              'replayed': false,
+            },
+            'error': null,
+          }),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        ),
+      ),
+    );
+    addTearDown(client.dispose);
+
+    await expectLater(
+      SupabaseActivityCommandRepository(client).save(_saveCommand),
+      throwsA(isA<ActivityCommandUnavailableException>()),
+    );
   });
 
   test('creates a unit-scoped model through the internal gateway', () async {
@@ -165,8 +296,72 @@ void main() {
 }
 
 const _saveCommand = ActivitySaveCommand(
-  requestId: 'save-1',
+  requestId: '8b200000-0000-4000-8000-000000000901',
   intent: ActivityCommandIntent.saveDraft,
+  name: 'Natação',
+  description: '',
+  taxonomyId: 'taxonomy-1',
+  taxonomyOtherDescription: '',
+  governance: ActivityGovernance.optional,
+  institutionId: 'institution-1',
+  unitIds: {'unit-1'},
+  groupIds: {},
+  assignments: [],
+  identity: ActivityCommandIdentity(
+    kind: ActivityIdentityKind.initials,
+    initials: 'NA',
+    color: '#D63C00',
+    icon: 'activity',
+  ),
+);
+
+const _unsupportedSaveCommand = ActivitySaveCommand(
+  requestId: '8b200000-0000-4000-8000-000000000902',
+  intent: ActivityCommandIntent.saveDraft,
+  name: 'Natação',
+  description: '',
+  taxonomyId: 'taxonomy-1',
+  taxonomyOtherDescription: '',
+  governance: ActivityGovernance.mandatory,
+  institutionId: 'institution-1',
+  unitIds: {'unit-1'},
+  groupIds: {},
+  assignments: [],
+  identity: ActivityCommandIdentity(
+    kind: ActivityIdentityKind.initials,
+    initials: 'NA',
+    color: '#D63C00',
+    icon: 'activity',
+  ),
+);
+
+const _editSaveCommand = ActivitySaveCommand(
+  requestId: '8b200000-0000-4000-8000-000000000903',
+  intent: ActivityCommandIntent.saveDraft,
+  activityId: 'activity-expected',
+  expectedVersion: 6,
+  name: 'Natação',
+  description: '',
+  taxonomyId: 'taxonomy-1',
+  taxonomyOtherDescription: '',
+  governance: ActivityGovernance.optional,
+  institutionId: 'institution-1',
+  unitIds: {'unit-1'},
+  groupIds: {},
+  assignments: [],
+  identity: ActivityCommandIdentity(
+    kind: ActivityIdentityKind.initials,
+    initials: 'NA',
+    color: '#D63C00',
+    icon: 'activity',
+  ),
+);
+
+const _publishSaveCommand = ActivitySaveCommand(
+  requestId: '8b200000-0000-4000-8000-000000000904',
+  intent: ActivityCommandIntent.publish,
+  activityId: 'activity-expected',
+  expectedVersion: 6,
   name: 'Natação',
   description: '',
   taxonomyId: 'taxonomy-1',
