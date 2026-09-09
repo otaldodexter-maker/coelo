@@ -530,3 +530,59 @@ guarda que deixou a rota de L03 inalcançável.
 18 casos): conversa vazia **autorizada** mostra o estado vazio e **mantém o
 composer**; conversa **negada** purga o instantâneo privado, composer incluído, e
 mostra o painel de sem permissão. Distinguíveis, como exigido.
+
+## Mapa transitivo de dependência — o que D00 precisa confirmar no preflight
+
+L01 entrou para converter a oitava linha da tabela de proveniência, **não
+conseguiu**, e o que trouxe de volta vale mais que a linha: o mapa real da
+dependência do delta de `catalog_kind` de chat, que antes era só "falta a
+fundação do catálogo".
+
+**Ordem real da cadeia:** base de Formulários → `20260813155118_forms_responses_and_private_media.sql`
+→ cadeia de auth interno com `app_private.superadmin_internal_identities`
+(`20260827233000_superadmin_internal_auth_context.sql` e
+`20260901190927_deploy_superadmin_internal_auth.sql`, que também não aplicam
+neste harness) → `20260908160000_private_media_catalog_r2_v1.sql` →
+`20260909135000_private_media_catalog_chat_kind_v1.sql`.
+
+**D00 precisa confirmar a cadeia inteira no preflight, não só a fundação.**
+
+### Dois ajustes de harness que destravam ~30 migrations no replay local
+
+Registrados para quem repetir o replay não redescobrir:
+
+1. **`check_function_bodies=off`** — sozinho levou o replay de **93 para 112** aplicadas.
+2. **Relaxar o `not null`** de `module_label`, `screen_label` e `action_label` em
+   `platform_permissions` — recuperou mais **11**, e com isso
+   `20260813155118` passou a aplicar.
+
+Depois disso a fundação do catálogo ainda falhou, por outro motivo:
+`relation "app_private.superadmin_internal_identities" does not exist`.
+L01 parou aí, dentro do time-box, e removeu o container com verificação.
+
+**Ressalva obrigatória:** replay com `check_function_bodies=off` e constraints
+relaxadas **não é o mesmo ambiente** que o perfil nominal. Prova contrato, não
+banco de produção. Repassei os dois ajustes a L02, cujo bloqueio é a cadeia de
+**Atividades** e não a de Formulários — pode ou não alcançar; se não alcançar,
+o `B=1` dele permanece bloqueado e assim será relatado.
+
+**A oitava linha da tabela permanece "subagente, não reexecutado"**, agora com o
+motivo mapeado em vez de nota vaga. L01 não fingiu que fechou.
+
+## Correção minha, registrada
+
+Listei duas vezes, como pendente, o congelamento em teste do defeito de tela
+indistinguível. **Ele já estava feito desde `02072307c`** para o caso do Acontece.
+O que L01 acrescentou agora foi o **quarto caso**, o do Agora achado por L03: o
+teste dirige `/principal-now/publication` com repositório fornecido e ator de
+escopo institucional, e prova que ele recebe a **mesma** `SuperadminErrorScreen`
+de indisponibilidade. Quatro casos, todos verdes, `dart analyze` limpo.
+
+### A formulação que fica, e é de L01
+
+**O ator institucional é legítimo e atendido pelo Perfil** — não é caso de borda
+inventado. É um usuário real que encontra dois becos e recebe, nos dois, a
+mensagem de que o aplicativo quebrou. O estreitamento de quem pode publicar é
+decisão de produto que nenhum executor toma; o que está preso em teste é a
+**resposta ser indistinguível de aplicativo quebrado**, errada independentemente
+de como aquela decisão cair.
