@@ -223,6 +223,17 @@ achados de RLS em `app_private`; consultar a evidência datada e o rastreador
 atual para a quantidade e estado. Não tratar contagem histórica como fato vivo.
 Não aplicar cauda de migrations em lote diante do drift de ledger.
 
+Pacote revisável não é pacote aplicável: exercer a aplicação sobre a base
+nominal, incluindo constraints e defaults vigentes, além das guardas de
+dependência. Ao inserir ou atualizar `platform_permissions`, fornecer
+`module_label`, `screen_label` e `action_label`. A migration
+`20260811215451` acrescenta esses campos e os torna `NOT NULL`; o bridge
+temporário do replay local e a remoção de defaults em `20260831130726`
+precisam ser considerados ao verificar omissões históricas. Um teste com
+defaults ou constraints relaxados não comprova aplicação do pacote nominal.
+Esta regra incorpora a revisão L02/R02 e preserva a distinção entre fonte,
+preflight local e produção; não autoriza editar migrations já aplicadas.
+
 ## Estados e encerramento
 
 - `pending-verification`: certificado atual ainda ausente; não significa inexistência

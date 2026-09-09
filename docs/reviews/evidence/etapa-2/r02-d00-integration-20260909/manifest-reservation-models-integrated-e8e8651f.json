@@ -1,0 +1,213 @@
+{
+  "source": "Actual Flutter machine reporter, excluding hidden/loading entries",
+  "generatedAt": "2026-09-09T16:26:58.962526-03:00",
+  "executionBase": "e8e8651f",
+  "baseSource": "D00 supplied execution basename; no clean-tree claim",
+  "environment": "Windows local Flutter integrated checkout; test fixtures/doubles, no remote certification",
+  "evidence": {
+    "path": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/reservation-models-integrated-e8e8651f.jsonl",
+    "sha256": "c3de1a8542e6968ecf49cde7844a79a2262907513cc8c99fc4438992a5578fca",
+    "doneSuccess": true,
+    "nonHiddenCases": 25,
+    "excludedHiddenLoading": 3
+  },
+  "process": {
+    "sessionId": 79903,
+    "exitCode": null,
+    "source": "D00 supplied exit0 for D04; reservation reporter done.success true observed, shell exit not yet supplied"
+  },
+  "counts": {
+    "P": 25,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0
+  },
+  "files": [
+    "C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/locations/location_reservation_panel_test.dart",
+    "C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/access_profiles/data/d04_model_scope_contract_test.dart",
+    "C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/access_profiles/presentation/d04_principal_model_scope_test.dart"
+  ],
+  "cases": [
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/locations/location_reservation_panel_test.dart",
+      "testName": "fails closed before reading when session or capability is absent",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/locations/location_reservation_panel_test.dart::fails closed before reading when session or capability is absent",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/reservation-models-integrated-e8e8651f.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/locations/location_reservation_panel_test.dart",
+      "testName": "an unset policy must be selected explicitly before reserving",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/locations/location_reservation_panel_test.dart::an unset policy must be selected explicitly before reserving",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/reservation-models-integrated-e8e8651f.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/locations/location_reservation_panel_test.dart",
+      "testName": "a conflict-free once request creates one reservation",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/locations/location_reservation_panel_test.dart::a conflict-free once request creates one reservation",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/reservation-models-integrated-e8e8651f.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/locations/location_reservation_panel_test.dart",
+      "testName": "reload blocks creation until its snapshot has settled",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/locations/location_reservation_panel_test.dart::reload blocks creation until its snapshot has settled",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/reservation-models-integrated-e8e8651f.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/access_profiles/data/d04_model_scope_contract_test.dart",
+      "testName": "model filter preserves selected scopes {} across cursor pages",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/access_profiles/data/d04_model_scope_contract_test.dart::model filter preserves selected scopes {} across cursor pages",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/reservation-models-integrated-e8e8651f.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/access_profiles/data/d04_model_scope_contract_test.dart",
+      "testName": "model filter preserves selected scopes {AccessProfileScope.unit} across cursor pages",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/access_profiles/data/d04_model_scope_contract_test.dart::model filter preserves selected scopes {AccessProfileScope.unit} across cursor pages",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/reservation-models-integrated-e8e8651f.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/access_profiles/data/d04_model_scope_contract_test.dart",
+      "testName": "model filter preserves selected scopes {AccessProfileScope.unit, AccessProfileScope.group} across cursor pages",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/access_profiles/data/d04_model_scope_contract_test.dart::model filter preserves selected scopes {AccessProfileScope.unit, AccessProfileScope.group} across cursor pages",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/reservation-models-integrated-e8e8651f.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/access_profiles/data/d04_model_scope_contract_test.dart",
+      "testName": "model capabilities never become person assignments in the shared profile UI",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/access_profiles/data/d04_model_scope_contract_test.dart::model capabilities never become person assignments in the shared profile UI",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/reservation-models-integrated-e8e8651f.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/access_profiles/data/d04_model_scope_contract_test.dart",
+      "testName": "Principal model filter uses the server child context scope",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/access_profiles/data/d04_model_scope_contract_test.dart::Principal model filter uses the server child context scope",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/reservation-models-integrated-e8e8651f.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/locations/location_reservation_panel_test.dart",
+      "testName": "confirmable conflict requires capability and a justification",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/locations/location_reservation_panel_test.dart::confirmable conflict requires capability and a justification",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/reservation-models-integrated-e8e8651f.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/access_profiles/data/d04_model_scope_contract_test.dart",
+      "testName": "Principal model create preserves child context at the RPC boundary",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/access_profiles/data/d04_model_scope_contract_test.dart::Principal model create preserves child context at the RPC boundary",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/reservation-models-integrated-e8e8651f.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/access_profiles/data/d04_model_scope_contract_test.dart",
+      "testName": "Principal model update preserves child context at the RPC boundary",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/access_profiles/data/d04_model_scope_contract_test.dart::Principal model update preserves child context at the RPC boundary",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/reservation-models-integrated-e8e8651f.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/access_profiles/data/d04_model_scope_contract_test.dart",
+      "testName": "Principal model duplicate preserves child context at the RPC boundary",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/access_profiles/data/d04_model_scope_contract_test.dart::Principal model duplicate preserves child context at the RPC boundary",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/reservation-models-integrated-e8e8651f.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/locations/location_reservation_panel_test.dart",
+      "testName": "editing an assessed conflict requires a fresh assessment",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/locations/location_reservation_panel_test.dart::editing an assessed conflict requires a fresh assessment",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/reservation-models-integrated-e8e8651f.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/locations/location_reservation_panel_test.dart",
+      "testName": "editing a weekly time zone invalidates its assessed conflict",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/locations/location_reservation_panel_test.dart::editing a weekly time zone invalidates its assessed conflict",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/reservation-models-integrated-e8e8651f.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/locations/location_reservation_panel_test.dart",
+      "testName": "transport retry preserves the request id and frozen draft",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/locations/location_reservation_panel_test.dart::transport retry preserves the request id and frozen draft",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/reservation-models-integrated-e8e8651f.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/locations/location_reservation_panel_test.dart",
+      "testName": "pending retry survives an equivalent rebuilt scope",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/locations/location_reservation_panel_test.dart::pending retry survives an equivalent rebuilt scope",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/reservation-models-integrated-e8e8651f.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/locations/location_reservation_panel_test.dart",
+      "testName": "an initial read failure can be reloaded",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/locations/location_reservation_panel_test.dart::an initial read failure can be reloaded",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/reservation-models-integrated-e8e8651f.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/locations/location_reservation_panel_test.dart",
+      "testName": "an active reservation can be cancelled with its current version",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/locations/location_reservation_panel_test.dart::an active reservation can be cancelled with its current version",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/reservation-models-integrated-e8e8651f.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/access_profiles/presentation/d04_principal_model_scope_test.dart",
+      "testName": "Principal model scope menu cannot select institution or unit",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/access_profiles/presentation/d04_principal_model_scope_test.dart::Principal model scope menu cannot select institution or unit",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/reservation-models-integrated-e8e8651f.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/locations/location_reservation_panel_test.dart",
+      "testName": "policy retry preserves its request id and payload",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/locations/location_reservation_panel_test.dart::policy retry preserves its request id and payload",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/reservation-models-integrated-e8e8651f.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/locations/location_reservation_panel_test.dart",
+      "testName": "cancel retry preserves its request id and target version",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/locations/location_reservation_panel_test.dart::cancel retry preserves its request id and target version",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/reservation-models-integrated-e8e8651f.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/locations/location_reservation_panel_test.dart",
+      "testName": "a pending read from A cannot replace B when gateway changes at the same revision",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/locations/location_reservation_panel_test.dart::a pending read from A cannot replace B when gateway changes at the same revision",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/reservation-models-integrated-e8e8651f.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/locations/location_reservation_panel_test.dart",
+      "testName": "a failed write from A cannot alter B after the context changes",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/locations/location_reservation_panel_test.dart::a failed write from A cannot alter B after the context changes",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/reservation-models-integrated-e8e8651f.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/locations/location_reservation_panel_test.dart",
+      "testName": "weekly recurrence is sent as a rule and never expanded by the client",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/locations/location_reservation_panel_test.dart::weekly recurrence is sent as a rule and never expanded by the client",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/reservation-models-integrated-e8e8651f.jsonl"
+    }
+  ],
+  "identity": "suite.path normalized to file URL + full test.name; framework wrapper URL not used as test file",
+  "limits": [
+    "No product action certification",
+    "New results are not added to prior288 until complete unique-ID union is reconciled"
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "source": "Existing D00 second reservation replay raw log and supplied session/cleanup receipts",
+  "generatedAt": "2026-09-09T16:21:15.943510-03:00",
+  "status": "local-reservations-pass-not-remote-or-E2E",
+  "base": "535bfa458",
+  "profile": "LocationReservationsV1",
+  "target": "20260909165000",
+  "migrationApply": {
+    "P": 64,
+    "F": 0,
+    "canonical": 59,
+    "preflight": 2,
+    "localFixtures": 3
+  },
+  "sessionId": 21669,
+  "exitCode": 0,
+  "processReceipt": "D00 task assignment",
+  "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/reservation-second-replay.log",
+  "sha256": "3928945817210bb0bf938c10c7a7be5999feb140098ba248b49c9c10ffd5e748",
+  "TAP": {
+    "file": "packages/coelo_database/supabase/tests/superadmin_location_reservations_v2_test.sql",
+    "P": 49,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0
+  },
+  "concurrency": {
+    "P": 2,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0,
+    "cases": [
+      {
+        "test_id": "location-reservation-audit-authorization::expiry",
+        "result": "P",
+        "observed": "Location reservation expiry passed after a confirmed audit wait: SAI_SESSION_INVALID and zero durable effects."
+      },
+      {
+        "test_id": "location-reservation-audit-authorization::terminal-revocation",
+        "result": "P",
+        "observed": "Location reservation revocation passed after a confirmed audit wait: SAI_MEMBERSHIP_REVOKED and zero durable effects."
+      }
+    ],
+    "observedSummary": "Location reservation audit authorization passed: expiry and terminal revocation rolled back every success effect."
+  },
+  "cleanup": {
+    "projectId": "coelo_safe_d9cb28d1469e49bb8eda84e6c1de6",
+    "wrapperZero": true,
+    "independentDocker": {
+      "toolReceipt": "6df7fb",
+      "observedAt": "2026-09-09T16:20:00-03:00",
+      "timePrecision": "minute as supplied by D00",
+      "containers": 0,
+      "volumes": 0,
+      "networks": 0
+    },
+    "independentTemp": {
+      "toolReceipt": "e624fa",
+      "path": "C:/Users/adrie/AppData/Local/Temp/coelo_safe_d9cb28d1469e49bb8eda84e6c1de6",
+      "exists": false,
+      "method": "Read-only Test-Path with GetTempPath same as wrapper"
+    },
+    "wrapperMechanism": "Success summary printed only after residual Docker check and Test-Path projectRoot both clear"
+  },
+  "supersedes": {
+    "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/reservation-first-replay.log",
+    "TAP": {
+      "P": 29,
+      "F": 0,
+      "B": 20
+    },
+    "concurrency": {
+      "P": 0,
+      "F": 0,
+      "B": 2
+    },
+    "counting": "Historical first attempt retained; replace results, never add preliminary29 to current49"
+  },
+  "limits": [
+    "Local causal audit-wait rollback and TAP contract only",
+    "No remote deployment or FE/BE/E2E action certification",
+    "Migrations are infrastructure, not application test cases"
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "source": "live Git at existing worktrees; no checkout or cleanup",
+  "generated_at": "2026-09-09T16:32:51.046000-03:00",
+  "status": "cutoff-snapshot-consolidation-still-active",
+  "worktrees": [
+    {
+      "id": "D00",
+      "worktree": "C:/Users/adrie/Documents/Coelo",
+      "head": "4b2c5611eabf7e9f912d388b5fe9c4ad6c21fda4",
+      "branch": "dev",
+      "status": "M apps/superadmin/lib/features/principal_for_you/data/principal_for_you_communications_adapter.dart\n M apps/superadmin/test/features/principal_for_you/data/principal_for_you_communications_adapter_test.dart\n M docs/reviews/etapa-2-operacao/next-round/R02-20260909/TERCEIRA-IA.md\n M docs/reviews/etapa-2-operacao/next-round/R02-20260909/assignments/D01.md\n M docs/reviews/etapa-2-operacao/next-round/R02-20260909/assignments/D02.md\n M docs/reviews/etapa-2-operacao/next-round/R02-20260909/assignments/D03.md\n M docs/reviews/etapa-2-operacao/next-round/R02-20260909/assignments/D04.md\n M docs/reviews/etapa-2-operacao/next-round/R02-20260909/registro.json\n M packages/coelo_database/scripts/Test-ChildRemotePackage.ps1\n M packages/coelo_database/scripts/tests/Test-ChildRemotePackage.Tests.ps1\n?? apps/superadmin/lib/features/principal_profile/presentation/principal_profile_happens_tab.dart\n?? apps/superadmin/test/features/principal_profile/presentation/principal_profile_happens_tab_responsive_test.dart\n?? apps/superadmin/test/features/principal_profile/presentation/principal_profile_happens_tab_test.dart\n?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/CONSOLIDADO-CLAUDE.md\n?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/ENTREGA-L00-PARA-D00.md\n?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/notes/D00-panel-provisional.json\n?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/notes/D00-panel-provisional.md\n?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/notes/D00-worktrees-provisional.json\n?? docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/L03highlights-causal-red.jsonl\n?? docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/L03highlights-red.jsonl\n?? docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/L03highlights-result.json\n?? docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/L03highlights-tab-green.jsonl\n?? docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl\n?? docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-app-jsonl-current-union.json\n?? docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-d04-integrated-f17e5b89.json\n?? docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-reservation-models-integrated-e8e8651f.json\n?? docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/manifest-reservation-second-integrated.json\n?? docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/reservation-models-integrated-e8e8651f.jsonl\n?? packages/coelo_api/pubspec.lock\n?? packages/coelo_domain/pubspec.lock",
+      "stash": "",
+      "handoff": "C:/Users/adrie/Documents/Coelo/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D00.md"
+    },
+    {
+      "id": "L00",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l00-coordenacao-claude",
+      "head": "eae3c42a47d8b7e3b491625381cb799ea90935ad",
+      "branch": "codex/e2-r02-l00-coordenacao-claude",
+      "status": "",
+      "stash": "",
+      "handoff": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l00-coordenacao-claude/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/L00.md"
+    },
+    {
+      "id": "D01",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao",
+      "head": "23bb31d1ff5c0731f765338f163f7d2096f232ab",
+      "branch": "codex/e2-r02-d01-autenticacao",
+      "status": "M docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D01.md\n?? docs/reviews/evidence/etapa-2/identidade-acessos/r02-d01-20260909/recovery-cold-reload-red-resumed.txt\n?? docs/reviews/evidence/etapa-2/identidade-acessos/r02-d01-20260909/recovery-cold-reload-red.txt",
+      "stash": "",
+      "handoff": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D01.md"
+    },
+    {
+      "id": "D02",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d02-estrutura",
+      "head": "752236255073edb273fc16fef8ed8418c1d3f2c0",
+      "branch": "codex/e2-r02-d02-estrutura",
+      "status": "M docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-snapshot-cutoff.md\n?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-activities-concurrency/build-clock-patch.py\n?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-activities-concurrency/replay.txt\n?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/0001-feat-db-copy-command-for-the-location-catalog-local-.patch\n?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/0001-feat-db-edit-and-status-commands-for-the-location-ca.patch\n?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/0001-feat-db-weekly-availability-windows-for-the-location.patch\n?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/0001-feat-locations-publish-the-minimum-contract-for-rese.patch\n?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/0001-test-locations-checkpoint-remote-snapshot-cutover-ca.patch\n?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/Get-NormalizedReplayHash.ps1\n?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/Verify-LocationCatalogWrapperPatch.ps1\n?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/Verify-LocationReservationsWrapperPatch.ps1\n?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/build-location-wrapper-patch.py\n?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/build-reservation-wrapper-patch.py\n?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/catalog01-snapshot-paths.md\n?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/catalog01-snapshot/\n?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/location-prepare-review-fixture.ps1\n?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/reservation-architecture.md\n?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/reservation-invoke-review-fixture.ps1\n?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/reservation-prepare-review-fixture.ps1",
+      "stash": "",
+      "handoff": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d02-estrutura/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D02.md"
+    },
+    {
+      "id": "D03",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d03-acompanhamento",
+      "head": "1a46bf6b703085048b8d2155cc3e53700c60a1a5",
+      "branch": "codex/e2-r02-d03-acompanhamento",
+      "status": "M docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/notes/d03-test-ledger.json\n M evidence/d03-acompanhamento/r02-20260909/manifest.json\n?? evidence/d03-acompanhamento/r02-20260909/child-package-first-replay.log.txt\n?? evidence/d03-acompanhamento/r02-20260909/d03-child-package-hook-integrated.xml",
+      "stash": "",
+      "handoff": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d03-acompanhamento/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D03.md"
+    },
+    {
+      "id": "D04",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos",
+      "head": "54e910ffb2146c8fcda59f112d848d7d8d418854",
+      "branch": "codex/e2-r02-d04-acessos",
+      "status": "M apps/superadmin/test/app/router/d04_model_duplicate_routes_test.dart\n M docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D04-profiles-models.md",
+      "stash": "",
+      "handoff": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/D04.md"
+    },
+    {
+      "id": "L01",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l01-publicacoes",
+      "head": "3697dd49e6441f1614a16ebf9d555fde0ee1ebc8",
+      "branch": "codex/e2-r02-l01-publicacoes",
+      "status": "M .agents/skills/coelo-ui/references/principal-visual-surfaces.md\n M specs/050-principal-ui-ux-closure.md",
+      "stash": "",
+      "handoff": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l01-publicacoes/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/L01.md"
+    },
+    {
+      "id": "L02",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l02-chat-comunicacoes",
+      "head": "9144f4efb73c0bf41580e54ed83acd64f5883c00",
+      "branch": "codex/e2-r02-l02-chat-comunicacoes",
+      "status": "M .agents/skills/coelo-ui/references/principal-visual-surfaces.md\n M specs/037-principal-circulars.md\n M specs/050-principal-ui-ux-closure.md",
+      "stash": "",
+      "handoff": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l02-chat-comunicacoes/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/L02.md"
+    },
+    {
+      "id": "L03",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l03-perfil-para-voce",
+      "head": "b209b4e0f47df8f1a39835a09b8e17191412b969",
+      "branch": "codex/e2-r02-l03-perfil-para-voce",
+      "status": "",
+      "stash": "",
+      "handoff": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l03-perfil-para-voce/docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/L03.md"
+    }
+  ]
+}

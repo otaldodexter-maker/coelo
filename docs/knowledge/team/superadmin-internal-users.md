@@ -4,7 +4,7 @@ knowledge_id: superadmin-internal-users
 source: decisions/0019-superadmin-internal-identity.md
 status: validated
 generated_at: 2026-08-27
-updated_at: 2026-09-07
+updated_at: 2026-09-09
 audience: team
 surfaces: [superadmin, internal-users, access, permissions]
 visibility: internal
@@ -41,6 +41,20 @@ Suspensão é reversível. Revogação do vínculo é terminal e um retorno exig
 vínculo e novo convite, preservando o ciclo anterior. O último Owner ativo e
 global não pode ser suspenso, revogado, rebaixado ou limitado.
 
-O preview atual é exclusivamente local e fake. Não representa Supabase, Auth,
-envio de e-mail, sessão, enforcement, auditoria ou persistência produtiva.
-Convite, recuperação e reset produtivos continuam fora do contrato aprovado.
+O preview de Usuários Internos referido no contrato original é local e usa
+dados simulados; ele não prova convite, enforcement, auditoria ou persistência
+produtiva. A [spec Auth-first de 01/09/2026](../../superpowers/specs/2026-09-01-superadmin-auth-first-local-green-design.md)
+autoriza separadamente recuperação, callback e redefinição locais do
+Superadmin. O aceite FE local de Auth não amplia o contrato de convite nem
+comprova execução em produção.
+
+A recuperação mantém uma sessão restrita em memória para redefinir a senha.
+Com a remoção do armazenamento concluída, reinicializar depois de consumir o
+callback exige outro link. Falha permanente de remoção pode reter a credencial;
+a proteção cliente não substitui a autorização no servidor. O controle backend
+comprovado localmente exige AMR `password` da mesma sessão validada para obter
+contexto interno e nega recovery/OTP, inclusive após refresh. A prova usa
+reinicialização de SDK, scope e rotas em teste com backend local real, não reinício
+do sistema operacional nem falha real do storage do navegador. Esse controle
+não é apresentado como implantado em produção. Após trocar a senha, o app
+encerra a sessão de recuperação e retorna ao Login.

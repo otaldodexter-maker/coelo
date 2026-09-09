@@ -1,0 +1,487 @@
+{
+  "source": "actual dev history after initial R02 package base",
+  "generated_at": "2026-09-09T16:54:21.342597-03:00",
+  "scope": "integrated history through final code d019c109a; closure documentation commits may follow",
+  "commits": [
+    {
+      "sha": "6c5567a60e37698fcc4d71046b0694fa83ed20a9",
+      "subject": "docs(e2): start R02 D00 and publish execution assignments"
+    },
+    {
+      "sha": "56eb3f19de23e364ea5f7e4f73a6fbd9a851e230",
+      "subject": "fix(e2): include required execution skills in shared base"
+    },
+    {
+      "sha": "87390aefa395b7c530d269e4e04dcb10d103e8ff",
+      "subject": "docs(e2): register verified R02 worktrees and preservation"
+    },
+    {
+      "sha": "f62b0b600c2961b198fc88ba0db9fa57eabfd8c7",
+      "subject": "docs(e2): reconcile R02 receipts and owner Locais scope"
+    },
+    {
+      "sha": "a252ffdf0a80f6f575caa7b8d291ff2e0f52b0e0",
+      "subject": "docs(e2): record incremental review and scoped reservations"
+    },
+    {
+      "sha": "bf04a9a67b639295beeb8b1b6d04ef06e5bcc2bf",
+      "subject": "fix(auth): show recovery revocation failure before returning to login"
+    },
+    {
+      "sha": "588d38ebe7b05bf67e1013f215f3234c3102033c",
+      "subject": "fix(daily-routine): contain unexpected directory decoding failures"
+    },
+    {
+      "sha": "576cac4064a83e2d811f30d7f8bf921734be8b3f",
+      "subject": "docs(e2): record verified Auth and routine integration"
+    },
+    {
+      "sha": "b8abfd59d0bbb088111af468102cd26aa3a0fca1",
+      "subject": "fix(auth): restore approved login geometry without changing goldens"
+    },
+    {
+      "sha": "5908a3307a579e84b18680dc66dd3337e8cbfba8",
+      "subject": "test(auth): deny invalid expired and reused recovery OTPs"
+    },
+    {
+      "sha": "b185a481a0af40f0d42a24be68d6c33a3d8cd185",
+      "subject": "fix(superadmin): report aggregate group save result"
+    },
+    {
+      "sha": "b648379b1f5d30ae0d3f208c4e71d4a0a14c509f",
+      "subject": "fix(superadmin): preserve unsupported institution edits"
+    },
+    {
+      "sha": "1c09cb7a34c400f20a9a4b8ea3e92d35d02da3be",
+      "subject": "fix(superadmin): recover assessment configuration save errors"
+    },
+    {
+      "sha": "e9fdd88d19304f9be05d1539a77f103a5b66ea27",
+      "subject": "fix(attendance): correct the selected participant and lock pending edits"
+    },
+    {
+      "sha": "eaab2df13d06d7d350cb63a3a3c825a02de68a46",
+      "subject": "docs(e2): reconcile Circulars scope and verified R02 integrations"
+    },
+    {
+      "sha": "a1c6a4babf60622b17c2be376569a19ec6cef216",
+      "subject": "test(auth): verify keyboard flow and reduced motion"
+    },
+    {
+      "sha": "6865fe1822b3e4c209d572d74cf0d85783769039",
+      "subject": "fix(superadmin): release group form after save errors"
+    },
+    {
+      "sha": "6cf8897ec03b6c2327a29b0072eabf894cde87da",
+      "subject": "fix(superadmin): remount unit forms on authorization changes"
+    },
+    {
+      "sha": "e9a582a04771c8170528cecdcd70441773946031",
+      "subject": "fix(superadmin): use administrative weekday selector for locations"
+    },
+    {
+      "sha": "f24ca5f3ce6c4c942a24204c961981c565def22e",
+      "subject": "feat(students): compose the authorized child list on the normal route"
+    },
+    {
+      "sha": "f2624f4b715cd2c13ba1dba4b8edb2d9d006880b",
+      "subject": "fix(daily-routine): reject empty identifiers in save receipts"
+    },
+    {
+      "sha": "4041bd813b5685b304d4b0defda86bfdb68eb7cd",
+      "subject": "test(attendance): make dashboard civil dates deterministic"
+    },
+    {
+      "sha": "950ac46746f12d943f1a1502040532cc533e8f11",
+      "subject": "fix(superadmin): reload units when repository context changes"
+    },
+    {
+      "sha": "cdf9f532fec65e5dff35c1c0bb86b1bd04905cae",
+      "subject": "fix(superadmin): keep unit table pagination valid after context change"
+    },
+    {
+      "sha": "be7ae564a6ace27b2a55f6b15cda74c5bbe23a28",
+      "subject": "test(auth): preserve client acceptance and browser proof harness"
+    },
+    {
+      "sha": "d1b9cbe04563cd111d7e83eadc82f432a979ade6",
+      "subject": "docs(auth): certify recovery client acceptance with reconciled evidence"
+    },
+    {
+      "sha": "5d12172972c2327a91a5e81e378ba2ecce817674",
+      "subject": "test(superadmin): distinguish blocked and unavailable unit routes"
+    },
+    {
+      "sha": "2070ab8fd431f06900274c50a7bcc54357294f8e",
+      "subject": "fix(daily-routine): validate application drafts before saving"
+    },
+    {
+      "sha": "8f9b3c35beaf5c9233bc4ada13123b2fc21ca9dd",
+      "subject": "fix(attendance): explain missing correction reasons"
+    },
+    {
+      "sha": "0f7b7cf83def0cf608092d8eb24ff666de3e7232",
+      "subject": "test(auth): prove reset callback form and cleanup composition"
+    },
+    {
+      "sha": "9554aaa3de3fdd2a19d89d4fa02af957f2f70c6f",
+      "subject": "chore(database): recover the reviewed CHILD read candidate"
+    },
+    {
+      "sha": "17fad0026c5d04a689c5eae46d5cb5c83e991869",
+      "subject": "chore(database): preserve the pinned CHILD envelope prerequisite"
+    },
+    {
+      "sha": "4687f04601aab562fbb4737f61b59a3ca65fd980",
+      "subject": "test(database): add the closed CHILD envelope replay profile"
+    },
+    {
+      "sha": "b1271d1a4ef1501c408563c20b00f9b66ad86e53",
+      "subject": "test(database): cover CHILD grants and invalid projections"
+    },
+    {
+      "sha": "ee82aa67d2f4191886714d0da0968310d2ce0614",
+      "subject": "docs(attendance): verify the deferred export acceptance"
+    },
+    {
+      "sha": "0d6d1ca6aaac7ae4c9868bf892b55e399088fc06",
+      "subject": "fix(daily-routine): validate drafts before changing inheritance"
+    },
+    {
+      "sha": "7271f4a39fda3ff24d4c1bf545eda290d891f8c4",
+      "subject": "feat(principal): filter Para Você by authorized audience scope"
+    },
+    {
+      "sha": "65bd5c287cfd3124ef5533bda735ea84bd2789c6",
+      "subject": "fix(attendance): disable completion while the command is pending"
+    },
+    {
+      "sha": "d96dbd9856e3094a97e952a422400f0a7414a05f",
+      "subject": "fix(attendance): freeze call context during creation"
+    },
+    {
+      "sha": "f947e9b50418fbcca50281f353b06380dc74a75f",
+      "subject": "test(students): discard stale pages after authenticated context changes"
+    },
+    {
+      "sha": "148cbb59982a3c6ea950a2ec9450760987109c07",
+      "subject": "test(students): exercise pagination with a real tap"
+    },
+    {
+      "sha": "24480c732037aa93b5de9137afa1d54f77039c11",
+      "subject": "fix(superadmin): close location forms when their capability is revoked"
+    },
+    {
+      "sha": "4eacb7b5b336f7c3ef874004cc7e4d734a3a99e8",
+      "subject": "fix(superadmin): enforce update grant in location detail footer"
+    },
+    {
+      "sha": "937d7b54b309ab1ab9e7d661da95ccdc4192c1ed",
+      "subject": "feat(locations): restore dated reservation contract with explicit timezone"
+    },
+    {
+      "sha": "6eb66fff301c5991c4b99065c0b43226a035d4c2",
+      "subject": "feat(locations): encode and validate correlated reservation payloads"
+    },
+    {
+      "sha": "e13642e29c068860f9b4842a836551cfabce8534",
+      "subject": "test(database): prepare isolated aggregate authorization concurrency proof"
+    },
+    {
+      "sha": "eb0564f22566df9382b2b339ce203fd48b7e3c55",
+      "subject": "test(database): enable only the nominal activity concurrency replay"
+    },
+    {
+      "sha": "c5bcaf9e1fe1ad933fde9e375aa6d3d46d08d7aa",
+      "subject": "fix(auth): qualify nominal proof package and reauthorize privileged steps"
+    },
+    {
+      "sha": "97c983929a0425db492193ad2c2c182e2cb9a462",
+      "subject": "test(database): advance the revoked membership fixture version"
+    },
+    {
+      "sha": "da180d4057dd5342de031ce579ef32c40282e9d3",
+      "subject": "docs(review): reconcile R02 takeover evidence and active regressions"
+    },
+    {
+      "sha": "a07c2a2ef367565beb4971e9167959120eb3c222",
+      "subject": "fix(auth): confine recovery persistence across cold restarts"
+    },
+    {
+      "sha": "cc487008f96b0c69f740c29b79accfdc93f04e31",
+      "subject": "test(d03): prepare isolated CHILD concurrency harness"
+    },
+    {
+      "sha": "d2cf2e151de970660dd2a64e9bec625941a3adb5",
+      "subject": "test(auth): wire isolated post-lock proof concurrency gate"
+    },
+    {
+      "sha": "6335f42b3eb9c934b7aa86a672794cee456783ec",
+      "subject": "docs(review): record integrated recovery and remaining SQL gates"
+    },
+    {
+      "sha": "f3e1f732f442b2e47a2f749cba1d927eb638d5be",
+      "subject": "test(database): gate CHILD concurrency on the nominal TAP suite"
+    },
+    {
+      "sha": "f5e5d8dfc1a0bf2a426d10173038897802232735",
+      "subject": "fix(superadmin): preserve the host across Principal routes"
+    },
+    {
+      "sha": "66a2e634b3e0c548a029a1e8dd3cfd591697b33b",
+      "subject": "test(database): prepare closed activity replay with integrated link clock"
+    },
+    {
+      "sha": "2de1dc1b24e9b6668ac35e8612d551668cc32766",
+      "subject": "feat(database): recover reviewed location catalog packages and closed replay profile"
+    },
+    {
+      "sha": "76e2485180fe217160f8aa1440d6eaebb2e2ef39",
+      "subject": "docs(review): record CHILD concurrency and Principal host evidence"
+    },
+    {
+      "sha": "6a4e9fa666fe9ef1a0ceed961da661d8ab4e333d",
+      "subject": "test(database): wire the closed Activity link-clock replay"
+    },
+    {
+      "sha": "605271ef496bdd4f1b600b181534693cc690cd4a",
+      "subject": "fix(superadmin): save supported new activity drafts atomically"
+    },
+    {
+      "sha": "e093e3be84f01da20974b1ec16aede97431d2fc4",
+      "subject": "fix(superadmin): prevent activity saves from dropping selected location"
+    },
+    {
+      "sha": "7468938cadd221e55f0b4e86e9aa5184c525824d",
+      "subject": "fix(superadmin): keep activity save attempts stable across partial failure"
+    },
+    {
+      "sha": "839570cd76fc26683e3bae5f1d26c14dbc293950",
+      "subject": "fix(activities): leave create route after saving the first draft"
+    },
+    {
+      "sha": "943a9bd67c05402d8bbe3e172af0698da7f80e9c",
+      "subject": "fix(test): import Auth proof SQL without starting its CLI"
+    },
+    {
+      "sha": "eb2a889d06c91499789a28136a8fe322dfe22aa4",
+      "subject": "fix(auth): retry failed recovery purge on later session events"
+    },
+    {
+      "sha": "cf37da7597afdcbdf986ae303db52b3f064ce680",
+      "subject": "test(auth): prepare the guarded real recovery boundary candidate"
+    },
+    {
+      "sha": "36e8e4c0baa97ac8ebe63d152fc66aee40c28dc3",
+      "subject": "fix(auth): prepare password-session authorization candidate"
+    },
+    {
+      "sha": "67f0632138a317683fc5304cb7bdcff7eaccd427",
+      "subject": "fix(test): preserve the last Owner during Activity revocation proof"
+    },
+    {
+      "sha": "aa6f528eb0844b768a7a40ca2ded56bb7151467a",
+      "subject": "test(database): compose guarded Auth boundary and location replay modes"
+    },
+    {
+      "sha": "97f3ae0326a122c7b99188459457e42c703478f7",
+      "subject": "fix(superadmin): dismiss location copy dialog when its context changes"
+    },
+    {
+      "sha": "657fbdcb8cdb70c3936997006904c82927e42d96",
+      "subject": "fix(superadmin): invalidate stale location copy completions"
+    },
+    {
+      "sha": "89a29d6d941bfdf1a8170556e99286b69b650a9f",
+      "subject": "fix(locations): capture copy route before its first frame"
+    },
+    {
+      "sha": "0e87507166ef0762071552063c5447fb8bdc3137",
+      "subject": "fix(test): preserve terminal Auth memberships between proof cases"
+    },
+    {
+      "sha": "0f77c364b9c9476b69373374a3e72485eb6fd977",
+      "subject": "feat(locations): add typed reservation RPC gateway with unavailable composition"
+    },
+    {
+      "sha": "21b0d9bbe2a1adbf9c4fd01140e32541a7b5f0c5",
+      "subject": "fix(test): accept proven EOL variants in local location snapshot"
+    },
+    {
+      "sha": "ae944fdb062aff40c99a899fae1ce4430f66c0ba",
+      "subject": "fix(locations): label illustrative address preview and unavailable media"
+    },
+    {
+      "sha": "d7ce6976b17454d595cc6e7562db8794dff29561",
+      "subject": "docs(review): reconcile R02 integration proofs and current blockers"
+    },
+    {
+      "sha": "1cb7358b53a5a15a90e34324afd9fe2c8c36a52e",
+      "subject": "test(database): integrate the confined CHILD HTTP harness"
+    },
+    {
+      "sha": "9e7e23f1832f561531fd01c16404e7a378461e86",
+      "subject": "fix(auth): preserve session denial reason in audit wrappers"
+    },
+    {
+      "sha": "232e65197551bbfbfcbce2338df89373a0d168a7",
+      "subject": "docs(review): receive the candidate atomic CHILD package"
+    },
+    {
+      "sha": "ac298c7883381b0b7a686ccab21fdd54417c1f4f",
+      "subject": "fix(notices): reload the directory when the local snapshot is stale"
+    },
+    {
+      "sha": "63e364300c062ca0b52bb79958cc465a9b16cd60",
+      "subject": "test(database): wire the isolated CHILD HTTP acceptance mode"
+    },
+    {
+      "sha": "437a973cb3e9a34dd33c85ab440477bf3562da1d",
+      "subject": "test(auth): preserve the completed browser persistence receipt"
+    },
+    {
+      "sha": "f6c03a6e62ec92c9d4896804f781f1dd48215323",
+      "subject": "test(locations): disambiguate catalog column assertions"
+    },
+    {
+      "sha": "605e2a2367531c96400b50218724524c3ecdd1d5",
+      "subject": "test(db): keep location revocation fixture terminal"
+    },
+    {
+      "sha": "6b03f26ebececc57fd9fdef3da43df356251e9d4",
+      "subject": "feat(db): prepare reviewed local location reservations candidate"
+    },
+    {
+      "sha": "28c54d7c1059478fbfebf8afac3b690459d8d292",
+      "subject": "test(db): prepare reservation dispatcher authorization and receipt cases"
+    },
+    {
+      "sha": "c68e8099926f0c2eeb2bc991bf0606afc9148cf7",
+      "subject": "test(db): require override reason in the reservation fixture"
+    },
+    {
+      "sha": "c6a21b38e9bfe7e93128118d1bdd543dee739616",
+      "subject": "chore(db): prepare nominal 64-file location reservations replay profile"
+    },
+    {
+      "sha": "cb9eb15a5bd9568f675b0fec389fe468e35cbd48",
+      "subject": "fix(db): reauthorize reservations after success audit waits"
+    },
+    {
+      "sha": "a796c0784d9559b57deb508b2dec0171b3daa81c",
+      "subject": "test(db): prepare nominal reservation audit concurrency hook"
+    },
+    {
+      "sha": "e8f8e65dd43f83877e0900491780bd30a102b87e",
+      "subject": "test(database): wire the nominal reservation audit proof"
+    },
+    {
+      "sha": "0933833e3109b4fc11a5d4046a8628f73c353ce4",
+      "subject": "test(locations): correlate override audit with persisted justification"
+    },
+    {
+      "sha": "d3503b50289c18fb96acc0e566fc022da47e3bd6",
+      "subject": "fix(test): format reservation proof claims as valid JSON"
+    },
+    {
+      "sha": "61d3720c88c6b488ee5fdbefbb630b168035db0f",
+      "subject": "docs(review): certify Auth frontend and reconcile integrated SQL gates"
+    },
+    {
+      "sha": "4417246abc424813f6bde10c89fdbef01634e836",
+      "subject": "docs(auth): receive the revised nominal CLI transport proposal"
+    },
+    {
+      "sha": "535bfa458e529a64c2f15637c698c1aaf3f39845",
+      "subject": "test(locations): grant the nominal temporary reservation payload helper"
+    },
+    {
+      "sha": "26bf71fd527c71b8b2c44aca26966b0e22739371",
+      "subject": "fix(people): discard obsolete directory requests"
+    },
+    {
+      "sha": "8192088a2f0891c8cc5a2b387e71d0d971a36cdd",
+      "subject": "fix(superadmin): integrate reviewed D04 local correction fc077e35e"
+    },
+    {
+      "sha": "9a816efb6297c6117bf80159dd51e86b888bb179",
+      "subject": "fix(superadmin): integrate reviewed D04 local correction 78c53b0a9"
+    },
+    {
+      "sha": "e086ff496dd0f64847fc0cfcc8ff87dccb9778a3",
+      "subject": "fix(superadmin): integrate reviewed D04 local correction 216d38c8d"
+    },
+    {
+      "sha": "6b5b4d9fde3d3afa59aed3e45699e9ef0c6d4c1b",
+      "subject": "fix(superadmin): integrate reviewed D04 local correction bb8e5f70d"
+    },
+    {
+      "sha": "534750c6e3cf58bf5bcaa9ec00dcf1e07593fa2b",
+      "subject": "fix(superadmin): integrate reviewed D04 local correction f16608acd"
+    },
+    {
+      "sha": "636bd63eaa1cb8ec8ba4ae552fa972a094ab97d3",
+      "subject": "fix(superadmin): integrate reviewed D04 local correction 78d81cb59"
+    },
+    {
+      "sha": "7d63c55012bfd29ed0fafdcc67165365b4519ad2",
+      "subject": "fix(superadmin): integrate reviewed D04 local correction 9b94393bf"
+    },
+    {
+      "sha": "f17e5b89cc9c1dafec143a364668d4597e5a8e99",
+      "subject": "fix(superadmin): integrate reviewed D04 local correction d2334cc8c"
+    },
+    {
+      "sha": "2252d5085a6b7f20af58cf1a2764757876817a60",
+      "subject": "fix(superadmin): integrate reviewed local candidate 4ac8473b"
+    },
+    {
+      "sha": "c8edcd3fb89e7b22746a36da024fc54b3d0b0f91",
+      "subject": "fix(superadmin): integrate reviewed local candidate 9cad40ccc"
+    },
+    {
+      "sha": "c1b2a0767154a7ff2d330b0664b45314ae18693d",
+      "subject": "fix(superadmin): integrate reviewed local candidate d2f8ecce0"
+    },
+    {
+      "sha": "bb3a33edee2b7c0fc98cd71a8661da5486df78dd",
+      "subject": "fix(superadmin): integrate reviewed local candidate c2209794b"
+    },
+    {
+      "sha": "e8e8651fb2061a638b45fbe879f20b5438fb6b7c",
+      "subject": "fix(superadmin): integrate reviewed local candidate 09afa753a"
+    },
+    {
+      "sha": "e0e83ee20dab4134703417e95cbca8c92db9b657",
+      "subject": "test(database): qualify the isolated CHILD nominal package"
+    },
+    {
+      "sha": "b7973b31f2b52febcf27c7c4aa3551fb2d0eaba0",
+      "subject": "test(database): expose sanitized CHILD fixture cleanup diagnostics"
+    },
+    {
+      "sha": "4b2c5611eabf7e9f912d388b5fe9c4ad6c21fda4",
+      "subject": "fix(auth): make nominal migrations atomic with CLI history"
+    },
+    {
+      "sha": "803af52ad1846f003069914486e6f022fb8ce653",
+      "subject": "fix(principal): require audience scope and preserve accessible profile tab"
+    },
+    {
+      "sha": "d0c0a9920a51edba80b8652982849de0277ca329",
+      "subject": "test(database): validate CHILD package cleanup and preserve raw evidence"
+    },
+    {
+      "sha": "3b04133d8ad82221cb35c268ea9a67fec27b5f71",
+      "subject": "test(auth): preserve the exact qualified CLI script bytes"
+    },
+    {
+      "sha": "82d845dd51f75064d9f50a0167fe1db9c9b72708",
+      "subject": "test(auth): retain the executed qualifier line endings"
+    },
+    {
+      "sha": "d019c109aeb7c85688cbee64eadf32079507a516",
+      "subject": "fix(superadmin): integrate authorized model invites and mixed feed routes"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "source": "Flutter normal lib/main.dart release on integrated root",
+  "status": "build-pass-no-deploy",
+  "generated_at": "2026-09-09T16:53:10.216670-03:00",
+  "codeCommit": "d019c109a",
+  "session": 38594,
+  "exitCode": 0,
+  "durationSeconds": 148.7,
+  "mainDartJsSha256": "5c8921130994ffb788839b87f817388cf74e75d229c1aca6ddd0de025aa3dc61",
+  "artifact": "apps/superadmin/build/r02-d00-final/main.dart.js",
+  "logs": [
+    "final-integrated-release-build.log",
+    "final-integrated-release-build.stderr.log"
+  ],
+  "warnings": [
+    "CupertinoIcons font warning also present in D01 earlier release; Wasm dry run succeeded, PowerShell formats stderr advisory as NativeCommandError but process exit0"
+  ],
+  "productTestsAdded": 0
+}

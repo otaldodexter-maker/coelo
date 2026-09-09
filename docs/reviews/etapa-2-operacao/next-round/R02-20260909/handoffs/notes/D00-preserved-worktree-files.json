@@ -1,0 +1,305 @@
+{
+    "source":  "Owner requested immediate closure, clean worktrees, preserved WIP",
+    "status":  "preserved-and-hash-verified-before-exact-path-cleanup",
+    "generated_at":  "2026-09-09T16:50:25.7132217-03:00",
+    "archiveRoot":  "C:/Users/adrie/Documents/Coelo.artifacts/R02-20260909-close-1650",
+    "files":  [
+                  {
+                      "role":  "D01",
+                      "source":  "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r02-d01-autenticacao\\docs\\reviews\\evidence\\etapa-2\\identidade-acessos\\r02-d01-20260909\\recovery-cold-reload-red-resumed.txt",
+                      "archive":  "C:\\Users\\adrie\\Documents\\Coelo.artifacts\\R02-20260909-close-1650\\D01\\docs\\reviews\\evidence\\etapa-2\\identidade-acessos\\r02-d01-20260909\\recovery-cold-reload-red-resumed.txt",
+                      "sha256":  "0B549BAF6B5A5F2EB44F934C6BF4B937BF514DF819910E111D3ECD80BCDD7075",
+                      "bytes":  17924,
+                      "tracked":  false,
+                      "reason":  "Owner-requested clean closure; preserved auxiliary or foreign reference WIP, not integrated product"
+                  },
+                  {
+                      "role":  "D01",
+                      "source":  "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r02-d01-autenticacao\\docs\\reviews\\evidence\\etapa-2\\identidade-acessos\\r02-d01-20260909\\recovery-cold-reload-red.txt",
+                      "archive":  "C:\\Users\\adrie\\Documents\\Coelo.artifacts\\R02-20260909-close-1650\\D01\\docs\\reviews\\evidence\\etapa-2\\identidade-acessos\\r02-d01-20260909\\recovery-cold-reload-red.txt",
+                      "sha256":  "1349E24435DD817B24F55656596EA373EF74B19DB34FE0397CA7C5D7FDA21DD8",
+                      "bytes":  1192,
+                      "tracked":  false,
+                      "reason":  "Owner-requested clean closure; preserved auxiliary or foreign reference WIP, not integrated product"
+                  },
+                  {
+                      "role":  "D02",
+                      "source":  "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r02-d02-estrutura\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-activities-concurrency\\build-clock-patch.py",
+                      "archive":  "C:\\Users\\adrie\\Documents\\Coelo.artifacts\\R02-20260909-close-1650\\D02\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-activities-concurrency\\build-clock-patch.py",
+                      "sha256":  "2FBE252E879D278848106E58166F88D3B9CF9AFC79F177AF0CC644C608F689CA",
+                      "bytes":  2735,
+                      "tracked":  false,
+                      "reason":  "Owner-requested clean closure; preserved auxiliary or foreign reference WIP, not integrated product"
+                  },
+                  {
+                      "role":  "D02",
+                      "source":  "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r02-d02-estrutura\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-activities-concurrency\\replay.txt",
+                      "archive":  "C:\\Users\\adrie\\Documents\\Coelo.artifacts\\R02-20260909-close-1650\\D02\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-activities-concurrency\\replay.txt",
+                      "sha256":  "AF53DAE2FAF8DE16B99DE77B4277F395FDA18C7AB81BFB699C2EE59DEAC88A07",
+                      "bytes":  690,
+                      "tracked":  false,
+                      "reason":  "Owner-requested clean closure; preserved auxiliary or foreign reference WIP, not integrated product"
+                  },
+                  {
+                      "role":  "D02",
+                      "source":  "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r02-d02-estrutura\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\0001-feat-db-copy-command-for-the-location-catalog-local-.patch",
+                      "archive":  "C:\\Users\\adrie\\Documents\\Coelo.artifacts\\R02-20260909-close-1650\\D02\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\0001-feat-db-copy-command-for-the-location-catalog-local-.patch",
+                      "sha256":  "E92D1059F737076DAD95DE6B008627DF334F8C48FD9038097C7E71AB988EE2E6",
+                      "bytes":  24372,
+                      "tracked":  false,
+                      "reason":  "Owner-requested clean closure; preserved auxiliary or foreign reference WIP, not integrated product"
+                  },
+                  {
+                      "role":  "D02",
+                      "source":  "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r02-d02-estrutura\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\0001-feat-db-edit-and-status-commands-for-the-location-ca.patch",
+                      "archive":  "C:\\Users\\adrie\\Documents\\Coelo.artifacts\\R02-20260909-close-1650\\D02\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\0001-feat-db-edit-and-status-commands-for-the-location-ca.patch",
+                      "sha256":  "E698FF77A731400C7DC15FAB65F703F478B71A6032068EFA5A177F1E11C84F7E",
+                      "bytes":  36399,
+                      "tracked":  false,
+                      "reason":  "Owner-requested clean closure; preserved auxiliary or foreign reference WIP, not integrated product"
+                  },
+                  {
+                      "role":  "D02",
+                      "source":  "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r02-d02-estrutura\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\0001-feat-db-weekly-availability-windows-for-the-location.patch",
+                      "archive":  "C:\\Users\\adrie\\Documents\\Coelo.artifacts\\R02-20260909-close-1650\\D02\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\0001-feat-db-weekly-availability-windows-for-the-location.patch",
+                      "sha256":  "ED8AEBEB2D1E6169906D3CCCB578DAA6200E687647AE72C8CCED9D23AFD3352C",
+                      "bytes":  35853,
+                      "tracked":  false,
+                      "reason":  "Owner-requested clean closure; preserved auxiliary or foreign reference WIP, not integrated product"
+                  },
+                  {
+                      "role":  "D02",
+                      "source":  "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r02-d02-estrutura\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\0001-feat-locations-publish-the-minimum-contract-for-rese.patch",
+                      "archive":  "C:\\Users\\adrie\\Documents\\Coelo.artifacts\\R02-20260909-close-1650\\D02\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\0001-feat-locations-publish-the-minimum-contract-for-rese.patch",
+                      "sha256":  "7CAC6DE98F3210D0EE51A955B79B508D1579DC1114363C708F6703A36FF1A18B",
+                      "bytes":  20273,
+                      "tracked":  false,
+                      "reason":  "Owner-requested clean closure; preserved auxiliary or foreign reference WIP, not integrated product"
+                  },
+                  {
+                      "role":  "D02",
+                      "source":  "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r02-d02-estrutura\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\0001-test-locations-checkpoint-remote-snapshot-cutover-ca.patch",
+                      "archive":  "C:\\Users\\adrie\\Documents\\Coelo.artifacts\\R02-20260909-close-1650\\D02\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\0001-test-locations-checkpoint-remote-snapshot-cutover-ca.patch",
+                      "sha256":  "43A615994F3ECD562B527E1F9B05D7ED6A455E4FBD06C1A04822449478D2EFE9",
+                      "bytes":  47379,
+                      "tracked":  false,
+                      "reason":  "Owner-requested clean closure; preserved auxiliary or foreign reference WIP, not integrated product"
+                  },
+                  {
+                      "role":  "D02",
+                      "source":  "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r02-d02-estrutura\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\Get-NormalizedReplayHash.ps1",
+                      "archive":  "C:\\Users\\adrie\\Documents\\Coelo.artifacts\\R02-20260909-close-1650\\D02\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\Get-NormalizedReplayHash.ps1",
+                      "sha256":  "CF3D00360DD5AC4FBD00B7A4ED1DF46AB109C4C9F946FAFB144058282128B6D4",
+                      "bytes":  385,
+                      "tracked":  false,
+                      "reason":  "Owner-requested clean closure; preserved auxiliary or foreign reference WIP, not integrated product"
+                  },
+                  {
+                      "role":  "D02",
+                      "source":  "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r02-d02-estrutura\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\Verify-LocationCatalogWrapperPatch.ps1",
+                      "archive":  "C:\\Users\\adrie\\Documents\\Coelo.artifacts\\R02-20260909-close-1650\\D02\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\Verify-LocationCatalogWrapperPatch.ps1",
+                      "sha256":  "4798C46F447B1D28A63D8062FFA4C906B8349FA436E69C49495480BE6038349C",
+                      "bytes":  2601,
+                      "tracked":  false,
+                      "reason":  "Owner-requested clean closure; preserved auxiliary or foreign reference WIP, not integrated product"
+                  },
+                  {
+                      "role":  "D02",
+                      "source":  "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r02-d02-estrutura\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\Verify-LocationReservationsWrapperPatch.ps1",
+                      "archive":  "C:\\Users\\adrie\\Documents\\Coelo.artifacts\\R02-20260909-close-1650\\D02\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\Verify-LocationReservationsWrapperPatch.ps1",
+                      "sha256":  "A6C2C4BD9CD40E3DDC816EC1F7F305E7278F9D472A3429E6242A9F88BECAB4F8",
+                      "bytes":  3047,
+                      "tracked":  false,
+                      "reason":  "Owner-requested clean closure; preserved auxiliary or foreign reference WIP, not integrated product"
+                  },
+                  {
+                      "role":  "D02",
+                      "source":  "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r02-d02-estrutura\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\build-location-wrapper-patch.py",
+                      "archive":  "C:\\Users\\adrie\\Documents\\Coelo.artifacts\\R02-20260909-close-1650\\D02\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\build-location-wrapper-patch.py",
+                      "sha256":  "FF6B27AA441A13011409AE4771D2A725CF09D97ECBA2871FCCC977A9BA06FFE4",
+                      "bytes":  3943,
+                      "tracked":  false,
+                      "reason":  "Owner-requested clean closure; preserved auxiliary or foreign reference WIP, not integrated product"
+                  },
+                  {
+                      "role":  "D02",
+                      "source":  "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r02-d02-estrutura\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\build-reservation-wrapper-patch.py",
+                      "archive":  "C:\\Users\\adrie\\Documents\\Coelo.artifacts\\R02-20260909-close-1650\\D02\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\build-reservation-wrapper-patch.py",
+                      "sha256":  "B40F7692EA4AE90D7BEB4D629EAF9E3911E58CA9F4249DAB7A17D25DA4FA2DAB",
+                      "bytes":  4635,
+                      "tracked":  false,
+                      "reason":  "Owner-requested clean closure; preserved auxiliary or foreign reference WIP, not integrated product"
+                  },
+                  {
+                      "role":  "D02",
+                      "source":  "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r02-d02-estrutura\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\catalog01-snapshot-paths.md",
+                      "archive":  "C:\\Users\\adrie\\Documents\\Coelo.artifacts\\R02-20260909-close-1650\\D02\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\catalog01-snapshot-paths.md",
+                      "sha256":  "204DA3B3379ACB94954DAA211830292CECA53F2C78F682B430B6CC1E88982432",
+                      "bytes":  1455,
+                      "tracked":  false,
+                      "reason":  "Owner-requested clean closure; preserved auxiliary or foreign reference WIP, not integrated product"
+                  },
+                  {
+                      "role":  "D02",
+                      "source":  "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r02-d02-estrutura\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\catalog01-snapshot\\2026-09-07-location-catalog-v2-local-contract.md",
+                      "archive":  "C:\\Users\\adrie\\Documents\\Coelo.artifacts\\R02-20260909-close-1650\\D02\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\catalog01-snapshot\\2026-09-07-location-catalog-v2-local-contract.md",
+                      "sha256":  "4896963B063BBDB0BA5833C21BC0257B7B938F451852EF9B727BCCC9E3662D5B",
+                      "bytes":  12985,
+                      "tracked":  false,
+                      "reason":  "Owner-requested clean closure; preserved auxiliary or foreign reference WIP, not integrated product"
+                  },
+                  {
+                      "role":  "D02",
+                      "source":  "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r02-d02-estrutura\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\catalog01-snapshot\\2026-09-08-location-remote-snapshot-cutover.md",
+                      "archive":  "C:\\Users\\adrie\\Documents\\Coelo.artifacts\\R02-20260909-close-1650\\D02\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\catalog01-snapshot\\2026-09-08-location-remote-snapshot-cutover.md",
+                      "sha256":  "8B01136EFA5A949034936887B84985969D61D60B938C4E97072F32C4927D5318",
+                      "bytes":  7452,
+                      "tracked":  false,
+                      "reason":  "Owner-requested clean closure; preserved auxiliary or foreign reference WIP, not integrated product"
+                  },
+                  {
+                      "role":  "D02",
+                      "source":  "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r02-d02-estrutura\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\catalog01-snapshot\\20260908031000_superadmin_location_catalog_v2.sql",
+                      "archive":  "C:\\Users\\adrie\\Documents\\Coelo.artifacts\\R02-20260909-close-1650\\D02\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\catalog01-snapshot\\20260908031000_superadmin_location_catalog_v2.sql",
+                      "sha256":  "4C9500D9CB8C3F82B301796B71E83816142A941F0A0F63DEC58E2AE04C2E5995",
+                      "bytes":  39134,
+                      "tracked":  false,
+                      "reason":  "Owner-requested clean closure; preserved auxiliary or foreign reference WIP, not integrated product"
+                  },
+                  {
+                      "role":  "D02",
+                      "source":  "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r02-d02-estrutura\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\catalog01-snapshot\\Test-LocationRemoteSnapshot.Tests.ps1",
+                      "archive":  "C:\\Users\\adrie\\Documents\\Coelo.artifacts\\R02-20260909-close-1650\\D02\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\catalog01-snapshot\\Test-LocationRemoteSnapshot.Tests.ps1",
+                      "sha256":  "2474D682BAD391526399B6F501F06320692689453026E83572D3FAA9BA222089",
+                      "bytes":  5360,
+                      "tracked":  false,
+                      "reason":  "Owner-requested clean closure; preserved auxiliary or foreign reference WIP, not integrated product"
+                  },
+                  {
+                      "role":  "D02",
+                      "source":  "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r02-d02-estrutura\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\catalog01-snapshot\\location_form_options_remote_snapshot_local.sql",
+                      "archive":  "C:\\Users\\adrie\\Documents\\Coelo.artifacts\\R02-20260909-close-1650\\D02\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\catalog01-snapshot\\location_form_options_remote_snapshot_local.sql",
+                      "sha256":  "6C3002B500DA4ECD623C3BD5E0DDD04950785B31C4BBCC858A702E5F3FF11C5E",
+                      "bytes":  7388,
+                      "tracked":  false,
+                      "reason":  "Owner-requested clean closure; preserved auxiliary or foreign reference WIP, not integrated product"
+                  },
+                  {
+                      "role":  "D02",
+                      "source":  "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r02-d02-estrutura\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\catalog01-snapshot\\superadmin_location_remote_options_cutover_test.sql",
+                      "archive":  "C:\\Users\\adrie\\Documents\\Coelo.artifacts\\R02-20260909-close-1650\\D02\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\catalog01-snapshot\\superadmin_location_remote_options_cutover_test.sql",
+                      "sha256":  "9E68F0A3F69056BF18D73A9577419D0168680FA557F0600D802D32F81AC9171D",
+                      "bytes":  16655,
+                      "tracked":  false,
+                      "reason":  "Owner-requested clean closure; preserved auxiliary or foreign reference WIP, not integrated product"
+                  },
+                  {
+                      "role":  "D02",
+                      "source":  "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r02-d02-estrutura\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\location-prepare-review-fixture.ps1",
+                      "archive":  "C:\\Users\\adrie\\Documents\\Coelo.artifacts\\R02-20260909-close-1650\\D02\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\location-prepare-review-fixture.ps1",
+                      "sha256":  "283F74463BD90CED1847C33F156F45D557D26EAC5BA1CB587CF1E8C0A91DFB7F",
+                      "bytes":  18743,
+                      "tracked":  false,
+                      "reason":  "Owner-requested clean closure; preserved auxiliary or foreign reference WIP, not integrated product"
+                  },
+                  {
+                      "role":  "D02",
+                      "source":  "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r02-d02-estrutura\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\reservation-architecture.md",
+                      "archive":  "C:\\Users\\adrie\\Documents\\Coelo.artifacts\\R02-20260909-close-1650\\D02\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\reservation-architecture.md",
+                      "sha256":  "615CB49054C08A376DD59974848CE3D0ACC7FFE5A48CC7B3385651F79585789E",
+                      "bytes":  6579,
+                      "tracked":  false,
+                      "reason":  "Owner-requested clean closure; preserved auxiliary or foreign reference WIP, not integrated product"
+                  },
+                  {
+                      "role":  "D02",
+                      "source":  "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r02-d02-estrutura\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\reservation-invoke-review-fixture.ps1",
+                      "archive":  "C:\\Users\\adrie\\Documents\\Coelo.artifacts\\R02-20260909-close-1650\\D02\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\reservation-invoke-review-fixture.ps1",
+                      "sha256":  "B16A3CCECC2406516926EFBD5FFC02CAF54BFED779513D512F72ACBB811912CA",
+                      "bytes":  23472,
+                      "tracked":  false,
+                      "reason":  "Owner-requested clean closure; preserved auxiliary or foreign reference WIP, not integrated product"
+                  },
+                  {
+                      "role":  "D02",
+                      "source":  "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r02-d02-estrutura\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\reservation-prepare-review-fixture.ps1",
+                      "archive":  "C:\\Users\\adrie\\Documents\\Coelo.artifacts\\R02-20260909-close-1650\\D02\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\handoffs\\evidence\\d02-locations-backend\\reservation-prepare-review-fixture.ps1",
+                      "sha256":  "65DE1C64CA9D76D6CDBC924CB68824B80B212D9E08C69C23EB62D35399C98165",
+                      "bytes":  19782,
+                      "tracked":  false,
+                      "reason":  "Owner-requested clean closure; preserved auxiliary or foreign reference WIP, not integrated product"
+                  },
+                  {
+                      "role":  "L01",
+                      "source":  "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r02-l01-publicacoes\\.agents\\skills\\coelo-ui\\references\\principal-visual-surfaces.md",
+                      "archive":  "C:\\Users\\adrie\\Documents\\Coelo.artifacts\\R02-20260909-close-1650\\L01\\.agents\\skills\\coelo-ui\\references\\principal-visual-surfaces.md",
+                      "sha256":  "AC70A4C4E90C7C379CFE022AB08D596574D493555EF914379C5E8DFAD2A48922",
+                      "bytes":  4885,
+                      "tracked":  true,
+                      "reason":  "Owner-requested clean closure; preserved auxiliary or foreign reference WIP, not integrated product"
+                  },
+                  {
+                      "role":  "L01",
+                      "source":  "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r02-l01-publicacoes\\specs\\050-principal-ui-ux-closure.md",
+                      "archive":  "C:\\Users\\adrie\\Documents\\Coelo.artifacts\\R02-20260909-close-1650\\L01\\specs\\050-principal-ui-ux-closure.md",
+                      "sha256":  "8FD55068F0314A150E77429399CABF20D7418C13837EA63AB140C772CE611A67",
+                      "bytes":  11792,
+                      "tracked":  true,
+                      "reason":  "Owner-requested clean closure; preserved auxiliary or foreign reference WIP, not integrated product"
+                  },
+                  {
+                      "role":  "L02",
+                      "source":  "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r02-l02-chat-comunicacoes\\.agents\\skills\\coelo-ui\\references\\principal-visual-surfaces.md",
+                      "archive":  "C:\\Users\\adrie\\Documents\\Coelo.artifacts\\R02-20260909-close-1650\\L02\\.agents\\skills\\coelo-ui\\references\\principal-visual-surfaces.md",
+                      "sha256":  "AC70A4C4E90C7C379CFE022AB08D596574D493555EF914379C5E8DFAD2A48922",
+                      "bytes":  4885,
+                      "tracked":  true,
+                      "reason":  "Owner-requested clean closure; preserved auxiliary or foreign reference WIP, not integrated product"
+                  },
+                  {
+                      "role":  "L02",
+                      "source":  "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r02-l02-chat-comunicacoes\\specs\\037-principal-circulars.md",
+                      "archive":  "C:\\Users\\adrie\\Documents\\Coelo.artifacts\\R02-20260909-close-1650\\L02\\specs\\037-principal-circulars.md",
+                      "sha256":  "76ACB58BA6DC7733FAFF3ECF96F6F0567621A3DEB0F058EAB7AA1D124AC627F0",
+                      "bytes":  7336,
+                      "tracked":  true,
+                      "reason":  "Owner-requested clean closure; preserved auxiliary or foreign reference WIP, not integrated product"
+                  },
+                  {
+                      "role":  "L02",
+                      "source":  "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r02-l02-chat-comunicacoes\\specs\\050-principal-ui-ux-closure.md",
+                      "archive":  "C:\\Users\\adrie\\Documents\\Coelo.artifacts\\R02-20260909-close-1650\\L02\\specs\\050-principal-ui-ux-closure.md",
+                      "sha256":  "8FD55068F0314A150E77429399CABF20D7418C13837EA63AB140C772CE611A67",
+                      "bytes":  11792,
+                      "tracked":  true,
+                      "reason":  "Owner-requested clean closure; preserved auxiliary or foreign reference WIP, not integrated product"
+                  },
+                  {
+                      "role":  "D00-owner-wip",
+                      "source":  "C:\\Users\\adrie\\Documents\\Coelo\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\TERCEIRA-IA.md",
+                      "archive":  "C:\\Users\\adrie\\Documents\\Coelo.artifacts\\R02-20260909-close-1650\\D00-owner-wip\\docs\\reviews\\etapa-2-operacao\\next-round\\R02-20260909\\TERCEIRA-IA.md",
+                      "sha256":  "F564ABE4E633484D65FA4631EDB87A58C74767307174609722E04313449C42AF",
+                      "bytes":  3924,
+                      "tracked":  true,
+                      "reason":  "Owner WIP and generated locks preserved outside Git; no discard or product integration"
+                  },
+                  {
+                      "role":  "D00-owner-wip",
+                      "source":  "C:\\Users\\adrie\\Documents\\Coelo\\packages\\coelo_api\\pubspec.lock",
+                      "archive":  "C:\\Users\\adrie\\Documents\\Coelo.artifacts\\R02-20260909-close-1650\\D00-owner-wip\\packages\\coelo_api\\pubspec.lock",
+                      "sha256":  "D13534BB5F92BD24215D1441F32F19BFFC2A20C883F70F03B10260371C50BB30",
+                      "bytes":  11337,
+                      "tracked":  false,
+                      "reason":  "Owner WIP and generated locks preserved outside Git; no discard or product integration"
+                  },
+                  {
+                      "role":  "D00-owner-wip",
+                      "source":  "C:\\Users\\adrie\\Documents\\Coelo\\packages\\coelo_domain\\pubspec.lock",
+                      "archive":  "C:\\Users\\adrie\\Documents\\Coelo.artifacts\\R02-20260909-close-1650\\D00-owner-wip\\packages\\coelo_domain\\pubspec.lock",
+                      "sha256":  "346534B135CB3DD196260C524418782C0A28AAA19B688744EE9D2CF67760CF39",
+                      "bytes":  11185,
+                      "tracked":  false,
+                      "reason":  "Owner WIP and generated locks preserved outside Git; no discard or product integration"
+                  }
+              ]
+}

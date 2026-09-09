@@ -1,0 +1,1089 @@
+{
+  "source": "Actual Flutter machine reporter, excluding hidden/loading entries",
+  "generatedAt": "2026-09-09T16:26:58.962526-03:00",
+  "executionBase": "f17e5b89",
+  "baseSource": "D00 supplied execution basename; no clean-tree claim",
+  "environment": "Windows local Flutter integrated checkout; test fixtures/doubles, no remote certification",
+  "evidence": {
+    "path": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl",
+    "sha256": "71f1f84a419dd0469fdde113c647075642662c67f0b97327620f35c320c55d1e",
+    "doneSuccess": true,
+    "nonHiddenCases": 149,
+    "excludedHiddenLoading": 11
+  },
+  "process": {
+    "sessionId": null,
+    "exitCode": 0,
+    "source": "D00 supplied exit0 for D04; reservation reporter done.success true observed, shell exit not yet supplied"
+  },
+  "counts": {
+    "P": 149,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0
+  },
+  "files": [
+    "C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart",
+    "C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_incomplete_save_test.dart",
+    "C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_directory_request_lifecycle_test.dart",
+    "C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/d04_person_form_confirmed_save_test.dart",
+    "C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart",
+    "C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart",
+    "C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/access_profiles/presentation/d04_profile_catalog_lifecycle_test.dart",
+    "C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart",
+    "C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/data/supabase_invite_repository_test.dart",
+    "C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_form_context_test.dart",
+    "C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart"
+  ],
+  "cases": [
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_incomplete_save_test.dart",
+      "testName": "a complete identity saves",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_incomplete_save_test.dart::a complete identity saves",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_incomplete_save_test.dart",
+      "testName": "legal name is optional under spec019",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_incomplete_save_test.dart::legal name is optional under spec019",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_incomplete_save_test.dart",
+      "testName": "clearing the first name after filling it refuses with an Exception",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_incomplete_save_test.dart::clearing the first name after filling it refuses with an Exception",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_incomplete_save_test.dart",
+      "testName": "clearing the last name after filling it refuses with an Exception",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_incomplete_save_test.dart::clearing the last name after filling it refuses with an Exception",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_incomplete_save_test.dart",
+      "testName": "clearing the display name after filling it refuses with an Exception",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_incomplete_save_test.dart::clearing the display name after filling it refuses with an Exception",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_incomplete_save_test.dart",
+      "testName": "the refusal is an Exception, so an `on Exception` catch sees it",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_incomplete_save_test.dart::the refusal is an Exception, so an `on Exception` catch sees it",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_incomplete_save_test.dart",
+      "testName": "an incomplete save leaves nothing behind to retry against",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_incomplete_save_test.dart::an incomplete save leaves nothing behind to retry against",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_directory_request_lifecycle_test.dart",
+      "testName": "new search discards old result during debounce",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_directory_request_lifecycle_test.dart::new search discards old result during debounce",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_directory_request_lifecycle_test.dart",
+      "testName": "new search discards old denial during debounce",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_directory_request_lifecycle_test.dart::new search discards old denial during debounce",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_directory_request_lifecycle_test.dart",
+      "testName": "search clears previous rows before debounce finishes",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_directory_request_lifecycle_test.dart::search clears previous rows before debounce finishes",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_directory_request_lifecycle_test.dart",
+      "testName": "pending response cannot mutate a disposed directory",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_directory_request_lifecycle_test.dart::pending response cannot mutate a disposed directory",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart",
+      "testName": "optional legal name does not prevent continuing or saving a person",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart::optional legal name does not prevent continuing or saving a person",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/d04_person_form_confirmed_save_test.dart",
+      "testName": "confirmed update retries navigation only",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/d04_person_form_confirmed_save_test.dart::confirmed update retries navigation only",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart",
+      "testName": "person identity step includes the compact address map state",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart::person identity step includes the compact address map state",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart",
+      "testName": "form keeps a local address section out of the persisted identity contract",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart::form keeps a local address section out of the persisted identity contract",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/d04_person_form_confirmed_save_test.dart",
+      "testName": "confirmed create retries navigation only",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/d04_person_form_confirmed_save_test.dart::confirmed create retries navigation only",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart",
+      "testName": "the relationship search says it is not connected, and invents nobody",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart::the relationship search says it is not connected, and invents nobody",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart",
+      "testName": "no invented person survives anywhere in the production form",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart::no invented person survives anywhere in the production form",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart",
+      "testName": "the source carries no relationship fixture to render",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart::the source carries no relationship fixture to render",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/d04_person_form_confirmed_save_test.dart",
+      "testName": "repository replacement clears confirmed navigation and unlocks new form",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/d04_person_form_confirmed_save_test.dart::repository replacement clears confirmed navigation and unlocks new form",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart",
+      "testName": "relationship search uses the direct form canvas without a redundant surface",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart::relationship search uses the direct form canvas without a redundant surface",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart",
+      "testName": "membership cards have tokenized separation",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart::membership cards have tokenized separation",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart",
+      "testName": "revoke membership is semantically negative at rest hover and focus",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart::revoke membership is semantically negative at rest hover and focus",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart",
+      "testName": "revoke child context is semantically negative at rest hover and focus",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart::revoke child context is semantically negative at rest hover and focus",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/access_profiles/presentation/d04_profile_catalog_lifecycle_test.dart",
+      "testName": "search during catalog load keeps loading and applies to the response",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/access_profiles/presentation/d04_profile_catalog_lifecycle_test.dart::search during catalog load keeps loading and applies to the response",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/access_profiles/presentation/d04_profile_catalog_lifecycle_test.dart",
+      "testName": "search after catalog failure preserves the error and retry state",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/access_profiles/presentation/d04_profile_catalog_lifecycle_test.dart::search after catalog failure preserves the error and retry state",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/access_profiles/presentation/d04_profile_catalog_lifecycle_test.dart",
+      "testName": "clearing search on an empty catalog preserves the empty state",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/access_profiles/presentation/d04_profile_catalog_lifecycle_test.dart::clearing search on an empty catalog preserves the empty state",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart",
+      "testName": "keeps the canonical footer after the compact scroll region",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart::keeps the canonical footer after the compact scroll region",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart",
+      "testName": "create form has three responsive steps and no sensitive fields",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart::create form has three responsive steps and no sensitive fields",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart",
+      "testName": "requires identity fields before advancing",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart::requires identity fields before advancing",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart",
+      "testName": "uses shared step navigation laterally from medium width",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart::uses shared step navigation laterally from medium width",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart",
+      "testName": "uses the shared compact step summary at 375",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart::uses the shared compact step summary at 375",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart",
+      "testName": "unknown credential status is rejected instead of displayed as active or accepted",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart::unknown credential status is rejected instead of displayed as active or accepted",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart",
+      "testName": "unknown invitation status is rejected instead of displayed as active or accepted",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart::unknown invitation status is rejected instead of displayed as active or accepted",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart",
+      "testName": "user detail and status accept canonical casing of a requested UUID",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart::user detail and status accept canonical casing of a requested UUID",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart",
+      "testName": "detail rejects another identity without replacing the authorized cache",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart::detail rejects another identity without replacing the authorized cache",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart",
+      "testName": "update rejects another identity without replacing the authorized cache",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart::update rejects another identity without replacing the authorized cache",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart",
+      "testName": "status rejects another identity without replacing the authorized cache",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart::status rejects another identity without replacing the authorized cache",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart",
+      "testName": "update retry after a lost response respects change=none",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart::update retry after a lost response respects change=none",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart",
+      "testName": "update retry after a lost response respects change=draft",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart::update retry after a lost response respects change=draft",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart",
+      "testName": "update retry after a lost response respects change=session",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart::update retry after a lost response respects change=session",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/data/supabase_invite_repository_test.dart",
+      "testName": "rejects one-time links with unexpected authority viewer@app.coelo.me",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/data/supabase_invite_repository_test.dart::rejects one-time links with unexpected authority viewer@app.coelo.me",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/data/supabase_invite_repository_test.dart",
+      "testName": "rejects one-time links with unexpected authority app.coelo.me:8443",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/data/supabase_invite_repository_test.dart::rejects one-time links with unexpected authority app.coelo.me:8443",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart",
+      "testName": "status retry after a lost response respects change=none",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart::status retry after a lost response respects change=none",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/data/supabase_invite_repository_test.dart",
+      "testName": "invitation operations accept canonical casing of a requested UUID",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/data/supabase_invite_repository_test.dart::invitation operations accept canonical casing of a requested UUID",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart",
+      "testName": "status retry after a lost response respects change=draft",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart::status retry after a lost response respects change=draft",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/data/supabase_invite_repository_test.dart",
+      "testName": "detail rejects a response for a different invitation",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/data/supabase_invite_repository_test.dart::detail rejects a response for a different invitation",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/data/supabase_invite_repository_test.dart",
+      "testName": "resend rejects a response for a different invitation",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/data/supabase_invite_repository_test.dart::resend rejects a response for a different invitation",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart",
+      "testName": "status retry after a lost response respects change=session",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart::status retry after a lost response respects change=session",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/data/supabase_invite_repository_test.dart",
+      "testName": "revoke rejects a response for a different invitation",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/data/supabase_invite_repository_test.dart::revoke rejects a response for a different invitation",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart",
+      "testName": "late profiles response denial=false preserves the new cache",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart::late profiles response denial=false preserves the new cache",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/data/supabase_invite_repository_test.dart",
+      "testName": "uses only the internal v2 directory RPC and maps minimized issuers",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/data/supabase_invite_repository_test.dart::uses only the internal v2 directory RPC and maps minimized issuers",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/data/supabase_invite_repository_test.dart",
+      "testName": "maps legacy rows without inventing channel, profile or issuer ids",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/data/supabase_invite_repository_test.dart::maps legacy rows without inventing channel, profile or issuer ids",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart",
+      "testName": "late profiles response denial=true preserves the new cache",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart::late profiles response denial=true preserves the new cache",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/data/supabase_invite_repository_test.dart",
+      "testName": "issue sends intent and unwraps a one-time safe link",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/data/supabase_invite_repository_test.dart::issue sends intent and unwraps a one-time safe link",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart",
+      "testName": "late list response denial=false preserves the new cache",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart::late list response denial=false preserves the new cache",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart",
+      "testName": "late list response denial=true preserves the new cache",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart::late list response denial=true preserves the new cache",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/data/supabase_invite_repository_test.dart",
+      "testName": "resend and revoke preserve versioned request contracts",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/data/supabase_invite_repository_test.dart::resend and revoke preserve versioned request contracts",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart",
+      "testName": "late detail response denial=false preserves the new cache",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart::late detail response denial=false preserves the new cache",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart",
+      "testName": "late detail response denial=true preserves the new cache",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart::late detail response denial=true preserves the new cache",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/data/supabase_invite_repository_test.dart",
+      "testName": "maps stable envelope denials, conflicts and invalid payloads",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/data/supabase_invite_repository_test.dart::maps stable envelope denials, conflicts and invalid payloads",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart",
+      "testName": "late status response denial=false preserves the new cache",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart::late status response denial=false preserves the new cache",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/data/supabase_invite_repository_test.dart",
+      "testName": "rejects identifier-bearing issuer payloads and unsafe links",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/data/supabase_invite_repository_test.dart::rejects identifier-bearing issuer payloads and unsafe links",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart",
+      "testName": "late status response denial=true preserves the new cache",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart::late status response denial=true preserves the new cache",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart",
+      "testName": "clearing session cache removes records and profiles",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart::clearing session cache removes records and profiles",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart",
+      "testName": "reload failure after confirmed suspension retries only the read",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart::reload failure after confirmed suspension retries only the read",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart",
+      "testName": "pending list cannot repopulate a cleared session cache",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart::pending list cannot repopulate a cleared session cache",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart",
+      "testName": "authorization denial clears populated caches envelope=true",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart::authorization denial clears populated caches envelope=true",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart",
+      "testName": "authorization denial clears populated caches envelope=false",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart::authorization denial clears populated caches envelope=false",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart",
+      "testName": "preserves the existing typed MFA error before generic privilege denial",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart::preserves the existing typed MFA error before generic privilege denial",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart",
+      "testName": "sanitizes authorization transport error 42501",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart::sanitizes authorization transport error 42501",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart",
+      "testName": "separates relationships from progressive institutional access context",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart::separates relationships from progressive institutional access context",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart",
+      "testName": "sanitizes authorization transport error PGRST301",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart::sanitizes authorization transport error PGRST301",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart",
+      "testName": "sanitizes authorization transport error PGRST302",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart::sanitizes authorization transport error PGRST302",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart",
+      "testName": "sanitizes authorization transport error PGRST303",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart::sanitizes authorization transport error PGRST303",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart",
+      "testName": "maps session denial envelope SAI_AUTH_REQUIRED to unauthorized",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart::maps session denial envelope SAI_AUTH_REQUIRED to unauthorized",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart",
+      "testName": "maps session denial envelope SAI_SESSION_INVALID to unauthorized",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart::maps session denial envelope SAI_SESSION_INVALID to unauthorized",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart",
+      "testName": "loads the protected directory and keeps the server projection cached",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart::loads the protected directory and keeps the server projection cached",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart",
+      "testName": "deep link fetches detail before a directory cache exists",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart::deep link fetches detail before a directory cache exists",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart",
+      "testName": "update and suspension use guarded versioned RPC commands",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart::update and suspension use guarded versioned RPC commands",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart",
+      "testName": "productive creation and invitation actions stay fail closed",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart::productive creation and invitation actions stay fail closed",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart",
+      "testName": "maps a successful HTTP denial envelope without exposing backend details",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/data/supabase_platform_user_repository_test.dart::maps a successful HTTP denial envelope without exposing backend details",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart",
+      "testName": "create review handles catalog removal without crashing or submitting",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart::create review handles catalog removal without crashing or submitting",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart",
+      "testName": "context step requires explicit adult membership selections",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart::context step requires explicit adult membership selections",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart",
+      "testName": "remote suspension uses honest confirmation and reloads the detail",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart::remote suspension uses honest confirmation and reloads the detail",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart",
+      "testName": "edit shows auth, platform and guardian summaries as read-only",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart::edit shows auth, platform and guardian summaries as read-only",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart",
+      "testName": "status command handles unexpected failure",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart::status command handles unexpected failure",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart",
+      "testName": "desktop edit uses side navigation and one-row footer like Institutions",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart::desktop edit uses side navigation and one-row footer like Institutions",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart",
+      "testName": "service deep-link is read-only and has no save action",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart::service deep-link is read-only and has no save action",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart",
+      "testName": "status command handles server denial",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart::status command handles server denial",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart",
+      "testName": "card rows preserve spacing at width 375.0",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart::card rows preserve spacing at width 375.0",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart",
+      "testName": "future step navigation validates identity before advancing",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart::future step navigation validates identity before advancing",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart",
+      "testName": "catalog removal restores the same access in review and submitted draft",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart::catalog removal restores the same access in review and submitted draft",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart",
+      "testName": "disposing the detail removes its dialog and preserves an unrelated dialog",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart::disposing the detail removes its dialog and preserves an unrelated dialog",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart",
+      "testName": "card rows preserve spacing at width 1100.0",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart::card rows preserve spacing at width 1100.0",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart",
+      "testName": "create card aligns with invitation row at text scale 1.0",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart::create card aligns with invitation row at text scale 1.0",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart",
+      "testName": "context change removes the old action confirmation without sending it",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart::context change removes the old action confirmation without sending it",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_form_context_test.dart",
+      "testName": "new option search invalidates an older response before debounce completes",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_form_context_test.dart::new option search invalidates an older response before debounce completes",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart",
+      "testName": "create card aligns with invitation row at text scale 2.0",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart::create card aligns with invitation row at text scale 2.0",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart",
+      "testName": "child contexts never render editable adult memberships",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart::child contexts never render editable adult memberships",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart",
+      "testName": "revocation discards the result of an already submitted action",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart::revocation discards the result of an already submitted action",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_form_context_test.dart",
+      "testName": "profile search stays available inside the selected context",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_form_context_test.dart::profile search stays available inside the selected context",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart",
+      "testName": "filter option failure renders a retryable state",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/people/presentation/person_form_page_test.dart::filter option failure renders a retryable state",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart",
+      "testName": "catalog replacement restores the same access in review and submitted draft",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart::catalog replacement restores the same access in review and submitted draft",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart",
+      "testName": "pending action disables another submission until completion",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart::pending action disables another submission until completion",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart",
+      "testName": "remote denial never renders a previously cached identity",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart::remote denial never renders a previously cached identity",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart",
+      "testName": "missing read capability does not query remote detail",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart::missing read capability does not query remote detail",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart",
+      "testName": "remote not found does not fall back to cached identity",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart::remote not found does not fall back to cached identity",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart",
+      "testName": "transient failure offers retry and reauthorizes detail",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart::transient failure offers retry and reauthorizes detail",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart",
+      "testName": "offers import and export file actions with explicit unavailable feedback",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart::offers import and export file actions with explicit unavailable feedback",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart",
+      "testName": "late detail A cannot replace detail B after repository change",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart::late detail A cannot replace detail B after repository change",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart",
+      "testName": "back action returns to the directory callback",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart::back action returns to the directory callback",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart",
+      "testName": "authorization revision clears the detail before rendering denial",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_detail_page_test.dart::authorization revision clears the detail before rendering denial",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart",
+      "testName": "real create cannot continue with an unavailable institution catalog",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart::real create cannot continue with an unavailable institution catalog",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_form_context_test.dart",
+      "testName": "recipient search preserves the selected profile when profile results are filtered",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_form_context_test.dart::recipient search preserves the selected profile when profile results are filtered",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart",
+      "testName": "loads cards first and can switch to the aligned canonical table",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart::loads cards first and can switch to the aligned canonical table",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart",
+      "testName": "real form without institution catalog does not offer fictional scopes",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart::real form without institution catalog does not offer fictional scopes",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart",
+      "testName": "debounces search and sends it to the repository",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart::debounces search and sends it to the repository",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart",
+      "testName": "fails closed with an unauthorized state",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart::fails closed with an unauthorized state",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart",
+      "testName": "hides create surfaces when no callback is available",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart::hides create surfaces when no callback is available",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_form_context_test.dart",
+      "testName": "review cannot skip a profile cleared after returning to context",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_form_context_test.dart::review cannot skip a profile cleared after returning to context",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart",
+      "testName": "real unknown membership scopes survive review and identity update",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart::real unknown membership scopes survive review and identity update",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_form_context_test.dart",
+      "testName": "repository replacement rejects previous options before showing the new denial",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_form_context_test.dart::repository replacement rejects previous options before showing the new denial",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart",
+      "testName": "keeps the create card beside empty, no-results and failure states",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart::keeps the create card beside empty, no-results and failure states",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_form_context_test.dart",
+      "testName": "late issuance cannot expose its link in a replacement context",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_form_context_test.dart::late issuance cannot expose its link in a replacement context",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart",
+      "testName": "expired row offers resend and exposes the one-time link",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart::expired row offers resend and exposes the one-time link",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart",
+      "testName": "confirmed update retries completion without repeating persistence",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart::confirmed update retries completion without repeating persistence",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart",
+      "testName": "search discards the previous response before debounce completes",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart::search discards the previous response before debounce completes",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_form_context_test.dart",
+      "testName": "repeated send activation before a frame issues once",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_form_context_test.dart::repeated send activation before a frame issues once",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart",
+      "testName": "ignores an older server response after a newer search completes",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart::ignores an older server response after a newer search completes",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart",
+      "testName": "repository swap clears filters and cancels the previous debounce",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart::repository swap clears filters and cancels the previous debounce",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart",
+      "testName": "confirmed create cannot be edited or submitted again after completion failure",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart::confirmed create cannot be edited or submitted again after completion failure",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart",
+      "testName": "transient editor read failure offers retry without claiming denial",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart::transient editor read failure offers retry without claiming denial",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart",
+      "testName": "directory read denial discards a resend receipt already in flight",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart::directory read denial discards a resend receipt already in flight",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart",
+      "testName": "captured directory action cannot start after a server read denial",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart::captured directory action cannot start after a server read denial",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart",
+      "testName": "failed save handles unexpected error safely",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart::failed save handles unexpected error safely",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart",
+      "testName": "revoking command permission removes the pending confirmation",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart::revoking command permission removes the pending confirmation",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart",
+      "testName": "revoking command permission discards the pending resend link",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart::revoking command permission discards the pending resend link",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart",
+      "testName": "failed save handles revocation safely",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart::failed save handles revocation safely",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart",
+      "testName": "revoke confirmation is single-flight before a frame",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart::revoke confirmation is single-flight before a frame",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart",
+      "testName": "discard confirmation leaves with its form: dispose=false",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart::discard confirmation leaves with its form: dispose=false",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart",
+      "testName": "repository swap dismisses an owned revoke dialog without commanding B",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart::repository swap dismisses an owned revoke dialog without commanding B",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart",
+      "testName": "discard confirmation leaves with its form: dispose=true",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart::discard confirmation leaves with its form: dispose=true",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart",
+      "testName": "repeated cancel requests open only one discard confirmation",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart::repeated cancel requests open only one discard confirmation",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart",
+      "testName": "late resend receipt from A cannot open an overlay or refresh B",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart::late resend receipt from A cannot open an overlay or refresh B",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart",
+      "testName": "a denied editor never starts remote catalog or detail reads",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart::a denied editor never starts remote catalog or detail reads",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart",
+      "testName": "old catalog completion cannot request detail in a replacement context",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart::old catalog completion cannot request detail in a replacement context",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart",
+      "testName": "retries an ambiguous resend with the same request id",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/invites/invite_directory_page_test.dart::retries an ambiguous resend with the same request id",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    },
+    {
+      "testURL": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart",
+      "testName": "revoking editor capability discards a pending update callback",
+      "test_id": "file:///C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart::revoking editor capability discards a pending update callback",
+      "result": "P",
+      "source": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/d04-integrated-f17e5b89.jsonl"
+    }
+  ],
+  "identity": "suite.path normalized to file URL + full test.name; framework wrapper URL not used as test file",
+  "limits": [
+    "No product action certification",
+    "New results are not added to prior288 until complete unique-ID union is reconciled"
+  ]
+}

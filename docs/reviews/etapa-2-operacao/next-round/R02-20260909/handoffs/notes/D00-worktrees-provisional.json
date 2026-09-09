@@ -1,0 +1,158 @@
+{
+  "source": "Read-only Git worktree status; no fetch/reset/cleanup",
+  "generatedAt": "2026-09-09T16:13:50.306181-03:00",
+  "roles": [
+    {
+      "role": "D00",
+      "worktree": "C:/Users/adrie/Documents/Coelo",
+      "branch": "dev",
+      "head": "535bfa458e529a64c2f15637c698c1aaf3f39845",
+      "statusEntries": 10,
+      "trackedModified": 4,
+      "untrackedEntries": 6,
+      "status": [
+        "M docs/reviews/etapa-2-operacao/next-round/R02-20260909/TERCEIRA-IA.md",
+        " M docs/reviews/etapa-2-operacao/next-round/R02-20260909/assignments/D01.md",
+        " M docs/reviews/etapa-2-operacao/next-round/R02-20260909/assignments/D02.md",
+        " M docs/reviews/etapa-2-operacao/next-round/R02-20260909/registro.json",
+        "?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/notes/D00-panel-provisional.json",
+        "?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/notes/D00-panel-provisional.md",
+        "?? docs/reviews/evidence/etapa-2/identidade-acessos/r02-d01-20260909/Test-ProposedCliLedgerAtomicity.ps1",
+        "?? docs/reviews/evidence/etapa-2/identidade-acessos/r02-d01-20260909/Test-ProposedCliLedgerAtomicityGuards.ps1",
+        "?? packages/coelo_api/pubspec.lock",
+        "?? packages/coelo_domain/pubspec.lock"
+      ],
+      "latestCommitDate": "2026-09-09T16:12:02-03:00"
+    },
+    {
+      "role": "L00",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l00-coordenacao-claude",
+      "branch": "codex/e2-r02-l00-coordenacao-claude",
+      "head": "b30c83f27c81b54fa5fc5a9a6a0bea212db936c7",
+      "statusEntries": 0,
+      "trackedModified": 0,
+      "untrackedEntries": 0,
+      "status": [],
+      "latestCommitDate": "2026-09-09T16:13:34-03:00"
+    },
+    {
+      "role": "D01",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d01-autenticacao",
+      "branch": "codex/e2-r02-d01-autenticacao",
+      "head": "e0fb9986453149e63c60a881c0a9ab975085e0d7",
+      "statusEntries": 2,
+      "trackedModified": 0,
+      "untrackedEntries": 2,
+      "status": [
+        "?? docs/reviews/evidence/etapa-2/identidade-acessos/r02-d01-20260909/recovery-cold-reload-red-resumed.txt",
+        "?? docs/reviews/evidence/etapa-2/identidade-acessos/r02-d01-20260909/recovery-cold-reload-red.txt"
+      ],
+      "latestCommitDate": "2026-09-09T16:12:48-03:00"
+    },
+    {
+      "role": "D02",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d02-estrutura",
+      "branch": "codex/e2-r02-d02-estrutura",
+      "head": "d2f8ecce0acce37ba9c72ef1e5713d506090d3bc",
+      "statusEntries": 19,
+      "trackedModified": 0,
+      "untrackedEntries": 19,
+      "status": [
+        "?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-activities-concurrency/build-clock-patch.py",
+        "?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-activities-concurrency/replay.txt",
+        "?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/0001-feat-db-copy-command-for-the-location-catalog-local-.patch",
+        "?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/0001-feat-db-edit-and-status-commands-for-the-location-ca.patch",
+        "?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/0001-feat-db-weekly-availability-windows-for-the-location.patch",
+        "?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/0001-feat-locations-publish-the-minimum-contract-for-rese.patch",
+        "?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/0001-test-locations-checkpoint-remote-snapshot-cutover-ca.patch",
+        "?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/Get-NormalizedReplayHash.ps1",
+        "?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/Verify-LocationCatalogWrapperPatch.ps1",
+        "?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/Verify-LocationReservationsWrapperPatch.ps1",
+        "?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/build-location-wrapper-patch.py",
+        "?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/build-reservation-wrapper-patch.py",
+        "?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/catalog01-snapshot-paths.md",
+        "?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/catalog01-snapshot/",
+        "?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/location-prepare-review-fixture.ps1",
+        "?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/reservation-architecture.md",
+        "?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/reservation-invoke-review-fixture.ps1",
+        "?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-locations-backend/reservation-prepare-review-fixture.ps1",
+        "?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/evidence/d02-retained-local-files.json"
+      ],
+      "latestCommitDate": "2026-09-09T16:13:14-03:00"
+    },
+    {
+      "role": "D03",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d03-acompanhamento",
+      "branch": "codex/e2-r02-d03-acompanhamento",
+      "head": "4ee03e8107eee9b5c3a3c9fc8b2a7316a80a6aab",
+      "statusEntries": 9,
+      "trackedModified": 4,
+      "untrackedEntries": 5,
+      "status": [
+        "M docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/notes/child-package-local-plan.md",
+        " M docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/notes/child-remote-package.md",
+        " M docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/notes/d03-test-ledger.json",
+        " M evidence/d03-acompanhamento/r02-20260909/manifest.json",
+        "?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/notes/child-package-invoke-tests.ps1",
+        "?? docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/notes/child-package-invoke.patch",
+        "?? evidence/d03-acompanhamento/r02-20260909/d03-child-remote-package-tests.log.txt",
+        "?? evidence/d03-acompanhamento/r02-20260909/d03-child-remote-package-tests.xml",
+        "?? packages/coelo_database/scripts/tests/Test-ChildRemotePackage.Tests.ps1"
+      ],
+      "latestCommitDate": "2026-09-09T16:04:34-03:00"
+    },
+    {
+      "role": "D04",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos",
+      "branch": "codex/e2-r02-d04-acessos",
+      "head": "b5c316f32145377773904d8b0c7f603b05f41323",
+      "statusEntries": 0,
+      "trackedModified": 0,
+      "untrackedEntries": 0,
+      "status": [],
+      "latestCommitDate": "2026-09-09T16:08:16-03:00"
+    },
+    {
+      "role": "L01",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l01-publicacoes",
+      "branch": "codex/e2-r02-l01-publicacoes",
+      "head": "3697dd49e6441f1614a16ebf9d555fde0ee1ebc8",
+      "statusEntries": 2,
+      "trackedModified": 2,
+      "untrackedEntries": 0,
+      "status": [
+        "M .agents/skills/coelo-ui/references/principal-visual-surfaces.md",
+        " M specs/050-principal-ui-ux-closure.md"
+      ],
+      "latestCommitDate": "2026-09-09T16:12:31-03:00"
+    },
+    {
+      "role": "L02",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l02-chat-comunicacoes",
+      "branch": "codex/e2-r02-l02-chat-comunicacoes",
+      "head": "9144f4efb73c0bf41580e54ed83acd64f5883c00",
+      "statusEntries": 3,
+      "trackedModified": 3,
+      "untrackedEntries": 0,
+      "status": [
+        "M .agents/skills/coelo-ui/references/principal-visual-surfaces.md",
+        " M specs/037-principal-circulars.md",
+        " M specs/050-principal-ui-ux-closure.md"
+      ],
+      "latestCommitDate": "2026-09-09T16:13:20-03:00"
+    },
+    {
+      "role": "L03",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l03-perfil-para-voce",
+      "branch": "codex/e2-r02-l03-perfil-para-voce",
+      "head": "b209b4e0f47df8f1a39835a09b8e17191412b969",
+      "statusEntries": 0,
+      "trackedModified": 0,
+      "untrackedEntries": 0,
+      "status": [],
+      "latestCommitDate": "2026-09-09T16:13:23-03:00"
+    }
+  ],
+  "stash": [],
+  "limit": "Untracked directories are summarized by Git; this is a dated snapshot, not final clean-tree claim."
+}

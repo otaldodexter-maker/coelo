@@ -897,10 +897,10 @@
       "family": "people",
       "screen": "Pessoas / Diretório",
       "scope": "mvp",
-      "done": "Formulários com lifecycle protegido; detalhe READ com SupabasePersonDetailReader já composto. Isso não certifica writes/vínculos. C00 integrou teclado de status33fccac6, preservação de busca2b1664ae, remoção de dados inventados no formulário0ecc5955 e erro de identidade incompletaff5000ef.",
+      "done": "Formulários com lifecycle protegido; detalhe READ com SupabasePersonDetailReader já composto. Isso não certifica writes/vínculos. C00 integrou teclado de status33fccac6, preservação de busca2b1664ae, remoção de dados inventados no formulário0ecc5955 e erro de identidade incompletaff5000ef. R02 consolidacao16:37: D04 ciclo do diretorio corrigido em26bf71fd5: resposta anterior invalidada antes do debounce e no dispose.",
       "fe": "Revalidar o aceite específico desta ação: Cards/tabela/tabs/filtros/estados, 375–1440 e goldens. Quatro filtros (Atividade/UF/Cidade/Bairro) ainda sem encaminhamento servidor; create/edit bloqueados; links apresentam duas listas para leitura de um tipo. Avatar348f81ab retido por mounted após await.",
       "be": "Provar contrato interno da ação, vínculos/hierarquia, RLS, auditoria, persistência e runtime reais.",
-      "evidence": "evidence/etapa-2/estruturas/2026-09-07-person-read-only-detail.md; Fechamento R01 C04/r61; C04estado47/r61; C00 conjunto288PASS/analyzer34limpo; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "evidence/etapa-2/estruturas/2026-09-07-person-read-only-detail.md; Fechamento R01 C04/r61; C04estado47/r61; C00 conjunto288PASS/analyzer34limpo; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-d04-integrated-f17e5b89.json",
       "historicalFrontend": "audited",
       "historicalBackend": "fail-closed",
       "frontendStatus": "pending-verification",
@@ -908,17 +908,22 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 61,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T05:41:00-03:00"
+      "lastEvidenceAt": "2026-09-09T16:38:28.742086-03:00",
+      "r02IntegratedProgress": {
+        "note": "D04 ciclo do diretorio corrigido em26bf71fd5: resposta anterior invalidada antes do debounce e no dispose.",
+        "productionApplied": false,
+        "certificateChanged": false
+      }
     },
     {
       "id": "people.create",
       "family": "people",
       "screen": "Criar Pessoa",
       "scope": "mvp",
-      "done": "Formulários com lifecycle protegido; detalhe READ com SupabasePersonDetailReader já composto. Isso não certifica writes/vínculos. C00 integrou teclado de status33fccac6, preservação de busca2b1664ae, remoção de dados inventados no formulário0ecc5955 e erro de identidade incompletaff5000ef.",
+      "done": "Formulários com lifecycle protegido; detalhe READ com SupabasePersonDetailReader já composto. Isso não certifica writes/vínculos. C00 integrou teclado de status33fccac6, preservação de busca2b1664ae, remoção de dados inventados no formulário0ecc5955 e erro de identidade incompletaff5000ef. R02 consolidacao16:37: D04 formulario preserva nome legal opcional e recibo de save confirmado sem repetir escrita apos falha do callback;8192088a/9a816efb. Writes produtivos continuam sob contrato/rota retidos.",
       "fe": "Revalidar o aceite específico desta ação: Criar/validar/falhar, 200%, teclado e baseline administrativa. Quatro filtros (Atividade/UF/Cidade/Bairro) ainda sem encaminhamento servidor; create/edit bloqueados; links apresentam duas listas para leitura de um tipo. Avatar348f81ab retido por mounted após await.",
       "be": "Provar contrato interno da ação, vínculos/hierarquia, RLS, auditoria, persistência e runtime reais.",
-      "evidence": "evidence/etapa-2/estruturas/2026-09-07-person-read-only-detail.md; Fechamento R01 C04/r61; C04estado47/r61; C00 conjunto288PASS/analyzer34limpo; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "evidence/etapa-2/estruturas/2026-09-07-person-read-only-detail.md; Fechamento R01 C04/r61; C04estado47/r61; C00 conjunto288PASS/analyzer34limpo; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-d04-integrated-f17e5b89.json",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
       "frontendStatus": "pending-verification",
@@ -926,17 +931,22 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 61,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T05:41:00-03:00"
+      "lastEvidenceAt": "2026-09-09T16:38:28.742086-03:00",
+      "r02IntegratedProgress": {
+        "note": "D04 formulario preserva nome legal opcional e recibo de save confirmado sem repetir escrita apos falha do callback;8192088a/9a816efb. Writes produtivos continuam sob contrato/rota retidos.",
+        "productionApplied": false,
+        "certificateChanged": false
+      }
     },
     {
       "id": "people.edit",
       "family": "people",
       "screen": "Editar Pessoa",
       "scope": "mvp",
-      "done": "Formulários com lifecycle protegido; detalhe READ com SupabasePersonDetailReader já composto. Isso não certifica writes/vínculos. C00 integrou teclado de status33fccac6, preservação de busca2b1664ae, remoção de dados inventados no formulário0ecc5955 e erro de identidade incompletaff5000ef.",
+      "done": "Formulários com lifecycle protegido; detalhe READ com SupabasePersonDetailReader já composto. Isso não certifica writes/vínculos. C00 integrou teclado de status33fccac6, preservação de busca2b1664ae, remoção de dados inventados no formulário0ecc5955 e erro de identidade incompletaff5000ef. R02 consolidacao16:37: D04 formulario preserva nome legal opcional e recibo de save confirmado sem repetir escrita apos falha do callback;8192088a/9a816efb. Writes produtivos continuam sob contrato/rota retidos.",
       "fe": "Revalidar o aceite específico desta ação: Abrir/editar/salvar/falhar/abandonar, 375–1440. Quatro filtros (Atividade/UF/Cidade/Bairro) ainda sem encaminhamento servidor; create/edit bloqueados; links apresentam duas listas para leitura de um tipo. Avatar348f81ab retido por mounted após await.",
       "be": "Provar contrato interno da ação, vínculos/hierarquia, RLS, auditoria, persistência e runtime reais.",
-      "evidence": "evidence/etapa-2/estruturas/2026-09-07-person-read-only-detail.md; Fechamento R01 C04/r61; C04estado47/r61; C00 conjunto288PASS/analyzer34limpo; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "evidence/etapa-2/estruturas/2026-09-07-person-read-only-detail.md; Fechamento R01 C04/r61; C04estado47/r61; C00 conjunto288PASS/analyzer34limpo; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-d04-integrated-f17e5b89.json",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
       "frontendStatus": "pending-verification",
@@ -944,7 +954,12 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 61,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T05:41:00-03:00"
+      "lastEvidenceAt": "2026-09-09T16:38:28.742086-03:00",
+      "r02IntegratedProgress": {
+        "note": "D04 formulario preserva nome legal opcional e recibo de save confirmado sem repetir escrita apos falha do callback;8192088a/9a816efb. Writes produtivos continuam sob contrato/rota retidos.",
+        "productionApplied": false,
+        "certificateChanged": false
+      }
     },
     {
       "id": "people.links",
@@ -969,10 +984,10 @@
       "family": "people",
       "screen": "Pessoas / Recarregar",
       "scope": "mvp",
-      "done": "Detalhe READ e SupabasePersonDetailReader já compostos;242/242 combinados registrados. C00 integrou teclado de status33fccac6, preservação de busca2b1664ae, remoção de dados inventados no formulário0ecc5955 e erro de identidade incompletaff5000ef.",
+      "done": "Detalhe READ e SupabasePersonDetailReader já compostos;242/242 combinados registrados. C00 integrou teclado de status33fccac6, preservação de busca2b1664ae, remoção de dados inventados no formulário0ecc5955 e erro de identidade incompletaff5000ef. R02 consolidacao16:37: D04 ciclo do diretorio corrigido em26bf71fd5: resposta anterior invalidada antes do debounce e no dispose.",
       "fe": "Executar reload real e goldens históricos restantes; reusar reader/composição existente. Quatro filtros (Atividade/UF/Cidade/Bairro) ainda sem encaminhamento servidor; create/edit bloqueados; links apresentam duas listas para leitura de um tipo. Avatar348f81ab retido por mounted após await.",
       "be": "Provar contrato interno da ação, vínculos/hierarquia, RLS, auditoria, persistência e runtime reais.",
-      "evidence": "evidence/etapa-2/estruturas/2026-09-07-person-read-only-detail.md; Fechamento R01 C04/r61; C04estado47/r61; C00 conjunto288PASS/analyzer34limpo; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "evidence/etapa-2/estruturas/2026-09-07-person-read-only-detail.md; Fechamento R01 C04/r61; C04estado47/r61; C00 conjunto288PASS/analyzer34limpo; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-d04-integrated-f17e5b89.json",
       "historicalFrontend": "audited",
       "historicalBackend": "fail-closed",
       "frontendStatus": "pending-verification",
@@ -980,17 +995,22 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 61,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T05:41:00-03:00"
+      "lastEvidenceAt": "2026-09-09T16:38:28.742086-03:00",
+      "r02IntegratedProgress": {
+        "note": "D04 ciclo do diretorio corrigido em26bf71fd5: resposta anterior invalidada antes do debounce e no dispose.",
+        "productionApplied": false,
+        "certificateChanged": false
+      }
     },
     {
       "id": "access-profiles.list",
       "family": "access_profiles",
       "screen": "Perfis de acesso / Lista",
       "scope": "mvp",
-      "done": "Contrato consumidor/CSV/página/count e descarte de contexto testados. SQL do probe falhou antes do contrato. C00 integrou sanitização de transporte, correlação de perfil/modelo e invalidação antes de debounce (00266adb/4074f306/6bd3cac8).",
+      "done": "Contrato consumidor/CSV/página/count e descarte de contexto testados. SQL do probe falhou antes do contrato. C00 integrou sanitização de transporte, correlação de perfil/modelo e invalidação antes de debounce (00266adb/4074f306/6bd3cac8). R02 consolidacao16:37: D04 catalogo Principal preserva loading/failure durante busca e aplica termo atual ao resultado;e086ff49.",
       "fe": "Conferir UI/contrato específico da ação e evidência visual restante; atribuição não deve ser inferida da listagem.",
       "be": "Resolver ACL42501 wrapper invoker→helper e decisão específica sobre definições globais sem uso institucional; não diagnosticar cinco bugs de paginação.",
-      "evidence": "evidence/etapa-2/engenheiro-1/auth47-loc-profiles-probe-2026-09-08.md; Fechamento R01 C01/r51; C00288PASS/analyzer34limpo; critérios locais, sem autorização remota certificada; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "evidence/etapa-2/engenheiro-1/auth47-loc-profiles-probe-2026-09-08.md; Fechamento R01 C01/r51; C00288PASS/analyzer34limpo; critérios locais, sem autorização remota certificada; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-d04-integrated-f17e5b89.json",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
       "frontendStatus": "pending-verification",
@@ -998,7 +1018,12 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 51,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:35-03:00"
+      "lastEvidenceAt": "2026-09-09T16:38:28.742086-03:00",
+      "r02IntegratedProgress": {
+        "note": "D04 catalogo Principal preserva loading/failure durante busca e aplica termo atual ao resultado;e086ff49.",
+        "productionApplied": false,
+        "certificateChanged": false
+      }
     },
     {
       "id": "access-profiles.create",
@@ -1094,10 +1119,10 @@
       "family": "access_models",
       "screen": "Modelos de acesso / Lista",
       "scope": "mvp",
-      "done": "Pré-lookup corrigido; ModelReadGreen50 executou38/38 pgTAP; envelope/epochs e rotas locais implementados. C00 integrou sanitização de transporte, correlação de perfil/modelo e invalidação antes de debounce (00266adb/4074f306/6bd3cac8).",
+      "done": "Pré-lookup corrigido; ModelReadGreen50 executou38/38 pgTAP; envelope/epochs e rotas locais implementados. C00 integrou sanitização de transporte, correlação de perfil/modelo e invalidação antes de debounce (00266adb/4074f306/6bd3cac8). R02 consolidacao16:37: D04 CSV por dominio antes do cursor e filtro Principal de grupo integrados localmentebb3a33ed/e8e8651f. Cliente nao pode ser publicado antes do SQL nominal20260909174500 e sua prova; nenhuma aplicacao remota.",
       "fe": "Conferir cobertura visual e composição da ação; preservar consumers e epochs implementados.",
       "be": "Runtime Flutter/HTTP, cobertura restante por escopo e pacote produtivo; não repetir correção pré-lookup.",
-      "evidence": "evidence/etapa-2/engenheiro-1/models-read-green-2026-09-08.md; Fechamento R01 C01/r51; C00288PASS/analyzer34limpo; critérios locais, sem autorização remota certificada; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "evidence/etapa-2/engenheiro-1/models-read-green-2026-09-08.md; Fechamento R01 C01/r51; C00288PASS/analyzer34limpo; critérios locais, sem autorização remota certificada; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-reservation-models-integrated-e8e8651f.json",
       "historicalFrontend": "audited",
       "historicalBackend": "fail-closed",
       "frontendStatus": "pending-verification",
@@ -1105,17 +1130,22 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 51,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:35-03:00"
+      "lastEvidenceAt": "2026-09-09T16:38:28.742086-03:00",
+      "r02IntegratedProgress": {
+        "note": "D04 CSV por dominio antes do cursor e filtro Principal de grupo integrados localmentebb3a33ed/e8e8651f. Cliente nao pode ser publicado antes do SQL nominal20260909174500 e sua prova; nenhuma aplicacao remota.",
+        "productionApplied": false,
+        "certificateChanged": false
+      }
     },
     {
       "id": "access-models.filter",
       "family": "access_models",
       "screen": "Modelos de acesso / Filtrar",
       "scope": "mvp",
-      "done": "Contrato READ local com38/38 pgTAP e consumers locais; filtros não são CRUD concluído. C00 integrou sanitização de transporte, correlação de perfil/modelo e invalidação antes de debounce (00266adb/4074f306/6bd3cac8).",
+      "done": "Contrato READ local com38/38 pgTAP e consumers locais; filtros não são CRUD concluído. C00 integrou sanitização de transporte, correlação de perfil/modelo e invalidação antes de debounce (00266adb/4074f306/6bd3cac8). R02 consolidacao16:37: D04 CSV por dominio antes do cursor e filtro Principal de grupo integrados localmentebb3a33ed/e8e8651f. Cliente nao pode ser publicado antes do SQL nominal20260909174500 e sua prova; nenhuma aplicacao remota.",
       "fe": "Conferir cobertura visual e composição da ação; preservar consumers e epochs implementados.",
       "be": "Filtros/paginação com runtime HTTP e escopo real; reusar reader corrigido.",
-      "evidence": "evidence/etapa-2/engenheiro-1/models-read-green-2026-09-08.md; Fechamento R01 C01/r51; C00288PASS/analyzer34limpo; critérios locais, sem autorização remota certificada; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "evidence/etapa-2/engenheiro-1/models-read-green-2026-09-08.md; Fechamento R01 C01/r51; C00288PASS/analyzer34limpo; critérios locais, sem autorização remota certificada; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-reservation-models-integrated-e8e8651f.json",
       "historicalFrontend": "audited",
       "historicalBackend": "fail-closed",
       "frontendStatus": "pending-verification",
@@ -1123,17 +1153,22 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 51,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:35-03:00"
+      "lastEvidenceAt": "2026-09-09T16:38:28.742086-03:00",
+      "r02IntegratedProgress": {
+        "note": "D04 CSV por dominio antes do cursor e filtro Principal de grupo integrados localmentebb3a33ed/e8e8651f. Cliente nao pode ser publicado antes do SQL nominal20260909174500 e sua prova; nenhuma aplicacao remota.",
+        "productionApplied": false,
+        "certificateChanged": false
+      }
     },
     {
       "id": "access-models.create",
       "family": "access_models",
       "screen": "Criar modelo de acesso",
       "scope": "mvp",
-      "done": "Envelopes, consumers, draft/conflito, save/duplicate e cache por época de autorização integrados; 24/24 focais registrados para cache/rotas. R01/16h: Candidatos locais04499bc3/4ff02758 alinham helper secundário à política AAL1 vigente, sem aplicação. C00 integrou sanitização de transporte, correlação de perfil/modelo e invalidação antes de debounce (00266adb/4074f306/6bd3cac8).",
+      "done": "Envelopes, consumers, draft/conflito, save/duplicate e cache por época de autorização integrados; 24/24 focais registrados para cache/rotas. R01/16h: Candidatos locais04499bc3/4ff02758 alinham helper secundário à política AAL1 vigente, sem aplicação. C00 integrou sanitização de transporte, correlação de perfil/modelo e invalidação antes de debounce (00266adb/4074f306/6bd3cac8). R02 consolidacao16:37: D04 CSV por dominio antes do cursor e filtro Principal de grupo integrados localmentebb3a33ed/e8e8651f. Cliente nao pode ser publicado antes do SQL nominal20260909174500 e sua prova; nenhuma aplicacao remota.",
       "fe": "Conferir cobertura visual e composição da ação; preservar consumers e epochs implementados.",
       "be": "Provar comando específico, concorrência, autorização real e persistência/reload; READ local não certifica writes. R01/16h: 31 asserts pgTAP escritos mas não executados; preflight de assinatura/ACL/proveniência e runtime pendentes.",
-      "evidence": "evidence/etapa-2/identidade-acessos/2026-09-08-model-write-cache-epoch.md; commits21ef243c/990300ef/eb84a01c R01/16h: C01r27;20260908182839_access_profile_models_aal1_phase_policy.sql; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 4ff02758→5f1911a8 e04499bc3→43a900e0;31TAP locais confirmados em log C00;sem remoto. Personas ee05b949/ba9b020b/00297839:31Denooffline;SecretStore/adapterPG/provaunban/cenários pendentes.; R01-delta-1815: C01r38–40:31/31pgTAP local já PASS naI010/log8f45584b, cleanup0; teste34 ffb79806 integradofafce1f6, hash8b45891d, NÃOexecutado. Novo reloadedição literal/controleOwnerinstitution/negaçãoescopo. Docker npipe indisponível18:15, diagnóstico C00; sem nova lease ou remoto. 31PASS não prova tenantA/B nem E2E.; Fechamento R01 C01/r51; C00288PASS/analyzer34limpo; critérios locais, sem autorização remota certificada; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "evidence/etapa-2/identidade-acessos/2026-09-08-model-write-cache-epoch.md; commits21ef243c/990300ef/eb84a01c R01/16h: C01r27;20260908182839_access_profile_models_aal1_phase_policy.sql; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 4ff02758→5f1911a8 e04499bc3→43a900e0;31TAP locais confirmados em log C00;sem remoto. Personas ee05b949/ba9b020b/00297839:31Denooffline;SecretStore/adapterPG/provaunban/cenários pendentes.; R01-delta-1815: C01r38–40:31/31pgTAP local já PASS naI010/log8f45584b, cleanup0; teste34 ffb79806 integradofafce1f6, hash8b45891d, NÃOexecutado. Novo reloadedição literal/controleOwnerinstitution/negaçãoescopo. Docker npipe indisponível18:15, diagnóstico C00; sem nova lease ou remoto. 31PASS não prova tenantA/B nem E2E.; Fechamento R01 C01/r51; C00288PASS/analyzer34limpo; critérios locais, sem autorização remota certificada; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-reservation-models-integrated-e8e8651f.json",
       "historicalFrontend": "blocked-decision",
       "historicalBackend": "fail-closed",
       "frontendStatus": "pending-verification",
@@ -1141,7 +1176,12 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 51,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:35-03:00"
+      "lastEvidenceAt": "2026-09-09T16:38:28.742086-03:00",
+      "r02IntegratedProgress": {
+        "note": "D04 CSV por dominio antes do cursor e filtro Principal de grupo integrados localmentebb3a33ed/e8e8651f. Cliente nao pode ser publicado antes do SQL nominal20260909174500 e sua prova; nenhuma aplicacao remota.",
+        "productionApplied": false,
+        "certificateChanged": false
+      }
     },
     {
       "id": "access-models.detail",
@@ -1184,10 +1224,10 @@
       "family": "access_models",
       "screen": "Duplicar modelo de acesso",
       "scope": "mvp",
-      "done": "Envelopes, consumers, draft/conflito, save/duplicate e cache por época de autorização integrados; 24/24 focais registrados para cache/rotas. R01/16h: Candidatos locais04499bc3/4ff02758 alinham helper secundário à política AAL1 vigente, sem aplicação. C00 integrou sanitização de transporte, correlação de perfil/modelo e invalidação antes de debounce (00266adb/4074f306/6bd3cac8).",
+      "done": "Envelopes, consumers, draft/conflito, save/duplicate e cache por época de autorização integrados; 24/24 focais registrados para cache/rotas. R01/16h: Candidatos locais04499bc3/4ff02758 alinham helper secundário à política AAL1 vigente, sem aplicação. C00 integrou sanitização de transporte, correlação de perfil/modelo e invalidação antes de debounce (00266adb/4074f306/6bd3cac8). Consolidacao final: Dev d019c109a integra rota normal com Owner global, dominio/capabilities, sessao e revisao; negacao de RPC limpa draft/recibo. Lote integrado Modelos18PASS (9router+9consumer), sem SQLremoto ou certificado integral.",
       "fe": "Conferir cobertura visual e composição da ação; preservar consumers e epochs implementados.",
       "be": "Provar comando específico, concorrência, autorização real e persistência/reload; READ local não certifica writes. R01/16h: 31 asserts pgTAP escritos mas não executados; preflight de assinatura/ACL/proveniência e runtime pendentes.",
-      "evidence": "evidence/etapa-2/identidade-acessos/2026-09-08-model-write-cache-epoch.md; commits21ef243c/990300ef/eb84a01c R01/16h: C01r27;20260908182839_access_profile_models_aal1_phase_policy.sql; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 4ff02758→5f1911a8 e04499bc3→43a900e0;31TAP locais confirmados em log C00;sem remoto. Personas ee05b949/ba9b020b/00297839:31Denooffline;SecretStore/adapterPG/provaunban/cenários pendentes.; R01-delta-1815: C01r38–40:31/31pgTAP local já PASS naI010/log8f45584b, cleanup0; teste34 ffb79806 integradofafce1f6, hash8b45891d, NÃOexecutado. Novo reloadedição literal/controleOwnerinstitution/negaçãoescopo. Docker npipe indisponível18:15, diagnóstico C00; sem nova lease ou remoto. 31PASS não prova tenantA/B nem E2E.; Fechamento R01 C01/r51; C00288PASS/analyzer34limpo; critérios locais, sem autorização remota certificada; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "evidence/etapa-2/identidade-acessos/2026-09-08-model-write-cache-epoch.md; commits21ef243c/990300ef/eb84a01c R01/16h: C01r27;20260908182839_access_profile_models_aal1_phase_policy.sql; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 4ff02758→5f1911a8 e04499bc3→43a900e0;31TAP locais confirmados em log C00;sem remoto. Personas ee05b949/ba9b020b/00297839:31Denooffline;SecretStore/adapterPG/provaunban/cenários pendentes.; R01-delta-1815: C01r38–40:31/31pgTAP local já PASS naI010/log8f45584b, cleanup0; teste34 ffb79806 integradofafce1f6, hash8b45891d, NÃOexecutado. Novo reloadedição literal/controleOwnerinstitution/negaçãoescopo. Docker npipe indisponível18:15, diagnóstico C00; sem nova lease ou remoto. 31PASS não prova tenantA/B nem E2E.; Fechamento R01 C01/r51; C00288PASS/analyzer34limpo; critérios locais, sem autorização remota certificada; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/FECHAMENTO-OWNER.md",
       "historicalFrontend": "blocked-decision",
       "historicalBackend": "fail-closed",
       "frontendStatus": "pending-verification",
@@ -1195,17 +1235,17 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 51,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:35-03:00"
+      "lastEvidenceAt": "2026-09-09T16:54:21.342597-03:00"
     },
     {
       "id": "invites.list",
       "family": "invites",
       "screen": "Convites / Lista",
       "scope": "mvp",
-      "done": "Aceite integral não certificado. Consultar evidência anterior antes de implementar ou repetir testes. C00 integrou descarte de buscas antigas e UUID canônico (58a66741/19161a19).",
+      "done": "Aceite integral não certificado. Consultar evidência anterior antes de implementar ou repetir testes. C00 integrou descarte de buscas antigas e UUID canônico (58a66741/19161a19). R02 consolidacao16:37: D04 busca/contexto e comandos invalidam geracoes apos negacao de leitura;6b5b4d9f/534750c6. Liberacao de comandos na rota de detalhe ainda retida ate confinamento por revisao de autorizacao.",
       "fe": "Revalidar o aceite específico desta ação: Loading/empty/error, filtros, 375–1440 e 200%.",
       "be": "Conferir a implementação e fechar o aceite backend desta ação: Listagem autorizada, filtros server-side e paginação; acesso negado; tenant A/B; SQL/ID/filtro adulterado; minimização e ausência de vazamento.",
-      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar invites.list); archive/2026-09-08/coelo-supabase-pendencias.md (buscar invites.list); Fechamento R01 C01/r51; C00288PASS conjunto; sem SMTP real; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar invites.list); archive/2026-09-08/coelo-supabase-pendencias.md (buscar invites.list); Fechamento R01 C01/r51; C00288PASS conjunto; sem SMTP real; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-d04-integrated-f17e5b89.json",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
       "frontendStatus": "pending-verification",
@@ -1213,17 +1253,22 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 51,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:35-03:00"
+      "lastEvidenceAt": "2026-09-09T16:38:28.742086-03:00",
+      "r02IntegratedProgress": {
+        "note": "D04 busca/contexto e comandos invalidam geracoes apos negacao de leitura;6b5b4d9f/534750c6. Liberacao de comandos na rota de detalhe ainda retida ate confinamento por revisao de autorizacao.",
+        "productionApplied": false,
+        "certificateChanged": false
+      }
     },
     {
       "id": "invites.create",
       "family": "invites",
       "screen": "Criar Convite",
       "scope": "mvp",
-      "done": "Aceite integral não certificado. Consultar evidência anterior antes de implementar ou repetir testes. C00 integrou descarte de buscas antigas e UUID canônico (58a66741/19161a19).",
+      "done": "Aceite integral não certificado. Consultar evidência anterior antes de implementar ou repetir testes. C00 integrou descarte de buscas antigas e UUID canônico (58a66741/19161a19). R02 consolidacao16:37: D04 busca/contexto e comandos invalidam geracoes apos negacao de leitura;6b5b4d9f/534750c6. Liberacao de comandos na rota de detalhe ainda retida ate confinamento por revisao de autorizacao.",
       "fe": "Revalidar o aceite específico desta ação: Formulário, validação, indisponível/erro e sem sucesso falso.",
       "be": "Conferir a implementação e fechar o aceite backend desta ação: Sucesso persistido; token único não persistido em claro; sem capability/AAL2; tenant A/B; target/profile/ID adulterado; idempotência, reload e auditoria.",
-      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar invites.create); archive/2026-09-08/coelo-supabase-pendencias.md (buscar invites.create); R01/17:40 r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.; R01-VISUAL-1835: REDSemanticsAction.tap emInstituição1, sharedmulti-select semonTap; reservaC01I012, semcorreção/certificação ainda.; Fechamento R01 C01/r51; C00288PASS conjunto; sem SMTP real; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar invites.create); archive/2026-09-08/coelo-supabase-pendencias.md (buscar invites.create); R01/17:40 r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.; R01-VISUAL-1835: REDSemanticsAction.tap emInstituição1, sharedmulti-select semonTap; reservaC01I012, semcorreção/certificação ainda.; Fechamento R01 C01/r51; C00288PASS conjunto; sem SMTP real; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-d04-integrated-f17e5b89.json",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
       "frontendStatus": "pending-verification",
@@ -1231,17 +1276,22 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 51,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:35-03:00"
+      "lastEvidenceAt": "2026-09-09T16:38:28.742086-03:00",
+      "r02IntegratedProgress": {
+        "note": "D04 busca/contexto e comandos invalidam geracoes apos negacao de leitura;6b5b4d9f/534750c6. Liberacao de comandos na rota de detalhe ainda retida ate confinamento por revisao de autorizacao.",
+        "productionApplied": false,
+        "certificateChanged": false
+      }
     },
     {
       "id": "invites.detail",
       "family": "invites",
       "screen": "Convite / Detalhe",
       "scope": "mvp",
-      "done": "Aceite integral não certificado. Consultar evidência anterior antes de implementar ou repetir testes. R01/16h: C01608dd187 rejeita recibo de outro convite antes de cache/link; entregue, ainda não integrado. C00 integrou descarte de buscas antigas e UUID canônico (58a66741/19161a19).",
+      "done": "Aceite integral não certificado. Consultar evidência anterior antes de implementar ou repetir testes. R01/16h: C01608dd187 rejeita recibo de outro convite antes de cache/link; entregue, ainda não integrado. C00 integrou descarte de buscas antigas e UUID canônico (58a66741/19161a19). R02 consolidacao16:37: D04 busca/contexto e comandos invalidam geracoes apos negacao de leitura;6b5b4d9f/534750c6. Liberacao de comandos na rota de detalhe ainda retida ate confinamento por revisao de autorizacao. Consolidacao final: Dev d019c109a integra flag de comandos e Listenable/key por revisao de autorizacao: descarta leitura/comando/dialogo anteriores. Lote8PASS com HTTPsintetico; sem SMTP/prova produtiva.",
       "fe": "Revalidar o aceite específico desta ação: Abrir/not-found/expirado/unauthorized e responsividade. R01/16h: 28 testes do executor passam; revisão C00 pendente.",
       "be": "Conferir a implementação e fechar o aceite backend desta ação: Leitura autorizada e minimizada; acesso negado; capability revogada; tenant A/B; ID existente/desconhecido sem oracle; reload sem vazamento.",
-      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar invites.detail); archive/2026-09-08/coelo-supabase-pendencias.md (buscar invites.detail) R01/16h: C01r30/608dd187; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.; Fechamento R01 C01/r51; C00288PASS conjunto; sem SMTP real; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar invites.detail); archive/2026-09-08/coelo-supabase-pendencias.md (buscar invites.detail) R01/16h: C01r30/608dd187; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.; Fechamento R01 C01/r51; C00288PASS conjunto; sem SMTP real; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-d04-integrated-f17e5b89.json; etapa-2-operacao/next-round/R02-20260909/FECHAMENTO-OWNER.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
       "frontendStatus": "pending-verification",
@@ -1249,17 +1299,22 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 51,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:35-03:00"
+      "lastEvidenceAt": "2026-09-09T16:54:21.342597-03:00",
+      "r02IntegratedProgress": {
+        "note": "D04 busca/contexto e comandos invalidam geracoes apos negacao de leitura;6b5b4d9f/534750c6. Liberacao de comandos na rota de detalhe ainda retida ate confinamento por revisao de autorizacao.",
+        "productionApplied": false,
+        "certificateChanged": false
+      }
     },
     {
       "id": "invites.resend",
       "family": "invites",
       "screen": "Convite / Reenviar",
       "scope": "mvp",
-      "done": "Aceite integral não certificado. Consultar evidência anterior antes de implementar ou repetir testes. R01/16h: C01608dd187 rejeita recibo de outro convite antes de cache/link; entregue, ainda não integrado. C00 integrou descarte de buscas antigas e UUID canônico (58a66741/19161a19).",
+      "done": "Aceite integral não certificado. Consultar evidência anterior antes de implementar ou repetir testes. R01/16h: C01608dd187 rejeita recibo de outro convite antes de cache/link; entregue, ainda não integrado. C00 integrou descarte de buscas antigas e UUID canônico (58a66741/19161a19). R02 consolidacao16:37: D04 busca/contexto e comandos invalidam geracoes apos negacao de leitura;6b5b4d9f/534750c6. Liberacao de comandos na rota de detalhe ainda retida ate confinamento por revisao de autorizacao. Consolidacao final: Dev d019c109a compoe reenvio no detalhe e invalida estado por revisao de autorizacao;8PASS de rota/negativas/confinamento. Envio real SMTP ainda nao autorizado nem provado.",
       "fe": "Revalidar o aceite específico desta ação: Reenviar/progresso/erro/bloqueio e foco. R01/16h: 28 testes do executor passam; revisão C00 pendente.",
       "be": "Conferir a implementação e fechar o aceite backend desta ação: Rotação de token, versão/send count, outbox único e idempotência; sem capability/AAL2; expirado/revogado; tenant A/B; reload e auditoria.",
-      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar invites.resend); archive/2026-09-08/coelo-supabase-pendencias.md (buscar invites.resend) R01/16h: C01r30/608dd187; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.; Fechamento R01 C01/r51; C00288PASS conjunto; sem SMTP real; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar invites.resend); archive/2026-09-08/coelo-supabase-pendencias.md (buscar invites.resend) R01/16h: C01r30/608dd187; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.; Fechamento R01 C01/r51; C00288PASS conjunto; sem SMTP real; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-d04-integrated-f17e5b89.json; etapa-2-operacao/next-round/R02-20260909/FECHAMENTO-OWNER.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
       "frontendStatus": "pending-verification",
@@ -1267,17 +1322,22 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 51,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:35-03:00"
+      "lastEvidenceAt": "2026-09-09T16:54:21.342597-03:00",
+      "r02IntegratedProgress": {
+        "note": "D04 busca/contexto e comandos invalidam geracoes apos negacao de leitura;6b5b4d9f/534750c6. Liberacao de comandos na rota de detalhe ainda retida ate confinamento por revisao de autorizacao.",
+        "productionApplied": false,
+        "certificateChanged": false
+      }
     },
     {
       "id": "invites.revoke",
       "family": "invites",
       "screen": "Convite / Revogar",
       "scope": "mvp",
-      "done": "Aceite integral não certificado. Consultar evidência anterior antes de implementar ou repetir testes. R01/16h: C01608dd187 rejeita recibo de outro convite antes de cache/link; entregue, ainda não integrado. C00 integrou descarte de buscas antigas e UUID canônico (58a66741/19161a19).",
+      "done": "Aceite integral não certificado. Consultar evidência anterior antes de implementar ou repetir testes. R01/16h: C01608dd187 rejeita recibo de outro convite antes de cache/link; entregue, ainda não integrado. C00 integrou descarte de buscas antigas e UUID canônico (58a66741/19161a19). R02 consolidacao16:37: D04 busca/contexto e comandos invalidam geracoes apos negacao de leitura;6b5b4d9f/534750c6. Liberacao de comandos na rota de detalhe ainda retida ate confinamento por revisao de autorizacao.",
       "fe": "Revalidar o aceite específico desta ação: Confirmar/cancelar/falhar, `Esc`, foco e item revogado. R01/16h: 28 testes do executor passam; revisão C00 pendente.",
       "be": "Conferir a implementação e fechar o aceite backend desta ação: Transição pending→revoked, cancelamento de outbox, versão/idempotência; sem capability/AAL2; tenant A/B; reenvio negado; reload e auditoria.",
-      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar invites.revoke); archive/2026-09-08/coelo-supabase-pendencias.md (buscar invites.revoke) R01/16h: C01r30/608dd187; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.; Fechamento R01 C01/r51; C00288PASS conjunto; sem SMTP real; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar invites.revoke); archive/2026-09-08/coelo-supabase-pendencias.md (buscar invites.revoke) R01/16h: C01r30/608dd187; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.; Fechamento R01 C01/r51; C00288PASS conjunto; sem SMTP real; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-d04-integrated-f17e5b89.json",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
       "frontendStatus": "pending-verification",
@@ -1285,7 +1345,12 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 51,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:35-03:00"
+      "lastEvidenceAt": "2026-09-09T16:38:28.742086-03:00",
+      "r02IntegratedProgress": {
+        "note": "D04 busca/contexto e comandos invalidam geracoes apos negacao de leitura;6b5b4d9f/534750c6. Liberacao de comandos na rota de detalhe ainda retida ate confinamento por revisao de autorizacao.",
+        "productionApplied": false,
+        "certificateChanged": false
+      }
     },
     {
       "id": "activities.list",
@@ -2604,17 +2669,18 @@
       "family": "acontece",
       "screen": "Acontece / Feed",
       "scope": "mvp",
-      "done": "Feed/overlays e purga de draft/rotas protegidos. TTL/cache50473bd8 passou16/16 no destino; não certifica R2 real. R01/16h: C05r8/69354767+88dac285 validam HTTPS redimido;40306f45 testa resposta tardia de Momentos com mutação da guarda.",
+      "done": "Feed/overlays e purga de draft/rotas protegidos. TTL/cache50473bd8 passou16/16 no destino; não certifica R2 real. R01/16h: C05r8/69354767+88dac285 validam HTTPS redimido;40306f45 testa resposta tardia de Momentos com mutação da guarda. Consolidacao final: Dev d019c109a agora injeta PrincipalHappensPreviewPage.mixed, recebe card Circular e refaz contexto/feed na revisao de autorizacao. Um teste causal invertido PASS. Abrir Circular informa indisponibilidade sem navegar ao leitor administrativo; abrir/responder e aceite integral continuam pendentes.",
       "fe": "Revalidar o aceite específico desta ação: Evidência local em testes/goldens 375–1440, light/dark, 200%, hover, foco e galeria; ainda exigir composição produtiva e E2E para `verified`. R01/16h: 907PASS/61goldenFAIL no executor; sem integração desses lotes ou certificação por delegate.",
       "be": "Gateway/catálogo, sessão/audiência reais, publicação/remoção, R2 master e Stream somente por métrica; negativos/reload. R01/16h: Chat staging/send depende extensão tipada do catálogo e RPC; seis arquivos handler concedidos I007. Feed Moments candidato nominal liberado; root produtivo ainda C00.",
-      "evidence": "commit50473bd8; evidence/etapa-2/comunicacao/2026-09-08-happens-ticket-cache-lifecycle.md R01/16h: C05r8–10; etapa-2-operacao/reports/R01-checkpoint-1600.md",
+      "evidence": "commit50473bd8; evidence/etapa-2/comunicacao/2026-09-08-happens-ticket-cache-lifecycle.md R01/16h: C05r8–10; etapa-2-operacao/reports/R01-checkpoint-1600.md; etapa-2-operacao/next-round/R02-20260909/FECHAMENTO-OWNER.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "blocked-decision",
       "frontendStatus": "pending-verification",
       "backendStatus": "pending-verification",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": "final",
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "lastEvidenceAt": "2026-09-09T16:54:21.342597-03:00"
     },
     {
       "id": "acontece.create",
@@ -2817,10 +2883,10 @@
       "family": "principal_profile",
       "screen": "Principal / Para Você",
       "scope": "mvp",
-      "done": "Menu dentro do Superadmin; Para Você com seleção/contexto/rolagem3e16dfec/5e762eb4 e Perfil/Circulares com isolamento de contextos. R02: 8c041ed50 integrado7271f4a39 como filtro adicional local;24 casos PASS. Rotas produtivas, autorização server-side e critérios completos de audiência permanecem pendentes.",
-      "fe": "Concluir aceites das rotas existentes no Superadmin. Não criar apps/principal. R02 reconciliou11 IDs próprios circulars.*; abas/preview de Perfil seguem subaceites principal.profile-view. Não duplicar esses IDs. C05/r7 relata rota real sempre indisponível na baseline do executor; existe projeção pura de Comunicacoes, sem repository produtivo. Composição C00 e adapter do consumidor pendentes. R01/16h: Composição produtiva continua ausente/indisponível no corte; profile_about existe em Activities, mas não está ligado ao Perfil Principal. Não afirmar que não há contrato em lugar algum.",
-      "be": "Conferir repository/capability/audiência da ação, R2 privado onde há mídia, persistência e reload.",
-      "evidence": "commits3e16dfec/5e762eb4; evidence/etapa-2/comunicacao/2026-09-08-principal-circular-context.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C05r10; etapa-2-operacao/reports/R01-checkpoint-1600.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json",
+      "done": "Estado separado por revisao: dev803af52ad tem hospedagem shellf5e5d8dfc, filtro Para Voce com audiencia explicita/NULL negado e aba Acontece acessivel;35testes focais locais PASS. Branch L03b209b4e0f entregue contem composicao do Perfil/Para Voce e editor ProfileAbout ligado a save_profile_about; L00 declara FE3/3 na origem. A composicao inteira ainda nao foi integrada nem certificada em dev.",
+      "fe": "Revisar/integrare provar a composicao da branch L03 em dev, preservando guarda da rota /principal-profile/edit, audiencia obrigatoria, destinos Principal e shell. Resolver estado de autorizacao/draft/callback e contrato visual pendentes. Ausencia em dev nao significa ausencia na branch entregue.",
+      "be": "O adapter da branch L03 ainda le tabelas do Sobre diretamente; conferir e usar contrato RPC autorizado existente antes de liberar. Para Voce recebe diretorio administrativo e exige filtragem de audiencia server-side; filtro local nao autoriza acesso. Midia/R2 e provas reais permanecem pendentes.",
+      "evidence": "commits3e16dfec/5e762eb4; evidence/etapa-2/comunicacao/2026-09-08-principal-circular-context.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C05r10; etapa-2-operacao/reports/R01-checkpoint-1600.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json; etapa-2-operacao/next-round/R02-20260909/ENTREGA-L00-PARA-D00.md; evidence/etapa-2/r02-d00-integration-20260909/L03highlights-result.json",
       "historicalFrontend": "local-green",
       "historicalBackend": "blocked-decision",
       "frontendStatus": "pending-verification",
@@ -2828,13 +2894,20 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T14:08:34.021718-03:00",
+      "lastEvidenceAt": "2026-09-09T16:38:28.742086-03:00",
       "roundLocalAcceptance": {
         "round": "R02",
         "revision": "148cbb59982a3c6ea950a2ec9450760987109c07",
         "recordedAt": "2026-09-09T14:08:34.021718-03:00",
         "note": "R02: 8c041ed50 integrado7271f4a39 como filtro adicional local;24 casos PASS. Rotas produtivas, autorização server-side e critérios completos de audiência permanecem pendentes.",
         "certifiesWholeAction": false
+      },
+      "branchDelivery": {
+        "source": "L03",
+        "head": "b209b4e0f",
+        "FEReported": "3/3 across three Principal actions",
+        "fullyIntegrated": false,
+        "productionApplied": false
       }
     },
     {
@@ -2842,27 +2915,35 @@
       "family": "principal_profile",
       "screen": "Principal / Perfil-circulares",
       "scope": "mvp",
-      "done": "Menu dentro do Superadmin; Para Você com seleção/contexto/rolagem3e16dfec/5e762eb4 e Perfil/Circulares com isolamento de contextos.",
-      "fe": "Concluir aceites das rotas existentes no Superadmin. Não criar apps/principal. R02 reconciliou11 IDs próprios circulars.*; abas/preview de Perfil seguem subaceites principal.profile-view. Não duplicar esses IDs. C05/r7 relata rota real indisponível e dados de preview. ID cobre aba Circulares do Perfil; não fecha diretório/compositor/detalhe/edição em /circulars. Reconciliar lacuna de inventário antes de certificação, sem criar IDs silenciosamente. R01/16h: Composição produtiva continua ausente/indisponível no corte; profile_about existe em Activities, mas não está ligado ao Perfil Principal. Não afirmar que não há contrato em lugar algum.",
-      "be": "Conferir repository/capability/audiência da ação, R2 privado onde há mídia, persistência e reload. Contrato de perfil produtivo não localizado por C05 nas fontes inspecionadas; cruzar PRDs/specs/evidências antes de pedir nova regra. Permissões/repository/persistência permanecem abertos.",
-      "evidence": "commits3e16dfec/5e762eb4; evidence/etapa-2/comunicacao/2026-09-08-principal-circular-context.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C05r10; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 313c43bb19Deno,operações503 semRPC;f413c2dc50PASS/21goldenFAIL,adapterfeed;cea29b1f9aceitação/39AcontecePASS,removercliente failclosed. Quatro subagentes SQLNotices/SQLMomentos/Agora/Chat ativos relatadosr15;não visual.",
+      "done": "Estado separado por revisao: dev803af52ad tem hospedagem shellf5e5d8dfc, filtro Para Voce com audiencia explicita/NULL negado e aba Acontece acessivel;35testes focais locais PASS. Branch L03b209b4e0f entregue contem composicao do Perfil/Para Voce e editor ProfileAbout ligado a save_profile_about; L00 declara FE3/3 na origem. A composicao inteira ainda nao foi integrada nem certificada em dev.",
+      "fe": "Revisar/integrare provar a composicao da branch L03 em dev, preservando guarda da rota /principal-profile/edit, audiencia obrigatoria, destinos Principal e shell. Resolver estado de autorizacao/draft/callback e contrato visual pendentes. Ausencia em dev nao significa ausencia na branch entregue.",
+      "be": "O adapter da branch L03 ainda le tabelas do Sobre diretamente; conferir e usar contrato RPC autorizado existente antes de liberar. Para Voce recebe diretorio administrativo e exige filtragem de audiencia server-side; filtro local nao autoriza acesso. Midia/R2 e provas reais permanecem pendentes.",
+      "evidence": "commits3e16dfec/5e762eb4; evidence/etapa-2/comunicacao/2026-09-08-principal-circular-context.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C05r10; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 313c43bb19Deno,operações503 semRPC;f413c2dc50PASS/21goldenFAIL,adapterfeed;cea29b1f9aceitação/39AcontecePASS,removercliente failclosed. Quatro subagentes SQLNotices/SQLMomentos/Agora/Chat ativos relatadosr15;não visual.; etapa-2-operacao/next-round/R02-20260909/ENTREGA-L00-PARA-D00.md; evidence/etapa-2/r02-d00-integration-20260909/L03highlights-result.json",
       "historicalFrontend": "local-green",
       "historicalBackend": "blocked-decision",
       "frontendStatus": "pending-verification",
       "backendStatus": "pending-verification",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": "final",
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "branchDelivery": {
+        "source": "L03",
+        "head": "b209b4e0f",
+        "FEReported": "3/3 across three Principal actions",
+        "fullyIntegrated": false,
+        "productionApplied": false
+      },
+      "lastEvidenceAt": "2026-09-09T16:38:28.742086-03:00"
     },
     {
       "id": "principal.profile-edit",
       "family": "principal_profile",
       "screen": "Principal / Editar perfil",
       "scope": "mvp",
-      "done": "Menu dentro do Superadmin; Para Você com seleção/contexto/rolagem3e16dfec/5e762eb4 e Perfil/Circulares com isolamento de contextos.",
-      "fe": "Concluir aceites das rotas existentes no Superadmin. Não criar apps/principal. R02 reconciliou11 IDs próprios circulars.*; abas/preview de Perfil seguem subaceites principal.profile-view. Não duplicar esses IDs. C05/r7 relata rota real indisponível e ausência de contrato produtivo nas fontes inspecionadas; edição com preview não certifica composição. R01/16h: Composição produtiva continua ausente/indisponível no corte; profile_about existe em Activities, mas não está ligado ao Perfil Principal. Não afirmar que não há contrato em lugar algum. Cliente cobre somente biografia; outros campos/contrato de Perfil institucional permanecem abertos.",
-      "be": "Conferir repository/capability/audiência da ação, R2 privado onde há mídia, persistência e reload. C00 deve reconciliar fontes do Perfil institucional antes de reservar contrato/adapter; não inventar payload/visibilidade/permissões.",
-      "evidence": "commits3e16dfec/5e762eb4; evidence/etapa-2/comunicacao/2026-09-08-principal-circular-context.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C05r10; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C05/rfinal; C05final reconhece entrega parcial; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "done": "Estado separado por revisao: dev803af52ad tem hospedagem shellf5e5d8dfc, filtro Para Voce com audiencia explicita/NULL negado e aba Acontece acessivel;35testes focais locais PASS. Branch L03b209b4e0f entregue contem composicao do Perfil/Para Voce e editor ProfileAbout ligado a save_profile_about; L00 declara FE3/3 na origem. A composicao inteira ainda nao foi integrada nem certificada em dev.",
+      "fe": "Revisar/integrare provar a composicao da branch L03 em dev, preservando guarda da rota /principal-profile/edit, audiencia obrigatoria, destinos Principal e shell. Resolver estado de autorizacao/draft/callback e contrato visual pendentes. Ausencia em dev nao significa ausencia na branch entregue.",
+      "be": "O adapter da branch L03 ainda le tabelas do Sobre diretamente; conferir e usar contrato RPC autorizado existente antes de liberar. Para Voce recebe diretorio administrativo e exige filtragem de audiencia server-side; filtro local nao autoriza acesso. Midia/R2 e provas reais permanecem pendentes.",
+      "evidence": "commits3e16dfec/5e762eb4; evidence/etapa-2/comunicacao/2026-09-08-principal-circular-context.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C05r10; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C05/rfinal; C05final reconhece entrega parcial; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/ENTREGA-L00-PARA-D00.md; evidence/etapa-2/r02-d00-integration-20260909/L03highlights-result.json",
       "historicalFrontend": "blocked-decision",
       "historicalBackend": "blocked-decision",
       "frontendStatus": "pending-verification",
@@ -2870,7 +2951,14 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T05:32:00-03:00"
+      "lastEvidenceAt": "2026-09-09T16:38:28.742086-03:00",
+      "branchDelivery": {
+        "source": "L03",
+        "head": "b209b4e0f",
+        "FEReported": "3/3 across three Principal actions",
+        "fullyIntegrated": false,
+        "productionApplied": false
+      }
     },
     {
       "id": "child-safety.list",
@@ -3916,10 +4004,10 @@
       "family": "internal_users",
       "screen": "Usuários internos / Lista",
       "scope": "mvp",
-      "done": "Repository Supabase e detalhe READ já compostos no runtime normal; Users49 executou48/48 pgTAP locais. C00 integrou ef1dd82e→0fd1fe50 e 88e846b1→58a66741: correlação de identidade antes de cache/efeito e descarte de busca antiga durante debounce.",
+      "done": "Repository Supabase e detalhe READ já compostos no runtime normal; Users49 executou48/48 pgTAP locais. C00 integrou ef1dd82e→0fd1fe50 e 88e846b1→58a66741: correlação de identidade antes de cache/efeito e descarte de busca antiga durante debounce. R02 consolidacao16:37: D04 tratamento de enums/recibos/refresh e catalogo real integrado636bd63e/7d63c550/f17e5b89. Retirada de instituicoes ficticias nao libera write/create; descoberta normal em consolidacao focal. Consolidacao final: Dev d019c109a expoe descoberta normal no menu; lote integrado Nav/Users29PASS com leitura/detalhe/negativas. Nao libera create/write nem substitui provaHTTPreal.",
       "fe": "Executar Flutter→HTTP real e fechar visuais/paginação/PII restantes; não implementar READ novamente.",
       "be": "Provar runtime e pacote produtivo compatível; READ local não certifica create/edit/suspend.",
-      "evidence": "evidence/etapa-2/engenheiro-1/users49-green-2026-09-07.md; apps/superadmin/lib/core/config/superadmin_auth_scope.dart; R01/17:40 r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.; Fechamento R01 C01/r51; C00 lote pós-integração288PASS; fonteC01 r51; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "evidence/etapa-2/engenheiro-1/users49-green-2026-09-07.md; apps/superadmin/lib/core/config/superadmin_auth_scope.dart; R01/17:40 r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.; Fechamento R01 C01/r51; C00 lote pós-integração288PASS; fonteC01 r51; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-d04-integrated-f17e5b89.json; etapa-2-operacao/next-round/R02-20260909/FECHAMENTO-OWNER.md",
       "historicalFrontend": "blocked-decision",
       "historicalBackend": "blocked-decision",
       "frontendStatus": "pending-verification",
@@ -3927,17 +4015,22 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 51,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:35-03:00"
+      "lastEvidenceAt": "2026-09-09T16:54:21.342597-03:00",
+      "r02IntegratedProgress": {
+        "note": "D04 tratamento de enums/recibos/refresh e catalogo real integrado636bd63e/7d63c550/f17e5b89. Retirada de instituicoes ficticias nao libera write/create; descoberta normal em consolidacao focal.",
+        "productionApplied": false,
+        "certificateChanged": false
+      }
     },
     {
       "id": "internal-users.create",
       "family": "internal_users",
       "screen": "Criar usuário interno",
       "scope": "mvp",
-      "done": "Formulários locais e guards de contexto integrados; habilitação READ não habilita criação/edição/suspensão. C00 integrou ef1dd82e→0fd1fe50 e 88e846b1→58a66741: correlação de identidade antes de cache/efeito e descarte de busca antiga durante debounce.",
+      "done": "Formulários locais e guards de contexto integrados; habilitação READ não habilita criação/edição/suspensão. C00 integrou ef1dd82e→0fd1fe50 e 88e846b1→58a66741: correlação de identidade antes de cache/efeito e descarte de busca antiga durante debounce. R02 consolidacao16:37: D04 tratamento de enums/recibos/refresh e catalogo real integrado636bd63e/7d63c550/f17e5b89. Retirada de instituicoes ficticias nao libera write/create; descoberta normal em consolidacao focal.",
       "fe": "Revalidar o aceite específico desta ação: Criar/convidar/negar/falhar com capability e AAL conforme ADR 0019.",
       "be": "Conferir contrato nominal específico do comando, Auth interno, capability, concorrência e auditoria; executar runtime e reload.",
-      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/identidade-acessos/; R01-VISUAL-1835: REDSemanticsAction.tap emInstituição1, sharedmulti-select semonTap; reservaC01I012, semcorreção/certificação ainda.; R01/C00 2026-09-08T19:00:55-03:00 da86ea22+6749ed07: Seletor múltiplo acessível: ação semântica altera draft; indisponível bloqueia toggle/clear/apply. C00 shared8PASS e consumer no lote155PASS; analyzer2clean. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; Fechamento R01 C01/r51; C00 lote pós-integração288PASS; fonteC01 r51; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/identidade-acessos/; R01-VISUAL-1835: REDSemanticsAction.tap emInstituição1, sharedmulti-select semonTap; reservaC01I012, semcorreção/certificação ainda.; R01/C00 2026-09-08T19:00:55-03:00 da86ea22+6749ed07: Seletor múltiplo acessível: ação semântica altera draft; indisponível bloqueia toggle/clear/apply. C00 shared8PASS e consumer no lote155PASS; analyzer2clean. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; Fechamento R01 C01/r51; C00 lote pós-integração288PASS; fonteC01 r51; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-d04-integrated-f17e5b89.json",
       "historicalFrontend": "local-green",
       "historicalBackend": "blocked-decision",
       "frontendStatus": "pending-verification",
@@ -3945,17 +4038,22 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 51,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:35-03:00"
+      "lastEvidenceAt": "2026-09-09T16:38:28.742086-03:00",
+      "r02IntegratedProgress": {
+        "note": "D04 tratamento de enums/recibos/refresh e catalogo real integrado636bd63e/7d63c550/f17e5b89. Retirada de instituicoes ficticias nao libera write/create; descoberta normal em consolidacao focal.",
+        "productionApplied": false,
+        "certificateChanged": false
+      }
     },
     {
       "id": "internal-users.edit",
       "family": "internal_users",
       "screen": "Editar usuário interno",
       "scope": "mvp",
-      "done": "Formulários locais e guards de contexto integrados; habilitação READ não habilita criação/edição/suspensão. C00 integrou ef1dd82e→0fd1fe50 e 88e846b1→58a66741: correlação de identidade antes de cache/efeito e descarte de busca antiga durante debounce.",
+      "done": "Formulários locais e guards de contexto integrados; habilitação READ não habilita criação/edição/suspensão. C00 integrou ef1dd82e→0fd1fe50 e 88e846b1→58a66741: correlação de identidade antes de cache/efeito e descarte de busca antiga durante debounce. R02 consolidacao16:37: D04 tratamento de enums/recibos/refresh e catalogo real integrado636bd63e/7d63c550/f17e5b89. Retirada de instituicoes ficticias nao libera write/create; descoberta normal em consolidacao focal.",
       "fe": "Revalidar o aceite específico desta ação: Editar/validar/negar/conflito/falhar.",
       "be": "Conferir contrato nominal específico do comando, Auth interno, capability, concorrência e auditoria; executar runtime e reload.",
-      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/identidade-acessos/; R01/17:40 r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.; R01/C00 2026-09-08T19:00:55-03:00 da86ea22+6749ed07: Seletor múltiplo acessível: ação semântica altera draft; indisponível bloqueia toggle/clear/apply. C00 shared8PASS e consumer no lote155PASS; analyzer2clean. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; Fechamento R01 C01/r51; C00 lote pós-integração288PASS; fonteC01 r51; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/identidade-acessos/; R01/17:40 r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.; R01/C00 2026-09-08T19:00:55-03:00 da86ea22+6749ed07: Seletor múltiplo acessível: ação semântica altera draft; indisponível bloqueia toggle/clear/apply. C00 shared8PASS e consumer no lote155PASS; analyzer2clean. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; Fechamento R01 C01/r51; C00 lote pós-integração288PASS; fonteC01 r51; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-d04-integrated-f17e5b89.json",
       "historicalFrontend": "local-green",
       "historicalBackend": "blocked-decision",
       "frontendStatus": "pending-verification",
@@ -3963,17 +4061,22 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 51,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:35-03:00"
+      "lastEvidenceAt": "2026-09-09T16:38:28.742086-03:00",
+      "r02IntegratedProgress": {
+        "note": "D04 tratamento de enums/recibos/refresh e catalogo real integrado636bd63e/7d63c550/f17e5b89. Retirada de instituicoes ficticias nao libera write/create; descoberta normal em consolidacao focal.",
+        "productionApplied": false,
+        "certificateChanged": false
+      }
     },
     {
       "id": "internal-users.suspend",
       "family": "internal_users",
       "screen": "Usuários internos / Suspender",
       "scope": "mvp",
-      "done": "Formulários locais e guards de contexto integrados; habilitação READ não habilita criação/edição/suspensão. C00 integrou ef1dd82e→0fd1fe50 e 88e846b1→58a66741: correlação de identidade antes de cache/efeito e descarte de busca antiga durante debounce.",
+      "done": "Formulários locais e guards de contexto integrados; habilitação READ não habilita criação/edição/suspensão. C00 integrou ef1dd82e→0fd1fe50 e 88e846b1→58a66741: correlação de identidade antes de cache/efeito e descarte de busca antiga durante debounce. R02 consolidacao16:37: D04 tratamento de enums/recibos/refresh e catalogo real integrado636bd63e/7d63c550/f17e5b89. Retirada de instituicoes ficticias nao libera write/create; descoberta normal em consolidacao focal.",
       "fe": "Revalidar o aceite específico desta ação: Suspender/cancelar/negar/falhar e sessões revogadas.",
       "be": "Conferir contrato nominal específico do comando, Auth interno, capability, concorrência e auditoria; executar runtime e reload.",
-      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/identidade-acessos/; R01/17:40 r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.; Fechamento R01 C01/r51; C00 lote pós-integração288PASS; fonteC01 r51; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/identidade-acessos/; R01/17:40 r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.; Fechamento R01 C01/r51; C00 lote pós-integração288PASS; fonteC01 r51; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-d04-integrated-f17e5b89.json",
       "historicalFrontend": "blocked-decision",
       "historicalBackend": "blocked-decision",
       "frontendStatus": "pending-verification",
@@ -3981,7 +4084,12 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 51,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:35-03:00"
+      "lastEvidenceAt": "2026-09-09T16:38:28.742086-03:00",
+      "r02IntegratedProgress": {
+        "note": "D04 tratamento de enums/recibos/refresh e catalogo real integrado636bd63e/7d63c550/f17e5b89. Retirada de instituicoes ficticias nao libera write/create; descoberta normal em consolidacao focal.",
+        "productionApplied": false,
+        "certificateChanged": false
+      }
     },
     {
       "id": "internal-users.mfa",
@@ -4183,16 +4291,16 @@
       "family": "locations",
       "screen": "Locais / Agendamento",
       "scope": "mvp",
-      "done": "Contrato nominal de Locais, DTO e painéis existentes; SQL candidato sem GREEN integral comprovado. R01/16h: C04r15–17 entregou acessibilidade/estados e consumidor UnitDetail opt-in84a05151; pacote ainda em revisão. C00188cf2ba integra componentes/catálogo/writer/seleção/cópia/status/semana e correções de estado adf5feb1;266funcionais+36DTO PASS, não equivale ao aceite individual. R02: 3b4f982a→e9a582a0 usa seletor canônico de dia; 19 casos de disponibilidade semanal PASS e gate visual administrativo limpo. Não implementa reservas datadas. R02 D00: contratos datados/fuso e DTO correlacionado integrados937d7b54b/6eb66fff3;13domain+21DTO PASS na base conjunta. Contrato parcial, sem motor/backend/rotas produtivas certificados; janela semanal continua distinta de reserva datada. R02 D00: gateway tipado34d2 integrado0f77c364b, ainda nao injetado; motor candidato retido por reautorizacao apos auditoria e escopo da negativa. Perfil nominal em preparo, nenhuma prova SQL do motor executada. R02 D00 motor/perfil de reservas integrados como candidato atecb9eb15a5; reautorizacao apos audit e escopo da negativa corrigidos. TAP49 e concorrencia2 aguardam harness nominal. Painel4ac retido por payload/requestId apos reload e confirmacao de conflito obsoleta; nao injetado.",
+      "done": "Contrato nominal de Locais, DTO e painéis existentes; SQL candidato sem GREEN integral comprovado. R01/16h: C04r15–17 entregou acessibilidade/estados e consumidor UnitDetail opt-in84a05151; pacote ainda em revisão. C00188cf2ba integra componentes/catálogo/writer/seleção/cópia/status/semana e correções de estado adf5feb1;266funcionais+36DTO PASS, não equivale ao aceite individual. R02: 3b4f982a→e9a582a0 usa seletor canônico de dia; 19 casos de disponibilidade semanal PASS e gate visual administrativo limpo. Não implementa reservas datadas. R02 D00: contratos datados/fuso e DTO correlacionado integrados937d7b54b/6eb66fff3;13domain+21DTO PASS na base conjunta. Contrato parcial, sem motor/backend/rotas produtivas certificados; janela semanal continua distinta de reserva datada. R02 D00: gateway tipado34d2 integrado0f77c364b, ainda nao injetado; motor candidato retido por reautorizacao apos auditoria e escopo da negativa. Perfil nominal em preparo, nenhuma prova SQL do motor executada. R02 D00 motor/perfil de reservas integrados como candidato atecb9eb15a5; reautorizacao apos audit e escopo da negativa corrigidos. TAP49 e concorrencia2 aguardam harness nominal. Painel4ac retido por payload/requestId apos reload e confirmacao de conflito obsoleta; nao injetado. R02 consolidacao16:37: Motor nominal aplicado em stack descartavel64SQL,49TAP+2concorrencias PASS;535bfa458. Painel de reserva integradoc1b2a076 com tentativas imutaveis e invalidacao por edicao,16testes incluidos no lote25PASS. Consumer real ainda nao composto; nao e aceite completo da acao.",
       "fe": "Revalidar o aceite específico desta ação: Spec de Locais 02/09; permitido/negado/revogado, tenant A/B, persistência/reload e auditoria; R2 privado quando houver mídia. R01/16h: 18form/7Locais/9brand/4fences relatados; conjunto410PASS/8goldenFAIL. R17 retirou causa atribuída apenas ao footer: cabeçalho, cartão criar ausente e fixtures/paginação divergem; precisa revisão nominal. UnitDetail depende wiring C00. PróximoC00: rotas/DI, hints separados create/update/status/copy/schedule eURL apóscópia; visuais/aceite específico aindaabertos. Pacote seletivo Locais já integrado no histórico; ligação de superfície/router e capacidades por ação continuam pendentes. Agenda semanal não equivale a reservas datadas; não ampliar autorização do cliente por canCreate.",
       "be": "Revisar snapshot remoto nominal e compatibilidade de helpers; executar script estático diretamente e depois replay SQL nominal. Não atualizar pins para mascarar drift. Ownership C04 confirmado I006; pacote de agenda/política de conflito proposto r8/r14 aguarda revisão/reserva local. Risco AAL2 do helper central retirado pela corretiva20260901200206, sem dispensar demais autorizações. R01/16h: Editar/status, cópia e agenda Locais receberam nomes locais I008; criação20260908031000 já candidata. Sem replay/apply. Não destruir activity_locations nem criar catálogo paralelo. Cadeia de provedores/SQL candidato requer revisão e runtime nominal; perfil de capacidade precisa backend real.",
-      "evidence": "codex/e2e-estruturas-pessoas-locais@9e689374; evidence/etapa-2/estruturas/2026-09-08-location-read-adapter.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C04r15–17;f147f6aa/621c2202/728feff9/d8741c60/84a05151;C04I008; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 27236a5a/ae7e8f5f/15516da9 retidos:fundação,capabilities,assertionsrecibos e schedule só disponibilidade semanal. ScratchAuthstub não é replay. Release confirmado;timestamp20:09r20 incoerente. Adapters posteriores observadosC06 sem handoff novo.; etapa-2-operacao/reports/R01-delta-2005.md; R01-locations-integration-manifest.json; Fechamento R01 C04/r61; C04r61/estado47;188cf2ba histórico266Flutter+36DTO; não rerun; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-e9a582a0-4041bd81.json; evidence/etapa-2/r02-d00-integration-20260909/manifest-reservations-profiles-resume.json; evidence/etapa-2/r02-d00-integration-20260909/joint-wrapper-offline-proof.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-location-gateway-integrated.json",
+      "evidence": "codex/e2e-estruturas-pessoas-locais@9e689374; evidence/etapa-2/estruturas/2026-09-08-location-read-adapter.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C04r15–17;f147f6aa/621c2202/728feff9/d8741c60/84a05151;C04I008; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 27236a5a/ae7e8f5f/15516da9 retidos:fundação,capabilities,assertionsrecibos e schedule só disponibilidade semanal. ScratchAuthstub não é replay. Release confirmado;timestamp20:09r20 incoerente. Adapters posteriores observadosC06 sem handoff novo.; etapa-2-operacao/reports/R01-delta-2005.md; R01-locations-integration-manifest.json; Fechamento R01 C04/r61; C04r61/estado47;188cf2ba histórico266Flutter+36DTO; não rerun; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-e9a582a0-4041bd81.json; evidence/etapa-2/r02-d00-integration-20260909/manifest-reservations-profiles-resume.json; evidence/etapa-2/r02-d00-integration-20260909/joint-wrapper-offline-proof.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-location-gateway-integrated.json; evidence/etapa-2/r02-d00-integration-20260909/manifest-reservation-second-integrated.json",
       "historicalFrontend": "not-reviewed",
       "historicalBackend": "not-reviewed",
       "frontendStatus": "pending-verification",
       "backendStatus": "pending-verification",
       "integratedStatus": "pending-verification",
-      "lastEvidenceAt": "2026-09-09T15:57:45.129531-03:00",
+      "lastEvidenceAt": "2026-09-09T16:38:28.742086-03:00",
       "lastHandoffRevision": 61,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "roundLocalAcceptance": {
@@ -4201,6 +4309,11 @@
         "recordedAt": "2026-09-09T15:35:39.987890-03:00",
         "note": "R02 D00: gateway tipado34d2 integrado0f77c364b, ainda nao injetado; motor candidato retido por reautorizacao apos auditoria e escopo da negativa. Perfil nominal em preparo, nenhuma prova SQL do motor executada.",
         "certifiesWholeAction": false
+      },
+      "r02IntegratedProgress": {
+        "note": "Motor nominal aplicado em stack descartavel64SQL,49TAP+2concorrencias PASS;535bfa458. Painel de reserva integradoc1b2a076 com tentativas imutaveis e invalidacao por edicao,16testes incluidos no lote25PASS. Consumer real ainda nao composto; nao e aceite completo da acao.",
+        "productionApplied": false,
+        "certificateChanged": false
       }
     },
     {
@@ -4446,7 +4559,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-09T13:37:29.319567-03:00",
+  "updatedAt": "2026-09-09T16:54:21.342597-03:00",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,
@@ -4458,5 +4571,6 @@
     "C07": 12
   },
   "closureEvidence": "etapa-2-operacao/reports/R01-fechamento-20260909.md",
-  "mappingRevision": "R02-circulars-r1"
+  "mappingRevision": "R02-circulars-r1",
+  "r02DeliveryState": "consolidating; author branches and dev differentiated; no new E2E certificates"
 }

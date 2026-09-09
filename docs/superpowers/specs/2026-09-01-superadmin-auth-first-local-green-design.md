@@ -103,3 +103,39 @@ A implementação deve ser forward-only e limitada ao gateway interno. Sessão
 real e não revogada, `session_id`, conta confirmada, realm, vínculo, membership,
 papel, capability, grant, escopo, tenant, negativas cruzadas e auditoria seguem
 fail-closed. O helper global e os realms people-based não são alterados.
+
+## Consolidação documental 2026-09-09 — recuperação e limite da prova
+
+Recuperação, callback e redefinição integram o contrato local Auth-first acima.
+Esta consolidação explicita o comportamento e a prova locais; não amplia o
+contrato de convite nem autoriza produção. O aditivo vigente da ADR 0019
+preserva AAL1/AAL2 sem gate de MFA durante a validação do MVP.
+
+A sessão de recuperação fica restrita à redefinição e é mantida em memória.
+Ao reconhecê-la, o cliente desabilita sua persistência e remove eventual
+credencial gravada, ordenando remoção e escritas pendentes. Com armazenamento
+operacional e remoção concluída, reinicializar após consumir o callback não
+restaura recovery como login administrativo; outro link é necessário para
+retomar a redefinição. A preferência de persistência do login normal continua
+válida. Após trocar a senha, o app encerra recovery e retorna ao Login.
+
+Falha de remoção é reportada sem segredo. Se transitória, um novo evento de
+refresh da mesma sessão permite nova tentativa; se permanente, a credencial
+pode permanecer gravada. A contenção em memória não prova por si só proteção
+após reinicialização nem substitui a autorização no servidor.
+
+O controle backend comprovado localmente exige AMR `password` da mesma sessão
+validada, na fonte mantida pelo provedor, para conceder contexto interno.
+Recovery/OTP não obtém contexto, inclusive após refresh ou alteração de
+metadados mutáveis. A negativa preserva os controles existentes e o motivo
+`SAI_SESSION_INVALID` na auditoria minimizada; não exige MFA nem altera outros realms.
+
+O aceite FE local das quatro ações Auth usa as provas pertinentes de cliente
+e navegador. A prova de recovery retido por falha permanente de armazenamento
+reinicializa SDK, storage, scope e rotas reais em teste Flutter com RPC contra
+backend local descartável: o servidor nega contexto e o scope encerra a sessão.
+Não é reinício do sistema operacional nem falha real do storage do navegador.
+Os quatro casos de navegador com HTTP sintético cobrem credenciais inválidas,
+persistência desativada/ativada e logout após reload, sem provar essa falha.
+Nenhuma dessas evidências certifica produção; aplicação e provas remotas
+continuam dependentes de pacote nominal e autorização próprios.
