@@ -1,0 +1,63 @@
+﻿rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:3 caractere:1
++ rtk proxy flutter test --no-pub test/features/platform_users/presenta ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart
+00:00 +0: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: confirmed update retries completion without repeating persistence
+  [1m[flutter_map][0m
+    We want to help keep OpenStreetMap available for everyone. Our examples
+    and demo app use the public tile servers, but they are NOT free to use by
+    everyone! Please review whether the OpenStreetMap tile servers are suitable
+    for your project.
+    See:
+      * https://operations.osmfoundation.org/policies/tiles (OSM Tile Usage Policy)
+      * https://docs.fleaflet.dev/osm-warn for more information about this warning
+00:02 +1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_pages_test.dart: creates an exclusive Superadmin access through four steps
+00:04 +2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: confirmed create cannot be edited or submitted again after completion failure
+00:04 +3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_pages_test.dart: compact form has simple surface and no horizontal overflow
+00:04 +4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: transient editor read failure offers retry without claiming denial
+00:04 +5: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_pages_test.dart: active credential keeps professional email read only during edit
+  [1m[flutter_map][0m
+    We want to help keep OpenStreetMap available for everyone. Our examples
+    and demo app use the public tile servers, but they are NOT free to use by
+    everyone! Please review whether the OpenStreetMap tile servers are suitable
+    for your project.
+    See:
+      * https://operations.osmfoundation.org/policies/tiles (OSM Tile Usage Policy)
+      * https://docs.fleaflet.dev/osm-warn for more information about this warning
+00:05 +6: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: failed save handles unexpected error safely
+  [1m[flutter_map][0m
+    We want to help keep OpenStreetMap available for everyone. Our examples
+    and demo app use the public tile servers, but they are NOT free to use by
+    everyone! Please review whether the OpenStreetMap tile servers are suitable
+    for your project.
+    See:
+      * https://operations.osmfoundation.org/policies/tiles (OSM Tile Usage Policy)
+      * https://docs.fleaflet.dev/osm-warn for more information about this warning
+00:06 +7: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: failed save handles revocation safely
+  [1m[flutter_map][0m
+    We want to help keep OpenStreetMap available for everyone. Our examples
+    and demo app use the public tile servers, but they are NOT free to use by
+    everyone! Please review whether the OpenStreetMap tile servers are suitable
+    for your project.
+    See:
+      * https://operations.osmfoundation.org/policies/tiles (OSM Tile Usage Policy)
+      * https://docs.fleaflet.dev/osm-warn for more information about this warning
+00:07 +8: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: discard confirmation leaves with its form: dispose=false
+00:08 +9: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: discard confirmation leaves with its form: dispose=true
+00:08 +10: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: repeated cancel requests open only one discard confirmation
+00:09 +11: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: a denied editor never starts remote catalog or detail reads
+00:09 +12: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: old catalog completion cannot request detail in a replacement context
+00:09 +13: C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: revoking editor capability discards a pending update callback
+  [1m[flutter_map][0m
+    We want to help keep OpenStreetMap available for everyone. Our examples
+    and demo app use the public tile servers, but they are NOT free to use by
+    everyone! Please review whether the OpenStreetMap tile servers are suitable
+    for your project.
+    See:
+      * https://operations.osmfoundation.org/policies/tiles (OSM Tile Usage Policy)
+      * https://docs.fleaflet.dev/osm-warn for more information about this warning
+00:10 +14: All tests passed!

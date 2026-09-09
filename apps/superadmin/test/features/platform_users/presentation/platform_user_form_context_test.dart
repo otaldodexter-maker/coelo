@@ -9,6 +9,87 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('confirmed update retries completion without repeating persistence', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final repository = _Repository('A');
+    var completions = 0;
+    await tester.pumpWidget(
+      _app(
+        repository,
+        onUpdated: (_) {
+          completions++;
+          if (completions == 1) throw StateError('synthetic navigation failure');
+        },
+      ),
+    );
+    await tester.pumpAndSettle();
+    for (var step = 0; step < 3; step++) {
+      await tester.tap(find.text('Continuar'));
+      await tester.pumpAndSettle();
+    }
+    await tester.tap(find.text('Salvar alterações'));
+    await tester.pumpAndSettle();
+    expect(repository.updates, 1);
+    expect(find.text('Não foi possível salvar. Tente novamente.'), findsNothing);
+    expect(
+      find.text('Cadastro salvo. Não foi possível concluir a navegação. Tente novamente.'),
+      findsOneWidget,
+    );
+    await tester.tap(find.text('Continuar'));
+    await tester.pumpAndSettle();
+    expect(repository.updates, 1);
+    expect(completions, 2);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('confirmed create cannot be edited or submitted again after completion failure', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final repository = _Repository('A');
+    var completions = 0;
+    await tester.pumpWidget(
+      _app(
+        repository,
+        creating: true,
+        onCreated: (_) {
+          completions++;
+          if (completions == 1) throw StateError('synthetic navigation failure');
+        },
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('platform-user-first-name')), 'Sintetico');
+    await tester.enterText(find.byKey(const Key('platform-user-last-name')), 'Teste');
+    await tester.enterText(find.byKey(const Key('platform-user-cpf')), '52998224725');
+    await tester.tap(find.text('Continuar'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('platform-user-email')), 'synthetic@example.test');
+    await tester.enterText(find.byKey(const Key('platform-user-job-title')), 'Analista');
+    await tester.tap(find.text('Continuar'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('platform-user-scopes-select-all')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Continuar'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Criar e preparar convite'));
+    await tester.pumpAndSettle();
+    expect(repository.creates, 1);
+    expect(find.text('Cadastro salvo'), findsOneWidget);
+    expect(
+      tester.widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Voltar')).onPressed,
+      isNull,
+    );
+    expect(find.byKey(const Key('platform-user-first-name')), findsNothing);
+    await tester.tap(find.text('Continuar'));
+    await tester.pumpAndSettle();
+    expect(repository.creates, 1);
+    expect(completions, 2);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('transient editor read failure offers retry without claiming denial', (tester) async {
     final repository = _Repository('A')..detailError = StateError('private read failure');
     await tester.pumpWidget(_app(repository));
@@ -173,15 +254,18 @@ Widget _app(
   _Repository repository, {
   PlatformUserCapability capability = PlatformUserCapability.owner,
   ValueChanged<PlatformUserRecord>? onUpdated,
+  ValueChanged<PlatformUserCreateResult>? onCreated,
+  bool creating = false,
   VoidCallback? onCancel,
 }) => MaterialApp(
   theme: CoeloTheme.light,
   home: PlatformUserFormPage(
     repository: repository,
     capability: capability,
-    internalUserId: repository.record.id,
+    internalUserId: creating ? null : repository.record.id,
     logout: unavailableSuperadminLogout,
     onUpdated: onUpdated,
+    onCreated: onCreated,
     onCancel: onCancel,
   ),
 );
@@ -198,12 +282,16 @@ final class _Repository implements PlatformUserRepository, PlatformUserRemoteLoa
   final Future<PlatformUserRecord>? saving;
   var catalogReads = 0;
   var updates = 0;
+  var creates = 0;
   Object? detailError;
   final detailIds = <String>[];
   @override
   bool get isDemo => false;
   @override
-  List<PlatformAccessProfile> get profiles => [record.profile];
+  List<PlatformAccessProfile> get profiles => [
+    record.profile,
+    PlatformAccessProfiles.byId('operations'),
+  ];
   @override
   List<PlatformUserRecord> get records => [record];
   @override
@@ -225,6 +313,12 @@ final class _Repository implements PlatformUserRepository, PlatformUserRemoteLoa
   Future<PlatformUserRecord> update(String id, PlatformUserDraft draft) async {
     updates++;
     return saving ?? record;
+  }
+
+  @override
+  Future<PlatformUserCreateResult> create(PlatformUserDraft draft) async {
+    creates++;
+    return PlatformUserCreateResult(record: record, message: 'Cadastro sintético salvo.');
   }
 
   @override

@@ -81,6 +81,7 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
   Object? _loadError;
   PlatformUserRecord? _loadedRecord;
   bool _dirty = false;
+  VoidCallback? _confirmedCompletion;
   double _footerHeight = 0;
   int _contextRevision = 0;
   bool _confirmingCancel = false;
@@ -144,6 +145,7 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
       _saving = false;
       _loading = false;
       _dirty = false;
+      _confirmedCompletion = null;
       _initializeContext();
     }
   }
@@ -230,6 +232,7 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
   @override
   void dispose() {
     _contextRevision++;
+    _confirmedCompletion = null;
     _dismissOwnedDialogs();
     for (final controller in _textControllers) {
       controller.dispose();
@@ -310,6 +313,10 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
 
   Future<void> _save() async {
     if (_saving || _loading) return;
+    if (_confirmedCompletion != null) {
+      _finishConfirmedSave();
+      return;
+    }
     if (widget.capability != PlatformUserCapability.owner || !_validateIdentity()) return;
     final revision = _contextRevision;
     final onUpdated = widget.onUpdated;
@@ -319,13 +326,15 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
       if (_editing) {
         final updated = await widget.repository.update(widget.internalUserId!, _draft());
         if (!_isCurrent(revision)) return;
-        onUpdated?.call(updated);
+        _loadedRecord = updated;
+        _confirmedCompletion = () => onUpdated?.call(updated);
       } else {
         final result = await widget.repository.create(_draft());
         if (!_isCurrent(revision)) return;
-        onCreated?.call(result);
+        _confirmedCompletion = () => onCreated?.call(result);
       }
       _dirty = false;
+      _finishConfirmedSave();
     } on PlatformUserConflictException catch (error) {
       if (mounted && _isCurrent(revision)) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.message)));
@@ -358,6 +367,20 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
       if (_isCurrent(revision)) {
         setState(() => _saving = false);
       }
+    }
+  }
+
+  void _finishConfirmedSave() {
+    if (!mounted || widget.capability != PlatformUserCapability.owner) return;
+    try {
+      _confirmedCompletion?.call();
+    } on Object {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Cadastro salvo. Não foi possível concluir a navegação. Tente novamente.'),
+        ),
+      );
     }
   }
 
@@ -456,7 +479,16 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
                 viewportWidth: MediaQuery.sizeOf(context).width,
                 scrollKey: const Key('platform-user-form-scroll'),
                 navigation: _navigation(),
-                body: KeyedSubtree(key: ValueKey(_step), child: _flowStep()),
+                body: KeyedSubtree(
+                  key: ValueKey(_step),
+                  child: _confirmedCompletion == null
+                      ? _flowStep()
+                      : const CoeloStatePanel(
+                          title: 'Cadastro salvo',
+                          message: 'As alterações foram salvas. Continue para concluir.',
+                          icon: Icons.check_circle_outline,
+                        ),
+                ),
                 footer: _footer(),
               ),
             ),
@@ -470,7 +502,7 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
     steps: _steps(),
     currentIndex: _step,
     onStepSelected: (index) {
-      if (index <= _step) setState(() => _step = index);
+      if (_confirmedCompletion == null && index <= _step) setState(() => _step = index);
     },
   );
 
@@ -490,7 +522,7 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
               : index < _step
               ? SuperadminFormStepStatus.complete
               : SuperadminFormStepStatus.incomplete,
-          enabled: index <= _step,
+          enabled: _confirmedCompletion == null && index <= _step,
         ),
     ];
   }
@@ -970,7 +1002,9 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
       continuationActions: [
         if (_step > 0)
           OutlinedButton(
-            onPressed: _saving ? null : () => setState(() => _step--),
+            onPressed: _saving || _confirmedCompletion != null
+                ? null
+                : () => setState(() => _step--),
             child: const Text('Voltar'),
           ),
         FilledButton(
@@ -978,7 +1012,7 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
           child: Text(
             _saving
                 ? 'Salvando…'
-                : _step < 3
+                : _confirmedCompletion != null || _step < 3
                 ? 'Continuar'
                 : _editing
                 ? 'Salvar alterações'
