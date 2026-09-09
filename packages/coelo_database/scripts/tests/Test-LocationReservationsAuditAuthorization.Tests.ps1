@@ -33,7 +33,7 @@ Describe 'Location reservation audit authorization harness contract' {
     $parsed.Text | Should Match 'supabase_db_\$ProjectId'
   }
 
-  It 'proves the caller reached the held audit relation lock before mutation' {
+  It 'proves the caller reached the held audit relation lock before final reauthorization' {
     $parsed = Parse-Script $harnessPath
     $parsed.Text | Should Match 'lock table audit\.audit_logs in share mode'
     $parsed.Text | Should Match 'pg_blocking_pids\(caller\.pid\)'
