@@ -34,6 +34,7 @@ apaga essa diferença vale metade.
 | 14 — cabeçalho compacto do shell | corrigido em `c4a7feff` | **declarado**; minha reprodução roda contra baseline anterior |
 | 17, 18 e 19 — sessão e gateway de Auth | encaminhados à C01 como `I017` | **declarado**; sem correção observada por mim |
 | Governança da referência aprovada | **resolvido** | **verificado por mim**: a imagem está em git na branch de integração, e o blob tem SHA256 `e096c855…`, idêntico ao original byte a byte |
+| Locais: retry ativo no detalhe negado | corrigido em `15dc4727` | **verificado por leitura do diff**: o botão passa a desabilitado, com comentário citando que o diretório da mesma feature nunca ofereceu retry em negativa. **Não medi**; está no roteiro de reverificação |
 | 12, 13, 16, 20, 22 | abertos | sem correção observada |
 
 **O que ainda me falta, e é a diferença entre relatar e certificar:** nenhuma dessas correções foi
