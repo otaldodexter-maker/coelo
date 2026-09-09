@@ -416,6 +416,36 @@ void main() {
     expect(find.byType(CoeloAdminResizableTable<AttendanceDashboardCallRow>), findsOneWidget);
   });
 
+  testWidgets('dashboard uses the supplied civil date for its period and picker limit', (
+    tester,
+  ) async {
+    final repository = FakeAttendanceRepository.seeded();
+    addTearDown(repository.dispose);
+    final dashboard = _DashboardRepository(canCreate: true);
+    final today = DateTime(2026, 9, 9);
+
+    await tester.pumpWidget(
+      _app(
+        AttendanceDashboardPage(
+          repository: repository,
+          dashboardRepository: dashboard,
+          permissions: const AttendancePermissions.owner(),
+          logout: unavailableSuperadminLogout,
+          onCreate: () {},
+          onOpenCall: (_) {},
+          today: today,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(dashboard.lastQuery!.periodStart, DateTime(2026, 9));
+    expect(dashboard.lastQuery!.periodEnd, today);
+    final picker = tester.widget<CoeloDateRangeField>(find.byType(CoeloDateRangeField));
+    expect(picker.lastDate, today);
+    expect(picker.currentDate, today);
+  });
+
   testWidgets('dashboard replaces its repository without retaining the previous context', (
     tester,
   ) async {
@@ -1834,6 +1864,7 @@ final class _DashboardRepository implements AttendanceDashboardRepository {
   bool failNext = false;
   int exportRequests = 0;
   int exportPolls = 0;
+  AttendanceDashboardQuery? lastQuery;
 
   AttendanceDashboardAccess get _access => AttendanceDashboardAccess(
     scope: AttendanceDashboardScope.platform,
@@ -1846,6 +1877,7 @@ final class _DashboardRepository implements AttendanceDashboardRepository {
 
   @override
   Future<AttendanceDashboardSnapshot> fetchDashboard(AttendanceDashboardQuery query) async {
+    lastQuery = query;
     await dashboardDelay;
     if (failNext) {
       failNext = false;
