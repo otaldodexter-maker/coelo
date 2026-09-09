@@ -9,6 +9,73 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('reload failure after confirmed suspension retries only the read', (tester) async {
+    final repository = _RemoteRepository();
+    await tester.pumpWidget(_page(repository, capability: PlatformUserCapability.owner));
+    await tester.pumpAndSettle();
+    repository.error = StateError('synthetic read failure');
+    await _openSuspend(tester);
+    await tester.tap(find.text('Confirmar ação'));
+    await tester.pumpAndSettle();
+    expect(repository.suspensions, 1);
+    expect(repository.calls, 2);
+    expect(find.textContaining('Nenhuma alteração foi realizada'), findsNothing);
+    repository.error = null;
+    await tester.tap(find.text('Tentar novamente'));
+    await tester.pumpAndSettle();
+    expect(repository.suspensions, 1);
+    expect(repository.calls, 3);
+  });
+
+  testWidgets('remote suspension uses honest confirmation and reloads the detail', (tester) async {
+    final repository = _RemoteRepository();
+    await tester.pumpWidget(_page(repository, capability: PlatformUserCapability.owner));
+    await tester.pumpAndSettle();
+    await _openSuspend(tester);
+    expect(find.textContaining('dados fake'), findsNothing);
+    await tester.tap(find.text('Confirmar ação'));
+    await tester.pumpAndSettle();
+    expect(repository.suspensions, 1);
+    expect(repository.calls, 2);
+    expect(find.textContaining('Demonstração local'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  for (final denied in [false, true]) {
+    testWidgets('status command handles ${denied ? 'server denial' : 'unexpected failure'}', (
+      tester,
+    ) async {
+      final repository = _RemoteRepository()..pendingSuspension = Completer<PlatformUserRecord>();
+      await tester.pumpWidget(_page(repository, capability: PlatformUserCapability.owner));
+      await tester.pumpAndSettle();
+      await _openSuspend(tester);
+      await tester.tap(find.text('Confirmar ação'));
+      await tester.pumpAndSettle();
+      repository.pendingSuspension!.completeError(
+        denied
+            ? const PlatformUserRuleException('unauthorized', 'private denial')
+            : StateError('private failure'),
+      );
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      if (denied) {
+        expect(find.text('Acesso não autorizado'), findsOneWidget);
+        expect(find.textContaining(repository.cached.fullName), findsNothing);
+        expect(find.byKey(const Key('platform-user-actions')), findsNothing);
+      } else {
+        expect(
+          find.text('Não foi possível confirmar a operação. Tente novamente.'),
+          findsOneWidget,
+        );
+        expect(
+          tester.widget<OutlinedButton>(find.byKey(const Key('platform-user-actions'))).onPressed,
+          isNotNull,
+        );
+      }
+      expect(find.textContaining('private'), findsNothing);
+    });
+  }
+
   testWidgets('disposing the detail removes its dialog and preserves an unrelated dialog', (
     tester,
   ) async {

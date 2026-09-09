@@ -332,7 +332,27 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
       }
     } on PlatformUserRuleException catch (error) {
       if (mounted && _isCurrent(revision)) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.message)));
+        if (error.code == 'unauthorized') {
+          setState(() {
+            for (final controller in _textControllers) {
+              controller.clear();
+            }
+            _loadedRecord = null;
+            _avatarBytes = null;
+            _birthDateValue = null;
+            _scopeIds = {};
+            _dirty = false;
+            _loadError = error;
+          });
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.message)));
+        }
+      }
+    } on Object {
+      if (mounted && _isCurrent(revision)) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Não foi possível salvar. Tente novamente.')));
       }
     } finally {
       if (_isCurrent(revision)) {
@@ -344,6 +364,10 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
   @override
   Widget build(BuildContext context) {
     final title = _editing ? 'Editar usuário interno' : 'Criar usuário interno';
+    final unauthorized =
+        widget.capability != PlatformUserCapability.owner ||
+        (_loadError is PlatformUserRuleException &&
+            (_loadError! as PlatformUserRuleException).code == 'unauthorized');
     if (_loading) {
       return SuperadminShell(
         logout: widget.logout,
@@ -360,8 +384,34 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
         ),
       );
     }
-    if (widget.capability != PlatformUserCapability.owner ||
-        (_editing && (_record == null || _loadError != null))) {
+    if (!unauthorized && _loadError != null) {
+      return SuperadminShell(
+        logout: widget.logout,
+        title: title,
+        subtitle: 'Identidade e acesso exclusivos do Superadmin.',
+        currentDestination: 'internal-users',
+        onDestinationSelected: widget.onDestinationSelected,
+        child: Padding(
+          padding: const EdgeInsets.all(CoeloSpacing.space6),
+          child: CoeloStatePanel(
+            title: 'Não foi possível carregar o usuário interno',
+            message: 'Tente novamente. Nenhuma alteração foi realizada.',
+            icon: Icons.error_outline,
+            actionLabel: 'Tentar novamente',
+            onAction: () {
+              final repository = widget.repository;
+              if (repository is! PlatformUserRemoteLoader) return;
+              setState(() {
+                _loading = true;
+                _loadError = null;
+              });
+              unawaited(_loadRemote(repository as PlatformUserRemoteLoader));
+            },
+          ),
+        ),
+      );
+    }
+    if (unauthorized || (_editing && (_record == null || _loadError != null))) {
       return SuperadminShell(
         logout: widget.logout,
         title: title,

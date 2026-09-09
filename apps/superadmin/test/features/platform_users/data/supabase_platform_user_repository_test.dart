@@ -9,6 +9,36 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  for (final section in ['credential', 'invitation']) {
+    test(
+      'unknown $section status is rejected instead of displayed as active or accepted',
+      () async {
+        final client = SupabaseClient(
+          'https://example.supabase.co',
+          'publishable-key',
+          httpClient: MockClient(
+            (request) async => Response(
+              jsonEncode({
+                ..._recordJson,
+                section: {...(_recordJson[section] as Map<String, Object?>), 'status': 'unknown'},
+              }),
+              200,
+              headers: {'content-type': 'application/json'},
+              request: request,
+            ),
+          ),
+        );
+        addTearDown(client.dispose);
+        final repository = SupabasePlatformUserRepository(client);
+        await expectLater(
+          repository.fetchById(_identityId),
+          throwsA(isA<PlatformUserRuleException>()),
+        );
+        expect(repository.records, isEmpty);
+      },
+    );
+  }
+
   test('user detail and status accept canonical casing of a requested UUID', () async {
     const id = 'aaaaaaaa-0000-4000-8000-000000000001';
     final client = SupabaseClient(
