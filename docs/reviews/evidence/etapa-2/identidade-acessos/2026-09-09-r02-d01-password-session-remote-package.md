@@ -89,8 +89,9 @@ Nenhum campo pendente pode ser preenchido com resultado presumido.
 4. Na janela, repetir somente o preflight necessário de catálogo e histórico,
    sem consultar linhas pessoais, sessions ou tokens. Conferir ausência de
    aplicação anterior/colisão e que nenhum outro escritor alterou o helper.
-5. O MCP deve atuar no projeto exato e permitir a operação nominal como
-   `postgres`. Ausência de acesso, drift ou timeout bloqueia a aplicação;
+5. A CLI2.116.0 deve atuar no projeto exato e permitir a operação nominal como
+   `postgres`, com histórico e dry-run de uma única migration qualificados.
+   Ausência de acesso, drift ou timeout bloqueia a aplicação;
    não habilita um transporte alternativo nem supressão dos preflights.
 
 O [recibo remoto somente leitura](r02-d01-20260909/password-session-remote-schema-readonly.md)
@@ -143,25 +144,23 @@ where p.oid = pg_catalog.to_regprocedure(
 commit;
 ```
 
-Para a única mutação, carregar os **bytes integrais do arquivo canônico final**
-na variável `migrationSql`, após conferir SHA-256 aprovado. Não interpolar
-IDs gerados ou reconstruir o SQL a partir deste documento. Chamada preparada:
+Para a única migration, o transporte proposto atualizado é a CLI oficial
+2.116.0 em diretório nominal separado, conforme comandos completos da
+[qualificação de versionamento](r02-d01-20260909/password-session-versioning-qualification.md).
+Esse diretório contém somente a fotografia do histórico já aplicado e os
+bytes aprovados da migration20260909173000. `migration fetch/list` devem
+qualificar o histórico; `db push --dry-run --skip-vault` deve listar exatamente
+esse único arquivo. Só depois dos demais gates pode ocorrer `db push` no
+mesmo diretório congelado, sem include-all/roles/seed. A CLI registra a versão
+nominal no histórico de migrations; esse registro é parte esperada da aplicação.
 
-```javascript
-await tools.mcp__codex_apps__supabase_apply_migration({
-  project_id: 'evvbomzejfijozbtgvpt',
-  name: 'superadmin_password_session_context',
-  query: migrationSql,
-});
-```
-
-`migrationSql` deliberadamente não está preenchida nesta proposta. DDL não
-passa por `execute_sql`, SQL editor ou chamada genérica `/database/query`.
-O nome local versionado permanece `20260909173000`; o contrato disponível do
-MCP não expõe argumento `version`. D00 deve reconciliar, antes da chamada,
-como o histórico remoto registrará a versão desse mesmo arquivo/hash; não
-presumir que `name` fixa o timestamp. Registrar versão realmente devolvida e
-conferir `list_migrations`. Não fazer `migration repair` automaticamente.
+Não executar esses comandos no espelho completo do checkout ou no staging do
+replay local. A sequência ainda não foi executada remotamente e depende do
+inventário atual, acesso CLI e janela. O MCP continua disponível para leituras
+de catálogo/histórico; seu apply_migration não expõe version e não é o
+transporte selecionado nesta proposta. Não renomear a fonte canônica pelo
+timestamp MCP nem fazer migration repair automaticamente. DDL também não
+passa por execute_sql, SQL editor ou chamada genérica /database/query.
 
 A migration contém transação, advisory lock da política interna de Auth,
 `lock_timeout='5s'`, `statement_timeout='60s'`, preflight do corpo anterior,
