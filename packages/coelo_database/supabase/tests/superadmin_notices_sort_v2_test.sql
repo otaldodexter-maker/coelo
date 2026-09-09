@@ -8,7 +8,7 @@
 
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(37);
+select plan(40);
 
 -- The extended signature exists and the previous one is gone, so the two never
 -- coexist as an ambiguous overload.
@@ -257,6 +257,43 @@ select ok(
 select ok(
   (select body from notices_directory_definition) not like '%filtered.id desc) page_row%',
   'the unconditional id desc tiebreak that disagreed with the filter is gone');
+
+-- The two allowlists have to stay in sync, and nothing else checks that.
+--
+-- The RPC refuses any sort column outside its own `in (...)` list, and the
+-- helper produces a value for the columns in its `case`. Add a column to one and
+-- not the other and the failure is silent in the worst way: the helper returns
+-- null for every row, the keyset comparison against null excludes everything,
+-- and the directory answers an empty page as if the institution had no
+-- communications. Same shape as the broken envelope that read as "no notices".
+insert into notices_directory_definition values (
+  'sort_value',
+  regexp_replace(
+    lower(
+      pg_catalog.pg_get_functiondef(
+        'app_private.superadmin_notice_sort_value(public.platform_notices,text)'::regprocedure)),
+    '\s+', ' ', 'g'));
+
+select is(
+  (select count(*) from regexp_matches(
+    (select body from notices_directory_definition where name = 'sort_value'),
+    'when ''[a-z_]+'' then', 'g')),
+  6::bigint,
+  'source: the sort helper answers exactly six columns, no more');
+select ok(
+  (select bool_and(
+    (select body from notices_directory_definition where name = 'sort_value')
+      like '%when ''' || column_name || ''' then%')
+   from unnest(array['updated_at','starts_at','title','type','priority','status']) as column_name),
+  'source: every allowed sort column is handled by the helper');
+-- Checked as the exact list, not column by column: several of these names appear
+-- elsewhere in the body, so a per-name search would pass even if the allowlist
+-- itself had drifted.
+select ok(
+  (select body from notices_directory_definition where name = 'directory') like
+    '%p_sort_column not in (''updated_at'', ''starts_at'', ''title'', ''type'','
+    ' ''priority'', ''status'')%',
+  'source: the RPC allowlist is exactly those six columns');
 
 select * from finish();
 rollback;
