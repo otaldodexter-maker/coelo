@@ -166,6 +166,42 @@ final class _DelayedCreateGateway extends _Gateway {
   }
 }
 
+final class _DelayedReloadGateway extends _Gateway {
+  final reloadPolicy = Completer<LocationSchedulingPolicyState>();
+  final reloadPage = Completer<LocationReservationPage>();
+  var policyReads = 0;
+  var pageReads = 0;
+
+  @override
+  Future<LocationSchedulingPolicyState> getPolicy({
+    required String locationId,
+    required LocationScope scope,
+  }) {
+    if (policyReads++ == 0) return Future.value(policy);
+    return reloadPolicy.future;
+  }
+
+  @override
+  Future<LocationReservationPage> listPaged({
+    required String locationId,
+    required LocationReservationConsumer consumer,
+    String? afterId,
+    int limit = 50,
+  }) {
+    if (pageReads++ == 0) {
+      return Future.value(
+        LocationReservationPage(
+          locationId: locationId,
+          consumer: consumer,
+          items: listed,
+          nextId: nextId,
+        ),
+      );
+    }
+    return reloadPage.future;
+  }
+}
+
 void main() {
   late _Gateway gateway;
   late List<String> requestIds;
@@ -254,6 +290,40 @@ void main() {
     expect(gateway.creates, hasLength(1));
     expect(gateway.creates.single.draft.recurrence, isA<LocationReservationOnce>());
     expect(gateway.creates.single.requestId, 'b1000000-0000-4000-8000-000000000001');
+    expect(
+      find.byKey(const Key('location-reservation-a1000000-0000-4000-8000-000000000004')),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('reload blocks creation until its snapshot has settled', (tester) async {
+    final delayed = _DelayedReloadGateway();
+    await tester.pumpWidget(panel(source: delayed));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('location-reservation-reload')));
+    await tester.pump();
+    expect(
+      tester.widget<FilledButton>(find.byKey(const Key('location-reservation-assess'))).onPressed,
+      isNull,
+    );
+    await fillOnce(tester);
+
+    delayed.reloadPolicy.complete(delayed.policy);
+    delayed.reloadPage.complete(
+      LocationReservationPage(
+        locationId: locationId,
+        consumer: consumer,
+        items: const [],
+        nextId: null,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('location-reservation-assess')));
+    await tester.pumpAndSettle();
+
+    expect(delayed.creates, hasLength(1));
     expect(
       find.byKey(const Key('location-reservation-a1000000-0000-4000-8000-000000000004')),
       findsOneWidget,
