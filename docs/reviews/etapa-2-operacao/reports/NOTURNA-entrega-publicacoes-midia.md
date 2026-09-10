@@ -334,3 +334,26 @@ defeito ficam aqui para ninguém repetir:
 7. Idempotência por intenção — 3 famílias fora do padrão da casa.
 8. Uso do cursor de paginação — 2 superfícies descartavam.
 9. Vazamento de texto do servidor para a interface — nenhum.
+
+A nona é a única dimensão cujo resultado é um **negativo**, e negativo obtido
+por busca é o mais frágil que existe: ele vale só até a largura do padrão que
+foi usado. Refiz esta com um padrão bem mais largo — `.toString()`,
+`error.message`, `e.message`, interpolação de exceção, `.details` e `.hint` —
+nas oito features, e o resultado se mantém, agora com os caminhos suspeitos
+rastreados até a tela:
+
+- `CircularInvalid(error.message)` **carrega** a mensagem do servidor para
+  dentro do domínio, em dois repositórios. Mas o leitor mapeia o **tipo** da
+  falha para texto próprio e descarta o `code`, e o host administrativo compara
+  o `code` com uma constante conhecida e escreve texto próprio nos dois ramos.
+  Não chega à tela.
+- As páginas de publicação renderizam `state.message` **direto**, sem
+  intermediário. Conferido o outro lado: todo valor que chega ali é literal
+  autoral ou vem de `enum → texto`. Nenhum ramo o preenche com resposta de
+  servidor.
+- O compositor faz `_setState(failure, error.runtimeType.toString())`, o que
+  poria um nome de classe Dart na tela. Não põe: a página mapeia `errorCode`
+  para texto próprio e tem ramo padrão, então o `runtimeType` cai no fallback e
+  nunca é exibido.
+
+Três candidatos, três verificados até a superfície, nenhum vazamento.
