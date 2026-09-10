@@ -1,11 +1,11 @@
 {
-  "revision": 92,
-  "updated_at": "2026-09-10T19:31:09.462Z",
+  "revision": 93,
+  "updated_at": "2026-09-10T19:39:13.368Z",
   "round": "E2-R03-20260910",
   "group": "acessos-pessoas",
   "tool": "Claude",
   "model": "Opus 5 (1M)",
-  "status": "R03_TODAS_AS_MIGRATIONS_APLICAM_SOBRE_A_BASELINE",
+  "status": "R03_LOTE_COMPLETO_VERDE_INCLUSIVE_O_RETIDO",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-acessos-pessoas",
   "branch": "work/etapa2-r03-acessos-pessoas",
   "head": "9c2ea8224",
@@ -1101,5 +1101,75 @@
       "d04_child_safety_internal_reads_test saiu com status 3 sem plano"
     ],
     "compromisso": "Nao vou declarar pacote verde sobre a baseline enquanto esses dois nao fecharem."
+  },
+  "PROVA_FINAL": {
+    "resultado": "Files=7, Tests=182, Result: PASS. As DEZ migrations aplicam sobre a baseline e os sete arquivos de pgTAP passam.",
+    "inclui_o_retido": "20260910170900_people_read_aal1_for_mvp tambem aplica e passa (14 testes). Provei junto de proposito: assim, no instante em que a P11 for respondida, nao ha nada a fazer alem de aplicar. Continua RETIDO e FORA do lote.",
+    "metodo": "Projeto descartavel proprio, portas proprias, container removido e diretorio apagado ao fim. Reset so com a baseline (schema e depois seed), pacotes um a um por psql na ordem da faixa, pgTAP por ultimo."
+  },
+  "O_QUE_O_LOTE_FECHA_DA_LACUNA": {
+    "medicao": "As dez migrations criam 30 funcoes public. DEZOITO delas estao hoje ausentes de producao e sao chamadas pelo cliente.",
+    "rpcs_que_passam_a_existir": [
+      "child_safety_change_lifecycle",
+      "child_safety_decide_authorization",
+      "child_safety_edit_pending_authorization",
+      "child_safety_request_authorization",
+      "superadmin_child_safety_directory",
+      "superadmin_child_safety_get",
+      "superadmin_child_safety_search_children",
+      "superadmin_internal_user_detail",
+      "superadmin_internal_user_profiles",
+      "superadmin_internal_users_list",
+      "superadmin_invite_detail_v2",
+      "superadmin_invite_directory_v2",
+      "superadmin_invite_issue_v2",
+      "superadmin_invite_options_v2",
+      "superadmin_invite_resend_v2",
+      "superadmin_invite_revoke_v2",
+      "superadmin_person_detail_v2",
+      "superadmin_request_child_safety_export"
+    ],
+    "efeito_na_lacuna": "123 RPCs ausentes hoje; 105 depois do lote. E a primeira reducao da lacuna desde que comecei a medir, e ela vinha SUBINDO (96 -> 123 em tres horas).",
+    "ressalva_honesta": "Fechar a lacuna de RPC nao e o mesmo que verificar acao pela regua do MVP. Passa a existir a funcao; falta a rota normal abrir, o CRUD persistir, o RLS negar outro tenant e o reload manter estado. So o coordenador, depois de aplicar, pode medir isso."
+  },
+  "ACOES_QUE_O_LOTE_DESBLOQUEIA": {
+    "invites": [
+      "invites.list",
+      "invites.detail",
+      "invites.create",
+      "invites.resend",
+      "invites.revoke"
+    ],
+    "internal_users": [
+      "internal-users.list",
+      "internal-users.create",
+      "internal-users.edit",
+      "internal-users.suspend"
+    ],
+    "child_safety": [
+      "child-safety.list",
+      "child-safety.child",
+      "child-safety.create",
+      "child-safety.edit",
+      "child-safety.suspend"
+    ],
+    "people": [
+      "people.links",
+      "people.reload"
+    ],
+    "total": "16 das 38 acoes do recorte, sem nenhuma mudanca em Dart: as chaves de composicao ja estao ligadas no escopo produtivo.",
+    "dependem_da_P11": [
+      "people.list",
+      "people.create",
+      "people.edit",
+      "e a escrita de Perfis e Modelos de acesso"
+    ]
+  },
+  "ESTADO_DO_RECORTE_38_ACOES": {
+    "prontas_para_aplicar": 16,
+    "presas_na_P11": "3 de Pessoas mais a escrita de Perfis e Modelos",
+    "adiadas_por_decisao": "6 de Arquivos de perfil, verificadas e corretas como estao: botoes visiveis, desabilitados, com rotulo semantico de indisponivel, sem picker, parser, job, RPC ou persistencia",
+    "leitura_ja_funcionando_em_producao": "Perfis e Modelos de acesso: as RPCs de leitura existem e nao exigem AAL2, entao essas telas abrem e listam hoje",
+    "sem_backend_por_escrever": "Nenhuma. Tudo que faltava no meu recorte existia como migration nao aplicada, nao como codigo por escrever."
   }
 }
