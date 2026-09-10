@@ -528,4 +528,37 @@ código desatualizado, com uma justificativa que parecia sólida.
 
 ## O que ainda falta
 
-Preenchido no fechamento, após o corte das 05:00.
+Fechado após o corte das 05:00; o que segue já está consolidado e datado.
+
+**Nada foi aplicado em ambiente remoto.** Treze pacotes SQL estão preparados,
+revisáveis e enfileirados em ordem forward-only, e nenhum foi executado em lugar
+nenhum. Dois deles carregam condição registrada: a trinca de Circulares, que só
+pode ser autorizada junto com a configuração do R2 e o deploy da Edge Function,
+e `20260909214000`, que exige suíte mínima antes de aplicar.
+
+**A prova SQL local está bloqueada por um defeito da própria cadeia.** A
+migration `20260812002010_import_export_unit_source_retention.sql` declara uma
+variável do tipo de uma tabela que **nenhuma migration cria**. Em produção a
+tabela deve existir por um caminho fora do repositório; localmente a cadeia é
+inconsistente consigo mesma a partir dali, e qualquer suíte pgTAP cujo alvo venha
+depois não roda pelo caminho sancionado. É por isso que cada candidato precisa de
+um profile próprio de replay — não é preciosismo do harness, é contorno.
+
+**As três medições não se movem sem decisão.** Front-end certificado em 11/230;
+backend e end-to-end em zero, e assim permanecem enquanto não houver autorização
+remota nominal. O que a rodada moveu foi o estado de bloqueio: agora separado
+entre o que depende de você, o que depende de ambiente, o que depende de
+implementação que não existe e o que depende de decisão de produto.
+
+**O que depende só de você para destravar hoje**, em ordem de custo crescente:
+a composição do Perfil (item 0, uma resposta binária); a baseline de
+`errors.409`; o ambiente de referência dos goldens; as quatro geometrias fixas; a
+rota Testar de Formulários; o contrato de Lançamentos; a navegação no editor de
+Rotina; e se Suporte entra no MVP.
+
+**O que nenhuma decisão resolve**, porque é ausência de implementação: Suporte
+sem camada de dados, `health-care` e `medication` sem repositório de produção,
+`RoutineRepository` e `StudentTrackingRepository` sem implementação, e
+`account.sessions` sem tela. E `attendance`, que é o caso mais delicado dos
+cinco, porque a camada de dados **existe, está ligada e chama funções que não
+existem no servidor** — só não quebra porque a rota está fechada.
