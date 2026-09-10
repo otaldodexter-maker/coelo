@@ -265,6 +265,81 @@ conserto: significa gravar rascunho de formulario sem acao explicita do autor, e
 quem decide isso e o Owner. O que nao pode continuar e o registro dizer que o
 autosave existe sem dizer que ele nao roda.
 
+## A varredura das dependencias que ninguem fornece
+
+O autosave foi achado por acaso. Depois transformei o mesmo raciocinio em
+varredura: para cada pagina publica do recorte, quais parametros do construtor
+NENHUM arquivo de `lib/` fornece.
+
+A primeira versao devolveu setenta e oito nomes e era inutil, por um falso
+positivo previsivel: componentes internos sao construidos dentro do proprio
+arquivo, entao "ninguem de fora fornece" e o normal deles. Restringindo as dez
+paginas publicas do recorte, sobram duas, e as duas dizem algo.
+
+`FormsDirectoryPage` nunca recebe `visualMetadata` nem `onLifecycleCompleted`.
+`HealthMedicationPlanFormPage` nunca recebe `responsibleOptions`,
+`onChangeChild`, `onPickMedicationImage` nem `onPickPrescription`.
+
+A consequencia de `responsibleOptions` fecha um circulo com outro achado desta
+noite: a lista de responsaveis chega vazia, entao o formulario de plano de
+medicacao nao oferece ninguem para escolher, e o diretorio — que resolve o
+rotulo pela mesma lista — mostra "Responsavel indisponivel". Os dois sintomas
+tem uma raiz so, e ela e o escopo demonstrativo aprovado em `specs/020`.
+
+### O contraste que vale mais que a lista
+
+`visualMetadata` e do tipo `Map<String, DevelopmentFormVisualMetadata>`. O
+**nome do tipo** diz que aquilo e de desenvolvimento. Quem le a pagina sabe, sem
+investigar nada, que a coluna Agendamentos nao tem numero em producao porque
+nao deveria ter.
+
+`authoringApi` nao tem marca nenhuma. Le-se como dependencia de producao que
+alguem esqueceu de ligar — e por isso o autosave parecia funcionalidade viva, e
+por isso levou uma rodada inteira para alguem notar que nao roda.
+
+A licao e de nomeacao, e e barata: **quando uma dependencia so existe para
+desenvolvimento ou demonstracao, o tipo ou o nome deve dizer isso**. O custo de
+nao dizer nao e confusao momentanea; e um registro que afirma, com razao, que a
+funcionalidade esta implementada e coberta, enquanto ninguem a alcanca.
+
+## Camada pronta sem superficie: uma forma, seis tamanhos
+
+Ao fim da varredura o recorte tinha seis ocorrencias do mesmo padrao. Elas nao
+sao seis dividas diferentes; sao uma forma so, em tamanhos que vao de um botao a
+uma funcionalidade inteira.
+
+1. O botao Criar nunca aparece no diretorio produtivo, porque a pagina e montada
+   com leitor interno e a permissao comeca negada.
+2. As acoes de Local nao tem kind no dominio de Formularios; o contrato de
+   selecao vive na feature Locais e Formularios nunca o referencia.
+3. Lembrete de agendamento existe no dominio e na API, e **nenhuma tela de
+   Formularios o referencia**.
+4. O autosave do editor sao quarenta e tres pontos de codigo, e o unico lugar do
+   repositorio que fornece a dependencia que o habilita e um arquivo de teste.
+5. A lista de responsaveis de medicacao nunca e fornecida, o que faz o
+   formulario nao oferecer ninguem e o diretorio mostrar "indisponivel".
+6. O adaptador de upload de anexo de pergunta tem `prepareAssetUpload`,
+   `finalizeAssetUpload` e `discardAsset` implementados, com a RPC mapeada — e
+   nenhuma tela os chama.
+
+A forma e sempre a mesma: **a camada de baixo esta pronta e testada, a de cima
+nao existe, e a suite verde afirma corretamente que a de baixo funciona.**
+
+Nenhum desses e defeito de implementacao. Todos sao consequencia de escopo
+aprovado ou de decisao pendente, e em pelo menos quatro casos a `specs/020`
+demonstrativa explica por que. O dano nao esta no codigo — esta no REGISTRO.
+Cada um deles, sozinho, pode ser descrito com frases inteiramente verdadeiras
+que somam a conclusao falsa de que a capacidade existe para quem usa o produto.
+
+Por isso convem contar como **um item com seis instancias, nao seis itens**.
+Seis linhas separadas parecem seis dividas de engenharia; uma linha com seis
+instancias e o que de fato e — uma pergunta sobre como o registro trata camada
+pronta sem superficie.
+
+E a deteccao custa quase nada, ja que o padrao e sempre o mesmo: contar as
+ocorrencias, em `lib/`, do parametro ou metodo que habilita a capacidade. Se
+todas caem dentro do arquivo que a implementa, ninguem a alcanca.
+
 ## Censo dos formatadores de data inline
 
 Medicao, nao alteracao. Contei os literais que montam data ou hora a mao com
