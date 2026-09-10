@@ -45,7 +45,7 @@ function Get-SafetyReadsBodyMd5([string]$Path) {
 }
 
 $descriptorFile = Assert-SafetyReadsFile (Join-Path $PSScriptRoot 'profile.json')
-if ((Get-SafetyReadsHash $descriptorFile.FullName) -cne 'ed5e3da1a42a97903cb2aef330d44c1b0e20fb688b3c2c336a42f9b51f9fd219') {
+if ((Get-SafetyReadsHash $descriptorFile.FullName) -cne '5aba17a7e5881a1f1bd8b465b564a593636fe39f97470d1e4610f9433120b4f0') {
   throw 'SafetyInternalReads53 descriptor hash mismatch'
 }
 $descriptor = [IO.File]::ReadAllText($descriptorFile.FullName) | ConvertFrom-Json
@@ -70,12 +70,12 @@ $baseEntries = @(Get-Content -LiteralPath $manifestFile.FullName | Where-Object 
 })
 if ($descriptor.base.profile -cne 'auth' -or
     $descriptor.base.boundary -cne '20260901200206' -or
-    $baseEntries.Count -ne 45 -or
+    $baseEntries.Count -ne 46 -or
     $baseEntries.Count -ne $descriptor.base.selected_canonical_count -or
     @($descriptor.canonical_additions).Count -ne 5 -or
     @($descriptor.local_bridges).Count -ne 1 -or
     @($descriptor.inherited_preflights).Count -ne 2) {
-  throw 'SafetyInternalReads53 requires unchanged Auth45, Safety5, bridge1 and preflight2'
+  throw 'SafetyInternalReads53 requires unchanged Auth46, Safety5, bridge1 and preflight2'
 }
 
 $canonicalEntries = @($baseEntries) + @($descriptor.canonical_additions)
@@ -101,7 +101,7 @@ if ($canonicalEntries.Count -ne $descriptor.planned_counts.canonical -or
     $bridgeEntries[0].after -cne '20260901200206_defer_superadmin_internal_mfa_until_mvp_go_live.sql' -or
     $bridgeEntries[0].before -cne '20260909193000_d04_child_safety_internal_reads.sql' -or
     @(Get-ChildItem -LiteralPath (Join-Path $packageRoot 'replay') -File -Filter '*.sql').Count -ne 2) {
-  throw 'SafetyInternalReads53 requires 50 canonical migrations, one ordered bridge and two inherited preflights'
+  throw 'SafetyInternalReads53 requires 51 canonical migrations, one ordered bridge and two inherited preflights'
 }
 if (@(Get-ChildItem -LiteralPath (Join-Path $packageRoot 'migrations') -File -Filter "$bridgeVersion`_*.sql").Count -ne 0) {
   throw 'SafetyInternalReads53 local bridge version conflicts with a canonical migration'
