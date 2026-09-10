@@ -1806,6 +1806,25 @@ depois por alteração, o que subcontava — 82 colunas viraram 93. Foi descober
 um caso escrito esperando falhar, que passou. **Restrição de coluna também muda
 por alteração, e medir só a criação subconta.**
 
+## Cobertura ausente contada como falha some no meio das falhas
+
+Uma frente vinha reportando, a noite inteira, o número da suíte "das oito famílias
+que encostei". Duas dessas oito **nunca entraram na conta**: os caminhos passados
+ao executor estavam no singular e os diretórios existem no plural, e o executor
+**contou cada caminho inexistente como uma falha** em vez de avisar que o caminho
+estava errado.
+
+O texto exato era "falhou ao carregar — não existe", e ele ficou escondido no
+meio de dezesseis falhas, das quais catorze eram reais e conhecidas de outras
+frentes. **Se as catorze fossem zero, duas falhas isoladas teriam sido
+investigadas na hora. Foi a companhia que as escondeu.**
+
+E a consequência é maior que o número: **cobertura ausente contada como falha é
+pior que contada como zero**, porque zero chama atenção e um a mais numa lista de
+falhas conhecidas não chama. A frente suspendeu as próprias afirmações anteriores
+de linha de base até remedir com os nomes corretos — que é a resposta certa, já
+que não dá para saber de memória quais execuções usaram o nome certo.
+
 ## Ler não pega; seguir pega
 
 Perto do fim, uma frente aplicou aos próprios documentos a pergunta que vinha
