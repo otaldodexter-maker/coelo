@@ -344,6 +344,20 @@ horas antes, a hipótese de trabalho desta coordenação era que a deriva do
 cabeçalho explicaria a maior parte dos 129. Ela explica **uma** família inteira e
 a metade larga de outra.
 
+**E há uma pergunta anterior ao rebaseline, que o censo de uma frente acabou de
+quantificar: 12 de 105 goldens do recorte dela — 11,4% — guardam superfície que
+nenhuma rota constrói.** Dez defendem um compositor de Circular do Principal que
+existe com 750 linhas e nenhum consumidor, e dois defendem uma composição cuja
+espinha são abas de Perfil públicas, sem consumidor, duplicando as que a página
+do Perfil já implementa em privado. Os 93 restantes foram verificados um a um e
+correspondem a páginas que o router de fato constrói.
+
+O que muda com o denominador: **ter golden não é evidência de que a superfície
+exista para o usuário.** Um golden prova que o desenho foi aprovado alguma vez,
+não que alguém consiga chegar nele — e esses doze passam verdes para sempre,
+somando à cobertura visual sem defender nada. A medição é de um recorte só; o
+número do app inteiro não foi levantado.
+
 **A recomendação que sai disso:** rebaseline por família, não em bloco, e cada
 família com conteúdo passa antes pelo dono. Agenda pode ir hoje; Conta,
 Cardápios, Instituições e Atividades, não. Se a decisão vier como "129 goldens,
@@ -1268,6 +1282,14 @@ Esta classe apareceu quatro vezes, e três delas quase produziram decisão errad
   remota.
 - Um caminho de golden longo faz a mensagem quebrar em duas linhas, e um `grep`
   de linha única devolve `Pixel test failed,` **sem percentual**.
+- O resumo do runner trunca a lista de falhas e escreve "e mais 19", e o reporter
+  expandido imprime o teste **em execução**, não todos: uma frente extraiu 34 de
+  105 nomes acreditando ter o inventário. **Log não é inventário — os dois
+  parecem listagem e são amostra.**
+- E a mais fina: um arquivo de relatório em JSON parseado **antes do evento de
+  encerramento** é JSON válido, com todas as linhas corretas, e devolve um total
+  errado, porque o processo ainda escrevia. **Arquivo completo e arquivo pronto
+  são coisas diferentes.**
 - E o relógio: `date` com `TZ=America/Sao_Paulo` dentro do Git Bash devolve UTC,
   porque não há base de fusos ali. Três horas a mais, com aparência de leitura
   local. Isso quase encerrou a rodada **uma hora e quarenta antes do horário
