@@ -315,13 +315,33 @@ produto; fixture diferente; perda de cobertura, que foi Instituições; e
 **deslocamento em bloco por mudança de shell**, que é Conta. A quarta é a pior
 porque o diff mostra conteúdo da feature enquanto a feature está intacta.
 
-**E há um fio a puxar:** o ícone que sumiu do cabeçalho é **o mesmo** em Conta e
-em Instituições — duas famílias diferentes, mesma perda, no mesmo lugar do shell.
-Não pertence a nenhuma das duas, e não foi investigado. Isso muda a leitura do
-rebaseline de Conta: regravar é seguro quanto a cobertura, porque a captura atual
-exercita o que a antiga exercitava — mas **congela o shell atual como referência
-em oito imagens de uma vez**, e se aquele ícone for regressão do shell, ele passa
-a estar aprovado em oito lugares.
+**O fio foi puxado, e a resposta é maior que a pergunta.** O ícone que falta em
+Conta e em Instituições é o mesmo, e não é regressão nem remoção deliberada: é o
+botão **"Reportar bug"** do cabeçalho, que **nunca aparece em produção, em tela
+nenhuma**. Ele renderiza apenas quando um manipulador é fornecido, e em produção
+esse manipulador vem do controlador de Suporte — um parâmetro opcional do router
+que nem o ponto de entrada nem o aplicativo mencionam. **É sempre nulo.** No
+ambiente de desenvolvimento ele é fornecido, então quem testa em `/dev` vê a
+afordância e quem usa o produto não tem como reportar um bug.
+
+**É a mesma causa raiz do 503 de Suporte**, encontrada de outro lugar: uma frente
+chegou por dentro da rota, outra pelo cabeçalho de todas as outras telas. O mesmo
+controlador ausente produz as duas ausências.
+
+Isso muda a recomendação de rebaseline de Conta, e na direção contrária à
+intuição: regravar **não** aprova uma regressão, porque o estado atual é o estado
+verdadeiro de produção. Mas **carimba como referência aprovada, em catorze imagens
+de uma vez, um Superadmin sem afordância de reportar bug** — sem que ninguém tenha
+decidido isso. A referência passa a certificar a ausência. **Tecnicamente seguro e
+politicamente prematuro:** primeiro você decide se o Superadmin de produção deve
+poder reportar bug, que é a mesma decisão de se Suporte recebe camada de dados no
+MVP; depois se regrava, e aí a referência reflete uma escolha em vez de um
+acidente.
+
+Um residual declarado: a referência de Instituições foi capturada **depois** de o
+gate existir e mesmo assim mostra o ícone, e os testes de golden nunca
+referenciaram aquele manipulador. O que o fornecia naquele momento não foi
+encontrado, e a busca parou porque a resposta que decide não depende disso.
 
 **Cardápios, 6 casos — conteúdo puro, sem componente de shell visível.**
 0,86%–8,70%. No diretório a 1440 a barra lateral não aparece no diff; o que difere
