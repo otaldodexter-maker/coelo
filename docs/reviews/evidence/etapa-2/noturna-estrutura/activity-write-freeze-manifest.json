@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-09-09T20:57:29.0927664-03:00",
+  "scope": "apps/superadmin -> Atividades -> Criar rascunho -> selecao catalogada durante save pendente",
+  "action_ids": [
+    "activities.create",
+    "activities.location"
+  ],
+  "status": "local-green; candidato gate defaultfalse; sem certificacao integral",
+  "root_cause": "Formulario mantinha corpo editavel e setters catalog/reserva aceitavam mutacao apos capturar commandA. SucessoA podia descartar B ao navegar ou marcar baselineB como salvo.",
+  "changes": [
+    "Corpo e navegacao com AbsorbPointer/ExcludeFocus durante isSubmitting e status textual liveRegion",
+    "selectCataloguedLocation/setLocationReservation recusam mutacao durante isSubmitting",
+    "Tentativa A, reserva e fingerprint preservados; apos termino UI e controller aceitam nova edicao"
+  ],
+  "metrics": {
+    "S": 0,
+    "F": 0,
+    "N": 6,
+    "B": 0,
+    "U": 0,
+    "E": 6,
+    "P": 6
+  },
+  "runs": [
+    {
+      "runner": 8512,
+      "command": "rtk proxy flutter test --no-pub --concurrency=1 test/features/activities/presentation/activity_form_page_test.dart test/features/activities/presentation/activity_catalogued_location_draft_test.dart --plain-name \"activity write freeze\" --reporter expanded",
+      "result": "RED3F: controller aceitava selecaoB; widgets sem aviso de save. Chunkbc9968.",
+      "exit_code": 1
+    },
+    {
+      "runner": 95999,
+      "result": "RED widget refinado confirma1command enviado; aviso ausente. Chunk90c8a5. Nao somar casos.",
+      "exit_code": 1
+    },
+    {
+      "runner": 89340,
+      "result": "Intermediario1P2F: selecaoB no dropdown apos liberar save precisava ensureVisible/pumpAndSettle; causa fixture, corrigida sem alteracao do produto",
+      "chunk": "4a667f",
+      "exit_code": 1
+    },
+    {
+      "runner": "exec_command concluido diretamente",
+      "command": "rtk proxy flutter test --no-pub --concurrency=1 test/features/activities/presentation/activity_form_page_test.dart test/features/activities/presentation/activity_catalogued_location_draft_test.dart --plain-name \"activity write freeze\" --reporter expanded",
+      "P": 3,
+      "chunk": "74696a",
+      "exit_code": 0
+    },
+    {
+      "runner": "exec_command concluido diretamente",
+      "command": "rtk proxy flutter test --no-pub --concurrency=1 test/features/activities/presentation/activity_form_page_test.dart --name \"edit route ignores an older save|failed draft save exposes retry|supports 200 percent text\" --reporter expanded",
+      "P": 3,
+      "chunk": "5df172",
+      "exit_code": 0
+    },
+    {
+      "runner": 27171,
+      "command": "rtk proxy dart analyze lib/features/activities/presentation/activity_form_page.dart lib/features/activities/presentation/activity_form_controller.dart test/features/activities/presentation/activity_form_page_test.dart test/features/activities/presentation/activity_catalogued_location_draft_test.dart",
+      "issues": 0,
+      "chunk": "47a1cf",
+      "exit_code": 0
+    },
+    {
+      "chunk": "9474b4",
+      "command": "rtk git diff --check",
+      "exit_code": 0
+    },
+    {
+      "command": "dart run tool/validate_admin_visual_contracts.dart <worktree> assets/admin-visual-contract-allowlist.json",
+      "cwd": "apps/catalog",
+      "chunk": "e44253",
+      "exit_code": 0,
+      "scope": "Static visual contracts; not screenshot or E2E proof"
+    }
+  ],
+  "evidence": "Saidas factuais via runners/chunks; nao preservei log bruto nem o fabriquei.6IDs unicos, reruns nao somados.",
+  "limitations": [
+    "Widget usa ActivityFormPage real e seletor compartilhado CoeloAdminSingleSelectField no seam locationSelectionBuilder com catalogo fixture; nao e prova do RPC/catalog reader",
+    "Guard de foco ExcludeFocus implementado; nao houve campanha separada de teclado/leitor de tela",
+    "Sem alteracao router/Auth/SQL/remoto/contratos ou guarda de owner57268a881",
+    "Status busy cobre qualquer submit em curso; nao afirma commit confirmado",
+    "Nao altera politica existente de tentativa ambigua/fingerprint divergente"
+  ],
+  "hashes": [
+    {
+      "sha256": "1EAC015FAEBA35AA245094CDFD554AF6FDC68A26A6FBAF90687BDBBE6B14A095",
+      "path": "apps/superadmin/lib/features/activities/presentation/activity_form_page.dart"
+    },
+    {
+      "sha256": "1FDFB633EBBAFCEB8C855B20AAAF276587CA1FED90F9AB6EEC5C44C41F276C2F",
+      "path": "apps/superadmin/lib/features/activities/presentation/activity_form_controller.dart"
+    },
+    {
+      "sha256": "D6D69D9CE419F3FF15470239BEF8FCBDC6C648295C7705D3BB34AB6E4A14DBD2",
+      "path": "apps/superadmin/test/features/activities/presentation/activity_form_page_test.dart"
+    },
+    {
+      "sha256": "B10F8054E4287F8242848FCAA07DBD17E9B3E1C54187B3C2BDC61EFC69D77272",
+      "path": "apps/superadmin/test/features/activities/presentation/activity_catalogued_location_draft_test.dart"
+    }
+  ],
+  "root_review": "Diff reviewed; four source/test hashes matched; no router/Auth/SQL edits."
+}

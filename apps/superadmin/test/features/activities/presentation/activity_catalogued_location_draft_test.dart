@@ -58,6 +58,23 @@ void main() {
     expect(c.toDraft().reservation, isNotNull);
     expect(c.toDraft().locationId, value.snapshot.id);
   });
+  test('activity write freeze keeps catalog and reservation until submission ends', () async {
+    final c = await controller();
+    final a = selection();
+    final intent = reservation();
+    c.selectCataloguedLocation(a);
+    c.setLocationReservation(intent);
+    final signature = c.commandSignature;
+    c.setSubmitting(true);
+    c.selectCataloguedLocation(selection(id: 'location-2'));
+    c.setLocationReservation(reservation(hour: 11));
+    expect(c.cataloguedLocationSelection, same(a));
+    expect(c.locationReservation, same(intent));
+    expect(c.commandSignature, signature);
+    c.setSubmitting(false);
+    c.selectCataloguedLocation(selection(id: 'location-2'));
+    expect(c.cataloguedLocationSelection!.snapshot.id, 'location-2');
+  });
   test('unit selection and reservation are pruned with the actual unit', () async {
     final c = await controller();
     c.selectCataloguedLocation(selection(unitId: unit));

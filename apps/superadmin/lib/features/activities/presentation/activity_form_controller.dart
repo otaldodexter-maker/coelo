@@ -133,6 +133,7 @@ final class ActivityFormController extends ChangeNotifier {
   }
 
   void selectCataloguedLocation(CataloguedLocationSelection? selection) {
+    if (isSubmitting) return;
     if (isEditing) throw StateError('Catalogued selection editing is unavailable');
     if (selection != null && !_matchesLocationOwner(selection)) {
       throw ArgumentError('Location owner mismatch');
@@ -144,6 +145,7 @@ final class ActivityFormController extends ChangeNotifier {
   }
 
   void setLocationReservation(ActivityCreateReservationIntent? reservation) {
+    if (isSubmitting) return;
     if (isEditing || reservation != null && _cataloguedLocationSelection == null) {
       throw StateError('A catalogued create selection is required');
     }
