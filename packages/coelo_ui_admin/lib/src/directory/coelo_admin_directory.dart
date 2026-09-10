@@ -654,9 +654,11 @@ final class _Footer extends StatelessWidget {
     compactOnNext: pagination.hasNext
         ? () => pagination.onPageSelected(pagination.currentPage + 1)
         : null,
-    child: KeyedSubtree(
-      key: pagination.surfaceKey,
-      child: CoeloAdminPagination(
+    // Sem surfaceKey o rodape recebe a paginacao diretamente, para que quem
+    // inspeciona `child` encontre o `CoeloAdminPagination`.
+    child: _maybeKeyed(
+      pagination.surfaceKey,
+      CoeloAdminPagination(
         currentPage: pagination.currentPage,
         totalPages: pagination.totalPages,
         pageSize: pagination.pageSize,
@@ -672,6 +674,9 @@ final class _Footer extends StatelessWidget {
       ),
     ),
   );
+
+  static Widget _maybeKeyed(Key? key, Widget child) =>
+      key == null ? child : KeyedSubtree(key: key, child: child);
 }
 
 /// Card de estado aprovado em Instituições (vazio, sem resultados, falha e

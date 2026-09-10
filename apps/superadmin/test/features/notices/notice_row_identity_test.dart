@@ -35,9 +35,7 @@ void main() {
       // Quais comunicacoes esta largura mostra na primeira pagina e decisao da
       // tela, e no estreito cabem menos. O que nao pode variar e: toda
       // comunicacao MOSTRADA tem de ser alcancavel por id.
-      final visiveis = criadas
-          .where((n) => find.text(n.title).evaluate().isNotEmpty)
-          .toList();
+      final visiveis = criadas.where((n) => find.text(n.title).evaluate().isNotEmpty).toList();
       expect(visiveis, isNotEmpty, reason: 'nenhuma comunicacao apareceu em ${caso.nome}');
 
       for (final notice in visiveis) {
@@ -51,6 +49,10 @@ void main() {
       // Alcancavel nao basta: tem de acionar a comunicacao CERTA. Sem isto,
       // uma chave posta no widget errado passaria na verificacao acima.
       final alvo = visiveis.first;
+      // No estreito o composto mostra toggle, abas e o card Criar antes do
+      // primeiro item; rolar ate o alvo antes de tocar.
+      await tester.ensureVisible(_porId(alvo.id).first);
+      await tester.pumpAndSettle();
       await tester.tap(_porId(alvo.id).first, warnIfMissed: false);
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
@@ -94,11 +96,7 @@ Future<void> _pump(
     MaterialApp(
       theme: CoeloTheme.light,
       home: Scaffold(
-        body: NoticeDirectoryPage(
-          repository: repository,
-          canManageLifecycle: true,
-          onEdit: onEdit,
-        ),
+        body: NoticeDirectoryPage(repository: repository, canManageLifecycle: true, onEdit: onEdit),
       ),
     ),
   );

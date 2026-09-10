@@ -65,7 +65,6 @@ void main() {
     expect(find.text('Aviso pagina 1'), findsNothing);
   });
 
-
   testWidgets('acting on the last item of a page leaves an honest state, not a dead end', (
     tester,
   ) async {

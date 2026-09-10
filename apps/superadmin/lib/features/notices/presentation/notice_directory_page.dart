@@ -7,8 +7,6 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../../../app/shell/superadmin_notice.dart';
-import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
-import '../../../shared/presentation/widgets/superadmin_underline_tabs.dart';
 import '../domain/notice_repository.dart';
 import '../domain/platform_notice.dart';
 import 'communication_type_badge.dart';
@@ -89,6 +87,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
   final _search = TextEditingController();
   _NoticeStatusFilter _statusFilter = _NoticeStatusFilter.all;
   _CommunicationTypeFilter _typeFilter = _CommunicationTypeFilter.all;
+  CoeloAdminDirectoryDisplay _display = CoeloAdminDirectoryDisplay.table;
   Timer? _searchDebounce;
   int _loadGeneration = 0;
   int _commandGeneration = 0;
@@ -160,97 +159,163 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
       final displayedPageSize = pageSizeOptions.contains(_pageSize)
           ? _pageSize
           : pageSizeOptions.first;
-      final contentPadding = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
-          ? CoeloSpacing.space10
-          : compact
-          ? CoeloSpacing.space4
-          : CoeloSpacing.space6;
-      if (_state == NoticeDirectoryViewState.forbidden) {
-        return Container(
-          color: Theme.of(context).colorScheme.surface,
-          child: Padding(
-            key: const Key('notice-directory-content-inset'),
-            padding: EdgeInsets.all(contentPadding),
-            child: _content(
-              context,
-              compact: compact,
-              allowInlinePreview: false,
-              all: const <PlatformNotice>[],
-              notices: const <PlatformNotice>[],
-            ),
-          ),
-        );
-      }
-      final all = _items;
-      final notices = _items;
+      final effectiveState = widget.viewState == NoticeDirectoryViewState.content
+          ? _state
+          : widget.viewState;
+      final notices = effectiveState == NoticeDirectoryViewState.content
+          ? _items
+          : const <PlatformNotice>[];
       final totalPages = _nextCursorId == null ? _page : _page + 1;
-      final showsPagination = _state == NoticeDirectoryViewState.content && notices.isNotEmpty;
+      final showsPagination =
+          effectiveState == NoticeDirectoryViewState.content && notices.isNotEmpty;
+      final allowInlinePreview =
+          widget.enableInlinePreview && constraints.maxWidth >= CoeloBreakpoints.large.minWidth;
+      final showsTable = !compact && _display == CoeloAdminDirectoryDisplay.table;
+      final selectedPreview = notices.isEmpty
+          ? null
+          : notices.firstWhere(
+              (notice) => notice.id == _selectedPreviewId,
+              orElse: () => notices.first,
+            );
       return Container(
         color: Theme.of(context).colorScheme.surface,
-        child: Column(
-          children: [
-            Expanded(
-              child: Padding(
-                key: const Key('notice-directory-content-inset'),
-                padding: EdgeInsets.fromLTRB(
-                  contentPadding,
-                  contentPadding,
-                  contentPadding,
-                  showsPagination ? 0 : contentPadding,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _toolbar(compact: compact),
-                    const SizedBox(height: CoeloSpacing.space4),
-                    SuperadminUnderlineTabs<_CommunicationTypeFilter>(
-                      tabs: [
-                        for (final type in _CommunicationTypeFilter.values)
-                          SuperadminUnderlineTab(value: type, label: type.label),
-                      ],
-                      selected: _typeFilter,
-                      onSelected: (value) {
-                        setState(() => _typeFilter = value);
-                        _load(reset: true);
-                      },
-                    ),
-                    const SizedBox(height: CoeloSpacing.space4),
-                    Expanded(
-                      child: _content(
-                        context,
-                        compact: compact,
-                        allowInlinePreview: constraints.maxWidth >= CoeloBreakpoints.large.minWidth,
-                        all: all,
-                        notices: notices,
-                      ),
-                    ),
-                  ],
-                ),
+        child: CoeloAdminDirectory<CoeloAdminDirectoryDisplay>(
+          key: const Key('notice-directory-content-inset'),
+          scrollKey: const Key('notice-directory-content-scroll'),
+          gridKey: const Key('notice-card-grid'),
+          status: switch (effectiveState) {
+            NoticeDirectoryViewState.loading => CoeloAdminDirectoryStatus.loading,
+            NoticeDirectoryViewState.error => CoeloAdminDirectoryStatus.failure,
+            NoticeDirectoryViewState.forbidden => CoeloAdminDirectoryStatus.unauthorized,
+            NoticeDirectoryViewState.content when notices.isEmpty && !_hasActiveQuery =>
+              CoeloAdminDirectoryStatus.empty,
+            NoticeDirectoryViewState.content when notices.isEmpty =>
+              CoeloAdminDirectoryStatus.noResults,
+            NoticeDirectoryViewState.content => CoeloAdminDirectoryStatus.success,
+          },
+          messages: const CoeloAdminDirectoryMessages(
+            empty: 'Nenhuma comunicação',
+            emptyIcon: Icons.campaign_outlined,
+            noResults: 'Nenhum resultado',
+            noResultsIcon: Icons.search_off_rounded,
+            failure: 'N\u00e3o foi poss\u00edvel carregar',
+            unauthorized: 'Sem permiss\u00e3o',
+          ),
+          errorMessage: switch (effectiveState) {
+            NoticeDirectoryViewState.error =>
+              _errorMessage ?? 'Não foi possível carregar as comunicações.',
+            NoticeDirectoryViewState.forbidden =>
+              _errorMessage ?? 'Você não tem permissão para ver comunicações.',
+            NoticeDirectoryViewState.content when notices.isEmpty =>
+              _hasActiveQuery
+                  ? 'Nenhuma comunicação encontrada com estes filtros.'
+                  : 'Ainda não existem comunicações cadastradas.',
+            _ => null,
+          },
+          onRetry: () => _load(reset: true),
+          search: CoeloSearchField(
+            controller: _search,
+            hintText: 'Buscar comunicação',
+            semanticLabel: 'Buscar comunicação por título, conteúdo ou contexto',
+            onChanged: (_) {
+              _searchDebounce?.cancel();
+              _searchDebounce = Timer(const Duration(milliseconds: 300), () => _load(reset: true));
+            },
+          ),
+          filters: [
+            SizedBox(
+              width: 220,
+              child: CoeloAdminSingleSelectField<_NoticeStatusFilter>(
+                value: _statusFilter,
+                label: 'Estado',
+                options: _NoticeStatusFilter.values,
+                optionLabel: (value) => value.label,
+                onChanged: (value) {
+                  _statusFilter = value;
+                  _load(reset: true);
+                },
+                prefixIcon: Icons.bar_chart_rounded,
               ),
             ),
-            if (showsPagination)
-              SuperadminListingPaginationFooter(
-                horizontalPadding: contentPadding,
-                semanticKey: const Key('notice-directory-pagination'),
-                compactCurrentPage: _page,
-                compactTotalPages: totalPages,
-                compactOnPrevious: _page > 1 ? _previousPage : null,
-                compactOnNext: _nextCursorId != null ? _nextPage : null,
-                child: CoeloAdminPagination(
+          ],
+          display: compact ? CoeloAdminDirectoryDisplay.cards : _display,
+          onDisplayChanged: (value) => setState(() => _display = value),
+          groupedTableView: CoeloAdminDirectoryDisplay.table,
+          selectedTableView: CoeloAdminDirectoryDisplay.table,
+          tableViews: const [
+            CoeloAdminDirectoryTableViewOption(
+              value: CoeloAdminDirectoryDisplay.table,
+              label: 'Tabela',
+            ),
+          ],
+          onTableViewSelected: (_) => setState(() => _display = CoeloAdminDirectoryDisplay.table),
+          fileActions: [
+            CoeloAdminFileAction(
+              label: 'Importar',
+              icon: Icons.upload_file_outlined,
+              onPressed: () => _showUnavailableFileAction('importação'),
+            ),
+            CoeloAdminFileAction(
+              label: 'Exportar CSV',
+              icon: Icons.table_rows_outlined,
+              onPressed: () => _showUnavailableFileAction('exportação'),
+            ),
+            CoeloAdminFileAction(
+              label: 'Exportar XLSX',
+              icon: Icons.grid_on_outlined,
+              onPressed: () => _showUnavailableFileAction('exportação'),
+            ),
+          ],
+          tabs: CoeloAdminUnderlineTabs<_CommunicationTypeFilter>(
+            tabs: [
+              for (final type in _CommunicationTypeFilter.values)
+                CoeloAdminUnderlineTab(value: type, label: type.label),
+            ],
+            selected: _typeFilter,
+            onSelected: (value) {
+              setState(() => _typeFilter = value);
+              _load(reset: true);
+            },
+          ),
+          create: widget.onCreate == null
+              ? null
+              : CoeloAdminDirectoryCreate(
+                  label: 'Nova comunicação',
+                  description: 'Criar aviso, conteúdo, destaque ou item Para você.',
+                  icon: Icons.post_add_rounded,
+                  onPressed: widget.onCreate!,
+                  tileKey: const Key('create-notice-card'),
+                  bannerKey: const Key('create-notice-banner'),
+                ),
+          cards: [for (final notice in notices) _noticeCard(context, notice)],
+          table: showsTable && allowInlinePreview && selectedPreview != null
+              ? Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(child: _table(context, notices, onSelected: _selectPreview)),
+                    const SizedBox(width: CoeloSpacing.space6),
+                    SizedBox(
+                      width: 360,
+                      height: 560,
+                      child: _inlinePreview(context, selectedPreview),
+                    ),
+                  ],
+                )
+              : _table(context, notices),
+          pagination: showsPagination
+              ? CoeloAdminDirectoryPagination(
+                  footerKey: const Key('notice-directory-pagination'),
                   currentPage: _page,
                   totalPages: totalPages,
                   pageSize: displayedPageSize,
                   pageSizeOptions: pageSizeOptions,
-                  onPrevious: _page > 1 ? _previousPage : null,
-                  onNext: _nextCursorId != null ? _nextPage : null,
-                  onPageSelected: null,
+                  onPageSelected: (value) => value > _page ? _nextPage() : _previousPage(),
                   onPageSizeChanged: (size) {
                     _pageSize = size;
                     _load(reset: true);
                   },
-                ),
-              ),
-          ],
+                )
+              : null,
         ),
       );
     },
@@ -269,139 +334,11 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
     });
   }
 
-  Widget _toolbar({required bool compact}) {
-    return CoeloAdminListingToolbar(
-      search: SizedBox(
-        width: compact ? double.infinity : CoeloSpacing.space20 * 4,
-        height: CoeloSize.touchMin,
-        child: CoeloSearchField(
-          controller: _search,
-          hintText: 'Buscar comunicação',
-          semanticLabel: 'Buscar comunicação por título, conteúdo ou contexto',
-          onChanged: (_) {
-            _searchDebounce?.cancel();
-            _searchDebounce = Timer(const Duration(milliseconds: 300), () => _load(reset: true));
-          },
-        ),
-      ),
-      filters: [
-        SizedBox(
-          width: compact ? double.infinity : 220,
-          child: CoeloAdminSingleSelectField<_NoticeStatusFilter>(
-            value: _statusFilter,
-            label: 'Estado',
-            options: _NoticeStatusFilter.values,
-            optionLabel: (value) => value.label,
-            onChanged: (value) {
-              _statusFilter = value;
-              _load(reset: true);
-            },
-            prefixIcon: Icons.bar_chart_rounded,
-          ),
-        ),
-      ],
-      actions: [
-        CoeloAdminFileActions(
-          compact: compact,
-          actions: [
-            CoeloAdminFileAction(
-              label: 'Importar',
-              icon: Icons.upload_file_outlined,
-              onPressed: () => _showUnavailableFileAction('importação'),
-            ),
-            CoeloAdminFileAction(
-              label: 'Exportar CSV',
-              icon: Icons.table_rows_outlined,
-              onPressed: () => _showUnavailableFileAction('exportação'),
-            ),
-            CoeloAdminFileAction(
-              label: 'Exportar XLSX',
-              icon: Icons.grid_on_outlined,
-              onPressed: () => _showUnavailableFileAction('exportação'),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
   void _showUnavailableFileAction(String operation) {
     showSuperadminNotice(
       context,
       'A $operation de comunicações ainda não está disponível.',
       icon: Icons.info_outline_rounded,
-    );
-  }
-
-  Widget _content(
-    BuildContext context, {
-    required bool compact,
-    bool allowInlinePreview = true,
-    required List<PlatformNotice> all,
-    required List<PlatformNotice> notices,
-  }) => switch (widget.viewState == NoticeDirectoryViewState.content ? _state : widget.viewState) {
-    NoticeDirectoryViewState.loading => const CoeloStatePanel(
-      title: 'Carregando comunicações',
-      message: 'Aguarde enquanto as comunicações são carregadas.',
-      loading: true,
-    ),
-    NoticeDirectoryViewState.error => _stateWithCreate(
-      compact: compact,
-      state: CoeloStatePanel(
-        title: 'N\u00e3o foi poss\u00edvel carregar',
-        message: _errorMessage ?? 'Não foi possível carregar as comunicações.',
-        actionLabel: 'Tentar novamente',
-        onAction: () => _load(reset: true),
-      ),
-    ),
-    NoticeDirectoryViewState.forbidden => CoeloStatePanel(
-      title: 'Sem permiss\u00e3o',
-      message: _errorMessage ?? 'Você não tem permissão para ver comunicações.',
-      icon: Icons.lock_outline_rounded,
-    ),
-    NoticeDirectoryViewState.content when all.isEmpty && !_hasActiveQuery => _stateWithCreate(
-      compact: compact,
-      state: const CoeloStatePanel(
-        title: 'Nenhuma comunicação',
-        message: 'Ainda não existem comunicações cadastradas.',
-        icon: Icons.campaign_outlined,
-      ),
-    ),
-    NoticeDirectoryViewState.content when notices.isEmpty => _stateWithCreate(
-      compact: compact,
-      state: const CoeloStatePanel(
-        title: 'Nenhum resultado',
-        message: 'Nenhuma comunicação encontrada com estes filtros.',
-        icon: Icons.search_off_rounded,
-      ),
-    ),
-    NoticeDirectoryViewState.content => _directoryContent(
-      context,
-      compact: compact,
-      allowInlinePreview: allowInlinePreview,
-      notices: notices,
-    ),
-  };
-
-  Widget _directoryContent(
-    BuildContext context, {
-    required bool compact,
-    required bool allowInlinePreview,
-    required List<PlatformNotice> notices,
-  }) {
-    if (compact) return _cards(context, notices: notices, compact: true);
-    if (!widget.enableInlinePreview || !allowInlinePreview) return _table(context, notices);
-    final selected = notices.firstWhere(
-      (notice) => notice.id == _selectedPreviewId,
-      orElse: () => notices.first,
-    );
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Expanded(child: _table(context, notices, onSelected: _selectPreview)),
-        const SizedBox(width: CoeloSpacing.space6),
-        SizedBox(width: 360, child: _inlinePreview(context, selected)),
-      ],
     );
   }
 
@@ -447,173 +384,84 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
     setState(() => _selectedPreviewId = notice.id);
   }
 
-  Widget _stateWithCreate({required bool compact, required Widget state}) {
-    if (compact) {
-      final children = <Widget>[if (widget.onCreate != null) _createAction(), state];
-      return ListView.separated(
-        key: const Key('notice-directory-state-list'),
-        itemCount: children.length,
-        separatorBuilder: (_, _) => const SizedBox(height: CoeloSpacing.space6),
-        itemBuilder: (_, index) => children[index],
-      );
-    }
-    return Column(
-      key: const Key('notice-directory-state-wide'),
-      children: [
-        if (widget.onCreate != null) ...[
-          _createBannerAction(),
-          const SizedBox(height: CoeloSpacing.space4),
-        ],
-        Expanded(child: state),
-      ],
-    );
-  }
-
-  Widget _createAction() => ConstrainedBox(
-    key: const Key('create-notice-card'),
-    constraints: const BoxConstraints(minHeight: 216),
-    child: CoeloAdminCreateAction(
-      label: 'Nova comunicação',
-      description: 'Criar aviso, conteúdo, destaque ou item Para você.',
-      icon: Icons.post_add_rounded,
-      onPressed: widget.onCreate,
-    ),
-  );
-
-  Widget _createBannerAction() => CoeloAdminCreateAction(
-    key: const Key('create-notice-banner'),
-    label: 'Nova comunicação',
-    description: 'Criar aviso, conteúdo, destaque ou item Para você.',
-    icon: Icons.post_add_rounded,
-    variant: CoeloAdminCreateActionVariant.banner,
-    onPressed: widget.onCreate,
-  );
-
-  Widget _cards(
-    BuildContext context, {
-    required List<PlatformNotice> notices,
-    required bool compact,
-  }) {
-    final cards = <Widget>[
-      if (widget.onCreate != null) _createAction(),
-      ...notices.map((notice) => _noticeCard(context, notice)),
-    ];
-    if (compact) {
-      return ListView.separated(
-        key: const Key('notice-card-list'),
-        itemCount: cards.length,
-        separatorBuilder: (_, _) => const SizedBox(height: CoeloSpacing.space6),
-        itemBuilder: (_, index) => cards[index],
-      );
-    }
-    return GridView.builder(
-      key: const Key('notice-card-grid'),
-      itemCount: cards.length,
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 420,
-        mainAxisExtent: 260,
-        mainAxisSpacing: CoeloSpacing.space6,
-        crossAxisSpacing: CoeloSpacing.space6,
-      ),
-      itemBuilder: (_, index) => cards[index],
-    );
-  }
-
   Widget _table(
     BuildContext context,
     List<PlatformNotice> notices, {
     ValueChanged<PlatformNotice>? onSelected,
-  }) => Column(
-    children: [
-      if (widget.onCreate != null) ...[
-        _createBannerAction(),
-        const SizedBox(height: CoeloSpacing.space4),
-      ],
-      Expanded(
-        child: SingleChildScrollView(
-          child: CoeloAdminResizableTable<PlatformNotice>(
-            key: ValueKey(
-              'communication-directory-table-${_typeFilter.type?.storageValue ?? 'all'}',
-            ),
-            items: notices,
-            rowKey: (notice) => 'communication-row-${notice.id}',
-            pinnedColumn: CoeloAdminTableColumn(
-              id: 'item',
-              label: 'Item',
-              initialWidth: 280,
-              minWidth: 220,
-              maxWidth: 420,
-              cellBuilder: (cellContext, notice) {
-                final showsSummary = MediaQuery.textScalerOf(cellContext).scale(1) < 1.5;
-                return Semantics(
-                  label: '${notice.title}. ${notice.message}',
-                  excludeSemantics: true,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(notice.title, maxLines: 1, overflow: TextOverflow.ellipsis),
-                      if (showsSummary)
-                        Text(
-                          notice.message,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: Theme.of(cellContext).textTheme.bodySmall,
-                        ),
-                    ],
-                  ),
-                );
-              },
-            ),
-            columns: [
-              CoeloAdminTableColumn(
-                id: 'type',
-                label: 'Tipo',
-                initialWidth: 150,
-                minWidth: 130,
-                maxWidth: 190,
-                cellBuilder: (_, notice) => CommunicationTypeBadge(type: notice.type),
-              ),
-              _textColumn('priority', 'Prioridade', 130, (notice) => notice.priority.label),
-              _textColumn(
-                'validity',
-                'Vigência',
-                180,
-                (notice) => notice.endsAt == null
-                    ? 'Desde ${_formatDate(notice.startsAt)}'
-                    : '${_formatDate(notice.startsAt)} – ${_formatDate(notice.endsAt!)}',
-              ),
-              _textColumn('recurrence', 'Recorrência', 170, (notice) => notice.recurrenceLabel),
-              _textColumn('context', 'Contexto', 180, (notice) => notice.audienceLabel),
-              CoeloAdminTableColumn(
-                id: 'status',
-                label: 'Status',
-                initialWidth: 140,
-                minWidth: 120,
-                maxWidth: 180,
-                cellBuilder: (context, notice) => Align(
-                  alignment: Alignment.centerLeft,
-                  child: _statusIndicator(context, notice.status),
+  }) => CoeloAdminResizableTable<PlatformNotice>(
+    key: ValueKey('communication-directory-table-${_typeFilter.type?.storageValue ?? 'all'}'),
+    items: notices,
+    rowKey: (notice) => 'communication-row-${notice.id}',
+    pinnedColumn: CoeloAdminTableColumn(
+      id: 'item',
+      label: 'Item',
+      initialWidth: 280,
+      minWidth: 220,
+      maxWidth: 420,
+      cellBuilder: (cellContext, notice) {
+        final showsSummary = MediaQuery.textScalerOf(cellContext).scale(1) < 1.5;
+        return Semantics(
+          label: '${notice.title}. ${notice.message}',
+          excludeSemantics: true,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(notice.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+              if (showsSummary)
+                Text(
+                  notice.message,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(cellContext).textTheme.bodySmall,
                 ),
-              ),
-              CoeloAdminTableColumn(
-                id: 'actions',
-                label: 'Ações',
-                initialWidth: 88,
-                minWidth: 80,
-                maxWidth: 104,
-                cellBuilder: (_, notice) => _rowActionMenu(notice),
-              ),
             ],
-            headerHeight: 56,
-            rowHeight: 64,
-            onRowPressed:
-                onSelected ??
-                (widget.onEdit == null ? null : (notice) => widget.onEdit!(notice.id)),
           ),
-        ),
+        );
+      },
+    ),
+    columns: [
+      CoeloAdminTableColumn(
+        id: 'type',
+        label: 'Tipo',
+        initialWidth: 150,
+        minWidth: 130,
+        maxWidth: 190,
+        cellBuilder: (_, notice) => CommunicationTypeBadge(type: notice.type),
+      ),
+      _textColumn('priority', 'Prioridade', 130, (notice) => notice.priority.label),
+      _textColumn(
+        'validity',
+        'Vigência',
+        180,
+        (notice) => notice.endsAt == null
+            ? 'Desde ${_formatDate(notice.startsAt)}'
+            : '${_formatDate(notice.startsAt)} – ${_formatDate(notice.endsAt!)}',
+      ),
+      _textColumn('recurrence', 'Recorrência', 170, (notice) => notice.recurrenceLabel),
+      _textColumn('context', 'Contexto', 180, (notice) => notice.audienceLabel),
+      CoeloAdminTableColumn(
+        id: 'status',
+        label: 'Status',
+        initialWidth: 140,
+        minWidth: 120,
+        maxWidth: 180,
+        cellBuilder: (context, notice) =>
+            Align(alignment: Alignment.centerLeft, child: _statusIndicator(context, notice.status)),
+      ),
+      CoeloAdminTableColumn(
+        id: 'actions',
+        label: 'Ações',
+        initialWidth: 88,
+        minWidth: 80,
+        maxWidth: 104,
+        cellBuilder: (_, notice) => _rowActionMenu(notice),
       ),
     ],
+    headerHeight: 56,
+    rowHeight: 64,
+    onRowPressed:
+        onSelected ?? (widget.onEdit == null ? null : (notice) => widget.onEdit!(notice.id)),
   );
 
   CoeloAdminTableColumn<PlatformNotice> _textColumn(

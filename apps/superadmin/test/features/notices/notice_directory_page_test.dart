@@ -216,8 +216,12 @@ void main() {
   testWidgets('uses the canonical large directory inset', (tester) async {
     await _pumpDirectory(tester, repository: _repository(), size: const Size(1440, 900));
 
-    final inset = tester.widget<Padding>(find.byKey(const Key('notice-directory-content-inset')));
-    expect(inset.padding, const EdgeInsets.all(CoeloSpacing.space10));
+    // O composto aplica o recuo da familia na lista rolavel (space10 em 1440).
+    final scroll = tester.widget<ListView>(
+      find.byKey(const Key('notice-directory-content-scroll')),
+    );
+    expect(scroll.padding?.resolve(TextDirection.ltr).left, CoeloSpacing.space10);
+    expect(scroll.padding?.resolve(TextDirection.ltr).top, CoeloSpacing.space10);
   });
 
   testWidgets('exposes honest unavailable import and export actions', (tester) async {
@@ -239,7 +243,7 @@ void main() {
   ) async {
     final repository = _repository()..create(_draft(1));
     await _pumpDirectory(tester, repository: repository, size: const Size(375, 800));
-    expect(find.byKey(const Key('notice-card-list')), findsOneWidget);
+    expect(find.byKey(const Key('notice-card-grid')), findsOneWidget);
     expect(find.byType(CoeloAdminResizableTable<PlatformNotice>), findsNothing);
 
     await _pumpDirectory(tester, repository: repository, size: const Size(1024, 800));
