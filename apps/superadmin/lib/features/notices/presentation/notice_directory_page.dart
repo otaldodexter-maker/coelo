@@ -809,7 +809,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
           );
           if (!_isCurrentCommand(generation, requestedRepository)) return;
           _actionRequestIds.remove(requestKey);
-          _refresh('Publicação agendada: ${updated.title}');
+          _refresh('Publicação agendada: ${updated.title}', reset: false);
           return;
         case _NoticeCardAction.pause:
           final updated = await requestedRepository.changeStatus(
@@ -820,7 +820,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
           );
           if (!_isCurrentCommand(generation, requestedRepository)) return;
           _actionRequestIds.remove(requestKey);
-          _refresh('Comunicação pausada: ${updated.title}');
+          _refresh('Comunicação pausada: ${updated.title}', reset: false);
           return;
         case _NoticeCardAction.resume:
           final updated = await requestedRepository.changeStatus(
@@ -831,7 +831,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
           );
           if (!_isCurrentCommand(generation, requestedRepository)) return;
           _actionRequestIds.remove(requestKey);
-          _refresh('Reativação agendada: ${updated.title}');
+          _refresh('Reativação agendada: ${updated.title}', reset: false);
           return;
         case _NoticeCardAction.cancel:
           final updated = await requestedRepository.changeStatus(
@@ -843,7 +843,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
           );
           if (!_isCurrentCommand(generation, requestedRepository)) return;
           _actionRequestIds.remove(requestKey);
-          _refresh('Comunicação inativada: ${updated.title}');
+          _refresh('Comunicação inativada: ${updated.title}', reset: false);
           return;
       }
     } on NoticeRepositoryException catch (error) {
@@ -884,9 +884,17 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
     if (action == _NoticeCardAction.cancel) cancellationReason?.trim() ?? '',
   ].join(':');
 
-  void _refresh(String message) {
+  /// `reset` volta o diretorio para a primeira pagina. Isso e o certo quando o
+  /// instantaneo INTEIRO esta velho — conflito de versao e aviso ausente —,
+  /// porque a paginacao guardada ja nao descreve o que o servidor tem.
+  ///
+  /// Depois de uma acao BEM SUCEDIDA e o oposto: devolver o operador ao inicio
+  /// o obriga a navegar de volta a cada acao, e operar tres avisos da pagina
+  /// tres vira tres viagens. Ai basta reler a pagina corrente, pelo mesmo
+  /// caminho que a propria paginacao ja usa.
+  void _refresh(String message, {bool reset = true}) {
     _feedback(message);
-    _load(reset: true);
+    _load(reset: reset);
   }
 
   void _feedback(String message) {
@@ -1032,6 +1040,14 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
         _nextCursorId = result.nextCursorId;
         _state = NoticeDirectoryViewState.content;
       });
+      // Reler a pagina corrente pode devolver uma pagina VAZIA quando a acao
+      // tirou o ultimo item dela. O rodape de paginacao so existe junto do
+      // conteudo, entao ficar ali seria um beco: sem itens e sem caminho de
+      // volta. Nesse caso, e so nesse, voltar ao inicio, que e o unico lugar
+      // garantidamente navegavel.
+      if (!reset && _items.isEmpty && _page > 1) {
+        await _load(reset: true);
+      }
     } on NoticeUnauthorizedException catch (error) {
       if (!_isCurrentLoad(generation, requestedRepository)) return;
       setState(() {
