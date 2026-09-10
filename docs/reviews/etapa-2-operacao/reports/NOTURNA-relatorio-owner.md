@@ -126,7 +126,7 @@ para 17, e das 17 nenhuma é órfã.** Elas se distribuem assim:
 
 | Falhas | Arquivo | O que é |
 | ---: | --- | --- |
-| 3 | `app/router/principal_real_route_test` | **defeito real e preexistente**: na rota real com contexto autenticado, a página de Acontece não é encontrada na árvore. O caso de negação passa — o caminho fechado funciona e o de sucesso não monta. Falha idêntica na base anterior à rodada |
+| 3 | `app/router/principal_real_route_test` | **fixture obsoleta, com causa localizada e verificada**: a rota exige dois repositórios, o teste fornece um, e a composição de produção liga os dois **juntos** ou **ambos nulos** — nunca o estado intermediário contra o qual o teste falha |
 | 2 | `core/config/composition_root_sanitization_test` | contrato de composição |
 | 2 | `core/config/unit_fail_closed_composition_source_test` | contrato de composição |
 | 2 | `shared/.../superadmin_form_action_footer_adoption_test` | adoção do rodapé de ação |
@@ -2171,15 +2171,40 @@ palavra contra palavra**. Ela estava certa sobre o princípio e arquivou a evid�
 errada. **Uma recusa mal fundamentada, bem arquivada, é pior que não arquivada:
 ela deixa de ser reexaminada.**
 
-**As três falhas são reais, são de escopo dela, e precedem esta rodada.** Na rota
-real com contexto autenticado, a página de Acontece não é encontrada na árvore; o
-quarto caso do mesmo arquivo, o de negação por múltiplos contextos ativos, passa —
-**o caminho fechado funciona e o de sucesso não monta**. Ficam diagnosticadas e não
-corrigidas: mexer na composição da rota real a menos de uma hora do congelamento
-seria abrir frente nova.
+**E houve uma terceira leitura, melhor fundamentada que as duas anteriores, que
+eu verifiquei de forma independente antes de publicar.** A rota real de Acontece
+exige **duas** dependências e devolve indisponibilidade se qualquer uma faltar. O
+teste fornece **uma**, nas três montagens. E os únicos dois pontos de composição do
+aplicativo ligam as duas **juntas**, do mesmo cliente, ou **ambas nulas** — não
+existe terceiro ponto, e portanto **nenhuma configuração de produção produz o
+estado contra o qual esse teste falha**.
+
+Então as três não evidenciam rota quebrada: evidenciam uma **fixture que precede a
+integração do feed misto e nunca foi atualizada**. E o ramo em que ela cai é o de
+falha fechada, que é o comportamento correto para dependência ausente. O limite da
+afirmação, declarado: isto é leitura do composition root, não produção
+respondendo — não se afirma que a rota funciona em produção, e sim que nenhuma
+composição existente produz aquele estado.
+
+**E o detalhe que parecia diagnóstico agora se explica:** o quarto caso do arquivo,
+o de negação por múltiplos contextos, passa **pelo motivo errado** — ele assere
+justamente o fechamento, e fechamento é o que acontece de qualquer jeito com a
+dependência faltando. O verde ali não prova nada.
+
+As três continuam **contadas como falha**, porque são vermelhas de verdade. O que
+muda é a classificação. A correção é uma linha — acrescentar o segundo repositório
+às três montagens — e não foi feita: alteração de teste a menos de uma hora do
+congelamento, num arquivo fora do recorte declarado de qualquer frente.
+
+**A sequência inteira é o exemplo mais completo da rodada de como um diagnóstico
+amadurece.** A primeira leitura — "não é meu" — era vazia: ausência de uma lista
+que não cobria o arquivo. A segunda — "defeito real preexistente" — tinha
+evidência, mas de **sintoma**: falhar em todos os checkouts prova preexistência,
+não prova defeito de produto. Só a terceira tem a **causa** e a conferência do
+outro lado: quem exige, quem fornece, e todos os pontos de composição que existem.
 
 E elas derrubam uma afirmação que a mesma frente tinha feito minutos antes, sobre o
-furo de denominador dela só esconder casos que passam. **Escondia três falhas.**
+furo de denominador dela só esconder casos que passam. **Escondia três.**
 
 ## O autosave do editor de Formulários não roda no aplicativo
 
