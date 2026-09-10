@@ -56,10 +56,12 @@ insert into public.institution_types(id,code,name) values
   ('71000000-0000-4000-8000-000000000001','synthetic-school','Escola'),
   ('71000000-0000-4000-8000-000000000002','synthetic-course','Curso'),
   ('71000000-0000-4000-8000-000000000003','unused-type','Invisível');
-insert into public.plans(id,code,name) values
-  ('71100000-0000-4000-8000-000000000001','synthetic-basic','Essencial'),
-  ('71100000-0000-4000-8000-000000000002','synthetic-full','Completo'),
-  ('71100000-0000-4000-8000-000000000003','unused-plan','Invisível');
+-- plans.description tem default '' e CHECK char_length>=1 em producao, ou seja
+-- o default nunca satisfaz a constraint: a fixture informa a descricao.
+insert into public.plans(id,code,name,description) values
+  ('71100000-0000-4000-8000-000000000001','synthetic-basic','Essencial','Plano sintetico da fixture'),
+  ('71100000-0000-4000-8000-000000000002','synthetic-full','Completo','Plano sintetico da fixture'),
+  ('71100000-0000-4000-8000-000000000003','unused-plan','Invisível','Plano sintetico da fixture');
 insert into public.institutions(
   id,public_name,trade_name,legal_name,slug,primary_domain,document_ref,status,
   institution_type_id) values
@@ -89,9 +91,11 @@ insert into public.institution_subscriptions(id,institution_id,plan_id,status,cr
     '71100000-0000-4000-8000-000000000002','active',now()),
   ('71300000-0000-4000-8000-000000000004','71200000-0000-4000-8000-000000000004',
     '71100000-0000-4000-8000-000000000001','active',now());
-insert into public.units(id,institution_id,name,slug,status,institution_type_id) values
-  ('71400000-0000-4000-8000-000000000001','71200000-0000-4000-8000-000000000001','Ativa','active-a','active','71000000-0000-4000-8000-000000000001'),
-  ('71400000-0000-4000-8000-000000000002','71200000-0000-4000-8000-000000000001','Arquivada','archived-a','archived','71000000-0000-4000-8000-000000000001');
+insert into public.unit_types(id,code,name,status) values
+ ('710000f0-0000-4000-8000-000000000001','superadmin-internal-institution-list-fil-u0','Tipo de unidade da fixture','active');
+insert into public.units(id,institution_id,name,slug,status,unit_type_id,handle) values
+ ('71400000-0000-4000-8000-000000000001','71200000-0000-4000-8000-000000000001','Ativa','active-a','active','710000f0-0000-4000-8000-000000000001','active.a'),
+ ('71400000-0000-4000-8000-000000000002','71200000-0000-4000-8000-000000000001','Arquivada','archived-a','archived','710000f0-0000-4000-8000-000000000001','archived.a');
 insert into public.groups(id,institution_id,unit_id,name,status) values
   ('71500000-0000-4000-8000-000000000001','71200000-0000-4000-8000-000000000001','71400000-0000-4000-8000-000000000001','Ativo','active'),
   ('71500000-0000-4000-8000-000000000002','71200000-0000-4000-8000-000000000001','71400000-0000-4000-8000-000000000002','Arquivado','archived');

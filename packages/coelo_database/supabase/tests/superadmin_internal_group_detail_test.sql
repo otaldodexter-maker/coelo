@@ -250,18 +250,14 @@ insert into public.institutions(
    'group-detail-institution-b','active',
    '81000000-0000-4000-8000-000000000201');
 
+insert into public.unit_types(id,code,name,status) values
+ ('810000f0-0000-4000-8000-000000000201','superadmin-internal-group-detail-test-u0','Tipo de unidade da fixture','active');
 insert into public.units(
-  id,institution_id,name,slug,status,institution_type_id
-) values
-  ('81000000-0000-4000-8000-000000000011',
-   '81000000-0000-4000-8000-000000000101','Group Detail Unit A1',
-   'group-detail-unit-a1','active','81000000-0000-4000-8000-000000000201'),
-  ('81000000-0000-4000-8000-000000000012',
-   '81000000-0000-4000-8000-000000000101','Group Detail Unit A2',
-   'group-detail-unit-a2','active','81000000-0000-4000-8000-000000000201'),
-  ('81000000-0000-4000-8000-000000000013',
-   '81000000-0000-4000-8000-000000000102','Group Detail Unit B1',
-   'group-detail-unit-b1','active','81000000-0000-4000-8000-000000000201');
+  id,institution_id,name,slug,status,unit_type_id
+,handle) values
+ ('81000000-0000-4000-8000-000000000011','81000000-0000-4000-8000-000000000101','Group Detail Unit A1','group-detail-unit-a1','active','810000f0-0000-4000-8000-000000000201','group.detail.unit.a1'),
+ ('81000000-0000-4000-8000-000000000012','81000000-0000-4000-8000-000000000101','Group Detail Unit A2','group-detail-unit-a2','active','810000f0-0000-4000-8000-000000000201','group.detail.unit.a2'),
+ ('81000000-0000-4000-8000-000000000013','81000000-0000-4000-8000-000000000102','Group Detail Unit B1','group-detail-unit-b1','active','810000f0-0000-4000-8000-000000000201','group.detail.unit.b1');
 
 insert into public.groups(
   id,institution_id,unit_id,name,group_type,group_type_other_text,status,
