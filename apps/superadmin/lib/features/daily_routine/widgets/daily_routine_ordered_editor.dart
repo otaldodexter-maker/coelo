@@ -233,7 +233,7 @@ final class _SectionCardState extends State<_SectionCard> {
             if (expanded) ...[
               const SizedBox(height: CoeloSpacing.space3),
               if (fields.isEmpty)
-                const Text('Adicione um campo para comecar.')
+                const Text('Adicione um campo para começar.')
               else
                 ReorderableListView.builder(
                   key: Key('daily-routine-section-${section.id}-field-list'),
