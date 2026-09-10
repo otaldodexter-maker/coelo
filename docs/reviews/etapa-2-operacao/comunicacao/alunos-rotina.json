@@ -1,11 +1,11 @@
 {
-  "revision": 15,
-  "updated_at": "2026-09-10T02:43:00-03:00",
+  "revision": 17,
+  "updated_at": "2026-09-10T03:27:00-03:00",
   "clock_note": "Hora conferida com date: local 23:59 de 09/09 no ultimo commit; esta revisao escrita por volta de 00:07 de 10/09.",
   "group": "alunos-rotina",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) - claude-opus-5[1m]",
-  "status": "ATIVO - recorte proprio e child_safety entregues; em acessos-pessoas restante",
+  "status": "PRE-ENTREGA publicada com folga; disponivel ate o corte",
   "coordinator": "Claude (Coordenacao e Integracao)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-alunos-rotina",
   "branch": "work/etapa2-noturna-alunos-rotina",
@@ -306,5 +306,111 @@
       "detalhe": "Estavam entre os sete certificados de front-end e nao tinham NENHUM teste no app. Coberto no lote 25 para access_profiles. Para people a cobertura ja existia e e melhor que a minha, encontrada quando cancelei o lote correspondente."
     },
     "outras": "Nao ha outra certificacao no meu recorte cuja prova eu nao consiga apontar."
+  },
+  "pre_entrega": {
+    "verificacao": {
+      "testes": "1055 P / 4 S / 0 F em test/features/{daily_routine,attendance,student_tracking,children,safety,access_profiles,people,platform_users}, execucao unica sobre a base integrada.",
+      "analyze": "flutter analyze em apps/superadmin inteiro: No issues found.",
+      "git": "worktree limpa, stash vazio, HEAD 0/0 com upstream.",
+      "integracao": "Os 25 lotes estao INTEGRADOS em dev, conferidos um a um com git merge-base --is-ancestor. Nada meu pendente.",
+      "skips": "Os 4 skips sao historicos de Rotina: tres de estados removidos na V2.10 e um da reconciliacao do dialogo compartilhado. Nenhum e meu."
+    },
+    "recortes_trabalhados": [
+      {
+        "recorte": "alunos-rotina, o original",
+        "lotes": "1 a 14",
+        "resultado": "De 235 P / 4 S / 12 F na base integrada para verde. 12 falhas nao registradas por ninguem, todas com causa raiz identificada."
+      },
+      {
+        "recorte": "child_safety, transferido apos 23:30",
+        "lotes": "18 a 22",
+        "resultado": "De 27 P / 5 F para 170 P / 0 F. Tela que nao se dispunha em PRODUCAO passou a se dispor."
+      },
+      {
+        "recorte": "acessos-pessoas restante",
+        "lotes": "23 e 25",
+        "resultado": "Ja estava verde, 713 P / 0 F. Duas lacunas de cobertura fechadas, ambas em acoes que o rastreador ja tratava como resolvidas."
+      },
+      {
+        "recorte": "createCall, devolvido pelo chat-comunicacoes",
+        "lotes": "24",
+        "resultado": "Ultimo sitio vivo do meu recorte sem chave de intencao."
+      }
+    ],
+    "defeitos_reais_corrigidos": [
+      "child_safety: grade nao se dispunha em producao. IntrinsicHeight sobre um LayoutBuilder, safety_pages.dart:292. Tres sintomas relatados eram a mesma linha.",
+      "daily_routine: TextEditingController usado apos dispose em todo fechamento do dialogo de renomear secao.",
+      "daily_routine: sair do editor perdia o rascunho sem aviso; aceite abandonar nao existia.",
+      "daily_routine: unavailable apresentado como falha recuperavel, com retry que nunca poderia funcionar.",
+      "daily_routine e child_safety e attendance: chave de idempotencia gerada no instante do toque em oito sitios, permitindo que um retry virasse segunda intencao. Em child_safety isso era decisao sobre retirada de crianca.",
+      "daily_routine: vazamento de valor cru na UI, DateTime completo e nome de enum.",
+      "attendance: snapshot lido sob autorizacao anterior sobrevivia a mudanca de autorizacao.",
+      "daily_routine: 73 literais sem acento, incluindo todas as mensagens de erro."
+    ],
+    "nao_corrigido_por_decisao": [
+      "IntrinsicHeight de person_directory_page: mesma forma, hoje seguro porque o cartao usa indicador proprio. Armadilha nomeada.",
+      "attendance_controller: 147 linhas nao referenciadas em lib/. Conferi que a pagina viva trata as tres excecoes, entao e redundancia de manutencao e nao lacuna. Armadilha nomeada.",
+      "studentTrackingRepository declarado no authScope e nao lido por ninguem. Armadilha nomeada.",
+      "Botao de menu do usuario do shell, 52x44 a 375, medido em DUAS telas independentes. Decisao do coordenador de nao mexer nesta rodada; vai ao Owner medido.",
+      "Golden de child_safety: NAO regravado. Sobre a base integrada ele passa."
+    ],
+    "promocoes_propostas": "NENHUMA, em dezesseis revisoes. As tres perguntas de composicao produtiva reprovam para as tres familias, e a causa mais funda apareceu hoje: schema nao reconstruivel.",
+    "erros_meus_nesta_rodada": [
+      "Carimbo de horario errado nas revisoes 5 e 6, cerca de 8 horas adiantado, por estimar em vez de consultar o relogio. Corrigido e declarado.",
+      "Sobrescrevi um arquivo de teste existente com quatro casos passando. Pego pela aritmetica da contagem antes de commitar; restaurado; conferi que nao houve outra ocorrencia.",
+      "Heuristica de chave sem referencia em teste deu falso positivo; passei a usa-la como ponto de partida para ler o teste existente, nao como evidencia.",
+      "Primeira tentativa de acentuacao usou regex que desalinhou nas aspas; refeita por palavra inteira.",
+      "Passei callback ao shell incondicionalmente e movi seis goldens; revertido para opt-in.",
+      "Liberei intencao de salvamento so num dos quatro sitios; corrigido no lote seguinte.",
+      "Reportei uma pista errada sobre access_profile_detail_page; retirei antes de ser repassada.",
+      "Primeira sonda da correcao de safety tinha o defeito, nao a correcao; achei lendo o erro real de cada cenario.",
+      "Medi acessibilidade de invites no widget isolado quando o relato media a pagina; refiz igual antes de afirmar."
+    ]
+  },
+  "amostragem_de_goldens": {
+    "pedido": "O coordenador pediu amostras para o Owner nao receber os 129 goldens vermelhos como um bloco unico.",
+    "metodo": "Leitura apenas. Rodar a suite, ler percentual e pixels de cada golden falho, abrir masterImage, testImage e isolatedDiff, e separar o que foi MEDIDO do que foi INFERIDO.",
+    "assinatura_de_referencia": "A deriva do toggle de barra lateral (ec9826f3e) produz 0,05% e 837 pixels, identico em qualquer largura. O cabecalho compacto (c4a7feff8) produz deslocamento vertical uniforme e so aparece em larguras compactas.",
+    "amostras": [
+      {
+        "suite": "agenda_calendar_golden_test",
+        "casos": 14,
+        "perfil": "SHELL PURO",
+        "medicao": "1440: 0,05% e 837px nas duas variantes de tema. 375 e 768: 10% a 18%, com todo o conteudo fantasmado em deslocamento vertical uniforme.",
+        "conclusao": "As duas mudancas aprovadas, separadas por largura. Nao esconde nada. Rebaseline seguro com causa nomeada."
+      },
+      {
+        "suite": "institutions",
+        "casos": 4,
+        "perfil": "SHELL MAIS CONTEUDO",
+        "medicao": "28% a 40%, de 120 mil a 200 mil pixels. Cabecalho mudou de hamburguer para marca Coelo. E o master abre com cartao tracejado Criar instituicao que o atual NAO tem; dados e paginacao tambem diferem.",
+        "ressalva": "A diferenca de dados e de paginacao indica fixture diferente, entao o cartao pode estar ausente por cenario e nao por regressao. NAO investiguei; e recorte de estrutura."
+      },
+      {
+        "suite": "account_pages_golden_test",
+        "casos": 8,
+        "perfil": "SHELL MAIS CONTEUDO",
+        "medicao": "375 e 768: 44% a 73%, ate 503 mil pixels. 1024 e 1440: 3,9% a 5,1%, ou seja CEM VEZES a assinatura de 837px. No corpo ha um controle segmentado de tres opcoes e uma linha com interruptor.",
+        "conclusao": "Era a familia escolhida por ser a mais provavel de ser so cabecalho, e e a que tem mais conteudo escondido."
+      },
+      {
+        "suite": "meal_plan_pages_golden_test",
+        "casos": 6,
+        "perfil": "CONTEUDO PURO",
+        "medicao": "0,86% a 8,70%. A barra lateral NAO aparece no diff. Difere um cartao: ponto de status trocando de cor e linhas de texto onde rotulo e data mudaram.",
+        "ressalva": "Conversa com o achado de operacoes-sistema sobre guarda de concorrencia de imagem, mas NAO afirmo ligacao."
+      },
+      {
+        "suite": "activities",
+        "casos": 16,
+        "perfil": "CONTEUDO EM TODAS AS LARGURAS",
+        "medicao": "375 e 768 entre 19% e 32%; 1024 entre 12% e 13%; 1440 entre 9,8% e 20,5%. Nas largas o diff e centenas de vezes a assinatura de 837px."
+      }
+    ],
+    "proporcao": "Cerca de 48 casos amostrados. 14 sao rebaseline seguro (Agenda). Os outros ~34, cerca de 70%, tem componente de conteudo que um rebaseline cego apagaria.",
+    "consequencia": "A hipotese de que a deriva do cabecalho explicaria a maior parte dos 129 NAO se sustenta: ela explica uma suite inteira e a metade larga de outra. Se o Owner autorizasse rebaseline em bloco, apagaria mudanca de produto em pelo menos quatro familias.",
+    "ressalvas": "Cinco suites nao sao os 129. A amostra nao e aleatoria: duas escolhi e tres o coordenador indicou. Componente de conteudo e o que MEDI nas imagens; nao investiguei QUAL mudanca de produto em nenhuma. Parte do conteudo pode ser fixture de teste e nao produto.",
+    "recomendacao": "Agenda rebaselina em bloco com causa nomeada. As demais passam pelo dono do recorte antes; o custo e alto, o de apagar regressao e maior.",
+    "armadilha_de_ferramenta_encontrada": "Caminho longo de golden faz o Flutter quebrar a mensagem em duas linhas, e grep de linha unica devolve \"Pixel test failed,\" SEM percentual. Aconteceu em oito casos de Atividades. Quem lesse so aquilo reportaria falha sem magnitude ou contaria errado. Juntar as linhas antes de extrair resolve."
   }
 }

@@ -1,10 +1,10 @@
 {
-  "revision": 34,
-  "updated_at": "2026-09-10T01:52:00-03:00",
+  "revision": 35,
+  "updated_at": "2026-09-10T01:55:00-03:00",
   "group": "chat-comunicacoes",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) - claude-opus-5[1m]",
-  "status": "active; em consolidacao para a pre-entrega",
+  "status": "consolidacao; branch inteiramente integrada, nada pendente",
   "coordinator": "Claude (coelo-73)",
   "ack_received": "revisao 1 aceita; coordenacao.json rev 2, commit 920f23199",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-chat-comunicacoes",
@@ -570,10 +570,9 @@
     "ressalva_de_metodo": "Numa das passadas perfil-para-voce acusou 1 buraco que nao existia mais quando fui identificar: o coordenador tinha integrado no intervalo. Medir estado de integracao ENQUANTO o integrador mescla produz buraco falso. E a mesma classe do numero velho catalogado — o dado estava certo no instante e errado quando fui ler. Quem repetir esta auditoria precisa congelar a referencia primeiro."
   },
   "estado_de_integracao": {
-    "dev": "07306b88e",
+    "dev": "6be8a7d35",
     "pendentes_meus": 0,
-    "nota": "Todos os 41 commits da branch estao em dev. Nao ha nada meu esperando integracao. Os dois patches isolados de router (c2127823f e 48d15d8df) tambem ja foram aplicados.",
-    "branch_a_apagar": "work/etapa2-noturna-chat-comunicacoes-router-dedupe continua sendo um commit vazio. Recomendei apagar; nao apaguei porque exclusao de artefato publicado e do coordenador."
+    "nota": "O par de commits do teste retirado foi integrado junto, como o coordenador decidiu. Todos os 43 commits da branch estao em dev."
   },
   "aberto_do_meu_lado_mas_nao_dependente_de_mim": [
     "Confirmar com o dono de formularios se formsApi.calls e zero no teste de fail-closed. E a metade que nao consigo provar por leitura estatica e a unica coisa da auditoria que pode virar prioridade real.",

@@ -1,6 +1,6 @@
 {
-  "revision": 24,
-  "updated_at": "2026-09-10T02:45:00-03:00",
+  "revision": 27,
+  "updated_at": "2026-09-10T03:35:00-03:00",
   "group": "perfil-para-voce",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
@@ -8,7 +8,7 @@
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-perfil-para-voce",
   "branch": "work/etapa2-noturna-perfil-para-voce",
-  "head": "56638e7fa",
+  "head": "b2cdba58a",
   "upstream": "origin/work/etapa2-noturna-perfil-para-voce",
   "base_observed": "d784462c1",
   "scope": [
@@ -75,7 +75,8 @@
     "250d0543c",
     "5401cec1b",
     "06876dac5",
-    "c5a6fd106"
+    "c5a6fd106",
+    "0f2135398"
   ],
   "tracker_delta_proposto": [
     {
@@ -151,9 +152,12 @@
   "achados_em_dev_nao_meus": [
     "test/app/router/principal_real_route_test.dart falha em 3 casos sobre hospedagem do Principal e Acontece. Confirmado em worktree destacado de origin/dev 1c5eaf0bc limpo: as mesmas 3 falham. Causa: a rota de Acontece passou a exigir principalHappensFeedRepository E principalMixedFeedRepository (superadmin_router.dart:902 em dev) e o teste injeta so o primeiro, entao a rota cai em indisponivel. Teste desatualizado pela integracao do feed misto, nao regressao de produto; a producao compoe os dois. Pertence a publicacoes-midia."
   ],
-  "recursos_proprios": [
-    "nenhum: containers coelo-sqlcheck e coelo-pg17 criados e removidos; docker ps -a vazio conferido"
-  ],
+  "recursos_proprios": {
+    "worktree_extra": "SIM, UMA: C:/Users/adrie/Documents/Coelo.worktrees/verify-dev-tmp, detached em 1c5eaf0bc. Criada por mim para verificar em base limpa se a rota principal-conversations duplicada era de dev ou do meu merge, e mantida para a conferencia externa de Git das 05:00. SERA REMOVIDA antes da entrega, com git worktree remove, e a remocao sera declarada. Nao contem trabalho: e checkout destacado de origin/dev, sem commit e sem alteracao.",
+    "containers": "nenhum ativo. coelo-sqlcheck e coelo-pg17 criados e removidos ao longo da noite; docker ps -a conferido vazio apos cada uso.",
+    "processos_portas_agendamentos": "nenhum.",
+    "correcao_de_declaracao": "Ate a revisao 26 este campo dizia 'nenhum', o que era FALSO desde que criei a worktree. Eu declarei a worktree em texto na revisao 9 e depois sobrescrevi o campo ao consolidar. O coordenador pediu a declaracao explicita e ao conferir eu achei a linha errada no meu proprio handoff. E a mesma categoria que passei a noite auditando nos outros: linha que parece informacao e nunca foi relida."
+  },
   "achado_principal_da_noite": {
     "titulo": "As 10 falhas de principal_profile_preview_golden nao sao deriva de golden nem artefato de host",
     "como_foi_medido": "Percentagens nao uniformes: 768/1024/1440 diferem 0,73% a 1,35% mas com numero ABSOLUTO de pixels quase igual (11128 a 11708), o que indica elemento de tamanho fixo e nao renderizacao de fonte, que escalaria com a area. As variantes 375 saltam para 22,1% com 91 mil pixels.",
@@ -268,6 +272,12 @@
       "titulo": "Referencia de skill: triagem de falhas de golden",
       "resumo": "Arquivo NOVO em .agents/skills/coelo-flutter-review/references/golden-failure-triage.md, com autorizacao explicita do coordenador porque skill e base compartilhada. Nomeia as tres assinaturas, o comando de extracao com o tr que junta linhas, as duas armadilhas de integracao e o fio dos 837 px. Nenhum arquivo existente de skill foi tocado.",
       "provas": "1 arquivo, 117 linhas; numeros citados de docs/reviews/evidence/etapa-2/formularios-cuidado/2026-09-09-golden-divergence-measurement.md e das medicoes proprias"
+    },
+    {
+      "sha": "0f2135398",
+      "titulo": "Evidencia: a base pode ser reconstruida?",
+      "resumo": "docs/reviews/evidence/etapa-2/perfil-para-voce/2026-09-10-schema-versionado-e-replay.md. Quatro fatos medidos: replay das 186 quebra no arquivo 48 e persiste no PG17; o conjunto de 17 que supabase start aplicaria nao tem create table; 40 objetos app_private chamados e nunca criados, agrupados por dominio e com os conferidos a mao marcados; e child_safety e chat versionados por inteiro, que e o que impede o diagnostico de virar catastrofe. Inclui a nota de versao PG15 x PG17 que quase produziu dois falsos positivos.",
+      "provas": "medicoes proprias em Postgres local efemero; containers removidos; nada aplicado remotamente"
     }
   ],
   "defeitos_corrigidos": 10,
@@ -346,11 +356,11 @@
     "ressalvas": "Os 40 sao objetos, nao defeitos: um helper pode servir a varios dominios. E nao distingo helper que nunca existiu de helper que existe no remoto e nunca foi versionado; para reconstruir a base da no mesmo, para responsabilidade nao da. Cinco conferidos a mao, os outros 35 vem do metodo."
   },
   "git": {
-    "divergencia_com_upstream": "0/0",
+    "divergencia_com_upstream": "0/0 conferido apos publicar o merge pendente",
     "worktree": "0 caminhos alterados",
     "stash": "0",
-    "lotes_integrados_em_dev": "todos ate c5a6fd106; 0f2135398 (evidencia de schema/replay) publicado na branch e pendente de integracao",
-    "base_conjunta_mesclada": "origin/dev 5fa5e7f77 mesclado em de4defc1c, publicado"
+    "base_conjunta": "origin/dev mesclado ate b2cdba58a e publicado",
+    "lotes_em_dev": "todos ate c5a6fd106 integrados; 0f2135398 e os merges seguintes publicados na branch e pendentes do proximo ciclo do coordenador"
   },
   "validacao_final_do_recorte": {
     "base": "56638e7fa (dev 05df1ffb4 mesclado)",
@@ -516,5 +526,13 @@
     ],
     "sinal_de_refresh_de_momentos": "Deliberadamente nao consumido. O router entrega principalMomentsWithdrawalRepository e momentsFeedRefreshSignal a rota /principal-moments; a aba do Perfil nao os usa. Publicar e retirar pertencem a superficie de Momentos, e o contrato estava mudando na noite da decisao. Se a frente de Momentos quiser que publicacao nova reflita na aba sem recarregar, o hunk e pequeno e a decisao e de quem mantem o contrato."
   },
-  "item_12_confirmado_no_relatorio": "A correcao chegou ao destino: o relatorio do Owner ja traz, no item 12, a retificacao com a leitura correta da assercao findsNothing e o reconhecimento explicito de que a string foi lida como expectativa."
+  "item_12_confirmado_no_relatorio": "A correcao chegou ao destino: o relatorio do Owner ja traz, no item 12, a retificacao com a leitura correta da assercao findsNothing e o reconhecimento explicito de que a string foi lida como expectativa.",
+  "servicos_a_outras_frentes_nesta_janela": {
+    "reteste_externo_operacoes_sistema": "Linhas conferidas por leitura de assercao e fonte. Nenhuma afirma mais do que sustenta. O texto de razao do proprio rpc_contract_test.dart enuncia a bifurcacao ('ou a funcao foi instalada fora do versionamento... ou a superficie falha no primeiro uso real'), entao o teste NAO estabelece blocked-environment: estabelece a duvida.",
+    "reteste_externo_alunos_rotina": "Quatro linhas conferidas uma a uma, todas verdadeiras. B1 esta SUBESTIMADA: cita um nome e sao pelo menos cinco RPCs superadmin_attendance_* chamadas pelo cliente e criadas por migration nenhuma. B3 e B4 sao mais fortes do que escritas: em superadmin_auth_scope, DENTRO do ramo autorizado, routineRepository e studentTrackingRepository recebem Unavailable explicitamente.",
+    "assimetria_encontrada": "No mesmo ramo autorizado, attendanceRepository recebe SupabaseAttendanceRepository real. Rotina e Alunos falham FECHADO por composicao deliberada; Assiduidade tem tudo composto e falharia no PRIMEIRO USO REAL se as RPCs tambem nao existirem no remoto. Ler as tres como 'sem backend' apaga a diferenca.",
+    "convergencia": "As cinco RPCs de Unidades de operacoes-sistema, as cinco de Assiduidade de alunos-rotina e os meus 40 objetos app_private sao o mesmo buraco medido por tres caminhos. create_unit_for_superadmin aparece em duas listas ao mesmo tempo.",
+    "dado_que_so_esta_frente_tinha": "'Instalado fora do versionamento' e fenomeno MEDIDO neste repositorio: profile_about prova. Isso torna a hipotese benigna pelo menos tao provavel quanto a grave, e recomenda um unico select proname from pg_proc que responde pelas tres frentes de uma vez.",
+    "leitura_de_imagem_instituicoes": "NAO e regressao. O cartao 'Criar instituicao' so renderiza if (onCreate != null) e o _goldenApp do teste nao fornece onCreate; em producao o router passa onCreate condicionado a hasStructureMutationCapability(). O fixture inteiro tambem trocou. MAS e perda de COBERTURA: o golden protegia a afordancia e deixou de proteger."
+  }
 }
