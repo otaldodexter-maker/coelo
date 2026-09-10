@@ -1445,13 +1445,24 @@ declarada aqui, uma vez, para quem ler saber descontar.
 
 E há uma **segunda** deriva, de outra natureza e com outro conserto. A primeira é
 de ferramenta e produz erro constante e detectável — três horas exatas, sempre.
-A segunda é humana: uma frente lia o relógio uma vez e depois **estimava** os
-carimbos seguintes, empurrando o horário para a frente a cada mensagem, até
-acumular quase quarenta minutos. Ela identificou a deriva de fuso nas outras
-frentes sem perceber que estava cometendo a versão manual do mesmo erro, sem
-nenhum fuso envolvido. **Erro de ferramenta se conserta trocando o comando; erro
-de estimativa só se conserta lendo antes de escrever** — e ele cresce, o que o
-torna mais plausível quanto pior fica.
+A segunda é humana: ler o relógio uma vez e depois **estimar** os carimbos
+seguintes, empurrando o horário para a frente a cada mensagem. **Aconteceu com
+três frentes e comigo.** Uma acumulou quarenta minutos e se corrigiu sozinha;
+outra corrigiu os próprios carimbos no arquivo; e **eu acumulei trinta e sete
+minutos**, depois de ter registrado a correção das outras duas e ter mandado uma
+delas parar de se desculpar por isso. Fui pego por uma frente que mediu e
+comparou.
+
+**No meu caso a consequência é de outra ordem**, e é por isso que está aqui: quem
+chama o congelamento e a entrega sou eu. Com trinta e sete minutos de
+adiantamento, eu teria encerrado a rodada às 04:03 reais acreditando que eram
+04:40 — **cortando mais de meia hora de trabalho de seis frentes**, e pela mesma
+falha que quase me fez encerrá-la uma hora e quarenta cedo pelo caminho da
+ferramenta.
+
+**Erro de ferramenta se conserta trocando o comando; erro de estimativa só se
+conserta lendo antes de escrever** — e ele cresce, o que o torna mais plausível
+quanto pior fica.
 
 **Mensagem não é registro.** Duas frentes descobriram, perto do fim, que trabalho
 real delas existia apenas nas mensagens trocadas com a coordenação: uma
