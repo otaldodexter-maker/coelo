@@ -65,30 +65,11 @@ begin
       and qual=$def$(( SELECT app_private.has_platform_permission('activities.read'::text) AS has_platform_permission) OR app_private.has_institution_permission(institution_id, 'activities.read'::text, unit_id, NULL::uuid, false))$def$) then
     raise object_not_in_prerequisite_state using message='location index or policy drift';
   end if;
-  -- A versao historica comparava a ACL com um array literal de nove entradas.
-  -- Aquilo era o retrato de uma cadeia local, nao um invariante: muda com a
-  -- versao do Postgres (MAINTAIN so existe a partir do 17) e com qualquer
-  -- concessao adicional legitima, e por isso barrava sobre a baseline de
-  -- producao. A guarda passa a afirmar o que de fato importa para a seguranca
-  -- desta tabela, sem depender de retrato: quem nao e service_role nem dono nao
-  -- pode escrever, e nem anon nem PUBLIC podem qualquer coisa.
-  if exists(
-      select 1
-      from pg_class c
-      cross join lateral aclexplode(coalesce(c.relacl,acldefault('r',c.relowner))) a
-      left join pg_roles r on r.oid=a.grantee
-      where c.oid='public.activity_locations'::regclass
-        and a.grantee<>c.relowner
-        and (
-          -- grantee nulo em aclexplode e PUBLIC
-          r.rolname is null
-          or r.rolname='anon'
-          or (r.rolname<>'service_role'
-              and a.privilege_type in ('INSERT','UPDATE','DELETE','TRUNCATE'))
-          or a.is_grantable
-        )) then
-    raise object_not_in_prerequisite_state using message='location table ACL drift';
-  end if;
+  -- A guarda de ACL saiu daqui. Producao concede ALL a anon e a authenticated
+  -- nesta tabela por privilegio padrao do schema public, junto com outras 204
+  -- tabelas, entao exigir a ACL correta ANTES de corrigi-la so barra o pacote.
+  -- Este candidato normaliza a concessao no corpo e afirma o invariante como
+  -- pos-condicao, no fim do arquivo.
   for expected in select * from (values
     ('app_private.activity_management_payload(uuid)','dbfb21e52b0773a41815a0986be0d64f',false),
     ('app_private.superadmin_activity_directory(text,uuid[],uuid[],uuid[],text[],text[],integer,integer,text,boolean)','f1809b1c0b268ed571eaaa958a061015',false),
@@ -153,6 +134,20 @@ begin
   end if;
 end
 $preflight$;
+
+-- Endurecimento da concessao, antes de qualquer DDL desta fatia.
+-- Producao dava ALL a anon e a authenticated em public.activity_locations por
+-- privilegio padrao do schema public. A RLS forcada ja barra escrita, porque a
+-- unica politica e activity_locations_authorized_read, de SELECT, mas manter
+-- INSERT/UPDATE/DELETE concedidos a quem nao escreve deixa a tabela a um
+-- descuido de politica de virar gravavel por anonimo. O cliente nunca le esta
+-- tabela direto, so por RPC; o SELECT de authenticated fica porque a politica
+-- de leitura existe justamente para ele.
+revoke all on table public.activity_locations from public;
+revoke all on table public.activity_locations from anon;
+revoke insert, update, delete, truncate, references, trigger
+  on table public.activity_locations from authenticated;
+grant select on table public.activity_locations to authenticated;
 
 alter table public.activity_locations
   alter column unit_id drop not null,
@@ -602,4 +597,27 @@ revoke all on function app_private.superadmin_create_activity_locations(uuid,uui
   from public,anon,authenticated,service_role;
 revoke all on function public.superadmin_create_activity_locations(uuid,uuid[],text,uuid)
   from public,anon,authenticated,service_role;
+-- Pos-condicao da concessao: afirma o invariante, nao um retrato. Comparar a
+-- ACL com um array literal quebrava entre versoes do Postgres, porque MAINTAIN
+-- so existe a partir do 17.
+do $acl$
+begin
+  if exists(
+      select 1
+      from pg_class c
+      cross join lateral aclexplode(coalesce(c.relacl,acldefault('r',c.relowner))) a
+      left join pg_roles r on r.oid=a.grantee
+      where c.oid='public.activity_locations'::regclass
+        and a.grantee<>c.relowner
+        and (
+          r.rolname is null
+          or r.rolname='anon'
+          or (r.rolname<>'service_role'
+              and a.privilege_type in ('INSERT','UPDATE','DELETE','TRUNCATE'))
+          or a.is_grantable
+        )) then
+    raise object_not_in_prerequisite_state using message='location table ACL drift';
+  end if;
+end $acl$;
+
 commit;
