@@ -494,6 +494,15 @@ o leitor recebia o repositório tipado pelo contrato mais estreito, então mesmo
 com o objeto certo em mãos o método era inalcançável pelo tipo. Nada falha nesse
 caso; simplesmente não existe.
 
+**Comparar duas telas que mostram o mesmo dado.** Em Formulários isso rendeu
+três casos seguidos — dinheiro, data e escolha —, e nos três a superfície de
+operações já fazia certo enquanto a de resposta carregava a versão antiga da
+formatação. O último expunha identificador interno: a pessoa via
+`Como foi: option-2` em vez de `Como foi: Difícil`, e o teste da outra superfície
+**já proibia isso explicitamente**. Não é descuido pontual; é sedimentação — uma
+tela escrita depois, com mais cuidado, e outra que ficou com as versões antigas
+de cada formatação.
+
 **Exigir ver o vermelho antes de aceitar o verde.** Três armadilhas diferentes
 apareceram só por isso: literais `const` que o compilador canonicaliza, fazendo
 uma guarda de igualdade passar contra o código defeituoso; `setSurfaceSize`
