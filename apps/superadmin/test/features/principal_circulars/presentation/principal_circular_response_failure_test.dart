@@ -3,7 +3,6 @@ import 'package:coelo_superadmin/features/principal_circulars/domain/circular_re
 import 'package:coelo_superadmin/features/principal_circulars/presentation/principal_circular_detail_page.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Envio de resposta de Circular quando o servidor recusa.
@@ -54,17 +53,15 @@ void main() {
 
     await _answerAndSubmit(tester);
 
-    final node = tester.getSemantics(
-      find.descendant(
-        of: find.byKey(const Key('circular-response-conflict-notice')),
-        matching: find.byType(Text),
-      ),
-    );
     expect(
-      node.hasFlag(SemanticsFlag.isLiveRegion) ||
-          tester
-              .widgetList<Semantics>(find.byType(Semantics))
-              .any((widget) => widget.properties.liveRegion ?? false),
+      tester
+          .widgetList<Semantics>(
+            find.ancestor(
+              of: find.byKey(const Key('circular-response-conflict-notice')),
+              matching: find.byType(Semantics),
+            ),
+          )
+          .any((widget) => widget.properties.liveRegion ?? false),
       isTrue,
       reason: 'quem usa leitor de tela precisa ser avisado quando a recusa aparece',
     );
