@@ -1667,11 +1667,22 @@ voltando a se dispor. Amostrou seis famílias de golden abrindo referência e
 captura lado a lado, o que produziu a triagem que muda a decisão de rebaseline. E
 varreu o app inteiro atrás de arquivo de teste que tivesse perdido casos.
 
-**Perfil para você.** Verificou a fila SQL inteira na versão de produção do
-Postgres, mediu onde a cadeia de migrations para de replayar, e descobriu que 40
-objetos são chamados e nunca criados. Fez o reteste externo de duas outras frentes
-e a triagem de dois pares de golden, uma delas terminando no botão de reportar bug
-que não existe em produção.
+**Perfil e Para Você.** Integrou a composição herdada sobre a base conjunta,
+resolvendo cinco conflitos, e com isso **tirou três telas do Principal do estado
+fechado**. Ligou a leitura do Sobre a uma RPC autorizada, com um caminho de
+contingência que nunca confunde negação com ausência, e conectou a aba de Momentos
+à projeção autorizada, fechando uma pendência herdada de que outras dependiam. Dez
+defeitos corrigidos com controle negativo, entre eles a saudação que chamava todo
+usuário real pelo nome de um fixture, um diálogo que se fechava sozinho a cada
+reconstrução, e conteúdo autorizado para outro vínculo permanecendo na tela depois
+da troca de contexto.
+
+Além do próprio recorte, foi a frente que mais serviu às outras: verificou a fila
+SQL inteira na versão de produção do Postgres, mediu onde a cadeia de migrations
+para de replayar, encontrou os 40 objetos chamados e nunca criados, fez o reteste
+externo das linhas de bloqueio de duas frentes, triou três pares de referência
+visual — e uma dessas triagens terminou no botão de reportar bug que não existe em
+produção.
 
 **Duas leituras honestas sobre este conjunto.** A primeira: a maior parte do valor
 da noite não veio de código escrito, veio de **medição que desfez conclusões** —
