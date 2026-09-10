@@ -1,12 +1,12 @@
 {
- "revision": 8,
+ "revision": 9,
  "round": "E2-R03-20260910",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5[1m]",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-10T07:10:00-03:00",
+ "updatedAt": "2026-09-10T08:20:00-03:00",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-formularios-cuidado-rotina",
  "branch": "work/etapa2-r03-formularios-cuidado-rotina",
  "head": "bb15db748",
@@ -72,7 +72,7 @@
   }
  ],
  "deltaProposals": [],
- "nextStep": "Formularios: autoria, respostas, arquivos e o XLSX de forms.responses.export.",
+ "nextStep": "Triar as 62 falhas de Formularios, separando fixture ausente de defeito real.",
  "findings": [
   {
    "id": "F-R03-FCR-001",
@@ -109,6 +109,17 @@
    "consequencia": "a OQ-042 registra o perfil FoundationOnly passando 259 asserts; isso deixou de valer. Hoje nenhuma frente consegue pgTAP local pelo caminho suportado, e quem tentar vai ler a falha como defeito do proprio pacote, porque ela acontece antes das migrations do pacote.",
    "correcao_proposta": "acrescentar 20260812000000_chat_production_contract.sql ao manifesto, com o hash normalizado, na posicao entre 20260812000847 e 20260820182000. O manifesto e escrito pelo coordenador; nao alterei o arquivo.",
    "contorno_em_uso_aqui": "montei um projeto de replay descartavel fora do repositorio (scratchpad, project_id coelo_fcr_replay, portas 553xx) com as 69 do manifesto, as duas pontes de replay/, a dependencia ausente e os meus tres pacotes. E disposable e local; nenhuma mutacao remota."
+  },
+  {
+   "id": "F-R03-FCR-004",
+   "severity": "o maior achado deste grupo; desbloqueia a familia Formularios inteira",
+   "titulo": "A primeira migration de Formularios e PL/pgSQL invalido. Nenhuma das 24 migrations da familia jamais pode ter sido aplicada em lugar nenhum.",
+   "medido": "aplicacao por psql sobre o replay descartavel, 2026-09-10",
+   "causa": "20260813155005_forms_definition_and_capabilities.sql usa um CASE sem parenteses dentro da condicao de um IF, em app_private.form_item_config_valid. Em PL/pgSQL o parser encerra a condicao do IF no primeiro THEN que encontra; com o CASE sem parenteses a expressao fica pela metade e o servidor responde 'syntax error at end of input'. A funcao nao compila, e como form_items tem uma constraint CHECK que a chama, a tabela tambem nao nasce.",
+   "prova_do_diagnostico": "do $$ begin if 1 - case when true then 1 else 2 end = 0 then null; end if; end $$; falha; com parenteses em volta do CASE, passa.",
+   "consequencia": "os 16 arquivos pgTAP de Formularios nunca puderam rodar, porque o schema nunca existiu. Qualquer estado 'local-green' registrado para Formularios no rastreador nao pode ter vindo de execucao contra banco.",
+   "correcao": "parenteses em volta dos dois CASE (linhas 105 e 145). E uma correcao no proprio arquivo, e nao uma migration nova, porque nao existe forward-fix para uma funcao que nunca foi criada: o arquivo nunca rodou em ambiente nenhum, entao nao ha historico a preservar.",
+   "efeito_medido": "as 24 migrations de Formularios passam a aplicar limpo (a do XLSX exige antes 20260908160000_private_media_catalog_r2_v1). Os testes da familia passaram de zero execucoes para 845 assercoes aprovadas e 62 falhas, que agora podem ser triadas."
   }
  ],
  "packages": [
@@ -243,6 +254,36 @@
     "salvar plano rele o detalhe pela leitura autorizada, para a tela nao renderizar um estado que uma nova leitura nao confirmaria",
     "negativa de escopo do servidor e opaca e vira notFound no cliente, sem confirmar existencia"
    ]
+  },
+  {
+   "id": "PKG-R03-FCR-FORMULARIOS-01",
+   "familia": "forms_authoring + forms_responses + forms_files",
+   "estado": "familia destravada; triagem das 62 falhas em curso",
+   "migration_corrigida": "packages/coelo_database/migrations/20260813155005_forms_definition_and_capabilities.sql",
+   "resultado_pgtap": {
+    "antes": "nenhuma execucao possivel: o schema nao podia ser criado",
+    "depois": "845 ok / 62 not ok em 18 arquivos",
+    "verdes_inteiros": [
+     "forms_definition 31",
+     "forms_distribution_cardinality 12",
+     "forms_export_download_capability_hardening 13",
+     "forms_internal_provenance_guards 39",
+     "forms_response_edit_validation_v1 56",
+     "forms_superadmin_media_read_r2_v1 82",
+     "forms_superadmin_operations_read_v2 70",
+     "forms_xlsx_private_r2_v1 313"
+    ],
+    "com_falha": [
+     "superadmin_forms_authoring_institution_context_v2 36",
+     "superadmin_internal_form_drafts_v2 14",
+     "superadmin_internal_form_drafts_v2_repeatable_read 4",
+     "superadmin_internal_form_drafts_v2_serializable 4",
+     "superadmin_forms_directory_internal_read 3",
+     "forms_editor_application_authorization 1"
+    ],
+    "ressalva": "quatro arquivos tambem acusam ERROR de SQL durante a execucao, o que costuma ser fixture ausente no meu perfil de replay e nao defeito do produto. Nao classifiquei ainda; nao contar essas falhas como defeito antes da triagem."
+   },
+   "forms_responses_export": "a migration do XLSX aplica e seu teste passa com 313 assercoes. O R2 real continua fora: o pacote Cloudflare e do coordenador."
   }
  ],
  "filaSQL": [
