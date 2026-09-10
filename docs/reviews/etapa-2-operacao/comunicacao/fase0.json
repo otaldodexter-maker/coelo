@@ -1,15 +1,15 @@
 {
   "grupo": "fase0",
-  "revision": 5,
+  "revision": 7,
   "round": "E2-R03-20260910",
-  "updatedAt": "2026-09-10T20:50:00-03:00",
+  "updatedAt": "2026-09-10T16:32:00-03:00",
   "app": "Claude",
   "modelo": "Fable 5.1",
   "conversa": "R03-P0-fase0-composto",
   "coordenador": "nenhum acima nesta fase; ordem de parar vem do Owner",
   "worktree": "C:/Users/adrie/Documents/Coelo (checkout principal)",
   "branch": "dev",
-  "head": "850ba1838",
+  "head": "ed3a544c8 (local; ultimo push b404d4fc7)",
   "upstream": "origin/dev",
   "divergencia": "0/0",
   "base": "bb15db748 (dev no HEAD que contem R03-prompts.md)",
@@ -54,7 +54,7 @@
       ]
     }
   ],
-  "mudou": "Lotes 5 e 6 publicados: Planos, Cardapios (8fafbe16c), Circulares e Comunicacoes (850ba1838) como instancias do composto; rebase sobre e6f40f9bc do coordenador. Composto: Criar desabilitado sem callback, bodyOverride, paginacao por cursor, rodape entrega CoeloAdminPagination direto.",
+  "mudou": "Revisao de corte 16:30. Lote 7: Convites e Perfis de acesso verdes no composto (388 P com arquitetura); Pessoas com 3 testes de status/hover falhando por overflow de 0,84 px do card em linha de altura fixa (grade em Table intrinsicHeight, que substituiu IntrinsicHeight por incompatibilidade com LayoutBuilder). Publicacao do lote 7 assim que Pessoas fechar; skill coelo-ui e conhecimento ja commitados localmente (ed3a544c8).",
   "diagnostico": {
     "menu": "Render atual difere da referencia em: item filho ativo em primaryContainer (referencia: primary preenchido, pai em tom mais escuro); Bug omitido quando onBugReportSubmitted e nulo; campo Buscar na navegacao presente no atual e deve permanecer (MENU).",
     "criar": "Instituicoes ja tem Criar no vazio/falha; Atividades so tem quando onCreate != null. Composto passa a garantir Criar primeiro em todos os estados.",
@@ -75,12 +75,12 @@
     "plans.list, meal_plans.list, circulars.list, notices.list: instancias do composto (goldens regravados; ARQUIVO pendente do Owner)"
   ],
   "testes": {
-    "P": 218,
-    "F": 0,
+    "P": 635,
+    "F": 3,
     "B": 0,
     "S": 0,
     "U": null,
-    "evidencia": "flutter test por feature (institutions, activities, groups), shell/navigation, packages/coelo_ui_admin/test/directory"
+    "evidencia": "flutter test test/features/{invites,access_profiles} test/architecture (388 P); test/features/people (+247 / -3: person_status_keyboard_test x2, person_directory_page_test card hover)"
   },
   "arquivosReservados": [
     "packages/coelo_ui_admin/**",
@@ -93,8 +93,17 @@
     ".flutter-version"
   ],
   "bloqueio": null,
-  "proximoPasso": "Pessoas, Convites e Perfis de acesso no composto, um lote por tela.",
-  "wip": [],
+  "proximoPasso": "Fechar o overflow do card de Pessoas (indicador de status em altura fixa), publicar lote 7 com rebase sobre origin/dev, responder o SHA ao coordenador; depois Suporte/Auditoria com operacoes.",
+  "wip": [
+    {
+      "caminho": "apps/superadmin/lib/features/{people,invites,access_profiles}/presentation/*",
+      "estado": "migrado, analyze limpo, testes em execucao"
+    },
+    {
+      "caminho": "packages/coelo_ui_admin/lib/src/directory/coelo_admin_directory.dart",
+      "estado": "grade em linhas + beforeResults, goldens do pacote regravados (14 P)"
+    }
+  ],
   "recursos": {
     "processos": [],
     "portas": []

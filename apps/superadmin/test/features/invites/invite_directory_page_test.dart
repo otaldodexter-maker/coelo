@@ -121,8 +121,8 @@ void main() {
       tester.widget<CoeloAdminPagination>(find.byType(CoeloAdminPagination)).pageSizeOptions,
       InviteDirectoryQuery.cardPageSizes,
     );
-    expect(find.byType(InviteDirectoryToolbar), findsOneWidget);
-    expect(find.byType(InviteDirectoryCards), findsOneWidget);
+    expect(find.byType(CoeloAdminListingToolbar), findsOneWidget);
+    expect(find.byKey(const Key('invite-card-grid')), findsOneWidget);
     expect(find.byKey(const Key('invite-create-card')), findsOneWidget);
     expect(find.byType(CoeloAdminExpandableStatusIndicator), findsOneWidget);
     expect(find.byType(InviteStatusChip), findsNothing);
@@ -133,12 +133,12 @@ void main() {
     await tester.tap(find.byType(CoeloAdminExpandableStatusIndicator));
     await tester.pumpAndSettle();
     expect(find.text('Pendente'), findsOneWidget);
-    expect(find.byType(InviteDirectoryTable), findsNothing);
+    expect(find.byType(InviteTableRows), findsNothing);
     expect(find.byType(SuperadminDirectoryViewToggle<InviteDirectoryTableView>), findsOneWidget);
     await tester.tap(find.byKey(const Key('invite-view-table')));
     await tester.pumpAndSettle();
-    expect(find.byType(InviteDirectoryCards), findsNothing);
-    expect(find.byType(InviteDirectoryTable), findsOneWidget);
+    expect(find.byKey(const Key('invite-card-grid')), findsNothing);
+    expect(find.byType(InviteTableRows), findsOneWidget);
     expect(find.byKey(const Key('invite-create-action')), findsOneWidget);
     expect(repository.lastQuery?.pageSize, 8);
     expect(
@@ -179,7 +179,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Acesso não autorizado'), findsOneWidget);
-    expect(find.byType(InviteDirectoryTable), findsNothing);
+    expect(find.byType(InviteTableRows), findsNothing);
     expect(find.byKey(const Key('invite-create-action')), findsNothing);
   });
 
@@ -301,8 +301,11 @@ void main() {
     await tester.pumpWidget(_app(InviteDirectoryPage(repository: repositoryA)));
     await tester.pumpAndSettle();
 
-    final toolbarA = tester.widget<InviteDirectoryToolbar>(find.byType(InviteDirectoryToolbar));
-    toolbarA.onStatusesChanged({InviteStatus.pending});
+    tester
+        .widget<CoeloAdminMultiSelectFilter<InviteStatus>>(
+          find.byType(CoeloAdminMultiSelectFilter<InviteStatus>),
+        )
+        .onChanged({InviteStatus.pending});
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField).first, 'tenant-a');
     await tester.pump(const Duration(milliseconds: 100));
@@ -311,10 +314,23 @@ void main() {
     await tester.pumpAndSettle();
     await tester.pump(const Duration(milliseconds: 400));
 
-    final toolbarB = tester.widget<InviteDirectoryToolbar>(find.byType(InviteDirectoryToolbar));
-    expect(toolbarB.searchController.text, isEmpty);
-    expect(toolbarB.statuses, isEmpty);
-    expect(toolbarB.channels, isEmpty);
+    expect(tester.widget<TextField>(find.byType(TextField).first).controller?.text, isEmpty);
+    expect(
+      tester
+          .widget<CoeloAdminMultiSelectFilter<InviteStatus>>(
+            find.byType(CoeloAdminMultiSelectFilter<InviteStatus>),
+          )
+          .selectedValues,
+      isEmpty,
+    );
+    expect(
+      tester
+          .widget<CoeloAdminMultiSelectFilter<InviteChannel>>(
+            find.byType(CoeloAdminMultiSelectFilter<InviteChannel>),
+          )
+          .selectedValues,
+      isEmpty,
+    );
     expect(repositoryB.queries, hasLength(1));
     expect(repositoryB.queries.single.search, isEmpty);
     expect(repositoryB.queries.single.statuses, isEmpty);
@@ -337,7 +353,7 @@ void main() {
     await tester.pump();
     repository.denyReads = true;
     await tester.enterText(
-      find.descendant(of: find.byType(InviteDirectoryToolbar), matching: find.byType(TextField)),
+      find.descendant(of: find.byType(CoeloAdminListingToolbar), matching: find.byType(TextField)),
       'busca',
     );
     await tester.pump(const Duration(milliseconds: 301));
@@ -374,7 +390,7 @@ void main() {
     final flyout = _flyout(tester);
     repository.denyReads = true;
     await tester.enterText(
-      find.descendant(of: find.byType(InviteDirectoryToolbar), matching: find.byType(TextField)),
+      find.descendant(of: find.byType(CoeloAdminListingToolbar), matching: find.byType(TextField)),
       'busca',
     );
     await tester.pump(const Duration(milliseconds: 301));

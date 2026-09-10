@@ -23,31 +23,15 @@ final class PersonFileActions extends StatelessWidget {
   final bool compact;
 
   @override
-  Widget build(BuildContext context) {
-    return CoeloAdminFileActions(
-      compact: compact,
-      actions: [
-        CoeloAdminFileAction(
-          key: const Key('people-files-import'),
-          label: 'Importar',
-          icon: Icons.upload_file_outlined,
-          onPressed: onImport ?? () => _showUnavailable(context),
-        ),
-        CoeloAdminFileAction(
-          key: const Key('people-files-export-csv'),
-          label: 'Exportar CSV',
-          icon: Icons.table_rows_outlined,
-          onPressed: () => _exportOrShowUnavailable(context, SuperadminExportFormat.csv),
-        ),
-        CoeloAdminFileAction(
-          key: const Key('people-files-export-xlsx'),
-          label: 'Exportar XLSX',
-          icon: Icons.grid_on_outlined,
-          onPressed: () => _exportOrShowUnavailable(context, SuperadminExportFormat.xlsx),
-        ),
-      ],
-    );
-  }
+  Widget build(BuildContext context) => CoeloAdminFileActions(
+    compact: compact,
+    actions: personFileActions(
+      context,
+      onImport: onImport,
+      onExport: onExport,
+      tableView: tableView,
+    ),
+  );
 
   void _exportOrShowUnavailable(BuildContext context, SuperadminExportFormat format) {
     final export = onExport;
@@ -61,4 +45,34 @@ final class PersonFileActions extends StatelessWidget {
   void _showUnavailable(BuildContext context) {
     showSuperadminNotice(context, 'Indisponível nesta etapa', icon: Icons.info_outline_rounded);
   }
+}
+
+/// Lista de ações de arquivo de Pessoas para o `CoeloAdminDirectory`.
+List<CoeloAdminFileAction> personFileActions(
+  BuildContext context, {
+  VoidCallback? onImport,
+  PersonExportAction? onExport,
+  PersonDirectoryTableView tableView = PersonDirectoryTableView.grouped,
+}) {
+  final actions = PersonFileActions(onImport: onImport, onExport: onExport, tableView: tableView);
+  return [
+    CoeloAdminFileAction(
+      key: const Key('people-files-import'),
+      label: 'Importar',
+      icon: Icons.upload_file_outlined,
+      onPressed: onImport ?? () => actions._showUnavailable(context),
+    ),
+    CoeloAdminFileAction(
+      key: const Key('people-files-export-csv'),
+      label: 'Exportar CSV',
+      icon: Icons.table_rows_outlined,
+      onPressed: () => actions._exportOrShowUnavailable(context, SuperadminExportFormat.csv),
+    ),
+    CoeloAdminFileAction(
+      key: const Key('people-files-export-xlsx'),
+      label: 'Exportar XLSX',
+      icon: Icons.grid_on_outlined,
+      onPressed: () => actions._exportOrShowUnavailable(context, SuperadminExportFormat.xlsx),
+    ),
+  ];
 }

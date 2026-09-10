@@ -51,10 +51,7 @@ void main() {
       expect(find.text('Suspensa'), findsOneWidget);
       expect(find.text('Suspender'), findsNothing);
       final filter = tester.widget<CoeloAdminMultiSelectFilter<PersonStatus>>(
-        find.descendant(
-          of: find.byKey(const Key('people-status-filter')),
-          matching: find.byType(CoeloAdminMultiSelectFilter<PersonStatus>),
-        ),
+        find.byKey(const Key('people-status-filter')),
       );
       expect(filter.options, contains(PersonStatus.suspended));
       filter.onChanged({PersonStatus.suspended});
