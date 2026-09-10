@@ -2398,6 +2398,24 @@ decisão de coordenação teria sido "consertada" de volta, com boa-fé e com m�
 a lado, é o que impede outra pessoa de desfazer a decisão. **Só o estado final não
 carrega a informação de que houve escolha.**
 
+**E há a metade que a coordenação não protegeu.** A renomeação dos candidatos foi
+pedida por esta coordenação, executada corretamente pelas frentes, com os hashes
+conferidos byte a byte — e **ninguém foi avisado de revisar as próprias citações
+depois.** Duas frentes ficaram apontando para os nomes antigos: uma em catorze
+referências, e outra **na própria lista dos pacotes que esperam autorização
+nominal.**
+
+**Esse segundo caso é o pior tipo de citação podre deste documento**, e a razão foi
+formulada por quem o encontrou: uma citação velha num registro interno engana quem
+**confere**, e a conferência é nossa. Esta engana quem **autoriza**. Quem seguir o
+caminho para revisar o pacote antes de aplicá-lo em produção não encontra arquivo —
+e "arquivo não encontrado", na hora da autorização nominal, não se lê como caminho
+velho; **lê-se como pacote inexistente**, e o desfecho provável é a recusa do
+pacote por parecer fantasma.
+
+Corrigido nos dois casos, e a verificação foi estendida aos nove arquivos de
+coordenação.
+
 A verificação foi repassada às demais frentes — custa segundos e não exige contexto
 — e aplicada também aos documentos desta coordenação, que saíram limpos. Os
 alarmes iniciais eram prefixos de checksum, identificadores de sessão, caminhos
