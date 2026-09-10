@@ -82,6 +82,29 @@ Não se pede redesenho de Circulares. Título, texto, anexos, perguntas,
 políticas de resposta, revisão, agendamento e público já estão definidos, e a
 confirmação visual do shell foi resolvida pelo Owner em 09/09/2026.
 
+## Quarta decisão, da mesma família: o teto do feed de Acontece
+
+O feed misto lê **uma** página de 20 itens e descarta o cursor que o servidor
+devolve. A capacidade de paginação existe pronta nas duas pontas: a RPC
+`list_visible_happens_feed` aceita cursor e o repositório já o monta quando a
+página vem cheia. A tela simplesmente não a consome.
+
+O efeito não é apenas "não dá para ver o que é antigo". O feed é **misto**: une
+publicações e Circulares numa ordenação única por data. Com teto de 20 no total
+e sem paginação, uma sequência de publicações empurra as Circulares para fora
+da primeira página — e uma Circular publicada há pouco fica **invisível** no
+Acontece, sem aviso.
+
+Não foi corrigido aqui porque a correção é afordância de carregar mais ou
+rolagem infinita, composição visual do Coelo Principal com referências
+aprovadas e goldens existentes. Diferente do diretório de Circulares, onde o
+hospedeiro apenas entregava a lista a uma página que já paginava sozinha e por
+isso deu para corrigir sem tocar composição.
+
+A pergunta: o feed pagina por rolagem, por botão, ou o teto de 20 é decisão
+consciente de MVP? Se for consciente, ainda vale registrar que Circulares
+competem com publicações pelo mesmo teto.
+
 ## Padrão, não acidente
 
 Vale registrar como padrão da família e não como três casos isolados: em
