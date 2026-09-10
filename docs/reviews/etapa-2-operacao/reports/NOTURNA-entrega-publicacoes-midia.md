@@ -120,7 +120,7 @@ definida na cadeia local de migrations; não é prova de produção.
 | `momentos.create` | avançado | sim | Bytes conferidos contra o MIME real no gateway |
 | `momentos.publish` | avançado | sim | Sinal de refresh compartilhado com a leitura |
 | `momentos.remove` | fechado | **não** | `withdraw_moment` só em candidato; guarda de contexto adicionada |
-| `circulars.list` | avançado | sim | Segue o cursor; declara truncamento no teto |
+| `circulars.list` | avançado | sim | Segue o cursor, pinta na 1ª página; declara truncamento |
 | `circulars.filter` | parcial | sim | Filtra no cliente sobre a lista completa; servidor não filtra |
 | `circulars.create` | avançado | sim | Anexos passaram a funcionar |
 | `circulars.edit` | avançado | sim | Nova revisão por `save_draft_v2`; recusa fechada/arquivada |
@@ -198,6 +198,26 @@ temporário residual foi conferido e removido.
 
 Registro para não haver leitura errada: durante a madrugada existiu na máquina
 um container `coelo-sqlcheck` que **não é deste grupo** e não foi tocado.
+
+## Custos que esta rodada introduziu, declarados
+
+Duas correções trocaram um problema por um custo. Nenhum é defeito, mas quem
+mantiver isto depois precisa saber:
+
+- **`moments-media` finaliza lendo os bytes de volta.** Antes conferia só o
+  `HEAD`. A leitura é limitada ao tamanho já esperado, com teto de 25 MB por
+  ativo, e é o preço de conferir o MIME real — o mesmo preço que Circular,
+  Acontece e Agora já pagavam. Sem ela, qualquer conteúdo do tamanho declarado
+  passava como imagem.
+- **O diretório de Circulares faz até 10 leituras por abertura.** Antes fazia 1
+  e escondia o resto. Desde `6e2a21287` a lista pinta na primeira e cresce nas
+  seguintes, então o custo não aparece como tela parada — mas o número de idas
+  ao servidor por abertura subiu.
+
+Registro também a correção de um defeito **meu**: o lote 10 deixava a tela em
+carregamento até a última página, o que numa instituição grande eram até dez
+idas antes do primeiro item. Encontrado relendo a própria entrega, não por
+teste — nenhum teste falhava.
 
 ## Dimensões varridas nesta rodada
 
