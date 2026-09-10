@@ -197,7 +197,25 @@ ou seja, o widget procurado nunca chegou a existir. **É falha de layout em
 ambiente de teste, não de renderização.**
 
 **As 129 falhas de golden são aceite visual e dependem de decisão sua**, não de
-código. As duas maiores concentrações são `agenda_calendar` com 14 casos e as
+código.
+
+**E que a deriva é da base, e não do recorte de ninguém, deixou de ser diagnóstico
+e passou a ser medição.** A rodada inteira repetiu essa frase apoiada na causa
+provável — a fonte de ícones vindo do SDK local sem versão fixada, com o texto
+também fantasmando. Uma frente foi medir goldens de **duas outras famílias, sem
+nenhuma relação com o próprio recorte**, e eles falham igual: sete passam, quatro
+são pulados, **seis falham**.
+
+**O custo de não medir isso seria alto.** Cada frente declara as próprias falhas de
+golden; sem essa medida, o Owner lê seis conjuntos independentes de regressão
+visual e conclui que a rodada degradou o visual do aplicativo em toda parte. E a
+conclusão seguinte seria mandar regravar — **e regravar sobre uma base que
+renderiza diferente congela o defeito na referência**, que é como uma deriva deixa
+de aparecer e passa a ser a verdade.
+
+Limite declarado: foram dois arquivos de duas famílias, não uma varredura completa.
+Não se afirma o total de goldens quebrados no repositório — afirma-se que a falha
+existe **fora** do recorte de quem mediu, em domínios sem relação com ele. As duas maiores concentrações são `agenda_calendar` com 14 casos e as
 três superfícies de prévia do Principal — Momentos 11, Acontece 10, Perfil 10.
 
 Tudo isto significa que a leitura "o app tem 146 testes quebrados" seria falsa. O
@@ -2622,6 +2640,20 @@ comportamento, e não são desta rodada — o arquivo foi tocado em 8 de setembr
 **Fica como aviso e não como bloqueio**, mas a frase muda: a partir daqui,
 "analyze limpo **em `apps/superadmin`**", ou a varredura dos sete, que custa
 menos de um minuto no total.
+
+**E a mesma forma pegou uma segunda vez, na mesma frase.** Todas as declarações
+desta coordenação rodaram `flutter analyze lib` — **sem `test`**. Com `lib test`
+aparece **um aviso**: um import não utilizado no teste vermelho da paginação do
+feed misto. A declaração nunca foi falsa; era mais estreita do que o leitor
+entendia, exatamente como a anterior.
+
+O aviso foi diagnosticado símbolo a símbolo por uma terceira frente: o arquivo tem
+oito ocorrências de símbolos com aquele prefixo, o que faz o import **parecer**
+usado, mas todos vêm de outros dois imports já presentes. **E a causa é a mesma
+armadilha do quarto critério de varredura, invertida:** três dessas classes moram
+num diretório cujo nome não corresponde ao prefixo delas, e quem escreveu o import
+seguiu o **nome** em vez do caminho. Antes essa confusão enganou quem procurava;
+aqui enganou quem escreveu.
 
 ## Higiene e preservação
 
