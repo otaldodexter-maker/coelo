@@ -1659,9 +1659,17 @@ Esta classe apareceu quatro vezes, e três delas quase produziram decisão errad
   republicação, recuperação, ou alguém reconstruindo o que nunca se perdeu sobre
   uma base que já o tem.
 
-  E ela **não é uniforme**, o que a torna traiçoeira: com um arquivo na raiz, sem
-  barras, o mesmo comando funciona. Qualquer teste rápido passa e confirma que a
-  ferramenta está boa.
+  **E a condição foi isolada, depois de duas frentes medirem resultados opostos e
+  as duas estarem certas:** a conversão acontece quando o caminho **começa com
+  ponto**. Testados quatro casos no mesmo repositório e no mesmo shell, dois
+  começando com letra passam intactos e dois começando com ponto são convertidos —
+  inclusive um sem nenhuma barra, o que descarta a barra como gatilho. Uma frente
+  havia testado com caminhos de aplicativo e via o comando funcionar; a outra
+  testara com um caminho de configuração e o via falhar.
+
+  Isso importa para esta rodada em particular, porque há artefatos entregues sob
+  diretórios que começam com ponto — e qualquer conferência de presença que os use
+  como argumento **reporta ausência para coisa que está lá.**
 
   **A regra geral, que cobre as três instâncias desta noite:** neste shell, um
   argumento que contenha dois-pontos, circunflexo ou chaves chega convertido com
