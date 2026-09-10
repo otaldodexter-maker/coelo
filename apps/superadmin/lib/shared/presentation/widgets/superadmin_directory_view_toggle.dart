@@ -123,6 +123,12 @@ final class _SuperadminDirectoryViewToggleState<T> extends State<SuperadminDirec
             // rotulados. Atalho por gesto sem nome nao e anunciavel. O rotulo
             // aqui nao altera nada visualmente.
             child: Semantics(
+              // container: true e obrigatorio. Sem ele, o rotulo e anexado ao no
+              // de semantica ancestral mais proximo, que na barra de listagem
+              // engloba o campo de busca: o no passa a ter o rotulo certo e
+              // perde a flag isTextField, quebrando quem procura o campo por
+              // semantica.
+              container: true,
               label: 'Pressione e segure sobre a tabela para abrir as opções de exibição.',
               child: GestureDetector(
                 behavior: HitTestBehavior.translucent,
