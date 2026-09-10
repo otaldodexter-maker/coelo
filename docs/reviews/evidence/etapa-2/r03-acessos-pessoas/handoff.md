@@ -20,22 +20,32 @@ Fase 0 nao existe. **Nenhuma tela de diretorio foi tocada.**
 
 ## O que fechou
 
-**Um pacote pronto para a fila.** `AP-PEOPLE-DETAIL-V2`: a migration
-`20260828005000_superadmin_internal_person_detail.sql`, que ja existia desde
-28/08 e nunca foi aplicada, agora tem prova. 42 testes pgTAP PASS, 51 migrations
-aplicadas em ordem, zero recurso residual. Reproduz com o perfil nominal
-`PersonDetailV2`, que escrevi nesta rodada. Aplicar essa migration acende
-`/people/:personId` sem tocar em Dart: `personDetailReader` ja e o reader real
-no escopo produtivo. Fecha `people.links` e `people.reload`.
+**Tres pacotes prontos para a fila, 123 testes pgTAP verdes.**
 
-**Um defeito de SQL corrigido.**
-`20260812002100_child_safety_read_models.sql` usava `authorization` como alias
-de tabela, palavra reservada, e falhava com 42601 em qualquer ambiente.
-Renomeado para `authorization_record`. Refiz a cadeia de hashes que fixa o
-arquivo no perfil `SafetyInternalReads53`.
+| Pacote | Migrations | pgTAP | Desbloqueia |
+| --- | --- | --- | --- |
+| `AP-PEOPLE-DETAIL-V2` | `20260828005000` | 42 PASS | `people.links`, `people.reload` |
+| `AP-INVITES-V2` | `20260901190432` (com minha correcao) | 33 PASS | as 5 de Convites |
+| `AP-INTERNAL-USERS-V2` | `20260901210000` e `20260908021644` | 48 PASS | as 4 de Usuarios internos |
 
-**Dois perfis nominais de prova**, `PersonDetailV2` e `InvitesV2`, registrados
-nos dois scripts do harness de forma aditiva.
+Sao **11 das 38 acoes** do recorte, e **nenhuma exige mudanca em Dart**: as
+chaves de composicao ja estao ligadas no escopo produtivo. O que faltava era a
+funcao existir no banco.
+
+**Dois defeitos de SQL corrigidos**, ambos do meu recorte e ambos impeditivos
+em qualquer ambiente:
+
+- `20260812002100` Seguranca infantil usava `authorization`, palavra reservada,
+  como alias de tabela: `42601`. Renomeado para `authorization_record`, com a
+  cadeia de hashes do perfil `SafetyInternalReads53` refeita.
+- `20260901190432` Convites chamava `gen_random_bytes` sem schema dentro de uma
+  funcao `security definer set search_path=''`. pgcrypto vive em `extensions`,
+  entao emitir e reenviar convite devolviam `SAI_INTERNAL_ERROR` 500. Qualificado.
+  O pgTAP saiu de 27/33 para 33/33.
+
+**Quatro perfis nominais de prova** -- `PersonDetailV2`, `InvitesV2`,
+`InternalUsersV2` e o `SafetyInternalReads53` reparado -- registrados nos dois
+scripts do harness de forma aditiva.
 
 **Uma proposta de contrato** para o acompanhamento automatico da D1, aguardando
 acordo com `principal-chat-sistema`.
@@ -51,22 +61,32 @@ nao forem aplicadas, nenhuma frente fecha E2E pela regua do MVP, porque a rota
 normal nao abre. Medicao e fila ordenada em
 [`rpc-cliente-vs-producao-2026-09-10.md`](rpc-cliente-vs-producao-2026-09-10.md).
 
-E parte dessa fila **nao aplica como esta escrita**. Encontrei tres migrations
-quebradas em cerca de dez que tentei aplicar de verdade: a de Seguranca infantil
-(corrigida), a de Chat v2 (23502, insert em `platform_permissions` sem os tres
-rotulos NOT NULL) e a de Avisos v2 (42P01, altera `public.notice_events`, tabela
-que o segundo passo da propria cadeia move para `analytics`). As duas ultimas sao
-de outros grupos e ficaram reportadas, nao reparadas.
+E parte dessa fila **nao aplica como esta escrita**. Encontrei **cinco**
+migrations quebradas em cerca de doze que tentei aplicar de verdade:
+
+| Migration | Erro | Dono |
+| --- | --- | --- |
+| `20260812002100` Seguranca infantil | `42601` alias reservado | meu, **corrigido** |
+| `20260901190432` Convites | `42883` funcao sem schema | meu, **corrigido** |
+| `20260901101500` Chat v2 | `23502` rotulos NOT NULL ausentes | principal-chat-sistema |
+| `20260901185008` Avisos v2 | `42P01` schema errado | publicacoes-agenda |
+| `20260901191921` Circulares v2 | `23502` mesmos rotulos ausentes | publicacoes-agenda |
+
+Tres dos cinco sao a mesma classe: a migration foi escrita contra um estado do
+schema que deixou de valer **antes dela na propria cadeia**. Nenhum aparece em
+leitura; todos aparecem na primeira aplicacao. Para corrigir Chat e Circulares
+existe modelo pronto no repositorio: `20260901210000` preenche os tres rotulos
+corretamente na linha 4.
 
 ## O que ficou aberto, com o primeiro gate
 
 | Aberto | Primeiro gate |
 | --- | --- |
 | `people.list`, `people.create`, `people.edit` | Decisao **AP-D1-AAL** do Owner. `app_private.assert_people_permission` exige AAL2 sem chave de escape, e o MVP e AAL1: em producao o diretorio de Pessoas nem lista. |
-| Convites (5 acoes) | Execucao do perfil `InvitesV2`, em curso no fechamento desta nota. |
+| Convites (5 acoes) | So a aplicacao da migration pelo coordenador. pgTAP 33/33. |
 | Seguranca infantil (5 acoes) | A fixture do pgTAP insere em `public.units` sem `institution_type_id`. A base de prova e producao **discordam** da forma dessa tabela: a base pede `institution_type_id`, producao tem `unit_type_id`. Precisa de decisao antes de eu ajustar a fixture para um lado. |
-| Usuarios internos (4 acoes) | As tres RPCs que o cliente chama nao existem em producao e as duas migrations que as criam estao fora do manifesto. Precisa de perfil proprio. |
-| Modelos e Perfis de acesso | Producao ja tem a maior parte das RPCs. Falta medir acao a acao, o que so vale depois de resolver o AAL. |
+| Usuarios internos (4 acoes) | So a aplicacao das duas migrations pelo coordenador. pgTAP 48/48. |
+| Perfis e Modelos de acesso | **Leitura ja funciona em producao hoje**: nenhuma das RPCs de leitura chama `has_mfa_aal2`. A escrita depende da decisao AP-D1-AAL, porque passa por `access_profile_require_mutation`, que exige AAL2. Nao falta migration: as RPCs ja estao no banco. |
 | Arquivos de perfil (6 acoes) | Adiados por decisao. Botao visivel e honesto, sem picker nem job. Nada a fazer no MVP. |
 | Acompanhamento (D1) | Acordo dos quatro pontos com `principal-chat-sistema`. |
 
