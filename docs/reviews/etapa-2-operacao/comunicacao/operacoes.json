@@ -1,5 +1,5 @@
 {
-  "revision": 5,
+  "revision": 6,
   "updated_at": "2026-09-10T09:30:00-03:00",
   "round": "E2-R03-20260910",
   "group": "operacoes",
@@ -34,7 +34,7 @@
   "changes": [
     {
       "action_ids": ["support.create", "support.table", "support.kanban", "support.detail", "support.reply", "support.close"],
-      "status": "local-package-in-progress",
+      "status": "backend-package-committed-pgTAP-blocked",
       "changed": [
         "packages/coelo_database/migrations/20260909217000_superadmin_support_production_v1.sql",
         "packages/coelo_database/supabase/tests/superadmin_support_production_test.sql"
@@ -64,7 +64,7 @@
     },
     {
       "action_ids": ["account.profile", "account.settings", "account.theme", "account.mfa", "account.sessions", "account.logout"],
-      "status": "local-package-in-progress",
+      "status": "backend-package-committed-pgTAP-blocked",
       "changed": [
         "packages/coelo_database/migrations/20260909218000_superadmin_account_profile_v1.sql",
         "packages/coelo_database/supabase/tests/superadmin_account_profile_v1_test.sql"
@@ -88,6 +88,6 @@
     {"kind": "environment/integration", "what": "base.fase0Head nao publicado em coordenacao.json", "owner": "coordenador/Fase 0", "unblocks": "SHA integrado da Fase 0 e rebase desta branch antes de tocar UI"},
     {"kind": "verification", "what": "nenhum replay pgTAP local nominal executado ainda; reset completo falha antes do pacote por schema app_private ausente na cadeia canonica", "owner": "coordenador/base de replay", "unblocks": "base/replay nominal corrigido ou perfil descartavel que inclua schema app_private; migration e teste ja estao no pacote"}
   ],
-  "next_step": "validar estaticamente e commitar o pacote Account; depois continuar Planos/Auditoria e aguardar/rebasear sobre base.fase0Head para UI/E2E",
+  "next_step": "coordenador deve aplicar/reconciliar os pacotes SQL na fila; quando base.fase0Head existir, rebasear esta branch e executar wiring Flutter + E2E das 21 acoes; ate la, pgTAP nominal permanece bloqueado pela cadeia app_private ausente",
   "commits": ["b172b695b8d996375fc7da7a539ed7ee78dc7e35", "94bca84f6", "5611c6da7"]
 }
