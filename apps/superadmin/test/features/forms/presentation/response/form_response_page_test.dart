@@ -1826,6 +1826,40 @@ void main() {
     expect(find.text('Alterações ainda não salvas.'), findsNothing);
   });
 
+  // O servidor aceita escala a partir de coalesce(scale_min, 1), e toda
+  // pergunta de escala criada pelo editor nasce SEM minimo declarado. O
+  // cliente usava scaleMin ?? 0 e portanto oferecia um valor que o servidor
+  // sempre recusaria.
+  testWidgets('a scale without a declared minimum starts where the server accepts', (tester) async {
+    final api = _ResponseApi(
+      items: [FormItem(id: 'item-1', kind: FormItemKind.scale, label: 'Nota', position: 0)],
+    );
+    await open(tester, api);
+    expect(find.widgetWithText(ChoiceChip, '0'), findsNothing);
+    expect(find.widgetWithText(ChoiceChip, '1'), findsOneWidget);
+    expect(find.widgetWithText(ChoiceChip, '10'), findsOneWidget);
+  });
+
+  testWidgets('a scale that declares zero still offers zero', (tester) async {
+    final api = _ResponseApi(
+      items: [
+        FormItem(
+          id: 'item-1',
+          kind: FormItemKind.scale,
+          label: 'Nota',
+          position: 0,
+          config: const FormItemConfig(scaleMin: 0, scaleMax: 2),
+        ),
+      ],
+    );
+    await open(tester, api);
+    // Declarado explicitamente, o servidor tambem aceita, porque o coalesce
+    // so vale quando o campo esta ausente.
+    expect(find.widgetWithText(ChoiceChip, '0'), findsOneWidget);
+    expect(find.widgetWithText(ChoiceChip, '2'), findsOneWidget);
+    expect(find.widgetWithText(ChoiceChip, '3'), findsNothing);
+  });
+
   // O autor pode declarar um intervalo de datas na pergunta, e o servidor
   // recusa data fora dele. O seletor do respondente ignorava esse intervalo e
   // oferecia 120 anos para tras e 20 para a frente, entao a pessoa escolhia
