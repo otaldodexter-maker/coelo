@@ -1313,6 +1313,16 @@ perdido — mas nenhum dos dois estava salvo pelo caminho que seus autores
 acreditavam. **Um artefato só está entregue quando existe no destino que o leitor
 abre**, e o canal de coordenação não é esse destino.
 
+E um terceiro caso, mandado conferir e encontrado em tempo real, explica **por
+que** isso acontece de forma sistemática. A frente conferiu item a item e achou
+que tudo o que ela havia produzido estava no arquivo — exceto as **duas
+auditorias que ela tinha acabado de fazer para a coordenação**, que viviam apenas
+nas mensagens. O padrão que ela nomeou: *registro o que pareço dono; conferência
+parece pertencer a quem pediu*. Ela escrevia no próprio arquivo antes de reportar
+enquanto o trabalho era dela, e parou de escrever exatamente quando o trabalho
+virou verificação para outro — que é justamente o trabalho que o outro não tem
+como refazer sozinho.
+
 ## Higiene e preservação
 
 - Os 90 artefatos de WIP ignorados na raiz do checkout integrador estão
