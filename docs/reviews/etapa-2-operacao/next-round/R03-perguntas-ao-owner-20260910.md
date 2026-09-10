@@ -30,9 +30,9 @@ timezone: "America/Sao_Paulo"
 | P16 Local em Formulários | sim; caso extra: bloquear com aviso | ADR 0034 D10/D12 |
 | P17 sessão de teste | sim; `qa-r03@coelo.me` em produção | ADR 0034 D10 |
 | P18 capacidades de Locais | sim; nove provisionadas | ADR 0034 D10 |
-| P19 ao vivo no Agora | **aberta** | — |
-| P20 token antigo com 25 permissões | **aberta** | — |
-| P21 Access na frente do Superadmin | **aberta** (pensar depois) | — |
+| P19 ao vivo no Agora | respondida 10/09 (noite) | Deixar preparado: o token de Stream já tem Read+Edit e cobre Live Inputs; nenhuma transmissão é criada até o Agora precisar. Sem custo até uso. |
+| P20 token antigo com 25 permissões | respondida 10/09 (noite) | Apagar. O coordenador não consegue (MCP retorna 9109 em /user/tokens); o Owner apaga em Perfil → Tokens de API → menu ⋯ → Excluir. Pendência de segurança 1c na skill coelo-backend até ele confirmar. |
+| P21 Access na frente do Superadmin | **aberta** (pensar depois) | Owner pediu explicação melhor em 10/09 (noite); explicada em conversa. Decisão fica para depois do MVP. |
 | HostGator: site, e-mail, blog | **aberta** (três perguntas) | — |
 
 O texto original de cada pergunta segue abaixo, como histórico.
