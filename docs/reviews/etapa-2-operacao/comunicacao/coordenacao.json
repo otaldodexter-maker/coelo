@@ -44,7 +44,11 @@
     "analyze": "limpo",
     "router": "7 falhas, 1 vermelho proposital nomeado",
     "suiteCompleta": "6344 PASS / 14 SKIP / 146 FAIL em b4cf3664a — 129 golden, 17 nao-golden",
-    "suiteFechamento": "6370 PASS / 14 SKIP / 144 FAIL sobre 8e230b15a — 129 golden, 15 nao-golden"
+    "suiteFechamento": "6370 PASS / 14 SKIP / 144 FAIL sobre 8e230b15a — 129 golden, 15 nao-golden",
+    "fase0Head": "1adb070c9028850ccdd7e091db5b97b63b95c750",
+    "fase0HeadShort": "1adb070c9",
+    "fase0PublishedAt": "2026-09-10T18:40:00-03:00",
+    "fase0Note": "Base da Fase 0 da Rodada 3: composto CoeloAdminDirectory, goldens do composto, teste de arquitetura, SDK 3.44.2 e migracao de Instituicoes, Atividades, Turmas, Unidades, Formularios e Saude. Migracoes restantes seguem em dev como lotes; ver next-round/R03-fase0-handoff.md."
   },
   "cutoffs": {
     "codexFreeze": "2026-09-09T23:10:00-03:00",
