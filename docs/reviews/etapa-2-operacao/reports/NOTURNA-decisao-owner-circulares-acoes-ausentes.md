@@ -20,15 +20,25 @@ Uma delas já foi corrigida nesta rodada; as outras duas dependem de decisão.
 | --- | --- | --- | --- |
 | `circulars.attach` | sim | sim | **corrigido em `4e825eef5`** |
 | `circulars.close` | `superadmin_circular_close_v2` | `closeResponses`, implementado em 4 lugares | **nenhuma** |
-| `circulars.delete` | **nenhuma** | **nenhum** | **nenhuma** |
+| `circulars.delete` | **nenhuma** | existe fora da interface, sem consumidor | **nenhuma** |
 
 `circulars.attach` era o caso mais barato: o botão existia e apenas anunciava
 que o envio "seria habilitado depois". Hoje seleciona arquivo, envia pelo
 caminho de mídia e reporta falha honestamente.
 
 `circulars.close` é o caso mais frustrante: tudo pronto, ninguém consegue
-acionar. `public.delete_circular` existe mas é chamada só pelo repositório do
-Principal; o gateway administrativo v2 tem sete funções e nenhuma de exclusão.
+acionar.
+
+Sobre `circulars.delete`, uma precisão que corrige uma afirmação anterior minha:
+não é verdade que não exista método de repositório. `SupabaseCircularRepository`
+tem um `delete` completo, que chama `public.delete_circular` com requisição,
+identificador e versão esperada. O que não existe é declaração desse método na
+interface `CircularRepository`, nem qualquer consumidor, nem RPC no gateway
+administrativo v2 — que tem sete funções e nenhuma de exclusão.
+
+Isso barateia a opção completa: o caminho de dados do lado do Principal já está
+escrito. O que falta do lado administrativo continua sendo a RPC de gateway com
+capacidade própria.
 
 ## Por que não foram implementadas de madrugada
 
