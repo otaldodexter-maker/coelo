@@ -3,7 +3,7 @@ title: "Entrega do grupo operacoes-sistema — rodada noturna 09/10 de setembro"
 source: "trabalho proprio sobre a base d784462c1, branch work/etapa2-noturna-operacoes-sistema"
 status: "documento vivo; atualizado ate a pre-entrega das 04:50"
 generated_at: "2026-09-09"
-last_update: "2026-09-09 22:31 (America/Sao_Paulo)"
+last_update: "2026-09-09 23:16 (America/Sao_Paulo)"
 group: "operacoes-sistema"
 ---
 
@@ -33,6 +33,8 @@ coordenador.
 | `94465f9c3` | Agenda: reprodução do transbordamento a 375 preservada como skip, com o resultado negativo da correção tentada. |
 | `87de5d09e` | Auto-revisão do meu próprio diff de Agenda, antes do review. |
 | `7b553ab75` | Hunk do router para a guarda de tenant de Cardápios — aplicado pelo coordenador em `59c842b32`. |
+| `179a54532` | Nome acessível na região de long-press do toggle compartilhado: sete telas de cinco donos saem da reprovação. |
+| `dfd39b8e8` | **Correção da regressão que `179a54532` causou.** Quem integrar o primeiro precisa integrar este. |
 
 ## Medições publicadas
 
@@ -61,6 +63,22 @@ depois de cinco minutos e teria sido entregue como não avaliada — justamente 
 tela que, medida com pumps limitados, falha nas três diretrizes. Refazer o
 instrumento antes de entregar evitou imputar falha a telas nunca avaliadas e
 revelou o achado mais grave da varredura.
+
+## A regressão que eu causei, e como apareceu
+
+`179a54532` corrigiu a diretriz de rótulo em sete telas e **quebrou quatro testes
+em duas outras áreas**. `Semantics` sem `container` não cria nó próprio: anexa o
+rótulo ao nó ancestral mais próximo, que na barra de listagem engloba o campo de
+busca. O nó ficou com o rótulo certo e perdeu a flag `isTextField`.
+
+Quebrou um caso em Instituições e três em Pessoas. `container: true` resolve os
+quatro sem desfazer o ganho — as sete telas continuam passando a diretriz.
+
+Apareceu porque eu rodei as suítes das **dezoito** features que usam o widget
+antes de considerar a entrega feita. A contrapartida de poder commitar em arquivo
+compartilhado é medir o alcance, não só o ganho; medir o alcance é o que pegou
+isto. Medindo só o ganho, a regressão entraria silenciosa e apareceria no
+fechamento como falha de outra frente.
 
 ## Gate de conhecimento
 
@@ -157,3 +175,8 @@ Registradas porque mudam o que o leitor deve confiar:
    assenta, e não apliquei: **medição que falha por exceção é medição não feita**,
    e um instrumento que confunde "lançou" com "reprovou" produz acusação.
    Declarar uma lição não é tê-la internalizado.
+8. Afirmei ter verificado por reversão que doze falhas não-golden não eram
+   minhas. Tinha verificado uma; três eram minhas. Eu as agrupei como
+   pré-existentes porque apareciam na mesma lista — **inferência por vizinhança,
+   não medição**. As outras nove são pré-existentes, e agora isso está verificado
+   e não assumido.
