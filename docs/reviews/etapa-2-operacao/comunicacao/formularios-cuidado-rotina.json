@@ -1,12 +1,12 @@
 {
- "revision": 16,
+ "revision": 17,
  "round": "E2-R03-20260910",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5[1m]",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-10T15:00:00-03:00",
+ "updatedAt": "2026-09-10T16:50:00-03:00",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-formularios-cuidado-rotina",
  "branch": "work/etapa2-r03-formularios-cuidado-rotina",
  "head": "1c188091f",
@@ -50,16 +50,14 @@
   "note": "Fundacao health_care/medication inexistente. Construindo o primeiro pacote SQL da familia health_care."
  },
  "tests": {
-  "pass": 1210,
+  "pass": 1033,
   "fail": 0,
   "blocked": 0,
   "skipped": 0,
   "notRun": 0,
-  "pgtap": "1021 assercoes / 0 falhas (1001 do recorte anterior mais 20 de Alunos), revalidadas sobre a base integrada 552058da0",
-  "flutter": "113 daily_routine + 89 attendance + 7 cuidado/medicacao + 5 alunos = 214 nas suites que escrevi ou alterei; dart analyze lib limpo",
-  "analyzer": "dart analyze lib limpo em apps/superadmin",
-  "falhas_preexistentes_nas_areas_tocadas": "8, medidas tambem sem as minhas mudancas: 4 goldens de health_care/presentation e 4 de saneamento de composicao de outras familias",
-  "escopo": "nao e a suite completa do app e nao e prova E2E"
+  "pgtap": "1033 assercoes / 0 falhas em 24 arquivos, sobre a BASELINE DE PRODUCAO mais a fila de Formularios medida",
+  "mudanca_de_base": "as 1021 assercoes anteriores foram medidas sobre um replay reconstruido da cadeia historica. A baseline publicada pelo coordenador e a base verdadeira, e refiz tudo sobre ela.",
+  "flutter": "214 nas suites que escrevi ou alterei; dart analyze lib limpo"
  },
  "reservedFiles": [],
  "blocking": [
@@ -72,7 +70,7 @@
   }
  ],
  "deltaProposals": [],
- "nextStep": "Tela de gestao de aluno, se houver janela; caso contrario ela e a unica pendencia de implementacao do recorte.",
+ "nextStep": "Aplicar as decisoes visuais D9 (goldens R/A e as seis referencias da Rotina) e as duas politicas de Local.",
  "findings": [
   {
    "id": "F-R03-FCR-001",
@@ -354,6 +352,14 @@
   {
    "ordem": 7,
    "arquivo": "packages/coelo_database/migrations/20260910140000_student_link_commands_v1.sql"
+  },
+  {
+   "ordem": 8,
+   "arquivo": "packages/coelo_database/migrations/20260910150000_health_care_guardian_read_v1.sql"
+  },
+  {
+   "ordem": 9,
+   "arquivo": "packages/coelo_database/migrations/20260910160000_forms_revoke_production_drift_v1.sql"
   }
  ],
  "chaveDeComposicao": {
@@ -475,5 +481,66 @@
    "Quais sao as seis referencias da Rotina da D8: a guarda ja esta ligada e provada, e a lista de decisoes de 10/09 nao cita nenhum arquivo de rotina"
   ],
   "pedido_ao_coordenador": "encaminhar a pagina ao Owner. Enquanto nao houver resposta, essas sete acoes ficam paradas por decisao e nao por implementacao; nada nelas depende de mais codigo meu."
+ },
+ "correcaoDeAfirmacaoMinha": {
+  "o_que_eu_disse": "que nenhuma migration de Formularios jamais foi aplicada em lugar nenhum",
+  "o_que_e_verdade": "o diagnostico do defeito esta certo (20260813155005 e PL/pgSQL invalido: CASE sem parenteses dentro do IF), mas producao TEM forms, form_items, form_applications e form_responses, e a funcao form_item_config_valid la ja esta com os parenteses. Houve divergencia: producao foi corrigida e a correcao nunca voltou ao arquivo do repositorio.",
+  "o_que_fiz": "realinhei o commit ao texto EXATO de producao, e nao a minha propria versao, para nao criar drift novo.",
+  "como_apareceu": "a baseline de producao publicada pelo coordenador; sem ela eu teria seguido com a conclusao errada."
+ },
+ "triagemDasQuatroFalhas": {
+  "veredito": "as quatro sao drift de producao. Nenhuma e teste desatualizado.",
+  "1_grants_diretos_de_tabela": {
+   "achado": "as sete tabelas expostas de Formularios tem SELECT, INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES e TRIGGER concedidos a anon E a authenticated em producao",
+   "explorável_hoje": "nao. As sete tem RLS habilitado e FORCE com ZERO policies, entao a negativa e total e um anon que consulte public.forms recebe zero linhas. Conferi na pratica.",
+   "por_que_corrigir_mesmo_assim": "a protecao inteira esta apoiada na ausencia de policy. No dia em que qualquer policy permissiva for criada, ou o FORCE cair, esses grants viram escrita real de anonimo em dado de formulario."
+  },
+  "2_tokens_de_download": {
+   "achado": "anon podia executar form_authorize_file_job_download e authenticated podia executar form_redeem_file_job_download",
+   "gravidade": "este e o unico dos quatro que NAO dependia de um segundo erro para importar. O resgate do token e server-side por contrato: quem resgata e o service_role, nao o navegador."
+  },
+  "correcao": "packages/coelo_database/migrations/20260910160000_forms_revoke_production_drift_v1.sql. Forward-only e mecanica: so revoga, nao cria, nao altera corpo de funcao e nao mexe em RLS. Se algum caminho legitimo dependia de grant direto, ele falha fechado e aparece.",
+  "resultado": "as quatro assercoes ficam verdes; o recorte inteiro vai a 1033 ok e 0 not ok sobre a baseline de producao."
+ },
+ "decisoesDoOwnerD9": {
+  "recebidas_em": "2026-09-10 16:00, pelo coordenador (ADR 0034, Decisao 9)",
+  "saude_alem_da_instituicao": {
+   "resposta": "opcao 1: o responsavel autorizado le o perfil de cuidado e os planos da propria crianca",
+   "estado": "implementado e provado",
+   "migration": "packages/coelo_database/migrations/20260910150000_health_care_guardian_read_v1.sql",
+   "pgtap": "packages/coelo_database/supabase/tests/health_care_guardian_read_v1_test.sql, 12/12",
+   "tres_limites": [
+    "somente leitura: o ramo de guardiao so existe para health_care.read e medication.read",
+    "somente a propria crianca: passa por guardian_has_capability daquele contexto infantil",
+    "sem diretorio: as duas RPCs exigem o contexto infantil e nao aceitam busca nem paginacao"
+   ],
+   "projecao_minima": "a familia nao recebe a trilha com justificativa, nem o registro de administracao do medicamento, nem a versao esperada do agregado",
+   "porta_separada_de_proposito": "nao reaproveitei superadmin_health_care_profile_detail porque afrouxar aquele portao abriria o diretorio inteiro junto",
+   "regra_anterior_preservada": "platform.read continua sem alcancar saude de crianca, provado por assercao"
+  },
+  "pendentes_nesta_revisao": [
+   "goldens R/A",
+   "Local com opcoes fixas na publicacao",
+   "Local revogado exige local atual",
+   "seis referencias da Rotina = modelo de atividade"
+  ]
+ },
+ "filaFormulariosMedida": {
+  "medida_sobre": "baseline de producao mais seed, por psql",
+  "producao_tem_formularios_ate": "~20260901194209",
+  "ordem_que_aplica_limpo": [
+   "20260827235500_superadmin_internal_institution_list_filter (de Estrutura, nao meu)",
+   "20260828000500_superadmin_internal_institution_edit_core (de Estrutura, nao meu)",
+   "20260908000049_superadmin_forms_directory_internal_read",
+   "20260908030000_superadmin_internal_form_drafts_v2",
+   "20260908032100_superadmin_forms_authoring_institution_context_v2",
+   "20260908054000_forms_internal_provenance_guards",
+   "20260908160000_private_media_catalog_r2_v1",
+   "20260908170000_forms_xlsx_private_r2_v1",
+   "20260908191327_forms_response_edit_validation_v1",
+   "20260908195512_forms_superadmin_operations_read_v2",
+   "20260908215522_forms_superadmin_media_read_r2_v1"
+  ],
+  "dependencia_cruzada": "os itens 3 a 6 FALHAM sem os dois primeiros: o preflight deles exige o envelope SAI_INVALID_ARGUMENT e o superadmin_internal_error_envelope de producao ainda devolve SAI_INTERNAL_ERROR/500 para esse codigo. Formularios nao sobe sem duas migrations de Estrutura antes."
  }
 }
