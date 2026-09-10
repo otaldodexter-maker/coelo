@@ -16,7 +16,9 @@ const _removedOriginFilterReason =
 const _removedReviewReason =
     'V2.10 no longer has a Revisao e ativacao wizard step; replacing it would mislabel another state.';
 const _removedDirtyExitReason =
-    'V2.10 has no cancel action or dirty-exit confirmation on the current editor.';
+    'The editor now confirms a dirty exit, so this reason no longer describes the '
+    'product; the case stays skipped because the dialog has no approved visual '
+    'definition of its own and reuses the shared shell.';
 const _sharedDialogReconciliationReason =
     'CoeloAdminDialogShell height belongs to the shared V4.19/V4.20 reconciliation; its oversized baseline cannot be promoted here.';
 
