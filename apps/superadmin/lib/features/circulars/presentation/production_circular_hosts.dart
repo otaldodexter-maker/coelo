@@ -60,7 +60,9 @@ final class _ProductionCircularDirectoryHostState extends State<ProductionCircul
   /// recebe. Ler uma unica pagina fazia o restante do acervo sumir em silencio:
   /// uma busca por uma Circular antiga simplesmente nao encontrava nada. O host
   /// passa a seguir o cursor do servidor ate acabar, com um teto para nao
-  /// prender a tela, e diz a verdade quando o teto e alcancado.
+  /// prender a tela, e diz a verdade quando o teto e alcancado. A lista aparece
+  /// na primeira pagina e cresce nas seguintes, para que seguir o cursor nao
+  /// custe uma tela parada ate a ultima resposta.
   static const _maxPages = 10;
   static const _pageSize = 100;
 
@@ -103,15 +105,19 @@ final class _ProductionCircularDirectoryHostState extends State<ProductionCircul
         );
         cursorUpdatedAt = fetched.nextCursorUpdatedAt;
         cursorId = fetched.nextCursorId;
-        if (cursorUpdatedAt == null || cursorId == null) break;
-        if (page == _maxPages - 1) truncated = true;
+        final finished = cursorUpdatedAt == null || cursorId == null;
+        if (!finished && page == _maxPages - 1) truncated = true;
+        // A lista aparece assim que a PRIMEIRA pagina chega e cresce com as
+        // seguintes. Esperar todas antes de mostrar qualquer coisa trocaria o
+        // acervo escondido por uma tela parada: numa instituicao grande sao ate
+        // dez idas ao servidor antes do primeiro item.
+        setState(() {
+          _items = List.unmodifiable(collected);
+          _truncated = truncated;
+          _state = CircularDirectoryViewState.content;
+        });
+        if (finished) break;
       }
-      if (!mounted || generation != _loadGeneration) return;
-      setState(() {
-        _items = List.unmodifiable(collected);
-        _truncated = truncated;
-        _state = CircularDirectoryViewState.content;
-      });
     } on CircularUnauthorized {
       if (mounted && generation == _loadGeneration) {
         setState(() => _state = CircularDirectoryViewState.forbidden);

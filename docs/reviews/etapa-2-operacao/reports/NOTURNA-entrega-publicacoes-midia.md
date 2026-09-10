@@ -2,7 +2,7 @@
 title: "Entrega da rodada noturna — grupo publicacoes-midia"
 source: "Contrato em docs/reviews/etapa-2-operacao/TRABALHO-ATUAL.md; coordenação Claude da rodada de 09-10/09/2026"
 status: "delivery-report; nenhuma mutação remota executada; nenhuma autorização nominal usada"
-generated_at: "2026-09-09"
+generated_at: "2026-09-10"
 timezone: "America/Sao_Paulo"
 ---
 
@@ -40,6 +40,27 @@ branch `work/etapa2-noturna-publicacoes-midia`, base `d784462c1` com
 | 18 | `d6ff438fc` | Suíte pgTAP que faltava para o candidato do feed misto |
 | 19 | `559017727` | `moments-media` confere os bytes armazenados, não só metadados |
 | 20 | `9737f7777` | Guarda de contexto na retirada de Momento |
+| 21 | `536b1f222` | Resumo de respostas no leitor administrativo |
+| 22 | `4a40e13aa` | Retirada repetida de Momento reapresenta a mesma chave |
+| 23 | `db2726df8` | Remoção do contrato órfão de retirada de Momento |
+| 24 | `9fde22632` | Circular encerrada diz que fechou, em vez de pedir outra resposta |
+| 25 | `6e2a21287` | Diretório pinta na primeira página em vez de esperar a última |
+
+## Resultado medido do recorte
+
+Medido em uma execução única, não somado de relatos anteriores: **636 PASS e
+23 FAIL** nas oito features do recorte mais as seis rotas tocadas.
+
+Esta medição **precede** os lotes 24 e 25, que entraram depois. Os dois foram
+verificados nas suas suítes próprias — 4 PASS cada, e 56 PASS na suíte de
+circulars — e uma nova medição completa está registrada abaixo quando concluída.
+
+As 23 falhas são **todas** de golden e reproduzem na base sem nenhum lote deste
+grupo: 10 em `principal_happens_preview_golden_test`, 11 em
+`principal_moments_preview_golden_test` e 2 em `circular_directory_golden_test`.
+Nenhum golden foi regravado, conforme decisão da coordenação.
+
+Fora de golden, zero falhas.
 
 ## Defeitos corrigidos, em ordem de gravidade
 
@@ -68,6 +89,62 @@ branch `work/etapa2-noturna-publicacoes-midia`, base `d784462c1` com
 9. **Confirmação aplicada ao contexto errado** na retirada de Momento.
 10. **Abrir Circular do feed** apenas informava indisponibilidade; agora entrega
     o leitor da família Principal dentro do shell.
+11. **Resumo de respostas invisível**: a RPC, o método de repositório e o teste
+    existiam, e nenhuma tela chamava; o leitor ainda recebia o repositório pelo
+    tipo mais estreito, o que tornava a chamada impossível.
+12. **Encerramento anunciado como conflito**: o servidor sinaliza Circular
+    encerrada com o mesmo conflito de versão do conteúdo obsoleto, então o
+    convite falso sobrevivia nesse subcaso.
+
+### Acréscimo não anunciado, registrado depois
+
+Os lotes `c72b2c217` e `65d04ba9e` também acrescentaram
+`X-Content-Type-Options: nosniff` e `Referrer-Policy: no-referrer` às respostas
+de `happens-media` e `now-media`, alinhando as quatro superfícies de mídia ao
+`circular-media`. É melhoria real, mas entrou sob uma descrição que falava
+apenas de costura injetável e ramo R2. Fica nomeado aqui.
+
+
+## Estado por ação, ao final da rodada
+
+Leitura verificada nesta rodada, não herdada do inventário. Três ressalvas de
+leitura, para nenhuma linha ser lida como mais do que diz:
+
+- **"RPC: sim"** significa definida na cadeia local de migrations. Não é prova
+  de que esteja aplicada em produção, e não tenho como obtê-la.
+- **Observações sobre gateways de mídia descrevem o código**, não o que está
+  implantado. As Edge Functions só passam a valer depois de um deploy que este
+  grupo não executou nem tem autorização para executar.
+- **"Cliente avançado"** nunca significa ação concluída ponta a ponta.
+
+| action_id | Cliente | RPC | Observação verificada |
+| --- | --- | --- | --- |
+| `acontece.feed` | avançado | sim | Abre o leitor Principal; teto de 20 sem paginação (decisão) |
+| `acontece.create` | avançado | sim | Cliente deixou de fixar bucket; provedor anunciado |
+| `acontece.publish` | avançado | sim | Chave de idempotência por intenção |
+| `acontece.remove` | fechado | **não** | `withdraw_happens_post` só em candidato |
+| `agora.view` | avançado | sim | Relê na revisão de autorização; estados honestos |
+| `agora.create` | avançado | sim | `embedded` e seletor de mídia convivendo |
+| `agora.publish` | avançado | sim | Chave de idempotência por intenção |
+| `agora.expire` | satisfeito no cliente | sim | Servidor exclui expirado; transição material é candidato |
+| `momentos.view` | fechado | **não** | `list_visible_moments` só em candidato |
+| `momentos.create` | avançado | sim | Gateway passou a conferir MIME real dos bytes (código) |
+| `momentos.publish` | avançado | sim | Sinal de refresh compartilhado com a leitura |
+| `momentos.remove` | fechado | **não** | `withdraw_moment` só em candidato; guarda de contexto adicionada |
+| `circulars.list` | avançado | sim | Segue o cursor, pinta na 1ª página; declara truncamento |
+| `circulars.filter` | parcial | sim | Filtra no cliente sobre a lista completa; servidor não filtra |
+| `circulars.create` | avançado | sim | Anexos passaram a funcionar |
+| `circulars.edit` | avançado | sim | Nova revisão por `save_draft_v2`; recusa fechada/arquivada |
+| `circulars.detail` | avançado | sim | Resumo de respostas passou a aparecer |
+| `circulars.schedule` | **desabilitado** | sim | Nenhum host fornece o seletor; decisão de UX pendente |
+| `circulars.publish` | avançado | sim | Versão otimista no contrato |
+| `circulars.close` | **inerte** | sim | Backend completo, nenhuma afordância; decisão pendente |
+| `circulars.delete` | **ausente** | **não** | Ausente nas três camadas; decisão pendente |
+| `circulars.respond` | avançado | sim | Recusas dizem o que aconteceu; encerramento distinguido |
+| `circulars.attach` | avançado | sim | Bilhete autorizado e expirável; gateway pronto para R2 |
+
+Nenhuma ação é declarada concluída ponta a ponta. Três têm cliente fechado e
+RPC ausente da cadeia aplicada, e por isso **não completam em produção**.
 
 ## O que NÃO está fechado, e por quê
 
@@ -126,5 +203,44 @@ Registradas para ninguém repetir:
 
 ## Recursos
 
-Nenhum container, volume ou porta permanece. O replay isolado subiu um Postgres
-em projeto temporário próprio e foi encerrado com a árvore limpa.
+Nenhum container, volume ou porta **deste grupo** permanece. O replay isolado
+subiu um Postgres em projeto temporário próprio e foi encerrado; o diretório
+temporário residual foi conferido e removido.
+
+Registro para não haver leitura errada: durante a madrugada existiu na máquina
+um container `coelo-sqlcheck` que **não é deste grupo** e não foi tocado.
+
+## Custos que esta rodada introduziu, declarados
+
+Duas correções trocaram um problema por um custo. Nenhum é defeito, mas quem
+mantiver isto depois precisa saber:
+
+- **`moments-media` finaliza lendo os bytes de volta.** Antes conferia só o
+  `HEAD`. A leitura é limitada ao tamanho já esperado, com teto de 25 MB por
+  ativo, e é o preço de conferir o MIME real — o mesmo preço que Circular,
+  Acontece e Agora já pagavam. Sem ela, qualquer conteúdo do tamanho declarado
+  passava como imagem.
+- **O diretório de Circulares faz até 10 leituras por abertura.** Antes fazia 1
+  e escondia o resto. Desde `6e2a21287` a lista pinta na primeira e cresce nas
+  seguintes, então o custo não aparece como tela parada — mas o número de idas
+  ao servidor por abertura subiu.
+
+Registro também a correção de um defeito **meu**: o lote 10 deixava a tela em
+carregamento até a última página, o que numa instituição grande eram até dez
+idas antes do primeiro item. Encontrado relendo a própria entrega, não por
+teste — nenhum teste falhava.
+
+## Dimensões varridas nesta rodada
+
+Nove, cada uma com resultado registrado — as com defeito viraram lote, as sem
+defeito ficam aqui para ninguém repetir:
+
+1. Existência das RPCs que o recorte chama — 14 conferidas, 3 ausentes.
+2. Métodos de interface sem consumidor — 25 conferidos, 2 sem.
+3. Classes de apresentação sem consumidor — 2 encontradas.
+4. Callbacks opcionais nunca fornecidos — 5 encontrados, 3 honestos.
+5. Conferência de MIME real nas superfícies de mídia — 1 faltava.
+6. Guardas de contexto em fluxo assíncrono — 1 faltava.
+7. Idempotência por intenção — 3 famílias fora do padrão da casa.
+8. Uso do cursor de paginação — 2 superfícies descartavam.
+9. Vazamento de texto do servidor para a interface — nenhum.
