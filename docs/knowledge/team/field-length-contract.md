@@ -55,8 +55,18 @@ carregado no formulário sem truncamento silencioso. Truncar dado existente para
 agradar a uma validação nova é perda de informação do usuário.
 
 Validação com mensagem explícita é melhor ainda, porque explica em vez de só
-impedir. Mas a entrada limitada é o que garante que nenhum payload inválido chegue a
-ser montado, e as duas se somam em vez de competirem.
+impedir — e ela não é opcional, por uma razão que eu mesmo deixei passar ao escrever
+a primeira versão deste artigo. As duas afirmações acima se contradizem se lidas
+juntas: se o formatador **não** trunca um valor herdado mais longo que o limite, então
+esse valor herdado continua sendo enviado no salvamento, e o servidor continua
+recusando com a mesma mensagem genérica. O formatador garante que o usuário não
+**crie** um texto inválido; não garante que nenhum payload inválido seja montado.
+
+Então o caso residual é nominalmente este: registro antigo, acima do limite, aberto
+para edição e salvo sem que o usuário mexa no campo. Para ele, só validação com
+mensagem resolve — e ela é a única que consegue dizer "este título tem 310
+caracteres e o máximo é 240", que é a informação que falta hoje. As duas medidas se
+somam, e a primeira sozinha cobre o caso comum, não todos.
 
 ## Como encontrar o resto
 
