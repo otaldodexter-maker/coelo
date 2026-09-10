@@ -2,8 +2,8 @@
   "id": "LocationCatalogV2",
   "parent": {
     "id": "FReadDirectoryContractGreenDerived",
-    "descriptor_sha256_crlf_utf8": "b6b1232c7e67e978747b784ba71de43afd8e85b3102645d91d53c66a457b2542",
-    "resolver_sha256_crlf_utf8": "d8caf37a298f8d92348613f21af79b3de4afb08224554736f3b802b51d66690b"
+    "descriptor_sha256_crlf_utf8": "ec6435a0869c6356cf305cb01148a4cbf9e1f1d08e5277d35f42c9dbe3b3db67",
+    "resolver_sha256_crlf_utf8": "bb8e307738f5a86d6c60c87007934f7dd2088c605de2159e4b2cf7e983e0fa6e"
   },
   "target_version": "20260908190650",
   "canonical_additions": [
@@ -25,5 +25,5 @@
     }
   ],
   "extra_bridges": [],
-  "planned_counts": {"canonical":53,"preflight":2,"bootstrap":2,"total":57}
+  "planned_counts": {"canonical":54,"preflight":2,"bootstrap":2,"total":58}
 }

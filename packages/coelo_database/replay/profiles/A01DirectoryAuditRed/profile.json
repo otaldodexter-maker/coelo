@@ -3,8 +3,8 @@
     "base":  {
                  "profile":  "auth",
                  "manifest":  "packages/coelo_database/replay/foundation-migrations.sha256",
-                 "manifest_sha256_crlf_utf8":  "4279e67c9651f4049329591b6e8aad82e3a9052506c1a4e16ba8bbb693249d59",
-                 "selected_canonical_count":  45,
+                 "manifest_sha256_crlf_utf8":  "8fcfb357bd83cec8a0fc98427b45ad236738c79dfd0ca11eb98f41df672cc8a0",
+                 "selected_canonical_count":  46,
                  "boundary":  "20260901200206"
              },
     "target_version":  "20260907222911",
@@ -46,7 +46,7 @@
                                 },
                                 {
                                     "file":  "20260907222911_superadmin_activity_directory_v2_client_contract.sql",
-                                    "sha256_crlf_utf8":  "77b248f6d60661ebf1fff941107b8fd148d9e2a19e9c27d1b4f45be01571847f",
+                                    "sha256_crlf_utf8":  "e72e11c5d0f8fd8d49bfe098a230530edb3d4070d80ca5b4ae04b61b72eb196f",
                                     "canonical_union_position":  53
                                 }
                             ],
@@ -67,8 +67,8 @@
 
                       ],
     "planned_counts":  {
-                           "canonical":  53,
+                           "canonical":  54,
                            "preflight":  2,
-                           "total":  55
+                           "total":  56
                        }
 }

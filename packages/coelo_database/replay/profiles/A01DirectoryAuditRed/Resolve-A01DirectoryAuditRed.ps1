@@ -33,7 +33,7 @@ function Get-A01AuditHash([string]$Path) {
 # This exact diagnostic descriptor is not an extension mechanism or a lease.
 # Changing any metadata, bridge, name, count or digest requires another review.
 $descriptorFile = Assert-A01AuditFile (Join-Path $PSScriptRoot 'profile.json')
-if ((Get-A01AuditHash $descriptorFile.FullName) -cne 'c850cec6380744d71a1c390cf0010d81d5fbd3f5a9b21cdeeb8e02051dc05648') {
+if ((Get-A01AuditHash $descriptorFile.FullName) -cne '1e3f5daa994a9a75174a4f78e330465cda24e6fa684f9bd799c4ab59399c5c07') {
   throw 'A01DirectoryAuditRed descriptor hash mismatch'
 }
 $descriptor = [IO.File]::ReadAllText($descriptorFile.FullName) | ConvertFrom-Json
@@ -57,7 +57,7 @@ $baseEntries = @(Get-Content -LiteralPath $manifestFile.FullName | Where-Object 
 })
 if ($baseEntries.Count -ne $descriptor.base.selected_canonical_count -or
     @($descriptor.extra_bridges).Count -ne 0) {
-  throw 'A01DirectoryAuditRed requires Auth45 and zero extra bridges'
+  throw 'A01DirectoryAuditRed requires Auth46 and zero extra bridges'
 }
 $canonicalEntries = @($baseEntries) + @($descriptor.canonical_additions)
 $preflightEntries = @($descriptor.inherited_preflights)

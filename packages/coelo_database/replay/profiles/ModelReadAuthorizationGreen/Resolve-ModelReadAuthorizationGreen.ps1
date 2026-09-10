@@ -32,7 +32,7 @@ function Get-ModelGreenHash([string]$Path) {
 # This exact diagnostic descriptor is not an extension mechanism or a lease.
 # Changing any metadata, bridge, name, count or digest requires another review.
 $descriptorFile = Assert-ModelGreenFile (Join-Path $PSScriptRoot 'profile.json')
-if ((Get-ModelGreenHash $descriptorFile.FullName) -cne '0986be5b8b35c7498644d0eca4e55fca02b4657ec2a830d27186c3958d5581f8') {
+if ((Get-ModelGreenHash $descriptorFile.FullName) -cne 'f65ed69e52039a6c0d22c8600e2a2750db3fdaf200c9204ee44e1d3391c505cb') {
   throw 'ModelReadAuthorizationGreen descriptor hash mismatch'
 }
 $descriptor = [IO.File]::ReadAllText($descriptorFile.FullName) | ConvertFrom-Json
@@ -56,7 +56,7 @@ $baseEntries = @(Get-Content -LiteralPath $manifestFile.FullName | Where-Object 
 })
 if ($baseEntries.Count -ne $descriptor.base.selected_canonical_count -or
     @($descriptor.extra_bridges).Count -ne 0) {
-  throw 'ModelReadAuthorizationGreen requires Auth45 and zero extra bridges'
+  throw 'ModelReadAuthorizationGreen requires Auth46 and zero extra bridges'
 }
 $canonicalEntries = @($baseEntries) + @($descriptor.canonical_additions)
 $preflightEntries = @($descriptor.inherited_preflights)
