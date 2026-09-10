@@ -8,7 +8,6 @@ import 'package:coelo_superadmin/features/principal_circulars/domain/circular.da
 import 'package:coelo_superadmin/features/principal_circulars/domain/circular_repository.dart';
 import 'package:coelo_superadmin/features/principal_circulars/domain/principal_happens_mixed_feed.dart';
 import 'package:coelo_superadmin/features/principal_happens/domain/principal_happens_feed_repository.dart';
-import 'package:coelo_superadmin/features/principal_happens/domain/principal_happens_preview_data.dart';
 import 'package:coelo_superadmin/features/principal_shared/domain/principal_runtime_context.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
