@@ -1,109 +1,185 @@
 {
-  "revision": 2,
-  "updated_at": "2026-09-09T18:38:00-03:00",
+  "revision": 12,
+  "updated_at": "2026-09-10T00:47:00-03:00",
+  "clock_note": "Hora conferida com date: local 23:59 de 09/09 no ultimo commit; esta revisao escrita por volta de 00:07 de 10/09.",
   "group": "alunos-rotina",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) - claude-opus-5[1m]",
-  "status": "activation-requested; read-only-focal concluida; no-product-write",
+  "status": "ATIVO - recorte proprio e child_safety entregues; em acessos-pessoas restante",
   "coordinator": "Claude (Coordenacao e Integracao)",
-  "worktree": null,
-  "branch": null,
-  "head": null,
-  "upstream": null,
-  "base_observed": "d784462c168d22fdb7090b7de1ef7db554ad5107 (dev, 0/0 com origin/dev)",
-  "scope_summary": "16 IDs: students.list/link/transfer/edit/revoke; attendance.dashboard/create/mark/correct/finish/export; daily-routine.list/create/edit/apply/publish",
-  "changed": "Auditoria read-only do caminho de composicao real das 16 acoes concluida sobre d784462c1. Resultado em findings; nenhuma linha de produto escrita.",
-  "findings": [
-    {
-      "id": "F1",
-      "severity": "blocker-decision",
-      "actions": ["attendance.create", "attendance.mark", "attendance.correct", "attendance.finish"],
-      "fact": "apps/superadmin/lib/features/attendance/data/supabase_attendance_repository.dart chama RPCs superadmin_attendance_create_call, _call_detail, _directory, _context_options, _set_participant_state, _complete_call, _correct_participant e _undo_bulk. Nenhuma dessas funcoes existe em packages/coelo_database/migrations (173 arquivos). As migrations vivas de Assiduidade (20260724152731, 20260825171221) definem apenas a familia legada people-based attendance_dashboard_* mais confirm/revert_attendance_record e submit_attendance_notice. As RPCs esperadas aparecem somente em .recovery-archives, cadeia historica removida.",
-      "consequence": "O ciclo de chamada (criar/marcar/corrigir/concluir) nao tem backend no remoto de producao. Confirma a leitura do rastreador de que o legado people-based nao prova backend039.",
-      "gate": "OQ-040 esta ABERTA em docs/open-questions.md linha 235 e exige aprovar capability interna, matriz/AAL, scope, DTO e cutover antes do detalhe v2, com zero mutacao remota autorizada. Nao e resolvivel por este executor."
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-alunos-rotina",
+  "branch": "work/etapa2-noturna-alunos-rotina",
+  "head": "d8ac0ed9c",
+  "upstream": "origin/work/etapa2-noturna-alunos-rotina",
+  "divergence": "0/0",
+  "workingTree": "limpo",
+  "stash": "vazio",
+  "recorte_proprio": {
+    "lotes": 17,
+    "tests": "283 P / 4 S / 0 F contra 235 P / 4 S / 12 F na base integrada",
+    "novos_testes": 34,
+    "promocoes_propostas": "nenhuma",
+    "estado": "sem trabalho executavel proprio sem decisao externa; ver revisao 8 para os gates"
+  },
+  "diagnostico_atribuido_child_safety": {
+    "alvo": "/dev/safety e, como se descobriu, tambem a rota de producao /safety",
+    "escrita": "NENHUMA. Nenhum arquivo de acessos-pessoas foi tocado. Tres sondas temporarias foram criadas, executadas e removidas; worktree limpa conferida.",
+    "categoria_corrigida": {
+      "relato_anterior": "transborda nas duas larguras; falha nas tres diretrizes nativas de acessibilidade; expira em carregamento",
+      "medicao_minha": "Nao sao transbordos. Sao 20 excecoes de layout por largura, e a primeira causa todas as outras: LayoutBuilder does not support returning intrinsic dimensions, widget causador IntrinsicHeight, em safety_pages.dart:292:21. As demais sao RenderBox was not laid out em cascata. A grade de cartoes NAO SE DISPOE.",
+      "conclusao": "As tres observacoes iniciais sao tres sintomas da MESMA causa, e a causa e uma linha."
     },
-    {
-      "id": "F2",
-      "severity": "informativo-importante",
-      "actions": ["attendance.create", "attendance.mark", "attendance.correct", "attendance.finish"],
-      "fact": "Em apps/superadmin/lib/app/router/superadmin_router.dart a rota /attendance passa onCreate: null e onOpenCall: null, e as rotas /attendance/create e /attendance/call/:id chamam hasAuthoritativeMutationCapability() sem argumento de location; essa funcao retorna false para tudo que nao comece por /invites, /notices ou /circulars. Origem: 2c0dbe84b, fix(superadmin) fail closed unavailable mutations.",
-      "consequence": "O fluxo esta duplamente fechado. Verificado que NAO deve ser aberto agora: com F1 em aberto, ligar a navegacao criaria acao falsa contra RPC inexistente. O fail-closed atual e o comportamento correto enquanto OQ-040 nao for decidida. Registrado para que nenhuma frente trate isso como bug a corrigir.",
-      "gate": "Depende de F1/OQ-040."
+    "cadeia_da_causa_raiz": [
+      "safety_pages.dart:292 envolve cada linha da grade em IntrinsicHeight, com Row crossAxisAlignment stretch e Expanded por cartao.",
+      "O cartao e SafetyChildDirectoryCard, que retorna CoeloAdminInteractiveCard.",
+      "Dentro dele ha CoeloAdminExpandableStatusIndicator.",
+      "packages/coelo_ui_admin/lib/src/surface/coelo_admin_expandable_status_indicator.dart:42 e literalmente LayoutBuilder(builder: _buildStatus).",
+      "IntrinsicHeight pede dimensoes intrinsecas; LayoutBuilder nao pode responder; assercao dispara."
+    ],
+    "atinge_producao": {
+      "veredito": "SIM",
+      "prova": "superadmin_auth_scope compoe childSafetyRepository como SupabaseChildSafetyRepository(client), real. superadmin_app.dart:231 constroi _childSafetyController com ele e passa ao router em :275. A rota de producao /safety, superadmin_router.dart:2097, monta SafetyLandingPage com esse controlador. O modo de exibicao padrao e cards, child_safety_contract.dart:13.",
+      "consequencia": "Basta existir um registro para a tela de producao quebrar no primeiro carregamento. E MVP e e sobre dados de crianca."
     },
-    {
-      "id": "F3",
-      "severity": "gap-backend",
-      "actions": ["daily-routine.list", "daily-routine.create", "daily-routine.edit", "daily-routine.publish"],
-      "fact": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart compoe routineRepository como const UnavailableRoutineRepository(). As unicas RPCs de rotina nas migrations vivas sao superadmin_routine_save_application, superadmin_routine_correct_launch e superadmin_routine_revert_application; nao ha reader de diretorio nem comando de publicacao.",
-      "consequence": "Coerente com o rastreador (materializar reader ou comando nominal interno039). O diretorio /rotina roda fail-closed em producao; onCreateEntry e onEdit tambem sao null na rota.",
-      "gate": "Precisa de contrato aprovado e pacote nominal; nenhum aplicavel sem autorizacao remota."
+    "acessibilidade": {
+      "veredito": "NAO MENSURAVEL hoje; descartar as duas medicoes existentes",
+      "fato": "Isolei a diretriz de contraste: ela nao chega a rodar, porque a assercao dispara durante performLayout e o teste aborta. Mesmo drenando as excecoes, a arvore continua NEEDS-LAYOUT, entao a semantica avaliada sobre ela nao representa a tela.",
+      "implicacao": "Meu 'rotulo e alvo passam' e tao pouco confiavel quanto o 'falha nas tres' da outra frente. Um alvo nao disposto pode medir zero e reprovar, ou nao ser visitado e passar. Remedir apos a correcao.",
+      "tela_presa": "Nao reproduzi. O controlador chega a ready normalmente. A hipotese e que o instrumento antigo expirava pela cascata de 20 excecoes, nao por carregamento."
     },
-    {
-      "id": "F4",
-      "severity": "gap-composicao",
-      "actions": ["students.list"],
-      "fact": "superadmin_auth_scope.dart linha 358 compoe studentTrackingRepository como const UnavailableStudentTrackingRepository(), e main.dart nao repassa esse campo ao SuperadminApp. Ja childDirectoryRead recebe SupabaseChildDirectoryReader(client).fetchPage, real e integrado.",
-      "consequence": "Explica a nota do rastreador de que a composicao do acompanhamento permanece Unavailable: o diretorio CHILD e real, o snapshot de acompanhamento nao. Nao existe implementacao Supabase de StudentTrackingRepository no repo; o unico concreto e DevelopmentStudentTrackingRepository no dev_menu.",
-      "gate": "Backend de acompanhamento inexistente; aceite FE possivel apenas no estado Unavailable honesto."
+    "varredura_do_mesmo_padrao": {
+      "total_de_IntrinsicHeight_no_app": 4,
+      "access_profiles": "NAO usa IntrinsicHeight. Usa Table com TableCellVerticalAlignment.intrinsicHeight e tem comentario ponytail na linha 633 dizendo que o status canonico usa LayoutBuilder e nao pode participar de IntrinsicHeight. Alguem ja bateu neste defeito, resolveu e documentou.",
+      "people": "Tem o padrao IDENTICO ao de safety em person_directory_page.dart:617, mas e SEGURO porque _PersonCard usa _PersonStatusIndicator proprio, com MouseRegion e TweenAnimationBuilder, e nao o indicador canonico. Confirmado empiricamente: 220 passando, as duas falhas sao goldens.",
+      "errors": "Seguro; envolve apenas Text e VerticalDivider.",
+      "safety": "Unica vitima.",
+      "risco_registrado": "People so nao quebra porque o cartao de la usa indicador proprio. Se algum dia trocarem pelo canonico, quebra na hora. E o argumento mais forte para corrigir tambem o componente compartilhado."
     },
-    {
-      "id": "F5",
-      "severity": "trabalho-executavel",
-      "actions": ["students.list", "attendance.dashboard", "attendance.create", "attendance.mark", "attendance.correct", "attendance.finish", "daily-routine.list", "daily-routine.create", "daily-routine.edit", "daily-routine.apply", "daily-routine.publish"],
-      "fact": "Existem 36 arquivos de teste Dart cobrindo as tres familias em apps/superadmin/test. O rastreador exige, por acao, revalidacao de aceites nominais: 375-1440, 200 por cento, teclado e toque, offline/unavailable, sem acao falsa, foco, reload e estado final.",
-      "consequence": "Ha trabalho FE local, executavel e independente de autorizacao remota: executar as suites por acao, confrontar com os aceites nominais do rastreador, corrigir lacunas reais e provar. E o caminho para mover FE ativo de 0/15.",
-      "gate": "Apenas ativacao e worktree do coordenador."
+    "correcao_recomendada": {
+      "escolhida": "Transplantar o idioma que access_profiles ja usa: Table com defaultVerticalAlignment TableCellVerticalAlignment.intrinsicHeight, cardWidth calculado como la, mantendo o comentario que nomeia a causa.",
+      "prova": "Sondei com os componentes reais. Cenario IntrinsicHeight reproduz a assercao exata da producao. Cenario Table: zero erros, e com dois cartoes de conteudos diferentes, um de uma linha e outro de quatro, as alturas medidas ficaram 170 e 170, ou seja a igualdade pelo mais alto e preservada.",
+      "descartada": "minHeight no cartao. Resolve o crash, mas impoe piso fixo: se o conteudo passar do valor, os cartoes voltam a ficar desiguais. Degrada a intencao original.",
+      "escopo": "Contida em safety_pages.dart. NAO tocarei people, mesmo com padrao igual, porque la esta seguro e seria mexer em arquivo de outra frente sem defeito."
+    },
+    "lente_aplicada_em_safety": {
+      "dialogos": "Dois. O de suspender autorizacao JA tem cobertura de resultado boa: cancelar nao emite comando, confirmar emite com authorizationId e expectedVersion corretos e conta o reload. Sem lacuna.",
+      "controllers": "Os quatro do assistente (linhas 806 a 809) e o de busca (linha 42) sao campos de State, todos disposto no dispose proprio. NAO ha aqui o defeito de controller disposto do meu lote 15.",
+      "chaves_sem_teste": "safety-export-csv, safety-import-file e safety-view-cards. As duas primeiras provavelmente caem na politica de import/export adiado. A terceira e o alternador que leva justamente a grade quebrada."
+    },
+    "ordem_proposta_apos_transferencia": [
+      "1. Corrigir o layout com o idioma Table.",
+      "2. Provar com teste que a landing se dispoe sem excecao em 375 e 1440.",
+      "3. Remedir as tres diretrizes de acessibilidade, que so entao passam a ser mensuraveis.",
+      "4. Cobrir safety-view-cards.",
+      "5. Conferir import/export contra a politica de adiamento.",
+      "6. RETIRADO. O item anterior mandava verificar o reasonController de access_profile_detail_page; a pista era minha e estava errada, o arquivo ja e seguro. Ver pista_retirada. O coordenador removeu esse arquivo da transferencia, que fica so com child_safety."
+    ],
+    "verificacao_do_golden": {
+      "hipotese_minha": "Levantei que a baseline aprovada poderia ser a foto de uma tela quebrada, ja que a grade nunca se dispunha.",
+      "resultado": "HIPOTESE ERRADA. Abri child_safety_directory_light_1440.png: mostra a tela SAUDAVEL, com quatro cartoes dispostos dois por linha, alturas iguais, sidebar, abas e barra de ferramentas no lugar.",
+      "implicacao": "A baseline correta ja existe. Apos a correcao, o golden deve ficar igual ou proximo do master; se bater, nao ha rebaseline a fazer. Se diferir, comparar isolado e avisar o coordenador antes de tocar.",
+      "achado_derivado": "A regressao entrou DEPOIS que o golden foi aprovado, e o golden nao a denunciou como diferenca de pixel porque o teste passou a abortar na assercao antes da comparacao. Um teste de golden que quebra por excecao deixa de detectar regressao visual: a foto certa estava la, ninguem chegou a compara-la."
+    },
+    "confinamento_medido": {
+      "metodo": "Execucao de test/features inteiro contando ocorrencias da mensagem de assercao.",
+      "resultado": "4683 P / 6 S / 160 F no total; a mensagem LayoutBuilder does not support returning intrinsic dimensions aparece EXATAMENTE 5 vezes, e safety tem exatamente 5 testes falhando. Batem um para um.",
+      "conclusao": "Das 160 falhas de test/features, 5 sao esta unica linha; as outras 155 tem causas diferentes. Nenhuma outra tela sofre deste defeito, confirmando a varredura estatica."
+    },
+    "pista_retirada": {
+      "arquivo": "access_profile_detail_page.dart",
+      "o_que_eu_disse": "Que tinha o mesmo defeito de controller descartado cedo, por criar reasonController fora do dialogo e dispor logo apos.",
+      "correcao": "ERRADO, e retirei antes que fosse repassado. O dialogo nao usa showDialog: usa _showConfirmation na linha 220, que constroi um DialogRoute e aguarda route.completed, com o comentario literal na linha 225 de que o controller precisa sobreviver a transicao de fechamento. Ja e seguro, por tecnica diferente e melhor que a minha.",
+      "placar_final_do_padrao": "Rotina tinha o defeito e foi corrigido no lote 15; access_profiles nunca teve, com guarda explicita e comentada; safety nao tem, porque la sao campos de State com dispose proprio."
     }
-  ],
-  "closed_criteria": [],
-  "tests": {
-    "note": "Nenhum teste executado nesta conversa. Provas reusadas sem repetir: CHILD 45 TAP mais 3 concorrencia mais 4 HTTP; compositor transacional 6 PASS; cache PostgREST 1 U.",
-    "P": 0,
-    "F": 0,
-    "B": 0,
-    "S": 0,
-    "U": 0
   },
-  "cache_postgrest_u1": {
-    "state": "nao executado (1U)",
-    "requisito_real": "Exige PostgREST ja ativo ANTES do DDL e disponibilidade posterior sem restart, apos NOTIFY pgrst reload schema. Modo DB-only nao certifica. Payload nominal 740057756FB2A7DFA5E8F2AB2D9908DF24968F2A3E78196A1FAA0D3B422C6C2C, 22280 bytes LF sem BOM, conforme D03 r20.",
-    "avaliacao": "Nao e executavel por este executor sem stack local DB mais Auth mais PostgREST mais Kong e sem a reserva/janela SQL que o contrato serializa no coordenador. Pedir decisao concreta em vez de repetir preparacao."
-  },
-  "reservations": [],
-  "reservations_requested": [
-    "apps/superadmin/lib/features/{student_tracking,attendance,daily_routine,children}/** - escrita exclusiva do grupo",
-    "apps/superadmin/test/features/{student_tracking,attendance,daily_routine,children}/** - escrita exclusiva do grupo",
-    "apps/superadmin/lib/app/router/superadmin_router.dart - NAO solicitado como exclusivo; qualquer alteracao sera proposta como hunk ao coordenador, por ser compartilhado com estrutura e operacoes-sistema",
-    "packages/coelo_database/** - NAO solicitado; sem pacote aplicavel enquanto OQ-040 estiver aberta"
+  "erros_meus_registrados_nesta_rodada": [
+    "Carimbo de horario errado nas revisoes 5 e 6, cerca de 8 horas adiantado, por estimar em vez de consultar o relogio.",
+    "Estimativa de horario adiantada de novo mais tarde, corrigida pelo coordenador.",
+    "Regex de literais que desalinhou nas aspas na primeira tentativa de acentuacao, e a palavra disponivel esquecida no mapa.",
+    "Callback do shell passado incondicionalmente, que moveu seis goldens e quebrou tres testes de salvar; revertido para opt-in.",
+    "Liberacao de intencao de salvamento implementada so no modelo, deixando tres inconsistentes; corrigido no lote 10.",
+    "Primeira sonda da correcao de safety manteve crossAxisAlignment stretch dentro de SingleChildScrollView e produziu BoxConstraints forces an infinite height, o que por alguns minutos fez a correcao correta parecer errada. Descoberto ao ler o erro real de cada cenario em vez do agregado."
   ],
-  "blocker": "Ativacao coordenada pendente: coordenacao.json ainda ausente no caminho compartilhado as 18:38. Bloqueio de produto independente: OQ-040 aberta impede o backend do ciclo de chamada de Assiduidade; ausencia de reader/comando de Rotina e de repositorio de acompanhamento impede E2E dessas acoes.",
-  "next_step": "Ao receber ativacao: criar worktree C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-alunos-rotina e branch work/etapa2-noturna-alunos-rotina a partir de d784462c1; executar as suites FE das tres familias por action_id; confrontar com os aceites nominais do rastreador; corrigir lacunas reais e provar. Ordem: students.list, depois daily-routine list/create/edit/apply/publish, depois attendance dashboard/create/mark/correct/finish. attendance.export permanece informativo e ja certificado; nao sera reaberto.",
-  "decisions_needed_from_coordinator": [
-    "Ativacao, worktree e as reservas acima.",
-    "Confirmar que F2 NAO deve ser aberto: manter fail-closed de /attendance enquanto OQ-040 estiver aberta. Se outra frente propuser ligar onCreate/onOpenCall, isso conflita com este diagnostico.",
-    "Cache PostgREST U1: informar se ha janela e stack local com reserva SQL, ou manter 1U declarado. Sem isso nao ha execucao honesta."
-  ],
+  "reservations_respected": "Um unico commit meu toca arquivo reservado, o lote 12 (af590ff18), isolado e identificado. Nenhum arquivo de outra frente foi tocado em nenhum momento, inclusive durante o diagnostico de safety.",
+  "next_step": "Aguardar a confirmacao de transferencia de escrita das 23:30 para aplicar a correcao de safety na ordem proposta. Ate la, somente leitura.",
+  "blocker": "Escrita sobre child_safety retida ate a transferencia; e o contrato, nao um impedimento tecnico.",
   "wip": [],
   "artifacts": [],
   "children": [],
   "processes": [],
   "ports": [],
-  "ack": null,
-  "limitations": "Publicar este arquivo nao comprova leitura pelo coordenador. Sem autorizacao nominal para mutacao remota Supabase ou Cloudflare. A analise F1 a F4 e estatica sobre a base d784462c1, sem execucao de runtime nem chamada remota.",
   "deadline": "2026-09-10T05:00:00-03:00",
   "milestones": {
     "freeze_new_batches": "2026-09-10T04:40:00-03:00",
     "pre_delivery": "2026-09-10T04:50:00-03:00",
     "final_delivery": "2026-09-10T05:00:00-03:00"
   },
-  "opening_contract": {
-    "objective": "Fechar os proximos aceites FE executaveis de Alunos, Assiduidade e Rotina diaria reutilizando D03 e CHILD, sem reabrir provas validas",
-    "included": "16 action_ids das familias students, attendance e daily_routine em apps/superadmin",
-    "excluded": "Outros apps; exportacao geral informativa; Safety, que pertence a acessos-pessoas; mutacao remota sem pacote nominal; abertura do fluxo de chamada enquanto OQ-040 estiver aberta",
-    "order": "students.list, depois daily-routine, depois attendance",
-    "stop": "Recorte fechado, bloqueio sem trabalho independente, ou 04:40 e 05:00 BRT de 10/09",
-    "evidence": "Diff seletivo, execucao nominal das suites por action_id, logs com hash e SHAs publicados",
-    "eta": "Delta FE ainda nao medido por execucao; estimativa somente apos a primeira suite rodar na worktree atribuida."
+  "observacao_para_o_owner": "Os dois defeitos estruturais encontrados nesta rodada JA tinham sido resolvidos neste mesmo codebase, em telas diferentes, por pessoas diferentes, e nos dois casos com comentario explicando a razao. O que sobrou esta onde a solucao existente nao foi transplantada. O problema nao e falta de conhecimento no time; e o conhecimento nao chegar a todas as telas.",
+  "trabalho_atribuido_child_safety": {
+    "transferencia": "Confirmada pelo coordenador apos 23:30; escopo apps/superadmin/lib/features/safety e testes. access_profile_detail_page saiu do escopo pela minha propria retratacao. people e coelo_ui_admin fora.",
+    "lotes": [
+      {
+        "sha": "089c1fafc",
+        "lote": 18,
+        "assunto": "trocar IntrinsicHeight por Table com o comentario transplantado de access_profiles",
+        "efeito": "suite de 27 P / 5 F para 31 P / 1 F; assercao do LayoutBuilder eliminada"
+      },
+      {
+        "sha": "33572247e",
+        "lote": 19,
+        "assunto": "fixar layout em 375 e 1440, round trip do alternador de visualizacao, e as duas diretrizes que a superficie possui"
+      },
+      {
+        "sha": "07c2e3ab4",
+        "lote": 20,
+        "assunto": "cobrir o import adiado pela politica: menu Arquivos, aviso honesto e nada alem"
+      },
+      {
+        "sha": "f52d524fb",
+        "lote": 21,
+        "assunto": "chave de idempotencia das decisoes de retirada passa a descrever a decisao em vez do instante"
+      }
+    ],
+    "estado_final": "test/features/safety em 170 P / 0 F sobre a base integrada.",
+    "golden": {
+      "decisao": "NAO regravado, e nao precisa.",
+      "motivo": "Trouxe origin/dev para a worktree antes de tocar. Sobre a base integrada o golden PASSA, isolado inclusive. As duas componentes que eu media na minha branch desaparecem na integracao.",
+      "licao": "Eu tinha GO para regravar e teria substituido uma baseline CORRETA pela foto de um codigo desatualizado, com um commit explicando causas que nao se aplicavam. A regra que faltava nao era pedir permissao, era medir na base integrada antes de executar."
+    },
+    "idempotencia_das_decisoes": {
+      "defeito": "_transition e _confirmSuspend montavam requestId com _uuid() no instante do toque. O retry esta a um toque: a transicao so fecha o dialogo quando o comando teve sucesso, entao em falha ele fica aberto com o botao vivo. Uma primeira tentativa que chegou ao servidor e perdeu a resposta ganharia uma segunda decisao sobre quem pode retirar a crianca.",
+      "correcao": "A chave passou a derivar de autorizacao, acao pretendida e expectedVersion, com sha256 formatado na mesma forma UUID. Retry da mesma decisao repete a chave; mudar a decisao ou agir sobre versao nova cria outra. Nada alem do requestId mudou.",
+      "por_que_derivar_em_vez_de_guardar": "Chave derivada sobrevive a fechar e reabrir o dialogo, a rebuild e a troca de rota. Um mapa em estado perderia a intencao no primeiro rebuild e voltaria a gerar decisao nova sem ninguem perceber.",
+      "o_padrao_certo_ja_existia_20_linhas_ao_lado": "O assistente de criacao, no MESMO arquivo, ja segura _pendingSaveCommand e reusa o requestId quando _sameSaveIntention e verdadeiro, gerando chave nova so quando a intencao muda. Alem disso tem _retryConfirmedSaveRead, que relê para confirmar se o save entrou. Ou seja: a semantica correta estava implementada ali do lado e nao foi aplicada as decisoes de aprovar, rejeitar e suspender.",
+      "cobertura": "Cobri as duas direcoes. So a primeira seria perigosa: uma correcao que colapsasse tudo numa chave passaria no teste do retry e seria pior que o defeito.",
+      "promocao": "NENHUMA. child_safety segue pending-verification pelos outros gates."
+    },
+    "acessibilidade_remedida": {
+      "1440": "rotulo PASSA, alvo PASSA, contraste PASSA",
+      "375": "rotulo PASSA, contraste PASSA, alvo FALHA",
+      "o_alvo_que_falha": "Nao e de safety. E o botao de menu do usuario do SuperadminShell, label OC, tooltip Abrir menu do usuario, medindo 52x44 quando o minimo e 48x48. Esta em toda tela do Superadmin a 375. Roteado ao coordenador, nao herdado por mim.",
+      "correcao_do_meu_registro": "Nas revisoes anteriores escrevi que a acessibilidade de safety era nao mensuravel. Agora e mensuravel, esta medida, e safety passa em tudo que e dela."
+    }
   },
-  "eta": "Nao calculavel ainda; nenhuma suite executada."
+  "trabalho_atribuido_acessos_pessoas_restante": {
+    "escopo": "people, access_profiles, invites, internal_users (platform_users), profile_files. Escrita liberada pelo coordenador; router, migrations, plataforma de midia e rastreadores continuam fora.",
+    "baseline": "people + access_profiles + invites + platform_users juntos: 713 P / 0 F. Nenhum vermelho. As duas falhas de golden que eu vira em people antes do merge sumiram na integracao.",
+    "lente_varrida": {
+      "idempotencia": "NEGATIVO. Todos os cinco sitios de comando seguram a chave: _requestId, _pendingSaveRequestId, _pendingDeleteRequestId e o idioma _issueRequestId ??= newInviteRequestId. O defeito de safety e de Rotina nao existe aqui.",
+      "ciclo_de_vida_de_controller": "NEGATIVO. O recorte inteiro usa DialogRoute com conjunto de dialogos possuidos e espera por route.completed, em access_profiles, platform_users e invites. E a tecnica mais geral que a que usei em Rotina.",
+      "acessibilidade_invites": "NEGATIVO para invites. Medido na PAGINA nas duas larguras: 375 rotulo PASSA, contraste PASSA, alvo FALHA; 1100 as tres passam. O no que falha e o botao de menu do usuario do shell, label OC, 52x44, identico ao encontrado em safety. O relato de que invites falha em rotulo de alvo esta errado em duas frentes.",
+      "caminho_positivo_sem_prova": "UM caso encontrado, virou o lote 23."
+    },
+    "lote_23": {
+      "sha": "d8ac0ed9c",
+      "assunto": "revokeInvitation nao aparecia em nenhum teste do app, enquanto o irmao resendInvitation tinha o dele; os dois esperam o mesmo contrato privilegiado de Auth e a producao lanca invitation-contract."
+    },
+    "avaliacao": "Este recorte foi construido com cuidado acima da media. Nas tres passagens estruturais ja tinha a solucao certa, incluindo a tecnica de dialogo que e melhor que a minha. Continuar aqui significa escrever cobertura para comportamento que ja funciona.",
+    "erro_de_metodo_meu": "Minha primeira medicao de acessibilidade de invites foi no WIDGET de cartoes isolado e passou nas tres. Quase reportei que o relato estava errado com base nisso. Mas o relato mediu a PAGINA, com shell. Refiz igual e a falha apareceu. Superficies diferentes nao autorizam conclusao nem para confirmar nem para REFUTAR, e refutar e a metade que engana porque parece segura."
+  },
+  "defeito_transversal_do_shell": {
+    "no": "label OC, tooltip Abrir menu do usuario, 52.0 x 44.0, dentro de _OverlayPortalState, quando o minimo e 48x48.",
+    "alcance": "Demonstrado em DUAS telas independentes, safety e invites, medidas por caminhos diferentes. Nao e defeito de nenhuma das duas: e do SuperadminShell e aparece em qualquer tela medida a 375.",
+    "decisao": "Coordenador decidiu nao mexer nesta rodada: sao 4 pixels num controle rotulado e alcancavel, e subir move o realce do InkWell em toda tela do app com seis frentes integrando. Vai ao Owner medido, com o alcance nomeado, e com a nota de que a correcao e de uma linha no shell e nao de N linhas em N telas."
+  }
 }

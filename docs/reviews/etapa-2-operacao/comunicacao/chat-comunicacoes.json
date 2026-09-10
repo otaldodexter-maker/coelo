@@ -1,47 +1,522 @@
 {
-  "revision": 1,
-  "updated_at": "2026-09-09T21:06:00-03:00",
+  "revision": 25,
+  "updated_at": "2026-09-10T00:50:00-03:00",
   "group": "chat-comunicacoes",
   "task": "/root",
-  "model": "Claude Opus 5 (1M context) — claude-opus-5[1m]",
-  "status": "activation-requested; read-only-review",
-  "coordinator": "Claude",
-  "worktree": null,
-  "branch": null,
-  "head": null,
-  "upstream": null,
-  "base_observed": "d784462c1",
-  "scope": [
-    "apps/superadmin -> Chat administrativo",
-    "apps/superadmin -> menu Coelo (Principal) -> Chat/Conversas",
-    "apps/superadmin -> Comunicados/Avisos (notices)"
-  ],
-  "action_ids_status": "13 IDs do contrato (familias chat, notices); mapeamento focal em andamento",
-  "changed": "Contrato TRABALHO-ATUAL.md lido integralmente. Worktrees R02 localizadas; L02 preservada em C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-l02-chat-comunicacoes (branch codex/e2-r02-l02-chat-comunicacoes, HEAD 45d92b9c1, contem 9144f4efb). coordenacao.json ainda ausente no caminho compartilhado.",
-  "closed_criteria": [],
-  "tests": {
-    "note": "Nenhum teste iniciado nesta rodada; provas L02 serao reusadas quando validas",
-    "P": null,
-    "F": null,
-    "B": null,
-    "S": null,
-    "U": null
+  "model": "Claude Opus 5 (1M context) - claude-opus-5[1m]",
+  "status": "active; itens 1 e 2 da atribuicao entregues",
+  "coordinator": "Claude (coelo-73)",
+  "ack_received": "revisao 1 aceita; coordenacao.json rev 2, commit 920f23199",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-chat-comunicacoes",
+  "branch": "work/etapa2-noturna-chat-comunicacoes",
+  "head": "f4a86ed7e",
+  "upstream": "origin/work/etapa2-noturna-chat-comunicacoes = f4a86ed7e (0/0)",
+  "base": "d784462c1",
+  "router_patch_branch": {
+    "branch": "work/etapa2-noturna-chat-comunicacoes-router-from",
+    "sha": "48d15d8df49e9f63a3db0d9d974263088b2cad15",
+    "parent": "origin/dev",
+    "diffstat": "1 arquivo, 25 insercoes, 4 remocoes, so superadmin_router.dart",
+    "AVISO_DE_SOBREPOSICAO": "Este hunk existe TAMBEM na branch principal? NAO. A branch carrega apenas os TESTES de G; o hunk de router esta so neste patch e no commit local 26c46f6ee da base conjunta, que nao foi publicado. Aplicar este patch e mesclar a branch e a combinacao correta."
   },
-  "reservations": [],
-  "requested_reservations": [
-    "apps/superadmin: rota/shell /principal-conversations (compartilhado com router — depende de reserva do coordenador)",
-    "dominio chat: paginacao/envio, receipts, reautorizacao pos-lock",
-    "dominio notices: worker/metricas"
+  "changed": "Portei seletivamente 15 commits de codigo de L02 (45d92b9c1) para a base integrada d784462c1 por cherry-pick, resolvendo o conflito unico de router. Descartei os commits documentais (o handoff historico permanece preservado na branch codex/e2-r02-l02-chat-comunicacoes) e pulei 97407afdb porque a invariante de rotulos de permissao JA esta integrada no dev em forma reconciliada em .agents/skills/coelo-supabase/SKILL.md. c68affc43 (recarga do diretorio de Avisos em conflito) veio vazio porque o dev ja o contem.",
+  "conflito_resolvido": {
+    "arquivo": "apps/superadmin/lib/app/router/superadmin_router.dart",
+    "descricao": "Regiao unica com o lado do dev VAZIO e o lado L02 contendo o bloco antigo de rotas Principal. O dev ja moveu principalHappens/ForYou/Moments/Profile para dentro da ShellRoute. Ficar com o lado do dev descartaria /principal-conversations em silencio, exatamente como L02 avisou.",
+    "resolucao": "Mantive a estrutura do dev e reapliquei manualmente as tres edicoes que o conflito engoliu: import, redirecionamento de onOpenMessages e a GoRoute nova DENTRO da ShellRoute com embedded:true, alinhada as demais rotas Principal.",
+    "verificacao": "principal_chat_route_test.dart e chat_routes_test.dart verdes; o caso 'Coelo Principal Chat opens the Principal composition, not the admin page' passa."
+  },
+  "commits": [
+    "2fde6ff46 feat(chat-be): project internal chat receipts and add edit/revoke gateways",
+    "8706e50db feat(chat): render server receipts and add edit/revoke to the chat surface",
+    "5cd2a1b5e fix(notices): schedule notices with an explicit time of day",
+    "4bbc40087 test(chat): cover receipt projection, edit and revoke",
+    "2b1cf2f00 feat(principal-chat): add the Principal-family chat surface",
+    "1824c4304 feat(principal-chat): route the Principal messages launcher to its own surface [ROUTER]",
+    "f733ac0e2 feat(principal-chat): reach older conversations from the Principal inbox",
+    "2eb3c7512 feat(principal-chat): reach older messages in a long conversation",
+    "53bcd14c8 test(principal-chat): prove the repository swap leaves no previous actor state",
+    "24c4e045d fix(chat): feed the unread badge from the router-built shells [ROUTER]",
+    "1370908f4 fix(notices-be): scope notice metrics to the current publication generation",
+    "d89e222bf test(notices): prove the real routes mount the composition and fail closed",
+    "a4ed2f363 test(principal-chat): distinguish an empty thread from a denied one",
+    "2b1293227 fix(chat-be): supply the mandatory permission labels so the package can apply",
+    "be45c1f0d fix(principal-chat): reconcile the inbox after sending",
+    "903c5525d fix(router): drop the duplicate principal chat import from the port [ROUTER, correcao minha desta rodada]",
+    "e4d03a427 test(chat): exercise the admin chat actions through the real route",
+    "a8302440f test(notices): operate publish and archive through the real route",
+    "51981fdc9 fix(router): teach the host shell that /principal-conversations is chat [ROUTER]",
+    "d4531fe87 test(router): guard the shell destination round trip against silent gaps",
+    "9e2a49100 fix(chat): treat a read-only conversation as a conflict, not a lost session",
+    "3120b56fc test(principal-chat): cover text scale and target size on the Principal surface",
+    "1f08ec26c test(chat): close the same accessibility gap on the admin surface",
+    "e657c34fb chore(chat-be): match the serialized SQL queue stamps the integrator assigned",
+    "dcc176bb8 test(router): guard against a route name declared twice",
+    "97be3b03c feat(chat): reach older messages on the administrative surface",
+    "0e9bfc4ee fix(chat): keep the thread continuation after sending",
+    "9dfc44598 test(chat): prove the continuation guard under a conversation swap",
+    "3c93ee8e2 fix(notices): keep the operator on their page after a successful action",
+    "a68feae79 fix(chat): reload after a refusal without swapping the open conversation",
+    "b1a70c72c fix(chat): do not let a continuation swallow a send that landed mid-flight",
+    "ec3d2d448 fix(chat): reconcile the conversation preview after send, edit and revoke",
+    "7113f836d fix(chat): reconcile the inbox silently instead of blinking the list",
+    "91e6805b3 test(chat): cover the preview effect of editing, not only of revoking",
+    "faab17ab3 test(chat): cover the six inbox states on the administrative surface",
+    "fbda2f551 test(chat): distinguish an empty thread by absence from one by permission",
+    "dc2dbe7e3 test(router): assert the host shell survives entering the Principal chat",
+    "2dc4cc388 fix(principal-chat): keep what the reader loaded when they act, items C and D",
+    "9f253b398 test(router): assert where back goes from the Principal chat, per origin",
+    "f4a86ed7e test(principal-happens): name the mixed feed pagination gap with a red test"
   ],
-  "blocker": "Coordenador precisa registrar atribuicao, worktree e branch (preferencia C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-chat-comunicacoes, work/etapa2-noturna-chat-comunicacoes) e resolver a reserva de router/shell. Escrita de produto retida ate la, conforme contrato.",
-  "next_step": "Ler skills obrigatorias e o handoff L02 em modo leitura; mapear os 13 action_ids reais nos rastreadores; iniciar correcao apos atribuicao/worktree confirmadas.",
-  "wip": [],
-  "artifacts": [],
-  "children": [],
-  "processes": [],
-  "ports": [],
-  "ack": null,
-  "limitations": "Sem canal nativo verificado com o coordenador; publicar este arquivo nao comprova leitura. Midia comum exige coordenacao com publicacoes-midia (worktree ja criada em e2-noturna-publicacoes-midia).",
+  "closed_criteria": [
+    "/principal-conversations existe na base integrada, dentro da ShellRoute, com falha fechada",
+    "destinos Principal (feed misto e /dev) deixam de cair na pagina administrativa com ?from=principal",
+    "paginacao de conversas e de mensagens antigas na superficie Principal, concorrente com envio",
+    "recibo do servidor vinculado a conversa renderizado nas duas superficies; ausencia nao vira nao-lida inventada",
+    "reautorizacao pos-lock: negacao purga o instantaneo privado incluindo composer; vazio autorizado preserva composer",
+    "badge de nao lidas alimentado nos shells montados pelo router, com guarda contra zero silencioso",
+    "metricas de Avisos escopadas pela geracao de publicacao corrente",
+    "chat.list/open/send: metade ADMINISTRATIVA exercida pela rota real /communication/conversations, nao por injecao direta da pagina",
+    "notices.publish e notices.archive: acao de ciclo de vida chega ao repositorio pela rota real com a versao vista e chave de intencao; inativar exige motivo e desistir nao dispara comando",
+    "defeito proprio corrigido: /principal-conversations nao era reconhecida por _destinationForLocation, entao o launcher de chat era desenhado por cima do proprio chat e o menu nao marcava a folha ativa",
+    "defeito proprio corrigido: a folha Chat do menu Principal era inerte no shell de PRODUCAO, porque _navigateFromPersistentShell nao tinha caso para principal-chat",
+    "chat.send: conversa fechada para escrita deixou de apagar inbox, thread, selecao, busca e rascunho do operador; virou conflito com releitura, nas duas superficies",
+    "chat.open administrativo: thread paginada. Antes a superficie so alcancava a pagina mais recente de uma conversa longa, sem nenhuma forma de chegar as anteriores",
+    "guarda de fonte contra nome de rota declarado duas vezes, provada por mutacao",
+    "chat.send administrativo: enviar deixou de descartar o cursor da thread, que fazia o controle de continuacao sumir depois do primeiro envio e prendia o operador na pagina mais recente",
+    "notices.publish e notices.archive: acao bem sucedida deixou de devolver o operador a pagina 1; o reset foi preservado para conflito e ausencia, onde o instantaneo inteiro esta velho",
+    "guarda de concorrencia da continuacao de thread provada sob troca de conversa",
+    "chat.send: continuacao de mensagens antigas deixou de engolir um envio que terminou durante o voo dela",
+    "chat.revoke (A-linha): corpo de mensagem revogada deixou de sobreviver no preview da lista de conversas",
+    "chat.send e chat.edit (A): preview e ordenacao da lista reconciliados apos a acao, sem trocar a conversa aberta",
+    "a reconciliacao da inbox deixou de piscar a lista de conversas a cada envio, edicao ou revogacao, e uma falha silenciosa mantem a lista valida em vez de virar painel de erro",
+    "item C: o envio deixou de descartar as mensagens antigas que o leitor ja tinha aberto",
+    "item D: a reconciliacao silenciosa deixou de descartar as conversas acumuladas com carregar mais",
+    "item G: voltar do chat Principal leva de volta a superficie que abriu, reusando o parametro from ja aprovado"
+  ],
+  "tests": {
+    "runner": "flutter test (Windows local), base 7113f836d",
+    "escopo": "test/features/chat + test/features/principal_chat + test/features/notices + test/app/router INTEIROS",
+    "P": 660,
+    "F": 45,
+    "B": 0,
+    "S": 1,
+    "U": 0,
+    "analyze": "flutter analyze: No issues found",
+    "nota": "Numero de pre-entrega do recorte completo. As falhas continuam sendo os 12 goldens conhecidos mais as vermelhas de test/app/router que pertencem a recortes alheios.",
+    "decomposicao_das_45": "33 de test/app/router pertencem a recortes alheios; 12 sao os goldens conhecidos (9 chat, 3 notices). 33 + 12 = 45, sem falha nova."
+  },
+  "reservations": {
+    "minhas": "nenhuma",
+    "respeitadas": "Router e shell permanecem reservados com o coordenador. Nao escrevi neles a partir da minha branch em nenhum momento; toda mudanca de router saiu como patch isolado, tres no total (61bb58350 e c2127823f, ja aplicados, e 48d15d8df, pendente)."
+  },
+  "reserva_respeitada": "Router/shell permanece seu. Nao escrevi dev nem rastreadores centrais. Nao substitui superadmin_router.dart, superadmin_routes.dart ou main.dart inteiros.",
+  "fe_be_e2e": {
+    "denominador": "13 IDs (chat 7, notices 6), todos E2E-aplicaveis",
+    "FE": "11/13 verificados nesta base por teste local pela rota real: chat.list, chat.open, chat.send (metade administrativa e metade Principal), chat.edit, chat.receipts, chat.revoke, notices.list, notices.create, notices.edit, notices.schedule, notices.publish, notices.archive. Faltam chat.attach (bloqueado) e a promocao formal dos IDs agregados de chat, que depende da reconciliacao de inventario que so voce faz.",
+    "BE": "0/13. Os dois pacotes de migration estao escritos e revisaveis, NAO aplicados. Aplicar exige autorizacao nominal; todo Supabase remoto do Coelo e producao.",
+    "E2E": "0/13. Sem aplicacao remota e sem execucao em rota normal com ator e permissao reais, nada e ponta a ponta. local-green nao e E2E."
+  },
+  "pacotes_remotos_aguardando_decisao_nominal": [
+    "packages/coelo_database/migrations/20260909130000_superadmin_internal_chat_receipts_edit_revoke_v2.sql - forward-only, guarda de dependencia, rotulos de permissao corrigidos em 2b1293227 (sem eles NAO aplicaria em base que ja tenha 20260811215451)",
+    "packages/coelo_database/migrations/20260909140000_superadmin_notice_metrics_by_generation_v1.sql - escopa metricas por geracao; sem regressao quando current_publication_job_id e nulo"
+  ],
+  "blocker": "chat.attach retido pela plataforma comum de midia (catalog_kind de chat e contrato de ticket de upload/leitura pelo gateway), escrita por publicacoes-midia nesta rodada. Nao criei gateway nem bucket por tela; mantive o placeholder honesto. O bloqueio retem somente chat.attach.",
+  "next_step": "Aguardar a remedicao na base conjunta e consolidar para a pre-entrega das 04:50.",
+  "wip": {
+    "retido": "nenhum",
+    "nota": "Tudo o que produzi esta commitado e publicado. Worktree limpa e sem stash. Existiram DOIS commits temporarios locais de base conjunta, criados so para medir e nunca publicados; depois de medir eu voltei para a branch e eles ficaram inalcancaveis, sem conteudo exclusivo. O ultimo, com C, D e G, teve suas partes portadas: a de produto foi para a branch e a de router virou o patch isolado 48d15d8df."
+  },
+  "artifacts": [
+    "branch work/etapa2-noturna-chat-comunicacoes (HEAD 9f253b398, publicada, 0/0) — entrega principal",
+    "branch work/etapa2-noturna-chat-comunicacoes-router (c2127823f) — JA APLICADA no dev",
+    "branch work/etapa2-noturna-chat-comunicacoes-router-from (48d15d8df) — patch isolado do item G, PENDENTE, nao se sobrepoe a branch",
+    "branch work/etapa2-noturna-chat-comunicacoes-router-dedupe (8d06b8a91) — commit VAZIO apos o avanco do dev; recomendo apagar",
+    "branch codex/e2-r02-l02-chat-comunicacoes (45d92b9c1) — fonte historica R02, preservada e nao alterada por mim"
+  ],
+  "children": {
+    "quantidade": 0,
+    "nota": "Nao abri nenhum subagente nesta rodada. Todo o trabalho foi feito nesta conversa, entao nao ha filho para recolher no corte."
+  },
+  "processes": {
+    "em_execucao": "nenhum meu",
+    "nota": "Uso somente flutter test e flutter analyze, sempre em primeiro plano ou como tarefa de fundo desta conversa, e cada uma termina antes da seguinte. Nao subo servidor, container, runner nem agendamento. A maquina tem dezenas de processos dart de OUTRAS frentes e eu nao toquei em nenhum."
+  },
+  "ports": {
+    "abertas": "nenhuma",
+    "nota": "Nao abri porta nem localhost em momento algum."
+  },
+  "limitations": "Relogio corrigido: o host ja esta em horario de Brasilia; eu estava aplicando TZ=America/Sao_Paulo sobre um relogio que ja era BRT e somando offset. Passei a ler date puro. Nenhum dado tecnico da revisao 1 dependia do horario. Sem MCP Supabase nesta sessao: qualquer verificacao de estado remoto depende de voce ou de autorizacao nominal. O CLI Supabase existe na maquina e esta linkado ao projeto de producao, mas nao o usei: ler producao sem autorizacao nominal nao esta no meu recorte.",
   "deadline": "2026-09-10T05:00:00-03:00",
-  "eta": "Delta ainda nao inspecionado; estimativa apos leitura do handoff L02 e mapeamento de IDs."
+  "perguntas_ao_coordenador": [
+    "pg_cron e o consumidor service_role existem no destino? Sem essa confirmacao a materializacao de notices.publish nao pode ser escrita: publish_v2 passaria a gravar sempre scheduled e a ativacao dependeria do worker. Se ele nao rodar, \"publica na hora\" vira \"nunca publica\". Nao ha MCP Supabase nesta sessao (os MCP disponiveis sao cloudflare-api, context7, dart, astro-docs, openaiDeveloperDocs; figma sem auth e github com falha de conexao), entao nao consigo verificar nem por leitura.",
+    "enableInlinePreview so e passado em /dev/notices; a rota real /notices nao recebe. Nao achei fonte aprovada exigindo a previa lateral em producao, entao registro como duvida e nao como defeito."
+  ],
+  "tracker_delta_proposto": [],
+  "tracker_delta_nota": "Array vazio: teste vermelho de recorte alheio e diagnostico nao alteram estado de acao nenhuma.",
+  "achado_que_corrige_pendencia_registrada": {
+    "pendencia": "O handoff L02 registrou que, onde a pagina monta o proprio shell, o badge de nao lidas continuaria zero, e classificou a correcao geral como arquitetural, atingindo ~60 construcoes de SuperadminShell.",
+    "medicao": "59 construcoes de SuperadminShell em lib/ e 44 arquivos de feature sem o loader. Sonda descartavel em 32 rotas de producao, com o repositorio reportando 13 nao lidas.",
+    "resultado": "Toda rota monta DOIS shells, um do router e um da pagina, mas apenas UM launcher e renderizado, e ele SEMPRE tem o loader. As rotas com zero launcher sao as de formulario (/institutions/new, /people/new, /notices/new) e /communication/conversations, todas por desenho.",
+    "conclusao": "A pendencia arquitetural NAO tem efeito observavel no badge em nenhuma rota de producao. O refactor de ~44 arquivos nao mudaria nada visivel. Registro para ninguem gastar a noite nele. A sonda foi removida e nao esta commitada.",
+    "efeito_colateral": "Foi essa sonda que revelou os dois defeitos reais acima, que sao de reconhecimento de rota e nao de injecao de loader."
+  },
+  "sql_fila": "Renomeacao dos carimbos para 20260909191000 e 20260909191100 acatada; conteudo intocado e nao vou reescrever os arquivos. Proximo candidato meu usara carimbo posterior a 20260909200000 e eu aviso antes.",
+  "local_green_bar_aceita": "Aceito a correcao para local-green nas 12 acoes e concordo com o motivo: enquanto 9 goldens de chat e 3 de notices seguem vermelhos sob decisao pendente do Owner, o aceite visual nao e demonstravel, e uma barra diferente por autor mediria quem escreveu o delta e nao o produto.",
+  "auditoria_composicao_produtiva": {
+    "pergunta": "main.dart compoe o caminho? o router monta a pagina PRODUTIVA? existe implementacao de producao do repositorio, nao so interface?",
+    "resposta_curta": "SIM para as tres perguntas nas 12 acoes, e a cadeia inteira e nominal: main.dart -> SuperadminAuthScope -> SupabaseChatRepository / SupabaseNoticeRepository -> 14 RPCs nomeadas. Nao ha controlador de prototipo em memoria em nenhuma das 12, e nenhuma promocao minha se apoia em rota /dev.",
+    "por_acao": [
+      {
+        "action_id": "chat.list",
+        "main_dart_compoe_o_caminho": "SIM. lib/main.dart linha 47 passa authScope.chatRepository ao SuperadminApp, que repassa ao router em lib/app/superadmin_app.dart. Nao e caminho de prototipo.",
+        "router_monta_a_pagina_produtiva": "SIM, e provado por teste e nao por leitura: os testes de rota montam a rota de PRODUCAO com sessao autenticada e afirmam que a pagina recebe exatamente o repositorio injetado pelo router (identical), e que sem repositorio autorizado a rota falha fechada em vez de montar composicao muda. Nenhuma das minhas promocoes se apoia em rota /dev.",
+        "implementacao_de_producao_do_repositorio": "SIM, camada de dados real e nao so interface: lib/core/config/superadmin_auth_scope.dart linha 352 constroi SupabaseChatRepository(client), que chama a RPC superadmin_chat_inbox_v2. Quando o escopo nao esta autorizado, a linha 424 injeta a implementacao Unavailable, que falha fechada.",
+        "rpc_de_producao": "superadmin_chat_inbox_v2"
+      },
+      {
+        "action_id": "chat.open",
+        "main_dart_compoe_o_caminho": "SIM. lib/main.dart linha 47 passa authScope.chatRepository ao SuperadminApp, que repassa ao router em lib/app/superadmin_app.dart. Nao e caminho de prototipo.",
+        "router_monta_a_pagina_produtiva": "SIM, e provado por teste e nao por leitura: os testes de rota montam a rota de PRODUCAO com sessao autenticada e afirmam que a pagina recebe exatamente o repositorio injetado pelo router (identical), e que sem repositorio autorizado a rota falha fechada em vez de montar composicao muda. Nenhuma das minhas promocoes se apoia em rota /dev.",
+        "implementacao_de_producao_do_repositorio": "SIM, camada de dados real e nao so interface: lib/core/config/superadmin_auth_scope.dart linha 352 constroi SupabaseChatRepository(client), que chama a RPC superadmin_chat_thread_v2 + superadmin_chat_mark_read_v2. Quando o escopo nao esta autorizado, a linha 424 injeta a implementacao Unavailable, que falha fechada.",
+        "rpc_de_producao": "superadmin_chat_thread_v2 + superadmin_chat_mark_read_v2"
+      },
+      {
+        "action_id": "chat.send",
+        "main_dart_compoe_o_caminho": "SIM. lib/main.dart linha 47 passa authScope.chatRepository ao SuperadminApp, que repassa ao router em lib/app/superadmin_app.dart. Nao e caminho de prototipo.",
+        "router_monta_a_pagina_produtiva": "SIM, e provado por teste e nao por leitura: os testes de rota montam a rota de PRODUCAO com sessao autenticada e afirmam que a pagina recebe exatamente o repositorio injetado pelo router (identical), e que sem repositorio autorizado a rota falha fechada em vez de montar composicao muda. Nenhuma das minhas promocoes se apoia em rota /dev.",
+        "implementacao_de_producao_do_repositorio": "SIM, camada de dados real e nao so interface: lib/core/config/superadmin_auth_scope.dart linha 352 constroi SupabaseChatRepository(client), que chama a RPC superadmin_chat_send_message_v2. Quando o escopo nao esta autorizado, a linha 424 injeta a implementacao Unavailable, que falha fechada.",
+        "rpc_de_producao": "superadmin_chat_send_message_v2"
+      },
+      {
+        "action_id": "chat.edit",
+        "main_dart_compoe_o_caminho": "SIM. lib/main.dart linha 47 passa authScope.chatRepository ao SuperadminApp, que repassa ao router em lib/app/superadmin_app.dart. Nao e caminho de prototipo.",
+        "router_monta_a_pagina_produtiva": "SIM, e provado por teste e nao por leitura: os testes de rota montam a rota de PRODUCAO com sessao autenticada e afirmam que a pagina recebe exatamente o repositorio injetado pelo router (identical), e que sem repositorio autorizado a rota falha fechada em vez de montar composicao muda. Nenhuma das minhas promocoes se apoia em rota /dev.",
+        "implementacao_de_producao_do_repositorio": "SIM, camada de dados real e nao so interface: lib/core/config/superadmin_auth_scope.dart linha 352 constroi SupabaseChatRepository(client), que chama a RPC superadmin_chat_edit_message_v2. Quando o escopo nao esta autorizado, a linha 424 injeta a implementacao Unavailable, que falha fechada.",
+        "rpc_de_producao": "superadmin_chat_edit_message_v2"
+      },
+      {
+        "action_id": "chat.receipts",
+        "main_dart_compoe_o_caminho": "SIM. lib/main.dart linha 47 passa authScope.chatRepository ao SuperadminApp, que repassa ao router em lib/app/superadmin_app.dart. Nao e caminho de prototipo.",
+        "router_monta_a_pagina_produtiva": "SIM, e provado por teste e nao por leitura: os testes de rota montam a rota de PRODUCAO com sessao autenticada e afirmam que a pagina recebe exatamente o repositorio injetado pelo router (identical), e que sem repositorio autorizado a rota falha fechada em vez de montar composicao muda. Nenhuma das minhas promocoes se apoia em rota /dev.",
+        "implementacao_de_producao_do_repositorio": "SIM, camada de dados real e nao so interface: lib/core/config/superadmin_auth_scope.dart linha 352 constroi SupabaseChatRepository(client), que chama a RPC superadmin_chat_thread_v2 (projecao) + superadmin_chat_mark_read_v2. Quando o escopo nao esta autorizado, a linha 424 injeta a implementacao Unavailable, que falha fechada.",
+        "rpc_de_producao": "superadmin_chat_thread_v2 (projecao) + superadmin_chat_mark_read_v2"
+      },
+      {
+        "action_id": "chat.revoke",
+        "main_dart_compoe_o_caminho": "SIM. lib/main.dart linha 47 passa authScope.chatRepository ao SuperadminApp, que repassa ao router em lib/app/superadmin_app.dart. Nao e caminho de prototipo.",
+        "router_monta_a_pagina_produtiva": "SIM, e provado por teste e nao por leitura: os testes de rota montam a rota de PRODUCAO com sessao autenticada e afirmam que a pagina recebe exatamente o repositorio injetado pelo router (identical), e que sem repositorio autorizado a rota falha fechada em vez de montar composicao muda. Nenhuma das minhas promocoes se apoia em rota /dev.",
+        "implementacao_de_producao_do_repositorio": "SIM, camada de dados real e nao so interface: lib/core/config/superadmin_auth_scope.dart linha 352 constroi SupabaseChatRepository(client), que chama a RPC superadmin_chat_revoke_message_v2. Quando o escopo nao esta autorizado, a linha 424 injeta a implementacao Unavailable, que falha fechada.",
+        "rpc_de_producao": "superadmin_chat_revoke_message_v2"
+      },
+      {
+        "action_id": "notices.list",
+        "main_dart_compoe_o_caminho": "SIM. lib/main.dart linha 50 passa authScope.noticeRepository ao SuperadminApp, que repassa ao router em lib/app/superadmin_app.dart. Nao e caminho de prototipo.",
+        "router_monta_a_pagina_produtiva": "SIM, e provado por teste e nao por leitura: os testes de rota montam a rota de PRODUCAO com sessao autenticada e afirmam que a pagina recebe exatamente o repositorio injetado pelo router (identical), e que sem repositorio autorizado a rota falha fechada em vez de montar composicao muda. Nenhuma das minhas promocoes se apoia em rota /dev.",
+        "implementacao_de_producao_do_repositorio": "SIM, camada de dados real e nao so interface: lib/core/config/superadmin_auth_scope.dart linha 355 constroi SupabaseNoticeRepository(client), que chama a RPC superadmin_notice_directory_v2. Quando o escopo nao esta autorizado, a linha 427 injeta a implementacao Unavailable, que falha fechada.",
+        "rpc_de_producao": "superadmin_notice_directory_v2"
+      },
+      {
+        "action_id": "notices.create",
+        "main_dart_compoe_o_caminho": "SIM. lib/main.dart linha 50 passa authScope.noticeRepository ao SuperadminApp, que repassa ao router em lib/app/superadmin_app.dart. Nao e caminho de prototipo.",
+        "router_monta_a_pagina_produtiva": "SIM, e provado por teste e nao por leitura: os testes de rota montam a rota de PRODUCAO com sessao autenticada e afirmam que a pagina recebe exatamente o repositorio injetado pelo router (identical), e que sem repositorio autorizado a rota falha fechada em vez de montar composicao muda. Nenhuma das minhas promocoes se apoia em rota /dev.",
+        "implementacao_de_producao_do_repositorio": "SIM, camada de dados real e nao so interface: lib/core/config/superadmin_auth_scope.dart linha 355 constroi SupabaseNoticeRepository(client), que chama a RPC superadmin_notice_save_draft_v2. Quando o escopo nao esta autorizado, a linha 427 injeta a implementacao Unavailable, que falha fechada.",
+        "rpc_de_producao": "superadmin_notice_save_draft_v2"
+      },
+      {
+        "action_id": "notices.edit",
+        "main_dart_compoe_o_caminho": "SIM. lib/main.dart linha 50 passa authScope.noticeRepository ao SuperadminApp, que repassa ao router em lib/app/superadmin_app.dart. Nao e caminho de prototipo.",
+        "router_monta_a_pagina_produtiva": "SIM, e provado por teste e nao por leitura: os testes de rota montam a rota de PRODUCAO com sessao autenticada e afirmam que a pagina recebe exatamente o repositorio injetado pelo router (identical), e que sem repositorio autorizado a rota falha fechada em vez de montar composicao muda. Nenhuma das minhas promocoes se apoia em rota /dev.",
+        "implementacao_de_producao_do_repositorio": "SIM, camada de dados real e nao so interface: lib/core/config/superadmin_auth_scope.dart linha 355 constroi SupabaseNoticeRepository(client), que chama a RPC superadmin_notice_detail_v2 + superadmin_notice_save_draft_v2. Quando o escopo nao esta autorizado, a linha 427 injeta a implementacao Unavailable, que falha fechada.",
+        "rpc_de_producao": "superadmin_notice_detail_v2 + superadmin_notice_save_draft_v2"
+      },
+      {
+        "action_id": "notices.schedule",
+        "main_dart_compoe_o_caminho": "SIM. lib/main.dart linha 50 passa authScope.noticeRepository ao SuperadminApp, que repassa ao router em lib/app/superadmin_app.dart. Nao e caminho de prototipo.",
+        "router_monta_a_pagina_produtiva": "SIM, e provado por teste e nao por leitura: os testes de rota montam a rota de PRODUCAO com sessao autenticada e afirmam que a pagina recebe exatamente o repositorio injetado pelo router (identical), e que sem repositorio autorizado a rota falha fechada em vez de montar composicao muda. Nenhuma das minhas promocoes se apoia em rota /dev.",
+        "implementacao_de_producao_do_repositorio": "SIM, camada de dados real e nao so interface: lib/core/config/superadmin_auth_scope.dart linha 355 constroi SupabaseNoticeRepository(client), que chama a RPC superadmin_notice_save_draft_v2. Quando o escopo nao esta autorizado, a linha 427 injeta a implementacao Unavailable, que falha fechada.",
+        "rpc_de_producao": "superadmin_notice_save_draft_v2"
+      },
+      {
+        "action_id": "notices.publish",
+        "main_dart_compoe_o_caminho": "SIM. lib/main.dart linha 50 passa authScope.noticeRepository ao SuperadminApp, que repassa ao router em lib/app/superadmin_app.dart. Nao e caminho de prototipo.",
+        "router_monta_a_pagina_produtiva": "SIM, e provado por teste e nao por leitura: os testes de rota montam a rota de PRODUCAO com sessao autenticada e afirmam que a pagina recebe exatamente o repositorio injetado pelo router (identical), e que sem repositorio autorizado a rota falha fechada em vez de montar composicao muda. Nenhuma das minhas promocoes se apoia em rota /dev.",
+        "implementacao_de_producao_do_repositorio": "SIM, camada de dados real e nao so interface: lib/core/config/superadmin_auth_scope.dart linha 355 constroi SupabaseNoticeRepository(client), que chama a RPC superadmin_notice_publish_v2. Quando o escopo nao esta autorizado, a linha 427 injeta a implementacao Unavailable, que falha fechada.",
+        "rpc_de_producao": "superadmin_notice_publish_v2"
+      },
+      {
+        "action_id": "notices.archive",
+        "main_dart_compoe_o_caminho": "SIM. lib/main.dart linha 50 passa authScope.noticeRepository ao SuperadminApp, que repassa ao router em lib/app/superadmin_app.dart. Nao e caminho de prototipo.",
+        "router_monta_a_pagina_produtiva": "SIM, e provado por teste e nao por leitura: os testes de rota montam a rota de PRODUCAO com sessao autenticada e afirmam que a pagina recebe exatamente o repositorio injetado pelo router (identical), e que sem repositorio autorizado a rota falha fechada em vez de montar composicao muda. Nenhuma das minhas promocoes se apoia em rota /dev.",
+        "implementacao_de_producao_do_repositorio": "SIM, camada de dados real e nao so interface: lib/core/config/superadmin_auth_scope.dart linha 355 constroi SupabaseNoticeRepository(client), que chama a RPC superadmin_notice_change_status_v2. Quando o escopo nao esta autorizado, a linha 427 injeta a implementacao Unavailable, que falha fechada.",
+        "rpc_de_producao": "superadmin_notice_change_status_v2"
+      }
+    ],
+    "ressalva_material_que_eu_nao_posso_resolver": "As tres respostas cobrem o CLIENTE. Existe uma camada abaixo delas que eu nao consigo verificar e que voce precisa carregar: a baseline 20260901101500_superadmin_internal_chat_v2.sql, que cria TODAS as RPCs superadmin_chat_*_v2 chamadas acima, insere permissao sem module_label, screen_label e action_label, que sao NOT NULL sem default desde 20260811215451. Ou ela nunca aplicou em producao, e entao aquelas RPCs nao existem la e todo o FE de chat falha fechado contra um gateway inexistente, ou alguem a ajustou fora do repositorio. O mesmo vale para 20260901185008_superadmin_internal_notices_v2.sql em Comunicacoes. As duas hipoteses sao materiais para o preflight e eu nao consigo distinguir daqui: nao tenho MCP Supabase nesta sessao e nao peco acesso a producao sem autorizacao nominal. Isso NAO e o caso do Suporte: la faltava a camada de dados no cliente; aqui a camada de dados existe e e real, e a duvida e se o gateway remoto correspondente foi aplicado.",
+    "consequencia_proposta": "Se voce quiser a barra mais dura, as 12 podem descer de local-green para blocked-environment ate o preflight confirmar que as baselines aplicaram em producao. Eu nao proponho isso por conta propria porque a duvida e a mesma para todo o realm interno do Superadmin e nao e especifica do meu recorte; a decisao de barra e sua."
+  },
+  "diagnostico_deriva_de_golden": {
+    "por_que_eu_fui_atras": "E o unico bloqueio que segura as minhas 12 acoes acima de local-green, entao esta no meu caminho critico e nao e frente nova.",
+    "o_que_a_imagem_mostra": "Abri o isolatedDiff de superadmin_chat_light_1440. O que difere sao BORDAS de glifos e de formas: o rotulo do item de menu e o rodape de paginacao aparecem fantasmados, como o mesmo texto desenhado com deslocamento subpixel, e o icone de escudo aparece so como contorno. Nenhuma diferenca de conteudo, cor ou layout.",
+    "pista_quantitativa": "1024 e 1440 falham com exatamente 1849 pixels de diferenca, o mesmo numero nas duas larguras, porque so os mesmos dois elementos de posicao fixa diferem. 375 e 768 divergem mais (12276 e 30921) porque a composicao compacta desloca mais elementos. Isso e assinatura de rasterizacao, nao de regressao de tela.",
+    "causa_raiz": "O harness de golden carrega Nunito Sans do REPOSITORIO, que e estavel, mas carrega MaterialIcons do SDK Flutter LOCAL, por caminho relativo a Platform.resolvedExecutable (apps/superadmin/test/features/chat/presentation/superadmin_chat_page_golden_test.dart, _loadGoldenFonts). O repositorio declara apenas um piso, flutter: \">=3.38.0\", sem .fvmrc, sem .flutter-version e sem registro de qual SDK gravou as baselines. Logo as baselines estao presas a um SDK nao registrado, e qualquer maquina em outro Flutter falha em bloco sem que nenhuma feature tenha causado nada.",
+    "ressalva_que_impede_conclusao_facil": "Vendorizar MaterialIcons no repositorio remove UMA das duas variaveis, nao as duas: o fantasma aparece tambem no texto em Nunito Sans, que ja vem do repositorio, entao o rasterizador do engine tambem difere. Pinar o SDK e necessario; trocar o caminho da fonte de icones sozinho nao resolveria.",
+    "ambiente_medido": "Flutter 3.44.2 stable, framework c9a6c48423 de 2026-06-10, engine 04efd7c093, Dart 3.12.2, Windows. As baselines de chat foram aprovadas em 7ed598cf9 (2026-09-01) e b816bacb8 (2026-09-07), e o carregador de fontes ja existia nas duas datas — verifiquei o conteudo do arquivo naqueles commits, entao o harness nao mudou entre gravar e medir.",
+    "o_que_isso_explica": "As 151 falhas de golden em 27 features que operacoes-sistema mediu, inclusive as minhas 12. Nao e regressao de produto e nao e do meu recorte: e defeito de reprodutibilidade do proprio harness.",
+    "recomendacao_para_o_owner": "Registrar o ambiente de golden junto das baselines — versao do SDK e hash do engine — e pina-lo, antes de regravar qualquer coisa. Regravar sem pinar apenas transfere a deriva para a proxima maquina. Nao apliquei nada: pinar SDK e decisao de plataforma e esta fora do meu recorte.",
+    "limite_do_que_eu_provei": "Provei que a diferenca e de rasterizacao e que o harness depende do SDK local. NAO provei em qual SDK as baselines foram gravadas, porque essa informacao nao existe no repositorio. Essa e justamente a lacuna."
+  },
+  "cobertura_acessibilidade_principal": {
+    "lacuna": "A superficie Principal tinha prova de estados, paginacao e largura, mas nenhuma de escala de texto nem de alvo de toque, enquanto a administrativa vizinha ja tinha o caso de 200 por cento.",
+    "resultado": "Seis casos verdes, nenhum defeito: aguenta texto dobrado nos quatro breakpoints sem estourar, os alvos passam do criterio 2.5.8 do WCAG 2.2 AA e o envio ja carrega tooltip, entao e anunciado por leitor de tela.",
+    "nota": "Afirmei o criterio AA de 24 e nao o minimo interativo de 48 do Material de proposito: 48 e preferencia de plataforma, e transformar preferencia em falha de acessibilidade tornaria o teste ruidoso sem tornar a tela mais acessivel.",
+    "tambem_registro_um_erro_meu": "A primeira versao media o alvo da conversa depois do toque; em 375px a lista da lugar a thread, entao o elemento nao existia mais. Corrigi medindo antes do toque. O teste estava errado, nao a tela."
+  },
+  "achado_rota_duplicada": {
+    "como_apareceu": "Fui verificar se o meu segundo patch de router ainda aplicava sobre o dev atual. Nao aplicava, e ao abrir o arquivo do dev encontrei /principal-conversations declarada duas vezes.",
+    "erro": "duplication fullpaths for name \"principal-conversations\" — assert do go_router em configuration.dart linha 785, na CONSTRUCAO do GoRouter.",
+    "medicao_independente": "test/app/router sobre origin/dev com a duplicata: 54 PASS / 325 FAIL, das quais 320 carregavam literalmente \"duplication fullpaths\". A mesma suite na minha branch, sem a duplicata: 320 PASS / 33 FAIL. Depois da sua correcao eu remedi de forma independente, no commit de remocao que eu havia preparado: 364 PASS / 1 SKIP / 15 FAIL — o mesmo numero que voce mediu no dev corrigido.",
+    "causa": "O mesmo bloco entrou duas vezes, uma pela aplicacao do patch isolado e outra pelo merge da branch que ja carregava o hunk de 61bb58350. Identidade byte a byte e a assinatura disso.",
+    "conduta": "Nao escrevi no router. Preparei o commit de remocao na branch work/etapa2-noturna-chat-comunicacoes-router-dedupe (8d06b8a91) e ofereci; o coordenador corrigiu antes e a branch ficou SUPERADA. Mantenho publicada e identificada em vez de apagar, conforme o contrato.",
+    "consequencia_para_o_roteamento": "As 325 nao eram varias causas somadas; eram uma so. As 31 falhas de rota reportadas por alunos-rotina foram medidas noutra base e precisam ser remedidas antes de distribuir aos donos."
+  },
+  "recorte_limpo_na_suite_de_rotas": {
+    "verificacao": "Rodei test/app/router sobre o origin/dev ja corrigido e listei os arquivos com falha.",
+    "resultado": "Nenhum dos 11 arquivos que ainda falham e de chat ou de notices: activity_routes, composition_root_fail_closed_routes, development_fixture_composition, forms_composition_sanitization_source, import_development_routes, meal_plan_production_routes, people_creation_requirements_red, person_detail_golden, principal_real_route, prototype_navigation_routes e safety_routes.",
+    "pista_que_entrego_a_quem_pegar": "prototype_navigation_routes_test menciona notices, mas NAO falha por causa dele: a excecao e StateError na linha 55, em tester.element(sectionItem), ou seja na busca da SECAO do menu, antes de o laco chegar a Avisos. As quatro secoes que o teste usa — health-care, operations, communication e governance — existem em superadmin_navigation.dart, entao o problema e a secao nao estar renderizada naquela composicao, e nao um id ausente. Nao investiguei alem disso porque e recorte alheio.",
+    "principal_real_route": "As 3 falhas continuam identicas com e sem a minha mudanca de destino, como eu ja havia medido com controle."
+  },
+  "correcao_do_que_eu_afirmei": {
+    "o_que_eu_disse": "Apresentei o 364 PASS / 1 SKIP / 15 FAIL como medicao de uma arvore minha distinta da do coordenador.",
+    "o_que_e_verdade": "O origin/dev avancou para a correcao do coordenador entre eu LER o conteudo quebrado e CRIAR o commit, entao 8d06b8a91 ficou parenteado na correcao e o diff dele contra o pai e VAZIO. A remocao que eu fiz por script proprio, a partir do conteudo quebrado, produziu arvore byte a byte identica a do coordenador — isso e convergencia independente confirmada mecanicamente, e o diff vazio e a prova. Mas nao foi uma segunda arvore medida em separado, e eu deixei parecer que era.",
+    "consequencia": "A branch work/etapa2-noturna-chat-comunicacoes-router-dedupe e um commit VAZIO. Nao preserva conteudo, entao a regra de preservar candidato nao se aplica a ela; recomendei ao coordenador apagar e nao apaguei por conta propria."
+  },
+  "guarda_de_rota_duplicada": {
+    "motivo": "A quebra de hoje derrubou 320 testes de rota de uma vez e o flutter analyze ficou limpo o tempo todo, porque duas rotas iguais sao Dart perfeitamente valido. Um teste de rota tambem nao pega, porque ele proprio nao chega a construir o router.",
+    "como": "A guarda le a fonte do router e conta declaracoes por nome. Rotas /dev e suas equivalentes de producao usam constantes de nome diferentes, entao o par legitimo nao conta como duplicata e a guarda nao precisa de lista de excecao.",
+    "prova_por_mutacao": "Reintroduzi a duplicata numa arvore descartavel e a guarda falhou com exatamente [principalConversationsName]; depois restaurei o arquivo e a arvore voltou limpa. Nao e verde vazio."
+  },
+  "varredura_de_assimetria": {
+    "metodo": "Comparar o que UMA superficie de chat faz e a outra nao, sobre a MESMA RPC. Foi o que revelou a ausencia de paginacao de thread na administrativa.",
+    "corrigido_por_mim": [
+      "Paginacao de thread na superficie administrativa, que nao existia (97be3b03c).",
+      "Envio descartava nextCursor e hasMore da thread, entao o controle de continuacao sumia depois do primeiro envio. Corrigido preservando o que o SERVIDOR ja havia devolvido, sem inventar estado."
+    ],
+    "registrado_e_nao_corrigido": [
+      {
+        "id": "A",
+        "onde": "superficie ADMINISTRATIVA",
+        "achado": "Nao reconcilia a inbox depois do envio. O preview e a ordenacao continuam anteriores a mensagem que acabou de ser enviada. A superficie Principal ja faz isso, com recarga silenciosa.",
+        "por_que_nao_corrigi": "O `_loadInbox` administrativo troca a lista por painel de carregamento E reseleciona o primeiro item, o que depois de um envio poderia TROCAR a conversa aberta. Um equivalente silencioso precisa ser desenhado, e a spec 028 nao decide o comportamento do diretorio administrativo depois do envio. Corrigir por conta propria seria inventar contrato visual.",
+        "recomendacao": "Decidir entre recarga silenciosa que preserva a selecao, ou atualizacao apenas do preview da conversa selecionada."
+      },
+      {
+        "id": "B",
+        "onde": "superficie PRINCIPAL",
+        "achado": "Nao renderiza anexo nenhum: zero referencias a attachment no arquivo, enquanto a administrativa renderiza um tile. Uma mensagem com anexo apareceria como bolha vazia.",
+        "por_que_nao_corrigi": "Inerte hoje, porque chat.attach esta bloqueado e nenhum anexo pode existir. Construir o visualizador agora seria trabalho especulativo sobre um contrato de midia que ainda nao existe.",
+        "recomendacao": "Tratar como dependencia declarada de chat.attach: quando a plataforma comum de midia entregar o contrato, a Principal precisa entrar no mesmo pacote, senao ela passa a descartar conteudo em silencio."
+      },
+      {
+        "id": "C",
+        "onde": "superficie PRINCIPAL",
+        "achado": "O envio rele a thread e substitui o estado pela PRIMEIRA pagina, descartando as paginas antigas que o leitor ja tinha carregado.",
+        "por_que_nao_corrigi": "A releitura normalizada e exigida pela spec e esta certa; o que falta e mesclar em vez de truncar, e mesclar sem duplicar mensagem exige decidir o criterio de fronteira. E recuperavel: o controle de continuacao volta.",
+        "recomendacao": "Mesclar a pagina nova com a cauda ja carregada, pelo mesmo criterio de cursor que a continuacao usa."
+      },
+      {
+        "id": "D",
+        "onde": "superficie PRINCIPAL",
+        "achado": "A reconciliacao silenciosa da inbox depois do envio tambem substitui pela primeira pagina, descartando as conversas que o leitor ja havia acumulado com \"carregar mais\".",
+        "por_que_nao_corrigi": "Mesma familia de C e mesma decisao de fronteira.",
+        "recomendacao": "Mesma de C."
+      },
+      {
+        "id": "E",
+        "onde": "Avisos",
+        "achado": "O diretorio volta para a pagina 1 depois de uma acao de ciclo de vida BEM SUCEDIDA. Operar tres avisos da pagina 3 exige navegar de volta tres vezes.",
+        "por_que_nao_corrigi": "Resetar esta certo para conflito de versao, onde o instantaneo inteiro esta velho. Para sucesso e escolha de implementacao, nao exigencia de spec. O caminho sem reset ja existe no arquivo e e usado pela paginacao, entao seria reuso e nao invencao — mas a acao pode tirar o item do filtro e mudar a pagina, e essa borda precisa de decisao.",
+        "recomendacao": "Recarregar a pagina corrente em vez de resetar, nos caminhos de SUCESSO apenas, mantendo o reset para conflito e ausencia."
+      }
+    ],
+    "padrao_comum": "C, D e E sao a mesma forma: a recarga SUBSTITUI a paginacao acumulada em vez de mesclar. A tenho a forma inversa: nao ha recarga nenhuma. Vale decidir a familia inteira de uma vez, em vez de caso a caso."
+  },
+  "achado_novo_A_linha": {
+    "id": "A-linha",
+    "onde": "superficie ADMINISTRATIVA de Chat",
+    "achado": "Revogar uma mensagem recarrega apenas a THREAD; a inbox nao e reconciliada. Se a mensagem revogada era a ultima da conversa, o CORPO dela continua visivel no preview da lista de conversas pelo resto da sessao do operador.",
+    "verificacao_de_ponta_a_ponta": "O SERVIDOR ja faz a parte dele: em 20260901101500_superadmin_internal_chat_v2.sql o lateral que calcula latest_message_text filtra deleted_at is null, entao uma leitura nova do inbox NAO traria o texto revogado. A revogacao e soft delete e grava deleted_at. Quem mantem o texto na tela e exclusivamente o cliente, por nao reler. Nao ha vazamento de servidor; e estado local velho.",
+    "por_que_pesa_mais_que_o_A": "O A e ordenacao e preview desatualizados depois do envio, que e incomodo. Este e conteudo REVOGADO continuando visivel, e a revogacao existe justamente para tirar a mensagem da conversa. O servidor cumpriu; o cliente desfaz o efeito na superficie que o operador mais olha.",
+    "por_que_nao_corrigi": "O bloqueio e o mesmo do A e o coordenador ja o declarou: o _loadInbox administrativo troca a lista por painel de carga E resseleciona o primeiro item, entao reconciliar poderia TROCAR a conversa aberta na mao do operador. Precisa de um equivalente silencioso que preserve a selecao, e isso e contrato.",
+    "recomendacao": "Tratar junto do A, com prioridade acima dele, e cobrir os dois com a mesma recarga silenciosa que preserve a selecao.",
+    "cobertura": "Nenhum teste cobre o preview depois de revogar hoje. Nao escrevi um, porque um teste que afirme o comportamento atual cimentaria o defeito."
+  },
+  "borda_da_propria_correcao": {
+    "o_que_o_teste_pegou": "Reler a pagina corrente devolve pagina VAZIA quando a acao tira o ultimo item dela, e o rodape de paginacao so existe junto do conteudo — o operador ficaria sem itens E sem caminho de volta. A minha correcao teria criado um beco novo.",
+    "como_ficou": "So nesse caso cai no inicio, que e o unico lugar garantidamente navegavel, e volta a ver conteudo.",
+    "licao": "A primeira asserção que escrevi para essa borda estava errada: eu esperava a seta de voltar, que nao existe na pagina 1. O comportamento certo era outro, e foi o teste que me obrigou a olhar."
+  },
+  "regressao_propria_corrigida": {
+    "o_que_eu_tinha_introduzido": "Na correcao de CHAT_READ_ONLY (9e2a49100) eu mandei a superficie administrativa reler a inbox com _loadInbox(). Essa recarga RESSELECIONA o primeiro item da lista. Se o operador estivesse lendo qualquer conversa que nao fosse a primeira, uma recusa naquela conversa TROCARIA a conversa aberta na mao dele.",
+    "a_ironia_registrada": "E exatamente o risco que o coordenador tinha descrito ao reter o item A, e eu o introduzi enquanto corrigia outra coisa. So apareceu porque escrevi um caso com DUAS conversas; o meu teste original usava uma so, e com uma conversa a troca e invisivel.",
+    "correcao": "_loadInbox ganhou `preserveSelection`. Com ele, a recarga resseleciona a MESMA conversa em vez da primeira, o que cai no ramo que ja existia e preserva a thread e o envio em voo, atualizando so o resumo — inclusive `isReadOnly`, que e o que faz a affordance de escrita sumir sozinha. Se a conversa sumiu da pagina relida, nada e resselecionado: manter o que o operador tem e melhor que puxa-lo para outra conversa.",
+    "segundo_defeito_no_mesmo_lote": "A superficie Principal tinha o problema espelhado: a recarga silenciosa atualizava a lista mas NAO o resumo selecionado, entao `isReadOnly` ficava preso no valor antigo e o composer continuava oferecido depois de o servidor ja ter fechado a conversa para escrita. Agora o resumo selecionado vem da leitura nova.",
+    "licao": "Os dois defeitos estavam na correcao que eu ja tinha publicado e declarado provada. O que os revelou nao foi teste novo de feature, foi reler a propria mudanca perguntando o que ela faz quando ha MAIS DE UM item. Cobertura com um unico elemento nao exercita selecao."
+  },
+  "itens_A_e_A_linha": {
+    "autorizacao": "Reabertos pelo coordenador depois que preserveSelection passou a existir. A objecao que os retinha era o risco de trocar a conversa aberta; o caminho seguro foi construido e provado antes.",
+    "A_linha": "Revogar recarregava so a THREAD, entao o corpo da mensagem revogada continuava no preview da lista pelo resto da sessao. Nao e cosmetico: o servidor JA exclui a revogada do preview desde a baseline de 01/09, entao quem desfazia o efeito da revogacao era exclusivamente o cliente.",
+    "A": "Enviar e editar tambem mudam a ultima mensagem da conversa; o preview e a ordenacao ficavam anteriores a acao.",
+    "como": "Ambos usam _loadInbox(preserveSelection: true), que resseleciona a MESMA conversa e nao resseleciona nada se ela sumiu da pagina relida."
+  },
+  "tres_defeitos_de_entrelacamento": {
+    "metodo": "Reler as proprias mudancas da noite perguntando o que cada uma faz quando ha mais de um item, ou mais de uma coisa acontecendo ao mesmo tempo.",
+    "achados": [
+      "A releitura por recusa trocava a conversa aberta quando o operador nao estava na primeira da lista (regressao minha, corrigida em a68feae79).",
+      "A recarga silenciosa da Principal nao atualizava o resumo selecionado, entao o composer continuava oferecido depois de o servidor fechar a conversa para escrita (mesmo commit).",
+      "A continuacao de mensagens antigas reescrevia a lista a partir do instantaneo capturado no INICIO, engolindo um envio que terminasse durante o voo — o servidor gravava e o operador via a mensagem sumir (b1a70c72c)."
+    ],
+    "por_que_nenhum_teste_pegava_antes": "Os tres exigem pluralidade ou simultaneidade: duas conversas, ou duas operacoes em voo. Os meus testes originais usavam uma conversa e uma operacao por vez. Cobertura com um unico elemento nao exercita selecao, e cobertura sequencial nao exercita entrelacamento.",
+    "segunda_licao": "Um dos defeitos existia porque o meu teste media o MECANISMO e nao o EFEITO: eu afirmei que a inbox era relida, em vez de afirmar que o composer sumia. O mecanismo rodou e o efeito nao aconteceu."
+  },
+  "quarto_defeito_proprio": {
+    "o_que_era": "_loadInbox trocava a lista por painel de carregamento em toda recarga. Como a reconciliacao que eu acabara de entregar roda depois de enviar, editar e revogar, a lista passou a PISCAR a cada acao.",
+    "como_apareceu": "Apliquei a checagem de EFEITO a minha propria entrega anterior: eu havia afirmado que a inbox era reconciliada, e nao o que o operador via enquanto isso. E a mesma falha de teste que ja tinha me pegado com o composer na Principal.",
+    "correcao": "silent reusa exatamente o desenho que a superficie Principal ja tinha, inclusive no tratamento de falha silenciosa. Negacao continua valendo em qualquer modo.",
+    "saldo_da_noite_nesse_metodo": "Quatro defeitos meus encontrados relendo as proprias mudancas, todos em codigo ja publicado e ja declarado provado por mim."
+  },
+  "registrado_e_nao_corrigido_novo": {
+    "id": "F",
+    "onde": "diretorio de Avisos",
+    "achado": "O diretorio tambem troca a lista por painel de carregamento a cada recarga, inclusive depois de uma acao bem sucedida. Mesma familia do que acabei de corrigir no Chat.",
+    "diferenca_importante": "Ali o comportamento e PRE-EXISTENTE, nao foi introduzido por mim: a recarga com reset ja fazia isso antes da minha mudanca. Nao entra como regressao.",
+    "por_que_nao_corrigi": "Nao esta nos itens que voce autorizou, e num diretorio administrativo o painel apos acao iniciada pelo proprio operador e mais defensavel que numa lista de conversas. O caminho da correcao ja existe pronto no Chat se voce quiser padronizar."
+  },
+  "preflight_dos_pacotes_sql": {
+    "por_que_eu_fiz": "Os dois pacotes aguardam autorizacao nominal. Um segundo bloqueador de aplicacao — como o de rotulos de permissao que ja quase custou o primeiro — desperdicaria a janela de autorizacao do Owner. Revisei procurando exatamente essa classe de defeito, em vez de esperar a aplicacao.",
+    "colunas_not_null_sem_default": "Conferi todo insert dos dois pacotes contra a definicao real da tabela alvo. app_private.superadmin_internal_chat_command_receipts tem cinco colunas NOT NULL sem default (request_id, internal_identity_id, conversation_id, request_hash, message_id) e os dois inserts fornecem as cinco; created_at tem default. A tabela nova superadmin_internal_chat_message_edits tem message_id e internal_identity_id NOT NULL, ambos fornecidos. Nenhum novo bloqueador dessa classe.",
+    "colunas_usadas_existem": "public.messages tem body_text, updated_at, status e deleted_at, que sao as colunas que edit e revoke tocam (definidas em 20260623191021). Nenhuma referencia a coluna inexistente, que falharia em runtime e nao na aplicacao.",
+    "create_or_replace_de_funcao_existente": "app_private.superadmin_notice_json e substituida por create or replace, e trocar assinatura ou tipo de retorno nesse caso falha a aplicacao. Comparei com a definicao vigente em 20260901185008: assinatura identica, p_notice public.platform_notices, returns jsonb language sql stable security definer set search_path = ''. Sem bloqueador.",
+    "os_dois_falham_fechado_sem_a_baseline": "Eu suspeitei de assimetria aqui e estava ERRADO — verifiquei e registro a correcao. Os DOIS pacotes tem guarda de dependencia e recusam aplicar sobre base incompleta: o de chat exige as RPCs e tabelas da baseline de chat v2; o de Avisos exige que app_private.superadmin_notice_json ja exista, alem das duas colunas de versionamento por job. Isso importa para a duvida que eu levantei sobre as baselines de 01/09 talvez nunca terem aplicado em producao: se nao aplicaram, os meus dois pacotes RECUSAM em vez de aplicar pela metade.",
+    "mfa": "chat.internal.manage nasce com requires_mfa true e e concedida so ao role owner. Os dois gateways novos chamam app_private.require_superadmin_internal_context('chat.internal.manage'), e essa funcao central le permission_record.requires_mfa e levanta SAI_MFA_REQUIRED — ha ate uma auto-verificacao na migration de 20260909173000 que falha se esses tokens sumirem da definicao. Ou seja, o MFA e aplicado no caminho central e os meus gateways nao o contornam.",
+    "limite_do_que_isso_prova": "Isso e revisao de fonte contra fonte, nao aplicacao. Prova ausencia das classes de bloqueador que eu sei procurar; nao prova que aplica. A licao que L02 deixou continua valendo: guarda de dependencia bem escrita nao descobre que o proprio insert viola constraint criada depois, e so exercitar a aplicacao descobre."
+  },
+  "revisao_de_logica_do_pacote_de_recibos": {
+    "por_que": "O pacote aguarda autorizacao nominal do Owner e nenhum teste local pode exercita-lo, porque o realm interno nao replica nesta maquina. Entao a unica revisao possivel antes da aplicacao e ler a logica contra o esquema real. Fiz isso em vez de esperar.",
+    "o_que_esta_correto_e_eu_confirmei": [
+      "O denominador NAO inclui o autor interno. A baseline derrubou o NOT NULL de author_person_id e criou author_kind com check: mensagem de autoria interna tem author_person_id nulo, entao o autor interno nao esta em conversation_participants e nao e contado como destinatario de si mesmo.",
+      "delivered_count e read_count nao contam duas vezes: message_receipts tem unique(message_id, person_id), e o join com participantes ativos apenas filtra.",
+      "Para mensagem recebida, os agregados sao zerados e so o recibo do proprio leitor interno e projetado, vindo de app_private.superadmin_internal_chat_receipts, que e chaveada por internal_identity_id — a tabela certa, ja que o leitor interno nao tem linha em people."
+    ],
+    "achado_semantico_que_registro": {
+      "o_que": "recipient_count conta os participantes ativos AGORA, sem comparar participant.joined_at com o created_at da mensagem. Quem entrou na conversa DEPOIS da mensagem entra no denominador e nunca vai ter recibo dela, entao \"Lida por X de Y\" nunca alcanca Y e isReadByEveryone nunca fica verdadeiro para aquela mensagem.",
+      "severidade": "Nao e bloqueador de aplicacao e nao expoe dado. E um numero visivel que pode ficar preso, e o efeito cresce em conversas de grupo que ganham participantes ao longo do tempo — que e o caso normal de turma.",
+      "verificado_e_nao_suposto": "conversation_participants tem joined_at e left_at desde 20260724152722, entao a informacao para decidir existe no esquema.",
+      "por_que_nao_mudei": "Exige decidir a semantica: quem entrou depois \"recebeu\" uma mensagem anterior? Na maioria dos produtos de chat, nao. Mas isso e contrato de produto e nao correcao obvia, e o pacote esta aguardando autorizacao nominal — mudar conteudo agora tambem mexe na fila que voce serializou.",
+      "recomendacao": "Se a decisao for a convencional, e uma condicao a mais no join do denominador, comparando joined_at com o created_at da mensagem. A funcao ja recebe p_message_id e pode buscar a data."
+    }
+  },
+  "revisao_de_logica_dos_gateways": {
+    "o_que_confirmei_correto": [
+      "Autorizacao pelo caminho central require_superadmin_internal_context, que valida identidade, capacidade e MFA.",
+      "Escopo de instituicao recomputado no servidor a partir do contexto, e nao aceito do cliente: impede IDOR entre instituicoes.",
+      "Autoria propria exigida em duas condicoes, author_kind e author_internal_identity_id, e nao so uma.",
+      "Idempotencia serializada por pg_advisory_xact_lock sobre identidade mais request_id, com receipt travado por for update e recusa CHAT_REPLAY_MISMATCH quando a carga difere.",
+      "Revogacao e soft delete: status archived mais deleted_at, que e exatamente o que o filtro deleted_at is null do preview da inbox espera.",
+      "Janela de edicao de 15 minutos contada de created_at, e mensagem ja revogada recusada antes de qualquer escrita."
+    ],
+    "achado_1_hash_de_idempotencia_nao_cobre_a_conversa": {
+      "o_que": "O request_hash de editar cobre op, message_id e body_text; o de revogar cobre op e message_id. Nenhum dos dois inclui conversation_id. Um replay com o MESMO request_id e a mesma mensagem mas outro p_conversation_id passa pela verificacao de hash e devolve o estado da mensagem original.",
+      "severidade": "Baixa e eu nao inflo: quem replica e o proprio autor, com o proprio receipt, sobre a propria mensagem, entao nao aprende nada que ja nao pudesse ver. E imprecisao de chave, nao vazamento.",
+      "recomendacao": "Incluir conversation_id na carga do hash, para a chave cobrir todos os parametros que a decisao usa."
+    },
+    "achado_2_cliente_mais_restrito_que_o_servidor_no_revogar": {
+      "o_que": "O gateway de revogar NAO checa conversa somente leitura — deliberado e defensavel, porque retirar a propria mensagem de uma conversa fechada para novas escritas continua sendo direito do autor. Mas o CLIENTE esconde a acao de revogar quando isReadOnly, na mesma condicao que usa para editar.",
+      "consequencia": "Uma mensagem numa conversa que depois virou somente leitura nao pode mais ser revogada pela interface, embora o servidor aceite. Como revogar existe justamente para retirar conteudo, a capacidade fica inalcancavel exatamente quando pode ser mais necessaria.",
+      "severidade": "Baixa em frequencia, mas o efeito e perder acesso a uma acao de retirada de conteudo.",
+      "por_que_nao_corrigi": "Editar PRECISA continuar bloqueado, porque o servidor recusa com CHAT_READ_ONLY; sao a mesma condicao no cliente hoje e separa-las e mudanca de comportamento. E a pergunta de fundo — conversa fechada ainda permite retirada? — e contrato de produto, do mesmo tipo que voce reteve em B, C e D.",
+      "nota": "A direcao atual e a segura: o cliente e mais restrito que o servidor, nunca o contrario. Registro como decisao, nao como defeito de seguranca."
+    },
+    "diferenca_menor_registrada": "O select da conversa em editar usa status active e for share; o de revogar nao usa nenhum dos dois. E coerente com permitir revogar em conversa arquivada, e o advisory lock ja serializa o mesmo request_id, mas registro a assimetria para quem revisar o pacote nao achar que e descuido."
+  },
+  "revisao_de_logica_das_metricas_de_avisos": {
+    "o_que_confirmei": "As quatro metricas usam o mesmo predicado: sem geracao corrente, contam TUDO, que e o comportamento anterior; com geracao, contam so aquela geracao. Como hoje nenhum aviso tem geracao, o pacote e sem regressao por construcao, exatamente como o comentario dele afirma.",
+    "nota_para_quem_implementar_o_worker": {
+      "o_que": "Um recibo com publication_job_id nulo fica FORA da contagem assim que o aviso passa a ter geracao corrente. Consequencia concreta: na primeira publicacao baseada em job de um aviso que ja tinha recibos antigos, as metricas visiveis caem para os numeros da geracao nova — que pode ser zero.",
+      "e_intencional": "Sim, e a propria razao do pacote: a spec exige que republicar preserve o historico sem misturar destinatarios e metricas entre geracoes, e recibo antigo pertence a geracao anterior.",
+      "por_que_registro_mesmo_assim": "Porque no dia em que o worker entrar isso vai PARECER perda de dado para quem olhar o painel, e a explicacao precisa estar escrita antes, nao depois. Quem implementar deve decidir se mostra a geracao anterior em algum lugar ou se aceita o reset como leitura correta."
+    },
+    "limite": "Revisao de fonte contra esquema. Nenhum dos dois pacotes foi aplicado e nenhum teste local pode exercita-los."
+  },
+  "paridade_de_cobertura": {
+    "lacuna": "A superficie Principal tinha caso para os seis estados do inbox e para o vazio de thread por ausencia versus por permissao. A administrativa exercitava dois estados e nao tinha o caso da thread.",
+    "nota": "Os seis estados EXISTIAM no codigo administrativo: a diferenca era de cobertura, nao de implementacao. E era justamente a metade que eu vinha chamando de nao verificada.",
+    "o_que_os_casos_afirmam": "Nao o texto de cada painel, e sim o que separa um estado do outro na pratica: se ha saida e QUAL saida. Vazio por ausencia oferece atualizar; vazio por busca oferece limpar a busca; negacao NAO oferece tentar novamente, porque insistir nao resolve; sem conexao e falha generica seguem distintas.",
+    "resultado": "Nenhum defeito. Registro o verde porque a duvida era legitima e agora esta respondida por prova, nao por leitura."
+  },
+  "verificacao_na_base_conjunta": {
+    "por_que": "Verificar na minha branch prova que funciona na minha branch. O que interessa e a base em que voce vai integrar, e essa eu ainda nao tinha exercitado.",
+    "como": "git merge-tree entre origin/dev a4922cf9e e a minha HEAD fbda2f551 produziu arvore SEM conflito; materializei essa arvore num commit temporario LOCAL, rodei, e voltei para a minha branch. O commit temporario nao foi publicado e nao existe em nenhum ref remoto.",
+    "resultado_features": "test/features/chat, principal_chat e notices: 343 PASS / 12 FAIL, e as 12 sao exatamente os goldens conhecidos.",
+    "resultado_rotas": "test/app/router inteiro: 403 PASS / 1 SKIP / 6 FAIL, em quatro arquivos — composition_root_fail_closed, import_development, principal_real_route e prototype_navigation. NENHUM e de chat ou de notices.",
+    "o_que_isso_permite_afirmar": "Todo o meu recorte, incluindo as duas guardas de fonte que escrevi e todos os testes de rota novos, passa na base em que a integracao vai acontecer. Nao e extrapolacao da minha branch.",
+    "observacao_util_para_voce": "As 6 falhas de rota na base conjunta sao bem menos que as 15 que voce mediu em dev sozinho, entao outras frentes corrigiram coisas no intervalo. Vale remedir antes de catalogar."
+  },
+  "invariante_do_shell_hospedeiro": {
+    "lacuna": "principal_real_route_test percorre as rotas Principal afirmando que o shell hospedeiro e o MESMO elemento em todas. A minha rota nao esta naquela lista, entao a invariante que justifica te-la declarado DENTRO da ShellRoute nao era afirmada em lugar nenhum.",
+    "onde_afirmei": "No meu proprio arquivo, em vez de editar o de outra frente.",
+    "o_que_afirma": "Que o hospedeiro e o mesmo ELEMENTO na ida e na volta, nao um shell novo com a mesma aparencia. Se fosse reconstruido, estado do hospedeiro se perderia na navegacao — e a decisao do Owner de 09/09 e justamente preservar o shell e por a experiencia Principal no conteiner de conteudo.",
+    "resultado": "Nenhum defeito: a rota ja se comportava assim por estar no lugar certo. Faltava a afirmacao."
+  },
+  "registrado_e_nao_corrigido_G": {
+    "id": "G",
+    "onde": "rota /principal-conversations",
+    "achado": "O botao voltar do chat Principal sempre leva a Acontece, independentemente de onde o leitor veio. Depois da sua reconciliacao, TRES superficies levam a essa rota — o feed misto, Para Voce e Perfil — e as tres voltam para Acontece.",
+    "precedente_no_proprio_produto": "A pagina administrativa resolve exatamente isso com o parametro from, que so troca o destino do voltar; foi por isso que ele existia.",
+    "severidade": "Baixa: ninguem perde dado nem acesso, e Acontece e um destino valido. Mas quem entra pelo Perfil e volta para Acontece perde o lugar onde estava.",
+    "por_que_nao_corrigi": "Mexe no router, que e reservado com voce, e a pergunta de para onde voltar e contrato, do mesmo tipo que voce reteve em B, C e D. Se autorizar, e o mesmo desenho do from ja existente e eu entrego como patch isolado de router."
+  },
+  "criterio_de_fronteira_aplicado": {
+    "regra": "Recarga disparada pela acao do PROPRIO operador preserva o acumulado; recarga por mudanca de contexto ou por negacao substitui tudo.",
+    "o_limite_tecnico": "O CURSOR devolvido pelo servidor, e nao o ultimo item da pagina.",
+    "por_que_essa_escolha_importa": "Se a pagina encolheu porque algo foi removido, o ultimo item passa a ser mais novo e a cauda preservada engoliria de volta o que sumiu — exatamente a inconsistencia que o coordenador pediu para eu vigiar. Com o cursor, dentro do alcance relido a pagina nova e a autoridade e a remocao e honrada; fora dele nao ha informacao nova. Sem cursor, a pagina nova cobre tudo e substitui.",
+    "como_descobri": "O caso adversarial — mensagem removida DENTRO do alcance relido — falhou na primeira versao, com o limite no ultimo item. Foi ele que me fez trocar para o cursor.",
+    "nao_precisei_parar": "A condicao que voce pos era parar se preservar produzisse lista visivelmente inconsistente. Produziu, na primeira versao, e o limite pelo cursor resolve sem decisao de produto: dentro do alcance quem manda e o servidor."
+  },
+  "diagnostico_publicacoes_midia": {
+    "natureza": "DIAGNOSTICO por atribuicao do coordenador. Nenhum arquivo de publicacoes-midia foi tocado e nenhuma branch foi aberta. O dono continua sendo a frente dele.",
+    "achado": {
+      "o_que": "O feed misto de Acontece descarta a paginacao que o servidor oferece. PrincipalMixedFeedRepository.list aceita cursor e limit=20 e devolve PrincipalHappensFeedPage(items, nextCursor); a tela chama list(mixedScope) sem cursor e guarda so page.items, jogando fora o nextCursor. Nao ha controle de continuacao no arquivo.",
+      "efeito": "Acontece mostra no maximo 20 itens e nao ha como alcancar os mais antigos, embora o servidor saiba entregar.",
+      "classe": "A mesma que eu achei e corrigi na thread do chat administrativo hoje: capacidade plumbada ate o contrato e nunca consumida na rota real.",
+      "como_verifiquei": "No call real dentro de _loadFeed, e nao pela assinatura do contrato.",
+      "escopo": "Especifico do feed misto. Momentos e a aba de Momentos do Perfil nao tem cursor e parecem apoiados em dados de previa."
+    },
+    "negativos_que_valem_registro": [
+      "Idempotencia correta nas TRES superficies de publicacao, por dois desenhos validos: Acontece e Agora retem a chave e a zeram ao editar; Momentos deriva de publish:id:version, que muda sozinha. Passei a lente de pluralidade procurando a superficie esquecida e nao ha nenhuma.",
+      "A retirada em Acontece esta correta nas tres lentes: confirmacao, expectedVersion, guarda contra resposta atrasada, recarga no sucesso E no conflito, e ausencia de recarga na negacao. E exatamente o que faltava no chat e que eu tive de corrigir; aqui ja estava feito."
+    ],
+    "aviso_que_liga_as_frentes": "Se paginacao for adicionada ao feed misto, a recarga apos retirada vai precisar do mesmo criterio de fronteira dos itens C e D: recarregar so a primeira pagina truncaria o que o leitor abriu, e preservar tudo faria um item retirado reaparecer. O limite que funciona e o CURSOR devolvido pelo servidor."
+  },
+  "eta": "Sem estimativa pendente: todo o recorte executavel esta entregue. O que resta depende de decisao do Owner, de autorizacao nominal remota ou de outra frente.",
+  "teste_vermelho_proposital": {
+    "arquivo": "apps/superadmin/test/app/router/principal_mixed_feed_pagination_red_test.dart",
+    "natureza": "VERMELHO PROPOSITAL, a pedido da coordenacao, seguindo a convencao ja existente em people_creation_requirements_red_test. NAO e regressao. Fica verde quando o feed misto oferecer continuacao.",
+    "atencao_para_a_contagem": "Este caso soma 1 falha permanente em qualquer medicao que inclua test/app/router, e precisa ser subtraido antes de comparar com numeros anteriores.",
+    "o_que_prova": "Na rota REAL, o servidor devolve nextCursor e nenhuma continuacao aparece. A primeira leitura vai sem cursor. As duas metades do defeito ficam visiveis no mesmo caso.",
+    "de_quem_e_o_defeito": "De publicacoes-midia. O dono ja o mapeou por caminho proprio e deliberadamente nao corrigiu, porque a correcao e afordancia visual e ele mantem o criterio de nao decidir composicao sozinho. Escrevi a prova, nao a correcao."
+  },
+  "diagnostico_alunos_rotina": {
+    "natureza": "DIAGNOSTICO por atribuicao. Nenhum arquivo tocado, nenhuma branch aberta.",
+    "achado_1": "AttendanceController tem 147 linhas com tratamento de comando e mapeamento de conflito e de nao autorizado, e NAO e referenciado em lib/ fora do proprio arquivo — so o teste dele o menciona. Producao usa attendance_pages.dart, que reimplementa as mesmas responsabilidades inline. Risco: quem for corrigir comportamento tende a abrir o controller, que tem cara de dono da regra, e a correcao nao mudaria nada. Tamanho modesto e eu registro: sao 2 testes, nao 61 como no Suporte, entao e risco de manutencao e nao cobertura inflada.",
+    "achado_2": "createCall envia p_idempotency_key gerado na hora a cada tentativa, e e a UNICA escrita viva de Assiduidade sem guarda de expectedVersion, porque criar nao tem versao anterior. Repeticao apos falha ambigua leva chave nova e o servidor nao reconhece a repeticao. O servidor OFERECE o parametro e o cliente esvazia o mecanismo; as tres superficies de publicacao retem a chave justamente para isso.",
+    "negativo_que_reduz_o_alcance": "Todas as demais escritas levam expectedVersion, entao repeticao falha com conflito em vez de duplicar — desenho legitimo, e eu quase reportei como defeito antes de olhar. E a pagina, que e a superficie usada, guarda comandos por geracao, repositorio e id da chamada."
+  },
+  "verificacoes_de_integridade_da_entrega": {
+    "commits": "40 commits sobre a base d784462c1 na branch, e 40 registrados neste arquivo. Contagem conferida, nao estimada.",
+    "migrations": "As duas migrations continuam byte a byte identicas as do dev depois de todas as renomeacoes e merges, conferido por hash de objeto. Nenhum carimbo antigo sobrou duplicado na fila.",
+    "determinismo_dos_meus_testes": "Verifiquei se algum teste meu poderia oscilar sob a contencao da maquina. Nenhum usa Future.delayed, sleep nem DateTime.now(). Os poucos pump com duracao fixa avancam o relogio FALSO do flutter_test, que e deterministico e independente de carga. O unico travamento que encontrei a noite foi pumpAndSettle com um indicador animando em voo, que e deterministico tambem e ja esta documentado dentro do proprio teste.",
+    "json": "Arquivo valido e com todos os campos obrigatorios do contrato presentes."
+  },
+  "nota_para_a_contagem_de_rotas": "A partir de f4a86ed7e, test/app/router passa a ter UMA falha permanente a mais, que e o teste vermelho proposital do feed misto. Ao remedir vai dar 7 e nao 6, e isso nao e regressao."
 }

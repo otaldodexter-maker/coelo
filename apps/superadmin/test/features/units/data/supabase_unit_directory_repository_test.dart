@@ -119,6 +119,31 @@ void main() {
     expect(form.record!.contactEmail, 'centro@coelo.me');
   });
 
+  test('recibo de outra unidade na atualizacao nao entra no cache', () async {
+    // Sem conferencia de identidade, uma resposta que nao corresponde a unidade
+    // pedida entraria no cache como se fosse o registro salvo. O repositorio de
+    // Instituicoes ja faz essa conferencia; este nao fazia.
+    final client = _client((request) async {
+      if (request.url.path.endsWith('/list_units_for_superadmin')) {
+        return _json({
+          'items': [_unitRow()],
+          'total_count': 1,
+        }, request);
+      }
+      final outra = Map<String, Object?>.from(_unitRow());
+      outra['id'] = '33333333-3333-4333-8333-333333333333';
+      return _json(outra, request);
+    });
+    addTearDown(client.dispose);
+    final repository = SupabaseUnitDirectoryRepository(client);
+    final page = await repository.fetchPage(UnitDirectoryQuery());
+
+    await expectLater(
+      repository.upsert(page.items.single.record),
+      throwsA(isA<UnavailableUnitDirectoryException>()),
+    );
+  });
+
   test('updates through the authoritative RPC with optimistic version', () async {
     Request? captured;
     final client = _client((request) async {

@@ -1,14 +1,14 @@
 {
-  "revision": 5,
-  "updated_at": "2026-09-09T18:52:00-03:00",
+  "revision": 43,
+  "updated_at": "2026-09-10T00:31:18-03:00",
   "group": "operacoes-sistema",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) — claude-opus-5[1m]",
-  "status": "ATIVO - item 1 entregue e publicado; seguindo para item 2",
+  "status": "ATIVO - residual de estrutura em andamento",
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-operacoes-sistema",
   "branch": "work/etapa2-noturna-operacoes-sistema",
-  "head": "1ac657de6",
+  "head": "fa4b968a3",
   "upstream": "origin/work/etapa2-noturna-operacoes-sistema",
   "base_observed": "d784462c168d22fdb7090b7de1ef7db554ad5107",
   "scope": [
@@ -40,16 +40,81 @@
       "proof": "flutter test meal_plan_directory_page_test.dart -> 10 PASS / 0 FAIL. O teste novo 'divergent publish receipt retry reuses the same operation id' foi executado contra a implementacao de 932003b1 e FALHOU; contra esta correcao PASSA. dart analyze no arquivo: No issues found.",
       "level": "Front-end verified para o criterio de idempotencia do retry. Nao promove E2E: nao houve runtime remoto.",
       "reserved_files_touched": "nenhum"
+    },
+    {
+      "action_ids": [
+        "plans.list",
+        "plans.create",
+        "plans.edit"
+      ],
+      "screen": "apps/superadmin > Planos > Diretorio",
+      "criterion": "C03r33 - erro inesperado no diretorio",
+      "commit": "5f42fbcbd",
+      "what": "_load definia PlanDataState.loading e so capturava PlanRepositoryException; qualquer falha fora dessa hierarquia deixava a tela presa no CircularProgressIndicator e virava unhandled async error. O caminho de arquivar/restaurar tinha a mesma lacuna. Ambos passam a fechar em PlanDataState.error com as guardas de geracao/repository ja existentes.",
+      "reuse": "mesmo tratamento que meal_plan_directory_page.dart ja fazia com catch on Object",
+      "proof": "flutter test plan_pages_test.dart -> 19 PASS / 0 FAIL. Controle negativo executado: com a correcao revertida, o teste novo falha com o indicador de progresso ainda em tela.",
+      "level": "Front-end verified para este criterio. Nao promove E2E.",
+      "reserved_files_touched": "nenhum"
+    },
+    {
+      "action_ids": [
+        "errors.403",
+        "errors.404",
+        "errors.500",
+        "errors.503"
+      ],
+      "screen": "apps/superadmin > Paginas de erro",
+      "commit": "0626c7655",
+      "what": "Aceite FE exercitado: acao pendente executa uma vez e volta a ficar disponivel, falha sanitizada com retry por teclado, callback substituido ignora continuacao antiga, fechamento descarta falha tardia, 409 delega navegacao segura por teclado sem retry automatico, 375-1440 sem overflow, texto 200% e troca de geometria.",
+      "proof": "flutter test test/features/errors -> 33 PASS / 2 SKIP / 0 FAIL.",
+      "level": "Front-end verified para estes quatro. errors.409 NAO entra."
+    },
+    {
+      "action_ids": [
+        "account.settings",
+        "account.theme",
+        "account.profile",
+        "account.logout"
+      ],
+      "screen": "apps/superadmin > Minha conta",
+      "what": "Aceite FE nao-visual exercitado: hidratacao unica, falha recuperavel com retry, validacao de iniciais, draft preservado em falha de save, cancelamento restaurando o confirmado, troca de tenant/controller sem vazamento, 200% em compacto, foco por teclado atravessando transicao de tema, motion local combinado com o do sistema, persistencia de tema e motion, erros de dispositivo com retry honesto, nomes acessiveis.",
+      "proof": "flutter test profile_page_test.dart settings_page_test.dart -> 45 PASS / 0 FAIL.",
+      "level": "Front-end nao-visual exercitado. O aceite VISUAL nao fecha: os 8 goldens de Minha conta falham na base."
+    },
+    {
+      "action_ids": [
+        "agenda.create",
+        "agenda.edit",
+        "agenda.request"
+      ],
+      "screen": "apps/superadmin > Agenda",
+      "commit": "29fa6ff13",
+      "what": "Dois defeitos de escrita corrigidos. (1) O p_request_id nascia dentro do repositorio, um por chamada, nos tres comandos remotos, entao todo retry do MESMO comando virava intencao nova. Em atualizacao o p_expected_revision ainda barrava a repeticao; na CRIACAO nao ha revisao esperada, entao um retry apos falha incerta criava um segundo evento. Agora a intencao e memorizada por comando+argumentos, reusada enquanto nao confirma e descartada ao confirmar. (2) Descoberto ao escrever o teste do primeiro: saveItem e os comandos so capturavam PostgrestException e FormatException, entao ClientException de transporte escapava do repositorio e chegava a UI como excecao nao tratada. Os tres sitios passam a capturar on Exception e devolver unavailable, idioma que _captureRequestRead ja usava na leitura.",
+      "proof": "flutter test supabase_agenda_repository_test.dart -> 54 PASS. Suite completa de Agenda -> 261 PASS / 20 FAIL, todas as 20 goldens e todas ANTERIORES a esta mudanca (registradas no censo, que rodou antes). Zero falha funcional.",
+      "level": "Front-end verified para o contrato de escrita. Nao promove E2E: sem runtime remoto.",
+      "reserved_files_touched": "nenhum"
+    },
+    {
+      "action_ids": [
+        "shell.load",
+        "shell.navigate",
+        "shell.switch-context",
+        "shell.unauthorized",
+        "shell.reload"
+      ],
+      "screen": "apps/superadmin > shell e navegacao",
+      "what": "Aceite exercitado em leitura, sem escrever router: shell unico atravessando rotas, cabecalho e drawer compactos, matriz final de responsividade/tema/escala/motion, loader de nao lidos apenas pelo composition root, logout de ambiente.",
+      "proof": "flutter test test/app/navigation test/app/shell -> 134 PASS / 0 FAIL.",
+      "level": "Front-end exercitado. Nenhum arquivo reservado tocado."
     }
   ],
   "tests": {
-    "P": 10,
+    "P": 5340,
     "F": 0,
     "B": 0,
-    "S": 0,
-    "U": 0,
-    "E": 10,
-    "note": "Suite meal_plan_directory_page_test.dart na worktree. Inclui a execucao negativa de controle contra 932003b1 (1 FAIL esperado), nao somada aos 10."
+    "S": 2,
+    "U": 151,
+    "note": "Inclui a suite completa do Superadmin na minha branch (5246 PASS / 9 SKIP / 199 FAIL, numero de BRANCH e nao de base integrada), mais os casos novos desta rodada: 10 recuperados nas quatro suites de rota, 20 em Planos, 32 em Minha conta, 4 no repositorio de imagens. Zero falha funcional introduzida por mim. Controles negativos e reruns nao somados."
   },
   "reservations": [],
   "reservations_requested": [
@@ -62,7 +127,7 @@
     "Agenda e Planos conforme contrato"
   ],
   "blocker": "Ativacao nominal do coordenador (coordenacao.json rev1 exige 'ativacao nominal' para operacoes-sistema). Revisao 1 publicada as 21:10; solicitacao tambem enviada por SendMessage a coelo-73.",
-  "next_step": "Item 2: parte LOCAL da Auditoria. Ja verifiquei e descartei um falso positivo (o grant de audit_start_export_for_superadmin a authenticated e legitimo: app_private valida audit.export/audit.read internamente). Cliente de export ja e fail-closed honesto. Foco agora no cutover people-based -> principal 039 e no helper legado current_person_id. Depois item 3 (Planos: erro inesperado no diretorio).",
+  "next_step": "Varredura de catalog por dentro e fechamento das classes restantes; sem lote novo depois de 04:40.",
   "wip": [],
   "artifacts": [],
   "children": [],
@@ -148,7 +213,7 @@
     "packages/coelo_database/migrations e replays SQL -> escritor: coordenador-claude. Candidato local permitido na minha worktree; aplicacao remota serializada.",
     "inventario e tres rastreadores -> escritor: coordenador-claude. Enviarei deltas propostos neste arquivo."
   ],
-  "timestamp_note": "As revisoes 2 e 3 registraram 21:20/21:25 por estimativa; o relogio real era 21:07-21:09. Corrigido a partir da revisao 4, que usa relogio consultado.",
+  "timestamp_note": "Carimbos agora vem do relogio lido no MESMO comando da escrita. Revisoes 2-5 e 20 tiveram horario estimado a frente do real; corrigido a partir daqui sem reescrever o historico.",
   "clock_correction": "ACEITA. As revisoes 2-4 carimbaram horario UTC com sufixo -03:00. Relogio real conferido: a maquina ja esta em Brasilia. Corte 10/09 05:00 continua distante; nao vou congelar cedo.",
   "divergence": "0/0",
   "candidate_disposition": {
@@ -162,6 +227,1355 @@
     {
       "id": "plans.activate / plans.assign",
       "state": "BLOQUEADO por decisao nominal de produto (spec 051). Nao implementar por inferencia."
+    },
+    {
+      "id": "errors.409",
+      "state": "blocked-decision. Baseline de golden AUSENTE (error_409_light.png e error_409_dark.png nunca existiram; o diretorio tem apenas 403/404/500/503). A spec 2026-07-28-superadmin-error-pages-design.md exige aprovacao nominal para goldens novos 409, sem rebaseline automatico. Nao e ausencia de implementacao: os testes funcionais de conflito passam. Os 2 casos contam em S, nunca em P."
+    },
+    {
+      "id": "support visual (support.table, support.kanban, support.detail)",
+      "state": "blocked-decision. Os 24 goldens de referencia de support_page_golden_test falham na base d784462c1, em light E dark, em 375/768/1024/1440, com diffs de 11,5% a 90,4%. NAO e a deriva de tema escuro: aqui todas as variantes falham, inclusive light. As referencias foram atualizadas pela ultima vez em ed23ec20f e depois disso quatro commits mudaram a implementacao (23510d7f8, b2bcf2d4c, bff822386, 59ee9601e) sem refrescar as imagens. Regravar exigiria aprovacao nominal e nao foi feito. O outro teste do mesmo arquivo, com textScaler, passa: suas referencias estao atuais."
+    },
+    {
+      "id": "account visual (8 goldens)",
+      "state": "blocked-decision. Referencias atualizadas pela ultima vez em c6623f7e2, seguidas de 18 commits em lib/features/account. Falham 375/768 em light com 44-73% e 1024/1440 em dark com 4-5%. O teste amarra tema a largura, entao dark em 375/768 e light em 1024/1440 nunca sao renderizados: metade da matriz visual nunca foi coberta. Registrar como cobertura ausente, nao como aprovada."
+    },
+    {
+      "id": "agenda visual (20 goldens) e view READ039 (b049b163)",
+      "state": "blocked-decision. As 20 falhas sao anteriores ao meu trabalho. O WIP b049b163 permanece preservado e NAO foi integrado, conforme o rastreador."
     }
-  ]
+  ],
+  "commits": [
+    {
+      "sha": "1ac657de6",
+      "item": 1,
+      "scope": "meal-plans.publish + submitForReview",
+      "state": "revisado e ACEITO pelo coordenador"
+    },
+    {
+      "sha": "0e7678895",
+      "item": 2,
+      "scope": "pacote revisavel AUDIT-READ-V2",
+      "state": "corrigido por aafde0b3d"
+    },
+    {
+      "sha": "5f42fbcbd",
+      "item": 3,
+      "scope": "plans diretorio erro inesperado",
+      "state": "aguardando revisao"
+    },
+    {
+      "sha": "aafde0b3d",
+      "item": 2,
+      "scope": "carimbo do candidato movido para a cauda + manifesto",
+      "state": "aguardando revisao"
+    },
+    {
+      "sha": "0626c7655",
+      "item": "paginas de erro",
+      "scope": "skip honesto dos goldens 409 ausentes",
+      "state": "MANTIDO por decisao do coordenador"
+    },
+    {
+      "sha": "9a074a05c",
+      "item": "higiene",
+      "scope": "destrackear 96 PNGs de failures/",
+      "state": "autorizado nominalmente; entregue"
+    },
+    {
+      "sha": "29fa6ff13",
+      "item": "Agenda",
+      "scope": "intencao idempotente + falha de transporte",
+      "state": "aguardando revisao"
+    },
+    {
+      "sha": "d3ddc4a76",
+      "item": "medicao",
+      "scope": "censo de goldens da base",
+      "state": "aguardando revisao"
+    },
+    {
+      "sha": "ef4b423a8",
+      "item": "rotas",
+      "scope": "persistent_shell_routes: allowDevelopmentPreview no helper",
+      "state": "9 casos vermelhos -> 15 PASS"
+    },
+    {
+      "sha": "01081d3fc",
+      "item": "Planos",
+      "scope": "falha de transporte vira PlanRepositoryException",
+      "state": "causa raiz do sintoma tratado em 5f42fbcbd"
+    },
+    {
+      "sha": "8f438402d",
+      "item": "Catalogo",
+      "scope": "medicao de sync e alerta de armadilha",
+      "state": "aguardando revisao"
+    },
+    {
+      "sha": "f07545d35",
+      "item": "Cardapios midia",
+      "scope": "falha de transporte no repositorio de imagens + primeiro arquivo de teste",
+      "state": "aguardando revisao"
+    },
+    {
+      "sha": "2f66e8838",
+      "item": "varredura",
+      "scope": "intencao de escrita gerada na camada de dados, app inteiro",
+      "state": "aguardando revisao"
+    },
+    {
+      "sha": "89ce2f59b",
+      "item": "auditoria",
+      "scope": "existe caminho de producao? 11 familias do recorte",
+      "state": "aguardando revisao"
+    },
+    {
+      "sha": "153b2dbfa",
+      "item": "rotas",
+      "scope": "4 suites recuperadas, 10 falhas",
+      "state": "integrado em dev por voce (41f82338f)"
+    },
+    {
+      "sha": "585351fec",
+      "item": "Planos",
+      "scope": "formulario fecha em erro inesperado",
+      "state": "aceito"
+    },
+    {
+      "sha": "88353d6ca",
+      "item": "diagnostico",
+      "scope": "causa raiz do overflow: tabela admin sem rolagem vertical",
+      "state": "decisao sua: nao mexer no componente nem limitar linhas"
+    },
+    {
+      "sha": "ac3238f7c",
+      "item": "Planos a11y",
+      "scope": "rotulo de metrica encolhe a 150/200%",
+      "state": "aguardando revisao"
+    },
+    {
+      "sha": "458277400",
+      "item": "Minha conta",
+      "scope": "32 casos de matriz largura x tema x escala",
+      "state": "aguardando revisao"
+    },
+    {
+      "sha": "62f2411bf",
+      "item": "handoff",
+      "scope": "documento de entrega do grupo, publicado cedo",
+      "state": "vivo, atualizado ate a pre-entrega"
+    },
+    {
+      "sha": "085c02c68",
+      "item": "a11y",
+      "scope": "varredura de 200% no recorte",
+      "state": "aguardando revisao"
+    },
+    {
+      "sha": "94465f9c3",
+      "item": "Agenda",
+      "scope": "reproducao do overflow a 375 e resultado negativo da correcao autorizada",
+      "state": "aguardando revisao"
+    },
+    {
+      "sha": "87de5d09e",
+      "item": "auto-revisao",
+      "scope": "organizacao do meu proprio diff de Agenda",
+      "state": "aguardando revisao"
+    },
+    {
+      "sha": "4e6e286fd",
+      "item": "conhecimento",
+      "scope": "projecao da armadilha do sincronizador",
+      "state": "draft, validador PASS"
+    },
+    {
+      "sha": "b0c182fcf",
+      "item": "conhecimento",
+      "scope": "projecao de suite verde nao prova producao",
+      "state": "draft, validador PASS"
+    },
+    {
+      "sha": "7b553ab75",
+      "item": "hunk proposto",
+      "scope": "guarda de tenant autorizado em Cardapios, para o coordenador aplicar no router",
+      "state": "proposta; nao aplicada"
+    },
+    {
+      "sha": "2cba8068d",
+      "item": "transversal",
+      "scope": "duas varreduras por dono: diretrizes a11y e captura estreita",
+      "state": "aguardando revisao"
+    },
+    {
+      "sha": "275150cdb",
+      "item": "handoff",
+      "scope": "transversais, conhecimento e mais duas auto-correcoes",
+      "state": "documento vivo"
+    },
+    {
+      "sha": "e2739adc9",
+      "item": "transversal",
+      "scope": "reflow no app inteiro, 100% e 200%",
+      "state": "aguardando revisao"
+    },
+    {
+      "sha": "179a54532",
+      "item": "a11y",
+      "scope": "nome acessivel na regiao de long press do toggle compartilhado",
+      "state": "aguardando validacao; arquivo compartilhado no app"
+    },
+    {
+      "sha": "c4b90018a",
+      "item": "a11y",
+      "scope": "tres causas dos alvos menores que 48, com hunk de shell",
+      "state": "proposta para o coordenador"
+    },
+    {
+      "sha": "73ed43ab4",
+      "item": "correcao",
+      "scope": "excecao contaminava a medicao de diretrizes em duas telas",
+      "state": "aguardando revisao"
+    },
+    {
+      "sha": "7c054afa6",
+      "item": "correcao",
+      "scope": "delimita a correcao de contaminacao por medicao",
+      "state": "aguardando revisao"
+    },
+    {
+      "sha": "c8551d434",
+      "item": "handoff",
+      "scope": "leva a correcao de contaminacao ao documento de entrega",
+      "state": "documento vivo"
+    },
+    {
+      "sha": "dfd39b8e8",
+      "item": "correcao de regressao propria",
+      "scope": "container: true no rotulo do toggle",
+      "state": "CRITICO: quem integrar 179a54532 precisa integrar este tambem"
+    }
+  ],
+  "answers_to_coordinator": {
+    "carimbo": "CORRIGIDO em aafde0b3d. Voce estava certo. O candidato era 20260908230039 e a cauda real e 20260909174500. Renomeado para 20260909190000; conteudo inalterado, SHA256 identico (3a14121447bbe21aa20acd8a291bec94ac3bb9bddc5ede8a96da8806ca1729b2). Preflight conferido contra a cauda: nenhuma das cinco migrations posteriores toca audit_list_events_for_superadmin, audit_get_event_for_superadmin, audit_assert_permission ou audit_start_export_for_superadmin, nenhuma tem drop function/type, e quatro delas sao consumidoras do contexto interno, o que confirma que os pre-requisitos do preflight continuam presentes. Verificacao estatica sobre os arquivos da fila; nao substitui a execucao do preflight no alvo.",
+    "superadmin_internal_auth_context_test.sql": "NAO sao ~200 linhas: o stat mostra 65, que e a soma de 32 insercoes com 33 remocoes. E adaptacao obrigatoria, nao reducao por descuido. As fixtures deixam de montar a identidade por public.people + person_auth_links + platform_memberships e passam a montar superadmin_internal_identities + auth_links + memberships, que e exatamente o cutover; as claims ganham session_id, exigido pelo contexto interno; e a assercao de exportacao troca de 'o snapshot renderiza auth_session sem identidade/role/hash' para 'authenticated nao tem mais execute nos tres entrypoints de exportacao'. A assercao antiga nao teria como passar depois do pacote, porque o caminho que ela exercitava deixa de ser alcancavel pelo cliente. PERDA REAL que registro: a assercao removida tambem cobria a minimizacao do snapshot de audit_materialize_export_for_worker, que continua existindo para o worker service_role, e essa cobertura nao foi recriada. Nao bloqueia o pacote (worker nao e superficie de cliente), mas esta anotada no manifesto como pendencia de teste."
+  },
+  "findings_new": [
+    {
+      "id": "artefatos de falha de golden versionados",
+      "severity": "higiene, com impacto real na entrega",
+      "detail": "apps/superadmin/test/features/support/presentation/screens/failures/ tem 96 arquivos PNG RASTREADOS em git (isolatedDiff/maskedDiff/testImage), contra 32 goldens. Toda execucao da suite de goldens de Suporte reescreve 48 deles e suja a worktree. Restaurei com git checkout apos cada execucao, entao minha worktree esta limpa, mas qualquer executor que rodar essa suite vai relatar alteracoes nao identificadas no fechamento.",
+      "proposal": "Adicionar o padrao failures/ ao .gitignore e destrackear com git rm --cached. NAO executei: sao 96 arquivos rastreados e o contrato proibe apagar artefato sem reconciliacao. Decisao sua.",
+      "evidence": "git status --porcelain apontou 48 arquivos M logo apos rodar a suite; ls failures/ = 96, ls goldens/ = 32."
+    }
+  ],
+  "census": {
+    "what": "49 suites *_golden_test.dart de apps/superadmin em uma passada sobre d784462c1",
+    "result": "226 PASS / 6 SKIP / 151 FAIL em 27 features",
+    "report": "docs/reviews/etapa-2-operacao/reports/E2-noturna-golden-census-20260909.md (commit d3ddc4a76)",
+    "why": "Falha de golden na base nao e regressao da frente que a encontrar. Sem a medicao, cada grupo reporta vermelho sem conseguir separar defeito proprio de obsolescencia acumulada.",
+    "top": "agenda 20, principal_moments 11, principal_profile 10, principal_happens 10, chat 9, activities 9, institutions 8, groups 8, forms 8, account 8",
+    "limits": "Mede o estado da base, nao a correcao visual de nenhuma tela, e nao autoriza regravar imagem alguma."
+  },
+  "routes_assigned": {
+    "persistent_shell_routes": "RESOLVIDO em ef4b423a8. Os 9 casos exercitam rotas e gatilho de preview de desenvolvimento, mas o helper _router nao passava allowDevelopmentPreview, falso por padrao desde b20a9c205. Uma linha. 15 PASS agora; o caso que verifica a OCULTACAO do gatilho em producao monta o proprio router e continua verde, entao nenhuma cobertura foi perdida.",
+    "meal_plan_production_composition": "JA VERDE na minha branch: 1 PASS. Nao precisou de correcao.",
+    "import_development_routes": "NAO RESOLVIDO, e nao e o flag. Confirmei que o teste ja passa allowDevelopmentPreview. A falha e um RenderFlex overflow real: 1409px a 800x600 e ainda 1069px depois de eu forcar 1440x900, num flex vertical de cerca de 1681px dentro de area de 612px. A hipotese de superficie pequena foi testada e descartada. O flex aparece DEFUNCT/DISPOSED, entao o overflow ocorre durante a transicao entre /dev/imports e /dev/imports/new. Nao localizei o widget exato: nao esta em SuperadminFormFrame, que rola corretamente, nem nos Columns do wizard e do diretorio que inspecionei. Entrego o diagnostico ate aqui em vez de afrouxar a assercao ou marcar skip.",
+    "composition_root_fail_closed": "NAO VOU AFROUXAR e acredito que nao seja meu para decidir. O teste espera a chave forms-operations-unavailable em /forms/form-1/files. Ela so e renderizada quando _usesProductionApi e falso, e _usesProductionApi = !development && api != null. O composition root agora injeta a API produtiva, entao a pagina entra no ramo de producao e o initState dispara _loadProduction, o que tambem violaria o tripwire de zero chamadas. Isso e mudanca de contrato de Forms e pertence a formularios-cuidado: ou o fail-closed daquela rota saiu de proposito e o teste esta desatualizado, ou a producao foi ligada antes do previsto. Nao decido por eles."
+  },
+  "sweep_narrow_catches": {
+    "why": "Voce sugeriu varrer os demais repositorios atras do mesmo par de catches estreitos que deixava ClientException escapar em Agenda.",
+    "method": "Listar repositorios com on PostgrestException e sem on Exception/on Object, depois inspecionar as clausulas reais um a um: ausencia de captura ampla nao prova o defeito.",
+    "found_in_my_scope": [
+      "plans/data/supabase_plan_catalog_repository.dart: o pior caso. O helper _rpc, por onde passam TODAS as chamadas, so mapeava PostgrestException. CORRIGIDO em 01081d3fc.",
+      "meal_plans/data/supabase_meal_plan_image_repository.dart: captura Postgrest, Storage e Format, mas nao ClientException. Em analise.",
+      "imports/data/supabase_import_repository.dart: JA captura ClientException. Sem defeito."
+    ],
+    "outside_my_scope": "Cerca de 20 repositorios sem captura ampla, incluindo access_profiles, activities, attendance, circulars, forms, groups, institutions, notices, principal_* e safety. NAO inspecionei um a um nem toquei em nenhum: pertencem a outros grupos. Entrego a lista para voce distribuir."
+  },
+  "tracker_delta_proposto": [
+    {
+      "action_id": "errors.403",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "verified",
+      "delta": "Aceite FE exercitado na base d784462c1: acao pendente executa uma vez e volta a ficar disponivel, falha sanitizada com retry por teclado, callback substituido ignora continuacao antiga, fechamento descarta falha tardia, 375-1440 sem overflow, texto 200% e troca de geometria. Os goldens desta variante passam e a feature nao aparece no censo de falhas da base.",
+      "evidencia": "apps/superadmin/test/features/errors/ -> 33 PASS / 2 SKIP / 0 FAIL; commit 0626c7655; censo d3ddc4a76"
+    },
+    {
+      "action_id": "errors.404",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "verified",
+      "delta": "Aceite FE exercitado na base d784462c1: acao pendente executa uma vez e volta a ficar disponivel, falha sanitizada com retry por teclado, callback substituido ignora continuacao antiga, fechamento descarta falha tardia, 375-1440 sem overflow, texto 200% e troca de geometria. Os goldens desta variante passam e a feature nao aparece no censo de falhas da base.",
+      "evidencia": "apps/superadmin/test/features/errors/ -> 33 PASS / 2 SKIP / 0 FAIL; commit 0626c7655; censo d3ddc4a76"
+    },
+    {
+      "action_id": "errors.500",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "verified",
+      "delta": "Aceite FE exercitado na base d784462c1: acao pendente executa uma vez e volta a ficar disponivel, falha sanitizada com retry por teclado, callback substituido ignora continuacao antiga, fechamento descarta falha tardia, 375-1440 sem overflow, texto 200% e troca de geometria. Os goldens desta variante passam e a feature nao aparece no censo de falhas da base.",
+      "evidencia": "apps/superadmin/test/features/errors/ -> 33 PASS / 2 SKIP / 0 FAIL; commit 0626c7655; censo d3ddc4a76"
+    },
+    {
+      "action_id": "errors.503",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "verified",
+      "delta": "Aceite FE exercitado na base d784462c1: acao pendente executa uma vez e volta a ficar disponivel, falha sanitizada com retry por teclado, callback substituido ignora continuacao antiga, fechamento descarta falha tardia, 375-1440 sem overflow, texto 200% e troca de geometria. Os goldens desta variante passam e a feature nao aparece no censo de falhas da base.",
+      "evidencia": "apps/superadmin/test/features/errors/ -> 33 PASS / 2 SKIP / 0 FAIL; commit 0626c7655; censo d3ddc4a76"
+    },
+    {
+      "action_id": "errors.409",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "blocked-decision",
+      "delta": "Implementacao existe e os testes funcionais de conflito passam, inclusive navegacao segura por teclado sem retry automatico e 200% em light e dark. Falta a baseline visual: error_409_light.png e error_409_dark.png nunca existiram, e a spec 2026-07-28-superadmin-error-pages-design.md exige aprovacao nominal para goldens novos 409, sem rebaseline automatico. Os dois casos ficam skip com o motivo no nome do teste.",
+      "evidencia": "commit 0626c7655; docs/superpowers/specs/2026-07-28-superadmin-error-pages-design.md"
+    },
+    {
+      "action_id": "meal-plans.publish",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Criterio de idempotencia do retry fechado: a intencao de escrita sobrevive ao recibo divergente, a validacao de recibo vive num unico ponto compartilhado e submitForReview foi coberto junto. Nao promove a acao, porque o aceite visual restante continua aberto e meal_plans tem 6 goldens falhando na base. O candidato 932003b1 fica SUPERADO e nao deve ser integrado como esta, porque contem o defeito.",
+      "evidencia": "commit 1ac657de6; apps/superadmin/test/features/meal_plans/presentation/meal_plan_directory_page_test.dart -> 10 PASS"
+    },
+    {
+      "action_id": "plans.list",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Criterio C03r33, erro inesperado no diretorio, fechado: _load e o caminho de arquivar/restaurar so capturavam PlanRepositoryException, entao qualquer outra falha deixava a tela presa no indicador de progresso e virava unhandled async error; ambos passam a fechar em PlanDataState.error. A causa raiz foi corrigida junto no repositorio, onde o helper _rpc so mapeava PostgrestException. Nao promove a acao: o aceite visual segue aberto e plan_golden_test falha na base.",
+      "evidencia": "commits 5f42fbcbd e 01081d3fc; apps/superadmin/test/features/plans/ -> 41 PASS"
+    },
+    {
+      "action_id": "plans.create",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Criterio C03r33, erro inesperado no diretorio, fechado: _load e o caminho de arquivar/restaurar so capturavam PlanRepositoryException, entao qualquer outra falha deixava a tela presa no indicador de progresso e virava unhandled async error; ambos passam a fechar em PlanDataState.error. A causa raiz foi corrigida junto no repositorio, onde o helper _rpc so mapeava PostgrestException. Nao promove a acao: o aceite visual segue aberto e plan_golden_test falha na base.",
+      "evidencia": "commits 5f42fbcbd e 01081d3fc; apps/superadmin/test/features/plans/ -> 41 PASS"
+    },
+    {
+      "action_id": "plans.edit",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Criterio C03r33, erro inesperado no diretorio, fechado: _load e o caminho de arquivar/restaurar so capturavam PlanRepositoryException, entao qualquer outra falha deixava a tela presa no indicador de progresso e virava unhandled async error; ambos passam a fechar em PlanDataState.error. A causa raiz foi corrigida junto no repositorio, onde o helper _rpc so mapeava PostgrestException. Nao promove a acao: o aceite visual segue aberto e plan_golden_test falha na base.",
+      "evidencia": "commits 5f42fbcbd e 01081d3fc; apps/superadmin/test/features/plans/ -> 41 PASS"
+    },
+    {
+      "action_id": "agenda.create",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Contrato de escrita corrigido em dois pontos. O p_request_id nascia dentro do repositorio, um por chamada, entao todo retry do mesmo comando virava intencao nova; na criacao, sem p_expected_revision para barrar, um retry apos falha incerta criava um segundo evento. A intencao passa a ser memorizada por comando e argumentos e descartada ao confirmar. Alem disso, os comandos so capturavam PostgrestException e FormatException, deixando ClientException de transporte escapar para a UI. Nao promove a acao: 20 goldens de Agenda falham na base e o WIP b049b163 permanece preservado e nao integrado.",
+      "evidencia": "commit 29fa6ff13; apps/superadmin/test/features/agenda/data/supabase_agenda_repository_test.dart -> 54 PASS; suite de Agenda 261 PASS"
+    },
+    {
+      "action_id": "agenda.edit",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Contrato de escrita corrigido em dois pontos. O p_request_id nascia dentro do repositorio, um por chamada, entao todo retry do mesmo comando virava intencao nova; na criacao, sem p_expected_revision para barrar, um retry apos falha incerta criava um segundo evento. A intencao passa a ser memorizada por comando e argumentos e descartada ao confirmar. Alem disso, os comandos so capturavam PostgrestException e FormatException, deixando ClientException de transporte escapar para a UI. Nao promove a acao: 20 goldens de Agenda falham na base e o WIP b049b163 permanece preservado e nao integrado.",
+      "evidencia": "commit 29fa6ff13; apps/superadmin/test/features/agenda/data/supabase_agenda_repository_test.dart -> 54 PASS; suite de Agenda 261 PASS"
+    },
+    {
+      "action_id": "agenda.request",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Contrato de escrita corrigido em dois pontos. O p_request_id nascia dentro do repositorio, um por chamada, entao todo retry do mesmo comando virava intencao nova; na criacao, sem p_expected_revision para barrar, um retry apos falha incerta criava um segundo evento. A intencao passa a ser memorizada por comando e argumentos e descartada ao confirmar. Alem disso, os comandos so capturavam PostgrestException e FormatException, deixando ClientException de transporte escapar para a UI. Nao promove a acao: 20 goldens de Agenda falham na base e o WIP b049b163 permanece preservado e nao integrado.",
+      "evidencia": "commit 29fa6ff13; apps/superadmin/test/features/agenda/data/supabase_agenda_repository_test.dart -> 54 PASS; suite de Agenda 261 PASS"
+    },
+    {
+      "action_id": "support.table",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "blocked-decision",
+      "delta": "Aceite funcional exercitado com 61 PASS. O aceite visual nao fecha por decisao pendente: os 24 goldens de referencia falham na base em light e dark, em 375/768/1024/1440, com diffs de 11,5% a 90,4%, o que os separa da deriva de tema escuro. As referencias foram atualizadas pela ultima vez em ed23ec20f e receberam quatro commits de implementacao depois: 23510d7f8, b2bcf2d4c, bff822386 e 59ee9601e. Rebaseline exige aprovacao nominal e nao foi feito.",
+      "evidencia": "apps/superadmin/test/features/support/ -> 61 PASS, 24 goldens em U; censo d3ddc4a76"
+    },
+    {
+      "action_id": "support.kanban",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "blocked-decision",
+      "delta": "Aceite funcional exercitado com 61 PASS. O aceite visual nao fecha por decisao pendente: os 24 goldens de referencia falham na base em light e dark, em 375/768/1024/1440, com diffs de 11,5% a 90,4%, o que os separa da deriva de tema escuro. As referencias foram atualizadas pela ultima vez em ed23ec20f e receberam quatro commits de implementacao depois: 23510d7f8, b2bcf2d4c, bff822386 e 59ee9601e. Rebaseline exige aprovacao nominal e nao foi feito.",
+      "evidencia": "apps/superadmin/test/features/support/ -> 61 PASS, 24 goldens em U; censo d3ddc4a76"
+    },
+    {
+      "action_id": "support.detail",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "blocked-decision",
+      "delta": "Aceite funcional exercitado com 61 PASS. O aceite visual nao fecha por decisao pendente: os 24 goldens de referencia falham na base em light e dark, em 375/768/1024/1440, com diffs de 11,5% a 90,4%, o que os separa da deriva de tema escuro. As referencias foram atualizadas pela ultima vez em ed23ec20f e receberam quatro commits de implementacao depois: 23510d7f8, b2bcf2d4c, bff822386 e 59ee9601e. Rebaseline exige aprovacao nominal e nao foi feito.",
+      "evidencia": "apps/superadmin/test/features/support/ -> 61 PASS, 24 goldens em U; censo d3ddc4a76"
+    },
+    {
+      "action_id": "support.create",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Coberto pela mesma suite funcional de Suporte, verde. Nao promove: nao produzi mapeamento entre os 61 casos e cada action_id, e afirmar aceite individual sem isso seria inferencia.",
+      "evidencia": "apps/superadmin/test/features/support/ -> 61 PASS"
+    },
+    {
+      "action_id": "support.reply",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Coberto pela mesma suite funcional de Suporte, verde. Nao promove: nao produzi mapeamento entre os 61 casos e cada action_id, e afirmar aceite individual sem isso seria inferencia.",
+      "evidencia": "apps/superadmin/test/features/support/ -> 61 PASS"
+    },
+    {
+      "action_id": "support.close",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Coberto pela mesma suite funcional de Suporte, verde. Nao promove: nao produzi mapeamento entre os 61 casos e cada action_id, e afirmar aceite individual sem isso seria inferencia.",
+      "evidencia": "apps/superadmin/test/features/support/ -> 61 PASS"
+    },
+    {
+      "action_id": "account.settings",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Aceite nao-visual exercitado com 45 PASS, incluindo foco por teclado atravessando transicao de tema, motion local combinado com o do sistema, erros de dispositivo com retry honesto e nomes acessiveis. Nao proponho blocked-decision, ao contrario de Suporte, porque aqui falta cobertura e nao apenas decisao: o teste de golden amarra tema a largura, com light so abaixo de 1024 e dark so acima, entao dark em 375/768 e light em 1024/1440 nunca sao renderizados. Metade da matriz visual nunca foi coberta. Os 8 goldens existentes tambem falham, com referencias de c6623f7e2 seguidas de 18 commits.",
+      "evidencia": "apps/superadmin/test/features/account/presentation/screens/profile_page_test.dart e settings_page_test.dart -> 45 PASS"
+    },
+    {
+      "action_id": "account.theme",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Aceite nao-visual exercitado com 45 PASS, incluindo foco por teclado atravessando transicao de tema, motion local combinado com o do sistema, erros de dispositivo com retry honesto e nomes acessiveis. Nao proponho blocked-decision, ao contrario de Suporte, porque aqui falta cobertura e nao apenas decisao: o teste de golden amarra tema a largura, com light so abaixo de 1024 e dark so acima, entao dark em 375/768 e light em 1024/1440 nunca sao renderizados. Metade da matriz visual nunca foi coberta. Os 8 goldens existentes tambem falham, com referencias de c6623f7e2 seguidas de 18 commits.",
+      "evidencia": "apps/superadmin/test/features/account/presentation/screens/profile_page_test.dart e settings_page_test.dart -> 45 PASS"
+    },
+    {
+      "action_id": "account.profile",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Aceite nao-visual exercitado com 45 PASS, incluindo foco por teclado atravessando transicao de tema, motion local combinado com o do sistema, erros de dispositivo com retry honesto e nomes acessiveis. Nao proponho blocked-decision, ao contrario de Suporte, porque aqui falta cobertura e nao apenas decisao: o teste de golden amarra tema a largura, com light so abaixo de 1024 e dark so acima, entao dark em 375/768 e light em 1024/1440 nunca sao renderizados. Metade da matriz visual nunca foi coberta. Os 8 goldens existentes tambem falham, com referencias de c6623f7e2 seguidas de 18 commits.",
+      "evidencia": "apps/superadmin/test/features/account/presentation/screens/profile_page_test.dart e settings_page_test.dart -> 45 PASS"
+    },
+    {
+      "action_id": "account.logout",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Aceite nao-visual exercitado com 45 PASS, incluindo foco por teclado atravessando transicao de tema, motion local combinado com o do sistema, erros de dispositivo com retry honesto e nomes acessiveis. Nao proponho blocked-decision, ao contrario de Suporte, porque aqui falta cobertura e nao apenas decisao: o teste de golden amarra tema a largura, com light so abaixo de 1024 e dark so acima, entao dark em 375/768 e light em 1024/1440 nunca sao renderizados. Metade da matriz visual nunca foi coberta. Os 8 goldens existentes tambem falham, com referencias de c6623f7e2 seguidas de 18 commits.",
+      "evidencia": "apps/superadmin/test/features/account/presentation/screens/profile_page_test.dart e settings_page_test.dart -> 45 PASS"
+    },
+    {
+      "action_id": "shell.load",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Suites de shell e navegacao exercitadas na base com 134 PASS e zero falha, sem escrever nenhum arquivo reservado. Nao promove: nao produzi mapeamento entre os 134 casos e cada um dos cinco action_ids. A suite de rotas do shell persistente foi recuperada de 9 vermelhos para 15 PASS, mas isso e condicao do aceite e nao o aceite.",
+      "evidencia": "flutter test test/app/navigation test/app/shell -> 134 PASS; commit ef4b423a8 -> 15 PASS em persistent_shell_routes_test"
+    },
+    {
+      "action_id": "shell.navigate",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Suites de shell e navegacao exercitadas na base com 134 PASS e zero falha, sem escrever nenhum arquivo reservado. Nao promove: nao produzi mapeamento entre os 134 casos e cada um dos cinco action_ids. A suite de rotas do shell persistente foi recuperada de 9 vermelhos para 15 PASS, mas isso e condicao do aceite e nao o aceite.",
+      "evidencia": "flutter test test/app/navigation test/app/shell -> 134 PASS; commit ef4b423a8 -> 15 PASS em persistent_shell_routes_test"
+    },
+    {
+      "action_id": "shell.switch-context",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Suites de shell e navegacao exercitadas na base com 134 PASS e zero falha, sem escrever nenhum arquivo reservado. Nao promove: nao produzi mapeamento entre os 134 casos e cada um dos cinco action_ids. A suite de rotas do shell persistente foi recuperada de 9 vermelhos para 15 PASS, mas isso e condicao do aceite e nao o aceite.",
+      "evidencia": "flutter test test/app/navigation test/app/shell -> 134 PASS; commit ef4b423a8 -> 15 PASS em persistent_shell_routes_test"
+    },
+    {
+      "action_id": "shell.unauthorized",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Suites de shell e navegacao exercitadas na base com 134 PASS e zero falha, sem escrever nenhum arquivo reservado. Nao promove: nao produzi mapeamento entre os 134 casos e cada um dos cinco action_ids. A suite de rotas do shell persistente foi recuperada de 9 vermelhos para 15 PASS, mas isso e condicao do aceite e nao o aceite.",
+      "evidencia": "flutter test test/app/navigation test/app/shell -> 134 PASS; commit ef4b423a8 -> 15 PASS em persistent_shell_routes_test"
+    },
+    {
+      "action_id": "shell.reload",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Suites de shell e navegacao exercitadas na base com 134 PASS e zero falha, sem escrever nenhum arquivo reservado. Nao promove: nao produzi mapeamento entre os 134 casos e cada um dos cinco action_ids. A suite de rotas do shell persistente foi recuperada de 9 vermelhos para 15 PASS, mas isso e condicao do aceite e nao o aceite.",
+      "evidencia": "flutter test test/app/navigation test/app/shell -> 134 PASS; commit ef4b423a8 -> 15 PASS em persistent_shell_routes_test"
+    },
+    {
+      "action_id": "audit.list",
+      "camada": "backend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "blocked-environment",
+      "delta": "Pacote AUDIT-READ-V2 preparado ate revisavel, com ordem, SHA256, preflight conferido contra a cauda real da fila e carimbo corrigido para 20260909190000. Nao aplicado: a rodada decidiu que nao ha aplicacao remota e nao ha autorizacao nominal do Owner. O replay permanece 0/145.",
+      "evidencia": "commits 0e7678895 e aafde0b3d; packages/coelo_database/plans/2026-09-09-audit-read-v2-package.md"
+    },
+    {
+      "action_id": "audit.filter",
+      "camada": "backend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "blocked-environment",
+      "delta": "Mesmo pacote AUDIT-READ-V2 e mesmo bloqueio: preparado, revisavel, nao aplicado, replay 0/145.",
+      "evidencia": "commits 0e7678895 e aafde0b3d"
+    },
+    {
+      "action_id": "audit.detail",
+      "camada": "backend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "blocked-environment",
+      "delta": "Mesmo pacote AUDIT-READ-V2 e mesmo bloqueio: preparado, revisavel, nao aplicado, replay 0/145.",
+      "evidencia": "commits 0e7678895 e aafde0b3d"
+    },
+    {
+      "action_id": "catalog.list",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Sincronizador executado corretamente contra a linha de base versionada: catalogo DESATUALIZADO com 16 diagnosticos source-example-fingerprint-mismatch, contra os 14 registrados em R01/16h. Nada foi regenerado; apps/catalog/assets/catalog-sync-report.json continua intocado. Fechar exige atualizar os EXEMPLOS das 16 fontes que mudaram, e so entao regenerar o relatorio; a maioria pertence a pacotes compartilhados e dois sao de Formularios, entao a distribuicao por dono e decisao da coordenacao. Registrado tambem que o relatorio versionado subnotifica o usuario: ele declara 1 diagnostico enquanto existem 16, e o app le esse asset para exibir o aviso de catalogo desatualizado.",
+      "evidencia": "docs/reviews/etapa-2-operacao/reports/E2-noturna-catalog-sync-20260909.md; commit 8f438402d"
+    },
+    {
+      "action_id": "catalog.validate",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Sincronizador executado corretamente contra a linha de base versionada: catalogo DESATUALIZADO com 16 diagnosticos source-example-fingerprint-mismatch, contra os 14 registrados em R01/16h. Nada foi regenerado; apps/catalog/assets/catalog-sync-report.json continua intocado. Fechar exige atualizar os EXEMPLOS das 16 fontes que mudaram, e so entao regenerar o relatorio; a maioria pertence a pacotes compartilhados e dois sao de Formularios, entao a distribuicao por dono e decisao da coordenacao. Registrado tambem que o relatorio versionado subnotifica o usuario: ele declara 1 diagnostico enquanto existem 16, e o app le esse asset para exibir o aviso de catalogo desatualizado.",
+      "evidencia": "docs/reviews/etapa-2-operacao/reports/E2-noturna-catalog-sync-20260909.md; commit 8f438402d"
+    },
+    {
+      "action_id": "catalog.sync",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Sincronizador executado corretamente contra a linha de base versionada: catalogo DESATUALIZADO com 16 diagnosticos source-example-fingerprint-mismatch, contra os 14 registrados em R01/16h. Nada foi regenerado; apps/catalog/assets/catalog-sync-report.json continua intocado. Fechar exige atualizar os EXEMPLOS das 16 fontes que mudaram, e so entao regenerar o relatorio; a maioria pertence a pacotes compartilhados e dois sao de Formularios, entao a distribuicao por dono e decisao da coordenacao. Registrado tambem que o relatorio versionado subnotifica o usuario: ele declara 1 diagnostico enquanto existem 16, e o app le esse asset para exibir o aviso de catalogo desatualizado.",
+      "evidencia": "docs/reviews/etapa-2-operacao/reports/E2-noturna-catalog-sync-20260909.md; commit 8f438402d"
+    },
+    {
+      "action_id": "catalog.publish",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Sincronizador executado corretamente contra a linha de base versionada: catalogo DESATUALIZADO com 16 diagnosticos source-example-fingerprint-mismatch, contra os 14 registrados em R01/16h. Nada foi regenerado; apps/catalog/assets/catalog-sync-report.json continua intocado. Fechar exige atualizar os EXEMPLOS das 16 fontes que mudaram, e so entao regenerar o relatorio; a maioria pertence a pacotes compartilhados e dois sao de Formularios, entao a distribuicao por dono e decisao da coordenacao. Registrado tambem que o relatorio versionado subnotifica o usuario: ele declara 1 diagnostico enquanto existem 16, e o app le esse asset para exibir o aviso de catalogo desatualizado.",
+      "evidencia": "docs/reviews/etapa-2-operacao/reports/E2-noturna-catalog-sync-20260909.md; commit 8f438402d"
+    },
+    {
+      "action_id": "support.table",
+      "camada": "frontend",
+      "estado_atual": "blocked-decision ou pending-verification conforme aplicado na revisao 10",
+      "estado_proposto": "pending-verification",
+      "delta": "SUBSTITUI o delta da revisao 10. Suporte nao tem camada de dados: a feature tem apenas domain e presentation, sem data/, sem repositorio e sem interface, e toda a tela roda sobre SupportPrototypeController com dados semeados em memoria. Em producao a rota /support nem abre: o router so monta SupportPage quando productionSupportController nao e nulo, e nenhum ponto de composicao em lib injeta esse controlador, entao a rota devolve SuperadminErrorScreen unavailable. Os 61 testes verdes exercitam o prototipo e nao o caminho produtivo. O aceite FE nao fecha enquanto faltar o seam de repository/gateway. A obsolescencia dos 24 goldens permanece verdadeira, mas e o segundo problema.",
+      "evidencia": "apps/superadmin/lib/features/support/ sem data/; apps/superadmin/lib/app/router/superadmin_router.dart linhas 3029-3037; apps/superadmin/lib/app/superadmin_app.dart sem nenhuma ocorrencia de supportController"
+    },
+    {
+      "action_id": "support.kanban",
+      "camada": "frontend",
+      "estado_atual": "blocked-decision ou pending-verification conforme aplicado na revisao 10",
+      "estado_proposto": "pending-verification",
+      "delta": "SUBSTITUI o delta da revisao 10. Suporte nao tem camada de dados: a feature tem apenas domain e presentation, sem data/, sem repositorio e sem interface, e toda a tela roda sobre SupportPrototypeController com dados semeados em memoria. Em producao a rota /support nem abre: o router so monta SupportPage quando productionSupportController nao e nulo, e nenhum ponto de composicao em lib injeta esse controlador, entao a rota devolve SuperadminErrorScreen unavailable. Os 61 testes verdes exercitam o prototipo e nao o caminho produtivo. O aceite FE nao fecha enquanto faltar o seam de repository/gateway. A obsolescencia dos 24 goldens permanece verdadeira, mas e o segundo problema.",
+      "evidencia": "apps/superadmin/lib/features/support/ sem data/; apps/superadmin/lib/app/router/superadmin_router.dart linhas 3029-3037; apps/superadmin/lib/app/superadmin_app.dart sem nenhuma ocorrencia de supportController"
+    },
+    {
+      "action_id": "support.detail",
+      "camada": "frontend",
+      "estado_atual": "blocked-decision ou pending-verification conforme aplicado na revisao 10",
+      "estado_proposto": "pending-verification",
+      "delta": "SUBSTITUI o delta da revisao 10. Suporte nao tem camada de dados: a feature tem apenas domain e presentation, sem data/, sem repositorio e sem interface, e toda a tela roda sobre SupportPrototypeController com dados semeados em memoria. Em producao a rota /support nem abre: o router so monta SupportPage quando productionSupportController nao e nulo, e nenhum ponto de composicao em lib injeta esse controlador, entao a rota devolve SuperadminErrorScreen unavailable. Os 61 testes verdes exercitam o prototipo e nao o caminho produtivo. O aceite FE nao fecha enquanto faltar o seam de repository/gateway. A obsolescencia dos 24 goldens permanece verdadeira, mas e o segundo problema.",
+      "evidencia": "apps/superadmin/lib/features/support/ sem data/; apps/superadmin/lib/app/router/superadmin_router.dart linhas 3029-3037; apps/superadmin/lib/app/superadmin_app.dart sem nenhuma ocorrencia de supportController"
+    },
+    {
+      "action_id": "support.create",
+      "camada": "frontend",
+      "estado_atual": "blocked-decision ou pending-verification conforme aplicado na revisao 10",
+      "estado_proposto": "pending-verification",
+      "delta": "SUBSTITUI o delta da revisao 10. Suporte nao tem camada de dados: a feature tem apenas domain e presentation, sem data/, sem repositorio e sem interface, e toda a tela roda sobre SupportPrototypeController com dados semeados em memoria. Em producao a rota /support nem abre: o router so monta SupportPage quando productionSupportController nao e nulo, e nenhum ponto de composicao em lib injeta esse controlador, entao a rota devolve SuperadminErrorScreen unavailable. Os 61 testes verdes exercitam o prototipo e nao o caminho produtivo. O aceite FE nao fecha enquanto faltar o seam de repository/gateway. A obsolescencia dos 24 goldens permanece verdadeira, mas e o segundo problema.",
+      "evidencia": "apps/superadmin/lib/features/support/ sem data/; apps/superadmin/lib/app/router/superadmin_router.dart linhas 3029-3037; apps/superadmin/lib/app/superadmin_app.dart sem nenhuma ocorrencia de supportController"
+    },
+    {
+      "action_id": "support.reply",
+      "camada": "frontend",
+      "estado_atual": "blocked-decision ou pending-verification conforme aplicado na revisao 10",
+      "estado_proposto": "pending-verification",
+      "delta": "SUBSTITUI o delta da revisao 10. Suporte nao tem camada de dados: a feature tem apenas domain e presentation, sem data/, sem repositorio e sem interface, e toda a tela roda sobre SupportPrototypeController com dados semeados em memoria. Em producao a rota /support nem abre: o router so monta SupportPage quando productionSupportController nao e nulo, e nenhum ponto de composicao em lib injeta esse controlador, entao a rota devolve SuperadminErrorScreen unavailable. Os 61 testes verdes exercitam o prototipo e nao o caminho produtivo. O aceite FE nao fecha enquanto faltar o seam de repository/gateway. A obsolescencia dos 24 goldens permanece verdadeira, mas e o segundo problema.",
+      "evidencia": "apps/superadmin/lib/features/support/ sem data/; apps/superadmin/lib/app/router/superadmin_router.dart linhas 3029-3037; apps/superadmin/lib/app/superadmin_app.dart sem nenhuma ocorrencia de supportController"
+    },
+    {
+      "action_id": "support.close",
+      "camada": "frontend",
+      "estado_atual": "blocked-decision ou pending-verification conforme aplicado na revisao 10",
+      "estado_proposto": "pending-verification",
+      "delta": "SUBSTITUI o delta da revisao 10. Suporte nao tem camada de dados: a feature tem apenas domain e presentation, sem data/, sem repositorio e sem interface, e toda a tela roda sobre SupportPrototypeController com dados semeados em memoria. Em producao a rota /support nem abre: o router so monta SupportPage quando productionSupportController nao e nulo, e nenhum ponto de composicao em lib injeta esse controlador, entao a rota devolve SuperadminErrorScreen unavailable. Os 61 testes verdes exercitam o prototipo e nao o caminho produtivo. O aceite FE nao fecha enquanto faltar o seam de repository/gateway. A obsolescencia dos 24 goldens permanece verdadeira, mas e o segundo problema.",
+      "evidencia": "apps/superadmin/lib/features/support/ sem data/; apps/superadmin/lib/app/router/superadmin_router.dart linhas 3029-3037; apps/superadmin/lib/app/superadmin_app.dart sem nenhuma ocorrencia de supportController"
+    },
+    {
+      "action_id": "support.create",
+      "camada": "backend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Nao ha backend de Suporte a verificar: nenhuma RPC, nenhum repositorio Supabase e nenhum contrato de persistencia existe no repo para esta familia. pending-verification descreve mal o estado, que e ausencia de implementacao e nao verificacao pendente; se o inventario tiver um estado para isso, e o correto aqui.",
+      "evidencia": "ausencia de apps/superadmin/lib/features/support/data e de qualquer SupportTicket em packages/"
+    },
+    {
+      "action_id": "support.table",
+      "camada": "backend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Nao ha backend de Suporte a verificar: nenhuma RPC, nenhum repositorio Supabase e nenhum contrato de persistencia existe no repo para esta familia. pending-verification descreve mal o estado, que e ausencia de implementacao e nao verificacao pendente; se o inventario tiver um estado para isso, e o correto aqui.",
+      "evidencia": "ausencia de apps/superadmin/lib/features/support/data e de qualquer SupportTicket em packages/"
+    },
+    {
+      "action_id": "support.kanban",
+      "camada": "backend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Nao ha backend de Suporte a verificar: nenhuma RPC, nenhum repositorio Supabase e nenhum contrato de persistencia existe no repo para esta familia. pending-verification descreve mal o estado, que e ausencia de implementacao e nao verificacao pendente; se o inventario tiver um estado para isso, e o correto aqui.",
+      "evidencia": "ausencia de apps/superadmin/lib/features/support/data e de qualquer SupportTicket em packages/"
+    },
+    {
+      "action_id": "support.detail",
+      "camada": "backend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Nao ha backend de Suporte a verificar: nenhuma RPC, nenhum repositorio Supabase e nenhum contrato de persistencia existe no repo para esta familia. pending-verification descreve mal o estado, que e ausencia de implementacao e nao verificacao pendente; se o inventario tiver um estado para isso, e o correto aqui.",
+      "evidencia": "ausencia de apps/superadmin/lib/features/support/data e de qualquer SupportTicket em packages/"
+    },
+    {
+      "action_id": "support.reply",
+      "camada": "backend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Nao ha backend de Suporte a verificar: nenhuma RPC, nenhum repositorio Supabase e nenhum contrato de persistencia existe no repo para esta familia. pending-verification descreve mal o estado, que e ausencia de implementacao e nao verificacao pendente; se o inventario tiver um estado para isso, e o correto aqui.",
+      "evidencia": "ausencia de apps/superadmin/lib/features/support/data e de qualquer SupportTicket em packages/"
+    },
+    {
+      "action_id": "support.close",
+      "camada": "backend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Nao ha backend de Suporte a verificar: nenhuma RPC, nenhum repositorio Supabase e nenhum contrato de persistencia existe no repo para esta familia. pending-verification descreve mal o estado, que e ausencia de implementacao e nao verificacao pendente; se o inventario tiver um estado para isso, e o correto aqui.",
+      "evidencia": "ausencia de apps/superadmin/lib/features/support/data e de qualquer SupportTicket em packages/"
+    },
+    {
+      "action_id": "account.profile",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "REFINA o delta anterior. Alem da lacuna de cobertura visual, nao existe caminho de producao: ProfilePage so e montada em SuperadminRoutes.devProfile, que e /dev/profile, com InMemoryAccountProfileRepository, e nao ha implementacao Supabase de AccountProfileRepository no repositorio, apenas a interface e a versao em memoria. Rota /dev nunca conclui ponta a ponta, conforme o contrato.",
+      "evidencia": "apps/superadmin/lib/app/router/superadmin_router.dart linhas 356-358 e 5176-5178; apps/superadmin/lib/features/account/data/account_profile_repository.dart"
+    },
+    {
+      "action_id": "account.sessions",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Nao existe tela de sessoes. features/account/presentation/screens contem apenas profile_page.dart e settings_page.dart, e nenhum arquivo de sessoes existe no app. E ausencia de implementacao, nao verificacao pendente; se o inventario tiver estado proprio para isso, e o correto.",
+      "evidencia": "apps/superadmin/lib/features/account/presentation/screens/"
+    },
+    {
+      "action_id": "account.settings",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "CONFIRMA caminho de producao real, ao contrario de account.profile: o router usa productionPreferencesController, que cai no padrao UserPreferencesController(SharedPreferencesUserPreferencesRepository()), com persistencia local de verdade. O que ainda falta e a cobertura visual, ja descrita: o teste de golden amarra tema a largura e metade da matriz nunca e renderizada.",
+      "evidencia": "apps/superadmin/lib/app/router/superadmin_router.dart linhas 3090-3101"
+    },
+    {
+      "action_id": "account.theme",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "CONFIRMA caminho de producao real, ao contrario de account.profile: o router usa productionPreferencesController, que cai no padrao UserPreferencesController(SharedPreferencesUserPreferencesRepository()), com persistencia local de verdade. O que ainda falta e a cobertura visual, ja descrita: o teste de golden amarra tema a largura e metade da matriz nunca e renderizada.",
+      "evidencia": "apps/superadmin/lib/app/router/superadmin_router.dart linhas 3090-3101"
+    },
+    {
+      "action_id": "imports.list",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Conformidade da politica de adiamento VERIFICADA por leitura, sem promover a acao. O assistente com FilePicker real nao e alcancavel em producao: a rota SuperadminRoutes.importCreate exige hasAuthoritativeMutationCapability(), chamada sem argumento, que cai no return false final e devolve blockedProductionMutationPage; e a composicao produtiva injeta const UnavailableImportRepository() nos dois pontos. Fail-closed em duas camadas independentes; o picker so vive em /dev/imports/new. Registrado tambem, sem correcao, um RenderFlex overflow real na transicao entre as rotas /dev de importacao.",
+      "evidencia": "apps/superadmin/lib/app/router/superadmin_router.dart linhas 4568-4585 e 576-592; apps/superadmin/lib/core/config/superadmin_auth_scope.dart linhas 376 e 454"
+    },
+    {
+      "action_id": "imports.create",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Conformidade da politica de adiamento VERIFICADA por leitura, sem promover a acao. O assistente com FilePicker real nao e alcancavel em producao: a rota SuperadminRoutes.importCreate exige hasAuthoritativeMutationCapability(), chamada sem argumento, que cai no return false final e devolve blockedProductionMutationPage; e a composicao produtiva injeta const UnavailableImportRepository() nos dois pontos. Fail-closed em duas camadas independentes; o picker so vive em /dev/imports/new. Registrado tambem, sem correcao, um RenderFlex overflow real na transicao entre as rotas /dev de importacao.",
+      "evidencia": "apps/superadmin/lib/app/router/superadmin_router.dart linhas 4568-4585 e 576-592; apps/superadmin/lib/core/config/superadmin_auth_scope.dart linhas 376 e 454"
+    },
+    {
+      "action_id": "imports.upload",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Conformidade da politica de adiamento VERIFICADA por leitura, sem promover a acao. O assistente com FilePicker real nao e alcancavel em producao: a rota SuperadminRoutes.importCreate exige hasAuthoritativeMutationCapability(), chamada sem argumento, que cai no return false final e devolve blockedProductionMutationPage; e a composicao produtiva injeta const UnavailableImportRepository() nos dois pontos. Fail-closed em duas camadas independentes; o picker so vive em /dev/imports/new. Registrado tambem, sem correcao, um RenderFlex overflow real na transicao entre as rotas /dev de importacao.",
+      "evidencia": "apps/superadmin/lib/app/router/superadmin_router.dart linhas 4568-4585 e 576-592; apps/superadmin/lib/core/config/superadmin_auth_scope.dart linhas 376 e 454"
+    },
+    {
+      "action_id": "imports.preview",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Conformidade da politica de adiamento VERIFICADA por leitura, sem promover a acao. O assistente com FilePicker real nao e alcancavel em producao: a rota SuperadminRoutes.importCreate exige hasAuthoritativeMutationCapability(), chamada sem argumento, que cai no return false final e devolve blockedProductionMutationPage; e a composicao produtiva injeta const UnavailableImportRepository() nos dois pontos. Fail-closed em duas camadas independentes; o picker so vive em /dev/imports/new. Registrado tambem, sem correcao, um RenderFlex overflow real na transicao entre as rotas /dev de importacao.",
+      "evidencia": "apps/superadmin/lib/app/router/superadmin_router.dart linhas 4568-4585 e 576-592; apps/superadmin/lib/core/config/superadmin_auth_scope.dart linhas 376 e 454"
+    },
+    {
+      "action_id": "imports.confirm",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Conformidade da politica de adiamento VERIFICADA por leitura, sem promover a acao. O assistente com FilePicker real nao e alcancavel em producao: a rota SuperadminRoutes.importCreate exige hasAuthoritativeMutationCapability(), chamada sem argumento, que cai no return false final e devolve blockedProductionMutationPage; e a composicao produtiva injeta const UnavailableImportRepository() nos dois pontos. Fail-closed em duas camadas independentes; o picker so vive em /dev/imports/new. Registrado tambem, sem correcao, um RenderFlex overflow real na transicao entre as rotas /dev de importacao.",
+      "evidencia": "apps/superadmin/lib/app/router/superadmin_router.dart linhas 4568-4585 e 576-592; apps/superadmin/lib/core/config/superadmin_auth_scope.dart linhas 376 e 454"
+    },
+    {
+      "action_id": "imports.status",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Conformidade da politica de adiamento VERIFICADA por leitura, sem promover a acao. O assistente com FilePicker real nao e alcancavel em producao: a rota SuperadminRoutes.importCreate exige hasAuthoritativeMutationCapability(), chamada sem argumento, que cai no return false final e devolve blockedProductionMutationPage; e a composicao produtiva injeta const UnavailableImportRepository() nos dois pontos. Fail-closed em duas camadas independentes; o picker so vive em /dev/imports/new. Registrado tambem, sem correcao, um RenderFlex overflow real na transicao entre as rotas /dev de importacao.",
+      "evidencia": "apps/superadmin/lib/app/router/superadmin_router.dart linhas 4568-4585 e 576-592; apps/superadmin/lib/core/config/superadmin_auth_scope.dart linhas 376 e 454"
+    },
+    {
+      "action_id": "imports.download",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Conformidade da politica de adiamento VERIFICADA por leitura, sem promover a acao. O assistente com FilePicker real nao e alcancavel em producao: a rota SuperadminRoutes.importCreate exige hasAuthoritativeMutationCapability(), chamada sem argumento, que cai no return false final e devolve blockedProductionMutationPage; e a composicao produtiva injeta const UnavailableImportRepository() nos dois pontos. Fail-closed em duas camadas independentes; o picker so vive em /dev/imports/new. Registrado tambem, sem correcao, um RenderFlex overflow real na transicao entre as rotas /dev de importacao.",
+      "evidencia": "apps/superadmin/lib/app/router/superadmin_router.dart linhas 4568-4585 e 576-592; apps/superadmin/lib/core/config/superadmin_auth_scope.dart linhas 376 e 454"
+    },
+    {
+      "action_id": "plans.list",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Defeito de acessibilidade encontrado e parcialmente corrigido. O diretorio transborda com texto a 150% e a 200% em 1440x900 com a pagina padrao de 11 itens, caminho que nao tinha cobertura: os testes de 200% existentes sao de 375 e da matriz de capacidades. Sao dois transbordamentos. O horizontal foi corrigido em ac3238f7c: _Metric era uma Row rigida dentro de um Wrap e estourava 34 e 58 pixels; o rotulo passa a ser Flexible, sem alterar a composicao a 100%. O vertical NAO foi corrigido: o cartao tem mainAxisExtent fixo de 216 e estoura 254 pixels a 200%; escalar o extent pelo textScaler daria 432 contra cerca de 470 necessarios, entao nem a solucao obvia fecha, e a escolha e contrato visual de tela com baseline aprovada. Fica para coelo-ui e para o Owner.",
+      "evidencia": "commit ac3238f7c; medicao antes e depois na mesma execucao; suite de Planos 42 PASS com a unica falha sendo plan_golden_test, ja no censo"
+    },
+    {
+      "action_id": "account.settings",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Lacuna de cobertura que eu havia reportado foi FECHADA, sem criar baseline: 32 casos novos cobrem quatro larguras, dois temas e duas escalas de texto para Perfil e Configuracoes, verificando ausencia de excecao de layout e o brilho efetivo. Resultado: 32 PASS. Minha conta atravessa a matriz inteira, inclusive 200%, sem transbordar. Nao promove a acao: os 8 goldens continuam obsoletos e a baseline depende de aprovacao nominal; e account.profile continua sem caminho de producao.",
+      "evidencia": "commit 458277400; apps/superadmin/test/features/account/presentation/screens/account_theme_width_matrix_test.dart -> 32 PASS"
+    },
+    {
+      "action_id": "account.theme",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Lacuna de cobertura que eu havia reportado foi FECHADA, sem criar baseline: 32 casos novos cobrem quatro larguras, dois temas e duas escalas de texto para Perfil e Configuracoes, verificando ausencia de excecao de layout e o brilho efetivo. Resultado: 32 PASS. Minha conta atravessa a matriz inteira, inclusive 200%, sem transbordar. Nao promove a acao: os 8 goldens continuam obsoletos e a baseline depende de aprovacao nominal; e account.profile continua sem caminho de producao.",
+      "evidencia": "commit 458277400; apps/superadmin/test/features/account/presentation/screens/account_theme_width_matrix_test.dart -> 32 PASS"
+    },
+    {
+      "action_id": "account.profile",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Lacuna de cobertura que eu havia reportado foi FECHADA, sem criar baseline: 32 casos novos cobrem quatro larguras, dois temas e duas escalas de texto para Perfil e Configuracoes, verificando ausencia de excecao de layout e o brilho efetivo. Resultado: 32 PASS. Minha conta atravessa a matriz inteira, inclusive 200%, sem transbordar. Nao promove a acao: os 8 goldens continuam obsoletos e a baseline depende de aprovacao nominal; e account.profile continua sem caminho de producao.",
+      "evidencia": "commit 458277400; apps/superadmin/test/features/account/presentation/screens/account_theme_width_matrix_test.dart -> 32 PASS"
+    },
+    {
+      "action_id": "meal-plans.list",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Cardapios transborda 37 pixels a 375 com texto a 200%: a celula do grid tem altura fixa igual a largura disponivel, 343, e o conteudo pede 380. Nao corrigido: proporcao de grid e contrato visual de tela com baseline aprovada. WCAG 2.2 AA exige reflow a 200% e AGENTS.md adota WCAG 2.2 AA, entao isto e criterio de aceite aberto e nao melhoria.",
+      "evidencia": "docs/reviews/etapa-2-operacao/reports/E2-noturna-texto-200-20260909.md; commit 085c02c68"
+    },
+    {
+      "action_id": "agenda.view",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Agenda produz 43 excecoes de layout numa unica abertura a 375 com texto a 200%: as celulas do calendario tem geometria fixa e transbordam entre 2,4 e 56 pixels, com um flex maior em 257. Nao corrigido pelo mesmo motivo. O teste existente chamado 'matriz a 200 por cento' cobre outra superficie e passa. WCAG 2.2 AA exige reflow a 200% e AGENTS.md adota WCAG 2.2 AA, entao isto e criterio de aceite aberto e nao melhoria.",
+      "evidencia": "docs/reviews/etapa-2-operacao/reports/E2-noturna-texto-200-20260909.md; commit 085c02c68"
+    },
+    {
+      "action_id": "meal-plans.create",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Guarda de fail-closed de tenant autorizado NAO implementada. O teste app/router/meal_plan_production_routes_test.dart espera SuperadminErrorScreen com a chave meal-plan-authorized-tenant-unavailable ao abrir mutacao sem tenant autorizado; a chave nao existe em apps/superadmin/lib, e a rota monta o assistente com tenantId vazio. Somado a isto, authorizedMealPlanTenantId nunca e atribuido na composicao de producao. O escopo real segue no servidor; o que falta e a guarda de cliente especificada pelo teste. Hunk entregue ao coordenador, nao aplicado por mim porque o router e reserva.",
+      "evidencia": "docs/reviews/etapa-2-operacao/handoffs/E2-noturna-operacoes-sistema-patch-router.md; commit 7b553ab75; teste vermelho na base"
+    },
+    {
+      "action_id": "meal-plans.edit",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Guarda de fail-closed de tenant autorizado NAO implementada. O teste app/router/meal_plan_production_routes_test.dart espera SuperadminErrorScreen com a chave meal-plan-authorized-tenant-unavailable ao abrir mutacao sem tenant autorizado; a chave nao existe em apps/superadmin/lib, e a rota monta o assistente com tenantId vazio. Somado a isto, authorizedMealPlanTenantId nunca e atribuido na composicao de producao. O escopo real segue no servidor; o que falta e a guarda de cliente especificada pelo teste. Hunk entregue ao coordenador, nao aplicado por mim porque o router e reserva.",
+      "evidencia": "docs/reviews/etapa-2-operacao/handoffs/E2-noturna-operacoes-sistema-patch-router.md; commit 7b553ab75; teste vermelho na base"
+    },
+    {
+      "action_id": "meal-plans.model-create",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Guarda de fail-closed de tenant autorizado NAO implementada. O teste app/router/meal_plan_production_routes_test.dart espera SuperadminErrorScreen com a chave meal-plan-authorized-tenant-unavailable ao abrir mutacao sem tenant autorizado; a chave nao existe em apps/superadmin/lib, e a rota monta o assistente com tenantId vazio. Somado a isto, authorizedMealPlanTenantId nunca e atribuido na composicao de producao. O escopo real segue no servidor; o que falta e a guarda de cliente especificada pelo teste. Hunk entregue ao coordenador, nao aplicado por mim porque o router e reserva.",
+      "evidencia": "docs/reviews/etapa-2-operacao/handoffs/E2-noturna-operacoes-sistema-patch-router.md; commit 7b553ab75; teste vermelho na base"
+    },
+    {
+      "action_id": "meal-plans.model-edit",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Guarda de fail-closed de tenant autorizado NAO implementada. O teste app/router/meal_plan_production_routes_test.dart espera SuperadminErrorScreen com a chave meal-plan-authorized-tenant-unavailable ao abrir mutacao sem tenant autorizado; a chave nao existe em apps/superadmin/lib, e a rota monta o assistente com tenantId vazio. Somado a isto, authorizedMealPlanTenantId nunca e atribuido na composicao de producao. O escopo real segue no servidor; o que falta e a guarda de cliente especificada pelo teste. Hunk entregue ao coordenador, nao aplicado por mim porque o router e reserva.",
+      "evidencia": "docs/reviews/etapa-2-operacao/handoffs/E2-noturna-operacoes-sistema-patch-router.md; commit 7b553ab75; teste vermelho na base"
+    },
+    {
+      "action_id": "groups.export",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Conformidade do adiamento VERIFICADA por leitura, sem promover a acao: nenhuma tela em features/groups/presentation chama requestExport nem usa GroupDirectoryExportResult. O metodo existe em supabase_group_directory_repository.dart e nunca e invocado pela interface. A chave de idempotencia inline que aparece ali esta num caminho morto, entao nao e defeito alcancavel e nao foi tocada.",
+      "evidencia": "apps/superadmin/lib/features/groups/data/supabase_group_directory_repository.dart linha 174-180; ausencia de chamadas em features/groups/presentation"
+    },
+    {
+      "action_id": "assessments.entry",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Aceite funcional EXERCITADO e integralmente verde na base conjunta: 42 PASS, 0 FAIL, 0 SKIP em test/features/assessments. A cobertura inclui as guardas que importam: rejeita gradebook cujo ID difere do requisitado, rejeita gradebook salvo que atravessa a instituicao carregada, rejeita diario retomado fora do contexto de lancamento, ignora resposta antiga depois de troca A para B, e compartilha um unico comando em voo entre salvar e submeter. Nao promovo por um motivo estrutural: o criterio menciona 'goldens restantes' e a familia NAO TEM NENHUM golden — nao existe diretorio goldens nem arquivo *golden*_test em assessments, e conferi no historico que dev nunca teve. Criar baseline visual exige aprovacao nominal, como no caso dos goldens 409. Entao o criterio visual nao esta pendente de verificacao: esta pendente de existir.",
+      "evidencia": "flutter test test/features/assessments -> 42 PASS; ausencia de goldens confirmada por find e por git log --diff-filter em origin/dev"
+    },
+    {
+      "action_id": "assessments.gradebook",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Aceite funcional EXERCITADO e integralmente verde na base conjunta: 42 PASS, 0 FAIL, 0 SKIP em test/features/assessments. A cobertura inclui as guardas que importam: rejeita gradebook cujo ID difere do requisitado, rejeita gradebook salvo que atravessa a instituicao carregada, rejeita diario retomado fora do contexto de lancamento, ignora resposta antiga depois de troca A para B, e compartilha um unico comando em voo entre salvar e submeter. Nao promovo por um motivo estrutural: o criterio menciona 'goldens restantes' e a familia NAO TEM NENHUM golden — nao existe diretorio goldens nem arquivo *golden*_test em assessments, e conferi no historico que dev nunca teve. Criar baseline visual exige aprovacao nominal, como no caso dos goldens 409. Entao o criterio visual nao esta pendente de verificacao: esta pendente de existir.",
+      "evidencia": "flutter test test/features/assessments -> 42 PASS; ausencia de goldens confirmada por find e por git log --diff-filter em origin/dev"
+    },
+    {
+      "action_id": "assessments.close",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Aceite funcional EXERCITADO e integralmente verde na base conjunta: 42 PASS, 0 FAIL, 0 SKIP em test/features/assessments. A cobertura inclui as guardas que importam: rejeita gradebook cujo ID difere do requisitado, rejeita gradebook salvo que atravessa a instituicao carregada, rejeita diario retomado fora do contexto de lancamento, ignora resposta antiga depois de troca A para B, e compartilha um unico comando em voo entre salvar e submeter. Nao promovo por um motivo estrutural: o criterio menciona 'goldens restantes' e a familia NAO TEM NENHUM golden — nao existe diretorio goldens nem arquivo *golden*_test em assessments, e conferi no historico que dev nunca teve. Criar baseline visual exige aprovacao nominal, como no caso dos goldens 409. Entao o criterio visual nao esta pendente de verificacao: esta pendente de existir.",
+      "evidencia": "flutter test test/features/assessments -> 42 PASS; ausencia de goldens confirmada por find e por git log --diff-filter em origin/dev"
+    },
+    {
+      "action_id": "assessments.reopen",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Aceite funcional EXERCITADO e integralmente verde na base conjunta: 42 PASS, 0 FAIL, 0 SKIP em test/features/assessments. A cobertura inclui as guardas que importam: rejeita gradebook cujo ID difere do requisitado, rejeita gradebook salvo que atravessa a instituicao carregada, rejeita diario retomado fora do contexto de lancamento, ignora resposta antiga depois de troca A para B, e compartilha um unico comando em voo entre salvar e submeter. Nao promovo por um motivo estrutural: o criterio menciona 'goldens restantes' e a familia NAO TEM NENHUM golden — nao existe diretorio goldens nem arquivo *golden*_test em assessments, e conferi no historico que dev nunca teve. Criar baseline visual exige aprovacao nominal, como no caso dos goldens 409. Entao o criterio visual nao esta pendente de verificacao: esta pendente de existir.",
+      "evidencia": "flutter test test/features/assessments -> 42 PASS; ausencia de goldens confirmada por find e por git log --diff-filter em origin/dev"
+    },
+    {
+      "action_id": "assessments.detail",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Aceite funcional EXERCITADO e integralmente verde na base conjunta: 42 PASS, 0 FAIL, 0 SKIP em test/features/assessments. A cobertura inclui as guardas que importam: rejeita gradebook cujo ID difere do requisitado, rejeita gradebook salvo que atravessa a instituicao carregada, rejeita diario retomado fora do contexto de lancamento, ignora resposta antiga depois de troca A para B, e compartilha um unico comando em voo entre salvar e submeter. Nao promovo por um motivo estrutural: o criterio menciona 'goldens restantes' e a familia NAO TEM NENHUM golden — nao existe diretorio goldens nem arquivo *golden*_test em assessments, e conferi no historico que dev nunca teve. Criar baseline visual exige aprovacao nominal, como no caso dos goldens 409. Entao o criterio visual nao esta pendente de verificacao: esta pendente de existir.",
+      "evidencia": "flutter test test/features/assessments -> 42 PASS; ausencia de goldens confirmada por find e por git log --diff-filter em origin/dev"
+    },
+    {
+      "action_id": "institutions.create",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "As quatro falhas nao-golden do formulario de Instituicoes foram RESOLVIDAS, todas pela mesma classe de toque sem visibilidade: o rodape institution-form-continue ficava fora da area visivel em 375 e em 1440 a 200%, a etapa nao avancava, e o que falhava depois apontava para o controle de destino. Arquivo de 42 PASS e 4 FAIL para 46 PASS e 0 FAIL, sem alteracao de produto. Nao promovo: o aceite visual segue aberto, com 8 casos de golden vermelhos na familia.",
+      "evidencia": "commits 174883c4f e 741459f27; institution_form_page_test 46 PASS"
+    },
+    {
+      "action_id": "institutions.edit",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "As quatro falhas nao-golden do formulario de Instituicoes foram RESOLVIDAS, todas pela mesma classe de toque sem visibilidade: o rodape institution-form-continue ficava fora da area visivel em 375 e em 1440 a 200%, a etapa nao avancava, e o que falhava depois apontava para o controle de destino. Arquivo de 42 PASS e 4 FAIL para 46 PASS e 0 FAIL, sem alteracao de produto. Nao promovo: o aceite visual segue aberto, com 8 casos de golden vermelhos na familia.",
+      "evidencia": "commits 174883c4f e 741459f27; institution_form_page_test 46 PASS"
+    },
+    {
+      "action_id": "groups.create",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "A unica falha nao-golden da familia, 'shows compact localized invite rows without overflow', foi RESOLVIDA pela mesma classe: group-form-continue fora da area visivel impedia a etapa de avancar e group-invite-add nunca era montado. Treze toques corrigidos, sem alteracao de produto. Suite 156 PASS com as 8 falhas restantes todas goldens. Nao promovo: aceite visual aberto.",
+      "evidencia": "commit 9a5081dfc; suite de Turmas 156 PASS"
+    },
+    {
+      "action_id": "groups.edit",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "A unica falha nao-golden da familia, 'shows compact localized invite rows without overflow', foi RESOLVIDA pela mesma classe: group-form-continue fora da area visivel impedia a etapa de avancar e group-invite-add nunca era montado. Treze toques corrigidos, sem alteracao de produto. Suite 156 PASS com as 8 falhas restantes todas goldens. Nao promovo: aceite visual aberto.",
+      "evidencia": "commit 9a5081dfc; suite de Turmas 156 PASS"
+    },
+    {
+      "action_id": "activities.list",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Falha de transporte fechada no repositorio de diretorio de Atividades, que capturava PostgrestException, FormatException, TypeError e StateError e deixava ClientException escapar cru para a UI. Preservada a negacao de autorizacao antes do catch alargado: sem o rethrow de ActivityDirectoryUnauthorizedException, negacao viraria indisponibilidade e o motivo real se perderia — tres casos de SAI_* ficaram vermelhos e apontaram isso. Nao promovo: 9 casos de golden seguem vermelhos na familia.",
+      "evidencia": "commit f30cc20c2; suite de Atividades 162 PASS com 9 falhas golden"
+    },
+    {
+      "action_id": "locations.detail-links",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Candidato 42ad0467 integrado: _copy passa a recusar quando ja existe rota de dialogo aberta, quando a sessao nao esta disponivel ou quando falta a capability, antes de qualquer navegacao. RESSALVA IMPORTANTE para o rastreador: a linha que pedia integrar os tres pacotes D02 estava obsoleta — o conteudo de cd03b9e30 e 42ad0467 ja estava em dev por f87543b6c e 4528c42df, reaplicados como commits novos, e a proposta de router de 1345af29f ja estava em dev por fc8287c57. Verifiquei por CONTEUDO e nao por SHA. O meu commit e redundante e inocuo: o arquivo ficou byte a byte identico ao de dev.",
+      "evidencia": "commit 34af4db34; suite de Locais 333 PASS; diff contra origin/dev identico"
+    }
+  ],
+  "tracker_delta_nota": "Nenhuma acao proposta para estado terminal alem de errors.403/404/500/503. Segui sua regra: corrigir baseline vermelha, escrever teste novo ou destrackear artefato nao promove acao. imports.* nao recebe delta, porque continuam deferred-post-mvp e o unico achado ali e o overflow de RenderFlex, que e defeito e nao aceite. catalog.* ainda nao inspecionado, entao nao proponho nada.",
+  "catalog_trap": "ALERTA DE METODO para quem for fechar catalog.sync: validate_catalog_sync.dart recebe o MESMO caminho como entrada e saida, e o relatorio versionado e a linha de base da comparacao. Rodar com um caminho de saida novo faz todo componente cair no ramo prior == null e imprimir 'Catalogo sincronizado: zero diagnostico' sem comparar nada. Foi o que aconteceu na minha primeira execucao; so a diferenca entre os dois arquivos revelou 16 hashes de fonte alterados com exemplo identico. Quem repetir isso e commitar vai zerar a pendencia sem corrigir nada.",
+  "sweep_write_intent": {
+    "report": "docs/reviews/etapa-2-operacao/reports/E2-noturna-idempotencia-escrita-20260909.md (commit 2f66e8838)",
+    "conclusion": "E classe, nao dois casos. 13 sitios de ESCRITA geram a chave de idempotencia inline fora do meu recorte.",
+    "corrigido_por_mim": [
+      "Cardapios publish e submitForReview (1ac657de6)",
+      "Agenda save, command e decide_publication (29fa6ff13)"
+    ],
+    "fora_do_recorte": {
+      "alunos-rotina": [
+        "superadmin_attendance_create_call",
+        "superadmin_attendance_clear_presence_marks",
+        "superadmin_attendance_set_participant",
+        "superadmin_attendance_complete_call"
+      ],
+      "estrutura": [
+        "create_unit_for_superadmin (2 sitios)",
+        "superadmin_group_export_create"
+      ],
+      "publicacoes-midia": [
+        "save_happens_draft",
+        "publish_happens_post",
+        "save_now_draft",
+        "publish_now",
+        "withdraw_happens_post",
+        "withdraw_moment"
+      ]
+    },
+    "mais_sensiveis": "publish_happens_post, publish_now e create_unit_for_superadmin: publicacao para familias e criacao sem revisao esperada nao tem o que barre a repeticao.",
+    "ressalva": "Nao afirmo que cada RPC seja nao idempotente no servidor; algumas podem deduplicar por conteudo ou checksum. O que esta afirmado e que o CLIENTE perdeu a capacidade de repetir a mesma intencao, condicao necessaria para a protecao funcionar de qualquer lado.",
+    "nao_tocado": "Nenhum arquivo fora de agenda, plans e meal_plans foi alterado."
+  },
+  "import_overflow_handoff": {
+    "estado": "NAO RESOLVIDO. Entrego o diagnostico em vez de afrouxar a assercao ou marcar skip.",
+    "sintoma": "RenderFlex overflow de 1409px a 800x600 e 1069px a 1440x900; flex vertical com cerca de 1681px de conteudo em area de 612px, mainAxisSize min e crossAxisAlignment center, largura 1190.",
+    "hipoteses_descartadas": [
+      "NAO e allowDevelopmentPreview: o teste ja passa a flag.",
+      "NAO e superficie pequena: forcei 1440x900 e o overflow persiste.",
+      "NAO e SuperadminFormFrame: ele rola corretamente, com SingleChildScrollView e crossAxisAlignment stretch.",
+      "NAO e CoeloAdminDialogShell: suas duas Columns usam stretch.",
+      "NAO e o Column do _ImportDialog: testei forcando stretch e o overflow persistiu identico.",
+      "NAO sao as paginas em si: a suite test/features/imports passa 30 casos, com 3 falhas que sao goldens ja no censo."
+    ],
+    "conclusao": "E especifico do embutimento no router/shell durante a transicao entre /dev/imports e /dev/imports/new: o flex aparece DEFUNCT/DISPOSED. A cadeia de creator so traz render objects, sem widget nomeado, entao nao consegui identificar o widget por ela."
+  },
+  "correcao_de_delta_anterior": {
+    "o_que": "CORRIJO o delta de support.* que voce ja aplicou na revisao 10. Eu classifiquei support.table/kanban/detail como blocked-decision por rebaseline de golden. O motivo dominante e outro e mais grave, e a linha atual do rastreador esta enganosa.",
+    "achado": "Suporte nao tem camada de dados. A pasta apps/superadmin/lib/features/support tem apenas domain e presentation: nao existe data/, nem repositorio, nem interface de repositorio, e nada em packages define SupportTicket. Toda a tela roda sobre SupportPrototypeController, que semeia _defaultTickets em memoria.",
+    "producao": "Pior: em producao a rota /support nao abre. O router so monta SupportPage quando productionSupportController nao e nulo, e NINGUEM injeta supportController em lib. SuperadminApp nao passa esse parametro (zero ocorrencias no arquivo); so testes passam. Com o controlador nulo o router devolve SuperadminErrorScreen com kind unavailable, ou seja 503.",
+    "consequencia": "Os 61 testes de Suporte que eu reportei como verdes exercitam o controlador de PROTOTIPO, nao o caminho de producao. Eles nao provam aceite de produto. Reportei o numero corretamente, mas a leitura que ele sugere estava errada, e a correcao e minha.",
+    "delta_correto": "support.* nao e blocked-decision por golden. E fail-closed em producao por construcao, sem camada de dados e sem seam de repositorio. O aceite Front-end nao pode fechar enquanto a tela so existir sobre prototipo, porque o contrato de repository/gateway faz parte da definicao de verified na skill de Front-end.",
+    "goldens": "A obsolescencia dos 24 goldens continua verdadeira e continua exigindo aprovacao nominal, mas e o segundo problema, nao o primeiro."
+  },
+  "production_path_audit": {
+    "report": "docs/reviews/etapa-2-operacao/reports/E2-noturna-composicao-producao-20260909.md (commit 89ce2f59b)",
+    "motivo": "Eu reportei 61 casos verdes de Suporte como aceite exercitado e a conclusao estava errada. Apliquei a mesma pergunta as onze familias antes que o erro se repetisse em outra.",
+    "com_producao": [
+      "auth",
+      "shell",
+      "error_pages",
+      "agenda",
+      "audit",
+      "plans",
+      "meal_plans",
+      "catalog",
+      "imports (composto; a indisponibilidade e da politica, nao da composicao)"
+    ],
+    "sem_producao": {
+      "support": "sem camada de dados e 503 na rota /support",
+      "account.profile": "so em /dev/profile com InMemoryAccountProfileRepository; nao existe implementacao Supabase da interface",
+      "account.sessions": "nao existe tela; features/account/presentation/screens tem apenas profile_page.dart e settings_page.dart"
+    },
+    "com_producao_em_account": [
+      "account.settings",
+      "account.theme"
+    ],
+    "confirmacao_relevante": "As tres correcoes que entreguei em plans, agenda e meal_plans estao em caminhos produtivos reais: planCatalogRepository, agendaRepository, mealPlanRepository e mealPlanImageRepository vem de authScope em main.dart."
+  },
+  "imports_policy_check": {
+    "pergunta": "AGENTS.md exige que importacao/exportacao adiadas fiquem 'com indisponibilidade honesta e sem picker, parser, job, arquivo, RPC ou persistencia'. O app depende de file_picker e o assistente de importacao chama FilePicker.platform.pickFiles com withData true e limite de 5 MB, o que parece violar a politica.",
+    "resultado": "POLITICA RESPEITADA. Verifiquei antes de acusar e o caminho com picker NAO e alcancavel em producao.",
+    "prova": [
+      "A rota produtiva SuperadminRoutes.importCreate so monta ImportWizardPage se hasAuthoritativeMutationCapability() for verdadeiro. Ela e chamada sem argumento, entao location e string vazia, nao casa com nenhum dos ramos especificos (/invites, /notices, /circulars, principalProfile) e cai no return false final. Em producao a rota devolve blockedProductionMutationPage.",
+      "Mesmo se a rota abrisse, superadmin_auth_scope.dart injeta const UnavailableImportRepository() nos dois pontos de composicao produtiva (linhas 376 e 454), entao nao ha RPC, job nem persistencia.",
+      "O picker so vive no caminho /dev/imports/new."
+    ],
+    "conclusao": "Fail-closed em duas camadas independentes: guarda de rota e repositorio indisponivel. A presenca de file_picker no pubspec parece alarmante isolada, mas nao ha exposicao produtiva. Registro como verificacao positiva porque e area sensivel e o proximo revisor provavelmente vai tropecar no mesmo sinal."
+  },
+  "gate_sem_localizacao": {
+    "achado": "hasAuthoritativeMutationCapability(location) so devolve verdadeiro em quatro ramos: /invites, /notices, /circulars e principalProfile. Qualquer outro caminho cai no return false final. Cinco rotas produtivas a chamam SEM argumento, entao location e string vazia e o resultado e SEMPRE falso, independentemente do repositorio injetado.",
+    "rotas": [
+      "SuperadminRoutes.importCreate (linha 4571) - meu recorte, e aqui o bloqueio e desejado, porque importacao esta adiada",
+      "SuperadminRoutes.attendanceCreate (linha 2165) - alunos-rotina",
+      "SuperadminRoutes.attendanceCall (linha 2186) - alunos-rotina",
+      "SuperadminRoutes.personCreate (linha 2683) - acessos-pessoas",
+      "SuperadminRoutes.personEdit (linha 2725) - acessos-pessoas"
+    ],
+    "por_que_importa": "Em superadmin_auth_scope.dart o escopo autenticado injeta SupabaseAttendanceRepository (linha 383) e SupabasePersonDirectoryRepository (linha 362), ou seja repositorios REAIS. Mesmo assim essas quatro rotas nao abrem em producao, porque a guarda nunca consulta o repositorio delas. Para Pessoas ha um atenuante: personIdentityRepository e const UnavailablePersonIdentityRepository (linha 364), entao a escrita provavelmente estaria fechada de qualquer modo. Para Assiduidade nao encontrei atenuante equivalente.",
+    "o_que_nao_afirmo": "Nao afirmo que seja defeito. Pode ser bloqueio deliberado enquanto a decisao nao sai. O que afirmo e que a forma da funcao, que testa repositorio por ramo, sugere intencao de ser sensivel a localizacao, e que essas quatro rotas nunca chegam a esse teste. Se alguma frente considerar essas acoes concluidas em producao, a guarda contradiz a afirmacao.",
+    "quem_decide": "router e reserva do coordenador; nao alterei nada e nao proponho alterar por conta propria."
+  },
+  "achado_tenant_inerte": {
+    "severidade": "baixa, mas e uma guarda que parece ativa e nao esta",
+    "o_que": "authorizedMealPlanTenantId atravessa quatro camadas — main.dart le de authScope, SuperadminApp repassa, o router repassa ao MealPlanWizardPage — mas NUNCA recebe valor: e parametro opcional do construtor de SuperadminAuthScope e nenhuma das duas fabricas o atribui. Em producao o assistente recebe tenantId string vazia.",
+    "uso_real": "No assistente o tenantId nao e enviado ao servidor nem usado como filtro. Ele serve apenas como chave de obsolescencia em _isCurrentLoad e _isCurrentCommand, comparado com widget.tenantId.",
+    "consequencia": "A guarda de invalidacao por troca de tenant nunca dispara, porque o valor e sempre igual e vazio. Nao e furo de autorizacao: o escopo real continua no servidor, e a validacao de recibo que eu adicionei compara tenantId vindo do dado do servidor, nao este.",
+    "o_que_nao_verifiquei": "Se uma troca de contexto recria a instancia do repositorio. Se recriar, o predicate identical(repository, widget.repository) ainda barra o resultado atrasado e nao ha risco pratico. Se NAO recriar, uma carga iniciada no contexto A poderia pousar no contexto B sem nada barrando. Nao investiguei e nao afirmo.",
+    "recomendacao": "Ou atribuir o tenant autorizado na composicao, ou remover o parametro das quatro camadas. Guarda inerte e pior que guarda ausente, porque o proximo revisor a le como protecao existente."
+  },
+  "achado_switch_context": {
+    "acao": "shell.switch-context",
+    "criterio_do_rastreador": "Contextos A/B, loading novo, sem dado residual e anuncio.",
+    "o_que_encontrei": "Nao existe seletor de contexto no shell. Nao ha switchContext, ContextSwitcher, TenantSwitcher nem equivalente em apps/superadmin/lib/app, e nenhum teste de shell ou navegacao menciona troca de contexto.",
+    "o_que_esta_implementado": "A metade 'sem dado residual' existe, mas como TROCA DE REPOSITORIO, nao como acao de shell: as telas guardam identical(repository, widget.repository) e geracao, e ha testes explicitos desse contrato, como 'repository swap clears A filters and rejects its late response' e 'publish intent never crosses repositories after a context swap'. Seletores de contexto existem DENTRO de features, por exemplo os contextos de Agenda, mas isso nao e a acao de shell descrita.",
+    "o_que_nao_encontrei": "O seletor em si e o anuncio de acessibilidade na troca.",
+    "ressalva": "Nao afirmo que a acao seja inexistente por decisao: pode estar prevista para um seletor ainda nao construido. Afirmo que nao localizei superficie nem teste dela no shell, e que o contrato de ausencia de dado residual esta coberto por outro mecanismo.",
+    "ligacao": "Isto explica por que a guarda inerte de authorizedMealPlanTenantId nao causa dano pratico hoje: sem troca de contexto no shell, o valor nunca mudaria de qualquer forma. Continua sendo fiacao morta a resolver."
+  },
+  "correcao_mecanismo_da_guarda": {
+    "aceito": "A correcao do coordenador e de alunos-rotina esta certa e eu estava errado no MECANISMO. Verifiquei na minha base antes de aceitar.",
+    "o_que_eu_disse": "Que o bloqueio vinha das chamadas sem argumento nos builders, que caem em location vazio e no return false final.",
+    "o_que_e_de_fato": "O bloqueio vem do REDIRECT, que chama com location. _isProductionMutationLocation reconhece esses caminhos: location.endsWith('/new') cobre /attendance/new e /imports/new, e ha ramo explicito para /attendance/calls/. Com location reconhecido, o redirect consulta hasAuthoritativeMutationCapability(location), que devolve falso por NAO TER ramo para /attendance nem /imports, e devolve _productionMutationUnavailablePath antes de qualquer builder rodar. As chamadas sem argumento nos builders sao segunda camada e nunca sao alcancadas; passar location nelas nao mudaria nada.",
+    "causa_correta": "ausencia do ramo, nao ausencia do argumento.",
+    "conclusao_que_se_mantem": "As rotas continuam fail-closed em producao, tanto as de Assiduidade e Pessoas quanto a minha de importacao. O resultado que eu reportei estava certo; o caminho pelo qual ele acontece estava errado.",
+    "risco_real_nomeado_pelo_coordenador": "Concordo e reforco: o perigo nao e o argumento ausente, e um revisor futuro ADICIONAR o ramo por simetria com invites, notices e circulars. Ai a funcao passaria a devolver verdadeiro contra RPCs superadmin_attendance_* que nao existem em migration viva. A ausencia do ramo e o que sustenta o fail-closed; e preciso que ela esteja documentada como intencional, ou alguem vai 'consertar' a simetria.",
+    "divergencia_de_base": "Conferido: minha base d784462c1 e origin/dev tem QUATRO ramos na funcao. A arvore de alunos-rotina tem tres e nao tem o ramo principalProfile, que entrou com o lote de perfil-para-voce. Os dois numeros estao certos para as respectivas bases; o meu vale para origin/dev."
+  },
+  "rotas_recuperadas": {
+    "autorizacao": "nominal do coordenador, por serem arquivos de teste",
+    "commit": "153b2dbfa",
+    "medido_antes_e_depois": {
+      "unit_routes_test": "1 PASS / 2 FAIL -> 3 PASS / 0 FAIL",
+      "institution_directory_routes_test": "2 PASS / 6 FAIL -> 8 PASS / 0 FAIL",
+      "assessment_routes_test": "3 PASS / 1 FAIL -> 4 PASS / 0 FAIL",
+      "people_routes_test": "2 PASS / 1 FAIL -> 3 PASS / 0 FAIL"
+    },
+    "total": "10 falhas recuperadas, 14 construcoes de router, uma linha cada",
+    "nao_entrou": "prototype_navigation_routes_test recebeu a mesma linha e continuou 0 PASS / 1 FAIL, entao a causa dele e outra. Revertido em vez de carregar alteracao que nao explica nada. Parei nele como voce condicionou.",
+    "aviso_aos_donos": "estrutura (unit, institution, assessment) e acessos-pessoas (people): alterei apenas arquivos de teste na area de voces, adicionando allowDevelopmentPreview: true nas construcoes de router. Nenhum arquivo de produto tocado."
+  },
+  "achado_overflow_tabela": {
+    "relatorio": "docs/reviews/etapa-2-operacao/reports/E2-noturna-tabela-admin-overflow-20260909.md (commit 88353d6ca)",
+    "causa": "CoeloAdminResizableTable._tableBody rola apenas na horizontal; a Column com cabecalho e todas as linhas fica com altura limitada e sem para onde rolar. 56 + 25*65 = 1681, menos 612 disponiveis, da os 1069 pixels observados.",
+    "consequencia": "As linhas abaixo do corte nao estao clipadas, estao inalcancaveis.",
+    "decisao": "Coordenador decidiu NAO mexer no componente compartilhado e NAO limitar as linhas de Importacoes, porque limitar esconderia um defeito de acessibilidade real atras de uma suite verde. Vai ao Owner como decisao de componente.",
+    "correcao_do_meu_relato": "Eu havia dito que prototype_navigation nao mudou com a flag de dev preview. O CONTADOR nao mudou; o MODO DE FALHA mudou, do elemento nao encontrado para o overflow. A flag ajudou; ler so o contador foi erro meu."
+  },
+  "padrao_a_repassar": "O padrao _Metric, Row rigida dentro de Wrap, se repete em forms_operations_page e principal_profile_happens_tab. Nao inspecionei nem toquei. Se o rotulo lá tambem for fixo, o mesmo estouro aparece a 200%. Verificacao de uma linha para formularios-cuidado e perfil-para-voce.",
+  "varredura_200": {
+    "metodo": "Nove telas /dev do recorte abertas pelo router real com TextScaler.linear(2), em 1440x900 e 375x900.",
+    "passam_nas_duas": [
+      "/dev/audit",
+      "/dev/catalog",
+      "/dev/profile",
+      "/dev/settings",
+      "/dev/home"
+    ],
+    "falham": {
+      "/dev/plans": "so em 1440",
+      "/dev/meal-plans": "so em 375",
+      "/dev/agenda": "so em 375",
+      "/dev/imports": "nas duas"
+    },
+    "achado_de_metodo": "Nenhuma largura sozinha encontraria os tres defeitos novos. Verificar 200% em uma largura so nao e verificar 200%. Vale para todas as frentes.",
+    "classe": "Geometria fixa que nao acompanha a escala de texto: mainAxisExtent fixo em Planos, proporcao quadrada em Cardapios, celula de calendario fixa em Agenda. Nao e falta de Flexible em rotulo, que foi o que corrigi em ac3238f7c.",
+    "agenda_detalhe": "43 excecoes de layout numa unica abertura a 375+200%; celulas de cerca de 37x39,6 transbordando entre 2,4 e 56 pixels, e um flex maior estourando 257.",
+    "nao_corrigido": "Nenhuma geometria alterada: contrato visual de telas com baseline aprovada, autoridade de coelo-ui com decisao do Owner. Mesmo criterio ja aplicado ao cartao de Planos e a tabela administrativa.",
+    "observacao": "Agenda tem um teste chamado 'matriz a 200 por cento funciona em claro e escuro' que passa e cobre outra superficie. Mesmo padrao do golden de Minha conta: nome tranquilizador cobrindo menos do que sugere."
+  },
+  "correcao_agenda_100": {
+    "corrige": "O que eu reportei na revisao 21 sobre Agenda estava SUBESTIMADO. Eu disse que Agenda falha a 375 com texto a 200%. Ela falha a 375 tambem com texto a 100%, nos dois temas.",
+    "medicao": "Matriz de 36 casos, nove rotas /dev por duas larguras por dois temas, com texto a 100%: 30 passam e 6 falham. As falhas sao /dev/agenda em 375 nos dois temas e /dev/imports em 1440 nos dois temas, mais imports em 375.",
+    "tema_nao_e_fator": "light e dark falham identicamente nas mesmas rotas. O tema nao influencia nenhum dos casos.",
+    "agenda_detalhe": "A 375 com texto a 100%: 11 transbordamentos, sendo 10 de 4,4 pixels e um de 42. O widget e o Column da celula de dia em agenda_calendar_page.dart:538, com caixa de 37 x 39,6.",
+    "causa": "A celula empilha o numero do dia e ate DUAS marcas de evento. A 375 a celula tem 39,6 de altura e o conteudo nao cabe.",
+    "observacao_util": "O codigo JA adapta para texto grande: 'occurrences.take(largeText ? 1 : 2)'. Ou seja, o mecanismo de reduzir marcas por restricao ja existe e foi pensado para escala de texto, mas nao para largura estreita. Estender a mesma condicao para largura e mudanca pequena e dentro do padrao existente, o que torna esta a mais barata de aprovar das quatro.",
+    "severidade": "Maior que as do relatorio de 200%, porque ocorre com as configuracoes PADRAO num viewport de telefone. Nao depende de o usuario ampliar texto.",
+    "nao_corrigido": "Quantas marcas cabem e decisao visual da tela de calendario, com baseline aprovada. Mesmo criterio das demais."
+  },
+  "agenda_correcao_autorizada": {
+    "resultado": "NAO APLICADA. A condicao autorizada foi medida e nao resolve. Parei em vez de escalar, conforme a condicao 1.",
+    "refinamento_do_diagnostico": "Nao e a largura que quebra, e a ALTURA que o shell deixa. A pagina isolada nao transborda nem a 375x560; dentro do SuperadminShell a 375x900 a celula fica com 39,6 de altura e transborda.",
+    "o_que_foi_medido": "Estendi occurrences.take(largeText ? 1 : 2) para valer tambem em largura de telefone, via CoeloBreakpoints.medium.minWidth de 600. Confirmei que a 375 a condicao fica verdadeira e apenas UMA marca e renderizada. O overflow permaneceu IDENTICO: as mesmas dez celulas com 4,4 pixels e a mesma de 42. Nem o numero do dia com uma unica marca cabe em 39,6.",
+    "correcao_da_minha_recomendacao": "Eu havia sugerido esta como a mais barata de aprovar. Estava errado: ela e a mais severa, por ocorrer no estado padrao, mas exige mexer na geometria da celula como qualquer uma das outras tres.",
+    "goldens": "Nao tocados. Capturei as porcentagens antes justamente para poder afirmar: agenda_calendar_light_375 em 14,10%, dark_375 em 17,65%, e as demais sem alteracao. As 20 falhas seguem as da base.",
+    "preservado": "A reproducao fica como skip com o motivo no nome, reexecutavel quando a decisao sair."
+  },
+  "varredura_diretrizes_a11y": {
+    "metodo": "Diretrizes nativas do Flutter aplicadas as nove telas /dev do recorte, a 1440x900, tema claro: labeledTapTargetGuideline, androidTapTargetGuideline e textContrastGuideline. 27 casos.",
+    "resultado": "21 PASS / 6 FAIL.",
+    "passam_nas_tres": [
+      "/dev/agenda",
+      "/dev/catalog",
+      "/dev/profile",
+      "/dev/settings",
+      "/dev/home"
+    ],
+    "falhas": {
+      "rotulo de alvo tocavel": [
+        "/dev/audit",
+        "/dev/plans",
+        "/dev/meal-plans",
+        "/dev/imports"
+      ],
+      "tamanho de alvo Android": [
+        "/dev/imports"
+      ],
+      "contraste de texto": [
+        "/dev/imports"
+      ]
+    },
+    "assinatura_do_no": "Em /dev/audit o no reportado e SemanticsNode com Rect 814,113 a 942,161, ou seja 128 por 48, com actions [focus, longPress], flags [isFocusable] e traversalParentIdentifier _OverlayPortalState.",
+    "limite_honesto": "NAO identifiquei o widget. Investiguei e descartei duas hipoteses: nao ha Tooltip nos controles compartilhados de listagem, e CoeloSearchField exige semanticLabel e envolve em Semantics, entao nao e ele. Tentei debugDumpSemanticsTree e nao consegui capturar a arvore na saida do runner.",
+    "ressalva": "labeledTapTargetGuideline marca nos que expoem apenas longPress, o que pode ser um container e nao o controle real. Entao trato como CANDIDATO a confirmar, nao como defeito confirmado. Nao alterei nada por causa disto.",
+    "valor": "Mesmo sem a identificacao, o recorte fica delimitado: quatro telas com candidato de rotulo e /dev/imports falhando nas TRES diretrizes, o que reforca que Importacoes e a tela mais fragil do recorte em acessibilidade.",
+    "hipoteses_descartadas_por_teste": [
+      "Tooltip nos controles compartilhados de listagem: nao existe nenhum.",
+      "CoeloSearchField sem rotulo: exige semanticLabel; testado ISOLADO contra a diretriz e PASSA.",
+      "Chamadores passando semanticLabel vazio: os quatro passam rotulos descritivos.",
+      "SuperadminPlaceholderFileActions: testado isolado e PASSA.",
+      "SuperadminDirectoryViewToggle: descartado por eliminacao, porque /dev/imports falha e nao usa o toggle.",
+      "CoeloAdminFlyout, sugerido pelo traversalParentIdentifier _OverlayPortalState: testado isolado e PASSA.",
+      "CoeloAdminListingToolbar como fator comum: continua sendo o unico denominador das quatro telas, mas nenhum dos seus filhos testados reproduz."
+    ],
+    "conclusao_honesta": "Sete hipoteses descartadas, seis delas por teste isolado e nao por leitura. NAO identifiquei o widget. O no aparece apenas na composicao completa pelo router, nunca nos componentes isolados, o que sugere que ele nasce da combinacao e nao de um widget especifico. Entrego a lista de descartes para que quem retomar nao repita o caminho.",
+    "o_que_permanece_solido": "Independente da identificacao: cinco telas passam nas tres diretrizes, e /dev/imports falha nas TRES. Esse continua sendo o achado aproveitavel."
+  },
+  "varredura_producao_fail_closed": {
+    "metodo": "Oito rotas de PRODUCAO do recorte (/, /agenda, /imports, /plans, /meal-plans, /support, /audit, /catalog) com a composicao PADRAO, que e fail-closed porque os repositorios nao injetados caem nas versoes Unavailable. Duas larguras, 375 e 1440.",
+    "texto_100": "16 de 16 PASS. Os estados de indisponibilidade honesta renderizam sem excecao nas duas larguras.",
+    "texto_200": "14 de 16. Falham /agenda e /meal-plans em 375. Cardapios transborda 37 pixels, o mesmo numero medido com dados de desenvolvimento.",
+    "por_que_importa": "Isto escala a severidade dos dois defeitos. Eu poderia ter concluido que dependiam do volume de dados semeado em desenvolvimento. Nao dependem: o transbordamento ocorre no estado SEM DADOS, so com o cromo da tela. E o numero identico de 37 pixels em Cardapios mostra que a causa e a moldura, nao o conteudo.",
+    "quadro_completo_agenda": "Com dados e texto a 100% em 375: falha. Sem dados e texto a 100%: passa. Sem dados e texto a 200%: falha. As tres medicoes juntas descrevem a tela: a celula nao tem folga, e qualquer acrescimo, de marca de evento ou de escala de texto, estoura.",
+    "positivo": "O caminho de indisponibilidade honesta em si esta solido: nenhuma das oito rotas lanca excecao no estado fail-closed com texto normal, nas duas larguras."
+  },
+  "auto_revisao_do_meu_codigo": {
+    "motivo": "Revisei o meu proprio diff de producao contra a base antes da entrega, em vez de esperar o seu review.",
+    "corrigido_em_87de5d09e": [
+      "Eu havia inserido os dois helpers de intencao no MEIO das declaracoes de campo da classe de Agenda, separando _readVersions de _pendingReads. Campo voltou para junto dos campos, metodos para junto dos helpers.",
+      "_confirmIntent estava em posicoes inconsistentes: antes da verificacao de obsolescencia em decidePublicationRequest e depois dela em saveItem e no comando. Os tres passam a confirmar imediatamente apos a RPC retornar, que e quando o servidor registrou a escrita. Obsolescencia de contexto nao deve fazer a intencao sobreviver."
+    ],
+    "ressalvas_que_deixo_explicitas": [
+      "Nas telas de Planos eu usei 'on Object' para fechar o estado de carregamento. Isso captura Error e nao apenas Exception, entao um erro de programacao passa a aparecer como estado de erro em vez de subir. Mantive assim por consistencia: e exatamente o que meal_plan_directory_page ja fazia e foi o precedente que eu reusei. Se a coordenacao preferir 'on Exception', o efeito colateral e voltar a prender a tela no indicador quando a falha for um Error, por exemplo TypeError de parsing.",
+      "O mapa _writeIntents em Cardapios e em Agenda cresce por acao, item e revisao enquanto a escrita nao confirma. Em sessao longa com muitas tentativas que nunca confirmam, ele acumula strings curtas. Nao tratei: o custo e desprezivel e limitar exigiria politica de expiracao que ninguem pediu. Registro para nao parecer descuido."
+    ],
+    "sem_mudanca_de_comportamento": "54 PASS no repositorio de Agenda e analyze limpo depois da reorganizacao."
+  },
+  "merge_check": {
+    "resultado": "Minha branch mescla LIMPO no dev atual: git merge-tree contra origin/dev em 1bac0f48a, com HEAD b0c182fcf, sem nenhum CONFLICT e sem marcador.",
+    "ressalva": "merge-tree prova merge textual limpo, nao correcao semantica, e dev continua andando. Vale refazer no momento da integracao.",
+    "arquivos_de_producao_tocados": [
+      "agenda/data/supabase_agenda_repository.dart",
+      "meal_plans/data/supabase_meal_plan_image_repository.dart",
+      "meal_plans/presentation/meal_plan_directory_page.dart",
+      "plans/data/supabase_plan_catalog_repository.dart",
+      "plans/presentation/plan_directory_page.dart",
+      "plans/presentation/plan_form_page.dart"
+    ],
+    "nada_compartilhado": "Nenhum arquivo do router, nenhuma migration aplicada, nenhum pacote compartilhado."
+  },
+  "limite_do_instrumento": {
+    "descoberta": "A varredura transversal nao travou, estava lenta, e a causa e um limite do MEU harness que preciso declarar: pumpAndSettle nunca assenta enquanto existir um CircularProgressIndicator em tela, porque ele e animacao perpetua. O caso de /dev/safety levou cerca de cinco minutos e falhou por timeout.",
+    "consequencia": "Para qualquer tela que permaneca em estado de carregamento, a varredura nao mede acessibilidade: ela expira. O resultado nessas telas nao significa 'falha de diretriz', significa 'nao medido'.",
+    "impacto_no_que_ja_entreguei": "Nenhum. As nove telas do meu recorte assentaram em segundos nas tres varreduras anteriores, que terminaram em poucos minutos no total. Os resultados de 200%, tema, producao fail-closed e diretrizes no meu recorte continuam validos.",
+    "como_vou_relatar": "Na entrega transversal vou separar tres categorias e nao duas: passou, falhou a diretriz, e NAO MEDIDO por timeout de assentamento. Misturar as duas ultimas produziria acusacao falsa contra o dono da tela.",
+    "achado_secundario": "Que /dev/safety permaneca em carregamento na composicao de desenvolvimento pode ser defeito de produto, nao so limite de teste. Nao investiguei: safety pertence a acessos-pessoas. Entrego a observacao."
+  },
+  "correcao_severidade_tenant": {
+    "corrige": "Na revisao 17 eu classifiquei a fiacao morta de authorizedMealPlanTenantId como BAIXA severidade e inerte. Com o teste vermelho em maos, a leitura correta e mais grave.",
+    "o_que_faltava_na_minha_analise": "Eu olhei o uso do valor dentro do assistente, vi que servia apenas como chave de obsolescencia, e concluí inofensivo. Nao verifiquei se existia uma GUARDA esperando aquele valor. Existe, especificada em teste, e nao foi implementada.",
+    "quadro_completo": "app/router/meal_plan_production_routes_test.dart tem o caso 'production meal plan mutation fails closed without an authorized tenant', que espera SuperadminErrorScreen com a chave meal-plan-authorized-tenant-unavailable. Essa chave nao existe em nenhum lugar de apps/superadmin/lib. Somando: o valor nunca e atribuido na composicao E a guarda nunca foi implementada, entao o assistente de MUTACAO de Cardapios abre em producao sem tenant autorizado.",
+    "o_que_nao_afirmo": "Nao afirmo escalonamento de privilegio. O escopo real continua imposto no servidor por RLS e RPC. Afirmo que a guarda de cliente especificada pelo proprio teste nao existe, e que o teste esta vermelho por isso desde antes desta rodada.",
+    "entrega": "Hunk pronto em docs/reviews/etapa-2-operacao/handoffs/E2-noturna-operacoes-sistema-patch-router.md, commit 7b553ab75. Nao apliquei: router e reserva do coordenador.",
+    "licao_de_metodo": "Fiacao morta nao se avalia so pelo consumo do valor; precisa-se procurar tambem quem ESPERAVA o valor. Foi o teste que revelou, nao a leitura do codigo."
+  },
+  "varredura_reflow_app": {
+    "metodo": "33 telas /dev por duas larguras, texto a 200%, instrumento de pumps limitados. 66 casos.",
+    "resultado": "59 PASS / 7 FAIL.",
+    "falhas": [
+      "/dev/agenda em 375",
+      "/dev/imports em 375 e em 1440",
+      "/dev/meal-plans em 375",
+      "/dev/plans em 1440",
+      "/dev/safety em 375 e em 1440"
+    ],
+    "leitura": "O problema de reflow a 200% esta CONCENTRADO: quatro features do meu recorte mais safety. As outras 29 telas do app passam nas duas larguras. Isso contraria a hipotese de que seria fragilidade geral do Design System e aponta telas especificas.",
+    "por_dono": {
+      "operacoes-sistema": [
+        "agenda",
+        "imports",
+        "meal-plans",
+        "plans"
+      ],
+      "acessos-pessoas": [
+        "safety"
+      ]
+    },
+    "observacao": "safety falha nas DUAS larguras a 200%, como imports, e tambem falha nas tres diretrizes nativas. E a tela com o pior conjunto de indicadores de acessibilidade do app, e nao esta adiada."
+  },
+  "no_sem_rotulo_RESOLVIDO": {
+    "como_encontrei": "Caminhei a arvore de semantica DENTRO do teste, coletando nos com acao de toque ou long press e rotulo vazio, e casei o retangulo de cada um com os widgets de mesmo tamanho. Foi a oitava abordagem, depois de sete hipoteses descartadas.",
+    "causa": "O GestureDetector de pressionar-e-segurar de SuperadminDirectoryViewToggle publica um no tocavel de 128x48 SEM nome acessivel, enquanto os dois segmentos internos sao rotulados. A cadeia encontrada foi SuperadminDirectoryViewToggle, CoeloAdminFlyout, MenuAnchor, OverlayPortal, que explica o _OverlayPortalState que eu tinha visto e que me levou a testar o flyout isolado, que passava.",
+    "por_que_o_teste_isolado_passou": "Eu dei ao builder do flyout um IconButton com tooltip. O toggle real nao tem nome nessa camada.",
+    "correcao": "Uma linha de Semantics, sem efeito visual: nenhum pixel muda, nenhuma baseline mexe.",
+    "medicao_antes_depois": "Das nove telas que reprovavam a diretriz de rotulo, passam agora activities, audit, forms, invites, meal-plans, plans e support. Continuam reprovando apenas imports e safety, que tem no proprio. Sete telas corrigidas por uma linha, atravessando estrutura, acessos-pessoas, formularios-cuidado e operacoes-sistema.",
+    "aviso_de_limite": "O arquivo e shared/presentation/widgets e nao pertence a uma frente so. Avisei o coordenador explicitamente e ofereci reverter para hunk se ele preferir.",
+    "ressalvas": [
+      "Meu caminhador encontrou dois nos residuais de 48x48 com acao de toque em /dev/audit que a diretriz NAO reprova: ele e mais estrito que a diretriz. Nao vou persegui-los.",
+      "A minha tentativa de computar retangulo global para identificar esses dois saiu errada. Parei ali em vez de insistir, porque o achado principal ja estava fechado."
+    ]
+  },
+  "alvos_pequenos": {
+    "eixo": "androidTapTargetGuideline reprovou seis telas: circulars, forms, imports, institutions, notices, safety. Eixo objetivo, tamanho em dp.",
+    "causa_1": "Menu do usuario no shell, 242x44. CircleAvatar raio 18 da 36, mais space1 vertical em cima e embaixo da 44. Faltam 4. Aparece em TODAS as telas com shell.",
+    "causa_1_entrega": "Hunk proposto, porque shell e reserva. Consequencia visual DECLARADA: o alvo vai a 52, mas o InkWell pinta o realce sobre a propria caixa, entao o realce de hover e pressao cresce 8 pixels e os goldens do shell se movem. Testei e descartei a alternativa de SizedBox por fora: o alvo continua sendo a caixa do InkWell.",
+    "causa_2": "Alcas de redimensionar coluna, 12 de largura, em coelo_ui_admin. Rotuladas corretamente. Nao alterado: mesmo pacote cuja rolagem vertical a coordenacao decidiu nao mexer. Saida honesta alternativa registrada: se alca de ponteiro nao precisa de alvo tatil, declarar isso e excluir da semantica de toque, em vez de manter sinal vermelho permanente que ninguem vai agir.",
+    "causa_3": "Cinco indicadores de status 24x24 com acao de toque em Instituicoes, rotulados. De estrutura, nao investigados.",
+    "limite": "Investiguei tres das seis telas reprovadas. Nao verifiquei se forms, imports e safety reprovam pelas mesmas causas."
+  },
+  "distincao_aplicada": "Compartilhado exige aviso e medicao de alcance; reservado exige a mao do coordenador. Toggle era compartilhado e entrou como commit meu; shell e reservado e vai como hunk.",
+  "correcao_contaminacao_a11y": {
+    "defeito_do_meu_instrumento": "Uma excecao lancada durante o layout faz o caso de teste falhar ANTES de a diretriz ser avaliada. Eu reportei esse resultado como reprovacao de acessibilidade. Refiz drenando a excecao antes de avaliar cada diretriz.",
+    "safety": "Eu reportei reprovando rotulo, alvo e contraste. NAO reprova nenhuma. A excecao e LayoutBuilder does not support returning intrinsic dimensions, exatamente o que a outra frente diagnosticou. Eles mediram independentemente e estavam certos.",
+    "imports": "Eu reportei reprovando as tres. Reprova apenas ALVO. Rotulo e contraste eram contaminacao do transbordamento.",
+    "contagem_corrigida": "As reprovacoes reais de diretriz sao 13 e nao 18: sete de rotulo, todas corrigidas por 179a54532; cinco de alvo; uma de contraste. Seguranca infantil tem ZERO.",
+    "contraste_real": "O unico contraste real e o selo DESTAQUE em /dev/principal-for-you, razao 3,75 contra 4,5 exigidos, fonte 11. De perfil-para-voce ou publicacoes-midia.",
+    "retratacao": "RETIRO a afirmacao de que Seguranca infantil acumulava o pior conjunto de acessibilidade do app. Era a frase mais forte que eu mandei hoje e estava errada.",
+    "o_que_permanece": "safety lanca excecao de layout na abertura, nas duas larguras, com texto padrao, e a outra frente contou cerca de 20 em cascata. Isso e MAIS grave que reprovar diretriz, nao menos. Mas e defeito de layout e nao de acessibilidade, e nomear um de outro manda a frente dona investigar a coisa errada.",
+    "impacto_no_meu_recorte": "Conferido: no meu recorte a 1440, a unica tela que lanca e imports. Os resultados de audit, plans, meal-plans, support, agenda, catalog, profile, settings e home continuam validos. E nos relatorios de reflow eu verifiquei a mensagem de transbordamento de agenda, meal-plans e plans individualmente, entao a palavra transborda esta correta para elas; so para safety estava errada.",
+    "licao": "Medicao que falha por excecao e medicao NAO FEITA. Um instrumento que confunde 'lancou' com 'reprovou' produz acusacao. Eu ja havia declarado essa licao para o caso do timeout e nao a apliquei ao caso da excecao, que e a mesma coisa."
+  },
+  "verificacao_de_regressao_em_curso": {
+    "motivo": "A contrapartida de poder commitar em arquivo COMPARTILHADO e provar ausencia de regressao, nao so medir o ganho. O Semantics que eu adicionei esta em SuperadminDirectoryViewToggle, usado por dezoito features.",
+    "escopo": "Suites de access_profiles, activities, agenda, audit, daily_routine, forms, groups, health_care, institutions, invites, locations, meal_plans, people, plans, platform_users, safety, support e units.",
+    "estado": "em execucao; reporto o numero e, para cada falha, se e anterior a minha mudanca ou causada por ela."
+  },
+  "residual_estrutura": {
+    "atribuido": "Coordenador atribuiu o recorte de ESTRUTURA a mim a partir das 23:30, quando o Codex congela. 49 IDs.",
+    "mapeado_sem_reauditar": "institutions 13, units 13, groups 7, activities 7, assessments 5, locations 4. Todos pending-verification no Front-end. No Back-end: seis blocked-environment (groups.create, groups.location, activities.create, activities.location, locations.detail-links, locations.schedule) e sete deferred-post-mvp (os import/export mais units.people-export).",
+    "nao_reabrir": "A reconciliacao dos tres contratos de composicao de Atividades esta fechada e verificada pelo coordenador na base conjunta: 14 de 14 verdes.",
+    "ordem_por_severidade": [
+      "0. Confirmar se activities em rotulo ja caiu com a minha correcao do toggle, antes de atacar achado que talvez nao exista mais.",
+      "1. Indicador de status de Instituicoes: LOCALIZADO como ExpandableInstitutionStatusIndicator, em features/institutions/presentation/widgets/institution_status_presentation.dart. Recolhido mede 24 de largura por 24 de altura (CoeloSpacing.space6) e e um GestureDetector rotulado dentro de Semantics. Esta rotulado; o problema e tamanho de alvo.",
+      "2. create_unit_for_superadmin em dois sitios e superadmin_group_export_create, com intencao de escrita inline. Criacao sem revisao esperada e a variante perigosa da classe, a mesma que em Agenda podia criar um segundo evento.",
+      "3. activities/data/supabase_activity_directory_repository.dart, na lista dos oito que nao fecham falha de transporte."
+    ],
+    "analise_previa_do_item_1": "A correcao obvia e tornar a area de toque maior que o desenho: GestureDetector com HitTestBehavior.opaque envolvendo um ConstrainedBox de minimo 48 por 48 com o pill centralizado. MAS isso faz o widget ocupar 48 em vez de 24 no layout do cartao, entao NAO e invisivel como foi o caso do rotulo do toggle. Plano: implementar, medir as porcentagens de diferenca dos goldens de Instituicoes antes e depois, e decidir com numero em maos em vez de suposicao. Se os goldens se moverem, vira proposta e nao commit."
+  },
+  "regressao_que_eu_causei": {
+    "descoberta": "Rodei as suites das dezoito features que usam o widget antes de considerar a entrega feita. A correcao 179a54532 causou regressao na area de DUAS frentes.",
+    "causa": "Semantics sem container NAO cria no proprio: anexa o rotulo ao no de semantica ancestral mais proximo. Na barra de listagem esse ancestral engloba o campo de busca, entao o no ficou com o rotulo certo e PERDEU a flag isTextField.",
+    "testes_afetados": [
+      "institutions: institution_directory_page_test 'exposes search semantics and reaches it by keyboard'",
+      "people: person_directory_query_survival_test 'a failed read keeps the question the operator asked'",
+      "people: person_directory_query_survival_test 'both ways of clearing the filters do the same thing'",
+      "people: person_directory_states_test 'renders no-results separately after a server-side search returns no rows'"
+    ],
+    "correcao": "container: true. O rotulo cria o proprio no e nao contamina irmaos.",
+    "prova_nos_dois_sentidos": "Com a versao da base os tres de people PASSAM; com a versao intermediaria FALHAM; com container: true os quatro passam. E as sete telas que a correcao original beneficiou continuam passando a diretriz de rotulo, entao o ganho nao foi desfeito para consertar a regressao.",
+    "estado_final": "196 PASS e 2 FAIL nas suites afetadas; as duas sao goldens de person_golden_test, ja no censo. Zero falha funcional."
+  },
+  "correcao_de_metodo_propria": {
+    "o_que_eu_afirmei_sem_verificar": "Disse ao coordenador que havia verificado por reversao que as outras doze falhas nao-golden nao eram minhas. Tinha verificado UMA.",
+    "o_que_a_verificacao_mostrou": "Tres delas eram minhas. Eu as agrupei como pre-existentes porque apareceram na mesma lista, junto com falhas de cinco areas. Foi inferencia por VIZINHANCA, nao medicao.",
+    "as_que_sao_pre_existentes": "Nove, e agora verificadas e nao assumidas: forms editor, groups invite rows, tres de institution_form e quatro de safety_pages falham igualmente com o toggle na versao da base.",
+    "licao": "Inferencia por vizinhanca nao e medicao. Eu apliquei esse mesmo principio corretamente ao separar excecao de reprovacao e o violei na mesma hora ao agrupar falhas por proximidade na lista."
+  },
+  "varredura_producao": {
+    "resultado": "56 de 58 nas rotas produtivas a 375. Falham /agenda e /meal-plans a 200%.",
+    "ressalva_obrigatoria": "Usa a composicao PADRAO, que e fail-closed, entao telas que so quebram COM dados nao aparecem. E por isso que imports e safety passam ali, e isso NAO contradiz a outra frente sobre safety em producao com repositorio Supabase real."
+  },
+  "estrutura_lista_revisada": {
+    "motivo": "Conferi os quatro itens da lista do coordenador contra o dev ATUAL antes de atacar. Dois nao sobrevivem.",
+    "obsoleto": "create_unit_for_superadmin. O repositorio de Unidades JA tem intencao preservada na criacao, com mapa _pendingCreates e o comentario 'Never evict an ambiguous receipt'. Estrutura corrigiu hoje em ee2c35686, depois da minha base. Confirmei os dois estados. O caminho de UPDATE segue com uuid inline, mas tem p_expected_version, o caso aceitavel que eu ja classificara.",
+    "a_verificar_antes_de_tocar": "superadmin_group_export_create ainda usa uuid inline, mas esta num caminho ADIADO. O rastreador de groups.export manda conferir botao visivel e indisponibilidade honesta e NAO implementar a operacao real. Preciso saber se requestExport e alcancavel em producao antes de mexer; se nao e, seria trabalho em codigo morto e poderia parecer implementacao de exportacao adiada.",
+    "sobrevivem": [
+      "Indicador de status de Instituicoes, 24x24, rotulado, tamanho de alvo abaixo do minimo.",
+      "activities/data/supabase_activity_directory_repository.dart: confirmado no dev atual que captura PostgrestException, FormatException, TypeError e StateError, mas NAO transporte. TypeError e StateError sao Error e nao Exception, entao devem continuar; FormatException e Exception e pode ser subsumida."
+    ],
+    "ja_resolvido_por_mim": "activities em rotulo caiu com a minha propria correcao do toggle: 7 de 7 telas passando.",
+    "licao_para_o_relatorio": "Lista de achados tem data de validade. A minha lista dos oito repositorios sem fechar transporte foi medida em d784462c1 e deve levar essa base registrada, porque o dev andou.",
+    "groups_export_resolvido": "NAO VOU TOCAR, e a duvida esta respondida: nenhuma tela de groups/presentation chama requestExport nem usa GroupDirectoryExportResult. O metodo existe no repositorio e nunca e invocado pela UI, entao o caminho e morto. Isso tambem e a resposta honesta para a pergunta de conformidade do adiamento: a politica ESTA respeitada no nivel da interface. Corrigir idempotencia ali seria trabalho em codigo morto e poderia parecer implementacao da exportacao adiada."
+  },
+  "verificacao_final_do_recorte": {
+    "quando": "Antecipada para 23:26, nao deixada para a pre-entrega, para sobrar noite caso aparecesse falha funcional.",
+    "escopo": "meal_plans, plans, agenda, errors, account, support, audit, imports, catalog, navegacao, shell, suite de rotas do shell persistente e suite do toggle compartilhado.",
+    "resultado": "883 PASS, 4 SKIP, 41 FAIL. ZERO falha nao-golden.",
+    "as_41": "Todas goldens e todas ja no censo da base: 14 do calendario de Agenda, 8 de Minha conta, 6 de Cardapios, 6 das superficies adicionais de Agenda, 3 de Importacoes, 2 de Auditoria, 1 de Suporte, 1 de Planos.",
+    "os_4_skips": "Os dois goldens 409 sem baseline e os dois casos do calendario a 375 preservados com motivo. Nenhum skip novo nem oportunista.",
+    "estado_do_lote": "39 commits, HEAD 418cda8e3 publicado, 0/0 com upstream, worktree limpa, mescla limpo em dev na ultima verificacao, zero falha funcional introduzida."
+  },
+  "base_sincronizada": {
+    "decisao": "Coordenador autorizou a opcao A. Trouxe origin/dev para a minha branch.",
+    "resultado": "FAST-FORWARD. Dev ja continha todos os meus commits, inclusive 2a7000e0e e 34af4db34. A branch trouxe 447 commits de dev e nao gerou merge commit, porque nada meu estava pendente.",
+    "consequencia": "A contagem de 'commits meus' deixa de ser propriedade da branch. O registro de autoria fica no historico e no handoff, que lista cada commit por SHA e proposito.",
+    "ressalva": "Dev andou para adada0d0d durante o merge, entao estou alguns commits atras de novo. Normal em integracao continua; a disciplina de verificar CONTEUDO antes de mexer permanece."
+  },
+  "licao_proxy_vs_conteudo": {
+    "erro": "Verifiquei que tres SHAs nao estavam em dev e conclui 'conteudo ausente'. Tratei um proxy como a coisa.",
+    "realidade": "Estrutura reaplicou os candidatos como commits NOVOS, f87543b6c e 4528c42df, e o coordenador integrou. O conteudo estava la; so os SHAs originais nao.",
+    "verificacao_correta": "Procurar o CONTEUDO: grep na guarda, no nome do arquivo novo, ou no titulo do commit. Eu tinha o grep a mao.",
+    "agravante": "A ressalva estava escrita no proprio rastreador, que diz que ausencia de cherry-pick literal nao prova codigo ausente porque houve integracao seletiva por hunks. Eu li e nao apliquei.",
+    "mesma_forma_que": "Inferencia por vizinhanca. Nos dois casos eu aceitei um resultado plausivel sem o controle que o derrubaria."
+  },
+  "classe_intrinsic_height": {
+    "motivacao": "safety quebra com 'LayoutBuilder does not support returning intrinsic dimensions'. Varri o app pela mesma classe.",
+    "usos_vivos_fora_de_safety": [
+      "errors/superadmin_error_screen.dart linha 207",
+      "people/person_directory_page.dart linha 617",
+      "principal_for_you/principal_for_you_preview_page.dart linha 450"
+    ],
+    "avaliacao": "Nenhum e defeito HOJE: as tres telas passam. Em principal_for_you o LayoutBuilder e o PAI e o IntrinsicHeight o descendente, que e a ordem segura. A forma perigosa e IntrinsicHeight envolvendo subarvore que CONTEM LayoutBuilder.",
+    "fragilidade_a_registrar": "person_directory_page usa IntrinsicHeight em volta de um Row de cartoes. E exatamente a forma que quebrou safety: no dia em que um cartao de Pessoas ganhar um LayoutBuilder, a tela quebra do mesmo jeito. Nao e defeito, e fragilidade estrutural, e pertence a acessos-pessoas.",
+    "confirmacao_de_que_e_conhecido": "access_profile_directory_page e safety_pages tem comentarios explicitos dizendo 'LayoutBuilder and cannot participate in IntrinsicHeight'. Alguem ja bateu nisso e documentou, o que reforca que o caso de safety e regressao e nao descoberta."
+  },
+  "nota_de_relogio": "Nas mensagens entre 23:35 e 23:50 eu citei horarios estimados (23:45, 23:58, 00:05, 00:13) que estavam a frente do real. O relogio lido agora marca 23:50 de 09/09. Os carimbos deste arquivo vem do relogio lido no mesmo comando da escrita e sao confiaveis; as horas citadas em prosa naquelas mensagens nao sao. Corte continua 10/09 as 04:40, 04:50 e 05:00.",
+  "estrutura_linha_de_base": {
+    "medida_em": "base conjunta apos merge de dev (bcc2c4c82)",
+    "resultado": "1352 PASS, 35 FAIL, dos quais 30 golden e 5 nao-golden.",
+    "as_cinco_nao_golden": "Todas RESOLVIDAS, e todas pela mesma classe: quatro em institution_form_page_test e uma em group_form_page_test.",
+    "commits": [
+      "174883c4f",
+      "741459f27",
+      "9a5081dfc"
+    ]
+  },
+  "classe_toque_sem_visibilidade": {
+    "o_que_e": "tester.tap num controle fora da area visivel nao avanca o fluxo, e o que falha depois aparece com sintoma NO LUGAR ERRADO.",
+    "por_que_engana": "O sintoma aponta para o controle de destino e a causa esta no toque anterior. Quem investiga vai para a tela de destino.",
+    "por_que_sobrevive_rodadas": "O teste passa enquanto o layout couber e quebra quando alguem insere conteudo acima. O autor da insercao nao errou e o autor do teste nao errou; a falha e na interacao e so aparece na base conjunta.",
+    "exemplo_datado": "LocationsMapSection entrando em _LocationSection empurrou o rodape e fez a quarta falha de Instituicoes cruzar o limiar; as outras tres ja estavam fora da vista em larguras e escalas diferentes.",
+    "correcao_da_minha_classificacao": "Eu disse 'uma regressao desta rodada e tres pre-existentes'. Certo na data, errado no diagnostico: as quatro tem a mesma causa.",
+    "inventario": "docs/reviews/etapa-2-operacao/reports/E2-noturna-toque-sem-visibilidade-20260910.md, commit 50df1ec67. 67 arquivos e 337 toques por dono, com triagem dupla: controle de rodape ou confirmacao E suite que varre breakpoint ou escala.",
+    "decisao_de_nao_corrigir_os_130": "Nenhum dos 130 toques de estrutura falha hoje, e nao ha tempo de rodar cada suite afetada antes do congelamento. Mexer sem medir trocaria exposicao conhecida por risco nao medido, que e pior as 00:12."
+  },
+  "lacuna_propria_fechada": "As rotas de FORMULARIO nunca tinham sido medidas pelas minhas varreduras, so as de listagem. Rodei as 16 rotas /new em duas larguras e duas escalas, 64 casos: todas passam. A secao nova de Locais nao introduziu transbordamento nos formularios.",
+  "checklist_contrato_de_escrita": {
+    "origem": "Escrevi o artigo docs/knowledge/team/repository-write-contract.md depois de corrigir a MESMA classe em quatro repositorios. O artigo nomeia supabase_institution_directory_repository como implementacao de referencia, porque ele ja fazia tudo.",
+    "aplicado_a_estrutura": {
+      "institutions": "Nenhuma lacuna. E a referencia: intencao por assinatura, recibo relido e comparado por identidade, transporte tratado, intencao preservada no caminho de indisponibilidade com comentario explicito.",
+      "units": "Faltava conferencia de recibo na atualizacao. CORRIGIDO em 65880be56.",
+      "groups": "Faltava conferencia de recibo. CORRIGIDO em fa4b968a3. A intencao ja estava correta no formulario, com _pendingSave ??=, e eu NAO toquei.",
+      "activities": "Faltava fechar transporte. CORRIGIDO em f30cc20c2, preservando a negacao de autorizacao.",
+      "locations": "Sem lacuna nas quatro perguntas.",
+      "assessments": "Sem lacuna. Ja testa rejeicao de gradebook com ID divergente e de instituicao cruzada, que e a mesma guarda por outro nome."
+    },
+    "resultado": "As seis familias de estrutura estao fechadas nas quatro perguntas. Tres defeitos reais encontrados por um checklist escrito DEPOIS das correcoes, em arquivos que eu ja havia lido sem ver.",
+    "cuidado_aplicado": "Em Turmas eu conferi o chamador antes de mexer e nao 'corrigi' a intencao, que ja estava certa. E rodei o teste existente de composicao idempotente antes de escrever o meu, porque guarda mal escrita recusaria tambem o recibo correto."
+  }
 }

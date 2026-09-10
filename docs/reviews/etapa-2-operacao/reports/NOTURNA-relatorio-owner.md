@@ -39,17 +39,41 @@ O método já evitou três enganos concretos:
 | --- | --- | --- |
 | `ecc8eae2b` | 19:30 | 5707 PASS, 9 SKIP, 190 FAIL |
 | `414b82b29` | 20:40 | 5871 PASS, 9 SKIP, 182 FAIL — 144 golden, 38 não |
-| `b0f816560` | 21:40 | 6811 PASS, 9 SKIP, 156 FAIL — 127 golden, **29 não** |
+| `b0f816560` | 21:40 | 6811 PASS, 9 SKIP, 156 FAIL — 127 golden, 29 não |
+| `b4cf3664a` | 02:20 | **6344 PASS, 14 SKIP, 146 FAIL — 129 golden, 17 não** |
 
-A rodada somou casos que passam e **reduziu 8 falhas**. Nenhum número soma
-reexecuções. O catálogo das 182, por arquivo e por dono, está no
-[catálogo de falhas](NOTURNA-catalogo-falhas.md).
+Nenhum número soma reexecuções, e cada linha é uma execução completa sobre a
+base indicada. A queda de PASS entre a terceira e a quarta linha não é regressão:
+a terceira medição rodou com um conjunto de suítes diferente. O que é comparável
+entre elas, porque é a mesma pergunta feita do mesmo jeito, é a coluna de falhas.
 
-O número que importa mais que o total: das 182, **144 são suítes de golden e
-apenas 38 não são**. A metade de golden depende da sua decisão de rebaseline, não
-de código. Dez das 38 foram recuperadas logo depois dessa medição, com uma linha
-por construção de router numa flag que voltou a ser necessária desde
-`b20a9c205`.
+**O número que importa é o segundo: as falhas que não são golden caíram de 38
+para 17, e das 17 nenhuma é órfã.** Elas se distribuem assim:
+
+| Falhas | Arquivo | O que é |
+| ---: | --- | --- |
+| 3 | `app/router/principal_real_route_test` | rota real do Principal, causa diagnosticada |
+| 2 | `core/config/composition_root_sanitization_test` | contrato de composição |
+| 2 | `core/config/unit_fail_closed_composition_source_test` | contrato de composição |
+| 2 | `shared/.../superadmin_form_action_footer_adoption_test` | adoção do rodapé de ação |
+| 3 | `app/dev_menu*`, `development_dataset_contract_test` | rota `/dev`, fora do MVP |
+| 3 | `composition_root_fail_closed_routes`, `import_development_routes`, `prototype_navigation_routes` | mesma família de composição |
+| 1 | `app/router/principal_mixed_feed_pagination_red_test` | **vermelho proposital**, escrito esta noite |
+| 1 | `features/forms/.../forms_editor_page_test` | asserção estrutural de foco, preexistente |
+
+Há ainda um segundo vermelho proposital antigo, `people_creation_requirements_red_test`,
+que na base atual passa. Vermelho proposital é um teste escrito para falhar até
+que o defeito que ele nomeia seja corrigido — ele documenta, não regride.
+
+**As 129 falhas de golden são aceite visual e dependem de decisão sua**, não de
+código. As duas maiores concentrações são `agenda_calendar` com 14 casos e as
+três superfícies de prévia do Principal — Momentos 11, Acontece 10, Perfil 10.
+
+Tudo isto significa que a leitura "o app tem 146 testes quebrados" seria falsa. O
+que existe é **um aceite visual inteiro pendente da sua decisão, mais dezessete
+casos de contrato e ambiente de desenvolvimento**. Duas dessas dezessete famílias
+foram fechadas esta noite: as cinco falhas não-golden de Estrutura caíram todas
+pela mesma causa, um toque de teste que não garantia visibilidade do rodapé.
 
 ## Conclusão certificada
 
@@ -69,6 +93,131 @@ O que avançou além dos quatro certificados foi a honestidade do resto. Os
 bloqueios agora estão separados entre `blocked-decision`, onde falta uma decisão
 sua, e `blocked-environment`, onde o pacote está revisável e só falta a aplicação
 remota que esta rodada proibiu.
+
+## Por que a integração é 0/198, e por que não é falta de esforço
+
+Esta seção responde antecipadamente a pergunta óbvia diante da tabela acima. A
+leitura fácil de "0/198" é que ninguém rodou rota real contra Supabase
+autenticado, o que soa como escolha de prioridade — e levaria à instrução
+"então rodem". **A medição desta noite mostra que essa instrução não teria
+efeito.** Não existe base reproduzível para exercitar rota real contra Postgres.
+As frentes ficaram entre uma base que não existe e uma base onde não podem
+tocar.
+
+São **três buracos independentes** no mesmo caminho, cada um suficiente sozinho:
+
+1. **A cadeia versionada não atravessa.** Das 186 migrations de
+   `packages/coelo_database/migrations`, replayadas em ordem de nome numa base
+   zerada, os arquivos 1 a 47 aplicam limpos e o **48 quebra**:
+   `20260812002000_child_safety_schema.sql` insere códigos de permissão novos
+   sem `module_label`, coluna que `20260811215451_access_profile_management_v2`
+   criou como `NOT NULL` sem default. E não é a única barreira nem dentro do
+   próprio arquivo: relaxando esse `NOT NULL`, ele falha em seguida em
+   `column "updated_at" of relation "platform_role_permissions" does not exist`.
+
+2. **O que `supabase start` aplicaria é outro conjunto, e é vazio.**
+   `packages/coelo_database/supabase/migrations` tem 17 arquivos e **zero
+   `create table`** — são `CREATE OR REPLACE` de função e ajustes de privilégio.
+   Um ambiente local subido por esse caminho não tem o schema do Coelo.
+
+3. **Oito domínios chamam objetos que o SQL versionado nunca cria.** O primeiro
+   encontrado foi `profile_about`: sem `create table` para
+   `profile_about_pages`, `_sections`, `_structured_fields`, `_revisions`, nem
+   para `app_private.profile_about_command_receipts`; e `profile_about_can` e
+   `profile_about_page_for` só aparecem **sendo chamadas**, dentro do corpo de
+   `save_profile_about`.
+
+   A frase confortável seria "`profile_about` é a exceção", e ela foi medida
+   antes de ser publicada — e é **falsa**. O SQL versionado chama 605 objetos
+   distintos de `app_private` e cria 527 funções mais 63 tabelas; **sobram 40
+   objetos chamados e nunca criados**, em `student_tracking`, `routine`,
+   `profile_about`, `meal_plan`, importação/exportação de unidades e mais alguns
+   avulsos. Cinco foram conferidos individualmente com busca que pegaria `CREATE`
+   e `DROP` — `profile_about_can`, `routine_receipt`,
+   `student_tracking_can_read` e `normalize_person_handle` têm zero ocorrências.
+
+   **E há a metade boa, que muda a decisão:** `child_safety` e `chat` estão
+   versionados corretamente — todas as tabelas, os receipts internos e dezenas
+   de funções `app_private` criadas em migration. O problema **não é sistêmico
+   por incapacidade**: existe um padrão certo dentro da própria casa, e oito
+   domínios saíram dele. A pergunta que isso coloca tem resposta possível.
+
+   Ressalvas do método, que valem tanto quanto o número: 40 é contagem de
+   **objetos**, não de defeitos, e alguns podem ser o mesmo helper compartilhado;
+   35 dos 40 vêm do método e não de inspeção individual; e o método não distingue
+   "nunca existiu" de "existe no remoto e nunca foi versionado" — para recriar a
+   base dá no mesmo, para saber quem escreveu não dá.
+
+**A consequência é maior que E2E.** Recriar a base do zero — ambiente novo,
+recuperação de desastre, homologação de verdade — não é difícil hoje, é
+impossível sem um dump. E enquanto não houver caminho de recriação, homologação
+não existe; sem homologação, a única base disponível é produção; e produção é
+exatamente onde E2E não pode rodar sem autorização nominal sua. **A integração
+continuará 0 por construção, e nenhum esforço de frente muda isso.**
+
+Não proponho a solução, porque ela é de arquitetura: se o conjunto de 186 é
+corrigido, se o de 17 é completado, ou se ambos são substituídos por um caminho
+único — e a decisão precisa cobrir o schema que hoje só existe no remoto.
+
+Limite desta afirmação, declarado: a frente que mediu verificou o próprio
+domínio arquivo por arquivo e deduziu o resto do fato de o conjunto local ser o
+mesmo para todas e não criar tabela nenhuma. Se alguma frente tiver um caminho
+de seed não conhecido, é a exceção que muda o quadro.
+
+## Progresso por tela
+
+As 230 ações da Etapa 2 em 39 famílias de tela, com o estado que o inventário
+certifica agora. "FE em avanço" reúne o que está em `pending-verification`,
+`audited`, `local-green` ou `fail-closed`: são telas com trabalho real feito e
+sem certificação de conclusão. Bloqueio `environment` significa pacote revisável
+esperando aplicação remota; `decision` significa que falta uma resposta sua.
+
+| Tela (família) | Ações | FE `verified` | FE em avanço | Bloqueio FE | BE aplicável | Bloqueio BE | E2E |
+| --- | ---: | ---: | ---: | --- | ---: | --- | ---: |
+| access_models | 6 | 0 | 6 | — | 6 | environment 6 | 0 |
+| access_profiles | 6 | 0 | 6 | — | 6 | — | 0 |
+| account | 6 | 0 | 6 | — | 4 | — | 0 |
+| acontece | 4 | 0 | 4 | — | 4 | environment 2 | 0 |
+| activities | 7 | 0 | 7 | — | 7 | environment 2 | 0 |
+| agenda | 7 | 0 | 7 | — | 7 | — | 0 |
+| agora | 4 | 0 | 4 | — | 4 | environment 1 | 0 |
+| assessments | 5 | 0 | 5 | — | 5 | — | 0 |
+| attendance | 6 | 1 | 5 | — | 6 | decision 1 | 0 |
+| audit | 4 | 0 | 4 | — | 4 | environment 3 | 0 |
+| auth | 5 | 4 | 1 | — | 5 | — | 0 |
+| catalog | 4 | 0 | 4 | — | 4 | — | 0 |
+| chat | 7 | 0 | 6 | environment 1 | 7 | environment 4 | 0 |
+| child_safety | 5 | 0 | 5 | — | 5 | environment 2 | 0 |
+| circulars | 11 | 0 | 10 | decision 1 | 11 | decision 1 | 0 |
+| daily_routine | 5 | 0 | 5 | — | 5 | — | 0 |
+| error_pages | 6 | 4 | 1 | decision 1 | 6 | — | 0 |
+| forms_authoring | 7 | 0 | 5 | decision 2 | 7 | — | 0 |
+| forms_files | 5 | 0 | 5 | — | 5 | environment 5 | 0 |
+| forms_responses | 6 | 0 | 5 | decision 1 | 6 | — | 0 |
+| groups | 7 | 0 | 7 | — | 7 | environment 2 | 0 |
+| health_care | 4 | 0 | 0 | decision 4 | 4 | environment 4 | 0 |
+| imports | 7 | 0 | 7 | — | 7 | — | 0 |
+| institutions | 13 | 0 | 13 | — | 13 | — | 0 |
+| internal_users | 5 | 0 | 5 | — | 5 | — | 0 |
+| invites | 5 | 0 | 5 | — | 5 | — | 0 |
+| locations | 4 | 0 | 4 | — | 4 | environment 2 | 0 |
+| meal_plans | 6 | 0 | 6 | — | 6 | — | 0 |
+| medication | 5 | 0 | 3 | decision 2 | 5 | environment 5 | 0 |
+| momentos | 4 | 0 | 4 | — | 4 | environment 1 | 0 |
+| notices | 6 | 0 | 6 | — | 6 | environment 1 | 0 |
+| people | 5 | 0 | 5 | — | 5 | — | 0 |
+| plans | 5 | 0 | 5 | — | 5 | — | 0 |
+| principal_profile | 3 | 0 | 1 | decision 2 | 3 | decision 3 | 0 |
+| profile_files | 6 | 2 | 4 | — | 6 | — | 0 |
+| shell | 5 | 0 | 5 | — | 0 | — | 0 |
+| students | 5 | 0 | 5 | — | 5 | — | 0 |
+| support | 6 | 0 | 3 | decision 3 | 6 | — | 0 |
+| units | 13 | 0 | 13 | — | 13 | — | 0 |
+
+Leitura honesta desta tabela: **a coluna que importa é a terceira, e ela soma
+11.** As colunas de avanço descrevem trabalho feito, não conclusão — e a
+diferença entre as duas é exatamente o que esta rodada passou a noite tornando
+visível.
 
 ## O defeito mais grave encontrado: Segurança infantil não se dispõe em produção
 
@@ -395,6 +544,55 @@ compartilhado, em vez de corrigir só a tela que quebrou.
     repositório. Não é distinguível sem acesso de leitura autorizado.
 11. **Autorizações remotas nominais** para os pacotes preparados nesta rodada.
 
+12. **Superfícies produtivas do Principal dizem ao usuário que ele está numa
+    prévia.** Seis ocorrências em três telas — Acontece, Agora e Momentos —
+    respondem a um toque com "indisponível **nesta prévia**" ou "estará
+    disponível na **experiência completa**". Essas páginas *são* as rotas
+    produtivas. Um responsável que toca em responder no Agora lê que o produto
+    que ele está usando é um rascunho.
+
+    O que torna isto decisão e não correção: o repositório já tem as **duas
+    respostas contrárias**. O teste da rota do Perfil exige que a frase
+    "experiência completa" **não** apareça; o teste de Para Você **espera** a
+    frase. Duas superfícies Principal, duas decisões opostas, no mesmo produto.
+    As opções são ou a ação sumir quando não há capacidade — que é o que a
+    galeria de Acontece já faz — ou a mensagem deixar de afirmar prévia. A
+    primeira muda composição aprovada; a segunda muda linguagem do produto. As
+    duas são baratas de executar e nenhuma é decisão de frente. O patch das três
+    telas está preparado e não mesclado, à espera da resposta.
+
+13. **Três capacidades de Circulares travadas em graus diferentes, e nenhuma por
+    falta de trabalho.** *Agendar* está desabilitada honestamente porque nenhum
+    host fornece o seletor — o resto do caminho existe, incluindo o `timestamptz`
+    aceito pela RPC; falta escolher entre um diálogo, padrão que o produto hoje
+    não tem, e um campo inline como nas irmãs, que muda a composição. *Encerrar*
+    está inerte com o backend completo. *Excluir* tem o método de repositório
+    escrito e não declarado na interface, então ninguém o alcança — o que
+    barateia a opção completa em relação ao que se supunha.
+
+14. **O feed de Acontece tem teto de 20 itens e descarta a paginação que o
+    servidor oferece.** A RPC devolve cursor, o repositório o monta corretamente,
+    e a tela o joga fora. O efeito não é só "acervo antigo inalcançável": o feed
+    é **misto**, então uma sequência de publicações empurra Circulares para fora
+    da primeira página, e **uma Circular institucional recente some do Acontece
+    sem aviso**. Há um teste vermelho proposital nomeando isto em
+    `principal_mixed_feed_pagination_red_test`, escrito por uma frente vizinha
+    sem tocar no código do dono. Se o teto for decisão consciente de MVP, ainda
+    vale registrar que Circulares competem com publicações pelo mesmo espaço.
+
+15. **Duas superfícies do Principal existem e ninguém as alcança.**
+    `PrincipalCircularComposerPage` tem 750 linhas e 238 de teste próprio, e
+    nenhuma rota a constrói — o que está roteado é o compositor administrativo. E
+    `PrincipalProfileContentTabs` é uma segunda implementação das abas de
+    conteúdo do Perfil, pública, sem consumidor, **e com golden aprovado**,
+    enquanto a implementação viva é a cópia privada dentro da página do Perfil.
+    O caso das abas é o pior dos dois: quem for mexer encontra primeiro a versão
+    pública, com nome canônico e prova visual, muda, e nada acontece no produto.
+    A pergunta é única: compor Circular e as abas do Perfil pertencem à
+    superfície do Principal, ou são exclusivamente administrativas? Se são
+    administrativas, as duas saem com seus testes; se não, falta rota, e aí é
+    trabalho e não lixo.
+
 ## Pacotes remotos preparados e não aplicados
 
 Ver [fila SQL serializada](NOTURNA-fila-sql-serializada.md), com a ordem
@@ -556,6 +754,51 @@ autorização em mãos**, foi medir sobre o integrado antes de executar e descob
 que o golden já passava. Teria substituído uma referência correta pela foto de um
 código desatualizado, com uma justificativa que parecia sólida.
 
+**Comparar superfícies diferentes não autoriza conclusão — nem para refutar.**
+Duas frentes bateram nisto em vinte minutos, por caminhos opostos. Uma comparou
+a imagem de referência com a atual e escreveu "o código atual", sem perguntar
+*qual* código: as duas vinham do mesmo widget montado com fixture, e não da rota
+de produção. A outra mediu um widget de cartões isolado, viu passar, e quase
+refutou um relato de acessibilidade que tinha medido a página inteira com o
+shell. A metade que engana é a segunda: refutar *parece* seguro, e uma refutação
+errada apaga um defeito real em vez de inventar um falso.
+
+**Escrever o caso adversarial antes de saber se ele falha.** A correção do envio
+no chat do Principal usava o último item da página como limite do que preservar.
+O caso adversarial — escrito antes, sem saber o resultado — falhou: quando a
+página encolhe porque algo foi removido, o último item passa a ser mais novo e a
+cauda preservada traz de volta o que sumiu. O limite correto é o **cursor
+devolvido pelo servidor**: dentro do alcance relido a página nova é a autoridade,
+fora dele preserva-se o que o leitor já via. Foi o teste que trocou o desenho, e
+não o contrário.
+
+**Projetar o conhecimento e depois aplicá-lo como checklist.** Uma frente
+corrigiu a mesma classe em quatro repositórios, escreveu o contrato de escrita
+nomeando o quinto — Instituições — como referência já existente, e ao aplicar as
+quatro perguntas do próprio artigo achou o sexto e o sétimo defeito, em arquivos
+que ela já havia lido duas vezes na mesma noite sem ver. **O checklist viu o que
+a leitura não viu**, e o artigo não é prescrição inventada: é a descrição do que
+o repositório já faz certo em um lugar, para o próximo copiar em vez de
+redescobrir.
+
+**Distinguir "pendente de verificação" de "pendente de existir".** O aceite de
+Avaliações pede conferir os goldens restantes e a família **não tem nenhum
+golden**, nem nunca teve — verificado no histórico, e os artefatos de falha que
+sugeriam o contrário vieram de uma branch que não está em `dev`. Cobertura
+perdida e cobertura que nunca existiu pedem decisões opostas, e sem esse rastreio
+a resposta teria sido a errada.
+
+**Uma classe de teste que erra o diagnóstico de propósito.** Cinco falhas em
+duas famílias tinham a mesma causa: o teste toca um botão de rodapé sem garantir
+que ele esteja visível. Em 375 px, ou em 1440 com texto a 200%, o rodapé sai da
+área visível, a etapa nunca avança, e tudo o que vem depois falha por motivos que
+**parecem** distintos — um campo ausente aqui, um `Bad state` ali, uma contagem
+de requisições errada acolá. O sintoma aponta para o controle de destino e a
+causa está no toque anterior, então a frente dona investiga o lugar errado. É por
+isso que essas falhas sobrevivem rodadas inteiras. O censo preventivo tem 67
+arquivos e 337 toques nessa forma; **nenhum falha hoje**, e por isso nenhum foi
+mexido nesta rodada.
+
 ## Higiene e preservação
 
 - Os 90 artefatos de WIP ignorados na raiz do checkout integrador estão
@@ -567,7 +810,7 @@ código desatualizado, com uma justificativa que parecia sólida.
 
 ## O que ainda falta
 
-Fechado após o corte das 05:00; o que segue já está consolidado e datado.
+Esta seção é atualizada a cada ciclo e fechada no corte das 05:00.
 
 **Nada foi aplicado em ambiente remoto.** Treze pacotes SQL estão preparados,
 revisáveis e enfileirados em ordem forward-only, e nenhum foi executado em lugar
@@ -575,13 +818,24 @@ nenhum. Dois deles carregam condição registrada: a trinca de Circulares, que s
 pode ser autorizada junto com a configuração do R2 e o deploy da Edge Function,
 e `20260909214000`, que exige suíte mínima antes de aplicar.
 
-**A prova SQL local está bloqueada por um defeito da própria cadeia.** A
-migration `20260812002010_import_export_unit_source_retention.sql` declara uma
-variável do tipo de uma tabela que **nenhuma migration cria**. Em produção a
-tabela deve existir por um caminho fora do repositório; localmente a cadeia é
-inconsistente consigo mesma a partir dali, e qualquer suíte pgTAP cujo alvo venha
-depois não roda pelo caminho sancionado. É por isso que cada candidato precisa de
-um profile próprio de replay — não é preciosismo do harness, é contorno.
+**A prova SQL local está bloqueada por defeitos da própria cadeia, e a
+medição melhorou duas vezes durante a noite.** A primeira frente relatou
+`20260812002010_import_export_unit_source_retention.sql`, que declara uma
+variável do tipo de uma tabela que nenhuma migration cria. Uma segunda medição,
+feita por replay completo em Postgres 17, localizou uma parada **anterior**:
+`20260812002000_child_safety_schema.sql`, o arquivo 48 de 186, viola o `NOT NULL`
+de `module_label` que o arquivo anterior criou sem default — e, relaxado esse,
+falha em seguida em `updated_at` ausente. Os arquivos 1 a 47 aplicam limpos.
+
+As duas observações são compatíveis e a segunda é mais útil: não há um defeito,
+há uma cadeia que deixou de ser replayável em algum ponto e acumulou os
+seguintes sem que ninguém percebesse, porque **em produção a ordem real de
+aplicação não foi a ordem de nome**. É por isso que cada candidato precisou de um
+profile próprio de replay — não é preciosismo do harness, é contorno.
+
+A verificação de sintaxe da fila inteira, essa sim, foi concluída: **13
+candidatos e 6 arquivos de pacote sem nenhum erro de sintaxe em Postgres 17**, e
+quatro deles aplicaram inteiros. Ver `NOTURNA-fila-sql-serializada.md`.
 
 **As três medições não se movem sem decisão.** Front-end certificado em 11/230;
 backend e end-to-end em zero, e assim permanecem enquanto não houver autorização
