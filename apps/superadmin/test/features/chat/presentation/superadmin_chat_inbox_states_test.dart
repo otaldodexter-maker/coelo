@@ -46,6 +46,18 @@ void main() {
     expect(find.text('Tentar novamente'), findsNothing);
   });
 
+  testWidgets('an empty thread by absence does not look like one by permission', (tester) async {
+    await _pump(tester, _StatefulRepository(mode: _Mode.emptyThread));
+
+    // Conversa autorizada e sem mensagens continua operavel: o composer fica,
+    // porque nao ha nada errado em ser a primeira mensagem. Se este estado
+    // parecesse negacao, o operador concluiria que perdeu acesso a uma conversa
+    // que ele pode usar.
+    expect(find.text('Turma Girassol'), findsWidgets);
+    expect(find.byKey(const Key('superadmin-chat-composer-field')), findsOneWidget);
+    expect(find.text('Acesso nao autorizado'), findsNothing);
+  });
+
   testWidgets('offline and failure are distinct states, both with a retry', (tester) async {
     await _pump(tester, _StatefulRepository(mode: _Mode.offline));
     expect(find.text('Sem conexao'), findsOneWidget);
@@ -73,7 +85,7 @@ Future<void> _pump(WidgetTester tester, ChatRepository repository) async {
   await tester.pumpAndSettle();
 }
 
-enum _Mode { empty, noResults, unauthorized, offline, failure }
+enum _Mode { empty, noResults, unauthorized, offline, failure, emptyThread }
 
 final class _StatefulRepository implements ChatRepository {
   _StatefulRepository({required this.mode});
@@ -92,6 +104,22 @@ final class _StatefulRepository implements ChatRepository {
         throw const ChatOfflineException();
       case _Mode.failure:
         throw const ChatFailureException();
+      case _Mode.emptyThread:
+        return ChatInboxPage(
+          totalUnread: 0,
+          items: [
+            ChatConversationSummary(
+              id: 'conversation-1',
+              title: 'Turma Girassol',
+              preview: '',
+              contextLabel: 'Unidade Cambui',
+              kind: 'group',
+              unreadCount: 0,
+              updatedAt: DateTime.utc(2026, 8, 12, 12),
+              isReadOnly: false,
+            ),
+          ],
+        );
       case _Mode.empty:
       case _Mode.noResults:
         // Sem busca a lista tem conteudo; com busca ela volta vazia, que e o
