@@ -250,6 +250,27 @@ compartilhado, em vez de corrigir só a tela que quebrou.
    inspeção confirmou: é mudança de conteúdo, tratada no item 0. Tratar as 144
    como um bloco só levaria a decidir errado em pelo menos uma delas.
 
+   As **três assinaturas**, e o método barato que as separa sem abrir imagem —
+   basta ler a linha `Pixel test failed, X%, Ypx` de cada caso:
+
+   - **Y cresce com a área** → renderização global. É a maior população.
+   - **Y praticamente constante entre larguras** → mudança de conteúdo, um
+     elemento de tamanho fixo adicionado ou removido. `principal_profile`
+     (~11,3 mil px) e `principal_happens` (~2,2 mil px).
+   - **X perto de 100% com conteúdo idêntico** → mudança de geometria.
+     `principal_moments`, onde a referência aprovada renderiza o viewer com
+     letterbox e o código atual renderiza full-bleed. Mesma foto, mesmos
+     contadores, mesma legenda; cada pixel deslocado.
+
+   Cada frente vinha chamando o próprio conjunto de "deriva pré-existente", e
+   **pelo menos três causas diferentes estavam sob esse nome**. Nenhuma delas se
+   corrige regravando golden sem decisão.
+
+   Há ainda uma quarta componente, menor e agora nomeada, que se soma a
+   qualquer golden capturado **antes de 08/09**: `c4a7feff8` e `ec9826f3e`
+   mexeram no cabeçalho compacto e no toggle da barra lateral. Já apareceu em
+   nove goldens de Rotina e um de Assiduidade.
+
    O que vem abaixo vale para a população de renderização, que é a maior: Primeiro tratei tudo como deriva de ambiente; depois a
    magnitude — 21 de 28 comparações acima de 8%, máximo de 43,94% — me fez
    registrar que a população grande "só podia ser mudança visual real nunca
