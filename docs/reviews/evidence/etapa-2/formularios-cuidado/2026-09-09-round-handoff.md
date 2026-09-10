@@ -174,6 +174,51 @@ botão de menu do usuário do shell expõe 242x44 px. O segundo nunca havia
 aparecido porque `superadmin_shell_accessibility_test` verifica rótulo e **não**
 tamanho de alvo.
 
+# As nove falhas do recorte, decompostas
+
+`test/features/forms` fecha em **800 PASS / 9 FAIL / 1 SKIP**.
+
+**Oito são comparação de golden** — três de `forms_directory_golden_test`, três
+de `forms_editor_golden_test`, uma de `forms_operations_golden_test` e uma de
+`form_response_golden_test`. Todas sob a decisão do Owner sobre o ambiente de
+referência.
+
+**A nona não é golden e não é defeito de produto.**
+`forms_editor_page_test`, "production preserves the editor hierarchy with
+neutral disabled controls", afirma que há exatamente dois `ExcludeFocus`
+excluindo na árvore inteira, e há quatro. Dois vêm do próprio editor, do helper
+`_locked` usado na navegação de seções e no corpo — exatamente os dois que o
+teste espera. Os outros dois vêm de `CoeloAdminToggleField`, de
+`packages/coelo_ui_admin`, que envolve o próprio `Switch` em `ExcludeFocus`.
+
+E esse `ExcludeFocus` do componente está **certo**: o campo inteiro já é focável
+por `FocusableActionDetector` com `Semantics(onTap:)`, então excluir o `Switch`
+impede que o mesmo controle vire duas paradas de foco. É desenho deliberado de
+um focus stop por campo.
+
+A asserção conta a árvore toda, incluindo as entranhas de um componente de outro
+pacote, então dispara sempre que muda quantos campos de alternância são
+renderizados. Confirmado que não é desta entrega: com o editor da base
+`d784462c1` restaurado no diretório de trabalho, o mesmo arquivo dá quatro
+também.
+
+# Uma dívida medida que decidi não pagar hoje
+
+41 arquivos em `apps/superadmin/lib` escrevem inline o mesmo formatador de data
+`dd/MM/aaaa` — agenda 5, forms 4, support 3, notices 3, meal_plans 3,
+health_care 3, activities 3, e o resto espalhado por pelo menos doze features.
+
+Não é dívida teórica: **três** das correções desta rodada saíram exatamente
+dela. Dinheiro dividido sem formatar numa tela e formatado na outra, data com
+zeros no campo e sem zeros no resumo, escolha por id numa tela e por rótulo na
+outra. Cada uma existia porque a mesma regra estava escrita duas vezes e as
+cópias envelheceram diferente.
+
+Não refatorei: deduplicar três de 41 é cosmético, e deduplicar 41 durante
+integração congelada troca um problema de manutenção por um problema de merge
+na pior hora. Fica como recomendação de passe dedicado, com dono único, fora de
+janela de integração. Quatro das 41 são deste recorte.
+
 # Invariantes de segurança do AGENTS.md
 
 Conferidas contra esta entrega, uma a uma.
