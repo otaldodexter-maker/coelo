@@ -152,6 +152,44 @@ Dart, está ligada, e chama funções que não existem no servidor**. As RPCs
 `superadmin_attendance_*` não aparecem em nenhuma das 173 migrations vivas, só em
 `.recovery-archives`. Só não quebra porque a rota está fechada.
 
+## O padrão que apareceu quatro vezes: cobertura que não cobre
+
+Não é um defeito, é a forma de vários deles, e muda o que o painel significa:
+
+- O teste de acessibilidade do shell verifica rótulo e **não verifica tamanho de
+  alvo**. O shell tem teste de acessibilidade — e o app inteiro está sem essa
+  verificação. O botão do menu do usuário expõe 44 px contra os 48 exigidos, mas
+  **o item não é os 4 px, é a diretriz que nunca foi aplicada ali**.
+- A Agenda tem um teste chamado "matriz a 200 por cento funciona em claro e
+  escuro", verde, enquanto o calendário no shell a 375 transborda a 100%. O
+  teste cobre outra superfície.
+- Minha conta tem golden que amarra tema à largura — claro só abaixo de 1024,
+  escuro só acima — então metade da matriz visual nunca foi renderizada.
+- `errors.409` era cobrado por um golden cujo arquivo de referência nunca
+  existiu.
+
+E a variante mais cara, que apareceu quatro vezes em telas diferentes: **verde
+sobre protótipo não é verde sobre produção**. Suporte, `forms.respond`,
+`health-care` com `medication`, e `daily_routine` têm suítes verdes sobre
+repositórios que não existem em produção.
+
+## O censo de `IntrinsicHeight`
+
+Vale como exemplo do que uma varredura barata entrega. Há exatamente quatro usos
+em `apps/superadmin`, e os quatro estados diferentes contam a história inteira:
+
+- `access_profiles` **já bateu neste defeito, resolveu com `Table`** e deixou na
+  linha 633 um comentário dizendo que o status canônico usa `LayoutBuilder` e não
+  pode participar de `IntrinsicHeight`.
+- `errors` é seguro: envolve apenas `Text` e `VerticalDivider`.
+- `people` tem o padrão **idêntico** ao de `safety` e só não quebra porque o
+  cartão de lá usa indicador próprio em vez do canônico. É uma armadilha armada:
+  no dia em que alguém padronizar o indicador, quebra na hora.
+- `safety` é a única vítima.
+
+É o argumento mais forte para tirar o `LayoutBuilder` do componente
+compartilhado, em vez de corrigir só a tela que quebrou.
+
 ## Decisões que dependem de você
 
 1. **Goldens: uma mudança global de renderização, e não 144 telas redesenhadas.**
