@@ -1,6 +1,6 @@
 {
-  "revision": 38,
-  "updated_at": "2026-09-10T03:26:00-03:00",
+  "revision": 39,
+  "updated_at": "2026-09-10T03:48:00-03:00",
   "group": "publicacoes-midia",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
@@ -8,7 +8,7 @@
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-publicacoes-midia",
   "branch": "work/etapa2-noturna-publicacoes-midia",
-  "head": "fbd0c54ac",
+  "head": "376408072",
   "upstream": "origin/work/etapa2-noturna-publicacoes-midia (0/0)",
   "base": "origin/dev 447e6eea2 mesclado em 3ab29d7df",
   "ack": "coordenador: revisao 1 aceita; lote 1e39b2fcf integrado (merge d502350ce); lote b10f48d1e aceito para a proxima integracao; atribuicao de principal_real_route_test retirada por ele apos minha medicao; reserva da plataforma comum de midia mantida",
@@ -358,6 +358,12 @@
       "state": "publicado",
       "title": "pre-entrega no formato de sete itens, com 96 casos que nunca tinham sido contados",
       "touches_reserved_files": []
+    },
+    {
+      "sha": "376408072",
+      "state": "publicado",
+      "title": "retratacao da refutacao vazia; pre-entrega republicada em 784/758/26",
+      "touches_reserved_files": []
     }
   ],
   "action_ids_touched": [
@@ -375,17 +381,17 @@
     "circulars.detail: rota Principal registrada, separada de /circulars/:circularId/read, com fail-closed sem capacidade e sem sessao"
   ],
   "tests": {
-    "P": 757,
-    "F": 23,
+    "P": 758,
+    "F": 26,
     "B": 0,
     "S": 0,
     "U": 0,
-    "metodo": "numero 1 do formato: execucao principal de 684 testes (661 PASS / 23 FAIL) sobre 20 caminhos conferidos por EXISTENCIA antes de rodar, mais o complemento do item 2b de 96 testes (96 PASS / 0 FAIL) em cinco arquivos que estavam fora do meu denominador. Sobreposicao entre as duas: ZERO, por construcao.",
+    "metodo": "numero 1 do formato, TRES execucoes disjuntas: 684 testes (661/23) sobre os 20 caminhos declarados; 96 testes (96/0) nos cinco arquivos achados pelo 2b por NOME; 4 testes (1/3) em principal_real_route_test, achado so pela varredura por IMPORT.",
     "item_2b": "invertida a pergunta: nao 'os caminhos declarados existem' e sim 'existe teste do meu escopo FORA da lista'. Varri o REPOSITORIO INTEIRO, nao so apps/superadmin. Dos 91 arquivos de teste do dominio, 15 caiam fora dos meus 20 caminhos; classificados por CONSUMIDOR e nao por nome: 5 meus, 7 de outras frentes, 3 de fronteira com perfil-para-voce, 1 falso positivo meu (coelo_state_panel_test entrou porque o caminho contem 'feedback', que contem 'feed').",
     "os_cinco": "principal_publication_frame_test (o frame e consumido por TRES paginas de publicacao minhas mais o compositor) e os quatro de packages/coelo_api/test/media (quatro arquivos meus importam essas classes: repositorios de publicacao de Acontece e Agora, coordenador de upload de Circular, host produtivo)",
     "direcao_do_erro": "os 96 casos subestimavam APROVADOS e nunca esconderam falha",
     "item_2c": "sobreposicao ZERO entre todos os pares, verificada de tres formas: numero 1 e numero 2 sao runtimes distintos; os cinco arquivos do 2b nao caem sob nenhum dos 20 caminhos, que foi o criterio que os achou; e dentro da execucao principal as rotas vivem fora das arvores de feature, execucao unica, contagem por ID DE TESTE e nao por linha de log.",
-    "falhas": "as mesmas 23 goldens, enumeradas UMA A UMA no documento de pre-entrega, todas dentro dos meus arquivos, nenhuma de fronteira. Provadas identicas as da base d784462c1, teste a teste.",
+    "falhas": "26: as 23 goldens preexistentes mais 3 de rota, tambem preexistentes. Todas enumeradas uma a uma no documento de pre-entrega.",
     "deno": "82 PASS / 0 FAIL: circular-media 27, moments-media 26, happens-media 15, now-media 14",
     "analyze": "flutter analyze --no-pub na arvore inteira do superadmin: No issues found",
     "nao_executado": "nenhuma suite pgTAP: o harness nao replica a cadeia canonica, falhando na 53a migration 20260812002010"
@@ -787,7 +793,8 @@
     "efeito_colateral_positivo": "a frente perfil-para-voce passou a consumir principalMomentsFeedRepository, a mesma instancia que /principal-moments usa, em vez de abrir uma segunda fonte para o mesmo feed",
     "commits_pendentes_de_integracao": [
       "b69c7d00f",
-      "fbd0c54ac"
+      "fbd0c54ac",
+      "376408072"
     ],
     "ja_integrados": [
       "05537c3b3",
@@ -945,5 +952,33 @@
     "documento": "docs/reviews/etapa-2-operacao/reports/NOTURNA-preentrega-publicacoes-midia.md",
     "commit": "fbd0c54ac",
     "formato": "itens 1 a 7 da coordenacao, mais 2b e 2c"
+  },
+  "retratacaoDaRefutacao": {
+    "gravidade": "ALTA: reverte uma decisao que o coordenador tomou por causa da minha medicao",
+    "o_que_eu_disse": "que principal_real_route_test 'nao aparece entre as 33 falhas da base d784462c1', logo os tres vermelhos atribuidos a mim nao eram meus. A coordenacao RETIROU a atribuicao.",
+    "o_que_medi_agora": "rodando o arquivo DIRETAMENTE: +1 -3 na base pre-rodada d784462c1, +1 -3 na origin/dev integrada, +1 -3 na minha branch. Falha nos tres lugares.",
+    "por_que_a_refutacao_era_vazia": "o arquivo nao aparecia naquela lista porque a minha medicao da base NAO O COBRIA. Tratei ausencia de uma lista como prova de ausencia do defeito, sem verificar se a lista podia conte-lo. Mesma armadilha do 'log nao e inventario', mas aqui o custo nao foi um numero: foi a retirada de uma atribuicao CORRETA.",
+    "agravante": "uma hora antes eu recuperei essa mesma refutacao do canal para arquivo, argumentando que evidencia de uma RECUSA vale mais que evidencia de um achado. O principio esta certo e eu arquivei a evidencia errada. Recusa mal fundamentada e bem arquivada e pior que nao arquivada: para de ser reexaminada.",
+    "as_tres": [
+      "production Principal keeps its host at Size(1440.0, 900.0)",
+      "production Principal keeps its host at Size(390.0, 844.0)",
+      "real Acontece resolves authenticated context and never uses demo fixtures"
+    ],
+    "causa": "StateError 'Bad state: No element' em tester.widget<PrincipalHappensPreviewPage>(...). Na rota real com contexto autenticado a pagina do Acontece nao e encontrada na arvore. O quarto caso do arquivo, o de fail-closed, PASSA: o caminho de negacao funciona e o de sucesso nao monta.",
+    "procedencia": "preexistente a esta rodada; nao e regressao minha nem de ninguem desta noite. Mas e do meu escopo e esta na dev agora.",
+    "nao_corrigido": "deliberado: diagnostico levou dez minutos e consertar composicao de rota as vesperas do congelamento seria frente nova. Entregue localizado, com causa e com prova de procedencia.",
+    "commit": "376408072"
+  },
+  "direcaoDoErroDeDenominador": {
+    "minha_afirmacao_falsa": "eu afirmei ao coordenador que no MEU caso o furo de denominador so subestimava aprovados e nunca escondia falha",
+    "por_que_era_falsa": "eu afirmei com base nos cinco arquivos que ja tinha medido, ANTES de medir o sexto. O sexto escondia tres falhas.",
+    "placar_das_frentes": "formularios-cuidado escondia SETE falhas alem de 272 aprovados; chat-comunicacoes so aprovados; eu escondia TRES. A direcao NAO e garantida.",
+    "licao": "o coordenador me avisou para nao generalizar a partir do caso do chat e eu nao generalizei — mas afirmei sobre o meu proprio caso antes de terminar de medi-lo, que e a mesma falha em escala menor."
+  },
+  "doisMetodosDeVarredura": {
+    "por_nome": "15 fora dos meus caminhos; PERDEU principal_real_route_test, cujo nome nao diz Acontece nem Agora; PEGOU coelo_state_panel_test, porque o caminho contem 'feedback', que contem 'feed'",
+    "por_import": "23 fora; ACHOU o que o nome perdeu; mas pega dependencia sem ser sujeito, exigindo classificacao por consumidor depois",
+    "conclusao": "nenhum dos dois sozinho fecha a pergunta; o que fecha e o segundo filtrando o primeiro. E os dois juntos ainda deixam um vao: teste do meu escopo que nem se chame como o dominio nem importe minhas arvores continua invisivel.",
+    "quatro_nao_reivindicados": "principal_global_navigation, principal_preview_app_bar, supabase_principal_runtime_context_repository e persistent_shell_routes: moldura Principal comum a cinco superficies. Consumo os quatro, nao sou dono exclusivo de nenhum, e adota-los inflaria o meu numero as custas da clareza. Registrados como SEM DONO."
   }
 }

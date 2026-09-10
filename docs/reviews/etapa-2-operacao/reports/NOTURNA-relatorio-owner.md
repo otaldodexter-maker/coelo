@@ -1886,6 +1886,24 @@ A inconclusiva ficou inconclusiva de propósito, porque a âncora aparecia duas
 vezes e mutar as duas mudaria o significado do teste — **não contar como pega o
 que não foi medido** é o que mantém o placar utilizável.
 
+**E há uma terceira forma de um "não pegou" enganar, descoberta depois: o estado
+que a mutação cria não é alcançável.** Numa invariante de segurança de mídia, a
+mutação passou por dois arquivos de teste sem derrubar nenhum — o que, pela regra
+anterior, seria lacuna grave numa garantia de falha fechada. Não é: o desenho
+proíbe o estado onde as duas versões se distinguiriam, porque o caminho de
+publicação retorna cedo quando a purga falhou e o campo nunca é reatribuído.
+
+**Então, antes de registrar uma lacuna, são duas perguntas e não uma:** onde essa
+regra *deveria* estar coberta, **e esse estado é alcançável?** As três formas de
+enganar são mira errada, lacuna real e mutante equivalente — e a mesma frente caiu
+nas três na mesma noite.
+
+**Um registro que equilibra**, porque um relatório que só nomeia defeito descreve
+mal o código: a classe onde apareceu o mutante equivalente é das mais bem escritas
+que a rodada leu. O comentário no código descreve uma propriedade que a estrutura
+**garante por construção e não por convenção** — e mesmo assim o autor pôs a
+proteção redundante.
+
 ## A classe que este relatório mais teve foi tempo verbal
 
 Este documento foi relido de ponta a ponta por uma frente que não o escreveu, com
