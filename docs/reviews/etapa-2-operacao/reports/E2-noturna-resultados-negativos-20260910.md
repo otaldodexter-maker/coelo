@@ -99,6 +99,33 @@ Um falso positivo vale registro para quem tentar de novo: `'guardianRequest'` n�
 é chave de payload, é valor de enum `AgendaItemOrigin`. Varredor que coleta
 `'x':` indiscriminadamente confunde as duas coisas.
 
+## Contrato de enums no app inteiro — uma divergência real, o resto limpo
+
+Depois de fixar o contrato de enums da Agenda, estendi a varredura a todo o app com
+um heurístico que foi o que fez o defeito aparecer: comparar **conjuntos quase
+iguais**. Para cada coluna com lista de valores permitidos e cada enum do cliente,
+calcular a interseção; sinalizar quando ela passa de 60% **e** há diferença nos dois
+lados. Igualdade exata é contrato cumprido; diferença só do lado do cliente é
+inofensiva; diferença nos dois lados é renome que chegou a uma ponta só.
+
+Medida: **82 colunas com lista** contra **284 enums**. Três pares sinalizados, todos
+em Cardápios:
+
+| Par | Banco só | Cliente só | Veredito |
+| --- | --- | --- | --- |
+| `meal_plans.status` x `MealPlanStatus` | `closed` | `ended` | **defeito real**, corrigido em `cadc56a48` |
+| `meal_plans.source_type` x `MealPlanScopeLevel` | `exception` | `activity` | par cruzado pelo varredor; cada coluna bate com o seu próprio enum |
+| `meal_plan_scopes.scope_level` x `MealPlanSourceType` | `activity` | `exception` | idem, e o cliente conhecer `activity` a mais é a direção inofensiva |
+
+Ou seja: um defeito real em todo o aplicativo, e ele estava no meu recorte. O
+heurístico tem um falso positivo previsível — quando duas colunas e dois enums de um
+mesmo domínio são quase iguais entre si, o cruzamento aparece nas duas direções —
+e reconhecê-lo custa ler dois pares, não refazer a medição.
+
+O que isto fecha para quem vier depois: não é preciso repetir esta varredura por
+domínio. O que vale repetir é o **teste** de contrato quando uma migration nova
+mexer em lista de valores permitidos, porque aí a pergunta volta a ser aberta.
+
 ## Reflow dos formulários de criação — limpo
 
 16 rotas de criação, em 375 e 1440 pixels, a 100% e 200% de escala de texto: 64
