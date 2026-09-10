@@ -140,6 +140,47 @@ void main() {
     int contextRevision = 0,
   }) => show(tester, capabilities, selected: selected, contextRevision: contextRevision);
 
+  testWidgets('held catalog create callback cannot restore a revoked writer surface', (
+    tester,
+  ) async {
+    await pump(tester, const LocationCapabilities(create: true));
+    final activate = tester.widget<FilledButton>(find.byKey(_create)).onPressed!;
+    await regrant(tester, LocationCapabilities.none);
+    activate();
+    await answer(tester);
+    expect(find.byKey(_form), findsNothing);
+  });
+
+  testWidgets('held catalog copy callback cannot restore a revoked writer surface', (tester) async {
+    await pump(tester, const LocationCapabilities(copy: true));
+    final activate = tester.widget<OutlinedButton>(find.byKey(_bring)).onPressed!;
+    await regrant(tester, LocationCapabilities.none);
+    activate();
+    await answer(tester);
+    expect(find.byKey(const Key('locations-bring-panel')), findsNothing);
+  });
+
+  testWidgets('held catalog edit callback cannot restore a revoked writer surface', (tester) async {
+    await pump(tester, const LocationCapabilities(update: true), selected: locationA);
+    final activate = tester.widget<LocationDetailPanel>(find.byType(LocationDetailPanel)).onEdit!;
+    await regrant(tester, LocationCapabilities.none, selected: locationA);
+    activate(locationFixture(id: locationA, scope: scopeUnitA));
+    await answer(tester);
+    expect(find.byKey(Key('locations-form-$locationA')), findsNothing);
+    expect(find.byKey(Key('locations-detail-$locationA')), findsOneWidget);
+  });
+
+  testWidgets('held catalog create callback is invalid after context replacement', (tester) async {
+    const grants = LocationCapabilities(create: true);
+    await pump(tester, grants);
+    final activate = tester.widget<FilledButton>(find.byKey(_create)).onPressed!;
+    await regrant(tester, grants, contextRevision: 1);
+    activate();
+    await answer(tester);
+    expect(find.byKey(_form), findsNothing);
+    expect(find.byKey(_create), findsOneWidget);
+  });
+
   testWidgets('losing create closes the create form that was open', (tester) async {
     await pump(tester, const LocationCapabilities(create: true));
     await tester.tap(find.byKey(_create));

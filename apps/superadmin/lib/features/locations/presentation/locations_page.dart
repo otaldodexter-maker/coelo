@@ -96,6 +96,7 @@ final class _LocationsPageState extends State<LocationsPage> {
   bool _creating = false;
   LocationCatalogEntry? _editing;
   bool _bringing = false;
+  int _contextGeneration = 0;
 
   static LocationCapabilities _capabilitiesOf(LocationsPage page) =>
       page.capabilities ??
@@ -117,6 +118,7 @@ final class _LocationsPageState extends State<LocationsPage> {
     if (oldWidget.contextRevision != widget.contextRevision ||
         oldWidget.sessionAvailable != widget.sessionAvailable ||
         !sameLocationScope(oldWidget.scope, widget.scope)) {
+      ++_contextGeneration;
       _selected = null;
       _creating = false;
       _editing = null;
@@ -128,6 +130,7 @@ final class _LocationsPageState extends State<LocationsPage> {
       // was about the previous one. Keeping the edit form alive across that
       // change is how an unsaved edit of A ends up saved over B: the panel
       // still holds A's id and version while the URL already says B.
+      ++_contextGeneration;
       _selected = _accepted(widget.selectedLocationId);
       _creating = false;
       _editing = null;
@@ -146,6 +149,11 @@ final class _LocationsPageState extends State<LocationsPage> {
     if (!can.update) _editing = null;
     if (!can.copy) _bringing = false;
   }
+
+  bool _current(int generation) =>
+      mounted && widget.sessionAvailable && generation == _contextGeneration;
+
+  bool get _directoryOpen => !_creating && !_bringing && _editing == null && _selected == null;
 
   /// A malformed identifier never becomes a read.
   String? _accepted(String? id) => id != null && validLocationId(id) ? id : null;
@@ -176,6 +184,7 @@ final class _LocationsPageState extends State<LocationsPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final selected = _selected;
+    final generation = _contextGeneration;
     // Creating is offered by the page, not by the directory panel: the panel is
     // a read surface and adding an action to it would change every screen that
     // renders it.
@@ -210,14 +219,20 @@ final class _LocationsPageState extends State<LocationsPage> {
           if (widget.scope is UnitLocationScope && canBring)
             OutlinedButton.icon(
               key: const Key('locations-bring-from-institution'),
-              onPressed: () => setState(() => _bringing = true),
+              onPressed: () {
+                if (!_current(generation) || !_can.copy || !_directoryOpen) return;
+                setState(() => _bringing = true);
+              },
               icon: const Icon(Icons.south_rounded),
               label: const Text('Trazer da instituição'),
             ),
           if (canCreate)
             FilledButton.icon(
               key: const Key('locations-create'),
-              onPressed: () => setState(() => _creating = true),
+              onPressed: () {
+                if (!_current(generation) || !_can.create || !_directoryOpen) return;
+                setState(() => _creating = true);
+              },
               icon: const Icon(Icons.add_rounded),
               label: const Text('Novo local'),
             ),
@@ -273,7 +288,17 @@ final class _LocationsPageState extends State<LocationsPage> {
                 // a bug cannot turn into a request.
                 writer: can.writesAnything ? widget.writer : null,
                 capabilities: can,
-                onEdit: can.update ? (item) => setState(() => _editing = item) : null,
+                onEdit: can.update
+                    ? (item) {
+                        if (!_current(generation) ||
+                            !_can.update ||
+                            _selected != item.id ||
+                            !sameLocationScope(widget.scope, item.scope)) {
+                          return;
+                        }
+                        setState(() => _editing = item);
+                      }
+                    : null,
                 // A copy is a different location, so the page opens it rather
                 // than leaving the actor looking at the one they duplicated.
                 onCopied: can.copy ? _open : null,
