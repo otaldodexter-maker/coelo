@@ -64,7 +64,7 @@ Provas e hashes por lote: `models/README.md`, `models/frontend-receipts.md`,
 `safety-composition/handoff.md`, `safety-sql/handoff.md` e
 `safety-sql/profile-proposal/README.md`. Contagens SQL, Flutter e preparação
 são separadas; reruns não aumentam cobertura. Rollback tardio6P em
-`models/rollback-01.txt`; formulário18P/0F em models-form-receipt/golden-reconciliation.md e duplicação24P em models/duplicate-receipts.md. Total atual430P/4F/120U: Safety108U e concorrênciaModels12U.
+`models/rollback-01.txt`; formulário18P/0F em models-form-receipt/golden-reconciliation.md e duplicação24P em models/duplicate-receipts.md. Total atual430P/5F/120U: Safety108U e concorrênciaModels12U.
 
 Produção: catálogo Supabase lido sem dados pessoais, zero mutação remota.
 Ausência do Owner não autoriza pacote novo. Modelos precisa da fundação nominal
@@ -86,3 +86,8 @@ Checkpoint22:03BRT: base conjunta6aa352c6a materializada por fast-forward; todos
 Alcance r16: ver alcance-produtivo.md. Detalhe de Pessoas usa reader mas o diretorio normal nao fornece callback para abri-lo; people.links/reload do detalhe requerem tambem ponto de entrada deliberado. Perfis/Modelos abrem EDIT pelos cards, nao DETAIL. Nao se confunde rota existente com percurso completo.
 
 Checkpoint22:23BRT: r18Safety investigado. 8f3905819 reflow4P;571ac3cf0 transporte5P semativar mutacoes;f4dd600ffdiretrizes2P4F atuais. Menuusuario44px econtraste compartilhadostem proposta paraClaude;rotulos/carga/overflow nao reproduziramtriagem d784. Total430P4F120U comF4explicitos, sem skipoucertificacao.
+
+Convites: [rotulo nativo](invite-labels/handoff.md)0P1F, c30f28d42.
+No longPress128x48 semlabel identificado porancestrais no SuperadminDirectoryViewToggle
+compartilhado, nao devtools. Proposta nominal ao coordenador sem editarshared.
+Total atual430P5F0S120U; cincofalhasdiagnosticas abertas, semskipoculto.
