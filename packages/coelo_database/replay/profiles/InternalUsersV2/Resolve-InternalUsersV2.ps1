@@ -50,6 +50,14 @@ function Get-InternalUsersHash([string]$Path) {
 # calls for internal users do not exist in the database.
 #
 # This is not a generic extension mechanism and not a remote authorization.
+#
+# Contagens revisadas em 2026-09-10: o manifesto de fundacao passou de 67 para 68
+# entradas quando a coordenacao acrescentou 20260812000000_chat_production_contract.sql
+# em ordem de versao (F-R03-FCR-003), fechando a lacuna que impedia qualquer base
+# posterior a 20260901101500 de ser montada. As exclusoes deste perfil continuam
+# valendo: o reparo do manifesto resolve a TABELA ausente, nao os defeitos de
+# conteudo de chat v2, avisos v2 e circulares v2, que seguem sem correcao em dev.
+
 if ($TargetVersion -cne '20260908021644') {
   throw "InternalUsersV2 requires target 20260908021644; received $TargetVersion"
 }
@@ -63,8 +71,8 @@ $entries = @(Get-Content -LiteralPath $manifestFile.FullName | Where-Object {
   }
   [pscustomobject]@{ file = $Matches[1]; version = $Matches[2]; sha256_crlf_utf8 = $Matches[3] }
 })
-if ($entries.Count -ne 67 -or $entries[-1].version -cne '20260901200206') {
-  throw 'InternalUsersV2 requires the unchanged 67-entry foundation manifest'
+if ($entries.Count -ne 68 -or $entries[-1].version -cne '20260901200206') {
+  throw 'InternalUsersV2 requires the unchanged 68-entry foundation manifest'
 }
 
 $excludedNames = @(
@@ -83,7 +91,7 @@ $repinnedName = '20260901190432_superadmin_internal_invites_v2.sql'
 $selected = @($entries | Where-Object {
   $_.file -cnotin $excludedNames -and $_.file -cne $repinnedName
 })
-if ($selected.Count -ne 63) {
+if ($selected.Count -ne 64) {
   throw 'InternalUsersV2 requires the three unreachable entries and the repinned invites migration to be present in the manifest and handled here'
 }
 $repinned = Assert-InternalUsersFile (Join-Path (Join-Path $packageRoot 'migrations') $repinnedName)
@@ -123,10 +131,10 @@ if ($preflight.Count -ne 2) {
 
 $allInputs = @($canonical) + @($preflight)
 $versions = @($allInputs | ForEach-Object { $_.Name.Substring(0, 14) })
-if ($canonical.Count -ne 66 -or $allInputs.Count -ne 68 -or
-    @($versions | Sort-Object -Unique).Count -ne 68 -or
+if ($canonical.Count -ne 67 -or $allInputs.Count -ne 69 -or
+    @($versions | Sort-Object -Unique).Count -ne 69 -or
     ($versions | Sort-Object)[-1] -cne $TargetVersion) {
-  throw 'InternalUsersV2 requires 66 unique canonical migrations and two inherited preflights'
+  throw 'InternalUsersV2 requires 67 unique canonical migrations and two inherited preflights'
 }
 
 [pscustomobject]@{

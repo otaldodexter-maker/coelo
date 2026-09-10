@@ -40,6 +40,14 @@ function Get-PersonDetailHash([string]$Path) {
 # later than this candidate and unrelated to it.
 #
 # This is not a generic extension mechanism and not a remote authorization.
+#
+# Contagens revisadas em 2026-09-10: o manifesto de fundacao passou de 67 para 68
+# entradas quando a coordenacao acrescentou 20260812000000_chat_production_contract.sql
+# em ordem de versao (F-R03-FCR-003), fechando a lacuna que impedia qualquer base
+# posterior a 20260901101500 de ser montada. As exclusoes deste perfil continuam
+# valendo: o reparo do manifesto resolve a TABELA ausente, nao os defeitos de
+# conteudo de chat v2, avisos v2 e circulares v2, que seguem sem correcao em dev.
+
 if ($TargetVersion -cne '20260828005000') {
   throw "PersonDetailV2 requires target 20260828005000; received $TargetVersion"
 }
@@ -53,13 +61,13 @@ $entries = @(Get-Content -LiteralPath $manifestFile.FullName | Where-Object {
   }
   [pscustomobject]@{ file = $Matches[1]; version = $Matches[2]; sha256_crlf_utf8 = $Matches[3] }
 })
-if ($entries.Count -ne 67 -or $entries[-1].version -cne '20260901200206') {
-  throw 'PersonDetailV2 requires the unchanged 67-entry foundation manifest'
+if ($entries.Count -ne 68 -or $entries[-1].version -cne '20260901200206') {
+  throw 'PersonDetailV2 requires the unchanged 68-entry foundation manifest'
 }
 
 $selected = @($entries | Where-Object { $_.version -le $TargetVersion })
-if ($selected.Count -ne 51 -or $selected[-1].file -cne '20260828005000_superadmin_internal_person_detail.sql') {
-  throw 'PersonDetailV2 requires the 51-entry manifest prefix ending at the candidate'
+if ($selected.Count -ne 52 -or $selected[-1].file -cne '20260828005000_superadmin_internal_person_detail.sql') {
+  throw 'PersonDetailV2 requires the 52-entry manifest prefix ending at the candidate'
 }
 
 $canonical = @($selected | ForEach-Object {
@@ -78,10 +86,10 @@ if ($preflight.Count -ne 2) {
 
 $allInputs = @($canonical) + @($preflight)
 $versions = @($allInputs | ForEach-Object { $_.Name.Substring(0, 14) })
-if ($canonical.Count -ne 51 -or $allInputs.Count -ne 53 -or
-    @($versions | Sort-Object -Unique).Count -ne 53 -or
+if ($canonical.Count -ne 52 -or $allInputs.Count -ne 54 -or
+    @($versions | Sort-Object -Unique).Count -ne 54 -or
     ($versions | Sort-Object)[-1] -cne $TargetVersion) {
-  throw 'PersonDetailV2 requires 51 unique canonical migrations and two inherited preflights'
+  throw 'PersonDetailV2 requires 52 unique canonical migrations and two inherited preflights'
 }
 
 [pscustomobject]@{
