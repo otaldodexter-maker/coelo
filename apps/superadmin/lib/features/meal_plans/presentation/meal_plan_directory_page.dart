@@ -5,13 +5,8 @@ import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
-import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
-import '../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
 import '../../../shared/presentation/widgets/superadmin_placeholder_file_actions.dart';
-import '../../../shared/presentation/widgets/superadmin_underline_tabs.dart';
 import '../domain/meal_plan_repository.dart';
-
-enum _MealPlanDirectoryDisplay { cards, table }
 
 enum _MealPlanDirectorySection { mealPlans, models }
 
@@ -64,7 +59,7 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
   final _periodStart = TextEditingController();
   final _periodEnd = TextEditingController();
 
-  _MealPlanDirectoryDisplay _display = _MealPlanDirectoryDisplay.cards;
+  CoeloAdminDirectoryDisplay _display = CoeloAdminDirectoryDisplay.cards;
   _MealPlanDirectorySection _section = _MealPlanDirectorySection.models;
   bool _loading = true;
   bool _unauthorized = false;
@@ -110,7 +105,7 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
     _periodStart.clear();
     _periodEnd.clear();
     setState(() {
-      _display = _MealPlanDirectoryDisplay.cards;
+      _display = CoeloAdminDirectoryDisplay.cards;
       _section = _MealPlanDirectorySection.models;
       _loading = true;
       _unauthorized = false;
@@ -144,401 +139,275 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
-        final horizontalPadding = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
-            ? CoeloSpacing.space10
-            : compact
-            ? CoeloSpacing.space4
-            : CoeloSpacing.space6;
-        if (_unauthorized) {
-          return ListView(
-            padding: EdgeInsets.all(horizontalPadding),
-            children: const [
-              CoeloStatePanel(
-                key: Key('meal-plans-unauthorized'),
-                title: 'Acesso não autorizado',
-                message: 'Seu acesso a este escopo não está disponível.',
-                icon: Icons.lock_outline_rounded,
-              ),
-            ],
-          );
-        }
-        return Column(
-          children: [
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(
-                  horizontalPadding,
-                  horizontalPadding,
-                  horizontalPadding,
-                  0,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _toolbar(compact: compact),
-                    const SizedBox(height: CoeloSpacing.space4),
-                    SuperadminUnderlineTabs<_MealPlanDirectorySection>(
-                      key: const Key('meal-plan-type-tabs'),
-                      selected: _section,
-                      tabs: const [
-                        SuperadminUnderlineTab(
-                          value: _MealPlanDirectorySection.models,
-                          label: 'Modelos',
-                        ),
-                        SuperadminUnderlineTab(
-                          value: _MealPlanDirectorySection.mealPlans,
-                          label: 'Cardápios',
-                        ),
-                      ],
-                      onSelected: _selectSection,
-                    ),
-                    const SizedBox(height: CoeloSpacing.space4),
-                    Expanded(
-                      child: LayoutBuilder(
-                        builder: (context, contentConstraints) =>
-                            _content(constraints: contentConstraints),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+    if (_unauthorized) {
+      return LayoutBuilder(
+        builder: (context, constraints) => ListView(
+          padding: EdgeInsets.all(
+            CoeloAdminDirectoryMetrics.horizontalPadding(constraints.maxWidth),
+          ),
+          children: const [
+            CoeloStatePanel(
+              key: Key('meal-plans-unauthorized'),
+              title: 'Acesso não autorizado',
+              message: 'Seu acesso a este escopo não está disponível.',
+              icon: Icons.lock_outline_rounded,
             ),
-            if (_totalPages >= 1 && _items.isNotEmpty)
-              SuperadminListingPaginationFooter(
-                semanticKey: const Key('meal-plans-pagination'),
-                horizontalPadding: horizontalPadding,
-                child: CoeloAdminPagination(
-                  currentPage: _page + 1,
-                  totalPages: _totalPages,
-                  pageSize: _pageSize,
-                  pageSizeOptions: _display == _MealPlanDirectoryDisplay.cards
-                      ? const [11, 20, 50, 100]
-                      : const [8, 20, 50, 100],
-                  onPrevious: _page == 0 ? null : () => _setPage(_page - 1),
-                  onNext: _page + 1 < _totalPages ? () => _setPage(_page + 1) : null,
-                  onPageSelected: (value) => _setPage(value - 1),
-                  onPageSizeChanged: _setPageSize,
-                ),
-              ),
           ],
-        );
-      },
-    );
-  }
-
-  Widget _toolbar({required bool compact}) => CoeloAdminListingToolbar(
-    search: SizedBox(
-      width: compact ? double.infinity : 360,
-      height: CoeloSize.touchMin,
-      child: CoeloSearchField(
+        ),
+      );
+    }
+    final models = _section == _MealPlanDirectorySection.models;
+    final compactLargeText =
+        MediaQuery.sizeOf(context).width < CoeloBreakpoints.medium.minWidth &&
+        MediaQuery.textScalerOf(context).scale(1) >= 2;
+    final onCreate = models
+        ? widget.onCreateTemplate
+        : widget.onCreate == null
+        ? null
+        : () => widget.onCreate!(null);
+    return CoeloAdminDirectory<CoeloAdminDirectoryDisplay>(
+      loadingKey: const Key('meal-plans-loading'),
+      cardsKey: const Key('meal-plan-directory-view-cards'),
+      tableKey: const Key('meal-plan-directory-view-table'),
+      gridKey: const Key('meal-plan-directory-card-grid'),
+      tabs: CoeloAdminUnderlineTabs<_MealPlanDirectorySection>(
+        key: const Key('meal-plan-type-tabs'),
+        selected: _section,
+        tabs: const [
+          CoeloAdminUnderlineTab(value: _MealPlanDirectorySection.models, label: 'Modelos'),
+          CoeloAdminUnderlineTab(value: _MealPlanDirectorySection.mealPlans, label: 'Cardápios'),
+        ],
+        onSelected: _selectSection,
+      ),
+      status: _loading
+          ? CoeloAdminDirectoryStatus.loading
+          : _errorMessage != null
+          ? CoeloAdminDirectoryStatus.failure
+          : _items.isEmpty
+          ? (_hasAnyFilter ? CoeloAdminDirectoryStatus.noResults : CoeloAdminDirectoryStatus.empty)
+          : CoeloAdminDirectoryStatus.success,
+      messages: const CoeloAdminDirectoryMessages(
+        empty: 'Nenhum card\u00e1pio',
+        emptyIcon: Icons.restaurant_menu,
+        noResults: 'Sem resultado',
+        noResultsIcon: Icons.search_off_rounded,
+        failure: 'N\u00e3o foi poss\u00edvel carregar',
+        unauthorized: 'Acesso não autorizado',
+      ),
+      errorMessage:
+          _errorMessage ??
+          (!_loading && _items.isEmpty
+              ? (_hasAnyFilter
+                    ? 'Ajuste os filtros para encontrar card\u00e1pios.'
+                    : 'Ainda n\u00e3o h\u00e1 card\u00e1pios cadastrados.')
+              : null),
+      onRetry: _loadFromState,
+      search: CoeloSearchField(
         controller: _search,
         hintText: 'Buscar card\u00e1pio',
         semanticLabel: 'Buscar por nome ou origem',
         onChanged: (_) => _debouncedLoad(),
       ),
-    ),
-    filters: [
-      SizedBox(
-        width: compact ? double.infinity : 200,
-        child: CoeloAdminSingleSelectField<MealPlanStatus?>(
-          value: _statusFilter,
-          label: 'Status',
-          options: const [null, ...MealPlanStatus.values],
-          optionLabel: (value) => switch (value) {
-            null => 'Todos',
-            MealPlanStatus.draft => 'Rascunho',
-            MealPlanStatus.inReview => 'Em revis\u00e3o',
-            MealPlanStatus.scheduled => 'Agendado',
-            MealPlanStatus.published => 'Publicado',
-            MealPlanStatus.updated => 'Atualizado',
-            MealPlanStatus.ended => 'Encerrado',
-            MealPlanStatus.archived => 'Arquivado',
-          },
-          onChanged: (value) => setState(() {
-            _statusFilter = value;
-            _load(reset: true);
-          }),
-          prefixIcon: Icons.rule_folder_outlined,
-        ),
-      ),
-      SizedBox(
-        width: compact ? double.infinity : 200,
-        child: CoeloAdminSingleSelectField<MealPlanSourceType?>(
-          value: _sourceFilter,
-          label: 'Origem',
-          options: const [null, ...MealPlanSourceType.values],
-          optionLabel: (value) => value == null ? 'Todos' : _sourceLabel(value),
-          onChanged: (value) => setState(() {
-            _sourceFilter = value;
-            _load(reset: true);
-          }),
-          prefixIcon: Icons.source_outlined,
-        ),
-      ),
-      SizedBox(
-        width: compact ? double.infinity : 170,
-        child: CoeloAdminSingleSelectField<bool?>(
-          value: _hasConflictFilter,
-          label: 'Conflito',
-          options: const [null, true, false],
-          optionLabel: (value) => value == null
-              ? 'Todos'
-              : value
-              ? 'Com conflito'
-              : 'Sem conflito',
-          onChanged: (value) => setState(() {
-            _hasConflictFilter = value;
-            _load(reset: true);
-          }),
-          prefixIcon: Icons.warning_amber_rounded,
-        ),
-      ),
-      SizedBox(
-        width: compact ? double.infinity : 200,
-        child: CoeloAdminSingleSelectField<bool?>(
-          value: _requiresReviewFilter,
-          label: 'Revis\u00e3o',
-          options: const [null, true, false],
-          optionLabel: (value) => value == null
-              ? 'Todos'
-              : value
-              ? 'Requer revis\u00e3o'
-              : 'Sem revis\u00e3o pendente',
-          onChanged: (value) => setState(() {
-            _requiresReviewFilter = value;
-            _load(reset: true);
-          }),
-          prefixIcon: Icons.checklist_rtl,
-        ),
-      ),
-    ],
-    actions: [
-      const SuperadminPlaceholderFileActions(resourceLabel: 'cardápios'),
-      SuperadminDirectoryViewToggle<_MealPlanDirectoryDisplay>(
-        cardsKey: const Key('meal-plan-directory-view-cards'),
-        tableKey: const Key('meal-plan-directory-view-table'),
-        cardsSelected: _display == _MealPlanDirectoryDisplay.cards,
-        groupedView: _MealPlanDirectoryDisplay.table,
-        selectedTableView: _MealPlanDirectoryDisplay.table,
-        tableViews: const [
-          SuperadminDirectoryTableViewOption(
-            value: _MealPlanDirectoryDisplay.table,
-            label: 'Agrupado',
-          ),
-        ],
-        onCardsSelected: () => _setDisplay(_MealPlanDirectoryDisplay.cards),
-        onTableViewSelected: (_) => _setDisplay(_MealPlanDirectoryDisplay.table),
-      ),
-    ],
-  );
-
-  Widget _content({required BoxConstraints constraints}) => switch (_loading) {
-    true => const CoeloStatePanel(
-      key: Key('meal-plans-loading'),
-      title: 'Carregando card\u00e1pios',
-      message: 'Sincronizando card\u00e1pios, status e revis\u00e3o.',
-      loading: true,
-    ),
-    false when _errorMessage != null => _stateWithCreate(
-      state: CoeloStatePanel(
-        title: 'N\u00e3o foi poss\u00edvel carregar',
-        message: _errorMessage!,
-        actionLabel: 'Tentar novamente',
-        onAction: _loadFromState,
-      ),
-    ),
-    false when _items.isEmpty && !_hasAnyFilter => _stateWithCreate(
-      state: const CoeloStatePanel(
-        title: 'Nenhum card\u00e1pio',
-        message: 'Ainda n\u00e3o h\u00e1 card\u00e1pios cadastrados.',
-        icon: Icons.restaurant_menu,
-      ),
-    ),
-    false when _items.isEmpty => _stateWithCreate(
-      state: const CoeloStatePanel(
-        title: 'Sem resultado',
-        message: 'Ajuste os filtros para encontrar card\u00e1pios.',
-        icon: Icons.search_off_rounded,
-      ),
-    ),
-    _ =>
-      _display == _MealPlanDirectoryDisplay.cards
-          ? _cards(constraints: constraints)
-          : _table(constraints: constraints),
-  };
-
-  Widget _stateWithCreate({required Widget state}) => LayoutBuilder(
-    builder: (context, constraints) => ListView(
-      padding: const EdgeInsets.only(bottom: CoeloSpacing.space6),
-      children: [
-        Align(
-          alignment: Alignment.centerLeft,
-          child: SizedBox(
-            width: math.min(constraints.maxWidth, 420),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: _cardMinHeight),
-              child: _createAction(),
-            ),
-          ),
-        ),
-        const SizedBox(height: CoeloSpacing.space4),
-        state,
-      ],
-    ),
-  );
-
-  Widget _createAction() {
-    final models = _section == _MealPlanDirectorySection.models;
-    final compactLargeText =
-        MediaQuery.sizeOf(context).width < CoeloBreakpoints.medium.minWidth &&
-        MediaQuery.textScalerOf(context).scale(1) >= 2;
-    return CoeloAdminCreateAction(
-      label: models ? 'Criar modelo de cardápio' : 'Criar cardápio',
-      description: compactLargeText
-          ? null
-          : models
-          ? 'Monte uma base reutilizável simples ou completa.'
-          : 'Defina modelo-base, período, público e refeições.',
-      icon: models ? Icons.collections_bookmark_rounded : Icons.restaurant_menu_rounded,
-      variant: _display == _MealPlanDirectoryDisplay.table
-          ? CoeloAdminCreateActionVariant.banner
-          : CoeloAdminCreateActionVariant.tile,
-      onPressed: models
-          ? widget.onCreateTemplate
-          : widget.onCreate == null
-          ? null
-          : () => widget.onCreate!(null),
-    );
-  }
-
-  Widget _cards({required BoxConstraints constraints}) {
-    final columns = constraints.maxWidth >= 1020
-        ? 3
-        : constraints.maxWidth >= 680
-        ? 2
-        : 1;
-    final width = (constraints.maxWidth - (columns - 1) * CoeloSpacing.space6) / columns;
-    return SingleChildScrollView(
-      padding: const EdgeInsets.only(bottom: CoeloSpacing.space4),
-      child: Wrap(
-        key: const Key('meal-plan-directory-card-grid'),
-        spacing: CoeloSpacing.space6,
-        runSpacing: CoeloSpacing.space6,
-        children: [
-          SizedBox(
-            key: const Key('meal-plan-directory-create-card'),
-            width: width,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: _cardMinHeight),
-              child: _createAction(),
-            ),
-          ),
-          for (final item in _items)
-            SizedBox(
-              width: width,
-              child: _MealPlanCard(
-                item: item,
-                minHeight: _cardMinHeight,
-                scopeLabel: _scopeLabel(item.scopeLevel, item.scopeId),
-                sourceLabel: _sourceLabel(item.sourceType),
-                onOpen: _canEdit(item) ? () => _runAction(_DirectoryAction.edit, item) : null,
-                canDuplicate: widget.onCreate != null,
-                onAction: (action) => _runAction(action, item),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _table({required BoxConstraints constraints}) => SingleChildScrollView(
-    padding: const EdgeInsets.only(bottom: CoeloSpacing.space4),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        _createAction(),
-        const SizedBox(height: CoeloSpacing.space4),
+      searchWidth: 360,
+      filters: [
         SizedBox(
-          height: math.max(160, constraints.maxHeight - CoeloSpacing.space24),
-          child: CoeloAdminResizableTable<MealPlan>(
-            items: _items,
-            rowKey: (meal) => meal.id,
-            headerHeight: 56,
-            rowHeight: MediaQuery.textScalerOf(context).scale(1) >= 1.75 ? 88 : 66,
-            pinnedColumn: CoeloAdminTableColumn(
-              id: 'name',
-              label: _section == _MealPlanDirectorySection.models ? 'Modelo' : 'Card\u00e1pio',
-              initialWidth: 260,
-              minWidth: 200,
-              maxWidth: 360,
-              cellBuilder: (_, item) =>
-                  Text(item.name, maxLines: 2, overflow: TextOverflow.ellipsis),
-            ),
-            columns: [
-              CoeloAdminTableColumn(
-                id: 'scope',
-                label: 'Abrang\u00eancia',
-                initialWidth: 220,
-                minWidth: 160,
-                maxWidth: 320,
-                cellBuilder: (_, item) => Text(_scopeLabel(item.scopeLevel, item.scopeId)),
-              ),
-              CoeloAdminTableColumn(
-                id: 'status',
-                label: 'Status',
-                initialWidth: 180,
-                minWidth: 140,
-                maxWidth: 220,
-                cellBuilder: (_, item) => _MealPlanStatusChip(status: item.status),
-              ),
-              CoeloAdminTableColumn(
-                id: 'period',
-                label: 'Per\u00edodo',
-                initialWidth: 220,
-                minWidth: 180,
-                maxWidth: 280,
-                cellBuilder: (_, item) => Text(
-                  '${_dateLabel(item.startDate)} a ${_dateLabel(item.endDate)}',
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              CoeloAdminTableColumn(
-                id: 'origin',
-                label: 'Origem',
-                initialWidth: 150,
-                minWidth: 120,
-                maxWidth: 200,
-                cellBuilder: (_, item) => Text(_sourceLabel(item.sourceType)),
-              ),
-              CoeloAdminTableColumn(
-                id: 'conflict',
-                label: 'Conflito',
-                initialWidth: 120,
-                minWidth: 110,
-                maxWidth: 160,
-                cellBuilder: (_, item) => Text(
-                  item.conflictState ? 'Com conflito' : 'Sem conflito',
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              CoeloAdminTableColumn(
-                id: 'actions',
-                label: '',
-                initialWidth: 120,
-                minWidth: 100,
-                maxWidth: 140,
-                cellBuilder: (_, item) => _rowActionMenu(item),
-              ),
-            ],
-            onRowPressed: _canEditSection ? _openItem : null,
+          width: 200,
+          child: CoeloAdminSingleSelectField<MealPlanStatus?>(
+            value: _statusFilter,
+            label: 'Status',
+            options: const [null, ...MealPlanStatus.values],
+            optionLabel: (value) => switch (value) {
+              null => 'Todos',
+              MealPlanStatus.draft => 'Rascunho',
+              MealPlanStatus.inReview => 'Em revis\u00e3o',
+              MealPlanStatus.scheduled => 'Agendado',
+              MealPlanStatus.published => 'Publicado',
+              MealPlanStatus.updated => 'Atualizado',
+              MealPlanStatus.ended => 'Encerrado',
+              MealPlanStatus.archived => 'Arquivado',
+            },
+            onChanged: (value) => setState(() {
+              _statusFilter = value;
+              _load(reset: true);
+            }),
+            prefixIcon: Icons.rule_folder_outlined,
+          ),
+        ),
+        SizedBox(
+          width: 200,
+          child: CoeloAdminSingleSelectField<MealPlanSourceType?>(
+            value: _sourceFilter,
+            label: 'Origem',
+            options: const [null, ...MealPlanSourceType.values],
+            optionLabel: (value) => value == null ? 'Todos' : _sourceLabel(value),
+            onChanged: (value) => setState(() {
+              _sourceFilter = value;
+              _load(reset: true);
+            }),
+            prefixIcon: Icons.source_outlined,
+          ),
+        ),
+        SizedBox(
+          width: 170,
+          child: CoeloAdminSingleSelectField<bool?>(
+            value: _hasConflictFilter,
+            label: 'Conflito',
+            options: const [null, true, false],
+            optionLabel: (value) => value == null
+                ? 'Todos'
+                : value
+                ? 'Com conflito'
+                : 'Sem conflito',
+            onChanged: (value) => setState(() {
+              _hasConflictFilter = value;
+              _load(reset: true);
+            }),
+            prefixIcon: Icons.warning_amber_rounded,
+          ),
+        ),
+        SizedBox(
+          width: 200,
+          child: CoeloAdminSingleSelectField<bool?>(
+            value: _requiresReviewFilter,
+            label: 'Revis\u00e3o',
+            options: const [null, true, false],
+            optionLabel: (value) => value == null
+                ? 'Todos'
+                : value
+                ? 'Requer revis\u00e3o'
+                : 'Sem revis\u00e3o pendente',
+            onChanged: (value) => setState(() {
+              _requiresReviewFilter = value;
+              _load(reset: true);
+            }),
+            prefixIcon: Icons.checklist_rtl,
           ),
         ),
       ],
+      display: _display,
+      onDisplayChanged: _setDisplay,
+      groupedTableView: CoeloAdminDirectoryDisplay.table,
+      selectedTableView: CoeloAdminDirectoryDisplay.table,
+      tableViews: const [
+        CoeloAdminDirectoryTableViewOption(
+          value: CoeloAdminDirectoryDisplay.table,
+          label: 'Agrupado',
+        ),
+      ],
+      onTableViewSelected: (_) => _setDisplay(CoeloAdminDirectoryDisplay.table),
+      fileActions: superadminPlaceholderFileActionList(context, 'cardápios'),
+      create: CoeloAdminDirectoryCreate(
+        label: models ? 'Criar modelo de cardápio' : 'Criar cardápio',
+        description: compactLargeText
+            ? null
+            : models
+            ? 'Monte uma base reutilizável simples ou completa.'
+            : 'Defina modelo-base, período, público e refeições.',
+        icon: models ? Icons.collections_bookmark_rounded : Icons.restaurant_menu_rounded,
+        onPressed: onCreate,
+        tileKey: const Key('meal-plan-directory-create-card'),
+      ),
+      cardMinHeight: _cardMinHeight,
+      cards: [
+        for (final item in _items)
+          _MealPlanCard(
+            item: item,
+            minHeight: _cardMinHeight,
+            scopeLabel: _scopeLabel(item.scopeLevel, item.scopeId),
+            sourceLabel: _sourceLabel(item.sourceType),
+            onOpen: _canEdit(item) ? () => _runAction(_DirectoryAction.edit, item) : null,
+            canDuplicate: widget.onCreate != null,
+            onAction: (action) => _runAction(action, item),
+          ),
+      ],
+      table: _table(),
+      pagination: _totalPages >= 1 && _items.isNotEmpty
+          ? CoeloAdminDirectoryPagination(
+              footerKey: const Key('meal-plans-pagination'),
+              currentPage: _page + 1,
+              totalPages: _totalPages,
+              pageSize: _pageSize,
+              pageSizeOptions: _display == CoeloAdminDirectoryDisplay.cards
+                  ? const [11, 20, 50, 100]
+                  : const [8, 20, 50, 100],
+              onPageSelected: (value) => _setPage(value - 1),
+              onPageSizeChanged: _setPageSize,
+            )
+          : null,
+    );
+  }
+
+  Widget _table() => CoeloAdminResizableTable<MealPlan>(
+    items: _items,
+    rowKey: (meal) => meal.id,
+    headerHeight: 56,
+    rowHeight: MediaQuery.textScalerOf(context).scale(1) >= 1.75 ? 88 : 66,
+    pinnedColumn: CoeloAdminTableColumn(
+      id: 'name',
+      label: _section == _MealPlanDirectorySection.models ? 'Modelo' : 'Card\u00e1pio',
+      initialWidth: 260,
+      minWidth: 200,
+      maxWidth: 360,
+      cellBuilder: (_, item) => Text(item.name, maxLines: 2, overflow: TextOverflow.ellipsis),
     ),
+    columns: [
+      CoeloAdminTableColumn(
+        id: 'scope',
+        label: 'Abrang\u00eancia',
+        initialWidth: 220,
+        minWidth: 160,
+        maxWidth: 320,
+        cellBuilder: (_, item) => Text(_scopeLabel(item.scopeLevel, item.scopeId)),
+      ),
+      CoeloAdminTableColumn(
+        id: 'status',
+        label: 'Status',
+        initialWidth: 180,
+        minWidth: 140,
+        maxWidth: 220,
+        cellBuilder: (_, item) => _MealPlanStatusChip(status: item.status),
+      ),
+      CoeloAdminTableColumn(
+        id: 'period',
+        label: 'Per\u00edodo',
+        initialWidth: 220,
+        minWidth: 180,
+        maxWidth: 280,
+        cellBuilder: (_, item) => Text(
+          '${_dateLabel(item.startDate)} a ${_dateLabel(item.endDate)}',
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+      CoeloAdminTableColumn(
+        id: 'origin',
+        label: 'Origem',
+        initialWidth: 150,
+        minWidth: 120,
+        maxWidth: 200,
+        cellBuilder: (_, item) => Text(_sourceLabel(item.sourceType)),
+      ),
+      CoeloAdminTableColumn(
+        id: 'conflict',
+        label: 'Conflito',
+        initialWidth: 120,
+        minWidth: 110,
+        maxWidth: 160,
+        cellBuilder: (_, item) => Text(
+          item.conflictState ? 'Com conflito' : 'Sem conflito',
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+      CoeloAdminTableColumn(
+        id: 'actions',
+        label: '',
+        initialWidth: 120,
+        minWidth: 100,
+        maxWidth: 140,
+        cellBuilder: (_, item) => _rowActionMenu(item),
+      ),
+    ],
+    onRowPressed: _canEditSection ? _openItem : null,
   );
 
   Widget _rowActionMenu(MealPlan item) {
@@ -704,8 +573,7 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
     required Future<MealPlan> Function(MealPlanRepository repository, String requestId) call,
     bool Function(MealPlan receipt)? isSettled,
   }) async {
-    final key =
-        '$action:${item.id}:${item.revision}:${item.tenantId}:${item.institutionId ?? ''}';
+    final key = '$action:${item.id}:${item.revision}:${item.tenantId}:${item.institutionId ?? ''}';
     final requestId = _writeIntents[key] ??= _requestId();
     final receipt = await call(repository, requestId);
     if (receipt.id != item.id ||
@@ -831,11 +699,11 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
     _load();
   }
 
-  void _setDisplay(_MealPlanDirectoryDisplay display) {
+  void _setDisplay(CoeloAdminDirectoryDisplay display) {
     if (_display == display) return;
     setState(() {
       _display = display;
-      _pageSize = display == _MealPlanDirectoryDisplay.cards ? 11 : 8;
+      _pageSize = display == CoeloAdminDirectoryDisplay.cards ? 11 : 8;
       _page = 0;
     });
     _load(reset: true);

@@ -45,7 +45,9 @@ final class CoeloAdminDirectoryCreate {
   });
 
   final String label;
-  final VoidCallback onPressed;
+
+  /// `null` mantém o Criar visível e desabilitado (sem callback autorizado).
+  final VoidCallback? onPressed;
   final String? description;
   final IconData icon;
   final Key? tileKey;

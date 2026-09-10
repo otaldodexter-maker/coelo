@@ -87,6 +87,10 @@ void main() {
   });
 
   testWidgets('publish intent never crosses repositories after a context swap', (tester) async {
+    // O rodape fixo de paginacao do composto cobre a base da janela padrao
+    // de 600 px; a superficie alta mantem o card e suas acoes visiveis.
+    await tester.binding.setSurfaceSize(const Size(1024, 1400));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
     final conflictsA = Completer<List<MealPlanConflict>>();
     final repositoryA = _DirectoryRepository(
       item: _plan(id: 'plan-a', name: 'Cardápio A'),
@@ -124,6 +128,8 @@ void main() {
 
   for (final mismatch in ['id', 'tenant', 'institution', 'status']) {
     testWidgets('publish rejects a mismatched $mismatch response', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1024, 1400));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
       final item = _plan(id: 'plan-a', name: 'Cardápio A');
       final repository = _DirectoryRepository(
         item: item,
@@ -154,6 +160,10 @@ void main() {
   }
 
   testWidgets('divergent publish receipt retry reuses the same operation id', (tester) async {
+    // O rodape fixo de paginacao do composto cobre a base da janela padrao
+    // de 600 px; a superficie alta mantem o card e suas acoes visiveis.
+    await tester.binding.setSurfaceSize(const Size(1024, 1400));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
     // O recibo divergente é o caso crítico: o servidor respondeu, entao a
     // escrita PODE ter ocorrido. Emitir uma intenção nova no retry permitiria
     // uma segunda publicação.
@@ -190,6 +200,10 @@ void main() {
   });
 
   testWidgets('uncertain publish retry reuses the same operation id', (tester) async {
+    // O rodape fixo de paginacao do composto cobre a base da janela padrao
+    // de 600 px; a superficie alta mantem o card e suas acoes visiveis.
+    await tester.binding.setSurfaceSize(const Size(1024, 1400));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
     final repository = _DirectoryRepository(
       item: _plan(id: 'plan-a', name: 'Cardápio A'),
       unavailablePublishes: 1,
@@ -243,9 +257,16 @@ void main() {
           findsOneWidget,
         );
         expect(find.byType(CoeloStatusChip), findsNothing);
-        var pagination = tester.widget<CoeloAdminPagination>(find.byType(CoeloAdminPagination));
-        expect(pagination.pageSize, 11);
-        expect(pagination.pageSizeOptions, const [11, 20, 50, 100]);
+        // Abaixo de 600 px o rodape da familia e compacto (setas com rotulo);
+        // acima, o seletor de itens por pagina do composto.
+        final compactFooter = size.width < CoeloBreakpoints.medium.minWidth;
+        if (compactFooter) {
+          expect(find.bySemanticsLabel('Página anterior'), findsOneWidget);
+        } else {
+          var pagination = tester.widget<CoeloAdminPagination>(find.byType(CoeloAdminPagination));
+          expect(pagination.pageSize, 11);
+          expect(pagination.pageSizeOptions, const [11, 20, 50, 100]);
+        }
         expect(
           tester.takeException(),
           isNull,
@@ -257,9 +278,11 @@ void main() {
         expect(find.byType(CoeloAdminResizableTable<MealPlan>), findsOneWidget);
         expect(find.byType(CoeloStatusChip), findsOneWidget);
         expect(find.byType(CoeloAdminExpandableStatusIndicator), findsNothing);
-        pagination = tester.widget<CoeloAdminPagination>(find.byType(CoeloAdminPagination));
-        expect(pagination.pageSize, 8);
-        expect(pagination.pageSizeOptions, const [8, 20, 50, 100]);
+        if (!compactFooter) {
+          final pagination = tester.widget<CoeloAdminPagination>(find.byType(CoeloAdminPagination));
+          expect(pagination.pageSize, 8);
+          expect(pagination.pageSizeOptions, const [8, 20, 50, 100]);
+        }
         expect(find.byTooltip('Ações'), findsOneWidget);
         expect(
           tester.takeException(),
@@ -269,9 +292,11 @@ void main() {
 
         await tester.tap(find.byKey(const Key('meal-plan-directory-view-cards')));
         await tester.pumpAndSettle();
-        pagination = tester.widget<CoeloAdminPagination>(find.byType(CoeloAdminPagination));
-        expect(pagination.pageSize, 11);
-        expect(pagination.pageSizeOptions, const [11, 20, 50, 100]);
+        if (!compactFooter) {
+          final pagination = tester.widget<CoeloAdminPagination>(find.byType(CoeloAdminPagination));
+          expect(pagination.pageSize, 11);
+          expect(pagination.pageSizeOptions, const [11, 20, 50, 100]);
+        }
         expect(
           tester.takeException(),
           isNull,

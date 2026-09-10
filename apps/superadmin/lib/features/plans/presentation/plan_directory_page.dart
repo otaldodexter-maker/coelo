@@ -5,10 +5,7 @@ import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
-import '../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
-import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import '../../../shared/presentation/widgets/superadmin_placeholder_file_actions.dart';
-import '../../../shared/presentation/widgets/superadmin_underline_tabs.dart';
 import '../domain/plan_catalog.dart';
 import '../domain/plan_catalog_repository.dart';
 
@@ -119,226 +116,168 @@ final class _PlanDirectoryPageState extends State<PlanDirectoryPage> {
   Widget build(BuildContext context) {
     final page =
         _loadedPage ?? PlanPage(items: const [], totalItems: 0, page: _page, pageSize: _pageSize);
-    return Padding(
-      padding: const EdgeInsets.all(CoeloSpacing.space6),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          CoeloAdminListingToolbar(
-            search: CoeloSearchField(
-              controller: _search,
-              semanticLabel: 'Buscar planos por nome ou código',
-              hintText: 'Buscar por nome ou código',
-              onChanged: (_) => _resetQuery(() {}),
-            ),
-            filters: const [],
-            actions: [
-              const SuperadminPlaceholderFileActions(resourceLabel: 'planos'),
-              SuperadminDirectoryViewToggle<PlanDirectoryView>(
-                cardsKey: const Key('plan-directory-cards-toggle'),
-                tableKey: const Key('plan-directory-table-toggle'),
-                cardsSelected: _view == PlanDirectoryView.cards,
-                groupedView: PlanDirectoryView.table,
-                selectedTableView: PlanDirectoryView.table,
-                tableViews: const [
-                  SuperadminDirectoryTableViewOption(
-                    value: PlanDirectoryView.table,
-                    label: 'Tabela de planos',
-                  ),
-                ],
-                onCardsSelected: () => _resetQuery(() {
-                  _view = PlanDirectoryView.cards;
-                  _pageSize = 11;
-                }),
-                onTableViewSelected: (_) => _resetQuery(() {
-                  _view = PlanDirectoryView.table;
-                  _pageSize = 8;
-                }),
-              ),
-            ],
-          ),
-          const SizedBox(height: CoeloSpacing.space3),
-          SuperadminUnderlineTabs<_PlanStatusFilter>(
-            key: const Key('plan-status-tabs'),
-            tabs: const [
-              SuperadminUnderlineTab(value: _PlanStatusFilter.all, label: 'Todos'),
-              SuperadminUnderlineTab(value: _PlanStatusFilter.active, label: 'Ativos'),
-              SuperadminUnderlineTab(value: _PlanStatusFilter.archived, label: 'Arquivados'),
-            ],
-            selected: _status,
-            onSelected: (value) => _resetQuery(() => _status = value),
-          ),
-          const SizedBox(height: CoeloSpacing.space4),
-          Expanded(child: _body(page)),
-          if (_dataState == PlanDataState.ready && page.totalItems > 0) ...[
-            const SizedBox(height: CoeloSpacing.space3),
-            SuperadminListingPaginationFooter(
-              horizontalPadding: 0,
-              child: CoeloAdminPagination(
-                key: const Key('plan-directory-pagination'),
-                currentPage: _page.clamp(1, page.totalPages),
-                totalPages: page.totalPages,
-                pageSize: _pageSize,
-                pageSizeOptions: _view == PlanDirectoryView.cards
-                    ? const [11, 20, 50, 100]
-                    : const [8, 20, 50, 100],
-                onPageSizeChanged: (value) => _resetQuery(() => _pageSize = value),
-                onPrevious: _page > 1 ? () => _changePage(_page - 1) : null,
-                onNext: _page < page.totalPages ? () => _changePage(_page + 1) : null,
-                onPageSelected: _changePage,
-              ),
-            ),
-          ],
-        ],
+    final filtered = _search.text.trim().isNotEmpty || _status != _PlanStatusFilter.all;
+    final status = switch (_dataState) {
+      PlanDataState.loading => CoeloAdminDirectoryStatus.loading,
+      PlanDataState.error => CoeloAdminDirectoryStatus.failure,
+      PlanDataState.unauthorized => CoeloAdminDirectoryStatus.unauthorized,
+      PlanDataState.ready when page.totalItems == 0 =>
+        filtered ? CoeloAdminDirectoryStatus.noResults : CoeloAdminDirectoryStatus.empty,
+      PlanDataState.ready => CoeloAdminDirectoryStatus.success,
+    };
+    return CoeloAdminDirectory<PlanDirectoryView>(
+      scrollKey: const Key('plan-directory-scroll'),
+      cardsKey: const Key('plan-directory-cards-toggle'),
+      tableKey: const Key('plan-directory-table-toggle'),
+      gridKey: const Key('plan-card-grid'),
+      status: status,
+      messages: const CoeloAdminDirectoryMessages(
+        empty: 'Nenhum plano cadastrado',
+        emptyIcon: Icons.loyalty_outlined,
+        noResults: 'Nenhum plano encontrado',
+        failure: 'Não foi possível carregar os planos',
+        failureIcon: Icons.cloud_off_outlined,
+        unauthorized: 'Acesso não autorizado',
+        unauthorizedIcon: Icons.lock_outline_rounded,
       ),
-    );
-  }
-
-  Widget _body(PlanPage page) => switch (_dataState) {
-    PlanDataState.loading => const CoeloStatePanel(
-      title: 'Carregando planos',
-      message: 'Aguarde enquanto preparamos o catálogo.',
-      loading: true,
-    ),
-    PlanDataState.error => CoeloStatePanel(
-      title: 'Não foi possível carregar os planos',
-      message: 'Tente novamente sem perder a consulta atual.',
-      icon: Icons.cloud_off_outlined,
-      actionLabel: 'Tentar novamente',
-      onAction: () => unawaited(_load()),
-    ),
-    PlanDataState.unauthorized => const CoeloStatePanel(
-      title: 'Acesso não autorizado',
-      message: 'Você não possui autorização para consultar o catálogo de planos.',
-      icon: Icons.lock_outline_rounded,
-    ),
-    PlanDataState.ready => _readyBody(page),
-  };
-
-  Widget _readyBody(PlanPage page) {
-    if (page.totalItems == 0) {
-      final filtered = _search.text.trim().isNotEmpty || _status != _PlanStatusFilter.all;
-      return CoeloStatePanel(
-        title: filtered ? 'Nenhum plano encontrado' : 'Nenhum plano cadastrado',
-        message: filtered
-            ? 'Ajuste a busca ou selecione outro status.'
-            : 'Crie o primeiro plano do catálogo Coelo.',
-        icon: filtered ? Icons.search_off_rounded : Icons.loyalty_outlined,
-        actionLabel: filtered ? 'Limpar consulta' : 'Novo plano',
-        onAction: filtered
-            ? () => _resetQuery(() {
-                _search.clear();
-                _status = _PlanStatusFilter.all;
-              })
-            : widget.onCreate,
-      );
-    }
-    return _view == PlanDirectoryView.cards ? _cards(page.items) : _table(page.items);
-  }
-
-  Widget _cards(List<PlanCatalog> plans) => LayoutBuilder(
-    builder: (context, constraints) => GridView.builder(
-      key: const Key('plan-card-grid'),
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 420,
-        mainAxisExtent: 216,
-        crossAxisSpacing: CoeloSpacing.space4,
-        mainAxisSpacing: CoeloSpacing.space4,
-      ),
-      itemCount: plans.length + 1,
-      itemBuilder: (context, index) {
-        if (index == 0) {
-          return CoeloAdminCreateAction(
-            label: 'Novo plano',
-            description: 'Adicionar ao catálogo global',
-            icon: Icons.loyalty_outlined,
-            onPressed: widget.onCreate,
-          );
-        }
-        return _PlanCard(
-          plan: plans[index - 1],
-          onOpen: () => widget.onEdit?.call(plans[index - 1].id),
-          onAction: (action) => _handleAction(plans[index - 1], action),
-        );
+      errorMessage: switch (status) {
+        CoeloAdminDirectoryStatus.failure => 'Tente novamente sem perder a consulta atual.',
+        CoeloAdminDirectoryStatus.unauthorized =>
+          'Você não possui autorização para consultar o catálogo de planos.',
+        CoeloAdminDirectoryStatus.empty => 'Crie o primeiro plano do catálogo Coelo.',
+        _ => null,
       },
-    ),
-  );
-
-  Widget _table(List<PlanCatalog> plans) => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      CoeloAdminCreateAction(
+      onRetry: () => unawaited(_load()),
+      onClearFilters: () => _resetQuery(() {
+        _search.clear();
+        _status = _PlanStatusFilter.all;
+      }),
+      search: CoeloSearchField(
+        controller: _search,
+        semanticLabel: 'Buscar planos por nome ou código',
+        hintText: 'Buscar por nome ou código',
+        onChanged: (_) => _resetQuery(() {}),
+      ),
+      display: _view == PlanDirectoryView.cards
+          ? CoeloAdminDirectoryDisplay.cards
+          : CoeloAdminDirectoryDisplay.table,
+      onDisplayChanged: (value) => _resetQuery(() {
+        _view = value == CoeloAdminDirectoryDisplay.cards
+            ? PlanDirectoryView.cards
+            : PlanDirectoryView.table;
+        _pageSize = _view == PlanDirectoryView.cards ? 11 : 8;
+      }),
+      groupedTableView: PlanDirectoryView.table,
+      selectedTableView: PlanDirectoryView.table,
+      tableViews: const [
+        CoeloAdminDirectoryTableViewOption(
+          value: PlanDirectoryView.table,
+          label: 'Tabela de planos',
+        ),
+      ],
+      onTableViewSelected: (_) => _resetQuery(() {
+        _view = PlanDirectoryView.table;
+        _pageSize = 8;
+      }),
+      fileActions: superadminPlaceholderFileActionList(context, 'planos'),
+      tabs: CoeloAdminUnderlineTabs<_PlanStatusFilter>(
+        key: const Key('plan-status-tabs'),
+        tabs: const [
+          CoeloAdminUnderlineTab(value: _PlanStatusFilter.all, label: 'Todos'),
+          CoeloAdminUnderlineTab(value: _PlanStatusFilter.active, label: 'Ativos'),
+          CoeloAdminUnderlineTab(value: _PlanStatusFilter.archived, label: 'Arquivados'),
+        ],
+        selected: _status,
+        onSelected: (value) => _resetQuery(() => _status = value),
+      ),
+      create: CoeloAdminDirectoryCreate(
         label: 'Novo plano',
         description: 'Adicionar ao catálogo global',
         icon: Icons.loyalty_outlined,
-        variant: CoeloAdminCreateActionVariant.banner,
         onPressed: widget.onCreate,
       ),
-      const SizedBox(height: CoeloSpacing.space4),
-      Expanded(
-        child: CoeloAdminResizableTable<PlanCatalog>(
-          key: const Key('plan-table'),
-          items: plans,
-          rowKey: (plan) => plan.id,
-          headerHeight: 56,
-          rowHeight: 64,
-          onRowPressed: (plan) => widget.onEdit?.call(plan.id),
-          pinnedColumn: CoeloAdminTableColumn(
-            id: 'plan',
-            label: 'Plano',
-            initialWidth: 260,
-            minWidth: 220,
-            maxWidth: 360,
-            cellBuilder: (context, plan) => _PlanName(plan: plan),
+      cards: [
+        for (final plan in page.items)
+          _PlanCard(
+            plan: plan,
+            onOpen: () => widget.onEdit?.call(plan.id),
+            onAction: (action) => _handleAction(plan, action),
           ),
-          columns: [
-            CoeloAdminTableColumn(
-              id: 'code',
-              label: 'Código',
-              initialWidth: 180,
-              minWidth: 150,
-              maxWidth: 240,
-              cellBuilder: (context, plan) => Text(plan.code),
-            ),
-            CoeloAdminTableColumn(
-              id: 'status',
-              label: 'Status',
-              initialWidth: 140,
-              minWidth: 120,
-              maxWidth: 180,
-              cellBuilder: (context, plan) => Text(_statusLabel(plan.status)),
-            ),
-            CoeloAdminTableColumn(
-              id: 'capabilities',
-              label: 'Capacidades',
-              initialWidth: 150,
-              minWidth: 130,
-              maxWidth: 190,
-              cellBuilder: (context, plan) => Text('${plan.features.length} incluídas'),
-            ),
-            CoeloAdminTableColumn(
-              id: 'institutions',
-              label: 'Instituições',
-              initialWidth: 150,
-              minWidth: 130,
-              maxWidth: 190,
-              cellBuilder: (context, plan) => Text('${plan.usedByInstitutionCount} vinculadas'),
-            ),
-            CoeloAdminTableColumn(
-              id: 'actions',
-              label: 'Ações',
-              initialWidth: 96,
-              minWidth: 88,
-              maxWidth: 120,
-              cellBuilder: (context, plan) => Align(
-                alignment: Alignment.centerLeft,
-                child: _PlanActions(
-                  plan: plan,
-                  onSelected: (action) => _handleAction(plan, action),
-                ),
-              ),
-            ),
-          ],
+      ],
+      table: _table(page.items),
+      pagination: _dataState == PlanDataState.ready && page.totalItems > 0
+          ? CoeloAdminDirectoryPagination(
+              footerKey: const Key('plan-directory-pagination'),
+              currentPage: _page.clamp(1, page.totalPages),
+              totalPages: page.totalPages,
+              pageSize: _pageSize,
+              pageSizeOptions: _view == PlanDirectoryView.cards
+                  ? const [11, 20, 50, 100]
+                  : const [8, 20, 50, 100],
+              onPageSelected: _changePage,
+              onPageSizeChanged: (value) => _resetQuery(() => _pageSize = value),
+            )
+          : null,
+    );
+  }
+
+  Widget _table(List<PlanCatalog> plans) => CoeloAdminResizableTable<PlanCatalog>(
+    key: const Key('plan-table'),
+    items: plans,
+    rowKey: (plan) => plan.id,
+    headerHeight: 56,
+    rowHeight: 64,
+    onRowPressed: (plan) => widget.onEdit?.call(plan.id),
+    pinnedColumn: CoeloAdminTableColumn(
+      id: 'plan',
+      label: 'Plano',
+      initialWidth: 260,
+      minWidth: 220,
+      maxWidth: 360,
+      cellBuilder: (context, plan) => _PlanName(plan: plan),
+    ),
+    columns: [
+      CoeloAdminTableColumn(
+        id: 'code',
+        label: 'Código',
+        initialWidth: 180,
+        minWidth: 150,
+        maxWidth: 240,
+        cellBuilder: (context, plan) => Text(plan.code),
+      ),
+      CoeloAdminTableColumn(
+        id: 'status',
+        label: 'Status',
+        initialWidth: 140,
+        minWidth: 120,
+        maxWidth: 180,
+        cellBuilder: (context, plan) => Text(_statusLabel(plan.status)),
+      ),
+      CoeloAdminTableColumn(
+        id: 'capabilities',
+        label: 'Capacidades',
+        initialWidth: 150,
+        minWidth: 130,
+        maxWidth: 190,
+        cellBuilder: (context, plan) => Text('${plan.features.length} incluídas'),
+      ),
+      CoeloAdminTableColumn(
+        id: 'institutions',
+        label: 'Instituições',
+        initialWidth: 150,
+        minWidth: 130,
+        maxWidth: 190,
+        cellBuilder: (context, plan) => Text('${plan.usedByInstitutionCount} vinculadas'),
+      ),
+      CoeloAdminTableColumn(
+        id: 'actions',
+        label: 'Ações',
+        initialWidth: 96,
+        minWidth: 88,
+        maxWidth: 120,
+        cellBuilder: (context, plan) => Align(
+          alignment: Alignment.centerLeft,
+          child: _PlanActions(plan: plan, onSelected: (action) => _handleAction(plan, action)),
         ),
       ),
     ],
@@ -509,7 +448,7 @@ final class _PlanCard extends StatelessWidget {
           ),
           const SizedBox(height: CoeloSpacing.space3),
           Text(plan.description, maxLines: 2, overflow: TextOverflow.ellipsis),
-          const Spacer(),
+          const SizedBox(height: CoeloSpacing.space4),
           Wrap(
             spacing: CoeloSpacing.space3,
             runSpacing: CoeloSpacing.space2,

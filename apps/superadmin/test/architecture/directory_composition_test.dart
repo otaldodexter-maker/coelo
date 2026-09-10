@@ -110,7 +110,6 @@ void main() {
       'lib/features/daily_routine/daily_routine_pages.dart',
       'lib/features/health_care/presentation/health_care_controller.dart',
       'lib/features/invites/presentation/invite_directory_widgets.dart',
-      'lib/features/meal_plans/presentation/meal_plan_directory_page.dart',
     };
     final found = <String>{};
     for (final entity in root.listSync(recursive: true)) {
