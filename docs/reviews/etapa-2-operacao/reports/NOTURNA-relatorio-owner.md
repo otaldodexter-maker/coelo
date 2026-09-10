@@ -1418,6 +1418,33 @@ enquanto o trabalho era dela, e parou de escrever exatamente quando o trabalho
 virou verificação para outro — que é justamente o trabalho que o outro não tem
 como refazer sozinho.
 
+## Uma proposta de processo para os goldens, e ela é nova — não é o que a casa faz
+
+O dilema que a triagem expôs é real: **regravar apaga a referência anterior, e não
+regravar deixa a suíte vermelha**. Nos casos de Instituições e de Conta isso ficou
+concreto — regravar carimba, como estado aprovado, uma perda de cobertura num caso
+e a ausência de uma afordância no outro.
+
+A saída natural é não substituir: **criar a próxima versão da referência e manter a
+anterior**, de modo que a comparação entre versões mostre o que mudou e quando.
+Isso dissolve o dilema, porque a referência antiga deixa de ser algo que se perde
+ao aprovar a nova.
+
+**Três famílias parecem já fazer isso**, com sufixos de versão nos nomes dos
+arquivos de golden. Fui verificar antes de recomendar como prática existente, e
+**não é.** Não há documento, spec ou nota de design que defina o esquema; os
+sufixos aparecem apenas dentro de três arquivos de teste, como texto fixo. Os
+números não correspondem às specs das famílias que os carregam. E o decisivo:
+**nenhuma versão jamais subiu.** Um dos arquivos foi criado uma vez e
+**sobrescrito no lugar** duas vezes, sempre com o mesmo nome; e o caso que mais
+parecia incremental entrou no repositório já com o número final, sem que a versão
+anterior tivesse existido.
+
+Portanto: **a proposta é nova.** O sufixo existente é, na melhor hipótese,
+evidência de que alguém teve a mesma intuição e não a levou adiante. Recomendá-la
+como prática da casa afirmaria que um problema já está resolvido quando não está —
+e essa afirmação, num relatório de estado, é pior que a ausência da recomendação.
+
 ## A dívida de formatação está no lugar oposto ao que o número sugere
 
 Um censo mediu 41 arquivos com formatação de data escrita à mão, e a leitura
