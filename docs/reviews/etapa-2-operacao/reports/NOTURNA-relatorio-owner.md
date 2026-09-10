@@ -1791,6 +1791,19 @@ script que escreve o registro — e não pegou onde ainda se digita, que são as
 mensagens. **Regra que depende de disciplina no momento da escrita não pega; a que
 vira comando pega.**
 
+- **E a sexta, a mais confortável de aceitar:** um filtro que devolve conjunto
+  **vazio**. Um script de recorte, rodado contra uma árvore de trabalho diferente
+  daquela para a qual fora escrito, descartou todos os caminhos e devolveu
+  **zero casos, zero falhas** — ao lado de um bloco de controle informando,
+  corretamente, que 316 casos haviam sido reconstruídos. **A metade conferível
+  certa emprestando credibilidade à metade errada, outra vez.** "Nenhuma falha no
+  recorte" é uma frase que qualquer leitor aceita, e um zero não parece erro:
+  parece resultado. Foi pego apenas porque quem mediu **esperava 306** — e
+  expectativa é controle fraco, que não teria existido numa primeira medição.
+  **Um filtro que devolve vazio precisa gritar**, pelo mesmo motivo que um detector
+  que nunca dispara — só que aqui o silêncio é a resposta que o leitor quer, o que
+  torna a checagem ainda menos provável.
+
 **E o que pegou essa foi conferir o instrumento contra um número que ele não
 produziu** — o contador oficial da própria corrida. Uma verificação do parser
 contra outra execução do mesmo parser teria confirmado o erro. É a lei do controle
