@@ -1286,11 +1286,26 @@ duas armadilhas armadas esperando a terceira.
     administrativas, as duas saem com seus testes; se não, falta rota, e aí é
     trabalho e não lixo.
 
-    **Verificado depois de esta seção ser escrita, e confirmado:** a
-    implementação duplicada das abas tem zero consumidores no código de produção,
-    e seus dois testes — incluindo a referência visual — passam, 19 de 19. É
-    exatamente o caso descrito: implementação pública, com nome canônico,
-    protegida por um golden verde, e inerte.
+    **Verificado depois de esta seção ser escrita, e a verificação corrige a
+    própria seção: não é duplicação, é divergência de contrato.** A implementação
+    órfã tem zero consumidores no código de produção e seus dois testes passam, 19
+    de 19 — mas ela oferece **quatro** abas, incluindo Circulares e Sobre, e a
+    página real do Perfil constrói **duas**. Não é uma cópia esquecida da tela
+    viva: **é uma composição que descreve um Perfil maior do que o que existe.**
+
+    E isso muda a pergunta que chega até você. **Um golden aprovado de quatro abas
+    é evidência de que alguém, em algum momento, aprovou um Perfil com Circulares
+    e Sobre.** Somado ao item 0 — a referência com "Acompanhar" e seis métricas
+    contra a composição com "Mensagem" e três — **são três versões do Perfil, não
+    duas.** Se a resposta cobrir só duas, ela fecha uma divergência e deixa a
+    outra viva.
+
+    **E o caso explica um limite das varreduras desta rodada:** essa classe não
+    foi encontrada por nenhuma delas porque falha nos três critérios ao mesmo
+    tempo — não está na árvore da feature, o nome do arquivo não menciona o
+    domínio, e a página não a importa. **Só aparece varrendo por nome de classe**,
+    que é um quarto critério que ninguém usou. Quando o domínio aparece no nome da
+    classe e não no caminho, nenhuma varredura de caminho o encontra.
 
     **E há um risco de execução que vale nomear junto:** o componente morto vive
     no arquivo de uma frente e o vivo no de outra. **Dono ambíguo foi o que deixou
