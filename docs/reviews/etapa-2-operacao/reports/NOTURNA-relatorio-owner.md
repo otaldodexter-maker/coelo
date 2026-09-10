@@ -38,7 +38,8 @@ O método já evitou três enganos concretos:
 | Base | Hora | Resultado |
 | --- | --- | --- |
 | `ecc8eae2b` | 19:30 | 5707 PASS, 9 SKIP, 190 FAIL |
-| `414b82b29` | 20:40 | 5871 PASS, 9 SKIP, 182 FAIL |
+| `414b82b29` | 20:40 | 5871 PASS, 9 SKIP, 182 FAIL — 144 golden, 38 não |
+| `b0f816560` | 21:40 | 6811 PASS, 9 SKIP, 156 FAIL — 127 golden, **29 não** |
 
 A rodada somou casos que passam e **reduziu 8 falhas**. Nenhum número soma
 reexecuções. O catálogo das 182, por arquivo e por dono, está no
@@ -175,6 +176,43 @@ hash que prova que só o nome mudou.
   **adicionar** um ramo `/attendance` por simetria com invites, notices e
   circulars. O repositório injetado é real, então o ramo abriria as rotas contra
   RPCs que não existem.
+
+## A classe de geometria fixa
+
+Quatro telas transbordam porque a moldura não cresce: o cartão do diretório de
+Planos tem `mainAxisExtent` fixo, a célula de Cardápios tem proporção quadrada, a
+célula do calendário da Agenda tem altura fixa, e a tabela administrativa não rola
+na vertical. Não é falta de `Flexible` num rótulo — esse caso existia e foi
+corrigido em Planos, sem mudar nada a 100%.
+
+Duas medições impedem a leitura confortável de que isso é problema de dados de
+teste:
+
+- Com a composição **padrão**, que é fail-closed e não injeta repositório nenhum,
+  as oito rotas de produção passam a 100% em 375 e 1440 — 16 de 16. A 200%, duas
+  falham. **Cardápios transborda os mesmos 37 pixels com e sem dados**, o que
+  prova que a causa é a moldura e não o conteúdo.
+- A Agenda a 375 transborda com texto a **100%**, no estado padrão de um
+  telefone. Autorizei estender a adaptação que a própria tela já tinha
+  (`occurrences.take(largeText ? 1 : 2)`) para largura estreita; foi medido e
+  **não resolveu**: nem o número do dia com uma única marca cabe nos 39,6 de
+  altura que o shell deixa. A alteração foi revertida em vez de escalar para
+  geometria. A decisão volta a ser sua, e é a mais severa das quatro porque
+  ocorre sem o usuário ampliar nada.
+
+## Acessibilidade medida pelas diretrizes nativas
+
+Nas nove telas do recorte de Operações, 21 de 27 casos passam. As falhas se
+concentram em `/dev/imports`, que falha nas **três** diretrizes — rótulo de alvo,
+tamanho de alvo Android e contraste — e é também a única tela que transborda nas
+duas larguras. A leitura inverte o sentido usual do adiamento: **o adiamento de
+Importações está protegendo o usuário de uma tela que não passaria**.
+
+Um candidato ficou sem identificação e está registrado como candidato, não como
+defeito: um nó de 128×48 no cabeçalho de quatro telas expõe apenas `longPress`
+sem rótulo. Sete hipóteses foram descartadas, seis delas por teste isolado, e o
+nó só aparece na composição completa pelo router — nunca nos componentes
+isolados. Quem retomar deve atacar pela composição.
 
 ## Duas decisões de componente e uma de segurança
 
