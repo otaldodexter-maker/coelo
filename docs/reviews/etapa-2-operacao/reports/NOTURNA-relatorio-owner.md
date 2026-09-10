@@ -1867,6 +1867,24 @@ obteve 8 de 27. **Nenhum dos três testes é o certo sozinho.** O que funciona �
 declarar os três lado a lado e explicar o desacordo, que foi o que as duas frentes
 acabaram fazendo por conta própria.
 
+E o critério errado teve uma última chance de mostrar o quanto custa. Noventa
+segundos depois de eu avisar uma frente de que a diferença de conteúdo não é imune
+ao movimento da base, ela rodou a conferência com esse teste e me devolveu **cinco
+commits "genuinamente fora de dev, não por SHA, por conteúdo"**. Quatro dos cinco
+estavam dentro, colhidos, com o rastro nomeando o commit de destino de cada um.
+
+**E o instrumento não parou no número errado: construiu uma hipótese em volta
+dele.** A frente observou que uma outra tinha cinco commits na branch e que só o
+último aparecia integrado, e sugeriu conferir se deixar os três do meio de fora
+fora deliberado. Era uma leitura correta do artefato errado. Se eu não tivesse
+medido, teria investigado uma integração parcial inexistente — ou recolhido
+trabalho já presente — no minuto do fechamento, e teria levantado uma suspeita de
+negligência sobre uma frente que não errou nada.
+
+É a única vez na noite em que um instrumento defeituoso produziu não apenas um
+número errado, mas **uma narrativa plausível sobre a conduta de outra pessoa**. E o
+alarme foi na direção que faz agir.
+
 ### O único número que diz se as correções da noite funcionaram
 
 Às 02:11 uma frente estava com quarenta minutos de deriva de relógio. Às 03:00 eu
