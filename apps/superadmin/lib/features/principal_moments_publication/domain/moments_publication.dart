@@ -190,35 +190,6 @@ final class InMemoryMomentsPublicationRepository implements MomentsPublicationRe
   }
 }
 
-/// Result of a soft withdrawal of a published moment.
-///
-/// Withdrawal never deletes the publication nor its media; it only removes the
-/// moment from every authorized feed.
-@immutable
-final class MomentsWithdrawal {
-  const MomentsWithdrawal({
-    required this.id,
-    required this.status,
-    required this.withdrawnAt,
-    required this.version,
-  });
-
-  final String id;
-  final MomentsStatus status;
-  final DateTime withdrawnAt;
-  final int version;
-}
-
-/// Author-only withdrawal command. The backend re-authorizes actor, tenant,
-/// scope, permission and authorship; the client never decides.
-abstract interface class MomentsWithdrawalRepository {
-  Future<MomentsWithdrawal> withdraw(
-    String publicationId, {
-    int? expectedVersion,
-    String? reason,
-  });
-}
-
 final class MomentsPublicationConflict implements Exception {}
 
 final class MomentsPublicationUnauthorized implements Exception {}
