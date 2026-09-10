@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/groups/data/fake_group_directory_repository.dart';
 import 'package:coelo_superadmin/features/groups/domain/group_directory.dart';
@@ -12,6 +14,77 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final failure in [false, true]) {
+    testWidgets(
+      'group pending save rejects duplicate submission and further editing failure=$failure',
+      (tester) async {
+        await tester.binding.setSurfaceSize(const Size(1024, 1100));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+        final institutions = FakeInstitutionDirectoryRepository();
+        final repository = _PendingGroupRepository(FakeGroupDirectoryRepository(institutions));
+        var saved = 0;
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: CoeloTheme.light,
+            home: GroupFormPage(
+              repository: repository,
+              logout: () async => const LogoutResult.success(),
+              onCancel: () {},
+              onSaved: (_) => saved++,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const Key('group-form-continue')));
+        await tester.pumpAndSettle();
+        await tester.enterText(find.byKey(const Key('group-name-field')), 'Turma A');
+        await tester.tap(find.byKey(const Key('step-convites')));
+        await tester.pumpAndSettle();
+        final submit = tester
+            .widget<FilledButton>(find.byKey(const Key('group-form-save')))
+            .onPressed!;
+        submit();
+        await tester.pump();
+        try {
+          expect(repository.requests, hasLength(1));
+          submit();
+          await tester.pump();
+          expect(repository.requests, hasLength(1), reason: 'One in-flight intention');
+          final add = find.byKey(const Key('group-invite-add'));
+          await tester.ensureVisible(add);
+          await tester.pump();
+          await tester.tap(add, warnIfMissed: false);
+          await tester.pump(const Duration(milliseconds: 300));
+          expect(find.byKey(const Key('group-invite-identifier-field')), findsNothing);
+          await tester.tap(find.byKey(const Key('step-identidade')), warnIfMissed: false);
+          await tester.pump();
+          expect(find.byKey(const Key('group-name-field')), findsNothing);
+          expect(find.text('Salvando altera\u00e7\u00f5es\u2026'), findsOneWidget);
+        } finally {
+          if (failure) {
+            repository.pending.completeError(const GroupDirectoryUnauthorizedException());
+          } else {
+            repository.pending.complete(
+              GroupDirectorySaveResult(
+                requestId: repository.requests.first.requestId,
+                steps: [GroupDirectorySaveStepResult.success(stage: GroupDirectorySaveStage.group)],
+              ),
+            );
+          }
+          await tester.pumpAndSettle();
+        }
+        expect(saved, failure ? 0 : 1);
+        expect(repository.requests.single.record.name, 'Turma A');
+        expect(find.text('Salvando altera\u00e7\u00f5es\u2026'), findsNothing);
+        await tester.tap(find.byKey(const Key('step-identidade')));
+        await tester.pumpAndSettle();
+        await tester.enterText(find.byKey(const Key('group-name-field')), 'Turma B');
+        await tester.tap(find.byKey(const Key('group-form-cancel')));
+        await tester.pumpAndSettle();
+        expect(find.text('Sair sem salvar?'), findsOneWidget);
+      },
+    );
+  }
   testWidgets('renders inherited access without a raw Material ListTile', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1024, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -475,4 +548,35 @@ final class _ErrorOnSaveGroupDirectoryRepository implements GroupDirectoryReposi
 
   @override
   Future<void> upsert(GroupRecord record) => _delegate.upsert(record);
+}
+
+final class _PendingGroupRepository implements GroupDirectoryRepository {
+  _PendingGroupRepository(this.delegate);
+  final GroupDirectoryRepository delegate;
+  final pending = Completer<GroupDirectorySaveResult>();
+  final requests = <GroupDirectorySaveRequest>[];
+  @override
+  Future<GroupDirectorySaveResult> saveComposition(GroupDirectorySaveRequest request) {
+    requests.add(request);
+    return pending.future;
+  }
+
+  @override
+  String createId(String institutionId, String unitId, String name) =>
+      delegate.createId(institutionId, unitId, name);
+  @override
+  Future<GroupDirectoryPage> fetchPage(GroupDirectoryQuery query) => delegate.fetchPage(query);
+  @override
+  Future<GroupDirectoryFilterOptions> fetchFilterOptions({Set<String> institutionIds = const {}}) =>
+      delegate.fetchFilterOptions(institutionIds: institutionIds);
+  @override
+  Future<GroupDirectoryFormContext> fetchFormContext({String? institutionId}) =>
+      delegate.fetchFormContext(institutionId: institutionId);
+  @override
+  Future<GroupRecord?> findById(String id) => delegate.findById(id);
+  @override
+  Future<GroupDirectoryExportResult> requestExport(GroupDirectoryQuery query) =>
+      delegate.requestExport(query);
+  @override
+  Future<void> upsert(GroupRecord record) => delegate.upsert(record);
 }
