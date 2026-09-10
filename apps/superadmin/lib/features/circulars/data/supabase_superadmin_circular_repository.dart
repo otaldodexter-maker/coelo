@@ -89,6 +89,27 @@ final class SupabaseSuperadminCircularRepository implements SuperadminCircularRe
   );
 
   @override
+  Future<SuperadminCircularDeleteResult> delete({
+    required String requestId,
+    required String circularId,
+    required int expectedVersion,
+  }) async {
+    final data = _map(
+      await _rpc('superadmin_circular_delete_v2', {
+        'p_request_id': requestId,
+        'p_circular_id': circularId,
+        'p_expected_version': expectedVersion,
+      }),
+    );
+    return SuperadminCircularDeleteResult(
+      id: _string(data['id']),
+      version: _integer(data['version']),
+      status: _status(data['status']),
+      deleted: data['deleted'] == true,
+    );
+  }
+
+  @override
   Future<CircularDetail> getVisible(String circularId, {String? childContextId}) async {
     final data = await _detail(circularId);
     final draft = CircularDraftCodec.fromJson(_map(data['draft']));

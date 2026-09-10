@@ -1,0 +1,67 @@
+{
+  "revision": 2,
+  "round": "E2-R03-20260910",
+  "group": "publicacoes-agenda",
+  "tool": "Codex",
+  "model": "Luna medio",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-publicacoes-agenda",
+  "branch": "work/etapa2-r03-publicacoes-agenda",
+  "head": "bb15db748b61eaa926bd7264330ba1509578410e",
+  "coordinator": "Claude",
+  "scope": {
+    "app": "apps/superadmin",
+    "families": ["agenda", "notices", "circulars"],
+    "actionIds": [
+      "agenda.view", "agenda.create", "agenda.detail", "agenda.edit", "agenda.request", "agenda.permissions", "agenda.location",
+      "notices.list", "notices.create", "notices.edit", "notices.schedule", "notices.publish", "notices.archive",
+      "circulars.list", "circulars.filter", "circulars.create", "circulars.edit", "circulars.detail", "circulars.schedule", "circulars.publish", "circulars.close", "circulars.delete", "circulars.respond", "circulars.attach"
+    ],
+    "included": "Telas e subtelas ponta a ponta, com migration, pgTAP, repositórios/contratos e chave de composição por pacote.",
+    "excluded": "Admin, Principal e Site; pg_cron e worker de Avisos; aplicação remota pelo coordenador; UI do composto enquanto base.fase0Head não existir.",
+    "order": ["agenda", "notices", "circulars"],
+    "stop": "Finalizar as 24 ações ou receber ordem do Owner/coordenador; bloqueio retém somente a ação dependente.",
+    "evidence": "Commits da frente, saída dos testes locais, handoffs e este JSON; E2E somente após base integrada e aplicação remota pelo coordenador."
+  },
+  "knownPendencies": [
+    "coordenacao.json não publicou base.fase0Head; worktree foi criada provisoriamente a partir de dev bb15db748.",
+    "Avisos: migration/pgTAP e worker nominal precisam ser revalidados; pg_cron e worker pertencem ao coordenador.",
+    "Circulares: gateway administrativo ainda não expõe exclusão e a ação de encerramento não tem affordance produtiva; contrato backend deve ser preparado sem tocar UI de diretório antes da base.",
+    "Agenda: compatibilizar contexto interno039 e validar readers/comandos produtivos; goldens e composto aguardam Fase 0."
+  ],
+  "firstGate": "Backend: localizar o contrato canônico, testar existência/assinaturas, grants, RLS, capacidade, tenant e idempotência; produzir o primeiro pacote SQL/pgTAP executável sem tocar UI de diretório.",
+  "status": "backend-package-local-green-pgtap-blocked",
+  "compositionKeys": [
+    {"package": "circulars.delete", "key": "superadminCircularDeleteEnabled", "default": false, "owner": "coordenador", "reason": "ligar somente após migration aplicada e gateway verificado"}
+  ],
+  "tests": {
+    "passed": 8,
+    "failed": 0,
+    "blocked": 1,
+    "skipped": 0,
+    "evidence": [
+      "apps/superadmin/test/features/circulars/data/supabase_superadmin_circular_repository_test.dart: 8 PASS",
+      "supabase test db supabase/tests/superadmin_internal_circular_delete_v1_test.sql --local: BLOQUEADO, Docker/Postgres local indisponível (ECONNREFUSED 127.0.0.1:54322)"
+    ]
+  },
+  "reservedFiles": [
+    "packages/coelo_database/migrations/*publicacoes_agenda*",
+    "packages/coelo_database/supabase/tests/*agenda*",
+    "packages/coelo_database/supabase/tests/*notice*",
+    "packages/coelo_database/supabase/tests/*circular*",
+    "apps/superadmin/lib/features/agenda/**",
+    "apps/superadmin/lib/features/notices/**",
+    "apps/superadmin/lib/features/circulars/**"
+  ],
+  "blocked": "Aguardando base.fase0Head para UI e E2E; pgTAP local retém a prova SQL até Docker/Postgres estar disponível; não bloqueia o pacote backend independente.",
+  "next": "Commitar pacote de exclusão administrativa, validar diff/SQL estático e seguir para preflight Agenda e Avisos; rebasear quando base.fase0Head aparecer.",
+  "changes": [
+    {
+      "screen": "Etapa 2 → apps/superadmin → Circulares → Diretório/Detalhe → Excluir → circulars.delete",
+      "actionIds": ["circulars.delete"],
+      "whatChanged": "Migration forward-only cria superadmin_circular_delete_v2 com capacidade circulars.manage, tenant/contexto interno, versão otimista, idempotência, auditoria e exclusão lógica; repositório/contrato chama RPC sem segredo.",
+      "criteria": ["RPC nominal e grant authenticated", "anon/service_role sem execute", "deleted_at/status archived", "receipt com hash e action delete", "audit internal_circular_deleted"],
+      "sha": "working-tree; será preenchido no commit"
+    }
+  ],
+  "updatedAt": "2026-09-10T00:25:00-03:00"
+}

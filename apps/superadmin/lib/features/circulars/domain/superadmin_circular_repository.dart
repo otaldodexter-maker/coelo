@@ -91,12 +91,33 @@ final class SuperadminCircularEditableDraft {
   final CircularScope scope;
 }
 
+@immutable
+final class SuperadminCircularDeleteResult {
+  const SuperadminCircularDeleteResult({
+    required this.id,
+    required this.version,
+    required this.status,
+    required this.deleted,
+  });
+
+  final String id;
+  final int version;
+  final CircularStatus status;
+  final bool deleted;
+}
+
 /// Internal-admin contract. It intentionally extends the UI's current composer
 /// contract without using any people-realm authentication or authorship.
 abstract interface class SuperadminCircularRepository implements CircularRepository {
   Future<SuperadminCircularDirectoryPage> fetchDirectory(SuperadminCircularDirectoryQuery query);
 
   Future<SuperadminCircularResponseSummary> fetchResponseSummary(String circularId);
+
+  Future<SuperadminCircularDeleteResult> delete({
+    required String requestId,
+    required String circularId,
+    required int expectedVersion,
+  });
 
   Future<SuperadminCircularEditableDraft> loadDraftById(String circularId);
 }
@@ -106,6 +127,13 @@ final class UnavailableSuperadminCircularRepository implements SuperadminCircula
   const UnavailableSuperadminCircularRepository();
 
   Future<T> _unavailable<T>() => Future<T>.error(const CircularUnavailable());
+
+  @override
+  Future<SuperadminCircularDeleteResult> delete({
+    required String requestId,
+    required String circularId,
+    required int expectedVersion,
+  }) => _unavailable();
 
   @override
   Future<CircularSaveResult> closeResponses({
