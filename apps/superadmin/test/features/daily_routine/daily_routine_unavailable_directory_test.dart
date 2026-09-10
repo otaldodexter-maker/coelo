@@ -8,8 +8,12 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   testWidgets('a routine backend that does not exist is not a retryable failure', (tester) async {
-    // This is what /rotina composes today: the production auth scope injects
-    // UnavailableRoutineRepository, because no production implementation exists.
+    // Isto continua sendo o que /rotina compoe por padrao: o escopo produtivo
+    // injeta UnavailableRoutineRepository enquanto a chave
+    // COELO_ENABLE_CARE_AND_ROUTINE_BACKEND estiver desligada. A implementacao
+    // Supabase ja existe (SupabaseRoutineRepository), mas as migrations da
+    // familia ainda nao foram aplicadas, e indisponibilidade honesta e melhor
+    // do que erro obscuro contra um banco sem esses objetos.
     await tester.pumpWidget(
       MaterialApp(
         theme: CoeloTheme.light,

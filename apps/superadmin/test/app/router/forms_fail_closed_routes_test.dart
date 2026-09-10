@@ -77,7 +77,15 @@ void main() {
             : path.endsWith('/files')
             ? 'files'
             : null;
-        if (productionSurface == null) {
+        if (path.endsWith('/test')) {
+          // D6, decisao do Owner em 10/09/2026: quem pode editar o formulario
+          // pode testa-lo preenchivel, por capacidade. A rota deixou de ser
+          // fail-closed e passou a ler a MESMA projecao autorizada que o
+          // editor le. Quem nao tiver a capacidade continua sem ver o
+          // formulario, porque a recusa vem do servidor e a tela mostra o
+          // aviso de indisponibilidade em vez de um formulario neutro.
+          expect(find.byType(SuperadminErrorScreen), findsNothing, reason: path);
+        } else if (productionSurface == null) {
           expect(find.textContaining('indispon'), findsWidgets, reason: path);
         } else {
           expect(find.byKey(Key('forms-operations-production-$productionSurface')), findsOneWidget);
@@ -87,7 +95,9 @@ void main() {
           path.endsWith('/monitor') ||
           path.endsWith('/responses') ||
           path.endsWith('response-1') ||
-          path.endsWith('/files');
+          path.endsWith('/files') ||
+          // D6: Testar passou a ler a projecao autorizada do formulario.
+          path.endsWith('/test');
       expect(api.calls, readsFromApi ? 1 : 0, reason: path);
     }
   });

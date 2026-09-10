@@ -101,6 +101,7 @@ import '../../features/auth/presentation/screens/superadmin_reset_password_scree
 import '../../features/attendance/attendance.dart';
 import '../../features/attendance/data/supabase_attendance_repository.dart';
 import '../../features/attendance/attendance_pages.dart';
+import '../../features/daily_routine/data/supabase_routine_repository.dart';
 import '../../features/daily_routine/daily_routine.dart';
 import '../../features/daily_routine/daily_routine_pages.dart';
 import '../../features/catalog/presentation/catalog_host_page.dart';
@@ -217,6 +218,7 @@ import '../../features/units/domain/unit_directory.dart' hide UnitDirectoryPage;
 import '../../features/units/presentation/unit_directory_page.dart';
 import '../../features/units/presentation/unit_form_page.dart';
 import '../dev_menu/dev_menu_overlay.dart';
+import '../shell/superadmin_notice.dart';
 import '../shell/superadmin_shell.dart';
 import 'superadmin_routes.dart';
 
@@ -244,6 +246,51 @@ void _returnToOr(
 SupportPrototypeController _createDevelopmentSupportController() => SupportPrototypeController();
 
 LocationCapabilities _noLocationCapabilities(SuperadminAuthContext? _) => LocationCapabilities.none;
+
+
+/// D7: publica um lancamento de rotina pelo comando que ja existe.
+///
+/// Nada aqui decide autorizacao. O servidor recalcula ator, capacidade, escopo
+/// e versao esperada dentro de superadmin_routine_publish_launch; esta funcao
+/// so pede, e relata em portugues o que ele respondeu. Devolve true quando a
+/// publicacao foi confirmada, para a lista recarregar do servidor.
+Future<bool> _publishRoutineLaunch(
+  BuildContext context,
+  RoutineRepository repository,
+  RoutineDirectoryItem item,
+) async {
+  try {
+    await repository.publishLaunch(
+      launchId: item.id,
+      expectedVersion: item.version,
+      requestId: newRoutineRequestId(),
+    );
+    if (context.mounted) {
+      showSuperadminNotice(
+        context,
+        'Lancamento publicado.',
+        icon: Icons.check_circle_outline_rounded,
+      );
+    }
+    return true;
+  } on RoutineRepositoryException catch (error) {
+    if (context.mounted) {
+      showSuperadminNotice(
+        context,
+        switch (error.kind) {
+          RoutineRepositoryFailureKind.unauthorized =>
+            'Seu acesso nao permite publicar este lancamento.',
+          RoutineRepositoryFailureKind.notFound => 'Lancamento indisponivel.',
+          RoutineRepositoryFailureKind.conflict =>
+            'O lancamento mudou desde que a lista foi carregada. Atualize e tente de novo.',
+          RoutineRepositoryFailureKind.unavailable => error.message,
+        },
+        icon: Icons.error_outline_rounded,
+      );
+    }
+    return false;
+  }
+}
 
 GoRouter createSuperadminRouter({
   required SuperadminSession session,
@@ -2377,6 +2424,12 @@ GoRouter createSuperadminRouter({
               activityController: attendanceActivities,
               onCreateEntry: null,
               onEdit: null,
+              // D7: Lancamentos no MVP e uma tela minima sobre o comando
+              // daily-routine.publish, que ja existe. Autoria, capacidade,
+              // escopo e versao esperada sao recalculados no servidor; aqui so
+              // se pede a publicacao e se relata o que ele respondeu.
+              onPublishLaunch: (item) =>
+                  _publishRoutineLaunch(context, dailyRoutineRepository, item),
             ),
           ),
           GoRoute(
@@ -2470,7 +2523,22 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.formTest,
             name: SuperadminRoutes.formTestName,
-            builder: (context, state) => const FormsTestPage(),
+            // D6: quem pode editar o formulario pode testa-lo preenchivel, por
+            // capacidade. A rota ja carregava :formId e o construtor ja sabia
+            // pre-visualizar uma definicao, mas nada disso era passado: a tela
+            // real abria sem api e sem formulario, entao Testar nao testava
+            // coisa alguma. A leitura e a MESMA projecao autorizada que o
+            // editor usa (form_get_editor), entao a capacidade e conferida no
+            // servidor e nao aqui.
+            builder: (context, state) => withFormsAuthorization(
+              () => FormsTestPage(
+                key: ValueKey(
+                  'form-test-${state.uri}-${session.authorizationInvalidationRevision}',
+                ),
+                api: formsApi,
+                formId: state.pathParameters['formId'],
+              ),
+            ),
           ),
           GoRoute(
             path: SuperadminRoutes.formMonitor,

@@ -28,6 +28,7 @@ class DailyRoutineDirectoryPage extends StatefulWidget {
     this.onEdit,
     this.onDuplicateModel,
     this.onCreateFromModel,
+    this.onPublishLaunch,
     this.onImport,
     this.onExport,
     this.activityController,
@@ -44,6 +45,11 @@ class DailyRoutineDirectoryPage extends StatefulWidget {
   final ValueChanged<RoutineDirectoryItem>? onEdit;
   final ValueChanged<RoutineDirectoryItem>? onDuplicateModel;
   final ValueChanged<RoutineDirectoryItem>? onCreateFromModel;
+
+  /// D7: Lançamentos no MVP é uma tela mínima sobre o comando
+  /// `daily-routine.publish`, que já existe. Publicar não é editar, então a
+  /// ação vive aqui, no item, e não dentro do editor.
+  final Future<bool> Function(RoutineDirectoryItem item)? onPublishLaunch;
   final VoidCallback? onImport;
   final VoidCallback? onExport;
   final SuperadminActivityController? activityController;
@@ -62,6 +68,11 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
   var _lastCanManage = false;
   var _display = _RoutineDisplay.cards;
   var _selectedType = RoutineEntryKind.model;
+
+  /// Publicação em voo, por item: o botão do próprio item fica desabilitado
+  /// enquanto o comando não volta, para um toque repetido não virar duas
+  /// publicações da mesma rotina.
+  final _publishing = <String>{};
 
   @override
   void initState() {
@@ -116,6 +127,45 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
   void clearFilters() {
     _search.clear();
     _load();
+  }
+
+  /// D7: publicar um lançamento é o comando `daily-routine.publish`, e nada
+  /// mais. Confirma antes porque publicar entrega a rotina às famílias e não
+  /// tem desfazer nesta tela; a correção é um comando próprio, com
+  /// justificativa. A lista é recarregada do servidor depois, para a tela
+  /// mostrar o estado que o servidor confirma e não o que ela supôs.
+  Future<void> _publishLaunch(RoutineDirectoryItem item) async {
+    final publish = widget.onPublishLaunch;
+    if (publish == null) return;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => CoeloAdminDialogShell(
+        dialogKey: const Key('daily-routine-publish-dialog'),
+        title: 'Publicar este lançamento?',
+        body: const Text(
+          'As famílias autorizadas passam a ver a rotina deste dia. '
+          'Depois de publicado, ajustes exigem uma correção com justificativa.',
+        ),
+        secondaryAction: OutlinedButton(
+          onPressed: () => Navigator.of(dialogContext).pop(false),
+          child: const Text('Cancelar'),
+        ),
+        primaryAction: FilledButton(
+          key: const Key('daily-routine-publish-confirm'),
+          onPressed: () => Navigator.of(dialogContext).pop(true),
+          child: const Text('Publicar'),
+        ),
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    setState(() => _publishing.add(item.id));
+    try {
+      final published = await publish(item);
+      if (!mounted) return;
+      if (published) _load(page: _controller.state.page?.page ?? 1);
+    } finally {
+      if (mounted) setState(() => _publishing.remove(item.id));
+    }
   }
 
   @override
@@ -360,6 +410,24 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
                             if (item.originLabel != null) Text('Origem: ${item.originLabel}'),
                             if (item.effectiveLabel != null)
                               Text('Efetivo: ${item.effectiveLabel}'),
+                            if (_canManage &&
+                                item.kind == RoutineEntryKind.launch &&
+                                item.status == 'draft' &&
+                                widget.onPublishLaunch != null) ...[
+                              const SizedBox(height: CoeloSpacing.space3),
+                              TextButton.icon(
+                                key: Key('daily-routine-publish-${item.id}'),
+                                onPressed: _publishing.contains(item.id)
+                                    ? null
+                                    : () => _publishLaunch(item),
+                                icon: const Icon(Icons.publish_rounded),
+                                label: Text(
+                                  _publishing.contains(item.id)
+                                      ? 'Publicando…'
+                                      : 'Publicar lançamento',
+                                ),
+                              ),
+                            ],
                             if (_canManage && item.kind == RoutineEntryKind.model) ...[
                               const SizedBox(height: CoeloSpacing.space3),
                               Wrap(
