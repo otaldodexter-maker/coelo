@@ -168,11 +168,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
         // envio em voo, e so atualiza o resumo — inclusive `isReadOnly`, que e
         // o que faz a affordance de escrita sumir sozinha.
         if (refreshed != null) {
-          await _select(
-            refreshed,
-            inboxRequestGeneration: requestGeneration,
-            inboxSearch: search,
-          );
+          await _select(refreshed, inboxRequestGeneration: requestGeneration, inboxSearch: search);
         }
         return;
       }
@@ -614,8 +610,9 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
       logout: widget.logout,
       title: 'Conversas',
       subtitle: 'Comunicacao institucional privada e contextual.',
-      actions: [_fileActions(compact: false)],
-      compactActions: [_fileActions(compact: true)],
+      // ARQUIVOS-CHAT (decisao do Owner de 10/09/2026, opcao B): Conversas nao
+      // oferece o botao Arquivos em nenhuma largura; a superficie nao entrega
+      // acoes de arquivo ao cabecalho compartilhado.
       currentDestination: widget.currentDestination,
       onDestinationSelected: widget.onDestinationSelected,
       child: LayoutBuilder(
@@ -661,27 +658,6 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
       ),
     );
   }
-
-  Widget _fileActions({required bool compact}) => CoeloAdminFileActions(
-    compact: compact,
-    actions: [
-      CoeloAdminFileAction(
-        label: 'Importar',
-        icon: Icons.upload_file_outlined,
-        onPressed: () => _showNotice('A importação de conversas ainda não está disponível.'),
-      ),
-      CoeloAdminFileAction(
-        label: 'Exportar CSV',
-        icon: Icons.table_rows_outlined,
-        onPressed: () => _showNotice('A exportação de conversas ainda não está disponível.'),
-      ),
-      CoeloAdminFileAction(
-        label: 'Exportar XLSX',
-        icon: Icons.grid_on_outlined,
-        onPressed: () => _showNotice('A exportação de conversas ainda não está disponível.'),
-      ),
-    ],
-  );
 
   Widget _body() {
     return switch (_inboxState.kind) {
@@ -932,9 +908,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
                 mediaSession: widget.mediaSession,
                 // A read-only conversation refuses the commands server-side;
                 // do not offer an affordance that cannot succeed.
-                onEdit: conversation.isReadOnly || _managing
-                    ? null
-                    : () => _editMessage(message),
+                onEdit: conversation.isReadOnly || _managing ? null : () => _editMessage(message),
                 onRevoke: conversation.isReadOnly || _managing
                     ? null
                     : () => _revokeMessage(message),
@@ -1001,10 +975,7 @@ final class _MessageBubble extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
-                    child: Text(
-                      message.authorName,
-                      style: Theme.of(context).textTheme.labelSmall,
-                    ),
+                    child: Text(message.authorName, style: Theme.of(context).textTheme.labelSmall),
                   ),
                   if (_canManage)
                     PopupMenuButton<_MessageAction>(
@@ -1129,10 +1100,7 @@ final class _EditMessageDialogState extends State<_EditMessageDialog> {
       decoration: const InputDecoration(labelText: 'Mensagem'),
     ),
     actions: [
-      TextButton(
-        onPressed: () => Navigator.of(context).pop(),
-        child: const Text('Cancelar'),
-      ),
+      TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancelar')),
       FilledButton(
         key: const Key('superadmin-chat-edit-confirm'),
         onPressed: () => Navigator.of(context).pop(_controller.text),
