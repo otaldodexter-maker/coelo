@@ -1,0 +1,7 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:1
++ rtk proxy dart apps/catalog/tool/validate_admin_visual_contracts.dart ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+exit0; nenhum diagnostico do validador de contratos visuais.

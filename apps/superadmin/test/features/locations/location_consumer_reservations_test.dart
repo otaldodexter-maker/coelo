@@ -1,4 +1,5 @@
 import 'package:coelo_domain/locations.dart';
+import 'package:coelo_superadmin/features/locations/domain/location_consumer_bindings_reader.dart';
 import 'package:coelo_superadmin/features/locations/domain/location_catalog_reader.dart';
 import 'package:coelo_superadmin/features/locations/domain/location_reservation_gateway.dart';
 import 'package:coelo_superadmin/features/locations/presentation/location_consumer_reservations.dart';
@@ -64,6 +65,31 @@ class _Gateway implements LocationReservationGateway {
       throw StateError('Unexpected reservation mutation');
 }
 
+class _Bindings implements LocationConsumerBindingsReader {
+  _Bindings(this.status);
+  final LocationCatalogStatus status;
+  @override
+  Future<LocationConsumerBindingPage> fetchPage({
+    required LocationReservationConsumer consumer,
+    String? afterLocationId,
+    int limit = 20,
+  }) async => LocationConsumerBindingPage(
+    consumer: consumer,
+    items: [
+      LocationConsumerBinding(
+        location: const LocationReferenceSnapshot(
+          id: locationB,
+          scope: scopeA,
+          kind: LocationKind.internal,
+          label: 'Local historico',
+        ),
+        status: status,
+      ),
+    ],
+    nextLocationId: null,
+  );
+}
+
 void main() {
   Widget app(
     _Reader reader,
@@ -71,6 +97,8 @@ void main() {
     LocationReservationConsumer consumer = activity,
     int revision = 1,
     bool canRead = true,
+    bool manage = false,
+    LocationConsumerBindingsReader bindings = const UnavailableLocationConsumerBindingsReader(),
     List<({LocationScope scope, String label})> scopes = const [
       (scope: scopeA, label: 'Instituição'),
       (scope: scopeUnitA, label: 'Unidade'),
@@ -93,6 +121,8 @@ void main() {
           sessionAvailable: true,
           contextRevision: revision,
           canRead: canRead,
+          canManage: manage,
+          bindingsReader: bindings,
         ),
       ),
     ),
@@ -103,6 +133,36 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Sala de leitura').last);
     await tester.pumpAndSettle();
+  }
+
+  for (final status in [
+    LocationCatalogStatus.active,
+    LocationCatalogStatus.inactive,
+    LocationCatalogStatus.archived,
+  ]) {
+    testWidgets('historical status ${status.name} governs only new reservation affordance', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(const Size(1024, 1800));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final gateway = _Gateway();
+      await tester.pumpWidget(app(_Reader(), gateway, manage: true, bindings: _Bindings(status)));
+      await tester.pumpAndSettle();
+      final open = find.byKey(const Key('consumer-binding-open-$locationB'));
+      await tester.ensureVisible(open);
+      await tester.pumpAndSettle();
+      await tester.tap(open);
+      await tester.pumpAndSettle();
+      expect(gateway.reads.single.locationId, locationB);
+      expect(
+        tester.widget<LocationReservationPanel>(find.byType(LocationReservationPanel)).canManage,
+        isTrue,
+      );
+      expect(
+        find.byKey(const Key('location-reservation-assess')),
+        status == LocationCatalogStatus.active ? findsOneWidget : findsNothing,
+      );
+    });
   }
 
   testWidgets('explicit catalog choice reads reservations for the actual persisted consumer', (

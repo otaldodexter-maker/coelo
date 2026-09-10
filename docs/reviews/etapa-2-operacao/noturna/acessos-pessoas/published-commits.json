@@ -1,0 +1,108 @@
+{
+    "through":  "0dae87652",
+    "branch":  "work/etapa2-noturna-acessos-pessoas",
+    "commits":  [
+                    {
+                        "sha":  "cc5d73bc74de652c91570061aef6ede95b3915a7",
+                        "subject":  "chore(models): prepare nominal internal contract package"
+                    },
+                    {
+                        "sha":  "3a96ca5353490bb410541861632a3b9d890b965b",
+                        "subject":  "fix(safety): restore guarded flows and reconcile accessible cards"
+                    },
+                    {
+                        "sha":  "63623e31f1bfc56d81abf49931a385ae92ca3b9e",
+                        "subject":  "fix(models): preserve deployed cursor signature in nominal package"
+                    },
+                    {
+                        "sha":  "7ce41f86b1397b8365da57c53e14c0cd46f27936",
+                        "subject":  "fix(safety): require compatible envelope for internal read candidate"
+                    },
+                    {
+                        "sha":  "485df698f826c382a0f2f86377220783eabb0952",
+                        "subject":  "test(models): prepare late rollback and receipt revocation proofs"
+                    },
+                    {
+                        "sha":  "1d291711ef7a74782688bfc248d53cbd0e77da57",
+                        "subject":  "fix(safety): require explicit support before offering mutations"
+                    },
+                    {
+                        "sha":  "b91f9206d9745f53d69e6e5b19dabed52f40f830",
+                        "subject":  "test(safety): propose guarded nominal replay profile"
+                    },
+                    {
+                        "sha":  "6b3777a57241cd27b5f043426cdf2ce5037c425b",
+                        "subject":  "fix(models): reject inconsistent command receipts"
+                    },
+                    {
+                        "sha":  "246c9e7e1ec1186f6b6e74082ca772907fb50c32",
+                        "subject":  "test(models): prove late abort rollback and record residual gates"
+                    },
+                    {
+                        "sha":  "b285a68040f13b5acabc94b472e78ec1383fa605",
+                        "subject":  "fix(profiles): retain confirmed saves across navigation failure"
+                    },
+                    {
+                        "sha":  "9d5ce7317735eda06dabe6c52531a86ae9e85b6d",
+                        "subject":  "fix(models): retain confirmed duplication after navigation failure"
+                    },
+                    {
+                        "sha":  "cb76f5968f5c6f67da2a292c4b432057d6b06dd4",
+                        "subject":  "test(access): wire reserved replay profiles and record Docker blocker"
+                    },
+                    {
+                        "sha":  "f85c8ddad2fab6229f8d740f4c503de966ed6e03",
+                        "subject":  "docs(access): reconcile delivered evidence and blocked replay"
+                    },
+                    {
+                        "sha":  "fa3caddd20510c2a1e192114da5e2a2aff62b580",
+                        "subject":  "fix(safety): align replay profile with coordinated SQL filename"
+                    },
+                    {
+                        "sha":  "8414ac9ab77de00660b619e85379a40e5b70605d",
+                        "subject":  "fix(safety): reject incomplete authorization detail payloads"
+                    },
+                    {
+                        "sha":  "c8c8b0fba31541e4ef3ba73999d08d7182b20d5e",
+                        "subject":  "test(profiles): reconcile form goldens with approved changes"
+                    },
+                    {
+                        "sha":  "f4ac658fb2f412d1494bcc05289f416a18e26ae3",
+                        "subject":  "docs(access): record production composition boundaries"
+                    },
+                    {
+                        "sha":  "f60b2c2fe4ce5231e445205f7d732ee4da268a1b",
+                        "subject":  "test(superadmin): reconcile profile hover with integrated layout"
+                    },
+                    {
+                        "sha":  "c76a0eb23d8be0bd6d303c38954d0346e4c44711",
+                        "subject":  "test(superadmin): reconcile person forms and prove compact continuation"
+                    },
+                    {
+                        "sha":  "5ffce5441ef94a7d06be526b12684fed6f57d80a",
+                        "subject":  "test(superadmin): reconcile people directory with approved components"
+                    },
+                    {
+                        "sha":  "7956dda48d6a6d7bdd9c86ba785b2ee93356e174",
+                        "subject":  "test(superadmin): reconcile profile directory references by nominal cause"
+                    },
+                    {
+                        "sha":  "d3fd0f7e93a96f3175fb628830deec6f9dabcebb",
+                        "subject":  "docs(review): reconcile published access visual evidence and residuals"
+                    },
+                    {
+                        "sha":  "99a66fd2e6ea9a4b40e3bd5b00011b6bea0d1bf8",
+                        "subject":  "fix(people): make status touch target accessible without changing status"
+                    },
+                    {
+                        "sha":  "5a1ed044f0ba9fc41dd3a440bf8782bfd02a49bc",
+                        "subject":  "test(invites): reconcile nine nominal visual references"
+                    },
+                    {
+                        "sha":  "0dae876529eb4faba30d81f3cd6d1bf8748e42f0",
+                        "subject":  "test(internal-users): reconcile scoped visual references"
+                    }
+                ],
+    "count":  25,
+    "base":  "d784462c1"
+}

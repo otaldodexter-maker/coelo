@@ -117,6 +117,20 @@ Dart, está ligada, e chama funções que não existem no servidor**. As RPCs
    maior que qualquer pendência do painel: o produto mudou de aparência sem
    passar por aprovação visual em algum ponto. Nenhuma imagem foi regravada fora
    do critério acordado.
+1b. **Pinar o SDK antes de regravar qualquer golden.** Uma frente foi atrás da
+   causa e eu confirmei por conta própria no código: as suítes de golden carregam
+   `MaterialIcons` do SDK **local**, por caminho relativo a
+   `Platform.resolvedExecutable`, enquanto a Nunito Sans vem do repositório. E o
+   `pubspec.yaml` declara só um piso, `flutter: ">=3.38.0"`, sem `.fvmrc`, sem
+   `.flutter-version` e sem nenhum registro de qual SDK gravou as baselines. As
+   referências estão presas a um SDK que o repositório não registra, então
+   qualquer máquina em outro Flutter falha em bloco sem que feature nenhuma tenha
+   causado nada. **Regravar sem pinar só transfere a deriva para a próxima
+   máquina.** A ressalva do autor, que eu mantenho: vendorizar a fonte de ícones
+   remove uma das duas variáveis, não as duas — o fantasma aparece também no
+   texto em Nunito Sans, que já vem do repositório, então o rasterizador do
+   engine também difere. Ambiente desta rodada: Flutter 3.44.2 stable, framework
+   c9a6c48423, engine 04efd7c093, Dart 3.12.2, Windows.
 2. **Baseline visual de `errors.409`**, que nunca existiu.
 3. **Visibilidade do leitor Principal no Sobre.** Não existe token de leitura em
    `profiles.about.*`, apenas manage, publish e update_official_data.

@@ -153,6 +153,32 @@ void main() {
     expect(find.text('Formulário B'), findsOneWidget);
     expect(find.text('Formulário A'), findsNothing);
   });
+
+  // Superficie PRODUTIVA (a rota /forms/:formId passa api real) e ate aqui sem
+  // nenhuma cobertura de texto ampliado. O padrao de metrica com rotulo rigido
+  // e o que costuma estourar a 150% e 200%, e a 100% nada aparece.
+  for (final scale in [1.5, 2.0]) {
+    for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
+      testWidgets('overview stays overflow-free at $width px and ${scale}x text', (tester) async {
+        tester.view.devicePixelRatio = 1;
+        tester.view.physicalSize = Size(width, 2000);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        addTearDown(tester.view.resetPhysicalSize);
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: CoeloTheme.light,
+            home: MediaQuery(
+              data: MediaQueryData(textScaler: TextScaler.linear(scale)),
+              child: Scaffold(body: FormsOverviewPage(api: _Api(), formId: 'form-1')),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(find.byKey(const Key('forms-overview-metrics')), findsOneWidget);
+        expect(tester.takeException(), isNull, reason: 'overflow at $width px, ${scale}x');
+      });
+    }
+  }
 }
 
 FormOverview _overview(String id, String title) => FormOverview(

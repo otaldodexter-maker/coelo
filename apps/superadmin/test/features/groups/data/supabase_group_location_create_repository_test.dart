@@ -15,6 +15,108 @@ const locationId = '44000000-0000-4000-8000-000000000001';
 const groupId = '55000000-0000-4000-8000-000000000001';
 
 void main() {
+  test('reservation canonical DST and justified override remain server authoritative', () async {
+    final intent = GroupLocationReservationIntent(
+      firstOccurrence: LocationReservationOccurrence(
+        startsAt: DateTime.utc(2026, 10, 30, 12),
+        endsAt: DateTime.utc(2026, 10, 30, 13),
+      ),
+      recurrence: LocationReservationRecurrence.weekly(
+        weekdays: {5},
+        until: DateTime.utc(2026, 11, 6),
+        timeZone: 'America/New_York',
+      ),
+      conflictJustification: 'Approved exception',
+    );
+    final result = _reservation()
+      ..['recurrence'] = intent.toJson()['recurrence']
+      ..['confirmed_over_conflict'] = true
+      ..['occurrences'] = [
+        {'starts_at': '2026-10-30T12:00:00Z', 'ends_at': '2026-10-30T13:00:00Z'},
+        {'starts_at': '2026-11-06T13:00:00Z', 'ends_at': '2026-11-06T14:00:00Z'},
+      ];
+    final repo = _repo(
+      (r) async => _success(r, {..._data(), 'reservation': result}),
+      available: true,
+    );
+    final saved = (await repo.create(_command(reservationIntent: intent))).reservation!;
+    expect(saved.confirmedOverConflict, isTrue);
+    expect(saved.occurrences.last.startsAt.hour, 13);
+  });
+  for (final mismatch in ['start', 'end', 'kind', 'days', 'until', 'zone', 'override']) {
+    test('reservation intent correlation Group rejects $mismatch', () async {
+      final weekly = ['days', 'until', 'zone'].contains(mismatch);
+      final recurrence = weekly
+          ? LocationReservationRecurrence.weekly(
+              weekdays: {5},
+              until: DateTime.utc(2026, 9, 30),
+              timeZone: 'America/Sao_Paulo',
+            )
+          : const LocationReservationRecurrence.once();
+      final intent = GroupLocationReservationIntent(
+        firstOccurrence: _occurrence(),
+        recurrence: recurrence,
+      );
+      final result = _reservation();
+      result['recurrence'] = intent.toJson()['recurrence'];
+      switch (mismatch) {
+        case 'start':
+          (result['occurrences'] as List).first['starts_at'] = '2026-09-11T12:30:00Z';
+        case 'end':
+          (result['occurrences'] as List).first['ends_at'] = '2026-09-11T14:00:00Z';
+        case 'kind':
+          result['recurrence'] = {
+            'kind': 'weekly',
+            'weekdays': [5],
+            'until': '2026-09-30',
+            'time_zone': 'America/Sao_Paulo',
+          };
+        case 'days':
+          (result['recurrence'] as Map)['weekdays'] = [4];
+        case 'until':
+          (result['recurrence'] as Map)['until'] = '2026-10-01';
+        case 'zone':
+          (result['recurrence'] as Map)['time_zone'] = 'UTC';
+        case 'override':
+          result['confirmed_over_conflict'] = true;
+      }
+      final repo = _repo(
+        (r) async => _success(r, {..._data(), 'reservation': result}),
+        available: true,
+      );
+      await expectLater(
+        repo.create(_command(reservationIntent: intent)),
+        _failure(GroupLocationCreateFailure.unavailable),
+      );
+    });
+  }
+  test(
+    'reservation intent correlation Group accepts normalized instants and weekly expansion',
+    () async {
+      final intent = GroupLocationReservationIntent(
+        firstOccurrence: _occurrence(),
+        recurrence: LocationReservationRecurrence.weekly(
+          weekdays: {5, 1},
+          until: DateTime.utc(2026, 9, 30),
+          timeZone: 'America/Sao_Paulo',
+        ),
+        conflictJustification: 'approved reason',
+      );
+      final result = _reservation()..['recurrence'] = intent.toJson()['recurrence'];
+      result['occurrences'] = [
+        {'starts_at': '2026-09-11T12:00:00.000+00:00', 'ends_at': '2026-09-11T13:00:00.000+00:00'},
+        {'starts_at': '2026-09-14T12:00:00Z', 'ends_at': '2026-09-14T13:00:00Z'},
+      ];
+      final repo = _repo(
+        (r) async => _success(r, {..._data(), 'reservation': result}),
+        available: true,
+      );
+      expect(
+        (await repo.create(_command(reservationIntent: intent))).reservation!.occurrences,
+        hasLength(2),
+      );
+    },
+  );
   test('default gate and unavailable repository perform no request', () async {
     var calls = 0;
     final repo = _repo((r) async {
@@ -205,33 +307,38 @@ LocationReservationOccurrence _occurrence() => LocationReservationOccurrence(
   startsAt: DateTime.utc(2026, 9, 11, 12),
   endsAt: DateTime.utc(2026, 9, 11, 13),
 );
-GroupLocationCreateCommand _command({bool reserve = false, String? invalid}) =>
-    GroupLocationCreateCommand(
-      requestId: invalid == 'id' ? 'bad' : requestId,
-      institutionId: institutionId,
-      unitId: unitId,
-      name: invalid == 'name' ? ' ' : ' Group ',
-      groupType: invalid == 'other' ? 'other' : 'CLASS',
-      groupTypeOtherText: null,
-      locationSelection: CataloguedLocationSelection(
-        LocationReferenceSnapshot(
-          id: locationId,
-          label: 'Room',
-          kind: LocationKind.internal,
-          scope: invalid == 'unit'
-              ? const LocationScope.unit(institutionId: institutionId, unitId: groupId)
-              : LocationScope.institution(
-                  institutionId: invalid == 'institution' ? groupId : institutionId,
-                ),
-        ),
-      ),
-      reservation: reserve
+GroupLocationCreateCommand _command({
+  bool reserve = false,
+  String? invalid,
+  GroupLocationReservationIntent? reservationIntent,
+}) => GroupLocationCreateCommand(
+  requestId: invalid == 'id' ? 'bad' : requestId,
+  institutionId: institutionId,
+  unitId: unitId,
+  name: invalid == 'name' ? ' ' : ' Group ',
+  groupType: invalid == 'other' ? 'other' : 'CLASS',
+  groupTypeOtherText: null,
+  locationSelection: CataloguedLocationSelection(
+    LocationReferenceSnapshot(
+      id: locationId,
+      label: 'Room',
+      kind: LocationKind.internal,
+      scope: invalid == 'unit'
+          ? const LocationScope.unit(institutionId: institutionId, unitId: groupId)
+          : LocationScope.institution(
+              institutionId: invalid == 'institution' ? groupId : institutionId,
+            ),
+    ),
+  ),
+  reservation:
+      reservationIntent ??
+      (reserve
           ? GroupLocationReservationIntent(
               firstOccurrence: _occurrence(),
               recurrence: const LocationReservationOnce(),
             )
-          : null,
-    );
+          : null),
+);
 Map<String, Object?> _data({bool reserve = false}) => {
   'group_id': groupId,
   'location_id': locationId,

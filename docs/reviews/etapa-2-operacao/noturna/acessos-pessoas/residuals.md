@@ -20,7 +20,7 @@ BE0/223,E2E0/198, histórico e não recontado nesta rodada.
 
 | action_id | Estado/subtela e delta local | Primeiro gate restante |
 | --- | --- | --- |
-| people.list | Diretório; lifecycle R02 preservado; golden8renders/1P reconciliado5ffce5441 | Contrato interno de listagem/filtros server-side; legado não atende spec046 |
+| people.list | Diretório; lifecycle R02 preservado; golden8renders/1P reconciliado; alvo48 corrigido99a66fd2e com4P+200%1P | Contrato interno de listagem/filtros server-side; legado não atende spec046 |
 | people.create | Formulário; recibo R02 preservado; visual e alcancefooter2P c76a0eb23 | Write interno aprovado e identity repository |
 | people.edit | Formulário; receipt/retry R02 preservados; visual2P compartilhados c76a0eb23 | Write interno, persistência e recarga autorizadas |
 | people.links | Vínculos minimizados | Contrato interno e negativas de escopo; consulta v2 não libera edição |
@@ -37,7 +37,7 @@ BE0/223,E2E0/198, histórico e não recontado nesta rodada.
 | access-models.detail | Sem contagem fictícia de vínculos; read local no pacote95 | Runtime autorizado e visual na composição normal |
 | access-models.edit | Recibo confere alvo/domínio/versão | Reautorização de replay após lock e recarga real |
 | access-models.duplicate | R02 integrado; recibo confere nova identidade; conclusão preservada e24P, incluindo9 rotas | Reautorização de replay e persistência/negações reais |
-| invites.list | R02 confinement/lifecycle integrado | Diretório normal com persona qualificada |
+| invites.list | R02 confinement/lifecycle integrado; visual5P/9renders compartilhados | Diretório normal com persona qualificada |
 | invites.create | Wizard e contexto R02 preservados | Persona/SMTP e envio nominal autorizado |
 | invites.detail | Link restrito/contexto R02 integrado | Runtime normal autorizado |
 | invites.resend | Receipt tardio/revisão descartados no R02 | Envio real nominal e composição normal |
@@ -47,7 +47,7 @@ BE0/223,E2E0/198, histórico e não recontado nesta rodada.
 | child-safety.create | Wizard indisponível em adapters reais, confirmado localmente | Lookup adulto minimizado e contrato de ator/receipt interno |
 | child-safety.edit | Somente pending; transporte não qualificado bloqueia ação | Contrato interno e persistência/recarga; UUID People não representa ator interno |
 | child-safety.suspend | Composição bloqueia despacho em transporte não qualificado | Contrato de realm/receipt e prova real de suspensão |
-| internal-users.list | Navegação normal R02 integrada, parser preservado | Runtime read-only com persona qualificada |
+| internal-users.list | Navegação normal R02 integrada, parser preservado; visual4P/23renders, hover acionável não provado | Runtime read-only com persona qualificada |
 | internal-users.create | Receipt/escopo R02 preservados, sem catálogo fictício | Contrato nominal de criação/convite |
 | internal-users.edit | Negativa limpa editor; escopo R02 preservado | Rota normal de escrita segue bloqueada |
 | internal-users.suspend | Confirmação/releitura/negativas R02 preservadas | Contrato e prova real; não liberar por repository existente |
@@ -64,7 +64,7 @@ Provas e hashes por lote: `models/README.md`, `models/frontend-receipts.md`,
 `safety-composition/handoff.md`, `safety-sql/handoff.md` e
 `safety-sql/profile-proposal/README.md`. Contagens SQL, Flutter e preparação
 são separadas; reruns não aumentam cobertura. Rollback tardio6P em
-`models/rollback-01.txt`; formulário18P/0F em models-form-receipt/golden-reconciliation.md e duplicação24P em models/duplicate-receipts.md. Total atual401P/0F/120U: Safety108U e concorrênciaModels12U.
+`models/rollback-01.txt`; formulário18P/0F em models-form-receipt/golden-reconciliation.md e duplicação24P em models/duplicate-receipts.md. Total atual415P/0F/120U: Safety108U e concorrênciaModels12U.
 
 Produção: catálogo Supabase lido sem dados pessoais, zero mutação remota.
 Ausência do Owner não autoriza pacote novo. Modelos precisa da fundação nominal
@@ -79,4 +79,4 @@ Checkpoint 19:25 BRT: Claude r9 registra integração até b285a6804 por69ce62c4
 
 Reconciliacao Formgolden: F1 substituido porP1, tres imagens com causa integrada e inspecao anterior conforme coordenacao r10. Evidencia models-form-receipt/golden-reconciliation.md; nenhum certificado completo novo.
 
-Checkpoint visual: f60b2c2fe hoverPerfis1P, c76a0eb23 formularioPessoas2P, 5ffce5441 diretorioPessoas1P e7956dda48 diretorioPerfis1P. Inspecao por render, causas integradas e manifests nos quatro handoffs. Nenhuma certificacao nova. O censo historico tinha14 testes golden falhos nestas familias; cinco foram reconciliados em lotes focais (inclui formularioPerfis c8c8b0fba). Restam nove do censo em Convites/Usuarios internos, ainda nao reexecutados neste checkpoint. Medicao ampla190F da base ecc8eae2b permanece historica separada.
+Checkpoint visual: f60b2c2fe hoverPerfis1P, c76a0eb23 formularioPessoas2P, 5ffce5441 diretorioPessoas1P e7956dda48 diretorioPerfis1P. Inspecao por render, causas integradas e manifests nos quatro handoffs. Nenhuma certificacao nova. O censo historico tinha14 testes golden falhos nestas familias; cinco foram reconciliados em lotes focais (inclui formularioPerfis c8c8b0fba). Os nove seguintes foram resolvidos depois por5a1ed044f(Convites5P) e0dae87652(Usuarios4P); evidencia nominal em seus handoffs. Medicao ampla190F da base ecc8eae2b permanece historica separada.

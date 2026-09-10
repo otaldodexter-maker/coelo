@@ -1,0 +1,94 @@
+[
+    {
+        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/invites-visual/causes.json",
+        "sha256":  "6eb24c3432b4f64e6990ed74416bc81506dc770198faacd6b69eeb6e99cd0444"
+    },
+    {
+        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/invites-visual/green.txt",
+        "sha256":  "24bc03de3d92fc92432005b343d96c4e21cc45d593e5d64ad8067bee55464a44"
+    },
+    {
+        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/invites-visual/handoff.md",
+        "sha256":  "2ebcbe3f9ad932e99f5d4de41a11615b4b330984b0636bace6d989441dd4e74b"
+    },
+    {
+        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/invites-visual/red.txt",
+        "sha256":  "7b4e0622704a5a7d5bac1961369c92f0fc915fac75cd4821ee2ef16dae41a70b"
+    },
+    {
+        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/invites-visual/renders.json",
+        "sha256":  "65d34fd310dad66f85e3d1dd66ba2cf53f304ea9cda0bab4f1370bddaea9fe5c"
+    },
+    {
+        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/invites-visual/invite_detail_desktop_dark/after.png",
+        "sha256":  "6a02e4b5249d178ff9239dbe9e3ebb32d15f0b6a437ba7124c30ea602b356867"
+    },
+    {
+        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/invites-visual/invite_detail_desktop_dark/before.png",
+        "sha256":  "a7e71a533ac8131973c8f5b24ae50607f86a1944e0d0de6775f72c2688846aef"
+    },
+    {
+        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/invites-visual/invite_detail_mobile_light/after.png",
+        "sha256":  "4e3ceca7f48b80f1c99aab402f1c47f3dc4c1a36afdb08debe418e88c033c44b"
+    },
+    {
+        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/invites-visual/invite_detail_mobile_light/before.png",
+        "sha256":  "327fd261e2d4c546532da1efb6ef00b1c3caf74783f849f8bd51ce1360e71ef1"
+    },
+    {
+        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/invites-visual/invite_directory_desktop_dark/after.png",
+        "sha256":  "ba563136e56e282fc5303da8287aeb741c6f7e198cca59c9330cd1c3c3b43090"
+    },
+    {
+        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/invites-visual/invite_directory_desktop_dark/before.png",
+        "sha256":  "8e497704db0fc6adf2e25b5aa6763fdfa8b7167855715d3fb546f0a84f678a1a"
+    },
+    {
+        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/invites-visual/invite_directory_flyout_open_light/after.png",
+        "sha256":  "032252d206fce2187c2a65b8dda9571759f075f42c080e51cdeb09a2ba659b66"
+    },
+    {
+        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/invites-visual/invite_directory_flyout_open_light/before.png",
+        "sha256":  "53ea87910cd5f912091a2b67d243e11a7e96087cbc831e78f90a09fa519425cb"
+    },
+    {
+        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/invites-visual/invite_directory_mobile_light/after.png",
+        "sha256":  "d2065d47089583c11256fcc4cfc1d3cc42858e95ac7ce1e7adb1ca31eeb556c6"
+    },
+    {
+        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/invites-visual/invite_directory_mobile_light/before.png",
+        "sha256":  "7a111f3bfd15d4b95523c0c1fffcd85ab532595012ef2eb1d74dbb08c4f6a740"
+    },
+    {
+        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/invites-visual/invite_directory_table_row_hover_light/after.png",
+        "sha256":  "fda1916f19ad8865929b6b9626c3ceed5a593664b05be29894f16df7c6e22ec8"
+    },
+    {
+        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/invites-visual/invite_directory_table_row_hover_light/before.png",
+        "sha256":  "302a1dcaa356bb9edaf88288a77f6add33a7487357bc3fd53374862ad536552b"
+    },
+    {
+        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/invites-visual/invite_form_desktop_dark/after.png",
+        "sha256":  "811bcfd1553e2c7b69c0ffad7bb6d562c80c076085d9982088a1384eeb97e3a9"
+    },
+    {
+        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/invites-visual/invite_form_desktop_dark/before.png",
+        "sha256":  "d6c38f3a1aefa26f05d2d6ef445a290ae9f8a80aa1db28f535d441ba166dcb0f"
+    },
+    {
+        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/invites-visual/invite_form_mobile_light/after.png",
+        "sha256":  "f6c3a49c83b4aed3229f6b86006eccce971dd077835004548f65a3cba3f3d21d"
+    },
+    {
+        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/invites-visual/invite_form_mobile_light/before.png",
+        "sha256":  "0d4eab19e0ea66642e62c16ec4abd26739321b5384e0185dadd398613ff9f31c"
+    },
+    {
+        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/invites-visual/invite_revoke_confirmation_light/after.png",
+        "sha256":  "979bf4062ae1d692ff29b262185ea4eba6db2e244dbf1a35141983cd8a40344c"
+    },
+    {
+        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/invites-visual/invite_revoke_confirmation_light/before.png",
+        "sha256":  "727a93745f93a9b590998069c02b8c17984395f9e9a38b576a1de6e9851b4434"
+    }
+]

@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-09-09T21:12:57.7070064-03:00",
+  "scope": "apps/superadmin -> Turmas/Atividades -> CREATE DRAFT catalogado -> reserva opcional",
+  "action_ids": [
+    "groups.create",
+    "groups.location",
+    "activities.create",
+    "activities.location"
+  ],
+  "status": "local-green; gates permanecem defaultfalse",
+  "source": "20260909165000_superadmin_location_reservations_v2.sql linhas159-175: once preserva instantes;203-208: primeira data deve pertencer weekdays e inicia expansao;251: weekdays ordenados; helperconflict servidor exige justificativa para override",
+  "changes": [
+    "requireLocationReservationIntentV2 compartilhado no DTO ja exportado",
+    "Dois adapters correlacionam primeira ocorrencia por instante, kindrecurrence e weeklyweekdayset/until/timezone com o comando original",
+    "confirmedOverConflict true exige justificativa enviada; envio de justificativa nao obriga override",
+    "Mantida expansao das demais ocorrencias no servidor, sem calcular DST cliente"
+  ],
+  "metrics": {
+    "S": 0,
+    "F": 0,
+    "N": 19,
+    "B": 0,
+    "U": 0,
+    "E": 19,
+    "P": 19
+  },
+  "runs": [
+    {
+      "chunks": [
+        "be8640",
+        "a932f8"
+      ],
+      "runner": 35318,
+      "command": "rtk proxy flutter test --no-pub --concurrency=1 test/features/groups/data/supabase_group_location_create_repository_test.dart test/features/activities/data/supabase_activity_command_repository_test.dart --plain-name \"reservation intent correlation\" --reporter expanded",
+      "result": "RED14F2P; respostas divergentes emitiram sucesso nos14casos;2normalizacoes ja validas",
+      "exit_code": 1
+    },
+    {
+      "runner": 34828,
+      "command": "rtk proxy flutter test --no-pub --concurrency=1 test/features/groups/data/supabase_group_location_create_repository_test.dart test/features/activities/data/supabase_activity_command_repository_test.dart --plain-name \"reservation intent correlation\" --reporter expanded",
+      "P": 16,
+      "chunk": "dd3f00",
+      "exit_code": 0
+    },
+    {
+      "runner": 73031,
+      "command": "rtk proxy flutter test --no-pub --concurrency=1 test/features/groups/data/supabase_group_location_create_repository_test.dart test/features/activities/data/supabase_activity_command_repository_test.dart --name \"reservation canonical DST|reservation has three keys|optional reservation carries no consumer\" --reporter expanded",
+      "P": 3,
+      "chunk": "fbeb79",
+      "exit_code": 0
+    },
+    {
+      "runner": 16823,
+      "command": "rtk proxy dart analyze lib/features/groups/data/supabase_group_location_create_repository.dart lib/features/activities/data/supabase_activity_command_repository.dart test/features/groups/data/supabase_group_location_create_repository_test.dart test/features/activities/data/supabase_activity_command_repository_test.dart ../../packages/coelo_api/lib/src/locations/location_reservation_dto.dart",
+      "issues": 0,
+      "chunk": "a707c7",
+      "exit_code": 0
+    },
+    {
+      "chunk": "c37bfd",
+      "command": "rtk git diff --check",
+      "exit_code": 0
+    },
+    {
+      "command": "rtk proxy dart analyze test/features/groups/data/supabase_group_location_create_repository_test.dart",
+      "runner": 74135,
+      "exit_code": 0,
+      "issues": 0,
+      "chunk": "95db8d",
+      "reason": "novo positivo DST acrescentado apos analyzer dos5paths"
+    }
+  ],
+  "evidence": "Saida factual via tools/runners/chunks; nenhum log bruto preservado ou fabricado. Reruns substituem resultados anteriores;19IDs unicos.",
+  "limitations": [
+    "Testes HTTPMockClient dos adapters; sem SQL/replay/remoto/gates/router",
+    "Sem reexpansao semanal cliente: datas posteriores permanecem resposta autoritativa do servidor",
+    "Positivos cobrem Z e +00:00 equivalentes, weekdays ordenados, expansao semanal, DST com UTC12h->13h, justificativa sem override e override justificado",
+    "Sem autorizacao inferida de policy; backend mantem capacidade e conflito",
+    "Divergencia de limite justificativa Group2000 vs motor1000 observada, fora desta correcao e reportada ao root"
+  ],
+  "hashes": [
+    {
+      "sha256": "0A6DEB50892867253FFBE1C2095F772C2FB1E7D7CB8D530CB5739540580A0A89",
+      "path": "packages/coelo_api/lib/src/locations/location_reservation_dto.dart"
+    },
+    {
+      "sha256": "54E31FC47271736DDEC313B6B454CFD8527773D7B77428C40FB7F9BC1CBF0DA1",
+      "path": "apps/superadmin/lib/features/groups/data/supabase_group_location_create_repository.dart"
+    },
+    {
+      "sha256": "01EB1BFD07185872BA88188293BCE63BCB56129FEB1CFF007C54FA0762262B93",
+      "path": "apps/superadmin/lib/features/activities/data/supabase_activity_command_repository.dart"
+    },
+    {
+      "sha256": "5ECE69A800C7C0EA25D80B6CDFC6F19E0FA58542BD862B6BF439867EF2BEBC2C",
+      "path": "apps/superadmin/test/features/groups/data/supabase_group_location_create_repository_test.dart"
+    },
+    {
+      "sha256": "B5EAD6FE4DE8805AEE5C33F9BDC72C353BA082CF272A7A4C30337C7C870C3825",
+      "path": "apps/superadmin/test/features/activities/data/supabase_activity_command_repository_test.dart"
+    }
+  ],
+  "root_review": "Five hashes matched; both adapter diffs and causal tests reviewed. Weekly date-only UTC domain invariant confirmed; helper does not recompute server DST expansion."
+}

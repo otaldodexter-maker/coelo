@@ -491,7 +491,10 @@ final class _ActivityFormBody extends StatelessWidget {
           );
           return SuperadminFormFrame(
             viewportWidth: viewportWidth,
-            navigation: navigation,
+            navigation: ExcludeFocus(
+              excluding: controller.isSubmitting,
+              child: AbsorbPointer(absorbing: controller.isSubmitting, child: navigation),
+            ),
             scrollKey: const Key('activity-form-scroll'),
             body: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -509,14 +512,28 @@ final class _ActivityFormBody extends StatelessWidget {
                   ),
                   const SizedBox(height: CoeloSpacing.space4),
                 ],
-                ActivityFormSection(
-                  controller: controller,
-                  onCreateLocation: onCreateLocation,
-                  locationSelectionBuilder: locationSelectionBuilder,
-                  onRetryCatalogOptions: onRetryCatalogOptions,
-                  imagePicker: imagePicker,
-                  aboutRepository: aboutRepository,
-                  activityId: activityId,
+                if (controller.isSubmitting)
+                  Semantics(
+                    liveRegion: true,
+                    child: const Padding(
+                      padding: EdgeInsets.only(bottom: CoeloSpacing.space3),
+                      child: Text('Salvando alterações…'),
+                    ),
+                  ),
+                ExcludeFocus(
+                  excluding: controller.isSubmitting,
+                  child: AbsorbPointer(
+                    absorbing: controller.isSubmitting,
+                    child: ActivityFormSection(
+                      controller: controller,
+                      onCreateLocation: onCreateLocation,
+                      locationSelectionBuilder: locationSelectionBuilder,
+                      onRetryCatalogOptions: onRetryCatalogOptions,
+                      imagePicker: imagePicker,
+                      aboutRepository: aboutRepository,
+                      activityId: activityId,
+                    ),
+                  ),
                 ),
               ],
             ),

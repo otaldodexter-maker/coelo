@@ -1,0 +1,563 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-09-09T21:11:20.773768-03:00",
+  "revision": "7798fe9f1b964209fb89f6e990d2ae2d2f6f2509",
+  "source": "docs/reviews/coelo-flutter-integrado-supabase-pendencias.md",
+  "source_sha256": "7ac410734d12666d86712abdaac04390c586f4c7df2804edcd540f9c69e02296",
+  "source_scope": "Inherited integrated tracker in assigned base; central writer remains Claude. This proposed handoff is not a central tracker update.",
+  "counts": {
+    "unique_action_ids": 49,
+    "mvp": 42,
+    "deferred": 7,
+    "new_terminal_promotions": 0
+  },
+  "productive_composition": "productive-composition-manifest.json",
+  "limits": [
+    "No family-level completion claims or sum of historical reruns.",
+    "Actions without night evidence are carried forward, not newly audited as complete.",
+    "SQL local candidates: bindings30U, Activity33U, Group46U; replay remains coordinator-owned.",
+    "Current active WIP is not represented until tested and committed."
+  ],
+  "rows": [
+    {
+      "action_id": "institutions.list",
+      "surface": "apps/superadmin -> Instituições / Diretório",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [],
+      "inspection": "carry-forward only; no new full action certification",
+      "next_step": "Qualify action-specific normal route/read or nominal write against integrated base; form mutations remain blocked. Map/photo/files require their approved media contract."
+    },
+    {
+      "action_id": "institutions.filter",
+      "surface": "apps/superadmin -> Instituições / Filtros",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [],
+      "inspection": "carry-forward only; no new full action certification",
+      "next_step": "Qualify action-specific normal route/read or nominal write against integrated base; form mutations remain blocked. Map/photo/files require their approved media contract."
+    },
+    {
+      "action_id": "institutions.detail",
+      "surface": "apps/superadmin -> Instituições / Detalhe",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [],
+      "inspection": "carry-forward only; no new full action certification",
+      "next_step": "Qualify action-specific normal route/read or nominal write against integrated base; form mutations remain blocked. Map/photo/files require their approved media contract."
+    },
+    {
+      "action_id": "institutions.create",
+      "surface": "apps/superadmin -> Criar Instituição",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [],
+      "inspection": "carry-forward only; no new full action certification",
+      "next_step": "Qualify action-specific normal route/read or nominal write against integrated base; form mutations remain blocked. Map/photo/files require their approved media contract."
+    },
+    {
+      "action_id": "institutions.edit",
+      "surface": "apps/superadmin -> Editar Instituição",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [],
+      "inspection": "carry-forward only; no new full action certification",
+      "next_step": "Qualify action-specific normal route/read or nominal write against integrated base; form mutations remain blocked. Map/photo/files require their approved media contract."
+    },
+    {
+      "action_id": "institutions.status",
+      "surface": "apps/superadmin -> Instituições / Ativar-desativar",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [],
+      "inspection": "carry-forward only; no new full action certification",
+      "next_step": "Qualify action-specific normal route/read or nominal write against integrated base; form mutations remain blocked. Map/photo/files require their approved media contract."
+    },
+    {
+      "action_id": "institutions.files",
+      "surface": "apps/superadmin -> Instituições / Arquivos",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [],
+      "inspection": "carry-forward only; no new full action certification",
+      "next_step": "Qualify action-specific normal route/read or nominal write against integrated base; form mutations remain blocked. Map/photo/files require their approved media contract."
+    },
+    {
+      "action_id": "institutions.import",
+      "surface": "apps/superadmin -> Instituições / Importar",
+      "scope": "deferred-post-mvp",
+      "inherited_state": "deferred-post-mvp",
+      "proposed_state": "deferred-post-mvp",
+      "night_evidence": [],
+      "inspection": "carry-forward only; no new full action certification",
+      "next_step": "Keep deferred; no implementation or activation this round."
+    },
+    {
+      "action_id": "institutions.export",
+      "surface": "apps/superadmin -> Instituições / Exportar",
+      "scope": "deferred-post-mvp",
+      "inherited_state": "deferred-post-mvp",
+      "proposed_state": "deferred-post-mvp",
+      "night_evidence": [],
+      "inspection": "carry-forward only; no new full action certification",
+      "next_step": "Keep deferred; no implementation or activation this round."
+    },
+    {
+      "action_id": "institutions.error",
+      "surface": "apps/superadmin -> Instituições / Erro e retry",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [],
+      "inspection": "carry-forward only; no new full action certification",
+      "next_step": "Qualify action-specific normal route/read or nominal write against integrated base; form mutations remain blocked. Map/photo/files require their approved media contract."
+    },
+    {
+      "action_id": "institutions.access-denied",
+      "surface": "apps/superadmin -> Instituições / Acesso negado",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [],
+      "inspection": "carry-forward only; no new full action certification",
+      "next_step": "Qualify action-specific normal route/read or nominal write against integrated base; form mutations remain blocked. Map/photo/files require their approved media contract."
+    },
+    {
+      "action_id": "institutions.reload",
+      "surface": "apps/superadmin -> Instituições / Recarregar",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [],
+      "inspection": "carry-forward only; no new full action certification",
+      "next_step": "Qualify action-specific normal route/read or nominal write against integrated base; form mutations remain blocked. Map/photo/files require their approved media contract."
+    },
+    {
+      "action_id": "institutions.locations-map",
+      "surface": "apps/superadmin -> Instituição / Mapa e locais",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [
+        "candidates-manifest.json"
+      ],
+      "inspection": "night delta supported by listed manifests",
+      "next_step": "Qualify action-specific normal route/read or nominal write against integrated base; form mutations remain blocked. Map/photo/files require their approved media contract."
+    },
+    {
+      "action_id": "units.list",
+      "surface": "apps/superadmin -> Unidades / Diretório",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [],
+      "inspection": "carry-forward only; no new full action certification",
+      "next_step": "Complete internal directory/form-context cutover before selecting actual UnitDirectory adapter; preserve verified retry fix. Unit detail/commands are separate paths."
+    },
+    {
+      "action_id": "units.filter",
+      "surface": "apps/superadmin -> Unidades / Filtrar",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [],
+      "inspection": "carry-forward only; no new full action certification",
+      "next_step": "Complete internal directory/form-context cutover before selecting actual UnitDirectory adapter; preserve verified retry fix. Unit detail/commands are separate paths."
+    },
+    {
+      "action_id": "units.create",
+      "surface": "apps/superadmin -> Criar Unidade",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [
+        "units-create-idempotency-manifest.json"
+      ],
+      "inspection": "night delta supported by listed manifests",
+      "next_step": "Complete internal directory/form-context cutover before selecting actual UnitDirectory adapter; preserve verified retry fix. Unit detail/commands are separate paths."
+    },
+    {
+      "action_id": "units.edit",
+      "surface": "apps/superadmin -> Editar Unidade",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [],
+      "inspection": "carry-forward only; no new full action certification",
+      "next_step": "Complete internal directory/form-context cutover before selecting actual UnitDirectory adapter; preserve verified retry fix. Unit detail/commands are separate paths."
+    },
+    {
+      "action_id": "units.status",
+      "surface": "apps/superadmin -> Unidades / Status",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [],
+      "inspection": "carry-forward only; no new full action certification",
+      "next_step": "Complete internal directory/form-context cutover before selecting actual UnitDirectory adapter; preserve verified retry fix. Unit detail/commands are separate paths."
+    },
+    {
+      "action_id": "units.import",
+      "surface": "apps/superadmin -> Unidades / Importar",
+      "scope": "deferred-post-mvp",
+      "inherited_state": "deferred-post-mvp",
+      "proposed_state": "deferred-post-mvp",
+      "night_evidence": [],
+      "inspection": "carry-forward only; no new full action certification",
+      "next_step": "Keep deferred; no implementation or activation this round."
+    },
+    {
+      "action_id": "units.export",
+      "surface": "apps/superadmin -> Unidades / Exportar",
+      "scope": "deferred-post-mvp",
+      "inherited_state": "deferred-post-mvp",
+      "proposed_state": "deferred-post-mvp",
+      "night_evidence": [],
+      "inspection": "carry-forward only; no new full action certification",
+      "next_step": "Keep deferred; no implementation or activation this round."
+    },
+    {
+      "action_id": "units.error",
+      "surface": "apps/superadmin -> Unidades / Erro",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [],
+      "inspection": "carry-forward only; no new full action certification",
+      "next_step": "Complete internal directory/form-context cutover before selecting actual UnitDirectory adapter; preserve verified retry fix. Unit detail/commands are separate paths."
+    },
+    {
+      "action_id": "units.access-denied",
+      "surface": "apps/superadmin -> Unidades / Acesso negado",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [],
+      "inspection": "carry-forward only; no new full action certification",
+      "next_step": "Complete internal directory/form-context cutover before selecting actual UnitDirectory adapter; preserve verified retry fix. Unit detail/commands are separate paths."
+    },
+    {
+      "action_id": "units.reload",
+      "surface": "apps/superadmin -> Unidades / Recarregar",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [],
+      "inspection": "carry-forward only; no new full action certification",
+      "next_step": "Complete internal directory/form-context cutover before selecting actual UnitDirectory adapter; preserve verified retry fix. Unit detail/commands are separate paths."
+    },
+    {
+      "action_id": "units.people-export",
+      "surface": "apps/superadmin -> Unidade / Pessoas / Exportar",
+      "scope": "deferred-post-mvp",
+      "inherited_state": "deferred-post-mvp",
+      "proposed_state": "deferred-post-mvp",
+      "night_evidence": [],
+      "inspection": "carry-forward only; no new full action certification",
+      "next_step": "Keep deferred; no implementation or activation this round."
+    },
+    {
+      "action_id": "units.locations-map",
+      "surface": "apps/superadmin -> Unidade / Mapa e locais",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [
+        "candidates-manifest.json"
+      ],
+      "inspection": "night delta supported by listed manifests",
+      "next_step": "Complete internal directory/form-context cutover before selecting actual UnitDirectory adapter; preserve verified retry fix. Unit detail/commands are separate paths."
+    },
+    {
+      "action_id": "units.copy-institution-location",
+      "surface": "apps/superadmin -> Unidade / Copiar local",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [
+        "candidates-manifest.json"
+      ],
+      "inspection": "night delta supported by listed manifests",
+      "next_step": "Complete internal directory/form-context cutover before selecting actual UnitDirectory adapter; preserve verified retry fix. Unit detail/commands are separate paths."
+    },
+    {
+      "action_id": "groups.list",
+      "surface": "apps/superadmin -> Turmas / Diretório",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [],
+      "inspection": "carry-forward only; no new full action certification",
+      "next_step": "Complete internal form context and command coverage before composition. Restricted atomic draft must not silently discard active status, branding, links, people, professionals or invites."
+    },
+    {
+      "action_id": "groups.create",
+      "surface": "apps/superadmin -> Criar Turma",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [
+        "group-atomic-client-manifest.json",
+        "group-location-candidate-manifest.json"
+      ],
+      "inspection": "night delta supported by listed manifests",
+      "next_step": "Complete internal form context and command coverage before composition. Restricted atomic draft must not silently discard active status, branding, links, people, professionals or invites."
+    },
+    {
+      "action_id": "groups.edit",
+      "surface": "apps/superadmin -> Turmas / Detalhe-editar",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [],
+      "inspection": "carry-forward only; no new full action certification",
+      "next_step": "Complete internal form context and command coverage before composition. Restricted atomic draft must not silently discard active status, branding, links, people, professionals or invites."
+    },
+    {
+      "action_id": "groups.members",
+      "surface": "apps/superadmin -> Turmas / Membros",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [],
+      "inspection": "carry-forward only; no new full action certification",
+      "next_step": "Complete internal form context and command coverage before composition. Restricted atomic draft must not silently discard active status, branding, links, people, professionals or invites."
+    },
+    {
+      "action_id": "groups.import",
+      "surface": "apps/superadmin -> Turmas / Importar",
+      "scope": "deferred-post-mvp",
+      "inherited_state": "deferred-post-mvp",
+      "proposed_state": "deferred-post-mvp",
+      "night_evidence": [],
+      "inspection": "carry-forward only; no new full action certification",
+      "next_step": "Keep deferred; no implementation or activation this round."
+    },
+    {
+      "action_id": "groups.export",
+      "surface": "apps/superadmin -> Turmas / Exportar",
+      "scope": "deferred-post-mvp",
+      "inherited_state": "deferred-post-mvp",
+      "proposed_state": "deferred-post-mvp",
+      "night_evidence": [],
+      "inspection": "carry-forward only; no new full action certification",
+      "next_step": "Keep deferred; no implementation or activation this round."
+    },
+    {
+      "action_id": "groups.location",
+      "surface": "apps/superadmin -> Turma / Local",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [
+        "consumer-manifest.json",
+        "bindings-manifest.json",
+        "current-selection-manifest.json",
+        "group-atomic-client-manifest.json",
+        "group-location-candidate-manifest.json",
+        "historical-reservation-status-manifest.json"
+      ],
+      "inspection": "night delta supported by listed manifests",
+      "next_step": "Complete internal form context and command coverage before composition. Restricted atomic draft must not silently discard active status, branding, links, people, professionals or invites."
+    },
+    {
+      "action_id": "activities.list",
+      "surface": "apps/superadmin -> Atividades / Diretório",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [],
+      "inspection": "carry-forward only; no new full action certification",
+      "next_step": "Qualify SQL candidate and intended permissions before activating restricted draft path. Current selection getter is separate from history; edit/publish/About/one-off remain outside that candidate."
+    },
+    {
+      "action_id": "activities.create",
+      "surface": "apps/superadmin -> Criar Atividade / Wizard",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [
+        "activity-atomic-client-manifest.json",
+        "activity-atomic-form-manifest.json",
+        "activity-catalog-ui-manifest.json",
+        "activity-write-freeze-manifest.json",
+        "activity-location-candidate-manifest.json"
+      ],
+      "inspection": "night delta supported by listed manifests",
+      "next_step": "Qualify SQL candidate and intended permissions before activating restricted draft path. Current selection getter is separate from history; edit/publish/About/one-off remain outside that candidate."
+    },
+    {
+      "action_id": "activities.detail",
+      "surface": "apps/superadmin -> Atividade / Detalhe",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [
+        "activity-reader-manifest.json",
+        "activity-read-composition-manifest.json"
+      ],
+      "inspection": "night delta supported by listed manifests",
+      "next_step": "Qualify SQL candidate and intended permissions before activating restricted draft path. Current selection getter is separate from history; edit/publish/About/one-off remain outside that candidate."
+    },
+    {
+      "action_id": "activities.edit",
+      "surface": "apps/superadmin -> Editar Atividade",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [],
+      "inspection": "carry-forward only; no new full action certification",
+      "next_step": "Qualify SQL candidate and intended permissions before activating restricted draft path. Current selection getter is separate from history; edit/publish/About/one-off remain outside that candidate."
+    },
+    {
+      "action_id": "activities.publish",
+      "surface": "apps/superadmin -> Atividade / Publicar",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [],
+      "inspection": "carry-forward only; no new full action certification",
+      "next_step": "Qualify SQL candidate and intended permissions before activating restricted draft path. Current selection getter is separate from history; edit/publish/About/one-off remain outside that candidate."
+    },
+    {
+      "action_id": "activities.assessment",
+      "surface": "apps/superadmin -> Atividade / Avaliar",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [],
+      "inspection": "carry-forward only; no new full action certification",
+      "next_step": "Qualify SQL candidate and intended permissions before activating restricted draft path. Current selection getter is separate from history; edit/publish/About/one-off remain outside that candidate."
+    },
+    {
+      "action_id": "activities.location",
+      "surface": "apps/superadmin -> Atividade / Local",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [
+        "consumer-manifest.json",
+        "bindings-manifest.json",
+        "current-selection-manifest.json",
+        "activity-catalog-ui-manifest.json",
+        "activity-owner-callback-manifest.json",
+        "activity-write-freeze-manifest.json",
+        "historical-reservation-status-manifest.json"
+      ],
+      "inspection": "night delta supported by listed manifests",
+      "next_step": "Qualify SQL candidate and intended permissions before activating restricted draft path. Current selection getter is separate from history; edit/publish/About/one-off remain outside that candidate."
+    },
+    {
+      "action_id": "assessments.entry",
+      "surface": "apps/superadmin -> Avaliações / Lançamento",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [
+        "assessments-draft-error-manifest.json"
+      ],
+      "inspection": "night delta supported by listed manifests",
+      "next_step": "Qualify real normal route and nominal command/read under actual build flag; local save-error tests do not establish real persistence."
+    },
+    {
+      "action_id": "assessments.gradebook",
+      "surface": "apps/superadmin -> Avaliações / Diário",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [
+        "assessments-draft-error-manifest.json"
+      ],
+      "inspection": "night delta supported by listed manifests",
+      "next_step": "Qualify real normal route and nominal command/read under actual build flag; local save-error tests do not establish real persistence."
+    },
+    {
+      "action_id": "assessments.close",
+      "surface": "apps/superadmin -> Avaliações / Fechar",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [],
+      "inspection": "carry-forward only; no new full action certification",
+      "next_step": "Qualify real normal route and nominal command/read under actual build flag; local save-error tests do not establish real persistence."
+    },
+    {
+      "action_id": "assessments.reopen",
+      "surface": "apps/superadmin -> Avaliações / Reabrir",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [],
+      "inspection": "carry-forward only; no new full action certification",
+      "next_step": "Qualify real normal route and nominal command/read under actual build flag; local save-error tests do not establish real persistence."
+    },
+    {
+      "action_id": "assessments.detail",
+      "surface": "apps/superadmin -> Avaliação / Detalhe",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [],
+      "inspection": "carry-forward only; no new full action certification",
+      "next_step": "Qualify real normal route and nominal command/read under actual build flag; local save-error tests do not establish real persistence."
+    },
+    {
+      "action_id": "locations.list",
+      "surface": "apps/superadmin -> Locais / Diretório",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [
+        "candidates-manifest.json"
+      ],
+      "inspection": "night delta supported by listed manifests",
+      "next_step": "Claude qualifies binding candidate and composed catalog/reservations on integrated base. Require permitted/denied/revoked, actual owner isolation, persistence/reload and audit before terminal acceptance."
+    },
+    {
+      "action_id": "locations.create-edit",
+      "surface": "apps/superadmin -> Local / Criar e editar",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [
+        "candidates-manifest.json"
+      ],
+      "inspection": "night delta supported by listed manifests",
+      "next_step": "Claude qualifies binding candidate and composed catalog/reservations on integrated base. Require permitted/denied/revoked, actual owner isolation, persistence/reload and audit before terminal acceptance."
+    },
+    {
+      "action_id": "locations.detail-links",
+      "surface": "apps/superadmin -> Local / Detalhe e vínculos",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [
+        "candidates-manifest.json",
+        "bindings-manifest.json"
+      ],
+      "inspection": "night delta supported by listed manifests",
+      "next_step": "Claude qualifies binding candidate and composed catalog/reservations on integrated base. Require permitted/denied/revoked, actual owner isolation, persistence/reload and audit before terminal acceptance."
+    },
+    {
+      "action_id": "locations.schedule",
+      "surface": "apps/superadmin -> Locais / Agendamento",
+      "scope": "mvp",
+      "inherited_state": "pending-verification",
+      "proposed_state": "pending-verification",
+      "night_evidence": [
+        "consumer-manifest.json",
+        "bindings-manifest.json",
+        "historical-reservation-status-manifest.json"
+      ],
+      "inspection": "night delta supported by listed manifests",
+      "next_step": "Claude qualifies binding candidate and composed catalog/reservations on integrated base. Require permitted/denied/revoked, actual owner isolation, persistence/reload and audit before terminal acceptance."
+    }
+  ]
+}

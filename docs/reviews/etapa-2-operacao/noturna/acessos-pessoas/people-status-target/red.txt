@@ -1,0 +1,37 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:3 caractere:1
++ rtk proxy flutter test --no-pub test/features/people/presentation/per ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/people/presentation/person_status_keyboard_test.dart
+00:00 +0: status target is 48px with centered 24px dot and isolated edge touch
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: Size:<Size(48.0, 48.0)>
+  Actual: Size:<Size(24.0, 24.0)>
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/people/presentation/person_status_keyboard_test.dart:45:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/people/presentation/person_status_keyboard_test.dart line 45
+The test description was:
+  status target is 48px with centered 24px dot and isolated edge touch
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:03 +0 -1: status target is 48px with centered 24px dot and isolated edge touch [E]
+  Test failed. See exception logs above.
+  The test description was: status target is 48px with centered 24px dot and isolated edge touch
+
+00:03 +0 -1: Some tests failed.
+
+Failing tests:
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/people/presentation/person_status_keyboard_test.dart: status target is 48px with centered 24px dot and isolated edge touch

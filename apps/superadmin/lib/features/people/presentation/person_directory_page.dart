@@ -806,6 +806,7 @@ final class _PersonStatusIndicatorState extends State<_PersonStatusIndicator> {
           button: true,
           label: 'Status: ${widget.item.status.label}',
           child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
             onTap: () => setState(() => _expandedByTap = !_expandedByTap),
             child: TweenAnimationBuilder<double>(
               key: Key('person-status-${widget.item.id}'),
@@ -814,34 +815,45 @@ final class _PersonStatusIndicatorState extends State<_PersonStatusIndicator> {
                   ? Duration.zero
                   : CoeloMotion.standard,
               curve: Curves.easeOutCubic,
-              builder: (context, progress, child) => Container(
-                width:
-                    24 + (math.max(56, 24 + widget.item.status.label.length * 6.5) - 24) * progress,
-                height: CoeloSpacing.space6,
-                padding: EdgeInsets.symmetric(horizontal: CoeloSpacing.space2 * progress),
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: background,
-                  borderRadius: BorderRadius.circular(CoeloRadius.full),
-                  border: Border.all(
-                    color: foreground.withValues(alpha: _focused ? .48 : .28),
-                    width: _focused ? 2 : 1,
+              builder: (context, progress, child) => ConstrainedBox(
+                constraints: const BoxConstraints(
+                  minWidth: CoeloSize.touchMin,
+                  minHeight: CoeloSize.touchMin,
+                ),
+                child: Align(
+                  widthFactor: 1,
+                  heightFactor: 1,
+                  child: Container(
+                    width:
+                        24 +
+                        (math.max(56, 24 + widget.item.status.label.length * 6.5) - 24) * progress,
+                    height: CoeloSpacing.space6,
+                    padding: EdgeInsets.symmetric(horizontal: CoeloSpacing.space2 * progress),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: background,
+                      borderRadius: BorderRadius.circular(CoeloRadius.full),
+                      border: Border.all(
+                        color: foreground.withValues(alpha: _focused ? .48 : .28),
+                        width: _focused ? 2 : 1,
+                      ),
+                    ),
+                    child: progress == 0
+                        ? null
+                        : Opacity(
+                            opacity: progress,
+                            child: Text(
+                              widget.item.status.label,
+                              maxLines: 1,
+                              overflow: TextOverflow.clip,
+                              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                color: foreground,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
                   ),
                 ),
-                child: progress == 0
-                    ? null
-                    : Opacity(
-                        opacity: progress,
-                        child: Text(
-                          widget.item.status.label,
-                          maxLines: 1,
-                          overflow: TextOverflow.clip,
-                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            color: foreground,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
               ),
             ),
           ),
