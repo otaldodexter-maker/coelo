@@ -140,6 +140,61 @@ domínio arquivo por arquivo e deduziu o resto do fato de o conjunto local ser o
 mesmo para todas e não criar tabela nenhuma. Se alguma frente tiver um caminho
 de seed não conhecido, é a exceção que muda o quadro.
 
+## Progresso por tela
+
+As 230 ações da Etapa 2 em 39 famílias de tela, com o estado que o inventário
+certifica agora. "FE em avanço" reúne o que está em `pending-verification`,
+`audited`, `local-green` ou `fail-closed`: são telas com trabalho real feito e
+sem certificação de conclusão. Bloqueio `environment` significa pacote revisável
+esperando aplicação remota; `decision` significa que falta uma resposta sua.
+
+| Tela (família) | Ações | FE `verified` | FE em avanço | Bloqueio FE | BE aplicável | Bloqueio BE | E2E |
+| --- | ---: | ---: | ---: | --- | ---: | --- | ---: |
+| access_models | 6 | 0 | 6 | — | 6 | environment 6 | 0 |
+| access_profiles | 6 | 0 | 6 | — | 6 | — | 0 |
+| account | 6 | 0 | 6 | — | 4 | — | 0 |
+| acontece | 4 | 0 | 4 | — | 4 | environment 2 | 0 |
+| activities | 7 | 0 | 7 | — | 7 | environment 2 | 0 |
+| agenda | 7 | 0 | 7 | — | 7 | — | 0 |
+| agora | 4 | 0 | 4 | — | 4 | environment 1 | 0 |
+| assessments | 5 | 0 | 5 | — | 5 | — | 0 |
+| attendance | 6 | 1 | 5 | — | 6 | decision 1 | 0 |
+| audit | 4 | 0 | 4 | — | 4 | environment 3 | 0 |
+| auth | 5 | 4 | 1 | — | 5 | — | 0 |
+| catalog | 4 | 0 | 4 | — | 4 | — | 0 |
+| chat | 7 | 0 | 6 | environment 1 | 7 | environment 4 | 0 |
+| child_safety | 5 | 0 | 5 | — | 5 | environment 2 | 0 |
+| circulars | 11 | 0 | 10 | decision 1 | 11 | decision 1 | 0 |
+| daily_routine | 5 | 0 | 5 | — | 5 | — | 0 |
+| error_pages | 6 | 4 | 1 | decision 1 | 6 | — | 0 |
+| forms_authoring | 7 | 0 | 5 | decision 2 | 7 | — | 0 |
+| forms_files | 5 | 0 | 5 | — | 5 | environment 5 | 0 |
+| forms_responses | 6 | 0 | 5 | decision 1 | 6 | — | 0 |
+| groups | 7 | 0 | 7 | — | 7 | environment 2 | 0 |
+| health_care | 4 | 0 | 0 | decision 4 | 4 | environment 4 | 0 |
+| imports | 7 | 0 | 7 | — | 7 | — | 0 |
+| institutions | 13 | 0 | 13 | — | 13 | — | 0 |
+| internal_users | 5 | 0 | 5 | — | 5 | — | 0 |
+| invites | 5 | 0 | 5 | — | 5 | — | 0 |
+| locations | 4 | 0 | 4 | — | 4 | environment 2 | 0 |
+| meal_plans | 6 | 0 | 6 | — | 6 | — | 0 |
+| medication | 5 | 0 | 3 | decision 2 | 5 | environment 5 | 0 |
+| momentos | 4 | 0 | 4 | — | 4 | environment 1 | 0 |
+| notices | 6 | 0 | 6 | — | 6 | environment 1 | 0 |
+| people | 5 | 0 | 5 | — | 5 | — | 0 |
+| plans | 5 | 0 | 5 | — | 5 | — | 0 |
+| principal_profile | 3 | 0 | 1 | decision 2 | 3 | decision 3 | 0 |
+| profile_files | 6 | 2 | 4 | — | 6 | — | 0 |
+| shell | 5 | 0 | 5 | — | 0 | — | 0 |
+| students | 5 | 0 | 5 | — | 5 | — | 0 |
+| support | 6 | 0 | 3 | decision 3 | 6 | — | 0 |
+| units | 13 | 0 | 13 | — | 13 | — | 0 |
+
+Leitura honesta desta tabela: **a coluna que importa é a terceira, e ela soma
+11.** As colunas de avanço descrevem trabalho feito, não conclusão — e a
+diferença entre as duas é exatamente o que esta rodada passou a noite tornando
+visível.
+
 ## O defeito mais grave encontrado: Segurança infantil não se dispõe em produção
 
 Duas frentes mediram `/safety` de forma independente, e o diagnóstico mais
