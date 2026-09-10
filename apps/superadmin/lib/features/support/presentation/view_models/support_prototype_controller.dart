@@ -72,6 +72,7 @@ final class SupportPrototypeController extends ChangeNotifier {
   int _nextSessionNumber = 1;
   int _currentPage = 1;
   int _pageSize = 9;
+  int? _backendTotalItems;
   SupportSortColumn _sortColumn = SupportSortColumn.updatedAt;
   bool _sortAscending = false;
 
@@ -84,7 +85,8 @@ final class SupportPrototypeController extends ChangeNotifier {
   SupportSortColumn get sortColumn => _sortColumn;
   bool get sortAscending => _sortAscending;
   int get totalPages =>
-      ((_sortedFilteredTickets.length + _pageSize - 1) ~/ _pageSize).clamp(1, 1 << 31);
+      (((_backendTotalItems ?? _sortedFilteredTickets.length) + _pageSize - 1) ~/ _pageSize)
+          .clamp(1, 1 << 31);
   List<SupportTicket> get visibleTickets {
     final start = (_currentPage - 1) * _pageSize;
     final tickets = _sortedFilteredTickets;
@@ -119,6 +121,7 @@ final class SupportPrototypeController extends ChangeNotifier {
     if (backend == null) return;
     try {
       final page = await backend.list(_filters, page: _currentPage, pageSize: _pageSize);
+      _backendTotalItems = page.totalItems;
       _tickets = List.unmodifiable(page.tickets);
       if (_selectedTicketId != null && !_tickets.any((ticket) => ticket.id == _selectedTicketId)) {
         _selectedTicketId = null;
@@ -360,12 +363,14 @@ final class SupportPrototypeController extends ChangeNotifier {
     _filters = filters;
     _currentPage = 1;
     notifyListeners();
+    if (repository != null) unawaited(loadFromRepository());
   }
 
   void clearFilters() {
     _filters = SupportFilters.empty;
     _currentPage = 1;
     notifyListeners();
+    if (repository != null) unawaited(loadFromRepository());
   }
 
   void setPage(int page) {
@@ -375,6 +380,7 @@ final class SupportPrototypeController extends ChangeNotifier {
     }
     _currentPage = nextPage;
     notifyListeners();
+    if (repository != null) unawaited(loadFromRepository());
   }
 
   void setPageSize(int pageSize) {
@@ -384,6 +390,7 @@ final class SupportPrototypeController extends ChangeNotifier {
     _pageSize = pageSize;
     _currentPage = 1;
     notifyListeners();
+    if (repository != null) unawaited(loadFromRepository());
   }
 
   void setSort(SupportSortColumn column) {
