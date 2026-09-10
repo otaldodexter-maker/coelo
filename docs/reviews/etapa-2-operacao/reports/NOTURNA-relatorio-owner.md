@@ -235,6 +235,47 @@ O teste falha também **se uma das cinco ausências passar a existir e continuar
 lista** — sem isso a lista de exceções envelhece e passa a esconder o defeito
 seguinte, que é como esse tipo de allowlist costuma morrer.
 
+## Bloqueio herdado é a espécie que mente
+
+Perto do fim da rodada, uma frente descobriu que uma das próprias linhas de
+bloqueio era falsa: a ação de imagem em pergunta de Formulários estava registrada
+como esperando contrato de mídia de outro grupo, e o contrato **já existia,
+aplicado, e era do próprio grupo** — a RPC de preparação com `grant` para
+`authenticated`, a de finalização revogada porque é função de worker, a Edge
+Function conferindo o MIME real dos bytes, e até o adaptador de cliente pronto. O
+bloqueio existia apenas no registro.
+
+Isso virou tarefa para todas as frentes: **cada linha de bloqueio é uma hipótese
+que ninguém testou**, e ela é mais perigosa que um achado errado, porque bloqueio
+declarado parece informação e não pergunta. Ninguém confere. E eu ia trazer essa
+lista a você como se fosse fato — cada linha falsa aqui é uma decisão sua sobre
+um problema que não existe, ou um trabalho que você adia sem motivo.
+
+O reteste achou mais dois na mesma frente, e os dois mudam o que você decide:
+
+**Pergunta de Local em Formulários não está esperando decisão para destravar
+código pronto.** O registro dizia `blocked-decision`, sobre opções fixadas na
+publicação contra catálogo dinâmico — o que sugere implementação à espera. Não
+há: o domínio de Formulários não tem um `kind` de Local, a tela de resposta não
+tem nenhuma ocorrência, e as quatro do editor são todas outra coisa
+(`_validateLocally`, `_saveDraftLocally` e afins). O enunciado correto é **decida
+e depois construa**, não "decida e sai".
+
+**`care049` não espera autorização remota; espera aprovação de spec.** A
+`specs/049-superadmin-internal-care-profile-crud-v2.md` está com status
+`draft-for-review` — é rascunho não aprovado, e é ela que criaria o contrato real.
+E a spec vigente, `specs/020-superadmin-health-care.md`, está como
+`approved-for-demonstrative-ui`. Ou seja: **Saúde e Medicação não terem
+repositório de produção não é omissão nem gate de implantação — é o escopo
+aprovado.** São decisões diferentes, de pessoas diferentes, em prazos diferentes,
+e a linha antiga levaria você a autorizar um pacote quando o que falta é aprovar
+uma spec.
+
+E a lição que a própria frente tirou é a generalização mais útil da noite: **dos
+bloqueios dela, os três que estavam errados eram exatamente os três copiados do
+rastreador sem teste. Nenhum bloqueio que ela mesma havia verificado estava
+errado.** Bloqueio herdado é a espécie que mente.
+
 ## Auditoria das onze certificações de Front-end
 
 As onze ações com Front-end `verified` foram reauditadas nesta rodada, uma a uma,
