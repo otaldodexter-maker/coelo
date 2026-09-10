@@ -60,6 +60,13 @@ de conclusão nem prova de backend conectado.
   com "+" branco e mantém o tracejado; Momentos não corta imagem no mobile e
   preenche mais a área preta no desktop; a foto do perfil Principal não pode
   aparecer recortada.
+- Decisão do Owner em 10/09/2026: **o botão flutuante de chat não aparece no
+  Agora aberto nem no Momentos aberto**, assim como não aparece em telas de
+  criar, editar ou publicar (contrato completo em
+  [form-layout-contracts](form-layout-contracts.md)). Essas superfícies ocupam a
+  tela com mídia e um balão por cima disso atrapalha. Isso não afeta o shell/menu
+  preservado pela decisão de 09/09: o que sai é o launcher de chat, não a
+  navegação do hospedeiro.
 - O viewer do Agora possui contrato imersivo próprio. Cor/contraste e controles
   sobre mídia seguem esse contrato; não aplicar mecanicamente fundo de popup
   administrativo ou o fechamento vermelho do Bug em toda superfície imersiva.

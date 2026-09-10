@@ -437,19 +437,26 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('keeps the compact chat launcher above the canonical footer', (tester) async {
+  testWidgets('nao mostra o balao de chat, e ancora o rodape no fim da tela', (tester) async {
+    // Decisao do Owner de 10/09/2026: sem balao de chat em telas de criar e
+    // editar, e rodape ancorado no fim da viewport tambem no mobile. Este caso
+    // substitui o anterior, que exigia o launcher acima do rodape.
     tester.view.physicalSize = const Size(375, 900);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     await tester.pumpWidget(_app(onDestinationSelected: (_) {}));
     await tester.pumpAndSettle();
-    final launcher = find.byKey(const Key('superadmin-chat-launcher-surface'));
+    expect(find.byKey(const Key('superadmin-chat-launcher-surface')), findsNothing);
     final footer = find.byKey(const Key('activity-form-footer-surface'));
-    expect(launcher, findsOneWidget);
+    // O rodape encosta no fim do frame, descontado apenas o padding inferior
+    // do proprio frame; nao acompanha mais o fim do conteudo rolavel.
     expect(
-      tester.getBottomLeft(launcher).dy,
-      lessThanOrEqualTo(tester.getTopLeft(footer).dy - CoeloSpacing.space4),
+      tester.getBottomLeft(footer).dy,
+      closeTo(
+        tester.getBottomLeft(find.byType(SuperadminFormFrame)).dy - CoeloSpacing.space4,
+        0.5,
+      ),
     );
   });
 

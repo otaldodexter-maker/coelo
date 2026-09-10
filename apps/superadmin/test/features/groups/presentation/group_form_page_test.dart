@@ -418,12 +418,17 @@ void main() {
     await tester.binding.setSurfaceSize(const Size(375, 900));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('superadmin-form-step-summary')), findsOneWidget);
-    final launcher = find.byKey(const Key('superadmin-chat-launcher-surface'));
+    // Decisao do Owner de 10/09/2026: sem balao de chat em telas de criar e
+    // editar, e rodape ancorado no fim da viewport tambem no mobile.
+    expect(find.byKey(const Key('superadmin-chat-launcher-surface')), findsNothing);
     final footer = find.byType(SuperadminFormActionFooter);
-    expect(launcher, findsOneWidget);
+    expect(footer, findsOneWidget);
     expect(
-      tester.getBottomLeft(launcher).dy,
-      lessThanOrEqualTo(tester.getTopLeft(footer).dy - CoeloSpacing.space4),
+      tester.getBottomLeft(footer).dy,
+      closeTo(
+        tester.getBottomLeft(find.byType(SuperadminFormFrame)).dy - CoeloSpacing.space4,
+        0.5,
+      ),
     );
   });
 

@@ -49,12 +49,15 @@ final class SuperadminFormFrame extends StatelessWidget {
                           child: body,
                         ),
                       ),
-                      if (!showRail) ...[const SizedBox(height: CoeloSpacing.space6), footer],
                     ],
                   ),
                 ),
               ),
-              if (showRail) footer,
+              // O rodape fica ancorado no fim da viewport em todas as larguras.
+              // Antes ele ia para dentro do scroll em mobile, entao subia junto
+              // com conteudo curto e ficava fora da primeira tela em formulario
+              // longo. Decisao do Owner de 10/09/2026 sobre a observacao RODAPE.
+              footer,
             ],
           ),
         );

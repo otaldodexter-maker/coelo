@@ -371,10 +371,9 @@ final class _UnitFormPageState extends State<UnitFormPage> {
               : 'Atualize os dados da unidade selecionada.',
           currentDestination: 'units',
           onDestinationSelected: _selectDestination,
-          showChatLauncher:
-              widget.onDestinationSelected != null &&
-              outerConstraints.maxWidth >= CoeloBreakpoints.expanded.minWidth,
-          chatLauncherBottomInset: _footerHeight == 0 ? 0 : _footerHeight + CoeloSpacing.space4,
+          // Sem balao de chat em telas de criar e editar: decisao do Owner de
+          // 10/09/2026. Essas telas pedem foco na tarefa em andamento.
+          showChatLauncher: false,
           child: AnimatedBuilder(
             animation: _formController,
             builder: (context, child) => _buildState(outerConstraints),

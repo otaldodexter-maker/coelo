@@ -243,8 +243,9 @@ final class _InstitutionFormPageState extends State<InstitutionFormPage> {
       subtitle: widget.institutionId == null
           ? 'Adicione uma nova instituição ao Coelo.'
           : 'Atualize os dados da instituição selecionada.',
-      showChatLauncher: _loadState != _InstitutionFormLoadState.ready || _footerHeight > 0,
-      chatLauncherBottomInset: _footerHeight == 0 ? 0 : _footerHeight + CoeloSpacing.space4,
+      // Sem balao de chat em telas de criar e editar: decisao do Owner de
+      // 10/09/2026. Essas telas pedem foco na tarefa em andamento.
+      showChatLauncher: false,
       onDestinationSelected: _selectDestination,
       child: switch (_loadState) {
         _InstitutionFormLoadState.loading => const Center(
