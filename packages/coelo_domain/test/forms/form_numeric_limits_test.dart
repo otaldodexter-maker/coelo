@@ -114,6 +114,45 @@ void main() {
   // A guarda de selecoes so tinha prova pela pagina de resposta. Ela e
   // compartilhada e espelha padroes do servidor, entao os padroes precisam de
   // afirmacao propria: um teste de widget nao diz QUAL numero esta espelhado.
+  // Achado por bateria de MUTACAO, nao por leitura: baixar
+  // _serverDefaultTextLength de 1000 para 999 nao derrubava nenhuma prova. A
+  // constante espelha o limite que o servidor aplica a texto curto sem maximo
+  // autorado, e um numero espelhado sem afirmacao e um numero que ninguem
+  // percebe mudar.
+  group('the default short text length mirrors the server', () {
+    test('a thousand code points pass when the author declared no maximum', () {
+      final atTheEdge = 'a' * 1000;
+      expect(FormNumericLimits.textViolation(const FormItemConfig(), atTheEdge), isNull);
+    });
+
+    test('one code point beyond the default is refused', () {
+      final justOver = 'a' * 1001;
+      expect(
+        FormNumericLimits.textViolation(const FormItemConfig(), justOver),
+        contains('1000'),
+      );
+    });
+
+    test('an authored maximum replaces the default entirely', () {
+      expect(
+        FormNumericLimits.textViolation(const FormItemConfig(maxLength: 3), 'abcd'),
+        contains('3'),
+      );
+      expect(
+        FormNumericLimits.textViolation(const FormItemConfig(maxLength: 3), 'abc'),
+        isNull,
+      );
+    });
+
+    test('length counts code points, not UTF-16 units', () {
+      // Um emoji fora do plano basico ocupa DUAS unidades em Dart e conta como
+      // um caractere no servidor, que usa char_length. Contar errado recusaria
+      // mil emojis que o servidor aceita.
+      final emoji = '\u{1F600}' * 1000;
+      expect(FormNumericLimits.textViolation(const FormItemConfig(), emoji), isNull);
+    });
+  });
+
   group('selection limits mirror the server defaults', () {
     test('an item without authored limits inherits coalesce(1, 50)', () {
       const config = FormItemConfig();
