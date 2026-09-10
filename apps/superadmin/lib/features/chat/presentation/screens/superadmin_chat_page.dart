@@ -443,9 +443,15 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
         ChatThreadQuery(conversationId: conversation.id, cursor: cursor),
       );
       if (!_isCurrentThreadRequest(threadGeneration, requestedRepository, conversation.id)) return;
+      // A lista pode ter mudado enquanto a continuacao estava em voo: um envio
+      // que terminou antes dela acrescentou uma mensagem ao topo. Reescrever a
+      // partir do instantaneo capturado no INICIO engoliria essa mensagem, e o
+      // operador acreditaria ter perdido um envio que o servidor aceitou.
+      // A continuacao so acrescenta ao fim o que veio do servidor.
+      final latest = _thread ?? current;
       setState(
         () => _thread = ChatThreadPage(
-          items: [...current.items, ...older.items],
+          items: [...latest.items, ...older.items],
           nextCursor: older.nextCursor,
           totalCount: older.totalCount,
           hasMore: older.hasMore,
