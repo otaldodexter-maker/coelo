@@ -1612,6 +1612,14 @@ Esta classe apareceu quatro vezes, e três delas quase produziram decisão errad
   encerramento** é JSON válido, com todas as linhas corretas, e devolve um total
   errado, porque o processo ainda escrevia. **Arquivo completo e arquivo pronto
   são coisas diferentes.**
+- **A pior de todas, porque acerta a metade que se confere:** o relatório
+  expandido do executor de testes, redirecionado para arquivo, **trunca o nome do
+  caso na largura do terminal** — e casos distintos do mesmo arquivo cujo prefixo
+  truncado coincide **colapsam num só**. Uma frente reconstruiu 733 casos de uma
+  corrida cujo contador oficial dizia **6390**. As **144 falhas bateram exatas**,
+  porque falha imprime um bloco próprio e não colapsa. **A lista de falhas fica
+  certa e o denominador fica subestimado**, e a metade conferível passa confiança
+  para a metade errada.
 - E o relógio: `date` com `TZ=America/Sao_Paulo` dentro do Git Bash devolve UTC,
   porque não há base de fusos ali. Três horas a mais, com aparência de leitura
   local. Isso quase encerrou a rodada **uma hora e quarenta antes do horário
@@ -1677,6 +1685,12 @@ três vezes: a regra "hora só medida" pegou onde a leitura virou **comando** �
 script que escreve o registro — e não pegou onde ainda se digita, que são as
 mensagens. **Regra que depende de disciplina no momento da escrita não pega; a que
 vira comando pega.**
+
+**E o que pegou essa foi conferir o instrumento contra um número que ele não
+produziu** — o contador oficial da própria corrida. Uma verificação do parser
+contra outra execução do mesmo parser teria confirmado o erro. É a lei do controle
+noutra roupa: **um controle que depende de quem está sendo controlado não é
+controle.**
 
 **Mensagem não é registro.** Duas frentes descobriram, perto do fim, que trabalho
 real delas existia apenas nas mensagens trocadas com a coordenação: uma
