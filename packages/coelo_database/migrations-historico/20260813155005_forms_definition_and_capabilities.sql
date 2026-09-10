@@ -102,9 +102,12 @@ begin
     max_length := coalesce((p_config ->> 'max_length')::integer, 1000);
     return max_length between 1 and 10000;
   elsif p_kind in ('integer', 'decimal', 'money') then
-    if p_config - case when p_kind = 'decimal' then array['min_value','max_value','decimal_places']
-                       when p_kind = 'money' then array['min_value','max_value','currency']
-                       else array['min_value','max_value'] end <> '{}'::jsonb
+    -- O CASE precisa de parenteses: em PL/pgSQL o parser encerra a condicao do
+    -- IF no primeiro THEN que encontra, entao um CASE sem parenteses deixa a
+    -- expressao pela metade e a funcao inteira nao compila.
+    if (p_config - case when p_kind = 'decimal' then array['min_value','max_value','decimal_places']
+                        when p_kind = 'money' then array['min_value','max_value','currency']
+                        else array['min_value','max_value'] end) <> '{}'::jsonb
        or (p_config ? 'min_value' and jsonb_typeof(p_config -> 'min_value') <> 'number')
        or (p_config ? 'max_value' and jsonb_typeof(p_config -> 'max_value') <> 'number') then return false; end if;
     value_min := (p_config ->> 'min_value')::numeric; value_max := (p_config ->> 'max_value')::numeric;
@@ -142,8 +145,8 @@ begin
     end if;
     return true;
   elsif p_kind in ('photo','gallery') then
-    if p_config - case when p_kind = 'photo' then array['allow_camera','min_images','max_images']
-                       else array['allow_existing','min_images','max_images'] end <> '{}'::jsonb
+    if (p_config - case when p_kind = 'photo' then array['allow_camera','min_images','max_images']
+                        else array['allow_existing','min_images','max_images'] end) <> '{}'::jsonb
        or (p_kind = 'photo' and p_config ? 'allow_camera' and jsonb_typeof(p_config -> 'allow_camera') <> 'boolean')
        or (p_kind = 'gallery' and p_config ? 'allow_existing' and jsonb_typeof(p_config -> 'allow_existing') <> 'boolean')
        or (p_config ? 'min_images' and jsonb_typeof(p_config -> 'min_images') <> 'number')
