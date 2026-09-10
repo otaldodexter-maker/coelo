@@ -1,5 +1,5 @@
 {
-  "revision": 14,
+  "revision": 15,
   "round": "E2-NOTURNA-20260909",
   "role": "Coordenacao e Integracao - Claude",
   "writer": "coordenador-claude",
@@ -8,7 +8,7 @@
   "app": "Claude Code (VS Code)",
   "model": "claude-opus-5[1m]",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-09T21:50:00-03:00",
+  "updatedAt": "2026-09-09T22:00:00-03:00",
   "clockCorrection": {
     "referenceNow": "2026-09-09T19:03:25-03:00",
     "measuredBy": "date no checkout integrador",
@@ -449,7 +449,7 @@
     "claudeExecutorAddresses": "Fornecidos pelo Owner e verificados por envio real: as seis conversas Claude receberam ACK nominal por SendMessage em 18:18. Enderecos gravados em groups[].sessionName/sessionId para recuperacao."
   },
   "blocks": [],
-  "nextStep": "Recolher a entrega Codex ate 23:30, seguir integrando as frentes Claude e fechar o relatorio do Owner.",
+  "nextStep": "Aguardar a resposta de estrutura sobre as tres regressoes de composicao de Atividades ate 23:10, recolher a entrega Codex ate 23:30 e seguir com as frentes Claude.",
   "providers": {
     "supabase": {
       "cli": "supabase 2.117.0 autenticado; token no Credential Manager do Windows",
@@ -767,5 +767,19 @@
       "licao": "Aplicar patch isolado e depois mesclar a branch de origem exige conferir se o hunk ja entrou. Analyzer limpo nao prova rota valida: o assert e de runtime na construcao. Nenhum numero de rota medido entre 20:59 e 21:12 vale."
     }
   ],
-  "gateDeIntegracao": "Depois de cada merge eu rodo, alem de flutter analyze lib, o guarda test/app/router/route_name_uniqueness_test.dart, escrito por perfil-para-voce e verificado contra a base quebrada. Ele pega hunk de rota aplicado duas vezes, que foi o defeito que eu introduzi as 20:59 e que nem o analyzer nem teste de rota pegam."
+  "gateDeIntegracao": "Depois de cada merge eu rodo, alem de flutter analyze lib, o guarda test/app/router/route_name_uniqueness_test.dart, escrito por perfil-para-voce e verificado contra a base quebrada. Ele pega hunk de rota aplicado duas vezes, que foi o defeito que eu introduzi as 20:59 e que nem o analyzer nem teste de rota pegam.",
+  "regressaoAberta": {
+    "prioridade": "ALTA - para estrutura, antes do congelamento das 23:10",
+    "grupo": "estrutura",
+    "achado": "Tres contratos de composicao fail-closed de Atividades passavam na base intocada d784462c1 e FALHAM na base integrada. Sao regressao desta rodada, nao deriva herdada.",
+    "casos": [
+      "test/app/router/activity_routes_test.dart :: production routes use only the injected directory repository",
+      "test/app/router/development_fixture_composition_test.dart :: production Activity builders keep only injected fail-closed dependencies",
+      "test/app/router/development_fixture_composition_test.dart :: assessment settings and pedagogical command fields remain wired"
+    ],
+    "comoFoiMedido": "Rodei os seis arquivos de contrato de composicao em worktree destacada no d784462c1 intocado, com reporter JSON: 8 falhas, e nenhuma delas e uma destas tres. Na base integrada os mesmos arquivos dao 11. As oito preexistentes sao forms_composition_sanitization (2), composition_root_sanitization (2), unit_fail_closed_composition_source (2) e superadmin_form_action_footer_adoption (2).",
+    "porQueImporta": "Sao contratos que afirmam que a composicao produtiva de Atividades so recebe dependencias injetadas e fail-closed. Um deles diz literalmente que as rotas produtivas usam SOMENTE o repositorio de diretorio injetado. Se a composicao de Locais e do catalogo passou a injetar algo ali, o contrato precisa ser reconciliado deliberadamente, com o motivo escrito, ou a composicao precisa voltar ao que o contrato exige. As duas saidas sao aceitaveis; deixar vermelho sem decisao nao e.",
+    "oQuePeço": "Antes de congelar: reproduza os tres, diga se a composicao nova e deliberada, e ou ajuste a composicao ou reconcilie o contrato explicando no proprio teste por que o limite mudou. Se nao couber antes das 23:10, registre no seu <grupo>.json com essa leitura e eu assumo o residual — mas nao feche sem registrar.",
+    "naoConfundir": "O terceiro caso, assessment settings and pedagogical command fields remain wired, e o inverso dos outros dois: ele exige que campos CONTINUEM ligados. Verifique se a composicao nova desligou algo em vez de ligar demais."
+  }
 }
