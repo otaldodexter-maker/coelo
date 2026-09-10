@@ -2413,8 +2413,25 @@ e "arquivo não encontrado", na hora da autorização nominal, não se lê como 
 velho; **lê-se como pacote inexistente**, e o desfecho provável é a recusa do
 pacote por parecer fantasma.
 
-Corrigido nos dois casos, e a verificação foi estendida aos nove arquivos de
-coordenação.
+**A verificação foi então estendida aos nove arquivos de coordenação, com quatro
+controles de calibração antes de rodar:** 199 caminhos citados, **seis ausentes,
+dois reais**. Um deles é um pacote SQL citado na **árvore errada** — o arquivo
+existe, noutro diretório — e ele reúne as três condições que tornam a classe cara:
+é pacote que alguém seguiria para revisar **antes de aplicar em produção**; "não
+encontrado" na autorização nominal lê-se como pacote fantasma; e a árvore citada
+**tem arquivos**, só que outros, então quem procurar lá encontra coisas e conclui
+que o pacote nunca existiu, com evidência aparente.
+
+O outro é o nome de um arquivo de evidência escrito com um prefixo de data que o
+nome não tem — **e é exatamente o mesmo erro que a frente havia identificado em si
+mesma uma hora antes**, numa mensagem, dizendo que corrigiria a citação. O alarme
+foi corrigido; a citação não. **Reconhecer o defeito e propagar a correção são
+coisas diferentes**, e três frentes mostraram isso nesta noite.
+
+Os dois foram roteados aos donos com margem para corrigir antes do congelamento. E
+a varredura declarou também **quantas sequências o instrumento não conseguiu
+examinar** — vinte e sete, com a distribuição por frente — em vez de reportar
+apenas os seis achados.
 
 A verificação foi repassada às demais frentes — custa segundos e não exige contexto
 — e aplicada também aos documentos desta coordenação, que saíram limpos. Os
