@@ -18,10 +18,15 @@ class LocationDirectoryPanel extends StatefulWidget {
     this.reader = const UnavailableLocationCatalogReader(),
     this.sessionAvailable = false,
     this.contextRevision = 0,
+    this.onCreate,
     super.key,
   });
   final LocationScope scope;
   final ValueChanged<LocationCatalogEntry> onOpen;
+
+  /// Abre a criacao ja com o tipo do grupo em que o card Criar foi clicado.
+  /// Nulo esconde os cards Criar, quando a pessoa nao pode criar.
+  final ValueChanged<LocationKind>? onCreate;
   final LocationCatalogReader reader;
   final bool sessionAvailable;
   final int contextRevision;
@@ -185,11 +190,31 @@ class _LocationDirectoryPanelState extends State<LocationDirectoryPanel> {
                                 final width =
                                     (constraints.maxWidth - (columns - 1) * CoeloSpacing.space4) /
                                     columns;
-                                return Wrap(
-                                  spacing: CoeloSpacing.space4,
-                                  runSpacing: CoeloSpacing.space4,
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    for (final item in data.items)
+                                    for (final kind in LocationKind.values) ...[
+                                      _GroupHeading(kind: kind, scope: widget.scope),
+                                      const SizedBox(height: CoeloSpacing.space3),
+                                      Wrap(
+                                        spacing: CoeloSpacing.space4,
+                                        runSpacing: CoeloSpacing.space4,
+                                        children: [
+                                          if (widget.onCreate case final create?)
+                                            SizedBox(
+                                              width: width,
+                                              child: ConstrainedBox(
+                                                constraints: const BoxConstraints(minHeight: 216),
+                                                child: CoeloAdminCreateAction(
+                                                  key: Key('location-create-${kind.name}'),
+                                                  label: _createLabel(kind, widget.scope),
+                                                  onPressed: () => create(kind),
+                                                ),
+                                              ),
+                                            ),
+                                          for (final item in data.items.where(
+                                            (item) => item.kind == kind,
+                                          ))
                                       SizedBox(
                                         width: width,
                                         child: CoeloAdminInteractiveCard(
@@ -202,23 +227,49 @@ class _LocationDirectoryPanelState extends State<LocationDirectoryPanel> {
                                             child: Column(
                                               crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
-                                                Text(
-                                                  item.name,
-                                                  style: Theme.of(context).textTheme.titleLarge,
+                                                // A bolinha de status fica na
+                                                // mesma linha do nome, como no
+                                                // card de Instituicoes.
+                                                // Decisao do Owner de 10/09/2026.
+                                                Row(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Expanded(
+                                                      child: Text(
+                                                        item.name,
+                                                        maxLines: 2,
+                                                        overflow: TextOverflow.ellipsis,
+                                                        style: Theme.of(
+                                                          context,
+                                                        ).textTheme.titleLarge,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(
+                                                      width: CoeloSpacing.space2,
+                                                    ),
+                                                    locationStatusIndicator(context, item),
+                                                  ],
                                                 ),
                                                 const SizedBox(height: CoeloSpacing.space4),
-                                                Text(locationKindLabel(item.kind)),
-                                                Text('Andar: ${locationOptionalText(item.floor)}'),
+                                                // O tipo saiu do corpo do card:
+                                                // agora ele e o titulo do grupo.
+                                                Text(
+                                                  'Andar: ${locationOptionalText(item.floor)}',
+                                                ),
                                                 Text(
                                                   'Visibilidade: ${locationVisibilityLabel(item.visibility)}',
                                                 ),
-                                                const SizedBox(height: CoeloSpacing.space4),
-                                                locationStatusIndicator(context, item),
                                               ],
                                             ),
                                           ),
                                         ),
                                       ),
+                                        ],
+                                      ),
+                                      if (kind != LocationKind.values.last)
+                                        const SizedBox(height: CoeloSpacing.space6),
+                                    ],
                                   ],
                                 );
                               },
@@ -258,11 +309,47 @@ class _LocationDirectoryPanelState extends State<LocationDirectoryPanel> {
                                 ),
                               ],
                             )
-                    else
+                    else ...[
                       LocationReadStatePanel(
                         state: _controller.state,
                         prefix: 'location-directory',
                       ),
+                      // CRIAR: sem nenhum local, o card Criar tem que existir.
+                      // Vale tambem quando a busca nao encontrou nada: sem isso,
+                      // tirar o botao Novo local do cabecalho deixaria esses dois
+                      // estados sem nenhuma forma de criar.
+                      if (_controller.state == LocationReadState.empty ||
+                          _controller.state == LocationReadState.noResults)
+                        if (widget.onCreate case final create?) ...[
+                          const SizedBox(height: CoeloSpacing.space4),
+                          LayoutBuilder(
+                            builder: (context, constraints) {
+                              final columns = (constraints.maxWidth / 340).floor().clamp(1, 4);
+                              final width =
+                                  (constraints.maxWidth - (columns - 1) * CoeloSpacing.space4) /
+                                  columns;
+                              return Wrap(
+                                spacing: CoeloSpacing.space4,
+                                runSpacing: CoeloSpacing.space4,
+                                children: [
+                                  for (final kind in LocationKind.values)
+                                    SizedBox(
+                                      width: width,
+                                      child: ConstrainedBox(
+                                        constraints: const BoxConstraints(minHeight: 216),
+                                        child: CoeloAdminCreateAction(
+                                          key: Key('location-create-empty-${kind.name}'),
+                                          label: _createLabel(kind, widget.scope),
+                                          onPressed: () => create(kind),
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              );
+                            },
+                          ),
+                        ],
+                    ],
                     if (_controller.state == LocationReadState.unavailable)
                       Align(
                         alignment: Alignment.centerLeft,
@@ -318,3 +405,54 @@ CoeloAdminTableColumn<LocationCatalogEntry> _column(
     child: Text(value(item), maxLines: 2, overflow: TextOverflow.ellipsis),
   ),
 );
+
+/// Titulo do grupo. O tipo do local deixa de ser uma linha perdida no corpo do
+/// card e passa a ser o titulo que separa os dois grupos, como o Owner pediu em
+/// 10/09/2026: locais internos dentro da instituicao ou da unidade, locais
+/// externos ao lado.
+class _GroupHeading extends StatelessWidget {
+  const _GroupHeading({required this.kind, required this.scope});
+
+  final LocationKind kind;
+  final LocationScope scope;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Semantics(
+      header: true,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            _groupTitle(kind, scope),
+            key: Key('location-group-${kind.name}'),
+            style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+          ),
+          Text(
+            _groupDescription(kind),
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+String _groupTitle(LocationKind kind, LocationScope scope) => switch (kind) {
+  LocationKind.internal =>
+    scope is UnitLocationScope ? 'Locais internos da unidade' : 'Locais internos da instituição',
+  LocationKind.external => 'Locais externos',
+};
+
+String _groupDescription(LocationKind kind) => switch (kind) {
+  LocationKind.internal => 'Salas, quadras e o que mais existir aqui dentro.',
+  LocationKind.external => 'Fora das dependências, com endereço próprio.',
+};
+
+String _createLabel(LocationKind kind, LocationScope scope) => switch (kind) {
+  LocationKind.internal => 'Criar local interno',
+  LocationKind.external => 'Criar local externo',
+};

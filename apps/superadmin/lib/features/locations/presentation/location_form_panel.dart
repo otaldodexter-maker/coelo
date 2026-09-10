@@ -32,6 +32,7 @@ class LocationFormPanel extends StatefulWidget {
     required this.onCancel,
     required this.onCreated,
     this.initial,
+    this.initialKind = LocationKind.internal,
     this.writer = const UnavailableLocationCatalogWriter(),
     this.sessionAvailable = false,
     this.requestIdFactory,
@@ -45,6 +46,11 @@ class LocationFormPanel extends StatefulWidget {
 
   /// The location being edited, or null to create a new one.
   final LocationCatalogEntry? initial;
+
+  /// Tipo com que o formulario abre ao criar. O diretorio manda o tipo do grupo
+  /// em que o card Criar foi clicado, entao quem cria a partir de "Locais
+  /// externos" ja abre em Externo. Ignorado ao editar, que usa o tipo salvo.
+  final LocationKind initialKind;
 
   final LocationCatalogWriter writer;
   final bool sessionAvailable;
@@ -76,7 +82,7 @@ class _LocationFormPanelState extends State<LocationFormPanel> {
   final _number = TextEditingController();
   final _complement = TextEditingController();
 
-  LocationKind _kind = LocationKind.internal;
+  late LocationKind _kind = widget.initialKind;
   LocationVisibility _visibility = LocationVisibility.team;
   bool _saving = false;
   String? _error;

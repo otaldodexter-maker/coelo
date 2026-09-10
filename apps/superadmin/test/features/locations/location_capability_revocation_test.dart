@@ -1,3 +1,4 @@
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_domain/locations.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/locations/domain/location_capabilities.dart';
@@ -28,7 +29,7 @@ import 'location_read_fixtures.dart';
 /// Each grant closes only what it held open. The selected detail is a read and
 /// survives all of it, and losing the right to copy is no reason to shut an
 /// edit someone is in the middle of.
-const _create = Key('locations-create');
+const _create = Key('location-create-internal');
 const _bring = Key('locations-bring-from-institution');
 const _form = Key('locations-form');
 const _edit = Key('location-detail-edit');
@@ -144,7 +145,7 @@ void main() {
     tester,
   ) async {
     await pump(tester, const LocationCapabilities(create: true));
-    final activate = tester.widget<FilledButton>(find.byKey(_create)).onPressed!;
+    final activate = tester.widget<CoeloAdminCreateAction>(find.byKey(_create)).onPressed!;
     await regrant(tester, LocationCapabilities.none);
     activate();
     await answer(tester);
@@ -173,7 +174,7 @@ void main() {
   testWidgets('held catalog create callback is invalid after context replacement', (tester) async {
     const grants = LocationCapabilities(create: true);
     await pump(tester, grants);
-    final activate = tester.widget<FilledButton>(find.byKey(_create)).onPressed!;
+    final activate = tester.widget<CoeloAdminCreateAction>(find.byKey(_create)).onPressed!;
     await regrant(tester, grants, contextRevision: 1);
     activate();
     await answer(tester);
