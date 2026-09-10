@@ -11,6 +11,49 @@ timezone: "America/Sao_Paulo"
 > Documento vivo. Os números são medidos, datados e reproduzíveis; onde falta
 > medição, está escrito que falta.
 
+## O essencial, em uma página
+
+Este documento tem duas mil linhas porque a rodada mediu muito. **Se você ler só
+esta seção, terá o que decide.**
+
+**O que a noite moveu.** Seis frentes trabalharam da meia-noite às 05:00 sobre uma
+base integrada continuamente. A suíte fechou em **6370 casos que passam e 144 que
+falham** — e das 144, **129 são referências visuais** que dependem de decisão sua,
+não de código. Das 15 restantes, **cinco foram medidas na base anterior à rodada e
+falham lá idênticas**: são anteriores, não introduzidas.
+
+**Front-end certificado subiu de 7 para 11 de 230.** Backend e integração
+permanecem em zero, e a seção seguinte explica por quê — não é falta de esforço,
+não existe base reproduzível para exercitar rota real contra Postgres.
+
+**Três defeitos de produto foram encontrados; dois corrigidos.** A grade de
+Segurança infantil não se dispunha em produção, sobre dados de criança — corrigida
+e verificada por quem não a corrigiu. Um cardápio encerrado aparecia como
+rascunho, e filtrar por encerrado devolvia lista vazia — corrigido. E Importações
+transborda por número de linhas, com a causa num componente de tabela
+compartilhado que já está na sua lista de decisão.
+
+**A ação de maior retorno que você pode autorizar é uma consulta.** Um
+`select proname from pg_proc` no banco de produção responde de uma vez por cinco
+RPCs de Unidades, cinco de Assiduidade e quarenta objetos internos que o
+repositório chama e nunca cria. **Três blocos inteiros de bloqueio viram fato em
+segundos.** Enquanto ela não acontecer, esses blocos estão classificados como
+falta de autorização para verificar — não como ausência.
+
+**As decisões que só você pode tomar**, em ordem de custo crescente: a referência
+aprovada do Perfil (uma resposta binária); a cópia de três telas que se declaram
+uma prévia ao usuário, com patch preparado e não mesclado; o véu do chip de
+destaque, que custa treze referências visuais; o rebaseline por família, com uma
+liberada e quatro não; se o Superadmin de produção deve poder reportar bug — que é
+a mesma decisão de se Suporte recebe camada de dados; e o que acontece com as
+demais regras de público quando um formulário é reagendado.
+
+**Uma leitura honesta sobre o método, porque ela muda como você lê o resto:** a
+maior parte do valor desta noite não veio de código escrito. Veio de **medição que
+desfez conclusões** — inclusive cinco afirmações desta coordenação, derrubadas por
+conferência externa antes de chegarem até você. O documento registra os erros com
+o mesmo cuidado que os acertos, e é isso que torna o resto verificável.
+
 ## Como o trabalho foi verificado
 
 Oito grupos trabalharam em worktrees isoladas a partir da base integrada
