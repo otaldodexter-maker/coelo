@@ -2045,6 +2045,26 @@ correções só foram possíveis porque o pedido vinha com o raciocínio junto �
 critério de residual errado foi pego não por alguém desconfiar de mim, mas porque o
 "por quê" que eu mandei não fechava.
 
+E o recíproco, que a mesma frente me devolveu: **executor que reporta resultado sem
+método não pode ser corrigido.** Os dois piores erros dela só viraram erro porque ela
+os tornou verificáveis — o denominador estreito só pôde ser desmentido porque ela
+declarou o caminho que o produziu, e a contagem incompleta só pôde ser corrigida
+porque ela disse como coletou. **Frente que reporta só o número nunca é pega, e nunca
+se corrige.**
+
+É a recomendação mais barata desta rodada: **exigir que todo número venha com o
+comando que o produziu não é burocracia — é a única coisa que torna o número
+falsificável.**
+
+E o método que produziu quase tudo que sobrou desta noite não foi habilidade, e sim
+três hábitos que cabem numa linha, ditos por outra frente: **pluralidade,
+simultaneidade e efeito.** Mais de um item, para a cobertura não esconder o caso;
+duas operações em voo, para a concorrência aparecer; e medir **o que o operador vê**,
+em vez do mecanismo que nós mesmos escrevemos. Os três defeitos reais dessa frente —
+a lista que trocava a conversa aberta, a continuação que engolia um envio, e a tela
+de importações que só cabe quando está vazia — saíram daí. **Nenhum deles aparecia em
+teste verde.**
+
 A reauditoria pedida junto encontrou o caso perfeito: o campo que dizia a cabeça de
 uma frente carregava o SHA da branch dela — verdadeiro ali e **enganoso sobre a
 base**, porque o commit entrou por colheita com identidade nova. Quem conferisse o
