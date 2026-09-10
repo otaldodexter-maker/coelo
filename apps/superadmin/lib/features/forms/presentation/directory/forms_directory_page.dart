@@ -8,15 +8,11 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
 
-import '../../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
-import '../../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import '../../../../shared/presentation/widgets/superadmin_placeholder_file_actions.dart';
 import '../../data/development_forms_api.dart';
 import '../../data/forms_editor_context.dart';
 import '../../data/forms_directory_reader.dart';
 import 'forms_lifecycle_actions.dart';
-
-enum FormsDirectoryDisplay { table, cards }
 
 enum FormsDirectoryLoadStatus { loading, data, empty, noResults, unauthorized, failure }
 
@@ -59,7 +55,7 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
   final _cursors = <String?>[null];
   Set<FormOperationalStatus> _operationalStatuses = {};
   DateTimeRange? _period;
-  FormsDirectoryDisplay _display = FormsDirectoryDisplay.table;
+  CoeloAdminDirectoryDisplay _display = CoeloAdminDirectoryDisplay.table;
   FormsDirectoryLoadStatus _status = FormsDirectoryLoadStatus.loading;
   FormCursorPage<FormDirectoryItem>? _page;
   String? _message;
@@ -223,338 +219,226 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
     unawaited(_load());
   }
 
+  void _clearFilters() {
+    _search.clear();
+    setState(() {
+      _operationalStatuses = {};
+      _period = null;
+    });
+    _resetAndLoad();
+  }
+
   @override
-  Widget build(BuildContext context) => LayoutBuilder(
-    builder: (context, constraints) {
-      final contentPadding = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
-          ? CoeloSpacing.space10
-          : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
-          ? CoeloSpacing.space6
-          : CoeloSpacing.space4;
-      final unauthorized = _status == FormsDirectoryLoadStatus.unauthorized;
-      final page = _page;
-      final showsPagination =
-          _status == FormsDirectoryLoadStatus.data &&
-          page != null &&
-          (_pageIndex > 0 || page.nextCursor != null);
-      return Column(
-        children: [
-          Expanded(
-            child: ListView(
-              key: const Key('forms-directory-content-scroll'),
-              padding: EdgeInsets.fromLTRB(
-                contentPadding,
-                contentPadding,
-                contentPadding,
-                showsPagination ? 0 : contentPadding,
-              ),
-              children: [
-                if (unauthorized)
-                  _content(includePagination: false)
-                else ...[
-                  _toolbar(),
-                  const SizedBox(height: CoeloSpacing.space4),
-                  _content(includePagination: false),
-                ],
-              ],
-            ),
-          ),
-          if (showsPagination)
-            SuperadminListingPaginationFooter(
-              semanticKey: const Key('forms-directory-pagination-footer'),
-              horizontalPadding: contentPadding,
-              compactCurrentPage: _pageIndex + 1,
-              compactTotalPages: page.nextCursor == null ? _pageIndex + 1 : _pageIndex + 2,
-              compactOnPrevious: _pageIndex > 0 ? _previous : null,
-              compactOnNext: page.nextCursor != null ? _next : null,
-              child: CoeloAdminPagination(
-                currentPage: _pageIndex + 1,
-                totalPages: page.nextCursor == null ? _pageIndex + 1 : _pageIndex + 2,
-                onPrevious: _pageIndex > 0 ? _previous : null,
-                onNext: page.nextCursor != null ? _next : null,
-              ),
-            ),
-        ],
-      );
-    },
-  );
+  Widget build(BuildContext context) {
+    final page = _page;
+    final showsPagination =
+        _status == FormsDirectoryLoadStatus.data &&
+        page != null &&
+        (_pageIndex > 0 || page.nextCursor != null);
+    final canCreate = _canManage && widget.onCreate != null;
+    final canManageLifecycle =
+        _canManageLifecycle || (_canManage && widget.api is DevelopmentFormsApi);
+    final canTransferCrossInstitution =
+        _canTransferCrossInstitution || (_canManage && widget.api is DevelopmentFormsApi);
+    final api = widget.reader == null ? widget.api : null;
+    final onManageSchedules = widget.reader == null ? widget.onManageSchedules : null;
+    final items = page?.items ?? const <FormDirectoryItem>[];
+    final showsActions =
+        canManageLifecycle || onManageSchedules != null || widget.onResponses != null;
 
-  Widget _toolbar() => CoeloAdminListingToolbar(
-    search: CoeloSearchField(
-      key: const Key('forms-directory-search'),
-      controller: _search,
-      semanticLabel: 'Buscar formulários',
-      hintText: 'Buscar formulários',
-      onChanged: _onSearch,
-    ),
-    filters: [
-      CoeloAdminMultiSelectField<FormOperationalStatus>(
-        label: 'Situação',
-        options: FormOperationalStatus.values,
-        selectedValues: _operationalStatuses,
-        optionLabel: _operationalStatusLabel,
-        onChanged: (value) {
-          setState(() => _operationalStatuses = value);
-          _resetAndLoad();
-        },
-      ),
-      CoeloDateRangeField(
-        value: _period,
-        onChanged: (value) {
-          setState(() => _period = value);
-          _resetAndLoad();
-        },
-        firstDate: DateTime(2020),
-        lastDate: DateTime(2100, 12, 31),
-      ),
-    ],
-    actions: [
-      const SuperadminPlaceholderFileActions(resourceLabel: 'formulários'),
-      SuperadminDirectoryViewToggle<FormsDirectoryDisplay>(
-        cardsKey: const Key('forms-directory-view-cards'),
-        tableKey: const Key('forms-directory-view-table'),
-        cardsSelected: _display == FormsDirectoryDisplay.cards,
-        groupedView: FormsDirectoryDisplay.table,
-        selectedTableView: FormsDirectoryDisplay.table,
-        tableViews: const [
-          SuperadminDirectoryTableViewOption(value: FormsDirectoryDisplay.table, label: 'Tabela'),
-        ],
-        onCardsSelected: () => setState(() => _display = FormsDirectoryDisplay.cards),
-        onTableViewSelected: (_) => setState(() => _display = FormsDirectoryDisplay.table),
-      ),
-    ],
-  );
+    Widget actions(FormDirectoryItem item) => FormsLifecycleActions(
+      api: api,
+      formId: item.id,
+      formTitle: item.title,
+      managementVersion: item.managementVersion,
+      canManage: canManageLifecycle,
+      canTransferCrossInstitution: canTransferCrossInstitution,
+      onEdit: widget.onEdit == null ? null : () => widget.onEdit!(item),
+      onManageSchedules: onManageSchedules == null ? null : () => onManageSchedules(item),
+      onResponses: widget.onResponses == null ? null : () => widget.onResponses!(item),
+      onCompleted: _resetAndLoad,
+    );
 
-  Widget _content({required bool includePagination}) => switch (_status) {
-    FormsDirectoryLoadStatus.loading => const CoeloStatePanel(
-      title: 'Carregando formulários',
-      message: 'Aguarde enquanto os dados autorizados são carregados.',
-      loading: true,
-    ),
-    FormsDirectoryLoadStatus.empty => _stateWithCreate(
-      const CoeloStatePanel(
-        title: 'Nenhum formulário disponível',
-        message: 'Não há formulários para consultar neste escopo.',
-        icon: Icons.dynamic_form_outlined,
+    return CoeloAdminDirectory<CoeloAdminDirectoryDisplay>(
+      scrollKey: const Key('forms-directory-content-scroll'),
+      cardsKey: const Key('forms-directory-view-cards'),
+      tableKey: const Key('forms-directory-view-table'),
+      gridKey: const Key('forms-directory-card-grid'),
+      status: switch (_status) {
+        FormsDirectoryLoadStatus.loading => CoeloAdminDirectoryStatus.loading,
+        FormsDirectoryLoadStatus.data => CoeloAdminDirectoryStatus.success,
+        FormsDirectoryLoadStatus.empty => CoeloAdminDirectoryStatus.empty,
+        FormsDirectoryLoadStatus.noResults => CoeloAdminDirectoryStatus.noResults,
+        FormsDirectoryLoadStatus.unauthorized => CoeloAdminDirectoryStatus.unauthorized,
+        FormsDirectoryLoadStatus.failure => CoeloAdminDirectoryStatus.failure,
+      },
+      messages: const CoeloAdminDirectoryMessages(
+        empty: 'Nenhum formulário disponível',
+        emptyIcon: Icons.dynamic_form_outlined,
+        noResults: 'Nenhum resultado',
+        noResultsIcon: Icons.search_off_rounded,
+        failure: 'Não foi possível carregar os formulários',
+        failureIcon: Icons.error_outline_rounded,
+        unauthorized: 'Acesso não autorizado',
+        unauthorizedIcon: Icons.lock_outline_rounded,
       ),
-    ),
-    FormsDirectoryLoadStatus.noResults => _stateWithCreate(
-      CoeloStatePanel(
-        title: 'Nenhum resultado',
-        message: 'Ajuste a busca, o status ou o período.',
-        icon: Icons.search_off_rounded,
-        actionLabel: 'Limpar filtros',
-        onAction: () {
-          _search.clear();
-          setState(() {
-            _operationalStatuses = {};
-            _period = null;
-          });
-          _resetAndLoad();
-        },
+      errorMessage: switch (_status) {
+        FormsDirectoryLoadStatus.failure => _message,
+        FormsDirectoryLoadStatus.unauthorized => 'Seu perfil não possui forms.read neste escopo.',
+        _ => null,
+      },
+      onRetry: _load,
+      onClearFilters: _clearFilters,
+      search: CoeloSearchField(
+        key: const Key('forms-directory-search'),
+        controller: _search,
+        semanticLabel: 'Buscar formulários',
+        hintText: 'Buscar formulários',
+        onChanged: _onSearch,
       ),
-    ),
-    FormsDirectoryLoadStatus.unauthorized => const CoeloStatePanel(
-      title: 'Acesso não autorizado',
-      message: 'Seu perfil não possui forms.read neste escopo.',
-      icon: Icons.lock_outline_rounded,
-    ),
-    FormsDirectoryLoadStatus.failure => _stateWithCreate(
-      CoeloStatePanel(
-        title: 'Não foi possível carregar os formulários',
-        message: _message ?? 'Tente novamente.',
-        icon: Icons.error_outline_rounded,
-        actionLabel: 'Tentar novamente',
-        onAction: _load,
-      ),
-    ),
-    FormsDirectoryLoadStatus.data => FormsDirectoryResults(
-      page: _page!,
-      display: _display,
-      canManage: _canManage,
-      canManageLifecycle: _canManageLifecycle || (_canManage && widget.api is DevelopmentFormsApi),
-      canTransferCrossInstitution:
-          _canTransferCrossInstitution || (_canManage && widget.api is DevelopmentFormsApi),
-      api: widget.reader == null ? widget.api : null,
-      pageNumber: _pageIndex + 1,
-      onPrevious: _pageIndex > 0 ? _previous : null,
-      onNext: _page!.nextCursor != null ? _next : null,
-      includePagination: includePagination,
-      onCreate: widget.onCreate,
-      onOpen: widget.onOpen,
-      onEdit: widget.onEdit,
-      onManageSchedules: widget.reader == null ? widget.onManageSchedules : null,
-      onResponses: widget.onResponses,
-      onLifecycleCompleted: _resetAndLoad,
-      visualMetadata: widget.visualMetadata,
-    ),
-  };
-
-  Widget _stateWithCreate(Widget state) => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      if (_canManage && widget.onCreate != null) ...[
-        CoeloAdminCreateAction(
-          key: const Key('forms-directory-create'),
-          label: 'Criar formulário',
-          description: 'Criar e configurar um formulário.',
-          variant: CoeloAdminCreateActionVariant.banner,
-          onPressed: widget.onCreate,
+      filters: [
+        CoeloAdminMultiSelectField<FormOperationalStatus>(
+          label: 'Situação',
+          options: FormOperationalStatus.values,
+          selectedValues: _operationalStatuses,
+          optionLabel: _operationalStatusLabel,
+          onChanged: (value) {
+            setState(() => _operationalStatuses = value);
+            _resetAndLoad();
+          },
         ),
-        const SizedBox(height: CoeloSpacing.space4),
+        SizedBox(
+          width: 240,
+          child: CoeloDateRangeField(
+            value: _period,
+            onChanged: (value) {
+              setState(() => _period = value);
+              _resetAndLoad();
+            },
+            firstDate: DateTime(2020),
+            lastDate: DateTime(2100, 12, 31),
+          ),
+        ),
       ],
-      state,
-    ],
+      display: _display,
+      onDisplayChanged: (value) => setState(() => _display = value),
+      groupedTableView: CoeloAdminDirectoryDisplay.table,
+      selectedTableView: CoeloAdminDirectoryDisplay.table,
+      tableViews: const [
+        CoeloAdminDirectoryTableViewOption(
+          value: CoeloAdminDirectoryDisplay.table,
+          label: 'Tabela',
+        ),
+      ],
+      onTableViewSelected: (_) => setState(() => _display = CoeloAdminDirectoryDisplay.table),
+      fileActions: superadminPlaceholderFileActionList(context, 'formulários'),
+      create: canCreate
+          ? CoeloAdminDirectoryCreate(
+              label: 'Criar formulário',
+              description: 'Criar e configurar um formulário.',
+              icon: Icons.dynamic_form_outlined,
+              onPressed: widget.onCreate!,
+              tileKey: const Key('forms-directory-create'),
+              bannerKey: const Key('forms-directory-create'),
+            )
+          : null,
+      cards: [
+        for (final item in items)
+          _FormCard(
+            item: item,
+            metadata: _visualMetadataFor(item),
+            onOpen: widget.onOpen,
+            actions: showsActions ? actions(item) : null,
+          ),
+      ],
+      table: _FormTableRows(
+        items: items,
+        metadataFor: _visualMetadataFor,
+        onOpen: widget.onOpen,
+        actions: showsActions ? actions : null,
+      ),
+      pagination: showsPagination
+          ? CoeloAdminDirectoryPagination(
+              footerKey: const Key('forms-directory-pagination-footer'),
+              currentPage: _pageIndex + 1,
+              totalPages: page.nextCursor == null ? _pageIndex + 1 : _pageIndex + 2,
+              onPageSelected: (value) => value > _pageIndex + 1 ? _next() : _previous(),
+            )
+          : null,
+    );
+  }
+
+  DevelopmentFormVisualMetadata? _visualMetadataFor(FormDirectoryItem item) =>
+      widget.visualMetadata[item.id] ?? developmentFormVisualMetadata(item.id);
+}
+
+/// Card de domínio de um formulário; largura, grade e o Criar vêm do composto.
+final class _FormCard extends StatelessWidget {
+  const _FormCard({
+    required this.item,
+    required this.metadata,
+    required this.onOpen,
+    required this.actions,
+  });
+
+  final FormDirectoryItem item;
+  final DevelopmentFormVisualMetadata? metadata;
+  final ValueChanged<FormDirectoryItem>? onOpen;
+  final Widget? actions;
+
+  @override
+  Widget build(BuildContext context) => CoeloAdminInteractiveCard(
+    key: Key('forms-directory-card-${item.id}'),
+    surfaceKey: Key('forms-directory-card-surface-${item.id}'),
+    minHeight: CoeloAdminDirectoryMetrics.cardMinHeight,
+    onPressed: onOpen == null ? null : () => onOpen!(item),
+    child: Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: CoeloSpacing.space6,
+        vertical: CoeloSpacing.space4,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(child: Text(item.title, style: Theme.of(context).textTheme.titleMedium)),
+              const SizedBox(width: CoeloSpacing.space2),
+              _FormOperationalStatusIndicator(item: item),
+            ],
+          ),
+          const SizedBox(height: CoeloSpacing.space3),
+          Text(_kindLabel(item.kind)),
+          const SizedBox(height: CoeloSpacing.space4),
+          Text('Atualizado em ${_shortDate(item.updatedAt)}'),
+          if (actions case final actions?) ...[
+            const SizedBox(height: CoeloSpacing.space2),
+            Align(alignment: Alignment.centerRight, child: actions),
+          ],
+        ],
+      ),
+    ),
   );
 }
 
-final class FormsDirectoryResults extends StatelessWidget {
-  const FormsDirectoryResults({
-    required this.page,
-    required this.display,
-    required this.canManage,
-    this.canManageLifecycle = false,
-    this.canTransferCrossInstitution = false,
-    this.api,
-    required this.pageNumber,
-    this.onPrevious,
-    this.onNext,
-    this.onCreate,
-    this.onOpen,
-    this.onEdit,
-    this.onManageSchedules,
-    this.onResponses,
-    this.onLifecycleCompleted,
-    this.includePagination = true,
-    this.visualMetadata = const {},
-    super.key,
+/// Linhas e colunas de domínio dos formulários sobre a tabela compartilhada.
+final class _FormTableRows extends StatelessWidget {
+  const _FormTableRows({
+    required this.items,
+    required this.metadataFor,
+    required this.onOpen,
+    required this.actions,
   });
 
-  final FormCursorPage<FormDirectoryItem> page;
-  final FormsDirectoryDisplay display;
-  final bool canManage;
-  final bool canManageLifecycle;
-  final bool canTransferCrossInstitution;
-  final FormsApi? api;
-  final int pageNumber;
-  final VoidCallback? onPrevious;
-  final VoidCallback? onNext;
-  final VoidCallback? onCreate;
+  final List<FormDirectoryItem> items;
+  final DevelopmentFormVisualMetadata? Function(FormDirectoryItem item) metadataFor;
   final ValueChanged<FormDirectoryItem>? onOpen;
-  final ValueChanged<FormDirectoryItem>? onEdit;
-  final ValueChanged<FormDirectoryItem>? onManageSchedules;
-  final ValueChanged<FormDirectoryItem>? onResponses;
-  final VoidCallback? onLifecycleCompleted;
-  final bool includePagination;
-  final Map<String, DevelopmentFormVisualMetadata> visualMetadata;
-
-  DevelopmentFormVisualMetadata? _visualMetadata(FormDirectoryItem item) =>
-      visualMetadata[item.id] ?? developmentFormVisualMetadata(item.id);
+  final Widget Function(FormDirectoryItem item)? actions;
 
   @override
-  Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      if (display == FormsDirectoryDisplay.cards)
-        _cards(context)
-      else ...[
-        if (canManage) ...[
-          CoeloAdminCreateAction(
-            key: const Key('forms-directory-create'),
-            label: 'Criar formulário',
-            description: 'Criar e configurar um formulário.',
-            variant: CoeloAdminCreateActionVariant.banner,
-            onPressed: onCreate,
-          ),
-          const SizedBox(height: CoeloSpacing.space4),
-        ],
-        _table(context),
-      ],
-      if (includePagination && (onPrevious != null || onNext != null))
-        Padding(
-          padding: const EdgeInsets.only(top: CoeloSpacing.space5),
-          child: CoeloAdminPagination(
-            currentPage: pageNumber,
-            totalPages: onNext == null ? pageNumber : pageNumber + 1,
-            onPrevious: onPrevious,
-            onNext: onNext,
-          ),
-        ),
-    ],
-  );
-
-  Widget _cards(BuildContext context) => LayoutBuilder(
-    builder: (context, constraints) {
-      final columns = constraints.maxWidth >= 1100
-          ? 3
-          : constraints.maxWidth >= 680
-          ? 2
-          : 1;
-      final width = (constraints.maxWidth - (columns - 1) * CoeloSpacing.space6) / columns;
-      return Wrap(
-        key: const Key('forms-directory-card-grid'),
-        spacing: CoeloSpacing.space6,
-        runSpacing: CoeloSpacing.space6,
-        children: [
-          if (canManage)
-            SizedBox(
-              width: width,
-              height: 216,
-              child: CoeloAdminCreateAction(
-                key: const Key('forms-directory-create'),
-                label: 'Criar formulário',
-                variant: CoeloAdminCreateActionVariant.tile,
-                onPressed: onCreate,
-              ),
-            ),
-          for (final item in page.items)
-            SizedBox(
-              width: width,
-              child: CoeloAdminInteractiveCard(
-                key: Key('forms-directory-card-${item.id}'),
-                surfaceKey: Key('forms-directory-card-surface-${item.id}'),
-                minHeight: 216,
-                onPressed: onOpen == null ? null : () => onOpen!(item),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: CoeloSpacing.space6,
-                    vertical: CoeloSpacing.space4,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Text(item.title, style: Theme.of(context).textTheme.titleMedium),
-                          ),
-                          const SizedBox(width: CoeloSpacing.space2),
-                          _FormOperationalStatusIndicator(item: item),
-                        ],
-                      ),
-                      const SizedBox(height: CoeloSpacing.space3),
-                      Text(_kindLabel(item.kind)),
-                      const SizedBox(height: CoeloSpacing.space4),
-                      Text('Atualizado em ${_shortDate(item.updatedAt)}'),
-                      if (canManageLifecycle ||
-                          onManageSchedules != null ||
-                          onResponses != null) ...[
-                        const SizedBox(height: CoeloSpacing.space2),
-                        Align(alignment: Alignment.centerRight, child: _actions(item)),
-                      ],
-                    ],
-                  ),
-                ),
-              ),
-            ),
-        ],
-      );
-    },
-  );
-
-  Widget _table(BuildContext context) => CoeloAdminResizableTable<FormDirectoryItem>(
-    items: page.items,
+  Widget build(BuildContext context) => CoeloAdminResizableTable<FormDirectoryItem>(
+    items: items,
     rowKey: (item) => item.id,
     pinnedColumn: CoeloAdminTableColumn(
       id: 'title',
@@ -579,7 +463,7 @@ final class FormsDirectoryResults extends StatelessWidget {
         initialWidth: 160,
         minWidth: 150,
         maxWidth: 280,
-        cellBuilder: (_, item) => Text(_visualMetadata(item)?.contextLabel ?? '—'),
+        cellBuilder: (_, item) => Text(metadataFor(item)?.contextLabel ?? '—'),
       ),
       CoeloAdminTableColumn(
         id: 'audience',
@@ -587,7 +471,7 @@ final class FormsDirectoryResults extends StatelessWidget {
         initialWidth: 140,
         minWidth: 140,
         maxWidth: 240,
-        cellBuilder: (_, item) => Text(_visualMetadata(item)?.audienceLabel ?? '—'),
+        cellBuilder: (_, item) => Text(metadataFor(item)?.audienceLabel ?? '—'),
       ),
       CoeloAdminTableColumn(
         id: 'responses',
@@ -595,7 +479,7 @@ final class FormsDirectoryResults extends StatelessWidget {
         initialWidth: 104,
         minWidth: 104,
         maxWidth: 160,
-        cellBuilder: (_, item) => Text(_visualMetadata(item)?.responseCount.toString() ?? '—'),
+        cellBuilder: (_, item) => Text(metadataFor(item)?.responseCount.toString() ?? '—'),
       ),
       CoeloAdminTableColumn(
         id: 'schedules',
@@ -603,7 +487,7 @@ final class FormsDirectoryResults extends StatelessWidget {
         initialWidth: 130,
         minWidth: 130,
         maxWidth: 190,
-        cellBuilder: (_, item) => Text(_visualMetadata(item)?.scheduleCount.toString() ?? '—'),
+        cellBuilder: (_, item) => Text(metadataFor(item)?.scheduleCount.toString() ?? '—'),
       ),
       CoeloAdminTableColumn(
         id: 'created',
@@ -612,36 +496,23 @@ final class FormsDirectoryResults extends StatelessWidget {
         minWidth: 128,
         maxWidth: 190,
         cellBuilder: (_, item) {
-          final createdAt = _visualMetadata(item)?.createdAt;
+          final createdAt = metadataFor(item)?.createdAt;
           return Text(createdAt == null ? '—' : _shortDate(createdAt));
         },
       ),
-      if (canManageLifecycle || onManageSchedules != null || onResponses != null)
+      if (actions case final actions?)
         CoeloAdminTableColumn(
           id: 'actions',
           label: 'Ações',
           initialWidth: 72,
           minWidth: 72,
           maxWidth: 72,
-          cellBuilder: (_, item) => Align(alignment: Alignment.center, child: _actions(item)),
+          cellBuilder: (_, item) => Align(alignment: Alignment.center, child: actions(item)),
         ),
     ],
     headerHeight: 56,
     rowHeight: 64,
     onRowPressed: onOpen,
-  );
-
-  Widget _actions(FormDirectoryItem item) => FormsLifecycleActions(
-    api: api,
-    formId: item.id,
-    formTitle: item.title,
-    managementVersion: item.managementVersion,
-    canManage: canManageLifecycle,
-    canTransferCrossInstitution: canTransferCrossInstitution,
-    onEdit: onEdit == null ? null : () => onEdit!(item),
-    onManageSchedules: onManageSchedules == null ? null : () => onManageSchedules!(item),
-    onResponses: onResponses == null ? null : () => onResponses!(item),
-    onCompleted: onLifecycleCompleted,
   );
 }
 
@@ -711,15 +582,11 @@ String _shortDate(DateTime value) =>
 Widget formsDirectoryDesktopPreview() => MaterialApp(
   theme: CoeloTheme.light,
   home: Scaffold(
-    body: Padding(
-      padding: const EdgeInsets.all(CoeloSpacing.space5),
-      child: FormsDirectoryResults(
-        page: FormCursorPage(items: _previewForms, nextCursor: 'next'),
-        display: FormsDirectoryDisplay.table,
-        canManage: true,
-        pageNumber: 1,
-        onNext: () {},
-      ),
+    body: FormsDirectoryPage(
+      api: null,
+      reader: _PreviewFormsReader(),
+      canManage: true,
+      onCreate: () {},
     ),
   ),
 );
@@ -728,17 +595,20 @@ Widget formsDirectoryDesktopPreview() => MaterialApp(
 Widget formsDirectoryCompactDarkPreview() => MaterialApp(
   theme: CoeloTheme.dark,
   home: Scaffold(
-    body: SingleChildScrollView(
-      padding: const EdgeInsets.all(CoeloSpacing.space4),
-      child: FormsDirectoryResults(
-        page: FormCursorPage(items: _previewForms, nextCursor: null),
-        display: FormsDirectoryDisplay.cards,
-        canManage: true,
-        pageNumber: 1,
-      ),
+    body: FormsDirectoryPage(
+      api: null,
+      reader: _PreviewFormsReader(),
+      canManage: true,
+      onCreate: () {},
     ),
   ),
 );
+
+final class _PreviewFormsReader implements FormsDirectoryReader {
+  @override
+  Future<FormCursorPage<FormDirectoryItem>> listDirectory(FormDirectoryQuery query) async =>
+      FormCursorPage(items: _previewForms, nextCursor: null);
+}
 
 final _previewForms = [
   FormDirectoryItem(

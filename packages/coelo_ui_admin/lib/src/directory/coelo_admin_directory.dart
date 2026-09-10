@@ -86,21 +86,25 @@ final class CoeloAdminDirectoryPagination {
   const CoeloAdminDirectoryPagination({
     required this.currentPage,
     required this.totalPages,
-    required this.pageSize,
-    required this.pageSizeOptions,
     required this.onPageSelected,
-    required this.onPageSizeChanged,
+    this.pageSize,
+    this.pageSizeOptions = const [],
+    this.onPageSizeChanged,
     this.footerKey,
     this.surfaceKey,
   }) : assert(currentPage >= 1),
-       assert(totalPages >= 1);
+       assert(totalPages >= 1),
+       assert(pageSize == null || pageSizeOptions.length > 0),
+       assert(onPageSizeChanged == null || pageSize != null);
 
   final int currentPage;
   final int totalPages;
-  final int pageSize;
+
+  /// Sem `pageSize` (paginação por cursor) o seletor de itens por página some.
+  final int? pageSize;
   final List<int> pageSizeOptions;
   final ValueChanged<int> onPageSelected;
-  final ValueChanged<int> onPageSizeChanged;
+  final ValueChanged<int>? onPageSizeChanged;
   final Key? footerKey;
   final Key? surfaceKey;
 
@@ -180,6 +184,7 @@ final class CoeloAdminDirectory<TView> extends StatefulWidget {
     this.create,
     this.cards = const [],
     this.table,
+    this.bodyOverride,
     this.pagination,
     this.errorMessage,
     this.onRetry,
@@ -240,8 +245,13 @@ final class CoeloAdminDirectory<TView> extends StatefulWidget {
 
   /// Tabela de domínio; o composto coloca o banner Criar acima.
   final Widget? table;
+
+  /// Conteúdo que substitui cards/tabela no estado `success` (resumo
+  /// minimizado, por exemplo), mantendo toolbar e abas.
+  final Widget? bodyOverride;
   final CoeloAdminDirectoryPagination? pagination;
 
+  /// Mensagem do serviço mostrada abaixo do texto de falha/não autorizado.
   final String? errorMessage;
   final VoidCallback? onRetry;
   final VoidCallback? onClearFilters;
@@ -306,7 +316,8 @@ final class _CoeloAdminDirectoryState<TView> extends State<CoeloAdminDirectory<T
           children: [
             _StateCard(
               icon: widget.messages.unauthorizedIcon,
-              message: widget.errorMessage ?? widget.messages.unauthorized,
+              message: widget.messages.unauthorized,
+              detail: widget.errorMessage,
             ),
           ],
         );
@@ -392,7 +403,14 @@ final class _Toolbar<TView> extends StatelessWidget {
                 height: CoeloSize.touchMin,
                 child: directory.search,
               ),
-              for (final filter in directory.filters) SizedBox(width: filterWidth, child: filter),
+              for (final filter in directory.filters)
+                // Um filtro entregue em SizedBox com largura própria (campo de
+                // período, por exemplo) mantém sua largura; os demais usam a
+                // largura padrão da família.
+                if (filter case SizedBox(width: final width?))
+                  SizedBox(width: width.clamp(0, filterConstraints.maxWidth), child: filter.child)
+                else
+                  SizedBox(width: filterWidth, child: filter),
               ...directory.trailing,
             ],
           );
@@ -457,12 +475,14 @@ final class _Results<TView> extends StatelessWidget {
       ),
       CoeloAdminDirectoryStatus.unauthorized => _StateCard(
         icon: messages.unauthorizedIcon,
-        message: directory.errorMessage ?? messages.unauthorized,
+        message: messages.unauthorized,
+        detail: directory.errorMessage,
       ),
       CoeloAdminDirectoryStatus.failure => _withCreate(
         _StateCard(
           icon: messages.failureIcon,
-          message: directory.errorMessage ?? messages.failure,
+          message: messages.failure,
+          detail: directory.errorMessage,
           actionLabel: directory.onRetry == null ? null : messages.retryLabel,
           onAction: directory.onRetry,
           actionKey: const Key('coelo-admin-directory-retry'),
@@ -496,6 +516,7 @@ final class _Results<TView> extends StatelessWidget {
   }
 
   Widget _success() {
+    if (directory.bodyOverride case final body?) return body;
     if (directory.display == CoeloAdminDirectoryDisplay.cards) {
       return _CardGrid(
         gridKey: directory.gridKey,
@@ -657,6 +678,7 @@ final class _StateCard extends StatelessWidget {
   const _StateCard({
     required this.icon,
     required this.message,
+    this.detail,
     this.actionLabel,
     this.onAction,
     this.actionKey,
@@ -664,6 +686,9 @@ final class _StateCard extends StatelessWidget {
 
   final IconData icon;
   final String message;
+
+  /// Linha secundária (mensagem do serviço); omitida quando repete a principal.
+  final String? detail;
   final String? actionLabel;
   final VoidCallback? onAction;
   final Key? actionKey;
@@ -679,6 +704,14 @@ final class _StateCard extends StatelessWidget {
             Icon(icon, size: CoeloSize.iconLg),
             const SizedBox(height: CoeloSpacing.space3),
             Text(message, textAlign: TextAlign.center),
+            if (detail case final detail? when detail != message) ...[
+              const SizedBox(height: CoeloSpacing.space1),
+              Text(
+                detail,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ],
             if (actionLabel != null) ...[
               const SizedBox(height: CoeloSpacing.space3),
               OutlinedButton(key: actionKey, onPressed: onAction, child: Text(actionLabel!)),

@@ -202,14 +202,8 @@ void main() {
       repo.fetchPage(UnitDirectoryQuery()),
       throwsA(isA<UnavailableUnitDirectoryException>()),
     );
-    await expectLater(
-      repo.loadForm(),
-      throwsA(isA<UnavailableUnitDirectoryException>()),
-    );
-    await expectLater(
-      repo.fetchFilterOptions(),
-      throwsA(isA<UnavailableUnitDirectoryException>()),
-    );
+    await expectLater(repo.loadForm(), throwsA(isA<UnavailableUnitDirectoryException>()));
+    await expectLater(repo.fetchFilterOptions(), throwsA(isA<UnavailableUnitDirectoryException>()));
     // E o que importa para quem le o erro: nao e negacao de autorizacao, entao a
     // tela nao pode dizer ao usuario que ele nao tem permissao.
     await expectLater(

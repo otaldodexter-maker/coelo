@@ -20,30 +20,38 @@ final class SuperadminPlaceholderFileActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) => CoeloAdminFileActions(
     compact: compact,
-    actions: [
-      CoeloAdminFileAction(
-        label: 'Importar arquivo',
-        icon: Icons.upload_file_outlined,
-        onPressed: () => _showUnavailable(context, 'Importação'),
-      ),
-      CoeloAdminFileAction(
-        label: 'Exportar CSV',
-        icon: Icons.table_rows_outlined,
-        onPressed: () => _showUnavailable(context, 'Exportação CSV'),
-      ),
-      CoeloAdminFileAction(
-        label: 'Exportar XLSX',
-        icon: Icons.grid_on_outlined,
-        onPressed: () => _showUnavailable(context, 'Exportação XLSX'),
-      ),
-    ],
+    actions: superadminPlaceholderFileActionList(context, resourceLabel),
   );
+}
 
-  void _showUnavailable(BuildContext context, String operation) {
+/// Lista de ações honestas de arquivo para o `CoeloAdminDirectory`.
+List<CoeloAdminFileAction> superadminPlaceholderFileActionList(
+  BuildContext context,
+  String resourceLabel,
+) {
+  void showUnavailable(String operation) {
     showSuperadminNotice(
       context,
       '$operation de $resourceLabel estará disponível em breve.',
       icon: Icons.info_outline_rounded,
     );
   }
+
+  return [
+    CoeloAdminFileAction(
+      label: 'Importar arquivo',
+      icon: Icons.upload_file_outlined,
+      onPressed: () => showUnavailable('Importação'),
+    ),
+    CoeloAdminFileAction(
+      label: 'Exportar CSV',
+      icon: Icons.table_rows_outlined,
+      onPressed: () => showUnavailable('Exportação CSV'),
+    ),
+    CoeloAdminFileAction(
+      label: 'Exportar XLSX',
+      icon: Icons.grid_on_outlined,
+      onPressed: () => showUnavailable('Exportação XLSX'),
+    ),
+  ];
 }

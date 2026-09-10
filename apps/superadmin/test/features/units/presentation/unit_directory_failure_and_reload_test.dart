@@ -3,7 +3,7 @@ import 'package:coelo_superadmin/features/institutions/data/fake_institution_dir
 import 'package:coelo_superadmin/features/units/data/fake_unit_directory_repository.dart';
 import 'package:coelo_superadmin/features/units/domain/unit_directory.dart' as domain;
 import 'package:coelo_superadmin/features/units/presentation/unit_directory_page.dart';
-import 'package:coelo_superadmin/features/units/presentation/widgets/unit_directory_cards.dart';
+import 'package:coelo_superadmin/features/units/presentation/widgets/unit_card.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +39,8 @@ void main() {
     // A failure must not be dressed as "no units registered".
     expect(find.text('Ainda não há unidades cadastradas.'), findsNothing);
     expect(find.text(_noResultsMessage), findsNothing);
-    expect(find.byKey(const Key('unit-card-grid')), findsNothing);
+    // CRIAR: a grade mostra so o card Criar; nenhuma unidade e desenhada.
+    expect(find.byType(UnitCard), findsNothing);
     expect(tester.takeException(), isNull);
   });
 
@@ -50,7 +51,7 @@ void main() {
 
     await tester.pumpWidget(app(repository));
     await tester.pumpAndSettle();
-    expect(find.byType(UnitCreateBanner), findsOneWidget);
+    expect(find.text('Criar unidade'), findsOneWidget);
   });
 
   testWidgets('without permission to create, the failure offers no creation', (tester) async {
@@ -61,7 +62,7 @@ void main() {
     await tester.pumpWidget(app(repository, canCreate: false));
     await tester.pumpAndSettle();
     expect(find.text(_failureMessage), findsOneWidget);
-    expect(find.byType(UnitCreateBanner), findsNothing);
+    expect(find.text('Criar unidade'), findsNothing);
   });
 
   testWidgets('retry reloads once and recovers without duplicating the read', (tester) async {
@@ -117,7 +118,7 @@ void main() {
 
     expect(find.text(_noResultsMessage), findsOneWidget);
     expect(find.text(_failureMessage), findsNothing);
-    expect(find.byType(UnitCreateBanner), findsOneWidget);
+    expect(find.text('Criar unidade'), findsOneWidget);
   });
 
   testWidgets('clearing the search restores the directory', (tester) async {

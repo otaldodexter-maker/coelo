@@ -7,10 +7,10 @@ import '../../domain/unit_directory.dart';
 import '../unit_directory_table_view.dart';
 import 'unit_status_presentation.dart';
 
-final class UnitDirectoryTable extends StatelessWidget {
-  const UnitDirectoryTable({
+/// Linhas e colunas de domínio de Unidades sobre a tabela compartilhada.
+final class UnitTableRows extends StatelessWidget {
+  const UnitTableRows({
     required this.items,
-    required this.createAction,
     this.onEdit,
     required this.sortColumn,
     required this.sortAscending,
@@ -20,7 +20,6 @@ final class UnitDirectoryTable extends StatelessWidget {
   });
 
   final List<UnitDirectoryItem> items;
-  final Widget createAction;
   final ValueChanged<UnitDirectoryItem>? onEdit;
   final UnitDirectorySortColumn sortColumn;
   final bool sortAscending;
@@ -32,36 +31,30 @@ final class UnitDirectoryTable extends StatelessWidget {
     final columns = _columnsFor(view);
     final activeSortColumn = columns.where((column) => column.sortColumn == sortColumn).firstOrNull;
     return LayoutBuilder(
-      builder: (context, constraints) => Column(
-        children: [
-          SizedBox(width: constraints.maxWidth, child: createAction),
-          const SizedBox(height: CoeloSpacing.space4),
-          SizedBox(
-            key: const Key('unit-directory-table-viewport'),
-            width: constraints.maxWidth,
-            child: KeyedSubtree(
-              key: Key('unit-directory-table-${view.name}'),
-              child: view == UnitDirectoryTableView.grouped
-                  ? CoeloAdminResizableTable<UnitDirectoryItem>(
-                      key: const Key('unit-directory-table'),
-                      items: items,
-                      rowKey: (item) => 'unit-table-row-${item.id}',
-                      pinnedColumn: _column(_UnitColumn.unit),
-                      columns: columns.skip(1).map(_column).toList(growable: false),
-                      headerHeight: 56,
-                      rowHeight: 64,
-                      onRowPressed: onEdit,
-                      sortColumnId: activeSortColumn?.id ?? _UnitColumn.unit.id,
-                      sortAscending: sortAscending,
-                      onSort: (id) {
-                        final column = _UnitColumn.values.firstWhere((value) => value.id == id);
-                        if (column.sortColumn != null) onSort(column.sortColumn!);
-                      },
-                    )
-                  : _detailTable(view),
-            ),
-          ),
-        ],
+      builder: (context, constraints) => SizedBox(
+        key: const Key('unit-directory-table-viewport'),
+        width: constraints.maxWidth,
+        child: KeyedSubtree(
+          key: Key('unit-directory-table-${view.name}'),
+          child: view == UnitDirectoryTableView.grouped
+              ? CoeloAdminResizableTable<UnitDirectoryItem>(
+                  key: const Key('unit-directory-table'),
+                  items: items,
+                  rowKey: (item) => 'unit-table-row-${item.id}',
+                  pinnedColumn: _column(_UnitColumn.unit),
+                  columns: columns.skip(1).map(_column).toList(growable: false),
+                  headerHeight: 56,
+                  rowHeight: 64,
+                  onRowPressed: onEdit,
+                  sortColumnId: activeSortColumn?.id ?? _UnitColumn.unit.id,
+                  sortAscending: sortAscending,
+                  onSort: (id) {
+                    final column = _UnitColumn.values.firstWhere((value) => value.id == id);
+                    if (column.sortColumn != null) onSort(column.sortColumn!);
+                  },
+                )
+              : _detailTable(view),
+        ),
       ),
     );
   }

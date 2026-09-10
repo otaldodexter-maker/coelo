@@ -3,7 +3,6 @@ import 'package:coelo_superadmin/features/institutions/data/fake_institution_dir
 import 'package:coelo_superadmin/features/units/data/fake_unit_directory_repository.dart';
 import 'package:coelo_superadmin/features/units/domain/unit_directory.dart' as domain;
 import 'package:coelo_superadmin/features/units/presentation/unit_directory_page.dart';
-import 'package:coelo_superadmin/features/units/presentation/widgets/unit_directory_toolbar.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +32,6 @@ void main() {
     );
 
     void expectNoDirectoryControls() {
-      expect(find.byType(UnitDirectoryToolbar), findsNothing);
       expect(find.byKey(const Key('unit-filter-toolbar')), findsNothing);
       expect(find.byKey(const Key('unit-status-tabs')), findsNothing);
       expect(find.byType(CoeloAdminFileActions), findsNothing);

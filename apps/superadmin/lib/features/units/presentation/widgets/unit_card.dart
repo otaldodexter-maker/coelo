@@ -1,78 +1,13 @@
-import 'dart:math' as math;
-
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../shared/presentation/widgets/superadmin_directory_create_banner.dart';
 import '../../domain/unit_directory.dart';
 import 'unit_status_presentation.dart';
 
-final class UnitDirectoryCards extends StatelessWidget {
-  const UnitDirectoryCards({required this.items, this.onCreate, this.onEdit, super.key});
-
-  final List<UnitDirectoryItem> items;
-  final VoidCallback? onCreate;
-  final ValueChanged<UnitDirectoryItem>? onEdit;
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final columns = math.max(1, (constraints.maxWidth / 340).floor());
-        final cardWidth = (constraints.maxWidth - (columns - 1) * CoeloSpacing.space6) / columns;
-        return Wrap(
-          key: const Key('unit-card-grid'),
-          spacing: CoeloSpacing.space6,
-          runSpacing: CoeloSpacing.space6,
-          children: [
-            if (onCreate != null)
-              SizedBox(
-                width: cardWidth,
-                child: ConstrainedBox(
-                  key: const Key('create-unit-card'),
-                  constraints: const BoxConstraints(minHeight: 216),
-                  child: CoeloAdminCreateAction(
-                    label: 'Criar unidade',
-                    icon: Icons.apartment_outlined,
-                    onPressed: onCreate!,
-                  ),
-                ),
-              ),
-            for (final item in items)
-              SizedBox(
-                width: cardWidth,
-                child: _UnitCard(
-                  item: item,
-                  onPressed: onEdit == null ? null : () => onEdit!(item),
-                ),
-              ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-final class UnitCreateBanner extends StatelessWidget {
-  const UnitCreateBanner({required this.onPressed, super.key});
-
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return SuperadminDirectoryCreateBanner(
-      label: 'Criar unidade',
-      description: 'Adicionar nova unidade ao sistema.',
-      onPressed: onPressed,
-      bannerKey: const Key('create-unit-banner'),
-      surfaceKey: const Key('create-unit-banner-surface'),
-    );
-  }
-}
-
-final class _UnitCard extends StatelessWidget {
-  const _UnitCard({required this.item, required this.onPressed});
+/// Card de domínio de Unidades; largura, grade e o card Criar vêm do composto.
+final class UnitCard extends StatelessWidget {
+  const UnitCard({required this.item, required this.onPressed, super.key});
 
   final UnitDirectoryItem item;
   final VoidCallback? onPressed;

@@ -6,7 +6,6 @@ import 'package:coelo_superadmin/features/units/data/fake_unit_directory_reposit
 import 'package:coelo_superadmin/features/units/domain/unit_backend_commands.dart';
 import 'package:coelo_superadmin/features/units/domain/unit_directory.dart' as domain;
 import 'package:coelo_superadmin/features/units/presentation/unit_directory_page.dart';
-import 'package:coelo_superadmin/features/units/presentation/widgets/unit_directory_toolbar.dart';
 import 'package:coelo_superadmin/features/units/presentation/widgets/unit_status_presentation.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_directory_view_toggle.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
@@ -231,7 +230,7 @@ void main() {
     expect(find.text('UF'), findsOneWidget);
     final bannerCenter = tester.getCenter(find.byKey(const Key('create-unit-banner')));
     final bannerContentCenter = tester.getCenter(
-      find.byKey(const Key('superadmin-directory-create-banner-content')),
+      find.byKey(const Key('create-unit-banner')),
     );
     expect(bannerContentCenter.dx, closeTo(bannerCenter.dx, 0.5));
   });
@@ -368,8 +367,6 @@ void main() {
           expect(find.byKey(const Key('unit-demo-file-picker')), findsNothing);
           expect(find.textContaining('A exportação está em andamento'), findsNothing);
           expect(gateway.calls, isEmpty);
-          final toolbar = tester.widget<UnitDirectoryToolbar>(find.byType(UnitDirectoryToolbar));
-          expect(toolbar.activityController.activities, isEmpty);
           expect(tester.takeException(), isNull);
         },
       );

@@ -12,8 +12,6 @@ import '../../support/domain/support_ticket.dart';
 import '../domain/activity_directory.dart';
 import 'activity_directory_view_model.dart';
 
-enum ActivityDirectoryDisplay { cards, table }
-
 enum ActivityDirectoryTableView { grouped, units, groups }
 
 enum ActivityDirectoryExportFormat { csv, xlsx }
@@ -91,16 +89,6 @@ CoeloAdminDirectoryStatusTab _tabForStatuses(Set<ActivityStatus> statuses) {
   return CoeloAdminDirectoryStatusTab.inactive;
 }
 
-CoeloAdminDirectoryDisplay _toDisplay(ActivityDirectoryDisplay display) =>
-    display == ActivityDirectoryDisplay.cards
-    ? CoeloAdminDirectoryDisplay.cards
-    : CoeloAdminDirectoryDisplay.table;
-
-ActivityDirectoryDisplay _fromDisplay(CoeloAdminDirectoryDisplay display) =>
-    display == CoeloAdminDirectoryDisplay.cards
-    ? ActivityDirectoryDisplay.cards
-    : ActivityDirectoryDisplay.table;
-
 final class ActivityDirectoryPage extends StatefulWidget {
   const ActivityDirectoryPage({
     required this.repository,
@@ -139,7 +127,7 @@ final class _ActivityDirectoryPageState extends State<ActivityDirectoryPage> {
   late ActivityDirectoryViewModel _viewModel;
   late final SuperadminActivityController _activityController;
   late final TextEditingController _searchController;
-  ActivityDirectoryDisplay _display = ActivityDirectoryDisplay.cards;
+  CoeloAdminDirectoryDisplay _display = CoeloAdminDirectoryDisplay.cards;
   ActivityDirectoryTableView _tableView = ActivityDirectoryTableView.grouped;
   double _footerHeight = 0;
 
@@ -163,7 +151,7 @@ final class _ActivityDirectoryPageState extends State<ActivityDirectoryPage> {
     previous.dispose();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || !identical(replacement, _viewModel)) return;
-      replacement.setPageSize(_display == ActivityDirectoryDisplay.cards ? 11 : 8);
+      replacement.setPageSize(_display == CoeloAdminDirectoryDisplay.cards ? 11 : 8);
     });
   }
 
@@ -175,15 +163,15 @@ final class _ActivityDirectoryPageState extends State<ActivityDirectoryPage> {
     super.dispose();
   }
 
-  void _setDisplay(ActivityDirectoryDisplay display) {
+  void _setDisplay(CoeloAdminDirectoryDisplay display) {
     if (_display == display) return;
     setState(() => _display = display);
-    _viewModel.setPageSize(display == ActivityDirectoryDisplay.cards ? 11 : 8);
+    _viewModel.setPageSize(display == CoeloAdminDirectoryDisplay.cards ? 11 : 8);
   }
 
   void _setTableView(ActivityDirectoryTableView tableView) {
     setState(() {
-      _display = ActivityDirectoryDisplay.table;
+      _display = CoeloAdminDirectoryDisplay.table;
       _tableView = tableView;
     });
     _viewModel.setPageSize(8);
@@ -246,9 +234,9 @@ final class _ActivityDirectoryContent extends StatefulWidget {
 
   final ActivityDirectoryViewModel viewModel;
   final TextEditingController searchController;
-  final ActivityDirectoryDisplay display;
+  final CoeloAdminDirectoryDisplay display;
   final ActivityDirectoryTableView tableView;
-  final ValueChanged<ActivityDirectoryDisplay> onDisplayChanged;
+  final ValueChanged<CoeloAdminDirectoryDisplay> onDisplayChanged;
   final ValueChanged<ActivityDirectoryTableView> onTableViewChanged;
   final VoidCallback? onCreate;
   final ValueChanged<String> onView;
@@ -601,8 +589,8 @@ final class _ActivityDirectoryContentState extends State<_ActivityDirectoryConte
             label: const Text('Limpar filtros'),
           ),
       ],
-      display: _toDisplay(widget.display),
-      onDisplayChanged: (value) => widget.onDisplayChanged(_fromDisplay(value)),
+      display: widget.display,
+      onDisplayChanged: widget.onDisplayChanged,
       groupedTableView: ActivityDirectoryTableView.grouped,
       selectedTableView: widget.tableView,
       tableViews: const [
@@ -686,7 +674,7 @@ final class _ActivityDirectoryContentState extends State<_ActivityDirectoryConte
               currentPage: viewModel.page.page + 1,
               totalPages: viewModel.page.totalPages,
               pageSize: viewModel.query.pageSize,
-              pageSizeOptions: widget.display == ActivityDirectoryDisplay.cards
+              pageSizeOptions: widget.display == CoeloAdminDirectoryDisplay.cards
                   ? const [11, 20, 50, 100]
                   : const [8, 20, 50, 100],
               onPageSelected: (page) => viewModel.setPage(page - 1),
@@ -781,8 +769,8 @@ final class _ActivityDirectoryContentState extends State<_ActivityDirectoryConte
             }),
           ),
       ],
-      display: _toDisplay(widget.display),
-      onDisplayChanged: (value) => widget.onDisplayChanged(_fromDisplay(value)),
+      display: widget.display,
+      onDisplayChanged: widget.onDisplayChanged,
       groupedTableView: ActivityDirectoryTableView.grouped,
       selectedTableView: ActivityDirectoryTableView.grouped,
       tableViews: const [
@@ -791,7 +779,7 @@ final class _ActivityDirectoryContentState extends State<_ActivityDirectoryConte
           label: 'Tabela',
         ),
       ],
-      onTableViewSelected: (_) => widget.onDisplayChanged(ActivityDirectoryDisplay.table),
+      onTableViewSelected: (_) => widget.onDisplayChanged(CoeloAdminDirectoryDisplay.table),
       fileActionsBusyLabel: _fileActionLabel,
       fileActions: [
         CoeloAdminFileAction(
