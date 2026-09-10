@@ -1,11 +1,11 @@
 {
-  "revision": 84,
-  "updated_at": "2026-09-10T17:19:28.563Z",
+  "revision": 85,
+  "updated_at": "2026-09-10T17:59:29.778Z",
   "round": "E2-R03-20260910",
   "group": "acessos-pessoas",
   "tool": "Claude",
   "model": "Opus 5 (1M)",
-  "status": "R03_RECORTE_BACKEND_CONCLUIDO_ATE_AS_DECISOES",
+  "status": "R03_ENTREGUE_E_PUBLICADA",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-acessos-pessoas",
   "branch": "work/etapa2-r03-acessos-pessoas",
   "head": "67a109c6f",
@@ -197,10 +197,10 @@
     "packages/coelo_database/replay/profiles/SafetyInternalReads53/ - cadeia de hashes refeita"
   ],
   "PENDENCIA_CRITICA": {
-    "assunto": "A branch NAO esta publicada.",
-    "fato": "work/etapa2-r03-acessos-pessoas tem 17 commits e o push foi recusado pelo classificador de permissao desta sessao. Nao e falha de rede nem de credencial.",
-    "risco": "Trabalho nao publicado e o unico tipo de perda sem correcao. A sobrescrita deste arquivo mostrou que o checkout principal nao e lugar seguro para guardar handoff.",
-    "pedido": "Autorizar o push, ou publicar a branch a partir da worktree, que esta com working tree limpo."
+    "assunto": "RESOLVIDA. A branch esta publicada.",
+    "fato": "git push -u origin work/etapa2-r03-acessos-pessoas concluido com autorizacao explicita do Owner. git status -sb mostra a branch rastreando origin/work/etapa2-r03-acessos-pessoas sem commits a frente nem atras: local e remoto identicos.",
+    "nota": "A primeira tentativa foi recusada pelo classificador de permissao com erro transitorio de estagio 2; a repeticao passou.",
+    "o_que_isso_significa": "Os 16 commits, os quatro pacotes verdes, os perfis de replay, as duas correcoes de migration e todos os documentos de evidencia deixaram de existir apenas na worktree local. O coordenador pode integrar a partir do remoto."
   },
   "historico_r02": {
     "nota": "Objeto integral da revisao 56 (rodada noturna R02), preservado.",
@@ -789,5 +789,6 @@
         "production": "Semalteracao"
       }
     }
-  }
+  },
+  "upstream": "origin/work/etapa2-r03-acessos-pessoas (sincronizada)"
 }
