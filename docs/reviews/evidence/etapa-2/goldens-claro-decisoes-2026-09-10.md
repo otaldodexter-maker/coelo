@@ -35,6 +35,8 @@ nome. Nada é regravado antes de aplicar a observação do item.
 | FLYOUT | Flyouts de perfil e do card com foto ou sigla abrem com respiro, nunca colados na borda da tela. |
 | ARQUIVO | Botão de arquivar/duplicar nos cards de Cardápios e Planos segue o conceito de duplicar do card de modelo de atividade; o ícone atual está errado. |
 | DADOS | Dados fictícios dos goldens usam as quantidades já alinhadas com o Owner. |
+| MENU-M | Cabeçalho mobile (375/768) segue o anexo do Owner de 10/09: logo Coelo com breadcrumb "Coelo ›", sino e avatar/sigla à direita, **mais o botão de Bug**, que hoje falta. |
+| ARQUIVOS-CHAT | Decisão de 10/09: o botão Arquivos (importar/exportar) fica **escondido em Conversas** em todas as larguras; os demais diretórios mantêm o botão. É uma configuração do componente compartilhado, não exceção codificada na tela. |
 
 Para Coelo (Principal) hospedado no Superadmin:
 
@@ -246,7 +248,7 @@ Para Coelo (Principal) hospedado no Superadmin:
 | superadmin_chat_light_1440 | A | regressão: idem; MENU |
 | superadmin_chat_light_375 | A | |
 | superadmin_chat_light_768 | A | regressão: idem; MENU |
-| superadmin_chat_reduced_motion_light_375 | A | Owner não entendeu o botão de arquivo; explicar ou remover |
+| superadmin_chat_reduced_motion_light_375 | A | ARQUIVOS-CHAT: esconder o botão Arquivos em Conversas (decisão B de 10/09); MENU-M |
 
 ### Circulares, Comunicações e Avisos
 

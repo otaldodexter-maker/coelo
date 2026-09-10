@@ -63,7 +63,9 @@ producao quando o pgTAP local passou, a ordem serializada foi respeitada e o
 backup por ponto no tempo esta ligado; nao pedir autorizacao por pacote. O que
 ficar aberto vai para os rastreadores e o Owner revisa em ciclo semanal ou
 quinzenal. Segredos, buckets e Workers do Cloudflare ainda exigem autorizacao
-nominal. A topologia R2 privada usa
+nominal; o pacote de 10/09/2026 (CORS, lifecycle do transitorio, token R2
+minimo nos secrets, migracao das tres funcoes de midia, spike) ja esta
+autorizado pela ADR 0034, Decisao 5, e roda sem custo no nivel gratuito do R2. A topologia R2 privada usa
 `coelo-media-prod`, `coelo-documents-prod` e `coelo-transient-prod`, com chaves
 opacas versionadas por escopo, dominio, entidade, finalidade, ativo e rendicao.
 Postgres e o catalogo autoritativo de ativos, variantes, usos e entregas.
@@ -197,7 +199,7 @@ registrar o aceite. Nao encerrar apenas com auditoria, plano ou percentuais
 quando a correcao autorizada ainda puder prosseguir. Pedidos explicitos de
 explicacao/review somente leitura e manutencao das skills mantem esse limite.
 Pacote SQL verde em pgTAP local e aplicado em producao pelo integrador na
-ordem da fila (ADR 0034); so Cloudflare ainda exige decisao nominal.
+ordem da fila (ADR 0034); Cloudflare fora do pacote autorizado na Decisao 5 ainda exige decisao nominal.
 Continuar o trabalho independente enquanto isso. Seguir o ciclo de resolucao em review-scope.md.
 
 Antes de retomar, localizar worktrees, base integrada, protocolo/fechamento da

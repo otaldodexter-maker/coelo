@@ -28,8 +28,10 @@ Levar implementação e pgTAP local até verde e então **aplicar o pacote no
 Supabase de produção** na ordem da fila, conforme a ADR 0034: o integrador tem
 autorização permanente para migrations forward-only quando o pgTAP local passou
 e o backup por ponto no tempo está ligado. Não pedir autorização por pacote.
-Só recursos Cloudflare (segredos, buckets, Workers) ainda exigem decisão
-nominal. Documentação e plano sozinhos não resolvem a pendência. Backend `done`
+Só recursos Cloudflare fora do pacote autorizado na Decisão 5 da ADR 0034
+(CORS, lifecycle do transitório, token R2 mínimo, migração das três funções
+de mídia, spike) ainda exigem decisão nominal. O MVP roda no nível gratuito do
+R2; Stream só no Agora por até 24 h. Documentação e plano sozinhos não resolvem a pendência. Backend `done`
 no MVP exige o pacote aplicado e o RLS negando outro tenant; ausência de
 Front-end não impede concluir o backend da ação.
 
@@ -96,7 +98,7 @@ produto ainda aberta não é suprida por esta regra. O projeto Supabase `coelo`
 forward-only são aplicadas pelo integrador sem autorização por pacote quando o
 pgTAP local passou, a fila serializada foi respeitada e o backup por ponto no
 tempo está ligado. Deploy de Edge Function acompanha a migration que o exige.
-Segredos, buckets e Workers do Cloudflare ainda exigem autorização nominal.
+Segredos, buckets e Workers do Cloudflare fora do pacote da Decisão 5 (ADR 0034) ainda exigem autorização nominal.
 Registrar no rastreador o que ficou aberto depois da aplicação; o Owner revisa
 em ciclo semanal ou quinzenal.
 

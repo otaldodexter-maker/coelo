@@ -84,6 +84,26 @@ pertencem e voltam a contar na revisão profunda.
 - Dúvidas e aprovações: o Owner quer ser perguntado, com referência visual
   lado a lado quando for UI/UX; decide mais rápido do que o agente.
 
+## Decisão 5 — Cloudflare, custo zero e organização da Rodada 3 (10/09/2026, tarde)
+
+- O Owner autorizou nominalmente o pacote Cloudflare: CORS restrito nos três
+  buckets, expiração automática em `coelo-transient-prod`, token R2 de escopo
+  mínimo (objetos dos três buckets, sem DNS, billing ou Workers) guardado nos
+  secrets das Edge Functions, migração de `happens-media`, `now-media` e
+  `moments-media` para R2 e conclusão do spike R2 com dados sintéticos. A
+  execução é da conversa que receber o prompt da Rodada 3, não desta.
+- O MVP começa **sem custo**: o piloto cabe no nível gratuito do R2 (10 GB-mês,
+  1 M Class A, 10 M Class B, egress grátis, conferido na documentação oficial
+  em 10/09/2026). Stream não tem nível gratuito; por isso só o Agora usa cópia
+  Stream, por até 24 horas, e somente quando a publicação exigir. Nenhuma outra
+  superfície promove vídeo ao Stream antes de métricas do piloto.
+- Botão Arquivos (importar/exportar) fica escondido em Conversas; o cabeçalho
+  mobile segue o anexo do Owner e inclui o botão de Bug.
+- Rodada 3: composto de diretório primeiro, depois grupos ponta a ponta. O
+  coordenador é uma conversa nova com prompt próprio; a conversa que planejou
+  não executa CRUD nem coordena. O Codex, com cota limitada, recebe os grupos
+  mais simples e parecidos entre si; o restante roda no Claude com Opus.
+
 ## Consequências
 
 - O replay local com Docker deixa de ser porta obrigatória; continua útil para
