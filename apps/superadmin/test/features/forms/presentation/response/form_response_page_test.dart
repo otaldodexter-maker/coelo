@@ -1897,6 +1897,91 @@ void main() {
     expect(find.text('Data: 01/03/2026'), findsOneWidget);
   });
 
+  // Fatia vertical. As correcoes desta rodada foram provadas isoladas; nenhuma
+  // prova que elas convivem no MESMO formulario e no MESMO percurso, que e como
+  // a pessoa usa. Se uma interferir noutra, e aqui que aparece.
+  testWidgets('one form exercises every authored limit from filling to sending', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1000, 2200));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final api = _ResponseApi(
+      items: [
+        FormItem(
+          id: 'texto',
+          kind: FormItemKind.shortText,
+          label: 'Texto',
+          position: 0,
+          config: const FormItemConfig(maxLength: 5),
+        ),
+        FormItem(
+          id: 'inteiro',
+          kind: FormItemKind.integer,
+          label: 'Inteiro',
+          position: 1,
+          config: const FormItemConfig(minValue: 1, maxValue: 10),
+        ),
+        FormItem(
+          id: 'dinheiro',
+          kind: FormItemKind.money,
+          label: 'Dinheiro',
+          position: 2,
+          config: const FormItemConfig(minValue: 100, maxValue: 1050),
+        ),
+        FormItem(id: 'escala', kind: FormItemKind.scale, label: 'Escala', position: 3),
+      ],
+    );
+    await open(tester, api);
+
+    // A escala comeca onde o servidor aceita, no meio de um formulario real.
+    expect(find.widgetWithText(ChoiceChip, '0'), findsNothing);
+    expect(find.widgetWithText(ChoiceChip, '1'), findsOneWidget);
+
+    Future<void> type(String id, String raw) async {
+      await tester.enterText(find.byKey(Key('form-response-item-$id')), raw);
+      await tester.pump(const Duration(seconds: 2));
+      await tester.pump();
+    }
+
+    // Cada limite recusa fora da faixa e aceita a borda, sem que um interfira
+    // no outro: depois de recusar um campo, os demais continuam funcionando.
+    await type('texto', 'abcdef');
+    expect(api.saveCalls, isEmpty);
+    await type('texto', 'abcde');
+
+    await type('inteiro', '11');
+    expect(find.text('Revise os valores numéricos antes de salvar.'), findsWidgets);
+    await type('inteiro', '10');
+
+    await type('dinheiro', '10,51');
+    expect(find.text('Revise os valores numéricos antes de salvar.'), findsWidgets);
+    await type('dinheiro', '10,50');
+
+    await tester.tap(find.widgetWithText(ChoiceChip, '7'));
+    await tester.pump(const Duration(seconds: 2));
+
+    // Com tudo dentro da faixa, o rascunho chega ao backend com os quatro
+    // valores, e dinheiro em minorUnits.
+    final saved = api.saveCalls.last.payload.answers;
+    expect(
+      saved['dinheiro']!.value,
+      isA<FormMoneyValue>().having((value) => value.minorUnits, 'minorUnits', 1050),
+    );
+    expect(saved['inteiro']!.value, isA<FormIntegerValue>().having((v) => v.value, 'value', 10));
+    expect(saved['texto']!.value, isA<FormShortTextValue>().having((v) => v.value, 'value', 'abcde'));
+    expect(saved['escala']!.value, isA<FormScaleValue>().having((v) => v.value, 'value', 7));
+
+    // Revisar e enviar.
+    await tester.tap(find.byKey(const Key('form-response-review')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('form-response-submit')));
+    await tester.pumpAndSettle();
+
+    // E o resumo da enviada le tudo na notacao certa.
+    expect(find.text('Resposta enviada'), findsOneWidget);
+    expect(find.text('Dinheiro: 10,50'), findsOneWidget);
+    expect(find.text('Texto: abcde'), findsOneWidget);
+    expect(find.text('Escala: 7'), findsOneWidget);
+  });
+
   // O servidor aceita escala a partir de coalesce(scale_min, 1), e toda
   // pergunta de escala criada pelo editor nasce SEM minimo declarado. O
   // cliente usava scaleMin ?? 0 e portanto oferecia um valor que o servidor
