@@ -66,6 +66,33 @@ void main() {
     expect(tester.element(host), same(hostElement));
   });
 
+  for (final origin in const [
+    (query: 'from=for-you', back: SuperadminRoutes.principalForYou),
+    (query: 'from=profile', back: SuperadminRoutes.principalProfile),
+    (query: '', back: SuperadminRoutes.principalHappens),
+    (query: 'from=inventado', back: SuperadminRoutes.principalHappens),
+  ]) {
+    testWidgets('back from the Principal chat returns to "${origin.query}"', (tester) async {
+      final router = _router(tester);
+      final path = origin.query.isEmpty
+          ? SuperadminRoutes.principalConversations
+          : '${SuperadminRoutes.principalConversations}?${origin.query}';
+
+      router.go(path);
+      await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('principal-chat-back')));
+      await tester.pumpAndSettle();
+
+      // Tres superficies levam para o chat do Principal. Sem o `from`, todas
+      // voltavam para Acontece e quem entrou pelo Perfil perdia o lugar onde
+      // estava. Origem desconhecida volta para Acontece, que e a superficie
+      // inicial: um valor inesperado nao pode travar o voltar.
+      expect(router.routeInformationProvider.value.uri.path, origin.back);
+    });
+  }
+
   testWidgets('the Principal menu Chat leaf reaches the Principal chat route', (tester) async {
     final router = _router(tester);
 

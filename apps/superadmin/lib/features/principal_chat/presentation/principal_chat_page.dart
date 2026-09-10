@@ -124,13 +124,20 @@ final class _PrincipalChatPageState extends State<PrincipalChatPage> {
       );
       if (!_isCurrentInbox(generation, requested)) return;
       setState(() {
-        _inboxState = ChatInboxState.loaded(page, search: search);
+        // Mesmo criterio da thread: recarga silenciosa disparada pela acao do
+        // proprio operador preserva as conversas que ele ja acumulou com
+        // "carregar mais". Uma recarga NAO silenciosa e mudanca de contexto —
+        // abertura, busca, troca de repositorio — e ali substituir e o certo.
+        final merged = silent
+            ? _mergeReloadedInbox(previous: _inboxState.page, reloaded: page)
+            : page;
+        _inboxState = ChatInboxState.loaded(merged, search: search);
         // O resumo selecionado precisa vir da leitura nova, senao `isReadOnly`
         // fica preso no valor antigo e o composer continua oferecido depois de
         // o servidor ja ter fechado a conversa para escrita.
         final selectedId = _selected?.id;
         if (selectedId != null) {
-          final refreshed = page.items.where((item) => item.id == selectedId).firstOrNull;
+          final refreshed = merged.items.where((item) => item.id == selectedId).firstOrNull;
           if (refreshed != null) _selected = refreshed;
         }
       });
@@ -148,6 +155,34 @@ final class _PrincipalChatPageState extends State<PrincipalChatPage> {
         setState(() => _inboxState = ChatInboxState.failure(error));
       }
     }
+  }
+
+
+  /// Mesmo limite da thread: o CURSOR devolvido pelo servidor separa o que a
+  /// pagina nova governa do que ela nao alcanca. Conversa que sumiu dentro do
+  /// alcance desaparece como deve; o que o leitor acumulou alem dele continua.
+  static ChatInboxPage _mergeReloadedInbox({
+    required ChatInboxPage? previous,
+    required ChatInboxPage reloaded,
+  }) {
+    final older = previous?.items;
+    final boundary = reloaded.nextCursor;
+    if (older == null || older.isEmpty || reloaded.items.isEmpty || boundary == null) {
+      return reloaded;
+    }
+    bool isBeyond(ChatConversationSummary conversation) =>
+        conversation.updatedAt.isBefore(boundary.timestamp) ||
+        (conversation.updatedAt.isAtSameMomentAs(boundary.timestamp) &&
+            conversation.id.compareTo(boundary.id) < 0);
+    final tail = older.where(isBeyond).toList(growable: false);
+    if (tail.isEmpty) return reloaded;
+    return ChatInboxPage(
+      items: [...reloaded.items, ...tail],
+      totalUnread: reloaded.totalUnread,
+      nextCursor: previous?.nextCursor,
+      totalCount: reloaded.totalCount,
+      hasMore: previous?.hasMore ?? reloaded.hasMore,
+    );
   }
 
   bool _isCurrentInbox(int generation, ChatRepository requested) =>
@@ -311,7 +346,7 @@ final class _PrincipalChatPageState extends State<PrincipalChatPage> {
       _pendingBody = null;
       setState(() {
         if (_composer.text.trim() == body) _composer.clear();
-        _thread = thread;
+        _thread = _mergeReloadedThread(previous: _thread, reloaded: thread);
       });
       // A lista mostra a última mensagem de cada conversa; sem reconciliar, o
       // preview e a ordenação continuariam anteriores ao que acabou de ser
@@ -345,6 +380,49 @@ final class _PrincipalChatPageState extends State<PrincipalChatPage> {
         setState(() => _sending = false);
       }
     }
+  }
+
+
+  /// Recarga disparada pela acao do PROPRIO operador nao descarta o que ele ja
+  /// tinha carregado. A releitura devolve so a primeira pagina; sem mesclar, um
+  /// envio jogaria fora todas as paginas antigas que o leitor abriu.
+  ///
+  /// A mesclagem so preserva o que esta ALEM do alcance da pagina nova. Dentro
+  /// desse alcance a pagina nova e a autoridade, entao uma mensagem revogada no
+  /// servidor desaparece como deve; preservar ali a faria reaparecer. Fora dele
+  /// nao ha informacao nova, e manter o que o leitor ja via e o comportamento
+  /// normal de lista paginada.
+  ///
+  /// Se a pagina nova vier vazia, ela substitui: conversa sem nada no trecho
+  /// mais recente nao e caso de preservar cauda.
+  static ChatThreadPage _mergeReloadedThread({
+    required ChatThreadPage? previous,
+    required ChatThreadPage reloaded,
+  }) {
+    final older = previous?.items;
+    // O limite e o CURSOR que o servidor devolveu, e nao o ultimo item da
+    // pagina: se a pagina encolheu porque algo foi removido, o ultimo item
+    // passa a ser mais novo e a cauda preservada engoliria de volta o que
+    // sumiu. Sem cursor, a pagina nova cobre tudo e substitui.
+    final boundary = reloaded.nextCursor;
+    if (older == null || older.isEmpty || reloaded.items.isEmpty || boundary == null) {
+      return reloaded;
+    }
+    bool isBeyond(ChatMessage message) =>
+        message.sentAt.isBefore(boundary.timestamp) ||
+        (message.sentAt.isAtSameMomentAs(boundary.timestamp) &&
+            message.id.compareTo(boundary.id) < 0);
+    final tail = older.where(isBeyond).toList(growable: false);
+    if (tail.isEmpty) return reloaded;
+    return ChatThreadPage(
+      items: [...reloaded.items, ...tail],
+      // A continuacao continua a partir do fim da CAUDA preservada, nao do fim
+      // da pagina nova: usar o cursor da pagina nova reofereceria mensagens que
+      // o leitor ja tem.
+      nextCursor: previous?.nextCursor,
+      totalCount: reloaded.totalCount,
+      hasMore: previous?.hasMore ?? reloaded.hasMore,
+    );
   }
 
   bool _isCurrentSend(int generation, ChatRepository requested, String conversationId) =>
