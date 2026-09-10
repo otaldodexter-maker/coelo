@@ -1,6 +1,6 @@
 {
-  "revision": 26,
-  "updated_at": "2026-09-10T03:11:27-03:00",
+  "revision": 27,
+  "updated_at": "2026-09-10T03:19:48-03:00",
   "clock_note": "Relogio corrigido pelo coordenador e conferido por mim com PowerShell Get-Date: 02:00 de 10/09, fuso E. South America Standard Time, -03:00. O date do Git Bash com TZ nao tem tzdata e devolve UTC; parei de usa-lo.",
   "group": "alunos-rotina",
   "task": "/root",
@@ -9,7 +9,7 @@
   "coordinator": "Claude (Coordenacao e Integracao)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-alunos-rotina",
   "branch": "work/etapa2-noturna-alunos-rotina",
-  "head": "6bab60a1c",
+  "head": "6bf424ee6",
   "upstream": "18d0127ed",
   "divergence": "HEAD 10 a frente de origin/dev. Os 10 sao merges de integracao do coordenador e lotes de OUTRAS frentes neste checkout compartilhado. NENHUM e meu: os 26 lotes citados neste arquivo foram verificados um a um como ancestrais de origin/dev. Publicar esses 10 nao e decisao minha.",
   "workingTree": "Sujo por 3 JSONs de comunicacao de frentes distintas neste checkout compartilhado. O unico que eu escrevo e alunos-rotina.json.",
@@ -607,30 +607,6 @@
     "dois_falsos_positivos_meus": "A varredura acusou 16 caminhos e 28 hashes inexistentes antes de acertar. Nenhum era defeito do registro; os dois eram defeitos da MEDICAO. Primeiro: escrevi os arquivos intermediarios em /tmp, que neste Windows e compartilhado entre as sessoes, e li de volta a lista da frente publicacoes-midia em vez da minha. Segundo: python em modo texto no Windows gravou CRLF, e cada linha lida terminava em \r, fazendo git e test falharem em TODAS as entradas. Um 100% de falha e sinal de instrumento quebrado, nao de registro podre.",
     "licao": "Ferramenta de verificacao tambem precisa ser verificada, e o sinal de que ela quebrou e o resultado ser uniforme demais. Corolario operacional: arquivo temporario vai para o scratchpad da sessao, nunca para /tmp, quando ha varias sessoes na mesma maquina."
   },
-  "medicao_r25": {
-    "base": "Recorte proprio medido sobre 18d0127ed, corrida COMPLETA (marcador type:done conferido). Entre 18d0127ed e 6bab60a1c entrou codigo, mas so em chat (superadmin_chat_page.dart e um teste de chat), que nao esta em nenhum dos seis diretorios medidos, entao o numero vale.",
-    "relogio": "Lido com powershell Get-Date, date e date -u, as tres concordando. Quarta vez nesta rodada que eu errei relogio: eu vinha ESTIMANDO somando tempo decorrido a uma leitura antiga em vez de ler. O coordenador me corrigiu pela segunda vez e estava certo.",
-    "dois_numeros_separados": "Reporto separado porque medir so o proprio recorte deixa falha de fronteira sem dono na consolidacao: cada frente mede o seu pedaco e ninguem mede a interseccao.",
-    "recorte_proprio_seis_familias": {
-      "P": 1095,
-      "S": 4,
-      "F": 8,
-      "dirs": "daily_routine, safety, attendance, people, access_profiles, institutions",
-      "as_8_falhas": "Todas em goldens de institutions: 6 em institution_directory_page_golden_test e 2 em institution_form_page_golden_test. NAO sao minhas e nao sao regressao. Sao theme drift conhecido, aguardando rebaseline nominal, documentado pela propria frente que cuida de institutions no commit 606a37581 de hoje 02:16, que declara textualmente 'both halves are already red from theme drift and still need a nominal rebaseline' e 'counts are unchanged at 1 pass and 6 failures'. A minha medicao corrobora a contagem dela.",
-      "dono": "frente de estrutura/institutions; decisao pendente e o rebaseline nominal",
-      "delta_explicado": "1091 na base anterior, 1095 agora. O +4 e ace7b32e1 test(safety), que prova que a grade de criancas de producao faz layout com registros — a superficie que eu consertei trocando IntrinsicHeight por Table com TableCellVerticalAlignment.intrinsicHeight. Delta inteiramente explicado."
-    },
-    "interseccao_que_eu_executo": {
-      "P": 1238,
-      "S": 2,
-      "F": 14,
-      "dirs": "test/app/router, test/features/forms",
-      "composicao": "6 de rota e 8 goldens de forms. Rota: 3 em principal_real_route_test, 1 import_development_routes, 1 principal_mixed_feed_pagination_red (RED nomeado de proposito), 1 prototype_navigation_routes. Forms goldens: directory 3, editor 3, operations 1, response 1.",
-      "dono": "outras frentes. As 5 de rota foram medidas na base pre-rodada d784462c1 por chat-comunicacoes e falham la identicas, entao sao anteriores a rodada. As 3 de principal_real_route_test tem causa nomeada: a rota de Acontece passou a exigir dois repositorios e o teste injeta um, entao e teste desatualizado pela integracao do feed misto, nao falha de produto.",
-      "conferencia_cruzada": "Bate caso a caso com a medicao independente do coordenador onde os conjuntos se sobrepoem. As listas divergem so por recorte de medicao: a dele e do app inteiro e inclui seis arquivos fora de router e forms.",
-      "nota_de_validade": "Os numeros de router e forms abaixo foram medidos sobre 7cb73b37b e estao VENCIDOS: entre 7cb73b37b e 6bab60a1c entrou fail_closed_screens_with_data_probe_test.dart em test/app/router. Remedindo. Nao usar ate a r27."
-    }
-  },
   "defeito_de_medicao_r25": {
     "o_que": "Eu vinha medindo 'as oito familias que encostei' apontando para test/features/access_profile e test/features/institution, no SINGULAR. Os diretorios reais sao access_profileS e institutionS. Os dois caminhos nao existem.",
     "como_o_runner_se_comportou": "flutter test nao avisa que o caminho esta errado. Ele emite 'Failed to load ... Does not exist' e conta cada caminho inexistente como UMA FALHA. Cobertura ausente virou falha, nao virou zero.",
@@ -649,6 +625,62 @@
     "5_estimar_nao_e_ler": "Estimar somando tempo decorrido a uma leitura antiga nao e medir. Nao ha saida estranha porque nao ha saida. Vale para relogio e para qualquer grandeza que muda sozinha.",
     "6_tmp_compartilhado": "Arquivo intermediario vai para o scratchpad da sessao, nunca para /tmp, quando ha varias sessoes na mesma maquina. Nome generico em /tmp faz uma frente ler a medicao de outra.",
     "7_espera_que_expira": "Espera com timeout que expira PARECE espera bem sucedida. Um laco de espera precisa distinguir 'achei o marcador de fim' de 'cansei', e quem le o resultado precisa exigir a distincao. Eu parseei um arquivo de corrida ainda sendo escrito e quase reportei perda de 22 casos de cobertura em institutions que nunca existiu — os arquivos eram identicos nas duas bases, e foi isso que me salvou: arquivo igual nao perde caso, entao o defeito estava no instrumento.",
-    "8_afirmar_leitura_nao_feita": "Pior que estimar em vez de ler e declarar que se leu. Eu escrevi 'sao 03:22:40, lidas agora' sem chamar o relogio; a leitura real do mesmo bloco era 03:10:49. Estimativa apresentada como medicao destroi a unica defesa que o leitor tinha, que era confiar no rotulo."
+    "8_afirmar_leitura_nao_feita": "Pior que estimar em vez de ler e declarar que se leu. Eu escrevi 'sao 03:22:40, lidas agora' sem chamar o relogio; a leitura real do mesmo bloco era 03:10:49. Estimativa apresentada como medicao destroi a unica defesa que o leitor tinha, que era confiar no rotulo.",
+    "9_lista_derivada_de_memoria": "Lista de caminhos escrita de memoria erra nos dois sentidos ao mesmo tempo: inventa o que nao existe e omite o que existe. A conferencia de existencia so pega a primeira metade. A pergunta que pega a causa e se a lista foi derivada do recorte ATRIBUIDO ou da lembranca de quem mede."
+  },
+  "medicao": {
+    "base": "6bf424ee6",
+    "regra": "Todo numero vem com a LISTA DE CAMINHOS que o produziu e com o marcador type:done conferido antes do parse. Total sem denominador nao e verificavel.",
+    "A_seis_familias_de_feature": {
+      "P": 1095,
+      "S": 4,
+      "F": 8,
+      "caminhos": "test/features/ daily_routine, safety, attendance, people, access_profiles, institutions",
+      "falhas": "8 goldens de institutions (directory 6, form 2). Dono: frente de institutions; theme drift documentado em 606a37581, aguardando rebaseline nominal. A minha contagem reproduz a da frente dona sem eu saber dela."
+    },
+    "B_recorte_fora_das_seis": {
+      "P": 152,
+      "S": 0,
+      "F": 0,
+      "arquivos": 27,
+      "como_apareceu": "Pergunta invertida proposta por chat-comunicacoes e repassada como item 2b: conferir que os caminhos existem NAO prova que a lista esta completa. Existe teste do meu escopo FORA da minha lista?",
+      "exclusivos_do_recorte": {
+        "casos": 92,
+        "arquivos": 13,
+        "children": "3 arquivos, 38 casos",
+        "student_tracking": "5 arquivos, 41 casos",
+        "app_dev_menu": "3 arquivos, 9 casos (attendance, routine, person_identity)",
+        "outros": "core/config/person_detail_composition 2 e support/people/fake_person_directory_repository 2"
+      },
+      "sobrepostos_com_C": {
+        "casos": 60,
+        "arquivos": 14,
+        "nota": "Vivem em test/app/router e ja estao contados em C. NAO somar duas vezes."
+      },
+      "gravidade": "children e student_tracking sao o meu recorte com todas as letras: a atribuicao do Owner diz 'Alunos/CHILD, Assiduidade e Rotina diaria'. CHILD e children; Alunos e student_tracking. As duas moram em test/features, exatamente onde eu estava olhando, entao NAO foram perdidas por morarem noutra arvore.",
+      "causa_raiz": "Eu escrevi a lista de diretorios A MAO, do que lembrava de ter tocado, e nunca a conferi contra o recorte ATRIBUIDO. Lista derivada de memoria erra nos dois sentidos ao mesmo tempo: inventa caminho que nao existe (os meus dois no singular) e omite familia que existe (estas duas). Mesmo defeito, duas direcoes.",
+      "terceiro_lado_do_2b": "Alem de 'os caminhos existem?' e 'falta caminho?', a pergunta que pega a causa e: A LISTA FOI DERIVADA DO RECORTE ATRIBUIDO OU DA MINHA MEMORIA? Quem tem recorte escrito confere em um minuto.",
+      "resultado": "152 P, zero falhas, zero puladas. Cobertura que estava invisivel e esta verde — mas eu nao podia afirmar isso antes de medir."
+    },
+    "C_interseccao_que_eu_executo": {
+      "P": 1238,
+      "S": 2,
+      "F": 14,
+      "caminhos": "test/app/router, test/features/forms",
+      "falhas_com_dono": "Rota 6: principal_real_route_test 3 (host 1440x900, host 390x844, Acontece com contexto autenticado) - dono principal/perfil-para-voce, teste desatualizado pela integracao do feed misto: a rota passou a exigir dois repositorios e o teste injeta um; producao compoe os dois. import_development_routes_test 1 - anterior a rodada, medida em d784462c1 por chat-comunicacoes. principal_mixed_feed_pagination_red_test 1 - RED nomeado de proposito por publicacoes-midia. prototype_navigation_routes_test 1 - anterior a rodada. Forms goldens 8, dono formularios-cuidado: directory 3, editor 3, operations 1, response 1.",
+      "nenhuma_minha": "Nenhuma das 14 e minha e nenhuma e regressao desta rodada."
+    },
+    "TOTAL_DO_RECORTE": {
+      "P": 1247,
+      "S": 4,
+      "F": 8,
+      "conta": "A 1095 + exclusivos de B 92 + sobrepostos de B 60 = 1247. Os 60 tambem estao dentro de C; somar C inteiro aqui contaria duas vezes."
+    },
+    "UNIAO_DO_QUE_EU_EXECUTO": {
+      "P": 2425,
+      "S": 6,
+      "F": 22,
+      "conta": "A 1095 + C 1238 + exclusivos de B 92 = 2425."
+    }
   }
 }
