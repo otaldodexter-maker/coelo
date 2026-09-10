@@ -108,6 +108,14 @@ agora, sobre a base entregue:
 7264 casos que passam e 146 que falham**, e a coluna acima é o denominador que
 faltava.
 
+As duas falhas do catálogo, identificadas: uma abre "o catálogo temporariamente
+público sem verificar acesso" e a outra verifica que "o repositório atual está
+inteiramente representado pela linha de base contada" de contratos visuais
+administrativos. **A segunda é a que interessa a esta rodada**: é um guarda que
+afirma que a contagem de referências visuais cobre o repositório inteiro — e a
+noite acrescentou testes e componentes. Nenhuma das duas foi investigada, e
+nenhuma é do recorte da Etapa 2; ficam registradas para quem cuidar do catálogo.
+
 Nenhum número soma reexecuções, e cada linha é uma execução completa sobre a
 base indicada. A queda de PASS entre a terceira e a quarta linha não é regressão:
 a terceira medição rodou com um conjunto de suítes diferente. O que é comparável
