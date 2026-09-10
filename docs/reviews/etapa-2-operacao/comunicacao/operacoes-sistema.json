@@ -1,6 +1,6 @@
 {
-  "revision": 48,
-  "updated_at": "2026-09-10T04:02:05-03:00",
+  "revision": 49,
+  "updated_at": "2026-09-10T04:05:28-03:00",
   "group": "operacoes-sistema",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) — claude-opus-5[1m]",
@@ -8,7 +8,7 @@
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-operacoes-sistema",
   "branch": "work/etapa2-noturna-operacoes-sistema",
-  "head": "52a9ce1ca",
+  "head": "0772a96ed",
   "upstream": "origin/work/etapa2-noturna-operacoes-sistema",
   "base_observed": "d784462c168d22fdb7090b7de1ef7db554ad5107",
   "scope": [
@@ -1689,7 +1689,8 @@
     "medida": "flutter test em agenda, plans, meal_plans, support, account, errors, audit e contracts, sobre a minha branch.",
     "resultado": "696 PASS, 4 SKIP, 38 FAIL.",
     "natureza_das_falhas": "TODAS as 38 estao em arquivo de golden, em sete arquivos: agenda_calendar_golden 14, account_pages_golden 12, meal_plan_pages_golden 6, agenda_additional_surfaces_golden 6, audit_directory_golden 2, support_page_golden 1, plan_golden 1. Zero falha nao-golden no recorte.",
-    "leitura": "O recorte nao tem defeito funcional em aberto nas suites que eu possuo; o que resta e aceite visual, que depende de rebaseline nominal."
+    "leitura": "O recorte nao tem defeito funcional em aberto nas suites que eu possuo; o que resta e aceite visual, que depende de rebaseline nominal.",
+    "SUPERADO": "Medido 02:53 sobre OITO caminhos declarados, e apresentado como residual do recorte. E numero estavel medido pelo instrumento errado, portanto estavelmente errado: faltavam auth, catalog, imports e toda a estrutura residual, alem de router, shell, navigation, dev_menu, core/guards e core/config. Substituido pelo bloco pre_entrega, medido 03:20 sobre apps/superadmin/test inteiro. Fica registrado em vez de apagado, porque foi citado em mensagens ao coordenador e apagar o numero esconderia o erro em vez de corrigi-lo."
   },
   "item_1_golden_instituicoes": {
     "pedido": "Restaurar onCreate no _goldenApp porque o cartao Criar instituicao desapareceu da captura.",
@@ -1797,5 +1798,21 @@
       "groups.filters": "blocked-environment, por dependencia e nao por implementacao propria: reusa duas das cinco RPCs. Mesma bifurcacao, no texto.",
       "meal-plans.image-delete": "blocked-decision. A guarda de revisao existe no banco desde a migration de recibos e nunca roda, porque o cliente chama a forma legada de dois argumentos. BIFURCACAO, no texto: se a decisao for manter a forma legada, a guarda e codigo morto e deveria sair do banco para nao dar falsa sensacao de protecao; se for usar a de tres argumentos, o dominio de imagem precisa expor a revisao que o usuario viu, e ler a revisao no cliente logo antes do delete reproduziria o furo que a guarda fecha."
     }
+  },
+  "auditoria_de_campos_de_estado": {
+    "hora": "2026-09-10T04:05:28-03:00",
+    "pergunta_usada": "Nao 'isto esta correto', e sim 'QUANDO isto foi medido e o que mudou desde entao'.",
+    "podres_encontrados": [
+      "head dizia 52a9ce1ca e o HEAD real ja era 0772a96ed, porque eu publiquei o fechamento do handoff DEPOIS de escrever a revisao 48. Campo de estado apodrece em minutos; corrigido nesta revisao.",
+      "residual_do_recorte, 696 PASS / 4 SKIP / 38 FAIL, media um subconjunto e estava sem marca de superado. Marcado no proprio campo.",
+      "O numero do teste de contrato estava em 4 PASS, de quando o arquivo tinha quatro casos. test/contracts tem hoje 14 casos em quatro arquivos, medidos verdes as 04:04."
+    ],
+    "conteudo_vs_estado": "Confirmei o padrao que perfil-para-voce descreveu: nada do que descreve o que foi FEITO apodreceu. Apodreceram exatamente os tres campos que descrevem como as coisas ESTAO.",
+    "estado_atual_medido_agora": {
+      "head": "0772a96ed",
+      "worktree": "limpa, zero linhas em git status --porcelain, medido 04:04. Importante porque o coordenador avisou que rodar a suite completa reescreve artefatos de falha RASTREADOS de outros grupos: na minha worktree a corrida de 03:20 nao deixou nenhum.",
+      "test_contracts": "14 casos, quatro arquivos, todos verdes as 04:04."
+    },
+    "achado_de_canal": "A minha branch carrega um retrato ANTIGO deste proprio arquivo, revisao 5 das 18:52, porque esta 264 commits atras de dev. O canal vivo e a copia do checkout principal, hoje na revisao 49 e commitada em dev. Eu nunca escrevi na copia da branch, entao um merge normal preserva a de dev; mas uma integracao que preferisse o meu lado regrediria o canal em 44 revisoes. Registro para quem integra, porque o risco e invisivel: o arquivo nao aparece como modificado em lado nenhum."
   }
 }

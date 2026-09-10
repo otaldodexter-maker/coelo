@@ -1,6 +1,6 @@
 {
-  "revision": 38,
-  "updated_at": "2026-09-10T04:02:00-03:00",
+  "revision": 39,
+  "updated_at": "2026-09-10T04:05:00-03:00",
   "group": "perfil-para-voce",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
@@ -839,7 +839,8 @@
         "docs/reviews/evidence/etapa-2/perfil-para-voce/2026-09-10-selo-destaque-contraste.md",
         ".agents/skills/coelo-flutter-review/references/golden-failure-triage.md"
       ],
-      "hashes": "ace7b32e1 e 1d453e2f3 resolvidos por git log --oneline -1 <sha> na MESMA chamada do merge-base; e35437360 lido de git log --oneline -1 origin/dev"
+      "hashes": "ace7b32e1 e 1d453e2f3 resolvidos por git log --oneline -1 <sha> na MESMA chamada do merge-base; e35437360 lido de git log --oneline -1 origin/dev",
+      "CORRECAO": "O artefato citado como 2026-09-10-handoff-snapshot-rev27.json chama-se handoff-snapshot-rev27.json, sem data. Citei de memoria. Todas as 11 citacoes foram reconferidas a partir da raiz com ls-tree as 04:04:20 e as outras 10 estavam certas."
     },
     "7_o_que_eu_NAO_verifiquei": [
       "O numero da corrida com reporter JSON: iniciada 03:31:40, ainda rodando. Entra na reconferencia das 04:50.",
@@ -917,5 +918,68 @@
     "o_que_NAO_estava_errado": "escopo, nao-escopo, criterios fechados, perguntas abertas ao Owner, tracker_delta_proposto, as evidencias publicadas e a proxima_rodada. O apodrecimento atinge campos de ESTADO, nao campos de CONTEUDO. Faz sentido: conteudo descreve o que foi feito e nao muda; estado descreve como as coisas estao e muda sozinho.",
     "regra_que_fica": "Campo que carrega numero, SHA ou pendencia precisa carregar TAMBEM a hora em que foi medido. Sem carimbo nao da para saber se envelheceu, e um numero sem data ao lado de numeros com data e lido como atual.",
     "cinco_de_setenta_e_seis": "Cinco campos em setenta e seis. Nao e catastrofe, e nao seria pego por leitura casual - nenhum dos cinco parecia errado. Foram pegos por conferir contra medicao nova, que e o unico metodo que funciona contra este defeito."
+  },
+  "terceira_armadilha_de_instrumento": {
+    "titulo": "git cat-file -e origin/dev:<caminho> reporta AUSENTE arquivo que esta em dev, por conversao de caminho do MSYS",
+    "descoberta_em": "2026-09-10T04:02:18-03:00, com origin/dev em 87a6ae387",
+    "como_apareceu": "Conferindo que os artefatos desta frente chegaram a dev (publicado nao e integrado), onze arquivos foram testados. Nove voltaram EM DEV e dois voltaram AUSENTE. Um dos ausentes era .agents/skills/coelo-flutter-review/references/golden-failure-triage.md, que o coordenador citara como estando em dev e que eu proprio tinha visto no diff da branch router-dedupe. A contradicao e que puxou o fio.",
+    "erro_cru": "fatal: Not a valid object name origin\\dev;.agents\\skills\\coelo-flutter-review\\references\\golden-failure-triage.md",
+    "causa": "A heuristica de conversao de caminho do Git Bash em Windows ve `a:b/c`, interpreta como lista de caminhos estilo PATH e traduz para formato Windows: o dois-pontos vira ponto-e-virgula e as barras viram contrabarras. O comando pergunta por um objeto inexistente e devolve 128, que e indistinguivel de arquivo ausente.",
+    "o_arquivo_esta_em_dev": "117 linhas. Nunca esteve perdido.",
+    "por_que_e_a_pior_das_tres": "A primeira armadilha mente no numero e acerta a lista. A segunda apaga o dado e nao reclama. Esta AFIRMA QUE TRABALHO SUMIU quando ele esta la. As duas primeiras fazem confiar em menos do que se tem; esta faz AGIR: no fechamento de uma rodada, um artefato declarado ausente dispara republicacao, cherry-pick ou tentativa de recuperar o que nunca se perdeu, em cima de uma base que ja o tem.",
+    "por_que_um_teste_rapido_nao_pega": "git cat-file -e origin/dev:AGENTS.md FUNCIONA, exit 0. Sem barra no caminho nao ha o que converter. Qualquer controle feito com arquivo de raiz PASSA e conclui-se que o comando esta bom.",
+    "correcoes_testadas_com_controle_positivo_e_negativo": [
+      "MSYS_NO_PATHCONV=1 git cat-file -e origin/dev:<caminho> - devolveu EM DEV para os dois arquivos e AUSENTE para um caminho com barras sabidamente inexistente",
+      "git ls-tree -r --name-only origin/dev | grep -qxF <caminho> - nao passa caminho como argumento, entao nao ha conversao. E o metodo adotado no script das 05:00, porque nao depende de lembrar de uma variavel de ambiente."
+    ],
+    "familia_e_regra_geral": "Terceira instancia na mesma noite, junto de git cat-file -e <sha>^{commit} (quebra por escape de shell) e --file-reporter json:C:/... (quebra pelo dois-pontos da unidade). No Git Bash em Windows, argumento que contem dois-pontos, circunflexo ou chaves chega mangled com frequencia, e a falha se apresenta como RESULTADO NEGATIVO, nunca como erro de sintaxe. Preferir o comando que nao recebe o caminho como argumento."
+  },
+  "correcao_de_citacao_minha": {
+    "erro": "Citei o artefato como docs/reviews/evidence/etapa-2/perfil-para-voce/2026-09-10-handoff-snapshot-rev27.json. O nome verdadeiro nao tem a data: handoff-snapshot-rev27.json.",
+    "como_aconteceu": "Citei de memoria em vez de conferir a partir da raiz. E o item 6 do formato do coordenador, que existe justamente contra isso.",
+    "estado_real": "O arquivo esta em origin/dev, 538 linhas.",
+    "consequencia": "Dos dois alarmes de ausencia, um era ferramenta quebrada e o outro era eu citando de cabeca. Nenhum era trabalho perdido - mas os dois teriam entrado no fechamento como perda se eu nao fosse conferir."
+  },
+  "conferencia_de_destino_dos_artefatos": {
+    "pergunta": "publicado nao e integrado: os artefatos desta frente chegaram a origin/dev?",
+    "medido_em": "2026-09-10T04:04:20-03:00, com ls-tree, mais controle positivo (AGENTS.md presente) e negativo (caminho inexistente recusado)",
+    "resultado": "TODOS OS ONZE ESTAO EM origin/dev",
+    "lista": [
+      "docs/reviews/evidence/etapa-2/perfil-para-voce/2026-09-10-schema-versionado-e-replay.md",
+      "docs/reviews/evidence/etapa-2/perfil-para-voce/2026-09-10-selo-destaque-contraste.md",
+      "docs/reviews/evidence/etapa-2/perfil-para-voce/handoff-snapshot-rev27.json",
+      ".agents/skills/coelo-flutter-review/references/golden-failure-triage.md",
+      "packages/coelo_database/plans/2026-09-09-profile-about-read-rpc.sql",
+      "packages/coelo_database/plans/2026-09-09-principal-for-you-read-rpc.sql",
+      "apps/superadmin/test/app/router/fail_closed_screens_with_data_probe_test.dart",
+      "apps/superadmin/test/features/safety/presentation/safety_production_grid_layout_test.dart",
+      "apps/superadmin/test/features/principal_profile/presentation/principal_profile_moments_tab_test.dart",
+      "apps/superadmin/lib/features/principal_profile/presentation/principal_profile_moments_tab.dart",
+      "apps/superadmin/lib/features/profile_about/presentation/profile_about_labels.dart"
+    ],
+    "nada_ficou_so_na_worktree": true
+  },
+  "script_da_conferencia_das_0500": {
+    "onde": "caminho privado da sessao, NAO em /tmp compartilhado",
+    "escopo": "repositorio inteiro, nao apps/superadmin",
+    "somente_leitura": "nao integra, nao apaga, nao commita",
+    "secoes": [
+      "0 e 7: relogio com saida crua no inicio e no fim, delimitando a janela, para o coordenador cruzar no momento da declaracao",
+      "0b: controles da propria conferencia impressos junto do resultado - positivo tem de passar, negativo tem de recusar, e o glob das branches tem de casar algo",
+      "1: HEAD declarado e divergencia do dev local",
+      "2: branches de grupo contra origin/dev, com deteccao de COMMIT VAZIO, para que fora de dev nunca mais seja lido como trabalho perdido sem perguntar se ha trabalho ali",
+      "3: branches locais, com containment em qualquer origin/* em vez de presenca de upstream",
+      "4: worktrees com branch, HEAD e caminhos nao commitados listados",
+      "5: stashes em todo o repositorio",
+      "6: COMO cada frente produziu o numero dela, mais deteccao de BOM",
+      "6b: artefatos desta frente presentes em origin/dev, por ls-tree e nao por cat-file, com controle positivo e negativo"
+    ],
+    "testado_em_seco": "2026-09-10 03:56:38 a 03:58:23 e novamente 04:04:20. Todos os controles no estado esperado.",
+    "achados_do_teste_em_seco": [
+      "quatro frentes nao declaram sobreposicao: acessos-pessoas, alunos-rotina, estrutura, operacoes-sistema",
+      "cinco frentes nao declaram o METODO de producao do numero: acessos-pessoas, chat-comunicacoes, estrutura, formularios-cuidado, operacoes-sistema. Nao e que usaram o errado; e que nao da para saber, e essa era a lacuna que a armadilha do expanded explora.",
+      "nenhum arquivo de comunicacao tem BOM",
+      "zero stash em todo o repositorio; nenhuma branch local em risco"
+    ]
   }
 }

@@ -1,6 +1,6 @@
 {
-  "revision": 51,
-  "updated_at": "2026-09-10T04:03:00-03:00",
+  "revision": 53,
+  "updated_at": "2026-09-10T04:08:00-03:00",
   "group": "chat-comunicacoes",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) - claude-opus-5[1m]",
@@ -910,5 +910,29 @@
     ],
     "as_tres_entregas_da_madrugada": "cb0a386d8 soma 6 linhas de codigo e 124 de teste; 05fdcf2d5 soma 5 e 108; fb31e11dc soma 226 de teste. As tres com ZERO remocoes, e nenhuma toca superadmin_router.dart, que e arquivo reservado ao integrador.",
     "por_que_isso_importa": "Zero remocoes significa que nenhuma delas pode ter apagado trabalho de outra frente, e isso e verificavel em um comando em vez de argumentado."
+  },
+  "alarme_de_ferramenta_que_nao_reproduziu": {
+    "alerta_recebido": "Que git cat-file -e com caminho contendo barras falha no Git Bash em Windows por conversao MSYS, devolvendo 128 mesmo para arquivo existente, e que isso produz falso alarme de trabalho perdido.",
+    "o_que_medi": "Quatro formas de invocacao nesta maquina, no mesmo repositorio: com aspas, sem aspas, com o caminho vindo de variavel sem aspas, e com MSYS_NO_PATHCONV=1. Todas exit 0. E do PowerShell via git -C, tambem exit 0.",
+    "controle_negativo": "Caminho inexistente devolve 128 com a mensagem citando o caminho COM barras e dois-pontos intactos. Se houvesse conversao MSYS, a mensagem traria contrabarras ou ponto-e-virgula.",
+    "ambiente": "MSYS, MSYS2_ARG_CONV_EXCL e MSYS_NO_PATHCONV todos vazios.",
+    "evidencia_adicional": "Eu tinha acabado de usar o comando 17 vezes em laco, com caminhos contendo barras, e as 17 responderam corretamente.",
+    "o_que_isso_significa": "O resultado que originou o alerta foi real, mas a causa diagnosticada nao explica o que eu meco. A correcao proposta pode nao consertar o problema de origem.",
+    "recomendacao": "Usar a forma que NAO recebe caminho como argumento (git ls-tree -r --name-only | grep) de qualquer maneira, porque e imune a qualquer conversao, conhecida ou nao. Mas nao publicar a explicacao do MSYS como causa estabelecida: causa que nao reproduz numa segunda maquina vira lenda tecnica e custa tempo de quem investigar depois.",
+    "minha_passada": "Verificada antes de rodar: nenhuma secao usa cat-file com caminho. Os detectores usam git ls-tree comparado com comm, e git show --cc.",
+    "desfecho": "REPRODUZIDO com a condicao isolada pela coordenacao: o gatilho e o PONTO INICIAL no caminho, nao a barra. Confirmei no meu shell: 'apps/superadmin/pubspec.yaml' e 'docs/reviews/coelo-flutter-pendencias.md' passam; '.gitignore' e '.agents/skills/coelo-knowledge/SKILL.md' falham com 128 e a mensagem mostra a conversao — 'origin\\dev;.gitignore'. E '.gitignore' nao tem barra nenhuma, o que elimina a barra como gatilho.",
+    "o_que_eu_errei": "Testei quatro formas de INVOCACAO e nenhuma variacao de CAMINHO. Todos os meus casos comecavam por letra, inclusive os 17 do laco. Variei o eixo errado e conclui 'nao reproduz' quando o certo era 'nao reproduz nestes caminhos'.",
+    "licao": "Nao reproduzir e afirmacao sobre o que foi variado, e nao sobre o defeito. Quatro repeticoes no mesmo eixo dao a sensacao de cobertura que uma unica variacao no eixo certo teria desfeito."
+  },
+  "duas_arvores_de_migration": {
+    "medicao": "packages/coelo_database tem 186 arquivos em migrations/ e 17 em supabase/migrations/. Comparadas por hash de blob: 17 identicas, zero divergentes, zero exclusivas de supabase/.",
+    "leitura": "Duplicacao consistente, nao divergencia e nao perda. Baixo risco.",
+    "minhas_migrations": "20260909191000 e 20260909191100 estao apenas na arvore principal, como as outras 169. Presentes no dev, com os nomes renomeados para serializacao de fila."
+  },
+  "action_ids_nomeados_por_teste": {
+    "medicao": "11 dos meus 13 action_ids sao nomeados por pelo menos um arquivo de teste no dev atual. Faltam notices.list e notices.schedule.",
+    "cobertura_real_dos_dois": "notices.list e exercido pela rota real em notice_routes_capability_test, que assere pageFetches maior que zero; notices.schedule tem casos de comportamento no assistente, incluindo modo de data unica, hora registrada ao lado da data e fim antes do inicio bloqueando a etapa.",
+    "o_que_eu_decidi_NAO_fazer": "Nao acrescentei o nome do action_id em comentario para fechar 13 de 13. Seria melhorar a aparencia do numero sem mudar o que e verdade — a rastreabilidade passaria a existir sem que nenhuma prova nova existisse.",
+    "declaracao_honesta": "Rastreabilidade por identificador: 11 de 13. Cobertura de comportamento: 13 de 13."
   }
 }
