@@ -213,7 +213,16 @@
       "backendStatus": "not-applicable",
       "integratedStatus": "flutter-only",
       "lastHandoffRevision": 51,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "dev_menu_all_parent_routes_light_375=A (o grupo e as hierarquias do menu já tinham sido arrumados; conferir regressão)"
+        ],
+        "referencia": 0,
+        "atual": 1,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "shell.switch-context",
@@ -272,16 +281,44 @@
       "screen": "Instituições / Diretório",
       "scope": "mvp",
       "done": "Diretório e formulários locais, snapshot autorizado e lifecycle de save protegidos; não é CRUD remoto certificado. R01/16h: C04r15–17 entregou acessibilidade/estados e consumidor UnitDetail opt-in84a05151; pacote ainda em revisão.",
-      "fe": "Revalidar o aceite específico desta ação: Loading/empty/error/unauthorized, Cards/tabela e goldens exatos. R01/16h: 18form/7Locais/9brand/4fences relatados; conjunto410PASS/8goldenFAIL. R17 retirou causa atribuída apenas ao footer: cabeçalho, cartão criar ausente e fixtures/paginação divergem; precisa revisão nominal. UnitDetail depende wiring C00.",
+      "fe": "R03: diretorio migrado ao composto pela Fase 0 e goldens regravados apos as decisoes do Owner de 10/09 (R/A por arquivo, MENU, CRIAR, TABS, DADOS); aprovacao visual registrada em ownerVisualApproval. Gate para verified: rota normal contra producao com o usuario sintetico (P17) e composicao real.",
       "be": "Conferir contrato interno nominal da ação, RLS, conflitos/auditoria e reload. Mídia usa Gateway e R2 privado. R01/16h: Editar/status, cópia e agenda Locais receberam nomes locais I008; criação20260908031000 já candidata. Sem replay/apply. Não destruir activity_locations nem criar catálogo paralelo.",
-      "evidence": "evidence/etapa-2/estruturas/; evidence/etapa-2/coordenador/rodada-2026-09-07.md R01/16h: C04r15–17;f147f6aa/621c2202/728feff9/d8741c60/84a05151;C04I008; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 r18:hipótese harness/header é proposta,sem aprovação automática de golden. Novos fluxosLocais ainda dependem baseline/revisão específica;não bloquear outros domínios pela discussão de tabela.",
+      "evidence": "evidence/etapa-2/estruturas/; evidence/etapa-2/coordenador/rodada-2026-09-07.md R01/16h: C04r15–17;f147f6aa/621c2202/728feff9/d8741c60/84a05151;C04I008; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 r18:hipótese harness/header é proposta,sem aprovação automática de golden. Novos fluxosLocais ainda dependem baseline/revisão específica;não bloquear outros domínios pela discussão de tabela.; goldens-claro-decisoes-2026-09-10.md; next-round/R03-fase0-handoff.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
-      "frontendStatus": "pending-verification",
+      "frontendStatus": "local-green",
       "backendStatus": "pending-verification",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 61,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "institution_directory_card_hover_light_1440=R (DADOS)",
+          "institution_directory_cards_light_1024=R",
+          "institution_directory_cards_light_1440=R",
+          "institution_directory_cards_light_375=A",
+          "institution_directory_cards_light_768=A",
+          "institution_directory_collapsed_flyout_hover_light_1024=A",
+          "institution_directory_empty_light_1440=R",
+          "institution_directory_failure_light_1440=R (CRIAR: sem nenhuma instituição, o card Criar tem que existir)",
+          "institution_directory_filter_selected_light_1440=R",
+          "institution_directory_loading_light_1440=R",
+          "institution_directory_no_results_light_1440=R",
+          "institution_directory_pagination_disabled_light_1440=R (MENU: não desconsiderar o Pesquisar no menu, para todos)",
+          "institution_directory_pagination_page_size_open_light_1440=R",
+          "institution_directory_search_focus_light_1440=R",
+          "institution_directory_status_tabs_light_1440=R",
+          "institution_directory_table_flyout_open_light_1440=R",
+          "institution_directory_table_light_1024=R",
+          "institution_directory_table_light_1440=R",
+          "institution_directory_table_light_375=A (TABELA no padrão da referência)",
+          "institution_directory_table_light_768=A"
+        ],
+        "referencia": 15,
+        "atual": 5,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "institutions.filter",
@@ -298,7 +335,23 @@
       "backendStatus": "pending-verification",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 61,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "institution_directory_empty_light_1440=R",
+          "institution_directory_filter_selected_light_1440=R",
+          "institution_directory_loading_light_1440=R",
+          "institution_directory_no_results_light_1440=R",
+          "institution_directory_pagination_disabled_light_1440=R (MENU: não desconsiderar o Pesquisar no menu, para todos)",
+          "institution_directory_pagination_page_size_open_light_1440=R",
+          "institution_directory_search_focus_light_1440=R",
+          "institution_directory_status_tabs_light_1440=R"
+        ],
+        "referencia": 8,
+        "atual": 0,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "institutions.detail",
@@ -336,7 +389,17 @@
       "lastHandoffRevision": 61,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T05:41:00-03:00",
-      "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
+      "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "institution_form_bio_light_1440=R",
+          "institution_form_create_light_375=A"
+        ],
+        "referencia": 1,
+        "atual": 1,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "institutions.edit",
@@ -362,7 +425,17 @@
         "note": "R02 D02:c3fb1d2c→b648379b recusa alterações fora spec042 antes da escrita e preserva rascunho/retry;35 repository+6 lifecycle PASS na basee9fdd88d. Writer não ampliado.",
         "certifiesWholeAction": false
       },
-      "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
+      "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "institution_form_bio_light_1440=R",
+          "institution_form_create_light_375=A"
+        ],
+        "referencia": 1,
+        "atual": 1,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "institutions.status",
@@ -451,7 +524,16 @@
       "backendStatus": "pending-verification",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 61,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "institution_directory_failure_light_1440=R (CRIAR: sem nenhuma instituição, o card Criar tem que existir)"
+        ],
+        "referencia": 1,
+        "atual": 0,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "institutions.access-denied",
@@ -468,7 +550,16 @@
       "backendStatus": "pending-verification",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 61,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "institution_directory_unauthorized_light_1440=R"
+        ],
+        "referencia": 1,
+        "atual": 0,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "institutions.reload",
@@ -512,12 +603,12 @@
       "screen": "Unidades / Diretório",
       "scope": "mvp",
       "done": "Diretórios/formulários locais e adapters existentes; detalhe READ possui página/rota/DI com guards D01. Writes não herdam conclusão do detalhe. R01/16h: C04r15–17 entregou acessibilidade/estados e consumidor UnitDetail opt-in84a05151; pacote ainda em revisão. R02: 85f82c88+00e69e3a→950ac4674+cdf9f532f invalidam repository anterior e preservam paginação tabela8; 1 caso integrado PASS. Expectativa legada de gate corrigida em 5d1217297; dois gates explícitos PASS, sem habilitar writes.",
-      "fe": "Revalidar o aceite específico desta ação: Diretório canônico, Cards/tabela, 375–1440, 200%, teclado; depois gateway nominal por realm e tenant A/B. R01/16h: 18form/7Locais/9brand/4fences relatados; conjunto410PASS/8goldenFAIL. R17 retirou causa atribuída apenas ao footer: cabeçalho, cartão criar ausente e fixtures/paginação divergem; precisa revisão nominal. UnitDetail depende wiring C00. C04mediu composição Unavailable; status viaja no save genérico sem transição própria. Mapa/cópia/agenda ainda parciais.",
+      "fe": "R03: diretorio de Unidades no composto, goldens regravados; repositorio real composto pelo grupo estrutura (RPCs em producao). Gate para verified: rota normal com sessao (P17).",
       "be": "R03 (10/09 15:45): 20260910160000 APLICADA EM PRODUCAO (ledger registrado): 13 RPCs de Unidades versionadas, revoke de PUBLIC e anon, execute so para authenticated (conferido em pg_proc apos aplicar: anon 0/5, authenticated 5/5). pgTAP 41/41 sobre a baseline de producao. Gate para done: negativa cross-tenant em pgTAP e persistencia real pelo cliente (composicao structureMutationsEnabled).",
-      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/estruturas/2026-09-07-detail-logout-followup.md R01/16h: C04r15–17;f147f6aa/621c2202/728feff9/d8741c60/84a05151;C04I008; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C04/r61; C04estado47/r61; patches/commits preservados; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-e9a582a0-4041bd81.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commit e14718844; apps/superadmin/test/contracts/rpc_contract_test.dart 3 PASS; relatorio E2-noturna-contrato-rpc-20260910.md; evidence/etapa-2/r03-estrutura/units-rpc-catalog-probe.md; comunicacao/coordenacao.json R03 rev 4 (producao.unidades); coordenacao.json R03 rev 6 (aplicadoEmProducao)",
+      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/estruturas/2026-09-07-detail-logout-followup.md R01/16h: C04r15–17;f147f6aa/621c2202/728feff9/d8741c60/84a05151;C04I008; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C04/r61; C04estado47/r61; patches/commits preservados; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-e9a582a0-4041bd81.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commit e14718844; apps/superadmin/test/contracts/rpc_contract_test.dart 3 PASS; relatorio E2-noturna-contrato-rpc-20260910.md; evidence/etapa-2/r03-estrutura/units-rpc-catalog-probe.md; comunicacao/coordenacao.json R03 rev 4 (producao.unidades); coordenacao.json R03 rev 6 (aplicadoEmProducao); goldens-claro-decisoes-2026-09-10.md; R03-fase0-handoff.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "audited",
-      "frontendStatus": "pending-verification",
+      "frontendStatus": "local-green",
       "backendStatus": "local-green",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 61,
@@ -530,7 +621,23 @@
         "note": "R02: 85f82c88+00e69e3a→950ac4674+cdf9f532f invalidam repository anterior e preservam paginação tabela8; 1 caso integrado PASS. Teste legado de gateway em outro arquivo falhou por expectativa incompatível com gate padrão; ajuste D02 aberto.",
         "certifiesWholeAction": false
       },
-      "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
+      "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "unit_directory_light_1024=R",
+          "unit_directory_light_1440=R",
+          "unit_directory_light_375=A",
+          "unit_directory_light_768=A",
+          "unit_directory_table_light_1024=R",
+          "unit_directory_table_light_1440=R",
+          "unit_directory_table_light_375=A",
+          "unit_directory_table_light_768=A"
+        ],
+        "referencia": 4,
+        "atual": 4,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "units.filter",
@@ -548,7 +655,23 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 61,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T05:41:00-03:00"
+      "lastEvidenceAt": "2026-09-09T05:41:00-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "unit_directory_light_1024=R",
+          "unit_directory_light_1440=R",
+          "unit_directory_light_375=A",
+          "unit_directory_light_768=A",
+          "unit_directory_table_light_1024=R",
+          "unit_directory_table_light_1440=R",
+          "unit_directory_table_light_375=A",
+          "unit_directory_table_light_768=A"
+        ],
+        "referencia": 4,
+        "atual": 4,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "units.create",
@@ -573,6 +696,15 @@
         "recordedAt": "2026-09-09T14:08:34.021718-03:00",
         "note": "R02: teste legado corrigido em5d1217297; dois gates explícitos PASS. O gate padrão permanece fechado e a composição habilitada indisponível; falha anterior resolvida sem habilitar writes.",
         "certifiesWholeAction": false
+      },
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "unit_form_create_light_375=A"
+        ],
+        "referencia": 0,
+        "atual": 1,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
       }
     },
     {
@@ -599,7 +731,16 @@
         "note": "R02: mesmo par de gates corrigido em5d1217297, contado uma vez; remount por autorização preservado.",
         "certifiesWholeAction": false
       },
-      "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
+      "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "unit_form_create_light_375=A"
+        ],
+        "referencia": 0,
+        "atual": 1,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "units.status",
@@ -774,18 +915,43 @@
       "screen": "Turmas / Diretório",
       "scope": "mvp",
       "done": "Detalhe READ com adapter, página, rota/DI e logout D01 já composto; diretório, membros e writes têm gates próprios. R01/16h: C04r15–17 entregou acessibilidade/estados e consumidor UnitDetail opt-in84a05151; pacote ainda em revisão.",
-      "fe": "Cards e tabela oferecem entrada de leitura quando editar nao esta disponivel; callback revalida groups.read. Diretorio produtivo permanece Unavailable. Preflight de detalhe impede chamadas sem a capability.",
+      "fe": "R03: diretorio de Turmas no composto (card na altura da familia), goldens regravados apos as decisoes do Owner; repositorio real composto pelo grupo estrutura. Gate para verified: rota normal com sessao (P17) e P5.",
       "be": "Conferir gateway nominal interno da ação e hierarquia/tenant. Provar membros, conflitos e reload conforme o comando. R01/16h: Editar/status, cópia e agenda Locais receberam nomes locais I008; criação20260908031000 já candidata. Sem replay/apply. Não destruir activity_locations nem criar catálogo paralelo. Provedores/composição de Grupos continuam incompletos; cliente não autoriza mutação.",
-      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/estruturas/2026-09-07-detail-logout-followup.md R01/16h: C04r15–17;f147f6aa/621c2202/728feff9/d8741c60/84a05151;C04I008; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C04/r61; C04estado47/r61; não promover E como concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; 0ce8e6b2a+10d69e38b group-detail-entry-manifest.json; 0ebae4394+36d3c6302 group-detail-read-preflight-manifest.json",
+      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/estruturas/2026-09-07-detail-logout-followup.md R01/16h: C04r15–17;f147f6aa/621c2202/728feff9/d8741c60/84a05151;C04I008; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C04/r61; C04estado47/r61; não promover E como concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; 0ce8e6b2a+10d69e38b group-detail-entry-manifest.json; 0ebae4394+36d3c6302 group-detail-read-preflight-manifest.json; goldens-claro-decisoes-2026-09-10.md; R03-fase0-handoff.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "pending-verification",
+      "frontendStatus": "local-green",
       "backendStatus": "pending-verification",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 61,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T05:41:00-03:00",
-      "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
+      "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "group_directory_bug_open_light_1440=A (card com excesso de espaçamento; MENU)",
+          "group_directory_card_hover_light_1440=A (card com excesso de espaçamento; MENU)",
+          "group_directory_cards_light_1024=A (card com excesso de espaçamento; MENU)",
+          "group_directory_cards_light_1440=A (card com excesso de espaçamento; MENU)",
+          "group_directory_cards_light_375=A (card de criar turma talvez exagerado; revisar tamanho)",
+          "group_directory_cards_light_768=A (card com excesso de espaçamento)",
+          "group_directory_create_banner_focus_light_1440=A (MENU)",
+          "group_directory_create_card_hover_light_1440=A (card com excesso de espaçamento; MENU)",
+          "group_directory_filter_selected_light_1440=A (card com excesso de espaçamento; MENU)",
+          "group_directory_institution_filter_open_light_1440=A (card com excesso de espaçamento; MENU)",
+          "group_directory_pagination_page_size_open_light_1440=A (card com excesso de espaçamento; MENU)",
+          "group_directory_profile_open_light_1440=A (card com excesso de espaçamento; MENU; FLYOUT de perfil muito colado)",
+          "group_directory_table_light_1024=A (card com excesso de espaçamento; MENU)",
+          "group_directory_table_light_1440=A",
+          "group_directory_table_light_768=A",
+          "group_directory_table_row_hover_light_1440=A (MENU)",
+          "group_directory_tour_open_light_1440=A (card com excesso de espaçamento; MENU)"
+        ],
+        "referencia": 0,
+        "atual": 17,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "groups.create",
@@ -811,7 +977,16 @@
         "note": "R02: 583bfd0d→6865fe18 recupera formulário após Error e conserva draft; 1 caso novo PASS na base e9a582a0.",
         "certifiesWholeAction": false
       },
-      "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
+      "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "group_form_create_light_375=A (RODAPÉ: Continuar e Cancelar mais ao rodapé; CHAT)"
+        ],
+        "referencia": 0,
+        "atual": 1,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "groups.edit",
@@ -837,7 +1012,16 @@
         "note": "R02: mesmo tratamento compartilhado 583bfd0d→6865fe18; caso de Error contado uma vez.",
         "certifiesWholeAction": false
       },
-      "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
+      "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "group_form_create_light_375=A (RODAPÉ: Continuar e Cancelar mais ao rodapé; CHAT)"
+        ],
+        "referencia": 0,
+        "atual": 1,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "groups.members",
@@ -1390,17 +1574,41 @@
       "screen": "Atividades / Diretório",
       "scope": "mvp",
       "done": "Adapter v2 51c02b75 e negativa225c8867 integrados. A01GREEN55 executou97/97 pgTAP reais locais com cleanup. C00 integrou troca de repositório1816a0e8, catálogo assíncrono1ee3ac18 e correlação de sujeitoabcf96ca.",
-      "fe": "Falha de transporte fechada no repositorio de diretorio de Atividades, que capturava PostgrestException, FormatException, TypeError e StateError e deixava ClientException escapar cru para a UI. Preservada a negacao de autorizacao antes do catch alargado: sem o rethrow de ActivityDirectoryUnauthorizedException, negacao viraria indisponibilidade e o motivo real se perderia — tres casos de SAI_* ficaram vermelhos e apontaram isso. Nao promovo: 9 casos de golden seguem vermelhos na familia.",
+      "fe": "R03: diretorio (Atividades e Modelos) no composto, goldens regravados apos as decisoes do Owner; aprovacao visual registrada. Gate para verified: rota normal com sessao (P17).",
       "be": "Provar runtime real e pacote produtivo; não repetir correção da auditoria v1 já validada.",
-      "evidence": "evidence/etapa-2/engenheiro-1/a01-directory-audit-green-2026-09-08.md; commit51c02b75; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01-delta-1815: C03r23–25:7b097502 catálogo/modelos, e76dca91 escopo de resposta; e76dca91 integrado40edad7f, teste C00 em andamento neste recibo. d2ea1f36 já na fila, sem promoção.; Recibo18:23:40edad7f C00adapter4PASS/análise2PASS; savefd791a81 continua retido comdependênciaSQL.; Fechamento R01 C03/r33; C00288PASS; C03r33 final; etapa-2-operacao/reports/R01-fechamento-20260909.md; ef751c33b activity-composition-r16-manifest.json; commit f30cc20c2; suite de Atividades 162 PASS com 9 falhas golden",
+      "evidence": "evidence/etapa-2/engenheiro-1/a01-directory-audit-green-2026-09-08.md; commit51c02b75; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01-delta-1815: C03r23–25:7b097502 catálogo/modelos, e76dca91 escopo de resposta; e76dca91 integrado40edad7f, teste C00 em andamento neste recibo. d2ea1f36 já na fila, sem promoção.; Recibo18:23:40edad7f C00adapter4PASS/análise2PASS; savefd791a81 continua retido comdependênciaSQL.; Fechamento R01 C03/r33; C00288PASS; C03r33 final; etapa-2-operacao/reports/R01-fechamento-20260909.md; ef751c33b activity-composition-r16-manifest.json; commit f30cc20c2; suite de Atividades 162 PASS com 9 falhas golden; goldens-claro-decisoes-2026-09-10.md; R03-fase0-handoff.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
-      "frontendStatus": "pending-verification",
+      "frontendStatus": "local-green",
       "backendStatus": "pending-verification",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:14-03:00"
+      "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "activity_directory_bug_open_light_1440=R (MENU: menu e mensagem desta referência valem para todos)",
+          "activity_directory_card_hover_light_1440=R (MENU)",
+          "activity_directory_cards_light_1024=R (MENU)",
+          "activity_directory_cards_light_1440=R (MENU)",
+          "activity_directory_cards_light_375=A (CHAT igual à referência, para todos)",
+          "activity_directory_cards_light_768=A (CHAT; ajustar posicionamento dos filtros)",
+          "activity_directory_filter_open_light_1440=R (MENU)",
+          "activity_directory_models_light_1440=R (MENU pela referência; acrescentar **Arquivos** que existe no atual; manter TABS do atual abaixo do filtro; CHAT)",
+          "activity_directory_pagination_open_light_1440=R (MENU)",
+          "activity_directory_profile_open_light_1440=R (MENU; FLYOUT: ao clicar no card OC (foto ou sigla) o flyout abre colado, precisa de espaço)",
+          "activity_directory_table_light_1024=R (MENU; manter TABS do atual)",
+          "activity_directory_table_light_375=A (CHAT)",
+          "activity_directory_table_light_768=A (CHAT)",
+          "activity_directory_table_row_hover_light_1440=R (manter TABS do atual)",
+          "activity_directory_text_200_light_375=A (CHAT)",
+          "activity_directory_tour_open_light_1440=R"
+        ],
+        "referencia": 11,
+        "atual": 5,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "activities.create",
@@ -1426,7 +1634,16 @@
         "note": "R02 D00: cadeia233/b736/86/59 integrada ate839570cd7 preserva identidade/intencao de retry e conclui criacao navegando ao diretorio apos SaveDraft. Dois novos callbacks PASS na base integrada; demais mutacoes nao recebem aceite por essa prova.",
         "certifiesWholeAction": false
       },
-      "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
+      "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "activity_form_create_light_375=A (RODAPÉ com Continuar e Cancelar da referência; CHAT)"
+        ],
+        "referencia": 0,
+        "atual": 1,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "activities.detail",
@@ -1444,7 +1661,16 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:14-03:00"
+      "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "activity_detail_light_375=A"
+        ],
+        "referencia": 0,
+        "atual": 1,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "activities.edit",
@@ -1463,7 +1689,16 @@
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
-      "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
+      "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "activity_form_create_light_375=A (RODAPÉ com Continuar e Cancelar da referência; CHAT)"
+        ],
+        "referencia": 0,
+        "atual": 1,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "activities.publish",
@@ -1525,7 +1760,16 @@
         "note": "R02 D00: replay Clock57SQL passou46TAP. Concorrencia2P1B/3: revogacao bloqueada pela fixture de ultimo Owner. Fixture corrigida preservando o guard, nova prova SQL pendente; sem certificacao remota.",
         "certifiesWholeAction": false
       },
-      "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
+      "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "activity_form_location_dialog_light_375=A"
+        ],
+        "referencia": 0,
+        "atual": 1,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "assessments.entry",
@@ -2030,7 +2274,21 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:14-03:00"
+      "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "agenda_calendar_light_1440=A (MENU)",
+          "agenda_calendar_light_375=A (retângulos muito amassados)",
+          "agenda_calendar_light_768=A",
+          "agenda_list_light_1440=R (MENU)",
+          "agenda_list_light_375=A",
+          "agenda_list_light_768=A"
+        ],
+        "referencia": 1,
+        "atual": 5,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "agenda.create",
@@ -2048,7 +2306,16 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:14-03:00"
+      "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "agenda_create_light_375=R (FUNDO: fora do padrão `coelo-ui`, fundo cinza, botão não laranja, sem cabeçalho de menu)"
+        ],
+        "referencia": 1,
+        "atual": 0,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "agenda.detail",
@@ -2066,7 +2333,18 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:14-03:00"
+      "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "agenda_detail_light_1440=R (FUNDO: idem)",
+          "agenda_detail_light_375=R (FUNDO: idem)",
+          "agenda_detail_light_768=R (FUNDO: idem)"
+        ],
+        "referencia": 3,
+        "atual": 0,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "agenda.edit",
@@ -2156,7 +2434,20 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
+      "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "superadmin_chat_light_1024=A (regressão: sumiram Criar grupo, Fixar conversas e sinalizadores de bandeira; MENU)",
+          "superadmin_chat_light_1440=A (regressão: idem; MENU)",
+          "superadmin_chat_light_375=A",
+          "superadmin_chat_light_768=A (regressão: idem; MENU)",
+          "superadmin_chat_reduced_motion_light_375=A (ARQUIVOS-CHAT: esconder o botão Arquivos em Conversas (decisão B de 10/09); MENU-M)"
+        ],
+        "referencia": 0,
+        "atual": 5,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "chat.open",
@@ -2296,9 +2587,9 @@
       "screen": "Avisos / Diretório",
       "scope": "mvp",
       "done": "Diretório/formulários, versão v2, recibos/agendamento e overlays corrigidos no cliente. C00 integrou layout compacto do status71b74dbe. R02 D00 c68affc43 integradoac298c788: conflito/ausencia recarregam o diretorio; indisponibilidade informa sem recarregar. Tres casos focais PASS. Publicacao/worker e metrica current_job NULL seguem gates independentes.",
-      "fe": "Diretorio montado pela rota real com o repositorio injetado; sem repositorio autorizado nao oferece criar, editar nem ciclo de vida. Coordenacao: local-green e nao verified enquanto os 9 goldens de chat e 3 de notices seguem vermelhos na base, sob decisao de rebaseline pendente do Owner. Mesma barra aplicada a support e a Minha conta.",
+      "fe": "R03: diretorio de Comunicacoes no composto (Fase 0 850ba1838) com goldens regravados, inclusive o toggle card/tabela pedido pelo Owner. Gate para verified: rota normal com sessao (P17).",
       "be": "Pacotes L02 escritos e não aplicados. Qualificar métricas por geração: current_job NULL ainda é retenção concreta. Catálogo remoto lido na R02 tinha pg_cron/pg_net, mas não as funções/job/Edge worker nominais de publicação; revalidar esse snapshot antes de aplicar. Preparar/aplicar pacote nominal, consumidor/worker e provar audiência, sessão, auditoria, persistência/reload. O bloqueio pgTAP autoral B1 não foi certificado como resolvido pelo integrador.",
-      "evidence": "evidence/etapa-2/comunicacao/; evidence/etapa-2/engenheiro-1/; R01/17:40 SQL5f0e7e29 retido porACL/cursor/envelope/schema/realm/reautorização/audiênciadesconhecida/store eplansTAP incorretos. C05r15 aceitouachados e corrige;sem replay. Fontes completas na assignmentI009.; Fechamento R01 C05/rfinal; C05final/C07r12; C00288PASS apenas lote focal não-golden; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-notices-conflict-integrated.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; apps/superadmin/test/app/router/notice_lifecycle_action_path_test.dart + apps/superadmin/test/app/router/notice_routes_capability_test.dart; flutter test, Windows local, branch work/etapa2-noturna-chat-comunicacoes revisao 51981fdc9, 2026-09-09",
+      "evidence": "evidence/etapa-2/comunicacao/; evidence/etapa-2/engenheiro-1/; R01/17:40 SQL5f0e7e29 retido porACL/cursor/envelope/schema/realm/reautorização/audiênciadesconhecida/store eplansTAP incorretos. C05r15 aceitouachados e corrige;sem replay. Fontes completas na assignmentI009.; Fechamento R01 C05/rfinal; C05final/C07r12; C00288PASS apenas lote focal não-golden; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-notices-conflict-integrated.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; apps/superadmin/test/app/router/notice_lifecycle_action_path_test.dart + apps/superadmin/test/app/router/notice_routes_capability_test.dart; flutter test, Windows local, branch work/etapa2-noturna-chat-comunicacoes revisao 51981fdc9, 2026-09-09; goldens-claro-decisoes-2026-09-10.md; R03-fase0-handoff.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "audited",
       "frontendStatus": "local-green",
@@ -2307,7 +2598,17 @@
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T15:57:45.129531-03:00",
-      "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
+      "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "communication_directory_light_375=A (falta o toggle card/tabela de `coelo-ui`)",
+          "communication_directory_text_200_375=A"
+        ],
+        "referencia": 0,
+        "atual": 2,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "notices.create",
@@ -2325,7 +2626,16 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T05:32:00-03:00"
+      "lastEvidenceAt": "2026-09-09T05:32:00-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "notice_form_initial_mobile_light_375=R (FUNDO cinza fora de `coelo-ui`)"
+        ],
+        "referencia": 1,
+        "atual": 0,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "notices.edit",
@@ -2415,16 +2725,30 @@
       "screen": "Formulários / Diretório",
       "scope": "mvp",
       "done": "Reader interno e composição FREAD integrados; derivação local FREAD51 executou117/117 pgTAP. Isso não habilita autoria/export.",
-      "fe": "Provar /forms com stack real, paginação/reload/negativas; /dev/forms preserva fixtures.",
+      "fe": "R03: diretorio de Formularios no composto (cursor), goldens regravados apos as decisoes do Owner (filtros e tabela no padrao). Gate para verified: rota normal com sessao (P17).",
       "be": "Vale para TODAS as acoes de Formularios, porque o gateway e o ponto unico de passagem. Uma falha de transporte, socket recusado, DNS, TLS ou timeout, nao produz PostgrestException nem FunctionException e escapava do gateway como excecao de plataforma. Cada consumidor compensava com catch generico, achatando tudo em desconhecido, entao a pessoa via que a acao falhou quando o certo era dizer que o servico esta indisponivel. Pior: a excecao crua carrega o endereco e a URI do backend, capturados literalmente pelo teste. O gateway passa a converter para FormsBackendFailure com codigo transport, mapeado para unavailable, que ja tem a mensagem certa. Converte apenas Exception; Error continua propagando para nao virar erro de rede silencioso.",
-      "evidence": "commitb61eba6e; commitce320f55; evidence/etapa-2/engenheiro-1/; commit 2e39ec739b47e5268b4fd960dd51ed93e03ba594; forms_backend_gateway_test novo, prova de transporte sem rede externa apontando o cliente para 127.0.0.1:1; 51/51 com supabase_forms_api_test; 2026-09-09",
+      "evidence": "commitb61eba6e; commitce320f55; evidence/etapa-2/engenheiro-1/; commit 2e39ec739b47e5268b4fd960dd51ed93e03ba594; forms_backend_gateway_test novo, prova de transporte sem rede externa apontando o cliente para 127.0.0.1:1; 51/51 com supabase_forms_api_test; 2026-09-09; goldens-claro-decisoes-2026-09-10.md; R03-fase0-handoff.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "pending-verification",
+      "frontendStatus": "local-green",
       "backendStatus": "pending-verification",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 48,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "forms_directory_actions_light_1440=A (MENU)",
+          "forms_directory_empty_light_375_v4_19=A (filtros fora do padrão `coelo-ui`)",
+          "forms_directory_light_375=A (filtros e TABELA fora do padrão `coelo-ui`)",
+          "forms_directory_light_768=A (filtros e TABELA fora do padrão `coelo-ui`)",
+          "forms_directory_no_results_light_375_v4_19=A (filtros fora do padrão `coelo-ui`)",
+          "forms_directory_unauthorized_light_375_200_v4_19=A"
+        ],
+        "referencia": 0,
+        "atual": 6,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "forms.create",
@@ -2442,7 +2766,23 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 48,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:20:50-03:00"
+      "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "forms_editor_catalog_groups_light_1440=A (MENU; falta o Bug no cabeçalho)",
+          "forms_editor_catalog_light_1440=A (MENU; falta o Bug no cabeçalho)",
+          "forms_editor_date_range_light_1440=A (MENU; falta o Bug no cabeçalho)",
+          "forms_editor_light_1024=A (MENU; falta o Bug no cabeçalho)",
+          "forms_editor_light_1440=A (MENU; falta o Bug no cabeçalho)",
+          "forms_editor_light_375=A (falta o Bug no cabeçalho)",
+          "forms_editor_light_375_text_200=A (falta o Bug no cabeçalho)",
+          "forms_editor_light_768=A"
+        ],
+        "referencia": 0,
+        "atual": 8,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "forms.overview",
@@ -2479,7 +2819,23 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 48,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:20:50-03:00"
+      "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "forms_editor_catalog_groups_light_1440=A (MENU; falta o Bug no cabeçalho)",
+          "forms_editor_catalog_light_1440=A (MENU; falta o Bug no cabeçalho)",
+          "forms_editor_date_range_light_1440=A (MENU; falta o Bug no cabeçalho)",
+          "forms_editor_light_1024=A (MENU; falta o Bug no cabeçalho)",
+          "forms_editor_light_1440=A (MENU; falta o Bug no cabeçalho)",
+          "forms_editor_light_375=A (falta o Bug no cabeçalho)",
+          "forms_editor_light_375_text_200=A (falta o Bug no cabeçalho)",
+          "forms_editor_light_768=A"
+        ],
+        "referencia": 0,
+        "atual": 8,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "forms.publish",
@@ -2554,7 +2910,16 @@
       "lastEvidenceAt": "2026-09-08T19:13:49-03:00",
       "lastSyncedHandoff": "C02/r39",
       "lastHandoffRevision": 48,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "forms_operations_monitor_light_375=A (falta o Bug no cabeçalho)"
+        ],
+        "referencia": 0,
+        "atual": 1,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "forms.respond",
@@ -2572,7 +2937,16 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 48,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:20:50-03:00"
+      "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "form_response_light_375=A"
+        ],
+        "referencia": 0,
+        "atual": 1,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "forms.responses",
@@ -2764,7 +3138,35 @@
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T16:54:21.342597-03:00",
-      "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
+      "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "principal_happens_light_1024=A",
+          "principal_happens_light_1440=A",
+          "principal_happens_light_375=A",
+          "principal_happens_light_768=A",
+          "principal_happens_now_hover_light_1440=A",
+          "principal_happens_gallery_light_1024=R",
+          "principal_happens_gallery_light_1440=R",
+          "principal_happens_gallery_light_375=R",
+          "principal_happens_gallery_light_768=R",
+          "principal_happens_gallery_video_unavailable_light_375=R",
+          "principal_happens_gallery_dark_1024=R",
+          "principal_happens_gallery_dark_1440=R",
+          "principal_happens_gallery_dark_375=R",
+          "principal_happens_gallery_dark_375_text_200=R",
+          "principal_happens_gallery_dark_768=R",
+          "principal_happens_dark_1024=A",
+          "principal_happens_dark_1440=A",
+          "principal_happens_dark_375=A",
+          "principal_happens_dark_375_text_200=A",
+          "principal_happens_dark_768=A"
+        ],
+        "referencia": 10,
+        "atual": 10,
+        "fonte": "goldens-acontece-cardapios-decisoes-2026-09-10"
+      }
     },
     {
       "id": "acontece.create",
@@ -2942,7 +3344,21 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
+      "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "principal_moments_light_1024=R (IMG: largura muito pequena, aproximar de 1440)",
+          "principal_moments_light_1440=R (IMG: parte preta preencher mais)",
+          "principal_moments_light_375=A (IMG: sem perder nem cortar imagem)",
+          "principal_moments_light_768=A (IMG: sem perder nem cortar imagem)",
+          "principal_moments_like_hover_light_1440=R (IMG: parte preta preencher mais)",
+          "principal_moments_text_200_light_375=A"
+        ],
+        "referencia": 3,
+        "atual": 3,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "momentos.create",
@@ -3072,7 +3488,20 @@
         "productionApplied": false
       },
       "lastEvidenceAt": "2026-09-09T16:38:28.742086-03:00",
-      "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
+      "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "principal_profile_light_1024=R (FOTO; SHELL)",
+          "principal_profile_light_1440=R (FOTO; SHELL)",
+          "principal_profile_light_375=R (FOTO)",
+          "principal_profile_light_768=R (FOTO)",
+          "principal_profile_text_200_light_375=R"
+        ],
+        "referencia": 5,
+        "atual": 0,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "principal.profile-edit",
@@ -3203,17 +3632,30 @@
       "screen": "Perfis de cuidado / Lista",
       "scope": "mvp",
       "done": "Isolamento de leituras165/165, refresh obsoleto e comandos pós-dispose182/182 registrados; quatro categorias golden ainda falharam.",
-      "fe": "As quatro categorias golden sao exatamente os quatro casos de health_care_golden_test e sao comparacao de imagem, sem logica a corrigir. Bloqueado pela politica desta rodada de nao regravar golden, que depende de decisao do Owner sobre o ambiente de referencia.",
+      "fe": "R03: diretorio de Perfis de cuidado no composto, goldens regravados apos as decisoes do Owner; repositorio Supabase entregue pelo grupo e chave ligada. Gate para verified: rota normal com sessao (P17).",
       "be": "R03 (10/09 16:05): 20260910010300 e 010400 APLICADAS EM PRODUCAO (lote 2): fundacao de Perfis de cuidado e Medicacao existe em producao (tabelas, RLS FORCE, capacidades, 7 RPCs). pgTAP 30/30 sobre a baseline. Gate para done: repositorio Supabase no cliente, persistencia e reload.",
-      "evidence": "evidence/etapa-2/formularios-cuidado/2026-09-08-care-read-context-isolation.md; evidence/etapa-2/formularios-cuidado/2026-09-08-care-disposed-command.md; R01/17:40 2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.; Fechamento R01 C02/r48; 2fe678e8/f3a36273/34f62128/1ccddb53/3ada3522 são entregas locais históricas; r48 final; etapa-2-operacao/reports/R01-fechamento-20260909.md; health_care_golden_test com quatro casos; decisao de coordenacao de 2026-09-09; 2026-09-09; specs/049-superadmin-internal-care-profile-crud-v2.md; sem autorizacao nominal; 2026-09-09; comunicacao/formularios-cuidado-rotina.json r7 (PKG-R03-FCR-CUIDADO-01); coordenacao.json R03 rev 7",
+      "evidence": "evidence/etapa-2/formularios-cuidado/2026-09-08-care-read-context-isolation.md; evidence/etapa-2/formularios-cuidado/2026-09-08-care-disposed-command.md; R01/17:40 2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.; Fechamento R01 C02/r48; 2fe678e8/f3a36273/34f62128/1ccddb53/3ada3522 são entregas locais históricas; r48 final; etapa-2-operacao/reports/R01-fechamento-20260909.md; health_care_golden_test com quatro casos; decisao de coordenacao de 2026-09-09; 2026-09-09; specs/049-superadmin-internal-care-profile-crud-v2.md; sem autorizacao nominal; 2026-09-09; comunicacao/formularios-cuidado-rotina.json r7 (PKG-R03-FCR-CUIDADO-01); coordenacao.json R03 rev 7; goldens-claro-decisoes-2026-09-10.md; R03-fase0-handoff.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "blocked-decision",
+      "frontendStatus": "local-green",
       "backendStatus": "local-green",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 48,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:20:50-03:00"
+      "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "profile_directory_card_hover_light_1440=R (MENU; falta o Bug no cabeçalho)",
+          "profile_directory_files_open_light_1440=R",
+          "profile_directory_mobile_light=A",
+          "profile_directory_table_light_1440=R (TABELA fora do padrão `coelo-ui`)",
+          "profile_directory_tabs_selected_light_1440=A (CRIAR acima de \"Nenhum resultado\"; MENU)"
+        ],
+        "referencia": 3,
+        "atual": 2,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "health-care.create",
@@ -3232,7 +3674,16 @@
       "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
       "lastSyncedHandoff": "C02/r40",
       "lastHandoffRevision": 48,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "profile_form_mobile_light=A (RODAPÉ; \"Criar Perfil de cuidado\" fora do padrão de criar de `coelo-ui` (Criar instituição))"
+        ],
+        "referencia": 0,
+        "atual": 1,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "health-care.detail",
@@ -3269,7 +3720,16 @@
       "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
       "lastSyncedHandoff": "C02/r40",
       "lastHandoffRevision": 48,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "profile_form_mobile_light=A (RODAPÉ; \"Criar Perfil de cuidado\" fora do padrão de criar de `coelo-ui` (Criar instituição))"
+        ],
+        "referencia": 0,
+        "atual": 1,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "medication.list",
@@ -3277,17 +3737,26 @@
       "screen": "Medicação / Lista",
       "scope": "mvp",
       "done": "Roundtrip /dev, isolamento e callbacks/commands pós-dispose protegidos; não habilita operações clínicas produtivas.",
-      "fe": "Conferir visuais/estados restantes mantendo guards já implementados.",
+      "fe": "R03: diretorio de Medicacao no composto, goldens regravados; repositorio Supabase entregue e chave ligada. Gate para verified: rota normal com sessao (P17).",
       "be": "R03 (10/09 16:05): fundacao aplicada em producao; pgTAP 30/30 na baseline. Gate para done: repositorio Supabase no cliente e reload.",
-      "evidence": "evidence/etapa-2/formularios-cuidado/2026-09-08-care-disposed-command.md; docs/open-questions.md; R01/17:40 2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.; Fechamento R01 C02/r48; 2fe678e8/f3a36273/34f62128/1ccddb53/3ada3522 são entregas locais históricas; r48 final; etapa-2-operacao/reports/R01-fechamento-20260909.md; specs/049-superadmin-internal-care-profile-crud-v2.md; sem autorizacao nominal; 2026-09-09; comunicacao/formularios-cuidado-rotina.json r7; coordenacao.json R03 rev 7",
+      "evidence": "evidence/etapa-2/formularios-cuidado/2026-09-08-care-disposed-command.md; docs/open-questions.md; R01/17:40 2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.; Fechamento R01 C02/r48; 2fe678e8/f3a36273/34f62128/1ccddb53/3ada3522 são entregas locais históricas; r48 final; etapa-2-operacao/reports/R01-fechamento-20260909.md; specs/049-superadmin-internal-care-profile-crud-v2.md; sem autorizacao nominal; 2026-09-09; comunicacao/formularios-cuidado-rotina.json r7; coordenacao.json R03 rev 7; goldens-claro-decisoes-2026-09-10.md; R03-fase0-handoff.md",
       "historicalFrontend": "blocked-decision",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "pending-verification",
+      "frontendStatus": "local-green",
       "backendStatus": "local-green",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 48,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:20:50-03:00"
+      "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "medication_directory_mobile_light=A (falta o Bug no cabeçalho)"
+        ],
+        "referencia": 0,
+        "atual": 1,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "medication.create",
@@ -3306,7 +3775,16 @@
       "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
       "lastSyncedHandoff": "C02/r39",
       "lastHandoffRevision": 48,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "medication_form_mobile_light=A"
+        ],
+        "referencia": 0,
+        "atual": 1,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "medication.detail",
@@ -3343,7 +3821,16 @@
       "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
       "lastSyncedHandoff": "C02/r39",
       "lastHandoffRevision": 48,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "medication_form_mobile_light=A"
+        ],
+        "referencia": 0,
+        "atual": 1,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "medication.evidence",
@@ -3378,7 +3865,16 @@
       "backendStatus": "deferred-post-mvp",
       "integratedStatus": "deferred-post-mvp",
       "lastHandoffRevision": 33,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "import_hub_wizard_light_375=R (FUNDO: fora do padrão `coelo-ui`, fundo cinza, botão não laranja, sem cabeçalho de menu)"
+        ],
+        "referencia": 1,
+        "atual": 0,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "imports.create",
@@ -3616,7 +4112,19 @@
       "integratedStatus": "pending-verification",
       "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
       "lastHandoffRevision": 33,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "audit_directory_desktop_light_1024=R (ajustar filtros)",
+          "audit_directory_empty_light_1440=R",
+          "audit_directory_failure_light_1440=R",
+          "audit_directory_mobile_light_375=A"
+        ],
+        "referencia": 3,
+        "atual": 1,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "audit.filter",
@@ -3634,7 +4142,18 @@
       "integratedStatus": "pending-verification",
       "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
       "lastHandoffRevision": 33,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "audit_directory_desktop_light_1024=R (ajustar filtros)",
+          "audit_directory_empty_light_1440=R",
+          "audit_directory_mobile_light_375=A"
+        ],
+        "referencia": 2,
+        "atual": 1,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "audit.detail",
@@ -3706,7 +4225,20 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:14-03:00"
+      "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "help_center_empty_light_1440=R",
+          "support_table_light_1024=A (filtros desalinhados; MENU; TABELA fora do padrão)",
+          "support_table_light_1440=A (MENU; TABELA (alinhamento interno); melhorar o card Criar)",
+          "support_table_light_375=A (CHAT)",
+          "support_table_light_768=A (MENU; TABELA (alinhamento interno); melhorar o card Criar; CHAT)"
+        ],
+        "referencia": 1,
+        "atual": 4,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "support.kanban",
@@ -3724,7 +4256,19 @@
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:14-03:00"
+      "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "support_kanban_light_1024=A",
+          "support_kanban_light_1440=A",
+          "support_kanban_light_375=A",
+          "support_kanban_light_768=A (filtros desalinhados)"
+        ],
+        "referencia": 0,
+        "atual": 4,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "support.detail",
@@ -3742,7 +4286,19 @@
       "integratedStatus": "pending-verification",
       "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
       "lastHandoffRevision": 33,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "support_detail_light_1024=R",
+          "support_detail_light_1440=A",
+          "support_detail_light_375=A",
+          "support_detail_light_768=A"
+        ],
+        "referencia": 1,
+        "atual": 3,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "support.reply",
@@ -3795,7 +4351,17 @@
       "backendStatus": "pending-verification",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 51,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "profile_375_light=A",
+          "profile_768_light=A"
+        ],
+        "referencia": 0,
+        "atual": 2,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "account.settings",
@@ -3812,7 +4378,17 @@
       "backendStatus": "not-applicable",
       "integratedStatus": "flutter-only",
       "lastHandoffRevision": 51,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "settings_375_light=A",
+          "settings_768_light=A"
+        ],
+        "referencia": 0,
+        "atual": 2,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "account.theme",
@@ -3962,17 +4538,29 @@
       "screen": "Planos / Diretório",
       "scope": "mvp",
       "done": "Spec051 aprovada, catálogo manual/backend be28f0c0, repository e5a24a82 e contexto de form c8cd7518 implementados. C00 integrou comparação por identidade do contexto do repositório60ae2b2a.",
-      "fe": "Defeito de acessibilidade encontrado e parcialmente corrigido. O diretorio transborda com texto a 150% e a 200% em 1440x900 com a pagina padrao de 11 itens, caminho que nao tinha cobertura: os testes de 200% existentes sao de 375 e da matriz de capacidades. Sao dois transbordamentos. O horizontal foi corrigido em ac3238f7c: _Metric era uma Row rigida dentro de um Wrap e estourava 34 e 58 pixels; o rotulo passa a ser Flexible, sem alterar a composicao a 100%. O vertical NAO foi corrigido: o cartao tem mainAxisExtent fixo de 216 e estoura 254 pixels a 200%; escalar o extent pelo textScaler daria 432 contra cerca de 470 necessarios, entao nem a solucao obvia fecha, e a escolha e contrato visual de tela com baseline aprovada. Fica para coelo-ui e para o Owner.",
+      "fe": "R03: diretorio de Planos no composto (Fase 0 8fafbe16c) com goldens regravados; ARQUIVO (icone de arquivar/duplicar) segue em wip/fase0-arquivo-chat. Gate para verified: rota normal com sessao (P17).",
       "be": "Resolver conflito específico de principal People da051 versus interno039; reader/command nominal e runtime. Não exigir aprovação geral do catálogo já aprovado.",
-      "evidence": "specs/051-superadmin-plans-production.md; docs/open-questions.md; commitsbe28f0c0/e5a24a82/c8cd7518; R01-delta-1815: C03r23 52f2075f usa identidade do repository;36não-golden relatados, revisão em andamento.; Fechamento R01 C03/r33; C00288PASS; conflito039/051 mantido em open-questions; etapa-2-operacao/reports/R01-fechamento-20260909.md; commits 5f42fbcbd e 01081d3fc; apps/superadmin/test/features/plans/ -> 41 PASS; commit ac3238f7c; medicao antes e depois na mesma execucao; suite de Planos 42 PASS com a unica falha sendo plan_golden_test, ja no censo",
+      "evidence": "specs/051-superadmin-plans-production.md; docs/open-questions.md; commitsbe28f0c0/e5a24a82/c8cd7518; R01-delta-1815: C03r23 52f2075f usa identidade do repository;36não-golden relatados, revisão em andamento.; Fechamento R01 C03/r33; C00288PASS; conflito039/051 mantido em open-questions; etapa-2-operacao/reports/R01-fechamento-20260909.md; commits 5f42fbcbd e 01081d3fc; apps/superadmin/test/features/plans/ -> 41 PASS; commit ac3238f7c; medicao antes e depois na mesma execucao; suite de Planos 42 PASS com a unica falha sendo plan_golden_test, ja no censo; goldens-claro-decisoes-2026-09-10.md; R03-fase0-handoff.md",
       "historicalFrontend": "audited",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "pending-verification",
+      "frontendStatus": "local-green",
       "backendStatus": "pending-verification",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:14-03:00"
+      "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "plan_cards_light_1024=R (ARQUIVO; FUNDO cinza incorreto, usar `coelo-ui`)",
+          "plan_cards_light_1440=R (ARQUIVO; FUNDO)",
+          "plan_cards_light_375=R (ARQUIVO; FUNDO)",
+          "plan_cards_light_768=R (ARQUIVO; FUNDO)"
+        ],
+        "referencia": 4,
+        "atual": 0,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "plans.create",
@@ -4050,17 +4638,30 @@
       "screen": "Cardápios / Diretório",
       "scope": "mvp",
       "done": "Wiring produtivo0c40b1c8, guards/retry/estado publicado, versão histórica682d4483, aliases cbdc90c3 e roundtrip c6532889 integrados. C00 integrou recuperação de erro de decode no diretório f4b65d8a.",
-      "fe": "Cardapios transborda 37 pixels a 375 com texto a 200%: a celula do grid tem altura fixa igual a largura disponivel, 343, e o conteudo pede 380. Nao corrigido: proporcao de grid e contrato visual de tela com baseline aprovada. WCAG 2.2 AA exige reflow a 200% e AGENTS.md adota WCAG 2.2 AA, entao isto e criterio de aceite aberto e nao melhoria.",
+      "fe": "R03: diretorio de Cardapios no composto (Fase 0 8fafbe16c), 11 goldens regravados pelo grupo principal-chat-sistema apos as decisoes do Owner; 10 da galeria seguem R com correcoes pendentes. Gate para verified: rota normal com sessao (P17).",
       "be": "R03 (10/09 16:45): cadeia de Cardapios reconstruida sobre a baseline e APLICADA EM PRODUCAO (lote 4: 20260910190000 recibos/arquivar, 190100 revisao obrigatoria + revoke de anon, 190200 meal_plan_delete); pgTAP 30/30, 22/22, 6/6 no espelho. Gate para done: rota normal com sessao (P17), CRUD real e reload.",
-      "evidence": "commits0c40b1c8/682d4483/cbdc90c3/c6532889; evidence/etapa-2/agenda-operacoes/; Fechamento R01 C03/r33; C00 conjunto74PASS; executor102não-golden; etapa-2-operacao/reports/R01-fechamento-20260909.md; docs/reviews/etapa-2-operacao/reports/E2-noturna-texto-200-20260909.md; commit 085c02c68; comunicacao/principal-chat-sistema.json r7 (fila_sql_para_o_coordenador); coordenacao.json R03 rev 6 (preflightNaBaseline); coordenacao.json R03 rev 10 (lote4)",
+      "evidence": "commits0c40b1c8/682d4483/cbdc90c3/c6532889; evidence/etapa-2/agenda-operacoes/; Fechamento R01 C03/r33; C00 conjunto74PASS; executor102não-golden; etapa-2-operacao/reports/R01-fechamento-20260909.md; docs/reviews/etapa-2-operacao/reports/E2-noturna-texto-200-20260909.md; commit 085c02c68; comunicacao/principal-chat-sistema.json r7 (fila_sql_para_o_coordenador); coordenacao.json R03 rev 6 (preflightNaBaseline); coordenacao.json R03 rev 10 (lote4); goldens-acontece-cardapios-decisoes-2026-09-10.md",
       "historicalFrontend": "audited",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "pending-verification",
+      "frontendStatus": "local-green",
       "backendStatus": "local-green",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:14-03:00"
+      "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "meal_plan_directory_card_hover_light_1440=A (o botão de arquivos fica **depois do toggle** e tem que ser similar à tela de Instituições)",
+          "meal_plan_directory_flyout_light_1440=A (tem que ter **editar, duplicar, arquivar e excluir**)",
+          "meal_plan_directory_light_1440=A (tem que ter editar, duplicar, arquivar e excluir)",
+          "meal_plan_directory_light_375=A (tem que ter editar, duplicar, arquivar e excluir)",
+          "meal_plan_directory_dark_1440=A"
+        ],
+        "referencia": 0,
+        "atual": 5,
+        "fonte": "goldens-acontece-cardapios-decisoes-2026-09-10"
+      }
     },
     {
       "id": "meal-plans.create",
@@ -4077,7 +4678,16 @@
       "backendStatus": "local-green",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "meal_plan_wizard_new_light_375=R"
+        ],
+        "referencia": 1,
+        "atual": 0,
+        "fonte": "goldens-acontece-cardapios-decisoes-2026-09-10"
+      }
     },
     {
       "id": "meal-plans.edit",
@@ -4468,7 +5078,17 @@
         "note": "R02 D00: footer respeita update em composição direta,4eacb7b5b;campanha21PASS compartilhada. Modal7777retido por callback tardio após troca de contexto; aguardando sucessor.",
         "certifiesWholeAction": false
       },
-      "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
+      "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "location_detail_focus_light_375=A",
+          "location_detail_light_375=A"
+        ],
+        "referencia": 0,
+        "atual": 2,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
+      }
     },
     {
       "id": "locations.schedule",
@@ -4507,10 +5127,10 @@
       "screen": "Circulares / Diretório",
       "scope": "mvp",
       "done": "Mapeamento R02 recebido de L01; existência parcial observada, sem aceite integral. Página existe e é montada em produção",
-      "fe": "Complemento e correcao de um defeito MEU do lote anterior: seguir o cursor corrigiu o acervo escondido, mas deixava a tela em carregamento ate a ultima pagina, o que numa instituicao grande sao ate dez idas sequenciais ao servidor antes do primeiro item. A lista passou a aparecer na primeira pagina e a crescer nas seguintes, e a condicao do aviso de truncamento foi ajustada para nao marcar truncado quando o servidor ja disse que acabou.",
+      "fe": "R03: diretorio de Circulares no composto (Fase 0 850ba1838) com goldens regravados. Gate para verified: rota normal com sessao (P17).",
       "be": "Validar contrato autorizado, tenant/escopo real, versão, RLS e auditoria. RPC `superadmin_circular_directory_v2`",
-      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md; commit 2de205da4; production_circular_directory_paging_test.dart (3 PASS, conferindo os cursores enviados em cada chamada, o caso de pagina unica e a parada no teto); test/features/circulars com 51 PASS e as 2 falhas de golden pre-existentes na base; 2026-09-09, local; commit 6e2a21287; production_circular_directory_paging_test.dart com 4 PASS, incluindo um caso que retem as leituras a partir da segunda e exige que a tela ja esteja em conteudo com os 20 primeiros itens; suite de circulars 56 PASS com as 2 falhas de golden pre-existentes; 2026-09-10, local",
-      "frontendStatus": "pending-verification",
+      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md; commit 2de205da4; production_circular_directory_paging_test.dart (3 PASS, conferindo os cursores enviados em cada chamada, o caso de pagina unica e a parada no teto); test/features/circulars com 51 PASS e as 2 falhas de golden pre-existentes na base; 2026-09-09, local; commit 6e2a21287; production_circular_directory_paging_test.dart com 4 PASS, incluindo um caso que retem as leituras a partir da segunda e exige que a tela ja esteja em conteudo com os 20 primeiros itens; suite de circulars 56 PASS com as 2 falhas de golden pre-existentes; 2026-09-10, local; goldens-claro-decisoes-2026-09-10.md; R03-fase0-handoff.md",
+      "frontendStatus": "local-green",
       "backendStatus": "pending-verification",
       "integratedStatus": "pending-verification",
       "lastEvidenceAt": "2026-09-09T13:20:58.702584-03:00",
@@ -4521,6 +5141,16 @@
         "sourceSha256": "db41ccba27a41c81df774e7379ad46b7441b7c3e9750a0693b9dacbc848acb65",
         "substate": "Lista, tabela desktop, cards compacto, paginação",
         "observationOnly": true
+      },
+      "ownerVisualApproval": {
+        "recordedAt": "2026-09-10",
+        "goldens": [
+          "circular_directory_light_375=A",
+          "circular_directory_text_200_375=A"
+        ],
+        "referencia": 0,
+        "atual": 2,
+        "fonte": "goldens-claro-decisoes-2026-09-10"
       }
     },
     {
@@ -4745,7 +5375,7 @@
       "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
     }
   ],
-  "updatedAt": "2026-09-10T21:32:42.042Z",
+  "updatedAt": "2026-09-10T21:44:49.546Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,

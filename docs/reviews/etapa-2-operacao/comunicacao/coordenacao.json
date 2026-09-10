@@ -1,6 +1,14 @@
 {
-  "revision": 13,
+  "revision": 14,
   "round": "E2-R03-20260910",
+  "aprovacaoVisualDoOwner": {
+    "quando": "2026-09-10 noite",
+    "fonte": "goldens-claro-decisoes-2026-09-10.md (163 linhas) + goldens-acontece-cardapios-decisoes-2026-09-10.md (26), a segunda prevalece sobre a primeira",
+    "resultado": "179 goldens decididos mapeados por regra de prefixo para 52 action_ids em 23 familias; gravado no inventario como ownerVisualApproval {goldens, referencia, atual, fonte}; 0 arquivos sem regra (scratchpad/map-goldens.js)",
+    "promocoes": "11 diretorios ja migrados ao composto com goldens regravados apos as observacoes subiram para FE local-green (institutions, activities, groups, units, forms, health-care, medication, meal-plans, plans, circulars, notices): FE local-green 13 -> 23",
+    "metricaNova": "aprovacao visual do Owner 52/230 (22,61%), reportada ao lado de verified e local-green; nunca substitui verified"
+  },
+  "tokensDeContaComValorErrado": "coelo-edge-functions-stream e coelo-deploy-apps: os valores colados nos arquivos tinham 32 caracteres (formato de ID de token, nao de valor, que tem 40); /accounts/{id}/tokens/verify e /user/tokens/verify devolveram 400 e wrangler whoami falhou. COELO_STREAM_API_TOKEN nos secrets e CLOUDFLARE_API_TOKEN no ambiente do usuario estao com valor invalido ate o Owner girar os dois tokens no painel e salvar de novo; nenhum uso depende deles hoje. moments-media implantada com o token R2 (valido).",
   "cloudflareFechamento": {
     "quando": "2026-09-10 18:12 a 18:40",
     "tokenR2": "criado pelo Owner (conta, Object Read & Write, tres buckets); gravado como COELO_R2_ENDPOINT/REGION/ACCESS_KEY_ID/SECRET_ACCESS_KEY a partir de arquivo local apagado em seguida",
