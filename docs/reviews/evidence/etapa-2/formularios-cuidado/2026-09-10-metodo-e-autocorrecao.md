@@ -265,6 +265,43 @@ conserto: significa gravar rascunho de formulario sem acao explicita do autor, e
 quem decide isso e o Owner. O que nao pode continuar e o registro dizer que o
 autosave existe sem dizer que ele nao roda.
 
+## A varredura das dependencias que ninguem fornece
+
+O autosave foi achado por acaso. Depois transformei o mesmo raciocinio em
+varredura: para cada pagina publica do recorte, quais parametros do construtor
+NENHUM arquivo de `lib/` fornece.
+
+A primeira versao devolveu setenta e oito nomes e era inutil, por um falso
+positivo previsivel: componentes internos sao construidos dentro do proprio
+arquivo, entao "ninguem de fora fornece" e o normal deles. Restringindo as dez
+paginas publicas do recorte, sobram duas, e as duas dizem algo.
+
+`FormsDirectoryPage` nunca recebe `visualMetadata` nem `onLifecycleCompleted`.
+`HealthMedicationPlanFormPage` nunca recebe `responsibleOptions`,
+`onChangeChild`, `onPickMedicationImage` nem `onPickPrescription`.
+
+A consequencia de `responsibleOptions` fecha um circulo com outro achado desta
+noite: a lista de responsaveis chega vazia, entao o formulario de plano de
+medicacao nao oferece ninguem para escolher, e o diretorio — que resolve o
+rotulo pela mesma lista — mostra "Responsavel indisponivel". Os dois sintomas
+tem uma raiz so, e ela e o escopo demonstrativo aprovado em `specs/020`.
+
+### O contraste que vale mais que a lista
+
+`visualMetadata` e do tipo `Map<String, DevelopmentFormVisualMetadata>`. O
+**nome do tipo** diz que aquilo e de desenvolvimento. Quem le a pagina sabe, sem
+investigar nada, que a coluna Agendamentos nao tem numero em producao porque
+nao deveria ter.
+
+`authoringApi` nao tem marca nenhuma. Le-se como dependencia de producao que
+alguem esqueceu de ligar — e por isso o autosave parecia funcionalidade viva, e
+por isso levou uma rodada inteira para alguem notar que nao roda.
+
+A licao e de nomeacao, e e barata: **quando uma dependencia so existe para
+desenvolvimento ou demonstracao, o tipo ou o nome deve dizer isso**. O custo de
+nao dizer nao e confusao momentanea; e um registro que afirma, com razao, que a
+funcionalidade esta implementada e coberta, enquanto ninguem a alcanca.
+
 ## Censo dos formatadores de data inline
 
 Medicao, nao alteracao. Contei os literais que montam data ou hora a mao com
