@@ -1,6 +1,6 @@
 {
-  "revision": 37,
-  "updated_at": "2026-09-10T02:26:00-03:00",
+  "revision": 38,
+  "updated_at": "2026-09-10T02:34:00-03:00",
   "group": "chat-comunicacoes",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) - claude-opus-5[1m]",
@@ -689,5 +689,27 @@
     "distincao_que_muda_o_conserto": "Deriva de ferramenta (TZ no Git Bash devolvendo UTC) produz erro CONSTANTE e detectavel, e se conserta trocando o comando. Estimativa entre leituras produz erro que CRESCE, e por isso permanece plausivel quanto pior fica.",
     "regra_nova": "Ler o relogio imediatamente antes de qualquer horario registrado, e nao a cada bloco de trabalho.",
     "escopo_do_erro": "Somente carimbos de entrega. Nenhum fato tecnico dependia de horario: SHAs, 762 goldens nas duas pontas, 232 nomes de rota, zero regressoes de revisao, zero merges com resolucao no intervalo."
+  },
+  "defeito_de_layout_mascarado_por_fail_closed": {
+    "resumo": "A rota de PRODUCAO /imports esta verde apenas porque esta fail-closed. O estado carregado da ImportDirectoryPage nunca coube em tela nenhuma.",
+    "partida": "import_development_routes_test morre com 'RenderFlex overflowed by 1409 pixels on the bottom'. A leitura obvia e que o teste nao fixa tamanho de view e cai no 800x600 padrao, o que se corrigiria em tres linhas.",
+    "por_que_nao_escrevi_esse_patch": "Pagina que nao rola e conteudo inalcancavel, e isso e defeito de produto. Ampliar o viewport ate o vermelho sumir teria escondido o defeito dentro de uma correcao de teste.",
+    "medicao_1_viewports": "/dev/imports estoura em TODOS: 1409px a 800x600, 1317px a 390x844, 1069px a 1440x900. Nao e artefato do tamanho padrao do flutter_test.",
+    "medicao_2_controle_com_pluralidade": "Nove rotas a 800x600: /dev/notices, /dev/notices/new, /dev/conversations, /dev/principal-conversations, /notices, /notices/new, /communication/conversations e /principal-conversations dao OK. So /dev/imports estoura. Nao e do shell nem do tema, e o meu recorte esta limpo a 800x600 (prova positiva).",
+    "medicao_3_decisiva": "A rota de producao /imports monta a mesma ImportDirectoryPage. SEM repositorio da OK; COM repositorio devolvendo dados, a 1440x900, estoura por 1069 pixels.",
+    "consequencia": "No dia em que o repositorio de producao for ligado, o operador abre Importacoes e perde 1069 pixels de conteudo sem rolagem para alcanca-lo. O verde atual nao e evidencia de que a tela funciona; e evidencia de que ela nunca foi exercitada com dados.",
+    "ligacao_com_o_contrato": "E o caso medido, e nao deduzido, da linha do AGENTS.md: fail-closed nunca deve ser declarada concluida ponta a ponta.",
+    "reproducao": "Criar o router com importRepository: DevelopmentImportRepository(), ir para /imports, pumpAndSettle, ler tester.takeException(). Duas linhas de assercao viram teste de regressao.",
+    "fora_do_meu_recorte": "Importacoes pertence a outra frente. Nao alterei nada; entrego medicao e reproducao.",
+    "o_que_eu_nao_fiz": "Nao localizei o widget exato. A toString do FlutterError nao traz o criador e eu nao gastei a janela na arvore de outra frente. O arquivo e lib/features/imports/presentation/import_directory_page.dart; o ramo carregado usa Expanded com CoeloAdminResizableTable e parece correto, entao o Column que estoura provavelmente esta acima dele.",
+    "risco_de_conserto_errado": "Se alguem consertar o import_development_routes_test fixando o viewport, o vermelho some e o defeito fica — e some o unico sinal que hoje aponta para ele."
+  },
+  "varredura_de_overflow_em_todas_as_rotas_dev": {
+    "motivo": "As rotas /dev/* ja tem repositorios de desenvolvimento COM DADOS ligados por padrao. Isso as torna o detector barato da classe 'defeito mascarado por fail-closed': elas exercitam o estado carregado que as rotas de producao hoje nao alcancam.",
+    "metodo": "67 rotas /dev sem parametro, extraidas de superadmin_routes.dart, montadas a 1440x900 com allowDevelopmentPreview, pumpAndSettle e leitura de tester.takeException().",
+    "resultado": "67 medidas. 66 OK. Uma unica excecao: /dev/imports, 'A RenderFlex overflowed by 1069 pixels on the bottom'.",
+    "o_que_isso_delimita": "A classe existe, mas tem exatamente uma instancia conhecida no app. Nao e um problema estrutural do shell nem do design system; e uma tela.",
+    "meu_recorte": "Alem da varredura, medi as quatro rotas de producao do meu recorte (/notices, /notices/new, /communication/conversations, /principal-conversations) em tres viewports COM dados e tambem em fail-closed a 390x844. Todas OK. Prova positiva, com pluralidade, de que a classe nao me atinge.",
+    "limite_declarado": "A varredura cobre rotas /dev sem parametro. Rotas com parametro (:noticeId e similares) e o estado carregado de rotas de producao sem espelho em /dev ficam fora, e eu nao afirmo nada sobre elas."
   }
 }
