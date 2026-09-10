@@ -367,6 +367,18 @@ hora resolveria a divergencia real com risco muito menor. Nao toquei em nada.
 
 ## Estado medido do recorte
 
+> **SUPERADO na mesma madrugada, e o motivo importa mais que o numero.** O
+> caminho `test/features/forms` NAO era o recorte inteiro: dezessete arquivos de
+> teste meus viviam fora dele, em tres arvores — rota/shell, `core/config` e
+> `shared`. O numero abaixo esta preservado como estava quando foi escrito;
+> o numero valido esta logo depois.
+
 `test/features/forms`: **808 PASS / 8 FAIL / 1 SKIP**, e as oito falhas sao
 TODAS comparacao de golden, sob a politica desta rodada de nao regravar golden.
 Nenhuma falha de logica restante no recorte. Medido em `b4d0e6af7`.
+
+**Numero valido**, recorte corrigido com os catorze caminhos, medido sobre a
+base integrada `3fb200dab`: **1081 PASS / 3 SKIP / 14 FAIL**. Das catorze, doze
+sao do meu recorte e TODAS sao comparacao de golden, triadas uma a uma; as duas
+restantes sao de `superadmin_form_action_footer_adoption`, que nao e do meu
+recorte. Nenhuma exige correcao de produto antes de regravar.

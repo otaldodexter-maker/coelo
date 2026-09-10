@@ -184,6 +184,12 @@ de `forms_editor_golden_test`, uma de `forms_operations_golden_test` e uma de
 referência.
 
 **A nona foi corrigida** e o recorte fecha com **oito falhas, todas de golden**.
+
+> **Superado.** "Oito" valia para `test/features/forms`, que nao era o recorte
+> inteiro — dezessete arquivos de teste do grupo viviam fora desse caminho. O
+> recorte corrigido fecha em **catorze falhas** sobre a base integrada
+> `3fb200dab`, das quais doze sao minhas e todas de golden. Ver
+> `2026-09-10-triagem-goldens.md`.
 Ela não era defeito de produto:
 `forms_editor_page_test`, "production preserves the editor hierarchy with
 neutral disabled controls", afirma que há exatamente dois `ExcludeFocus`
