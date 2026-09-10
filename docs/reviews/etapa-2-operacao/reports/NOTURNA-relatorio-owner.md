@@ -1305,6 +1305,16 @@ reescritos de propósito — corrigir registro passado para ficar coerente é o 
 tipo de coisa que se recusou a fazer com o histórico de commits. A deriva fica
 declarada aqui, uma vez, para quem ler saber descontar.
 
+E há uma **segunda** deriva, de outra natureza e com outro conserto. A primeira é
+de ferramenta e produz erro constante e detectável — três horas exatas, sempre.
+A segunda é humana: uma frente lia o relógio uma vez e depois **estimava** os
+carimbos seguintes, empurrando o horário para a frente a cada mensagem, até
+acumular quase quarenta minutos. Ela identificou a deriva de fuso nas outras
+frentes sem perceber que estava cometendo a versão manual do mesmo erro, sem
+nenhum fuso envolvido. **Erro de ferramenta se conserta trocando o comando; erro
+de estimativa só se conserta lendo antes de escrever** — e ele cresce, o que o
+torna mais plausível quanto pior fica.
+
 **Mensagem não é registro.** Duas frentes descobriram, perto do fim, que trabalho
 real delas existia apenas nas mensagens trocadas com a coordenação: uma
 amostragem de goldens de cinco famílias, num caso, e um handoff de 27 revisões

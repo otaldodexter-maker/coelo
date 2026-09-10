@@ -1,6 +1,6 @@
 {
-  "revision": 32,
-  "updated_at": "2026-09-10T02:12:00-03:00",
+  "revision": 33,
+  "updated_at": "2026-09-10T02:10:00-03:00",
   "group": "publicacoes-midia",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
@@ -8,7 +8,7 @@
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-publicacoes-midia",
   "branch": "work/etapa2-noturna-publicacoes-midia",
-  "head": "a6decef0e",
+  "head": "1afc854b9",
   "upstream": "origin/work/etapa2-noturna-publicacoes-midia (0/0)",
   "base": "origin/dev 447e6eea2 mesclado em 3ab29d7df",
   "ack": "coordenador: revisao 1 aceita; lote 1e39b2fcf integrado (merge d502350ce); lote b10f48d1e aceito para a proxima integracao; atribuicao de principal_real_route_test retirada por ele apos minha medicao; reserva da plataforma comum de midia mantida",
@@ -315,6 +315,12 @@
       "sha": "a6decef0e",
       "state": "publicado",
       "title": "prova de que as 23 falhas de golden precedem a rodada, nominalmente",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "1afc854b9",
+      "state": "publicado",
+      "title": "censo de goldens do recorte: 12 de 105 guardam superficie inalcancavel",
       "touches_reserved_files": []
     }
   ],
@@ -751,7 +757,8 @@
     "efeito_colateral_positivo": "a frente perfil-para-voce passou a consumir principalMomentsFeedRepository, a mesma instancia que /principal-moments usa, em vez de abrir uma segunda fonte para o mesmo feed",
     "commits_pendentes_de_integracao": [
       "53bfabff9",
-      "a6decef0e"
+      "a6decef0e",
+      "1afc854b9"
     ],
     "ja_integrados": [
       "05537c3b3",
@@ -799,5 +806,33 @@
       "alerta dos 21 commits de integracao segurados sem publicar em origin/dev",
       "reteste dos meus proprios bloqueios, que virou tarefa para as seis frentes"
     ]
+  },
+  "censoDeGoldensDoRecorte": {
+    "pergunta": "quanto da cobertura visual guarda superficie que nenhuma rota constroi. Medido SO no meu recorte, a pedido da coordenacao, sem varrer o app.",
+    "total": 105,
+    "inalcancaveis": 12,
+    "percentual": "11,4%",
+    "todos_no_mesmo_arquivo": "test/features/principal_circulars/presentation/principal_circular_golden_test.dart",
+    "quebra": [
+      {
+        "grupo": "composer golden",
+        "testes": 10,
+        "superficie": "PrincipalCircularComposerPage",
+        "situacao": "750 linhas, zero consumidores em lib alem do proprio arquivo; inalcancavel por inteiro"
+      },
+      {
+        "grupo": "profile and feed golden",
+        "testes": 2,
+        "superficie": "PrincipalProfileContentTabs mais PrincipalCircularFeedCard",
+        "situacao": "composicao mista: o card e usado por Acontece, mas as abas tem zero consumidores em lib e duplicam as que principal_profile_preview_page ja implementa em privado. A espinha da composicao e inalcancavel."
+      }
+    ],
+    "restantes": "os outros 93 guardam paginas que o router constroi, verificado uma a uma",
+    "metodo": "flutter test --reporter json, contando eventos testStart e descartando (setUpAll) e (tearDownAll)",
+    "troca_de_metodo": "primeiro tentei extrair os nomes do reporter EXPANDIDO e obtive 34 de 105, porque ele imprime o teste em execucao e nao todos. Log nao e inventario. Ainda pior, cheguei a parsear o arquivo JSON antes do evento done e reportei 87 para mim mesmo; so vale o parse depois do done.",
+    "erro_de_metodo_meu": "suspeitei de tres paginas sem consumidor e DUAS eram falso positivo meu: grep por 'Page(' nao enxerga construtor NOMEADO, e o router constroi PrincipalHappensPreviewPage como .demo( e .mixed(. A terceira, PrincipalCursorPage, nem widget e: e classe generica de paginacao no dominio.",
+    "leitura": "nao e que os 12 goldens estejam errados; eles passam e as imagens sao referencias aprovadas. E que TER GOLDEN NAO E EVIDENCIA DE QUE A SUPERFICIE EXISTA para o usuario. Onze por cento da cobertura visual do recorte defende tela que ninguem alcanca, e ficaria verde para sempre.",
+    "nao_removido": "nenhum dos dois casos foi apagado nem roteado; a decisao e do Owner e esta no documento de oito pontos",
+    "commit": "1afc854b9"
   }
 }

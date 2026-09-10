@@ -1,10 +1,10 @@
 {
-  "revision": 35,
-  "updated_at": "2026-09-10T01:55:00-03:00",
+  "revision": 36,
+  "updated_at": "2026-09-10T02:45:00-03:00",
   "group": "chat-comunicacoes",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) - claude-opus-5[1m]",
-  "status": "consolidacao; branch inteiramente integrada, nada pendente",
+  "status": "active; segunda conferencia externa entregue; passando o que vivia so no canal para o arquivo",
   "coordinator": "Claude (coelo-73)",
   "ack_received": "revisao 1 aceita; coordenacao.json rev 2, commit 920f23199",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-chat-comunicacoes",
@@ -643,5 +643,32 @@
     "import_development_terceira_causa": "A falha de import_development NAO e chamada de backend: calls=0 nas duas rotas. E overflow de RenderFlex de 1409 pixels na superficie padrao de 800x600, que mata o caso antes da assercao. Terceira causa distinta com o mesmo sintoma vermelho.",
     "caracteristica_conhecida_de_formularios": "A sessao daquele teste concede apenas permissionCodes {platform.read} e withFormsAuthorization consulta so isAuthenticated. O contrato de 08/09 delega a autorizacao de leitura de Formularios INTEIRAMENTE ao servidor. Nao e defeito, porque o AGENTS.md poe a autoridade no backend, mas e caracteristica conhecida: se alguma RPC de Formularios for mais frouxa do que se supoe, nao existe segunda linha no cliente."
   },
-  "decisao_sobre_o_par_de_commits": "O coordenador decidiu integrar os dois juntos e pediu para NAO reescrever a branch. Motivo que eu subscrevo: a mensagem da reversao e o unico lugar onde o episodio esta contado por quem o viveu, e reescrever historia publicada para ficar bonita apagaria justamente a parte que ensina."
+  "decisao_sobre_o_par_de_commits": "O coordenador decidiu integrar os dois juntos e pediu para NAO reescrever a branch. Motivo que eu subscrevo: a mensagem da reversao e o unico lugar onde o episodio esta contado por quem o viveu, e reescrever historia publicada para ficar bonita apagaria justamente a parte que ensina.",
+  "segunda_conferencia_externa": {
+    "referencia_congelada": "0d847eb7a5e53b7a12c0166e2fc9f4b4c0194751, marcada com tag local audit-frozen-0200 na minha worktree.",
+    "por_que_congelei": "A minha propria ressalva de metodo: medir integracao enquanto o integrador mescla produz buraco falso. Congelei o meu lado em vez de pedir que ele parasse, porque parar a integracao por quase tres horas custaria mais que a precisao ganha.",
+    "item_1_perda_de_trabalho": {
+      "conclusao": "Nenhum trabalho publicado e perdido.",
+      "merges": "Zero merges com resolucao real no intervalo desde a auditoria anterior, sobre apps, packages E docs. Os seis ciclos foram auto-merge limpo.",
+      "arquivos_ausentes_explicados": "Dois docs de operacoes-sistema estao em commits pendentes NOMEADOS (a1fc2df0d e 0dc2228b1), o handoff-snapshot de perfil-para-voce em 8065dc529, e o relatorio de copia-previa e prepared-not-merged por desenho.",
+      "artefatos_de_teste": "Os 96 PNGs em failures/ sao artefato regenerado, anteriores a base (28/07), removidos de proposito em 9a074a05c. A MINHA branch ainda os carrega, herdados da base, e o dev esta mais limpo que ela — registro para nao virar falso alarme na conferencia final.",
+      "goldens_intactos": "762 na base d784462c1 e 762 no dev. Se a limpeza tivesse levado um golden junto, apareceria aqui.",
+      "DOCS_detector_novo": "Angulo que ninguem tinha auditado. Percorri TODO o historico de cada JSON de comunicacao no dev verificando se o numero de revisao alguma vez DIMINUIU entre commits, que e a assinatura de copia velha sobrescrevendo nova. ZERO regressoes nos nove arquivos.",
+      "limitacao_declarada": "O detector so funciona porque esses arquivos tem contador monotonico. Relatorio, evidencia e artigo de conhecimento NAO tem, e para esses o unico detector foi merges com resolucao, que deu zero. Ha uma classe de perda em documentacao que continua NAO auditada nesta rodada, e agora esta nomeada em vez de invisivel.",
+      "duas_coisas_vivas_reportadas_e_resolvidas": "perfil-para-voce revisao 28 e publicacoes-midia revisao 31 estavam no disco e nao no dev; commitadas pelo coordenador em dc4caff4a. E os carimbos dentro dos JSONs commitados estavam a frente do relogio real por deriva de TZ; declarados no relatorio em ec12c8393 em vez de reescritos."
+    },
+    "item_2_auto_merge_do_router": {
+      "correcao_de_vocabulario": "Nao foi merge com resolucao: nao houve resolucao. `--cc` so mostra merge cujo resultado difere dos DOIS pais. Auto-merge limpo nao aparece porque nao ha o que resolver — e o risco dele e outro: os dois lados mexerem em linhas proximas e nao sobrepostas e o git juntar metades sintaticamente validas e semanticamente erradas. Nenhum diff combinado pega isso; so leitura pega.",
+      "o_que_li": "Extrai o CODIGO de _isProductionMutationLocation na base e no dev congelado, sem comentarios, e comparei: IDENTICO. A auto-mesclagem acrescentou SOMENTE o comentario sobre Agenda. A linha que importa ja existia na base palavra por palavra.",
+      "checagem_que_responde_a_pergunta": "Extrai os 232 nomes de rota declarados no dev congelado e comparei contra os declarados em cada uma das sete branches: ZERO rotas presentes numa branch e ausentes do dev. Nenhum merge derrubou declaracao de rota.",
+      "guardas": "Unicidade de nome de rota, ida e volta menu/destino/shell, chat_routes e principal_chat_route: 23 casos, 23 verdes sobre a referencia congelada.",
+      "conclusao": "O auto-merge esta correto, e o codigo da funcao nao mudou desde a base.",
+      "sugestao_pos_corte": "A checagem de nomes de rota e barata e pega uma classe que nenhum teste pega, porque teste de rota so exercita rota que alguem lembrou de escrever. Vira guarda permanente, mas depois do corte."
+    },
+    "item_3_mensagem_nao_e_registro": {
+      "o_que_conferi": "Item a item, e nao de memoria: criterio de fronteira do cursor, os tres diagnosticos, a conferencia externa anterior, o contador nao zerado, a licao dos tres leitores e o padrao herdado unico.",
+      "resultado": "Os oito ja estavam no arquivo. Mas as DUAS auditorias que eu acabara de entregar viviam so no canal — o exercicio me pegou em tempo real.",
+      "licao": "Eu escrevia no arquivo antes de mandar quando o trabalho era meu, e deixei de escrever quando o trabalho era conferencia para outro. Registro so o que pareco dono; conferencia parece pertencer a quem pediu."
+    }
+  }
 }
