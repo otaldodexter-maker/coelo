@@ -47,8 +47,24 @@ existem em produção; o único gate de `units.*` e metade de `groups.*` passa a
 ser a composição do cliente (`structureMutationsEnabled` e adapters
 `Unavailable*`), a ligar depois dos pacotes SQL (retidos por P1 do Owner).
 
-Percentuais certificados **não mudaram**: Front-end 11/230. Nenhuma ação
-passou pela régua do MVP porque nada foi aplicado em produção. Perguntas ao
+**Consolidação das 17:10 (10/09):** as seis frentes e a Fase 0 entregaram os
+SHAs finais e estão em `dev`: Fase 0 lote 7 (Pessoas, Convites, Perfis de
+acesso no composto; WIP `wip/fase0-arquivo-chat`), estrutura (Locais com
+grupos internos/externos e card Criar por grupo, composição real de Unidades e
+Turmas, fixtures na forma de produção), acessos-pessoas (Segurança infantil no
+composto, allowlist mais apertada), formularios-cuidado-rotina (repositórios
+Supabase das quatro famílias, Lançamentos D7, Testar por capacidade D6,
+wizard de cuidado no padrão, gestão de aluno), principal-chat-sistema
+(Acontece sem prévia, feed paginado, Fixar/bandeira, 11 goldens regravados
+por decisão do Owner), publicacoes-agenda (encerrar/excluir Circular) e
+operacoes (Conta e Suporte ligados a RPC). As chaves de Cuidado/Rotina e de
+vínculo de aluno estão ligadas por padrão. Goldens que divergem de propósito:
+`medication_form_mobile_light` (P15), `child_safety_directory_light_1440`
+(causa visual pré-existente), formulários mobile até a Fase 0 fechar MENU-M.
+
+Percentuais certificados **não mudaram**: Front-end `verified` 11/230,
+`local-green` 13/230. Nenhuma ação passou pela régua do MVP porque a rota
+normal contra produção ainda não tem sessão autenticada (P17). Perguntas ao
 Owner em lote: [P1 a P10](etapa-2-operacao/next-round/R03-perguntas-ao-owner-20260910.md).
 
 ## Estado anterior — Rodada noturna 09→10/09/2026 encerrada

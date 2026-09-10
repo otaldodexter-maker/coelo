@@ -25,10 +25,14 @@ Coordenação e Integração P1 (Claude, `coelo-2b`) registrou posse na
 [revisão 1 de coordenacao.json](etapa-2-operacao/comunicacao/coordenacao.json)
 em 10/09/2026 14:50, sobre `dev` `e6f40f9bc`, com `base.fase0Head =
 1adb070c9`. Estados distintos desta rodada: **recebido** (sete canais com ACK),
-**integrado** (as sete branches em `dev`), **aplicado em produção** (lotes 1
-e 2 de 10/09: concessões de Cardápios, RPCs de Unidades, fundações de Rotina,
-Assiduidade, Perfis de cuidado e Medicação, após a Decisão 8 da ADR 0034 e
-preflight na baseline) e **verificado E2E** (nenhum). As chaves publicáveis
+**integrado** (as sete branches em `dev`, consolidação das 17:10 com os SHAs
+finais de cada frente), **aplicado em produção** (lotes 1 a 4 de 10/09, 33
+versões: Cardápios, Unidades, Rotina, Assiduidade, Cuidado, Medicação,
+Alunos, Formulários, catálogo de mídia, Pessoas, Convites, Usuários internos
+e Segurança infantil, após a Decisão 8 da ADR 0034 e preflight no espelho da
+baseline) e **verificado E2E** (nenhum: falta sessão autenticada em produção,
+P17; a negativa cross-tenant está provada em pgTAP sobre a baseline, não em
+execução com dois tenants reais). As chaves publicáveis
 estão em `apps/superadmin/.env.local` de todas as worktrees: a rota normal
 contra produção deixou de estar bloqueada por ambiente.
 

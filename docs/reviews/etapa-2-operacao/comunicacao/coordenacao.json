@@ -1,6 +1,14 @@
 {
-  "revision": 10,
+  "revision": 11,
   "round": "E2-R03-20260910",
+  "corte1710": {
+    "shasFinais": {"fase0": "dev 5fb331f37 + wip/fase0-arquivo-chat 91e011dc6", "estrutura": "63be8a474", "acessos-pessoas": "d47e16839", "formularios-cuidado-rotina": "fdc89c488", "principal-chat-sistema": "49b92ffa3 (bridge; sem SHA de corte proprio)", "publicacoes-agenda": "3b21db696 (Codex, sem resposta ao corte)", "operacoes": "3fa07edd0 (Codex, sem resposta ao corte)", "realm-interno": "sem branch publicada (coelo-f0 nao respondeu)"},
+    "integrado": "todas as branches acima em work/etapa2-r03-coordenacao e publicadas em dev no fechamento; conflitos resolvidos pela versao do grupo em JSON/evidencias/goldens e nos arquivos de Alunos (dono formularios)",
+    "worktrees": "estrutura, acessos-pessoas, formularios, principal-chat: limpas e publicadas; publicacoes-agenda e operacoes: WIP nao commitado preservado nas worktrees (5 e 0 arquivos) por serem Codex sem resposta; checkout principal: arquivos de outros grupos preservados, Fase 0 limpa nos seus caminhos",
+    "lote5Bloqueado": "P18: nenhuma capacidade locations.* existe em producao; o candidato de catalog_v2 ja passa as duas guardas de ACL com os revokes e para na fixture de capacidade Owner-only por desenho",
+    "verificacaoSemSessao": "acessos-pessoas provou por action_id que as 18 RPCs do lote 4 existem, resolvem pela assinatura e negam anonimo (42501); nada promovido a verified; achado para principal-chat: list_visible_happens_posts do cliente envia cursor que producao nao conhece (PGRST202) ate 20260910150000 ser aplicada",
+    "pausa": "frentes paradas por ordem do Owner; reativacao so quando ele voltar"
+  },
   "role": "Coordenacao e Integracao - Claude (P1)",
   "writer": "coordenador-claude",
   "sessionName": "coelo-2b",

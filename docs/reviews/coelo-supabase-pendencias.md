@@ -64,11 +64,31 @@ OAuth do MCP não cria tokens): pedido ao Owner em P2; migração das três
 funções e spike ficam pendentes dele.
 
 **Aplicado em produção em 10/09 (Decisão 8 da ADR 0034, dump lógico por lote
-em `C:/Users/adrie/Documents/Coelo-backups/`):** lote 1 (15:47)
-`20260910130000_meal_plans_owner_permission_grants_v1` e
+em `C:/Users/adrie/Documents/Coelo-backups/`), 33 versões no ledger:** lote 1
+(15:47) `20260910130000_meal_plans_owner_permission_grants_v1` e
 `20260910160000_units_rpcs_versioned_from_production_v1`; lote 2 (16:03)
 `20260910010000..010500` (fundação da Rotina, Assiduidade com chave de
-idempotência no banco, Perfis de cuidado e Medicação). Todos provados antes
+idempotência no banco, Perfis de cuidado e Medicação); lote 3 (16:32) as duas
+migrations de Instituições internas, as nove de Formulários de 08/09
+(recarimbadas `20260910230001..230011`), o catálogo de mídia privada com
+revoke de `media_assets`, `20260910220000` leitura de saúde pelo responsável
+(D9), `220200` comandos de vínculo de aluno e `220100` revoke do drift de
+Formulários (anon executava `form_authorize_file_job_download`); lote 4
+(16:45) Cardápios v2 (`20260910190000..190200`, com revoke de anon) e o realm
+interno de Pessoas, Convites, Usuários internos e Segurança infantil
+(`20260910170100..170800`, quatro tabelas novas). Chaves de composição
+`COELO_ENABLE_CARE_AND_ROUTINE_BACKEND` e `COELO_ENABLE_STUDENT_LINK_COMMANDS`
+ligadas por padrão no cliente. Fila restante: lote 5 (cadeia de Locais v2 de
+estrutura) bloqueado por P18 (nenhuma capacidade `locations.*` existe em
+produção); `people_read_aal1` por P11; realm interno v2 de Chat, Avisos e
+Circulares com a frente `realm-interno`; Suporte e Conta com pgTAP a
+corrigir; Acontece `happens_feed_pagination` e Momentos aguardam cadeia.
+
+**R01/R02 (Codex) conferidos em 10/09 17:05:** as sete branches
+`codex/e2-r02-*` continuam como WIP retido documentado (30 a 81 commits fora
+de `dev` cada, l03 já contida); nada delas foi perdido nem copiado em bloco, e
+a reconciliação de pendências continua sendo
+`next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md`. Todos provados antes
 sobre a **baseline** (dump schema-only de produção, agora
 `migrations/20260910000000_baseline_producao.sql` + `supabase/seed.sql`;
 cadeia antiga em `migrations-historico/`). Preflight negativo na baseline:

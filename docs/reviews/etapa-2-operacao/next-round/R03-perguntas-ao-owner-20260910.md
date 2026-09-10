@@ -176,6 +176,17 @@ mantém" exige uma sessão autenticada, e só existe o usuário do Owner. Opçõ
 - (c) Sem sessão: as frentes registram só "função existe e nega anônimo" e
   nenhuma ação chega a `verified`.
 
+## P18 — Capacidades de Locais não existem em produção (estrutura)
+
+O seed de produção não tem nenhuma permissão `locations.*`. A cadeia de
+Locais v2 exige nove: `locations.read`, `create`, `update`, `status`, `copy`,
+`schedule`, `reservations.read`, `reservations.manage` e
+`reservations.override` (confirmar conflito de reserva). Sem elas, mesmo com
+o SQL aplicado toda ação de Locais nega. Decidir: provisionar as nove no
+catálogo com concessão inicial só ao Owner, `requires_mfa=false` no MVP
+(AAL1) e risco registrado, ou reduzir o conjunto. Recomendação: provisionar
+as nove como está na cadeia, Owner-only, AAL1, e revisar na fase profunda.
+
 ## P10 — `requires_mfa` em capacidades de publicação (publicacoes-agenda)
 
 Código histórico ainda pede AAL2 em algumas capacidades de publicação; o MVP é
