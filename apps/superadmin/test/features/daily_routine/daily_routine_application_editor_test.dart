@@ -125,7 +125,7 @@ void main() {
     (
       name: 'invalid start time',
       inputs: const {'daily-routine-application-starts-at': '08:7'},
-      message: 'Informe o horario inicial no formato HH:MM.',
+      message: 'Informe o horário inicial no formato HH:MM.',
     ),
   ]) {
     testWidgets('rejects ${validationCase.name} before saving an application', (tester) async {

@@ -13,6 +13,46 @@ import 'widgets/daily_routine_field_configuration_editor.dart';
 import 'widgets/daily_routine_inheritance_summary.dart';
 import 'widgets/daily_routine_ordered_editor.dart';
 
+/// The dialog owns its controller so it is disposed when the dialog leaves the
+/// tree. Disposing right after showDialog returns is too early: the field is
+/// still rebuilt during the closing animation.
+final class _SectionNameDialog extends StatefulWidget {
+  const _SectionNameDialog({required this.initialName});
+
+  final String initialName;
+
+  @override
+  State<_SectionNameDialog> createState() => _SectionNameDialogState();
+}
+
+final class _SectionNameDialogState extends State<_SectionNameDialog> {
+  late final _controller = TextEditingController(text: widget.initialName);
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => CoeloAdminDialogShell(
+    title: 'Editar seção',
+    body: CoeloFormTextField(
+      controller: _controller,
+      labelText: 'Nome da seção',
+      prefixIcon: Icons.view_agenda_outlined,
+    ),
+    secondaryAction: OutlinedButton(
+      onPressed: () => Navigator.pop(context),
+      child: const Text('Cancelar'),
+    ),
+    primaryAction: FilledButton(
+      onPressed: () => Navigator.pop(context, _controller.text.trim()),
+      child: const Text('Salvar'),
+    ),
+  );
+}
+
 final class DailyRoutineWizardPage extends StatefulWidget {
   const DailyRoutineWizardPage({
     required this.repository,
@@ -603,7 +643,7 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
       const SizedBox(height: CoeloSpacing.space4),
       _applicationReferenceSummary(application),
       const SizedBox(height: CoeloSpacing.space5),
-      Text('Validade e horario', style: Theme.of(context).textTheme.titleLarge),
+      Text('Validade e horário', style: Theme.of(context).textTheme.titleLarge),
       const SizedBox(height: CoeloSpacing.space4),
       LayoutBuilder(
         builder: (context, constraints) {
@@ -625,14 +665,14 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
             CoeloFormTextField(
               key: const Key('daily-routine-application-starts-at'),
               controller: _startsAt,
-              labelText: 'Horario inicial (HH:MM)',
+              labelText: 'Horário inicial (HH:MM)',
               prefixIcon: Icons.schedule_outlined,
               enabled: _canManage && !_saving,
             ),
             CoeloFormTextField(
               key: const Key('daily-routine-application-ends-at'),
               controller: _endsAt,
-              labelText: 'Horario final (HH:MM)',
+              labelText: 'Horário final (HH:MM)',
               prefixIcon: Icons.schedule_rounded,
               enabled: _canManage && !_saving,
             ),
@@ -773,27 +813,10 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
   }
 
   Future<void> _editSection(RoutineSection section) async {
-    final controller = TextEditingController(text: section.name);
     final result = await showDialog<String>(
       context: context,
-      builder: (dialogContext) => CoeloAdminDialogShell(
-        title: 'Editar seção',
-        body: CoeloFormTextField(
-          controller: controller,
-          labelText: 'Nome da seção',
-          prefixIcon: Icons.view_agenda_outlined,
-        ),
-        secondaryAction: OutlinedButton(
-          onPressed: () => Navigator.pop(dialogContext),
-          child: const Text('Cancelar'),
-        ),
-        primaryAction: FilledButton(
-          onPressed: () => Navigator.pop(dialogContext, controller.text.trim()),
-          child: const Text('Salvar'),
-        ),
-      ),
+      builder: (dialogContext) => _SectionNameDialog(initialName: section.name),
     );
-    controller.dispose();
     if (!mounted || result == null || result.isEmpty) return;
     setState(() {
       _sections = [

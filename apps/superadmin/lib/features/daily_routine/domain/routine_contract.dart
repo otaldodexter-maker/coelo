@@ -247,13 +247,13 @@ final class RoutineApplication {
       throw const FormatException('O início da validade não pode ser posterior ao fim.');
     }
     if (startsAt != null && !_isClockTime(startsAt!)) {
-      throw const FormatException('Informe o horario inicial no formato HH:MM.');
+      throw const FormatException('Informe o horário inicial no formato HH:MM.');
     }
     if (endsAt != null && !_isClockTime(endsAt!)) {
-      throw const FormatException('Informe o horario final no formato HH:MM.');
+      throw const FormatException('Informe o horário final no formato HH:MM.');
     }
     if (startsAt != null && endsAt != null && startsAt!.compareTo(endsAt!) >= 0) {
-      throw const FormatException('O horario inicial deve ser anterior ao final.');
+      throw const FormatException('O horário inicial deve ser anterior ao final.');
     }
     final keys = assignees
         .map((value) => '${value.membershipId}:${value.responsibility.name}')

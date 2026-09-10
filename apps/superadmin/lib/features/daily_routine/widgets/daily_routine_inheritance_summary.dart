@@ -53,8 +53,8 @@ final class DailyRoutineInheritanceSummary extends StatelessWidget {
                 key: const Key('daily-routine-inheritance-toggle'),
                 label: 'Personalizar nesta hierarquia',
                 description: customized
-                    ? 'Os valores efetivos incluem personalizacoes locais.'
-                    : 'Mudancas da origem continuam refletidas automaticamente.',
+                    ? 'Os valores efetivos incluem personalizações locais.'
+                    : 'Mudanças da origem continuam refletidas automaticamente.',
                 value: customized,
                 onChanged: enabled
                     ? (value) => onModeChanged(
