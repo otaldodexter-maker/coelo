@@ -1,6 +1,6 @@
 {
-  "revision": 41,
-  "updated_at": "2026-09-10T02:52:47-03:00",
+  "revision": 42,
+  "updated_at": "2026-09-10T03:27:44-03:00",
   "group": "formularios-cuidado",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
@@ -8,7 +8,7 @@
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-formularios-cuidado",
   "branch": "work/etapa2-noturna-formularios-cuidado",
-  "head": "8111ebb678d48f7eb3dbaf98c6a7c2c8da17ebaa",
+  "head": "d1e8069c04b544e6ccd33ed014fe7252dc29872d",
   "upstream": {
     "branch": "origin/work/etapa2-noturna-formularios-cuidado",
     "ahead": 0,
@@ -65,13 +65,93 @@
     "forms.create e forms.edit: o autor agora declara o maximo de caracteres de texto curto. O campo so aparece em shortText, limpar remove o limite, e um maximo invalido (0, negativo, nao inteiro, nao numerico) bloqueia autosave e salvar rascunho pelo mesmo caminho de galleryLimitsIssue e dateLimitsIssue."
   ],
   "tests": {
-    "recorte": "apps/superadmin test/features/forms",
-    "resultado": "808 PASS / 8 FAIL / 1 SKIP",
-    "medido_em": "b4d0e6af7",
-    "natureza_das_falhas": "as oito sao comparacao de golden, triadas uma a uma; nenhuma falha de logica restante no recorte",
-    "coelo_domain": "74 PASS antes do ultimo lote, 28 PASS no arquivo de limites",
+    "numero_1_recorte": {
+      "resultado": "1080 PASS / 3 SKIP / 15 FAIL",
+      "caminhos_apps_superadmin": [
+        "test/features/forms",
+        "test/features/health_care",
+        "test/app/router/care_profile_preview_routes_test.dart",
+        "test/app/router/composition_root_fail_closed_routes_test.dart",
+        "test/app/router/forms_composition_sanitization_source_test.dart",
+        "test/app/router/forms_fail_closed_routes_test.dart",
+        "test/app/router/forms_internal_directory_routes_test.dart",
+        "test/app/router/forms_media_composition_test.dart",
+        "test/app/router/health_care_routes_test.dart",
+        "test/app/router/production_repository_wiring_red_test.dart",
+        "test/app/router/superadmin_error_routes_test.dart",
+        "test/core/config/superadmin_auth_scope_test.dart",
+        "test/core/config/superadmin_media_scope_test.dart",
+        "test/shared/presentation/widgets/superadmin_form_action_footer_adoption_test.dart"
+      ],
+      "caminhos_pacotes": {
+        "packages/coelo_domain test/forms": "41 PASS",
+        "packages/coelo_api test/forms": "132 PASS"
+      },
+      "existencia_conferida": "os catorze caminhos passados ao comando foram testados com -e antes da execucao; flutter test conta caminho inexistente como UMA falha e nao avisa",
+      "completude_conferida": "pergunta invertida aplicada: varri o repositorio por arquivos de teste que referenciam Formularios ou Cuidado e conferi que cada um cai sob um caminho declarado. Achei DEZESSETE fora do meu caminho original test/features/forms, em TRES arvores alem da minha: rota/shell, core/config e shared. O numero anterior de 808 cobria menos do que eu declarava.",
+      "falhas_enumeradas": [
+        {
+          "quantidade": 8,
+          "arquivo": "features/forms/presentation/{directory,editor,operations,response}/*_golden_test.dart",
+          "natureza": "comparacao de golden, 23 imagens triadas uma a uma",
+          "dono": "meu recorte",
+          "acao": "nenhuma correcao de produto necessaria antes de regravar; ver 2026-09-10-triagem-goldens.md"
+        },
+        {
+          "quantidade": 4,
+          "arquivo": "features/health_care/presentation/health_care_golden_test.dart",
+          "casos": [
+            "matches both sibling directories on mobile light and desktop dark",
+            "matches profile files flyout open",
+            "matches both forms on mobile light and desktop dark",
+            "matches profile directory tabs hover and table evidence"
+          ],
+          "natureza": "comparacao de golden",
+          "dono": "meu recorte",
+          "acao": "sob a mesma politica de nao regravar golden desta rodada"
+        },
+        {
+          "quantidade": 1,
+          "arquivo": "app/router/composition_root_fail_closed_routes_test.dart",
+          "casos": [
+            "model and Forms production routes stay fail-closed"
+          ],
+          "natureza": "CONTRADICAO ENTRE DUAS PROVAS, nao quebra de fail-closed",
+          "dono": "coordenador",
+          "acao": "este teste, tocado por ultimo em ac1676232 de 2026-09-01, exige formsApi.calls == 0 para /forms/form-1/files; forms_fail_closed_routes_test, tocado em 3f5449940 de 2026-09-08 com a mensagem de vincular rotas normais e vida de midia a autorizacao, exige calls == 1 para a mesma familia. O mais novo passa 7/7 e o mais antigo falha na PRIMEIRA assercao, o que faz a contradicao parecer quebra de fail-closed. Nao alterei nada: verificado com arvore limpa."
+        },
+        {
+          "quantidade": 2,
+          "arquivo": "shared/presentation/widgets/superadmin_form_action_footer_adoption_test.dart",
+          "casos": [
+            "all current administrative creation and edit surfaces use the canonical footer",
+            "form-like pages without a footer remain semantic non-form wrappers"
+          ],
+          "natureza": "teste de adocao repo-wide que derivou",
+          "dono": "NAO e do meu recorte",
+          "acao": "a primeira falha aponta principal_happens_publication_page, que e de publicacoes-midia. A segunda compara uma lista fixa de cinco arquivos com nove reais, e entre os novos esta activities/presentation/activity_directory_page, que nao e de Formularios nem de Cuidado. Nenhum arquivo criado por mim nesta rodada entrou na lista."
+        }
+      ],
+      "saida_crua": "03:32 +1080 ~3 -15: Some tests failed."
+    },
+    "numero_2_conjunto": {
+      "recorte": "apps/superadmin inteiro",
+      "resultado": "5350 PASS / 10 SKIP / 206 FAIL",
+      "saida_crua": "18:22 +5350 ~10 -206: Some tests failed.",
+      "base": "8111ebb67",
+      "divergencia_com_o_coordenador": "ele mediu 6370 PASS / 14 SKIP / 144 FAIL sobre 8e230b15a. A minha primeira hipotese, de que o recorte dele incluia os packages, foi REFUTADA por ele: as medicoes dele tambem foram flutter test dentro de apps/superadmin. Resta a segunda: base diferente. A base dele tem as correcoes das outras cinco frentes que a minha branch nao tem. Nao ajustei o meu numero ao dele e nao verifiquei a explicacao rodando sobre a base dele."
+    },
     "analyze": "limpo em lib e test de apps/superadmin",
-    "ambiente": "Windows local; testes controlados nao certificam remoto"
+    "ambiente": "Windows local; testes controlados nao certificam remoto",
+    "sobreposicao_entre_os_numeros": {
+      "regra": "tudo sob apps/superadmin/test ESTA dentro do numero 2, porque o numero 2 e flutter test sem caminho dentro de apps/superadmin",
+      "sobrepostos": "os catorze caminhos de apps/superadmin do numero 1, incluindo os nove de app/router, core/config e shared",
+      "fora_do_numero_2": [
+        "packages/coelo_domain test/forms (41 PASS)",
+        "packages/coelo_api test/forms (132 PASS)"
+      ],
+      "como_somar": "nao somar 1080 com 5350; o unico acrescimo legitimo ao numero 2 sao os 173 casos dos dois pacotes"
+    }
   },
   "reservations_requested": [
     "plataforma comum de midia (question-image / FormsMediaReader / gateway) — compartilhada com publicacoes-midia; peco escritor identificado ou janela serializada antes do item 4",
@@ -1089,5 +1169,20 @@
     "tarefas_em_segundo_plano": [],
     "worktrees_criadas_por_mim": [],
     "nota": "listas vazias sao a lista, nao um adjetivo; nada meu fica de pe"
-  }
+  },
+  "pergunta_ao_owner": {
+    "id": "forms.distribuicao.regras-de-publico",
+    "pergunta": "Quando uma aplicacao tem varias regras de publico, o dialogo de agendamento edita qual delas, e o que acontece com as demais?",
+    "porque_e_pergunta_e_nao_achado": "A correcao aparentemente obvia, preservar as demais, faria o formulario chegar a MAIS GENTE do que a tela mostra. Trocar apagar em silencio por ampliar em silencio e escolher qual dos dois males se prefere, e isso e decisao de produto sobre quem recebe formulario. Corrigir esconderia do Owner que houve escolha.",
+    "alcance": "o unico escritor de regras no Superadmin e esse dialogo e ele escreve uma, entao por esta superficie a aplicacao nunca chega a ter duas; o estado perigoso so existe se as regras vierem de carga inicial, migration ou outro caminho",
+    "evidencia": "docs/reviews/evidence/etapa-2/formularios-cuidado/2026-09-10-regras-de-publico-perdidas.md, commit d1e8069c0"
+  },
+  "nao_verificado": [
+    "Nada remoto: nenhum pacote nominal aplicado, nenhum deploy, nenhum E2E real.",
+    "Os goldens nao foram regravados; a politica da rodada depende de decisao do Owner.",
+    "A hipotese sobre a divergencia entre o meu numero do conjunto e o do coordenador nao foi verificada; eu nao rodei a suite sobre a base dele.",
+    "A perda de regras de publico nao foi reproduzida com dado real de mais de uma regra, porque nao existe caminho no Superadmin que crie a segunda; a conclusao vem da leitura do cliente e das tres migrations.",
+    "Os tres limites de distribuicao sem espelho em Dart nao ganharam teste, porque nenhuma tela os alcanca.",
+    "Nao entrevistei historico de decisao alem do que o Git mostra."
+  ]
 }

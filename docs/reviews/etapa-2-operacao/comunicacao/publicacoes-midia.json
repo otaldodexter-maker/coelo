@@ -1,14 +1,14 @@
 {
-  "revision": 37,
-  "updated_at": "2026-09-10T03:07:00-03:00",
+  "revision": 38,
+  "updated_at": "2026-09-10T03:26:00-03:00",
   "group": "publicacoes-midia",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
-  "status": "active; 30 lotes e 4 documentos; medicao de pre-entrega concluida; nenhuma frente nova",
+  "status": "pre-entrega publicada; medicao final concluida; aguardando congelamento das 04:40",
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-publicacoes-midia",
   "branch": "work/etapa2-noturna-publicacoes-midia",
-  "head": "b69c7d00f",
+  "head": "fbd0c54ac",
   "upstream": "origin/work/etapa2-noturna-publicacoes-midia (0/0)",
   "base": "origin/dev 447e6eea2 mesclado em 3ab29d7df",
   "ack": "coordenador: revisao 1 aceita; lote 1e39b2fcf integrado (merge d502350ce); lote b10f48d1e aceito para a proxima integracao; atribuicao de principal_real_route_test retirada por ele apos minha medicao; reserva da plataforma comum de midia mantida",
@@ -352,6 +352,12 @@
       "state": "publicado",
       "title": "reverificacao do unico negativo das nove dimensoes, com padrao largo e rastreio ate a tela",
       "touches_reserved_files": []
+    },
+    {
+      "sha": "fbd0c54ac",
+      "state": "publicado",
+      "title": "pre-entrega no formato de sete itens, com 96 casos que nunca tinham sido contados",
+      "touches_reserved_files": []
     }
   ],
   "action_ids_touched": [
@@ -369,26 +375,20 @@
     "circulars.detail: rota Principal registrada, separada de /circulars/:circularId/read, com fail-closed sem capacidade e sem sessao"
   ],
   "tests": {
-    "P": 671,
+    "P": 757,
     "F": 23,
     "B": 0,
     "S": 0,
     "U": 0,
-    "metodo": "medicao de PRE-ENTREGA, apos TODOS os lotes, em duas execucoes DISJUNTAS que se somam (nao sao reruns): (1) nove diretorios de feature do recorte mais quatro arquivos de rota = 640 PASS / 23 FAIL; (2) as oito rotas restantes do recorte = 31 PASS / 0 FAIL.",
-    "correcao_de_escopo": "o numero anterior de 638 estava certo como resultado, mas a frase ao lado dele dizia 'oito features mais as seis rotas' e a execucao cobria QUATRO arquivos de rota, sendo doze os do recorte. A diferenca de 638 para 671 e escopo medido, nao regressao nem correcao de codigo. Corrigido no relatorio em 53bfabff9.",
-    "rotas_execucao_2": "principal_happens_composition_gaps, principal_happens_preview_route, principal_moments_publication_media_union, principal_moments_publication_route, principal_moments_route_states, principal_now_authorization_revision, principal_now_preview_route, route_name_uniqueness",
-    "falhas": "as 23 sao TODAS de golden e reproduzem na base sem nenhum lote deste grupo: 10 em principal_happens_preview_golden_test, 11 em principal_moments_preview_golden_test e 2 em circular_directory_golden_test. Fora de golden, zero falhas. Nenhum golden foi regravado. A lista nominal das 23 foi extraida dos marcadores [E] do log, nao do resumo truncado do flutter.",
-    "deno": "remedido na pre-entrega: circular-media 27, moments-media 26, happens-media 15, now-media 14 = 82 PASS / 0 FAIL. Os numeros 25 e 12 que constavam aqui eram anteriores aos testes de ramo R2 e de bytes armazenados.",
+    "metodo": "numero 1 do formato: execucao principal de 684 testes (661 PASS / 23 FAIL) sobre 20 caminhos conferidos por EXISTENCIA antes de rodar, mais o complemento do item 2b de 96 testes (96 PASS / 0 FAIL) em cinco arquivos que estavam fora do meu denominador. Sobreposicao entre as duas: ZERO, por construcao.",
+    "item_2b": "invertida a pergunta: nao 'os caminhos declarados existem' e sim 'existe teste do meu escopo FORA da lista'. Varri o REPOSITORIO INTEIRO, nao so apps/superadmin. Dos 91 arquivos de teste do dominio, 15 caiam fora dos meus 20 caminhos; classificados por CONSUMIDOR e nao por nome: 5 meus, 7 de outras frentes, 3 de fronteira com perfil-para-voce, 1 falso positivo meu (coelo_state_panel_test entrou porque o caminho contem 'feedback', que contem 'feed').",
+    "os_cinco": "principal_publication_frame_test (o frame e consumido por TRES paginas de publicacao minhas mais o compositor) e os quatro de packages/coelo_api/test/media (quatro arquivos meus importam essas classes: repositorios de publicacao de Acontece e Agora, coordenador de upload de Circular, host produtivo)",
+    "direcao_do_erro": "os 96 casos subestimavam APROVADOS e nunca esconderam falha",
+    "item_2c": "sobreposicao ZERO entre todos os pares, verificada de tres formas: numero 1 e numero 2 sao runtimes distintos; os cinco arquivos do 2b nao caem sob nenhum dos 20 caminhos, que foi o criterio que os achou; e dentro da execucao principal as rotas vivem fora das arvores de feature, execucao unica, contagem por ID DE TESTE e nao por linha de log.",
+    "falhas": "as mesmas 23 goldens, enumeradas UMA A UMA no documento de pre-entrega, todas dentro dos meus arquivos, nenhuma de fronteira. Provadas identicas as da base d784462c1, teste a teste.",
+    "deno": "82 PASS / 0 FAIL: circular-media 27, moments-media 26, happens-media 15, now-media 14",
     "analyze": "flutter analyze --no-pub na arvore inteira do superadmin: No issues found",
-    "nao_executado": "nenhuma suite pgTAP executada: o harness sancionado nao replica a cadeia canonica, falhando na 53a migration 20260812002010 com relation app_private.unit_import_source_attestations does not exist",
-    "falhas_provadas_como_preexistentes": {
-      "base": "d784462c1, checkout separado em C:/Users/adrie/AppData/Local/Temp/coelo-base-check",
-      "resultado_na_base": "10 PASS / 23 FAIL nos mesmos tres arquivos de golden",
-      "comparacao": "as duas listas nominais foram extraidas dos marcadores [E] dos logs e comparadas com diff: conjuntos IDENTICOS, teste por teste. Nao e 'o mesmo numero de falhas', sao as mesmas 23.",
-      "por_que_importa": "a entrega inteira depende dessa frase: se alguma das 23 fosse minha, o recorte estaria entregando uma regressao. Estava afirmada a noite toda e so agora foi medida.",
-      "commit": "a6decef0e",
-      "quando": "2026-09-10T01:50-03:00 (medido)"
-    }
+    "nao_executado": "nenhuma suite pgTAP: o harness nao replica a cadeia canonica, falhando na 53a migration 20260812002010"
   },
   "regression_check": {
     "method": "flutter test --no-pub --reporter json test/app/router, comparado com worktree destacada em d784462c1",
@@ -786,11 +786,8 @@
     ],
     "efeito_colateral_positivo": "a frente perfil-para-voce passou a consumir principalMomentsFeedRepository, a mesma instancia que /principal-moments usa, em vez de abrir uma segunda fonte para o mesmo feed",
     "commits_pendentes_de_integracao": [
-      "ecefa32a1",
-      "813210d27",
-      "322ad3f5e",
-      "86ad83423",
-      "7bf6aed75"
+      "b69c7d00f",
+      "fbd0c54ac"
     ],
     "ja_integrados": [
       "05537c3b3",
@@ -943,5 +940,10 @@
       "O censo de goldens mede reachability de WIDGET: se o router constroi a pagina. NAO mede se um golden retrata um ESTADO que nenhuma rota consegue produzir. Um golden pode guardar composicao inalcancavel dentro de pagina alcancavel e eu nao contaria.",
       "As nove dimensoes varridas sao as que eu escolhi. Nao afirmo que sao as nove certas nem que sao suficientes."
     ]
+  },
+  "preEntrega": {
+    "documento": "docs/reviews/etapa-2-operacao/reports/NOTURNA-preentrega-publicacoes-midia.md",
+    "commit": "fbd0c54ac",
+    "formato": "itens 1 a 7 da coordenacao, mais 2b e 2c"
   }
 }
