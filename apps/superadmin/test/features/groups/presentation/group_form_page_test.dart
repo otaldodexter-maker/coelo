@@ -14,6 +14,77 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final phase in ['loaded', 'find', 'context', 'same-props']) {
+    testWidgets('group initial context stays scoped $phase', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1024, 1100));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final delegate = FakeGroupDirectoryRepository(FakeInstitutionDirectoryRepository());
+      final repository = _PendingGroupRepository(delegate);
+      final replacement = _PendingGroupRepository(delegate);
+      final context = await delegate.fetchFormContext();
+      if (phase == 'find') repository.pendingFind = Completer<GroupRecord?>();
+      if (phase == 'context' || phase == 'same-props') {
+        repository.pendingContext = Completer<GroupDirectoryFormContext>();
+      }
+      Widget app(bool changed) => MaterialApp(
+        theme: CoeloTheme.light,
+        home: GroupFormPage(
+          key: const ValueKey('initial-context-form'),
+          repository: changed && phase == 'find' ? replacement : repository,
+          groupId: phase == 'find'
+              ? 'old-group'
+              : changed && phase == 'loaded'
+              ? 'new-group'
+              : null,
+          initialInstitutionId: changed && phase == 'context' ? 'new-institution' : null,
+          initialUnitId: changed && phase == 'context' ? 'new-unit' : null,
+          logout: () async => const LogoutResult.success(),
+          onCancel: () {},
+          onSaved: (_) => fail('No save should complete in this test'),
+        ),
+      );
+      await tester.pumpWidget(app(false));
+      await tester.pump();
+      VoidCallback? retainedSave;
+      if (phase == 'loaded') {
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const Key('group-form-continue')));
+        await tester.pumpAndSettle();
+        await tester.enterText(find.byKey(const Key('group-name-field')), 'Turma anterior');
+        await tester.tap(find.byKey(const Key('step-convites')));
+        await tester.pumpAndSettle();
+        retainedSave = tester
+            .widget<FilledButton>(find.byKey(const Key('group-form-save')))
+            .onPressed;
+      }
+      await tester.pumpWidget(app(true));
+      await tester.pump();
+      final blockedBeforeCompletion = find
+          .byKey(const Key('group-form-save-context-changed'))
+          .evaluate()
+          .isNotEmpty;
+      repository.pendingFind?.complete(null);
+      repository.pendingContext?.complete(context);
+      await tester.pumpAndSettle();
+      retainedSave?.call();
+      await tester.pump();
+      expect(repository.requests, isEmpty);
+      expect(replacement.requests, isEmpty);
+      expect(replacement.contextCalls, 0);
+      if (phase == 'same-props') {
+        expect(repository.contextCalls, 1);
+        expect(find.byKey(const Key('group-form-continue')), findsOneWidget);
+        expect(find.byKey(const Key('group-form-save-context-changed')), findsNothing);
+      } else {
+        if (phase == 'find') expect(repository.contextCalls, 0);
+        expect(blockedBeforeCompletion, isTrue);
+        expect(find.textContaining('Reabra o formulário'), findsOneWidget);
+        expect(find.byType(CircularProgressIndicator), findsNothing);
+        expect(find.byKey(const Key('group-form-continue')), findsNothing);
+      }
+      expect(tester.takeException(), isNull);
+    });
+  }
   for (final change in ['repository', 'groupId', 'institution', 'unit']) {
     testWidgets('group retry rejects changed context $change', (tester) async {
       await tester.binding.setSurfaceSize(const Size(1024, 1100));
@@ -697,6 +768,9 @@ final class _PendingGroupRepository implements GroupDirectoryRepository {
   final GroupDirectoryRepository delegate;
   var pending = Completer<GroupDirectorySaveResult>();
   final requests = <GroupDirectorySaveRequest>[];
+  Completer<GroupRecord?>? pendingFind;
+  Completer<GroupDirectoryFormContext>? pendingContext;
+  int contextCalls = 0;
   @override
   Future<GroupDirectorySaveResult> saveComposition(GroupDirectorySaveRequest request) {
     requests.add(request);
@@ -712,10 +786,13 @@ final class _PendingGroupRepository implements GroupDirectoryRepository {
   Future<GroupDirectoryFilterOptions> fetchFilterOptions({Set<String> institutionIds = const {}}) =>
       delegate.fetchFilterOptions(institutionIds: institutionIds);
   @override
-  Future<GroupDirectoryFormContext> fetchFormContext({String? institutionId}) =>
-      delegate.fetchFormContext(institutionId: institutionId);
+  Future<GroupDirectoryFormContext> fetchFormContext({String? institutionId}) {
+    contextCalls++;
+    return pendingContext?.future ?? delegate.fetchFormContext(institutionId: institutionId);
+  }
+
   @override
-  Future<GroupRecord?> findById(String id) => delegate.findById(id);
+  Future<GroupRecord?> findById(String id) => pendingFind?.future ?? delegate.findById(id);
   @override
   Future<GroupDirectoryExportResult> requestExport(GroupDirectoryQuery query) =>
       delegate.requestExport(query);

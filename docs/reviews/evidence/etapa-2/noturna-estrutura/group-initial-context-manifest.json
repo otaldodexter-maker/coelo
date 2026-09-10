@@ -1,0 +1,96 @@
+﻿{
+    "generated_at":  "2026-09-09T21:59:06.8056868-03:00",
+    "scope":  "apps/superadmin \u003e Turmas \u003e formulario \u003e carregar contexto antes da primeira tentativa",
+    "status":  "local-green",
+    "environment":  "local; sem SQL/remoto",
+    "counts":  {
+                   "S":  0,
+                   "F":  0,
+                   "N":  4,
+                   "B":  0,
+                   "U":  0,
+                   "E":  4,
+                   "P":  4
+               },
+    "changes":  [
+                    "Mudança de repository/groupId/initialInstitutionId/initialUnitId invalida o State também antes da primeira tentativa.",
+                    "Snapshot de repository e IDs em _loadContext; rejeição após cada await e nos catches; não mistura recordA e repositoryB.",
+                    "Painel de contexto precede loading/loadingError/not-found, preservando draft e pedido ambíguo sem reload.",
+                    "Mensagem geral honesta para contexto alterado, sem alegar tentativa que ainda não ocorreu."
+                ],
+    "tests":  [
+                  "loaded: callback retido após troca groupId não grava",
+                  "find: repository trocado durante findById não recebe fetchFormContext",
+                  "context: scope trocado durante contexto mostra bloqueio antes e depois da resposta",
+                  "same-props: reconstrução com mesmos props permite carregamento normal uma única vez"
+              ],
+    "commands":  {
+                     "analyzer":  "rtk proxy dart analyze lib/features/groups/presentation/group_form_page.dart test/features/groups/presentation/group_form_page_test.dart",
+                     "format":  "rtk proxy dart format lib/features/groups/presentation/group_form_page.dart test/features/groups/presentation/group_form_page_test.dart",
+                     "diff":  "rtk git diff --check",
+                     "visual":  "rtk proxy dart run tool/validate_admin_visual_contracts.dart C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura assets/admin-visual-contract-allowlist.json",
+                     "flutter":  "rtk proxy flutter test --no-pub test/features/groups/presentation/group_form_page_test.dart --plain-name \"group initial context stays scoped\" --concurrency=1 --reporter expanded"
+                 },
+    "runners":  [
+                    {
+                        "chunks":  [
+                                       "741465",
+                                       "45451d"
+                                   ],
+                        "result":  "1P3F: ausência de painel. Asserções reordenadas antes do segundo RED para observar request e mistura de repositórios.",
+                        "id":  97232,
+                        "exit":  1
+                    },
+                    {
+                        "chunks":  [
+                                       "e1e4a9",
+                                       "f4a882",
+                                       "c74267"
+                                   ],
+                        "result":  "1P3F: save obsoleto executado; fetchFormContext disparado no repository novo; bloqueio ausente durante contexto pendente.",
+                        "id":  69155,
+                        "exit":  1
+                    },
+                    {
+                        "chunks":  [
+                                       "44a696",
+                                       "b8ab47",
+                                       "fbdafa"
+                                   ],
+                        "result":  "4P0F",
+                        "id":  54619,
+                        "exit":  0
+                    },
+                    {
+                        "chunks":  [
+                                       "d6b3e4",
+                                       "a687b7",
+                                       "403df7",
+                                       "886594"
+                                   ],
+                        "result":  "No issues found!",
+                        "id":  69778,
+                        "exit":  0
+                    },
+                    {
+                        "chunks":  [
+                                       "e0f36d",
+                                       "93a9e0"
+                                   ],
+                        "result":  "Visual contract gate exit0; sem saída adicional",
+                        "id":  59351,
+                        "exit":  0
+                    }
+                ],
+    "evidence":  "Resultados reais via tool runners/report. Saída bruta não persistida em arquivo. Reruns não somados como IDs novos.",
+    "limits":  [
+                   "Sem golden ou E2E remoto; gate visual estático e teste widget real local.",
+                   "10 casos válidos do lote retry anterior não repetidos.",
+                   "Não muda decisões de backend, Auth ou transporte.",
+                   "Reabertura é explícita; nenhuma migração automática de draft entre proprietários."
+               ],
+    "hashes":  {
+                   "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart":  "0030C2BFF29F8B62A291AF1B35FAF72342B6E4F9C09AEE7FAAAD91B7BD2DB024",
+                   "apps/superadmin/lib/features/groups/presentation/group_form_page.dart":  "E672127701D645134EA8D560D9084A9B9DEFD42CEFCA8731BAD5C8DF2931B612"
+               }
+}
