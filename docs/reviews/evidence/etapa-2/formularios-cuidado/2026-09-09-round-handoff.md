@@ -42,10 +42,32 @@ Oito correções de produto. Todas passaram por teste vermelho antes da correç�
    o servidor aceita a partir de 1 quando a pergunta não declara mínimo — o que
    é o caso de toda escala criada neste app.
 
+9. **O intervalo de datas autorado passou a valer também contra si mesmo.** Um
+   intervalo inconsistente, com mínimo depois do máximo, fazia o seletor
+   **estourar**, porque `showDatePicker` afirma que a data final não é anterior
+   à inicial. Agora a pergunta diz que não pode ser respondida.
+10. **A data passou a ser lida do mesmo jeito no campo e no resumo da enviada.**
+    Aparecia `01/03/2026` num lugar e `1/3/2026` no outro.
+11. **A escolha passou a ser lida pelo rótulo, não pelo id interno.** O resumo
+    da enviada mostrava `option-2` para quem respondeu. Além de ilegível,
+    expunha identificador interno — o que o teste do detalhe de resposta, na
+    superfície de operações, já proíbe explicitamente.
+
 Mais duas correções fora do fluxo de resposta: o **gateway de backend** passou a
 converter falha de transporte em falha declarada, em vez de deixar escapar uma
 exceção de plataforma que carrega o endereço e a URI do backend; e os **dois
 exemplos de catálogo** de Formulários passaram a descrever o comportamento novo.
+
+# Uma segunda lente: comparar duas telas que mostram o mesmo dado
+
+As correções 5, 10 e 11 saíram de comparar a tela de **resposta** com o
+**detalhe de resposta** em operações. Nas três, operações já fazia certo e a
+resposta ficara com a versão antiga da formatação: dinheiro dividido sem
+formatar, data sem zeros, escolha como id. Não é descuido pontual, é
+sedimentação — a superfície escrita depois recebeu mais cuidado de apresentação.
+
+Onde existem duas telas que mostram o mesmo dado, compará-las rende mais que
+auditar uma.
 
 # O padrão por trás de cinco delas
 
@@ -64,6 +86,23 @@ Depois de entregar, reli linha a linha o código que eu mesmo havia escrito.
 Sete defeitos, seis deles meus, **nenhum** pego pela suíte — todos haviam
 passado por RED, correção e regressão completa sem aparecer. Estão em
 `d4c997375`. O argumento prático: suíte verde não substitui reler o diff.
+
+# Uma segunda releitura do próprio diff
+
+Reli também o que escrevi **depois** da primeira releitura. Rendeu um achado, e
+foi um estouro: ao honrar o intervalo de datas eu tratei a resposta guardada
+fora do intervalo e não tratei o intervalo ser inconsistente.
+
+O rendimento cai da primeira para a segunda passada e não vai a zero, e o que
+sobra tende a ser mais grave, porque o barato saiu na primeira.
+
+O critério que separou o que corrigi do que apenas registrei: **latente com
+custo de crash não é a mesma coisa que latente com custo de recusa**. Três
+pendências latentes ficaram registradas sem correção — contagem de seleções de
+múltipla escolha sem verificação no cliente, escala com faixa invertida gerando
+zero opções, e escolha com lista vazia — porque nenhuma é produzível pelo editor
+atual e todas custam uma recusa, não uma tela quebrada. Isso prioriza; não as
+absolve.
 
 # O que NÃO fecha, e por quê
 
@@ -93,11 +132,29 @@ passado por RED, correção e regressão completa sem aparecer. Estão em
 
 | Suíte | Base `d784462c1` | Com a entrega |
 | --- | ---: | ---: |
-| `apps/superadmin` completo | 5225 PASS / 209 FAIL / 7 SKIP | 5294 PASS / 209 FAIL / 7 SKIP |
-| Formulários + contratos de rota | 699 PASS / 11 FAIL | 794 PASS / 9 FAIL |
+| `apps/superadmin` completo | 5225 PASS / 209 FAIL / 7 SKIP | 5326 PASS / 207 FAIL / 10 SKIP |
+| Formulários + contratos de rota | 699 PASS / 11 FAIL | 797 PASS / 9 FAIL |
 
-As mesmas 209 falhas nas duas pontas do app inteiro: **zero regressão**, medida
-e não deduzida. As duas falhas que saíram do recorte eram um teste de contrato
+O app inteiro reconcilia item a item: **+101 testes**, **duas falhas a menos** —
+os dois testes de contrato obsoletos — e **três marcados com motivo**, que são o
+diretório de Formulários e os dois de Cuidado. Nenhum número sobrando, e
+**zero regressão**, medida e não deduzida.
+
+## O recorte sobre a base integrada
+
+O mesmo comando, `test/features/forms` e `test/features/health_care` juntos,
+rodado dos dois lados:
+
+| Base | Resultado |
+| --- | ---: |
+| `origin/dev` em `6811e453e` | 979 PASS / 13 FAIL / 3 SKIP |
+| esta branch em `0de24d014` | 982 PASS / 13 FAIL / 3 SKIP |
+
+Mesmas 13 falhas e mesmos 3 marcados. A diferença de exatamente três testes é o
+último commit, ainda não integrado, que adiciona dois casos de faixa de
+`maxLength` e um de fidelidade do preview. O recorte se comporta igual com os
+lotes das outras sete frentes juntos: não há surpresa de integração guardada
+para o fechamento. As duas falhas que saíram do recorte eram um teste de contrato
 obsoleto, nunca defeito de produto. As 9 restantes são comparações de golden, e
 a rodada não regrava golden.
 
@@ -116,6 +173,31 @@ nenhum no código do recorte: a alça de redimensionar coluna expõe 12x56 px, e
 botão de menu do usuário do shell expõe 242x44 px. O segundo nunca havia
 aparecido porque `superadmin_shell_accessibility_test` verifica rótulo e **não**
 tamanho de alvo.
+
+# Invariantes de segurança do AGENTS.md
+
+Conferidas contra esta entrega, uma a uma.
+
+- **Regra de negócio validada no backend.** Nenhuma validação foi movida para o
+  cliente: o que eu liguei espelha regra que o servidor já aplicava, e serve
+  para falhar cedo e explicar. Encontrei uma violação existente e **não** a
+  corrigi, porque é migration nova: o gate estrutural de publicação é só do
+  cliente. `app_private.form_publish` confere ator, existência,
+  `expected_version` e versão de trabalho, e não valida título, ordem,
+  obrigatórios nem as regras de Enquete rápida. A autorização está correta e é
+  server-side; o que é client-only é a validação estrutural.
+- **IDs e parâmetros do cliente não confiáveis.** Nenhum caminho novo confia em
+  ID vindo do cliente. Retirei o único hunk que teria composto uma rota nova.
+- **Inputs limitados no servidor.** Verificado: `form_replace_response_answers`
+  recusa texto acima do máximo, número fora da faixa, data fora do intervalo,
+  escala fora dos limites, contagem de seleções e contagem de arquivos.
+- **Nenhum segredo em Git, log ou URL.** Varri o diff inteiro: nenhum valor de
+  credencial. E **corrigi** um vazamento real — a exceção crua de transporte
+  carregava o endereço e a URI do backend, capturados literalmente pelo teste.
+  Não há `print`, `debugPrint` ou log em nenhum dos dois recortes, e o ticket de
+  download já tinha `toString` redigido.
+- **Rotas não entregam dado antes da autorização.** Nenhuma rota foi alterada;
+  o router tem zero alteração líquida nesta branch.
 
 # Goldens
 
