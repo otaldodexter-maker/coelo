@@ -1,5 +1,5 @@
 {
-  "revision": 17,
+  "revision": 18,
   "round": "E2-NOTURNA-20260909",
   "role": "Coordenacao e Integracao - Claude",
   "writer": "coordenador-claude",
@@ -8,7 +8,7 @@
   "app": "Claude Code (VS Code)",
   "model": "claude-opus-5[1m]",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-09T22:25:00-03:00",
+  "updatedAt": "2026-09-09T22:12:00-03:00",
   "clockCorrection": {
     "referenceNow": "2026-09-09T19:03:25-03:00",
     "measuredBy": "date no checkout integrador",
@@ -30,7 +30,7 @@
   "base": {
     "root": "C:/Users/adrie/Documents/Coelo",
     "branch": "dev",
-    "head": "59c842b32",
+    "head": "0c75d9fa5",
     "previousHead": "d784462c168d22fdb7090b7de1ef7db554ad5107",
     "upstream": "origin/dev",
     "divergence": "0/0",
@@ -823,5 +823,24 @@
     "porQueImporta": "Sao contratos que afirmam que a composicao produtiva de Atividades so recebe dependencias injetadas e fail-closed. Um deles diz literalmente que as rotas produtivas usam SOMENTE o repositorio de diretorio injetado. Se a composicao de Locais e do catalogo passou a injetar algo ali, o contrato precisa ser reconciliado deliberadamente, com o motivo escrito, ou a composicao precisa voltar ao que o contrato exige. As duas saidas sao aceitaveis; deixar vermelho sem decisao nao e.",
     "oQuePeço": "Antes de congelar: reproduza os tres, diga se a composicao nova e deliberada, e ou ajuste a composicao ou reconcilie o contrato explicando no proprio teste por que o limite mudou. Se nao couber antes das 23:10, registre no seu <grupo>.json com essa leitura e eu assumo o residual — mas nao feche sem registrar.",
     "naoConfundir": "O terceiro caso, assessment settings and pedagogical command fields remain wired, e o inverso dos outros dois: ele exige que campos CONTINUEM ligados. Verifique se a composicao nova desligou algo em vez de ligar demais."
+  },
+  "prioridadeParaAcessosPessoas": {
+    "assunto": "/dev/safety e a tela com o pior conjunto de problemas do app inteiro, e e MVP sobre dados de crianca",
+    "fonte": "operacoes-sistema, matriz de reflow do app inteiro (commit e2739adc9) mais a varredura de diretrizes nativas (2cba8068d)",
+    "oQueFoiMedido": [
+      "Transborda nas DUAS larguras com texto PADRAO a 100%, sem o usuario ampliar nada.",
+      "Falha nas TRES diretrizes nativas de acessibilidade: rotulo de alvo, tamanho de alvo Android e contraste.",
+      "Era a tela que expirava no instrumento antigo por permanecer em carregamento na composicao de desenvolvimento, o que e suspeito por si: uma tela de desenvolvimento que nao resolve o carregamento com dados semeados."
+    ],
+    "porQuePriorizar": "A outra tela que falha nas tres, /dev/imports, esta adiada pos-MVP, o que atenua. Seguranca infantil NAO tem esse atenuante. Se houvesse uma unica tela do app para olhar, seria esta.",
+    "limite": "Nenhuma causa foi investigada e a composicao nao foi aberta: e triagem por medicao, feita por outra frente, e pertence a voces.",
+    "seNaoCouber": "Registre no seu <grupo>.json antes do congelamento das 23:10 com essa leitura, e eu levo ao Owner como prioridade da proxima rodada."
+  },
+  "contextoDaMatrizDeReflow": {
+    "resultado": "132 casos, 33 telas por duas larguras por duas escalas. A 100%: 61 de 66 passam. A 200%: 59 de 66.",
+    "leituraPrincipal": "O problema e CONCENTRADO e nao sistemico: 28 das 33 telas passam nas duas larguras e nas duas escalas. Isso derruba a hipotese de fragilidade geral do Design System. Nao e refatoracao de sistema, sao quatro ou cinco telas com geometria especifica.",
+    "estadoPadrao": "Tres telas quebram sem ampliacao nenhuma: /dev/safety e /dev/imports nas duas larguras, /dev/agenda em largura de telefone.",
+    "larguraImporta": "Planos quebra so em 1440 e Cardapios so em 375. Terceira confirmacao, agora com amostra do app inteiro: verificar reflow numa largura so nao e verificar reflow.",
+    "limites": "Mede ausencia de excecao na abertura, em tema claro, sem interacao nem navegacao interna. Tema escuro foi medido a parte e nao foi fator em nenhum caso."
   }
 }
