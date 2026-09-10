@@ -31,7 +31,7 @@ function Get-FReadDerivedHash([string]$Path) {
 # This descriptor permits one local four-character materialization only.
 # It neither changes the canonical parent selection nor authorizes execution.
 $descriptorFile = Assert-FReadDerivedFile (Join-Path $PSScriptRoot 'profile.json')
-if ((Get-FReadDerivedHash $descriptorFile.FullName) -cne '4545585ed64dd72e98d2f70c08fa23141d7a60f25c61d2dfc6b74419dc03a5f5') {
+if ((Get-FReadDerivedHash $descriptorFile.FullName) -cne '449186e4598522945baabad162caf5700bcd6d01dde0e8de360d8f668ecab04a') {
   throw 'FReadDirectoryContractRedDerived descriptor hash mismatch'
 }
 $descriptor = [IO.File]::ReadAllText($descriptorFile.FullName) | ConvertFrom-Json

@@ -32,7 +32,7 @@ function Get-N01Hash([string]$Path) {
 # This exact diagnostic descriptor is not an extension mechanism or a lease.
 # Changing any metadata, bridge, name, count or digest requires another review.
 $descriptorFile = Assert-N01File (Join-Path $PSScriptRoot 'profile.json')
-if ((Get-N01Hash $descriptorFile.FullName) -cne '4907bca493852aabf388806c56bec617fcb7479190bc09be6ab1392c7e004ac8') {
+if ((Get-N01Hash $descriptorFile.FullName) -cne '0f20047141c6d3f23e324f6a05fa21dd05f15d271f7bbe7ca45f63708819bfac') {
   throw 'N01PrerequisitesRed descriptor hash mismatch'
 }
 $descriptor = [IO.File]::ReadAllText($descriptorFile.FullName) | ConvertFrom-Json
@@ -56,7 +56,7 @@ $baseEntries = @(Get-Content -LiteralPath $manifestFile.FullName | Where-Object 
 })
 if ($baseEntries.Count -ne $descriptor.base.selected_canonical_count -or
     @($descriptor.extra_bridges).Count -ne 0) {
-  throw 'N01PrerequisitesRed requires Auth45 and zero extra bridges'
+  throw 'N01PrerequisitesRed requires Auth46 and zero extra bridges'
 }
 $canonicalEntries = @($baseEntries) + @($descriptor.canonical_additions)
 $preflightEntries = @($descriptor.inherited_preflights)

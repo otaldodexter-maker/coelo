@@ -37,10 +37,10 @@ if ($TargetVersion -cne '20260908182839') {
 }
 $baseResolver = Assert-ModelAal1File (Join-Path $packageRoot 'replay\profiles\ModelReadAuthorizationGreen\Resolve-ModelReadAuthorizationGreen.ps1')
 $baseProfile = & $baseResolver.FullName -TargetVersion '20260908021821'
-if (@($baseProfile.Canonical).Count -ne 48 -or
+if (@($baseProfile.Canonical).Count -ne 49 -or
     @($baseProfile.Preflight).Count -ne 2 -or
     @($baseProfile.Additional).Count -ne 3) {
-  throw 'ModelAal1PhasePolicy requires the unchanged Model READ profile with 50 inputs'
+  throw 'ModelAal1PhasePolicy requires the unchanged Model READ profile with 51 inputs'
 }
 $candidateName = '20260908182839_access_profile_models_aal1_phase_policy.sql'
 $candidate = Assert-ModelAal1File (Join-Path (Join-Path $packageRoot 'migrations') $candidateName)
@@ -50,10 +50,10 @@ if ((Get-ModelAal1Hash $candidate.FullName) -cne 'b88a0f82ba07f21eba60171c681852
 $canonical = @(@($baseProfile.Canonical) + @($candidate) | Sort-Object Name)
 $allInputs = @($canonical) + @($baseProfile.Preflight)
 $versions = @($allInputs | ForEach-Object { $_.Name.Substring(0, 14) })
-if ($canonical.Count -ne 49 -or $allInputs.Count -ne 51 -or
-    @($versions | Sort-Object -Unique).Count -ne 51 -or
+if ($canonical.Count -ne 50 -or $allInputs.Count -ne 52 -or
+    @($versions | Sort-Object -Unique).Count -ne 52 -or
     ($versions | Sort-Object)[-1] -cne $TargetVersion) {
-  throw 'ModelAal1PhasePolicy requires 49 unique canonical migrations and two inherited preflights'
+  throw 'ModelAal1PhasePolicy requires 50 unique canonical migrations and two inherited preflights'
 }
 [pscustomobject]@{
   Canonical = $canonical

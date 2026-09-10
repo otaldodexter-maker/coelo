@@ -33,7 +33,7 @@ function Get-A01AuditGreenHash([string]$Path) {
 # This exact diagnostic descriptor is not an extension mechanism or a lease.
 # Changing any metadata, bridge, name, count or digest requires another review.
 $descriptorFile = Assert-A01AuditGreenFile (Join-Path $PSScriptRoot 'profile.json')
-if ((Get-A01AuditGreenHash $descriptorFile.FullName) -cne 'bbd606be64e366502d84389f4a66e9e32ba500f29b043c5cf21cb332a14424ba') {
+if ((Get-A01AuditGreenHash $descriptorFile.FullName) -cne 'a615fa191ecac8fbf8253ef1c0485a357fcb2a423638441601899d54e6a7916e') {
   throw 'A01DirectoryAuditGreen descriptor hash mismatch'
 }
 $descriptor = [IO.File]::ReadAllText($descriptorFile.FullName) | ConvertFrom-Json
@@ -57,7 +57,7 @@ $baseEntries = @(Get-Content -LiteralPath $manifestFile.FullName | Where-Object 
 })
 if ($baseEntries.Count -ne $descriptor.base.selected_canonical_count -or
     @($descriptor.extra_bridges).Count -ne 0) {
-  throw 'A01DirectoryAuditGreen requires Auth45 and zero extra bridges'
+  throw 'A01DirectoryAuditGreen requires Auth46 and zero extra bridges'
 }
 $canonicalEntries = @($baseEntries) + @($descriptor.canonical_additions)
 $preflightEntries = @($descriptor.inherited_preflights)

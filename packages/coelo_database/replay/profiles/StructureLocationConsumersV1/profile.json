@@ -2,13 +2,13 @@
   "id": "StructureLocationConsumersV1",
   "parent": {
     "id": "LocationReservationsV1",
-    "descriptor_sha256_crlf_utf8": "611fde347e1324b90c9d8af438ef062f2ec19aa25e74e330d0e11caec1401f85",
-    "resolver_sha256_crlf_utf8": "878d566ebbfc09c93331ae24ca9f486c95d16f970d6304aca5f19ea143d2d15c"
+    "descriptor_sha256_crlf_utf8": "9c8453dc4d9b2b0ee09c4b37b533fe2abd4bbc6a0bde76fb6e753ae7670d6d2c",
+    "resolver_sha256_crlf_utf8": "68ac743402437becd62a6f9c2df715b9aa4c3bcb739c1f841e59abfd665c2596"
   },
   "companion": {
     "id": "ActivityAggregateConcurrencyClock",
-    "descriptor_sha256_crlf_utf8": "a1b92a382fcc9f47bbd5c7dc4f3c05a7db679b5ae663ba6b964ca90e745af15c",
-    "resolver_sha256_crlf_utf8": "36cc35a4946993fd2cefcd9f0f60bce25f3baf8877c4e090120e56e257bdd8d1",
+    "descriptor_sha256_crlf_utf8": "ff02d9402aeb62ff4423d38e8d7ef6a8208af4fb58116ffadf307000a9b6e275",
+    "resolver_sha256_crlf_utf8": "7e6ede81abaaccb33786bd06f04f9b3b47ce59a106f624b90a4467420f9856e5",
     "reason": "20260909200000 declara no cabecalho que se aplica sobre a uniao revisada ActivityAggregateConcurrencyClock + reservas; sozinho, LocationReservationsV1 nao traz superadmin_activity_save_v2 nem os recibos do agregado."
   },
   "canonical_additions": [
@@ -28,12 +28,12 @@
   "target_version": "20260909210000",
   "extra_bridges": [],
   "planned_counts": {
-    "parent_canonical": 59,
-    "companion_canonical": 55,
-    "union_canonical": 64,
-    "canonical": 67,
+    "parent_canonical": 60,
+    "companion_canonical": 56,
+    "union_canonical": 65,
+    "canonical": 68,
     "preflight": 2,
     "bootstrap": 3,
-    "total": 72
+    "total": 73
   }
 }
