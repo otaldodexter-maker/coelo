@@ -1885,6 +1885,23 @@ negligência sobre uma frente que não errou nada.
 número errado, mas **uma narrativa plausível sobre a conduta de outra pessoa**. E o
 alarme foi na direção que faz agir.
 
+### Seis frentes com a mesma assinatura
+
+Uma frente foi isolar o próprio trabalho para responder à pergunta da atribuição e
+usou o caminho óbvio: filtrar o histórico pelo autor. **Não isola nada.** As seis
+frentes commitam com a mesma identidade Git neste checkout, e a varredura devolveu
+arquivos de todas — de saúde, de perfil, de importações, de locais. A frente quase
+respondeu sobre trabalho alheio como se fosse seu, **na pergunta que existe
+justamente para achar trabalho alheio sem dono**.
+
+Refez sobre a lista de commits registrados como seus, que é a única coisa que de
+fato a identifica. E a classe é a mesma da noite inteira em roupa nova: **identidade
+presumida em vez de derivada** — o filtro respondia "quem assinou", e a pergunta era
+"quem fez".
+
+Vale para qualquer rodada com várias frentes na mesma máquina: se alguém delimitou
+o próprio trabalho por autor, mediu o de todo mundo.
+
 ### O único número que diz se as correções da noite funcionaram
 
 Às 02:11 uma frente estava com quarenta minutos de deriva de relógio. Às 03:00 eu
