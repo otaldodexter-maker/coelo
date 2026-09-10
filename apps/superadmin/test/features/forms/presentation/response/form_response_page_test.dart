@@ -2207,6 +2207,100 @@ void main() {
     expect(find.byKey(const Key('form-response-submit')), findsOneWidget);
   });
 
+  // A definicao de "respondida" para um item obrigatorio existe em DUAS
+  // implementacoes: `_hasAnswer` na pagina e o `case` de
+  // app_private.form_assert_required_response_answers, na migration
+  // 20260813155121. Conferi clausula por clausula e elas concordam hoje:
+  // texto curto exige conteudo apos aparar, escolha exige opcao selecionada,
+  // foto e galeria exigem anexo, e TODO O RESTO conta como respondido pela
+  // simples presenca. Nada travava essa concordancia.
+  //
+  // Uma diferenca conhecida e deliberada: `String.trim()` do Dart apara todo
+  // espaco Unicode, enquanto `btrim` do Postgres sem segundo argumento apara
+  // apenas o espaco comum. Um texto so com tabulacao seria vazio aqui e
+  // preenchido la. A divergencia so existe no sentido seguro — o cliente e
+  // sempre igual ou MAIS estrito — entao ela nunca deixa passar algo que o
+  // servidor recusaria. Nao e defeito e nao deve ser "corrigida" para igualar.
+  //
+  // A escolha UNICA vazia nao aparece aqui porque o dominio nao a
+  // representa: FormAnswer.singleChoice exige um optionId, entao o estado que
+  // o servidor recusa e inconstruivel antes de chegar a esta camada. Essa e a
+  // trava mais forte que um teste, e por isso nao precisa de um.
+  _ResponseApi requiredApi(FormItemKind kind, FormAnswer? answer) => _ResponseApi(
+    items: [
+      FormItem(
+        id: 'required',
+        kind: kind,
+        label: 'Required',
+        position: 0,
+        isRequired: true,
+      ),
+    ],
+    initialAnswers: answer == null ? const {} : {'required': answer},
+  );
+
+  Future<bool> reviewOpens(WidgetTester tester, _ResponseApi api) async {
+    await tester.pumpWidget(
+      MaterialApp(home: FormResponsePage(api: api, occurrenceId: 'occurrence-1')),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('form-response-review')));
+    await tester.pumpAndSettle();
+    return find.text('Revis\u00e3o da resposta').evaluate().isNotEmpty;
+  }
+
+  // ANEXO OBRIGATORIO NAO PASSA POR _hasAnswer, e isso so apareceu porque a
+  // verificacao por mutacao acusou. Eu tinha escrito estes dois casos afirmando
+  // apenas que a revisao nao abre; eles ficaram verdes, e continuaram verdes
+  // depois de eu quebrar de proposito a clausula de anexo de _hasAnswer. Verde
+  // pelo motivo errado.
+  //
+  // O que realmente guarda foto e galeria obrigatorias e um ramo anterior e
+  // proprio de _itemValidationMessage, que nem chega a consultar _hasAnswer: a
+  // superficie ainda nao tem envio protegido, entao QUALQUER foto ou galeria
+  // obrigatoria bloqueia a revisao, com ou sem anexo. As afirmacoes passam a
+  // ser sobre esse mecanismo, e nao sobre o efeito generico.
+  for (final kind in [FormItemKind.photo, FormItemKind.gallery]) {
+    testWidgets('a required $kind blocks review while upload is unavailable', (tester) async {
+      final api = requiredApi(
+        kind,
+        kind == FormItemKind.photo
+            ? FormAnswer.photo(itemId: 'required', assetIds: const [])
+            : FormAnswer.gallery(itemId: 'required', assetIds: const []),
+      );
+      expect(await reviewOpens(tester, api), isFalse);
+      expect(api.submitCommand, isNull);
+      // A pessoa precisa saber que o impedimento e da superficie e nao dela.
+      expect(find.textContaining('envio protegido'), findsWidgets);
+    });
+  }
+
+  // O arm mais sutil da regra, e o unico que protege contra excesso de zelo.
+  // O servidor diz `else true`: para os demais tipos, a presenca da resposta
+  // basta. Um "Nao" e uma resposta, e um zero e uma resposta. Quem "melhorasse"
+  // _hasAnswer para tratar falso ou zero como vazio bloquearia no cliente um
+  // envio que o servidor aceita, e a pessoa ficaria sem conseguir enviar um
+  // formulario correto.
+  testWidgets('a negative answer satisfies a required yes-no', (tester) async {
+    final api = requiredApi(
+      FormItemKind.yesNo,
+      FormAnswer.yesNo(itemId: 'required', value: false),
+    );
+    expect(await reviewOpens(tester, api), isTrue);
+  });
+
+  testWidgets('zero satisfies a required number', (tester) async {
+    final api = requiredApi(
+      FormItemKind.integer,
+      FormAnswer.integer(itemId: 'required', value: 0),
+    );
+    expect(await reviewOpens(tester, api), isTrue);
+  });
+
+  testWidgets('a missing answer never satisfies a required item', (tester) async {
+    expect(await reviewOpens(tester, requiredApi(FormItemKind.yesNo, null)), isFalse);
+  });
+
   testWidgets('an item without authored selection limits keeps every option open', (tester) async {
     await open(tester, choiceApi());
     await tapChip(tester, 'Primeira');
