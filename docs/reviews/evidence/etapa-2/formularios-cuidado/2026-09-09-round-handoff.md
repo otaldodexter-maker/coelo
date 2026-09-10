@@ -5,6 +5,31 @@ status: "delivered-local; remote-pending"
 generated_at: "2026-09-09"
 ---
 
+# Estado final, medido em 2026-09-10
+
+Este cabeçalho existe para que quem abrir o documento não precise procurar o
+número atual entre as seções — o restante do texto foi escrito ao longo da
+rodada e algumas passagens estão marcadas como superadas onde o leitor as
+encontra.
+
+- **Recorte corrigido**: `1081 PASS / 3 SKIP / 14 FAIL` sobre a base integrada
+  `3fb200dab`. Das catorze, **doze são do recorte e todas são comparação de
+  golden**, triadas imagem a imagem; as duas restantes são de
+  `superadmin_form_action_footer_adoption`, que não pertence a este grupo.
+  Nenhuma exige correção de produto antes de regravar.
+- **O caminho declarado estava furado** durante a rodada: `test/features/forms`
+  não era o recorte. Dezessete arquivos de teste do grupo vivem fora dele, em
+  três árvores — rota/shell, `core/config` e `shared`.
+- **Perguntas ao Owner**, nenhuma delas corrigível sem decisão: as regras de
+  público apagadas ao salvar um agendamento; o autosave do editor construído e
+  inalcançável; e de onde vem uma definição com limites de seleção, se nenhum
+  autor os define pela interface.
+- **Quatro linhas de bloqueio deste grupo estavam erradas**, e as quatro eram
+  as copiadas do rastreador sem teste.
+- Documentos desta madrugada: `2026-09-10-metodo-e-autocorrecao.md`,
+  `2026-09-10-triagem-goldens.md` e
+  `2026-09-10-regras-de-publico-perdidas.md`.
+
 # Recorte e limites
 
 `apps/superadmin`: Formulários (autoria, editor, respostas, arquivos, XLSX),
