@@ -1,6 +1,6 @@
 {
-  "revision": 36,
-  "updated_at": "2026-09-10T02:44:02-03:00",
+  "revision": 37,
+  "updated_at": "2026-09-10T03:07:00-03:00",
   "group": "publicacoes-midia",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
@@ -8,7 +8,7 @@
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-publicacoes-midia",
   "branch": "work/etapa2-noturna-publicacoes-midia",
-  "head": "7bf6aed75",
+  "head": "b69c7d00f",
   "upstream": "origin/work/etapa2-noturna-publicacoes-midia (0/0)",
   "base": "origin/dev 447e6eea2 mesclado em 3ab29d7df",
   "ack": "coordenador: revisao 1 aceita; lote 1e39b2fcf integrado (merge d502350ce); lote b10f48d1e aceito para a proxima integracao; atribuicao de principal_real_route_test retirada por ele apos minha medicao; reserva da plataforma comum de midia mantida",
@@ -917,5 +917,31 @@
       "commit": "7bf6aed75"
     },
     "saldo": "as tres afirmacoes resistiram. O valor da reverificacao nao foi derrubar nenhuma, foi trocar evidencia estreita por evidencia rastreada ate a superficie em tres afirmacoes que sustentam decisao do Owner."
+  },
+  "oQueNaoVerifiquei": {
+    "nota": "item 7 do formato de pre-entrega, escrito ANTES do numero final para nao ser aparado por ele. Declarado, nao omitido.",
+    "banco_de_dados": [
+      "NENHUMA suite pgTAP foi executada nesta rodada. O harness sancionado nao consegue replicar a cadeia canonica: falha na 53a migration, 20260812002010, porque app_private.unit_import_source_attestations nunca e criada. Sem banco de pe, nenhum teste de RPC, RLS ou policy do meu recorte foi exercido.",
+      "Os seis candidatos SQL foram revisados LINHA A LINHA e nunca executados em lugar nenhum. Nao afirmo nada sobre o comportamento deles em tempo de execucao, inclusive as correcoes que eu mesmo propus, como a unificacao da negacao em withdraw_happens_post.",
+      "Acesso cruzado entre tenants nao foi testado em tempo de execucao. As leituras que fiz sao do texto das funcoes, nao de um servidor respondendo."
+    ],
+    "producao_e_remoto": [
+      "NENHUMA mutacao remota foi aplicada. Nenhum pacote nominal foi autorizado a mim e eu nao apliquei nenhum.",
+      "Nao afirmo nada sobre o comportamento em PRODUCAO de nada do recorte. Onde eu havia afirmado, retratei durante a noite e a ressalva esta propagada no relatorio, nos 30 deltas e nos achados: sem evidencia, inverificavel daqui.",
+      "As quatro edge functions foram testadas com dependencias INJETADAS (envGet, createClient, createR2). Nenhuma foi implantada, e nenhuma foi exercida contra um R2 real. O ramo R2 de happens-media e now-media esta pronto e RETIDO ate a RPC devolver storage_provider."
+    ],
+    "visual": [
+      "As 23 falhas de golden foram provadas PREEXISTENTES, nominalmente, mas a CAUSA visual delas nao foi diagnosticada. Nao sei o que mudou nas imagens; sei que nao fui eu.",
+      "Nenhum golden foi regravado, por decisao da coordenacao. Portanto nenhuma das 23 esta 'resolvida'."
+    ],
+    "wip_retido": [
+      "O patch de copia previa esta preparado na branch work/etapa2-noturna-copia-previa em 80f160599, publicado, e NAO foi mesclado. Nao foi testado sobre a dev atual.",
+      "O documento de desenho do catalogo de midia e desenho: nao existe implementacao correspondente e eu nao a escrevi."
+    ],
+    "limites_do_meu_proprio_metodo": [
+      "A conferencia de citacoes cobre os MEUS quatro documentos e este JSON. Nao conferi documentos de outras frentes.",
+      "O censo de goldens mede reachability de WIDGET: se o router constroi a pagina. NAO mede se um golden retrata um ESTADO que nenhuma rota consegue produzir. Um golden pode guardar composicao inalcancavel dentro de pagina alcancavel e eu nao contaria.",
+      "As nove dimensoes varridas sao as que eu escolhi. Nao afirmo que sao as nove certas nem que sao suficientes."
+    ]
   }
 }

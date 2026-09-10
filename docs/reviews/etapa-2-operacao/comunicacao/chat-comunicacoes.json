@@ -1,6 +1,6 @@
 {
-  "revision": 42,
-  "updated_at": "2026-09-10T02:55:00-03:00",
+  "revision": 43,
+  "updated_at": "2026-09-10T03:06:00-03:00",
   "group": "chat-comunicacoes",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) - claude-opus-5[1m]",
@@ -762,5 +762,16 @@
     "dois_erros_meus_que_o_teste_pegou": "Primeiro, supus que a tabela expusesse a chave crua; ela vem prefixada pelas chaves derivadas da tabela administrativa, entao o finder passou a aceitar a chave que CONTEM o identificador. Segundo, afirmei que as tres comunicacoes apareceriam nas duas larguras; no estreito a paginacao mostra menos por pagina, e a afirmacao correta e sobre as visiveis.",
     "regressao": "Suite de notices na branch: 128 PASS / 3 FAIL, sendo os 3 exatamente os goldens ja conhecidos. Nenhuma regressao.",
     "para_o_integrador": "Branch isolada, nao mexi em superadmin_router.dart nem em arquivo reservado. Pode ser integrada ou descartada sem afetar o resto da minha entrega."
+  },
+  "entrega_troca_de_conversa_no_celular": {
+    "branch": "work/etapa2-noturna-chat-volta-mobile, publicada em origin, sobre 18d0127ed",
+    "commit": "05fdcf2d5 test(chat): prove the operator can switch conversations on a phone",
+    "medicao_que_originou": "/communication/conversations tem 8 chaves de conversa a 1440x900 e ZERO a 375x812. No estreito a tela mostra a conversa NO LUGAR da caixa de entrada, entao existe exatamente um caminho de volta a lista.",
+    "risco": "Se esse unico caminho falhar, o operador fica preso na conversa que a tela escolheu para ele: sem erro, sem tela vermelha e sem sintoma nenhum num teste de composicao.",
+    "mudanca": "O controle de volta ganhou key 'superadmin-chat-back-to-inbox'. Antes so era alcancavel pelo texto do tooltip, que e rotulo de interface e muda sem aviso.",
+    "o_que_o_teste_mede": "O efeito operacional: entrar no estreito abre uma conversa e nao mostra a lista; voltar mostra MAIS DE UMA conversa, que e o minimo para haver troca, e nao sai da rota; abrir uma conversa DIFERENTE da escolhida pela tela substitui a lista. O segundo caso e o contraste no largo, onde lista e conversa convivem e o controle nao aparece.",
+    "verificacao_por_mutacao": "Trocando o onPressed por callback vazio, o caso do estreito falha em 'a value greater than <1>, actual <0>'. O teste pega regressao de comportamento e nao apenas ausencia de chave.",
+    "regressao": "Suite de chat na branch: 195 PASS / 9 FAIL, sendo as 9 os goldens ja conhecidos.",
+    "falso_alarme_que_eu_evitei": "Uma sonda minha tocou a chave 'superadmin-chat-back' e caiu em /institutions, o que parecia defeito grave. Fui ao codigo antes de reportar: aquele e o 'Voltar' de PAGINA (widget.onBack), nao o 'Voltar para conversas'. Peguei a chave pelo nome sem conferir que era o controle do tooltip."
   }
 }
