@@ -1355,6 +1355,36 @@ enquanto o trabalho era dela, e parou de escrever exatamente quando o trabalho
 virou verificação para outro — que é justamente o trabalho que o outro não tem
 como refazer sozinho.
 
+## A dívida de formatação está no lugar oposto ao que o número sugere
+
+Um censo mediu 41 arquivos com formatação de data escrita à mão, e a leitura
+natural — "41 cópias da mesma regra, unifique" — está errada. O detalhamento
+inverte a decisão:
+
+- **`dd/MM/aaaa` aparece em 19 arquivos e é consistente.** Sozinho não é dívida, é
+  convenção repetida. Um passe que "unificasse" isso mexeria em 19 arquivos para
+  padronizar o que já está padronizado, com risco proporcional e ganho nenhum.
+- **`aaaa-MM-dd` aparece em 9 arquivos e é formato de fio**, em DTOs e chaves.
+  Propósito legitimamente diferente, e **não deve** ser unificado com o anterior.
+- **A divergência real está na data com hora, em três separadores diferentes** —
+  um ponto médio, um "às", e a forma longa por extenso — espalhados por cinco
+  arquivos. E um único componente compartilhado contém **duas** dessas formas.
+
+**A recomendação é o passe pequeno:** cinco pontos de data com hora resolvem a
+divergência que uma pessoa consegue ver na tela, com risco muito menor que os 19.
+
+E a dívida não é teórica: **três das correções de leitura desta rodada saíram
+exatamente dela** — dinheiro formatado numa tela e cru na outra, data com zeros
+num lugar e sem zeros no outro, e escolha exibida por identificador interno em
+vez de rótulo. Cada uma existia porque a mesma regra de apresentação estava
+escrita duas vezes e as duas cópias envelheceram diferente. O custo aparece do
+jeito mais caro: não quebra teste, não quebra build, só mostra o mesmo dado de
+dois jeitos para a pessoa.
+
+Ressalva do método, que a própria frente declarou: o censo conta **literais, não
+intenções**. Parte das formas distintas são fragmentos do mesmo formato quebrado
+em várias linhas, e foram descontados à mão.
+
 ## Higiene e preservação
 
 - Os 90 artefatos de WIP ignorados na raiz do checkout integrador estão
