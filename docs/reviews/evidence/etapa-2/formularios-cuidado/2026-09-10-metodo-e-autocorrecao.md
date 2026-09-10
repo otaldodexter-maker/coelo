@@ -302,6 +302,44 @@ desenvolvimento ou demonstracao, o tipo ou o nome deve dizer isso**. O custo de
 nao dizer nao e confusao momentanea; e um registro que afirma, com razao, que a
 funcionalidade esta implementada e coberta, enquanto ninguem a alcanca.
 
+## Camada pronta sem superficie: uma forma, seis tamanhos
+
+Ao fim da varredura o recorte tinha seis ocorrencias do mesmo padrao. Elas nao
+sao seis dividas diferentes; sao uma forma so, em tamanhos que vao de um botao a
+uma funcionalidade inteira.
+
+1. O botao Criar nunca aparece no diretorio produtivo, porque a pagina e montada
+   com leitor interno e a permissao comeca negada.
+2. As acoes de Local nao tem kind no dominio de Formularios; o contrato de
+   selecao vive na feature Locais e Formularios nunca o referencia.
+3. Lembrete de agendamento existe no dominio e na API, e **nenhuma tela de
+   Formularios o referencia**.
+4. O autosave do editor sao quarenta e tres pontos de codigo, e o unico lugar do
+   repositorio que fornece a dependencia que o habilita e um arquivo de teste.
+5. A lista de responsaveis de medicacao nunca e fornecida, o que faz o
+   formulario nao oferecer ninguem e o diretorio mostrar "indisponivel".
+6. O adaptador de upload de anexo de pergunta tem `prepareAssetUpload`,
+   `finalizeAssetUpload` e `discardAsset` implementados, com a RPC mapeada — e
+   nenhuma tela os chama.
+
+A forma e sempre a mesma: **a camada de baixo esta pronta e testada, a de cima
+nao existe, e a suite verde afirma corretamente que a de baixo funciona.**
+
+Nenhum desses e defeito de implementacao. Todos sao consequencia de escopo
+aprovado ou de decisao pendente, e em pelo menos quatro casos a `specs/020`
+demonstrativa explica por que. O dano nao esta no codigo — esta no REGISTRO.
+Cada um deles, sozinho, pode ser descrito com frases inteiramente verdadeiras
+que somam a conclusao falsa de que a capacidade existe para quem usa o produto.
+
+Por isso convem contar como **um item com seis instancias, nao seis itens**.
+Seis linhas separadas parecem seis dividas de engenharia; uma linha com seis
+instancias e o que de fato e — uma pergunta sobre como o registro trata camada
+pronta sem superficie.
+
+E a deteccao custa quase nada, ja que o padrao e sempre o mesmo: contar as
+ocorrencias, em `lib/`, do parametro ou metodo que habilita a capacidade. Se
+todas caem dentro do arquivo que a implementa, ninguem a alcanca.
+
 ## Censo dos formatadores de data inline
 
 Medicao, nao alteracao. Contei os literais que montam data ou hora a mao com
