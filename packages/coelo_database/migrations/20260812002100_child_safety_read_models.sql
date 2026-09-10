@@ -36,20 +36,20 @@ as $$ declare result jsonb; begin
       coalesce(child_context.local_identifier,'') internal_id,
       institution.id institution_id,institution.public_name institution_name,
       unit_record.id unit_id,unit_record.name unit_name,
-      count(authorization.id) authorization_count,
-      count(*) filter(where authorization.decision_status='pending' and authorization.status='active') pending_count,
-      count(*) filter(where authorization.decision_status='approved' and authorization.status='active') approved_count,
-      count(*) filter(where authorization.decision_status='rejected') rejected_count,
-      count(*) filter(where authorization.status<>'active') inactive_count,
-      max(authorization.updated_at) last_safety_change
+      count(authorization_record.id) authorization_count,
+      count(*) filter(where authorization_record.decision_status='pending' and authorization_record.status='active') pending_count,
+      count(*) filter(where authorization_record.decision_status='approved' and authorization_record.status='active') approved_count,
+      count(*) filter(where authorization_record.decision_status='rejected') rejected_count,
+      count(*) filter(where authorization_record.status<>'active') inactive_count,
+      max(authorization_record.updated_at) last_safety_change
     from public.child_contexts child_context
     join public.people child on child.id=child_context.child_person_id and child.person_type='child'
     join public.institutions institution on institution.id=child_context.institution_id
     join public.child_unit_links child_unit on child_unit.child_context_id=child_context.id
       and child_unit.status in ('active','awaiting_allocation')
     join public.units unit_record on unit_record.id=child_unit.unit_id
-    left join public.authorized_person_authorizations authorization
-      on authorization.child_context_id=child_context.id and authorization.unit_id=unit_record.id
+    left join public.authorized_person_authorizations authorization_record
+      on authorization_record.child_context_id=child_context.id and authorization_record.unit_id=unit_record.id
     where child_context.status='active'
       and (cardinality(coalesce(p_institution_ids,'{}'::uuid[]))=0 or institution.id=any(p_institution_ids))
       and (cardinality(coalesce(p_unit_ids,'{}'::uuid[]))=0 or unit_record.id=any(p_unit_ids))
@@ -143,19 +143,19 @@ as $$ declare result jsonb; begin
     join public.units unit_record on unit_record.id=child_unit.unit_id
     where context_record.child_person_id=child.id and context_record.status='active'),'[]'::jsonb),
     'authorizations',coalesce((select jsonb_agg(jsonb_build_object(
-      'id',authorization.id,'child_context_id',authorization.child_context_id,'unit_id',authorization.unit_id,
+      'id',authorization_record.id,'child_context_id',authorization_record.child_context_id,'unit_id',authorization_record.unit_id,
       'person_id',authorized_person.person_id,'name',authorized_person.display_name,
-      'relationship_code',relationship.code,'relationship_detail',authorization.relationship_detail,
+      'relationship_code',relationship.code,'relationship_detail',authorization_record.relationship_detail,
       'capability_codes',(select coalesce(jsonb_agg(capability.capability_code order by capability.capability_code),'[]'::jsonb)
-        from public.authorized_person_authorization_capabilities capability where capability.authorization_id=authorization.id),
-      'decision_status',authorization.decision_status,'lifecycle_status',authorization.status,
-      'valid_from',authorization.valid_from,'valid_until',authorization.valid_until,'version',authorization.version,
-      'request_reason',authorization.request_reason,'decision_reason',authorization.decision_reason
-    ) order by authorization.created_at desc)
-    from public.authorized_person_authorizations authorization
-    join public.authorized_people authorized_person on authorized_person.id=authorization.authorized_person_id
-    join public.family_relationship_types relationship on relationship.id=authorization.relationship_type_id
-    join public.child_contexts context_record on context_record.id=authorization.child_context_id
+        from public.authorized_person_authorization_capabilities capability where capability.authorization_id=authorization_record.id),
+      'decision_status',authorization_record.decision_status,'lifecycle_status',authorization_record.status,
+      'valid_from',authorization_record.valid_from,'valid_until',authorization_record.valid_until,'version',authorization_record.version,
+      'request_reason',authorization_record.request_reason,'decision_reason',authorization_record.decision_reason
+    ) order by authorization_record.created_at desc)
+    from public.authorized_person_authorizations authorization_record
+    join public.authorized_people authorized_person on authorized_person.id=authorization_record.authorized_person_id
+    join public.family_relationship_types relationship on relationship.id=authorization_record.relationship_type_id
+    join public.child_contexts context_record on context_record.id=authorization_record.child_context_id
     where context_record.child_person_id=child.id),'[]'::jsonb),
     'restrictions',coalesce((select jsonb_agg(to_jsonb(restriction)-'created_by_person_id'-'updated_by_person_id')
       from public.child_safety_restrictions restriction

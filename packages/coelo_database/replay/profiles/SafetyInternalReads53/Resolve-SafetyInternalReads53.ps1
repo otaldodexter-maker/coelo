@@ -45,7 +45,7 @@ function Get-SafetyReadsBodyMd5([string]$Path) {
 }
 
 $descriptorFile = Assert-SafetyReadsFile (Join-Path $PSScriptRoot 'profile.json')
-if ((Get-SafetyReadsHash $descriptorFile.FullName) -cne '8336114691c93d545fa80f00ea4bcdec7ffddb382c8836ca14e33710a8734b5e') {
+if ((Get-SafetyReadsHash $descriptorFile.FullName) -cne 'ed5e3da1a42a97903cb2aef330d44c1b0e20fb688b3c2c336a42f9b51f9fd219') {
   throw 'SafetyInternalReads53 descriptor hash mismatch'
 }
 $descriptor = [IO.File]::ReadAllText($descriptorFile.FullName) | ConvertFrom-Json

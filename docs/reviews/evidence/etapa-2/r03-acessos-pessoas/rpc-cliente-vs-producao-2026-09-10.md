@@ -7,7 +7,7 @@ timezone: "America/Sao_Paulo"
 author: "Rodada 3, grupo acessos-pessoas"
 ---
 
-# 90 das 137 RPCs que o Superadmin chama nao existem em producao
+# 96 das 162 RPCs que o Superadmin chama nao existem em producao
 
 ## O que foi medido
 
@@ -20,15 +20,25 @@ que a cria, esta em
 
 | Medida | Valor |
 | --- | --- |
-| RPCs distintas chamadas pelo cliente | 137 |
-| Existem em producao | 47 |
-| **Ausentes em producao** | **90** |
-| Migrations do repositorio que as criam | 32 |
+| RPCs distintas chamadas pelo cliente | 162 |
+| Existem em producao | 66 |
+| **Ausentes em producao** | **96** |
+| Migrations do repositorio que as criam | 36 |
 | RPCs sem nenhuma migration que as crie | 8 |
 
-O metodo se auto-valida: as 47 que casaram provam que a extracao e a comparacao
+O metodo se auto-valida: as 66 que casaram provam que a extracao e a comparacao
 funcionam. Um falso negativo exigiria que o `pg_dump` omitisse uma funcao de
 `public`, o que ele nao faz.
+
+## Correcao da primeira medicao
+
+A primeira versao desta pagina disse 90 de 137. O numero estava baixo: o padrao
+de extracao parava no primeiro `>` e por isso perdia chamadas com generico
+aninhado, como `rpc<Map<String, dynamic>>('...')`. Corrigido, aparecem mais 25
+chamadas e mais 6 ausencias, entre elas as tres RPCs de **Usuarios internos**
+(`superadmin_internal_user_profiles`, `superadmin_internal_user_detail`,
+`superadmin_internal_users_list`) e as de contexto e feed do Principal. Os
+numeros desta pagina sao os corrigidos.
 
 ## Por que isso importa
 
@@ -99,11 +109,11 @@ as dependencias reais do pacote, nunca sobre a cadeia integral.
 Isto e maior que o grupo acessos-pessoas e nao cabe a um executor decidir. Para
 o coordenador e para o Owner:
 
-1. A fila SQL da Rodada 3 nao sao alguns pacotes: sao **32 migrations** ja
+1. A fila SQL da Rodada 3 nao sao alguns pacotes: sao **36 migrations** ja
    escritas, esperando aplicacao, mais 8 RPCs por escrever.
 2. A ordem da fila precisa considerar que producao esta em 01/09/2026, nao em
    09/09/2026, e que ha objetos em producao sem migration de origem.
-3. Enquanto essas 32 nao forem aplicadas, nenhuma frente consegue fechar E2E
+3. Enquanto essas 36 nao forem aplicadas, nenhuma frente consegue fechar E2E
    pela regua do MVP, porque a rota normal nao abre. Medir avanco de tela sem
    isso mede o Front-end contra um backend ausente.
 4. A decisao de como reconciliar o ledger (baseline nova a partir do dump de

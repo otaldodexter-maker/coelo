@@ -16,7 +16,7 @@
     },
     {
       "file": "20260812002100_child_safety_read_models.sql",
-      "sha256_crlf_utf8": "fcaccbaea2a4236ebb5d728d6b0ac9ad71d04f47fd662b22e4c80f6de2487b28"
+      "sha256_crlf_utf8": "dfd2cde13fd241a3fb5c8b40864dc17500b6d9622e80477c223cf5978ccbb0ba"
     },
     {
       "file": "20260812002200_child_safety_security_closure.sql",

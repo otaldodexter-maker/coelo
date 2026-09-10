@@ -1,10 +1,10 @@
 {
-  "geradoEm": "2026-09-10T16:12:21.700Z",
+  "geradoEm": "2026-09-10T16:27:44.194Z",
   "metodo": "RPCs extraidas de apps/superadmin/lib por regex de client.rpc(...), comparadas com o dump schema-only de producao (public) de 10/09/2026.",
-  "totalChamadasDistintas": 137,
-  "existemEmProducao": 47,
-  "ausentesEmProducao": 90,
-  "migrationsNecessarias": 32,
+  "totalChamadasDistintas": 162,
+  "existemEmProducao": 66,
+  "ausentesEmProducao": 96,
+  "migrationsNecessarias": 36,
   "fila": [
     {
       "migration": "20260812002100_child_safety_read_models.sql",
@@ -94,6 +94,12 @@
       ]
     },
     {
+      "migration": "20260901161700_principal_runtime_contexts.sql",
+      "rpcs": [
+        "list_my_principal_contexts"
+      ]
+    },
+    {
       "migration": "20260901165125_activity_template_unit_scope.sql",
       "rpcs": [
         "superadmin_create_scoped_activity_template"
@@ -147,6 +153,13 @@
       ]
     },
     {
+      "migration": "20260901210000_superadmin_internal_users_directory.sql",
+      "rpcs": [
+        "superadmin_internal_user_detail",
+        "superadmin_internal_user_profiles"
+      ]
+    },
+    {
       "migration": "20260907222911_superadmin_activity_directory_v2_client_contract.sql",
       "rpcs": [
         "superadmin_activity_directory_v2",
@@ -157,6 +170,12 @@
       "migration": "20260908000049_superadmin_forms_directory_internal_read.sql",
       "rpcs": [
         "superadmin_forms_directory_v2"
+      ]
+    },
+    {
+      "migration": "20260908021644_superadmin_internal_users_read_minimization.sql",
+      "rpcs": [
+        "superadmin_internal_users_list"
       ]
     },
     {
@@ -237,6 +256,12 @@
       ]
     },
     {
+      "migration": "20260909211000_now_publication_expiry_transition_v1.sql",
+      "rpcs": [
+        "list_visible_now_publications"
+      ]
+    },
+    {
       "migration": "20260909213000_happens_post_withdrawal_v1.sql",
       "rpcs": [
         "withdraw_happens_post"
@@ -245,6 +270,7 @@
     {
       "migration": "20260909216000_moments_feed_and_withdrawal_v1.sql",
       "rpcs": [
+        "list_visible_moments",
         "withdraw_moment"
       ]
     }
@@ -271,6 +297,15 @@
     ],
     "child_safety_request_authorization": [
       "features/safety/data/supabase_child_safety_repository.dart"
+    ],
+    "list_my_principal_contexts": [
+      "features/principal_shared/data/supabase_principal_runtime_context_repository.dart"
+    ],
+    "list_visible_moments": [
+      "features/principal_moments/data/supabase_principal_moments_feed_repository.dart"
+    ],
+    "list_visible_now_publications": [
+      "features/principal_now/data/supabase_principal_now_feed_repository.dart"
     ],
     "load_moments_draft": [
       "features/principal_moments_publication/data/supabase_moments_publication_repository.dart"
@@ -433,6 +468,15 @@
     ],
     "superadmin_institution_filter_options_v2": [
       "features/institutions/data/supabase_institution_directory_repository.dart"
+    ],
+    "superadmin_internal_user_detail": [
+      "features/platform_users/data/supabase_platform_user_repository.dart"
+    ],
+    "superadmin_internal_user_profiles": [
+      "features/platform_users/data/supabase_platform_user_repository.dart"
+    ],
+    "superadmin_internal_users_list": [
+      "features/platform_users/data/supabase_platform_user_repository.dart"
     ],
     "superadmin_invite_detail_v2": [
       "features/invites/data/supabase_invite_repository.dart"
