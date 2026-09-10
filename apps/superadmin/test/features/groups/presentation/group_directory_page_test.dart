@@ -185,8 +185,9 @@ void main() {
 
     expect(find.byKey(const Key('group-directory-pagination-footer')), findsOneWidget);
     expect(find.byKey(const Key('coelo-admin-pagination-page-size')), findsNothing);
-    expect(find.byKey(const Key('coelo-admin-pagination-previous')), findsOneWidget);
-    expect(find.byKey(const Key('coelo-admin-pagination-next')), findsOneWidget);
+    // Rodapé compacto da família (Instituições): setas com rótulo semântico.
+    expect(find.bySemanticsLabel('Página anterior'), findsOneWidget);
+    expect(find.bySemanticsLabel('Próxima página'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 

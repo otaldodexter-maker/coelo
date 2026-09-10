@@ -61,6 +61,8 @@ void main() {
       _app(
         brightness: Brightness.light,
         child: ActivityDirectoryPage(
+          // CHAT: o balão de conversas faz parte da referência do diretório.
+          onDestinationSelected: (_) {},
           repository: FakeActivityDirectoryRepository(),
           logout: _logout,
           onCreate: () {},
@@ -330,6 +332,7 @@ Widget _directoryApp({
   brightness: brightness,
   textScaler: textScaler,
   child: ActivityDirectoryPage(
+    onDestinationSelected: (_) {},
     repository: FakeActivityDirectoryRepository(),
     logout: _logout,
     onCreate: () {},

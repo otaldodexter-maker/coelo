@@ -188,6 +188,7 @@ final class CoeloAdminDirectory<TView> extends StatefulWidget {
     this.cardMinHeight = CoeloAdminDirectoryMetrics.cardMinHeight,
     this.onFooterHeightChanged,
     this.scrollKey,
+    this.loadingKey,
     this.toolbarKey,
     this.filterControlsKey,
     this.actionsKey,
@@ -227,6 +228,9 @@ final class CoeloAdminDirectory<TView> extends StatefulWidget {
   final TView groupedTableView;
   final TView selectedTableView;
   final List<CoeloAdminDirectoryTableViewOption<TView>> tableViews;
+
+  /// Chamado ao escolher uma visão de tabela (inclusive ao clicar no segmento
+  /// Tabela). O consumidor muda o display para tabela nesse callback.
   final ValueChanged<TView> onTableViewSelected;
 
   final CoeloAdminDirectoryCreate? create;
@@ -248,6 +252,9 @@ final class CoeloAdminDirectory<TView> extends StatefulWidget {
   final ValueChanged<double>? onFooterHeightChanged;
 
   final Key? scrollKey;
+
+  /// Chave do indicador de carregamento inicial.
+  final Key? loadingKey;
   final Key? toolbarKey;
   final Key? filterControlsKey;
   final Key? actionsKey;
@@ -407,10 +414,9 @@ final class _Toolbar<TView> extends StatelessWidget {
               selectedTableView: directory.selectedTableView,
               tableViews: directory.tableViews,
               onCardsSelected: () => directory.onDisplayChanged(CoeloAdminDirectoryDisplay.cards),
-              onTableViewSelected: (view) {
-                directory.onDisplayChanged(CoeloAdminDirectoryDisplay.table);
-                directory.onTableViewSelected(view);
-              },
+              // Quem recebe a visão de tabela troca o display para tabela; o
+              // composto não dispara duas recargas.
+              onTableViewSelected: directory.onTableViewSelected,
             ),
             if (directory.fileActionsBusyLabel case final busy?) ...[
               const SizedBox(width: CoeloSpacing.space2),
@@ -444,9 +450,10 @@ final class _Results<TView> extends StatelessWidget {
   Widget build(BuildContext context) {
     final messages = directory.messages;
     final content = switch (directory.status) {
-      CoeloAdminDirectoryStatus.loading => const Padding(
-        padding: EdgeInsets.all(CoeloSpacing.space8),
-        child: Center(child: CircularProgressIndicator()),
+      CoeloAdminDirectoryStatus.loading => Padding(
+        key: directory.loadingKey,
+        padding: const EdgeInsets.all(CoeloSpacing.space8),
+        child: const Center(child: CircularProgressIndicator()),
       ),
       CoeloAdminDirectoryStatus.unauthorized => _StateCard(
         icon: messages.unauthorizedIcon,
@@ -458,6 +465,7 @@ final class _Results<TView> extends StatelessWidget {
           message: directory.errorMessage ?? messages.failure,
           actionLabel: directory.onRetry == null ? null : messages.retryLabel,
           onAction: directory.onRetry,
+          actionKey: const Key('coelo-admin-directory-retry'),
         ),
       ),
       CoeloAdminDirectoryStatus.empty => _withCreate(
@@ -469,6 +477,7 @@ final class _Results<TView> extends StatelessWidget {
           message: messages.noResults,
           actionLabel: directory.onClearFilters == null ? null : 'Limpar filtros',
           onAction: directory.onClearFilters,
+          actionKey: const Key('coelo-admin-directory-clear-filters'),
         ),
       ),
       CoeloAdminDirectoryStatus.success => _success(),
@@ -556,11 +565,11 @@ final class _CardGrid extends StatelessWidget {
             SizedBox(
               width: width,
               child: ConstrainedBox(
-                key: create.tileKey,
                 constraints: BoxConstraints(minHeight: cardMinHeight),
                 child: KeyedSubtree(
                   key: create.tileSurfaceKey,
                   child: CoeloAdminCreateAction(
+                    key: create.tileKey,
                     label: create.label,
                     icon: create.icon,
                     onPressed: create.onPressed,
@@ -645,12 +654,19 @@ final class _Footer extends StatelessWidget {
 /// Card de estado aprovado em Instituições (vazio, sem resultados, falha e
 /// não autorizado).
 final class _StateCard extends StatelessWidget {
-  const _StateCard({required this.icon, required this.message, this.actionLabel, this.onAction});
+  const _StateCard({
+    required this.icon,
+    required this.message,
+    this.actionLabel,
+    this.onAction,
+    this.actionKey,
+  });
 
   final IconData icon;
   final String message;
   final String? actionLabel;
   final VoidCallback? onAction;
+  final Key? actionKey;
 
   @override
   Widget build(BuildContext context) => Card(
@@ -665,7 +681,7 @@ final class _StateCard extends StatelessWidget {
             Text(message, textAlign: TextAlign.center),
             if (actionLabel != null) ...[
               const SizedBox(height: CoeloSpacing.space3),
-              OutlinedButton(onPressed: onAction, child: Text(actionLabel!)),
+              OutlinedButton(key: actionKey, onPressed: onAction, child: Text(actionLabel!)),
             ],
           ],
         ),

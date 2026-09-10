@@ -312,7 +312,7 @@ void main() {
     expect(find.byKey(const Key('activity-status-tabs')), findsOneWidget);
     expect(find.text('Todos'), findsOneWidget);
     expect(find.text('Ativos'), findsOneWidget);
-    expect(find.text('Rascunho'), findsOneWidget);
+    expect(find.text('Rascunhos'), findsOneWidget);
     expect(find.text('Inativos'), findsOneWidget);
     expect(find.byKey(const Key('activity-origin-filter')), findsOneWidget);
     expect(find.byKey(const Key('activity-type-filter')), findsNothing);
@@ -492,10 +492,10 @@ void main() {
         .onChanged('Institucional');
     await tester.enterText(find.byKey(const Key('activity-template-search')), 'sem resultado');
     await tester.pump();
-    await tester.ensureVisible(find.byKey(const Key('activity-template-clear-filters')));
+    await tester.ensureVisible(find.byKey(const Key('coelo-admin-directory-clear-filters')));
     await tester.pump();
     tester
-        .widget<TextButton>(find.byKey(const Key('activity-template-clear-filters')))
+        .widget<OutlinedButton>(find.byKey(const Key('coelo-admin-directory-clear-filters')))
         .onPressed!();
     await tester.pump();
     expect(find.byKey(const Key('activity-template-template-1')), findsOneWidget);
@@ -719,11 +719,12 @@ void main() {
     await tester.pump();
     await tester.pump();
     expect(find.byKey(const Key('activity-templates-loading')), findsOneWidget);
-    expect(find.byKey(const Key('create-activity-template-tile')), findsOneWidget);
     expect(find.byKey(const Key('activity-card-activity-10')), findsNothing);
     delayed.complete();
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('activity-template-section')), findsOneWidget);
+    // CRIAR: o card Criar existe assim que o diretório sai do carregamento.
+    expect(find.byKey(const Key('create-activity-template-tile')), findsOneWidget);
 
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pumpWidget(
@@ -740,7 +741,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('activity-templates-failure')), findsOneWidget);
+    expect(find.text('Não foi possível carregar os modelos'), findsOneWidget);
     expect(find.byKey(const Key('create-activity-template-tile')), findsOneWidget);
     await tester.tap(find.byKey(const Key('activity-template-view-table')));
     await tester.pump();
