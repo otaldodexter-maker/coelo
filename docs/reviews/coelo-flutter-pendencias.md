@@ -3,7 +3,7 @@ title: "Pendências Coelo — Front-end"
 source: "AGENTS.md; ADR 0019; ADR 0032; tracker-corrections-2026-09-08.json; inventario-etapa-2.json"
 status: "open"
 generated_at: "2026-09-08"
-updated_at: "2026-09-10T08:30:00-03:00"
+updated_at: "2026-09-10T14:30:00-03:00"
 action_count: 230
 family_count: 39
 active_mvp_action_count: 200
@@ -43,8 +43,16 @@ reproduzida em 2026-09-10 sobre `0a9cb1e63`: `cancel-changed` e
 `destination-changed` falham, `same-context` passa).
 
 Suíte `apps/superadmin` no fechamento: **6390 PASS / 14 SKIP / 144 FAIL**; das
-144, 129 são goldens com deriva de base (não regravar sem pin de SDK) e 15
-não-golden preexistentes. Outros sete pacotes: 894 PASS / 2 FAIL (`apps/catalog`).
+144, 129 são goldens com deriva de base e 15 não-golden preexistentes.
+**Atualização 10/09 (tarde):** o Owner decidiu arquivo por arquivo os 165
+goldens claros divergentes da suíte completa de 03:42 em
+[goldens-claro-decisoes-2026-09-10.md](evidence/etapa-2/goldens-claro-decisoes-2026-09-10.md):
+quais mantêm a referência guardada (o código volta a ela), quais passam a usar
+o render atual, e as regras transversais que valem para todas as telas (menu
+e cabeçalho da referência de Instituições com Pesquisar e botão de Bug, chat,
+card Criar primeiro no grid, abas Todos/Ativos/Rascunhos/Inativos, rodapé
+Continuar/Cancelar, sem fundo cinza, tabela e flyouts no padrão). Regravar só
+depois de aplicar a observação do item e com o mesmo SDK da suíte. Outros sete pacotes: 894 PASS / 2 FAIL (`apps/catalog`).
 `flutter analyze lib test` limpo em `apps/superadmin`. Validador dos três
 rastreadores PASS; portão de conhecimento PASS, 61 artigos.
 

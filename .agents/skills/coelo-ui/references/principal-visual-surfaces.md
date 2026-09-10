@@ -53,6 +53,13 @@ de conclusão nem prova de backend conectado.
   mobile. A imersão fica dentro do contêiner; só elementos internos concorrentes
   do Principal podem ser suspensos. Restaurar foco e contexto ao sair. Esta
   regra pertence ao hospedeiro Superadmin, não ao app Principal independente.
+- Decisão do Owner em 10/09/2026 sobre os goldens claros
+  ([lista](../../../../docs/reviews/evidence/etapa-2/goldens-claro-decisoes-2026-09-10.md)):
+  no web do Superadmin, Acontece, Momentos e Perfil mostram shell/menu com o
+  conteúdo Principal dentro do contêiner; o botão "mais" do Acontece é laranja
+  com "+" branco e mantém o tracejado; Momentos não corta imagem no mobile e
+  preenche mais a área preta no desktop; a foto do perfil Principal não pode
+  aparecer recortada.
 - O viewer do Agora possui contrato imersivo próprio. Cor/contraste e controles
   sobre mídia seguem esse contrato; não aplicar mecanicamente fundo de popup
   administrativo ou o fechamento vermelho do Bug em toda superfície imersiva.

@@ -78,7 +78,11 @@ pertencem e voltam a contar na revisão profunda.
 - Anexos de UI/UX passados às skills continuam como correções pendentes
   (cards e tabelas fora do padrão, diferenças no menu Coelo Principal); não
   são aprovação do render atual. Goldens só são regravados depois dessas
-  correções.
+  correções. Em 10/09 (tarde) o Owner decidiu arquivo por arquivo os 165
+  goldens claros divergentes; a lista e as regras transversais estão em
+  `docs/reviews/evidence/etapa-2/goldens-claro-decisoes-2026-09-10.md`.
+- Dúvidas e aprovações: o Owner quer ser perguntado, com referência visual
+  lado a lado quando for UI/UX; decide mais rápido do que o agente.
 
 ## Consequências
 
