@@ -16,7 +16,7 @@
 
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(32);
+select plan(33);
 
 -- ---------------------------------------------------------------------------
 -- Contrato estrutural minimo.
@@ -260,6 +260,18 @@ select is(
     'a1400000-0000-4000-8000-000000000001', 2, null),
   '42501:happens_permission_denied',
   'a non-author holding the removal capability is still refused'
+);
+
+-- Um post inexistente devolve exatamente a mesma classe e a mesma mensagem do
+-- post alheio. Se este teste falhar porque alguem reintroduziu post_not_found,
+-- a regressao e de invariante: distinguir os dois entrega informacao antes da
+-- autorizacao e vira um oraculo de existencia atravessando tenant.
+select is(
+  pg_temp.try_withdraw(
+    'a1000000-0000-4000-8000-000000000001','a1600000-0000-4000-8000-000000000009',
+    'a14fffff-ffff-4fff-8fff-ffffffffffff', 1, null),
+  '42501:happens_permission_denied',
+  'a post that does not exist is refused exactly like a post that is not yours'
 );
 
 select is(

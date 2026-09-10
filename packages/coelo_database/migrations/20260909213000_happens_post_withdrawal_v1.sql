@@ -19,6 +19,15 @@
 --  * `can_withdraw` confere tambem a capacidade `happens.posts.remove` no
 --    escopo, e nao so a autoria. Sem isso o feed oferecia ao autor uma acao que
 --    o servidor negaria logo em seguida.
+--  * a negacao de `withdraw_happens_post` e UNIFICADA. Antes, um post
+--    inexistente levantava `no_data_found:post_not_found` ANTES de chamar
+--    `happens_actor`, e um post alheio levantava
+--    `insufficient_privilege:happens_permission_denied` depois. Um ator
+--    autenticado distinguia "nao existe" de "existe e nao e seu", inclusive
+--    atravessando tenant: informacao entregue antes da autorizacao. Agora os
+--    dois casos usam a MESMA classe e a MESMA mensagem, como `withdraw_moment`
+--    e `circulars_production` ja faziam. Nao reintroduzir a granularidade: a
+--    suite tem uma assercao dedicada a essa igualdade.
 
 alter table public.posts
   add column if not exists withdrawn_at timestamptz,
@@ -73,7 +82,15 @@ declare
   normalized_reason text;
 begin
   select * into target from public.posts where id=p_post_id for update;
-  if not found then raise no_data_found using message='post_not_found'; end if;
+  -- A negacao e unificada DE PROPOSITO. Quem nao pode retirar recebe a mesma
+  -- classe de erro e a mesma mensagem para "nao existe" e para "existe e nao e
+  -- seu". Distinguir os dois entregaria informacao antes da autorizacao e daria
+  -- ao ator autenticado um oraculo de existencia, inclusive atravessando tenant.
+  -- E o mesmo que withdraw_moment e circulars_production fazem. Nao "restaurar"
+  -- a granularidade achando que se perdeu qualidade de erro.
+  if not found then
+    raise insufficient_privilege using message='happens_permission_denied';
+  end if;
 
   select * into actor from app_private.happens_actor(
     target.institution_id,'happens.posts.remove',target.unit_id,target.group_id);
