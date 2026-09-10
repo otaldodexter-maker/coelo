@@ -51,7 +51,17 @@ final class SupabaseActivityDirectoryRepository implements ActivityDirectoryRepo
       );
     } on PostgrestException catch (error) {
       throw _mapError(error);
-    } on FormatException {
+    } on ActivityDirectoryUnauthorizedException {
+      // A negacao de autorizacao precisa sobreviver ao catch amplo abaixo. Ela
+      // e lancada de dentro do parsing, por _v2Data, e e Exception: sem este
+      // rethrow ela viraria indisponibilidade e o motivo real se perderia.
+      rethrow;
+    } on Exception {
+      // Cobre resposta malformada E falha de transporte. Antes, apenas
+      // FormatException era capturada, entao um ClientException escapava do
+      // repositorio e chegava a UI como excecao nao tratada. TypeError e
+      // StateError continuam com clausula propria porque sao Error e nao
+      // Exception: on Exception nao os captura.
       throw const ActivityDirectoryUnavailableException();
     } on TypeError {
       throw const ActivityDirectoryUnavailableException();
@@ -71,6 +81,13 @@ final class SupabaseActivityDirectoryRepository implements ActivityDirectoryRepo
       );
     } on PostgrestException catch (error) {
       throw _mapError(error);
+    } on ActivityDirectoryUnauthorizedException {
+      // A negacao de autorizacao precisa sobreviver ao catch amplo abaixo. Ela
+      // e lancada de dentro do parsing, por _v2Data, e e Exception: sem este
+      // rethrow ela viraria indisponibilidade e o motivo real se perderia.
+      rethrow;
+    } on Exception {
+      throw const ActivityDirectoryUnavailableException();
     } on TypeError {
       throw const ActivityDirectoryUnavailableException();
     }
@@ -121,6 +138,13 @@ final class SupabaseActivityDirectoryRepository implements ActivityDirectoryRepo
       );
     } on PostgrestException catch (error) {
       throw _mapError(error);
+    } on ActivityDirectoryUnauthorizedException {
+      // A negacao de autorizacao precisa sobreviver ao catch amplo abaixo. Ela
+      // e lancada de dentro do parsing, por _v2Data, e e Exception: sem este
+      // rethrow ela viraria indisponibilidade e o motivo real se perderia.
+      rethrow;
+    } on Exception {
+      throw const ActivityDirectoryUnavailableException();
     }
   }
 }

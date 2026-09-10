@@ -234,6 +234,32 @@ void main() {
     }
   });
 
+  test('falha de rede vira indisponibilidade nos tres metodos remotos', () async {
+    // Os status HTTP acima ja eram mapeados. O que escapava era a falha de
+    // TRANSPORTE: o repositorio capturava PostgrestException, FormatException,
+    // TypeError e StateError, e um ClientException chegava cru a UI.
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-key',
+      httpClient: MockClient((request) async => throw ClientException('synthetic network failure')),
+    );
+    addTearDown(client.dispose);
+    final repository = SupabaseActivityDirectoryRepository(client);
+
+    await expectLater(
+      repository.fetchPage(ActivityDirectoryQuery()),
+      throwsA(isA<ActivityDirectoryUnavailableException>()),
+    );
+    await expectLater(
+      repository.fetchFilterOptions(),
+      throwsA(isA<ActivityDirectoryUnavailableException>()),
+    );
+    await expectLater(
+      repository.fetchTemplateOptions(),
+      throwsA(isA<ActivityDirectoryUnavailableException>()),
+    );
+  });
+
   for (final status in [401, 403, 500]) {
     test('v2 transport error $status is mapped for both reads', () async {
       final client = SupabaseClient(
