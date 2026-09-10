@@ -1,14 +1,14 @@
 {
-  "revision": 43,
-  "updated_at": "2026-09-10T04:39:09-03:00",
+  "revision": 44,
+  "updated_at": "2026-09-10T04:45:28-03:00",
   "group": "publicacoes-midia",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
-  "status": "PRE-ENTREGA PUBLICADA; congelado; aguardando entrega final e parada as 05:00",
+  "status": "PRE-ENTREGA FINAL publicada (9754d64e4); congelado; parada as 05:00",
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-publicacoes-midia",
   "branch": "work/etapa2-noturna-publicacoes-midia",
-  "head": "184dbb696",
+  "head": "9754d64e4",
   "upstream": "origin/work/etapa2-noturna-publicacoes-midia (0/0)",
   "base": "origin/dev 447e6eea2 mesclado em 3ab29d7df",
   "ack": "coordenador: revisao 1 aceita; lote 1e39b2fcf integrado (merge d502350ce); lote b10f48d1e aceito para a proxima integracao; atribuicao de principal_real_route_test retirada por ele apos minha medicao; reserva da plataforma comum de midia mantida",
@@ -375,6 +375,12 @@
       "sha": "184dbb696",
       "state": "publicado",
       "title": "pre-entrega no congelamento, com residual provado por conteudo",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "9754d64e4",
+      "state": "publicado",
+      "title": "pre-entrega final com residual pelos tres metodos e o falso positivo de ancestralidade documentado",
       "touches_reserved_files": []
     }
   ],
@@ -804,7 +810,7 @@
     ],
     "efeito_colateral_positivo": "a frente perfil-para-voce passou a consumir principalMomentsFeedRepository, a mesma instancia que /principal-moments usa, em vez de abrir uma segunda fonte para o mesmo feed",
     "commits_pendentes_de_integracao": [
-      "184dbb696"
+      "9754d64e4"
     ],
     "ja_integrados": [
       "05537c3b3",
@@ -1079,6 +1085,25 @@
       "divergencia": "0/0",
       "cabeca": "80f160599 fix(principal): stop production screens from calling themselves a preview",
       "conclusao": "esta no remoto e nao so no disco temporario; a worktree pode ser removida no fechamento sem perda. O patch segue NAO mesclado e nao testado sobre a dev atual."
+    },
+    "residual_pelos_tres_metodos": {
+      "dev": "8211bac07",
+      "residual_real": 0,
+      "rastro": "git log origin/dev --grep='cherry picked from commit 184dbb696' encontra cb1aa0669 -> INTEGRADO",
+      "ancestralidade": "HEAD NAO e ancestral; origin/dev..HEAD = 1 -> acusa 1 pendente, e e FALSO",
+      "conteudo": "os cinco documentos IDENTICOS entre HEAD e origin/dev -> INTEGRADO",
+      "o_que_aconteceu": "as 04:36 eu medi e escrevi que a minha integracao tinha sido por MERGE e que por isso a ancestralidade respondera certo. NOVE MINUTOS depois, o mesmo par de sessoes, o commit seguinte entrou por CHERRY-PICK. Se eu repetisse a frase das 04:36 sem remedir, estaria certo por acidente na primeira e errado na segunda, com o mesmo comando e a mesma confianca.",
+      "direcao_do_erro_foi_a_oposta_da_prevista": "eu escrevi que o teste 'erra em silencio no dia em que a premissa mudar', imaginando falso NEGATIVO. Produziu falso POSITIVO de pendencia — e reportar residual que nao existe faz alguem procurar, no fechamento, um commit que ja esta na base.",
+      "o_que_cada_um_esconde": {
+        "ancestralidade": "mente quando o metodo de integracao muda",
+        "conteudo": "mente quando a base anda por baixo; os meus cinco documentos batem porque NINGUEM MAIS TOCOU aqueles caminhos, o que e propriedade do meu recorte e nao virtude do teste",
+        "rastro": "depende de a mensagem de integracao carregar a marca"
+      }
+    },
+    "delimitacao_do_conjunto": {
+      "por_autor": "NAO USEI, em momento nenhum",
+      "como_delimitei": "por INTERVALO (origin/dev..HEAD) ou por lista nominal de SHA produzida ao commitar; nunca --author nem --committer",
+      "por_que_importa": "as seis frentes commitam com a MESMA identidade Git neste checkout (achado por alunos-rotina), entao git log --author nao isola ninguem e montaria um conjunto com os commits das outras seis dentro"
     }
   }
 }

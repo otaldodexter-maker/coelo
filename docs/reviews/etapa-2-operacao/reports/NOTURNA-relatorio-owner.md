@@ -1863,9 +1863,18 @@ concordam a confiança é maior, e quando só o rastro responde, ainda assim che
 exatamente quando ninguém mais tocou aqueles caminhos depois, e engana nos dois
 sentidos fora disso. Uma frente cujos dois arquivos ninguém mais tocou obteve
 concordância perfeita entre os três testes; outra, cujos arquivos são disputados,
-obteve 8 de 27. **Nenhum dos três testes é o certo sozinho.** O que funciona é
-declarar os três lado a lado e explicar o desacordo, que foi o que as duas frentes
-acabaram fazendo por conta própria.
+obteve 8 de 27. **Nenhum dos três testes é o certo sozinho**, e cada um mente de um jeito
+diferente: **a ancestralidade mente quando o método de integração muda; o conteúdo
+mente quando a base anda por baixo; o rastro depende de a mensagem carregar a
+marca.** O que funciona é declarar os três lado a lado e explicar o desacordo.
+
+E a demonstração veio no mesmo par de sessões, com quinze minutos de intervalo: a
+mesma frente que às 04:36 escreveu "no meu caso não foi cherry-pick, foi merge" —
+e estava certa — teve o commit seguinte colhido, e às 04:45 a ancestralidade
+acusou uma pendência **falsa**. Mesmo comando, mesma confiança, mesma frase: certa
+por acidente na primeira vez e errada na segunda. **E o erro foi um falso positivo,
+não um falso negativo** — reportar residual que não existe faz alguém procurar, no
+fechamento, um commit que já está na base.
 
 E o critério errado teve uma última chance de mostrar o quanto custa. Noventa
 segundos depois de eu avisar uma frente de que a diferença de conteúdo não é imune
