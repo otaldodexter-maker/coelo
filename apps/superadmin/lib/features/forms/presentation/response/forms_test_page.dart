@@ -547,6 +547,10 @@ final class _AvailabilityNotice extends StatelessWidget {
 
 /// One authored question, shown as the respondent will see it but with every
 /// control inert: this surface must never be able to produce an answer.
+///
+/// Branch questions are shown regardless of their condition, on purpose: the
+/// author needs to see what a branch contains before publishing. That is the
+/// one deliberate difference from what the respondent sees.
 final class _PreviewItem extends StatelessWidget {
   const _PreviewItem({required this.item});
 
@@ -599,6 +603,25 @@ final class _PreviewItem extends StatelessWidget {
   }
 
   Widget _control(BuildContext context) => switch (item.kind) {
+    // As formas espelham as da tela de resposta, so que inertes. Um preview que
+    // mostra caixa de texto onde a pessoa vera fichas nao previa coisa alguma.
+    FormItemKind.scale => Wrap(
+      spacing: CoeloSpacing.space2,
+      runSpacing: CoeloSpacing.space2,
+      children: [
+        for (
+          var value = item.config.scaleMin ?? 1;
+          value <= (item.config.scaleMax ?? 10);
+          value++
+        )
+          ChoiceChip(label: Text('$value'), selected: false, onSelected: null),
+      ],
+    ),
+    FormItemKind.date => OutlinedButton.icon(
+      onPressed: null,
+      icon: const Icon(Icons.calendar_today_outlined),
+      label: const Text('Selecionar data'),
+    ),
     FormItemKind.singleChoice || FormItemKind.multipleChoice => Wrap(
       spacing: CoeloSpacing.space2,
       runSpacing: CoeloSpacing.space2,
@@ -625,8 +648,6 @@ final class _PreviewItem extends StatelessWidget {
           FormItemKind.integer => 'Número inteiro',
           FormItemKind.decimal => 'Número',
           FormItemKind.money => 'Valor',
-          FormItemKind.date => 'Data',
-          FormItemKind.scale => 'Escala',
           FormItemKind.photo => 'Foto',
           FormItemKind.gallery => 'Imagens',
           _ => 'Resposta',

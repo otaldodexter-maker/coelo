@@ -366,7 +366,10 @@ void main() {
     expect(api.commands.last.payload.sections.single.items.single.config.maxLength, isNull);
   });
 
-  for (final raw in ['0', '-5', 'abc', '2,5']) {
+  // O DTO exige inteiro de 1 a 10000 para texto curto e recusa o payload fora
+  // disso. A minha validacao so exigia maior que zero, entao 20000 passava aqui
+  // e falhava com erro de formato de fio no salvamento, sem mensagem util.
+  for (final raw in ['0', '-5', 'abc', '2,5', '10001', '99999']) {
     testWidgets('a maximum length of $raw never saves a draft', (tester) async {
       final api = shortTextApi();
       await open(tester, api);
@@ -374,7 +377,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 800));
       await tester.pumpAndSettle();
       expect(api.commands, isEmpty);
-      expect(find.text('Informe um máximo de caracteres inteiro e maior que zero.'), findsWidgets);
+      expect(find.text('Informe um máximo de caracteres inteiro entre 1 e 10000.'), findsWidgets);
     });
   }
 
