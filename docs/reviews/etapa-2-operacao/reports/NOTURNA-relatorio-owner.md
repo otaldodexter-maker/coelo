@@ -1852,6 +1852,24 @@ falhas conhecidas não chama. A frente suspendeu as próprias afirmações anter
 de linha de base até remedir com os nomes corretos — que é a resposta certa, já
 que não dá para saber de memória quais execuções usaram o nome certo.
 
+**Remedido, o tamanho apareceu: 512 casos nunca entravam em conta nenhuma, e eles
+escondiam oito falhas reais.** Com os caminhos corretos, aquelas famílias dão 1091
+casos que passam contra 579 antes. As oito falhas não são regressão — são
+referências visuais de outra família, já documentadas pela frente dona no mesmo
+dia, e a contagem independente reproduz a dela. **Mas ninguém podia saber, porque
+ninguém as via.**
+
+**E a regra que sai disso vale para toda medição desta rodada:** um número de suíte
+só significa alguma coisa junto da **lista de caminhos que o produziu**. Total sem
+denominador não é verificável — nem por outra pessoa, nem pelo próprio autor uma
+hora depois. Passou a ser exigência da entrega.
+
+**Há um agravante estrutural que a rodada criou sem perceber:** conviver com
+vermelho conhecido de outra frente é razoável e foi a prática da noite inteira —
+e cria um esconderijo de graça. **Ruído conhecido é um bom lugar para uma falha
+nova se perder.** Foi o mesmo mecanismo que quase deixou passar quatro casos de
+teste apagados no meio de sete mil.
+
 ## Uma pergunta sobre distribuição de formulário, e ela é sua
 
 O diálogo de agendamento de Formulários monta a aplicação com **exatamente uma
