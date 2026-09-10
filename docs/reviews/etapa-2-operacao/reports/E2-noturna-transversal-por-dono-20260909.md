@@ -61,6 +61,14 @@ Isso não absolve as duas telas: lançar exceção de layout é mais grave que r
 uma diretriz. Só não é o mesmo problema, e chamar um de outro manda a frente dona
 investigar a coisa errada.
 
+**Por que só duas telas precisaram de correção, e não todas as 33.** A contaminação
+só atinge telas que lançam exceção na configuração medida — 1440 × 900, tema claro,
+texto padrão. A varredura de reflow mediu exatamente essa configuração para as 33
+telas e identificou que **apenas `/dev/imports` e `/dev/safety` lançam** ali;
+`/dev/agenda` lança somente em 375, e as outras 30 não lançam. Então a correção é
+delimitada por medição, não por amostragem: nenhuma outra linha da tabela está
+contaminada.
+
 ### Por dono
 
 | Dono provável | Tela | Diretrizes que falham |
