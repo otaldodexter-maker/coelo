@@ -997,11 +997,24 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
   Future<void> _pickDate(FormItem item) async {
     final generation = _loadGeneration;
     final now = DateTime.now();
+    // The author can declare a range and the server refuses a date outside it.
+    // Offering 120 years either way let the person pick a date the backend was
+    // always going to reject.
+    final first = item.config.minDate ?? DateTime(now.year - 120);
+    final last = item.config.maxDate ?? DateTime(now.year + 20);
+    final stored = (_answers[item.id]?.value as FormDateValue?)?.value ?? now;
+    // A stored answer can predate a range declared later. showDatePicker
+    // asserts the initial date is inside the range, so clamp instead of crash.
+    final initial = stored.isBefore(first)
+        ? first
+        : stored.isAfter(last)
+        ? last
+        : stored;
     final selected = await showDatePicker(
       context: context,
-      initialDate: (_answers[item.id]?.value as FormDateValue?)?.value ?? now,
-      firstDate: DateTime(now.year - 120),
-      lastDate: DateTime(now.year + 20),
+      initialDate: initial,
+      firstDate: first,
+      lastDate: last,
     );
     if (selected != null && _isCurrent(generation)) {
       setState(() => _setAnswer(item, FormAnswer.date(itemId: item.id, value: selected)));
