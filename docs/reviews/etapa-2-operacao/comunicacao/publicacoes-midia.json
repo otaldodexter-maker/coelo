@@ -1,6 +1,6 @@
 {
-  "revision": 39,
-  "updated_at": "2026-09-10T03:48:00-03:00",
+  "revision": 40,
+  "updated_at": "2026-09-10T03:52:00-03:00",
   "group": "publicacoes-midia",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
@@ -8,7 +8,7 @@
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-publicacoes-midia",
   "branch": "work/etapa2-noturna-publicacoes-midia",
-  "head": "376408072",
+  "head": "5029dfc05",
   "upstream": "origin/work/etapa2-noturna-publicacoes-midia (0/0)",
   "base": "origin/dev 447e6eea2 mesclado em 3ab29d7df",
   "ack": "coordenador: revisao 1 aceita; lote 1e39b2fcf integrado (merge d502350ce); lote b10f48d1e aceito para a proxima integracao; atribuicao de principal_real_route_test retirada por ele apos minha medicao; reserva da plataforma comum de midia mantida",
@@ -364,6 +364,12 @@
       "state": "publicado",
       "title": "retratacao da refutacao vazia; pre-entrega republicada em 784/758/26",
       "touches_reserved_files": []
+    },
+    {
+      "sha": "5029dfc05",
+      "state": "publicado",
+      "title": "terceira leitura dos tres vermelhos: fixture obsoleta, com causa conferida dos dois lados",
+      "touches_reserved_files": []
     }
   ],
   "action_ids_touched": [
@@ -391,7 +397,7 @@
     "os_cinco": "principal_publication_frame_test (o frame e consumido por TRES paginas de publicacao minhas mais o compositor) e os quatro de packages/coelo_api/test/media (quatro arquivos meus importam essas classes: repositorios de publicacao de Acontece e Agora, coordenador de upload de Circular, host produtivo)",
     "direcao_do_erro": "os 96 casos subestimavam APROVADOS e nunca esconderam falha",
     "item_2c": "sobreposicao ZERO entre todos os pares, verificada de tres formas: numero 1 e numero 2 sao runtimes distintos; os cinco arquivos do 2b nao caem sob nenhum dos 20 caminhos, que foi o criterio que os achou; e dentro da execucao principal as rotas vivem fora das arvores de feature, execucao unica, contagem por ID DE TESTE e nao por linha de log.",
-    "falhas": "26: as 23 goldens preexistentes mais 3 de rota, tambem preexistentes. Todas enumeradas uma a uma no documento de pre-entrega.",
+    "falhas": "26: as 23 goldens preexistentes mais 3 em principal_real_route_test. As 3 seguem CONTADAS porque sao vermelhas de verdade; o que mudou foi a classificacao, de defeito de produto para fixture obsoleta com causa localizada. Contagem nao muda, leitura muda.",
     "deno": "82 PASS / 0 FAIL: circular-media 27, moments-media 26, happens-media 15, now-media 14",
     "analyze": "flutter analyze --no-pub na arvore inteira do superadmin: No issues found",
     "nao_executado": "nenhuma suite pgTAP: o harness nao replica a cadeia canonica, falhando na 53a migration 20260812002010"
@@ -794,7 +800,8 @@
     "commits_pendentes_de_integracao": [
       "b69c7d00f",
       "fbd0c54ac",
-      "376408072"
+      "376408072",
+      "5029dfc05"
     ],
     "ja_integrados": [
       "05537c3b3",
@@ -967,7 +974,26 @@
     "causa": "StateError 'Bad state: No element' em tester.widget<PrincipalHappensPreviewPage>(...). Na rota real com contexto autenticado a pagina do Acontece nao e encontrada na arvore. O quarto caso do arquivo, o de fail-closed, PASSA: o caminho de negacao funciona e o de sucesso nao monta.",
     "procedencia": "preexistente a esta rodada; nao e regressao minha nem de ninguem desta noite. Mas e do meu escopo e esta na dev agora.",
     "nao_corrigido": "deliberado: diagnostico levou dez minutos e consertar composicao de rota as vesperas do congelamento seria frente nova. Entregue localizado, com causa e com prova de procedencia.",
-    "commit": "376408072"
+    "commit": "376408072",
+    "terceira_leitura": {
+      "classificacao_final": "FIXTURE OBSOLETA com causa localizada, e NAO defeito de produto",
+      "medido": [
+        "a rota real do Acontece exige DUAS dependencias: linha 892 do router, 'if (repository == null || mixedRepository == null) return _unavailableCompositionRootRoute(context)'",
+        "o teste fornece UMA: nas tres montagens passa principalRuntimeContextRepository e principalHappensFeedRepository, e NUNCA principalMixedFeedRepository",
+        "os UNICOS dois pontos de composicao em lib estao em superadmin_auth_scope.dart: o escopo autenticado liga as duas juntas do mesmo client (linha 400-401); o escopo fechado liga as duas como null (linha 474-475). Nao existe terceiro."
+      ],
+      "conclusao": "o teste constroi uma configuracao que o composition root NAO PRODUZ — Acontece ligado e feed misto ausente — e cai no ramo indisponivel, que e o comportamento correto para dependencia faltando",
+      "limite_declarado": "e leitura do composition root, NAO producao respondendo. NAO afirmo que a rota real do Acontece funciona em producao; afirmo que nenhuma configuracao do composition root produz o estado contra o qual este teste falha.",
+      "o_verde_que_engana": "o quarto caso do arquivo, o de fail-closed por multiplos contextos, PASSA PELO MOTIVO ERRADO: ele assere fechamento, e fechamento e o que acontece de qualquer jeito com a dependencia ausente",
+      "correcao_descrita_nao_aplicada": "acrescentar principalMixedFeedRepository as tres montagens de createSuperadminRouter no arquivo. Uma linha. Nao aplicada: alteracao de teste a menos de uma hora do congelamento, em arquivo fora do recorte declarado.",
+      "commit": "5029dfc05"
+    },
+    "tres_leituras_em_ordem": {
+      "1_vazia": "'nao sao minhas' — ausencia de uma lista que nao cobria o arquivo. Sem evidencia nenhuma.",
+      "2_sintoma": "'defeito de produto preexistente' — falha nos tres checkouts. Isso prova PREEXISTENCIA, nao prova DEFEITO. Parei no sintoma e chamei de diagnostico.",
+      "3_causa": "'fixture obsoleta' — confere quem exige, quem fornece e todos os pontos de composicao que existem. E a que se sustenta.",
+      "licao": "falhar em toda parte e evidencia de procedencia, nunca de defeito. Sao perguntas diferentes e eu tratei uma como resposta da outra."
+    }
   },
   "direcaoDoErroDeDenominador": {
     "minha_afirmacao_falsa": "eu afirmei ao coordenador que no MEU caso o furo de denominador so subestimava aprovados e nunca escondia falha",

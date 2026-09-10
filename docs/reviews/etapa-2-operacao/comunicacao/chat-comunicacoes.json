@@ -1,6 +1,6 @@
 {
-  "revision": 44,
-  "updated_at": "2026-09-10T03:12:00-03:00",
+  "revision": 46,
+  "updated_at": "2026-09-10T03:52:00-03:00",
   "group": "chat-comunicacoes",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) - claude-opus-5[1m]",
@@ -792,5 +792,55 @@
     "como_encontrei": "O formato de pre-entrega pediu a LISTA DE CAMINHOS junto de cada numero, contra o caso de uma frente que perdeu 512 casos por caminho no singular. Fui verificar se os meus existiam — existiam todos. O risco real era o inverso: nao caminho inexistente, e caminho AUSENTE da lista.",
     "licao": "Conferir que os caminhos declarados existem nao prova que a lista esta completa. Sao duas perguntas diferentes, e so a primeira tem verificacao obvia. A segunda exige varrer o repositorio pelo escopo e nao pela lista.",
     "efeito_na_entrega": "Todos os numeros de recorte que publiquei antes desta revisao subestimavam os aprovados. Nenhum superestimava, e nenhuma falha estava escondida."
+  },
+  "sobreposicao_declarada_item_2c": {
+    "resposta": "NAO ha soma a fazer no meu caso. A sobreposicao entre os dois numeros e ZERO.",
+    "por_que": "Os 7 caminhos que eu media eram test/features/chat, test/features/notices, test/features/principal_chat e QUATRO arquivos nomeados um a um em test/app/router. Os 9 que faltavam sao outros arquivos, seis em test/app/router, dois em test/app/shell e um em test/app/dev_menu. Nenhum dos nove estava dentro de um caminho ja declarado, porque os quatro de router eram ARQUIVOS e nao a pasta.",
+    "numero_unico": "394 PASS / 12 FAIL em 16 caminhos ja e o numero completo e nao a soma de dois. Com o arquivo novo de action path fica 397 PASS / 12 FAIL em 17 caminhos.",
+    "onde_eu_teria_inflado": "Se eu tivesse declarado 'test/app/router' como pasta em vez dos quatro arquivos, os nove estariam dentro e eu teria contado duas vezes ao somar. O que me protegeu foi acidente da forma da lista, nao cuidado."
+  },
+  "entrega_action_path_de_criacao_e_edicao": {
+    "branch": "work/etapa2-noturna-chat-volta-mobile (segundo commit na mesma branch)",
+    "commit": "fb31e11dc test(notices): prove create and edit reach the repository from the real route",
+    "lacuna_que_fecha": "notices.publish e notices.archive ja tinham prova de acao pela ROTA REAL; notices.create e notices.edit nao. O assistente era exercido montando a pagina direto, e a rota so era provada quanto a composicao e a falha fechada.",
+    "por_que_importa": "Montar a pagina pula resolucao de parametro, escolha de repositorio e a decisao entre criar e editar. Uma rota de edicao que entregasse a pagina em modo de CRIACAO passaria em todo teste de pagina e perderia a comunicacao do operador.",
+    "o_que_prova": "Criar pela rota real: titulo e mensagem chegam como digitados e noticeId vem NULO. Editar: id e versao vista chegam juntos, senao escrita concorrente vira sobrescrita silenciosa.",
+    "guarda_contra_verde_vazio": "O caso de falha fechada afirma o POSITIVO: a rota desvia para /errors/mutation-capability-unavailable e o operador le o motivo. Ausencia de botao sozinha nao prova nada, porque pagina em branco tambem nao tem botao.",
+    "como_encontrei": "Contando quantos arquivos de teste NOMEIAM cada um dos meus 13 action_ids. Quatro ids nao eram nomeados por nenhum. Verifiquei antes de concluir: list, create, edit e schedule tinham cobertura de COMPORTAMENTO, entao a lacuna real era outra e menor — nao havia prova pela rota real para create e edit.",
+    "numero": "397 PASS / 12 FAIL em 17 caminhos."
+  },
+  "residual_por_sha": {
+    "metodo": "git merge-base --is-ancestor <sha> origin/dev, conforme o item 1 do formato. Nao usei git cat-file -e <sha>^{commit}: o circunflexo some no cmd, e existencia e mais fraca que ancestralidade.",
+    "origin_dev_no_momento": "e864a254f",
+    "integrados": [
+      "c1e6756c7 (cabeca da branch original, logo os 43 commits dela sao ancestrais)",
+      "cb0a386d8",
+      "05fdcf2d5"
+    ],
+    "pendente": [
+      "fb31e11dc (publicado em origin, aguardando integracao)"
+    ],
+    "nota": "Provar que c1e6756c7 e ancestral prova os 43 de uma vez, sem enumerar."
+  },
+  "tags_de_auditoria": {
+    "audit-frozen-0200": "0d847eb7a — cobre do inicio da noite ate ~02:00",
+    "audit-frozen-0350": "e864a254f — cobre de ~02:00 ate ~03:50",
+    "por_que_duas": "Auditoria sem intervalo declarado e afirmacao sobre um estado que ninguem consegue reconstituir depois. Cada tag diz ate onde a afirmacao correspondente vale.",
+    "tipo": "Tags LOCAIS, nao publicadas. Somem se o repositorio local for limpo."
+  },
+  "recursos": {
+    "worktree_propria": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-chat-comunicacoes, limpa, sem stash.",
+    "worktree_descartavel_criada_por_mim": "C:/cdchk, detached, criada nesta madrugada por caminho curto porque o scratchpad estoura o limite de nome do Windows. E MINHA e eu removo antes da entrega final.",
+    "branches_minhas": [
+      "work/etapa2-noturna-chat-comunicacoes",
+      "work/etapa2-noturna-chat-comunicacoes-router",
+      "work/etapa2-noturna-chat-comunicacoes-router-dedupe",
+      "work/etapa2-noturna-chat-comunicacoes-router-from",
+      "work/etapa2-noturna-avisos-chave-de-linha",
+      "work/etapa2-noturna-chat-volta-mobile"
+    ],
+    "worktrees_que_eu_nao_reivindico": "C:/Users/adrie/AppData/Local/Temp/coelo-base-check e Coelo.worktrees/e2-noturna-verificacao, ambas em d784462c1. Nao tenho registro de te-las criado e nao vou remover o que nao sei que e meu. Declaro em vez de presumir.",
+    "processos_filhos_portas": "nenhum",
+    "stash": "vazio"
   }
 }
