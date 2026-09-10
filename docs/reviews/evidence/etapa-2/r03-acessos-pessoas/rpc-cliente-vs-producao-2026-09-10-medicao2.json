@@ -1,0 +1,731 @@
+{
+  "geradoEm": "2026-09-10T18:55:18.048Z",
+  "metodo": "RPCs extraidas de apps/superadmin/lib por regex de client.rpc(...), comparadas com o dump schema-only de producao (public) de 10/09/2026.",
+  "totalChamadasDistintas": 189,
+  "existemEmProducao": 66,
+  "ausentesEmProducao": 123,
+  "migrationsNecessarias": 45,
+  "fila": [
+    {
+      "migration": "20260812002100_child_safety_read_models.sql",
+      "rpcs": [
+        "superadmin_child_safety_get",
+        "superadmin_child_safety_search_children"
+      ]
+    },
+    {
+      "migration": "20260812002200_child_safety_security_closure.sql",
+      "rpcs": [
+        "child_safety_change_lifecycle",
+        "child_safety_decide_authorization",
+        "child_safety_edit_pending_authorization",
+        "child_safety_request_authorization",
+        "superadmin_child_safety_directory",
+        "superadmin_request_child_safety_export"
+      ]
+    },
+    {
+      "migration": "20260820220000_now_publication_mvp.sql",
+      "rpcs": [
+        "load_now_draft",
+        "publish_now",
+        "save_now_draft"
+      ]
+    },
+    {
+      "migration": "20260820230000_meal_plan_media_lifecycle_receipts.sql",
+      "rpcs": [
+        "meal_plan_archive"
+      ]
+    },
+    {
+      "migration": "20260821112822_moments_publication_mvp.sql",
+      "rpcs": [
+        "load_moments_draft",
+        "publish_moment",
+        "save_moments_draft"
+      ]
+    },
+    {
+      "migration": "20260827234500_superadmin_internal_institution_detail.sql",
+      "rpcs": [
+        "superadmin_institution_detail_v2"
+      ]
+    },
+    {
+      "migration": "20260827235500_superadmin_internal_institution_list_filter.sql",
+      "rpcs": [
+        "superadmin_institution_directory_v2",
+        "superadmin_institution_filter_options_v2"
+      ]
+    },
+    {
+      "migration": "20260828000500_superadmin_internal_institution_edit_core.sql",
+      "rpcs": [
+        "superadmin_institution_edit_core_v2"
+      ]
+    },
+    {
+      "migration": "20260828002000_superadmin_internal_unit_detail.sql",
+      "rpcs": [
+        "superadmin_unit_detail_v2"
+      ]
+    },
+    {
+      "migration": "20260828003500_superadmin_internal_group_detail.sql",
+      "rpcs": [
+        "superadmin_group_detail_v2"
+      ]
+    },
+    {
+      "migration": "20260828005000_superadmin_internal_person_detail.sql",
+      "rpcs": [
+        "superadmin_person_detail_v2"
+      ]
+    },
+    {
+      "migration": "20260831231645_activities_v2_rls_grants.sql",
+      "rpcs": [
+        "superadmin_activity_detail_v2"
+      ]
+    },
+    {
+      "migration": "20260901101500_superadmin_internal_chat_v2.sql",
+      "rpcs": [
+        "superadmin_chat_mark_read_v2",
+        "superadmin_chat_realtime_refresh_v2",
+        "superadmin_chat_send_message_v2",
+        "superadmin_chat_unread_total_v2"
+      ]
+    },
+    {
+      "migration": "20260901161700_principal_runtime_contexts.sql",
+      "rpcs": [
+        "list_my_principal_contexts"
+      ]
+    },
+    {
+      "migration": "20260901165125_activity_template_unit_scope.sql",
+      "rpcs": [
+        "superadmin_create_scoped_activity_template"
+      ]
+    },
+    {
+      "migration": "20260901182838_superadmin_assessments_internal_v2.sql",
+      "rpcs": [
+        "superadmin_assessment_activate_configuration",
+        "superadmin_assessment_closing_queue",
+        "superadmin_assessment_configuration_read",
+        "superadmin_assessment_context_options",
+        "superadmin_assessment_gradebook_read",
+        "superadmin_assessment_save_configuration",
+        "superadmin_assessment_save_gradebook",
+        "superadmin_assessment_schedule_publication"
+      ]
+    },
+    {
+      "migration": "20260901185008_superadmin_internal_notices_v2.sql",
+      "rpcs": [
+        "superadmin_notice_audience_options_v2",
+        "superadmin_notice_change_status_v2",
+        "superadmin_notice_detail_v2",
+        "superadmin_notice_directory_v2",
+        "superadmin_notice_publish_v2",
+        "superadmin_notice_save_draft_v2"
+      ]
+    },
+    {
+      "migration": "20260901190432_superadmin_internal_invites_v2.sql",
+      "rpcs": [
+        "superadmin_invite_detail_v2",
+        "superadmin_invite_directory_v2",
+        "superadmin_invite_issue_v2",
+        "superadmin_invite_options_v2",
+        "superadmin_invite_resend_v2",
+        "superadmin_invite_revoke_v2"
+      ]
+    },
+    {
+      "migration": "20260901191921_superadmin_internal_circulars_v2.sql",
+      "rpcs": [
+        "superadmin_circular_close_v2",
+        "superadmin_circular_detail_v2",
+        "superadmin_circular_directory_v2",
+        "superadmin_circular_load_draft_v2",
+        "superadmin_circular_publish_v2",
+        "superadmin_circular_response_summary_v2",
+        "superadmin_circular_save_draft_v2"
+      ]
+    },
+    {
+      "migration": "20260901210000_superadmin_internal_users_directory.sql",
+      "rpcs": [
+        "superadmin_internal_user_detail",
+        "superadmin_internal_user_profiles"
+      ]
+    },
+    {
+      "migration": "20260907222911_superadmin_activity_directory_v2_client_contract.sql",
+      "rpcs": [
+        "superadmin_activity_directory_v2",
+        "superadmin_activity_filter_options_v2"
+      ]
+    },
+    {
+      "migration": "20260908000049_superadmin_forms_directory_internal_read.sql",
+      "rpcs": [
+        "superadmin_forms_directory_v2"
+      ]
+    },
+    {
+      "migration": "20260908021644_superadmin_internal_users_read_minimization.sql",
+      "rpcs": [
+        "superadmin_internal_users_list"
+      ]
+    },
+    {
+      "migration": "20260908031000_superadmin_location_catalog_v2.sql",
+      "rpcs": [
+        "superadmin_location_create_v2",
+        "superadmin_location_detail_v2",
+        "superadmin_location_directory_v2"
+      ]
+    },
+    {
+      "migration": "20260908051500_superadmin_child_context_directory_v2.sql",
+      "rpcs": [
+        "superadmin_child_context_directory_v2"
+      ]
+    },
+    {
+      "migration": "20260908154257_superadmin_activity_save_v2.sql",
+      "rpcs": [
+        "superadmin_activity_save_v2"
+      ]
+    },
+    {
+      "migration": "20260908190646_superadmin_locations_update_status_v2.sql",
+      "rpcs": [
+        "superadmin_location_set_status_v2",
+        "superadmin_location_update_v2"
+      ]
+    },
+    {
+      "migration": "20260908190648_superadmin_locations_copy_v2.sql",
+      "rpcs": [
+        "superadmin_location_copy_v2"
+      ]
+    },
+    {
+      "migration": "20260908190650_superadmin_locations_schedule_v2.sql",
+      "rpcs": [
+        "superadmin_location_schedule_set_v2",
+        "superadmin_location_schedule_v2"
+      ]
+    },
+    {
+      "migration": "20260909165000_superadmin_location_reservations_v2.sql",
+      "rpcs": [
+        "superadmin_location_reservation_assess_v2",
+        "superadmin_location_reservation_cancel_v2",
+        "superadmin_location_reservation_create_v2",
+        "superadmin_location_reservations_v2",
+        "superadmin_location_scheduling_policy_set_v2",
+        "superadmin_location_scheduling_policy_v2"
+      ]
+    },
+    {
+      "migration": "20260909191000_superadmin_internal_chat_receipts_edit_revoke_v2.sql",
+      "rpcs": [
+        "superadmin_chat_edit_message_v2",
+        "superadmin_chat_revoke_message_v2",
+        "superadmin_chat_thread_v2"
+      ]
+    },
+    {
+      "migration": "20260909192000_superadmin_location_consumer_bindings_v2.sql",
+      "rpcs": [
+        "superadmin_location_consumer_bindings_v2"
+      ]
+    },
+    {
+      "migration": "20260909200000_superadmin_activity_location_create_v2.sql",
+      "rpcs": [
+        "superadmin_activity_location_create_v2"
+      ]
+    },
+    {
+      "migration": "20260909210000_superadmin_group_location_create_v2.sql",
+      "rpcs": [
+        "superadmin_group_location_create_v2"
+      ]
+    },
+    {
+      "migration": "20260909211000_now_publication_expiry_transition_v1.sql",
+      "rpcs": [
+        "list_visible_now_publications"
+      ]
+    },
+    {
+      "migration": "20260909213000_happens_post_withdrawal_v1.sql",
+      "rpcs": [
+        "withdraw_happens_post"
+      ]
+    },
+    {
+      "migration": "20260909216000_moments_feed_and_withdrawal_v1.sql",
+      "rpcs": [
+        "list_visible_moments",
+        "withdraw_moment"
+      ]
+    },
+    {
+      "migration": "20260909217000_superadmin_support_production_v1.sql",
+      "rpcs": [
+        "superadmin_support_create",
+        "superadmin_support_get",
+        "superadmin_support_list",
+        "superadmin_support_reply",
+        "superadmin_support_set_status"
+      ]
+    },
+    {
+      "migration": "20260909218000_superadmin_account_profile_v1.sql",
+      "rpcs": [
+        "superadmin_account_email_change_cancel",
+        "superadmin_account_profile_get",
+        "superadmin_account_profile_save"
+      ]
+    },
+    {
+      "migration": "20260910010100_daily_routine_behavior_v1.sql",
+      "rpcs": [
+        "superadmin_routine_correct_launch",
+        "superadmin_routine_directory",
+        "superadmin_routine_model_detail",
+        "superadmin_routine_publish_launch",
+        "superadmin_routine_revert_application",
+        "superadmin_routine_save_application",
+        "superadmin_routine_save_launch_draft",
+        "superadmin_routine_save_model"
+      ]
+    },
+    {
+      "migration": "20260910010200_attendance_authorization_and_idempotency_v1.sql",
+      "rpcs": [
+        "attendance_reserve_idempotency_key"
+      ]
+    },
+    {
+      "migration": "20260910010400_health_care_behavior_v1.sql",
+      "rpcs": [
+        "superadmin_health_care_directory",
+        "superadmin_health_care_profile_detail",
+        "superadmin_health_care_save_profile",
+        "superadmin_medication_plan_detail",
+        "superadmin_medication_plan_directory",
+        "superadmin_medication_plan_save"
+      ]
+    },
+    {
+      "migration": "20260910010500_daily_routine_client_contract_v1.sql",
+      "rpcs": [
+        "superadmin_routine_application_detail",
+        "superadmin_routine_launch_detail"
+      ]
+    },
+    {
+      "migration": "20260910120000_superadmin_internal_circular_delete_v1.sql",
+      "rpcs": [
+        "superadmin_circular_delete_v2"
+      ]
+    },
+    {
+      "migration": "20260910140000_chat_conversation_preferences_v1.sql",
+      "rpcs": [
+        "superadmin_chat_inbox_v2"
+      ]
+    }
+  ],
+  "semMigrationLocalizada": [
+    "superadmin_agenda_contexts_v2",
+    "superadmin_agenda_get_v2",
+    "superadmin_agenda_list_v2",
+    "superadmin_attendance_call_detail",
+    "superadmin_attendance_context_options",
+    "superadmin_attendance_create_call",
+    "superadmin_attendance_directory",
+    "superadmin_attendance_undo_bulk"
+  ],
+  "consumidorPorRpc": {
+    "attendance_reserve_idempotency_key": [
+      "features/attendance/data/supabase_attendance_repository.dart"
+    ],
+    "child_safety_change_lifecycle": [
+      "features/safety/data/supabase_child_safety_repository.dart"
+    ],
+    "child_safety_decide_authorization": [
+      "features/safety/data/supabase_child_safety_repository.dart"
+    ],
+    "child_safety_edit_pending_authorization": [
+      "features/safety/data/supabase_child_safety_repository.dart"
+    ],
+    "child_safety_request_authorization": [
+      "features/safety/data/supabase_child_safety_repository.dart"
+    ],
+    "list_my_principal_contexts": [
+      "features/principal_shared/data/supabase_principal_runtime_context_repository.dart"
+    ],
+    "list_visible_moments": [
+      "features/principal_moments/data/supabase_principal_moments_feed_repository.dart"
+    ],
+    "list_visible_now_publications": [
+      "features/principal_now/data/supabase_principal_now_feed_repository.dart"
+    ],
+    "load_moments_draft": [
+      "features/principal_moments_publication/data/supabase_moments_publication_repository.dart"
+    ],
+    "load_now_draft": [
+      "features/principal_now_publication/data/supabase_now_publication_repository.dart"
+    ],
+    "meal_plan_archive": [
+      "features/meal_plans/data/supabase_meal_plan_repository.dart"
+    ],
+    "publish_moment": [
+      "features/principal_moments_publication/data/supabase_moments_publication_repository.dart"
+    ],
+    "publish_now": [
+      "features/principal_now_publication/data/supabase_now_publication_repository.dart"
+    ],
+    "save_moments_draft": [
+      "features/principal_moments_publication/data/supabase_moments_publication_repository.dart"
+    ],
+    "save_now_draft": [
+      "features/principal_now_publication/data/supabase_now_publication_repository.dart"
+    ],
+    "superadmin_account_email_change_cancel": [
+      "features/account/data/supabase_account_profile_repository.dart"
+    ],
+    "superadmin_account_profile_get": [
+      "features/account/data/supabase_account_profile_repository.dart"
+    ],
+    "superadmin_account_profile_save": [
+      "features/account/data/supabase_account_profile_repository.dart"
+    ],
+    "superadmin_activity_detail_v2": [
+      "features/activities/data/supabase_activity_read_detail_repository.dart"
+    ],
+    "superadmin_activity_directory_v2": [
+      "features/activities/data/supabase_activity_directory_repository.dart"
+    ],
+    "superadmin_activity_filter_options_v2": [
+      "features/activities/data/supabase_activity_directory_repository.dart"
+    ],
+    "superadmin_activity_location_create_v2": [
+      "features/activities/data/supabase_activity_command_repository.dart"
+    ],
+    "superadmin_activity_save_v2": [
+      "features/activities/data/supabase_activity_command_repository.dart"
+    ],
+    "superadmin_agenda_contexts_v2": [
+      "features/agenda/data/supabase_agenda_read_repository.dart"
+    ],
+    "superadmin_agenda_get_v2": [
+      "features/agenda/data/supabase_agenda_read_repository.dart"
+    ],
+    "superadmin_agenda_list_v2": [
+      "features/agenda/data/supabase_agenda_read_repository.dart"
+    ],
+    "superadmin_assessment_activate_configuration": [
+      "features/assessments/data/supabase_assessment_repository.dart"
+    ],
+    "superadmin_assessment_closing_queue": [
+      "features/assessments/data/supabase_assessment_repository.dart"
+    ],
+    "superadmin_assessment_configuration_read": [
+      "features/assessments/data/supabase_assessment_repository.dart"
+    ],
+    "superadmin_assessment_context_options": [
+      "features/assessments/data/supabase_assessment_repository.dart"
+    ],
+    "superadmin_assessment_gradebook_read": [
+      "features/assessments/data/supabase_assessment_repository.dart"
+    ],
+    "superadmin_assessment_save_configuration": [
+      "features/assessments/data/supabase_assessment_repository.dart"
+    ],
+    "superadmin_assessment_save_gradebook": [
+      "features/assessments/data/supabase_assessment_repository.dart"
+    ],
+    "superadmin_assessment_schedule_publication": [
+      "features/assessments/data/supabase_assessment_repository.dart"
+    ],
+    "superadmin_attendance_call_detail": [
+      "features/attendance/data/supabase_attendance_repository.dart"
+    ],
+    "superadmin_attendance_context_options": [
+      "features/attendance/data/supabase_attendance_repository.dart"
+    ],
+    "superadmin_attendance_create_call": [
+      "features/attendance/data/supabase_attendance_repository.dart"
+    ],
+    "superadmin_attendance_directory": [
+      "features/attendance/data/supabase_attendance_repository.dart"
+    ],
+    "superadmin_attendance_undo_bulk": [
+      "features/attendance/data/supabase_attendance_repository.dart"
+    ],
+    "superadmin_chat_edit_message_v2": [
+      "features/chat/data/supabase_chat_repository.dart"
+    ],
+    "superadmin_chat_inbox_v2": [
+      "features/chat/data/supabase_chat_repository.dart"
+    ],
+    "superadmin_chat_mark_read_v2": [
+      "features/chat/data/supabase_chat_repository.dart"
+    ],
+    "superadmin_chat_realtime_refresh_v2": [
+      "features/chat/data/supabase_chat_repository.dart"
+    ],
+    "superadmin_chat_revoke_message_v2": [
+      "features/chat/data/supabase_chat_repository.dart"
+    ],
+    "superadmin_chat_send_message_v2": [
+      "features/chat/data/supabase_chat_repository.dart"
+    ],
+    "superadmin_chat_thread_v2": [
+      "features/chat/data/supabase_chat_repository.dart"
+    ],
+    "superadmin_chat_unread_total_v2": [
+      "features/chat/data/supabase_chat_repository.dart"
+    ],
+    "superadmin_child_context_directory_v2": [
+      "features/children/data/supabase_child_directory_reader.dart"
+    ],
+    "superadmin_child_safety_directory": [
+      "features/safety/data/supabase_child_safety_repository.dart"
+    ],
+    "superadmin_child_safety_get": [
+      "features/safety/data/supabase_child_safety_repository.dart"
+    ],
+    "superadmin_child_safety_search_children": [
+      "features/safety/data/supabase_child_safety_repository.dart"
+    ],
+    "superadmin_circular_close_v2": [
+      "features/circulars/data/supabase_superadmin_circular_repository.dart"
+    ],
+    "superadmin_circular_delete_v2": [
+      "features/circulars/data/supabase_superadmin_circular_repository.dart"
+    ],
+    "superadmin_circular_detail_v2": [
+      "features/circulars/data/supabase_superadmin_circular_repository.dart"
+    ],
+    "superadmin_circular_directory_v2": [
+      "features/circulars/data/supabase_superadmin_circular_repository.dart"
+    ],
+    "superadmin_circular_load_draft_v2": [
+      "features/circulars/data/supabase_superadmin_circular_repository.dart"
+    ],
+    "superadmin_circular_publish_v2": [
+      "features/circulars/data/supabase_superadmin_circular_repository.dart"
+    ],
+    "superadmin_circular_response_summary_v2": [
+      "features/circulars/data/supabase_superadmin_circular_repository.dart"
+    ],
+    "superadmin_circular_save_draft_v2": [
+      "features/circulars/data/supabase_superadmin_circular_repository.dart"
+    ],
+    "superadmin_create_scoped_activity_template": [
+      "features/activities/data/supabase_activity_command_repository.dart"
+    ],
+    "superadmin_forms_directory_v2": [
+      "features/forms/data/supabase_superadmin_forms_directory_reader.dart"
+    ],
+    "superadmin_group_detail_v2": [
+      "features/groups/data/supabase_group_detail_repository.dart"
+    ],
+    "superadmin_group_location_create_v2": [
+      "features/groups/data/supabase_group_location_create_repository.dart"
+    ],
+    "superadmin_health_care_directory": [
+      "features/health_care/data/supabase_health_care_repository.dart"
+    ],
+    "superadmin_health_care_profile_detail": [
+      "features/health_care/data/supabase_health_care_repository.dart"
+    ],
+    "superadmin_health_care_save_profile": [
+      "features/health_care/data/supabase_health_care_repository.dart"
+    ],
+    "superadmin_institution_detail_v2": [
+      "features/institutions/data/supabase_institution_directory_repository.dart"
+    ],
+    "superadmin_institution_directory_v2": [
+      "features/institutions/data/supabase_institution_directory_repository.dart"
+    ],
+    "superadmin_institution_edit_core_v2": [
+      "features/institutions/data/supabase_institution_directory_repository.dart"
+    ],
+    "superadmin_institution_filter_options_v2": [
+      "features/institutions/data/supabase_institution_directory_repository.dart"
+    ],
+    "superadmin_internal_user_detail": [
+      "features/platform_users/data/supabase_platform_user_repository.dart"
+    ],
+    "superadmin_internal_user_profiles": [
+      "features/platform_users/data/supabase_platform_user_repository.dart"
+    ],
+    "superadmin_internal_users_list": [
+      "features/platform_users/data/supabase_platform_user_repository.dart"
+    ],
+    "superadmin_invite_detail_v2": [
+      "features/invites/data/supabase_invite_repository.dart"
+    ],
+    "superadmin_invite_directory_v2": [
+      "features/invites/data/supabase_invite_repository.dart"
+    ],
+    "superadmin_invite_issue_v2": [
+      "features/invites/data/supabase_invite_repository.dart"
+    ],
+    "superadmin_invite_options_v2": [
+      "features/invites/data/supabase_invite_repository.dart"
+    ],
+    "superadmin_invite_resend_v2": [
+      "features/invites/data/supabase_invite_repository.dart"
+    ],
+    "superadmin_invite_revoke_v2": [
+      "features/invites/data/supabase_invite_repository.dart"
+    ],
+    "superadmin_location_consumer_bindings_v2": [
+      "features/locations/data/supabase_location_consumer_bindings_reader.dart"
+    ],
+    "superadmin_location_copy_v2": [
+      "features/locations/data/supabase_location_catalog_writer.dart"
+    ],
+    "superadmin_location_create_v2": [
+      "features/locations/data/supabase_location_catalog_writer.dart"
+    ],
+    "superadmin_location_detail_v2": [
+      "features/locations/data/supabase_location_catalog_reader.dart"
+    ],
+    "superadmin_location_directory_v2": [
+      "features/locations/data/supabase_location_catalog_reader.dart"
+    ],
+    "superadmin_location_reservation_assess_v2": [
+      "features/locations/data/supabase_location_reservation_gateway.dart"
+    ],
+    "superadmin_location_reservation_cancel_v2": [
+      "features/locations/data/supabase_location_reservation_gateway.dart"
+    ],
+    "superadmin_location_reservation_create_v2": [
+      "features/locations/data/supabase_location_reservation_gateway.dart"
+    ],
+    "superadmin_location_reservations_v2": [
+      "features/locations/data/supabase_location_reservation_gateway.dart"
+    ],
+    "superadmin_location_schedule_set_v2": [
+      "features/locations/data/supabase_location_catalog_writer.dart"
+    ],
+    "superadmin_location_schedule_v2": [
+      "features/locations/data/supabase_location_catalog_writer.dart"
+    ],
+    "superadmin_location_scheduling_policy_set_v2": [
+      "features/locations/data/supabase_location_reservation_gateway.dart"
+    ],
+    "superadmin_location_scheduling_policy_v2": [
+      "features/locations/data/supabase_location_reservation_gateway.dart"
+    ],
+    "superadmin_location_set_status_v2": [
+      "features/locations/data/supabase_location_catalog_writer.dart"
+    ],
+    "superadmin_location_update_v2": [
+      "features/locations/data/supabase_location_catalog_writer.dart"
+    ],
+    "superadmin_medication_plan_detail": [
+      "features/health_care/data/supabase_medication_plan_repository.dart"
+    ],
+    "superadmin_medication_plan_directory": [
+      "features/health_care/data/supabase_medication_plan_repository.dart"
+    ],
+    "superadmin_medication_plan_save": [
+      "features/health_care/data/supabase_medication_plan_repository.dart"
+    ],
+    "superadmin_notice_audience_options_v2": [
+      "features/notices/data/supabase_notice_repository.dart"
+    ],
+    "superadmin_notice_change_status_v2": [
+      "features/notices/data/supabase_notice_repository.dart"
+    ],
+    "superadmin_notice_detail_v2": [
+      "features/notices/data/supabase_notice_repository.dart"
+    ],
+    "superadmin_notice_directory_v2": [
+      "features/notices/data/supabase_notice_repository.dart"
+    ],
+    "superadmin_notice_publish_v2": [
+      "features/notices/data/supabase_notice_repository.dart"
+    ],
+    "superadmin_notice_save_draft_v2": [
+      "features/notices/data/supabase_notice_repository.dart"
+    ],
+    "superadmin_person_detail_v2": [
+      "features/people/data/supabase_person_directory_repository.dart"
+    ],
+    "superadmin_request_child_safety_export": [
+      "features/safety/data/supabase_child_safety_repository.dart"
+    ],
+    "superadmin_routine_application_detail": [
+      "features/daily_routine/data/supabase_routine_repository.dart"
+    ],
+    "superadmin_routine_correct_launch": [
+      "features/daily_routine/data/supabase_routine_repository.dart"
+    ],
+    "superadmin_routine_directory": [
+      "features/daily_routine/data/supabase_routine_repository.dart"
+    ],
+    "superadmin_routine_launch_detail": [
+      "features/daily_routine/data/supabase_routine_repository.dart"
+    ],
+    "superadmin_routine_model_detail": [
+      "features/daily_routine/data/supabase_routine_repository.dart"
+    ],
+    "superadmin_routine_publish_launch": [
+      "features/daily_routine/data/supabase_routine_repository.dart"
+    ],
+    "superadmin_routine_revert_application": [
+      "features/daily_routine/data/supabase_routine_repository.dart"
+    ],
+    "superadmin_routine_save_application": [
+      "features/daily_routine/data/supabase_routine_repository.dart"
+    ],
+    "superadmin_routine_save_launch_draft": [
+      "features/daily_routine/data/supabase_routine_repository.dart"
+    ],
+    "superadmin_routine_save_model": [
+      "features/daily_routine/data/supabase_routine_repository.dart"
+    ],
+    "superadmin_support_create": [
+      "features/support/data/support_repository.dart"
+    ],
+    "superadmin_support_get": [
+      "features/support/data/support_repository.dart"
+    ],
+    "superadmin_support_list": [
+      "features/support/data/support_repository.dart"
+    ],
+    "superadmin_support_reply": [
+      "features/support/data/support_repository.dart"
+    ],
+    "superadmin_support_set_status": [
+      "features/support/data/support_repository.dart"
+    ],
+    "superadmin_unit_detail_v2": [
+      "features/units/data/supabase_unit_detail_repository.dart"
+    ],
+    "withdraw_happens_post": [
+      "features/principal_happens/data/supabase_principal_happens_feed_repository.dart"
+    ],
+    "withdraw_moment": [
+      "features/principal_moments/data/supabase_principal_moments_feed_repository.dart"
+    ]
+  }
+}
