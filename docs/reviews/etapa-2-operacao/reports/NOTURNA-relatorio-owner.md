@@ -306,12 +306,32 @@ interruptor à direita.
 é um cartão, com um ponto de status trocando de cor e linhas de texto sobrepostas
 onde um rótulo e uma data mudaram.
 
-**Instituições, 4 casos** — já relatado antes: cabeçalho conhecido **mais** o
-cartão tracejado "Criar instituição" presente na referência e ausente na captura
-atual, com dados e paginação diferentes. Pode ser afordância de criação sumindo
-de um diretório do MVP, ou apenas fixture diferente; barato de confirmar por quem
-tem o recorte, e nenhuma das duas respostas aparece se os 129 forem tratados como
-bloco.
+**Instituições, 4 casos — resolvido, e a resposta é a terceira possibilidade.**
+O cartão tracejado "Criar instituição" está presente na referência e ausente na
+captura atual, e a pergunta era se a afordância havia sumido do produto. **Não
+sumiu.** O cartão é renderizado apenas quando o callback de criação é fornecido,
+e em produção o router o fornece condicionado à capacidade de estrutura. O que
+mudou foi a **composição do teste**: o `_goldenApp` atual monta a página sem esse
+callback. O fixture inteiro também trocou — outros nomes de instituição, outra
+contagem de turmas, "Página 1 de 1" em vez de "1 de 2" — o que confirma que é
+outro seed do repositório falso, não outra tela.
+
+**Mas há uma perda real, e ela não é a que se procurava: perdeu-se cobertura.** A
+referência aprovada protegia o cartão de criação e hoje não protege mais, porque
+o teste parou de fornecer o callback. **Se alguém remover a afordância amanhã,
+este golden não acusa.** Então a ação correta não é "regravar e seguir": é decidir
+se o golden de Instituições volta a exercitar a criação — o que é uma linha no
+próprio teste.
+
+Isso responde à pergunta que abriu a triagem: o rótulo "deriva de golden" estava
+mesmo escondendo algo real, só que o algo real é **cobertura perdida, não
+afordância perdida** — e a diferença muda quem age. Não é a frente de Estrutura
+consertando tela; é quem mantém o golden restaurando a composição do teste.
+
+**E o método que resolveu vale para os outros pares:** a imagem levantou a
+pergunta, o código respondeu. Abrir as duas capturas diz *onde* olhar; só a cadeia
+no código diz *o que* aconteceu. Foi a mesma sequência que corrigiu a leitura do
+golden do Perfil horas antes.
 
 **Atividades, 16 casos** — a maior das amostras, e falha em **todas** as
 larguras: 19%–32% em 375 e 768, 12%–13% em 1024, 9,8%–20,5% em 1440. Nas larguras
