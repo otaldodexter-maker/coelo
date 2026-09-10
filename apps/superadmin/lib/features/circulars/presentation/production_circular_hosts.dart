@@ -40,6 +40,7 @@ final class _ProductionCircularDirectoryHostState extends State<ProductionCircul
   var _state = CircularDirectoryViewState.loading;
   List<CircularDirectoryItem> _items = const [];
   var _loadGeneration = 0;
+  var _truncated = false;
 
   @override
   void initState() {
@@ -53,34 +54,62 @@ final class _ProductionCircularDirectoryHostState extends State<ProductionCircul
     if (!identical(oldWidget.repository, widget.repository)) _load();
   }
 
+  /// Paginas seguidas por rodada de leitura.
+  ///
+  /// O diretorio filtra, busca e pagina na propria pagina, sobre a lista que
+  /// recebe. Ler uma unica pagina fazia o restante do acervo sumir em silencio:
+  /// uma busca por uma Circular antiga simplesmente nao encontrava nada. O host
+  /// passa a seguir o cursor do servidor ate acabar, com um teto para nao
+  /// prender a tela, e diz a verdade quando o teto e alcancado.
+  static const _maxPages = 10;
+  static const _pageSize = 100;
+
   Future<void> _load() async {
     final generation = ++_loadGeneration;
     setState(() {
       _items = const [];
+      _truncated = false;
       _state = CircularDirectoryViewState.loading;
     });
     try {
-      final page = await widget.repository.fetchDirectory(
-        const SuperadminCircularDirectoryQuery(limit: 100),
-      );
+      final collected = <CircularDirectoryItem>[];
+      DateTime? cursorUpdatedAt;
+      String? cursorId;
+      var truncated = false;
+      for (var page = 0; page < _maxPages; page++) {
+        final fetched = await widget.repository.fetchDirectory(
+          SuperadminCircularDirectoryQuery(
+            limit: _pageSize,
+            cursorUpdatedAt: cursorUpdatedAt,
+            cursorId: cursorId,
+          ),
+        );
+        if (!mounted || generation != _loadGeneration) return;
+        collected.addAll(
+          fetched.items.map(
+            (item) => CircularDirectoryItem(
+              id: item.id,
+              title: item.title,
+              excerpt: item.excerpt,
+              authorName: item.authorName,
+              contextLabel: item.contextLabel,
+              status: item.status,
+              effectiveAt: item.effectiveAt,
+              attachmentCount: item.attachmentCount,
+              questionCount: item.questionCount,
+              responseCount: item.responseCount,
+            ),
+          ),
+        );
+        cursorUpdatedAt = fetched.nextCursorUpdatedAt;
+        cursorId = fetched.nextCursorId;
+        if (cursorUpdatedAt == null || cursorId == null) break;
+        if (page == _maxPages - 1) truncated = true;
+      }
       if (!mounted || generation != _loadGeneration) return;
       setState(() {
-        _items = page.items
-            .map(
-              (item) => CircularDirectoryItem(
-                id: item.id,
-                title: item.title,
-                excerpt: item.excerpt,
-                authorName: item.authorName,
-                contextLabel: item.contextLabel,
-                status: item.status,
-                effectiveAt: item.effectiveAt,
-                attachmentCount: item.attachmentCount,
-                questionCount: item.questionCount,
-                responseCount: item.responseCount,
-              ),
-            )
-            .toList(growable: false);
+        _items = List.unmodifiable(collected);
+        _truncated = truncated;
         _state = CircularDirectoryViewState.content;
       });
     } on CircularUnauthorized {
@@ -95,13 +124,36 @@ final class _ProductionCircularDirectoryHostState extends State<ProductionCircul
   }
 
   @override
-  Widget build(BuildContext context) => CircularDirectoryPage(
-    items: _items,
-    viewState: _state,
-    onRetry: _load,
-    onCreate: _state == CircularDirectoryViewState.content ? widget.onCreate : null,
-    onOpen: widget.onOpen,
-  );
+  Widget build(BuildContext context) {
+    final directory = CircularDirectoryPage(
+      items: _items,
+      viewState: _state,
+      onRetry: _load,
+      onCreate: _state == CircularDirectoryViewState.content ? widget.onCreate : null,
+      onOpen: widget.onOpen,
+    );
+    if (!_truncated) return directory;
+    final colors = Theme.of(context).colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Semantics(
+          liveRegion: true,
+          child: Container(
+            key: const Key('circular-directory-truncated'),
+            padding: const EdgeInsets.all(CoeloSpacing.space3),
+            color: colors.secondaryContainer,
+            child: Text(
+              'Mostrando as ${_maxPages * _pageSize} Circulares mais recentes. '
+              'Use a busca da instituição para encontrar as anteriores.',
+              style: TextStyle(color: colors.onSecondaryContainer),
+            ),
+          ),
+        ),
+        Expanded(child: directory),
+      ],
+    );
+  }
 }
 
 final class ProductionCircularComposerHost extends StatefulWidget {
