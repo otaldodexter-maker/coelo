@@ -230,6 +230,34 @@ void main() {
     expect(repository.requested.single.unitId, 'unit-1');
   });
 
+  testWidgets('names every About field to assistive technology', (tester) async {
+    // The Sobre tab renders each field as its bare value beside a generic icon,
+    // which is the approved composition. A screen reader therefore announced
+    // two contact numbers as two numbers, with nothing saying which is which:
+    // for assistive technology the information was not ambiguous, it was
+    // absent. The semantic label names the field without changing a pixel.
+    final handle = tester.ensureSemantics();
+
+    final page = ProfileAboutPage(
+      subject: subjectOf(context),
+      version: 1,
+      fields: const [
+        ProfileAboutField(key: ProfileAboutFieldKey.phone, value: '11 3000-0000'),
+        ProfileAboutField(key: ProfileAboutFieldKey.mobile, value: '11 99999-0000'),
+      ],
+      sections: const [],
+    );
+    await pump(tester, repository: _StubAboutRepository(page: page));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Sobre').last);
+    await tester.tap(find.text('Sobre').last);
+    await tester.pumpAndSettle();
+
+    expect(find.bySemanticsLabel('Telefone: 11 3000-0000'), findsOneWidget);
+    expect(find.bySemanticsLabel('Celular: 11 99999-0000'), findsOneWidget);
+    handle.dispose();
+  });
+
   testWidgets('does not offer "Ver mais" when there is no bio to expand', (tester) async {
     // The bio is the authorized `description` field and can legitimately be
     // absent. An empty paragraph followed by "Ver mais" offers to expand
