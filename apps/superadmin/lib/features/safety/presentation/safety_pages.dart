@@ -10,12 +10,9 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import '../../../app/shell/superadmin_notice.dart';
 import '../../../app/shell/superadmin_shell.dart';
-import '../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
 import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
-import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
-import '../../../shared/presentation/widgets/superadmin_underline_tabs.dart';
 import '../../auth/domain/logout_action.dart';
 import '../application/child_safety_controller.dart';
 import '../domain/child_safety.dart';
@@ -148,13 +145,13 @@ final class _SafetyLandingPageState extends State<SafetyLandingPage> {
                       ),
                       filters: const [],
                       actions: [
-                        SuperadminDirectoryViewToggle<_TableView>(
+                        CoeloAdminDirectoryViewToggle<_TableView>(
                           cardsSelected:
                               widget.controller.query.view == ChildSafetyDirectoryView.cards,
                           groupedView: _TableView.grouped,
                           selectedTableView: _TableView.grouped,
                           tableViews: const [
-                            SuperadminDirectoryTableViewOption(
+                            CoeloAdminDirectoryTableViewOption(
                               value: _TableView.grouped,
                               label: 'Agrupado',
                             ),
@@ -195,10 +192,10 @@ final class _SafetyLandingPageState extends State<SafetyLandingPage> {
                       ],
                     ),
                     const SizedBox(height: CoeloSpacing.space4),
-                    SuperadminUnderlineTabs<ChildSafetyDirectorySegment>(
+                    CoeloAdminUnderlineTabs<ChildSafetyDirectorySegment>(
                       tabs: [
                         for (final value in ChildSafetyDirectorySegment.values)
-                          SuperadminUnderlineTab(
+                          CoeloAdminUnderlineTab(
                             value: value,
                             label: '${value.label} (${widget.controller.segmentCounts[value]})',
                           ),
@@ -217,7 +214,7 @@ final class _SafetyLandingPageState extends State<SafetyLandingPage> {
                     bottom: 0,
                     child: SizeChangedLayoutNotifier(
                       key: _footerKey,
-                      child: SuperadminListingPaginationFooter(
+                      child: CoeloAdminPaginationFooter(
                         semanticKey: const Key('safety-directory-pagination-footer'),
                         horizontalPadding: inset,
                         compactCurrentPage: widget.controller.currentPage + 1,
@@ -347,7 +344,7 @@ final class _SafetyLandingPageState extends State<SafetyLandingPage> {
             ),
             const SizedBox(height: CoeloSpacing.space4),
           ],
-          _SafetyTable(records: c.records, onOpen: widget.onOpenChild),
+          _SafetyRows(records: c.records, onOpen: widget.onOpenChild),
         ],
       ],
     );
@@ -444,8 +441,8 @@ final class SafetyChildDirectoryCard extends StatelessWidget {
   }
 }
 
-final class _SafetyTable extends StatelessWidget {
-  const _SafetyTable({required this.records, required this.onOpen});
+final class _SafetyRows extends StatelessWidget {
+  const _SafetyRows({required this.records, required this.onOpen});
   final List<ChildSafetyRecord> records;
   final ValueChanged<String> onOpen;
   @override
@@ -659,7 +656,7 @@ final class _ChildSecurityPageState extends State<ChildSecurityPage> {
                   onAction: widget.controller.canCreate ? widget.onCreate : null,
                 )
               else if (constraints.maxWidth >= 768)
-                _AuthorizedTable(
+                _AuthorizedRows(
                   record: child,
                   controller: widget.controller,
                   onEdit: widget.onEdit,
@@ -707,8 +704,8 @@ final class _PendingNotice extends StatelessWidget {
   }
 }
 
-final class _AuthorizedTable extends StatelessWidget {
-  const _AuthorizedTable({required this.record, required this.controller, required this.onEdit});
+final class _AuthorizedRows extends StatelessWidget {
+  const _AuthorizedRows({required this.record, required this.controller, required this.onEdit});
   final ChildSafetyRecord record;
   final ChildSafetyController controller;
   final ValueChanged<String>? onEdit;
