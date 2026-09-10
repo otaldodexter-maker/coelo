@@ -85,6 +85,38 @@ void main() {
     expect(find.text('mensagem da margarida'), findsOneWidget);
   });
 
+  testWidgets('a send that lands during a continuation is not swallowed by it', (tester) async {
+    final repository = _InterleavedRepository();
+    await _pump(tester, repository);
+    expect(find.text('mensagem recente'), findsOneWidget);
+
+    // Continuacao em voo.
+    await tester.tap(find.byKey(const Key('superadmin-chat-load-older')));
+    await tester.pump();
+
+    // O envio termina ANTES dela e acrescenta ao topo.
+    await tester.enterText(find.byKey(const Key('superadmin-chat-composer-field')), 'Tudo bem?');
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('superadmin-chat-send')));
+    // Nao usar pumpAndSettle aqui: o indicador da continuacao em voo anima e a
+    // arvore nunca fica ociosa. Bombear quadros e o suficiente para o envio.
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
+    expect(find.text('Tudo bem?'), findsOneWidget);
+
+    repository.completeContinuation();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
+
+    // A continuacao acrescenta as antigas ao fim. Se ela reescrever a lista a
+    // partir do instantaneo que capturou ANTES do envio, a mensagem enviada
+    // desaparece da tela mesmo tendo sido aceita pelo servidor — o pior
+    // resultado possivel, porque o operador acredita ter perdido o envio.
+    expect(find.text('Tudo bem?'), findsOneWidget);
+    expect(find.text('mensagem antiga'), findsOneWidget);
+    expect(find.text('mensagem recente'), findsOneWidget);
+  });
+
   testWidgets('a denied continuation purges the private snapshot', (tester) async {
     final repository = _PagedThreadRepository(denyContinuation: true);
     await _pump(tester, repository);
@@ -270,3 +302,63 @@ ChatMessage _message(String id, String body, String conversationId, int hour) =>
   isMine: false,
   kind: 'text',
 );
+
+/// Continuacao lenta e envio rapido, para exercitar o entrelacamento.
+final class _InterleavedRepository implements ChatRepository {
+  final _continuation = Completer<ChatThreadPage>();
+
+  void completeContinuation() => _continuation.complete(
+    ChatThreadPage(items: [_message('message-old', 'mensagem antiga', 'conversation-1', 9)]),
+  );
+
+  @override
+  Future<int> fetchUnreadTotal() async => 0;
+
+  @override
+  Future<ChatInboxPage> fetchInbox(ChatInboxQuery query) async => ChatInboxPage(
+    totalUnread: 0,
+    items: [
+      ChatConversationSummary(
+        id: 'conversation-1',
+        title: 'Turma Girassol',
+        preview: 'Ultima mensagem',
+        contextLabel: 'Unidade Cambui',
+        kind: 'group',
+        unreadCount: 0,
+        updatedAt: DateTime.utc(2026, 8, 12, 12),
+        isReadOnly: false,
+      ),
+    ],
+  );
+
+  @override
+  Future<ChatThreadPage> fetchThread(ChatThreadQuery query) {
+    if (query.cursor != null) return _continuation.future;
+    return Future.value(
+      ChatThreadPage(
+        items: [_message('message-recent', 'mensagem recente', 'conversation-1', 12)],
+        nextCursor: ChatCursor(DateTime.utc(2026, 8, 12, 12), 'message-recent'),
+        hasMore: true,
+      ),
+    );
+  }
+
+  @override
+  Future<void> markRead({required String conversationId, required String upToMessageId}) async {}
+
+  @override
+  Future<ChatRealtimeRefresh> refreshAfterRealtime({required String conversationId}) =>
+      throw UnimplementedError();
+
+  @override
+  Future<ChatMessage> sendMessage(ChatSendMessageCommand command) async =>
+      _message('message-sent', command.body, command.conversationId, 13);
+
+  @override
+  Future<ChatMessage> editMessage(ChatEditMessageCommand command) =>
+      Future<ChatMessage>.error(const ChatFailureException());
+
+  @override
+  Future<ChatMessageRevocation> revokeMessage(ChatRevokeMessageCommand command) =>
+      Future<ChatMessageRevocation>.error(const ChatFailureException());
+}

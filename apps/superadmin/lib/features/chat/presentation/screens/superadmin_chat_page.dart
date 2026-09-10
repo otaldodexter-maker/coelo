@@ -130,7 +130,17 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
   /// normal resseleciona o primeiro item, o que e certo na abertura e na busca,
   /// mas seria destrutivo depois de uma recusa: o operador perderia a conversa
   /// que estava lendo por causa de uma recusa naquela mesma conversa.
-  Future<void> _loadInbox({bool reset = false, bool preserveSelection = false}) async {
+  /// `silent` reconcilia sem trocar a lista por um painel de carregamento.
+  /// Reconciliar nao pode custar a lista que o operador ja tem: piscar a inbox
+  /// a cada envio seria pior que o preview velho que a reconciliacao veio
+  /// consertar. Pelo mesmo motivo, uma FALHA silenciosa mantem a lista valida
+  /// em vez de troca-la por painel de erro. Negacao continua valendo em
+  /// qualquer modo: perder acesso nao e detalhe que se engula.
+  Future<void> _loadInbox({
+    bool reset = false,
+    bool preserveSelection = false,
+    bool silent = false,
+  }) async {
     if (reset) {
       _inboxPage = 1;
       _inboxCursor = null;
@@ -139,7 +149,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
     final requestGeneration = ++_inboxRequestGeneration;
     final requestedRepository = _repository;
     final search = _search.text;
-    setState(() => _inboxState = const ChatInboxState.loading());
+    if (!silent) setState(() => _inboxState = const ChatInboxState.loading());
     try {
       final page = await requestedRepository.fetchInbox(
         ChatInboxQuery(search: search, cursor: _inboxCursor, pageSize: _inboxPageSize),
@@ -175,10 +185,10 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
       if (!_isCurrentInboxRequest(requestGeneration, requestedRepository)) return;
       _denyAccess(error);
     } on ChatOfflineException catch (error) {
-      if (!_isCurrentInboxRequest(requestGeneration, requestedRepository)) return;
+      if (!_isCurrentInboxRequest(requestGeneration, requestedRepository) || silent) return;
       setState(() => _inboxState = ChatInboxState.offline(error));
     } catch (error) {
-      if (!_isCurrentInboxRequest(requestGeneration, requestedRepository)) return;
+      if (!_isCurrentInboxRequest(requestGeneration, requestedRepository) || silent) return;
       setState(() => _inboxState = ChatInboxState.failure(error));
     }
   }
@@ -295,6 +305,11 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
           hasMore: current?.hasMore ?? false,
         );
       });
+      // A lista mostra a ULTIMA mensagem de cada conversa; sem reconciliar, o
+      // preview e a ordenacao continuariam anteriores ao que acabou de ser
+      // enviado. `preserveSelection` reconcilia sem resselecionar o primeiro
+      // item, que trocaria a conversa aberta na mao do operador.
+      unawaited(_loadInbox(preserveSelection: true, silent: true));
     } on ChatUnauthorizedException catch (error) {
       if (_isCurrentSend(sendGeneration, requestedRepository, conversation.id)) {
         _denyAccess(error);
@@ -308,7 +323,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
         // some sozinha. A sessao e o restante da tela permanecem.
         _pendingSend = null;
         _showNotice('A conversa nao aceita novas mensagens. A tela foi atualizada.');
-        unawaited(_loadInbox(preserveSelection: true));
+        unawaited(_loadInbox(preserveSelection: true, silent: true));
       }
     } on ChatOfflineException {
       if (_isCurrentSend(sendGeneration, requestedRepository, conversation.id)) {
@@ -348,6 +363,11 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
       // The edited row carries its own receipt and edit marker; re-read the
       // thread instead of patching a single bubble from the command's echo.
       await _reloadThread(conversation, manageGeneration, requestedRepository);
+      // Editar e revogar mudam a ULTIMA mensagem da conversa, que e o preview
+      // da lista. No caso de revogar isso nao e cosmetico: o servidor ja exclui
+      // a mensagem revogada do preview, entao deixar o corpo antigo na tela
+      // desfaz o efeito da revogacao na superficie que o operador mais olha.
+      unawaited(_loadInbox(preserveSelection: true, silent: true));
     } on ChatUnauthorizedException catch (error) {
       if (_isCurrentManage(manageGeneration, requestedRepository, conversation.id)) {
         _denyAccess(error);
@@ -389,6 +409,11 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
       );
       if (!_isCurrentManage(manageGeneration, requestedRepository, conversation.id)) return;
       await _reloadThread(conversation, manageGeneration, requestedRepository);
+      // Editar e revogar mudam a ULTIMA mensagem da conversa, que e o preview
+      // da lista. No caso de revogar isso nao e cosmetico: o servidor ja exclui
+      // a mensagem revogada do preview, entao deixar o corpo antigo na tela
+      // desfaz o efeito da revogacao na superficie que o operador mais olha.
+      unawaited(_loadInbox(preserveSelection: true, silent: true));
       if (_isCurrentManage(manageGeneration, requestedRepository, conversation.id)) {
         _showNotice('Mensagem revogada.');
       }
@@ -443,9 +468,15 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
         ChatThreadQuery(conversationId: conversation.id, cursor: cursor),
       );
       if (!_isCurrentThreadRequest(threadGeneration, requestedRepository, conversation.id)) return;
+      // A lista pode ter mudado enquanto a continuacao estava em voo: um envio
+      // que terminou antes dela acrescentou uma mensagem ao topo. Reescrever a
+      // partir do instantaneo capturado no INICIO engoliria essa mensagem, e o
+      // operador acreditaria ter perdido um envio que o servidor aceitou.
+      // A continuacao so acrescenta ao fim o que veio do servidor.
+      final latest = _thread ?? current;
       setState(
         () => _thread = ChatThreadPage(
-          items: [...current.items, ...older.items],
+          items: [...latest.items, ...older.items],
           nextCursor: older.nextCursor,
           totalCount: older.totalCount,
           hasMore: older.hasMore,
