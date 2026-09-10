@@ -63,8 +63,25 @@ publicacoes-agenda r5, operacoes r6, formularios-cuidado-rotina r7.
 OAuth do MCP não cria tokens): pedido ao Owner em P2; migração das três
 funções e spike ficam pendentes dele.
 
+**Aplicado em produção em 10/09 (Decisão 8 da ADR 0034, dump lógico por lote
+em `C:/Users/adrie/Documents/Coelo-backups/`):** lote 1 (15:47)
+`20260910130000_meal_plans_owner_permission_grants_v1` e
+`20260910160000_units_rpcs_versioned_from_production_v1`; lote 2 (16:03)
+`20260910010000..010500` (fundação da Rotina, Assiduidade com chave de
+idempotência no banco, Perfis de cuidado e Medicação). Todos provados antes
+sobre a **baseline** (dump schema-only de produção, agora
+`migrations/20260910000000_baseline_producao.sql` + `supabase/seed.sql`;
+cadeia antiga em `migrations-historico/`). Preflight negativo na baseline:
+`meal_plan_image_delete` (cadeia de Cardápios em produção para antes de
+20260820230000), `person_detail` (fixture usa `units.institution_type_id`;
+produção usa `unit_type_id`), Suporte e Conta (teste chama
+`row_security_active(regclass,text)` inexistente), `circular_delete`
+(pré-requisitos do realm interno ausentes). Backend `done` continua 0/223
+porque `done` exige persistência real pelo cliente e reload.
+
 **Fila SQL R03:** 25 posições serializadas em `coordenacao.json`
-(`filaSqlR03`), retidas por P1. Estados: 12 pgTAP verde em perfil declarado,
+(`filaSqlR03`), liberadas pela Decisão 8 (P1 B) e aplicadas uma a uma após
+preflight na baseline. Estados: 12 pgTAP verde em perfil declarado,
 2 committados sem pgTAP nominal (Suporte, Conta), 1 retido por porta ocupada,
 o restante candidato. Nenhuma chave de composição ligada. Próximo carimbo livre:
 posterior a `20260910160000`.

@@ -25,9 +25,12 @@ Coordenação e Integração P1 (Claude, `coelo-2b`) registrou posse na
 [revisão 1 de coordenacao.json](etapa-2-operacao/comunicacao/coordenacao.json)
 em 10/09/2026 14:50, sobre `dev` `e6f40f9bc`, com `base.fase0Head =
 1adb070c9`. Estados distintos desta rodada: **recebido** (sete canais com ACK),
-**integrado** (branch estrutura em `dev`, merge `f615575de`), **aplicado em
-produção** (nenhum: backup por ponto no tempo desligado, P1 ao Owner) e
-**verificado E2E** (nenhum).
+**integrado** (as sete branches em `dev`), **aplicado em produção** (lotes 1
+e 2 de 10/09: concessões de Cardápios, RPCs de Unidades, fundações de Rotina,
+Assiduidade, Perfis de cuidado e Medicação, após a Decisão 8 da ADR 0034 e
+preflight na baseline) e **verificado E2E** (nenhum). As chaves publicáveis
+estão em `apps/superadmin/.env.local` de todas as worktrees: a rota normal
+contra produção deixou de estar bloqueada por ambiente.
 
 O que a leitura de produção muda para a integração: as RPCs de Unidades
 existem; o worker de Avisos e as fundações de `now`/`moments`, chat
