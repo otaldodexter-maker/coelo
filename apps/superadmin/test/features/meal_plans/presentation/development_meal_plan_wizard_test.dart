@@ -990,6 +990,10 @@ class _OrderedMealPlanRepository implements MealPlanRepository {
   @override
   Future<MealPlan> archive(String mealPlanId, String requestId, int expectedRevision) async =>
       throw UnimplementedError('archive nao participa deste caso');
+  @override
+  Future<void> delete(String mealPlanId, String requestId, int expectedRevision) async =>
+      throw UnimplementedError('delete nao participa deste caso');
+
 
 
   @override

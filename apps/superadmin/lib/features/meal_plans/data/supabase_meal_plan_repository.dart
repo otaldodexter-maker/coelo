@@ -96,6 +96,11 @@ final class SupabaseMealPlanRepository implements MealPlanRepository {
     ),
   );
   @override
+  Future<void> delete(String id, String requestId, int revision) async => await _rpc(
+    'meal_plan_delete',
+    {'p_request_id': requestId, 'p_meal_plan_id': id, 'p_expected_revision': revision},
+  );
+  @override
   Future<List<MealPlanConflict>> checkConflicts({
     required String scopeLevel,
     required String scopeId,

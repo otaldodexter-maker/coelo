@@ -699,6 +699,11 @@ abstract interface class MealPlanRepository {
   /// com recibo e revisao otimista desde 20260820230000; o cliente nunca a
   /// chamava, entao o estado `archived` so podia chegar por fora do produto.
   Future<MealPlan> archive(String mealPlanId, String requestId, int expectedRevision);
+
+  /// Exclui o cardapio. O servidor so aceita rascunho, em revisao ou ja
+  /// arquivado: publicado precisa ser arquivado antes, para nao sumir com o
+  /// historico de algo que as familias ja viram.
+  Future<void> delete(String mealPlanId, String requestId, int expectedRevision);
   Future<List<MealPlanConflict>> checkConflicts({
     required String scopeLevel,
     required String scopeId,
@@ -734,6 +739,8 @@ final class UnavailableMealPlanRepository implements MealPlanRepository {
   Future<MealPlan> publish(String id, String requestId, int rev) async => throw _fail();
   @override
   Future<MealPlan> archive(String id, String requestId, int rev) async => throw _fail();
+  @override
+  Future<void> delete(String id, String requestId, int rev) async => throw _fail();
   @override
   Future<List<MealPlanConflict>> checkConflicts({
     required String scopeLevel,

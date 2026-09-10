@@ -177,6 +177,11 @@ final class DevelopmentMealPlanRepository implements MealPlanRepository {
       _updateStatus(mealPlanId, requestId, expectedRevision, MealPlanStatus.archived);
 
   @override
+  Future<void> delete(String mealPlanId, String requestId, int expectedRevision) async {
+    _plans.removeWhere((plan) => plan.id == mealPlanId);
+  }
+
+  @override
   Future<List<MealPlanConflict>> checkConflicts({
     required String scopeLevel,
     required String scopeId,
