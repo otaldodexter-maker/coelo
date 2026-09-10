@@ -126,6 +126,7 @@ final class SupabaseSuperadminCircularRepository implements SuperadminCircularRe
       blocks: draft.blocks,
       status: draft.status,
       responseState: CircularResponseState.unanswered,
+      managementVersion: draft.expectedVersion,
     );
   }
 

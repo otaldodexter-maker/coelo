@@ -90,6 +90,7 @@ void main() {
 
     final detail = await SupabaseSuperadminCircularRepository(client).getVisible(_circularId);
     expect(detail.status, CircularStatus.scheduled);
+    expect(detail.managementVersion, 4);
     expect(detail.blocks.single, isA<CircularTextBlock>());
     expect(detail.contextLabel, 'Colégio Horizonte');
   });
@@ -169,11 +170,9 @@ void main() {
     });
     addTearDown(client.dispose);
 
-    final result = await SupabaseSuperadminCircularRepository(client).delete(
-      requestId: _requestId,
-      circularId: _circularId,
-      expectedVersion: 4,
-    );
+    final result = await SupabaseSuperadminCircularRepository(
+      client,
+    ).delete(requestId: _requestId, circularId: _circularId, expectedVersion: 4);
 
     expect(captured!.url.path, endsWith('/rpc/superadmin_circular_delete_v2'));
     final body = jsonDecode(captured!.body) as Map<String, dynamic>;
