@@ -1,6 +1,12 @@
 {
-  "revision": 15,
+  "revision": 16,
   "round": "E2-R03-20260910",
+  "avisosPreflight": {
+    "quando": "2026-09-10 18:55",
+    "resultado": "a cadeia de Avisos NAO entra em producao ainda: 20260812003000 notices_production insere em platform_permissions sem module_label (NOT NULL); 20260820204824 app_communications_contract tem defeito proprio ('missing FROM-clause entry for table p_notice'); 20260820220500 exige app_private.append_notice_audit(7 args) que nao existe; 20260820204752 aplica; 20260820212340 (runtime do worker) aplica so depois da fundacao. pgTAP: notice_production 9 ok/9 not ok, worker_runtime 21/7, communications_types 1/1",
+    "dono": "publicacoes-agenda (Codex): reentregar a fundacao de Avisos como pacote sobre a baseline com os labels e o append_notice_audit; o coordenador implanta notice-publication-worker, grava COELO_NOTICE_WORKER_SECRET e agenda o cron.schedule em seguida",
+    "espelho": "o ensaio de 003000 parou no meio sem transacao e poluiu o espelho; reconstruido por db reset + seed + lotes 1-7 antes de qualquer preflight novo"
+  },
   "lote7": {"dump": "Coelo-backups/schema-producao-20260910-lote7.sql (18:48)", "aplicadoEm": "2026-09-10 18:55", "conteudo": ["20260910230019_superadmin_support_production_v1 (antiga 20260909217000; pgTAP 23/23 apos o coordenador trocar row_security_active(regclass,text), inexistente, por assercao sobre pg_class.relrowsecurity/relforcerowsecurity)", "20260910230020_superadmin_account_profile_v1 (antiga 20260909218000; 16/16)"], "verificado": "ledger 42; 5 RPCs superadmin_support_*, 3 superadmin_account_*, RLS forcado em support_sessions", "grupo": "operacoes (Codex), avisado pelo JSON; teste corrigido pelo coordenador e commitado em dev"},
   "funcoesEmProducao": "circular-media v5 (R2) e moments-media v1 (R2, token unico) ACTIVE; happens-media, now-media, notice-publication-worker, meal-plan-image-cleanup e audit-export continuam sem deploy",
   "reativacaoDasFrentes": {
