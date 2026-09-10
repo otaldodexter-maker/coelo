@@ -1,6 +1,6 @@
 {
-  "revision": 53,
-  "updated_at": "2026-09-10T04:08:00-03:00",
+  "revision": 55,
+  "updated_at": "2026-09-10T04:10:00-03:00",
   "group": "chat-comunicacoes",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) - claude-opus-5[1m]",
@@ -830,7 +830,7 @@
   },
   "recursos": {
     "worktree_propria": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-chat-comunicacoes, limpa, sem stash.",
-    "worktree_descartavel_criada_por_mim": "C:/cdchk, detached, criada nesta madrugada por caminho curto porque o scratchpad estoura o limite de nome do Windows. E MINHA e eu removo antes da entrega final.",
+    "worktree_descartavel_criada_por_mim": "C:/cdchk — REGISTRO removido do git (nao aparece mais em git worktree list, prune executado), mas o DIRETORIO nao saiu: rm -rf parou em apps/superadmin com 'Device or resource busy' e o PowerShell recusa por caminho na raiz do disco ser protegido. Restam 12K, arvore vazia, sem trabalho dentro. NAO FECHADO: precisa de remocao manual por quem tiver permissao.",
     "branches_minhas": [
       "work/etapa2-noturna-chat-comunicacoes",
       "work/etapa2-noturna-chat-comunicacoes-router",
@@ -840,8 +840,10 @@
       "work/etapa2-noturna-chat-volta-mobile"
     ],
     "worktrees_que_eu_nao_reivindico": "C:/Users/adrie/AppData/Local/Temp/coelo-base-check e Coelo.worktrees/e2-noturna-verificacao, ambas em d784462c1. Nao tenho registro de te-las criado e nao vou remover o que nao sei que e meu. Declaro em vez de presumir.",
-    "processos_filhos_portas": "nenhum",
-    "stash": "vazio"
+    "processos_filhos_portas": "CORRECAO: eu vinha declarando 'nenhum', e essa declaracao era sobre o que eu ABRI deliberadamente, nao sobre o que ficou rodando. Medido as 04:09: 32 processos vivos na maquina, 24 dart e 8 flutter_tester, distribuidos entre as horas 14, 17, 18, 19, 21, 00, 02 e 04 — os mais antigos vivos ha catorze horas. Nao consigo distinguir os meus dos das outras frentes e NAO matei nenhum, porque as 04:09 um kill largo pode derrubar suite de frente em pre-entrega.",
+    "stash": "vazio",
+    "erro_de_origem": "Criei em C:\\ porque o scratchpad estourava o limite de nome do Windows. Resolveu o problema daquela hora e criou este. Um caminho curto DENTRO do perfil do usuario teria resolvido os dois.",
+    "licao_da_declaracao_de_recursos": "'O que eu abri' parece 'o que esta rodando', do mesmo jeito que a lista de caminhos parecia o escopo. A declaracao de recursos precisa vir de MEDICAO da maquina, nao de memoria do que foi iniciado."
   },
   "trabalho_publicado_e_nao_integrado_na_base": {
     "motivo": "O contrato trata trabalho nao publicado como a unica perda sem correcao. Fui verificar se existia algum, e verifiquei tambem o passo seguinte: publicado mas fora da base entregue.",
@@ -934,5 +936,19 @@
     "cobertura_real_dos_dois": "notices.list e exercido pela rota real em notice_routes_capability_test, que assere pageFetches maior que zero; notices.schedule tem casos de comportamento no assistente, incluindo modo de data unica, hora registrada ao lado da data e fim antes do inicio bloqueando a etapa.",
     "o_que_eu_decidi_NAO_fazer": "Nao acrescentei o nome do action_id em comentario para fechar 13 de 13. Seria melhorar a aparencia do numero sem mudar o que e verdade — a rastreabilidade passaria a existir sem que nenhuma prova nova existisse.",
     "declaracao_honesta": "Rastreabilidade por identificador: 11 de 13. Cobertura de comportamento: 13 de 13."
+  },
+  "passada_final_das_0420": {
+    "executada_em": "04:08 lido, adiantada em relacao as 04:20 combinadas.",
+    "intervalo": "audit-frozen-0200 (0d847eb7a) ate origin/dev cdfef4464. A tag audit-frozen-0350 (e864a254f) marca o meio do intervalo.",
+    "volume": "169 commits, 32 merges.",
+    "merges_com_resolucao": "ZERO, medidos merge a merge por diff combinado nao vazio, e nao pela listagem que nao discrimina.",
+    "perda_de_arquivo": "4374 arquivos no marco das 02:00, 4395 agora, ZERO sumidos. Confirmado por segunda fonte independente: git log --diff-filter=D registra zero delecoes no intervalo.",
+    "goldens": "762 nas duas pontas.",
+    "skills": "54 arquivos sob .agents/skills/ presentes no dev, verificados por git ls-tree e NAO por cat-file, porque caminho iniciado por ponto sofre conversao de argumento e reportaria ausencia falsa.",
+    "regressao_de_revisao": "107 versoes examinadas nos nove JSONs de comunicacao, ZERO regressoes, 2 pulos — os dois com BOM ja diagnosticados, do mesmo arquivo, com revisoes vizinhas monotonicas.",
+    "residual_meu": "c1e6756c7, cb0a386d8, 05fdcf2d5 e fb31e11dc: os quatro INTEGRADOS. Nenhum pendente.",
+    "revisoes_no_dev_no_momento_da_passada": "acessos-pessoas 55, alunos-rotina 31, chat-comunicacoes 51, coordenacao 28, estrutura 51, formularios-cuidado 46, operacoes-sistema 48, perfil-para-voce 38, publicacoes-midia 40.",
+    "instrumentos": "Os tres detectores foram calibrados ANTES desta passada, e um deles estava furado e foi corrigido. Nenhuma secao usa cat-file com caminho.",
+    "o_que_esta_passada_NAO_cobre": "Nao verifica conteudo semantico de arquivo alterado, so presenca e contagem. Nao cobre trabalho que nunca chegou a ser commitado em maquina nenhuma. E o detector de regressao so funciona em arquivo com contador monotonico, entao relatorios em markdown e artigos de conhecimento seguem sem instrumento."
   }
 }
