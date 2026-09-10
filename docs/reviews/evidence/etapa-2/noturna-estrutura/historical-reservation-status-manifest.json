@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-09-09T21:04:54.540129-03:00",
+  "scope": "apps/superadmin -> Turmas/Atividades -> Detalhe -> Locais/reservas -> historico inativo",
+  "action_ids": [
+    "groups.location",
+    "activities.location",
+    "locations.schedule"
+  ],
+  "status": "local-green; pending-verification FE/BE/E2E",
+  "root_cause": "Historical binding status was discarded; inactive/archived locations offered fresh reservations despite backend active requirement.",
+  "changes": [
+    "Preserve historical catalog status independently of management capabilities.",
+    "Hide and guard fresh reservation assessment/confirmation for inactive or archived locations.",
+    "Recheck status after delayed assessment; retain cancellation and policy operations.",
+    "Preserve ambiguous request ID and original draft for authoritative receipt replay even after status becomes inactive."
+  ],
+  "metrics": {
+    "N": 9,
+    "E": 9,
+    "P": 9,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0
+  },
+  "dedup": "6 new causal cases + 3 existing regressions; reruns not added. Catalog165, Clock46+3 and reservations49+2 reused, not repeated.",
+  "runs": [
+    {
+      "phase": "RED",
+      "filter": "historical status",
+      "chunk": "455054",
+      "P": 1,
+      "F": 2,
+      "exit_code": 1,
+      "reason": "Inactive and archived historical rows still offered assessment."
+    },
+    {
+      "phase": "GREEN",
+      "filter": "historical status|inactive catalog",
+      "runner": 92158,
+      "chunk": "fe454f",
+      "P": 6,
+      "exit_code": 0
+    },
+    {
+      "phase": "regression",
+      "filter": "a conflict-free once request|an active reservation can be cancelled|transport retry preserves",
+      "chunk": "497055",
+      "P": 3,
+      "exit_code": 0
+    },
+    {
+      "phase": "dart analyze",
+      "paths": [
+        "apps/superadmin/lib/features/locations/presentation/location_consumer_reservations.dart",
+        "apps/superadmin/lib/features/locations/presentation/location_reservation_panel.dart",
+        "apps/superadmin/test/features/locations/location_consumer_reservations_test.dart",
+        "apps/superadmin/test/features/locations/location_reservation_panel_test.dart"
+      ],
+      "chunk": "1026aa",
+      "issues": 0,
+      "exit_code": 0
+    },
+    {
+      "phase": "static visual contracts",
+      "chunk": "e44253",
+      "exit_code": 0
+    }
+  ],
+  "evidence": "Actual tool chunks; no raw log preserved or reconstructed. Source and tests reviewed.",
+  "limitations": [
+    "Status is a read hint; server authorization and current catalog checks remain authoritative.",
+    "Widget gateways are fixtures; no production or SQL replay proof.",
+    "No remote mutation, Auth, CHILD, shell, deferred operations or goldens changed."
+  ],
+  "hashes": [
+    {
+      "path": "apps/superadmin/lib/features/locations/presentation/location_consumer_reservations.dart",
+      "sha256": "ecff73b4667a021e048cf35a1ede7f0f350afaf6091dfc169e0eed563e5f5c1a"
+    },
+    {
+      "path": "apps/superadmin/lib/features/locations/presentation/location_reservation_panel.dart",
+      "sha256": "b1a2fba2f6fe426b25ea1597f1f74699691fd5631d3954913dd9a0a2913f2571"
+    },
+    {
+      "path": "apps/superadmin/test/features/locations/location_consumer_reservations_test.dart",
+      "sha256": "f3e087f947c6c3c19ce77b7134cd4222ca693f5c042ee5219d7ba355e78bab0d"
+    },
+    {
+      "path": "apps/superadmin/test/features/locations/location_reservation_panel_test.dart",
+      "sha256": "598aa148f5fc32a9c0bc13814d113e50e199ac16973d8e6db9cfc9e1c550eb6d"
+    }
+  ]
+}
