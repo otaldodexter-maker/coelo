@@ -1,7 +1,7 @@
 {
     "docs\\reviews\\etapa-2-operacao\\noturna\\acessos-pessoas\\people-status-target\\analyze.txt":  "7d508c3bba556cf06685ac25f8e44324daa137da5f7f8557ea1d7fa380ba52f4",
     "docs\\reviews\\etapa-2-operacao\\noturna\\acessos-pessoas\\people-status-target\\green.txt":  "57ffa7ceb944da399201693c2191972a63b45bdca9bddb0ca333263fa3613845",
-    "docs\\reviews\\etapa-2-operacao\\noturna\\acessos-pessoas\\people-status-target\\handoff.md":  "9afb2177957e084801edaa8dba5778939711e066ead4be8f952e8cdfd0144905",
+    "docs\\reviews\\etapa-2-operacao\\noturna\\acessos-pessoas\\people-status-target\\handoff.md":  "8bc9b197fee425cd7dea79c15942e7d2491255bcd7326ccb5dc627338e3bc133",
     "docs\\reviews\\etapa-2-operacao\\noturna\\acessos-pessoas\\people-status-target\\person_directory_cards_light_1024-before.png":  "90fc30476be25028bb9fe87a1de093168436abf3359aea59147f99599dcba0bc",
     "docs\\reviews\\etapa-2-operacao\\noturna\\acessos-pessoas\\people-status-target\\person_directory_cards_light_1024-inspected.png":  "4f3f4929cc2a8f407c4db74923cd21eb3a9fa62ffc029d5da77c55264583f9e3",
     "docs\\reviews\\etapa-2-operacao\\noturna\\acessos-pessoas\\people-status-target\\person_directory_cards_light_1440-before.png":  "7b3b1b5e15d14bf4235f5bf370891908cee40d9267d8cd389c4cd06c4429c5de",
@@ -15,5 +15,6 @@
     "docs\\reviews\\etapa-2-operacao\\noturna\\acessos-pessoas\\people-status-target\\visual-green.txt":  "261a4fcd636c9405279e143f02ac10dd3766b7bacd99c55759db8789cac5bf63",
     "docs\\reviews\\etapa-2-operacao\\noturna\\acessos-pessoas\\people-status-target\\visual-red.txt":  "652133d31985ccef5d3c26e16cb2fdb004f3987f597af55257e1b1c55facd679",
     "apps/superadmin/lib/features/people/presentation/person_directory_page.dart":  "c53676215c1e6ab3622bd763c8434b1f127f9c9bb1cc7d047ca534cf65b27cba",
-    "apps/superadmin/test/features/people/presentation/person_status_keyboard_test.dart":  "3fa400df0f6a5798ce9283305383cfeb37549b6eb3fadcedc4978fcff6ef0b78"
+    "apps/superadmin/test/features/people/presentation/person_status_keyboard_test.dart":  "3fa400df0f6a5798ce9283305383cfeb37549b6eb3fadcedc4978fcff6ef0b78",
+    "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/people-status-target/visual-contracts.txt":  "1654caa975e4c841014e6e5d21dbdbd0ebb571529975e24e3d464ef76fcee9c9"
 }
