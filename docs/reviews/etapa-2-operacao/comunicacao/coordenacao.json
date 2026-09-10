@@ -1,5 +1,5 @@
 {
-  "revision": 16,
+  "revision": 17,
   "round": "E2-NOTURNA-20260909",
   "role": "Coordenacao e Integracao - Claude",
   "writer": "coordenador-claude",
@@ -8,7 +8,7 @@
   "app": "Claude Code (VS Code)",
   "model": "claude-opus-5[1m]",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-09T22:05:00-03:00",
+  "updatedAt": "2026-09-09T22:25:00-03:00",
   "clockCorrection": {
     "referenceNow": "2026-09-09T19:03:25-03:00",
     "measuredBy": "date no checkout integrador",
@@ -30,7 +30,7 @@
   "base": {
     "root": "C:/Users/adrie/Documents/Coelo",
     "branch": "dev",
-    "head": "e76c61f9f",
+    "head": "59c842b32",
     "previousHead": "d784462c168d22fdb7090b7de1ef7db554ad5107",
     "upstream": "origin/dev",
     "divergence": "0/0",
@@ -449,7 +449,7 @@
     "claudeExecutorAddresses": "Fornecidos pelo Owner e verificados por envio real: as seis conversas Claude receberam ACK nominal por SendMessage em 18:18. Enderecos gravados em groups[].sessionName/sessionId para recuperacao."
   },
   "blocks": [],
-  "nextStep": "Aguardar a resposta de estrutura sobre as tres regressoes de composicao de Atividades ate 23:10, recolher a entrega Codex ate 23:30 e seguir com as frentes Claude.",
+  "nextStep": "Recolher a entrega Codex ate 23:30 e seguir integrando as frentes Claude ate 04:40.",
   "providers": {
     "supabase": {
       "cli": "supabase 2.117.0 autenticado; token no Credential Manager do Windows",
@@ -729,6 +729,34 @@
       "achado": "O badge de nao lidas NAO tem pendencia arquitetural observavel: toda rota monta dois shells e o unico launcher renderizado sempre tem o loader",
       "fonte": "chat-comunicacoes, sonda descartavel em 32 rotas de producao, removida e nao commitada",
       "efeito": "Tira da fila um refactor de ~44 arquivos que nao mudaria nada visivel"
+    },
+    {
+      "achado": "Varredura de acessibilidade pelas diretrizes nativas do Flutter: 33 telas de desenvolvimento por 3 diretrizes, 99 casos, 81 passam e 18 falham, zero nao medidos.",
+      "fonte": "operacoes-sistema, relatorio E2-noturna-transversal-por-dono-20260909.md, commit 2cba8068d",
+      "peso": "Tamanho de alvo e contraste sao objetivos e viram ACHADO. Rotulo vira CANDIDATO, porque a diretriz marca nos que expoem apenas longPress e sete hipoteses foram descartadas sem identificar o no.",
+      "porDono": {
+        "acessos-pessoas": "safety falha nas TRES diretrizes; invites falha em rotulo",
+        "estrutura": "activities em rotulo; institutions em alvo",
+        "formularios-cuidado": "forms em rotulo e alvo",
+        "chat-comunicacoes": "notices em alvo",
+        "publicacoes-midia": "circulars em alvo; principal-for-you em contraste",
+        "operacoes-sistema": "imports nas tres; audit, plans, meal-plans e support em rotulo"
+      },
+      "destaque": "As duas telas que falham nas TRES sao imports e safety. Importacoes esta adiada pos-MVP, o que inverte a leitura do adiamento. Seguranca infantil NAO tem esse atenuante.",
+      "limite": "E triagem para priorizar, nao revisao: a composicao das telas nao foi aberta e nao se confirmou se a falha vem de codigo proprio ou compartilhado."
+    },
+    {
+      "achado": "Oito repositorios nao fecham falha de transporte e deixam ClientException escapar crua ate a UI",
+      "fonte": "operacoes-sistema, mesma entrega; corrige a estimativa anterior de cerca de vinte",
+      "lista": "activities, attendance, forms_backend_gateway, os tres de publicacoes-midia, profile_about e child_safety",
+      "prioridade": "forms_backend_gateway primeiro: gateway e ponto unico de passagem, entao uma clausula ali cobre todas as chamadas de Formularios."
+    },
+    {
+      "achado": "Controller criado FORA do dialogo e descartado logo apos showDialog retornar lanca erro de uso apos dispose em todo fechamento",
+      "fonte": "alunos-rotina, lote c2140a5af, corrigido em Rotina",
+      "ondeMais": "access_profile_detail_page.dart de acessos-pessoas: reasonController criado na linha 141 e descartado nas linhas 194 e 216, nos dois ramos. Mesma forma exata.",
+      "comoRevelar": "O teste que revela e COMPLETAR o dialogo, nao apenas abri-lo. Em Rotina o unico teste que tocava o dialogo era o golden, que tira a foto e encerra.",
+      "nota": "Nao esta afirmado que dispara em Perfis de acesso: depende de o campo ser reconstruido durante o fechamento naquela composicao."
     }
   ],
   "avisoCodex": {
