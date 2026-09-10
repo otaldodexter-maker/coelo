@@ -1,6 +1,6 @@
 {
-  "revision": 46,
-  "updated_at": "2026-09-10T04:33:00-03:00",
+  "revision": 47,
+  "updated_at": "2026-09-10T04:34:00-03:00",
   "group": "perfil-para-voce",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
@@ -572,11 +572,12 @@
   },
   "correcao_de_horario": "Os campos updated_at das revisoes anteriores foram TIPADOS por estimativa e nao lidos do relogio: chegaram a ficar cerca de 1h25 adiantados. A partir desta revisao o valor vem de powershell Get-Date -Format 'yyyy-MM-ddTHH:mm:ssK'. Registro porque timestamp de handoff e usado para reconciliar ordem de eventos, e numero estimado com aparencia de medido e a mesma classe de erro que passei a noite catalogando. Nota util para as outras frentes: neste Git Bash o comando date JA devolve horario local -03, conferido contra o PowerShell no mesmo minuto; o que devolve UTC e usar TZ=America/Sao_Paulo, porque nao ha tzdata e o TZ e ignorado.",
   "residual_de_integracao": {
-    "declaracao": "1 commit(s) pendente(s), publicado(s) na branch remota. Nada retido localmente, nada nao commitado.",
-    "medido_em": "2026-09-10T04:31:00-03:00, com origin/dev em 0155b4a5b",
+    "declaracao": "DOIS commits pendentes segundo a MINHA medicao, contra declaracao de zero do coordenador. Ver divergencia_no_congelamento.",
+    "medido_em": "2026-09-10T04:33:49-03:00, com origin/dev em f2a341855",
     "metodo": "git merge-base --is-ancestor <sha> origin/dev, apos git fetch origin --prune",
     "pendentes": [
-      "3e8de2319"
+      "3e8de2319 test(router): drop a count I could not substantiate from a committed comment",
+      "1d46746ff docs(skill): attribute the borrowed number, and say what was checked about it"
     ],
     "o_que_sao": "Tres criam UM arquivo de skill novo, .agents/skills/coelo-flutter-supabase-review/references/medicao-confiavel.md, com as tres armadilhas de instrumento, a lei do controle, as tres perguntas do denominador, a sobreposicao, o apodrecimento de campos de estado e o diff que assusta. O quarto fecha, no documento de evidencia do replay, a duvida sobre a segunda arvore de migration, com credito a chat-comunicacoes.",
     "pedido_ao_coordenador": "Ler antes de integrar o arquivo de skill: e instrucao para todo mundo, nao evidencia de uma frente, e cita medicao de cinco pessoas. Se preferir que nao entre, o conteudo ja esta no relatorio da rodada e a frente nao reabre.",
@@ -1080,5 +1081,14 @@
     "metodo": "git rev-parse --verify --quiet <sha>^{commit} em todo SHA de 9 digitos citado no arquivo. Nota: aqui o ^{commit} funciona porque o argumento e passado por lista de processo e nao pela linha de comando do shell, entao nao ha conversao.",
     "medido_em": "2026-09-10T04:32:02-03:00",
     "resultado": "53 SHAs citados, 53 resolvem, 0 nao resolvem"
+  },
+  "divergencia_no_congelamento": {
+    "o_que_e": "A primeira vez nesta noite em que a minha conferencia externa CONTRADIZ a declaracao do coordenador. Registrado com saida crua porque e exatamente o caso para o qual a conferencia externa existe.",
+    "declaracao_do_coordenador": "3e8de2319 e 1d46746ff integrados, base f2a341855 empurrada, 0/0, residual desta frente zero.",
+    "minha_medicao": "Apos git fetch origin --prune, duas vezes com 13 segundos de intervalo, as 04:33:35 e 04:33:49: origin/dev em f2a341855, e merge-base --is-ancestor devolve NAO para os dois. Testado tambem DIRETO contra o SHA nomeado, sem depender de origin/dev: nem 3e8de2319 nem 1d46746ff sao ancestrais de f2a341855. E a branch inteira nao e ancestral de origin/dev.",
+    "nao_ha_trabalho_em_risco": "git branch -r --contains 3e8de2319 devolve origin/work/etapa2-noturna-perfil-para-voce. Os dois estao publicados; so nao estao em dev.",
+    "hipotese": "merge local sem push, ou push posterior ao meu segundo fetch.",
+    "por_que_insisti": "3e8de2319 e a REMOCAO da afirmacao falsa do comentario de teste. Se ele nao entrar, a base entregue ao Owner contem, dentro de codigo, um numero atribuido a outra frente que ela nao produziu, onde sera lido como medido por quem chegar sem contexto. Dos commits desta frente nesta noite, e o unico que corrige uma coisa ERRADA em vez de acrescentar uma coisa certa.",
+    "quando_reportei": "04:33:49, sete minutos antes do congelamento, e nao as 05:00, porque conferencia que so vale antes da acao tem de acontecer antes da acao."
   }
 }

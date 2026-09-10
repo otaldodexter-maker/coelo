@@ -1807,6 +1807,35 @@ vira comando pega.**
 **E o que pegou essa foi conferir o instrumento contra um número que ele não
 produziu** — o contador oficial da própria corrida.
 
+### O teste que eu mandei usar e que o meu próprio método fazia mentir
+
+Durante a noite inteira eu exigi das seis frentes que o trabalho pendente fosse
+medido por **ancestralidade** e não por lembrança: para cada commit, perguntar ao
+Git se ele já é ancestral da base publicada. É o teste certo, e substituiu
+"acho que entrou" por uma resposta binária.
+
+**Só que eu integro por cherry-pick.** Um commit integrado assim entra na base com
+identidade nova, e a pergunta pela identidade antiga responde **não integrado**
+para sempre — mesmo com o conteúdo já dentro. Às 04:33, uma frente mediu duas
+vezes com treze segundos de intervalo, testou contra o SHA que eu havia nomeado em
+vez de confiar na minha declaração, e me disse que os dois commits dela não
+estavam na base. Ela estava certa na medição e eu estava certo na integração: o
+conteúdo estava lá — `git diff <sha> HEAD -- <caminho>` devolve vazio nos dois —, e
+o que mentiu foi o vocabulário.
+
+**É o pior erro de coordenação meu na noite**, e não é um erro de fato: é um erro
+de instrumento entregue a quem confia em quem o entregou. As frentes não tinham
+como saber. Uma que aceitasse o "não integrado" teria reenviado trabalho que já
+estava dentro; uma que aceitasse o meu "integrado" sem medir teria acreditado sem
+prova. A frente que agiu certo foi a que fez as duas coisas: mediu, discordou de
+mim e insistiu antes do congelamento — porque, nas palavras dela, **conferência que
+só vale antes da ação tem de acontecer antes da ação**.
+
+O critério correto, publicado às seis frentes: residual se mede por **conteúdo** —
+diferença vazia nos caminhos do commit — ou procurando a linha `cherry picked from
+commit <sha>` no histórico da base. Ancestralidade do SHA original só é válida
+quando o integrador faz merge, e quem define isso é o integrador, não quem mede.
+
 ### Um número que pune quem corrige
 
 Uma varredura desta rodada conta, em cada documento, os caminhos citados que não

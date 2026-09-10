@@ -1,6 +1,6 @@
 {
-  "revision": 62,
-  "updated_at": "2026-09-10T04:30:00-03:00",
+  "revision": 63,
+  "updated_at": "2026-09-10T04:34:00-03:00",
   "group": "chat-comunicacoes",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) - claude-opus-5[1m]",
@@ -1042,5 +1042,19 @@
   "quatro_declaracoes_estreitas_da_noite": {
     "padrao": "Quatro vezes uma declaracao verdadeira produziu leitura errada por nao dizer o ESCOPO: 'analyze limpo' sem test; 'suite completa' cobrindo apps/superadmin sem o monorepo; o meu recorte com sete caminhos sem os outros nove; e 'processos filhos: nenhum' sobre o que foi aberto e nao sobre o que ficou rodando.",
     "o_que_isso_prova": "Nenhuma das quatro foi mentira, e as quatro levariam o Owner a conclusao errada. E o argumento mais forte a favor de declarar ESCOPO junto de todo numero, porque nao adianta pedir honestidade: as quatro eram honestas."
+  },
+  "medicao_de_terceiro_dentro_de_artefato_meu": {
+    "pergunta": "Em algum arquivo COMMITADO meu ha numero medido por outra frente, e o arquivo diz de quem e?",
+    "resposta": "SIM, uma ocorrencia, na mensagem de 8a09d66ac (integrado como e9beeae4c).",
+    "medicoes_que_nao_sao_minhas": [
+      "'o arquivo tem OITO ocorrencias de simbolos PrincipalHappens*' — contagem de perfil-para-voce.",
+      "'nasceu orfao no UNICO commit que o arquivo tem, f4a86ed7e' — historico levantado por perfil-para-voce.",
+      "O mapeamento de qual simbolo vem de qual import tambem e dele."
+    ],
+    "o_defeito": "A mensagem escreve as duas em voz propria. Quem ler o commit daqui a seis meses atribui a medicao a mim.",
+    "agravante": "Eu creditei perfil-para-voce no meu JSON, na revisao 62, e nao no artefato. A hierarquia esta invertida: o relatorio e desta rodada e some no arquivo morto; a mensagem de commit viaja com o codigo para sempre e e o unico lugar onde alguem procura quando pergunta por que a linha saiu.",
+    "verificacao_feita_antes_de_responder": "Contei: OITO ocorrencias exatas — um PrincipalHappensCircularItem, tres PrincipalHappensFeedCursor, tres PrincipalHappensFeedPage, um PrincipalHappensFeedRepository. E o historico: antes do meu commit o arquivo tinha UM. As duas afirmacoes dele estavam certas.",
+    "o_que_NAO_fiz": "Nao reescrevi historia para corrigir mensagem de commit as 04:34. O custo de mexer na base dez minutos antes do congelamento e maior que o beneficio, e a decisao de reescrever nao e minha.",
+    "regra_proposta": "Numero medido por outra frente dentro de artefato commitado precisa dizer de quem e e o que foi conferido. Nao por cortesia, por rastreabilidade: numero sem dono nao pode ser re-medido nem contestado, e vira fato por repeticao. Eu mesmo, lendo esse commit em janeiro, acreditaria que contei oito."
   }
 }
