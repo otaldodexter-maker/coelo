@@ -613,6 +613,11 @@ void main() {
     expect(failedSelect.isLoading, isFalse);
     expect(find.byKey(const Key('institution-municipalities-retry')), findsOneWidget);
 
+    // A secao de mapa de Locais entrou acima deste controle, entao ele pode
+    // ficar abaixo da area visivel na superficie do teste. Sem garantir a
+    // visibilidade, o toque nao alcanca o botao e nenhuma nova requisicao sai.
+    await tester.ensureVisible(find.byKey(const Key('institution-municipalities-retry')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('institution-municipalities-retry')));
     await tester.pumpAndSettle();
 
