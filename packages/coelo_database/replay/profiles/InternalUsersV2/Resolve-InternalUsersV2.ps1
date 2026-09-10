@@ -38,8 +38,12 @@ function Get-InternalUsersHash([string]$Path) {
 # that 20260831130726 made mandatory by dropping their defaults) and
 # 20260901185008_superadmin_internal_notices_v2.sql (42P01: alters
 # public.notice_events, a table the manifest's own second entry moves to the
-# analytics schema, where production keeps it too). Both defects belong to other
-# packages and are reported, not repaired here.
+# analytics schema, where production keeps it too); and
+# 20260901191921_superadmin_internal_circulars_v2.sql (23502, the same defect as
+# chat v2 -- its platform_permissions insert lists code, module_code, screen_code,
+# action_code, description, risk_level, requires_mfa and status, and omits the
+# three labels). All three defects belong to other packages and are reported, not
+# repaired here.
 #
 # Additions: the two internal users migrations, in order. Neither is in the
 # manifest, and neither is in production -- the three RPCs the Superadmin client
@@ -65,7 +69,8 @@ if ($entries.Count -ne 67 -or $entries[-1].version -cne '20260901200206') {
 
 $excludedNames = @(
   '20260901101500_superadmin_internal_chat_v2.sql',
-  '20260901185008_superadmin_internal_notices_v2.sql'
+  '20260901185008_superadmin_internal_notices_v2.sql',
+  '20260901191921_superadmin_internal_circulars_v2.sql'
 )
 # The invites migration is verified against its own pin instead of the
 # manifest's, because 20260901190432 was corrected in this round: it called
@@ -78,8 +83,8 @@ $repinnedName = '20260901190432_superadmin_internal_invites_v2.sql'
 $selected = @($entries | Where-Object {
   $_.file -cnotin $excludedNames -and $_.file -cne $repinnedName
 })
-if ($selected.Count -ne 64) {
-  throw 'InternalUsersV2 requires both unreachable entries and the repinned invites migration to be present in the manifest and handled here'
+if ($selected.Count -ne 63) {
+  throw 'InternalUsersV2 requires the three unreachable entries and the repinned invites migration to be present in the manifest and handled here'
 }
 $repinned = Assert-InternalUsersFile (Join-Path (Join-Path $packageRoot 'migrations') $repinnedName)
 if ((Get-InternalUsersHash $repinned.FullName) -cne
@@ -118,10 +123,10 @@ if ($preflight.Count -ne 2) {
 
 $allInputs = @($canonical) + @($preflight)
 $versions = @($allInputs | ForEach-Object { $_.Name.Substring(0, 14) })
-if ($canonical.Count -ne 67 -or $allInputs.Count -ne 69 -or
-    @($versions | Sort-Object -Unique).Count -ne 69 -or
+if ($canonical.Count -ne 66 -or $allInputs.Count -ne 68 -or
+    @($versions | Sort-Object -Unique).Count -ne 68 -or
     ($versions | Sort-Object)[-1] -cne $TargetVersion) {
-  throw 'InternalUsersV2 requires 67 unique canonical migrations and two inherited preflights'
+  throw 'InternalUsersV2 requires 66 unique canonical migrations and two inherited preflights'
 }
 
 [pscustomobject]@{
