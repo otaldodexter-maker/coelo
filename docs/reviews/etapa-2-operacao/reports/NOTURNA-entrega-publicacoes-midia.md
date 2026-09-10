@@ -40,6 +40,23 @@ branch `work/etapa2-noturna-publicacoes-midia`, base `d784462c1` com
 | 18 | `d6ff438fc` | Suíte pgTAP que faltava para o candidato do feed misto |
 | 19 | `559017727` | `moments-media` confere os bytes armazenados, não só metadados |
 | 20 | `9737f7777` | Guarda de contexto na retirada de Momento |
+| 21 | `536b1f222` | Resumo de respostas no leitor administrativo |
+| 22 | `4a40e13aa` | Retirada repetida de Momento reapresenta a mesma chave |
+| 23 | `db2726df8` | Remoção do contrato órfão de retirada de Momento |
+| 24 | `9fde22632` | Circular encerrada diz que fechou, em vez de pedir outra resposta |
+
+## Resultado medido do recorte
+
+Medido em uma execução única ao final da rodada, não somado de relatos
+anteriores: **636 PASS e 23 FAIL** nas oito features do recorte mais as seis
+rotas tocadas.
+
+As 23 falhas são **todas** de golden e reproduzem na base sem nenhum lote deste
+grupo: 10 em `principal_happens_preview_golden_test`, 11 em
+`principal_moments_preview_golden_test` e 2 em `circular_directory_golden_test`.
+Nenhum golden foi regravado, conforme decisão da coordenação.
+
+Fora de golden, zero falhas.
 
 ## Defeitos corrigidos, em ordem de gravidade
 
@@ -68,6 +85,20 @@ branch `work/etapa2-noturna-publicacoes-midia`, base `d784462c1` com
 9. **Confirmação aplicada ao contexto errado** na retirada de Momento.
 10. **Abrir Circular do feed** apenas informava indisponibilidade; agora entrega
     o leitor da família Principal dentro do shell.
+11. **Resumo de respostas invisível**: a RPC, o método de repositório e o teste
+    existiam, e nenhuma tela chamava; o leitor ainda recebia o repositório pelo
+    tipo mais estreito, o que tornava a chamada impossível.
+12. **Encerramento anunciado como conflito**: o servidor sinaliza Circular
+    encerrada com o mesmo conflito de versão do conteúdo obsoleto, então o
+    convite falso sobrevivia nesse subcaso.
+
+### Acréscimo não anunciado, registrado depois
+
+Os lotes `c72b2c217` e `65d04ba9e` também acrescentaram
+`X-Content-Type-Options: nosniff` e `Referrer-Policy: no-referrer` às respostas
+de `happens-media` e `now-media`, alinhando as quatro superfícies de mídia ao
+`circular-media`. É melhoria real, mas entrou sob uma descrição que falava
+apenas de costura injetável e ramo R2. Fica nomeado aqui.
 
 ## O que NÃO está fechado, e por quê
 
