@@ -1,12 +1,12 @@
 {
- "revision": 15,
+ "revision": 16,
  "round": "E2-R03-20260910",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5[1m]",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-10T14:10:00-03:00",
+ "updatedAt": "2026-09-10T15:00:00-03:00",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-formularios-cuidado-rotina",
  "branch": "work/etapa2-r03-formularios-cuidado-rotina",
  "head": "1c188091f",
@@ -56,7 +56,7 @@
   "skipped": 0,
   "notRun": 0,
   "pgtap": "1021 assercoes / 0 falhas (1001 do recorte anterior mais 20 de Alunos), revalidadas sobre a base integrada 552058da0",
-  "flutter": "113 daily_routine (inclui os 6 novos do D7) + 89 attendance + 7 cuidado/medicacao = 209 nas suites que escrevi ou alterei",
+  "flutter": "113 daily_routine + 89 attendance + 7 cuidado/medicacao + 5 alunos = 214 nas suites que escrevi ou alterei; dart analyze lib limpo",
   "analyzer": "dart analyze lib limpo em apps/superadmin",
   "falhas_preexistentes_nas_areas_tocadas": "8, medidas tambem sem as minhas mudancas: 4 goldens de health_care/presentation e 4 de saneamento de composicao de outras familias",
   "escopo": "nao e a suite completa do app e nao e prova E2E"
@@ -72,7 +72,7 @@
   }
  ],
  "deltaProposals": [],
- "nextStep": "Cliente de Alunos: repositorio Supabase e a tela de gestao, hoje uma tela de indisponivel.",
+ "nextStep": "Tela de gestao de aluno, se houver janela; caso contrario ela e a unica pendencia de implementacao do recorte.",
  "findings": [
   {
    "id": "F-R03-FCR-001",
@@ -293,7 +293,7 @@
   {
    "id": "PKG-R03-FCR-ALUNOS-01",
    "familia": "students",
-   "estado": "backend escrito e verde; cliente pendente",
+   "estado": "backend verde; contrato, repositorio e chave de composicao prontos; falta a tela",
    "action_ids": [
     "students.link",
     "students.transfer",
@@ -315,7 +315,15 @@
     "transferir e revogar exigem motivo",
     "vincular a mesma crianca a mesma unidade de novo reativa o vinculo existente em vez de falhar por chave duplicada"
    ],
-   "falta": "repositorio Supabase e a tela de gestao na rota /students/:childContextId/manage, hoje uma tela de indisponivel."
+   "falta": "repositorio Supabase e a tela de gestao na rota /students/:childContextId/manage, hoje uma tela de indisponivel.",
+   "cliente": {
+    "contrato": "apps/superadmin/lib/features/students/domain/student_link.dart",
+    "repositorio": "apps/superadmin/lib/features/students/data/supabase_student_link_repository.dart",
+    "testes": "apps/superadmin/test/features/students/data/supabase_student_link_repository_test.dart, 5/5",
+    "decisao_de_contrato": "instituicao nao aparece em nenhum dos tipos do dominio, e um teste prova que nenhum dos quatro comandos a envia. Ela e derivada do contexto infantil no banco; aceita-la do cliente permitiria mover a crianca de tenant.",
+    "detalhe_de_editar": "o payload distingue 'nao mexa na data de fim' de 'apague a data de fim' pela PRESENCA da chave ends_at, nao pelo valor nulo. Sem isso, editar so o inicio apagaria o fim sem querer.",
+    "falta": "a tela em /students/:childContextId/manage, hoje um SuperadminErrorScreen de indisponivel. E a unica peca do recorte que fica sem implementacao minha."
+   }
   }
  ],
  "filaSQL": [
@@ -349,18 +357,27 @@
   }
  ],
  "chaveDeComposicao": {
-  "nome": "SuperadminAppConfig.careAndRoutineBackendEnabled",
-  "variavel": "COELO_ENABLE_CARE_AND_ROUTINE_BACKEND",
-  "arquivo": "apps/superadmin/lib/core/config/superadmin_app_config.dart",
-  "estado": "declarada e ligada na composicao, valor padrao false",
-  "liga": [
-   "Perfis de cuidado (SupabaseHealthCareRepository)",
-   "Planos de medicacao (SupabaseMedicationPlanRepository)",
-   "Rotina diaria (SupabaseRoutineRepository)"
-  ],
-  "depende_de": "migrations 20260910010000 a 20260910010500 aplicadas",
-  "por_que_nasce_desligada": "antes do SQL aplicado, ligar trocaria uma indisponibilidade honesta por erro obscuro contra um banco sem esses objetos",
-  "mudanca_estrutural": "SuperadminAuthScope ganhou o campo healthCareRepository, que nao existia: Perfis de cuidado estava preso a UnavailableHealthCareRepository dentro do proprio router. Passa por main.dart, superadmin_app.dart e superadmin_router.dart."
+  "careAndRoutine": {
+   "nome": "SuperadminAppConfig.careAndRoutineBackendEnabled",
+   "variavel": "COELO_ENABLE_CARE_AND_ROUTINE_BACKEND",
+   "arquivo": "apps/superadmin/lib/core/config/superadmin_app_config.dart",
+   "estado": "declarada e ligada na composicao, valor padrao false",
+   "liga": [
+    "Perfis de cuidado (SupabaseHealthCareRepository)",
+    "Planos de medicacao (SupabaseMedicationPlanRepository)",
+    "Rotina diaria (SupabaseRoutineRepository)"
+   ],
+   "depende_de": "migrations 20260910010000 a 20260910010500 aplicadas",
+   "por_que_nasce_desligada": "antes do SQL aplicado, ligar trocaria uma indisponibilidade honesta por erro obscuro contra um banco sem esses objetos",
+   "mudanca_estrutural": "SuperadminAuthScope ganhou o campo healthCareRepository, que nao existia: Perfis de cuidado estava preso a UnavailableHealthCareRepository dentro do proprio router. Passa por main.dart, superadmin_app.dart e superadmin_router.dart."
+  },
+  "studentLink": {
+   "nome": "SuperadminAppConfig.studentLinkCommandsEnabled",
+   "variavel": "COELO_ENABLE_STUDENT_LINK_COMMANDS",
+   "estado": "declarada e ligada na composicao, valor padrao false",
+   "depende_de": "migration 20260910140000_student_link_commands_v1 aplicada",
+   "por_que_chave_separada": "o SQL e outro pacote e pode ser aplicado em outro momento; e a autorizacao destes comandos passa pelo realm people-based, que e o ponto que a OQ-043 deixou em aberto para os CRUDs anteriores a ADR 0019. Ligar e decisao separada, nao carona da chave de Cuidado e Rotina."
+  }
  },
  "replayReprodutivel": {
   "por_que": "o perfil FoundationOnly esta quebrado no HEAD (F-R03-FCR-003) e a cadeia completa nao replica (F-R03-FCR-001 e o mesmo padrao em imports). Esta e a receita que produziu as 1001 assercoes, para o coordenador reproduzir em vez de acreditar.",

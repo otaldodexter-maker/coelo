@@ -67,6 +67,8 @@ import '../../features/daily_routine/domain/routine_contract.dart';
 import '../../features/health_care/data/supabase_health_care_repository.dart';
 import '../../features/health_care/data/supabase_medication_plan_repository.dart';
 import '../../features/health_care/domain/health_care_repository.dart';
+import '../../features/students/data/supabase_student_link_repository.dart';
+import '../../features/students/domain/student_link.dart';
 import '../../features/health_care/domain/medication_plan_repository.dart';
 import '../../features/meal_plans/data/supabase_meal_plan_repository.dart';
 import '../../features/meal_plans/data/supabase_meal_plan_image_repository.dart';
@@ -158,6 +160,7 @@ final class SuperadminAuthScope {
     required this.childSafetyRepository,
     required this.medicationPlanRepository,
     required this.healthCareRepository,
+    required this.studentLinkRepository,
     required this.mealPlanRepository,
     required this.mealPlanImageRepository,
     this.authorizedMealPlanTenantId,
@@ -217,6 +220,7 @@ final class SuperadminAuthScope {
   final ChildSafetyRepository childSafetyRepository;
   final MedicationPlanRepository medicationPlanRepository;
   final HealthCareRepository healthCareRepository;
+  final StudentLinkRepository studentLinkRepository;
   final MealPlanRepository mealPlanRepository;
   final MealPlanImageRepository mealPlanImageRepository;
   final String? authorizedMealPlanTenantId;
@@ -405,6 +409,9 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       healthCareRepository: SuperadminAppConfig.careAndRoutineBackendEnabled
           ? SupabaseHealthCareRepository(client)
           : const UnavailableHealthCareRepository(),
+      studentLinkRepository: SuperadminAppConfig.studentLinkCommandsEnabled
+          ? SupabaseStudentLinkRepository(client)
+          : const UnavailableStudentLinkRepository(),
       mealPlanRepository: SupabaseMealPlanRepository(client),
       mealPlanImageRepository: SupabaseMealPlanImageRepository(client),
       formsApi: SupabaseFormsApi(formsBackend),
@@ -483,6 +490,7 @@ SuperadminAuthScope _createUnavailableScope(CoeloAuthLifecycleGateway auth) {
     childSafetyRepository: const UnavailableChildSafetyRepository(),
     medicationPlanRepository: const UnavailableMedicationPlanRepository(),
     healthCareRepository: const UnavailableHealthCareRepository(),
+    studentLinkRepository: const UnavailableStudentLinkRepository(),
     mealPlanRepository: const UnavailableMealPlanRepository(),
     mealPlanImageRepository: const UnavailableMealPlanImageRepository(),
     formsApi: null,
