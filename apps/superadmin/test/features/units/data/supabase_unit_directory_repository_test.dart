@@ -169,6 +169,70 @@ void main() {
     expect(body['p_expected_version'], 4);
     expect(body['p_unit_id'], '22222222-2222-4222-8222-222222222222');
   });
+
+  test('RPC inexistente no banco vira indisponibilidade, nao excecao crua', () async {
+    // As cinco RPCs do diretorio de Unidades nao sao criadas por nenhum arquivo de
+    // packages/coelo_database, medido em 2026-09-10 e fixado por
+    // test/contracts/rpc_contract_test.dart. Enquanto a bifurcacao estiver aberta
+    // — instaladas fora do versionamento, ou inexistentes — importa saber o que o
+    // cliente faz se elas NAO existirem. O PostgREST responde 404 com PGRST202
+    // quando nao encontra a funcao, e este teste prova que o repositorio fecha:
+    // _mapError manda qualquer codigo que nao seja de autorizacao para
+    // indisponibilidade, entao a tela mostra indisponibilidade honesta em vez de
+    // receber excecao crua. O custo e que PGRST202 chega ao usuario com a mesma
+    // aparencia de queda de rede, e e por isso que a pergunta de catalogo precisa
+    // ser respondida em vez de esperada.
+    final client = _client(
+      (request) async => Response(
+        jsonEncode({
+          'code': 'PGRST202',
+          'message': 'Could not find the function public.list_units_for_superadmin',
+          'hint': null,
+          'details': null,
+        }),
+        404,
+        headers: {'content-type': 'application/json'},
+        request: request,
+      ),
+    );
+    addTearDown(client.dispose);
+    final repo = SupabaseUnitDirectoryRepository(client);
+
+    await expectLater(
+      repo.fetchPage(UnitDirectoryQuery()),
+      throwsA(isA<UnavailableUnitDirectoryException>()),
+    );
+    await expectLater(
+      repo.loadForm(),
+      throwsA(isA<UnavailableUnitDirectoryException>()),
+    );
+    await expectLater(
+      repo.fetchFilterOptions(),
+      throwsA(isA<UnavailableUnitDirectoryException>()),
+    );
+    // E o que importa para quem le o erro: nao e negacao de autorizacao, entao a
+    // tela nao pode dizer ao usuario que ele nao tem permissao.
+    await expectLater(
+      repo.fetchPage(UnitDirectoryQuery()),
+      throwsA(isNot(isA<UnitDirectoryUnauthorizedException>())),
+    );
+
+    // Controle positivo no mesmo teste, senao "tudo vira indisponibilidade"
+    // passaria tambem: com 42501 o mesmo repositorio distingue e devolve negacao.
+    final denied = _client(
+      (request) async => Response(
+        jsonEncode({'code': '42501', 'message': 'permission denied'}),
+        403,
+        headers: {'content-type': 'application/json'},
+        request: request,
+      ),
+    );
+    addTearDown(denied.dispose);
+    await expectLater(
+      SupabaseUnitDirectoryRepository(denied).fetchPage(UnitDirectoryQuery()),
+      throwsA(isA<UnitDirectoryUnauthorizedException>()),
+    );
+  });
 }
 
 Map<String, Object?> _unitRow() => {
