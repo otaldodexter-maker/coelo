@@ -173,6 +173,32 @@ grupos diferentes. Qual sobrevive não é decisão de um executor — e a respos
 provavelmente contraria a intuição, porque a viva é a privada e a com prova
 visual é a morta.
 
+## Oitava decisão: telas produtivas dizem ao usuário que ele está numa prévia
+
+Seis mensagens em três superfícies do Principal afirmam um contexto que não é o
+da tela: `principal_happens_preview_page` (281, 1323, 1661),
+`principal_now_preview_page` (327, 343) e `principal_moments_preview_page`
+(242). Os textos falam em "indisponível nesta prévia" e "estará disponível na
+experiência completa".
+
+Essas páginas **são** as rotas produtivas hoje. Na tela real, tocar em responder
+no Agora informa que a resposta está indisponível "nesta prévia". Não é apenas
+afordância inerte: é o produto dizendo à pessoa que ela está olhando um rascunho
+dele.
+
+Há precedente contraditório dentro do repositório:
+`principal_profile_route_page_test` exige que "experiência completa" **não**
+apareça na rota real, enquanto `principal_for_you_route_responsive_test` espera
+que apareça. Duas superfícies Principal, duas decisões contrárias.
+
+Duas saídas, e a escolha é uma só para todas: ou a ação some quando não há
+capacidade, como a galeria do Acontece já faz com compartilhar e salvar; ou a
+mensagem passa a ser verdadeira nos dois contextos, sem afirmar prévia.
+
+Não foi corrigido aqui porque são seis textos em três features e quatro testes
+que travam as frases exatas, um deles em `principal_for_you`, de outro grupo.
+Corrigir só uma superfície troca um defeito por uma inconsistência.
+
 ## Padrão, não acidente
 
 O padrão apareceu por três ângulos nesta rodada, e vale registrar como um só:
