@@ -57,6 +57,7 @@
       "action_ids": ["plans.list", "plans.create", "plans.edit", "plans.activate", "plans.assign"],
       "status": "candidate-existing",
       "changed": [],
+      "commit_sha": "be28f0c0b",
       "delta": "contrato de Planos ja existe na migration 20260901183154_superadmin_plans_production.sql com list/get/save, receipts, RLS forcado e grants somente authenticated; pgTAP existente sera levado para a fila serializada",
       "composition_key_candidate": "plansProductionRepositoryV1",
       "criteria": {"frontend": "N", "backend": "N", "e2e": "N", "reload": "N", "cross_tenant": "pgTAP pendente de replay nominal"}
@@ -77,7 +78,7 @@
       "action_ids": ["audit.export"],
       "status": "deferred-post-mvp",
       "changed": [],
-      "commit_sha": "be28f0c0b",
+      "commit_sha": "aafde0b3d",
       "delta": "mantido adiado conforme ADR 0034; nenhum entrypoint novo",
       "criteria": {"frontend": "N/A", "backend": "N/A", "e2e": "N/A"}
     }
