@@ -1,4 +1,7 @@
+import 'dart:convert';
 import 'dart:math';
+
+import 'package:crypto/crypto.dart';
 
 import 'package:coelo_domain/coelo_domain.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -139,7 +142,7 @@ final class SupabaseAttendanceRepository
         'p_group_id': draft.groupId,
         'p_activity_id': draft.activityContextId,
         'p_session_date': _dateOnly(draft.date),
-        'p_idempotency_key': _newUuid(),
+        'p_idempotency_key': _draftIdempotencyKey(draft),
       }),
     ),
   );
@@ -623,6 +626,27 @@ String _dashboardStatusName(AttendanceDashboardCallStatus value) => switch (valu
   AttendanceDashboardCallStatus.completed => 'completed',
   AttendanceDashboardCallStatus.inReview => 'inReview',
 };
+
+/// Creating a call is the one live write without an expected version, so a
+/// repeated attempt cannot be refused as a conflict. The key therefore has to
+/// describe the call being created rather than the attempt, or the server loses
+/// the only handle it has for recognising the repetition.
+String _draftIdempotencyKey(AttendanceCallDraft draft) => _uuidFromSeed(
+  '${draft.institutionId}:${draft.unitId}:${draft.groupId}:'
+  '${draft.activityContextId ?? ''}:${_dateOnly(draft.date)}',
+);
+
+String _uuidFromSeed(String seed) {
+  final bytes = List<int>.of(sha256.convert(utf8.encode(seed)).bytes.take(16));
+  bytes[6] = (bytes[6] & 0x0f) | 0x40;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+  final hex = bytes.map((value) => value.toRadixString(16).padLeft(2, '0')).join();
+  return '${hex.substring(0, 8)}-'
+      '${hex.substring(8, 12)}-'
+      '${hex.substring(12, 16)}-'
+      '${hex.substring(16, 20)}-'
+      '${hex.substring(20)}';
+}
 
 String _newUuid() {
   final random = Random.secure();
