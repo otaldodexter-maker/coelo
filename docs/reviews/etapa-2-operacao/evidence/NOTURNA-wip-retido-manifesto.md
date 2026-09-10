@@ -21,6 +21,13 @@ nenhum descarte.
 - **Preservação:** o objeto foi escrito no banco de objetos do repositório e a
   diferença completa está publicada ao lado, em
   `NOTURNA-wip-retido-estrutura.patch` — 59 linhas.
+- **Cópia crua:** `NOTURNA-wip-retido-estrutura-institution_form_save_lifecycle_test.dart.txt`
+  (o patch não aplica por diferença de fim de linha; a cópia aplica por substituição).
+- **Executado em 2026-09-10 sobre `0a9cb1e63`:** 7 casos anteriores PASS; dos três
+  novos, `same-context` PASS, `cancel-changed` e `destination-changed` FAIL
+  (`Expected: <0>, Actual: <1>`). **O defeito reproduz na base atual** e fica
+  registrado em `institutions.create`/`institutions.edit` como confirmado e não
+  corrigido. Worktree `e2-noturna-estrutura` restaurada e limpa depois da preservação.
 
 Acrescenta três casos de confirmação de saída de formulário de instituição
 (`cancel-changed`, `destination-changed`, `same-context`). **Não foi integrado nem

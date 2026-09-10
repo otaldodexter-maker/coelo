@@ -1,5 +1,5 @@
 {
-  "revision": 30,
+  "revision": 31,
   "round": "E2-NOTURNA-20260909",
   "role": "Coordenacao e Integracao - Claude",
   "writer": "coordenador-claude",
@@ -8,7 +8,7 @@
   "app": "Claude Code (VS Code)",
   "model": "claude-opus-5[1m]",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-10T05:00:00-03:00",
+  "updatedAt": "2026-09-10T08:30:00-03:00",
   "clockCorrection": {
     "referenceNow": "2026-09-09T19:03:25-03:00",
     "measuredBy": "date no checkout integrador",
@@ -247,6 +247,20 @@
         }
       ],
       "incidenteEvitado": "mesclar so a branch de chat deixou dois casos vermelhos porque os testes de G estavam la e o hunk de router nao. O aviso explicito de sobreposicao do autor evitou investigacao de merge perdido; da vez anterior o silencio custou 320 testes."
+    },
+    {
+      "grupo": "acessos-pessoas",
+      "revisao": 56,
+      "lidoEm": "2026-09-10T08:25:00-03:00",
+      "estado": "recebido e aceito",
+      "nota": "Checkpoint final pos-corte (08:13). Git 992f3530d 0/0 limpo; 35 commits publicados, todos em dev por ancestralidade. Residual transferido sem duplicacao: Safety assumido por alunos-rotina/coordenador; 5 achados shared (4 acessibilidade, 1 Convites) e Safety SQL 108U / Modelos concorrencia 12U permanecem para decisao nominal. Lidos na ordem indicada pelo Owner: acessos-pessoas.json, coordenacao r30, ENTREGA.md, residuals.md, safety-reflow, safety-transport, safety-accessibility, invite-labels, published-commits.json, retained-artifacts.json."
+    },
+    {
+      "grupo": "estrutura",
+      "revisao": 52,
+      "lidoEm": "2026-09-10T08:25:00-03:00",
+      "estado": "recebido e aceito",
+      "nota": "Filho esgotou cota; teste causal de Institutions ficou WIP retido (sha256 502bc2023544...). O coordenador executou o teste sobre origin/dev 0a9cb1e63: 7 casos anteriores PASS, novo caso same-context PASS, cancel-changed e destination-changed FALHAM (Expected 0, Actual 1). O defeito REPRODUZ na base atual: confirmacao de saida obsoleta apos await em cancel/destination. Nao corrigido nesta consolidacao; registrado em institutions como defeito confirmado com prova preservada."
     }
   ],
   "approvedSequences": [
@@ -485,7 +499,7 @@
     "claudeExecutorAddresses": "Fornecidos pelo Owner e verificados por envio real: as seis conversas Claude receberam ACK nominal por SendMessage em 18:18. Enderecos gravados em groups[].sessionName/sessionId para recuperacao."
   },
   "blocks": [],
-  "nextStep": "rodada encerrada; nao abrir nova sem decisao do Owner",
+  "nextStep": "Owner decide: corrigir a confirmacao de saida obsoleta de Instituicoes; autorizar select pg_proc em producao; decisoes nominais listadas no relatorio NOTURNA. Nenhuma rodada nova aberta.",
   "providers": {
     "supabase": {
       "cli": "supabase 2.117.0 autenticado; token no Credential Manager do Windows",
@@ -1174,5 +1188,35 @@
     "operacaoRemota": "nenhuma, por nenhuma frente, em nenhum momento da rodada",
     "manifesto": "docs/reviews/etapa-2-operacao/evidence/NOTURNA-wip-retido-manifesto.md",
     "relatorioAoOwner": "docs/reviews/etapa-2-operacao/reports/NOTURNA-relatorio-owner.md"
+  },
+  "consolidacaoManha": {
+    "horaInicio": "2026-09-10T08:19:04-03:00",
+    "pedidoDoOwner": "conferir entregas com Codex e conversas filhas; atualizar commits; worktrees limpas; nada perdido; atualizar pendencias das tres skills; relatar avanco por tela",
+    "frentesConferidas": {
+      "publicacoes-midia": "coelo-a6, residual 0 (rastro)",
+      "formularios-cuidado": "coelo-d6, residual 0",
+      "alunos-rotina": "coelo-1f, residual 0",
+      "chat-comunicacoes": "coelo-4d, residual 0",
+      "operacoes-sistema": "coelo-7e, residual 0 por conteudo",
+      "perfil-para-voce": "sessao offline; branch 1d46746ff, 2 commits fora de dev ambos com rastro de cherry-pick, residual 0",
+      "acessos-pessoas (Codex)": "r56 08:13, 35/35 commits em dev",
+      "estrutura (Codex)": "r52, integrado; WIP de teste reproduzido e preservado"
+    },
+    "branchesR02Codex": "7 branches codex/e2-r02-* seguem com 23 a 72 commits sem rastro em dev e 7 a 52 arquivos nao-docs diferentes de dev. Sao entregas da R02 encerrada com integracao SELETIVA por hunks, documentada em RECONCILIACAO-PENDENCIAS-R01-R02.md. Nao sao commits perdidos: sao WIP retido por decisao da R02. Nao copiar em bloco para dev.",
+    "higiene": {
+      "pubspecLockRemovidos": "3 arquivos untracked identicos ao rastreado em dev, removidos das worktrees formularios-cuidado e publicacoes-midia",
+      "estruturaWip": "blob 1db1d68d8 no banco de objetos + patch + copia crua em evidence/; worktree restaurada",
+      "branchesRemovidas": "locais contidas em dev e copias locais de refs remotas; remotas router-dedupe (commit vazio) e alunos-rotina-final (contida em dev)"
+    },
+    "defeitoConfirmado": {
+      "tela": "apps/superadmin -> Estrutura -> Instituicoes -> formulario -> sair com alteracoes",
+      "actionIds": [
+        "institutions.create",
+        "institutions.edit"
+      ],
+      "prova": "docs/reviews/etapa-2-operacao/evidence/NOTURNA-wip-retido-estrutura-institution_form_save_lifecycle_test.dart.txt",
+      "resultado": "cancel-changed F, destination-changed F, same-context P, sobre 0a9cb1e63",
+      "origem": "estrutura (Codex) r51/r52, filho encerrado por cota"
+    }
   }
 }

@@ -1,6 +1,6 @@
 {
-  "revision": 51,
-  "updated_at": "2026-09-09T22:35:53.520417-03:00",
+  "revision": 52,
+  "updated_at": "2026-09-10T01:36:00-03:00",
   "group": "estrutura",
   "task": "/root",
   "model": "GPT-6 (variante nao exposta)",
@@ -8,8 +8,8 @@
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura",
   "branch": "work/etapa2-noturna-estrutura",
-  "head": "36d3c6302ac1944fd06f314f02a90bb0dcf1c99b",
-  "upstream": "origin/work/etapa2-noturna-estrutura;HEAD36d3c6302 verified0/0",
+  "head": "6709f1473e3c730b30683d096d4efc1fa8d5677f",
+  "upstream": "origin/work/etapa2-noturna-estrutura;HEAD6709f1473 verified0/0",
   "base_observed": "d784462c1",
   "scope": [
     "apps/superadmin -> Instituicoes",
@@ -20,12 +20,12 @@
     "apps/superadmin -> Locais"
   ],
   "action_ids_status": "49 IDs confirmados no inventario: 42 MVP e 7 adiados. Recorte inicial institutions.locations-map,units.locations-map,units.copy-institution-location,locations.list,locations.create-edit,locations.detail-links; seguinte groups.location/activities.location/locations.schedule.",
-  "changed": "Revisita final identificou possivel confirmacao de saida obsoleta em Institutions: save revalida contexto apos await, cancel/destination nao. Filho recebeu prova causal limitada a 3 casos e correcao minima somente se reproduzir; prazo interno 23:00. Codigo anterior publicado e WIP documental preservado.",
+  "changed": "Revisita final identificou possivel confirmacao de saida obsoleta em Institutions: save revalida contexto apos await, cancel/destination nao. Filho esgotou cota sem fechar a prova; teste causal permanece WIP retido para Claude. Codigo e documentacao publicados em 6709f1473.",
   "closed_criteria": [
     "Tres candidatos R02 revisados e reaproveitados; patches de composicao isolados.",
     "Consumidores, adapters e protecoes locais qualificados conforme manifests individuais; nenhuma certificacao integral FE/BE/E2E.",
     "Regressao R16 reconciliada com prova do comando avaliativo preenchido.",
-    "Todos os lotes de codigo publicados; filho recolhido e runners encerrados."
+    "Todos os lotes de codigo e documentacao publicados; investigacao Institutions recolhida por limite de cota, runners encerrados."
   ],
   "tests": {
     "latest_batch": "Group read preflight",
@@ -44,8 +44,14 @@
     "Migrations: candidatos locais permitidos; replay e remoto serializados Claude"
   ],
   "blocker": "Somente dependentes: replay SQL na fila Claude, producao sem autorizacao nominal, Group writer legado, Activity edit/About/avulso fora do candidato atomico atual.",
-  "next_step": "Fechar a prova de confirmacao obsoleta de Institutions ate 23:00; publicar se qualificada. Finalizar indice e checkpoints 23:10/23:20/23:30, sem novos lotes apos congelamento.",
+  "next_step": "Claude deve decidir se incorpora o teste WIP de Institutions (hash 502bc2023544e7747d31b2efc8aaf1eda21dc20e591ca8ebc68ee348ea6051df) e executar prova causal; depois validar 6709f1473 na base integrada e manter os tres SQL em fila nominal.",
   "wip": [
+    {
+      "path": "apps/superadmin/test/features/institutions/presentation/screens/institution_form_save_lifecycle_test.dart",
+      "owner": "root",
+      "sha256": "502bc2023544e7747d31b2efc8aaf1eda21dc20e591ca8ebc68ee348ea6051df",
+      "status": "WIP retido; filho encerrou por limite de cota; nao publicado"
+    },
     {
       "path": "apps/superadmin/lib/app/router/superadmin_router.dart",
       "owner": "bindings_review",
@@ -117,18 +123,16 @@
   "children": [
     {
       "task": "/root/bindings_review",
-      "state": "active-bounded-institution-exit-context",
-      "resources": "Slot Flutter; apenas InstitutionForm/3 casos; sem router/Auth/remoto; prazo interno 23:00"
+      "state": "completed-usage-limit",
+      "resources": "Sem recursos ativos; prova causal Institutions permanece WIP retido"
     }
   ],
-  "processes": [
-    "Child owns focal lifecycle test slot"
-  ],
+  "processes": [],
   "ports": [],
   "ack": "Coordenacaor18camposnovoslidos;R16respondidoef751c33b5P. Recibonominalestrutura ainda r11, naoafirmoleituradeentregasposteriores.",
   "limitations": "Sem canal nativo Claude verificado; arquivo publicado nao comprova leitura nem desperta conversa encerrada.",
   "deadline": "2026-09-09T23:30:00-03:00",
-  "eta": "Codigo qualificado e publicado. Restam consolidacao documental, conferencias Git/recursos e checkpoints obrigatorios de horario.",
+  "eta": "Codigo e indice publicados em 6709f1473; resta ao Claude integrar/verificar, decidir o WIP Institutions e conduzir fila SQL nominal.",
   "candidate_review": [
     {
       "paths": 6,
@@ -156,6 +160,7 @@
     "excluded": "Outros apps; adiados; Auth/CHILD/shell preservados; producao sem pacote nominal"
   },
   "commits": [
+    "6709f1473e3c730b30683d096d4efc1fa8d5677f docs(review): reconcile action deltas and retained SQL packages",
     "36d3c6302ac1944fd06f314f02a90bb0dcf1c99b fix(superadmin): propose group detail read-capability preflight",
     "0ebae43941ce04c73dc128c652ebbd0005a9a444 fix(superadmin): deny group detail reads before transport when capability is absent",
     "10d69e38bc9c201ce357bbe9d45eea96dedd3c2c feat(superadmin): propose group read-detail entry route",

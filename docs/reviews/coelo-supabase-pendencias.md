@@ -3,7 +3,7 @@ title: "Pendências Coelo — Back-end"
 source: "AGENTS.md; ADR 0019; ADR 0032; tracker-corrections-2026-09-08.json; inventario-etapa-2.json"
 status: "open"
 generated_at: "2026-09-08"
-updated_at: "2026-09-09T17:13:51-03:00"
+updated_at: "2026-09-10T08:30:00-03:00"
 action_count: 230
 family_count: 39
 active_mvp_action_count: 200
@@ -13,13 +13,58 @@ backend_applicable_action_count: 223
 formal_mvp_gate_action_count: 3
 deferred_post_mvp_action_count: 22
 flutter_only_action_count: 5
-tracker_sync_at: "2026-09-09T08:41:13-03:00"
-tracker_sync_revisions: "C01r51; C02r48; C03r33; C04r61; C05final; C06r53; C07r12"
+tracker_sync_at: "2026-09-10T08:30:00-03:00"
+tracker_sync_revisions: "noturna: acessos-pessoas r56; estrutura r52; operacoes-sistema r61; formularios-cuidado r58; alunos-rotina r33; perfil-para-voce r51; chat-comunicacoes r68; publicacoes-midia r46; coordenacao r31"
 ---
 
 # Pendências Coelo — Back-end
 
-## Estado vigente — R01 e R02 encerradas
+## Estado vigente — Rodada noturna 09→10/09/2026 encerrada
+
+Consolidação em **2026-09-10T08:30-03:00**, sobre `dev` `0a9cb1e63` (base
+funcional e documental são a mesma). Rodada noturna coordenada por Claude
+(`coelo-73`), com oito frentes: duas Codex (estrutura, acessos-pessoas; corte
+23:30) e seis Claude (operações-sistema, formulários-cuidado, alunos-rotina,
+perfil-para-você, chat-comunicações, publicações-mídia; corte 05:00). Todas
+entregaram; residual de commits **zero** nas oito, medido por rastro de
+cherry-pick, ancestralidade e conteúdo (nenhum critério isolado basta — ver
+relatório). Nenhuma operação remota em Supabase ou Cloudflare por nenhuma
+frente. Adiamentos pós-MVP, gates MFA (ADR 0019/AAL1), bloqueios SQL nominais e
+a regra de que repositório real não autoriza escrita foram preservados.
+
+Conclusão certificada no inventário **não mudou**: Front-end 11/230, backend
+0/223 aplicáveis, integração 0/198 ativas. A rodada moveu **estado de bloqueio e
+evidência** (132 deltas de rastreador aceitos, 0 conflitos), corrigiu três
+defeitos de produto (grade de Segurança infantil que não se dispunha em
+produção, `089c1fafc`; cardápio encerrado exibido como rascunho; inbox do chat
+Principal após envio) e identificou dois não corrigidos (Importações transborda
+ao ligar o repositório; confirmação de saída obsoleta em Instituições,
+reproduzida em 2026-09-10 sobre `0a9cb1e63`: `cancel-changed` e
+`destination-changed` falham, `same-context` passa).
+
+Suíte `apps/superadmin` no fechamento: **6390 PASS / 14 SKIP / 144 FAIL**; das
+144, 129 são goldens com deriva de base (não regravar sem pin de SDK) e 15
+não-golden preexistentes. Outros sete pacotes: 894 PASS / 2 FAIL (`apps/catalog`).
+`flutter analyze lib test` limpo em `apps/superadmin`. Validador dos três
+rastreadores PASS; portão de conhecimento PASS, 61 artigos.
+
+Fontes desta rodada: [relatório ao Owner](etapa-2-operacao/reports/NOTURNA-relatorio-owner.md)
+(decisões pendentes, progresso por tela, achados), [fila SQL serializada](etapa-2-operacao/reports/NOTURNA-fila-sql-serializada.md)
+(13 candidatos, zero erro de sintaxe em Postgres 17, nenhum aplicado),
+[manifesto de WIP retido](etapa-2-operacao/evidence/NOTURNA-wip-retido-manifesto.md)
+e os nove canais em `etapa-2-operacao/comunicacao/` (revisões finais:
+acessos-pessoas 56, estrutura 52, operações-sistema 61, formulários-cuidado 58,
+alunos-rotina 33, perfil-para-você 51, chat-comunicações 68, publicações-mídia
+46, coordenação 31). As sete branches `codex/e2-r02-*` da R02 permanecem com
+entregas de integração seletiva por hunks; não são commits perdidos nem devem
+ser copiadas em bloco.
+
+**Primeira ação de maior retorno para o Owner:** um `select proname from pg_proc`
+no banco de produção fecha de uma vez três blocos de bloqueio (cinco RPCs de
+Unidades, cinco de Assiduidade, 40 objetos `app_private`). Enquanto não ocorrer,
+esses blocos são "sem autorização para verificar", não "ausentes".
+
+## Estado anterior — R01 e R02 encerradas
 
 Reconciliação documental em **2026-09-09T17:13:51-03:00**, sobre `dev` documental `09aa3861e` e base funcional `d019c109a`.
 Objetivo: atualizar entregas, pendências e evidências das duas rodadas no inventário e nas três camadas. Inclui as 230 ações conhecidas; não reabre tarefas nem executa/deploya produto. Critério de parada: matrizes idênticas ao inventário nos campos de cada camada, fontes reconciliadas e publicação verificada. Trabalho documental realizado neste turno; ETA do produto continua desconhecida.
@@ -34,6 +79,19 @@ Seleção R02: 147 IDs, 131 ativos E2E. Claude entregou FE na origem **L01 6/23,
 Fontes atuais: [fechamento R02](etapa-2-operacao/next-round/R02-20260909/FECHAMENTO-OWNER.md), [entrega L00](etapa-2-operacao/next-round/R02-20260909/ENTREGA-L00-PARA-D00.md), [reconciliação R01/R02](etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md) e [inventário](inventario-etapa-2.json). Os relatos R01/16h ou Cxx nas linhas são evidência histórica quando não substituídos por recibo final, não ordens ativas nem nova prova runtime.
 
 <!-- stage2-dashboard:start -->
+## Entregas e primeiro limite restante — Rodada noturna 09→10/09
+
+| Frente e telas | Resultado integrado nesta rodada | Primeiro limite restante |
+| --- | --- | --- |
+| estrutura (Codex) — Instituições, Unidades, Turmas, Atividades, Avaliações, Locais | Correções de formulário/rotas integradas; três candidatos SQL em fila nominal; índice publicado em `6709f1473`. | Confirmação de saída obsoleta em Instituições reproduzida (2 F) e não corrigida; cinco RPCs de Unidades sem prova de existência em produção; consumidores de reservas/bindings. |
+| acessos-pessoas (Codex) — Pessoas, Perfis, Modelos, Convites, Usuários internos, Segurança infantil, Arquivos de perfil | 35 commits em dev: pacote nominal Modelos 95P local, recibos e duplicação sem repetição, Safety só comanda com suporte qualificado, transporte tipado 5P, sete lotes de referência visual reconciliados. Grade de Safety corrigida por alunos-rotina/coordenador. | Safety SQL 108U aguardando ordem nominal; concorrência Modelos 12U não executada; alvo 44px do menu do usuário, contrastes 3.50 e nó de longPress sem rótulo em componentes shared; pacote Modelos sem aplicação remota; MFA adiado (AAL1). |
+| operações-sistema — Agenda, Auditoria, Suporte, Planos, Cardápios, Catálogo, Minha conta, Auth, shell, erros | Cardápio encerrado corrigido; contrato de tamanho de campo; teste de contrato RPC que confere existência da função chamada; catálogo sincronizado; limites de Agenda/Planos com asserção. | Replay Auditoria 0/145; três linhas de bloqueio dependem do `pg_proc`; quatro guardas de composição com intenção a confirmar; extrair AgendaLimits/PlanLimits. |
+| formulários-cuidado — Formulários, Saúde e Cuidado, Medicação | Limites de seleção guardados no domínio e na resposta; semântica OU entre condições; goldens triados por caso (12 de 12 do recorte são deslocamento puro). | Três decisões do Owner: regras de público apagadas ao salvar agendamento; autosave do editor inalcançável; origem de definição com limites de seleção. |
+| alunos-rotina — Alunos/CHILD, Assiduidade, Rotina diária (+ Safety residual) | Grade de Safety com `Table` intrinsicHeight (`089c1fafc`), verificada por outra frente em quatro larguras; 26 lotes integrados; provas por assinatura de conteúdo. | Rebaseline nominal de 16 goldens; 9 objetos `app_private` de Rotina e 4 de student_tracking sem migration; OQ-040 segurando `/attendance`; cache PostgREST U1. |
+| perfil-para-você — Perfil, Para Você, Sobre | Recorte 306P/10F na base integrada; afirmação não sustentada removida de comentário de código; referência de medição confiável adicionada à skill. | Referência aprovada do Perfil (resposta binária); dez falhas de causa única `blocked-decision`; três telas com prévia declarada (patch `80f160599` retido). |
+| chat-comunicações — Chat administrativo, Chat Principal, Avisos | Rota `/principal-conversations` no shell persistente; inbox reconciliada após envio; rotas reais de Avisos fail-closed provadas; import órfão removido (analyze limpo em `test`). | 16 listagens em grade sem chave de linha; `/imports` transborda ao ligar repositório; pin do SDK antes de regravar goldens; 4 ações de chat `blocked-environment`. |
+| publicações-mídia — Acontece, Agora, Momentos, Circulares, plataforma de mídia | Recorte 784/758P/26F; plataforma 82P; catálogo de mídia desenhado; revisão dos candidatos SQL; feed misto corrigido. | Oito decisões do Owner (véu do chip DESTAQUE = 13 goldens; cópia de prévia); trinca SQL de Circulares só com R2 + Edge Function; abrir/responder Circular no leitor Principal. |
+
 ## Entregas e primeiro limite restante — R02
 
 | Frente e telas | Resultado integrado nesta rodada | Primeiro limite restante |
