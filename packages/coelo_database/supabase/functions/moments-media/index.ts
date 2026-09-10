@@ -37,12 +37,18 @@ function reply(origin: string | null, status: number, body: Json) {
 }
 
 function environment() {
+  // COELO_R2_* e o token unico de midia (ADR 0034, Decisao 11); MOMENTS_R2_*
+  // continua aceito como sobrescrita local.
   return Object.fromEntries([
     "MOMENTS_R2_ENDPOINT",
     "MOMENTS_R2_REGION",
     "MOMENTS_R2_ACCESS_KEY_ID",
     "MOMENTS_R2_SECRET_ACCESS_KEY",
     "MOMENTS_R2_BUCKET",
+    "COELO_R2_ENDPOINT",
+    "COELO_R2_REGION",
+    "COELO_R2_ACCESS_KEY_ID",
+    "COELO_R2_SECRET_ACCESS_KEY",
   ].map((name) => [name, Deno.env.get(name)]));
 }
 

@@ -117,8 +117,15 @@ rodada o coordenador remove o usuário e o que ele criou.
 
 Remover cada item no mesmo turno em que a verificação confirmar o efeito.
 
-1. **Token R2 de escopo mínimo (ADR 0034, Decisão 5 e 8/P2).** A sessão OAuth
-   do MCP não cria tokens de API. Roteiro para o Owner: painel Cloudflare →
+1. **Token R2 de escopo mínimo (ADR 0034, Decisão 5 e 8/P2). FEITO em
+   10/09/2026 18:12:** o Owner criou o token de conta `coelo-edge-functions-r2`
+   (Object Read & Write, três buckets, sem expiração) e o coordenador gravou
+   `COELO_R2_ENDPOINT`, `COELO_R2_REGION`, `COELO_R2_ACCESS_KEY_ID` e
+   `COELO_R2_SECRET_ACCESS_KEY` nos secrets das Edge Functions a partir de um
+   arquivo local depois apagado; spike sintético R2-T001/T002/T003/T004/T007
+   PASS contra `coelo-transient-prod`. Os valores mascarados que o Owner colou
+   no chat não são o segredo; se algum dia o valor real aparecer em chat, o
+   token é rotacionado no mesmo painel. Roteiro original, para rotação: painel Cloudflare →
    R2 Object Storage → *Manage R2 API Tokens* → *Create API token* → nome
    `coelo-edge-functions-r2`, permissão **Object Read & Write**, *Specify
    bucket(s)* com `coelo-media-prod`, `coelo-documents-prod` e
@@ -139,6 +146,20 @@ Remover cada item no mesmo turno em que a verificação confirmar o efeito.
    packages/coelo_database/scripts/r2-spike-synthetic.ts` com os mesmos valores
    no ambiente do processo (nunca em arquivo versionado). Efeito: deploy de
    `happens-media`, `now-media` e `moments-media` e conclusão do spike.
+1b. **Stream (ADR 0034, Decisão 11).** Token de conta
+   `coelo-edge-functions-stream` (Stream Read+Edit) gravado como
+   `COELO_STREAM_API_TOKEN` com `COELO_CLOUDFLARE_ACCOUNT_ID` em 10/09/2026;
+   valor ainda não exercitado (token de conta não responde em
+   `/user/tokens/verify`). Primeiro uso: promoção de vídeo do Agora. Se
+   falhar, o Owner gira o token em Tokens de API da conta.
+1c. **Revisar o token de usuário "Cloudflare Agent Token - 2026-09-03"**
+   (25 permissões, todas as contas e zonas): reduzir ou revogar (P20).
+1d. **DNS de `coelo.me`:** zona criada na Cloudflare em 10/09 (id
+   `358365d64558c2cfd4f5aff62498f6ec`), pendente até o Owner trocar os
+   nameservers na HostGator por `armando.ns.cloudflare.com` e
+   `rosa.ns.cloudflare.com`; antes, copiar MX/A existentes se houver e-mail ou
+   site. Registros dos apps entram com o deploy, com token próprio de
+   Pages/Workers e DNS, nunca o token de mídia.
 2. **Troca da senha do banco de produção (ADR 0034, Decisão 8/P14).** Motivo:
    `supabase db dump --dry-run` imprimiu a credencial do papel efêmero do
    pooler numa saída de ferramenta em 10/09/2026. Roteiro: painel Supabase →

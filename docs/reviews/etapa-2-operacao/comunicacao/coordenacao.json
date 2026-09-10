@@ -1,6 +1,15 @@
 {
-  "revision": 12,
+  "revision": 13,
   "round": "E2-R03-20260910",
+  "cloudflareFechamento": {
+    "quando": "2026-09-10 18:12 a 18:40",
+    "tokenR2": "criado pelo Owner (conta, Object Read & Write, tres buckets); gravado como COELO_R2_ENDPOINT/REGION/ACCESS_KEY_ID/SECRET_ACCESS_KEY a partir de arquivo local apagado em seguida",
+    "spike": "R2-T001 PUT assinado 200; T002 MIME divergente 403; T003 HEAD bytes/mime; T004 GET 200; T007 expirada 403; limpeza OK; T005/T006 no gateway (pgTAP); T008 lifecycle 7 dias + limpeza do catalogo; T009 varredura de segredos sem ocorrencia. Registrado em docs/spikes/media-r2/evidence-log.md (EV-007..EV-016)",
+    "funcoes": "circular-media implantada com o ramo R2 (migration 212000 ja estava em producao). moments-media: fundacao 20260910230017 + correcao de bucket 230018 aplicadas em producao (lote 6, ledger 40), funcao passa a ler COELO_R2_* (fallback) e bucket coelo-media-prod, testes 26/26; deploy na sequencia. happens-media e now-media: continuam sem deploy porque o storage_provider default e supabase_mvp; precisam de migration no padrao de Circulares (default r2, bucket por MIME) pelo grupo principal-chat-sistema; now_publication_mvp aplica na baseline mas seu pgTAP tem 1 not ok + 28 erros (drift)",
+    "stream": "token de conta coelo-edge-functions-stream (Stream Read+Edit) criado pelo Owner e gravado como COELO_STREAM_API_TOKEN + COELO_CLOUDFLARE_ACCOUNT_ID; valor nao exercitado ainda (verify de usuario devolve 400 para token de conta); custo zero ate o Agora promover video",
+    "dns": "zona coelo.me criada (Free, id 358365d64558c2cfd4f5aff62498f6ec) a pedido do Owner; nameservers atuais na HostGator dns3/dns4; pendente troca para armando/rosa.ns.cloudflare.com; nenhum registro importado; ssl full, always_use_https, tls 1.2 min, tls 1.3, http3, brotli, early hints ligados; registros dos apps so com deploy (token proprio)",
+    "pendenciasDeSegurancaNovas": "P20 token de usuario 'Cloudflare Agent Token - 2026-09-03' com 25 permissoes; P19 ao vivo no Agora e decisao de produto"
+  },
   "posCorte": {
     "quando": "2026-09-10 noite, apos o Owner responder P16/P17/P18 (ADR 0034 Decisao 10)",
     "artefatoParaOOwner": "https://claude.ai/code/artifact/a8eadb47-c843-481a-bafb-053382d31d8a (explicacao simples + decisoes com imagens lado a lado)",

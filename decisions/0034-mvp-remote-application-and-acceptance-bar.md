@@ -206,6 +206,35 @@ pertencem e voltam a contar na revisão profunda.
   registrada por action_id no inventário e nos três rastreadores como
   aprovação visual, com decisão e observação; não substitui `verified`.
 
+## Decisão 11 — Cloudflare além do pacote da Decisão 5 (10/09/2026, noite, a pedido do Owner)
+
+- **Token R2 (P2) feito pelo Owner** às 18:12: token de conta
+  `coelo-edge-functions-r2`, Object Read & Write nos três buckets, sem
+  expiração; gravado pelo coordenador como `COELO_R2_*` nos secrets das Edge
+  Functions a partir de arquivo local depois apagado. Spike R2-T001/T002/T003/
+  T004/T007 PASS contra `coelo-transient-prod`; `circular-media` implantada
+  com o ramo R2.
+- **Token do Stream criado agora, por decisão do Owner**, token de conta
+  `coelo-edge-functions-stream` com permissão Stream Read+Edit apenas, gravado
+  como `COELO_STREAM_API_TOKEN` (mais `COELO_CLOUDFLARE_ACCOUNT_ID`). Não há
+  uso até o Agora promover o primeiro vídeo; custo zero. A verificação do
+  valor fica para o primeiro uso; se falhar, girar o token no painel.
+- **Ao vivo no Agora (Stream Live)** não está decidido: fica como pergunta
+  P19 de produto (custo por minuto e regra de privacidade de crianças). O
+  token atual já cobriria, se decidido.
+- **Zona `coelo.me` adicionada à Cloudflare** (plano gratuito) a pedido do
+  Owner, com `ssl=full`, `always_use_https`, TLS mínimo 1.2, TLS 1.3, HTTP/3,
+  Brotli e Early Hints ligados. Status pendente até os nameservers na
+  HostGator (`dns3/dns4.hostgator.com.br`) apontarem para
+  `armando.ns.cloudflare.com` e `rosa.ns.cloudflare.com`. Registros de
+  `superadmin`, `admin`, `app` e do site entram com cada deploy, que é outro
+  pacote (Pages/Workers) com token próprio; DNS e mídia nunca compartilham
+  token.
+- **Pendência de segurança nova:** existe na conta um token de usuário
+  "Cloudflare Agent Token - 2026-09-03" com 25 permissões sobre todas as contas
+  e zonas. O Owner revisa (reduzir ou revogar) na próxima janela de segurança
+  (P20).
+
 ## Consequências
 
 - O replay local com Docker deixa de ser porta obrigatória; continua útil para

@@ -187,6 +187,19 @@ catálogo com concessão inicial só ao Owner, `requires_mfa=false` no MVP
 (AAL1) e risco registrado, ou reduzir o conjunto. Recomendação: provisionar
 as nove como está na cadeia, Owner-only, AAL1, e revisar na fase profunda.
 
+## P19 — Transmissão ao vivo no Agora (Stream Live)
+
+Você perguntou se dá para "deixar preparado" o ao vivo. O token do Stream já
+cobre, mas ao vivo é funcionalidade nova: custo por minuto entregue e
+armazenado e regra própria de privacidade para crianças. Decidir depois do
+MVP, com métrica do piloto. Recomendação: não agora.
+
+## P20 — Token antigo "Cloudflare Agent Token - 2026-09-03"
+
+Token de usuário com 25 permissões sobre todas as contas e zonas. Muito mais
+do que o Coelo usa. Revisar no painel (Meu perfil → Tokens de API): se ainda
+for necessário, reduzir; senão, revogar. Só você pode.
+
 ## P10 — `requires_mfa` em capacidades de publicação (publicacoes-agenda)
 
 Código histórico ainda pede AAL2 em algumas capacidades de publicação; o MVP é
