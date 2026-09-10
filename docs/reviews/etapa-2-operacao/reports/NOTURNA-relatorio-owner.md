@@ -1281,6 +1281,25 @@ conferia o integrador. Duas frentes foram encarregadas de conferir, e acharam:
   segundo** — só leitura mostra. Os quatro merges com resolução da rodada foram
   inspecionados; os demais, não.
 
+**A primeira lacuna foi fechada com uma varredura própria, e o resultado é uma
+linha de garantia que antes não existia:** comparando a base pré-rodada com a base
+entregue, **187 arquivos de teste foram tocados, 100 adicionados, nenhum deletado,
+nenhum renomeado, e dos 87 modificados 48 ganharam casos, 39 mantiveram e
+nenhum perdeu.** O instrumento foi validado antes de ser confiado — um detector
+que sempre responde "limpo" não vale nada, e este discrimina, com 148 arquivos de
+delta positivo.
+
+E a varredura fechou uma lacuna que eu não havia pedido: **contagem igual não
+prova conteúdo igual.** Nos 39 arquivos de contagem estável, cinco tinham nomes
+de caso diferentes. Os cinco foram abertos: quatro são renomeações acompanhando
+mudança deliberada — inclusive a asserção de fronteira que mudou porque o
+contrato mudou — e o quinto é falso positivo do extrator, um caso parametrizado
+cujo nome deixou de ser literal.
+
+**O buraco que permanece, declarado em vez de omitido:** um teste cujo *corpo*
+foi esvaziado mantendo nome e contagem não é detectado por nada disto. Fechar
+isso exigiria contar asserções por caso em vez de casos por arquivo.
+
 Três verificações fecharam o que era verificável: nenhum commit publicado por
 frente ficou fora da base — conferido commit a commit nos 2305 das sete branches;
 os 762 goldens da base pré-rodada continuam 762; e nenhum arquivo de coordenação
