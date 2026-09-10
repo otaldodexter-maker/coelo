@@ -251,6 +251,46 @@ O teste falha também **se uma das cinco ausências passar a existir e continuar
 lista** — sem isso a lista de exceções envelhece e passa a esconder o defeito
 seguinte, que é como esse tipo de allowlist costuma morrer.
 
+## Os 129 goldens não são um bloco, e rebaseline cego apagaria produto
+
+Quatro conjuntos foram amostrados abrindo `masterImage` e `testImage` lado a lado.
+Deram **três perfis distintos**, e a conclusão prática é forte: **na amostra, a
+maioria dos casos tem componente que um rebaseline em bloco apagaria.**
+
+**Agenda, 14 casos — deriva pura de shell, rebaseline seguro.** A 1440 o diff é
+0,05% e **837 pixels**, nas duas variantes de tema, que é a assinatura exata do
+commit que fundiu o rótulo do alternador da barra lateral com a ação. A 375 e 768
+sobe para 10%–18%, e o diff isolado mostra **todo o conteúdo deslocado
+verticalmente por poucos pixels**, do título ao último dia — nenhuma diferença de
+conteúdo, a página inteira descendo. É o commit que "alinha o cabeçalho compacto
+e reserva espaço de ação", que só muda a altura do cabeçalho nas larguras
+compactas. Duas mudanças aprovadas, separadas por largura. Agenda não esconde
+nada.
+
+**Conta, 8 casos — tem mudança de produto, e era a família que eu apostava ser só
+cabeçalho.** A 375 e 768, 44%–73%, até 503 mil pixels; a 1024 e 1440, 3,9%–5,1%,
+de 36 mil a 63 mil. O que mata a hipótese: nas larguras largas o diff é **cem
+vezes** a assinatura de 837 pixels. Se fosse cabeçalho puro, 1440 daria 837 como
+em Agenda. O diff de configurações a 1440 mostra diferença no **corpo** — um
+controle segmentado de três opções com a primeira realçada, e uma linha com
+interruptor à direita.
+
+**Cardápios, 6 casos — conteúdo puro, sem componente de shell visível.**
+0,86%–8,70%. No diretório a 1440 a barra lateral não aparece no diff; o que difere
+é um cartão, com um ponto de status trocando de cor e linhas de texto sobrepostas
+onde um rótulo e uma data mudaram.
+
+**Instituições, 4 casos** — já relatado antes: cabeçalho conhecido **mais** o
+cartão tracejado "Criar instituição" presente na referência e ausente na captura
+atual, com dados e paginação diferentes. Pode ser afordância de criação sumindo
+de um diretório do MVP, ou apenas fixture diferente; barato de confirmar por quem
+tem o recorte, e nenhuma das duas respostas aparece se os 129 forem tratados como
+bloco.
+
+**A recomendação que sai disso:** rebaseline por família, não em bloco, e cada
+família com conteúdo passa antes pelo dono. Agenda pode ir hoje; Conta,
+Cardápios e Instituições, não.
+
 ## Bloqueio herdado é a espécie que mente
 
 Perto do fim da rodada, uma frente descobriu que uma das próprias linhas de
@@ -727,15 +767,29 @@ compartilhado, em vez de corrigir só a tela que quebrou.
     produtivas. Um responsável que toca em responder no Agora lê que o produto
     que ele está usando é um rascunho.
 
-    O que torna isto decisão e não correção: o repositório já tem as **duas
-    respostas contrárias**. O teste da rota do Perfil exige que a frase
-    "experiência completa" **não** apareça; o teste de Para Você **espera** a
-    frase. Duas superfícies Principal, duas decisões opostas, no mesmo produto.
-    As opções são ou a ação sumir quando não há capacidade — que é o que a
-    galeria de Acontece já faz — ou a mensagem deixar de afirmar prévia. A
-    primeira muda composição aprovada; a segunda muda linguagem do produto. As
-    duas são baratas de executar e nenhuma é decisão de frente. O patch das três
-    telas está preparado e não mesclado, à espera da resposta.
+    **Correção da minha própria leitura, feita antes de isto chegar a você.** Eu
+    havia escrito que o repositório tem as duas respostas contrárias — que o
+    teste do Perfil proíbe a frase e o de Para Você a espera. **Está errado.** A
+    ocorrência em Para Você está dentro de um `findsNothing`: o teste se chama
+    "diz claramente que um atalho sem destino está indisponível", toca em
+    Cardápio na rota real, e assere que aparece "Cardápio ainda não está
+    disponível" e que **não** aparece "estará disponível na experiência
+    completa", com o comentário "uma rota de produção nunca responde com a
+    mensagem de prévia". Eu vi a string e li como expectativa; a asserção em
+    volta dizia o oposto.
+
+    Com isso o item **encolhe e melhora**. Não há duas filosofias no produto:
+    Perfil e Para Você **já estão corrigidos e provados**, e Acontece, Agora e
+    Momentos ficaram para trás — nessas três os testes de fato esperam a frase
+    presente, com `findsOneWidget`. Então a decisão deixa de ser "escolher entre
+    duas filosofias" e passa a ser **aplicar em três telas o que duas já fazem**,
+    que é conserto com precedente e não escolha de linguagem.
+
+    As opções continuam sendo a ação sumir quando não há capacidade — o que a
+    galeria de Acontece já faz — ou a mensagem deixar de afirmar prévia. O patch
+    das três telas está preparado e não mesclado, à espera da resposta; e não há
+    versão de Para Você a fazer, porque a frase já é inalcançável na rota de
+    produção.
 
 13. **Três capacidades de Circulares travadas em graus diferentes, e nenhuma por
     falta de trabalho.** *Agendar* está desabilitada honestamente porque nenhum
