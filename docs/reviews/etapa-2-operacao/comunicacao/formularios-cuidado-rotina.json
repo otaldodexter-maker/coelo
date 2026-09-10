@@ -1,12 +1,12 @@
 {
- "revision": 18,
+ "revision": 19,
  "round": "E2-R03-20260910",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5[1m]",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-10T17:05:00-03:00",
+ "updatedAt": "2026-09-10T17:40:00-03:00",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-formularios-cuidado-rotina",
  "branch": "work/etapa2-r03-formularios-cuidado-rotina",
  "head": "1c188091f",
@@ -70,7 +70,7 @@
   }
  ],
  "deltaProposals": [],
- "nextStep": "Aplicar as decisoes visuais D9 (goldens R/A e as seis referencias da Rotina) e as duas politicas de Local.",
+ "nextStep": "Confirmar o conflito do golden de medicacao; enquanto isso, tela de gestao de aluno e cliente das familias novas.",
  "findings": [
   {
    "id": "F-R03-FCR-001",
@@ -523,7 +523,38 @@
    "Local com opcoes fixas na publicacao",
    "Local revogado exige local atual",
    "seis referencias da Rotina = modelo de atividade"
-  ]
+  ],
+  "goldens": {
+   "profile_form_mobile_light": {
+    "decisao": "A",
+    "observacao_aplicada": "o Owner disse que o wizard nao segue 100% o padrao e citou o conteiner interno. Era o _FormSection de health_care_form_pages.dart: titulo e descricao da etapa viviam dentro de um card com borda. Em Criar instituicao eles sao cabecalho do corpo da pagina (headlineSmall) e so os grupos auxiliares ganham card. Uma borda diz 'objeto separado', e a etapa nao e um objeto dentro da pagina: ela e a pagina.",
+    "estado": "alinhado ao padrao e golden regravado"
+   },
+   "profile_form_desktop_dark": {
+    "decisao": "A, seguindo a skill coelo-ui",
+    "estado": "mesma correcao, golden regravado"
+   },
+   "medication_form_mobile_light": {
+    "decisao": "R",
+    "estado": "NAO aplicado; conflito levado ao coordenador",
+    "por_que_nao_apliquei": "R manda o codigo voltar a referencia, e a referencia tem o rodape DENTRO do scroll: Cancelar fica cortado no fim da tela e so aparece rolando. O render atual tem o rodape ancorado, que e exatamente o que a regra RODAPE do mesmo dia 10/09 pediu, e e o que o golden APROVADO de Criar instituicao em 375 px faz. Naquele golden aprovado o rodape ancorado tambem corta o card de imagem atras dele, e isso e a referencia. Aplicar R aqui desfaria a RODAPE so nesta tela e a afastaria do padrao que ela deveria seguir.",
+    "o_que_o_owner_pode_ter_visto": "no render atual a linha 'Envio indisponivel neste contexto.' fica fatiada na fronteira do scroll com o rodape. E o mesmo efeito do golden de Instituicoes, mas ali quem e cortado e um card e aqui e uma linha de texto, o que le pior.",
+    "proposta": "manter o rodape ancorado e resolver a fatia, em vez de voltar o rodape para dentro do scroll: reservar respiro no fim do conteudo para a fronteira nao cair no meio de uma linha de texto. Preciso da confirmacao antes de mexer, porque o componente e compartilhado e a mudanca alcanca todos os formularios."
+   }
+  },
+  "seis_referencias_da_rotina": {
+   "resposta": "sao as do modelo de atividade, aplicadas ao modelo de rotina diaria",
+   "consequencia": "nao existem seis goldens de rotina esperando regravacao por conta propria. O editor de modelo de Rotina segue a familia visual do modelo de atividade.",
+   "registrado_em": ".agents/skills/coelo-ui/references/approved-superadmin-visual-baselines.md"
+  },
+  "local_no_formulario": {
+   "opcoes_fixas_na_publicacao": "opcao 1, decidida",
+   "local_revogado_exige_local_atual": "opcao 2, decidida",
+   "registrado_em": "docs/superpowers/specs/2026-08-13-superadmin-forms-end-to-end-design.md",
+   "conflito_de_escopo_que_impede_implementar": "o tipo location NAO existe: a constraint de form_items.kind em producao aceita short_text, integer, decimal, money, date, yes_no, single_choice, multiple_choice, scale, photo, gallery e information, e nada no cliente trata local em Formularios. A secao 'Fora de escopo' da propria spec lista localizacao como fora do MVP. A politica esta decidida, mas implementa-la exige antes uma decisao de escopo do Owner sobre trazer location para dentro do MVP.",
+   "caso_ainda_aberto": "pergunta obrigatoria, local revogado e NENHUMA alternativa valida na lista congelada. A opcao 2 obriga um local atual, e nesse caso nao existe nenhum.",
+   "estado_das_duas_acoes": "forms.location-question e forms.location-answer continuam bloqueadas, agora por escopo e nao mais por falta de politica."
+  }
  },
  "filaFormulariosMedida": {
   "medida_sobre": "baseline de producao mais seed, por psql",
