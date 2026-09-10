@@ -221,6 +221,18 @@ final class _PagedThreadRepository implements ChatRepository {
   @override
   Future<ChatMessageRevocation> revokeMessage(ChatRevokeMessageCommand command) =>
       Future<ChatMessageRevocation>.error(const ChatFailureException());
+
+  @override
+  Future<ChatConversationPreference> setPinned({
+    required String conversationId,
+    required bool pinned,
+  }) => Future<ChatConversationPreference>.error(const ChatFailureException());
+
+  @override
+  Future<ChatConversationPreference> setFlag({
+    required String conversationId,
+    required ChatConversationFlag flag,
+  }) => Future<ChatConversationPreference>.error(const ChatFailureException());
 }
 
 /// Duas conversas, e a continuacao da primeira so responde quando mandarem.
@@ -291,6 +303,18 @@ final class _SlowContinuationRepository implements ChatRepository {
   @override
   Future<ChatMessageRevocation> revokeMessage(ChatRevokeMessageCommand command) =>
       Future<ChatMessageRevocation>.error(const ChatFailureException());
+
+  @override
+  Future<ChatConversationPreference> setPinned({
+    required String conversationId,
+    required bool pinned,
+  }) => Future<ChatConversationPreference>.error(const ChatFailureException());
+
+  @override
+  Future<ChatConversationPreference> setFlag({
+    required String conversationId,
+    required ChatConversationFlag flag,
+  }) => Future<ChatConversationPreference>.error(const ChatFailureException());
 }
 
 ChatMessage _message(String id, String body, String conversationId, int hour) => ChatMessage(
@@ -361,4 +385,16 @@ final class _InterleavedRepository implements ChatRepository {
   @override
   Future<ChatMessageRevocation> revokeMessage(ChatRevokeMessageCommand command) =>
       Future<ChatMessageRevocation>.error(const ChatFailureException());
+
+  @override
+  Future<ChatConversationPreference> setPinned({
+    required String conversationId,
+    required bool pinned,
+  }) => Future<ChatConversationPreference>.error(const ChatFailureException());
+
+  @override
+  Future<ChatConversationPreference> setFlag({
+    required String conversationId,
+    required ChatConversationFlag flag,
+  }) => Future<ChatConversationPreference>.error(const ChatFailureException());
 }

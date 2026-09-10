@@ -608,6 +608,10 @@ final class FakeMealPlanRepository implements MealPlanRepository {
   @override
   Future<MealPlan> publish(String mealPlanId, String requestId, int expectedRevision) async =>
       mealPlans.firstWhere((item) => item.id == mealPlanId);
+  @override
+  Future<MealPlan> archive(String mealPlanId, String requestId, int expectedRevision) async =>
+      throw UnimplementedError('archive nao participa deste caso');
+
 
   @override
   Future<List<MealPlanConflict>> checkConflicts({

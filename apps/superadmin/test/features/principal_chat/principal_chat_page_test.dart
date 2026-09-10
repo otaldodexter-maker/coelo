@@ -519,4 +519,16 @@ final class _PrincipalChatRepository implements ChatRepository {
   @override
   Future<ChatRealtimeRefresh> refreshAfterRealtime({required String conversationId}) =>
       Future<ChatRealtimeRefresh>.error(const ChatFailureException());
+
+  @override
+  Future<ChatConversationPreference> setPinned({
+    required String conversationId,
+    required bool pinned,
+  }) => Future<ChatConversationPreference>.error(const ChatFailureException());
+
+  @override
+  Future<ChatConversationPreference> setFlag({
+    required String conversationId,
+    required ChatConversationFlag flag,
+  }) => Future<ChatConversationPreference>.error(const ChatFailureException());
 }

@@ -170,6 +170,40 @@ final class SupabaseChatRepository implements ChatRepository {
     }
   }
 
+  @override
+  Future<ChatConversationPreference> setPinned({
+    required String conversationId,
+    required bool pinned,
+  }) => _preference('superadmin_chat_set_pinned_v2', {
+    'p_conversation_id': conversationId,
+    'p_pinned': pinned,
+  });
+
+  @override
+  Future<ChatConversationPreference> setFlag({
+    required String conversationId,
+    required ChatConversationFlag flag,
+  }) => _preference('superadmin_chat_set_flag_v2', {
+    'p_conversation_id': conversationId,
+    'p_flag': flag.name,
+  });
+
+  Future<ChatConversationPreference> _preference(
+    String rpc,
+    Map<String, Object?> params,
+  ) async {
+    try {
+      final payload = _data(await _client.rpc<Object?>(rpc, params: params));
+      return ChatConversationPreference(
+        conversationId: _string(payload, 'conversation_id'),
+        pinnedAt: _optionalDate(payload['pinned_at']),
+        flag: _flag(payload['flag']),
+      );
+    } catch (error) {
+      throw _mapError(error);
+    }
+  }
+
   Future<Map<String, dynamic>> _threadData(ChatThreadQuery query) async => _data(
     await _client.rpc<Object?>(
       'superadmin_chat_thread_v2',
@@ -192,6 +226,15 @@ ChatConversationSummary _conversation(Map<String, dynamic> json) => ChatConversa
   unreadCount: _int(json['unread_count']),
   updatedAt: _date(json, 'activity_at'),
   isReadOnly: _bool(json['is_read_only']),
+  pinnedAt: _optionalDate(json['pinned_at']),
+  flag: _flag(json['flag']),
+);
+
+/// Bandeira desconhecida vira `none` em vez de derrubar a inbox: um servidor
+/// mais novo pode acrescentar cores antes deste cliente conhece-las.
+ChatConversationFlag _flag(Object? value) => ChatConversationFlag.values.firstWhere(
+  (candidate) => candidate.name == value?.toString(),
+  orElse: () => ChatConversationFlag.none,
 );
 
 ChatMessage _message(Map<String, dynamic> json, {required String conversationId}) => ChatMessage(

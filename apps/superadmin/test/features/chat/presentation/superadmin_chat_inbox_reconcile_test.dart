@@ -239,4 +239,16 @@ final class _ReconcilingRepository implements ChatRepository {
       revokedAt: DateTime.utc(2026, 8, 12, 14),
     );
   }
+
+  @override
+  Future<ChatConversationPreference> setPinned({
+    required String conversationId,
+    required bool pinned,
+  }) => Future<ChatConversationPreference>.error(const ChatFailureException());
+
+  @override
+  Future<ChatConversationPreference> setFlag({
+    required String conversationId,
+    required ChatConversationFlag flag,
+  }) => Future<ChatConversationPreference>.error(const ChatFailureException());
 }

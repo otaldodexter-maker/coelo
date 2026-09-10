@@ -767,6 +767,111 @@ void main() {
       throwsA(isA<ChatUnauthorizedException>()),
     );
   });
+  test('a inbox carrega a preferencia da propria identidade', () async {
+    // Fixar e bandeira sumiram da tela quando a inbox passou a vir do servidor.
+    // Voltam pelo servidor: o cliente le o que a RPC projeta, sem estado local.
+    final client = _client(
+      (request) async => _json({
+        'ok': true,
+        'data': {
+          'items': [
+            {
+              'conversation_id': 'conversa-1',
+              'title': 'Familias',
+              'latest_message_text': 'Bom dia',
+              'scope_kind': 'institution',
+              'conversation_type': 'institution',
+              'unread_count': 0,
+              'activity_at': '2026-09-10T12:00:00Z',
+              'is_read_only': false,
+              'pinned_at': '2026-09-10T11:00:00Z',
+              'flag': 'red',
+            },
+          ],
+          'total': 1,
+          'total_unread': 0,
+          'has_more': false,
+          'next_cursor': null,
+        },
+        'error': null,
+      }, request),
+    );
+    addTearDown(client.dispose);
+
+    final page = await SupabaseChatRepository(
+      client,
+    ).fetchInbox(const ChatInboxQuery(pageSize: 30));
+
+    expect(page.items.single.isPinned, isTrue);
+    expect(page.items.single.flag, ChatConversationFlag.red);
+  });
+
+  test('bandeira desconhecida nao derruba a inbox', () async {
+    final client = _client(
+      (request) async => _json({
+        'ok': true,
+        'data': {
+          'items': [
+            {
+              'conversation_id': 'conversa-1',
+              'title': 'Familias',
+              'latest_message_text': '',
+              'scope_kind': 'institution',
+              'conversation_type': 'institution',
+              'unread_count': 0,
+              'activity_at': '2026-09-10T12:00:00Z',
+              'is_read_only': false,
+              'flag': 'turquesa',
+            },
+          ],
+          'total': 1,
+          'total_unread': 0,
+          'has_more': false,
+          'next_cursor': null,
+        },
+        'error': null,
+      }, request),
+    );
+    addTearDown(client.dispose);
+
+    final page = await SupabaseChatRepository(
+      client,
+    ).fetchInbox(const ChatInboxQuery(pageSize: 30));
+
+    expect(page.items.single.flag, ChatConversationFlag.none);
+    expect(page.items.single.isPinned, isFalse);
+  });
+
+  test('fixar e sinalizar chamam as RPCs do realm interno', () async {
+    final calls = <String>[];
+    final client = _client((request) async {
+      calls.add('${request.url.path}|${request.body}');
+      return _json({
+        'ok': true,
+        'data': {
+          'conversation_id': 'conversa-1',
+          'pinned_at': '2026-09-10T11:00:00Z',
+          'flag': 'blue',
+        },
+        'error': null,
+      }, request);
+    });
+    addTearDown(client.dispose);
+    final repository = SupabaseChatRepository(client);
+
+    final pinned = await repository.setPinned(conversationId: 'conversa-1', pinned: true);
+    final flagged = await repository.setFlag(
+      conversationId: 'conversa-1',
+      flag: ChatConversationFlag.blue,
+    );
+
+    expect(pinned.pinnedAt, isNotNull);
+    expect(flagged.flag, ChatConversationFlag.blue);
+    expect(calls.first, contains('superadmin_chat_set_pinned_v2'));
+    expect(calls.first, contains('"p_pinned":true'));
+    expect(calls.last, contains('superadmin_chat_set_flag_v2'));
+    expect(calls.last, contains('"p_flag":"blue"'));
+  });
 }
 
 SupabaseClient _client(Future<Response> Function(Request request) handler) => SupabaseClient(

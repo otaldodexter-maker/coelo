@@ -987,6 +987,10 @@ class _OrderedMealPlanRepository implements MealPlanRepository {
   @override
   Future<MealPlan> publish(String mealPlanId, String requestId, int expectedRevision) =>
       _delegate.publish(mealPlanId, requestId, expectedRevision);
+  @override
+  Future<MealPlan> archive(String mealPlanId, String requestId, int expectedRevision) async =>
+      throw UnimplementedError('archive nao participa deste caso');
+
 
   @override
   Future<List<MealPlanConflict>> checkConflicts({

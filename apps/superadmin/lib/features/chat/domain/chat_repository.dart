@@ -54,6 +54,8 @@ final class ChatConversationSummary {
     required this.unreadCount,
     required this.updatedAt,
     required this.isReadOnly,
+    this.pinnedAt,
+    this.flag = ChatConversationFlag.none,
   });
 
   final String id;
@@ -64,6 +66,28 @@ final class ChatConversationSummary {
   final int unreadCount;
   final DateTime updatedAt;
   final bool isReadOnly;
+
+  /// Preferencia da propria identidade interna, vinda do servidor. Duas pessoas
+  /// na mesma conversa fixam e sinalizam de forma independente.
+  final DateTime? pinnedAt;
+  final ChatConversationFlag flag;
+
+  bool get isPinned => pinnedAt != null;
+}
+
+/// Sinalizador de cor da conversa. Os nomes acompanham o dominio do banco.
+enum ChatConversationFlag { none, red, yellow, green, blue, pink, restricted }
+
+final class ChatConversationPreference {
+  const ChatConversationPreference({
+    required this.conversationId,
+    required this.pinnedAt,
+    required this.flag,
+  });
+
+  final String conversationId;
+  final DateTime? pinnedAt;
+  final ChatConversationFlag flag;
 }
 
 final class ChatInboxPage {
@@ -312,6 +336,17 @@ abstract interface class ChatRepository {
   Future<ChatMessageRevocation> revokeMessage(ChatRevokeMessageCommand command);
   Future<void> markRead({required String conversationId, required String upToMessageId});
   Future<ChatRealtimeRefresh> refreshAfterRealtime({required String conversationId});
+  /// Um repositorio que ainda nao fala com o realm interno recusa a
+  /// preferencia em vez de fingir um estado local, que era exatamente o que o
+  /// reload apagava antes.
+  Future<ChatConversationPreference> setPinned({
+    required String conversationId,
+    required bool pinned,
+  });
+  Future<ChatConversationPreference> setFlag({
+    required String conversationId,
+    required ChatConversationFlag flag,
+  });
 }
 
 final class UnavailableChatRepository implements ChatRepository {
@@ -347,6 +382,19 @@ final class UnavailableChatRepository implements ChatRepository {
   @override
   Future<ChatRealtimeRefresh> refreshAfterRealtime({required String conversationId}) =>
       Future<ChatRealtimeRefresh>.error(const ChatFailureException());
+
+
+  @override
+  Future<ChatConversationPreference> setPinned({
+    required String conversationId,
+    required bool pinned,
+  }) => Future<ChatConversationPreference>.error(const ChatFailureException());
+
+  @override
+  Future<ChatConversationPreference> setFlag({
+    required String conversationId,
+    required ChatConversationFlag flag,
+  }) => Future<ChatConversationPreference>.error(const ChatFailureException());
 }
 
 final class ChatUnauthorizedException implements Exception {

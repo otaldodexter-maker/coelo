@@ -733,6 +733,18 @@ final class _ChatRepository implements ChatRepository {
   @override
   Future<ChatMessageRevocation> revokeMessage(ChatRevokeMessageCommand command) =>
       Future<ChatMessageRevocation>.error(const ChatFailureException());
+
+  @override
+  Future<ChatConversationPreference> setPinned({
+    required String conversationId,
+    required bool pinned,
+  }) => Future<ChatConversationPreference>.error(const ChatFailureException());
+
+  @override
+  Future<ChatConversationPreference> setFlag({
+    required String conversationId,
+    required ChatConversationFlag flag,
+  }) => Future<ChatConversationPreference>.error(const ChatFailureException());
 }
 
 final class _ControlledSearchRepository implements ChatRepository {
@@ -792,6 +804,18 @@ final class _ControlledSearchRepository implements ChatRepository {
   @override
   Future<ChatMessageRevocation> revokeMessage(ChatRevokeMessageCommand command) =>
       Future<ChatMessageRevocation>.error(const ChatFailureException());
+
+  @override
+  Future<ChatConversationPreference> setPinned({
+    required String conversationId,
+    required bool pinned,
+  }) => Future<ChatConversationPreference>.error(const ChatFailureException());
+
+  @override
+  Future<ChatConversationPreference> setFlag({
+    required String conversationId,
+    required ChatConversationFlag flag,
+  }) => Future<ChatConversationPreference>.error(const ChatFailureException());
 }
 
 final class _PaginatedChatRepository implements ChatRepository {
@@ -824,6 +848,18 @@ final class _PaginatedChatRepository implements ChatRepository {
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+
+  @override
+  Future<ChatConversationPreference> setPinned({
+    required String conversationId,
+    required bool pinned,
+  }) => Future<ChatConversationPreference>.error(const ChatFailureException());
+
+  @override
+  Future<ChatConversationPreference> setFlag({
+    required String conversationId,
+    required ChatConversationFlag flag,
+  }) => Future<ChatConversationPreference>.error(const ChatFailureException());
 }
 
 final class _ControlledThreadSearchRepository implements ChatRepository {
@@ -883,6 +919,18 @@ final class _ControlledThreadSearchRepository implements ChatRepository {
   @override
   Future<ChatMessageRevocation> revokeMessage(ChatRevokeMessageCommand command) =>
       Future<ChatMessageRevocation>.error(const ChatFailureException());
+
+  @override
+  Future<ChatConversationPreference> setPinned({
+    required String conversationId,
+    required bool pinned,
+  }) => Future<ChatConversationPreference>.error(const ChatFailureException());
+
+  @override
+  Future<ChatConversationPreference> setFlag({
+    required String conversationId,
+    required ChatConversationFlag flag,
+  }) => Future<ChatConversationPreference>.error(const ChatFailureException());
 }
 
 final class _UnauthorizedChatRepository implements ChatRepository {
@@ -896,6 +944,18 @@ final class _UnauthorizedChatRepository implements ChatRepository {
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+
+  @override
+  Future<ChatConversationPreference> setPinned({
+    required String conversationId,
+    required bool pinned,
+  }) => Future<ChatConversationPreference>.error(const ChatFailureException());
+
+  @override
+  Future<ChatConversationPreference> setFlag({
+    required String conversationId,
+    required ChatConversationFlag flag,
+  }) => Future<ChatConversationPreference>.error(const ChatFailureException());
 }
 
 final class _ControlledSendRepository implements ChatRepository {
@@ -954,6 +1014,18 @@ final class _ControlledSendRepository implements ChatRepository {
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+
+  @override
+  Future<ChatConversationPreference> setPinned({
+    required String conversationId,
+    required bool pinned,
+  }) => Future<ChatConversationPreference>.error(const ChatFailureException());
+
+  @override
+  Future<ChatConversationPreference> setFlag({
+    required String conversationId,
+    required ChatConversationFlag flag,
+  }) => Future<ChatConversationPreference>.error(const ChatFailureException());
 }
 
 final class _AmbiguousSendRepository implements ChatRepository {
@@ -996,6 +1068,18 @@ final class _AmbiguousSendRepository implements ChatRepository {
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+
+  @override
+  Future<ChatConversationPreference> setPinned({
+    required String conversationId,
+    required bool pinned,
+  }) => Future<ChatConversationPreference>.error(const ChatFailureException());
+
+  @override
+  Future<ChatConversationPreference> setFlag({
+    required String conversationId,
+    required ChatConversationFlag flag,
+  }) => Future<ChatConversationPreference>.error(const ChatFailureException());
 }
 
 final class _RevokedChatRepository implements ChatRepository {
@@ -1046,6 +1130,18 @@ final class _RevokedChatRepository implements ChatRepository {
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+
+  @override
+  Future<ChatConversationPreference> setPinned({
+    required String conversationId,
+    required bool pinned,
+  }) => Future<ChatConversationPreference>.error(const ChatFailureException());
+
+  @override
+  Future<ChatConversationPreference> setFlag({
+    required String conversationId,
+    required ChatConversationFlag flag,
+  }) => Future<ChatConversationPreference>.error(const ChatFailureException());
 }
 
 final class _RefreshingChatRepository implements ChatRepository {
@@ -1089,6 +1185,18 @@ final class _RefreshingChatRepository implements ChatRepository {
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+
+  @override
+  Future<ChatConversationPreference> setPinned({
+    required String conversationId,
+    required bool pinned,
+  }) => Future<ChatConversationPreference>.error(const ChatFailureException());
+
+  @override
+  Future<ChatConversationPreference> setFlag({
+    required String conversationId,
+    required ChatConversationFlag flag,
+  }) => Future<ChatConversationPreference>.error(const ChatFailureException());
 }
 
 ChatConversationSummary _conversation(String id, String title) => ChatConversationSummary(
