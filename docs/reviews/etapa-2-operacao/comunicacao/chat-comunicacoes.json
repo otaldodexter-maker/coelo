@@ -1,6 +1,6 @@
 {
-  "revision": 38,
-  "updated_at": "2026-09-10T02:34:00-03:00",
+  "revision": 39,
+  "updated_at": "2026-09-10T02:39:00-03:00",
   "group": "chat-comunicacoes",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) - claude-opus-5[1m]",
@@ -711,5 +711,20 @@
     "o_que_isso_delimita": "A classe existe, mas tem exatamente uma instancia conhecida no app. Nao e um problema estrutural do shell nem do design system; e uma tela.",
     "meu_recorte": "Alem da varredura, medi as quatro rotas de producao do meu recorte (/notices, /notices/new, /communication/conversations, /principal-conversations) em tres viewports COM dados e tambem em fail-closed a 390x844. Todas OK. Prova positiva, com pluralidade, de que a classe nao me atinge.",
     "limite_declarado": "A varredura cobre rotas /dev sem parametro. Rotas com parametro (:noticeId e similares) e o estado carregado de rotas de producao sem espelho em /dev ficam fora, e eu nao afirmo nada sobre elas."
+  },
+  "fresta_de_producao_fechada": {
+    "pergunta": "A varredura das 67 rotas /dev deixou duas frestas declaradas: rotas com parametro e telas de PRODUCAO sem espelho em /dev. Fui medir a segunda.",
+    "metodo": "Diferenca de conjuntos entre as rotas de producao sem parametro e as rotas /dev sem parametro, extraidas de superadmin_routes.dart.",
+    "tamanho_da_fresta": "67 rotas de producao sem parametro, 63 com espelho em /dev. Sobram QUATRO: /, /communication/conversations, /governance/catalog e /principal-profile/edit.",
+    "resultado": "/communication/conversations ja estava medida com dados em tres viewports (meu recorte, OK). As outras tres medidas agora em 1440x900, 800x600 e 390x844, com planCatalogRepository real ligado para o catalogo: nove medidas, todas OK.",
+    "conclusao": "A fresta de producao esta fechada. Resta apenas a das rotas com parametro.",
+    "corroboracao_independente": "alunos-rotina mediu, por outro caminho e sem saber deste, um censo de reflow dos 16 formularios de criacao em 375 e 1440 a 100% e 200%: 64 casos, zero excecoes, com a conclusao de que os transbordamentos ficam em diretorios e listas. As duas medicoes concordam, e o unico defeito achado esta num diretorio."
+  },
+  "medicao_do_recorte_no_dev_mais_novo": {
+    "base": "origin/dev 0736b900f",
+    "resultado": "363 PASS / 12 FAIL nos testes de chat, notices, principal_chat e nas minhas rotas.",
+    "enumeracao_das_falhas": "Os 12 foram enumerados um a um e sao TODOS goldens: nove em superadmin_chat_page_golden_test, dois em notice_directory_golden_test e um em notice_form_golden_test.",
+    "comparacao": "A medicao anterior no dev integrado dava 347/12. O numero de aprovados subiu porque o dev ganhou testes; o de falhas nao mudou e nenhuma falha nova apareceu no meu recorte.",
+    "nota": "Numero medido na hora, nao herdado."
   }
 }

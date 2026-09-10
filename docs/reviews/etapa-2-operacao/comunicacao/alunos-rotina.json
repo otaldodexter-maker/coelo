@@ -1,6 +1,6 @@
 {
-  "revision": 22,
-  "updated_at": "2026-09-10T02:56:00-03:00",
+  "revision": 23,
+  "updated_at": "2026-09-10T03:00:00-03:00",
   "clock_note": "Relogio corrigido pelo coordenador e conferido por mim com PowerShell Get-Date: 02:00 de 10/09, fuso E. South America Standard Time, -03:00. O date do Git Bash com TZ nao tem tzdata e devolve UTC; parei de usa-lo.",
   "group": "alunos-rotina",
   "task": "/root",
@@ -569,5 +569,28 @@
     "conclusao_conjunta": "As duas se encaixam e a conclusao e contraria a metade que eu achei que sustentava. Nao houve delecao porque nao houve troca de arquivo: regravaram POR CIMA. Entao \"a convencao nao apaga\" e VERDADE sobre o arquivo e FALSA sobre o conteudo — e o conteudo e o que a referencia visual e. Um golden regravado no lugar perdeu a imagem anterior tao completamente quanto um deletado; a diferenca e so que o Git nao chama isso de delecao.",
     "estado_final": "O sufixo e NOME, nao processo. Nao existe spec definindo o esquema e os numeros nao correspondem as specs das familias que os carregam. Versionar em vez de regravar entra no relatorio como PROPOSTA NOVA, nao como pratica da casa.",
     "licao_de_metodo": "Duas medicoes parciais honestas, por caminhos diferentes, produziram uma conclusao que nenhuma das duas alcancava sozinha. A minha respondeu se houve delecao; a dele respondeu se houve sobrescrita. Eu declarei o limite da minha em vez de extrapolar, e foi isso que permitiu encaixar as duas em vez de escolher entre elas."
+  },
+  "erros_meus_nesta_rodada": {
+    "nota_estrutural": "Esta lista vive no TOPO do arquivo de proposito. Ela existia dentro de pre_entrega na revisao 16 e foi destruida por mim na revisao 20, quando reescrevi aquele bloco inteiro. E a mesma classe de perda do arquivo de teste que sobrescrevi, agora no meu proprio registro, e foi pega pela mesma coisa: uma conferencia procurando o que ficou so em mensagem.",
+    "lista": [
+      "Carimbo de horario errado nas revisoes 5 e 6, cerca de 8 horas adiantado, por estimar em vez de consultar o relogio. Depois errei de novo por deriva acumulada e fui corrigido pelo coordenador duas vezes. Passei a medir com PowerShell Get-Date antes de qualquer afirmacao de horario.",
+      "Sobrescrevi um arquivo de teste existente com quatro casos passando, ao criar um teste novo com nome que ja existia. A suite continuou VERDE. Peguei pela aritmetica: 223 antes, dois acrescentados, 221 depois. Restaurado antes de commitar; conferi que nao houve outra ocorrencia em nenhum dos meus commits.",
+      "Heuristica furada: eu usava \"chave sem referencia em teste\" como evidencia de controle sem cobertura. Deu FALSO POSITIVO em people, onde o teste existente encontra os controles por rotulo e por tipo, nao por Key. Chave nao referenciada significa apenas que ninguem a usou como seletor. Passei a usar a varredura como ponto de partida para LER o teste existente.",
+      "Primeira tentativa de acentuacao usou regex de literais que desalinhou nas aspas e acentuou so parte das strings; refeita por palavra inteira. E esqueci disponivel no primeiro mapa.",
+      "Passei callback ao shell incondicionalmente e movi seis goldens e quebrei tres testes de salvar; revertido para opt-in.",
+      "Liberei a intencao de salvamento so num dos quatro sitios; corrigido no lote seguinte.",
+      "Reportei pista errada sobre access_profile_detail_page; retirei antes de ser repassada a outra frente.",
+      "Primeira sonda da correcao de safety tinha o defeito, nao a correcao, e por minutos fez a correcao certa parecer errada.",
+      "Medi acessibilidade de invites no widget isolado quando o relato media a pagina; refiz igual antes de afirmar.",
+      "INVERTI A PROPRIA PROPORCAO de goldens: classifiquei duas suites SO POR MAGNITUDE e conclui 77% com conteudo quando sao ~17%. Todos os percentuais que reportei estavam certos; a INFERENCIA a partir deles estava errada. Derrubei a conclusao depois de ela ja estar no relatorio.",
+      "Destrui a propria lista de erros ao reescrever pre_entrega na revisao 20, e so achei ao auditar o que ficou so em mensagem."
+    ]
+  },
+  "censo_de_transbordamento_fail_closed": {
+    "pergunta": "Se /imports estoura com dados e ninguem sabia por estar fail-closed, quantas outras telas fail-closed do MVP estao verdes pelo mesmo motivo?",
+    "fail_closed_em_producao": "Cinco repositorios: unitDirectory, import, studentTracking, routine e medicationPlan.",
+    "medicao_minha": "Montei com dados, nos mesmos tres viewports do relato (800x600, 390x844, 1440x900): Unidades SEM EXCECAO nos tres; Saude e Cuidado SEM EXCECAO nos tres; diretorio de Rotina SEM EXCECAO nos tres.",
+    "resultado_do_chat": "Ele respondeu por caminho mais barato: extraiu as 67 rotas /dev sem parametro, montou cada uma a 1440x900 e leu takeException. 66 OK, UMA excecao, /dev/imports.",
+    "conclusao": "A classe tem exatamente uma instancia conhecida. As duas medicoes concordam por caminhos independentes e nenhuma sabia da outra quando comecou."
   }
 }

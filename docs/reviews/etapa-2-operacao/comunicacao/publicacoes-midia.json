@@ -1,6 +1,6 @@
 {
-  "revision": 34,
-  "updated_at": "2026-09-10T02:36:20-03:00",
+  "revision": 35,
+  "updated_at": "2026-09-10T02:39:09-03:00",
   "group": "publicacoes-midia",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
@@ -8,7 +8,7 @@
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-publicacoes-midia",
   "branch": "work/etapa2-noturna-publicacoes-midia",
-  "head": "813210d27",
+  "head": "322ad3f5e",
   "upstream": "origin/work/etapa2-noturna-publicacoes-midia (0/0)",
   "base": "origin/dev 447e6eea2 mesclado em 3ab29d7df",
   "ack": "coordenador: revisao 1 aceita; lote 1e39b2fcf integrado (merge d502350ce); lote b10f48d1e aceito para a proxima integracao; atribuicao de principal_real_route_test retirada por ele apos minha medicao; reserva da plataforma comum de midia mantida",
@@ -333,6 +333,12 @@
       "sha": "813210d27",
       "state": "publicado",
       "title": "catorze referencias a nomes de migration que nao existem mais, corrigidas com o mapa de renumeracao",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "322ad3f5e",
+      "state": "publicado",
+      "title": "caminho truncado no documento de decisao do Owner, achado ao refazer a conferencia sem find -name",
       "touches_reserved_files": []
     }
   ],
@@ -769,7 +775,8 @@
     "efeito_colateral_positivo": "a frente perfil-para-voce passou a consumir principalMomentsFeedRepository, a mesma instancia que /principal-moments usa, em vez de abrir uma segunda fonte para o mesmo feed",
     "commits_pendentes_de_integracao": [
       "ecefa32a1",
-      "813210d27"
+      "813210d27",
+      "322ad3f5e"
     ],
     "ja_integrados": [
       "05537c3b3",
@@ -862,7 +869,13 @@
       "caso_real": "a revisao dos seis candidatos SQL citava os carimbos ORIGINAIS de L01, familia 2026090913xxxx. A serializacao na fila renumerou os seis para 2026090921xxxx, para caírem depois da cauda 20260909210000. Os nomes antigos nao existem mais em lugar nenhum: as catorze referencias levavam a arquivo nenhum.",
       "cuidado": "quase corrigi como erro de digitacao. A tabela da fila mostra os dois carimbos lado a lado, o que me fez ler o cabecalho antes de mexer: era renomeacao deliberada, nao engano. Reescrevi para os nomes finais E deixei o mapa no topo, porque quem conhece o documento pelos carimbos antigos precisa ver que sao os mesmos seis arquivos.",
       "caso_esperado": "NOTURNA-patch-copia-previa.md nao esta nesta worktree porque vive na branch work/etapa2-noturna-copia-previa em 80f160599; o relatorio ja dizia 'naquela branch'.",
-      "commit": "813210d27"
+      "commit": "813210d27",
+      "refacao_estrita": {
+        "motivo": "a primeira conferencia usou find -name, que responde 'existe um arquivo com esse nome em ALGUM lugar' e nao 'existe ESTE caminho'. A substituicao de pergunta que passei a noite catalogando nas ferramentas dos outros estava dentro da minha propria auditoria.",
+        "resultado": "refeita a partir da raiz do repositorio, encontrou um caso que a primeira deixou passar: o documento de decisao do Owner apontava para principal_circulars/presentation/principal_circular_surfaces.dart, sem o prefixo apps/superadmin/lib/features/. O Owner copiando e colando esse caminho nao acha nada. E o setimo ponto de decisao, o das abas duplicadas.",
+        "estado_final": "todos os outros caminhos citados resolvem a partir da raiz",
+        "commit": "322ad3f5e"
+      }
     }
   }
 }
