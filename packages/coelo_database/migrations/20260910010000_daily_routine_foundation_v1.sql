@@ -205,11 +205,16 @@ create table public.routine_field_conditions (
   constraint routine_field_conditions_trigger_check check (
     (option_id is not null and boolean_value is null)
     or (option_id is null and boolean_value is not null)
-  ),
-  unique (parent_field_id, target_field_id,
-    coalesce(option_id,'00000000-0000-0000-0000-000000000000'::uuid),
-    coalesce(boolean_value,false))
+  )
 );
+-- Gatilho unico por par de campos: constraint UNIQUE nao aceita expressao, e o
+-- par (option_id, boolean_value) e mutuamente exclusivo por construcao.
+create unique index routine_field_conditions_trigger_uidx
+  on public.routine_field_conditions(
+    parent_field_id, target_field_id,
+    coalesce(option_id,'00000000-0000-0000-0000-000000000000'::uuid),
+    coalesce(boolean_value,false)
+  );
 create index routine_field_conditions_target_idx
   on public.routine_field_conditions(target_field_id);
 

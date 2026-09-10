@@ -1,12 +1,12 @@
 {
- "revision": 4,
+ "revision": 5,
  "round": "E2-R03-20260910",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5[1m]",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-10T02:20:00-03:00",
+ "updatedAt": "2026-09-10T03:10:00-03:00",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-formularios-cuidado-rotina",
  "branch": "work/etapa2-r03-formularios-cuidado-rotina",
  "head": "bb15db748",
@@ -50,12 +50,12 @@
   "note": "Fundacao health_care/medication inexistente. Construindo o primeiro pacote SQL da familia health_care."
  },
  "tests": {
-  "pass": 0,
+  "pass": 56,
   "fail": 0,
   "blocked": 0,
   "skipped": 0,
   "notRun": 0,
-  "note": "suite ainda nao executada nesta worktree"
+  "escopo": "pgTAP dos meus tres pacotes SQL no replay descartavel; nao e a suite Flutter e nao e prova E2E"
  },
  "reservedFiles": [],
  "blocking": [
@@ -68,7 +68,7 @@
   }
  ],
  "deltaProposals": [],
- "nextStep": "Rodar pgTAP dos dois pacotes no replay descartavel; depois trocar os quatro sitios do cliente para a chave do servidor.",
+ "nextStep": "Fundacao de health_care e medication (campo aberto: nem migration nem teste existem; o contrato e a interface Dart). Depois trocar os quatro sitios do cliente para a chave do servidor.",
  "findings": [
   {
    "id": "F-R03-FCR-001",
@@ -111,7 +111,7 @@
   {
    "id": "PKG-R03-FCR-ROTINA-01",
    "familia": "daily_routine",
-   "estado": "escrito, aguardando janela de replay para prova pgTAP",
+   "estado": "pgTAP verde no replay descartavel",
    "migrations": [
     "packages/coelo_database/migrations/20260910010000_daily_routine_foundation_v1.sql",
     "packages/coelo_database/migrations/20260910010100_daily_routine_behavior_v1.sql"
@@ -123,12 +123,34 @@
    "conteudo": "13 tabelas publicas, app_private.routine_command_receipts, 8 capacidades de plataforma e 8 contextuais, 7 auxiliares de autorizacao/validacao, gatilho de hierarquia, view daily_routine_effective_applications com security_invoker, 8 RPCs publicas, RLS deny-by-default com FORCE em todas as tabelas e cliente so com SELECT.",
    "chave_de_composicao": "a definir no cliente quando o repositorio Supabase de Rotina existir; ainda nao ha adapter para ligar",
    "mfa": "app_private.routine_mfa_phase_enforced() devolve false na fase MVP (AAL1, ADR 0034). requires_mfa continua true nas capacidades de alto impacto e a mensagem 'MFA AAL2 required' continua nos comandos. Ligar MFA e uma migration de uma linha. Sem isso D7 (Lancamentos sobre daily-routine.publish) seria inalcancavel no MVP.",
-   "nao_provado_ainda": "nenhuma assercao pgTAP foi executada. Nada aqui pode ser declarado verde."
+   "prova": {
+    "quando": "2026-09-10",
+    "onde": "projeto de replay descartavel coelo_fcr_replay, fora do repositorio (scratchpad), portas 553xx",
+    "perfil": "57 migrations: as do manifesto foundation com versao <= 20260831164937, mais replay/20260811151253 e replay/20260811215452, mais um arquivo somente-replay que repoe a sentinela de rotulo depois de 20260831130726. As *_v2 de 09/2026 (chat, notices, invites, circulars) foram deixadas de fora porque quebram antes do meu pacote e pertencem a outros grupos.",
+    "aplicacao": "as tres migrations aplicaram sem erro por psql, na ordem, sobre a base resetada",
+    "resultado": {
+     "daily_routine_foundation_test": "34 ok / 0 not ok",
+     "daily_routine_scope_closure_test": "6 ok / 0 not ok",
+     "attendance_authorization_and_idempotency_v1_test": "16 ok / 0 not ok",
+     "total": "56 asseroes, zero falhas"
+    },
+    "o_que_isso_nao_prova": [
+     "nao e prova ponta a ponta: nenhuma tela abriu, nenhum repositorio Flutter chamou estas RPCs, nada tocou o Supabase de producao",
+     "o perfil de replay nao inclui as *_v2 de 09/2026; se alguma delas alterar permissoes, policies ou helpers que meu pacote usa, isso nao foi exercitado",
+     "nenhuma acao do inventario muda de estado por causa desta prova"
+    ],
+    "defeitos_meus_que_a_execucao_pegou": [
+     "constraint UNIQUE com expressao coalesce em routine_field_conditions: sintaxe invalida, virou indice unico",
+     "as permissoes da rotina nao passavam module_label/screen_label/action_label, que sao NOT NULL na cadeia real desde 20260811215451. O replay com sentinela teria escondido isso; peguei por leitura da migration do dashboard de Assiduidade, que passa os rotulos",
+     "os wrappers publicos sao SECURITY INVOKER e nao podiam alcancar a funcao definer correspondente, nem as policies podiam avaliar routine_scope_allowed, porque eu havia revogado tudo em app_private. Corrigido para o mesmo desenho da fundacao de Assiduidade",
+     "uma assercao minha do teste de Assiduidade estava mal escrita: o LIKE com curingas casava tambem com o corpo corrigido. Trocada por comparacao de posicao entre platform.read e a abertura do case"
+    ]
+   }
   },
   {
    "id": "PKG-R03-FCR-ASSIDUIDADE-01",
    "familia": "attendance",
-   "estado": "escrito, aguardando prova no replay descartavel",
+   "estado": "pgTAP verde no replay descartavel",
    "action_ids": [
     "attendance.create",
     "attendance.mark",
@@ -157,7 +179,21 @@
     "efeito_na_versao_esperada": "depois que a chamada avanca, a intencao antiga deixou de existir e a proxima reserva devolve outra chave. Isso e proposital.",
     "falta": "trocar os quatro sitios do cliente para pedir a chave ao banco. Feito depois que o SQL estiver verde."
    },
-   "nao_provado_ainda": "nenhuma assercao executada."
+   "prova": "ver packages[0].prova, mesma execucao"
+  }
+ ],
+ "filaSQL": [
+  {
+   "ordem": 1,
+   "arquivo": "packages/coelo_database/migrations/20260910010000_daily_routine_foundation_v1.sql"
+  },
+  {
+   "ordem": 2,
+   "arquivo": "packages/coelo_database/migrations/20260910010100_daily_routine_behavior_v1.sql"
+  },
+  {
+   "ordem": 3,
+   "arquivo": "packages/coelo_database/migrations/20260910010200_attendance_authorization_and_idempotency_v1.sql"
   }
  ]
 }

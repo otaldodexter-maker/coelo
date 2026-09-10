@@ -1464,19 +1464,31 @@ for select to authenticated using (
 revoke all on public.daily_routine_effective_applications from public, anon, authenticated;
 grant select on public.daily_routine_effective_applications to authenticated, service_role;
 
+-- Os wrappers publicos sao SECURITY INVOKER, entao rodam com os privilegios de
+-- quem chama e precisam poder alcancar a funcao definer correspondente. O mesmo
+-- vale para routine_scope_allowed, que e avaliada dentro das policies e portanto
+-- pelo proprio usuario da consulta. Os demais auxiliares so sao chamados de
+-- dentro de funcoes definer, onde o usuario efetivo ja e o dono, e continuam
+-- sem grant nenhum. Mesmo desenho da fundacao de Assiduidade.
 do $grants$
 declare current_signature text;
 begin
   foreach current_signature in array array[
     'app_private.routine_mfa_phase_enforced()',
-    'app_private.routine_scope_allowed(text,uuid,uuid,uuid)',
     'app_private.require_routine_actor(text,boolean)',
     'app_private.require_routine_scope(text,uuid,uuid,uuid,boolean)',
     'app_private.routine_receipt(uuid,uuid,text)',
     'app_private.routine_definition_json(uuid)',
     'app_private.validate_routine_definition(uuid)',
     'app_private.validate_routine_launch_answers(uuid,boolean)',
-    'app_private.validate_routine_application_hierarchy()',
+    'app_private.validate_routine_application_hierarchy()'
+  ] loop
+    execute format('revoke all on function %s from public, anon, authenticated',
+      current_signature);
+  end loop;
+
+  foreach current_signature in array array[
+    'app_private.routine_scope_allowed(text,uuid,uuid,uuid)',
     'app_private.superadmin_routine_directory(text,text,text,uuid,uuid,uuid,integer,integer)',
     'app_private.superadmin_routine_model_detail(uuid)',
     'app_private.superadmin_routine_save_model(uuid,uuid,bigint,jsonb)',
@@ -1484,13 +1496,7 @@ begin
     'app_private.superadmin_routine_revert_application(uuid,uuid,bigint)',
     'app_private.superadmin_routine_save_launch_draft(uuid,uuid,bigint,jsonb)',
     'app_private.superadmin_routine_publish_launch(uuid,uuid,bigint)',
-    'app_private.superadmin_routine_correct_launch(uuid,uuid,bigint,text,jsonb)'
-  ] loop
-    execute format('revoke all on function %s from public, anon, authenticated',
-      current_signature);
-  end loop;
-
-  foreach current_signature in array array[
+    'app_private.superadmin_routine_correct_launch(uuid,uuid,bigint,text,jsonb)',
     'public.superadmin_routine_directory(text,text,text,uuid,uuid,uuid,integer,integer)',
     'public.superadmin_routine_model_detail(uuid)',
     'public.superadmin_routine_save_model(uuid,uuid,bigint,jsonb)',

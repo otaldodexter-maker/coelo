@@ -10,11 +10,21 @@ select plan(16);
 -- Parte 1: ler deixou de alcancar gerir
 -- --------------------------------------------------------------------------
 
+-- Antes, platform.read era a primeira condicao do OR e valia mesmo com
+-- require_manage verdadeiro. Agora ele so aparece dentro do ramo de leitura,
+-- isto e, depois da abertura do case. Comparar as posicoes prova exatamente
+-- isso, sem depender de espaco em branco.
 select ok(
-  pg_get_functiondef(
-    'app_private.can_access_attendance_child(uuid,uuid,uuid,uuid,uuid,boolean)'::regprocedure)
-    not like '%select%app_private.has_platform_permission(''platform.read'')%or%app_private.has_context_permission%',
-  'platform.read nao e mais a primeira condicao incondicional'
+  strpos(
+    pg_get_functiondef(
+      'app_private.can_access_attendance_child(uuid,uuid,uuid,uuid,uuid,boolean)'::regprocedure),
+    'has_platform_permission(''platform.read'')'
+  ) > strpos(
+    pg_get_functiondef(
+      'app_private.can_access_attendance_child(uuid,uuid,uuid,uuid,uuid,boolean)'::regprocedure),
+    'case when require_manage'
+  ),
+  'platform.read so aparece dentro do ramo de leitura'
 );
 
 select ok(
