@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 
 import '../../principal_circulars/domain/circular.dart';
 import '../../principal_circulars/domain/circular_repository.dart';
+import '../domain/superadmin_circular_repository.dart';
 
 final class SuperadminCircularDetailPage extends StatefulWidget {
   const SuperadminCircularDetailPage({
@@ -12,6 +13,7 @@ final class SuperadminCircularDetailPage extends StatefulWidget {
     required this.repository,
     required this.onBack,
     this.onEdit,
+    this.responseSummarySource,
     super.key,
   });
 
@@ -20,12 +22,20 @@ final class SuperadminCircularDetailPage extends StatefulWidget {
   final VoidCallback onBack;
   final VoidCallback? onEdit;
 
+  /// Fonte do resumo de respostas, quando a composicao a fornece.
+  ///
+  /// O leitor administrativo declara conteudo, contexto E resumo de respostas.
+  /// O resumo e opcional de proposito: sem fonte, o leitor nao inventa numero
+  /// nenhum e simplesmente nao mostra o bloco.
+  final SuperadminCircularRepository? responseSummarySource;
+
   @override
   State<SuperadminCircularDetailPage> createState() => _SuperadminCircularDetailPageState();
 }
 
 final class _SuperadminCircularDetailPageState extends State<SuperadminCircularDetailPage> {
   CircularDetail? _detail;
+  SuperadminCircularResponseSummary? _summary;
   Object? _error;
   var _loadGeneration = 0;
 
@@ -48,6 +58,7 @@ final class _SuperadminCircularDetailPageState extends State<SuperadminCircularD
     final generation = ++_loadGeneration;
     setState(() {
       _detail = null;
+      _summary = null;
       _error = null;
     });
     try {
@@ -55,6 +66,17 @@ final class _SuperadminCircularDetailPageState extends State<SuperadminCircularD
       if (mounted && generation == _loadGeneration) setState(() => _detail = detail);
     } on Object catch (error) {
       if (mounted && generation == _loadGeneration) setState(() => _error = error);
+      return;
+    }
+    // O resumo e complementar: uma falha nele nao pode derrubar a leitura da
+    // Circular, entao a ausencia simplesmente esconde o bloco.
+    final source = widget.responseSummarySource;
+    if (source == null) return;
+    try {
+      final summary = await source.fetchResponseSummary(widget.circularId);
+      if (mounted && generation == _loadGeneration) setState(() => _summary = summary);
+    } on Object {
+      if (mounted && generation == _loadGeneration) setState(() => _summary = null);
     }
   }
 
@@ -182,6 +204,20 @@ final class _SuperadminCircularDetailPageState extends State<SuperadminCircularD
           Divider(color: colors.outlineVariant),
           const SizedBox(height: CoeloSpacing.space3),
           Text('$mediaCount arquivos · ${questions.length} perguntas'),
+          if (_summary case final summary?) ...[
+            const SizedBox(height: CoeloSpacing.space2),
+            Text(
+              key: const Key('circular-detail-response-summary'),
+              summary.closed
+                  ? 'Respostas encerradas · ${summary.submittedCount} enviadas · '
+                        '${summary.partialCount} parciais · ${summary.responseCount} no total'
+                  : '${summary.submittedCount} enviadas · ${summary.partialCount} parciais · '
+                        '${summary.responseCount} no total',
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
+            ),
+          ],
           for (final question in questions) ...[
             const SizedBox(height: CoeloSpacing.space3),
             Container(
