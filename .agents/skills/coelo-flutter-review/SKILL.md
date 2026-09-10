@@ -85,6 +85,14 @@ ação chegou ao fim do Front-end; pode usar double fiel no teste, mas runtime
 normal não pode cair em fake/fixture. A falta do backend não rebaixa um
 `verified`; fica aberta no rastreador integrado.
 
+Régua do MVP (ADR 0034): `verified` exige rota normal abrindo sem fixture nem
+fail-closed, formulário salvando pelo repository produtivo e reload mantendo o
+estado. Golden divergente, prova de teclado por estado e varredura de
+acessibilidade por tela ficam registrados, mas não bloqueiam `verified` no MVP;
+entram na revisão profunda. Chaves de composição fechadas
+(`structureMutationsEnabled`, adapters `available: false`) devem ser ligadas
+assim que o SQL correspondente estiver aplicado, não deixadas em indisponível.
+
 Obter o denominador atual do inventário e rastreador da camada. Não manter
 contagens fixas na skill. `pending-verification` exige conferir evidências e
 não significa que a implementação inexiste. Quando Astro entrar em escopo, criar
@@ -97,16 +105,17 @@ camada reutiliza o snapshot integrado datado; não inicia auditoria das demais.
 Se faltarem dados, indicar o dado necessário, sem inventar zero nem percentual.
 Tempo usado é medido; se faltar, escrever `não calculável ainda`.
 
+Checkpoint curto, no máximo quatro linhas:
+
 ```text
 Etapa 2 | apps/superadmin | menu > tela > subtela | action_ids
-Avanço local comprovado: ...; Front-end verified: C/N = ...%; restante: ...
-E2E certificado conhecido: C/N = ...% (snapshot/data ou não calculável).
-Testes Front-end: aprovados P/E = ...%; falhos F/E = ...%; E = P + F.
-Plano: P/N aprovados; E/N executados; B bloqueados, S ignorados, U não executados.
-Campanha/revisão/ambiente/runner/evidência: ...; geral Etapa 2: ...
-Delta desde o checkpoint: ...; primeiro gate aberto e próximo passo: ...
-Tempo medido: ...; ETA do delta: ...; espera externa: ...
+Feito: telas ligadas/corrigidas ...; testes P/F; verified C/N.
+Aberto: ... (o que falta e quem desbloqueia).
+Próximo passo: ...
 ```
+
+Não montar manifestos com hash de arquivo, recibos de recibo nem contagens
+P/F/B/S/U por lote: o commit no Git e a saída do `flutter test` são a evidência.
 
 ## Contrato de abertura
 

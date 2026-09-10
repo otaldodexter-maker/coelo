@@ -26,10 +26,11 @@ explicação, diagnóstico/review somente leitura ou manutenção da skill segue
 esse pedido, sem iniciar implementação do produto.
 
 Conectar e provar a mesma ação na UI normal, no backend aplicável e no retorno
-após reload. Preparar o pacote remoto revisável antes de pedir autorização que
-ainda falte; respeitar autorizações existentes e a ordem serializada. Se um
-gate impedir E2E, concluir o trabalho independente do recorte, registrar a
-causa e o desbloqueio concreto, sem promover o estado por expectativa.
+após reload. Pacote SQL verde em pgTAP local é aplicado em produção pelo
+integrador na ordem da fila (ADR 0034), e a chave de composição do cliente é
+ligada em seguida. Só Cloudflare ainda espera decisão nominal. Se um gate
+impedir E2E, concluir o trabalho independente do recorte, registrar a causa e o
+desbloqueio concreto, sem promover o estado por expectativa.
 
 ## Princípio
 
@@ -90,25 +91,27 @@ Não somar os três denominadores. Preservar progresso de camada quando a cadeia
 integrada ainda estiver aberta. `ready-for-e2e` exige Front-end `verified` e
 Back-end `done` para a mesma ação.
 
-Em cada entrega de implementação, publicar por tela/subtela: avanço local
-comprovado, Front-end `verified`, Back-end `done`, E2E `verified-e2e`, restante,
-testes aprovados/falhos e cobertura do plano. Separar recorte do geral conhecido
-da Etapa 2, com data e base. Somar contagens de IDs únicos, nunca médias dos
-percentuais de telas. Não usar testes locais aprovados como percentual de E2E.
-Falta de inventário, evidência ou horário fica `não calculável ainda`, com
-próximo dado necessário; ausência de certificado não é ausência de implementação.
+Em cada entrega, publicar por tela um checkpoint de até quatro linhas: o que
+foi ligado e provado, `verified`/`done`/`verified-e2e` em C/N, o que ficou
+aberto e quem desbloqueia, e o próximo passo. Contar IDs únicos, nunca médias
+de percentuais. Ausência de certificado não é ausência de implementação. Não
+montar manifestos com hash, recibos de recibo nem consolidações longas: o Git
+e a saída dos testes são a evidência.
 
 ## Gate `verified-e2e`
 
-Para cada `action_id`, provar:
+Régua do MVP (ADR 0034). Para cada `action_id`, provar:
 
-1. UI/rota normal → estado → repository/gateway produtivo;
-2. sessão, ator, capability, tenant, ownership e hierarquia no servidor;
-3. RPC/query/Edge/Worker, RLS e grants mínimos;
-4. persistência e nova leitura/reload;
-5. permitido, negado, revogado, tenant A/B e ID adulterado;
-6. auditoria, efeitos laterais, retry/idempotência e cleanup;
-7. regressão Front-end, Back-end e integrada no ambiente autorizado.
+1. a rota normal abre a tela sem fixture nem fail-closed;
+2. o CRUD persiste no Supabase de produção pelo repository/gateway produtivo;
+3. o RLS nega outro tenant;
+4. o reload mantém o estado.
+
+Ficam para a revisão profunda de segurança, depois do MVP, e não bloqueiam
+`verified-e2e`: revogação durante espera com duas sessões, ID adulterado tela
+por tela, auditoria com retry, tenant A/B por ação, golden por estado. Sessão,
+capacidade, tenant e hierarquia continuam validados no servidor por cada
+migration e provados no pgTAP do pacote.
 
 Quando houver mídia/exportação, a cadeia inclui Supabase para metadados e
 autorização, Media Gateway e objeto R2 privado real. Quando a política exigir
@@ -135,13 +138,12 @@ IDs e dependências antes da edição e registrar: apps/telas/ações, objetivo,
 incluído/fora, ownership, ordem, critério de parada, evidências, bloqueios e ETA.
 
 Review sem pedido de correção é leitura. Preparar/corrigir migrations e executar
-replay local segue o contrato/spec aprovado da ação. Aplicar migrations ou
-alterar recursos Cloudflare remotamente e fazer deploy exige autorização
-nominal; correção local não concede essa autorização. Todo remoto Coelo é
-produção e exige autorização explícita para o
-pacote nominal; não presumir DEV/homologação. Testar localmente, aplicar
-forward-only de forma serializada e registrar recuperação. Um bloqueio externo
-retém somente a ação dependente; continuar todo trabalho seguro independente.
+pgTAP local segue o contrato/spec aprovado da ação. Todo remoto Coelo é
+produção e ainda não tem clientes reais; pela ADR 0034 migrations forward-only
+verdes são aplicadas pelo integrador na ordem da fila, com backup por ponto no
+tempo ligado, sem autorização por pacote. Alterar recursos Cloudflare ainda
+exige autorização nominal. Um bloqueio externo retém somente a ação
+dependente; continuar todo trabalho seguro independente.
 
 ## Execução, rastreadores e encerramento
 

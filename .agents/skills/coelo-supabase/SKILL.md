@@ -24,12 +24,14 @@ Informar a escolha e corrigir/testar localmente dentro do escopo autorizado,
 sem exigir nova confirmação para esse trabalho. Pedido explícito de explicação,
 diagnóstico/review somente leitura ou manutenção da skill segue esse pedido.
 
-Levar implementação, replay/testes e pacote nominal até evidência revisável.
-Se faltar autorização remota, pedir somente a decisão concreta depois dessa
-preparação; autorização vigente para o mesmo pacote não é solicitada de novo.
-Documentação e plano sozinhos não resolvem a pendência. Backend `done` continua
-exigindo todos os seus provedores/gates; ausência de Front-end não impede
-concluir o backend da ação.
+Levar implementação e pgTAP local até verde e então **aplicar o pacote no
+Supabase de produção** na ordem da fila, conforme a ADR 0034: o integrador tem
+autorização permanente para migrations forward-only quando o pgTAP local passou
+e o backup por ponto no tempo está ligado. Não pedir autorização por pacote.
+Só recursos Cloudflare (segredos, buckets, Workers) ainda exigem decisão
+nominal. Documentação e plano sozinhos não resolvem a pendência. Backend `done`
+no MVP exige o pacote aplicado e o RLS negando outro tenant; ausência de
+Front-end não impede concluir o backend da ação.
 
 ## Princípio e limite
 
@@ -89,13 +91,14 @@ ADR 0032. Não buscar credenciais ou acessar produção para explicar uma regra.
 Review, auditoria e diagnóstico sem pedido de correção são somente leitura.
 Correção local solicitada segue o recorte autorizado. Criar, corrigir e testar
 migrations localmente segue o contrato/spec aprovado da ação; uma decisão de
-produto ainda aberta não é suprida por esta regra. Aplicar migrations, deploy,
-configuração ou alteração de recurso remoto exige autorização para o ambiente
-e o pacote exatos. O projeto Supabase `coelo` é produção; autorização anterior de
-outro pacote não se transfere. Todo recurso Supabase ou Cloudflare remoto do
-Coelo deve ser tratado como produção; não presumir DEV/homologação. Validar
-localmente primeiro e aplicar no remoto somente o pacote nominal, forward-only,
-revisado, serializado e com plano de recuperação.
+produto ainda aberta não é suprida por esta regra. O projeto Supabase `coelo`
+é produção e não tem clientes reais em 10/09/2026. Pela ADR 0034, migrations
+forward-only são aplicadas pelo integrador sem autorização por pacote quando o
+pgTAP local passou, a fila serializada foi respeitada e o backup por ponto no
+tempo está ligado. Deploy de Edge Function acompanha a migration que o exige.
+Segredos, buckets e Workers do Cloudflare ainda exigem autorização nominal.
+Registrar no rastreador o que ficou aberto depois da aplicação; o Owner revisa
+em ciclo semanal ou quinzenal.
 
 ## Segurança de credenciais
 
@@ -128,29 +131,31 @@ Reutilizar o snapshot integrado datado para informar E2E conhecido, sem
 certificar Front-end numa tarefa Backend. Se faltarem horários/evidências, usar
 `não calculável ainda` e registrar o próximo dado necessário.
 
+Checkpoint curto, no máximo quatro linhas:
+
 ```text
-Etapa 2 | apps/superadmin | menu > tela > subtela | action_ids | provedores
-Avanço local comprovado: ...; Back-end done: C/N = ...%; restante: ...
-E2E certificado conhecido: C/N = ...% (snapshot/data ou não calculável).
-Testes Backend: aprovados P/E = ...%; falhos F/E = ...%; E = P + F.
-Plano: P/N aprovados; E/N executados; B bloqueados, S ignorados, U não executados.
-Campanha/revisão/ambiente/runner/evidência: ...; geral Etapa 2: ...
-Pacote e ações desbloqueadas: ...; primeiro gate e próximo passo: ...
-Tempo medido: ...; ETA do delta: ...; espera externa: ...
+Etapa 2 | apps/superadmin | menu > tela > subtela | action_ids
+Aplicado em produção: migrations ...; pgTAP P/F; done C/N.
+Aberto: ... (o que falta e quem desbloqueia).
+Próximo passo: ...
 ```
+
+Não montar manifestos com hash de arquivo, recibos de recibo nem contagens
+P/F/B/S/U por lote: o commit no Git e o log do pgTAP são a evidência.
 
 ### Limite de `done` do Back-end
 
-`done` encerra tudo que pertence ao backend da ação, sem exigir Front-end:
+No MVP (ADR 0034), `done` exige, sem Front-end:
 
-1. contrato e validação de entrada não confiável;
-2. sessão, ator, capability, tenant, ownership e hierarquia;
-3. schema/migration, RLS deny-by-default, grants mínimos e caminho server-side;
-4. persistência, idempotência/concorrência, auditoria e efeitos laterais;
-5. permitido, negado, revogado, tenant A/B e IDOR/BOLA;
-6. reload por cliente de teste e resposta estável;
-7. todos os provedores aplicáveis comprovados no remoto autorizado;
-8. regressão, Advisors/observabilidade, cleanup e rastreador atualizado.
+1. migration aplicada em produção, com RLS deny-by-default, grants mínimos e
+   caminho server-side que valida sessão, ator, capacidade e tenant;
+2. persistência real e reload por cliente de teste;
+3. pgTAP do pacote verde, incluindo negação de outro tenant;
+4. rastreador atualizado com o que ficou aberto.
+
+Ficam para a revisão profunda de segurança, registrados mas sem bloquear
+`done`: concorrência com duas sessões e revogação durante espera, IDOR/BOLA por
+ação, auditoria com retry, Advisors e cleanup de órfãos.
 
 Para mídia/exportação, acrescentar: objeto R2 privado real, metadados
 consistentes no Supabase, URL curta após reautorização, expiração/revogação,
@@ -168,7 +173,11 @@ quando houver limite informado, preservando segurança e os gates da conclusão.
 ## Políticas vigentes de mídia e exportação
 
 - Usar os buckets privados de produção definidos na ADR 0032:
-  `coelo-media-prod`, `coelo-documents-prod` e `coelo-transient-prod`.
+  `coelo-media-prod`, `coelo-documents-prod` e `coelo-transient-prod`. Os três
+  existem na conta Cloudflare desde 03/09/2026 (conferido via MCP
+  `cloudflare-api` em 10/09). Stream e Workers estão vazios. O gateway de
+  mídia roda em Edge Functions do Supabase e acessa o R2 pela API S3 com token
+  de escopo mínimo guardado nos secrets das Edge Functions, nunca em Git.
 - A plataforma é compartilhada por Superadmin, Admin e Principal. Não criar
   bucket, chave, gateway ou catálogo por app; a Etapa 2 conecta somente
   Superadmin, preservando contratos em `coelo_domain`/`coelo_api` para os
@@ -207,16 +216,17 @@ Para cada item de implementação autorizado (diagnóstico permanece leitura):
    nomear ator, tenant, recurso, capability e provedores;
 2. rastrear schema, migration, grants, RLS, RPC/Edge/Worker, R2 e Stream;
 3. escrever o teste antes da correção e provar sucesso e negativas;
-4. fazer replay/cutover forward-only na ordem coordenada;
-5. provar o pacote no remoto de produção autorizado, com dados sintéticos
-   minimizados e cleanup comprovado;
+4. aplicar forward-only em produção na ordem da fila, com backup por ponto no
+   tempo ligado (ADR 0034);
+5. provar o pacote no remoto com dados sintéticos minimizados e cleanup;
 6. atualizar o rastreador no mesmo turno com ação, estado, evidência, bloqueio
    e ETA.
 
 Priorizar o primeiro gate backend que permite fechar a subtela selecionada,
-reutilizando readers, migrations e provas já válidas. Preparar o pacote nominal
-até ficar revisável antes de pedir autorização remota que ainda falte; registrar
-o responsável pelo desbloqueio e continuar as ações locais independentes.
+reutilizando readers, migrations e provas já válidas. Pacote verde vai para
+produção no mesmo turno; não acumular fila de candidatos. Só Cloudflare pode
+ficar aguardando decisão nominal, e nesse caso registrar o responsável pelo
+desbloqueio e continuar as ações independentes.
 
 Não habilitar RLS em lote sem policies e testes: a auditoria remota registrou
 achados de RLS em `app_private`; consultar a evidência datada e o rastreador

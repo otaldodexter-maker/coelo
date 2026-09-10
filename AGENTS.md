@@ -57,8 +57,13 @@ Acontece somente por necessidade medida; Chat nao exige Stream no MVP. O master
 permanece no R2.
 
 Todo recurso Supabase ou Cloudflare remoto do Coelo e producao; nao presumir
-DEV ou homologacao. Testar localmente e aplicar pacotes remotos nominais,
-forward-only, revisados e serializados. A topologia R2 privada usa
+DEV ou homologacao. Desde a ADR 0034 (10/09/2026) o integrador tem
+autorizacao permanente para aplicar migrations forward-only no Supabase de
+producao quando o pgTAP local passou, a ordem serializada foi respeitada e o
+backup por ponto no tempo esta ligado; nao pedir autorizacao por pacote. O que
+ficar aberto vai para os rastreadores e o Owner revisa em ciclo semanal ou
+quinzenal. Segredos, buckets e Workers do Cloudflare ainda exigem autorizacao
+nominal. A topologia R2 privada usa
 `coelo-media-prod`, `coelo-documents-prod` e `coelo-transient-prod`, com chaves
 opacas versionadas por escopo, dominio, entidade, finalidade, ativo e rendicao.
 Postgres e o catalogo autoritativo de ativos, variantes, usos e entregas.
@@ -177,6 +182,11 @@ Percentuais usam IDs unicos, base, revisao, ambiente e data; historico nao vira
 resultado atual. Relatar por tela/subtela e recorte, com geral conhecido datado.
 Falta de mapeamento ou evidencia fica explicita. Retomadas fecham o primeiro
 gate aberto do recorte, reutilizando implementacao e provas validas.
+Regua do MVP (ADR 0034): uma acao conta como verificada quando a rota normal
+abre, o CRUD persiste no Supabase real, o RLS nega outro tenant e o reload
+mantem o estado. Provas exaustivas por acao (sessoes concorrentes, ID
+adulterado por tela, auditoria com retry, golden por estado) ficam para a
+revisao profunda de seguranca depois do MVP; nao bloqueiam o aceite.
 Atualizar inventario e matrizes juntos ao mudar estados; validacao documental
 nao certifica o app nem autoriza producao.
 
@@ -186,8 +196,9 @@ selecionar a proxima acao executavel da Etapa 2, corrigir localmente, testar e
 registrar o aceite. Nao encerrar apenas com auditoria, plano ou percentuais
 quando a correcao autorizada ainda puder prosseguir. Pedidos explicitos de
 explicacao/review somente leitura e manutencao das skills mantem esse limite.
-Bloqueio remoto exige pacote revisavel e decisao nominal quando ainda faltar;
-continuar o trabalho independente. Seguir o ciclo de resolucao em review-scope.md.
+Pacote SQL verde em pgTAP local e aplicado em producao pelo integrador na
+ordem da fila (ADR 0034); so Cloudflare ainda exige decisao nominal.
+Continuar o trabalho independente enquanto isso. Seguir o ciclo de resolucao em review-scope.md.
 
 Antes de retomar, localizar worktrees, base integrada, protocolo/fechamento da
 rodada e handoff por revisao/data/SHA; o dev local pode estar desatualizado.

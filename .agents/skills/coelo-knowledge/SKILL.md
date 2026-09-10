@@ -28,6 +28,12 @@ autorização por tenant, papel, vínculo ou contexto.
 Validar com `scripts/Test-CoeloKnowledge.ps1` e
 `tests/Test-CoeloKnowledge.ps1`, e relatar a captura ou o `no-op`.
 
+Decisões do Owner sobre autorização remota, régua de aceite e processo são
+conhecimento durável: registrar em ADR em `decisions/` no mesmo turno, refletir
+em `AGENTS.md` e nas skills afetadas, e atualizar a projeção `team`
+correspondente (por exemplo `supabase-production-environment`). Não deixar a
+decisão só em relatório de rodada ou em conversa.
+
 
 ## Consulta e limites da automação
 
