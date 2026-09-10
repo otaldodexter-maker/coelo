@@ -6,7 +6,7 @@
   "model": "Luna medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-publicacoes-agenda",
   "branch": "work/etapa2-r03-publicacoes-agenda",
-  "head": "7c95744912c9e25d6afac0afc980958e9ca563b8",
+  "head": "9ee216986c1e5ff69d8ce22d3e3b3cad4cd80d94",
   "coordinator": "Claude",
   "scope": {
     "app": "apps/superadmin",
@@ -77,7 +77,7 @@
       "actionIds": ["notices.list"],
       "whatChanged": "Indicador circular de estado voltou à linha do título, entre o título e o menu; o chip de tipo permanece abaixo e o título é mantido em uma linha no mobile por redução proporcional quando necessário.",
       "criteria": ["círculo distingue estados", "rótulo expande por toque, foco ou hover", "alvo mínimo de 48 px", "sem sobreposição com título ou ações", "goldens aprovados nos anexos"],
-      "sha": "7c95744912c9e25d6afac0afc980958e9ca563b8"
+      "sha": "9ee216986c1e5ff69d8ce22d3e3b3cad4cd80d94"
     }
   ],
   "baselinePackages": [
