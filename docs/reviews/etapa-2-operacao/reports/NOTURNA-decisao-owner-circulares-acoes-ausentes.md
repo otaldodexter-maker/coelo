@@ -191,7 +191,7 @@ trabalho, não lixo.
 ## Sétima decisão: abas do Perfil implementadas duas vezes
 
 `PrincipalProfileContentTabs`, com o enum `PrincipalProfileContentTab`, vive em
-`principal_circulars/presentation/principal_circular_surfaces.dart` e tem
+`apps/superadmin/lib/features/principal_circulars/presentation/principal_circular_surfaces.dart` e tem
 **zero** consumidores em `lib`. Tem dois em `test`, e um deles é o golden — ou
 seja, existe **referência visual aprovada** para um componente que ninguém vê
 no produto.
