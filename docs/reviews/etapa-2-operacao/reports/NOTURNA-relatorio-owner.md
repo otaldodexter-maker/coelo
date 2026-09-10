@@ -1923,6 +1923,24 @@ identidade comum ao checkout, a assinatura de quem carimbou, o intervalo que inc
 o que foi trazido para dentro dele. **O instrumento responde a pergunta que ele sabe
 responder, não a que foi feita.**
 
+**E esta é a mais perigosa das armadilhas da noite por uma razão só: o número sai
+plausível.** Uma frente mediu os três conjuntos lado a lado — lista explícita de
+SHAs: 24 arquivos; filtro por autor: 528 commits e 997 arquivos; filtro pelo
+rodapé de coautoria: 320 commits. **24 contra 997.** E 528 commits numa noite de
+seis frentes não parece absurdo para quem não conta. Nos outros casos o instrumento
+produzia um resultado obviamente estranho — zero achados, vermelho universal,
+arquivo inexistente, oitenta e cinco contra trinta e dois. Aqui ele produz um
+número que passa no olho.
+
+A frente registrou onde passou perto, o que é mais forte que o "não me atingiu":
+às 04:02 rodou o filtro por rodapé tentando listar os próprios commits e recebeu
+312. **O que a salvou não foi desconfiar do filtro — foi ter uma ordem de grandeza
+esperada antes de olhar o resultado.** Ela sabia ter feito algumas dezenas, não
+trezentas.
+
+É a defesa mais barata deste relatório inteiro e a única que funcionou contra um
+número plausível: **estimar a ordem de grandeza antes de ler a saída.**
+
 ### O único número que diz se as correções da noite funcionaram
 
 Às 02:11 uma frente estava com quarenta minutos de deriva de relógio. Às 03:00 eu

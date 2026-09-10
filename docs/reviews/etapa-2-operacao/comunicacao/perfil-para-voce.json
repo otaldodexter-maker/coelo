@@ -1,10 +1,10 @@
 {
-  "revision": 48,
-  "updated_at": "2026-09-10T04:39:30-03:00",
+  "revision": 49,
+  "updated_at": "2026-09-10T04:49:00-03:00",
   "group": "perfil-para-voce",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
-  "status": "pre-entrega antecipada; recorte executavel esgotado, handoff completo neste arquivo",
+  "status": "Pre-entrega das 04:50 publicada. Congelado desde 04:40. Residual zero. Aguardando o estado final do coordenador para a conferencia externa das 05:00.",
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-perfil-para-voce",
   "branch": "work/etapa2-noturna-perfil-para-voce",
@@ -418,7 +418,7 @@
     "Destino do CTA das comunicacoes: PlatformNotice nao modela URL no cliente embora platform_notices tenha cta_url.",
     "Caminho de recriacao da base, do qual dependem homologacao e E2E."
   ],
-  "proximo_passo": "Disponivel para conferencia externa de Git as 05:00 e para leitura de imagem sob demanda. Sem trabalho de produto executavel restante no recorte.",
+  "proximo_passo": "Rodar a conferencia externa de Git sobre o estado que o coordenador declarar as 05:00, com relogio cru dentro dela, e remover a worktree verify-dev-tmp declarando a remocao com git worktree list.",
   "reteste_das_linhas_de_bloqueio": {
     "criterio": "Cada linha chega com o teste que a sustenta NOMEADO, ou marcada como NAO TESTADA. Distingue bloqueio por AUSENCIA do objeto de bloqueio por FALTA DE AUTORIZACAO NOMINAL para verificar: sao coisas diferentes e pedem decisoes diferentes do Owner.",
     "linhas": [
@@ -897,7 +897,8 @@
         "nota": "o recorte.json deixado pelo reporter foi removido antes desta medicao"
       }
     },
-    "lote_3_json_resultado": "a corrida com caminho absoluto NAO gerou arquivo (ver CORRECAO_rev37, segunda armadilha). Refeita com caminho relativo."
+    "lote_3_json_resultado": "a corrida com caminho absoluto NAO gerou arquivo (ver CORRECAO_rev37, segunda armadilha). Refeita com caminho relativo.",
+    "SUPERADA": "Preservada como estava as 03:35. O que vale e PRE_ENTREGA_DEFINITIVA_0450, que declara item por item o que mudou."
   },
   "releitura_critica_do_proprio_handoff": {
     "quando": "2026-09-10, entre 03:58 e 04:02, com 38 minutos ate o congelamento",
@@ -1096,5 +1097,86 @@
       "RESIDUAL": "ZERO. Confirmado por tres criterios independentes.",
       "licao": "A conferencia externa serviu exatamente para o que existe: nao para achar erro do coordenador, e sim para expor que declaracao e medicao usavam vocabularios diferentes. O comportamento tinha chegado; o vocabulario e que mentia. E so apareceu porque eu insisti em vez de aceitar a declaracao, e porque ele mediu em vez de repetir a declaracao."
     }
+  },
+  "PRE_ENTREGA_DEFINITIVA_0450": {
+    "estado": "PRE-ENTREGA DEFINITIVA das 04:50. A versao publicada as 03:35 fica preservada em pre_entrega_0450; este bloco declara o que MUDOU desde ela, item por item, como mudanca e nao por reescrita silenciosa.",
+    "hora_desta_publicacao": "2026-09-10 04:49:00 -03:00",
+    "o_que_mudou_desde_as_0335": [
+      "Item 2, o numero: era 288 PASS / 10 FAIL e passou a 306 PASS / 10 FAIL em 316 casos. O antigo estava certo para os caminhos que mediu e errado como denominador; faltavam os cinco arquivos que a inversao do 2b encontrou. 288 + 18 = 306.",
+      "Item 2, o metodo: o numero passou a vir de reporter JSON e nao de parse de expanded, porque o expanded gravado em arquivo TRUNCA nome de caso e reconstroi 589 de 6390.",
+      "Item 2, a base: o numero foi remedido NA BASE INTEGRADA e nao so na branch, e deu identico arquivo por arquivo.",
+      "Item 1, o residual: variou tres vezes entre 03:35 e 04:39 - zero, quatro, dois, zero - porque continuei commitando. Fechou em ZERO, confirmado por tres criterios.",
+      "Item 1, o METODO do residual: mudou de ancestralidade para rastro de cherry-pick, porque a integracao desta rodada e por cherry-pick e o SHA original nunca vira ancestral.",
+      "Item 6, as citacoes: uma estava errada e foi corrigida; as 32 foram varridas por ls-tree e os 53 SHAs conferidos.",
+      "Item 7: cresceu. Quatro itens novos entraram no que eu NAO verifiquei.",
+      "NOVO: analyze deixou de estar limpo e voltou a estar, por correcao de outra frente.",
+      "NOVO: dois artefatos orfaos do dominio, achados por um quarto criterio de varredura.",
+      "NOVO: uma afirmacao falsa minha DENTRO do codigo integrado, encontrada e removida."
+    ],
+    "1_residual": {
+      "declaracao": "ZERO",
+      "medido_em": "2026-09-10T04:43:46-03:00, com origin/dev em 8211bac07",
+      "metodo": "Tres criterios lado a lado, com o RASTRO de cherry-pick como principal. Ancestralidade do SHA original NAO responde nesta rodada: a integracao e por cherry-pick e o commit entra em dev com SHA novo. Conteudo tambem nao responde sozinho: a base anda e o diff deixa de ser vazio mesmo com a mudanca la dentro.",
+      "os_nove_commits_desta_frente": "ace7b32e1, 1d453e2f3, 6bf733fec, 50ba6a73c, 31cff109d, 2a0da284f, f57459bed integrados por ancestralidade; 3e8de2319 -> 1ca8a7f81 e 1d46746ff -> 58a5a6ed1 por cherry-pick, com conteudo identico conferido arquivo a arquivo.",
+      "estado_git": "worktree de trabalho 0 caminhos, HEAD 1d46746ff, upstream 0 0; worktree de verificacao 0 caminhos, destacada; stash 0."
+    },
+    "2_numeros": {
+      "recorte_na_base_integrada": "306 PASS / 0 SKIP / 10 FAIL, em 316 casos e 30 arquivos. Base 98ef12509, janela 04:24:13 a 04:26:14, reporter JSON.",
+      "recorte_na_branch": "306 PASS / 10 FAIL, identico caso a caso e arquivo a arquivo. Janela 03:52:22 a 03:53:01.",
+      "suite_completa_do_app": "6390 PASS / 14 SKIP / 144 FAIL, duas corridas independentes com resultado identico.",
+      "fora_do_app": "packages/coelo_domain/test/profile_about/profile_about_test.dart, 9 PASS / 0 FAIL.",
+      "sobreposicao": "Os 316 sao subconjunto proprio dos 6548 da suite do app. Os 9 de coelo_domain NAO sao. Total nao-duplicado do escopo: 325 casos, 315 passando, 10 falhando.",
+      "controle_de_caminhos": "ls em cada um dos 11 caminhos antes de cada corrida; nenhum ausente. O contador da corrida e a reconstrucao do parser batem exato."
+    },
+    "3_falhas": {
+      "quantas": 10,
+      "arquivo": "apps/superadmin/test/features/principal_profile/presentation/principal_profile_preview_golden_test.dart, que tem 12 casos: 10 falham e 2 passam",
+      "causa_unica": "a referencia aprovada mostra botao Acompanhar e seis metricas, com Seguidores e Seguindo; a composicao atual mostra Mensagem e tres metricas",
+      "estado": "blocked-decision. NAO regravei golden para fechar vermelho.",
+      "nao_e_regressao": "as dez ja falhavam antes de qualquer alteracao desta frente, e o par 306/10 se manteve identico na branch e na base integrada",
+      "as_outras_134_do_app": "nao sao desta frente; atribuidas por caminho e nao por leitura de cada uma"
+    },
+    "4_recursos": {
+      "worktree_de_trabalho": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-perfil-para-voce, 0 caminhos alterados",
+      "worktree_de_verificacao": "C:/Users/adrie/Documents/Coelo.worktrees/verify-dev-tmp, DETACHED, 0 caminhos. SERA REMOVIDA apos a conferencia das 05:00, com a remocao declarada pela saida crua de git worktree list.",
+      "containers": "postgres:15 e supabase/postgres:17.6.1.165, JA REMOVIDOS",
+      "arquivos_temporarios": "scratchpad privado da sessao; NADA em /tmp compartilhado",
+      "artefatos_de_instrumento_limpos": "recorte.json e recorte-dev.json, deixados pelo reporter JSON dentro do repositorio, removidos das duas worktrees",
+      "processos_portas_agendamentos": "nenhum"
+    },
+    "5_hora": {
+      "metodo": "date na MESMA chamada que produziu cada dado, com segundos. Nao ha carimbo estimado nesta revisao.",
+      "conferencia_final": "inicio 2026-09-10 04:43:46 -03:00, UTC 07:43:46",
+      "residual": "2026-09-10T04:43:46-03:00",
+      "recorte_na_base_integrada": "04:24:13 a 04:26:14",
+      "citacoes_e_shas": "2026-09-10T04:32:02-03:00",
+      "analyze": "04:17:46 a 04:20:46"
+    },
+    "6_citacoes": {
+      "metodo": "todos os caminhos extraidos por expressao regular e conferidos por git ls-tree, nunca por cat-file e nunca por basename",
+      "resultado": "32 caminhos citados, 30 presentes em origin/dev, 2 ausentes e ambos DECLARADOS como mencao intencional - um citado como removido, um citado como exemplo do erro que foi corrigido",
+      "shas": "53 SHAs de nove digitos citados, 53 resolvem, 0 nao resolvem",
+      "erro_corrigido": "eu citava 2026-09-10-handoff-snapshot-rev27.json; o nome verdadeiro nao tem prefixo de data"
+    },
+    "7_o_que_eu_NAO_verifiquei": [
+      "Se a leitura por tabela do Sobre funciona HOJE em producao. Nunca consultei producao; falta autorizacao nominal. Esta bloqueado por falta de autorizacao para VERIFICAR, e nao por ausencia.",
+      "Se get_profile_about e list_my_principal_for_you se comportam em producao. Sintaxe verificada em Postgres 17 LOCAL, aplicam inteiros local, NAO aplicados remotamente.",
+      "35 dos 40 objetos app_private sem CREATE vem do metodo de conjuntos. Cinco conferidos a mao. 40 nao sao 40 fatos verificados.",
+      "As 134 falhas do app que nao sao desta frente: atribuidas por caminho, nao lidas uma a uma.",
+      "Os outros pacotes do monorepo alem de coelo_domain. Nao rodei teste nem analyze neles.",
+      "Os tres achados de health_care que a varredura por nome de classe produziu: passados adiante como pista, nao inspecionados.",
+      "Se o conjunto de 17 migrations e duplicata exata: e medicao de chat-comunicacoes, incorporada com credito, nao reexecutada por mim.",
+      "Os sete totais por pacote que somam 894: soma conferida, totais nao reexecutados. Medicao da coordenacao.",
+      "Se o unused_import corrigido por outra frente fechou analyze limpo em todo o monorepo: conferi apps/superadmin e coelo_domain apenas.",
+      "Nada de E2E. Continua zero por construcao enquanto nao existir caminho de recriacao da base."
+    ],
+    "8_erros_meus_desta_janela_declarados": [
+      "Publiquei numero nao sustentado DENTRO de comentario de codigo integrado, atribuido a outra frente, que a medicao real contradizia. Removido em 3e8de2319.",
+      "Escrevi numero de outra pessoa em arquivo de skill sem atribuicao. Corrigido em 1d46746ff.",
+      "Corrigi um alarme de citacao errada e deixei a CITACAO errada no lugar por uma hora. Foi preciso outra frente varrer 199 caminhos.",
+      "Generalizei a causa da armadilha do ponto inicial a partir de UM caso; outra frente barrou com o argumento certo e o coordenador isolou a condicao.",
+      "Afirmei que o teste de conteudo era imune ao metodo de integracao DEPOIS de o coordenador me avisar que nao era, e com isso produzi uma lista de residual falso que continha uma HIPOTESE DE NEGLIGENCIA sobre outra frente, com narrativa plausivel em volta. E o pior erro meu da noite: numero errado sobre mim custa uma correcao; numero errado sobre outra frente custa a confianca dela, e ela nem fica sabendo que foi acusada.",
+      "Supus push faltando quando a causa era cherry-pick: dado certo, causa errada, pela segunda vez na noite."
+    ]
   }
 }
