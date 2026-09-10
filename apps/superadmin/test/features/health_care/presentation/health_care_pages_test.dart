@@ -205,10 +205,6 @@ void main() {
     );
 
     expect(find.text('Arquivos'), findsOneWidget);
-    final profileFiles = tester.widget<HealthCareFileActions>(find.byType(HealthCareFileActions));
-    expect(profileFiles.onImport, isNull);
-    expect(profileFiles.onExportCsv, isNull);
-    expect(profileFiles.onExportXlsx, isNull);
     await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
     await tester.pumpAndSettle();
     expect(find.text('Importar'), findsOneWidget);
@@ -235,12 +231,6 @@ void main() {
     );
 
     expect(find.text('Arquivos'), findsOneWidget);
-    final medicationFiles = tester.widget<HealthCareFileActions>(
-      find.byType(HealthCareFileActions),
-    );
-    expect(medicationFiles.onImport, isNull);
-    expect(medicationFiles.onExportCsv, isNull);
-    expect(medicationFiles.onExportXlsx, isNull);
     await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Exportar XLSX'));

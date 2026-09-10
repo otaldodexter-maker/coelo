@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
@@ -8,9 +6,6 @@ import 'package:flutter/material.dart';
 import '../../../app/shell/superadmin_shell.dart';
 import 'health_care_responsive_surface.dart';
 import '../../auth/domain/logout_action.dart';
-import '../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
-import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
-import '../../../shared/presentation/widgets/superadmin_underline_tabs.dart';
 import '../domain/health_care.dart';
 import 'health_care_controller.dart';
 import 'health_care_file_actions.dart';
@@ -104,128 +99,138 @@ final class _HealthCareProfileDirectoryPageState extends State<HealthCareProfile
               ),
             ),
           )
-        : LayoutBuilder(
-            builder: (context, constraints) {
-              final padding = _directoryInset(constraints.maxWidth);
-              return Stack(
-                children: [
-                  ListView(
-                    key: const Key('health-care-profiles-directory-scroll'),
-                    padding: EdgeInsets.fromLTRB(
-                      padding,
-                      padding,
-                      padding,
-                      CoeloSpacing.space24 * 2,
-                    ),
-                    children: [
-                      _toolbar(constraints),
-                      const SizedBox(height: CoeloSpacing.space4),
-                      _statusTabs(),
-                      const SizedBox(height: CoeloSpacing.space4),
-                      LayoutBuilder(
-                        builder: (context, contentConstraints) =>
-                            _content(context, contentConstraints),
-                      ),
-                    ],
-                  ),
-                  if (widget.controller.page != null)
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: SuperadminListingPaginationFooter(
-                        semanticKey: const Key('health-care-profiles-pagination-footer'),
-                        horizontalPadding: padding,
-                        child: CoeloAdminPagination(
-                          currentPage: widget.controller.query.page + 1,
-                          totalPages: widget.controller.totalPages,
-                          pageSize: widget.controller.query.pageSize,
-                          pageSizeOptions:
-                              widget.controller.display == HealthCareDirectoryDisplay.cards
-                              ? const [11, 20, 50, 100]
-                              : const [8, 20, 50, 100],
-                          onPrevious: widget.controller.query.page == 0
-                              ? null
-                              : () => widget.controller.setPage(widget.controller.query.page - 1),
-                          onNext: widget.controller.query.page + 1 >= widget.controller.totalPages
-                              ? null
-                              : () => widget.controller.setPage(widget.controller.query.page + 1),
-                          onPageSelected: (value) => widget.controller.setPage(value - 1),
-                          onPageSizeChanged: widget.controller.setPageSize,
-                        ),
-                      ),
-                    ),
-                ],
-              );
-            },
-          ),
+        : _directory(context),
   ).withHealthCareResponsiveSurface();
 
-  Widget _toolbar(BoxConstraints constraints) => CoeloAdminListingToolbar(
-    search: ConstrainedBox(
-      constraints: const BoxConstraints(maxWidth: CoeloSpacing.space24 * 3),
-      child: CoeloSearchField(
+  Widget _directory(BuildContext context) {
+    final controller = widget.controller;
+    final minimizedSummary =
+        controller.state == HealthCareLoadState.minimized && controller.items.isEmpty;
+    final onPressedFor = controller.canReadSensitive && widget.onChildSelected != null
+        ? (HealthCareChildSummary item) => widget.onChildSelected!(item.id)
+        : null;
+    return CoeloAdminDirectory<_HealthCareTableView>(
+      scrollKey: const Key('health-care-profiles-directory-scroll'),
+      cardsKey: const Key('health-care-profiles-view-cards'),
+      tableKey: const Key('health-care-profiles-view-table'),
+      gridKey: const Key('health-care-profiles-cards'),
+      status: switch (controller.state) {
+        HealthCareLoadState.loading => CoeloAdminDirectoryStatus.loading,
+        HealthCareLoadState.empty => CoeloAdminDirectoryStatus.empty,
+        HealthCareLoadState.noResults => CoeloAdminDirectoryStatus.noResults,
+        HealthCareLoadState.error => CoeloAdminDirectoryStatus.failure,
+        HealthCareLoadState.unauthorized => CoeloAdminDirectoryStatus.unauthorized,
+        HealthCareLoadState.unavailable => CoeloAdminDirectoryStatus.failure,
+        HealthCareLoadState.ready ||
+        HealthCareLoadState.minimized => CoeloAdminDirectoryStatus.success,
+      },
+      messages: const CoeloAdminDirectoryMessages(
+        empty: 'Nenhum registro',
+        emptyIcon: Icons.health_and_safety_outlined,
+        noResults: 'Nenhum resultado',
+        failure: 'Não foi possível carregar',
+        unauthorized: 'Sem permissão',
+      ),
+      errorMessage: switch (controller.state) {
+        HealthCareLoadState.empty => 'Ainda não existem perfis de cuidado cadastrados.',
+        HealthCareLoadState.error => 'Tente novamente.',
+        _ => null,
+      },
+      onRetry: controller.load,
+      search: CoeloSearchField(
         controller: _search,
         semanticLabel: 'Buscar crianças em Perfis de cuidado',
         hintText: 'Buscar criança',
-        onChanged: widget.controller.setSearch,
+        onChanged: controller.setSearch,
       ),
-    ),
-    filters: [
-      _filter(
-        'Pessoa',
-        const [],
-        widget.controller.query.personIds,
-        widget.controller.setPersonIds,
+      filters: [
+        _filter('Pessoa', const [], controller.query.personIds, controller.setPersonIds),
+        _filter('Criança', const [], controller.query.childIds, controller.setChildIds),
+        _filter(
+          'Instituição',
+          const [],
+          controller.query.institutionIds,
+          controller.setInstitutionIds,
+        ),
+        _filter(
+          'Unidade',
+          controller.availableUnitIds.toList(growable: false),
+          controller.query.unitIds,
+          controller.setUnitIds,
+        ),
+        _filter(
+          'Turma/Atividade',
+          controller.availableGroupIds.toList(growable: false),
+          controller.query.groupOrActivityIds,
+          controller.setGroupIds,
+        ),
+      ],
+      display: controller.display == HealthCareDirectoryDisplay.cards
+          ? CoeloAdminDirectoryDisplay.cards
+          : CoeloAdminDirectoryDisplay.table,
+      onDisplayChanged: (value) => controller.setDisplay(
+        value == CoeloAdminDirectoryDisplay.cards
+            ? HealthCareDirectoryDisplay.cards
+            : HealthCareDirectoryDisplay.table,
       ),
-      _filter('Criança', const [], widget.controller.query.childIds, widget.controller.setChildIds),
-      _filter(
-        'Instituição',
-        const [],
-        widget.controller.query.institutionIds,
-        widget.controller.setInstitutionIds,
-      ),
-      _filter(
-        'Unidade',
-        widget.controller.availableUnitIds.toList(growable: false),
-        widget.controller.query.unitIds,
-        widget.controller.setUnitIds,
-      ),
-      _filter(
-        'Turma/Atividade',
-        widget.controller.availableGroupIds.toList(growable: false),
-        widget.controller.query.groupOrActivityIds,
-        widget.controller.setGroupIds,
-      ),
-    ],
-    actions: [
-      SuperadminDirectoryViewToggle<_HealthCareTableView>(
-        cardsSelected: widget.controller.display == HealthCareDirectoryDisplay.cards,
-        groupedView: _HealthCareTableView.grouped,
-        selectedTableView: _HealthCareTableView.grouped,
-        tableViews: const [
-          SuperadminDirectoryTableViewOption(
-            value: _HealthCareTableView.grouped,
-            label: 'Agrupado',
-          ),
-        ],
-        cardsKey: const Key('health-care-profiles-view-cards'),
-        tableKey: const Key('health-care-profiles-view-table'),
-        onCardsSelected: () => widget.controller.setDisplay(HealthCareDirectoryDisplay.cards),
-        onTableViewSelected: (_) => widget.controller.setDisplay(HealthCareDirectoryDisplay.table),
-      ),
-      HealthCareFileActions(
+      groupedTableView: _HealthCareTableView.grouped,
+      selectedTableView: _HealthCareTableView.grouped,
+      tableViews: const [
+        CoeloAdminDirectoryTableViewOption(value: _HealthCareTableView.grouped, label: 'Agrupado'),
+      ],
+      onTableViewSelected: (_) => controller.setDisplay(HealthCareDirectoryDisplay.table),
+      fileActions: healthCareFileActions(
+        context,
         onImport: widget.onImport,
         onExportCsv: widget.onExportCsv,
         onExportXlsx: widget.onExportXlsx,
       ),
-    ],
-  );
+      tabs: _statusTabs(),
+      create: _canCreate
+          ? CoeloAdminDirectoryCreate(
+              label: 'Criar perfil de cuidado',
+              description: 'Cadastre alergias, restrições e características de cuidado.',
+              icon: Icons.health_and_safety_outlined,
+              onPressed: widget.onCreate!,
+            )
+          : null,
+      cards: [
+        for (final item in controller.items)
+          _ProfileCard(
+            item: item,
+            minimized: controller.isMinimized,
+            onPressed: onPressedFor == null ? null : () => onPressedFor(item),
+          ),
+      ],
+      table: _table(onPressedFor),
+      bodyOverride: minimizedSummary
+          ? const CoeloStatePanel(
+              title: 'Resumo minimizado',
+              message: 'Somente contagens, pendências e status estão disponíveis.',
+            )
+          : null,
+      pagination: controller.page != null
+          ? CoeloAdminDirectoryPagination(
+              footerKey: const Key('health-care-profiles-pagination-footer'),
+              currentPage: controller.query.page + 1,
+              totalPages: controller.totalPages,
+              pageSize: controller.query.pageSize,
+              pageSizeOptions: controller.display == HealthCareDirectoryDisplay.cards
+                  ? const [11, 20, 50, 100]
+                  : const [8, 20, 50, 100],
+              onPageSelected: (value) => controller.setPage(value - 1),
+              onPageSizeChanged: controller.setPageSize,
+            )
+          : null,
+    );
+  }
 
-  Widget _statusTabs() => SuperadminUnderlineTabs<_ProfileStatusFilter>(
+  Widget _statusTabs() => CoeloAdminUnderlineTabs<_ProfileStatusFilter>(
     tabs: const [
-      SuperadminUnderlineTab(value: _ProfileStatusFilter.all, label: 'Todos'),
-      SuperadminUnderlineTab(value: _ProfileStatusFilter.active, label: 'Ativos'),
-      SuperadminUnderlineTab(value: _ProfileStatusFilter.implementation, label: 'Em Implantação'),
-      SuperadminUnderlineTab(value: _ProfileStatusFilter.inactive, label: 'Inativos'),
+      CoeloAdminUnderlineTab(value: _ProfileStatusFilter.all, label: 'Todos'),
+      CoeloAdminUnderlineTab(value: _ProfileStatusFilter.active, label: 'Ativos'),
+      CoeloAdminUnderlineTab(value: _ProfileStatusFilter.implementation, label: 'Em Implantação'),
+      CoeloAdminUnderlineTab(value: _ProfileStatusFilter.inactive, label: 'Inativos'),
     ],
     selected: _selectedStatus,
     onSelected: (value) => widget.controller.setStatuses(switch (value) {
@@ -251,156 +256,17 @@ final class _HealthCareProfileDirectoryPageState extends State<HealthCareProfile
     List<String> options,
     Set<String> selected,
     ValueChanged<Set<String>> onChanged,
-  ) => _filterBox(
-    CoeloAdminMultiSelectFilter<String>(
-      label: label,
-      options: options,
-      selectedValues: selected,
-      optionLabel: (value) => value,
-      onChanged: onChanged,
-    ),
-  );
-
-  Widget _filterBox(Widget child) => ConstrainedBox(
-    constraints: const BoxConstraints(maxWidth: CoeloSpacing.space24 * 3),
-    child: child,
-  );
-
-  Widget _content(BuildContext context, BoxConstraints constraints) {
-    final controller = widget.controller;
-    if (controller.state != HealthCareLoadState.ready &&
-        controller.state != HealthCareLoadState.minimized) {
-      return switch (controller.state) {
-        HealthCareLoadState.loading => const CoeloStatePanel(
-          title: 'Carregando',
-          message: 'Buscando registros locais.',
-          loading: true,
-        ),
-        HealthCareLoadState.empty => _stateWithCreate(
-          constraints,
-          const CoeloStatePanel(
-            title: 'Nenhum registro',
-            message: 'Ainda não existem perfis de cuidado cadastrados.',
-          ),
-        ),
-        HealthCareLoadState.noResults => _stateWithCreate(
-          constraints,
-          const CoeloStatePanel(
-            title: 'Nenhum resultado',
-            message: 'Revise a busca ou os filtros.',
-          ),
-        ),
-        HealthCareLoadState.error => _stateWithCreate(
-          constraints,
-          CoeloStatePanel(
-            title: 'Não foi possível carregar',
-            message: 'Tente novamente.',
-            actionLabel: 'Tentar novamente',
-            onAction: controller.load,
-          ),
-        ),
-        HealthCareLoadState.unauthorized => const CoeloStatePanel(
-          title: 'Sem permissão',
-          message: 'O contexto não autoriza esta consulta.',
-        ),
-        HealthCareLoadState.unavailable => const CoeloStatePanel(
-          title: 'Perfis de cuidado indisponíveis',
-          message: 'A integração necessária para consultar estes dados ainda não está disponível.',
-          icon: Icons.cloud_off_outlined,
-        ),
-        _ => const SizedBox.shrink(),
-      };
-    }
-    if (controller.state == HealthCareLoadState.minimized && controller.items.isEmpty) {
-      return const CoeloStatePanel(
-        title: 'Resumo minimizado',
-        message: 'Somente contagens, pendências e status estão disponíveis.',
-      );
-    }
-    return controller.display == HealthCareDirectoryDisplay.cards
-        ? _cards(context, constraints)
-        : _table();
-  }
-
-  Widget _stateWithCreate(BoxConstraints constraints, Widget statePanel) => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      statePanel,
-      if (_canCreate) const SizedBox(height: CoeloSpacing.space4),
-      if (_canCreate && widget.controller.display == HealthCareDirectoryDisplay.cards)
-        Align(
-          alignment: Alignment.centerLeft,
-          child: SizedBox(
-            width: math.min(340, constraints.maxWidth),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: 216),
-              child: CoeloAdminCreateAction(
-                label: 'Criar perfil de cuidado',
-                onPressed: widget.onCreate,
-              ),
-            ),
-          ),
-        )
-      else if (_canCreate)
-        CoeloAdminCreateAction(
-          label: 'Criar perfil de cuidado',
-          description: 'Cadastre alergias, restrições e características de cuidado.',
-          variant: CoeloAdminCreateActionVariant.banner,
-          onPressed: widget.onCreate,
-        ),
-    ],
+  ) => CoeloAdminMultiSelectFilter<String>(
+    label: label,
+    options: options,
+    selectedValues: selected,
+    optionLabel: (value) => value,
+    onChanged: onChanged,
   );
 
   bool get _canCreate => widget.controller.canEdit && widget.onCreate != null;
 
-  Widget _cards(BuildContext context, BoxConstraints constraints) {
-    const minimumCardWidth = 340.0;
-    final usable = constraints.maxWidth;
-    final columns = math.max(1, (usable / minimumCardWidth).floor());
-    final width = (usable - (CoeloSpacing.space6 * (columns - 1))) / columns;
-    return Wrap(
-      key: const Key('health-care-profiles-cards'),
-      spacing: CoeloSpacing.space6,
-      runSpacing: CoeloSpacing.space6,
-      children: [
-        if (_canCreate)
-          SizedBox(
-            width: width,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: 216),
-              child: CoeloAdminCreateAction(
-                label: 'Criar perfil de cuidado',
-                onPressed: widget.onCreate,
-              ),
-            ),
-          ),
-        for (final item in widget.controller.items)
-          SizedBox(
-            width: width,
-            child: _ProfileCard(
-              item: item,
-              minimized: widget.controller.isMinimized,
-              onPressed: widget.controller.canReadSensitive && widget.onChildSelected != null
-                  ? () => widget.onChildSelected!(item.id)
-                  : null,
-            ),
-          ),
-      ],
-    );
-  }
-
-  Widget _table() => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      if (_canCreate) ...[
-        CoeloAdminCreateAction(
-          label: 'Criar perfil de cuidado',
-          description: 'Cadastre alergias, restrições e características de cuidado.',
-          variant: CoeloAdminCreateActionVariant.banner,
-          onPressed: widget.onCreate,
-        ),
-        const SizedBox(height: CoeloSpacing.space4),
-      ],
+  Widget _table(ValueChanged<HealthCareChildSummary>? onPressed) =>
       CoeloAdminResizableTable<HealthCareChildSummary>(
         key: const Key('health-care-profiles-table'),
         items: widget.controller.items,
@@ -445,12 +311,8 @@ final class _HealthCareProfileDirectoryPageState extends State<HealthCareProfile
         ],
         headerHeight: 56,
         rowHeight: 64,
-        onRowPressed: widget.controller.canReadSensitive && widget.onChildSelected != null
-            ? (item) => widget.onChildSelected!(item.id)
-            : null,
-      ),
-    ],
-  );
+        onRowPressed: onPressed,
+      );
 }
 
 final class _ProfileCard extends StatelessWidget {
