@@ -27,6 +27,7 @@ final class GroupDirectoryPage extends StatefulWidget {
     required this.logout,
     this.onCreate,
     this.onEdit,
+    this.onView,
     this.onDestinationSelected,
     this.onBugReportSubmitted,
     this.successMessage,
@@ -37,6 +38,7 @@ final class GroupDirectoryPage extends StatefulWidget {
   final LogoutAction logout;
   final VoidCallback? onCreate;
   final ValueChanged<String>? onEdit;
+  final ValueChanged<String>? onView;
   final ValueChanged<String>? onDestinationSelected;
   final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
   final String? successMessage;
@@ -121,7 +123,7 @@ final class _GroupDirectoryPageState extends State<GroupDirectoryPage> {
             onDisplayChanged: _setDisplay,
             onTableViewChanged: _setTableView,
             onCreate: widget.onCreate,
-            onEdit: widget.onEdit,
+            onEdit: widget.onEdit ?? widget.onView,
             onFooterHeightChanged: (height) {
               if ((_footerHeight - height).abs() >= .5) {
                 setState(() => _footerHeight = height);
@@ -662,7 +664,7 @@ final class _GroupCard extends StatelessWidget {
       surfaceKey: Key('group-card-surface-${item.id}'),
       minHeight: 336,
       onPressed: onPressed,
-      semanticLabel: onPressed == null ? null : 'Editar turma ${item.name}',
+      semanticLabel: onPressed == null ? null : 'Abrir turma ${item.name}',
       child: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: CoeloSpacing.space6,

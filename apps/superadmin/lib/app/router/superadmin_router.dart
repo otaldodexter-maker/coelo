@@ -1770,6 +1770,19 @@ GoRouter createSuperadminRouter({
               repository: groupRepository,
               logout: logout,
               successMessage: groupSuccessMessage(state.extra),
+              onView: session.authContext?.permissionCodes.contains('groups.read') == true
+                  ? (id) {
+                      if (!session.isAuthenticated ||
+                          session.isPasswordRecovery ||
+                          session.authContext?.permissionCodes.contains('groups.read') != true) {
+                        return;
+                      }
+                      context.goNamed(
+                        SuperadminRoutes.groupDetailName,
+                        pathParameters: {'groupId': id},
+                      );
+                    }
+                  : null,
               onCreate: hasStructureMutationCapability()
                   ? () => context.goNamed(SuperadminRoutes.groupCreateName)
                   : null,
