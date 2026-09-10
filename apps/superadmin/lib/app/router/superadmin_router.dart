@@ -290,6 +290,7 @@ GoRouter createSuperadminRouter({
   ValueChanged<Uri>? openExternalCatalog,
   SupportPrototypeController? supportController,
   UserPreferencesController? userPreferencesController,
+  AccountProfileRepository accountProfileRepository = const UnavailableAccountProfileRepository(),
   ImportRepository importRepository = const UnavailableImportRepository(),
   PlanCatalogRepository planCatalogRepository = const UnavailablePlanCatalogRepository(),
   AgendaRepository? agendaRepository,
@@ -346,6 +347,10 @@ GoRouter createSuperadminRouter({
   final productionSupportController = supportController;
   final developmentSupportController = _createDevelopmentSupportController();
   final accountActivities = SuperadminActivityController();
+  final productionAccountController = AccountController(
+    repository: accountProfileRepository,
+    activities: accountActivities,
+  );
   final operationalActivities = SuperadminActivityController();
   final operationalStore = SuperadminPrototypeStore(activityController: operationalActivities);
   final developmentAssessmentRepository = DevelopmentAssessmentRepository();
@@ -370,6 +375,7 @@ GoRouter createSuperadminRouter({
   );
   var productionPreferencesLoadStarted = productionPreferencesController.loaded;
   unawaited(developmentAccountController.load());
+  unawaited(productionAccountController.load());
   unawaited(developmentPreferencesController.load());
   FakeInstitutionDirectoryRepository? cachedInstitutionPreviewRepository;
   FakeInstitutionDirectoryRepository institutionPreviewRepository() =>
@@ -3233,10 +3239,11 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.profile,
             name: SuperadminRoutes.profileName,
-            builder: (context, state) => SuperadminErrorScreen(
-              kind: SuperadminErrorKind.unavailable,
-              actionLabel: 'Voltar ao início',
-              onAction: () => context.goNamed(SuperadminRoutes.homeName),
+            builder: (context, state) => ProfilePage(
+              controller: productionAccountController,
+              logout: logout,
+              onDestinationSelected: (destination) =>
+                  _navigateFromPersistentShell(context, destination),
             ),
           ),
           GoRoute(

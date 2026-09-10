@@ -26,6 +26,7 @@ import '../features/circulars/domain/superadmin_circular_repository.dart';
 import '../features/attendance/attendance.dart';
 import '../features/attendance/data/supabase_attendance_repository.dart';
 import '../features/account/data/user_preferences_repository.dart';
+import '../features/account/data/account_profile_repository.dart';
 import '../features/account/presentation/user_preferences_controller.dart';
 import '../features/institutions/data/supabase_institution_directory_repository.dart';
 import '../features/institutions/domain/institution_directory_repository.dart';
@@ -94,8 +95,7 @@ final _superadminDarkTheme = CoeloTheme.dark.copyWith(
   pageTransitionsTheme: _instantPageTransitions,
 );
 
-LocationCapabilities _noLocationCapabilities(SuperadminAuthContext? _) =>
-    LocationCapabilities.none;
+LocationCapabilities _noLocationCapabilities(SuperadminAuthContext? _) => LocationCapabilities.none;
 
 final class _InstantPageTransitionsBuilder extends PageTransitionsBuilder {
   const _InstantPageTransitionsBuilder();
@@ -177,6 +177,7 @@ class SuperadminApp extends StatefulWidget {
     this.momentsPublicationRepository,
     this.nowPublicationRepository,
     this.userPreferencesRepository,
+    this.accountProfileRepository = const UnavailableAccountProfileRepository(),
     super.key,
   });
 
@@ -245,6 +246,7 @@ class SuperadminApp extends StatefulWidget {
   final MomentsPublicationRepository? momentsPublicationRepository;
   final NowPublicationRepository? nowPublicationRepository;
   final UserPreferencesRepository? userPreferencesRepository;
+  final AccountProfileRepository accountProfileRepository;
 
   @override
   State<SuperadminApp> createState() => _SuperadminAppState();
@@ -339,6 +341,7 @@ class _SuperadminAppState extends State<SuperadminApp> {
       momentsPublicationRepository: widget.momentsPublicationRepository,
       nowPublicationRepository: widget.nowPublicationRepository,
       userPreferencesController: _preferencesController,
+      accountProfileRepository: widget.accountProfileRepository,
       onThemeModeChanged: _setThemeMode,
     );
   }
