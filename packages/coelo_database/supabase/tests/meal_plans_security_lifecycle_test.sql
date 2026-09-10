@@ -107,18 +107,21 @@ select ok(
     where n.nspname = 'public' and c.relname = 'meal_plans'),
   'every meal plan policy validates tenant and institution scope');
 
+-- A comparacao normaliza espacos: a producao formata a mesma condicao como
+-- `priority = plan.priority`, e a assercao reprovava um corpo correto por causa
+-- de dois espacos.
 select ok(
   pg_get_functiondef(
     'public.meal_plan_publish_unreceipted(text,uuid,integer)'::regprocedure)
       like '%pending_conflicts%'
-  and pg_get_functiondef(
-    'public.meal_plan_publish_unreceipted(text,uuid,integer)'::regprocedure)
+  and replace(pg_get_functiondef(
+    'public.meal_plan_publish_unreceipted(text,uuid,integer)'::regprocedure), ' ', '')
       like '%priority=plan.priority%'
   and pg_get_functiondef(
     'public.meal_plan_publish_unreceipted(text,uuid,integer)'::regprocedure)
       like '%unresolved conflict%'
-  and pg_get_functiondef(
-    'public.meal_plan_publish_unreceipted(text,uuid,integer)'::regprocedure)
+  and replace(pg_get_functiondef(
+    'public.meal_plan_publish_unreceipted(text,uuid,integer)'::regprocedure), ' ', '')
       like '%status=''published''%',
   'publication blocks equal-priority overlaps before lifecycle transition');
 
