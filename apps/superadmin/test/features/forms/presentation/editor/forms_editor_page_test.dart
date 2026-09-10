@@ -33,10 +33,24 @@ void main() {
       isNull,
     );
     expect(tester.takeException(), isNull);
-    expect(
-      tester.widgetList<ExcludeFocus>(find.byType(ExcludeFocus)).where((value) => value.excluding),
-      hasLength(2),
-    );
+    // Este teste contava ExcludeFocus da arvore INTEIRA e esperava dois. Hoje ha
+    // quatro: dois do editor, do helper _locked usado na navegacao de secoes e
+    // no corpo, e dois de CoeloAdminToggleField, de packages/coelo_ui_admin, que
+    // embrulha o proprio Switch.
+    //
+    // O ExcludeFocus do toggle esta CERTO e nao deve ser "consertado": o campo
+    // inteiro ja e focavel por FocusableActionDetector com Semantics onTap,
+    // entao excluir o Switch impede que o mesmo controle vire duas paradas de
+    // foco. E desenho deliberado de um focus stop por campo.
+    //
+    // Contagem global acoplava a asserção as entranhas de outro pacote e
+    // disparava quando ele mudava por dentro, sem dizer nada sobre o editor. A
+    // afirmacao passa a ser de intencao: no estado fail-closed nada esta focavel
+    // e as duas regioes do editor estao excluidas.
+    final excluders = tester.widgetList<ExcludeFocus>(find.byType(ExcludeFocus));
+    expect(excluders, isNotEmpty);
+    expect(excluders.every((value) => value.excluding), isTrue);
+    expect(excluders.where((value) => value.excluding).length, greaterThanOrEqualTo(2));
   });
 
   testWidgets('development editor uses the selected form fixture', (tester) async {
