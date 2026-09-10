@@ -1421,7 +1421,9 @@ final class _PlanSection extends StatelessWidget {
       title: 'Trocar para o plano ${value.label}?',
       message: 'A nova seleção será aplicada ao salvar as alterações.',
     );
-    if (!confirmed) {
+    // The dialog is asynchronous: the form may have been disposed while it was
+    // open, and the controller must not be written to after that.
+    if (!context.mounted || !confirmed) {
       return;
     }
     controller.setPlan(value);
@@ -1441,7 +1443,7 @@ final class _PlanSection extends StatelessWidget {
           '${_subscriptionActionLabel(value, current: controller.subscriptionStatus)} assinatura?',
       message: 'Esta ação será aplicada ao salvar as alterações.',
     );
-    if (!confirmed) {
+    if (!context.mounted || !confirmed) {
       return;
     }
     controller.setSubscriptionStatus(value);
