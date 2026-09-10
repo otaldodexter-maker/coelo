@@ -135,3 +135,37 @@ Antes de concluir mudança nessas superfícies:
    esconder regressão.
 6. não aceitar golden geral da página como prova de hover, foco, seleção, menu
    aberto, expansão ou ação negativa; usar o arquivo exato da matriz.
+
+## Decisões do Owner de 2026-09-10 sobre Cuidado, Medicação e Rotina
+
+Registradas na ADR 0034, Decisão 9, a partir da página de comparação lado a
+lado do grupo `formularios-cuidado-rotina`.
+
+### Goldens de Perfis de cuidado e Planos de medicação
+
+| Arquivo | Decisão | O que ela obriga |
+| --- | --- | --- |
+| `medication_form_mobile_light` | **R** | A referência guardada continua valendo. O código volta a ela; o render atual é a regressão. |
+| `profile_form_mobile_light` | **A** | O render atual passa a ser a referência, mas só depois de aplicar a observação abaixo. |
+| `profile_form_desktop_dark` | **A** | Idem, seguindo esta skill. |
+
+Observação do Owner que condiciona os dois `A`: **o wizard de Perfis de cuidado
+não segue 100% o padrão administrativo**, e ele citou o contêiner interno como
+exemplo. Alinhar o wizard a esta skill antes de regravar; regravar primeiro
+congelaria o desvio como referência.
+
+`profile_form_desktop_dark` não pôde ser deduzido pela regra "o escuro segue o
+claro de mesmo nome", porque o claro que diverge é o de 375 px e não o de
+1440 px. Por isso foi decidido separadamente.
+
+### As seis referências da Rotina
+
+A decisão D8 mandava "regravar as seis referências" do editor de Rotina sem
+nomear os arquivos. O Owner esclareceu em 2026-09-10: **as referências são as do
+modelo de atividade, aplicadas ao modelo de rotina diária**. Ou seja, o editor
+de modelo de Rotina segue a família visual do modelo de atividade; não existem
+seis goldens de rotina esperando regravação por conta própria.
+
+A guarda de alterações não salvas do editor de Rotina já estava ligada e
+provada antes desta decisão (`PopScope` com `canPop: !_isDirty`, confirmação
+também na saída pelo menu, e `daily_routine_dirty_exit_test`).

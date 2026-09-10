@@ -1,12 +1,12 @@
 {
- "revision": 17,
+ "revision": 18,
  "round": "E2-R03-20260910",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5[1m]",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-10T16:50:00-03:00",
+ "updatedAt": "2026-09-10T17:05:00-03:00",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-formularios-cuidado-rotina",
  "branch": "work/etapa2-r03-formularios-cuidado-rotina",
  "head": "1c188091f",
@@ -298,7 +298,7 @@
     "students.edit",
     "students.revoke"
    ],
-   "migration": "packages/coelo_database/migrations/20260910140000_student_link_commands_v1.sql",
+   "migration": "packages/coelo_database/migrations/20260910220200_student_link_commands_v1.sql",
    "pgtap": "packages/coelo_database/supabase/tests/student_link_commands_v1_test.sql, 20/20",
    "estado_anterior": "as quatro acoes estao no MVP e o adiamento nao foi autorizado, mas nao existia comando nenhum: a leitura do diretorio ja estava qualificada e as escritas nunca sairam do papel. A rota /students/:childContextId/manage abre uma tela de indisponivel.",
    "o_que_o_pacote_faz": "quatro comandos sobre as tabelas que ja existem desde 20260720180000; nenhuma estrutura nova alem dos recibos.",
@@ -351,15 +351,15 @@
   },
   {
    "ordem": 7,
-   "arquivo": "packages/coelo_database/migrations/20260910140000_student_link_commands_v1.sql"
+   "arquivo": "packages/coelo_database/migrations/20260910220200_student_link_commands_v1.sql"
   },
   {
    "ordem": 8,
-   "arquivo": "packages/coelo_database/migrations/20260910150000_health_care_guardian_read_v1.sql"
+   "arquivo": "packages/coelo_database/migrations/20260910220000_health_care_guardian_read_v1.sql"
   },
   {
    "ordem": 9,
-   "arquivo": "packages/coelo_database/migrations/20260910160000_forms_revoke_production_drift_v1.sql"
+   "arquivo": "packages/coelo_database/migrations/20260910220100_forms_revoke_production_drift_v1.sql"
   }
  ],
  "chaveDeComposicao": {
@@ -381,7 +381,7 @@
    "nome": "SuperadminAppConfig.studentLinkCommandsEnabled",
    "variavel": "COELO_ENABLE_STUDENT_LINK_COMMANDS",
    "estado": "declarada e ligada na composicao, valor padrao false",
-   "depende_de": "migration 20260910140000_student_link_commands_v1 aplicada",
+   "depende_de": "migration 20260910220200_student_link_commands_v1 aplicada",
    "por_que_chave_separada": "o SQL e outro pacote e pode ser aplicado em outro momento; e a autorizacao destes comandos passa pelo realm people-based, que e o ponto que a OQ-043 deixou em aberto para os CRUDs anteriores a ADR 0019. Ligar e decisao separada, nao carona da chave de Cuidado e Rotina."
   }
  },
@@ -499,7 +499,7 @@
    "achado": "anon podia executar form_authorize_file_job_download e authenticated podia executar form_redeem_file_job_download",
    "gravidade": "este e o unico dos quatro que NAO dependia de um segundo erro para importar. O resgate do token e server-side por contrato: quem resgata e o service_role, nao o navegador."
   },
-  "correcao": "packages/coelo_database/migrations/20260910160000_forms_revoke_production_drift_v1.sql. Forward-only e mecanica: so revoga, nao cria, nao altera corpo de funcao e nao mexe em RLS. Se algum caminho legitimo dependia de grant direto, ele falha fechado e aparece.",
+  "correcao": "packages/coelo_database/migrations/20260910220100_forms_revoke_production_drift_v1.sql. Forward-only e mecanica: so revoga, nao cria, nao altera corpo de funcao e nao mexe em RLS. Se algum caminho legitimo dependia de grant direto, ele falha fechado e aparece.",
   "resultado": "as quatro assercoes ficam verdes; o recorte inteiro vai a 1033 ok e 0 not ok sobre a baseline de producao."
  },
  "decisoesDoOwnerD9": {
@@ -507,7 +507,7 @@
   "saude_alem_da_instituicao": {
    "resposta": "opcao 1: o responsavel autorizado le o perfil de cuidado e os planos da propria crianca",
    "estado": "implementado e provado",
-   "migration": "packages/coelo_database/migrations/20260910150000_health_care_guardian_read_v1.sql",
+   "migration": "packages/coelo_database/migrations/20260910220000_health_care_guardian_read_v1.sql",
    "pgtap": "packages/coelo_database/supabase/tests/health_care_guardian_read_v1_test.sql, 12/12",
    "tres_limites": [
     "somente leitura: o ramo de guardiao so existe para health_care.read e medication.read",
@@ -542,5 +542,15 @@
    "20260908215522_forms_superadmin_media_read_r2_v1"
   ],
   "dependencia_cruzada": "os itens 3 a 6 FALHAM sem os dois primeiros: o preflight deles exige o envelope SAI_INVALID_ARGUMENT e o superadmin_internal_error_envelope de producao ainda devolve SAI_INTERNAL_ERROR/500 para esse codigo. Formularios nao sobe sem duas migrations de Estrutura antes."
+ },
+ "renumeracaoDeCarimbos": {
+  "motivo": "o coordenador apontou colisao: 20260910160000 ja era a migration de Unidades APLICADA em producao e 20260910150000 era happens_feed_pagination do principal-chat. Conferindo a pasta inteira, 20260910140000 do meu pacote de Alunos tambem colidia com chat_conversation_preferences_v1.",
+  "faixa_adotada": "2026091022xxxx, conforme o coordenador pediu",
+  "renomeados": [
+   "20260910140000_student_link_commands_v1 -> 20260910220200_student_link_commands_v1",
+   "20260910150000_health_care_guardian_read_v1 -> 20260910220000_health_care_guardian_read_v1",
+   "20260910160000_forms_revoke_production_drift_v1 -> 20260910220100_forms_revoke_production_drift_v1"
+  ],
+  "colisao_que_nao_e_minha": "20260910120000 aparece duas vezes na pasta: meal_plan_image_delete_requires_revision_v1 e superadmin_internal_circular_delete_v1, de dois outros grupos. Nao renomeei nada alheio; fica o aviso."
  }
 }
