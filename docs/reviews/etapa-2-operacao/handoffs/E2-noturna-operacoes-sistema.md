@@ -3,7 +3,7 @@ title: "Entrega do grupo operacoes-sistema — rodada noturna 09/10 de setembro"
 source: "trabalho proprio sobre a base d784462c1, branch work/etapa2-noturna-operacoes-sistema"
 status: "documento vivo; atualizado ate a pre-entrega das 04:50"
 generated_at: "2026-09-09"
-last_update: "2026-09-10 01:50 (America/Sao_Paulo)"
+last_update: "2026-09-10 02:45 (America/Sao_Paulo)"
 group: "operacoes-sistema"
 ---
 
@@ -232,6 +232,77 @@ produção nas duas rotas `/dev`. Ele falha por RenderFlex estourando 1409 pixel
 na superfície padrão, que é o overflow de `/dev/imports` já catalogado. Mesmo
 sintoma vermelho, três causas diferentes em três rotas.
 
+
+## Cardápios: o banco grava `closed` e o cliente só conhecia `ended` (`cadc56a48`)
+
+Achado pela varredura de enums que eu havia escrito para Agenda, aplicada às
+outras tabelas do recorte. A coluna `status` de `public.meal_plans` aceita
+`draft, inReview, scheduled, published, updated, closed, archived`. O enum do
+cliente chama o mesmo estado de `ended`, e **faltava conversão nas duas
+direções**:
+
+- na leitura, `closed` não casava com nenhum ramo e caía no `_ =>
+  MealPlanStatus.draft`. Um cardápio **encerrado aparecia como rascunho** ao
+  operador, com o rótulo, a cor e o filtro de rascunho;
+- no filtro, o cliente enviava `ended`, que a coluna nunca contém, então filtrar
+  por "Encerrado" devolvia lista vazia em vez dos planos encerrados.
+
+Nada falhava. Nenhum teste acusava porque **todo payload de teste usava o nome do
+enum**, que é exatamente o valor que o banco não grava. Corrigido com uma
+conversão usada pelos dois lados, com controle negativo nos dois casos. O
+fallback silencioso restante ficou declarado em teste em vez de alterado:
+transformar desconhecido em exceção derrubaria a listagem inteira por uma linha, e
+esse é o modo de falha que a Agenda tem e que não se traz para Cardápios sem
+decisão.
+
+Pela mesma varredura, a Agenda está alinhada hoje, e o contrato ficou fixado em
+`test/contracts/agenda_enum_contract_test.dart` com dois cuidados: um caso afirma
+que o varredor **achou** as restrições, senão a comparação passaria sobre conjunto
+vazio, e outro registra que o cliente pode legitimamente conhecer valor que o
+banco recusa, para que ninguém aperte a direção errada.
+
+## Importações: o limiar é contável, e a causa é o componente compartilhado (`a1ea3c784`)
+
+Trabalho pedido por outra frente, sobre um vermelho cuja leitura óbvia — "o teste
+não fixa viewport" — está errada, e cuja correção óbvia esconderia o defeito dentro
+de uma correção de teste. Três medições, cada uma derrubando a hipótese anterior:
+
+1. a página isolada **não** transborda em nenhum dos três viewports com três
+   trabalhos;
+2. pela rota, `/dev/imports` transborda em todos, com número **idêntico** para
+   zero ou três trabalhos injetados — o que prova que a origem é a lista do
+   repositório de desenvolvimento, não a moldura nem o dado injetado. E `/imports`
+   de produção, com dados, deu OK nos três;
+3. varredura linha por linha: o limiar é a **altura disponível e o número de
+   linhas**. 800x600 aguenta quatro e transborda com cinco; 390x844 aguenta cinco
+   e transborda com seis; 1440x900 aguenta oito e transborda com dez, por 70
+   pixels, crescendo ~65 por linha — uma altura de linha. A tela estreita aguenta
+   **mais** que a de 800x600, porque a barra de ferramentas empilha diferente, o
+   que encerra qualquer explicação por largura.
+
+Causa localizada: `CoeloAdminResizableTable._tableBody` envolve as linhas num
+`SingleChildScrollView` **horizontal** e as monta num `Column`. Não existe rolagem
+vertical. O `Expanded` da página de Importações está correto; quem transborda é o
+`Column` de linhas dentro do componente.
+
+Isso não é achado novo: é a sexta tela da mesma causa já registrada como decisão do
+Owner. Não corrigi, e por motivo e não por tempo — rolagem vertical nesse componente
+muda o layout de todos os diretórios administrativos e invalidaria os goldens de
+todos, no dia em que a medição de fechamento já rodou.
+
+## Auditoria de referências: seguir, não reler
+
+Segui todo SHA e todo nome de arquivo citado nos meus documentos e nos comentários
+dos testes que escrevi: 41 SHAs por `git cat-file`, 293 nomes por resolução de
+basename. Os 41 resolvem, incluindo os dois que sustentam o comentário datado de
+Formulários. Achei **uma** referência obsoleta minha, descrita na lista de
+autocorreções.
+
+A lição é do instrumento: a primeira passada, com regex ancorado em prefixo de
+diretório, deu zero achados e eu quase parei ali. O achado só apareceu resolvendo
+por basename no repositório inteiro. Seguir pega o que reler não pega, mas seguir
+com instrumento estreito também não pega.
+
 ## Correções que fiz contra o meu próprio relato
 
 Registradas porque mudam o que o leitor deve confiar:
@@ -274,3 +345,10 @@ Registradas porque mudam o que o leitor deve confiar:
    denominador. A cadeia estática que eu havia confirmado provava o mecanismo e
    não provava a infração. Uma correção de composição estava sendo atribuída com
    base nisso e foi parada a tempo.
+10. A minha linha de bloqueio de Auditoria citava
+    `20260908230039_superadmin_internal_audit_read_v2.sql`, arquivo que não existe
+    mais — **eu mesmo** corrigi aquele carimbo para `20260909190000`, porque o
+    original era anterior a cinco migrations e não era aplicável forward-only, e
+    nunca voltei na linha que o citava. Quem seguisse o nome não acharia arquivo.
+    Corrigido citando os dois carimbos e a razão da troca, em vez de apenas
+    trocar o número, senão o histórico perde o motivo.

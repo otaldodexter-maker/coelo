@@ -99,6 +99,64 @@ Um falso positivo vale registro para quem tentar de novo: `'guardianRequest'` n�
 é chave de payload, é valor de enum `AgendaItemOrigin`. Varredor que coleta
 `'x':` indiscriminadamente confunde as duas coisas.
 
+## Contrato de enums no app inteiro — uma divergência real, o resto limpo
+
+Depois de fixar o contrato de enums da Agenda, estendi a varredura a todo o app com
+um heurístico que foi o que fez o defeito aparecer: comparar **conjuntos quase
+iguais**. Para cada coluna com lista de valores permitidos e cada enum do cliente,
+calcular a interseção; sinalizar quando ela passa de 60% **e** há diferença nos dois
+lados. Igualdade exata é contrato cumprido; diferença só do lado do cliente é
+inofensiva; diferença nos dois lados é renome que chegou a uma ponta só.
+
+Medida, **corrigida**: **93 colunas com lista** contra **284 enums**, cinco pares
+sinalizados. A primeira versão deste parágrafo dizia 82 colunas e três pares, porque
+o varredor lia somente o corpo do `create table` e ignorava `alter table ... check`.
+Descobri isso escrevendo o teste de contrato de Cardápios: um caso que eu havia
+escrito esperando que `activity` existisse só no enum falhou, porque um `alter`
+posterior acrescentou o valor à coluna. **Restrição de coluna também muda por
+alter**, e medir só a criação subconta.
+
+| Par | Banco só | Cliente só | Veredito |
+| --- | --- | --- | --- |
+| `meal_plans.status` x `MealPlanStatus` | `closed` | `ended` | **defeito real**, corrigido em `cadc56a48` |
+| `meal_plans.source_type` x `MealPlanScopeLevel` | `exception` | `activity` | par cruzado pelo varredor; cada coluna bate com o seu próprio enum |
+| `meal_plan_scopes.scope_level` x `MealPlanSourceType` | `activity` | `exception` | idem |
+| `meal_plans.scope_level` x `MealPlanSourceType` | `activity` | `exception` | idem; só apareceu na medição corrigida |
+| `audit_logs.context_kind` x `ChatContextKind` | `global` | `conversationGroup`, `person` | falso positivo entre domínios: Auditoria não usa enum para isto, o cliente passa `Set<String>` adiante e a interface nem oferece o filtro |
+
+Ou seja: **um** defeito real em todo o aplicativo, e ele estava no meu recorte. O
+heurístico tem dois falsos positivos previsíveis, e reconhecê-los custa ler quatro
+pares em vez de refazer a medição: quando duas colunas e dois enums de um mesmo
+domínio são quase iguais entre si, o cruzamento aparece nas duas direções; e
+domínios diferentes que usam o mesmo vocabulário de contexto se emparelham por
+acidente, como Auditoria com o enum de Conversas.
+
+O que isto fecha para quem vier depois: não é preciso repetir esta varredura por
+domínio. O que vale repetir é o **teste** de contrato quando uma migration nova
+mexer em lista de valores permitidos, porque aí a pergunta volta a ser aberta.
+
+### A lacuna da própria varredura: enums com `databaseValue` próprio
+
+A varredura acima compara `.name`. Vinte e oito enums do app declaram
+`databaseValue` explícito, e um deles converte de verdade — foi `ended`/`closed`.
+Se outro convertesse para snake_case, a comparação por `.name` o acusaria ou o
+perderia sem que o número dissesse qual.
+
+Fechei a lacuna medindo só os valores que parecem de banco — minúsculas,
+snake_case, sem espaço nem acento — e cruzando com as colunas. Os pares que casam
+bem casam **por inteiro**: `ActivityCommandProfessionalRole` com `assignment_role`,
+`ActivityDistribution` com `distribution_scope`, `ActivityGovernance` com
+`governance_kind`, `ActivityParticipation` com `participation_mode`,
+`AccessProfileScope` com `max_scope_kind`, e `ActivityTemplateScopeKind` com
+`scope_kind` de `activity_templates`, conferido à mão: `platform`, `institution`,
+`unit` nos dois lados. Os restos que aparecem são do meu heurístico de "melhor
+coluna", que emparelha enums pequenos com a coluna genérica `max_scope_kind`; não
+são divergência.
+
+O resto dos `databaseValue` é rótulo de interface — `Calendário`, `Aprovado`,
+`Ciência` — e não tem nada a ver com o banco. Um varredor que não separasse as
+duas coisas produziria dezenas de acusações falsas.
+
 ## Reflow dos formulários de criação — limpo
 
 16 rotas de criação, em 375 e 1440 pixels, a 100% e 200% de escala de texto: 64
