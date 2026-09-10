@@ -139,6 +139,82 @@ seed. Nos dois casos a guarda do cliente tem de existir, porque o servidor
 recusa de qualquer forma; mas o controle de autoria e o proximo passo, nao um
 detalhe.
 
+## A bateria de mutacao, e o que ela achou que a leitura nao acha
+
+Depois de terminar as correcoes, submeti as guardas que escrevi nesta rodada a
+uma bateria de mutacao em vez de reler o diff outra vez. Quebrar o produto de
+proposito e ver qual prova cai. Nove mutacoes: sete pegas, uma lacuna real, uma
+inconclusiva.
+
+Pegas: faixa numerica desligada, guarda de tamanho de texto desligada, dinheiro
+deixando de virar centavos, seletor de data ignorando o intervalo autorado,
+intervalo invertido deixando de ser recusado, rotulo de escolha voltando a
+mostrar o ID interno, e o mapeamento de falha de transporte.
+
+A LACUNA REAL foi `_serverDefaultTextLength`. Baixar de 1000 para 999 nao
+derrubava nenhuma prova. E o detalhe que generaliza: essa constante esta no
+MESMO arquivo dos padroes de selecao que eu tinha acabado de fixar, poucos
+minutos antes, e eu nao reparei no vizinho descoberto. A bateria encontra o que
+a leitura nao encontra mesmo no arquivo que voce acabou de ler.
+
+Um numero espelhado do servidor sem afirmacao e um numero que ninguem percebe
+mudar. Fechei a borda nos dois lados e tambem a contagem por code points —
+trocar `runes.length` por `length` passava batido e recusaria mil emojis que o
+servidor aceita, porque um emoji fora do plano basico ocupa duas unidades em
+Dart e conta como um caractere no `char_length` do servidor.
+
+E a bateria pegou dois testes MEUS verdes pelo motivo errado, na mesma leva em
+que eu os escrevi. Eu afirmara que anexo vazio nao satisfaz um item
+obrigatorio, e o caso passava; quebrei de proposito a clausula de anexo de
+`_hasAnswer` e ele continuou passando. O que guarda foto e galeria obrigatorias
+e um ramo anterior de `_itemValidationMessage`, que nem consulta `_hasAnswer`.
+Meus testes mediam o efeito e nao o mecanismo — a terceira pergunta deste mesmo
+documento, aplicada contra mim e falhada na primeira tentativa. O metodo nao
+protege automaticamente quem o escreveu.
+
+### A ressalva que impede o placar de vender demais
+
+Mutacao responde uma pergunta estreita: *este arquivo de teste protege esta
+linha?* Um "nao pegou" e ambiguo entre lacuna real e mira errada.
+
+Aconteceu comigo. A bateria acusou que o mapeamento de falha de transporte nao
+estava protegido, e eu quase registrei como segunda lacuna. A regra esta
+coberta; eu e que apontei a bateria para o arquivo de teste vizinho. Contra o
+arquivo certo, a mutacao cai.
+
+Entao sete em nove vale como evidencia de que aquelas guardas estao protegidas.
+NAO vale como medida de cobertura, e um "nao pegou" so vira achado depois de
+responder onde aquela regra deveria estar coberta.
+
+## Uma verificacao que nunca passa nao esta rigorosa, esta quebrada
+
+A lei acima apareceu por um caminho e se confirmou por outro no mesmo turno.
+
+Testei a existencia de todo hash e todo caminho citado nas evidencias do grupo.
+A primeira versao da checagem usava `git cat-file -e <sha>^{commit}` com shell
+no Windows. O circunflexo e escape no `cmd` e some, entao TODO objeto retornava
+inexistente. A saida trazia "SHAs conferidos OK: 0" e cinquenta citacoes
+supostamente quebradas — incluindo o SHA da base do proprio recorte, que eu
+sabia que existia. Foi so isso que me segurou. Se a lista tivesse vindo com
+quarenta e nove reprovadas e a base aprovada, eu teria mandado a lista.
+
+A segunda versao corrigiu o shell e passou a exigir tipo `commit`. Reprovou
+quinze blobs, que sao referencias legitimas de objeto de arquivo e estao
+rotuladas como blobs no proprio texto. Rigor que reprova o correto nao e rigor.
+
+So a terceira versao respondeu a pergunta certa, que nao e "o comando acusou" e
+sim *o leitor copiando isto chega ao objeto?*. Resultado: trinta caminhos
+alcancaveis, nenhum quebrado; vinte e nove hashes de commit e quinze de blob
+validos; e um unico identificador que nao resolve para nada, anotado ao lado em
+vez de apagado.
+
+Um resultado que reprova tudo merece a mesma desconfianca que um que aprova
+tudo. O controle, nos dois casos, e testar o instrumento contra um caso cujo
+resultado voce ja conhece. E a mesma disciplina da mutacao um nivel acima: la
+se quebra o produto para ver o teste falhar, aqui se aponta a verificacao para
+um caso conhecido para ve-la passar. O que se verifica e o instrumento, nao o
+objeto.
+
 ## Censo dos formatadores de data inline
 
 Medicao, nao alteracao. Contei os literais que montam data ou hora a mao com
