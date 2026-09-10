@@ -505,6 +505,13 @@ Reabertos os diffs um a um:
 conteúdo, e nos dois casos o conteúdo é pequeno e identificável** — uma cor de
 status e um cartão de criação com dados de fixture.
 
+**Uma nota de procedência, porque o conjunto tem duas mãos:** cinco das seis
+famílias foram amostradas por uma frente; a de Formulários foi triada pela frente
+**dona daquelas telas**, que contou 12 casos cobrindo 23 imagens e as classificou
+por comparação elemento a elemento, com uma quinta diferença de conteúdo
+encontrada em Saúde e Cuidado. Sem Formulários a proporção seria 79% em vez de
+83% — a conclusão não muda, e a precisão vem de duas fontes e não de uma.
+
 **A recomendação, corrigida:** a maior parte dos 129 é provavelmente rebaseline
 seguro, e a revisão humana deve se concentrar nas famílias onde a comparação
 elemento a elemento mostra diferença que **não** é deslocamento. Regravar em bloco
