@@ -37,8 +37,11 @@ insert into public.institutions(id, public_name, legal_name, slug, status) value
 insert into public.platform_memberships(
   person_id, role_id, status, scope_kind, scope_institution_id, mfa_required
 )
-select '9b100000-0000-4000-8000-000000000001', id, 'active', 'institution',
-  '9b200000-0000-4000-8000-000000000001', false
+-- O ator A e Owner de plataforma. app_private.has_platform_permission so
+-- enxerga membership com scope_kind='platform' e instituicao nula, entao um
+-- Owner de instituicao nao teria meal_plans.manage nem apos a concessao.
+select '9b100000-0000-4000-8000-000000000001', id, 'active', 'platform',
+  null, false
 from public.platform_roles where code = 'owner';
 insert into public.platform_memberships(
   person_id, role_id, status, scope_kind, scope_institution_id, mfa_required
@@ -92,7 +95,7 @@ select throws_ok(
     '9b400000-0000-4000-8000-000000000001',
     '9b500000-0000-4000-8000-000000000002', 1)$$,
   '42501', 'meal plan image delete denied',
-  'another tenant cannot delete the image even with the right revision');
+  'an institution-scoped actor from another tenant is denied even with the right revision');
 
 reset role;
 set local role authenticated;

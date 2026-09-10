@@ -173,6 +173,10 @@ final class DevelopmentMealPlanRepository implements MealPlanRepository {
       _updateStatus(mealPlanId, requestId, expectedRevision, MealPlanStatus.published);
 
   @override
+  Future<MealPlan> archive(String mealPlanId, String requestId, int expectedRevision) async =>
+      _updateStatus(mealPlanId, requestId, expectedRevision, MealPlanStatus.archived);
+
+  @override
   Future<List<MealPlanConflict>> checkConflicts({
     required String scopeLevel,
     required String scopeId,
