@@ -1,19 +1,19 @@
 {
-  "revision": 45,
-  "updated_at": "2026-09-10T04:02:49-03:00",
+  "revision": 46,
+  "updated_at": "2026-09-10T04:04:20-03:00",
   "group": "formularios-cuidado",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
-  "status": "ACTIVE; recorte medido em 808 PASS / 8 FAIL / 1 SKIP com as oito falhas todas de golden; triagem das 23 imagens concluida sem regressao e sem perda de cobertura; bateria de mutacao aplicada as guardas desta rodada",
+  "status": "ACTIVE; recorte corrigido medido na BASE INTEGRADA 3fb200dab em 1081 PASS / 3 SKIP / 14 FAIL, com as 12 do meu recorte todas de golden e triadas uma a uma, e as 2 restantes fora do meu recorte; nenhuma exige correcao de produto antes de regravar",
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-formularios-cuidado",
   "branch": "work/etapa2-noturna-formularios-cuidado",
-  "head": "9747a0aa25b3dc1092a8c30121f8214269048e15",
+  "head": "1d91908e9ff1f75675840087bed5097e33f419d1",
   "upstream": {
     "branch": "origin/work/etapa2-noturna-formularios-cuidado",
     "ahead": 0,
     "behind": 0,
-    "nota": "Zero divergencia: tudo o que existe local esta publicado."
+    "medido_em": "2026-09-10T04:04:20-03:00"
   },
   "base": "d784462c168d22fdb7090b7de1ef7db554ad5107",
   "base_observed": "d784462c168d22fdb7090b7de1ef7db554ad5107",
@@ -233,98 +233,120 @@
       "tipo": "produto",
       "resumo": "limites de selecao ditos a pessoa antes de o servidor recusar; o rascunho autosalvava e so o envio falhava",
       "integrado_em_dev": true,
-      "criterio": "git merge-base --is-ancestor <sha> origin/dev"
+      "criterio": "git merge-base --is-ancestor <sha> origin/dev",
+      "medido_em": "2026-09-10T04:04:20-03:00"
     },
     {
       "sha": "745b1fbdf",
       "tipo": "evidencia",
       "resumo": "metodo, nove autocorrecoes, tres bloqueios falsos e censo de datas",
       "integrado_em_dev": true,
-      "criterio": "git merge-base --is-ancestor <sha> origin/dev"
+      "criterio": "git merge-base --is-ancestor <sha> origin/dev",
+      "medido_em": "2026-09-10T04:04:20-03:00"
     },
     {
       "sha": "e2912506c",
       "tipo": "evidencia",
       "resumo": "triagem das 23 imagens de golden",
       "integrado_em_dev": true,
-      "criterio": "git merge-base --is-ancestor <sha> origin/dev"
+      "criterio": "git merge-base --is-ancestor <sha> origin/dev",
+      "medido_em": "2026-09-10T04:04:20-03:00"
     },
     {
       "sha": "79bc782b7",
       "tipo": "teste",
       "resumo": "trava da semantica OU e dos padroes de selecao",
       "integrado_em_dev": true,
-      "criterio": "git merge-base --is-ancestor <sha> origin/dev"
+      "criterio": "git merge-base --is-ancestor <sha> origin/dev",
+      "medido_em": "2026-09-10T04:04:20-03:00"
     },
     {
       "sha": "296e349a7",
       "tipo": "teste",
       "resumo": "trava do que significa respondida; dois testes meus corrigidos",
       "integrado_em_dev": true,
-      "criterio": "git merge-base --is-ancestor <sha> origin/dev"
+      "criterio": "git merge-base --is-ancestor <sha> origin/dev",
+      "medido_em": "2026-09-10T04:04:20-03:00"
     },
     {
       "sha": "925a6e4ea",
       "tipo": "teste",
       "resumo": "padrao de tamanho de texto do servidor, achado por mutacao",
       "integrado_em_dev": true,
-      "criterio": "git merge-base --is-ancestor <sha> origin/dev"
+      "criterio": "git merge-base --is-ancestor <sha> origin/dev",
+      "medido_em": "2026-09-10T04:04:20-03:00"
     },
     {
       "sha": "1e694e7e9",
       "tipo": "evidencia",
       "resumo": "a unica citacao que o leitor nao alcanca, sinalizada",
       "integrado_em_dev": true,
-      "criterio": "git merge-base --is-ancestor <sha> origin/dev"
+      "criterio": "git merge-base --is-ancestor <sha> origin/dev",
+      "medido_em": "2026-09-10T04:04:20-03:00"
     },
     {
       "sha": "8111ebb67",
       "tipo": "evidencia",
       "resumo": "bateria de mutacao e a lei do instrumento, tornadas duraveis",
       "integrado_em_dev": true,
-      "criterio": "git merge-base --is-ancestor <sha> origin/dev"
+      "criterio": "git merge-base --is-ancestor <sha> origin/dev",
+      "medido_em": "2026-09-10T04:04:20-03:00"
     },
     {
       "sha": "de5cdb2f8",
       "tipo": "teste",
       "resumo": "condicao composta da superficie clara de Saude e Cuidado",
       "integrado_em_dev": true,
-      "criterio": "git merge-base --is-ancestor <sha> origin/dev"
+      "criterio": "git merge-base --is-ancestor <sha> origin/dev",
+      "medido_em": "2026-09-10T04:04:20-03:00"
     },
     {
       "sha": "995156f15",
       "tipo": "evidencia",
       "resumo": "triagem dos quatro goldens de Saude e Cuidado, com o achado de conteudo",
       "integrado_em_dev": true,
-      "criterio": "git merge-base --is-ancestor <sha> origin/dev"
+      "criterio": "git merge-base --is-ancestor <sha> origin/dev",
+      "medido_em": "2026-09-10T04:04:20-03:00"
     },
     {
       "sha": "ff759d211",
       "tipo": "evidencia",
       "resumo": "o mutante equivalente, terceira forma de um nao pegou enganar",
       "integrado_em_dev": true,
-      "criterio": "git merge-base --is-ancestor <sha> origin/dev"
+      "criterio": "git merge-base --is-ancestor <sha> origin/dev",
+      "medido_em": "2026-09-10T04:04:20-03:00"
     },
     {
       "sha": "99d882fe2",
       "tipo": "evidencia",
       "resumo": "o autosave do editor nao roda no aplicativo",
       "integrado_em_dev": true,
-      "criterio": "git merge-base --is-ancestor <sha> origin/dev"
+      "criterio": "git merge-base --is-ancestor <sha> origin/dev",
+      "medido_em": "2026-09-10T04:04:20-03:00"
     },
     {
       "sha": "9747a0aa2",
       "tipo": "evidencia",
       "resumo": "varredura das dependencias que ninguem fornece, e a licao de nomeacao",
-      "integrado_em_dev": false,
-      "criterio": "git merge-base --is-ancestor <sha> origin/dev"
+      "integrado_em_dev": true,
+      "criterio": "git merge-base --is-ancestor <sha> origin/dev",
+      "medido_em": "2026-09-10T04:04:20-03:00"
     },
     {
       "sha": "d1e8069c0",
       "tipo": "evidencia",
       "resumo": "perda de regras de publico, levantada como pergunta ao Owner",
       "integrado_em_dev": true,
-      "criterio": "git merge-base --is-ancestor <sha> origin/dev"
+      "criterio": "git merge-base --is-ancestor <sha> origin/dev",
+      "medido_em": "2026-09-10T04:04:20-03:00"
+    },
+    {
+      "sha": "1d91908e9",
+      "tipo": "evidencia",
+      "resumo": "camada pronta sem superficie: uma forma, seis tamanhos",
+      "integrado_em_dev": true,
+      "criterio": "git merge-base --is-ancestor <sha> origin/dev",
+      "medido_em": "2026-09-10T04:04:20-03:00"
     }
   ],
   "tracker_delta_proposto": [
@@ -1238,12 +1260,13 @@
       "995156f15",
       "ff759d211",
       "99d882fe2",
-      "d1e8069c0"
+      "9747a0aa2",
+      "d1e8069c0",
+      "1d91908e9"
     ],
-    "retidos": [
-      "9747a0aa2"
-    ],
-    "definicao_de_retido": "publicado na branch do grupo e ainda nao ancestral de origin/dev; NADA esta apenas local"
+    "retidos": [],
+    "definicao_de_retido": "publicado na branch do grupo e ainda nao ancestral de origin/dev; NADA esta apenas local",
+    "medido_em": "2026-09-10T04:04:20-03:00"
   },
   "recursos": {
     "processos_filhos": [],
@@ -1311,5 +1334,20 @@
     "quando": "2026-09-10T04:01:55-03:00",
     "achado": "a execucao da suite completa regravou 54 PNG RASTREADOS de failures/ de support e help_center, que nao sao do meu recorte. Restaurados com git checkout; nao eram trabalho e nao podiam viajar como modificacao minha.",
     "restante": "apenas os dois pubspec.lock nao rastreados, ja rastreados em dev pelo coordenador"
+  },
+  "head_medido_em": "2026-09-10T04:04:20-03:00",
+  "status_medido_em": "2026-09-10T04:04:20-03:00",
+  "auditoria_de_apodrecimento": {
+    "quando": "2026-09-10T04:04:20-03:00",
+    "metodo": "cada campo de ESTADO reconferido contra medicao feita na hora, nao contra memoria; a pergunta usada foi QUANDO isto foi medido e o que mudou desde entao",
+    "podres_encontrados": [
+      "head declarava 9747a0aa2 e o real era 1d91908e9",
+      "9747a0aa2 estava marcado como nao integrado e ja fora integrado",
+      "residual listava 9747a0aa2 como retido, e ele nao era mais; alem disso 1d91908e9 nao constava da lista",
+      "o campo status ainda anunciava 808 PASS / 8 FAIL, superado pelo recorte corrigido",
+      "a prova historica de nao regressao nao tinha carimbo dizendo que era historica"
+    ],
+    "nenhum_campo_de_conteudo_apodreceu": "escopo, criterios, perguntas ao Owner, achados e evidencias seguem validos — conteudo descreve o que foi feito e nao muda sozinho; estado descreve como as coisas estao e muda sozinho, sem ninguem tocar no arquivo",
+    "regra_adotada": "todo campo com numero, SHA ou pendencia carrega tambem a hora em que foi medido"
   }
 }
