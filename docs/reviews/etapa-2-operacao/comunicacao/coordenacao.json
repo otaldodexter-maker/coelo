@@ -1,6 +1,19 @@
 {
-  "revision": 14,
+  "revision": 15,
   "round": "E2-R03-20260910",
+  "lote7": {"dump": "Coelo-backups/schema-producao-20260910-lote7.sql (18:48)", "aplicadoEm": "2026-09-10 18:55", "conteudo": ["20260910230019_superadmin_support_production_v1 (antiga 20260909217000; pgTAP 23/23 apos o coordenador trocar row_security_active(regclass,text), inexistente, por assercao sobre pg_class.relrowsecurity/relforcerowsecurity)", "20260910230020_superadmin_account_profile_v1 (antiga 20260909218000; 16/16)"], "verificado": "ledger 42; 5 RPCs superadmin_support_*, 3 superadmin_account_*, RLS forcado em support_sessions", "grupo": "operacoes (Codex), avisado pelo JSON; teste corrigido pelo coordenador e commitado em dev"},
+  "funcoesEmProducao": "circular-media v5 (R2) e moments-media v1 (R2, token unico) ACTIVE; happens-media, now-media, notice-publication-worker, meal-plan-image-cleanup e audit-export continuam sem deploy",
+  "reativacaoDasFrentes": {
+    "regra": "so quando o Owner mandar; cada frente recebe base dev atual, o usuario qa-r03@coelo.me (credencial em Coelo-backups/qa-r03.env) e o primeiro gate",
+    "estrutura": "reservas e bindings de Locais sobre a baseline (audit_append_superadmin_internal tem outra assinatura em producao), fixture de activity_save_v2 (activity_v2_denied_envelope), unit_detail_v2 candidato (nome do wrapper); depois rota normal de Unidades/Turmas/Locais com sessao",
+    "acessos-pessoas": "verificar por action_id as 18 RPCs do lote 4 com sessao; P11 quando o Owner responder; acordo D1 com principal-chat",
+    "formularios-cuidado-rotina": "rota normal de Cuidado/Rotina/Assiduidade/Alunos com sessao (chaves ligadas); P16 Local no MVP (tipo location); P15 apos o Owner",
+    "principal-chat-sistema": "migration R2 de happens/now no padrao de Circulares + fundacao do Agora com teste corrigido; deploy de happens-media e now-media na sequencia; chat depende do realm interno",
+    "publicacoes-agenda (Codex)": "corrigir notices_v2 (notice_events em analytics) e circulars_v2 (labels) como pacotes sobre a baseline; circular_delete renumerado na faixa 2026091020xxxx",
+    "operacoes (Codex)": "rota normal de Suporte e Conta com sessao (SQL em producao); Planos e Auditoria sobre o composto",
+    "realm-interno": "frente sem entrega; reatribuir a uma sessao Claude nova com o mesmo recorte",
+    "fase0": "Comunicacoes, Agenda, Assiduidade, Seguranca no composto; ARQUIVO/CHAT aguardam Owner; MENU-M"
+  },
   "aprovacaoVisualDoOwner": {
     "quando": "2026-09-10 noite",
     "fonte": "goldens-claro-decisoes-2026-09-10.md (163 linhas) + goldens-acontece-cardapios-decisoes-2026-09-10.md (26), a segunda prevalece sobre a primeira",

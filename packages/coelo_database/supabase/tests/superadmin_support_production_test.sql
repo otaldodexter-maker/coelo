@@ -7,10 +7,10 @@ select has_column('public', 'support_sessions', 'ticket_status', 'support sessio
 select has_column('public', 'support_sessions', 'revision', 'support sessions have optimistic revision');
 select is((select is_nullable from information_schema.columns where table_schema='public' and table_name='support_sessions' and column_name='institution_id'), 'YES', 'internal support can be created without institution scope');
 select has_table('public', 'support_command_receipts', 'support command receipts exist');
-select row_security_active('public.support_sessions'::regclass, 'support sessions RLS is active');
-select row_security_active('public.support_messages'::regclass, 'support messages RLS is active');
-select row_security_active('audit.support_session_actions'::regclass, 'support actions RLS is active');
-select row_security_active('public.support_command_receipts'::regclass, 'support receipts RLS is active');
+select ok((select relrowsecurity and relforcerowsecurity from pg_class where oid='public.support_sessions'::regclass), 'support sessions RLS is active');
+select ok((select relrowsecurity and relforcerowsecurity from pg_class where oid='public.support_messages'::regclass), 'support messages RLS is active');
+select ok((select relrowsecurity and relforcerowsecurity from pg_class where oid='audit.support_session_actions'::regclass), 'support actions RLS is active');
+select ok((select relrowsecurity and relforcerowsecurity from pg_class where oid='public.support_command_receipts'::regclass), 'support receipts RLS is active');
 select function_returns('public', 'superadmin_support_list', array['text','text[]','text[]','text[]','uuid[]','boolean','integer','integer'], 'jsonb', 'support list returns jsonb');
 select function_returns('public', 'superadmin_support_get', array['uuid'], 'jsonb', 'support detail returns jsonb');
 select function_returns('public', 'superadmin_support_create', array['uuid','uuid','uuid','text','text','text','text','text','text'], 'jsonb', 'support create returns jsonb');
