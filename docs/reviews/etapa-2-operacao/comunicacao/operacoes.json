@@ -1,5 +1,5 @@
 {
-  "revision": 3,
+  "revision": 5,
   "updated_at": "2026-09-10T09:30:00-03:00",
   "round": "E2-R03-20260910",
   "group": "operacoes",
@@ -52,6 +52,25 @@
       "criteria": {"frontend": "N", "backend": "N", "e2e": "N"}
     },
     {
+      "action_ids": ["plans.list", "plans.create", "plans.edit", "plans.activate", "plans.assign"],
+      "status": "candidate-existing",
+      "changed": [],
+      "delta": "contrato de Planos ja existe na migration 20260901183154_superadmin_plans_production.sql com list/get/save, receipts, RLS forcado e grants somente authenticated; pgTAP existente sera levado para a fila serializada",
+      "composition_key_candidate": "plansProductionRepositoryV1",
+      "criteria": {"frontend": "N", "backend": "N", "e2e": "N", "reload": "N", "cross_tenant": "pgTAP pendente de replay nominal"}
+    },
+    {
+      "action_ids": ["account.profile", "account.settings", "account.theme", "account.sessions", "account.logout"],
+      "status": "local-package-in-progress",
+      "changed": [
+        "packages/coelo_database/migrations/20260909218000_superadmin_account_profile_v1.sql",
+        "packages/coelo_database/supabase/tests/superadmin_account_profile_v1_test.sql"
+      ],
+      "delta": "adicionada persistencia server-side do perfil: nome/telefone em people, leitura de email Auth, pedido/cancelamento de troca de email, papel/capacidades, receipts de idempotencia e grants somente por RPC; tema continua preferencia local e sessoes/logout dependem dos contratos Auth existentes",
+      "composition_key_candidate": "accountProfileProductionRepositoryV1",
+      "criteria": {"frontend": "N", "backend": "N", "e2e": "N", "reload": "N", "cross_tenant": "pgTAP pendente de replay nominal"}
+    },
+    {
       "action_ids": ["audit.export"],
       "status": "deferred-post-mvp",
       "changed": [],
@@ -59,11 +78,11 @@
       "criteria": {"frontend": "N/A", "backend": "N/A", "e2e": "N/A"}
     }
   ],
-  "tests": {"P": 1, "F": 0, "B": 1, "S": 0, "U": 1, "evidence": ["support-contract-static PASS: required RPCs=5, receipt=idempotency, audit schema=correct, RLS=force, test=22 assertions", "supabase db lint --local BLOCKED: ECONNREFUSED 127.0.0.1:54322; supabase start nao criou container durante pull"], "planned": ["pgTAP nominal de suporte", "preflight da migration na fila serializada", "flutter tests somente apos base.fase0Head"]},
+  "tests": {"P": 2, "F": 0, "B": 2, "S": 0, "U": 1, "evidence": ["support-contract-static PASS: required RPCs=5, receipt=idempotency, audit schema=correct, RLS=force, test=22 assertions", "account-contract-static PASS: RPCs=3, email request, idempotency receipt, auth email read, forced RLS, test=16 assertions", "supabase db lint --local BLOCKED: ECONNREFUSED 127.0.0.1:54322", "supabase start --workdir packages/coelo_database BLOCKED before support migration: 20260820152528_form... fails SQLSTATE 3F000 because schema app_private is absent"], "planned": ["pgTAP nominal de conta, planos, auditoria e suporte", "preflight da migration na fila serializada", "flutter tests somente apos base.fase0Head"]},
   "blocked": [
     {"kind": "environment/integration", "what": "base.fase0Head nao publicado em coordenacao.json", "owner": "coordenador/Fase 0", "unblocks": "SHA integrado da Fase 0 e rebase desta branch antes de tocar UI"},
-    {"kind": "verification", "what": "nenhum replay pgTAP local nominal executado ainda", "owner": "grupo operacoes", "unblocks": "runner Postgres local nominal disponivel; migration e teste ja estao no pacote"}
+    {"kind": "verification", "what": "nenhum replay pgTAP local nominal executado ainda; reset completo falha antes do pacote por schema app_private ausente na cadeia canonica", "owner": "coordenador/base de replay", "unblocks": "base/replay nominal corrigido ou perfil descartavel que inclua schema app_private; migration e teste ja estao no pacote"}
   ],
-  "next_step": "commitar o pacote Support e enviar SHA ao coordenador; depois aguardar/rebasear sobre base.fase0Head para Conta -> Planos -> Auditoria -> Support UI/E2E",
+  "next_step": "validar estaticamente e commitar o pacote Account; depois continuar Planos/Auditoria e aguardar/rebasear sobre base.fase0Head para UI/E2E",
   "commits": ["b172b695b8d996375fc7da7a539ed7ee78dc7e35", "94bca84f6", "5611c6da7"]
 }
