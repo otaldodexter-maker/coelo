@@ -69,6 +69,41 @@ que é **rastreado** e tem mais de 180 arquivos em `dev`. A regra de ignore cobr
 
 Novos candidatos, a partir daqui, usam carimbo posterior a `20260909216000`.
 
+
+## Revisão dos seis candidatos L01 (09/09 21:35)
+
+Revisão linha a linha em
+`NOTURNA-revisao-candidatos-sql-publicacoes-midia.md`. Quatro passam limpos;
+dois têm ressalva, e uma delas **bloqueia a aplicação**.
+
+**Bloqueia — vazamento de existência em `20260909213000` (`withdraw_happens_post`).**
+A função levanta `post_not_found` **antes** de qualquer verificação de ator: faz
+o select, levanta se não achou, e só então chama `happens_actor` para comparar
+autoria. Um ator autenticado distingue "existe mas não é seu" de "não existe",
+inclusive para publicação de outro tenant. É oráculo de existência, e contraria a
+invariante de não entregar informação antes da autorização. O padrão certo está
+no arquivo irmão do mesmo autor: em `20260909216000`, `withdraw_moment` usa a
+mesma mensagem para não-encontrado e para não-autor. Correção de uma linha.
+Severidade prática baixa — exige autenticação e adivinhar um UUID v4 — e
+severidade de invariante alta, porque é exatamente a distinção que
+`circulars_production` mascara de propósito.
+
+**Exige prova antes de aplicar — `20260909214000` sem suíte.** É o único dos seis
+sem teste, e copia fielmente um corpo grande de função alterando o predicado de
+retirada e dois campos do payload. Cópia fiel de corpo grande sem teste é onde a
+divergência silenciosa mora, e essa função alimenta o feed misto de Acontece, que
+já está integrado e em uso.
+
+Três coisas que **pareciam** defeito e não são, registradas para ninguém gastar
+tempo: `20260909214000` sem revoke/grant está correto, é `create or replace` de
+assinatura inalterada; `20260909215000` sem grant está correto e documentado no
+próprio arquivo; e `20260909216000` ter três `security definer` em quatro funções
+está correto, porque a quarta é um predicado `sql immutable` em `app_private`
+com `search_path` vazio e revoke de todos os papéis.
+
+A revisão é estática: nenhuma suíte foi executada contra banco, nada foi
+aplicado, nenhuma autorização nominal foi usada.
+
 ## Consequências registradas
 
 - Manifests e handoffs dos grupos citam os carimbos **originais**. Esta tabela
