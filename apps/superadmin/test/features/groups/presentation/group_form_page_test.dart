@@ -14,6 +14,148 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final change in ['repository', 'groupId', 'institution', 'unit']) {
+    testWidgets('group retry rejects changed context $change', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1024, 1100));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final institutions = FakeInstitutionDirectoryRepository();
+      final repository = _PendingGroupRepository(FakeGroupDirectoryRepository(institutions));
+      final replacement = _PendingGroupRepository(FakeGroupDirectoryRepository(institutions));
+      var saved = 0;
+      Widget app(bool changed) => MaterialApp(
+        theme: CoeloTheme.light,
+        home: GroupFormPage(
+          key: const ValueKey('same-form'),
+          repository: changed && change == 'repository' ? replacement : repository,
+          groupId: changed && change == 'groupId' ? 'different-group' : null,
+          initialInstitutionId: changed && change == 'institution' ? 'different-institution' : null,
+          initialUnitId: changed && change == 'unit' ? 'different-unit' : null,
+          logout: () async => const LogoutResult.success(),
+          onCancel: () {},
+          onSaved: (_) => saved++,
+        ),
+      );
+      await tester.pumpWidget(app(false));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('group-form-continue')));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byKey(const Key('group-name-field')), 'Turma A');
+      await tester.tap(find.byKey(const Key('step-convites')));
+      await tester.pumpAndSettle();
+      final retainedSave = tester
+          .widget<FilledButton>(find.byKey(const Key('group-form-save')))
+          .onPressed!;
+      await tester.tap(find.byKey(const Key('group-form-save')));
+      await tester.pump();
+      final first = repository.requests.single;
+      final retry = tester.state<State<GroupFormPage>>(find.byType(GroupFormPage));
+      final failedBeforeChange = change == 'repository' || change == 'institution';
+      if (failedBeforeChange) {
+        repository.pending.completeError(const GroupDirectoryUnavailableException());
+        await tester.pumpAndSettle();
+        repository.pending = Completer<GroupDirectorySaveResult>();
+      }
+      await tester.pumpWidget(app(true));
+      await tester.pump();
+      if (!failedBeforeChange) {
+        repository.pending.complete(
+          GroupDirectorySaveResult(
+            requestId: first.requestId,
+            steps: [GroupDirectorySaveStepResult.success(stage: GroupDirectorySaveStage.group)],
+          ),
+        );
+        await tester.pumpAndSettle();
+      }
+      expect(saved, 0, reason: 'A stale completion must not invoke onSaved');
+      expect(tester.state<State<GroupFormPage>>(find.byType(GroupFormPage)), same(retry));
+      retainedSave();
+      await tester.pump();
+      expect(saved, 0, reason: 'The old scope must never report success for the new scope');
+      expect(repository.requests, hasLength(1));
+      expect(replacement.requests, isEmpty);
+      expect(find.textContaining('Reabra o formulário'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  }
+  for (final change in ['none', 'name', 'status', 'appearance', 'same-status', 'trim-name']) {
+    testWidgets('group ambiguous retry keeps intent unless edited $change', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1024, 1100));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final editAfterFailure = ['name', 'status', 'appearance'].contains(change);
+      final institutions = FakeInstitutionDirectoryRepository();
+      final repository = _PendingGroupRepository(FakeGroupDirectoryRepository(institutions));
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoeloTheme.light,
+          home: GroupFormPage(
+            repository: repository,
+            logout: () async => const LogoutResult.success(),
+            onCancel: () {},
+            onSaved: (_) {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('group-form-continue')));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byKey(const Key('group-name-field')), 'Turma A');
+      await tester.tap(find.byKey(const Key('step-convites')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('group-form-save')));
+      await tester.pump();
+      final first = repository.requests.single;
+      repository.pending.completeError(const GroupDirectoryUnavailableException());
+      await tester.pumpAndSettle();
+      repository.pending = Completer<GroupDirectorySaveResult>();
+      if (change != 'none') {
+        await tester.tap(find.byKey(const Key('step-identidade')));
+        await tester.pumpAndSettle();
+        if (change == 'name' || change == 'trim-name') {
+          await tester.enterText(
+            find.byKey(const Key('group-name-field')),
+            change == 'name' ? 'Turma B' : '  Turma A  ',
+          );
+        } else if (change == 'status' || change == 'same-status') {
+          tester
+              .widget<CoeloAdminSingleSelectField<GroupStatus>>(
+                find.byKey(const Key('group-status-field')),
+              )
+              .onChanged(change == 'status' ? GroupStatus.inactive : GroupStatus.active);
+          await tester.pumpAndSettle();
+        } else {
+          await tester.tap(find.byKey(const Key('group-form-continue')));
+          await tester.pumpAndSettle();
+          await tester.tap(find.byKey(const Key('group-inherit-appearance')));
+          await tester.pumpAndSettle();
+        }
+        await tester.tap(find.byKey(const Key('step-convites')));
+        await tester.pumpAndSettle();
+      }
+      await tester.tap(find.byKey(const Key('group-form-save')));
+      await tester.pump();
+      try {
+        expect(repository.requests, hasLength(2));
+        final second = repository.requests.last;
+        expect(second.requestId, editAfterFailure ? isNot(first.requestId) : first.requestId);
+        expect(second.record.name, change == 'name' ? 'Turma B' : 'Turma A');
+        expect(
+          second.record.status,
+          change == 'status' ? GroupStatus.inactive : GroupStatus.active,
+        );
+        expect(second.record.inheritAppearance, change != 'appearance');
+        if (!editAfterFailure) expect(second, same(first));
+      } finally {
+        repository.pending.complete(
+          GroupDirectorySaveResult(
+            requestId: repository.requests.last.requestId,
+            steps: [GroupDirectorySaveStepResult.success(stage: GroupDirectorySaveStage.group)],
+          ),
+        );
+        await tester.pumpAndSettle();
+      }
+      expect(tester.takeException(), isNull);
+    });
+  }
   for (final failure in [false, true]) {
     testWidgets(
       'group pending save rejects duplicate submission and further editing failure=$failure',
@@ -553,7 +695,7 @@ final class _ErrorOnSaveGroupDirectoryRepository implements GroupDirectoryReposi
 final class _PendingGroupRepository implements GroupDirectoryRepository {
   _PendingGroupRepository(this.delegate);
   final GroupDirectoryRepository delegate;
-  final pending = Completer<GroupDirectorySaveResult>();
+  var pending = Completer<GroupDirectorySaveResult>();
   final requests = <GroupDirectorySaveRequest>[];
   @override
   Future<GroupDirectorySaveResult> saveComposition(GroupDirectorySaveRequest request) {

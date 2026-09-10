@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-09-09T21:52:16.967386-03:00",
+  "scope": "apps/superadmin -> Turmas -> criar/editar -> salvar e repetir intencao",
+  "action_ids": [
+    "groups.create",
+    "groups.edit"
+  ],
+  "status": "local-green; no terminal promotion",
+  "cause": "Each retry rebuilt requestId, createId and timestamps even when the previous result was ambiguous.",
+  "changes": [
+    "Retain the complete composition request and record for an unchanged effective payload.",
+    "Effective changes start a new intent; no-op status and trim-equivalent name preserve it.",
+    "Freeze edits during write and block changed-context retry; suppress obsolete completion."
+  ],
+  "metrics": {
+    "N": 13,
+    "E": 13,
+    "P": 13,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0
+  },
+  "dedup": "10 new unique IDs this batch (4 initial intent +6 context/no-op);3 existing regressions. The4 initial intent cases were rerun by child after fingerprint adjustment and count once.",
+  "runs": [
+    {
+      "runner": 5154,
+      "chunk": "18887e",
+      "phase": "initial causal RED",
+      "P": 1,
+      "F": 1,
+      "reason": "Unchanged retry created a new requestId."
+    },
+    {
+      "runner": 30297,
+      "chunk": "4de24f",
+      "phase": "initial GREEN superseded by child final10P",
+      "P": 4,
+      "exit_code": 0
+    },
+    {
+      "runner": 68540,
+      "chunk": "692ed9",
+      "phase": "regression",
+      "P": 3,
+      "exit_code": 0,
+      "filter": "group pending save|creates a custom group type"
+    },
+    {
+      "runner": 39950,
+      "chunk": "145fa8",
+      "phase": "initial analyzer before child context/fingerprint edits",
+      "issues": 0,
+      "exit_code": 0
+    },
+    {
+      "runner": 31816,
+      "chunk": "be9347",
+      "phase": "static visual contracts",
+      "exit_code": 0
+    }
+  ],
+  "final_context_evidence": "group-retry-context-manifest.json",
+  "review": "Root inspected every changed save field, fingerprint coverage, context latch, error/success handling and child hashes. Child independently found context and no-op defects before publication.",
+  "limits": [
+    "Normal Group create/edit still blocked by existing productive composition; no activation or backend certification.",
+    "No new SQL, remote, Auth, CHILD, shell or import/export behavior.",
+    "Initial context loading before first save remains outside this batch.",
+    "Raw runner logs not saved; factual chunks and filters identify evidence."
+  ],
+  "hashes": {
+    "apps/superadmin/lib/features/groups/presentation/group_form_page.dart": "49af593b5c63f3460d188199e73520cf99f574d167b012503eb74022a511e478",
+    "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart": "41bb6c77aa821a953accee39c04e7b8f7e93bb98c1a3a97c09c0c363aaa498a9"
+  }
+}

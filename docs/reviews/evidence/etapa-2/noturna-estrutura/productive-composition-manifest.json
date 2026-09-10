@@ -83,5 +83,16 @@
     "apps/superadmin/lib/core/config/superadmin_app_config.dart": "e17c4dfacd894338afe8d09c1197121630685914ba59410ff2766f0b0660303d",
     "apps/superadmin/lib/app/superadmin_app.dart": "5d2140ad793438345b5a5f3e4d3794e7631ece647239151ecfa6152d243974a7",
     "apps/superadmin/lib/app/router/superadmin_router.dart": "00ea13596dc614874d81f4bf53f9441c3ec39b2cf43ff8a41b8f9d68693afaa8"
+  },
+  "followup": {
+    "recorded_at": "2026-09-09T21:55:42.538814-03:00",
+    "commit": "77a917de529cd07a1f26e747be87a1f399c309ea",
+    "supersedes": [
+      "groups.location main/current-selection not passed",
+      "activities.location main/current-selection not passed"
+    ],
+    "current_fact": "Both now receive actual SupabaseLocationConsumerSelectionReader through main/App, explicitly available:false. Normal routes already consume it. Getter calls remain unavailable; backend and terminal states unchanged.",
+    "evidence": "current-selection-composition-manifest.json",
+    "original_rows": "Historical inspection and hashes above intentionally retained for provenance; followup supersedes only current-selection DI facts."
   }
 }
