@@ -15,6 +15,15 @@ Metodo: a imagem diz ONDE olhar, o codigo diz O QUE aconteceu. Comparei
 elemento a elemento entre a referencia e a captura atual, em vez de olhar o que
 acende no diff.
 
+**Precisao sobre a contagem de 23.** As imagens foram coletadas na branch do
+grupo, e ali os goldens de `forms_operations` PASSAVAM — por isso nenhuma
+imagem de operacoes aparece nas tabelas abaixo. Na base integrada `3fb200dab`
+o caso de operacoes tambem falha, o que eleva as imagens do recorte acima de
+23. A diferenca e de base e nao de leitura: a triagem elemento a elemento vale
+para as 23 que eu de fato abri, e o caso de operacoes nao foi triado imagem a
+imagem. Digo isto explicitamente para ninguem ler "23 imagens triadas" como
+"todas as imagens do recorte triadas".
+
 ## Resposta curta
 
 **Nenhuma das 23 e regressao de produto, e nenhuma e perda de cobertura.**
