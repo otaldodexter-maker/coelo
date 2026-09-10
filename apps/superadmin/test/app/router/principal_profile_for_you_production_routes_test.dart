@@ -286,6 +286,54 @@ void main() {
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devPrincipalForYou);
     await tester.pumpWidget(const SizedBox.shrink());
   });
+
+  group('hosted chrome of the edit route', () {
+    // L03 delivered /principal-profile/edit as a Scaffold with its own AppBar
+    // and left an explicit instruction: confirm whether the host duplicates
+    // that chrome and, if it does, pass the page the same `embedded` parameter
+    // the other two composition roots take. These two cases are that
+    // confirmation, measured rather than argued, and the answer turned out to
+    // depend on the width.
+    //
+    // WHEN THE DECISION IS MADE: invert the narrow case instead of relaxing
+    // it. Where the title and the close action live once the page stops owning
+    // a bar is a visual contract, and nobody has approved one.
+
+    testWidgets('below the expanded breakpoint two app bars stack', (tester) async {
+      await pumpProductionRoute(
+        tester,
+        SuperadminRoutes.principalProfileEdit,
+        aboutRepository: _EmptyAboutRepository(),
+        surface: const Size(375, 1200),
+      );
+
+      expect(
+        find.byType(AppBar),
+        findsNWidgets(2),
+        reason:
+            'Registered defect: SuperadminShell renders its own compact AppBar '
+            'below the expanded breakpoint and PrincipalProfileEditPage renders '
+            'another, so the hosted route shows two stacked headers on a phone. '
+            'The fix is the embedded parameter the sibling Principal pages '
+            'already take.',
+      );
+      await tester.pumpWidget(const SizedBox.shrink());
+    });
+
+    testWidgets('at desktop widths the page bar is the only one', (tester) async {
+      // The host uses a side rail here, so nothing is duplicated and the page
+      // bar carries the title and the close action.
+      await pumpProductionRoute(
+        tester,
+        SuperadminRoutes.principalProfileEdit,
+        aboutRepository: _EmptyAboutRepository(),
+        surface: const Size(1440, 1000),
+      );
+
+      expect(find.byType(AppBar), findsOneWidget);
+      await tester.pumpWidget(const SizedBox.shrink());
+    });
+  });
 }
 
 final class GoRouterHarness {
