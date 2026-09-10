@@ -1,6 +1,6 @@
 {
-  "revision": 24,
-  "updated_at": "2026-09-10T02:43:02-03:00",
+  "revision": 25,
+  "updated_at": "2026-09-10T03:00:57-03:00",
   "clock_note": "Relogio corrigido pelo coordenador e conferido por mim com PowerShell Get-Date: 02:00 de 10/09, fuso E. South America Standard Time, -03:00. O date do Git Bash com TZ nao tem tzdata e devolve UTC; parei de usa-lo.",
   "group": "alunos-rotina",
   "task": "/root",
@@ -9,8 +9,8 @@
   "coordinator": "Claude (Coordenacao e Integracao)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-alunos-rotina",
   "branch": "work/etapa2-noturna-alunos-rotina",
-  "head": "e2af0abe4",
-  "upstream": "e2af0abe4",
+  "head": "18d0127ed",
+  "upstream": "18d0127ed",
   "divergence": "HEAD 10 a frente de origin/dev. Os 10 sao merges de integracao do coordenador e lotes de OUTRAS frentes neste checkout compartilhado. NENHUM e meu: os 26 lotes citados neste arquivo foram verificados um a um como ancestrais de origin/dev. Publicar esses 10 nao e decisao minha.",
   "workingTree": "Sujo por 3 JSONs de comunicacao de frentes distintas neste checkout compartilhado. O unico que eu escrevo e alunos-rotina.json.",
   "stash": "vazio",
@@ -606,5 +606,45 @@
     "resultado": "LIMPO. 28 hashes extraidos, todos resolvem com git cat-file -e <sha>^{commit}. 8 caminhos extraidos, todos existem em disco. Alem da existencia, testei ANCESTRALIDADE: os 28 sao alcancaveis a partir de origin/dev, entao quem retomar amanha encontra cada lote publicado, nao so existente.",
     "dois_falsos_positivos_meus": "A varredura acusou 16 caminhos e 28 hashes inexistentes antes de acertar. Nenhum era defeito do registro; os dois eram defeitos da MEDICAO. Primeiro: escrevi os arquivos intermediarios em /tmp, que neste Windows e compartilhado entre as sessoes, e li de volta a lista da frente publicacoes-midia em vez da minha. Segundo: python em modo texto no Windows gravou CRLF, e cada linha lida terminava em \r, fazendo git e test falharem em TODAS as entradas. Um 100% de falha e sinal de instrumento quebrado, nao de registro podre.",
     "licao": "Ferramenta de verificacao tambem precisa ser verificada, e o sinal de que ela quebrou e o resultado ser uniforme demais. Corolario operacional: arquivo temporario vai para o scratchpad da sessao, nunca para /tmp, quando ha varias sessoes na mesma maquina."
+  },
+  "medicao_r25": {
+    "base": "Medida sobre 7cb73b37b. Revalidada para 18d0127ed: o diff entre as duas bases nao toca nenhum arquivo em apps nem em packages, so documentacao, entao o numero vale para a base atual.",
+    "relogio": "Lido com powershell Get-Date, date e date -u, as tres concordando. Quarta vez nesta rodada que eu errei relogio: eu vinha ESTIMANDO somando tempo decorrido a uma leitura antiga em vez de ler. O coordenador me corrigiu pela segunda vez e estava certo.",
+    "dois_numeros_separados": "Reporto separado porque medir so o proprio recorte deixa falha de fronteira sem dono na consolidacao: cada frente mede o seu pedaco e ninguem mede a interseccao.",
+    "recorte_proprio_seis_familias": {
+      "P": 1091,
+      "S": 4,
+      "F": 8,
+      "dirs": "daily_routine, safety, attendance, people, access_profiles, institutions",
+      "as_8_falhas": "Todas em goldens de institutions: 6 em institution_directory_page_golden_test e 2 em institution_form_page_golden_test. NAO sao minhas e nao sao regressao. Sao theme drift conhecido, aguardando rebaseline nominal, documentado pela propria frente que cuida de institutions no commit 606a37581 de hoje 02:16, que declara textualmente 'both halves are already red from theme drift and still need a nominal rebaseline' e 'counts are unchanged at 1 pass and 6 failures'. A minha medicao corrobora a contagem dela.",
+      "dono": "frente de estrutura/institutions; decisao pendente e o rebaseline nominal"
+    },
+    "interseccao_que_eu_executo": {
+      "P": 1238,
+      "S": 2,
+      "F": 14,
+      "dirs": "test/app/router, test/features/forms",
+      "composicao": "6 de rota e 8 goldens de forms. Rota: 3 em principal_real_route_test, 1 import_development_routes, 1 principal_mixed_feed_pagination_red (RED nomeado de proposito), 1 prototype_navigation_routes. Forms goldens: directory 3, editor 3, operations 1, response 1.",
+      "dono": "outras frentes. As 5 de rota foram medidas na base pre-rodada d784462c1 por chat-comunicacoes e falham la identicas, entao sao anteriores a rodada. As 3 de principal_real_route_test tem causa nomeada: a rota de Acontece passou a exigir dois repositorios e o teste injeta um, entao e teste desatualizado pela integracao do feed misto, nao falha de produto.",
+      "conferencia_cruzada": "Bate caso a caso com a medicao independente do coordenador onde os conjuntos se sobrepoem. As listas divergem so por recorte de medicao: a dele e do app inteiro e inclui seis arquivos fora de router e forms."
+    }
+  },
+  "defeito_de_medicao_r25": {
+    "o_que": "Eu vinha medindo 'as oito familias que encostei' apontando para test/features/access_profile e test/features/institution, no SINGULAR. Os diretorios reais sao access_profileS e institutionS. Os dois caminhos nao existem.",
+    "como_o_runner_se_comportou": "flutter test nao avisa que o caminho esta errado. Ele emite 'Failed to load ... Does not exist' e conta cada caminho inexistente como UMA FALHA. Cobertura ausente virou falha, nao virou zero.",
+    "quanto_estava_invisivel": "512 casos. A corrida errada dava 579 P; a corrida com os nomes certos da 1091 P.",
+    "o_que_estava_escondido": "As 8 falhas reais de golden de institutions. Elas estavam dentro do meu recorte e eu nunca as vi.",
+    "por_que_sobreviveu": "Porque as 2 falhas de carregamento apareciam no meio de 14 falhas conhecidas de outras frentes. Se as 14 nao estivessem la, duas falhas isoladas teriam sido investigadas na hora. Foi a companhia que as escondeu — o mesmo mecanismo pelo qual 4 casos perdidos em 7000 ficaram invisiveis quando eu sobrescrevi person_file_actions_test.",
+    "licao": "Cobertura ausente contada como falha e pior que contada como zero. E numero de suite so significa alguma coisa junto da LISTA DE CAMINHOS que o produziu; total sem denominador nao e verificavel. Passei a reportar os caminhos junto do numero.",
+    "efeito_sobre_relatos_anteriores": "Nao afirmo o que o baseline anterior de 1055 P cobria. Nao tenho registro de quais caminhos aquelas corridas usaram e chutar repetiria o erro de operando velho. O numero valido e o desta revisao, com os caminhos nomeados acima."
+  },
+  "leis_de_instrumento": {
+    "contexto": "Catalogadas nesta rodada com o coordenador, a partir de falhas reais de ferramenta, nao de teoria.",
+    "1_uniforme_demais": "Resultado uniforme demais e ferramenta quebrada, nos dois extremos. 100% de falha nao e registro podre. 100% limpo de primeira merece conferir se estava lendo o arquivo certo.",
+    "2_verificacao_que_nunca_passa": "Verificacao que nunca passa nao esta rigorosa, esta quebrada. O controle e testar contra um caso que voce SABE que deveria passar.",
+    "3_estado_raro": "Resultado que descreve estado raro merece a mesma desconfianca, mesmo com saida plausivel. Aritmetica certa sobre operando velho e o modo de falha que mais se parece com dado bom.",
+    "4_resultado_conveniente": "Resultado CONVENIENTE merece a mesma desconfianca e nao dispara nenhuma das outras tres. A saida nao e uniforme, nao descreve estado impossivel, o instrumento esta certo, e so a conclusao favorece quem mede. Controle: quando um subconjunto e o conjunto dao numeros diferentes, SUBTRAIA antes de atribuir dono.",
+    "5_estimar_nao_e_ler": "Estimar somando tempo decorrido a uma leitura antiga nao e medir. Nao ha saida estranha porque nao ha saida. Vale para relogio e para qualquer grandeza que muda sozinha.",
+    "6_tmp_compartilhado": "Arquivo intermediario vai para o scratchpad da sessao, nunca para /tmp, quando ha varias sessoes na mesma maquina. Nome generico em /tmp faz uma frente ler a medicao de outra."
   }
 }
