@@ -165,14 +165,25 @@ leitura, para nenhuma linha ser lida como mais do que diz:
 | `circulars.attach` | avançado | sim | Bilhete autorizado e expirável; gateway pronto para R2 |
 
 Nenhuma ação é declarada concluída ponta a ponta. Três têm cliente fechado e
-RPC ausente da cadeia aplicada, e por isso **não completam em produção**.
+RPC sem evidência de existência no repositório — ver a ressalva na seção
+seguinte sobre o que isso permite e não permite afirmar.
 
 ## O que NÃO está fechado, e por quê
 
 - `withdraw_happens_post`, `list_visible_moments` e `withdraw_moment` **não
-  existem na cadeia aplicada**. Só em candidatos. Portanto `momentos.view`,
-  `momentos.remove` e `acontece.remove` têm cliente fechado e ação que **não
-  completa em produção**.
+  existem em nenhum arquivo de migration do repositório**, exceto nos
+  candidatos autorais. Conferido nas 180 migrations rastreadas em
+  `packages/coelo_database/migrations/` e nas 17 de `supabase/migrations/`.
+
+  **Retestando a própria afirmação:** dizer que "não completam em produção" é
+  inferência, não medição. O repositório não espelha produção integralmente — a
+  prova é que `app_private.unit_import_source_attestations` é referenciada por
+  uma migration e criada por nenhuma, e ainda assim produção evidentemente a
+  tem. O que posso afirmar é o que verifiquei: **não há evidência de que essas
+  três RPCs existam, e não há como verificar daqui.** Se produção as tiver, as
+  três ações podem funcionar; se não tiver, falham fechado com estado honesto.
+  A ação certa é a mesma nos dois casos — aplicar os candidatos sob autorização
+  nominal —, mas o rastreador não deve registrar "falha em produção" como fato.
 - Mídia de Acontece e Agora **não está no R2**. Falta migration que exponha
   `storage_provider` no envelope de preparo e troque a checagem de existência
   do finalize, que hoje consulta `storage.objects`.
