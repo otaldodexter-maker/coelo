@@ -64,6 +64,12 @@ contexto real, antes dos parâmetros e novamente após a query. Auditoria obriga
 fora do catch; nenhum nome, busca, cursor, grafo ou People no log.
 
 Fixtures próprias 8f032000, dois Owners, rollback final e RPCs sob authenticated.
+<!-- Correção de 2026-09-10: o identificador 8f032000 acima NÃO resolve para
+     nenhum objeto neste repositório. Verificado com `git cat-file -t` em
+     todos os hashes citados pelo grupo: os outros quinze não-commit são
+     blobs válidos; só este está ausente. Preservado no texto em vez de
+     apagado, porque apagar esconderia que houve uma referência aqui; quem
+     precisar das fixtures deve localizá-las pelo pacote, não por este hash. -->
 Cobrem 20+1, cursor do último visível, empate por UUID, busca literal %/_/barra,
 tipos/null/limites, manage-only sem platform.read/read, read-only sem catálogo,
 escopo e cursor estrangeiro, inactive/deleted, sessão relógio real/NULL, revogação,
