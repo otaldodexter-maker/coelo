@@ -1,6 +1,6 @@
 {
-  "revision": 43,
-  "updated_at": "2026-09-10T03:06:00-03:00",
+  "revision": 44,
+  "updated_at": "2026-09-10T03:12:00-03:00",
   "group": "chat-comunicacoes",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) - claude-opus-5[1m]",
@@ -773,5 +773,24 @@
     "verificacao_por_mutacao": "Trocando o onPressed por callback vazio, o caso do estreito falha em 'a value greater than <1>, actual <0>'. O teste pega regressao de comportamento e nao apenas ausencia de chave.",
     "regressao": "Suite de chat na branch: 195 PASS / 9 FAIL, sendo as 9 os goldens ja conhecidos.",
     "falso_alarme_que_eu_evitei": "Uma sonda minha tocou a chave 'superadmin-chat-back' e caiu em /institutions, o que parecia defeito grave. Fui ao codigo antes de reportar: aquele e o 'Voltar' de PAGINA (widget.onBack), nao o 'Voltar para conversas'. Peguei a chave pelo nome sem conferir que era o controle do tooltip."
+  },
+  "correcao_do_meu_proprio_recorte_de_teste": {
+    "erro": "Eu vinha reportando o meu recorte com SETE caminhos de teste. Existem sedezeis. Nove arquivos do meu escopo ficavam de fora de toda medicao que eu publiquei esta noite.",
+    "arquivos_que_faltavam": [
+      "test/app/dev_menu/development_chat_repository_test.dart",
+      "test/app/router/chat_routes_test.dart",
+      "test/app/router/chat_unread_badge_wiring_test.dart",
+      "test/app/router/notice_logout_wiring_test.dart",
+      "test/app/router/notice_routes_capability_test.dart",
+      "test/app/router/principal_chat_route_test.dart",
+      "test/app/router/superadmin_chat_media_composition_test.dart",
+      "test/app/shell/superadmin_notice_test.dart",
+      "test/app/shell/superadmin_shell_chat_inset_test.dart"
+    ],
+    "numero_corrigido": "394 PASS / 12 FAIL sobre os 16 caminhos, contra 363 PASS / 12 FAIL sobre os 7. Sao 31 testes aprovados que nunca entravam na conta.",
+    "as_falhas_nao_mudaram": "Continuam 12 e continuam todas goldens. Os nove arquivos que faltavam passam integralmente: 26 casos, zero falhas.",
+    "como_encontrei": "O formato de pre-entrega pediu a LISTA DE CAMINHOS junto de cada numero, contra o caso de uma frente que perdeu 512 casos por caminho no singular. Fui verificar se os meus existiam — existiam todos. O risco real era o inverso: nao caminho inexistente, e caminho AUSENTE da lista.",
+    "licao": "Conferir que os caminhos declarados existem nao prova que a lista esta completa. Sao duas perguntas diferentes, e so a primeira tem verificacao obvia. A segunda exige varrer o repositorio pelo escopo e nao pela lista.",
+    "efeito_na_entrega": "Todos os numeros de recorte que publiquei antes desta revisao subestimavam os aprovados. Nenhum superestimava, e nenhuma falha estava escondida."
   }
 }
