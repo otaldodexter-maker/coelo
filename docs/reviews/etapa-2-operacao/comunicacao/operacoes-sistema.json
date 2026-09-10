@@ -1,6 +1,6 @@
 {
-  "revision": 59,
-  "updated_at": "2026-09-10T04:41:16-03:00",
+  "revision": 60,
+  "updated_at": "2026-09-10T04:45:32-03:00",
   "group": "operacoes-sistema",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) — claude-opus-5[1m]",
@@ -1899,5 +1899,13 @@
     "criterio_de_residual_revogado": "O coordenador revogou o criterio de ancestralidade do SHA, porque ele integra por cherry-pick. O oficial passa a ser o rastro de cherry-pick, com ancestralidade como complementar, e o metodo que ele vai citar e o terceiro que eu usei: diff do HEAD contra dev por arquivo, mais presenca das marcas de conteudo no arquivo de dev. A razao de ser melhor e que ele prova que o COMPORTAMENTO chegou, e nao que o commit chegou.",
     "cruzamento_de_relogio_era_invalido": "O coordenador corrigiu o proprio protocolo: ele comparava leituras tiradas em INSTANTES DIFERENTES como se fossem simultaneas, e chamava de deriva o que era latencia de mensagem. Os meus 58 segundos de diferenca, os 61 de chat-comunicacoes e os cinco minutos de formularios-cuidado eram intervalo entre blocos. NENHUMA frente estava atrasada. Isso muda o que o meu proprio registro afirma: onde eu escrevi que a leitura do coordenador prevalecia por acordo, a comparacao que sustentava essa escolha nao media o que dizia medir. A escolha em si continua segura, porque adotar a leitura MAIOR da margem a favor do corte; o que cai e a inferencia de que alguem estava atrasado.",
     "licao_que_fica": "Cruzar relogios exige leituras do mesmo instante, e mensagem assincrona nao da isso de graca. E a quinta vez na noite que um instrumento respondeu outra pergunta com aparencia de medicao — e a unica em que o instrumento era o proprio protocolo de controle."
+  },
+  "verificacao_identidade_presumida": {
+    "hora": "2026-09-10T04:45:32-03:00",
+    "pergunta": "Em algum ponto o meu conjunto 'meus arquivos' veio de AUTOR em vez de lista de SHA?",
+    "resposta": "NAO. Medido e nao lembrado.",
+    "medicao": "O conjunto que eu usei em todas as contas — residual por conteudo, citacoes, atribuicao de falhas — sai de uma lista explicita de 21 SHAs que eu mantive a mao, e produz 24 arquivos. Se tivesse vindo de --author='Adriel' daria 528 commits e 997 arquivos, porque as seis frentes commitam com a MESMA identidade git neste checkout. E o trailer Co-Authored-By daria 320 commits, pelo mesmo motivo: todas as frentes usam o mesmo trailer.",
+    "onde_eu_quase_caí": "Eu cheguei a rodar o filtro por trailer uma vez, as 04:02, para tentar listar 'os meus commits'. Recebi 312 e reconheci na hora que o numero nao podia ser meu, e troquei pela lista explicita de SHAs. E numa chamada posterior sobrou uma invocacao vestigial de --author cuja saida foi descartada para /dev/null; o conjunto de caminhos daquela chamada veio do laco sobre os SHAs explicitos, nao dela. Registro as duas porque 'nao me atingiu' e mais forte quando se diz onde passou perto.",
+    "classe": "Sexta roupa da mesma lei: identidade PRESUMIDA em vez de DERIVADA. O filtro responde 'quem assinou' e a pergunta e 'quem fez'. E o caso e mais perigoso que os outros cinco porque o numero sai plausivel — 528 commits numa noite de seis frentes nao parece absurdo para quem nao conta."
   }
 }

@@ -1902,6 +1902,27 @@ presumida em vez de derivada** — o filtro respondia "quem assinou", e a pergun
 Vale para qualquer rodada com várias frentes na mesma máquina: se alguém delimitou
 o próprio trabalho por autor, mediu o de todo mundo.
 
+**E há uma forma pior que "não isola".** Outra frente usou o filtro uma única vez,
+para uma pergunta pontual — um rótulo de formulário havia mudado e ela quis saber se
+a mudança era sua. A linha de autor respondeu com o nome dela. **Não era sua:** o
+commit é de dois dias antes da rodada. Ela chegou à resposta certa por data e por
+conteúdo, e a identidade foi ruído que apontava na direção errada. O filtro não
+falhou em distinguir — **atribuiu positivamente a quem perguntou**. As duas respostas
+eram até a mesma string, e ainda assim uma era verdadeira e inútil.
+
+**E o delimitador errado não precisa de autor nenhum.** Uma terceira frente foi
+conferir e achou a mesma classe no intervalo da própria branch: dos 43 commits que
+ela contava como seus, quinze são portes de uma sessão anterior. Não é apropriação —
+o recorte mandava reutilizar aquele trabalho, e portá-lo resolvendo conflito de
+roteador foi trabalho real. Mas **"46 arquivos que eu escrevi" é mais forte que "46
+arquivos que a minha entrega toca, dos quais parte veio de outra sessão e eu
+portei"**, e só a segunda é verdadeira. Os números não mudam; a frase muda.
+
+Nos três casos o delimitador parece delimitar autoria e delimita outra coisa: a
+identidade comum ao checkout, a assinatura de quem carimbou, o intervalo que inclui
+o que foi trazido para dentro dele. **O instrumento responde a pergunta que ele sabe
+responder, não a que foi feita.**
+
 ### O único número que diz se as correções da noite funcionaram
 
 Às 02:11 uma frente estava com quarenta minutos de deriva de relógio. Às 03:00 eu
