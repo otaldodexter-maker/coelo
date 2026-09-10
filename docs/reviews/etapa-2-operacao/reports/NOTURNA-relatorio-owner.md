@@ -730,54 +730,61 @@ Leitura honesta desta tabela: **a coluna que importa é a terceira, e ela soma
 diferença entre as duas é exatamente o que esta rodada passou a noite tornando
 visível.
 
-## O defeito mais grave encontrado: Segurança infantil não se dispõe em produção
+## O defeito mais grave encontrado, e ele foi corrigido nesta rodada
 
-Duas frentes mediram `/safety` de forma independente, e o diagnóstico mais
-preciso mudou a categoria do problema. **Não é transbordamento: a grade de
-cartões não se dispõe.** São vinte exceções de layout por largura, encabeçadas
-por `LayoutBuilder does not support returning intrinsic dimensions` com
-`IntrinsicHeight` como causador, seguidas de dezenove `RenderBox was not laid
-out` em cascata.
+**Estado: fechado.** Corrigido às 23:35 em `089c1fafc`, integrado em `dev`, e
+verificado depois por uma frente que não o corrigiu.
 
-A cadeia está rastreada até o fim: `safety_pages.dart:292` envolve cada linha da
-grade em `IntrinsicHeight`; o cartão é `SafetyChildDirectoryCard`, que retorna
-`CoeloAdminInteractiveCard`, que contém `CoeloAdminExpandableStatusIndicator`, e
-esse é literalmente um `LayoutBuilder` na linha 42 do pacote. `IntrinsicHeight`
-pergunta dimensões intrínsecas; `LayoutBuilder` não sabe responder; a asserção
-dispara.
+**O que era.** Duas frentes mediram `/safety` de forma independente, e o
+diagnóstico mudou a categoria do problema: não era transbordamento — **a grade de
+cartões não se dispunha**. Vinte exceções de layout por largura, encabeçadas por
+`LayoutBuilder does not support returning intrinsic dimensions`, seguidas de
+dezenove `RenderBox was not laid out` em cascata.
 
-**E isso alcança produção.** `childSafetyRepository` é composto como
-`SupabaseChildSafetyRepository` real, o controlador é construído em
-`superadmin_app.dart:231`, a rota produtiva `/safety` monta `SafetyLandingPage`
-com ele, e o modo de exibição padrão é cartões. Basta existir um registro para a
-tela quebrar no primeiro carregamento. Não é protótipo com defeito: é MVP, com
-repositório de produção ligado, sobre dados de criança.
+A cadeia foi rastreada até o fim: cada linha da grade era envolvida em
+`IntrinsicHeight`; o cartão contém um indicador de status canônico que é
+literalmente um `LayoutBuilder`. `IntrinsicHeight` pergunta dimensões
+intrínsecas, `LayoutBuilder` não sabe responder, e a asserção dispara.
 
-Duas correções possíveis, e a escolha é sua com o `coelo-ui`: contida em
-`safety`, deixando de envolver a linha em `IntrinsicHeight`; ou no componente
-compartilhado, tirando o `LayoutBuilder` do indicador, o que resolve para todo
-consumidor mas mexe no Design System e move goldens de outras telas. A primeira
-está atribuída para execução; a segunda fica registrada, porque qualquer tela
-que um dia envolver esse indicador em `IntrinsicHeight` cai no mesmo buraco.
+**E alcançava produção.** O repositório de Segurança infantil é composto real, a
+rota produtiva monta a mesma página, e o modo de exibição padrão é cartões —
+bastava existir um registro para a tela quebrar no primeiro carregamento. Não era
+protótipo com defeito: era MVP, com repositório de produção ligado, **sobre dados
+de criança**.
 
-A divergência de medição sobre acessibilidade nesta tela terminou num terceiro
-lugar, e é o mais honesto: **nenhuma das duas medições vale**. Uma frente
-reportou as três diretrizes reprovando, a outra reportou duas passando — e a
-segunda foi verificar e mostrou que a asserção de layout dispara durante
-`performLayout`, antes de qualquer avaliação. Mesmo drenando as exceções à mão, a
-árvore de render continua marcada `NEEDS-LAYOUT`, então a semântica avaliada em
-cima dela não representa a tela. Um alvo que não foi disposto pode medir zero e
-reprovar, ou não ser visitado e passar: as duas coisas são artefato do mesmo
-defeito.
+**A correção** trocou o `IntrinsicHeight` por uma composição de tabela com
+alinhamento vertical intrínseco, e deixou no código o comentário explicando a
+causa — o que impede a próxima pessoa de reintroduzir o padrão.
 
-Registro portanto a acessibilidade de `child_safety` como **não medida**, com o
-motivo, a ser remedida depois da correção de layout.
+**A verificação, feita por outra frente sobre a base entregue:** a mesma página
+montada em 1440, 1024, 768 e 375 renderiza **onze cartões em cada largura e zero
+exceção de layout**. E não é verde vazio: os cartões foram **contados antes** de
+ler as exceções, justamente porque uma grade vazia não exercita o defeito e
+produziria um verde que não prova nada.
 
-E isso fecha as três observações iniciais sobre a tela — transborda, falha nas
-três diretrizes, fica presa carregando — como **três sintomas da mesma causa**,
-e a causa é uma linha. Não é uma tela com três problemas independentes; é uma
-tela que não renderiza. A prioridade continua a mesma; a natureza do trabalho
-não.
+Limite declarado dessa verificação: ela usou o controlador de desenvolvimento, e
+não a rota de produção com o repositório real. A correção é estrutural e não
+depende de dados, então vale para as duas — mas a prova sobre a rota produtiva
+não foi feita.
+
+**Uma consequência que muda de categoria junto.** A acessibilidade desta tela
+estava registrada como *não medida*, e o motivo era que a asserção de layout
+disparava durante o `performLayout`, antes de qualquer avaliação — a árvore
+continuava marcada como precisando de layout, então a semântica avaliada em cima
+dela não representava a tela. **Com a correção, ela deixou de ser impossível de
+medir e passou a ser apenas ainda não medida.** São coisas diferentes: a primeira
+pedia consertar antes; a segunda pede apenas medir.
+
+**Fica registrada a segunda correção possível**, que não foi feita: tirar o
+`LayoutBuilder` do indicador compartilhado resolveria para todo consumidor, mas
+mexe no Design System e move referências visuais de outras telas. **Qualquer tela
+que um dia envolver esse indicador em `IntrinsicHeight` cai no mesmo buraco** — e
+o censo desta rodada encontrou uma tela com o padrão idêntico, hoje segura apenas
+porque usa um indicador próprio.
+
+E o que isto fechou continua valendo como método: as três observações iniciais
+sobre a tela — transborda, falha nas três diretrizes, fica presa carregando — eram
+**três sintomas da mesma causa**, e a causa era uma linha.
 
 ## O achado mais importante da rodada
 
