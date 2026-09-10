@@ -559,6 +559,16 @@ GoRouter createSuperadminRouter({
     String? mealPlanModelId,
     bool isTemplate = false,
   }) {
+    final authorizedTenantId = authorizedMealPlanTenantId?.trim() ?? '';
+    if (authorizedTenantId.isEmpty) {
+      // Fail-closed: sem tenant autorizado o assistente de mutacao nao abre.
+      return SuperadminErrorScreen(
+        key: const Key('meal-plan-authorized-tenant-unavailable'),
+        kind: SuperadminErrorKind.unavailable,
+        actionLabel: 'Voltar ao inicio',
+        onAction: () => context.goNamed(SuperadminRoutes.homeName),
+      );
+    }
     return productionOperationalPage(
       context,
       title: title,
@@ -567,7 +577,7 @@ GoRouter createSuperadminRouter({
       child: MealPlanWizardPage(
         repository: mealPlanRepository,
         imageRepository: mealPlanImageRepository,
-        tenantId: authorizedMealPlanTenantId?.trim() ?? '',
+        tenantId: authorizedTenantId,
         mealPlanId: mealPlanId,
         templatePlanId: templatePlanId,
         mealPlanModelId: mealPlanModelId,
