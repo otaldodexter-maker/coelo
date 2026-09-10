@@ -1,5 +1,5 @@
 {
-  "revision": 27,
+  "revision": 28,
   "round": "E2-NOTURNA-20260909",
   "role": "Coordenacao e Integracao - Claude",
   "writer": "coordenador-claude",
@@ -40,10 +40,11 @@
     "runtimeBaselinePreserved": "d019c109a",
     "documentaryReconciliation": "8954de221",
     "verifiedAt": "2026-09-09T18:10:00-03:00",
-    "sha": "671f77bd9",
+    "sha": "18d0127ed",
     "analyze": "limpo",
     "router": "7 falhas, 1 vermelho proposital nomeado",
-    "suiteCompleta": "6344 PASS / 14 SKIP / 146 FAIL em b4cf3664a — 129 golden, 17 nao-golden"
+    "suiteCompleta": "6344 PASS / 14 SKIP / 146 FAIL em b4cf3664a — 129 golden, 17 nao-golden",
+    "suiteFechamento": "6370 PASS / 14 SKIP / 144 FAIL sobre 8e230b15a — 129 golden, 15 nao-golden"
   },
   "cutoffs": {
     "codexFreeze": "2026-09-09T23:10:00-03:00",
@@ -484,7 +485,7 @@
     "claudeExecutorAddresses": "Fornecidos pelo Owner e verificados por envio real: as seis conversas Claude receberam ACK nominal por SendMessage em 18:18. Enderecos gravados em groups[].sessionName/sessionId para recuperacao."
   },
   "blocks": [],
-  "nextStep": "ciclos de integracao ate 04:40; 04:50 receber pre-entregas; 05:00 consolidar, medir a suite na base final, reconciliar Git das oito frentes e fechar o relatorio",
+  "nextStep": "integrar ate 04:40; 04:40 congelar com leitura dupla de relogio; 04:50 receber pre-entregas no formato residual-por-SHA mais dois numeros; 05:00 consolidar, conferencia externa de Git e fechar o relatorio",
   "providers": {
     "supabase": {
       "cli": "supabase 2.117.0 autenticado; token no Credential Manager do Windows",
@@ -732,6 +733,34 @@
       "oQueEraVerdade": "1; o people_creation ficou verde durante a noite e eu continuava classificando como proposital",
       "comoFoiPego": "conferencia externa que eu mesmo atribui a chat-comunicacoes",
       "licao": "se a contagem errada chegasse ao Owner, um defeito real passaria por convencao"
+    },
+    {
+      "id": "relogio-deriva-humana",
+      "oQueEuAfirmei": "horarios reportados por estimativa, com ate 37 minutos de adiantamento, tres vezes",
+      "oQueEraVerdade": "a leitura correta, confirmada por tres fontes na maquina e por tres frentes",
+      "consequenciaEvitada": "congelar a rodada as 04:03 acreditando serem 04:40, cortando meia hora de trabalho de seis frentes",
+      "regraNova": "leitura do relogio nas MESMAS chamadas de ferramenta da mensagem que carrega o horario; leitura dupla com as frentes nas chamadas de 04:40 e 05:00, e se divergir espera-se a maior"
+    },
+    {
+      "id": "defeito-mais-grave-em-presente",
+      "oQueEuAfirmei": "que a grade de Seguranca infantil quebra em producao e que a correcao esta atribuida",
+      "oQueEraVerdade": "corrigida as 23:35 em 089c1fafc e integrada horas antes; verificada depois por frente externa com 11 cartoes em quatro larguras e zero excecao",
+      "comoFoiPego": "releitura externa do relatorio, atribuida por mim a perfil-para-voce"
+    },
+    {
+      "id": "cobertura-das-80-chamadas",
+      "oQueEuAfirmei": "zero divergencia nas 80 chamadas de RPC",
+      "oQueEraVerdade": "o teste pula chamada sem assinatura declarada, entao a cobertura e de no maximo 75 e as cinco de Unidades ficam fora por construcao"
+    },
+    {
+      "id": "censo-intrinsicheight",
+      "oQueEuAfirmei": "quatro usos",
+      "oQueEraVerdade": "tres usos; dois dos quatro eram COMENTARIOS e um uso real faltava"
+    },
+    {
+      "id": "proporcao-de-goldens",
+      "oQueEuAfirmei": "cerca de 70% dos casos amostrados escondem mudanca de produto",
+      "oQueEraVerdade": "cerca de 83% sao deslocamento e rebaseline seguro; a inversao veio da frente que produziu o numero original"
     }
   ],
   "censoGoldens": {
@@ -1052,5 +1081,13 @@
     "assimetria": "no mesmo ramo autorizado, Rotina e Alunos recebem repositorios Unavailable por composicao deliberada, e Assiduidade recebe o Supabase real chamando RPCs que nenhuma migration cria",
     "precedente": "instalado fora do versionamento e fenomeno medido: profile_about existe em producao e em migration nenhuma",
     "recomendacao": "um select proname from pg_proc na proxima janela autorizada converte tres blocos de bloqueio em fato"
-  }
+  },
+  "achadosDeProdutoDaRodada": [
+    "grade de Seguranca infantil nao se dispunha em producao — CORRIGIDO e verificado externamente",
+    "cardapio encerrado aparecia como rascunho e filtrar por encerrado devolvia lista vazia — CORRIGIDO",
+    "Importacoes transborda por numero de linhas; causa e o componente de tabela compartilhado, ja em decisao do Owner",
+    "botao de reportar bug nao existe no Superadmin de producao, mesma causa raiz do 503 de Suporte",
+    "salvar agendamento de formulario apaga todas as regras de publico menos a primeira — pergunta ao Owner, correcao nao e livre de decisao",
+    "quinze listagens em grade de cartoes perdem a identidade das linhas no estreito — uma corrigida"
+  ]
 }
