@@ -340,6 +340,23 @@ bloco também produz magnitude grande**, porque cada elemento aparece duas vezes
 imagem de diferença. Só a comparação **elemento a elemento** classifica; o número
 não classifica nada.
 
+O contra-exemplo numérico que fecha o argumento: uma captura de diretório a 375 px
+diverge **22,24% e é deslocamento puro**, sem um único elemento diferente. Não é a
+causa que muda com a largura, é a **densidade** — dezesseis pixels de deslocamento
+num viewport estreito e cheio de linhas de texto atingem quase toda linha; os
+mesmos dezesseis pixels em 1440 encontram espaço vazio.
+
+**Daí saem três discriminadores baratos, e nenhum deles é o valor absoluto:**
+
+- **O gradiente de largura.** Percentual que **cai** conforme a tela alarga é
+  deslocamento: a mesma causa produziu 43,94% em 375, 17,01% em 768 e 4,08% em
+  1024.
+- **Forma e cor.** Um elemento que apenas se moveu aparece **duas vezes, iguais**.
+  Se a cor muda — um ponto de status rosa na referência e verde agora — ou se a
+  forma muda, não é deslocamento.
+- **Quantas vezes o elemento aparece.** Deslocado, aparece duas vezes; **novo,
+  aparece uma vez**, numa região onde a referência não tinha nada.
+
 Reabertos os diffs um a um:
 
 | Família | Casos | Leitura final |
