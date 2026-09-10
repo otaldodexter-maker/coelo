@@ -305,6 +305,57 @@ void main() {
       }
     }
   });
+  testWidgets('o menu de acoes traz editar, duplicar, arquivar e excluir', (tester) async {
+    // Decisao do Owner em 10/09/2026, ao aprovar os goldens do diretorio. Antes
+    // o menu parava em publicar: arquivar nao aparecia, e excluir abria um
+    // dialogo dizendo que a acao nao estava disponivel nesta versao.
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      _app(
+        repository: _DirectoryRepository(
+          item: _plan(id: 'plan-a', name: 'Cardapio da semana'),
+        ),
+        onEdit: (_) {},
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('Ações').first);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Editar'), findsOneWidget);
+    expect(find.textContaining('Duplicar'), findsOneWidget);
+    expect(find.text('Arquivar'), findsOneWidget);
+    expect(find.text('Excluir'), findsOneWidget);
+  });
+
+  testWidgets('cardapio publicado nao oferece excluir, so arquivar', (tester) async {
+    // A regra tambem vive no servidor: apagar um cardapio publicado sumiria com
+    // o historico de algo que as familias ja viram. Arquivar existe para isso.
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      _app(
+        repository: _DirectoryRepository(
+          item: _plan(
+            id: 'plan-b',
+            name: 'Cardapio publicado',
+            status: MealPlanStatus.published,
+            requiresReview: false,
+          ),
+        ),
+        onEdit: (_) {},
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('Ações').first);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Arquivar'), findsOneWidget);
+    expect(find.text('Excluir'), findsNothing);
+  });
 }
 
 Widget _app({

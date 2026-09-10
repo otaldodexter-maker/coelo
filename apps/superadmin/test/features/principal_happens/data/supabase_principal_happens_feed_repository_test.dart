@@ -77,10 +77,9 @@ void main() {
       'p_unit_id': 'unit-1',
       'p_group_id': 'group-1',
       'p_limit': 20,
-      // A primeira pagina manda o cursor explicitamente nulo, e nao omitido: a
-      // RPC exige que as duas metades andem juntas.
-      'p_cursor_published_at': null,
-      'p_cursor_post_id': null,
+      // A primeira pagina NAO manda cursor: a producao ainda tem a forma de
+      // quatro argumentos desta RPC, e mandar os dois parametros nulos faria a
+      // chamada procurar uma sobrecarga que la nao existe.
     });
     expect(posts.single.likes, isNull);
     expect(posts.single.likedBy, isNull);
