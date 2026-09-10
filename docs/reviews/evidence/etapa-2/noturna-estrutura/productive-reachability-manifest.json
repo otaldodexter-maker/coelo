@@ -1,0 +1,119 @@
+{
+  "generated_at": "2026-09-09T22:08:55.3948292-03:00",
+  "revision_observed": "60ff99a7fbf78e88eca00b95a5df417d6687986b",
+  "source": "Coordenador r16; inspeção estática local sidebar/router/directorycallbacks + productive-composition-manifest.json e followup77a917de",
+  "status": "read-only-reachability-no-promotion",
+  "questions": [
+    "main compõe?",
+    "router normal monta?",
+    "repositório real existe e é selecionado?",
+    "superfície produtiva leva o usuário até o caminho ou somente URL?"
+  ],
+  "rows": [
+    {
+      "family": "Instituições",
+      "action_ids": [
+        "institutions.locations-map"
+      ],
+      "main": "YES: institutionDirectoryRepository from authScope plus real locationCatalogReader/writer in main35-45.",
+      "router": "CONDITIONAL: InstitutionFormPage has catalog seam in normal create/edit, but structureMutationsEnabled=false returns blockedProductionMutationPage before these forms.",
+      "repository": "SupabaseInstitutionDirectoryRepository and SupabaseLocationCatalogReader/Writer exist and are selected when initialized; map/photo media remains honestly unavailable.",
+      "reachability": "Sidebar Estrutura > Instituições existe (navigation105; router5197-5198). Lista monta em router1109. Formulários e seus links para Locais exigem structureMutations=false->bloqueio (1119,1176,1187). Não há caminho navegável para catálogo por esse formulário na composição atual.",
+      "status": "pending-verification; sem promoção terminal"
+    },
+    {
+      "family": "Unidades",
+      "action_ids": [
+        "units.locations-map",
+        "units.copy-institution-location",
+        "units.create"
+      ],
+      "main": "Interface is passed, but authScope selects UnavailableUnitDirectoryRepository (line343); unitDetailRepository and UnitBackendCommands are different paths.",
+      "router": "UnitFormPage normal create/edit gated by structureMutationsEnabled=false. Catalog copy also exists inside normal owner-scoped LocationsPage with capability checks.",
+      "repository": "SupabaseUnitDirectoryRepository exists and received the6-test retry fix, but IS NOT selected by authScope. Local form/HTTP tests do not certify production create.",
+      "reachability": "Sidebar Estrutura > Unidades existe (navigation106; router5199-5200). Lista monta em1217, mas authScope343 injeta UnavailableUnitDirectoryRepository. Editar/form e link Locais (1324,1336) ficam gated.",
+      "status": "pending-verification; sem promoção terminal"
+    },
+    {
+      "family": "Locais",
+      "action_ids": [
+        "locations.list",
+        "locations.create-edit",
+        "locations.detail-links",
+        "locations.schedule"
+      ],
+      "main": "YES for catalog reader/writer, reservation gateway and historical bindings reader; Supabase factories fall back to Unavailable on initialization error.",
+      "router": "Normal institution/unit catalog routes mount LocationsPage and LocationDetailPage; real path owner IDs passed, context revision/capabilities checked. Writes inside catalog depend on locationCapabilities; do not equate this with the umbrella structureMutations gate.",
+      "repository": "Supabase catalog reader/writer, reservation gateway and bindings reader exist. Bindings RPC is a LOCAL SQL candidate, not proven deployed; catalog/reservation historical165/49+2 do not certify this new composition remotely.",
+      "reachability": "Não há item Locais na árvore navigation103-112. Entradas nomeadas ao catálogo somente forms1178-1188/1336-1337 e retorno dos próprios detalhes1451/1518. Catálogo por URL /institutions/:institutionId/locations ou /units/:unitId/locations existe (routes10/22). Uma vez no catálogo, clique abre detalhe (locations_page169; router1411/1483).",
+      "status": "pending-verification; sem promoção terminal"
+    },
+    {
+      "family": "Turmas",
+      "action_ids": [
+        "groups.location"
+      ],
+      "main": "YES para Group detail, catálogo/reservas/history e seleção atual. main47/App269 encaminham seleção; main144 mantém available:false. Novo GroupLocationCreateRepository não composto.",
+      "router": "GroupDetailPage normal1608 compõe consumidor persistido e selectionReader1633. Create/edit permanecem gatedfalse. Getter atual indisponível por gate do adapter.",
+      "repository": "Group detail e adapters Locais reais selecionados. Group directory é Unavailable (authScope340). Cliente Group atômico defaultfalse não selecionado; getter Supabase selecionado available:false.",
+      "reachability": "Sidebar Estrutura > Turmas existe (navigation107; router5201-5202). GroupDirectoryPage só tem onEdit (29/39), cards622 e table884 o utilizam. Router1555 envia groupEdit sob gate de mutação, não groupDetail. Busca em lib encontrou groupDetailName apenas declaração e rota1603, sem navegação de entrada. /groups/:groupId é alcançável por URL autorizada, não pelo clique da lista atual. Lista usa UnavailableGroupDirectoryRepository authScope340.",
+      "status": "pending-verification; sem promoção terminal"
+    },
+    {
+      "family": "Atividades",
+      "action_ids": [
+        "activities.location"
+      ],
+      "main": "YES para Activity directory/command/read detail e catálogo/reservas/history/seleção. Reader atual main144 available:false; criação atômica catalogada não ativada.",
+      "router": "ActivityReadDetailPage normal1807 usa projeção real e consumidor1829 com seleção atual injetada. Formulários dependem structureMutations=false; enableActivityLocationCreate=false adicional.",
+      "repository": "Adapters reais de diretório/detail/command selecionados. activityLocationCreateAvailable=false; getter Supabase atual selecionado available:false. Sem qualificação remota inferida.",
+      "reachability": "Sidebar Estrutura > Atividades existe (navigation108; router5203-5204). Diretório router1668 injeta onView1710->activityDetail; activity_directory_page694 escolhe onEdit??onView. Com structureMutations=false, onEdit=null e cards1906/tables2160,2245 abrem reader real /activities/:activityId. Detalhe1807 compõe consumer/current selection1829. Seleção atual explicitamente indisponível no main144; catálogo/resevas seguem seus próprios gates.",
+      "status": "pending-verification; sem promoção terminal"
+    },
+    {
+      "family": "Avaliações",
+      "action_ids": [
+        "assessments.entry",
+        "assessments.gradebook"
+      ],
+      "main": "YES: SupabaseAssessmentRepository and assessmentMutationsEnabled passed from authScope.",
+      "router": "Normal AssessmentEntryPage/gradebook routes exist but require enableAssessmentMutations. Default comes from COELO_ENABLE_ASSESSMENT_MUTATIONS bool.fromEnvironment, false when absent; deployed build value was NOT inspected.",
+      "repository": "SupabaseAssessmentRepository is selected when initialized.10-test error/edit-freeze fix exercises fake repository, not live production.",
+      "reachability": "Sidebar Estrutura > Atividades > Lançar/Fechamento de avaliações existe (navigation109-110; router5205-5208). Rotas1900/1914/1928/1945 têm gate assessmentMutations; detalhes de fechamento via callback1936. Valor de build implantado não inspecionado; defaultfalse não equivale a caminho liberado.",
+      "status": "pending-verification; sem promoção terminal"
+    }
+  ],
+  "global_gates": [
+    "authScope348: structureMutationsEnabled=false; capacidade não deve ser inferida da existência da rota.",
+    "main144: SupabaseLocationConsumerSelectionReader available:false; App269 encaminha.",
+    "Router1388+ exige sessão/capacidade locations.read; writers dependem de capabilities.",
+    "Group/current selection1634 e Activity1830 exigem read de entidade+locations; reservas também exigem locations.reservations.read."
+  ],
+  "limits": [
+    "Inspeção fonte, sem browser/teste/remoto. Não atesta menus renderizados para um ator real nem build implantado.",
+    "Campos três primeiras perguntas reutilizam auditoria datada; followup explícito registra DI supersedida. Nenhuma contagem de teste adicionada.",
+    "Linha muda se root integrar WIP paralelamente; hashes abaixo identificam fonte lida.",
+    "Ausência de entrada de Group/Locais é residual de alcance, não pedido para ativar gates ou usar writer legado."
+  ],
+  "hashes": {
+    "apps/superadmin/lib/main.dart": "250B4D6DC7A1A634B5F0B67F76592F32B6532EBED99EB95238926927B29FA883",
+    "apps/superadmin/lib/app/router/superadmin_router.dart": "00EA13596DC614874D81F4BF53F9441C3EC39B2CF43FF8A41B8F9D68693AFAA8",
+    "apps/superadmin/lib/features/activities/presentation/activity_directory_page.dart": "9C672DA55538FDCA3B605DDA22C52A2CD28BBE420D1A5D9B1E20ED2DF033D182",
+    "apps/superadmin/lib/app/superadmin_app.dart": "89087931964CBF7F85BFD40B5911FCDD465B7FAFF20C13E860931CC739D32947",
+    "apps/superadmin/lib/features/groups/presentation/group_directory_page.dart": "5C92ECF4B9A8EE7950B40BC2AEB2F7D0EA620DD82FC48DCFF4EA86A57A54EA37",
+    "apps/superadmin/lib/app/navigation/superadmin_navigation.dart": "D148531FF21767DF5FA15EDE08E11720864BC7503FBE8E5946425ABF37A741E5",
+    "apps/superadmin/lib/core/config/superadmin_auth_scope.dart": "1E1D66558F01838BEB2AF0376347043E214BE2A77E424D4A370DE43F1185294C"
+  },
+  "encoding_note": "Root repaired mojibake from PowerShell intermediate encoding; factual text unchanged, UTF8 without BOM.",
+  "followup": {
+    "recorded_at": "2026-09-09T22:23:44.360622-03:00",
+    "commits": [
+      "0ce8e6b2a6b02f36edfa6209092ee7f2a0d750a3",
+      "10d69e38bc9c201ce357bbe9d45eea96dedd3c2c"
+    ],
+    "supersedes": "GroupDirectory has no onView entry in historical rows",
+    "current_fact": "GroupDirectory now supports readonly card/table open -> groupDetail; existing authorized edit takes precedence. Router callback requires current groups.read. Actual authScope still selects UnavailableGroupDirectoryRepository, so this is prepared entry, not verified productive directory availability.",
+    "evidence": "group-detail-entry-manifest.json",
+    "metrics": "4localP; no terminalpromotion"
+  }
+}

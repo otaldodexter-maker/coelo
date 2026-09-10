@@ -11,6 +11,14 @@ abstract interface class GroupDetailRepository {
   Future<GroupDetail> fetchById(String groupId);
 }
 
+/// Local read preflight; backend authorization remains mandatory for real reads.
+final class DeniedGroupDetailRepository implements GroupDetailRepository {
+  const DeniedGroupDetailRepository();
+  @override
+  Future<GroupDetail> fetchById(String groupId) async =>
+      throw const GroupDetailException(GroupDetailFailure.denied);
+}
+
 final class UnavailableGroupDetailRepository implements GroupDetailRepository {
   const UnavailableGroupDetailRepository();
   @override

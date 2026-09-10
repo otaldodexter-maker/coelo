@@ -53,6 +53,24 @@ final class PrincipalForYouAudienceScope {
     // PrincipalRuntimeContext today, so neither can be resolved to an actor id.
     NoticeAudienceDimension.platform || NoticeAudienceDimension.plan => null,
   };
+
+  /// Value equality, because this scope is rebuilt from the runtime context on
+  /// every route build. Comparing it by instance would make each rebuild look
+  /// like a new actor and send the hub back to the server for nothing.
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PrincipalForYouAudienceScope &&
+          other.institutionId == institutionId &&
+          other.unitId == unitId &&
+          other.groupId == groupId &&
+          other.personId == personId &&
+          other.roleCode == roleCode &&
+          other.membershipId == membershipId;
+
+  @override
+  int get hashCode =>
+      Object.hash(institutionId, unitId, groupId, personId, roleCode, membershipId);
 }
 
 /// Projects the shared Communications contract into the read-only Principal hub.
@@ -67,12 +85,12 @@ final class PrincipalForYouCommunicationsAdapter {
   /// item is projected and carries `eligible` so the UI can keep rendering the
   /// full projection while only eligible items count as content.
   ///
-  /// [scope] must be supplied explicitly. A missing runtime context never
-  /// makes a communication eligible; callers may pass null while unavailable.
+  /// [scope] is required: an optional audience gate is one forgotten argument
+  /// away from silently projecting communications the actor may not see.
   static List<PrincipalForYouHighlight> highlights(
     Iterable<PlatformNotice> communications, {
     required DateTime now,
-    required PrincipalForYouAudienceScope? scope,
+    required PrincipalForYouAudienceScope scope,
   }) => PrincipalForYouPreviewData.orderHighlights(
     communications
         .where((item) => item.type != CommunicationType.notice)
@@ -85,8 +103,6 @@ final class PrincipalForYouCommunicationsAdapter {
             title: item.title,
             body: item.message,
             cta: item.linkLabel ?? item.buttonLabel,
-            assetPath: 'assets/principal_happens/now-strip.png',
-            assetIndex: 2,
           ),
         ),
   );
@@ -106,13 +122,12 @@ final class PrincipalForYouCommunicationsAdapter {
   static bool isEligible(
     PlatformNotice item, {
     required DateTime now,
-    required PrincipalForYouAudienceScope? scope,
+    required PrincipalForYouAudienceScope scope,
   }) {
     if (item.type == CommunicationType.notice) return false;
     if (item.status != NoticeStatus.active) return false;
     if (item.startsAt.isAfter(now)) return false;
     if (item.endsAt != null && !item.endsAt!.isAfter(now)) return false;
-    if (scope == null) return false;
     return matchesAudience(item, scope);
   }
 

@@ -152,6 +152,10 @@ void main() {
         'O formulário foi alterado em outra sessão. Recarregue e tente novamente.',
       ),
       ('503', FormApiFailureKind.unavailable, 'O serviço está indisponível. Tente novamente.'),
+      // Falha de transporte: a requisicao nao chegou ao backend, entao nao ha
+      // codigo do Postgres nem corpo. Cair em desconhecido diria a pessoa que
+      // a acao falhou, quando o certo e dizer que o servico esta indisponivel.
+      ('transport', FormApiFailureKind.unavailable, 'O serviço está indisponível. Tente novamente.'),
       (
         'unexpected',
         FormApiFailureKind.unknown,

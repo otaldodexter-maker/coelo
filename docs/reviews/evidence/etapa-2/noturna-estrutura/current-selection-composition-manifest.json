@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-09-09T21:55:42.530635-03:00",
+  "scope": "apps/superadmin -> Turmas/Atividades -> detalhe -> selecao atual de Local",
+  "action_ids": [
+    "groups.location",
+    "activities.location"
+  ],
+  "status": "local-green; composition proposal, unavailable in main",
+  "proposal_commit": "77a917de529cd07a1f26e747be87a1f399c309ea",
+  "changes": [
+    "main instantiates the real selection adapter with explicit available:false and initialization fallback.",
+    "App forwards the injected reader to the existing normal-router consumer slots. No router or Auth change."
+  ],
+  "metrics": {
+    "N": 2,
+    "E": 2,
+    "P": 2,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0
+  },
+  "runs": [
+    {
+      "runner": 39632,
+      "chunk": "177329",
+      "phase": "causal RED",
+      "P": 1,
+      "F": 1,
+      "reason": "Constructor seam existed but forwarding omitted; qualified test received zero RPC calls."
+    },
+    {
+      "runner": 84815,
+      "chunk": "ceafd1",
+      "phase": "GREEN",
+      "P": 2,
+      "exit_code": 0
+    },
+    {
+      "runner": 8061,
+      "chunk": "d35e3d",
+      "phase": "analyzer final",
+      "issues": 0,
+      "exit_code": 0
+    }
+  ],
+  "command": "flutter test --no-pub --concurrency=1 test/app/location_selection_composition_test.dart --reporter expanded",
+  "review": "bindings_review static review found no material issue; factory gate, default and transport suppression inspected.",
+  "limits": [
+    "Test builds actual SuperadminApp and normal Group route with real Supabase adapter and injected local RPC callback. It does not boot private main factory or contact production.",
+    "Existing Group+Activity router-selection tests reused from5658023; not rerun or added to2P.",
+    "Main available:false means zero getter RPC; no backend activation or FE/BE/E2E promotion.",
+    "SQL getters remain local unqualified candidates; Claude owns replay, integration and nominal package path.",
+    "No golden rebaseline, shell/Auth/CHILD changes or remote writes."
+  ],
+  "hashes": {
+    "apps/superadmin/lib/main.dart": "250b4d6dc7a1a634b5f0b67f76592f32b6532ebed99eb95238926927b29fa883",
+    "apps/superadmin/lib/app/superadmin_app.dart": "89087931964cbf7f85bfd40b5911fcdd465b7faff20c13e860931cc739d32947",
+    "apps/superadmin/test/app/location_selection_composition_test.dart": "fa50dbb68d5b6b8d5ff48618ac75324800e7ea1c3220680e9461016b3e41adea"
+  }
+}

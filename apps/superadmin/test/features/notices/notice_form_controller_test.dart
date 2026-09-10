@@ -382,6 +382,63 @@ void main() {
     expect(repository.publishRequestIds, hasLength(2));
     expect(repository.publishRequestIds[1], isNot(repository.publishRequestIds[0]));
   });
+
+  test('schedule keeps the operator local time on the draft and on the saved notice', () async {
+    final repository = FakeNoticeRepository();
+    final controller = NoticeFormController(repository: repository);
+    addTearDown(controller.dispose);
+    controller.titleController.text = 'Aviso com hora';
+    controller.messageController.text = 'Mensagem';
+    controller.setStartsAt(DateTime(2026, 9, 20, 14, 30));
+    controller.setEndsAt(DateTime(2026, 9, 20, 18, 45));
+
+    expect(controller.draft.startsAt, DateTime(2026, 9, 20, 14, 30));
+    expect(controller.draft.endsAt, DateTime(2026, 9, 20, 18, 45));
+
+    final saved = await controller.saveDraft();
+
+    expect(saved, isNotNull);
+    expect(saved!.startsAt, DateTime(2026, 9, 20, 14, 30));
+    expect(saved.endsAt, DateTime(2026, 9, 20, 18, 45));
+    expect(controller.startsAt, DateTime(2026, 9, 20, 14, 30));
+    expect(controller.endsAt, DateTime(2026, 9, 20, 18, 45));
+  });
+
+  test('end time before start time on the same day is blocked with an honest message', () {
+    final repository = FakeNoticeRepository();
+    final controller = NoticeFormController(repository: repository);
+    addTearDown(controller.dispose);
+    controller.setStartsAt(DateTime(2026, 9, 20, 14));
+    controller.setEndsAt(DateTime(2026, 9, 20, 13, 59));
+
+    expect(controller.hasEndBeforeStart, isTrue);
+    expect(controller.validate(NoticeFormStep.schedule), isFalse);
+    expect(controller.scheduleErrorMessage, contains('término não pode ser anterior ao início'));
+
+    controller.setEndsAt(DateTime(2026, 9, 20, 14, 1));
+
+    expect(controller.hasEndBeforeStart, isFalse);
+    expect(controller.validate(NoticeFormStep.schedule), isTrue);
+    expect(controller.scheduleErrorMessage, 'Revise as datas e a configuração de recorrência.');
+  });
+
+  test('recurrence ending on the start day stays valid for an intraday start', () {
+    final repository = FakeNoticeRepository();
+    final controller = NoticeFormController(repository: repository);
+    addTearDown(controller.dispose);
+    controller.setStartsAt(DateTime(2026, 9, 20, 10));
+    controller.setRecurrence(NoticeRecurrence.daily);
+    controller.setRecurrenceUntil(DateTime(2026, 9, 20));
+
+    expect(controller.hasRecurrenceEndBeforeStart, isFalse);
+    expect(controller.validate(NoticeFormStep.schedule), isTrue);
+
+    controller.setRecurrenceUntil(DateTime(2026, 9, 19));
+
+    expect(controller.hasRecurrenceEndBeforeStart, isTrue);
+    expect(controller.validate(NoticeFormStep.schedule), isFalse);
+    expect(controller.scheduleErrorMessage, contains('fim da recorrência'));
+  });
 }
 
 PlatformNotice _notice(String id, String title) => PlatformNotice(

@@ -1,0 +1,98 @@
+{
+  "source": "Coordinator r12 PERGUNTA-DE-COMPOSICAO-PRODUTIVA; direct source inspection in assigned branch",
+  "status": "read-only-composition-audit-no-terminal-promotion",
+  "recorded_at": "2026-09-09T20:56:26.965555-03:00",
+  "revision": "57268a881b579d168f45da8ac344c2424ab9c866",
+  "scope": "apps/superadmin; six Estrutura families. This answers three composition questions, not production availability.",
+  "questions": [
+    "Does main.dart compose the path?",
+    "Does the normal router mount the productive page?",
+    "Does an actual production repository implementation exist and is it selected?"
+  ],
+  "rows": [
+    {
+      "action_ids": [
+        "institutions.locations-map"
+      ],
+      "main": "YES: institutionDirectoryRepository from authScope plus real locationCatalogReader/writer in main35-45.",
+      "router": "CONDITIONAL: InstitutionFormPage has catalog seam in normal create/edit, but structureMutationsEnabled=false returns blockedProductionMutationPage before these forms.",
+      "repository": "SupabaseInstitutionDirectoryRepository and SupabaseLocationCatalogReader/Writer exist and are selected when initialized; map/photo media remains honestly unavailable.",
+      "state": "pending-verification; candidate local UI, no complete normal form or map/photo acceptance"
+    },
+    {
+      "action_ids": [
+        "units.locations-map",
+        "units.copy-institution-location",
+        "units.create"
+      ],
+      "main": "Interface is passed, but authScope selects UnavailableUnitDirectoryRepository (line343); unitDetailRepository and UnitBackendCommands are different paths.",
+      "router": "UnitFormPage normal create/edit gated by structureMutationsEnabled=false. Catalog copy also exists inside normal owner-scoped LocationsPage with capability checks.",
+      "repository": "SupabaseUnitDirectoryRepository exists and received the6-test retry fix, but IS NOT selected by authScope. Local form/HTTP tests do not certify production create.",
+      "state": "pending-verification; reader/form cutover and nominal backend remain dependencies"
+    },
+    {
+      "action_ids": [
+        "locations.list",
+        "locations.create-edit",
+        "locations.detail-links",
+        "locations.schedule"
+      ],
+      "main": "YES for catalog reader/writer, reservation gateway and historical bindings reader; Supabase factories fall back to Unavailable on initialization error.",
+      "router": "Normal institution/unit catalog routes mount LocationsPage and LocationDetailPage; real path owner IDs passed, context revision/capabilities checked. Writes inside catalog depend on locationCapabilities; do not equate this with the umbrella structureMutations gate.",
+      "repository": "Supabase catalog reader/writer, reservation gateway and bindings reader exist. Bindings RPC is a LOCAL SQL candidate, not proven deployed; catalog/reservation historical165/49+2 do not certify this new composition remotely.",
+      "state": "pending-verification; main composition is not proof of remote contract availability"
+    },
+    {
+      "action_ids": [
+        "groups.location"
+      ],
+      "main": "YES for SupabaseGroupDetailRepository, catalog/reservation/history. NO for new GroupLocationCreateRepository or current-selection reader.",
+      "router": "GroupDetailPage normal route composes actual persisted consumer and reservation/current-selection slots. Group create/edit remains blocked by structureMutations=false and legacy options reader is Unavailable.",
+      "repository": "Real Group detail/reservation/history adapters selected. New Group atomic client available=false by default and not selected. Current selection router defaults Unavailable; actual Supabase reader exists but is not passed through App/main.",
+      "state": "pending-verification; SQL46U, current getter unqualified; Group form active creation and extra fields cannot be silently converted to restricted draft"
+    },
+    {
+      "action_ids": [
+        "activities.location"
+      ],
+      "main": "YES for SupabaseActivityDirectoryRepository, SupabaseActivityCommandRepository, new SupabaseActivityReadDetailRepository and shared catalog/reservations/history. NO for current-selection reader or enabling atomic catalog creation.",
+      "router": "Normal ActivityReadDetailPage uses authorized projection and real linked-unit scopes. Normal ActivityFormPage is behind structureMutations=false; additional enableActivityLocationCreate=false. Current-selection slot mounts with Unavailable default.",
+      "repository": "Real adapters exist. Activity command factory leaves activityLocationCreateAvailable=false. Restricted atomic branch and optional reservation intent are implemented but not activated. Current getter exists only as local SQLcandidate33U.",
+      "state": "pending-verification; no empty fake production detail, no legacy edit navigation enabled; complete atomic lifecycle remains dependent"
+    },
+    {
+      "action_ids": [
+        "assessments.entry",
+        "assessments.gradebook"
+      ],
+      "main": "YES: SupabaseAssessmentRepository and assessmentMutationsEnabled passed from authScope.",
+      "router": "Normal AssessmentEntryPage/gradebook routes exist but require enableAssessmentMutations. Default comes from COELO_ENABLE_ASSESSMENT_MUTATIONS bool.fromEnvironment, false when absent; deployed build value was NOT inspected.",
+      "repository": "SupabaseAssessmentRepository is selected when initialized.10-test error/edit-freeze fix exercises fake repository, not live production.",
+      "state": "pending-verification; no terminal promotion from10localP"
+    }
+  ],
+  "limits": [
+    "No production read or write performed for this audit; cannot assert deployed build flags or RPC catalog state.",
+    "No changes to main/Auth/central trackers, no activation, no deploy.",
+    "No golden rebaseline. Coordinator reported existing screen goldens red; local-green evidence cannot promote frontend verified.",
+    "Remaining49-ID scope, deferred operations and blockers listed in estrutura.json; this document only details paths touched or directly relevant to this night."
+  ],
+  "sha256": {
+    "apps/superadmin/lib/main.dart": "e9a6a5c96d1b1804cfa867e2cb3c79ed5b77d415f05f51c3b03e1430bf976caa",
+    "apps/superadmin/lib/core/config/superadmin_auth_scope.dart": "1e1d66558f01838beb2af0376347043e214be2a77e424d4a370de43f1185294c",
+    "apps/superadmin/lib/core/config/superadmin_app_config.dart": "e17c4dfacd894338afe8d09c1197121630685914ba59410ff2766f0b0660303d",
+    "apps/superadmin/lib/app/superadmin_app.dart": "5d2140ad793438345b5a5f3e4d3794e7631ece647239151ecfa6152d243974a7",
+    "apps/superadmin/lib/app/router/superadmin_router.dart": "00ea13596dc614874d81f4bf53f9441c3ec39b2cf43ff8a41b8f9d68693afaa8"
+  },
+  "followup": {
+    "recorded_at": "2026-09-09T21:55:42.538814-03:00",
+    "commit": "77a917de529cd07a1f26e747be87a1f399c309ea",
+    "supersedes": [
+      "groups.location main/current-selection not passed",
+      "activities.location main/current-selection not passed"
+    ],
+    "current_fact": "Both now receive actual SupabaseLocationConsumerSelectionReader through main/App, explicitly available:false. Normal routes already consume it. Getter calls remain unavailable; backend and terminal states unchanged.",
+    "evidence": "current-selection-composition-manifest.json",
+    "original_rows": "Historical inspection and hashes above intentionally retained for provenance; followup supersedes only current-selection DI facts."
+  }
+}

@@ -52,10 +52,11 @@ select ok(
 );
 select ok(
   not has_function_privilege('anon', 'public.audit_start_export_for_superadmin(text,jsonb,uuid)', 'EXECUTE')
-  and has_function_privilege('authenticated', 'public.audit_start_export_for_superadmin(text,jsonb,uuid)', 'EXECUTE')
+  and not has_function_privilege('authenticated', 'public.audit_start_export_for_superadmin(text,jsonb,uuid)', 'EXECUTE')
+  and not has_function_privilege('authenticated', 'public.audit_get_export_job_for_superadmin(uuid)', 'EXECUTE')
   and not has_function_privilege('anon', 'public.audit_authorize_export_download_for_superadmin(uuid)', 'EXECUTE')
-  and has_function_privilege('authenticated', 'public.audit_authorize_export_download_for_superadmin(uuid)', 'EXECUTE'),
-  'only authenticated clients can request exports'
+  and not has_function_privilege('authenticated', 'public.audit_authorize_export_download_for_superadmin(uuid)', 'EXECUTE'),
+  'general audit exports expose no authenticated client gateway'
 );
 select ok(
   has_function_privilege('service_role','public.audit_materialize_export_for_worker(uuid,uuid)','EXECUTE')
@@ -91,9 +92,14 @@ select ok(
     like '%actor::text||'':audit_export''%'
   and pg_get_functiondef('app_private.audit_start_export_for_superadmin(text,jsonb,uuid)'::regprocedure)
     like '%interval ''1 hour''%'
-  and pg_get_functiondef('app_private.audit_list_events_for_superadmin(text,uuid[],text[],text[],text[],text[],text[],uuid,timestamptz,timestamptz,timestamptz,uuid,integer)'::regprocedure)
-    like '%has_mfa_aal2%',
-  'export quota is actor-serialized and can_export includes AAL2'
+  and position('require_superadmin_internal_context(''audit.read'')' in
+    lower(regexp_replace(pg_get_functiondef(
+      'app_private.audit_list_events_for_superadmin(text,uuid[],text[],text[],text[],text[],text[],uuid,timestamptz,timestamptz,timestamptz,uuid,integer)'::regprocedure),
+      '[[:space:]]+','','g'))) > 0
+  and position('''can_export'',false' in lower(regexp_replace(pg_get_functiondef(
+    'app_private.audit_list_events_for_superadmin(text,uuid[],text[],text[],text[],text[],text[],uuid,timestamptz,timestamptz,timestamptz,uuid,integer)'::regprocedure),
+    '[[:space:]]+','','g'))) > 0,
+  'deferred export internals remain for workers while the reader is internal and returns false'
 );
 select ok(
   (select column_default is null from information_schema.columns
@@ -167,10 +173,20 @@ select ok(
   'new entry links to the immediate predecessor'
 );
 
-insert into auth.users(id,aud,role,email,created_at,updated_at) values
- ('81100000-0000-4000-8000-000000000001','authenticated','authenticated','audit-owner@test.invalid',now(),now()),
- ('81100000-0000-4000-8000-000000000002','authenticated','authenticated','audit-denied@test.invalid',now(),now()),
- ('81100000-0000-4000-8000-000000000003','authenticated','authenticated','audit-scoped@test.invalid',now(),now());
+insert into auth.users(id,aud,role,email,email_confirmed_at,created_at,updated_at) values
+ ('81100000-0000-4000-8000-000000000001','authenticated','authenticated','audit-owner@test.invalid',now(),now(),now()),
+ ('81100000-0000-4000-8000-000000000002','authenticated','authenticated','audit-denied@test.invalid',now(),now(),now()),
+ ('81100000-0000-4000-8000-000000000003','authenticated','authenticated','audit-scoped@test.invalid',now(),now(),now()),
+ ('81120000-0000-4000-8000-000000000001','authenticated','authenticated','audit-internal-owner@test.invalid',now(),now(),now()),
+ ('81120000-0000-4000-8000-000000000002','authenticated','authenticated','audit-internal-denied@test.invalid',now(),now(),now()),
+ ('81120000-0000-4000-8000-000000000003','authenticated','authenticated','audit-internal-scoped@test.invalid',now(),now(),now());
+insert into auth.sessions(id,user_id,created_at,updated_at,aal,not_after) values
+ ('81110000-0000-4000-8000-000000000001','81100000-0000-4000-8000-000000000001',now(),now(),'aal1',now()+interval '1 hour'),
+ ('81110000-0000-4000-8000-000000000002','81100000-0000-4000-8000-000000000002',now(),now(),'aal1',now()+interval '1 hour'),
+ ('81110000-0000-4000-8000-000000000003','81100000-0000-4000-8000-000000000003',now(),now(),'aal1',now()+interval '1 hour'),
+ ('81130000-0000-4000-8000-000000000001','81120000-0000-4000-8000-000000000001',now(),now(),'aal1',now()+interval '1 hour'),
+ ('81130000-0000-4000-8000-000000000002','81120000-0000-4000-8000-000000000002',now(),now(),'aal1',now()+interval '1 hour'),
+ ('81130000-0000-4000-8000-000000000003','81120000-0000-4000-8000-000000000003',now(),now(),'aal1',now()+interval '1 hour');
 insert into public.people(id,person_type,first_name,last_name,display_name,status) values
  ('81200000-0000-4000-8000-000000000001','adult','Audit','Owner','Audit Owner','active'),
  ('81200000-0000-4000-8000-000000000002','adult','Audit','Denied','Audit Denied','active'),
@@ -212,6 +228,27 @@ insert into public.platform_role_permissions(role_id,permission_id,effect,status
 select '81300000-0000-4000-8000-000000000003',id,'deny','active'
 from public.platform_permissions where code in('audit.read','audit.export');
 
+insert into app_private.superadmin_internal_identities(id) values
+ ('81310000-0000-4000-8000-000000000001'),
+ ('81310000-0000-4000-8000-000000000002'),
+ ('81310000-0000-4000-8000-000000000003');
+insert into app_private.superadmin_internal_auth_links(
+  id,internal_identity_id,auth_user_id,status,revoked_at) values
+ ('81320000-0000-4000-8000-000000000001','81310000-0000-4000-8000-000000000001','81120000-0000-4000-8000-000000000001','active',null),
+ ('81320000-0000-4000-8000-000000000002','81310000-0000-4000-8000-000000000002','81120000-0000-4000-8000-000000000002','active',null),
+ ('81320000-0000-4000-8000-000000000003','81310000-0000-4000-8000-000000000003','81120000-0000-4000-8000-000000000003','active',null);
+insert into app_private.superadmin_internal_memberships(
+  id,internal_identity_id,platform_role_id,scope_kind,scope_institution_id,status,revoked_at)
+select fixture.id,fixture.identity_id,role_record.id,
+  fixture.scope_kind::app_private.superadmin_internal_scope_kind,
+  fixture.institution_id,fixture.status::app_private.superadmin_internal_membership_status,null
+from (values
+ ('81330000-0000-4000-8000-000000000001'::uuid,'81310000-0000-4000-8000-000000000001'::uuid,'owner','platform',null::uuid,'active'),
+ ('81330000-0000-4000-8000-000000000002','81310000-0000-4000-8000-000000000002','audit_test_denied','platform',null,'active'),
+ ('81330000-0000-4000-8000-000000000003','81310000-0000-4000-8000-000000000003','audit_test_scoped','institution','81500000-0000-4000-8000-000000000001','active')
+) fixture(id,identity_id,role_code,scope_kind,institution_id,status)
+join public.platform_roles role_record on role_record.code=fixture.role_code;
+
 insert into audit.audit_logs(id,action_code,object_type,object_id,institution_id,context_kind,context_id,occurred_at) values
  ('81900000-0000-4000-8000-000000000001','audit_test.institution_a','test','81910000-0000-4000-8000-000000000001','81500000-0000-4000-8000-000000000001','institution','81500000-0000-4000-8000-000000000001','2026-08-12T10:04:00Z'),
  ('81900000-0000-4000-8000-000000000002','audit_test.unit_a','test','81910000-0000-4000-8000-000000000002','81500000-0000-4000-8000-000000000001','unit','81600000-0000-4000-8000-000000000001','2026-08-12T10:03:00Z'),
@@ -233,17 +270,17 @@ select throws_ok(
 reset role;
 
 set local role authenticated;
-select set_config('request.jwt.claim.sub','81100000-0000-4000-8000-000000000002',true);
-select set_config('request.jwt.claims','{"sub":"81100000-0000-4000-8000-000000000002","aal":"aal2","role":"authenticated"}',true);
-select throws_ok(
-  $$select public.audit_list_events_for_superadmin()$$,
-  '42501', 'audit.read required', 'actor without capability cannot list'
+select set_config('request.jwt.claim.sub','81120000-0000-4000-8000-000000000002',true);
+select set_config('request.jwt.claims','{"sub":"81120000-0000-4000-8000-000000000002","session_id":"81130000-0000-4000-8000-000000000002","aal":"aal1","role":"authenticated"}',true);
+select is(
+  public.audit_list_events_for_superadmin()#>>'{error,code}',
+  'SAI_PERMISSION_DENIED', 'internal actor without capability cannot list'
 );
 reset role;
 
 set local role authenticated;
-select set_config('request.jwt.claim.sub','81100000-0000-4000-8000-000000000003',true);
-select set_config('request.jwt.claims','{"sub":"81100000-0000-4000-8000-000000000003","aal":"aal2","role":"authenticated"}',true);
+select set_config('request.jwt.claim.sub','81120000-0000-4000-8000-000000000003',true);
+select set_config('request.jwt.claims','{"sub":"81120000-0000-4000-8000-000000000003","session_id":"81130000-0000-4000-8000-000000000003","aal":"aal1","role":"authenticated"}',true);
 select ok(
   not exists(select 1 from jsonb_array_elements(public.audit_list_events_for_superadmin()->'items') item
     where item->'institution'->>'id' is distinct from '81500000-0000-4000-8000-000000000001'),
@@ -261,17 +298,25 @@ select ok(
     where public.audit_get_event_for_superadmin(target.id) is not null),
   'cross-scope unit, group and child details all fail closed'
 );
-select ok(
-  not exists(select 1 from jsonb_array_elements(public.audit_list_events_for_superadmin(
-    p_cursor_occurred_at=>'2026-08-12T10:05:00Z',p_cursor_id=>'81900000-0000-4000-8000-000000000005')->'items') item
-    where item->'institution'->>'id' is distinct from '81500000-0000-4000-8000-000000000001'),
-  'cursor sourced from another scope cannot disclose cross-scope rows'
+select is(
+  public.audit_list_events_for_superadmin(
+    p_cursor_occurred_at=>'2026-08-12T10:05:00Z',
+    p_cursor_id=>'81900000-0000-4000-8000-000000000005')#>>'{error,code}',
+  'SAI_INVALID_ARGUMENT',
+  'cursor sourced from another scope is rejected without disclosure'
 );
-select ok(
-  (public.audit_start_export_for_superadmin('csv','{}','81400000-0000-4000-8000-000000000010')->>'job_id') is not null,
-  'institution-scoped export creates an authorized idempotent job'
+select throws_ok(
+  $$select public.audit_start_export_for_superadmin('csv','{}','81400000-0000-4000-8000-000000000010')$$,
+  '42501',null,'institution-scoped clients cannot start a deferred export'
 );
 reset role;
+select set_config('request.jwt.claim.sub','81100000-0000-4000-8000-000000000003',true);
+select set_config('request.jwt.claims',
+  '{"sub":"81100000-0000-4000-8000-000000000003","aal":"aal2","role":"authenticated"}',true);
+do $$begin
+  perform app_private.audit_start_export_for_superadmin(
+    'csv','{}','81400000-0000-4000-8000-000000000010');
+end $$;
 
 set local role service_role;
 select set_config('request.jwt.claims','{"role":"service_role"}',true);
@@ -314,24 +359,25 @@ select throws_ok(
 reset role;
 
 set local role authenticated;
-select set_config('request.jwt.claim.sub','81100000-0000-4000-8000-000000000001',true);
-select set_config('request.jwt.claims','{"sub":"81100000-0000-4000-8000-000000000001","aal":"aal1","role":"authenticated"}',true);
+select set_config('request.jwt.claim.sub','81120000-0000-4000-8000-000000000001',true);
+select set_config('request.jwt.claims','{"sub":"81120000-0000-4000-8000-000000000001","session_id":"81130000-0000-4000-8000-000000000001","aal":"aal1","role":"authenticated"}',true);
 select throws_ok(
   $$select public.audit_start_export_for_superadmin('csv','{}','81400000-0000-4000-8000-000000000001')$$,
-  '42501', 'audit.export and AAL2 required', 'export fails closed below AAL2'
+  '42501',null,'deferred export is sealed independently of AAL'
 );
 reset role;
 
 set local role authenticated;
-select set_config('request.jwt.claim.sub','81100000-0000-4000-8000-000000000001',true);
-select set_config('request.jwt.claims','{"sub":"81100000-0000-4000-8000-000000000001","aal":"aal2","role":"authenticated"}',true);
-select throws_ok(
-  $$select public.audit_list_events_for_superadmin(p_cursor_occurred_at=>now(),p_cursor_id=>null)$$,
-  '22023', 'invalid audit list filters', 'partial cursor is rejected'
+select set_config('request.jwt.claim.sub','81120000-0000-4000-8000-000000000001',true);
+select set_config('request.jwt.claims','{"sub":"81120000-0000-4000-8000-000000000001","session_id":"81130000-0000-4000-8000-000000000001","aal":"aal1","role":"authenticated"}',true);
+select is(
+  public.audit_list_events_for_superadmin(
+    p_cursor_occurred_at=>now(),p_cursor_id=>null)#>>'{error,code}',
+  'SAI_INVALID_ARGUMENT','partial cursor is rejected with the stable envelope'
 );
-select throws_ok(
-  $$select public.audit_list_events_for_superadmin(repeat('x',201))$$,
-  '22023', 'invalid audit list filters', 'hostile oversized query is rejected'
+select is(
+  public.audit_list_events_for_superadmin(repeat('x',201))#>>'{error,code}',
+  'SAI_INVALID_ARGUMENT','hostile oversized query is rejected with the stable envelope'
 );
 select ok(
   (public.audit_get_event_for_superadmin('81000000-0000-4000-8000-000000000001')->'before') ? 'status'
@@ -345,13 +391,15 @@ select ok(
   'list never returns before/after payloads'
 );
 select ok(
-  (public.audit_list_events_for_superadmin()->>'can_export')::boolean,
-  'list returns export capability when at least one scope survives a local deny'
+  not (public.audit_list_events_for_superadmin()->>'can_export')::boolean,
+  'list keeps general exports deferred for an authorized internal reader'
 );
 select ok(
-  not exists(select 1 from jsonb_array_elements(public.audit_list_events_for_superadmin()->'items') item
+  exists(select 1 from jsonb_array_elements(public.audit_list_events_for_superadmin()->'items') item
+    where item->'institution'->>'id'='81500000-0000-4000-8000-000000000001')
+  and exists(select 1 from jsonb_array_elements(public.audit_list_events_for_superadmin()->'items') item
     where item->'institution'->>'id'='81500000-0000-4000-8000-000000000002'),
-  'platform allow does not override an explicit institution deny'
+  'the internal platform scope reads both institutions without consulting People denies'
 );
 select ok(
   (public.audit_get_event_for_superadmin('81000000-0000-4000-8000-000000000001')->'actor'->>'display_name')='Sistema'
@@ -363,59 +411,61 @@ select is(
   'legacy_unknown',
   'historical actor without trustworthy role evidence is never mislabeled as system'
 );
-select ok(
-  (public.audit_start_export_for_superadmin('csv','{}','81400000-0000-4000-8000-000000000002')->>'job_id') is not null
-  and public.audit_start_export_for_superadmin('csv','{}','81400000-0000-4000-8000-000000000002')
-      = public.audit_start_export_for_superadmin('csv','{}','81400000-0000-4000-8000-000000000002'),
-  'export requests are idempotent'
+select throws_ok(
+  $$select public.audit_start_export_for_superadmin('csv','{}','81400000-0000-4000-8000-000000000002')$$,
+  '42501',null,'authenticated clients cannot reach export idempotency state'
 );
+reset role;
+select set_config('request.jwt.claim.sub','81100000-0000-4000-8000-000000000001',true);
+select set_config('request.jwt.claims',
+  '{"sub":"81100000-0000-4000-8000-000000000001","aal":"aal2","role":"authenticated"}',true);
 do $$begin
-  perform public.audit_start_export_for_superadmin('csv','{}','81400000-0000-4000-8000-000000000020');
-  perform public.audit_start_export_for_superadmin('csv','{}','81400000-0000-4000-8000-000000000021');
-  perform public.audit_start_export_for_superadmin('csv','{}','81400000-0000-4000-8000-000000000022');
-  perform public.audit_start_export_for_superadmin('csv','{}','81400000-0000-4000-8000-000000000023');
+  perform app_private.audit_start_export_for_superadmin(
+    'csv','{}','81400000-0000-4000-8000-000000000002');
 end $$;
+set local role authenticated;
 select throws_ok(
   $$select public.audit_start_export_for_superadmin('csv','{}','81400000-0000-4000-8000-000000000024')$$,
-  '54000','audit export rate limit exceeded','sixth export request in one hour is rejected'
+  '42501',null,'deferred export is denied before client rate-limit state'
 );
 select throws_ok(
   $$select public.audit_start_export_for_superadmin('pdf','{}','81400000-0000-4000-8000-000000000003')$$,
-  '22023', 'invalid audit export request', 'unsupported export formats fail closed'
+  '42501',null,'deferred export formats are unreachable to clients'
 );
 select throws_ok(
   $$select public.audit_start_export_for_superadmin('csv','{"actor_ids":"not-an-array"}','81400000-0000-4000-8000-000000000004')$$,
-  '22023', 'invalid audit export request', 'malformed export filter types fail with a safe error'
+  '42501',null,'deferred export filters are unreachable to clients'
 );
 select throws_ok(
   $$select public.audit_start_export_for_superadmin('csv',null,'81400000-0000-4000-8000-000000000005')$$,
-  '22023', 'invalid audit export request', 'null export filters fail closed on direct RPC calls'
+  '42501',null,'null filters cannot bypass the deferred export ACL'
 );
-select ok(
-  (public.audit_get_export_job_for_superadmin('81400000-0000-4000-8000-000000000002')->>'state')='PENDENTE',
-  'authorized requester can read the real queued job state'
+select throws_ok(
+  $$select public.audit_get_export_job_for_superadmin('81400000-0000-4000-8000-000000000002')$$,
+  '42501',null,'authenticated clients cannot read deferred export status'
 );
 select ok(
   (select (summary->>'pii_included')::boolean from public.import_jobs
     where request_id='81400000-0000-4000-8000-000000000002'),
   'export metadata truthfully classifies actor and contextual identifiers as PII'
 );
+reset role;
 insert into app_private.audit_export_snapshot_rows(export_job_id,ordinal,audit_log_id,row_payload)
 select id,1,'81900000-0000-4000-8000-000000000005','{}'::jsonb from public.import_jobs
 where request_id='81400000-0000-4000-8000-000000000002';
-select is(
-  public.audit_get_export_job_for_superadmin(
-    (select id from public.import_jobs where request_id='81400000-0000-4000-8000-000000000002')),
-  null::jsonb,
-  'ready export is unavailable when any snapshot row is outside the current scope'
+set local role authenticated;
+select throws_ok(
+  $$select public.audit_get_export_job_for_superadmin(
+    (select id from public.import_jobs where request_id='81400000-0000-4000-8000-000000000002'))$$,
+  '42501',null,'snapshot contents cannot reopen deferred status to clients'
 );
 reset role;
 
 insert into audit.audit_logs(id,action_code) values
   ('81900000-0000-4000-8000-000000000099','audit_test.null_resource');
 set local role authenticated;
-select set_config('request.jwt.claim.sub','81100000-0000-4000-8000-000000000001',true);
-select set_config('request.jwt.claims','{"sub":"81100000-0000-4000-8000-000000000001","aal":"aal2","role":"authenticated"}',true);
+select set_config('request.jwt.claim.sub','81120000-0000-4000-8000-000000000001',true);
+select set_config('request.jwt.claims','{"sub":"81120000-0000-4000-8000-000000000001","session_id":"81130000-0000-4000-8000-000000000001","aal":"aal1","role":"authenticated"}',true);
 select ok(
   (select item ? 'object_type' and item->'object_type'='null'::jsonb
       and item ? 'object_id' and item->'object_id'='null'::jsonb

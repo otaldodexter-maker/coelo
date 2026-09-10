@@ -254,9 +254,41 @@ abstract interface class CircularMediaRepository {
     String? checksumSha256,
   });
 
-  Future<Uri> resolveRead(String assetId);
+  /// Requests a short lived, server authorized read for [assetId]. The backend
+  /// re-checks actor, tenant and Circular visibility; the client never derives a
+  /// permanent or public address for the file.
+  Future<CircularMediaReadTicket> resolveRead(String assetId);
 
   Future<void> remove(String assetId);
+}
+
+/// Server authorized, expiring read of one Circular attachment. The [url] is a
+/// transient credential: it must never be logged, persisted or shown as text.
+@immutable
+final class CircularMediaReadTicket {
+  const CircularMediaReadTicket({
+    required this.assetId,
+    required this.url,
+    required this.mimeType,
+    required this.expiresAt,
+    this.name,
+    this.byteSize,
+  });
+
+  final String assetId;
+  final Uri url;
+  final String mimeType;
+  final DateTime expiresAt;
+
+  /// Optional descriptive fields. The deployed read envelope does not publish
+  /// them yet, so the presentation stays honest while they are null.
+  final String? name;
+  final int? byteSize;
+
+  bool expiredAt(DateTime moment) => !moment.toUtc().isBefore(expiresAt);
+
+  @override
+  String toString() => 'CircularMediaReadTicket(assetId: $assetId, mimeType: $mimeType)';
 }
 
 @immutable
@@ -266,6 +298,7 @@ final class CircularMediaUploadIntent {
     required this.uploadUrl,
     required this.requiredHeaders,
     required this.expiresAt,
+    this.storageProvider,
   });
 
   final String assetId;
@@ -273,7 +306,15 @@ final class CircularMediaUploadIntent {
   final Map<String, String> requiredHeaders;
   final DateTime expiresAt;
 
+  /// Storage branch chosen by the server ('r2' for the private R2 platform).
+  /// The client never selects provider, bucket or object key.
+  final String? storageProvider;
+
   bool get alreadyUploaded => uploadUrl == null;
+
+  /// The R2 branch signs a short PUT window, so the client must fail honestly
+  /// and re-prepare instead of transferring against an expired signature.
+  bool expiredAt(DateTime moment) => !moment.toUtc().isBefore(expiresAt);
 }
 
 sealed class CircularFailure implements Exception {

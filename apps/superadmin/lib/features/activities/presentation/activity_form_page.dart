@@ -21,6 +21,8 @@ import 'activity_form_draft.dart';
 import 'activity_form_sections.dart';
 
 typedef ActivityFormSubmit = Future<void> Function(ActivityFormDraft draft);
+typedef ActivityLocationSelectionBuilder =
+    Widget Function(BuildContext context, ActivityFormController controller);
 typedef ActivityLocationCreator =
     Future<List<ActivityFormLocationOption>> Function(ActivityLocationDraft draft);
 
@@ -36,6 +38,7 @@ final class ActivityFormPage extends StatefulWidget {
     required this.onSaveDraft,
     required this.onSubmit,
     required this.onCreateLocation,
+    this.locationSelectionBuilder,
     this.activityId,
     this.initialInstitutionId,
     this.initialUnitId,
@@ -61,6 +64,7 @@ final class ActivityFormPage extends StatefulWidget {
   final ActivityFormSubmit onSaveDraft;
   final ActivityFormSubmit onSubmit;
   final ActivityLocationCreator onCreateLocation;
+  final ActivityLocationSelectionBuilder? locationSelectionBuilder;
   final ValueChanged<String>? onDestinationSelected;
   final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
   final InstitutionLogoPicker? imagePicker;
@@ -93,6 +97,8 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
   void didUpdateWidget(covariant ActivityFormPage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.activityId == widget.activityId &&
+        oldWidget.initialInstitutionId == widget.initialInstitutionId &&
+        oldWidget.initialUnitId == widget.initialUnitId &&
         identical(oldWidget.repository, widget.repository)) {
       return;
     }
@@ -101,6 +107,7 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
     _failedCommand = null;
     _pendingAttempt = null;
     _state = _ActivityFormLoadState.loading;
+    _loadGeneration++;
     _commandGeneration++;
     WidgetsBinding.instance.addPostFrameCallback((_) => _load());
   }
@@ -119,6 +126,11 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
     final generation = ++_loadGeneration;
     final repository = widget.repository;
     final activityId = widget.activityId;
+    final initialInstitutionId = widget.initialInstitutionId;
+    final initialUnitId = widget.initialUnitId;
+    final initialTemplateId = widget.initialTemplateId;
+    final initialDraft = widget.initialDraft;
+    final initialStep = widget.initialStep;
     final isEditing = activityId != null;
     setState(() => _state = _ActivityFormLoadState.loading);
     try {
@@ -130,9 +142,9 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
       }
       ActivityFormOptions options;
       String? initialCatalogError;
-      if (isEditing || widget.initialInstitutionId != null) {
+      if (isEditing || initialInstitutionId != null) {
         options = await repository.fetchFormOptions(
-          institutionId: detail?.item.institutionId ?? widget.initialInstitutionId!,
+          institutionId: detail?.item.institutionId ?? initialInstitutionId!,
         );
       } else {
         try {
@@ -162,15 +174,15 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
           ? ActivityFormController.edit(
               options,
               detail!,
-              initialDraft: widget.initialDraft,
+              initialDraft: initialDraft,
               professionalSearcher: (institutionId, query) =>
                   repository.searchProfessionals(institutionId: institutionId, query: query),
             )
           : ActivityFormController.create(
               options,
-              initialInstitutionId: widget.initialInstitutionId,
-              initialUnitId: widget.initialUnitId,
-              initialTemplateId: widget.initialTemplateId,
+              initialInstitutionId: initialInstitutionId,
+              initialUnitId: initialUnitId,
+              initialTemplateId: initialTemplateId,
               loadScopedOptions: (institutionId) =>
                   repository.fetchFormOptions(institutionId: institutionId),
               loadTemplateOptions: (institutionId) =>
@@ -179,7 +191,7 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
               professionalSearcher: (institutionId, query) =>
                   repository.searchProfessionals(institutionId: institutionId, query: query),
             );
-      if (widget.initialStep case final step?) {
+      if (initialStep case final step?) {
         nextController.goToStep(step.index);
       }
       if (!_isCurrentLoad(generation, repository, activityId)) {
@@ -241,7 +253,8 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
   }
 
   Future<void> _saveDraft() async {
-    final controller = _controller!;
+    final controller = _controller;
+    if (!mounted || controller == null || controller.isSubmitting) return;
     if (!controller.validateDraft()) return;
     if (controller.selectedLocationId != null) {
       setState(() => _failedCommand = _ActivityFormCommand.saveDraft);
@@ -271,9 +284,12 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
   }
 
   Future<void> _submit() async {
-    final controller = _controller!;
+    final controller = _controller;
+    if (!mounted || controller == null || controller.isSubmitting) return;
     if (!controller.validateCompletion()) return;
-    if (controller.selectedLocationId != null) {
+    if (controller.selectedLocationId != null ||
+        controller.cataloguedLocationSelection != null ||
+        controller.locationReservation != null) {
       setState(() => _failedCommand = _ActivityFormCommand.submit);
       return;
     }
@@ -377,6 +393,7 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
       onSaveDraft: _saveDraft,
       onSubmit: _submit,
       onCreateLocation: widget.onCreateLocation,
+      locationSelectionBuilder: widget.locationSelectionBuilder,
       onRetryCatalogOptions: _retryCatalogOptions,
       imagePicker: widget.imagePicker ?? pickInstitutionLogo,
       aboutRepository: widget.aboutRepository,
@@ -426,6 +443,7 @@ final class _ActivityFormBody extends StatelessWidget {
     required this.onSaveDraft,
     required this.onSubmit,
     required this.onCreateLocation,
+    this.locationSelectionBuilder,
     required this.onRetryCatalogOptions,
     required this.imagePicker,
     required this.aboutRepository,
@@ -441,6 +459,7 @@ final class _ActivityFormBody extends StatelessWidget {
   final VoidCallback onSaveDraft;
   final VoidCallback onSubmit;
   final ActivityLocationCreator onCreateLocation;
+  final ActivityLocationSelectionBuilder? locationSelectionBuilder;
   final Future<void> Function() onRetryCatalogOptions;
   final InstitutionLogoPicker imagePicker;
   final ActivityProfileAboutRepository aboutRepository;
@@ -482,7 +501,10 @@ final class _ActivityFormBody extends StatelessWidget {
           );
           return SuperadminFormFrame(
             viewportWidth: viewportWidth,
-            navigation: navigation,
+            navigation: ExcludeFocus(
+              excluding: controller.isSubmitting,
+              child: AbsorbPointer(absorbing: controller.isSubmitting, child: navigation),
+            ),
             scrollKey: const Key('activity-form-scroll'),
             body: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -500,13 +522,28 @@ final class _ActivityFormBody extends StatelessWidget {
                   ),
                   const SizedBox(height: CoeloSpacing.space4),
                 ],
-                ActivityFormSection(
-                  controller: controller,
-                  onCreateLocation: onCreateLocation,
-                  onRetryCatalogOptions: onRetryCatalogOptions,
-                  imagePicker: imagePicker,
-                  aboutRepository: aboutRepository,
-                  activityId: activityId,
+                if (controller.isSubmitting)
+                  Semantics(
+                    liveRegion: true,
+                    child: const Padding(
+                      padding: EdgeInsets.only(bottom: CoeloSpacing.space3),
+                      child: Text('Salvando alterações…'),
+                    ),
+                  ),
+                ExcludeFocus(
+                  excluding: controller.isSubmitting,
+                  child: AbsorbPointer(
+                    absorbing: controller.isSubmitting,
+                    child: ActivityFormSection(
+                      controller: controller,
+                      onCreateLocation: onCreateLocation,
+                      locationSelectionBuilder: locationSelectionBuilder,
+                      onRetryCatalogOptions: onRetryCatalogOptions,
+                      imagePicker: imagePicker,
+                      aboutRepository: aboutRepository,
+                      activityId: activityId,
+                    ),
+                  ),
                 ),
               ],
             ),

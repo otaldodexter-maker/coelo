@@ -1406,6 +1406,8 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     for (final section in _sections) {
       for (final question in _flattenQuestions(section.questions)) {
         if (question.galleryLimitsIssue case final issue?) return issue;
+        if (question.textLimitsIssue case final issue?) return issue;
+        if (question.numericLimitsIssue case final issue?) return issue;
         if (question.dateLimitsIssue case final issue?) return issue;
       }
     }
@@ -1517,7 +1519,9 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     isRequired: question.required,
     conditions: question.loadedConditions,
     config: FormItemConfig(
-      maxLength: question.loadedConfig.maxLength,
+      maxLength: question.kind == FormItemKind.shortText
+          ? int.tryParse(question.maxLength.text.trim())
+          : question.loadedConfig.maxLength,
       minDate:
           question.kind == FormItemKind.date &&
               (question.dateRule == _DateRule.from || question.dateRule == _DateRule.range)
@@ -1543,8 +1547,8 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       maxImages: question.kind == FormItemKind.gallery
           ? int.tryParse(question.maximumImages.text.trim())
           : question.loadedConfig.maxImages,
-      minValue: num.tryParse(question.minimum.text.trim().replaceAll(',', '.')),
-      maxValue: num.tryParse(question.maximum.text.trim().replaceAll(',', '.')),
+      minValue: FormNumericLimits.parse(question.kind, question.minimum.text),
+      maxValue: FormNumericLimits.parse(question.kind, question.maximum.text),
       currency: question.kind == FormItemKind.money ? 'BRL' : null,
     ),
     options: [
@@ -1720,8 +1724,14 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     );
     draft
       ..details.text = item.helpText ?? ''
-      ..minimum.text = item.config.minValue?.toString() ?? ''
-      ..maximum.text = item.config.maxValue?.toString() ?? '';
+      ..minimum.text = switch (item.config.minValue) {
+        final value? => FormNumericLimits.format(item.kind, value),
+        null => '',
+      }
+      ..maximum.text = switch (item.config.maxValue) {
+        final value? => FormNumericLimits.format(item.kind, value),
+        null => '',
+      };
     draft.replaceOptions(item.options);
     return draft;
   }
@@ -1752,7 +1762,18 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     if (!widget.development) {
       final api = widget.api;
       final definition = _definition;
-      if (api == null || definition == null || !_canPublish) return;
+      if (api == null || definition == null || !_canPublish) {
+        // A publication that cannot proceed says why. Silence here reads as a
+        // broken button: the form is never published and nothing explains it.
+        setState(
+          () => _feedback = switch ((api, definition)) {
+            (null, _) => 'O serviço de Formulários não está disponível.',
+            (_, null) => 'Salve o rascunho antes de publicar.',
+            _ => 'Você não tem permissão para publicar este formulário.',
+          },
+        );
+        return;
+      }
       setState(() => _saving = true);
       try {
         final published = await api.publish(
@@ -2154,6 +2175,7 @@ final class _EditorQuestionDraft {
        details = TextEditingController(),
        minimum = TextEditingController(),
        maximum = TextEditingController(),
+       maxLength = TextEditingController(text: loadedConfig.maxLength?.toString() ?? ''),
        minimumImages = TextEditingController(text: loadedConfig.minImages?.toString() ?? ''),
        maximumImages = TextEditingController(text: loadedConfig.maxImages?.toString() ?? ''),
        options = kind == FormItemKind.singleChoice || kind == FormItemKind.multipleChoice
@@ -2179,6 +2201,7 @@ final class _EditorQuestionDraft {
   final TextEditingController details;
   final TextEditingController minimum;
   final TextEditingController maximum;
+  final TextEditingController maxLength;
   final TextEditingController minimumImages;
   final TextEditingController maximumImages;
   final List<TextEditingController> options;
@@ -2202,6 +2225,37 @@ final class _EditorQuestionDraft {
     }
     if (dateRule == _DateRule.range && from!.isAfter(until!)) {
       return 'A data mínima deve ser anterior ou igual à data máxima.';
+    }
+    return null;
+  }
+
+  /// Gallery and dates already refuse an inverted range. Numeric limits did
+  /// not, so an author could save minimum above maximum and leave a question
+  /// that no answer can satisfy, with nothing said.
+  String? get numericLimitsIssue {
+    if (!FormNumericLimits.isNumeric(kind)) return null;
+    final low = FormNumericLimits.parse(kind, minimum.text);
+    final high = FormNumericLimits.parse(kind, maximum.text);
+    // A bound that was typed but cannot be read was dropped in silence: the
+    // form saved with no limit at all and nothing said so.
+    for (final (text, value) in [(minimum.text, low), (maximum.text, high)]) {
+      if (text.trim().isEmpty || value != null) continue;
+      return kind == FormItemKind.integer
+          ? 'O mínimo e o máximo de uma pergunta de número inteiro precisam ser inteiros.'
+          : 'Informe limites numéricos válidos.';
+    }
+    if (low == null || high == null) return null;
+    if (low > high) return 'O valor mínimo deve ser menor ou igual ao máximo.';
+    return null;
+  }
+
+  String? get textLimitsIssue {
+    if (kind != FormItemKind.shortText) return null;
+    final declared = maxLength.text.trim();
+    if (declared.isEmpty) return null;
+    final value = int.tryParse(declared);
+    if (value == null || value < 1) {
+      return 'Informe um máximo de caracteres inteiro e maior que zero.';
     }
     return null;
   }
@@ -2284,6 +2338,7 @@ final class _EditorQuestionDraft {
       ..details.text = details.text
       ..minimum.text = minimum.text
       ..maximum.text = maximum.text
+      ..maxLength.text = maxLength.text
       ..minimumImages.text = minimumImages.text
       ..maximumImages.text = maximumImages.text;
     value.replaceOptions([
@@ -2310,6 +2365,7 @@ final class _EditorQuestionDraft {
     details.dispose();
     minimum.dispose();
     maximum.dispose();
+    maxLength.dispose();
     minimumImages.dispose();
     maximumImages.dispose();
     for (final option in options) {
@@ -2654,8 +2710,41 @@ final class _QuestionCardState extends State<_QuestionCard> {
           onChanged: (_) => widget.onChanged(),
         ),
       ],
+      if (widget.question.kind == FormItemKind.shortText) ...[
+        const SizedBox(height: CoeloSpacing.space3),
+        CoeloFormTextField(
+          fieldKey: ValueKey('forms-editor-max-length-${widget.question.id}'),
+          controller: widget.question.maxLength,
+          labelText: 'Máximo de caracteres',
+          hintText: 'Sem limite',
+          prefixIcon: Icons.short_text_rounded,
+          keyboardType: TextInputType.number,
+          onChanged: (_) {
+            setState(() {});
+            widget.onChanged();
+          },
+        ),
+        if (widget.question.textLimitsIssue case final issue?) ...[
+          const SizedBox(height: CoeloSpacing.space2),
+          Text(
+            issue,
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.error),
+          ),
+        ],
+      ],
       if (_isNumericKind(widget.question.kind)) ...[
         const SizedBox(height: CoeloSpacing.space3),
+        if (widget.question.numericLimitsIssue case final issue?) ...[
+          Text(
+            issue,
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.error),
+          ),
+          const SizedBox(height: CoeloSpacing.space2),
+        ],
         LayoutBuilder(
           builder: (context, constraints) {
             final minimum = CoeloFormTextField(
@@ -2663,14 +2752,24 @@ final class _QuestionCardState extends State<_QuestionCard> {
               labelText: widget.question.kind == FormItemKind.money ? 'Valor mínimo' : 'Mínimo',
               prefixIcon: Icons.vertical_align_bottom_rounded,
               keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
-              onChanged: (_) => widget.onChanged(),
+              // Rebuild so the inverted-range message appears while typing,
+              // like the gallery bounds already do.
+              onChanged: (_) {
+                setState(() {});
+                widget.onChanged();
+              },
             );
             final maximum = CoeloFormTextField(
               controller: widget.question.maximum,
               labelText: widget.question.kind == FormItemKind.money ? 'Valor máximo' : 'Máximo',
               prefixIcon: Icons.vertical_align_top_rounded,
               keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
-              onChanged: (_) => widget.onChanged(),
+              // Rebuild so the inverted-range message appears while typing,
+              // like the gallery bounds already do.
+              onChanged: (_) {
+                setState(() {});
+                widget.onChanged();
+              },
             );
             if (constraints.maxWidth < 520) {
               return Column(
@@ -3141,7 +3240,7 @@ const _catalogGroups = [
 ];
 
 bool _isNumericKind(FormItemKind kind) =>
-    kind == FormItemKind.integer || kind == FormItemKind.decimal || kind == FormItemKind.money;
+    FormNumericLimits.isNumeric(kind);
 
 String _kindLabel(FormItemKind kind) => switch (kind) {
   FormItemKind.shortText => 'Texto curto',

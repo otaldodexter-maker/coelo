@@ -502,6 +502,11 @@ void main() {
 
 GoRouter _router(SuperadminSession session) => createSuperadminRouter(
   session: session,
+  // b20a9c205 tornou SuperadminAppConfig.allowDevelopmentPreview falso por
+  // padrao. Estes casos exercitam justamente as rotas e o gatilho de preview de
+  // desenvolvimento, entao precisam liga-lo de forma explicita; sem isto o
+  // router redireciona /dev e a suite fica vermelha sem defeito de produto.
+  allowDevelopmentPreview: true,
   login: (_) async => const LoginResult.success(),
   logout: unavailableSuperadminLogout,
   requestPasswordRecovery: unavailableSuperadminPasswordRecovery,

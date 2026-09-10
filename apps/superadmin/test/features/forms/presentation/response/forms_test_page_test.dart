@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coelo_api/coelo_api.dart';
 import 'package:coelo_domain/coelo_domain.dart';
 import 'package:coelo_superadmin/features/forms/presentation/response/forms_test_page.dart';
@@ -128,6 +130,246 @@ void main() {
       expect(tester.takeException(), isNull, reason: 'overflow at $width px');
     }
   });
+
+  // Residual C02/R01, forms.test: faltava preview produtivo sem resposta real.
+  // O caminho com occurrenceId ja delega ao fluxo de resposta autorizado; o que
+  // nao existia era prever o formulario autorado sem criar ocorrencia nem rascunho.
+  testWidgets('production previews the authored form without opening a response', (tester) async {
+    final api = _TestDefinitionApi();
+    await tester.pumpWidget(app(FormsTestPage(api: api, formId: 'form-7')));
+    await tester.pumpAndSettle();
+
+    expect(api.requestedFormIds, ['form-7']);
+    expect(find.text('Autorização de saída'), findsOneWidget);
+    expect(find.text('Quem retira a criança *'), findsOneWidget);
+    expect(find.text('Meio de transporte'), findsOneWidget);
+    expect(find.text('A pé'), findsOneWidget);
+    // Nenhum comando de escrita: sem abrir rascunho, salvar ou enviar.
+    expect(api.commands, isEmpty);
+    expect(find.byKey(const Key('forms-test-no-persistence')), findsOneWidget);
+  });
+
+  testWidgets('the preview never offers a control that could answer', (tester) async {
+    await tester.pumpWidget(app(FormsTestPage(api: _TestDefinitionApi(), formId: 'form-7')));
+    await tester.pumpAndSettle();
+
+    for (final chip in tester.widgetList<ChoiceChip>(find.byType(ChoiceChip))) {
+      // Os unicos chips habilitados são os de largura do preview.
+      if (chip.label case Text(:final data) when data == 'A pé' || data == 'Carro') {
+        expect(chip.onSelected, isNull, reason: 'option $data must not be answerable');
+      }
+    }
+    expect(find.byKey(const Key('forms-test-next')), findsNothing);
+    expect(find.byKey(const Key('forms-test-finish')), findsNothing);
+  });
+
+  testWidgets('a refused preview fails closed instead of showing a neutral form', (tester) async {
+    final api = _TestDefinitionApi(failure: FormApiFailureKind.unauthorized);
+    await tester.pumpWidget(app(FormsTestPage(api: api, formId: 'form-7')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('forms-test-unavailable')), findsOneWidget);
+    expect(find.text('Autorização de saída'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('a preview that returns after dispose changes nothing', (tester) async {
+    final gate = Completer<void>();
+    final api = _TestDefinitionApi(gate: gate.future);
+    await tester.pumpWidget(app(FormsTestPage(api: api, formId: 'form-7')));
+    await tester.pump();
+    await tester.pumpWidget(app(const SizedBox()));
+    gate.complete();
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('switching forms never shows the previous one under the new id', (tester) async {
+    final first = _TestDefinitionApi();
+    await tester.pumpWidget(app(FormsTestPage(api: first, formId: 'form-7')));
+    await tester.pumpAndSettle();
+    expect(find.text('Quem retira a criança *'), findsOneWidget);
+
+    final gate = Completer<void>();
+    final second = _TestDefinitionApi(gate: gate.future);
+    await tester.pumpWidget(app(FormsTestPage(api: second, formId: 'form-8')));
+    await tester.pump();
+    // Enquanto o novo carrega, o formulario ANTERIOR nao pode continuar na
+    // tela: seria um formulario exibido sob o id de outro.
+    expect(find.text('Quem retira a criança *'), findsNothing);
+
+    gate.complete();
+    await tester.pumpAndSettle();
+    expect(find.text('Quem retira a criança *'), findsOneWidget);
+    expect(second.requestedFormIds, ['form-8']);
+  });
+
+  testWidgets('an authorized occurrence still wins over the definition preview', (tester) async {
+    final occurrence = _TestOccurrenceApi();
+    await tester.pumpWidget(
+      app(FormsTestPage(api: occurrence, occurrenceId: 'occurrence-1', formId: 'form-7')),
+    );
+    await tester.pumpAndSettle();
+
+    expect(occurrence.requestedOccurrenceId, 'occurrence-1');
+    expect(find.text('Compartilhe um cuidado importante'), findsOneWidget);
+  });
+
+  testWidgets('without api or form the production surface stays fail-closed', (tester) async {
+    await tester.pumpWidget(app(FormsTestPage(api: _TestDefinitionApi())));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('form-response-unavailable')), findsOneWidget);
+  });
+
+  testWidgets('the preview stays overflow-free at responsive widths and 200% text', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
+      tester.view.physicalSize = Size(width, 1600);
+      await tester.pumpWidget(
+        app(
+          FormsTestPage(api: _TestDefinitionApi(), formId: 'form-7'),
+          textScaler: const TextScaler.linear(2),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull, reason: 'overflow at $width px');
+    }
+  });
+
+  testWidgets('every authored kind renders in the preview without crashing', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    tester.view.physicalSize = const Size(1024, 4000);
+    final api = _AllKindsApi();
+    await tester.pumpWidget(app(FormsTestPage(api: api, formId: 'form-9')));
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    for (final kind in FormItemKind.values) {
+      expect(find.text(_labelFor(kind)), findsOneWidget, reason: 'missing ${kind.name}');
+    }
+  });
+
+  testWidgets('the preview shows the authored limits in civil notation', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    tester.view.physicalSize = const Size(1024, 4000);
+    await tester.pumpWidget(app(FormsTestPage(api: _AllKindsApi(), formId: 'form-9')));
+    await tester.pumpAndSettle();
+
+    // money max 1050 minor units reads as 10,50 for the author.
+    expect(find.textContaining('máximo 10,50'), findsOneWidget);
+    expect(find.textContaining('até 140 caracteres'), findsOneWidget);
+  });
+}
+
+String _labelFor(FormItemKind kind) => 'Pergunta ${kind.name}';
+
+final class _AllKindsApi implements FormsApi {
+  @override
+  Future<FormEditorProjection> getEditor(String formId) async => FormEditorProjection(
+    definition: FormDefinition(
+      id: formId,
+      institutionId: 'institution-1',
+      kind: FormKind.form,
+      identityMode: FormIdentityMode.anonymous,
+      responseUnit: FormResponseUnit.person,
+      title: 'Todos os tipos',
+      sections: [
+        FormSection(
+          id: 'section-1',
+          title: 'Cobertura',
+          position: 0,
+          items: [
+            for (final (index, kind) in FormItemKind.values.indexed)
+              FormItem(
+                id: 'item-$index',
+                kind: kind,
+                label: _labelFor(kind),
+                position: index,
+                config: switch (kind) {
+                  FormItemKind.money => const FormItemConfig(maxValue: 1050),
+                  FormItemKind.shortText => const FormItemConfig(maxLength: 140),
+                  _ => const FormItemConfig(),
+                },
+                options: kind == FormItemKind.singleChoice || kind == FormItemKind.multipleChoice
+                    ? const [FormOption(id: 'option-1', label: 'Única opção', position: 0)]
+                    : const [],
+              ),
+          ],
+        ),
+      ],
+    ),
+  );
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+final class _TestDefinitionApi implements FormsApi {
+  _TestDefinitionApi({this.failure, this.gate});
+
+  final FormApiFailureKind? failure;
+  final Future<void>? gate;
+  final requestedFormIds = <String>[];
+  final commands = <Object>[];
+
+  @override
+  Future<FormEditorProjection> getEditor(String formId) async {
+    requestedFormIds.add(formId);
+    if (gate case final gate?) await gate;
+    if (failure case final failure?) {
+      throw FormApiException(failure, 'refused');
+    }
+    return FormEditorProjection(
+      definition: FormDefinition(
+        id: formId,
+        institutionId: 'institution-1',
+        kind: FormKind.form,
+        identityMode: FormIdentityMode.identified,
+        responseUnit: FormResponseUnit.person,
+        title: 'Autorização de saída',
+        status: FormStatus.draft,
+        managementVersion: 1,
+        sections: [
+          FormSection(
+            id: 'section-1',
+            title: 'Responsável',
+            position: 0,
+            items: [
+              FormItem(
+                id: 'item-1',
+                kind: FormItemKind.shortText,
+                label: 'Quem retira a criança',
+                position: 0,
+                isRequired: true,
+              ),
+              FormItem(
+                id: 'item-2',
+                kind: FormItemKind.singleChoice,
+                label: 'Meio de transporte',
+                position: 1,
+                options: const [
+                  FormOption(id: 'option-1', label: 'A pé', position: 0),
+                  FormOption(id: 'option-2', label: 'Carro', position: 1),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) {
+    commands.add(invocation.memberName);
+    return super.noSuchMethod(invocation);
+  }
 }
 
 final class _TestOccurrenceApi implements FormsApi {

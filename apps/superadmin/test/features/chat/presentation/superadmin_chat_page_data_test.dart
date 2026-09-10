@@ -176,4 +176,12 @@ final class _ChatRepository implements ChatRepository {
       kind: 'text',
     );
   }
+
+  @override
+  Future<ChatMessage> editMessage(ChatEditMessageCommand command) =>
+      Future<ChatMessage>.error(const ChatFailureException());
+
+  @override
+  Future<ChatMessageRevocation> revokeMessage(ChatRevokeMessageCommand command) =>
+      Future<ChatMessageRevocation>.error(const ChatFailureException());
 }

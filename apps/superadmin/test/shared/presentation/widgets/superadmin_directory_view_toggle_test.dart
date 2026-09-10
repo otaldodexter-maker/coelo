@@ -36,6 +36,19 @@ void main() {
     );
   });
 
+  testWidgets('a regiao de pressionar-e-segurar tem nome acessivel', (tester) async {
+    // O detector de long press publicava um no tocavel de 128x48 sem rotulo,
+    // enquanto os dois segmentos internos eram rotulados. Como este toggle
+    // aparece em varios diretorios, o no sem nome reprovava
+    // labeledTapTargetGuideline em sete telas de cinco donos.
+    final handle = tester.ensureSemantics();
+    await tester.pumpWidget(_app(onSelected: (_) {}));
+    await tester.pumpAndSettle();
+
+    await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+    handle.dispose();
+  });
+
   testWidgets('selects grouped when the table segment is tapped directly', (tester) async {
     _View? selected;
     await tester.pumpWidget(_app(onSelected: (value) => selected = value));

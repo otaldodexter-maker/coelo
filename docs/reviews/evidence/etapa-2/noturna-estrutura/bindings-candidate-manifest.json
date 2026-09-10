@@ -1,0 +1,41 @@
+{
+  "package": "ESTRUTURA-BINDINGS-READ-V2-20260909",
+  "generated_at": "2026-09-09T18:38:56.381854-03:00",
+  "status": "local nominal candidate; no SQL execution; no production application authorized",
+  "base": "d784462c168d22fdb7090b7de1ef7db554ad5107",
+  "files": [
+    {
+      "path": "packages/coelo_database/migrations/20260909190000_superadmin_location_consumer_bindings_v2.sql",
+      "sha256": "13d7631bab35b5a667286d994db017aa6999f38a774971fa07bbc1e68762053d"
+    },
+    {
+      "path": "packages/coelo_database/supabase/tests/superadmin_location_consumer_bindings_v2_test.sql",
+      "sha256": "22eb4ad94ab53e28e48548875fe1adc499c5c99ca62b433ab952feccc4234dac"
+    }
+  ],
+  "required_base_profile": "LocationReservationsV1 (64 migrations; last20260909165000); coordinator owns derived profile and serialized replay",
+  "counts": {
+    "N": 30,
+    "E": 0,
+    "P": 0,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 30
+  },
+  "contract": "superadmin_location_consumer_bindings_v2(jsonb,uuid,integer): authorized historical location references for persisted Group/Activity; never current selected location",
+  "security": [
+    "Owner-only; locations.read + reservations.read + consumer.read",
+    "Real consumer authorized before empty result",
+    "Cursor and lookahead checked against current owner/consumer relation",
+    "After audit reauthorization and wall-clock session check; rollback on denial",
+    "No direct table grants, capability provisioning, helper replacement, or data backfill"
+  ],
+  "outstanding": [
+    "Coordinator local replay slot + nominal successor profile",
+    "Causal expiry/revocation while audit is blocked (not among30 TAP)",
+    "Forward-only order must be reconciled against coordinator queue before any deployment",
+    "Remote exact-package authorization absent; production action retained"
+  ],
+  "child": "bindings_review: implementation and static review complete; no active resources"
+}

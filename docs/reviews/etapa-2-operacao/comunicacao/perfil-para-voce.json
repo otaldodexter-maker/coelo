@@ -1,0 +1,55 @@
+{
+  "revision": 2,
+  "updated_at": "2026-09-09T18:32:00-03:00",
+  "group": "perfil-para-voce",
+  "task": "/root",
+  "model": "Claude Opus 5 (1M context)",
+  "status": "executing",
+  "coordinator": "Claude",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-perfil-para-voce",
+  "branch": "work/etapa2-noturna-perfil-para-voce",
+  "head": "d784462c1 + merge em andamento (nao commitado)",
+  "upstream": "sem upstream ainda",
+  "base_observed": "d784462c1",
+  "scope": [
+    "apps/superadmin -> menu Coelo (Principal) -> Perfil contextual -> visualizar/editar Sobre",
+    "apps/superadmin -> menu Coelo (Principal) -> Perfil contextual -> Para Voce"
+  ],
+  "not_in_scope": [
+    "Minha conta",
+    "Perfis de acesso",
+    "demais apps",
+    "import/export adiados"
+  ],
+  "action_ids_status": "familia principal_profile, 3 IDs do contrato; mapeamento focal em andamento",
+  "changed": "Worktree/branch do contrato ja existiam pre-criadas e foram adotadas. Merge de codex/e2-r02-l03-perfil-para-voce (b209b4e0f) sobre d784462c1 com 5 conflitos resolvidos conforme propostas/L03-analise-conflitos-dev.md: nos 4 arquivos de Para Voce prevalece L03 (gate de audiencia obrigatorio; dev tinha a versao antiga em que scope==null retornava true e desligava o gate); no router prevalece a colocacao de dev (rotas dentro do ShellRoute) com o corpo de L03 e embedded:true, mais a rota nova /principal-profile/edit e a declaracao de capacidade de mutacao. Removido import duplicado de circular_repository.dart. flutter analyze lib: No issues found.",
+  "closed_criteria": [
+    "flutter analyze lib limpo apos merge (evidencia local)"
+  ],
+  "tests": {
+    "note": "Lote do recorte ainda nao executado apos o merge.",
+    "P": null,
+    "F": null,
+    "B": null,
+    "S": null,
+    "U": null
+  },
+  "reservations": [],
+  "reservations_requested": [
+    "apps/superadmin/lib/app/router/superadmin_router.dart (hunks: 2 builders Principal + rota nova de edicao + 2 parametros opcionais + imports + capacidade de mutacao)",
+    "apps/superadmin/lib/app/router/superadmin_routes.dart (2 constantes principalProfileEdit)",
+    "apps/superadmin/lib/core/config/superadmin_auth_scope.dart, superadmin_app.dart, main.dart (apenas campo/injecao/passagem dos 2 parametros)"
+  ],
+  "blocker": "coordenacao.json ainda ausente; nenhum coordenador registrou posse. Trabalho segue confinado a minha worktree; integracao em dev depende do coordenador.",
+  "next_step": "Executar o lote do recorte (test/app/router/principal_profile_for_you_production_routes_test.dart, test/features/principal_profile, principal_for_you, profile_about) sobre o merge resolvido e comparar com a referencia P=214 F=10 da branch L03.",
+  "wip": [],
+  "artifacts": [],
+  "children": [],
+  "processes": [],
+  "ports": [],
+  "ack": null,
+  "limitations": "Sem canal nativo verificado ate agora; arquivo publicado nao comprova leitura pelo coordenador.",
+  "deadline": "2026-09-10T05:00:00-03:00",
+  "eta": "Delta ainda nao inspecionado.",
+  "alert": "registro.json aponta headSha de L03 em 9c6042732, que e o revert e esta 48 commits atras. O SHA correto e b209b4e0f."
+}

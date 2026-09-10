@@ -61,6 +61,8 @@ final class _ThrowingRepository implements HappensPublicationRepository {
       _inner.removeMedia(context, media);
 
   @override
-  Future<HappensPublication> publish(HappensPublicationContext context, HappensPostDraft draft) =>
-      _inner.publish(context, draft);
+  Future<HappensPublication> publish(HappensPublicationContext context, HappensPostDraft draft, {
+    required String requestId,
+  }) =>
+      _inner.publish(context, draft, requestId: requestId);
 }

@@ -1,0 +1,62 @@
+[
+    {
+        "state":  "identity",
+        "path":  "apps/superadmin/test/app/router/goldens/person_detail_dark_1440_identity.png",
+        "before_sha256":  "6B52F83DCB9FF46034BB140F3B649EA0B3ACDA3254F08609D1F74FDA9A872413",
+        "after_sha256":  "D17641CCE602A23C885BB74FFC4D0790A71D06D1DCE8475C9192927F9A9B4E44",
+        "inspected_before_update":  true,
+        "cause":  "d019c109a internal-users navigation",
+        "pixels":  4801,
+        "percent":  0.37
+    },
+    {
+        "state":  "context",
+        "path":  "apps/superadmin/test/app/router/goldens/person_detail_dark_1440_context.png",
+        "before_sha256":  "05E4991F686871304E55F3832F721B126C32946C6E5A96FF47B33C80DCB5595B",
+        "after_sha256":  "77A6321A6AADCE99C8FD74DECD29AAEE2782452A637693862548A53C64AAA4B3",
+        "inspected_before_update":  true,
+        "cause":  "d019c109a internal-users navigation",
+        "pixels":  4801,
+        "percent":  0.37
+    },
+    {
+        "state":  "focus",
+        "path":  "apps/superadmin/test/app/router/goldens/person_detail_dark_1440_focus.png",
+        "before_sha256":  "3A20A4204837D1338CB27ECEF821371D39FAD1D140C9522349495623D04D1FE9",
+        "after_sha256":  "981510D612FDB67F6C1BA0A4F3612CC7F5D1189246B8D6A75F16728C56082E75",
+        "inspected_before_update":  true,
+        "cause":  "d019c109a internal-users navigation",
+        "pixels":  4801,
+        "percent":  0.37
+    },
+    {
+        "state":  "loading",
+        "path":  "apps/superadmin/test/app/router/goldens/person_detail_dark_1440_loading.png",
+        "before_sha256":  "09D57E7AF02107A8804FBEC2622B9E74A64757410F756B63D5B28B812A3E93ED",
+        "after_sha256":  "CC898242CE103E7524700CDD243F6F224CE9ECB102A8A774006DEB13475AA685",
+        "inspected_before_update":  true,
+        "cause":  "d019c109a internal-users navigation",
+        "pixels":  4801,
+        "percent":  0.37
+    },
+    {
+        "state":  "denied",
+        "path":  "apps/superadmin/test/app/router/goldens/person_detail_dark_1440_denied.png",
+        "before_sha256":  "DD9689BAEA5D512852A0CACF3BA94A3CD01EB9F316490397F40B1C77457CA7F3",
+        "after_sha256":  "A51971BF125C16517E713CFB53211A07F5FFCF8180EE87A8A0D7B871C34B29C2",
+        "inspected_before_update":  true,
+        "cause":  "d019c109a internal-users navigation",
+        "pixels":  4801,
+        "percent":  0.37
+    },
+    {
+        "state":  "unavailable",
+        "path":  "apps/superadmin/test/app/router/goldens/person_detail_dark_1440_unavailable.png",
+        "before_sha256":  "AA237C6D47045F8DCE3DF3099873BAC95461F6A7DE950723D8DAF112B9202068",
+        "after_sha256":  "469C187C1425E9CEE6590EF443DC702C82EDAD64901103E3C832A93432CFEADD",
+        "inspected_before_update":  true,
+        "cause":  "d019c109a internal-users navigation",
+        "pixels":  4801,
+        "percent":  0.37
+    }
+]

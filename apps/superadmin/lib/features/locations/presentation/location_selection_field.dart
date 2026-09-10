@@ -34,6 +34,7 @@ class LocationSelectionField extends StatefulWidget {
     this.sessionAvailable = false,
     this.contextRevision = 0,
     this.enabled = true,
+    this.catalogOnly = false,
     this.onSaveToCatalogRequested,
     super.key,
   });
@@ -45,6 +46,9 @@ class LocationSelectionField extends StatefulWidget {
   final bool sessionAvailable;
   final int contextRevision;
   final bool enabled;
+
+  /// Reservation contexts can only use an existing catalog entry.
+  final bool catalogOnly;
 
   /// Reserved for the authorized write that promotes a one-off to the catalog.
   final ValueChanged<String>? onSaveToCatalogRequested;
@@ -62,7 +66,9 @@ class _LocationSelectionFieldState extends State<LocationSelectionField> {
   @override
   void initState() {
     super.initState();
-    final initial = widget.initialSelection;
+    final initial = widget.catalogOnly && widget.initialSelection is OneOffLocationSelection
+        ? null
+        : widget.initialSelection;
     _mode = initial is OneOffLocationSelection
         ? LocationSelectionMode.oneOff
         : LocationSelectionMode.catalogued;
@@ -141,25 +147,26 @@ class _LocationSelectionFieldState extends State<LocationSelectionField> {
           Semantics(header: true, child: Text('Local', style: theme.textTheme.titleMedium)),
           Text(locationScopeLabel(widget.scope), style: theme.textTheme.bodyMedium),
           const SizedBox(height: CoeloSpacing.space3),
-          SegmentedButton<LocationSelectionMode>(
-            key: const Key('location-selection-mode'),
-            segments: const [
-              ButtonSegment(
-                value: LocationSelectionMode.catalogued,
-                label: Text('Do catálogo'),
-                icon: Icon(Icons.place_outlined),
-              ),
-              ButtonSegment(
-                value: LocationSelectionMode.oneOff,
-                label: Text('Pontual'),
-                icon: Icon(Icons.edit_location_alt_outlined),
-              ),
-            ],
-            selected: {_mode},
-            onSelectionChanged: widget.enabled ? (values) => _changeMode(values.first) : null,
-          ),
+          if (!widget.catalogOnly)
+            SegmentedButton<LocationSelectionMode>(
+              key: const Key('location-selection-mode'),
+              segments: const [
+                ButtonSegment(
+                  value: LocationSelectionMode.catalogued,
+                  label: Text('Do catálogo'),
+                  icon: Icon(Icons.place_outlined),
+                ),
+                ButtonSegment(
+                  value: LocationSelectionMode.oneOff,
+                  label: Text('Pontual'),
+                  icon: Icon(Icons.edit_location_alt_outlined),
+                ),
+              ],
+              selected: {_mode},
+              onSelectionChanged: widget.enabled ? (values) => _changeMode(values.first) : null,
+            ),
           const SizedBox(height: CoeloSpacing.space3),
-          if (_mode == LocationSelectionMode.catalogued) ...[
+          if (widget.catalogOnly || _mode == LocationSelectionMode.catalogued) ...[
             CoeloSearchField(
               key: const Key('location-selection-search'),
               controller: _search,

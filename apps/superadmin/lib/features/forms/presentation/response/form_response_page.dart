@@ -259,7 +259,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
   int _savedAnswerRevision = 0;
   Timer? _autosaveTimer;
   bool _autosavePaused = false;
-  final _invalidNumericIds = <String>{};
+  final _invalidAnswerReasons = <String, String>{};
   String? _activeSectionId;
   final _sectionFocus = <String, FocusNode>{};
   ({_ResponseCommandKind kind, FormCommand<FormResponseDraftPayload> command, int answerRevision})?
@@ -319,7 +319,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
       _answerRevision = 0;
       _savedAnswerRevision = 0;
       _autosavePaused = false;
-      _invalidNumericIds.clear();
+      _invalidAnswerReasons.clear();
       _activeSectionId = null;
     });
     if (api == null || occurrenceId == null || occurrenceId.isEmpty) {
@@ -654,9 +654,9 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
         initialValue: _textValue(item.id),
         minLines: 2,
         maxLines: 6,
-        onChanged: (value) => update(
-          value.trim().isEmpty ? null : FormAnswer.shortText(itemId: item.id, value: value),
-        ),
+        onChanged: (value) {
+          if (_isCurrent(generation)) _setTextAnswer(item, value);
+        },
         validator: (_) => _requiredMessage(item),
         decoration: const InputDecoration(border: OutlineInputBorder()),
       ),
@@ -722,8 +722,11 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
       FormItemKind.scale => Wrap(
         spacing: CoeloSpacing.space2,
         children: [
+          // Os padroes espelham os do servidor, coalesce(scale_min, 1) e
+          // coalesce(scale_max, 10). Comecar em zero oferecia um valor que o
+          // servidor sempre recusaria numa escala sem minimo declarado.
           for (
-            var value = item.config.scaleMin ?? 0;
+            var value = item.config.scaleMin ?? 1;
             value <= (item.config.scaleMax ?? 10);
             value++
           )
@@ -826,7 +829,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
   void _pruneHiddenAnswers() {
     final visible = _visibleItemIds;
     _answers.removeWhere((id, _) => !visible.contains(id));
-    _invalidNumericIds.removeWhere((id) => !visible.contains(id));
+    _invalidAnswerReasons.removeWhere((id, _) => !visible.contains(id));
     final sections = _presentedSections;
     if (!sections.any((section) => section.id == _activeSectionId)) {
       final hadActiveSection = _activeSectionId != null;
@@ -882,7 +885,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
         _saving ||
         _review ||
         _autosavePaused ||
-        _invalidNumericIds.isNotEmpty ||
+        _invalidAnswerReasons.isNotEmpty ||
         _pendingCommand != null ||
         _answerRevision == _savedAnswerRevision) {
       return;
@@ -900,44 +903,77 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
     });
   }
 
+  /// One refusal path for every answer that fails its authored limit, so the
+  /// draft, the autosave and the submit gate all see the same state.
+  void _refuseAnswer(FormItem item, String reason) {
+    _autosaveTimer?.cancel();
+    setState(() {
+      _invalidAnswerReasons[item.id] = reason;
+      _answerRevision++;
+      if (_pendingCommand?.kind != _ResponseCommandKind.submit) _review = false;
+      // The banner names what was refused. Saying "valores numéricos" for a
+      // text length would send the person to the wrong field.
+      _message = FormNumericLimits.isNumeric(item.kind)
+          ? 'Revise os valores numéricos antes de salvar.'
+          : 'Revise as respostas antes de salvar.';
+    });
+  }
+
+  /// Short text shares the same refusal path so an authored maxLength is a real
+  /// gate, not only a hint on the field.
+  void _setTextAnswer(FormItem item, String raw) {
+    if (!mounted || _state != _ProductionResponseState.content || _occurrence?.canEdit != true) {
+      return;
+    }
+    if (FormNumericLimits.textViolation(item.config, raw) case final reason?) {
+      _refuseAnswer(item, reason);
+      return;
+    }
+    final repaired = _invalidAnswerReasons.remove(item.id) != null;
+    _setAnswer(
+      item,
+      raw.trim().isEmpty ? null : FormAnswer.shortText(itemId: item.id, value: raw),
+    );
+    if (repaired && !_autosavePaused) {
+      setState(() => _message = 'Alterações ainda não salvas.');
+      // Repairing back to the stored text leaves the answers identical, so
+      // _setAnswer returned early and scheduled nothing. Without this the
+      // screen keeps announcing an unsaved change that will never be saved.
+      _scheduleAutosave();
+    }
+  }
+
   void _setNumericAnswer(FormItem item, String raw) {
     if (!mounted || _state != _ProductionResponseState.content || _occurrence?.canEdit != true) {
       return;
     }
     final value = raw.trim();
-    final normalized = value.replaceAll(',', '.');
-    final parsed = double.tryParse(normalized);
-    final valid =
-        value.isEmpty ||
-        (item.kind == FormItemKind.integer
-            ? int.tryParse(normalized) != null
-            : parsed != null &&
-                  parsed.isFinite &&
-                  (item.kind != FormItemKind.money || (parsed * 100).isFinite));
-    if (!valid) {
-      _autosaveTimer?.cancel();
-      setState(() {
-        _invalidNumericIds.add(item.id);
-        _answerRevision++;
-        if (_pendingCommand?.kind != _ResponseCommandKind.submit) _review = false;
-        _message = 'Revise os valores numéricos antes de salvar.';
-      });
+    // FormNumericLimits is the single representation: money parses to minor
+    // units, so the authored range and the stored answer share one unit.
+    final parsed = FormNumericLimits.parse(item.kind, value);
+    final reason = value.isEmpty
+        ? null
+        : parsed == null
+        ? 'Revise os valores numéricos antes de salvar.'
+        : FormNumericLimits.violation(item.kind, item.config, parsed);
+    if (reason != null) {
+      _refuseAnswer(item, reason);
       return;
     }
-    final repaired = _invalidNumericIds.remove(item.id);
-    final answer = switch (item.kind) {
-      FormItemKind.integer => switch (int.tryParse(normalized)) {
-        final number? => FormAnswer.integer(itemId: item.id, value: number),
-        null => null,
-      },
-      FormItemKind.decimal => switch (double.tryParse(normalized)) {
-        final number? => FormAnswer.decimal(itemId: item.id, value: number),
-        null => null,
-      },
-      FormItemKind.money => switch (double.tryParse(normalized)) {
-        final number? => FormAnswer.money(itemId: item.id, minorUnits: (number * 100).round()),
-        null => null,
-      },
+    final repaired = _invalidAnswerReasons.remove(item.id) != null;
+    final answer = switch ((item.kind, parsed)) {
+      (FormItemKind.integer, final number?) => FormAnswer.integer(
+        itemId: item.id,
+        value: number.toInt(),
+      ),
+      (FormItemKind.decimal, final number?) => FormAnswer.decimal(
+        itemId: item.id,
+        value: number.toDouble(),
+      ),
+      (FormItemKind.money, final number?) => FormAnswer.money(
+        itemId: item.id,
+        minorUnits: number.toInt(),
+      ),
       _ => null,
     };
     _setAnswer(item, answer);
@@ -951,7 +987,8 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
   String _numberValue(String itemId) => switch (_answers[itemId]?.value) {
     FormIntegerValue(:final value) => '$value',
     FormDecimalValue(:final value) => '$value',
-    FormMoneyValue(:final minorUnits) => '${minorUnits / 100}',
+    // Money is stored in minor units; show it the way the author declared it.
+    FormMoneyValue(:final minorUnits) => FormNumericLimits.format(FormItemKind.money, minorUnits),
     _ => '',
   };
   String? _dateValue(String itemId) => switch (_answers[itemId]?.value) {
@@ -963,11 +1000,24 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
   Future<void> _pickDate(FormItem item) async {
     final generation = _loadGeneration;
     final now = DateTime.now();
+    // The author can declare a range and the server refuses a date outside it.
+    // Offering 120 years either way let the person pick a date the backend was
+    // always going to reject.
+    final first = item.config.minDate ?? DateTime(now.year - 120);
+    final last = item.config.maxDate ?? DateTime(now.year + 20);
+    final stored = (_answers[item.id]?.value as FormDateValue?)?.value ?? now;
+    // A stored answer can predate a range declared later. showDatePicker
+    // asserts the initial date is inside the range, so clamp instead of crash.
+    final initial = stored.isBefore(first)
+        ? first
+        : stored.isAfter(last)
+        ? last
+        : stored;
     final selected = await showDatePicker(
       context: context,
-      initialDate: (_answers[item.id]?.value as FormDateValue?)?.value ?? now,
-      firstDate: DateTime(now.year - 120),
-      lastDate: DateTime(now.year + 20),
+      initialDate: initial,
+      firstDate: first,
+      lastDate: last,
     );
     if (selected != null && _isCurrent(generation)) {
       setState(() => _setAnswer(item, FormAnswer.date(itemId: item.id, value: selected)));
@@ -1008,7 +1058,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
   }
 
   String? _itemValidationMessage(FormItem item) {
-    if (_invalidNumericIds.contains(item.id)) return 'Revise os valores numéricos antes de salvar.';
+    if (_invalidAnswerReasons[item.id] case final reason?) return reason;
     if (item.kind == FormItemKind.gallery) {
       final value = _answers[item.id]?.value;
       if (value is FormAssetValue && value.assetIds.isNotEmpty) {
@@ -1068,7 +1118,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
       _answers
         ..clear()
         ..addAll(_draft!.answers);
-      _invalidNumericIds.clear();
+      _invalidAnswerReasons.clear();
       _answerRevision = _savedAnswerRevision;
       _review = false;
       _message = null;
@@ -1090,7 +1140,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
       return;
     }
     if (_pendingCommand != null && _pendingCommand!.kind != kind) return;
-    if (_pendingCommand == null && _invalidNumericIds.isNotEmpty) {
+    if (_pendingCommand == null && _invalidAnswerReasons.isNotEmpty) {
       setState(() => _message = 'Revise os valores numéricos antes de salvar.');
       return;
     }
@@ -1132,7 +1182,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
         if (answerRevision == _answerRevision ||
             submitted ||
             updated.status == FormResponseDraftStatus.submitted) {
-          _invalidNumericIds.clear();
+          _invalidAnswerReasons.clear();
           _answers
             ..clear()
             ..addAll(updated.answers);
@@ -1185,7 +1235,7 @@ String _answerLabel(FormAnswer answer) => switch (answer.value) {
   FormShortTextValue(:final value) => value,
   FormIntegerValue(:final value) => '$value',
   FormDecimalValue(:final value) => '$value',
-  FormMoneyValue(:final minorUnits) => '${minorUnits / 100}',
+  FormMoneyValue(:final minorUnits) => FormNumericLimits.format(FormItemKind.money, minorUnits),
   FormDateValue(:final value) => '${value.day}/${value.month}/${value.year}',
   FormYesNoValue(:final value) => value ? 'Sim' : 'Não',
   FormChoiceValue(:final optionIds) => optionIds.join(', '),

@@ -43,7 +43,7 @@ void main() {
     membershipId: 'membership-1',
   );
 
-  bool eligibleFor(PlatformNotice item, {PrincipalForYouAudienceScope? actor = scope}) =>
+  bool eligibleFor(PlatformNotice item, {PrincipalForYouAudienceScope actor = scope}) =>
       PrincipalForYouCommunicationsAdapter.highlights([
         item,
       ], now: now, scope: actor).single.eligible;
@@ -312,7 +312,7 @@ void main() {
       );
     });
 
-    test('sem escopo o comportamento anterior é preservado', () {
+    test('não há caminho que dispense a avaliação de audiência', () {
       final item = communication(
         type: CommunicationType.content,
         audience: NoticeAudience.institution,
@@ -326,15 +326,9 @@ void main() {
         ),
       );
 
-      expect(eligibleFor(item, actor: null), isFalse);
-      expect(
-        () => Function.apply(PrincipalForYouCommunicationsAdapter.highlights, [[item]], {#now: now}),
-        throwsNoSuchMethodError,
-      );
-      expect(
-        () => Function.apply(PrincipalForYouCommunicationsAdapter.isEligible, [item], {#now: now}),
-        throwsNoSuchMethodError,
-      );
+      // O escopo é obrigatório na API: não existe chamada que projete um
+      // comunicado de outra instituição por esquecimento de argumento.
+      expect(eligibleFor(item), isFalse);
     });
 
     test('escopo derivado do runtime context reaproveita a mesma avaliação', () {

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:coelo_tokens/coelo_tokens.dart';
@@ -13,7 +14,9 @@ final class PrincipalCircularDetailPage extends StatefulWidget {
     required this.repository,
     required this.responseRepository,
     this.childContextId,
+    this.mediaRepository,
     this.onReturn,
+    this.embedded = false,
     super.key,
   });
 
@@ -21,7 +24,19 @@ final class PrincipalCircularDetailPage extends StatefulWidget {
   final String? childContextId;
   final CircularRepository repository;
   final CircularResponseRepository responseRepository;
+
+  /// Capacidade de leitura autorizada dos anexos, repassada ao leitor.
+  ///
+  /// Sem ela o leitor mantem os anexos honestamente fechados em vez de fingir
+  /// que a abertura e possivel. Quem compoe a rota decide se a fornece.
+  final CircularMediaRepository? mediaRepository;
   final VoidCallback? onReturn;
+
+  /// Marks the reading surface as hosted inside the Superadmin shell content
+  /// area. The host keeps its own shell/menu visible (Owner decision of
+  /// 2026-09-09) and already consumed the system insets, so the compact
+  /// reading state stops behaving as if it owned the whole window.
+  final bool embedded;
 
   @override
   State<PrincipalCircularDetailPage> createState() => _PrincipalCircularDetailPageState();
@@ -33,6 +48,13 @@ final class _PrincipalCircularDetailPageState extends State<PrincipalCircularDet
   var _loading = true;
   var _responseVersion = 0;
   var _generation = 0;
+
+  /// Aviso do hospedeiro que sobrevive a releitura.
+  ///
+  /// Um conflito de versao troca o leitor inteiro por um recarregado, entao a
+  /// explicacao nao pode morar dentro do leitor: quem responde precisa
+  /// continuar vendo por que a resposta anterior nao valeu.
+  String? _conflictNotice;
 
   @override
   void initState() {
@@ -117,6 +139,16 @@ final class _PrincipalCircularDetailPageState extends State<PrincipalCircularDet
         });
       }
       rethrow;
+    } on CircularVersionConflict {
+      // A resposta ficou obsoleta: releitura autorizada em vez de manter em
+      // tela um conteudo e uma versao que o servidor ja recusou.
+      if (mounted && generation == _generation) {
+        _conflictNotice =
+            'Esta circular foi atualizada enquanto você respondia. '
+            'Confira o conteúdo recarregado e responda novamente.';
+        unawaited(_load());
+      }
+      rethrow;
     }
   }
 
@@ -145,6 +177,10 @@ final class _PrincipalCircularDetailPageState extends State<PrincipalCircularDet
                   ),
             body: compact
                 ? SafeArea(
+                    top: !widget.embedded,
+                    bottom: !widget.embedded,
+                    left: !widget.embedded,
+                    right: !widget.embedded,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
@@ -216,12 +252,32 @@ final class _PrincipalCircularDetailPageState extends State<PrincipalCircularDet
         ),
       );
     }
-    return PrincipalCircularReader(
+    final reader = PrincipalCircularReader(
       key: ValueKey(_generation),
       detail: _detail!,
       initialAnswers: _detail!.initialAnswers,
       onSubmit: _submit,
+      mediaRepository: widget.mediaRepository,
+      embedded: widget.embedded,
     );
+    if (_conflictNotice case final notice?) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            key: const Key('circular-response-conflict-notice'),
+            color: Theme.of(context).colorScheme.errorContainer,
+            padding: const EdgeInsets.all(CoeloSpacing.space3),
+            child: Text(
+              notice,
+              style: TextStyle(color: Theme.of(context).colorScheme.onErrorContainer),
+            ),
+          ),
+          Expanded(child: reader),
+        ],
+      );
+    }
+    return reader;
   }
 }
 

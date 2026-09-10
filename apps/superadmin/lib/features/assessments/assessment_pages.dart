@@ -279,7 +279,7 @@ final class _AssessmentEntryPageState extends State<AssessmentEntryPage> {
         message: 'A edição desta sessão foi mantida. Reconecte e tente salvar novamente.',
         icon: Icons.cloud_off_outlined,
         actionLabel: 'Tentar novamente',
-        onAction: state.gradebook == null ? _reloadCurrent : _retryOfflineSave,
+        onAction: state.gradebook == null ? _reloadCurrent : _saveDraft,
       );
     }
     if (state is AssessmentFailure) {
@@ -321,14 +321,33 @@ final class _AssessmentEntryPageState extends State<AssessmentEntryPage> {
     final compact = width < CoeloBreakpoints.medium.minWidth;
     return SuperadminFormFrame(
       viewportWidth: width,
-      navigation: _navigation(),
+      navigation: ExcludeFocus(
+        excluding: _controller.saving,
+        child: AbsorbPointer(absorbing: _controller.saving, child: _navigation()),
+      ),
       scrollKey: const Key('assessment-entry-scroll'),
-      body: _stepBody(compact),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (_controller.saving)
+            Semantics(
+              liveRegion: true,
+              child: const Padding(
+                padding: EdgeInsets.only(bottom: CoeloSpacing.space3),
+                child: Text('Salvando alterações…'),
+              ),
+            ),
+          ExcludeFocus(
+            excluding: _controller.saving,
+            child: AbsorbPointer(absorbing: _controller.saving, child: _stepBody(compact)),
+          ),
+        ],
+      ),
       footer: _footer(compact),
     );
   }
 
-  Future<void> _retryOfflineSave() async {
+  Future<void> _saveDraft() async {
     try {
       await _controller.saveDraft();
     } on AssessmentOfflineException {
@@ -337,6 +356,8 @@ final class _AssessmentEntryPageState extends State<AssessmentEntryPage> {
       // The controller exposes the revoked-access state.
     } on AssessmentVersionConflictException {
       // The controller exposes the conflict state and its reload action.
+    } on Exception {
+      // The controller exposes the failure state; UI callbacks consume the Future.
     }
   }
 
@@ -876,7 +897,7 @@ final class _AssessmentEntryPageState extends State<AssessmentEntryPage> {
       continuationActions: [
         if (book != null)
           OutlinedButton(
-            onPressed: _controller.saving ? null : () => _controller.saveDraft(),
+            onPressed: _controller.saving ? null : _saveDraft,
             child: const Text('Salvar rascunho'),
           ),
         FilledButton(

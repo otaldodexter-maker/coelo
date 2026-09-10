@@ -115,6 +115,16 @@ final class HappensPublication {
   final DateTime publishAt;
 }
 
+/// Bucket legado do Supabase Storage para a midia do Acontece, valor de
+/// transicao ate o servidor anunciar o destino em todo envelope.
+const legacyHappensBucket = 'coelo-happens-mvp';
+
+/// Destino de upload ANUNCIADO PELO SERVIDOR.
+///
+/// O cliente nunca escolhe provedor, bucket ou chave: ele obedece ao envelope.
+/// Enquanto o servidor anunciar o provedor legado, o caminho e o mesmo de
+/// sempre; quando anunciar `r2`, o envelope traz uma janela PUT assinada e os
+/// cabecalhos exigidos, e nem bucket nem chave atravessam a fronteira.
 @immutable
 final class HappensUploadIntent {
   const HappensUploadIntent({
@@ -122,17 +132,51 @@ final class HappensUploadIntent {
     required this.institutionId,
     required this.postId,
     required this.requestId,
-    required this.objectKey,
-    required this.token,
     required this.displayOrder,
+    this.storageProvider = 'supabase_mvp',
+    this.objectKey,
+    this.token,
+    this.bucketId,
+    this.uploadUrl,
+    this.requiredHeaders = const {},
+    this.expiresAt,
   });
   final String assetId;
   final String institutionId;
   final String postId;
   final String requestId;
-  final String objectKey;
-  final String token;
   final int displayOrder;
+
+  /// Provedor escolhido pelo servidor. `supabase_mvp` mantem o caminho legado.
+  final String storageProvider;
+
+  /// Campos do caminho legado do Supabase Storage.
+  final String? objectKey;
+  final String? token;
+
+  /// Bucket anunciado pelo servidor no caminho legado. Ate a Edge Function
+  /// passar a envia-lo, o repositorio usa o bucket legado conhecido.
+  final String? bucketId;
+
+  /// Campos do caminho R2: janela PUT assinada e cabecalhos exigidos.
+  final Uri? uploadUrl;
+  final Map<String, String> requiredHeaders;
+  final DateTime? expiresAt;
+
+  bool get usesR2 => storageProvider == 'r2';
+
+  /// Bucket do caminho legado.
+  ///
+  /// Prefere o valor ANUNCIADO pelo servidor. O literal permanece apenas
+  /// enquanto a Edge Function implantada nao envia o campo, e nao deve ser
+  /// lido como escolha do cliente. No caminho R2 nao existe bucket no cliente.
+  String get legacyBucket => bucketId ?? legacyHappensBucket;
+
+  /// A janela assinada e curta de proposito: transferir contra uma assinatura
+  /// vencida falha de forma obscura, entao o cliente prefere falhar honesto e
+  /// preparar de novo.
+  bool expiredAt(DateTime moment) =>
+      expiresAt != null && !moment.toUtc().isBefore(expiresAt!);
 }
 
 abstract interface class HappensPublicationRepository {
@@ -146,7 +190,16 @@ abstract interface class HappensPublicationRepository {
   );
   Future<HappensMediaDraft> finalizeMedia(HappensUploadIntent intent, HappensMediaDraft media);
   Future<void> removeMedia(HappensPublicationContext context, HappensMediaDraft media);
-  Future<HappensPublication> publish(HappensPublicationContext context, HappensPostDraft draft);
+  /// Publica [draft] sob a chave de idempotencia [requestId].
+  ///
+  /// A chave pertence a intencao, nao a chamada: repetir a mesma tentativa
+  /// depois de uma falha deve reapresentar a MESMA chave, para que o servidor
+  /// possa reconhecer a repeticao em vez de publicar duas vezes para familias.
+  Future<HappensPublication> publish(
+    HappensPublicationContext context,
+    HappensPostDraft draft, {
+    required String requestId,
+  });
 }
 
 final class InMemoryHappensPublicationRepository implements HappensPublicationRepository {
@@ -201,8 +254,9 @@ final class InMemoryHappensPublicationRepository implements HappensPublicationRe
   @override
   Future<HappensPublication> publish(
     HappensPublicationContext context,
-    HappensPostDraft draft,
-  ) async {
+    HappensPostDraft draft, {
+    required String requestId,
+  }) async {
     final now = DateTime.now().toUtc();
     final at = draft.publishAt?.toUtc() ?? now;
     lastPublication = HappensPublication(

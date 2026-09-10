@@ -1,0 +1,40 @@
+{
+    "status":  "blocked-environment-before-sql",
+    "at":  "2026-09-09T19:10:51-03:00",
+    "projectId":  "coelo_safe_308169e4512d4c8485af298abb48c",
+    "executionSession":  88439,
+    "concurrency":  {
+                        "P":  0,
+                        "F":  0,
+                        "B":  0,
+                        "S":  0,
+                        "U":  12
+                    },
+    "nominalInstallTap":  {
+                              "P":  0,
+                              "F":  0,
+                              "B":  0,
+                              "S":  0,
+                              "U":  8
+                          },
+    "sqlExecuted":  false,
+    "dockerCreationAttempted":  false,
+    "productRedConfirmed":  false,
+    "sqlFixPrepared":  false,
+    "error":  "docker ps -a never answered initial inspection or final verification; wrapper raised cannot inspect Docker containers and aggregate incomplete cleanup",
+    "ownedPidsTerminated":  [
+                                31728,
+                                24448
+                            ],
+    "ownedRunnerPid":  9500,
+    "ownedPidsRemaining":  [
+
+                           ],
+    "temporaryRootExists":  false,
+    "mutexAcquirableAndReleased":  true,
+    "dockerResidualVerification":  "unavailable; no creation command reached",
+    "log":  "red-replay.txt",
+    "next":  "parent confirms Docker recovery and fresh serialized slot; preserve attempt01 before retry",
+    "logRedaction":  "Three transcript header fields (host/user) omitted; runtime diagnostics unchanged; raw .log retained locally and ignored",
+    "publishedLogSha256":  "68e0bb9ca183c6897e12c95924026277ae554b5b19b2414c4759e1dc2309044c"
+}

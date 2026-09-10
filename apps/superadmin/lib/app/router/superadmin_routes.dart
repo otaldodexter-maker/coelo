@@ -7,6 +7,10 @@ abstract final class SuperadminRoutes {
   static const institutionCreateName = 'institution-create';
   static const institutionEdit = '/institutions/:institutionId/edit';
   static const institutionEditName = 'institution-edit';
+  static const institutionLocations = '/institutions/:institutionId/locations';
+  static const institutionLocationsName = 'institution-locations';
+  static const institutionLocationDetail = '/institutions/:institutionId/locations/:locationId';
+  static const institutionLocationDetailName = 'institution-location-detail';
   static const units = '/units';
   static const unitsName = 'units';
   static const unitCreate = '/units/new';
@@ -15,6 +19,10 @@ abstract final class SuperadminRoutes {
   static const unitEditName = 'unit-edit';
   static const unitDetail = '/units/:unitId';
   static const unitDetailName = 'unit-detail';
+  static const unitLocations = '/units/:unitId/locations';
+  static const unitLocationsName = 'unit-locations';
+  static const unitLocationDetail = '/units/:unitId/locations/:locationId';
+  static const unitLocationDetailName = 'unit-location-detail';
   static const groups = '/groups';
   static const groupsName = 'groups';
   static const groupCreate = '/groups/new';
@@ -201,8 +209,12 @@ abstract final class SuperadminRoutes {
   static const principalHappensName = 'principal-happens';
   static const principalHappensPublish = '/principal-happens/publish';
   static const principalHappensPublishName = 'principal-happens-publish';
+  static const principalHappensCircular = '/principal-happens/circular/:circularId';
+  static const principalHappensCircularName = 'principal-happens-circular';
   static const principalForYou = '/principal-for-you';
   static const principalForYouName = 'principal-for-you';
+  static const principalConversations = '/principal-conversations';
+  static const principalConversationsName = 'principal-conversations';
   static const principalMoments = '/principal-moments';
   static const principalMomentsName = 'principal-moments';
   static const principalMomentsPublish = '/principal-moments/publish';
@@ -213,6 +225,8 @@ abstract final class SuperadminRoutes {
   static const principalNowPublicationName = 'principal-now-publication';
   static const principalProfile = '/principal-profile';
   static const principalProfileName = 'principal-profile';
+  static const principalProfileEdit = '/principal-profile/edit';
+  static const principalProfileEditName = 'principal-profile-edit';
   static const profile = '/profile';
   static const profileName = 'profile';
   static const settings = '/settings';
@@ -415,6 +429,8 @@ abstract final class SuperadminRoutes {
   static const devPrincipalHappensName = 'dev-principal-happens';
   static const devPrincipalForYou = '/dev/principal-for-you';
   static const devPrincipalForYouName = 'dev-principal-for-you';
+  static const devPrincipalConversations = '/dev/principal-conversations';
+  static const devPrincipalConversationsName = 'dev-principal-conversations';
   static const devPrincipalHappensPublish = '/dev/principal-happens/publish';
   static const devPrincipalHappensPublishName = 'dev-principal-happens-publish';
   static const devPrincipalMoments = '/dev/principal-moments';

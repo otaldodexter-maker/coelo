@@ -1,0 +1,13 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:1
++ rtk proxy flutter test --no-pub test/app/router/safety_reflow_test.da ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/app/router/safety_reflow_test.dart
+00:00 +0: development safety loads without overflow at 375.0 text 1.0
+00:01 +1: development safety loads without overflow at 375.0 text 2.0
+00:02 +2: development safety loads without overflow at 1440.0 text 1.0
+00:03 +3: development safety loads without overflow at 1440.0 text 2.0
+00:05 +4: All tests passed!

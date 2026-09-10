@@ -263,6 +263,345 @@ void main() {
     expect(api.commands.single.payload.sections.single.items.single.config.maxLength, 123);
   });
 
+  // Residual C02/R01: o editor gravava os limites de dinheiro em unidades enquanto a
+  // resposta grava minorUnits, então 10,50 virava 10.5 em vez de 1050.
+  _Api numericApi(FormItemKind kind, {FormItemConfig config = const FormItemConfig()}) =>
+      _Api(manage: true)
+        ..customItems = [
+          FormItem(id: 'number', kind: kind, label: 'Número', position: 0, config: config),
+        ];
+
+  Future<FormItemConfig> saveAfterTyping(
+    WidgetTester tester,
+    _Api api, {
+    required String minimum,
+    required String maximum,
+  }) async {
+    await open(tester, api);
+    await tester.enterText(find.widgetWithText(TextFormField, 'Mínimo').first, minimum);
+    await tester.enterText(find.widgetWithText(TextFormField, 'Máximo').first, maximum);
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+    return api.commands.last.payload.sections.single.items.single.config;
+  }
+
+  testWidgets('money limits are authored in minor units', (tester) async {
+    final api = numericApi(FormItemKind.money);
+    await open(tester, api);
+    await tester.enterText(find.widgetWithText(TextFormField, 'Valor mínimo').first, '1,00');
+    await tester.enterText(find.widgetWithText(TextFormField, 'Valor máximo').first, '10,50');
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+    final config = api.commands.last.payload.sections.single.items.single.config;
+    expect(config.minValue, 100);
+    expect(config.maxValue, 1050);
+  });
+
+  testWidgets('authored money limits are restored in the same civil notation', (tester) async {
+    final api = numericApi(
+      FormItemKind.money,
+      config: const FormItemConfig(minValue: 100, maxValue: 1050),
+    );
+    await open(tester, api);
+    expect(find.widgetWithText(TextFormField, '1,00'), findsOneWidget);
+    expect(find.widgetWithText(TextFormField, '10,50'), findsOneWidget);
+  });
+
+  testWidgets('integer and decimal limits keep their plain unit', (tester) async {
+    final integer = await saveAfterTyping(
+      tester,
+      numericApi(FormItemKind.integer),
+      minimum: '1',
+      maximum: '10',
+    );
+    expect(integer.minValue, 1);
+    expect(integer.maxValue, 10);
+    await tester.pumpWidget(const SizedBox());
+    final decimal = await saveAfterTyping(
+      tester,
+      numericApi(FormItemKind.decimal),
+      minimum: '1,5',
+      maximum: '10,5',
+    );
+    expect(decimal.minValue, 1.5);
+    expect(decimal.maxValue, 10.5);
+  });
+
+  // Residual C02/R01: maxLength de texto curto era persistido e respeitado ao
+  // responder, mas o autor não tinha onde declará-lo.
+  _Api shortTextApi({FormItemConfig config = const FormItemConfig()}) => _Api(manage: true)
+    ..customItems = [
+      FormItem(
+        id: 'short',
+        kind: FormItemKind.shortText,
+        label: 'Texto curto',
+        position: 0,
+        config: config,
+      ),
+    ];
+
+  Finder maxLengthField() => find.byKey(const ValueKey('forms-editor-max-length-short'));
+
+  testWidgets('short text exposes a maximum length control the author can set', (tester) async {
+    final api = shortTextApi();
+    await open(tester, api);
+    expect(maxLengthField(), findsOneWidget);
+    await tester.enterText(maxLengthField(), '140');
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+    expect(api.commands.last.payload.sections.single.items.single.config.maxLength, 140);
+  });
+
+  testWidgets('an authored maximum length is restored into its control', (tester) async {
+    await open(tester, shortTextApi(config: const FormItemConfig(maxLength: 140)));
+    expect(tester.widget<TextFormField>(maxLengthField()).controller?.text, '140');
+  });
+
+  testWidgets('clearing the control removes the maximum length', (tester) async {
+    final api = shortTextApi(config: const FormItemConfig(maxLength: 140));
+    await open(tester, api);
+    await tester.enterText(maxLengthField(), '');
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+    expect(api.commands.last.payload.sections.single.items.single.config.maxLength, isNull);
+  });
+
+  for (final raw in ['0', '-5', 'abc', '2,5']) {
+    testWidgets('a maximum length of $raw never saves a draft', (tester) async {
+      final api = shortTextApi();
+      await open(tester, api);
+      await tester.enterText(maxLengthField(), raw);
+      await tester.pump(const Duration(milliseconds: 800));
+      await tester.pumpAndSettle();
+      expect(api.commands, isEmpty);
+      expect(find.text('Informe um máximo de caracteres inteiro e maior que zero.'), findsWidgets);
+    });
+  }
+
+  testWidgets('only short text carries the maximum length control', (tester) async {
+    await open(tester, numericApi(FormItemKind.integer));
+    expect(find.byKey(const ValueKey('forms-editor-max-length-number')), findsNothing);
+  });
+
+  // copy() passou a carregar maxLength junto dos demais controladores; sem este
+  // teste a duplicacao perderia o limite em silencio.
+  // Os goldens do editor ja falham na base e esta rodada nao regrava golden,
+  // entao os controles novos ficariam sem nenhuma verificacao visual. Esta e a
+  // parte que um golden pegaria e que ainda da para provar sem regravar: que
+  // eles cabem nas larguras reais e a 200% de texto, e que a mensagem de erro
+  // nao empurra o layout para fora.
+  for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
+    testWidgets('the maximum length control fits at $width px and 200% text', (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = Size(width, 2200);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoeloTheme.light,
+          home: MediaQuery(
+            data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+            child: Scaffold(
+              body: FormsEditorPage.authoring(
+                authoringApi: shortTextApi(config: const FormItemConfig(maxLength: 140)),
+                formId: 'form-a',
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byKey(const ValueKey('forms-editor-max-length-short')), findsOneWidget);
+      expect(tester.takeException(), isNull, reason: 'overflow at $width px');
+    });
+
+    testWidgets('the inverted range message fits at $width px and 200% text', (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = Size(width, 2200);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoeloTheme.light,
+          home: MediaQuery(
+            data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+            child: Scaffold(
+              body: FormsEditorPage.authoring(
+                authoringApi: numericApi(
+                  FormItemKind.money,
+                  config: const FormItemConfig(minValue: 10050, maxValue: 100),
+                ),
+                formId: 'form-a',
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('O valor mínimo deve ser menor ou igual ao máximo.'), findsWidgets);
+      expect(tester.takeException(), isNull, reason: 'overflow at $width px');
+    });
+  }
+
+  testWidgets('the maximum length control is reachable and labelled for assistive tech', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    await open(tester, shortTextApi());
+    expect(find.bySemanticsLabel(RegExp('Máximo de caracteres')), findsWidgets);
+    semantics.dispose();
+  });
+
+  // Galeria e datas ja recusam intervalo invertido. Os limites numericos nao
+  // recusavam, entao o autor podia gravar minimo 100 e maximo 10 e tornar a
+  // pergunta impossivel de responder, sem nenhum aviso.
+  for (final (kind, minimum, maximum) in <(FormItemKind, String, String)>[
+    (FormItemKind.integer, '100', '10'),
+    (FormItemKind.decimal, '10,5', '10,4'),
+    (FormItemKind.money, '10,50', '10,00'),
+  ]) {
+    testWidgets('${kind.name} refuses an inverted range instead of saving it', (tester) async {
+      final api = numericApi(kind);
+      await open(tester, api);
+      final label = kind == FormItemKind.money ? 'Valor mínimo' : 'Mínimo';
+      final upper = kind == FormItemKind.money ? 'Valor máximo' : 'Máximo';
+      await tester.enterText(find.widgetWithText(TextFormField, label).first, minimum);
+      await tester.enterText(find.widgetWithText(TextFormField, upper).first, maximum);
+      await tester.pump(const Duration(milliseconds: 800));
+      await tester.pumpAndSettle();
+
+      expect(api.commands, isEmpty);
+      expect(find.text('O valor mínimo deve ser menor ou igual ao máximo.'), findsWidgets);
+    });
+  }
+
+  // Um limite que a pessoa digitou mas que nao da para interpretar era
+  // descartado em silencio: o formulario salvava sem limite e nada avisava.
+  testWidgets('an unreadable bound is refused instead of being dropped', (tester) async {
+    final api = numericApi(FormItemKind.decimal);
+    await open(tester, api);
+    await tester.enterText(find.widgetWithText(TextFormField, 'Máximo').first, 'dez');
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+
+    expect(api.commands, isEmpty);
+    expect(find.text('Informe limites numéricos válidos.'), findsWidgets);
+  });
+
+  testWidgets('a decimal bound on an integer question is refused, not dropped', (tester) async {
+    final api = numericApi(FormItemKind.integer);
+    await open(tester, api);
+    await tester.enterText(find.widgetWithText(TextFormField, 'Máximo').first, '10,5');
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+
+    expect(api.commands, isEmpty);
+    expect(
+      find.text('O mínimo e o máximo de uma pergunta de número inteiro precisam ser inteiros.'),
+      findsWidgets,
+    );
+  });
+
+  testWidgets('an equal minimum and maximum is a valid single accepted value', (tester) async {
+    final api = numericApi(FormItemKind.integer);
+    await open(tester, api);
+    await tester.enterText(find.widgetWithText(TextFormField, 'Mínimo').first, '7');
+    await tester.enterText(find.widgetWithText(TextFormField, 'Máximo').first, '7');
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+
+    final config = api.commands.last.payload.sections.single.items.single.config;
+    expect(config.minValue, 7);
+    expect(config.maxValue, 7);
+  });
+
+  testWidgets('only one declared bound never counts as inverted', (tester) async {
+    final api = numericApi(FormItemKind.integer);
+    await open(tester, api);
+    await tester.enterText(find.widgetWithText(TextFormField, 'Máximo').first, '10');
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+
+    final config = api.commands.last.payload.sections.single.items.single.config;
+    expect(config.minValue, isNull);
+    expect(config.maxValue, 10);
+  });
+
+  // As validacoes novas percorrem _flattenQuestions, que inclui perguntas de
+  // ramo. Sem este teste, uma pergunta dentro de um ramo poderia salvar com
+  // intervalo invertido enquanto a de primeiro nivel e barrada.
+  testWidgets('a branch question is held to the same numeric limits', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 1600));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final api = _Api(manage: true)
+      ..customItems = [
+        FormItem(
+          id: 'gate',
+          kind: FormItemKind.yesNo,
+          label: 'Precisa de valor',
+          position: 0,
+        ),
+        FormItem(
+          id: 'branch-money',
+          kind: FormItemKind.money,
+          label: 'Valor',
+          position: 1,
+          config: const FormItemConfig(minValue: 10050, maxValue: 100),
+          conditions: const [FormCondition.yesNo(sourceItemId: 'gate', expected: true)],
+        ),
+      ];
+    await open(tester, api);
+    await tester.enterText(title('Authorized title'), 'Alterado');
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+
+    // Garante que o item entrou mesmo como ramo, senao o teste passaria por
+    // estar validando uma pergunta de primeiro nivel.
+    expect(find.text('Adicionar pergunta ao ramo'), findsWidgets);
+    expect(api.commands, isEmpty);
+    expect(find.text('O valor mínimo deve ser menor ou igual ao máximo.'), findsWidgets);
+  });
+
+  testWidgets('duplicating a question keeps its authored limits', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 1400));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final api = shortTextApi(config: const FormItemConfig(maxLength: 140));
+    await open(tester, api);
+    final duplicate = find.byTooltip('Duplicar pergunta').first;
+    await tester.ensureVisible(duplicate);
+    await tester.pumpAndSettle();
+    await tester.tap(duplicate);
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+
+    final items = api.commands.last.payload.sections.single.items;
+    expect(items, hasLength(2));
+    expect(items.map((item) => item.config.maxLength), [140, 140]);
+    expect(items.first.id, isNot(items.last.id));
+  });
+
+  testWidgets('duplicating a money question keeps its limits in minor units', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 1400));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final api = numericApi(
+      FormItemKind.money,
+      config: const FormItemConfig(minValue: 100, maxValue: 1050),
+    );
+    await open(tester, api);
+    final duplicate = find.byTooltip('Duplicar pergunta').first;
+    await tester.ensureVisible(duplicate);
+    await tester.pumpAndSettle();
+    await tester.tap(duplicate);
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+
+    final items = api.commands.last.payload.sections.single.items;
+    expect(items, hasLength(2));
+    expect(items.map((item) => item.config.minValue), [100, 100]);
+    expect(items.map((item) => item.config.maxValue), [1050, 1050]);
+  });
+
+
   _Api galleryApi({FormItemConfig config = const FormItemConfig()}) => _Api(manage: true)
     ..customItems = [
       FormItem(

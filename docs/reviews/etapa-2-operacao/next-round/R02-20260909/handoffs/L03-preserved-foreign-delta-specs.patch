@@ -1,0 +1,171 @@
+diff --git a/specs/037-principal-circulars.md b/specs/037-principal-circulars.md
+index 2f93c66bb..5cc64fa13 100644
+--- a/specs/037-principal-circulars.md
++++ b/specs/037-principal-circulars.md
+@@ -3,7 +3,7 @@ title: "Circulares privadas e versionadas no Principal"
+ source: "PRDs App, Auth Multi-tenant, Permissões, LGPD/Segurança/Mídia e Modelo de Dados; referência visual aprovada em 2026-08-21"
+ status: approved
+ generated_at: "2026-08-21"
+-updated_at: "2026-08-31"
++updated_at: "2026-09-09"
+ ---
+ 
+ # Circulares privadas e versionadas no Principal
+@@ -61,17 +61,27 @@ do cliente. RPCs e projeções não revelam existência fora do escopo autorizad
+ 
+ ## Mídia privada
+ 
+-Por decisão explícita do Owner em 2026-08-21, Circulares usa o bucket privado
+-Supabase `coelo-circulars-private` conforme ADR 0027. A exceção é exclusiva de
+-Circulares e não altera Acontece, Agora ou Momentos.
+-
+-Upload e leitura passam por Edge Function autenticada: intenção autorizada,
+-caminho opaco gerado no servidor, upload assinado, validação de extensão, MIME,
+-assinatura real, tamanho e checksum, finalização idempotente e URL de leitura de
+-120 segundos. O token nativo de upload assinado do Supabase expira em duas
+-horas; a UI não o persiste, o objeto usa chave opaca exclusiva e a finalização
+-server-side usa ticket adicional de dois minutos. Metadados, ownership, estado
+-e auditoria ficam no Postgres.
++Pela decisão do Owner de 2026-09-03, registrada na ADR 0032, toda mídia nova
++de Circulares usa a plataforma R2 privada comum do MVP. A exceção Supabase da
++ADR 0027 está superada. Imagens e masters de vídeo pertencem a
++`coelo-media-prod`, documentos como PDF a `coelo-documents-prod` e uploads ainda
++não finalizados/quarentena a `coelo-transient-prod`, conforme a finalidade.
++Nenhum desses buckets é público; Circulares não cria bucket próprio.
++
++Upload e leitura passam pelo Media Gateway server-side, inicialmente Edge
++Function Supabase. O gateway valida sessão, tenant, capacidade e audiência,
++emite chave opaca segundo a hierarquia comum da ADR 0032 e presigned PUT/GET
++curto, finaliza de forma idempotente, limpa órfãos e audita. A chave nunca
++autoriza acesso. MIME real, bytes, dimensões/pixels quando aplicável, checksum
++e limites por finalidade são validados no servidor. PDF também exige validação
++de assinatura, estrutura, conteúdo ativo e malware; viewer e download são
++reautorizados. O limite específico de PDF desta spec permanece em 5 MiB.
++
++Postgres é o catálogo autoritativo de ativos, variantes, vínculos, ownership,
++permissões, retenção e auditoria. O master permanece no R2; PDF nunca usa
++Stream. Nenhuma credencial R2 ou `service_role` entra no cliente. Os prazos do
++token de upload Supabase da regra anterior não definem o contrato R2: sua
++entrega segue o gateway comum da ADR 0032, sem presumir TTL específico aqui.
+ 
+ ## UX e estados
+ 
+@@ -89,10 +99,13 @@ O contrato visual dessas duas projeções foi aprovado em 2026-08-31. No web, a
+ prévia de como a Circular aparece no Acontece não ocupa coluna lateral nem nasce
+ aberta: uma ação explícita abre a prévia em popup contextual, devolvendo a
+ largura principal ao Perfil. O popup usa superfície neutra, barreira, corpo
+-rolável e fechamento acessível conforme o contrato Coelo de overlays. Em
+-compacto, o detalhe usa viewer fullscreen sem cabeçalho ou dock global, com
+-retorno contextual `‹ Circular`. Fechar ou usar Escape devolve foco ao gatilho
+-e preserva o ponto de origem. Esta regra
++rolável e fechamento acessível conforme o contrato Coelo de overlays.
++Esclarecimento do Owner de 09/09/2026: quando hospedado no Superadmin, o detalhe
++preserva o shell/menu no web e no mobile e ocupa sua área de conteúdo, com
++retorno contextual `‹ Circular`. A regra antiga de fullscreen sem cabeçalho
++ou dock global não autoriza ocultar o shell do Superadmin no compacto; esta
++restrição é específica desse hospedeiro. Fechar ou usar Escape devolve foco ao
++gatilho e preserva o ponto de origem. Esta regra
+ não altera o preview lateral aprovado dos composers de publicação.
+ 
+ O editor pertence ao fluxo de publicação do Principal, ao lado de Publicar no
+@@ -117,4 +130,5 @@ resposta parcial, respondida, conflito e limites excedidos.
+ - testes Dart cobrem domínio, codec, repositories, widgets e 375/768/1024/1440;
+ - pgTAP cobre constraints, grants, RLS, capacidades, idempotência, cross-tenant,
+   cross-context e IDOR/BOLA;
+-- testes Deno cobrem validação e gateway de Storage privado.
++- testes Deno cobrem validação, finalização idempotente e gateway R2 privado,
++  incluindo negativas cross-tenant, IDOR, sessão revogada e entrega expirada.
+diff --git a/specs/050-principal-ui-ux-closure.md b/specs/050-principal-ui-ux-closure.md
+index 3ac5a303c..cd183672e 100644
+--- a/specs/050-principal-ui-ux-closure.md
++++ b/specs/050-principal-ui-ux-closure.md
+@@ -2,10 +2,23 @@
+ source: "ajustes visuais e anexos aprovados pelo usuario em 2026-09-01; docs/superpowers/specs/2026-08-28-coelo-visual-completion-stage-design.md; docs/design/design-system.md; specs/005-principal-app.md; specs/036-principal-now-publication-mvp.md"
+ status: approved
+ generated_at: 2026-09-01
++updated_at: 2026-09-09
+ ---
+ 
+ # Fechamento UI/UX do Coelo Principal
+ 
++## Esclarecimento aprovado do Owner — 09/09/2026
++
++Quando o hospedeiro é o Superadmin, preservar o shell/menu tanto no web quanto
++no mobile, inclusive em Agora, Momentos e na leitura de Circular. A experiência
++Principal permanece no contêiner de conteúdo do shell, respeitando sua navegação
++responsiva. Não suspender nem substituir o shell hospedeiro ao abrir um viewer.
++
++Esta regra se aplica apenas ao Principal hospedado no Superadmin. Não determina
++o comportamento do aplicativo Principal independente. Substitui neste hospedeiro
++a antiga autorização genérica de fullscreen que removia o shell, sem converter
++feeds, viewers ou compositores em páginas administrativas.
++
+ ## Objetivo e problema
+ 
+ Finalizar o acabamento visual responsivo das superficies Coelo (Principal)
+@@ -68,8 +81,9 @@ nao copia seu cabecalho e nao modifica os apps privados separados.
+ 
+ O dock canonico preserva Home, Para voce, a acao central de publicar no Agora,
+ Momentos e Pesquisar. Mensagens permanece launcher contextual separado e Perfil
+-permanece no cabecalho. Viewers imersivos suspendem cabecalho, shell, dock e
+-launchers ate o retorno contextual.
++permanece no cabecalho. No Superadmin, viewers podem suspender elementos internos
++concorrentes do Principal, mas preservam o shell/menu hospedeiro no web e no mobile.
++O retorno contextual restaura foco e posição dentro do mesmo contêiner.
+ 
+ Componentes neutros podem permanecer em `coelo_ui_core`. Composicoes sociais do
+ Principal nao importam `coelo_ui_admin`; extracoes novas so sao feitas quando
+@@ -95,9 +109,9 @@ sem copiar navegacao ou linguagem visual de outro produto.
+ 
+ ### Agora e Momentos
+ 
+-Agora continua imersivo. Ao abrir Momentos, a midia ocupa a tela inteira em
+-mobile, tablet e desktop e todo chrome externo e suspenso. O retorno contextual
+-restaura foco e posicao. Imagem e video preservam proporcao, controles legiveis,
++Agora e Momentos preservam a composição imersiva dentro da área de conteúdo.
++No Superadmin web e mobile, a mídia não assume uma tela que remova o shell/menu
++hospedeiro. O retorno contextual restaura foco e posicao. Imagem e video preservam proporcao, controles legiveis,
+ contraste, alvos de toque e estados de carregamento, erro e indisponibilidade.
+ 
+ ### Perfil
+diff --git a/docs/reviews/etapa-2-operacao/next-round/R02-20260909/PRINCIPAL.md b/docs/reviews/etapa-2-operacao/next-round/R02-20260909/PRINCIPAL.md
+index 7b8544a2b..b27a3c274 100644
+--- a/docs/reviews/etapa-2-operacao/next-round/R02-20260909/PRINCIPAL.md
++++ b/docs/reviews/etapa-2-operacao/next-round/R02-20260909/PRINCIPAL.md
+@@ -20,19 +20,20 @@ Compartilhar o hospedeiro não significa compartilhar as telas administrativas.
+ coelo_ui_principal não importa coelo_ui_admin; tokens/controles neutros podem
+ vir de coelo_ui_core.
+ 
+-## Única ambiguidade ainda submetida ao Owner
++## Decisão final do Owner — 09/09/2026
+ 
+-A spec050 e a referência visual da skill coelo-ui permitem que viewers
+-imersivos de Agora/Momentos ocultem temporariamente o chrome e restaurem o
+-contexto ao sair. O pedido atual de manter o contêiner junto ao shell pode
+-abranger também esses viewers. A pergunta sobre essa exceção foi enviada
+-nesta tarefa e ainda não há resposta registrada neste pacote.
++A regra vale no Superadmin web e mobile, inclusive em Agora, Momentos e na
++leitura de Circular: preservar o shell/menu hospedeiro e manter a experiência
++Principal em seu contêiner de conteúdo, conforme a navegação responsiva.
++Não ocultar o shell inteiro para abrir esses viewers. A família visual
++Principal continua própria; elementos internos concorrentes podem ser suspensos.
+ 
+-Não interpretar silêncio como aprovação. Não alterar essa exceção nem
+-certificá-la como aceita pela rodada até esclarecer o alcance da instrução
+-atual. O desenvolvimento de feeds, publicadores, Perfil, Para Você e demais
+-ações independentes continua. Uma resposta posterior do Owner prevalece e
+-deve atualizar esta fonte e a referência canônica afetada, sem reabrir o resto.
++A confirmação final do Owner substitui a resposta intermediária de que seria
++apenas no web. Aplica-se somente ao conteúdo hospedado no Superadmin, sem
++definir o comportamento do aplicativo Principal independente. A dúvida está
++resolvida; não pedir nova confirmação nem manter bloqueio por esse motivo.
++A implementação e sua prova continuam sendo responsabilidade da frente L01,
++com compartilhados coordenados por D00. Decisão registrada não é E2E certificado.
+ 
+ ## Referências preservadas
+ 
+@@ -84,4 +85,3 @@ Use as rotas existentes como ponto de partida e preserve entrada normal:
+  /principal-moments e /principal-moments/publish;
+  /circulars, /circulars/new, /circulars/:circularId/read e /circulars/:circularId/edit.
+ Uma rota existente não é prova de acesso normal, persistência ou E2E.
+-

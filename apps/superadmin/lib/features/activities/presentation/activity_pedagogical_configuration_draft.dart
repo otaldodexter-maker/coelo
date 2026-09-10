@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 enum ActivityAssessmentModel { none, gradeOnly, competenciesOnly, gradeAndCompetencies }
 
 enum ActivityAssessmentPeriodicity { bimonthly, trimester, semester, annual }
@@ -391,6 +393,13 @@ final class ActivityPedagogicalConfigurationDraft {
     usedByResults: usedByResults ?? this.usedByResults,
     changeJustification: changeJustification ?? this.changeJustification,
   );
+
+  /// Only the untouched disabled configuration fits the restricted draft command.
+  Map<String, Object?> toAggregateCommandJson() {
+    final value = toJson();
+    final empty = const ActivityPedagogicalConfigurationDraft.disabled().toJson();
+    return jsonEncode(value) == jsonEncode(empty) ? <String, Object?>{'enabled': false} : value;
+  }
 
   Map<String, Object?> toJson() => {
     'enabled': enabled,

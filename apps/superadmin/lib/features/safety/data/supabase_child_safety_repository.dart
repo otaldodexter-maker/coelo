@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:http/http.dart' show ClientException;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../domain/child_safety.dart';
@@ -110,6 +111,8 @@ final class SupabaseChildSafetyRepository implements ChildSafetyRepository {
         '22023' || '23514' => const ChildSafetyValidationException(),
         _ => const ChildSafetyUnavailableException(),
       };
+    } on ClientException {
+      throw const ChildSafetyUnavailableException();
     }
   }
 }

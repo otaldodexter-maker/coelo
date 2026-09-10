@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
@@ -159,6 +160,11 @@ final class _GroupFormPageState extends State<GroupFormPage> {
   String? _loadingError;
   bool _saving = false;
   String? _saveError;
+  GroupDirectorySaveRequest? _pendingSave;
+  String? _pendingSaveFingerprint;
+  bool _saveContextInvalidated = false;
+  static const _changedSaveContextMessage =
+      'O contexto do formulário mudou. Reabra o formulário para continuar.';
   _GroupFormStep _currentStep = _GroupFormStep.hierarchy;
   final Set<_GroupFormStep> _completedSteps = {};
   final Set<_GroupFormStep> _errorSteps = {};
@@ -188,15 +194,30 @@ final class _GroupFormPageState extends State<GroupFormPage> {
     unawaited(_loadContext());
   }
 
+  @override
+  void didUpdateWidget(covariant GroupFormPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.repository, widget.repository) ||
+        oldWidget.groupId != widget.groupId ||
+        oldWidget.initialInstitutionId != widget.initialInstitutionId ||
+        oldWidget.initialUnitId != widget.initialUnitId) {
+      _saveContextInvalidated = true;
+      _saveError = _changedSaveContextMessage;
+    }
+  }
+
   Future<void> _loadContext() async {
+    final repository = widget.repository;
+    final groupId = widget.groupId;
+    final initialInstitutionId = widget.initialInstitutionId;
+    final initialUnitId = widget.initialUnitId;
     try {
-      final initialRecord = widget.groupId == null
-          ? null
-          : await widget.repository.findById(widget.groupId!);
-      final context = await widget.repository.fetchFormContext(
-        institutionId: widget.initialInstitutionId ?? initialRecord?.institutionId,
+      final initialRecord = groupId == null ? null : await repository.findById(groupId);
+      if (!mounted || _saveContextInvalidated) return;
+      final context = await repository.fetchFormContext(
+        institutionId: initialInstitutionId ?? initialRecord?.institutionId,
       );
-      if (!mounted) return;
+      if (!mounted || _saveContextInvalidated) return;
 
       _institutionOptions = context.institutions;
       _unitOptions = context.units;
@@ -233,10 +254,10 @@ final class _GroupFormPageState extends State<GroupFormPage> {
       _surfaceColorController.text = appearance['surface_color'] ?? '#FFFFFF';
 
       _selectedInstitution =
-          _resolveInstitution(widget.initialInstitutionId ?? initialRecord?.institutionId) ??
+          _resolveInstitution(initialInstitutionId ?? initialRecord?.institutionId) ??
           (context.institutions.isNotEmpty ? context.institutions.first : null);
       _selectedUnit = _resolveUnitForInstitution(
-        widget.initialUnitId ?? initialRecord?.unitId,
+        initialUnitId ?? initialRecord?.unitId,
         _selectedInstitution?.id,
       );
       if (_selectedUnit == null) {
@@ -248,13 +269,13 @@ final class _GroupFormPageState extends State<GroupFormPage> {
         _loading = false;
       });
     } on GroupDirectoryUnauthorizedException {
-      if (!mounted) return;
+      if (!mounted || _saveContextInvalidated) return;
       setState(() {
         _loading = false;
         _loadingError = 'Sem permissão para carregar os dados desta tela.';
       });
     } on Exception {
-      if (!mounted) return;
+      if (!mounted || _saveContextInvalidated) return;
       setState(() {
         _loading = false;
         _loadingError = 'Não foi possível carregar as opções de turma.';
@@ -358,6 +379,43 @@ final class _GroupFormPageState extends State<GroupFormPage> {
     if (!_dirty) setState(() => _dirty = true);
   }
 
+  String _saveFingerprint() => jsonEncode([
+    _selectedInstitution?.id,
+    _selectedUnit?.id,
+    _nameController.text.trim(),
+    _typeController.text.trim(),
+    _typeController.text == 'other' ? _typeOtherController.text.trim() : null,
+    _status.name,
+    _inheritAppearance,
+    _inheritAccess,
+    _inheritActivities,
+    _primaryColorController.text.trim(),
+    _secondaryColorController.text.trim(),
+    _surfaceColorController.text.trim(),
+    for (final bindings in [_people, _professionals])
+      [
+        for (final person in bindings)
+          [
+            person.id,
+            person.name,
+            person.identifier,
+            _GroupRoleLabel.label(person.role),
+            person.note,
+          ],
+      ],
+    _inheritActivities ? const <String>[] : _selectedActivities.toList(growable: false),
+    [
+      for (final invite in _invites)
+        [
+          invite.id,
+          invite.identifier,
+          _GroupRoleLabel.label(invite.role),
+          invite.profile,
+          invite.status,
+        ],
+    ],
+  ]);
+
   Future<bool> _confirmExit() async {
     if (!_dirty) return true;
     final discard = await showDialog<bool>(
@@ -447,6 +505,11 @@ final class _GroupFormPageState extends State<GroupFormPage> {
   }
 
   Future<void> _save() async {
+    if (_saving) return;
+    if (_saveContextInvalidated) {
+      setState(() => _saveError = _changedSaveContextMessage);
+      return;
+    }
     setState(() => _saveError = null);
     if (!_identityValid) {
       setState(() {
@@ -466,90 +529,103 @@ final class _GroupFormPageState extends State<GroupFormPage> {
         return;
       }
       final now = DateTime.now();
+      final fingerprint = _saveFingerprint();
+      if (_pendingSaveFingerprint != fingerprint) _pendingSave = null;
       final original = _original;
       final institution = _selectedInstitution!;
       final unit = _selectedUnit!;
-      final record = original == null
-          ? GroupRecord(
-              id: widget.repository.createId(institution.id, unit.id, _nameController.text.trim()),
-              institutionId: institution.id,
-              institutionName: institution.label,
-              unitId: unit.id,
-              unitName: unit.label,
-              name: _nameController.text.trim(),
-              groupType: _typeController.text.trim(),
-              groupTypeOtherText: _typeController.text == 'other'
-                  ? _typeOtherController.text.trim()
-                  : null,
-              status: _status,
-              inheritAppearance: _inheritAppearance,
-              inheritAccess: _inheritAccess,
-              inheritActivities: _inheritActivities,
-              createdAt: now,
-              updatedAt: now,
-            )
-          : original.copyWith(
-              name: _nameController.text.trim(),
-              groupType: _typeController.text.trim(),
-              groupTypeOtherText: _typeController.text == 'other'
-                  ? _typeOtherController.text.trim()
-                  : null,
-              status: _status,
-              inheritAppearance: _inheritAppearance,
-              inheritAccess: _inheritAccess,
-              inheritActivities: _inheritActivities,
-              updatedAt: now,
-            );
-      final result = await widget.repository.saveComposition(
-        GroupDirectorySaveRequest(
-          requestId:
-              'group-save-${_editing ? 'edit' : 'create'}-${DateTime.now().millisecondsSinceEpoch}',
-          record: record,
-          branding: {
-            'accent_color': _primaryColorController.text.trim(),
-            'secondary_color': _secondaryColorController.text.trim(),
-            'surface_color': _surfaceColorController.text.trim(),
-          },
-          people: [
-            for (final person in _people)
-              GroupDirectoryPersonBinding(
-                id: person.id,
-                name: person.name,
-                identifier: person.identifier,
-                role: _GroupRoleLabel.label(person.role),
-                profile: person.note,
-              ),
-          ],
-          professionals: [
-            for (final professional in _professionals)
-              GroupDirectoryPersonBinding(
-                id: professional.id,
-                name: professional.name,
-                identifier: professional.identifier,
-                role: _GroupRoleLabel.label(professional.role),
-                profile: professional.note,
-              ),
-          ],
-          activityIds: _inheritActivities ? const [] : _selectedActivities.toList(growable: false),
-          typeRequestLabel: _typeController.text == 'other'
-              ? _typeOtherController.text.trim()
-              : null,
-          typeRequestJustification: _typeController.text == 'other'
-              ? 'Solicitado no formulário de Turma'
-              : null,
-          invites: [
-            for (final invite in _invites)
-              GroupDirectoryInviteBinding(
-                id: invite.id,
-                identifier: invite.identifier,
-                role: _GroupRoleLabel.label(invite.role),
-                profile: invite.profile,
-                status: invite.status,
-              ),
-          ],
-        ),
+      final record =
+          _pendingSave?.record ??
+          (original == null
+              ? GroupRecord(
+                  id: widget.repository.createId(
+                    institution.id,
+                    unit.id,
+                    _nameController.text.trim(),
+                  ),
+                  institutionId: institution.id,
+                  institutionName: institution.label,
+                  unitId: unit.id,
+                  unitName: unit.label,
+                  name: _nameController.text.trim(),
+                  groupType: _typeController.text.trim(),
+                  groupTypeOtherText: _typeController.text == 'other'
+                      ? _typeOtherController.text.trim()
+                      : null,
+                  status: _status,
+                  inheritAppearance: _inheritAppearance,
+                  inheritAccess: _inheritAccess,
+                  inheritActivities: _inheritActivities,
+                  createdAt: now,
+                  updatedAt: now,
+                )
+              : original.copyWith(
+                  name: _nameController.text.trim(),
+                  groupType: _typeController.text.trim(),
+                  groupTypeOtherText: _typeController.text == 'other'
+                      ? _typeOtherController.text.trim()
+                      : null,
+                  status: _status,
+                  inheritAppearance: _inheritAppearance,
+                  inheritAccess: _inheritAccess,
+                  inheritActivities: _inheritActivities,
+                  updatedAt: now,
+                ));
+      final request = _pendingSave ??= GroupDirectorySaveRequest(
+        requestId:
+            'group-save-${_editing ? 'edit' : 'create'}-${DateTime.now().microsecondsSinceEpoch}',
+        record: record,
+        branding: {
+          'accent_color': _primaryColorController.text.trim(),
+          'secondary_color': _secondaryColorController.text.trim(),
+          'surface_color': _surfaceColorController.text.trim(),
+        },
+        people: [
+          for (final person in _people)
+            GroupDirectoryPersonBinding(
+              id: person.id,
+              name: person.name,
+              identifier: person.identifier,
+              role: _GroupRoleLabel.label(person.role),
+              profile: person.note,
+            ),
+        ],
+        professionals: [
+          for (final professional in _professionals)
+            GroupDirectoryPersonBinding(
+              id: professional.id,
+              name: professional.name,
+              identifier: professional.identifier,
+              role: _GroupRoleLabel.label(professional.role),
+              profile: professional.note,
+            ),
+        ],
+        activityIds: _inheritActivities ? const [] : _selectedActivities.toList(growable: false),
+        typeRequestLabel: _typeController.text == 'other' ? _typeOtherController.text.trim() : null,
+        typeRequestJustification: _typeController.text == 'other'
+            ? 'Solicitado no formulário de Turma'
+            : null,
+        invites: [
+          for (final invite in _invites)
+            GroupDirectoryInviteBinding(
+              id: invite.id,
+              identifier: invite.identifier,
+              role: _GroupRoleLabel.label(invite.role),
+              profile: invite.profile,
+              status: invite.status,
+            ),
+        ],
       );
+      _pendingSaveFingerprint = fingerprint;
+      final result = await widget.repository.saveComposition(request);
       if (!mounted) return;
+      if (_saveContextInvalidated) {
+        setState(() {
+          _saving = false;
+          _saveError = _changedSaveContextMessage;
+        });
+        return;
+      }
       if (result.hasFailure) {
         final failedSteps = <_GroupFormStep>{};
         final lines = <String>[];
@@ -581,6 +657,8 @@ final class _GroupFormPageState extends State<GroupFormPage> {
       }
       setState(() {
         _errorSteps.clear();
+        _pendingSave = null;
+        _pendingSaveFingerprint = null;
         _dirty = false;
         _saving = false;
       });
@@ -591,7 +669,9 @@ final class _GroupFormPageState extends State<GroupFormPage> {
       if (!mounted) return;
       setState(() {
         _saving = false;
-        _saveError = 'Não foi possível salvar a turma. Revise os dados e tente novamente.';
+        _saveError = _saveContextInvalidated
+            ? _changedSaveContextMessage
+            : 'Não foi possível salvar a turma. Revise os dados e tente novamente.';
       });
     }
   }
@@ -610,7 +690,16 @@ final class _GroupFormPageState extends State<GroupFormPage> {
         onDestinationSelected: _selectDestination,
         onBugReportSubmitted: widget.onBugReportSubmitted,
         chatLauncherBottomInset: _footerHeight == 0 ? 0 : _footerHeight + CoeloSpacing.space4,
-        child: _loading
+        child: _saveContextInvalidated
+            ? CoeloStatePanel(
+                key: const Key('group-form-save-context-changed'),
+                title: 'Contexto alterado',
+                message: _changedSaveContextMessage,
+                icon: Icons.info_outline,
+                actionLabel: 'Voltar às turmas',
+                onAction: widget.onCancel,
+              )
+            : _loading
             ? const Center(child: CircularProgressIndicator())
             : _loadingError != null
             ? CoeloStatePanel(
@@ -640,9 +729,28 @@ final class _GroupFormPageState extends State<GroupFormPage> {
                   child: SuperadminFormFrame(
                     key: const Key('group-form-golden-root'),
                     viewportWidth: outerConstraints.maxWidth,
-                    navigation: _navigation(),
+                    navigation: ExcludeFocus(
+                      excluding: _saving,
+                      child: AbsorbPointer(absorbing: _saving, child: _navigation()),
+                    ),
                     scrollKey: const Key('group-form-scroll'),
-                    body: _formSurface(),
+                    body: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        if (_saving)
+                          Semantics(
+                            liveRegion: true,
+                            child: const Padding(
+                              padding: EdgeInsets.only(bottom: CoeloSpacing.space3),
+                              child: Text('Salvando altera\u00e7\u00f5es\u2026'),
+                            ),
+                          ),
+                        ExcludeFocus(
+                          excluding: _saving,
+                          child: AbsorbPointer(absorbing: _saving, child: _formSurface()),
+                        ),
+                      ],
+                    ),
                     footer: _footer(),
                   ),
                 ),
@@ -815,7 +923,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
       prefixIcon: Icons.category_outlined,
       onChanged: (value) => setState(() {
         _typeController.text = value;
-        _dirty = true;
+        _markDirty();
       }),
     ),
     if (_typeController.text == 'other')
@@ -836,7 +944,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
       prefixIcon: Icons.toggle_on_outlined,
       onChanged: (value) => setState(() {
         _status = value;
-        _dirty = true;
+        _markDirty();
       }),
     ),
   ];
@@ -851,7 +959,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
       value: _inheritAppearance,
       onChanged: (value) => setState(() {
         _inheritAppearance = value;
-        _dirty = true;
+        _markDirty();
         if (value) {
           final inherited = _original?.effectiveAppearance ?? const <String, String?>{};
           _primaryColorController.text = inherited['accent_color'] ?? '#D63C00';
@@ -867,7 +975,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
       value: _inheritAccess,
       onChanged: (value) => setState(() {
         _inheritAccess = value;
-        _dirty = true;
+        _markDirty();
       }),
     ),
     CoeloAdminToggleField(
@@ -876,7 +984,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
       value: _inheritActivities,
       onChanged: (value) => setState(() {
         _inheritActivities = value;
-        _dirty = true;
+        _markDirty();
       }),
     ),
     if (!_inheritAppearance) ...[

@@ -1,0 +1,152 @@
+{
+  "revision": 3,
+  "updated_at": "2026-09-09T18:26:00-03:00",
+  "group": "formularios-cuidado",
+  "task": "/root",
+  "model": "Claude Opus 5 (1M context)",
+  "status": "awaiting-nominal-activation; coordination-read; plan-ready",
+  "coordinator": "Claude",
+  "worktree": null,
+  "branch": null,
+  "head": null,
+  "upstream": null,
+  "base_observed": "d784462c168d22fdb7090b7de1ef7db554ad5107",
+  "scope": [
+    "apps/superadmin -> Formularios / Diretorio, Criar, Visao geral, Editar, Publicar, Testar, Pergunta Local interno",
+    "apps/superadmin -> Respostas / Monitor, Responder, Lista, Detalhe, Exportar respostas, Responder Local interno",
+    "apps/superadmin -> Arquivos de Formularios / Upload, Resolver, Baixar, Expirar, Excluir",
+    "apps/superadmin -> Perfis de cuidado / Lista, Criar, Detalhe, Editar",
+    "apps/superadmin -> Medicacao / Lista, Criar, Detalhe, Editar, Evidencia",
+    "fora do recorte: child_safety (acessos-pessoas)"
+  ],
+  "action_ids": [
+    "forms.list",
+    "forms.create",
+    "forms.overview",
+    "forms.edit",
+    "forms.publish",
+    "forms.test",
+    "forms.location-question",
+    "forms.monitor",
+    "forms.respond",
+    "forms.responses",
+    "forms.response-detail",
+    "forms.responses.export",
+    "forms.location-answer",
+    "forms.upload",
+    "forms.resolve-file",
+    "forms.download",
+    "forms.expire-file",
+    "forms.delete-file",
+    "health-care.list",
+    "health-care.create",
+    "health-care.detail",
+    "health-care.edit",
+    "medication.list",
+    "medication.create",
+    "medication.detail",
+    "medication.edit",
+    "medication.evidence"
+  ],
+  "action_ids_status": "27/27 mapeados no inventario. Todos em FE/BE/E2E pending-verification na base d784462c1.",
+  "changed": "Coordenacao rev1 lida: worktree/branch atribuidas, quatro reservas registradas, remoto de producao sem autorizacao nominal. Pedido unico de ativacao enviado por SendMessage ao coelo-73. Leitura focal aprofundada confirmou que o mecanismo _invalidNumericIds ja existe e ja bloqueia autosave (linha 885) e submit (linha 1093), entao a correcao de limites reusa esse mecanismo em vez de criar outro.",
+  "root_causes_found": [
+    {
+      "item": "limites numericos nao aplicados na resposta (integer 11/max 10, decimal 10.5/max 10, money 1100/max 1000 aceitos)",
+      "where": "apps/superadmin/lib/features/forms/presentation/response/form_response_page.dart:902-947 (_setNumericAnswer)",
+      "cause": "A validacao so confere formato (parseavel/finito). config.minValue e config.maxValue nunca sao comparados em nenhum ponto do cliente.",
+      "actions": [
+        "forms.respond",
+        "forms.location-answer"
+      ]
+    },
+    {
+      "item": "money 10,50 vira 10.5 em vez de 1050",
+      "where": "apps/superadmin/lib/features/forms/presentation/editor/forms_editor_page.dart:1546-1547 (_itemDefinition)",
+      "cause": "minValue/maxValue sao gravados em unidades (10.5) enquanto a resposta money e gravada em minorUnits (form_response_page.dart:938, (number*100).round()). Incompatibilidade de unidade entre autoria e resposta.",
+      "actions": [
+        "forms.create",
+        "forms.edit",
+        "forms.respond"
+      ]
+    },
+    {
+      "item": "falta controle maxLength no editor",
+      "where": "apps/superadmin/lib/features/forms/presentation/editor/forms_editor_page.dart:1519 (config.maxLength)",
+      "cause": "maxLength apenas repassa question.loadedConfig.maxLength; nao existe campo de edicao nem aplicacao no respondente.",
+      "actions": [
+        "forms.create",
+        "forms.edit",
+        "forms.respond"
+      ]
+    },
+    {
+      "item": "edicao de resposta submitted",
+      "where": "inventario forms.respond; form_mutate_response valida obrigatorios apenas em p_submit",
+      "cause": "UI/double esperam draft, SQL preserva submitted; negativa e correcao forward-only I008 ainda nao implementadas. Depende de pacote nominal BE.",
+      "actions": [
+        "forms.respond"
+      ]
+    }
+  ],
+  "closed_criteria": [],
+  "tests": {
+    "P": 0,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0,
+    "note": "nenhum teste executado; escrita de produto retida ate ativacao"
+  },
+  "proposed_first_sequence": [
+    "1. Limites numericos/texto FE (forms.create, forms.edit, forms.respond): aplicar min/max e maxLength no respondente, unificar unidade money entre editor e resposta, com testes de widget cobrindo os quatro RED da r48. Nao toca arquivo compartilhado; executavel imediatamente.",
+    "2. Overview/Publicar/Testar/Local (forms.overview, forms.publish, forms.test, forms.location-question): fechar criterios proprios reusando R36-r39 ja integrado; nao reimplementar editor.",
+    "3. Ciclo XLSX (forms.responses.export, forms.download): ligar resolver/opener a9d0bd42 na composicao produtiva reusando schema313/writer128 e SQL I005172/I01382 ja integrados 882c1655/b82157a4.",
+    "4. Midia question-image I021 (forms.upload/resolve-file/download): DEPENDE de reserva da plataforma comum de midia.",
+    "5. care049 e goldens (health-care.*, medication.*): quatro categorias golden falhas e 1 teste/4 comparacoes golden FAIL em medication."
+  ],
+  "reservations_requested": [
+    "plataforma comum de midia (question-image / FormsMediaReader / gateway) — compartilhada com publicacoes-midia; peco escritor identificado ou janela serializada antes do item 4",
+    "migrations de forms (I008 forward-only, I021) — replay SQL serializado pelo coordenador"
+  ],
+  "reservations_not_needed_now": "Itens 1 a 3 ficam contidos em apps/superadmin/lib/features/forms/presentation/{editor,response} e packages/coelo_domain/lib/src/forms; nao tocam router, shell nem midia compartilhada.",
+  "blocker": "Ativacao nominal pendente. Nao ha outro bloqueio: o item 1 nao depende de remoto, migration, midia nem router.",
+  "next_step": "Aguardando ACK nominal. Ao receber: usar a worktree atribuida e abrir o item 1 escrevendo primeiro os quatro testes RED de faixa em form_response_page_test.dart, depois a correcao em _setNumericAnswer e a unidade money no editor.",
+  "wip": [],
+  "artifacts": [],
+  "children": [],
+  "processes": [],
+  "ports": [],
+  "ack": null,
+  "limitations": "Sem canal nativo verificado com o coordenador; ha 14 sessoes pares listadas mas nenhuma identificada como coordenador, entao nao houve aviso nativo. Publicar este arquivo nao prova leitura.",
+  "deadline": "2026-09-10T05:00:00-03:00",
+  "eta": "Item 1 estimado em delta pequeno apos inspecao: dois arquivos de apresentacao e testes de widget. Itens 2-5 nao inspecionados em profundidade ainda.",
+  "worktree_assigned": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-formularios-cuidado",
+  "branch_assigned": "work/etapa2-noturna-formularios-cuidado",
+  "coordination_read": {
+    "revision": 1,
+    "session": "coelo-73",
+    "ref": "4aacb8",
+    "updatedAt": "2026-09-09T18:10:00-03:00",
+    "myActivation": "worktree pronta; aguardar ativacao nominal antes de escrita de produto",
+    "note": "coordenacao.json rev1 ainda registra meu status como aguardando revisao 1; minhas revisoes 1 e 2 ja estavam publicadas as 18:05 e 18:16."
+  },
+  "native_channel": {
+    "tool": "SendMessage",
+    "target": "coelo-73",
+    "sent_at": "2026-09-09T18:22:00-03:00",
+    "msg_id": "d371aa66-68e0-4650-9684-54887a610f1d",
+    "reason": "bloqueio: ativacao nominal pendente com trabalho diagnosticado e sem conflito de reserva",
+    "delivery": "aceito pela ferramenta; leitura pelo coordenador ainda nao confirmada"
+  },
+  "reuse_confirmed": [
+    "form_response_page.dart: _invalidNumericIds ja gate de autosave/submit e ja exibe mensagem por campo (linha 1011). A correcao de faixa entra em _setNumericAnswer reusando esse conjunto.",
+    "forms_editor_page.dart:498-501 e 1996-2051: Publicar/agendar ja implementado com RPC FormsRpc.publish e capability can_publish_forms; nao reconstruir.",
+    "apps/superadmin/lib/features/forms/presentation/overview/forms_overview_page.dart existe; overview nao esta ausente.",
+    "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart tem 53 casos e ja cobre numerico invalido por formato; os quatro RED de faixa nao estao cobertos.",
+    "apps/superadmin/test/features/health_care/presentation/health_care_golden_test.dart e o alvo das quatro categorias golden falhas."
+  ],
+  "gap_confirmed": [
+    "shortText em form_response_page.dart:652 nao aplica maxLength; nao ha FormItemKind.longText nesse switch."
+  ]
+}

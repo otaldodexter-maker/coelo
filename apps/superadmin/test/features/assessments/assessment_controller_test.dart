@@ -5,6 +5,34 @@ import 'package:coelo_superadmin/features/assessments/assessment_controller.dart
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final offline in [false, true]) {
+    test('assessment draft guard rejects edits during pending save offline=$offline', () async {
+      final repository = _DeferredAssessmentRepository();
+      final controller = AssessmentController(repository);
+      addTearDown(controller.dispose);
+      final load = controller.loadGradebook('book-a');
+      repository.completeLoad('book-a', _book('book-a', 'Aluno'));
+      await load;
+      controller.updateStudent(controller.selectedStudent!.copyWith(familyComment: 'Before save'));
+      final snapshot = controller.gradebook!;
+      final future = controller.saveDraft();
+      final completion = offline
+          ? expectLater(future, throwsA(isA<AssessmentOfflineException>()))
+          : future;
+      controller.updateStudent(controller.selectedStudent!.copyWith(familyComment: 'During save'));
+      final observed = controller.selectedStudent!.familyComment;
+      if (offline) {
+        repository._save.completeError(const AssessmentOfflineException());
+      } else {
+        repository.completeSave(snapshot.copyWith(version: 2));
+      }
+      await completion;
+      expect(observed, 'Before save');
+      expect(controller.selectedStudent!.familyComment, 'Before save');
+      controller.updateStudent(controller.selectedStudent!.copyWith(familyComment: 'After save'));
+      expect(controller.selectedStudent!.familyComment, 'After save');
+    });
+  }
   test('tracks progress without turning absence into zero', () {
     final gradebook = AssessmentGradebook(
       id: 'book-1',

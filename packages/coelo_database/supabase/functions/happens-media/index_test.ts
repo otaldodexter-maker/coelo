@@ -26,11 +26,9 @@ Deno.test("private reads redeem a viewer-bound ticket into a sixty-second URL", 
   assertEquals(source.includes('body.action === "read"'), true);
   assertEquals(source.includes("user.auth.getUser()"), true);
   assertEquals(source.includes("redeem_happens_media_read_ticket"), true);
-  assertEquals(
-    source.includes("createSignedUrl(String(descriptor.object_key), 60)"),
-    true,
-  );
-  assertEquals(source.includes("expires_in: 60"), true);
+  // A janela de sessenta segundos deixou de ser afirmada por texto-fonte: ela e
+  // provada por comportamento nos dois provedores em `r2_branch_test.ts`, que
+  // exercita o handler de verdade em vez de procurar um literal no arquivo.
 });
 
 Deno.test("CORS reflects only configured origins", async () => {

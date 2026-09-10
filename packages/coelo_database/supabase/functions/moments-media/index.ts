@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 
 import { MomentsR2Client, momentsR2Config } from "./r2_s3.ts";
+import { assertStoredBytesMatchDeclaredType } from "./stored_bytes.ts";
 
 type Json = Record<string, unknown>;
 const allowedMimeTypes = new Set([
@@ -211,6 +212,16 @@ Deno.serve(async (request) => {
       ) {
         throw new Error("uploaded_media_mismatch");
       }
+      // O Content-Type do objeto e o que o proprio cliente declarou no PUT
+      // assinado, entao conferir metadado nao prova nada sobre o conteudo. Os
+      // bytes sao relidos e a assinatura MIME real e conferida, como as outras
+      // superficies de midia ja fazem.
+      await assertStoredBytesMatchDeclaredType(
+        r2,
+        String(descriptor.object_key),
+        Number(descriptor.expected_byte_size),
+        String(descriptor.expected_mime_type),
+      );
       const authorizationTicket = await user.rpc(
         "authorize_moments_media_finalize",
         { p_asset_id: descriptor.asset_id },

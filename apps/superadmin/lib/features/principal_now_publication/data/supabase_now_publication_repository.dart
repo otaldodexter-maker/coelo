@@ -227,13 +227,17 @@ final class SupabaseNowPublicationRepository implements NowPublicationRepository
   }
 
   @override
-  Future<NowPublication> publish(NowPublicationContext context, NowPublicationDraft draft) async {
+  Future<NowPublication> publish(
+    NowPublicationContext context,
+    NowPublicationDraft draft, {
+    required String requestId,
+  }) async {
     final saved = draft.id == null ? await saveDraft(context, draft) : draft;
     try {
       final data = await _client.rpc<Object>(
         'publish_now',
         params: {
-          'p_request_id': _uuid(),
+          'p_request_id': requestId,
           'p_publication_id': saved.id,
           'p_expected_version': saved.version,
           'p_publish_at': saved.publishAt?.toUtc().toIso8601String(),

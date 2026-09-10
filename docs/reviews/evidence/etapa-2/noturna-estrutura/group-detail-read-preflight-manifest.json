@@ -1,0 +1,91 @@
+{
+  "generated_at": "2026-09-09T22:26:52.9996215-03:00",
+  "scope": "apps/superadmin > Turmas > detalhe > preflight groups.read",
+  "status": "local-green-no-backend-promotion",
+  "counts": {
+    "U": 0,
+    "regression_unique": 12,
+    "E": 15,
+    "S": 0,
+    "N": 15,
+    "P": 15,
+    "B": 0,
+    "F": 0,
+    "new_unique": 3
+  },
+  "changes": [
+    "DeniedGroupDetailRepository const lança GroupDetailException(denied) sem transporte.",
+    "Router escolhe reader real somente com groups.read atual; chave authorizationInvalidationRevision já existente recria detalhe e remove resposta antiga.",
+    "Reload usa sentinel enquanto negado; read restaurado seleciona adapter real. Nenhuma mudança de controller, shell ou backend."
+  ],
+  "fixture_adjustments": [
+    "structure_detail_authorization_test contextA/contextB agora incluem groups.read: continuam testando invalidação de contexto e negativa backend após preflight autorizado.",
+    "structure_detail_routes_test sessão autenticada explicita platform.read e groups.read: continua medindo backend denial e logout; não é bypass da negativa local.",
+    "Primeiro RED tinha pumpAndSettle antes de contar nova chamada e foi interrompido preventivamente após primeira falha; contagem movida antes de settle para observar diretamente as chamadas."
+  ],
+  "commands": {
+    "analyze": "rtk proxy dart analyze lib/features/groups/domain/group_detail.dart lib/app/router/superadmin_router.dart test/app/router/structure_detail_authorization_test.dart test/app/router/structure_detail_routes_test.dart",
+    "diff": "rtk git diff --check",
+    "red": "rtk proxy flutter test --no-pub test/app/router/structure_detail_authorization_test.dart --plain-name \"group detail read preflight\" --concurrency=1 --reporter expanded",
+    "green": "rtk proxy flutter test --no-pub test/app/router/structure_detail_authorization_test.dart test/app/router/structure_detail_routes_test.dart --name \"group\" --concurrency=1 --reporter expanded",
+    "format": "rtk proxy dart format lib/features/groups/domain/group_detail.dart test/app/router/structure_detail_authorization_test.dart test/app/router/structure_detail_routes_test.dart"
+  },
+  "runners": [
+    {
+      "chunks": [
+        "f66414",
+        "9d4ec6",
+        "2b0970"
+      ],
+      "result": "1 falha observada (initial denied chamou real); interrompido via Ctrl-C durante segundo caso para corrigir ordem de espera da fixture. Não classificado como suite RED completa.",
+      "id": 38553,
+      "exit": 1
+    },
+    {
+      "chunks": [
+        "af6bc0",
+        "c9b60b"
+      ],
+      "result": "0P3F causais: real chamado sem read e segunda chamada depois de revogação com detalhe carregado/pendente.",
+      "id": 57784,
+      "exit": 1
+    },
+    {
+      "chunks": [
+        "9dcc3c",
+        "780ed7",
+        "5659f7"
+      ],
+      "result": "15P0F:3novos+12regressõesGroup. Unit fora deste delta não repetido.",
+      "id": 99923,
+      "exit": 0
+    },
+    {
+      "chunks": [
+        "d657c3",
+        "514a79"
+      ],
+      "result": "No issues found!",
+      "id": 18054,
+      "exit": 0
+    }
+  ],
+  "evidence": "Resultados reais tool runners/report, sem log bruto persistido. Reruns não somados como IDs novos.",
+  "limits": [
+    "Backend continua autoridade de acesso/owner/tenant; nenhuma evidência de vazamento ou leitura remota foi produzida.",
+    "Preflight cliente não substitui RPC/RLS; somente evita chamadas quando read ausente no contexto atual.",
+    "Lista Group permanece com repositório produtivo Unavailable e gates de escrita fechados.",
+    "Sem novo layout, visualgate não repetido; estado denied já existente.",
+    "Sem SQL/remoto/Auth/shell/main/commit. Todos runners próprios encerrados."
+  ],
+  "hashes": {
+    "apps/superadmin/test/app/router/structure_detail_authorization_test.dart": "A8C094444896FCF611BE23EE67CCF5CECF568DA42671354F37554655B00C1AB8",
+    "apps/superadmin/lib/features/groups/domain/group_detail.dart": "FB4089768800F2C615DDD54059441884D449705B1C77A851B23860F111EF2F74",
+    "apps/superadmin/test/app/router/structure_detail_routes_test.dart": "C7ECDB15C75C1ADF76870A7BE2DC4FDF5B33322E6354B623F3EDA082824F4551",
+    "apps/superadmin/lib/app/router/superadmin_router.dart": "36E05950CECE0C3749305E6B1B87C625955D28CF52044F3CCE29E8343F47A980"
+  },
+  "action_ids": [
+    "groups.list",
+    "groups.location"
+  ]
+}

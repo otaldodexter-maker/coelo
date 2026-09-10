@@ -403,17 +403,21 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
     children: [
       _formGrid([
         _dateField(
-          label: 'Data de início',
+          label: 'Data e hora de início',
           value: _controller.startsAt,
           onChanged: (value) {
             if (value != null) _controller.setStartsAt(value);
           },
+          withTime: true,
         ),
         _dateField(
-          label: 'Data de término (opcional)',
+          label: 'Data e hora de término (opcional)',
           value: _controller.endsAt,
           onChanged: _controller.setEndsAt,
           canClear: true,
+          withTime: true,
+          defaultHour: 23,
+          defaultMinute: 59,
         ),
       ]),
       const SizedBox(height: CoeloSpacing.space4),
@@ -490,7 +494,7 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
             _reviewLine('Dispositivo', _deviceLabel(notice.targetDevice)),
             _reviewLine(
               'Vigência',
-              '${_formatDate(notice.startsAt)} — ${_formatOptionalDate(notice.endsAt)}',
+              '${_formatDateTime(notice.startsAt)} — ${_formatOptionalDateTime(notice.endsAt)}',
             ),
             _reviewLine('Recorrência', _recurrenceSummary(notice)),
           ],
@@ -653,12 +657,22 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
     required DateTime? value,
     required ValueChanged<DateTime?> onChanged,
     bool canClear = false,
+    bool withTime = false,
+    int defaultHour = 8,
+    int defaultMinute = 0,
   }) => Row(
     children: [
       Expanded(
         child: OutlinedButton(
           key: ValueKey('notice-date-$label'),
-          onPressed: () => _pickDate(value: value, onChanged: onChanged),
+          onPressed: () => _pickDate(
+            value: value,
+            onChanged: onChanged,
+            label: label,
+            withTime: withTime,
+            defaultHour: defaultHour,
+            defaultMinute: defaultMinute,
+          ),
           style: OutlinedButton.styleFrom(
             alignment: AlignmentDirectional.centerStart,
             padding: const EdgeInsets.symmetric(
@@ -669,7 +683,7 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
           ),
           child: Row(
             children: [
-              const Icon(Icons.date_range_rounded),
+              Icon(withTime ? Icons.event_note_rounded : Icons.date_range_rounded),
               const SizedBox(width: CoeloSpacing.space3),
               Expanded(
                 child: Column(
@@ -678,7 +692,11 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
                   children: [
                     Text(label, style: Theme.of(context).textTheme.labelSmall),
                     const SizedBox(height: CoeloSpacing.space1),
-                    Text(value == null ? 'Selecionar data' : _formatDate(value)),
+                    Text(
+                      value == null
+                          ? (withTime ? 'Selecionar data e hora' : 'Selecionar data')
+                          : (withTime ? _formatDateTime(value) : _formatDate(value)),
+                    ),
                   ],
                 ),
               ),
@@ -824,6 +842,10 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
   Future<void> _pickDate({
     required DateTime? value,
     required ValueChanged<DateTime?> onChanged,
+    String label = 'Data',
+    bool withTime = false,
+    int defaultHour = 8,
+    int defaultMinute = 0,
   }) async {
     final now = DateTime.now();
     final initial = value ?? now;
@@ -838,7 +860,29 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
       selectionMode: CoeloDateSelectionMode.single,
       showQuickRanges: false,
     );
-    if (mounted && selected != null) onChanged(selected.start);
+    if (!mounted || selected == null) return;
+    if (!withTime) {
+      onChanged(selected.start);
+      return;
+    }
+    final time = await showCoeloTimePicker(
+      context: context,
+      initialValue: TimeOfDay(
+        hour: value?.hour ?? defaultHour,
+        minute: value?.minute ?? defaultMinute,
+      ),
+      title: 'Horário — $label',
+    );
+    if (!mounted || time == null) return;
+    onChanged(
+      DateTime(
+        selected.start.year,
+        selected.start.month,
+        selected.start.day,
+        time.hour,
+        time.minute,
+      ),
+    );
   }
 
   Future<void> _onSaveDraft() async {
@@ -917,7 +961,7 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
     NoticeFormStep.identity => 'Informe o título do aviso para continuar.',
     NoticeFormStep.content => 'Informe a mensagem do aviso para continuar.',
     NoticeFormStep.audience => 'Selecione um público válido e informe seu nome.',
-    NoticeFormStep.schedule => 'Revise as datas e a configuração de recorrência.',
+    NoticeFormStep.schedule => _controller.scheduleErrorMessage,
     NoticeFormStep.review => 'Revise as etapas e ajuste o contraste antes de publicar.',
   };
 
@@ -987,7 +1031,11 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
       'A cada ${notice.intervalDays} dia(s)${_untilSuffix(notice.recurrenceUntil)}',
   };
   String _untilSuffix(DateTime? date) => date == null ? '' : ' até ${_formatDate(date)}';
-  String _formatOptionalDate(DateTime? value) => value == null ? 'sem término' : _formatDate(value);
+  String _formatOptionalDateTime(DateTime? value) =>
+      value == null ? 'sem término' : _formatDateTime(value);
+  String _formatDateTime(DateTime value) =>
+      '${_formatDate(value)} · '
+      '${value.hour.toString().padLeft(2, '0')}:${value.minute.toString().padLeft(2, '0')}';
   String _formatDate(DateTime value) =>
       '${value.day.toString().padLeft(2, '0')}/${value.month.toString().padLeft(2, '0')}/${value.year}';
 }

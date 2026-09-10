@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math' as math;
 
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -23,6 +24,15 @@ final class SupabaseAgendaRepository extends AgendaRepository {
   List<GuardianBirthdayRequest> _requests = const [];
   List<AgendaPublicationRequest> _publicationRequests = const [];
   final _readVersions = <String, int>{};
+
+  /// Intencao de escrita por comando, preservada entre tentativas.
+  ///
+  /// Sem isto, cada nova tentativa do MESMO comando chegava ao servidor como
+  /// uma intencao diferente. Em atualizacao o `p_expected_revision` ainda
+  /// barrava a repeticao, mas a criacao nao tem revisao esperada: um retry
+  /// apos falha incerta criava um segundo evento. A intencao so e descartada
+  /// quando o comando confirma.
+  final _writeIntents = <String, String>{};
   final _pendingReads = <String>{};
   final _readStates = <String, AgendaReadStatus>{};
   var _accessDenied = false;
@@ -153,6 +163,12 @@ final class SupabaseAgendaRepository extends AgendaRepository {
     };
   });
 
+  String _intentFor(String command, Map<String, Object?> arguments) =>
+      _writeIntents[jsonEncode({'command': command, 'arguments': arguments})] ??= _requestId();
+
+  void _confirmIntent(String command, Map<String, Object?> arguments) =>
+      _writeIntents.remove(jsonEncode({'command': command, 'arguments': arguments}));
+
   Future<Object?> _captureRequestRead(Future<Object?> Function() operation) async {
     try {
       return await operation();
@@ -179,17 +195,18 @@ final class SupabaseAgendaRepository extends AgendaRepository {
     final epoch = _accessEpoch;
     if (reason.trim().isEmpty) return AgendaMutationResult.reasonRequired;
     try {
+      final arguments = <String, Object?>{
+        'p_publication_request_id': requestId,
+        'p_approve': approve,
+        'p_reason': reason.trim(),
+      };
       final mapped = _publicationRequest(
         await _client.rpc<Object?>(
           'superadmin_agenda_decide_publication',
-          params: {
-            'p_request_id': _requestId(),
-            'p_publication_request_id': requestId,
-            'p_approve': approve,
-            'p_reason': reason.trim(),
-          },
+          params: {'p_request_id': _intentFor('decide', arguments), ...arguments},
         ),
       );
+      _confirmIntent('decide', arguments);
       if (!_canApply(epoch)) return _staleMutationResult;
       _invalidateEventReads();
       final index = _publicationRequests.indexWhere((request) => request.id == mapped.id);
@@ -204,7 +221,10 @@ final class SupabaseAgendaRepository extends AgendaRepository {
       return AgendaMutationResult.success;
     } on PostgrestException catch (error) {
       return _commandFailure(error, epoch);
-    } on FormatException {
+    } on Exception {
+      // Falha de transporte tambem precisa virar resultado: antes, um
+      // ClientException escapava do comando e chegava a UI como excecao nao
+      // tratada. Mesmo idioma do caminho de leitura em _captureRequestRead.
       return AgendaMutationResult.unavailable;
     }
   }
@@ -246,20 +266,21 @@ final class SupabaseAgendaRepository extends AgendaRepository {
     if (_disposed) return AgendaMutationResult.unavailable;
     final epoch = _accessEpoch;
     final existing = itemById(item.id);
+    final arguments = <String, Object?>{
+      'p_event_id': existing?.id,
+      'p_expected_revision': existing?.revision,
+      'p_payload': _payload(item),
+      'p_reason': reason?.trim().isEmpty == true ? null : reason?.trim(),
+      'p_override_reservation': overrideConflict,
+    };
     try {
       final saved = _item(
         await _client.rpc<Object?>(
           'superadmin_agenda_save',
-          params: {
-            'p_request_id': _requestId(),
-            'p_event_id': existing?.id,
-            'p_expected_revision': existing?.revision,
-            'p_payload': _payload(item),
-            'p_reason': reason?.trim().isEmpty == true ? null : reason?.trim(),
-            'p_override_reservation': overrideConflict,
-          },
+          params: {'p_request_id': _intentFor('save', arguments), ...arguments},
         ),
       );
+      _confirmIntent('save', arguments);
       if (!_canApply(epoch)) return _staleMutationResult;
       _invalidateEventReads();
       _lastSavedItemId = saved.id;
@@ -268,7 +289,10 @@ final class SupabaseAgendaRepository extends AgendaRepository {
       return AgendaMutationResult.success;
     } on PostgrestException catch (error) {
       return _commandFailure(error, epoch);
-    } on FormatException {
+    } on Exception {
+      // Falha de transporte tambem precisa virar resultado: antes, um
+      // ClientException escapava do comando e chegava a UI como excecao nao
+      // tratada. Mesmo idioma do caminho de leitura em _captureRequestRead.
       return AgendaMutationResult.unavailable;
     }
   }
@@ -354,19 +378,20 @@ final class SupabaseAgendaRepository extends AgendaRepository {
     final epoch = _accessEpoch;
     final item = itemById(id);
     if (item == null) return AgendaMutationResult.notFound;
+    final arguments = <String, Object?>{
+      'p_event_id': id,
+      'p_expected_revision': item.revision,
+      'p_action': action,
+      'p_reason': reason,
+    };
     try {
       final value = _map(
         await _client.rpc<Object?>(
           'superadmin_agenda_command',
-          params: {
-            'p_request_id': _requestId(),
-            'p_event_id': id,
-            'p_expected_revision': item.revision,
-            'p_action': action,
-            'p_reason': reason,
-          },
+          params: {'p_request_id': _intentFor('command', arguments), ...arguments},
         ),
       );
+      _confirmIntent('command', arguments);
       if (!_canApply(epoch)) return _staleMutationResult;
       final deleted = value['deleted'] == true;
       final updated = deleted ? null : _item(value['event'] is Map ? value['event'] : value);
@@ -383,7 +408,10 @@ final class SupabaseAgendaRepository extends AgendaRepository {
       return AgendaMutationResult.success;
     } on PostgrestException catch (error) {
       return _commandFailure(error, epoch);
-    } on FormatException {
+    } on Exception {
+      // Falha de transporte tambem precisa virar resultado: antes, um
+      // ClientException escapava do comando e chegava a UI como excecao nao
+      // tratada. Mesmo idioma do caminho de leitura em _captureRequestRead.
       return AgendaMutationResult.unavailable;
     }
   }

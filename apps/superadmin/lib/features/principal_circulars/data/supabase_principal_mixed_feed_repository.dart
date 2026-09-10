@@ -68,6 +68,8 @@ PrincipalHappensFeedItem _item(Map<String, dynamic> row) {
       contextLabel: context,
       caption: payload['caption'] as String? ?? '',
       media: _postMedia(payload['media']),
+      managementVersion: (payload['management_version'] as num?)?.toInt(),
+      canWithdraw: payload['can_withdraw'] == true,
     ),
     'circular' => PrincipalHappensCircularItem(
       id: id,

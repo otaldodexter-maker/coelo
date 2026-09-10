@@ -1,0 +1,44 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:206
++ ... s_test.dart;rtk proxy flutter test --no-pub test/app/router/invite_di ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/app/router/invite_directory_labels_test.dart
+00:00 +0: loaded development invites exposes labels for tappable controls
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: Tappable widgets should have a semantic label
+  Actual: <Instance of 'WidgetTester'>
+   Which: SemanticsNode#42(Rect.fromLTRB(814.0, 24.0, 942.0, 72.0), actions: [focus, longPress],
+flags: [isFocusable], traversalParentIdentifier: _OverlayPortalState#e091b): expected tappable node
+to have semantic label, but none was found.
+
+When the exception was thrown, this was the stack:
+#0      fail (package:matcher/src/expect/expect.dart:187:31)
+#1      _expect.<anonymous closure> (package:matcher/src/expect/expect.dart:155:13)
+<asynchronous suspension>
+<asynchronous suspension>
+#8      expectLater.<anonymous closure> (package:flutter_test/src/widget_tester.dart:508:19)
+<asynchronous suspension>
+#9      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/app/router/invite_directory_labels_test.dart:38:7)
+<asynchronous suspension>
+#10     testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#11     TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided 7 frames from dart:async and package:stack_trace)
+
+The test description was:
+  loaded development invites exposes labels for tappable controls
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:05 +0 -1: loaded development invites exposes labels for tappable controls [E]
+  Test failed. See exception logs above.
+  The test description was: loaded development invites exposes labels for tappable controls
+
+00:06 +0 -1: Some tests failed.
+
+Failing tests:
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/app/router/invite_directory_labels_test.dart: loaded development invites exposes labels for tappable controls

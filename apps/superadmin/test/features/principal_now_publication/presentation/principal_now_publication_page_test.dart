@@ -1145,7 +1145,9 @@ final class _DeferredPageNowRepository implements NowPublicationRepository {
   ) async => audio;
 
   @override
-  Future<NowPublication> publish(NowPublicationContext context, NowPublicationDraft draft) async =>
+  Future<NowPublication> publish(NowPublicationContext context, NowPublicationDraft draft, {
+    required String requestId,
+  }) async =>
       NowPublication(id: draft.id!, publishAt: draft.publishAt);
 }
 
@@ -1182,7 +1184,9 @@ final class _ContextQueueNowRepository implements NowPublicationRepository {
   ) async => audio;
 
   @override
-  Future<NowPublication> publish(NowPublicationContext context, NowPublicationDraft draft) async =>
+  Future<NowPublication> publish(NowPublicationContext context, NowPublicationDraft draft, {
+    required String requestId,
+  }) async =>
       NowPublication(id: draft.id!, publishAt: draft.publishAt);
 }
 
@@ -1215,8 +1219,10 @@ final class _BlockingRepository implements NowPublicationRepository {
   ) => delegate.uploadAudio(context, publicationId, audio);
 
   @override
-  Future<NowPublication> publish(NowPublicationContext context, NowPublicationDraft draft) =>
-      delegate.publish(context, draft);
+  Future<NowPublication> publish(NowPublicationContext context, NowPublicationDraft draft, {
+    required String requestId,
+  }) =>
+      delegate.publish(context, draft, requestId: requestId);
 }
 
 final class _RetryingNowRepository implements NowPublicationRepository {
@@ -1273,7 +1279,9 @@ final class _RetryingNowRepository implements NowPublicationRepository {
   ) async => audio;
 
   @override
-  Future<NowPublication> publish(NowPublicationContext context, NowPublicationDraft draft) async {
+  Future<NowPublication> publish(NowPublicationContext context, NowPublicationDraft draft, {
+    required String requestId,
+  }) async {
     publishCalls += 1;
     if (publishCalls <= publishFailures) throw Exception('publish failed');
     return NowPublication(id: draft.id ?? 'now', publishAt: draft.publishAt);

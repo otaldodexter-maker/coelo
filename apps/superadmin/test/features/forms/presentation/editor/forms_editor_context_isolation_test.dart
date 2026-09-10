@@ -1820,6 +1820,135 @@ void main() {
       },
     );
   }
+  // Os limites autorados que eu corrigi nesta rodada foram provados em
+  // forms_editor_authoring_test, que usa FormsEditorPage.authoring. Esse
+  // construtor NAO e composto em lugar nenhum do app: nada constroi
+  // SupabaseFormsAuthoringApi. O codigo de configuracao e de serializacao e o
+  // mesmo nos dois construtores, mas "o mesmo codigo" e leitura, nao prova.
+  // Estes casos repetem o essencial pelo caminho de api, que e o que /forms/new
+  // e /forms/:formId/edit montam de verdade.
+  testWidgets('production authoring saves money limits in minor units', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 1200));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final api = _EditorApi(
+      firstItems: [FormItem(id: 'money', kind: FormItemKind.money, label: 'Valor', position: 0)],
+    );
+    await tester.pumpWidget(_app(api, 'form-1'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.widgetWithText(TextFormField, 'Valor máximo').first, '10,50');
+    await tester.pumpAndSettle();
+    final save = find.widgetWithText(OutlinedButton, 'Salvar rascunho');
+    await tester.ensureVisible(save);
+    await tester.tap(save);
+    await tester.pumpAndSettle();
+
+    expect(api.savedCommands.last.payload.sections.first.items.first.config.maxValue, 1050);
+  });
+
+  testWidgets('production authoring refuses an inverted numeric range', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 1200));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final api = _EditorApi(
+      firstItems: [
+        FormItem(id: 'number', kind: FormItemKind.integer, label: 'Número', position: 0),
+      ],
+    );
+    await tester.pumpWidget(_app(api, 'form-1'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.widgetWithText(TextFormField, 'Mínimo').first, '100');
+    await tester.enterText(find.widgetWithText(TextFormField, 'Máximo').first, '10');
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+
+    expect(api.savedCommands, isEmpty);
+    expect(find.text('O valor mínimo deve ser menor ou igual ao máximo.'), findsWidgets);
+  });
+
+  testWidgets('production authoring declares the short text maximum length', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 1200));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final api = _EditorApi(
+      firstItems: [
+        FormItem(id: 'short', kind: FormItemKind.shortText, label: 'Texto', position: 0),
+      ],
+    );
+    await tester.pumpWidget(_app(api, 'form-1'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const ValueKey('forms-editor-max-length-short')), '140');
+    await tester.pumpAndSettle();
+    final save = find.widgetWithText(OutlinedButton, 'Salvar rascunho');
+    await tester.ensureVisible(save);
+    await tester.tap(save);
+    await tester.pumpAndSettle();
+
+    expect(api.savedCommands.last.payload.sections.first.items.first.config.maxLength, 140);
+  });
+
+  // Residual C02/R01, forms.publish: um formulario novo ainda nao salvo tem
+  // _definition nulo, entao _openPublishDialog retornava em silencio depois da
+  // confirmacao. O botao fica habilitado porque _canPublish nao depende de
+  // _definition, entao a pessoa confirmava e nada acontecia, sem explicacao.
+  testWidgets('publishing a form that was never saved says why instead of doing nothing', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 1100));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final api = _EditorApi();
+    await tester.pumpWidget(_app(api, null));
+    await tester.pumpAndSettle();
+    // Um formulario novo e vazio ja e barrado antes pelo validador de titulo e
+    // ordem. O caso deste teste e o que passa nessa validacao e mesmo assim
+    // nunca foi salvo, entao _definition continua nulo.
+    await tester.enterText(find.byWidget(_title(tester)), 'Formulário válido');
+    await tester.pumpAndSettle();
+    await _openOverlay(tester, 'publish');
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('forms-editor-confirm-publish')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('forms-editor-confirm-publish')));
+    await tester.pumpAndSettle();
+
+    expect(api.publishCommands, isEmpty);
+    expect(find.text('Salve o rascunho antes de publicar.'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('a form saved first can then be published', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 1100));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final api = _EditorApi();
+    await tester.pumpWidget(_app(api, null));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byWidget(_title(tester)), 'Formulário válido');
+    await tester.pumpAndSettle();
+    final save = find.widgetWithText(OutlinedButton, 'Salvar rascunho');
+    await tester.ensureVisible(save);
+    await tester.tap(save);
+    await tester.pumpAndSettle();
+    await _openOverlay(tester, 'publish');
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('forms-editor-confirm-publish')));
+    await tester.pumpAndSettle();
+
+    expect(api.publishCommands, hasLength(1));
+    expect(find.text('Salve o rascunho antes de publicar.'), findsNothing);
+  });
+
+  testWidgets('a publication refused by capability says so instead of doing nothing', (
+    tester,
+  ) async {
+    final api = _EditorApi(canPublish: false);
+    await tester.pumpWidget(_app(api, 'form-1'));
+    await tester.pumpAndSettle();
+    // O botao ja fica desabilitado; o contrato aqui e que nao exista caminho
+    // silencioso, nem pelo botao nem pela confirmacao.
+    expect(
+      tester
+          .widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Publicar ou agendar'))
+          .onPressed,
+      isNull,
+    );
+    expect(api.publishCommands, isEmpty);
+  });
 }
 
 Widget _app(FormsApi api, String? formId) => _host(FormsEditorPage(api: api, formId: formId));
@@ -2066,7 +2195,9 @@ final class _EditorApi implements FormsApi, FormsEditorContextApi {
     publishCommands.add(command);
     if (publishGate != null) await publishGate;
     return definition(
-      requestedForms.last,
+      // Um formulario criado na propria sessao nunca passou por getEditor,
+      // entao requestedForms fica vazio: o recibo usa o ID do comando.
+      requestedForms.isEmpty ? command.payload.formId : requestedForms.last,
       version: command.expectedVersion + 1,
       confirmedTitle: publishedTitle,
     );

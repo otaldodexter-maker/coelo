@@ -4,7 +4,10 @@ import 'package:coelo_superadmin/app/shell/superadmin_shell.dart';
 import 'package:coelo_superadmin/core/guards/superadmin_session.dart';
 import 'package:coelo_superadmin/features/activities/domain/activity_command.dart';
 import 'package:coelo_superadmin/features/activities/domain/activity_directory.dart';
+import 'package:coelo_superadmin/features/activities/domain/activity_read_detail.dart';
+import 'package:coelo_superadmin/features/auth/domain/superadmin_auth_context.dart';
 import 'package:coelo_superadmin/features/activities/presentation/activity_form_draft.dart';
+import 'package:coelo_superadmin/features/activities/presentation/activity_pedagogical_configuration_draft.dart';
 import 'package:coelo_superadmin/features/activities/presentation/activity_form_page.dart';
 import 'package:coelo_superadmin/features/auth/domain/login_request.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
@@ -185,6 +188,74 @@ void main() {
 
     expect(commands.saveCalls, 1);
     expect(commands.lastSave?.activityId, isNull);
+    expect(commands.lastSave?.pedagogicalConfiguration, {'enabled': false});
+    expect(
+      commands.lastSave?.expectedAssessmentVersion,
+      _routeDraft.pedagogicalConfiguration.expectedVersion,
+    );
+    expect(
+      commands.lastSave?.assessmentChangeJustification,
+      _routeDraft.pedagogicalConfiguration.changeJustification,
+    );
+    expect(commands.createdActivityIds, {'activity-created'});
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.activities);
+    expect(find.byType(ActivityFormPage), findsNothing);
+  });
+
+  testWidgets('production save preserves populated pedagogical fields in aggregate command', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final session = SuperadminSession()..signInForTesting();
+    final commands = _SuccessfulActivityCommandRepository();
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      activityDirectoryRepository: FakeActivityDirectoryRepository(),
+      activityCommandRepository: commands,
+      enableStructureMutations: true,
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    router.go('${SuperadminRoutes.activityCreate}?returnTo=${SuperadminRoutes.activityCreate}');
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+    final page = tester.widget<ActivityFormPage>(find.byType(ActivityFormPage));
+    const pedagogical = ActivityPedagogicalConfigurationDraft(
+      enabled: true,
+      model: ActivityAssessmentModel.gradeOnly,
+      expectedVersion: 7,
+      changeJustification: 'Revisao autorizada de criterios',
+    );
+    final draft = ActivityFormDraft(
+      requestId: 'pedagogical-route-1',
+      commandSignature: 'pedagogical-populated-1',
+      name: _routeDraft.name,
+      description: _routeDraft.description,
+      taxonomy: _routeDraft.taxonomy,
+      subtype: null,
+      template: null,
+      taxonomyOtherDescription: '',
+      governance: _routeDraft.governance,
+      institutionId: _routeDraft.institutionId,
+      unitIds: _routeDraft.unitIds,
+      groupIds: {},
+      assignments: [],
+      pedagogicalConfiguration: pedagogical,
+    );
+    await page.onSaveDraft(draft);
+    await tester.pumpAndSettle();
+
+    expect(commands.saveCalls, 1);
+    expect(commands.lastSave?.activityId, isNull);
+    expect(commands.lastSave?.pedagogicalConfiguration, pedagogical.toJson());
+    expect(commands.lastSave?.expectedAssessmentVersion, pedagogical.expectedVersion);
+    expect(commands.lastSave?.assessmentChangeJustification, pedagogical.changeJustification);
     expect(commands.createdActivityIds, {'activity-created'});
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.activities);
     expect(find.byType(ActivityFormPage), findsNothing);
@@ -251,8 +322,25 @@ void main() {
     expect(commands.calls, 0);
   });
 
-  testWidgets('production routes use only the injected directory repository', (tester) async {
-    final session = SuperadminSession()..signInForTesting();
+  testWidgets('production routes use injected directory and authorized read-detail repositories', (
+    tester,
+  ) async {
+    // The deliberate read projection replaces the legacy editor's detail DTO.
+    // List/form options still use the directory; detail requires its own injected
+    // reader and activities.read, while mutation navigation remains fail-closed.
+    await tester.binding.setSurfaceSize(const Size(1440, 1100));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final session = SuperadminSession()
+      ..authorize(
+        const SuperadminAuthContext(
+          platformRoleCode: 'test',
+          scopeKind: SuperadminAuthScopeKind.platform,
+          permissionCodes: {'activities.read'},
+          aal: 'aal1',
+        ),
+        sessionId: 'read-test',
+      );
+    final reader = _TrackingReadDetailRepository();
     final directory = _TrackingActivityDirectoryRepository();
     final commands = _TripwireActivityCommandRepository();
     final router = createSuperadminRouter(
@@ -261,6 +349,7 @@ void main() {
       logout: unavailableSuperadminLogout,
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
       activityDirectoryRepository: directory,
+      activityReadDetailRepository: reader,
       activityCommandRepository: commands,
       onThemeModeChanged: (_) {},
     );
@@ -273,9 +362,12 @@ void main() {
     expect(directory.calls, greaterThan(0));
 
     final beforeDetail = directory.calls;
-    router.go('/activities/activity-1');
+    router.go('/activities/10000000-0000-4000-8000-000000000001');
     await tester.pumpAndSettle();
-    expect(directory.calls, greaterThan(beforeDetail));
+    expect(directory.calls, beforeDetail);
+    expect(reader.ids, ['10000000-0000-4000-8000-000000000001']);
+    await tester.ensureVisible(find.byKey(const Key('activity-read-assessment')));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Configuração avaliativa'));
     await tester.pumpAndSettle();
     expect(
@@ -415,3 +507,38 @@ const _routeDraft = ActivityFormDraft(
   groupIds: {},
   assignments: [],
 );
+
+ActivityReadDetail _routeReadDetail(String id) => ActivityReadDetail.fromJson({
+  'activity': {
+    'activity_id': id,
+    'institution_id': '20000000-0000-4000-8000-000000000001',
+    'name': 'Oficina autorizada',
+    'description': 'Descrição autorizada',
+    'taxonomy_id': null,
+    'taxonomy_name': null,
+    'status': 'draft',
+    'management_version': 1,
+    'icon_key': null,
+    'initials': 'OA',
+    'created_at': '2026-09-01T12:00:00Z',
+    'updated_at': '2026-09-01T12:00:00Z',
+  },
+  'units': [
+    {
+      'unit_id': '30000000-0000-4000-8000-000000000001',
+      'name': 'Unidade autorizada',
+      'status': 'active',
+    },
+  ],
+  'groups': <Object?>[],
+  'counts': {'units': 1, 'groups': 0, 'participants': 2, 'instructors': 1, 'activity_admins': 1},
+});
+
+class _TrackingReadDetailRepository implements ActivityReadDetailRepository {
+  final ids = <String>[];
+  @override
+  Future<ActivityReadDetail> fetchById(String id) async {
+    ids.add(id);
+    return _routeReadDetail(id);
+  }
+}

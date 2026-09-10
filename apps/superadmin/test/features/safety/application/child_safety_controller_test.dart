@@ -6,6 +6,130 @@ import 'package:coelo_superadmin/features/safety/domain/child_safety_repository.
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('unexpected directory error clears prior data and retry recovers', () async {
+    final repository = _Repository();
+    final controller = ChildSafetyController(repository);
+    addTearDown(controller.dispose);
+    await controller.load();
+    final states = <ChildSafetyLoadState>[];
+    controller.addListener(() => states.add(controller.state));
+    final pending = Completer<ChildSafetyDirectoryPage>();
+    repository.nextDirectory = pending.future;
+    final reload = controller.retry();
+    pending.completeError(StateError('untrusted provider detail'));
+    await reload;
+    expect(controller.state, ChildSafetyLoadState.error);
+    expect(states.last, ChildSafetyLoadState.error);
+    expect(controller.records, isEmpty);
+    expect(controller.totalCount, 0);
+    expect(controller.canCreate, isFalse);
+    expect(controller.errorMessage, 'Não foi possível carregar a segurança da criança.');
+    repository.nextDirectory = null;
+    await controller.retry();
+    expect(controller.records.single.childName, 'Ana');
+    expect(controller.errorMessage, isNull);
+  });
+
+  test('unexpected stale directory error cannot replace a newer successful load', () async {
+    final repository = _Repository();
+    final pending = Completer<ChildSafetyDirectoryPage>();
+    repository.nextDirectory = pending.future;
+    final controller = ChildSafetyController(repository);
+    addTearDown(controller.dispose);
+    final oldLoad = controller.load();
+    repository.nextDirectory = null;
+    await controller.retry();
+    pending.completeError(StateError('old context'));
+    await oldLoad;
+    expect(controller.state, ChildSafetyLoadState.ready);
+    expect(controller.records.single.childName, 'Ana');
+    expect(controller.errorMessage, isNull);
+  });
+
+  test('unexpected mutation error releases saving without confirming or refreshing', () async {
+    final repository = _Repository()..saveFailure = StateError('private provider detail');
+    final controller = ChildSafetyController(repository);
+    addTearDown(controller.dispose);
+    await controller.load();
+    const command = SavePickupAuthorizationCommand(
+      requestId: '11111111-1111-4111-8111-111111111111',
+      childId: 'child-1',
+      childContextId: 'context-1',
+      unitId: 'unit-1',
+      personId: 'person-1',
+      relationshipCode: 'mother',
+      capabilityCodes: {'pickup'},
+      requestReason: 'Revisão sintética',
+    );
+    var confirmed = 0;
+    expect(await controller.saveAuthorization(command, onConfirmed: () => confirmed++), isFalse);
+    expect(controller.isSaving, isFalse);
+    expect(controller.commandFailure, ChildSafetyCommandFailure.unavailable);
+    expect(controller.errorMessage, 'Não foi possível concluir a ação.');
+    expect(repository.queries, hasLength(1));
+    expect(confirmed, 0);
+    repository.saveFailure = null;
+    expect(await controller.saveAuthorization(command, onConfirmed: () => confirmed++), isTrue);
+    expect(confirmed, 1);
+  });
+  test('confirmation precedes failed refresh and retry performs no new mutation', () async {
+    final repository = _Repository();
+    final controller = ChildSafetyController(repository);
+    addTearDown(controller.dispose);
+    const command = SavePickupAuthorizationCommand(
+      requestId: '11111111-1111-4111-8111-111111111111',
+      childId: 'child-1',
+      childContextId: 'context-1',
+      unitId: 'unit-1',
+      personId: 'person-1',
+      relationshipCode: 'mother',
+      capabilityCodes: {'pickup'},
+      requestReason: 'Revisão sintética',
+    );
+    var confirmations = 0;
+    repository.unauthorized = true;
+    expect(
+      await controller.saveAuthorization(command, onConfirmed: () => confirmations++),
+      isFalse,
+    );
+    expect(confirmations, 1);
+    expect(controller.state, ChildSafetyLoadState.unauthorized);
+    repository.unauthorized = false;
+    await controller.retry();
+    expect(controller.state, ChildSafetyLoadState.ready);
+    expect(confirmations, 1);
+    expect(repository.saves, 1);
+    repository.saveFailure = const ChildSafetyUnavailableException();
+    expect(
+      await controller.saveAuthorization(command, onConfirmed: () => confirmations++),
+      isFalse,
+    );
+    expect(confirmations, 1);
+  });
+  test('command failure exposes conflict separately and resets after a new attempt', () async {
+    final repository = _Repository();
+    final controller = ChildSafetyController(repository);
+    addTearDown(controller.dispose);
+    const command = SavePickupAuthorizationCommand(
+      requestId: '11111111-1111-4111-8111-111111111111',
+      childId: 'child-1',
+      childContextId: 'context-1',
+      unitId: 'unit-1',
+      personId: 'person-1',
+      relationshipCode: 'mother',
+      capabilityCodes: {'pickup'},
+      requestReason: 'Revisão sintética',
+    );
+    repository.saveFailure = const ChildSafetyConflictException();
+    expect(await controller.saveAuthorization(command), isFalse);
+    expect(controller.commandFailure, ChildSafetyCommandFailure.conflict);
+    repository.saveFailure = const ChildSafetyUnavailableException();
+    expect(await controller.saveAuthorization(command), isFalse);
+    expect(controller.commandFailure, ChildSafetyCommandFailure.unavailable);
+    repository.saveFailure = null;
+    expect(await controller.saveAuthorization(command), isTrue);
+    expect(controller.commandFailure, isNull);
+  });
   test('loads server page and exposes server segment counts', () async {
     final repository = _Repository();
     final controller = ChildSafetyController(repository, searchDebounce: Duration.zero);
@@ -104,18 +228,217 @@ void main() {
     repository.completeTransition();
     expect(await first, isTrue);
   });
+
+  test('late directory success cannot undo a command authorization denial', () async {
+    final repository = _Repository();
+    final oldPage = await repository.fetchDirectory(ChildSafetyDirectoryQuery());
+    final pending = Completer<ChildSafetyDirectoryPage>();
+    repository.nextDirectory = pending.future;
+    repository.commandUnauthorized = true;
+    final controller = ChildSafetyController(repository);
+    addTearDown(controller.dispose);
+    final oldLoad = controller.load();
+    final succeeded = await controller.transitionAuthorization(
+      const TransitionPickupAuthorizationCommand(
+        requestId: '11111111-1111-4111-8111-111111111111',
+        childId: 'child-1',
+        authorizationId: 'authorization-1',
+        status: PickupAuthorizationStatus.approved,
+        reason: 'Documento conferido',
+      ),
+    );
+    expect(succeeded, isFalse);
+    expect(controller.state, ChildSafetyLoadState.unauthorized);
+    pending.complete(oldPage);
+    await oldLoad;
+    expect(controller.state, ChildSafetyLoadState.unauthorized);
+    expect(controller.records, isEmpty);
+    expect(controller.canCreate, isFalse);
+  });
+
+  test('known access denial prevents new child lookup and child search', () async {
+    final repository = _Repository()..unauthorized = true;
+    final controller = ChildSafetyController(repository);
+    addTearDown(controller.dispose);
+    await controller.load();
+    await expectLater(
+      controller.fetchChild('child-1'),
+      throwsA(isA<ChildSafetyUnauthorizedException>()),
+    );
+    await expectLater(
+      controller.searchChildren('Ana'),
+      throwsA(isA<ChildSafetyUnauthorizedException>()),
+    );
+    expect(repository.childReads, 0);
+    expect(repository.childSearches, 0);
+  });
+
+  test('late child read and search cannot escape a changed directory context', () async {
+    final repository = _Repository();
+    final child = Completer<ChildSafetyRecord?>();
+    final search = Completer<List<ChildSafetyChildOption>>();
+    repository.nextChild = child.future;
+    repository.nextChildSearch = search.future;
+    final controller = ChildSafetyController(repository);
+    addTearDown(controller.dispose);
+    final childResult = expectLater(
+      controller.fetchChild('child-1'),
+      throwsA(isA<ChildSafetyUnavailableException>()),
+    );
+    final searchResult = expectLater(
+      controller.searchChildren('Ana'),
+      throwsA(isA<ChildSafetyUnavailableException>()),
+    );
+    await controller.setInstitutions({'another-institution'});
+    child.complete(null);
+    search.complete([]);
+    await Future.wait([childResult, searchResult]);
+  });
+
+  test('child response ID must match the requested child', () async {
+    final repository = _Repository();
+    final page = await repository.fetchDirectory(ChildSafetyDirectoryQuery());
+    repository.nextChild = Future.value(page.records.single);
+    final controller = ChildSafetyController(repository);
+    addTearDown(controller.dispose);
+    await expectLater(
+      controller.fetchChild('different-child'),
+      throwsA(isA<ChildSafetyUnavailableException>()),
+    );
+  });
+
+  test('disposed controller starts no directory read or search timer', () async {
+    final repository = _Repository();
+    final controller = ChildSafetyController(repository, searchDebounce: Duration.zero);
+    controller.dispose();
+
+    await controller.load();
+    await controller.retry();
+    await controller.setInstitutions({'institution-2'});
+    controller.setSearch('Bia');
+    await Future<void>.delayed(Duration.zero);
+
+    expect(repository.queries, isEmpty);
+  });
+
+  test('disposed controller rejects child reads without contacting repository', () async {
+    final repository = _Repository();
+    final controller = ChildSafetyController(repository)..dispose();
+
+    await expectLater(
+      controller.fetchChild('child-1'),
+      throwsA(isA<ChildSafetyUnavailableException>()),
+    );
+    await expectLater(
+      controller.searchChildren('Ana'),
+      throwsA(isA<ChildSafetyUnavailableException>()),
+    );
+
+    expect(repository.childReads, 0);
+    expect(repository.childSearches, 0);
+  });
+
+  test('debounced search invalidates the previous response before its timer fires', () async {
+    final repository = _Repository();
+    final oldPage = await repository.fetchDirectory(ChildSafetyDirectoryQuery());
+    final pending = Completer<ChildSafetyDirectoryPage>();
+    repository.nextDirectory = pending.future;
+    final controller = ChildSafetyController(repository, searchDebounce: const Duration(days: 1));
+    addTearDown(controller.dispose);
+
+    final oldLoad = controller.load();
+    controller.setSearch('Bia');
+    pending.complete(oldPage);
+    await oldLoad;
+
+    expect(controller.query.search, 'Bia');
+    expect(controller.state, ChildSafetyLoadState.loading);
+    expect(controller.records, isEmpty);
+    expect(controller.canCreate, isFalse);
+  });
+
+  test('debounced search hides prior records and capabilities immediately', () async {
+    final repository = _Repository();
+    final controller = ChildSafetyController(repository, searchDebounce: const Duration(days: 1));
+    addTearDown(controller.dispose);
+    await controller.load();
+
+    controller.setSearch('Bia');
+
+    expect(controller.state, ChildSafetyLoadState.loading);
+    expect(controller.records, isEmpty);
+    expect(controller.totalCount, 0);
+    expect(controller.canCreate, isFalse);
+  });
+
+  test('child data completing after dispose is not delivered to retained callbacks', () async {
+    final repository = _Repository();
+    final pending = Completer<ChildSafetyRecord?>();
+    repository.nextChild = pending.future;
+    final controller = ChildSafetyController(repository);
+    final result = controller.fetchChild('child-1');
+    final expectation = expectLater(result, throwsA(isA<ChildSafetyUnavailableException>()));
+    controller.dispose();
+    pending.complete((await repository.fetchDirectory(ChildSafetyDirectoryQuery())).records.single);
+
+    await expectation;
+    expect(repository.childReads, 1);
+  });
+
+  test('old authorization error cannot replace a debounced search', () async {
+    final repository = _Repository();
+    final pending = Completer<ChildSafetyDirectoryPage>();
+    repository.nextDirectory = pending.future;
+    final controller = ChildSafetyController(repository, searchDebounce: const Duration(days: 1));
+    addTearDown(controller.dispose);
+    final oldLoad = controller.load();
+
+    controller.setSearch('Bia');
+    pending.completeError(const ChildSafetyUnauthorizedException());
+    await oldLoad;
+
+    expect(controller.state, ChildSafetyLoadState.loading);
+    expect(controller.errorMessage, isNull);
+    expect(controller.records, isEmpty);
+  });
+
+  test('child search completing after dispose is rejected', () async {
+    final repository = _Repository();
+    final pending = Completer<List<ChildSafetyChildOption>>();
+    repository.nextChildSearch = pending.future;
+    final controller = ChildSafetyController(repository);
+    final result = controller.searchChildren('Ana');
+    final expectation = expectLater(result, throwsA(isA<ChildSafetyUnavailableException>()));
+
+    controller.dispose();
+    pending.complete([]);
+
+    await expectation;
+    expect(repository.childSearches, 1);
+  });
 }
 
-final class _Repository implements ChildSafetyRepository {
+final class _Repository implements ChildSafetyRepository, ChildSafetyMutationSupport {
+  @override
+  bool get mutationsEnabled => true;
+  int saves = 0;
+  Object? saveFailure;
   final queries = <ChildSafetyDirectoryQuery>[];
   bool unauthorized = false;
+  bool commandUnauthorized = false;
   int transitions = 0;
   bool holdTransitions = false;
   Completer<void>? _transitionCompleter;
+  Future<ChildSafetyDirectoryPage>? nextDirectory;
+  Future<ChildSafetyRecord?>? nextChild;
+  Future<List<ChildSafetyChildOption>>? nextChildSearch;
+  int childReads = 0;
+  int childSearches = 0;
 
   @override
   Future<ChildSafetyDirectoryPage> fetchDirectory(ChildSafetyDirectoryQuery query) async {
     queries.add(query);
+    if (nextDirectory case final pending?) return pending;
     if (unauthorized) throw const ChildSafetyUnauthorizedException();
     return ChildSafetyDirectoryPage(
       records: const [
@@ -144,14 +467,27 @@ final class _Repository implements ChildSafetyRepository {
   }
 
   @override
-  Future<ChildSafetyRecord?> fetchChild(String childId) async => null;
+  Future<ChildSafetyRecord?> fetchChild(String childId) async {
+    childReads++;
+    return nextChild == null ? null : await nextChild;
+  }
+
   @override
-  Future<List<ChildSafetyChildOption>> searchChildren(String query, {int limit = 20}) async => [];
+  Future<List<ChildSafetyChildOption>> searchChildren(String query, {int limit = 20}) async {
+    childSearches++;
+    return nextChildSearch == null ? [] : await nextChildSearch!;
+  }
+
   @override
-  Future<void> saveAuthorization(SavePickupAuthorizationCommand command) async {}
+  Future<void> saveAuthorization(SavePickupAuthorizationCommand command) async {
+    saves++;
+    if (saveFailure case final failure?) throw failure;
+  }
+
   @override
   Future<void> transitionAuthorization(TransitionPickupAuthorizationCommand command) async {
     transitions++;
+    if (commandUnauthorized) throw const ChildSafetyUnauthorizedException();
     if (holdTransitions) {
       _transitionCompleter = Completer<void>();
       await _transitionCompleter!.future;

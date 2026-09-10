@@ -63,8 +63,22 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text('Editar segurança'), findsOneWidget);
+    expect(find.text('Não foi possível carregar o contexto solicitado.'), findsOneWidget);
+    expect(
+      tester.widget<FilledButton>(find.byKey(const Key('safety-wizard-primary'))).onPressed,
+      isNull,
+    );
+
+    router.go(
+      '/dev/safety/children/dev-child-0127/authorizations/'
+      'dev-safety-0127-pending-1/edit',
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Editar segurança'), findsOneWidget);
+    expect(find.text('Não foi possível carregar o contexto solicitado.'), findsNothing);
+    await tester.ensureVisible(find.byKey(const Key('safety-wizard-primary')));
     await tester.tap(find.byKey(const Key('safety-wizard-primary')));
     await tester.pumpAndSettle();
-    expect(find.text('Vínculo familiar conferido pela unidade.'), findsOneWidget);
+    expect(find.text('Solicitação familiar aguardando revisão da unidade.'), findsOneWidget);
   });
 }

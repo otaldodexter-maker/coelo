@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import '../domain/activity_command.dart';
 import '../domain/activity_profile_about_repository.dart';
 import '../presentation/activity_form_draft.dart';
@@ -26,6 +28,16 @@ final class ActivitySaveAttemptRunner {
     required ActivitySaveCommandBuilder buildCommand,
   }) async {
     final aboutPage = draft.aboutPage;
+    final selection = draft.locationSelection;
+    if ((draft.locationId != null && selection == null) ||
+        (draft.reservation != null && selection == null) ||
+        (selection != null &&
+            (aboutPage != null ||
+                activityId != null ||
+                intent != ActivityCommandIntent.saveDraft ||
+                draft.locationId != null && draft.locationId != selection.snapshot.id))) {
+      throw const ActivityCommandUnavailableException();
+    }
     if (aboutPage != null && !aboutRepository.isAvailable) {
       throw const ActivityProfileAboutUnavailableException();
     }
@@ -34,14 +46,22 @@ final class ActivitySaveAttemptRunner {
     if (requestId == null || fingerprint == null) {
       throw const ActivityCommandUnavailableException();
     }
+    final command = buildCommand(
+      draft,
+      requestId: requestId,
+      intent: intent,
+      activityId: activityId,
+    );
+    if (command.locationSelection?.snapshot.id != selection?.snapshot.id ||
+        jsonEncode(command.reservation?.toJson()) != jsonEncode(draft.reservation?.toJson())) {
+      throw const ActivityCommandUnavailableException();
+    }
     await _coordinator.run<ActivitySaveResult>(
       requestId: requestId,
       fingerprint: fingerprint,
       intent: intent,
       readAuthorizationRevision: _readAuthorizationRevision,
-      saveActivity: () => commandRepository.save(
-        buildCommand(draft, requestId: requestId, intent: intent, activityId: activityId),
-      ),
+      saveActivity: () => commandRepository.save(command),
       saveFollowUp: (result) async {
         if (aboutPage == null) return;
         await aboutRepository.save(

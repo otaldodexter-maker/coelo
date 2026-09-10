@@ -18,6 +18,14 @@ library;
 
 import 'location_catalog_entry.dart';
 
+/// Matches PostgreSQL length(text) after the client's established trim.
+/// Unicode code points, not UTF-16 code units or grapheme clusters.
+bool validLocationReservationJustification(String? raw) {
+  if (raw == null) return true;
+  final value = raw.trim();
+  return value.isNotEmpty && value.runes.length <= 1000;
+}
+
 /// Who holds the reservation.
 ///
 /// A reservation always belongs to something the actor was already working on.

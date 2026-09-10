@@ -1,0 +1,58 @@
+{
+  "source": "Root scope review of the newly composed Activity catalog field",
+  "status": "local-green",
+  "recorded_at": "2026-09-09T20:48:42.416993-03:00",
+  "scope": "apps/superadmin -> Atividades -> Criar -> Estrutura/local -> activities.location",
+  "metrics": {
+    "N": 2,
+    "E": 2,
+    "P": 2,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0,
+    "dedup": "1new causal test plus1 existing valid-choice regression. Prior12 widget checks and44 form batch not repeated or summed."
+  },
+  "cause": "With implicit first catalog owner, replacing institution scopes did not increment the explicit-owner generation. A retained callback from the removed catalog was still forwarded.",
+  "fix": "Before forwarding either a choice or clear, require the captured catalog scope to remain in the current allowed owner list. No parent controller receives a foreign owner callback.",
+  "runs": [
+    {
+      "command": "rtk proxy flutter test --no-pub --concurrency 1 test/features/activities/presentation/activity_catalogued_location_section_test.dart --plain-name 'implicit owner replacement' --reporter expanded",
+      "phase": "RED",
+      "chunk": "3cc744",
+      "F": 1,
+      "exit_code": 1,
+      "observed": "Expected empty values, received CataloguedLocationSelection from removed institution."
+    },
+    {
+      "phase": "GREEN same command, plus null callback assertion",
+      "session": 2468,
+      "chunk": "bbe731",
+      "P": 1,
+      "exit_code": 0
+    },
+    {
+      "command": "rtk proxy flutter test --no-pub --concurrency 1 test/features/activities/presentation/activity_catalogued_location_section_test.dart --plain-name 'catalog selection stays typed' --reporter expanded",
+      "chunk": "3be711",
+      "P": 1,
+      "exit_code": 0
+    }
+  ],
+  "analyzer": {
+    "paths": 2,
+    "session": 77270,
+    "chunk": "106cf3",
+    "exit_code": 0,
+    "result": "No issues found"
+  },
+  "sha256": {
+    "apps/superadmin/lib/features/activities/presentation/activity_catalogued_location_section.dart": "fb14a4b4b08e602fb4ec15ec844990e18bed37eca820c5777f94949fd32208aa",
+    "apps/superadmin/test/features/activities/presentation/activity_catalogued_location_section_test.dart": "62145bc774e07406d0849fd0d2faa9b03824370a66c58427b1fe40ee452d5ffc"
+  },
+  "limitations": [
+    "Widget callback test with fake catalog; no remote/SQL/E2E acceptance.",
+    "No visual change; existing approved tokens/layout retained.",
+    "Availability gate remains false; no Auth/CHILD/shell/backend change."
+  ],
+  "evidence_transport": "Observed tool reports; no raw log fabricated."
+}

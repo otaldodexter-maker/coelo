@@ -7,6 +7,7 @@ import '../../principal_moments/domain/principal_moments_preview_data.dart';
 import '../../principal_shared/presentation/principal_global_navigation.dart';
 import '../../principal_circulars/domain/circular_repository.dart';
 import '../../principal_circulars/presentation/principal_circular_surfaces.dart';
+import '../../profile_about/presentation/profile_about_labels.dart';
 import '../domain/principal_profile_preview_data.dart';
 
 enum _ProfileTab { happens, moments, circulars, about }
@@ -21,6 +22,7 @@ final class PrincipalProfilePreviewPage extends StatefulWidget {
     this.onOpenNotifications,
     this.onOpenContext,
     this.onMessage,
+    this.onOpenEdit,
     this.onOpenBio,
     this.onOpenLinks,
     this.onOpenAboutMap,
@@ -32,8 +34,11 @@ final class PrincipalProfilePreviewPage extends StatefulWidget {
     this.onOpenMessages,
     this.circularRepository,
     this.circularScope,
+    this.happensTab,
+    this.momentsTab,
     this.onOpenCircular,
     this.data = PrincipalProfilePreviewData.horizon,
+    this.showPreviewFeeds = true,
     this.aboutPage,
     super.key,
   });
@@ -46,6 +51,12 @@ final class PrincipalProfilePreviewPage extends StatefulWidget {
   final VoidCallback? onOpenNotifications;
   final VoidCallback? onOpenContext;
   final VoidCallback? onMessage;
+
+  /// Optional entry point to `principal.profile-edit`.
+  ///
+  /// The affordance only renders when a caller supplies it, so surfaces
+  /// without an approved edit contract stay exactly as approved.
+  final VoidCallback? onOpenEdit;
   final VoidCallback? onOpenBio;
   final VoidCallback? onOpenLinks;
   final VoidCallback? onOpenAboutMap;
@@ -56,9 +67,23 @@ final class PrincipalProfilePreviewPage extends StatefulWidget {
   final VoidCallback? onOpenSearch;
   final VoidCallback? onOpenMessages;
   final PrincipalProfilePreviewData data;
+
+  /// Whether the Acontece/Momentos tabs may render the local preview fixtures.
+  ///
+  /// Production composition roots pass `false`: a real route never shows
+  /// fixture feeds, it shows an honest pending state until the authorized
+  /// projection is wired.
+  final bool showPreviewFeeds;
   final ProfileAboutPage? aboutPage;
   final CircularRepository? circularRepository;
   final CircularScope? circularScope;
+
+  /// Authorized projections for the Acontece and Momentos tabs.
+  ///
+  /// A production composition root supplies them; when absent the tabs show a
+  /// pending state rather than the local preview fixtures.
+  final Widget? happensTab;
+  final Widget? momentsTab;
   final ValueChanged<String>? onOpenCircular;
 
   @override
@@ -77,13 +102,13 @@ final class _PrincipalProfilePreviewPageState extends State<PrincipalProfilePrev
           ? null
           : PrincipalGlobalHeader(
               keyPrefix: 'principal-profile',
-              onOpenMenu: () => _runOrPreview(context, widget.onOpenMenu, 'Menu'),
+              onOpenMenu: () => _runOrPreview(context, widget.showPreviewFeeds, widget.onOpenMenu, 'Menu'),
               onOpenNotifications: () =>
-                  _runOrPreview(context, widget.onOpenNotifications, 'Notificações'),
+                  _runOrPreview(context, widget.showPreviewFeeds, widget.onOpenNotifications, 'Notificações'),
               onReportProblem: () =>
-                  _runOrPreview(context, widget.onReportBug, 'Reportar problema'),
+                  _runOrPreview(context, widget.showPreviewFeeds, widget.onReportBug, 'Reportar problema'),
               onOpenProfile: () =>
-                  _runOrPreview(context, widget.onOpenContext, 'Troca de contexto'),
+                  _runOrPreview(context, widget.showPreviewFeeds, widget.onOpenContext, 'Troca de contexto'),
             ),
       body: Stack(
         fit: StackFit.expand,
@@ -109,7 +134,12 @@ final class _PrincipalProfilePreviewPageState extends State<PrincipalProfilePrev
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          _ProfileHero(data: widget.data, compact: compact, wide: wide),
+                          _ProfileHero(
+                            data: widget.data,
+                            compact: compact,
+                            wide: wide,
+                            showFixtureMedia: widget.showPreviewFeeds,
+                          ),
                           SizedBox(height: compact ? CoeloSpacing.space3 : CoeloSpacing.space4),
                           if (wide)
                             Row(
@@ -140,12 +170,12 @@ final class _PrincipalProfilePreviewPageState extends State<PrincipalProfilePrev
             PrincipalGlobalNavigation(
               selected: PrincipalDestination.home,
               onHome: () =>
-                  _runOrPreview(context, widget.onOpenHome ?? widget.onOpenHappens, 'Home'),
-              onForYou: () => _runOrPreview(context, widget.onOpenForYou, 'Para você'),
-              onPublishNow: () => _runOrPreview(context, widget.onPublishNow, 'Publicar no Agora'),
-              onMoments: () => _runOrPreview(context, widget.onOpenMoments, 'Momentos'),
-              onSearch: () => _runOrPreview(context, widget.onOpenSearch, 'Pesquisar'),
-              onMessages: () => _runOrPreview(context, widget.onOpenMessages, 'Mensagens'),
+                  _runOrPreview(context, widget.showPreviewFeeds, widget.onOpenHome ?? widget.onOpenHappens, 'Home'),
+              onForYou: () => _runOrPreview(context, widget.showPreviewFeeds, widget.onOpenForYou, 'Para você'),
+              onPublishNow: () => _runOrPreview(context, widget.showPreviewFeeds, widget.onPublishNow, 'Publicar no Agora'),
+              onMoments: () => _runOrPreview(context, widget.showPreviewFeeds, widget.onOpenMoments, 'Momentos'),
+              onSearch: () => _runOrPreview(context, widget.showPreviewFeeds, widget.onOpenSearch, 'Pesquisar'),
+              onMessages: () => _runOrPreview(context, widget.showPreviewFeeds, widget.onOpenMessages, 'Mensagens'),
             ),
         ],
       ),
@@ -158,20 +188,29 @@ final class _PrincipalProfilePreviewPageState extends State<PrincipalProfilePrev
       _IdentitySection(
         data: widget.data,
         wide: !compact,
-        onMessage: () => _runOrPreview(context, widget.onMessage, 'Mensagem'),
-        onOpenBio: () => _runOrPreview(context, widget.onOpenBio, 'Biografia completa'),
+        onMessage: () => _runOrPreview(context, widget.showPreviewFeeds, widget.onMessage, 'Mensagem'),
+        onOpenEdit: widget.onOpenEdit,
+        onOpenBio: () => _runOrPreview(context, widget.showPreviewFeeds, widget.onOpenBio, 'Biografia completa'),
       ),
-      const SizedBox(height: CoeloSpacing.space4),
-      _MetricsPanel(metrics: widget.data.metrics, compact: compact),
-      const SizedBox(height: CoeloSpacing.space5),
-      _HighlightsSection(items: widget.data.highlights, compact: compact),
-      const SizedBox(height: CoeloSpacing.space5),
-      _LinksSection(
-        links: widget.data.links,
-        onOpenAll: () => _runOrPreview(context, widget.onOpenLinks, 'Todos os vínculos'),
-      ),
-      const SizedBox(height: CoeloSpacing.space4),
-      _AgendaSummary(event: widget.data.nextEvent, onOpenAgenda: widget.onOpenAgenda),
+      if (widget.data.metrics.isNotEmpty) ...[
+        const SizedBox(height: CoeloSpacing.space4),
+        _MetricsPanel(metrics: widget.data.metrics, compact: compact),
+      ],
+      if (widget.data.highlights.isNotEmpty) ...[
+        const SizedBox(height: CoeloSpacing.space5),
+        _HighlightsSection(items: widget.data.highlights, compact: compact),
+      ],
+      if (widget.data.links.isNotEmpty) ...[
+        const SizedBox(height: CoeloSpacing.space5),
+        _LinksSection(
+          links: widget.data.links,
+          onOpenAll: () => _runOrPreview(context, widget.showPreviewFeeds, widget.onOpenLinks, 'Todos os vínculos'),
+        ),
+      ],
+      if (widget.data.nextEvent case final event?) ...[
+        const SizedBox(height: CoeloSpacing.space4),
+        _AgendaSummary(event: event, onOpenAgenda: widget.onOpenAgenda),
+      ],
       const SizedBox(height: CoeloSpacing.space4),
       _ProfileTabs(
         selected: _selectedTab,
@@ -192,28 +231,48 @@ final class _PrincipalProfilePreviewPageState extends State<PrincipalProfilePrev
       const SizedBox(height: CoeloSpacing.space4),
       _TabContent(
         tab: _selectedTab,
+        showPreviewFeeds: widget.showPreviewFeeds,
         aboutPage: widget.aboutPage,
         onOpenAboutMap: widget.onOpenAboutMap,
         circularRepository: widget.circularRepository,
         circularScope: widget.circularScope,
+        happensTab: widget.happensTab,
+        momentsTab: widget.momentsTab,
         onOpenCircular: widget.onOpenCircular,
       ),
     ],
   );
 }
 
-void _showPrototypeMessage(BuildContext context, String label) {
-  ScaffoldMessenger.of(
-    context,
-  ).showSnackBar(SnackBar(content: Text('$label estará disponível na experiência completa.')));
+/// Answers an action that has no destination.
+///
+/// A production surface never tells the user it is a prototype: it says the
+/// capability is not available yet. The preview keeps its own wording.
+void _showUnavailableMessage(BuildContext context, String label, {required bool preview}) {
+  ScaffoldMessenger.of(context)
+    ..hideCurrentSnackBar()
+    ..showSnackBar(
+      SnackBar(
+        content: Text(
+          preview
+              ? '$label estará disponível na experiência completa.'
+              : '$label ainda não está disponível.',
+        ),
+      ),
+    );
 }
 
-void _runOrPreview(BuildContext context, VoidCallback? action, String fallbackLabel) {
+void _runOrPreview(
+  BuildContext context,
+  bool preview,
+  VoidCallback? action,
+  String fallbackLabel,
+) {
   if (action != null) {
     action();
     return;
   }
-  _showPrototypeMessage(context, fallbackLabel);
+  _showUnavailableMessage(context, fallbackLabel, preview: preview);
 }
 
 final class _ProfileContextAside extends StatelessWidget {
@@ -243,14 +302,16 @@ final class _ProfileContextAside extends StatelessWidget {
           Text(data.name, style: Theme.of(context).textTheme.labelLarge),
           Text(data.typeLabel, style: Theme.of(context).textTheme.bodySmall),
           const SizedBox(height: CoeloSpacing.space4),
-          const _ProfileContextFact(Icons.location_on_outlined, 'São Paulo, SP'),
-          const SizedBox(height: CoeloSpacing.space2),
-          const _ProfileContextFact(Icons.groups_outlined, 'Comunidade escolar'),
-          const SizedBox(height: CoeloSpacing.space4),
-          Text('Próximo evento', style: Theme.of(context).textTheme.labelMedium),
-          const SizedBox(height: CoeloSpacing.space1),
-          Text(data.nextEvent.title, style: Theme.of(context).textTheme.bodyMedium),
-          Text('${data.nextEvent.day} ${data.nextEvent.month} · ${data.nextEvent.context}'),
+          if (data.nextEvent case final event?) ...[
+            const _ProfileContextFact(Icons.location_on_outlined, 'São Paulo, SP'),
+            const SizedBox(height: CoeloSpacing.space2),
+            const _ProfileContextFact(Icons.groups_outlined, 'Comunidade escolar'),
+            const SizedBox(height: CoeloSpacing.space4),
+            Text('Próximo evento', style: Theme.of(context).textTheme.labelMedium),
+            const SizedBox(height: CoeloSpacing.space1),
+            Text(event.title, style: Theme.of(context).textTheme.bodyMedium),
+            Text('${event.day} ${event.month} · ${event.context}'),
+          ],
           const SizedBox(height: CoeloSpacing.space3),
           TextButton.icon(
             onPressed: onOpenAgenda,
@@ -279,11 +340,23 @@ final class _ProfileContextFact extends StatelessWidget {
 }
 
 final class _ProfileHero extends StatelessWidget {
-  const _ProfileHero({required this.data, required this.compact, required this.wide});
+  const _ProfileHero({
+    required this.data,
+    required this.compact,
+    required this.wide,
+    required this.showFixtureMedia,
+  });
 
   final PrincipalProfilePreviewData data;
   final bool compact;
   final bool wide;
+
+  /// Whether the local cover/crest fixtures may render.
+  ///
+  /// Cover and avatar are authorized media in private R2, reached through the
+  /// shared gateway. Until that descriptor exists for this surface a real route
+  /// shows a neutral brand placeholder instead of a fabricated campus photo.
+  final bool showFixtureMedia;
 
   @override
   Widget build(BuildContext context) {
@@ -306,13 +379,20 @@ final class _ProfileHero extends StatelessWidget {
             label: 'Campus do ${data.name}',
             child: ClipRRect(
               borderRadius: const BorderRadius.vertical(bottom: Radius.circular(CoeloRadius.lg)),
-              child: Image.asset(
-                'assets/principal_profile/institution-cover.png',
-                width: double.infinity,
-                height: coverHeight,
-                fit: BoxFit.cover,
-                alignment: compact ? const Alignment(.5, 0) : Alignment.center,
-              ),
+              child: showFixtureMedia
+                  ? Image.asset(
+                      'assets/principal_profile/institution-cover.png',
+                      width: double.infinity,
+                      height: coverHeight,
+                      fit: BoxFit.cover,
+                      alignment: compact ? const Alignment(.5, 0) : Alignment.center,
+                    )
+                  : Container(
+                      key: const Key('principal-profile-cover-placeholder'),
+                      width: double.infinity,
+                      height: coverHeight,
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    ),
             ),
           ),
           Positioned(
@@ -338,10 +418,22 @@ final class _ProfileHero extends StatelessWidget {
                   ],
                 ),
                 child: ClipOval(
-                  child: Image.asset(
-                    'assets/principal_profile/institution-crest.png',
-                    fit: BoxFit.contain,
-                  ),
+                  child: showFixtureMedia
+                      ? Image.asset(
+                          'assets/principal_profile/institution-crest.png',
+                          fit: BoxFit.contain,
+                        )
+                      : ColoredBox(
+                          key: const Key('principal-profile-avatar-placeholder'),
+                          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                          child: Center(
+                            child: Icon(
+                              Icons.apartment_outlined,
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              size: avatarSize * .45,
+                            ),
+                          ),
+                        ),
                 ),
               ),
             ),
@@ -357,12 +449,14 @@ final class _IdentitySection extends StatelessWidget {
     required this.data,
     required this.wide,
     required this.onMessage,
+    required this.onOpenEdit,
     required this.onOpenBio,
   });
 
   final PrincipalProfilePreviewData data;
   final bool wide;
   final VoidCallback onMessage;
+  final VoidCallback? onOpenEdit;
   final VoidCallback onOpenBio;
 
   @override
@@ -435,6 +529,13 @@ final class _IdentitySection extends StatelessWidget {
           icon: const Icon(Icons.chat_bubble_outline_rounded),
           label: const Text('Mensagem'),
         ),
+        if (onOpenEdit case final openEdit?)
+          OutlinedButton.icon(
+            key: const Key('principal-profile-edit'),
+            onPressed: openEdit,
+            icon: const Icon(Icons.edit_outlined),
+            label: const Text('Editar perfil'),
+          ),
       ],
     );
     return Column(
@@ -454,12 +555,18 @@ final class _IdentitySection extends StatelessWidget {
           const SizedBox(height: CoeloSpacing.space3),
           actions,
         ],
-        const SizedBox(height: CoeloSpacing.space3),
-        ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 760),
-          child: Text(data.bio, style: Theme.of(context).textTheme.bodyMedium),
-        ),
-        TextButton(onPressed: onOpenBio, child: const Text('Ver mais')),
+        // The bio is the authorized `description` of the About page and can be
+        // legitimately absent. Rendering an empty paragraph plus "Ver mais"
+        // offers to expand nothing: on the real route it reads as content that
+        // failed to arrive. With a bio present the composition is unchanged.
+        if (data.bio.trim().isNotEmpty) ...[
+          const SizedBox(height: CoeloSpacing.space3),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 760),
+            child: Text(data.bio, style: Theme.of(context).textTheme.bodyMedium),
+          ),
+          TextButton(onPressed: onOpenBio, child: const Text('Ver mais')),
+        ],
       ],
     );
   }
@@ -871,24 +978,51 @@ final class _ProfileTabButton extends StatelessWidget {
 final class _TabContent extends StatelessWidget {
   const _TabContent({
     required this.tab,
+    required this.showPreviewFeeds,
     required this.aboutPage,
     required this.onOpenAboutMap,
     required this.circularRepository,
     required this.circularScope,
+    required this.happensTab,
+    required this.momentsTab,
     required this.onOpenCircular,
   });
 
   final _ProfileTab tab;
+  final bool showPreviewFeeds;
   final ProfileAboutPage? aboutPage;
   final VoidCallback? onOpenAboutMap;
   final CircularRepository? circularRepository;
   final CircularScope? circularScope;
+
+  /// Authorized projections for the Acontece and Momentos tabs.
+  ///
+  /// A production composition root supplies them; when absent the tabs show a
+  /// pending state rather than the local preview fixtures.
+  final Widget? happensTab;
+  final Widget? momentsTab;
   final ValueChanged<String>? onOpenCircular;
 
   @override
   Widget build(BuildContext context) => switch (tab) {
-    _ProfileTab.happens => const _ProfileHappensFeed(),
-    _ProfileTab.moments => const _ProfileMomentsFeed(),
+    _ProfileTab.happens => happensTab ??
+        (showPreviewFeeds
+            ? const _ProfileHappensFeed()
+            : const _PlaceholderContent(
+              key: Key('principal-profile-happens-pending'),
+            icon: Icons.article_outlined,
+            title: 'Acontece ainda não disponível aqui',
+              message: 'A projeção autorizada de publicações ainda não foi ligada a este perfil.',
+            )),
+    _ProfileTab.moments => momentsTab ??
+        (showPreviewFeeds
+            ? const _ProfileMomentsFeed()
+            : const _PlaceholderContent(
+              key: Key('principal-profile-moments-pending'),
+            icon: Icons.play_circle_outline_rounded,
+            title: 'Momentos ainda não disponível aqui',
+              message: 'A projeção autorizada de Momentos ainda não foi ligada a este perfil.',
+            )),
     _ProfileTab.circulars =>
       circularRepository == null || circularScope == null
           ? const _PlaceholderContent(
@@ -899,12 +1033,17 @@ final class _TabContent extends StatelessWidget {
           : PrincipalProfileCircularsTab(
               repository: circularRepository!,
               scope: circularScope!,
-              onOpen: onOpenCircular ?? (_) {},
+              // A top-level tear-off, not a fresh `(_) {}` per build: the tab
+              // reads a changed `onOpen` as a changed context and closes the
+              // open preview.
+              onOpen: onOpenCircular ?? _ignoreCircular,
               embedded: true,
             ),
     _ProfileTab.about => _AboutContent(page: aboutPage, onOpenMap: onOpenAboutMap),
   };
 }
+
+void _ignoreCircular(String _) {}
 
 final class _ProfileHappensFeed extends StatelessWidget {
   const _ProfileHappensFeed();
@@ -1118,7 +1257,12 @@ final class _ProfileMetric extends StatelessWidget {
 }
 
 final class _PlaceholderContent extends StatelessWidget {
-  const _PlaceholderContent({required this.icon, required this.title, required this.message});
+  const _PlaceholderContent({
+    required this.icon,
+    required this.title,
+    required this.message,
+    super.key,
+  });
 
   final IconData icon;
   final String title;
@@ -1194,7 +1338,20 @@ final class _AboutContent extends StatelessWidget {
                     size: CoeloSize.iconSm,
                   ),
                   const SizedBox(width: CoeloSpacing.space2),
-                  Expanded(child: Text(field.value)),
+                  // Visually the row is unchanged: the field renders as its bare
+                  // value beside a generic icon, which is the approved
+                  // composition. For assistive technology that value alone is
+                  // not ambiguous, it is unnamed -- two contact numbers are
+                  // announced as two numbers. The semantic label names the
+                  // field without moving a pixel. Whether the label should also
+                  // be visible is an open question for the Owner.
+                  Expanded(
+                    child: Semantics(
+                      label: '${profileAboutFieldLabel(field.key)}: ${field.value}',
+                      excludeSemantics: true,
+                      child: Text(field.value),
+                    ),
+                  ),
                 ],
               ),
             ),

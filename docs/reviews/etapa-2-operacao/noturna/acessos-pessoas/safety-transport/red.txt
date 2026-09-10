@@ -1,0 +1,52 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:1
++ rtk proxy flutter test --no-pub test/features/safety/data/supabase_ch ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/safety/data/supabase_child_safety_repository_test.dart
+00:00 +0: read normalizes a transport failure as unavailable
+00:00 +0 -1: read normalizes a transport failure as unavailable [E]
+  Expected: throws <Instance of 'ChildSafetyUnavailableException'>
+    Actual: <Instance of 'Future<ChildSafetyRecord?>'>
+     Which: threw ClientException:<ClientException: Connection interrupted>
+            stack test\features\safety\data\supabase_child_safety_repository_test.dart 13:43  main.<fn>.<fn>
+                  package:http/src/mock_client.dart 54:36                                     new MockClient.<fn>
+                  ===== asynchronous gap ===========================
+                  package:matcher                                                             expectLater
+                  package:flutter_test/src/widget_tester.dart 507:8                           expectLater
+                  test\features\safety\data\supabase_child_safety_repository_test.dart 17:13  main.<fn>
+
+            which is not an instance of 'ChildSafetyUnavailableException'
+
+  package:matcher                                                             expectLater
+  package:flutter_test/src/widget_tester.dart 507:8                           expectLater
+  test\features\safety\data\supabase_child_safety_repository_test.dart 17:13  main.<fn>
+
+00:00 +0 -1: command normalizes a transport failure as unavailable
+00:00 +0 -2: command normalizes a transport failure as unavailable [E]
+  Expected: throws <Instance of 'ChildSafetyUnavailableException'>
+    Actual: <Instance of 'Future<void>'>
+     Which: threw ClientException:<ClientException: Connection interrupted>
+            stack test\features\safety\data\supabase_child_safety_repository_test.dart 13:43  main.<fn>.<fn>
+                  package:http/src/mock_client.dart 54:36                                     new MockClient.<fn>
+                  ===== asynchronous gap ===========================
+                  package:matcher                                                             expectLater
+                  package:flutter_test/src/widget_tester.dart 507:8                           expectLater
+                  test\features\safety\data\supabase_child_safety_repository_test.dart 17:13  main.<fn>
+
+            which is not an instance of 'ChildSafetyUnavailableException'
+
+  package:matcher                                                             expectLater
+  package:flutter_test/src/widget_tester.dart 507:8                           expectLater
+  test\features\safety\data\supabase_child_safety_repository_test.dart 17:13  main.<fn>
+
+00:00 +0 -2: transport boundary preserves database error 42501
+00:00 +1 -2: transport boundary preserves database error 40001
+00:00 +2 -2: transport boundary preserves database error 23505
+00:00 +3 -2: Some tests failed.
+
+Failing tests:
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/safety/data/supabase_child_safety_repository_test.dart: command normalizes a transport failure as unavailable
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/safety/data/supabase_child_safety_repository_test.dart: read normalizes a transport failure as unavailable

@@ -1,0 +1,105 @@
+{
+    "revision":  6,
+    "updated_at":  "2026-09-09T18:15:46.3399919-03:00",
+    "group":  "estrutura",
+    "task":  "/root",
+    "model":  "GPT-6 (variante nao exposta)",
+    "status":  "active",
+    "coordinator":  "Claude",
+    "worktree":  "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura",
+    "branch":  "work/etapa2-noturna-estrutura",
+    "head":  "84662238122df2a7b85f5082ac9c5c8e93d8c69a",
+    "upstream":  "origin/work/etapa2-noturna-estrutura; HEAD igual; divergencia 0/0",
+    "base_observed":  "d784462c1",
+    "scope":  [
+                  "apps/superadmin -\u003e Instituicoes",
+                  "apps/superadmin -\u003e Unidades",
+                  "apps/superadmin -\u003e Turmas",
+                  "apps/superadmin -\u003e Atividades",
+                  "apps/superadmin -\u003e Avaliacoes",
+                  "apps/superadmin -\u003e Locais"
+              ],
+    "action_ids_status":  "49 IDs confirmados no inventario: 42 MVP e 7 adiados. Recorte inicial institutions.locations-map,units.locations-map,units.copy-institution-location,locations.list,locations.create-edit,locations.detail-links; seguinte groups.location/activities.location/locations.schedule.",
+    "changed":  "Lote publicado: f87543b6c (cd03),4528c42df (42ad),fc8287c57 (proposta hunks 1345),84662238 (evidencias). 36P, analyzer13 limpo, validador visual exit0. Nenhuma escrita dev/remoto.",
+    "closed_criteria":  [
+                            "Candidatos qualificados sobre base d784; sem promocao de acao completa"
+                        ],
+    "tests":  {
+                  "E":  36,
+                  "S":  0,
+                  "U":  0,
+                  "P":  36,
+                  "B":  0,
+                  "F":  0,
+                  "evidence":  "docs/reviews/evidence/etapa-2/noturna-estrutura/candidates-manifest.json",
+                  "revision":  "fc8287c57",
+                  "N":  36
+              },
+    "reservations":  [
+                         "Router/composition: hunks pequenos na branch como proposta; integrador Claude",
+                         "Migrations: candidatos locais permitidos; replay e remoto serializados Claude"
+                     ],
+    "blocker":  null,
+    "next_step":  "Implementar consumidor real do painel em detalhe de Atividade/Turma persistida: catalogo owner-scoped -\u003e escolha explicita -\u003e reservas daquela entidade/local, reutilizando LocationDirectoryPanel e LocationReservationPanel. Selecao apenas contexto de consulta, nao local salvo no formulario. Depois reader de bindings para descoberta/reabertura; save atomico Activity separado. Router somente proposta de hunks ao Claude.",
+    "wip":  [
+
+            ],
+    "artifacts":  [
+
+                  ],
+    "children":  [
+                     {
+                         "result":  "Nao ha selecao legada atual reutilizavel; location_names era join indevido ja fechado. Motor existente suporta reserva consumidor/local escolhido explicitamente.",
+                         "task":  "/root/bindings_review",
+                         "state":  "completed read-only"
+                     }
+                 ],
+    "processes":  [
+
+                  ],
+    "ports":  [
+
+              ],
+    "ack":  "coordenacao r2 recibo estrutura r3 lido; escritor central preservado",
+    "limitations":  "Sem canal nativo Claude verificado; arquivo publicado nao comprova leitura nem desperta conversa encerrada.",
+    "deadline":  "2026-09-09T23:30:00-03:00",
+    "eta":  "Delta de implementacao ainda nao inspecionado; espera de atribuicao indeterminada.",
+    "candidate_review":  [
+                             {
+                                 "paths":  6,
+                                 "status":  "static-review; integration pending",
+                                 "sha":  "cd03b9e30f49a286ff691b993179efbe9cafc19f"
+                             },
+                             {
+                                 "status":  "static-review; shared-path reservation pending",
+                                 "note":  "Location writes usam capabilities; conferir preservacao gate enableStructureMutations na integracao; testes de origem cobrem leituras (sem teste de escrita pelo main).",
+                                 "sha":  "1345af29ff180fa8bcf7757b27663bb3964c669d"
+                             },
+                             {
+                                 "sha":  "42ad0467e69f1667a31f0cf9db51ac82a061e87f",
+                                 "status":  "static-review; focused copy guard consistent with current generation protection"
+                             }
+                         ],
+    "memory":  "Consulta knowledge com Root explicito concluida; fonte aprovada de Locais conferida; nenhuma regra nova, no-op.",
+    "opening_contract":  {
+                             "stop":  "Recorte fechado, bloqueio sem independente ou 23:30 BRT",
+                             "eta":  "Atribuicao externa pendente; ainda sem estimativa fundamentada do delta SQL/consumidores",
+                             "evidence":  "Diff seletivo, testes proporcionais causal/negativas, logs e SHAs publicados",
+                             "included":  "6 familias/49 IDs e contratos aplicaveis",
+                             "objective":  "Fechar proximo aceite executavel Estrutura reutilizando R02",
+                             "order":  "Tres candidatos -\u003e consumidores e bindings -\u003e save atomico",
+                             "excluded":  "Outros apps; adiados; Auth/CHILD/shell preservados; producao sem pacote nominal"
+                         },
+    "commits":  [
+                    "f87543b6c",
+                    "4528c42df",
+                    "fc8287c57",
+                    "84662238"
+                ],
+    "coordinator_requests":  [
+                                 "Revisar/integrar lote publicado; fc8287 candidato de composicao restrito aos5paths, sem tocar dev.",
+                                 "Autorizar hunks de injecao de reservas em detalhes reais (serao propostos na branch); capabilities read/manage/override da sessao, sem liberar save legado Group.",
+                                 "Midia: publicacoes-midia e escritor; contrato locations/map-general/photo continua dependente, sem nova plataforma."
+                             ],
+    "owner_update":  "Owner ausente; pediu continuidade sem novas aprovacoes pessoais. Cortes originais mantidos; pacote remoto nominal continua exigido pelo contrato."
+}
