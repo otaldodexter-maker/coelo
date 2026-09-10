@@ -295,6 +295,11 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
           hasMore: current?.hasMore ?? false,
         );
       });
+      // A lista mostra a ULTIMA mensagem de cada conversa; sem reconciliar, o
+      // preview e a ordenacao continuariam anteriores ao que acabou de ser
+      // enviado. `preserveSelection` reconcilia sem resselecionar o primeiro
+      // item, que trocaria a conversa aberta na mao do operador.
+      unawaited(_loadInbox(preserveSelection: true));
     } on ChatUnauthorizedException catch (error) {
       if (_isCurrentSend(sendGeneration, requestedRepository, conversation.id)) {
         _denyAccess(error);
@@ -348,6 +353,11 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
       // The edited row carries its own receipt and edit marker; re-read the
       // thread instead of patching a single bubble from the command's echo.
       await _reloadThread(conversation, manageGeneration, requestedRepository);
+      // Editar e revogar mudam a ULTIMA mensagem da conversa, que e o preview
+      // da lista. No caso de revogar isso nao e cosmetico: o servidor ja exclui
+      // a mensagem revogada do preview, entao deixar o corpo antigo na tela
+      // desfaz o efeito da revogacao na superficie que o operador mais olha.
+      unawaited(_loadInbox(preserveSelection: true));
     } on ChatUnauthorizedException catch (error) {
       if (_isCurrentManage(manageGeneration, requestedRepository, conversation.id)) {
         _denyAccess(error);
@@ -389,6 +399,11 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
       );
       if (!_isCurrentManage(manageGeneration, requestedRepository, conversation.id)) return;
       await _reloadThread(conversation, manageGeneration, requestedRepository);
+      // Editar e revogar mudam a ULTIMA mensagem da conversa, que e o preview
+      // da lista. No caso de revogar isso nao e cosmetico: o servidor ja exclui
+      // a mensagem revogada do preview, entao deixar o corpo antigo na tela
+      // desfaz o efeito da revogacao na superficie que o operador mais olha.
+      unawaited(_loadInbox(preserveSelection: true));
       if (_isCurrentManage(manageGeneration, requestedRepository, conversation.id)) {
         _showNotice('Mensagem revogada.');
       }
