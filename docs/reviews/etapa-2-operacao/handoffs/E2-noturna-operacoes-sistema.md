@@ -319,7 +319,9 @@ independentes, mesmo resultado.
 
 Das 144, **83 são do meu recorte** e 61 não são. As 83 se dividem em 71 goldens já
 censados, que dependem de rebaseline nominal, e **9 não-golden**, depois de devolver
-três que outra frente mediu como fixture obsoleta e não minhas. Nenhuma das nove é
+três que a frente publicacoes-midia mediu como fixture obsoleta e não minhas — medição
+dela, que **eu não reproduzi**; o que eu verifiquei por conta própria é que não toquei
+naqueles arquivos. Nenhuma das nove é
 regressão minha por edição: não toquei em `dev_menu`, em `core/config` nem em rota de
 Principal.
 
