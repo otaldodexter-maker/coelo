@@ -2028,6 +2028,18 @@ conferência de existência**, que era o único controle que a rodada tinha: fam
 perdida dentro da própria árvore, por lista escrita de memória; arquivo de
 integração noutra árvore; pacote inteiro do monorepo; e arquivo noutro pacote.
 
+**E a direção do erro não é garantida — o que importa para quem repetir isto.** No
+primeiro caso o furo só escondia casos que passam; **no de outra frente escondia
+sete falhas**, além de 272 casos que passam. Quem concluir, a partir do primeiro
+exemplo, que um denominador incompleto apenas subestima o verde, conclui errado.
+
+**Duas armadilhas de varredura, para quem repetir:** casar o termo de domínio no
+texto do arquivo produz falso positivo em massa — uma frente casou "child" e
+recebeu 35 arquivos, porque é o nome do parâmetro de praticamente todo teste de
+widget; outra casou "feed" e recebeu um painel de estado, porque o caminho contém
+"feedback". **O que funciona é casar o diretório de domínio, não a menção**, e
+classificar por **consumidor** e não por nome, porque nome não decide dono.
+
 **Uma última exigência saiu disso, e ela evita o erro simétrico:** cada frente
 declara a **sobreposição** entre o número do próprio recorte e o do conjunto que
 executa. Sem isso, a consolidação soma conjuntos que se cruzam e o total geral fica
