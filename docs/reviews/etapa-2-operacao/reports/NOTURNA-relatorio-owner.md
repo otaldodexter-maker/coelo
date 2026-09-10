@@ -235,6 +235,35 @@ O teste falha também **se uma das cinco ausências passar a existir e continuar
 lista** — sem isso a lista de exceções envelhece e passa a esconder o defeito
 seguinte, que é como esse tipo de allowlist costuma morrer.
 
+## Auditoria das onze certificações de Front-end
+
+As onze ações com Front-end `verified` foram reauditadas nesta rodada, uma a uma,
+conferindo se a evidência citada existe e o que ela de fato prova. **As onze
+apontam para arquivos que existem.** Mas a qualidade da prova não é uniforme, e a
+diferença importa:
+
+- **Quatro de erros** (`errors.403/404/500/503`) apontam para um arquivo de teste
+  no repositório. É a forma mais forte: a prova é reexecutável hoje.
+- **Quatro de autenticação** e **uma de exportação de Assiduidade** apontam para
+  documentos de reconciliação em `docs/reviews/evidence/`, que existem e estão
+  versionados.
+- **Duas — `profile-files.import` e `profile-files.export` — apontavam para um
+  relatório que cita "24/24 testes de página/estados/componente" e um log num
+  diretório temporário.** O log já não existe, e uma frente mediu esta noite que
+  **as três ações de arquivo de perfil não tinham nenhum teste no app inteiro**.
+  Os 24 testes cobriam a página; não cobriam essas ações, seus rótulos nem o
+  estado adiado. A certificação não era falsa, mas era mais fraca do que o rótulo
+  `verified` sugere.
+
+Isso foi corrigido no mesmo turno em que foi descoberto: as três ações agora têm
+teste próprio, que fixa a presença na tela, os rótulos e o estado adiado.
+
+**A lição vale mais que a correção, e é uma lição sobre o meu próprio processo:**
+uma certificação que aponta para um log em diretório temporário não é
+verificável depois que a máquina reinicia. A regra que fica é que evidência de
+certificação precisa ser um arquivo versionado no repositório — de preferência um
+teste — e não um log, um caminho local ou uma contagem citada em prosa.
+
 ## Progresso por tela
 
 As 230 ações da Etapa 2 em 39 famílias de tela, com o estado que o inventário
