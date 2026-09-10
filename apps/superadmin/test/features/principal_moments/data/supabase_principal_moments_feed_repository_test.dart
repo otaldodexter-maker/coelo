@@ -175,6 +175,60 @@ void main() {
     expect(calls.single['p_request_id'], matches(RegExp(r'^[0-9a-f-]{36}$')));
   });
 
+  test('repetir a mesma retirada reapresenta a mesma chave de idempotência', () async {
+    final calls = <Map<String, dynamic>>[];
+    var failNext = true;
+    final client = _client((request) async {
+      calls.add(jsonDecode(request.body) as Map<String, dynamic>);
+      if (failNext) {
+        failNext = false;
+        return http.Response('{"message":"boom"}', 500);
+      }
+      return _json({
+        'id': 'publication-1',
+        'status': 'published',
+        'withdrawn_at': '2026-09-09T13:00:00Z',
+        'version': 3,
+      }, request);
+    });
+    addTearDown(client.dispose);
+    final repository = SupabasePrincipalMomentsFeedRepository(client);
+
+    await expectLater(
+      repository.withdrawMoment('publication-1'),
+      throwsA(isA<PrincipalMomentsWithdrawalFailure>()),
+    );
+    await repository.withdrawMoment('publication-1');
+
+    expect(calls, hasLength(2));
+    expect(
+      calls.first['p_request_id'],
+      calls.last['p_request_id'],
+      reason: 'a segunda tentativa e a MESMA intencao e precisa reapresentar a chave',
+    );
+  });
+
+  test('retiradas de publicações diferentes usam chaves diferentes', () async {
+    final calls = <Map<String, dynamic>>[];
+    final client = _client((request) async {
+      calls.add(jsonDecode(request.body) as Map<String, dynamic>);
+      return _json({
+        'id': 'publication',
+        'status': 'published',
+        'withdrawn_at': '2026-09-09T13:00:00Z',
+        'version': 3,
+      }, request);
+    });
+    addTearDown(client.dispose);
+    final repository = SupabasePrincipalMomentsFeedRepository(client);
+
+    await repository.withdrawMoment('publication-1');
+    await repository.withdrawMoment('publication-2');
+
+    expect(calls, hasLength(2));
+    expect(calls.first['p_request_id'], isNot(calls.last['p_request_id']));
+  });
+
   test('mapeia negação e falha da retirada sem sucesso falso', () async {
     final denied = _client(
       (request) async => http.Response(
