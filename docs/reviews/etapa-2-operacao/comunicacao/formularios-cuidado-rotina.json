@@ -1,12 +1,12 @@
 {
- "revision": 13,
+ "revision": 14,
  "round": "E2-R03-20260910",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5[1m]",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-10T12:10:00-03:00",
+ "updatedAt": "2026-09-10T13:20:00-03:00",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-formularios-cuidado-rotina",
  "branch": "work/etapa2-r03-formularios-cuidado-rotina",
  "head": "1c188091f",
@@ -55,7 +55,7 @@
   "blocked": 0,
   "skipped": 0,
   "notRun": 0,
-  "pgtap": "1001 assercoes / 0 falhas nos 22 arquivos do recorte, no replay descartavel",
+  "pgtap": "1021 assercoes / 0 falhas (1001 do recorte anterior mais 20 de Alunos), revalidadas sobre a base integrada 552058da0",
   "flutter": "113 daily_routine (inclui os 6 novos do D7) + 89 attendance + 7 cuidado/medicacao = 209 nas suites que escrevi ou alterei",
   "analyzer": "dart analyze lib limpo em apps/superadmin",
   "falhas_preexistentes_nas_areas_tocadas": "8, medidas tambem sem as minhas mudancas: 4 goldens de health_care/presentation e 4 de saneamento de composicao de outras familias",
@@ -72,7 +72,7 @@
   }
  ],
  "deltaProposals": [],
- "nextStep": "Revalidar o pgTAP do recorte sobre a base integrada e seguir para forms_files e o XLSX.",
+ "nextStep": "Cliente de Alunos e, em paralelo, o lote de duvidas para o Owner.",
  "findings": [
   {
    "id": "F-R03-FCR-001",
@@ -289,6 +289,33 @@
     "3_de_superadmin_forms_directory_internal_read": "mesma causa",
     "1_de_forms_editor_application_authorization": "unica falha real, e era o teste que estava desatualizado. Ele foi escrito contra a ordem de verificacoes anterior a 20260908030000, quando o par formulario/instituicao forjado chegava a form_assert_distribution_target e voltava como 22023. Aquela migration passou a conferir o proprio agregado ANTES, entao um id de aplicacao inexistente volta como indisponivel e nunca chega a confirmar se o par seria valido. A rejeicao continua acontecendo e ficou MAIS opaca. Atualizei o teste para cobrir os dois caminhos, com a explicacao no proprio arquivo, para a intencao original nao se perder."
    }
+  },
+  {
+   "id": "PKG-R03-FCR-ALUNOS-01",
+   "familia": "students",
+   "estado": "backend escrito e verde; cliente pendente",
+   "action_ids": [
+    "students.link",
+    "students.transfer",
+    "students.edit",
+    "students.revoke"
+   ],
+   "migration": "packages/coelo_database/migrations/20260910140000_student_link_commands_v1.sql",
+   "pgtap": "packages/coelo_database/supabase/tests/student_link_commands_v1_test.sql, 20/20",
+   "estado_anterior": "as quatro acoes estao no MVP e o adiamento nao foi autorizado, mas nao existia comando nenhum: a leitura do diretorio ja estava qualificada e as escritas nunca sairam do papel. A rota /students/:childContextId/manage abre uma tela de indisponivel.",
+   "o_que_o_pacote_faz": "quatro comandos sobre as tabelas que ja existem desde 20260720180000; nenhuma estrutura nova alem dos recibos.",
+   "tres_regras_que_valem_nos_quatro": [
+    "a instituicao e derivada do contexto infantil e nunca vem do payload; aceitar a instituicao enviada pelo cliente permitiria mover a crianca de um tenant para outro",
+    "unidade e turma sao conferidas contra essa instituicao antes de qualquer escrita; um id de outro tenant recebe a mesma negativa opaca de um id que nao existe",
+    "revogar nao apaga: o vinculo vira revoked com carimbo e motivo, e o historico continua legivel, porque presenca, rotina e cuidado passados apontam para um vinculo que existiu"
+   ],
+   "decisoes": [
+    "transferir autoriza os DOIS lados: quem so pode gerir a unidade de destino nao pode retirar a crianca da origem",
+    "transferir encerra as turmas da unidade de origem, senao a crianca continuaria aparecendo em chamada e rotina de onde ja nao esta",
+    "transferir e revogar exigem motivo",
+    "vincular a mesma crianca a mesma unidade de novo reativa o vinculo existente em vez de falhar por chave duplicada"
+   ],
+   "falta": "repositorio Supabase e a tela de gestao na rota /students/:childContextId/manage, hoje uma tela de indisponivel."
   }
  ],
  "filaSQL": [
@@ -315,6 +342,10 @@
   {
    "ordem": 6,
    "arquivo": "packages/coelo_database/migrations/20260910010500_daily_routine_client_contract_v1.sql"
+  },
+  {
+   "ordem": 7,
+   "arquivo": "packages/coelo_database/migrations/20260910140000_student_link_commands_v1.sql"
   }
  ],
  "chaveDeComposicao": {
