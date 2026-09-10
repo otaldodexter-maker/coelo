@@ -14,6 +14,8 @@ import 'features/locations/domain/location_catalog_writer.dart';
 import 'features/locations/domain/location_reservation_gateway.dart';
 import 'features/locations/domain/location_consumer_bindings_reader.dart';
 import 'features/locations/data/supabase_location_consumer_bindings_reader.dart';
+import 'features/locations/data/supabase_location_consumer_selection_reader.dart';
+import 'features/locations/domain/location_consumer_selection_reader.dart';
 import 'features/activities/data/supabase_activity_read_detail_repository.dart';
 import 'features/activities/domain/activity_read_detail.dart';
 
@@ -42,6 +44,7 @@ Future<void> main() async {
       locationCatalogWriter: _locationCatalogWriter(),
       locationReservationGateway: _locationReservationGateway(),
       locationConsumerBindingsReader: _locationConsumerBindingsReader(),
+      locationConsumerSelectionReader: _locationConsumerSelectionReader(),
       locationCapabilities: _locationCapabilities,
       activityDirectoryRepository: authScope.activityDirectoryRepository,
       activityReadDetailRepository: _activityReadDetailRepository(),
@@ -132,5 +135,14 @@ ActivityReadDetailRepository _activityReadDetailRepository() {
     return SupabaseActivityReadDetailRepository(Supabase.instance.client);
   } on Object {
     return const UnavailableActivityReadDetailRepository();
+  }
+}
+
+LocationConsumerSelectionReader _locationConsumerSelectionReader() {
+  try {
+    // Candidate getters remain closed until the exact backend package is qualified.
+    return SupabaseLocationConsumerSelectionReader(Supabase.instance.client, available: false);
+  } on Object {
+    return const UnavailableLocationConsumerSelectionReader();
   }
 }
