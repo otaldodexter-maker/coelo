@@ -1181,6 +1181,10 @@ GoRouter createSuperadminRouter({
                 circularRepository: principalCircularRepository,
                 aboutRepository: profileAboutRepository,
                 happensFeedRepository: principalHappensFeedRepository,
+                // The Momentos projection owned by the Momentos front, the same
+                // instance /principal-moments consumes. The Perfil projects it;
+                // it does not own a second source for the same feed.
+                momentsFeedRepository: principalMomentsFeedRepository,
                 onOpenCircular: (circularId) => context.goNamed(
                   SuperadminRoutes.circularDetailName,
                   pathParameters: {'circularId': circularId},
