@@ -3,7 +3,7 @@ title: "Entrega do grupo operacoes-sistema — rodada noturna 09/10 de setembro"
 source: "trabalho proprio sobre a base d784462c1, branch work/etapa2-noturna-operacoes-sistema"
 status: "documento vivo; atualizado ate a pre-entrega das 04:50"
 generated_at: "2026-09-09"
-last_update: "2026-09-09 21:38 (America/Sao_Paulo)"
+last_update: "2026-09-09 21:48 (America/Sao_Paulo)"
 group: "operacoes-sistema"
 ---
 
@@ -57,6 +57,30 @@ largura estreita — foi aplicada, medida e **não resolve**: com uma única mar
 transbordamento permanece idêntico, porque nem o número do dia mais uma marca
 cabe em 39,6 pixels. Revertida, e registrada a correção da minha própria
 recomendação: ela não é a mais barata de aprovar.
+
+### O estado vazio também transborda
+
+As oito rotas de produção, com a composição padrão fail-closed, passam em 16 de
+16 casos com texto a 100% — o caminho de indisponibilidade honesta está sólido.
+A 200%, duas falham em 375: `/agenda` e `/meal-plans`. Cardápios transborda 37
+pixels, o **mesmo número** medido com dados de desenvolvimento.
+
+Isso afasta a explicação confortável de que esses defeitos vêm do volume de
+dados semeado em desenvolvimento. Eles ocorrem no estado mais vazio possível da
+aplicação, e o número idêntico mostra que a causa é a moldura, não o conteúdo.
+
+Para Agenda, as três medições juntas descrevem a tela: com dados e texto a 100%
+em 375, falha; sem dados a 100%, passa; sem dados a 200%, falha. A célula não tem
+folga nenhuma. É também por isso que a extensão autorizada não tinha margem para
+recuperar, e a pergunta certa ao Owner passa a ser se a célula precisa de mais
+altura ou de outra composição — não quantas marcas cabem.
+
+### Travessia por teclado
+
+Oito das nove telas passam uma travessia de doze Tabs sem exceção e com o foco
+avançando. A nona, `/dev/imports`, falha pela exceção de overflow já
+diagnosticada, e **não** por defeito de foco. Registrado assim para não contar
+duas vezes o mesmo defeito em eixos diferentes.
 
 Tema não é fator em nenhum caso. Claro e escuro falham identicamente nas mesmas
 rotas, o que separa o eixo de tema do eixo de largura e dispensa metade da
