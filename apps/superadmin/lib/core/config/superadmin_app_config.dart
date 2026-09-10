@@ -22,8 +22,12 @@ abstract final class SuperadminAppConfig {
   /// que não tem esses objetos. Ligar antes trocaria uma indisponibilidade
   /// honesta por um erro obscuro. Esta é a chave de composição do pacote:
   /// aplicado o SQL, ligar aqui é o passo seguinte.
+  /// Ligada por padrão em 10/09/2026 depois de o lote 2 (20260910010000 a
+  /// 010500) entrar em produção (ADR 0034, Decisão 8); desligar só com
+  /// --dart-define=COELO_ENABLE_CARE_AND_ROUTINE_BACKEND=false.
   static const careAndRoutineBackendEnabled = bool.fromEnvironment(
     'COELO_ENABLE_CARE_AND_ROUTINE_BACKEND',
+    defaultValue: true,
   );
 
   /// Liga os comandos de vínculo de aluno (vincular, transferir, editar e
@@ -34,8 +38,11 @@ abstract final class SuperadminAppConfig {
   /// autorização destes comandos passa pelo realm people-based, que é
   /// justamente o ponto que a OQ-043 deixou em aberto para os CRUDs anteriores
   /// à ADR 0019. Ligar é uma decisão separada.
+  /// Ligada por padrão em 10/09/2026 depois de 20260910220200 entrar em
+  /// produção (lote 3); desligar só por --dart-define.
   static const studentLinkCommandsEnabled = bool.fromEnvironment(
     'COELO_ENABLE_STUDENT_LINK_COMMANDS',
+    defaultValue: true,
   );
   static const allowDevelopmentPreview = !kReleaseMode && environment == 'local';
 
