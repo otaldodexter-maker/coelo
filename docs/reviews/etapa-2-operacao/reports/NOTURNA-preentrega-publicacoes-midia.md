@@ -265,15 +265,20 @@ não fui eu, não o que mudou nas imagens.
 `tester.widget<PrincipalHappensPreviewPage>(...)`: a página do Acontece não entra
 na árvore. E o motivo é conferido dos dois lados:
 
-- A rota exige **duas** dependências. Linha 892 do router:
+- A rota exige **duas** dependências, na guarda
   `if (repository == null || mixedRepository == null) return _unavailableCompositionRootRoute(context);`
+  dentro da rota `principalHappens` de `superadmin_router.dart`. **Procure pelo
+  texto, não pelo número da linha:** ela está na 892 nesta branch e na 902 na
+  dev, porque outras frentes deslocaram o arquivo. Número de linha é o tipo de
+  ponteiro que envelhece sozinho.
 - O teste fornece **uma**. Nas três montagens do arquivo ele passa
   `principalRuntimeContextRepository` e `principalHappensFeedRepository`, e nunca
   `principalMixedFeedRepository`.
 - Os **únicos dois** pontos de composição em `lib` estão em
   `superadmin_auth_scope.dart`: o escopo autenticado liga as duas juntas, do
   mesmo client; o escopo fechado liga as duas como `null`, junto de todas as
-  outras. Não existe terceiro.
+  outras. `superadmin_app.dart` e `main.dart` apenas repassam. Não existe
+  terceiro.
 
 Logo o teste constrói uma configuração que o composition root **não produz** —
 Acontece ligado e feed misto ausente — e cai no ramo indisponível, que é o
