@@ -140,13 +140,66 @@ as $$
     and child_row.status = 'active'
 $$;
 
+-- O cliente identifica a crianca pela pessoa (MedicationPlanSaveCommand.
+-- childPersonId), nao pelo contexto infantil. Resolver aqui evita duas coisas
+-- ruins: o cliente escolher o contexto de outro tenant, e o servidor adivinhar
+-- qual contexto usar quando a mesma pessoa tem vinculo em mais de uma
+-- instituicao. Quando o contexto vem explicito, ele manda; quando so vem a
+-- pessoa, so resolve se a escolha for unica dentro do escopo pedido.
+create or replace function app_private.health_care_resolve_child_context(
+  p_child_context_id uuid,
+  p_child_person_id uuid,
+  p_institution_id uuid
+) returns uuid
+language plpgsql
+stable
+security definer
+set search_path=''
+as $$
+declare
+  resolved uuid;
+  candidates integer;
+begin
+  if p_child_context_id is not null then
+    select child_row.id into resolved
+    from public.child_contexts child_row
+    where child_row.id = p_child_context_id
+      and child_row.status = 'active'
+      and (p_child_person_id is null
+        or child_row.child_person_id = p_child_person_id)
+      and (p_institution_id is null
+        or child_row.institution_id = p_institution_id);
+    return resolved;
+  end if;
+  if p_child_person_id is null then
+    return null;
+  end if;
+  -- Postgres nao agrega uuid, entao a contagem e a escolha saem da mesma
+  -- varredura por array em vez de min().
+  select array_length(found.ids, 1), found.ids[1] into candidates, resolved
+  from (
+    select array_agg(child_row.id order by child_row.id) as ids
+    from public.child_contexts child_row
+    where child_row.child_person_id = p_child_person_id
+      and child_row.status = 'active'
+      and (p_institution_id is null or child_row.institution_id = p_institution_id)
+  ) found;
+  if coalesce(candidates, 0) <> 1 then
+    -- Zero: nao existe. Mais de um: a instituicao precisa ser dita. Nos dois
+    -- casos, adivinhar seria escrever dado de saude no lugar errado.
+    return null;
+  end if;
+  return resolved;
+end
+$$;
+
 -- ---------------------------------------------------------------------------
 -- Perfis de cuidado: leitura
 -- ---------------------------------------------------------------------------
 
 create or replace function app_private.superadmin_health_care_directory(
   p_search text,
-  p_status text,
+  p_statuses text[],
   p_institution_id uuid,
   p_unit_id uuid,
   p_group_id uuid,
@@ -190,7 +243,8 @@ begin
             'health_care.read', profile_row.institution_id,
             null, null, profile_row.child_context_id)
       and (p_institution_id is null or profile_row.institution_id = p_institution_id)
-      and (p_status is null or profile_row.operational_status = p_status)
+      and (p_statuses is null or array_length(p_statuses, 1) is null
+        or profile_row.operational_status = any(p_statuses))
       and (p_unit_id is null or exists (
             select 1 from public.child_unit_links unit_link
             where unit_link.child_context_id = profile_row.child_context_id
@@ -228,6 +282,8 @@ as $$
 declare
   actor uuid;
   profile_row public.health_care_profiles;
+  child_person_id uuid;
+  child_display_name text;
 begin
   actor := app_private.require_health_care_actor('health_care.read');
   select * into profile_row
@@ -238,11 +294,18 @@ begin
   if profile_row.id is null then
     raise no_data_found using message='health care profile unavailable';
   end if;
+  select child_row.child_person_id, child_person.display_name
+    into child_person_id, child_display_name
+  from public.child_contexts child_row
+  join public.people child_person on child_person.id = child_row.child_person_id
+  where child_row.id = profile_row.child_context_id;
 
   return jsonb_build_object(
     'id', profile_row.id,
     'institution_id', profile_row.institution_id,
     'child_context_id', profile_row.child_context_id,
+    'child_person_id', child_person_id,
+    'display_name', child_display_name,
     'operational_status', profile_row.operational_status,
     'important_signs', profile_row.important_signs,
     'adaptations', profile_row.adaptations,
@@ -290,6 +353,7 @@ declare
   actor uuid;
   aggregate_id uuid := coalesce(p_profile_id, gen_random_uuid());
   profile_row public.health_care_profiles;
+  child_context uuid;
   child_institution uuid;
   before_json jsonb;
   after_json jsonb;
@@ -328,14 +392,16 @@ begin
     -- A instituicao vem do contexto infantil, nunca do payload: aceitar a
     -- instituicao enviada pelo cliente permitiria anexar a crianca de um
     -- tenant a um perfil de outro.
-    child_institution := app_private.health_care_child_institution(
-      (p_payload->>'child_context_id')::uuid);
+    child_context := app_private.health_care_resolve_child_context(
+      (p_payload->>'child_context_id')::uuid,
+      (p_payload->>'child_person_id')::uuid,
+      (p_payload->>'institution_id')::uuid);
+    child_institution := app_private.health_care_child_institution(child_context);
     if child_institution is null then
       raise no_data_found using message='health care profile unavailable';
     end if;
     if not app_private.health_care_scope_allowed(
-      'health_care.manage', child_institution, null, null,
-      (p_payload->>'child_context_id')::uuid) then
+      'health_care.manage', child_institution, null, null, child_context) then
       raise insufficient_privilege using message='health_care.manage required';
     end if;
     before_json := null;
@@ -346,8 +412,7 @@ begin
       id, institution_id, child_context_id, operational_status,
       important_signs, adaptations, created_by_person_id
     ) values (
-      aggregate_id, child_institution,
-      (p_payload->>'child_context_id')::uuid,
+      aggregate_id, child_institution, child_context,
       coalesce(p_payload->>'operational_status','implementation'),
       coalesce(p_payload->>'important_signs',''),
       coalesce(p_payload->>'adaptations',''),
@@ -462,7 +527,7 @@ $$;
 
 create or replace function app_private.superadmin_medication_plan_directory(
   p_search text,
-  p_status text,
+  p_statuses text[],
   p_institution_id uuid,
   p_unit_id uuid,
   p_group_id uuid,
@@ -490,7 +555,7 @@ begin
     select plan_row.id, plan_row.institution_id, plan_row.child_context_id,
            plan_row.scope_kind, plan_row.unit_id, plan_row.group_id,
            plan_row.status, plan_row.management_version, plan_row.updated_at,
-           child_person.display_name,
+           child_row.child_person_id, child_person.display_name,
            version_row.medication_name, version_row.dose_amount,
            version_row.dose_unit, version_row.administration_route,
            version_row.valid_from, version_row.valid_until,
@@ -507,7 +572,8 @@ begin
       and (p_institution_id is null or plan_row.institution_id = p_institution_id)
       and (p_unit_id is null or plan_row.unit_id = p_unit_id)
       and (p_group_id is null or plan_row.group_id = p_group_id)
-      and (p_status is null or plan_row.status = p_status)
+      and (p_statuses is null or array_length(p_statuses, 1) is null
+        or plan_row.status = any(p_statuses))
       and (search_term is null
         or child_person.display_name ilike '%' || search_term || '%'
         or version_row.medication_name ilike '%' || search_term || '%')
@@ -551,6 +617,9 @@ begin
     'id', plan_row.id,
     'institution_id', plan_row.institution_id,
     'child_context_id', plan_row.child_context_id,
+    'child_person_id', (
+      select child_row.child_person_id from public.child_contexts child_row
+      where child_row.id = plan_row.child_context_id),
     'scope_kind', plan_row.scope_kind,
     'unit_id', plan_row.unit_id,
     'group_id', plan_row.group_id,
@@ -586,6 +655,7 @@ declare
   actor uuid;
   aggregate_id uuid := coalesce(p_plan_id, gen_random_uuid());
   plan_row public.medication_plans;
+  child_context uuid;
   child_institution uuid;
   version_id uuid;
   version_no integer;
@@ -620,23 +690,25 @@ begin
     if p_expected_version <> 0 then
       raise serialization_failure using message='expected_version mismatch';
     end if;
-    child_institution := app_private.health_care_child_institution(
-      (p_payload->>'child_context_id')::uuid);
+    child_context := app_private.health_care_resolve_child_context(
+      (p_payload->>'child_context_id')::uuid,
+      (p_payload->>'child_person_id')::uuid,
+      (p_payload->>'institution_id')::uuid);
+    child_institution := app_private.health_care_child_institution(child_context);
     if child_institution is null then
       raise no_data_found using message='medication plan unavailable';
     end if;
     if not app_private.health_care_scope_allowed(
       'medication.manage', child_institution,
       (p_payload->>'unit_id')::uuid, (p_payload->>'group_id')::uuid,
-      (p_payload->>'child_context_id')::uuid) then
+      child_context) then
       raise insufficient_privilege using message='medication.manage required';
     end if;
     insert into public.medication_plans(
       id, institution_id, child_context_id, scope_kind, unit_id, group_id,
       status, created_by_person_id
     ) values (
-      aggregate_id, child_institution,
-      (p_payload->>'child_context_id')::uuid,
+      aggregate_id, child_institution, child_context,
       coalesce(p_payload->>'scope_kind','institution'),
       (p_payload->>'unit_id')::uuid, (p_payload->>'group_id')::uuid,
       coalesce(p_payload->>'status','draft'), actor
@@ -791,11 +863,11 @@ $$;
 -- ---------------------------------------------------------------------------
 
 create or replace function public.superadmin_health_care_directory(
-  search text, status text, institution_id uuid, unit_id uuid,
+  search text, statuses text[], institution_id uuid, unit_id uuid,
   group_id uuid, page_limit integer, page_offset integer
 ) returns jsonb language sql stable security invoker set search_path='' as $$
   select app_private.superadmin_health_care_directory(
-    search, status, institution_id, unit_id, group_id, page_limit, page_offset)
+    search, statuses, institution_id, unit_id, group_id, page_limit, page_offset)
 $$;
 
 create or replace function public.superadmin_health_care_profile_detail(profile_id uuid)
@@ -811,11 +883,11 @@ create or replace function public.superadmin_health_care_save_profile(
 $$;
 
 create or replace function public.superadmin_medication_plan_directory(
-  search text, status text, institution_id uuid, unit_id uuid,
+  search text, statuses text[], institution_id uuid, unit_id uuid,
   group_id uuid, page_limit integer, page_offset integer
 ) returns jsonb language sql stable security invoker set search_path='' as $$
   select app_private.superadmin_medication_plan_directory(
-    search, status, institution_id, unit_id, group_id, page_limit, page_offset)
+    search, statuses, institution_id, unit_id, group_id, page_limit, page_offset)
 $$;
 
 create or replace function public.superadmin_medication_plan_detail(plan_id uuid)
@@ -950,7 +1022,8 @@ begin
   foreach current_signature in array array[
     'app_private.require_health_care_actor(text)',
     'app_private.health_care_receipt(uuid,uuid,text)',
-    'app_private.health_care_child_institution(uuid)'
+    'app_private.health_care_child_institution(uuid)',
+    'app_private.health_care_resolve_child_context(uuid,uuid,uuid)'
   ] loop
     execute format('revoke all on function %s from public, anon, authenticated',
       current_signature);
@@ -958,17 +1031,17 @@ begin
 
   foreach current_signature in array array[
     'app_private.health_care_scope_allowed(text,uuid,uuid,uuid,uuid)',
-    'app_private.superadmin_health_care_directory(text,text,uuid,uuid,uuid,integer,integer)',
+    'app_private.superadmin_health_care_directory(text,text[],uuid,uuid,uuid,integer,integer)',
     'app_private.superadmin_health_care_profile_detail(uuid)',
     'app_private.superadmin_health_care_save_profile(uuid,uuid,bigint,jsonb)',
-    'app_private.superadmin_medication_plan_directory(text,text,uuid,uuid,uuid,integer,integer)',
+    'app_private.superadmin_medication_plan_directory(text,text[],uuid,uuid,uuid,integer,integer)',
     'app_private.superadmin_medication_plan_detail(uuid)',
     'app_private.superadmin_medication_plan_save(uuid,uuid,bigint,jsonb)',
     'app_private.superadmin_medication_plan_record_evidence(uuid,uuid,jsonb)',
-    'public.superadmin_health_care_directory(text,text,uuid,uuid,uuid,integer,integer)',
+    'public.superadmin_health_care_directory(text,text[],uuid,uuid,uuid,integer,integer)',
     'public.superadmin_health_care_profile_detail(uuid)',
     'public.superadmin_health_care_save_profile(uuid,uuid,bigint,jsonb)',
-    'public.superadmin_medication_plan_directory(text,text,uuid,uuid,uuid,integer,integer)',
+    'public.superadmin_medication_plan_directory(text,text[],uuid,uuid,uuid,integer,integer)',
     'public.superadmin_medication_plan_detail(uuid)',
     'public.superadmin_medication_plan_save(uuid,uuid,bigint,jsonb)',
     'public.superadmin_medication_plan_record_evidence(uuid,uuid,jsonb)'

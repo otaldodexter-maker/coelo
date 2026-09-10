@@ -3,7 +3,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(27);
+select plan(30);
 
 -- --------------------------------------------------------------------------
 -- Estrutura
@@ -152,6 +152,34 @@ select ok(
   and has_function_privilege('authenticated',
     'public.superadmin_health_care_save_profile(uuid,uuid,bigint,jsonb)','EXECUTE'),
   'comandos sao de sessao autenticada'
+);
+
+-- O cliente identifica a crianca pela pessoa. Resolver isso no servidor evita
+-- que o payload escolha o contexto de outro tenant, e evita que o servidor
+-- adivinhe quando a mesma pessoa tem vinculo em mais de uma instituicao:
+-- adivinhar seria escrever dado de saude no lugar errado.
+select is(
+  app_private.health_care_resolve_child_context(
+    null, '10000000-0000-4000-8000-0000000000aa'::uuid, null),
+  null,
+  'pessoa sem contexto ativo nao resolve'
+);
+
+select ok(
+  pg_get_functiondef(
+    'app_private.health_care_resolve_child_context(uuid,uuid,uuid)'::regprocedure)
+    like '%coalesce(candidates, 0) <> 1%',
+  'pessoa com mais de um contexto no escopo pedido nao resolve por adivinhacao'
+);
+
+select ok(
+  pg_get_functiondef(
+    'app_private.health_care_resolve_child_context(uuid,uuid,uuid)'::regprocedure)
+    like '%child_row.child_person_id = p_child_person_id%'
+  and pg_get_functiondef(
+    'app_private.health_care_resolve_child_context(uuid,uuid,uuid)'::regprocedure)
+    like '%child_row.institution_id = p_institution_id%',
+  'contexto explicito ainda e conferido contra a pessoa e a instituicao pedidas'
 );
 
 set local role anon;
