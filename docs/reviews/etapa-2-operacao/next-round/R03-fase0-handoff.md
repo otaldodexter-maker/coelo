@@ -1,7 +1,7 @@
 ---
 title: "Rodada 3 — handoff da Fase 0 (composto de diretório)"
 source: "R03-prompts.md (P0); R03-plano.md; goldens-claro-decisoes-2026-09-10.md; commits 60747d57b..1adb070c9 em dev"
-status: "base-published; migration-in-progress"
+status: "base-published; directories-migrated"
 generated_at: "2026-09-10"
 timezone: "America/Sao_Paulo"
 ---
@@ -29,7 +29,10 @@ continuam em `dev` como lotes pequenos; rebase normal.
 - **Diretórios migrados:** Instituições, Atividades (Atividades e Modelos),
   Turmas (card na altura da família), Unidades, Formulários (cursor), Perfis de
   cuidado, Planos de medicação, Planos, Cardápios, Circulares, Comunicações
-  (toggle no compacto, prévia inline ao lado da tabela em telas largas). Goldens desses diretórios regravados após as
+  (toggle no compacto, prévia inline ao lado da tabela em telas largas),
+  Pessoas, Convites e Perfis de acesso (fa404db39). A grade do composto tem
+  cards da mesma altura por linha (Table intrinsicHeight; IntrinsicHeight
+  travava a suíte com cards que usam LayoutBuilder). Goldens desses diretórios regravados após as
   observações do Owner (MENU, CRIAR, TABS, DADOS, ARQUIVOS nos Modelos).
 - **Teste de arquitetura** `apps/superadmin/test/architecture/directory_composition_test.dart`:
   falha em Table/Toolbar/Pagination/PageHeader/Directory novos em feature e em
@@ -44,7 +47,6 @@ continuam em `dev` como lotes pequenos; rebase normal.
 | --- | --- | --- |
 | Planos, Cardápios, Circulares, Comunicações | migrados e publicados (8fafbe16c, 850ba1838) | ARQUIVO (ícone duplicar/arquivar dos cards de Cardápios e Planos) pendente de decisão do Owner; nova regravação depois |
 | Agenda eventos | não migrado (`_EventTable` na allowlist) | grupo publicacoes-agenda ao tocar a tela |
-| Pessoas, Convites, Perfis de acesso | não migrados (na allowlist) | Fase 0 ou grupo acessos-pessoas ao tocar a tela |
 | Suporte, Auditoria | workspace com painel de detalhe; toolbar/tabela na allowlist | grupo operacoes: toolbar de filtros no padrão do composto |
 | Chat: Criar grupo, Fixar, sinalizadores | existiam até 54f2dfb69 (inbox local); exigem backend | grupo principal-chat-sistema |
 | CHAT (balão) | referência de agosto mostra o balão antigo "Mensagens"; atual é o círculo "Mens." aprovado em 01/09 | decisão do Owner com imagens lado a lado |
@@ -55,7 +57,10 @@ continuam em `dev` como lotes pequenos; rebase normal.
 
 ## Próximo passo
 
-Pessoas, Convites e Perfis de acesso no composto (um lote por tela, para o
-grupo acessos-pessoas rebasear por lote); depois Suporte e Auditoria com o
-grupo operacoes. A cada lote verde, commit e push em `dev` e este handoff
-atualizado.
+Os 13 diretórios da Fase 0 e os quatro adicionais estão no composto. Restam,
+fora do recorte de diretório: Suporte e Auditoria (workspaces com painel;
+toolbar de filtros a alinhar pelo grupo operacoes), Agenda eventos, Assiduidade
+e Segurança (renomear `*Table`/`*Toolbar` para `*Rows`/`*Filters` ao tocar a
+tela). Grupos que rebasearem sobre fa404db39 devem trocar `SuperadminUnderlineTabs`,
+`SuperadminDirectoryViewToggle` e `SuperadminListingPaginationFooter` (typedefs
+de compatibilidade) pelos nomes de `coelo_ui_admin` quando tocarem o arquivo.
