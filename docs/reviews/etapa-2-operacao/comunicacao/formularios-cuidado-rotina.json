@@ -1,12 +1,12 @@
 {
- "revision": 5,
+ "revision": 6,
  "round": "E2-R03-20260910",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5[1m]",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-10T03:10:00-03:00",
+ "updatedAt": "2026-09-10T04:20:00-03:00",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-formularios-cuidado-rotina",
  "branch": "work/etapa2-r03-formularios-cuidado-rotina",
  "head": "bb15db748",
@@ -50,12 +50,13 @@
   "note": "Fundacao health_care/medication inexistente. Construindo o primeiro pacote SQL da familia health_care."
  },
  "tests": {
-  "pass": 56,
+  "pass": 83,
   "fail": 0,
   "blocked": 0,
   "skipped": 0,
   "notRun": 0,
-  "escopo": "pgTAP dos meus tres pacotes SQL no replay descartavel; nao e a suite Flutter e nao e prova E2E"
+  "detalhe": "daily_routine_foundation 34, daily_routine_scope_closure 6, attendance_authorization_and_idempotency 16, health_care_and_medication_plans 27",
+  "escopo": "pgTAP dos cinco pacotes SQL no replay descartavel; nao e a suite Flutter e nao e prova E2E"
  },
  "reservedFiles": [],
  "blocking": [
@@ -68,7 +69,7 @@
   }
  ],
  "deltaProposals": [],
- "nextStep": "Fundacao de health_care e medication (campo aberto: nem migration nem teste existem; o contrato e a interface Dart). Depois trocar os quatro sitios do cliente para a chave do servidor.",
+ "nextStep": "Cliente: repositorios Supabase de Perfis de cuidado, Medicacao e Rotina, e os quatro sitios de Assiduidade passando a pedir a chave ao banco. Depois Formularios.",
  "findings": [
   {
    "id": "F-R03-FCR-001",
@@ -180,6 +181,42 @@
     "falta": "trocar os quatro sitios do cliente para pedir a chave ao banco. Feito depois que o SQL estiver verde."
    },
    "prova": "ver packages[0].prova, mesma execucao"
+  },
+  {
+   "id": "PKG-R03-FCR-CUIDADO-01",
+   "familia": "health_care + medication",
+   "estado": "pgTAP verde no replay descartavel",
+   "action_ids": [
+    "health-care.list",
+    "health-care.create",
+    "health-care.detail",
+    "health-care.edit",
+    "medication.list",
+    "medication.create",
+    "medication.detail",
+    "medication.edit",
+    "medication.evidence"
+   ],
+   "migrations": [
+    "packages/coelo_database/migrations/20260910010300_health_care_and_medication_plans_v1.sql",
+    "packages/coelo_database/migrations/20260910010400_health_care_behavior_v1.sql"
+   ],
+   "pgtap": [
+    "packages/coelo_database/supabase/tests/health_care_and_medication_plans_v1_test.sql (27 asserts, novo)"
+   ],
+   "autorizacao_para_existir": "specs/020-superadmin-health-care.md, secao 'Decisao superveniente para o backend': em 2026-08-28 o Owner determinou que as pendencias juridicas nao bloqueiam a implementacao Supabase local, com dados sinteticos. Contrato de comportamento e seguranca em docs/superpowers/specs/2026-09-01-superadmin-access-health-care-finalization-design.md.",
+   "estado_anterior": "nem migration nem teste existiam. No cliente havia apenas repositorios /dev e UnavailableHealthCareRepository. As nove acoes nunca tiveram backend.",
+   "conteudo": "8 tabelas publicas mais recibos de comando; 5 capacidades de plataforma e 5 contextuais; RLS deny-by-default com FORCE e cliente so com SELECT; 7 RPCs (dois diretorios paginados no servidor, dois detalhes, dois comandos versionados e o comando proprio de evidencia).",
+   "decisao_de_seguranca_deliberada": "platform.read NAO alcanca dado de saude de crianca. A leitura exige health_care.read ou medication.read, de plataforma ou contextual. Quem so tem leitura geral do Superadmin nao ve saude de crianca. Isso diverge do padrao das outras familias e esta provado por assercao.",
+   "outras_decisoes": [
+    "a instituicao do agregado e derivada do contexto infantil, nunca do payload; aceitar a instituicao enviada pelo cliente permitiria anexar a crianca de um tenant a um perfil de outro",
+    "a identidade da crianca fica travada na edicao, como a spec 020 exige",
+    "mudanca no plano cria versao nova e invalida a aprovacao anterior, preservando as versoes passadas",
+    "registrar evidencia nao e editar: comando proprio, capacidade propria, append-only, e nao move a versao do agregado",
+    "toda mudanca de perfil de cuidado exige justificativa, gravada em health_care_profile_revisions alem de audit.audit_logs, porque a tela mostra o historico e audit nao tem grant de cliente"
+   ],
+   "pendencia_registrada_nao_omitida": "leitura por responsavel familiar nao entra neste pacote: exigiria uma capacidade de guardiao que ainda nao existe, e inventa-la seria decidir sozinho quem ve dado de saude de crianca. Precisa de decisao.",
+   "oq_003": "prazo de retencao, base legal e regra clinica continuam abertos. A migration nao apaga nada por tempo, nao infere consentimento e nao classifica gravidade por conta propria."
   }
  ],
  "filaSQL": [
@@ -194,6 +231,14 @@
   {
    "ordem": 3,
    "arquivo": "packages/coelo_database/migrations/20260910010200_attendance_authorization_and_idempotency_v1.sql"
+  },
+  {
+   "ordem": 4,
+   "arquivo": "packages/coelo_database/migrations/20260910010300_health_care_and_medication_plans_v1.sql"
+  },
+  {
+   "ordem": 5,
+   "arquivo": "packages/coelo_database/migrations/20260910010400_health_care_behavior_v1.sql"
   }
  ]
 }
