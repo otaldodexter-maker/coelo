@@ -59,6 +59,27 @@ Consequencia, nas duas leituras possiveis, ambas reportaveis:
 2. nao existem, e entao o diretorio de Unidades e os filtros de instituicao e
    unidade de Turmas falham no primeiro uso real, fail-closed.
 
+### Qual das duas leituras e mais provavel
+
+Continuo sem escolher, mas a plausibilidade deixou de ser simetrica, e o dado vem
+de outra frente. A hipotese "instalado fora do versionamento" e **fenomeno medido
+neste repositorio**, e nao especulacao: a frente perfil-para-voce mostrou que as
+tabelas `profile_about_*` existem em producao e em migration nenhuma, provado pela
+RPC de escrita versionada que le e escreve nelas. Ha precedente comprovado do
+mesmo padrao no mesmo pacote.
+
+A consequencia pratica para a decisao do Owner: se a leitura benigna for a
+correta, `blocked-environment` descreve a coisa certa pelo motivo errado — a
+superficie funciona e o que falta e revisabilidade do que esta instalado. As duas
+leituras pedem acoes opostas, e e por isso que a pergunta precisa ser respondida
+antes de promover qualquer coisa.
+
+E ela se resolve de uma vez para tres frentes: um unico `select proname from
+pg_proc` responde pelas cinco RPCs de Unidades deste relatorio, pelas cinco de
+Assiduidade levantadas por alunos-rotina e pelos 40 objetos `app_private` que o
+SQL versionado chama e nao cria, medidos por perfil-para-voce. E leitura, nao
+mutacao.
+
 Nao e possivel decidir entre as duas daqui: a rodada decidiu nao executar
 operacao remota e nao ha autorizacao nominal do Owner para leitura de producao.
 Um `select` de catalogo resolveria em segundos e e exatamente o que a proxima
