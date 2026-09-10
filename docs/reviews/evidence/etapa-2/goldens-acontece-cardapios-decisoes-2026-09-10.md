@@ -43,6 +43,11 @@ Compartilhar mídia e Salvar mídia em vez de anunciar prévia. O Owner manteve 
 | principal_happens_gallery_dark_375_text_200 | R |
 | principal_happens_gallery_dark_768 | R |
 
+**Segunda rodada, no mesmo dia:** aplicadas três das quatro correções, o Owner
+viu o antes/depois e aprovou os dez. Os goldens da galeria foram regravados com
+o render corrigido. A quarta correção (mobile no espírito do Instagram) segue
+aberta como redesenho.
+
 Correções pedidas, na íntegra:
 
 1. **GALERIA-ALINHAMENTO** — a paginação ("1 de N") fica **alinhada à direita**;
@@ -96,8 +101,9 @@ contêiner das imagens estava fora do padrão de `coelo-ui`. A decisão nova é
 1. Regravar os 11 goldens **A sem observação**, no SDK registrado, conferindo
    antes que o render aprovado ainda é o render atual da base.
 2. Em Cardápios, aplicar as duas correções e só então regravar os 5.
-3. Na galeria, aplicar as quatro correções e voltar o código à referência
-   guardada; a regravação só acontece se a correção mudar o render de propósito,
-   e nesse caso a nova imagem volta ao Owner.
+3. Na galeria, três correções aplicadas, aprovadas pelo Owner e regravadas. A
+   quarta, o mobile, continua aberta: a direção proposta é imagem na largura
+   toda, sem moldura, troca por deslize em vez de setas e controles sobrepostos
+   na base, mas ainda não foi confirmada.
 4. Registrar no rastreador Front-end, por tela, o que foi regravado e o que
    voltou à referência, com o SHA.
