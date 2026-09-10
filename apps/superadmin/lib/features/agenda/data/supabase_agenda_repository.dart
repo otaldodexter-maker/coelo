@@ -33,12 +33,6 @@ final class SupabaseAgendaRepository extends AgendaRepository {
   /// apos falha incerta criava um segundo evento. A intencao so e descartada
   /// quando o comando confirma.
   final _writeIntents = <String, String>{};
-
-  String _intentFor(String command, Map<String, Object?> arguments) =>
-      _writeIntents[jsonEncode({'command': command, 'arguments': arguments})] ??= _requestId();
-
-  void _confirmIntent(String command, Map<String, Object?> arguments) =>
-      _writeIntents.remove(jsonEncode({'command': command, 'arguments': arguments}));
   final _pendingReads = <String>{};
   final _readStates = <String, AgendaReadStatus>{};
   var _accessDenied = false;
@@ -169,6 +163,12 @@ final class SupabaseAgendaRepository extends AgendaRepository {
     };
   });
 
+  String _intentFor(String command, Map<String, Object?> arguments) =>
+      _writeIntents[jsonEncode({'command': command, 'arguments': arguments})] ??= _requestId();
+
+  void _confirmIntent(String command, Map<String, Object?> arguments) =>
+      _writeIntents.remove(jsonEncode({'command': command, 'arguments': arguments}));
+
   Future<Object?> _captureRequestRead(Future<Object?> Function() operation) async {
     try {
       return await operation();
@@ -280,9 +280,9 @@ final class SupabaseAgendaRepository extends AgendaRepository {
           params: {'p_request_id': _intentFor('save', arguments), ...arguments},
         ),
       );
+      _confirmIntent('save', arguments);
       if (!_canApply(epoch)) return _staleMutationResult;
       _invalidateEventReads();
-      _confirmIntent('save', arguments);
       _lastSavedItemId = saved.id;
       _upsertItem(saved);
       notifyListeners();
@@ -391,8 +391,8 @@ final class SupabaseAgendaRepository extends AgendaRepository {
           params: {'p_request_id': _intentFor('command', arguments), ...arguments},
         ),
       );
-      if (!_canApply(epoch)) return _staleMutationResult;
       _confirmIntent('command', arguments);
+      if (!_canApply(epoch)) return _staleMutationResult;
       final deleted = value['deleted'] == true;
       final updated = deleted ? null : _item(value['event'] is Map ? value['event'] : value);
       _invalidateEventReads();
