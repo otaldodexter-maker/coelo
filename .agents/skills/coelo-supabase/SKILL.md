@@ -177,7 +177,11 @@ quando houver limite informado, preservando segurança e os gates da conclusão.
 - Usar os buckets privados de produção definidos na ADR 0032:
   `coelo-media-prod`, `coelo-documents-prod` e `coelo-transient-prod`. Os três
   existem na conta Cloudflare desde 03/09/2026 (conferido via MCP
-  `cloudflare-api` em 10/09). Stream e Workers estão vazios. O gateway de
+  `cloudflare-api` em 10/09). Desde 10/09 (tarde) os três têm CORS restrito
+  às origens `superadmin`, `admin` e `app.coelo.me` (GET, PUT, HEAD) e o
+  transitório expira objetos com 7 dias. Stream e Workers estão vazios; a
+  sessão OAuth do MCP não cria tokens de API, então o token R2 nasce no
+  painel pelo Owner. O gateway de
   mídia roda em Edge Functions do Supabase e acessa o R2 pela API S3 com token
   de escopo mínimo guardado nos secrets das Edge Functions, nunca em Git.
 - A plataforma é compartilhada por Superadmin, Admin e Principal. Não criar
@@ -223,6 +227,27 @@ Para cada item de implementação autorizado (diagnóstico permanece leitura):
 5. provar o pacote no remoto com dados sintéticos minimizados e cleanup;
 6. atualizar o rastreador no mesmo turno com ação, estado, evidência, bloqueio
    e ETA.
+
+Regras medidas na Rodada 3 (10/09/2026) que valem daqui em diante:
+
+- O ledger `supabase_migrations.schema_migrations` de produção não espelha os
+  arquivos locais (51 versões só remotas, 121 só locais). Aplicabilidade de um
+  pacote é decidida por **presença de objeto** em `pg_proc`/`pg_class`, com
+  `supabase db query --linked` somente leitura, nunca pelo carimbo. O mapa por
+  migration fica em `docs/reviews/evidence/etapa-2/r03-coordenacao/`.
+- Conferir `supabase backups list` antes de aplicar: em 10/09 o projeto estava
+  com `pitr_enabled: false`, o que retém a fila até decisão do Owner. Registrar
+  `blocked-environment` com a capacidade exata ausente, nunca `remote-green`.
+- Migration só pode ser corrigida no arquivo quando seus objetos estão
+  ausentes em produção; presença parcial exige migration nova forward-only.
+- "pgTAP verde" só vale com o perfil de replay declarado (manifesto
+  FoundationOnly, perfil nominal ou projeto descartável com a lista de
+  migrations); o replay integral da cadeia não reproduz produção.
+- Nunca usar `supabase db dump --dry-run` em sessão de agente: imprime a
+  credencial do pooler de produção na saída.
+- A janela de replay local (mutex do harness e porta 54322) é reservada no
+  próprio JSON do grupo antes do uso; quem não reservar usa projeto descartável
+  próprio em outras portas.
 
 Priorizar o primeiro gate backend que permite fechar a subtela selecionada,
 reutilizando readers, migrations e provas já válidas. Pacote verde vai para

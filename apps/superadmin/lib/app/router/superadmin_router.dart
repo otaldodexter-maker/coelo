@@ -913,8 +913,9 @@ GoRouter createSuperadminRouter({
                       builder: (context, runtimeContext) {
                         final repository = principalHappensFeedRepository;
                         final mixedRepository = principalMixedFeedRepository;
-                        if (repository == null || mixedRepository == null)
+                        if (repository == null || mixedRepository == null) {
                           return _unavailableCompositionRootRoute(context);
+                        }
                         return PrincipalHappensPreviewPage.mixed(
                           mixedFeedRepository: mixedRepository,
                           mediaRepository: repository,

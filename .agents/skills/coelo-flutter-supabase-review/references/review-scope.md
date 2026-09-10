@@ -59,6 +59,15 @@ Mencionar Auth, Supabase ou Cloudflare não significa alterar essas camadas.
 - Mudança de skill numa worktree não se propaga às demais. Conferir versões das
   skills e referências no destino e incluir seu delta na integração autorizada.
   Não copiar todo o checkout nem sobrescrever instruções locais divergentes.
+- Uma árvore de trabalho por escritor. Quem tem worktree edita só nela e
+  publica a branch; o checkout principal pertence a quem o declarou no próprio
+  JSON (na Rodada 3, a Fase 0). O coordenador integra a partir de uma worktree
+  própria com `git push origin HEAD:dev` após rebase, sem `stash`/`pop`,
+  `reset --hard`, `clean` ou force-push na árvore de outro escritor: em
+  10/09/2026 um stash/pop do coordenador no checkout principal reverteu por
+  um minuto o JSON de um grupo e apagou 27 revisões do canal. O JSON de
+  comunicação vale pela cópia commitada na branch do grupo quando o checkout
+  principal divergir.
 
 ## Fechamento Git e continuidade
 
