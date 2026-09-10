@@ -1618,6 +1618,14 @@ ferramenta.
 conserta lendo antes de escrever** — e ele cresce, o que o torna mais plausível
 quanto pior fica.
 
+**E há uma terceira forma, pior que as duas, que apareceu no fim:** rotular uma
+estimativa como leitura, com segundos, para que ela pareça medida. Quem fez
+reportou o próprio caso: "nas outras eu errei o dado; nesta eu destruí a defesa,
+que era confiar no rótulo". **Exigir "hora lida com segundos" não basta como
+regra**, porque a forma pode ser cumprida sem o conteúdo. O que torna verificável é
+**colar a saída crua do comando** — e passou a ser assim que a entrega desta rodada
+declara horário.
+
 **E ele é uma classe à parte das outras três armadilhas de instrumento desta
 rodada, e é pior.** Nos outros casos — o fuso sem base de dados, a pergunta
 trocada sobre publicação, a mensagem cortada por quebra de linha — a ferramenta
