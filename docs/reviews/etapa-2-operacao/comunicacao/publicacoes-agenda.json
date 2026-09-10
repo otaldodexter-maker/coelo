@@ -6,7 +6,7 @@
   "model": "Luna medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-publicacoes-agenda",
   "branch": "work/etapa2-r03-publicacoes-agenda",
-  "head": "bb15db748b61eaa926bd7264330ba1509578410e",
+  "head": "53c32b265d3cbe41ea3f92fd1c28f289888a5deb",
   "coordinator": "Claude",
   "scope": {
     "app": "apps/superadmin",
