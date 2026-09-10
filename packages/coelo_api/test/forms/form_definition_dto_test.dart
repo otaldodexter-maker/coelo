@@ -62,6 +62,44 @@ void main() {
     return item['config'] as Map<String, Object?>;
   }
 
+  // Os limites de data ja eram cobertos abaixo. Os NUMERICOS e o max_length nao
+  // eram, e sao justamente o que carrega ao servidor a unidade que o cliente
+  // grava. Se o DTO perdesse ou convertesse esses valores, a correcao de
+  // dinheiro em minor units nao chegaria ao banco e nada acusaria.
+  for (final (kind, config) in <(String, Map<String, Object?>)>[
+    ('money', {'min_value': 100, 'max_value': 1050}),
+    ('integer', {'min_value': 1, 'max_value': 10}),
+    ('decimal', {'min_value': 1.5, 'max_value': 10.5}),
+    ('money', {'min_value': -320}),
+    ('integer', {'max_value': 0}),
+  ]) {
+    test('numeric limits survive the round trip for $kind $config', () {
+      final dto = FormDefinitionDto.fromJson(withConfig(kind, config));
+      final typed = dto.toDomain().sections.first.items.first.config;
+      expect(typed.minValue, config['min_value']);
+      expect(typed.maxValue, config['max_value']);
+      expect(typed.minDate, isNull);
+      expect(typed.maxDate, isNull);
+      expect(encodedConfig(dto), config);
+    });
+  }
+
+  test('the short text maximum length survives the round trip', () {
+    final dto = FormDefinitionDto.fromJson(withConfig('short_text', {'max_length': 140}));
+    expect(dto.toDomain().sections.first.items.first.config.maxLength, 140);
+    expect(encodedConfig(dto), {'max_length': 140});
+  });
+
+  test('a maximum length on a kind without text is refused, not dropped', () {
+    // Eu esperava que o DTO apenas nao emitisse max_length fora de short_text.
+    // Ele e mais rigoroso: RECUSA o payload inteiro. E melhor assim, porque
+    // descartar em silencio esconderia um emissor errado.
+    expect(
+      () => FormDefinitionDto.fromJson(withConfig('integer', {'max_length': 140})),
+      throwsA(isA<WireFormatException>()),
+    );
+  });
+
   for (final config in <Map<String, Object?>>[
     {},
     {'min_value': '2026-09-01'},
