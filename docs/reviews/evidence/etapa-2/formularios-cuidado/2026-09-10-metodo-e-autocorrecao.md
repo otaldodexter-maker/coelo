@@ -109,11 +109,28 @@ Achados por releitura do proprio diff antes de entregar, nao por teste vermelho.
 9. Assumi que o DTO descartaria `max_length` num texto curto. Ele RECUSA o
    payload. Mudei o teste para documentar o comportamento melhor, que era o real.
 
-## Tres linhas de bloqueio minhas que estavam erradas
+## Quatro linhas de bloqueio minhas que estavam erradas
 
 Uma linha de bloqueio parece informacao e por isso ninguem a testa, mas e uma
-hipotese nao verificada. Auditei todas as minhas. Tres estavam erradas, e as tres
-eram exatamente as que eu havia copiado do rastreador sem testar. Nenhuma que eu
+hipotese nao verificada. Auditei todas as minhas. **Quatro** estavam erradas, e as
+quatro eram exatamente as que eu havia copiado do rastreador sem testar.
+
+A quarta merece nota, porque ensina sobre a auditoria e nao sobre a linha. Ela
+so apareceu vinte minutos antes do congelamento, na conferencia final:
+`forms.resolve-file` afirmava que cliente, handler e injecao de dependencia
+seguiam em fila, quando o resolvedor esta COMPOSTO em producao — o roteador
+passa `formsMediaScope.downloadResolver` e o escopo de midia constroi um
+`FormExportDownloadResolver` real com o gateway e o tempo de vida da sessao. O
+estado `blocked-environment` continuava certo; a RAZAO e que estava errada, e a
+diferenca importa: "esperando ambiente" com a razao "cliente em fila" manda
+alguem escrever um cliente que ja existe.
+
+Que a quarta tenha aparecido tao tarde diz que a auditoria anterior foi
+**oportunista e nao exaustiva**. Refiz cobrindo todas as linhas de ambiente uma
+a uma, e as outras tres se confirmaram — `forms.expire-file` e
+`forms.delete-file` nao tem metodo de cliente nenhum, e a API de Formularios
+expoe apenas `listFileJobs` entre as acoes de arquivo. A taxa de erro nao caiu
+com o tempo; o que faltava era varrer em vez de amostrar. Nenhuma que eu
 mesmo verifiquei estava errada. Estao detalhadas no handoff da rodada; a que mais
 muda quem age e `care049`: a spec 049 esta `draft-for-review` e a spec vigente
 020 esta `approved-for-demonstrative-ui`. Saude e Medicacao nao terem repositorio
