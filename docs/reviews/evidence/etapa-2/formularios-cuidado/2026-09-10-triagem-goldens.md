@@ -174,9 +174,18 @@ esta fechada e nao muda a classificacao.
 
 ## Contra-exemplo a heuristica de escala
 
-A rodada vinha usando a assinatura do toggle de barra lateral — 837 pixels, ou
-0,058% numa tela de 1440 — como referencia de deslocamento, e concluindo que
+A rodada vinha usando a assinatura do toggle de barra lateral — **837 pixels, ou
+0,058% numa tela de 1440** — como referencia de deslocamento, e concluindo que
 divergencias de dois digitos indicam conteudo.
+
+> **Este numero nao e meu e eu nao o conferi.** Foi medido pela frente
+> alunos-rotina e me chegou pelo coordenador. Nao reproduzi a medicao, nao abri
+> a imagem de onde ela saiu e nao verifico aqui se 837 pixels correspondem
+> mesmo a 0,058% numa tela de 1440. Ele aparece neste documento apenas como a
+> premissa que o paragrafo seguinte REFUTA, e a refutacao nao depende de o
+> numero estar certo: ela se apoia em medicao minha, `forms_directory_light_375`
+> divergindo 22,24% sem UM elemento diferente. Se o 837 estiver errado, o
+> argumento continua de pe; se estiver certo, tambem.
 
 Os numeros deste recorte mostram que a heuristica nao se sustenta sozinha.
 `forms_directory_light_375` diverge 22,24% e e deslocamento puro, sem UM
