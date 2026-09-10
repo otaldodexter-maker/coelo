@@ -6,7 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('exposes canonical file actions with honest unavailable feedback', (tester) async {
+  testWidgets('Conversas nao expoe o botao Arquivos', (tester) async {
+    // ARQUIVOS-CHAT, decisao B do Owner em 10/09/2026: o botao Arquivos fica
+    // escondido em Conversas em todas as larguras, por configuracao do
+    // componente compartilhado. O caso guardava o contrato anterior, que
+    // exigia Importar / Exportar CSV / Exportar XLSX com aviso honesto de
+    // indisponibilidade, e ficou vermelho quando a Fase 0 aplicou a decisao.
     await tester.pumpWidget(
       MaterialApp(
         home: SuperadminChatPage(
@@ -17,16 +22,9 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    final fileActions = tester.widget<CoeloAdminFileActions>(find.byType(CoeloAdminFileActions));
-    expect(fileActions.actions.map((action) => action.label), [
-      'Importar',
-      'Exportar CSV',
-      'Exportar XLSX',
-    ]);
-
-    fileActions.actions.first.onPressed!();
-    await tester.pumpAndSettle();
-    expect(find.text('A importação de conversas ainda não está disponível.'), findsOneWidget);
+    expect(find.byType(CoeloAdminFileActions), findsNothing);
+    expect(find.text('Importar'), findsNothing);
+    expect(find.text('Exportar XLSX'), findsNothing);
   });
 
   testWidgets('renders a usable empty inbox from the real repository result', (tester) async {
