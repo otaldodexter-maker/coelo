@@ -1,5 +1,5 @@
 ---
-source: "TRABALHO-ATUAL; coordenacao r12; branch work/etapa2-noturna-acessos-pessoas; handoffs e manifests locais"
+source: "TRABALHO-ATUAL; coordenacao r16; branch work/etapa2-noturna-acessos-pessoas; handoffs e manifests locais"
 status: "checkpoint publicado; vigilancia ativa ate corte; nenhuma certificacao nova"
 generated_at: "2026-09-09"
 ---
@@ -12,7 +12,7 @@ Convites, Usuarios internos, Seguranca infantil e Arquivos de perfil`.
 1 gate MFA. ADR0019/AAL1, import/export adiados, duplicacao R02 e confinamento
 de Convites preservados. Somente Claude integra dev e escreve rastreadores.
 
-Resultado local unico: **415P,0F,0S,120U**; U120=Safety108+concorrenciaModelos12.
+Resultado local unico: **419P,0F,0S,120U**; U120=Safety108+concorrenciaModelos12.
 [Contagem por conjunto](current-results.json) separa testes de PNGs, preparacao
 7P e historico R02. Nenhum certificado FE/BE/E2E novo; historico FE2/38 refere-se
 aos adiamentos. Ativos FE0/31,BE0/31,E2E0/31. Nao e medicao atual da suite ampla.
@@ -69,15 +69,16 @@ hover, nao hover acionavel. Essa lacuna permanece explicita.
 
 ## Publicacao e recuperacao
 
-Base materializada d784462c1;25commits publicados ate0dae87652 estao em
-[published-commits.json](published-commits.json). Na leitura21:07BRT,
-dev09d03250e contem os22commits ate d3fd0f7e9. Os tres sucessores
-99a66fd2e/5a1ed044f/0dae87652 estavam publicados para integracao. Ancestralidade
-Git nao afirma verificacao integrada. Recibo formal em coordenacao r12 ainda
-cita nossa r15; nosso JSON separa isso da integracao observada.
+Base original d784462c1. Todos os27 commits proprios ate d02bc4558 estao
+integrados e publicados em origin/dev6aa352c6a. Essa base conjunta foi
+materializada por fast-forward na worktree propria. Novos2816fbff1 e
+c0e4fc47d estao publicados; [lista nominal](published-commits.json) conta
+somente commits proprios, sem atribuir os imports de outras frentes ao grupo.
+Os testes antigos nao foram repetidos; as novas quatro provas usam6aa.
+Ancestralidade Git nao afirma verificacao integrada ou aceite de produto.
 
 Checkpoints atuais, HEAD/upstream, recursos e deltas propostos estao no canal
-compartilhado `comunicacao/acessos-pessoas.json`.30deltas:22frontend continuam
+compartilhado `comunicacao/acessos-pessoas.json`.32deltas:24frontend continuam
 pending-verification e8backend blocked-environment. Nenhum rastreador central
 foi escrito pelo executor. Tres filhos recolhidos, sem runners; concorrencia
 Modelos permanece encerrada por bloqueio automatico.
@@ -92,3 +93,17 @@ Acompanhamento permanece ativo para resposta de sequencia/achado nominal.
 Nao esperar ACK alem do corte. Claude assume o residual depois23:30.
 
 Checkpoint21:18BRT: merge e648b57af incorpora todos os26commits atef6cab17f1 na arvore localdev805512a37. A consulta remota naquele instante ainda devolvia8b22e7edd (antesdessemerge), portanto nao se declarou a nova integracao publicada. Nossa branch estava publicada0/0. [Artefatos ignorados preservados](retained-artifacts.json):319arquivos,24340415bytes, cada path/SHA256; includesfixture53 e falhas brutas historicas, sem remover WIP.
+
+Lote residual de rotas: [2816fbff1](router-residuals/handoff.md),2P preservando
+negativa produtiva de Pessoas e negativa de editar Safety approved;
+[c0e4fc47d](person-detail-visual/handoff.md),2P do detalhe em375/1440,
+seis PNGs desktop reconciliados por d019c109a. people_routes3P ja integrado
+por153b2dbfa foi reutilizado sem soma. Quatro arquivos do catalogo revisitados.
+Artefatos preservados atuais:343 arquivos,25884065bytes, hashes no manifesto;
+o checkpoint21:18 acima e historico, sucedido pela integracao publicada6aa.
+
+Quarta pergunta coordenada r16: [alcance produtivo](alcance-produtivo.md)
+registra entradas das sete familias. Detalhes de Pessoas, Perfis e Modelos
+tem rota mas nenhum ponto de entrada UI identificado; cards de Perfis/Modelos
+levam a editar. Isso acrescenta gate de alcance aos respectivos detalhes,
+sem habilitar callbacks ou alterar decisoes. Todos os filhos recolhidos.

@@ -1918,10 +1918,157 @@
                         "sha256":  "6fa99c60eb0343e4539a876b74d89a3121ed8fce0a0640051c41ff8f52fe5999",
                         "bytes":  24674,
                         "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/app/router/failures/person_detail_dark_1440_context_isolatedDiff.png",
+                        "sha256":  "ea633e713f394125a4d76724f97a8c0010c6a875e7fb21286fa99c14f06f9343",
+                        "bytes":  14449,
+                        "retention":  "preserved-local-ignored; nominal before/after proof published c0e4fc47d"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/app/router/failures/person_detail_dark_1440_context_maskedDiff.png",
+                        "sha256":  "dfb7793b52fd2c3366a127adafc07e87f47c0c674a9d0a989cd887bd60dca308",
+                        "bytes":  90549,
+                        "retention":  "preserved-local-ignored; nominal before/after proof published c0e4fc47d"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/app/router/failures/person_detail_dark_1440_context_masterImage.png",
+                        "sha256":  "05e4991f686871304e55f3832f721b126c32946c6e5a96ff47b33c80dcb5595b",
+                        "bytes":  90729,
+                        "retention":  "preserved-local-ignored; nominal before/after proof published c0e4fc47d"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/app/router/failures/person_detail_dark_1440_context_testImage.png",
+                        "sha256":  "77a6321a6aadce99c8fd74decd29aaee2782452a637693862548a53c64aaa4b3",
+                        "bytes":  90579,
+                        "retention":  "preserved-local-ignored; nominal before/after proof published c0e4fc47d"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/app/router/failures/person_detail_dark_1440_denied_isolatedDiff.png",
+                        "sha256":  "ea633e713f394125a4d76724f97a8c0010c6a875e7fb21286fa99c14f06f9343",
+                        "bytes":  14449,
+                        "retention":  "preserved-local-ignored; nominal before/after proof published c0e4fc47d"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/app/router/failures/person_detail_dark_1440_denied_maskedDiff.png",
+                        "sha256":  "f3d47ba4072ac0f33d0144b0c4182a3656cbc65aa56def021c1ff2443d529668",
+                        "bytes":  72048,
+                        "retention":  "preserved-local-ignored; nominal before/after proof published c0e4fc47d"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/app/router/failures/person_detail_dark_1440_denied_masterImage.png",
+                        "sha256":  "dd9689baea5d512852a0cacf3ba94a3cd01eb9f316490397f40b1c77457ca7f3",
+                        "bytes":  72591,
+                        "retention":  "preserved-local-ignored; nominal before/after proof published c0e4fc47d"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/app/router/failures/person_detail_dark_1440_denied_testImage.png",
+                        "sha256":  "a51971bf125c16517e713cfb53211a07f5ffcf8180ee87a8a0d7b871c34b29c2",
+                        "bytes":  72333,
+                        "retention":  "preserved-local-ignored; nominal before/after proof published c0e4fc47d"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/app/router/failures/person_detail_dark_1440_focus_isolatedDiff.png",
+                        "sha256":  "ea633e713f394125a4d76724f97a8c0010c6a875e7fb21286fa99c14f06f9343",
+                        "bytes":  14449,
+                        "retention":  "preserved-local-ignored; nominal before/after proof published c0e4fc47d"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/app/router/failures/person_detail_dark_1440_focus_maskedDiff.png",
+                        "sha256":  "eb962b4e94a9ac207db31bcaa465e7333ebaa7b7cf6154090149b69a3ca58417",
+                        "bytes":  90778,
+                        "retention":  "preserved-local-ignored; nominal before/after proof published c0e4fc47d"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/app/router/failures/person_detail_dark_1440_focus_masterImage.png",
+                        "sha256":  "3a20a4204837d1338cb27ecef821371d39fad1d140c9522349495623d04d1fe9",
+                        "bytes":  90935,
+                        "retention":  "preserved-local-ignored; nominal before/after proof published c0e4fc47d"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/app/router/failures/person_detail_dark_1440_focus_testImage.png",
+                        "sha256":  "981510d612fdb67f6c1ba0a4f3612cc7f5d1189246b8d6a75f16728c56082e75",
+                        "bytes":  90786,
+                        "retention":  "preserved-local-ignored; nominal before/after proof published c0e4fc47d"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/app/router/failures/person_detail_dark_1440_identity_isolatedDiff.png",
+                        "sha256":  "ea633e713f394125a4d76724f97a8c0010c6a875e7fb21286fa99c14f06f9343",
+                        "bytes":  14449,
+                        "retention":  "preserved-local-ignored; nominal before/after proof published c0e4fc47d"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/app/router/failures/person_detail_dark_1440_identity_maskedDiff.png",
+                        "sha256":  "ce6a07ca3a40891b31f1d3991b9c57d9bd1c0f2e7606a1d887cb38d294dc6cec",
+                        "bytes":  93184,
+                        "retention":  "preserved-local-ignored; nominal before/after proof published c0e4fc47d"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/app/router/failures/person_detail_dark_1440_identity_masterImage.png",
+                        "sha256":  "6b52f83dcb9ff46034bb140f3b649ea0b3acda3254f08609d1f74fda9a872413",
+                        "bytes":  93712,
+                        "retention":  "preserved-local-ignored; nominal before/after proof published c0e4fc47d"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/app/router/failures/person_detail_dark_1440_identity_testImage.png",
+                        "sha256":  "d17641cce602a23c885bb74ffc4d0790a71d06d1dce8475c9192927f9a9b4e44",
+                        "bytes":  93441,
+                        "retention":  "preserved-local-ignored; nominal before/after proof published c0e4fc47d"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/app/router/failures/person_detail_dark_1440_loading_isolatedDiff.png",
+                        "sha256":  "ea633e713f394125a4d76724f97a8c0010c6a875e7fb21286fa99c14f06f9343",
+                        "bytes":  14449,
+                        "retention":  "preserved-local-ignored; nominal before/after proof published c0e4fc47d"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/app/router/failures/person_detail_dark_1440_loading_maskedDiff.png",
+                        "sha256":  "b91b5eb63276a36477f489a5f7afb7d31f69bce4490fc5133d8ab67d0745f343",
+                        "bytes":  65836,
+                        "retention":  "preserved-local-ignored; nominal before/after proof published c0e4fc47d"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/app/router/failures/person_detail_dark_1440_loading_masterImage.png",
+                        "sha256":  "09d57e7af02107a8804fbec2622b9e74a64757410f756b63d5b28b812a3e93ed",
+                        "bytes":  66554,
+                        "retention":  "preserved-local-ignored; nominal before/after proof published c0e4fc47d"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/app/router/failures/person_detail_dark_1440_loading_testImage.png",
+                        "sha256":  "cc898242ce103e7524700cdd243f6f224ce9ecb102a8a774006deb13475aa685",
+                        "bytes":  66314,
+                        "retention":  "preserved-local-ignored; nominal before/after proof published c0e4fc47d"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/app/router/failures/person_detail_dark_1440_unavailable_isolatedDiff.png",
+                        "sha256":  "ea633e713f394125a4d76724f97a8c0010c6a875e7fb21286fa99c14f06f9343",
+                        "bytes":  14449,
+                        "retention":  "preserved-local-ignored; nominal before/after proof published c0e4fc47d"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/app/router/failures/person_detail_dark_1440_unavailable_maskedDiff.png",
+                        "sha256":  "6fb2cf64475895b4f4e73e8d0332c957da72dd5310c0b5ee1e203ccbd11dba42",
+                        "bytes":  71922,
+                        "retention":  "preserved-local-ignored; nominal before/after proof published c0e4fc47d"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/app/router/failures/person_detail_dark_1440_unavailable_masterImage.png",
+                        "sha256":  "aa237c6d47045f8dce3df3099873bac95461f6a7de950723d8daf112b9202068",
+                        "bytes":  72460,
+                        "retention":  "preserved-local-ignored; nominal before/after proof published c0e4fc47d"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/app/router/failures/person_detail_dark_1440_unavailable_testImage.png",
+                        "sha256":  "469c187c1425e9cee6590ef443dc702c82edad64901103e3c832a93432cfeadd",
+                        "bytes":  72205,
+                        "retention":  "preserved-local-ignored; nominal before/after proof published c0e4fc47d"
                     }
                 ],
-    "count":  319,
+    "count":  343,
     "not_wip":  "Dart/Flutter build caches are regenerable tool output and excluded from this evidence manifest",
     "captured_at":  "2026-09-09T21:18:59.2498786-03:00",
-    "worktree":  "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-noturna-acessos-pessoas"
+    "worktree":  "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-noturna-acessos-pessoas",
+    "refreshed_at":  "2026-09-09T22:02:40.6060765-03:00",
+    "total_entries":  343,
+    "total_bytes":  25884065
 }
