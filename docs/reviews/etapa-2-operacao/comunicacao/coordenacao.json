@@ -1,5 +1,5 @@
 {
-  "revision": 5,
+  "revision": 6,
   "round": "E2-R03-20260910",
   "role": "Coordenacao e Integracao - Claude (P1)",
   "writer": "coordenador-claude",
@@ -14,7 +14,9 @@
     "2": "15:10 rastreadores com o estado medido, RPCs de Unidades versionadas, ADR 0034 Decisao 7, merge de estrutura",
     "3": "15:40 merges de principal-chat-sistema, publicacoes-agenda, operacoes, formularios-cuidado-rotina; runner do spike R2",
     "4": "16:20 merges de acessos-pessoas (local) e operacoes (commit local); deltas de estado por action_id; incidente do JSON sobrescrito assumido; perguntas P11-P14; ordem do Owner de 10/09 (tarde) incorporada",
-    "5": "16:55 base integrada publicada em dev bdd7eef82 (inclui os lotes 5 e 6 da Fase 0, 850ba1838/b404d4fc7); testes e analyze da base conjunta registrados; skills Back-end e Front-end + Back-end com as regras medidas; portao de conhecimento PASS"
+    "5": "base integrada publicada em dev bdd7eef82 e 552058da0 (inclui os lotes 5 e 6 da Fase 0); testes e analyze da base conjunta registrados; skills com as regras medidas; portao de conhecimento PASS",
+    "6": "16:05 (relogio real) respostas do Owner P1 B, P2, P4, P12, P14 (ADR 0034 Decisao 8); chaves publicaveis gravadas; dump logico de producao; baseline provada em projeto descartavel; preflight de quatro pacotes; DOIS PACOTES APLICADOS EM PRODUCAO; migrations/ reestruturado com a baseline; corte de handoff das frentes as 16:30 e consolidacao ate 17:45 por ordem do Owner",
+    "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina."
   },
   "notaDeRevisao": "O conteudo da rodada E2-NOTURNA-20260909 (revisao 31) permanece no historico do Git; nada dele vale como estado atual. Nao ha 'nenhuma rodada nova aberta': a Rodada 3 esta aberta desde a Fase 0.",
   "relogio": "Relogio do coordenador (maquina): 14:16 -03:00 na posse. Os JSONs dos grupos carimbam 3 a 4 horas a frente; o coordenador registra pelo relogio da maquina e nao antecipa cortes por carimbo.",
@@ -156,6 +158,40 @@
     "e2eVerified": "0/198 (0,00%)",
     "nota": "contagens exatas por estado saem do validador; local-green acima e a soma dos deltas aplicados nesta revisao sobre o estado anterior e deve ser reconferida pelo proprio inventario"
   },
+  "respostasDoOwner20260910": {
+    "P1": "B: PITR dispensado ate cliente real; dump logico local antes de cada lote (ADR 0034 Decisao 8)",
+    "P2": "Owner delega ao coordenador, mas a sessao OAuth do MCP nao cria tokens de API; roteiro de 5 minutos para o Owner na skill coelo-backend (secao 'Pendencias de seguranca que so o Owner executa'); enquanto isso nada de midia R2 nova",
+    "P4": "sim: .env.local gravado em 10/09 15:27 nos oito checkouts (principal e sete worktrees e2-r03-*), ignorado pelo Git, com COELO_SUPABASE_URL e a chave publicavel 'default' (sb_publishable_...). Cada frente roda flutter com --dart-define a partir dele (README de apps/superadmin/lib/core/config)",
+    "P12": "seguir o recomendado: baseline a partir do dump de producao",
+    "P14": "nao precisa agora; roteiro de troca de senha na mesma secao da skill"
+  },
+  "dumpLogicoDoLote": {
+    "regra": "ADR 0034 Decisao 8/P1: dump antes de cada lote SQL",
+    "lote1": {"quando": "2026-09-10T15:23:00-03:00 e 15:29", "schema": "scratchpad/baseline/schema-producao-20260910.sql sha256 9686ab744082a110... (2.088.098 bytes, 231 tabelas, 179 policies, 633 funcoes)", "dados": "scratchpad/baseline/dados-public-20260910.sql sha256 bde2c3d730913650... (472.232 bytes; 18 tabelas com linhas, entre elas people 1 e platform_memberships 1)", "onde": "fora do Git, no scratchpad da sessao do coordenador; copia a mover para um diretorio local persistente ignorado pelo Git (pendente)"}
+  },
+  "baseline": {
+    "decisao": "ADR 0034 Decisao 8/P12",
+    "arquivo": "packages/coelo_database/migrations/20260910000000_baseline_producao.sql (dump schema-only de producao de 10/09/2026, 2 MB) + packages/coelo_database/supabase/seed.sql (catalogo de referencia: 16 tabelas, sem pessoas nem memberships)",
+    "historico": "packages/coelo_database/migrations-historico/ (186 arquivos + os da rodada); deixa de ser replayado; os scripts Invoke/Prepare-SafeMigrationReplay e o manifesto foundation ficam obsoletos",
+    "prova": "projeto descartavel coelo_baseline (portas 573xx): baseline aplicou limpa em Postgres 17 local (186 tabelas public, 181 policies, 633 funcoes), seed aplicou (74 permissoes, 5 papeis, 100 concessoes, 0 pessoas)",
+    "usoPelasFrentes": "Sync-SupabaseCliMigrations.ps1 -Mode Prepare espelha migrations/ (baseline + pacotes aceitos) e supabase db reset em projeto descartavel proprio aplica baseline + seed; o pacote do grupo entra depois com psql e o pgTAP roda em cima. Pacote so entra em migrations/ quando passar esse preflight; ate la fica na branch do grupo e em migrations-historico/ se for antigo",
+    "carimbos": "todo pacote novo usa carimbo > 20260910000000; pacotes antigos aceitos sao renumerados ao entrar",
+    "ressalvaLocal": "no Postgres local os privilegios padrao do Supabase dao execute em public a anon; producao nao tinha. A migration de Unidades passou a revogar anon explicitamente; testes sobre anon precisam dessa revogacao explicita para valerem nos dois ambientes"
+  },
+  "preflightNaBaseline": {
+    "quando": "2026-09-10T15:40:00-03:00",
+    "resultados": [
+      {"pos": 26, "migration": "20260910160000_units_rpcs_versioned_from_production_v1", "aplica": true, "pgtap": "41/41 apos revoke explicito de anon e service_role"},
+      {"pos": 22, "migration": "20260910130000_meal_plans_owner_permission_grants_v1", "aplica": true, "pgtap": "6/6 (teste novo meal_plans_owner_permission_grants_v1_test); os pgTAP de 58 casos do grupo NAO passam na baseline porque exigem meal_plan_publish_unreceipted e app_private.meal_plan_command_receipts, ausentes em producao"},
+      {"pos": 21, "migration": "20260910120000_meal_plan_image_delete_requires_revision_v1", "aplica": false, "erro": "producao nao tem meal_plan_request_image_delete(uuid,uuid,integer): a cadeia de Cardapios em producao para antes de 20260820230000"},
+      {"pos": 27, "migration": "20260828005000_superadmin_internal_person_detail", "aplica": true, "pgtap": "fixture insere units.institution_type_id, que producao nao tem (unit_type_id): 151 erros; P13"}
+    ],
+    "licao": "pgTAP verde no replay do repositorio nao e pgTAP verde sobre producao. Toda prova passa a ser sobre a baseline. Os grupos precisam reexecutar seus pacotes e fixtures nela antes de o coordenador aplicar."
+  },
+  "aplicadoEmProducao": [
+    {"quando": "2026-09-10T15:47:00-03:00", "migration": "20260910130000_meal_plans_owner_permission_grants_v1", "grupo": "principal-chat-sistema", "verificacao": "3 concessoes meal_plans.* ao owner em platform_role_permissions; ledger registrado", "efeito": "meal-plans.* deixa de ser inalcancavel para o Owner; o resto da cadeia de Cardapios continua ausente"},
+    {"quando": "2026-09-10T15:47:00-03:00", "migration": "20260910160000_units_rpcs_versioned_from_production_v1", "grupo": "coordenador", "verificacao": "5 RPCs conferidas: anon 0/5, authenticated 5/5; ledger registrado", "efeito": "divida de versionamento de Unidades fechada; anon perdeu o execute que os privilegios padrao poderiam dar"}
+  ],
   "integracaoNoCorte": {
     "shaPublicado": "bdd7eef82 (origin/dev, 2026-09-10T16:50-03:00); dev local do checkout principal continua atras e a Fase 0 precisa de git pull --rebase antes do proximo push",
     "conteudo": "coordenacao R03 rev 1-5, sete branches de grupo (estrutura, principal-chat-sistema, publicacoes-agenda, operacoes, formularios-cuidado-rotina, acessos-pessoas) + lotes 1-6 da Fase 0, migration 20260910160000 e pgTAP de contrato de Unidades, manifesto do replay, skills, ADR 0034 Decisao 7, projecao de conhecimento, inventario e rastreadores regenerados",
@@ -164,5 +200,6 @@
     "validadores": "validate-trackers.cjs PASS (230 acoes, 39 familias, FE verified 11, BE done 0, E2E 0); Test-CoeloKnowledge PASS 61 artigos; parse PowerShell dos scripts de replay 0 erros; deno check do runner do spike OK",
     "wipPreservado": "publicacoes-agenda 5 arquivos (ATENCAO: a Fase 0 migrou notice_directory_page.dart em 850ba1838; o WIP local do grupo nesse arquivo vai conflitar no rebase, resolver pela versao do composto), formularios-cuidado-rotina 1 migration, checkout principal 13 arquivos da Fase 0/principal-chat-sistema; stash 'r03-jsons-grupos' obsoleto"
   },
+  "proximoPassoRev6": "1) publicar rev 6 com a baseline; 2) cada grupo reexecuta seus pgTAP sobre a baseline (projeto descartavel proprio) e corrige fixtures (units.unit_type_id, cadeia de Cardapios); 3) coordenador aplica em producao, na ordem, cada pacote que passar, com dump antes do lote; 4) formularios-cuidado-rotina e o proximo candidato (fundacoes novas, sem dependencia de cadeia ausente); 5) Owner: P2 e P14 na skill",
   "proximoPasso": "1) publicar rev 4 em dev; 2) resultado dos testes da base conjunta (rev 5); 3) enquanto o Owner nao responde P1/P2/P4/P12: preparar a migration unica de fase MFA do MVP (P10+P11), o pgTAP de Suporte e Conta num perfil declarado, e a correcao das tres migrations quebradas com os donos; 4) proximo action_id executavel pelo coordenador: units.list (compor o repositorio real de Unidades com structureMutationsEnabled ainda false, provado por teste de composicao)"
 }
