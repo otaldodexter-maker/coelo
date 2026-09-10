@@ -70,6 +70,7 @@ final class MealPlanImageAsset {
     required this.mimeType,
     required this.sizeBytes,
     required this.checksumSha256,
+    required this.revision,
     this.altText,
   });
 
@@ -79,6 +80,10 @@ final class MealPlanImageAsset {
   final String mimeType;
   final int sizeBytes;
   final String checksumSha256;
+
+  /// Revisao lida do servidor. Volta em toda escrita e e o que autoriza a
+  /// exclusao: sem ela o comando nao sabe sobre qual estado esta agindo.
+  final int revision;
   final String? altText;
 }
 
@@ -99,7 +104,11 @@ abstract interface class MealPlanImageRepository {
 
   Future<Uri> createSignedReadUrl(String assetId);
 
-  Future<void> delete({required String assetId, required String requestId});
+  Future<void> delete({
+    required String assetId,
+    required String requestId,
+    required int expectedRevision,
+  });
 }
 
 sealed class MealPlanImageException implements Exception {
@@ -139,6 +148,9 @@ final class UnavailableMealPlanImageRepository implements MealPlanImageRepositor
       Future.error(const MealPlanImageUnavailableException());
 
   @override
-  Future<void> delete({required String assetId, required String requestId}) =>
-      Future.error(const MealPlanImageUnavailableException());
+  Future<void> delete({
+    required String assetId,
+    required String requestId,
+    required int expectedRevision,
+  }) => Future.error(const MealPlanImageUnavailableException());
 }

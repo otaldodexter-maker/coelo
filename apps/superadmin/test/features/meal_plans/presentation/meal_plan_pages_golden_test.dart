@@ -787,6 +787,9 @@ final class _UnavailableMealPlanImageRepository implements MealPlanImageReposito
       Future<Uri>.error(const MealPlanImageUnavailableException());
 
   @override
-  Future<void> delete({required String assetId, required String requestId}) =>
-      Future<void>.error(const MealPlanImageUnavailableException());
+  Future<void> delete({
+    required String assetId,
+    required String requestId,
+    required int expectedRevision,
+  }) => Future<void>.error(const MealPlanImageUnavailableException());
 }

@@ -112,13 +112,21 @@ final class SupabaseMealPlanImageRepository implements MealPlanImageRepository {
   }
 
   @override
-  Future<void> delete({required String assetId, required String requestId}) async {
+  Future<void> delete({
+    required String assetId,
+    required String requestId,
+    required int expectedRevision,
+  }) async {
+    if (expectedRevision < 1) {
+      throw const MealPlanImageValidationException('expectedRevision e obrigatorio.');
+    }
     try {
       await _client.rpc<Object?>(
         'meal_plan_request_image_delete',
         params: {
           'p_asset_id': _required(assetId, 'assetId'),
           'p_idempotency_key': _required(requestId, 'requestId'),
+          'p_expected_revision': expectedRevision,
         },
       );
     } on MealPlanImageException {
@@ -211,6 +219,7 @@ MealPlanImageAsset _assetFromJson(Map<String, dynamic> json, {required String fa
       mimeType: _string(json, 'mime_type'),
       sizeBytes: _integer(json, 'size_bytes'),
       checksumSha256: _optionalString(json['checksum_sha256']) ?? fallbackChecksum,
+      revision: _integer(json, 'revision'),
       altText: _optionalString(json['alt_text']),
     );
 
