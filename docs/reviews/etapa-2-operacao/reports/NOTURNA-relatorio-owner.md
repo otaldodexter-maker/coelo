@@ -1950,6 +1950,24 @@ trezentas.
 É a defesa mais barata deste relatório inteiro e a única que funcionou contra um
 número plausível: **estimar a ordem de grandeza antes de ler a saída.**
 
+E o último caso da noite fechou a mesma família com um operando que ninguém olha:
+**`git push origin HEAD:<destino>` resolve `HEAD` no momento do push, não quando o
+comando foi escrito.** Numa árvore de trabalho compartilhada por seis frentes, isso
+significa empurrar o que quer que tenha entrado ali no intervalo — e foi o que
+aconteceu: a branch nomeada por uma frente levou junto dois commits do coordenador.
+Não houve perda nem conflito, e o commit que interessava já estava na base; o que
+ficou errado foi a **etiqueta**, uma branch com o nome de alguém carregando conteúdo
+de outro. A frente declarou em vez de deixar descobrir, e nomeou a correção:
+**empurrar o SHA, nunca `HEAD`, quando o checkout é compartilhado.**
+
+É a terceira vez que a mesma classe pega a mesma frente — depois do rastreamento
+remoto desatualizado e do "só entrou documentação" emprestado —, e as três têm a
+mesma forma: **um operando velho, avaliado num instante diferente daquele em que foi
+pensado.** É a mesma coisa que fez o cruzamento de relógios medir latência, e a
+mesma que fez a diferença de conteúdo reprovar trabalho presente. **A rodada inteira
+tropeçou, nove vezes, em avaliar alguma coisa num instante que não era o instante da
+pergunta.**
+
 ### O único número que diz se as correções da noite funcionaram
 
 Às 02:11 uma frente estava com quarenta minutos de deriva de relógio. Às 03:00 eu

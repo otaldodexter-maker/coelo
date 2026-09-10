@@ -1,6 +1,6 @@
 {
-  "revision": 49,
-  "updated_at": "2026-09-10T04:49:00-03:00",
+  "revision": 50,
+  "updated_at": "2026-09-10T04:49:30-03:00",
   "group": "perfil-para-voce",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
@@ -8,9 +8,9 @@
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-perfil-para-voce",
   "branch": "work/etapa2-noturna-perfil-para-voce",
-  "head": "1d453e2f3",
+  "head": "1d46746ff",
   "upstream": "origin/work/etapa2-noturna-perfil-para-voce",
-  "base_observed": "d784462c1",
+  "base_observed": "origin/dev em 51ed08d0c, lido 2026-09-10T04:49:30-03:00",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Perfil contextual -> visualizar/editar Sobre",
     "apps/superadmin -> menu Coelo (Principal) -> Perfil contextual -> Para Voce"
@@ -45,16 +45,16 @@
     "apps/superadmin/lib/core/config/superadmin_auth_scope.dart, superadmin_app.dart, main.dart (apenas campo/injecao/passagem dos 2 parametros)"
   ],
   "blocker": "Nenhum bloqueio retendo trabalho independente. Os bloqueios de decisao estao declarados no tracker_delta_proposto.",
-  "next_step": "Seguir auditando ate 04:40; as 04:50 pre-entrega e as 05:00 entrega, com a conferencia externa de Git para o coordenador.",
+  "next_step": "Rodar a conferencia externa de Git sobre o estado final que o coordenador declarar as 05:00, com relogio cru dentro dela, e remover a worktree verify-dev-tmp declarando a remocao com a saida crua de git worktree list.",
   "wip": [],
   "artifacts": [],
   "children": [],
   "processes": [],
   "ports": [],
   "ack": null,
-  "limitations": "Sem canal nativo verificado ate agora; arquivo publicado nao comprova leitura pelo coordenador.",
+  "limitations": "Canal nativo com o coordenador verificado nesta janela: houve troca bidirecional com recibo nominal em varias mensagens. A ressalva anterior, de que arquivo publicado nao comprova leitura, continua valendo para o arquivo; nao vale mais para a comunicacao.",
   "deadline": "2026-09-10T05:00:00-03:00",
-  "eta": "Delta ainda nao inspecionado.",
+  "eta": "Encerrada. Congelado desde 04:40; entrega as 05:00.",
   "alert": "RESOLVIDO. O alerta dizia que registro.json apontava o headSha de L03 em 9c6042732, que e o revert, 48 commits atras. Conferido em 2026-09-10 03:59:53: o arquivo docs/reviews/etapa-2-operacao/next-round/R02-20260909/registro.json agora traz b209b4e0f47df8f1a39835a09b8e17191412b969, que e o SHA correto. Nada a fazer. Mantido como registro porque este campo permaneceu descrevendo como aberto um problema ja corrigido - a mesma classe de defeito que encontrei no relatorio do Owner, agora encontrada em mim.",
   "open_questions": [
     "Regra de visibilidade do leitor Principal no Sobre: nao existe token de leitura em profiles.about.*; a proposta assume visibility='profile_access' por ser o default dos INSERTs da RPC de escrita. Decisao do Owner.",
@@ -139,7 +139,8 @@
     "recorte": "P=247 F=10 B=0 S=0 U=0",
     "provas_de_rota": "11/11 PASS",
     "analyze": "flutter analyze lib test: No issues found",
-    "achado_de_integracao": "origin/dev 09d03250e tinha o GoRoute de principal-conversations DUPLICADO byte a byte; go_router assere na construcao, entao createSuperadminRouter lancava e o app Superadmin inteiro nao subia. Confirmado como sendo de dev e nao do meu merge antes de alertar (grep contava 2 em origin/dev e 0 em 0e1df2217). Corrigido pelo coordenador em ff9143ba4."
+    "achado_de_integracao": "origin/dev 09d03250e tinha o GoRoute de principal-conversations DUPLICADO byte a byte; go_router assere na construcao, entao createSuperadminRouter lancava e o app Superadmin inteiro nao subia. Confirmado como sendo de dev e nao do meu merge antes de alertar (grep contava 2 em origin/dev e 0 em 0e1df2217). Corrigido pelo coordenador em ff9143ba4.",
+    "SUPERADO": "P=247 F=10 era de base anterior e denominador incompleto, e o bloco nao tinha data. O numero valido e 306/10 na base integrada 98ef12509; ver validacao_na_base_integrada."
   },
   "verificado_e_nao_alterado": [
     "Destino de Mensagem do Perfil e do hub ja aponta para principalConversationsName na base conjunta; nao ha mais desvio para a pagina administrativa com ?from=principal, e nenhum teste meu carrega o destino antigo.",
@@ -158,10 +159,11 @@
     "test/app/router/principal_real_route_test.dart falha em 3 casos sobre hospedagem do Principal e Acontece. Confirmado em worktree destacado de origin/dev 1c5eaf0bc limpo: as mesmas 3 falham. Causa: a rota de Acontece passou a exigir principalHappensFeedRepository E principalMixedFeedRepository (superadmin_router.dart:902 em dev) e o teste injeta so o primeiro, entao a rota cai em indisponivel. Teste desatualizado pela integracao do feed misto, nao regressao de produto; a producao compoe os dois. Pertence a publicacoes-midia."
   ],
   "recursos_proprios": {
-    "worktree_extra": "SIM, UMA: C:/Users/adrie/Documents/Coelo.worktrees/verify-dev-tmp, detached em 1c5eaf0bc. Criada por mim para verificar em base limpa se a rota principal-conversations duplicada era de dev ou do meu merge, e mantida para a conferencia externa de Git das 05:00. SERA REMOVIDA antes da entrega, com git worktree remove, e a remocao sera declarada. Nao contem trabalho: e checkout destacado de origin/dev, sem commit e sem alteracao.",
+    "worktree_extra": "SIM, UMA: C:/Users/adrie/Documents/Coelo.worktrees/verify-dev-tmp, DETACHED em 98ef12509, 0 caminhos alterados, medido 04:49:30. Criada para verificar em base limpa se a rota principal-conversations duplicada era de dev ou do meu merge; reaproveitada para medir o recorte NA BASE INTEGRADA e para a conferencia externa. SERA REMOVIDA apos a conferencia das 05:00, com a remocao declarada pela saida crua de git worktree list.",
     "containers": "nenhum ativo. coelo-sqlcheck e coelo-pg17 criados e removidos ao longo da noite; docker ps -a conferido vazio apos cada uso.",
     "processos_portas_agendamentos": "nenhum.",
-    "correcao_de_declaracao": "Ate a revisao 26 este campo dizia 'nenhum', o que era FALSO desde que criei a worktree. Eu declarei a worktree em texto na revisao 9 e depois sobrescrevi o campo ao consolidar. O coordenador pediu a declaracao explicita e ao conferir eu achei a linha errada no meu proprio handoff. E a mesma categoria que passei a noite auditando nos outros: linha que parece informacao e nunca foi relida."
+    "correcao_de_declaracao": "Ate a revisao 26 este campo dizia 'nenhum', o que era FALSO desde que criei a worktree. Eu declarei a worktree em texto na revisao 9 e depois sobrescrevi o campo ao consolidar. O coordenador pediu a declaracao explicita e ao conferir eu achei a linha errada no meu proprio handoff. E a mesma categoria que passei a noite auditando nos outros: linha que parece informacao e nunca foi relida.",
+    "artefatos_de_instrumento": "recorte.json e recorte-dev.json, deixados pelo reporter JSON dentro do repositorio nas duas worktrees, removidos. Ambas as arvores com 0 caminhos."
   },
   "achado_principal_da_noite": {
     "titulo": "As 10 falhas de principal_profile_preview_golden nao sao deriva de golden nem artefato de host",
@@ -385,11 +387,14 @@
     "ressalvas": "Os 40 sao objetos, nao defeitos: um helper pode servir a varios dominios. E nao distingo helper que nunca existiu de helper que existe no remoto e nunca foi versionado; para reconstruir a base da no mesmo, para responsabilidade nao da. Cinco conferidos a mao, os outros 35 vem do metodo."
   },
   "git": {
-    "divergencia_com_upstream": "0/0 conferido apos publicar o merge pendente",
+    "medido_em": "2026-09-10T04:49:30-03:00",
+    "head_da_worktree": "1d46746ff",
+    "divergencia_com_upstream": "0 0",
     "worktree": "0 caminhos alterados",
     "stash": "0",
-    "base_conjunta": "origin/dev mesclado ate b2cdba58a e publicado",
-    "lotes_em_dev": "todos ate c5a6fd106 integrados; 0f2135398 e os merges seguintes publicados na branch e pendentes do proximo ciclo do coordenador"
+    "origin_dev": "51ed08d0c",
+    "residual": "ZERO, pelos tres criterios; ver PRE_ENTREGA_DEFINITIVA_0450",
+    "SUPERADO": "A versao anterior deste bloco citava b2cdba58a, c5a6fd106 e 0f2135398 como estado corrente e envelheceu horas atras."
   },
   "validacao_final_do_recorte": {
     "NUMERO_VALIDO": "306 PASS / 0 SKIP / 10 FAIL, em 316 casos e 30 arquivos",
@@ -913,7 +918,12 @@
     ],
     "o_que_NAO_estava_errado": "escopo, nao-escopo, criterios fechados, perguntas abertas ao Owner, tracker_delta_proposto, as evidencias publicadas e a proxima_rodada. O apodrecimento atinge campos de ESTADO, nao campos de CONTEUDO. Faz sentido: conteudo descreve o que foi feito e nao muda; estado descreve como as coisas estao e muda sozinho.",
     "regra_que_fica": "Campo que carrega numero, SHA ou pendencia precisa carregar TAMBEM a hora em que foi medido. Sem carimbo nao da para saber se envelheceu, e um numero sem data ao lado de numeros com data e lido como atual.",
-    "cinco_de_setenta_e_seis": "Cinco campos em setenta e seis. Nao e catastrofe, e nao seria pego por leitura casual - nenhum dos cinco parecia errado. Foram pegos por conferir contra medicao nova, que e o unico metodo que funciona contra este defeito."
+    "cinco_de_setenta_e_seis": "Cinco campos em setenta e seis. Nao e catastrofe, e nao seria pego por leitura casual - nenhum dos cinco parecia errado. Foram pegos por conferir contra medicao nova, que e o unico metodo que funciona contra este defeito.",
+    "segunda_passada": {
+      "quando": "2026-09-10T04:49:30-03:00, entre a pre-entrega e a entrega",
+      "achados": "Mais SETE campos de estado podres, uma hora depois da primeira passada: head apontando 1d453e2f3 quando a worktree estava em 1d46746ff; base_observed em d784462c1; o bloco git inteiro citando SHAs de horas antes; eta e next_step descrevendo uma janela ja vencida; recursos_proprios com a worktree destacada no SHA errado; e joint_base_verified com P=247 sem data.",
+      "a_conclusao_que_importa": "A primeira passada achou cinco e eu escrevi a regra do carimbo de hora. Uma hora depois havia sete novos, e varios eram campos que eu tinha ACABADO de olhar. Isso mostra que a regra do carimbo nao basta sozinha: carimbo diz quando algo foi medido, nao obriga a remedir. O que funciona e reauditar os campos de ESTADO a cada publicacao, e nao uma vez por rodada. Sete em setenta e seis, de novo, e de novo nenhum parecia errado na leitura."
+    }
   },
   "terceira_armadilha_de_instrumento": {
     "titulo": "git cat-file -e origin/dev:<caminho> reporta AUSENTE arquivo que esta em dev, por conversao de caminho do MSYS",
