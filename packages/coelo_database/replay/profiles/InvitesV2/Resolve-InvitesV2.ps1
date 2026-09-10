@@ -55,6 +55,14 @@ function Get-InvitesHash([string]$Path) {
 # profile.
 #
 # This is not a generic extension mechanism and not a remote authorization.
+#
+# Contagens revisadas em 2026-09-10: o manifesto de fundacao passou de 67 para 68
+# entradas quando a coordenacao acrescentou 20260812000000_chat_production_contract.sql
+# em ordem de versao (F-R03-FCR-003), fechando a lacuna que impedia qualquer base
+# posterior a 20260901101500 de ser montada. As exclusoes deste perfil continuam
+# valendo: o reparo do manifesto resolve a TABELA ausente, nao os defeitos de
+# conteudo de chat v2, avisos v2 e circulares v2, que seguem sem correcao em dev.
+
 if ($TargetVersion -cne '20260901190432') {
   throw "InvitesV2 requires target 20260901190432; received $TargetVersion"
 }
@@ -68,8 +76,8 @@ $entries = @(Get-Content -LiteralPath $manifestFile.FullName | Where-Object {
   }
   [pscustomobject]@{ file = $Matches[1]; version = $Matches[2]; sha256_crlf_utf8 = $Matches[3] }
 })
-if ($entries.Count -ne 67 -or $entries[-1].version -cne '20260901200206') {
-  throw 'InvitesV2 requires the unchanged 67-entry foundation manifest'
+if ($entries.Count -ne 68 -or $entries[-1].version -cne '20260901200206') {
+  throw 'InvitesV2 requires the unchanged 68-entry foundation manifest'
 }
 
 $excludedNames = @(
@@ -77,14 +85,14 @@ $excludedNames = @(
   '20260901185008_superadmin_internal_notices_v2.sql'
 )
 $prefix = @($entries | Where-Object { $_.version -le $TargetVersion })
-if ($prefix.Count -ne 65 -or $prefix[-1].file -cne '20260901190432_superadmin_internal_invites_v2.sql') {
-  throw 'InvitesV2 requires the 65-entry manifest prefix ending at the candidate'
+if ($prefix.Count -ne 66 -or $prefix[-1].file -cne '20260901190432_superadmin_internal_invites_v2.sql') {
+  throw 'InvitesV2 requires the 66-entry manifest prefix ending at the candidate'
 }
 $candidateName = '20260901190432_superadmin_internal_invites_v2.sql'
 $selected = @($prefix | Where-Object {
   $_.file -cnotin $excludedNames -and $_.file -cne $candidateName
 })
-if ($selected.Count -ne 62) {
+if ($selected.Count -ne 63) {
   throw 'InvitesV2 requires both unreachable entries and the candidate to be present in the manifest and handled here'
 }
 
@@ -127,10 +135,10 @@ if ($preflight.Count -ne 2) {
 
 $allInputs = @($canonical) + @($preflight)
 $versions = @($allInputs | ForEach-Object { $_.Name.Substring(0, 14) })
-if ($canonical.Count -ne 63 -or $allInputs.Count -ne 65 -or
-    @($versions | Sort-Object -Unique).Count -ne 65 -or
+if ($canonical.Count -ne 64 -or $allInputs.Count -ne 66 -or
+    @($versions | Sort-Object -Unique).Count -ne 66 -or
     ($versions | Sort-Object)[-1] -cne $TargetVersion) {
-  throw 'InvitesV2 requires 63 unique canonical migrations and two inherited preflights'
+  throw 'InvitesV2 requires 64 unique canonical migrations and two inherited preflights'
 }
 
 [pscustomobject]@{
