@@ -16,8 +16,10 @@ insert into public.institution_types(id,code,name,status) values
 insert into public.institutions(id,public_name,slug,status,institution_type_id) values
  ('e1100000-0000-4000-8000-000000000001','Activity Location A','activity-location-a','active','e1000000-0000-4000-8000-000000000001'),
  ('e1100000-0000-4000-8000-000000000002','Activity Location B','activity-location-b','active','e1000000-0000-4000-8000-000000000001');
-insert into public.units(id,institution_id,name,slug,status,institution_type_id) values
- ('e1200000-0000-4000-8000-000000000001','e1100000-0000-4000-8000-000000000001','Activity Location Unit','activity-location-unit','active','e1000000-0000-4000-8000-000000000001');
+insert into public.unit_types(id,code,name,status) values
+ ('e10000f0-0000-4000-8000-000000000001','superadmin-activity-location-create-v2-t-u0','Tipo de unidade da fixture','active');
+insert into public.units(id,institution_id,name,slug,status,unit_type_id,handle) values
+ ('e1200000-0000-4000-8000-000000000001','e1100000-0000-4000-8000-000000000001','Activity Location Unit','activity-location-unit','active','e10000f0-0000-4000-8000-000000000001','activity.location.unit');
 insert into auth.users(id,aud,role,email,email_confirmed_at,created_at,updated_at,raw_app_meta_data,raw_user_meta_data)
  select ('e1400000-0000-4000-8000-'||lpad(i::text,12,'0'))::uuid,'authenticated','authenticated',
  'activity-location-'||i||'@invalid.test',now(),now(),now(),'{}','{}' from generate_series(1,2) i;

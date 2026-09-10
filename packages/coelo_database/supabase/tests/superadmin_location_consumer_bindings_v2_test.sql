@@ -17,9 +17,11 @@ insert into public.institution_types(id,code,name,status) values
 insert into public.institutions(id,public_name,slug,status,institution_type_id) values
  ('d1100000-0000-4000-8000-000000000001','Bindings A','bindings-a','active','d1000000-0000-4000-8000-000000000001'),
  ('d1100000-0000-4000-8000-000000000002','Bindings B','bindings-b','active','d1000000-0000-4000-8000-000000000001');
-insert into public.units(id,institution_id,name,slug,status,institution_type_id) values
- ('d1200000-0000-4000-8000-000000000001','d1100000-0000-4000-8000-000000000001','Bindings Unit A','bindings-unit-a','active','d1000000-0000-4000-8000-000000000001'),
- ('d1200000-0000-4000-8000-000000000002','d1100000-0000-4000-8000-000000000002','Bindings Unit B','bindings-unit-b','active','d1000000-0000-4000-8000-000000000001');
+insert into public.unit_types(id,code,name,status) values
+ ('d10000f0-0000-4000-8000-000000000001','superadmin-location-consumer-bindings-v2-u0','Tipo de unidade da fixture','active');
+insert into public.units(id,institution_id,name,slug,status,unit_type_id,handle) values
+ ('d1200000-0000-4000-8000-000000000001','d1100000-0000-4000-8000-000000000001','Bindings Unit A','bindings-unit-a','active','d10000f0-0000-4000-8000-000000000001','bindings.unit.a'),
+ ('d1200000-0000-4000-8000-000000000002','d1100000-0000-4000-8000-000000000002','Bindings Unit B','bindings-unit-b','active','d10000f0-0000-4000-8000-000000000001','bindings.unit.b');
 insert into public.groups(id,institution_id,unit_id,name,status) values
  ('d1300000-0000-4000-8000-000000000001','d1100000-0000-4000-8000-000000000001','d1200000-0000-4000-8000-000000000001','Bindings Group A','active'),
  ('d1300000-0000-4000-8000-000000000002','d1100000-0000-4000-8000-000000000002','d1200000-0000-4000-8000-000000000002','Bindings Group B','active'),
