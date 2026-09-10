@@ -1,5 +1,5 @@
 {
-  "revision": 2,
+  "revision": 3,
   "round": "E2-R03-20260910",
   "group": "publicacoes-agenda",
   "tool": "Codex",
@@ -34,12 +34,12 @@
     {"package": "circulars.delete", "key": "superadminCircularDeleteEnabled", "default": false, "owner": "coordenador", "reason": "ligar somente após migration aplicada e gateway verificado"}
   ],
   "tests": {
-    "passed": 8,
+    "passed": 121,
     "failed": 0,
     "blocked": 1,
     "skipped": 0,
     "evidence": [
-      "apps/superadmin/test/features/circulars/data/supabase_superadmin_circular_repository_test.dart: 8 PASS",
+      "apps/superadmin/test/features/agenda/data/supabase_agenda_repository_test.dart + supabase_agenda_read_repository_test.dart + apps/superadmin/test/features/notices/data/supabase_notice_repository_test.dart + apps/superadmin/test/features/circulars/data/supabase_superadmin_circular_repository_test.dart: 121 PASS",
       "supabase test db supabase/tests/superadmin_internal_circular_delete_v1_test.sql --local: BLOQUEADO, Docker/Postgres local indisponível (ECONNREFUSED 127.0.0.1:54322)"
     ]
   },
@@ -53,15 +53,24 @@
     "apps/superadmin/lib/features/circulars/**"
   ],
   "blocked": "Aguardando base.fase0Head para UI e E2E; pgTAP local retém a prova SQL até Docker/Postgres estar disponível; não bloqueia o pacote backend independente.",
-  "next": "Commitar pacote de exclusão administrativa, validar diff/SQL estático e seguir para preflight Agenda e Avisos; rebasear quando base.fase0Head aparecer.",
+  "next": "Enviar o commit ao coordenador; seguir para preflight SQL de Agenda/Avisos quando Docker estiver disponível; rebasear imediatamente quando base.fase0Head aparecer.",
   "changes": [
     {
       "screen": "Etapa 2 → apps/superadmin → Circulares → Diretório/Detalhe → Excluir → circulars.delete",
       "actionIds": ["circulars.delete"],
       "whatChanged": "Migration forward-only cria superadmin_circular_delete_v2 com capacidade circulars.manage, tenant/contexto interno, versão otimista, idempotência, auditoria e exclusão lógica; repositório/contrato chama RPC sem segredo.",
       "criteria": ["RPC nominal e grant authenticated", "anon/service_role sem execute", "deleted_at/status archived", "receipt com hash e action delete", "audit internal_circular_deleted"],
-      "sha": "working-tree; será preenchido no commit"
+      "sha": "f15a9eec2c8bd50b3049016827741502117ba293"
     }
   ],
-  "updatedAt": "2026-09-10T00:25:00-03:00"
+  "baselinePackages": [
+    {"actionIds": ["agenda.view", "agenda.create", "agenda.detail", "agenda.edit", "agenda.request", "agenda.permissions", "agenda.location"], "migrationShas": ["be28f0c0bd5ac626df925b7dc1d577af0b0e8dca", "09bf4e71b81711cfd5a44852c94805415b5ab237"], "state": "existing-local-contract; pgTAP/remote pending"},
+    {"actionIds": ["notices.list", "notices.create", "notices.edit", "notices.schedule", "notices.publish", "notices.archive"], "migrationShas": ["ca55088753b10330b1890fbec35158854118f2ed", "5ad9b9b00e5ab060d81d01aaf406cbea30e254b6"], "state": "existing-local-contract; pgTAP/worker/remote pending"},
+    {"actionIds": ["circulars.list", "circulars.filter", "circulars.create", "circulars.edit", "circulars.detail", "circulars.schedule", "circulars.publish", "circulars.close", "circulars.respond", "circulars.attach"], "migrationShas": ["1944bd957a5771b9b3b9e2cf559e15f3cacd3c02"], "state": "existing-local-contract; pgTAP/remote pending"}
+  ],
+  "sharedFindings": [
+    "O código histórico ainda modela requires_mfa/aal2 para algumas capacidades de publicação; o alinhamento R03 diz MFA fora do MVP. A remoção do bloqueio no contexto interno é compartilhada e deve ser coordenada, não duplicada nesta frente.",
+    "Não declarar E2E: base.fase0Head ausente, Docker/Postgres local indisponível e aplicação remota reservada ao coordenador."
+  ],
+  "updatedAt": "2026-09-10T00:55:00-03:00"
 }
