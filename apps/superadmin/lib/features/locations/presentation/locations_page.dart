@@ -94,6 +94,8 @@ final class LocationsPage extends StatefulWidget {
 final class _LocationsPageState extends State<LocationsPage> {
   String? _selected;
   bool _creating = false;
+  /// Tipo com que a criacao abre. O card Criar do grupo manda o tipo dele.
+  LocationKind _creatingKind = LocationKind.internal;
   LocationCatalogEntry? _editing;
   bool _bringing = false;
   int _contextGeneration = 0;
@@ -226,16 +228,11 @@ final class _LocationsPageState extends State<LocationsPage> {
               icon: const Icon(Icons.south_rounded),
               label: const Text('Trazer da instituição'),
             ),
-          if (canCreate)
-            FilledButton.icon(
-              key: const Key('locations-create'),
-              onPressed: () {
-                if (!_current(generation) || !_can.create || !_directoryOpen) return;
-                setState(() => _creating = true);
-              },
-              icon: const Icon(Icons.add_rounded),
-              label: const Text('Novo local'),
-            ),
+          // O botao Novo local do cabecalho saiu: criar agora e o card Criar
+          // dentro do grupo, que ja diz se o local e interno ou externo.
+          // Decisao do Owner de 10/09/2026 sobre a estrutura de Locais.
+          // O card existe tambem nos estados vazio e sem resultados, entao
+          // nenhum estado ficou sem forma de criar.
         ],
         child: _bringing && widget.scope is UnitLocationScope
             ? LocationInstitutionCopyPanel(
@@ -257,6 +254,7 @@ final class _LocationsPageState extends State<LocationsPage> {
                     : Key('locations-form-${editing.id}'),
                 scope: widget.scope,
                 initial: editing,
+                initialKind: _creatingKind,
                 writer: widget.writer,
                 sessionAvailable: widget.sessionAvailable,
                 onCancel: () => setState(() {
@@ -276,6 +274,15 @@ final class _LocationsPageState extends State<LocationsPage> {
                 sessionAvailable: widget.sessionAvailable,
                 contextRevision: widget.contextRevision,
                 onOpen: _open,
+                onCreate: canCreate
+                    ? (kind) {
+                        if (!_current(generation) || !_can.create || !_directoryOpen) return;
+                        setState(() {
+                          _creatingKind = kind;
+                          _creating = true;
+                        });
+                      }
+                    : null,
               )
             : LocationDetailPanel(
                 key: Key('locations-detail-$selected'),

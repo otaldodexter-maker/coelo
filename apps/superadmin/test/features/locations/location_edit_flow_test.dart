@@ -334,7 +334,7 @@ void main() {
 
     testWidgets('creating is not offered while a location is open', (tester) async {
       await openDetail(tester);
-      expect(find.byKey(const Key('locations-create')), findsNothing);
+      expect(find.byKey(const Key('location-create-internal')), findsNothing);
     });
   });
 }
