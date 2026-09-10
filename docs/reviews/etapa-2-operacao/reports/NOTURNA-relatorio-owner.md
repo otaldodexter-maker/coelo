@@ -127,8 +127,24 @@ Dart, está ligada, e chama funções que não existem no servidor**. As RPCs
      viewport; uma mudança de métrica de texto muda, porque em 375 o texto quebra
      apertado, um delta mínimo reflui a coluna inteira e cascateia.
 
-   O mesmo gradiente aparece em duas features independentes, de donos
-   diferentes, uma delas intocada nesta rodada. **Isso muda a decisão de
+   O mesmo gradiente aparece em **quatro** features independentes, de donos
+   diferentes, três delas intocadas por quem mediu. E o refinamento é mais forte
+   que a confirmação cega: a assinatura de gradiente aparece nas quatro, mas a
+   **magnitude escala com a densidade da tela**. Diretórios administrativos
+   densos explodem — `access_profile_cards_dark_375` em 91,90%,
+   `group_directory_cards_dark_375` em 17,37% — enquanto um feed do Principal,
+   com poucos elementos grandes, quase não muda:
+   `principal_happens dark_375` em 0,63%, caindo a 0,15% em 1440, na mesma ordem
+   por largura. É exatamente o que uma mudança de métrica de renderização prevê,
+   e encaixa com o harness carregar ícones do SDK local: tela com muito texto e
+   muitos ícones sofre muito, tela com poucos sofre pouco.
+
+   A causa provável está verificada e é simples: **não existe ambiente de
+   referência fixado**. O `pubspec.yaml` declara `flutter: ">=3.38.0"` sem limite
+   superior, não há `.fvmrc` nem `.tool-versions`, **não há CI** — nenhum golden
+   foi gravado em ambiente controlado — e o histórico mostra que as referências
+   foram atualizadas por commits locais comuns, o último em 01/09. A referência
+   visual do projeto é comparada contra o que a máquina do momento tiver. **Isso muda a decisão de
    auditoria para decisão única:** você não precisa investigar 144 telas para
    descobrir o que mudou em cada uma. Precisa identificar a mudança de ambiente
    ou de toolchain entre `f71b6a9c5` e hoje, e reaprovar as referências em bloco.
