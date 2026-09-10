@@ -1545,6 +1545,20 @@ cópia velha sobrescrevendo nova em documentação. **Esse detector só funciona
 há contador monotônico**, então relatório, evidência e artigo de conhecimento
 permanecem sem auditoria dessa classe — declarado aqui em vez de omitido.
 
+**Espera com prazo esgotado parece espera bem-sucedida.** Uma medição foi
+reportada com vinte e oito casos a menos que a anterior — exatamente a assinatura
+da perda de cobertura que a rodada acabara de denunciar. A frente foi investigar e
+os arquivos eram idênticos nas duas bases, sem commit tocando nenhum deles: **arquivo
+igual não perde caso**, e isso a fez olhar para o instrumento em vez de para o
+dado. A causa era um laço de espera que estourou o limite de tentativas e **seguiu
+para a leitura sem verificar se havia saído por sucesso ou por cansaço** — o
+arquivo ainda estava sendo escrito. O número era um retrato de meio caminho, e o
+total de falhas coincidir com o anterior foi acaso.
+
+**Um laço de espera precisa distinguir "encontrei o fim" de "desisti", e quem lê o
+resultado precisa exigir essa distinção** — do mesmo jeito que "só entrou
+documentação" precisa do intervalo a que se refere.
+
 **Uma ferramenta que responde outra pergunta é indistinguível de uma medição.**
 Esta classe apareceu quatro vezes, e três delas quase produziram decisão errada:
 
