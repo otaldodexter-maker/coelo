@@ -1,17 +1,17 @@
 {
-  "revision": 67,
-  "updated_at": "2026-09-10T04:45:00-03:00",
+  "revision": 68,
+  "updated_at": "2026-09-10T04:49:39-03:00",
   "group": "chat-comunicacoes",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) - claude-opus-5[1m]",
-  "status": "congelado; nenhum lote novo; aguardando pre-entrega das 04:50",
+  "status": "entregue; congelado; sem lote novo; parada as 05:00",
   "coordinator": "Claude (coelo-73)",
   "ack_received": "revisao 1 aceita; coordenacao.json rev 2, commit 920f23199",
-  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-chat-comunicacoes",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-chat-comunicacoes — branch nomeada, 0 alteracoes, 0 stash",
   "branch": "work/etapa2-noturna-import-orfao",
-  "head": "8a09d66ac",
+  "head": "8a09d66ac na minha branch; equivalente integrado em dev e e9beeae4c",
   "upstream": "origin/work/etapa2-noturna-import-orfao = 8a09d66ac (0/0)",
-  "base": "d784462c1",
+  "base": "origin/dev 61c49e46d, remedida as 04:49:39 e nao herdada de carimbo anterior",
   "router_patch_branch": {
     "branch": "work/etapa2-noturna-chat-comunicacoes-router-from",
     "sha": "48d15d8df49e9f63a3db0d9d974263088b2cad15",
@@ -1080,5 +1080,21 @@
     "o_padrao_comum": "O delimitador parece delimitar autoria e delimita outra coisa. No --author e a identidade git, comum ao checkout; no intervalo de branch e o que foi trazido para dentro dela por cherry-pick. Nos dois casos o instrumento responde a pergunta que ele sabe responder, e nao a que foi feita.",
     "o_que_NAO_muda": "Nenhum numero. Os 46 arquivos seguem sendo os da minha entrega, o saldo de zero remocoes vale, e a incursao unica em Formularios segue retratada.",
     "o_que_eu_nao_verifiquei": "Nao separei quais dos 46 vieram dos quinze portes e quais nasceram nesta noite. E mensuravel; nao abri por ser 04:45 e o valor nao justificar."
+  },
+  "reauditoria_dos_campos_de_estado": {
+    "quando": "04:49:39, remedidos e nao reconferidos por carimbo.",
+    "por_que": "Carimbo diz QUANDO foi medido e nao obriga a REMEDIR. Um campo carimbado 04:29 e honesto e inutil as 04:55.",
+    "o_campo_que_tinha_apodrecido": "head dizia apenas '8a09d66ac'. Verdadeiro na minha branch e enganoso sobre a base: aquele SHA NAO e ancestral do dev, porque entrou por cherry-pick como e9beeae4c. Quem conferisse residual pelo campo head, com o metodo de ancestralidade, concluiria PENDENTE para trabalho integrado.",
+    "corrigido_para": "head declara os dois: 8a09d66ac na branch, e9beeae4c em dev.",
+    "os_cinco_remedidos": "head, base (61c49e46d), residual (zero), worktree (0 alteracoes, 0 stash) e prazo (05:00)."
+  },
+  "item_8_o_que_eu_verifiquei_ERRADO_nesta_janela": {
+    "criterio_de_ordem": "Por DANO, e nao por cronologia nem por vergonha. Cronologia esconde gravidade.",
+    "1_maior_dano": "Usei o teste de CONTEUDO para julgar residual — o meu e o de tres commits de OUTRAS frentes — depois de ter DECLARADO a fraqueza dele na revisao 64. Dano potencial: afirmar que trabalho alheio esta fora da base quando esta dentro, o que manda alguem procurar o que nao se perdeu, no fechamento. Acertei nos tres por coincidencia, porque a maioria da integracao foi por merge.",
+    "2": "Delimitei 'os arquivos que eu toquei' pelo intervalo da minha branch, que inclui quinze cherry-picks de L02. A frase 'arquivos que esta frente escreveu' e falsa; 'arquivos que esta entrega toca' e verdadeira. Mesma familia do --author: o delimitador parece delimitar autoria e delimita outra coisa.",
+    "3": "Declarei 'nao reproduz' sobre o defeito de conversao de caminho tendo variado quatro formas de INVOCACAO e zero variacoes de CAMINHO. Quatro repeticoes no mesmo eixo deram sensacao de cobertura que uma unica variacao no eixo certo desfez.",
+    "4": "Reportei 'zero merges com resolucao' com um comando que nao discriminava resolucao. A conclusao era verdadeira por um motivo mais simples do que eu disse: nao havia merges.",
+    "5_menor_dano": "Escrevi horario que nao li no bloco, uma vez depois de ter proposto a regra. O numero saiu quase certo, o que e pior: acerto por sorte com metodo errado nao corrige nada.",
+    "o_que_todos_tem_em_comum": "Em nenhum deles o resultado final estava errado. O que estava errado era o direito de afirmar. 'Estar certo' e 'ter como saber que esta certo' sao coisas diferentes."
   }
 }

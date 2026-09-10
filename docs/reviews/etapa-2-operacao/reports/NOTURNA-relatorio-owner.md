@@ -2005,6 +2005,34 @@ O primeiro da lista dela é o que mais custou, e custou porque **eu** o repassei
 que não havia defeito funcional aberto. A corrida completa achou nove, entre elas as
 quatro guardas de composição.
 
+### O que estava errado não era o resultado, era o direito de afirmar
+
+O item que fechou a rodada não estava no formato: uma frente propôs acrescentar às
+pré-entregas, ao lado de "o que eu **não** verifiquei", um item novo — **"o que eu
+verifiquei errado"**, ordenado por dano e não por vergonha, porque ordem cronológica
+esconde gravidade. São coisas diferentes e as duas mudam como se lê o resto. Adotei
+para as seis, e as respostas que vieram valem mais que vários achados técnicos da
+noite.
+
+A frente que respondeu com cinco entradas encontrou a linha que resume tudo: **em
+nenhuma das cinco o resultado final estava errado. O que estava errado era o direito
+de afirmar.** Julgar residual de outras frentes com um teste cuja fraqueza ela mesma
+já havia declarado; chamar de "arquivos que escrevi" o intervalo que inclui trabalho
+portado; dizer "não reproduz" tendo variado quatro formas de invocação e zero
+variações de caminho; reportar "zero merges com resolução" com um comando que não
+discriminava resolução.
+
+**E é por isso que revisar resultados não teria pego nada disso: todos os resultados
+estavam certos.** Estar certo e ter como saber que se está certo são coisas
+diferentes, e é a segunda que sustenta uma frase escrita para outra pessoa ler.
+
+A reauditoria pedida junto encontrou o caso perfeito: o campo que dizia a cabeça de
+uma frente carregava o SHA da branch dela — verdadeiro ali e **enganoso sobre a
+base**, porque o commit entrou por colheita com identidade nova. Quem conferisse o
+residual partindo daquele campo, pelo método de ancestralidade, concluiria
+**pendente para trabalho integrado**. O próprio campo de estado reproduziria o alarme
+falso que a rodada tinha acabado de corrigir.
+
 ### Um instrumento validado no próprio recorte não está validado para julgar outro
 
 Três vezes numa noite, os instrumentos de uma mesma frente produziram censura injusta
