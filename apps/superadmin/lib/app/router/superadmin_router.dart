@@ -5569,6 +5569,13 @@ bool _usesPersistentShell(String location) {
 
 bool _isProductionMutationLocation(String location) {
   if (location.startsWith('/dev/')) return false;
+  // Agenda nao e fronteira de autorizacao no cliente porque o servidor
+  // revalida: superadmin_agenda_save exige agenda.create ou agenda.read para
+  // entrar, valida contexto e audiencia, recusa status published sem
+  // agenda.publish, e antes de atualizar exige agenda.edit_all ou autoria mais
+  // agenda.edit_own, com p_expected_revision. superadmin_agenda_command exige
+  // agenda.cancel_restore, e o override de reserva exige permissao propria mais
+  // MFA aal2 e justificativa. Medido em 20260901183836_superadmin_agenda_production.sql.
   if (location.startsWith('/forms') || location.startsWith('/agenda')) return false;
   // Access-profile RPCs revalidate actor, scope, MFA and version server-side.
   // The client route may render the request form without becoming an authorization boundary.
