@@ -1,14 +1,14 @@
 {
-  "revision": 93,
-  "updated_at": "2026-09-10T19:39:13.368Z",
+  "revision": 94,
+  "updated_at": "2026-09-10T19:56:30.537Z",
   "round": "E2-R03-20260910",
   "group": "acessos-pessoas",
   "tool": "Claude",
   "model": "Opus 5 (1M)",
-  "status": "R03_LOTE_COMPLETO_VERDE_INCLUSIVE_O_RETIDO",
+  "status": "R03_REVISAO_FINAL_DO_CORTE_17H10",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-acessos-pessoas",
   "branch": "work/etapa2-r03-acessos-pessoas",
-  "head": "9c2ea8224",
+  "head": "8657bf1ea0446c1cbe902a32416d19752b04075f",
   "base_observed": "Rebaseado em origin/dev com a baseline 7ce4337b1. packages/coelo_database/migrations tem baseline + os dois pacotes ja aplicados + os meus recarimbados; a cadeia antiga esta em migrations-historico/.",
   "AVISO_DE_SOBRESCRITA": {
     "o_que_houve": "Entre as minhas revisoes 83 e 84 este arquivo foi REVERTIDO no checkout principal para o conteudo da revisao 56, que e o da rodada noturna R02. As minhas revisoes 57 a 83 sumiram do arquivo.",
@@ -1171,5 +1171,93 @@
     "adiadas_por_decisao": "6 de Arquivos de perfil, verificadas e corretas como estao: botoes visiveis, desabilitados, com rotulo semantico de indisponivel, sem picker, parser, job, RPC ou persistencia",
     "leitura_ja_funcionando_em_producao": "Perfis e Modelos de acesso: as RPCs de leitura existem e nao exigem AAL2, entao essas telas abrem e listam hoje",
     "sem_backend_por_escrever": "Nenhuma. Tudo que faltava no meu recorte existia como migration nao aplicada, nao como codigo por escrever."
+  },
+  "working_tree": "limpo",
+  "wip_nao_commitado": "Nenhum.",
+  "FEITO": {
+    "lote_4_aplicado_em_producao": "Oito das minhas migrations aplicadas pelo coordenador sem erro, com dump antes e ledger registrado: 170100, 170200, 170300, 170400, 170500, 170600, 170700 e 170800. pgTAP verde no espelho limpo dele.",
+    "170750_envelope_nao_entrou": "O preflight de md5 parou com dependency drift porque o lote 3 (Formularios) ja tinha levado SAI_INVALID_ARGUMENT ao envelope, e o d04 aplicou sem ele. E o desfecho certo: o preflight existia para PARAR em vez de sobrescrever helper compartilhado. Arquivo marcado como obsoleto pelo coordenador.",
+    "170900_AAL_retido": "Continua fora, aguardando a P11. Ja provado sobre a baseline (14 testes), entao no dia da decisao e so aplicar.",
+    "verificacao_sem_sessao": "18/18 RPCs existem em producao, resolvem pela assinatura publicada e negam anonimo com 42501 permission denied for function. 18/18 com REVOKE ALL FROM PUBLIC e EXECUTE apenas para authenticated; nenhuma concede a anon. Zero divergencia de argumento entre cliente e producao. Publicado por action_id em docs/reviews/evidence/etapa-2/r03-acessos-pessoas/verificacao-sem-sessao-pos-lote4.md.",
+    "seguranca_infantil_no_padrao_do_composto": "Conforme o handoff da Fase 0, que o coordenador confirmou ser a fonte: _SafetyTable e _AuthorizedTable viraram _SafetyRows e _AuthorizedRows; os typedefs de compatibilidade deram lugar aos nomes canonicos de coelo_ui_admin e os imports sairam; a entrada de Seguranca saiu da allowlist do teste de arquitetura, que assim aperta. Analyzer limpo, teste de arquitetura verde."
+  },
+  "PENDENCIAS_COM_PRIMEIRO_GATE": [
+    {
+      "id": "regua-do-MVP-por-action_id",
+      "estado": "verificado-sem-sessao; NAO promovido a verified",
+      "falta": "CRUD persistindo, reload mantendo estado e negativa cross-tenant provada em PRODUCAO. A negativa cross-tenant esta provada em pgTAP sobre a baseline, o que nao e a mesma coisa.",
+      "primeiro_gate": "P17 com o Owner: autorizar um usuario sintetico de Superadmin criado via Auth, com senha gerada e guardada so no ambiente da sessao que testa e usuario apagado ao fim. Sem sessao nao ha como provar as tres partes que faltam.",
+      "acoes_afetadas": [
+        "people.links",
+        "people.reload",
+        "invites.list",
+        "invites.detail",
+        "invites.create",
+        "invites.resend",
+        "invites.revoke",
+        "internal-users.list",
+        "internal-users.create",
+        "internal-users.edit",
+        "internal-users.suspend",
+        "child-safety.list",
+        "child-safety.child",
+        "child-safety.create",
+        "child-safety.edit",
+        "child-safety.suspend"
+      ]
+    },
+    {
+      "id": "AP-D1-AAL",
+      "estado": "pacote pronto e provado, retido",
+      "falta": "Resposta da P11.",
+      "primeiro_gate": "Decisao do Owner. O pacote 20260910170900 aplica e passa 14 testes sobre a baseline; no dia da decisao e so aplicar.",
+      "achado_que_reduz_o_risco_da_pergunta": "O realm interno JA aceita aal1 em producao por decisao anterior do proprio Owner. superadmin_person_detail_v2 responde em aal1 hoje. Quem nega e o portao legado assert_people_permission, que ficou para tras quando o resto foi adiado. A opcao C que recomendo e mais conservadora do que o que ja vale no realm interno.",
+      "acoes_afetadas": [
+        "people.list",
+        "people.create",
+        "people.edit",
+        "escrita de Perfis e Modelos de acesso"
+      ]
+    },
+    {
+      "id": "golden-child_safety_directory_light_1440",
+      "estado": "falhando, PRE-EXISTENTE",
+      "detalhe": "1,58% e 22716px de diferenca. Conferido guardando a minha alteracao e rodando sem ela: falha identica, mesmos numeros. Veio no rebase sobre o composto, antes de qualquer coisa que eu tenha tocado.",
+      "primeiro_gate": "Achar a causa visual. NAO regravei e nao vou regravar: golden nao se regrava antes da correcao da causa.",
+      "acoes_afetadas": [
+        "child-safety.list"
+      ]
+    },
+    {
+      "id": "D1-acompanhamento",
+      "estado": "proposta de contrato escrita, sem acordo",
+      "primeiro_gate": "Acordo de quatro pontos com principal-chat-sistema: alvo do botao Acompanhar, contagem ou lista, se o automatico aparece em Seguindo, e quem consome primeiro. Nao escrevi migration para nao entregarmos dois modelos incompativeis.",
+      "arquivo": "docs/reviews/evidence/etapa-2/r03-acessos-pessoas/acompanhamento-d1-proposta.md"
+    },
+    {
+      "id": "arquivos-de-perfil",
+      "estado": "adiado por decisao, verificado e correto",
+      "detalhe": "Botoes visiveis, desabilitados, com rotulo semantico de indisponivel; sem picker, parser, job, RPC ou persistencia. Nada a fazer no MVP."
+    }
+  ],
+  "REPASSE_PARA_OUTRO_GRUPO": {
+    "para": "principal-chat-sistema",
+    "achado": "list_visible_happens_posts, chamada em features/principal_happens/data/supabase_principal_happens_feed_repository.dart, envia p_cursor_post_id e p_cursor_published_at, que producao NAO conhece. A chamada e recusada com PGRST202. A migration que acrescenta a paginacao, 20260910150000_happens_feed_pagination_v1, ainda nao foi aplicada. Foi a unica quebra de assinatura em todo o cliente na conferencia pos-lote 4."
+  },
+  "TESTES_P_F": {
+    "pgTAP_sobre_a_baseline": "Files=7, Tests=182, Result PASS, incluindo o pacote retido do AAL.",
+    "pgTAP_do_coordenador_em_producao": "Verde no espelho limpo dele: 42, 33, 45, 3, 43, 2.",
+    "flutter_seguranca": "175 testes; 1 falha, que e o golden pre-existente acima.",
+    "flutter_arquitetura": "2 testes, verde, com a allowlist mais apertada.",
+    "analyzer": "limpo em lib/features/safety e test/features/safety."
+  },
+  "NUMEROS_HONESTOS": {
+    "acoes_do_recorte": 38,
+    "com_backend_aplicado_em_producao": 16,
+    "verificadas_pela_regua_do_MVP": 0,
+    "por_que_zero": "A regua exige rota normal abrindo, CRUD persistindo, RLS negando outro tenant e reload mantendo estado. Sem sessao autenticada nada disso e demonstravel. Ter a funcao em producao e condicao necessaria, nao suficiente, e nao vou chamar de verificado o que nao verifiquei.",
+    "presas_em_decisao": "3 de Pessoas mais a escrita de Perfis e Modelos, na P11",
+    "adiadas_por_decisao": 6,
+    "backend_por_escrever": "Nenhum."
   }
 }

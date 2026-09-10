@@ -1,0 +1,225 @@
+{
+  "geradoEm": "2026-09-10T19:53:55.743Z",
+  "total": 18,
+  "resolvem": 18,
+  "negam": 18,
+  "linhas": [
+    {
+      "rpc": "superadmin_person_detail_v2",
+      "acoes": [
+        "people.links",
+        "people.reload"
+      ],
+      "existeNoDump": true,
+      "argumentos": 1,
+      "status": 401,
+      "resolveu": true,
+      "negou": true,
+      "amostra": "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for function superadmin_person_detail_v2\"}"
+    },
+    {
+      "rpc": "superadmin_invite_directory_v2",
+      "acoes": [
+        "invites.list"
+      ],
+      "existeNoDump": true,
+      "argumentos": 12,
+      "status": 401,
+      "resolveu": true,
+      "negou": true,
+      "amostra": "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for function superadmin_invite_directory_v2\"}"
+    },
+    {
+      "rpc": "superadmin_invite_options_v2",
+      "acoes": [
+        "invites.create (opcoes)"
+      ],
+      "existeNoDump": true,
+      "argumentos": 5,
+      "status": 401,
+      "resolveu": true,
+      "negou": true,
+      "amostra": "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for function superadmin_invite_options_v2\"}"
+    },
+    {
+      "rpc": "superadmin_invite_detail_v2",
+      "acoes": [
+        "invites.detail"
+      ],
+      "existeNoDump": true,
+      "argumentos": 1,
+      "status": 401,
+      "resolveu": true,
+      "negou": true,
+      "amostra": "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for function superadmin_invite_detail_v2\"}"
+    },
+    {
+      "rpc": "superadmin_invite_issue_v2",
+      "acoes": [
+        "invites.create"
+      ],
+      "existeNoDump": true,
+      "argumentos": 9,
+      "status": 401,
+      "resolveu": true,
+      "negou": true,
+      "amostra": "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for function superadmin_invite_issue_v2\"}"
+    },
+    {
+      "rpc": "superadmin_invite_resend_v2",
+      "acoes": [
+        "invites.resend"
+      ],
+      "existeNoDump": true,
+      "argumentos": 3,
+      "status": 401,
+      "resolveu": true,
+      "negou": true,
+      "amostra": "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for function superadmin_invite_resend_v2\"}"
+    },
+    {
+      "rpc": "superadmin_invite_revoke_v2",
+      "acoes": [
+        "invites.revoke"
+      ],
+      "existeNoDump": true,
+      "argumentos": 4,
+      "status": 401,
+      "resolveu": true,
+      "negou": true,
+      "amostra": "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for function superadmin_invite_revoke_v2\"}"
+    },
+    {
+      "rpc": "superadmin_internal_users_list",
+      "acoes": [
+        "internal-users.list"
+      ],
+      "existeNoDump": true,
+      "argumentos": 6,
+      "status": 401,
+      "resolveu": true,
+      "negou": true,
+      "amostra": "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for function superadmin_internal_users_list\"}"
+    },
+    {
+      "rpc": "superadmin_internal_user_profiles",
+      "acoes": [
+        "internal-users.list"
+      ],
+      "existeNoDump": true,
+      "argumentos": 0,
+      "status": 401,
+      "resolveu": true,
+      "negou": true,
+      "amostra": "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for function superadmin_internal_user_profiles\"}"
+    },
+    {
+      "rpc": "superadmin_internal_user_detail",
+      "acoes": [
+        "internal-users.edit"
+      ],
+      "existeNoDump": true,
+      "argumentos": 1,
+      "status": 401,
+      "resolveu": true,
+      "negou": true,
+      "amostra": "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for function superadmin_internal_user_detail\"}"
+    },
+    {
+      "rpc": "superadmin_child_safety_directory",
+      "acoes": [
+        "child-safety.list"
+      ],
+      "existeNoDump": true,
+      "argumentos": 6,
+      "status": 401,
+      "resolveu": true,
+      "negou": true,
+      "amostra": "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for function superadmin_child_safety_directory\"}"
+    },
+    {
+      "rpc": "superadmin_child_safety_get",
+      "acoes": [
+        "child-safety.child"
+      ],
+      "existeNoDump": true,
+      "argumentos": 1,
+      "status": 401,
+      "resolveu": true,
+      "negou": true,
+      "amostra": "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for function superadmin_child_safety_get\"}"
+    },
+    {
+      "rpc": "superadmin_child_safety_search_children",
+      "acoes": [
+        "child-safety.create (busca)"
+      ],
+      "existeNoDump": true,
+      "argumentos": 2,
+      "status": 401,
+      "resolveu": true,
+      "negou": true,
+      "amostra": "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for function superadmin_child_safety_search_chil"
+    },
+    {
+      "rpc": "superadmin_request_child_safety_export",
+      "acoes": [
+        "child-safety.list (export)"
+      ],
+      "existeNoDump": true,
+      "argumentos": 3,
+      "status": 401,
+      "resolveu": true,
+      "negou": true,
+      "amostra": "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for function superadmin_request_child_safety_exp"
+    },
+    {
+      "rpc": "child_safety_request_authorization",
+      "acoes": [
+        "child-safety.create"
+      ],
+      "existeNoDump": true,
+      "argumentos": 2,
+      "status": 401,
+      "resolveu": true,
+      "negou": true,
+      "amostra": "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for function child_safety_request_authorization\""
+    },
+    {
+      "rpc": "child_safety_edit_pending_authorization",
+      "acoes": [
+        "child-safety.edit"
+      ],
+      "existeNoDump": true,
+      "argumentos": 4,
+      "status": 401,
+      "resolveu": true,
+      "negou": true,
+      "amostra": "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for function child_safety_edit_pending_authoriza"
+    },
+    {
+      "rpc": "child_safety_decide_authorization",
+      "acoes": [
+        "child-safety.edit (decidir)"
+      ],
+      "existeNoDump": true,
+      "argumentos": 5,
+      "status": 401,
+      "resolveu": true,
+      "negou": true,
+      "amostra": "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for function child_safety_decide_authorization\"}"
+    },
+    {
+      "rpc": "child_safety_change_lifecycle",
+      "acoes": [
+        "child-safety.suspend"
+      ],
+      "existeNoDump": true,
+      "argumentos": 5,
+      "status": 401,
+      "resolveu": true,
+      "negou": true,
+      "amostra": "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for function child_safety_change_lifecycle\"}"
+    }
+  ]
+}

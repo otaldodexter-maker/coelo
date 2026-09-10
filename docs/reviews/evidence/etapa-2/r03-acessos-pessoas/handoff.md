@@ -140,3 +140,28 @@ a cadeia de migrations, nao sobre a baseline.
 ela entrar, e no mesmo movimento trocar a fixture de Seguranca infantil de
 `institution_type_id` para `unit_type_id` — a coordenacao confirmou que producao
 usa `unit_type_id`, o que responde a decisao AP-D3-UNITS que eu havia levantado.
+
+## Fechamento do corte de 17:10
+
+Base: `origin/dev` com a baseline de producao. Working tree limpo, sem WIP.
+
+**Lote 4 aplicado em producao** pelo coordenador, sem erro, com dump antes:
+`170100`, `170200`, `170300`, `170400`, `170500`, `170600`, `170700` e `170800`.
+O `170750` (envelope) nao entrou porque o preflight de md5 parou com
+*dependency drift* — o lote 3 ja tinha levado `SAI_INVALID_ARGUMENT` ao helper.
+E o desfecho certo: o preflight existia para parar em vez de sobrescrever.
+
+**Verificacao sem sessao das 18 RPCs:** existem, resolvem pela assinatura
+publicada, negam anonimo com `42501`, todas com `REVOKE ALL FROM PUBLIC` e
+`EXECUTE` so para `authenticated`, e zero divergencia de argumento com o
+cliente. **Nao promovido a `verified`**: sem sessao nao ha CRUD, reload nem
+negativa cross-tenant em producao.
+
+**Numeros honestos:** 16 das 38 acoes tem backend aplicado; **zero** estao
+verificadas pela regua do MVP. Ter a funcao em producao e condicao necessaria,
+nao suficiente.
+
+**Primeiro gate de cada pendencia:** P17 (usuario sintetico) para a regua;
+P11 para o AAL; causa visual do golden `child_safety_directory_light_1440`,
+que falha desde antes de eu tocar a tela; acordo de quatro pontos com
+`principal-chat-sistema` para o modelo de acompanhamento da D1.
