@@ -79,6 +79,10 @@ Nenhum golden foi regravado, conforme decisão da coordenação.
 
 Fora de golden, zero falhas.
 
+**Plataforma comum de mídia**, medida separadamente ao final: **82 PASS e 0
+FAIL** nos quatro gateways — `circular-media` 27, `moments-media` 26,
+`happens-media` 15 e `now-media` 14.
+
 ## Defeitos corrigidos, em ordem de gravidade
 
 1. **Vazamento de existência** em `withdraw_happens_post` (candidato). A função
