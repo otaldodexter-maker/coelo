@@ -139,9 +139,9 @@ if ($NominalProfile) {
     }
   }
   if ($NominalProfile -ceq 'InvitesV2') {
-    if ($canonical.Count -ne 66 -or $additionalCanonical.Count -ne 2 -or
+    if ($canonical.Count -ne 63 -or $additionalCanonical.Count -ne 1 -or
         $preflight.Count -ne 2) {
-      throw 'InvitesV2 requires 66 canonical migrations, two additions and two preflights'
+      throw 'InvitesV2 requires 63 canonical migrations, one candidate and two preflights'
     }
   }
   if ($NominalProfile -ceq 'PersonDetailV2') {
