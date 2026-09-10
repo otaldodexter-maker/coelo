@@ -20,7 +20,9 @@ final class SupabasePrincipalHappensFeedRepository
           'p_institution_id': scope.institutionId,
           'p_unit_id': scope.unitId,
           'p_group_id': scope.groupId,
-          'p_limit': 20,
+          'p_limit': scope.limit,
+          'p_cursor_published_at': scope.cursorPublishedAt?.toUtc().toIso8601String(),
+          'p_cursor_post_id': scope.cursorPostId,
         },
       );
       return response
@@ -143,6 +145,7 @@ PrincipalPostPreviewItem _postFromJson(Map<String, dynamic> json) {
     author: author,
     context: context,
     time: _relativeTime(publishedAt),
+    publishedAt: publishedAt,
     initials: initials,
     body: json['caption'] as String? ?? '',
     media: media,

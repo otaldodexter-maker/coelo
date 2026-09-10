@@ -14,7 +14,7 @@ select has_function('public','prepare_happens_media_upload',array['text','uuid',
 select has_function('public','finalize_happens_media_upload',array['uuid','uuid','text','bigint'],'upload finalization exists');
 select has_function('public','remove_happens_media',array['uuid'],'authorized media removal exists');
 select has_function('public','publish_happens_post',array['uuid','uuid','bigint','timestamp with time zone'],'publish command exists');
-select has_function('public','list_visible_happens_posts',array['uuid','uuid','uuid','integer'],'audience-resolved feed projection exists');
+select has_function('public','list_visible_happens_posts',array['uuid','uuid','uuid','integer','timestamp with time zone','uuid'],'audience-resolved feed projection exists');
 select has_function('public','redeem_happens_media_read_ticket',array['uuid','uuid'],'service-only ticket redemption exists');
 select has_function('app_private','happens_audience_matches_role',array['text','happens_audience_kind'],'audience matcher exists');
 select ok((select relrowsecurity and relforcerowsecurity from pg_class where oid='public.posts'::regclass),'posts force RLS');
@@ -32,23 +32,27 @@ select ok(not exists(select 1 from pg_policies where schemaname='storage' and ta
 select ok(position('happens.posts.create' in pg_get_functiondef('public.save_happens_draft(uuid,jsonb,uuid,bigint)'::regprocedure))>0,'save checks create capability');
 select ok(position('happens.posts.publish' in pg_get_functiondef('public.publish_happens_post(uuid,uuid,bigint,timestamptz)'::regprocedure))>0,'publish checks publish capability');
 select ok(exists(select 1 from public.institution_permissions where code='happens.posts.read'),'read capability exists');
-select ok(position('happens.posts.read' in pg_get_functiondef('public.list_visible_happens_posts(uuid,uuid,uuid,integer)'::regprocedure))>0,'feed checks read capability');
+select ok(position('happens.posts.read' in pg_get_functiondef('public.list_visible_happens_posts(uuid,uuid,uuid,integer,timestamptz,uuid)'::regprocedure))>0,'feed checks read capability');
 select ok(position('author_person_id' in pg_get_functiondef('public.prepare_happens_media_upload(text,uuid,uuid,text,text,bigint)'::regprocedure))>0,'upload preparation binds post ownership');
 select ok(position('institution_id=asset.institution_id' in replace(pg_get_functiondef('public.finalize_happens_media_upload(uuid,uuid,text,bigint)'::regprocedure),' ',''))>0,'media finalization binds post tenant');
-select ok(position('post.institution_id=p_institution_id' in replace(pg_get_functiondef('public.list_visible_happens_posts(uuid,uuid,uuid,integer)'::regprocedure),' ',''))>0,'feed query remains tenant scoped');
+select ok(position('post.institution_id=p_institution_id' in replace(pg_get_functiondef('public.list_visible_happens_posts(uuid,uuid,uuid,integer,timestamptz,uuid)'::regprocedure),' ',''))>0,'feed query remains tenant scoped');
 select ok(position('unit_scope_invalid' in pg_get_functiondef('public.save_happens_draft(uuid,jsonb,uuid,bigint)'::regprocedure))>0,'draft rejects cross-institution unit scope');
 select ok(position('group_scope_invalid' in pg_get_functiondef('public.save_happens_draft(uuid,jsonb,uuid,bigint)'::regprocedure))>0,'draft rejects cross-institution group scope');
 select ok(position('target.unit_id,target.group_id' in replace(pg_get_functiondef('public.prepare_happens_media_upload(text,uuid,uuid,text,text,bigint)'::regprocedure),' ',''))>0,'media authorization uses the post scope');
 select ok(position('expected_version' in pg_get_functiondef('public.save_happens_draft(uuid,jsonb,uuid,bigint)'::regprocedure))>0,'save uses optimistic version');
-select ok(position('publish_at' in pg_get_functiondef('public.list_visible_happens_posts(uuid,uuid,uuid,integer)'::regprocedure))>0,'feed visibility derives scheduled state from time');
+select ok(position('publish_at' in pg_get_functiondef('public.list_visible_happens_posts(uuid,uuid,uuid,integer,timestamptz,uuid)'::regprocedure))>0,'feed visibility derives scheduled state from time');
 select ok(position('published_media_immutable' in pg_get_functiondef('public.remove_happens_media(uuid)'::regprocedure))>0,'published media cannot be removed');
 select ok(
-  pg_get_function_result('public.list_visible_happens_posts(uuid,uuid,uuid,integer)'::regprocedure)
-    = 'TABLE(author_name text, author_initials text, context_label text, caption text, published_at timestamp with time zone, media jsonb)',
+  pg_get_function_result('public.list_visible_happens_posts(uuid,uuid,uuid,integer,timestamptz,uuid)'::regprocedure)
+    -- A projecao cresceu em 20260909213000, que acrescentou identidade, versao
+    -- otimista e autorizacao de retirada. A assercao ficou parada na forma
+    -- anterior; o que ela guarda continua sendo o mesmo: nenhuma coluna alem
+    -- do que a tela precisa, e nada de identificador de pessoa.
+    = 'TABLE(post_id uuid, author_name text, author_initials text, context_label text, caption text, published_at timestamp with time zone, management_version bigint, can_withdraw boolean, media jsonb)',
   'feed exposes only the minimum presentation projection'
 );
 select ok(
-  position('post_audiences' in pg_get_functiondef('public.list_visible_happens_posts(uuid,uuid,uuid,integer)'::regprocedure))>0,
+  position('post_audiences' in pg_get_functiondef('public.list_visible_happens_posts(uuid,uuid,uuid,integer,timestamptz,uuid)'::regprocedure))>0,
   'feed resolves post audiences'
 );
 select ok(
@@ -58,7 +62,7 @@ select ok(
   'feed keeps family, student and staff audiences separated'
 );
 select ok(
-  position('happens_media_read_tickets' in pg_get_functiondef('public.list_visible_happens_posts(uuid,uuid,uuid,integer)'::regprocedure))>0,
+  position('happens_media_read_tickets' in pg_get_functiondef('public.list_visible_happens_posts(uuid,uuid,uuid,integer,timestamptz,uuid)'::regprocedure))>0,
   'feed issues opaque media read tickets instead of storage paths'
 );
 select ok(

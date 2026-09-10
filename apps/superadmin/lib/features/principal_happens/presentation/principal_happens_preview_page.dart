@@ -117,6 +117,17 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
   final _likedPosts = <int>{};
   final _savedPosts = <int>{};
   List<PrincipalPostPreviewItem>? _remotePosts;
+
+  /// Escopo da proxima pagina do feed, montado a partir do ultimo item que o
+  /// servidor devolveu. Nulo quando a ultima pagina veio incompleta, que e como
+  /// o servidor diz que acabou.
+  PrincipalHappensFeedScope? _nextPageScope;
+
+  /// Cursor da proxima pagina do feed misto. O servidor ja devolvia
+  /// `nextCursor` desde 20260909214000; a tela descartava o valor e nunca
+  /// pedia a pagina seguinte.
+  PrincipalHappensFeedCursor? _nextMixedCursor;
+  var _loadingMore = false;
   List<PrincipalHappensFeedItem>? _mixedItems;
   Object? _feedError;
   var _feedLoading = false;
@@ -151,6 +162,10 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
     _dismissGallery();
     setState(() {
       _remotePosts = null;
+      _nextPageScope = null;
+      _nextMixedCursor = null;
+      _loadMoreError = null;
+      _loadingMore = false;
       _mixedItems = null;
       _likedPosts.clear();
       _savedPosts.clear();
@@ -166,6 +181,7 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
           _mixedItems = page.items;
           _remotePosts = null;
           _feedLoading = false;
+          _nextMixedCursor = page.nextCursor;
         });
       } on Object catch (error) {
         if (!mounted || request != _feedRequest) return;
@@ -186,6 +202,7 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
         _remotePosts = posts;
         _mixedItems = null;
         _feedLoading = false;
+        _nextPageScope = _scopeAfter(scope, posts);
       });
     } on Object catch (error) {
       if (!mounted || request != _feedRequest) return;
@@ -274,6 +291,76 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
       ..clearSnackBars()
       ..showSnackBar(SnackBar(content: Text(message)));
   }
+
+  /// Proxima pagina depois de [posts], ou `null` quando o servidor sinalizou o
+  /// fim devolvendo menos itens do que o limite pedido.
+  PrincipalHappensFeedScope? _scopeAfter(
+    PrincipalHappensFeedScope scope,
+    List<PrincipalPostPreviewItem> posts,
+  ) {
+    if (posts.length < scope.limit) return null;
+    return scope.after(posts.last);
+  }
+
+  /// Carregar mais (acontece.feed).
+  ///
+  /// A pagina seguinte vem do servidor pelo cursor keyset; o cliente nunca
+  /// corta em memoria nem inventa o fim da lista.
+  Future<void> _loadMore() async {
+    if (_loadingMore || _feedLoading) return;
+    final request = _feedRequest;
+    final mixedRepository = widget.mixedFeedRepository;
+    final mixedScope = widget.mixedFeedScope;
+    final mixedCursor = _nextMixedCursor;
+    if (mixedRepository != null && mixedScope != null && mixedCursor != null) {
+      setState(() {
+        _loadingMore = true;
+        _loadMoreError = null;
+      });
+      try {
+        final page = await mixedRepository.list(mixedScope, cursor: mixedCursor);
+        if (!mounted || request != _feedRequest) return;
+        setState(() {
+          _mixedItems = [...?_mixedItems, ...page.items];
+          _nextMixedCursor = page.nextCursor;
+          _loadingMore = false;
+        });
+      } on Object catch (error) {
+        if (!mounted || request != _feedRequest) return;
+        setState(() {
+          _loadingMore = false;
+          _loadMoreError = error;
+        });
+      }
+      return;
+    }
+    final repository = widget.feedRepository;
+    final next = _nextPageScope;
+    if (repository == null || next == null) return;
+    setState(() {
+      _loadingMore = true;
+      _loadMoreError = null;
+    });
+    try {
+      final posts = await repository.listVisiblePosts(next);
+      if (!mounted || request != _feedRequest) return;
+      setState(() {
+        _remotePosts = [...?_remotePosts, ...posts];
+        _nextPageScope = _scopeAfter(next, posts);
+        _loadingMore = false;
+      });
+    } on Object catch (error) {
+      if (!mounted || request != _feedRequest) return;
+      // A pagina seguinte falhar nao apaga o que ja esta na tela: o erro vira
+      // uma nova tentativa possivel, e o cursor permanece onde estava.
+      setState(() {
+        _loadingMore = false;
+        _loadMoreError = error;
+      });
+    }
+  }
+
+  Object? _loadMoreError;
 
   void _prototypeMessage(String label) {
     ScaffoldMessenger.of(
@@ -409,6 +496,10 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
                         : null,
                     withdrawingPostId: _withdrawingPostId,
                     embedded: widget.embedded,
+                    canLoadMore: _nextPageScope != null || _nextMixedCursor != null,
+                    loadingMore: _loadingMore,
+                    loadMoreError: _loadMoreError,
+                    onLoadMore: _loadMore,
                   ),
                 ),
                 if (large)
@@ -461,6 +552,10 @@ final class _Feed extends StatelessWidget {
     required this.onWithdraw,
     required this.withdrawingPostId,
     required this.embedded,
+    required this.canLoadMore,
+    required this.loadingMore,
+    required this.loadMoreError,
+    required this.onLoadMore,
   });
 
   final PrincipalHappensPreviewData data;
@@ -486,6 +581,10 @@ final class _Feed extends StatelessWidget {
   final ValueChanged<PrincipalPostPreviewItem>? onWithdraw;
   final String? withdrawingPostId;
   final bool embedded;
+  final bool canLoadMore;
+  final bool loadingMore;
+  final Object? loadMoreError;
+  final VoidCallback onLoadMore;
 
   @override
   Widget build(BuildContext context) {
@@ -546,6 +645,22 @@ final class _Feed extends StatelessWidget {
             itemBuilder: (context, index) => Padding(
               padding: EdgeInsets.symmetric(horizontal: compact ? 0 : horizontal),
               child: _feedItem(index),
+            ),
+          ),
+        if (canLoadMore || loadingMore || loadMoreError != null)
+          SliverPadding(
+            padding: EdgeInsets.fromLTRB(
+              horizontal,
+              CoeloSpacing.space3,
+              horizontal,
+              0,
+            ),
+            sliver: SliverToBoxAdapter(
+              child: _LoadMoreFooter(
+                loading: loadingMore,
+                error: loadMoreError,
+                onPressed: onLoadMore,
+              ),
             ),
           ),
         const SliverToBoxAdapter(child: SizedBox(height: 150)),
@@ -745,6 +860,55 @@ final class _NowSection extends StatelessWidget {
                         : 104,
                     onPressed: onOpenItem,
                   ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Rodape de paginacao do feed.
+///
+/// Aparece somente quando o servidor indicou que ha mais: uma pagina cheia. A
+/// falha da pagina seguinte nao apaga o que ja esta na tela; vira uma nova
+/// tentativa.
+final class _LoadMoreFooter extends StatelessWidget {
+  const _LoadMoreFooter({required this.loading, required this.error, required this.onPressed});
+
+  final bool loading;
+  final Object? error;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    if (loading) {
+      return const Center(
+        key: Key('principal-happens-load-more-loading'),
+        child: Padding(
+          padding: EdgeInsets.all(CoeloSpacing.space3),
+          child: SizedBox(height: 24, width: 24, child: CircularProgressIndicator(strokeWidth: 2)),
+        ),
+      );
+    }
+    return Column(
+      children: [
+        if (error != null)
+          Padding(
+            padding: const EdgeInsets.only(bottom: CoeloSpacing.space2),
+            child: Text(
+              error is PrincipalHappensFeedUnauthorized
+                  ? 'Sem acesso ao restante do feed.'
+                  : 'Nao foi possivel carregar mais publicacoes.',
+              key: const Key('principal-happens-load-more-error'),
+              style: Theme.of(context).textTheme.bodySmall,
+              textAlign: TextAlign.center,
+            ),
+          ),
+        Center(
+          child: OutlinedButton(
+            key: const Key('principal-happens-load-more'),
+            onPressed: onPressed,
+            child: Text(error == null ? 'Carregar mais' : 'Tentar novamente'),
           ),
         ),
       ],
