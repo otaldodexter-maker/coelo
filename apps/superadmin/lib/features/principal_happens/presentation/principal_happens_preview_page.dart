@@ -362,19 +362,11 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
 
   Object? _loadMoreError;
 
-  void _prototypeMessage(String label) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('$label estará disponível na experiência completa.')));
-  }
-
-  void _invoke(VoidCallback? callback, String fallback) {
-    if (callback == null) {
-      _prototypeMessage(fallback);
-    } else {
-      callback();
-    }
-  }
+  /// Decisao do Owner em 10/09/2026 (D3): nao existe previa. Uma acao sem
+  /// destino nao anuncia que estara disponivel algum dia; ela simplesmente nao
+  /// se oferece. Na rota real o composition root fornece todos estes destinos,
+  /// entao o controle desabilitado so aparece em composicao incompleta, que e
+  /// exatamente o que precisa ficar visivel para quem monta a tela.
 
   Future<void> _openGallery(PrincipalPostPreviewItem post) async {
     if (!mounted || _feedLoading || _feedError != null || _galleryRoute != null) return;
@@ -449,9 +441,9 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
       return Scaffold(
         backgroundColor: Theme.of(context).colorScheme.surface,
         appBar: PrincipalGlobalHeader(
-          onOpenMenu: () => _invoke(widget.onOpenMenu, 'Menu'),
-          onOpenNotifications: () => _invoke(widget.onOpenNotifications, 'Notificações'),
-          onOpenProfile: () => _invoke(widget.onOpenProfile, 'Perfil'),
+          onOpenMenu: () => widget.onOpenMenu?.call(),
+          onOpenNotifications: () => widget.onOpenNotifications?.call(),
+          onOpenProfile: () => widget.onOpenProfile?.call(),
         ),
         body: Stack(
           children: [
@@ -472,11 +464,11 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
                     onRetry: _loadFeed,
                     compact: compact,
                     onCreatePost: () =>
-                        _invoke(widget.onPublishNow ?? widget.onCreatePost, 'Publicar no Agora'),
-                    onMoments: () => _invoke(widget.onOpenMoments, 'Momentos'),
-                    onProfile: () => _invoke(widget.onOpenProfile, 'Perfil'),
-                    onOpenNow: () => _invoke(widget.onOpenNow, 'Agora'),
-                    onForYou: () => _invoke(widget.onOpenForYou, 'Para você'),
+                        (widget.onPublishNow ?? widget.onCreatePost)?.call(),
+                    onMoments: () => widget.onOpenMoments?.call(),
+                    onProfile: () => widget.onOpenProfile?.call(),
+                    onOpenNow: () => widget.onOpenNow?.call(),
+                    onForYou: () => widget.onOpenForYou?.call(),
                     likedPosts: _likedPosts,
                     savedPosts: _savedPosts,
                     onLike: (index) => setState(() {
@@ -489,7 +481,6 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
                           ? _savedPosts.remove(index)
                           : _savedPosts.add(index);
                     }),
-                    onPrototypeAction: _prototypeMessage,
                     onOpenGallery: _galleryOpener(),
                     onWithdraw: widget.feedRepository is PrincipalHappensPostWithdrawal
                         ? _withdrawPost
@@ -505,20 +496,19 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
                 if (large)
                   _ContextColumn(
                     data: widget.data,
-                    onOpenAgenda: () => _invoke(widget.onOpenAgenda, 'Agenda'),
-                    onAction: _prototypeMessage,
+                    onOpenAgenda: () => widget.onOpenAgenda?.call(),
                   ),
               ],
             ),
             PrincipalGlobalNavigation(
               selected: PrincipalDestination.home,
               onHome: () {},
-              onForYou: () => _invoke(widget.onOpenForYou, 'Para você'),
+              onForYou: () => widget.onOpenForYou?.call(),
               onPublishNow: () =>
-                  _invoke(widget.onPublishNow ?? widget.onCreatePost, 'Publicar no Agora'),
-              onMoments: () => _invoke(widget.onOpenMoments, 'Momentos'),
-              onSearch: () => _invoke(widget.onOpenSearch, 'Pesquisar'),
-              onMessages: () => _invoke(widget.onOpenMessages, 'Mensagens'),
+                  (widget.onPublishNow ?? widget.onCreatePost)?.call(),
+              onMoments: () => widget.onOpenMoments?.call(),
+              onSearch: () => widget.onOpenSearch?.call(),
+              onMessages: () => widget.onOpenMessages?.call(),
             ),
           ],
         ),
@@ -547,7 +537,6 @@ final class _Feed extends StatelessWidget {
     required this.savedPosts,
     required this.onLike,
     required this.onSave,
-    required this.onPrototypeAction,
     required this.onOpenGallery,
     required this.onWithdraw,
     required this.withdrawingPostId,
@@ -576,7 +565,6 @@ final class _Feed extends StatelessWidget {
   final Set<int> savedPosts;
   final ValueChanged<int> onLike;
   final ValueChanged<int> onSave;
-  final ValueChanged<String> onPrototypeAction;
   final ValueChanged<PrincipalPostPreviewItem> onOpenGallery;
   final ValueChanged<PrincipalPostPreviewItem>? onWithdraw;
   final String? withdrawingPostId;
@@ -692,7 +680,6 @@ final class _Feed extends StatelessWidget {
     saved: savedPosts.contains(index),
     onLike: () => onLike(index),
     onSave: () => onSave(index),
-    onAction: onPrototypeAction,
     onOpenGallery: () => onOpenGallery(post),
     onWithdraw: onWithdraw == null || !post.isWithdrawable ? null : () => onWithdraw!(post),
     withdrawing: withdrawingPostId != null && withdrawingPostId == post.postId,
@@ -954,19 +941,19 @@ final class _PublishNowCard extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    // MAIS (decisao dos goldens de 10/09/2026): o botao e
+                    // laranja com o "+" branco em qualquer estado; o tracejado
+                    // continua sendo o que responde ao hover.
                     DecoratedBox(
                       key: const Key('principal-happens-publish-now-action'),
                       decoration: BoxDecoration(
-                        color: active ? colors.primary : colors.surface,
+                        color: colors.primary,
                         shape: BoxShape.circle,
                       ),
                       child: SizedBox(
                         width: 44,
                         height: 44,
-                        child: Icon(
-                          Icons.add_rounded,
-                          color: active ? colors.onPrimary : colors.primary,
-                        ),
+                        child: Icon(Icons.add_rounded, color: colors.onPrimary),
                       ),
                     ),
                     const SizedBox(height: CoeloSpacing.space2),
@@ -1125,7 +1112,6 @@ final class _PostCard extends StatelessWidget {
     required this.saved,
     required this.onLike,
     required this.onSave,
-    required this.onAction,
     required this.onOpenGallery,
     required this.onWithdraw,
     required this.withdrawing,
@@ -1140,7 +1126,6 @@ final class _PostCard extends StatelessWidget {
   final bool saved;
   final VoidCallback onLike;
   final VoidCallback onSave;
-  final ValueChanged<String> onAction;
   final VoidCallback onOpenGallery;
   final VoidCallback? onWithdraw;
   final bool withdrawing;
@@ -1191,7 +1176,6 @@ final class _PostCard extends StatelessWidget {
                 ),
                 _PostOverflowAction(
                   index: index,
-                  onAction: onAction,
                   onWithdraw: onWithdraw,
                   withdrawing: withdrawing,
                 ),
@@ -1220,17 +1204,19 @@ final class _PostCard extends StatelessWidget {
                   label: post.likes == null ? null : '${post.likes! + (liked ? 1 : 0)}',
                   onPressed: onLike,
                 ),
-                _SocialAction(
+                // Comentar e compartilhar nao existem no servidor: nenhuma
+                // migration cria tabela de comentario ou de compartilhamento.
+                // O controle fica visivel e desabilitado, que e honesto, em vez
+                // de abrir um aviso de previa.
+                const _SocialAction(
                   tooltip: 'Comentar',
                   icon: Icons.chat_bubble_outline_rounded,
-                  label: post.comments?.toString(),
-                  onPressed: () => onAction('Comentários'),
+                  onPressed: null,
                 ),
-                _SocialAction(
+                const _SocialAction(
                   tooltip: 'Compartilhar',
                   icon: Icons.ios_share_rounded,
-                  label: post.shares?.toString(),
-                  onPressed: () => onAction('Compartilhamento'),
+                  onPressed: null,
                 ),
                 const Spacer(),
                 IconButton(
@@ -1278,13 +1264,11 @@ final class _PostCard extends StatelessWidget {
 final class _PostOverflowAction extends StatelessWidget {
   const _PostOverflowAction({
     required this.index,
-    required this.onAction,
     required this.onWithdraw,
     required this.withdrawing,
   });
 
   final int index;
-  final ValueChanged<String> onAction;
   final VoidCallback? onWithdraw;
   final bool withdrawing;
 
@@ -1303,17 +1287,18 @@ final class _PostOverflowAction extends StatelessWidget {
     }
     final withdraw = onWithdraw;
     if (withdraw == null) {
-      return IconButton(
+      // Sem autorizacao de retirada, o menu nao tem nenhuma opcao real.
+      return const IconButton(
         tooltip: 'Mais opções da publicação',
-        onPressed: () => onAction('Opções da publicação'),
-        icon: const Icon(Icons.more_horiz_rounded),
+        onPressed: null,
+        icon: Icon(Icons.more_horiz_rounded),
       );
     }
     return PopupMenuButton<String>(
       key: Key('principal-happens-options-post-$index'),
       tooltip: 'Mais opções da publicação',
       icon: const Icon(Icons.more_horiz_rounded),
-      onSelected: (value) => value == 'withdraw' ? withdraw() : onAction('Opções da publicação'),
+      onSelected: (value) => value == 'withdraw' ? withdraw() : null,
       itemBuilder: (context) => [
         const PopupMenuItem<String>(
           value: 'withdraw',
@@ -1477,16 +1462,6 @@ final class _HappensGalleryState extends State<_HappensGallery> {
 
   void _move(int delta) => setState(() => _index = (_index + delta + _count) % _count);
 
-  void _invokeOrExplain(VoidCallback? callback, String action) {
-    if (callback != null) {
-      callback();
-      return;
-    }
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('$action indisponível nesta prévia.')));
-  }
-
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
@@ -1624,13 +1599,15 @@ final class _HappensGalleryState extends State<_HappensGallery> {
                     const SizedBox(width: CoeloSpacing.space2),
                     IconButton(
                       tooltip: 'Compartilhar mídia',
-                      onPressed: () => _invokeOrExplain(widget.onShare, 'Compartilhamento'),
+                      // Sem destino no servidor, o controle fica inerte em vez
+                      // de anunciar previa (D3).
+                      onPressed: widget.onShare,
                       color: Colors.white,
                       icon: const Icon(Icons.ios_share_rounded),
                     ),
                     IconButton(
                       tooltip: 'Salvar mídia',
-                      onPressed: () => _invokeOrExplain(widget.onSave, 'Salvar mídia'),
+                      onPressed: widget.onSave,
                       color: Colors.white,
                       icon: const Icon(Icons.bookmark_border_rounded),
                     ),
@@ -1822,7 +1799,7 @@ final class _AuthorizedMediaState extends State<_AuthorizedMedia> with WidgetsBi
                   ),
                   const SizedBox(height: CoeloSpacing.space3),
                   const Text(
-                    'Reprodução de vídeo indisponível nesta prévia.',
+                    'Não foi possível reproduzir este vídeo.',
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: CoeloSpacing.space3),
@@ -1915,7 +1892,10 @@ final class _SocialAction extends StatelessWidget {
   final String tooltip;
   final IconData icon;
   final String? label;
-  final VoidCallback onPressed;
+
+  /// Nulo desabilita o controle. Uma acao sem destino real fica visivel e
+  /// inerte, em vez de anunciar indisponibilidade.
+  final VoidCallback? onPressed;
   final Color? color;
 
   @override
@@ -1974,10 +1954,9 @@ final class _AvatarStack extends StatelessWidget {
 }
 
 final class _ContextColumn extends StatelessWidget {
-  const _ContextColumn({required this.data, required this.onOpenAgenda, required this.onAction});
+  const _ContextColumn({required this.data, required this.onOpenAgenda});
   final PrincipalHappensPreviewData data;
   final VoidCallback onOpenAgenda;
-  final ValueChanged<String> onAction;
 
   @override
   Widget build(BuildContext context) => SizedBox(
@@ -2010,14 +1989,14 @@ final class _ContextColumn extends StatelessWidget {
           _ContextPanel(
             title: 'Avisos importantes',
             action: 'Ver todos',
-            onAction: () => onAction('Todos os avisos'),
+            onAction: null,
             children: [for (final notice in data.notices) _NoticeCard(notice: notice)],
           ),
           const SizedBox(height: CoeloSpacing.space3),
           _ContextPanel(
             title: 'Aniversariantes',
             action: 'Ver todos',
-            onAction: () => onAction('Aniversariantes'),
+            onAction: null,
             children: [for (final birthday in data.birthdays) _BirthdayRow(item: birthday)],
           ),
         ],
@@ -2035,7 +2014,9 @@ final class _ContextPanel extends StatelessWidget {
   });
   final String title;
   final String action;
-  final VoidCallback onAction;
+
+  /// Nulo desabilita o atalho do painel.
+  final VoidCallback? onAction;
   final List<Widget> children;
 
   @override

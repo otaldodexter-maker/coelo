@@ -320,7 +320,10 @@ void main() {
     expect(
       find.descendant(
         of: gallery,
-        matching: find.text('Reprodução de vídeo indisponível nesta prévia.'),
+        // D3 (10/09/2026): nao existe previa. A falha de reproducao continua
+        // sendo dita ao leitor, mas como falha real, nao como limitacao de uma
+        // demonstracao.
+        matching: find.text('Não foi possível reproduzir este vídeo.'),
       ),
       findsOneWidget,
     );
@@ -337,16 +340,25 @@ void main() {
     expect(repository.listCalls, 1);
   });
 
-  testWidgets('reports unavailable gallery actions instead of simulating success', (tester) async {
+  testWidgets('acao de galeria sem destino fica inerte, sem anunciar previa', (tester) async {
+    // O caso guardava o oposto: exigia o aviso "indisponivel nesta previa". A
+    // D3 do Owner encerrou a previa, e a regra que a substitui e que a acao sem
+    // destino nao se oferece.
     await pumpHappens(tester, size: const Size(375, 900));
     await tester.drag(find.byKey(const Key('principal-happens-feed')), const Offset(0, -430));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('principal-happens-media-post-0')));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byTooltip('Compartilhar mídia'));
+    final share = tester
+        .widgetList<IconButton>(find.byType(IconButton))
+        .firstWhere((button) => button.tooltip == 'Compartilhar mídia');
+    expect(share.onPressed, isNull);
+
+    await tester.tap(find.byTooltip('Compartilhar mídia'), warnIfMissed: false);
     await tester.pump();
-    expect(find.text('Compartilhamento indisponível nesta prévia.'), findsOneWidget);
+    expect(find.textContaining('prévia'), findsNothing);
+    expect(find.byType(SnackBar), findsNothing);
   });
 
   testWidgets('keeps tablet anatomy without desktop side columns', (tester) async {
