@@ -1,12 +1,12 @@
 {
- "revision": 20,
+ "revision": 21,
  "round": "E2-R03-20260910",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5[1m]",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-10T17:55:00-03:00",
+ "updatedAt": "2026-09-10T18:15:00-03:00",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-formularios-cuidado-rotina",
  "branch": "work/etapa2-r03-formularios-cuidado-rotina",
  "head": "1c188091f",
@@ -70,7 +70,7 @@
   }
  ],
  "deltaProposals": [],
- "nextStep": "Confirmar o conflito do golden de medicacao; enquanto isso, tela de gestao de aluno e cliente das familias novas.",
+ "nextStep": "Tela de gestao de aluno; depois a rota normal contra producao, quando o coordenador ligar as chaves.",
  "findings": [
   {
    "id": "F-R03-FCR-001",
@@ -595,5 +595,27 @@
   "ja_em_migrations_porque_ja_aplicados": [
    "20260910010000 a 20260910010500, lote 2, aplicados em producao as 16:03"
   ]
+ },
+ "handoff": "docs/reviews/etapa-2-operacao/comunicacao/formularios-cuidado-rotina-handoff.md",
+ "ledgerRemoto": {
+  "conferido_por": "supabase migration list --linked, 2026-09-10",
+  "meus_pacotes_em_producao": [
+   "20260910010000",
+   "20260910010100",
+   "20260910010200",
+   "20260910010300",
+   "20260910010400",
+   "20260910010500",
+   "20260910220000",
+   "20260910220100",
+   "20260910220200"
+  ],
+  "fila_de_formularios_em_producao": "20260910230001 a 20260910230011, onze entradas, que batem com as duas de Estrutura mais as nove de Formularios que eu havia medido",
+  "conclusao": "o backend do recorte inteiro esta aplicado em producao: rotina, assiduidade, cuidado, medicacao, alunos e formularios"
+ },
+ "provaHttpQueNaoProvaDeploy": {
+  "o_que_fiz": "chamei quatro RPCs com a chave publicavel; todas responderam HTTP 404",
+  "o_que_isso_diz": "e o esperado para funcao que anon nao pode executar, porque o PostgREST esconde o que o papel nao alcanca",
+  "o_que_isso_NAO_diz": "404 nao distingue negado de ausente. Quem prova a implantacao e o ledger, nao essa chamada. Registrado aqui para ninguem citar o 404 como prova de deploy nem como prova de negativa."
  }
 }
