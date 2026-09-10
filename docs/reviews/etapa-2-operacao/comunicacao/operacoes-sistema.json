@@ -1,10 +1,10 @@
 {
-  "revision": 56,
-  "updated_at": "2026-09-10T04:29:11-03:00",
+  "revision": 58,
+  "updated_at": "2026-09-10T04:39:19-03:00",
   "group": "operacoes-sistema",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) — claude-opus-5[1m]",
-  "status": "congelado; sem lote novo desde 04:16; disponivel para correcao apontada pelo coordenador ate 05:00",
+  "status": "congelado as 04:38 pelo relogio do coordenador; pre-entrega publicada; paro as 05:00",
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-operacoes-sistema",
   "branch": "work/etapa2-noturna-operacoes-sistema",
@@ -1751,7 +1751,8 @@
       "pendentes": [
         "52a9ce1ca test(contracts): assert the field length numbers the forms mirror"
       ],
-      "estado": "HEAD 52a9ce1ca, empurrado para origin/work/etapa2-noturna-operacoes-sistema, zero a frente do proprio upstream. Em relacao a origin/dev: 1 commit meu ainda nao integrado e 264 commits de outras frentes que eu NAO trouxe, de proposito, para nao mexer na arvore durante a medicao de fechamento."
+      "estado": "HEAD 52a9ce1ca, empurrado para origin/work/etapa2-noturna-operacoes-sistema, zero a frente do proprio upstream. Em relacao a origin/dev: 1 commit meu ainda nao integrado e 264 commits de outras frentes que eu NAO trouxe, de proposito, para nao mexer na arvore durante a medicao de fechamento.",
+      "CRITERIO_CORRIGIDO": "O coordenador integra por CHERRY-PICK, nao por merge, e corrigiu isso as 04:37. Ancestralidade do SHA original responde NAO para sempre nesse regime. O residual vale pelo criterio de CONTEUDO, registrado em residual_por_conteudo: ZERO. Dos 24 arquivos que eu toquei, so superadmin_router.dart difere do meu HEAD, e a diferenca e de outras frentes que eu nao tenho por estar atras de dev. Conferi sete marcas de conteudo meu diretamente nos arquivos de dev: todas presentes."
     },
     "2_numeros_com_caminhos": {
       "comando": "flutter test, a partir de apps/superadmin, reporter PADRAO redirecionado para arquivo. Sem -r expanded e sem --file-reporter.",
@@ -1783,7 +1784,8 @@
         "contagem": "32 processos vivos na maquina: 21 dart e 11 flutter_tester. O mais antigo comecou 09/09 as 14:02, catorze horas antes desta medicao.",
         "nao_matei_nada": "Conforme o protocolo: nao matei nenhum. O coordenador cruza as seis frentes e mata o conjunto no fechamento.",
         "CORRECAO_DO_QUE_EU_DECLAREI": "O meu item 4 dizia 'processos filhos: nenhum'. Isso estava errado pelo motivo exato que o coordenador antecipou: eu olhei o que ABRI deliberadamente e que terminou — as duas corridas em segundo plano — e nao o que FICOU na maquina. Cada corrida de flutter test deixa processos vivos, e eu rodei dezenas de corridas nesta noite. A contagem de 32 e da maquina inteira, compartilhada com as outras frentes, e eu nao consigo atribuir quantos sao meus: nao registrei PID por corrida. Declaro a contagem total e a impossibilidade de atribuir, em vez de estimar uma fatia.",
-        "licao": "Terceira ocorrencia da mesma lei na noite, agora em processo: caminho declarado, recurso declarado e processo declarado erram todos por serem escritos a partir do que o autor lembra de ter feito, e nao de uma medicao do estado."
+        "licao": "Terceira ocorrencia da mesma lei na noite, agora em processo: caminho declarado, recurso declarado e processo declarado erram todos por serem escritos a partir do que o autor lembra de ter feito, e nao de uma medicao do estado.",
+        "recontagem_no_congelamento": "28 processos dart e flutter_tester as 04:38:59, contra 32 as 04:12. Nao matei nenhum; a queda e de corridas de outras frentes terminando. A fatia minha continua nao atribuivel, por nao ter registrado PID por corrida."
       }
     },
     "6_citacoes_seguidas": {
@@ -1805,7 +1807,8 @@
       "units.list/create/edit/filters": "blocked-environment. Cinco RPCs que nenhum arquivo do pacote cria, medido com controle negativo no versionamento e NAO medido em producao. BIFURCACAO, no texto da linha: se as funcoes existirem instaladas fora do versionamento, blocked-environment descreve a coisa certa pelo motivo errado, porque a superficie funciona e o que falta e revisabilidade; se nao existirem, o diretorio falha fail-closed e o usuario ve tente novamente para sempre, porque PGRST202 chega com a mesma aparencia de queda de rede, o que eu provei em teste. Um select de catalogo decide, e responde junto pelas cinco de Assiduidade e pelos 40 objetos app_private de outras frentes.",
       "groups.filters": "blocked-environment, por dependencia e nao por implementacao propria: reusa duas das cinco RPCs. Mesma bifurcacao, no texto.",
       "meal-plans.image-delete": "blocked-decision. A guarda de revisao existe no banco desde a migration de recibos e nunca roda, porque o cliente chama a forma legada de dois argumentos. BIFURCACAO, no texto: se a decisao for manter a forma legada, a guarda e codigo morto e deveria sair do banco para nao dar falsa sensacao de protecao; se for usar a de tres argumentos, o dominio de imagem precisa expor a revisao que o usuario viu, e ler a revisao no cliente logo antes do delete reproduziria o furo que a guarda fecha."
-    }
+    },
+    "5_hora_lida_no_congelamento": "2026-09-10 04:38:59 -0300, saida crua de date na mesma chamada que mediu o estado. A leitura do coordenador, 04:38:01, e a que prevalece por acordo; a minha e 58 segundos depois dela, o que e o tempo entre os dois blocos."
   },
   "auditoria_de_campos_de_estado": {
     "hora": "2026-09-10T04:05:28-03:00",
@@ -1868,5 +1871,27 @@
     "commits_meus_fora_de_dev": "1",
     "nota": "Os commits fora de dev sao os de documento e teste que o coordenador disse que entram no proximo ciclo. Nao integrei os commits de outras frentes para ca, de proposito: trazer a arvore inteira depois da medicao de fechamento invalidaria os numeros que eu acabei de entregar.",
     "ultimo_lote": "9fed2950d, carimbo do handoff passando a ser lido do commit em vez de digitado a mao."
+  },
+  "residual_por_conteudo": {
+    "hora": "2026-09-10T04:38:38-03:00",
+    "por_que_refiz": "O coordenador corrigiu a si mesmo: ele integra por CHERRY-PICK, nao por merge. Entao merge-base --is-ancestor do meu SHA contra origin/dev responde errado por construcao, porque o commit entra em dev com identidade nova. O instrumento que a rodada inteira usou para medir residual foi distribuido pelo integrador e contradiz o metodo de integracao dele.",
+    "tres_instrumentos_tres_respostas": [
+      "ANCESTRALIDADE do SHA: dizia 23 de 24 ancestrais. Criterio errado para quem integra por cherry-pick; acertou por acidente, porque houve merge de dev para a minha branch em algum momento da noite.",
+      "DIFF DO SHA ANTIGO contra dev, por caminho do commit: acusou OITO divergentes. Tambem errado, e o erro e meu: comparar a versao de um commit antigo inclui as MINHAS proprias alteracoes posteriores no mesmo arquivo. rpc_contract_test.dart 'divergia' porque eu o estendi duas vezes depois.",
+      "DIFF DO MEU HEAD contra dev, arquivo por arquivo, mais presenca das minhas marcas no conteudo de dev: este e o que pergunta a coisa certa — o meu conteudo esta em dev?"
+    ],
+    "resultado": "RESIDUAL ZERO por conteudo. Dos 24 arquivos que eu toquei, apenas UM difere entre o meu HEAD e dev: superadmin_router.dart, 62 linhas, e a diferenca e de OUTRAS frentes que eu nao tenho por estar atras de dev, como responseSummarySource de Circulares. Nenhuma linha minha falta. Conferi tambem quatro marcas de conteudo diretamente no arquivo de dev: o comentario de Agenda no router, o limite de 240 do titulo, a restricao plans_name_length e a extensao MealPlanStatusDatabaseValue. As quatro estao em dev.",
+    "licao": "Ancestralidade do SHA so vale quando o integrador faz merge, e quem define isso e o integrador e nao quem mede. A pergunta que sobrevive a qualquer metodo de integracao e 'o meu CONTEUDO esta la', e ela se responde por diff do estado final mais presenca de marca, nao por identidade de commit."
+  },
+  "estado_na_entrega": {
+    "hora": "2026-09-10 04:38:59 -0300",
+    "head": "dd1a95bcd",
+    "upstream": "0 a frente, 0 atras",
+    "worktree": "0 linhas",
+    "stash": "0",
+    "dev_congelada": "5ac61f6d7",
+    "residual": "zero por conteudo",
+    "processos": "28 vivos na maquina, nenhum morto por mim",
+    "operacao_remota": "nenhuma na rodada inteira"
   }
 }

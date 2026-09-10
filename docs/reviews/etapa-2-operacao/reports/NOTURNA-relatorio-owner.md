@@ -1831,10 +1831,27 @@ prova. A frente que agiu certo foi a que fez as duas coisas: mediu, discordou de
 mim e insistiu antes do congelamento — porque, nas palavras dela, **conferência que
 só vale antes da ação tem de acontecer antes da ação**.
 
-O critério correto, publicado às seis frentes: residual se mede por **conteúdo** —
-diferença vazia nos caminhos do commit — ou procurando a linha `cherry picked from
-commit <sha>` no histórico da base. Ancestralidade do SHA original só é válida
-quando o integrador faz merge, e quem define isso é o integrador, não quem mede.
+Distribuí então um critério substituto — diferença vazia nos caminhos do commit —
+**e ele estava errado também**, na direção oposta e pior. Uma frente mediu os três
+lado a lado sobre os mesmos 27 commits e devolveu: ancestralidade acerta 22, o
+rastro de cherry-pick acerta 27, e a diferença de conteúdo acerta **8**. O motivo é
+elementar depois de visto: a base **anda**, outras frentes tocam os mesmos arquivos,
+e a diferença deixa de ser vazia mesmo com a mudança lá dentro. A condição que o
+critério exige — ninguém mais tocou aqueles caminhos depois — quase nunca vale numa
+noite de seis frentes.
+
+**Eu teria feito cinco frentes reportarem trabalho retido que não existe**, e desta
+vez o erro apontaria para a direção alarmante em vez da tranquilizadora. O critério
+que funciona é o rastro: procurar `cherry picked from commit <sha>` no histórico da
+base publicada, com a ancestralidade como sinal **complementar** — quando os dois
+concordam a confiança é maior, e quando só o rastro responde, ainda assim chegou.
+
+E a frente que mediu recusou a minha autoflagelação com um argumento melhor que ela:
+os 22 ancestrais mostram que os dois caminhos de integração coexistiram na noite, e
+o instrumento que eu distribuí **não estava errado — estava certo para uma parte e
+cego para outra**, que é a forma mais difícil de perceber, porque nunca responde
+obviamente errado. Foi preciso um commit recente, ainda não ancestral, para a
+cegueira aparecer.
 
 E uma frente fez, com o método novo, a coisa que este relatório inteiro vem
 pedindo: **validou o instrumento nos casos em que a resposta já era conhecida antes
