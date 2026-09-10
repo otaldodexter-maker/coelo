@@ -75,4 +75,26 @@ void main() {
     );
     expect(find.byType(SafetyChildDirectoryCard), findsWidgets);
   });
+
+  testWidgets('the deferred import stays visible and honestly unavailable', (tester) async {
+    await _pumpDirectory(tester, const Size(1440, 1000));
+
+    // The key lives on the action model, not on a widget, so the toolbar is
+    // reached the same way its sibling export assertion reaches it.
+    // The toolbar groups file actions behind an "Arquivos" menu.
+    await tester.tap(find.text('Arquivos'));
+    await tester.pumpAndSettle();
+
+    final importAction = find.text('Importar');
+    expect(importAction, findsOneWidget, reason: 'a deferred action stays visible, not hidden');
+
+    await tester.tap(importAction);
+    await tester.pumpAndSettle();
+
+    // The deferred policy allows the control and the honest notice, and nothing
+    // else: no picker, no parser, no job. If a real import is ever wired here,
+    // this is where it has to be decided rather than slipped in.
+    expect(find.text('Indisponível nesta etapa'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 }
