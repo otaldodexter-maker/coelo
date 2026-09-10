@@ -42,6 +42,12 @@
 -- Trocar a condicao de volta por `if not (select app_private.has_mfa_aal2())`.
 -- Uma linha, sem migracao de dado.
 
+-- Carimbo 20260910170000. O 20260910120000 original colidia com duas migrations
+-- de outros grupos que chegaram em dev (meal_plan_image_delete_requires_revision_v1
+-- e superadmin_internal_circular_delete_v1), e o harness exige que a versao alvo
+-- identifique exatamente uma migration canonica. Essas duas continuam colidindo
+-- entre si; a colisao de carimbo esta reportada ao coordenador.
+
 begin;
 
 set local lock_timeout = '5s';
