@@ -152,3 +152,60 @@ porque lá a migration ainda nem existe.
   Nenhum destes pacotes teve preflight executado contra produção.
 - A verificação estática de pré-requisitos feita pelos autores permanece válida
   como evidência de revisão, não como prova de aplicabilidade.
+
+## Verificação de sintaxe da fila inteira (10/09 00:40)
+
+Executada por `perfil-para-voce` em Postgres 15 local efêmero, container criado
+e removido, nada remoto tocado. **Zero erros de sintaxe nos 13 candidatos** e
+nos 6 arquivos do pacote de Modelos e de Safety
+(`docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/` e
+`safety-sql/`).
+
+**Três candidatos ficam em categoria superior aos outros dez.**
+`20260909211000_now_publication_expiry_transition_v1`,
+`20260909213000_happens_post_withdrawal_v1` e
+`20260909214000_happens_mixed_feed_withdrawal_v1` aplicaram **inteiros, com zero
+erros de qualquer tipo**: todas as dependências de nome existiam no schema local
+e o `CREATE` completou. Para esses três a prova é substancialmente maior — não
+apenas "não tem erro de digitação", mas "aplicou". Continua sem prova de
+comportamento, de RLS e de autorização.
+
+O de Circulares foi verificado primeiro, a pedido, e passa. Isso elimina o risco
+de a trinca inseparável quebrar por digitação no meio de uma sequência de três
+passos com rollback caro. **Não altera a ordem obrigatória** da seção anterior:
+configurar R2 → implantar `circular-media` → aplicar a migration.
+
+### O limite do método, declarado antes do resultado valer
+
+O schema local é **parcial**. Das 186 migrations do histórico, 80 aplicaram sem
+erro e **104 falharam por objeto ausente**, quase todas por dependerem de
+recursos do Supabase real não replicados. Isso é, por si só, uma medição do
+tamanho do buraco do replay — confirma por caminho independente o bloqueio que
+`publicacoes-midia` encontrou em `20260812002010`.
+
+Por isso os candidatos rodaram com `ON_ERROR_STOP=0`, coletando todas as linhas
+de `ERROR` e classificando por mensagem: `syntax error at or near` é defeito do
+arquivo; `does not exist` é buraco do schema. Os totais de erro por candidato
+(de 3 a 74) são todos da segunda categoria e **não são achado**. Parar no
+primeiro erro esconderia um erro de sintaxe na linha 200 atrás de um
+`relation does not exist` na linha 10 — que é justamente o único defeito que
+este método consegue encontrar.
+
+O que **não** foi provado: plpgsql valida sintaxe no `CREATE` e não resolve
+nomes de tabela, coluna, função ou enum dentro do corpo. Sem prova de
+comportamento, de RLS ou de autorização.
+
+**Stubs inventados, informação para quem aplicar:** `auth.uid()`, `auth.role()`
+e `auth.jwt()` retornam nulo ou objeto vazio; `auth.users` tem só `id` e
+`email`; `storage.buckets` tem `id`, `name` e `public`; `storage.objects` tem
+`id`, `bucket_id`, `name`, `owner` e `metadata`. Nenhum candidato falhou por
+causa desses stubs, mas qualquer lógica que dependa do **comportamento** de
+`auth.uid()` retornando um usuário real não foi exercitada.
+
+**Duas anotações de borda, sem ação recomendada.**
+`20260812002100_child_safety_read_models.sql` e
+`20260813155005_forms_definition_and_capabilities.sql` acusaram `syntax error`
+no ambiente parcial. Ambos estão aplicados em produção há semanas; a explicação
+provável é dollar-quoting quebrado depois de um erro anterior no mesmo arquivo.
+Registrado apenas para quem refizer o experimento não se assustar com os mesmos
+dois.

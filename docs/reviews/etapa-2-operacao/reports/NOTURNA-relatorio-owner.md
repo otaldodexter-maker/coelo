@@ -245,16 +245,35 @@ compartilhado, em vez de corrigir só a tela que quebrou.
 
 ## Decisões que dependem de você
 
-0. **PERGUNTA BINÁRIA, e é a mais barata de responder: a composição atual do
-   Perfil do Principal é a aprovada?** A referência aprovada de
-   `principal_profile` contém um botão **"Acompanhar"** e uma faixa com
-   **Seguidores, Seguindo**, Publicações, Localização, Fundação e Colaboradores.
-   O código atual renderiza apenas "Mensagem" e três métricas — Publicações,
-   Momentos e Circulares. O resto da página é pixel a pixel idêntico.
+0. **PERGUNTA BINÁRIA, e é a mais barata de responder: qual é, a partir de
+   agora, a referência aprovada do Perfil do Principal?** A referência aprovada
+   hoje contém um botão **"Acompanhar"** e uma faixa com **Seguidores,
+   Seguindo**, Publicações, Localização, Fundação e Colaboradores. A composição
+   atual tem apenas "Mensagem" e três métricas — Publicações, Momentos e
+   Circulares. O resto da página é pixel a pixel idêntico.
 
-   Se a composição atual é a aprovada, isso é **reaprovação administrativa** de
-   dez referências e não há defeito. Se não é, o código removeu capacidade
-   aprovada e é defeito grave. Nenhuma frente pode decidir.
+   A pergunta é: **a referência aprovada continua sendo a que tem Acompanhar,
+   Seguidores e Seguindo, ou a composição atual passa a ser a referência?** Se
+   passa a ser, isso é **reaprovação administrativa** de dez referências e não
+   há defeito. Se não passa, alguém mudou uma composição aprovada sem
+   reaprovação. Nenhuma frente pode decidir.
+
+   **Precisão que muda a forma da pergunta, e não o achado.** A frente que
+   levantou isso corrigiu o próprio enunciado depois de verificar de onde vêm as
+   métricas: a comparação é entre duas imagens da superfície de **preview**,
+   montada com o fixture "Colégio Horizonte" — a mesma que a rota `/dev` monta —
+   e não da rota de produção. Na rota real, o construtor que produção usa
+   (`PrincipalProfilePreviewData.contextual`) traz `metrics`, `highlights` e
+   `links` vazios e `nextEvent` nulo, e as quatro seções são guardadas por
+   `isNotEmpty`. **Na rota real essas seções nunca aparecem, nem antes nem
+   depois.** Ninguém tirou capacidade da tela que o usuário vê hoje.
+
+   Isso não enfraquece a pergunta, porque os doze anexos que você aprovou são
+   exatamente as referências dessas superfícies, e o golden é o que as protege.
+   Mas acrescenta um fato que ajuda a responder: **manter Seguidores na
+   referência seria aprovar uma referência que a rota real hoje não consegue
+   preencher**, porque não existe fonte autorizada por trás de nenhuma das
+   quatro seções.
 
    Uma inferência, identificada como inferência: seguidor e botão de seguir num
    perfil de escola é exatamente o que a visão do produto recusa — o Coelo não é
