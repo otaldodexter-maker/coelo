@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coelo_superadmin/features/circulars/domain/superadmin_circular_repository.dart';
 import 'package:coelo_superadmin/features/circulars/presentation/circular_directory_page.dart';
 import 'package:coelo_superadmin/features/circulars/presentation/production_circular_hosts.dart';
@@ -39,6 +41,41 @@ void main() {
     );
   });
 
+  testWidgets('mostra a primeira pagina antes de terminar de seguir o cursor', (tester) async {
+    final gate = Completer<void>();
+    final repository = _PagedRepository(pages: 3, holdFrom: 1, gate: gate);
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: ProductionCircularDirectoryHost(
+            repository: repository,
+            onOpen: (_) {},
+            onCreate: () {},
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
+
+    // A segunda leitura esta retida de proposito: a tela ja precisa mostrar a
+    // primeira pagina em vez de esperar todas.
+    final page = tester.widget<CircularDirectoryPage>(find.byType(CircularDirectoryPage));
+    expect(page.viewState, CircularDirectoryViewState.content);
+    expect(page.items, hasLength(20));
+
+    gate.complete();
+    await tester.pumpAndSettle();
+
+    expect(
+      tester.widget<CircularDirectoryPage>(find.byType(CircularDirectoryPage)).items,
+      hasLength(60),
+    );
+  });
+
   testWidgets('ao atingir o teto diz a verdade em vez de truncar em silencio', (tester) async {
     final repository = _PagedRepository(pages: 50);
     await _pumpHost(tester, repository);
@@ -68,9 +105,14 @@ Future<void> _pumpHost(WidgetTester tester, _PagedRepository repository) async {
 }
 
 final class _PagedRepository implements SuperadminCircularRepository {
-  _PagedRepository({required this.pages});
+  _PagedRepository({required this.pages, this.holdFrom, this.gate});
 
   final int pages;
+
+  /// Retem as leituras a partir deste indice ate [gate] completar, para provar
+  /// que a tela nao espera todas as paginas.
+  final int? holdFrom;
+  final Completer<void>? gate;
   final calls = <SuperadminCircularDirectoryQuery>[];
 
   @override
@@ -79,6 +121,7 @@ final class _PagedRepository implements SuperadminCircularRepository {
   ) async {
     calls.add(query);
     final index = calls.length - 1;
+    if (holdFrom != null && index >= holdFrom! && gate != null) await gate!.future;
     final last = index >= pages - 1;
     return SuperadminCircularDirectoryPage(
       items: [
