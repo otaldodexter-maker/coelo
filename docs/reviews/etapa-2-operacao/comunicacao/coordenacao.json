@@ -1,5 +1,5 @@
 {
-  "revision": 24,
+  "revision": 25,
   "round": "E2-NOTURNA-20260909",
   "role": "Coordenacao e Integracao - Claude",
   "writer": "coordenador-claude",
@@ -8,7 +8,7 @@
   "app": "Claude Code (VS Code)",
   "model": "claude-opus-5[1m]",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-09T23:56:00-03:00",
+  "updatedAt": "2026-09-10T01:05:00-03:00",
   "clockCorrection": {
     "referenceNow": "2026-09-09T19:03:25-03:00",
     "measuredBy": "date no checkout integrador",
@@ -32,14 +32,17 @@
     "branch": "dev",
     "head": "d0833938c",
     "previousHead": "d784462c168d22fdb7090b7de1ef7db554ad5107",
-    "upstream": "origin/dev",
+    "upstream": "0/0",
     "divergence": "0/0",
     "workingTree": "clean",
     "stash": "empty",
     "note": "dev avancou com tres merges de lote integrados nesta rodada.",
     "runtimeBaselinePreserved": "d019c109a",
     "documentaryReconciliation": "8954de221",
-    "verifiedAt": "2026-09-09T18:10:00-03:00"
+    "verifiedAt": "2026-09-09T18:10:00-03:00",
+    "sha": "ec624e728",
+    "analyze": "limpo",
+    "router": "407 PASS / 1 SKIP / 6 FAIL (todas goldens)"
   },
   "cutoffs": {
     "codexFreeze": "2026-09-09T23:10:00-03:00",
@@ -211,6 +214,37 @@
       "lidoEm": "2026-09-09T19:03:00-03:00",
       "estado": "recebido",
       "nota": "Bom RED funcional reproduzindo canManage=true sem groups.manage. Publique bindings e o candidato Activity atomico; o replay continua na minha fila e nao sai desta noite."
+    },
+    {
+      "ciclo": "10/09 00:00-01:05",
+      "integrados": [
+        {
+          "grupo": "alunos-rotina",
+          "ate": "7b995abfe",
+          "conteudo": "visibilidade garantida antes de todo toque nos testes novos de safety, inclusive em dialogos"
+        },
+        {
+          "grupo": "operacoes-sistema",
+          "ate": "50df1ec67",
+          "conteudo": "quatro falhas de institution_form e uma de groups resolvidas pela mesma classe; inventario de 67 arquivos e 337 toques por dono"
+        },
+        {
+          "grupo": "chat-comunicacoes",
+          "ate": "9f253b398",
+          "conteudo": "itens C e D: envio preserva o que o leitor carregou, com limite no cursor do servidor"
+        },
+        {
+          "grupo": "chat-comunicacoes",
+          "ate": "48d15d8df",
+          "conteudo": "item G: hunk de router do voltar por origem; patch isolado, NAO sobreposto a branch"
+        },
+        {
+          "grupo": "publicacoes-midia",
+          "ate": "9fde22632",
+          "conteudo": "Circular encerrada diz que encerrou em vez de pedir nova resposta"
+        }
+      ],
+      "incidenteEvitado": "mesclar so a branch de chat deixou dois casos vermelhos porque os testes de G estavam la e o hunk de router nao. O aviso explicito de sobreposicao do autor evitou investigacao de merge perdido; da vez anterior o silencio custou 320 testes."
     }
   ],
   "approvedSequences": [
@@ -449,7 +483,7 @@
     "claudeExecutorAddresses": "Fornecidos pelo Owner e verificados por envio real: as seis conversas Claude receberam ACK nominal por SendMessage em 18:18. Enderecos gravados em groups[].sessionName/sessionId para recuperacao."
   },
   "blocks": [],
-  "nextStep": "Recolher a entrega Codex ate 23:30 e seguir integrando as frentes Claude ate 04:40.",
+  "nextStep": "integrar os lotes pendentes de estrutura (fa4b968a3, 65880be56, c99281e25), acessos-pessoas e o teste vermelho f4a86ed7e; fechar medicao por arquivo de test/features; congelar 04:40, pre-entrega 04:50, entrega 05:00",
   "providers": {
     "supabase": {
       "cli": "supabase 2.117.0 autenticado; token no Credential Manager do Windows",
@@ -582,6 +616,18 @@
       "causa": "Ele faz grep no router exigindo que monitor, responses, responseDetail e files continuem const sem api, enquanto forms_fail_closed_routes_test, verde, exige que as quatro LEIAM a api. Dois testes em contradicao direta; o comportamental e o autoritativo. As duas falhas ja existiam na base intocada d784462c1, confirmado por medicao propria com reporter JSON.",
       "principio": "Alarme cronico vira ruido. Um teste chamado fail-closed vermelho o tempo todo ensina a ignorar teste de fail-closed vermelho.",
       "data": "2026-09-09T22:04:00-03:00"
+    },
+    {
+      "id": "copia-nesta-previa",
+      "decisao": "preparar, nao aplicar",
+      "contexto": "seis ocorrencias em happens, now e moments dizem \"indisponivel nesta previa\" em rotas produtivas com embedded true; principal_profile_route_page_test exige findsNothing para \"experiencia completa\" e principal_for_you_route_responsive_test espera a frase",
+      "razao": "copia e autoridade do coelo-ui; as duas opcoes nao sao equivalentes (uma muda composicao aprovada, outra muda linguagem do produto); atravessa arquivo de outra frente",
+      "forma": "patch isolado em branch propria cobrindo apenas as tres features do autor, para o Owner pagar so a decisao e nao a execucao"
+    },
+    {
+      "id": "controller-morto-attendance",
+      "decisao": "nao remover; registrar como armadilha nomeada",
+      "razao": "147 linhas sem referencia em lib, mas nao ha como distinguir morto de preparado a esta hora; mesma regra ja aplicada a PrincipalCircularComposerPage e a PrincipalProfileContentTabs"
     }
   ],
   "integrado": [
@@ -929,5 +975,27 @@
       "Parar de adivinhar seletor e SONDAR a arvore renderizada. Apareceu em tres frentes diferentes.",
       "Verificar CONTEUDO e nao SHA antes de afirmar que algo falta. SHA ausente nao prova codigo ausente: houve integracao seletiva por hunks."
     ]
+  },
+  "achadoEstrutural": {
+    "titulo": "nao existe base reproduzivel para E2E",
+    "autor": "perfil-para-voce",
+    "buracos": [
+      "a cadeia de 186 migrations nao atravessa o arquivo 48 (module_label NOT NULL; e, relaxando-o, updated_at ausente em platform_role_permissions): duas barreiras independentes no mesmo arquivo, arquivos 1 a 47 limpos",
+      "packages/coelo_database/supabase/migrations tem 17 arquivos e ZERO create table: supabase start sobe banco vazio do ponto de vista do Coelo",
+      "profile_about nao tem schema versionado em conjunto nenhum; so save_profile_about, como CREATE OR REPLACE"
+    ],
+    "consequencia": "recriar a base do zero e impossivel sem dump; sem recriacao nao ha homologacao; sem homologacao a unica base e producao, onde E2E exige autorizacao nominal. 0/198 e por construcao.",
+    "publicadoEm": "NOTURNA-relatorio-owner.md, secao \"Por que a integracao e 0/198\""
+  },
+  "verificacaoSqlDaFila": {
+    "versao": "Postgres 17, a de producao",
+    "resultado": "13 candidatos e 6 arquivos de Modelos e Safety com zero erro de sintaxe",
+    "provaMaior": [
+      "now_publication_expiry_transition_v1",
+      "happens_post_withdrawal_v1",
+      "happens_mixed_feed_withdrawal_v1",
+      "list_my_principal_for_you"
+    ],
+    "licao": "medir em Postgres 15 produziu falso positivo de defeito em dois arquivos de producao, porque authorization e palavra reservada no 15 e nao no 17; sem erro no 15 bastaria para o 17, mas o inverso nao vale"
   }
 }
