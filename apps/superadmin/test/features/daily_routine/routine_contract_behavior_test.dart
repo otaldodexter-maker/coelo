@@ -197,6 +197,7 @@ void main() {
       'unauthorized',
       'notFound',
       'conflict',
+      'unavailable',
     ]);
     expect(
       RoutineDirectoryStatus.values.where((status) => status != RoutineDirectoryStatus.data),

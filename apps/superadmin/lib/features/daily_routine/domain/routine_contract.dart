@@ -21,6 +21,7 @@ enum RoutineDirectoryStatus {
   unauthorized,
   notFound,
   conflict,
+  unavailable,
 }
 
 enum RoutineRepositoryFailureKind { unauthorized, notFound, conflict, unavailable }

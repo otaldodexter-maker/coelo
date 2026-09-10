@@ -67,7 +67,7 @@ void main() {
       RoutineDirectoryStatus.unauthorized,
       RoutineDirectoryStatus.notFound,
       RoutineDirectoryStatus.conflict,
-      RoutineDirectoryStatus.failure,
+      RoutineDirectoryStatus.unavailable,
     ];
 
     for (var index = 0; index < failures.length; index++) {
