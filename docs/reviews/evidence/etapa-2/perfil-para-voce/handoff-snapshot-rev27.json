@@ -1,0 +1,539 @@
+{
+  "revision": 27,
+  "updated_at": "2026-09-10T03:35:00-03:00",
+  "group": "perfil-para-voce",
+  "task": "/root",
+  "model": "Claude Opus 5 (1M context)",
+  "status": "pre-entrega antecipada; recorte executavel esgotado, handoff completo neste arquivo",
+  "coordinator": "Claude",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-perfil-para-voce",
+  "branch": "work/etapa2-noturna-perfil-para-voce",
+  "head": "b2cdba58a",
+  "upstream": "origin/work/etapa2-noturna-perfil-para-voce",
+  "base_observed": "d784462c1",
+  "scope": [
+    "apps/superadmin -> menu Coelo (Principal) -> Perfil contextual -> visualizar/editar Sobre",
+    "apps/superadmin -> menu Coelo (Principal) -> Perfil contextual -> Para Voce"
+  ],
+  "not_in_scope": [
+    "Minha conta",
+    "Perfis de acesso",
+    "demais apps",
+    "import/export adiados"
+  ],
+  "action_ids_status": "familia principal_profile, 3 IDs do contrato; mapeamento focal em andamento",
+  "changed": "Lote 14 (06876dac5): cobertura responsiva e de acessibilidade da aba Momentos, com o limite escrito no arquivo — as verificacoes de ausencia de excecao quase nao podem falhar nesta aba, porque todo eixo e rolavel ou Wrap, medido pondo a superficie em 120 px de altura e continuando verde. Por isso o arquivo carrega tambem uma assercao que pode falhar: o refluxo das metricas em 320 px com texto a 300%, vista falhando em 375/200% antes de ser movida.",
+  "closed_criteria": [
+    "Composicao real das tres rotas montada dentro do ShellRoute, sem fixture, com 11/11 provas de rota real PASS",
+    "Audiencia obrigatoria de Para Voce preservada no cliente (gate nao pode ser desligado por argumento omitido)",
+    "Guarda da rota de edicao preservada: capacidade de mutacao declarada, fail-closed sem repositorio de Sobre",
+    "Leitura do Sobre passa a consumir contrato de RPC autorizada, com negacao nunca confundida com ausencia de funcao",
+    "Estado do editor: reload em troca de contexto, membership e pessoa; fail-closed em revogacao; rascunho nunca apresentado como persistido",
+    "Tres ajustes do pacote SQL de Para Voce verificados NO ARQUIVO (p_target_device com allowlist validada no servidor, content_card elegivel, status='active' deixando legado published invisivel ate o cutover)"
+  ],
+  "tests": {
+    "note": "Sem rerun de lote verde. Base conjunta com origin/dev ff9143ba4.",
+    "lote12_recorte_base_conjunta": "P=256 F=10 B=0 S=0 U=0",
+    "analyze": "flutter analyze lib test: No issues found",
+    "negative_controls": "5 executados na noite; dois deles revelaram guardas incapazes de falhar (literais const canonicalizados; setSurfaceSize deixando MediaQuery em 800 px), ambas refeitas."
+  },
+  "reservations": [],
+  "reservations_requested": [
+    "apps/superadmin/lib/app/router/superadmin_router.dart (hunks: 2 builders Principal + rota nova de edicao + 2 parametros opcionais + imports + capacidade de mutacao)",
+    "apps/superadmin/lib/app/router/superadmin_routes.dart (2 constantes principalProfileEdit)",
+    "apps/superadmin/lib/core/config/superadmin_auth_scope.dart, superadmin_app.dart, main.dart (apenas campo/injecao/passagem dos 2 parametros)"
+  ],
+  "blocker": "Nenhum bloqueio retendo trabalho independente. Os bloqueios de decisao estao declarados no tracker_delta_proposto.",
+  "next_step": "Seguir auditando ate 04:40; as 04:50 pre-entrega e as 05:00 entrega, com a conferencia externa de Git para o coordenador.",
+  "wip": [],
+  "artifacts": [],
+  "children": [],
+  "processes": [],
+  "ports": [],
+  "ack": null,
+  "limitations": "Sem canal nativo verificado ate agora; arquivo publicado nao comprova leitura pelo coordenador.",
+  "deadline": "2026-09-10T05:00:00-03:00",
+  "eta": "Delta ainda nao inspecionado.",
+  "alert": "registro.json aponta headSha de L03 em 9c6042732, que e o revert e esta 48 commits atras. O SHA correto e b209b4e0f.",
+  "open_questions": [
+    "Regra de visibilidade do leitor Principal no Sobre: nao existe token de leitura em profiles.about.*; a proposta assume visibility='profile_access' por ser o default dos INSERTs da RPC de escrita. Decisao do Owner.",
+    "Contraste do chip DESTAQUE em Para Voce mede 3,75:1, abaixo do minimo AA 4,5:1 para 11px. Escurecer altera composicao aprovada e quebra 20 goldens. Decisao de coelo-ui e do Owner (herdado de L03, nao regravei golden).",
+    "Contrato visual de Editar perfil segue sem fonte canonica aprovada (herdado de L03)."
+  ],
+  "batches_published": [
+    "b09da7c15",
+    "76e8ada8f",
+    "60f32e292",
+    "6e58b624f",
+    "0399b186e",
+    "35fff6b13",
+    "65e1e5000",
+    "9a82d5dcf",
+    "0e1df2217",
+    "6b05ccb82",
+    "086961de5",
+    "250d0543c",
+    "5401cec1b",
+    "06876dac5",
+    "c5a6fd106",
+    "0f2135398"
+  ],
+  "tracker_delta_proposto": [
+    {
+      "action_id": "principal.profile-view",
+      "camada": "frontend",
+      "estado_atual": "local-green",
+      "estado_proposto": "local-green",
+      "delta": "Mantido, agora com a verificacao de producao respondida por simbolo. main.dart compoe o caminho (linhas 56-59, via authScope); o router monta a pagina PRODUTIVA PrincipalProfileRoutePage em SuperadminRoutes.principalProfile dentro do ShellRoute, linha 1033, e nao apenas a tela /dev; e existem implementacoes de producao concretas, SupabaseProfileAboutRepository, SupabaseCircularRepository, SupabasePrincipalHappensFeedRepository e SupabasePrincipalRuntimeContextRepository, instanciadas em superadmin_auth_scope.dart linhas 382-385. Correcoes desta rodada nesta acao: previa de circular deixou de fechar a cada rebuild da rota; bio ausente deixou de oferecer Ver mais; releitura do Sobre passou a considerar membership e pessoa.",
+      "evidencia": "commits 0399b186e e 65e1e5000; apps/superadmin/lib/main.dart:56-59; apps/superadmin/lib/app/router/superadmin_router.dart:1033; apps/superadmin/lib/core/config/superadmin_auth_scope.dart:382-385; apps/superadmin/test/features/principal_profile/; 2026-09-09"
+    },
+    {
+      "action_id": "principal.for-you",
+      "camada": "frontend",
+      "estado_atual": "blocked-decision",
+      "estado_proposto": "blocked-decision",
+      "delta": "Mantido em blocked-decision pelo contraste 3,75:1 do chip DESTAQUE, decisao do Owner. Progresso desta rodada, sem promocao: o hub deixou de saudar todo ator real como Fernanda, nome do fixture, porque PrincipalRuntimeContext nao carrega o nome da pessoa e a saudacao passou a omitir o nome em vez de inventar um; e os dois gatilhos de troca de contexto deixaram de renderizar com um unico contexto autorizado, ja que o seletor se recusa a abrir abaixo de dois. Verificacao de producao: main.dart compoe (linha 50, noticeRepository), o router monta PrincipalForYouRoutePage em SuperadminRoutes.principalForYou dentro do ShellRoute, linha 990, e SupabaseNoticeRepository e implementacao concreta instanciada em superadmin_auth_scope.dart linha 367.",
+      "evidencia": "commits 35fff6b13 e 9a82d5dcf; apps/superadmin/lib/main.dart:50; apps/superadmin/lib/app/router/superadmin_router.dart:990; apps/superadmin/lib/core/config/superadmin_auth_scope.dart:367; apps/superadmin/test/features/principal_for_you/; 2026-09-09"
+    },
+    {
+      "action_id": "principal.profile-edit",
+      "camada": "frontend",
+      "estado_atual": "blocked-decision",
+      "estado_proposto": "blocked-decision",
+      "delta": "Mantido em blocked-decision por ausencia de contrato visual canonico aprovado. Verificacao de producao, para o registro: main.dart compoe via authScope.profileAboutRepository (linha 57); o router monta PrincipalProfileEditPage em SuperadminRoutes.principalProfileEdit dentro do ShellRoute, linha 1068, com a capacidade de mutacao declarada; e SupabaseProfileAboutRepository e implementacao concreta, instanciada em superadmin_auth_scope.dart linha 383. Sem repositorio real composto a rota permanece fail-closed, nao monta prototipo.",
+      "evidencia": "commits b09da7c15, 60f32e292 e 6e58b624f; apps/superadmin/lib/app/router/superadmin_router.dart:1068; apps/superadmin/lib/core/config/superadmin_auth_scope.dart:383; 2026-09-09"
+    }
+  ],
+  "verificacao_de_producao": {
+    "pergunta_1_main_dart_compoe": "SIM. apps/superadmin/lib/main.dart linhas 50 e 56-59 passam authScope.noticeRepository, authScope.principalRuntimeContextRepository, authScope.profileAboutRepository, authScope.principalCircularRepository e authScope.principalHappensFeedRepository para SuperadminApp. superadmin_app.dart (campos nas linhas 203-204, repasse nas 286-287) entrega ao createSuperadminRouter.",
+    "pergunta_2_router_monta_pagina_produtiva": "SIM. superadmin_router.dart monta, dentro do ShellRoute e fora de /dev: SuperadminRoutes.principalForYou (linha 990) -> PrincipalForYouRoutePage(embedded: true); SuperadminRoutes.principalProfile (linha 1033) -> PrincipalProfileRoutePage(embedded: true); SuperadminRoutes.principalProfileEdit (linha 1068) -> PrincipalProfileEditPage. As tres deixaram de resolver para _unavailableCompositionRootRoute. As telas /dev continuam existindo em paralelo e nao sao estas.",
+    "pergunta_3_implementacao_de_producao_do_repositorio": "SIM para os quatro repositorios do recorte, e sao classes concretas com implementacao Supabase, nao apenas interface: SupabaseProfileAboutRepository (lib/features/profile_about/data/supabase_profile_about_repository.dart), SupabaseCircularRepository (lib/features/principal_circulars/data/supabase_circular_repository.dart), SupabasePrincipalHappensFeedRepository (lib/features/principal_happens/data/supabase_principal_happens_feed_repository.dart) e SupabasePrincipalRuntimeContextRepository (lib/features/principal_shared/data/supabase_principal_runtime_context_repository.dart). Todas instanciadas no ramo autorizado de superadmin_auth_scope.dart, linhas 382-385. Para o hub, SupabaseNoticeRepository (linha 367). No ramo indisponivel (linhas 441 e 453-454) os campos ficam null ou Unavailable, e a rota cai em indisponibilidade honesta em vez de montar prototipo.",
+    "ressalva_que_nao_muda_as_tres_respostas": "SupabaseProfileAboutRepository existe e e real, mas a leitura chama public.get_profile_about, que NAO existe no remoto; nesse caso cai no fallback por tabela sob RLS. Isso mantem o backend em blocked-decision, como ja declarado, e nao afeta a composicao de producao do frontend. SupabaseNoticeRepository consome o diretorio administrativo, o que tambem ja esta declarado como blocked-decision no backend de principal.for-you.",
+    "conferido_em": "2026-09-09, worktree e2-noturna-perfil-para-voce, HEAD 9a82d5dcf"
+  },
+  "defeitos_encontrados_nesta_frente": [
+    "Afordancia morta: botao Pre-visualizar e seletor de audiencia renderizados sem prévia alcancavel abaixo de 1120 px",
+    "Autorizacao: rascunho e conteudo sobrevivendo a troca de membership ou pessoa dentro do mesmo escopo nomeado, em duas paginas",
+    "Identidade fabricada: rotulos de campo exibindo identificador de enum no editor",
+    "Identidade fabricada: hub de producao saudando todo ator real como Fernanda, nome do fixture de demo",
+    "Estado indistinguivel: bio ausente renderizada como paragrafo vazio seguido de Ver mais",
+    "Comparacao por identidade de objetos reconstruidos por frame: releitura integral do diretorio a cada rebuild do hub",
+    "Comparacao por identidade: previa de circular fechando sozinha a cada rebuild da rota",
+    "Gatilho inerte: dois controles de trocar contexto chamando um seletor que se recusa a abrir com um unico contexto",
+    "Convite a corrida: Recarregar sem estado de ocupado, permitindo duas leituras concorrentes",
+    "Acessibilidade: campos do Sobre sem nome para tecnologia assistiva"
+  ],
+  "perguntas_abertas_para_o_owner": [
+    "Regra de visibilidade do leitor Principal no Sobre: nao existe token de leitura em profiles.about.*; a proposta get_profile_about assume visibility profile_access por ser o default dos INSERTs da RPC de escrita, e erra para o lado fechado.",
+    "Contraste do chip DESTAQUE em Para Voce: 3,75:1 contra o minimo AA de 4,5:1 para 11 px. Corrigir altera composicao aprovada e quebra 20 goldens. Herdado de L03; nenhum golden foi regravado.",
+    "Contrato visual canonico de Editar perfil: continua inexistente; a tela foi entregue reutilizando o editor de Sobre.",
+    "Rotulo VISIVEL dos campos na aba Sobre: hoje cada campo aparece como valor puro ao lado de um icone generico, sem nome. O rotulo de acessibilidade ja foi entregue no lote 10 e nao depende de decisao. Tornar o rotulo visivel altera a composicao de uma aba sem fonte canonica em coelo-ui, entao NAO foi feito. Proposta pronta: reutilizar profileAboutFieldLabel, que ja e compartilhado.",
+    "Destino da chamada para acao das comunicacoes: PlatformNotice nao modela URL alguma no cliente, embora platform_notices tenha cta_url. O CTA de uma comunicacao real publicada no hub responde honestamente que a capacidade nao esta disponivel, mas nunca leva a lugar nenhum. Estender o contrato compartilhado de Comunicacoes e decisao de quem o mantem, mais decisao sobre abrir URL externa."
+  ],
+  "joint_base_verified": {
+    "merged": "origin/dev ff9143ba4 (merge 77f2b7717 na worktree)",
+    "recorte": "P=247 F=10 B=0 S=0 U=0",
+    "provas_de_rota": "11/11 PASS",
+    "analyze": "flutter analyze lib test: No issues found",
+    "achado_de_integracao": "origin/dev 09d03250e tinha o GoRoute de principal-conversations DUPLICADO byte a byte; go_router assere na construcao, entao createSuperadminRouter lancava e o app Superadmin inteiro nao subia. Confirmado como sendo de dev e nao do meu merge antes de alertar (grep contava 2 em origin/dev e 0 em 0e1df2217). Corrigido pelo coordenador em ff9143ba4."
+  },
+  "verificado_e_nao_alterado": [
+    "Destino de Mensagem do Perfil e do hub ja aponta para principalConversationsName na base conjunta; nao ha mais desvio para a pagina administrativa com ?from=principal, e nenhum teste meu carrega o destino antigo.",
+    "O beco condicional de /principal-now/publication registrado por L03 nao alcanca a superficie hospedada: com embedded o dock nao e renderizado, entao onPublishNow nao e acionavel no Perfil de producao.",
+    "onAdjustLocation no editor do Sobre ja era guardado por != null.",
+    "Ver mais, Ver todos e Ver no mapa passam por _runOrPreview e nao sao afordancias mortas."
+  ],
+  "suite_completa": {
+    "base": "250d0543c (dev ff9143ba4 + lotes 1 a 12)",
+    "resultado": "P=6147 S=9 F=159, reporter padrao, 15min32s",
+    "recorte_dentro_dela": "10 falhas, todas de principal_profile_preview_golden, deriva pre-existente",
+    "nota_de_comparacao": "Nao comparavel em PASS com medicoes do coordenador em reporter JSON: mesma arvore da 5871 no compacto e 6559 no JSON, com FAIL e SKIP identicos. Comparar apenas FAIL e SKIP."
+  },
+  "achados_em_dev_nao_meus": [
+    "test/app/router/principal_real_route_test.dart falha em 3 casos sobre hospedagem do Principal e Acontece. Confirmado em worktree destacado de origin/dev 1c5eaf0bc limpo: as mesmas 3 falham. Causa: a rota de Acontece passou a exigir principalHappensFeedRepository E principalMixedFeedRepository (superadmin_router.dart:902 em dev) e o teste injeta so o primeiro, entao a rota cai em indisponivel. Teste desatualizado pela integracao do feed misto, nao regressao de produto; a producao compoe os dois. Pertence a publicacoes-midia."
+  ],
+  "recursos_proprios": {
+    "worktree_extra": "SIM, UMA: C:/Users/adrie/Documents/Coelo.worktrees/verify-dev-tmp, detached em 1c5eaf0bc. Criada por mim para verificar em base limpa se a rota principal-conversations duplicada era de dev ou do meu merge, e mantida para a conferencia externa de Git das 05:00. SERA REMOVIDA antes da entrega, com git worktree remove, e a remocao sera declarada. Nao contem trabalho: e checkout destacado de origin/dev, sem commit e sem alteracao.",
+    "containers": "nenhum ativo. coelo-sqlcheck e coelo-pg17 criados e removidos ao longo da noite; docker ps -a conferido vazio apos cada uso.",
+    "processos_portas_agendamentos": "nenhum.",
+    "correcao_de_declaracao": "Ate a revisao 26 este campo dizia 'nenhum', o que era FALSO desde que criei a worktree. Eu declarei a worktree em texto na revisao 9 e depois sobrescrevi o campo ao consolidar. O coordenador pediu a declaracao explicita e ao conferir eu achei a linha errada no meu proprio handoff. E a mesma categoria que passei a noite auditando nos outros: linha que parece informacao e nunca foi relida."
+  },
+  "achado_principal_da_noite": {
+    "titulo": "As 10 falhas de principal_profile_preview_golden nao sao deriva de golden nem artefato de host",
+    "como_foi_medido": "Percentagens nao uniformes: 768/1024/1440 diferem 0,73% a 1,35% mas com numero ABSOLUTO de pixels quase igual (11128 a 11708), o que indica elemento de tamanho fixo e nao renderizacao de fonte, que escalaria com a area. As variantes 375 saltam para 22,1% com 91 mil pixels.",
+    "o_que_as_imagens_mostram": "Comparando masterImage com testImage em 1024, o resto da pagina e pixel a pixel identico e diferem exatamente dois elementos. O golden aprovado tem um botao primario Acompanhar ao lado de Mensagem, que o codigo atual nao renderiza; e tem uma faixa de SEIS metricas (1,2 mil Seguidores, 286 Seguindo, 128 Publicacoes, Localizacao, Fundacao, 50+ Colaborando) onde o codigo atual renderiza TRES (128 Publicacoes, 42 Momentos, 12 Circulares). Em 375 px a remocao desloca tudo abaixo, o que explica os 22%.",
+    "inferencia_nao_decisao": "Parece mudanca deliberada de produto e coerente com a visao: o Coelo nao e rede social aberta, e seguidor com botao de seguir num perfil de escola e o que a visao recusa. Nao decido isso.",
+    "acao_correta": "Pergunta binaria ao Owner: a composicao atual, sem Acompanhar e sem Seguidores/Seguindo, e a aprovada? Se sim, regravar as 10 referencias e consequencia administrativa e nao ha defeito. Se nao, o codigo removeu capacidade aprovada e e defeito de produto. Nenhum golden foi regravado.",
+    "custo_enquanto_durar": "Sao 10 de 12 casos do arquivo. A referencia visual da tela principal do Principal esta inutilizavel em todos os temas e larguras; so passam os dois goldens especificos de aba. Qualquer regressao visual da composicao completa do Perfil e invisivel hoje, o que enfraquece o local-green de principal.profile-view mais do que eu havia dito.",
+    "artefatos": "apps/superadmin/test/features/principal_profile/presentation/failures/, par mais legivel principal_profile_light_1024_masterImage.png contra _testImage.png; .gitignore ja exclui **/failures/"
+  },
+  "triagem_de_goldens": {
+    "metodo": "Rodar o arquivo de golden e ler as linhas 'Pixel test failed, X%, Ypx'. Se Y for quase constante entre larguras, e mudanca de CONTEUDO (elemento de tamanho fixo). Se Y crescer com a area, e RENDERIZACAO. Se X ficar perto de 100 com conteudo identico, e GEOMETRIA.",
+    "correcao_do_metodo": "grep de linha unica da FALSO NEGATIVO: com caminho de golden longo o Flutter quebra a mensagem em duas linhas e a suite aparece limpa. activities_golden_test aparecia com zero e tem 31. Comando correto junta as linhas antes: flutter test <arquivo> 2>&1 | tr '\n' ' ' | grep -oE \"Pixel test failed, +[0-9.]+%, +[0-9]+px\" | tr -s ' ' | sort -u",
+    "medicoes": {
+      "principal_profile": "0,73% a 1,35% em 768/1024/1440 com absoluto quase constante (11128-11708); 22,1% em 375. CONTEUDO, confirmado por imagem: botao Acompanhar e tres metricas a menos.",
+      "principal_happens": "0,15% a 0,65% com absoluto constante (2122-2436). CONTEUDO, nao confirmado por imagem.",
+      "principal_moments": "99,17% a 100%. GEOMETRIA, confirmado por imagem: golden com letterbox, codigo full-bleed, mesmo conteudo.",
+      "chat": "dois casos com absoluto constante 1849px e quatro de 12k a 39k crescendo com a area. MISTA.",
+      "agenda_calendar": "11 casos, 10,5% a 21,0%, absoluto 63k a 160k crescendo com a area, mais outlier de 837px.",
+      "activities": "31 casos, 4,9% a 31,9%, absoluto 44k a 380k crescendo com a area, mais o MESMO outlier de 837px."
+    },
+    "fio_barato": "O outlier de 837px aparece identico em agenda e activities: um componente compartilhado diferindo do mesmo jeito pode explicar dois arquivos.",
+    "limite_declarado": "Nao abri imagens de agenda, activities nem chat: sao dominios de outras frentes e classificar sem confirmar seria chute."
+  },
+  "knowledge_gate": "no-op deliberado em docs/knowledge. O gate da skill coelo-knowledge exige projetar apenas regra duravel JA APROVADA em fonte canonica, e a triagem de goldens nao esta aprovada em lugar nenhum. Oferecido ao coordenador como referencia de skill, que e base compartilhada e depende da palavra dele.",
+  "lotes": [
+    {
+      "sha": "b09da7c15",
+      "titulo": "Integracao da composicao L03 sobre dev",
+      "resumo": "Merge de codex/e2-r02-l03-perfil-para-voce (b209b4e0f) com os cinco conflitos resolvidos: colocacao de dev no router, corpo L03 nos builders, embedded:true, rota nova /principal-profile/edit com capacidade de mutacao declarada; nos quatro arquivos de Para Voce prevalece L03 porque dev carregava a revisao antiga com audienceScope OPCIONAL. Achado do merge corrigido: guarda de Circulares usava find.text ambiguo dentro do shell.",
+      "provas": "analyze limpo; 11/11 provas de rota real; recorte P=225 F=10"
+    },
+    {
+      "sha": "76e8ada8f",
+      "titulo": "Leitura do Sobre por RPC autorizada com fallback fail-closed",
+      "resumo": "load passa a chamar public.get_profile_about e so cai para leitura por tabela quando o banco diz que a funcao nao existe (42883 ou PGRST202). Negacao continua negacao e nunca vira select direto. Candidato SQL nao aplicado em packages/coelo_database/plans/2026-09-09-profile-about-read-rpc.sql, fundamentado apenas em objetos que save_profile_about ja chama.",
+      "provas": "5 casos novos; profile_about 29/29 PASS"
+    },
+    {
+      "sha": "60f32e292",
+      "titulo": "Afordancias mortas do editor e reload por membership",
+      "resumo": "Abaixo de 1120px o botao Pre-visualizar e o seletor de audiencia deixam de renderizar sem previa alcancavel. didUpdateWidget da edicao passa a comparar membership e pessoa, nao so o escopo nomeado: a autorizacao pertence ao membership.",
+      "provas": "4 casos novos; teste fixado por L03 INVERTIDO, nao relaxado; P=131 F=10"
+    },
+    {
+      "sha": "6e58b624f",
+      "titulo": "Campos do Sobre com nome em portugues",
+      "resumo": "O editor rotulava cada campo com field.key.name, exibindo displayAddress e preciseLocation ao usuario. Switch exaustivo, entao chave nova para de compilar.",
+      "provas": "guarda varre o enum inteiro; controle negativo executado; profile_about 30/30"
+    },
+    {
+      "sha": "0399b186e",
+      "titulo": "Bio ausente e reload por membership na visualizacao",
+      "resumo": "Bio ausente deixou de renderizar paragrafo vazio seguido de Ver mais. A pagina de visualizacao tinha o mesmo buraco de didUpdateWidget da de edicao.",
+      "provas": "3 casos novos; recorte P=146 F=10"
+    },
+    {
+      "sha": "35fff6b13",
+      "titulo": "Hub deixou de reler o diretorio a cada rebuild",
+      "resumo": "audienceScope e supportingData sao reconstruidos por frame e eram comparados por identidade, entao todo rebuild parecia ator novo: carregando, timer de vigencia cancelado e 100 comunicacoes relidas. Escopo passou a ter igualdade por valor.",
+      "provas": "3 casos novos; controle negativo revelou que a primeira versao da guarda usava literais const e nao podia falhar"
+    },
+    {
+      "sha": "65e1e5000",
+      "titulo": "Previa de circular sobrevive a rebuild da rota",
+      "resumo": "A aba fecha a previa quando onOpen muda; o router entrega closure nova por build, entao o dialogo fechava sozinho. Corrigido do lado do chamador com tear-off estavel, sem tocar no arquivo do dominio de Circulares.",
+      "provas": "1 caso novo; controle negativo executado; recorte P=147 F=10"
+    },
+    {
+      "sha": "9a82d5dcf",
+      "titulo": "Fim da saudacao com nome de fixture em producao",
+      "resumo": "O hub abria com 'Bom dia, Fernanda!' hardcoded na rota real. PrincipalRuntimeContext nao carrega nome de pessoa, entao a saudacao omite o nome em vez de inventar. Dois gatilhos de trocar contexto deixaram de renderizar com um unico contexto autorizado.",
+      "provas": "3 casos novos, um fixando o fixture; principal_for_you 97/97; recorte P=244 F=10"
+    },
+    {
+      "sha": "0e1df2217",
+      "titulo": "Estado de ocupado na acao Recarregar",
+      "resumo": "Recarregar nao dava sinal de ter sido pressionado e um segundo toque iniciava outra leitura. Aplicado o idioma que o botao Salvar ao lado ja tinha.",
+      "provas": "1 caso novo cobrindo comportamento e nao legenda; controle negativo executado"
+    },
+    {
+      "sha": "6b05ccb82",
+      "titulo": "Rotulo de acessibilidade dos campos do Sobre",
+      "resumo": "Leitor de tela anunciava dois numeros de contato sem dizer qual era qual. Semantics nomeia o campo sem mover um pixel: lista de goldens falhando identica antes e depois, comparada por NOME e nao por contagem. Tabela de rotulos promovida a profile_about_labels.dart, compartilhada entre editor e leitor.",
+      "provas": "1 caso novo; controle negativo executado; recorte P=246 F=10"
+    },
+    {
+      "sha": "086961de5",
+      "titulo": "Guarda de unicidade de nome de rota",
+      "resumo": "Le o fonte do router e nomeia qualquer rota declarada duas vezes. Escrita contra a base quebrada e vista falhando la antes de ficar verde. Ja adotada pelo coordenador como parte do gate de integracao.",
+      "provas": "falhou com principalConversationsName x2 na base quebrada; verde apos a correcao"
+    },
+    {
+      "sha": "250d0543c",
+      "titulo": "Aba Momentos conectada a projecao autorizada",
+      "resumo": "Fecha a pendencia 7 de L03, que era dependencia: SupabasePrincipalMomentsFeedRepository chegou na base conjunta e o router ja o tinha. Espelha PrincipalProfileHappensTab; midia por URL assinada ja resolvida; sem repositorio paralelo, sem publicar ou retirar, sem sprite de fixture; escopo por valor.",
+      "provas": "9 casos novos; recorte P=256 F=10"
+    },
+    {
+      "sha": "5401cec1b",
+      "titulo": "Medicao do chrome duplicado da rota de edicao hospedada",
+      "resumo": "Confirma a instrucao que L03 deixou em aberto: abaixo do breakpoint expanded o shell renderiza um _CompactAppBar e a pagina renderiza outra, entao a rota hospedada empilha DUAS AppBars num celular; em 1440px e uma so. Nao corrigido: onde ficam titulo e acao de fechar apos o embedded e contrato visual sem aprovacao.",
+      "provas": "2 casos novos nas provas de rota, 13/13 PASS"
+    },
+    {
+      "sha": "06876dac5",
+      "titulo": "Cobertura responsiva e de acessibilidade da aba Momentos",
+      "resumo": "Divida da entrega anterior. Dez casos, com o limite escrito no arquivo: as verificacoes de ausencia de excecao quase nao podem falhar nesta aba porque todo eixo e rolavel ou Wrap, medido pondo a superficie em 120px e continuando verde. Por isso o arquivo tambem carrega o refluxo das metricas, que pode falhar.",
+      "provas": "10 casos novos, 10/10 PASS"
+    },
+    {
+      "sha": "c5a6fd106",
+      "titulo": "Referencia de skill: triagem de falhas de golden",
+      "resumo": "Arquivo NOVO em .agents/skills/coelo-flutter-review/references/golden-failure-triage.md, com autorizacao explicita do coordenador porque skill e base compartilhada. Nomeia as tres assinaturas, o comando de extracao com o tr que junta linhas, as duas armadilhas de integracao e o fio dos 837 px. Nenhum arquivo existente de skill foi tocado.",
+      "provas": "1 arquivo, 117 linhas; numeros citados de docs/reviews/evidence/etapa-2/formularios-cuidado/2026-09-09-golden-divergence-measurement.md e das medicoes proprias"
+    },
+    {
+      "sha": "0f2135398",
+      "titulo": "Evidencia: a base pode ser reconstruida?",
+      "resumo": "docs/reviews/evidence/etapa-2/perfil-para-voce/2026-09-10-schema-versionado-e-replay.md. Quatro fatos medidos: replay das 186 quebra no arquivo 48 e persiste no PG17; o conjunto de 17 que supabase start aplicaria nao tem create table; 40 objetos app_private chamados e nunca criados, agrupados por dominio e com os conferidos a mao marcados; e child_safety e chat versionados por inteiro, que e o que impede o diagnostico de virar catastrofe. Inclui a nota de versao PG15 x PG17 que quase produziu dois falsos positivos.",
+      "provas": "medicoes proprias em Postgres local efemero; containers removidos; nada aplicado remotamente"
+    }
+  ],
+  "defeitos_corrigidos": 10,
+  "defeitos_registrados_sem_correcao": [
+    "Chrome duplicado da rota de edicao hospedada abaixo do breakpoint expanded (medido, lote 13)",
+    "Campos do Sobre sem rotulo VISIVEL: acessibilidade entregue, visual depende de decisao",
+    "Contraste 3,75:1 do chip DESTAQUE contra o minimo AA de 4,5:1 (herdado de L03)",
+    "CTA de comunicacao real nao leva a lugar nenhum: PlatformNotice nao modela URL no cliente embora platform_notices tenha cta_url"
+  ],
+  "invariantes_latentes_declaradas": [
+    "PrincipalForYouRoutePage assume que supportingData e audienceScope derivam do MESMO runtime context, o que o router garante. Se um chamador futuro trocar so os rotulos durante um carregamento em andamento, o resultado usara os rotulos antigos. Nao alcancavel pela composicao atual; declarado em vez de corrigido para nao acrescentar refetch por caminho inexistente.",
+    "A saudacao do hub diz 'Bom dia' em qualquer hora do dia, inclusive a noite. E copy aprovada no fixture e torna-la sensivel ao horario e comportamento novo; registrado, nao alterado."
+  ],
+  "verificacao_sql_local": {
+    "o_que": "CREATE FUNCTION dos dois pacotes nao aplicados do recorte, em Postgres local efemero (docker postgres:15, --rm), com preambulo minimo: schema app_private, papeis authenticated e anon, e tabela stub public.profile_about_pages porque a declaracao p public.profile_about_pages resolve o TIPO no CREATE.",
+    "resultado": "Os dois aceitos e registrados em pg_proc: get_profile_about (candidato proprio) e list_my_principal_for_you (pacote de L03). O unico erro inicial foi role anon inexistente num REVOKE, e anon existe em qualquer projeto Supabase real.",
+    "o_que_nao_prova": "plpgsql valida sintaxe no CREATE e NAO resolve nomes de tabela, coluna, funcao ou enum do corpo. Continua sem prova de que app_private.profile_about_can, profile_about_page_for, as colunas de profile_about_structured_fields e os tokens de visibilidade existem como assumido. Nada de comportamento, RLS ou autorizacao. BE segue nao certificado.",
+    "recursos": "container coelo-sqlcheck criado e removido; docker ps -a vazio; temporario apagado; nada remoto tocado"
+  },
+  "estado": "Recorte executavel esgotado. O que resta e bloqueado por decisao do Owner ou por autorizacao nominal remota.",
+  "disponivel_para": [
+    "conferencia externa de Git",
+    "leitura de imagem de golden para frentes cujo ambiente falha ao abrir PNG",
+    "checagem de sintaxe de pacote SQL nao aplicado de qualquer frente"
+  ],
+  "verificacao_fila_sql": {
+    "atribuicao": "Coordenador pediu verificacao da fila SQL inteira: 13 candidatos em packages/coelo_database/migrations/ mais o pacote de Modelos.",
+    "resultado": "ZERO erros de sintaxe nos 13 candidatos e nos 6 arquivos de models/ e safety-sql/. O de Circulares (20260909212000_circulars_media_private_r2_v1.sql), priorizado por ser trinca inseparavel com Edge Function e R2, passa.",
+    "resultado_mais_forte": "now_publication_expiry_transition_v1, happens_post_withdrawal_v1 e happens_mixed_feed_withdrawal_v1 aplicaram com ZERO erros de qualquer tipo: as dependencias existiam no schema local e eles EXECUTARAM inteiros.",
+    "metodo": "Postgres local efemero (docker postgres:15, --rm) com shim Supabase (schemas auth/extensions/storage/app_private/audit; papeis anon/authenticated/service_role/supabase_admin/authenticator; pgcrypto; auth.uid/role/jwt; stubs auth.users, storage.buckets, storage.objects) e as 186 migrations do historico aplicadas antes. O historico NAO aplica limpo nesse shim: 80 sem erro, 104 com objeto ausente. Schema local e PARCIAL.",
+    "por_que_ON_ERROR_STOP_0": "Parar no primeiro erro esconderia erro de sintaxe posterior atras de um 'relation does not exist' na linha 10. Com ON_ERROR_STOP=0 todas as linhas de ERROR sao coletadas e classificadas: 'syntax error at or near' e defeito do arquivo, 'does not exist' e buraco do schema local.",
+    "stubs_declarados": "auth.uid/role/jwt retornam nulo ou objeto vazio; auth.users so id e email; storage.buckets id/name/public; storage.objects id/bucket_id/name/owner/metadata. Nenhum candidato falhou por causa deles, mas comportamento de auth.uid real nao foi exercitado.",
+    "o_que_nao_prova": "plpgsql valida sintaxe no CREATE e nao resolve nomes de tabela, coluna, funcao ou enum do corpo. Sem prova de comportamento, RLS ou autorizacao.",
+    "borda_registrada_sem_afirmar_defeito": "Dois arquivos do HISTORICO acusaram syntax error neste ambiente (20260812002100_child_safety_read_models.sql e 20260813155005_forms_definition_and_capabilities.sql). Ja estao aplicados em producao ha semanas, entao a explicacao provavel e estado parcial do schema ou dollar-quoting apos erro anterior no mesmo arquivo. Nao tratar como defeito.",
+    "versao_corrigida": "A primeira medicao usou postgres:15 e o Coelo roda Postgres 17. Refeita inteira em public.ecr.aws/supabase/postgres:17.6.1.165 com o mesmo shim e as 186 migrations aplicadas antes.",
+    "resultado_pg17": "13 candidatos syntax=0; 4 arquivos de models/ syntax=0; os 2 planos do recorte syntax=0.",
+    "quatro_com_prova_maior": "now_publication_expiry_transition_v1, happens_post_withdrawal_v1, happens_mixed_feed_withdrawal_v1 e o plano list_my_principal_for_you aplicam INTEIROS no PG17 com o historico aplicado: zero erros de qualquer tipo.",
+    "causa_dos_dois_syntax_errors_do_historico": "RESOLVIDO e nao era defeito: count(authorization.id) usa authorization, palavra reservada que o PG15 recusa como qualificador e o PG17 aceita. Provado por controle: a mesma funcao extraida sozinha falha no 15 e no 17 devolve apenas 'schema app_private does not exist'.",
+    "por_que_a_versao_importa": "O 17 e mais permissivo nesse ponto, entao ausencia de erro no 15 bastaria para o 17; o inverso nao vale, e foi justamente o inverso que produziu dois falsos positivos. Verificar na versao de producao era condicao para a afirmacao valer nos dois sentidos."
+  },
+  "correcao_de_escopo_do_achado_de_golden": "O golden do Perfil renderiza PrincipalProfilePreviewPage com o fixture horizon, ou seja a superficie de PREVIEW, nao a rota real. PrincipalProfilePreviewData.contextual, usado pela rota de producao, tem metrics/highlights/links vazios e nextEvent nulo, e as quatro secoes sao guardadas por isNotEmpty: a rota real nunca mostra metrica nenhuma. A pergunta correta ao Owner e se a referencia aprovada continua sendo a que tem Acompanhar, Seguidores e Seguindo, ou se a composicao atual passa a ser a referencia. Fato adicional para a decisao: nenhuma dessas secoes tem projecao autorizada por tras hoje, entao manter a referencia antiga seria aprovar algo que a rota real nao consegue preencher.",
+  "replay_do_historico": {
+    "correcao_de_numero": "O 80/104 que reportei antes estava ERRADO por defeito do meu shim: create extension pgcrypto sem schema colocou a extensao em public e o create ... with schema extensions virou no-op, entao extensions.digest nao existia e a cadeia morria no arquivo 28 por culpa do ambiente. Refeito com pgcrypto no schema correto e stubs completos de storage e supabase_migrations.",
+    "medicao_corrigida": "186 arquivos em packages/coelo_database/migrations replayados em ordem de nome numa base zerada: arquivos 1 a 47 aplicam LIMPOS; 51 falham a partir do 48.",
+    "primeira_quebra_real": "Arquivo 48, 20260812002000_child_safety_schema.sql linha 192: null value in column module_label of relation platform_permissions violates not-null constraint. Causa rastreada: 20260811215451_access_profile_management_v2.sql, que roda antes, adiciona module_label SEM default e depois faz set not null; o arquivo 48 insere codigos de permissao novos sem module_label e o ON CONFLICT DO UPDATE tambem nao o define. Verificado que child_safety.manage so aparece a partir do proprio 48, entao num replay do zero o caminho de INSERT e o que roda.",
+    "duas_explicacoes_possiveis": "Ou producao aplicou em ordem diferente da ordem de nome, ou as linhas ja existiam por outro caminho e o conflito preservou o valor. Nao ha como escolher daqui, e as duas significam o mesmo para quem precisa recriar a base.",
+    "consequencia": "A pasta de migrations, replayada em ordem de nome a partir do zero, NAO atravessa. Isso e recuperabilidade: ambiente novo, recuperacao de desastre e homologacao real nao tem caminho hoje.",
+    "cuidado_de_leitura": "Os 51 sao majoritariamente cascata, porque com ON_ERROR_STOP cada arquivo aborta no primeiro erro e nao cria o que os seguintes esperam. Nao contar 51 como 51 defeitos.",
+    "nao_afetado": "A verificacao dos 13 candidatos e dos 6 arquivos de Modelos usou ON_ERROR_STOP=0 e o discriminador por mensagem, entao nao depende da completude do schema e continua valendo: zero erros de sintaxe.",
+    "segunda_barreira_no_mesmo_arquivo": "Relaxando o NOT NULL de module_label, o arquivo 48 falha logo depois em 'column updated_at of relation platform_role_permissions does not exist'. Sao pelo menos dois problemas independentes de replay no mesmo arquivo. A primeira barreira persiste no PG17, entao nao e versao: e a cadeia."
+  },
+  "profile_about_nao_versionado": {
+    "medido": "Busca em packages/coelo_database/migrations e supabase/migrations: app_private.profile_about_can NUNCA e criada, so chamada dentro do corpo de save_profile_about; app_private.profile_about_page_for idem; e nao ha nenhum create table de profile_about_*. O unico artefato versionado do dominio e 20260825193131_final_review_profile_about_lint_hardening.sql, que faz CREATE OR REPLACE da RPC de escrita.",
+    "consequencia_para_o_candidato": "2026-09-09-profile-about-read-rpc.sql so pode ser aplicado ao banco REMOTO, onde esses objetos existem. Num banco reconstruido criaria uma funcao que falha na primeira chamada. Isso confirma a pendencia 3 de L03 com evidencia.",
+    "consequencia_para_recuperabilidade": "Somado a quebra do replay no arquivo 48, sao DOIS buracos independentes: um de ordem e um de ausencia. Mesmo corrigindo o 48, um banco reconstruido nao teria o dominio profile_about. Recriar a base hoje depende de dump.",
+    "limite": "Nao verifiquei se outros dominios tem o mesmo padrao; distinguir 'referenciado e nao criado' de 'nome montado dinamicamente' exigiria cuidado que nao cabia na janela."
+  },
+  "por_que_e2e_e_zero": {
+    "tese": "Nao existe base reproduzivel para exercitar rota real contra Postgres. Tres buracos independentes, todos medidos nesta rodada.",
+    "buraco_1": "A cadeia de 186 migrations quebra no arquivo 48 (NOT NULL de module_label) e tem pelo menos uma segunda barreira no mesmo arquivo. Replay do zero nao atravessa. Confirmado tambem no PG17.",
+    "buraco_2": "O conjunto que supabase start aplicaria e outro: packages/coelo_database/supabase/migrations, 17 arquivos, com ZERO create table. Sao 14 CREATE OR REPLACE de funcao mais revokes. list_my_principal_contexts e list_visible_profile_circulars nao estao la. Um supabase start sobe um banco praticamente vazio do ponto de vista do Coelo.",
+    "buraco_3": "O dominio profile_about nao tem schema versionado em conjunto nenhum.",
+    "conclusao_para_o_recorte": "Nao havia como certificar E2E localmente: o schema que as tres telas leem nao existe em nenhum conjunto aplicavel. Dedutivo e assinado.",
+    "limite": "Para outras frentes afirmo menos: o conjunto local e o mesmo e nao cria tabela, entao a situacao provavelmente e a mesma, mas nao medi dominio por dominio.",
+    "releitura_do_numero": "O 0/198 vinha sendo lido como escolha de prioridade. A leitura correta e que a unica base disponivel e a PRODUCAO, onde ninguem pode rodar E2E sem autorizacao nominal. Enquanto nao houver caminho de recriacao, E2E continua zero por construcao e nenhum esforco de frente muda isso."
+  },
+  "schema_versionado_por_dominio": {
+    "pedido": "Coordenador pediu medir o padrao de profile_about em child_safety e depois em chat.",
+    "child_safety": "VERSIONADO. Tabelas (child_contexts, child_group_links, child_safety_alerts, _evidence, _restrictions, child_unit_links, child_unit_access_requests, app_private.child_safety_command_receipts) e dezenas de funcoes app_private do dominio sao criadas em migration.",
+    "chat": "VERSIONADO. conversations, conversation_members, messages, message_receipts, message_edits, chat_attachment_metadata e receipts internos, mais can_access_chat_conversation, chat_send_message, chat_mark_read e outras.",
+    "conclusao": "profile_about NAO e excecao. Varredura sistematica: 605 objetos app_private chamados no SQL versionado contra 527 funcoes e 63 tabelas criadas; sobram 40 chamados e nunca criados.",
+    "dominios_atingidos": "student_tracking (4), superadmin_unit import/export (8), routine (9), profile_about (3), meal_plan (2), mais assert_access_profile_assignment_delegable, assert_unit_file_access, create_unit_for_superadmin, enforce_unit_branding_identity_ownership, normalize_person_handle e quatro de legal_representative.",
+    "conferencia_manual": "profile_about_can, routine_receipt, student_tracking_can_read e normalize_person_handle: ZERO ocorrencias de 'function app_private.<nome>' em todo o SQL versionado, busca que pegaria CREATE e DROP.",
+    "impacto_para_outra_frente": "routine e student_tracking sao o dominio de alunos-rotina, que entregou muito em cima deles nesta rodada. A entrega nao fica invalida; a base que a sustenta e que nao e reconstruivel.",
+    "leitura_positiva": "O buraco e sistemico mas NAO universal. child_safety e chat mostram que existe padrao correto na propria casa para seguir.",
+    "ressalvas": "Os 40 sao objetos, nao defeitos: um helper pode servir a varios dominios. E nao distingo helper que nunca existiu de helper que existe no remoto e nunca foi versionado; para reconstruir a base da no mesmo, para responsabilidade nao da. Cinco conferidos a mao, os outros 35 vem do metodo."
+  },
+  "git": {
+    "divergencia_com_upstream": "0/0 conferido apos publicar o merge pendente",
+    "worktree": "0 caminhos alterados",
+    "stash": "0",
+    "base_conjunta": "origin/dev mesclado ate b2cdba58a e publicado",
+    "lotes_em_dev": "todos ate c5a6fd106 integrados; 0f2135398 e os merges seguintes publicados na branch e pendentes do proximo ciclo do coordenador"
+  },
+  "validacao_final_do_recorte": {
+    "base": "56638e7fa (dev 05df1ffb4 mesclado)",
+    "resultado": "P=268 F=10 B=0 S=0 U=0, estavel entre as tres ultimas bases integradas",
+    "as_dez": "exatamente principal_profile_preview_golden_test, mesma lista de NOMES",
+    "analyze": "flutter analyze lib test: No issues found (conferido em de4defc1c; base seguinte sem mudanca no recorte)"
+  },
+  "servicos_prestados_a_outras_frentes": [
+    "Alerta e diagnostico da rota principal-conversations duplicada em dev, que fazia createSuperadminRouter lancar e o app inteiro nao subir; confirmado em checkout limpo antes de alertar",
+    "Guarda de unicidade de nome de rota, adotada pelo coordenador como parte do gate de integracao",
+    "Triagem de falhas de golden em tres assinaturas, com o comando corrigido; referencia de skill publicada com autorizacao",
+    "Verificacao de sintaxe da fila SQL inteira em Postgres 17: 13 candidatos, 4 arquivos de Modelos e 2 planos, todos syntax=0",
+    "Diagnostico estrutural do E2E 0/198: replay quebrado no arquivo 48, conjunto local sem create table, 40 objetos app_private orfaos em oito dominios",
+    "Capacidade de leitura de imagem de golden, que falha por timeout em outras frentes, oferecida e disponivel"
+  ],
+  "o_que_fica_para_o_owner": [
+    "Referencia aprovada do Perfil: continua a que tem Acompanhar, Seguidores e Seguindo, ou a composicao atual passa a ser a referencia? Na rota real nenhuma dessas secoes aparece, porque nao ha projecao autorizada por tras.",
+    "Regra de visibilidade do leitor Principal no Sobre: nao existe token de leitura em profiles.about.*.",
+    "Contraste 3,75:1 do chip DESTAQUE contra o minimo AA de 4,5:1.",
+    "Contrato visual canonico de Editar perfil, incluindo onde ficam titulo e acao de fechar se a pagina receber embedded para resolver o chrome duplicado abaixo do breakpoint expanded.",
+    "Rotulo VISIVEL dos campos do Sobre: a acessibilidade ja foi entregue e nao depende de decisao.",
+    "Destino do CTA das comunicacoes: PlatformNotice nao modela URL no cliente embora platform_notices tenha cta_url.",
+    "Caminho de recriacao da base, do qual dependem homologacao e E2E."
+  ],
+  "proximo_passo": "Disponivel para conferencia externa de Git as 05:00 e para leitura de imagem sob demanda. Sem trabalho de produto executavel restante no recorte.",
+  "reteste_das_linhas_de_bloqueio": {
+    "criterio": "Cada linha chega com o teste que a sustenta NOMEADO, ou marcada como NAO TESTADA. Distingue bloqueio por AUSENCIA do objeto de bloqueio por FALTA DE AUTORIZACAO NOMINAL para verificar: sao coisas diferentes e pedem decisoes diferentes do Owner.",
+    "linhas": [
+      {
+        "linha": "principal.profile-view BE: leitura do Sobre depende de public.get_profile_about, nao aplicada",
+        "classificacao": "bloqueio por AUSENCIA, e a ausencia e certa",
+        "teste_que_sustenta": "A funcao foi escrita por mim nesta rodada como plano em packages/coelo_database/plans/; nunca foi aplicada em lugar nenhum. Sintaxe verificada em Postgres 17 local (syntax=0). Nao existe no remoto por construcao.",
+        "confianca": "alta"
+      },
+      {
+        "linha": "principal.profile-view BE: enquanto isso o caminho real e o fallback por tabela sob RLS",
+        "classificacao": "NAO TESTADO. Corrijo a minha propria redacao anterior.",
+        "teste_que_sustenta": "NENHUM. Eu disse que o fallback 'falha fechado se as tabelas estiverem deny-by-default'. Isso e uma CONDICIONAL que nunca verifiquei: nunca consultei o banco remoto. As tabelas profile_about_* existem no remoto (prova indireta: save_profile_about, que e versionada e aplicada, as le e escreve), entao o fallback pode estar funcionando normalmente hoje. Nao sei.",
+        "reclassificacao_correta": "bloqueado por FALTA DE AUTORIZACAO NOMINAL para verificar, nao por ausencia",
+        "confianca": "baixa; a linha estava mais assertiva do que a evidencia permite"
+      },
+      {
+        "linha": "principal.profile-edit BE: escrita por save_profile_about preservada",
+        "classificacao": "objeto EXISTE no remoto; falta prova, nao objeto",
+        "teste_que_sustenta": "public.save_profile_about e versionada em 20260825193131_final_review_profile_about_lint_hardening.sql e chama app_private.profile_about_can e profile_about_page_for, o que e a unica prova disponivel de que esses existem no remoto. O que falta e execucao por ator autorizado real.",
+        "reclassificacao_correta": "bloqueado por FALTA DE AUTORIZACAO NOMINAL para verificar",
+        "confianca": "alta"
+      },
+      {
+        "linha": "principal.profile-edit BE: schema profile_about nao versionado",
+        "classificacao": "bloqueio por AUSENCIA no repositorio, confirmado",
+        "teste_que_sustenta": "Busca em packages/coelo_database/migrations e supabase/migrations: zero create table profile_about_*; profile_about_can e profile_about_page_for com zero ocorrencias de 'function app_private.<nome>'. Publicado em docs/reviews/evidence/etapa-2/perfil-para-voce/2026-09-10-schema-versionado-e-replay.md.",
+        "confianca": "alta"
+      },
+      {
+        "linha": "principal.for-you BE: autorizacao ainda no diretorio administrativo",
+        "classificacao": "bloqueio por DECISAO de contrato, nao por ausencia",
+        "teste_que_sustenta": "SupabaseNoticeRepository chama superadmin_notice_directory_v2, que existe e e versionada. O objeto nao falta: o limite e que ele decide por permissao administrativa e a audiencia acaba resolvida no cliente. O pacote list_my_principal_for_you existe como plano, tem syntax=0 no PG17 e aplica inteiro no schema local.",
+        "confianca": "alta"
+      },
+      {
+        "linha": "principal.for-you FE: contraste 3,75:1 do chip DESTAQUE",
+        "classificacao": "bloqueio por DECISAO, agora MEDIDO por mim e nao herdado",
+        "teste_que_sustenta": "Calculo WCAG sobre as cores reais da composicao: tema claro, chip = onPrimary branco a 16% sobre primary orange500, texto onPrimary branco -> 3,75:1, abaixo dos 4,5 exigidos. Tema escuro: chip = onPrimary orange950 a 16% sobre primary orange300, texto orange950 -> 6,25:1, PASSA. Impacto medido: trocar o veu quebra 13 de 13 goldens de principal_for_you_preview_golden_test, medido e revertido.",
+        "confianca": "alta"
+      },
+      {
+        "linha": "principal.profile-edit FE: sem contrato visual canonico",
+        "classificacao": "bloqueio por DECISAO",
+        "teste_que_sustenta": "Leitura de .agents/skills/coelo-ui/references/principal-visual-surfaces.md: a matriz nao cobre a tela e manda localizar rota e spec pelo nome. Somado a medicao do chrome duplicado (2 AppBars abaixo do breakpoint expanded, 1 em 1440 px), fixada em teste no lote 13.",
+        "confianca": "alta"
+      },
+      {
+        "linha": "as tres camadas integrated: E2E nao certificado",
+        "classificacao": "bloqueio ESTRUTURAL, medido nesta rodada",
+        "teste_que_sustenta": "Replay das 186 migrations quebra no arquivo 48 (persiste no PG17); o conjunto que supabase start aplicaria tem 17 arquivos e zero create table; 40 objetos app_private chamados e nunca criados. Publicado na evidencia citada acima.",
+        "confianca": "alta"
+      }
+    ],
+    "resultado_do_reteste": "Duas linhas mudam de classificacao e uma perde confianca. A que eu tratava como 'o caminho real falha fechado em producao' era CONDICIONAL nunca verificada, e a reclassificacao correta e falta de autorizacao para verificar. A escrita do Sobre tambem nao esta bloqueada por ausencia: o objeto existe no remoto e o que falta e prova."
+  },
+  "selo_destaque_medido": {
+    "tema_claro": "chip = onPrimary branco a 16% sobre primary orange500, texto onPrimary branco. Composto RGB (221,91,41); contraste 3,75:1, abaixo dos 4,5 exigidos em AA para 11px. Numero herdado CONFIRMADO por calculo proprio.",
+    "tema_escuro": "chip = onPrimary orange950 a 16% sobre primary orange300, texto orange950. Contraste 6,25:1: PASSA. O defeito e so do tema claro, o que ninguem havia dito.",
+    "causa_estrutural": "No tema claro o veu e o texto sao a MESMA cor (onPrimary branco). Curva medida: alpha 0 -> 4,66; 0,08 -> 4,21; 0,16 -> 3,75; 0,24 -> 3,32. Nao existe alpha de veu branco que resolva; so remover o veu, o que apaga o chip.",
+    "proposta": "Inverter o veu para o tom escuro da propria marca: orange950 a 16% sobre orange500 da 5,75:1, passa com folga, usa token de paleta existente e fica simetrico com o tema escuro, que ja veda com orange950.",
+    "nao_aplicado": "O token e scheme.onPrimary, compartilhado, entao pela regra do coordenador vira decisao de coelo-ui. E o custo foi MEDIDO em vez de herdado: trocar o veu quebra 13 de 13 goldens de principal_for_you_preview_golden_test. Medido e revertido; arvore limpa conferida.",
+    "decisao_do_owner": "Entre uma tela que nao cumpre AA no tema claro e treze referencias aprovadas a regravar."
+  },
+  "item_12_do_relatorio_premissa_falsa": {
+    "afirmado_no_relatorio": "o teste da rota do Perfil exige que a frase 'experiencia completa' nao apareca; o teste de Para Voce ESPERA a frase.",
+    "verificado": "FALSO. Sao exatamente duas ocorrencias da frase em todo test/ do superadmin e as DUAS estao dentro de assercoes findsNothing. principal_for_you_route_responsive_test.dart:389 pertence ao teste 'says plainly that a shortcut without a destination is unavailable', que assere 'Cardapio ainda nao esta disponivel.' presente e a frase de previa AUSENTE, com o comentario 'A production route never answers with the preview message'.",
+    "consequencia": "Perfil e Para Voce CONCORDAM. Nao ha decisao a tomar nem trabalho a fazer nas duas. Se as seis ocorrencias de Acontece, Agora e Momentos existirem, o item continua real para essas tres, mas deixa de ser 'o produto esta dividido' e vira 'tres telas ficaram para tras enquanto duas ja foram corrigidas'.",
+    "resposta_sobre_simetria": "Nao ha versao de for_you a fazer. A frase e inalcancavel na rota de producao: embedded esconde o chrome e onAction recebe _handleAction, que usa a mensagem honesta. _feedback so sobrevive para a superficie nao hospedada, que e o /dev.",
+    "padrao": "Terceira ocorrencia na mesma noite do mesmo erro: ler a string e nao a assercao em volta. As outras duas foram minha leitura do golden e a de outra frente medindo widget isolado."
+  },
+  "proxima_rodada": {
+    "como_ler_este_bloco": "Ordem de execucao, nao de importancia. Cada item diz o que desbloqueia e o que fazer PRIMEIRO. Quem pegar este grupo nao precisa reler a noite inteira: comece pelo item 1.",
+    "itens": [
+      {
+        "ordem": 1,
+        "acao": "Confirmar com o Owner qual e a referencia aprovada do Perfil",
+        "primeira_coisa_a_fazer": "Abrir apps/superadmin/test/features/principal_profile/presentation/failures/principal_profile_light_1024_masterImage.png contra _testImage.png (gerar rodando o golden). A referencia tem botao Acompanhar e seis metricas com Seguidores e Seguindo; a composicao atual tem Mensagem e tres metricas.",
+        "desbloqueia": "10 dos 12 goldens do Perfil, que hoje deixam a tela sem guarda visual utilizavel. Enquanto isso durar, regressao visual da composicao completa e invisivel.",
+        "cuidado": "NAO regravar golden para fechar vermelho. Se o Owner confirmar a composicao atual, regravar e consequencia administrativa; se nao, e defeito de produto e volta para esta fila."
+      },
+      {
+        "ordem": 2,
+        "acao": "Decidir o veu do selo DESTAQUE",
+        "primeira_coisa_a_fazer": "Levar a coelo-ui os numeros ja medidos: tema claro 3,75:1 (falha AA), tema escuro 6,25:1 (passa), e a proposta de inverter o veu para orange950 a 16%, que da 5,75:1. Custo medido: quebra 13 de 13 goldens de principal_for_you_preview_golden_test.",
+        "desbloqueia": "principal.for-you FE sair de blocked-decision.",
+        "cuidado": "O token e scheme.onPrimary, compartilhado. Nao e correcao de executor."
+      },
+      {
+        "ordem": 3,
+        "acao": "Decidir o contrato visual de Editar perfil",
+        "primeira_coisa_a_fazer": "Duas perguntas juntas, porque a segunda depende da primeira: quais campos a tela edita e quem edita; e onde ficam titulo e acao de fechar se a pagina receber embedded para resolver o chrome duplicado. A medicao do chrome esta fixada em teste: 2 AppBars abaixo do breakpoint expanded, 1 em 1440 px.",
+        "desbloqueia": "principal.profile-edit FE sair de blocked-decision.",
+        "cuidado": "Inverter o teste de chrome em vez de relaxa-lo quando a decisao vier."
+      },
+      {
+        "ordem": 4,
+        "acao": "Decidir a regra de visibilidade do leitor Principal no Sobre",
+        "primeira_coisa_a_fazer": "Ler o cabecalho de packages/coelo_database/plans/2026-09-09-profile-about-read-rpc.sql, que registra a decisao necessaria e o que a proposta assumiu: visibility profile_access, por ser o default dos INSERTs da RPC de escrita. Nao existe token de leitura em profiles.about.*.",
+        "desbloqueia": "Aplicacao nominal de get_profile_about, e com ela a leitura autorizada do Sobre.",
+        "cuidado": "A funcao ja tem sintaxe verificada em Postgres 17. O que falta e decisao e autorizacao, nao codigo."
+      },
+      {
+        "ordem": 5,
+        "acao": "Verificar, com autorizacao nominal, se a leitura por tabela do Sobre funciona hoje em producao",
+        "primeira_coisa_a_fazer": "Uma consulta de leitura as tabelas profile_about_* como ator autorizado. E a linha que eu classifiquei errado a noite toda: nao esta bloqueada por ausencia, esta bloqueada por falta de autorizacao para verificar.",
+        "desbloqueia": "Saber se o fallback esta funcionando ou falhando fechado em producao, que muda a urgencia do item 4.",
+        "cuidado": "Nao inferir do codigo. A duvida existe justamente porque ninguem consultou."
+      },
+      {
+        "ordem": 6,
+        "acao": "Aplicar list_my_principal_for_you e mover a audiencia para o servidor",
+        "primeira_coisa_a_fazer": "O pacote esta em packages/coelo_database/plans/2026-09-09-principal-for-you-read-rpc.sql, com os tres ajustes do dono do contrato ja aplicados e verificados NO ARQUIVO, e aplica inteiro no Postgres 17 local.",
+        "desbloqueia": "principal.for-you BE. Hoje o filtro de audiencia no cliente e defesa em profundidade, nao controle de acesso.",
+        "cuidado": "Serializacao pelo integrador e autorizacao nominal."
+      },
+      {
+        "ordem": 7,
+        "acao": "Rotulo VISIVEL dos campos na aba Sobre",
+        "primeira_coisa_a_fazer": "Trocar o Semantics por Text usando profileAboutFieldLabel, que ja e compartilhado em features/profile_about/presentation/profile_about_labels.dart. O rotulo de acessibilidade ja foi entregue e nao depende disso.",
+        "desbloqueia": "Nada tecnico; e legibilidade da tela.",
+        "cuidado": "Muda composicao de uma aba sem fonte canonica em coelo-ui. E decisao, nao conserto."
+      },
+      {
+        "ordem": 8,
+        "acao": "Destino do CTA das comunicacoes",
+        "primeira_coisa_a_fazer": "PlatformNotice nao modela URL alguma no cliente, embora platform_notices tenha cta_url. Estender o contrato compartilhado e de quem o mantem; abrir URL externa e decisao de produto e de seguranca.",
+        "desbloqueia": "O CTA de uma comunicacao real publicada deixar de responder apenas que a capacidade nao esta disponivel.",
+        "cuidado": "Nao e do recorte perfil-para-voce sozinho."
+      },
+      {
+        "ordem": 9,
+        "acao": "E2E das tres acoes",
+        "primeira_coisa_a_fazer": "Nao tentar antes de existir caminho de recriacao da base. Ver docs/reviews/evidence/etapa-2/perfil-para-voce/2026-09-10-schema-versionado-e-replay.md: o replay quebra no arquivo 48, o conjunto local nao cria tabela e profile_about nao esta versionado.",
+        "desbloqueia": "As tres camadas integrated.",
+        "cuidado": "Enquanto a unica base for producao, E2E continua zero por construcao."
+      }
+    ],
+    "sinal_de_refresh_de_momentos": "Deliberadamente nao consumido. O router entrega principalMomentsWithdrawalRepository e momentsFeedRefreshSignal a rota /principal-moments; a aba do Perfil nao os usa. Publicar e retirar pertencem a superficie de Momentos, e o contrato estava mudando na noite da decisao. Se a frente de Momentos quiser que publicacao nova reflita na aba sem recarregar, o hunk e pequeno e a decisao e de quem mantem o contrato."
+  },
+  "item_12_confirmado_no_relatorio": "A correcao chegou ao destino: o relatorio do Owner ja traz, no item 12, a retificacao com a leitura correta da assercao findsNothing e o reconhecimento explicito de que a string foi lida como expectativa.",
+  "servicos_a_outras_frentes_nesta_janela": {
+    "reteste_externo_operacoes_sistema": "Linhas conferidas por leitura de assercao e fonte. Nenhuma afirma mais do que sustenta. O texto de razao do proprio rpc_contract_test.dart enuncia a bifurcacao ('ou a funcao foi instalada fora do versionamento... ou a superficie falha no primeiro uso real'), entao o teste NAO estabelece blocked-environment: estabelece a duvida.",
+    "reteste_externo_alunos_rotina": "Quatro linhas conferidas uma a uma, todas verdadeiras. B1 esta SUBESTIMADA: cita um nome e sao pelo menos cinco RPCs superadmin_attendance_* chamadas pelo cliente e criadas por migration nenhuma. B3 e B4 sao mais fortes do que escritas: em superadmin_auth_scope, DENTRO do ramo autorizado, routineRepository e studentTrackingRepository recebem Unavailable explicitamente.",
+    "assimetria_encontrada": "No mesmo ramo autorizado, attendanceRepository recebe SupabaseAttendanceRepository real. Rotina e Alunos falham FECHADO por composicao deliberada; Assiduidade tem tudo composto e falharia no PRIMEIRO USO REAL se as RPCs tambem nao existirem no remoto. Ler as tres como 'sem backend' apaga a diferenca.",
+    "convergencia": "As cinco RPCs de Unidades de operacoes-sistema, as cinco de Assiduidade de alunos-rotina e os meus 40 objetos app_private sao o mesmo buraco medido por tres caminhos. create_unit_for_superadmin aparece em duas listas ao mesmo tempo.",
+    "dado_que_so_esta_frente_tinha": "'Instalado fora do versionamento' e fenomeno MEDIDO neste repositorio: profile_about prova. Isso torna a hipotese benigna pelo menos tao provavel quanto a grave, e recomenda um unico select proname from pg_proc que responde pelas tres frentes de uma vez.",
+    "leitura_de_imagem_instituicoes": "NAO e regressao. O cartao 'Criar instituicao' so renderiza if (onCreate != null) e o _goldenApp do teste nao fornece onCreate; em producao o router passa onCreate condicionado a hasStructureMutationCapability(). O fixture inteiro tambem trocou. MAS e perda de COBERTURA: o golden protegia a afordancia e deixou de proteger."
+  },
+  "_snapshot": "COPIA de seguranca do handoff vivo em docs/reviews/etapa-2-operacao/comunicacao/perfil-para-voce.json, tirada na revisao 27. A FONTE E O ARQUIVO DE COMUNICACAO, nao este. Existe porque o arquivo vivo estava modificado e nao commitado no checkout raiz, e trabalho nao publicado e a unica perda sem correcao possivel. Se as duas divergirem, vale a de comunicacao."
+}
