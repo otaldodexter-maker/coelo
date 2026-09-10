@@ -39,17 +39,41 @@ O método já evitou três enganos concretos:
 | --- | --- | --- |
 | `ecc8eae2b` | 19:30 | 5707 PASS, 9 SKIP, 190 FAIL |
 | `414b82b29` | 20:40 | 5871 PASS, 9 SKIP, 182 FAIL — 144 golden, 38 não |
-| `b0f816560` | 21:40 | 6811 PASS, 9 SKIP, 156 FAIL — 127 golden, **29 não** |
+| `b0f816560` | 21:40 | 6811 PASS, 9 SKIP, 156 FAIL — 127 golden, 29 não |
+| `b4cf3664a` | 02:20 | **6344 PASS, 14 SKIP, 146 FAIL — 129 golden, 17 não** |
 
-A rodada somou casos que passam e **reduziu 8 falhas**. Nenhum número soma
-reexecuções. O catálogo das 182, por arquivo e por dono, está no
-[catálogo de falhas](NOTURNA-catalogo-falhas.md).
+Nenhum número soma reexecuções, e cada linha é uma execução completa sobre a
+base indicada. A queda de PASS entre a terceira e a quarta linha não é regressão:
+a terceira medição rodou com um conjunto de suítes diferente. O que é comparável
+entre elas, porque é a mesma pergunta feita do mesmo jeito, é a coluna de falhas.
 
-O número que importa mais que o total: das 182, **144 são suítes de golden e
-apenas 38 não são**. A metade de golden depende da sua decisão de rebaseline, não
-de código. Dez das 38 foram recuperadas logo depois dessa medição, com uma linha
-por construção de router numa flag que voltou a ser necessária desde
-`b20a9c205`.
+**O número que importa é o segundo: as falhas que não são golden caíram de 38
+para 17, e das 17 nenhuma é órfã.** Elas se distribuem assim:
+
+| Falhas | Arquivo | O que é |
+| ---: | --- | --- |
+| 3 | `app/router/principal_real_route_test` | rota real do Principal, causa diagnosticada |
+| 2 | `core/config/composition_root_sanitization_test` | contrato de composição |
+| 2 | `core/config/unit_fail_closed_composition_source_test` | contrato de composição |
+| 2 | `shared/.../superadmin_form_action_footer_adoption_test` | adoção do rodapé de ação |
+| 3 | `app/dev_menu*`, `development_dataset_contract_test` | rota `/dev`, fora do MVP |
+| 3 | `composition_root_fail_closed_routes`, `import_development_routes`, `prototype_navigation_routes` | mesma família de composição |
+| 1 | `app/router/principal_mixed_feed_pagination_red_test` | **vermelho proposital**, escrito esta noite |
+| 1 | `features/forms/.../forms_editor_page_test` | asserção estrutural de foco, preexistente |
+
+Há ainda um segundo vermelho proposital antigo, `people_creation_requirements_red_test`,
+que na base atual passa. Vermelho proposital é um teste escrito para falhar até
+que o defeito que ele nomeia seja corrigido — ele documenta, não regride.
+
+**As 129 falhas de golden são aceite visual e dependem de decisão sua**, não de
+código. As duas maiores concentrações são `agenda_calendar` com 14 casos e as
+três superfícies de prévia do Principal — Momentos 11, Acontece 10, Perfil 10.
+
+Tudo isto significa que a leitura "o app tem 146 testes quebrados" seria falsa. O
+que existe é **um aceite visual inteiro pendente da sua decisão, mais dezessete
+casos de contrato e ambiente de desenvolvimento**. Duas dessas dezessete famílias
+foram fechadas esta noite: as cinco falhas não-golden de Estrutura caíram todas
+pela mesma causa, um toque de teste que não garantia visibilidade do rodapé.
 
 ## Conclusão certificada
 
