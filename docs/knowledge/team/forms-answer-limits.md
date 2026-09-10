@@ -4,6 +4,7 @@ knowledge_id: "forms-answer-limits"
 source: "packages/coelo_database/migrations/20260825193120_final_review_forms_runtime_hardening.sql"
 status: "validated"
 generated_at: "2026-09-09"
+updated_at: "2026-09-09"
 audience: "team"
 surfaces: [superadmin, forms, supabase, authoring, response]
 visibility: "internal"
@@ -42,6 +43,40 @@ A conversão e a comparação ficam em `FormNumericLimits`, em
 `format` e `violation`. Autoria, resposta e detalhe de resposta usam essa mesma
 função. Reimplementar a regra de dinheiro numa tela é como as telas passaram a
 ler o mesmo valor de formas diferentes.
+
+## Datas e escalas seguem a mesma regra, com armadilhas próprias
+
+O intervalo de datas declarado pelo autor chega ao servidor nos mesmos campos
+`min_value` e `max_value`, gravados como data civil, e o servidor recusa data
+fora dele. O seletor do respondente precisa oferecer **apenas** esse intervalo:
+oferecer datas que o backend vai recusar é pior que aceitar um número inválido,
+porque a interface convida ao erro. Cuidado ao passar o intervalo adiante: uma
+resposta já gravada pode ser anterior a um intervalo declarado depois, e o
+seletor do Flutter exige que a data inicial esteja dentro do intervalo. Limite a
+data inicial em vez de deixar estourar.
+
+A escala é aceita pelo servidor de `scale_min` até `scale_max`, com padrões **1
+e 10** quando a pergunta não declara. Como o editor não expõe controle para
+`scale_min`, toda escala criada no app nasce sem mínimo declarado: usar zero
+como padrão no cliente oferece um valor que o servidor sempre recusaria.
+
+## O padrão de defeito: a regra é aprendida, a unidade não
+
+Os cinco defeitos encontrados nesta família têm a mesma forma. A regra existia
+dos dois lados; o que divergia era a unidade, o padrão ou o limite:
+
+| Onde | Cliente | Servidor |
+| --- | --- | --- |
+| Dinheiro | limite em unidades | compara `money_minor_units` |
+| Texto | contava unidades UTF-16 | `char_length` conta code points |
+| Texto sem máximo | sem limite | recusa acima de 1000 |
+| Data | intervalo ignorado | recusa fora do intervalo |
+| Escala | começava em 0 | aceita a partir de 1 |
+
+Ao ligar uma validação nova no cliente, a pergunta útil não é "a regra existe
+no servidor?", e sim "em que unidade, com que padrão e a partir de que limite
+ela existe lá?". Uma validação de cliente que discorda do servidor é pior que
+nenhuma: ela produz recusa que a pessoa não consegue explicar.
 
 ## Um intervalo invertido torna a pergunta impossível
 
