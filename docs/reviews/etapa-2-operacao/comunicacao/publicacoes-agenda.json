@@ -1,5 +1,5 @@
 {
-  "revision": 11,
+  "revision": 12,
   "round": "E2-R03-20260910",
   "group": "publicacoes-agenda",
   "tool": "Codex",
@@ -99,5 +99,32 @@
     "Owner aprovou os anexos visuais: Agenda e Circulares seguem integralmente as referências; em Avisos, o círculo sinaliza ativo, inativo, rascunho e demais estados. Goldens divergentes foram regravados e a matriz passou.",
     "Não declarar E2E: base.fase0Head publicada, mas Docker/Postgres local continua ocupado por outra frente e aplicação remota permanece reservada ao coordenador."
   ],
-  "updatedAt": "2026-09-10T21:35:00-03:00"
+  "coordinatorHandoff": {
+    "generatedAt": "2026-09-10T16:20:00-03:00",
+    "base": "552058da0",
+    "branchHead": "5883ad69fbf424a9f23d7686317acd016916ef1d",
+    "progress": {
+      "overallPct": 50,
+      "basis": "2 de 4 gates ponderados fechados: FE/composição local e documentação/commits verdes; backend/pgTAP e E2E remoto retidos por ambiente/aplicação.",
+      "frontendLocal": "100% das superfícies alteradas e goldens afetados verificados; não equivale a aceite das 24 ações.",
+      "backend": "migration, contratos e pgTAP entregues; execução local bloqueada antes de app_private na migration legada.",
+      "e2e": "0% remoto; aguardando aplicação do coordenador, gateway/RLS nominal e reload contra ambiente autorizado."
+    },
+    "commits": [
+      {"sha": "9ee216986c1e5ff69d8ce22d3e3b3cad4cd80d94", "actionIds": ["notices.list"], "summary": "indicador circular de estado no cartão compacto de Avisos"},
+      {"sha": "377e1b1f9", "actionIds": ["agenda.view", "agenda.create", "agenda.detail", "notices.list", "notices.create", "circulars.list"], "summary": "aprovação visual dos três anexos"},
+      {"sha": "29188430d27a57fd53075d1f58400ffca546134e", "actionIds": ["agenda.view", "agenda.create", "agenda.detail", "notices.list", "notices.create", "circulars.list"], "summary": "goldens regenerados na base integrada"},
+      {"sha": "1abe6909646cc038af33687dc829c0e95e255381", "actionIds": ["agenda.view", "agenda.create", "agenda.detail", "notices.list", "notices.create", "circulars.list"], "summary": "rebase e goldens integrados"},
+      {"sha": "0fe5b6ad7", "actionIds": ["agenda.view", "agenda.create", "agenda.detail", "notices.list", "notices.create", "circulars.list"], "summary": "head do handoff reconciliado com a base do coordenador"},
+      {"sha": "5883ad69fbf424a9f23d7686317acd016916ef1d", "actionIds": ["notices.list"], "summary": "regressão de layout/semântica do indicador reexecutada e registrada"}
+    ],
+    "pendingForCoordinator": [
+      {"actionIds": ["agenda.view", "agenda.create", "agenda.detail", "agenda.edit", "agenda.request", "agenda.permissions", "agenda.location"], "pending": "replay nominal de readers/comandos, RLS/tenant, persistência e reload"},
+      {"actionIds": ["notices.list", "notices.create", "notices.edit", "notices.schedule", "notices.publish", "notices.archive"], "pending": "revalidar migrations/pgTAP, métricas por geração, audiência, pg_cron/worker e prova de persistência/reload; pg_cron/worker fora desta frente"},
+      {"actionIds": ["circulars.list", "circulars.filter", "circulars.create", "circulars.edit", "circulars.detail", "circulars.schedule", "circulars.publish", "circulars.close", "circulars.delete", "circulars.respond", "circulars.attach"], "pending": "validar gateway/RLS/tenant e E2E; ligar superadminCircularDeleteEnabled somente após pgTAP e gateway nominal"}
+    ],
+    "environmentBlocker": "supabase start/test db --local para na migration 20260820152528_forms_editor_application_capability_guard.sql porque app_private ainda não existe; não houve criação manual de schema nem alteração da ordem histórica.",
+    "handoffRule": "coordenador Claude deve consumir este arquivo, os actionIds e os SHAs; não há alteração direta no checkout/JSON de coordenação desta frente."
+  },
+  "updatedAt": "2026-09-10T16:20:00-03:00"
 }
