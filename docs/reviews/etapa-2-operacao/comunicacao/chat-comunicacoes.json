@@ -1,6 +1,6 @@
 {
-  "revision": 49,
-  "updated_at": "2026-09-10T03:56:30-03:00",
+  "revision": 51,
+  "updated_at": "2026-09-10T04:03:00-03:00",
   "group": "chat-comunicacoes",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) - claude-opus-5[1m]",
@@ -880,5 +880,35 @@
     "diagnostico_das_duas": "Nao e JSON corrompido, e BOM UTF-8 (EF BB BF) no inicio do arquivo. Parser estrito recusa; leitor tolerante aceita. As duas versoes sao historicas e a versao ATUAL do arquivo parseia normalmente, na revisao 55.",
     "verificacao_de_extensao": "Conferi os NOVE arquivos de comunicacao no dev atual: nenhum tem BOM. O problema nao esta vivo na base entregue.",
     "licao": "Um detector que ignora o que nao entende reporta silencio como saude. Contar o que foi pulado e tao importante quanto contar o que foi achado."
+  },
+  "metodo_da_medicao_de_teste": {
+    "comando": "flutter test <17 caminhos>, executado a partir de apps/superadmin, com o reporter PADRAO.",
+    "o_que_NAO_foi_usado": "Nao usei --reporter expanded parseado por mim, nem file-reporter, nem contagem propria de linhas. O numero e o que o contador oficial do flutter test imprime na linha final.",
+    "por_que_declaro": "Sem esta linha o arquivo nao PERMITE descartar a hipotese de denominador furado, que e exatamente a armadilha que uma contagem caseira explora. O dado existia e o registro nao o carregava — terceira vez que este padrao aparece na minha noite.",
+    "verificacao_de_caminho": "Os 17 caminhos sao testados por existencia antes de cada execucao; a rodada que produziu este numero reportou ausentes=0.",
+    "numero": "397 PASS / 12 FAIL sobre origin/dev 0032b90c7, com os tres commits meus da madrugada ja integrados.",
+    "as_12_falhas": "Todas goldens: nove em superadmin_chat_page_golden_test, duas em notice_directory_golden_test, uma em notice_form_golden_test."
+  },
+  "correcao_sobre_8d06b8a91": {
+    "o_que_eu_disse": "Que a branch estava SUPERADA, porque o guarda de unicidade de rota passa no dev atual.",
+    "o_que_e_verdade": "A conclusao estava certa e o enquadramento errado. Medido agora: 8d06b8a91 altera ZERO arquivos. E um commit VAZIO — nunca carregou conteudo, provavelmente resultado de cherry-pick de algo ja presente na base.",
+    "por_que_a_diferenca_importa": "'Superado' sugere que houve trabalho e outra correcao chegou antes. 'Vazio' diz que nao ha nada ali para perder, e isso e mais forte e mais simples de verificar.",
+    "licao": "Antes de concluir que um commit fora da base foi superado, perguntar se ele tem conteudo. 'Fora do dev' nao deveria ser lido como 'trabalho perdido' sem essa pergunta."
+  },
+  "limpeza": {
+    "arquivos_removidos": "apps/superadmin/paramroutes.txt e sweep.txt dentro de C:/cdchk, saida das minhas sondas de varredura. A worktree esta limpa agora.",
+    "pendente": "Remover a propria C:/cdchk depois da passada das 04:20."
+  },
+  "verificacao_do_que_eu_toquei_na_noite_inteira": {
+    "metodo": "Uniao dos arquivos tocados por todos os meus commits, de d784462c1 ate c1e6756c7, mais cb0a386d8, 05fdcf2d5 e fb31e11dc.",
+    "total": "46 arquivos.",
+    "dentro_do_recorte": "43, entre chat, notices, principal_chat, router e rotas, navegacao, migrations e documentacao do canal.",
+    "tres_que_ficam_fora_do_filtro_ingenuo": [
+      "forms_production_routes_call_backend_red_test.dart — INCURSAO REAL fora do meu recorte, o teste do falso alarme de fail-closed em Formularios. Verificado agora: o arquivo esta AUSENTE do dev, entao a retratacao teve efeito e o saldo e zero.",
+      "principal_mixed_feed_pagination_red_test.dart — vermelho PROPOSITAL para publicacoes-midia, declarado desde a criacao. Verificado: continua presente no dev, como combinado.",
+      "shell_destination_round_trip_source_test.dart — meu, de rota; so nao casa com o filtro por causa do nome."
+    ],
+    "as_tres_entregas_da_madrugada": "cb0a386d8 soma 6 linhas de codigo e 124 de teste; 05fdcf2d5 soma 5 e 108; fb31e11dc soma 226 de teste. As tres com ZERO remocoes, e nenhuma toca superadmin_router.dart, que e arquivo reservado ao integrador.",
+    "por_que_isso_importa": "Zero remocoes significa que nenhuma delas pode ter apagado trabalho de outra frente, e isso e verificavel em um comando em vez de argumentado."
   }
 }

@@ -1574,6 +1574,14 @@ cujo nome deixou de ser literal.
 foi esvaziado mantendo nome e contagem não é detectado por nada disto. Fechar
 isso exigiria contar asserções por caso em vez de casos por arquivo.
 
+**E uma frente respondeu, com uma medição, a uma pergunta que ninguém fez em voz
+alta a noite inteira:** as três entregas dela da madrugada somam **zero
+remoções**. Nenhuma delas pode ter apagado trabalho de outra frente, e isso é
+verificável num comando em vez de argumentado com base em cuidado. A mesma
+verificação mostrou que a única incursão dela fora do próprio recorte — o teste do
+falso alarme — está **ausente da base**: a retratação teve efeito medido, não
+declarado.
+
 Três verificações fecharam o que era verificável: nenhum commit publicado por
 frente ficou fora da base — conferido commit a commit nos 2305 das sete branches;
 os 762 goldens da base pré-rodada continuam 762; e nenhum arquivo de coordenação
@@ -2476,6 +2484,26 @@ decisão pendente.
 ser descrita com frases verdadeiras que somam a conclusão falsa de que a
 capacidade existe para quem usa o produto. É a razão de este relatório insistir na
 diferença entre "implementado e coberto" e "alcançável".
+
+## Rodar a suíte inteira sujava a árvore com artefatos de outros grupos
+
+Uma frente encontrou 54 arquivos **modificados** — não novos — na própria árvore
+depois de executar a suíte completa: imagens de falha de duas famílias que **não
+são do recorte dela**, regravadas pela própria execução.
+
+**O risco não é a sujeira, é o commit seguinte.** Quem rodar a suíte inteira e
+depois adicionar um diretório inteiro ao commit, ou usar o atalho que inclui tudo
+o que está modificado, leva junto artefato de outro grupo — e o diff parece ruído
+visual e passa em revisão. A frente não caiu nisso porque já havia adotado, horas
+antes e por outro motivo, a regra de nunca adicionar diretórios depois de rodar
+testes.
+
+**Na base entregue esse risco não existe mais:** os artefatos de falha foram
+retirados do controle de versão durante esta rodada, e a base atual não rastreia
+nenhum. Mas quem trabalhar a partir de uma base anterior ainda encontra o
+comportamento, e a observação que a frente deixou é justa: **artefatos regenerados
+a cada execução vermelha não deveriam estar versionados**, porque qualquer pessoa
+que rode a suíte fica com a árvore suja sem ter tocado em nada.
 
 ## Higiene e preservação
 

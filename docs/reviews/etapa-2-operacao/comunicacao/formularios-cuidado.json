@@ -1,6 +1,6 @@
 {
-  "revision": 43,
-  "updated_at": "2026-09-10T03:55:54-03:00",
+  "revision": 45,
+  "updated_at": "2026-09-10T04:02:49-03:00",
   "group": "formularios-cuidado",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
@@ -151,6 +151,49 @@
         "packages/coelo_api test/forms (132 PASS)"
       ],
       "como_somar": "nao somar 1080 com 5350; o unico acrescimo legitimo ao numero 2 sao os 173 casos dos dois pacotes"
+    },
+    "metodo_de_medicao": {
+      "reporter": "numero lido da SAIDA CRUA DO CONTADOR do flutter test, nunca de parse de texto",
+      "saidas_cruas": {
+        "recorte_na_minha_branch": "03:32 +1080 ~3 -15: Some tests failed.",
+        "recorte_na_base_integrada": "02:44 +1081 ~3 -14: Some tests failed.",
+        "conjunto_apps_superadmin": "18:22 +5350 ~10 -206: Some tests failed."
+      },
+      "por_que_declaro": "o arquivo sozinho nao permitia descartar a hipotese de denominador furado, que e exatamente a lacuna que a armadilha do reporter expanded explora: ele TRUNCA o nome do caso na largura do terminal e casos distintos com prefixo igual COLAPSAM, subestimando o denominador enquanto a lista de falhas permanece correta",
+      "enumeracao": "as falhas NAO foram tiradas do bloco \"Failing tests\", porque ele TRUNCOU em \"... and 11 more\". Reexecutei subconjuntos e li os marcadores [E] de cada arquivo. Quem repetir cai no truncamento se confiar no bloco.",
+      "existencia_de_caminho": "os catorze caminhos testados com -e antes de cada execucao"
+    },
+    "numero_1_recorte_base_integrada": {
+      "resultado": "1081 PASS / 3 SKIP / 14 FAIL",
+      "base": "3fb200dab",
+      "observacao": "quinze na minha branch e catorze na base integrada: a diferenca e composition_root_fail_closed_routes_test, corrigido por operacoes-sistema em c2e6bda5d, que a minha branch nao tinha. O aprovado sobe de 1080 para 1081 pelo mesmo caso.",
+      "medido_em_worktree_temporaria": "Temp/fc-base-final, destacada em origin/dev, removida antes da entrega",
+      "falhas_enumeradas_nao_inferidas": {
+        "total": 14,
+        "metodo": "reexecucao dos arquivos suspeitos na base integrada, lendo os marcadores [E]; NAO por subtracao",
+        "forms_golden_8": [
+          "directory: matches the approved responsive directory contract",
+          "directory: matches the approved flyout and content-height schedule dialog",
+          "directory: captures empty, no-results, failure and unauthorized directory states",
+          "editor: matches the approved responsive editor contract",
+          "editor: matches catalog, date range and explicit preview states",
+          "editor: matches the approved editor at 200 percent text",
+          "response: matches development response at approved widths and themes",
+          "operations: matches monitor, responses and files at approved widths and themes"
+        ],
+        "health_care_golden_4": [
+          "matches both sibling directories on mobile light and desktop dark",
+          "matches profile files flyout open",
+          "matches both forms on mobile light and desktop dark",
+          "matches profile directory tabs hover and table evidence"
+        ],
+        "fora_do_meu_recorte_2": [
+          "superadmin_form_action_footer_adoption: all current administrative creation and edit surfaces use the canonical footer",
+          "superadmin_form_action_footer_adoption: form-like pages without a footer remain semantic non-form wrappers"
+        ],
+        "dono_das_duas_ultimas": "NAO e do meu recorte: a primeira aponta principal_happens_publication_page, de publicacoes-midia; a segunda compara lista fixa de cinco arquivos com nove reais e entre os novos esta activity_directory_page. Conferido que nenhum arquivo criado por mim nesta rodada entrou na lista.",
+        "conclusao": "as DOZE do meu recorte sao TODAS comparacao de golden, triadas uma a uma, e nenhuma exige correcao de produto antes de regravar"
+      }
     }
   },
   "reservations_requested": [
@@ -1263,5 +1306,10 @@
       "lacuna real",
       "mutante equivalente: o estado nao e alcancavel"
     ]
+  },
+  "arvore_limpa": {
+    "quando": "2026-09-10T04:01:55-03:00",
+    "achado": "a execucao da suite completa regravou 54 PNG RASTREADOS de failures/ de support e help_center, que nao sao do meu recorte. Restaurados com git checkout; nao eram trabalho e nao podiam viajar como modificacao minha.",
+    "restante": "apenas os dois pubspec.lock nao rastreados, ja rastreados em dev pelo coordenador"
   }
 }

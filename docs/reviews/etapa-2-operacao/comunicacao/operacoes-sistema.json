@@ -1,6 +1,6 @@
 {
-  "revision": 47,
-  "updated_at": "2026-09-10T02:43:10-03:00",
+  "revision": 48,
+  "updated_at": "2026-09-10T04:02:05-03:00",
   "group": "operacoes-sistema",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) — claude-opus-5[1m]",
@@ -8,7 +8,7 @@
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-operacoes-sistema",
   "branch": "work/etapa2-noturna-operacoes-sistema",
-  "head": "a1ea3c784",
+  "head": "52a9ce1ca",
   "upstream": "origin/work/etapa2-noturna-operacoes-sistema",
   "base_observed": "d784462c168d22fdb7090b7de1ef7db554ad5107",
   "scope": [
@@ -1717,5 +1717,85 @@
     "achado_real": "Uma referencia obsoleta minha: a linha de bloqueio de Auditoria citava 20260908230039_superadmin_internal_audit_read_v2.sql, que nao existe mais, porque eu mesmo corrigi o carimbo para 20260909190000 em aafde0b3d e nunca voltei na linha. E exatamente a classe que publicacoes-midia descreveu: carimbo original sobrevivendo ao renomeio. Corrigido nesta revisao citando os dois carimbos e a razao da troca, em vez de so trocar o numero.",
     "falsos_positivos": "error_409_light.png e error_409_dark.png aparecem como inexistentes e e justamente o ponto: sao citados por NAO existirem. material.dart, flutter_test.dart, services.dart, gestures.dart e go_router.dart resolvem no SDK e no cache de pacotes. novo.json e sync_compare.json sao exemplos de linha de comando dentro de um relatorio, nao arquivos do repositorio. E varios fragmentos vem de interpolacao de string em nome de golden, como _light_1440.png.",
     "licao_do_instrumento": "A primeira passada, com regex ancorado em prefixo de diretorio, deu ZERO achados e eu quase parei ali. O achado apareceu so quando passei a resolver por basename no repositorio inteiro. Seguir a referencia pega o que reler nao pega, mas seguir com instrumento estreito tambem nao pega: as duas passadas sao a mesma diferenca que eu ja catalogue tres vezes esta noite entre a ferramenta e a pergunta."
+  },
+  "pre_entrega": {
+    "hora_lida": "2026-09-10T04:02:05-03:00 (saida crua de date na mesma chamada que escreveu este bloco)",
+    "1_residual_por_sha": {
+      "metodo": "git merge-base --is-ancestor <sha> origin/dev para cada commit meu da rodada. NAO usei git cat-file -e com chaves de commit: o circunflexo e escape no cmd e existencia local e mais fraca que ancestralidade.",
+      "ancestrais": [
+        "fa4b968a3",
+        "e14718844",
+        "dba3fcccb",
+        "5cab49f09",
+        "c2e6bda5d",
+        "017949f71",
+        "0dc2228b1",
+        "b1ec93103",
+        "845c07ff8",
+        "a1fc2df0d",
+        "606a37581",
+        "f2ea71f96",
+        "2c439746f",
+        "cadc56a48",
+        "e008756ef",
+        "3189bd08a",
+        "68b69b9c5",
+        "5845f01c2",
+        "646239792",
+        "a1ea3c784",
+        "cda70299f",
+        "07cb0e5e8",
+        "f3c903ce0"
+      ],
+      "pendentes": [
+        "52a9ce1ca test(contracts): assert the field length numbers the forms mirror"
+      ],
+      "estado": "HEAD 52a9ce1ca, empurrado para origin/work/etapa2-noturna-operacoes-sistema, zero a frente do proprio upstream. Em relacao a origin/dev: 1 commit meu ainda nao integrado e 264 commits de outras frentes que eu NAO trouxe, de proposito, para nao mexer na arvore durante a medicao de fechamento."
+    },
+    "2_numeros_com_caminhos": {
+      "comando": "flutter test, a partir de apps/superadmin, reporter PADRAO redirecionado para arquivo. Sem -r expanded e sem --file-reporter.",
+      "conjunto_caminhos": "apps/superadmin/test por inteiro, sem filtro.",
+      "conjunto_numero": "6342 PASS, 15 SKIP, 144 FAIL, duracao 20:36, iniciada 03:20.",
+      "fonte_do_numero": "CONTADOR OFICIAL da ultima linha da corrida, nao parse. O reporter padrao nao trunca esse contador.",
+      "recorte_numero": "Das 144 falhas, 83 sao do meu escopo e 61 nao. NAO extraio a parcela de APROVADOS do recorte e declaro o motivo: o reporter padrao nao atribui aprovacao por arquivo, so falha. Denominador estimado seria pior que denominador ausente, porque pareceria completo.",
+      "atribuicao_das_falhas": "dedupe de pares arquivo mais nome-de-caso sobre a saida inteira.",
+      "conferencia_do_instrumento": "A dedupe devolveu 144, exatamente igual ao contador oficial. Dois caminhos independentes, mesmo numero; se tivessem divergido eu usaria o contador e declararia a atribuicao como parcial.",
+      "SOBREPOSICAO": "O recorte esta INTEGRALMENTE CONTIDO no conjunto, por construcao: uma corrida so, sobre apps/superadmin/test inteiro, com o recorte extraido dela. NAO somar os dois numeros. Se eu tivesse rodado duas vezes, a sobreposicao seria de 56 arquivos e centenas de casos contados duas vezes.",
+      "base_do_numero": "A corrida comecou 03:20 e NAO inclui 52a9ce1ca nem f3c903ce0. Os tres casos novos de test/contracts rodaram verdes isolados."
+    },
+    "3_falhas_enumeradas": {
+      "minhas_golden": "71 em catorze arquivos: agenda_calendar_golden 14, activity_golden 9, account_pages_golden 8, group_golden 8, agenda_additional_surfaces_golden 6, institution_directory_page_golden 6, meal_plan_pages_golden 6, import_hub_golden 3, location_read_panels_golden 3, audit_directory_golden 2, institution_form_page_golden 2, unit_golden 2, plan_golden 1, support_page_golden 1. Todas no censo, todas dependentes de rebaseline nominal.",
+      "minhas_nao_golden": "9, depois de devolver 3: core/config/composition_root_sanitization 2 e core/config/unit_fail_closed_composition_source 2, guardas de composicao com bifurcacao aberta; app/dev_menu 3, dataset de prototipo e golden de menu; app/router/import_development_routes 1, o overflow do diretorio com limiar medido; app/router/prototype_navigation_routes 1, conhecida.",
+      "devolvidas": "app/router/principal_real_route 3. Estavam na minha arvore de router e NAO sao minhas: publicacoes-midia mediu fixture obsoleta, a rota exige dois repositorios e o teste fornece um. Eu as havia marcado como fronteira, sem me atribuir.",
+      "fora_do_meu_escopo": "61, com dono provavel: principal_moments_preview_golden 11, principal_happens_preview_golden 10, principal_profile_preview_golden 10 e principal_real_route 3 de Principal; superadmin_chat_page_golden 9 de Conversas; health_care_golden 4 de Cuidado; forms 9 em cinco arquivos de Formularios; notices 3 e circulars 2 de Comunicacao; help_center 1; shared superadmin_form_action_footer_adoption 2, componente compartilhado."
+    },
+    "4_recursos": {
+      "processos_filhos": "nenhum. As duas corridas em segundo plano terminaram; a de 03:20 fechou com DONE no arquivo de saida.",
+      "portas": "nenhuma aberta por mim.",
+      "tarefas_em_segundo_plano": "nenhuma ativa.",
+      "worktrees_criadas_por_mim": "nenhuma. Trabalhei na worktree que recebi, Coelo.worktrees/e2-noturna-operacoes-sistema, e nao a removo.",
+      "containers": "nenhum. Nao subi Docker nem replay SQL local.",
+      "arquivos_nao_rastreados": "nenhum na minha worktree. Os rascunhos de medicao ficaram no diretorio temporario da sessao, fora do repositorio, e os quatro arquivos zz_scratch que precisei criar dentro de test/ foram apagados depois de usados. Os arquivos paramroutes.txt e sweep.txt citados em C:/cdchk NAO sao meus: nunca escrevi naquela worktree."
+    },
+    "6_citacoes_seguidas": {
+      "metodo": "45 SHAs citados nos meus documentos e nos comentarios dos testes que escrevi, verificados por ANCESTRALIDADE em origin/dev, e 40 caminhos conferidos a partir da RAIZ do repositorio, nao por basename.",
+      "caminhos": "40 citados, 40 existem.",
+      "shas": "45 citados. 37 sao ancestrais de origin/dev. Dois nao sao hash: 20260909 e 20260910, carimbos de data com cara de hash curto. Os outros SEIS existem localmente e NAO sao ancestrais DE PROPOSITO, porque sao citados como nao integrados: 932003b1, o candidato de Cardapios que eu declarei SUPERADO por conter o defeito; b049b163, o WIP de Agenda preservado e nao integrado; 8b4dfb6a e 89949f30, os candidatos do pacote de Auditoria nao aplicado; cacf7cbc5, a branch de onde vieram artefatos de falha de assessments e que nao esta em dev; e dc44df9e1, citado como fechamento de outra frente. Nenhuma referencia quebrada.",
+      "achado_anterior_corrigido": "A linha de bloqueio de Auditoria citava o carimbo 20260908230039, arquivo que nao existe mais porque eu mesmo corrigi o carimbo para 20260909190000. Corrigido na revisao 47 citando os dois carimbos e a razao da troca."
+    },
+    "7_o_que_nao_verifiquei": [
+      "PRODUCAO, nada. Nenhuma leitura e nenhuma escrita remota em Supabase ou Cloudflare nesta rodada. Tudo o que eu afirmo sobre o banco vem do SQL versionado.",
+      "As cinco RPCs de Unidades: medido no versionamento, com controle negativo, e NAO medido em producao.",
+      "O replay 0/145 de Auditoria: e estado remoto e nao foi medido hoje.",
+      "O corpo da forma de dois argumentos do delete de imagem de Cardapios: LIDO no SQL, nao executado contra banco nenhum.",
+      "A parcela de aprovados do recorte na corrida completa: nao extraida, por limitacao declarada do reporter.",
+      "Os 24 goldens de Suporte e os 8 de Instituicoes: medidos no censo anterior e NAO re-medidos por arquivo individual nesta corrida; entram pelo numero agregado.",
+      "A intencao das quatro guardas de composicao: medi as datas e a fiacao, e NAO confirmei com os donos de Estrutura e de Acesso se a fiacao foi decidida. Sem isso nao escolho entre defeito e expectativa superada."
+    ],
+    "bloqueios_com_bifurcacao_no_texto": {
+      "units.list/create/edit/filters": "blocked-environment. Cinco RPCs que nenhum arquivo do pacote cria, medido com controle negativo no versionamento e NAO medido em producao. BIFURCACAO, no texto da linha: se as funcoes existirem instaladas fora do versionamento, blocked-environment descreve a coisa certa pelo motivo errado, porque a superficie funciona e o que falta e revisabilidade; se nao existirem, o diretorio falha fail-closed e o usuario ve tente novamente para sempre, porque PGRST202 chega com a mesma aparencia de queda de rede, o que eu provei em teste. Um select de catalogo decide, e responde junto pelas cinco de Assiduidade e pelos 40 objetos app_private de outras frentes.",
+      "groups.filters": "blocked-environment, por dependencia e nao por implementacao propria: reusa duas das cinco RPCs. Mesma bifurcacao, no texto.",
+      "meal-plans.image-delete": "blocked-decision. A guarda de revisao existe no banco desde a migration de recibos e nunca roda, porque o cliente chama a forma legada de dois argumentos. BIFURCACAO, no texto: se a decisao for manter a forma legada, a guarda e codigo morto e deveria sair do banco para nao dar falsa sensacao de protecao; se for usar a de tres argumentos, o dominio de imagem precisa expor a revisao que o usuario viu, e ler a revisao no cliente logo antes do delete reproduziria o furo que a guarda fecha."
+    }
   }
 }

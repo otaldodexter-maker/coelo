@@ -1,6 +1,6 @@
 {
-  "revision": 37,
-  "updated_at": "2026-09-10T03:56:00-03:00",
+  "revision": 38,
+  "updated_at": "2026-09-10T04:02:00-03:00",
   "group": "perfil-para-voce",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
@@ -32,10 +32,11 @@
     "Tres ajustes do pacote SQL de Para Voce verificados NO ARQUIVO (p_target_device com allowlist validada no servidor, content_card elegivel, status='active' deixando legado published invisivel ate o cutover)"
   ],
   "tests": {
-    "note": "Sem rerun de lote verde. Base conjunta com origin/dev ff9143ba4.",
-    "lote12_recorte_base_conjunta": "P=256 F=10 B=0 S=0 U=0",
+    "NUMERO_VALIDO_DO_RECORTE": "306 PASS / 10 FAIL, 316 casos, reporter JSON, 03:52:22-03:53:01",
+    "NUMERO_VALIDO_DO_APP": "6390 PASS / 14 SKIP / 144 FAIL, duas corridas concordantes",
     "analyze": "flutter analyze lib test: No issues found",
-    "negative_controls": "5 executados na noite; dois deles revelaram guardas incapazes de falhar (literais const canonicalizados; setSurfaceSize deixando MediaQuery em 800 px), ambas refeitas."
+    "negative_controls": "5 executados na noite; dois revelaram guardas incapazes de falhar - literais const canonicalizados, e setSurfaceSize deixando o MediaQuery em 800 px. Ambas refeitas e vistas falhando antes de passarem.",
+    "SUPERADO": "lote12_recorte_base_conjunta P=256 F=10, de base anterior e denominador incompleto"
   },
   "reservations": [],
   "reservations_requested": [
@@ -54,7 +55,7 @@
   "limitations": "Sem canal nativo verificado ate agora; arquivo publicado nao comprova leitura pelo coordenador.",
   "deadline": "2026-09-10T05:00:00-03:00",
   "eta": "Delta ainda nao inspecionado.",
-  "alert": "registro.json aponta headSha de L03 em 9c6042732, que e o revert e esta 48 commits atras. O SHA correto e b209b4e0f.",
+  "alert": "RESOLVIDO. O alerta dizia que registro.json apontava o headSha de L03 em 9c6042732, que e o revert, 48 commits atras. Conferido em 2026-09-10 03:59:53: o arquivo docs/reviews/etapa-2-operacao/next-round/R02-20260909/registro.json agora traz b209b4e0f47df8f1a39835a09b8e17191412b969, que e o SHA correto. Nada a fazer. Mantido como registro porque este campo permaneceu descrevendo como aberto um problema ja corrigido - a mesma classe de defeito que encontrei no relatorio do Owner, agora encontrada em mim.",
   "open_questions": [
     "Regra de visibilidade do leitor Principal no Sobre: nao existe token de leitura em profiles.about.*; a proposta assume visibility='profile_access' por ser o default dos INSERTs da RPC de escrita. Decisao do Owner.",
     "Contraste do chip DESTAQUE em Para Voce mede 3,75:1, abaixo do minimo AA 4,5:1 para 11px. Escurecer altera composicao aprovada e quebra 20 goldens. Decisao de coelo-ui e do Owner (herdado de L03, nao regravei golden).",
@@ -147,10 +148,11 @@
     "Ver mais, Ver todos e Ver no mapa passam por _runOrPreview e nao sao afordancias mortas."
   ],
   "suite_completa": {
-    "base": "b2cdba58a e seguintes (dev mesclado), reporter padrao",
-    "resultado": "P=6355 S=14 F=146",
-    "do_recorte": "exatamente 10, todas de principal_profile_preview_golden; nenhuma outra falha do app esta em arquivo que esta frente tocou",
-    "comparabilidade": "comparar apenas FAIL e SKIP entre reporters, criterio do coordenador"
+    "NUMERO_VALIDO": "6390 PASS / 14 SKIP / 144 FAIL em apps/superadmin",
+    "medido_em": "2026-09-10, duas corridas independentes: 03:12:47-03:28:09 e 03:31:40-03:51. Numero identico nas duas.",
+    "do_recorte": "exatamente 10 falhas, todas de principal_profile_preview_golden_test",
+    "denominador": "apps/superadmin INTEIRO, e NADA ALEM DELE. Existem sete outros conjuntos de teste no monorepo que esta medicao nao cobre; o unico que contem arquivo do meu dominio e coelo_domain, medido a parte.",
+    "SUPERADO": "A medicao anterior, P=6355 S=14 F=146 sobre b2cdba58a, era de outra base e ficou sem data no arquivo. Substituida, nao apagada."
   },
   "achados_em_dev_nao_meus": [
     "test/app/router/principal_real_route_test.dart falha em 3 casos sobre hospedagem do Principal e Acontece. Confirmado em worktree destacado de origin/dev 1c5eaf0bc limpo: as mesmas 3 falham. Causa: a rota de Acontece passou a exigir principalHappensFeedRepository E principalMixedFeedRepository (superadmin_router.dart:902 em dev) e o teste injeta so o primeiro, entao a rota cai em indisponivel. Teste desatualizado pela integracao do feed misto, nao regressao de produto; a producao compoe os dois. Pertence a publicacoes-midia."
@@ -390,10 +392,14 @@
     "lotes_em_dev": "todos ate c5a6fd106 integrados; 0f2135398 e os merges seguintes publicados na branch e pendentes do proximo ciclo do coordenador"
   },
   "validacao_final_do_recorte": {
-    "base": "134d582f4, identico a origin/dev no momento da medicao",
-    "resultado": "P=268 F=10 B=0 S=0 U=0",
-    "as_dez": "exatamente principal_profile_preview_golden_test, mesma lista de NOMES do inicio da noite",
-    "estabilidade": "mesmo par 268/10 em quatro bases integradas sucessivas"
+    "NUMERO_VALIDO": "306 PASS / 0 SKIP / 10 FAIL, em 316 casos e 30 arquivos",
+    "metodo": "flutter test --file-reporter json:recorte.json, reporter que nao trunca nome de caso",
+    "medido_em": "2026-09-10, janela 03:52:22 a 03:53:01",
+    "controle": "o contador da propria corrida declarou +306 -10 e o parser reconstruiu exatamente isso",
+    "SUPERADO_268_10": "A medicao anterior, P=268 F=10, repetida em quatro bases sucessivas, estava CERTA para os caminhos que mediu e ERRADA como denominador: faltavam cinco arquivos do dominio que a inversao do 2b encontrou. A estabilidade em quatro bases nao era sinal de solidez, era o mesmo furo repetido quatro vezes. Guardo o numero antigo aqui porque apaga-lo esconderia como o erro se sustentou.",
+    "aritmetica": "288 + 18 = 306, onde 18 sao os casos dos quatro arquivos recuperados em apps/superadmin",
+    "fora_do_app": "packages/coelo_domain/test/profile_about/profile_about_test.dart, 9 PASS / 0 FAIL",
+    "total_nao_duplicado": "325 casos, 315 passando, 10 falhando"
   },
   "servicos_prestados_a_outras_frentes": [
     "Alerta e diagnostico da rota principal-conversations duplicada em dev, que fazia createSuperadminRouter lancar e o app inteiro nao subir; confirmado em checkout limpo antes de alertar",
@@ -566,14 +572,16 @@
   },
   "correcao_de_horario": "Os campos updated_at das revisoes anteriores foram TIPADOS por estimativa e nao lidos do relogio: chegaram a ficar cerca de 1h25 adiantados. A partir desta revisao o valor vem de powershell Get-Date -Format 'yyyy-MM-ddTHH:mm:ssK'. Registro porque timestamp de handoff e usado para reconciliar ordem de eventos, e numero estimado com aparencia de medido e a mesma classe de erro que passei a noite catalogando. Nota util para as outras frentes: neste Git Bash o comando date JA devolve horario local -03, conferido contra o PowerShell no mesmo minuto; o que devolve UTC e usar TZ=America/Sao_Paulo, porque nao ha tzdata e o TZ e ignorado.",
   "residual_de_integracao": {
-    "declaracao": "DOIS commits pendentes de integracao, ambos publicados na branch remota. Nada retido localmente, nada nao commitado.",
-    "pendentes": [
-      "ace7b32e1 — test(safety): prova produtiva do grid de Seguranca infantil com registros",
-      "1d453e2f3 — test(router): aviso de que a guarda de verde vazio nao se estende a rotas de detalhe"
+    "declaracao": "RESIDUAL ZERO. Nenhum commit desta frente esta fora de origin/dev.",
+    "medido_em": "2026-09-10T03:07:38-03:00, reconferido 03:12:33 e 03:56:38",
+    "metodo": "git merge-base --is-ancestor <sha> origin/dev, apos git fetch origin --prune",
+    "os_dois_que_estavam_pendentes": [
+      "ace7b32e1 test(safety): prove the production child grid lays out with records -> INTEGRADO",
+      "1d453e2f3 test(router): warn that the vacuous-green guard does not extend to detail routes -> INTEGRADO"
     ],
-    "ja_integrados": "Os demais 22 commits desta frente sao ancestrais de origin/dev, verificados com merge-base --is-ancestor.",
-    "estado_git": "HEAD 1d453e2f3; upstream 0/0; worktree com 0 caminhos alterados; zero stash.",
-    "nota": "A declaracao anterior dizia NADA PENDENTE e envelheceu em vinte minutos, porque commitei dois testes depois dela. E a mesma classe de linha que passei a noite achando nos outros: escrita uma vez, verdadeira quando escrita, nao relida."
+    "branch": "origin/work/etapa2-noturna-perfil-para-voce em 1d453e2f3, INTEGRADA",
+    "estado_git": "HEAD 1d453e2f3; upstream 0 0; worktree com 0 caminhos alterados; zero stash",
+    "historico_desta_linha": "Na revisao 34 ela dizia NADA PENDENTE e envelheceu em vinte minutos, porque commitei dois testes depois. Na 35 passou a nomear os dois. Na 37 ainda dizia DOIS PENDENTES, ja falso havia quase uma hora. Tres estados, e nos tres a linha estava certa quando escrita. E o argumento inteiro a favor de reler: nao basta escrever a verdade, e preciso reescrever quando ela muda."
   },
   "releitura_do_relatorio_do_owner": {
     "achados": [
@@ -894,5 +902,20 @@
       }
     },
     "lote_3_json_resultado": "a corrida com caminho absoluto NAO gerou arquivo (ver CORRECAO_rev37, segunda armadilha). Refeita com caminho relativo."
+  },
+  "releitura_critica_do_proprio_handoff": {
+    "quando": "2026-09-10, entre 03:58 e 04:02, com 38 minutos ate o congelamento",
+    "por_que": "Passei a noite achando nos arquivos dos outros linhas verdadeiras quando escritas e nunca relidas, inclusive uma secao do relatorio do Owner que descrevia como aberto um defeito ja corrigido. Este arquivo tem 76 chaves acumuladas em 37 revisoes. Seria estranho que a mesma doenca nao estivesse aqui.",
+    "metodo": "listar todas as chaves de topo por tamanho, ler as que carregam ESTADO (numero, SHA, pendencia, bloqueio) e conferir cada uma contra medicao feita agora - nao contra o que eu lembrava.",
+    "achados": [
+      "residual_de_integracao dizia DOIS COMMITS PENDENTES, falso havia quase uma hora. MATERIAL: e exatamente o campo que o coordenador le para montar o residual da rodada.",
+      "validacao_final_do_recorte declarava P=268 F=10 e citava a repeticao em quatro bases como sinal de estabilidade. Era o mesmo denominador furado repetido quatro vezes.",
+      "suite_completa trazia P=6355 F=146 de outra base, sem data, ao lado de campos datados - o formato que faz um numero velho parecer atual.",
+      "tests carregava um terceiro numero de lote, mais antigo ainda.",
+      "alert descrevia como aberto o headSha errado de L03 no registro.json; conferido, o arquivo ja traz b209b4e0f."
+    ],
+    "o_que_NAO_estava_errado": "escopo, nao-escopo, criterios fechados, perguntas abertas ao Owner, tracker_delta_proposto, as evidencias publicadas e a proxima_rodada. O apodrecimento atinge campos de ESTADO, nao campos de CONTEUDO. Faz sentido: conteudo descreve o que foi feito e nao muda; estado descreve como as coisas estao e muda sozinho.",
+    "regra_que_fica": "Campo que carrega numero, SHA ou pendencia precisa carregar TAMBEM a hora em que foi medido. Sem carimbo nao da para saber se envelheceu, e um numero sem data ao lado de numeros com data e lido como atual.",
+    "cinco_de_setenta_e_seis": "Cinco campos em setenta e seis. Nao e catastrofe, e nao seria pego por leitura casual - nenhum dos cinco parecia errado. Foram pegos por conferir contra medicao nova, que e o unico metodo que funciona contra este defeito."
   }
 }
