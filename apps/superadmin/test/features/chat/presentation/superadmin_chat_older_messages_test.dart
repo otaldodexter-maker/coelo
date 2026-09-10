@@ -29,6 +29,27 @@ void main() {
     expect(repository.cursorsRequested, ['message-recent']);
   });
 
+  testWidgets('sending keeps the continuation the server had offered', (tester) async {
+    final repository = _PagedThreadRepository(acceptSend: true);
+    await _pump(tester, repository);
+    expect(find.byKey(const Key('superadmin-chat-load-older')), findsOneWidget);
+
+    await tester.enterText(find.byKey(const Key('superadmin-chat-composer-field')), 'Tudo bem?');
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('superadmin-chat-send')));
+    await tester.pumpAndSettle();
+
+    // Enviar acrescenta uma mensagem ao topo; nao torna o resto da conversa
+    // inalcancavel. Descartar o cursor aqui faria o controle sumir e prenderia
+    // o operador na pagina mais recente, sem nenhum sinal de que algo mudou.
+    expect(find.text('Tudo bem?'), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-chat-load-older')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('superadmin-chat-load-older')));
+    await tester.pumpAndSettle();
+    expect(find.text('mensagem antiga'), findsOneWidget);
+  });
+
   testWidgets('offers no continuation when the server says there is none', (tester) async {
     final repository = _PagedThreadRepository(exhausted: true);
     await _pump(tester, repository);
@@ -66,10 +87,15 @@ Future<void> _pump(WidgetTester tester, ChatRepository repository) async {
 }
 
 final class _PagedThreadRepository implements ChatRepository {
-  _PagedThreadRepository({this.exhausted = false, this.denyContinuation = false});
+  _PagedThreadRepository({
+    this.exhausted = false,
+    this.denyContinuation = false,
+    this.acceptSend = false,
+  });
 
   final bool exhausted;
   final bool denyContinuation;
+  final bool acceptSend;
   final List<String> cursorsRequested = [];
 
   @override
@@ -125,8 +151,10 @@ final class _PagedThreadRepository implements ChatRepository {
       throw UnimplementedError();
 
   @override
-  Future<ChatMessage> sendMessage(ChatSendMessageCommand command) =>
-      Future<ChatMessage>.error(const ChatFailureException());
+  Future<ChatMessage> sendMessage(ChatSendMessageCommand command) async {
+    if (!acceptSend) throw const ChatFailureException();
+    return _message('message-sent', command.body, 13);
+  }
 
   @override
   Future<ChatMessage> editMessage(ChatEditMessageCommand command) =>

@@ -264,7 +264,18 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
       _pendingSend = null;
       setState(() {
         if (_composer.text.trim() == body) _composer.clear();
-        _thread = ChatThreadPage(items: [sent, ...?_thread?.items]);
+        // Enviar acrescenta uma mensagem ao topo; nao torna o resto da
+        // conversa inalcancavel. Preservar o cursor e o `hasMore` que o
+        // servidor ja tinha devolvido, senao o controle de continuacao some
+        // depois do primeiro envio e o operador fica preso na pagina mais
+        // recente sem nenhum sinal de que algo mudou.
+        final current = _thread;
+        _thread = ChatThreadPage(
+          items: [sent, ...?current?.items],
+          nextCursor: current?.nextCursor,
+          totalCount: current?.totalCount ?? 0,
+          hasMore: current?.hasMore ?? false,
+        );
       });
     } on ChatUnauthorizedException catch (error) {
       if (_isCurrentSend(sendGeneration, requestedRepository, conversation.id)) {
