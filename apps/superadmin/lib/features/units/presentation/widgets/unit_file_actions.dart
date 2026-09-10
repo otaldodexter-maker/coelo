@@ -46,21 +46,12 @@ final class _UnitFileActionsState extends State<UnitFileActions> {
     if (_exportBusy) return;
     final gateway = widget.backendCommands;
     if (gateway == null) {
-      final demoFormat = format == UnitFileFormat.csv
-          ? SuperadminExportFormat.csv
-          : SuperadminExportFormat.xlsx;
-      widget.activityController.completeDemoExport(
-        demoFormat,
-        subject: widget.viewLabel == null ? 'Unidades' : 'Unidades · ${widget.viewLabel}',
-        fileBaseName: widget.viewLabel == null
-            ? 'unidades'
-            : 'unidades-${_viewSuffix(widget.viewLabel!)}',
-      );
-      showSuperadminNotice(
-        context,
-        'A exportação está em andamento. Acompanhe pelo sininho.',
-        icon: Icons.download_outlined,
-      );
+      // Exportação real está adiada para depois do MVP. Enquanto isso o botão
+      // continua visível, mas não pode afirmar que algo aconteceu: anunciar uma
+      // exportação bem-sucedida, com nome de arquivo, para um arquivo que nunca
+      // foi gerado é o oposto da indisponibilidade honesta que a regra pede.
+      // Instituições já se comporta assim em `institution_file_actions.dart`.
+      showSuperadminNotice(context, 'Indisponível nesta etapa', icon: Icons.info_outline_rounded);
       return;
     }
 
@@ -292,14 +283,6 @@ UnitExportSortField _exportSort(UnitDirectorySortColumn value) => switch (value)
   UnitDirectorySortColumn.groupsCount => UnitExportSortField.groups,
   UnitDirectorySortColumn.activitiesCount => UnitExportSortField.activities,
   _ => UnitExportSortField.name,
-};
-
-String _viewSuffix(String label) => switch (label) {
-  'Cards' => 'cards',
-  'Agrupado' => 'agrupado',
-  'Por turmas' => 'por-turmas',
-  'Por atividades' => 'por-atividades',
-  _ => 'visao',
 };
 
 Future<void> _showImportDialog(

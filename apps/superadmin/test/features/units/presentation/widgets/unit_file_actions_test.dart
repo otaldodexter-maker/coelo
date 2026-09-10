@@ -13,7 +13,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('names the current unit view in the export preview', (tester) async {
+  testWidgets('exportar sem gateway avisa indisponivel e nao inventa atividade concluida', (
+    tester,
+  ) async {
     final controller = SuperadminActivityController();
     addTearDown(controller.dispose);
     await tester.pumpWidget(
@@ -34,10 +36,13 @@ void main() {
     await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Exportar CSV'));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
-    expect(controller.activities.single.subject, 'Unidades · Agrupado');
-    expect(controller.activities.single.fileName, 'unidades-agrupado.csv');
+    // Exportação real está adiada. O botão continua visível, mas não pode
+    // anunciar uma exportação bem-sucedida, com nome de arquivo, para um
+    // arquivo que nunca foi gerado. Instituições já se comporta assim.
+    expect(find.text('Indisponível nesta etapa'), findsOneWidget);
+    expect(controller.activities, isEmpty);
   });
 
   testWidgets('does not expose fixture or demonstration labels in import', (tester) async {
