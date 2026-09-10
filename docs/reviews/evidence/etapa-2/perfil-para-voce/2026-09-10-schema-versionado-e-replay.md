@@ -144,10 +144,16 @@ normalize_person_handle                           [conferido]
 superadmin_unit_import_template
 ```
 
-O quinto conferido à mão foi `meal_plan_finalize_image_upload_unreceipted`, que
-é o único dos cinco com **uma** ocorrência de `function app_private.<nome>` em
-vez de zero. Não inspecionei se essa ocorrência é um CREATE ou um DROP, então
-ele fica marcado como caso a olhar antes de qualquer conclusão sobre meal_plan.
+O quinto conferido à mão foi `meal_plan_finalize_image_upload_unreceipted`, o
+único dos cinco com **uma** ocorrência de `function app_private.<nome>` em vez
+de zero. Aberta, a ocorrência é um **REVOKE**, não um CREATE:
+`20260820230000_meal_plan_media_lifecycle_receipts.sql:488` faz
+`revoke all on function app_private.meal_plan_finalize_image_upload_unreceipted(...)`.
+
+Então ele pertence à lista sem qualificação, como os outros quatro. E acrescenta
+uma barreira de replay que os outros não têm: numa base reconstruída esse
+`revoke` falha, porque revoga privilégio de uma função que nenhuma migration
+cria.
 
 O domínio `profile_about` não tem **nenhum** `create table profile_about_*` em
 conjunto algum: o único artefato versionado é o `create or replace` de
