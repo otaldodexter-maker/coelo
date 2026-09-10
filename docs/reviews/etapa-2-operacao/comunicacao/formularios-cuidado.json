@@ -1,14 +1,14 @@
 {
-  "revision": 36,
-  "updated_at": "2026-09-10T00:48:06-03:00",
+  "revision": 40,
+  "updated_at": "2026-09-10T01:31:20-03:00",
   "group": "formularios-cuidado",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
-  "status": "ACTIVE; integrated-base measurement done; handoff current",
+  "status": "ACTIVE; every blocker line of mine audited and three corrected",
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-formularios-cuidado",
   "branch": "work/etapa2-noturna-formularios-cuidado",
-  "head": "b163f66133c8901940826229f20a60dfc577161b",
+  "head": "3e0bde1c09f919cc1acbff09df8b8acccdc4ef93",
   "upstream": "origin/work/etapa2-noturna-formularios-cuidado (0/0)",
   "base": "d784462c168d22fdb7090b7de1ef7db554ad5107",
   "base_observed": "d784462c168d22fdb7090b7de1ef7db554ad5107",
@@ -78,11 +78,10 @@
   ],
   "reservations_respected": "Nao toquei router/shell, migrations nem plataforma de midia. Nenhuma execucao remota Supabase ou Cloudflare.",
   "reservations_pending": [
-    "question-image I021: aguardo reserva nominal com voce; consumo o contrato de publicacoes-midia (coelo-ae) e proponho delta por este arquivo, conforme sua exigencia 2.",
-    "migrations de forms I008 (negativa de edicao de resposta submitted): sua fila SQL posicao 2."
+    "migrations de forms: fila SQL do coordenador. Nao criei nenhuma nesta rodada."
   ],
   "blocker": "Nenhum bloqueio ativo.",
-  "next_step": "Continuar no fluxo de autoria, que e o unico fluxo de Formularios realmente alcancavel em producao no meu recorte, procurando armadilhas silenciosas do mesmo tipo.",
+  "next_step": "Suite completa final em execucao para fechar os numeros de entrega, ja que houve mudanca de lib depois da medicao anterior. A partir daqui nao planejo mais alteracao de lib: so verificacao, documentacao e o que o coordenador atribuir. Pre-entrega preparada com folga antes de 04:50.",
   "wip": [],
   "artifacts": [
     "Dois pubspec.lock nao rastreados aparecem em packages/coelo_api e packages/coelo_domain apos rodar dart test. Nao pertencem ao lote, foram retirados do commit e ficam preservados como nao rastreados; nao os apago nem os adiciono ao gitignore, que nao e meu."
@@ -280,6 +279,21 @@
       "sha": "b163f66133c8901940826229f20a60dfc577161b",
       "pushed": true,
       "subject": "docs(evidence): bring the handoff up to the measured state"
+    },
+    {
+      "sha": "e54f04c4a215f45197c4a6619122f71a8a859768",
+      "pushed": true,
+      "subject": "test(forms): exercise every authored limit in one form, from filling to sending"
+    },
+    {
+      "sha": "38b072212d9b41aad62b2f79f6a40592c47c4429",
+      "pushed": true,
+      "subject": "test(forms): hold the preview I wrote to the accessibility bar I demanded"
+    },
+    {
+      "sha": "3e0bde1c09f919cc1acbff09df8b8acccdc4ef93",
+      "pushed": true,
+      "subject": "docs(evidence): decompose the nine failures and record one debt left unpaid"
     }
   ],
   "tracker_delta_proposto": [
@@ -312,16 +326,16 @@
       "camada": "frontend",
       "estado_atual": "pending-verification",
       "estado_proposto": "blocked-decision",
-      "delta": "Herda a guarda compartilhada de limites quando a pergunta for numerica, mas NAO tem criterio proprio fechado. Depende de decisao do Owner sobre manter local revogado historico no reenvio versus exigir referencia atual ou substituicao, inclusive no caso obrigatorio sem alternativa.",
-      "evidencia": "inventario-etapa-2.json na linha da acao; sem prova nova nesta rodada; 2026-09-09"
+      "delta": "CORRECAO do meu proprio delta. Eu havia escrito blocked-decision como se houvesse codigo pronto esperando politica. Testado: nao existe kind de Local no dominio de Formularios, LocationSelectionSource vive na feature locations e nunca e referenciado por Formularios, e a tela de resposta nao tem uma unica ocorrencia. Nao ha implementacao. A decisao do Owner sobre opcoes fixadas na publicacao versus catalogo dinamico PRECEDE a construcao; nao destrava codigo pronto.",
+      "evidencia": "form_definition.dart enum FormItemKind sem kind de local; locations/domain/location_selection_source.dart consumido por locations_page.dart; zero ocorrencias em form_response_page.dart; 2026-09-10"
     },
     {
       "action_id": "forms.location-question",
       "camada": "frontend",
       "estado_atual": "pending-verification",
       "estado_proposto": "blocked-decision",
-      "delta": "Contrato LocationSelectionSource ja integrado, mas a acao depende de decisao do Owner entre opcoes fixadas na publicacao e catalogo dinamico ao responder. O contrato nao decide a politica e eu nao devo inventar essa politica.",
-      "evidencia": "inventario-etapa-2.json na linha da acao; Owner ausente desde 18:26; 2026-09-09"
+      "delta": "CORRECAO do meu proprio delta. Eu havia escrito blocked-decision como se houvesse codigo pronto esperando politica. Testado: nao existe kind de Local no dominio de Formularios, LocationSelectionSource vive na feature locations e nunca e referenciado por Formularios, e a tela de resposta nao tem uma unica ocorrencia. Nao ha implementacao. A decisao do Owner sobre opcoes fixadas na publicacao versus catalogo dinamico PRECEDE a construcao; nao destrava codigo pronto.",
+      "evidencia": "form_definition.dart enum FormItemKind sem kind de local; locations/domain/location_selection_source.dart consumido por locations_page.dart; zero ocorrencias em form_response_page.dart; 2026-09-10"
     },
     {
       "action_id": "forms.publish",
@@ -368,8 +382,8 @@
       "camada": "backend",
       "estado_atual": "pending-verification",
       "estado_proposto": "blocked-environment",
-      "delta": "Midia question-image, a I021, continua sem migration, processor e adapter final. Depende da reserva nominal de midia e da fila SQL do coordenador. Conferi o merge d502350ce e ele traz passthrough de midia de Circular, nao uma plataforma de question-image que eu pudesse consumir.",
-      "evidencia": "inspecao de d502350ce; sem reserva nominal concedida; 2026-09-09"
+      "delta": "CORRECAO do meu proprio delta anterior, que dizia bloqueio por reserva de midia. Errado. A cadeia de midia de Formularios esta aplicada e e alcancavel: form_prepare_asset_upload com grant a authenticated, form_worker_finalize_asset como funcao de worker, Edge Function form-media conferindo MIME real, e o adaptador de cliente ja implementado em SupabaseFormsApi. Falta SO a interface de anexo na tela de resposta, que hoje mostra painel de indisponibilidade. Decisao de projeto tomada: usa esse caminho e nao espera o catalogo unificado, que nao tem write path para kind nenhum. Nao construido nesta rodada por decisao de risco: lote grande a 3h do congelamento, numa tela nao alcancavel.",
+      "evidencia": "20260813155121 linha 1554 e grant na 2239; 20260813155124 linha 1262; supabase_forms_api.dart linhas 408, 432 e 453; form_response_page.dart linha 747; 2026-09-10"
     },
     {
       "action_id": "forms.resolve-file",
@@ -448,72 +462,72 @@
       "camada": "backend",
       "estado_atual": "pending-verification",
       "estado_proposto": "blocked-environment",
-      "delta": "care049 e a spec 049, superadmin internal care profile CRUD v2. A qualificacao pendente e de permissoes internas e evidencia real, o que exige pacote nominal de producao.",
-      "evidencia": "specs/049-superadmin-internal-care-profile-crud-v2.md; sem autorizacao nominal; 2026-09-09"
+      "delta": "CORRECAO do meu proprio delta. care049 nao esta esperando pacote nominal de producao: specs/049 esta com status draft-for-review, e rascunho NAO aprovado, e define um contrato Supabase que ainda nao existe. E specs/020, a spec vigente, esta approved-for-demonstrative-ui, o que explica a ausencia de repositorio de producao: e o escopo aprovado, nao uma omissao. O que falta e APROVAR UMA SPEC, nao autorizar um pacote.",
+      "evidencia": "specs/049-superadmin-internal-care-profile-crud-v2.md frontmatter status; specs/020-superadmin-health-care.md frontmatter status; 2026-09-10"
     },
     {
       "action_id": "health-care.create",
       "camada": "backend",
       "estado_atual": "pending-verification",
       "estado_proposto": "blocked-environment",
-      "delta": "care049 e a spec 049, superadmin internal care profile CRUD v2. A qualificacao pendente e de permissoes internas e evidencia real, o que exige pacote nominal de producao.",
-      "evidencia": "specs/049-superadmin-internal-care-profile-crud-v2.md; sem autorizacao nominal; 2026-09-09"
+      "delta": "CORRECAO do meu proprio delta. care049 nao esta esperando pacote nominal de producao: specs/049 esta com status draft-for-review, e rascunho NAO aprovado, e define um contrato Supabase que ainda nao existe. E specs/020, a spec vigente, esta approved-for-demonstrative-ui, o que explica a ausencia de repositorio de producao: e o escopo aprovado, nao uma omissao. O que falta e APROVAR UMA SPEC, nao autorizar um pacote.",
+      "evidencia": "specs/049-superadmin-internal-care-profile-crud-v2.md frontmatter status; specs/020-superadmin-health-care.md frontmatter status; 2026-09-10"
     },
     {
       "action_id": "health-care.detail",
       "camada": "backend",
       "estado_atual": "pending-verification",
       "estado_proposto": "blocked-environment",
-      "delta": "care049 e a spec 049, superadmin internal care profile CRUD v2. A qualificacao pendente e de permissoes internas e evidencia real, o que exige pacote nominal de producao.",
-      "evidencia": "specs/049-superadmin-internal-care-profile-crud-v2.md; sem autorizacao nominal; 2026-09-09"
+      "delta": "CORRECAO do meu proprio delta. care049 nao esta esperando pacote nominal de producao: specs/049 esta com status draft-for-review, e rascunho NAO aprovado, e define um contrato Supabase que ainda nao existe. E specs/020, a spec vigente, esta approved-for-demonstrative-ui, o que explica a ausencia de repositorio de producao: e o escopo aprovado, nao uma omissao. O que falta e APROVAR UMA SPEC, nao autorizar um pacote.",
+      "evidencia": "specs/049-superadmin-internal-care-profile-crud-v2.md frontmatter status; specs/020-superadmin-health-care.md frontmatter status; 2026-09-10"
     },
     {
       "action_id": "health-care.edit",
       "camada": "backend",
       "estado_atual": "pending-verification",
       "estado_proposto": "blocked-environment",
-      "delta": "care049 e a spec 049, superadmin internal care profile CRUD v2. A qualificacao pendente e de permissoes internas e evidencia real, o que exige pacote nominal de producao.",
-      "evidencia": "specs/049-superadmin-internal-care-profile-crud-v2.md; sem autorizacao nominal; 2026-09-09"
+      "delta": "CORRECAO do meu proprio delta. care049 nao esta esperando pacote nominal de producao: specs/049 esta com status draft-for-review, e rascunho NAO aprovado, e define um contrato Supabase que ainda nao existe. E specs/020, a spec vigente, esta approved-for-demonstrative-ui, o que explica a ausencia de repositorio de producao: e o escopo aprovado, nao uma omissao. O que falta e APROVAR UMA SPEC, nao autorizar um pacote.",
+      "evidencia": "specs/049-superadmin-internal-care-profile-crud-v2.md frontmatter status; specs/020-superadmin-health-care.md frontmatter status; 2026-09-10"
     },
     {
       "action_id": "medication.list",
       "camada": "backend",
       "estado_atual": "pending-verification",
       "estado_proposto": "blocked-environment",
-      "delta": "care049 e a spec 049, superadmin internal care profile CRUD v2. A qualificacao pendente e de permissoes internas e evidencia real, o que exige pacote nominal de producao.",
-      "evidencia": "specs/049-superadmin-internal-care-profile-crud-v2.md; sem autorizacao nominal; 2026-09-09"
+      "delta": "CORRECAO do meu proprio delta. care049 nao esta esperando pacote nominal de producao: specs/049 esta com status draft-for-review, e rascunho NAO aprovado, e define um contrato Supabase que ainda nao existe. E specs/020, a spec vigente, esta approved-for-demonstrative-ui, o que explica a ausencia de repositorio de producao: e o escopo aprovado, nao uma omissao. O que falta e APROVAR UMA SPEC, nao autorizar um pacote.",
+      "evidencia": "specs/049-superadmin-internal-care-profile-crud-v2.md frontmatter status; specs/020-superadmin-health-care.md frontmatter status; 2026-09-10"
     },
     {
       "action_id": "medication.create",
       "camada": "backend",
       "estado_atual": "pending-verification",
       "estado_proposto": "blocked-environment",
-      "delta": "care049 e a spec 049, superadmin internal care profile CRUD v2. A qualificacao pendente e de permissoes internas e evidencia real, o que exige pacote nominal de producao.",
-      "evidencia": "specs/049-superadmin-internal-care-profile-crud-v2.md; sem autorizacao nominal; 2026-09-09"
+      "delta": "CORRECAO do meu proprio delta. care049 nao esta esperando pacote nominal de producao: specs/049 esta com status draft-for-review, e rascunho NAO aprovado, e define um contrato Supabase que ainda nao existe. E specs/020, a spec vigente, esta approved-for-demonstrative-ui, o que explica a ausencia de repositorio de producao: e o escopo aprovado, nao uma omissao. O que falta e APROVAR UMA SPEC, nao autorizar um pacote.",
+      "evidencia": "specs/049-superadmin-internal-care-profile-crud-v2.md frontmatter status; specs/020-superadmin-health-care.md frontmatter status; 2026-09-10"
     },
     {
       "action_id": "medication.detail",
       "camada": "backend",
       "estado_atual": "pending-verification",
       "estado_proposto": "blocked-environment",
-      "delta": "care049 e a spec 049, superadmin internal care profile CRUD v2. A qualificacao pendente e de permissoes internas e evidencia real, o que exige pacote nominal de producao.",
-      "evidencia": "specs/049-superadmin-internal-care-profile-crud-v2.md; sem autorizacao nominal; 2026-09-09"
+      "delta": "CORRECAO do meu proprio delta. care049 nao esta esperando pacote nominal de producao: specs/049 esta com status draft-for-review, e rascunho NAO aprovado, e define um contrato Supabase que ainda nao existe. E specs/020, a spec vigente, esta approved-for-demonstrative-ui, o que explica a ausencia de repositorio de producao: e o escopo aprovado, nao uma omissao. O que falta e APROVAR UMA SPEC, nao autorizar um pacote.",
+      "evidencia": "specs/049-superadmin-internal-care-profile-crud-v2.md frontmatter status; specs/020-superadmin-health-care.md frontmatter status; 2026-09-10"
     },
     {
       "action_id": "medication.edit",
       "camada": "backend",
       "estado_atual": "pending-verification",
       "estado_proposto": "blocked-environment",
-      "delta": "care049 e a spec 049, superadmin internal care profile CRUD v2. A qualificacao pendente e de permissoes internas e evidencia real, o que exige pacote nominal de producao.",
-      "evidencia": "specs/049-superadmin-internal-care-profile-crud-v2.md; sem autorizacao nominal; 2026-09-09"
+      "delta": "CORRECAO do meu proprio delta. care049 nao esta esperando pacote nominal de producao: specs/049 esta com status draft-for-review, e rascunho NAO aprovado, e define um contrato Supabase que ainda nao existe. E specs/020, a spec vigente, esta approved-for-demonstrative-ui, o que explica a ausencia de repositorio de producao: e o escopo aprovado, nao uma omissao. O que falta e APROVAR UMA SPEC, nao autorizar um pacote.",
+      "evidencia": "specs/049-superadmin-internal-care-profile-crud-v2.md frontmatter status; specs/020-superadmin-health-care.md frontmatter status; 2026-09-10"
     },
     {
       "action_id": "medication.evidence",
       "camada": "backend",
       "estado_atual": "pending-verification",
       "estado_proposto": "blocked-environment",
-      "delta": "care049 e a spec 049, superadmin internal care profile CRUD v2. A qualificacao pendente e de permissoes internas e evidencia real, o que exige pacote nominal de producao.",
-      "evidencia": "specs/049-superadmin-internal-care-profile-crud-v2.md; sem autorizacao nominal; 2026-09-09"
+      "delta": "CORRECAO do meu proprio delta. care049 nao esta esperando pacote nominal de producao: specs/049 esta com status draft-for-review, e rascunho NAO aprovado, e define um contrato Supabase que ainda nao existe. E specs/020, a spec vigente, esta approved-for-demonstrative-ui, o que explica a ausencia de repositorio de producao: e o escopo aprovado, nao uma omissao. O que falta e APROVAR UMA SPEC, nao autorizar um pacote.",
+      "evidencia": "specs/049-superadmin-internal-care-profile-crud-v2.md frontmatter status; specs/020-superadmin-health-care.md frontmatter status; 2026-09-10"
     },
     {
       "action_id": "forms.respond",
@@ -1100,7 +1114,53 @@
       "documented_not_invented": "O preview mostra perguntas de ramo sem avaliar condicao, de proposito, porque o autor precisa ver o conteudo do ramo. Documentei no widget em vez de inventar texto de interface para uma tela que ainda nao e alcancavel.",
       "tally": "Tres passadas de releitura do proprio diff renderam sete defeitos, um estouro e um limite divergente. Nove defeitos que a suite nao pegou, todos em codigo escrito por mim nesta rodada."
     },
-    "dev_tracks_a_lock": "origin/dev rastreia packages/coelo_domain/pubspec.lock, o mesmo artefato que eu retirei do meu commit por nao existir na base e ser regerado pelo dart test. Alguma frente commitou. Reportado ao coordenador; nao mexo em arquivo de outro grupo."
+    "dev_tracks_a_lock": "origin/dev rastreia packages/coelo_domain/pubspec.lock, o mesmo artefato que eu retirei do meu commit por nao existir na base e ser regerado pelo dart test. Alguma frente commitou. Reportado ao coordenador; nao mexo em arquivo de outro grupo.",
+    "scope_failures_decomposed": {
+      "total": "test/features/forms fecha em 800 PASS / 9 FAIL / 1 SKIP.",
+      "golden": "OITO sao comparacao de golden: tres de forms_directory_golden_test, tres de forms_editor_golden_test, uma de forms_operations_golden_test e uma de form_response_golden_test. Todas sob a decisao do Owner sobre o ambiente de referencia.",
+      "the_ninth": "forms_editor_page_test, \"production preserves the editor hierarchy with neutral disabled controls\". NAO e golden: afirma que ha exatamente dois ExcludeFocus excluindo na arvore inteira e ha quatro.",
+      "diagnosis": "Dois vem do proprio editor, do helper _locked usado na navegacao de secoes e no corpo, o que bate com o esperado. Os outros dois vem de CoeloAdminToggleField, de packages/coelo_ui_admin, que embrulha o proprio Switch em ExcludeFocus. O editor usa esse campo em tres lugares.",
+      "the_component_is_right": "Conferi antes de opinar: o campo inteiro ja e focavel por FocusableActionDetector com Semantics onTap, entao excluir o Switch impede que o mesmo controle vire duas paradas de foco. E desenho deliberado de um focus stop por campo.",
+      "not_mine": "Restaurei o editor da base d784462c1 no diretorio de trabalho e rodei so aquele arquivo: quatro tambem, identico. Nao piorei o numero, e restaurei a minha versao conferindo que a mensagem nova continua no arquivo.",
+      "conclusion": "O produto esta correto. A asserção conta ExcludeFocus da arvore toda, incluindo as entranhas de um componente de outro pacote, entao dispara sempre que muda quantos campos de alternancia sao renderizados. Registro correto: asserção acoplada a componente compartilhado, nao falha do editor.",
+      "proposal_pending_decision": "Proposto ao coordenador trocar a contagem global por afirmacao de intencao: todo ExcludeFocus presente esta excluindo, e ha pelo menos os dois do editor. Nao executo sem decisao."
+    },
+    "open_response_draft_answered": {
+      "identified": "FECHADO. Existe indice unico parcial em form_responses(occurrence_id, respondent_person_id) where identity_mode = identified, criado em 20260813155118, e a funcao faz select FOR UPDATE por ocorrencia e ator antes de inserir, alem de passar por form_begin_command com o request_id. Mandar expectedVersion 0 e chave nova a cada chamada e inofensivo: a unicidade e por chave natural.",
+      "anonymous": "CORRIDA REAL, registrada e nao construida. O indice unico e parcial e nao cobre anonimo; o ramo casa por hash do segredo com limit 1 e SEM for update, e insere se nao achar. Duas aberturas simultaneas com o mesmo segredo podem inserir duas vezes, e as seguintes pegam uma por limit 1 deixando a outra orfa.",
+      "why_not_built": "E migration, entao e fila do coordenador; a rota de responder nao e produtiva, entao e latente; e o custo e anomalia de dado, nao estouro nem recusa. Pelo criterio de crash contra recusa, registra e nao constroi."
+    },
+    "duplicated_date_formatter": {
+      "measured": "41 arquivos em apps/superadmin/lib escrevem inline o mesmo formatador de data dd/MM/aaaa. Por feature: agenda 5, forms 4, support 3, notices 3, meal_plans 3, health_care 3, activities 3, principal_circulars 2, platform_users 2, circulars 2, attendance 2, assessments 2, e o resto espalhado.",
+      "not_theoretical": "Tres correcoes desta rodada sairam exatamente dessa duplicacao: dinheiro dividido sem formatar numa tela e formatado na outra, data com zeros no campo e sem zeros no resumo, e escolha por id numa tela e por rotulo na outra. Cada uma existia porque a mesma regra estava escrita duas vezes e as copias envelheceram diferente.",
+      "why_i_did_not_refactor": "Deduplicar tres de 41 e cosmetico e inconsistente; deduplicar 41 durante integracao congelada toca arquivo de todas as sete frentes e troca um problema de manutencao por um problema de merge na pior hora possivel.",
+      "recommendation": "Passe dedicado, dono unico, fora de janela de integracao. Nao e urgente e nao e do MVP; e divida que ja produziu defeito e vai produzir de novo, e o custo aparece do jeito mais caro, porque nao quebra teste nem build, so mostra o mesmo dado de dois jeitos para a pessoa.",
+      "my_share": "Quatro das 41 sao deste recorte, e eu reduzi uma duplicacao interna hoje ao unificar o formato de data da tela de resposta."
+    },
+    "i021_record_corrected": {
+      "what_i_had_written": "Que question-image, a I021, estava bloqueada aguardando reserva nominal da plataforma de midia, escrita por publicacoes-midia.",
+      "that_was_wrong": "Nunca foi bloqueio de reserva. Era desconhecimento meu do que ja esta aplicado.",
+      "verified_myself": "public.form_prepare_asset_upload(uuid, bigint, jsonb) existe em 20260813155121 com grant execute to authenticated. public.form_worker_finalize_asset existe em 20260813155124 e esta revogado de authenticated, ou seja e funcao de worker chamada pela Edge Function form-media, que confere o MIME real. E o adaptador de cliente TAMBEM existe: SupabaseFormsApi ja implementa prepareAssetUpload, finalizeAssetUpload e discardAsset.",
+      "the_real_gap": "So falta INTERFACE. form_response_page mostra um painel de anexo indisponivel para photo e gallery, e nada mais falta atras dele.",
+      "project_decision": "question-image usa o caminho de midia de Formularios que ja funciona, e NAO espera o catalogo unificado. Motivos: o caminho existente ja confere MIME real no servidor, que e a invariante do ADR 0032; o catalogo unificado nao tem write path para kind nenhum, entao esperar por ele e esperar sem data; e o que falta e interface, trocavel depois sem refazer contrato.",
+      "not_built_tonight": "Decidi NAO construir as 01h28 com congelamento as 04h40. Interface de anexo feita direito e escolha de arquivo, PUT no ticket do R2, progresso, cancelamento, expiracao, erro de rede, descarte de orfao e teste de cada estado. E lote grande com prazo duro, e o contrato proibe iniciar lote sem tempo de encerra-lo. Somado a isso, a tela onde ele cairia nao e alcancavel em producao, entao seria risco alto por valor que so aparece quando a rota for composta.",
+      "what_i_deliver_instead": "O mapa exato do que falta, com a prova de que so falta interface. Quem pegar comeca com prepare, finalize, Edge Function, adaptador e grants ja conferidos."
+    },
+    "blocker_audit": {
+      "why": "O coordenador observou que uma linha de bloqueio parece informacao e por isso ninguem a testa, mas e uma hipotese nao verificada. Auditei todas as minhas.",
+      "result": "TRES estavam erradas, e as tres eram exatamente as que eu havia copiado do rastreador sem testar. Nenhum bloqueio que eu mesmo verifiquei estava errado. Bloqueio herdado e a especie que mente.",
+      "corrected_1_i021": "Nunca foi bloqueio de reserva de midia. A cadeia esta aplicada e o adaptador de cliente existe; falta apenas a interface de anexo.",
+      "corrected_2_location": "Eu registrei blocked-decision, sugerindo codigo pronto esperando decisao. Testado: NAO existe kind de Local no dominio de Formularios; LocationSelectionSource vive na feature locations e e consumido por locations_page, nunca por Formularios; form_response_page tem zero ocorrencias e as quatro do editor sao local edits, _validateLocally, Previa local, _localDefinition e _saveDraftLocally. Nao ha implementacao alguma. A decisao do Owner PRECEDE a construcao em vez de destravar codigo pronto.",
+      "corrected_3_care049": "Eu escrevi que exige pacote nominal de producao, herdando do rastreador. Testado: specs/049 esta com status draft-for-review, ou seja rascunho NAO aprovado, e define um contrato Supabase que ainda nao existe. E specs/020, a vigente, esta approved-for-demonstrative-ui — entao health-care e medication sem repositorio de producao nao e omissao nem gate de deploy, e o escopo aprovado. Falta APROVAR UMA SPEC, nao autorizar um pacote.",
+      "reverified_and_kept": [
+        "forms.test e forms.respond nao alcancaveis: router monta const sem api, e forms_fail_closed_routes_test exige api.calls zero.",
+        "Autoria sem porta de entrada navegavel: _canManage comeca com widget.reader == null e a rota produtiva passa reader.",
+        "Autosave nao alcancavel: _scheduleAutosave retorna quando authoringApi e nulo e nada constroi SupabaseFormsAuthoringApi.",
+        "health-care e medication sem repositorio de producao: nao existe implementacao Supabase de nenhum dos dois.",
+        "Goldens: medidos, com dispersao e gradiente por largura.",
+        "forms.download, expire-file e delete-file: limpeza fisica e expiracao no R2 sao remotas de verdade."
+      ]
+    }
   },
   "nota_de_organizacao": "Arquivo reorganizado na revisao 35, sem remover nada. O contrato pede estado corrente e nao log acumulado, e o arquivo tinha chegado a 95 chaves de topo, o que dificultava achar o estado. Os campos exigidos pelo contrato e o tracker_delta_proposto ficam no topo; todo o resto foi agrupado sob achados_e_registros com as mesmas chaves e o mesmo conteudo. A narrativa durável esta em docs/reviews/evidence/etapa-2/formularios-cuidado/2026-09-09-round-handoff.md."
 }

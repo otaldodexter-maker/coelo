@@ -1,6 +1,6 @@
 {
-  "revision": 43,
-  "updated_at": "2026-09-10T00:31:18-03:00",
+  "revision": 45,
+  "updated_at": "2026-09-10T01:43:28-03:00",
   "group": "operacoes-sistema",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) — claude-opus-5[1m]",
@@ -8,7 +8,7 @@
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-operacoes-sistema",
   "branch": "work/etapa2-noturna-operacoes-sistema",
-  "head": "fa4b968a3",
+  "head": "c2e6bda5d",
   "upstream": "origin/work/etapa2-noturna-operacoes-sistema",
   "base_observed": "d784462c168d22fdb7090b7de1ef7db554ad5107",
   "scope": [
@@ -596,24 +596,24 @@
       "camada": "frontend",
       "estado_atual": "pending-verification",
       "estado_proposto": "blocked-decision",
-      "delta": "Aceite funcional exercitado com 61 PASS. O aceite visual nao fecha por decisao pendente: os 24 goldens de referencia falham na base em light e dark, em 375/768/1024/1440, com diffs de 11,5% a 90,4%, o que os separa da deriva de tema escuro. As referencias foram atualizadas pela ultima vez em ed23ec20f e receberam quatro commits de implementacao depois: 23510d7f8, b2bcf2d4c, bff822386 e 59ee9601e. Rebaseline exige aprovacao nominal e nao foi feito.",
-      "evidencia": "apps/superadmin/test/features/support/ -> 61 PASS, 24 goldens em U; censo d3ddc4a76"
+      "delta": "CORRIGIDO nesta revisao, porque a linha anterior culpava os goldens e isso e secundario. O bloqueio vinculante e ausencia de implementacao: features/support tem somente README, domain e presentation; supportController e parametro do router que nenhuma composicao de producao fornece; e o builder de /support devolve SuperadminErrorScreen unavailable quando o controlador e nulo, entao a tela e 503 em producao. A suite de 61 PASS mede um prototipo com dados em memoria. A decisao pendente e de produto, se Suporte recebe camada de dados no MVP, e nao de ambiente. Os 24 goldens continuam vermelhos desde o censo, mas nao sao a razao do bloqueio.",
+      "evidencia": "superadmin_router.dart:3101-3115; grep de supportController em lib e test; censo d3ddc4a76 para os goldens"
     },
     {
       "action_id": "support.kanban",
       "camada": "frontend",
       "estado_atual": "pending-verification",
       "estado_proposto": "blocked-decision",
-      "delta": "Aceite funcional exercitado com 61 PASS. O aceite visual nao fecha por decisao pendente: os 24 goldens de referencia falham na base em light e dark, em 375/768/1024/1440, com diffs de 11,5% a 90,4%, o que os separa da deriva de tema escuro. As referencias foram atualizadas pela ultima vez em ed23ec20f e receberam quatro commits de implementacao depois: 23510d7f8, b2bcf2d4c, bff822386 e 59ee9601e. Rebaseline exige aprovacao nominal e nao foi feito.",
-      "evidencia": "apps/superadmin/test/features/support/ -> 61 PASS, 24 goldens em U; censo d3ddc4a76"
+      "delta": "CORRIGIDO nesta revisao, porque a linha anterior culpava os goldens e isso e secundario. O bloqueio vinculante e ausencia de implementacao: features/support tem somente README, domain e presentation; supportController e parametro do router que nenhuma composicao de producao fornece; e o builder de /support devolve SuperadminErrorScreen unavailable quando o controlador e nulo, entao a tela e 503 em producao. A suite de 61 PASS mede um prototipo com dados em memoria. A decisao pendente e de produto, se Suporte recebe camada de dados no MVP, e nao de ambiente. Os 24 goldens continuam vermelhos desde o censo, mas nao sao a razao do bloqueio.",
+      "evidencia": "superadmin_router.dart:3101-3115; grep de supportController em lib e test; censo d3ddc4a76 para os goldens"
     },
     {
       "action_id": "support.detail",
       "camada": "frontend",
       "estado_atual": "pending-verification",
       "estado_proposto": "blocked-decision",
-      "delta": "Aceite funcional exercitado com 61 PASS. O aceite visual nao fecha por decisao pendente: os 24 goldens de referencia falham na base em light e dark, em 375/768/1024/1440, com diffs de 11,5% a 90,4%, o que os separa da deriva de tema escuro. As referencias foram atualizadas pela ultima vez em ed23ec20f e receberam quatro commits de implementacao depois: 23510d7f8, b2bcf2d4c, bff822386 e 59ee9601e. Rebaseline exige aprovacao nominal e nao foi feito.",
-      "evidencia": "apps/superadmin/test/features/support/ -> 61 PASS, 24 goldens em U; censo d3ddc4a76"
+      "delta": "CORRIGIDO nesta revisao, porque a linha anterior culpava os goldens e isso e secundario. O bloqueio vinculante e ausencia de implementacao: features/support tem somente README, domain e presentation; supportController e parametro do router que nenhuma composicao de producao fornece; e o builder de /support devolve SuperadminErrorScreen unavailable quando o controlador e nulo, entao a tela e 503 em producao. A suite de 61 PASS mede um prototipo com dados em memoria. A decisao pendente e de produto, se Suporte recebe camada de dados no MVP, e nao de ambiente. Os 24 goldens continuam vermelhos desde o censo, mas nao sao a razao do bloqueio.",
+      "evidencia": "superadmin_router.dart:3101-3115; grep de supportController em lib e test; censo d3ddc4a76 para os goldens"
     },
     {
       "action_id": "support.create",
@@ -771,25 +771,25 @@
       "action_id": "support.table",
       "camada": "frontend",
       "estado_atual": "blocked-decision ou pending-verification conforme aplicado na revisao 10",
-      "estado_proposto": "pending-verification",
-      "delta": "SUBSTITUI o delta da revisao 10. Suporte nao tem camada de dados: a feature tem apenas domain e presentation, sem data/, sem repositorio e sem interface, e toda a tela roda sobre SupportPrototypeController com dados semeados em memoria. Em producao a rota /support nem abre: o router so monta SupportPage quando productionSupportController nao e nulo, e nenhum ponto de composicao em lib injeta esse controlador, entao a rota devolve SuperadminErrorScreen unavailable. Os 61 testes verdes exercitam o prototipo e nao o caminho produtivo. O aceite FE nao fecha enquanto faltar o seam de repository/gateway. A obsolescencia dos 24 goldens permanece verdadeira, mas e o segundo problema.",
-      "evidencia": "apps/superadmin/lib/features/support/ sem data/; apps/superadmin/lib/app/router/superadmin_router.dart linhas 3029-3037; apps/superadmin/lib/app/superadmin_app.dart sem nenhuma ocorrencia de supportController"
+      "estado_proposto": "blocked-decision",
+      "delta": "CORRIGIDO nesta revisao, porque a linha anterior culpava os goldens e isso e secundario. O bloqueio vinculante e ausencia de implementacao: features/support tem somente README, domain e presentation; supportController e parametro do router que nenhuma composicao de producao fornece; e o builder de /support devolve SuperadminErrorScreen unavailable quando o controlador e nulo, entao a tela e 503 em producao. A suite de 61 PASS mede um prototipo com dados em memoria. A decisao pendente e de produto, se Suporte recebe camada de dados no MVP, e nao de ambiente. Os 24 goldens continuam vermelhos desde o censo, mas nao sao a razao do bloqueio.",
+      "evidencia": "superadmin_router.dart:3101-3115; grep de supportController em lib e test; censo d3ddc4a76 para os goldens"
     },
     {
       "action_id": "support.kanban",
       "camada": "frontend",
       "estado_atual": "blocked-decision ou pending-verification conforme aplicado na revisao 10",
-      "estado_proposto": "pending-verification",
-      "delta": "SUBSTITUI o delta da revisao 10. Suporte nao tem camada de dados: a feature tem apenas domain e presentation, sem data/, sem repositorio e sem interface, e toda a tela roda sobre SupportPrototypeController com dados semeados em memoria. Em producao a rota /support nem abre: o router so monta SupportPage quando productionSupportController nao e nulo, e nenhum ponto de composicao em lib injeta esse controlador, entao a rota devolve SuperadminErrorScreen unavailable. Os 61 testes verdes exercitam o prototipo e nao o caminho produtivo. O aceite FE nao fecha enquanto faltar o seam de repository/gateway. A obsolescencia dos 24 goldens permanece verdadeira, mas e o segundo problema.",
-      "evidencia": "apps/superadmin/lib/features/support/ sem data/; apps/superadmin/lib/app/router/superadmin_router.dart linhas 3029-3037; apps/superadmin/lib/app/superadmin_app.dart sem nenhuma ocorrencia de supportController"
+      "estado_proposto": "blocked-decision",
+      "delta": "CORRIGIDO nesta revisao, porque a linha anterior culpava os goldens e isso e secundario. O bloqueio vinculante e ausencia de implementacao: features/support tem somente README, domain e presentation; supportController e parametro do router que nenhuma composicao de producao fornece; e o builder de /support devolve SuperadminErrorScreen unavailable quando o controlador e nulo, entao a tela e 503 em producao. A suite de 61 PASS mede um prototipo com dados em memoria. A decisao pendente e de produto, se Suporte recebe camada de dados no MVP, e nao de ambiente. Os 24 goldens continuam vermelhos desde o censo, mas nao sao a razao do bloqueio.",
+      "evidencia": "superadmin_router.dart:3101-3115; grep de supportController em lib e test; censo d3ddc4a76 para os goldens"
     },
     {
       "action_id": "support.detail",
       "camada": "frontend",
       "estado_atual": "blocked-decision ou pending-verification conforme aplicado na revisao 10",
-      "estado_proposto": "pending-verification",
-      "delta": "SUBSTITUI o delta da revisao 10. Suporte nao tem camada de dados: a feature tem apenas domain e presentation, sem data/, sem repositorio e sem interface, e toda a tela roda sobre SupportPrototypeController com dados semeados em memoria. Em producao a rota /support nem abre: o router so monta SupportPage quando productionSupportController nao e nulo, e nenhum ponto de composicao em lib injeta esse controlador, entao a rota devolve SuperadminErrorScreen unavailable. Os 61 testes verdes exercitam o prototipo e nao o caminho produtivo. O aceite FE nao fecha enquanto faltar o seam de repository/gateway. A obsolescencia dos 24 goldens permanece verdadeira, mas e o segundo problema.",
-      "evidencia": "apps/superadmin/lib/features/support/ sem data/; apps/superadmin/lib/app/router/superadmin_router.dart linhas 3029-3037; apps/superadmin/lib/app/superadmin_app.dart sem nenhuma ocorrencia de supportController"
+      "estado_proposto": "blocked-decision",
+      "delta": "CORRIGIDO nesta revisao, porque a linha anterior culpava os goldens e isso e secundario. O bloqueio vinculante e ausencia de implementacao: features/support tem somente README, domain e presentation; supportController e parametro do router que nenhuma composicao de producao fornece; e o builder de /support devolve SuperadminErrorScreen unavailable quando o controlador e nulo, entao a tela e 503 em producao. A suite de 61 PASS mede um prototipo com dados em memoria. A decisao pendente e de produto, se Suporte recebe camada de dados no MVP, e nao de ambiente. Os 24 goldens continuam vermelhos desde o censo, mas nao sao a razao do bloqueio.",
+      "evidencia": "superadmin_router.dart:3101-3115; grep de supportController em lib e test; censo d3ddc4a76 para os goldens"
     },
     {
       "action_id": "support.create",
@@ -827,25 +827,25 @@
       "action_id": "support.table",
       "camada": "backend",
       "estado_atual": "pending-verification",
-      "estado_proposto": "pending-verification",
-      "delta": "Nao ha backend de Suporte a verificar: nenhuma RPC, nenhum repositorio Supabase e nenhum contrato de persistencia existe no repo para esta familia. pending-verification descreve mal o estado, que e ausencia de implementacao e nao verificacao pendente; se o inventario tiver um estado para isso, e o correto aqui.",
-      "evidencia": "ausencia de apps/superadmin/lib/features/support/data e de qualquer SupportTicket em packages/"
+      "estado_proposto": "blocked-decision",
+      "delta": "CORRIGIDO nesta revisao, porque a linha anterior culpava os goldens e isso e secundario. O bloqueio vinculante e ausencia de implementacao: features/support tem somente README, domain e presentation; supportController e parametro do router que nenhuma composicao de producao fornece; e o builder de /support devolve SuperadminErrorScreen unavailable quando o controlador e nulo, entao a tela e 503 em producao. A suite de 61 PASS mede um prototipo com dados em memoria. A decisao pendente e de produto, se Suporte recebe camada de dados no MVP, e nao de ambiente. Os 24 goldens continuam vermelhos desde o censo, mas nao sao a razao do bloqueio.",
+      "evidencia": "superadmin_router.dart:3101-3115; grep de supportController em lib e test; censo d3ddc4a76 para os goldens"
     },
     {
       "action_id": "support.kanban",
       "camada": "backend",
       "estado_atual": "pending-verification",
-      "estado_proposto": "pending-verification",
-      "delta": "Nao ha backend de Suporte a verificar: nenhuma RPC, nenhum repositorio Supabase e nenhum contrato de persistencia existe no repo para esta familia. pending-verification descreve mal o estado, que e ausencia de implementacao e nao verificacao pendente; se o inventario tiver um estado para isso, e o correto aqui.",
-      "evidencia": "ausencia de apps/superadmin/lib/features/support/data e de qualquer SupportTicket em packages/"
+      "estado_proposto": "blocked-decision",
+      "delta": "CORRIGIDO nesta revisao, porque a linha anterior culpava os goldens e isso e secundario. O bloqueio vinculante e ausencia de implementacao: features/support tem somente README, domain e presentation; supportController e parametro do router que nenhuma composicao de producao fornece; e o builder de /support devolve SuperadminErrorScreen unavailable quando o controlador e nulo, entao a tela e 503 em producao. A suite de 61 PASS mede um prototipo com dados em memoria. A decisao pendente e de produto, se Suporte recebe camada de dados no MVP, e nao de ambiente. Os 24 goldens continuam vermelhos desde o censo, mas nao sao a razao do bloqueio.",
+      "evidencia": "superadmin_router.dart:3101-3115; grep de supportController em lib e test; censo d3ddc4a76 para os goldens"
     },
     {
       "action_id": "support.detail",
       "camada": "backend",
       "estado_atual": "pending-verification",
-      "estado_proposto": "pending-verification",
-      "delta": "Nao ha backend de Suporte a verificar: nenhuma RPC, nenhum repositorio Supabase e nenhum contrato de persistencia existe no repo para esta familia. pending-verification descreve mal o estado, que e ausencia de implementacao e nao verificacao pendente; se o inventario tiver um estado para isso, e o correto aqui.",
-      "evidencia": "ausencia de apps/superadmin/lib/features/support/data e de qualquer SupportTicket em packages/"
+      "estado_proposto": "blocked-decision",
+      "delta": "CORRIGIDO nesta revisao, porque a linha anterior culpava os goldens e isso e secundario. O bloqueio vinculante e ausencia de implementacao: features/support tem somente README, domain e presentation; supportController e parametro do router que nenhuma composicao de producao fornece; e o builder de /support devolve SuperadminErrorScreen unavailable quando o controlador e nulo, entao a tela e 503 em producao. A suite de 61 PASS mede um prototipo com dados em memoria. A decisao pendente e de produto, se Suporte recebe camada de dados no MVP, e nao de ambiente. Os 24 goldens continuam vermelhos desde o censo, mas nao sao a razao do bloqueio.",
+      "evidencia": "superadmin_router.dart:3101-3115; grep de supportController em lib e test; censo d3ddc4a76 para os goldens"
     },
     {
       "action_id": "support.reply",
@@ -1126,6 +1126,54 @@
       "estado_proposto": "pending-verification",
       "delta": "Candidato 42ad0467 integrado: _copy passa a recusar quando ja existe rota de dialogo aberta, quando a sessao nao esta disponivel ou quando falta a capability, antes de qualquer navegacao. RESSALVA IMPORTANTE para o rastreador: a linha que pedia integrar os tres pacotes D02 estava obsoleta — o conteudo de cd03b9e30 e 42ad0467 ja estava em dev por f87543b6c e 4528c42df, reaplicados como commits novos, e a proposta de router de 1345af29f ja estava em dev por fc8287c57. Verifiquei por CONTEUDO e nao por SHA. O meu commit e redundante e inocuo: o arquivo ficou byte a byte identico ao de dev.",
       "evidencia": "commit 34af4db34; suite de Locais 333 PASS; diff contra origin/dev identico"
+    },
+    {
+      "action_id": "units.list",
+      "camada": "backend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "blocked-environment",
+      "delta": "O repositorio de Unidades chama cinco RPCs que nenhum arquivo do pacote coelo_database cria. Uma migration versionada chama uma delas e se declara reparo de funcao instalada localmente. Ou producao tem as funcoes fora do versionamento, e entao nao ha o que revisar, ou a superficie falha fail-closed no primeiro uso. Decidir exige leitura de catalogo autorizada, que esta rodada nao tem.",
+      "evidencia": "commit e14718844; apps/superadmin/test/contracts/rpc_contract_test.dart 3 PASS; relatorio E2-noturna-contrato-rpc-20260910.md"
+    },
+    {
+      "action_id": "units.create",
+      "camada": "backend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "blocked-environment",
+      "delta": "O repositorio de Unidades chama cinco RPCs que nenhum arquivo do pacote coelo_database cria. Uma migration versionada chama uma delas e se declara reparo de funcao instalada localmente. Ou producao tem as funcoes fora do versionamento, e entao nao ha o que revisar, ou a superficie falha fail-closed no primeiro uso. Decidir exige leitura de catalogo autorizada, que esta rodada nao tem.",
+      "evidencia": "commit e14718844; apps/superadmin/test/contracts/rpc_contract_test.dart 3 PASS; relatorio E2-noturna-contrato-rpc-20260910.md"
+    },
+    {
+      "action_id": "units.edit",
+      "camada": "backend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "blocked-environment",
+      "delta": "O repositorio de Unidades chama cinco RPCs que nenhum arquivo do pacote coelo_database cria. Uma migration versionada chama uma delas e se declara reparo de funcao instalada localmente. Ou producao tem as funcoes fora do versionamento, e entao nao ha o que revisar, ou a superficie falha fail-closed no primeiro uso. Decidir exige leitura de catalogo autorizada, que esta rodada nao tem.",
+      "evidencia": "commit e14718844; apps/superadmin/test/contracts/rpc_contract_test.dart 3 PASS; relatorio E2-noturna-contrato-rpc-20260910.md"
+    },
+    {
+      "action_id": "units.filters",
+      "camada": "backend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "blocked-environment",
+      "delta": "O repositorio de Unidades chama cinco RPCs que nenhum arquivo do pacote coelo_database cria. Uma migration versionada chama uma delas e se declara reparo de funcao instalada localmente. Ou producao tem as funcoes fora do versionamento, e entao nao ha o que revisar, ou a superficie falha fail-closed no primeiro uso. Decidir exige leitura de catalogo autorizada, que esta rodada nao tem.",
+      "evidencia": "commit e14718844; apps/superadmin/test/contracts/rpc_contract_test.dart 3 PASS; relatorio E2-noturna-contrato-rpc-20260910.md"
+    },
+    {
+      "action_id": "groups.filters",
+      "camada": "backend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "blocked-environment",
+      "delta": "Os filtros de instituicao e unidade de Turmas reusam list_units_for_superadmin e unit_directory_filter_options, as mesmas duas RPCs sem definicao no pacote. Mesmo bloqueio de Unidades, por dependencia e nao por implementacao propria de Turmas.",
+      "evidencia": "commit e14718844; groups/data/supabase_group_directory_repository.dart:120"
+    },
+    {
+      "action_id": "meal-plans.image-delete",
+      "camada": "backend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "blocked-decision",
+      "delta": "A guarda de revisao do delete de imagem existe no banco desde a migration de recibos e nunca roda, porque o cliente chama a forma legada de dois argumentos, cujo corpo le a revisao corrente. Fechar exige o dominio de imagem expor a revisao do ativo, que e mudanca de contrato e decisao do Owner, nao correcao noturna.",
+      "evidencia": "commit e14718844; supabase_meal_plan_image_repository.dart:117; migration 20260820230000 linhas 632 e 709"
     }
   ],
   "tracker_delta_nota": "Nenhuma acao proposta para estado terminal alem de errors.403/404/500/503. Segui sua regra: corrigir baseline vermelha, escrever teste novo ou destrackear artefato nao promove acao. imports.* nao recebe delta, porque continuam deferred-post-mvp e o unico achado ali e o overflow de RenderFlex, que e defeito e nao aceite. catalog.* ainda nao inspecionado, entao nao proponho nada.",
@@ -1577,5 +1625,64 @@
     },
     "resultado": "As seis familias de estrutura estao fechadas nas quatro perguntas. Tres defeitos reais encontrados por um checklist escrito DEPOIS das correcoes, em arquivos que eu ja havia lido sem ver.",
     "cuidado_aplicado": "Em Turmas eu conferi o chamador antes de mexer e nao 'corrigi' a intencao, que ja estava certa. E rodei o teste existente de composicao idempotente antes de escrever o meu, porque guarda mal escrita recusaria tambem o recibo correto."
+  },
+  "classe_nova_contrato_rpc": {
+    "pergunta": "Nenhum teste do app confere se a RPC chamada existe no banco nem se os parametros batem com a assinatura. Cliente falso e transporte interceptado nao tocam no contrato.",
+    "medicao": "80 chamadas .rpc em apps/superadmin/lib, 76 nomes distintos, contra 383 funcoes declaradas em packages/coelo_database, ignorando tests/ porque pgTAP cria auxiliares.",
+    "achado_1": "Cinco RPCs do diretorio de Unidades nao sao criadas por NENHUM arquivo do repositorio: create_unit_for_superadmin, update_unit_for_superadmin, get_unit_form_for_superadmin, list_units_for_superadmin e unit_directory_filter_options. As duas ultimas tambem sao usadas pelos filtros de Turmas. A migration versionada 20260825180500 chama app_private.create_unit_for_superadmin e o cabecalho dela diz 'locally installed', ou seja o versionamento depende de funcao que ele mesmo nao cria.",
+    "achado_1_leitura": "Ou existem em producao fora do versionamento, e o pacote nao descreve producao, ou nao existem e Unidades falha fail-closed no primeiro uso. Nao decido daqui: exigiria leitura de catalogo em producao, sem autorizacao nominal nesta rodada. Um select de catalogo resolve em segundos na proxima janela autorizada.",
+    "achado_2": "Cardapios chama meal_plan_request_image_delete na forma legada de dois argumentos. A migration de recibos 20260820230000 criou a forma de tres com p_expected_revision e manteve a antiga como compatibilidade, que le a revisao corrente do proprio banco. Resultado: a guarda de concorrencia nunca roda em producao, e uma exclusao sobre lista desatualizada remove a imagem corrente em vez de ser recusada.",
+    "achado_2_por_que_nao_corrigi": "O dominio de imagem de Cardapios nao tem conceito de revisao de ativo. Enviar p_expected_revision exige a leitura expor a revisao que o usuario viu; ler a revisao no cliente logo antes do delete reproduziria o furo que a guarda fecha. E decisao de contrato do Owner do recorte.",
+    "achado_3": "Zero divergencia de nome de parametro nas 80 chamadas. Nao e falta de medida: o pacote tem teste proprio de nomes de argumento, entao a classe ja cobrou preco antes e hoje esta limpa. Tres chamadas de Agenda montam parametros por espalhamento e ficam declaradamente fora da verificacao de omissao.",
+    "regressao_fechada": "apps/superadmin/test/contracts/rpc_contract_test.dart, 3 PASS, sem binding de Flutter, menos de um segundo. Falha em RPC inexistente, chave fora da assinatura e obrigatorio omitido de todas as sobrecargas. As cinco ausencias estao listadas com motivo e o teste TAMBEM falha se uma delas passar a existir e continuar na lista, senao a lista envelhece e esconde o defeito seguinte.",
+    "controle_negativo": "Rodado nos tres: removi um nome da lista e o primeiro acusou list_units_for_superadmin; troquei p_import_job_id por nome inexistente numa chamada real e o segundo e o terceiro acusaram chave extra e obrigatorio omitido, com arquivo e linha. Revertidos.",
+    "limite_declarado": "A verificacao de omissao usa a intersecao das sobrecargas, entao acusa so quem nao satisfaz nenhuma forma. O achado 2 fica de proposito fora do teste e dentro do relatorio: escolher sobrecarga e decisao de produto, nao invariante estatica.",
+    "commit": "e14718844",
+    "relatorio": "docs/reviews/etapa-2-operacao/reports/E2-noturna-contrato-rpc-20260910.md"
+  },
+  "censo_formularios_reflow": {
+    "medida": "16 rotas de criacao em /dev/<dominio>/new, 375 e 1440, 100% e 200%, 64 casos.",
+    "resultado": "64 PASS, zero excecao. Resultado negativo medido: os overflows que encontrei a noite estao nas telas de diretorio e lista, nao nos formularios de criacao.",
+    "nota": "Rodei com o arquivo de rascunho zz_scratch_forms_reflow_test.dart, que nao fica no repositorio; o numero fica aqui como evidencia."
+  },
+  "medicao_formularios_e_import": {
+    "pedido": "O coordenador e chat-comunicacoes leram estaticamente que /forms/form-1/files chama backend em rota declarada fail-closed e pediram o numero.",
+    "medido_forms": "Com contador zerado antes de cada rota: /forms/form-1/monitor 1 chamada getMonitor; /forms/form-1/responses 1 listResponses; /forms/form-1/responses/response-1 1 getResponseDetail; /forms/form-1/files 1 listFileJobs; /forms/media/asset-1 zero.",
+    "conclusao": "NAO e defeito. forms_fail_closed_routes_test, verde, exige exatamente uma chamada nessas quatro rotas; foi escrito em 3f5449940 de 2026-09-08, 'bind normal routes and media lifetime to authorization'. O teste que falhava foi tocado por ultimo em ac1676232, de 2026-09-01, e afirmava o contrario. Duas asserções opostas sobre a mesma rota conviveram sete dias.",
+    "meu_erro": "Mandei o numero 1 antes de saber qual contrato vale. 1 e violacao contra um contrato e conformidade contra o outro: o numero nao estava errado, faltava o denominador. A cadeia estatica provou o mecanismo e nao provou a infracao.",
+    "correcao_entregue": "c2e6bda5d ajusta a asserção com comentario datado, renomeia o caso porque 'stay fail-closed' ficou falso na metade, e troca o literal zero de midia por contador lido antes da navegacao, para nao esconder uma chamada nova de midia. composition_root + forms_fail_closed rodam juntos 8 PASS; analyze limpo.",
+    "capacidade_medida": "A sessao daquele teste NAO tem capacidade de Formularios: signInForTesting concede permissionCodes {'platform.read'} e withFormsAuthorization consulta somente session.isAuthenticated. O contrato de 08/09 delega a autorizacao de leitura inteiramente ao servidor. Decisao legitima, e diferente de 'o cliente confere capacidade', e por isso fica registrada no comentario do teste.",
+    "medido_import": "/dev/imports e /dev/imports/new: zero chamada ao repositorio de producao. A fronteira esta intacta. import_development_routes_test falha por RenderFlex estourando 1409 pixels na superficie padrao de 800x600, que e o overflow de /dev/imports ja catalogado no relatorio de reflow. Mesmo sintoma vermelho, tres causas diferentes nas tres rotas.",
+    "licao": "Quando dois testes afirmam contratos opostos sobre a mesma rota, o vermelho nao diz qual esta certo, diz que existe contradicao; e preciso datar as duas asserções. E o caso morre na primeira falha, entao a mensagem vermelha nunca nomeia a causa real."
+  },
+  "bloqueios_retestados": {
+    "premissa_aceita": "Cada linha de bloqueio e hipotese que ninguem testou, e e mais perigosa que achado errado, porque parece informacao e nao pergunta. Abaixo, cada linha minha com o que a sustenta e se foi medida ou nao.",
+    "errors.409": {
+      "estado": "blocked-decision",
+      "sustentado_por": "MEDIDO agora: nao existe nenhum arquivo error_409* em apps/superadmin/test; e a spec 2026-07-28-superadmin-error-pages-design.md, linha 73, diz textualmente que goldens novos 409 precisam aprovacao nominal, sem rebaseline automatico.",
+      "testado": "sim, ausencia de arquivo e texto de spec conferidos nesta revisao"
+    },
+    "support.table/kanban/detail": {
+      "estado": "blocked-decision",
+      "CORRECAO": "A linha anterior citava os 24 goldens como bloqueio e isso e secundario. MEDIDO agora: features/support tem somente README, domain e presentation, sem camada de dados; supportController e parametro do router que NENHUMA composicao de producao fornece, so testes; e o builder da rota /support, linha 3105, devolve SuperadminErrorScreen unavailable quando o controlador e nulo. Em producao a tela e 503.",
+      "sustentado_por": "grep de supportController em lib e test, e leitura do builder em superadmin_router.dart:3101-3115",
+      "testado": "sim no codigo; os 24 goldens foram medidos no censo d3ddc4a76 e NAO foram re-medidos nesta revisao",
+      "decisao_pendente": "se Suporte recebe camada de dados no MVP. E decisao de produto, nao de ambiente, e por isso continua blocked-decision e nao blocked-environment."
+    },
+    "audit.list/filter/detail": {
+      "estado": "blocked-environment",
+      "sustentado_por": "O pacote AUDIT-READ-V2 existe, revisavel, com SHA256 e ordem; a rodada decidiu nao aplicar remoto e nao existe autorizacao nominal do Owner.",
+      "testado": "a existencia e o conteudo do pacote, sim. O replay 0/145 e o estado remoto, NAO. Nao medi producao e nao posso: nenhuma leitura remota foi autorizada nesta rodada."
+    },
+    "units.list/create/edit/filters e groups.filters": {
+      "estado": "blocked-environment",
+      "sustentado_por": "MEDIDO no versionamento: apps/superadmin/test/contracts/rpc_contract_test.dart, 4 PASS, falha se qualquer uma das cinco RPCs passar a existir e continuar na lista. Varri o repositorio inteiro, nao so o pacote.",
+      "testado": "no versionamento sim, com controle negativo. EM PRODUCAO NAO. A bifurcacao que eu mesmo nomeei continua aberta: se as funcoes existirem instaladas fora do versionamento, blocked-environment descreve a coisa certa pelo motivo errado, e o Owner precisa saber disso. Um select de catalogo resolve em segundos na proxima janela autorizada."
+    },
+    "meal-plans.image-delete": {
+      "estado": "blocked-decision",
+      "sustentado_por": "MEDIDO: o cliente envia apenas p_asset_id e p_idempotency_key, e isso e verificado pelo teste de contrato. LIDO e nao executado: que a forma de dois argumentos le a revisao corrente do proprio banco e repassa, nas linhas 709-728 da migration 20260820230000.",
+      "testado": "o lado do cliente sim. O comportamento do corpo da funcao NAO foi executado contra banco nenhum; e leitura de SQL."
+    }
   }
 }

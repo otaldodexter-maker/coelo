@@ -1,14 +1,14 @@
 {
-  "revision": 18,
-  "updated_at": "2026-09-10T00:38:00-03:00",
+  "revision": 30,
+  "updated_at": "2026-09-10T02:28:00-03:00",
   "group": "publicacoes-midia",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
-  "status": "active; 26 lotes e 2 documentos publicados",
+  "status": "active; 30 lotes e 4 documentos; medicao de pre-entrega concluida; nenhuma frente nova",
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-publicacoes-midia",
   "branch": "work/etapa2-noturna-publicacoes-midia",
-  "head": "d9bde1ab0",
+  "head": "a6decef0e",
   "upstream": "origin/work/etapa2-noturna-publicacoes-midia (0/0)",
   "base": "origin/dev 447e6eea2 mesclado em 3ab29d7df",
   "ack": "coordenador: revisao 1 aceita; lote 1e39b2fcf integrado (merge d502350ce); lote b10f48d1e aceito para a proxima integracao; atribuicao de principal_real_route_test retirada por ele apos minha medicao; reserva da plataforma comum de midia mantida",
@@ -256,6 +256,66 @@
       "state": "publicado",
       "title": "relatorio: custos introduzidos declarados",
       "touches_reserved_files": []
+    },
+    {
+      "sha": "ed344cfe3",
+      "state": "publicado",
+      "title": "ressalvas de leitura no cabecalho da tabela das 23 acoes",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "76fb0d76d",
+      "state": "publicado",
+      "title": "correcao da afirmacao errada sobre circulars.delete",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "f989b5063",
+      "state": "publicado; aguarda integracao",
+      "title": "aviso de conflito de resposta passa a ser anunciado",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "58d02bac4",
+      "state": "publicado; aguarda integracao",
+      "title": "troca de API depreciada no teste do aviso",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "763bd5581",
+      "state": "publicado",
+      "title": "contexto medido da cadeia irreproduzivel no relatorio",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "43319b448",
+      "state": "publicado",
+      "title": "pacote revisavel do catalogo de midia, em desenho",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "f041b5291",
+      "state": "publicado",
+      "title": "indice dos quatro documentos no relatorio de entrega",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "8ff72f722",
+      "state": "publicado",
+      "title": "documento de decisao do Owner reestruturado de tres para oito pontos, com indice",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "53bfabff9",
+      "state": "publicado",
+      "title": "medicao de pre-entrega do recorte inteiro, rotas incluidas: 671 PASS / 23 FAIL",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "a6decef0e",
+      "state": "publicado",
+      "title": "prova de que as 23 falhas de golden precedem a rodada, nominalmente",
+      "touches_reserved_files": []
     }
   ],
   "action_ids_touched": [
@@ -273,16 +333,25 @@
     "circulars.detail: rota Principal registrada, separada de /circulars/:circularId/read, com fail-closed sem capacidade e sem sessao"
   ],
   "tests": {
-    "P": 636,
+    "P": 671,
     "F": 23,
     "B": 0,
     "S": 0,
     "U": 0,
-    "metodo": "medido em UMA execucao ao final da rodada, nao somado de relatos anteriores: as oito features do recorte mais as seis rotas tocadas",
-    "falhas": "as 23 sao TODAS de golden e reproduzem na base sem nenhum lote deste grupo: 10 em principal_happens_preview_golden_test, 11 em principal_moments_preview_golden_test e 2 em circular_directory_golden_test. Fora de golden, zero falhas. Nenhum golden foi regravado.",
-    "deno": "circular-media 25 PASS, happens-media 15 PASS, now-media 14 PASS, moments-media 12 PASS",
+    "metodo": "medicao de PRE-ENTREGA, apos TODOS os lotes, em duas execucoes DISJUNTAS que se somam (nao sao reruns): (1) nove diretorios de feature do recorte mais quatro arquivos de rota = 640 PASS / 23 FAIL; (2) as oito rotas restantes do recorte = 31 PASS / 0 FAIL.",
+    "correcao_de_escopo": "o numero anterior de 638 estava certo como resultado, mas a frase ao lado dele dizia 'oito features mais as seis rotas' e a execucao cobria QUATRO arquivos de rota, sendo doze os do recorte. A diferenca de 638 para 671 e escopo medido, nao regressao nem correcao de codigo. Corrigido no relatorio em 53bfabff9.",
+    "rotas_execucao_2": "principal_happens_composition_gaps, principal_happens_preview_route, principal_moments_publication_media_union, principal_moments_publication_route, principal_moments_route_states, principal_now_authorization_revision, principal_now_preview_route, route_name_uniqueness",
+    "falhas": "as 23 sao TODAS de golden e reproduzem na base sem nenhum lote deste grupo: 10 em principal_happens_preview_golden_test, 11 em principal_moments_preview_golden_test e 2 em circular_directory_golden_test. Fora de golden, zero falhas. Nenhum golden foi regravado. A lista nominal das 23 foi extraida dos marcadores [E] do log, nao do resumo truncado do flutter.",
+    "deno": "remedido na pre-entrega: circular-media 27, moments-media 26, happens-media 15, now-media 14 = 82 PASS / 0 FAIL. Os numeros 25 e 12 que constavam aqui eram anteriores aos testes de ramo R2 e de bytes armazenados.",
     "analyze": "flutter analyze --no-pub na arvore inteira do superadmin: No issues found",
-    "nao_executado": "nenhuma suite pgTAP executada: o harness sancionado nao replica a cadeia canonica, falhando na 53a migration 20260812002010 com relation app_private.unit_import_source_attestations does not exist"
+    "nao_executado": "nenhuma suite pgTAP executada: o harness sancionado nao replica a cadeia canonica, falhando na 53a migration 20260812002010 com relation app_private.unit_import_source_attestations does not exist",
+    "falhas_provadas_como_preexistentes": {
+      "base": "d784462c1, checkout separado em C:/Users/adrie/AppData/Local/Temp/coelo-base-check",
+      "resultado_na_base": "10 PASS / 23 FAIL nos mesmos tres arquivos de golden",
+      "comparacao": "as duas listas nominais foram extraidas dos marcadores [E] dos logs e comparadas com diff: conjuntos IDENTICOS, teste por teste. Nao e 'o mesmo numero de falhas', sao as mesmas 23.",
+      "por_que_importa": "a entrega inteira depende dessa frase: se alguma das 23 fosse minha, o recorte estaria entregando uma regressao. Estava afirmada a noite toda e so agora foi medida.",
+      "commit": "a6decef0e"
+    }
   },
   "regression_check": {
     "method": "flutter test --no-pub --reporter json test/app/router, comparado com worktree destacada em d784462c1",
@@ -295,7 +364,11 @@
     "held": [
       "plataforma comum de midia: Media Gateway, catalogo de ativos R2, mediaPicker/embedded"
     ],
-    "respected": "router/shell e migrations sao do coordenador; lote b10f48d1e toca router e composition root e foi entregue como commit pequeno isolado para revisao"
+    "respected": "router/shell e migrations sao do coordenador; lote b10f48d1e toca router e composition root e foi entregue como commit pequeno isolado para revisao",
+    "consumidores_verificados": {
+      "formularios-cuidado": "question-image I021 NAO depende de mim. O caminho de midia de Formularios ja existe aplicado e e deles: public.form_prepare_asset_upload(uuid,bigint,jsonb) com grant to authenticated em 20260813155121, form_worker_finalize_asset em 20260813155124, e a Edge Function form-media que baixa o objeto, confere MIME real com sniffImageMime e chama o finalize. A pergunta deles e de projeto: usar o caminho de Formularios que funciona, ou esperar o catalogo unificado ganhar interface.",
+      "chat-comunicacoes": "bloqueio real, natureza precisada. O candidato 20260909215000 JA acrescenta chat-attachment ao dominio de catalog_kind e define a forma bem-formada da linha. Falta o candidato ser aplicado, que depende do Owner, e uma interface publica de escrita e leitura do catalogo, que NAO existe para nenhum kind: 20260908160000 cria coluna, tabelas e guardas em app_private, sem RPC publica e sem grant. Posso preparar essa interface como pacote revisavel; e SQL novo, entra na fila do coordenador e nao pode ser aplicada esta noite."
+    }
   },
   "blocker": null,
   "findings_for_coordinator": [
@@ -313,10 +386,10 @@
     "RESULTADO NEGATIVO, verificado e nao presumido: o padrao _Metric que estoura com texto ampliado NAO reproduz em principal_profile_happens_tab. A suite responsiva existente ja cobre 200 por cento em 375 e 1440 e passa; forcei larguras 320, 360 e 375 cruzadas com escalas 1.5, 2.0 e 3.0 e rotulos de seis digitos, nove combinacoes, todas sem excecao de layout. A diferenca provavel e estrutural: em Planos o _Metric vive num cartao de grid com mainAxisExtent fixo, aqui o Wrap esta num cartao de altura livre. Nao apliquei Flexible: seria mudanca especulativa num arquivo de principal_profile, territorio de perfil-para-voce, e criaria dois escritores no mesmo arquivo sem necessidade.",
     "As nove RPCs de Circulares que o caminho Principal chama estao todas definidas em packages/coelo_database/supabase/migrations/20260821190000_circulars_production.sql e todas no grant execute to authenticated apos um revoke all; o arquivo tem 28 funcoes security definer e 29 set search_path vazio. get_visible_circular checa capacidade por circular_actor com circulars.circulars.read no escopo institution/unit/group, checa audiencia, barra nao publicada e mascara a negacao como circular_not_found. Isso prova DEFINICAO local, nao aplicacao remota, que nao verifiquei e nao tenho autorizacao para verificar. A lacuna do inventario deve ser reescrita de 'RPC ausente no gateway v2' para 'definida localmente, aplicacao remota nao verificada', porque a nota original vale para o gateway administrativo v2 e nao para o caminho Principal.",
     "Severidade baixa, para decisao e nao para correcao minha: public.authorize_circular_media_read esta no grant to authenticated e devolve bucket_id e object_key. Ela precisa ser chamavel pelo usuario porque a Edge Function usa o cliente do usuario para autorizar antes de assinar. Nao concede acesso, ja que o bucket e privado e sem assinatura nada e lido, mas contraria a regra da ADR 0032 de nao expor bucket, chave ou provedor ao cliente. A correcao seria devolver um identificador opaco, o que muda o contrato entre a RPC e a Edge Function e entra na fila SQL com autorizacao nominal.",
-    "CORRECAO DE ENQUADRAMENTO DO MEU PROPRIO LOTE 3, importante antes de voce registrar avanco: a rota /principal-moments que eu compus chama list_visible_moments, e essa RPC NAO existe na base integrada. Conferi as 180 migrations rastreadas em packages/coelo_database/migrations/ na branch dev e as 17 de supabase/migrations/: zero ocorrencias de list_visible_moments, withdraw_moment e withdraw_happens_post. As tres so existem nos candidatos autorais de L01, que continuam fora de dev. O lado cliente esta fechado e o estado de falha e honesto, mas a acao nao completa em producao. Isto e exatamente a classe do caso de Suporte que voce descreveu, e eu prefiro apontar no meu proprio trabalho antes que vire promocao indevida.",
+    "CORRECAO DE ENQUADRAMENTO DO MEU PROPRIO LOTE 3, importante antes de voce registrar avanco: a rota /principal-moments que eu compus chama list_visible_moments, e essa RPC NAO existe na base integrada. Conferi as 180 migrations rastreadas em packages/coelo_database/migrations/ na branch dev e as 17 de supabase/migrations/: zero ocorrencias de list_visible_moments, withdraw_moment e withdraw_happens_post. As tres so existem nos candidatos autorais de L01, que continuam fora de dev. O lado cliente esta fechado e o estado de falha e honesto, mas a acao nao completa em producao. Isto e exatamente a classe do caso de Suporte que voce descreveu, e eu prefiro apontar no meu proprio trabalho antes que vire promocao indevida. RESSALVA POSTERIOR, do reteste dos meus proprios bloqueios: a parte sobre PRODUCAO e inferencia. O verificado e a ausencia no repositorio; o repositorio nao espelha producao, entao o registro correto e ausencia de evidencia, nao afirmacao de comportamento produtivo.",
     "O defeito de withdraw_happens_post era maior do que eu havia relatado: alem da mensagem, a CLASSE de erro diferia (no_data_found para inexistente, insufficient_privilege para alheio). Mensagem unificada sozinha deixaria o SQLSTATE distinguindo os dois casos. A correcao unifica os dois eixos.",
     "VIOLACAO VIVA DA ADR 0032 NO CLIENTE, independente do R2: apps/superadmin/lib/features/principal_happens_publication/data/supabase_happens_publication_repository.dart fixa o nome do bucket coelo-happens-mvp e sobe os bytes com uploadBinaryToSignedUrl. O cliente nao deveria conhecer o bucket. A correcao e o cliente obedecer ao provedor anunciado pelo servidor, no formato que CircularMediaUploadIntent ja tem. E do meu recorte; aguardo o coordenador dizer se entra no mesmo pacote retido.",
-    "O ramo R2 de happens-media esta RETIDO e nao pode ser lido como midia do Acontece no R2: prepare_happens_media_upload ainda nao devolve storage_provider, entao em producao todo descritor cai no ramo legado e o comportamento nao muda.",
+    "O ramo R2 de happens-media esta RETIDO e nao pode ser lido como midia do Acontece no R2: prepare_happens_media_upload ainda nao devolve storage_provider, entao em producao todo descritor cai no ramo legado e o comportamento nao muda. RESSALVA POSTERIOR, do reteste dos meus proprios bloqueios: a parte sobre PRODUCAO e inferencia. O verificado e a ausencia no repositorio; o repositorio nao espelha producao, entao o registro correto e ausencia de evidencia, nao afirmacao de comportamento produtivo.",
     "now-media tinha um obstaculo extra que happens-media nao tinha: ela fixava o nome do bucket legado E recusava qualquer descritor que nao apontasse para ele, o que por si so bloquearia um descritor R2. A trava agora guarda apenas o ramo legado; o ramo R2 resolve o bucket pelo descritor emitido pelo servidor.",
     "Mapeamento de Circulares administrativas, verificado por leitura: o gateway v2 tem SETE funcoes e nenhuma de exclusao. Logo circulars.delete nao esta apenas sem RPC, esta ausente nas tres camadas (gateway, repositorio e tela). Proponho blocked-decision, nao pending-verification, porque fechar exige decidir se a exclusao logica administrativa entra no MVP.",
     "Ainda sobre o inventario: a nota de que save_circular_response_draft e submit_circular_response estao ausentes do gateway v2 e verdadeira e NAO e lacuna. Responder Circular e acao do Principal, e o caminho Principal tem as duas RPCs definidas e concedidas a authenticated. Sugiro remover essa linha da lacuna para nao virar trabalho fantasma.",
@@ -336,9 +409,19 @@
     "DEFEITO CROSS-GRUPO NAO CORRIGIDO, aguardando decisao de copia: seis mensagens em tres superficies PRODUTIVAS do Principal afirmam contexto de previa. principal_happens_preview_page 281, 1323 e 1661; principal_now_preview_page 327 e 343; principal_moments_preview_page 242. Na tela real, tocar em responder no Agora informa que a resposta esta indisponivel \"nesta previa\". O repositorio ja se contradiz: principal_profile_route_page_test exige que a frase NAO apareca na rota real e principal_for_you_route_responsive_test espera que apareca. Nao corrigi porque sao quatro testes travando as frases exatas e um deles e de outro grupo; corrigir so uma superficie troca defeito por inconsistencia.",
     "VARREDURA DE VAZAMENTO DE TEXTO DO SERVIDOR: limpa. Nenhuma tela do recorte renderiza mensagem vinda do backend. CircularInvalid carrega error.message como codigo, mas a unica leitura de .code na apresentacao compara com a constante media_upload_expired para escolher entre duas frases fixas.",
     "AUTO-REVISAO ENCONTROU UM DEFEITO MEU que nenhum teste pegava: o lote 10 deixava o diretorio em carregamento ate a ultima pagina. Corrigido em 6e2a21287. O metodo foi reler a propria entrega perguntando \"quantas idas ao servidor a minha mudanca acrescentou antes do primeiro pixel\", pergunta que eu nao tinha feito ao escrever.",
-    "CUSTOS INTRODUZIDOS, declarados no relatorio para quem mantiver depois: moments-media passou a ler os bytes de volta no finalize, limitado ao tamanho esperado com teto de 25 MB, que e o preco de conferir MIME real e o mesmo que as outras tres superficies ja pagavam; e o diretorio de Circulares faz ate 10 leituras por abertura, contra 1 que escondia o resto."
+    "CUSTOS INTRODUZIDOS, declarados no relatorio para quem mantiver depois: moments-media passou a ler os bytes de volta no finalize, limitado ao tamanho esperado com teto de 25 MB, que e o preco de conferir MIME real e o mesmo que as outras tres superficies ja pagavam; e o diretorio de Circulares faz ate 10 leituras por abertura, contra 1 que escondia o resto.",
+    "ACESSIBILIDADE, defeito meu: eu tinha envolvido o aviso de truncamento do diretorio numa regiao viva e deixado o aviso de conflito de resposta sem. O segundo aparece logo depois de um envio recusado, que e quando quem usa leitor de tela mais precisa ser avisado. Corrigido em f989b5063 com teste que trava a regiao viva.",
+    "PROCESSO, erro meu: commitei o teste desse aviso com uma API depreciada sem ler a linha do analyzer que eu mesmo tinha acabado de rodar no mesmo comando. Corrigido em 58d02bac4.",
+    "A varredura AMPLIADA para metodos publicos de implementacao, e nao so de interface, foi rodada: alem do delete ja corrigido, so apareceu closeResponses em tres implementacoes, que ja estava mapeado. Nenhum orfao novo.",
+    "VERIFICACAO NA BASE INTEGRADA, feita agora e nao presumida: a correcao de seguranca sobreviveu intacta ao merge. Em origin/dev, 20260909213000 levanta insufficient_privilege:happens_permission_denied tanto para post inexistente quanto para post alheio, as unicas mencoes a post_not_found sao o cabecalho que explica a historia, e a assercao dedicada esta na suite. Conferidas tambem a rota do leitor de Circular, a composicao do feed de Momentos, o ramo R2 de happens-media e a conferencia de bytes de moments-media: todas presentes.",
+    "VARREDURA DE TIPOS DE DOMINIO: 5 falsos positivos em 7 na primeira versao, porque ela contava so uso em OUTRO arquivo. Refeita contando uso em qualquer lugar menos a linha de declaracao. Sobraram CircularRevisionStatus, com zero usos em lib e test, e as duas classes Unavailable de Circular, que existem como fallback honesto e nao sao consumidas. Nada removido.",
+    "NOTA DE PROJETO sobre escolha minha: UnavailableCircularRepository existe para o caso que eu tratei com parametro anulavel na rota do leitor. As duas abordagens falham fechado; a minha falha ANTES de renderizar, porque a rota distingue nao-composto e devolve indisponibilidade sem montar a pagina, e e consistente com os outros repositorios Principal do router, que ja sao anulaveis. Registro para nao parecer que ignorei uma convencao existente.",
+    "OBRIGACAO DE ESCRITOR DA PLATAFORMA, cumprida: li os JSONs dos dois grupos que dependem da minha reserva. formularios-cuidado nao esta bloqueado por mim, porque o contrato de midia de Formularios ja existe aplicado e concedido. chat-comunicacoes esta bloqueado, mas por aplicacao de candidato e por ausencia de interface publica de escrita no catalogo unificado, que nao existe para kind nenhum.",
+    "RETESTE DOS MEUS PROPRIOS BLOQUEIOS, conforme alvo que voce deu: dos cinco, tres confirmados, um ja tinha sido corrigido antes, e UM era mais forte do que a evidencia permitia. Eu afirmava que tres acoes nao completam em producao; o que verifiquei e que as RPCs nao aparecem em nenhum arquivo do repositorio exceto os candidatos. O repositorio nao espelha producao — a prova esta na propria cadeia quebrada — entao a afirmacao correta e que nao ha evidencia de que existam e nao ha como verificar daqui.",
+    "DEZ GOLDENS APROVADOS guardam PrincipalCircularComposerPage, a pagina que nenhuma rota constroi, em principal_circular_golden_test, nas duas luminancias e em quatro larguras. Junto com as abas duplicadas, que tambem tem golden e tambem nao sao consumidas, isso diz que ter golden NAO e evidencia de que a superficie exista para o usuario. Pode valer para o censo de goldens: parte da cobertura visual pode estar guardando superficies inalcancaveis.",
+    "Corrigi uma ambiguidade minha no documento do Owner: eu escrevera \"nao ha golden do compositor\", verdade apenas do compositor ADMINISTRATIVO, que e o roteado. Verificado olhando um diretorio so."
   ],
-  "next_step": "Revisao final dos documentos de entrega; aguardando decisoes pendentes.",
+  "next_step": "Congelar lotes as 04:40, publicar a pre-entrega as 04:50 e a entrega final as 05:00. Nenhuma frente nova.",
   "wip": [],
   "artifacts": [
     "worktree temporaria de verificacao de base em %TEMP%/coelo-base-check (detached d784462c1), sera removida antes da entrega"
@@ -370,7 +453,7 @@
       "camada": "frontend",
       "estado_atual": "pending-verification",
       "estado_proposto": "pending-verification",
-      "delta": "A rota normal /principal-moments deixou de responder composicao indisponivel: consome PrincipalMomentsFeedRepository sob o escopo real do runtime dentro do shell do Superadmin, expoe o contrato de retirada autoral, recarrega pela revisao de invalidacao de autorizacao e por sinal de publicacao confirmada, e nunca cai na fixture de demonstracao. Abrir/fechar, deep link, foco e responsividade seguem abertos. DEPENDENCIA MATERIAL, verificada por mim depois de publicar o lote: a RPC list_visible_moments NAO existe em nenhuma migration da base integrada. Conferi as 180 migrations rastreadas em packages/coelo_database/migrations/ na branch dev e as 17 de supabase/migrations/, e ela so existe no candidato autoral 20260909136000_moments_feed_and_withdrawal_v1.sql, que continua nao integrado. Portanto a rota que compus fecha o lado cliente, mas em producao ela falha fechada no estado honesto de indisponibilidade ate a migration ser aplicada. NAO leia este delta como 'Momentos funciona ponta a ponta'.",
+      "delta": "A rota normal /principal-moments deixou de responder composicao indisponivel: consome PrincipalMomentsFeedRepository sob o escopo real do runtime dentro do shell do Superadmin, expoe o contrato de retirada autoral, recarrega pela revisao de invalidacao de autorizacao e por sinal de publicacao confirmada, e nunca cai na fixture de demonstracao. Abrir/fechar, deep link, foco e responsividade seguem abertos. DEPENDENCIA MATERIAL, verificada por mim depois de publicar o lote: a RPC list_visible_moments NAO existe em nenhuma migration da base integrada. Conferi as 180 migrations rastreadas em packages/coelo_database/migrations/ na branch dev e as 17 de supabase/migrations/, e ela so existe no candidato autoral 20260909136000_moments_feed_and_withdrawal_v1.sql, que continua nao integrado. Portanto a rota que compus fecha o lado cliente, mas em producao ela falha fechada no estado honesto de indisponibilidade ate a migration ser aplicada. NAO leia este delta como 'Momentos funciona ponta a ponta'. RESSALVA ACRESCENTADA AO RETESTAR O PROPRIO BLOQUEIO: afirmar comportamento em PRODUCAO e inferencia. O verificado e a ausencia da RPC em todo arquivo de migration do repositorio, exceto candidatos. O repositorio comprovadamente nao espelha producao, entao o registro correto e ausencia de evidencia e impossibilidade de verificar daqui.",
       "evidencia": "commit 57006c7a7; apps/superadmin/test/app/router/principal_moments_feed_route_test.dart (4 PASS, cobrindo indisponibilidade sem repositorio, negacao sem sessao, escopo real institution/unit/group e releitura por revisao de autorizacao); principal_moments_publication_route_test.dart sem regressao (4 PASS); flutter analyze --no-pub lib sem issues; 2026-09-09, local"
     },
     {
@@ -394,7 +477,7 @@
       "camada": "frontend",
       "estado_atual": "pending-verification",
       "estado_proposto": "pending-verification",
-      "delta": "A retirada autoral de Momento entrou na base integrada como contrato separado do feed de leitura, renderizada somente para momentos que o servidor marcou como retiravel, e agora chega a rota normal pela composicao. O contrato withdraw_moment no backend permanece candidato nao aplicado. A mesma dependencia vale aqui: withdraw_moment nao existe na base integrada, so no candidato 20260909136000, entao a afordancia chega ao cliente mas a acao nao completa em producao.",
+      "delta": "A retirada autoral de Momento entrou na base integrada como contrato separado do feed de leitura, renderizada somente para momentos que o servidor marcou como retiravel, e agora chega a rota normal pela composicao. O contrato withdraw_moment no backend permanece candidato nao aplicado. A mesma dependencia vale aqui: withdraw_moment nao existe na base integrada, so no candidato 20260909136000, entao a afordancia chega ao cliente mas a acao nao completa em producao. CORRECAO DE FORCA DA AFIRMACAO, feita ao retestar meus proprios bloqueios: dizer que a acao NAO completa em producao e inferencia. O verificado e que a RPC nao aparece em nenhum arquivo de migration do repositorio exceto os candidatos autorais; o repositorio comprovadamente nao espelha producao, entao o correto e registrar ausencia de evidencia e impossibilidade de verificar daqui, nao falha em producao.",
       "evidencia": "commits 1e39b2fcf (integrado, merge d502350ce) e 57006c7a7; principal_moments_withdrawal_test.dart; principal_moments_feed_route_test.dart prova a passagem do contrato pela rota; 2026-09-09, local"
     },
     {
@@ -426,7 +509,7 @@
       "camada": "backend",
       "estado_atual": "pending-verification",
       "estado_proposto": "pending-verification",
-      "delta": "A Edge Function circular-media deixou de criar todo objeto novo no bucket legado do Supabase Storage: ela ramifica pelo storage_provider do descritor e usa o cliente R2 compartilhado, com PUT e GET assinados de vida curta, releitura dos bytes para conferir a assinatura MIME real, falha de transporte opaca e nenhuma credencial em log ou resposta. O bucket legado continua legivel e apagavel para preservar o acervo publicado. Implantacao remota e prova em producao continuam pendentes de autorizacao nominal.",
+      "delta": "A Edge Function circular-media deixou de criar todo objeto novo no bucket legado do Supabase Storage: ela ramifica pelo storage_provider do descritor e usa o cliente R2 compartilhado, com PUT e GET assinados de vida curta, releitura dos bytes para conferir a assinatura MIME real, falha de transporte opaca e nenhuma credencial em log ou resposta. O bucket legado continua legivel e apagavel para preservar o acervo publicado. Implantacao remota e prova em producao continuam pendentes de autorizacao nominal. RESSALVA ACRESCENTADA AO RETESTAR O PROPRIO BLOQUEIO: afirmar comportamento em PRODUCAO e inferencia. O verificado e a ausencia da RPC em todo arquivo de migration do repositorio, exceto candidatos. O repositorio comprovadamente nao espelha producao, entao o registro correto e ausencia de evidencia e impossibilidade de verificar daqui.",
       "evidencia": "commit 04acb3e7b; deno test --config deno.json --allow-all packages/coelo_database/supabase/functions/circular-media/index_test.ts, 25 PASS e 0 FAIL, incluindo os casos que provam que o segredo e as credenciais do bucket nunca saem, que um R2 nao configurado e recusado antes de alcancar o objeto e que a falha de transporte e opaca; 2026-09-09, local"
     },
     {
@@ -589,5 +672,101 @@
       "delta": "Complemento e correcao de um defeito MEU do lote anterior: seguir o cursor corrigiu o acervo escondido, mas deixava a tela em carregamento ate a ultima pagina, o que numa instituicao grande sao ate dez idas sequenciais ao servidor antes do primeiro item. A lista passou a aparecer na primeira pagina e a crescer nas seguintes, e a condicao do aviso de truncamento foi ajustada para nao marcar truncado quando o servidor ja disse que acabou.",
       "evidencia": "commit 6e2a21287; production_circular_directory_paging_test.dart com 4 PASS, incluindo um caso que retem as leituras a partir da segunda e exige que a tela ja esteja em conteudo com os 20 primeiros itens; suite de circulars 56 PASS com as 2 falhas de golden pre-existentes; 2026-09-10, local"
     }
-  ]
+  ],
+  "branches_extra": [
+    {
+      "branch": "work/etapa2-noturna-copia-previa",
+      "head": "80f160599",
+      "base": "origin/dev",
+      "state": "PREPARADO, NAO MESCLAR sem decisao do Owner",
+      "conteudo": "corrige as seis mensagens que declaram previa nas rotas produtivas de happens, now e moments, mais os tres testes que travavam as frases; NAO cobre principal_for_you, de outra frente",
+      "verificacao": "analyze limpo nas tres features; 54 PASS e 0 FAIL nas suites que travavam os textos",
+      "merge_conferido": "merge de teste da branch principal do grupo sobre esta branch: automatico e sem conflito, verificado e nao presumido"
+    }
+  ],
+  "documentos": [
+    {
+      "arquivo": "docs/reviews/etapa-2-operacao/reports/NOTURNA-entrega-publicacoes-midia.md",
+      "conteudo": "lotes, defeitos por gravidade, estado das 23 acoes, o que nao fechou, custos introduzidos, nove dimensoes varridas, erros meus"
+    },
+    {
+      "arquivo": "docs/reviews/etapa-2-operacao/reports/NOTURNA-decisao-owner-circulares-acoes-ausentes.md",
+      "conteudo": "OITO decisoes para o Owner com o caminho de cada uma mapeado"
+    },
+    {
+      "arquivo": "docs/reviews/etapa-2-operacao/reports/NOTURNA-revisao-candidatos-sql-publicacoes-midia.md",
+      "conteudo": "revisao dos seis candidatos SQL: um defeito de vazamento de existencia e uma lacuna de prova"
+    },
+    {
+      "arquivo": "docs/reviews/etapa-2-operacao/reports/NOTURNA-pacote-catalogo-midia.md",
+      "conteudo": "desenho revisavel da interface publica que falta no catalogo de midia privada"
+    },
+    {
+      "arquivo": "NOTURNA-patch-copia-previa.md na branch work/etapa2-noturna-copia-previa",
+      "conteudo": "patch preparado e NAO mesclado das seis mensagens que declaram previa em rota produtiva"
+    }
+  ],
+  "retesteDosMeusBloqueios": {
+    "motivo": "alvo dado pelo coordenador: aplicar aos meus proprios bloqueios o rigor que usei nos dos outros",
+    "resultados": [
+      {
+        "bloqueio": "withdraw_happens_post, list_visible_moments e withdraw_moment ausentes, logo tres acoes nao completam em producao",
+        "veredito": "PARCIALMENTE FALSO como afirmado",
+        "detalhe": "o que verifiquei e que as tres nao aparecem em NENHUM arquivo de migration do repositorio, nem nas 180 rastreadas de packages/coelo_database/migrations/ nem nas 17 de supabase/migrations/, exceto nos candidatos autorais. Dizer que nao completam em PRODUCAO e inferencia: o repositorio nao espelha producao, e a prova e app_private.unit_import_source_attestations, referenciada por uma migration, criada por nenhuma, e evidentemente presente em producao. Se producao as tiver, as tres acoes podem funcionar. A acao necessaria e a mesma nos dois casos, mas o rastreador nao deve registrar falha em producao como fato."
+      },
+      {
+        "bloqueio": "ramo R2 de happens-media e now-media inerte porque a RPC nao devolve storage_provider",
+        "veredito": "CONFIRMADO",
+        "detalhe": "reconferido em origin/dev: nas migrations de happens e now a unica ocorrencia de storage_provider e a definicao da coluna; nenhum candidato expoe o campo no envelope de preparo"
+      },
+      {
+        "bloqueio": "pgTAP nao executavel porque a cadeia canonica nao replica",
+        "veredito": "CONFIRMADO",
+        "detalhe": "medido executando o harness: falha na 53a migration com 42P01"
+      },
+      {
+        "bloqueio": "circulars.close inerte e circulars.schedule desabilitado",
+        "veredito": "CONFIRMADO",
+        "detalhe": "verificavel inteiramente no cliente, por leitura de codigo, sem depender de producao"
+      },
+      {
+        "bloqueio": "circulars.delete ausente nas tres camadas",
+        "veredito": "JA CORRIGIDO ANTES",
+        "detalhe": "existe metodo de repositorio fora da interface; corrigido em 76fb0d76d"
+      }
+    ]
+  },
+  "verificacaoNaBaseIntegrada": {
+    "dev": "a3cb7544b",
+    "quando": "2026-09-10T02:00-03:00",
+    "metodo": "git diff da minha HEAD contra origin/dev restrito aos diretorios do recorte, e nao apenas grep de marcadores",
+    "resultado": "o unico arquivo que diverge e o router compartilhado, e a divergencia e de OUTRAS frentes (chat com o parametro from, meal plan com tenant autorizado, grupos com repository). Nenhuma linha minha foi removida na integracao.",
+    "marcadores_presentes": [
+      "principalHappensCircular (2 arquivos)",
+      "momentsFeedRefreshSignal (1)",
+      "responseSummarySource (2)",
+      "principalMomentsFeedRepository consumido tambem pelo Perfil"
+    ],
+    "efeito_colateral_positivo": "a frente perfil-para-voce passou a consumir principalMomentsFeedRepository, a mesma instancia que /principal-moments usa, em vez de abrir uma segunda fonte para o mesmo feed",
+    "commits_pendentes_de_integracao": [
+      "53bfabff9",
+      "a6decef0e"
+    ],
+    "ja_integrados": [
+      "05537c3b3",
+      "f041b5291",
+      "d6aa4a4fc",
+      "43319b448",
+      "6357d7e4c",
+      "8ff72f722"
+    ],
+    "ressalva_de_entrega": "a versao do relatorio de entrega que esta em dev ainda e anterior a reestruturacao do documento de decisao e a esta medicao. Os tres commits pendentes sao TODOS de documentacao; nenhum toca codigo, migration ou edge function.",
+    "preflight_de_merge": {
+      "quando": "2026-09-10T02:25-03:00",
+      "metodo": "merge --no-commit --no-ff da minha branch sobre origin/dev a3cb7544b, num checkout separado, depois abortado",
+      "resultado": "merge automatico limpo, zero conflitos",
+      "alcance": "um unico arquivo muda: reports/NOTURNA-entrega-publicacoes-midia.md, +24/-9. Nenhum arquivo de codigo, migration, edge function ou rota compartilhada e tocado.",
+      "para_o_coordenador": "os dois commits pendentes podem ser integrados sem revisao de conflito e sem risco de regressao; sao documentacao do proprio relatorio de entrega."
+    }
+  }
 }

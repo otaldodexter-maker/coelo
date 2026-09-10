@@ -1,6 +1,6 @@
 {
-  "revision": 12,
-  "updated_at": "2026-09-10T00:47:00-03:00",
+  "revision": 15,
+  "updated_at": "2026-09-10T02:43:00-03:00",
   "clock_note": "Hora conferida com date: local 23:59 de 09/09 no ultimo commit; esta revisao escrita por volta de 00:07 de 10/09.",
   "group": "alunos-rotina",
   "task": "/root",
@@ -9,7 +9,7 @@
   "coordinator": "Claude (Coordenacao e Integracao)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-alunos-rotina",
   "branch": "work/etapa2-noturna-alunos-rotina",
-  "head": "d8ac0ed9c",
+  "head": "95b11afd4",
   "upstream": "origin/work/etapa2-noturna-alunos-rotina",
   "divergence": "0/0",
   "workingTree": "limpo",
@@ -181,5 +181,130 @@
     "no": "label OC, tooltip Abrir menu do usuario, 52.0 x 44.0, dentro de _OverlayPortalState, quando o minimo e 48x48.",
     "alcance": "Demonstrado em DUAS telas independentes, safety e invites, medidas por caminhos diferentes. Nao e defeito de nenhuma das duas: e do SuperadminShell e aparece em qualquer tela medida a 375.",
     "decisao": "Coordenador decidiu nao mexer nesta rodada: sao 4 pixels num controle rotulado e alcancavel, e subir move o realce do InkWell em toda tela do app com seis frentes integrando. Vai ao Owner medido, com o alcance nomeado, e com a nota de que a correcao e de uma linha no shell e nao de N linhas em N telas."
+  },
+  "lote_24": {
+    "sha": "b6767f4e1",
+    "assunto": "createCall passou a derivar a chave de idempotencia da chamada em vez do instante da tentativa.",
+    "por_que_mudei_de_posicao": "Eu tinha deixado os quatro sitios de Assiduidade para o pacote de OQ-040, argumentando que a forma da chave e parte do contrato que ainda nao existe. Isso vale para a FORMA, nao para a RETENCAO. O chat-comunicacoes viu o que eu nao vi: createCall e a unica escrita viva sem expectedVersion, entao e a unica onde repetir nao volta como conflito. Nos outros tres a repeticao falha com conflito, entao o defeito e teorico ate OQ-040 e eles continuam onde eu os deixei.",
+    "escolha_tecnica": "Derivar em vez de reter com ??=. Chave retida vive num objeto que pode ser reconstruido, e reconstruir e exatamente o que acontece entre a falha e a nova tentativa. Derivada sobrevive a rebuild de pagina, troca de rota e recriacao do repositorio.",
+    "cobertura": "Duas direcoes: mesmo draft repete a chave; outra turma ou outro dia mantem a sua. Sem a segunda, uma correcao que colapsasse tudo passaria no teste do retry e faria duas chamadas legitimas virarem uma.",
+    "promocao": "NENHUMA. As RPCs do ciclo de chamada continuam inexistentes em migration viva e o fluxo segue fail-closed por OQ-040."
+  },
+  "armadilhas_nomeadas": [
+    {
+      "onde": "apps/superadmin/lib/features/attendance/attendance_controller.dart",
+      "o_que": "147 linhas com tratamento de comando, mapeamento de conflito de versao e de nao autorizado, NAO referenciadas em nenhum lugar de lib/. Quem roda em producao e attendance_pages.dart, que reimplementa as mesmas responsabilidades inline.",
+      "verificacao_minha": "Conferi que a pagina viva trata as TRES excecoes: Unauthorized nas linhas 442 e 776, VersionConflict na 867, Unavailable na 1103 e 1122. Entao o controlador e redundancia de manutencao e NAO lacuna de comportamento.",
+      "nao_corrigido": "Remover 147 linhas de madrugada num arquivo que nao escrevi, sem saber se e morto ou preparado, e a mesma decisao que o coordenador negou a outra frente duas vezes hoje. O custo real e de manutencao futura: quem for corrigir Assiduidade abre o arquivo com cara de dono da regra e a correcao nao muda nada em producao.",
+      "ressalva_honesta": "Sao 2 testes, nao 61 como no caso do Suporte; a cobertura nao esta inflada."
+    },
+    {
+      "onde": "apps/superadmin/lib/features/people/presentation/person_directory_page.dart:617",
+      "o_que": "IntrinsicHeight em volta de um Row de cartoes, a forma EXATA que quebrou child_safety.",
+      "por_que_nao_quebra_hoje": "O cartao de Pessoas usa _PersonStatusIndicator proprio, com MouseRegion e TweenAnimationBuilder, e nao o indicador canonico com LayoutBuilder. Confirmado empiricamente: 220 passando, as duas falhas eram golden.",
+      "nao_corrigido": "Esta verde hoje; mexer sem defeito e risco sem ganho. No dia em que padronizarem o indicador, quebra igual."
+    },
+    {
+      "onde": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart e lib/app/superadmin_app.dart",
+      "o_que": "SuperadminAuthScope declara studentTrackingRepository, mas SuperadminApp NAO tem esse parametro e main.dart nao o repassa. O campo existe e ninguem le.",
+      "verificado_em": "Reconferido na base integrada de 10/09 as 01:00: continua assim.",
+      "nao_corrigido": "Composition root e reserva do coordenador, e a correcao nao muda comportamento nenhum hoje, porque o valor e Unavailable dos dois lados. Fica nomeado para quem for implementar o backend de acompanhamento e for configurar o authScope esperando efeito."
+    }
+  ],
+  "schema_nao_reconstruivel": {
+    "fato_recebido": "Medicao de outra frente: o SQL versionado chama 605 objetos de app_private e cria 527 funcoes mais 63 tabelas; 40 objetos sao chamados e nunca criados. Routine e student_tracking estao entre os dominios atingidos, com nove e quatro objetos nominalmente listados.",
+    "o_que_nao_significa": "Nao invalida a entrega desta noite e nao ha acao minha para corrigir. Os objetos existem no banco remoto; o que nao existe e o caminho para recriar aquele banco.",
+    "o_que_significa_para_o_meu_registro": "CONFIRMA, com causa exata, o bloqueio de E2E que eu venho reportando desde a revisao 2. Eu atribuia a ausencia de implementacao de producao de RoutineRepository e StudentTrackingRepository; a causa e mais funda, o schema que essas rotas leriam nao esta em conjunto aplicavel nenhum. Nao muda a conclusao, melhora a explicacao.",
+    "coerencia": "Em nenhuma das treze revisoes propus promover acao a verified, sempre pelas tres perguntas de composicao produtiva. Continua correto e agora com um motivo a mais.",
+    "boa_noticia": "child_safety, onde mais trabalhei nesta segunda metade, esta versionado corretamente. O que entreguei la nao carrega esse bloqueio.",
+    "ressalvas_do_metodo": "40 e contagem de objetos e nao de defeitos; cinco foram conferidos individualmente e os outros trinta e cinco vem do metodo; o metodo nao distingue nunca existiu de existe no remoto e nunca foi versionado."
+  },
+  "bloqueios_retestados": {
+    "quando": "2026-09-10T02:32 e 02:43 sobre a base integrada, com comando por linha. Cinco das seis retestadas hoje; a sexta (cache U1) nao e testavel por mim e e decisao registrada do coordenador. NENHUMA linha herdada sem reteste.",
+    "linhas": [
+      {
+        "id": "B1",
+        "acoes": [
+          "attendance.create",
+          "attendance.mark",
+          "attendance.correct",
+          "attendance.finish"
+        ],
+        "camada": "BACKEND, e mais fundo: SQL versionado",
+        "afirmacao": "As RPCs superadmin_attendance_* que o cliente chama nao existem em migration viva.",
+        "teste": "grep -rl superadmin_attendance_create_call packages/coelo_database/migrations/ retorna ZERO em 2026-09-10T02:32.",
+        "categoria_corrigida": "Eu classificava como bloqueio por OQ-040. OQ-040 continua sendo a decisao que falta, mas a camada e SQL versionado ausente e nao decisao de produto pendente sobre cliente. Owner deve ler como trabalho de banco, nao de front-end."
+      },
+      {
+        "id": "B2",
+        "acoes": [
+          "daily-routine.publish"
+        ],
+        "camada": "CONTRATO DE UX, ausente",
+        "afirmacao": "A spec 021 nao cobre Lancamentos.",
+        "teste": "grep -ci lancamento em specs/021-superadmin-daily-routine-prototype.md retorna ZERO em 2026-09-10T02:32.",
+        "categoria": "Ausencia de contrato aprovado, nao pendencia de implementacao. O comando publishLaunch existe no contrato e no repositorio dev; o front-end nao existe e nao deve ser inventado."
+      },
+      {
+        "id": "B3",
+        "acoes": [
+          "daily-routine.list",
+          "daily-routine.create",
+          "daily-routine.edit",
+          "daily-routine.apply",
+          "daily-routine.publish"
+        ],
+        "camada": "DADOS: sem implementacao de producao E schema nao reconstruivel",
+        "afirmacao": "Nenhuma classe implementa RoutineRepository fora de Development e Unavailable.",
+        "teste": "grep -rn \"implements RoutineRepository\" excluindo Development e Unavailable retorna ZERO em 2026-09-10T02:32.",
+        "categoria_corrigida": "Eu atribuia so a ausencia de implementacao. A causa e mais funda: routine tem nove objetos app_private chamados pelo SQL versionado e nunca criados, entao nao ha base local onde exercitar a rota real. Owner deve ler como schema nao versionado, nao como repositorio a escrever."
+      },
+      {
+        "id": "B4",
+        "acoes": [
+          "students.list"
+        ],
+        "camada": "DADOS: sem implementacao de producao E schema nao reconstruivel",
+        "afirmacao": "Nenhuma classe implementa StudentTrackingRepository fora de Development e Unavailable; e main.dart nao repassa o campo que o authScope declara.",
+        "teste": "grep -rn \"implements StudentTrackingRepository\" excluindo Development e Unavailable retorna ZERO; grep -c studentTrackingRepository em main.dart retorna ZERO. Ambos em 2026-09-10T02:32.",
+        "categoria_corrigida": "Mesma correcao de camada de B3; student_tracking tem quatro objetos na mesma lista, incluindo student_tracking_can_read."
+      },
+      {
+        "id": "B5",
+        "acoes": [
+          "students.link",
+          "students.transfer",
+          "students.edit",
+          "students.revoke"
+        ],
+        "camada": "CONTRATO, ausente",
+        "afirmacao": "Os quatro comandos exigem contratos aprovados, conforme o proprio rastreador; a rota /students/:id/manage existe, e fail-closed e nao tem ponto de entrada na interface.",
+        "teste": "RETESTADO em 2026-09-10T02:43: as UNICAS referencias a studentManage em lib/ sao a propria declaracao da rota, linhas 2212 e 2213 de superadmin_router.dart; nada navega para ela. A rota renderiza SuperadminErrorScreen com kind unavailable.",
+        "marcacao": "VERIFICADA HOJE. A marca de parcialmente herdada foi removida apos o reteste."
+      },
+      {
+        "id": "B6",
+        "acoes": [
+          "cache PostgREST U1"
+        ],
+        "camada": "AMBIENTE E DECISAO",
+        "afirmacao": "Exige PostgREST ativo antes do DDL e disponibilidade sem restart; depende de stack local completa e de janela SQL serializada pelo coordenador.",
+        "teste": "NAO TESTAVEL por mim. O coordenador decidiu manter 1U por ausencia de janela nesta rodada.",
+        "marcacao": "Decisao registrada, nao herdada."
+      }
+    ]
+  },
+  "certificacoes_conferidas": {
+    "pedido": "O coordenador pediu que eu apontasse certificacoes do meu recorte cuja prova eu nao consiga localizar.",
+    "attendance.export": {
+      "estado": "PROVA LOCALIZADA E FORTE",
+      "onde": "test/features/attendance/attendance_pages_test.dart, dashboard exports are informative only",
+      "o_que_prova": "Roda em quatro combinacoes de largura, escala e tema; afirma o alvo de toque; toca Exportar CSV e Exportar XLSX; exige a mensagem Disponivel depois do MVP; e afirma ZERO exportRequests e ZERO exportPolls, ou seja nenhum job iniciado."
+    },
+    "profile-files.import_export": {
+      "estado": "CERTIFICACAO SEM PROVA, encontrada por mim e agora corrigida",
+      "detalhe": "Estavam entre os sete certificados de front-end e nao tinham NENHUM teste no app. Coberto no lote 25 para access_profiles. Para people a cobertura ja existia e e melhor que a minha, encontrada quando cancelei o lote correspondente."
+    },
+    "outras": "Nao ha outra certificacao no meu recorte cuja prova eu nao consiga apontar."
   }
 }

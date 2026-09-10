@@ -1,15 +1,15 @@
 {
-  "revision": 19,
-  "updated_at": "2026-09-10T02:35:00-03:00",
+  "revision": 24,
+  "updated_at": "2026-09-10T02:45:00-03:00",
   "group": "perfil-para-voce",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
-  "status": "executing; consolidated handoff kept current from here",
+  "status": "pre-entrega antecipada; recorte executavel esgotado, handoff completo neste arquivo",
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-perfil-para-voce",
   "branch": "work/etapa2-noturna-perfil-para-voce",
-  "head": "f5a139c10 (igual a origin/dev; todos os lotes integrados)",
-  "upstream": "origin/work/etapa2-noturna-perfil-para-voce (0/0)",
+  "head": "56638e7fa",
+  "upstream": "origin/work/etapa2-noturna-perfil-para-voce",
   "base_observed": "d784462c1",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Perfil contextual -> visualizar/editar Sobre",
@@ -344,5 +344,177 @@
     "impacto_para_outra_frente": "routine e student_tracking sao o dominio de alunos-rotina, que entregou muito em cima deles nesta rodada. A entrega nao fica invalida; a base que a sustenta e que nao e reconstruivel.",
     "leitura_positiva": "O buraco e sistemico mas NAO universal. child_safety e chat mostram que existe padrao correto na propria casa para seguir.",
     "ressalvas": "Os 40 sao objetos, nao defeitos: um helper pode servir a varios dominios. E nao distingo helper que nunca existiu de helper que existe no remoto e nunca foi versionado; para reconstruir a base da no mesmo, para responsabilidade nao da. Cinco conferidos a mao, os outros 35 vem do metodo."
-  }
+  },
+  "git": {
+    "divergencia_com_upstream": "0/0",
+    "worktree": "0 caminhos alterados",
+    "stash": "0",
+    "lotes_integrados_em_dev": "todos ate c5a6fd106; 0f2135398 (evidencia de schema/replay) publicado na branch e pendente de integracao",
+    "base_conjunta_mesclada": "origin/dev 5fa5e7f77 mesclado em de4defc1c, publicado"
+  },
+  "validacao_final_do_recorte": {
+    "base": "56638e7fa (dev 05df1ffb4 mesclado)",
+    "resultado": "P=268 F=10 B=0 S=0 U=0, estavel entre as tres ultimas bases integradas",
+    "as_dez": "exatamente principal_profile_preview_golden_test, mesma lista de NOMES",
+    "analyze": "flutter analyze lib test: No issues found (conferido em de4defc1c; base seguinte sem mudanca no recorte)"
+  },
+  "servicos_prestados_a_outras_frentes": [
+    "Alerta e diagnostico da rota principal-conversations duplicada em dev, que fazia createSuperadminRouter lancar e o app inteiro nao subir; confirmado em checkout limpo antes de alertar",
+    "Guarda de unicidade de nome de rota, adotada pelo coordenador como parte do gate de integracao",
+    "Triagem de falhas de golden em tres assinaturas, com o comando corrigido; referencia de skill publicada com autorizacao",
+    "Verificacao de sintaxe da fila SQL inteira em Postgres 17: 13 candidatos, 4 arquivos de Modelos e 2 planos, todos syntax=0",
+    "Diagnostico estrutural do E2E 0/198: replay quebrado no arquivo 48, conjunto local sem create table, 40 objetos app_private orfaos em oito dominios",
+    "Capacidade de leitura de imagem de golden, que falha por timeout em outras frentes, oferecida e disponivel"
+  ],
+  "o_que_fica_para_o_owner": [
+    "Referencia aprovada do Perfil: continua a que tem Acompanhar, Seguidores e Seguindo, ou a composicao atual passa a ser a referencia? Na rota real nenhuma dessas secoes aparece, porque nao ha projecao autorizada por tras.",
+    "Regra de visibilidade do leitor Principal no Sobre: nao existe token de leitura em profiles.about.*.",
+    "Contraste 3,75:1 do chip DESTAQUE contra o minimo AA de 4,5:1.",
+    "Contrato visual canonico de Editar perfil, incluindo onde ficam titulo e acao de fechar se a pagina receber embedded para resolver o chrome duplicado abaixo do breakpoint expanded.",
+    "Rotulo VISIVEL dos campos do Sobre: a acessibilidade ja foi entregue e nao depende de decisao.",
+    "Destino do CTA das comunicacoes: PlatformNotice nao modela URL no cliente embora platform_notices tenha cta_url.",
+    "Caminho de recriacao da base, do qual dependem homologacao e E2E."
+  ],
+  "proximo_passo": "Disponivel para conferencia externa de Git as 05:00 e para leitura de imagem sob demanda. Sem trabalho de produto executavel restante no recorte.",
+  "reteste_das_linhas_de_bloqueio": {
+    "criterio": "Cada linha chega com o teste que a sustenta NOMEADO, ou marcada como NAO TESTADA. Distingue bloqueio por AUSENCIA do objeto de bloqueio por FALTA DE AUTORIZACAO NOMINAL para verificar: sao coisas diferentes e pedem decisoes diferentes do Owner.",
+    "linhas": [
+      {
+        "linha": "principal.profile-view BE: leitura do Sobre depende de public.get_profile_about, nao aplicada",
+        "classificacao": "bloqueio por AUSENCIA, e a ausencia e certa",
+        "teste_que_sustenta": "A funcao foi escrita por mim nesta rodada como plano em packages/coelo_database/plans/; nunca foi aplicada em lugar nenhum. Sintaxe verificada em Postgres 17 local (syntax=0). Nao existe no remoto por construcao.",
+        "confianca": "alta"
+      },
+      {
+        "linha": "principal.profile-view BE: enquanto isso o caminho real e o fallback por tabela sob RLS",
+        "classificacao": "NAO TESTADO. Corrijo a minha propria redacao anterior.",
+        "teste_que_sustenta": "NENHUM. Eu disse que o fallback 'falha fechado se as tabelas estiverem deny-by-default'. Isso e uma CONDICIONAL que nunca verifiquei: nunca consultei o banco remoto. As tabelas profile_about_* existem no remoto (prova indireta: save_profile_about, que e versionada e aplicada, as le e escreve), entao o fallback pode estar funcionando normalmente hoje. Nao sei.",
+        "reclassificacao_correta": "bloqueado por FALTA DE AUTORIZACAO NOMINAL para verificar, nao por ausencia",
+        "confianca": "baixa; a linha estava mais assertiva do que a evidencia permite"
+      },
+      {
+        "linha": "principal.profile-edit BE: escrita por save_profile_about preservada",
+        "classificacao": "objeto EXISTE no remoto; falta prova, nao objeto",
+        "teste_que_sustenta": "public.save_profile_about e versionada em 20260825193131_final_review_profile_about_lint_hardening.sql e chama app_private.profile_about_can e profile_about_page_for, o que e a unica prova disponivel de que esses existem no remoto. O que falta e execucao por ator autorizado real.",
+        "reclassificacao_correta": "bloqueado por FALTA DE AUTORIZACAO NOMINAL para verificar",
+        "confianca": "alta"
+      },
+      {
+        "linha": "principal.profile-edit BE: schema profile_about nao versionado",
+        "classificacao": "bloqueio por AUSENCIA no repositorio, confirmado",
+        "teste_que_sustenta": "Busca em packages/coelo_database/migrations e supabase/migrations: zero create table profile_about_*; profile_about_can e profile_about_page_for com zero ocorrencias de 'function app_private.<nome>'. Publicado em docs/reviews/evidence/etapa-2/perfil-para-voce/2026-09-10-schema-versionado-e-replay.md.",
+        "confianca": "alta"
+      },
+      {
+        "linha": "principal.for-you BE: autorizacao ainda no diretorio administrativo",
+        "classificacao": "bloqueio por DECISAO de contrato, nao por ausencia",
+        "teste_que_sustenta": "SupabaseNoticeRepository chama superadmin_notice_directory_v2, que existe e e versionada. O objeto nao falta: o limite e que ele decide por permissao administrativa e a audiencia acaba resolvida no cliente. O pacote list_my_principal_for_you existe como plano, tem syntax=0 no PG17 e aplica inteiro no schema local.",
+        "confianca": "alta"
+      },
+      {
+        "linha": "principal.for-you FE: contraste 3,75:1 do chip DESTAQUE",
+        "classificacao": "bloqueio por DECISAO, agora MEDIDO por mim e nao herdado",
+        "teste_que_sustenta": "Calculo WCAG sobre as cores reais da composicao: tema claro, chip = onPrimary branco a 16% sobre primary orange500, texto onPrimary branco -> 3,75:1, abaixo dos 4,5 exigidos. Tema escuro: chip = onPrimary orange950 a 16% sobre primary orange300, texto orange950 -> 6,25:1, PASSA. Impacto medido: trocar o veu quebra 13 de 13 goldens de principal_for_you_preview_golden_test, medido e revertido.",
+        "confianca": "alta"
+      },
+      {
+        "linha": "principal.profile-edit FE: sem contrato visual canonico",
+        "classificacao": "bloqueio por DECISAO",
+        "teste_que_sustenta": "Leitura de .agents/skills/coelo-ui/references/principal-visual-surfaces.md: a matriz nao cobre a tela e manda localizar rota e spec pelo nome. Somado a medicao do chrome duplicado (2 AppBars abaixo do breakpoint expanded, 1 em 1440 px), fixada em teste no lote 13.",
+        "confianca": "alta"
+      },
+      {
+        "linha": "as tres camadas integrated: E2E nao certificado",
+        "classificacao": "bloqueio ESTRUTURAL, medido nesta rodada",
+        "teste_que_sustenta": "Replay das 186 migrations quebra no arquivo 48 (persiste no PG17); o conjunto que supabase start aplicaria tem 17 arquivos e zero create table; 40 objetos app_private chamados e nunca criados. Publicado na evidencia citada acima.",
+        "confianca": "alta"
+      }
+    ],
+    "resultado_do_reteste": "Duas linhas mudam de classificacao e uma perde confianca. A que eu tratava como 'o caminho real falha fechado em producao' era CONDICIONAL nunca verificada, e a reclassificacao correta e falta de autorizacao para verificar. A escrita do Sobre tambem nao esta bloqueada por ausencia: o objeto existe no remoto e o que falta e prova."
+  },
+  "selo_destaque_medido": {
+    "tema_claro": "chip = onPrimary branco a 16% sobre primary orange500, texto onPrimary branco. Composto RGB (221,91,41); contraste 3,75:1, abaixo dos 4,5 exigidos em AA para 11px. Numero herdado CONFIRMADO por calculo proprio.",
+    "tema_escuro": "chip = onPrimary orange950 a 16% sobre primary orange300, texto orange950. Contraste 6,25:1: PASSA. O defeito e so do tema claro, o que ninguem havia dito.",
+    "causa_estrutural": "No tema claro o veu e o texto sao a MESMA cor (onPrimary branco). Curva medida: alpha 0 -> 4,66; 0,08 -> 4,21; 0,16 -> 3,75; 0,24 -> 3,32. Nao existe alpha de veu branco que resolva; so remover o veu, o que apaga o chip.",
+    "proposta": "Inverter o veu para o tom escuro da propria marca: orange950 a 16% sobre orange500 da 5,75:1, passa com folga, usa token de paleta existente e fica simetrico com o tema escuro, que ja veda com orange950.",
+    "nao_aplicado": "O token e scheme.onPrimary, compartilhado, entao pela regra do coordenador vira decisao de coelo-ui. E o custo foi MEDIDO em vez de herdado: trocar o veu quebra 13 de 13 goldens de principal_for_you_preview_golden_test. Medido e revertido; arvore limpa conferida.",
+    "decisao_do_owner": "Entre uma tela que nao cumpre AA no tema claro e treze referencias aprovadas a regravar."
+  },
+  "item_12_do_relatorio_premissa_falsa": {
+    "afirmado_no_relatorio": "o teste da rota do Perfil exige que a frase 'experiencia completa' nao apareca; o teste de Para Voce ESPERA a frase.",
+    "verificado": "FALSO. Sao exatamente duas ocorrencias da frase em todo test/ do superadmin e as DUAS estao dentro de assercoes findsNothing. principal_for_you_route_responsive_test.dart:389 pertence ao teste 'says plainly that a shortcut without a destination is unavailable', que assere 'Cardapio ainda nao esta disponivel.' presente e a frase de previa AUSENTE, com o comentario 'A production route never answers with the preview message'.",
+    "consequencia": "Perfil e Para Voce CONCORDAM. Nao ha decisao a tomar nem trabalho a fazer nas duas. Se as seis ocorrencias de Acontece, Agora e Momentos existirem, o item continua real para essas tres, mas deixa de ser 'o produto esta dividido' e vira 'tres telas ficaram para tras enquanto duas ja foram corrigidas'.",
+    "resposta_sobre_simetria": "Nao ha versao de for_you a fazer. A frase e inalcancavel na rota de producao: embedded esconde o chrome e onAction recebe _handleAction, que usa a mensagem honesta. _feedback so sobrevive para a superficie nao hospedada, que e o /dev.",
+    "padrao": "Terceira ocorrencia na mesma noite do mesmo erro: ler a string e nao a assercao em volta. As outras duas foram minha leitura do golden e a de outra frente medindo widget isolado."
+  },
+  "proxima_rodada": {
+    "como_ler_este_bloco": "Ordem de execucao, nao de importancia. Cada item diz o que desbloqueia e o que fazer PRIMEIRO. Quem pegar este grupo nao precisa reler a noite inteira: comece pelo item 1.",
+    "itens": [
+      {
+        "ordem": 1,
+        "acao": "Confirmar com o Owner qual e a referencia aprovada do Perfil",
+        "primeira_coisa_a_fazer": "Abrir apps/superadmin/test/features/principal_profile/presentation/failures/principal_profile_light_1024_masterImage.png contra _testImage.png (gerar rodando o golden). A referencia tem botao Acompanhar e seis metricas com Seguidores e Seguindo; a composicao atual tem Mensagem e tres metricas.",
+        "desbloqueia": "10 dos 12 goldens do Perfil, que hoje deixam a tela sem guarda visual utilizavel. Enquanto isso durar, regressao visual da composicao completa e invisivel.",
+        "cuidado": "NAO regravar golden para fechar vermelho. Se o Owner confirmar a composicao atual, regravar e consequencia administrativa; se nao, e defeito de produto e volta para esta fila."
+      },
+      {
+        "ordem": 2,
+        "acao": "Decidir o veu do selo DESTAQUE",
+        "primeira_coisa_a_fazer": "Levar a coelo-ui os numeros ja medidos: tema claro 3,75:1 (falha AA), tema escuro 6,25:1 (passa), e a proposta de inverter o veu para orange950 a 16%, que da 5,75:1. Custo medido: quebra 13 de 13 goldens de principal_for_you_preview_golden_test.",
+        "desbloqueia": "principal.for-you FE sair de blocked-decision.",
+        "cuidado": "O token e scheme.onPrimary, compartilhado. Nao e correcao de executor."
+      },
+      {
+        "ordem": 3,
+        "acao": "Decidir o contrato visual de Editar perfil",
+        "primeira_coisa_a_fazer": "Duas perguntas juntas, porque a segunda depende da primeira: quais campos a tela edita e quem edita; e onde ficam titulo e acao de fechar se a pagina receber embedded para resolver o chrome duplicado. A medicao do chrome esta fixada em teste: 2 AppBars abaixo do breakpoint expanded, 1 em 1440 px.",
+        "desbloqueia": "principal.profile-edit FE sair de blocked-decision.",
+        "cuidado": "Inverter o teste de chrome em vez de relaxa-lo quando a decisao vier."
+      },
+      {
+        "ordem": 4,
+        "acao": "Decidir a regra de visibilidade do leitor Principal no Sobre",
+        "primeira_coisa_a_fazer": "Ler o cabecalho de packages/coelo_database/plans/2026-09-09-profile-about-read-rpc.sql, que registra a decisao necessaria e o que a proposta assumiu: visibility profile_access, por ser o default dos INSERTs da RPC de escrita. Nao existe token de leitura em profiles.about.*.",
+        "desbloqueia": "Aplicacao nominal de get_profile_about, e com ela a leitura autorizada do Sobre.",
+        "cuidado": "A funcao ja tem sintaxe verificada em Postgres 17. O que falta e decisao e autorizacao, nao codigo."
+      },
+      {
+        "ordem": 5,
+        "acao": "Verificar, com autorizacao nominal, se a leitura por tabela do Sobre funciona hoje em producao",
+        "primeira_coisa_a_fazer": "Uma consulta de leitura as tabelas profile_about_* como ator autorizado. E a linha que eu classifiquei errado a noite toda: nao esta bloqueada por ausencia, esta bloqueada por falta de autorizacao para verificar.",
+        "desbloqueia": "Saber se o fallback esta funcionando ou falhando fechado em producao, que muda a urgencia do item 4.",
+        "cuidado": "Nao inferir do codigo. A duvida existe justamente porque ninguem consultou."
+      },
+      {
+        "ordem": 6,
+        "acao": "Aplicar list_my_principal_for_you e mover a audiencia para o servidor",
+        "primeira_coisa_a_fazer": "O pacote esta em packages/coelo_database/plans/2026-09-09-principal-for-you-read-rpc.sql, com os tres ajustes do dono do contrato ja aplicados e verificados NO ARQUIVO, e aplica inteiro no Postgres 17 local.",
+        "desbloqueia": "principal.for-you BE. Hoje o filtro de audiencia no cliente e defesa em profundidade, nao controle de acesso.",
+        "cuidado": "Serializacao pelo integrador e autorizacao nominal."
+      },
+      {
+        "ordem": 7,
+        "acao": "Rotulo VISIVEL dos campos na aba Sobre",
+        "primeira_coisa_a_fazer": "Trocar o Semantics por Text usando profileAboutFieldLabel, que ja e compartilhado em features/profile_about/presentation/profile_about_labels.dart. O rotulo de acessibilidade ja foi entregue e nao depende disso.",
+        "desbloqueia": "Nada tecnico; e legibilidade da tela.",
+        "cuidado": "Muda composicao de uma aba sem fonte canonica em coelo-ui. E decisao, nao conserto."
+      },
+      {
+        "ordem": 8,
+        "acao": "Destino do CTA das comunicacoes",
+        "primeira_coisa_a_fazer": "PlatformNotice nao modela URL alguma no cliente, embora platform_notices tenha cta_url. Estender o contrato compartilhado e de quem o mantem; abrir URL externa e decisao de produto e de seguranca.",
+        "desbloqueia": "O CTA de uma comunicacao real publicada deixar de responder apenas que a capacidade nao esta disponivel.",
+        "cuidado": "Nao e do recorte perfil-para-voce sozinho."
+      },
+      {
+        "ordem": 9,
+        "acao": "E2E das tres acoes",
+        "primeira_coisa_a_fazer": "Nao tentar antes de existir caminho de recriacao da base. Ver docs/reviews/evidence/etapa-2/perfil-para-voce/2026-09-10-schema-versionado-e-replay.md: o replay quebra no arquivo 48, o conjunto local nao cria tabela e profile_about nao esta versionado.",
+        "desbloqueia": "As tres camadas integrated.",
+        "cuidado": "Enquanto a unica base for producao, E2E continua zero por construcao."
+      }
+    ],
+    "sinal_de_refresh_de_momentos": "Deliberadamente nao consumido. O router entrega principalMomentsWithdrawalRepository e momentsFeedRefreshSignal a rota /principal-moments; a aba do Perfil nao os usa. Publicar e retirar pertencem a superficie de Momentos, e o contrato estava mudando na noite da decisao. Se a frente de Momentos quiser que publicacao nova reflita na aba sem recarregar, o hunk e pequeno e a decisao e de quem mantem o contrato."
+  },
+  "item_12_confirmado_no_relatorio": "A correcao chegou ao destino: o relatorio do Owner ja traz, no item 12, a retificacao com a leitura correta da assercao findsNothing e o reconhecimento explicito de que a string foi lida como expectativa."
 }

@@ -1,16 +1,16 @@
 {
-  "revision": 25,
-  "updated_at": "2026-09-10T00:50:00-03:00",
+  "revision": 34,
+  "updated_at": "2026-09-10T01:52:00-03:00",
   "group": "chat-comunicacoes",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) - claude-opus-5[1m]",
-  "status": "active; itens 1 e 2 da atribuicao entregues",
+  "status": "active; em consolidacao para a pre-entrega",
   "coordinator": "Claude (coelo-73)",
   "ack_received": "revisao 1 aceita; coordenacao.json rev 2, commit 920f23199",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-chat-comunicacoes",
   "branch": "work/etapa2-noturna-chat-comunicacoes",
-  "head": "f4a86ed7e",
-  "upstream": "origin/work/etapa2-noturna-chat-comunicacoes = f4a86ed7e (0/0)",
+  "head": "c1e6756c7",
+  "upstream": "origin/work/etapa2-noturna-chat-comunicacoes = c1e6756c7 (0/0)",
   "base": "d784462c1",
   "router_patch_branch": {
     "branch": "work/etapa2-noturna-chat-comunicacoes-router-from",
@@ -66,7 +66,10 @@
     "dc2dbe7e3 test(router): assert the host shell survives entering the Principal chat",
     "2dc4cc388 fix(principal-chat): keep what the reader loaded when they act, items C and D",
     "9f253b398 test(router): assert where back goes from the Principal chat, per origin",
-    "f4a86ed7e test(principal-happens): name the mixed feed pagination gap with a red test"
+    "f4a86ed7e test(principal-happens): name the mixed feed pagination gap with a red test",
+    "7d264af82 test(chat): assert the attachment affordances refuse honestly",
+    "4c91b4bc4 test(router): name the measured Forms fail-closed defect with a red test",
+    "c1e6756c7 Revert \"test(router): name the measured Forms fail-closed defect\""
   ],
   "closed_criteria": [
     "/principal-conversations existe na base integrada, dentro da ShellRoute, com falha fechada",
@@ -92,19 +95,23 @@
     "a reconciliacao da inbox deixou de piscar a lista de conversas a cada envio, edicao ou revogacao, e uma falha silenciosa mantem a lista valida em vez de virar painel de erro",
     "item C: o envio deixou de descartar as mensagens antigas que o leitor ja tinha aberto",
     "item D: a reconciliacao silenciosa deixou de descartar as conversas acumuladas com carregar mais",
-    "item G: voltar do chat Principal leva de volta a superficie que abriu, reusando o parametro from ja aprovado"
+    "item G: voltar do chat Principal leva de volta a superficie que abriu, reusando o parametro from ja aprovado",
+    "chat.attach: indisponibilidade honesta afirmada por teste — afordancia visivel, recusa explicita, e nenhuma mensagem sai por um toque em anexo"
   ],
   "tests": {
-    "runner": "flutter test (Windows local), base 7113f836d",
-    "escopo": "test/features/chat + test/features/principal_chat + test/features/notices + test/app/router INTEIROS",
-    "P": 660,
-    "F": 45,
+    "runner": "flutter test (Windows local)",
+    "base": "BASE CONJUNTA: merge local f7731b7fc de origin/dev f5a139c10 com a minha branch. Commit temporario nao publicado.",
+    "escopo": "test/features/chat + test/features/principal_chat + test/features/notices — o MEU recorte, isolado de proposito",
+    "P": 346,
+    "F": 12,
     "B": 0,
-    "S": 1,
+    "S": 0,
     "U": 0,
     "analyze": "flutter analyze: No issues found",
-    "nota": "Numero de pre-entrega do recorte completo. As falhas continuam sendo os 12 goldens conhecidos mais as vermelhas de test/app/router que pertencem a recortes alheios.",
-    "decomposicao_das_45": "33 de test/app/router pertencem a recortes alheios; 12 sao os goldens conhecidos (9 chat, 3 notices). 33 + 12 = 45, sem falha nova."
+    "falhas": "Os 12 goldens conhecidos: 9 de chat e 3 de notices, sob decisao de rebaseline pendente do Owner, com causa raiz diagnosticada na revisao 7.",
+    "zero_falhas_de_comportamento": "Nenhuma falha de comportamento no recorte. Todas as correcoes da noite estao verdes na base em que a integracao acontece.",
+    "por_que_isolado": "A medicao ampla no mesmo merge deu 674 PASS / 1 SKIP / 55 FAIL, mas esse numero mistura o trabalho de todas as frentes e nao e comparavel com os anteriores, porque o dev avancou entre as medicoes e o total de testes mudou. Prefiro entregar um numero pequeno e interpretavel a um grande que mistura tudo.",
+    "nota_do_vermelho_proposital": "O teste vermelho do feed misto NAO entra nestes 12: ele vive em test/app/router, que ficou fora deste recorte isolado de proposito, porque o defeito e de publicacoes-midia e nao meu."
   },
   "reservations": {
     "minhas": "nenhuma",
@@ -121,8 +128,8 @@
     "packages/coelo_database/migrations/20260909130000_superadmin_internal_chat_receipts_edit_revoke_v2.sql - forward-only, guarda de dependencia, rotulos de permissao corrigidos em 2b1293227 (sem eles NAO aplicaria em base que ja tenha 20260811215451)",
     "packages/coelo_database/migrations/20260909140000_superadmin_notice_metrics_by_generation_v1.sql - escopa metricas por geracao; sem regressao quando current_publication_job_id e nulo"
   ],
-  "blocker": "chat.attach retido pela plataforma comum de midia (catalog_kind de chat e contrato de ticket de upload/leitura pelo gateway), escrita por publicacoes-midia nesta rodada. Nao criei gateway nem bucket por tela; mantive o placeholder honesto. O bloqueio retem somente chat.attach.",
-  "next_step": "Aguardar a remedicao na base conjunta e consolidar para a pre-entrega das 04:50.",
+  "blocker": "chat.attach: espera o candidato 20260909215000 ser APLICADO, decisao do Owner, e um gateway de escrita proprio de Chat no catalogo de midia — trabalho com precedente em Acontece e no XLSX de Formularios. Os dois pacotes SQL: esperam autorizacao nominal. notices.publish: NAO esta bloqueado por terceiro; e implementacao normal com acoplamento conhecido ao worker que ja existe desde agosto.",
+  "next_step": "Consolidacao para a pre-entrega, com checkpoint a cada trinta minutos.",
   "wip": {
     "retido": "nenhum",
     "nota": "Tudo o que produzi esta commitado e publicado. Worktree limpa e sem stash. Existiram DOIS commits temporarios locais de base conjunta, criados so para medir e nunca publicados; depois de medir eu voltei para a branch e eles ficaram inalcancaveis, sem conteudo exclusivo. O ultimo, com C, D e G, teve suas partes portadas: a de produto foi para a branch e a de router virou o patch isolado 48d15d8df."
@@ -153,7 +160,7 @@
     "enableInlinePreview so e passado em /dev/notices; a rota real /notices nao recebe. Nao achei fonte aprovada exigindo a previa lateral em producao, entao registro como duvida e nao como defeito."
   ],
   "tracker_delta_proposto": [],
-  "tracker_delta_nota": "Array vazio: teste vermelho de recorte alheio e diagnostico nao alteram estado de acao nenhuma.",
+  "tracker_delta_nota": "Array vazio: medicao nao promove acao.",
   "achado_que_corrige_pendencia_registrada": {
     "pendencia": "O handoff L02 registrou que, onde a pagina monta o proprio shell, o badge de nao lidas continuaria zero, e classificou a correcao geral como arquitetural, atingindo ~60 construcoes de SuperadminShell.",
     "medicao": "59 construcoes de SuperadminShell em lib/ e 44 arquivos de feature sem o loader. Sonda descartavel em 32 rotas de producao, com o repositorio reportando 13 nao lidas.",
@@ -518,5 +525,124 @@
     "determinismo_dos_meus_testes": "Verifiquei se algum teste meu poderia oscilar sob a contencao da maquina. Nenhum usa Future.delayed, sleep nem DateTime.now(). Os poucos pump com duracao fixa avancam o relogio FALSO do flutter_test, que e deterministico e independente de carga. O unico travamento que encontrei a noite foi pumpAndSettle com um indicador animando em voo, que e deterministico tambem e ja esta documentado dentro do proprio teste.",
     "json": "Arquivo valido e com todos os campos obrigatorios do contrato presentes."
   },
-  "nota_para_a_contagem_de_rotas": "A partir de f4a86ed7e, test/app/router passa a ter UMA falha permanente a mais, que e o teste vermelho proposital do feed misto. Ao remedir vai dar 7 e nao 6, e isso nao e regressao."
+  "nota_para_a_contagem_de_rotas": "Volta a UM vermelho proposital meu em test/app/router — o do feed misto. O de Formularios foi retirado. A contagem do coordenador volta a 7 falhas com 1 proposital nomeada.",
+  "diagnostico_formularios_cuidado": {
+    "natureza": "DIAGNOSTICO por atribuicao. Nenhum arquivo tocado.",
+    "resultado": "Quase todo NEGATIVO, e essa e a informacao util: e onde nao vale gastar as horas restantes.",
+    "negativo_1": "O envio de resposta trata simultaneidade melhor do que o chat tratava. Retem o comando pendente E a revisao das respostas; numa repeticao apos falha completa a intencao ORIGINAL, sem trocar o payload no meio, e depois avisa o operador que ha alteracoes locais ainda nao salvas. Nao sobrescreve edicao local com o eco do servidor. Fui procurar ali o espelho do defeito que corrigi no chat e o autor ja tinha resolvido, melhor para o dominio dele.",
+    "negativo_2": "A exportacao XLSX, unica exportacao viva do MVP, retem o comando, e single-flight por _exportBusy, leva expectedVersion e tem guarda de geracao.",
+    "negativo_3": "Em cuidado, o HealthCareController E usado pelo router — ao contrario do de Assiduidade — e e so leitura, entao ausencia de idempotencia ali e correta. A rota de PRODUCAO de perfis usa repositorio bloqueado e falha fechada, coerente com care049 pendente.",
+    "unica_pergunta": "openResponseDraft manda expectedVersion 0 e chave nova a cada chamada, mesma forma do createCall de Assiduidade. A diferenca e que abrir rascunho para o mesmo formulario e o mesmo respondente provavelmente e unico no servidor, o que tornaria a repeticao inofensiva. Nao afirmo defeito porque nao verifico o servidor daqui.",
+    "comparacao_das_tres_frentes": "publicacoes-midia tinha um achado real que o dono nao ia corrigir; alunos-rotina tem dois que ele vai corrigir; formularios-cuidado esta limpo nas lentes que eu sei aplicar."
+  },
+  "nota_sobre_medicao_ampla": "A medicao ampla na base conjunta deu 674 PASS / 1 SKIP / 55 FAIL, mas NAO e comparavel com as anteriores: o dev avancou muito entre elas e o total de testes mudou. Por isso medi o meu recorte isolado, que e o numero que significa alguma coisa para a minha entrega.",
+  "verificacao_externa_da_integracao": {
+    "por_que": "O coordenador e o unico integrador e o unico escritor do inventario, entao ninguem conferiu o trabalho dele a noite inteira. Ele pediu conferencia externa e eu executei em checkout DESTACADO sobre origin/dev, sem tocar em nada.",
+    "base_medida": "origin/dev 5f8459349 — e NAO ac69b6055, que era o SHA que ele me passou. Ele integrou mais coisa no intervalo e eu reporto o que medi.",
+    "item_4_trabalho_perdido": {
+      "resultado": "NENHUM trabalho publicado e perdido.",
+      "metodo_1": "Comparei cada branch com dev. Cinco tem o tip integrado; quatro tem commits pendentes, o que e normal no meio do ciclo.",
+      "metodo_2": "Fui atras de conteudo perdido em CONFLITO, que e diferente de commit perdido: um merge pode registrar o commit como ancestral e ainda descartar conteudo. Dos 151 merges desde a base, apenas QUATRO tem resolucao real com diff combinado nao vazio. Inspecionei os quatro.",
+      "metodo_3": "Verifiquei que os commits pendentes de cada branch formam um SUFIXO limpo, ou seja, nenhum commit do meio foi pulado — o que descartaria um cherry-pick com buraco.",
+      "quase_alarme_registrado": "Em safety_pages.dart vi _uuid() onde havia uma chave derivada de authorizationId, acao e versao, e quase reportei que a correcao tinha sido comida num arquivo de seguranca infantil. Verifiquei antes de mandar e a direcao era INVERSA: o DEV tem a chave derivada e a BRANCH e que esta velha. Eu havia lido o sinal do diff ao contrario. Registro porque explica tambem os outros numeros que pareciam perda.",
+      "falsos_positivos_explicados": "estrutura mostrava 224 linhas ausentes no dev: 194 sao de uma migration RENOMEADA na fila, conferida por hash como identica, e 30 sao copias velhas de outras frentes que a branch carrega por nunca ter mesclado dev. Minha propria branch mostra 37 pelo mesmo motivo."
+    },
+    "item_3_migrations": "As duas migrations de chat continuam byte a byte identicas as do dev na base publicada, zero carimbo antigo duplicado, e a fila de 20260909 esta monotonica e ordenada com 17 arquivos.",
+    "item_2_gates": "Guarda de unicidade de nome de rota: 3/3 verde no dev. flutter analyze lib: No issues found.",
+    "achado_lateral_do_meu_recorte": "20260909215000_private_media_catalog_chat_kind_v1 entrou no dev — e o catalog_kind que chat.attach esperava. Nao desbloqueia sozinho, ainda faltam o contrato de ticket de upload e leitura e a Edge Function, mas e metade do caminho.",
+    "item_1_suite_de_rotas": {
+      "medido_em": "origin/dev 5f8459349",
+      "resultado": "408 PASS / 1 SKIP / 7 FAIL — o numero que o coordenador afirmou esta CERTO.",
+      "correcao_na_categorizacao": "Ele afirmou 2 vermelhos propositais e 5 do resto. Sao 1 e 6. people_creation_requirements_red_test NAO esta falhando: rodei isolado e da 1/1 verde. Ficou verde em algum momento da noite e a categoria dele ainda o contava como proposital. Com \"2 propositais\" no relatorio, um defeito real passaria por convencao.",
+      "os_sete": [
+        "composition_root_fail_closed_routes_test — model and Forms production routes stay fail-closed",
+        "import_development_routes_test — development import routes never use the production repository",
+        "principal_mixed_feed_pagination_red_test — o MEU vermelho proposital, o unico",
+        "principal_real_route_test — production Principal keeps its host at 1440",
+        "principal_real_route_test — production Principal keeps its host at 390",
+        "principal_real_route_test — real Acontece resolves authenticated context and never uses demo fixtures",
+        "prototype_navigation_routes_test — prototype destinations navigate from any development shell page"
+      ],
+      "prioridade_recomendada": "Os dois primeiros sao assercoes de FRONTEIRA e nao cosmeticas: rotas de producao continuarem falhando fechado, e rotas de desenvolvimento nunca usarem o repositorio de producao, sao a invariante que o AGENTS.md chama de nao entregar dados antes da autorizacao.",
+      "ate_onde_investiguei": "O teste de fail-closed espera o painel forms-operations-unavailable em /forms/form-1/files e encontra zero, E TAMBEM afirma formsApi.calls == 0. Falha na primeira assercao, entao a metade que importa para seguranca nao chega a ser avaliada. Evidencia a favor de deriva e nao de falha aberta: a suite dedicada forms_fail_closed_routes_test passa 7/7 no mesmo dev. NAO consigo provar a metade da chamada por leitura estatica, entao nao afirmo que esta tudo bem; recomendei ao dono checar formsApi.calls primeiro."
+    },
+    "item_4_conclusao_final": "NENHUM trabalho publicado e perdido. Fechei a ultima brecha verificando commit a commit, nos 2305 commits das sete branches, se algum do prefixo integrado nao era ancestral de dev. Zero buracos.",
+    "ressalva_de_metodo": "Numa das passadas perfil-para-voce acusou 1 buraco que nao existia mais quando fui identificar: o coordenador tinha integrado no intervalo. Medir estado de integracao ENQUANTO o integrador mescla produz buraco falso. E a mesma classe do numero velho catalogado — o dado estava certo no instante e errado quando fui ler. Quem repetir esta auditoria precisa congelar a referencia primeiro."
+  },
+  "estado_de_integracao": {
+    "dev": "07306b88e",
+    "pendentes_meus": 0,
+    "nota": "Todos os 41 commits da branch estao em dev. Nao ha nada meu esperando integracao. Os dois patches isolados de router (c2127823f e 48d15d8df) tambem ja foram aplicados.",
+    "branch_a_apagar": "work/etapa2-noturna-chat-comunicacoes-router-dedupe continua sendo um commit vazio. Recomendei apagar; nao apaguei porque exclusao de artefato publicado e do coordenador."
+  },
+  "aberto_do_meu_lado_mas_nao_dependente_de_mim": [
+    "Confirmar com o dono de formularios se formsApi.calls e zero no teste de fail-closed. E a metade que nao consigo provar por leitura estatica e a unica coisa da auditoria que pode virar prioridade real.",
+    "chat.attach continua bloqueado: o catalog_kind de chat entrou no dev, mas faltam o contrato de ticket de upload e leitura e a Edge Function.",
+    "materializacao de notices.publish, dependente de pg_cron e do consumidor service_role no destino.",
+    "aplicacao dos dois pacotes SQL, dependente de autorizacao nominal.",
+    "item B, a superficie Principal nao renderizar anexo, que so vira defeito no dia em que a midia entregar.",
+    "item F, o diretorio de Avisos piscar a lista, pre-existente e nao autorizado.",
+    "achado semantico do denominador do recibo, que exige decisao de produto."
+  ],
+  "defeito_medido_fail_closed_formularios": {
+    "natureza": "Defeito de OUTRO recorte (composition root). Eu entreguei a PROVA; a correcao e do dono. Nao toquei em arquivo dele.",
+    "fatos_medidos": "Sonda instrumentada que CONTA chamadas, na rota de PRODUCAO, sessao autenticada e SEM capacidade de Formularios: /forms/form-1/files chama FormsApi.listFileJobs (1 chamada) e /forms/form-1/responses chama FormsApi.listResponses (2 acumuladas). Dois metodos de LEITURA disparados no initState so por navegar.",
+    "cadeia": "withFormsAuthorization checa apenas session.isAuthenticated; _usesProductionApi e verdadeiro porque a rota sempre passa api nao nulo.",
+    "o_que_prova": "Que a rota nao esta fechada no sentido que o teste afirma, e que o vermelho existente aponta defeito real e nao deriva de expectativa.",
+    "o_que_NAO_prova": "Vazamento de dado. Quem decide e o SERVIDOR, e as RPCs continuam sendo a autoridade. Nao consigo verificar o lado remoto daqui e nao afirmo. A leitura honesta e que a defesa do cliente nao esta segurando e a do servidor passou a ser a unica.",
+    "por_que_ficou_invisivel_a_noite_toda": "O duble existente apenas LANCAVA, entao a falha parava na primeira expectativa e a assercao de contagem nunca era avaliada. O meu registra o nome do metodo ANTES de recusar. E a mesma licao do teste que mede o mecanismo e nao o efeito, so que aqui era o duble que escondia o efeito.",
+    "prova": "4c91b4bc4, dois casos vermelhos com o nome do metodo aparecendo na propria falha."
+  },
+  "reauditoria_das_linhas_de_bloqueio": {
+    "por_que": "O coordenador pediu, depois de outra frente descobrir uma acao registrada como bloqueada esperando contrato que ja existia e era dela mesma. E o padrao INVERSO do que eu vinha achando: capacidade que existe e ninguem consome, contra bloqueio que existe e nao e real. Mais caro de achar porque ninguem procura por bloqueio inexistente.",
+    "B_chat_attach_CORRIGIDO": {
+      "formulacao_antiga_minha": "Faltavam o catalog_kind de chat E o contrato de ticket de upload e leitura pelo gateway.",
+      "o_que_verifiquei_por_conta_propria": "20260909215000 EXISTE no dev e acrescenta o discriminador chat-attachment. Ela cria ZERO grants, contei. E nao ha grant nenhum sobre public.media_assets em migration alguma do repositorio.",
+      "nuance_que_corrige_ate_a_descricao_que_recebi": "NAO e verdade que nao exista interface de escrita para kind nenhum. Ha inserts em public.media_assets em 20260820182000_happens_publication_mvp e em 20260908170000_forms_xlsx_private_r2_v1 — Acontece e o XLSX de Formularios ja escrevem no catalogo, cada um pelo proprio caminho.",
+      "formulacao_correta": "chat.attach NAO espera ninguem escrever o discriminador, que ja existe revisado. Espera duas coisas: o candidato ser APLICADO, que e decisao do Owner, e um gateway de escrita proprio de Chat. E trabalho menor e com PRECEDENTE dentro do produto — dois exemplos para copiar — e nao plataforma a construir.",
+      "por_que_a_diferenca_importa": "Esperar reserva de terceiro e uma decisao; esperar aplicacao de candidato revisado mais um gateway com dois precedentes e outra, e a segunda tem caminho."
+    },
+    "F_diretorio_de_avisos_MEDIDO": {
+      "o_que_eu_tinha_dito": "Pre-existente, nao introduzido por mim.",
+      "como_estava": "Deduzido do codigo, NAO medido. O coordenador cobrou a distincao e ele esta certo: pre-existente e afirmacao sobre o passado.",
+      "medicao": "Conferi a base intocada d784462c1: _load ja setava NoticeDirectoryViewState.loading na linha 1019, o estado de loading ja renderizava um CoeloStatePanel na linha 343, e _refresh ja chamava _load(reset: true). Ou seja, uma acao bem sucedida ja trocava a lista por painel antes de qualquer mudanca minha.",
+      "conclusao": "F e pre-existente POR MEDICAO, e nao por deducao. A minha mudanca trocou reset por manter a pagina; o painel de carregamento ja estava la e continua."
+    },
+    "C_notices_publish_CORRIGIDO": {
+      "formulacao_antiga_minha": "A materializacao de notices.publish depende de confirmar pg_cron e o consumidor service_role no destino. Herdada de L02 e repetida a noite inteira sem verificar.",
+      "o_que_medi": "20260820212340_notice_publication_worker_runtime.sql, de 20 de AGOSTO — tres semanas antes desta rodada — cria a extensao pg_cron, define claim_notice_publication_jobs e run_notice_publication_job ambas gated por auth.role() = service_role, da os grants correspondentes, e AGENDA coelo-notice-publication-worker de minuto em minuto via cron.schedule.",
+      "formulacao_correta": "Nao ha nada a confirmar sobre pg_cron que seja especifico de Avisos: o worker, o consumidor service_role e o agendamento existem no repositorio. A unica incognita e se essa base foi aplicada em producao, que e a mesma incognita de toda migration e nao um bloqueio de Avisos. A materializacao e trabalho normal de implementacao.",
+      "o_que_continua_verdadeiro": "O acoplamento existe e eu confirmei: run_notice_publication_job recusa com notice_not_scheduled se o aviso nao estiver em scheduled. Fazer publish_v2 enfileirar obriga a gravar sempre scheduled, e a ativacao passa a depender do worker rodar no destino. Essa parte da analise de L02 estava certa."
+    },
+    "balanco": {
+      "resultado": "Tres linhas de bloqueio reauditadas, TRES erradas, cada uma de um jeito diferente.",
+      "B": "Superestimava o que faltava — teria feito o Owner adiar algo que tem caminho e precedente.",
+      "F": "Afirmava verificacao que eu nao tinha feito — teria passado por conferido sendo herdado.",
+      "C": "Inventava dependencia de terceiro que nao existe — teria mantido bloqueada uma implementacao normal.",
+      "causa_comum": "Nenhuma foi ma-fe. As tres foram escritas rapido, DUAS delas herdadas da rodada R02, e nunca relidas, porque bloqueio declarado parece informacao e nao pergunta.",
+      "recomendacao_que_mandei_ao_coordenador": "Que as outras frentes releiam as proprias linhas de bloqueio, e principalmente as HERDADAS de R02. Duas das minhas tres vieram de la."
+    }
+  },
+  "retratacao_fail_closed_formularios": {
+    "o_que_eu_afirmei": "Que a rota de producao de Formularios chamava o backend sem capacidade e que isso era defeito, com prioridade um.",
+    "o_que_estava_certo": "A medicao do mecanismo. As chamadas existem e os metodos sao listFileJobs e listResponses.",
+    "o_que_estava_ERRADO": "A conclusao. forms_fail_closed_routes_test, de 08/09, afirma explicitamente expect(api.calls, readsFromApi ? 1 : 0) para monitor, responses, response-1 e files, e passa 7/7. Conferi a linha na fonte antes de retirar. UMA chamada nao viola o contrato: uma chamada E o contrato vigente.",
+    "erro_meu_na_medicao": "O numero 2 em /responses tambem estava errado, e o erro e meu: a minha sonda nao zerava o contador entre navegacoes, e o teste de 08/09 zera na linha 57. Com reset, da 1.",
+    "a_pergunta_que_eu_nao_fiz": "Contra QUAL contrato esse numero e violacao. Eu herdei o enquadramento do titulo do teste que falhava e nunca perguntei se a invariante que ele afirma ainda estava vigente. Media certo, concluia errado.",
+    "o_defeito_real": "Nao e o comportamento: e a contradicao entre dois testes sobre a mesma rota. composition_root_fail_closed_routes_test, de 01/09, afirma uma invariante que a decisao de produto substituiu sete dias depois. A correcao pertence a quem mantem o teste velho.",
+    "o_que_sobra_de_aproveitavel": "Um teste afirmou por sete dias uma invariante ja substituida e ninguem notou, porque ele falha na PRIMEIRA assercao e quem le conclui que o fail-closed quebrou. TRES pessoas leram como defeito de produto antes de alguem perguntar contra qual contrato o numero era violacao.",
+    "acao": "Teste retirado em c1e6756c7. Mante-lo transformaria um erro de leitura meu em registro permanente."
+  },
+  "padrao_unico_por_tras_dos_dois_achados": {
+    "sintese": "Contrato herdado de um TITULO de teste e bloqueio herdado de um HANDOFF sao a mesma coisa: informacao que parece verificada porque veio escrita. A formulacao e do coordenador; eu achei as duas metades em superficies diferentes na mesma noite e nao as conectei.",
+    "metade_1_bloqueio_herdado": "Tres linhas de bloqueio minhas estavam erradas, duas delas herdadas de R02. Nenhuma tinha sido relida desde que foi escrita.",
+    "metade_2_contrato_herdado": "Eu li o titulo \"stay fail-closed\" de um teste que falhava e tratei a invariante dele como vigente, sem verificar se outra decisao de produto a tinha substituido — e tinha, sete dias antes. Medi o mecanismo com rigor e conclui a infracao por inercia.",
+    "por_que_e_caro": "Nos dois casos a informacao chega com aparencia de verificada e ninguem a trata como pergunta. No bloqueio, mantem parada uma implementacao que tem caminho. No contrato, transforma conformidade em defeito de prioridade um."
+  },
+  "fatos_novos_recebidos_da_coordenacao": {
+    "composition_root_corrigido": "operacoes-sistema corrigiu a linha do teste velho em c2e6bda5d, com comentario datado e nome do caso ajustado. A falha de composition_root ja caiu.",
+    "import_development_terceira_causa": "A falha de import_development NAO e chamada de backend: calls=0 nas duas rotas. E overflow de RenderFlex de 1409 pixels na superficie padrao de 800x600, que mata o caso antes da assercao. Terceira causa distinta com o mesmo sintoma vermelho.",
+    "caracteristica_conhecida_de_formularios": "A sessao daquele teste concede apenas permissionCodes {platform.read} e withFormsAuthorization consulta so isAuthenticated. O contrato de 08/09 delega a autorizacao de leitura de Formularios INTEIRAMENTE ao servidor. Nao e defeito, porque o AGENTS.md poe a autoridade no backend, mas e caracteristica conhecida: se alguma RPC de Formularios for mais frouxa do que se supoe, nao existe segunda linha no cliente."
+  },
+  "decisao_sobre_o_par_de_commits": "O coordenador decidiu integrar os dois juntos e pediu para NAO reescrever a branch. Motivo que eu subscrevo: a mensagem da reversao e o unico lugar onde o episodio esta contado por quem o viveu, e reescrever historia publicada para ficar bonita apagaria justamente a parte que ensina."
 }
