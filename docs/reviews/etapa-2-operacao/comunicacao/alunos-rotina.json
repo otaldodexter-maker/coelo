@@ -1,6 +1,6 @@
 {
-  "revision": 23,
-  "updated_at": "2026-09-10T03:00:00-03:00",
+  "revision": 24,
+  "updated_at": "2026-09-10T02:43:02-03:00",
   "clock_note": "Relogio corrigido pelo coordenador e conferido por mim com PowerShell Get-Date: 02:00 de 10/09, fuso E. South America Standard Time, -03:00. O date do Git Bash com TZ nao tem tzdata e devolve UTC; parei de usa-lo.",
   "group": "alunos-rotina",
   "task": "/root",
@@ -9,10 +9,10 @@
   "coordinator": "Claude (Coordenacao e Integracao)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-alunos-rotina",
   "branch": "work/etapa2-noturna-alunos-rotina",
-  "head": "95b11afd4",
-  "upstream": "origin/work/etapa2-noturna-alunos-rotina",
-  "divergence": "0/0",
-  "workingTree": "limpo",
+  "head": "e2af0abe4",
+  "upstream": "e2af0abe4",
+  "divergence": "HEAD 10 a frente de origin/dev. Os 10 sao merges de integracao do coordenador e lotes de OUTRAS frentes neste checkout compartilhado. NENHUM e meu: os 26 lotes citados neste arquivo foram verificados um a um como ancestrais de origin/dev. Publicar esses 10 nao e decisao minha.",
+  "workingTree": "Sujo por 3 JSONs de comunicacao de frentes distintas neste checkout compartilhado. O unico que eu escrevo e alunos-rotina.json.",
   "stash": "vazio",
   "recorte_proprio": {
     "lotes": 17,
@@ -592,5 +592,19 @@
     "medicao_minha": "Montei com dados, nos mesmos tres viewports do relato (800x600, 390x844, 1440x900): Unidades SEM EXCECAO nos tres; Saude e Cuidado SEM EXCECAO nos tres; diretorio de Rotina SEM EXCECAO nos tres.",
     "resultado_do_chat": "Ele respondeu por caminho mais barato: extraiu as 67 rotas /dev sem parametro, montou cada uma a 1440x900 e leu takeException. 66 OK, UMA excecao, /dev/imports.",
     "conclusao": "A classe tem exatamente uma instancia conhecida. As duas medicoes concordam por caminhos independentes e nenhuma sabia da outra quando comecou."
+  },
+  "limitations": {
+    "estrutural": "Chave restaurada na r24. Ela existiu na r1 e na r2 e sumiu na r3 quando o bloco que a continha foi reescrito inteiro. Mesmo defeito que destruiu erros_meus_nesta_rodada na r20: dado duravel guardado dentro de bloco descartavel herda a efemeridade do bloco. Por isso ela volta no TOPO, nao aninhada.",
+    "autorizacao_remota": "Nenhuma autorizacao nominal para mutacao remota Supabase ou Cloudflare foi concedida a esta frente em nenhum momento. Nenhuma mutacao remota foi tentada.",
+    "nada_e2e": "Toda prova aqui e local: flutter test e flutter analyze sobre a base integrada. Nada foi exercitado contra Supabase ou Cloudflare reais. Nenhuma tela deste recorte pode ser declarada concluida ponta a ponta.",
+    "publicar_nao_e_entregar": "Publicar este arquivo nao comprova leitura pelo coordenador.",
+    "exportacao_geral": "Exportacao geral permanece informativa; attendance.export segue com aceite de adiamento no FE.",
+    "analise_estatica": "O diagnostico de schema nao reconstruivel e estatico sobre as migrations do repositorio, sem execucao de runtime nem chamada remota."
+  },
+  "auditoria_de_referencias_r24": {
+    "pedido": "Coordenador pediu as seis frentes: EXTRAIR hashes e caminhos do handoff duravel e TESTAR existencia de cada um, sem reler.",
+    "resultado": "LIMPO. 28 hashes extraidos, todos resolvem com git cat-file -e <sha>^{commit}. 8 caminhos extraidos, todos existem em disco. Alem da existencia, testei ANCESTRALIDADE: os 28 sao alcancaveis a partir de origin/dev, entao quem retomar amanha encontra cada lote publicado, nao so existente.",
+    "dois_falsos_positivos_meus": "A varredura acusou 16 caminhos e 28 hashes inexistentes antes de acertar. Nenhum era defeito do registro; os dois eram defeitos da MEDICAO. Primeiro: escrevi os arquivos intermediarios em /tmp, que neste Windows e compartilhado entre as sessoes, e li de volta a lista da frente publicacoes-midia em vez da minha. Segundo: python em modo texto no Windows gravou CRLF, e cada linha lida terminava em \r, fazendo git e test falharem em TODAS as entradas. Um 100% de falha e sinal de instrumento quebrado, nao de registro podre.",
+    "licao": "Ferramenta de verificacao tambem precisa ser verificada, e o sinal de que ela quebrou e o resultado ser uniforme demais. Corolario operacional: arquivo temporario vai para o scratchpad da sessao, nunca para /tmp, quando ha varias sessoes na mesma maquina."
   }
 }
