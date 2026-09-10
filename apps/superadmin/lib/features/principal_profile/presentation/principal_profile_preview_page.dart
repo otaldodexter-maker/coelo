@@ -7,6 +7,7 @@ import '../../principal_moments/domain/principal_moments_preview_data.dart';
 import '../../principal_shared/presentation/principal_global_navigation.dart';
 import '../../principal_circulars/domain/circular_repository.dart';
 import '../../principal_circulars/presentation/principal_circular_surfaces.dart';
+import '../../profile_about/presentation/profile_about_labels.dart';
 import '../domain/principal_profile_preview_data.dart';
 
 enum _ProfileTab { happens, moments, circulars, about }
@@ -1337,7 +1338,20 @@ final class _AboutContent extends StatelessWidget {
                     size: CoeloSize.iconSm,
                   ),
                   const SizedBox(width: CoeloSpacing.space2),
-                  Expanded(child: Text(field.value)),
+                  // Visually the row is unchanged: the field renders as its bare
+                  // value beside a generic icon, which is the approved
+                  // composition. For assistive technology that value alone is
+                  // not ambiguous, it is unnamed -- two contact numbers are
+                  // announced as two numbers. The semantic label names the
+                  // field without moving a pixel. Whether the label should also
+                  // be visible is an open question for the Owner.
+                  Expanded(
+                    child: Semantics(
+                      label: '${profileAboutFieldLabel(field.key)}: ${field.value}',
+                      excludeSemantics: true,
+                      child: Text(field.value),
+                    ),
+                  ),
                 ],
               ),
             ),
