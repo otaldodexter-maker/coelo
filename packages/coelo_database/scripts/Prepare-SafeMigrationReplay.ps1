@@ -1,4 +1,4 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param(
   [Parameter(Mandatory = $true)]
   [ValidateNotNullOrEmpty()]
@@ -102,6 +102,7 @@ if ($NominalProfile) {
     'FReadDirectoryContractGreenDerived' { 'profiles\FReadDirectoryContractGreenDerived\Resolve-FReadDirectoryContractGreenDerived.ps1' }
     'LocationCatalogV2' { 'profiles\LocationCatalogV2\Resolve-LocationCatalogV2.ps1' }
     'LocationReservationsV1' { 'profiles\LocationReservationsV1\Resolve-LocationReservationsV1.ps1' }
+    'PersonDetailV2' { 'profiles\PersonDetailV2\Resolve-PersonDetailV2.ps1' }
   }
   $nominalResolver = Join-Path $preflightRoot $nominalResolverRelative
   $nominalCursor = Get-Item -LiteralPath $nominalResolver -Force -ErrorAction Stop
@@ -134,6 +135,12 @@ if ($NominalProfile) {
         $locationBootstraps[0].Name -cne '20260908030958_location_form_options_remote_snapshot_local.sql' -or
         $locationBootstraps[1].Name -cne '20260908030959_location_catalog_v2_capability_bootstrap_local.sql') {
       throw 'LocationCatalogV2 requires the reviewed 53 canonical migrations and exactly two local fixtures'
+    }
+  }
+  if ($NominalProfile -ceq 'PersonDetailV2') {
+    if ($canonical.Count -ne 51 -or $additionalCanonical.Count -ne 1 -or
+        $preflight.Count -ne 2) {
+      throw 'PersonDetailV2 requires 51 canonical migrations, one candidate and two preflights'
     }
   }
   if ($NominalProfile -ceq 'SafetyInternalReads53') {
