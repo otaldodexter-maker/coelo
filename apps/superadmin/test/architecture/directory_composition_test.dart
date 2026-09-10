@@ -32,7 +32,6 @@ const _pendingMigration = <String, List<String>>{
   'lib/features/agenda/presentation/agenda_calendar_page.dart': ['_AgendaToolbar'],
   'lib/features/agenda/presentation/agenda_requests_page.dart': ['_RequestTable'],
   'lib/features/attendance/attendance_pages.dart': ['_AttendanceCallToolbar'],
-  'lib/features/safety/presentation/safety_pages.dart': ['_SafetyTable', '_AuthorizedTable'],
   'lib/features/agenda/presentation/agenda_events_page.dart': ['_EventTable'],
   'lib/features/support/presentation/widgets/support_filter_toolbar.dart': ['SupportFilterToolbar'],
   'lib/features/support/presentation/widgets/support_ticket_table.dart': ['SupportTicketTable'],
