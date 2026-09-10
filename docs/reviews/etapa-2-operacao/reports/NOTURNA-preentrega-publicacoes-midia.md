@@ -11,25 +11,37 @@ timezone: "America/Sao_Paulo"
 Recorte: Acontece, Agora, Momentos e Circulares em `apps/superadmin`, mais a
 plataforma comum de mídia que os quatro consomem.
 
-## 1. Residual por SHA
+## 1. Residual, provado por conteúdo
 
-Testado com `git merge-base --is-ancestor <sha> origin/dev`, e **não** com
-`git cat-file -e`: um hash existe no object store local mesmo sem ter sido
-publicado, então `cat-file` responde a outra pergunta.
+**Zero.** Medido no congelamento, não lembrado.
 
-Base de comparação: `origin/dev` em `2ae5b760d`, lida na mesma checagem.
+`origin/dev` em `5ac61f6d7`, após `git fetch` no mesmo bloco.
 
-| SHA | Estado |
+| Verificação | Resultado |
 | --- | --- |
-| `b69c7d00f` | **pendente** — `docs(e2): the recorte is eight feature directories, not nine` |
+| `git rev-list --count origin/dev..HEAD` | `0` |
+| `git merge-base --is-ancestor HEAD origin/dev` | sim |
+| Meus cinco documentos, `git diff --quiet HEAD origin/dev` um a um | idênticos |
 
-Todos os demais commits do grupo são ancestrais de `origin/dev`. O único
-pendente é de documentação: não toca código, migration nem edge function.
+**Por que a terceira linha é a que vale.** As duas primeiras dependem de uma
+propriedade do método de integração da coordenação que eu não tinha verificado:
+a minha branch entrou por **merge**, e por isso o teste de ancestralidade
+respondeu certo. Se a integração tivesse sido por **cherry-pick**, o commit
+entraria na dev com SHA novo, deixaria de ser ancestral para sempre, e o mesmo
+laço daria zero pelo motivo **oposto** — sem que nada no resultado denunciasse a
+troca.
 
-`HEAD` = `b69c7d00f`; upstream `origin/work/etapa2-noturna-publicacoes-midia`
-em 0/0; worktree limpa; sem stash.
+Um teste que responde certo por um motivo que não é o presumido continua
+respondendo certo até a premissa mudar, e nesse dia erra em silêncio. Por isso a
+prova que fica é a de **conteúdo**: não "não há commit pendente", e sim *o
+conteúdo que entreguei está lá, byte a byte*.
 
-Esta seção é volátil e será reconferida no congelamento das 04:40.
+Publicado, recebido, aceito e integrado são quatro estados diferentes, e só o
+quarto responde à pergunta que interessa.
+
+`HEAD` = `149751c5f`; upstream `origin/work/etapa2-noturna-publicacoes-midia` em
+0/0; worktree limpa; sem stash. O commit que publica esta versão do documento
+fica pendente por construção, e é de documentação.
 
 ## 2. Dois números de teste, com os caminhos que os produziram
 
@@ -348,12 +360,31 @@ não a contagem.
 **Branches publicadas — duas:** `origin/work/etapa2-noturna-publicacoes-midia` e
 `origin/work/etapa2-noturna-copia-previa`.
 
+O WIP retido foi conferido no congelamento, porque é o que mais se perde num
+fechamento: `origin/work/etapa2-noturna-copia-previa` contra a local dá **0/0**,
+cabeça em `80f160599`. Está no remoto, e não só no disco temporário — a worktree
+pode ser removida sem perda. O patch segue **não mesclado** e não testado sobre
+a dev atual.
+
 **Stash:** vazio.
 **Containers:** nenhum.
 **Portas abertas por mim:** nenhuma.
 **Agendamentos:** nenhum.
-**Processos filhos e tarefas em segundo plano:** nenhum em execução; as medições
-desta pré-entrega terminaram e seus esperadores saíram.
+**Tarefas em segundo plano:** nenhuma em execução; as medições terminaram e seus
+esperadores saíram.
+
+**Processos `dart` e `flutter_tester`: 28**, contados no congelamento com
+`Get-Process`. **Declarados, não mortos** — a coordenação encerra o conjunto
+depois que as seis frentes entregarem, e matar por conta própria arriscaria a
+medição de quem ainda estivesse rodando.
+
+**Resíduo que eu gerei, declarado.** `packages/coelo_api/pubspec.lock` aparece
+como *untracked* na minha worktree. Foi produzido quando rodei `flutter test` em
+`coelo_api`, na medição do item 2b. Conferi o conteúdo contra a dev com
+`git show origin/dev:...` e `diff`: **idêntico** ao que a coordenação passou a
+rastrear. Aparece untracked apenas porque a minha `HEAD` precede aquele commit.
+Não commitado e não apagado — apagar destruiria uma cópia igual à rastreada, sem
+ganho nenhum.
 
 ## 5. Hora
 
@@ -362,8 +393,14 @@ e não estimada a partir de leitura anterior:
 
 ```
 PS> Get-Date -Format 'yyyy-MM-dd HH:mm:ss K'
-2026-09-10 03:25:56 -03:00
+2026-09-10 04:39:09 -03:00
 ```
+
+Leitura do congelamento, cruzada entre as frentes: coordenação `04:38:01`, esta
+frente `04:36:56`, chat-comunicações `04:36:47`, operações-sistema `04:36:40`,
+formulários-cuidado `04:33:51`. Prevalece a **maior** por acordo, e a divergência
+máxima entre as cinco é de pouco mais de quatro minutos — contra os 37 de deriva
+que uma única estimativa produziu no começo da noite.
 
 A regra existe porque eu mesmo a quebrei: as revisões 28, 29 e 30 do meu canal
 saíram carimbadas 02:05, 02:20 e 02:28 quando o horário real das três estava
