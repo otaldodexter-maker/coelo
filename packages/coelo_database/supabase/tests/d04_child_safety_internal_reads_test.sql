@@ -17,12 +17,14 @@ insert into app_private.superadmin_internal_auth_links(id,internal_identity_id,a
 values('d4940000-0000-4000-8000-000000000001','d4930000-0000-4000-8000-000000000001','d4910000-0000-4000-8000-000000000001');
 insert into app_private.superadmin_internal_memberships(id,internal_identity_id,platform_role_id,scope_kind)
 values('d4950000-0000-4000-8000-000000000001','d4930000-0000-4000-8000-000000000001','d4900000-0000-4000-8000-000000000001','platform');
-insert into public.institutions(id,public_name,slug) values
-('d4960000-0000-4000-8000-000000000001','D04 synthetic A','d04-safety-a'),
-('d4960000-0000-4000-8000-000000000002','D04 synthetic B','d04-safety-b');
-insert into public.units(id,institution_id,name,slug) values
-('d4970000-0000-4000-8000-000000000001','d4960000-0000-4000-8000-000000000001','D04 unit A','a'),
-('d4970000-0000-4000-8000-000000000002','d4960000-0000-4000-8000-000000000002','D04 unit B','b');
+insert into public.institution_types(id,code,name,status) values
+('d4950000-0000-4000-8000-000000000001','d04-safety-type','D04 safety type','active');
+insert into public.institutions(id,public_name,slug,institution_type_id) values
+('d4960000-0000-4000-8000-000000000001','D04 synthetic A','d04-safety-a','d4950000-0000-4000-8000-000000000001'),
+('d4960000-0000-4000-8000-000000000002','D04 synthetic B','d04-safety-b','d4950000-0000-4000-8000-000000000001');
+insert into public.units(id,institution_id,institution_type_id,name,slug) values
+('d4970000-0000-4000-8000-000000000001','d4960000-0000-4000-8000-000000000001','d4950000-0000-4000-8000-000000000001','D04 unit A','a'),
+('d4970000-0000-4000-8000-000000000002','d4960000-0000-4000-8000-000000000002','d4950000-0000-4000-8000-000000000001','D04 unit B','b');
 insert into public.people(id,person_type,first_name,last_name,display_name)
 select ('d4980000-0000-4000-8000-'||lpad(n::text,12,'0'))::uuid,'child','D04','Synthetic','D04 safety synthetic '||n
 from generate_series(1,9) n;
