@@ -16,6 +16,8 @@ void main() {
   final router = File('lib/app/router/superadmin_router.dart').readAsStringSync();
   final navigation = File('lib/app/navigation/superadmin_navigation.dart').readAsStringSync();
 
+  _guardDuplicateRouteNames(router);
+
   test('every navigation leaf reaches a route in the production shell', () {
     final productionCases = _casesOf(router, 'void _navigateFromPersistentShell(');
     final leaves = RegExp(r"_leaf\(\s*'([a-z0-9-]+)'")
@@ -79,4 +81,37 @@ int _endOfFunction(String source, int start) {
     }
   }
   return source.length;
+}
+
+/// Guarda para a classe de defeito que quebrou o router em 09/09/2026.
+///
+/// `/principal-conversations` acabou declarada duas vezes, byte a byte
+/// identica, quando um patch isolado de router foi aplicado e depois a branch
+/// que ja continha o mesmo hunk foi mesclada. O go_router recusa nome
+/// duplicado e dispara assert na CONSTRUCAO do GoRouter, entao a falha nao
+/// fica contida: derruba todo teste que monte o router de producao. Foram 320
+/// testes de rota vermelhos de uma vez, e o `flutter analyze` ficou limpo o
+/// tempo todo, porque duas rotas iguais sao Dart perfeitamente valido.
+///
+/// Um teste de rota nao pega isto: ele proprio nao chega a construir o router.
+/// Por isso a guarda le a fonte e conta declaracoes.
+void _guardDuplicateRouteNames(String router) {
+  test('no route name is declared twice in the router', () {
+    final names = RegExp(r"name:\s*SuperadminRoutes\.([A-Za-z0-9_]+)\s*,")
+        .allMatches(router)
+        .map((m) => m.group(1)!)
+        .toList();
+    expect(names, isNotEmpty, reason: 'a varredura precisa encontrar declaracoes de rota');
+
+    final seen = <String, int>{};
+    for (final name in names) {
+      seen[name] = (seen[name] ?? 0) + 1;
+    }
+    final duplicated = seen.entries.where((e) => e.value > 1).map((e) => e.key).toList()..sort();
+
+    // Uma rota `/dev/...` e sua equivalente de producao usam constantes de nome
+    // DIFERENTES, entao o par legitimo nao aparece aqui. Qualquer nome repetido
+    // e declaracao duplicada de verdade.
+    expect(duplicated, isEmpty);
+  });
 }
