@@ -1,12 +1,12 @@
 {
-  "revision": 9,
+  "revision": 10,
   "updated_at": "2026-09-10T09:30:00-03:00",
   "round": "E2-R03-20260910",
   "group": "operacoes",
   "tool_model": "Codex, Luna medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-operacoes",
   "branch": "work/etapa2-r03-operacoes",
-  "head": "b02478937",
+  "head": "179cd6ae4",
   "base": {
     "requested": "base.fase0Head",
     "resolved": "1adb070c9028850ccdd7e091db5b97b63b95c750",
@@ -42,6 +42,7 @@
       "commit_sha": "b172b695b8d996375fc7da7a539ed7ee78dc7e35",
       "integration_commit_sha": "b02478937",
       "backend_revision_commit_sha": "9ae607fca",
+      "pagination_commit_sha": "179cd6ae4",
       "delta": "adicionada camada server-side sobre support_sessions existente: campos de ticket, revisao otimista, receipts de idempotencia, list/detail/create/reply/set_status, acoes em audit.support_session_actions, RLS deny-by-default e grants somente por RPC authenticated",
       "composition_key_candidate": "supportProductionRepositoryV1",
       "criteria": {"frontend": "P(tabela/kanban/detalhe e rota de producao)", "backend": "P(adapter RPC; pgTAP pendente)", "e2e": "N", "reload": "N", "cross_tenant": "pgTAP pendente de replay nominal"}
@@ -91,5 +92,5 @@
     {"kind": "verification", "what": "nenhum replay pgTAP local nominal executado ainda; reset completo falha antes do pacote por schema app_private ausente na cadeia canonica", "owner": "coordenador/base de replay", "unblocks": "base/replay nominal corrigido ou perfil descartavel que inclua schema app_private; migration e teste ja estao no pacote"}
   ],
   "next_step": "coordenador deve aplicar/reconciliar os pacotes SQL na fila; em seguida executar replay pgTAP e E2E Supabase real das 21 acoes, começando por Conta e seguindo Planos, Auditoria e Suporte; sem declarar aceite ponta a ponta antes do replay",
-  "commits": ["b172b695b8d996375fc7da7a539ed7ee78dc7e35", "94bca84f6", "5611c6da7", "ce4939227", "b02478937", "9ae607fca"]
+  "commits": ["b172b695b8d996375fc7da7a539ed7ee78dc7e35", "94bca84f6", "5611c6da7", "ce4939227", "b02478937", "9ae607fca", "179cd6ae4"]
 }
