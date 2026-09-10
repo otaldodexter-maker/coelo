@@ -1990,6 +1990,27 @@ void main() {
     expect(picker.initialDate!.isAfter(picker.lastDate), isFalse);
   });
 
+  // O editor ja recusa intervalo de datas invertido, entao formulario criado
+  // aqui nao tem esse estado. Dado legado pode ter. showDatePicker afirma que
+  // a data final nao e anterior a inicial, entao abrir o seletor estouraria.
+  testWidgets('an inconsistent authored date range says so instead of crashing', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1000, 1200));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await open(
+      tester,
+      dateApi(min: DateTime.utc(2026, 9, 30), max: DateTime.utc(2026, 3, 1)),
+    );
+    await tester.tap(find.widgetWithIcon(OutlinedButton, Icons.calendar_today_outlined));
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(find.byType(DatePickerDialog), findsNothing);
+    expect(
+      find.text('Esta pergunta tem um intervalo de datas inválido e não pode ser respondida.'),
+      findsWidgets,
+    );
+  });
+
   testWidgets('without an authored range the picker keeps its wide fallback', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1000, 1200));
     addTearDown(() => tester.binding.setSurfaceSize(null));

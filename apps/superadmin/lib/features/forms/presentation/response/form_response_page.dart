@@ -1004,6 +1004,16 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
     // always going to reject.
     final first = item.config.minDate ?? DateTime(now.year - 120);
     final last = item.config.maxDate ?? DateTime(now.year + 20);
+    if (first.isAfter(last)) {
+      // O editor recusa intervalo invertido, mas dado legado pode ter. Sem esta
+      // guarda showDatePicker estoura na propria afirmacao dele, e mesmo sem
+      // estourar nao existe data que o servidor fosse aceitar.
+      setState(
+        () => _message =
+            'Esta pergunta tem um intervalo de datas inválido e não pode ser respondida.',
+      );
+      return;
+    }
     final stored = (_answers[item.id]?.value as FormDateValue?)?.value ?? now;
     // A stored answer can predate a range declared later. showDatePicker
     // asserts the initial date is inside the range, so clamp instead of crash.
