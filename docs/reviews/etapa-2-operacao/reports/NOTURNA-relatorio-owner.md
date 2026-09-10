@@ -70,6 +70,42 @@ bloqueios agora estão separados entre `blocked-decision`, onde falta uma decis�
 sua, e `blocked-environment`, onde o pacote está revisável e só falta a aplicação
 remota que esta rodada proibiu.
 
+## O defeito mais grave encontrado: Segurança infantil não se dispõe em produção
+
+Duas frentes mediram `/safety` de forma independente, e o diagnóstico mais
+preciso mudou a categoria do problema. **Não é transbordamento: a grade de
+cartões não se dispõe.** São vinte exceções de layout por largura, encabeçadas
+por `LayoutBuilder does not support returning intrinsic dimensions` com
+`IntrinsicHeight` como causador, seguidas de dezenove `RenderBox was not laid
+out` em cascata.
+
+A cadeia está rastreada até o fim: `safety_pages.dart:292` envolve cada linha da
+grade em `IntrinsicHeight`; o cartão é `SafetyChildDirectoryCard`, que retorna
+`CoeloAdminInteractiveCard`, que contém `CoeloAdminExpandableStatusIndicator`, e
+esse é literalmente um `LayoutBuilder` na linha 42 do pacote. `IntrinsicHeight`
+pergunta dimensões intrínsecas; `LayoutBuilder` não sabe responder; a asserção
+dispara.
+
+**E isso alcança produção.** `childSafetyRepository` é composto como
+`SupabaseChildSafetyRepository` real, o controlador é construído em
+`superadmin_app.dart:231`, a rota produtiva `/safety` monta `SafetyLandingPage`
+com ele, e o modo de exibição padrão é cartões. Basta existir um registro para a
+tela quebrar no primeiro carregamento. Não é protótipo com defeito: é MVP, com
+repositório de produção ligado, sobre dados de criança.
+
+Duas correções possíveis, e a escolha é sua com o `coelo-ui`: contida em
+`safety`, deixando de envolver a linha em `IntrinsicHeight`; ou no componente
+compartilhado, tirando o `LayoutBuilder` do indicador, o que resolve para todo
+consumidor mas mexe no Design System e move goldens de outras telas. A primeira
+está atribuída para execução; a segunda fica registrada, porque qualquer tela
+que um dia envolver esse indicador em `IntrinsicHeight` cai no mesmo buraco.
+
+Registro também uma **divergência de medição não resolvida**: nas diretrizes
+nativas de acessibilidade, uma frente reporta as três reprovando em `safety` e a
+outra reporta rótulo e tamanho de alvo passando, com contraste sem concluir. A
+segunda levanta que a cascata de exceções pode ter contaminado a primeira
+medição. As duas ficam registradas; nenhuma foi escolhida.
+
 ## O achado mais importante da rodada
 
 Uma frente entregou 61 testes verdes de Suporte e reportou aceite funcional
