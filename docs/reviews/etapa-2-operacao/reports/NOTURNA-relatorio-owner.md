@@ -3082,10 +3082,24 @@ diz que a tela funciona.
 
 **O que eu NÃO verifiquei no fechamento, e não vou apresentar como verificado:**
 
-- **A suíte completa não foi reexecutada sobre a base entregue.** O último número
-  completo — 6390 aprovados, 14 ignorados, 144 falhas — é de uma base anterior, e os
-  commits desde então são de documento e de canal. **Que isso não mexa no número é
-  inferência minha, não medição.**
+- **A suíte completa não foi reexecutada sobre a base entregue**, e a inferência que
+  eu ia entregar no lugar dela **estava errada**. Escrevi que os commits desde a
+  última corrida eram "só de documento e de canal"; uma frente foi medir e achou
+  **três arquivos de teste alterados**. Mas, filtradas as linhas que não são
+  comentário nem importação, os três devolvem **zero linhas** — são a remoção de um
+  número não sustentado, a remoção de um import órfão e uma nota num contrato de RPC.
+  **Nenhuma linha executável mudou.** Então 6390/14/144 e o recorte de 306/10 valem
+  sobre a base final — não porque nada mudou, e sim porque o que mudou não pode
+  alterar resultado de teste. **A conclusão sobrevive; a minha razão para ela não
+  sobrevivia.**
+
+  E a medição que a corrigiu quase não aconteceu: a primeira checagem da frente usou
+  um filtro de caminho que devolveu **zero arquivos alterados**, e ela quase me
+  respondeu "nada mudou, confirmado". Pegou porque **sabia** que um commit seu havia
+  tocado um arquivo naquele escopo — e um controle que contradiz fato conhecido está
+  quebrado. É o segundo zero desta noite que parecia resultado, e a defesa que
+  funcionou nas duas vezes foi a mesma: **ter um caso que se sabe que deveria
+  aparecer.**
 - **Os 28 processos de teste vivos na máquina não têm dono conhecido.** Nenhuma
   frente registrou identificador de processo por corrida, então nenhuma consegue
   dizer quais são seus. A trajetória foi 32 às 04:09, 30 às 04:14, 28 no corte:
