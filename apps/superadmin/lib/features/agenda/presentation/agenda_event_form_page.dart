@@ -4,6 +4,7 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
@@ -551,7 +552,18 @@ final class _AgendaEventFormPageState extends State<_AgendaEventFormBody> {
   );
 
   List<Widget> _basicFields() => [
-    CoeloFormTextField(controller: _title, labelText: 'Título', prefixIcon: Icons.title_rounded),
+    CoeloFormTextField(
+      controller: _title,
+      labelText: 'Título',
+      prefixIcon: Icons.title_rounded,
+      // O banco recusa titulo acima de 240 caracteres em
+      // superadmin_agenda_save, e a recusa volta como 22023, que o repositorio
+      // traduz para indisponibilidade generica: o usuario nao descobre que o
+      // problema e o tamanho e tenta de novo para sempre. Limitar a entrada
+      // impede montar um payload invalido, e nao trunca o que ja esta salvo,
+      // porque o formatador so age na digitacao.
+      inputFormatters: [LengthLimitingTextInputFormatter(240)],
+    ),
     CoeloAdminSingleSelectField<AgendaItemType>(
       key: const Key('agenda-event-type'),
       label: 'Tipo',
@@ -583,6 +595,8 @@ final class _AgendaEventFormPageState extends State<_AgendaEventFormBody> {
       labelText: 'Descrição (opcional)',
       prefixIcon: Icons.notes_rounded,
       maxLines: 4,
+      // Limite da coluna description de agenda_events.
+      inputFormatters: [LengthLimitingTextInputFormatter(10000)],
     ),
     _questionBuilder(),
   ];
@@ -647,6 +661,8 @@ final class _AgendaEventFormPageState extends State<_AgendaEventFormBody> {
       labelText: 'Local (opcional)',
       prefixIcon: Icons.place_outlined,
       onChanged: (_) => setState(() {}),
+      // Limite da coluna location de agenda_events.
+      inputFormatters: [LengthLimitingTextInputFormatter(500)],
     ),
     _LocationPreview(location: _location.text.trim()),
     CoeloAdminSingleSelectField<String>(
