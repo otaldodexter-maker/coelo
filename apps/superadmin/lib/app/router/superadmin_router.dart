@@ -7,6 +7,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:coelo_api/coelo_api.dart';
+import 'package:coelo_domain/locations.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import '../../core/guards/superadmin_session.dart';
@@ -29,6 +30,9 @@ import '../../features/activities/data/dev/dev_activity_session_store.dart';
 import '../../features/activities/application/activity_save_attempt_coordinator.dart';
 import '../../features/activities/domain/activity_command.dart';
 import '../../features/activities/domain/activity_directory.dart';
+import '../../features/activities/domain/activity_read_detail.dart';
+import '../../features/activities/presentation/activity_read_detail_page.dart';
+import '../../features/activities/presentation/activity_catalogued_location_section.dart';
 import '../../features/activities/domain/activity_profile_about_repository.dart';
 import '../../features/activities/presentation/activity_detail_page.dart';
 import '../../features/activities/presentation/activity_directory_page.dart';
@@ -134,6 +138,15 @@ import '../../features/institutions/data/supabase_institution_directory_reposito
 import '../../features/institutions/domain/institution_directory_repository.dart';
 import '../../features/institutions/presentation/screens/institution_directory_page.dart';
 import '../../features/institutions/presentation/screens/institution_form_page.dart';
+import '../../features/locations/domain/location_capabilities.dart';
+import '../../features/locations/domain/location_catalog_reader.dart';
+import '../../features/locations/domain/location_catalog_writer.dart';
+import '../../features/locations/domain/location_reservation_gateway.dart';
+import '../../features/locations/domain/location_consumer_bindings_reader.dart';
+import '../../features/locations/domain/location_consumer_selection_reader.dart';
+import '../../features/locations/presentation/location_consumer_reservations.dart';
+import '../../features/locations/presentation/locations_page.dart';
+import '../../features/locations/presentation/unit_locations_gate.dart';
 import '../../features/audit/presentation/audit_directory_page.dart';
 import '../../features/audit/presentation/audit_controller.dart';
 import '../../features/audit/domain/audit.dart';
@@ -150,7 +163,10 @@ import '../../features/notices/domain/notice_repository.dart'
 import '../../features/notices/data/development_notice_repository.dart';
 import '../../features/notices/presentation/notice_directory_page.dart';
 import '../../features/notices/presentation/notice_form_page.dart';
+import '../../features/principal_chat/presentation/principal_chat_page.dart';
 import '../../features/principal_circulars/domain/principal_happens_mixed_feed.dart';
+import '../../features/principal_circulars/presentation/principal_circular_detail_page.dart';
+import '../../features/principal_moments/domain/principal_moments_feed_repository.dart';
 import '../../features/plans/data/fake_plan_catalog_repository.dart';
 import '../../features/plans/domain/plan_catalog_repository.dart';
 import '../../features/plans/presentation/plan_directory_page.dart';
@@ -226,6 +242,8 @@ void _returnToOr(
 
 SupportPrototypeController _createDevelopmentSupportController() => SupportPrototypeController();
 
+LocationCapabilities _noLocationCapabilities(SuperadminAuthContext? _) => LocationCapabilities.none;
+
 GoRouter createSuperadminRouter({
   required SuperadminSession session,
   required LoginAction login,
@@ -236,8 +254,20 @@ GoRouter createSuperadminRouter({
   GroupDirectoryRepository groupDirectoryRepository = const UnavailableGroupDirectoryRepository(),
   GroupDetailRepository groupDetailRepository = const UnavailableGroupDetailRepository(),
   UnitDetailRepository unitDetailRepository = const UnavailableUnitDetailRepository(),
+  LocationCatalogReader locationCatalogReader = const UnavailableLocationCatalogReader(),
+  LocationConsumerBindingsReader locationConsumerBindingsReader =
+      const UnavailableLocationConsumerBindingsReader(),
+  LocationConsumerSelectionReader locationConsumerSelectionReader =
+      const UnavailableLocationConsumerSelectionReader(),
+  LocationCatalogWriter locationCatalogWriter = const UnavailableLocationCatalogWriter(),
+  LocationReservationGateway locationReservationGateway =
+      const UnavailableLocationReservationGateway(),
+  LocationCapabilities Function(SuperadminAuthContext?) locationCapabilities =
+      _noLocationCapabilities,
   ActivityDirectoryRepository activityDirectoryRepository =
       const UnavailableActivityDirectoryRepository(),
+  ActivityReadDetailRepository activityReadDetailRepository =
+      const UnavailableActivityReadDetailRepository(),
   ActivityCommandRepository activityCommandRepository =
       const UnavailableActivityCommandRepository(),
   AssessmentRepository assessmentRepository = const UnavailableAssessmentRepository(),
@@ -249,6 +279,7 @@ GoRouter createSuperadminRouter({
   UnitDirectoryRepository unitDirectoryRepository = const UnavailableUnitDirectoryRepository(),
   UnitBackendCommandsGateway unitBackendCommands = const UnavailableUnitBackendCommandsGateway(),
   bool enableStructureMutations = false,
+  bool enableActivityLocationCreate = false,
   AccessProfileRepository accessProfileRepository = const UnavailableAccessProfileRepository(),
   PlatformUserRepository? platformUserRepository,
   ResetPasswordAction resetPassword = unavailableResetPassword,
@@ -290,6 +321,10 @@ GoRouter createSuperadminRouter({
   CircularRepository? principalCircularRepository,
   PrincipalHappensFeedRepository? principalHappensFeedRepository,
   PrincipalMixedFeedRepository? principalMixedFeedRepository,
+  CircularResponseRepository? principalCircularResponseRepository,
+  CircularMediaRepository? principalCircularMediaRepository,
+  PrincipalMomentsFeedRepository? principalMomentsFeedRepository,
+  PrincipalMomentsWithdrawalRepository? principalMomentsWithdrawalRepository,
   HappensPublicationRepository? happensPublicationRepository,
   PrincipalNowFeedRepository? principalNowFeedRepository,
   MomentsPublicationRepository? momentsPublicationRepository,
@@ -298,6 +333,10 @@ GoRouter createSuperadminRouter({
   bool allowDevelopmentPreview = SuperadminAppConfig.allowDevelopmentPreview,
   required ValueChanged<ThemeMode> onThemeModeChanged,
 }) {
+  // Publicar e ler Momentos sao rotas distintas; o sinal compartilhado deixa a
+  // leitura recarregar pelo repositorio autorizado apos uma publicacao
+  // confirmada, sem tratar o recibo do publicador como dado de feed.
+  final momentsFeedRefreshSignal = PrincipalMomentsFeedRefreshSignal();
   final accessHealthFixtures = DevelopmentAccessHealthFixtureCatalog.standard();
   final resolvedChildSafetyController =
       childSafetyController ?? ChildSafetyController(const UnavailableChildSafetyRepository());
@@ -479,6 +518,7 @@ GoRouter createSuperadminRouter({
     subtitle: subtitle,
     currentDestination: destination,
     activityController: operationalActivities,
+    chatUnreadCountLoader: developmentChatRepository.fetchUnreadTotal,
     onDestinationSelected: (value) => _navigateFromDevelopmentShell(context, value),
     child: child,
   );
@@ -494,6 +534,13 @@ GoRouter createSuperadminRouter({
     subtitle: subtitle,
     currentDestination: destination,
     activityController: operationalActivities,
+    // O launcher só afirma contagem quando existe repositório autorizado.
+    // `UnavailableChatRepository.fetchUnreadTotal` devolve 0, e um zero
+    // silencioso é indistinguível de "não há não lidas": passar null faz o
+    // launcher não afirmar nada em vez de afirmar algo falso.
+    chatUnreadCountLoader: chatRepository is UnavailableChatRepository
+        ? null
+        : chatRepository.fetchUnreadTotal,
     onDestinationSelected: (value) => _navigateFromPersistentShell(context, value),
     child: child,
   );
@@ -724,10 +771,17 @@ GoRouter createSuperadminRouter({
           onOpenNow: () => context.pushNamed(SuperadminRoutes.devPrincipalNowName),
           onPublishNow: () => context.goNamed(SuperadminRoutes.devPrincipalNowPublicationName),
           onCreatePost: () => context.goNamed(SuperadminRoutes.devPrincipalHappensPublishName),
-          onOpenMessages: () => context.goNamed(
-            SuperadminRoutes.devConversationsName,
-            queryParameters: const {'from': 'principal'},
-          ),
+          onOpenMessages: () =>
+              context.goNamed(SuperadminRoutes.devPrincipalConversationsName),
+        ),
+      ),
+      GoRoute(
+        path: SuperadminRoutes.devPrincipalConversations,
+        name: SuperadminRoutes.devPrincipalConversationsName,
+        builder: (context, state) => PrincipalChatPage(
+          chatRepository: developmentChatRepository,
+          onBack: () => context.goNamed(SuperadminRoutes.devPrincipalHappensName),
+          onOpenProfile: () => context.goNamed(SuperadminRoutes.devPrincipalProfileName),
         ),
       ),
       GoRoute(
@@ -794,6 +848,13 @@ GoRouter createSuperadminRouter({
                   onDestinationSelected: (destination) => developmentPreview
                       ? _navigateFromDevelopmentShell(context, destination)
                       : _navigateFromPersistentShell(context, destination),
+                  // Mesma regra do shell de produção: sem repositório
+                  // autorizado o launcher não afirma contagem alguma.
+                  chatUnreadCountLoader: developmentPreview
+                      ? developmentChatRepository.fetchUnreadTotal
+                      : chatRepository is UnavailableChatRepository
+                      ? null
+                      : chatRepository.fetchUnreadTotal,
                   onBugReportSubmitted: developmentPreview
                       ? developmentSupportController.submitReport
                       : productionSupportController?.submitReport,
@@ -837,22 +898,66 @@ GoRouter createSuperadminRouter({
                     unitId: runtimeContext.unitId,
                     groupId: runtimeContext.groupId,
                   ),
-                  onOpenCircular: (_) => ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('A leitura de circulares ainda não está disponível neste contexto.')),
-                  ),
+                  // Com a capacidade de leitura composta, a Circular abre no
+                  // leitor da familia Principal. Sem ela, a acao continua
+                  // informando indisponibilidade em vez de virar toque morto.
+                  onOpenCircular: (circularId) =>
+                      principalCircularRepository == null ||
+                          principalCircularResponseRepository == null
+                      ? ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'A leitura de circulares ainda não está disponível neste contexto.',
+                            ),
+                          ),
+                        )
+                      : context.pushNamed(
+                          SuperadminRoutes.principalHappensCircularName,
+                          pathParameters: {'circularId': circularId},
+                        ),
                   data: PrincipalHappensPreviewData.empty,
                   embedded: true,
                   onCreatePost: () => context.goNamed(SuperadminRoutes.principalHappensPublishName),
                   onOpenNow: () => context.pushNamed(SuperadminRoutes.principalNowName),
                   onPublishNow: () => context.goNamed(SuperadminRoutes.principalNowPublicationName),
-                  onOpenMessages: () => context.goNamed(
-                    SuperadminRoutes.conversationsName,
-                    queryParameters: const {'from': 'principal'},
-                  ),
+                  onOpenMessages: () =>
+                      context.goNamed(SuperadminRoutes.principalConversationsName),
                 );
               },
             ),
             ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.principalHappensCircular,
+            name: SuperadminRoutes.principalHappensCircularName,
+            builder: (context, state) {
+              final circularId = state.pathParameters['circularId'];
+              final repository = principalCircularRepository;
+              final responseRepository = principalCircularResponseRepository;
+              if (circularId == null || circularId.isEmpty || repository == null || responseRepository == null) {
+                return _unavailableCompositionRootRoute(context);
+              }
+              return ListenableBuilder(
+                listenable: session,
+                builder: (context, _) => !session.isAuthenticated || session.isPasswordRecovery
+                    ? _unavailableCompositionRootRoute(context)
+                    : PrincipalCircularDetailPage(
+                        // A leitura pertence à revisão de autorização vigente: se
+                        // ela mudar, o leitor recarrega em vez de manter conteúdo
+                        // obtido sob um contexto que já não vale.
+                        key: ValueKey(
+                          'principal-circular-$circularId-${session.authorizationInvalidationRevision}',
+                        ),
+                        circularId: circularId,
+                        repository: repository,
+                        responseRepository: responseRepository,
+                        mediaRepository: principalCircularMediaRepository,
+                        embedded: true,
+                        onReturn: () =>
+                            context.canPop() ? context.pop() : context.goNamed(SuperadminRoutes.principalHappensName),
+                      ),
+              );
+            },
           ),
           GoRoute(
             path: SuperadminRoutes.principalHappensPublish,
@@ -892,7 +997,13 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.principalNow,
             name: SuperadminRoutes.principalNowName,
-            builder: (context, state) => PrincipalRuntimeContextRoute(
+            builder: (context, state) => ListenableBuilder(
+              listenable: session,
+              builder: (context, _) => PrincipalRuntimeContextRoute(
+              // Uma leitura obtida sob a autorizacao anterior nao pode
+              // sobreviver a revisao dela: o Agora rele como Acontece e
+              // Momentos ja fazem.
+              key: ValueKey('principal-now-${session.authorizationInvalidationRevision}'),
               repository: principalRuntimeContextRepository,
               builder: (context, runtimeContext) {
                 final repository = principalNowFeedRepository;
@@ -910,6 +1021,7 @@ GoRouter createSuperadminRouter({
                   onCreate: () => context.goNamed(SuperadminRoutes.principalNowPublicationName),
                 );
               },
+            ),
             ),
           ),
           GoRoute(
@@ -981,7 +1093,10 @@ GoRouter createSuperadminRouter({
                     groupName: groupName,
                   ),
                   onClose: () => context.goNamed(SuperadminRoutes.principalHappensName),
-                  onPublished: (_) => context.goNamed(SuperadminRoutes.principalMomentsName),
+                  onPublished: (publication) {
+                    momentsFeedRefreshSignal.markPublished(publication.id);
+                    context.goNamed(SuperadminRoutes.principalMomentsName);
+                  },
                 );
               },
             ),
@@ -1013,10 +1128,7 @@ GoRouter createSuperadminRouter({
                   onOpenAgenda: () => context.goNamed(SuperadminRoutes.agendaName),
                   onOpenProfile: () => context.goNamed(SuperadminRoutes.principalProfileName),
                   onOpenActivities: () => context.goNamed(SuperadminRoutes.activitiesName),
-                  onOpenMessages: () => context.goNamed(
-                    SuperadminRoutes.conversationsName,
-                    queryParameters: const {'from': 'principal'},
-                  ),
+                  onOpenMessages: () => context.goNamed(SuperadminRoutes.principalConversationsName),
                 );
               },
             ),
@@ -1024,9 +1136,35 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.principalMoments,
             name: SuperadminRoutes.principalMomentsName,
-            builder: (context, state) => PrincipalRuntimeContextRoute(
+            builder: (context, state) => ListenableBuilder(
+              listenable: session,
+              builder: (context, _) => !session.isAuthenticated || session.isPasswordRecovery
+                  ? _unavailableCompositionRootRoute(context)
+                  : PrincipalRuntimeContextRoute(
+              key: ValueKey('principal-moments-${session.authorizationInvalidationRevision}'),
               repository: principalRuntimeContextRepository,
-              builder: (context, _) => _unavailableCompositionRootRoute(context),
+              builder: (context, runtimeContext) {
+                final repository = principalMomentsFeedRepository;
+                if (repository == null) return _unavailableCompositionRootRoute(context);
+                return PrincipalMomentsPreviewPage(
+                  embedded: true,
+                  feedRepository: repository,
+                  feedScope: PrincipalMomentsFeedScope(
+                    institutionId: runtimeContext.institutionId,
+                    unitId: runtimeContext.unitId,
+                    groupId: runtimeContext.groupId,
+                  ),
+                  withdrawalRepository: principalMomentsWithdrawalRepository,
+                  refreshSignal: momentsFeedRefreshSignal,
+                  onOpenHappens: () => context.goNamed(SuperadminRoutes.principalHappensName),
+                  onOpenHome: () => context.goNamed(SuperadminRoutes.principalHappensName),
+                  onCreateMoment: () =>
+                      context.goNamed(SuperadminRoutes.principalMomentsPublishName),
+                  onPublishNow: () =>
+                      context.goNamed(SuperadminRoutes.principalNowPublicationName),
+                );
+              },
+            ),
             ),
           ),
           GoRoute(
@@ -1053,16 +1191,29 @@ GoRouter createSuperadminRouter({
                 onOpenForYou: () => context.goNamed(SuperadminRoutes.principalForYouName),
                 onOpenMoments: () => context.pushNamed(SuperadminRoutes.principalMomentsName),
                 onPublishNow: () => context.goNamed(SuperadminRoutes.principalNowPublicationName),
-                onMessage: () => context.goNamed(
-                  SuperadminRoutes.conversationsName,
-                  queryParameters: const {'from': 'principal'},
-                ),
-                onOpenMessages: () => context.goNamed(
-                  SuperadminRoutes.conversationsName,
-                  queryParameters: const {'from': 'principal'},
-                ),
+                onMessage: () => context.goNamed(SuperadminRoutes.principalConversationsName),
+                onOpenMessages: () => context.goNamed(SuperadminRoutes.principalConversationsName),
               ),
             ),
+          ),
+          // Chat contextual do Coelo (Principal): composicao propria da familia
+          // Principal sobre o ChatRepository compartilhado. Substitui o desvio
+          // para a pagina administrativa, onde `?from=principal` so trocava o
+          // botao voltar. Falha fechada quando a composicao nao injeta um
+          // repository produtivo, em vez de exibir uma superficie sem backend
+          // autorizado. Declarada dentro da ShellRoute para que o shell/menu
+          // hospedeiro seja preservado, como as demais rotas Principal.
+          GoRoute(
+            path: SuperadminRoutes.principalConversations,
+            name: SuperadminRoutes.principalConversationsName,
+            builder: (context, state) => chatRepository is UnavailableChatRepository
+                ? _unavailableCompositionRootRoute(context)
+                : PrincipalChatPage(
+                    chatRepository: chatRepository,
+                    embedded: true,
+                    onBack: () => context.goNamed(SuperadminRoutes.principalHappensName),
+                    onOpenProfile: () => context.goNamed(SuperadminRoutes.principalProfileName),
+                  ),
           ),
           GoRoute(
             path: SuperadminRoutes.principalProfileEdit,
@@ -1079,6 +1230,25 @@ GoRouter createSuperadminRouter({
                 );
               },
             ),
+          ),
+          // Chat contextual do Coelo (Principal): composicao propria da familia
+          // Principal sobre o ChatRepository compartilhado. Substitui o desvio
+          // para a pagina administrativa, onde `?from=principal` so trocava o
+          // botao voltar. Falha fechada quando a composicao nao injeta um
+          // repository produtivo, em vez de exibir uma superficie sem backend
+          // autorizado. Declarada dentro da ShellRoute para que o shell/menu
+          // hospedeiro seja preservado, como as demais rotas Principal.
+          GoRoute(
+            path: SuperadminRoutes.principalConversations,
+            name: SuperadminRoutes.principalConversationsName,
+            builder: (context, state) => chatRepository is UnavailableChatRepository
+                ? _unavailableCompositionRootRoute(context)
+                : PrincipalChatPage(
+                    chatRepository: chatRepository,
+                    embedded: true,
+                    onBack: () => context.goNamed(SuperadminRoutes.principalHappensName),
+                    onOpenProfile: () => context.goNamed(SuperadminRoutes.principalProfileName),
+                  ),
           ),
           GoRoute(
             path: SuperadminRoutes.login,
@@ -1195,6 +1365,12 @@ GoRouter createSuperadminRouter({
                 ? blockedProductionMutationPage(context)
                 : InstitutionFormPage(
                     repository: institutionDirectoryRepository,
+                    locationCatalogReader: locationCatalogReader,
+                    locationSessionAvailable:
+                        session.isAuthenticated &&
+                        !session.isPasswordRecovery &&
+                        session.authContext?.permissionCodes.contains('locations.read') == true,
+                    locationContextRevision: session.authorizationInvalidationRevision,
                     logout: logout,
                     onCancel: () => context.goNamed(SuperadminRoutes.institutionsName),
                     onSaved: (result) =>
@@ -1228,6 +1404,16 @@ GoRouter createSuperadminRouter({
                 : InstitutionFormPage(
                     repository: institutionDirectoryRepository,
                     institutionId: state.pathParameters['institutionId'],
+                    locationCatalogReader: locationCatalogReader,
+                    locationSessionAvailable:
+                        session.isAuthenticated &&
+                        !session.isPasswordRecovery &&
+                        session.authContext?.permissionCodes.contains('locations.read') == true,
+                    locationContextRevision: session.authorizationInvalidationRevision,
+                    onOpenLocations: () => context.goNamed(
+                      SuperadminRoutes.institutionLocationsName,
+                      pathParameters: {'institutionId': state.pathParameters['institutionId']!},
+                    ),
                     logout: logout,
                     onCancel: () => context.goNamed(SuperadminRoutes.institutionsName),
                     onSaved: (result) =>
@@ -1304,6 +1490,12 @@ GoRouter createSuperadminRouter({
                   : UnitFormPage(
                       key: ValueKey(session.authorizationInvalidationRevision),
                       repository: unitRepository,
+                      locationCatalogReader: locationCatalogReader,
+                      locationSessionAvailable:
+                          session.isAuthenticated &&
+                          !session.isPasswordRecovery &&
+                          session.authContext?.permissionCodes.contains('locations.read') == true,
+                      locationContextRevision: session.authorizationInvalidationRevision,
                       logout: logout,
                       onCreateGroup: (institutionId, unitId) => context.goNamed(
                         SuperadminRoutes.groupCreateName,
@@ -1361,6 +1553,16 @@ GoRouter createSuperadminRouter({
                       key: ValueKey(session.authorizationInvalidationRevision),
                       repository: unitRepository,
                       unitId: state.pathParameters['unitId'],
+                      locationCatalogReader: locationCatalogReader,
+                      locationSessionAvailable:
+                          session.isAuthenticated &&
+                          !session.isPasswordRecovery &&
+                          session.authContext?.permissionCodes.contains('locations.read') == true,
+                      locationContextRevision: session.authorizationInvalidationRevision,
+                      onOpenLocations: () => context.goNamed(
+                        SuperadminRoutes.unitLocationsName,
+                        pathParameters: {'unitId': state.pathParameters['unitId']!},
+                      ),
                       logout: logout,
                       onCreateGroup: (institutionId, unitId) => context.goNamed(
                         SuperadminRoutes.groupCreateName,
@@ -1405,6 +1607,147 @@ GoRouter createSuperadminRouter({
                         }
                       },
                     ),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.institutionLocations,
+            name: SuperadminRoutes.institutionLocationsName,
+            builder: (context, state) => ListenableBuilder(
+              listenable: session,
+              builder: (context, child) {
+                final capabilities = locationCapabilities(session.authContext);
+                final sessionAvailable =
+                    session.isAuthenticated &&
+                    !session.isPasswordRecovery &&
+                    session.authContext?.permissionCodes.contains('locations.read') == true;
+                return LocationsPage(
+                  key: ValueKey(session.authorizationInvalidationRevision),
+                  scope: LocationScope.institution(
+                    institutionId: state.pathParameters['institutionId']!,
+                  ),
+                  reader: locationCatalogReader,
+                  writer: capabilities.writesAnything
+                      ? locationCatalogWriter
+                      : const UnavailableLocationCatalogWriter(),
+                  capabilities: capabilities,
+                  sessionAvailable: sessionAvailable,
+                  contextRevision: session.authorizationInvalidationRevision,
+                  logout: logout,
+                  currentDestination: 'institutions',
+                  onLocationOpened: (id) => context.goNamed(
+                    SuperadminRoutes.institutionLocationDetailName,
+                    pathParameters: {
+                      'institutionId': state.pathParameters['institutionId']!,
+                      'locationId': id,
+                    },
+                  ),
+                  onDestinationSelected: (destination) =>
+                      _navigateFromPersistentShell(context, destination),
+                );
+              },
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.institutionLocationDetail,
+            name: SuperadminRoutes.institutionLocationDetailName,
+            builder: (context, state) => ListenableBuilder(
+              listenable: session,
+              builder: (context, child) {
+                final capabilities = locationCapabilities(session.authContext);
+                final sessionAvailable =
+                    session.isAuthenticated &&
+                    !session.isPasswordRecovery &&
+                    session.authContext?.permissionCodes.contains('locations.read') == true;
+                return LocationsPage(
+                  key: ValueKey(session.authorizationInvalidationRevision),
+                  scope: LocationScope.institution(
+                    institutionId: state.pathParameters['institutionId']!,
+                  ),
+                  reader: locationCatalogReader,
+                  writer: capabilities.writesAnything
+                      ? locationCatalogWriter
+                      : const UnavailableLocationCatalogWriter(),
+                  capabilities: capabilities,
+                  sessionAvailable: sessionAvailable,
+                  contextRevision: session.authorizationInvalidationRevision,
+                  selectedLocationId: state.pathParameters['locationId'],
+                  logout: logout,
+                  currentDestination: 'institutions',
+                  onLocationClosed: () => context.goNamed(
+                    SuperadminRoutes.institutionLocationsName,
+                    pathParameters: {'institutionId': state.pathParameters['institutionId']!},
+                  ),
+                  onDestinationSelected: (destination) =>
+                      _navigateFromPersistentShell(context, destination),
+                );
+              },
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.unitLocations,
+            name: SuperadminRoutes.unitLocationsName,
+            builder: (context, state) => ListenableBuilder(
+              listenable: session,
+              builder: (context, child) {
+                final capabilities = locationCapabilities(session.authContext);
+                final sessionAvailable =
+                    session.isAuthenticated &&
+                    !session.isPasswordRecovery &&
+                    session.authContext?.permissionCodes.contains('locations.read') == true;
+                return UnitLocationsGate(
+                  key: ValueKey(session.authorizationInvalidationRevision),
+                  unitId: state.pathParameters['unitId']!,
+                  unitDetailRepository: unitDetailRepository,
+                  reader: locationCatalogReader,
+                  writer: capabilities.writesAnything
+                      ? locationCatalogWriter
+                      : const UnavailableLocationCatalogWriter(),
+                  capabilities: capabilities,
+                  sessionAvailable: sessionAvailable,
+                  contextRevision: session.authorizationInvalidationRevision,
+                  logout: logout,
+                  onLocationOpened: (id) => context.goNamed(
+                    SuperadminRoutes.unitLocationDetailName,
+                    pathParameters: {'unitId': state.pathParameters['unitId']!, 'locationId': id},
+                  ),
+                  onDestinationSelected: (destination) =>
+                      _navigateFromPersistentShell(context, destination),
+                );
+              },
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.unitLocationDetail,
+            name: SuperadminRoutes.unitLocationDetailName,
+            builder: (context, state) => ListenableBuilder(
+              listenable: session,
+              builder: (context, child) {
+                final capabilities = locationCapabilities(session.authContext);
+                final sessionAvailable =
+                    session.isAuthenticated &&
+                    !session.isPasswordRecovery &&
+                    session.authContext?.permissionCodes.contains('locations.read') == true;
+                return UnitLocationsGate(
+                  key: ValueKey(session.authorizationInvalidationRevision),
+                  unitId: state.pathParameters['unitId']!,
+                  unitDetailRepository: unitDetailRepository,
+                  reader: locationCatalogReader,
+                  writer: capabilities.writesAnything
+                      ? locationCatalogWriter
+                      : const UnavailableLocationCatalogWriter(),
+                  capabilities: capabilities,
+                  sessionAvailable: sessionAvailable,
+                  contextRevision: session.authorizationInvalidationRevision,
+                  selectedLocationId: state.pathParameters['locationId'],
+                  logout: logout,
+                  onLocationClosed: () => context.goNamed(
+                    SuperadminRoutes.unitLocationsName,
+                    pathParameters: {'unitId': state.pathParameters['unitId']!},
+                  ),
+                  onDestinationSelected: (destination) =>
+                      _navigateFromPersistentShell(context, destination),
+                );
+              },
             ),
           ),
           GoRoute(
@@ -1492,6 +1835,52 @@ GoRouter createSuperadminRouter({
                       key: ValueKey(session.authorizationInvalidationRevision),
                       repository: groupDetailRepository,
                       id: state.pathParameters['groupId']!,
+                      reservationBuilder: (context, detail) => LocationConsumerReservations(
+                        consumer: LocationReservationConsumer(
+                          kind: LocationReservationConsumerKind.group,
+                          id: detail.id,
+                        ),
+                        scopes: [
+                          (
+                            scope: LocationScope.institution(institutionId: detail.institutionId),
+                            label: detail.institutionName,
+                          ),
+                          (
+                            scope: LocationScope.unit(
+                              institutionId: detail.institutionId,
+                              unitId: detail.unitId,
+                            ),
+                            label: detail.unitName,
+                          ),
+                        ],
+                        reader: locationCatalogReader,
+                        gateway: locationReservationGateway,
+                        bindingsReader: locationConsumerBindingsReader,
+                        selectionReader: locationConsumerSelectionReader,
+                        canReadSelection: detail.status != 'archived' && session.authContext?.permissionCodes.containsAll({
+                          'groups.read', 'locations.read',
+                        }) == true,
+                        sessionAvailable: session.isAuthenticated && !session.isPasswordRecovery,
+                        contextRevision: session.authorizationInvalidationRevision,
+                        canRead:
+                            session.authContext?.permissionCodes.containsAll({
+                              'groups.read',
+                              'locations.read',
+                              'locations.reservations.read',
+                            }) ==
+                            true,
+                        canManage:
+                            session.authContext?.permissionCodes.containsAll({
+                              'locations.reservations.manage',
+                              'groups.manage',
+                            }) ==
+                            true,
+                        canOverride:
+                            session.authContext?.permissionCodes.contains(
+                              'locations.reservations.override',
+                            ) ==
+                            true,
+                      ),
                       logout: logout,
                       onBack: () => context.goNamed(SuperadminRoutes.groupsName),
                       onDestinationSelected: (destination) =>
@@ -1564,6 +1953,27 @@ GoRouter createSuperadminRouter({
                     initialTemplateId: state.uri.queryParameters['templateId'],
                     initialInstitutionId: state.uri.queryParameters['institutionId'],
                     initialUnitId: state.uri.queryParameters['unitId'],
+                    locationSelectionBuilder: (context, controller) => ListenableBuilder(
+                      listenable: session,
+                      builder: (context, _) => ActivityCataloguedLocationSection(
+                        scopes: [
+                          if (controller.selectedInstitutionId case final institutionId?) ...[
+                            (scope: LocationScope.institution(institutionId: institutionId), label: 'Locais da institui\u00e7\u00e3o'),
+                            for (final unit in controller.units.where((unit) => controller.selectedUnitIds.contains(unit.id)))
+                              (scope: LocationScope.unit(institutionId: institutionId, unitId: unit.id), label: unit.name),
+                          ],
+                        ],
+                        reader: locationCatalogReader,
+                        selection: controller.cataloguedLocationSelection,
+                        onChanged: controller.selectCataloguedLocation,
+                        sessionAvailable: session.isAuthenticated && !session.isPasswordRecovery,
+                        contextRevision: session.authorizationInvalidationRevision,
+                        available: enableActivityLocationCreate && session.authContext?.permissionCodes.containsAll({
+                          'activities.create', 'activities.read', 'activities.link_units',
+                          'activities.link_groups', 'activities.assign_people', 'activities.manage_permissions', 'locations.read',
+                        }) == true,
+                      ),
+                    ),
                     aboutRepository: productionActivityAboutRepository,
                     logout: logout,
                     onCancel: () => _returnToOr(context, state, SuperadminRoutes.activitiesName),
@@ -1618,23 +2028,49 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.activityDetail,
             name: SuperadminRoutes.activityDetailName,
-            builder: (context, state) => ActivityDetailPage(
-              activityId: state.pathParameters['activityId']!,
-              repository: activityDirectoryRepository,
-              logout: logout,
-              onBack: () => context.goNamed(SuperadminRoutes.activitiesName),
-              onEdit: () => context.goNamed(
-                SuperadminRoutes.activityEditName,
-                pathParameters: {'activityId': state.pathParameters['activityId']!},
+            builder: (context, state) => ListenableBuilder(
+              listenable: session,
+              builder: (context, _) => ActivityReadDetailPage(
+                activityId: state.pathParameters['activityId']!,
+                repository: activityReadDetailRepository,
+                sessionAvailable: session.isAuthenticated && !session.isPasswordRecovery,
+                canRead: session.authContext?.permissionCodes.contains('activities.read') == true,
+                contextRevision: session.authorizationInvalidationRevision,
+                logout: logout,
+                onBack: () => context.goNamed(SuperadminRoutes.activitiesName),
+                onAssessmentSettings: (detail) => context.goNamed(
+                  SuperadminRoutes.activityAssessmentSettingsName,
+                  pathParameters: {'activityId': detail.id},
+                  queryParameters: {'institutionId': detail.institutionId},
+                ),
+                reservationBuilder: (context, detail) => LocationConsumerReservations(
+                  consumer: LocationReservationConsumer(kind: LocationReservationConsumerKind.activity, id: detail.id),
+                  scopes: [
+                    (scope: LocationScope.institution(institutionId: detail.institutionId), label: 'Locais da instituição'),
+                    for (final unit in detail.units)
+                      (scope: LocationScope.unit(institutionId: detail.institutionId, unitId: unit.unitId), label: unit.name),
+                  ],
+                  reader: locationCatalogReader,
+                  bindingsReader: locationConsumerBindingsReader,
+                  selectionReader: locationConsumerSelectionReader,
+                  canReadSelection: detail.status != 'archived' && session.authContext?.permissionCodes.containsAll({
+                    'activities.read', 'locations.read',
+                  }) == true,
+                  gateway: locationReservationGateway,
+                  sessionAvailable: session.isAuthenticated && !session.isPasswordRecovery,
+                  contextRevision: session.authorizationInvalidationRevision,
+                  canRead: detail.status != 'archived' && session.authContext?.permissionCodes.containsAll({
+                    'activities.read', 'locations.read', 'locations.reservations.read',
+                  }) == true,
+                  canManage: session.authContext?.permissionCodes.containsAll({
+                    'activities.manage', 'locations.reservations.manage',
+                  }) == true,
+                  canOverride: session.authContext?.permissionCodes.contains('locations.reservations.override') == true,
+                ),
+                onDestinationSelected: (destination) =>
+                    _navigateFromPersistentShell(context, destination),
+                onBugReportSubmitted: productionSupportController?.submitReport,
               ),
-              onAssessmentSettings: (detail) => context.goNamed(
-                SuperadminRoutes.activityAssessmentSettingsName,
-                pathParameters: {'activityId': detail.item.id},
-                queryParameters: {'institutionId': detail.item.institutionId},
-              ),
-              onDestinationSelected: (destination) =>
-                  _navigateFromPersistentShell(context, destination),
-              onBugReportSubmitted: productionSupportController?.submitReport,
             ),
           ),
           GoRoute(
@@ -4780,6 +5216,11 @@ GoRouter createSuperadminRouter({
               return SuperadminChatPage(
                 logout: _previewLogout,
                 chatRepository: developmentChatRepository,
+                // A preview precisa exercer a mesma capacidade da rota real;
+                // sem estas dependências o tile de anexo nunca abre imagem e a
+                // preview vira evidência falsa de que está tudo bem.
+                mediaReader: mediaReader,
+                mediaSession: mediaSession,
                 currentDestination: origin == 'principal' ? 'principal-chat' : 'conversations',
                 onBack: () => context.goNamed(switch (origin) {
                   'home' => SuperadminRoutes.devHomeName,
@@ -5343,6 +5784,14 @@ String _destinationForLocation(String location) {
   if (location.startsWith('/principal-now')) {
     return 'principal-now';
   }
+  if (location.startsWith('/principal-conversations')) {
+    // Sem este mapeamento o shell hospedeiro não sabe que está no Chat do
+    // Principal: continua desenhando o launcher flutuante que oferece abrir o
+    // chat por cima do próprio chat, e o menu não marca a folha ativa. O nome
+    // `principal-chat` já é a folha do menu e já está na lista de supressão do
+    // launcher, então reusá-lo resolve os dois de uma vez.
+    return 'principal-chat';
+  }
   if (location.startsWith('/principal-profile')) {
     return 'principal-profile';
   }
@@ -5451,6 +5900,10 @@ void _navigateFromPersistentShell(BuildContext context, String destination) {
       context.goNamed(SuperadminRoutes.principalNowName);
     case 'principal-now-publish':
       context.goNamed(SuperadminRoutes.principalNowPublicationName);
+    case 'principal-chat':
+      // A folha Chat do menu Principal existe em superadmin_navigation.dart,
+      // mas não tinha destino aqui: no shell de produção o item era inerte.
+      context.goNamed(SuperadminRoutes.principalConversationsName);
     case 'principal-profile':
       context.goNamed(SuperadminRoutes.principalProfileName);
     case 'institution-create':
@@ -5621,10 +6074,7 @@ void _navigateFromDevelopmentShell(BuildContext context, String destination) {
     case 'principal-now-publish':
       context.goNamed(SuperadminRoutes.devPrincipalNowPublicationName);
     case 'principal-chat':
-      context.goNamed(
-        SuperadminRoutes.devConversationsName,
-        queryParameters: const {'from': 'principal'},
-      );
+      context.goNamed(SuperadminRoutes.devPrincipalConversationsName);
     case 'principal-profile':
       context.goNamed(SuperadminRoutes.devPrincipalProfileName);
   }
@@ -5662,7 +6112,7 @@ ActivitySaveCommand _activitySaveCommand(
   activityId: activityId,
   templateId: activityId == null ? draft.template?.id : null,
   expectedVersion: draft.expectedManagementVersion,
-  pedagogicalConfiguration: draft.pedagogicalConfiguration.toJson(),
+  pedagogicalConfiguration: draft.pedagogicalConfiguration.toAggregateCommandJson(),
   expectedAssessmentVersion: draft.pedagogicalConfiguration.expectedVersion,
   assessmentChangeJustification: draft.pedagogicalConfiguration.changeJustification,
   name: draft.name,
@@ -5675,6 +6125,8 @@ ActivitySaveCommand _activitySaveCommand(
   taxonomyOtherDescription: draft.taxonomy?.isOther == true ? draft.taxonomyOtherDescription : '',
   governance: draft.governance,
   institutionId: draft.institutionId,
+  locationSelection: draft.locationSelection,
+  reservation: draft.reservation,
   unitIds: draft.unitIds,
   groupIds: draft.groupIds,
   groupParticipation: draft.groupParticipation,

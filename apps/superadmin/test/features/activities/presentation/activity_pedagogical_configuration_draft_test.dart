@@ -2,6 +2,27 @@ import 'package:coelo_superadmin/features/activities/presentation/activity_pedag
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('aggregate command compacts only canonical empty disabled configuration', () {
+    const value = ActivityPedagogicalConfigurationDraft.disabled();
+    expect(value.toAggregateCommandJson(), {'enabled': false});
+    expect(value.toJson().length, greaterThan(1));
+  });
+  test('disabled but populated configuration is never silently dropped', () {
+    const value = ActivityPedagogicalConfigurationDraft(
+      enabled: false,
+      model: ActivityAssessmentModel.gradeOnly,
+      expectedVersion: 3,
+    );
+    expect(value.toAggregateCommandJson(), value.toJson());
+  });
+  test('enabled configuration preserves its complete aggregate boundary', () {
+    const value = ActivityPedagogicalConfigurationDraft(
+      enabled: true,
+      model: ActivityAssessmentModel.gradeOnly,
+    );
+    expect(value.toAggregateCommandJson(), value.toJson());
+  });
+
   group('ActivityPedagogicalConfigurationDraft', () {
     test('disabled configuration is explicit and has no assessment children', () {
       const draft = ActivityPedagogicalConfigurationDraft.disabled();

@@ -1,16 +1,24 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 import '../../institutions/domain/institution_directory_item.dart';
 import '../../institutions/domain/institution_directory_query.dart';
 import '../../institutions/domain/institution_directory_repository.dart';
 import '../../principal_circulars/application/circular_composer_controller.dart';
+import '../../principal_circulars/application/circular_media_upload_coordinator.dart';
+import '../../principal_circulars/domain/circular.dart';
 import '../../principal_circulars/domain/circular_repository.dart';
 import '../domain/superadmin_circular_repository.dart';
 import 'circular_directory_page.dart';
 import 'superadmin_circular_composer_page.dart';
+
+/// Returns the files chosen by the operator. Selection is a convenience: the
+/// server re-validates identity, scope, MIME, signature, bytes and quota.
+typedef CircularAttachmentPicker = Future<List<CircularSelectedFile>> Function();
 
 final class ProductionCircularDirectoryHost extends StatefulWidget {
   const ProductionCircularDirectoryHost({
@@ -103,6 +111,9 @@ final class ProductionCircularComposerHost extends StatefulWidget {
     required this.onCancel,
     required this.onDone,
     this.circularId,
+    this.mediaRepository,
+    this.filePicker,
+    this.mediaHttpClient,
     super.key,
   });
 
@@ -112,17 +123,32 @@ final class ProductionCircularComposerHost extends StatefulWidget {
   final VoidCallback onCancel;
   final VoidCallback onDone;
 
+  /// Media capability of the Circular domain. When it is absent the composer
+  /// stays fail-closed for attachments instead of faking a local selection.
+  final CircularMediaRepository? mediaRepository;
+
+  /// Injected only by tests; production uses the platform file picker.
+  final CircularAttachmentPicker? filePicker;
+
+  /// Injected only by tests; the coordinator owns the real transfer otherwise.
+  final http.Client? mediaHttpClient;
+
   @override
   State<ProductionCircularComposerHost> createState() => _ProductionCircularComposerHostState();
 }
 
 final class _ProductionCircularComposerHostState extends State<ProductionCircularComposerHost> {
   CircularComposerController? _controller;
+  CircularMediaUploadCoordinator? _uploader;
   List<InstitutionDirectoryItem> _institutions = const [];
   InstitutionDirectoryItem? _selectedInstitution;
   Object? _error;
   var _loading = true;
   var _prepareGeneration = 0;
+  var _pickGeneration = 0;
+  var _uploading = false;
+  String? _attachmentStatus;
+  var _attachmentFailed = false;
 
   @override
   void initState() {
@@ -146,21 +172,28 @@ final class _ProductionCircularComposerHostState extends State<ProductionCircula
     final institutionRepository = widget.institutionRepository;
     final circularId = widget.circularId;
     _controller?.dispose();
+    _pickGeneration++;
     setState(() {
       _controller = null;
+      _uploader = null;
       _institutions = const [];
       _selectedInstitution = null;
       _error = null;
       _loading = true;
+      _uploading = false;
+      _attachmentStatus = null;
+      _attachmentFailed = false;
     });
     try {
       if (circularId != null) {
         final editable = await repository.loadDraftById(circularId);
         if (!mounted || generation != _prepareGeneration) return;
-        _controller = CircularComposerController(
-          repository: repository,
-          scope: editable.scope,
-          initialDraft: editable.draft,
+        _adopt(
+          CircularComposerController(
+            repository: repository,
+            scope: editable.scope,
+            initialDraft: editable.draft,
+          ),
         );
       } else {
         final page = await institutionRepository.fetchPage(
@@ -185,15 +218,166 @@ final class _ProductionCircularComposerHostState extends State<ProductionCircula
     final selected = _selectedInstitution;
     if (selected == null) return;
     setState(() {
-      _controller = CircularComposerController(
-        repository: widget.repository,
-        scope: CircularScope(institutionId: selected.id),
+      _adopt(
+        CircularComposerController(
+          repository: widget.repository,
+          scope: CircularScope(institutionId: selected.id),
+        ),
       );
     });
   }
 
+  void _adopt(CircularComposerController controller) {
+    _controller = controller;
+    final mediaRepository = widget.mediaRepository;
+    _uploader = mediaRepository == null
+        ? null
+        : CircularMediaUploadCoordinator(
+            controller: controller,
+            repository: mediaRepository,
+            httpClient: widget.mediaHttpClient,
+          );
+  }
+
+  /// Picks and uploads attachments. Local checks only give fast feedback; the
+  /// asset only exists after the backend authorizes prepare and finalize.
+  Future<void> _pickAttachments(CircularComposerController controller) async {
+    if (_uploading) return;
+    final uploader = _uploader;
+    if (uploader == null) {
+      _report('Envio de anexos indisponível nesta composição.', failed: true);
+      return;
+    }
+    final used = controller.draft.blocks
+        .whereType<CircularMediaBlock>()
+        .expand((block) => block.assetIds)
+        .length;
+    final remaining = CircularLimits.files - used;
+    if (remaining <= 0) {
+      _report(
+        'Limite de ${CircularLimits.files} arquivos por Circular já alcançado.',
+        failed: true,
+      );
+      return;
+    }
+    final generation = ++_pickGeneration;
+    setState(() {
+      _uploading = true;
+      _attachmentFailed = false;
+      _attachmentStatus = 'Selecionando arquivos…';
+    });
+    try {
+      final picked = await (widget.filePicker ?? _defaultPicker)();
+      if (!mounted || generation != _pickGeneration) return;
+      if (picked.isEmpty) {
+        _report('Nenhum arquivo selecionado.');
+        return;
+      }
+      final withinQuota = picked.take(remaining).toList(growable: false);
+      final overQuota = picked.length - withinQuota.length;
+      final accepted = withinQuota.where((file) => file.acceptedLocally).toList(growable: false);
+      final rejected = withinQuota.length - accepted.length;
+      if (accepted.isEmpty) {
+        _report(_rejectionMessage(rejected, overQuota), failed: true);
+        return;
+      }
+      var sent = 0;
+      String? failure;
+      for (final file in accepted) {
+        setState(() => _attachmentStatus = 'Enviando ${sent + 1} de ${accepted.length}…');
+        try {
+          await uploader.upload(file);
+        } on CircularUnauthorized {
+          failure = 'Você não tem permissão para enviar anexos nesta Circular.';
+        } on CircularVersionConflict {
+          failure = 'A Circular mudou em outro lugar. Recarregue antes de anexar.';
+        } on CircularInvalid catch (error) {
+          failure = error.code == 'media_upload_expired'
+              ? 'A janela autorizada de envio expirou. Tente novamente.'
+              : 'O servidor recusou o arquivo. Verifique tipo, tamanho e conteúdo.';
+        } on Object {
+          failure = 'Não foi possível concluir o envio. Tente novamente.';
+        }
+        if (!mounted || generation != _pickGeneration) return;
+        if (failure != null) break;
+        sent++;
+      }
+      _report(
+        _outcomeMessage(
+          sent: sent,
+          total: accepted.length,
+          rejected: rejected,
+          overQuota: overQuota,
+          failure: failure,
+        ),
+        failed: failure != null || rejected > 0 || overQuota > 0,
+      );
+    } on Object {
+      if (!mounted || generation != _pickGeneration) return;
+      _report('Não foi possível abrir a seleção de arquivos.', failed: true);
+    } finally {
+      if (mounted && generation == _pickGeneration) setState(() => _uploading = false);
+    }
+  }
+
+  String _rejectionMessage(int rejected, int overQuota) {
+    if (rejected > 0) {
+      return 'Arquivo não aceito. Use imagem JPEG/PNG/WebP até 10 MB, vídeo MP4 até 25 MB '
+          'ou PDF até 5 MB.';
+    }
+    return overQuota > 0
+        ? 'Limite de ${CircularLimits.files} arquivos por Circular já alcançado.'
+        : 'Nenhum arquivo selecionado.';
+  }
+
+  String _outcomeMessage({
+    required int sent,
+    required int total,
+    required int rejected,
+    required int overQuota,
+    required String? failure,
+  }) {
+    final extra = [
+      if (rejected > 0) '$rejected recusado(s) localmente',
+      if (overQuota > 0) '$overQuota acima do limite de ${CircularLimits.files}',
+    ].join(' · ');
+    final suffix = extra.isEmpty ? '' : ' ($extra)';
+    if (failure != null) {
+      return sent == 0 ? '$failure$suffix' : '$sent de $total enviado(s). $failure$suffix';
+    }
+    return sent == 1 ? 'Anexo enviado.$suffix' : '$sent anexos enviados.$suffix';
+  }
+
+  void _report(String message, {bool failed = false}) {
+    if (!mounted) return;
+    setState(() {
+      _attachmentStatus = message;
+      _attachmentFailed = failed;
+    });
+  }
+
+  Future<List<CircularSelectedFile>> _defaultPicker() async {
+    final result = await FilePicker.platform.pickFiles(
+      allowMultiple: true,
+      withData: true,
+      type: FileType.custom,
+      allowedExtensions: CircularMediaLimits.acceptedExtensions.keys.toList(growable: false),
+    );
+    return [
+      for (final file in result?.files ?? const <PlatformFile>[])
+        if (file.bytes case final bytes?)
+          CircularSelectedFile(
+            uploadRequestId: CircularMediaLimits.newRequestId(),
+            name: file.name,
+            mimeType: CircularMediaLimits.mimeForFileName(file.name) ?? 'application/octet-stream',
+            bytes: bytes,
+          ),
+    ];
+  }
+
   @override
   void dispose() {
+    _pickGeneration++;
     _controller?.dispose();
     super.dispose();
   }
@@ -217,16 +401,60 @@ final class _ProductionCircularComposerHostState extends State<ProductionCircula
     }
     final controller = _controller;
     if (controller == null) return _institutionPicker(context);
-    return SuperadminCircularComposerPage(
-      controller: controller,
-      onCancel: widget.onCancel,
-      onPublished: widget.onDone,
-      onPickFiles: () async {
-        if (!context.mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Envio de anexos será habilitado após a seleção segura.')),
-        );
-      },
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (_attachmentStatus case final status?) _attachmentBanner(context, status),
+        Expanded(
+          child: SuperadminCircularComposerPage(
+            controller: controller,
+            onCancel: widget.onCancel,
+            onPublished: widget.onDone,
+            onPickFiles: () => _pickAttachments(controller),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _attachmentBanner(BuildContext context, String status) {
+    final colors = Theme.of(context).colorScheme;
+    return Semantics(
+      liveRegion: true,
+      child: Container(
+        key: const Key('circular-attachment-status'),
+        margin: const EdgeInsets.only(bottom: CoeloSpacing.space3),
+        padding: const EdgeInsets.all(CoeloSpacing.space3),
+        decoration: BoxDecoration(
+          color: _attachmentFailed ? colors.errorContainer : colors.primaryContainer,
+          borderRadius: BorderRadius.circular(CoeloRadius.md),
+        ),
+        child: Row(
+          children: [
+            if (_uploading)
+              const SizedBox.square(dimension: 20, child: CircularProgressIndicator(strokeWidth: 2))
+            else
+              Icon(
+                _attachmentFailed
+                    ? Icons.error_outline_rounded
+                    : Icons.check_circle_outline_rounded,
+                color: _attachmentFailed ? colors.error : colors.primary,
+              ),
+            const SizedBox(width: CoeloSpacing.space2),
+            Expanded(child: Text(status)),
+            if (!_uploading)
+              SizedBox(
+                width: CoeloSize.touchMin,
+                height: CoeloSize.touchMin,
+                child: IconButton(
+                  tooltip: 'Dispensar aviso',
+                  onPressed: () => setState(() => _attachmentStatus = null),
+                  icon: const Icon(Icons.close_rounded),
+                ),
+              ),
+          ],
+        ),
+      ),
     );
   }
 

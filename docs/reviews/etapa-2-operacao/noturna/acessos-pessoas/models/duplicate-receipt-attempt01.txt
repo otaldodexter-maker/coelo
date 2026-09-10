@@ -1,0 +1,53 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:187
++ ... _test.dart; rtk proxy flutter test --no-pub test/features/access_prof ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_duplicate_context_test.dart
+00:00 +0 -1: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/app/router/access_profile_model_duplicate_route_test.dart [E]
+  Failed to load "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/app/router/access_profile_model_duplicate_route_test.dart": Does not exist.
+00:00 +0 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_duplicate_context_test.dart: replacement repository loads its source and discards the previous response
+00:01 +1 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: create SQL envelope reaches UI denied=false
+00:03 +2 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: create SQL envelope reaches UI denied=false
+00:03 +3 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: create SQL envelope reaches UI denied=false
+00:04 +4 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: create SQL envelope reaches UI denied=false
+00:04 +5 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: create SQL envelope reaches UI denied=false
+00:07 +6 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: create SQL envelope reaches UI denied=true
+00:09 +7 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: update SQL envelope reaches UI denied=false
+00:12 +8 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: update SQL envelope reaches UI denied=true
+00:14 +9 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: duplicate SQL envelope reaches UI denied=false
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: <1>
+  Actual: <0>
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart:87:9)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart line 87
+The test description was:
+  duplicate SQL envelope reaches UI denied=false
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:17 +9 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: duplicate SQL envelope reaches UI denied=false [E]
+  Test failed. See exception logs above.
+  The test description was: duplicate SQL envelope reaches UI denied=false
+  
+00:17 +9 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: duplicate SQL envelope reaches UI denied=true
+00:17 +10 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: delete SQL envelope reaches UI denied=false
+00:18 +11 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: delete SQL envelope reaches UI denied=true
+00:19 +12 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: update envelope conflict offers reference reload without save callback
+00:22 +13 -2: Some tests failed.
+
+Failing tests:
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/app/router/access_profile_model_duplicate_route_test.dart: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/app/router/access_profile_model_duplicate_route_test.dart
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/model_command_consumer_test.dart: duplicate SQL envelope reaches UI denied=false

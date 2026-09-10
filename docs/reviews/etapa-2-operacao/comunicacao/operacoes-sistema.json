@@ -1,0 +1,167 @@
+{
+  "revision": 5,
+  "updated_at": "2026-09-09T18:52:00-03:00",
+  "group": "operacoes-sistema",
+  "task": "/root",
+  "model": "Claude Opus 5 (1M context) — claude-opus-5[1m]",
+  "status": "ATIVO - item 1 entregue e publicado; seguindo para item 2",
+  "coordinator": "Claude",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-operacoes-sistema",
+  "branch": "work/etapa2-noturna-operacoes-sistema",
+  "head": "1ac657de6",
+  "upstream": "origin/work/etapa2-noturna-operacoes-sistema",
+  "base_observed": "d784462c168d22fdb7090b7de1ef7db554ad5107",
+  "scope": [
+    "apps/superadmin -> Agenda",
+    "apps/superadmin -> Auditoria",
+    "apps/superadmin -> Suporte",
+    "apps/superadmin -> Planos",
+    "apps/superadmin -> Cardapios",
+    "apps/superadmin -> Catalogo",
+    "apps/superadmin -> Minha conta",
+    "apps/superadmin -> Auth (FE4 certificado; reabrir so por regressao/dependencia/pacote nominal)",
+    "apps/superadmin -> shell/navegacao (COMPARTILHADO: exige reserva exclusiva)",
+    "apps/superadmin -> paginas de erro",
+    "importacoes adiadas (politica vigente mantida, sem picker/parser/job)"
+  ],
+  "action_ids_status": "61 IDs mapeados no inventario (base d784462c1): auth 5 (login/recover/reset/logout FE=verified; mfa gate-formal-mvp), shell 5 (flutter-only, FE=pending-verification), agenda 7, imports 7 (deferred-post-mvp), audit 4 (export deferred), support 6, account 6 (mfa gate), catalog 4, plans 5, meal_plans 6, error_pages 6. Nenhuma reauditoria do zero.",
+  "changed": "TRABALHO-ATUAL.md lido integralmente (contrato comum, bloco Executores Claude e recorte operacoes-sistema). Git observado: dev d784462c1, limpo exceto comunicacao/ nao rastreada. Worktrees R02 e e2-noturna-publicacoes-midia localizadas. coordenacao.json ainda ausente no caminho compartilhado.",
+  "closed_criteria": [
+    {
+      "action_ids": [
+        "meal-plans.publish"
+      ],
+      "screen": "apps/superadmin > Cardapios > Publicar",
+      "commit": "1ac657de6",
+      "branch": "work/etapa2-noturna-operacoes-sistema",
+      "what": "Intencao de escrita (requestId) passa a sobreviver ao recibo divergente. Divergencia virou estado proprio (_MealPlanReceiptMismatch), fora da hierarquia MealPlanRepositoryException. Validacao de recibo num unico ponto compartilhado por Publicar e Solicitar revisao, conforme voce exigiu: guarda no ponto compartilhado, nao uma por chamador.",
+      "root_cause_extra": "Alem do que 932003b1 cobria, dev gerava requestId novo tambem em submitForReview (linha 601). Os dois call sites foram corrigidos pelo mesmo helper.",
+      "reuse": "Padrao copiado de audit_controller.dart:180 (_exportIdempotencyKey ??=, limpo so em sucesso confirmado) e andaime de teste reusado de 932003b1.",
+      "proof": "flutter test meal_plan_directory_page_test.dart -> 10 PASS / 0 FAIL. O teste novo 'divergent publish receipt retry reuses the same operation id' foi executado contra a implementacao de 932003b1 e FALHOU; contra esta correcao PASSA. dart analyze no arquivo: No issues found.",
+      "level": "Front-end verified para o criterio de idempotencia do retry. Nao promove E2E: nao houve runtime remoto.",
+      "reserved_files_touched": "nenhum"
+    }
+  ],
+  "tests": {
+    "P": 10,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0,
+    "E": 10,
+    "note": "Suite meal_plan_directory_page_test.dart na worktree. Inclui a execucao negativa de controle contra 932003b1 (1 FAIL esperado), nao somada aos 10."
+  },
+  "reservations": [],
+  "reservations_requested": [
+    "Nenhuma reserva exclusiva necessaria para a sequencia proposta abaixo: itens 1 e 2 nao tocam router/shell nem migrations aplicadas.",
+    "Se o cutover de Auditoria exigir migration nova, ela nasce como candidato local na minha worktree e fica sob a reserva do coordenador."
+  ],
+  "first_candidates": [
+    "Auditoria 145U",
+    "Cardapios 932003b1 / requestId",
+    "Agenda e Planos conforme contrato"
+  ],
+  "blocker": "Ativacao nominal do coordenador (coordenacao.json rev1 exige 'ativacao nominal' para operacoes-sistema). Revisao 1 publicada as 21:10; solicitacao tambem enviada por SendMessage a coelo-73.",
+  "next_step": "Item 2: parte LOCAL da Auditoria. Ja verifiquei e descartei um falso positivo (o grant de audit_start_export_for_superadmin a authenticated e legitimo: app_private valida audit.export/audit.read internamente). Cliente de export ja e fail-closed honesto. Foco agora no cutover people-based -> principal 039 e no helper legado current_person_id. Depois item 3 (Planos: erro inesperado no diretorio).",
+  "wip": [],
+  "artifacts": [],
+  "children": [],
+  "processes": [],
+  "ports": [],
+  "ack": {
+    "from": "coelo-73",
+    "received": "rev3 ATIVADA, sequencia 1-2-3 aprovada",
+    "coordenacao_rev": 4,
+    "remote_policy": "NENHUMA aplicacao remota nesta noite; replay Auditoria 145 fica 0/145 BLOQUEADO ate o Owner voltar. Aceito: nao vou pedir decisao nem aguardar slot."
+  },
+  "limitations": "Sem canal nativo verificado com o coordenador; publicar este arquivo nao comprova leitura nem desperta conversa. Shell/router e compartilhado com outros grupos: sem reserva registrada nao ha escrita segura nesses arquivos.",
+  "deadline": "2026-09-10T05:00:00-03:00",
+  "freeze": "2026-09-10T04:40:00-03:00",
+  "pre_delivery": "2026-09-10T04:50:00-03:00",
+  "eta": "itens 1 e 3 inspecionados: diffs pequenos, 2 arquivos cada (fonte + teste). Item 2 local de Auditoria ainda nao dimensionado. Nenhuma estimativa em horas antes de executar o primeiro.",
+  "native_channel": {
+    "tool": "ListAgents/SendMessage disponiveis nesta sessao Claude",
+    "my_session_name": "coelo-9e",
+    "my_session_ref": "659c9e",
+    "note": "Coordenador pode me enviar SendMessage para 'coelo-9e'. Nao sei qual peer e o coordenador; nao vou emitir broadcast. 14 sessoes peer listadas as 21:05."
+  },
+  "findings": [
+    {
+      "candidate": "932003b1 (Cardapios / Publicar)",
+      "status": "defeito confirmado; correcao de causa raiz definida; NAO aplicada (sem ativacao nominal)",
+      "file": "apps/superadmin/lib/features/meal_plans/presentation/meal_plan_directory_page.dart",
+      "integrated_in_dev": false,
+      "diagnosis": "Em dev (d784462c1) nao existe requestId estavel nem validacao de recibo: linhas 601 e 615 chamam _requestId() novo a cada tentativa, em submitForReview E publish. Toda repeticao vira intencao nova. O candidato 932003b1 corrige apenas publish e ainda perde o requestId no caminho critico: ele lanca MealPlanValidationException para recibo divergente, e essa classe e subclasse de MealPlanRepositoryException (domain/meal_plan_repository.dart:662,679), entao o catch executa _clearPublishOperation antes do rethrow. Recibo divergente e justamente o caso em que a escrita PODE ter ocorrido; limpar ali torna o retry nao idempotente.",
+      "root_cause": "dois call sites geram intencao nova por tentativa; e o unico caminho que preserva id trata rejeicao do servidor (sem escrita) e divergencia de recibo (escrita possivel) com o mesmo tipo de excecao.",
+      "planned_fix": "Reusar o padrao que ja existe no proprio repositorio em audit_controller.dart:180 (_exportIdempotencyKey ??= _createIdempotencyKey(), limpo somente em sucesso confirmado). Um unico mapa _operationIds com chave 'acao:id:revision:tenant:institution', consumido por submitForReview e publish, limpo apenas no sucesso validado e no didUpdateWidget quando o repository troca. Isso remove o clear do catch, cobre os dois call sites e fica menor que o candidato.",
+      "tests_planned": "Preservar os 5 testes do candidato (4 de recibo divergente + retry apos resultado incerto) e acrescentar o que falta: retry apos RECIBO DIVERGENTE deve reusar o mesmo requestId. Esse caso e o defeito e hoje nao tem teste.",
+      "touches_reserved_files": false
+    },
+    {
+      "candidate": "Auditoria 145U (audit.list / audit.filter / audit.detail)",
+      "status": "parte remota BLOQUEADA por autorizacao nominal; parte local em analise",
+      "integrated_in_dev": false,
+      "remote": "Commits candidatos 8b4dfb6a (migration 20260908230039_superadmin_internal_audit_read_v2.sql + 2 suites SQL) e 89949f30 (fixtures). Rastreador registra Runtime 0/145 e lease devolvida sem consumo. Replay SQL em producao e serializado pelo coordenador e exige autorizacao nominal do pacote exato; NAO executo.",
+      "local": "Cutover dos wrappers audit_*_for_superadmin ainda people-based para principal 039, helper legado current_person_id e exposicao de SQL de export no cliente. Em leitura.",
+      "note": "audit.export permanece deferred-post-mvp; a politica de import/export adiado nao muda."
+    },
+    {
+      "candidate": "Planos / diretorio - criterio aberto C03r33 'erro inesperado no diretorio'",
+      "status": "defeito confirmado por leitura; correcao local definida; NAO aplicada",
+      "file": "apps/superadmin/lib/features/plans/presentation/plan_directory_page.dart",
+      "diagnosis": "_load() (linha ~87) define _dataState = loading e so captura PlanRepositoryException. Qualquer excecao fora dessa hierarquia escapa: o estado permanece loading para sempre, a tela fica presa no spinner e o erro vira unhandled async error. O mesmo vale para o caminho de arquivar/restaurar na linha ~388, que tambem so captura PlanRepositoryException.",
+      "precedent": "meal_plan_directory_page.dart ja trata o caso com um catch 'on Object' que fecha o estado em erro. Plans e a superficie que ficou sem ele.",
+      "planned_fix": "Acrescentar catch 'on Object' nos dois pontos, fechando em PlanDataState.error com as mesmas guardas de geracao/repository ja usadas. Teste de widget com repository que lanca excecao fora da hierarquia, provando que a tela sai de loading e mostra o estado de erro.",
+      "applies_to": [
+        "plans.list",
+        "plans.create",
+        "plans.edit"
+      ],
+      "touches_reserved_files": false
+    },
+    {
+      "candidate": "Planos / activate e assign",
+      "status": "BLOQUEADO por decisao nominal, nao por implementacao",
+      "note": "plans.activate exige conciliar o nome/aceite do ID com arquivar/restaurar da spec 051; plans.assign exige decisao nominal sobre atribuicao. O contrato proibe criar acao por inferencia. Nao vou implementar nenhum dos dois."
+    },
+    {
+      "candidate": "Agenda (7 IDs)",
+      "status": "em leitura; cautela registrada",
+      "note": "WIP b049b163 esta preservado e o rastreador proibe integrar automaticamente a view READ039 ou certificar seus goldens (quatro diferencas golden pendentes). Nao vou reintegrar a view; procuro lacuna por acao."
+    }
+  ],
+  "proposed_first_sequence": [
+    "1. meal-plans.publish: preservar requestId em recibo divergente + teste de retry idempotente (local, sem remoto)",
+    "2. audit: parte local do cutover 039 e exposicao de export SQL no cliente (sem replay remoto)",
+    "3. agenda/plans: primeira acao executavel apos mapeamento"
+  ],
+  "coordinator_file_observed": {
+    "revision": 1,
+    "updatedAt": "2026-09-09T18:10:00-03:00",
+    "sessionName": "coelo-73",
+    "sessionRef": "4aacb8"
+  },
+  "assigned_base_sha": "d784462c168d22fdb7090b7de1ef7db554ad5107",
+  "assigned_source": "codex/e2-r02-d01-autenticacao @ dc44df9e1",
+  "reservations_acknowledged": [
+    "router/shell/composition root do Superadmin -> escritor: coordenador-claude. NAO vou escrever esses arquivos; proporei hunks pequenos aqui se necessario.",
+    "packages/coelo_database/migrations e replays SQL -> escritor: coordenador-claude. Candidato local permitido na minha worktree; aplicacao remota serializada.",
+    "inventario e tres rastreadores -> escritor: coordenador-claude. Enviarei deltas propostos neste arquivo."
+  ],
+  "timestamp_note": "As revisoes 2 e 3 registraram 21:20/21:25 por estimativa; o relogio real era 21:07-21:09. Corrigido a partir da revisao 4, que usa relogio consultado.",
+  "clock_correction": "ACEITA. As revisoes 2-4 carimbaram horario UTC com sufixo -03:00. Relogio real conferido: a maquina ja esta em Brasilia. Corte 10/09 05:00 continua distante; nao vou congelar cedo.",
+  "divergence": "0/0",
+  "candidate_disposition": {
+    "932003b1": "SUPERADO. Nao integrar como esta: contem o defeito. 1ac657de6 cobre o que ele fazia de certo, corrige a perda de intencao e amplia para submitForReview. O andaime de teste dele foi preservado."
+  },
+  "blocked": [
+    {
+      "id": "Auditoria replay 145",
+      "state": "0/145 BLOQUEADO por decisao permanente da noite (sem aplicacao remota). Nao pedirei decisao nem slot."
+    },
+    {
+      "id": "plans.activate / plans.assign",
+      "state": "BLOQUEADO por decisao nominal de produto (spec 051). Nao implementar por inferencia."
+    }
+  ]
+}

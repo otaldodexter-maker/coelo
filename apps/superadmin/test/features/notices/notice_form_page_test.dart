@@ -167,11 +167,41 @@ void main() {
     await _tapVisible(tester, find.widgetWithText(FilledButton, 'Continuar'));
     await tester.pump();
 
-    await _tapVisible(tester, find.byKey(const Key('notice-date-Data de início')));
+    await _tapVisible(tester, find.byKey(const Key('notice-date-Data e hora de início')));
     await tester.pumpAndSettle();
 
     final picker = tester.widget<CoeloDateRangePicker>(find.byType(CoeloDateRangePicker));
     expect(picker.selectionMode, CoeloDateSelectionMode.single);
+  });
+
+  testWidgets('schedule start field records the chosen time next to the date', (tester) async {
+    await _pumpForm(tester, const Size(375, 812));
+    await _goToScheduleStep(tester);
+
+    await _pickScheduleDateTime(tester, label: 'Data e hora de início', time: '07:45');
+
+    expect(find.text('${_todayNumericDate()} · 07:45'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('end before start on the same day blocks the step with an honest message', (
+    tester,
+  ) async {
+    await _pumpForm(tester, const Size(375, 812));
+    await _goToScheduleStep(tester);
+
+    await _pickScheduleDateTime(tester, label: 'Data e hora de início', time: '23:59');
+    await _pickScheduleDateTime(
+      tester,
+      label: 'Data e hora de término (opcional)',
+      time: '00:00',
+    );
+
+    await _tapVisible(tester, find.widgetWithText(FilledButton, 'Continuar'));
+    await tester.pump();
+
+    expect(find.byKey(const Key('notice-step-schedule')), findsOneWidget);
+    expect(find.textContaining('término não pode ser anterior ao início'), findsOneWidget);
   });
 
   testWidgets('has no layout exception at mobile and desktop widths', (tester) async {
@@ -467,4 +497,51 @@ Future<void> _pumpForm(WidgetTester tester, Size size) async {
     ),
   );
   await tester.pump();
+}
+
+Future<void> _goToScheduleStep(WidgetTester tester) async {
+  await tester.enterText(_fieldIn(const Key('notice-title')), 'Manutenção programada');
+  await _tapVisible(tester, find.widgetWithText(FilledButton, 'Continuar'));
+  await tester.pump();
+  await tester.enterText(_fieldIn(const Key('notice-message')), 'O serviço ficará indisponível.');
+  await _tapVisible(tester, find.widgetWithText(FilledButton, 'Continuar'));
+  await tester.pump();
+  await _tapVisible(tester, find.widgetWithText(FilledButton, 'Continuar'));
+  await tester.pump();
+  expect(find.byKey(const Key('notice-step-schedule')), findsOneWidget);
+}
+
+String _todayDateKey() {
+  final today = DateTime.now();
+  return 'coelo-date-${today.year.toString().padLeft(4, '0')}-'
+      '${today.month.toString().padLeft(2, '0')}-'
+      '${today.day.toString().padLeft(2, '0')}';
+}
+
+String _todayNumericDate() {
+  final today = DateTime.now();
+  return '${today.day.toString().padLeft(2, '0')}/'
+      '${today.month.toString().padLeft(2, '0')}/${today.year}';
+}
+
+Future<void> _pickScheduleDateTime(
+  WidgetTester tester, {
+  required String label,
+  required String time,
+}) async {
+  await _tapVisible(tester, find.byKey(ValueKey('notice-date-$label')));
+  await tester.pumpAndSettle();
+  await _tapVisible(tester, find.byKey(ValueKey(_todayDateKey())));
+  await _tapVisible(tester, find.byKey(const ValueKey('coelo-date-range-apply')));
+  await tester.pumpAndSettle();
+  expect(find.byKey(const ValueKey('coelo-time-picker-dialog')), findsOneWidget);
+  await tester.enterText(
+    find.descendant(
+      of: find.byKey(const ValueKey('coelo-time-picker-input')),
+      matching: find.byType(EditableText),
+    ),
+    time,
+  );
+  await _tapVisible(tester, find.byKey(const ValueKey('coelo-time-picker-apply')));
+  await tester.pumpAndSettle();
 }

@@ -13,7 +13,9 @@ import '../core/config/superadmin_media_scope.dart';
 import '../core/guards/superadmin_session.dart';
 import '../features/activities/domain/activity_command.dart';
 import '../features/activities/domain/activity_directory.dart';
+import '../features/activities/domain/activity_read_detail.dart';
 import '../features/assessments/assessment.dart';
+import '../features/auth/domain/superadmin_auth_context.dart';
 import '../features/auth/domain/login_request.dart';
 import '../features/auth/domain/logout_action.dart';
 import '../features/auth/domain/password_recovery.dart';
@@ -27,6 +29,11 @@ import '../features/account/data/user_preferences_repository.dart';
 import '../features/account/presentation/user_preferences_controller.dart';
 import '../features/institutions/data/supabase_institution_directory_repository.dart';
 import '../features/institutions/domain/institution_directory_repository.dart';
+import '../features/locations/domain/location_capabilities.dart';
+import '../features/locations/domain/location_catalog_reader.dart';
+import '../features/locations/domain/location_catalog_writer.dart';
+import '../features/locations/domain/location_reservation_gateway.dart';
+import '../features/locations/domain/location_consumer_bindings_reader.dart';
 import '../features/units/data/unavailable_unit_composition.dart';
 import '../features/units/domain/unit_backend_commands.dart';
 import '../features/units/domain/unit_directory.dart';
@@ -42,8 +49,11 @@ import '../features/meal_plans/domain/meal_plan_image_repository.dart';
 import '../features/meal_plans/domain/meal_plan_repository.dart';
 import '../features/invites/domain/platform_invite.dart';
 import '../features/notices/domain/notice_repository.dart';
+import '../features/principal_circulars/domain/circular_repository.dart'
+    show CircularMediaRepository, CircularRepository, CircularResponseRepository;
 import '../features/principal_circulars/domain/principal_happens_mixed_feed.dart';
 import '../features/principal_happens/domain/principal_happens_feed_repository.dart';
+import '../features/principal_moments/domain/principal_moments_feed_repository.dart';
 import '../features/principal_happens_publication/domain/happens_publication.dart';
 import '../features/principal_moments_publication/domain/moments_publication.dart';
 import '../features/principal_now/domain/principal_now_feed_repository.dart';
@@ -83,6 +93,9 @@ final _superadminDarkTheme = CoeloTheme.dark.copyWith(
   pageTransitionsTheme: _instantPageTransitions,
 );
 
+LocationCapabilities _noLocationCapabilities(SuperadminAuthContext? _) =>
+    LocationCapabilities.none;
+
 final class _InstantPageTransitionsBuilder extends PageTransitionsBuilder {
   const _InstantPageTransitionsBuilder();
 
@@ -107,7 +120,13 @@ class SuperadminApp extends StatefulWidget {
     this.groupDirectoryRepository = const UnavailableGroupDirectoryRepository(),
     this.groupDetailRepository = const UnavailableGroupDetailRepository(),
     this.unitDetailRepository = const UnavailableUnitDetailRepository(),
+    this.locationCatalogReader = const UnavailableLocationCatalogReader(),
+    this.locationConsumerBindingsReader = const UnavailableLocationConsumerBindingsReader(),
+    this.locationCatalogWriter = const UnavailableLocationCatalogWriter(),
+    this.locationReservationGateway = const UnavailableLocationReservationGateway(),
+    this.locationCapabilities = _noLocationCapabilities,
     this.activityDirectoryRepository = const UnavailableActivityDirectoryRepository(),
+    this.activityReadDetailRepository = const UnavailableActivityReadDetailRepository(),
     this.activityCommandRepository = const UnavailableActivityCommandRepository(),
     this.assessmentRepository = const UnavailableAssessmentRepository(),
     this.assessmentMutationsEnabled = false,
@@ -147,6 +166,10 @@ class SuperadminApp extends StatefulWidget {
     this.principalCircularRepository,
     this.principalHappensFeedRepository,
     this.principalMixedFeedRepository,
+    this.principalCircularResponseRepository,
+    this.principalCircularMediaRepository,
+    this.principalMomentsFeedRepository,
+    this.principalMomentsWithdrawalRepository,
     this.happensPublicationRepository,
     this.principalNowFeedRepository,
     this.momentsPublicationRepository,
@@ -164,7 +187,13 @@ class SuperadminApp extends StatefulWidget {
   final GroupDirectoryRepository groupDirectoryRepository;
   final GroupDetailRepository groupDetailRepository;
   final UnitDetailRepository unitDetailRepository;
+  final LocationCatalogReader locationCatalogReader;
+  final LocationConsumerBindingsReader locationConsumerBindingsReader;
+  final LocationCatalogWriter locationCatalogWriter;
+  final LocationReservationGateway locationReservationGateway;
+  final LocationCapabilities Function(SuperadminAuthContext?) locationCapabilities;
   final ActivityDirectoryRepository activityDirectoryRepository;
+  final ActivityReadDetailRepository activityReadDetailRepository;
   final ActivityCommandRepository activityCommandRepository;
   final AssessmentRepository assessmentRepository;
   final bool assessmentMutationsEnabled;
@@ -204,6 +233,10 @@ class SuperadminApp extends StatefulWidget {
   final CircularRepository? principalCircularRepository;
   final PrincipalHappensFeedRepository? principalHappensFeedRepository;
   final PrincipalMixedFeedRepository? principalMixedFeedRepository;
+  final CircularResponseRepository? principalCircularResponseRepository;
+  final CircularMediaRepository? principalCircularMediaRepository;
+  final PrincipalMomentsFeedRepository? principalMomentsFeedRepository;
+  final PrincipalMomentsWithdrawalRepository? principalMomentsWithdrawalRepository;
   final HappensPublicationRepository? happensPublicationRepository;
   final PrincipalNowFeedRepository? principalNowFeedRepository;
   final MomentsPublicationRepository? momentsPublicationRepository;
@@ -245,7 +278,13 @@ class _SuperadminAppState extends State<SuperadminApp> {
       groupDirectoryRepository: widget.groupDirectoryRepository,
       groupDetailRepository: widget.groupDetailRepository,
       unitDetailRepository: widget.unitDetailRepository,
+      locationCatalogReader: widget.locationCatalogReader,
+      locationConsumerBindingsReader: widget.locationConsumerBindingsReader,
+      locationCatalogWriter: widget.locationCatalogWriter,
+      locationReservationGateway: widget.locationReservationGateway,
+      locationCapabilities: widget.locationCapabilities,
       activityDirectoryRepository: widget.activityDirectoryRepository,
+      activityReadDetailRepository: widget.activityReadDetailRepository,
       activityCommandRepository: widget.activityCommandRepository,
       assessmentRepository: widget.assessmentRepository,
       enableAssessmentMutations: widget.assessmentMutationsEnabled,
@@ -287,6 +326,10 @@ class _SuperadminAppState extends State<SuperadminApp> {
       principalCircularRepository: widget.principalCircularRepository,
       principalHappensFeedRepository: widget.principalHappensFeedRepository,
       principalMixedFeedRepository: widget.principalMixedFeedRepository,
+      principalCircularResponseRepository: widget.principalCircularResponseRepository,
+      principalCircularMediaRepository: widget.principalCircularMediaRepository,
+      principalMomentsFeedRepository: widget.principalMomentsFeedRepository,
+      principalMomentsWithdrawalRepository: widget.principalMomentsWithdrawalRepository,
       happensPublicationRepository: widget.happensPublicationRepository,
       principalNowFeedRepository: widget.principalNowFeedRepository,
       momentsPublicationRepository: widget.momentsPublicationRepository,

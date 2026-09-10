@@ -95,6 +95,48 @@ final class SupabaseChatRepository implements ChatRepository {
   }
 
   @override
+  Future<ChatMessage> editMessage(ChatEditMessageCommand command) async {
+    try {
+      final response = _data(
+        await _client.rpc<Object?>(
+          'superadmin_chat_edit_message_v2',
+          params: {
+            'p_conversation_id': command.conversationId,
+            'p_message_id': command.messageId,
+            'p_body_text': command.body.trim(),
+            'p_request_id': command.idempotencyKey,
+          },
+        ),
+      );
+      return _message(response, conversationId: command.conversationId);
+    } catch (error) {
+      throw _mapError(error);
+    }
+  }
+
+  @override
+  Future<ChatMessageRevocation> revokeMessage(ChatRevokeMessageCommand command) async {
+    try {
+      final response = _data(
+        await _client.rpc<Object?>(
+          'superadmin_chat_revoke_message_v2',
+          params: {
+            'p_conversation_id': command.conversationId,
+            'p_message_id': command.messageId,
+            'p_request_id': command.idempotencyKey,
+          },
+        ),
+      );
+      return ChatMessageRevocation(
+        messageId: _string(response, 'message_id'),
+        revokedAt: _date(response, 'revoked_at'),
+      );
+    } catch (error) {
+      throw _mapError(error);
+    }
+  }
+
+  @override
   Future<void> markRead({required String conversationId, required String upToMessageId}) async {
     try {
       _data(
@@ -162,7 +204,36 @@ ChatMessage _message(Map<String, dynamic> json, {required String conversationId}
   isMine: _bool(json['is_mine']),
   kind: json['message_type'] as String? ?? '',
   attachments: _rows(json['attachments']).map(_attachment).toList(growable: false),
+  // A receipt is rendered only when the server actually projected one. An
+  // older gateway that omits the field yields null, never a fabricated state.
+  receipt: _receipt(json['receipt'], isMine: _bool(json['is_mine'])),
+  editedAt: _optionalDate(json['edited_at']),
+  canManage: _bool(json['can_manage']),
 );
+
+ChatMessageReceipt? _receipt(Object? value, {required bool isMine}) {
+  if (value == null) return null;
+  if (value is! Map<Object?, Object?>) throw const ChatFailureException();
+  final json = Map<String, dynamic>.from(value);
+  return ChatMessageReceipt(
+    // Authorship comes from the message row itself; the receipt envelope may
+    // restate it but never overrides who the server said the author is.
+    isMine: isMine,
+    deliveredAt: _optionalDate(json['delivered_at']),
+    readAt: _optionalDate(json['read_at']),
+    recipientCount: _int(json['recipient_count']),
+    deliveredCount: _int(json['delivered_count']),
+    readCount: _int(json['read_count']),
+  );
+}
+
+DateTime? _optionalDate(Object? value) {
+  if (value == null) return null;
+  if (value is! String) throw const ChatFailureException();
+  final parsed = DateTime.tryParse(value);
+  if (parsed == null) throw const ChatFailureException();
+  return parsed;
+}
 
 ChatAttachment _attachment(Map<String, dynamic> json) => ChatAttachment(
   id: _string(json, 'id'),
@@ -199,6 +270,7 @@ String? _timestamp(DateTime? value) => value?.toUtc().toIso8601String();
 Exception _mapError(Object error) {
   if (error is ChatUnauthorizedException) return error;
   if (error is ChatOfflineException) return error;
+  if (error is ChatConflictException) return error;
   if (error is ChatFailureException) return error;
   if (error is PostgrestException &&
       (error.code == '42501' || error.code == 'PGRST301' || error.code == 'PGRST116')) {
@@ -217,6 +289,25 @@ Map<String, dynamic> _data(Object? value) {
   final error = envelope['error'];
   if (error is Map<Object?, Object?>) {
     final code = error['code'];
+    // A refused command is not a lost session: the caller keeps its access and
+    // the UI must say why the message itself refused the change.
+    if (code == 'CHAT_EDIT_WINDOW_CLOSED') {
+      throw const ChatConflictException(ChatConflictReason.editWindowClosed);
+    }
+    if (code == 'CHAT_ALREADY_REVOKED') {
+      throw const ChatConflictException(ChatConflictReason.alreadyRevoked);
+    }
+    if (code == 'CHAT_READ_ONLY') {
+      // Conversa fechada para escrita é estado da conversa, não perda de
+      // acesso. As duas superfícies já escondem o composer quando
+      // `isReadOnly`, então esta recusa só chega quando a conversa fechou
+      // DEPOIS da leitura: instantâneo velho. Tratar como negação apagava
+      // inbox, thread, seleção e busca do operador porque UMA conversa
+      // deixou de aceitar escrita. `CHAT_NOT_FOUND` continua abaixo, como
+      // negação, porque o servidor pode responder ausência justamente para
+      // não revelar existência.
+      throw const ChatConflictException(ChatConflictReason.readOnly);
+    }
     if (code is String &&
         const {
           'SAI_AUTH_REQUIRED',
@@ -227,7 +318,7 @@ Map<String, dynamic> _data(Object? value) {
           'SAI_PERMISSION_DENIED',
           'SAI_MFA_REQUIRED',
           'CHAT_NOT_FOUND',
-          'CHAT_READ_ONLY',
+          'CHAT_NOT_AUTHOR',
         }.contains(code)) {
       throw const ChatUnauthorizedException();
     }

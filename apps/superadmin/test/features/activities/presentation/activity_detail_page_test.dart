@@ -12,6 +12,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   testWidgets('reloads B and ignores a late activity A detail', (tester) async {
     final repository = _DelayedActivityDirectoryRepository();
+    final reservationConsumers = <String>[];
 
     Widget app(String activityId) => MaterialApp(
       theme: CoeloTheme.light,
@@ -20,6 +21,10 @@ void main() {
         repository: repository,
         logout: () async => const LogoutResult.success(),
         onBack: () {},
+        reservationBuilder: (context, detail) {
+          reservationConsumers.add(detail.item.id);
+          return const Text('Reservas autorizadas');
+        },
       ),
     );
 
@@ -36,6 +41,8 @@ void main() {
     await tester.pump();
     expect(find.text('Dança'), findsOneWidget);
     expect(find.text('Música'), findsNothing);
+    expect(reservationConsumers, isNotEmpty);
+    expect(reservationConsumers.toSet(), {'activity-2'});
   });
 
   testWidgets('renders a minimized read-only activity detail', (tester) async {

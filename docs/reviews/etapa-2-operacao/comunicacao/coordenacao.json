@@ -1,0 +1,733 @@
+{
+  "revision": 12,
+  "round": "E2-NOTURNA-20260909",
+  "role": "Coordenacao e Integracao - Claude",
+  "writer": "coordenador-claude",
+  "sessionName": "coelo-73",
+  "sessionRef": "4aacb8",
+  "app": "Claude Code (VS Code)",
+  "model": "claude-opus-5[1m]",
+  "timezone": "America/Sao_Paulo",
+  "updatedAt": "2026-09-09T20:52:00-03:00",
+  "clockCorrection": {
+    "referenceNow": "2026-09-09T19:03:25-03:00",
+    "measuredBy": "date no checkout integrador",
+    "warning": "Duas revisoes chegaram carimbadas 21:06 e 21:25 com sufixo -03:00. Isso e horario UTC rotulado como Brasilia. Reconferir o relogio local: faltam cerca de 5h ate o corte Codex 23:30 e cerca de 10h50 ate o corte Claude 05:00. Nao antecipar congelamento por leitura errada de relogio.",
+    "affected": [
+      "chat-comunicacoes (corrigido)",
+      "operacoes-sistema (corrigido)",
+      "alunos-rotina (revisao 3 carimbada 19:50 quando o relogio real marcava 19:03)"
+    ]
+  },
+  "exclusivity": {
+    "soleIntegratorOfDev": true,
+    "soleWriterOfTrackersAndInventory": true,
+    "previousCoordination": "R02 D00 (Codex) e L00 (Claude) encerrados antecipadamente por ordem do Owner; registro.json marca no-automatic-resumption",
+    "transferRegistered": true,
+    "otherActiveIntegratorObserved": "nenhum. Oito grupos publicaram revisao propria e todos declararam coordinator=Claude.",
+    "note": "Qualquer sessao que se declare integradora deve registrar no seu <grupo>.json antes de tocar dev."
+  },
+  "base": {
+    "root": "C:/Users/adrie/Documents/Coelo",
+    "branch": "dev",
+    "head": "b1d10c141",
+    "previousHead": "d784462c168d22fdb7090b7de1ef7db554ad5107",
+    "upstream": "origin/dev",
+    "divergence": "0/0",
+    "workingTree": "clean",
+    "stash": "empty",
+    "note": "dev avancou com tres merges de lote integrados nesta rodada.",
+    "runtimeBaselinePreserved": "d019c109a",
+    "documentaryReconciliation": "8954de221",
+    "verifiedAt": "2026-09-09T18:10:00-03:00"
+  },
+  "cutoffs": {
+    "codexFreeze": "2026-09-09T23:10:00-03:00",
+    "codexPreDelivery": "2026-09-09T23:20:00-03:00",
+    "codexFinal": "2026-09-09T23:30:00-03:00",
+    "claudeFreeze": "2026-09-10T04:40:00-03:00",
+    "claudePreDelivery": "2026-09-10T04:50:00-03:00",
+    "claudeFinal": "2026-09-10T05:00:00-03:00"
+  },
+  "communication": {
+    "root": "C:/Users/adrie/Documents/Coelo/docs/reviews/etapa-2-operacao/comunicacao/",
+    "coordinatorFile": "coordenacao.json",
+    "executorFilePattern": "<grupo>.json",
+    "rule": "Executor escreve SOMENTE o proprio <grupo>.json, de forma atomica. Coordenador escreve SOMENTE coordenacao.json. Arquivo escrito nao e mensagem recebida: o recibo nominal esta em receipts.",
+    "encoding": "Gravar UTF-8 sem BOM. acessos-pessoas.json chegou com BOM e quebra JSON.parse estrito; corrigir na proxima revisao.",
+    "cadence": "Atualizar ao fechar correcao, publicar lote, mudar bloqueio, antes de comando longo e ao menos a cada 30 minutos ativo."
+  },
+  "receipts": [
+    {
+      "grupo": "estrutura",
+      "revisao": 3,
+      "lidoEm": "2026-09-09T18:11:00-03:00",
+      "estado": "recebido e aceito",
+      "nota": "Revisao estatica dos tres candidatos aceita. Aplicar cd03b9e30 e 42ad0467 na sua branch. Os hunks de router de 1345af29f NAO entram por voce: proponha o patch minimo e eu integro (ver reservations)."
+    },
+    {
+      "grupo": "acessos-pessoas",
+      "revisao": 3,
+      "lidoEm": "2026-09-09T18:11:00-03:00",
+      "estado": "recebido e aceito",
+      "nota": "Prepare o pacote nominal de Modelos com preflight, base e hashes. Slot SQL concedido em sqlQueue posicao 1; nenhuma aplicacao remota sem autorizacao nominal do Owner para o pacote exato."
+    },
+    {
+      "grupo": "publicacoes-midia",
+      "revisao": 1,
+      "lidoEm": "2026-09-09T18:11:00-03:00",
+      "estado": "recebido e aceito",
+      "nota": "Worktree e branch confirmadas. Voce e o escritor da plataforma comum de midia nesta rodada, sob minha reserva; formularios-cuidado consome e propoe."
+    },
+    {
+      "grupo": "chat-comunicacoes",
+      "revisao": 1,
+      "lidoEm": "2026-09-09T18:11:00-03:00",
+      "estado": "recebido e aceito",
+      "nota": "Worktree e branch atribuidas abaixo; comece agora. /principal-conversations depende de patch de router proposto por voce e aplicado por mim."
+    },
+    {
+      "grupo": "perfil-para-voce",
+      "revisao": 1,
+      "lidoEm": "2026-09-09T18:11:00-03:00",
+      "estado": "recebido e aceito",
+      "nota": "Worktree e branch atribuidas abaixo; escrita de produto liberada no seu recorte."
+    },
+    {
+      "grupo": "alunos-rotina",
+      "revisao": 1,
+      "lidoEm": "2026-09-09T18:11:00-03:00",
+      "estado": "recebido e aceito; ATIVADO",
+      "nota": "Worktree e branch atribuidas abaixo. Nao repetir CHILD 45+3+4 nem compositor 6."
+    },
+    {
+      "grupo": "formularios-cuidado",
+      "revisao": 2,
+      "lidoEm": "2026-09-09T18:11:00-03:00",
+      "estado": "recebido e aceito; ATIVADO",
+      "nota": "Sequencia 1 aprovada como descrita. Ver approvedSequences."
+    },
+    {
+      "grupo": "operacoes-sistema",
+      "revisao": 3,
+      "lidoEm": "2026-09-09T18:11:00-03:00",
+      "estado": "recebido e aceito; ATIVADO",
+      "nota": "Sequencia 1-2-3 aprovada com o limite descrito em approvedSequences."
+    },
+    {
+      "grupo": "perfil-para-voce",
+      "revisao": "lote 1 b09da7c15",
+      "lidoEm": "2026-09-09T18:30:00-03:00",
+      "estado": "revisado; merge limpo na base conjunta; VERIFICACAO EM CURSO antes de publicar em dev",
+      "nota": "Router revisado hunk a hunk: composicao dentro do ShellRoute de dev preservada, rota /principal-profile/edit adicionada e guarda de capacidade so alcanca /edit por _isProductionMutationLocation endsWith(/edit). A leitura /principal-profile continua aberta. analyze lib limpo na arvore mesclada; suite do recorte reproduzida por mim em P=225 F=10. As 10 falhas sao goldens de principal_profile_preview_golden_test; estou verificando em base d784462c1 intocada se sao deriva preexistente ou regressao do lote antes de publicar."
+    },
+    {
+      "grupo": "estrutura",
+      "revisao": 6,
+      "lidoEm": "2026-09-09T18:38:00-03:00",
+      "estado": "recebido; revisao de codigo em curso",
+      "nota": "Lote 846622381 com f87543b6c, 4528c42df e fc8287c57. Atencao: fc8287c57 altera superadmin_router.dart (+185), superadmin_routes.dart, superadmin_app.dart e main.dart, que sao arquivos reservados. Aceito como PROPOSTA na sua branch, e eu resolvo o merge com o lote de perfil-para-voce, que tambem toca o router. Nao republique esses arquivos como snapshot."
+    },
+    {
+      "grupo": "acessos-pessoas",
+      "revisao": 5,
+      "lidoEm": "2026-09-09T18:38:00-03:00",
+      "estado": "recebido",
+      "nota": "Candidato local cc5d73bc7 (pacote AP-MODELS-NOMINAL-20260909-v1) permanece nao executado, como manda a rodada. O bloqueio que voce registrou sobre cursor legado em producao esta correto e nao sera resolvido hoje: o Owner saiu e nao ha autorizacao nominal. Entregue o pacote revisavel e siga o trabalho local."
+    },
+    {
+      "grupo": "operacoes-sistema",
+      "revisao": 5,
+      "lidoEm": "2026-09-09T18:38:00-03:00",
+      "estado": "item 1 aceito em revisao de codigo; entra na proxima integracao",
+      "nota": "1ac657de6 corrige a causa raiz no ponto compartilhado e cobre tambem submitForReview. Alerta enviado: o candidato 20260908230039 de 0e7678895 tem carimbo anterior a cinco migrations ja existentes e nao e aplicavel forward-only como esta; e preciso tambem justificar a reducao de ~200 linhas em superadmin_internal_auth_context_test.sql."
+    },
+    {
+      "grupo": "perfil-para-voce",
+      "revisao": "lote 2 76e8ada8f",
+      "lidoEm": "2026-09-09T18:30:00-03:00",
+      "estado": "aceito para integracao com ressalva registrada",
+      "nota": "Fallback restrito a 42883/PGRST202 e a decisao correta: negacao continua negacao. RESSALVA: enquanto get_profile_about nao existir no remoto, o caminho real e sempre o fallback por tabela, entao FE avanca e BE nao certifica. Regra de visibilidade do leitor Principal vira pergunta aberta de produto."
+    },
+    {
+      "grupo": "chat-comunicacoes",
+      "revisao": 2,
+      "lidoEm": "2026-09-09T18:32:00-03:00",
+      "estado": "aceito; router isolado recebido",
+      "nota": "Patch de router isolado 61bb58350 na branch work/etapa2-noturna-chat-comunicacoes-router. CONFLITO LOGICO que o executor nao podia ver: os builders de perfil-para-voce ja integrados em 790e215f3 chamam onOpenMessages para conversationsName, e o patch redireciona para principalConversationsName. Reconciliacao e minha."
+    },
+    {
+      "grupo": "formularios-cuidado",
+      "revisao": 4,
+      "lidoEm": "2026-09-09T18:34:00-03:00",
+      "estado": "aceito; em integracao",
+      "nota": "Guarda unica em FormNumericLimits no dominio, RED antes da correcao e comparacao por git stash na mesma base: 699+11 sem o lote contra 712+11 com ele. Delta de rastreador acatado, inclusive a recusa de declarar criterio proprio para forms.location-answer."
+    },
+    {
+      "grupo": "operacoes-sistema",
+      "revisao": "6 e 0626c7655",
+      "lidoEm": "2026-09-09T18:35:00-03:00",
+      "estado": "aceito; item 1-2-3 integrado",
+      "nota": "Carimbo corrigido para 20260909190000 com SHA256 identico. Reducao em superadmin_internal_auth_context_test.sql explicada como adaptacao do cutover, com perda de cobertura registrada em vez de escondida."
+    },
+    {
+      "grupo": "perfil-para-voce",
+      "revisao": "lotes 3 e 4, 60f32e292 e 6e58b624f",
+      "lidoEm": "2026-09-09T19:00:00-03:00",
+      "estado": "aceitos; entram na proxima integracao",
+      "nota": "Afordancia morta abaixo de 1120px escondida em vez de desabilitada; didUpdateWidget passa a comparar membership e pessoa, fechando rascunho vivo sob autorizacao nao reavaliada; rotulos de enum deixam de vazar para a interface, com switch exaustivo e controle negativo executado."
+    },
+    {
+      "grupo": "formularios-cuidado",
+      "revisao": "5 e 7, ate 75b2cebdb",
+      "lidoEm": "2026-09-09T19:00:00-03:00",
+      "estado": "aceito; entra na proxima integracao",
+      "nota": "maxLength autoral fecha o lado de autoria. Limite registrado a pedido do proprio executor: a aparencia do campo novo NAO tem golden verde e fica verificacao visual pendente, blocked-decision. Progressao 699/712/720 com as mesmas 11 falhas."
+    },
+    {
+      "grupo": "operacoes-sistema",
+      "revisao": "7 e 8, 0626c7655",
+      "lidoEm": "2026-09-09T19:00:00-03:00",
+      "estado": "aceito",
+      "nota": "errors.409 fica skip com motivo e blocked-decision, sem contar como FE verificado. Goldens de Suporte: 24 casos em U, referencia obsoleta desde ed23ec20f com quatro commits posteriores. Autorizei destrackear os 96 PNGs de failures/ por git rm --cached mais gitignore, sem tocar em goldens/."
+    },
+    {
+      "grupo": "alunos-rotina",
+      "revisao": 3,
+      "lidoEm": "2026-09-09T19:03:00-03:00",
+      "estado": "recebido e aceito",
+      "nota": "Achado relevante: a base integrada tinha 12 testes vermelhos em attendance e daily_routine que NAO constavam em nenhum rastreador. Resolvidos sem tocar em codigo de produto: 235P/4S/12F viraram 247P/4S/0F. Lote 063f19c35 entra na fila de integracao."
+    },
+    {
+      "grupo": "acessos-pessoas",
+      "revisao": 15,
+      "lidoEm": "2026-09-09T19:03:00-03:00",
+      "estado": "recebido",
+      "nota": "Safety 3a96ca535 e candidatos locais. Propostas Safety53 (b91f9206d) e wrapper de concorrencia de Modelos (485df698f) aguardam reserva nominal; concedo os hunks desde que fiquem na sua branch e nao toquem router nem migrations aplicadas. Producao continua retida: o Owner saiu."
+    },
+    {
+      "grupo": "estrutura",
+      "revisao": 11,
+      "lidoEm": "2026-09-09T19:03:00-03:00",
+      "estado": "recebido",
+      "nota": "Bom RED funcional reproduzindo canManage=true sem groups.manage. Publique bindings e o candidato Activity atomico; o replay continua na minha fila e nao sai desta noite."
+    }
+  ],
+  "approvedSequences": [
+    {
+      "grupo": "formularios-cuidado",
+      "aprovado": "Sequencia 1: limites numericos e de texto em forms.create, forms.edit, forms.respond, forms.location-answer.",
+      "limite": "Contido em apps/superadmin/lib/features/forms/presentation/{editor,response} e testes de widget. Nao toca router/shell, migrations nem plataforma de midia.",
+      "exigencia": "A causa 2 (money gravado em unidades no editor e em minorUnits na resposta) e defeito de contrato de dados: corrigir numa unica representacao e provar com teste que reproduz 10,50 -> 1050 antes da correcao. Ponytail: uma guarda no ponto compartilhado, nao uma por chamador.",
+      "depois": "question-image (I021) so apos reserva nominal comigo, porque a plataforma de midia e escrita por publicacoes-midia."
+    },
+    {
+      "grupo": "operacoes-sistema",
+      "aprovado": "1) meal-plans.publish (candidato 932003b1); 2) Auditoria 145U parte LOCAL; 3) primeira acao executavel de Agenda ou Planos.",
+      "limite": "Item 2 sem qualquer execucao remota: o replay de 145 casos permanece 0/145 e depende de autorizacao nominal do Owner. Preparar o pacote ate revisavel e seguir para o item 3.",
+      "exigencia": "Em meal-plans.publish, o teste deve provar que o requestId sobrevive ao recibo divergente e que o retry reusa a mesma intencao. Nao alargar o catch: trate a divergencia como estado proprio.",
+      "nota": "Auth FE4 permanece certificado; nao reabrir."
+    }
+  ],
+  "groups": [
+    {
+      "id": "estrutura",
+      "env": "Codex",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura",
+      "branch": "work/etapa2-noturna-estrutura",
+      "baseSha": "d784462c168d22fdb7090b7de1ef7db554ad5107",
+      "worktreeReady": true,
+      "activation": "ATIVO",
+      "families": [
+        "institutions",
+        "units",
+        "groups",
+        "activities",
+        "assessments",
+        "locations"
+      ],
+      "ids": 49,
+      "lastRevisionRead": 3,
+      "ackChannel": "somente arquivo (Codex nao alcancavel por ferramenta nativa)"
+    },
+    {
+      "id": "acessos-pessoas",
+      "env": "Codex",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas",
+      "branch": "work/etapa2-noturna-acessos-pessoas",
+      "baseSha": "d784462c168d22fdb7090b7de1ef7db554ad5107",
+      "worktreeReady": true,
+      "activation": "ATIVO",
+      "families": [
+        "people",
+        "access_profiles",
+        "access_models",
+        "invites",
+        "internal_users",
+        "child_safety",
+        "profile_files"
+      ],
+      "ids": 38,
+      "lastRevisionRead": 3,
+      "ackChannel": "somente arquivo (Codex nao alcancavel por ferramenta nativa)"
+    },
+    {
+      "id": "publicacoes-midia",
+      "env": "Claude",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-publicacoes-midia",
+      "branch": "work/etapa2-noturna-publicacoes-midia",
+      "baseSha": "d784462c168d22fdb7090b7de1ef7db554ad5107",
+      "worktreeReady": true,
+      "activation": "ATIVO",
+      "families": [
+        "acontece",
+        "agora",
+        "momentos",
+        "circulars"
+      ],
+      "ids": 23,
+      "lastRevisionRead": 1,
+      "sessionName": "coelo-ae",
+      "sessionId": "62702d09-b685-4298-8ef8-952d713409a8",
+      "ackSentAt": "2026-09-09T18:18:00-03:00",
+      "ackChannel": "SendMessage cross-session"
+    },
+    {
+      "id": "chat-comunicacoes",
+      "env": "Claude",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-chat-comunicacoes",
+      "branch": "work/etapa2-noturna-chat-comunicacoes",
+      "baseSha": "d784462c168d22fdb7090b7de1ef7db554ad5107",
+      "worktreeReady": true,
+      "activation": "ATIVO",
+      "families": [
+        "chat",
+        "notices"
+      ],
+      "ids": 13,
+      "lastRevisionRead": 1,
+      "sessionName": "coelo-64",
+      "sessionId": "4b8c15a3-0c77-4edd-a136-5b4dbb471fbf",
+      "ackSentAt": "2026-09-09T18:18:00-03:00",
+      "ackChannel": "SendMessage cross-session"
+    },
+    {
+      "id": "perfil-para-voce",
+      "env": "Claude",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-perfil-para-voce",
+      "branch": "work/etapa2-noturna-perfil-para-voce",
+      "baseSha": "d784462c168d22fdb7090b7de1ef7db554ad5107",
+      "worktreeReady": true,
+      "activation": "ATIVO",
+      "families": [
+        "principal_profile"
+      ],
+      "ids": 3,
+      "lastRevisionRead": 1,
+      "sessionName": "coelo-65",
+      "sessionId": "a8f7f0b9-7ff3-4767-bd17-4a58e1f717a9",
+      "ackSentAt": "2026-09-09T18:18:00-03:00",
+      "ackChannel": "SendMessage cross-session"
+    },
+    {
+      "id": "alunos-rotina",
+      "env": "Claude",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-alunos-rotina",
+      "branch": "work/etapa2-noturna-alunos-rotina",
+      "baseSha": "d784462c168d22fdb7090b7de1ef7db554ad5107",
+      "worktreeReady": true,
+      "activation": "ATIVO - escrita de produto liberada no recorte students, attendance, daily_routine",
+      "families": [
+        "students",
+        "attendance",
+        "daily_routine"
+      ],
+      "ids": 16,
+      "lastRevisionRead": 1,
+      "sessionName": "coelo-c4",
+      "sessionId": "b4d9315f-30e4-4ad8-bc11-9b14bd0c901d",
+      "ackSentAt": "2026-09-09T18:18:00-03:00",
+      "ackChannel": "SendMessage cross-session"
+    },
+    {
+      "id": "formularios-cuidado",
+      "env": "Claude",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-formularios-cuidado",
+      "branch": "work/etapa2-noturna-formularios-cuidado",
+      "baseSha": "d784462c168d22fdb7090b7de1ef7db554ad5107",
+      "worktreeReady": true,
+      "activation": "ATIVO - sequencia 1 aprovada",
+      "families": [
+        "forms_authoring",
+        "forms_responses",
+        "forms_files",
+        "health_care",
+        "medication"
+      ],
+      "ids": 27,
+      "lastRevisionRead": 2,
+      "sessionName": "coelo-1e",
+      "sessionId": "092d5dc9-a5c0-4fa1-8ddc-3461fc33d884",
+      "ackSentAt": "2026-09-09T18:18:00-03:00",
+      "ackChannel": "SendMessage cross-session"
+    },
+    {
+      "id": "operacoes-sistema",
+      "env": "Claude",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-operacoes-sistema",
+      "branch": "work/etapa2-noturna-operacoes-sistema",
+      "baseSha": "d784462c168d22fdb7090b7de1ef7db554ad5107",
+      "worktreeReady": true,
+      "activation": "ATIVO - sequencia 1-2-3 aprovada",
+      "families": [
+        "auth",
+        "shell",
+        "agenda",
+        "imports",
+        "audit",
+        "support",
+        "account",
+        "catalog",
+        "plans",
+        "meal_plans",
+        "error_pages"
+      ],
+      "ids": 61,
+      "lastRevisionRead": 3,
+      "sessionName": "coelo-9e",
+      "sessionId": "fbcd5520-17b1-4f87-b819-b219bc5d2200",
+      "ackSentAt": "2026-09-09T18:18:00-03:00",
+      "ackChannel": "SendMessage cross-session"
+    }
+  ],
+  "reservations": [
+    {
+      "scope": "router/shell/composition root do Superadmin: superadmin_routes.dart, superadmin_router.dart, main.dart",
+      "writer": "coordenador-claude",
+      "rule": "Dois grupos ja pediram rota nesta rodada (estrutura, pelos hunks de 1345af29f; chat-comunicacoes, por /principal-conversations). Por isso eu serializo. Cada grupo publica na sua branch um commit pequeno contendo APENAS o patch de router e aponta o SHA no seu <grupo>.json; eu aplico sobre a base conjunta. Ninguem substitui o arquivo inteiro nem copia snapshot antigo.",
+      "queue": [
+        "estrutura (1345af29f, 4 rotas)",
+        "chat-comunicacoes (/principal-conversations)"
+      ]
+    },
+    {
+      "scope": "packages/coelo_database/migrations e replays SQL",
+      "writer": "coordenador-claude",
+      "rule": "Candidatos locais permitidos na worktree do grupo. Ordem, replay e qualquer aplicacao remota sao serializados por mim.",
+      "sqlQueue": [
+        "acessos-pessoas (pacote Modelos)",
+        "formularios-cuidado (forms I008, quando chegar)"
+      ]
+    },
+    {
+      "scope": "plataforma comum de midia: Media Gateway, catalogo de ativos R2, mediaPicker/embedded",
+      "writer": "publicacoes-midia",
+      "coordinator": "coordenador-claude",
+      "rule": "publicacoes-midia escreve a plataforma comum nesta rodada. formularios-cuidado (question-image I021) e chat-comunicacoes (anexos R2) consomem o contrato e propoem delta pelo proprio <grupo>.json. Nao criar gateway, bucket ou catalogo por tela."
+    },
+    {
+      "scope": "docs/reviews/inventario-etapa-2.json e os tres rastreadores",
+      "writer": "coordenador-claude",
+      "rule": "Executores nao escrevem; enviam delta proposto no proprio <grupo>.json com action_id, camada, estado novo e evidencia."
+    }
+  ],
+  "remoteAuthorization": {
+    "supabase": "Projeto coelo e PRODUCAO. Esta rodada autoriza correcao local, Git e preparacao de pacote revisavel. Nenhuma migration ou mutacao remota sem autorizacao nominal do Owner para o pacote exato.",
+    "cloudflare": "R2, Stream e Workers de producao. Mesma regra.",
+    "escalation": "Preparar o pacote ate revisavel, registrar o bloqueio nominal no proprio <grupo>.json e continuar o trabalho independente. Bloqueio remoto retem apenas a acao dependente.",
+    "pendingNominalDecisions": [
+      "acessos-pessoas: replay do pacote Modelos - BLOQUEADO ate o Owner voltar; entregar pacote revisavel",
+      "operacoes-sistema: replay Auditoria 145 casos (0/145) - BLOQUEADO ate o Owner voltar; entregar pacote revisavel"
+    ]
+  },
+  "resumeMechanisms": {
+    "claudeToClaude": "SendMessage cross-session verificado em uso real nesta rodada: operacoes-sistema (coelo-9e) e formularios-cuidado (coelo-1e) me alcancaram e eu respondo pelo mesmo canal.",
+    "claudeToCodex": "INDISPONIVEL. Nao ha ferramenta nativa desta sessao para acordar uma conversa Codex. Arquivo em disco nao desperta conversa Codex. Em parada confirmada antes do corte, eu preservo a entrega e transfiro o residual a um executor Claude, sem dois escritores.",
+    "watch": "Leitura espacada do diretorio de comunicacao e do Git; sem loop segundo a segundo, sem ping continuo, sem agendamento apos os cortes.",
+    "limitation": "Se esta sessao do coordenador for encerrada pelo aplicativo ou pela cota, o acompanhamento para. Nenhuma promessa de vigilia alem da sessao. Por isso: commit e push de lotes pequenos durante o trabalho, nao um unico salvamento no fim.",
+    "claudeExecutorAddresses": "Fornecidos pelo Owner e verificados por envio real: as seis conversas Claude receberam ACK nominal por SendMessage em 18:18. Enderecos gravados em groups[].sessionName/sessionId para recuperacao."
+  },
+  "blocks": [],
+  "nextStep": "Manter o ciclo de integracao a cada 30-40 minutos ate 23:30, recolher as entregas Codex, e seguir com as frentes Claude ate 04:40.",
+  "providers": {
+    "supabase": {
+      "cli": "supabase 2.117.0 autenticado; token no Credential Manager do Windows",
+      "projeto": "coelo / ref evvbomzejfijozbtgvpt, sa-east-1, Postgres 17, ACTIVE_HEALTHY, linked",
+      "workdir": "comandos exigem --workdir packages/coelo_database",
+      "acessoVerificado": "leitura (projects list) em 2026-09-09T18:25-03:00",
+      "escrita": "NAO autorizada nesta rodada"
+    },
+    "cloudflare": {
+      "mcp": "cloudflare-api (docs/search/execute), conta 2363eb1eadce9b73279d3c8ce46eb424",
+      "acessoVerificado": "leitura real: GET /r2/buckets retornou coelo-documents-prod, coelo-media-prod e coelo-transient-prod em 2026-09-09T18:27-03:00, coerente com a ADR 0032",
+      "wrangler": "4.130.0 instalado, sem credencial propria (whoami nao autenticado)",
+      "escrita": "NAO autorizada nesta rodada"
+    },
+    "segredos": "Nenhuma credencial exposta em arquivo, log ou evidencia. O MCP Cloudflare tem consentimento amplo; tratado como leitura por padrao."
+  },
+  "ownerAvailability": {
+    "estado": "AUSENTE a partir de 2026-09-09T18:26-03:00, por aviso direto do Owner ao coordenador",
+    "consequencia": "Nenhuma autorizacao nominal nova sera concedida durante a noite. Toda aplicacao remota em Supabase e Cloudflare fica BLOQUEADA ate o Owner voltar.",
+    "instrucao": "Nao esperar decisao. Preparar o pacote ate revisavel, registrar o bloqueio nominal e seguir para a proxima acao local executavel. Isso vale explicitamente para o replay do pacote Modelos (acessos-pessoas) e para o replay Auditoria 145 (operacoes-sistema), que permanecem 0/145.",
+    "ordemDoOwner": "Nao parar por nada, respeitar os horarios, publicar commits e entregar pendencias ao coordenador."
+  },
+  "integration": {
+    "politica": "Integro por revisao de codigo mais verificacao na base conjunta, nunca por confianca no relato. Falha reportada como preexistente e conferida contra a base intocada antes de eu publicar.",
+    "filaRouter": [
+      "perfil-para-voce b09da7c15 (em verificacao)",
+      "estrutura fc8287c57 (proposta recebida)",
+      "chat-comunicacoes (/principal-conversations, pendente)"
+    ],
+    "lotesPublicadosPelasBranches": {
+      "perfil-para-voce": "b09da7c15",
+      "estrutura": "846622381",
+      "acessos-pessoas": "3a96ca535",
+      "operacoes-sistema": "0e7678895",
+      "publicacoes-midia": "1e39b2fcf",
+      "chat-comunicacoes": "903c5525d",
+      "alunos-rotina": "nada publicado ainda",
+      "formularios-cuidado": "nada publicado ainda"
+    },
+    "observadoEm": "2026-09-09T18:36:00-03:00"
+  },
+  "decisoes": [
+    {
+      "id": "GOLDEN-DRIFT",
+      "decisao": "Nenhum grupo regrava golden nesta rodada.",
+      "causa": "Deriva de golden PREEXISTENTE na base d784462c1, confirmada pelo coordenador em worktree destacada intocada (C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-verificacao), sempre nas variantes dark e text_200: principal_profile 10 falhas; principal_happens e vizinhas 21; chat e notices 12; meal_plans e plans 7. Em todos os casos o mesmo numero de falhas aparece sem nenhum lote aplicado.",
+      "efeito": "Registrada como falha conhecida da base, estado blocked-decision. Regravar gravaria a deriva como referencia. O ambiente de referencia de golden e decisao do Owner.",
+      "data": "2026-09-09T18:33:00-03:00"
+    },
+    {
+      "id": "ERRORS-409-BASELINE",
+      "decisao": "Manter os dois casos de errors.409 como skip com motivo, nao como vermelho permanente.",
+      "causa": "Os goldens 409 nunca existiram; o diretorio tem 403, 404, 500 e 503 em light e dark. A spec 2026-07-28-superadmin-error-pages-design.md exige aprovacao nominal e proibe rebaseline automatico. Problema distinto da deriva: aqui a referencia nunca existiu.",
+      "efeito": "errors.409 fica blocked-decision e NAO conta como FE verificado; os dois casos contam em S, nunca em P. Vermelho fixo escondia regressao real nas outras quatro variantes.",
+      "data": "2026-09-09T18:35:00-03:00"
+    },
+    {
+      "id": "FORMS-MONEY-MIGRACAO",
+      "decisao": "Nao criar migracao de dados para converter limites de money para minorUnits agora.",
+      "causa": "Backend esta 0/223 e nao houve cutover; nao ha base de definicoes persistidas em producao gravadas por este cliente. Migrar dados que nao se sabe existir e pior que a fronteira registrada.",
+      "efeito": "A convergencia fica registrada como dependencia de contrato de dados para quando o BE de forms for ao remoto.",
+      "data": "2026-09-09T18:34:00-03:00"
+    },
+    {
+      "id": "GOLDEN-REBASELINE-CRITERIO",
+      "decisao": "Rebaseline de golden e permitido quando as tres condicoes forem cumpridas JUNTAS: (i) a causa e rastreavel a um commit aprovado especifico OU a uma mudanca intencional e testada do proprio lote; (ii) cada render foi inspecionado antes de regenerar; (iii) os arquivos ficam listados por caminho no registro. Fora disso, proibido.",
+      "causa": "A regra anterior era cega demais. O que ela precisa proibir e mascarar deriva de origem desconhecida, nao impedir que um golden acompanhe uma mudanca intencional e testada, que e TDD normal.",
+      "casos": "alunos-rotina regenerou 10 goldens de daily_routine e attendance com causa em c4a7feff8 e ec9826f3e, inspecao por render e lista por caminho: ACEITO. Deriva de tema escuro, Suporte e Minha conta: NAO cumprem e continuam U/blocked-decision. Correcao de acentuacao de Rotina: AUTORIZADA em commit isolado com antes/depois.",
+      "data": "2026-09-09T19:20:00-03:00"
+    },
+    {
+      "id": "ATTENDANCE-FAIL-CLOSED",
+      "decisao": "NAO abrir a navegacao de /attendance (onCreate e onOpenCall nulos, capacidade de mutacao negada) antes de OQ-040. Qualquer patch nesse sentido sera rejeitado.",
+      "causa": "As RPCs superadmin_attendance_* nao existem em nenhuma das 173 migrations vivas, apenas em .recovery-archives; as vivas so tem a familia legada attendance_dashboard_*. Abrir a navegacao criaria acao falsa contra RPC inexistente. Achado de alunos-rotina.",
+      "efeito": "Mesmo tratamento para routineRepository e studentTrackingRepository, ambos Unavailable. O fail-closed e o comportamento correto.",
+      "data": "2026-09-09T19:15:00-03:00"
+    },
+    {
+      "id": "FILA-SQL-SERIALIZADA",
+      "decisao": "Quatro candidatos renomeados para uma fila forward-only unica depois da cauda 20260909174500, na ordem real de integracao em dev. Conteudo intocado, SHA256 identico antes e depois.",
+      "causa": "Tres grupos escolheram independentemente o carimbo 20260909190000 e chat-comunicacoes escolheu 130000 e 140000, anteriores a cinco migrations ja existentes. Worktrees separadas nao impedem colisao logica: a ordem da fila e global.",
+      "registro": "docs/reviews/etapa-2-operacao/reports/NOTURNA-fila-sql-serializada.md contem o mapeamento autoritativo dos carimbos originais que os manifests dos grupos ainda citam.",
+      "regra": "Novos candidatos escolhem carimbo posterior a 20260909200000 e avisam o coordenador.",
+      "data": "2026-09-09T19:35:00-03:00"
+    },
+    {
+      "id": "BARRA-DE-VERIFIED-COM-GOLDEN-VERMELHO",
+      "decisao": "Uma acao nao vai a frontend verified enquanto os goldens da propria tela estiverem vermelhos na base, mesmo que a deriva nao seja culpa do lote. Nesses casos o estado e local-green, e a promocao fica esperando a decisao de rebaseline do Owner.",
+      "causa": "chat-comunicacoes propos verified para 12 acoes com 9 goldens de chat e 3 de notices vermelhos, enquanto operacoes-sistema recusou promover meal-plans, plans e agenda exatamente por goldens vermelhos. Aceitar as duas barras faria o painel medir quem escreveu o delta em vez do estado do produto.",
+      "efeito": "As 12 acoes entraram como local-green com o texto do autor preservado mais a justificativa. Sobem sem retrabalho quando a decisao vier.",
+      "data": "2026-09-09T20:00:00-03:00"
+    },
+    {
+      "id": "ARTEFATOS-FAILURES-PNG",
+      "decisao": "Os PNGs sob test/**/failures/ ficam fora do indice. Em conflito de merge, prevalece o lado que nao os rastreia; os arquivos permanecem no disco.",
+      "causa": "Sao diffs regenerados a cada execucao das suites de golden. O .gitignore ja exclui o diretorio, mas uma branch os havia adicionado antes disso valer, e o merge de alunos-rotina conflitou em 54 deles. Rastreados, fazem qualquer frente aparecer no fechamento com alteracoes nao identificadas que nao sao trabalho.",
+      "data": "2026-09-09T20:02:00-03:00"
+    },
+    {
+      "id": "PERGUNTA-DE-COMPOSICAO-PRODUTIVA",
+      "decisao": "OBRIGATORIO para todos os grupos, antes de propor qualquer promocao de estado: responder por escrito se main.dart compoe aquele caminho, se o router monta a pagina PRODUTIVA, e se existe implementacao de producao do repositorio, nao apenas a interface. Sem as tres respostas, nao aplico promocao.",
+      "causa": "operacoes-sistema descobriu, corrigindo o proprio delta ja aplicado, que Suporte tem 61 testes verdes e nenhuma camada de dados: so domain e presentation, sem data/, sem repositorio, sem interface, e nada em packages define SupportTicket. Em producao a rota nem abre, porque nenhum ponto de composicao injeta supportController e o router devolve 503. Os 61 casos exercitam um controlador de prototipo em memoria.",
+      "regra": "Verde sobre controlador de prototipo nao e verde sobre producao. O mesmo engano e facil em qualquer feature com store de prototipo.",
+      "exemplo": "docs/reviews/etapa-2-operacao/reports/E2-noturna-composicao-producao-20260909.md mapeia as onze familias do recorte de operacoes-sistema. Oito tem caminho produtivo; imports tambem esta composto e sua indisponibilidade e de politica, nao de composicao; account e misto, com settings e theme produtivos, profile so em /dev e sessions sem tela alguma.",
+      "data": "2026-09-09T20:18:00-03:00"
+    }
+  ],
+  "integrado": [
+    {
+      "grupo": "perfil-para-voce",
+      "lote": "b09da7c15",
+      "merge": "790e215f3",
+      "verificacao": "analyze limpo; P=225 F=10; as 10 identicas na base intocada"
+    },
+    {
+      "grupo": "publicacoes-midia",
+      "lote": "1e39b2fcf",
+      "merge": "d502350ce",
+      "verificacao": "analyze limpo; 229P/21F contra 138P/21F na base intocada: +91 casos, zero regressao"
+    },
+    {
+      "grupo": "operacoes-sistema",
+      "lote": "aafde0b3d",
+      "merge": "264684020",
+      "verificacao": "159P/7F contra 153P/7F na base intocada: +6 casos, zero regressao"
+    },
+    {
+      "grupo": "formularios-cuidado",
+      "lote": "94b9fa18d",
+      "merge": "bfb6a7c00",
+      "verificacao": "coelo_domain test/forms todos verdes; forms do superadmin 711P/9F, falhas conhecidas da base"
+    },
+    {
+      "grupo": "estrutura",
+      "lote": "e6c25bb94",
+      "merge": "946cc0274",
+      "verificacao": "analyze limpo; 688P/36F contra 645P/36F em dev antes do merge: +43 casos, zero regressao"
+    },
+    {
+      "grupo": "chat-comunicacoes",
+      "lote": "e4d03a427",
+      "merge": "60b98f98a",
+      "verificacao": "55 falhas antes e 55 depois nas mesmas suites; conflito logico de onOpenMessages reconciliado pelo coordenador"
+    },
+    {
+      "grupo": "alunos-rotina",
+      "lote": "bf69016f3",
+      "merge": "dba34c9e6",
+      "verificacao": "analyze limpo no conjunto"
+    },
+    {
+      "grupo": "perfil-para-voce",
+      "lote": "6e58b624f (lotes 2-4)",
+      "merge": "23044a276",
+      "verificacao": "analyze limpo no conjunto"
+    },
+    {
+      "grupo": "formularios-cuidado",
+      "lote": "75b2cebdb",
+      "merge": "8d4991a2e",
+      "verificacao": "analyze limpo no conjunto"
+    },
+    {
+      "grupo": "operacoes-sistema",
+      "lote": "d3ddc4a76",
+      "merge": "aa0e54d0c",
+      "verificacao": "analyze limpo no conjunto; inclui censo de goldens e correcoes de Agenda"
+    },
+    {
+      "grupo": "estrutura",
+      "lote": "bf422d4f9",
+      "merge": "8a520c547",
+      "verificacao": "analyze limpo no conjunto"
+    },
+    {
+      "grupo": "acessos-pessoas",
+      "lote": "b285a6804",
+      "merge": "69ce62c43",
+      "verificacao": "analyze limpo no conjunto"
+    }
+  ],
+  "correcoesDoCoordenador": [
+    {
+      "erro": "Repassei a publicacoes-midia uma atribuicao de 3 vermelhos em principal_real_route_test.dart vinda de alunos-rotina, sem medir.",
+      "correcao": "publicacoes-midia mediu contra worktree destacada em d784462c1 e mostrou que esse arquivo nao aparece entre as 33 falhas da base. Atribuicao retirada. Passo a medir antes de rotear.",
+      "data": "2026-09-09T19:38:00-03:00"
+    },
+    {
+      "erro": "Segurei 21 commits de integracao sem publicar em origin/dev enquanto verificava, e publicacoes-midia teve de me alertar.",
+      "correcao": "Publicado em 4d119b4f3. Passo a publicar a cada merge validado, nao a cada lote de merges. O risco de perder trabalho de sete frentes numa queda supera o de dev ficar minutos com erro de analise.",
+      "data": "2026-09-09T19:52:00-03:00"
+    }
+  ],
+  "censoGoldens": {
+    "fonte": "operacoes-sistema, commit d3ddc4a76",
+    "relatorio": "docs/reviews/etapa-2-operacao/reports/E2-noturna-golden-census-20260909.md",
+    "medida": "49 suites *_golden_test.dart de apps/superadmin sobre d784462c1: 226 PASS, 6 SKIP, 151 FAIL em 27 features",
+    "maiores": "agenda 20, principal_moments 11, principal_profile 10, principal_happens 10, chat 9, activities 9, institutions 8, groups 8, forms 8, account 8",
+    "padroes": "referencia ausente (nunca existiu), referencia obsoleta com commits rastreados, e deriva de tema escuro",
+    "limite": "A medicao nao classifica sozinha obsolescencia aceitavel versus regressao real; isso exige abrir a referencia aprovada de cada tela e e decisao do Owner"
+  },
+  "deltaObrigatorio": {
+    "exigencia": "A partir desta revisao, TODA revisao de <grupo>.json inclui o campo tracker_delta_proposto. Sem ele eu nao consigo atualizar inventario e rastreadores no fechamento, e o trabalho do grupo aparece como commit sem estado.",
+    "formato": "Array de objetos: {action_id, camada: frontend|backend|integrated, estado_atual, estado_proposto, delta (frase que entra na linha do rastreador), evidencia (commit e/ou caminho de teste)}.",
+    "regras": [
+      "action_id exatamente como no inventario. Nao inventar ID nem agrupar familia como se fosse acao.",
+      "estado_proposto so pode ser terminal (verified, done, verified-e2e) com certificacao completa: evidencia em arquivo do repo, revisao, ambiente e data. Na duvida, manter pending-verification e escrever o motivo.",
+      "Correcao de baseline vermelha, teste novo ou golden reconciliado NAO promove acao. Sao condicao do aceite, nao o aceite.",
+      "Bloqueio vira estado explicito: blocked-decision quando falta decisao do Owner, blocked-environment quando falta ambiente ou autorizacao remota.",
+      "Se nada mudou de estado, enviar array vazio com uma nota. Array ausente e diferente de nenhuma mudanca."
+    ],
+    "exemploBom": "alunos-rotina revisao 3 publicou tracker_delta_proposto correto, inclusive recusando promover qualquer acao a verified por ter apenas restaurado baseline vermelha."
+  },
+  "baselineIntegrado": {
+    "medidoEm": "2026-09-09T19:30:00-03:00",
+    "base": "ecc8eae2b",
+    "comando": "flutter test em apps/superadmin",
+    "resultado": "5707 PASS, 9 SKIP, 190 FAIL",
+    "nota": "Baseline datado da base integrada. alunos-rotina mediu 4667 P / 6 S / 160 F em test/features apenas, o que e coerente: o restante esta em test/app e vizinhos. Nenhuma frente deve tratar lote verde proprio como sinal de saude da base."
+  },
+  "correcoesDeGrupo": [
+    {
+      "grupo": "operacoes-sistema",
+      "revisaoAnterior": 10,
+      "revisaoCorreta": 13,
+      "oQueMudou": "support.table/kanban/detail voltam a pending-verification no frontend, com a causa correta: ausencia do seam de repository/gateway e fail-closed em producao, nao decisao de rebaseline de golden. A obsolescencia dos 24 goldens continua verdadeira, mas e o segundo problema.",
+      "avaliacao": "Autocorrecao contra o proprio numero, depois do delta ja aplicado. E o comportamento que faz o fechamento valer."
+    }
+  ],
+  "distribuicaoDeAchados": [
+    {
+      "achado": "13 sitios de escrita geram a chave de idempotencia inline; o cliente perde a capacidade de repetir a MESMA intencao",
+      "fonte": "operacoes-sistema, relatorio E2-noturna-idempotencia-escrita-20260909.md, commit 2f66e8838",
+      "donos": {
+        "alunos-rotina": "superadmin_attendance_create_call, clear_presence_marks, set_participant, complete_call",
+        "estrutura": "create_unit_for_superadmin (dois sitios), superadmin_group_export_create",
+        "publicacoes-midia": "save_happens_draft, publish_happens_post, save_now_draft, publish_now, withdraw_happens_post, withdraw_moment"
+      },
+      "prioridade": "publish_happens_post, publish_now e create_unit_for_superadmin primeiro: publicacao e criacao nao tem p_expected_revision barrando a repeticao",
+      "ressalva": "Nao afirma que as RPCs sejam nao idempotentes no servidor; afirma que o cliente perdeu a capacidade de repetir a intencao"
+    },
+    {
+      "achado": "16 divergencias source-example-fingerprint-mismatch no catalogo (o rastreador registrava 14)",
+      "fonte": "operacoes-sistema, relatorio E2-noturna-catalog-sync-20260909.md",
+      "armadilha": "validate_catalog_sync.dart usa o MESMO caminho como entrada e saida. O relatorio versionado e a LINHA DE BASE. Rodar apontando para caminho inexistente faz tudo cair em prior==null e imprimir zero diagnostico sem ter comparado nada. Regenerar o relatorio versionado ZERA os 16 sem corrigir um unico exemplo.",
+      "donos": "dois em Formularios (superadmin.forms-editor, superadmin.forms-response); a maioria em coelo_ui_core e coelo_ui_admin"
+    },
+    {
+      "achado": "O badge de nao lidas NAO tem pendencia arquitetural observavel: toda rota monta dois shells e o unico launcher renderizado sempre tem o loader",
+      "fonte": "chat-comunicacoes, sonda descartavel em 32 rotas de producao, removida e nao commitada",
+      "efeito": "Tira da fila um refactor de ~44 arquivos que nao mudaria nada visivel"
+    }
+  ],
+  "avisoCodex": {
+    "destinatarios": [
+      "estrutura",
+      "acessos-pessoas"
+    ],
+    "mensagem": "Faltam cerca de 2h15 para o congelamento das 23:10. A partir de agora, nao inicie lote que nao caiba antes disso. Sequencia obrigatoria: 23:10 congelar novos lotes; 23:20 pre-entrega publicada; 23:30 entrega final e parada de TODOS os filhos. Antes de fechar, revisite pedidos recebidos, acoes nao terminadas, arquivos modificados, commits, stash, artefatos ignorados, falhas e testes interrompidos. Exijo HEAD igual ao upstream com divergencia 0/0, worktree sem alteracao nao identificada, WIP preservado por caminho e hash, e recursos proprios encerrados. Nao espere ACK depois do corte: eu assumo o residual.",
+    "lembreteDelta": "A entrega precisa trazer tracker_delta_proposto, senao o trabalho entra em dev como codigo sem estado no rastreador.",
+    "lembreteRegra": "Antes de qualquer promocao, responda as tres perguntas de composicao produtiva."
+  },
+  "economiasRegistradas": [
+    {
+      "achado": "Varredura das 217 rotas do router atras de pathParameters descartados: resultado NEGATIVO em producao",
+      "fonte": "formularios-cuidado",
+      "detalhe": "Quinze rotas descartam parametro e todas caem em bloqueio honesto e explicito (redirect, tela de indisponibilidade, SuperadminErrorScreen ou blockedProductionMutationPage). As unicas duas rotas produtivas que montam pagina real sem dados sao /forms/:formId/test e /forms/:formId/occurrences/:occurrenceId/respond, ja mapeadas.",
+      "efeito": "Nenhuma frente precisa refazer essa varredura."
+    },
+    {
+      "achado": "Badge de nao lidas nao tem pendencia arquitetural observavel",
+      "fonte": "chat-comunicacoes",
+      "efeito": "Sai da fila um refactor de ~44 arquivos."
+    },
+    {
+      "achado": "A ausencia do ramo /attendance em hasAuthoritativeMutationCapability e INTENCIONAL e sustenta o fail-closed",
+      "fonte": "operacoes-sistema e alunos-rotina, por caminhos independentes",
+      "detalhe": "O bloqueio vem do redirect, que chama COM location; as chamadas sem argumento nos builders sao segunda camada inalcancavel. O risco e um revisor futuro ADICIONAR o ramo por simetria com invites, notices e circulars: o repositorio injetado e real e a rota abriria contra RPCs que nao existem em migration viva.",
+      "efeito": "Nao corrigir. Documentado como intencional."
+    }
+  ]
+}

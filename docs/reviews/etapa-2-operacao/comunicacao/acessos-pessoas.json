@@ -1,0 +1,106 @@
+{
+    "revision":  7,
+    "updated_at":  "2026-09-09T18:23:01.2954217-03:00",
+    "group":  "acessos-pessoas",
+    "task_id":  "/root",
+    "native_thread_id":  null,
+    "model":  "GPT-6 (variante não exposta)",
+    "status":  "active",
+    "worktree":  "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas",
+    "branch":  "work/etapa2-noturna-acessos-pessoas",
+    "head":  "3a96ca5353490bb410541861632a3b9d890b965b",
+    "upstream":  "origin/work/etapa2-noturna-acessos-pessoas",
+    "base_observed":  "d784462c1",
+    "scope":  "apps/superadmin -\u003e Pessoas, Perfis, Modelos, Convites, Usuários internos, Segurança infantil, Arquivos de perfil",
+    "action_ids_status":  "38 IDs reconciliados com matriz D04:31 ativos,6 adiados,1 gate MFA; nenhuma certificação nova",
+    "changes":  [
+                    {
+                        "status":  "published-local-candidate-unexecuted",
+                        "commit":  "cc5d73bc74de652c91570061aef6ede95b3915a7",
+                        "manifest":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/manifest.json",
+                        "package":  "AP-MODELS-NOMINAL-20260909-v1"
+                    },
+                    {
+                        "commit":  "3a96ca5353490bb410541861632a3b9d890b965b",
+                        "actions":  [
+                                        "child-safety.list",
+                                        "child-safety.child",
+                                        "child-safety.create",
+                                        "child-safety.edit",
+                                        "child-safety.suspend"
+                                    ],
+                        "tests":  "18P0F atuais apresentação; analyzer Safety limpo; visual contracts PASS",
+                        "note":  "Reuso adc902eaf + teste alvo48/tap/Enter + golden revisado. Pai abriu actual e revisou evidência. No bootstrap/SQL/shared.",
+                        "evidence":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-visual/handoff.md",
+                        "status":  "published-ready-for-selective-integration"
+                    }
+                ],
+    "criteria_closed":  [
+                            "child-safety.list: golden F1 resolvido por reconciliação nominal24/48+shell integrado; nenhum certificadoFE/BE/E2E novo"
+                        ],
+    "tests":  {
+                  "note":  "Safety18P; Models95 bloqueados pela base nominal. Reporter efetivamente10SQL P1F9 dependentes de pacote não instalado, sem certificação.",
+                  "S":  0,
+                  "F":  0,
+                  "B":  95,
+                  "U":  0,
+                  "P":  18
+              },
+    "reservations":  [
+                         "SQL/replay/shared: coordenador; candidatos locais permitidos na worktree"
+                     ],
+    "blocker":  "Replay02 interrompido no preflight: Auth45 cursores diferem dos corpos reais remotos. Guardas corretas preservadas; snapshot DDL somente catálogo inserido exclusivamente na fixture local. Nenhum objeto remoto alterado.",
+    "next_step":  "Reexecutar pacote95 com fixture dos dois cursores reais; hashes remotos e preflight não relaxados. Recursos replay02 zero após cleanup. Próximo logreplay03.",
+    "wip":  [
+
+            ],
+    "processes":  [
+                      {
+                          "container":  "supabase_db_coelo_safe_2079c545aa8647bb8d657611cce32",
+                          "owner":  "/root",
+                          "type":  "SQL replay",
+                          "session":  65461,
+                          "state":  "running",
+                          "log":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/replay-02.log"
+                      }
+                  ],
+    "children":  [
+                     {
+                         "scope":  "Safety visual feature/testes, sem SQL/adapter/shared",
+                         "cutoff":  "23:05BRT",
+                         "id":  "/root/safety_visual",
+                         "state":  "active"
+                     }
+                 ],
+    "cutoff":  "2026-09-09T23:30:00-03:00",
+    "ack_observed":  true,
+    "historical_evidence":  {
+                                "source":  "R02 D04 r14/FECHAMENTO-OWNER",
+                                "held":  "Safety adc902eaf/48141c195/f84db0412/963796ddf",
+                                "author_tests":  "440P1F, SafetySQL43U; históricos, não resultados desta rodada",
+                                "integrated":  "Modelos duplicate82f08af50 e Convites444e03ccb consolidados em d019c109a",
+                                "general_snapshot":  "R02 FE7/230 BE0/223 E2E0/198",
+                                "scope_certification":  "FE2/38 históricos; ativos FE0/31 BE0/31 E2E0/31"
+                            },
+    "providers":  {
+                      "cloudflare":  "cloudflare_api docs/search/execute disponíveis; sem acesso testado",
+                      "supabase":  "MCP instalado descoberto; sem operação remota"
+                  },
+    "knowledge":  "Consulta realizada; projeções access-profiles/child-safety ainda contêm MFA/AAL2 histórico. Preservar ADR0019 AAL1 vigente; writer central deve reconciliar. Nenhuma regra nova.",
+    "contract":  {
+                     "stop":  "aceites completos, bloqueio demonstrado, ou corte23:30 BRT",
+                     "eta":  "não calculável antes de atribuição/slot; leitura focal concluída para primeiros gates",
+                     "evidence":  "testes focais, manifests/hashes, commits publicados e0/0 upstream na branch atribuída",
+                     "included":  "38 IDs apps/superadmin",
+                     "objective":  "Corrigir/provar ações restantes do grupo",
+                     "excluded":  "outros apps, import/export adiados, MFA novo, produção sem pacote nominal"
+                 },
+    "coordinator_revision_read":  4,
+    "requested_sql_slot":  {
+                               "scope":  "aplicação transacional local + rollback/ACL/persistência + contratos Models",
+                               "status":  "granted-by-coordinator-r4-starting",
+                               "base":  "Auth45 20260901200206; labels NOT NULL sem bridge default ao aplicar pacote",
+                               "production":  "não autorizado; somente leitura catálogo realizada",
+                               "package":  "AP-MODELS-NOMINAL-20260909-v1"
+                           }
+}

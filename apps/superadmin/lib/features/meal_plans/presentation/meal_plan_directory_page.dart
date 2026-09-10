@@ -17,6 +17,18 @@ enum _MealPlanDirectorySection { mealPlans, models }
 
 enum _DirectoryAction { edit, duplicate, publish, review, remove }
 
+/// Recibo de escrita que nao corresponde ao cardapio solicitado.
+///
+/// E um estado proprio, e nao um [MealPlanRepositoryException]: a rejeicao do
+/// servidor significa que nada foi escrito, enquanto um recibo divergente
+/// significa que a escrita PODE ter ocorrido. Os dois casos nao podem
+/// compartilhar tratamento.
+final class _MealPlanReceiptMismatch implements Exception {
+  const _MealPlanReceiptMismatch(this.message);
+
+  final String message;
+}
+
 bool _mealPlanCanPublish(MealPlan item) =>
     !item.conflictState &&
     (item.status == MealPlanStatus.inReview || item.status == MealPlanStatus.updated);
@@ -64,6 +76,12 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
   int _requestedVersion = 1;
   int _actionGeneration = 0;
 
+  /// Intencao de escrita por acao e revisao do item.
+  ///
+  /// Preservada entre tentativas para que o retry reenvie a MESMA intencao;
+  /// so e removida quando o recibo confirma a escrita.
+  final Map<String, String> _writeIntents = {};
+
   MealPlanStatus? _statusFilter;
   MealPlanSourceType? _sourceFilter;
   bool? _hasConflictFilter;
@@ -83,6 +101,7 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
     if (identical(oldWidget.repository, widget.repository)) return;
     _requestedVersion += 1;
     _actionGeneration += 1;
+    _writeIntents.clear();
     _search.clear();
     _institution.clear();
     _unit.clear();
@@ -598,7 +617,15 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
 
   Future<void> _requestReview(MealPlan item) async {
     await _runActionWithFeedback(
-      action: (repository) => repository.submitForReview(item.id, _requestId(), item.revision),
+      action: (repository) => _runWrite(
+        action: 'review',
+        item: item,
+        repository: repository,
+        mismatchMessage:
+            'A confirma\u00e7\u00e3o da revis\u00e3o n\u00e3o corresponde ao card\u00e1pio solicitado.',
+        call: (repository, requestId) =>
+            repository.submitForReview(item.id, requestId, item.revision),
+      ),
       successMessage: 'Revis\u00e3o solicitada com sucesso.',
       refresh: true,
     );
@@ -612,7 +639,18 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
       },
       preflightFailureMessage:
           'N\u00e3o \u00e9 poss\u00edvel publicar com conflito n\u00e3o resolvido.',
-      action: (repository) => repository.publish(item.id, _requestId(), item.revision),
+      action: (repository) => _runWrite(
+        action: 'publish',
+        item: item,
+        repository: repository,
+        mismatchMessage:
+            'A confirma\u00e7\u00e3o da publica\u00e7\u00e3o n\u00e3o corresponde ao card\u00e1pio solicitado.',
+        isSettled: (receipt) =>
+            receipt.status == MealPlanStatus.published &&
+            !receipt.isDraft &&
+            !receipt.requiresReview,
+        call: (repository, requestId) => repository.publish(item.id, requestId, item.revision),
+      ),
       successMessage: 'Card\u00e1pio publicado.',
       refresh: true,
     );
@@ -656,6 +694,32 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
     _feedback('A a\u00e7\u00e3o ainda n\u00e3o foi implementada no backend.');
   }
 
+  /// Executa uma escrita reusando a mesma intencao enquanto ela nao for
+  /// confirmada, e valida o recibo num unico ponto compartilhado.
+  Future<MealPlan> _runWrite({
+    required String action,
+    required MealPlan item,
+    required MealPlanRepository repository,
+    required String mismatchMessage,
+    required Future<MealPlan> Function(MealPlanRepository repository, String requestId) call,
+    bool Function(MealPlan receipt)? isSettled,
+  }) async {
+    final key =
+        '$action:${item.id}:${item.revision}:${item.tenantId}:${item.institutionId ?? ''}';
+    final requestId = _writeIntents[key] ??= _requestId();
+    final receipt = await call(repository, requestId);
+    if (receipt.id != item.id ||
+        receipt.tenantId != item.tenantId ||
+        receipt.institutionId != item.institutionId ||
+        !(isSettled?.call(receipt) ?? true)) {
+      // A escrita pode ter ocorrido: manter a intencao para que o retry
+      // reenvie o mesmo requestId em vez de criar uma segunda intencao.
+      throw _MealPlanReceiptMismatch(mismatchMessage);
+    }
+    _writeIntents.remove(key);
+    return receipt;
+  }
+
   Future<void> _runActionWithFeedback({
     Future<bool> Function(MealPlanRepository repository)? preflight,
     String? preflightFailureMessage,
@@ -680,6 +744,9 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
       if (refresh) {
         await _load(reset: true);
       }
+    } on _MealPlanReceiptMismatch catch (mismatch) {
+      if (!_isCurrentAction(generation, repository)) return;
+      _feedback(mismatch.message);
     } on MealPlanRepositoryException catch (error) {
       if (!_isCurrentAction(generation, repository)) return;
       _feedback(error.message);

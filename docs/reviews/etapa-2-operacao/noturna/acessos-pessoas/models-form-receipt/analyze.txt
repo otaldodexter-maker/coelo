@@ -1,0 +1,15 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:1
++ rtk proxy flutter analyze --no-pub lib/features/access_profiles/prese ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Analyzing 2 items...                                            
+
+   info - Use interpolation to compose strings and values. Try using string interpolation to build the composite string - test\features\access_profiles\presentation\access_profile_form_receipt_test.dart:12:7 - prefer_interpolation_to_compose_strings
+   info - Use interpolation to compose strings and values. Try using string interpolation to build the composite string - test\features\access_profiles\presentation\access_profile_form_receipt_test.dart:47:7 - prefer_interpolation_to_compose_strings
+warning - A value for optional parameter 'load' isn't ever given. Try removing the unused parameter - test\features\access_profiles\presentation\access_profile_form_receipt_test.dart:141:30 - unused_element_parameter
+warning - A value for optional parameter 'saving' isn't ever given. Try removing the unused parameter - test\features\access_profiles\presentation\access_profile_form_receipt_test.dart:141:41 - unused_element_parameter
+
+4 issues found. (ran in 85.6s)

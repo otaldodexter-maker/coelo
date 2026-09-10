@@ -1,0 +1,77 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:1
++ rtk proxy flutter test --no-pub test/features/access_profiles/present ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_duplicate_context_test.dart
+00:00 +0: confirmed duplicate survives navigation failure unexpected=false
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: <1>
+  Actual: <2>
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_duplicate_context_test.dart:83:7)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_duplicate_context_test.dart line 83
+The test description was:
+  confirmed duplicate survives navigation failure unexpected=false
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:01 +0 -1: confirmed duplicate survives navigation failure unexpected=false [E]
+  Test failed. See exception logs above.
+  The test description was: confirmed duplicate survives navigation failure unexpected=false
+  
+00:01 +0 -1: confirmed duplicate survives navigation failure unexpected=true
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following StateError was thrown running a test:
+Bad state: Navigation failed
+
+When the exception was thrown, this was the stack:
+#0      main.<anonymous closure>.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_duplicate_context_test.dart:72:27)
+#1      _AccessProfileDuplicatePageState._duplicate (package:coelo_superadmin/features/access_profiles/presentation/access_profile_duplicate_page.dart:122:19)
+<asynchronous suspension>
+
+The test description was:
+  confirmed duplicate survives navigation failure unexpected=true
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:01 +0 -2: confirmed duplicate survives navigation failure unexpected=true [E]
+  Test failed. See exception logs above.
+  The test description was: confirmed duplicate survives navigation failure unexpected=true
+  
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test (but after the test had completed):
+Expected: <1>
+  Actual: <2>
+
+When the exception was thrown, this was the stack:
+#0      fail (package:matcher/src/expect/expect.dart:187:31)
+#1      _expect (package:matcher/src/expect/expect.dart:182:3)
+#2      expect (package:matcher/src/expect/expect.dart:65:3)
+#3      expect (package:flutter_test/src/widget_tester.dart:473:18)
+#4      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_duplicate_context_test.dart:83:7)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+════════════════════════════════════════════════════════════════════════════════════════════════════
+  Test failed. See exception logs above.
+  The test description was: confirmed duplicate survives navigation failure unexpected=true
+  
+00:01 +0 -2: Some tests failed.
+
+Failing tests:
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_duplicate_context_test.dart: confirmed duplicate survives navigation failure unexpected=false
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_duplicate_context_test.dart: confirmed duplicate survives navigation failure unexpected=true

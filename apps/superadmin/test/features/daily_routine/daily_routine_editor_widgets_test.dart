@@ -64,7 +64,7 @@ void main() {
 
     final moveUp = find.byKey(const Key('daily-routine-option-1-move-up'));
     expect(tester.getSize(moveUp), const Size(48, 48));
-    expect(tester.getSemantics(moveUp).tooltip, 'Mover opcao para cima');
+    expect(tester.getSemantics(moveUp).tooltip, 'Mover opção para cima');
     await tester.tap(moveUp);
     expect(reorder, (1, 0));
   });
@@ -135,7 +135,7 @@ void main() {
 
     expect(
       tester.getSemantics(find.byKey(const Key('daily-routine-section-first-drag-handle'))).label,
-      contains('Reordenar secao'),
+      contains('Reordenar seção'),
     );
     expect(
       tester
@@ -174,7 +174,7 @@ void main() {
     );
 
     final summary = find.byKey(const Key('daily-routine-inheritance-summary'));
-    expect(tester.getSemantics(summary).label, contains('Heranca da rotina'));
+    expect(tester.getSemantics(summary).label, contains('Herança da rotina'));
     expect(find.text('Origem'), findsOneWidget);
     expect(find.text('Herdado'), findsOneWidget);
     expect(find.text('Efetivo'), findsOneWidget);

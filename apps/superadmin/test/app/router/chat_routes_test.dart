@@ -76,7 +76,12 @@ void main() {
     expect(launcher, findsNothing);
   });
 
-  testWidgets('Coelo Principal Chat reuses the dev conversations route and repository', (
+  // Este caso afirmava que o launcher do Principal reusava a rota administrativa
+  // com `?from=principal`. Esse era justamente o defeito: PRINCIPAL.md, a
+  // spec050 e principal-chat-integration.md exigem superfície própria da família
+  // Principal. Reescrito para afirmar o destino correto; o repositório
+  // determinístico continua sendo o mesmo, o que muda é a composição.
+  testWidgets('Coelo Principal Chat opens the Principal composition, not the admin page', (
     tester,
   ) async {
     tester.view.devicePixelRatio = 1;
@@ -104,8 +109,11 @@ void main() {
     await tester.tap(messages);
     await tester.pumpAndSettle();
 
-    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devConversations);
-    expect(router.routeInformationProvider.value.uri.queryParameters['from'], 'principal');
+    expect(
+      router.routeInformationProvider.value.uri.path,
+      SuperadminRoutes.devPrincipalConversations,
+    );
+    expect(router.routeInformationProvider.value.uri.queryParameters['from'], isNull);
     expect(find.text('Turma Girassol'), findsWidgets);
     expect(find.text('Coordenação Pedagógica'), findsWidgets);
     expect(
@@ -114,7 +122,7 @@ void main() {
       reason: 'O Chat aberto por Coelo (Principal) já é a superfície de conversas.',
     );
 
-    await tester.tap(find.byTooltip('Voltar'));
+    await tester.tap(find.byKey(const Key('principal-chat-back')));
     await tester.pumpAndSettle();
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devPrincipalHappens);
   });
@@ -238,6 +246,9 @@ void main() {
     addTearDown(router.dispose);
     addTearDown(session.dispose);
 
+    // A página administrativa continua honrando `?from=principal` no botão
+    // voltar para quem chegar por um link antigo; a entrada do Principal passou
+    // a ser /principal-conversations, coberta em principal_chat_route_test.dart.
     router.go('${SuperadminRoutes.conversations}?from=principal');
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
     await tester.pumpAndSettle();

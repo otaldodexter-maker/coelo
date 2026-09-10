@@ -454,7 +454,9 @@ final class _DeniedNowRepository implements NowPublicationRepository {
   }
 
   @override
-  Future<NowPublication> publish(NowPublicationContext context, NowPublicationDraft value) async {
+  Future<NowPublication> publish(NowPublicationContext context, NowPublicationDraft value, {
+    required String requestId,
+  }) async {
     _check('publish');
     return NowPublication(id: value.id!, publishAt: value.publishAt);
   }
@@ -491,7 +493,9 @@ final class _DeferredNowRepository implements NowPublicationRepository {
   ) async => audio;
 
   @override
-  Future<NowPublication> publish(NowPublicationContext context, NowPublicationDraft draft) async =>
+  Future<NowPublication> publish(NowPublicationContext context, NowPublicationDraft draft, {
+    required String requestId,
+  }) async =>
       NowPublication(id: draft.id!, publishAt: draft.publishAt);
 }
 
@@ -520,7 +524,9 @@ final class _CheckpointNowRepository implements NowPublicationRepository {
   ) async => audio;
 
   @override
-  Future<NowPublication> publish(NowPublicationContext context, NowPublicationDraft draft) async =>
+  Future<NowPublication> publish(NowPublicationContext context, NowPublicationDraft draft, {
+    required String requestId,
+  }) async =>
       throw UnimplementedError();
 }
 
@@ -558,8 +564,10 @@ final class _CountingRepository implements NowPublicationRepository {
   }
 
   @override
-  Future<NowPublication> publish(NowPublicationContext context, NowPublicationDraft draft) =>
-      delegate.publish(context, draft);
+  Future<NowPublication> publish(NowPublicationContext context, NowPublicationDraft draft, {
+    required String requestId,
+  }) =>
+      delegate.publish(context, draft, requestId: requestId);
 }
 
 final class _FailAudioOnceRepository implements NowPublicationRepository {
@@ -597,6 +605,8 @@ final class _FailAudioOnceRepository implements NowPublicationRepository {
   }
 
   @override
-  Future<NowPublication> publish(NowPublicationContext context, NowPublicationDraft draft) =>
-      delegate.publish(context, draft);
+  Future<NowPublication> publish(NowPublicationContext context, NowPublicationDraft draft, {
+    required String requestId,
+  }) =>
+      delegate.publish(context, draft, requestId: requestId);
 }

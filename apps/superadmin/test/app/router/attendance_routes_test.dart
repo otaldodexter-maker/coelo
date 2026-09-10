@@ -76,6 +76,7 @@ void main() {
       onThemeModeChanged: (_) {},
       attendanceRepository: repository,
       attendancePermissions: const AttendancePermissions.owner(),
+      allowDevelopmentPreview: true,
     );
     addTearDown(router.dispose);
     addTearDown(session.dispose);

@@ -97,7 +97,7 @@ void main() {
             expect(find.text('Acesso não autorizado'), findsOneWidget);
           }
         } else if (operation != 'delete') {
-          expect(saved?.id, _id);
+          expect(saved?.id, operation == 'duplicate' ? _copyId : _id);
           expect(saved?.version, 4);
         }
         expect(tester.takeException(), isNull);
@@ -261,8 +261,8 @@ SupabaseClient _client(
       data = operation == 'delete'
           ? {'model_id': _id, 'status': 'inactive', 'version': 4, 'replayed': false}
           : {
-              'model': {..._model, 'version': 4},
-              'model_id': _id,
+              'model': {..._model, 'id': operation == 'duplicate' ? _copyId : _id, 'version': 4},
+              'model_id': operation == 'duplicate' ? _copyId : _id,
               'version': 4,
               'replayed': false,
             };
@@ -292,6 +292,7 @@ SupabaseClient _client(
 );
 
 const _id = '00000000-0000-4000-8000-000000000002';
+const _copyId = '00000000-0000-4000-8000-000000000003';
 const _model = {
   'id': _id,
   'domain': 'platform',

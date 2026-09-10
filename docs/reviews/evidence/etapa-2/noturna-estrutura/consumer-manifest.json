@@ -1,0 +1,332 @@
+{
+  "generated_at": "2026-09-09T18:38:56.381854-03:00",
+  "base": "84662238122df2a7b85f5082ac9c5c8e93d8c69a",
+  "component_commit": "c899e1236d36d8d2d7ff925b463af2328fc78d38",
+  "composition_proposal_commit": "be96ba98b423fcf382a866ca09a4fe00af57c63a",
+  "environment": "local Flutter widget/route tests, injected repositories; not production E2E",
+  "action_ids": [
+    "groups.location",
+    "activities.location",
+    "locations.schedule"
+  ],
+  "scope": "apps/superadmin -> Turmas -> detalhe autorizado -> reservas; Activity detail callback prepared, actual reader/composition not connected",
+  "counts": {
+    "N": 47,
+    "E": 47,
+    "P": 47,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0
+  },
+  "cases": [
+    {
+      "name": "explicit catalog choice reads reservations for the actual persisted consumer",
+      "source": "apps/superadmin/test/features/locations/location_consumer_reservations_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "changing consumer drops the previous selection before any reservation read",
+      "source": "apps/superadmin/test/features/locations/location_consumer_reservations_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "changing owner uses its catalog and removes previous reservation context",
+      "source": "apps/superadmin/test/features/locations/location_consumer_reservations_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "authorization revision and revocation clear the selected location",
+      "source": "apps/superadmin/test/features/locations/location_consumer_reservations_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "missing or unsupported consumer never reaches the catalog",
+      "source": "apps/superadmin/test/features/locations/location_consumer_reservations_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "consumer picker fits width 375.0 dark=false at 200 percent",
+      "source": "apps/superadmin/test/features/locations/location_consumer_reservations_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "consumer picker fits width 375.0 dark=true at 200 percent",
+      "source": "apps/superadmin/test/features/locations/location_consumer_reservations_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "consumer picker fits width 768.0 dark=false at 200 percent",
+      "source": "apps/superadmin/test/features/locations/location_consumer_reservations_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "normal group route composes reservations from authorized detail and confines revocation",
+      "source": "apps/superadmin/test/features/locations/location_consumer_routes_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "consumer picker fits width 768.0 dark=true at 200 percent",
+      "source": "apps/superadmin/test/features/locations/location_consumer_reservations_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "catalogued options are read for the owner scope and can be chosen",
+      "source": "apps/superadmin/test/features/locations/location_selection_field_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "consumer picker fits width 1024.0 dark=false at 200 percent",
+      "source": "apps/superadmin/test/features/locations/location_consumer_reservations_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "reservation context only offers catalogued locations",
+      "source": "apps/superadmin/test/features/locations/location_selection_field_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "consumer picker fits width 1024.0 dark=true at 200 percent",
+      "source": "apps/superadmin/test/features/locations/location_consumer_reservations_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "a one-off keeps its text and never becomes a catalogued id",
+      "source": "apps/superadmin/test/features/locations/location_selection_field_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "consumer picker fits width 1440.0 dark=false at 200 percent",
+      "source": "apps/superadmin/test/features/locations/location_consumer_reservations_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "the one-off mode offers no promotion to the catalog",
+      "source": "apps/superadmin/test/features/locations/location_selection_field_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "consumer picker fits width 1440.0 dark=true at 200 percent",
+      "source": "apps/superadmin/test/features/locations/location_consumer_reservations_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "switching mode drops the previous choice instead of converting it",
+      "source": "apps/superadmin/test/features/locations/location_selection_field_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "search narrows the read on the server, not only on screen",
+      "source": "apps/superadmin/test/features/locations/location_selection_field_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "truncation asks for a narrower search instead of implying completeness",
+      "source": "apps/superadmin/test/features/locations/location_selection_field_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "an empty catalog says empty and a denied read says denied",
+      "source": "apps/superadmin/test/features/locations/location_selection_field_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "without a session nothing is read and the field stays denied",
+      "source": "apps/superadmin/test/features/locations/location_selection_field_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "the default source is unavailable rather than an empty catalog",
+      "source": "apps/superadmin/test/features/locations/location_selection_field_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "a stored choice is re-resolved and a stale one is announced",
+      "source": "apps/superadmin/test/features/locations/location_selection_field_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "changing owner drops a choice made in the previous catalog",
+      "source": "apps/superadmin/test/features/locations/location_selection_field_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "the field lays out without overflow at 375 light 1.0x",
+      "source": "apps/superadmin/test/features/locations/location_selection_field_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "changing the route id ignores the previous pending response",
+      "source": "apps/superadmin/test/features/groups/presentation/group_detail_page_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "the field lays out without overflow at 375 light 2.0x",
+      "source": "apps/superadmin/test/features/locations/location_selection_field_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "the field lays out without overflow at 375 dark 1.0x",
+      "source": "apps/superadmin/test/features/locations/location_selection_field_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "read-only detail reload removes payload and keeps denial safe",
+      "source": "apps/superadmin/test/features/groups/presentation/group_detail_page_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "the field lays out without overflow at 375 dark 2.0x",
+      "source": "apps/superadmin/test/features/locations/location_selection_field_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "reloads B and ignores a late activity A detail",
+      "source": "apps/superadmin/test/features/activities/presentation/activity_detail_page_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "read-only 375.0 dark=false text200 remains usable",
+      "source": "apps/superadmin/test/features/groups/presentation/group_detail_page_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "the field lays out without overflow at 1440 light 1.0x",
+      "source": "apps/superadmin/test/features/locations/location_selection_field_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "renders a minimized read-only activity detail",
+      "source": "apps/superadmin/test/features/activities/presentation/activity_detail_page_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "the field lays out without overflow at 1440 light 2.0x",
+      "source": "apps/superadmin/test/features/locations/location_selection_field_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "renders not-found without exposing an edit action",
+      "source": "apps/superadmin/test/features/activities/presentation/activity_detail_page_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "read-only 375.0 dark=true text200 remains usable",
+      "source": "apps/superadmin/test/features/groups/presentation/group_detail_page_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "the field lays out without overflow at 1440 dark 1.0x",
+      "source": "apps/superadmin/test/features/locations/location_selection_field_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "the field lays out without overflow at 1440 dark 2.0x",
+      "source": "apps/superadmin/test/features/locations/location_selection_field_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "read-only 768.0 dark=false text200 remains usable",
+      "source": "apps/superadmin/test/features/groups/presentation/group_detail_page_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "read-only 768.0 dark=true text200 remains usable",
+      "source": "apps/superadmin/test/features/groups/presentation/group_detail_page_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "read-only 1024.0 dark=false text200 remains usable",
+      "source": "apps/superadmin/test/features/groups/presentation/group_detail_page_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "read-only 1024.0 dark=true text200 remains usable",
+      "source": "apps/superadmin/test/features/groups/presentation/group_detail_page_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "read-only 1440.0 dark=false text200 remains usable",
+      "source": "apps/superadmin/test/features/groups/presentation/group_detail_page_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "read-only 1440.0 dark=true text200 remains usable",
+      "source": "apps/superadmin/test/features/groups/presentation/group_detail_page_test.dart",
+      "result": "success",
+      "skipped": false
+    }
+  ],
+  "analysis": {
+    "paths": 12,
+    "result": "No issues after follow-up on two paths; initial two informational brace lints resolved. Unrelated formatter change reverted."
+  },
+  "visual_contract_gate": {
+    "result": "passed",
+    "command": "dart run tool/validate_admin_visual_contracts.dart <own-worktree> assets/admin-visual-contract-allowlist.json"
+  },
+  "resolved_test_failures": [
+    "Missing consumer API compilation before implementation",
+    "Offscreen sentinel and ambiguous Scrollable finder in Group detail test",
+    "Inline catalog options required scrolling after expansion in normal route test"
+  ],
+  "limitations": [
+    "No consumer form selection is persisted by this panel; explicit catalog choice selects reservation context only",
+    "No action promoted to complete FE/BE/E2E",
+    "Activity normal detail remains blocked by unavailable equivalent reader",
+    "Atomic Group/Activity form save not implemented in this commit"
+  ],
+  "reused_evidence": [
+    "catalog165",
+    "Clock46+3",
+    "reservations49+2",
+    "candidates36 (separate paths)"
+  ],
+  "memory": "No new durable product rule; approved catalog/reservation design reused"
+}

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:coelo_superadmin/features/units/data/supabase_unit_directory_repository.dart';
+import 'package:coelo_superadmin/features/units/data/unavailable_unit_composition.dart';
 import 'package:coelo_superadmin/features/units/domain/unit_directory.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
@@ -8,6 +9,65 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  test('unit create intent reuses receipt after committed response is lost', () async {
+    final requests = <String>[];
+    final receipts = <String>{};
+    var loseResponse = true;
+    final client = _client((request) async {
+      if (request.url.path.endsWith('/list_units_for_superadmin')) {
+        return _json({
+          'items': [_unitRow()],
+          'total_count': 1,
+        }, request);
+      }
+      final body = jsonDecode(request.body) as Map<String, dynamic>;
+      final id = body['p_request_id'] as String;
+      requests.add(id);
+      receipts.add(id);
+      if (loseResponse) {
+        loseResponse = false;
+        throw ClientException('response lost after commit');
+      }
+      return _json({..._unitRow(), 'management_version': 1}, request);
+    });
+    addTearDown(client.dispose);
+    final repo = SupabaseUnitDirectoryRepository(client);
+    final record = (await repo.fetchPage(
+      UnitDirectoryQuery(),
+    )).items.single.record.copyWith(managementVersion: 0);
+    await expectLater(repo.upsert(record), throwsA(isA<UnavailableUnitDirectoryException>()));
+    await repo.upsert(record);
+    expect(requests, hasLength(2));
+    expect(receipts, hasLength(1));
+    await repo.upsert(record);
+    expect(receipts, hasLength(2), reason: 'confirmed intent is cleared');
+  });
+  test('unit create intent changes with payload and separates independent drafts', () async {
+    final requests = <String>[];
+    final client = _client((request) async {
+      if (request.url.path.endsWith('/list_units_for_superadmin')) {
+        return _json({
+          'items': [_unitRow()],
+          'total_count': 1,
+        }, request);
+      }
+      requests.add((jsonDecode(request.body) as Map<String, dynamic>)['p_request_id'] as String);
+      throw ClientException('ambiguous');
+    });
+    addTearDown(client.dispose);
+    final repo = SupabaseUnitDirectoryRepository(client);
+    final record = (await repo.fetchPage(
+      UnitDirectoryQuery(),
+    )).items.single.record.copyWith(managementVersion: 0);
+    for (final draft in [
+      record,
+      record.copyWith(name: 'Changed'),
+      record.copyWith(id: 'other-draft'),
+    ]) {
+      await expectLater(repo.upsert(draft), throwsA(isA<UnavailableUnitDirectoryException>()));
+    }
+    expect(requests.toSet(), hasLength(3));
+  });
   test('uses the protected unit directory RPC with server pagination and search', () async {
     Request? captured;
     final client = _client((request) async {

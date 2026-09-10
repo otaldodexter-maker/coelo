@@ -1,0 +1,10 @@
+{
+    "apps\\superadmin\\test\\features\\access_profiles\\presentation\\goldens\\access_profile_domain_tab_hover_light_1440.png":  "25ff4c716477fcb6e00237ba25ccdd261535a261b4ac0835adf7b191212c7e86",
+    "docs\\reviews\\etapa-2-operacao\\noturna\\acessos-pessoas\\profile-hover\\after.png":  "25ff4c716477fcb6e00237ba25ccdd261535a261b4ac0835adf7b191212c7e86",
+    "docs\\reviews\\etapa-2-operacao\\noturna\\acessos-pessoas\\profile-hover\\before.png":  "af8e8d4509d68c2e77430ddb1eef995562801622da08c4b67880716e358ec6ff",
+    "docs\\reviews\\etapa-2-operacao\\noturna\\acessos-pessoas\\profile-hover\\comparison.json":  "cf42cd54f702b93d188a5ac4f2f43d6d15cd3a90e4c316eabddf0543e450db65",
+    "docs\\reviews\\etapa-2-operacao\\noturna\\acessos-pessoas\\profile-hover\\diff.png":  "fddada86920ea044d1885e31c2629d17e5718318f950eabee15c0314057fa0c4",
+    "docs\\reviews\\etapa-2-operacao\\noturna\\acessos-pessoas\\profile-hover\\green.txt":  "3eacc1aabb760852992becc830d7f5118d9dcb1db40f89a67c65f1c0cf1055c5",
+    "docs\\reviews\\etapa-2-operacao\\noturna\\acessos-pessoas\\profile-hover\\handoff.md":  "a396e1340b20ef1702897877d8196adf1882acfc5e81d13baeb03a6cb13d7152",
+    "docs\\reviews\\etapa-2-operacao\\noturna\\acessos-pessoas\\profile-hover\\red.txt":  "eff1d55f6597f16794e3b6ae7664364e3ad1b5f1cb022bc952920f2fd3bfd067"
+}

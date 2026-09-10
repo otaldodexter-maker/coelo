@@ -20,10 +20,12 @@ enum PickupAuthorizationStatus {
 }
 
 enum PickupAuthorizationLifecycleStatus {
+  inactive('Inativa'),
   active('Ativa'),
   suspended('Suspensa'),
   expired('Expirada'),
-  revoked('Revogada');
+  revoked('Revogada'),
+  unavailable('Indisponível');
 
   const PickupAuthorizationLifecycleStatus(this.label);
   final String label;

@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'dart:math' as math;
 
+import 'package:coelo_api/locations.dart';
+import 'package:coelo_domain/locations.dart';
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../domain/activity_command.dart';
@@ -9,15 +12,27 @@ import '../domain/activity_directory.dart';
 /// Production mutations stay closed unless one Flutter command maps to one
 /// approved internal transaction. Template creation has that equivalence.
 final class SupabaseActivityCommandRepository implements ActivityCommandRepository {
-  const SupabaseActivityCommandRepository(this._client);
+  const SupabaseActivityCommandRepository(
+    this._client, {
+    this.activityLocationCreateAvailable = false,
+  });
 
   final SupabaseClient _client;
+
+  /// Composition gate only; does not authorize an actor or deploy the candidate.
+  final bool activityLocationCreateAvailable;
 
   Future<T> _unavailable<T>() => Future.error(const ActivityCommandUnavailableException());
 
   @override
   Future<ActivitySaveResult> save(ActivitySaveCommand command) async {
     if (!_supportsAggregateSave(command)) return _unavailable();
+    if (command.locationSelection != null || command.reservation != null) {
+      if (!activityLocationCreateAvailable || command.locationSelection == null) {
+        return _unavailable();
+      }
+      return _saveWithCataloguedLocation(command);
+    }
     try {
       final envelope = _asMap(
         await _client.rpc<Object?>(
@@ -57,6 +72,108 @@ final class SupabaseActivityCommandRepository implements ActivityCommandReposito
       );
     } on PostgrestException catch (error) {
       throw _mapError(error);
+    }
+  }
+
+  Future<ActivitySaveResult> _saveWithCataloguedLocation(ActivitySaveCommand command) async {
+    try {
+      final selection = command.locationSelection!.snapshot;
+      final locationId = _atomicId(selection.id);
+      final institutionId = _atomicId(command.institutionId);
+      if (_atomicId(selection.scope.institutionId) != institutionId) _invalidAtomic();
+      if (selection.scope case UnitLocationScope(:final unitId)) {
+        if (!command.unitIds.map(_atomicId).contains(_atomicId(unitId))) _invalidAtomic();
+      }
+      final envelope = _atomicMap(
+        await _client.rpc<Object?>(
+          'superadmin_activity_location_create_v2',
+          params: {
+            'p_request_id': _atomicId(command.requestId),
+            'p_location_id': locationId,
+            'p_activity_payload': _activitySavePayload(command),
+            'p_reservation': command.reservation?.toJson(),
+          },
+        ),
+        const {'ok', 'data', 'error'},
+      );
+      if (envelope['ok'] is! bool) _invalidAtomic();
+      if (envelope['ok'] == false) {
+        if (envelope['data'] != null) _invalidAtomic();
+        final error = _atomicMap(envelope['error'], const {
+          'code',
+          'message',
+          'correlation_id',
+          'http_status',
+        });
+        if (error['code'] is! String ||
+            (error['code'] as String).trim().isEmpty ||
+            error['message'] is! String ||
+            error['http_status'] is! int ||
+            (error['http_status'] as int) < 400 ||
+            (error['http_status'] as int) > 599) {
+          _invalidAtomic();
+        }
+        _atomicId(error['correlation_id']);
+        throw _mapEnvelopeError(envelope);
+      }
+      if (envelope['error'] != null) _invalidAtomic();
+      final data = _atomicMap(envelope['data'], const {
+        'activity_id',
+        'management_version',
+        'status',
+        'correlation_id',
+        'replayed',
+        'location_id',
+        'reservation',
+      });
+      final activityId = _atomicId(data['activity_id']);
+      _atomicId(data['correlation_id']);
+      final version = data['management_version'];
+      if (_atomicId(data['location_id']) != locationId ||
+          data['status'] != 'draft' ||
+          data['replayed'] is! bool ||
+          version is! int ||
+          version < 1 ||
+          version > 9007199254740991 ||
+          (command.reservation == null) != (data['reservation'] == null)) {
+        _invalidAtomic();
+      }
+      final reservation = data['reservation'] == null
+          ? null
+          : decodeLocationReservationV2(
+              data['reservation'],
+              requestedLocationId: locationId,
+              requestedConsumer: LocationReservationConsumer(
+                kind: LocationReservationConsumerKind.activity,
+                id: activityId,
+              ),
+            );
+      if (reservation != null &&
+          (reservation.state != LocationReservationState.active ||
+              reservation.managementVersion > 9007199254740991)) {
+        _invalidAtomic();
+      }
+      return ActivitySaveResult(
+        activityId: activityId,
+        managementVersion: version,
+        status: ActivityStatus.draft,
+        locationId: locationId,
+        reservation: reservation,
+      );
+    } on ActivityCommandUnauthorizedException {
+      rethrow;
+    } on ActivityCommandConflictException {
+      rethrow;
+    } on ActivityCommandUnavailableException {
+      rethrow;
+    } on PostgrestException catch (error) {
+      throw switch (error.code) {
+        '42501' || 'PGRST301' || 'PGRST302' => const ActivityCommandUnauthorizedException(),
+        '40001' => const ActivityCommandConflictException(),
+        _ => const ActivityCommandUnavailableException(),
+      };
+    } on Object {
+      throw const ActivityCommandUnavailableException();
     }
   }
 
@@ -116,6 +233,25 @@ final class SupabaseActivityCommandRepository implements ActivityCommandReposito
 }
 
 const _activityCapabilities = ['attendance', 'chat', 'happens', 'moments', 'now'];
+
+String _atomicId(Object? value) {
+  if (value is! String ||
+      !RegExp(
+        r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$',
+      ).hasMatch(value)) {
+    _invalidAtomic();
+  }
+  return value.toLowerCase();
+}
+
+Map<String, dynamic> _atomicMap(Object? value, Set<String> keys) {
+  if (value is! Map || value.length != keys.length || !keys.every(value.containsKey)) {
+    _invalidAtomic();
+  }
+  return Map<String, dynamic>.from(value);
+}
+
+Never _invalidAtomic() => throw const ActivityCommandUnavailableException();
 
 bool _supportsAggregateSave(ActivitySaveCommand command) {
   final pedagogical = command.pedagogicalConfiguration;

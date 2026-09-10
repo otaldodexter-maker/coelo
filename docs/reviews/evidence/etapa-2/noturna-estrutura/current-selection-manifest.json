@@ -1,0 +1,148 @@
+{
+  "source": "Approved selection contract2026-09-07; candidate getters in20260909200000 Activity and20260909210000 Group; local tool runs",
+  "status": "local-green-gates-closed-pending-integration",
+  "recorded_at": "2026-09-09T20:41:02.712787-03:00",
+  "base": "d784462c168d22fdb7090b7de1ef7db554ad5107",
+  "prior_head": "ee2c35686b7e3b9f400181aa6bcfd8459e2d377e",
+  "scope": [
+    "apps/superadmin -> Turmas -> Detalhe -> groups.location",
+    "apps/superadmin -> Atividades -> Detalhe -> activities.location",
+    "apps/superadmin -> Locais -> historico/reservas -> locations.detail-links/locations.schedule"
+  ],
+  "environment": "Dart pure DTO and Flutter widgets/routes with fakes. No remote operation.",
+  "metrics": {
+    "N": 68,
+    "E": 68,
+    "P": 68,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0,
+    "dedup": "53new (22DTO,12adapter,17section,2normalroutes);15existing (13consumerreservations+2normalroutes). Composite run16P1F followed by ONLY failed fixture retest1P; latest result per unique test, no rerun sum."
+  },
+  "runs": [
+    {
+      "command": "rtk proxy dart test test/locations/location_consumer_selection_dto_test.dart --reporter expanded",
+      "cwd": "packages/coelo_api",
+      "session": 72035,
+      "completion_chunk": "bad8ea",
+      "P": 22,
+      "exit_code": 0,
+      "raw": "Tool report only; no fabricated raw file."
+    },
+    {
+      "command": "rtk proxy flutter test --no-pub --concurrency 1 test/features/locations/supabase_location_consumer_selection_reader_test.dart test/features/locations/location_consumer_selection_section_test.dart --reporter json",
+      "session": 99996,
+      "completion_chunk": "063816",
+      "P": 29,
+      "exit_code": 0,
+      "raw": "current-selection-tests.jsonl"
+    },
+    {
+      "command": "rtk proxy flutter test --no-pub --concurrency 1 test/features/locations/location_consumer_routes_test.dart test/features/locations/location_consumer_reservations_test.dart --reporter json",
+      "session": 47467,
+      "completion_chunk": "57b379",
+      "P": 16,
+      "F": 1,
+      "exit_code": 1,
+      "raw": "current-selection-composition-tests.jsonl"
+    },
+    {
+      "command": "rtk proxy flutter test --no-pub --concurrency 1 test/features/locations/location_consumer_routes_test.dart --plain-name 'normal activity current choice' --reporter json",
+      "session": 48504,
+      "completion_chunk": "294782",
+      "P": 1,
+      "exit_code": 0,
+      "raw": "current-selection-activity-route-retest.jsonl"
+    }
+  ],
+  "analyzer": [
+    {
+      "scope": "API2paths",
+      "session": 33771,
+      "completion_chunk": "398712",
+      "result": "No issues found"
+    },
+    {
+      "scope": "app8paths",
+      "session": 51450,
+      "completion_chunk": "b21c2e",
+      "result": "No issues found"
+    },
+    {
+      "scope": "domain2paths",
+      "completion_chunk": "16543e",
+      "result": "No issues found"
+    },
+    {
+      "scope": "Final route fixture after lazy-scroll correction",
+      "session": 36654,
+      "completion_chunk": "a0feac",
+      "result": "No issues found"
+    }
+  ],
+  "visual_static_gate": {
+    "command": "rtk proxy dart run tool/validate_admin_visual_contracts.dart C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura assets/admin-visual-contract-allowlist.json",
+    "cwd": "apps/catalog",
+    "chunk": "905d50",
+    "exit_code": 0
+  },
+  "changes": [
+    "Current persisted catalog selection has its own immutable domain projection, distinct from reservation history and nullable authorized absence.",
+    "Strict consumer-correlated getter envelopes, owner/kind/status/UUID validation, sanitized denials/errors. No historical fallback or inferred snapshot.",
+    "Supabase reader available=false by default; normal router defaults Unavailable reader. No new query against an unqualified candidate RPC.",
+    "Section invalidates pending/rendered data on consumer, scope, reader, session, capability or revision changes. Gate closed performs zero calls and hides reload; no automatic form or reservation choice.",
+    "Normal Group/Activity composition reads current selection with domain.read+locations.read independently of locations.reservations.read; scopes come only from actual detail. Shared router patch proposed to Claude."
+  ],
+  "history": [
+    "DTO RED compilation74268/chunk3d6645 before decoder. App63168/chunka7e9ad expected missing section plus missing exception import; import fixed without moving existing exception contracts.",
+    "DTO interpolation5infos and private test API1info corrected; no semantic change to qualified test data.",
+    "Normal route RED17580/chunk458017 missing named reader before composition.",
+    "Composite16P1F: Activity ListView lazily builds location section. New test looked before scrolling. Added scrollUntilVisible+pump to only that fixture; retest1P. No product correction arose from that failure."
+  ],
+  "limitations": [
+    "SQL33+46 tests remain U for candidate getters/create and require Claude serialized qualification; no E2E/production claim.",
+    "No one-off/edit/replace/cancel/publish support enabled; selection is read-only.",
+    "Responsive375/768/1024/1440 light/dark200% tests and static visual gate do not approve new goldens or certify browser UX.",
+    "Main/App activation untouched; the normal route exposes an honest unavailable state until a qualified reader is composed."
+  ],
+  "logs": {
+    "current-selection-tests.jsonl": {
+      "sha256": "f30ad8266d3a871ea71e815ef8b4a54c4376100840577246d4084e31ea7b939a",
+      "reported": {
+        "success": 29
+      },
+      "complete_success": true
+    },
+    "current-selection-composition-tests.jsonl": {
+      "sha256": "dc54f59bf241102e8d29202d45e55ad92f6f1c167d714e1585f3e5fbac5029a7",
+      "reported": {
+        "success": 16,
+        "error": 1
+      },
+      "complete_success": false
+    },
+    "current-selection-activity-route-retest.jsonl": {
+      "sha256": "aa7232d35ee25c6b6f3fc70058b135c380d84dd8d451e7892ae798b4778a401c",
+      "reported": {
+        "success": 1
+      },
+      "complete_success": true
+    }
+  },
+  "sha256": {
+    "packages/coelo_domain/lib/locations.dart": "d8e740bd76dad64c99bb4cd79a035d05a3086ab2530a6103977ecdd5f2ce716f",
+    "packages/coelo_domain/lib/src/locations/location_consumer_current_selection.dart": "c062c7953c0e1ac0c4e58fb2bd37ee0462cbf6c7d9215078703636af75a55926",
+    "packages/coelo_api/lib/src/locations/location_catalog_dto.dart": "434310ae66f1c32f3736cff6ccae32a47a6ee9084de3a3e5d06b8c23d0a5eb2b",
+    "packages/coelo_api/test/locations/location_consumer_selection_dto_test.dart": "4f6e34bf245ea6dfe73ac536a7558acae83ce419ca4ca4d3fe621a25012b4ea6",
+    "apps/superadmin/lib/features/locations/domain/location_consumer_selection_reader.dart": "57d665516c0652440758dc8897fe843620c0b679f9243ffcd117e7fbb3b3a190",
+    "apps/superadmin/lib/features/locations/data/supabase_location_consumer_selection_reader.dart": "e649250e6ec78b9515415e18b12301598654dfbc8ca51bfef3206a3d4e0404a1",
+    "apps/superadmin/lib/features/locations/presentation/location_consumer_selection_section.dart": "a701b4ce5a184460e061f132df9b749355aae45ee1f17ab353dd73fe654e5868",
+    "apps/superadmin/lib/features/locations/presentation/location_consumer_reservations.dart": "b20f3f5f9d9283489768a4aaf1155b8577a9351e32a020d041bdf3cdad1d2b8b",
+    "apps/superadmin/test/features/locations/supabase_location_consumer_selection_reader_test.dart": "e1fb2872ae09433bc977dcdc99113e168c9698c966ad97b5b849c5a4d676f220",
+    "apps/superadmin/test/features/locations/location_consumer_selection_section_test.dart": "35ab8d853a0fddfc279cfc6ddd72c2f1beab17f051c55132a913248c6e6bf4b7",
+    "apps/superadmin/test/features/locations/location_consumer_routes_test.dart": "32e9383cd257b0cdb8f281dbd0038f3a1007a6ea22b277ad5d3d7f80dd93efe9",
+    "apps/superadmin/lib/app/router/superadmin_router.dart": "00ea13596dc614874d81f4bf53f9441c3ec39b2cf43ff8a41b8f9d68693afaa8"
+  },
+  "memory": "No new product rule. Canonical approved selection/history distinction reused; no central knowledge files changed."
+}

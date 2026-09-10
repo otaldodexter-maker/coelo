@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+import '../../principal_shared/domain/principal_request_id.dart';
 import '../domain/now_publication.dart';
 
 enum _NowRetryAction { load, save, publish }
@@ -214,7 +215,13 @@ final class NowPublicationController extends ChangeNotifier {
         _applyCheckpoint(draft, NowPublicationPhase.uploading);
       }
       _emit(NowPublicationState(draft: draft, phase: NowPublicationPhase.publishing));
-      final result = await repository.publish(context, draft);
+      final result = await repository.publish(
+        context,
+        draft,
+        requestId: _publishRequestId ??= newPrincipalRequestId(),
+      );
+      // A intencao foi aceita; a proxima publicacao e outra intencao.
+      _publishRequestId = null;
       if (_disposed) return null;
       _emit(NowPublicationState(draft: draft, phase: NowPublicationPhase.success));
       _retryAction = null;
@@ -262,7 +269,15 @@ final class NowPublicationController extends ChangeNotifier {
     }
   }
 
+  /// Chave de idempotencia da intencao de publicacao em curso.
+  ///
+  /// Retida entre tentativas para que repetir a MESMA publicacao apos uma
+  /// falha reapresente a mesma chave, em vez de virar uma publicacao nova.
+  String? _publishRequestId;
+
   void _edit(NowPublicationDraft draft) {
+    // Editar o rascunho cria uma intencao NOVA de publicacao.
+    _publishRequestId = null;
     if (_disposed || _accessDenied || _loadInFlight || _publishingIntent) return;
     _editGeneration += 1;
     _retryAction = null;

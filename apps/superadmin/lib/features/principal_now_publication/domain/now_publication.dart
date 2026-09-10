@@ -280,7 +280,16 @@ abstract interface class NowPublicationRepository {
     String publicationId,
     NowAudioDraft audio,
   );
-  Future<NowPublication> publish(NowPublicationContext context, NowPublicationDraft draft);
+  /// Publica [draft] sob a chave de idempotencia [requestId].
+  ///
+  /// A chave pertence a intencao, nao a chamada: repetir a mesma tentativa
+  /// depois de uma falha deve reapresentar a MESMA chave, para que o servidor
+  /// possa reconhecer a repeticao em vez de publicar duas vezes.
+  Future<NowPublication> publish(
+    NowPublicationContext context,
+    NowPublicationDraft draft, {
+    required String requestId,
+  });
 }
 
 final class InMemoryNowPublicationRepository implements NowPublicationRepository {
@@ -317,7 +326,11 @@ final class InMemoryNowPublicationRepository implements NowPublicationRepository
   ) async => audio.copyWith(remoteAssetId: 'audio-${audio.localId}');
 
   @override
-  Future<NowPublication> publish(NowPublicationContext context, NowPublicationDraft draft) async {
+  Future<NowPublication> publish(
+    NowPublicationContext context,
+    NowPublicationDraft draft, {
+    required String requestId,
+  }) async {
     lastPublication = NowPublication(
       id: draft.id ?? '00000000-0000-4000-8000-000000000011',
       publishAt: draft.publishAt,

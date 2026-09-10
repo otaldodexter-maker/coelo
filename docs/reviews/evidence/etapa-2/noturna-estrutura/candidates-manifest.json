@@ -1,0 +1,246 @@
+{
+    "campaign_id":  "noturna-estrutura-candidates-01",
+    "revision":  "fc8287c57",
+    "base":  "d784462c1",
+    "environment":  "Windows Flutter local; faithful doubles",
+    "recordedAt":  "2026-09-09T18:11:26.0774926-03:00",
+    "exitCode":  0,
+    "cases":  [
+                  {
+                      "id":  "before the owner exists the section explains instead of reading",
+                      "source":  "file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/locations_map_section_test.dart",
+                      "result":  "success",
+                      "skipped":  false
+                  },
+                  {
+                      "id":  "a unit says its catalog is independent from the institution",
+                      "source":  "file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/locations_map_section_test.dart",
+                      "result":  "success",
+                      "skipped":  false
+                  },
+                  {
+                      "id":  "an existing owner summarizes its catalog",
+                      "source":  "file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/locations_map_section_test.dart",
+                      "result":  "success",
+                      "skipped":  false
+                  },
+                  {
+                      "id":  "a single location is counted in the singular",
+                      "source":  "file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/locations_map_section_test.dart",
+                      "result":  "success",
+                      "skipped":  false
+                  },
+                  {
+                      "id":  "the section never promises media it cannot store",
+                      "source":  "file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/locations_map_section_test.dart",
+                      "result":  "success",
+                      "skipped":  false
+                  },
+                  {
+                      "id":  "without a composed route the section offers no catalog link",
+                      "source":  "file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/locations_map_section_test.dart",
+                      "result":  "success",
+                      "skipped":  false
+                  },
+                  {
+                      "id":  "with a composed route the catalog link opens it",
+                      "source":  "file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/locations_map_section_test.dart",
+                      "result":  "success",
+                      "skipped":  false
+                  },
+                  {
+                      "id":  "without a session the section is denied and reads nothing",
+                      "source":  "file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/locations_map_section_test.dart",
+                      "result":  "success",
+                      "skipped":  false
+                  },
+                  {
+                      "id":  "a failed read says unavailable instead of showing zero locations",
+                      "source":  "file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/locations_map_section_test.dart",
+                      "result":  "success",
+                      "skipped":  false
+                  },
+                  {
+                      "id":  "the section lays out without overflow at 375 light 1.0x",
+                      "source":  "file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/locations_map_section_test.dart",
+                      "result":  "success",
+                      "skipped":  false
+                  },
+                  {
+                      "id":  "the section lays out without overflow at 375 dark 1.0x",
+                      "source":  "file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/locations_map_section_test.dart",
+                      "result":  "success",
+                      "skipped":  false
+                  },
+                  {
+                      "id":  "the section lays out without overflow at 375 light 2.0x",
+                      "source":  "file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/locations_map_section_test.dart",
+                      "result":  "success",
+                      "skipped":  false
+                  },
+                  {
+                      "id":  "the section lays out without overflow at 375 dark 2.0x",
+                      "source":  "file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/locations_map_section_test.dart",
+                      "result":  "success",
+                      "skipped":  false
+                  },
+                  {
+                      "id":  "the section lays out without overflow at 1440 light 1.0x",
+                      "source":  "file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/locations_map_section_test.dart",
+                      "result":  "success",
+                      "skipped":  false
+                  },
+                  {
+                      "id":  "the section lays out without overflow at 1440 dark 1.0x",
+                      "source":  "file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/locations_map_section_test.dart",
+                      "result":  "success",
+                      "skipped":  false
+                  },
+                  {
+                      "id":  "the section lays out without overflow at 1440 light 2.0x",
+                      "source":  "file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/locations_map_section_test.dart",
+                      "result":  "success",
+                      "skipped":  false
+                  },
+                  {
+                      "id":  "the section lays out without overflow at 1440 dark 2.0x",
+                      "source":  "file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/locations_map_section_test.dart",
+                      "result":  "success",
+                      "skipped":  false
+                  },
+                  {
+                      "id":  "institution form exposes the catalog from creation and scopes edit",
+                      "source":  "file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_form_sections_integration_test.dart",
+                      "result":  "success",
+                      "skipped":  false
+                  },
+                  {
+                      "id":  "unit form exposes an independent catalog and scopes edit",
+                      "source":  "file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_form_sections_integration_test.dart",
+                      "result":  "success",
+                      "skipped":  false
+                  },
+                  {
+                      "id":  "location routes carry their owner and never expose a scope-less catalog",
+                      "source":  "file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_routes_test.dart",
+                      "result":  "success",
+                      "skipped":  false
+                  },
+                  {
+                      "id":  "the institution catalog reads the owner taken from the route",
+                      "source":  "file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_routes_test.dart",
+                      "result":  "success",
+                      "skipped":  false
+                  },
+                  {
+                      "id":  "losing create closes the create form that was open",
+                      "source":  "file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_capability_revocation_test.dart",
+                      "result":  "success",
+                      "skipped":  false
+                  },
+                  {
+                      "id":  "a location link opens the detail of that id only",
+                      "source":  "file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_routes_test.dart",
+                      "result":  "success",
+                      "skipped":  false
+                  },
+                  {
+                      "id":  "losing copy closes the panel that brings one down",
+                      "source":  "file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_capability_revocation_test.dart",
+                      "result":  "success",
+                      "skipped":  false
+                  },
+                  {
+                      "id":  "a malformed owner in the route is denied without any read",
+                      "source":  "file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_routes_test.dart",
+                      "result":  "success",
+                      "skipped":  false
+                  },
+                  {
+                      "id":  "losing update closes the edit form of a location",
+                      "source":  "file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_capability_revocation_test.dart",
+                      "result":  "success",
+                      "skipped":  false
+                  },
+                  {
+                      "id":  "the unit catalog takes its institution from the authorized detail",
+                      "source":  "file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_routes_test.dart",
+                      "result":  "success",
+                      "skipped":  false
+                  },
+                  {
+                      "id":  "a denied unit detail never reaches the catalog read",
+                      "source":  "file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_routes_test.dart",
+                      "result":  "success",
+                      "skipped":  false
+                  },
+                  {
+                      "id":  "losing copy closes a duplication dialog that is already open",
+                      "source":  "file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_capability_revocation_test.dart",
+                      "result":  "success",
+                      "skipped":  false
+                  },
+                  {
+                      "id":  "a revoked authorization rebuilds the catalog instead of keeping data",
+                      "source":  "file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_routes_test.dart",
+                      "result":  "success",
+                      "skipped":  false
+                  },
+                  {
+                      "id":  "changing authorization context closes a duplication dialog",
+                      "source":  "file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_capability_revocation_test.dart",
+                      "result":  "success",
+                      "skipped":  false
+                  },
+                  {
+                      "id":  "revocation before the first dialog frame leaves no old writer action",
+                      "source":  "file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_capability_revocation_test.dart",
+                      "result":  "success",
+                      "skipped":  false
+                  },
+                  {
+                      "id":  "a second copy activation before the first frame leaves no orphaned barrier",
+                      "source":  "file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_capability_revocation_test.dart",
+                      "result":  "success",
+                      "skipped":  false
+                  },
+                  {
+                      "id":  "reloading the same route reads again instead of serving stale data",
+                      "source":  "file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_routes_test.dart",
+                      "result":  "success",
+                      "skipped":  false
+                  },
+                  {
+                      "id":  "losing copy does not shut an edit someone is in the middle of",
+                      "source":  "file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_capability_revocation_test.dart",
+                      "result":  "success",
+                      "skipped":  false
+                  },
+                  {
+                      "id":  "the grants that stay keep drawing what they always drew",
+                      "source":  "file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura/apps/superadmin/test/features/locations/location_capability_revocation_test.dart",
+                      "result":  "success",
+                      "skipped":  false
+                  }
+              ],
+    "note":  "Reverificacao do delta dos candidatos sobre base conjunta nova; nao soma provas R02. Nenhum SQL/remoto.",
+    "analyzer":  {
+                     "paths":  13,
+                     "exitCode":  0,
+                     "result":  "No issues found"
+                 },
+    "visualValidator":  {
+                            "initialInvocation":  "exit1 missing two required arguments; corrected invocation passed; no product failure",
+                            "exitCode":  0,
+                            "command":  "dart run tool/validate_admin_visual_contracts.dart \u003crepo\u003e assets/admin-visual-contract-allowlist.json"
+                        },
+    "counts":  {
+                   "N":  36,
+                   "S":  0,
+                   "F":  0,
+                   "B":  0,
+                   "U":  0,
+                   "E":  36,
+                   "P":  36
+               }
+}

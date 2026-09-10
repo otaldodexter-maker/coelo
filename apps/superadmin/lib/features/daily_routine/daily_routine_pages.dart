@@ -166,7 +166,7 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
                           ),
                           SuperadminUnderlineTab(
                             value: RoutineEntryKind.launch,
-                            label: 'Lancamentos',
+                            label: 'Lançamentos',
                           ),
                         ],
                         onSelected: (value) => updateDirectory(() => _selectedType = value),
@@ -254,8 +254,8 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
     return switch (state.status) {
       RoutineDirectoryStatus.loading => const CoeloStatePanel(
         key: Key('daily-routine-loading'),
-        title: 'Carregando rotina diaria',
-        message: 'Aguarde enquanto os dados autorizados sao carregados.',
+        title: 'Carregando rotina diária',
+        message: 'Aguarde enquanto os dados autorizados são carregados.',
         loading: true,
       ),
       RoutineDirectoryStatus.empty => _stateWithCreate(
@@ -266,7 +266,7 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
                 : 'daily-routine-empty',
           ),
           title: 'Nenhum item criado',
-          message: 'Nao ha itens neste escopo.',
+          message: 'Não há itens neste escopo.',
           icon: Icons.event_note_outlined,
         ),
       ),
@@ -282,20 +282,20 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
       ),
       RoutineDirectoryStatus.unauthorized => const CoeloStatePanel(
         key: Key('daily-routine-unauthorized'),
-        title: 'Acesso nao autorizado',
-        message: 'Seu acesso a este escopo nao esta disponivel.',
+        title: 'Acesso não autorizado',
+        message: 'Seu acesso a este escopo não está disponível.',
         icon: Icons.lock_outline_rounded,
       ),
       RoutineDirectoryStatus.notFound => const CoeloStatePanel(
         key: Key('daily-routine-not-found'),
-        title: 'Conteudo nao encontrado',
-        message: 'O recurso solicitado nao esta disponivel.',
+        title: 'Conteúdo não encontrado',
+        message: 'O recurso solicitado não está disponível.',
         icon: Icons.search_off_rounded,
       ),
       RoutineDirectoryStatus.conflict || RoutineDirectoryStatus.failure => _stateWithCreate(
         CoeloStatePanel(
           key: const Key('daily-routine-error'),
-          title: 'Nao foi possivel carregar a rotina diaria',
+          title: 'Não foi possível carregar a rotina diária',
           message: state.message ?? 'Atualize para tentar novamente.',
           icon: Icons.error_outline_rounded,
           actionLabel: 'Tentar novamente',
@@ -348,7 +348,7 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
                             const SizedBox(height: CoeloSpacing.space3),
                             _RoutineStatusIndicator(status: item.status),
                             const SizedBox(height: CoeloSpacing.space2),
-                            Text('Versao v${item.version}'),
+                            Text('Versão v${item.version}'),
                             if (item.originLabel != null) Text('Origem: ${item.originLabel}'),
                             if (item.effectiveLabel != null)
                               Text('Efetivo: ${item.effectiveLabel}'),
@@ -423,7 +423,7 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
           ),
           CoeloAdminTableColumn(
             id: 'version',
-            label: 'Versao',
+            label: 'Versão',
             initialWidth: 100,
             minWidth: 90,
             maxWidth: 140,
@@ -520,17 +520,7 @@ final class _RoutineStatusIndicator extends StatelessWidget {
         theme.extension<CoeloStatusColors>() ??
         (theme.brightness == Brightness.dark ? CoeloStatusColors.dark : CoeloStatusColors.light);
     final normalized = status.trim().toLowerCase();
-    final label = switch (normalized) {
-      'active' || 'ativo' => 'Ativo',
-      'published' || 'publicado' => 'Publicado',
-      'draft' || 'rascunho' => 'Rascunho',
-      'in_review' || 'em revisao' => 'Em revisão',
-      'inactive' || 'inativo' => 'Inativo',
-      'archived' || 'arquivado' => 'Arquivado',
-      'corrected' || 'corrigido' => 'Corrigido',
-      'cancelled' || 'cancelado' => 'Cancelado',
-      _ => status,
-    };
+    final label = routineStatusLabel(status);
     final colors = switch (normalized) {
       'active' ||
       'ativo' ||
@@ -563,6 +553,7 @@ class DailyRoutineEditorPage extends StatefulWidget {
     this.duplicateFromModelId,
     this.applicationFromModelId,
     this.activityController,
+    this.onDestinationSelected,
     super.key,
   }) : assert(duplicateFromModelId == null || applicationFromModelId == null);
 
@@ -573,6 +564,7 @@ class DailyRoutineEditorPage extends StatefulWidget {
   final String? duplicateFromModelId;
   final String? applicationFromModelId;
   final SuperadminActivityController? activityController;
+  final ValueChanged<String>? onDestinationSelected;
 
   @override
   State<DailyRoutineEditorPage> createState() => _DailyRoutineEditorPageState();
@@ -588,5 +580,6 @@ class _DailyRoutineEditorPageState extends State<DailyRoutineEditorPage> {
     duplicateFromModelId: widget.duplicateFromModelId,
     applicationFromModelId: widget.applicationFromModelId,
     activityController: widget.activityController,
+    onDestinationSelected: widget.onDestinationSelected,
   );
 }

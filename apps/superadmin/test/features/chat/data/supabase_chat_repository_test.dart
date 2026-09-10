@@ -409,6 +409,364 @@ void main() {
     expect(refresh.latestMessageId, isNull);
     expect(refresh.unreadCount, 9);
   });
+
+  test('projects the server receipt of a received message without inferring it', () async {
+    final client = _client(
+      (request) async => _json({
+        'ok': true,
+        'data': {
+          'items': [
+            {
+              'message_id': 'message-1',
+              'body_text': 'Bom dia',
+              'author_name': 'Marina',
+              'is_mine': false,
+              'message_type': 'text',
+              'created_at': '2026-09-07T12:00:00Z',
+              'attachments': <Object?>[],
+              'receipt': {
+                'is_mine': true,
+                'delivered_at': '2026-09-07T12:00:30Z',
+                'read_at': '2026-09-07T12:01:00Z',
+                'recipient_count': 0,
+                'delivered_count': 0,
+                'read_count': 0,
+              },
+            },
+          ],
+          'total': 1,
+          'has_more': false,
+          'next_cursor': null,
+        },
+        'error': null,
+      }, request),
+    );
+    addTearDown(client.dispose);
+
+    final message = (await SupabaseChatRepository(
+      client,
+    ).fetchThread(const ChatThreadQuery(conversationId: 'conversation-1'))).items.single;
+    final receipt = message.receipt!;
+
+    expect(message.isMine, isFalse);
+    // Authorship comes from the message row; a receipt envelope cannot flip it.
+    expect(receipt.isMine, isFalse);
+    expect(receipt.deliveredAt, DateTime.utc(2026, 9, 7, 12, 0, 30));
+    expect(receipt.readAt, DateTime.utc(2026, 9, 7, 12, 1));
+    expect(receipt.isDeliveredToMe, isTrue);
+    expect(receipt.isReadByMe, isTrue);
+    expect(receipt.isReadByEveryone, isFalse);
+  });
+
+  for (final sample in <({String name, int recipients, int read, bool everyone})>[
+    (name: 'every active recipient read it', recipients: 3, read: 3, everyone: true),
+    (name: 'one recipient is missing', recipients: 3, read: 2, everyone: false),
+    (name: 'no active recipient exists', recipients: 0, read: 0, everyone: false),
+  ]) {
+    test('aggregates the receipt counts of a sent message: ${sample.name}', () async {
+      final client = _client(
+        (request) async => _json({
+          'ok': true,
+          'data': {
+            'items': [
+              {
+                'message_id': 'message-2',
+                'body_text': 'Enviado por mim',
+                'author_name': 'Eu',
+                'is_mine': true,
+                'message_type': 'text',
+                'created_at': '2026-09-07T12:02:00Z',
+                'attachments': <Object?>[],
+                'receipt': {
+                  'recipient_count': sample.recipients,
+                  'delivered_count': sample.recipients,
+                  'read_count': sample.read,
+                },
+              },
+            ],
+            'total': 1,
+            'has_more': false,
+            'next_cursor': null,
+          },
+          'error': null,
+        }, request),
+      );
+      addTearDown(client.dispose);
+
+      final receipt = (await SupabaseChatRepository(
+        client,
+      ).fetchThread(const ChatThreadQuery(conversationId: 'conversation-1'))).items.single.receipt!;
+
+      expect(receipt.isMine, isTrue);
+      expect(receipt.recipientCount, sample.recipients);
+      expect(receipt.deliveredCount, sample.recipients);
+      expect(receipt.readCount, sample.read);
+      expect(receipt.isReadByEveryone, sample.everyone);
+      expect(receipt.isDeliveredToEveryone, sample.recipients > 0);
+      // The caller's own read state is meaningless for a message it sent.
+      expect(receipt.isReadByMe, isFalse);
+      expect(receipt.isDeliveredToMe, isFalse);
+    });
+  }
+
+  test('never fabricates receipt, edit or management state the server omitted', () async {
+    final client = _client(
+      (request) async => _json({
+        'ok': true,
+        'data': {
+          'items': [
+            {
+              'message_id': 'message-1',
+              'body_text': 'Gateway antigo',
+              'author_name': 'Marina',
+              'is_mine': false,
+              'message_type': 'text',
+              'created_at': '2026-09-07T12:00:00Z',
+              'attachments': <Object?>[],
+            },
+          ],
+          'total': 1,
+          'has_more': false,
+          'next_cursor': null,
+        },
+        'error': null,
+      }, request),
+    );
+    addTearDown(client.dispose);
+
+    final message = (await SupabaseChatRepository(
+      client,
+    ).fetchThread(const ChatThreadQuery(conversationId: 'conversation-1'))).items.single;
+
+    expect(message.receipt, isNull, reason: 'Absence is not "unread".');
+    expect(message.editedAt, isNull);
+    expect(message.isEdited, isFalse);
+    expect(message.canManage, isFalse, reason: 'An omitted grant is never an affordance.');
+  });
+
+  for (final sample in <({String name, Map<String, Object?> overrides})>[
+    (name: 'receipt is not an object', overrides: {'receipt': 'read'}),
+    (name: 'receipt is a list', overrides: {'receipt': <Object?>[]}),
+    (name: 'edited_at is unparseable', overrides: {'edited_at': 'ontem'}),
+    (name: 'edited_at is not a string', overrides: {'edited_at': 1757246400}),
+  ]) {
+    test('refuses a malformed message envelope instead of degrading it (${sample.name})', () async {
+      final client = _client(
+        (request) async => _json({
+          'ok': true,
+          'data': {
+            'items': [
+              {
+                'message_id': 'message-1',
+                'body_text': 'Envelope inválido',
+                'author_name': 'Marina',
+                'is_mine': false,
+                'message_type': 'text',
+                'created_at': '2026-09-07T12:00:00Z',
+                'attachments': <Object?>[],
+                ...sample.overrides,
+              },
+            ],
+            'total': 1,
+            'has_more': false,
+            'next_cursor': null,
+          },
+          'error': null,
+        }, request),
+      );
+      addTearDown(client.dispose);
+
+      await expectLater(
+        SupabaseChatRepository(
+          client,
+        ).fetchThread(const ChatThreadQuery(conversationId: 'conversation-1')),
+        throwsA(isA<ChatFailureException>()),
+      );
+    });
+  }
+
+  test('edits a message through its dedicated idempotent RPC', () async {
+    Request? captured;
+    final client = _client((request) async {
+      captured = request;
+      return _json({
+        'ok': true,
+        'data': {
+          'message_id': 'message-2',
+          'body_text': 'Texto corrigido',
+          'author_name': 'Eu',
+          'is_mine': true,
+          'message_type': 'text',
+          'created_at': '2026-09-07T12:02:00Z',
+          'edited_at': '2026-09-07T12:05:00Z',
+          'can_manage': true,
+          'attachments': <Object?>[],
+        },
+        'error': null,
+      }, request);
+    });
+    addTearDown(client.dispose);
+
+    final edited = await SupabaseChatRepository(client).editMessage(
+      const ChatEditMessageCommand(
+        conversationId: 'conversation-1',
+        messageId: 'message-2',
+        body: '  Texto corrigido  ',
+        idempotencyKey: 'b1c0f0f4-4e0e-4b0a-9a0e-2f6d1b8b0c11',
+      ),
+    );
+
+    expect(captured!.url.path, endsWith('/rpc/superadmin_chat_edit_message_v2'));
+    expect(jsonDecode(captured!.body), {
+      'p_conversation_id': 'conversation-1',
+      'p_message_id': 'message-2',
+      'p_body_text': 'Texto corrigido',
+      'p_request_id': 'b1c0f0f4-4e0e-4b0a-9a0e-2f6d1b8b0c11',
+    });
+    expect(edited.id, 'message-2');
+    expect(edited.conversationId, 'conversation-1');
+    expect(edited.body, 'Texto corrigido');
+    expect(edited.editedAt, DateTime.utc(2026, 9, 7, 12, 5));
+    expect(edited.isEdited, isTrue);
+    expect(edited.canManage, isTrue);
+  });
+
+  test('revokes a message and returns the server-recorded revocation', () async {
+    Request? captured;
+    final client = _client((request) async {
+      captured = request;
+      return _json({
+        'ok': true,
+        'data': {'message_id': 'message-2', 'revoked_at': '2026-09-07T12:06:00Z'},
+        'error': null,
+      }, request);
+    });
+    addTearDown(client.dispose);
+
+    final revocation = await SupabaseChatRepository(client).revokeMessage(
+      const ChatRevokeMessageCommand(
+        conversationId: 'conversation-1',
+        messageId: 'message-2',
+        idempotencyKey: 'c2d1a1b5-5f1f-4c1b-8b1f-3e7d2c9c1d22',
+      ),
+    );
+
+    expect(captured!.url.path, endsWith('/rpc/superadmin_chat_revoke_message_v2'));
+    expect(jsonDecode(captured!.body), {
+      'p_conversation_id': 'conversation-1',
+      'p_message_id': 'message-2',
+      'p_request_id': 'c2d1a1b5-5f1f-4c1b-8b1f-3e7d2c9c1d22',
+    });
+    expect(revocation.messageId, 'message-2');
+    expect(revocation.revokedAt, DateTime.utc(2026, 9, 7, 12, 6));
+  });
+
+  for (final sample in <({String code, ChatConflictReason reason})>[
+    (code: 'CHAT_EDIT_WINDOW_CLOSED', reason: ChatConflictReason.editWindowClosed),
+    (code: 'CHAT_ALREADY_REVOKED', reason: ChatConflictReason.alreadyRevoked),
+  ]) {
+    test('reports ${sample.code} as a state conflict, never as a lost session', () async {
+      final client = _client(
+        (request) async => _json({
+          'ok': false,
+          'data': null,
+          'error': {
+            'code': sample.code,
+            'message': 'A mensagem recusou a alteração.',
+            'http_status': 409,
+          },
+        }, request),
+      );
+      addTearDown(client.dispose);
+      final repository = SupabaseChatRepository(client);
+
+      for (final command in <Future<Object?> Function()>[
+        () => repository.editMessage(
+          const ChatEditMessageCommand(
+            conversationId: 'conversation-1',
+            messageId: 'message-2',
+            body: 'Tarde demais',
+            idempotencyKey: 'd3e2b2c6-6a2a-4d2c-9c2a-4f8e3d0d2e33',
+          ),
+        ),
+        () => repository.revokeMessage(
+          const ChatRevokeMessageCommand(
+            conversationId: 'conversation-1',
+            messageId: 'message-2',
+            idempotencyKey: 'e4f3c3d7-7b3b-4e3d-8d3b-5a9f4e1e3f44',
+          ),
+        ),
+      ]) {
+        final error = await command().then<Object?>((_) => null, onError: (Object it) => it);
+        expect(error, isA<ChatConflictException>());
+        expect((error! as ChatConflictException).reason, sample.reason);
+        // The command was refused by the message's own state; the session lives.
+        expect(error, isNot(isA<ChatUnauthorizedException>()));
+      }
+    });
+  }
+
+  test('reports CHAT_READ_ONLY on send as a state conflict, never as a lost session', () async {
+    // A conversa fechada para escrita nao e sessao perdida. As duas superficies
+    // ja escondem o composer quando `isReadOnly`, entao esta recusa so chega
+    // quando a conversa fechou DEPOIS da leitura: instantaneo velho. Mapear
+    // como negacao fazia a pagina apagar inbox, thread, selecao e busca do
+    // operador porque UMA conversa deixou de aceitar escrita.
+    final client = _client(
+      (request) async => _json({
+        'ok': false,
+        'data': null,
+        'error': {
+          'code': 'CHAT_READ_ONLY',
+          'message': 'A conversa nao aceita novas mensagens.',
+          'http_status': 409,
+        },
+      }, request),
+    );
+    addTearDown(client.dispose);
+    final repository = SupabaseChatRepository(client);
+
+    final error = await repository
+        .sendMessage(
+          const ChatSendMessageCommand(
+            conversationId: 'conversation-1',
+            body: 'Tudo bem?',
+            idempotencyKey: 'f5a4d4e8-8c4c-4f4e-9e4c-6b0a5f2f4a55',
+          ),
+        )
+        .then<Object?>((_) => null, onError: (Object it) => it);
+
+    expect(error, isA<ChatConflictException>());
+    expect((error! as ChatConflictException).reason, ChatConflictReason.readOnly);
+    expect(error, isNot(isA<ChatUnauthorizedException>()));
+  });
+
+  test('treats CHAT_NOT_AUTHOR as unauthorized even inside an HTTP 200 envelope', () async {
+    final client = _client(
+      (request) async => _json({
+        'ok': false,
+        'data': null,
+        'error': {
+          'code': 'CHAT_NOT_AUTHOR',
+          'message': 'Somente o autor pode alterar a mensagem.',
+          'http_status': 200,
+        },
+      }, request),
+    );
+    addTearDown(client.dispose);
+
+    await expectLater(
+      SupabaseChatRepository(client).editMessage(
+        const ChatEditMessageCommand(
+          conversationId: 'conversation-1',
+          messageId: 'message-de-outro-autor',
+          body: 'Não é minha',
+          idempotencyKey: 'f5a4d4e8-8c4c-4f4e-9e4c-6b0a5f2f4a55',
+        ),
+      ),
+      throwsA(isA<ChatUnauthorizedException>()),
+    );
+  });
 }
 
 SupabaseClient _client(Future<Response> Function(Request request) handler) => SupabaseClient(

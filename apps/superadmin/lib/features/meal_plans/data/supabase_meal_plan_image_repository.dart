@@ -73,7 +73,10 @@ final class SupabaseMealPlanImageRepository implements MealPlanImageRepository {
       throw _mapPostgrestError(error);
     } on StorageException catch (error) {
       throw _mapStorageError(error);
-    } on FormatException {
+    } on Exception {
+      // Alem de resposta malformada, cobre falha de transporte: sem isto um
+      // ClientException escapava do repositorio e chegava a UI como excecao
+      // nao tratada, em vez de virar estado de indisponibilidade.
       throw const MealPlanImageUnavailableException();
     }
   }
@@ -100,7 +103,10 @@ final class SupabaseMealPlanImageRepository implements MealPlanImageRepository {
       throw _mapPostgrestError(error);
     } on StorageException catch (error) {
       throw _mapStorageError(error);
-    } on FormatException {
+    } on Exception {
+      // Alem de resposta malformada, cobre falha de transporte: sem isto um
+      // ClientException escapava do repositorio e chegava a UI como excecao
+      // nao tratada, em vez de virar estado de indisponibilidade.
       throw const MealPlanImageUnavailableException();
     }
   }
@@ -115,8 +121,12 @@ final class SupabaseMealPlanImageRepository implements MealPlanImageRepository {
           'p_idempotency_key': _required(requestId, 'requestId'),
         },
       );
+    } on MealPlanImageException {
+      rethrow;
     } on PostgrestException catch (error) {
       throw _mapPostgrestError(error);
+    } on Exception {
+      throw const MealPlanImageUnavailableException();
     }
   }
 }

@@ -1,0 +1,12 @@
+{
+    "elapsed_ms":  175,
+    "owned_process_closed":  true,
+    "at":  "2026-09-09T19:18:22.5617089-03:00",
+    "daemon_modified":  false,
+    "error_present":  false,
+    "server_version":  "29.7.2",
+    "responded":  true,
+    "pid":  54208,
+    "exit_code":  0,
+    "operation":  "docker version Server.Version, read-only"
+}

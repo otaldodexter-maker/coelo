@@ -154,7 +154,7 @@ final class AssessmentController extends ChangeNotifier {
   }
 
   void updateStudent(AssessmentStudentEntry value) {
-    if (_disposed) return;
+    if (_disposed || _saving) return;
     final book = gradebook;
     if (book == null) return;
     final students = [...book.students];

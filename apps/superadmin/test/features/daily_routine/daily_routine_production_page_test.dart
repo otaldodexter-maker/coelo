@@ -67,8 +67,8 @@ void main() {
     expect(find.byKey(const Key('daily-routine-type-tabs')), findsOneWidget);
     expect(find.text('Modelos'), findsOneWidget);
     expect(find.text('Rotinas'), findsOneWidget);
-    expect(find.text('Lancamentos'), findsOneWidget);
-    await tester.tap(find.text('Lancamentos'));
+    expect(find.text('Lançamentos'), findsOneWidget);
+    await tester.tap(find.text('Lançamentos'));
     await tester.pumpAndSettle();
 
     expect(requestedKinds.last, RoutineEntryKind.launch);

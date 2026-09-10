@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
@@ -11,11 +12,51 @@ import '../domain/moments_publication.dart';
 
 part 'principal_moments_publication_components.dart';
 
+/// One file offered by the host composition before any validation.
+///
+/// The client never chooses bucket, key or provider: it only hands local bytes
+/// to the controller. Upload, destination and authorization stay server-side.
+@immutable
+final class MomentsMediaCandidate {
+  const MomentsMediaCandidate({required this.name, required this.mimeType, required this.bytes});
+
+  final String name;
+  final String mimeType;
+  final Uint8List bytes;
+}
+
+/// Injectable media selection port. Returns an empty list when the person
+/// cancels the selection.
+typedef MomentsMediaPicker = Future<List<MomentsMediaCandidate>> Function();
+
+/// Client-side mirror of the limits the `moments-media` Edge Function already
+/// enforces for Momentos. Validating here is convenience, never authorization:
+/// the backend re-validates actor, tenant, ownership, MIME, bytes and order.
+abstract final class MomentsMediaLimits {
+  /// Same ceiling the controller applies and the Edge Function enforces through
+  /// `display_order` (0..4).
+  static const maxItems = MomentsPublicationController.maxMedia;
+
+  /// `maximumBytes` of the `moments-media` Edge Function.
+  static const maxBytes = 25 * 1024 * 1024;
+
+  static const acceptedExtensions = <String>['jpg', 'jpeg', 'png', 'webp'];
+
+  static const acceptedMimeTypes = <String>{'image/jpeg', 'image/png', 'image/webp'};
+
+  /// Accepted by the backend but not offered by this composition: `video/mp4`
+  /// requires a measured duration that this selection cannot produce.
+  static const deferredMimeTypes = <String>{'video/mp4'};
+
+  static int get maxMegabytes => maxBytes ~/ (1024 * 1024);
+}
+
 class PrincipalMomentsPublicationPage extends StatefulWidget {
   const PrincipalMomentsPublicationPage({
     required this.controller,
     super.key,
     this.onAddMedia,
+    this.mediaPicker,
     this.onEditCover,
     this.onSelectContext,
     this.onOpenSchedule,
@@ -28,6 +69,7 @@ class PrincipalMomentsPublicationPage extends StatefulWidget {
   const PrincipalMomentsPublicationPage.demo({
     super.key,
     this.onAddMedia,
+    this.mediaPicker,
     this.onEditCover,
     this.onSelectContext,
     this.onOpenSchedule,
@@ -41,6 +83,7 @@ class PrincipalMomentsPublicationPage extends StatefulWidget {
   final MomentsPublicationController? controller;
   final bool demo;
   final VoidCallback? onAddMedia;
+  final MomentsMediaPicker? mediaPicker;
   final VoidCallback? onEditCover;
   final VoidCallback? onSelectContext;
   final VoidCallback? onOpenSchedule;
@@ -60,6 +103,7 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
   var _controllerGeneration = 0;
   int _selectedMediaIndex = 0;
   int _currentStep = 0;
+  var _pickingMedia = false;
 
   @override
   void initState() {
@@ -83,6 +127,7 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
     _captionController.clear();
     _selectedMediaIndex = 0;
     _currentStep = 0;
+    _pickingMedia = false;
     _controller.addListener(_syncCaption);
     unawaited(_load());
   }
@@ -375,7 +420,7 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
         label: 'Mídia',
         child: AspectRatio(
           aspectRatio: 9 / 16,
-          child: _EmptyMomentMedia(onPressed: _addMedia),
+          child: _EmptyMomentMedia(onPressed: _addMedia, busy: _pickingMedia),
         ),
       );
     }
@@ -421,7 +466,7 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
             height: 64,
             child: Row(
               children: [
-                _AddMediaButton(onPressed: _addMedia),
+                _AddMediaButton(onPressed: _addMedia, busy: _pickingMedia),
                 const SizedBox(width: CoeloSpacing.space2),
                 Expanded(
                   child: ListView.separated(
@@ -541,15 +586,109 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
       callback();
       return;
     }
-    if (!widget.demo) {
-      _showMessage('Adicionar mídia está indisponível sem a integração autorizada.');
+    if (widget.demo) {
+      _controller.addMedia(MomentsMediaDraft.demo(_controller.state.draft.media.length));
+      if (_controller.state.draft.media.isNotEmpty) {
+        setState(() => _selectedMediaIndex = _controller.state.draft.media.length - 1);
+      }
+      _showMessage(_controller.state.message ?? 'Mídia adicionada à demonstração.');
       return;
     }
-    _controller.addMedia(MomentsMediaDraft.demo(_controller.state.draft.media.length));
-    if (_controller.state.draft.media.isNotEmpty) {
+    if (widget.mediaPicker case final picker?) {
+      unawaited(_pickMedia(picker));
+      return;
+    }
+    // Fail-closed on purpose: without a selection port there is no honest way to
+    // add media, and the client must not pretend otherwise.
+    _showMessage('Adicionar mídia está indisponível sem a integração autorizada.');
+  }
+
+  Future<void> _pickMedia(MomentsMediaPicker picker) async {
+    if (_pickingMedia) return;
+    final controller = _controller;
+    final generation = _controllerGeneration;
+    switch (controller.state.phase) {
+      case MomentsPublicationPhase.unauthorized:
+        _showMessage(controller.state.message ?? 'Você não pode publicar neste contexto.');
+        return;
+      case MomentsPublicationPhase.loading:
+      case MomentsPublicationPhase.saving:
+      case MomentsPublicationPhase.publishing:
+        return;
+      case MomentsPublicationPhase.initial:
+      case MomentsPublicationPhase.editing:
+      case MomentsPublicationPhase.saved:
+      case MomentsPublicationPhase.conflict:
+      case MomentsPublicationPhase.failure:
+      case MomentsPublicationPhase.success:
+        break;
+    }
+    if (controller.state.draft.media.length >= MomentsMediaLimits.maxItems) {
+      _showMessage('Você pode adicionar até ${MomentsMediaLimits.maxItems} mídias.');
+      return;
+    }
+    setState(() => _pickingMedia = true);
+    List<MomentsMediaCandidate> candidates;
+    try {
+      candidates = await picker();
+    } on Object {
+      if (!_isCurrentController(controller, generation)) return;
+      setState(() => _pickingMedia = false);
+      _showMessage('Não foi possível abrir seus arquivos. Tente novamente.');
+      return;
+    }
+    if (!_isCurrentController(controller, generation)) return;
+    setState(() => _pickingMedia = false);
+    _acceptCandidates(candidates);
+  }
+
+  /// Client-side screening before the draft grows. Nothing here authorizes an
+  /// upload: the media only reaches R2 through the server-side path when the
+  /// backend accepts the publication.
+  void _acceptCandidates(List<MomentsMediaCandidate> candidates) {
+    if (candidates.isEmpty) return;
+    var accepted = 0;
+    String? refusal;
+    for (final candidate in candidates) {
+      final mimeType = candidate.mimeType.toLowerCase();
+      if (_controller.state.draft.media.length >= MomentsMediaLimits.maxItems) {
+        refusal ??= 'Você pode adicionar até ${MomentsMediaLimits.maxItems} mídias.';
+        break;
+      }
+      if (!MomentsMediaLimits.acceptedMimeTypes.contains(mimeType)) {
+        refusal ??= MomentsMediaLimits.deferredMimeTypes.contains(mimeType)
+            ? 'Vídeo depende da duração medida pela integração autorizada.'
+            : 'Formato não aceito. Use JPG, PNG ou WEBP.';
+        continue;
+      }
+      if (candidate.bytes.isEmpty ||
+          candidate.bytes.lengthInBytes > MomentsMediaLimits.maxBytes) {
+        refusal ??= 'Cada arquivo deve ter até ${MomentsMediaLimits.maxMegabytes} MB.';
+        continue;
+      }
+      _controller.addMedia(
+        MomentsMediaDraft.local(
+          localId: '${DateTime.now().microsecondsSinceEpoch}-${candidate.name}',
+          name: candidate.name,
+          mimeType: mimeType,
+          bytes: candidate.bytes,
+        ),
+      );
+      accepted += 1;
+    }
+    if (accepted > 0 && _controller.state.draft.media.isNotEmpty) {
       setState(() => _selectedMediaIndex = _controller.state.draft.media.length - 1);
     }
-    _showMessage(_controller.state.message ?? 'Mídia adicionada à demonstração.');
+    if (accepted == 0) {
+      if (refusal != null) _showMessage(refusal);
+      return;
+    }
+    final added = accepted == 1 ? '1 mídia selecionada' : '$accepted mídias selecionadas';
+    _showMessage(
+      refusal == null
+          ? '$added. O envio acontece ao publicar.'
+          : '$added. $refusal',
+    );
   }
 
   void _editCover() {

@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(36);
+select plan(30);
 
 select ok(to_regprocedure('public.superadmin_auth_bootstrap_context()') is not null
   and to_regprocedure('public.superadmin_auth_resolve_institution_context(uuid)') is not null
@@ -117,11 +117,6 @@ values
    now(),now(),'aal1',now()+interval '1 hour'),
   ('20000000-0000-4000-8000-000000000002','10000000-0000-4000-8000-000000000002',
    now(),now(),'aal1',now()+interval '1 hour');
--- These existing fixtures represent validated password sessions, not recovery.
-insert into auth.mfa_amr_claims(id,session_id,created_at,updated_at,authentication_method)
-values
-  (gen_random_uuid(),'20000000-0000-4000-8000-000000000001',now(),now(),'password'),
-  (gen_random_uuid(),'20000000-0000-4000-8000-000000000002',now(),now(),'password');
 insert into app_private.superadmin_internal_identities(id)
 values('30000000-0000-4000-8000-000000000002');
 insert into app_private.superadmin_internal_auth_links(id,internal_identity_id,auth_user_id)
@@ -317,43 +312,42 @@ select ok((select array_agg(distinct log_record.hash_version order by log_record
   from audit.audit_logs log_record join target_events on target_events.id=log_record.id),
   'mixed v1, v2 and v3 entries all verify through the versioned digest dispatcher');
 
--- Reuse the approved legacy audit reader authority only to exercise reader compatibility.
-insert into auth.users(id,aud,role,email,created_at,updated_at)
+-- Reader compatibility follows the internal 039 realm; no People fallback is accepted.
+insert into auth.users(id,aud,role,email,email_confirmed_at,created_at,updated_at)
 values('10000000-0000-4000-8000-000000000004','authenticated','authenticated',
-  'synthetic-audit-reader@invalid.test',now(),now());
-insert into public.people(id,person_type,first_name,last_name,display_name,status)
-values('52000000-0000-4000-8000-000000000004','adult','Synthetic','Reader',
-  'Synthetic Audit Reader','active');
-insert into public.person_auth_links(person_id,auth_user_id,status)
-values('52000000-0000-4000-8000-000000000004',
+  'synthetic-audit-reader@invalid.test',now(),now(),now());
+insert into auth.sessions(id,user_id,created_at,updated_at,aal,not_after)
+values('20000000-0000-4000-8000-000000000004',
+  '10000000-0000-4000-8000-000000000004',now(),now(),'aal1',now()+interval '1 hour');
+insert into app_private.superadmin_internal_identities(id)
+values('30000000-0000-4000-8000-000000000004');
+insert into app_private.superadmin_internal_auth_links(
+  id,internal_identity_id,auth_user_id,status)
+values('40000000-0000-4000-8000-000000000004',
+  '30000000-0000-4000-8000-000000000004',
   '10000000-0000-4000-8000-000000000004','active');
-insert into public.platform_memberships(person_id,role_id,status,scope_kind,mfa_required)
-select '52000000-0000-4000-8000-000000000004',id,'active','platform',true
+insert into app_private.superadmin_internal_memberships(
+  id,internal_identity_id,platform_role_id,scope_kind,status)
+select '41000000-0000-4000-8000-000000000004',
+  '30000000-0000-4000-8000-000000000004',id,'platform','active'
 from public.platform_roles where code='owner';
 create temporary table auth_v3_target(id uuid primary key,hash_hex text not null);
 insert into auth_v3_target
 select id,encode(session_id_hash,'hex') from audit.audit_logs
 where correlation_id=(select (body#>>'{error,correlation_id}')::uuid
   from auth_test_responses where sequence_number=3);
-grant select on auth_v3_target to authenticated,service_role;
+grant select on auth_v3_target to authenticated;
 create temporary table auth_reader_results(
-  detail jsonb,list_result jsonb,hash_search jsonb,export_start jsonb,materialized jsonb);
-grant select,insert,update on auth_reader_results to authenticated,service_role;
+  detail jsonb,list_result jsonb,hash_search jsonb);
+grant select,insert on auth_reader_results to authenticated;
 select set_config('request.jwt.claim.sub','10000000-0000-4000-8000-000000000004',true);
-select set_config('request.jwt.claims','{"sub":"10000000-0000-4000-8000-000000000004","aal":"aal2","role":"authenticated"}',true);
+select set_config('request.jwt.claims','{"sub":"10000000-0000-4000-8000-000000000004","session_id":"20000000-0000-4000-8000-000000000004","aal":"aal1","role":"authenticated"}',true);
 set local role authenticated;
-insert into auth_reader_results(detail,list_result,hash_search,export_start)
+insert into auth_reader_results(detail,list_result,hash_search)
 select public.audit_get_event_for_superadmin(target.id),
   public.audit_list_events_for_superadmin(p_search=>'Sessão autenticada'),
-  public.audit_list_events_for_superadmin(p_search=>target.hash_hex),
-  public.audit_start_export_for_superadmin('csv','{}'::jsonb,
-    '53000000-0000-4000-8000-000000000001')
+  public.audit_list_events_for_superadmin(p_search=>target.hash_hex)
 from auth_v3_target target;
-reset role;
-select set_config('request.jwt.claims','{"role":"service_role"}',true);
-set local role service_role;
-update auth_reader_results set materialized=public.audit_materialize_export_for_worker(
-  (export_start->>'job_id')::uuid,'54000000-0000-4000-8000-000000000001');
 reset role;
 select ok((select detail#>>'{actor,kind}'='auth_session'
     and detail#>>'{actor,display_name}'='Sessão autenticada'
@@ -371,144 +365,15 @@ select ok((select (list_result->>'total_count')::integer>=2
   'audit list renders auth_session items with null identity and role and no hash');
 select is((select (hash_search->>'total_count')::integer from auth_reader_results),0,
   'audit search cannot discover an auth_session event from its session hash');
-select ok((select snapshot.row_payload->>'actor_kind'='auth_session'
-    and snapshot.row_payload->>'actor_name'='Sessão autenticada'
-    and snapshot.row_payload->'actor_id'='null'::jsonb
-    and snapshot.row_payload->'actor_role_code'='null'::jsonb
-    and position(target.hash_hex in snapshot.row_payload::text)=0
-  from auth_reader_results result
-  join public.import_jobs job on job.id=(result.export_start->>'job_id')::uuid
-  join app_private.audit_export_snapshot_rows snapshot on snapshot.export_job_id=job.id
-  join auth_v3_target target on target.id=snapshot.audit_log_id),
-  'audit export renders auth_session without identity, role or session hash');
--- source: local-auth-recovery-boundary-receipt.md; proposed-password-session-context.sql
--- status: proposed-not-executed
--- generated_at: 2026-09-09
--- Insert immediately before finish() in superadmin_internal_auth_context_test.sql;
--- increase plan(30) to plan(36). Existing valid sessions ...001 and ...002 also
--- need provider-owned password AMR fixture rows after their INSERT statement.
--- This SQL covers authorization; provider recovery/refresh remain real HTTP tests.
-
-select set_config('request.jwt.claim.sub','',true);
-insert into auth.users(id,aud,role,email,email_confirmed_at,created_at,updated_at,
-  raw_app_meta_data,raw_user_meta_data)
-values('10000000-0000-4000-8000-000000000005','authenticated','authenticated',
-  'synthetic-password-session@invalid.test',now(),now(),now(),'{}','{}');
-insert into auth.sessions(id,user_id,created_at,updated_at,aal,not_after)
-select session_id,'10000000-0000-4000-8000-000000000005',
-  now(),now(),'aal1',now()+interval '1 hour'
-from (values
-  ('20000000-0000-4000-8000-000000000005'::uuid),
-  ('20000000-0000-4000-8000-000000000006'::uuid),
-  ('20000000-0000-4000-8000-000000000007'::uuid)
-) sessions(session_id);
-insert into auth.mfa_amr_claims(id,session_id,created_at,updated_at,authentication_method)
-values
-  (gen_random_uuid(),'20000000-0000-4000-8000-000000000005',now(),now(),'password'),
-  (gen_random_uuid(),'20000000-0000-4000-8000-000000000006',now(),now(),'otp');
-insert into app_private.superadmin_internal_identities(id)
-values('30000000-0000-4000-8000-000000000005');
-insert into app_private.superadmin_internal_auth_links(id,internal_identity_id,auth_user_id)
-values('40000000-0000-4000-8000-000000000005',
-  '30000000-0000-4000-8000-000000000005','10000000-0000-4000-8000-000000000005');
-insert into app_private.superadmin_internal_memberships(
-  internal_identity_id,platform_role_id,scope_kind,status)
-select '30000000-0000-4000-8000-000000000005',id,'platform','active'
-from public.platform_roles where code='operations' and status='active';
-
-select set_config('request.jwt.claims',jsonb_build_object(
-  'sub','10000000-0000-4000-8000-000000000005',
-  'session_id','20000000-0000-4000-8000-000000000005',
-  'aal','aal1','role','authenticated')::text,true);
-set local role authenticated;
-insert into auth_test_responses values(101,public.superadmin_auth_bootstrap_context());
-reset role;
-select ok((select body->>'ok'='true'
-  and body#>>'{data,platform_role_code}'='operations'
-  and body#>'{data,permission_codes}' ? 'platform.read'
-  from auth_test_responses where sequence_number=101),
-  'password AMR in the current provider session permits the active operations context');
-
-select set_config('request.jwt.claims',jsonb_build_object(
-  'sub','10000000-0000-4000-8000-000000000005',
-  'session_id','20000000-0000-4000-8000-000000000006',
-  'aal','aal1','role','authenticated')::text,true);
-set local role authenticated;
-insert into auth_test_responses values(102,public.superadmin_auth_bootstrap_context());
-reset role;
-select ok((select body->>'ok'='false' and body->'data'='null'::jsonb
-  and body#>>'{error,code}'='SAI_SESSION_INVALID'
-  from auth_test_responses where sequence_number=102),
-  'OTP-only session is denied even when the same user has a different password session');
-
-select set_config('request.jwt.claims',jsonb_build_object(
-  'sub','10000000-0000-4000-8000-000000000005',
-  'session_id','20000000-0000-4000-8000-000000000007',
-  'aal','aal1','role','authenticated')::text,true);
-set local role authenticated;
-insert into auth_test_responses values(103,public.superadmin_auth_bootstrap_context());
-reset role;
-select ok((select body->>'ok'='false' and body->'data'='null'::jsonb
-  and body#>>'{error,code}'='SAI_SESSION_INVALID'
-  from auth_test_responses where sequence_number=103),
-  'valid session without provider AMR is denied without productive context');
-
-update auth.users set raw_user_meta_data='{"authentication_method":"password","password_authenticated":true}'::jsonb
-where id='10000000-0000-4000-8000-000000000005';
-select set_config('request.jwt.claims',jsonb_build_object(
-  'sub','10000000-0000-4000-8000-000000000005',
-  'session_id','20000000-0000-4000-8000-000000000006',
-  'aal','aal1','role','authenticated',
-  'amr',jsonb_build_array(jsonb_build_object('method','password')),
-  'user_metadata',jsonb_build_object('authentication_method','password','password_authenticated',true)
-)::text,true);
-set local role authenticated;
--- The session gate runs before institution resolution, so NULL exercises the
--- second wrapper without adding a tenant fixture or relaxing its authorization.
-insert into auth_test_responses values(104,public.superadmin_auth_resolve_institution_context(null));
-reset role;
-select ok((select body->>'ok'='false' and body->'data'='null'::jsonb
-  and body#>>'{error,code}'='SAI_SESSION_INVALID'
-  from auth_test_responses where sequence_number=104),
-  'claimed password AMR and mutable user metadata cannot override provider OTP-only session');
-
-select ok((select count(*)=3 and count(distinct log_record.correlation_id)=3
-  and bool_and(coalesce(
-    app_private.audit_verify_entry(log_record.id)
-    and log_record.outcome='denied' and log_record.reason_code='SAI_SESSION_INVALID'
-    and log_record.reason='SAI_SESSION_INVALID'
-    and log_record.action_code=case when response.sequence_number=104
-      then 'superadmin.auth.resolve_institution' else 'superadmin.auth.bootstrap' end
-    and log_record.hash_version=2 and log_record.payload_contract_version=2
-    and log_record.actor_kind='superadmin_internal' and log_record.actor_role_code='operations'
-    and log_record.actor_internal_identity_id='30000000-0000-4000-8000-000000000005'::uuid
-    and log_record.actor_internal_auth_link_id='40000000-0000-4000-8000-000000000005'::uuid
-    and membership.internal_identity_id=log_record.actor_internal_identity_id
-    and log_record.actor_person_id is null and log_record.actor_membership_id is null
-    and log_record.support_session_id is null
-    and log_record.permission_code='platform.read' and log_record.mfa_aal='aal1'
-    and log_record.session_id_hash=extensions.digest(pg_catalog.convert_to(
-      case when response.sequence_number=103 then '20000000-0000-4000-8000-000000000007'
-        else '20000000-0000-4000-8000-000000000006' end,'UTF8'),'sha256')
-    and log_record.origin='database' and log_record.context_kind='global'
-    and log_record.context_id is null and log_record.institution_id is null
-    and log_record.object_type is null and log_record.object_id is null
-    and log_record.before_json is null and log_record.after_json is null,
-    false))
-  from auth_test_responses response
-  join audit.audit_logs log_record
-    on log_record.correlation_id=(response.body#>>'{error,correlation_id}')::uuid
-  left join app_private.superadmin_internal_memberships membership
-    on membership.id=log_record.actor_internal_membership_id
-  where response.sequence_number in(102,103,104)),
-  'password-session denials append three correlated verified minimized audit records');
-
-set local role authenticated;
-select throws_ok($$insert into auth.mfa_amr_claims(
-  id,session_id,created_at,updated_at,authentication_method)
-values(gen_random_uuid(),'20000000-0000-4000-8000-000000000006',now(),now(),'password')$$,
-  '42501',null,'the client role cannot mint a provider password AMR claim');
-reset role;
-
+select ok(
+  not has_function_privilege('authenticated',
+    'public.audit_start_export_for_superadmin(text,jsonb,uuid)','execute')
+  and not has_function_privilege('authenticated',
+    'public.audit_get_export_job_for_superadmin(uuid)','execute')
+  and not has_function_privilege('authenticated',
+    'public.audit_authorize_export_download_for_superadmin(uuid)','execute')
+  and not exists(select 1 from public.import_jobs
+    where request_id='53000000-0000-4000-8000-000000000001'),
+  'the internal reader cannot create, inspect or download a deferred export');
 select * from finish();
 rollback;

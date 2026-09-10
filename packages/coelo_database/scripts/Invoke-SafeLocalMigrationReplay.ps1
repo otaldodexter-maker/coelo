@@ -8,7 +8,7 @@ param(
 
   [switch]$AuthOnly,
 
-  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'ModelAal1PhasePolicy', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived', 'ChildDirectoryEnvelope', 'ActivityAggregateConcurrency', 'ActivityAggregateConcurrencyClock', 'LocationCatalogV2', 'LocationReservationsV1')]
+  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'ModelAal1PhasePolicy', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived', 'ChildDirectoryEnvelope', 'ActivityAggregateConcurrency', 'ActivityAggregateConcurrencyClock', 'LocationCatalogV2', 'LocationReservationsV1', 'SafetyInternalReads53')]
   [string]$NominalProfile,
 
   [string[]]$AdditionalMigration = @(),
@@ -33,7 +33,9 @@ param(
 
   [switch]$RunActivityV2Concurrency,
 
-  [switch]$RunLocationReservationsAuditAuthorization
+  [switch]$RunLocationReservationsAuditAuthorization,
+
+  [switch]$RunModelReceiptConcurrency
 )
 
 $ErrorActionPreference = 'Stop'
@@ -166,6 +168,15 @@ if ($RunLocationReservationsAuditAuthorization -and (
     $RunChildDirectoryHttp -or $RunActivityV2Concurrency -or $RunLint)) {
   throw 'Location reservation audit proof requires exact LocationReservationsV1 target without other modes or additions'
 }
+if ($RunModelReceiptConcurrency -and (
+    -not $AuthOnly -or $TargetVersion -cne '20260901200206' -or
+    $FoundationOnly -or $NominalProfile -or $AdditionalMigration.Count -gt 0 -or
+    $RunAuthLifecycle -or $RunAuthRecoveryBoundary -or $AssertAuthRecoveryConfined -or
+    $RunR02AuthProofConcurrency -or $RunChildDirectoryConcurrency -or
+    $RunChildDirectoryHttp -or $RunChildRemotePackage -or $RunActivityV2Concurrency -or
+    $RunLocationReservationsAuditAuthorization -or $RunLint)) {
+  throw 'Model receipt concurrency requires exact AuthOnly target without additions or other modes'
+}
 if ($NominalProfile) {
   if ($FoundationOnly -or $AuthOnly -or $AdditionalMigration.Count -gt 0 -or
       $RunAuthLifecycle -or
@@ -173,6 +184,7 @@ if ($NominalProfile) {
     throw 'nominal replay cannot be combined with other replay profiles, additions, Auth lifecycle or concurrency'
   }
   $nominalResolverRelative = switch ($NominalProfile) {
+    'SafetyInternalReads53' { 'replay\profiles\SafetyInternalReads53\Resolve-SafetyInternalReads53.ps1' }
     'ChildDirectoryEnvelope' { 'replay\profiles\ChildDirectoryEnvelope\Resolve-ChildDirectoryEnvelope.ps1' }
     'N01PrerequisitesRed' { 'replay\profiles\N01PrerequisitesRed\Resolve-N01PrerequisitesRed.ps1' }
     'A01DirectoryContractRed' { 'replay\profiles\A01DirectoryContractRed\Resolve-A01DirectoryContractRed.ps1' }
@@ -290,6 +302,17 @@ if ($RunLocationReservationsAuditAuthorization -and (
     $resolvedTestPaths.Count -ne 1 -or
     $resolvedTestPaths[0] -ine $expectedReservationTap)) {
   throw 'Location reservation audit proof requires exactly the nominal reservation TAP'
+}
+$modelReceiptRunner = Join-Path $repositoryRoot 'docs\reviews\etapa-2-operacao\noturna\acessos-pessoas\models-concurrency\Test-ModelReceiptConcurrency.ps1'
+if ($RunModelReceiptConcurrency) {
+  $expectedModelsTap = Join-Path $canonicalTestsRoot 'ap_models_nominal_package_test.sql'
+  if ($resolvedTestPaths.Count -ne 1 -or $resolvedTestPaths[0] -ine $expectedModelsTap) {
+    throw 'Model receipt concurrency requires exactly the nominal Models package TAP'
+  }
+  Assert-NoReparseAncestors $modelReceiptRunner
+  if (-not (Test-Path -LiteralPath $modelReceiptRunner -PathType Leaf)) {
+    throw 'Model receipt concurrency runner is missing'
+  }
 }
 Assert-NoReparseAncestors $tempRoot
 if ($projectRoot -eq $repositoryFull -or
@@ -420,6 +443,9 @@ try {
   if ($resolvedTestPaths.Count -gt 0) {
     & npx.cmd --yes $cliPackage --agent no test db --local @resolvedTestPaths --workdir $projectRoot
     if ($LASTEXITCODE -ne 0) { throw "safe local pgTAP failed with exit code $LASTEXITCODE" }
+  }
+  if ($RunModelReceiptConcurrency) {
+    & $modelReceiptRunner -ProjectRoot $projectRoot -ProjectId $projectId
   }
   if ($RunChildRemotePackage) {
     & (Join-Path $scriptRoot 'Test-ChildRemotePackage.ps1') `

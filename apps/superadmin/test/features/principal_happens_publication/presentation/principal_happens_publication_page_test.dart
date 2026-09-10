@@ -548,7 +548,9 @@ final class _UnauthorizedRepository implements HappensPublicationRepository {
       throw UnimplementedError();
 
   @override
-  Future<HappensPublication> publish(HappensPublicationContext context, HappensPostDraft draft) =>
+  Future<HappensPublication> publish(HappensPublicationContext context, HappensPostDraft draft, {
+    required String requestId,
+  }) =>
       throw UnimplementedError();
 }
 
@@ -582,7 +584,9 @@ final class _DeferredRepository implements HappensPublicationRepository {
   Future<void> removeMedia(HappensPublicationContext context, HappensMediaDraft media) async {}
 
   @override
-  Future<HappensPublication> publish(HappensPublicationContext context, HappensPostDraft draft) =>
+  Future<HappensPublication> publish(HappensPublicationContext context, HappensPostDraft draft, {
+    required String requestId,
+  }) =>
       throw UnimplementedError();
 }
 
@@ -615,10 +619,12 @@ final class _FailOncePublishRepository implements HappensPublicationRepository {
       delegate.removeMedia(context, media);
 
   @override
-  Future<HappensPublication> publish(HappensPublicationContext context, HappensPostDraft draft) {
+  Future<HappensPublication> publish(HappensPublicationContext context, HappensPostDraft draft, {
+    required String requestId,
+  }) {
     publishCalls++;
     if (publishCalls == 1) throw Exception('transient');
-    return delegate.publish(context, draft);
+    return delegate.publish(context, draft, requestId: requestId);
   }
 }
 
@@ -654,7 +660,9 @@ final class _FailOnceSaveRepository implements HappensPublicationRepository {
   Future<void> removeMedia(HappensPublicationContext context, HappensMediaDraft media) async {}
 
   @override
-  Future<HappensPublication> publish(HappensPublicationContext context, HappensPostDraft draft) =>
+  Future<HappensPublication> publish(HappensPublicationContext context, HappensPostDraft draft, {
+    required String requestId,
+  }) =>
       throw UnimplementedError();
 }
 
@@ -693,6 +701,8 @@ final class _ConflictThenReloadRepository implements HappensPublicationRepositor
   Future<void> removeMedia(HappensPublicationContext context, HappensMediaDraft media) async {}
 
   @override
-  Future<HappensPublication> publish(HappensPublicationContext context, HappensPostDraft draft) =>
+  Future<HappensPublication> publish(HappensPublicationContext context, HappensPostDraft draft, {
+    required String requestId,
+  }) =>
       throw UnimplementedError();
 }

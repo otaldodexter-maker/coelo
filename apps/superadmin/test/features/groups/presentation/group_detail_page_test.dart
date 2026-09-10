@@ -49,6 +49,7 @@ void main() {
           id: 'id',
           logout: () async => const LogoutResult.success(),
           onBack: () => back++,
+          reservationBuilder: (context, detail) => Text('Reservas de ${detail.id}'),
         ),
       ),
     );
@@ -57,11 +58,23 @@ void main() {
     repository.calls[0].complete(_detail);
     await tester.pumpAndSettle();
     expect(find.text('Nome autorizado'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.text('Reservas de id'),
+      200,
+      scrollable: find
+          .descendant(
+            of: find.byKey(const Key('group-detail-content')),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
+    expect(find.text('Reservas de id'), findsOneWidget);
     expect(find.text('Salvar alterações'), findsNothing);
     expect(find.text('Editar'), findsNothing);
     await tester.tap(find.byKey(const Key('group-detail-reload')));
     await tester.pump();
     expect(find.text('Nome autorizado'), findsNothing);
+    expect(find.text('Reservas de id'), findsNothing);
     repository.calls[1].completeError(const GroupDetailException(GroupDetailFailure.denied));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('group-detail-denied')), findsOneWidget);

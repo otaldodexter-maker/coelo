@@ -105,6 +105,13 @@ final class _PlanDirectoryPageState extends State<PlanDirectoryPage> {
             ? PlanDataState.unauthorized
             : PlanDataState.error;
       });
+    } on Object {
+      // Falha inesperada tambem precisa sair de loading: sem isto o diretorio
+      // fica preso no indicador de progresso e o erro vira unhandled.
+      if (!mounted || !identical(repository, widget.repository) || loadVersion != _loadVersion) {
+        return;
+      }
+      setState(() => _dataState = PlanDataState.error);
     }
   }
 
@@ -391,6 +398,12 @@ final class _PlanDirectoryPageState extends State<PlanDirectoryPage> {
           identical(repository, widget.repository)) {
         setState(() => _dataState = PlanDataState.error);
       }
+    } on Object {
+      if (mounted &&
+          repositoryVersion == _repositoryVersion &&
+          identical(repository, widget.repository)) {
+        setState(() => _dataState = PlanDataState.error);
+      }
     }
   }
 }
@@ -577,7 +590,10 @@ final class _Metric extends StatelessWidget {
     children: [
       Icon(icon, size: CoeloSize.iconSm),
       const SizedBox(width: CoeloSpacing.space1),
-      Text(label, style: Theme.of(context).textTheme.bodySmall),
+      // O rotulo precisa poder encolher: dentro do Wrap a linha recebe a largura
+      // disponivel como maximo, e com texto a 150% ou 200% um Text rigido
+      // transbordava para fora do cartao.
+      Flexible(child: Text(label, style: Theme.of(context).textTheme.bodySmall)),
     ],
   );
 }

@@ -1,0 +1,50 @@
+{
+  "source": "Tool runner reports from /root/bindings_review; nominal SQL 20260909200000_superadmin_activity_location_create_v2.sql",
+  "status": "local-candidate-gate-closed",
+  "recorded_at": "2026-09-09T19:35:40.6599631-03:00",
+  "timestamp_scope": "Actual recording clock. Exact command start/end wall-clock timestamps were not captured.",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura",
+  "working_directory": "apps/superadmin",
+  "scope": "apps/superadmin -> Atividades -> create draft -> catalogued selection and optional reservation command/adapter only",
+  "evidence_transport": "Conversation tool runner output/report; no raw output log file was retained or fabricated.",
+  "test": {
+    "command": "rtk proxy flutter test --no-pub --concurrency=1 test/features/activities/data/supabase_activity_command_repository_test.dart --reporter expanded",
+    "session_id": 36757,
+    "start_chunk_id": "08e636",
+    "completion_chunk_id": "28f816",
+    "reported_result": "00:01 +31: All tests passed!",
+    "exit_code": 0,
+    "N": 31, "E": 31, "P": 31, "F": 0, "B": 0, "S": 0, "U": 0,
+    "composition": "23 candidate tests plus 8 existing command/template regressions; repeats are not added to totals"
+  },
+  "analyzer": {
+    "command": "rtk proxy dart analyze lib/features/activities/domain/activity_command.dart lib/features/activities/data/supabase_activity_command_repository.dart test/features/activities/data/supabase_activity_command_repository_test.dart",
+    "chunk_id": "436f4e",
+    "reported_result": "No issues found!",
+    "exit_code": 0
+  },
+  "sha256": {
+    "apps/superadmin/lib/features/activities/domain/activity_command.dart": "8A78326EEF78C7C18B334598F022972B7AB04EE96FC8D7D36728311A94D4894F",
+    "apps/superadmin/lib/features/activities/data/supabase_activity_command_repository.dart": "C615DF0FD5DEA9160CEB009A358F263F9C23C8A6DF28004DAEF38B524FBACE09",
+    "apps/superadmin/test/features/activities/data/supabase_activity_command_repository_test.dart": "02F07B9FF880E3487DDB50321C77535284AF418B2567DBB42280E118A04689E9"
+  },
+  "history": [
+    "Tests first: session 1663 ended exit 1 (chunk 7362a7) because new typed selection/reservation/result fields and adapter gate constructor did not exist yet. This was the expected compilation RED, not 31 individually executed failing tests.",
+    "After implementation session 40714 passed 25 tests. Static review added six tests for weekly encoding, enabled-gate rejected variants, malformed denial and reservation correlation/state, and made zero-HTTP gate assertions explicit.",
+    "Analyzer session 19403 reported seven braces infos; all were fixed. Session 83887 passed 31 tests and analyzer chunk 86eeb1 had no issues.",
+    "Parent requested canonical ActivityCreateReservationIntent.toJson() shared with its controller fingerprint. Moved the private encoder to the domain method without changing payload semantics; final session 36757 reran the same 31 tests for this code change, not additional coverage."
+  ],
+  "contract": [
+    "ActivitySaveCommand accepts CataloguedLocationSelection? and ActivityCreateReservationIntent? without a fabricated consumer ID.",
+    "ActivityCreateReservationIntent.toJson() encodes exactly first_occurrence, recurrence and conflict_justification. Once/weekly encoding preserves the existing reservation DTO conventions.",
+    "activityLocationCreateAvailable defaults false. Selection or orphan reservation cannot silently fall back to the old aggregate writer. The no-selection/no-reservation path is preserved.",
+    "One candidate RPC returns the aggregate, location ID and optional reservation; response validates envelope, error fields, IDs, positive safe version, draft status, replay flag and correlated reservation consumer/location/state."
+  ],
+  "limitations": [
+    "Candidate is not enabled in production composition; no SQL, remote RPC, replay, commit or push was executed by this subtask.",
+    "Controller, draft, attempt runner, About guard and router integration remain parent-owned and are not qualified by these command tests.",
+    "One-off, editing, publish and About persistence remain outside this candidate. Conflict preassessment for a not-yet-created consumer still requires its own approved contract.",
+    "Mock HTTP tests do not prove backend rollback, lock ordering, late reauthorization or production acceptance."
+  ],
+  "resources": "All test and analyzer runners completed; no owned runner remains."
+}

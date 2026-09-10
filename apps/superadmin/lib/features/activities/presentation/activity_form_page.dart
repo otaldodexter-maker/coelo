@@ -21,6 +21,8 @@ import 'activity_form_draft.dart';
 import 'activity_form_sections.dart';
 
 typedef ActivityFormSubmit = Future<void> Function(ActivityFormDraft draft);
+typedef ActivityLocationSelectionBuilder =
+    Widget Function(BuildContext context, ActivityFormController controller);
 typedef ActivityLocationCreator =
     Future<List<ActivityFormLocationOption>> Function(ActivityLocationDraft draft);
 
@@ -36,6 +38,7 @@ final class ActivityFormPage extends StatefulWidget {
     required this.onSaveDraft,
     required this.onSubmit,
     required this.onCreateLocation,
+    this.locationSelectionBuilder,
     this.activityId,
     this.initialInstitutionId,
     this.initialUnitId,
@@ -61,6 +64,7 @@ final class ActivityFormPage extends StatefulWidget {
   final ActivityFormSubmit onSaveDraft;
   final ActivityFormSubmit onSubmit;
   final ActivityLocationCreator onCreateLocation;
+  final ActivityLocationSelectionBuilder? locationSelectionBuilder;
   final ValueChanged<String>? onDestinationSelected;
   final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
   final InstitutionLogoPicker? imagePicker;
@@ -273,7 +277,9 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
   Future<void> _submit() async {
     final controller = _controller!;
     if (!controller.validateCompletion()) return;
-    if (controller.selectedLocationId != null) {
+    if (controller.selectedLocationId != null ||
+        controller.cataloguedLocationSelection != null ||
+        controller.locationReservation != null) {
       setState(() => _failedCommand = _ActivityFormCommand.submit);
       return;
     }
@@ -377,6 +383,7 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
       onSaveDraft: _saveDraft,
       onSubmit: _submit,
       onCreateLocation: widget.onCreateLocation,
+      locationSelectionBuilder: widget.locationSelectionBuilder,
       onRetryCatalogOptions: _retryCatalogOptions,
       imagePicker: widget.imagePicker ?? pickInstitutionLogo,
       aboutRepository: widget.aboutRepository,
@@ -426,6 +433,7 @@ final class _ActivityFormBody extends StatelessWidget {
     required this.onSaveDraft,
     required this.onSubmit,
     required this.onCreateLocation,
+    this.locationSelectionBuilder,
     required this.onRetryCatalogOptions,
     required this.imagePicker,
     required this.aboutRepository,
@@ -441,6 +449,7 @@ final class _ActivityFormBody extends StatelessWidget {
   final VoidCallback onSaveDraft;
   final VoidCallback onSubmit;
   final ActivityLocationCreator onCreateLocation;
+  final ActivityLocationSelectionBuilder? locationSelectionBuilder;
   final Future<void> Function() onRetryCatalogOptions;
   final InstitutionLogoPicker imagePicker;
   final ActivityProfileAboutRepository aboutRepository;
@@ -503,6 +512,7 @@ final class _ActivityFormBody extends StatelessWidget {
                 ActivityFormSection(
                   controller: controller,
                   onCreateLocation: onCreateLocation,
+                  locationSelectionBuilder: locationSelectionBuilder,
                   onRetryCatalogOptions: onRetryCatalogOptions,
                   imagePicker: imagePicker,
                   aboutRepository: aboutRepository,

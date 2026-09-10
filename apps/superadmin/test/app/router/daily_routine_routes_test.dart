@@ -79,7 +79,10 @@ void main() {
     router.go('/dev/daily-routine');
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('daily-routine-duplicate-model-1')));
+    final duplicateAction = find.byKey(const Key('daily-routine-duplicate-model-1'));
+    await tester.ensureVisible(duplicateAction);
+    await tester.pump();
+    await tester.tap(duplicateAction);
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('daily-routine-model-editor')), findsOneWidget);
     final duplicateName = tester.widget<TextField>(
@@ -88,11 +91,14 @@ void main() {
         matching: find.byType(TextField),
       ),
     );
-    expect(duplicateName.controller?.text, 'Rotina diária (cópia)');
+    expect(duplicateName.controller?.text, 'Chegada e acolhimento (cópia)');
 
     router.go('/dev/daily-routine');
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('daily-routine-apply-model-1')));
+    final applyAction = find.byKey(const Key('daily-routine-apply-model-1'));
+    await tester.ensureVisible(applyAction);
+    await tester.pump();
+    await tester.tap(applyAction);
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('daily-routine-application-editor')), findsOneWidget);
     final application = tester.widget<DailyRoutineEditorPage>(find.byType(DailyRoutineEditorPage));

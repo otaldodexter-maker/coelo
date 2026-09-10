@@ -1,0 +1,338 @@
+[
+  {
+    "path": "apps\\superadmin\\test\\features\\access_profiles\\presentation\\goldens\\access_profile_cards_light_375.png",
+    "width": 375,
+    "theme": "light",
+    "kind": "cards",
+    "inspected_before_update": true,
+    "before_sha256": "8fbcd23d61921105ed23f458ff7a23d90fd9070851bdac6089ac1308ab8cca16",
+    "after_sha256": "14c8383deb17fe6fcd80d385d74927dd7204b82a5a1e6383fc436015e39f5c61",
+    "background_before": [
+      247,
+      248,
+      248,
+      255
+    ],
+    "background_after": [
+      255,
+      255,
+      255,
+      255
+    ]
+  },
+  {
+    "path": "apps\\superadmin\\test\\features\\access_profiles\\presentation\\goldens\\access_profile_table_light_375.png",
+    "width": 375,
+    "theme": "light",
+    "kind": "table",
+    "inspected_before_update": true,
+    "before_sha256": "3f694dc599041a17a852f901f65ed1875dc5dc7006c7fae343db72203221e30b",
+    "after_sha256": "c487d22b49bde97a08170df1a2aac4b8e7a43155e1fb0c644531a8f18fc51f4f",
+    "background_before": [
+      247,
+      248,
+      248,
+      255
+    ],
+    "background_after": [
+      255,
+      255,
+      255,
+      255
+    ]
+  },
+  {
+    "path": "apps\\superadmin\\test\\features\\access_profiles\\presentation\\goldens\\access_profile_cards_dark_375.png",
+    "width": 375,
+    "theme": "dark",
+    "kind": "cards",
+    "inspected_before_update": true,
+    "before_sha256": "cb602f11c6b10bca6b939bf79817297e859d4628d10a189aa4043f8a73903f11",
+    "after_sha256": "a6ec1163ea6c38918ea62c883129b676d54da8c928a9a64f5b2faf9f4fbdddb0",
+    "background_before": [
+      17,
+      20,
+      22,
+      255
+    ],
+    "background_after": [
+      24,
+      28,
+      31,
+      255
+    ]
+  },
+  {
+    "path": "apps\\superadmin\\test\\features\\access_profiles\\presentation\\goldens\\access_profile_table_dark_375.png",
+    "width": 375,
+    "theme": "dark",
+    "kind": "table",
+    "inspected_before_update": true,
+    "before_sha256": "247b57e4ab337fc5067ec318c7771107f3d926795d1cce57071ae60dd9d60d28",
+    "after_sha256": "8c8fe295689319ee7badd2ce7a96cca5bb02ebdc667aa9b04e4d9e21d2da5298",
+    "background_before": [
+      17,
+      20,
+      22,
+      255
+    ],
+    "background_after": [
+      24,
+      28,
+      31,
+      255
+    ]
+  },
+  {
+    "path": "apps\\superadmin\\test\\features\\access_profiles\\presentation\\goldens\\access_profile_cards_light_768.png",
+    "width": 768,
+    "theme": "light",
+    "kind": "cards",
+    "inspected_before_update": true,
+    "before_sha256": "8487676c2c8c5f446dd7b3ae6996408a9e6c17ed740b241da9d5a5916d64ed19",
+    "after_sha256": "8d3890396fb38a48418ce7cf33ad8889a66d39e909fc38db19a6e176aeb8c369",
+    "background_before": [
+      247,
+      248,
+      248,
+      255
+    ],
+    "background_after": [
+      255,
+      255,
+      255,
+      255
+    ]
+  },
+  {
+    "path": "apps\\superadmin\\test\\features\\access_profiles\\presentation\\goldens\\access_profile_table_light_768.png",
+    "width": 768,
+    "theme": "light",
+    "kind": "table",
+    "inspected_before_update": true,
+    "before_sha256": "6ea4eae1b99630397e9f92b4290a2a50b0130a41eb6968a5f3843fae8654cdce",
+    "after_sha256": "fb554f7f7ebfda8b899aa1064bb3f1f241d703341e6f3ffa022840b9387472d8",
+    "background_before": [
+      247,
+      248,
+      248,
+      255
+    ],
+    "background_after": [
+      255,
+      255,
+      255,
+      255
+    ]
+  },
+  {
+    "path": "apps\\superadmin\\test\\features\\access_profiles\\presentation\\goldens\\access_profile_cards_dark_768.png",
+    "width": 768,
+    "theme": "dark",
+    "kind": "cards",
+    "inspected_before_update": true,
+    "before_sha256": "950c57ca7af1f78ba57ff749c650dab771162f1c531eaf281435a21cfb13bec1",
+    "after_sha256": "0f96afc031b099aad53ea0cb2142585ff1b107c641398f7e99bb1314bda4d01a",
+    "background_before": [
+      17,
+      20,
+      22,
+      255
+    ],
+    "background_after": [
+      24,
+      28,
+      31,
+      255
+    ]
+  },
+  {
+    "path": "apps\\superadmin\\test\\features\\access_profiles\\presentation\\goldens\\access_profile_table_dark_768.png",
+    "width": 768,
+    "theme": "dark",
+    "kind": "table",
+    "inspected_before_update": true,
+    "before_sha256": "bc5280d31646fa5f272a61394ebb62b2d93f9cc7af3f4992c30e56ad08009e43",
+    "after_sha256": "a1191f489207245da83e503aa22b5c9099aa55ff6c9dfea7c002077e5e34e245",
+    "background_before": [
+      17,
+      20,
+      22,
+      255
+    ],
+    "background_after": [
+      24,
+      28,
+      31,
+      255
+    ]
+  },
+  {
+    "path": "apps\\superadmin\\test\\features\\access_profiles\\presentation\\goldens\\access_profile_cards_light_1024.png",
+    "width": 1024,
+    "theme": "light",
+    "kind": "cards",
+    "inspected_before_update": true,
+    "before_sha256": "45501e244fc3d1bf8a7f096a4da760275e6dc6edcaeefbee69f62914a98de83e",
+    "after_sha256": "cfdd814ed576c8359500770b496264d0abf3534146dc61075d192e9ce9093494",
+    "background_before": [
+      255,
+      255,
+      255,
+      255
+    ],
+    "background_after": [
+      255,
+      255,
+      255,
+      255
+    ]
+  },
+  {
+    "path": "apps\\superadmin\\test\\features\\access_profiles\\presentation\\goldens\\access_profile_table_light_1024.png",
+    "width": 1024,
+    "theme": "light",
+    "kind": "table",
+    "inspected_before_update": true,
+    "before_sha256": "f8287c7d2a9a02a67da5a4e6aebc154989320b3985155aa046ac4c3d53a57627",
+    "after_sha256": "2c53d79373e0fdc949b237f950ef23e1010a16feebde3f2099c15b629f6f32ab",
+    "background_before": [
+      255,
+      255,
+      255,
+      255
+    ],
+    "background_after": [
+      255,
+      255,
+      255,
+      255
+    ]
+  },
+  {
+    "path": "apps\\superadmin\\test\\features\\access_profiles\\presentation\\goldens\\access_profile_cards_dark_1024.png",
+    "width": 1024,
+    "theme": "dark",
+    "kind": "cards",
+    "inspected_before_update": true,
+    "before_sha256": "e2efcb5d6abf2377fb646891f6ff540170f7589125d9bb3bb8b3bd537b34d997",
+    "after_sha256": "39f3bbb5f7265de3ca3ce0db6f19348a40d54b26f5006b65d089290b2f5e3eff",
+    "background_before": [
+      24,
+      28,
+      31,
+      255
+    ],
+    "background_after": [
+      24,
+      28,
+      31,
+      255
+    ]
+  },
+  {
+    "path": "apps\\superadmin\\test\\features\\access_profiles\\presentation\\goldens\\access_profile_table_dark_1024.png",
+    "width": 1024,
+    "theme": "dark",
+    "kind": "table",
+    "inspected_before_update": true,
+    "before_sha256": "36ce0b4a590d4b171ad036b8210f4cd0e8440e8f15af0fb1fb7a160cb26c602a",
+    "after_sha256": "3fbec3b35398964e38d2e25982adad983ac9b4bf817a02648600786023a00d4c",
+    "background_before": [
+      24,
+      28,
+      31,
+      255
+    ],
+    "background_after": [
+      24,
+      28,
+      31,
+      255
+    ]
+  },
+  {
+    "path": "apps\\superadmin\\test\\features\\access_profiles\\presentation\\goldens\\access_profile_cards_light_1440.png",
+    "width": 1440,
+    "theme": "light",
+    "kind": "cards",
+    "inspected_before_update": true,
+    "before_sha256": "7fe935c7751b2e718d9f6014ce3433dc8d82e0fde5d29172c92a2a08ea8369cb",
+    "after_sha256": "b30e2e9179debf783b2d0ed86417aad25d58a6cf6b7761e22f5e0f6c62152c0b",
+    "background_before": [
+      255,
+      255,
+      255,
+      255
+    ],
+    "background_after": [
+      255,
+      255,
+      255,
+      255
+    ]
+  },
+  {
+    "path": "apps\\superadmin\\test\\features\\access_profiles\\presentation\\goldens\\access_profile_table_light_1440.png",
+    "width": 1440,
+    "theme": "light",
+    "kind": "table",
+    "inspected_before_update": true,
+    "before_sha256": "691a037ff75f4be6a944310f7084230f4c04a8dc9747a0da31c2ac16823e8f15",
+    "after_sha256": "64a5c594588d98de05bab939015bcce18044d988589cdc7333474edd247451cd",
+    "background_before": [
+      255,
+      255,
+      255,
+      255
+    ],
+    "background_after": [
+      255,
+      255,
+      255,
+      255
+    ]
+  },
+  {
+    "path": "apps\\superadmin\\test\\features\\access_profiles\\presentation\\goldens\\access_profile_cards_dark_1440.png",
+    "width": 1440,
+    "theme": "dark",
+    "kind": "cards",
+    "inspected_before_update": true,
+    "before_sha256": "bdb168a0c7f65b91426669b9860da26ddc4e2c312aefb47b8069bad3c4eaee8e",
+    "after_sha256": "5ab2d088b07bab799b2bf152672bba9a3bcccdd4e08fbb6fbfc8be0e7bf548cc",
+    "background_before": [
+      24,
+      28,
+      31,
+      255
+    ],
+    "background_after": [
+      24,
+      28,
+      31,
+      255
+    ]
+  },
+  {
+    "path": "apps\\superadmin\\test\\features\\access_profiles\\presentation\\goldens\\access_profile_table_dark_1440.png",
+    "width": 1440,
+    "theme": "dark",
+    "kind": "table",
+    "inspected_before_update": true,
+    "before_sha256": "c9f4e46bc2e9c92cbc0feae1fa5fd45e8b46fb6d2ec4f62c808b42d49820b18f",
+    "after_sha256": "b75d8fc4e76a667a86dbe9d76d87187eeb0a00a30f8643953dcbbff6e86a16ea",
+    "background_before": [
+      24,
+      28,
+      31,
+      255
+    ],
+    "background_after": [
+      24,
+      28,
+      31,
+      255
+    ]
+  }
+]

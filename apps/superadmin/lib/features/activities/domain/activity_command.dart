@@ -1,5 +1,7 @@
 import 'dart:typed_data';
 
+import 'package:coelo_domain/locations.dart';
+
 import 'activity_directory.dart';
 
 enum ActivityCommandIntent { saveDraft, publish }
@@ -96,6 +98,8 @@ final class ActivitySaveCommand {
     this.pedagogicalConfiguration = const {'enabled': false},
     this.expectedAssessmentVersion,
     this.assessmentChangeJustification = '',
+    this.locationSelection,
+    this.reservation,
   });
 
   final String requestId;
@@ -120,6 +124,45 @@ final class ActivitySaveCommand {
   final List<ActivityCommandAssignment> assignments;
   final List<ActivityCommandParticipant> participants;
   final ActivityCommandIdentity identity;
+  final CataloguedLocationSelection? locationSelection;
+  final ActivityCreateReservationIntent? reservation;
+}
+
+/// A create request has no Activity ID yet. The transaction supplies the consumer.
+final class ActivityCreateReservationIntent {
+  const ActivityCreateReservationIntent({
+    required this.firstOccurrence,
+    required this.recurrence,
+    this.conflictJustification,
+  });
+  final LocationReservationOccurrence firstOccurrence;
+  final LocationReservationRecurrence recurrence;
+  final String? conflictJustification;
+
+  /// Canonical request and attempt fingerprint; no consumer exists before create.
+  Map<String, Object?> toJson() {
+    final justification = conflictJustification?.trim();
+    if (justification != null && (justification.isEmpty || justification.length > 2000)) {
+      throw const ActivityCommandUnavailableException();
+    }
+    return {
+      'first_occurrence': {
+        'starts_at': firstOccurrence.startsAt.toIso8601String(),
+        'ends_at': firstOccurrence.endsAt.toIso8601String(),
+      },
+      'recurrence': switch (recurrence) {
+        LocationReservationOnce() => {'kind': 'once'},
+        LocationReservationWeekly(:final weekdays, :final until, :final timeZone) => {
+          'kind': 'weekly',
+          'weekdays': weekdays.toList()..sort(),
+          'until':
+              '${until.year.toString().padLeft(4, '0')}-${until.month.toString().padLeft(2, '0')}-${until.day.toString().padLeft(2, '0')}',
+          'time_zone': timeZone,
+        },
+      },
+      'conflict_justification': justification,
+    };
+  }
 }
 
 final class ActivitySaveResult {
@@ -127,11 +170,15 @@ final class ActivitySaveResult {
     required this.activityId,
     required this.managementVersion,
     required this.status,
+    this.locationId,
+    this.reservation,
   });
 
   final String activityId;
   final int managementVersion;
   final ActivityStatus status;
+  final String? locationId;
+  final LocationReservation? reservation;
 }
 
 final class ActivityLocationCommand {
