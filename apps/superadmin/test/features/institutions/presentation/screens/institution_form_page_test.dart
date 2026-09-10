@@ -20,7 +20,10 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 
 void main() {
-  testWidgets('uses the measured shared footer and keeps the launcher above it', (tester) async {
+  testWidgets('usa o rodape compartilhado e nao mostra o balao de chat', (tester) async {
+    // Decisao do Owner de 10/09/2026: sem balao de chat em telas de criar e
+    // editar. Este caso substitui o anterior, que media a folga entre o
+    // launcher e o rodape.
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
@@ -41,11 +44,8 @@ void main() {
 
     await tester.pump();
 
-    expect(launcher, findsOneWidget);
-    expect(
-      tester.getBottomLeft(launcher).dy,
-      lessThanOrEqualTo(tester.getTopLeft(footer).dy - CoeloSpacing.space4),
-    );
+    expect(launcher, findsNothing);
+    expect(footer, findsOneWidget);
   });
 
   testWidgets('aligns the rounded notes icon at the bio top-left', (tester) async {

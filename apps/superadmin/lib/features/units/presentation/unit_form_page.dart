@@ -339,17 +339,19 @@ final class _UnitFormPageState extends State<UnitFormPage> {
   }
 
   Future<void> _cancel() async {
-    if (_formController.isDirty &&
-        !await showInstitutionExitDialog(context, entityLabel: 'unidade')) {
-      return;
+    if (_formController.isDirty) {
+      final confirmed = await showInstitutionExitDialog(context, entityLabel: 'unidade');
+      // The dialog is asynchronous: the form may have been disposed while it
+      // was open, and a confirmation answered then must not act on it.
+      if (!mounted || !confirmed) return;
     }
     widget.onCancel();
   }
 
   Future<void> _selectDestination(String destination) async {
-    if (_formController.isDirty &&
-        !await showInstitutionExitDialog(context, entityLabel: 'unidade')) {
-      return;
+    if (_formController.isDirty) {
+      final confirmed = await showInstitutionExitDialog(context, entityLabel: 'unidade');
+      if (!mounted || !confirmed) return;
     }
     widget.onDestinationSelected?.call(destination);
   }
@@ -369,10 +371,9 @@ final class _UnitFormPageState extends State<UnitFormPage> {
               : 'Atualize os dados da unidade selecionada.',
           currentDestination: 'units',
           onDestinationSelected: _selectDestination,
-          showChatLauncher:
-              widget.onDestinationSelected != null &&
-              outerConstraints.maxWidth >= CoeloBreakpoints.expanded.minWidth,
-          chatLauncherBottomInset: _footerHeight == 0 ? 0 : _footerHeight + CoeloSpacing.space4,
+          // Sem balao de chat em telas de criar e editar: decisao do Owner de
+          // 10/09/2026. Essas telas pedem foco na tarefa em andamento.
+          showChatLauncher: false,
           child: AnimatedBuilder(
             animation: _formController,
             builder: (context, child) => _buildState(outerConstraints),

@@ -138,6 +138,23 @@ podem virar API genérica após proposta e aprovação.
   em 100%, sem quebra 2+1.
 - Em mobile, a ação primária ocupa a largura útil e as demais ações continuam
   acessíveis sem cobrir conteúdo permanentemente.
+- **O rodapé fica ancorado no fim da viewport em todas as larguras, inclusive
+  mobile.** No Superadmin isso é o `footer` do `SuperadminFormFrame` ficando
+  fora do scroll, como já acontece no desktop: quando o conteúdo é curto, o
+  rodapé não sobe junto com ele; quando é longo, o rodapé permanece visível em
+  vez de esperar a rolagem chegar ao fim. Decisão do Owner de 10/09/2026,
+  respondendo à observação RODAPÉ dos goldens da Etapa 2, com a consequência
+  aceita de regravar o golden de Instituições em 375.
+- **O botão flutuante de chat não aparece em telas de criar, editar ou
+  publicar.** Passar `showChatLauncher: false` de forma explícita na tela. Regra
+  do Owner de 10/09/2026: essas telas pedem foco na tarefa que a pessoa está
+  completando, e um balão por cima disso atrapalha. A regra vale mesmo quando a
+  referência guardada mostra o balão — nesse conflito a palavra do Owner vence e
+  o golden é regravado sem ele. Cuidado com o efeito colateral: o
+  `SuperadminShell` só monta o launcher quando consegue abrir Conversas e deriva
+  isso de `onDestinationSelected`, então o chat some ou volta por acidente ao
+  mexer na navegação; esconder de propósito é a chave explícita, nunca deixar de
+  passar o handler.
 
 ## Verificação obrigatória
 

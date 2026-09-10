@@ -689,7 +689,9 @@ final class _GroupFormPageState extends State<GroupFormPage> {
         currentDestination: 'groups',
         onDestinationSelected: _selectDestination,
         onBugReportSubmitted: widget.onBugReportSubmitted,
-        chatLauncherBottomInset: _footerHeight == 0 ? 0 : _footerHeight + CoeloSpacing.space4,
+        // Sem balao de chat em telas de criar e editar: decisao do Owner de
+        // 10/09/2026. Essas telas pedem foco na tarefa em andamento.
+        showChatLauncher: false,
         child: _saveContextInvalidated
             ? CoeloStatePanel(
                 key: const Key('group-form-save-context-changed'),

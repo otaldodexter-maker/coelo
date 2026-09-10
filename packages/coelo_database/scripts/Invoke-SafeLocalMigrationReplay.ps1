@@ -8,7 +8,7 @@ param(
 
   [switch]$AuthOnly,
 
-  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'ModelAal1PhasePolicy', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived', 'ChildDirectoryEnvelope', 'ActivityAggregateConcurrency', 'ActivityAggregateConcurrencyClock', 'LocationCatalogV2', 'LocationReservationsV1', 'SafetyInternalReads53')]
+  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'ModelAal1PhasePolicy', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived', 'ChildDirectoryEnvelope', 'ActivityAggregateConcurrency', 'ActivityAggregateConcurrencyClock', 'LocationCatalogV2', 'LocationReservationsV1', 'StructureLocationConsumersV1', 'SafetyInternalReads53')]
   [string]$NominalProfile,
 
   [string[]]$AdditionalMigration = @(),
@@ -201,6 +201,7 @@ if ($NominalProfile) {
     'FReadDirectoryContractGreenDerived' { 'replay\profiles\FReadDirectoryContractGreenDerived\Resolve-FReadDirectoryContractGreenDerived.ps1' }
     'LocationCatalogV2' { 'replay\profiles\LocationCatalogV2\Resolve-LocationCatalogV2.ps1' }
     'LocationReservationsV1' { 'replay\profiles\LocationReservationsV1\Resolve-LocationReservationsV1.ps1' }
+    'StructureLocationConsumersV1' { 'replay\profiles\StructureLocationConsumersV1\Resolve-StructureLocationConsumersV1.ps1' }
   }
   $nominalResolver = Join-Path $packageRoot $nominalResolverRelative
   Assert-NoReparseAncestors $nominalResolver

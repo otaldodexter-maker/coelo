@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:coelo_superadmin/app/shell/superadmin_shell.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/institutions/data/fake_institution_directory_repository.dart';
 import 'package:coelo_superadmin/features/institutions/domain/institution_directory_page.dart';
@@ -135,17 +136,84 @@ void main() {
     await tester.pump();
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('exit confirmation answered after the form changed does not close the new one', (
+    tester,
+  ) async {
+    final repository = _Repository();
+    var cancelled = 0;
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1440, 1000);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    await tester.pumpWidget(_app(repository, onCancel: () => cancelled++));
+    await tester.pumpAndSettle();
+    _controller(tester).setText(InstitutionFormField.publicName, 'Rascunho da primeira');
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('institution-form-cancel')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('institution-confirm-exit-dialog')), findsOneWidget);
+
+    // The form is reloaded for another institution while the dialog is open.
+    await tester.pumpWidget(_app(repository, id: 'second', onCancel: () => cancelled++));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Sair sem salvar'));
+    await tester.pumpAndSettle();
+
+    expect(cancelled, 0);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('destination confirmation answered after the form changed does not navigate', (
+    tester,
+  ) async {
+    final repository = _Repository();
+    final destinations = <String>[];
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1440, 1000);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    await tester.pumpWidget(_app(repository, onDestinationSelected: destinations.add));
+    await tester.pumpAndSettle();
+    _controller(tester).setText(InstitutionFormField.publicName, 'Rascunho da primeira');
+    await tester.pumpAndSettle();
+
+    // The shell is what calls this callback when a menu destination is picked.
+    final shell = tester.widget<SuperadminShell>(find.byType(SuperadminShell));
+    unawaited(Future<void>(() => shell.onDestinationSelected!('units')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('institution-confirm-exit-dialog')), findsOneWidget);
+
+    await tester.pumpWidget(
+      _app(repository, id: 'second', onDestinationSelected: destinations.add),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Sair sem salvar'));
+    await tester.pumpAndSettle();
+
+    expect(destinations, isEmpty);
+    expect(tester.takeException(), isNull);
+  });
 }
 
 InstitutionFormController _controller(WidgetTester tester) =>
     tester.widget<InstitutionFormNavigation>(find.byType(InstitutionFormNavigation)).controller;
-Widget _app(_Repository repository, {String id = 'first'}) => MaterialApp(
+Widget _app(
+  _Repository repository, {
+  String id = 'first',
+  VoidCallback? onCancel,
+  ValueChanged<String>? onDestinationSelected,
+}) => MaterialApp(
   theme: CoeloTheme.light,
   home: InstitutionFormPage(
     repository: repository,
     institutionId: id,
     logout: () async => const LogoutResult.success(),
-    onCancel: () {},
+    onCancel: onCancel ?? () {},
+    onDestinationSelected: onDestinationSelected,
     onSaved: (_) {},
   ),
 );

@@ -358,8 +358,13 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
         ? 'Revise identidade, vínculos e profissionais desta atividade.'
         : 'Configure a atividade e seus vínculos institucionais.',
     currentDestination: 'activities',
-    chatLauncherBottomInset: _footerHeight == 0 ? 0 : _footerHeight + CoeloSpacing.space4,
-    onDestinationSelected: widget.onDestinationSelected == null ? null : _selectDestination,
+    // Sem balao de chat em telas de criar e editar: decisao do Owner de
+    // 10/09/2026. Essas telas pedem foco na tarefa em andamento.
+    showChatLauncher: false,
+    // Sempre entregar o handler ao shell, como Instituicoes e Turmas ja fazem.
+    // _selectDestination e inofensivo quando widget.onDestinationSelected e nulo,
+    // e a navegacao do menu nao deve depender de o chamador ter passado callback.
+    onDestinationSelected: _selectDestination,
     onBugReportSubmitted: widget.onBugReportSubmitted,
     child: _body(MediaQuery.sizeOf(context).width),
   );
