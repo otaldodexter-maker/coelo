@@ -292,6 +292,14 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
         message: 'O recurso solicitado não está disponível.',
         icon: Icons.search_off_rounded,
       ),
+      RoutineDirectoryStatus.unavailable => _stateWithCreate(
+        CoeloStatePanel(
+          key: const Key('daily-routine-unavailable'),
+          title: 'Rotina diária indisponível',
+          message: 'A rotina diária não está disponível neste ambiente.',
+          icon: Icons.cloud_off_outlined,
+        ),
+      ),
       RoutineDirectoryStatus.conflict || RoutineDirectoryStatus.failure => _stateWithCreate(
         CoeloStatePanel(
           key: const Key('daily-routine-error'),
