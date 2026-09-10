@@ -239,6 +239,32 @@ se quebra o produto para ver o teste falhar, aqui se aponta a verificacao para
 um caso conhecido para ve-la passar. O que se verifica e o instrumento, nao o
 objeto.
 
+## O autosave do editor nao roda no aplicativo
+
+Eu havia relatado isto durante a rodada e voltei a verificar antes de entregar,
+porque afirmacao repetida nao vira verdade por repeticao.
+
+`_scheduleAutosave` retorna imediatamente quando `widget.authoringApi == null`.
+E `authoringApi` aparece **vinte e duas vezes dentro de
+`forms_editor_page.dart` e em nenhum outro lugar de `lib/`**. Nenhuma
+composicao produtiva o fornece — nem o roteador, nem o `main`, nem a rota do
+editor. Em producao ele e sempre nulo, e portanto o autosave nunca dispara.
+
+O que esta inalcancavel nao e um detalhe: sao quarenta e tres pontos de codigo
+entre temporizador, pausa, marca de rascunho alterado e guarda de salvamento
+pendente, construidos em `e9e7a282a`, "autosave nominal drafts through receipt
+queue". O unico lugar que fornece `authoringApi` e um arquivo de teste.
+
+Isso e a mesma classe do botao Criar que nunca aparece no diretorio produtivo e
+das acoes de Local sem kind no dominio: **a capacidade existe, e completa, e
+ninguem chega nela**. A diferenca e o tamanho — aqui e uma funcionalidade
+inteira, testada e verde, que nao existe para quem usa o produto.
+
+Registro sem corrigir. Ligar o autosave em producao e decisao de produto, nao
+conserto: significa gravar rascunho de formulario sem acao explicita do autor, e
+quem decide isso e o Owner. O que nao pode continuar e o registro dizer que o
+autosave existe sem dizer que ele nao roda.
+
 ## Censo dos formatadores de data inline
 
 Medicao, nao alteracao. Contei os literais que montam data ou hora a mao com
