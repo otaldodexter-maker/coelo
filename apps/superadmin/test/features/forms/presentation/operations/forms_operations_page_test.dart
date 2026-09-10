@@ -208,6 +208,42 @@ void main() {
       expect(tester.takeException(), isNull, reason: '$width px');
     }
   });
+
+  // A matriz acima cobria apenas a aba de arquivos e apenas a 100% de texto.
+  // Monitoramento, Respostas e Detalhe sao superficies produtivas, porque as
+  // rotas de monitor, responses e responses/:responseId passam api real sob
+  // withFormsAuthorization, e o layout aqui e o mesmo das construtoras de
+  // producao. Texto ampliado e onde esse tipo de tela costuma estourar.
+  for (final (label, page) in <(String, Widget)>[
+    ('monitor', FormsOperationsPage.monitor(development: true)),
+    ('respostas', FormsOperationsPage.responses(development: true)),
+    ('detalhe', FormsOperationsPage.responseDetail(development: true)),
+    ('arquivos', FormsOperationsPage.files(development: true)),
+  ]) {
+    for (final scale in [1.5, 2.0]) {
+      testWidgets('$label sem overflow em toda a matriz a ${scale}x de texto', (tester) async {
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetDevicePixelRatio);
+        addTearDown(tester.view.resetPhysicalSize);
+
+        for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
+          tester.view.physicalSize = Size(width, 2400);
+          await tester.pumpWidget(const SizedBox.shrink());
+          await tester.pumpWidget(
+            MaterialApp(
+              theme: CoeloTheme.light,
+              home: MediaQuery(
+                data: MediaQueryData(textScaler: TextScaler.linear(scale)),
+                child: page,
+              ),
+            ),
+          );
+          await tester.pumpAndSettle();
+          expect(tester.takeException(), isNull, reason: '$label, $width px, ${scale}x');
+        }
+      });
+    }
+  }
 }
 
 Future<void> _pump(WidgetTester tester, Widget page, {bool settle = true}) async {
