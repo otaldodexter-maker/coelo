@@ -1,0 +1,1927 @@
+{
+    "r02_source":  {
+                       "path":  "C:/Users/adrie/Documents/Coelo.worktrees/e2-r02-d04-acessos",
+                       "head":  "375e0a62a41cb28cb4c9ef20818e0ad11b1010e5",
+                       "state":  "clean readonly; preserved"
+                   },
+    "entries":  [
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_cards_dark_1024_isolatedDiff.png",
+                        "sha256":  "14a05975bf5250d5d421346fc1d661e14ce757038000544ed0c7ebbf72d13eaa",
+                        "bytes":  46353,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_cards_dark_1024_maskedDiff.png",
+                        "sha256":  "80d78aec9712893afbea033a580e39158e06047e67225918fabaa42d5b12ba92",
+                        "bytes":  79216,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_cards_dark_1024_masterImage.png",
+                        "sha256":  "e2efcb5d6abf2377fb646891f6ff540170f7589125d9bb3bb8b3bd537b34d997",
+                        "bytes":  108825,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_cards_dark_1024_testImage.png",
+                        "sha256":  "39f3bbb5f7265de3ca3ce0db6f19348a40d54b26f5006b65d089290b2f5e3eff",
+                        "bytes":  100307,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_cards_dark_1440_isolatedDiff.png",
+                        "sha256":  "50ea362101e122a24080c788d1c9bc619c7ff7678cb86b30cc31b5f0721fe5fe",
+                        "bytes":  48647,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_cards_dark_1440_maskedDiff.png",
+                        "sha256":  "27274a11587af4307081a2621f7f556b7f6847900f0e0d67eec0134976542648",
+                        "bytes":  84730,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_cards_dark_1440_masterImage.png",
+                        "sha256":  "bdb168a0c7f65b91426669b9860da26ddc4e2c312aefb47b8069bad3c4eaee8e",
+                        "bytes":  113540,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_cards_dark_1440_testImage.png",
+                        "sha256":  "5ab2d088b07bab799b2bf152672bba9a3bcccdd4e08fbb6fbfc8be0e7bf548cc",
+                        "bytes":  113503,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_cards_dark_375_isolatedDiff.png",
+                        "sha256":  "a2f0aa59e8d98e84ea74f5539f07594975532a94b01dae75691f3a40de2c7f95",
+                        "bytes":  24959,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_cards_dark_375_maskedDiff.png",
+                        "sha256":  "fe65991fac12fe3cb83e913f2cf53afc47c98c743015fcf2252469a197c6b2da",
+                        "bytes":  24948,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_cards_dark_375_masterImage.png",
+                        "sha256":  "cb602f11c6b10bca6b939bf79817297e859d4628d10a189aa4043f8a73903f11",
+                        "bytes":  46242,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_cards_dark_375_testImage.png",
+                        "sha256":  "a6ec1163ea6c38918ea62c883129b676d54da8c928a9a64f5b2faf9f4fbdddb0",
+                        "bytes":  50285,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_cards_dark_768_isolatedDiff.png",
+                        "sha256":  "fb340662f5157178050b65d3e4e231ce9c685d084d349c86b93bd1047032c324",
+                        "bytes":  35137,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_cards_dark_768_maskedDiff.png",
+                        "sha256":  "89b6d4bf1430e5b6f7cd7c27f94162762f817bc710c6ff9185f3a2aac7599aa9",
+                        "bytes":  38822,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_cards_dark_768_masterImage.png",
+                        "sha256":  "950c57ca7af1f78ba57ff749c650dab771162f1c531eaf281435a21cfb13bec1",
+                        "bytes":  69935,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_cards_dark_768_testImage.png",
+                        "sha256":  "0f96afc031b099aad53ea0cb2142585ff1b107c641398f7e99bb1314bda4d01a",
+                        "bytes":  63045,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_cards_light_1024_isolatedDiff.png",
+                        "sha256":  "99ef9be96536ce3df8e362efe5c44dacbf0ecc7867135995e5df8cb69194014d",
+                        "bytes":  128002,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_cards_light_1024_maskedDiff.png",
+                        "sha256":  "b88be66cb2ffb9cdae58518f286e9ab9d5b0b2d49902544fcfe9726ed2b1eac6",
+                        "bytes":  155944,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_cards_light_1024_masterImage.png",
+                        "sha256":  "45501e244fc3d1bf8a7f096a4da760275e6dc6edcaeefbee69f62914a98de83e",
+                        "bytes":  107302,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_cards_light_1024_testImage.png",
+                        "sha256":  "cfdd814ed576c8359500770b496264d0abf3534146dc61075d192e9ce9093494",
+                        "bytes":  97981,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_cards_light_1440_isolatedDiff.png",
+                        "sha256":  "1cd2c3b46b5ae72a058682c4c5f45b4c63325228d4aa6fb13b3eeb2eb627b4b1",
+                        "bytes":  136548,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_cards_light_1440_maskedDiff.png",
+                        "sha256":  "b89ac6c1b14095418d04fc0deed1d12c5649efd4006b6e0135a657c5c370cbd6",
+                        "bytes":  166824,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_cards_light_1440_masterImage.png",
+                        "sha256":  "7fe935c7751b2e718d9f6014ce3433dc8d82e0fde5d29172c92a2a08ea8369cb",
+                        "bytes":  112528,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_cards_light_1440_testImage.png",
+                        "sha256":  "b30e2e9179debf783b2d0ed86417aad25d58a6cf6b7761e22f5e0f6c62152c0b",
+                        "bytes":  110819,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_cards_light_375_isolatedDiff.png",
+                        "sha256":  "7ed7aecf6addaafb86482567bb0a4b9facb7f68c3fafc3a50305dcea040b7bf6",
+                        "bytes":  85381,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_cards_light_375_maskedDiff.png",
+                        "sha256":  "1d07cef1a78ac1556732c91856579690eddb57135b55eb4f9fbd5073331a0d1d",
+                        "bytes":  84897,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_cards_light_375_masterImage.png",
+                        "sha256":  "8fbcd23d61921105ed23f458ff7a23d90fd9070851bdac6089ac1308ab8cca16",
+                        "bytes":  45456,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_cards_light_375_testImage.png",
+                        "sha256":  "14c8383deb17fe6fcd80d385d74927dd7204b82a5a1e6383fc436015e39f5c61",
+                        "bytes":  48218,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_cards_light_768_isolatedDiff.png",
+                        "sha256":  "b995f3403734447494f91691b9c114509e9358fe17ecd86aa77ba81fd6ad100d",
+                        "bytes":  112117,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_cards_light_768_maskedDiff.png",
+                        "sha256":  "10d7084250d975f79a23fdfc8d37f2eda8a21196d835abdf4e21765253812757",
+                        "bytes":  112811,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_cards_light_768_masterImage.png",
+                        "sha256":  "8487676c2c8c5f446dd7b3ae6996408a9e6c17ed740b241da9d5a5916d64ed19",
+                        "bytes":  67441,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_cards_light_768_testImage.png",
+                        "sha256":  "8d3890396fb38a48418ce7cf33ad8889a66d39e909fc38db19a6e176aeb8c369",
+                        "bytes":  60582,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_domain_tab_hover_light_1440_isolatedDiff.png",
+                        "sha256":  "fddada86920ea044d1885e31c2629d17e5718318f950eabee15c0314057fa0c4",
+                        "bytes":  137627,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_domain_tab_hover_light_1440_maskedDiff.png",
+                        "sha256":  "e7829ba78dd3080cda8b07efb675cc87d3d98ed2149a94d7d5d6c8860bfd4d70",
+                        "bytes":  167696,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_domain_tab_hover_light_1440_masterImage.png",
+                        "sha256":  "af8e8d4509d68c2e77430ddb1eef995562801622da08c4b67880716e358ec6ff",
+                        "bytes":  113044,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_domain_tab_hover_light_1440_testImage.png",
+                        "sha256":  "25ff4c716477fcb6e00237ba25ccdd261535a261b4ac0835adf7b191212c7e86",
+                        "bytes":  111305,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_editor_dark_1440_isolatedDiff.png",
+                        "sha256":  "26c474671d2ddf3e3d6263a6f38ea227d5077c56c6a0a8ecc791a1669896d330",
+                        "bytes":  31228,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_editor_dark_1440_maskedDiff.png",
+                        "sha256":  "1241b89e2a55a8476f5a273e7bb98efa9e08bc6fbd304f7a24d92d3178d47d73",
+                        "bytes":  83574,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_editor_dark_1440_masterImage.png",
+                        "sha256":  "312c41a33f1bcf8356721a9b8bf0af03ea0db91ca6ee47770b2221dcbc4d91d0",
+                        "bytes":  95990,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_editor_dark_1440_testImage.png",
+                        "sha256":  "91e91dd0b4e3b789e1351d534cd0a5a75fca8b1164a2ea07479f7cf464233d10",
+                        "bytes":  100833,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_form_light_375_isolatedDiff.png",
+                        "sha256":  "92b2c56ecad310df588a57b533e1307de093fb2353d9af10bccee060402b5bc0",
+                        "bytes":  53067,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_form_light_375_maskedDiff.png",
+                        "sha256":  "9b08bf94c1f52417040bac59683fb20f231532250cc21565e5243d90eaa26a97",
+                        "bytes":  53329,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_form_light_375_masterImage.png",
+                        "sha256":  "0480a75094edfc01b550d6ef18f2cbb5ea40c11f6391801724dc9ccf2b01b985",
+                        "bytes":  36645,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_form_light_375_testImage.png",
+                        "sha256":  "7619d2e6b25922d50ceaced180cb297b4415c04d34b304c5d756c2c43c33d81b",
+                        "bytes":  38950,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_review_dark_1440_isolatedDiff.png",
+                        "sha256":  "6936039c325eb73cf642a78c5357dfb07aa2d68ed49ac8628cd61175e6951127",
+                        "bytes":  26419,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_review_dark_1440_maskedDiff.png",
+                        "sha256":  "47409d4a1dffde6cef765aa8428f79f8363be150f44319d13bd05011055bb978",
+                        "bytes":  105671,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_review_dark_1440_masterImage.png",
+                        "sha256":  "3c3f1ed65e9d5c693cde286f9c1b00df94c9e6c1dffa7ad3aa62fe28242f548e",
+                        "bytes":  110272,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_review_dark_1440_testImage.png",
+                        "sha256":  "23bdae81e1a10c133efbbd4fb3248cca22b872dc156b4161f13febcb65af5283",
+                        "bytes":  115022,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_table_dark_1024_isolatedDiff.png",
+                        "sha256":  "9eb44c778ce885ef265ff3222e78b468e4a8469a177ae962432d2aa57163c509",
+                        "bytes":  42699,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_table_dark_1024_maskedDiff.png",
+                        "sha256":  "2da5b058d4cb2efae48f6be2048a9b7302696a22aed844f455d5acb678994812",
+                        "bytes":  76202,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_table_dark_1024_masterImage.png",
+                        "sha256":  "36ce0b4a590d4b171ad036b8210f4cd0e8440e8f15af0fb1fb7a160cb26c602a",
+                        "bytes":  99658,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_table_dark_1024_testImage.png",
+                        "sha256":  "3fbec3b35398964e38d2e25982adad983ac9b4bf817a02648600786023a00d4c",
+                        "bytes":  97978,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_table_dark_1440_isolatedDiff.png",
+                        "sha256":  "be830e978aa7d067ade6f5433ab18041b5321546133fe89665fd9badcca0aba2",
+                        "bytes":  47567,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_table_dark_1440_maskedDiff.png",
+                        "sha256":  "46be4b1ddeaab5ef9884b8b2b5d075c0cb3880d3ba5b88a31c696c8d22f6e042",
+                        "bytes":  84001,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_table_dark_1440_masterImage.png",
+                        "sha256":  "c9f4e46bc2e9c92cbc0feae1fa5fd45e8b46fb6d2ec4f62c808b42d49820b18f",
+                        "bytes":  110347,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_table_dark_1440_testImage.png",
+                        "sha256":  "b75d8fc4e76a667a86dbe9d76d87187eeb0a00a30f8643953dcbbff6e86a16ea",
+                        "bytes":  108767,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_table_dark_375_isolatedDiff.png",
+                        "sha256":  "f41e809cfb06d7e19580e501a5f0bb915ba7c9444be6f4a9dfb4c70d5d4eb32c",
+                        "bytes":  26127,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_table_dark_375_maskedDiff.png",
+                        "sha256":  "27cd30688bf6834f230d2042ad41b011f11ffa659be437befe557dd9e1de75dc",
+                        "bytes":  26251,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_table_dark_375_masterImage.png",
+                        "sha256":  "247b57e4ab337fc5067ec318c7771107f3d926795d1cce57071ae60dd9d60d28",
+                        "bytes":  50610,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_table_dark_375_testImage.png",
+                        "sha256":  "8c8fe295689319ee7badd2ce7a96cca5bb02ebdc667aa9b04e4d9e21d2da5298",
+                        "bytes":  44337,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_table_dark_768_isolatedDiff.png",
+                        "sha256":  "05471db5ffc8eb76bf42a97cba3bf464be83a19f2319a5b6b912bb1cfa4313db",
+                        "bytes":  32310,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_table_dark_768_maskedDiff.png",
+                        "sha256":  "ed869423f68e94df5a18be4972542f6580d7cf56dd4e338ac280b171d72b1c4a",
+                        "bytes":  34203,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_table_dark_768_masterImage.png",
+                        "sha256":  "bc5280d31646fa5f272a61394ebb62b2d93f9cc7af3f4992c30e56ad08009e43",
+                        "bytes":  61241,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_table_dark_768_testImage.png",
+                        "sha256":  "a1191f489207245da83e503aa22b5c9099aa55ff6c9dfea7c002077e5e34e245",
+                        "bytes":  61071,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_table_light_1024_isolatedDiff.png",
+                        "sha256":  "cd27b6da99f058e4bef106b30af6be00017059c4c76e93fab647a8b7a6ad9a53",
+                        "bytes":  112244,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_table_light_1024_maskedDiff.png",
+                        "sha256":  "d835df06ea9e4c2e3b8fffe9034894949dc73d160e7ecea2ba1396dab3a997ef",
+                        "bytes":  142375,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_table_light_1024_masterImage.png",
+                        "sha256":  "f8287c7d2a9a02a67da5a4e6aebc154989320b3985155aa046ac4c3d53a57627",
+                        "bytes":  97781,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_table_light_1024_testImage.png",
+                        "sha256":  "2c53d79373e0fdc949b237f950ef23e1010a16feebde3f2099c15b629f6f32ab",
+                        "bytes":  95428,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_table_light_1440_isolatedDiff.png",
+                        "sha256":  "b37aadb1a82cdffbe80131c740a1b4072cb365da5b23da6caab6537bbb427123",
+                        "bytes":  127249,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_table_light_1440_maskedDiff.png",
+                        "sha256":  "6a9cc9c0f2cc6ce6406bf8fc26f7b343a30e21e1878ed96d244acfafd91b77a3",
+                        "bytes":  158810,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_table_light_1440_masterImage.png",
+                        "sha256":  "691a037ff75f4be6a944310f7084230f4c04a8dc9747a0da31c2ac16823e8f15",
+                        "bytes":  108324,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_table_light_1440_testImage.png",
+                        "sha256":  "64a5c594588d98de05bab939015bcce18044d988589cdc7333474edd247451cd",
+                        "bytes":  106193,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_table_light_375_isolatedDiff.png",
+                        "sha256":  "761b795a851001223d4f7468671ba26d3e53c13294fb5a5ddd79d7e238f3fc25",
+                        "bytes":  83445,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_table_light_375_maskedDiff.png",
+                        "sha256":  "0d0e0e754b855428f0491f4e25aef8cc44854fb4a1d37cdd0e2f794bc7f30630",
+                        "bytes":  82948,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_table_light_375_masterImage.png",
+                        "sha256":  "3f694dc599041a17a852f901f65ed1875dc5dc7006c7fae343db72203221e30b",
+                        "bytes":  48968,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_table_light_375_testImage.png",
+                        "sha256":  "c487d22b49bde97a08170df1a2aac4b8e7a43155e1fb0c644531a8f18fc51f4f",
+                        "bytes":  42668,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_table_light_768_isolatedDiff.png",
+                        "sha256":  "eefc7d085aec2f043a76a291796cc03ea5ef5ec8b6b49a54a36af1d2b98caa42",
+                        "bytes":  99469,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_table_light_768_maskedDiff.png",
+                        "sha256":  "b909154fec102aa4316c0ca4764c788ed19648ce98431c9bdf086f257ab63824",
+                        "bytes":  100007,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_table_light_768_masterImage.png",
+                        "sha256":  "6ea4eae1b99630397e9f92b4290a2a50b0130a41eb6968a5f3843fae8654cdce",
+                        "bytes":  59287,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/access_profiles/presentation/failures/access_profile_table_light_768_testImage.png",
+                        "sha256":  "fb554f7f7ebfda8b899aa1064bb3f1f241d703341e6f3ffa022840b9387472d8",
+                        "bytes":  58504,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/invites/failures/invite_detail_desktop_dark_isolatedDiff.png",
+                        "sha256":  "32e35125bc20ba55c4cbd54f04dbaaa603b2db63843df14f26aaefc4e49f5f44",
+                        "bytes":  6697,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/invites/failures/invite_detail_desktop_dark_maskedDiff.png",
+                        "sha256":  "7687751aac9702c434dfff6ceb408c9b86360e7e21968ce08a14071912dd6b48",
+                        "bytes":  95572,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/invites/failures/invite_detail_desktop_dark_masterImage.png",
+                        "sha256":  "a7e71a533ac8131973c8f5b24ae50607f86a1944e0d0de6775f72c2688846aef",
+                        "bytes":  95291,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/invites/failures/invite_detail_desktop_dark_testImage.png",
+                        "sha256":  "6a02e4b5249d178ff9239dbe9e3ebb32d15f0b6a437ba7124c30ea602b356867",
+                        "bytes":  96037,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/invites/failures/invite_detail_mobile_light_isolatedDiff.png",
+                        "sha256":  "0cfcb11d13d29baa2664718d6550934bd53d3d4e40b3730e9b6df7f4d2cadd46",
+                        "bytes":  51143,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/invites/failures/invite_detail_mobile_light_maskedDiff.png",
+                        "sha256":  "61c5036ff79d4f84460edc5287b5f07d88c1487aa28e05a2df5649ad3a35c18a",
+                        "bytes":  51387,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/invites/failures/invite_detail_mobile_light_masterImage.png",
+                        "sha256":  "327fd261e2d4c546532da1efb6ef00b1c3caf74783f849f8bd51ce1360e71ef1",
+                        "bytes":  45249,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/invites/failures/invite_detail_mobile_light_testImage.png",
+                        "sha256":  "4e3ceca7f48b80f1c99aab402f1c47f3dc4c1a36afdb08debe418e88c033c44b",
+                        "bytes":  44384,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/invites/failures/invite_directory_desktop_dark_isolatedDiff.png",
+                        "sha256":  "9fe7dcef99b3489330f939740008a685d2571c96442464c197f9cacffc830b80",
+                        "bytes":  11088,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/invites/failures/invite_directory_desktop_dark_maskedDiff.png",
+                        "sha256":  "5e879cff275d068273388a74e59692051bb2ba1e469c1ba120bc6397b20106ff",
+                        "bytes":  81345,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/invites/failures/invite_directory_desktop_dark_masterImage.png",
+                        "sha256":  "8e497704db0fc6adf2e25b5aa6763fdfa8b7167855715d3fb546f0a84f678a1a",
+                        "bytes":  84165,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/invites/failures/invite_directory_desktop_dark_testImage.png",
+                        "sha256":  "ba563136e56e282fc5303da8287aeb741c6f7e198cca59c9330cd1c3c3b43090",
+                        "bytes":  84650,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/invites/failures/invite_directory_flyout_open_light_isolatedDiff.png",
+                        "sha256":  "519938201bc2dd42bbd672a2f6ea482e3e58579734b6076449b6dba132c52d2d",
+                        "bytes":  39710,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/invites/failures/invite_directory_flyout_open_light_maskedDiff.png",
+                        "sha256":  "6d9bb1c8720521ca1a8e998bef359588427bf5fd2c9935599dfcf7420ceee2a0",
+                        "bytes":  107080,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/invites/failures/invite_directory_flyout_open_light_masterImage.png",
+                        "sha256":  "53ea87910cd5f912091a2b67d243e11a7e96087cbc831e78f90a09fa519425cb",
+                        "bytes":  91186,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/invites/failures/invite_directory_flyout_open_light_testImage.png",
+                        "sha256":  "032252d206fce2187c2a65b8dda9571759f075f42c080e51cdeb09a2ba659b66",
+                        "bytes":  91700,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/invites/failures/invite_directory_mobile_light_isolatedDiff.png",
+                        "sha256":  "296b69566fe7335db7a5cbabf0bbe74f3deb253024ce8e3db108e5e83e905a69",
+                        "bytes":  42965,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/invites/failures/invite_directory_mobile_light_maskedDiff.png",
+                        "sha256":  "3442bfe83127464448cbbd666ef874df659f42142307ae2885b0a4d477ffd9df",
+                        "bytes":  44575,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/invites/failures/invite_directory_mobile_light_masterImage.png",
+                        "sha256":  "7a111f3bfd15d4b95523c0c1fffcd85ab532595012ef2eb1d74dbb08c4f6a740",
+                        "bytes":  31888,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/invites/failures/invite_directory_mobile_light_testImage.png",
+                        "sha256":  "d2065d47089583c11256fcc4cfc1d3cc42858e95ac7ce1e7adb1ca31eeb556c6",
+                        "bytes":  32443,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/invites/failures/invite_directory_table_row_hover_light_isolatedDiff.png",
+                        "sha256":  "0829d9a68d8d0e1b10e9c1cfcf9487889d84dde69791ab9bae5c4607ae2b4b6f",
+                        "bytes":  7923,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/invites/failures/invite_directory_table_row_hover_light_maskedDiff.png",
+                        "sha256":  "e07aaad3e8570e49b3510fa8a52a48f4f611ffb9cb84116c604132ad85783656",
+                        "bytes":  89126,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/invites/failures/invite_directory_table_row_hover_light_masterImage.png",
+                        "sha256":  "302a1dcaa356bb9edaf88288a77f6add33a7487357bc3fd53374862ad536552b",
+                        "bytes":  87684,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/invites/failures/invite_directory_table_row_hover_light_testImage.png",
+                        "sha256":  "fda1916f19ad8865929b6b9626c3ceed5a593664b05be29894f16df7c6e22ec8",
+                        "bytes":  88473,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/invites/failures/invite_form_desktop_dark_isolatedDiff.png",
+                        "sha256":  "32e35125bc20ba55c4cbd54f04dbaaa603b2db63843df14f26aaefc4e49f5f44",
+                        "bytes":  6697,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/invites/failures/invite_form_desktop_dark_maskedDiff.png",
+                        "sha256":  "46c8201a10f73b809f442807207ed2d5aa5819d7ebbcbd529f187b1bf6ab358b",
+                        "bytes":  85780,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/invites/failures/invite_form_desktop_dark_masterImage.png",
+                        "sha256":  "d6c38f3a1aefa26f05d2d6ef445a290ae9f8a80aa1db28f535d441ba166dcb0f",
+                        "bytes":  85550,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/invites/failures/invite_form_desktop_dark_testImage.png",
+                        "sha256":  "811bcfd1553e2c7b69c0ffad7bb6d562c80c076085d9982088a1384eeb97e3a9",
+                        "bytes":  86358,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/invites/failures/invite_form_mobile_light_isolatedDiff.png",
+                        "sha256":  "5dfe819664148aaf38c82e488506f23da8699186491814691e70d966075c1211",
+                        "bytes":  47611,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/invites/failures/invite_form_mobile_light_maskedDiff.png",
+                        "sha256":  "189f16517e98c72ccf478fdba52f5cb75e827d290d03c4bfd47a2d88f5679f0a",
+                        "bytes":  47817,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/invites/failures/invite_form_mobile_light_masterImage.png",
+                        "sha256":  "0d4eab19e0ea66642e62c16ec4abd26739321b5384e0185dadd398613ff9f31c",
+                        "bytes":  36701,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/invites/failures/invite_form_mobile_light_testImage.png",
+                        "sha256":  "f6c3a49c83b4aed3229f6b86006eccce971dd077835004548f65a3cba3f3d21d",
+                        "bytes":  37250,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/invites/failures/invite_revoke_confirmation_light_isolatedDiff.png",
+                        "sha256":  "d5a16b1001f0bbafe65d51c682c8b28d278bf5137775948ed1be3868dfb6800e",
+                        "bytes":  21515,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/invites/failures/invite_revoke_confirmation_light_maskedDiff.png",
+                        "sha256":  "290e92145e8e4b4e6d46af949a916cc18a8ca26fe002ff4c82f8ec38be011faa",
+                        "bytes":  103449,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/invites/failures/invite_revoke_confirmation_light_masterImage.png",
+                        "sha256":  "727a93745f93a9b590998069c02b8c17984395f9e9a38b576a1de6e9851b4434",
+                        "bytes":  95547,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/invites/failures/invite_revoke_confirmation_light_testImage.png",
+                        "sha256":  "979bf4062ae1d692ff29b262185ea4eba6db2e244dbf1a35141983cd8a40344c",
+                        "bytes":  95724,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_directory_cards_light_1024_isolatedDiff.png",
+                        "sha256":  "432247c0f332d2a626e59d6117e53a9e544e190181e124bbf2931440dc0fb64b",
+                        "bytes":  80909,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_directory_cards_light_1024_maskedDiff.png",
+                        "sha256":  "11bced1645340acfefcecd4b4700b0e9e3883cb35c282948d22a8cf212445c8c",
+                        "bytes":  151118,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_directory_cards_light_1024_masterImage.png",
+                        "sha256":  "90fc30476be25028bb9fe87a1de093168436abf3359aea59147f99599dcba0bc",
+                        "bytes":  128616,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_directory_cards_light_1024_testImage.png",
+                        "sha256":  "4f3f4929cc2a8f407c4db74923cd21eb3a9fa62ffc029d5da77c55264583f9e3",
+                        "bytes":  128406,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_directory_cards_light_1440_isolatedDiff.png",
+                        "sha256":  "2ac488db404bc0d624ad29a5a45613fa12d75554ae3dbae5854f853a50e9999b",
+                        "bytes":  145113,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_directory_cards_light_1440_maskedDiff.png",
+                        "sha256":  "cee734e6b0f39bee41da2306f9738875502792ed501c26beab2632a69893dfcc",
+                        "bytes":  217080,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_directory_cards_light_1440_masterImage.png",
+                        "sha256":  "7b3b1b5e15d14bf4235f5bf370891908cee40d9267d8cd389c4cd06c4429c5de",
+                        "bytes":  170443,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_directory_cards_light_1440_testImage.png",
+                        "sha256":  "bb44abb353e0c904ad580eff549a94f417ceaef67fc536fb512f87531eb8136e",
+                        "bytes":  170584,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_directory_cards_light_375_isolatedDiff.png",
+                        "sha256":  "3ab291460d26bc51ed154b78cdc9cb0562afe89b74149e9bd7569678343134d7",
+                        "bytes":  30517,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_directory_cards_light_375_maskedDiff.png",
+                        "sha256":  "3dbb6be7664c7a239d2772a63432cde65a31352c1def01962160964e91a64d0d",
+                        "bytes":  59315,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_directory_cards_light_375_masterImage.png",
+                        "sha256":  "4fcd0774b141855662982551d523d9447de25e7bd5e6c6d0a640a4572d1cf34b",
+                        "bytes":  51147,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_directory_cards_light_375_testImage.png",
+                        "sha256":  "31f20734f604979893d318ef2f4ad592258e5bf58c77d6fcf665eaa8d330e7c4",
+                        "bytes":  51007,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_directory_cards_light_768_isolatedDiff.png",
+                        "sha256":  "6a9e49052e887deb55005df0d239d2f1f98dd24bef09d618df6fca26f03f4e90",
+                        "bytes":  85954,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_directory_cards_light_768_maskedDiff.png",
+                        "sha256":  "3f1a41df75da8fe53e7646014e7f6c769adb8e33466f6a4d717b96d9ddc759cd",
+                        "bytes":  119439,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_directory_cards_light_768_masterImage.png",
+                        "sha256":  "0baf9b39cd63169ce9c1643a584740988f6afce22f777e2b24b1b26f9e5ad832",
+                        "bytes":  96147,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_directory_cards_light_768_testImage.png",
+                        "sha256":  "0e2f91f106c4d03984203a7a284e5bd53ad29d0119a8fa74b4cb076fda70edac",
+                        "bytes":  95784,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_directory_table_dark_1024_isolatedDiff.png",
+                        "sha256":  "47945b5c2a55a9ff922cf69dae43032ea7a028f543086e9d07ec392a1db88dc6",
+                        "bytes":  52152,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_directory_table_dark_1024_maskedDiff.png",
+                        "sha256":  "75531243f0c1404843352c3282de7663355ae15f2ab9e95a8c6f4efe57e804b4",
+                        "bytes":  94548,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_directory_table_dark_1024_masterImage.png",
+                        "sha256":  "503ae80444710526acbb27885170fa5e54a8f18e28a984605e3b215163ed90cf",
+                        "bytes":  121232,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_directory_table_dark_1024_testImage.png",
+                        "sha256":  "51477c645396a92f4d871a3b548454f240aefc1d716a4ccabec21c92a5017186",
+                        "bytes":  123034,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_directory_table_dark_1440_isolatedDiff.png",
+                        "sha256":  "b4a444b35f7c9339a549f0bd56c47c822bfaae528c4c715b84561a983b78483f",
+                        "bytes":  61643,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_directory_table_dark_1440_maskedDiff.png",
+                        "sha256":  "14e23f0fc1e5755dd7c5ea5cd35e4866d17096d66495a46b2fb3699cfd063d48",
+                        "bytes":  105249,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_directory_table_dark_1440_masterImage.png",
+                        "sha256":  "345822dad473fa7280caac81888288a11b724e2ba255a2a0d1d829cf13b0f4b3",
+                        "bytes":  141258,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_directory_table_dark_1440_testImage.png",
+                        "sha256":  "c6b50c2e5442ae565ef40309a76461604dcca00fb57bc44b2ca2f07f231f7499",
+                        "bytes":  145176,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_directory_table_dark_375_isolatedDiff.png",
+                        "sha256":  "abdb173ea4f80231b59a48e65e8cb83f8f35e6b19720974b8ccc75dc5030ec95",
+                        "bytes":  26073,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_directory_table_dark_375_maskedDiff.png",
+                        "sha256":  "4d2b0a1dd8a9e3b0036d139835f16d10cf5d4dfa4ab8ba9c7fa055c7ec101058",
+                        "bytes":  26217,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_directory_table_dark_375_masterImage.png",
+                        "sha256":  "02a231304914d00997f2475a4fd10c6080573809bedf83546343c8f3a739785c",
+                        "bytes":  52308,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_directory_table_dark_375_testImage.png",
+                        "sha256":  "29df5df0596f6a3c710ae1595d4e3fd6a01ed65d873a213c6809fae9d46e4e0b",
+                        "bytes":  47645,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_directory_table_dark_768_isolatedDiff.png",
+                        "sha256":  "6256b3a033a61af9be126eb5228c92c8311021b64e2b2db8be7dffcaeca137c6",
+                        "bytes":  48885,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_directory_table_dark_768_maskedDiff.png",
+                        "sha256":  "5ae4f8d704e0fc3813c19819d5304232501228278d9fd6fb7e5d98a46afc0492",
+                        "bytes":  57033,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_directory_table_dark_768_masterImage.png",
+                        "sha256":  "eef5ab802035f2348352d7666d613cc0d744795e64206715e8ad19f4f9f7cff1",
+                        "bytes":  81066,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_directory_table_dark_768_testImage.png",
+                        "sha256":  "e5982d105e653489a67996b7cdf996f10a781baa04024530cc68ff64f408e9fc",
+                        "bytes":  91132,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_form_create_light_375_isolatedDiff.png",
+                        "sha256":  "07ea90d0034504fe351698b7d061b66588fcb6fb07103f0c3b3bc57d0ae0d373",
+                        "bytes":  52912,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_form_create_light_375_maskedDiff.png",
+                        "sha256":  "9c2da6240da58eb2db33586a77435a1e47dba2443685bbba302914123b7f3bac",
+                        "bytes":  52533,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_form_create_light_375_masterImage.png",
+                        "sha256":  "2561a6db89dff5dd705c2b24f8a91a7cc20d29966f6e3b26af65eb3aae46f099",
+                        "bytes":  39599,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_form_create_light_375_testImage.png",
+                        "sha256":  "8388c442266f497a72180a1bcbf7a97a44b2eb5574c7b430ff704511c64d928a",
+                        "bytes":  37669,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_form_edit_dark_1440_isolatedDiff.png",
+                        "sha256":  "8c7ead689367c36857871a28a958b7a029911cec9aaa1fd2df5f26788db494d6",
+                        "bytes":  14281,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_form_edit_dark_1440_maskedDiff.png",
+                        "sha256":  "1eddfcb06cc6bb916217e88b7074e65ce91576b2853108e2342d878947431493",
+                        "bytes":  98628,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_form_edit_dark_1440_masterImage.png",
+                        "sha256":  "c51412083c06eab6e1ebb07c0020adfa0c4798bf43a9c2a8ae8376cfbbc2beda",
+                        "bytes":  100966,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/people/presentation/failures/person_form_edit_dark_1440_testImage.png",
+                        "sha256":  "ee2b5e53ed9836679388bffb13bc3da044d7e232de58e7205bcb3e02baf735ff",
+                        "bytes":  105459,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_create_light_375_isolatedDiff.png",
+                        "sha256":  "96cb5531676be7801d9d8c678bfd795a4de52b2106515cc0e91b6a828016d810",
+                        "bytes":  64662,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_create_light_375_maskedDiff.png",
+                        "sha256":  "63b71f216048e912c7049a6c58226fb06d33c8c7ea1b703d64b252f85262f7c5",
+                        "bytes":  63955,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_create_light_375_masterImage.png",
+                        "sha256":  "965f2d64498e0604bf9cf8ac17529212e6bcc3d24a5a4130ce452041274317a9",
+                        "bytes":  45854,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_create_light_375_testImage.png",
+                        "sha256":  "335e2f6e442ad1262c48e0e231a2c730cc13f4ef222aaf0aa10b224cc80c7c81",
+                        "bytes":  45428,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_detail_actions_open_dark_1440_isolatedDiff.png",
+                        "sha256":  "0dab0968e01d7b61145ae4a9c4340d59bac5ab42c473a2c8149edd999b05756a",
+                        "bytes":  28884,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_detail_actions_open_dark_1440_maskedDiff.png",
+                        "sha256":  "106570b50793fc63e74729515791b8ba5205be10849efd44a232e13953ec0077",
+                        "bytes":  100642,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_detail_actions_open_dark_1440_masterImage.png",
+                        "sha256":  "867ccb83b4ba929ad62e2bedf24c94989783d2aefc9990b0c18efedb9b25d153",
+                        "bytes":  110334,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_detail_actions_open_dark_1440_testImage.png",
+                        "sha256":  "22c2dca4d6d480c1008600d95ead0e2e9f8f56783b0de74f370fb66f2277f242",
+                        "bytes":  110065,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_card_hover_light_1440_isolatedDiff.png",
+                        "sha256":  "dcfb95919b9c733c2f43c2fa3aae70a64946d3f36dec19dc8aefce89082a36da",
+                        "bytes":  215234,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_card_hover_light_1440_maskedDiff.png",
+                        "sha256":  "518694f6bef0f2b578a322ba377d7ad72a2b8d8492ac682cb8c86ce431b29ca0",
+                        "bytes":  256306,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_card_hover_light_1440_masterImage.png",
+                        "sha256":  "74c1ec2de19f86a265d8035eb718a9a3ce5bb1da3b1b06ce41c339117193f3a8",
+                        "bytes":  179968,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_card_hover_light_1440_testImage.png",
+                        "sha256":  "ec867b49fe803e62b999d6cd633c5329f8daa67c9bb63c7875e9cf8141cd3f6b",
+                        "bytes":  187912,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_cards_dark_1024_isolatedDiff.png",
+                        "sha256":  "3690e99a39c8d44186d8d428c4cb47506a2ead3d8237136ec07f12526670fa79",
+                        "bytes":  62329,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_cards_dark_1024_maskedDiff.png",
+                        "sha256":  "3460c1a9640a52d23855b124a94a2a68b129b9d6dba5f901578d5df68af092af",
+                        "bytes":  93777,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_cards_dark_1024_masterImage.png",
+                        "sha256":  "8fb7ed2f2d9a9d393aa47bdd6209e4785864f0d09b7debddbaacb434e8410b71",
+                        "bytes":  124046,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_cards_dark_1024_testImage.png",
+                        "sha256":  "86a3d1ba9d0c626ecdeda80688750f99930deafd9acff2a1904eb09078d1b590",
+                        "bytes":  121447,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_cards_dark_1440_isolatedDiff.png",
+                        "sha256":  "f233f50364a9baa37fa3f52dd7bdaec0ef0457561fa3aa7f22ae0fdfb167ae2e",
+                        "bytes":  105023,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_cards_dark_1440_maskedDiff.png",
+                        "sha256":  "18aa7bd783e0236271d86949998a031347daea23d8f64fb3ed5a97bd7f951cf7",
+                        "bytes":  159547,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_cards_dark_1440_masterImage.png",
+                        "sha256":  "217b4c6e038a24f6f6eb9b1629052ce007c5a80481a358cd6b717157180c2f24",
+                        "bytes":  180786,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_cards_dark_1440_testImage.png",
+                        "sha256":  "2c68657ff67e85e8e1c2346cad52f4cdbcacde0c13676503528dc37e8c5450b8",
+                        "bytes":  188545,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_cards_dark_375_isolatedDiff.png",
+                        "sha256":  "3097960dcb62f4070afeee2615bf5c5a48445f22a5d76ec00abadf86ecbe23be",
+                        "bytes":  28062,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_cards_dark_375_maskedDiff.png",
+                        "sha256":  "1870563a8a7075c8f54e9c0f2b59a83515e8a3ec6624a65517e47d5777e7d7d9",
+                        "bytes":  28370,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_cards_dark_375_masterImage.png",
+                        "sha256":  "f4e7e89371572ef1fa058fd0d607fc64ecd6acbc362a820b89b42e43e60bdbc8",
+                        "bytes":  50707,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_cards_dark_375_testImage.png",
+                        "sha256":  "76490589f3cc3057c5d5a814696008cebb756905b7224820d3af3795c3ca029f",
+                        "bytes":  56869,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_cards_dark_768_isolatedDiff.png",
+                        "sha256":  "f0db1563e0ea804d02bc85831a7e89bba332bc4a9abbf5194e1142e48a30930f",
+                        "bytes":  47821,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_cards_dark_768_maskedDiff.png",
+                        "sha256":  "e63c5ee2cb18f745171fffb6ab0851a7fd1db00fda22bac406f0690c8c470ddd",
+                        "bytes":  48688,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_cards_dark_768_masterImage.png",
+                        "sha256":  "78bb88644fb2e664059a75837d250face8539896535fffb597a6702078693c84",
+                        "bytes":  87633,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_cards_dark_768_testImage.png",
+                        "sha256":  "97a0d67ce49f78abfddf8f700e31e25e996eba257289deb75d93ec6c3b1e8483",
+                        "bytes":  81450,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_cards_light_1024_isolatedDiff.png",
+                        "sha256":  "df4e526c0076296233bf0cf75337e9591ccbf7e54c01f05ccead639b832ac3a0",
+                        "bytes":  164353,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_cards_light_1024_maskedDiff.png",
+                        "sha256":  "b4017b2f7285fdadd1929a61e499d2a0292b54ddf58553bbb70168fa0d11b694",
+                        "bytes":  189200,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_cards_light_1024_masterImage.png",
+                        "sha256":  "bf518baded9da121f93700c4ef31a5ab051e2f7c1f853b912ee0ebd57cca78e1",
+                        "bytes":  124451,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_cards_light_1024_testImage.png",
+                        "sha256":  "1b9535c465c819f53342da27a238e1bf559a1112d4072895a40d045d51645dc9",
+                        "bytes":  120331,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_cards_light_1440_isolatedDiff.png",
+                        "sha256":  "be51bb90aed5c2be553fb52b29b04e923a250a069e03b75de4b8825c7542394b",
+                        "bytes":  210249,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_cards_light_1440_maskedDiff.png",
+                        "sha256":  "c5018bad7538807158d656a3737343c10544322a0c2a4c48aabf290240ad9d83",
+                        "bytes":  254598,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_cards_light_1440_masterImage.png",
+                        "sha256":  "d0d7c8ef23d5ae8116ecda48755311a1717149806f86bbe6f19a1380790f7a60",
+                        "bytes":  180165,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_cards_light_1440_testImage.png",
+                        "sha256":  "ec867b49fe803e62b999d6cd633c5329f8daa67c9bb63c7875e9cf8141cd3f6b",
+                        "bytes":  187912,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_cards_light_375_isolatedDiff.png",
+                        "sha256":  "bed92adbc9bbc2eb3c03d83ad62f7f1324030cf2842ed5334e50e5f5cf8076ed",
+                        "bytes":  89191,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_cards_light_375_maskedDiff.png",
+                        "sha256":  "cb535e51e5797b01f9afbdc344973eab8bca8a3287a519105ced96154da98b6c",
+                        "bytes":  87619,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_cards_light_375_masterImage.png",
+                        "sha256":  "59ee95df3e118e1f694c5183407b1cce434fd97562fb70f508c0b2226b7a41c2",
+                        "bytes":  50307,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_cards_light_375_testImage.png",
+                        "sha256":  "b7911899101254103f973d08d2f5e8254a2d7771961dcea338f1af8fc4486b4b",
+                        "bytes":  55715,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_cards_light_768_isolatedDiff.png",
+                        "sha256":  "b7ef3f5194b668584611695de8b953ff5c2d22f8d0a25eb4c304cef88aee5a0d",
+                        "bytes":  158341,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_cards_light_768_maskedDiff.png",
+                        "sha256":  "d7e0bb60b86d723e0e13150c302813190c6f7f3a526230137f4a7b2f3b7d2e4e",
+                        "bytes":  154213,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_cards_light_768_masterImage.png",
+                        "sha256":  "b1b3c7dd322bc71e903de081e2e4326cc0bab4b053bf0de92c2ff111ed055279",
+                        "bytes":  86916,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_cards_light_768_testImage.png",
+                        "sha256":  "f33331620f6c21280ccc95c8ed4ecb4594df3a1e6b9354e6b33e4b05f90f0350",
+                        "bytes":  79954,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_filter_open_light_1440_isolatedDiff.png",
+                        "sha256":  "f38ce845f9bff526d7efb3bd8a8788ca3b6aecbf5067b190b954aa6183621cdb",
+                        "bytes":  197827,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_filter_open_light_1440_maskedDiff.png",
+                        "sha256":  "01a5ae28ea32c55f36e9fe1b0c62ce5b0fc2eaefcf033caf7786c886489f7e64",
+                        "bytes":  253563,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_filter_open_light_1440_masterImage.png",
+                        "sha256":  "28656aeefff89226ede4e66ee27142e6190b8df089779ea10d971572d0a237e7",
+                        "bytes":  182705,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_filter_open_light_1440_testImage.png",
+                        "sha256":  "465252842445fee3ddbe47686eafab9cfd2e80d4b24e2b25e0b23052250154ee",
+                        "bytes":  190607,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_table_dark_1024_isolatedDiff.png",
+                        "sha256":  "8e03ae1cffecd26f65e391dd0e2c0119b373a9c748eb99d28397b81b78391a6e",
+                        "bytes":  59044,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_table_dark_1024_maskedDiff.png",
+                        "sha256":  "e2c7b6a682145e46f719840072992202d476d42b4d6192d1ac48a72a5c29cd14",
+                        "bytes":  89703,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_table_dark_1024_masterImage.png",
+                        "sha256":  "08048858181aa66b1e201bffc4828bd2fd5f3aabab238be4d67380431fc6884e",
+                        "bytes":  123108,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_table_dark_1024_testImage.png",
+                        "sha256":  "9317b82432dc7ac00dd4797402a66b1a33e0b12e358aaa912cdfb88a5d7ac60c",
+                        "bytes":  128006,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_table_dark_1440_isolatedDiff.png",
+                        "sha256":  "dffffddf66582962f6b7586f6e4e3f176839dbaf75dcee95c29d774063b68158",
+                        "bytes":  75094,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_table_dark_1440_maskedDiff.png",
+                        "sha256":  "1c76fd6e9012ed601529871d9efa950d2a26698acdc802889e26a7f026dc177f",
+                        "bytes":  103413,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_table_dark_1440_masterImage.png",
+                        "sha256":  "9615841ccf37280deb0b6af505cd7ee256a246d8b5195655f6b0f1050bf81caf",
+                        "bytes":  157643,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_table_dark_1440_testImage.png",
+                        "sha256":  "bc9ca3ad1762259a81071dd148c42664d7c4ed5a82f4baac084e549e9aed64c3",
+                        "bytes":  158422,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_table_dark_375_isolatedDiff.png",
+                        "sha256":  "1a3d1b4f411b70d902a7e0570e39c313211baf8c36e88fc2c0435e7de0b6c4ac",
+                        "bytes":  41780,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_table_dark_375_maskedDiff.png",
+                        "sha256":  "25ff32bb83b1298d8ce1d3a073dbcf23a818bbbab60a4bea0ddbd1fdee955c7d",
+                        "bytes":  43248,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_table_dark_375_masterImage.png",
+                        "sha256":  "f8e00b10d3bc033daaccf43a60654e03c69b19d34e6637ba9debd6a457fe94ea",
+                        "bytes":  61677,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_table_dark_375_testImage.png",
+                        "sha256":  "6a8fb4258950457106e446b5a6898c0f31bb65e89b214288b43bbb69508b1423",
+                        "bytes":  56741,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_table_dark_768_isolatedDiff.png",
+                        "sha256":  "809847c6317b8c43c80670ef400a4f6bde5e0b6000e8375cf268329798b49fe0",
+                        "bytes":  49383,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_table_dark_768_maskedDiff.png",
+                        "sha256":  "3cdde41a2b2e9b82b99acb450d20cddbb9ccef774a7a57d2502b336140adb3c1",
+                        "bytes":  50506,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_table_dark_768_masterImage.png",
+                        "sha256":  "cb1afaa53726429644e613e1c081470c07da7c23c960e461136c7e7d121b8f05",
+                        "bytes":  91850,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_table_dark_768_testImage.png",
+                        "sha256":  "5d8705d81c204b3b5ce6b10f63fec23073aaece57c45e787f3ab663e835921eb",
+                        "bytes":  89902,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_table_light_1024_isolatedDiff.png",
+                        "sha256":  "e1f2a3affe495f14e7ef80dc29e6a276a9e95126b57ea3eae7a10eb83ed4e0ab",
+                        "bytes":  168582,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_table_light_1024_maskedDiff.png",
+                        "sha256":  "338674ed79c7e39505e30eca45c3a0806871d2bbc3f04e975e6674f051ab106d",
+                        "bytes":  190810,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_table_light_1024_masterImage.png",
+                        "sha256":  "36dbe1116236e4c589ba77b98fb215b7efc16c4999f4230e69dd651e157a6f58",
+                        "bytes":  123367,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_table_light_1024_testImage.png",
+                        "sha256":  "f2b6e640b5c21a5dc74ee547c3935cfe1fea3f23a443d9057b60d4820e0169de",
+                        "bytes":  126584,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_table_light_1440_isolatedDiff.png",
+                        "sha256":  "3013079c8bbec8336470283b48349ddf559a4bdd15157385b44dced0fca83d01",
+                        "bytes":  227236,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_table_light_1440_maskedDiff.png",
+                        "sha256":  "2ce9e609f302c6f35d3d42055916b1f782e3925e8b4c33d8c7d1d30f31368d92",
+                        "bytes":  243023,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_table_light_1440_masterImage.png",
+                        "sha256":  "c14cc566228debe8144b7750c6194c9c0a7fc995541d2190b1a00bdbc2de49ac",
+                        "bytes":  156367,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_table_light_1440_testImage.png",
+                        "sha256":  "86f98ea9f836de6f8720c44577dedfa4f78193f7ac2455b651afe2a7dd91869f",
+                        "bytes":  155991,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_table_light_375_isolatedDiff.png",
+                        "sha256":  "ba67fd14cd9348bb631da21031bb3aff9b4fab4fd1953a9445a8a840b55933fe",
+                        "bytes":  98598,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_table_light_375_maskedDiff.png",
+                        "sha256":  "53b5348875b24564a6719cb023e8b9c4d2aaaa57b4721cef28db8063733446f3",
+                        "bytes":  97181,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_table_light_375_masterImage.png",
+                        "sha256":  "8cfcc370567acbeb145a004f3a58decbf6c94518a1d9b40647aa7b7ed65ce3ea",
+                        "bytes":  61677,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_table_light_375_testImage.png",
+                        "sha256":  "c4aae351a7488d2d22d1a20b7be55dda3edfcf7ffa5faf9e899924d30f8ff1a5",
+                        "bytes":  55350,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_table_light_768_isolatedDiff.png",
+                        "sha256":  "62d7596de64b8ff78077011d7ee2463172d7e311599a05150f93cf3540416484",
+                        "bytes":  166899,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_table_light_768_maskedDiff.png",
+                        "sha256":  "7dfd202cbba9db2042af7891eb1a76a083d34fe0b7d7177ba6aac65191d77a85",
+                        "bytes":  161505,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_table_light_768_masterImage.png",
+                        "sha256":  "f588d0f8aa897bc8af1e34089cb87875e683e4dc319684c02ebb57b2bdb56bfa",
+                        "bytes":  91257,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_directory_table_light_768_testImage.png",
+                        "sha256":  "7f9c5f1093faebb4b7b55ee10acea0ca4a7e7bb51bb5e9c33da453432e81040e",
+                        "bytes":  88590,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_edit_dark_1440_isolatedDiff.png",
+                        "sha256":  "794bb737890b1029ec85dc870e24b90ba463577c3716e9899ec6dd66aef75766",
+                        "bytes":  13760,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_edit_dark_1440_maskedDiff.png",
+                        "sha256":  "db02f670da61ebb3e0e07660dd11251eeb8abcf8bec0ff9218b2564b637533dc",
+                        "bytes":  102944,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_edit_dark_1440_masterImage.png",
+                        "sha256":  "840b7743b35798eb2239dde2fe6a099f47d078418429fd37cb33469a1ef491ab",
+                        "bytes":  103683,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_edit_dark_1440_testImage.png",
+                        "sha256":  "5d2a1b99efade4fffd7776ab5b9dafaecd3c60737e5c937226f8f731587f0e27",
+                        "bytes":  103327,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_view_dark_1440_isolatedDiff.png",
+                        "sha256":  "0dab0968e01d7b61145ae4a9c4340d59bac5ab42c473a2c8149edd999b05756a",
+                        "bytes":  28884,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_view_dark_1440_maskedDiff.png",
+                        "sha256":  "a69b8b32b3cfb4962dc47129724e7505a55d88270151500d83aa380a580032cf",
+                        "bytes":  95094,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_view_dark_1440_masterImage.png",
+                        "sha256":  "7275f668f32cccaeaa73a0e57d978d692a7b0f16596de1665999b3b26940bde4",
+                        "bytes":  104690,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_view_dark_1440_testImage.png",
+                        "sha256":  "8d5aeef1560d44d6ba8955966c7b8681235c3d5a7c8c3b32b23ad36015c59302",
+                        "bytes":  104555,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_view_light_375_isolatedDiff.png",
+                        "sha256":  "6a8015c58c9e59e95f2e1e002f74e7148453cd0895fa80acb9d4ef36bcbddf18",
+                        "bytes":  78201,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_view_light_375_maskedDiff.png",
+                        "sha256":  "c50bcabe5ec8e0179589fbfddea1a4651c28ed17b0e2c5347dd85df70112b4ec",
+                        "bytes":  77476,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_view_light_375_masterImage.png",
+                        "sha256":  "3bc5dce7dd5771638849c2d59da1440cbceef1472a781ed2c19e0cc57903ce57",
+                        "bytes":  52055,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/platform_users/presentation/failures/platform_user_view_light_375_testImage.png",
+                        "sha256":  "8fb36d51c12963d7f680bb05dd35b4c0f59aa4f91c3df77df92d88d8da00143c",
+                        "bytes":  51242,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/safety/presentation/failures/child_safety_directory_light_1440_isolatedDiff.png",
+                        "sha256":  "7e285a25d44bae1528963be8f7aa60fb584c17f80a9cbdc756746bb0ecf5685c",
+                        "bytes":  14852,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/safety/presentation/failures/child_safety_directory_light_1440_maskedDiff.png",
+                        "sha256":  "ea9ab2efd848c4af4590e1fdccf4b6e6381294382f8e82331d64f19ea3f47d5b",
+                        "bytes":  43552,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/safety/presentation/failures/child_safety_directory_light_1440_masterImage.png",
+                        "sha256":  "545e85f0ab74b2877977a85c4a3c3634a551912717008f32089e556dfd7374ca",
+                        "bytes":  40729,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "apps/superadmin/test/features/safety/presentation/failures/child_safety_directory_light_1440_testImage.png",
+                        "sha256":  "01ab965db8eb1a0ab90415b7cadf007a795c5639e948b3707c717b694aced330",
+                        "bytes":  40958,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models-concurrency/red-replay.raw.log",
+                        "sha256":  "e4cc6b2c53393776d65192bdbbaab0a6f7bf61675dfbf4319fd51d578884e0cb",
+                        "bytes":  1172,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/duplicate-capture.log",
+                        "sha256":  "ec8b60541ed73c5dca85816e81560afa3810dfcd7435673a6fbe645fe77862fe",
+                        "bytes":  1540,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/duplicate-consumer-green.log",
+                        "sha256":  "2d100a37b49430f9eed8d2c6408e46890a77feaba3aefdcbffa1f6937262f76e",
+                        "bytes":  1370,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/duplicate-context-green.log",
+                        "sha256":  "439ccf9bf35d7f584bcfdf4a9b68ce583ad9cbdcf6566af6ed1eb284af6cb836",
+                        "bytes":  1442,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/duplicate-receipt-analyze.log",
+                        "sha256":  "8a3937feca40e94f9480306d2eae04306498b67493cbecaeac69cd7f91b549c3",
+                        "bytes":  1036,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/duplicate-receipt-green.log",
+                        "sha256":  "882eba6762242e22088ac57275941359c7b94823eb9eace6a3be9e22e8a2805e",
+                        "bytes":  12532,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/duplicate-receipt-red.log",
+                        "sha256":  "86f2bc406d068249df8e555583142f6a79823a17dccec619ecca5263fccfaea8",
+                        "bytes":  10450,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/duplicate-routes-green.log",
+                        "sha256":  "3b888afe4817055c4ced9c808dfdedfbf843f9f7577716fc60b2064b86ae1b0e",
+                        "bytes":  2278,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/frontend-receipts-green.log",
+                        "sha256":  "48b2b74a1339805f9b396aa9afbed921711bafe1a6115ce6b7cadbc0cf43bda5",
+                        "bytes":  59588,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/replay-01.log",
+                        "sha256":  "74c263ef35b881e90224aebbe196002f840d42f467aa4a60ffe2fa1e953d4053",
+                        "bytes":  1550,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/replay-02.log",
+                        "sha256":  "f322a61aaf688d93537ef6495716a3f9546b112c299778ee9d5a1ac9d61edc4c",
+                        "bytes":  24570,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/replay-03.log",
+                        "sha256":  "ec8ba4aabf77541eaebb36da3ae404db276d44ce560430a9f5eb104d7b513385",
+                        "bytes":  25204,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/replay-04.log",
+                        "sha256":  "a48b592d634e98bb78579e50dbadfa5260d04795d4e9599cf6c4dabec372b620",
+                        "bytes":  15444,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/rollback-01.log",
+                        "sha256":  "ee6639ec22d1fce7c223937ac6dfb0c0ea907341b683b52c81645345fb10405b",
+                        "bytes":  11542,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260623191021_superadmin_foundation_v1.sql",
+                        "sha256":  "1ec51807d2a1f0bbd5cdf7ad11c7ec6d3089cd613319a5954f4d912f45c4edf3",
+                        "bytes":  43310,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260623203230_schema_boundaries_catalog_v1.sql",
+                        "sha256":  "a8985d8a1fd005c9de23ea08c8da916703c908dc891141599445bf3d0f86d1be",
+                        "bytes":  17976,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260717151609_institution_directory_foundation.sql",
+                        "sha256":  "c64e43c80f5994f99e66455f5a0572d18d99ecf7731eedfaebb423619ff849f5",
+                        "bytes":  12236,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260720103023_institution_contact_directory_refinement.sql",
+                        "sha256":  "971f61cdcdbba5fcb077d323d823b76ba7d3c7b56fc3f1da97fc9eebef993716",
+                        "bytes":  9376,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260720180000_people_context_foundation.sql",
+                        "sha256":  "b2d6ee36c1b75961c057230ff8879bb7979ce417aab0d9662f028c22471b300d",
+                        "bytes":  29925,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260720190000_people_context_advisor_hardening.sql",
+                        "sha256":  "916696126dddd0b64aa4d8fcf484c8fe26b7191c48f990e7c51a5cdbbcdf893a",
+                        "bytes":  1705,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260724120307_contextual_activities_foundation.sql",
+                        "sha256":  "6625f904248ab5a36e7d665616bd5b2cab74dd31279442e0493968ea08eb5fd9",
+                        "bytes":  60783,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260724122545_contextual_activities_fk_index_hardening.sql",
+                        "sha256":  "fecec02870b5462b49001afbe5aea737ae439bef76d493ee339bf78cf3747771",
+                        "bytes":  1336,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260724152628_contextual_authorization_core.sql",
+                        "sha256":  "bcdc37b5ceda56ecbe3d71f9c30a59f3d48c1a878519da45ca37c2245d467795",
+                        "bytes":  21718,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260724152707_family_authorizations_and_transfers.sql",
+                        "sha256":  "36168d2c22d9d2d08c433d26fc9e10164f6cc3da8b38bdc916ec443655040f8f",
+                        "bytes":  43123,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260724152713_activity_governance_and_participation.sql",
+                        "sha256":  "29d3682bfe4875557ad3c2b1a69d1dc92d076a46a709f8f161bcede2d8fead6c",
+                        "bytes":  18255,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260724152722_contextual_chat_foundation.sql",
+                        "sha256":  "d85b1b1efa3a2690800cb0ee2e1f77509b45b76a67152e1d20dfa3c36908a117",
+                        "bytes":  23404,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260724152731_attendance_assiduity_foundation.sql",
+                        "sha256":  "d8f99e587330eb4ec8f30525097a25667cc593b0cb03722dc89b1cdf47269ae6",
+                        "bytes":  33208,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260724161334_contextual_domains_compatibility_hardening.sql",
+                        "sha256":  "9d73e2abf73c76fd1c20573d8423b297e885ce670570604f65ec6905cae0b4e7",
+                        "bytes":  1743,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260724161706_contextual_domains_advisor_hardening.sql",
+                        "sha256":  "5621569f754a28c855386bf8a346a02e2d51fbc49feb4f75558944444102421d",
+                        "bytes":  11245,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260724162210_contextual_chat_lifecycle_hardening.sql",
+                        "sha256":  "a8f8ac522d74c0b31eba89f1121a279243c27a457eb97a394832a89548cad39b",
+                        "bytes":  11646,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260724162604_contextual_chat_trigger_hardening.sql",
+                        "sha256":  "ef7e97f92e628a5c91157bb8cdc9dae17576c39ff61df944996e42dee960733b",
+                        "bytes":  4646,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260724162900_contextual_chat_audit_schema_hardening.sql",
+                        "sha256":  "80ae137c545d21cf63c3a5fa3fd11a870a59a021dc59337b2dba283553419549",
+                        "bytes":  568,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260727130433_remediate_schema_column_catalog_completeness.sql",
+                        "sha256":  "ffa67d796d7586b2fce8ff7682ac6349b35976f0509cdce88001dce0eb925606",
+                        "bytes":  4662,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260728172333_institution_profile_and_legal_representatives.sql",
+                        "sha256":  "6be5f3ebb001d9f1c24aac650a9762a10cafda099300127062df629323f69f68",
+                        "bytes":  17189,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260728203000_cover_institution_legal_representative_membership_fk.sql",
+                        "sha256":  "f14e603ccbdcba05fbb7f1d9df53b536361b7b0e58693e0baba6e7e13427f8f9",
+                        "bytes":  278,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260729140915_unit_type_plan_foundation.sql",
+                        "sha256":  "71673526884c563a3e44fc1f72ff99b33534f680ec1ac8681f82d58572c4519e",
+                        "bytes":  4009,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260729141839_superadmin_people_directory.sql",
+                        "sha256":  "20cce28127774f1403280de351620b255590e60f4e842d2da22fd897f6fb85bf",
+                        "bytes":  102678,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260729144440_profiles_permissions_governance.sql",
+                        "sha256":  "d0e87f73c841c338c7df7553f2c91e91f7287da481b70501e0f9334fadce385e",
+                        "bytes":  39077,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260729153000_superadmin_people_directory_policy_hardening.sql",
+                        "sha256":  "b938d5ac0399a7137dc764a48baaff32776c466c3c8259d0b170778b528c40cd",
+                        "bytes":  6439,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260729153100_child_context_lifecycle_trigger_hardening.sql",
+                        "sha256":  "0b16d82755171a1ae26059455b8718162c390a54bac7c1d81107ddcefc3e6065",
+                        "bytes":  2051,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260804205732_access_profile_permission_matrix_metadata.sql",
+                        "sha256":  "60992879e5f04eebc3d368742b97be7423b80f26ad73c6c3fcc1819a4a59f07f",
+                        "bytes":  8586,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260811125345_institution_management_commands.sql",
+                        "sha256":  "10d8bbbbcc8222f62c2e07e07b0886e1a85b54a6b4dd815965f1218d93417321",
+                        "bytes":  50158,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260811151253_assert_function_execute_preflight.sql",
+                        "sha256":  "718c2de052e9df29abc42642806d9a5e4d98c8964665453de6f14f0f8b61ab75",
+                        "bytes":  2010,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260811151254_group_management_security.sql",
+                        "sha256":  "8666c997a8a04e13a404c20f46bfbcaae0cb12b8b5dbb64623fbfff4cfcd993f",
+                        "bytes":  80959,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260811192514_activity_management_security.sql",
+                        "sha256":  "dcb4b5f0781af2f3b0bb1b6a9b63d79a00549e371b7ca0feb0ac5be5bd3820f4",
+                        "bytes":  28792,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260811193838_activity_management_commands.sql",
+                        "sha256":  "77fdae731eb56df04bd45f3b8f854495a422bb3230802b5bc4855840f436813b",
+                        "bytes":  14557,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260811194624_activity_aggregate_commands.sql",
+                        "sha256":  "d28c0c7dae5947806c4d2c300a14259cdc997dfb0c85e40c2e0d192bc70b15ba",
+                        "bytes":  26659,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260811194840_activity_files_identity_commands.sql",
+                        "sha256":  "3ab6f64f3f2d00fb6ff99fa6f1f3c929753bcf29f5b6506f62c95b50107474e9",
+                        "bytes":  21804,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260811195042_activity_file_workers.sql",
+                        "sha256":  "b33bdaf0db753fc7dc35f3e6da2a5305a789dea571c1b1f5ec9c12929ddfadd8",
+                        "bytes":  19737,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260811195429_activity_management_hardening.sql",
+                        "sha256":  "b0ee2c41376bd482cead99931a3fdd1f4ac70327c2615b4a1b879640f32819ba",
+                        "bytes":  9816,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260811200614_activity_read_model_contract_hardening.sql",
+                        "sha256":  "9e99d589ec89975110d3fcaef8c363701bd255b00072b99a4797a923458cea26",
+                        "bytes":  13515,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260811201830_activity_file_job_authorization.sql",
+                        "sha256":  "acfec92c0f1c2907591e76a7bc94b411e7b677013d14abd3dfa5c5c8587b8a74",
+                        "bytes":  2180,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260811201945_activity_template_commands_hardening.sql",
+                        "sha256":  "2c844d87a79a3808df1e67a256481a8794fac737f4d3b609aea4a85b3528987f",
+                        "bytes":  11466,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260811202030_activity_options_minimization.sql",
+                        "sha256":  "540e02eb1217d1b177efbd9a52b610ff698268892c2ca540d476cd719dd8079a",
+                        "bytes":  3036,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260811215451_access_profile_management_v2.sql",
+                        "sha256":  "04c1bedd194b812ea753243dd95e400d39e0257f985506a8b703e68329d90208",
+                        "bytes":  117682,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260811215452_access_profile_labels_replay_bridge.sql",
+                        "sha256":  "d97e02796fcd5897707b5657b7a1c1df690f831e09ed98df6ed21886f75f9ef3",
+                        "bytes":  745,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260812000847_audit_production.sql",
+                        "sha256":  "5f5047292c7ed7bbd0f87c5f164628ee50ac211f481e018968469f0b3ad13d0e",
+                        "bytes":  66945,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260812002000_child_safety_schema.sql",
+                        "sha256":  "2912b2d52d46f1c87f1238db1c16c296360ab89f1be32b8ef1f375c513c41809",
+                        "bytes":  16736,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260812002100_child_safety_read_models.sql",
+                        "sha256":  "fcaccbaea2a4236ebb5d728d6b0ac9ad71d04f47fd662b22e4c80f6de2487b28",
+                        "bytes":  14606,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260812002200_child_safety_security_closure.sql",
+                        "sha256":  "94d8b1267e6186e8c9393584bf67fdbbd7da6592560e15fbb118e5eb650f2e7c",
+                        "bytes":  76297,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260825193116_final_review_child_safety_lint_hardening.sql",
+                        "sha256":  "c9991fdc9cf3414f4461608ff3f10d56cb494006ef868be628e0b96d8f8dc759",
+                        "bytes":  8716,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260827214000_harden_default_function_execute_privileges.sql",
+                        "sha256":  "fe77ad1daa41477ceb15a91d8080a866b8a23ed470e585c5685f575123bfd5ff",
+                        "bytes":  3844,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260827233000_superadmin_internal_auth_context.sql",
+                        "sha256":  "87d03cd1e75d9859438c82abbf3c59424680bdd64b57741f10740a5ac7007a33",
+                        "bytes":  68315,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260901124500_harden_superadmin_auth_context_denial_audit.sql",
+                        "sha256":  "f7a9f92cf0a3a9980f1cd861807a138c012d25977bf08b0e1165bb7db60ee1df",
+                        "bytes":  2963,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260901200206_defer_superadmin_internal_mfa_until_mvp_go_live.sql",
+                        "sha256":  "7e5fa210ff9a0e998c416d7b01a60a14103a5c3d2c539881f49889c0fd618c45",
+                        "bytes":  9469,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260908051499_child_directory_error_envelope_bridge.sql",
+                        "sha256":  "6f9342ccad9ce145158e1667a84c5bd58e4577af022204194280b4d8cfaad17a",
+                        "bytes":  3621,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    },
+                    {
+                        "path":  "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/fixture/20260909193000_d04_child_safety_internal_reads.sql",
+                        "sha256":  "6fa99c60eb0343e4539a876b74d89a3121ed8fce0a0640051c41ff8f52fe5999",
+                        "bytes":  24674,
+                        "retention":  "preserved-local-ignored; canonical proof already published or fixture regenerable"
+                    }
+                ],
+    "count":  319,
+    "not_wip":  "Dart/Flutter build caches are regenerable tool output and excluded from this evidence manifest",
+    "captured_at":  "2026-09-09T21:18:59.2498786-03:00",
+    "worktree":  "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-noturna-acessos-pessoas"
+}
