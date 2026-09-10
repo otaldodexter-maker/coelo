@@ -1268,14 +1268,35 @@ entre o que depende de você, o que depende de ambiente, o que depende de
 implementação que não existe e o que depende de decisão de produto.
 
 **O que depende só de você para destravar hoje**, em ordem de custo crescente:
-a composição do Perfil (item 0, uma resposta binária); a baseline de
-`errors.409`; o ambiente de referência dos goldens; as quatro geometrias fixas; a
-rota Testar de Formulários; o contrato de Lançamentos; a navegação no editor de
-Rotina; e se Suporte entra no MVP.
+a referência aprovada do Perfil (item 0, uma resposta binária); a baseline de
+`errors.409`; a cópia das três telas que se chamam de prévia — com patch já
+preparado; o véu do chip DESTAQUE, sabendo que custa treze goldens; o rebaseline
+por família, com Agenda liberada e as demais não; a rota Testar de Formulários; o
+contrato de Lançamentos; e se Suporte recebe camada de dados no MVP.
+
+**O que uma única consulta autorizada resolve, e é a ação de maior retorno da
+lista:** um `select proname from pg_proc` responde de uma vez pelas cinco RPCs de
+Unidades, pelas cinco de Assiduidade e pelos 40 objetos `app_private` chamados e
+nunca criados. Enquanto ela não for feita, três blocos inteiros de bloqueio
+permanecem classificados como **falta de autorização para verificar**, e não como
+ausência.
 
 **O que nenhuma decisão resolve**, porque é ausência de implementação: Suporte
-sem camada de dados, `health-care` e `medication` sem repositório de produção,
-`RoutineRepository` e `StudentTrackingRepository` sem implementação, e
-`account.sessions` sem tela. E `attendance`, que é o caso mais delicado dos
-cinco, porque a camada de dados **existe, está ligada e chama funções que não
-existem no servidor** — só não quebra porque a rota está fechada.
+sem camada de dados — a rota de produção devolve 503 hoje, e os 61 testes verdes
+exercitam um protótipo em memória; `RoutineRepository` e `StudentTrackingRepository`
+recebendo repositórios indisponíveis **por composição deliberada** no ramo
+autorizado; e `account.sessions` sem tela.
+
+**Duas linhas mudaram de dono depois do reteste de bloqueios e valem repetir
+aqui**, porque a versão antiga levaria a decisão errada: `health-care` e
+`medication` não terem repositório de produção **não é omissão nem gate de
+implantação — é o escopo aprovado**, porque a spec vigente está aprovada para
+interface demonstrativa e a que criaria o contrato real é rascunho em revisão. E
+a pergunta de Local em Formulários não é código pronto esperando decisão: não
+existe o tipo de pergunta no domínio, então é **decida e depois construa**.
+
+E `attendance` continua o caso mais delicado, agora com a assimetria medida: no
+mesmo ramo autorizado onde Rotina e Alunos recebem indisponibilidade honesta,
+Assiduidade recebe o repositório real, que chama cinco RPCs que nenhuma migration
+cria. Se elas também não existirem em produção, **a tela parece pronta e quebraria
+no primeiro uso**, com o erro chegando como indisponibilidade genérica.
