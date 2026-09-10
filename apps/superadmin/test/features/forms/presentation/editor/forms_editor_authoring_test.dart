@@ -527,6 +527,41 @@ void main() {
     expect(config.maxValue, 10);
   });
 
+  // As validacoes novas percorrem _flattenQuestions, que inclui perguntas de
+  // ramo. Sem este teste, uma pergunta dentro de um ramo poderia salvar com
+  // intervalo invertido enquanto a de primeiro nivel e barrada.
+  testWidgets('a branch question is held to the same numeric limits', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 1600));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final api = _Api(manage: true)
+      ..customItems = [
+        FormItem(
+          id: 'gate',
+          kind: FormItemKind.yesNo,
+          label: 'Precisa de valor',
+          position: 0,
+        ),
+        FormItem(
+          id: 'branch-money',
+          kind: FormItemKind.money,
+          label: 'Valor',
+          position: 1,
+          config: const FormItemConfig(minValue: 10050, maxValue: 100),
+          conditions: const [FormCondition.yesNo(sourceItemId: 'gate', expected: true)],
+        ),
+      ];
+    await open(tester, api);
+    await tester.enterText(title('Authorized title'), 'Alterado');
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+
+    // Garante que o item entrou mesmo como ramo, senao o teste passaria por
+    // estar validando uma pergunta de primeiro nivel.
+    expect(find.text('Adicionar pergunta ao ramo'), findsWidgets);
+    expect(api.commands, isEmpty);
+    expect(find.text('O valor mínimo deve ser menor ou igual ao máximo.'), findsWidgets);
+  });
+
   testWidgets('duplicating a question keeps its authored limits', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1200, 1400));
     addTearDown(() => tester.binding.setSurfaceSize(null));
