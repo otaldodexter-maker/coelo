@@ -161,7 +161,7 @@ a tela do Perfil. Inspecionei o `_Metric` do último durante a noite e não ache
 overflow. Se aquela frente não os mede, ficam sem dono.
 
 **Um falso positivo meu — um**, e da mesma família que a noite inteira ensinou:
-`coelo_ui_core/test/feedback/coelo_state_panel_test.dart` entrou na varredura
+`packages/coelo_ui_core/test/feedback/coelo_state_panel_test.dart` entrou na varredura
 porque o **caminho** contém `feedback`, que contém `feed`. Padrão largo demais
 também mente, só que na direção oposta.
 
@@ -402,8 +402,17 @@ substituição de pergunta que passei a noite catalogando nas ferramentas dos
 outros, rodando dentro da minha própria auditoria. O terceiro defeito só
 apareceu na versão estrita.
 
-Um ponteiro válido mas não resolvível para o leitor foi qualificado em vez de
-corrigido: `3697dd49e`, a entrega autoral L01, existe em
+Depois de escrito, **este documento passou pela própria conferência que
+descreve**, e ela achou mais um: `coelo_ui_core/test/feedback/...` sem o prefixo
+`packages/`. O mesmo defeito de caminho truncado que eu havia corrigido no
+documento do Owner uma hora antes, cometido de novo num documento escrito
+**depois** da correção. Saber da armadilha não protege de cair nela; rodar o
+teste, sim.
+
+Três ponteiros válidos mas não resolvíveis a partir da dev ficam **qualificados
+em vez de corrigidos**, porque estão certos: `2ae5b760d` é a `origin/dev` usada
+como base de comparação; `80f160599` é a cabeça da branch de cópia prévia; e
+`3697dd49e`, a entrega autoral L01, existe em
 `origin/codex/e2-r02-l01-publicacoes` e **não** na dev, então `git show` falha
 para quem só tem dev. A linha agora diz onde ele está.
 
