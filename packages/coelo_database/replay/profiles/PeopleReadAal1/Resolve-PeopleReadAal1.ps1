@@ -1,5 +1,5 @@
 [CmdletBinding()]
-param([string]$TargetVersion = '20260910120000')
+param([string]$TargetVersion = '20260910170000')
 
 $ErrorActionPreference = 'Stop'
 $packageRoot = Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $PSScriptRoot))
@@ -56,8 +56,8 @@ function Get-PeopleAalHash([string]$Path) {
 # valendo: o reparo do manifesto resolve a TABELA ausente, nao os defeitos de
 # conteudo de chat v2, avisos v2 e circulares v2, que seguem sem correcao em dev.
 
-if ($TargetVersion -cne '20260910120000') {
-  throw "PeopleReadAal1 requires target 20260910120000; received $TargetVersion"
+if ($TargetVersion -cne '20260910170000') {
+  throw "PeopleReadAal1 requires target 20260910170000; received $TargetVersion"
 }
 
 $manifestFile = Assert-PeopleAalFile (Join-Path $packageRoot 'replay\foundation-migrations.sha256')
@@ -92,10 +92,10 @@ if ((Get-PeopleAalHash $repinned.FullName) -cne
   throw "PeopleReadAal1 input hash mismatch: $repinnedName"
 }
 
-$candidateName = '20260910120000_people_read_aal1_for_mvp.sql'
+$candidateName = '20260910170000_people_read_aal1_for_mvp.sql'
 $candidate = Assert-PeopleAalFile (Join-Path (Join-Path $packageRoot 'migrations') $candidateName)
 if ((Get-PeopleAalHash $candidate.FullName) -cne
-    'd5bd0f04e7e87b603b7f858e57acfae3d02d9c6aa3963ffd7643a9a009e0089f') {
+    'd5c91bdacdcfd71aee9dfcee1e0c3a13c0a69870c8aca121c45f95ca924aff58') {
   throw "PeopleReadAal1 input hash mismatch: $candidateName"
 }
 
