@@ -67,7 +67,8 @@ void main() {
     //
     // MEDIDO em 2026-09-10, nao inferido: a rota dispara exatamente uma leitura,
     // listFileJobs, e a pagina mostra a superficie de producao em estado de erro,
-    // nao o painel de indisponibilidade. MEDIDO tambem que a sessao deste teste
+    // nao o painel de indisponibilidade. MEDIDO na mesma data, e nao assumido, que
+    // a sessao deste teste
     // NAO tem capacidade de Formularios: signInForTesting concede apenas
     // permissionCodes {'platform.read'}, e withFormsAuthorization consulta
     // somente session.isAuthenticated. Ou seja, o contrato de 08/09 delega a
