@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:coelo_auth/coelo_auth.dart';
+import '../../features/groups/data/supabase_group_directory_repository.dart';
+import '../../features/units/data/supabase_unit_directory_repository.dart';
 import '../../features/groups/domain/group_detail.dart';
 import '../../features/groups/data/supabase_group_detail_repository.dart';
 import '../../features/units/domain/unit_detail.dart';
@@ -374,10 +376,13 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       personIdentityRepository: const UnavailablePersonIdentityRepository(),
       accessProfileRepository: SupabaseAccessProfileRepository(client),
       platformUserRepository: platformUsers,
-      groupDirectoryRepository: const UnavailableGroupDirectoryRepository(),
+      // As 13 RPCs de Unidades foram conferidas em pg_proc e versionadas em
+      // 20260910160000, e o diretorio de Turmas reaproveita duas delas. Os dois
+      // diretorios saem de Unavailable e passam a ler producao de verdade.
+      groupDirectoryRepository: SupabaseGroupDirectoryRepository(client),
       groupDetailRepository: SupabaseGroupDetailRepository(client),
       unitDetailRepository: SupabaseUnitDetailRepository(client),
-      unitDirectoryRepository: const UnavailableUnitDirectoryRepository(),
+      unitDirectoryRepository: SupabaseUnitDirectoryRepository(client),
       unitBackendCommands: SupabaseUnitBackendCommandsGateway(client),
       // OQ-032/OQ-043: these CRUD repositories still target the legacy
       // people-based realm. Keep production mutations fail-closed until the

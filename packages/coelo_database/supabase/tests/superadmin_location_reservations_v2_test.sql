@@ -84,9 +84,11 @@ insert into public.institution_types(id,code,name,status) values
 insert into public.institutions(id,public_name,slug,status,institution_type_id) values
   ('c1100000-0000-4000-8000-000000000001','Reservation Institution A','reservation-a','active','c1000000-0000-4000-8000-000000000001'),
   ('c1100000-0000-4000-8000-000000000002','Reservation Institution B','reservation-b','active','c1000000-0000-4000-8000-000000000001');
-insert into public.units(id,institution_id,name,slug,status,institution_type_id) values
-  ('c1200000-0000-4000-8000-000000000001','c1100000-0000-4000-8000-000000000001','Reservation Unit A','reservation-unit-a','active','c1000000-0000-4000-8000-000000000001'),
-  ('c1200000-0000-4000-8000-000000000002','c1100000-0000-4000-8000-000000000002','Reservation Unit B','reservation-unit-b','active','c1000000-0000-4000-8000-000000000001');
+insert into public.unit_types(id,code,name,status) values
+ ('c10000f0-0000-4000-8000-000000000001','superadmin-location-reservations-v2-test-u0','Tipo de unidade da fixture','active');
+insert into public.units(id,institution_id,name,slug,status,unit_type_id,handle) values
+ ('c1200000-0000-4000-8000-000000000001','c1100000-0000-4000-8000-000000000001','Reservation Unit A','reservation-unit-a','active','c10000f0-0000-4000-8000-000000000001','reservation.unit.a'),
+ ('c1200000-0000-4000-8000-000000000002','c1100000-0000-4000-8000-000000000002','Reservation Unit B','reservation-unit-b','active','c10000f0-0000-4000-8000-000000000001','reservation.unit.b');
 insert into public.groups(id,institution_id,unit_id,name,status) values
   ('c1300000-0000-4000-8000-000000000001','c1100000-0000-4000-8000-000000000001','c1200000-0000-4000-8000-000000000001','Reservation Group A','active'),
   ('c1300000-0000-4000-8000-000000000002','c1100000-0000-4000-8000-000000000002','c1200000-0000-4000-8000-000000000002','Reservation Group B','active');

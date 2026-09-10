@@ -13,8 +13,10 @@ insert into public.institution_types(id,code,name,status) values
 insert into public.institutions(id,public_name,slug,status,institution_type_id) values
  ('e1100000-0000-4000-8000-000000000001','Group Location A','group-location-a','active','e1000000-0000-4000-8000-000000000001'),
  ('e1100000-0000-4000-8000-000000000002','Group Location B','group-location-b','active','e1000000-0000-4000-8000-000000000001');
-insert into public.units(id,institution_id,name,slug,status,institution_type_id) values
- ('e1200000-0000-4000-8000-000000000001','e1100000-0000-4000-8000-000000000001','Group Location Unit','group-location-unit','active','e1000000-0000-4000-8000-000000000001');
+insert into public.unit_types(id,code,name,status) values
+ ('e10000f0-0000-4000-8000-000000000001','superadmin-group-location-create-v2-test-u0','Tipo de unidade da fixture','active');
+insert into public.units(id,institution_id,name,slug,status,unit_type_id,handle) values
+ ('e1200000-0000-4000-8000-000000000001','e1100000-0000-4000-8000-000000000001','Group Location Unit','group-location-unit','active','e10000f0-0000-4000-8000-000000000001','group.location.unit');
 insert into auth.users(id,aud,role,email,email_confirmed_at,created_at,updated_at,raw_app_meta_data,raw_user_meta_data)
  select ('e1400000-0000-4000-8000-'||lpad(i::text,12,'0'))::uuid,'authenticated','authenticated',
  'group-location-'||i||'@invalid.test',now(),now(),now(),'{}','{}' from generate_series(1,3) i;
@@ -161,8 +163,8 @@ drop trigger group_location_test_expiry on audit.audit_logs;
 select is((select body#>>'{error,code}' from group_location_results where label='late_expiry'),'SAI_SESSION_INVALID','expiry after successful motor rolls back outer transaction');
 select is((select count(*)::integer from public.groups where name='Late expiry' and institution_id='e1100000-0000-4000-8000-000000000001'),0,'late expiry removes new Group');
 select ok((select not_after>clock_timestamp() from auth.sessions where id='e1500000-0000-4000-8000-000000000001'),'test expiry mutation also rolled back');
-insert into public.units(id,institution_id,name,slug,status,institution_type_id) values
- ('e1200000-0000-4000-8000-000000000002','e1100000-0000-4000-8000-000000000001','Second unit','group-second-unit','active','e1000000-0000-4000-8000-000000000001');
+insert into public.units(id,institution_id,name,slug,status,unit_type_id,handle) values
+ ('e1200000-0000-4000-8000-000000000002','e1100000-0000-4000-8000-000000000001','Second unit','group-second-unit','active','e10000f0-0000-4000-8000-000000000001','group.second.unit');
 insert into public.activity_locations(id,institution_id,unit_id,name,status,scope_kind,kind,visibility,created_by_internal_identity_id) values
  ('e1900000-0000-4000-8000-000000000003','e1100000-0000-4000-8000-000000000001','e1200000-0000-4000-8000-000000000001','Unit room','active','unit','internal','team','e1600000-0000-4000-8000-000000000001');
 set local role authenticated;

@@ -124,10 +124,12 @@ insert into public.institution_types(id,code,name,status) values
 insert into public.institutions(id,public_name,slug,status,institution_type_id) values
  ('8b200000-0000-4000-8000-000000000010','Save Tenant A','activity-save-v2-a','active','8b200000-0000-4000-8000-000000000001'),
  ('8b200000-0000-4000-8000-000000000020','Save Tenant B','activity-save-v2-b','active','8b200000-0000-4000-8000-000000000001');
-insert into public.units(id,institution_id,institution_type_id,name,slug,status) values
- ('8b200000-0000-4000-8000-000000000011','8b200000-0000-4000-8000-000000000010','8b200000-0000-4000-8000-000000000001','Unidade A','activity-save-v2-unit-a','active'),
- ('8b200000-0000-4000-8000-000000000013','8b200000-0000-4000-8000-000000000010','8b200000-0000-4000-8000-000000000001','Unidade A2','activity-save-v2-unit-a2','active'),
- ('8b200000-0000-4000-8000-000000000021','8b200000-0000-4000-8000-000000000020','8b200000-0000-4000-8000-000000000001','Unidade B','activity-save-v2-unit-b','active');
+insert into public.unit_types(id,code,name,status) values
+ ('8b2000f0-0000-4000-8000-000000000001','superadmin-activity-save-v2-test-u0','Tipo de unidade da fixture','active');
+insert into public.units(id,institution_id,unit_type_id,name,slug,status,handle) values
+ ('8b200000-0000-4000-8000-000000000011','8b200000-0000-4000-8000-000000000010','8b2000f0-0000-4000-8000-000000000001','Unidade A','activity-save-v2-unit-a','active','activity.save.v2.unit.a'),
+ ('8b200000-0000-4000-8000-000000000013','8b200000-0000-4000-8000-000000000010','8b2000f0-0000-4000-8000-000000000001','Unidade A2','activity-save-v2-unit-a2','active','activity.save.v2.unit.a2'),
+ ('8b200000-0000-4000-8000-000000000021','8b200000-0000-4000-8000-000000000020','8b2000f0-0000-4000-8000-000000000001','Unidade B','activity-save-v2-unit-b','active','activity.save.v2.unit.b');
 insert into public.groups(id,institution_id,unit_id,name,status) values
  ('8b200000-0000-4000-8000-000000000012','8b200000-0000-4000-8000-000000000010','8b200000-0000-4000-8000-000000000011','Turma A','active'),
  ('8b200000-0000-4000-8000-000000000014','8b200000-0000-4000-8000-000000000010','8b200000-0000-4000-8000-000000000013','Turma A2','active'),
