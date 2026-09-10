@@ -2026,6 +2026,25 @@ discriminava resolução.
 estavam certos.** Estar certo e ter como saber que se está certo são coisas
 diferentes, e é a segunda que sustenta uma frase escrita para outra pessoa ler.
 
+Outra frente listou seis, e a primeira é a que mais custou a esta rodada: **um
+número apresentado como "o recorte" durante horas, que media um terço dele e
+escondia sete falhas.** Não aprovados — falhas. Se tivesse chegado ao Owner assim,
+ele leria "recorte fechado com oito falhas, todas de referência visual" sobre um
+recorte que tinha catorze. **Um denominador que esconde aprovados subestima trabalho;
+um denominador que esconde falhas certifica o que não está certo.**
+
+E a nota que ela pôs no fim da própria lista é o achado desta seção: os dois piores
+erros dela são da **mesma família dos achados que ela trouxe à rodada** — afirmação
+verdadeira sobre o que foi medido, lida como afirmação sobre o todo. **Ela descreveu
+esse padrão no registro de método e caiu nele duas vezes na mesma noite, depois de
+descrevê-lo.** O método não protege quem o escreveu; só a medição protege.
+
+E há uma condição para que qualquer disso funcione, dita por quem me corrigiu três
+vezes: **coordenação que manda ordem sem razão não pode ser conferida.** As três
+correções só foram possíveis porque o pedido vinha com o raciocínio junto — o
+critério de residual errado foi pego não por alguém desconfiar de mim, mas porque o
+"por quê" que eu mandei não fechava.
+
 A reauditoria pedida junto encontrou o caso perfeito: o campo que dizia a cabeça de
 uma frente carregava o SHA da branch dela — verdadeiro ali e **enganoso sobre a
 base**, porque o commit entrou por colheita com identidade nova. Quem conferisse o

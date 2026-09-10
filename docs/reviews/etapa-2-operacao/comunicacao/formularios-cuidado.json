@@ -1,6 +1,6 @@
 {
-  "revision": 57,
-  "updated_at": "2026-09-10T04:39:45-03:00",
+  "revision": 58,
+  "updated_at": "2026-09-10T04:51:31-03:00",
   "group": "formularios-cuidado",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
@@ -217,7 +217,8 @@
     "stash": "vazio",
     "nao_rastreado": "nenhum",
     "nota": "os dois pubspec.lock deixaram de ser WIP: o coordenador os rastreou em 9a896b993. Os SHA256 que eu havia registrado — coelo_api d13534bb5f92bd24215d1441f32f19bffc2a20c883f70f03b10260371c50bb30 e coelo_domain 346534b135cb3dd196260c524418782c0a28aaa19b688744ee9d2cf67760cf39 — mudam de significado: deixam de identificar trabalho retido e passam a provar que o conteudo nao mudou entre a geracao local e o rastreamento.",
-    "retido": "ZERO, por lista e nao por adjetivo"
+    "retido": "ZERO, por lista e nao por adjetivo",
+    "remedido_em": "2026-09-10T04:51:31-03:00"
   },
   "artifacts": [
     "Dois pubspec.lock nao rastreados aparecem em packages/coelo_api e packages/coelo_domain apos rodar dart test. Nao pertencem ao lote, foram retirados do commit e ficam preservados como nao rastreados; nao os apago nem os adiciono ao gitignore, que nao e meu."
@@ -241,7 +242,7 @@
       "resumo": "limites de selecao ditos a pessoa antes de o servidor recusar; o rascunho autosalvava e so o envio falhava",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:39:45-03:00",
+      "medido_em": "2026-09-10T04:51:31-03:00",
       "ancestral_em_dev": true,
       "cherry_pick_em_dev": true,
       "conteudo_igual_em_dev": false
@@ -252,7 +253,7 @@
       "resumo": "metodo, nove autocorrecoes, tres bloqueios falsos e censo de datas",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:39:45-03:00",
+      "medido_em": "2026-09-10T04:51:31-03:00",
       "ancestral_em_dev": true,
       "cherry_pick_em_dev": true,
       "conteudo_igual_em_dev": false
@@ -263,7 +264,7 @@
       "resumo": "triagem das 23 imagens de golden",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:39:45-03:00",
+      "medido_em": "2026-09-10T04:51:31-03:00",
       "ancestral_em_dev": true,
       "cherry_pick_em_dev": true,
       "conteudo_igual_em_dev": false
@@ -274,7 +275,7 @@
       "resumo": "trava da semantica OU e dos padroes de selecao",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:39:45-03:00",
+      "medido_em": "2026-09-10T04:51:31-03:00",
       "ancestral_em_dev": true,
       "cherry_pick_em_dev": true,
       "conteudo_igual_em_dev": false
@@ -285,7 +286,7 @@
       "resumo": "trava do que significa respondida; dois testes meus corrigidos",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:39:45-03:00",
+      "medido_em": "2026-09-10T04:51:31-03:00",
       "ancestral_em_dev": true,
       "cherry_pick_em_dev": true,
       "conteudo_igual_em_dev": true
@@ -296,7 +297,7 @@
       "resumo": "padrao de tamanho de texto do servidor, achado por mutacao",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:39:45-03:00",
+      "medido_em": "2026-09-10T04:51:31-03:00",
       "ancestral_em_dev": true,
       "cherry_pick_em_dev": true,
       "conteudo_igual_em_dev": true
@@ -307,7 +308,7 @@
       "resumo": "a unica citacao que o leitor nao alcanca, sinalizada",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:39:45-03:00",
+      "medido_em": "2026-09-10T04:51:31-03:00",
       "ancestral_em_dev": true,
       "cherry_pick_em_dev": true,
       "conteudo_igual_em_dev": true
@@ -318,7 +319,7 @@
       "resumo": "bateria de mutacao e a lei do instrumento, tornadas duraveis",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:39:45-03:00",
+      "medido_em": "2026-09-10T04:51:31-03:00",
       "ancestral_em_dev": true,
       "cherry_pick_em_dev": true,
       "conteudo_igual_em_dev": false
@@ -329,7 +330,7 @@
       "resumo": "condicao composta da superficie clara de Saude e Cuidado",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:39:45-03:00",
+      "medido_em": "2026-09-10T04:51:31-03:00",
       "ancestral_em_dev": true,
       "cherry_pick_em_dev": true,
       "conteudo_igual_em_dev": true
@@ -340,7 +341,7 @@
       "resumo": "triagem dos quatro goldens de Saude e Cuidado, com o achado de conteudo",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:39:45-03:00",
+      "medido_em": "2026-09-10T04:51:31-03:00",
       "ancestral_em_dev": true,
       "cherry_pick_em_dev": true,
       "conteudo_igual_em_dev": false
@@ -351,7 +352,7 @@
       "resumo": "o mutante equivalente, terceira forma de um nao pegou enganar",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:39:45-03:00",
+      "medido_em": "2026-09-10T04:51:31-03:00",
       "ancestral_em_dev": true,
       "cherry_pick_em_dev": true,
       "conteudo_igual_em_dev": false
@@ -362,7 +363,7 @@
       "resumo": "o autosave do editor nao roda no aplicativo",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:39:45-03:00",
+      "medido_em": "2026-09-10T04:51:31-03:00",
       "ancestral_em_dev": true,
       "cherry_pick_em_dev": true,
       "conteudo_igual_em_dev": false
@@ -373,7 +374,7 @@
       "resumo": "varredura das dependencias que ninguem fornece, e a licao de nomeacao",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:39:45-03:00",
+      "medido_em": "2026-09-10T04:51:31-03:00",
       "ancestral_em_dev": true,
       "cherry_pick_em_dev": true,
       "conteudo_igual_em_dev": false
@@ -384,7 +385,7 @@
       "resumo": "perda de regras de publico, levantada como pergunta ao Owner",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:39:45-03:00",
+      "medido_em": "2026-09-10T04:51:31-03:00",
       "ancestral_em_dev": true,
       "cherry_pick_em_dev": true,
       "conteudo_igual_em_dev": true
@@ -395,7 +396,7 @@
       "resumo": "camada pronta sem superficie: uma forma, seis tamanhos",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:39:45-03:00",
+      "medido_em": "2026-09-10T04:51:31-03:00",
       "ancestral_em_dev": true,
       "cherry_pick_em_dev": true,
       "conteudo_igual_em_dev": false
@@ -405,7 +406,7 @@
       "tipo": "evidencia",
       "resumo": "marca de superacao dos numeros de recorte onde o leitor os encontra",
       "integrado_em_dev": true,
-      "medido_em": "2026-09-10T04:39:45-03:00",
+      "medido_em": "2026-09-10T04:51:31-03:00",
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
       "ancestral_em_dev": true,
       "cherry_pick_em_dev": true,
@@ -416,7 +417,7 @@
       "tipo": "evidencia",
       "resumo": "quarta linha de bloqueio errada e a auditoria exaustiva",
       "integrado_em_dev": true,
-      "medido_em": "2026-09-10T04:39:45-03:00",
+      "medido_em": "2026-09-10T04:51:31-03:00",
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
       "ancestral_em_dev": true,
       "cherry_pick_em_dev": true,
@@ -427,7 +428,7 @@
       "tipo": "evidencia",
       "resumo": "propaga a correcao das quatro linhas para o handoff",
       "integrado_em_dev": true,
-      "medido_em": "2026-09-10T04:39:45-03:00",
+      "medido_em": "2026-09-10T04:51:31-03:00",
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
       "ancestral_em_dev": true,
       "cherry_pick_em_dev": true,
@@ -438,7 +439,7 @@
       "tipo": "evidencia",
       "resumo": "desfaz uma coincidencia numerica que se lia como repeticao",
       "integrado_em_dev": true,
-      "medido_em": "2026-09-10T04:39:45-03:00",
+      "medido_em": "2026-09-10T04:51:31-03:00",
       "ancestral_em_dev": true,
       "cherry_pick_em_dev": true,
       "conteudo_igual_em_dev": true
@@ -448,7 +449,7 @@
       "tipo": "evidencia",
       "resumo": "cabecalho de estado final no ponto onde o leitor abre o handoff",
       "integrado_em_dev": true,
-      "medido_em": "2026-09-10T04:39:45-03:00",
+      "medido_em": "2026-09-10T04:51:31-03:00",
       "ancestral_em_dev": true,
       "cherry_pick_em_dev": true,
       "conteudo_igual_em_dev": true
@@ -458,7 +459,7 @@
       "tipo": "ferramenta",
       "resumo": "as tres verificacoes em forma executavel, com as armadilhas ja pagas evitadas no codigo",
       "integrado_em_dev": true,
-      "medido_em": "2026-09-10T04:39:45-03:00",
+      "medido_em": "2026-09-10T04:51:31-03:00",
       "ancestral_em_dev": true,
       "cherry_pick_em_dev": true,
       "conteudo_igual_em_dev": false
@@ -468,7 +469,7 @@
       "tipo": "evidencia",
       "resumo": "declara quais imagens NAO foram triadas e por que",
       "integrado_em_dev": true,
-      "medido_em": "2026-09-10T04:39:45-03:00",
+      "medido_em": "2026-09-10T04:51:31-03:00",
       "ancestral_em_dev": true,
       "cherry_pick_em_dev": true,
       "conteudo_igual_em_dev": false
@@ -478,7 +479,7 @@
       "tipo": "evidencia",
       "resumo": "indice de leitura para os quarenta documentos",
       "integrado_em_dev": true,
-      "medido_em": "2026-09-10T04:39:45-03:00",
+      "medido_em": "2026-09-10T04:51:31-03:00",
       "ancestral_em_dev": false,
       "cherry_pick_em_dev": true,
       "conteudo_igual_em_dev": false
@@ -488,7 +489,7 @@
       "tipo": "evidencia",
       "resumo": "o falso positivo da propria ferramenta, achado por ela",
       "integrado_em_dev": true,
-      "medido_em": "2026-09-10T04:39:45-03:00",
+      "medido_em": "2026-09-10T04:51:31-03:00",
       "ancestral_em_dev": false,
       "cherry_pick_em_dev": true,
       "conteudo_igual_em_dev": true
@@ -498,7 +499,7 @@
       "tipo": "evidencia",
       "resumo": "triagem do golden de operacoes e o motivo real da omissao",
       "integrado_em_dev": true,
-      "medido_em": "2026-09-10T04:39:45-03:00",
+      "medido_em": "2026-09-10T04:51:31-03:00",
       "ancestral_em_dev": false,
       "cherry_pick_em_dev": true,
       "conteudo_igual_em_dev": false
@@ -508,7 +509,7 @@
       "tipo": "evidencia",
       "resumo": "declara que a contagem de imagens pode estar incompleta",
       "integrado_em_dev": true,
-      "medido_em": "2026-09-10T04:39:45-03:00",
+      "medido_em": "2026-09-10T04:51:31-03:00",
       "ancestral_em_dev": false,
       "cherry_pick_em_dev": true,
       "conteudo_igual_em_dev": false
@@ -520,7 +521,7 @@
       "ancestral_em_dev": false,
       "cherry_pick_em_dev": true,
       "integrado_em_dev": true,
-      "medido_em": "2026-09-10T04:39:45-03:00",
+      "medido_em": "2026-09-10T04:51:31-03:00",
       "conteudo_igual_em_dev": true
     }
   ],
@@ -1397,7 +1398,7 @@
     "declarados": 27,
     "integrados": 27,
     "retidos": [],
-    "medido_em": "2026-09-10T04:39:45-03:00",
+    "medido_em": "2026-09-10T04:51:31-03:00",
     "por_criterio": {
       "ancestralidade": "22 de 27",
       "rastro_de_cherry_pick": "27 de 27",
@@ -1412,7 +1413,8 @@
     "portas_abertas": [],
     "tarefas_em_segundo_plano": [],
     "worktrees_criadas_por_mim": [],
-    "verificacao": "conferido, nao lembrado: as duas worktrees destacadas em d784462c1 que poderiam ser minhas tem dono declarado — coelo-base-check e de publicacoes-midia e e2-noturna-verificacao e do coordenador"
+    "verificacao": "conferido, nao lembrado: as duas worktrees destacadas em d784462c1 que poderiam ser minhas tem dono declarado — coelo-base-check e de publicacoes-midia e e2-noturna-verificacao e do coordenador",
+    "remedido_em": "2026-09-10T04:51:31-03:00"
   },
   "pergunta_ao_owner": {
     "id": "forms.distribuicao.regras-de-publico",
@@ -1484,7 +1486,7 @@
     "achado": "a execucao da suite completa regravou 54 PNG RASTREADOS de failures/ de support e help_center, que nao sao do meu recorte. Restaurados com git checkout; nao eram trabalho e nao podiam viajar como modificacao minha.",
     "restante": "apenas os dois pubspec.lock nao rastreados, ja rastreados em dev pelo coordenador"
   },
-  "head_medido_em": "2026-09-10T04:39:45-03:00",
+  "head_medido_em": "2026-09-10T04:51:31-03:00",
   "status_medido_em": "2026-09-10T04:39:45-03:00",
   "auditoria_de_apodrecimento": {
     "quando": "2026-09-10T04:04:20-03:00",
@@ -1543,5 +1545,68 @@
     "mudanca_no_dominio_compartilhado": "46 insercoes e ZERO remocoes em coelo_domain form_definition.dart, medido por git diff. Puramente aditivo, entao nenhum consumidor existente pode quebrar.",
     "consumidores_dos_guardas_novos": "todos dentro de Formularios ou do proprio dominio: forms_editor_page, forms_operations_page, form_response_page e forms_test_page. Nenhum outro grupo alcanca.",
     "artefatos_de_outros_grupos": "a execucao da suite completa regravou 54 PNG rastreados de failures/ de support e help_center; restaurados com git checkout e nao entraram em commit nenhum meu."
+  },
+  "base_observada_em_dev": "b9b57863a",
+  "reauditoria_final": {
+    "quando": "2026-09-10T04:51:31-03:00",
+    "motivo": "carimbo diz QUANDO foi medido e nao obriga a REMEDIR; outra frente achou sete campos podres novos uma hora depois de adotar a regra, varios recem-conferidos",
+    "cinco_campos": {
+      "cabeca": "declarada e real batem",
+      "base": "a base andou e esta anotada como observacao, nao como campo meu",
+      "residual": "zero pelos tres criterios, remedido agora",
+      "worktree": "nenhuma minha; a temporaria segue ausente de git worktree list",
+      "arvore_e_stash": "arvore com apenas os dois pubspec.lock nao rastreados; stash vazio"
+    },
+    "resultado": "nenhum campo podre"
+  },
+  "item_8_verificado_errado": {
+    "quando": "2026-09-10T04:51:31-03:00",
+    "criterio_de_ordem": "por DANO e nao por cronologia nem por vergonha; cronologia esconde gravidade",
+    "lista": [
+      {
+        "dano": 1,
+        "o_que": "Reportei 808 PASS / 8 FAIL como sendo \"o recorte\" durante horas.",
+        "por_que_errado": "test/features/forms nao era o recorte: dezessete arquivos de teste do grupo vivem fora dele, em rota/shell, core/config e shared",
+        "consequencia": "o numero circulou entre as frentes, foi usado pelo coordenador, e escondia SETE falhas — nao apenas aprovados. Um denominador que esconde falhas CERTIFICA o que nao esta certo. Se tivesse chegado ao Owner assim, ele leria \"recorte fechado com oito falhas, todas de golden\" sobre um recorte que tinha catorze.",
+        "como_apareceu": "pergunta invertida do coordenador: existe teste do meu escopo FORA da minha lista?",
+        "estado": "corrigido e marcado como superado nos dois documentos onde aparecia como conclusao"
+      },
+      {
+        "dano": 2,
+        "o_que": "Afirmei que a triagem cobria 23 imagens, e o extrator subestimava em silencio.",
+        "por_que_errado": "a coleta usava grep que assumia a mensagem de falha numa linha so, e o Flutter quebrou a de forms_operations em duas",
+        "consequencia": "publiquei uma afirmacao de completude que nao tinha, e um golden do recorte ficou sem triagem. E o unico instrumento da noite que nao produziu saida errada e sim saida A MENOS — o silencio nao desperta suspeita.",
+        "estado": "a imagem foi triada e o documento agora diz 24 E que a contagem pode estar incompleta, apontando a contagem por CASO como a confiavel"
+      },
+      {
+        "dano": 3,
+        "o_que": "Atribui a ausencia do golden de operacoes a uma diferenca de base — explicacao FALSA, publicada em documento commitado.",
+        "por_que_errado": "rodei o arquivo na propria branch e ele falha aqui tambem; a causa era o extrator",
+        "consequencia": "uma explicacao causal errada ficou de pe cerca de vinte minutos e teria ensinado a proxima rodada a procurar no lugar errado",
+        "estado": "corrigido no mesmo documento, com o motivo real no lugar"
+      },
+      {
+        "dano": 4,
+        "o_que": "Reportei commits como RETIDOS quando ja estavam na base.",
+        "por_que_errado": "medi por merge-base --is-ancestor sobre o SHA original, e a integracao e por cherry-pick, que gera SHA novo",
+        "consequencia": "afirmei ao coordenador ter trabalho retido que nao existia. O criterio era o que ele havia distribuido, mas quem aplicou e reportou fui eu.",
+        "estado": "refeito por tres criterios; zero retidos, e o criterio de conteudo proposto foi revogado"
+      },
+      {
+        "dano": 5,
+        "o_que": "Escrevi um numero de outra frente atribuindo a \"a rodada\", que nao e ninguem.",
+        "por_que_errado": "837 pixels / 0,058% foi medido por alunos-rotina e me chegou pelo coordenador; eu nao reproduzi nem confiro",
+        "consequencia": "numero sem dono em arquivo commitado. Menor dano porque serve de CONTRASTE e nao sustenta conclusao — a refutacao se apoia em medicao minha.",
+        "estado": "atribuido, com o que NAO foi conferido declarado ao lado"
+      },
+      {
+        "dano": 6,
+        "o_que": "Usei git log para ver autor ao decidir se uma mudanca era minha.",
+        "por_que_errado": "as seis frentes commitam com a MESMA identidade neste checkout",
+        "consequencia": "nenhuma, por sorte de metodo: conclui pela data e pelo conteudo do commit. Mas a linha de autor dizia que a mudanca ERA minha, e nao era — o filtro nao falhou em distinguir, ATRIBUIU positivamente a quem perguntou.",
+        "estado": "nenhum passo da varredura de atribuicao dependeu de autor; foi por caminho e por SHA"
+      }
+    ],
+    "nota": "os dois primeiros sao da mesma familia dos achados que eu levei a rodada — afirmacao verdadeira sobre o que foi medido, lida como afirmacao sobre o todo. Eu descrevi o padrao e cai nele duas vezes na mesma noite."
   }
 }
