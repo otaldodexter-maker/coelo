@@ -179,8 +179,9 @@ Remover cada item no mesmo turno em que a verificação confirmar o efeito.
    (e depois `admin.coelo.me`) com Cloudflare Access (Zero Trust, gratuito até
    50 usuários) como segunda barreira antes do login do app. Exige política de
    quem entra (e-mails do Owner e da equipe), token próprio com `Access: Apps`
-   e não substitui Auth, RLS nem MFA. Decidir quando o app for publicado no
-   domínio.
+   e não substitui Auth, RLS nem MFA. **Decisão do Owner (10/09/2026,
+   noite): ligar depois do MVP.** Não bloqueia a Etapa 2; volta à fila na
+   revisão profunda de segurança, quando o Superadmin tiver clientes reais.
 2. **Troca da senha do banco de produção (ADR 0034, Decisão 8/P14).** Motivo:
    `supabase db dump --dry-run` imprimiu a credencial do papel efêmero do
    pooler numa saída de ferramenta em 10/09/2026. Roteiro: painel Supabase →

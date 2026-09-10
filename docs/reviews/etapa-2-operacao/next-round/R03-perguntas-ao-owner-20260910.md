@@ -32,7 +32,7 @@ timezone: "America/Sao_Paulo"
 | P18 capacidades de Locais | sim; nove provisionadas | ADR 0034 D10 |
 | P19 ao vivo no Agora | respondida 10/09 (noite) | Deixar preparado: o token de Stream já tem Read+Edit e cobre Live Inputs; nenhuma transmissão é criada até o Agora precisar. Sem custo até uso. |
 | P20 token antigo com 25 permissões | respondida 10/09 (noite) | Apagar. O coordenador não consegue (MCP retorna 9109 em /user/tokens); o Owner apaga em Perfil → Tokens de API → menu ⋯ → Excluir. Pendência de segurança 1c na skill coelo-backend até ele confirmar. |
-| P21 Access na frente do Superadmin | **aberta** (pensar depois) | Owner pediu explicação melhor em 10/09 (noite); explicada em conversa. Decisão fica para depois do MVP. |
+| P21 Access na frente do Superadmin | respondida 10/09 (noite) | Ligar depois do MVP. Cloudflare Access (Zero Trust, gratuito até 50 usuários) na frente de superadmin.coelo.me, lista de e-mails da equipe Coelo, código por e-mail; não bloqueia nada da Etapa 2. |
 | HostGator: site, e-mail, blog | **aberta** (três perguntas) | — |
 
 O texto original de cada pergunta segue abaixo, como histórico.
