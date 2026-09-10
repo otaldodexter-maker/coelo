@@ -1,7 +1,7 @@
 {
-  "revision": 17,
-  "updated_at": "2026-09-10T03:27:00-03:00",
-  "clock_note": "Hora conferida com date: local 23:59 de 09/09 no ultimo commit; esta revisao escrita por volta de 00:07 de 10/09.",
+  "revision": 18,
+  "updated_at": "2026-09-10T02:38:00-03:00",
+  "clock_note": "Relogio corrigido pelo coordenador e conferido por mim com PowerShell Get-Date: 02:00 de 10/09, fuso E. South America Standard Time, -03:00. O date do Git Bash com TZ nao tem tzdata e devolve UTC; parei de usa-lo.",
   "group": "alunos-rotina",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) - claude-opus-5[1m]",
@@ -411,6 +411,21 @@
     "consequencia": "A hipotese de que a deriva do cabecalho explicaria a maior parte dos 129 NAO se sustenta: ela explica uma suite inteira e a metade larga de outra. Se o Owner autorizasse rebaseline em bloco, apagaria mudanca de produto em pelo menos quatro familias.",
     "ressalvas": "Cinco suites nao sao os 129. A amostra nao e aleatoria: duas escolhi e tres o coordenador indicou. Componente de conteudo e o que MEDI nas imagens; nao investiguei QUAL mudanca de produto em nenhuma. Parte do conteudo pode ser fixture de teste e nao produto.",
     "recomendacao": "Agenda rebaselina em bloco com causa nomeada. As demais passam pelo dono do recorte antes; o custo e alto, o de apagar regressao e maior.",
-    "armadilha_de_ferramenta_encontrada": "Caminho longo de golden faz o Flutter quebrar a mensagem em duas linhas, e grep de linha unica devolve \"Pixel test failed,\" SEM percentual. Aconteceu em oito casos de Atividades. Quem lesse so aquilo reportaria falha sem magnitude ou contaria errado. Juntar as linhas antes de extrair resolve."
+    "armadilha_de_ferramenta_encontrada": "Caminho longo de golden faz o Flutter quebrar a mensagem em duas linhas, e grep de linha unica devolve \"Pixel test failed,\" SEM percentual. Aconteceu em oito casos de Atividades. Quem lesse so aquilo reportaria falha sem magnitude ou contaria errado. Juntar as linhas antes de extrair resolve.",
+    "CORRECAO_IMPORTANTE": {
+      "o_que_mudou": "A proporcao que publiquei na revisao 17 estava ERRADA e INVERTE. Nao e 77% com conteudo; e cerca de 17%.",
+      "causa_do_meu_erro": "Perfil-para-voce achou uma QUARTA categoria: elemento identico que se DESLOCOU acende no diff exatamente como elemento alterado. Eu classifiquei Atividades e Formularios SO POR MAGNITUDE, argumentando que diff centenas de vezes maior que a assinatura de 837px implicava conteudo. Esse implicava estava errado: deslocamento em bloco tambem produz magnitude grande.",
+      "reexame_elemento_a_elemento": {
+        "agenda": "DESLOCAMENTO. Ja verificado por imagem na primeira passagem.",
+        "atividades": "DESLOCAMENTO. Reclassificada. No diff de 1440 cada item da barra lateral aparece duas vezes deslocado, e os cartoes tambem, inclusive o de criar.",
+        "conta": "DESLOCAMENTO. Reclassificada por medicao de perfil-para-voce: o controle segmentado so tinha se movido, empurrado pelo shell.",
+        "formularios": "PROVAVELMENTE DESLOCAMENTO. Linhas de icones e interruptores em dobro deslocados. Ressalva: um chevron aparece como v de um lado e ^ do outro, o que pode ser estado de expandir e nao deslocamento; nao decidivel so pela imagem.",
+        "cardapios": "MANTEM CONTEUDO, agora com prova elemento a elemento. Todo o conteudo e identico e o cartao desceu cerca de doze pixels, MAS o ponto de status e ROSA no master e VERDE no atual. Um elemento que so se move aparece duas vezes na MESMA cor.",
+        "instituicoes": "MANTEM CONTEUDO, por motivo mais forte que cor. O master tem o cartao tracejado Criar instituicao e o atual nao tem; os dados diferem, Casa Nuvem contra Centro Horizonte; a paginacao e 2 contra 1. Ressalva de fixture continua."
+      },
+      "proporcao_corrigida": "Cerca de 60 casos em seis suites. Deslocamento e rebaseline seguro: Agenda 14, Atividades 16, Conta 8, Formularios 12, cerca de 50 casos ou 83%. Com componente de conteudo: Cardapios 6 e Instituicoes 4, cerca de 10 casos ou 17%.",
+      "recomendacao_corrigida": "A maior parte dos 129 provavelmente E rebaseline seguro. A revisao humana deve se concentrar nas suites onde a comparacao elemento a elemento mostra diferenca que NAO e deslocamento. Nas duas que tem conteudo, ele e identificavel e pequeno: uma cor de status e um cartao de criacao com dados de fixture.",
+      "licao": "Magnitude nao classifica nada; so a comparacao elemento a elemento classifica. Nas tres suites em que abri imagem eu acertei; nas duas em que julguei por numero eu errei; e numa terceira acertei pelo motivo errado."
+    }
   }
 }

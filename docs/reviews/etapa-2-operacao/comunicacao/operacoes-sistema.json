@@ -1,6 +1,6 @@
 {
-  "revision": 45,
-  "updated_at": "2026-09-10T01:43:28-03:00",
+  "revision": 46,
+  "updated_at": "2026-09-10T02:22:21-03:00",
   "group": "operacoes-sistema",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) — claude-opus-5[1m]",
@@ -8,7 +8,7 @@
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-operacoes-sistema",
   "branch": "work/etapa2-noturna-operacoes-sistema",
-  "head": "c2e6bda5d",
+  "head": "f2ea71f96",
   "upstream": "origin/work/etapa2-noturna-operacoes-sistema",
   "base_observed": "d784462c168d22fdb7090b7de1ef7db554ad5107",
   "scope": [
@@ -1684,5 +1684,31 @@
       "sustentado_por": "MEDIDO: o cliente envia apenas p_asset_id e p_idempotency_key, e isso e verificado pelo teste de contrato. LIDO e nao executado: que a forma de dois argumentos le a revisao corrente do proprio banco e repassa, nas linhas 709-728 da migration 20260820230000.",
       "testado": "o lado do cliente sim. O comportamento do corpo da funcao NAO foi executado contra banco nenhum; e leitura de SQL."
     }
+  },
+  "residual_do_recorte": {
+    "medida": "flutter test em agenda, plans, meal_plans, support, account, errors, audit e contracts, sobre a minha branch.",
+    "resultado": "696 PASS, 4 SKIP, 38 FAIL.",
+    "natureza_das_falhas": "TODAS as 38 estao em arquivo de golden, em sete arquivos: agenda_calendar_golden 14, account_pages_golden 12, meal_plan_pages_golden 6, agenda_additional_surfaces_golden 6, audit_directory_golden 2, support_page_golden 1, plan_golden 1. Zero falha nao-golden no recorte.",
+    "leitura": "O recorte nao tem defeito funcional em aberto nas suites que eu possuo; o que resta e aceite visual, que depende de rebaseline nominal."
+  },
+  "item_1_golden_instituicoes": {
+    "pedido": "Restaurar onCreate no _goldenApp porque o cartao Criar instituicao desapareceu da captura.",
+    "o_que_medi": "Com onCreate, o diff de institution_directory_cards_light_375 cai de 37,57% para 20,43% e o escuro de 23,18% para patamar equivalente: a referencia de CARTOES foi capturada com a afordancia. Na mesma corrida o diff de institution_directory_table_light_375 SOBE de 35,53% para 36,40%: a referencia de TABELA e anterior ao banner. Duas metades no mesmo caso, historias diferentes.",
+    "por_que_nao_fiz_como_pedido": "O caso 'approved interactive directory state references' usa o mesmo helper e PASSA hoje, confirmado por controle. Com onCreate no helper inteiro ele falha em cinco imagens de hover e foco, com diffs de 6,6% a 14,3%. Seria trocar um verde por vermelho novo, o mesmo criterio com que recusei os 130 toques preventivos.",
+    "entrega": "onCreate virou parametro opcional e e passado so no caso de cartoes e tabela. Contagens inalteradas, 1 PASS e 6 FAIL antes e depois. Nenhum golden regravado. As tres medicoes ficaram no comentario do teste, com data. Commit 606a37581.",
+    "gravidade_rebaixada": "A suite funcional ja guarda as duas direcoes da afordancia, pelas chaves create-institution-card e create-institution-banner. A perda era exclusivamente visual: nao e afordancia sem teste, e afordancia sem referencia visual.",
+    "classe_nomeada": "Arranjo de golden composto diferente da producao apaga afordancias da referencia sem que nada fique vermelho por isso. A referencia e a evidencia do que existia, e so comparando diff com e sem o callback se descobre o que ela continha."
+  },
+  "item_2_capacidade_inalcancavel": {
+    "pergunta": "Metodo publico que existe so na implementacao, fora da interface, passa despercebido pelas duas pontas da varredura. Publicacoes-midia achou um delete de Circular assim.",
+    "resultado": "19 ocorrencias no app mais pacotes. A UNICA implementacao de producao com metodo publico inalcancavel e SupabaseCircularRepository.delete — exatamente a que publicacoes-midia achou pelo caminho oposto. Todo o resto e fake ou repositorio de desenvolvimento, com auxiliares chamados dentro do proprio arquivo.",
+    "no_meu_recorte": "Nada de producao. FakePlanCatalogRepository.archive e codigo morto num fake: o diretorio arquiva por save com status arquivado. Nao removi porque e lib e eu me comprometi a so teste e documento depois das 02:30; fica como limpeza de uma linha para quem integrar.",
+    "erro_de_metodo_que_corrigi": "A primeira rodada do varredor acusou cinco metodos de SupabaseFormsApi como inalcancaveis — prepareAssetUpload, finalizeAssetUpload, discardAsset, listMonitorHierarchy, listMonitorPeople. Todos FALSOS: estao declarados em packages/coelo_api/lib/src/forms/forms_api.dart, e eu varria interfaces so dentro de apps/superadmin/lib. Quem repetir esta medicao precisa varrer packages, senao acusa uma frente inteira por artefato do varredor."
+  },
+  "item_3_unidades_falha_fechada": {
+    "pergunta": "Enquanto a bifurcacao das cinco RPCs estiver aberta, o que o cliente de Unidades faz se elas NAO existirem?",
+    "medido": "PostgREST responde 404 com PGRST202 quando nao acha a funcao. Teste novo prova que fetchPage, loadForm e fetchFilterOptions todas levantam UnavailableUnitDirectoryException, e nenhuma afirma falta de permissao. Controle positivo no mesmo teste: com 42501 o mesmo repositorio distingue e levanta negacao, senao 'tudo vira indisponibilidade' passaria igual.",
+    "custo_para_o_owner": "Falha fechada, o que e o comportamento certo, mas PGRST202 chega ao usuario com a mesma aparencia de queda de rede. Entao a bifurcacao aberta custa: se as funcoes nao existirem, o diretorio de Unidades diz 'tente novamente' para sempre e ninguem distingue isso de instabilidade.",
+    "commit": "f2ea71f96"
   }
 }

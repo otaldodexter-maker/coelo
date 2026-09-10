@@ -1,6 +1,6 @@
 {
-  "revision": 28,
-  "updated_at": "2026-09-10T01:59:22-03:00",
+  "revision": 32,
+  "updated_at": "2026-09-10T02:22:02-03:00",
   "group": "perfil-para-voce",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
@@ -8,7 +8,7 @@
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-perfil-para-voce",
   "branch": "work/etapa2-noturna-perfil-para-voce",
-  "head": "b2cdba58a",
+  "head": "134d582f4",
   "upstream": "origin/work/etapa2-noturna-perfil-para-voce",
   "base_observed": "d784462c1",
   "scope": [
@@ -144,10 +144,10 @@
     "Ver mais, Ver todos e Ver no mapa passam por _runOrPreview e nao sao afordancias mortas."
   ],
   "suite_completa": {
-    "base": "250d0543c (dev ff9143ba4 + lotes 1 a 12)",
-    "resultado": "P=6147 S=9 F=159, reporter padrao, 15min32s",
-    "recorte_dentro_dela": "10 falhas, todas de principal_profile_preview_golden, deriva pre-existente",
-    "nota_de_comparacao": "Nao comparavel em PASS com medicoes do coordenador em reporter JSON: mesma arvore da 5871 no compacto e 6559 no JSON, com FAIL e SKIP identicos. Comparar apenas FAIL e SKIP."
+    "base": "b2cdba58a e seguintes (dev mesclado), reporter padrao",
+    "resultado": "P=6355 S=14 F=146",
+    "do_recorte": "exatamente 10, todas de principal_profile_preview_golden; nenhuma outra falha do app esta em arquivo que esta frente tocou",
+    "comparabilidade": "comparar apenas FAIL e SKIP entre reporters, criterio do coordenador"
   },
   "achados_em_dev_nao_meus": [
     "test/app/router/principal_real_route_test.dart falha em 3 casos sobre hospedagem do Principal e Acontece. Confirmado em worktree destacado de origin/dev 1c5eaf0bc limpo: as mesmas 3 falham. Causa: a rota de Acontece passou a exigir principalHappensFeedRepository E principalMixedFeedRepository (superadmin_router.dart:902 em dev) e o teste injeta so o primeiro, entao a rota cai em indisponivel. Teste desatualizado pela integracao do feed misto, nao regressao de produto; a producao compoe os dois. Pertence a publicacoes-midia."
@@ -278,6 +278,12 @@
       "titulo": "Evidencia: a base pode ser reconstruida?",
       "resumo": "docs/reviews/evidence/etapa-2/perfil-para-voce/2026-09-10-schema-versionado-e-replay.md. Quatro fatos medidos: replay das 186 quebra no arquivo 48 e persiste no PG17; o conjunto de 17 que supabase start aplicaria nao tem create table; 40 objetos app_private chamados e nunca criados, agrupados por dominio e com os conferidos a mao marcados; e child_safety e chat versionados por inteiro, que e o que impede o diagnostico de virar catastrofe. Inclui a nota de versao PG15 x PG17 que quase produziu dois falsos positivos.",
       "provas": "medicoes proprias em Postgres local efemero; containers removidos; nada aplicado remotamente"
+    },
+    {
+      "sha": "e4ce0e49b",
+      "titulo": "Pacote revisavel do selo DESTAQUE",
+      "resumo": "docs/reviews/evidence/etapa-2/perfil-para-voce/2026-09-10-selo-destaque-contraste.md. Contraste medido nos dois temas (3,75:1 claro, falha AA; 6,25:1 escuro, passa), curva de alfa mostrando que nenhum veu branco resolve, correcao proposta com orange950 a 16% dando 5,75:1, e o custo medido de 13 de 13 goldens. Nao aplicado: o token e compartilhado e a decisao e de coelo-ui.",
+      "provas": "calculo WCAG sobre as cores reais; troca aplicada, medida e revertida com arvore limpa conferida"
     }
   ],
   "defeitos_corrigidos": 10,
@@ -363,10 +369,10 @@
     "lotes_em_dev": "todos ate c5a6fd106 integrados; 0f2135398 e os merges seguintes publicados na branch e pendentes do proximo ciclo do coordenador"
   },
   "validacao_final_do_recorte": {
-    "base": "56638e7fa (dev 05df1ffb4 mesclado)",
-    "resultado": "P=268 F=10 B=0 S=0 U=0, estavel entre as tres ultimas bases integradas",
-    "as_dez": "exatamente principal_profile_preview_golden_test, mesma lista de NOMES",
-    "analyze": "flutter analyze lib test: No issues found (conferido em de4defc1c; base seguinte sem mudanca no recorte)"
+    "base": "134d582f4, identico a origin/dev no momento da medicao",
+    "resultado": "P=268 F=10 B=0 S=0 U=0",
+    "as_dez": "exatamente principal_profile_preview_golden_test, mesma lista de NOMES do inicio da noite",
+    "estabilidade": "mesmo par 268/10 em quatro bases integradas sucessivas"
   },
   "servicos_prestados_a_outras_frentes": [
     "Alerta e diagnostico da rota principal-conversations duplicada em dev, que fazia createSuperadminRouter lancar e o app inteiro nao subir; confirmado em checkout limpo antes de alertar",
@@ -533,7 +539,35 @@
     "assimetria_encontrada": "No mesmo ramo autorizado, attendanceRepository recebe SupabaseAttendanceRepository real. Rotina e Alunos falham FECHADO por composicao deliberada; Assiduidade tem tudo composto e falharia no PRIMEIRO USO REAL se as RPCs tambem nao existirem no remoto. Ler as tres como 'sem backend' apaga a diferenca.",
     "convergencia": "As cinco RPCs de Unidades de operacoes-sistema, as cinco de Assiduidade de alunos-rotina e os meus 40 objetos app_private sao o mesmo buraco medido por tres caminhos. create_unit_for_superadmin aparece em duas listas ao mesmo tempo.",
     "dado_que_so_esta_frente_tinha": "'Instalado fora do versionamento' e fenomeno MEDIDO neste repositorio: profile_about prova. Isso torna a hipotese benigna pelo menos tao provavel quanto a grave, e recomenda um unico select proname from pg_proc que responde pelas tres frentes de uma vez.",
-    "leitura_de_imagem_instituicoes": "NAO e regressao. O cartao 'Criar instituicao' so renderiza if (onCreate != null) e o _goldenApp do teste nao fornece onCreate; em producao o router passa onCreate condicionado a hasStructureMutationCapability(). O fixture inteiro tambem trocou. MAS e perda de COBERTURA: o golden protegia a afordancia e deixou de proteger."
+    "leitura_de_imagem_instituicoes": "NAO e regressao. O cartao 'Criar instituicao' so renderiza if (onCreate != null) e o _goldenApp do teste nao fornece onCreate; em producao o router passa onCreate condicionado a hasStructureMutationCapability(). O fixture inteiro tambem trocou. MAS e perda de COBERTURA: o golden protegia a afordancia e deixou de proteger.",
+    "leitura_de_imagem_conta": "A composicao de Conta NAO mudou em nenhuma das quatro capturas. O que mudou e o SHELL: em 1440 dark a barra lateral ganhou campo de busca e cresceu de 6 para ~9 itens, e o cabecalho perdeu um icone; em 768 light o cabecalho trocou icone de menu por logo e marca, perdeu um icone e ganhou divisor, deslocando tudo ~6px. QUARTA RESPOSTA da taxonomia: deslocamento em bloco por mudanca de shell. O controle segmentado que outra frente viu no diff nao mudou, aparece porque DESLOCOU. E a armadilha do isolatedDiff: elemento identico que se moveu acende igual a elemento alterado. Corroboracao cruzada: o icone que sumiu do cabecalho e o mesmo em Conta e em Instituicoes, entao nao e de nenhuma das duas. Para rebaseline, Conta e seguro quanto a cobertura, mas congela o shell atual como referencia em oito imagens de uma vez.",
+    "icone_do_cabecalho_do_shell": "O icone e Icons.bug_report_outlined, key superadmin-report-bug, primeiro filho de _HeaderUtilityActions; o segundo e o SuperadminActivityCenter, o sino, que renderiza sempre. Ele e gateado por if (widget.onBugReportSubmitted != null), gate existente desde 2026-07-20; o unico commit que tocou a linha desde entao so trocou para widget.<campo> num refactor. NAO foi removido. ACHADO: em producao o handler e productionSupportController?.submitReport, e supportController e parametro opcional de createSuperadminRouter que nem main.dart nem superadmin_app.dart fornecem. E sempre nulo. Logo o botao Reportar bug NAO EXISTE no shell de producao do Superadmin, em tela nenhuma. Mesma causa raiz do /support devolver 503 achada por operacoes-sistema: Suporte nao tem composicao de producao e as duas coisas dependem do mesmo controlador ausente. O /dev preview fornece developmentSupportController, entao la o icone aparece. RESIDUAL DECLARADO: o golden de Instituicoes foi capturado em 2026-08-10, depois do gate existir, e mostra o icone; os dois testes de golden nunca referenciaram onBugReportSubmitted em commit nenhum e eu nao achei o que fornecia o handler naquela epoca. Parei porque a resposta que decide nao depende disso. RECOMENDACAO: regravar Conta e Instituicoes nao aprova regressao, aprova o estado verdadeiro de producao. Mas carimba como referencia aprovada uma tela sem a afordancia de reportar bug, em catorze imagens, sem ninguem ter decidido isso. Primeiro a decisao sobre Suporte no MVP, depois o rebaseline."
   },
-  "correcao_de_horario": "Os campos updated_at das revisoes anteriores foram TIPADOS por estimativa e nao lidos do relogio: chegaram a ficar cerca de 1h25 adiantados. A partir desta revisao o valor vem de powershell Get-Date -Format 'yyyy-MM-ddTHH:mm:ssK'. Registro porque timestamp de handoff e usado para reconciliar ordem de eventos, e numero estimado com aparencia de medido e a mesma classe de erro que passei a noite catalogando. Nota util para as outras frentes: neste Git Bash o comando date JA devolve horario local -03, conferido contra o PowerShell no mesmo minuto; o que devolve UTC e usar TZ=America/Sao_Paulo, porque nao ha tzdata e o TZ e ignorado."
+  "correcao_de_horario": "Os campos updated_at das revisoes anteriores foram TIPADOS por estimativa e nao lidos do relogio: chegaram a ficar cerca de 1h25 adiantados. A partir desta revisao o valor vem de powershell Get-Date -Format 'yyyy-MM-ddTHH:mm:ssK'. Registro porque timestamp de handoff e usado para reconciliar ordem de eventos, e numero estimado com aparencia de medido e a mesma classe de erro que passei a noite catalogando. Nota util para as outras frentes: neste Git Bash o comando date JA devolve horario local -03, conferido contra o PowerShell no mesmo minuto; o que devolve UTC e usar TZ=America/Sao_Paulo, porque nao ha tzdata e o TZ e ignorado.",
+  "residual_de_integracao": {
+    "declaracao": "19 commits desta frente; 18 verificados como ancestrais de origin/dev um a um, e o 19o (e4ce0e49b, pacote do selo DESTAQUE) publicado na branch e pendente do proximo ciclo do coordenador. Nada retido localmente.",
+    "commits_verificados": [
+      "b09da7c15",
+      "76e8ada8f",
+      "60f32e292",
+      "6e58b624f",
+      "0399b186e",
+      "35fff6b13",
+      "65e1e5000",
+      "9a82d5dcf",
+      "0e1df2217",
+      "6b05ccb82",
+      "086961de5",
+      "250d0543c",
+      "5401cec1b",
+      "06876dac5",
+      "c5a6fd106",
+      "0f2135398",
+      "8065dc529",
+      "0d2304c56",
+      "e4ce0e49b"
+    ],
+    "estado_git": "HEAD 134d582f4, igual a origin/dev; upstream 0/0; worktree com 0 caminhos alterados; git rev-list --count origin/dev..HEAD devolve 0; zero stash.",
+    "por_que_declarado_assim": "O coordenador reconcilia oito frentes as 05:00 e tende a assumir que quem faz conferencia de fora esta limpo. Residual meu e o que mais provavelmente escaparia, entao a declaracao e por SHA e nao por adjetivo."
+  }
 }

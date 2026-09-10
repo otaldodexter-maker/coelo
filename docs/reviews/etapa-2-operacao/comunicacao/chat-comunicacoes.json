@@ -1,6 +1,6 @@
 {
-  "revision": 36,
-  "updated_at": "2026-09-10T02:45:00-03:00",
+  "revision": 37,
+  "updated_at": "2026-09-10T02:26:00-03:00",
   "group": "chat-comunicacoes",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) - claude-opus-5[1m]",
@@ -670,5 +670,24 @@
       "resultado": "Os oito ja estavam no arquivo. Mas as DUAS auditorias que eu acabara de entregar viviam so no canal — o exercicio me pegou em tempo real.",
       "licao": "Eu escrevia no arquivo antes de mandar quando o trabalho era meu, e deixei de escrever quando o trabalho era conferencia para outro. Registro so o que pareco dono; conferencia parece pertencer a quem pediu."
     }
+  },
+  "falhas_nao_golden_do_dev_sao_anteriores_a_rodada": {
+    "pergunta": "A suite completa da minha worktree fechou 408 pass / 7 fail. Tres goldens conhecidos e um vermelho proposital explicavam quatro. Sobravam falhas em arquivos de ROTA que eu nunca tinha verificado.",
+    "por_que_importa": "Falha de rota e a classe que a rodada passou a noite protegendo. Um leitor razoavel que veja 5 vermelhos de rota num dev entregue de madrugada assume que a noite os produziu.",
+    "metodo": "Mesmos quatro arquivos de teste medidos em tres pontos: minha base, dev atual (origin/dev=c1df3e1af) e a base do inicio da noite (d784462c1). Worktree descartavel detached em C:/cdchk, sem tocar no checkout do integrador.",
+    "resultado_dev_atual": "5 falham: import_development_routes (1), principal_real_route (3), prototype_navigation_routes (1).",
+    "resultado_base_do_inicio_da_noite": "AS MESMAS CINCO falham em d784462c1, com os mesmos nomes de caso. Sao pre-existentes; a rodada nao introduziu nenhuma.",
+    "melhora_medida": "composition_root_fail_closed_routes_test FALHAVA em d784462c1 e PASSA no dev atual. A rodada consertou uma e nao quebrou nenhuma neste conjunto.",
+    "natureza_tecnica": "Nao e drift de pixel. import_development_routes morre com 'RenderFlex overflowed by 1409 pixels on the bottom' porque o teste nao fixa tamanho de view e cai no 800x600 padrao; as outras quatro morrem com 'Bad state: No element', isto e, o widget procurado nao chegou a existir. Falha de layout em ambiente de teste, nao de fonte.",
+    "ligacao_com_erro_meu": "A falha de composition_root_fail_closed_routes e exatamente a que eu li como defeito de fail-open e reportei como prioridade um, e depois retratei em c1e6756c7. O vermelho era real; o defeito que eu li nele nao era. Alguem o consertou nesta rodada.",
+    "limite_declarado": "O recorte sao estes quatro arquivos. Nao rodei a suite inteira nos tres pontos e nao afirmo nada sobre os demais testes.",
+    "recurso_a_fechar": "Worktree descartavel C:/cdchk (caminho curto porque o scratchpad estoura o limite de nome do Windows). Removida antes da entrega final."
+  },
+  "correcao_de_horarios_estimados": {
+    "o_que_eu_errei": "Carimbei horarios nas tres entregas de auditoria sem ler o relogio, estimando a partir da ultima leitura real (01:55). O erro chegou a quase quarenta minutos.",
+    "por_que_e_grave": "Eu tinha acabado de reportar deriva de horario em outras frentes e estava cometendo a versao manual do mesmo erro.",
+    "distincao_que_muda_o_conserto": "Deriva de ferramenta (TZ no Git Bash devolvendo UTC) produz erro CONSTANTE e detectavel, e se conserta trocando o comando. Estimativa entre leituras produz erro que CRESCE, e por isso permanece plausivel quanto pior fica.",
+    "regra_nova": "Ler o relogio imediatamente antes de qualquer horario registrado, e nao a cada bloco de trabalho.",
+    "escopo_do_erro": "Somente carimbos de entrega. Nenhum fato tecnico dependia de horario: SHAs, 762 goldens nas duas pontas, 232 nomes de rota, zero regressoes de revisao, zero merges com resolucao no intervalo."
   }
 }

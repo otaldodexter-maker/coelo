@@ -40,7 +40,8 @@ O método já evitou três enganos concretos:
 | `ecc8eae2b` | 19:30 | 5707 PASS, 9 SKIP, 190 FAIL |
 | `414b82b29` | 20:40 | 5871 PASS, 9 SKIP, 182 FAIL — 144 golden, 38 não |
 | `b0f816560` | 21:40 | 6811 PASS, 9 SKIP, 156 FAIL — 127 golden, 29 não |
-| `b4cf3664a` | 02:20 | **6344 PASS, 14 SKIP, 146 FAIL — 129 golden, 17 não** |
+| `b4cf3664a` | 01:20 | 6344 PASS, 14 SKIP, 146 FAIL — 129 golden, 17 não |
+| `8e230b15a` | 02:25 | **6370 PASS, 14 SKIP, 144 FAIL — 129 golden, 15 não** |
 
 Nenhum número soma reexecuções, e cada linha é uma execução completa sobre a
 base indicada. A queda de PASS entre a terceira e a quarta linha não é regressão:
@@ -107,6 +108,20 @@ existe — `SuperadminSession` expõe apenas autenticação — e a outra exigir
 página soubesse qual capacidade governa uma superfície de leitura, quando o
 contrato de Formulários só tem capacidades de gerenciar e publicar. A alternativa
 real, às duas da manhã, era inventar um portão de autorização.
+
+**E as não-golden são anteriores à rodada, medido e não deduzido.** Os mesmos
+arquivos foram executados em três pontos: a base do início da noite, uma
+intermediária e a base entregue. Em `d784462c1`, **antes de a rodada começar,
+falhavam exatamente as mesmas cinco, com os mesmos nomes de caso**; nenhuma foi
+introduzida esta noite, e uma que falhava lá **passa agora**. Isso é diferente de
+"são conhecidas" — quem vê cinco vermelhos de rota numa base entregue de
+madrugada assume que a madrugada os produziu.
+
+O motivo técnico também as separa do bloco visual: uma morre com
+`RenderFlex overflowed by 1409 pixels`, porque o teste não fixa o tamanho da view
+e cai no padrão de 800×600; as outras quatro morrem com `Bad state: No element`,
+ou seja, o widget procurado nunca chegou a existir. **É falha de layout em
+ambiente de teste, não de renderização.**
 
 **As 129 falhas de golden são aceite visual e dependem de decisão sua**, não de
 código. As duas maiores concentrações são `agenda_calendar` com 14 casos e as
@@ -277,76 +292,45 @@ O teste falha também **se uma das cinco ausências passar a existir e continuar
 lista** — sem isso a lista de exceções envelhece e passa a esconder o defeito
 seguinte, que é como esse tipo de allowlist costuma morrer.
 
-## Os 129 goldens não são um bloco, e rebaseline cego apagaria produto
+## Triagem dos 129 goldens: a maior parte é rebaseline seguro
 
-Quatro conjuntos foram amostrados abrindo `masterImage` e `testImage` lado a lado.
-Deram **três perfis distintos**, e a conclusão prática é forte: **na amostra, a
-maioria dos casos tem componente que um rebaseline em bloco apagaria.**
+**Esta seção foi reescrita depois de a própria medição que a sustentava se
+inverter, e a inversão é o resultado mais importante dela.** A primeira leitura
+concluía que cerca de 70% dos casos amostrados escondiam mudança de produto e que
+um rebaseline em bloco apagaria trabalho. **A leitura correta é o contrário: cerca
+de 83% são deslocamento e podem ser regravados com segurança.**
 
-**Agenda, 14 casos — deriva pura de shell, rebaseline seguro.** A 1440 o diff é
-0,05% e **837 pixels**, nas duas variantes de tema, que é a assinatura exata do
-commit que fundiu o rótulo do alternador da barra lateral com a ação. A 375 e 768
-sobe para 10%–18%, e o diff isolado mostra **todo o conteúdo deslocado
-verticalmente por poucos pixels**, do título ao último dia — nenhuma diferença de
-conteúdo, a página inteira descendo. É o commit que "alinha o cabeçalho compacto
-e reserva espaço de ação", que só muda a altura do cabeçalho nas larguras
-compactas. Duas mudanças aprovadas, separadas por largura. Agenda não esconde
-nada.
+**O que estava errado no método:** duas das seis famílias foram classificadas
+**só por magnitude** — "nas larguras largas o diff vale centenas de vezes a
+assinatura do shell, logo há conteúdo". Esse *logo* é falso. **Deslocamento em
+bloco também produz magnitude grande**, porque cada elemento aparece duas vezes na
+imagem de diferença. Só a comparação **elemento a elemento** classifica; o número
+não classifica nada.
 
-**Conta, 8 casos — e aqui apareceu a quarta categoria, que é a mais enganosa de
-todas.** A primeira leitura mediu 44%–73% nas larguras compactas e 3,9%–5,1% nas
-largas, com o diff das largas valendo **cem vezes** a assinatura do shell, e viu
-no corpo um controle segmentado e uma linha com interruptor. A conclusão natural
-era mudança de produto.
+Reabertos os diffs um a um:
 
-**Não é.** A comparação elemento a elemento das quatro capturas mostra que a
-composição de Conta **não mudou**: os mesmos dois cartões, o mesmo controle
-segmentado com a mesma opção realçada, o mesmo interruptor, os mesmos textos, nas
-mesmas posições relativas — deslocados **em bloco**. O que mudou foi o shell: a
-barra lateral ganhou um campo de busca e passou de 6 para cerca de 9 itens, o
-cabeçalho perdeu um ícone, e em 768 tudo desce cerca de 6 px sob um divisor novo.
+| Família | Casos | Leitura final |
+| --- | ---: | --- |
+| Agenda | 14 | deslocamento — duas mudanças aprovadas de shell, separadas por largura |
+| Atividades | 16 | deslocamento — cada item da barra lateral e cada cartão aparece em dobro |
+| Conta | 8 | deslocamento — composição idêntica, empurrada em bloco pelo shell |
+| Formulários | 12 | deslocamento, com uma ressalva: um chevron aparece invertido, o que pode ser estado de expansão e não deslocamento |
+| Cardápios | 6 | **conteúdo** — todo o cartão desceu doze pixels, mas o ponto de status é rosa na referência e verde agora. Duas cores diferentes não são deslocamento |
+| Instituições | 4 | **conteúdo** — o cartão de criação ausente, outro fixture, outra paginação |
 
-**A armadilha é do próprio diff:** um elemento idêntico que se deslocou acende
-exatamente como um elemento alterado, e a imagem não distingue os dois casos. O
-controle segmentado apareceu no diff porque se moveu, não porque mudou.
+**Cerca de 50 casos de 60 são deslocamento; cerca de 10 têm componente de
+conteúdo, e nos dois casos o conteúdo é pequeno e identificável** — uma cor de
+status e um cartão de criação com dados de fixture.
 
-Então a taxonomia fecha com **quatro** respostas, e não três: regressão de
-produto; fixture diferente; perda de cobertura, que foi Instituições; e
-**deslocamento em bloco por mudança de shell**, que é Conta. A quarta é a pior
-porque o diff mostra conteúdo da feature enquanto a feature está intacta.
+**A recomendação, corrigida:** a maior parte dos 129 é provavelmente rebaseline
+seguro, e a revisão humana deve se concentrar nas famílias onde a comparação
+elemento a elemento mostra diferença que **não** é deslocamento. Regravar em bloco
+sem essa triagem continua sendo errado — mas o custo de fazer a triagem é muito
+menor do que a primeira leitura sugeria.
 
-**O fio foi puxado, e a resposta é maior que a pergunta.** O ícone que falta em
-Conta e em Instituições é o mesmo, e não é regressão nem remoção deliberada: é o
-botão **"Reportar bug"** do cabeçalho, que **nunca aparece em produção, em tela
-nenhuma**. Ele renderiza apenas quando um manipulador é fornecido, e em produção
-esse manipulador vem do controlador de Suporte — um parâmetro opcional do router
-que nem o ponto de entrada nem o aplicativo mencionam. **É sempre nulo.** No
-ambiente de desenvolvimento ele é fornecido, então quem testa em `/dev` vê a
-afordância e quem usa o produto não tem como reportar um bug.
-
-**É a mesma causa raiz do 503 de Suporte**, encontrada de outro lugar: uma frente
-chegou por dentro da rota, outra pelo cabeçalho de todas as outras telas. O mesmo
-controlador ausente produz as duas ausências.
-
-Isso muda a recomendação de rebaseline de Conta, e na direção contrária à
-intuição: regravar **não** aprova uma regressão, porque o estado atual é o estado
-verdadeiro de produção. Mas **carimba como referência aprovada, em catorze imagens
-de uma vez, um Superadmin sem afordância de reportar bug** — sem que ninguém tenha
-decidido isso. A referência passa a certificar a ausência. **Tecnicamente seguro e
-politicamente prematuro:** primeiro você decide se o Superadmin de produção deve
-poder reportar bug, que é a mesma decisão de se Suporte recebe camada de dados no
-MVP; depois se regrava, e aí a referência reflete uma escolha em vez de um
-acidente.
-
-Um residual declarado: a referência de Instituições foi capturada **depois** de o
-gate existir e mesmo assim mostra o ícone, e os testes de golden nunca
-referenciaram aquele manipulador. O que o fornecia naquele momento não foi
-encontrado, e a busca parou porque a resposta que decide não depende disso.
-
-**Cardápios, 6 casos — conteúdo puro, sem componente de shell visível.**
-0,86%–8,70%. No diretório a 1440 a barra lateral não aparece no diff; o que difere
-é um cartão, com um ponto de status trocando de cor e linhas de texto sobrepostas
-onde um rótulo e uma data mudaram.
+**As duas famílias com conteúdo continuam pedindo o dono antes do rebaseline**, e
+uma delas pela razão descrita adiante: em Instituições o que se perdeu não foi
+afordância, foi cobertura.
 
 **Instituições, 4 casos — resolvido, e a resposta é a terceira possibilidade.**
 O cartão tracejado "Criar instituição" está presente na referência e ausente na
