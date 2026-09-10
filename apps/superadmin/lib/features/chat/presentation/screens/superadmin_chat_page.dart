@@ -881,6 +881,11 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
             children: [
               if (compact)
                 IconButton(
+                  // Unico caminho de volta a lista no estreito, onde a tela
+                  // mostra a conversa NO LUGAR da caixa de entrada. Sem chave
+                  // ele so podia ser alcancado pelo texto do tooltip, que e
+                  // rotulo de interface e muda sem aviso.
+                  key: const Key('superadmin-chat-back-to-inbox'),
                   tooltip: 'Voltar para conversas',
                   onPressed: () => setState(() => _selected = null),
                   icon: const Icon(Icons.arrow_back_rounded),
