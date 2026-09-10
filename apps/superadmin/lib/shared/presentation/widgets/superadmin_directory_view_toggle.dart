@@ -118,44 +118,51 @@ final class _SuperadminDirectoryViewToggleState<T> extends State<SuperadminDirec
             onHover: (event) {
               if (_isTableHalf(event.localPosition.dx)) _openMenu();
             },
-            child: GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onLongPressStart: (details) {
-                if (_isTableHalf(details.localPosition.dx)) _openMenu();
-              },
-              child: SegmentedButton<bool>(
-                style: ButtonStyle(
-                  fixedSize: WidgetStatePropertyAll(Size(_segmentWidth, CoeloSize.touchMin)),
-                  padding: WidgetStatePropertyAll(EdgeInsets.zero),
-                ),
-                segments: [
-                  ButtonSegment(
-                    value: true,
-                    icon: Semantics(
-                      label: 'Exibir como cards',
-                      child: Icon(key: widget.cardsKey, Icons.grid_view_rounded),
-                    ),
+            // O detector de pressionar-e-segurar publicava um no tocavel SEM
+            // nome acessivel, enquanto os dois segmentos internos eram
+            // rotulados. Atalho por gesto sem nome nao e anunciavel. O rotulo
+            // aqui nao altera nada visualmente.
+            child: Semantics(
+              label: 'Pressione e segure sobre a tabela para abrir as opções de exibição.',
+              child: GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onLongPressStart: (details) {
+                  if (_isTableHalf(details.localPosition.dx)) _openMenu();
+                },
+                child: SegmentedButton<bool>(
+                  style: ButtonStyle(
+                    fixedSize: WidgetStatePropertyAll(Size(_segmentWidth, CoeloSize.touchMin)),
+                    padding: WidgetStatePropertyAll(EdgeInsets.zero),
                   ),
-                  ButtonSegment(
-                    value: false,
-                    icon: KeyedSubtree(
-                      key: _tableSegmentContentKey,
-                      child: Semantics(
-                        label: 'Exibir como tabela',
-                        child: Icon(key: widget.tableKey, Icons.table_rows_rounded),
+                  segments: [
+                    ButtonSegment(
+                      value: true,
+                      icon: Semantics(
+                        label: 'Exibir como cards',
+                        child: Icon(key: widget.cardsKey, Icons.grid_view_rounded),
                       ),
                     ),
-                  ),
-                ],
-                selected: {widget.cardsSelected},
-                showSelectedIcon: false,
-                onSelectionChanged: (selection) {
-                  if (selection.single) {
-                    widget.onCardsSelected();
-                  } else {
-                    _selectTableView(widget.groupedView);
-                  }
-                },
+                    ButtonSegment(
+                      value: false,
+                      icon: KeyedSubtree(
+                        key: _tableSegmentContentKey,
+                        child: Semantics(
+                          label: 'Exibir como tabela',
+                          child: Icon(key: widget.tableKey, Icons.table_rows_rounded),
+                        ),
+                      ),
+                    ),
+                  ],
+                  selected: {widget.cardsSelected},
+                  showSelectedIcon: false,
+                  onSelectionChanged: (selection) {
+                    if (selection.single) {
+                      widget.onCardsSelected();
+                    } else {
+                      _selectTableView(widget.groupedView);
+                    }
+                  },
+                ),
               ),
             ),
           ),
