@@ -1,6 +1,6 @@
 {
-  "revision": 40,
-  "updated_at": "2026-09-10T04:10:00-03:00",
+  "revision": 41,
+  "updated_at": "2026-09-10T04:17:30-03:00",
   "group": "perfil-para-voce",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
@@ -572,14 +572,11 @@
   },
   "correcao_de_horario": "Os campos updated_at das revisoes anteriores foram TIPADOS por estimativa e nao lidos do relogio: chegaram a ficar cerca de 1h25 adiantados. A partir desta revisao o valor vem de powershell Get-Date -Format 'yyyy-MM-ddTHH:mm:ssK'. Registro porque timestamp de handoff e usado para reconciliar ordem de eventos, e numero estimado com aparencia de medido e a mesma classe de erro que passei a noite catalogando. Nota util para as outras frentes: neste Git Bash o comando date JA devolve horario local -03, conferido contra o PowerShell no mesmo minuto; o que devolve UTC e usar TZ=America/Sao_Paulo, porque nao ha tzdata e o TZ e ignorado.",
   "residual_de_integracao": {
-    "declaracao": "QUATRO commits pendentes de integracao, todos publicados na branch remota. Nada retido localmente, nada nao commitado.",
-    "medido_em": "2026-09-10T04:09:41-03:00, com origin/dev em cdfef4464",
+    "declaracao": "1 commit(s) pendente(s) de integracao, todos publicados na branch remota. Nada retido localmente, nada nao commitado.",
+    "medido_em": "2026-09-10T04:17:30-03:00, com origin/dev em 606e291f5",
     "metodo": "git merge-base --is-ancestor <sha> origin/dev, apos git fetch origin --prune",
     "pendentes": [
-      "6bf733fec docs(skill): catalogue the instruments that make a review number wrong",
-      "50ba6a73c docs(skill): name the condition, because a cause that does not reproduce is folklore",
-      "31cff109d docs(skill): say why the recommendation is ls-tree and not the environment flag",
-      "2a0da284f docs(evidence): close the open question about the second migration tree"
+      "f57459bed"
     ],
     "o_que_sao": "Tres criam UM arquivo de skill novo, .agents/skills/coelo-flutter-supabase-review/references/medicao-confiavel.md, com as tres armadilhas de instrumento, a lei do controle, as tres perguntas do denominador, a sobreposicao, o apodrecimento de campos de estado e o diff que assusta. O quarto fecha, no documento de evidencia do replay, a duvida sobre a segunda arvore de migration, com credito a chat-comunicacoes.",
     "pedido_ao_coordenador": "Ler antes de integrar o arquivo de skill: e instrucao para todo mundo, nao evidencia de uma frente, e cita medicao de cinco pessoas. Se preferir que nao entre, o conteudo ja esta no relatorio da rodada e a frente nao reabre.",
@@ -986,5 +983,33 @@
       "zero stash em todo o repositorio; nenhuma branch local em risco"
     ]
   },
-  "residual_zero_declarado_as_0356": "SUPERADO pela revisao 40: era verdadeiro as 03:56:38 e deixou de ser as 04:06:56, quando publiquei o arquivo de skill. Preservado aqui para que a linha do tempo feche."
+  "residual_zero_declarado_as_0356": "SUPERADO pela revisao 40: era verdadeiro as 03:56:38 e deixou de ser as 04:06:56, quando publiquei o arquivo de skill. Preservado aqui para que a linha do tempo feche.",
+  "varredura_por_nome_de_classe": {
+    "o_que_e": "Um quarto criterio de varredura, alem de nome de arquivo, diretorio de dominio e import. Os tres primeiros sao criterios de CAMINHO; existe artefato do dominio que falha nos tres ao mesmo tempo e so aparece pelo nome da CLASSE.",
+    "quando_nasceu": "2026-09-10, ao conferir uma afirmacao do relatorio do Owner sobre abas de Perfil orfas, feita por outra frente sobre o meu recorte e nunca verificada por mim.",
+    "regra": "Quando o dominio aparece no nome da CLASSE mas nao no caminho, nenhuma varredura de caminho o encontra.",
+    "limite_medido_do_detector": "So vale para classes PUBLICAS. Classe privada de Dart e, por definicao, consumida no proprio arquivo; 'sem consumidor fora do arquivo' e o estado normal dela. A primeira versao do detector marcou 57 orfas no dominio e cerca de 50 eram falso positivo, porque eu excluia as ocorrencias do arquivo declarante e isso apaga tambem os usos legitimos de widget privado. Taxa de falso positivo perto de 90% em codigo Flutter. Filtrando por visibilidade, sobram cinco, das quais duas sao deste recorte."
+  },
+  "orfa_1_abas_de_perfil_publicas": {
+    "classe": "PrincipalProfileContentTabs",
+    "onde": "apps/superadmin/lib/features/principal_circulars/presentation/principal_circular_surfaces.dart, linha 10, arquivo de 795 linhas",
+    "consumidores_em_lib": "ZERO",
+    "o_que_a_mantem_viva": "dois arquivos de teste, ambos em apps/superadmin/test/features/principal_circulars/presentation/ - principal_circular_golden_test.dart e principal_circular_surfaces_test.dart",
+    "medido_em": "2026-09-10T04:11:47-03:00",
+    "NAO_E_DUPLICACAO": "O relatorio do Owner descreve estas abas como duplicando as que a pagina do Perfil ja implementa em privado. A afirmacao de orfandade esta CERTA, mas nao sao os mesmos conjuntos: a orfa oferece QUATRO abas - Acontece, Momentos, Circulares, Sobre - e a tela viva oferece DUAS - happensTab e momentsTab. A orfa nao e copia esquecida da tela existente; descreve um Perfil MAIOR do que o que existe.",
+    "por_que_a_distincao_importa": "Duplicata e desperdicio. Divergencia de contrato e decisao pendente, porque um golden aprovado e evidencia de que alguem, em algum momento, aprovou aquilo. A decisao numero 1 desta frente ja e binaria e esta com o Owner - qual e a referencia aprovada do Perfil, dado que o golden mostra Acompanhar e seis metricas e a composicao atual mostra Mensagem e tres. Esta orfa e um TERCEIRO Perfil. Se a pergunta for feita com duas versoes, a resposta fecha uma divergencia e deixa a outra viva.",
+    "por_que_o_2b_nao_a_pegou": "Falhou nos tres criterios de caminho ao mesmo tempo: nao esta na arvore do recorte (mora em features/principal_circulars), o nome do arquivo nao menciona perfil (principal_circular_surfaces.dart), e a pagina do Perfil nao a importa porque constroi as proprias abas."
+  },
+  "orfa_2_decisao_de_dado_oficial_no_Sobre": {
+    "classe": "ProfileAboutOfficialUpdateRequest",
+    "onde": "packages/coelo_domain/lib/src/profile_about/profile_about.dart, linha 446",
+    "consumidores_em_lib": "ZERO, em todo o monorepo",
+    "o_que_a_mantem_viva": "duas referencias, ambas em packages/coelo_domain/test/profile_about/profile_about_test.dart",
+    "medido_em": "2026-09-10T04:15:48-03:00",
+    "o_que_ela_modela": "A decisao de, ao editar um campo do Sobre, atualizar SO o Sobre ou o Sobre E O DADO OFICIAL. E condicionada a permissao: availableDecisions devolve aboutOnly sempre, e acrescenta aboutAndOfficial somente se canUpdateOfficialData for verdadeiro.",
+    "consequencia": "Editar o Sobre no app nunca apresenta o caminho de atualizar tambem o dado oficial, ainda que o contrato de dominio o preveja e um teste garanta o comportamento das duas variantes. Nao e 'faltou implementar': alguem modelou a distincao, escreveu o teste, e a superficie nao existe. Verde legitimo sobre contrato que nao chega ao usuario.",
+    "forma_conhecida": "E a sexta instancia virando setima do padrao que o coordenador catalogou como camada pronta sem superficie, agora em profile_about.",
+    "toca_decisao_pendente": "A decisao 3 da proxima_rodada pergunta quais campos a tela de Editar perfil edita e quem edita. A resposta do dominio ja existe e e mais rica do que a pergunta assumia: ha uma segunda escolha, gated por permissao, que a pergunta nao contempla."
+  },
+  "nao_inspecionado_e_passado_adiante": "A mesma varredura marcou HealthCareProfileCatalogGroup e HealthCareProfileCatalogItem (features/health_care/domain/health_care.dart) e HealthCareProfileUpdateCommand (features/health_care/presentation/health_care_controller.dart) como publicas sem consumidor em lib, as duas primeiras tambem sem teste algum. NAO sao deste recorte e NAO foram inspecionadas. Registrado como pista para quem tem o recorte de saude, nao como achado."
 }

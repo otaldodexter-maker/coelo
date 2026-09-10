@@ -1,6 +1,6 @@
 {
-  "revision": 40,
-  "updated_at": "2026-09-10T03:52:00-03:00",
+  "revision": 41,
+  "updated_at": "2026-09-10T04:22:00-03:00",
   "group": "publicacoes-midia",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
@@ -428,12 +428,12 @@
     "Colisao logica entre worktrees, confirmada pelo coordenador: o meu lote 2 e o de perfil-para-voce adicionaram INDEPENDENTEMENTE o mesmo parametro principalCircularRepository ao router, ao superadmin_app, ao auth scope e ao main, mais dois imports da mesma biblioteca. O Git mesclou limpo porque as linhas nao se sobrepoem; so o analyzer pegou. Merge limpo nao e arvore que compila, e worktree separada nao protege de conflito semantico em arquivo compartilhado. Corrigido por ele em 4d119b4f3, mantendo a declaracao que carrega o comentario da projecao do Principal.",
     "Acontece e Agora foram verificados contra o mesmo padrao de perda do lote 4: ja tem embedded e mediaPicker convivendo, com seletor local padrao, e as rotas produtivas passam embedded: true. Nao ha perda ali.",
     "O diretorio packages/coelo_database/supabase/migrations e gitignored por regra do projeto (.gitignore linha 93); apenas 17 arquivos sao rastreados. Os seis candidatos de migration de L01 no meu recorte estao preservados como arquivos rastreados na branch codex/e2-r02-l01-publicacoes e nao se perdem, mas nao podem ser reproduzidos por copia para uma worktree sem -f.",
-    "O candidato 20260909135000_private_media_catalog_chat_kind_v1.sql encosta ao mesmo tempo na plataforma comum de midia, que e minha reserva, e em chat-comunicacoes. A serializacao e do coordenador; nao escrevo nele sem sua decisao.",
+    "O candidato 20260909215000_private_media_catalog_chat_kind_v1.sql encosta ao mesmo tempo na plataforma comum de midia, que e minha reserva, e em chat-comunicacoes. A serializacao e do coordenador; nao escrevo nele sem sua decisao.",
     "Metodo, sobre a prova do lote 7: verifiquei que principal_now_authorization_revision_test FALHA com a correcao revertida e passa com ela. Uma prova que passa nos dois estados nao prova nada, e vale a pena as outras frentes conferirem isso nas invariantes que escreverem hoje.",
     "Risco evitado no lote 7: o primeiro rascunho passou dart format no router e reformatou 191 linhas de um arquivo compartilhado. Descartado e refeito com 8 linhas. Reformatar arquivo reservado na noite em que o coordenador serializa merges cria conflito para todas as frentes.",
     "Restam quatro dos seis sitios de idempotencia: save_happens_draft e save_now_draft, onde o p_expected_revision ainda barra a repeticao, e withdraw_happens_post e withdraw_moment, que dependem dos contratos SQL ainda candidatos na branch de L01.",
     "RESULTADO NEGATIVO, verificado e nao presumido: o padrao _Metric que estoura com texto ampliado NAO reproduz em principal_profile_happens_tab. A suite responsiva existente ja cobre 200 por cento em 375 e 1440 e passa; forcei larguras 320, 360 e 375 cruzadas com escalas 1.5, 2.0 e 3.0 e rotulos de seis digitos, nove combinacoes, todas sem excecao de layout. A diferenca provavel e estrutural: em Planos o _Metric vive num cartao de grid com mainAxisExtent fixo, aqui o Wrap esta num cartao de altura livre. Nao apliquei Flexible: seria mudanca especulativa num arquivo de principal_profile, territorio de perfil-para-voce, e criaria dois escritores no mesmo arquivo sem necessidade.",
-    "As nove RPCs de Circulares que o caminho Principal chama estao todas definidas em packages/coelo_database/supabase/migrations/20260821190000_circulars_production.sql e todas no grant execute to authenticated apos um revoke all; o arquivo tem 28 funcoes security definer e 29 set search_path vazio. get_visible_circular checa capacidade por circular_actor com circulars.circulars.read no escopo institution/unit/group, checa audiencia, barra nao publicada e mascara a negacao como circular_not_found. Isso prova DEFINICAO local, nao aplicacao remota, que nao verifiquei e nao tenho autorizacao para verificar. A lacuna do inventario deve ser reescrita de 'RPC ausente no gateway v2' para 'definida localmente, aplicacao remota nao verificada', porque a nota original vale para o gateway administrativo v2 e nao para o caminho Principal.",
+    "As nove RPCs de Circulares que o caminho Principal chama estao todas definidas em packages/coelo_database/migrations/20260821190000_circulars_production.sql e todas no grant execute to authenticated apos um revoke all; o arquivo tem 28 funcoes security definer e 29 set search_path vazio. get_visible_circular checa capacidade por circular_actor com circulars.circulars.read no escopo institution/unit/group, checa audiencia, barra nao publicada e mascara a negacao como circular_not_found. Isso prova DEFINICAO local, nao aplicacao remota, que nao verifiquei e nao tenho autorizacao para verificar. A lacuna do inventario deve ser reescrita de 'RPC ausente no gateway v2' para 'definida localmente, aplicacao remota nao verificada', porque a nota original vale para o gateway administrativo v2 e nao para o caminho Principal.",
     "Severidade baixa, para decisao e nao para correcao minha: public.authorize_circular_media_read esta no grant to authenticated e devolve bucket_id e object_key. Ela precisa ser chamavel pelo usuario porque a Edge Function usa o cliente do usuario para autorizar antes de assinar. Nao concede acesso, ja que o bucket e privado e sem assinatura nada e lido, mas contraria a regra da ADR 0032 de nao expor bucket, chave ou provedor ao cliente. A correcao seria devolver um identificador opaco, o que muda o contrato entre a RPC e a Edge Function e entra na fila SQL com autorizacao nominal.",
     "CORRECAO DE ENQUADRAMENTO DO MEU PROPRIO LOTE 3, importante antes de voce registrar avanco: a rota /principal-moments que eu compus chama list_visible_moments, e essa RPC NAO existe na base integrada. Conferi as 180 migrations rastreadas em packages/coelo_database/migrations/ na branch dev e as 17 de supabase/migrations/: zero ocorrencias de list_visible_moments, withdraw_moment e withdraw_happens_post. As tres so existem nos candidatos autorais de L01, que continuam fora de dev. O lado cliente esta fechado e o estado de falha e honesto, mas a acao nao completa em producao. Isto e exatamente a classe do caso de Suporte que voce descreveu, e eu prefiro apontar no meu proprio trabalho antes que vire promocao indevida. RESSALVA POSTERIOR, do reteste dos meus proprios bloqueios: a parte sobre PRODUCAO e inferencia. O verificado e a ausencia no repositorio; o repositorio nao espelha producao, entao o registro correto e ausencia de evidencia, nao afirmacao de comportamento produtivo.",
     "O defeito de withdraw_happens_post era maior do que eu havia relatado: alem da mensagem, a CLASSE de erro diferia (no_data_found para inexistente, insufficient_privilege para alheio). Mensagem unificada sozinha deixaria o SQLSTATE distinguindo os dois casos. A correcao unifica os dois eixos.",
@@ -502,7 +502,7 @@
       "camada": "frontend",
       "estado_atual": "pending-verification",
       "estado_proposto": "pending-verification",
-      "delta": "A rota normal /principal-moments deixou de responder composicao indisponivel: consome PrincipalMomentsFeedRepository sob o escopo real do runtime dentro do shell do Superadmin, expoe o contrato de retirada autoral, recarrega pela revisao de invalidacao de autorizacao e por sinal de publicacao confirmada, e nunca cai na fixture de demonstracao. Abrir/fechar, deep link, foco e responsividade seguem abertos. DEPENDENCIA MATERIAL, verificada por mim depois de publicar o lote: a RPC list_visible_moments NAO existe em nenhuma migration da base integrada. Conferi as 180 migrations rastreadas em packages/coelo_database/migrations/ na branch dev e as 17 de supabase/migrations/, e ela so existe no candidato autoral 20260909136000_moments_feed_and_withdrawal_v1.sql, que continua nao integrado. Portanto a rota que compus fecha o lado cliente, mas em producao ela falha fechada no estado honesto de indisponibilidade ate a migration ser aplicada. NAO leia este delta como 'Momentos funciona ponta a ponta'. RESSALVA ACRESCENTADA AO RETESTAR O PROPRIO BLOQUEIO: afirmar comportamento em PRODUCAO e inferencia. O verificado e a ausencia da RPC em todo arquivo de migration do repositorio, exceto candidatos. O repositorio comprovadamente nao espelha producao, entao o registro correto e ausencia de evidencia e impossibilidade de verificar daqui.",
+      "delta": "A rota normal /principal-moments deixou de responder composicao indisponivel: consome PrincipalMomentsFeedRepository sob o escopo real do runtime dentro do shell do Superadmin, expoe o contrato de retirada autoral, recarrega pela revisao de invalidacao de autorizacao e por sinal de publicacao confirmada, e nunca cai na fixture de demonstracao. Abrir/fechar, deep link, foco e responsividade seguem abertos. DEPENDENCIA MATERIAL, verificada por mim depois de publicar o lote: a RPC list_visible_moments NAO existe em nenhuma migration da base integrada. Conferi as 180 migrations rastreadas em packages/coelo_database/migrations/ na branch dev e as 17 de supabase/migrations/, e ela so existe no candidato autoral 20260909216000_moments_feed_and_withdrawal_v1.sql, que continua nao integrado. Portanto a rota que compus fecha o lado cliente, mas em producao ela falha fechada no estado honesto de indisponibilidade ate a migration ser aplicada. NAO leia este delta como 'Momentos funciona ponta a ponta'. RESSALVA ACRESCENTADA AO RETESTAR O PROPRIO BLOQUEIO: afirmar comportamento em PRODUCAO e inferencia. O verificado e a ausencia da RPC em todo arquivo de migration do repositorio, exceto candidatos. O repositorio comprovadamente nao espelha producao, entao o registro correto e ausencia de evidencia e impossibilidade de verificar daqui.",
       "evidencia": "commit 57006c7a7; apps/superadmin/test/app/router/principal_moments_feed_route_test.dart (4 PASS, cobrindo indisponibilidade sem repositorio, negacao sem sessao, escopo real institution/unit/group e releitura por revisao de autorizacao); principal_moments_publication_route_test.dart sem regressao (4 PASS); flutter analyze --no-pub lib sem issues; 2026-09-09, local"
     },
     {
@@ -526,7 +526,7 @@
       "camada": "frontend",
       "estado_atual": "pending-verification",
       "estado_proposto": "pending-verification",
-      "delta": "A retirada autoral de Momento entrou na base integrada como contrato separado do feed de leitura, renderizada somente para momentos que o servidor marcou como retiravel, e agora chega a rota normal pela composicao. O contrato withdraw_moment no backend permanece candidato nao aplicado. A mesma dependencia vale aqui: withdraw_moment nao existe na base integrada, so no candidato 20260909136000, entao a afordancia chega ao cliente mas a acao nao completa em producao. CORRECAO DE FORCA DA AFIRMACAO, feita ao retestar meus proprios bloqueios: dizer que a acao NAO completa em producao e inferencia. O verificado e que a RPC nao aparece em nenhum arquivo de migration do repositorio exceto os candidatos autorais; o repositorio comprovadamente nao espelha producao, entao o correto e registrar ausencia de evidencia e impossibilidade de verificar daqui, nao falha em producao.",
+      "delta": "A retirada autoral de Momento entrou na base integrada como contrato separado do feed de leitura, renderizada somente para momentos que o servidor marcou como retiravel, e agora chega a rota normal pela composicao. O contrato withdraw_moment no backend permanece candidato nao aplicado. A mesma dependencia vale aqui: withdraw_moment nao existe na base integrada, so no candidato 20260909216000, entao a afordancia chega ao cliente mas a acao nao completa em producao. CORRECAO DE FORCA DA AFIRMACAO, feita ao retestar meus proprios bloqueios: dizer que a acao NAO completa em producao e inferencia. O verificado e que a RPC nao aparece em nenhum arquivo de migration do repositorio exceto os candidatos autorais; o repositorio comprovadamente nao espelha producao, entao o correto e registrar ausencia de evidencia e impossibilidade de verificar daqui, nao falha em producao.",
       "evidencia": "commits 1e39b2fcf (integrado, merge d502350ce) e 57006c7a7; principal_moments_withdrawal_test.dart; principal_moments_feed_route_test.dart prova a passagem do contrato pela rota; 2026-09-09, local"
     },
     {
@@ -566,7 +566,7 @@
       "camada": "backend",
       "estado_atual": "pending-verification",
       "estado_proposto": "blocked-environment",
-      "delta": "A transicao material de expiracao do Agora existe como candidato SQL autoral em 20260909131000_now_publication_expiry_transition_v1.sql, preservado na branch codex/e2-r02-l01-publicacoes. Aplicacao depende da fila SQL serializada pelo coordenador e de autorizacao nominal remota que este grupo nao recebeu.",
+      "delta": "A transicao material de expiracao do Agora existe como candidato SQL autoral em 20260909211000_now_publication_expiry_transition_v1.sql, preservado na branch codex/e2-r02-l01-publicacoes. Aplicacao depende da fila SQL serializada pelo coordenador e de autorizacao nominal remota que este grupo nao recebeu.",
       "evidencia": "branch codex/e2-r02-l01-publicacoes em 3697dd49e; contrato da rodada, que exige pacote nominal autorizado para qualquer mutacao remota; 2026-09-09"
     },
     {
@@ -574,7 +574,7 @@
       "camada": "backend",
       "estado_atual": "pending-verification",
       "estado_proposto": "blocked-environment",
-      "delta": "O contrato withdraw_happens_post existe como candidato SQL autoral em 20260909133000_happens_post_withdrawal_v1.sql, com 20260909134000_happens_mixed_feed_withdrawal_v1.sql cobrindo o feed misto, ambos preservados na branch codex/e2-r02-l01-publicacoes. Aplicacao depende da fila SQL do coordenador e de autorizacao nominal remota.",
+      "delta": "O contrato withdraw_happens_post existe como candidato SQL autoral em 20260909213000_happens_post_withdrawal_v1.sql, com 20260909214000_happens_mixed_feed_withdrawal_v1.sql cobrindo o feed misto, ambos preservados na branch codex/e2-r02-l01-publicacoes. Aplicacao depende da fila SQL do coordenador e de autorizacao nominal remota.",
       "evidencia": "branch codex/e2-r02-l01-publicacoes em 3697dd49e; 2026-09-09"
     },
     {
@@ -582,7 +582,7 @@
       "camada": "backend",
       "estado_atual": "pending-verification",
       "estado_proposto": "blocked-environment",
-      "delta": "O contrato withdraw_moment e a projecao de feed existem como candidato SQL autoral em 20260909136000_moments_feed_and_withdrawal_v1.sql, preservado na branch codex/e2-r02-l01-publicacoes. Aplicacao depende da fila SQL do coordenador e de autorizacao nominal remota.",
+      "delta": "O contrato withdraw_moment e a projecao de feed existem como candidato SQL autoral em 20260909216000_moments_feed_and_withdrawal_v1.sql, preservado na branch codex/e2-r02-l01-publicacoes. Aplicacao depende da fila SQL do coordenador e de autorizacao nominal remota.",
       "evidencia": "branch codex/e2-r02-l01-publicacoes em 3697dd49e; 2026-09-09"
     },
     {
@@ -1006,5 +1006,19 @@
     "por_import": "23 fora; ACHOU o que o nome perdeu; mas pega dependencia sem ser sujeito, exigindo classificacao por consumidor depois",
     "conclusao": "nenhum dos dois sozinho fecha a pergunta; o que fecha e o segundo filtrando o primeiro. E os dois juntos ainda deixam um vao: teste do meu escopo que nem se chame como o dominio nem importe minhas arvores continua invisivel.",
     "quatro_nao_reivindicados": "principal_global_navigation, principal_preview_app_bar, supabase_principal_runtime_context_repository e persistent_shell_routes: moldura Principal comum a cinco superficies. Consumo os quatro, nao sou dono exclusivo de nenhum, e adota-los inflaria o meu numero as custas da clareza. Registrados como SEM DONO."
+  },
+  "citacoesDeMigrationCorrigidas": {
+    "origem": "achado por chat-comunicacoes, que varreu 199 caminhos citados nas nove frentes com git ls-tree contra origin/dev",
+    "defeito_1_arvore_errada": {
+      "citado": "packages/coelo_database/supabase/migrations/20260821190000_circulars_production.sql",
+      "real": "packages/coelo_database/migrations/20260821190000_circulars_production.sql",
+      "por_que_e_o_pior_caso_da_classe": "e um pacote SQL: quem seguir o caminho para revisar ANTES DE APLICAR EM PRODUCAO nao acha. E 'nao encontrado' na hora da autorizacao nominal nao se le como caminho errado, se le como PACOTE FANTASMA, cujo desfecho provavel e a recusa. Pior ainda: a arvore que eu citava TEM 17 arquivos, entao quem procurasse la ENCONTRARIA coisas, so que nao aquela, e concluiria que o pacote nunca existiu com evidencia aparente."
+    },
+    "defeito_2_carimbos_antigos_no_JSON": {
+      "quantos": 6,
+      "por_que_escapou": "eu corrigi catorze referencias de carimbo antigo nos DOCUMENTOS e nao rodei a mesma correcao no CANAL. A correcao anterior era por carimbo e esta e de arvore, mas o vao real foi de SUPERFICIE: eu tratei 'meus documentos' como o conjunto a conferir, e o JSON e o artefato que o coordenador mais le."
+    },
+    "metodo": "git ls-tree -r --name-only origin/dev, e NAO cat-file nem existencia no disco local: o que importa e se o leitor encontra o caminho NA BASE PUBLICADA",
+    "verificacao_final": "todos os .sql citados no canal conferidos um a um contra origin/dev: os quatro que existem na dev resolvem no caminho citado; os cinco candidatos de L01 seguem ausentes da dev por serem candidatos nao integrados, que e o estado correto e declarado."
   }
 }

@@ -1,6 +1,6 @@
 {
-  "revision": 58,
-  "updated_at": "2026-09-10T04:19:00-03:00",
+  "revision": 60,
+  "updated_at": "2026-09-10T04:24:00-03:00",
   "group": "chat-comunicacoes",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) - claude-opus-5[1m]",
@@ -972,7 +972,27 @@
     "dono": "Todas goldens, e a deriva e da BASE e nao do meu recorte: diagnosticada como MaterialIcons vindo do SDK local sem pin, com o texto tambem fantasmando, o que torna insuficiente vendorizar so a fonte de icones.",
     "estabilidade": "Os mesmos 12 nomes apareceram em 0736b900f, 0032b90c7 e b39e04c5a. Nao e contagem que coincide, sao os mesmos casos.",
     "verificacao_de_conteudo_das_minhas_entregas": "Ancestralidade prova que o commit esta no historico, nao que o conteudo sobreviveu — eu mesmo tenho um revert na noite. Verifiquei o conteudo no dev: a chave dos cartoes de avisos esta la, a chave da volta no chat mobile esta la, e os tres arquivos de teste estao presentes.",
-    "vermelho_proposital": "principal_mixed_feed_pagination_red_test continua VERMELHO e pelo motivo certo — nenhum controle de continuacao encontrado. Verificado, porque vermelho proposital que fica verde sozinho e noticia."
+    "vermelho_proposital": "principal_mixed_feed_pagination_red_test continua VERMELHO e pelo motivo certo — nenhum controle de continuacao encontrado. Verificado, porque vermelho proposital que fica verde sozinho e noticia.",
+    "caminhos": [
+      "apps/superadmin/test/features/chat",
+      "apps/superadmin/test/features/notices",
+      "apps/superadmin/test/features/principal_chat",
+      "apps/superadmin/test/app/router/principal_chat_shell_destination_test.dart",
+      "apps/superadmin/test/app/router/shell_destination_round_trip_source_test.dart",
+      "apps/superadmin/test/app/router/chat_admin_action_path_test.dart",
+      "apps/superadmin/test/app/router/notice_lifecycle_action_path_test.dart",
+      "apps/superadmin/test/app/router/notice_authoring_action_path_test.dart",
+      "apps/superadmin/test/app/dev_menu/development_chat_repository_test.dart",
+      "apps/superadmin/test/app/router/chat_routes_test.dart",
+      "apps/superadmin/test/app/router/chat_unread_badge_wiring_test.dart",
+      "apps/superadmin/test/app/router/notice_logout_wiring_test.dart",
+      "apps/superadmin/test/app/router/notice_routes_capability_test.dart",
+      "apps/superadmin/test/app/router/principal_chat_route_test.dart",
+      "apps/superadmin/test/app/router/superadmin_chat_media_composition_test.dart",
+      "apps/superadmin/test/app/shell/superadmin_notice_test.dart",
+      "apps/superadmin/test/app/shell/superadmin_shell_chat_inset_test.dart"
+    ],
+    "nota_sobre_a_lista": "Os caminhos sao passados ao flutter test relativos a apps/superadmin; aqui estao escritos a partir da RAIZ, conforme o item 6. Nove deles foram descobertos as 03:11 e nunca entraram em medicao antes disso."
   },
   "campos_que_estavam_velhos": {
     "achado": "Numa revisao de consistencia do proprio arquivo, encontrei head, branch e upstream apontando para o estado de horas atras: head c1e6756c7 na branch work/etapa2-noturna-chat-comunicacoes.",
@@ -986,5 +1006,19 @@
     "por_que_importa": "Quem seguisse a citacao para aprovar o pacote nao acharia arquivo, e 'arquivo nao encontrado' na hora da autorizacao nominal parece pacote inexistente, nao caminho velho.",
     "corrigido": "Os dois caminhos foram atualizados na lista.",
     "nota_de_metodo": "Usei ls-tree e nao cat-file, porque a verificacao de caminho e justamente onde um falso AUSENTE seria indistinguivel do achado."
+  },
+  "varredura_de_citacoes_de_caminho_das_nove_frentes": {
+    "pedido": "Executada a pedido da coordenacao, somente leitura, sem escrever em arquivo de nenhuma frente.",
+    "metodo": "Extracao de caminhos de cada JSON por padrao, conferencia de presenca por git ls-tree contra origin/dev — nunca por cat-file, porque um falso AUSENTE seria indistinguivel do achado. Caminho RELATIVO e aceito quando resolve como sufixo de um caminho real, porque muita citacao e relativa a apps/superadmin.",
+    "calibracao": "Quatro controles antes de rodar: nome antigo de migration da AUSENTE, nome novo da exato, caminho relativo resolve, caminho inventado da AUSENTE.",
+    "volume": "199 caminhos citados pelo padrao principal nas nove frentes, mais 27 sequencias que o padrao nao cobria e que foram conferidas a mao.",
+    "achados_reais": [
+      "publicacoes-midia cita packages/coelo_database/supabase/migrations/20260821190000_circulars_production.sql. O arquivo existe, mas em packages/coelo_database/migrations/. ARVORE ERRADA, e num pacote SQL — quem seguir o caminho para revisar antes de aplicar em producao nao acha, e a arvore citada tem 17 arquivos que nao sao aquele.",
+      "perfil-para-voce cita docs/reviews/evidence/etapa-2/perfil-para-voce/2026-09-10-handoff-snapshot-rev27.json. O arquivo existe como handoff-snapshot-rev27.json, SEM o prefixo de data. E o mesmo erro de citacao de memoria que ja tinha gerado um alarme falso mais cedo: o alarme foi corrigido, a citacao nao."
+    ],
+    "ausentes_benignos": "apps/superadmin/paramroutes.txt (meu arquivo de sonda, apagado, e o proprio JSON diz isso), apps/superadmin/recorte.json (arquivo de trabalho de outra frente), uma saida de falha de golden que nunca e commitada, e uma citacao com tres pontos de elisao no meio, que nao e caminho.",
+    "as_27_puladas": "Conferidas uma a uma. Vinte e uma resolvem como caminho relativo abreviado. As seis restantes eram falha do MEU extrator: duas com SHA colado no caminho, uma com dois nomes de arquivo lado a lado em prosa lidos como um caminho so, e tres abreviacoes que pulam um segmento intermediario. Todos os arquivos existem.",
+    "pulos_nao_verificados": "Zero.",
+    "o_que_a_varredura_NAO_alcanca": "Confere se o caminho EXISTE, nao se e o caminho CERTO. Uma citacao que aponte para um arquivo real porem errado passa limpa, e nao ha instrumento para isso."
   }
 }
