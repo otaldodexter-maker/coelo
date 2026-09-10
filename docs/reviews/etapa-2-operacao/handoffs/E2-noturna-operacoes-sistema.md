@@ -198,8 +198,11 @@ saber se o backend dela existe.
 **Cardápios chama a forma legada do delete de imagem.** A migration de recibos
 criou a forma de três argumentos com `p_expected_revision` e manteve a de dois
 como compatibilidade, cujo corpo lê a revisão corrente do próprio banco. Para o
-banco a chamada é legítima, nada falha, e a guarda de concorrência nunca roda em
-produção. Não corrigi porque o domínio de imagem não tem conceito de revisão:
+banco a chamada é legítima e nada falha, então a guarda de concorrência não é
+exercida pelo caminho que o cliente usa. Peso da evidência, declarado: o lado do
+cliente está **medido** e fixado em teste — só vão dois argumentos; o comportamento
+do corpo da forma legada foi **lido** no SQL e não executado contra banco nenhum.
+Não corrigi porque o domínio de imagem não tem conceito de revisão:
 **ler a revisão no cliente logo antes do delete reproduziria exatamente o furo
 que a guarda existe para fechar**.
 
@@ -270,8 +273,9 @@ de uma correção de teste. Três medições, cada uma derrubando a hipótese an
 1. a página isolada **não** transborda em nenhum dos três viewports com três
    trabalhos;
 2. pela rota, `/dev/imports` transborda em todos, com número **idêntico** para
-   zero ou três trabalhos injetados — o que prova que a origem é a lista do
-   repositório de desenvolvimento, não a moldura nem o dado injetado. E `/imports`
+   zero ou três trabalhos injetados — número que não muda com o dado injetado não
+   vem do dado injetado, e o construtor daquela rota usa o repositório de
+   desenvolvimento, e não o que o teste passa. E `/imports`
    de produção, com dados, deu OK nos três;
 3. varredura linha por linha: o limiar é a **altura disponível e o número de
    linhas**. 800x600 aguenta quatro e transborda com cinco; 390x844 aguenta cinco
