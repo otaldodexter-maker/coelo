@@ -32,6 +32,14 @@ insert into auth.sessions(id,user_id,created_at,updated_at,aal,not_after) values
  ('9c100000-0000-4000-8000-000000000202','9c100000-0000-4000-8000-000000000102',now(),now(),'aal1',now()+interval '1 hour'),
  ('9c100000-0000-4000-8000-000000000203','9c100000-0000-4000-8000-000000000103',now(),now(),'aal1',now()+interval '1 hour'),
  ('9c100000-0000-4000-8000-000000000204','9c100000-0000-4000-8000-000000000104',now(),now(),'aal2',now()+interval '1 hour');
+-- 20260909173000 passou a exigir uma prova de autenticacao por senha na sessao:
+-- sem a linha de AMR, require_superadmin_internal_context recusa com
+-- SAI_SESSION_INVALID antes de qualquer regra do chat.
+insert into auth.mfa_amr_claims(id, session_id, authentication_method, created_at, updated_at) values
+ (gen_random_uuid(),'9c100000-0000-4000-8000-000000000201','password',now(),now()),
+ (gen_random_uuid(),'9c100000-0000-4000-8000-000000000202','password',now(),now()),
+ (gen_random_uuid(),'9c100000-0000-4000-8000-000000000203','password',now(),now()),
+ (gen_random_uuid(),'9c100000-0000-4000-8000-000000000204','password',now(),now());
 insert into app_private.superadmin_internal_identities(id) values
  ('9c100000-0000-4000-8000-000000000301'),('9c100000-0000-4000-8000-000000000302'),
  ('9c100000-0000-4000-8000-000000000303'),('9c100000-0000-4000-8000-000000000304');
@@ -111,8 +119,13 @@ select is((select body#>>'{error,code}' from chat_results where label='scoped_cr
  'CHAT_NOT_FOUND','cross-tenant id is non-enumerating');
 select is((select body#>>'{error,code}' from chat_results where label='scoped_send_denied'),
  'SAI_PERMISSION_DENIED','read-only role cannot send');
-select is((select body#>>'{error,code}' from chat_results where label='owner_aal1_send'),
- 'SAI_MFA_REQUIRED','owner mutation requires aal2');
+-- 20260901200206 adiou o MFA ate o go-live do MVP (AAL1 vale para o Superadmin
+-- interno). O caso guardava o contrato anterior e afirmava o oposto do que a
+-- migration vigente faz. Enquanto o adiamento durar, a prova e que aal1 envia e
+-- que o gate nao voltou sozinho.
+select ok((select body#>>'{error,code}' is null and body#>>'{data,message_id}' is not null
+ from chat_results where label='owner_aal1_send'),
+ 'while MFA is deferred for the MVP, aal1 sends through the internal realm');
 select is((select body#>>'{error,code}' from chat_results where label='revoked'),
  'SAI_MEMBERSHIP_REVOKED','revoked membership is denied immediately');
 select ok(not has_table_privilege('authenticated','app_private.superadmin_internal_chat_receipts','select')

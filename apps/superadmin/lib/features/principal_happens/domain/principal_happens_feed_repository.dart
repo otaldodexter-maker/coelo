@@ -1,11 +1,43 @@
 import 'principal_happens_preview_data.dart';
 
 final class PrincipalHappensFeedScope {
-  const PrincipalHappensFeedScope({required this.institutionId, this.unitId, this.groupId});
+  const PrincipalHappensFeedScope({
+    required this.institutionId,
+    this.unitId,
+    this.groupId,
+    this.limit = 20,
+    this.cursorPublishedAt,
+    this.cursorPostId,
+  }) : assert(
+         (cursorPublishedAt == null) == (cursorPostId == null),
+         'as duas metades do cursor andam juntas',
+       );
 
   final String institutionId;
   final String? unitId;
   final String? groupId;
+  final int limit;
+
+  /// Cursor keyset da proxima pagina, montado a partir do ultimo item recebido.
+  /// Nulo pede a primeira pagina.
+  final DateTime? cursorPublishedAt;
+  final String? cursorPostId;
+
+  /// Proxima pagina depois de [last], ou `null` quando o item nao tem posicao
+  /// no servidor (fixture visual sem id ou sem instante).
+  PrincipalHappensFeedScope? after(PrincipalPostPreviewItem last) {
+    final publishedAt = last.publishedAt;
+    final postId = last.postId;
+    if (publishedAt == null || postId == null) return null;
+    return PrincipalHappensFeedScope(
+      institutionId: institutionId,
+      unitId: unitId,
+      groupId: groupId,
+      limit: limit,
+      cursorPublishedAt: publishedAt,
+      cursorPostId: postId,
+    );
+  }
 }
 
 abstract interface class PrincipalHappensFeedRepository {

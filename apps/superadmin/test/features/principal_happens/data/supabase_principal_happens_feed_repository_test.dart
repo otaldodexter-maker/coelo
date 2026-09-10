@@ -77,6 +77,10 @@ void main() {
       'p_unit_id': 'unit-1',
       'p_group_id': 'group-1',
       'p_limit': 20,
+      // A primeira pagina manda o cursor explicitamente nulo, e nao omitido: a
+      // RPC exige que as duas metades andem juntas.
+      'p_cursor_published_at': null,
+      'p_cursor_post_id': null,
     });
     expect(posts.single.likes, isNull);
     expect(posts.single.likedBy, isNull);

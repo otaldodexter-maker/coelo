@@ -104,27 +104,43 @@ select ok(
 
 insert into auth.users(id, aud, role, email, created_at, updated_at) values
   ('9a000000-0000-4000-8000-000000000001', 'authenticated', 'authenticated', 'meal-owner-a@test.invalid', now(), now()),
-  ('9a000000-0000-4000-8000-000000000002', 'authenticated', 'authenticated', 'meal-owner-b@test.invalid', now(), now());
+  ('9a000000-0000-4000-8000-000000000002', 'authenticated', 'authenticated', 'meal-owner-b@test.invalid', now(), now()),
+  ('9a000000-0000-4000-8000-000000000003', 'authenticated', 'authenticated', 'meal-owner-c@test.invalid', now(), now());
 insert into public.people(id, person_type, first_name, last_name, display_name, status) values
   ('9a100000-0000-4000-8000-000000000001', 'adult', 'Meal', 'Owner A', 'Meal Owner A', 'active'),
-  ('9a100000-0000-4000-8000-000000000002', 'adult', 'Meal', 'Owner B', 'Meal Owner B', 'active');
+  ('9a100000-0000-4000-8000-000000000002', 'adult', 'Meal', 'Owner B', 'Meal Owner B', 'active'),
+  ('9a100000-0000-4000-8000-000000000003', 'adult', 'Meal', 'Owner C', 'Meal Owner C', 'active');
 insert into public.person_auth_links(person_id, auth_user_id, status) values
   ('9a100000-0000-4000-8000-000000000001', '9a000000-0000-4000-8000-000000000001', 'active'),
-  ('9a100000-0000-4000-8000-000000000002', '9a000000-0000-4000-8000-000000000002', 'active');
+  ('9a100000-0000-4000-8000-000000000002', '9a000000-0000-4000-8000-000000000002', 'active'),
+  ('9a100000-0000-4000-8000-000000000003', '9a000000-0000-4000-8000-000000000003', 'active');
 insert into public.institutions(id, public_name, legal_name, slug, status) values
   ('9a200000-0000-4000-8000-000000000001', 'Meal Institution A', 'Meal Institution A', 'meal-receipts-a', 'active'),
   ('9a200000-0000-4000-8000-000000000002', 'Meal Institution B', 'Meal Institution B', 'meal-receipts-b', 'active');
 insert into public.platform_memberships(
   person_id, role_id, status, scope_kind, scope_institution_id, mfa_required
 )
-select '9a100000-0000-4000-8000-000000000001', id, 'active', 'institution',
-  '9a200000-0000-4000-8000-000000000001', false
+-- Ator A e Owner de plataforma: app_private.has_platform_permission so enxerga
+-- membership com scope_kind='platform' e instituicao nula. Com o membership de
+-- instituicao que este fixture usava antes, meal_plans.manage era sempre falso
+-- e todo comando parava em 42501 antes da regra que o caso queria provar.
+select '9a100000-0000-4000-8000-000000000001', id, 'active', 'platform',
+  null, false
 from public.platform_roles where code = 'owner';
 insert into public.platform_memberships(
   person_id, role_id, status, scope_kind, scope_institution_id, mfa_required
 )
 select '9a100000-0000-4000-8000-000000000002', id, 'active', 'institution',
   '9a200000-0000-4000-8000-000000000002', false
+from public.platform_roles where code = 'owner';
+-- Ator C existe porque o caso de isolamento de recibo precisa de um segundo
+-- ator que realmente possa executar o comando, e permissao de plataforma nao
+-- alcanca membership de instituicao.
+insert into public.platform_memberships(
+  person_id, role_id, status, scope_kind, scope_institution_id, mfa_required
+)
+select '9a100000-0000-4000-8000-000000000003', id, 'active', 'platform',
+  null, false
 from public.platform_roles where code = 'owner';
 
 insert into public.meal_plans(
@@ -198,25 +214,27 @@ select throws_ok(
   'changed delete payload cannot reuse a receipt');
 
 insert into meal_plan_receipt_results(key, result)
+-- meal_plans.revision nasce em 1 no schema vigente; o fixture pedia 0 e por
+-- isso o comando parava em P0003 antes de exercitar o recibo.
 select 'review-a', public.meal_plan_submit_for_review(
-  'shared-review-request', '9a300000-0000-4000-8000-000000000001', 0);
+  'shared-review-request', '9a300000-0000-4000-8000-000000000001', 1);
 select is(
   public.meal_plan_submit_for_review(
-    'shared-review-request', '9a300000-0000-4000-8000-000000000001', 0),
+    'shared-review-request', '9a300000-0000-4000-8000-000000000001', 1),
   (select result from meal_plan_receipt_results where key = 'review-a'),
   'review replay returns the original result after revision changed');
 select throws_ok(
   $$select public.meal_plan_submit_for_review(
-    'shared-review-request', '9a300000-0000-4000-8000-000000000001', 1)$$,
+    'shared-review-request', '9a300000-0000-4000-8000-000000000001', 2)$$,
   '22023', 'idempotency key reused',
   'changed lifecycle payload cannot reuse a receipt');
 
-select set_config('request.jwt.claim.sub', '9a000000-0000-4000-8000-000000000002', true);
+select set_config('request.jwt.claim.sub', '9a000000-0000-4000-8000-000000000003', true);
 select set_config('request.jwt.claims',
-  '{"sub":"9a000000-0000-4000-8000-000000000002","aal":"aal1","role":"authenticated"}', true);
+  '{"sub":"9a000000-0000-4000-8000-000000000003","aal":"aal1","role":"authenticated"}', true);
 insert into meal_plan_receipt_results(key, result)
 select 'review-b', public.meal_plan_submit_for_review(
-  'shared-review-request', '9a300000-0000-4000-8000-000000000002', 0);
+  'shared-review-request', '9a300000-0000-4000-8000-000000000002', 1);
 
 reset role;
 select results_eq(
@@ -230,8 +248,10 @@ select set_config('request.jwt.claim.sub', '9a000000-0000-4000-8000-000000000001
 select set_config('request.jwt.claims',
   '{"sub":"9a000000-0000-4000-8000-000000000001","aal":"aal1","role":"authenticated"}', true);
 select is(
+  -- O plano A ja passou por submit_for_review acima, entao a revisao corrente
+  -- e 2; arquivar com 1 e justamente o conflito que a RPC deve recusar.
   public.meal_plan_archive(
-    'archive-a', '9a300000-0000-4000-8000-000000000001', 1) ->> 'status',
+    'archive-a', '9a300000-0000-4000-8000-000000000001', 2) ->> 'status',
   'archived', 'authorized owner archives with optimistic revision');
 
 reset role;

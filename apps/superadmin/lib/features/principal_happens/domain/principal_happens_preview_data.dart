@@ -114,6 +114,7 @@ final class PrincipalPostPreviewItem {
     this.postId,
     this.managementVersion,
     this.canWithdraw = false,
+    this.publishedAt,
   });
   final String author;
   final String context;
@@ -127,6 +128,10 @@ final class PrincipalPostPreviewItem {
 
   /// Versao otimista devolvida pelo feed, exigida pela retirada.
   final int? managementVersion;
+
+  /// Instante cru da publicacao. `time` e texto ja formatado e nao serve de
+  /// cursor; a paginacao keyset do servidor precisa do valor original.
+  final DateTime? publishedAt;
 
   /// O servidor decide quem pode retirar; o cliente apenas obedece.
   final bool canWithdraw;

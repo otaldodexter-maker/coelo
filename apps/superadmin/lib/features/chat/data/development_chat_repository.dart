@@ -212,6 +212,18 @@ final class DevelopmentChatRepository implements ChatRepository {
       occurredAt: latest?.sentAt ?? conversation.updatedAt,
     );
   }
+
+  @override
+  Future<ChatConversationPreference> setPinned({
+    required String conversationId,
+    required bool pinned,
+  }) => Future<ChatConversationPreference>.error(const ChatFailureException());
+
+  @override
+  Future<ChatConversationPreference> setFlag({
+    required String conversationId,
+    required ChatConversationFlag flag,
+  }) => Future<ChatConversationPreference>.error(const ChatFailureException());
 }
 
 List<ChatConversationSummary> _seedConversations(DateTime now) => [

@@ -608,6 +608,10 @@ final class FakeMealPlanRepository implements MealPlanRepository {
   @override
   Future<MealPlan> publish(String mealPlanId, String requestId, int expectedRevision) async =>
       mealPlans.firstWhere((item) => item.id == mealPlanId);
+  @override
+  Future<MealPlan> archive(String mealPlanId, String requestId, int expectedRevision) async =>
+      throw UnimplementedError('archive nao participa deste caso');
+
 
   @override
   Future<List<MealPlanConflict>> checkConflicts({
@@ -787,6 +791,9 @@ final class _UnavailableMealPlanImageRepository implements MealPlanImageReposito
       Future<Uri>.error(const MealPlanImageUnavailableException());
 
   @override
-  Future<void> delete({required String assetId, required String requestId}) =>
-      Future<void>.error(const MealPlanImageUnavailableException());
+  Future<void> delete({
+    required String assetId,
+    required String requestId,
+    required int expectedRevision,
+  }) => Future<void>.error(const MealPlanImageUnavailableException());
 }

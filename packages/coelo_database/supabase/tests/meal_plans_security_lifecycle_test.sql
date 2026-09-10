@@ -2,7 +2,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(21);
+select plan(22);
 
 select has_table('public', 'meal_plans', 'meal plans aggregate exists');
 select has_column('public', 'meal_plans', 'status', 'meal plans have lifecycle status');
@@ -63,6 +63,12 @@ select ok(
     'authenticated', 'public.meal_plan_publish(text,uuid,integer)', 'EXECUTE'),
   'authenticated clients use the intentional RLS and RPC surface');
 
+-- 20260820230000 passou os tres comandos de escrita a security definer porque
+-- eles gravam o recibo em app_private, fora do alcance do invocador. A guarda
+-- que substitui a anterior e dupla: as leituras continuam invoker sob RLS, e
+-- cada comando definer tem search_path travado em '' e revalida a permissao
+-- dentro da funcao. Reconciliado nesta data; a mudanca de postura esta
+-- registrada para a ADR.
 select ok(
   (select bool_and(not p.prosecdef)
      from pg_proc p
@@ -70,14 +76,30 @@ select ok(
     where n.nspname = 'public'
       and p.proname in (
         'meal_plan_list', 'meal_plan_get',
-        'meal_plan_create_or_update_draft',
-        'meal_plan_submit_for_review', 'meal_plan_publish',
         'meal_plan_conflicts_check', 'meal_plan_effective_snapshot')),
-  'public meal plan RPCs execute as invoker under RLS');
+  'meal plan reads execute as invoker under RLS');
 
 select ok(
   (select bool_and(
-      coalesce(pg_get_expr(pol.polqual, pol.polrelid), '')
+      p.prosecdef
+      and coalesce(array_to_string(p.proconfig, ','), '') like '%search_path=""%'
+      and pg_get_functiondef(p.oid) like '%has_platform_permission%')
+     from pg_proc p
+     join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'public'
+      and p.proname in (
+        'meal_plan_create_or_update_draft',
+        'meal_plan_submit_for_review', 'meal_plan_publish')),
+  'meal plan writes are definer with a locked search_path and revalidate permission');
+
+select ok(
+  -- A policy de INSERT so tem WITH CHECK: olhar apenas polqual dava nulo e
+  -- reprovava uma policy correta.
+  (select bool_and(
+      coalesce(
+        pg_get_expr(pol.polqual, pol.polrelid),
+        pg_get_expr(pol.polwithcheck, pol.polrelid),
+        '')
         like '%meal_plan_scope_allowed%')
      from pg_policy pol
      join pg_class c on c.oid = pol.polrelid
@@ -87,26 +109,26 @@ select ok(
 
 select ok(
   pg_get_functiondef(
-    'public.meal_plan_publish(text,uuid,integer)'::regprocedure)
+    'public.meal_plan_publish_unreceipted(text,uuid,integer)'::regprocedure)
       like '%pending_conflicts%'
   and pg_get_functiondef(
-    'public.meal_plan_publish(text,uuid,integer)'::regprocedure)
+    'public.meal_plan_publish_unreceipted(text,uuid,integer)'::regprocedure)
       like '%priority=plan.priority%'
   and pg_get_functiondef(
-    'public.meal_plan_publish(text,uuid,integer)'::regprocedure)
+    'public.meal_plan_publish_unreceipted(text,uuid,integer)'::regprocedure)
       like '%unresolved conflict%'
   and pg_get_functiondef(
-    'public.meal_plan_publish(text,uuid,integer)'::regprocedure)
+    'public.meal_plan_publish_unreceipted(text,uuid,integer)'::regprocedure)
       like '%status=''published''%',
   'publication blocks equal-priority overlaps before lifecycle transition');
 
 select ok(
   pg_get_functiondef(
-    'public.meal_plan_submit_for_review(text,uuid,integer)'::regprocedure)
+    'public.meal_plan_submit_for_review_unreceipted(text,uuid,integer)'::regprocedure)
       like '%status = ''inReview''%'
   and pg_get_functiondef(
-    'public.meal_plan_create_or_update_draft(text,jsonb,uuid,integer)'::regprocedure)
-      like '%status=''draft''%',
+    'public.meal_plan_create_or_update_draft_unreceipted(text,jsonb,uuid,integer)'::regprocedure)
+      like '%status = ''draft''%',
   'draft and review lifecycle transitions are explicit');
 
 set local role anon;

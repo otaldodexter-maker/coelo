@@ -86,6 +86,16 @@ final class SupabaseMealPlanRepository implements MealPlanRepository {
     ),
   );
   @override
+  Future<MealPlan> archive(String id, String requestId, int revision) async => MealPlan.fromJson(
+    _json(
+      await _rpc('meal_plan_archive', {
+        'p_request_id': requestId,
+        'p_meal_plan_id': id,
+        'p_expected_revision': revision,
+      }),
+    ),
+  );
+  @override
   Future<List<MealPlanConflict>> checkConflicts({
     required String scopeLevel,
     required String scopeId,

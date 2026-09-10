@@ -30,7 +30,7 @@ select ok(
   (select prosecdef from pg_proc
    where oid='public.withdraw_happens_post(uuid,uuid,bigint,text)'::regprocedure)
   and (select prosecdef from pg_proc
-       where oid='public.list_visible_happens_posts(uuid,uuid,uuid,integer)'::regprocedure),
+       where oid='public.list_visible_happens_posts(uuid,uuid,uuid,integer,timestamptz,uuid)'::regprocedure),
   'withdrawal and feed run as security definer'
 );
 
@@ -39,20 +39,20 @@ select ok(
    where oid='public.withdraw_happens_post(uuid,uuid,bigint,text)'::regprocedure)
     @> array['search_path=""']::text[]
   and (select coalesce(proconfig,'{}'::text[]) from pg_proc
-       where oid='public.list_visible_happens_posts(uuid,uuid,uuid,integer)'::regprocedure)
+       where oid='public.list_visible_happens_posts(uuid,uuid,uuid,integer,timestamptz,uuid)'::regprocedure)
     @> array['search_path=""']::text[],
   'withdrawal and feed pin an empty search path'
 );
 
 select ok(
   has_function_privilege('authenticated','public.withdraw_happens_post(uuid,uuid,bigint,text)','execute')
-  and has_function_privilege('authenticated','public.list_visible_happens_posts(uuid,uuid,uuid,integer)','execute'),
+  and has_function_privilege('authenticated','public.list_visible_happens_posts(uuid,uuid,uuid,integer,timestamptz,uuid)','execute'),
   'authenticated actors reach both contracts'
 );
 
 select ok(
   not has_function_privilege('anon','public.withdraw_happens_post(uuid,uuid,bigint,text)','execute')
-  and not has_function_privilege('anon','public.list_visible_happens_posts(uuid,uuid,uuid,integer)','execute'),
+  and not has_function_privilege('anon','public.list_visible_happens_posts(uuid,uuid,uuid,integer,timestamptz,uuid)','execute'),
   'anonymous callers reach neither contract'
 );
 
@@ -171,7 +171,7 @@ begin
   set local role authenticated;
   return query
     select visible.post_id, visible.management_version, visible.can_withdraw
-    from public.list_visible_happens_posts(p_institution, null, null, 50) visible;
+    from public.list_visible_happens_posts(p_institution, null, null, 50, null, null) visible;
   reset role;
 end
 $fn$;
