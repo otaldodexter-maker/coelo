@@ -1,6 +1,6 @@
 {
-  "revision": 30,
-  "updated_at": "2026-09-10T02:28:00-03:00",
+  "revision": 32,
+  "updated_at": "2026-09-10T02:12:00-03:00",
   "group": "publicacoes-midia",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
@@ -350,7 +350,8 @@
       "resultado_na_base": "10 PASS / 23 FAIL nos mesmos tres arquivos de golden",
       "comparacao": "as duas listas nominais foram extraidas dos marcadores [E] dos logs e comparadas com diff: conjuntos IDENTICOS, teste por teste. Nao e 'o mesmo numero de falhas', sao as mesmas 23.",
       "por_que_importa": "a entrega inteira depende dessa frase: se alguma das 23 fosse minha, o recorte estaria entregando uma regressao. Estava afirmada a noite toda e so agora foi medida.",
-      "commit": "a6decef0e"
+      "commit": "a6decef0e",
+      "quando": "2026-09-10T01:50-03:00 (medido)"
     }
   },
   "regression_check": {
@@ -738,7 +739,7 @@
   },
   "verificacaoNaBaseIntegrada": {
     "dev": "a3cb7544b",
-    "quando": "2026-09-10T02:00-03:00",
+    "quando": "2026-09-10T01:45-03:00 (medido)",
     "metodo": "git diff da minha HEAD contra origin/dev restrito aos diretorios do recorte, e nao apenas grep de marcadores",
     "resultado": "o unico arquivo que diverge e o router compartilhado, e a divergencia e de OUTRAS frentes (chat com o parametro from, meal plan com tenant autorizado, grupos com repository). Nenhuma linha minha foi removida na integracao.",
     "marcadores_presentes": [
@@ -762,11 +763,41 @@
     ],
     "ressalva_de_entrega": "a versao do relatorio de entrega que esta em dev ainda e anterior a reestruturacao do documento de decisao e a esta medicao. Os tres commits pendentes sao TODOS de documentacao; nenhum toca codigo, migration ou edge function.",
     "preflight_de_merge": {
-      "quando": "2026-09-10T02:25-03:00",
+      "quando": "2026-09-10T01:57-03:00 (medido, ver correcao_de_carimbos)",
       "metodo": "merge --no-commit --no-ff da minha branch sobre origin/dev a3cb7544b, num checkout separado, depois abortado",
       "resultado": "merge automatico limpo, zero conflitos",
       "alcance": "um unico arquivo muda: reports/NOTURNA-entrega-publicacoes-midia.md, +24/-9. Nenhum arquivo de codigo, migration, edge function ou rota compartilhada e tocado.",
       "para_o_coordenador": "os dois commits pendentes podem ser integrados sem revisao de conflito e sem risco de regressao; sao documentacao do proprio relatorio de entrega."
     }
+  },
+  "correcao_de_carimbos": {
+    "o_que": "as revisoes 28, 29 e 30 saíram carimbadas 02:05, 02:20 e 02:28. O horario real das tres estava entre 01:40 e 02:00.",
+    "por_que": "eu media o relogio, escrevia o carimbo e depois PROJETAVA os seguintes para a frente, em vez de medir de novo a cada publicacao. Estimativa apresentada como medicao, que e o erro que eu ja tinha catalogado esta noite e continuei cometendo em outro campo.",
+    "regra": "carimbo de revisao so sai de leitura de relogio no mesmo turno em que a revisao e escrita; nunca de aritmetica sobre a leitura anterior.",
+    "ferramenta": "medido com powershell -NoProfile -Command \"Get-Date -Format 'yyyy-MM-dd HH:mm:ss K'\": 2026-09-10 02:00:21 -03:00",
+    "armadilha_confirmada": "no Git Bash desta maquina, date puro devolve 2026-09-10 02:00:26 -0300, CORRETO. Forcar TZ=America/Sao_Paulo date devolve 05:00:26 +0000, ou seja UTC, tres horas a mais, por falta de tzdata. A forma segura e a nua; a explicita e a que mente. Confirmado aqui a pedido da coordenacao, que quase encerrou a rodada uma hora e quarenta cedo por causa disso."
+  },
+  "soExistiaNoCanal": {
+    "motivo": "a licao que eu mesmo registrei foi 'corrigi a afirmacao e achei que tinha corrigido o erro; ele vivia em quatro lugares'. A coordenacao pediu a direcao inversa: o que eu contei por mensagem e nao esta em arquivo nenhum. Se a sessao dela caisse, sumia. Auditei o canal contra o meu JSON e os meus quatro documentos.",
+    "achados": [
+      {
+        "item": "a prova que derrubou a atribuicao falsa dos 3 vermelhos em principal_real_route_test.dart",
+        "estado_anterior": "o meu JSON dizia apenas 'atribuicao retirada por ele apos minha medicao'. O RESULTADO estava registrado; a EVIDENCIA nao estava em lugar nenhum.",
+        "evidencia_recuperada": "medicao contra worktree destacada na base pre-rodada d784462c1, em C:/Users/adrie/AppData/Local/Temp/coelo-base-check: 33 falhas na base, e principal_real_route_test.dart NAO aparece entre elas. Portanto os 3 vermelhos nao vinham da base nem do meu recorte.",
+        "por_que_importa": "era a unica atribuicao de defeito que este grupo recusou. Recusa sem evidencia arquivada e palavra contra palavra."
+      },
+      {
+        "item": "o selo DESTAQUE em /dev/principal-for-you, razao de contraste 3,75 contra os 4,5 exigidos",
+        "estado_anterior": "a coordenacao registrou que o achado e real e de 'perfil-para-voce ou publicacoes-midia'. Nao estava em arquivo meu nenhum, e a duvida de dono ficou aberta a noite toda.",
+        "medicao": "grep case-insensitive por 'destaque' em apps/superadmin/lib: o rotulo nasce em features/principal_for_you/domain/principal_for_you_preview_data.dart, na traducao de PrincipalForYouContentType.highlight. Nenhuma das minhas oito features do recorte desenha esse selo.",
+        "conclusao": "o achado NAO e de publicacoes-midia. E de perfil-para-voce. Medido, nao deduzido por nome de tela.",
+        "limite": "resolvi a duvida de DONO, que custou um grep. Nao medi o contraste nem corri atras da correcao: isso seria abrir frente na tela de outra pessoa."
+      }
+    ],
+    "verificados_e_ja_presentes": [
+      "migrations e diretorio RASTREADO com 180 arquivos e o gitignore so cobre supabase/migrations/",
+      "alerta dos 21 commits de integracao segurados sem publicar em origin/dev",
+      "reteste dos meus proprios bloqueios, que virou tarefa para as seis frentes"
+    ]
   }
 }
