@@ -250,5 +250,17 @@ O Design System Coelo prevalece sobre recomendações genéricas.
 - Criar/Editar Instituição permanece a baseline de formulários administrativos.
   O fluxo de Pessoas em Instituições e Unidades deve ser sequencial, baseado em
   vínculo, busca, convite e cadastro; não usar um popup genérico único.
+- Decisão do Owner em 10/09/2026: conceito de família (cabeçalho com
+  Pesquisar e botão de Bug, menu, chat, toolbar, abas de estado, toggle
+  card/tabela, grid com card Criar primeiro, tabela, paginação, rodapé de
+  formulário, comportamento em 375/768/1024/1440) vive **uma vez** em
+  `coelo_ui_admin` ou `apps/superadmin/lib/shared`, e as telas o consomem.
+  Feature não declara classe própria de Table, Toolbar, Pagination, Header ou
+  Directory; quando uma observação se repete em várias telas, a correção é no
+  componente compartilhado, nunca tela por tela. Um teste de arquitetura em
+  `apps/superadmin/test` falha quando uma feature declara esses widgets; os
+  goldens do composto por largura ficam no pacote e as telas guardam golden só
+  do que é delas. Fonte:
+  [decisões dos goldens claros](../../../../docs/reviews/evidence/etapa-2/goldens-claro-decisoes-2026-09-10.md).
 - Mídia privada segue Cloudflare R2 conforme AGENTS e a ADR aprovada. Supabase
   Storage não substitui esse contrato sem nova decisão arquitetural.

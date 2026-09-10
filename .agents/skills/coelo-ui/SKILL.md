@@ -55,5 +55,12 @@ para criar ou alterar essa família. Ele preserva os contratos de cards, tabela
 Consultar os [contratos de interação](references/surface-interaction-contracts.md)
 quando o controle administrativo for afetado.
 
+Conceito de família (cabeçalho, menu, chat, toolbar, abas, cards, tabela,
+paginação, rodapé, larguras) é implementado uma única vez no componente
+compartilhado e consumido pelas telas; feature não reimplementa Table,
+Toolbar, Pagination, Header ou Directory. Correção repetida em várias telas
+pertence ao componente (decisão do Owner de 10/09/2026, detalhada no fluxo
+administrativo).
+
 Aprovação já concedida continua válida. Ausência de teste exige verificação;
 ausência de definição visual exige proposta antes de oficializar padrão novo.
