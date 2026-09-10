@@ -308,6 +308,10 @@ class _LocationReservationPanelState extends State<LocationReservationPanel> {
       _fail('Explique por que a sobreposição deve ser confirmada.');
       return;
     }
+    if (!validLocationReservationJustification(justification)) {
+      _fail('Use uma justificativa com at\u00e9 1000 caracteres.');
+      return;
+    }
     if (!widget.canOverride) {
       _fail('Você não tem permissão para confirmar sobreposições.');
       return;

@@ -412,6 +412,49 @@ void main() {
     );
   });
 
+  for (final sample in ['a\u0301', '\u{1F469}\u200D\u{1F4BB}']) {
+    testWidgets(
+      'reservation justification preflight preserves an editable intention for ${sample.codeUnitAt(0)}',
+      (tester) async {
+        gateway.assessment = LocationReservationAssessment(
+          policy: LocationSchedulingPolicy.warn,
+          conflict: LocationReservationConflict.confirmable,
+          conflicting: [reservation().occurrences.single],
+        );
+        await tester.pumpWidget(panel());
+        await tester.pumpAndSettle();
+        await fillOnce(tester);
+        final assess = find.byKey(const Key('location-reservation-assess'));
+        await tester.ensureVisible(assess);
+        await tester.tap(assess);
+        await tester.pumpAndSettle();
+        final field = find.byKey(const Key('location-reservation-justification'));
+        final confirm = find.byKey(const Key('location-reservation-confirm-conflict'));
+        final size = sample.runes.length;
+        final valid = sample * (1000 ~/ size) + 'x' * (1000 % size);
+        await tester.enterText(field, '${valid}x');
+        expect(tester.widget<TextFormField>(field).controller!.text.runes.length, 1001);
+        tester.testTextInput.hide();
+        await tester.ensureVisible(confirm);
+        await tester.pumpAndSettle();
+        await tester.tap(confirm);
+        await tester.pumpAndSettle();
+        expect(gateway.creates, isEmpty);
+        expect(find.byKey(const Key('location-reservation-retry')), findsNothing);
+        expect(find.text('Use uma justificativa com at\u00e9 1000 caracteres.'), findsOneWidget);
+        await tester.enterText(field, valid);
+        tester.testTextInput.hide();
+        await tester.ensureVisible(confirm);
+        await tester.pumpAndSettle();
+        await tester.tap(confirm);
+        await tester.pumpAndSettle();
+        expect(gateway.creates, hasLength(1));
+        expect(gateway.creates.single.draft.conflictJustification!.runes.length, 1000);
+        expect(gateway.creates.single.requestId, 'b1000000-0000-4000-8000-000000000001');
+      },
+    );
+  }
+
   testWidgets('confirmable conflict requires capability and a justification', (tester) async {
     gateway.assessment = LocationReservationAssessment(
       policy: LocationSchedulingPolicy.warn,
