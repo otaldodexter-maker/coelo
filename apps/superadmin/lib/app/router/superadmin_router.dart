@@ -1620,7 +1620,9 @@ GoRouter createSuperadminRouter({
                   ? const SizedBox.shrink()
                   : GroupDetailPage(
                       key: ValueKey(session.authorizationInvalidationRevision),
-                      repository: groupDetailRepository,
+                      repository: session.authContext?.permissionCodes.contains('groups.read') == true
+                          ? groupDetailRepository
+                          : const DeniedGroupDetailRepository(),
                       id: state.pathParameters['groupId']!,
                       reservationBuilder: (context, detail) => LocationConsumerReservations(
                         consumer: LocationReservationConsumer(
