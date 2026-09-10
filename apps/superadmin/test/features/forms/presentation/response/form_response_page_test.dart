@@ -1826,6 +1826,73 @@ void main() {
     expect(find.text('Alterações ainda não salvas.'), findsNothing);
   });
 
+  // O autor pode declarar um intervalo de datas na pergunta, e o servidor
+  // recusa data fora dele. O seletor do respondente ignorava esse intervalo e
+  // oferecia 120 anos para tras e 20 para a frente, entao a pessoa escolhia
+  // uma data que o backend ia recusar.
+  _ResponseApi dateApi({DateTime? min, DateTime? max, DateTime? answer}) => _ResponseApi(
+    items: [
+      FormItem(
+        id: 'item-1',
+        kind: FormItemKind.date,
+        label: 'Data',
+        position: 0,
+        config: FormItemConfig(minDate: min, maxDate: max),
+      ),
+    ],
+    initialAnswers: answer == null
+        ? const {}
+        : {'item-1': FormAnswer.date(itemId: 'item-1', value: answer)},
+  );
+
+  Future<DatePickerDialog> openPicker(WidgetTester tester) async {
+    await tester.tap(find.widgetWithIcon(OutlinedButton, Icons.calendar_today_outlined));
+    await tester.pumpAndSettle();
+    return tester.widget<DatePickerDialog>(find.byType(DatePickerDialog));
+  }
+
+  testWidgets('the date picker offers only the authored range', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1000, 1200));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await open(
+      tester,
+      dateApi(min: DateTime.utc(2026, 3, 1), max: DateTime.utc(2026, 9, 30)),
+    );
+    final picker = await openPicker(tester);
+    // showDatePicker normaliza para data local sem hora, entao comparo os
+    // componentes em vez do DateTime exato.
+    expect((picker.firstDate.year, picker.firstDate.month, picker.firstDate.day), (2026, 3, 1));
+    expect((picker.lastDate.year, picker.lastDate.month, picker.lastDate.day), (2026, 9, 30));
+  });
+
+  testWidgets('a stored answer outside the authored range does not crash the picker', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1000, 1200));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await open(
+      tester,
+      dateApi(
+        min: DateTime.utc(2026, 3, 1),
+        max: DateTime.utc(2026, 9, 30),
+        answer: DateTime.utc(2020, 1, 15),
+      ),
+    );
+    final picker = await openPicker(tester);
+    expect(tester.takeException(), isNull);
+    expect(picker.initialDate, isNotNull);
+    expect(picker.initialDate!.isBefore(picker.firstDate), isFalse);
+    expect(picker.initialDate!.isAfter(picker.lastDate), isFalse);
+  });
+
+  testWidgets('without an authored range the picker keeps its wide fallback', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1000, 1200));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await open(tester, dateApi());
+    final picker = await openPicker(tester);
+    expect(picker.lastDate.year - picker.firstDate.year, greaterThan(100));
+  });
+
   testWidgets('an out-of-range value cannot be submitted either', (tester) async {
     final api = limited(FormItemKind.integer, max: 10);
     await open(tester, api);
