@@ -142,7 +142,7 @@ final class ActivityCreateReservationIntent {
   /// Canonical request and attempt fingerprint; no consumer exists before create.
   Map<String, Object?> toJson() {
     final justification = conflictJustification?.trim();
-    if (justification != null && (justification.isEmpty || justification.length > 2000)) {
+    if (!validLocationReservationJustification(justification)) {
       throw const ActivityCommandUnavailableException();
     }
     return {
