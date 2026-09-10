@@ -1,6 +1,6 @@
 {
-  "revision": 27,
-  "updated_at": "2026-09-10T03:19:48-03:00",
+  "revision": 28,
+  "updated_at": "2026-09-10T03:23:01-03:00",
   "clock_note": "Relogio corrigido pelo coordenador e conferido por mim com PowerShell Get-Date: 02:00 de 10/09, fuso E. South America Standard Time, -03:00. O date do Git Bash com TZ nao tem tzdata e devolve UTC; parei de usa-lo.",
   "group": "alunos-rotina",
   "task": "/root",
@@ -9,7 +9,7 @@
   "coordinator": "Claude (Coordenacao e Integracao)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-alunos-rotina",
   "branch": "work/etapa2-noturna-alunos-rotina",
-  "head": "6bf424ee6",
+  "head": "c939cd120",
   "upstream": "18d0127ed",
   "divergence": "HEAD 10 a frente de origin/dev. Os 10 sao merges de integracao do coordenador e lotes de OUTRAS frentes neste checkout compartilhado. NENHUM e meu: os 26 lotes citados neste arquivo foram verificados um a um como ancestrais de origin/dev. Publicar esses 10 nao e decisao minha.",
   "workingTree": "Sujo por 3 JSONs de comunicacao de frentes distintas neste checkout compartilhado. O unico que eu escrevo e alunos-rotina.json.",
@@ -629,7 +629,7 @@
     "9_lista_derivada_de_memoria": "Lista de caminhos escrita de memoria erra nos dois sentidos ao mesmo tempo: inventa o que nao existe e omite o que existe. A conferencia de existencia so pega a primeira metade. A pergunta que pega a causa e se a lista foi derivada do recorte ATRIBUIDO ou da lembranca de quem mede."
   },
   "medicao": {
-    "base": "6bf424ee6",
+    "base": "c939cd120",
     "regra": "Todo numero vem com a LISTA DE CAMINHOS que o produziu e com o marcador type:done conferido antes do parse. Total sem denominador nao e verificavel.",
     "A_seis_familias_de_feature": {
       "P": 1095,
@@ -671,16 +671,26 @@
       "nenhuma_minha": "Nenhuma das 14 e minha e nenhuma e regressao desta rodada."
     },
     "TOTAL_DO_RECORTE": {
-      "P": 1247,
+      "P": 1282,
       "S": 4,
       "F": 8,
-      "conta": "A 1095 + exclusivos de B 92 + sobrepostos de B 60 = 1247. Os 60 tambem estao dentro de C; somar C inteiro aqui contaria duas vezes."
+      "conta": "A 1095 + exclusivos de B 92 + sobrepostos de B 60 + D 35 = 1282. Os 60 tambem estao dentro de C; somar C inteiro contaria duas vezes."
     },
     "UNIAO_DO_QUE_EU_EXECUTO": {
-      "P": 2425,
+      "P": 2460,
       "S": 6,
       "F": 22,
-      "conta": "A 1095 + C 1238 + exclusivos de B 92 = 2425."
+      "conta": "A 1095 + C 1238 + exclusivos de B 92 + D 35 = 2460."
+    },
+    "D_recorte_em_packages": {
+      "P": 35,
+      "S": 0,
+      "F": 0,
+      "arquivos": 3,
+      "como_apareceu": "O coordenador aplicou o 2b a si mesmo e descobriu que TODAS as medicoes de suite completa da rodada cobriam apps/superadmin e mais nada, deixando sete conjuntos de teste do monorepo fora. Apliquei a mesma pergunta um nivel acima, ao meu recorte.",
+      "caminhos": "packages/coelo_api/test/children/child_directory_dto_test.dart 29 casos; packages/coelo_domain/test/attendance/attendance_dashboard_test.dart 5 casos; packages/coelo_ui_admin/test/people/coelo_admin_assignee_stack_test.dart 1 caso.",
+      "resultado": "35 P, zero falhas. O DTO de diretorio de criancas cobre normalizacao unicode, orcamento de cursor em bytes UTF8, forma estrita contra vazamento de PII e negacao segura para os sete codigos SAI. O de Assiduidade cobre denominador da taxa, dado insuficiente em vez de zero por cento, limpeza de selecao descendente e escopo de acesso fixo.",
+      "falso_positivo_do_instrumento": "A primeira varredura devolveu 35 arquivos porque eu casei a palavra 'child', que aparece como parametro child: em praticamente todo teste de widget Flutter. Refinei para diretorio de dominio em vez de mencao no texto e sobraram 3. Buscar por termo de dominio em codigo Flutter tem falso positivo estrutural nessa palavra."
     }
   }
 }
