@@ -7,12 +7,63 @@ import 'package:coelo_superadmin/features/attendance/attendance.dart';
 import 'package:coelo_superadmin/features/auth/domain/login_request.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/auth/domain/password_recovery.dart';
+import 'package:coelo_superadmin/features/auth/domain/superadmin_auth_context.dart';
 import 'package:coelo_domain/coelo_domain.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+const _fullContext = SuperadminAuthContext(
+  platformRoleCode: 'owner',
+  scopeKind: SuperadminAuthScopeKind.platform,
+  permissionCodes: {'platform.read', 'attendance.read'},
+  aal: 'aal1',
+);
+
+const _reducedContext = SuperadminAuthContext(
+  platformRoleCode: 'owner',
+  scopeKind: SuperadminAuthScopeKind.platform,
+  permissionCodes: {'platform.read'},
+  aal: 'aal1',
+);
+
 void main() {
+  testWidgets('the attendance dashboard is rebuilt when authorization changes', (tester) async {
+    final session = SuperadminSession()..authorize(_fullContext, sessionId: 'nominal-session');
+    final repository = _TrackingAttendanceRepository();
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      onThemeModeChanged: (_) {},
+      attendanceRepository: repository,
+      attendancePermissions: const AttendancePermissions.owner(),
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+    addTearDown(repository.dispose);
+
+    router.go(SuperadminRoutes.attendance);
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+
+    final loadsBefore = repository.calls.where((call) => call == 'fetchDashboard').length;
+    expect(loadsBefore, 1);
+    final previousRevision = session.authorizationInvalidationRevision;
+
+    session.authorize(_reducedContext, sessionId: 'nominal-session');
+    await tester.pumpAndSettle();
+
+    expect(session.authorizationInvalidationRevision, greaterThan(previousRevision));
+    expect(
+      repository.calls.where((call) => call == 'fetchDashboard').length,
+      greaterThan(loadsBefore),
+      reason: 'a snapshot read under the previous authorization must not survive it',
+    );
+    expect(tester.takeException(), isNull);
+  });
+
   test('declares production and development attendance routes', () {
     expect(SuperadminRoutes.attendance, '/attendance');
     expect(SuperadminRoutes.attendanceCreate, '/attendance/new');
