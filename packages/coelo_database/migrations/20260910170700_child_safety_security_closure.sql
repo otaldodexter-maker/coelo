@@ -11,13 +11,17 @@
 -- SECURITY MODEL: direct browser writes are denied. Public RPCs are SECURITY
 -- INVOKER wrappers over narrowly granted functions in the unexposed app_private schema.
 
+-- Mesmos rotulos obrigatorios do 20260910170500; ver a nota la.
 insert into public.platform_permissions(
-  code,module_code,screen_code,action_code,description,risk_level,requires_mfa,status
+  code,module_code,module_label,screen_code,screen_label,action_code,action_label,
+  description,risk_level,requires_mfa,status
 ) values (
-  'child_safety.review','child_safety','approvals','review',
+  'child_safety.review','child_safety','Segurança infantil','approvals','Aprovações','review','Revisar',
   'Revisar decisões de segurança da criança no escopo exato da unidade.',
   'critical',true,'active'
 ) on conflict (code) do update set
+  module_label=excluded.module_label,screen_label=excluded.screen_label,
+  action_label=excluded.action_label,
   description=excluded.description,risk_level='critical',requires_mfa=true,
   status='active',updated_at=now();
 

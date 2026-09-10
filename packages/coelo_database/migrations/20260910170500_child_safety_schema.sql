@@ -185,18 +185,26 @@ on conflict (id) do update set
   file_size_limit = excluded.file_size_limit,
   allowed_mime_types = excluded.allowed_mime_types;
 
+-- Rotulos obrigatorios desde 20260811215451 e sem default desde 20260831130726.
+-- Na cadeia antiga esta migration corria ANTES da remocao dos defaults, entao o
+-- vazio passava. Sobre a baseline de producao os defaults ja nao existem e o
+-- insert falha com 23502. Os tres rotulos entram tambem no do update, senao uma
+-- linha preexistente continuaria nula.
 insert into public.platform_permissions(
-  code,module_code,screen_code,action_code,description,risk_level,requires_mfa,status
+  code,module_code,module_label,screen_code,screen_label,action_code,action_label,
+  description,risk_level,requires_mfa,status
 ) values
-  ('child_safety.read','child_safety','directory','read',
+  ('child_safety.read','child_safety','Segurança infantil','directory','Diretório','read','Ver',
    'Visualizar segurança da criança no escopo autorizado.','critical',true,'active'),
-  ('child_safety.manage','child_safety','management','manage',
+  ('child_safety.manage','child_safety','Segurança infantil','management','Gestão','manage','Gerenciar',
    'Gerenciar autorizações, restrições e alertas infantis.','critical',true,'active'),
-  ('child_safety.export','child_safety','files','export',
+  ('child_safety.export','child_safety','Segurança infantil','files','Arquivos','export','Exportar',
    'Exportar dados minimizados de segurança da criança.','critical',true,'active')
 on conflict (code) do update set
-  module_code=excluded.module_code,screen_code=excluded.screen_code,
-  action_code=excluded.action_code,description=excluded.description,
+  module_code=excluded.module_code,module_label=excluded.module_label,
+  screen_code=excluded.screen_code,screen_label=excluded.screen_label,
+  action_code=excluded.action_code,action_label=excluded.action_label,
+  description=excluded.description,
   risk_level=excluded.risk_level,requires_mfa=true,status='active',updated_at=now();
 
 insert into public.platform_role_permissions(role_id,permission_id,effect,status)
@@ -205,7 +213,9 @@ from public.platform_roles role_record
 join public.platform_permissions permission_record
   on permission_record.code in ('child_safety.read','child_safety.manage','child_safety.export')
 where role_record.code='owner'
-on conflict (role_id,permission_id) do update set effect='allow',status='active',revoked_at=null,updated_at=now();
+-- public.platform_role_permissions NAO tem updated_at em producao; a coluna so
+-- existia na cadeia antiga. Manter updated_at=now() aqui quebra com 42703.
+on conflict (role_id,permission_id) do update set effect='allow',status='active',revoked_at=null;
 
 create or replace function app_private.validate_child_safety_context()
 returns trigger language plpgsql security definer set search_path=''
