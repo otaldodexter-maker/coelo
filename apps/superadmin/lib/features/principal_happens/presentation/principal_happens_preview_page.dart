@@ -278,7 +278,7 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
   void _prototypeMessage(String label) {
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(SnackBar(content: Text('$label estará disponível na experiência completa.')));
+    ).showSnackBar(SnackBar(content: Text('$label ainda não está disponível.')));
   }
 
   void _invoke(VoidCallback? callback, String fallback) {
@@ -1320,7 +1320,7 @@ final class _HappensGalleryState extends State<_HappensGallery> {
     }
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(SnackBar(content: Text('$action indisponível nesta prévia.')));
+    ).showSnackBar(SnackBar(content: Text('$action ainda não está disponível.')));
   }
 
   @override
@@ -1658,7 +1658,7 @@ final class _AuthorizedMediaState extends State<_AuthorizedMedia> with WidgetsBi
                   ),
                   const SizedBox(height: CoeloSpacing.space3),
                   const Text(
-                    'Reprodução de vídeo indisponível nesta prévia.',
+                    'Reprodução de vídeo ainda não está disponível.',
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: CoeloSpacing.space3),

@@ -320,7 +320,7 @@ void main() {
     expect(
       find.descendant(
         of: gallery,
-        matching: find.text('Reprodução de vídeo indisponível nesta prévia.'),
+        matching: find.text('Reprodução de vídeo ainda não está disponível.'),
       ),
       findsOneWidget,
     );
@@ -346,7 +346,7 @@ void main() {
 
     await tester.tap(find.byTooltip('Compartilhar mídia'));
     await tester.pump();
-    expect(find.text('Compartilhamento indisponível nesta prévia.'), findsOneWidget);
+    expect(find.text('Compartilhamento ainda não está disponível.'), findsOneWidget);
   });
 
   testWidgets('keeps tablet anatomy without desktop side columns', (tester) async {
