@@ -140,6 +140,42 @@ bloco de conexão do pooler de produção com `PGPASSWORD` do papel efêmero
 saída de ferramenta de uma conversa. Pedido: trocar a senha do banco do projeto
 no painel (só o Owner pode) e não usar `--dry-run` em sessão de agente.
 
+## P15 — `medication_form_mobile_light`: rodapé dentro do scroll ou ancorado? (formularios-cuidado-rotina)
+
+A referência guardada (R) tem o rodapé dentro do scroll, com "Cancelar"
+cortado no fim da tela. O render atual tem o rodapé ancorado, como a regra
+RODAPÉ (Decisão 7) e o golden aprovado de Criar instituição em 375 px.
+
+- (a) Rodapé de volta para dentro do scroll, como na referência.
+- (b) **Recomendado:** rodapé ancorado como em Instituições, com respiro no
+  fim do conteúdo para nenhuma linha de texto ficar fatiada; o golden é
+  regravado depois. Até a resposta o golden fica divergente de propósito.
+
+## P16 — Pergunta de Local em Formulários entra no MVP? (formularios-cuidado-rotina)
+
+As duas políticas de Local (opções fixas na publicação; local revogado exige
+local atual) já estão na spec, mas o tipo `location` não existe: a constraint
+de `form_items.kind` em produção não o aceita e a própria spec lista
+localização como fora do MVP. Decidir: trazer `location` para o MVP (novo tipo
+de item, migration e cliente) ou manter `forms.location-question` e
+`forms.location-answer` adiadas. Caso aberto se entrar: pergunta obrigatória
+com local revogado e nenhuma alternativa válida na lista congelada.
+
+## P17 — Sessão de teste em produção para a régua do MVP (todas as frentes)
+
+Os pacotes já estão em produção, mas "rota normal abre, CRUD persiste, reload
+mantém" exige uma sessão autenticada, e só existe o usuário do Owner. Opções:
+
+- (a) **Recomendado:** autorizar a criação de um usuário sintético de
+  Superadmin via Supabase Auth (por exemplo `qa+r03@coelo.me`), com senha
+  gerada por quem testa e guardada só no ambiente daquela sessão, membership
+  de Owner de plataforma, e remoção do usuário e dos dados sintéticos ao fim
+  de cada verificação. Nenhuma credencial passa por chat.
+- (b) O Owner faz as verificações no próprio app a partir de um roteiro por
+  action_id que as frentes escrevem.
+- (c) Sem sessão: as frentes registram só "função existe e nega anônimo" e
+  nenhuma ação chega a `verified`.
+
 ## P10 — `requires_mfa` em capacidades de publicação (publicacoes-agenda)
 
 Código histórico ainda pede AAL2 em algumas capacidades de publicação; o MVP é

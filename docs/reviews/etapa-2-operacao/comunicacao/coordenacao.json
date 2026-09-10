@@ -1,5 +1,5 @@
 {
-  "revision": 9,
+  "revision": 10,
   "round": "E2-R03-20260910",
   "role": "Coordenacao e Integracao - Claude (P1)",
   "writer": "coordenador-claude",
@@ -197,6 +197,19 @@
     "aplicadoEm": "2026-09-10T16:32:00-03:00: 14 migrations sem erro; ledger 22 versoes de 10/09; verificado: anon sem execute em form_authorize_file_job_download, media_assets e forms sem grant a anon/authenticated; os 11 arquivos historicos entraram em migrations/ como 20260910230001..230011 (ordem preservada) porque o carimbo original, anterior a baseline, quebraria o db reset local",
     "estado": "aplicacao em producao logo apos o dump; ledger e move dos 11 arquivos de migrations-historico/ para migrations/ no mesmo commit"
   },
+  "lote4": {
+    "dump": "C:/Users/adrie/Documents/Coelo-backups/schema-producao-20260910-lote4.sql (16:40)",
+    "espelho": "projeto descartavel coelo_baseline reconstruido por db reset (baseline + seed) + lotes 1-3, para o preflight nao herdar resíduo dos ensaios anteriores; passa a ser o espelho de producao do coordenador",
+    "aplicadoEm": "2026-09-10T16:45:00-03:00, 11 migrations sem erro, ledger 33 versoes de 10/09",
+    "conteudo": ["20260910190000_meal_plans_media_lifecycle_receipts_v2 (a antiga 20260820230000 reconstruida sobre a baseline; pgTAP 30/30 e 22/22)", "20260910190100_meal_plan_image_delete_requires_revision_v2 (fecha a porta e revoga de anon o SELECT em meal_plans e o execute em meal_plan_list/get; 6/6)", "20260910190200_meal_plan_delete_v1", "20260910170100 person_detail (42/42)", "170200 invites_v2 (33/33)", "170300 internal_users_directory (45/45)", "170400 read_minimization (3/3)", "170500 child_safety_schema (4 tabelas novas)", "170600 child_safety_read_models", "170700 child_safety_security_closure", "170800 d04_child_safety_internal_reads (43/43)"],
+    "naoEntrou": "20260910170750_child_directory_error_envelope: obsoleta, o lote 3 ja levou SAI_INVALID_ARGUMENT ao envelope e o preflight de md5 dela parou por drift; d04 aplicou sem ela. Arquivo marcado OBSOLETO em candidatos/acessos-pessoas/. 170900 people_read_aal1 retido por P11.",
+    "verificado": "invites v2 10 funcoes, child_safety 4 tabelas, meal_plan_delete presente, anon sem execute em meal_plan_list",
+    "medicaoDoGrupo": "acessos-pessoas: a lacuna de RPCs chamadas pelo cliente e ausentes em producao cai de 123 para 105 com este lote; primeira reducao do dia"
+  },
+  "chavesLigadas": "2026-09-10T16:50: COELO_ENABLE_CARE_AND_ROUTINE_BACKEND e COELO_ENABLE_STUDENT_LINK_COMMANDS passam a defaultValue true em SuperadminAppConfig (commit 900ed78ca), porque o SQL correspondente (lotes 2 e 3) esta em producao; testes das familias em execucao antes do push",
+  "lote5Pendente": "cadeia de Locais de estrutura (catalog_v2 baseline -> activity_save_v2 -> update_status -> copy -> schedule -> reservations -> 180000/180100/180200) mais unit_detail_v2_baseline: o candidato catalog_v2 ainda falha no espelho por 'location table ACL drift' (activity_locations tem ALL para anon/authenticated por privilegio padrao); o grupo corrige com revoke antes da guarda",
+  "filhasAs1650": "vivas e respondendo: fase0 (coelo-d2, lote 7 fa404db39 + 33277a140 + 01849ec2c em dev), estrutura (coelo-3f, fc9c6e138), acessos-pessoas (coelo-94, c949067ee, assumiu Seguranca infantil no composto), formularios-cuidado-rotina (coelo-c7, 7a3b1441c), principal-chat-sistema (bridge, 49b92ffa3, conflito do checkout principal resolvido). Sem sinal desde 15:46: operacoes (Codex, 3fa07edd0) e publicacoes-agenda (Codex, 3b21db696). realm-interno (coelo-f0) sem branch publicada.",
+  "perguntasNovasAoOwner": "P15 rodape de medication_form_mobile_light; P16 tipo location em Formularios entra no MVP; P17 sessao de teste em producao para a regua do MVP (sem ela nenhuma acao chega a verified)",
   "colisoesDeCarimbo": "20260910120000 usado por meal_plan_image_delete_requires_revision_v1 (principal-chat-sistema) e superadmin_internal_circular_delete_v1 (publicacoes-agenda); 20260910140000 por chat_conversation_preferences_v1 e student_link_commands_v1 (renumerado para 220200); 20260910150000 por happens_feed_pagination_v1 e health_care_guardian_read_v1 (renumerado para 220000); 20260910160000 por units (aplicado) e forms_revoke (renumerado para 220100). principal-chat-sistema e publicacoes-agenda renumeram os seus para as faixas 2026091019xxxx e 2026091020xxxx; nenhum dos dois aplica ainda (cadeias ausentes).",
   "layoutDePacotes": "pacote novo nasce em packages/coelo_database/candidatos/<grupo>/; o coordenador move para migrations/ no commit em que aplica em producao (README do pacote atualizado)",
   "preflightEstruturaNaBaseline1612": {
