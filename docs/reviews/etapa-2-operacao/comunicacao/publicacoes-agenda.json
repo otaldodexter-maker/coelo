@@ -1,5 +1,5 @@
 {
-  "revision": 6,
+  "revision": 7,
   "round": "E2-R03-20260910",
   "group": "publicacoes-agenda",
   "tool": "Codex",
@@ -29,18 +29,19 @@
     "Agenda: compatibilizar contexto interno039 e validar readers/comandos produtivos; telas seguem no composto publicado da Fase 0."
   ],
   "firstGate": "Backend: localizar o contrato canônico, testar existência/assinaturas, grants, RLS, capacidade, tenant e idempotência; produzir o primeiro pacote SQL/pgTAP executável sem tocar UI de diretório.",
-  "status": "frontend-backend-local-green-pgtap-blocked",
+  "status": "frontend-backend-local-green-golden-pgtap-blocked",
   "compositionKeys": [
     {"package": "circulars.delete", "key": "superadminCircularDeleteEnabled", "default": false, "owner": "coordenador", "reason": "ligar somente após migration aplicada e gateway verificado"}
   ],
   "tests": {
     "passed": 158,
-    "failed": 0,
+    "failed": 25,
     "blocked": 1,
     "skipped": 0,
     "evidence": [
       "Lote combinado Agenda/Avisos/Circulares (router, contratos, repositórios e detalhe administrativo): 158 PASS",
       "flutter analyze do recorte: sem erros; 1 informação de estilo preexistente em superadmin_router.dart:902 (curly_braces_in_flow_control_structures)",
+      "Goldens do recorte: 25 falhas de pixel (Agenda/Avisos em breakpoints canônicos e Circular em texto 200%); nenhum golden foi regravado, pois a causa é deriva de baseline e exige decisão do Owner",
       "supabase test db supabase/tests/superadmin_internal_circular_delete_v1_test.sql --local: BLOQUEADO, porta 54322 ocupada pelo Supabase local e2-r03-operacoes; não interrompido por pertencer a outra frente"
     ]
   },
@@ -53,8 +54,8 @@
     "apps/superadmin/lib/features/notices/**",
     "apps/superadmin/lib/features/circulars/**"
   ],
-  "blocked": "pgTAP local retém a prova SQL porque a porta 54322 está ocupada pelo Supabase de outra frente; E2E remoto aguarda aplicação do coordenador. O pacote FE/BE local está verde.",
-  "next": "Aplicar/revalidar migrations na ordem do coordenador, executar pgTAP no ambiente liberado, habilitar superadminCircularDeleteEnabled somente após o gateway verificado e então rodar E2E ponta a ponta.",
+  "blocked": "Goldens do recorte estão vermelhos por deriva de baseline e aguardam decisão de rebaseline do Owner; pgTAP local retém a prova SQL porque a porta 54322 está ocupada pelo Supabase de outra frente; E2E remoto aguarda aplicação do coordenador.",
+  "next": "Não regravar goldens sem decisão. Aplicar/revalidar migrations na ordem do coordenador, executar pgTAP no ambiente liberado, habilitar superadminCircularDeleteEnabled somente após o gateway verificado e então rodar E2E ponta a ponta.",
   "changes": [
     {
       "screen": "Etapa 2 → apps/superadmin → Circulares → Diretório/Detalhe → Excluir → circulars.delete",
@@ -78,6 +79,7 @@
   ],
   "sharedFindings": [
     "O código histórico ainda modela requires_mfa/aal2 para algumas capacidades de publicação; o alinhamento R03 diz MFA fora do MVP. A remoção do bloqueio no contexto interno é compartilhada e deve ser coordenada, não duplicada nesta frente.",
+    "Goldens de Agenda/Avisos/Circulares falham na base publicada com diffs de 0,47% a 37,69%; preservar os arquivos e aguardar decisão de rebaseline do Owner.",
     "Não declarar E2E: base.fase0Head publicada, mas Docker/Postgres local continua ocupado por outra frente e aplicação remota permanece reservada ao coordenador."
   ],
   "updatedAt": "2026-09-10T19:20:00-03:00"
