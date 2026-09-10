@@ -551,6 +551,18 @@ void main() {
       () => repository.resendInvitation(_identityId),
       throwsA(isA<PlatformUserRuleException>()),
     );
+    // Revoking an invitation waits on the same privileged Auth contract as
+    // resending it, and had no test saying so: only its sibling did.
+    expect(
+      () => repository.revokeInvitation(_identityId),
+      throwsA(
+        isA<PlatformUserRuleException>().having(
+          (error) => error.code,
+          'code',
+          'invitation-contract',
+        ),
+      ),
+    );
   });
 
   test('maps a successful HTTP denial envelope without exposing backend details', () async {
