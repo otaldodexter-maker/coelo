@@ -126,7 +126,7 @@ para 17, e das 17 nenhuma é órfã.** Elas se distribuem assim:
 
 | Falhas | Arquivo | O que é |
 | ---: | --- | --- |
-| 3 | `app/router/principal_real_route_test` | **teste desatualizado pela integração do feed misto**: a rota passou a exigir dois repositórios e o teste injeta um, então cai em indisponível. Produção compõe os dois e o fail-closed está correto |
+| 3 | `app/router/principal_real_route_test` | **defeito real e preexistente**: na rota real com contexto autenticado, a página de Acontece não é encontrada na árvore. O caso de negação passa — o caminho fechado funciona e o de sucesso não monta. Falha idêntica na base anterior à rodada |
 | 2 | `core/config/composition_root_sanitization_test` | contrato de composição |
 | 2 | `core/config/unit_fail_closed_composition_source_test` | contrato de composição |
 | 2 | `shared/.../superadmin_form_action_footer_adoption_test` | adoção do rodapé de ação |
@@ -2125,6 +2125,68 @@ do escopo que convém ser vista antes de a tela ser dada por pronta**, porque
 omissão** — as outras duas são a ausência de repositório de produção em Saúde e
 Medicação, e a spec que criaria o contrato real estar em rascunho. **Não são três
 lacunas: é um escopo aprovado com três consequências**, e vale decidi-las juntas.
+
+## Uma retratação que restaura uma atribuição, e o que ela ensina
+
+Cedo na rodada eu atribuí três falhas de rota a uma frente sem ter medido. Ela
+mediu, disse que aquelas falhas não apareciam entre as 33 da base anterior, e eu
+**retirei a atribuição** e registrei a lição de medir antes de rotear.
+
+**A retirada estava errada e a frente a desfez sozinha, horas depois.** Rodando o
+arquivo diretamente, ele falha três vezes na base anterior à rodada, na base
+entregue e na branch dela. **Não aparecia entre as 33 porque a medição da base não
+cobria aquele arquivo** — a lista não podia contê-lo. Ausência de uma lista foi
+tratada como prova de ausência do defeito.
+
+E o agravante é a ordem dos fatos, que a própria frente apontou: uma hora antes,
+ela havia recuperado essa refutação do canal de conversa para o registro durável,
+com o argumento — correto — de que **evidência de uma recusa vale mais que
+evidência de um achado, porque um achado outra pessoa reproduz e uma recusa é
+palavra contra palavra**. Ela estava certa sobre o princípio e arquivou a evidência
+errada. **Uma recusa mal fundamentada, bem arquivada, é pior que não arquivada:
+ela deixa de ser reexaminada.**
+
+**As três falhas são reais, são de escopo dela, e precedem esta rodada.** Na rota
+real com contexto autenticado, a página de Acontece não é encontrada na árvore; o
+quarto caso do mesmo arquivo, o de negação por múltiplos contextos ativos, passa —
+**o caminho fechado funciona e o de sucesso não monta**. Ficam diagnosticadas e não
+corrigidas: mexer na composição da rota real a menos de uma hora do congelamento
+seria abrir frente nova.
+
+E elas derrubam uma afirmação que a mesma frente tinha feito minutos antes, sobre o
+furo de denominador dela só esconder casos que passam. **Escondia três falhas.**
+
+## O autosave do editor de Formulários não roda no aplicativo
+
+**Quinta ocorrência do padrão "a capacidade existe e ninguém a alcança", e a
+maior: uma funcionalidade inteira.**
+
+O agendamento de gravação automática retorna imediatamente quando a interface de
+autoria é nula — e essa interface aparece vinte e duas vezes dentro do próprio
+arquivo do editor e **em nenhum outro lugar do código de produção**. Nenhuma
+composição a fornece: nem o roteador, nem o ponto de entrada, nem a rota do
+editor. **Em produção ela é sempre nula.** O único lugar do repositório que a
+fornece é um arquivo de teste.
+
+São quarenta e três pontos de código — temporizador, pausa, marca de rascunho
+alterado, guarda de salvamento pendente — construídos em setembro. **Tudo testado,
+tudo verde, tudo inalcançável.**
+
+**E o motivo de isto ser difícil de pegar merece ser dito com precisão:** a suíte
+verde afirma que a gravação automática funciona, e está certa — ela funciona quando
+alguém fornece a interface. O registro que diz "implementado e coberto" também está
+certo. **Duas afirmações verdadeiras somadas produzem uma conclusão falsa**, que é
+"quem edita um formulário tem gravação automática". Não há nenhuma frase errada
+para corrigir.
+
+**Não foi ligado, e a razão é a mesma das outras devoluções:** ligar significa
+gravar rascunho **sem ação explícita do autor**, o que é decisão de produto sobre
+persistência de trabalho não confirmado — não é conserto de fiação.
+
+**E o método que encontrou custa um comando:** contar quantas vezes o parâmetro
+habilitador aparece no código de produção e ver se todas as ocorrências caem dentro
+do próprio arquivo que o consome. Se caem, ninguém fornece. Serve para qualquer
+capacidade que dependa de dependência injetada — e o repositório tem várias.
 
 ## Ler não pega; seguir pega
 
