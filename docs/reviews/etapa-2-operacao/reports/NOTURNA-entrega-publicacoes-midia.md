@@ -16,6 +16,22 @@ Worktree `C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-publicacoes-midia`
 branch `work/etapa2-noturna-publicacoes-midia`, base `d784462c1` com
 `origin/dev` mesclado em `3ab29d7df`.
 
+## Os quatro documentos desta entrega
+
+Tudo o que este grupo produziu fora de código está nestes quatro arquivos, no
+mesmo diretório:
+
+| Arquivo | Para que serve |
+| --- | --- |
+| `NOTURNA-entrega-publicacoes-midia.md` | este: lotes, defeitos, estado por ação, o que não fechou |
+| `NOTURNA-decisao-owner-circulares-acoes-ausentes.md` | **oito decisões para o Owner**, com o caminho de cada uma já mapeado |
+| `NOTURNA-revisao-candidatos-sql-publicacoes-midia.md` | revisão dos seis candidatos SQL, com um defeito e uma lacuna de prova |
+| `NOTURNA-pacote-catalogo-midia.md` | desenho revisável da interface que falta no catálogo de mídia |
+
+Há ainda um patch **preparado e não mesclado** na branch
+`work/etapa2-noturna-copia-previa`, documentado em
+`NOTURNA-patch-copia-previa.md` naquela branch.
+
 ## Lotes publicados
 
 | # | SHA | O que é |
@@ -62,6 +78,10 @@ grupo: 10 em `principal_happens_preview_golden_test`, 11 em
 Nenhum golden foi regravado, conforme decisão da coordenação.
 
 Fora de golden, zero falhas.
+
+**Plataforma comum de mídia**, medida separadamente ao final: **82 PASS e 0
+FAIL** nos quatro gateways — `circular-media` 27, `moments-media` 26,
+`happens-media` 15 e `now-media` 14.
 
 ## Defeitos corrigidos, em ordem de gravidade
 
@@ -145,14 +165,25 @@ leitura, para nenhuma linha ser lida como mais do que diz:
 | `circulars.attach` | avançado | sim | Bilhete autorizado e expirável; gateway pronto para R2 |
 
 Nenhuma ação é declarada concluída ponta a ponta. Três têm cliente fechado e
-RPC ausente da cadeia aplicada, e por isso **não completam em produção**.
+RPC sem evidência de existência no repositório — ver a ressalva na seção
+seguinte sobre o que isso permite e não permite afirmar.
 
 ## O que NÃO está fechado, e por quê
 
 - `withdraw_happens_post`, `list_visible_moments` e `withdraw_moment` **não
-  existem na cadeia aplicada**. Só em candidatos. Portanto `momentos.view`,
-  `momentos.remove` e `acontece.remove` têm cliente fechado e ação que **não
-  completa em produção**.
+  existem em nenhum arquivo de migration do repositório**, exceto nos
+  candidatos autorais. Conferido nas 180 migrations rastreadas em
+  `packages/coelo_database/migrations/` e nas 17 de `supabase/migrations/`.
+
+  **Retestando a própria afirmação:** dizer que "não completam em produção" é
+  inferência, não medição. O repositório não espelha produção integralmente — a
+  prova é que `app_private.unit_import_source_attestations` é referenciada por
+  uma migration e criada por nenhuma, e ainda assim produção evidentemente a
+  tem. O que posso afirmar é o que verifiquei: **não há evidência de que essas
+  três RPCs existam, e não há como verificar daqui.** Se produção as tiver, as
+  três ações podem funcionar; se não tiver, falham fechado com estado honesto.
+  A ação certa é a mesma nos dois casos — aplicar os candidatos sob autorização
+  nominal —, mas o rastreador não deve registrar "falha em produção" como fato.
 - Mídia de Acontece e Agora **não está no R2**. Falta migration que exponha
   `storage_provider` no envelope de preparo e troque a checagem de existência
   do finalize, que hoje consulta `storage.objects`.
