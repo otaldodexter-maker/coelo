@@ -150,6 +150,29 @@ ou compor Circular é ação exclusivamente administrativa? Se for exclusivament
 administrativa, a tela e seus testes saem. Se não for, falta a rota — e aí é
 trabalho, não lixo.
 
+## Sétima decisão: abas do Perfil implementadas duas vezes
+
+`PrincipalProfileContentTabs`, com o enum `PrincipalProfileContentTab`, vive em
+`principal_circulars/presentation/principal_circular_surfaces.dart` e tem
+**zero** consumidores em `lib`. Tem dois em `test`, e um deles é o golden — ou
+seja, existe **referência visual aprovada** para um componente que ninguém vê
+no produto.
+
+E é duplicata: `principal_profile_preview_page.dart` traz a sua própria
+implementação privada das mesmas abas, com o enum `_ProfileTab` e o widget
+`_ProfileTabButton`, nos mesmos quatro destinos e com as mesmas etiquetas. Essa
+é a que está ligada.
+
+Pior que código morto comum: quem for mexer nas abas encontra primeiro a versão
+pública, com nome claro e golden, e conclui que é a canônica. Mexer nela não
+muda nada no produto e o golden segue verde, então o engano só aparece quando
+alguém abre a tela.
+
+Cruza territórios: `principal_circulars` e `principal_profile` pertencem a
+grupos diferentes. Qual sobrevive não é decisão de um executor — e a resposta
+provavelmente contraria a intuição, porque a viva é a privada e a com prova
+visual é a morta.
+
 ## Padrão, não acidente
 
 O padrão apareceu por três ângulos nesta rodada, e vale registrar como um só:
