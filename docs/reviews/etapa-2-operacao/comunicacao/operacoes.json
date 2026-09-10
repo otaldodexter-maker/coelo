@@ -6,7 +6,7 @@
   "tool_model": "Codex, Luna medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-operacoes",
   "branch": "work/etapa2-r03-operacoes",
-  "head": "820a2dcaa",
+  "head": "d7ca27d93",
   "base": {
     "requested": "base.fase0Head",
     "resolved": "1adb070c9028850ccdd7e091db5b97b63b95c750",
@@ -108,7 +108,7 @@
     "decision": {"plans": "manter indicadores atuais e atualizar 8 goldens de cards", "support": "aprovar composição atual e atualizar 32 goldens"},
     "recording": "decisão recebida do Owner nesta conversa; coordenador deve ler este handoff",
     "executed_commit": "d7ca27d93cbe01aba9861c6a5f93a54725c08dd7",
-    "handoff_commit": "820a2dcaa"
+    "handoff_commit": "bbfcf4b9d"
   },
   "next_step": "coordenador deve ler este checkpoint e, quando a janela de replay e o gate P1 forem liberados, executar pgTAP nominal dos 20 action_ids ativos; depois aplicar a fila SQL forward-only e executar E2E Supabase real",
   "commits": ["b172b695b8d996375fc7da7a539ed7ee78dc7e35", "94bca84f6", "5611c6da7", "ce4939227", "b02478937", "9ae607fca", "179cd6ae4", "af8ee0524", "2ea0e5606", "d7ca27d93"]
