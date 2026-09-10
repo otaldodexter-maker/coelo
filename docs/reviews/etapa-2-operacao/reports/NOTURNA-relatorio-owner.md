@@ -344,6 +344,40 @@ a família como falha sem magnitude, ou contaria errado. É a terceira classe de
 "verde ou vermelho que engana" catalogada nesta rodada, junto do teste que
 sobrescreve outro e da string lida sem a asserção em volta.
 
+## Três testes de fronteira vermelhos, três causas sem relação
+
+A sequência do falso alarme acima produziu um resultado lateral melhor que o
+alarme. Três testes que afirmam fronteiras de autorização estavam vermelhos, e a
+tentação — a minha — foi tratá-los como uma família com uma causa. São três
+causas sem nenhuma relação entre si:
+
+- `/forms/form-1/files` — **expectativa superada**: o contrato mudou uma semana
+  antes e o teste antigo não acompanhou.
+- `/forms/media/asset-1` — **não havia nada**: `calls=0` e painel honesto
+  presente. Estava correto o tempo todo, e só parecia quebrado porque o caso
+  falhava antes de chegar nele.
+- `/dev/imports` — **overflow de layout**: `RenderFlex` estourando 1409 pixels na
+  superfície padrão de 800×600, e a exceção mata o caso antes de qualquer
+  asserção ser avaliada. `calls=0` nas duas rotas; a fronteira de importação está
+  intacta.
+
+E o que as três compartilham não é a causa, é o modo de esconder: **em nenhuma a
+mensagem vermelha nomeia a causa real.** Uma morre na primeira asserção, outra
+morre atrás dela, a terceira morre numa exceção que nem é asserção. Quem
+catalogar por nome de arquivo erra as três.
+
+**Uma característica conhecida, medida no caminho e registrada como
+característica e não como defeito:** a autorização de leitura das rotas de
+Formulários é delegada **inteiramente ao servidor**. A sessão do teste concede
+apenas `platform.read`, e a guarda do router consulta unicamente se há sessão
+autenticada — não há verificação de capacidade no cliente. Isso é coerente com o
+princípio de que a autoridade é o backend e de que esconder botão nunca foi
+controle de acesso. Mas significa que **não existe segunda linha de defesa no
+cliente**: se alguma RPC de Formulários for mais frouxa do que se supõe, nada a
+segura antes. Verificar isso exige leitura autorizada das policies, que ninguém
+pôde fazer nesta rodada — entra na lista da próxima janela autorizada, junto do
+`select` de catálogo das cinco RPCs de Unidades.
+
 ## Bloqueio herdado é a espécie que mente
 
 Perto do fim da rodada, uma frente descobriu que uma das próprias linhas de
@@ -384,6 +418,22 @@ E a lição que a própria frente tirou é a generalização mais útil da noite
 bloqueios dela, os três que estavam errados eram exatamente os três copiados do
 rastreador sem teste. Nenhum bloqueio que ela mesma havia verificado estava
 errado.** Bloqueio herdado é a espécie que mente.
+
+E o exercício se repetiu em outra frente com o mesmo placar: **três de três
+errados**, dois deles herdados da rodada anterior. Um superestimava o que faltava
+— e teria feito você adiar algo que tem caminho. Um afirmava uma verificação que
+nunca foi feita. E um inventava uma dependência de terceiro que não existe: a
+materialização de publicação de Avisos estava registrada como dependente de
+confirmar `pg_cron` e o consumidor `service_role`, e a migration de **20 de
+agosto** já cria a extensão, define as duas funções restritas a `service_role`,
+concede os grants e agenda o worker de minuto em minuto. Não há nada a confirmar
+que seja específico de Avisos.
+
+**A generalização final junta as duas metades desta noite**, e ela vale além de
+bloqueios: contrato herdado do título de um teste e bloqueio herdado de um
+handoff são a mesma coisa — **informação que parece verificada porque veio
+escrita**. Foi essa espécie que produziu o falso alarme da seção anterior e as
+seis linhas de bloqueio falsas destas duas frentes.
 
 ## Auditoria das onze certificações de Front-end
 
