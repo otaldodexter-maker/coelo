@@ -217,7 +217,15 @@ componente depois.
 # Três linhas de bloqueio minhas que estavam erradas
 
 Uma linha de bloqueio parece informação e por isso ninguém a testa, mas é uma
-hipótese não verificada. Auditei todas as minhas. **Três estavam erradas, e as
+hipótese não verificada. Auditei todas as minhas.
+
+> **Corrigido em 2026-09-10: são QUATRO, não três.** A quarta apareceu na
+> conferência final — `forms.resolve-file` afirmava que cliente e injeção de
+> dependência seguiam em fila, quando o resolvedor está composto em produção.
+> Que ela tenha aparecido tão tarde prova que esta auditoria foi oportunista;
+> a varredura exaustiva está em `2026-09-10-metodo-e-autocorrecao.md`.
+
+**Três estavam erradas, e as
 três eram exatamente as que eu havia copiado do rastreador sem testar.** Nenhum
 bloqueio que eu mesmo verifiquei estava errado.
 
