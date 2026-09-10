@@ -164,6 +164,60 @@ domínio arquivo por arquivo e deduziu o resto do fato de o conjunto local ser o
 mesmo para todas e não criar tabela nenhuma. Se alguma frente tiver um caminho
 de seed não conhecido, é a exceção que muda o quadro.
 
+## Nenhum teste conferia se a RPC chamada existe, e agora confere
+
+Um teste novo, `apps/superadmin/test/contracts/rpc_contract_test.dart`, fecha uma
+lacuna que atravessava a suíte inteira: **nenhum teste do app verificava se a RPC
+que o cliente chama existe no pacote de banco**, porque todos usam cliente falso
+ou interceptam transporte. Nome errado, parâmetro renomeado em migration
+posterior ou função que nunca entrou no versionamento passavam por 6 mil testes
+verdes e falhavam no primeiro uso real — chegando à tela como indisponibilidade
+genérica, indistinguível de queda de rede. **A própria interface escondia o
+defeito.**
+
+Medidos os dois lados: 80 chamadas `.rpc`, 76 nomes distintos, contra 383 funções
+declaradas no pacote. O teste roda em menos de um segundo, sem binding de
+Flutter, e foi validado com controle negativo nos três casos.
+
+**Achado 1, e é grave: cinco RPCs do diretório de Unidades não são criadas por
+arquivo nenhum do repositório** — `create_unit_for_superadmin`,
+`update_unit_for_superadmin`, `get_unit_form_for_superadmin`,
+`list_units_for_superadmin` e `unit_directory_filter_options`. As outras 71
+existem. E não é falha do varredor: a migration versionada `20260825180500`
+**chama** `app_private.create_unit_for_superadmin` de dentro do confirmador de
+importação, e o cabeçalho dela diz textualmente "Repair locally installed Unit
+import/export worker functions". Uma migration do pacote depende de função que o
+pacote nunca cria.
+
+As duas leituras possíveis pedem decisões opostas: ou as funções existem em
+produção instaladas fora do versionamento — e aí o pacote não descreve produção —
+ou não existem, e **Unidades e os filtros de Turmas falham fechado no primeiro
+uso**. Um `select` de catálogo resolve em segundos, e é o que a próxima janela
+autorizada deve fazer **antes** de qualquer promoção de Unidades. Isto se soma
+diretamente aos 40 objetos `app_private` chamados e nunca criados: é o mesmo
+buraco, visto do lado do cliente.
+
+**Achado 2: a guarda de concorrência de imagem de Cardápios nunca roda.**
+`meal_plan_request_image_delete` tem duas formas — a migration de recibos
+`20260820230000` criou a de três argumentos com `p_expected_revision` e manteve a
+de dois por compatibilidade, cujo corpo lê a revisão corrente do próprio banco e
+a repassa. **O cliente chama a de dois.** Para o banco a chamada é legítima, por
+isso nenhum teste acusa, e o efeito é que uma exclusão disparada sobre lista
+desatualizada remove a imagem corrente em vez de ser recusada por divergência.
+Não foi corrigido por contrato, não por tempo: o domínio de imagem de Cardápios
+não tem conceito de revisão de ativo, e ler a revisão no cliente logo antes do
+delete reproduziria exatamente o furo que a guarda existe para fechar. Exige a
+leitura expor a revisão que a pessoa viu — mudança de contrato de domínio, e
+decisão sua.
+
+**Achado 3, que é resultado e não ausência de medida:** zero divergência de nome
+de parâmetro nas 80 chamadas. O pacote já tem teste próprio de nomes de
+argumento, o que mostra que essa classe já cobrou preço antes; hoje está limpa.
+
+O teste falha também **se uma das cinco ausências passar a existir e continuar na
+lista** — sem isso a lista de exceções envelhece e passa a esconder o defeito
+seguinte, que é como esse tipo de allowlist costuma morrer.
+
 ## Progresso por tela
 
 As 230 ações da Etapa 2 em 39 famílias de tela, com o estado que o inventário
