@@ -2095,6 +2095,37 @@ aplicação — não estão espelhados no cliente. Nenhum é violável hoje, por
 diálogo cria uma regra e um agendamento, e **lembrete não tem nenhuma tela que o
 referencie**, apesar de existir no domínio e na API.
 
+## A tela que diz quem responde pela medicação de uma criança não diz nome nenhum
+
+Encontrado ao triar uma referência visual vermelha, elemento a elemento em vez de
+por magnitude. O cartão de plano de medicação mostrava, na referência aprovada, o
+contexto institucional e o responsável pelo nome. Hoje mostra **"Contexto
+institucional indisponível"** e **"Responsável indisponível"**.
+
+A causa está explícita no código: são duas funções que **recebem o identificador e
+o ignoram**. O dado existe — o modelo carrega o vínculo institucional e os
+destinatários, e a página os passa adiante. **O que não existe é a resolução de
+nome.**
+
+**Não é regressão desta rodada** — entrou em agosto — **e é coerente com o escopo
+aprovado**, porque a spec vigente de Saúde e Cuidado está aprovada para interface
+demonstrativa, e resolver nome de instituição e de responsável exigiria uma leitura
+que esse escopo não contempla. O que aconteceu foi a referência visual ficar velha
+desde agosto sem que ninguém a regravasse.
+
+**Vai a você mesmo assim, e a razão é o assunto:** a perda é de informação de
+cuidado. A tela que diz **quem responde pela medicação de uma criança** hoje não
+diz nome nenhum. O comportamento atual é honesto — mostrar "indisponível" é melhor
+que mostrar um identificador interno a quem cuida de uma criança — e não se está
+pedindo correção dentro do escopo vigente. Está-se dizendo que **é uma consequência
+do escopo que convém ser vista antes de a tela ser dada por pronta**, porque
+"golden vermelho, só cosmético" a esconderia.
+
+**E é a terceira vez nesta rodada que a mesma spec explica o que parecia
+omissão** — as outras duas são a ausência de repositório de produção em Saúde e
+Medicação, e a spec que criaria o contrato real estar em rascunho. **Não são três
+lacunas: é um escopo aprovado com três consequências**, e vale decidi-las juntas.
+
 ## Ler não pega; seguir pega
 
 Perto do fim, uma frente aplicou aos próprios documentos a pergunta que vinha
