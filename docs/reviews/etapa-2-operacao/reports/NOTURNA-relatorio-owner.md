@@ -317,6 +317,21 @@ que ela nunca foi exercitada com dados — que é literalmente a regra de que um
 tela `fail-closed` nunca deve ser declarada concluída ponta a ponta, aqui medida e
 não deduzida.
 
+**E a classe foi limitada, o que muda o custo de atacá-la.** As rotas de
+desenvolvimento já montam com repositórios que devolvem dados, então elas
+exercitam exatamente o estado carregado que as rotas de produção não alcançam
+enquanto estão fechadas — o que as torna o detector barato desta classe inteira.
+**Sessenta e sete rotas foram montadas a 1440×900 e lidas: 66 passam, e a única
+exceção é Importações.** Não é problema estrutural do shell nem do design system;
+**é uma tela.** Sem esse número, "defeito mascarado por fail-closed" soa como
+categoria que pode estar em qualquer lugar e o custo de atacar fica
+indeterminado; com ele, é um item.
+
+Limite declarado pela própria varredura: ela cobre rotas de desenvolvimento **sem
+parâmetro**. Rotas parametrizadas e telas de produção sem espelho em
+desenvolvimento ficam de fora, e é por essa fresta que uma segunda instância
+poderia existir.
+
 **Registrado como achado aberto, e não como falha de teste**, e a distinção é
 prática: se alguém "consertar" o teste fixando o viewport, o vermelho some e o
 defeito fica — e some justamente o único sinal que hoje aponta para ele. A
