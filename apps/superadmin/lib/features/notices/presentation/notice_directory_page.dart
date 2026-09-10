@@ -633,6 +633,12 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
   Widget _noticeCard(BuildContext context, PlatformNotice notice) {
     final theme = Theme.of(context);
     return CoeloAdminInteractiveCard(
+      // Mesmo identificador que a tabela usa em `rowKey`. A tela troca de
+      // tabela para cartoes abaixo do breakpoint medio, e ate aqui so a
+      // apresentacao larga era alcancavel por id: no estreito nao havia chave
+      // de linha nenhuma. Uma lista que muda de forma nao deveria mudar de
+      // identidade.
+      key: ValueKey('communication-row-${notice.id}'),
       onPressed: widget.onEdit == null ? null : () => widget.onEdit!(notice.id),
       minHeight: 216,
       child: Padding(
