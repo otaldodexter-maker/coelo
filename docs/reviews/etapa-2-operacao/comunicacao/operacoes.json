@@ -6,7 +6,7 @@
   "tool_model": "Codex, Luna medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-operacoes",
   "branch": "work/etapa2-r03-operacoes",
-  "head": "af8ee0524",
+  "head": "2ea0e5606",
   "base": {
     "requested": "base.fase0Head",
     "resolved": "1adb070c9028850ccdd7e091db5b97b63b95c750",
@@ -93,5 +93,5 @@
     {"kind": "production-gate", "what": "fila SQL R03 retida pelo P1 da coordenação: backup por ponto no tempo/PITR ainda não está ligado", "owner": "Owner/coordenador", "unblocks": "decisão do Owner e PITR habilitado; depois o integrador aplica forward-only na ordem, começando pela posição 1 e sem ligar composição antes do SQL"}
   ],
   "next_step": "reservar uma janela de replay descartável em portas próprias, executar reset/lint/pgTAP nominal dos pacotes de Conta, Planos, Auditoria e Suporte, registrar os resultados; depois aguardar o gate P1 para o integrador aplicar a fila SQL (Suporte posição 14, Conta posição 15) e só então executar E2E Supabase real das 21 ações",
-  "commits": ["b172b695b8d996375fc7da7a539ed7ee78dc7e35", "94bca84f6", "5611c6da7", "ce4939227", "b02478937", "9ae607fca", "179cd6ae4", "af8ee0524"]
+  "commits": ["b172b695b8d996375fc7da7a539ed7ee78dc7e35", "94bca84f6", "5611c6da7", "ce4939227", "b02478937", "9ae607fca", "179cd6ae4", "af8ee0524", "2ea0e5606"]
 }
