@@ -8,7 +8,7 @@ param(
 
   [switch]$AuthOnly,
 
-  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'ModelAal1PhasePolicy', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived', 'ChildDirectoryEnvelope', 'ActivityAggregateConcurrency', 'ActivityAggregateConcurrencyClock', 'LocationCatalogV2', 'LocationReservationsV1', 'SafetyInternalReads53', 'PersonDetailV2', 'InvitesV2')]
+  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'ModelAal1PhasePolicy', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived', 'ChildDirectoryEnvelope', 'ActivityAggregateConcurrency', 'ActivityAggregateConcurrencyClock', 'LocationCatalogV2', 'LocationReservationsV1', 'SafetyInternalReads53', 'PersonDetailV2', 'InvitesV2', 'InternalUsersV2')]
   [string]$NominalProfile,
 
   [string[]]$AdditionalMigration = @(),
@@ -187,6 +187,7 @@ if ($NominalProfile) {
     'SafetyInternalReads53' { 'replay\profiles\SafetyInternalReads53\Resolve-SafetyInternalReads53.ps1' }
     'PersonDetailV2' { 'replay\profiles\PersonDetailV2\Resolve-PersonDetailV2.ps1' }
     'InvitesV2' { 'replay\profiles\InvitesV2\Resolve-InvitesV2.ps1' }
+    'InternalUsersV2' { 'replay\profiles\InternalUsersV2\Resolve-InternalUsersV2.ps1' }
     'ChildDirectoryEnvelope' { 'replay\profiles\ChildDirectoryEnvelope\Resolve-ChildDirectoryEnvelope.ps1' }
     'N01PrerequisitesRed' { 'replay\profiles\N01PrerequisitesRed\Resolve-N01PrerequisitesRed.ps1' }
     'A01DirectoryContractRed' { 'replay\profiles\A01DirectoryContractRed\Resolve-A01DirectoryContractRed.ps1' }

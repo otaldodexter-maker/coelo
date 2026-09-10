@@ -670,7 +670,7 @@ begin
       end if;
       result:=receipt.result_json||jsonb_build_object('replayed',true,'link',null);
     else
-      clear_token:=encode(gen_random_bytes(32),'hex');
+      clear_token:=encode(extensions.gen_random_bytes(32),'hex');
       stored_token_hash:=encode(extensions.digest(convert_to(clear_token,'UTF8'),'sha256'),'hex');
       if normalized_email is not null then
         target_hash:=encode(extensions.digest(convert_to(normalized_email,'UTF8'),'sha256'),'hex');
@@ -780,7 +780,7 @@ begin
         raise invalid_parameter_value using
           message='invitation cannot be resent',detail='SAI_INVALID_ARGUMENT';
       end if;
-      clear_token:=encode(gen_random_bytes(32),'hex');
+      clear_token:=encode(extensions.gen_random_bytes(32),'hex');
       update public.invitations set
         token_hash=encode(extensions.digest(convert_to(clear_token,'UTF8'),'sha256'),'hex'),
         invitation_state='pending',status='active',expires_at=now()+interval '48 hours',

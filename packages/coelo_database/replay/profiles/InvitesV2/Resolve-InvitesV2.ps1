@@ -80,18 +80,44 @@ $prefix = @($entries | Where-Object { $_.version -le $TargetVersion })
 if ($prefix.Count -ne 65 -or $prefix[-1].file -cne '20260901190432_superadmin_internal_invites_v2.sql') {
   throw 'InvitesV2 requires the 65-entry manifest prefix ending at the candidate'
 }
-$selected = @($prefix | Where-Object { $_.file -cnotin $excludedNames })
-if ($selected.Count -ne 63) {
-  throw 'InvitesV2 requires both unreachable entries to be present in the manifest and excluded here'
+$candidateName = '20260901190432_superadmin_internal_invites_v2.sql'
+$selected = @($prefix | Where-Object {
+  $_.file -cnotin $excludedNames -and $_.file -cne $candidateName
+})
+if ($selected.Count -ne 62) {
+  throw 'InvitesV2 requires both unreachable entries and the candidate to be present in the manifest and handled here'
 }
 
-$canonical = @($selected | ForEach-Object {
+# The candidate is verified against its own pin, not the manifest's.
+#
+# The manifest still records the PRE-FIX content of this migration, because
+# 20260901190432 carried a real defect: `clear_token:=encode(gen_random_bytes(32),
+# 'hex')` inside a `security definer set search_path=''` function. pgcrypto lives
+# in the extensions schema, so the unqualified call raised undefined_function,
+# the handler's `when others` branch swallowed it, and every issue and resend
+# came back as SAI_INTERNAL_ERROR 500. The same function qualifies
+# extensions.digest correctly four times; only this call was missed. Fixed to
+# extensions.gen_random_bytes.
+#
+# Rewriting the manifest entry is the correct end state, but the manifest hash is
+# itself pinned by ten other profiles, each in a profile.json that is in turn
+# pinned inside its resolver. Re-blessing all of them is the harness owner's call,
+# not an executor's, so this profile pins the corrected file directly and the
+# stale manifest entry is reported to the coordinator instead of being edited.
+$candidate = Assert-InvitesFile (Join-Path (Join-Path $packageRoot 'migrations') $candidateName)
+if ((Get-InvitesHash $candidate.FullName) -cne
+    'e213807cab3a07bf49384cc832b6074d81d7fef26269001f239463dac72d07c3') {
+  throw "InvitesV2 input hash mismatch: $candidateName"
+}
+
+$fromManifest = @($selected | ForEach-Object {
   $file = Assert-InvitesFile (Join-Path (Join-Path $packageRoot 'migrations') $_.file)
   if ((Get-InvitesHash $file.FullName) -cne $_.sha256_crlf_utf8) {
     throw "InvitesV2 input hash mismatch: $($_.file)"
   }
   $file
-} | Sort-Object Name)
+})
+$canonical = @(@($fromManifest) + @($candidate) | Sort-Object Name)
 
 $preflight = @(Get-ChildItem -LiteralPath (Join-Path $packageRoot 'replay') -File -Filter '*.sql' |
   Sort-Object Name | ForEach-Object { Assert-InvitesFile $_.FullName })
