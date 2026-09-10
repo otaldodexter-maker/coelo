@@ -314,7 +314,7 @@ Reabertos os diffs um a um:
 | Agenda | 14 | deslocamento — duas mudanças aprovadas de shell, separadas por largura |
 | Atividades | 16 | deslocamento — cada item da barra lateral e cada cartão aparece em dobro |
 | Conta | 8 | deslocamento — composição idêntica, empurrada em bloco pelo shell |
-| Formulários | 12 | deslocamento, com uma ressalva: um chevron aparece invertido, o que pode ser estado de expansão e não deslocamento |
+| Formulários | 12 | deslocamento — a ressalva do chevron invertido foi fechada: a própria referência já contém as duas direções, porque são duas seções na mesma tela, uma recolhida e outra expandida |
 | Cardápios | 6 | **conteúdo** — todo o cartão desceu doze pixels, mas o ponto de status é rosa na referência e verde agora. Duas cores diferentes não são deslocamento |
 | Instituições | 4 | **conteúdo** — o cartão de criação ausente, outro fixture, outra paginação |
 
@@ -327,6 +327,17 @@ seguro, e a revisão humana deve se concentrar nas famílias onde a comparação
 elemento a elemento mostra diferença que **não** é deslocamento. Regravar em bloco
 sem essa triagem continua sendo errado — mas o custo de fazer a triagem é muito
 menor do que a primeira leitura sugeria.
+
+**E o erro que produziu a leitura invertida merece nome próprio, porque é o mais
+perigoso desta rodada: medir certo e concluir errado.** Todos os percentuais
+reportados na primeira leitura estavam corretos — 44%, 73%, 32%, cem vezes a
+assinatura do shell. O que estava errado era a **inferência** tirada deles. Isso é
+pior que medir errado, porque **os números conferem quando alguém checa**, e a
+conferência natural — refazer a medida — confirma a leitura errada.
+
+Se a quarta categoria não tivesse aparecido, você receberia a recomendação de
+revisar humanamente 129 referências visuais quando cerca de 107 delas são
+provavelmente rebaseline seguro.
 
 **As duas famílias com conteúdo continuam pedindo o dono antes do rebaseline**, e
 uma delas pela razão descrita adiante: em Instituições o que se perdeu não foi
