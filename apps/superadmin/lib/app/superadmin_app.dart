@@ -27,6 +27,7 @@ import '../features/attendance/attendance.dart';
 import '../features/attendance/data/supabase_attendance_repository.dart';
 import '../features/account/data/user_preferences_repository.dart';
 import '../features/account/data/account_profile_repository.dart';
+import '../features/support/data/support_repository.dart';
 import '../features/account/presentation/user_preferences_controller.dart';
 import '../features/institutions/data/supabase_institution_directory_repository.dart';
 import '../features/institutions/domain/institution_directory_repository.dart';
@@ -178,6 +179,7 @@ class SuperadminApp extends StatefulWidget {
     this.nowPublicationRepository,
     this.userPreferencesRepository,
     this.accountProfileRepository = const UnavailableAccountProfileRepository(),
+    this.supportRepository,
     super.key,
   });
 
@@ -247,6 +249,7 @@ class SuperadminApp extends StatefulWidget {
   final NowPublicationRepository? nowPublicationRepository;
   final UserPreferencesRepository? userPreferencesRepository;
   final AccountProfileRepository accountProfileRepository;
+  final SupportRepository? supportRepository;
 
   @override
   State<SuperadminApp> createState() => _SuperadminAppState();
@@ -342,6 +345,7 @@ class _SuperadminAppState extends State<SuperadminApp> {
       nowPublicationRepository: widget.nowPublicationRepository,
       userPreferencesController: _preferencesController,
       accountProfileRepository: widget.accountProfileRepository,
+      supportRepository: widget.supportRepository,
       onThemeModeChanged: _setThemeMode,
     );
   }
