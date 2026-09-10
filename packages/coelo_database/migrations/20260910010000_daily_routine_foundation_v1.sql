@@ -47,52 +47,58 @@ $preflight$;
 -- ---------------------------------------------------------------------------
 
 insert into public.platform_permissions(
-  code, module_code, screen_code, action_code, description, risk_level, requires_mfa
+  code, module_code, module_label, screen_code, screen_label,
+  action_code, action_label, description, risk_level, requires_mfa
 ) values
-  ('routine.read','routine','daily_routine','read',
-   'Visualizar modelos, aplicacoes e lancamentos de rotina diaria.','normal',false),
-  ('routine.manage_models','routine','daily_routine','manage_models',
-   'Criar e editar modelos de rotina diaria.','high',false),
-  ('routine.manage_applications','routine','daily_routine','manage_applications',
-   'Aplicar modelos de rotina a instituicao, unidade, turma ou atividade.','high',false),
-  ('routine.record','routine','daily_routine','record',
-   'Registrar respostas de rotina em um lancamento em rascunho.','normal',false),
-  ('routine.publish','routine','daily_routine','publish',
-   'Publicar um lancamento de rotina para as familias.','high',true),
-  ('routine.correct','routine','daily_routine','correct',
-   'Corrigir um lancamento de rotina ja publicado, com justificativa.','high',true),
-  ('routine.import','routine','daily_routine','import',
-   'Importar modelos de rotina.','high',true),
-  ('routine.export','routine','daily_routine','export',
-   'Exportar rotinas e lancamentos.','high',true)
+  ('routine.read','routine','Rotina diaria','daily_routine','Rotina diaria',
+   'read','Ver','Visualizar modelos, aplicacoes e lancamentos de rotina diaria.','normal',false),
+  ('routine.manage_models','routine','Rotina diaria','daily_routine','Rotina diaria',
+   'manage_models','Gerenciar','Criar e editar modelos de rotina diaria.','high',false),
+  ('routine.manage_applications','routine','Rotina diaria','daily_routine','Rotina diaria',
+   'manage_applications','Gerenciar','Aplicar modelos de rotina a instituicao, unidade, turma ou atividade.','high',false),
+  ('routine.record','routine','Rotina diaria','daily_routine','Rotina diaria',
+   'record','Gerenciar','Registrar respostas de rotina em um lancamento em rascunho.','normal',false),
+  ('routine.publish','routine','Rotina diaria','daily_routine','Rotina diaria',
+   'publish','Gerenciar','Publicar um lancamento de rotina para as familias.','high',true),
+  ('routine.correct','routine','Rotina diaria','daily_routine','Rotina diaria',
+   'correct','Gerenciar','Corrigir um lancamento de rotina ja publicado, com justificativa.','high',true),
+  ('routine.import','routine','Rotina diaria','daily_routine','Rotina diaria',
+   'import','Importar','Importar modelos de rotina.','high',true),
+  ('routine.export','routine','Rotina diaria','daily_routine','Rotina diaria',
+   'export','Exportar','Exportar rotinas e lancamentos.','high',true)
 on conflict (code) do update set
-  module_code=excluded.module_code, screen_code=excluded.screen_code,
-  action_code=excluded.action_code, description=excluded.description,
+  module_code=excluded.module_code, module_label=excluded.module_label,
+  screen_code=excluded.screen_code, screen_label=excluded.screen_label,
+  action_code=excluded.action_code, action_label=excluded.action_label,
+  description=excluded.description,
   risk_level=excluded.risk_level, requires_mfa=excluded.requires_mfa,
   status='active', updated_at=now();
 
 insert into public.institution_permissions(
-  code, module_code, screen_code, action_code, description, risk_level, requires_mfa
+  code, module_code, module_label, screen_code, screen_label,
+  action_code, action_label, description, risk_level, requires_mfa
 ) values
-  ('routine.read','routine','daily_routine','read',
-   'Visualizar rotina diaria dentro do escopo contextual.','normal',false),
-  ('routine.manage_models','routine','daily_routine','manage_models',
-   'Gerenciar modelos de rotina dentro do escopo contextual.','high',false),
-  ('routine.manage_applications','routine','daily_routine','manage_applications',
-   'Gerenciar aplicacoes de rotina dentro do escopo contextual.','high',false),
-  ('routine.record','routine','daily_routine','record',
-   'Registrar respostas de rotina dentro do escopo contextual.','normal',false),
-  ('routine.publish','routine','daily_routine','publish',
-   'Publicar lancamentos de rotina dentro do escopo contextual.','high',true),
-  ('routine.correct','routine','daily_routine','correct',
-   'Corrigir lancamentos publicados dentro do escopo contextual.','high',true),
-  ('routine.import','routine','daily_routine','import',
-   'Importar modelos de rotina dentro do escopo contextual.','high',true),
-  ('routine.export','routine','daily_routine','export',
-   'Exportar rotina dentro do escopo contextual.','high',true)
+  ('routine.read','routine','Rotina diaria','daily_routine','Rotina diaria',
+   'read','Ver','Visualizar rotina diaria dentro do escopo contextual.','normal',false),
+  ('routine.manage_models','routine','Rotina diaria','daily_routine','Rotina diaria',
+   'manage_models','Gerenciar','Gerenciar modelos de rotina dentro do escopo contextual.','high',false),
+  ('routine.manage_applications','routine','Rotina diaria','daily_routine','Rotina diaria',
+   'manage_applications','Gerenciar','Gerenciar aplicacoes de rotina dentro do escopo contextual.','high',false),
+  ('routine.record','routine','Rotina diaria','daily_routine','Rotina diaria',
+   'record','Gerenciar','Registrar respostas de rotina dentro do escopo contextual.','normal',false),
+  ('routine.publish','routine','Rotina diaria','daily_routine','Rotina diaria',
+   'publish','Gerenciar','Publicar lancamentos de rotina dentro do escopo contextual.','high',true),
+  ('routine.correct','routine','Rotina diaria','daily_routine','Rotina diaria',
+   'correct','Gerenciar','Corrigir lancamentos publicados dentro do escopo contextual.','high',true),
+  ('routine.import','routine','Rotina diaria','daily_routine','Rotina diaria',
+   'import','Importar','Importar modelos de rotina dentro do escopo contextual.','high',true),
+  ('routine.export','routine','Rotina diaria','daily_routine','Rotina diaria',
+   'export','Exportar','Exportar rotina dentro do escopo contextual.','high',true)
 on conflict (code) do update set
-  module_code=excluded.module_code, screen_code=excluded.screen_code,
-  action_code=excluded.action_code, description=excluded.description,
+  module_code=excluded.module_code, module_label=excluded.module_label,
+  screen_code=excluded.screen_code, screen_label=excluded.screen_label,
+  action_code=excluded.action_code, action_label=excluded.action_label,
+  description=excluded.description,
   risk_level=excluded.risk_level, requires_mfa=excluded.requires_mfa,
   status='active', updated_at=now();
 
