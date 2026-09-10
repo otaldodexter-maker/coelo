@@ -1,6 +1,6 @@
 {
-  "revision": 41,
-  "updated_at": "2026-09-10T02:48:00-03:00",
+  "revision": 42,
+  "updated_at": "2026-09-10T02:55:00-03:00",
   "group": "chat-comunicacoes",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) - claude-opus-5[1m]",
@@ -750,5 +750,17 @@
     "aviso_recebido": "Duas frentes relataram que /tmp neste Windows e compartilhado entre sessoes, e uma teve rodada inteira de falso positivo por ler de volta a lista de outra frente.",
     "minha_exposicao": "Eu tentei usar /tmp uma vez, para a lista de rotas, e a leitura FALHOU com arquivo inexistente. Troquei para arquivo dentro da propria worktree antes de qualquer medicao valer.",
     "consequencia": "Nenhuma das varreduras publicadas leu de /tmp. A varredura das 67 rotas e as demais usaram arquivo local em apps/superadmin, criado e removido no mesmo comando."
+  },
+  "entrega_nova_chave_de_linha_nos_cartoes_de_avisos": {
+    "branch": "work/etapa2-noturna-avisos-chave-de-linha, publicada em origin, sobre a10c7d28e (origin/dev do momento)",
+    "commit": "cb0a386d8 fix(notices): keep the row identity when the directory turns into cards",
+    "motivo": "Fechar no meu proprio recorte a lacuna que eu tinha acabado de apontar em dezesseis telas de outras frentes.",
+    "mudanca": "O cartao de comunicacao passa a carregar ValueKey('communication-row-<id>'), o MESMO identificador que a tabela ja usava em rowKey. Seis linhas somadas, nenhuma removida.",
+    "teste": "apps/superadmin/test/features/notices/notice_row_identity_test.dart, tres casos.",
+    "o_que_o_teste_mede": "O efeito e nao a existencia da chave: toda comunicacao VISIVEL na largura corrente e alcancavel pelo id; o toque abre a comunicacao CERTA (senao uma chave no widget errado passaria); e o identificador nao muda quando a apresentacao muda.",
+    "discriminacao_verificada": "Removi a correcao e reexecutei: dois dos tres casos falham e o de tabela continua passando. Teste que passa com e sem a correcao nao prova nada, entao medi.",
+    "dois_erros_meus_que_o_teste_pegou": "Primeiro, supus que a tabela expusesse a chave crua; ela vem prefixada pelas chaves derivadas da tabela administrativa, entao o finder passou a aceitar a chave que CONTEM o identificador. Segundo, afirmei que as tres comunicacoes apareceriam nas duas larguras; no estreito a paginacao mostra menos por pagina, e a afirmacao correta e sobre as visiveis.",
+    "regressao": "Suite de notices na branch: 128 PASS / 3 FAIL, sendo os 3 exatamente os goldens ja conhecidos. Nenhuma regressao.",
+    "para_o_integrador": "Branch isolada, nao mexi em superadmin_router.dart nem em arquivo reservado. Pode ser integrada ou descartada sem afetar o resto da minha entrega."
   }
 }

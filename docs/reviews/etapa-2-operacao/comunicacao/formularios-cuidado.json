@@ -1,15 +1,20 @@
 {
-  "revision": 40,
-  "updated_at": "2026-09-10T01:31:20-03:00",
+  "revision": 41,
+  "updated_at": "2026-09-10T02:52:47-03:00",
   "group": "formularios-cuidado",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
-  "status": "ACTIVE; every blocker line of mine audited and three corrected",
+  "status": "ACTIVE; recorte medido em 808 PASS / 8 FAIL / 1 SKIP com as oito falhas todas de golden; triagem das 23 imagens concluida sem regressao e sem perda de cobertura; bateria de mutacao aplicada as guardas desta rodada",
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-formularios-cuidado",
   "branch": "work/etapa2-noturna-formularios-cuidado",
-  "head": "3e0bde1c09f919cc1acbff09df8b8acccdc4ef93",
-  "upstream": "origin/work/etapa2-noturna-formularios-cuidado (0/0)",
+  "head": "8111ebb678d48f7eb3dbaf98c6a7c2c8da17ebaa",
+  "upstream": {
+    "branch": "origin/work/etapa2-noturna-formularios-cuidado",
+    "ahead": 0,
+    "behind": 0,
+    "nota": "Zero divergencia: tudo o que existe local esta publicado."
+  },
   "base": "d784462c168d22fdb7090b7de1ef7db554ad5107",
   "base_observed": "d784462c168d22fdb7090b7de1ef7db554ad5107",
   "scope": [
@@ -60,17 +65,13 @@
     "forms.create e forms.edit: o autor agora declara o maximo de caracteres de texto curto. O campo so aparece em shortText, limpar remove o limite, e um maximo invalido (0, negativo, nao inteiro, nao numerico) bloqueia autosave e salvar rascunho pelo mesmo caminho de galleryLimitsIssue e dateLimitsIssue."
   ],
   "tests": {
-    "P": 5326,
-    "F": 207,
-    "B": 0,
-    "S": 10,
-    "U": 0,
-    "note": "Suite COMPLETA do apps/superadmin, medida nas duas pontas. Sem somar reruns.",
-    "base_full_suite": "d784462c1 intocada: 5225 PASS / 209 FAIL / 7 SKIP",
-    "delivery_full_suite": "esta branch: 5326 PASS / 207 FAIL / 10 SKIP",
-    "reconciliation": "Mais 101 testes, DUAS falhas a menos e TRES marcados a mais. As duas falhas que sairam sao os testes de contrato obsoletos; os tres marcados sao o diretorio de Formularios e os dois de Cuidado. Nenhum numero sobrando.",
-    "scope_on_integrated_base": "Mesmo comando, test/features/forms e test/features/health_care juntos: origin/dev 6811e453e da 979 PASS / 13 FAIL / 3 SKIP; esta branch em 0de24d014 da 982 PASS / 13 FAIL / 3 SKIP. Mesmas falhas e mesmos marcados; a diferenca de tres e o commit 0de24d014, ainda nao integrado, que adiciona dois casos de faixa de maxLength e um de fidelidade do preview.",
-    "conclusion": "O recorte se comporta igual sobre a base integrada. Nao ha surpresa de integracao guardada para o fechamento."
+    "recorte": "apps/superadmin test/features/forms",
+    "resultado": "808 PASS / 8 FAIL / 1 SKIP",
+    "medido_em": "b4d0e6af7",
+    "natureza_das_falhas": "as oito sao comparacao de golden, triadas uma a uma; nenhuma falha de logica restante no recorte",
+    "coelo_domain": "74 PASS antes do ultimo lote, 28 PASS no arquivo de limites",
+    "analyze": "limpo em lib e test de apps/superadmin",
+    "ambiente": "Windows local; testes controlados nao certificam remoto"
   },
   "reservations_requested": [
     "plataforma comum de midia (question-image / FormsMediaReader / gateway) — compartilhada com publicacoes-midia; peco escritor identificado ou janela serializada antes do item 4",
@@ -81,14 +82,21 @@
     "migrations de forms: fila SQL do coordenador. Nao criei nenhuma nesta rodada."
   ],
   "blocker": "Nenhum bloqueio ativo.",
-  "next_step": "Suite completa final em execucao para fechar os numeros de entrega, ja que houve mudanca de lib depois da medicao anterior. A partir daqui nao planejo mais alteracao de lib: so verificacao, documentacao e o que o coordenador atribuir. Pre-entrega preparada com folga antes de 04:50.",
-  "wip": [],
+  "next_step": "seguir varrendo o recorte com as tres perguntas ate 04:40; pre-entrega 04:50 e entrega final 05:00",
+  "wip": {
+    "stash": "vazio",
+    "nao_rastreado": [
+      "?? packages/coelo_api/pubspec.lock",
+      "?? packages/coelo_domain/pubspec.lock"
+    ],
+    "nota": "os dois pubspec.lock nao rastreados sao preservados de proposito e nunca entram em commit; regra adotada apos eu te-los incluido por engano com git add de diretorio"
+  },
   "artifacts": [
     "Dois pubspec.lock nao rastreados aparecem em packages/coelo_api e packages/coelo_domain apos rodar dart test. Nao pertencem ao lote, foram retirados do commit e ficam preservados como nao rastreados; nao os apago nem os adiciono ao gitignore, que nao e meu."
   ],
-  "children": [],
-  "processes": [],
-  "ports": [],
+  "children": 0,
+  "processes": 0,
+  "ports": 0,
   "ack": {
     "received": "2026-09-09T19:30:00-03:00",
     "via": "SendMessage de coelo-73",
@@ -100,200 +108,67 @@
   "eta": "Sigo encadeando ate 04:40.",
   "delivered_commits": [
     {
-      "sha": "94b9fa18dda26b328d655009b0b9f401d45923c4",
-      "pushed": true,
-      "integrated_in_dev": "bfb6a7c00",
-      "subject": "fix(forms): enforce authored numeric and text limits on the response"
+      "sha": "b4d0e6af7",
+      "tipo": "produto",
+      "resumo": "limites de selecao ditos a pessoa antes de o servidor recusar; o rascunho autosalvava e so o envio falhava",
+      "integrado_em_dev": true,
+      "criterio": "git merge-base --is-ancestor <sha> origin/dev"
     },
     {
-      "sha": "4e8bcb227be205fc13266313f52f3e9cab94a32f",
-      "pushed": true,
-      "integrated_in_dev": "8d4991a2e",
-      "subject": "feat(forms): let the author declare the short text maximum length"
+      "sha": "745b1fbdf",
+      "tipo": "evidencia",
+      "resumo": "metodo, nove autocorrecoes, tres bloqueios falsos e censo de datas",
+      "integrado_em_dev": true,
+      "criterio": "git merge-base --is-ancestor <sha> origin/dev"
     },
     {
-      "sha": "75b2cebdb471ecb55582455ef6e940f7341164c8",
-      "pushed": true,
-      "integrated_in_dev": "8d4991a2e",
-      "subject": "chore(forms): drop the pubspec.lock files that dart test regenerated"
+      "sha": "e2912506c",
+      "tipo": "evidencia",
+      "resumo": "triagem das 23 imagens de golden",
+      "integrado_em_dev": true,
+      "criterio": "git merge-base --is-ancestor <sha> origin/dev"
     },
     {
-      "sha": "7151f63920acd6e56a0956afecb2a9d1da708933",
-      "pushed": true,
-      "subject": "feat(forms): preview the authored form in Testar without opening a response",
-      "note": "capacidade provada; permanece inalcancavel pela rota por decisao pendente"
+      "sha": "79bc782b7",
+      "tipo": "teste",
+      "resumo": "trava da semantica OU e dos padroes de selecao",
+      "integrado_em_dev": true,
+      "criterio": "git merge-base --is-ancestor <sha> origin/dev"
     },
     {
-      "sha": "0b34ddc5292e15b674f59c624874f6303ef1cb38",
-      "pushed": true,
-      "subject": "propose(router): pass the form to the Testar route",
-      "note": "REVERTIDO. Nao integrar. Fica no historico como a proposta medida e recusada por mim mesmo."
+      "sha": "296e349a7",
+      "tipo": "teste",
+      "resumo": "trava do que significa respondida; dois testes meus corrigidos",
+      "integrado_em_dev": true,
+      "criterio": "git merge-base --is-ancestor <sha> origin/dev"
     },
     {
-      "sha": "82e9d85b94b6ae9019f6206a6043bab23022e012",
-      "pushed": true,
-      "subject": "revert(router): withdraw the Testar route hunk",
-      "note": "Restaura superadmin_router.dart ao estado de 7151f639. A branch nao contem alteracao de arquivo reservado."
+      "sha": "925a6e4ea",
+      "tipo": "teste",
+      "resumo": "padrao de tamanho de texto do servidor, achado por mutacao",
+      "integrado_em_dev": false,
+      "criterio": "git merge-base --is-ancestor <sha> origin/dev"
     },
     {
-      "sha": "c24b7a6ad894e2922bc186e0d26b9d7e9e8b9c5e",
-      "pushed": true,
-      "subject": "fix(forms): say why a publication cannot proceed instead of failing silently"
+      "sha": "1e694e7e9",
+      "tipo": "evidencia",
+      "resumo": "a unica citacao que o leitor nao alcanca, sinalizada",
+      "integrado_em_dev": false,
+      "criterio": "git merge-base --is-ancestor <sha> origin/dev"
     },
     {
-      "sha": "5ec63374c3aebdf5977b79534687180d0d47bd3f",
-      "pushed": true,
-      "subject": "fix(forms): show a saved money answer in civil notation"
+      "sha": "8111ebb67",
+      "tipo": "evidencia",
+      "resumo": "bateria de mutacao e a lei do instrumento, tornadas duraveis",
+      "integrado_em_dev": false,
+      "criterio": "git merge-base --is-ancestor <sha> origin/dev"
     },
     {
-      "sha": "223245e06dc3b426d641c0153acb34dae5bc6acd",
-      "pushed": true,
-      "subject": "fix(catalog): update the two Forms examples the sources outgrew"
-    },
-    {
-      "sha": "94d28c8f28ff6850c67b0f8cd6b1c9a98b61e719",
-      "pushed": true,
-      "subject": "refactor(forms): read money through the one shared formatter everywhere"
-    },
-    {
-      "sha": "49aa6737213627449a0059bc82c5dc06504e6ade",
-      "pushed": true,
-      "subject": "fix(forms): refuse an inverted numeric range in the editor"
-    },
-    {
-      "sha": "ab9fbb8420eadafdd3a8c7ac46e9f0524736593e",
-      "pushed": true,
-      "subject": "test(forms): cover what the frozen editor goldens cannot for the new controls"
-    },
-    {
-      "sha": "45bee2bb54821b675eb5ce54a6457ddd2de0a06b",
-      "pushed": true,
-      "subject": "test(forms): cover enlarged text on the productive overview surface"
-    },
-    {
-      "sha": "e51723bf0915e8e4250cdeb683d010fc11bb1a82",
-      "pushed": true,
-      "subject": "docs(knowledge): record how Forms answer limits work end to end"
-    },
-    {
-      "sha": "900607d9c6837e6f2b1f77c86ab55da581dee6c9",
-      "pushed": true,
-      "subject": "test(forms): extend the operations responsive matrix to enlarged text"
-    },
-    {
-      "sha": "d4c9973751abc58adbeb7347b60ceb4039fd789b",
-      "pushed": true,
-      "subject": "fix(forms): correct seven defects found by rereading my own diff"
-    },
-    {
-      "sha": "1733a04a70fa1a0f9453d1d69381ba1c41d6aff4",
-      "pushed": true,
-      "subject": "test(forms): stop a stale source test from crying fail-closed"
-    },
-    {
-      "sha": "2e39ec739b47e5268b4fd960dd51ed93e03ba594",
-      "pushed": true,
-      "subject": "fix(forms): close the backend gateway against transport failures"
-    },
-    {
-      "sha": "846c7371528af572c9c7e7ec7809a720a5709cec",
-      "pushed": true,
-      "subject": "test(forms): sweep the native accessibility guidelines over Forms"
-    },
-    {
-      "sha": "d7b4d8f23fe7141cc5ccd351a79e7ac4d39f1203",
-      "pushed": true,
-      "subject": "docs(forms): record why the resize handle is a design decision, not a fix"
-    },
-    {
-      "sha": "27e819bcf9d7b2b139869e28f4d28c4532c7780d",
-      "pushed": true,
-      "subject": "test(health-care): sweep the native accessibility guidelines and find a shell defect"
-    },
-    {
-      "sha": "51274c867bf5d0695d974f0b5aec3fa6f48806ec",
-      "pushed": true,
-      "subject": "test(health-care): cover the care profile form and correct a wrong assumption"
-    },
-    {
-      "sha": "32373e94744b71a02f5707200e6bf0e3835031a2",
-      "pushed": true,
-      "subject": "fix(forms): honour the authored date range in the respondent picker"
-    },
-    {
-      "sha": "1d589503e1700b500a75ccaff37269ae97ced12a",
-      "pushed": true,
-      "subject": "fix(forms): start a scale where the server accepts it"
-    },
-    {
-      "sha": "92b1348f69f7cc470a54011e31c322109adc6f41",
-      "pushed": true,
-      "subject": "docs(knowledge): record the client-server unit pattern behind five defects"
-    },
-    {
-      "sha": "c43d85f354d8e7e79d90337b46b70bdf9806d822",
-      "pushed": true,
-      "subject": "docs(evidence): preserve the golden divergence measurement and its tool"
-    },
-    {
-      "sha": "38ea1943e98088e5eef96cae295fb3986690a16a",
-      "pushed": true,
-      "subject": "test(forms): hold branch questions to the same authored limits"
-    },
-    {
-      "sha": "e052aceb960d36e73a5125febef336749eded977",
-      "pushed": true,
-      "subject": "test(forms): prove the authored limits on the path production actually mounts"
-    },
-    {
-      "sha": "812c47cfc72afb29213edbb433de2a929a33a0d5",
-      "pushed": true,
-      "subject": "docs(evidence): write the round handoff while there is still time to improve it"
-    },
-    {
-      "sha": "29c4d428c73354328f12497d3f04e293f8360e4b",
-      "pushed": true,
-      "subject": "test(api): cover the numeric and text limits the DTO carries to the server"
-    },
-    {
-      "sha": "021fcfbdb89ff292695bfaa31fc3f8a65ef44e15",
-      "pushed": true,
-      "subject": "fix(forms): read a date the same way in the field and in the summary"
-    },
-    {
-      "sha": "515c12d1724f84fa1daebe2f93b14c38f758e85e",
-      "pushed": true,
-      "subject": "fix(forms): show the chosen option, not its internal id"
-    },
-    {
-      "sha": "3d7384295ea12dc18e65ad81452d3f07ae11d212",
-      "pushed": true,
-      "subject": "fix(forms): refuse an inconsistent date range instead of crashing the picker"
-    },
-    {
-      "sha": "0de24d01495c22fe878763f121b21a6685b5dc07",
-      "pushed": true,
-      "subject": "fix(forms): mirror the DTO bound and make the preview look like the answer"
-    },
-    {
-      "sha": "b163f66133c8901940826229f20a60dfc577161b",
-      "pushed": true,
-      "subject": "docs(evidence): bring the handoff up to the measured state"
-    },
-    {
-      "sha": "e54f04c4a215f45197c4a6619122f71a8a859768",
-      "pushed": true,
-      "subject": "test(forms): exercise every authored limit in one form, from filling to sending"
-    },
-    {
-      "sha": "38b072212d9b41aad62b2f79f6a40592c47c4429",
-      "pushed": true,
-      "subject": "test(forms): hold the preview I wrote to the accessibility bar I demanded"
-    },
-    {
-      "sha": "3e0bde1c09f919cc1acbff09df8b8acccdc4ef93",
-      "pushed": true,
-      "subject": "docs(evidence): decompose the nine failures and record one debt left unpaid"
+      "sha": "de5cdb2f8",
+      "tipo": "teste",
+      "resumo": "condicao composta da superficie clara de Saude e Cuidado",
+      "integrado_em_dev": true,
+      "criterio": "git merge-base --is-ancestor <sha> origin/dev"
     }
   ],
   "tracker_delta_proposto": [
@@ -1162,5 +1037,57 @@
       ]
     }
   },
-  "nota_de_organizacao": "Arquivo reorganizado na revisao 35, sem remover nada. O contrato pede estado corrente e nao log acumulado, e o arquivo tinha chegado a 95 chaves de topo, o que dificultava achar o estado. Os campos exigidos pelo contrato e o tracker_delta_proposto ficam no topo; todo o resto foi agrupado sob achados_e_registros com as mesmas chaves e o mesmo conteudo. A narrativa durável esta em docs/reviews/evidence/etapa-2/formularios-cuidado/2026-09-09-round-handoff.md."
+  "nota_de_organizacao": "Arquivo reorganizado na revisao 35, sem remover nada. O contrato pede estado corrente e nao log acumulado, e o arquivo tinha chegado a 95 chaves de topo, o que dificultava achar o estado. Os campos exigidos pelo contrato e o tracker_delta_proposto ficam no topo; todo o resto foi agrupado sob achados_e_registros com as mesmas chaves e o mesmo conteudo. A narrativa durável esta em docs/reviews/evidence/etapa-2/formularios-cuidado/2026-09-09-round-handoff.md.",
+  "triagem_goldens": {
+    "documento": "docs/reviews/evidence/etapa-2/formularios-cuidado/2026-09-10-triagem-goldens.md",
+    "unidade": "oito CASOS de teste cobrem 23 IMAGENS; a imagem e a unidade util porque um caso captura ate oito larguras e temas",
+    "resultado": "nenhuma e regressao de produto e nenhuma e perda de cobertura",
+    "causa_1": "c4a7feff8 deixou o cabecalho compacto do shell ~16px mais alto, o que empurra todo o conteudo; oito imagens sao deslocamento puro, identicas elemento por elemento",
+    "causa_2": "c0b20ccd6 mudou o painel de ramos: rotulo Se Sim virou Ramos por resposta, e o painel ganhou seletor e botao; a barra de acoes saiu da folha ancorada e virou rodape embutido",
+    "amplificador": "ensureVisible re-rola quando a altura do conteudo muda, o que tira a lista de secoes do viewport em 375; e propriedade do teste, nao do produto",
+    "perda_de_cobertura": "procurada especificamente e NAO encontrada: os elementos aparecem em 1440 na mesma execucao e as afordancias sao exercidas por testes que passam pelo caminho produtivo",
+    "risco_invertido": "DOIS goldens protegem hoje o estado ERRADO. Um exige o rotulo que o produto abandonou de proposito; forms_directory_actions_light_1440, com apenas 0,72%, afirma um menu de acoes SEM o item Duplicar, que existe. Quem lesse esses vermelhos como defeito desfaria uma mudanca correta ou apagaria uma acao.",
+    "discriminador_medido": "percentual que CAI com a largura e deslocamento: a mesma causa da 43,94% em 375, 17,01% em 768 e 4,08% em 1024. forms_directory_light_375 diverge 22,24% e e deslocamento PURO, o que derruba a heuristica de magnitude.",
+    "v4_19": "investigado a pedido do coordenador: NAO e convencao viva. Nenhum documento define o esquema, os numeros nao sao de spec, e o arquivo foi criado uma vez e SOBRESCRITO no lugar duas vezes com o mesmo nome. Nenhuma versao jamais subiu."
+  },
+  "bateria_de_mutacao": {
+    "placar": "9 mutacoes, 7 pegas, 1 lacuna real fechada, 1 inconclusiva",
+    "lacuna_encontrada": "_serverDefaultTextLength de 1000 para 999 nao derrubava nada; fechada em 925a6e4ea junto da contagem por code points, que trocada por UTF-16 recusaria mil emojis que o servidor aceita",
+    "achado_contra_mim": "a bateria pegou DOIS testes meus verdes pelo motivo errado na mesma leva em que os escrevi: anexo obrigatorio e guardado por um ramo anterior que nem consulta _hasAnswer, entao eles mediam o efeito e nao o mecanismo",
+    "ressalva": "mutacao responde apenas \"este arquivo de teste protege esta linha\". Um nao pegou e ambiguo entre lacuna real e mira errada — aconteceu comigo uma vez. O placar e evidencia de que aquelas guardas estao protegidas; NAO e medida de cobertura.",
+    "produto_intacto": "git diff vazio apos as nove; restaurado arquivo por arquivo"
+  },
+  "citacoes_verificadas": {
+    "metodo": "existencia testada a partir da RAIZ do repositorio e por tipo de objeto, nunca por basename",
+    "resultado": "30 caminhos alcancaveis e nenhum quebrado; 29 hashes de commit e 15 de blob validos; UM identificador nao resolve, 8f032000, anotado ao lado em vez de apagado",
+    "armadilha_encontrada": "git cat-file -e <sha>^{commit} com shell no Windows come o circunflexo e reprova TODO objeto, inclusive o SHA da base. Usar git cat-file -t e conferir o TIPO. Avisei o coordenador porque ele repassou o comando a varias frentes."
+  },
+  "commits_fora_de_dev": [
+    "8111ebb67 docs(evidence): make the mutation battery and the instrument law durable",
+    "1e694e7e9 docs(evidence): flag the one citation a reader cannot follow",
+    "925a6e4ea test(forms): pin the server default text length, found by mutation battery"
+  ],
+  "residual_por_sha": {
+    "integraveis": [
+      "b4d0e6af7",
+      "745b1fbdf",
+      "e2912506c",
+      "79bc782b7",
+      "296e349a7",
+      "de5cdb2f8"
+    ],
+    "retidos": [
+      "925a6e4ea",
+      "1e694e7e9",
+      "8111ebb67"
+    ],
+    "nota": "retido aqui significa publicado na branch do grupo e ainda nao ancestral de origin/dev; nada esta apenas local"
+  },
+  "recursos": {
+    "processos_filhos": [],
+    "portas_abertas": [],
+    "tarefas_em_segundo_plano": [],
+    "worktrees_criadas_por_mim": [],
+    "nota": "listas vazias sao a lista, nao um adjetivo; nada meu fica de pe"
+  }
 }

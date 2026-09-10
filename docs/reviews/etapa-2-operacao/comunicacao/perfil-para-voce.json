@@ -1,6 +1,6 @@
 {
-  "revision": 33,
-  "updated_at": "2026-09-10T02:51:43-03:00",
+  "revision": 35,
+  "updated_at": "2026-09-10T02:53:41-03:00",
   "group": "perfil-para-voce",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
@@ -8,7 +8,7 @@
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-perfil-para-voce",
   "branch": "work/etapa2-noturna-perfil-para-voce",
-  "head": "134d582f4",
+  "head": "1d453e2f3",
   "upstream": "origin/work/etapa2-noturna-perfil-para-voce",
   "base_observed": "d784462c1",
   "scope": [
@@ -566,30 +566,14 @@
   },
   "correcao_de_horario": "Os campos updated_at das revisoes anteriores foram TIPADOS por estimativa e nao lidos do relogio: chegaram a ficar cerca de 1h25 adiantados. A partir desta revisao o valor vem de powershell Get-Date -Format 'yyyy-MM-ddTHH:mm:ssK'. Registro porque timestamp de handoff e usado para reconciliar ordem de eventos, e numero estimado com aparencia de medido e a mesma classe de erro que passei a noite catalogando. Nota util para as outras frentes: neste Git Bash o comando date JA devolve horario local -03, conferido contra o PowerShell no mesmo minuto; o que devolve UTC e usar TZ=America/Sao_Paulo, porque nao ha tzdata e o TZ e ignorado.",
   "residual_de_integracao": {
-    "declaracao": "19 commits desta frente; 18 verificados como ancestrais de origin/dev um a um, e o 19o (e4ce0e49b, pacote do selo DESTAQUE) publicado na branch e pendente do proximo ciclo do coordenador. Nada retido localmente.",
-    "commits_verificados": [
-      "b09da7c15",
-      "76e8ada8f",
-      "60f32e292",
-      "6e58b624f",
-      "0399b186e",
-      "35fff6b13",
-      "65e1e5000",
-      "9a82d5dcf",
-      "0e1df2217",
-      "6b05ccb82",
-      "086961de5",
-      "250d0543c",
-      "5401cec1b",
-      "06876dac5",
-      "c5a6fd106",
-      "0f2135398",
-      "8065dc529",
-      "0d2304c56",
-      "e4ce0e49b"
+    "declaracao": "DOIS commits pendentes de integracao, ambos publicados na branch remota. Nada retido localmente, nada nao commitado.",
+    "pendentes": [
+      "ace7b32e1 — test(safety): prova produtiva do grid de Seguranca infantil com registros",
+      "1d453e2f3 — test(router): aviso de que a guarda de verde vazio nao se estende a rotas de detalhe"
     ],
-    "estado_git": "HEAD 134d582f4, igual a origin/dev; upstream 0/0; worktree com 0 caminhos alterados; git rev-list --count origin/dev..HEAD devolve 0; zero stash.",
-    "por_que_declarado_assim": "O coordenador reconcilia oito frentes as 05:00 e tende a assumir que quem faz conferencia de fora esta limpo. Residual meu e o que mais provavelmente escaparia, entao a declaracao e por SHA e nao por adjetivo."
+    "ja_integrados": "Os demais 22 commits desta frente sao ancestrais de origin/dev, verificados com merge-base --is-ancestor.",
+    "estado_git": "HEAD 1d453e2f3; upstream 0/0; worktree com 0 caminhos alterados; zero stash.",
+    "nota": "A declaracao anterior dizia NADA PENDENTE e envelheceu em vinte minutos, porque commitei dois testes depois dela. E a mesma classe de linha que passei a noite achando nos outros: escrita uma vez, verdadeira quando escrita, nao relida."
   },
   "releitura_do_relatorio_do_owner": {
     "achados": [
@@ -598,11 +582,14 @@
       "principal_real_route_test aparecia como tres falhas na rota real do Principal sem a diagnose, que e teste desatualizado pela integracao do feed misto. Corrigida.",
       "Replay '1 a 47 limpos' sem a clausula do shim, o que faria quem reproduzisse chegar ao arquivo 28. Corrigida.",
       "Censo de IntrinsicHeight conta DOIS COMENTARIOS como usos (access_profiles e safety, ambos ja convertidos para Table) e PERDE um uso real, o _HeroContent do hub de Para Voce, que e segunda armadilha armada.",
-      "Paragrafo desta frente em 'o que cada frente entregou' omite o recorte proprio e descreve so o servico cruzado."
+      "Paragrafo desta frente em 'o que cada frente entregou' omite o recorte proprio e descreve so o servico cruzado.",
+      "Decisao 12 diz que 'nessas tres os testes esperam a frase presente'. Verdade para DUAS: principal_happens (dois findsOneWidget) e principal_now (um). MOMENTOS nao tem teste que assere a frase, embora a ocorrencia exista em lib. O custo do patch nao e uniforme: Momentos e a mais barata e nao quebra teste; Acontece e Agora tem tres assercoes que precisam mudar junto."
     ],
     "confirmado_sem_correcao": "Decisao 15: PrincipalProfileContentTabs existe em principal_circulars, tem ZERO consumidor em lib e e protegida por golden verde (19/19). A implementacao viva e a copia privada dentro de principal_profile_preview_page. Dono ambiguo entre duas frentes, que e o que deixou tres achados orfaos nesta rodada.",
     "classe_predominante": "Nao foi numero errado, foi TEMPO VERBAL: quatro dos cinco achados sao afirmacao escrita cedo, verdadeira sobre o mundo de entao e falsa sobre o mundo agora. Custo de documento que cresce por acrescimo enquanto o codigo muda debaixo dele.",
-    "pratica_sugerida": "Secoes que afirmam ESTADO carregarem o SHA da base em que foram medidas, como as medicoes de suite ja fazem. Secoes de metodo ou decisao nao precisam, porque nao envelhecem."
+    "pratica_sugerida": "Secoes que afirmam ESTADO carregarem o SHA da base em que foram medidas, como as medicoes de suite ja fazem. Secoes de metodo ou decisao nao precisam, porque nao envelhecem.",
+    "encerrada": "Sete achados: quatro corrigidos pelo coordenador, o censo de IntrinsicHeight, a omissao do paragrafo desta frente (corrigida) e o detalhe da decisao 12. Mais a confirmacao da decisao 15, que nao precisou de correcao."
   },
-  "higiene_de_medicao": "Os 40 objetos orfaos foram REFEITOS com caminhos privados da sessao apos o aviso de que /tmp e compartilhado nesta maquina: 605/527/63/40, lista byte a byte identica. Nao houve contaminacao, mas a verificacao era devida porque o numero ja estava publicado."
+  "higiene_de_medicao": "Os 40 objetos orfaos foram REFEITOS com caminhos privados da sessao apos o aviso de que /tmp e compartilhado nesta maquina: 605/527/63/40, lista byte a byte identica. Nao houve contaminacao, mas a verificacao era devida porque o numero ja estava publicado.",
+  "correcao_de_horario_2": "Escrevi 'Sao 03:30 medidas' numa mensagem sem ter medido; a hora real era 02:51. Terceira ocorrencia do mesmo habito contra a minha propria regra. A licao operacional: a regra pegou no JSON, onde a leitura do relogio virou COMANDO, e nao pegou nas mensagens, onde eu ainda digito. Regra que depende de disciplina no momento da escrita nao pega; a que vira comando pega."
 }
