@@ -11,37 +11,58 @@ timezone: "America/Sao_Paulo"
 Recorte: Acontece, Agora, Momentos e Circulares em `apps/superadmin`, mais a
 plataforma comum de mídia que os quatro consomem.
 
-## 1. Residual, provado por conteúdo
+## 1. Residual, pelos três métodos lado a lado
 
-**Zero.** Medido no congelamento, não lembrado.
+**Zero.** E os três métodos precisam aparecer juntos, porque cada um mente de um
+jeito diferente.
 
-`origin/dev` em `5ac61f6d7`, após `git fetch` no mesmo bloco.
+`origin/dev` em `8211bac07`, após `git fetch` no mesmo bloco.
 
-| Verificação | Resultado |
-| --- | --- |
-| `git rev-list --count origin/dev..HEAD` | `0` |
-| `git merge-base --is-ancestor HEAD origin/dev` | sim |
-| Meus cinco documentos, `git diff --quiet HEAD origin/dev` um a um | idênticos |
+| Método | Resultado | Leitura |
+| --- | --- | --- |
+| **Rastro** — `git log origin/dev --grep="cherry picked from commit 184dbb696"` | encontra `cb1aa0669` | **integrado** |
+| **Ancestralidade** — `merge-base --is-ancestor` e `rev-list origin/dev..HEAD` | não é ancestral; 1 commit | **acusa 1 pendente, e é falso** |
+| **Conteúdo** — `git diff --quiet HEAD origin/dev` nos cinco documentos | idênticos | **integrado** |
 
-**Por que a terceira linha é a que vale.** As duas primeiras dependem de uma
-propriedade do método de integração da coordenação que eu não tinha verificado:
-a minha branch entrou por **merge**, e por isso o teste de ancestralidade
-respondeu certo. Se a integração tivesse sido por **cherry-pick**, o commit
-entraria na dev com SHA novo, deixaria de ser ancestral para sempre, e o mesmo
-laço daria zero pelo motivo **oposto** — sem que nada no resultado denunciasse a
-troca.
+**A ancestralidade acusa uma pendência que não existe**, e o motivo é concreto:
+a coordenação integra ora por merge, ora por cherry-pick. Um commit que entra por
+cherry-pick recebe **SHA novo**, deixa de ser ancestral para sempre, e continua
+dentro da base.
 
-Um teste que responde certo por um motivo que não é o presumido continua
-respondendo certo até a premissa mudar, e nesse dia erra em silêncio. Por isso a
-prova que fica é a de **conteúdo**: não "não há commit pendente", e sim *o
-conteúdo que entreguei está lá, byte a byte*.
+Isso não é hipótese. Às 04:36 eu escrevi, medindo, que a minha integração tinha
+sido por *merge* e que por isso o teste de ancestralidade respondera certo. Nove
+minutos depois, o mesmo par de sessões, o commit seguinte entrou por
+**cherry-pick**. Se eu tivesse repetido a frase das 04:36 sem remedir, estaria
+certo por acidente na primeira vez e errado na segunda, com o mesmo comando e a
+mesma confiança.
+
+E a direção do erro é a oposta da que eu tinha previsto. Eu havia escrito que um
+teste assim "erra em silêncio no dia em que a premissa mudar", imaginando um
+falso negativo. Aqui ele produziu um **falso positivo de pendência** — e
+reportar residual que não existe faz alguém procurar, no fechamento e com quinze
+minutos de relógio, um commit que já está na base.
+
+**O que cada método esconde:**
+
+- *Ancestralidade* mente quando o método de integração muda.
+- *Conteúdo* mente quando a base anda por baixo: outra frente toca os mesmos
+  caminhos e o diff reprova um commit que chegou. Os meus cinco documentos batem
+  por conteúdo porque **ninguém mais tocou aqueles caminhos** — é propriedade do
+  meu recorte, não virtude do teste.
+- *Rastro* depende de a mensagem de integração carregar a marca.
+
+**Delimitação do conjunto: por intervalo, nunca por autor.** As seis frentes
+commitam com a mesma identidade Git neste checkout, então `git log --author` não
+isola ninguém. Todas as minhas delimitações de "meus commits" foram por intervalo
+(`origin/dev..HEAD`) ou por lista nominal de SHA produzida ao commitar. Nenhuma
+passou por `--author` nem por `--committer`.
+
+`HEAD` = `184dbb696`; upstream `origin/work/etapa2-noturna-publicacoes-midia` em
+0/0; worktree limpa; sem stash. O commit que publica esta versão do documento
+fica pendente por construção, e é de documentação.
 
 Publicado, recebido, aceito e integrado são quatro estados diferentes, e só o
 quarto responde à pergunta que interessa.
-
-`HEAD` = `149751c5f`; upstream `origin/work/etapa2-noturna-publicacoes-midia` em
-0/0; worktree limpa; sem stash. O commit que publica esta versão do documento
-fica pendente por construção, e é de documentação.
 
 ## 2. Dois números de teste, com os caminhos que os produziram
 
@@ -393,7 +414,7 @@ e não estimada a partir de leitura anterior:
 
 ```
 PS> Get-Date -Format 'yyyy-MM-dd HH:mm:ss K'
-2026-09-10 04:39:09 -03:00
+2026-09-10 04:45:28 -03:00
 ```
 
 Leitura do congelamento, cruzada entre as frentes: coordenação `04:38:01`, esta
