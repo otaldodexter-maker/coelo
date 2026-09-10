@@ -292,53 +292,60 @@ O teste falha também **se uma das cinco ausências passar a existir e continuar
 lista** — sem isso a lista de exceções envelhece e passa a esconder o defeito
 seguinte, que é como esse tipo de allowlist costuma morrer.
 
-## A tela de Importações não cabe em tela nenhuma, e está verde por estar fechada
+## Importações transborda em produção, e a causa é um componente que você já tem para decidir
 
-Um teste de fronteira falhava com `RenderFlex overflowed by 1409 pixels`, e a
-leitura óbvia era artefato de ambiente: o teste não fixa o tamanho da view, cai no
-padrão de 800×600, e o conteúdo não cabe. A correção óbvia seriam três linhas
-fixando um viewport maior. **Ela teria escondido um defeito de produto dentro de
-uma correção de teste.**
+**Esta seção foi reescrita três vezes, cada uma derrubando a anterior por
+medição, e a terceira é a que decide.**
 
-O que a medição mostrou, em três viewports: `/dev/imports` **estoura em todos** —
-1409 px a 800×600, 1317 px a 390×844 e **1069 px a 1440×900**. Não é artefato do
-tamanho padrão. E o controle com pluralidade fecha a atribuição: nove rotas
-comparáveis foram exercitadas no mesmo tamanho e **apenas essa estoura**, então
-não é do shell nem do tema.
+**A primeira leitura** foi que um teste de fronteira falhava por artefato de
+ambiente — o teste não fixa o tamanho da view, cai no padrão de 800×600, e o
+conteúdo não cabe. A correção óbvia eram três linhas fixando um viewport maior, e
+ela teria escondido um defeito de produto dentro de uma correção de teste. A
+frente que a encontrou não escreveu esse patch, e por isso o resto existe.
 
-**E a rota de produção monta a mesma página.** Sem repositório ela passa; **com
-repositório devolvendo dados, a 1440×900, ela estoura por 1069 pixels.**
+**A segunda leitura**, medida em três viewports, foi que a página não cabe em
+tela nenhuma e que a rota de produção monta a mesma página — logo, produção
+quebraria assim que houvesse dados. Uma varredura de 67 rotas de desenvolvimento
+mostrou que a classe tem uma instância só.
 
-Ou seja: **Importações está verde hoje porque está fail-closed.** O estado
-carregado da tela nunca coube. No dia em que o repositório de produção for ligado,
-quem abrir Importações perde mil pixels de conteúdo de uma vez, **sem rolagem para
-alcançá-lo**. O verde atual não é evidência de que a tela funciona; é evidência de
-que ela nunca foi exercitada com dados — que é literalmente a regra de que uma
-tela `fail-closed` nunca deve ser declarada concluída ponta a ponta, aqui medida e
-não deduzida.
+**A terceira leitura, também medida, derruba a segunda e é a correta.** A página
+**isolada** não transborda em nenhum viewport com três trabalhos. Pelo router, a
+rota de desenvolvimento transborda **com número idêntico para zero ou três
+trabalhos injetados** — e número que não muda com o dado injetado não vem do dado
+injetado: aquela rota usa o próprio repositório de desenvolvimento. E a rota de
+**produção**, com um repositório devolvendo dados, passa nos três viewports.
 
-**E a classe foi limitada, o que muda o custo de atacá-la.** As rotas de
-desenvolvimento já montam com repositórios que devolvem dados, então elas
-exercitam exatamente o estado carregado que as rotas de produção não alcançam
-enquanto estão fechadas — o que as torna o detector barato desta classe inteira.
-**Sessenta e sete rotas foram montadas a 1440×900 e lidas: 66 passam, e a única
-exceção é Importações.** Não é problema estrutural do shell nem do design system;
-**é uma tela.** Sem esse número, "defeito mascarado por fail-closed" soa como
-categoria que pode estar em qualquer lugar e o custo de atacar fica
-indeterminado; com ele, é um item.
+**O que realmente governa é a altura disponível e o número de linhas, não a
+largura.** Medido linha a linha: 800×600 aguenta quatro linhas e transborda com
+cinco; 390×844 aguenta cinco e transborda com seis; 1440×900 aguenta oito e
+transborda com dez, por 70 pixels, crescendo cerca de 65 por linha — exatamente
+uma altura de linha. **A tela estreita aguenta mais que a de 800×600**, porque a
+barra de ferramentas empilha diferente, o que encerra qualquer explicação por
+largura.
 
-Limite declarado pela própria varredura: ela cobre rotas de desenvolvimento **sem
-parâmetro**. Rotas parametrizadas e telas de produção sem espelho em
-desenvolvimento ficam de fora, e é por essa fresta que uma segunda instância
-poderia existir.
+**Então: produção transborda, só não com três linhas. Com dez importações reais,
+transborda.**
 
-**Registrado como achado aberto, e não como falha de teste**, e a distinção é
-prática: se alguém "consertar" o teste fixando o viewport, o vermelho some e o
-defeito fica — e some justamente o único sinal que hoje aponta para ele. A
-reprodução é barata e está documentada: compor o router com o repositório de
-importação, navegar para a rota, e ler a exceção. O widget exato não foi
-localizado; o ramo carregado da página parece correto, então a coluna que estoura
-provavelmente está acima dele.
+**E a causa, agora localizada, já está na sua lista de decisão.** O componente
+compartilhado de tabela redimensionável envolve as linhas numa rolagem
+**horizontal** e as monta numa coluna de altura mínima: **não existe rolagem
+vertical**. O `Expanded` na página de Importações está correto — ele limita a
+altura; quem transborda é a coluna de linhas dentro do componente. Importações
+não é achado novo: **é a sexta tela da mesma causa**, e é a que dá o número mais
+limpo, porque a altura de linha fixa torna o limiar contável.
+
+**Não foi corrigido, e a recusa tem motivo:** a correção é rolagem vertical num
+componente que sustenta **todos** os diretórios administrativos. Mexer nele de
+madrugada mudaria o layout de uma dúzia de telas e invalidaria as referências
+visuais de todas, no dia em que a medição de fechamento já havia rodado. Não é
+correção contida — é a decisão que você já tem em aberto.
+
+**O sinal foi preservado nos dois sentidos:** três casos verdes fixam o que
+funciona hoje — quatro linhas em 800×600, cinco em 390×844, oito em 1440×900 — e
+um caso carrega os números do defeito, suspenso com a razão **no próprio nome**.
+Remover a suspensão é o teste de aceite quando a decisão sair. E o arquivo explica
+por que "consertar" fixando o viewport esconderia o defeito, para que ninguém o
+faça.
 
 ## Triagem dos 129 goldens: a maior parte é rebaseline seguro
 
