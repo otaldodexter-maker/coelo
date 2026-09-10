@@ -1,0 +1,131 @@
+{
+  "revision": 7,
+  "updated_at": "2026-09-10T19:50:00-03:00",
+  "round": "E2-R03-20260910",
+  "group": "principal-chat-sistema",
+  "tool": "Claude Code (VS Code)",
+  "model": "claude-opus-5[1m]",
+  "coordinator": "Claude (P1)",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-principal-chat-sistema",
+  "branch": "work/etapa2-r03-principal-chat-sistema",
+  "head": "fca02963f",
+  "publicada": "origin/work/etapa2-r03-principal-chat-sistema",
+  "aviso_ao_coordenador": [
+    "ESTE ARQUIVO FOI PERDIDO UMA VEZ. As revisoes 1 a 6 foram gravadas aqui e sumiram do checkout principal por volta de 19:40, quando dev avancou para 2043f9df2 e a arvore passou a ter alteracoes nao commitadas. Reescrevi o conteudo consolidado nesta revisao 7. Se o canal precisa sobreviver, ele precisa ser commitado por quem escreve em dev.",
+    "O checkout principal esta agora com CONFLITO NAO RESOLVIDO em apps/superadmin/lib/features/principal_happens/presentation/principal_happens_preview_page.dart (both modified), com dois arquivos de teste de principal_happens ja staged. Nao toquei nisso: e integracao, e integracao e sua. A fonte correta para resolver e a minha branch em fca02963f, que tem o arquivo inteiro e coerente com os testes.",
+    "A base.fase0Head 1adb070c9 ja esta publicada em coordenacao.json. Vou rebasear minha branch sobre ela."
+  ],
+  "status": "EM EXECUCAO. Cardapios, Shell, Chat (Fixar/bandeira) e Acontece (paginacao e fim da previa) fechados localmente e publicados na branch do grupo.",
+  "scope": [
+    "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos, Perfil",
+    "apps/superadmin -> Chat administrativo e Principal",
+    "apps/superadmin -> Cardapios, Importacoes, Catalogo, paginas de erro, Auth, Shell"
+  ],
+  "action_ids_status": "55 IDs do inventario: acontece 4, agora 4, momentos 4, principal_profile 3, chat 7, meal_plans 6, imports 7, catalog 4, error_pages 6, auth 5, shell 5.",
+  "lotes": [
+    {
+      "commit": "6a5d351fa",
+      "titulo": "Cardapios: apagar imagem exige a revisao lida pelo cliente",
+      "achado": "A migration 20260820230000 criou a forma revisionada de meal_plan_request_image_delete mas deixou exposta a forma de dois argumentos, que le a revisao atual do banco e a passa como esperada. Com grant para authenticated e o repositorio Flutter chamando justamente essa forma, o controle otimista NUNCA disparava.",
+      "action_ids": ["meal-plans.edit", "meal-plans.publish"]
+    },
+    {
+      "commit": "a4a49b313",
+      "titulo": "Cardapios: conceder meal_plans ao Owner e destravar a familia",
+      "achado": "ACHADO MATERIAL. meal_plans.read/.manage/.publish existem no catalogo desde 20260813120000, mas NENHUMA migration as concedeu a papel algum em platform_role_permissions, e 20260729144440 ja tinha removido o bypass implicito do Owner. Toda a familia Cardapios era inalcancavel, inclusive para o Owner. Medido em replay local: as tres permissoes existem, o bypass nao existe, e nao ha uma linha de concessao.",
+      "action_ids": ["meal-plans.list", "meal-plans.create", "meal-plans.edit", "meal-plans.model-create", "meal-plans.model-edit", "meal-plans.publish"]
+    },
+    {
+      "commit": "a3cec9757",
+      "titulo": "Shell: mapear os cinco action_ids",
+      "achado": "Os 134 casos de shell e navegacao passavam, mas nenhum dizia a qual acao pertencia, e por isso o rastreador recusava promover as cinco acoes. Um caso nominal por action_id, sobre router e sessao reais, sem fixture de rota. Controle negativo executado em shell.unauthorized.",
+      "action_ids": ["shell.load", "shell.navigate", "shell.switch-context", "shell.unauthorized", "shell.reload"]
+    },
+    {
+      "commit": "6e43b957d",
+      "titulo": "Chat: fixar conversa e bandeira voltam, agora persistidas",
+      "achado": "A regressao apontada pelo Owner vinha de 2ffc126db, que trocou a inbox de fixture por dados reais. O estado antigo vivia so na memoria do controller (_pinnedOrder e _flags), entao restaurar do jeito anterior reintroduziria algo que o reload apaga. Agora a preferencia e do banco, por identidade interna, com RPCs v2 que revalidam contexto, capacidade e escopo. Criar grupo NAO entrou: exige criar conversa e membros, que e pacote proprio.",
+      "action_ids": ["chat.list", "chat.open"]
+    },
+    {
+      "commit": "df542741d",
+      "titulo": "Acontece: o feed pagina de verdade, nos dois caminhos",
+      "achado": "list_visible_happens_posts nao tinha cursor nenhum, so teto. E no caminho misto, que e o de producao, o defeito nao era do servidor: list_visible_happens_feed ja devolvia nextCursor desde 20260909214000 e a TELA descartava o cursor, deixando o resto do feed inalcancavel com o backend pronto.",
+      "action_ids": ["acontece.feed"]
+    },
+    {
+      "commit": "fca02963f",
+      "titulo": "Acontece: encerrar a previa e aplicar a regra MAIS",
+      "achado": "D3: removidas todas as mensagens de previa. A regra que as substitui e que acao sem destino real fica visivel e inerte, porque na rota real o composition root fornece os destinos e um controle desabilitado passa a denunciar composicao incompleta. Comentar e compartilhar seguem desabilitados por nao existirem no servidor. MAIS aplicada.",
+      "action_ids": ["acontece.feed"]
+    }
+  ],
+  "tests": {
+    "pgTAP_cardapios": "supabase test db em replay local -> 58 PASS / 0 FAIL nos tres arquivos da familia. Antes deste turno, dois dos tres abortavam no meio e nunca completavam o plano.",
+    "pgTAP_chat": "31 PASS / 0 FAIL (superadmin_internal_chat_preferences 10 novo, superadmin_internal_chat_v2 21). O arquivo de referencia tinha 13 casos vermelhos por fixture desatualizado.",
+    "pgTAP_acontece": "92 PASS / 0 FAIL (happens_publication 53, happens_post_withdrawal 33, happens_feed_pagination 6 novo). Os dois primeiros nao completavam o plano antes.",
+    "shell_action_ids": "flutter test shell_action_ids_test -> 5 PASS. Controle negativo executado: com sessao valida, o caso de acesso negado falha.",
+    "cliente_chat": "196 PASS / 9 FAIL em test/features/chat; as 9 sao goldens ja divergentes e ja decididos pelo Owner.",
+    "cliente_acontece": "71 PASS / 20 FAIL em test/features/principal_happens; as 20 sao exclusivamente goldens, ver o campo goldens.",
+    "analyze": "flutter analyze lib test em apps/superadmin: No issues found."
+  },
+  "goldens": {
+    "estado": "NAO REGRAVEI NENHUM GOLDEN.",
+    "medicao": "Base bb15db748: 10 PASS / 10 FAIL em principal_happens_preview_golden_test. Depois do lote fca02963f: 0 PASS / 20 FAIL.",
+    "porque": "Desabilitar controle sem destino e trocar a cor do botao de publicar mudam pixels. Os 20 sao decisao A com observacao (SHELL, MAIS, conteiner de imagens em 375). MAIS ja esta aplicada; SHELL vem do composto da Fase 0. Pelo contrato, golden A com observacao so e regravado depois de aplicada a observacao.",
+    "quem_desbloqueia": "Com a base 1adb070c9 publicada, posso avaliar SHELL no proximo ciclo e entao regravar os 20 no SDK registrado."
+  },
+  "fila_sql_para_o_coordenador": [
+    {
+      "ordem": 1,
+      "migration": "packages/coelo_database/migrations/20260910120000_meal_plan_image_delete_requires_revision_v1.sql",
+      "pgtap": "packages/coelo_database/supabase/tests/meal_plan_image_delete_requires_revision_test.sql",
+      "commit": "6a5d351fa",
+      "estado": "pgTAP local VERDE",
+      "observacao": "Dropa as duas sobrecargas de dois argumentos. O unico chamador era o repositorio Flutter, corrigido no mesmo commit."
+    },
+    {
+      "ordem": 2,
+      "migration": "packages/coelo_database/migrations/20260910130000_meal_plans_owner_permission_grants_v1.sql",
+      "commit": "a4a49b313",
+      "estado": "pgTAP local VERDE",
+      "observacao": "CONFERIR EM PRODUCAO ANTES: select em platform_role_permissions para meal_plans.*. Se producao ja tiver concessao manual, a migration e no-op idempotente."
+    },
+    {
+      "ordem": 3,
+      "migration": "packages/coelo_database/migrations/20260910140000_chat_conversation_preferences_v1.sql",
+      "pgtap": "packages/coelo_database/supabase/tests/superadmin_internal_chat_preferences_test.sql",
+      "commit": "6e43b957d",
+      "estado": "pgTAP local VERDE",
+      "observacao": "Recria superadmin_chat_inbox_v2 com dois campos novos por item (pinned_at, flag). O cliente ja le os dois e trata bandeira desconhecida como none, entao a ordem entre aplicar e publicar nao quebra nenhum lado."
+    },
+    {
+      "ordem": 4,
+      "migration": "packages/coelo_database/migrations/20260910150000_happens_feed_pagination_v1.sql",
+      "pgtap": "packages/coelo_database/supabase/tests/happens_feed_pagination_test.sql",
+      "commit": "df542741d",
+      "estado": "pgTAP local VERDE",
+      "observacao": "ATENCAO A ORDEM: dropa a assinatura antiga (uuid,uuid,uuid,integer) e cria (uuid,uuid,uuid,integer,timestamptz,uuid). Entre aplicar o SQL e publicar o app, um cliente antigo recebe erro de funcao inexistente. Aplicar junto com o deploy do cliente, ou aceitar a janela."
+    }
+  ],
+  "achados_de_cadeia_para_o_coordenador": [
+    "Invoke-SafeLocalMigrationReplay aborta em 20260812002010: app_private.unit_import_source_attestations e referenciada e nunca criada. Ja relatado ao Owner na rodada noturna.",
+    "MAIS GRAVE: 20260901101500_superadmin_internal_chat_v2 insere em platform_permissions sem module_label/screen_label/action_label, que 20260811215451 tornou NOT NULL sem default. Em qualquer base recriada do zero, a migration do chat interno v2 e INAPLICAVEL. Ou nunca foi aplicada em producao, ou foi aplicada numa ordem diferente da ordem por nome. Nao editei a migration; e decisao de arquitetura. Para provar meu pacote usei um contorno declarado, somente no replay local.",
+    "20260901190927_deploy_superadmin_internal_auth tem preflight de ledger que falha em base recriada (column rollback does not exist).",
+    "PADRAO: em Cardapios, Chat e Acontece, os pgTAP existentes estavam vermelhos por fixture ou assercao desatualizada, alguns desde 09/09. A suite SQL nao vem sendo executada. Vale um gate no ciclo do coordenador."
+  ],
+  "perguntas_ao_owner_via_coordenador": [
+    "has_platform_permission so enxerga membership com scope_kind=platform e instituicao nula. Consequencia: um Owner de INSTITUICAO nunca tem meal_plans.manage, nem com a concessao nova. Para o MVP do Superadmin isso basta, mas quando Admin entrar, nenhum administrador de instituicao gerenciara cardapios. E a regra pretendida ou uma lacuna? Nao alterei a funcao.",
+    "A 20260820230000 passou os tres comandos de escrita de Cardapios de invoker para security definer (com search_path travado e revalidacao de permissao dentro). O pgTAP guardava a postura anterior. Reconciliei o teste para o contrato vigente e registro a mudanca para a ADR, em vez de reverter a migration.",
+    "Criar grupo (terceira parte da regressao do Chat) exige criar conversa e membros pelo realm interno, o que nao existe em RPC nenhuma. E pacote proprio, com regra de quem pode criar grupo e quem entra nele. Confirmar o escopo antes de eu escrever, ou deixar para depois do MVP?",
+    "Curtir e comentar no Acontece sao Set em memoria por indice e nao existem no banco: nenhuma migration cria tabela de reacao ou de comentario. Ligar ponta a ponta, como a D3 pede, exige um pacote de backend proprio. Confirmar prioridade."
+  ],
+  "observacoes_para_o_composto": [
+    "ARQUIVO: o icone de arquivar/duplicar aparece em Cardapios e em Planos, e Planos e do grupo operacoes, entao a correcao pertence ao componente compartilhado. Cardapios usa Icons.copy_all_outlined; o card de modelo de atividade, que e a referencia aprovada, usa Icons.content_copy_rounded.",
+    "meal_plan_directory_flyout_light_1440 tem observacao 'sem shell': o golden e montado fora do shell, o que e do harness de golden do composto, nao da tela."
+  ],
+  "nao_tocado_ainda": "UI de diretorio de Cardapios (o diretorio esta na lista dos 13 da Fase 0). Momentos, Perfil, Agora, Importacoes, Catalogo e paginas de erro seguem no meu recorte e ainda nao foram trabalhados.",
+  "blocker": "Nenhum bloqueio retendo trabalho independente.",
+  "next_step": "Rebase sobre base.fase0Head 1adb070c9; depois Momentos (IMG e acoes reais) e Perfil (D1/D9) em conjunto com acessos-pessoas.",
+  "ack": null
+}

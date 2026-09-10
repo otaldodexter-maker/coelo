@@ -1,0 +1,93 @@
+{
+  "revision": 6,
+  "updated_at": "2026-09-10T09:30:00-03:00",
+  "round": "E2-R03-20260910",
+  "group": "operacoes",
+  "tool_model": "Codex, Luna medio",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-operacoes",
+  "branch": "work/etapa2-r03-operacoes",
+  "head": "b172b695b8d996375fc7da7a539ed7ee78dc7e35",
+  "base": {
+    "requested": "base.fase0Head",
+    "resolved": null,
+    "fallback": "worktree materializado a partir de dev em bb15db748; backend-only ate a publicacao da Fase 0"
+  },
+  "scope": {
+    "app": "apps/superadmin",
+    "families": ["support", "account", "plans", "audit"],
+    "action_ids": [
+      "audit.list", "audit.filter", "audit.detail", "audit.export",
+      "support.create", "support.table", "support.kanban", "support.detail", "support.reply", "support.close",
+      "account.profile", "account.settings", "account.theme", "account.mfa", "account.sessions", "account.logout",
+      "plans.list", "plans.create", "plans.edit", "plans.activate", "plans.assign"
+    ],
+    "order": ["account", "plans", "audit", "support"],
+    "included": "camadas Front-end, Supabase/Postgres e E2E das 21 acoes; neste primeiro gate apenas backend independente, sem UI de diretorio",
+    "excluded_until_phase0": "UI administrativa, composto de diretorio, goldens e composicao de rota"
+  },
+  "opening_contract": {
+    "objective": "entregar contratos backend revisaveis para Conta/Planos/Auditoria e construir a camada Supabase produtiva de Suporte",
+    "known_pending": "base.fase0Head ausente; Suporte sem data/repository produtivo; Auditoria tem candidato AUDIT-READ-V2; Planos ja possui migration e pgTAP; Conta depende de camada de perfil/sessao a reconciliar",
+    "stop_criterion": "fechar gates backend locais independentes ou registrar bloqueio concreto; nao promover E2E antes de migration aplicada e composicao da Fase 0",
+    "expected_evidence": "migration forward-only, pgTAP com RLS/grants/RPC, chave de composicao proposta, SHA dos commits e estado separado FE/BE/E2E"
+  },
+  "changes": [
+    {
+      "action_ids": ["support.create", "support.table", "support.kanban", "support.detail", "support.reply", "support.close"],
+      "status": "backend-package-committed-pgTAP-blocked",
+      "changed": [
+        "packages/coelo_database/migrations/20260909217000_superadmin_support_production_v1.sql",
+        "packages/coelo_database/supabase/tests/superadmin_support_production_test.sql"
+      ],
+      "commit_sha": "b172b695b8d996375fc7da7a539ed7ee78dc7e35",
+      "delta": "adicionada camada server-side sobre support_sessions existente: campos de ticket, revisao otimista, receipts de idempotencia, list/detail/create/reply/set_status, acoes em audit.support_session_actions, RLS deny-by-default e grants somente por RPC authenticated",
+      "composition_key_candidate": "supportProductionRepositoryV1",
+      "criteria": {"frontend": "N", "backend": "N", "e2e": "N", "reload": "N", "cross_tenant": "pgTAP pendente de replay nominal"}
+    },
+    {
+      "action_ids": ["audit.list", "audit.filter", "audit.detail"],
+      "status": "candidate-existing",
+      "changed": [],
+      "commit_sha": "aafde0b3d",
+      "delta": "candidato 20260909190000_superadmin_internal_audit_read_v2.sql ja existe e foi preservado; aplicar/verificar fica com coordenador na fila SQL",
+      "composition_key_candidate": "auditReadV2",
+      "criteria": {"frontend": "N", "backend": "N", "e2e": "N"}
+    },
+    {
+      "action_ids": ["plans.list", "plans.create", "plans.edit", "plans.activate", "plans.assign"],
+      "status": "candidate-existing",
+      "changed": [],
+      "commit_sha": "be28f0c0b",
+      "delta": "contrato de Planos ja existe na migration 20260901183154_superadmin_plans_production.sql com list/get/save, receipts, RLS forcado e grants somente authenticated; pgTAP existente sera levado para a fila serializada",
+      "composition_key_candidate": "plansProductionRepositoryV1",
+      "criteria": {"frontend": "N", "backend": "N", "e2e": "N", "reload": "N", "cross_tenant": "pgTAP pendente de replay nominal"}
+    },
+    {
+      "action_ids": ["account.profile", "account.settings", "account.theme", "account.mfa", "account.sessions", "account.logout"],
+      "status": "backend-package-committed-pgTAP-blocked",
+      "changed": [
+        "packages/coelo_database/migrations/20260909218000_superadmin_account_profile_v1.sql",
+        "packages/coelo_database/supabase/tests/superadmin_account_profile_v1_test.sql"
+      ],
+      "commit_sha": "efd9af79e",
+      "delta": "adicionada persistencia server-side do perfil: nome/telefone em people, leitura de email Auth, pedido/cancelamento de troca de email, papel/capacidades, receipts de idempotencia e grants somente por RPC; tema continua preferencia local e MFA, sessoes/logout dependem dos contratos Auth existentes",
+      "composition_key_candidate": "accountProfileProductionRepositoryV1",
+      "criteria": {"frontend": "N", "backend": "N", "e2e": "N", "reload": "N", "cross_tenant": "pgTAP pendente de replay nominal"}
+    },
+    {
+      "action_ids": ["audit.export"],
+      "status": "deferred-post-mvp",
+      "changed": [],
+      "commit_sha": "aafde0b3d",
+      "delta": "mantido adiado conforme ADR 0034; nenhum entrypoint novo",
+      "criteria": {"frontend": "N/A", "backend": "N/A", "e2e": "N/A"}
+    }
+  ],
+  "tests": {"P": 3, "F": 0, "B": 2, "S": 0, "U": 1, "evidence": ["support-contract-static PASS: required RPCs=5, receipt=idempotency, audit schema=correct, RLS=force, test=22 assertions", "account-contract-static PASS: RPCs=3, email request, idempotency receipt, auth email read, forced RLS, test=16 assertions", "plans-audit-contract-static PASS: plans=3 RPCs + forced RLS; audit=list/filter/detail + deferred export revoke; tests present", "supabase db lint --local BLOCKED: ECONNREFUSED 127.0.0.1:54322", "supabase start --workdir packages/coelo_database BLOCKED before support migration: 20260820152528_form... fails SQLSTATE 3F000 because schema app_private is absent"], "planned": ["pgTAP nominal de conta, planos, auditoria e suporte", "preflight da migration na fila serializada", "flutter tests somente apos base.fase0Head"]},
+  "blocked": [
+    {"kind": "environment/integration", "what": "base.fase0Head nao publicado em coordenacao.json", "owner": "coordenador/Fase 0", "unblocks": "SHA integrado da Fase 0 e rebase desta branch antes de tocar UI"},
+    {"kind": "verification", "what": "nenhum replay pgTAP local nominal executado ainda; reset completo falha antes do pacote por schema app_private ausente na cadeia canonica", "owner": "coordenador/base de replay", "unblocks": "base/replay nominal corrigido ou perfil descartavel que inclua schema app_private; migration e teste ja estao no pacote"}
+  ],
+  "next_step": "coordenador deve aplicar/reconciliar os pacotes SQL na fila; quando base.fase0Head existir, rebasear esta branch e executar wiring Flutter + E2E das 21 acoes; ate la, pgTAP nominal permanece bloqueado pela cadeia app_private ausente",
+  "commits": ["b172b695b8d996375fc7da7a539ed7ee78dc7e35", "94bca84f6", "5611c6da7"]
+}

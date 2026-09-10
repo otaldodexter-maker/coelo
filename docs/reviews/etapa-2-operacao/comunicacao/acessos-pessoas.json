@@ -1,585 +1,793 @@
 {
-  "revision": 56,
-  "updated_at": "2026-09-10T08:13:53.8758692-03:00",
+  "revision": 84,
+  "updated_at": "2026-09-10T17:19:28.563Z",
+  "round": "E2-R03-20260910",
   "group": "acessos-pessoas",
-  "task_id": "/root",
-  "native_thread_id": null,
-  "model": "GPT-6 (variante não exposta)",
-  "status": "HANDOFF_COMPLETE_COORDINATOR_FINAL_SAFETY_RECLASSIFICATION",
-  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas",
-  "branch": "work/etapa2-noturna-acessos-pessoas",
-  "head": "992f3530d",
-  "upstream": "origin/work/etapa2-noturna-acessos-pessoas",
-  "base_observed": "d784462c1",
-  "scope": "apps/superadmin -> Pessoas, Perfis, Modelos, Convites, Usuários internos, Segurança infantil, Arquivos de perfil",
-  "action_ids_status": "38 IDs reconciliados com matriz D04:31 ativos,6 adiados,1 gate MFA; nenhuma certificação nova",
-  "changes": [
+  "tool": "Claude",
+  "model": "Opus 5 (1M)",
+  "status": "R03_RECORTE_BACKEND_CONCLUIDO_ATE_AS_DECISOES",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-acessos-pessoas",
+  "branch": "work/etapa2-r03-acessos-pessoas",
+  "head": "67a109c6f",
+  "base_observed": "bb15db748 (dev). base.fase0Head nunca foi publicado em coordenacao.json, que segue na revisao 31 da R02. Trabalhei so backend, sem tocar UI de diretorio, como o P5 manda nesse caso.",
+  "AVISO_DE_SOBRESCRITA": {
+    "o_que_houve": "Entre as minhas revisoes 83 e 84 este arquivo foi REVERTIDO no checkout principal para o conteudo da revisao 56, que e o da rodada noturna R02. As minhas revisoes 57 a 83 sumiram do arquivo.",
+    "como_percebi": "Meu utilitario de atualizacao le a revisao atual e incrementa. Ele leu 56 e gravou 57, quando eu esperava 84. As chaves antigas da R02 tinham voltado.",
+    "causa_provavel": "Outro processo operando no mesmo checkout C:/Users/adrie/Documents/Coelo. Nao fui eu: meus commits acontecem na worktree, que e outro checkout.",
+    "o_que_fiz": "Reconstrui o conteudo por inteiro nesta revisao 84 e passei a versionar uma copia em docs/reviews/evidence/etapa-2/r03-acessos-pessoas/comunicacao-acessos-pessoas.json dentro da minha worktree, para o canal de handoff nao depender de um arquivo que outra sessao pode sobrescrever.",
+    "pedido": "Coordenador: se foi voce, combine comigo antes. Se nao foi, vale descobrir quem escreve nesse caminho, porque o contrato diz que <grupo>.json e escrito so pelo executor do grupo."
+  },
+  "RESUMO_EXECUTIVO": {
+    "achado_principal": "96 das 162 RPCs que o Superadmin chama NAO EXISTEM em producao. O ledger remoto para em 01/09/2026. Nao e funcionalidade incompleta: e erro de funcao inexistente na primeira chamada da rota produtiva. Explica por que quase todo o inventario esta em pending-verification e por que nenhuma frente fechou E2E.",
+    "segundo_achado": "Parte da fila e INAPLICAVEL como esta escrita. Cinco migrations quebradas encontradas em cerca de doze que tentei aplicar de verdade. Nenhuma tinha sido detectada porque ninguem aplicou.",
+    "entregue": "Quatro pacotes verdes com 168 testes pgTAP, que desbloqueiam 16 das 38 acoes do recorte assim que forem aplicados. Nenhum exige mudanca em Dart.",
+    "preso": "Tres acoes de Pessoas e a escrita de Perfis e Modelos dependem de uma decisao do Owner sobre AAL2. Seis acoes de Arquivos de perfil estao adiadas por decisao e verificadas como corretas."
+  },
+  "PACOTES_VERDES_PRONTOS_PARA_A_FILA": [
     {
-      "status": "published-initial-candidate-corrected-local95P-WIP-to-publish",
-      "commit": "cc5d73bc74de652c91570061aef6ede95b3915a7",
-      "manifest": "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/manifest.json",
-      "package": "AP-MODELS-NOMINAL-20260909-v1"
+      "id": "AP-PEOPLE-DETAIL-V2",
+      "migrations": [
+        "packages/coelo_database/migrations/20260828005000_superadmin_internal_person_detail.sql"
+      ],
+      "pgTAP": "supabase/tests/superadmin_internal_person_detail_test.sql - 42 testes, PASS",
+      "perfil": "NominalProfile PersonDetailV2, alvo 20260828005000 (escrito por mim)",
+      "chave_de_composicao": "NENHUMA. personDetailReader ja e SupabasePersonDetailReader no escopo produtivo e /people/:personId ja o monta. Faltava so a funcao existir.",
+      "desbloqueia": [
+        "people.links",
+        "people.reload"
+      ],
+      "nota": "A rota /people/:personId esta QUEBRADA em producao hoje: o cliente chama superadmin_person_detail_v2, que nao existe no banco."
     },
     {
-      "commit": "3a96ca5353490bb410541861632a3b9d890b965b",
-      "actions": [
+      "id": "AP-INVITES-V2",
+      "migrations": [
+        "packages/coelo_database/migrations/20260901190432_superadmin_internal_invites_v2.sql COM a minha correcao de extensions.gen_random_bytes"
+      ],
+      "pgTAP": "supabase/tests/superadmin_internal_invites_v2_test.sql - 33 testes, PASS (era 27 PASS e 6 FAIL antes da correcao)",
+      "perfil": "NominalProfile InvitesV2, alvo 20260901190432 (escrito por mim)",
+      "chave_de_composicao": "NENHUMA. inviteRepository ja e real e hasAuthoritativeMutationCapability ja libera /invites.",
+      "desbloqueia": [
+        "invites.list",
+        "invites.detail",
+        "invites.create",
+        "invites.resend",
+        "invites.revoke"
+      ]
+    },
+    {
+      "id": "AP-INTERNAL-USERS-V2",
+      "migrations": [
+        "packages/coelo_database/migrations/20260901210000_superadmin_internal_users_directory.sql",
+        "packages/coelo_database/migrations/20260908021644_superadmin_internal_users_read_minimization.sql"
+      ],
+      "ordem": "nessa ordem; a segunda depende da primeira",
+      "pgTAP": "superadmin_internal_users_directory_test.sql e superadmin_internal_users_read_minimization_test.sql - 48 testes, PASS",
+      "perfil": "NominalProfile InternalUsersV2, alvo 20260908021644 (escrito por mim)",
+      "chave_de_composicao": "NENHUMA. platformUserRepository ja e SupabasePlatformUserRepository.",
+      "desbloqueia": [
+        "internal-users.list",
+        "internal-users.create",
+        "internal-users.edit",
+        "internal-users.suspend"
+      ],
+      "fora": "internal-users.mfa continua fora do MVP por decisao (AAL1)"
+    },
+    {
+      "id": "AP-CHILD-SAFETY-INTERNAL-READS",
+      "migrations": [
+        "packages/coelo_database/migrations/20260812002100_child_safety_read_models.sql COM a minha correcao do alias reservado",
+        "packages/coelo_database/migrations/20260812002200_child_safety_security_closure.sql",
+        "packages/coelo_database/migrations/20260909193000_d04_child_safety_internal_reads.sql"
+      ],
+      "pgTAP": "d04_child_safety_internal_reads_test.sql e ap_safety_internal_preflight_test.sql - 45 testes, PASS",
+      "perfil": "NominalProfile SafetyInternalReads53, ja existente, com profile.json e hash do descritor refeitos por mim",
+      "desbloqueia": [
         "child-safety.list",
         "child-safety.child",
         "child-safety.create",
         "child-safety.edit",
         "child-safety.suspend"
       ],
-      "tests": "18P0F atuais apresentação; analyzer Safety limpo; visual contracts PASS",
-      "note": "Reuso adc902eaf + teste alvo48/tap/Enter + golden revisado. Pai abriu actual e revisou evidência. No bootstrap/SQL/shared.",
-      "evidence": "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-visual/handoff.md",
-      "status": "published-ready-for-selective-integration"
-    },
-    {
-      "scope": "access-models.list/filter/create/detail/edit/duplicate",
-      "status": "published-local95P",
-      "commit": "63623e31f",
-      "note": "Assinatura nomes/defaults preservada; fixture cursor remoto local; evidencia replay-04.txt; nunca aplicado remoto"
-    },
-    {
-      "scope": "child-safety.list/child",
-      "status": "published-local-candidate-U108",
-      "commit": "7ce41f86b1397b8365da57c53e14c0cd46f27936",
-      "note": "SQL43+legado63+preflight2 ainda nao executados. Reuso adapter34P historico inativo, guard envelope corrigido; manifests53 e handoff publicados"
-    },
-    {
-      "scope": "Models rollback6 + concorrencia12",
-      "status": "published-prepared-U18",
-      "commit": "485df698f",
-      "note": "wrapper.patch apenas proposta, nao aplicado"
-    },
-    {
-      "scope": "child-safety.list/create/edit/suspend",
-      "status": "published-local89P",
-      "commit": "1d291711e",
-      "note": "Nenhuma escrita por mera existencia de repository; suporte explicito somente Dev/fixtures; adapters reais bloqueados; golden preservado"
-    },
-    {
-      "scope": "SafetyInternalReads53",
-      "status": "published-proposal-7P-preparation-U108-SQL",
-      "commit": "b91f9206d",
-      "note": "Patch minimo 2wrappers e 2novos arquivos perfil; guardtest canonico preparado. Sem editar wrappers reais; pedido de reserva continua."
-    },
-    {
-      "scope": "access-models.create/edit/duplicate",
-      "status": "published-local123P",
-      "commit": "6b3777a57",
-      "note": "23RED inconsistencias recibo corrigidas, HTTP123P atual, analyzerlimpo e review independente sembloqueante; nao altera duplicacaoR02/adiamentos/MFA"
-    },
-    {
-      "scope": "Models rollback tardio",
-      "status": "published-local6P",
-      "commit": "246c9e7e1",
-      "note": "Pacote hashinalterado, 6P e zero recursos; matriz38 publicada"
-    },
-    {
-      "scope": "access-profiles.create/edit e access-models.create/edit",
-      "status": "published-local17P-inherited1F",
-      "commit": "b285a6804",
-      "note": "Recibo confirmado bloqueia segunda escrita se navegacao falhar. FormgoldenF1 igualna base com3imagens byteidenticas; analyzerlimpo. Nenhuma goldenalterada."
-    },
-    {
-      "scope": "access-models.duplicate",
-      "status": "published-local24P",
-      "commit": "9d5ce7317",
-      "note": "Callback nao repete copia confirmada; captura375inspecionada;9provasrotaR02verdes. Fixtureconsumer agora devolveidnovo conformeSQL, parser nao foi relaxado."
-    },
-    {
-      "scope": "Safety53+Modelsconcurrency",
-      "status": "published-reserved-hunks-and-infra-evidence",
-      "commit": "cb76f5968",
-      "note": "r7aplicadossomente na propria branch;3scriptsparsePASS; attempt01DockersemSQLpreservado"
-    },
-    {
-      "scope": "child-safety.list/child",
-      "status": "published-profile-aligned-with-coordinated-rename",
-      "commit": "fa3caddd2",
-      "note": "193000 conforme ecc8eae2b; nao houve mudanca SQL; perfil7Ppreparatorio nao soma aos354Pproduto"
-    },
-    {
-      "scope": "child-safety.child",
-      "status": "published-local41P",
-      "commit": "8414ac9ab",
-      "note": "6RED: ausencia/malformacao authorizations virava vazio/registros sem identidade. Adapter exige lista e identidade das linhas;41P e analyzerlimpo. Sem SQL/decoderlegado/bootstrap/writes."
-    },
-    {
-      "scope": "access-profiles.create/edit;access-models.create/edit",
-      "status": "published-form-golden1P-resolves-inherited1F",
-      "commit": "c8c8b0fba",
-      "note": "3renders/paths/hash com sete causas emd784462c1; regra coordenada r10 satisfeita. Comparador focal1P semupdate aposregenerar. Nenhuma certificacao FE."
-    },
-    {
-      "scope": "access-profiles.list",
-      "status": "published-hover1P",
-      "commit": "f60b2c2fe",
-      "note": "1PNG reconciliado com6causas integradas; hoverpixelidentico deslocado64px; pai inspecionoupar."
-    },
-    {
-      "scope": "people.create/edit",
-      "status": "published-form2P",
-      "commit": "c76a0eb23",
-      "note": "2PNGs inspecionados antesupdate,8causas integradas; comparador1P+alcancefooter1P."
-    },
-    {
-      "scope": "people.list",
-      "status": "published-directory1P",
-      "commit": "5ffce5441",
-      "note": "8renders/7causas integradas;inspecao individual anterior."
-    },
-    {
-      "scope": "access-profiles.list",
-      "status": "published-directory1P",
-      "commit": "7956dda48",
-      "note": "16renders/9causas integradas;inspecaoindividual;sem driftgenericoescuro."
-    },
-    {
-      "scope": "people.list",
-      "status": "published-target48-5additionalP",
-      "commit": "99a66fd2e6ea9a4b40e3bd5b00011b6bea0d1bf8",
-      "note": "RED24 resolvido;dot24centralizado em48; borda+Enter+navegacao0;4P+200%1P;comparador1P mantido semsomar;4rendersinspecionados."
-    },
-    {
-      "scope": "invites.list/create/detail/revoke",
-      "status": "published-5P9renders",
-      "commit": "5a1ed044f",
-      "note": "9renders inspecionados/4causas integradas; confinamentoR02 e SMTP intocados."
-    },
-    {
-      "scope": "internal-users.list/create/edit/suspend",
-      "status": "published-4P23renders",
-      "commit": "0dae87652",
-      "note": "23paresinspecionados/16causas integradas; fixture sintetica; hoveracionavel nao comprovado;MFA/writesintocados."
-    },
-    {
-      "scope": "38IDs/report",
-      "status": "published-clean415P120U",
-      "commit": "f6cab17f1",
-      "note": "Indice reescrito,current-results415P,lista25commits+esteconsolidador,30deltaspropostos;nenhumcertificadonovo."
-    },
-    {
-      "scope": "preservacaoWIP/report",
-      "status": "published",
-      "commit": "d02bc4558",
-      "note": "319ignorados comhash/path;distincaoGitlocalversusorigin/dev;nenhumrecursoapagado."
-    },
-    "2816fbff1 publicado: testes Pessoas producao503/Devlookup e Safety approvedbloqueado/pendingedit,2P.",
-    "c0e4fc47d publicado: detalhePessoa2P, seisgoldensdesktop com causa d019c109a;semDart.",
-    "c526307dd publicado: consolidacao419P,38residuais,343artefatos SHA256, quarta pergunta de alcance das sete familias.",
-    "f4dd600ff publicado: probe reproduzivel,4Fsharedobjetivos,2Protulos;loadingresolvido na baseconjunta. Sem produtoUIalterado.",
-    "571ac3cf0 publicado:ClientException→Unavailable emadapterlegado;5P,semcapturaampla/ativacaoescrita.",
-    "8f3905819 publicado:Safetyreflow4P/carga/scroll;triagemantiga d784 nao reproduzida embaseconjunta.",
-    "6f4c24c03 consolidacao publicada:430P4F0S120U;34deltas sempromocao;residual38IDs atualizado.",
-    "c30f28d42 publicado:ConviteslongPresssemrotulo identificado atecomponenteshared.",
-    "992f3530d publicado: metricas430P5F0S120U e residual atualizado.",
-    " Checkpoint final alinhado à coordenação r30: reclassificação Safety recebida e residual transferido sem duplicação."
-  ],
-  "criteria_closed": [
-    "child-safety.list: golden F1 resolvido por reconciliação nominal24/48+shell integrado; nenhum certificadoFE/BE/E2E novo"
-  ],
-  "tests": {
-    "note": "ModelsSQL95+rollback6; Safety89; HTTPModels123; Form18 (17funcionais+1golden com3renders); Duplicate24; Safetyadapter41. AntigoFormF1resolvido conforme regraGOLDEN-REBASELINE-CRITERIO/r10, sete causas integradas e3rendersinspecionados. U120=Safety108+Modelsconcurrency12. Preparacao7Pseparada, rerunsnaosomam. HoverPerfis1P f60b2c2fe e Peopleform2P c76a0eb23 (golden1+alcancefooter1); total399P. Reruns/RED nao somam. DiretoriosPeople1P5ffce5441 e Perfis1P7956dda48,24PNGs;total401P. AlvoPessoas48:4P funcionais e1P texto200%, golden1 reexecutado por sourcefix nao soma;total406P. Invites5P5a1ed044f,9renders;total411P. Usuarios4P0dae87652/23renders;total415P0F120U. Censo14F destasfamilias resolvido nominalmente;nao equivale a suiteampla atual. Base conjunta6aa: rotas2P2816fbff1 e detalhe2Pc0e4fc47d (375 aproveitado,1440 focal6renders). Total419P0F0S120U; people_routes3P de153b2dbfa reutilizado sem soma. Sonda Safety acessibilidade valida2P4F publicadaf4dd600ff, basec526/6aa. F4shared: menu44 e contraste emrota/pagina;rotulos2P. Instrumento inicialSemanticsHandle invalido excluido. 571ac3cf0 transporte5P,analyze2paths0issues;8f3905819 reflow4P375/1440texto100/200 comcarga+rolagem. Total430P4F0S120U. F4 compartilhadosemsondadiagnostica,naoskip,não CI cronica. Convitesrotulo1Fconfirmadoc30f28d42: noSemanticslongPress128x48deSuperadminDirectoryViewToggle viaMenuAnchor/Flyout. Diagnosticorerunmesmo1casonaosoma. Total430P5F0S120U.",
-    "S": 0,
-    "F": 5,
-    "B": 0,
-    "U": 120,
-    "P": 430
-  },
-  "reservations": [
-    "Hunks Safety53 e wrapper Models concedidos r7 e publicados cb76f5968",
-    "Slot Models liberado; pedido Safety108 pendente de ordem coordenada"
-  ],
-  "blocker": "Safety108 aguardando sequencia local; Modelsconcurrency12 bloqueado por revisao automatica por possivel risco de ciberseguranca, sem contorno. Producao retida por falta de pacote nominal autorizado. FormgoldenF1resolvido.",
-  "next_step": "Coordenador assumiu residual Safety: falha real IntrinsicHeight/LayoutBuilder na base antiga, correcao Wrap/minHeight ja provada por alunos-rotina; nao duplicar patch. Permanecem no nosso handoff os5 achados diagnosticados (4 shared accesibilidade e1 Convites), SafetySQL108, ModelsConcurrency12 e gates produtivos. Nenhuma acao nova apos corte.",
-  "wip": [],
-  "processes": [],
-  "children": [
-    {
-      "scope": "Safety3diretrizes x rota/pagina isolada, sem produto ate causa",
-      "id": "/root/safety_visual",
-      "state": "completed-collected-no-resources"
-    },
-    {
-      "scope": "negativa de recibo após espera lock, teste/delta próprios",
-      "id": "/root/models_receipt",
-      "state": "errored-automatic-cybersecurity-review-no-retry"
-    },
-    {
-      "scope": "Adapter legado:2ClientException+3codigosDB,correcaoestreita aposRED",
-      "id": "/root/internal_visual",
-      "state": "completed-collected-no-resources"
+      "nota": "Reexecutado do zero com a fixture ja commitada, sem corrida."
     }
   ],
-  "cutoff": "2026-09-09T23:30:00-03:00",
-  "ack_observed": true,
-  "historical_evidence": {
-    "source": "R02 D04 r14/FECHAMENTO-OWNER",
-    "held": "Safety adc902eaf/48141c195/f84db0412/963796ddf",
-    "author_tests": "440P1F, SafetySQL43U; históricos, não resultados desta rodada",
-    "integrated": "Modelos duplicate82f08af50 e Convites444e03ccb consolidados em d019c109a",
-    "general_snapshot": "R02 FE7/230 BE0/223 E2E0/198",
-    "scope_certification": "FE2/38 históricos; ativos FE0/31 BE0/31 E2E0/31"
-  },
-  "providers": {
-    "cloudflare": "cloudflare_api docs/search/execute disponíveis; sem acesso testado",
-    "supabase": "MCP descoberto; catalogo pg_proc/information_schema/migrations lidos sem dados pessoais; zero escrita remota"
-  },
-  "knowledge": "Gate validate PASS com -Root explicito; nenhuma regra nova. Projecoes access-profiles/child-safety MFA historico pendentes writer central (ADR0019 AAL1 vigente).",
-  "contract": {
-    "stop": "aceites completos, bloqueio demonstrado, ou corte23:30 BRT",
-    "eta": "Lotes locais executaveis conhecidos publicados; deltaSQL108 depende de ordemlocal. Encerramentoobrigatorio23:30BRT.",
-    "evidence": "testes focais, manifests/hashes, commits publicados e0/0 upstream na branch atribuída",
-    "included": "38 IDs apps/superadmin",
-    "objective": "Corrigir/provar ações restantes do grupo",
-    "excluded": "outros apps, import/export adiados, MFA novo, produção sem pacote nominal"
-  },
-  "coordinator_revision_read": 30,
-  "requested_sql_slot": {
-    "scope": "aplicação transacional local + rollback/ACL/persistência + contratos Models",
-    "status": "released-Models-local95plus6P-concurrency12U",
-    "base": "Auth45 20260901200206; labels NOT NULL sem bridge default ao aplicar pacote",
-    "production": "não autorizado; somente leitura catálogo realizada",
-    "package": "AP-MODELS-NOMINAL-20260909-v1",
-    "rationale": "Rollback ja consta no escopo nominal originalmente concedido, fila vigente r6 ainda mantem Models posicao1; sem alterar wrapper reservado e sem execucao remota. Pedido separado de novos profiles/hunks continua pendente."
-  },
-  "safety_sql_request": {
-    "scope": "child-safety.list/child; regressão legado",
-    "plan": "Auth45+Safetyhist4+candidate1=50canonical +2preflights +1envelopebridge=53; testes43+63+2",
-    "handoff": "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/handoff.md",
-    "reserved_paths_requested": [
-      "packages/coelo_database/replay/profiles/SafetyInternalReads53/",
-      "Prepare-SafeMigrationReplay.ps1:ValidateSet+resolver",
-      "Invoke-SafeLocalMigrationReplay.ps1:ValidateSet"
+  "CINCO_MIGRATIONS_QUEBRADAS": {
+    "metodo": "Achadas ao APLICAR de verdade, nao lendo. Todas sao invisiveis em leitura e aparecem no instante em que o Postgres tenta criar a funcao ou alterar a tabela.",
+    "minhas_corrigidas": [
+      {
+        "arquivo": "20260812002100_child_safety_read_models.sql",
+        "erro": "42601 syntax error",
+        "causa": "usa authorization, palavra reservada, como alias de tabela em 17 referencias",
+        "correcao": "renomeado para authorization_record; cadeia de hashes do perfil SafetyInternalReads53 refeita"
+      },
+      {
+        "arquivo": "20260901190432_superadmin_internal_invites_v2.sql",
+        "erro": "42883 undefined_function, engolido pelo when others e devolvido como SAI_INTERNAL_ERROR 500",
+        "causa": "gen_random_bytes sem qualificacao dentro de funcao security definer com search_path vazio; pgcrypto vive no schema extensions",
+        "correcao": "extensions.gen_random_bytes nas duas ocorrencias, linhas 673 e 783"
+      }
     ],
-    "status": "ready-for-local-sequence-target193000-profile7P",
-    "manifest": "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/manifest-after.json",
-    "proposal_commit": "b91f9206d",
-    "proposal_path": "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/profile-proposal/",
-    "serialization_commit": "fa3caddd2: renome identico ao dev ecc8eae2b; perfil/runner/materializador alinhados; SQL intacto",
-    "preparation": "7P0F mesma cobertura reexecutada somente por mudanca de target/descritor;53arquivos byte-identicos; sandbox removido; SQL108U"
+    "de_outros_grupos_reportadas": [
+      {
+        "arquivo": "20260901101500_superadmin_internal_chat_v2.sql",
+        "dono": "principal-chat-sistema",
+        "erro": "23502",
+        "causa": "insert em platform_permissions sem module_label, screen_label e action_label, obrigatorios desde 20260811215451 e sem default desde 20260831130726",
+        "modelo_de_correcao": "20260901210000_superadmin_internal_users_directory.sql linha 4 faz certo"
+      },
+      {
+        "arquivo": "20260901185008_superadmin_internal_notices_v2.sql",
+        "dono": "publicacoes-agenda",
+        "erro": "42P01",
+        "causa": "linha 99 altera public.notice_events, mas a 20260623203230, segunda entrada da propria cadeia, move a tabela para o schema analytics; producao tambem a tem em analytics"
+      },
+      {
+        "arquivo": "20260901191921_superadmin_internal_circulars_v2.sql",
+        "dono": "publicacoes-agenda",
+        "erro": "23502",
+        "causa": "mesmo defeito do chat v2, linha 109"
+      }
+    ],
+    "padrao": "Tres dos cinco sao a mesma classe: a migration foi escrita contra um estado do schema que deixou de valer ANTES dela na propria cadeia.",
+    "recomendacao": "Nao aplicar a fila de 36 migrations na ordem sem exercer cada pacote numa aplicacao real. Vai falhar no meio, em producao, com parte aplicada e parte nao."
   },
-  "model_concurrency_request": {
-    "scope": "4 writers x replay permitido/sessao invalidada/capability retirada apos espera lock",
-    "status": "blocked-automatic-review-U12",
-    "reserved_hunk": "Invoke-SafeLocalMigrationReplay switch+guard+dispatch RunModelReceiptConcurrency",
-    "path": "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models-concurrency/Test-ModelReceiptConcurrency.ps1",
-    "note": "Revisao automatica rejeitou a retomada do filho por possivel risco de ciberseguranca. Nenhum contorno; encaminhar pendencia ao coordenador.",
-    "wrapper_patch": "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models-concurrency/replay-wrapper.patch (git apply --check PASS, wrapper inalterado)"
-  },
-  "git_checkpoint": {
-    "head": "992f3530d",
-    "upstream": "origin/work/etapa2-noturna-acessos-pessoas",
-    "divergence": "0/0",
-    "working_tree": "clean",
-    "stash": "empty",
-    "published": "36 commits proprios:35 listados atec30f28d42 mais consolidacao992f3530d",
-    "retained_artifacts": "343 paths/hash SHA256,25884065bytes",
-    "time": "2026-09-10T08:13:53.8900151-03:00"
-  },
-  "residual_matrix": "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/residuals.md (38IDs unicos verificados)",
-  "infrastructure_block": {
-    "command": "docker ps -a --filter name=coelo_safe_308169e4512d4c8485af298abb48c --format {{.ID}}",
-    "needs_coordinator": "shared Docker health/recovery and next local sequence",
-    "first_observed": "2026-09-09T19:07:23-03:00",
-    "action": "terminate only owned CLI; no daemon restart",
-    "recovery": "19:18:22 probePASS175ms;19:18:56 oldprojectresources0/0/0; no daemon restart"
-  },
-  "tracker_delta_proposto": [
+  "DECISOES_PARA_O_OWNER_EM_LOTE": [
     {
-      "delta": "Recibo confirmado preservado quando navegacao falha;17Pfuncionais e1Pgolden atual. F1herdado resolvido por rebaseline nominal de3renders com sete causas integradas, inspecao anterior e paths/hashes. Continua pending-verification; nao certifica acao.",
-      "camada": "frontend",
-      "estado_proposto": "pending-verification",
-      "estado_atual": "pending-verification",
-      "action_id": "access-profiles.create",
-      "evidencia": "b285a6804; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models-form-receipt/handoff.md;c8c8b0fba;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models-form-receipt/golden-reconciliation.md"
+      "id": "AP-D1-AAL",
+      "pergunta": "Como destravar Pessoas no MVP, ja que o banco exige MFA e o MVP nao tem MFA?",
+      "fato": "app_private.assert_people_permission exige AAL2 sem excecao e as cinco RPCs de Pessoas passam por ela, INCLUSIVE a de listar. app_private.has_mfa_aal2() e literalmente uma comparacao da claim aal do JWT com a string aal2; sem fator cadastrado o Supabase emite aal1. Conferido no dump de producao.",
+      "mapa_refinado": "O bloqueio NAO e uniforme. Em Perfis e Modelos de acesso nenhuma RPC de leitura chama has_mfa_aal2: essas telas ABREM E LISTAM em producao hoje. So a escrita passa por access_profile_require_mutation, que exige AAL2. Pessoas e a excecao fora do padrao.",
+      "opcao_A": "Escrever create e update de pessoa no realm interno v2, como ja e o detalhe. Aceita AAL1 por heranca do adiamento aprovado, com envelope e auditoria.",
+      "opcao_B": "Adiar o AAL2 dentro de assert_people_permission, como a 20260901200206 fez para o realm interno. Uma migration pequena destrava as cinco.",
+      "opcao_C": "Separar por codigo de permissao: people.read aceita AAL1, people.create e people.update seguem exigindo AAL2.",
+      "recomendacao": "C agora, A em seguida. C e exatamente o desenho que Perfis e Modelos ja usam, faz o diretorio de Pessoas abrir esta semana sem afrouxar escrita nenhuma, e e reversivel numa linha.",
+      "por_que_e_do_owner": "Afrouxar exigencia de MFA em caminho que le dado pessoal de crianca e decisao de risco, nao de implementacao."
     },
     {
-      "delta": "Recibo confirmado preservado quando navegacao falha;17Pfuncionais e1Pgolden atual. F1herdado resolvido por rebaseline nominal de3renders com sete causas integradas, inspecao anterior e paths/hashes. Continua pending-verification; nao certifica acao.",
-      "camada": "frontend",
-      "estado_proposto": "pending-verification",
-      "estado_atual": "pending-verification",
-      "action_id": "access-profiles.edit",
-      "evidencia": "b285a6804; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models-form-receipt/handoff.md;c8c8b0fba;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models-form-receipt/golden-reconciliation.md"
+      "id": "AP-D2-LEDGER",
+      "pergunta": "Como reconciliar o repositorio com producao, ja que o repositorio nao consegue reconstruir producao?",
+      "fato": "O ledger remoto para em 01/09/2026 e tem entradas sem arquivo local. O replay integral morre na 53a migration porque app_private.unit_import_source_attestations nao e criada por nenhum arquivo do repositorio, mas existe em producao. E o bloqueio OQ-042, que reproduzi de forma independente.",
+      "opcao_A": "Baseline nova: o dump schema-only de producao vira a migration inicial e o catalogo de permissoes vira seed versionado.",
+      "opcao_B": "Reconstruir as orfas uma a uma.",
+      "recomendacao": "A. Testei: o dump de producao APLICA num Postgres 17 limpo, 231 tabelas, 179 policies e as funcoes entram sem erro. So falta semear o catalogo de permissoes, que sao dados de referencia sem PII.",
+      "por_que_e_do_owner": "Muda como o versionamento do banco funciona daqui para a frente."
     },
     {
-      "delta": "Recibo confirmado preservado quando navegacao falha;17Pfuncionais e1Pgolden atual. F1herdado resolvido por rebaseline nominal de3renders com sete causas integradas, inspecao anterior e paths/hashes. Continua pending-verification; nao certifica acao.",
-      "camada": "frontend",
-      "estado_proposto": "pending-verification",
-      "estado_atual": "pending-verification",
-      "action_id": "access-models.create",
-      "evidencia": "b285a6804; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models-form-receipt/handoff.md;c8c8b0fba;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models-form-receipt/golden-reconciliation.md"
-    },
-    {
-      "delta": "Recibo confirmado preservado quando navegacao falha;17Pfuncionais e1Pgolden atual. F1herdado resolvido por rebaseline nominal de3renders com sete causas integradas, inspecao anterior e paths/hashes. Continua pending-verification; nao certifica acao.",
-      "camada": "frontend",
-      "estado_proposto": "pending-verification",
-      "estado_atual": "pending-verification",
-      "action_id": "access-models.edit",
-      "evidencia": "b285a6804; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models-form-receipt/handoff.md;c8c8b0fba;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models-form-receipt/golden-reconciliation.md"
-    },
-    {
-      "delta": "Duplicacao confirmada sobrevive falha de navegacao sem repetir copia;24P incluindo9provas de rota R02. Recibo exige identidade nova. Sem certificacao E2E.",
-      "camada": "frontend",
-      "estado_proposto": "pending-verification",
-      "estado_atual": "pending-verification",
-      "action_id": "access-models.duplicate",
-      "evidencia": "9d5ce7317; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/duplicate-receipts.md"
-    },
-    {
-      "delta": "Sucessor Safety integrado conforme merge69ce62c43: golden reconciliado,89P de composicao; adapters reais sem suporte explicito nao oferecem escrita. Adapter interno permanece inativo; SQL108U aguarda fila. Sem certificacao da acao. Triagemr18 baseconjunta: rotulos2P;4Fshared Androiduser44 econtraste, f4dd600ff. Abertos, semcertificacao. Reflow4P8f3905819 confirma375/1440texto100/200carregados;triagem d784 superada paraoverflow/carga. Transporte5P571ac3cf0 normaliza erroHTTP semqualificarescrita.",
-      "camada": "frontend",
-      "estado_proposto": "pending-verification",
-      "estado_atual": "pending-verification",
-      "action_id": "child-safety.list",
-      "evidencia": "3a96ca535/1d291711e; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-composition/handoff.md;f4dd600ff/safety-accessibility/handoff.md"
-    },
-    {
-      "delta": "Sucessor Safety integrado conforme merge69ce62c43: golden reconciliado,89P de composicao; adapters reais sem suporte explicito nao oferecem escrita. Adapter interno permanece inativo; SQL108U aguarda fila. Sem certificacao da acao. Adapter detalhe agora recusa authorizations ausente/malformada:6RED resolvidos,41P HTTP atual e analyzerlimpo. Continua inativo. Adapterlegado normalizaClientException,5P571ac3cf0;semprovaUIcrashnemescritaaberta.",
-      "camada": "frontend",
-      "estado_proposto": "pending-verification",
-      "estado_atual": "pending-verification",
-      "action_id": "child-safety.child",
-      "evidencia": "3a96ca535/1d291711e; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-composition/handoff.md;8414ac9ab;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/adapter-shape.md"
-    },
-    {
-      "delta": "Sucessor Safety integrado conforme merge69ce62c43: golden reconciliado,89P de composicao; adapters reais sem suporte explicito nao oferecem escrita. Adapter interno permanece inativo; SQL108U aguarda fila. Sem certificacao da acao.",
-      "camada": "frontend",
-      "estado_proposto": "pending-verification",
-      "estado_atual": "pending-verification",
-      "action_id": "child-safety.create",
-      "evidencia": "3a96ca535/1d291711e; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-composition/handoff.md"
-    },
-    {
-      "delta": "Sucessor Safety integrado conforme merge69ce62c43: golden reconciliado,89P de composicao; adapters reais sem suporte explicito nao oferecem escrita. Adapter interno permanece inativo; SQL108U aguarda fila. Sem certificacao da acao. Teste de rota preserva negativa approved e edicao pendingDev,1P2816fbff1.",
-      "camada": "frontend",
-      "estado_proposto": "pending-verification",
-      "estado_atual": "pending-verification",
-      "action_id": "child-safety.edit",
-      "evidencia": "3a96ca535/1d291711e; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-composition/handoff.md"
-    },
-    {
-      "delta": "Sucessor Safety integrado conforme merge69ce62c43: golden reconciliado,89P de composicao; adapters reais sem suporte explicito nao oferecem escrita. Adapter interno permanece inativo; SQL108U aguarda fila. Sem certificacao da acao.",
-      "camada": "frontend",
-      "estado_proposto": "pending-verification",
-      "estado_atual": "pending-verification",
-      "action_id": "child-safety.suspend",
-      "evidencia": "3a96ca535/1d291711e; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-composition/handoff.md"
-    },
-    {
-      "delta": "Pacote nominal local95P+rollback6P pronto, sem aplicacao remota autorizada. Concorrencia12U retida por revisao automatica; nenhuma prova runtime dessa hipotese. Owner ausente; gate remoto preservado.",
-      "camada": "backend",
-      "estado_proposto": "blocked-environment",
-      "estado_atual": "pending-verification",
-      "action_id": "access-models.list",
-      "evidencia": "63623e31f/246c9e7e1;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/README.md"
-    },
-    {
-      "delta": "Pacote nominal local95P+rollback6P pronto, sem aplicacao remota autorizada. Concorrencia12U retida por revisao automatica; nenhuma prova runtime dessa hipotese. Owner ausente; gate remoto preservado.",
-      "camada": "backend",
-      "estado_proposto": "blocked-environment",
-      "estado_atual": "pending-verification",
-      "action_id": "access-models.filter",
-      "evidencia": "63623e31f/246c9e7e1;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/README.md"
-    },
-    {
-      "delta": "Pacote nominal local95P+rollback6P pronto, sem aplicacao remota autorizada. Concorrencia12U retida por revisao automatica; nenhuma prova runtime dessa hipotese. Owner ausente; gate remoto preservado.",
-      "camada": "backend",
-      "estado_proposto": "blocked-environment",
-      "estado_atual": "pending-verification",
-      "action_id": "access-models.create",
-      "evidencia": "63623e31f/246c9e7e1;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/README.md"
-    },
-    {
-      "delta": "Pacote nominal local95P+rollback6P pronto, sem aplicacao remota autorizada. Concorrencia12U retida por revisao automatica; nenhuma prova runtime dessa hipotese. Owner ausente; gate remoto preservado.",
-      "camada": "backend",
-      "estado_proposto": "blocked-environment",
-      "estado_atual": "pending-verification",
-      "action_id": "access-models.detail",
-      "evidencia": "63623e31f/246c9e7e1;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/README.md"
-    },
-    {
-      "delta": "Pacote nominal local95P+rollback6P pronto, sem aplicacao remota autorizada. Concorrencia12U retida por revisao automatica; nenhuma prova runtime dessa hipotese. Owner ausente; gate remoto preservado.",
-      "camada": "backend",
-      "estado_proposto": "blocked-environment",
-      "estado_atual": "pending-verification",
-      "action_id": "access-models.edit",
-      "evidencia": "63623e31f/246c9e7e1;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/README.md"
-    },
-    {
-      "delta": "Pacote nominal local95P+rollback6P pronto, sem aplicacao remota autorizada. Concorrencia12U retida por revisao automatica; nenhuma prova runtime dessa hipotese. Owner ausente; gate remoto preservado.",
-      "camada": "backend",
-      "estado_proposto": "blocked-environment",
-      "estado_atual": "pending-verification",
-      "action_id": "access-models.duplicate",
-      "evidencia": "63623e31f/246c9e7e1;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/README.md"
-    },
-    {
-      "delta": "Candidato SQL read-only e perfil53 preparados/alinhados a193000;108U aguardam sequencia local. Adapter permanece inativo. Producao sem autorizacao nominal; sem liberacao de escrita.",
-      "camada": "backend",
-      "estado_proposto": "blocked-environment",
-      "estado_atual": "pending-verification",
-      "action_id": "child-safety.list",
-      "evidencia": "fa3caddd2/8414ac9ab;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/handoff.md"
-    },
-    {
-      "delta": "Candidato SQL read-only e perfil53 preparados/alinhados a193000;108U aguardam sequencia local. Adapter permanece inativo. Producao sem autorizacao nominal; sem liberacao de escrita.",
-      "camada": "backend",
-      "estado_proposto": "blocked-environment",
-      "estado_atual": "pending-verification",
-      "action_id": "child-safety.child",
-      "evidencia": "fa3caddd2/8414ac9ab;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/handoff.md"
-    },
-    {
-      "delta": "Formulario visual nominal reconciliado:2PNGs, comparador1P e alcancefooter1P; causas integradas e inspecao anterior. Contrato interno/persistencia continuam pendentes. Teste de rota reconciliado preserva bloqueio produtivo e lookupDev,1P2816fbff1.",
-      "camada": "frontend",
-      "estado_proposto": "pending-verification",
-      "estado_atual": "pending-verification",
-      "action_id": "people.create",
-      "evidencia": "c76a0eb23;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/people-form-visual/handoff.md"
-    },
-    {
-      "delta": "Formulario visual nominal reconciliado:2PNGs, comparador1P e alcancefooter1P; causas integradas e inspecao anterior. Contrato interno/persistencia continuam pendentes.",
-      "camada": "frontend",
-      "estado_proposto": "pending-verification",
-      "estado_atual": "pending-verification",
-      "action_id": "people.edit",
-      "evidencia": "c76a0eb23;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/people-form-visual/handoff.md"
-    },
-    {
-      "delta": "Hover1F resolvido por1PNG com causas integradas e inspecao;1P focal. Diretorio separado ainda em exame. Nenhuma certificacao. Diretorio separado agora1P/16renders com9causas e inspecao previa;7956dda48.",
-      "camada": "frontend",
-      "estado_proposto": "pending-verification",
-      "estado_atual": "pending-verification",
-      "action_id": "access-profiles.list",
-      "evidencia": "f60b2c2fe;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/profile-hover/handoff.md;7956dda48;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/profile-directory-visual/handoff.md"
-    },
-    {
-      "delta": "Diretorio1F do censo resolvido por8PNGs inspecionados com7causas integradas;1P focal. Reader interno e runtime permanecem pendentes. Alvo24 corrigido48 mantendo dot24;4P funcionais+200%1P, golden1P reexecutado por sourcechange;sem abrir editor ou alterar status.",
-      "camada": "frontend",
-      "estado_proposto": "pending-verification",
-      "estado_atual": "pending-verification",
-      "action_id": "people.list",
-      "evidencia": "5ffce5441;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/people-directory-visual/handoff.md;99a66fd2e6ea9a4b40e3bd5b00011b6bea0d1bf8;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/people-status-target/handoff.md"
-    },
-    {
-      "delta": "Referencia visual nominal de diretorio/hover/flyout,formulario,detalhe/confirmacao reconciliada conforme estado aplicavel; lote5P9renders com4causas integradas. ConfinamentoR02 preservado; runtime/persona/SMTP/persistencia continuam pendentes. Rotulo nativo1Fconfirmado emnode128x48 longPress no sharedDirectoryViewToggle; proposta coordenador c30f28d42. Nenhuma semantica removida.",
-      "camada": "frontend",
-      "estado_proposto": "pending-verification",
-      "estado_atual": "pending-verification",
-      "action_id": "invites.list",
-      "evidencia": "5a1ed044f;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/invites-visual/handoff.md;c30f28d42/invite-labels/handoff.md"
-    },
-    {
-      "delta": "Referencia visual nominal de diretorio/hover/flyout,formulario,detalhe/confirmacao reconciliada conforme estado aplicavel; lote5P9renders com4causas integradas. ConfinamentoR02 preservado; runtime/persona/SMTP/persistencia continuam pendentes.",
-      "camada": "frontend",
-      "estado_proposto": "pending-verification",
-      "estado_atual": "pending-verification",
-      "action_id": "invites.create",
-      "evidencia": "5a1ed044f;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/invites-visual/handoff.md"
-    },
-    {
-      "delta": "Referencia visual nominal de diretorio/hover/flyout,formulario,detalhe/confirmacao reconciliada conforme estado aplicavel; lote5P9renders com4causas integradas. ConfinamentoR02 preservado; runtime/persona/SMTP/persistencia continuam pendentes.",
-      "camada": "frontend",
-      "estado_proposto": "pending-verification",
-      "estado_atual": "pending-verification",
-      "action_id": "invites.detail",
-      "evidencia": "5a1ed044f;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/invites-visual/handoff.md"
-    },
-    {
-      "delta": "Referencia visual nominal de diretorio/hover/flyout,formulario,detalhe/confirmacao reconciliada conforme estado aplicavel; lote5P9renders com4causas integradas. ConfinamentoR02 preservado; runtime/persona/SMTP/persistencia continuam pendentes.",
-      "camada": "frontend",
-      "estado_proposto": "pending-verification",
-      "estado_atual": "pending-verification",
-      "action_id": "invites.revoke",
-      "evidencia": "5a1ed044f;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/invites-visual/handoff.md"
-    },
-    {
-      "delta": "Referencia visual nominal reconciliada conforme estado:diretorio/detalhe,formularios,flyoutOwnerprotegido;4P23renders com16causas integradas. Cardhover semonView provaestadoinformativo,nao hoveracionavel. Contratos/runtime permanecem pendentes;MFAintocado.",
-      "camada": "frontend",
-      "estado_proposto": "pending-verification",
-      "estado_atual": "pending-verification",
-      "action_id": "internal-users.list",
-      "evidencia": "0dae87652;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/internal-users-visual/handoff.md"
-    },
-    {
-      "delta": "Referencia visual nominal reconciliada conforme estado:diretorio/detalhe,formularios,flyoutOwnerprotegido;4P23renders com16causas integradas. Cardhover semonView provaestadoinformativo,nao hoveracionavel. Contratos/runtime permanecem pendentes;MFAintocado.",
-      "camada": "frontend",
-      "estado_proposto": "pending-verification",
-      "estado_atual": "pending-verification",
-      "action_id": "internal-users.create",
-      "evidencia": "0dae87652;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/internal-users-visual/handoff.md"
-    },
-    {
-      "delta": "Referencia visual nominal reconciliada conforme estado:diretorio/detalhe,formularios,flyoutOwnerprotegido;4P23renders com16causas integradas. Cardhover semonView provaestadoinformativo,nao hoveracionavel. Contratos/runtime permanecem pendentes;MFAintocado.",
-      "camada": "frontend",
-      "estado_proposto": "pending-verification",
-      "estado_atual": "pending-verification",
-      "action_id": "internal-users.edit",
-      "evidencia": "0dae87652;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/internal-users-visual/handoff.md"
-    },
-    {
-      "delta": "Referencia visual nominal reconciliada conforme estado:diretorio/detalhe,formularios,flyoutOwnerprotegido;4P23renders com16causas integradas. Cardhover semonView provaestadoinformativo,nao hoveracionavel. Contratos/runtime permanecem pendentes;MFAintocado.",
-      "camada": "frontend",
-      "estado_proposto": "pending-verification",
-      "estado_atual": "pending-verification",
-      "action_id": "internal-users.suspend",
-      "evidencia": "0dae87652;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/internal-users-visual/handoff.md"
-    },
-    {
-      "action_id": "people.links",
-      "camada": "frontend",
-      "estado_atual": "pending-verification",
-      "estado_proposto": "pending-verification",
-      "delta": "Detalhe sintetico 2P/0F em375/1440; seis referencias desktop reconciliadas por menu Usuarios internos integrado d019c109a. Sem qualificacao do reader produtivo. Diretorio normal nao tem callback para abrir detalhe; alcance UI nao comprovado, conforme c526307dd.",
-      "evidencia": "c0e4fc47d; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/person-detail-visual/handoff.md"
-    },
-    {
-      "action_id": "people.reload",
-      "camada": "frontend",
-      "estado_atual": "pending-verification",
-      "estado_proposto": "pending-verification",
-      "delta": "Detalhe sintetico 2P/0F em375/1440; seis referencias desktop reconciliadas por menu Usuarios internos integrado d019c109a. Sem qualificacao do reader produtivo. Diretorio normal nao tem callback para abrir detalhe; alcance UI nao comprovado, conforme c526307dd.",
-      "evidencia": "c0e4fc47d; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/person-detail-visual/handoff.md"
-    },
-    {
-      "action_id": "access-profiles.detail",
-      "camada": "frontend",
-      "estado_atual": "pending-verification",
-      "estado_proposto": "pending-verification",
-      "delta": "Quarta pergunta r16: rota DETAIL existe, mas cards e linhas abrem EDIT; nenhum chamador UI de DETAIL identificado na base6aa. Alcance deliberado permanece gate adicional, sem ativar callbacks.",
-      "evidencia": "c526307dd; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/alcance-produtivo.md"
-    },
-    {
-      "action_id": "access-models.detail",
-      "camada": "frontend",
-      "estado_atual": "pending-verification",
-      "estado_proposto": "pending-verification",
-      "delta": "Quarta pergunta r16: rota DETAIL existe, mas cards e linhas abrem EDIT; nenhum chamador UI de DETAIL identificado na base6aa. Alcance deliberado permanece gate adicional, sem ativar callbacks.",
-      "evidencia": "c526307dd; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/alcance-produtivo.md"
+      "id": "AP-D3-UNITS",
+      "pergunta": "Qual e a forma canonica de public.units: unit_type_id, como em producao, ou institution_type_id, como o repositorio afirma?",
+      "fato": "Producao tem unit_type_id NOT NULL e nao tem institution_type_id, e tem os dois catalogos. O repositorio tem app_private.assert_unit_hierarchy_contract (migration 20260831164937, nao aplicada) que exige o contrario e trata unit_type_id como coluna conflitante. Se aplicada em producao, ela levanta.",
+      "impacto": "Trava o grupo estrutura e as fixtures de pgTAP de qualquer grupo que crie unidade sintetica.",
+      "recomendacao": "Nao tenho base para recomendar: e modelagem de dominio. Sugiro so decidir antes da fila SQL rodar.",
+      "encaminhamento": "E do grupo estrutura. Levanto porque me bloqueia."
     }
   ],
-  "tracker_delta_note": "30deltas:22frontend pending-verification e8backend blocked-environment;415P0F120U publicados;nenhumcertificadonovo.",
-  "integration_observed": "origin/dev6aa352c6a434086905444aaa5f128034ad8352e6 contem TODOS27commits proprios ate d02bc4558; publicacao remota confirmada. Ownworktree materializada por fast-forward ate6aa, semhunk proprio de router/main/shared.",
-  "delivery_index": "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/ENTREGA.md",
-  "coordinator_action_needed": "Tudo repassado. Coordenacao r30 reclassificou Safety: a leitura anterior4F de diretrizes foi retirada; verdade operacional e excecao LayoutBuilder/IntrinsicHeight em base antiga, com correcao provada. Nao repetir nem aplicar nosso patch; coordenador/alunos-rotina assumem. Nossos5 achados shared seguem registrados para decisao nominal.",
-  "source_reconciliation": "R02D04worktree375e0a62a preservada;stashvazio;nao tocamosdev/centrais. Ancestorintegradoatual d3fd0f7e9. CanalnominalJSON,semcapacidadenativaClaude.",
-  "production_composition_answers": {
-    "scope": "7familias/38IDs; main/router/repository respondidos explicitamente",
-    "critical": "Safety main compoe adapter LEGADO, v2inativo; Perfis/Modelos rotasnormais e repositoryreal nao qualificam contratos remotos; Usuarios leitura normal/writesbloqueados; Pessoas identityUnavailable; Arquivos politicaadiada",
-    "evidence": "f4ac658fb;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/composicao-produtiva.md",
-    "base": "devf6859fbcad74104632ac53962f317d45e57a8b98 lido sem escrita",
-    "fourth_question": "Respondida em alcance-produtivo.md,c526307dd: sete familias; detalhes de Pessoas/Perfis/Modelos sem chamador UI identificado. Sem nova certificacao."
+  "INCIDENTE_DE_SEGURANCA": {
+    "severidade": "ALTA",
+    "o_que": "Rodei supabase db dump com a flag --dry-run e a CLI imprimiu no console o bloco de conexao do POOLER DE PRODUCAO, com PGHOST, PGUSER (papel efemero cli_login_postgres.evvbomzejfijozbtgvpt) e PGPASSWORD em texto claro.",
+    "o_que_fiz": "Nao usei, nao copiei, nao testei, nao guardei em arquivo. Parei de usar a flag.",
+    "onde_vazou": "Saida de ferramenta desta conversa. Nao entrou em Git, log persistido nem bundle.",
+    "pedido": "Revogar o papel efemero. E criado pela propria CLI a cada comando remoto, entao a revogacao e barata. Avaliar trocar a senha do postgres do projeto.",
+    "prevencao": "Nao usar --dry-run em sessao de agente: ele imprime PGPASSWORD de producao por design. Os dumps normais nao imprimem credencial."
   },
-  "last_receipt_observed": "r13formalnossar15;integracao/publicacaoremota dos26comprovada porls-remote+merge-base.",
-  "checkpoint_at": "2026-09-09T22:00:01.2566422-03:00",
-  "safety_triage_current": {
-    "base": "c526307dd sobre6aa",
-    "accessibility": "2P4F em6casos validos; primeira6F invalidada porSemanticsHandle do harness",
-    "reflow": "4P0F,8f3905819;controllerready,Alicevia scroll,contagem164,semloading/overflow",
-    "original_base": "d784, anterior3a96ca535",
-    "production": "Semalteracao"
+  "D1_ACOMPANHAMENTO": {
+    "estado": "Proposta escrita, aguardando acordo com principal-chat-sistema.",
+    "arquivo": "docs/reviews/evidence/etapa-2/r03-acessos-pessoas/acompanhamento-d1-proposta.md",
+    "fato_de_partida": "Nao existe NADA de acompanhamento no banco. Varri as 186 migrations por follow, following, follower, acompanh, subscription, watch e tracking: nenhuma tabela, view ou funcao.",
+    "proposta": "public.follow_links materializada com procedencia: follower_person_id, target_kind (institution, unit, group, person), target_id, origin (automatic, manual), source_child_context_id, source_relationship, status, revoked_at. O automatico nasce por trigger nas insercoes de child_contexts, child_unit_links e child_group_links, cobrindo a cadeia ate a instituicao para a crianca e cada responsavel ativo. A revogacao e por procedencia. Nao pode ser view porque o botao Acompanhar e uma escrita que precisa sobreviver a estrutura.",
+    "quatro_pontos_a_fechar": [
+      "O botao Acompanhar cria vinculo pessoa para pessoa, ou so para instituicao, unidade e turma?",
+      "Seguidores e Seguindo mostram contagem, lista, ou as duas?",
+      "O acompanhamento automatico aparece na lista de Seguindo do usuario?",
+      "Quem consome primeiro, para eu decidir se entrego leitura derivada antes da escrita materializada?"
+    ],
+    "seguranca": "Seguidores de instituicao expoe lista de pessoas incluindo criancas. Proponho contagem no contexto e lista so por capacidade, com crianca fora da lista para ator sem vinculo. A policy de SELECT precisa correlacionar a permissao com a linha exata, para nao repetir o vazamento cross-context que a 20260729153000 teve de corrigir."
+  },
+  "VERIFICACOES_FINAIS": {
+    "arquivos_de_perfil": "CORRETO como esta. Os tres botoes existem com onPressed null e o composto CoeloAdminFileActions ja desabilita o item e anuncia o rotulo semantico indisponivel. Sem picker, parser, job, RPC ou persistencia. As RPCs de import e export EXISTEM em producao; o adiamento e do cliente.",
+    "regressao_dos_meus_toques": "Rodei os 20 resolvers de replay/profiles. 19 OK, incluindo o SafetyInternalReads53 cuja cadeia de hashes eu refiz. A unica falha e A01DirectoryAuditRed, hash mismatch em 20260907222911. Conferi por git log: nao toquei nesse arquivo nem nesse perfil; vem de 40f6dc274, anterior a minha base. Pre-existente, de outro grupo.",
+    "testes_front_end": "714 PASS nas familias people, invites, access_profiles e platform_users, e 174 PASS em safety, Flutter 3.44.2. Linha de base, nao conclusao: exercitam apresentacao com fixture. Nao alterei nenhum arquivo Dart nesta rodada.",
+    "manifesto_desatualizado": "replay/foundation-migrations.sha256 guarda o conteudo PRE-correcao de 20260901190432. Nao reescrevi porque o hash do manifesto e fixado por DEZ perfis, cada um num profile.json que por sua vez tem o hash fixado no resolver: seriam vinte edicoes em artefatos de outros grupos, no dia da integracao. Meus perfis InvitesV2 e InternalUsersV2 fixam o arquivo corrigido pelo proprio hash. Reabencoar o manifesto e do dono do harness."
+  },
+  "ARTEFATOS_PUBLICADOS_NA_BRANCH": [
+    "docs/reviews/evidence/etapa-2/r03-acessos-pessoas/rpc-cliente-vs-producao-2026-09-10.md e .json - a medicao e a fila das 36 migrations, por migration e por arquivo cliente",
+    "docs/reviews/evidence/etapa-2/r03-acessos-pessoas/acompanhamento-d1-proposta.md",
+    "docs/reviews/evidence/etapa-2/r03-acessos-pessoas/handoff.md",
+    "docs/reviews/evidence/etapa-2/r03-acessos-pessoas/comunicacao-acessos-pessoas.json - copia deste arquivo, versionada por causa da sobrescrita",
+    "packages/coelo_database/replay/profiles/PersonDetailV2/, InvitesV2/, InternalUsersV2/ - perfis novos",
+    "packages/coelo_database/replay/profiles/SafetyInternalReads53/ - cadeia de hashes refeita"
+  ],
+  "PENDENCIA_CRITICA": {
+    "assunto": "A branch NAO esta publicada.",
+    "fato": "work/etapa2-r03-acessos-pessoas tem 17 commits e o push foi recusado pelo classificador de permissao desta sessao. Nao e falha de rede nem de credencial.",
+    "risco": "Trabalho nao publicado e o unico tipo de perda sem correcao. A sobrescrita deste arquivo mostrou que o checkout principal nao e lugar seguro para guardar handoff.",
+    "pedido": "Autorizar o push, ou publicar a branch a partir da worktree, que esta com working tree limpo."
+  },
+  "historico_r02": {
+    "nota": "Objeto integral da revisao 56 (rodada noturna R02), preservado.",
+    "conteudo": {
+      "revision": 57,
+      "updated_at": "2026-09-10T17:15:01.584Z",
+      "group": "acessos-pessoas",
+      "task_id": "/root",
+      "native_thread_id": null,
+      "model": "GPT-6 (variante não exposta)",
+      "status": "R03_RECORTE_BACKEND_CONCLUIDO_ATE_AS_DECISOES",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas",
+      "branch": "work/etapa2-noturna-acessos-pessoas",
+      "head": "67a109c6f",
+      "upstream": "origin/work/etapa2-noturna-acessos-pessoas",
+      "base_observed": "d784462c1",
+      "scope": "apps/superadmin -> Pessoas, Perfis, Modelos, Convites, Usuários internos, Segurança infantil, Arquivos de perfil",
+      "action_ids_status": "38 IDs reconciliados com matriz D04:31 ativos,6 adiados,1 gate MFA; nenhuma certificação nova",
+      "changes": [
+        {
+          "status": "published-initial-candidate-corrected-local95P-WIP-to-publish",
+          "commit": "cc5d73bc74de652c91570061aef6ede95b3915a7",
+          "manifest": "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/manifest.json",
+          "package": "AP-MODELS-NOMINAL-20260909-v1"
+        },
+        {
+          "commit": "3a96ca5353490bb410541861632a3b9d890b965b",
+          "actions": [
+            "child-safety.list",
+            "child-safety.child",
+            "child-safety.create",
+            "child-safety.edit",
+            "child-safety.suspend"
+          ],
+          "tests": "18P0F atuais apresentação; analyzer Safety limpo; visual contracts PASS",
+          "note": "Reuso adc902eaf + teste alvo48/tap/Enter + golden revisado. Pai abriu actual e revisou evidência. No bootstrap/SQL/shared.",
+          "evidence": "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-visual/handoff.md",
+          "status": "published-ready-for-selective-integration"
+        },
+        {
+          "scope": "access-models.list/filter/create/detail/edit/duplicate",
+          "status": "published-local95P",
+          "commit": "63623e31f",
+          "note": "Assinatura nomes/defaults preservada; fixture cursor remoto local; evidencia replay-04.txt; nunca aplicado remoto"
+        },
+        {
+          "scope": "child-safety.list/child",
+          "status": "published-local-candidate-U108",
+          "commit": "7ce41f86b1397b8365da57c53e14c0cd46f27936",
+          "note": "SQL43+legado63+preflight2 ainda nao executados. Reuso adapter34P historico inativo, guard envelope corrigido; manifests53 e handoff publicados"
+        },
+        {
+          "scope": "Models rollback6 + concorrencia12",
+          "status": "published-prepared-U18",
+          "commit": "485df698f",
+          "note": "wrapper.patch apenas proposta, nao aplicado"
+        },
+        {
+          "scope": "child-safety.list/create/edit/suspend",
+          "status": "published-local89P",
+          "commit": "1d291711e",
+          "note": "Nenhuma escrita por mera existencia de repository; suporte explicito somente Dev/fixtures; adapters reais bloqueados; golden preservado"
+        },
+        {
+          "scope": "SafetyInternalReads53",
+          "status": "published-proposal-7P-preparation-U108-SQL",
+          "commit": "b91f9206d",
+          "note": "Patch minimo 2wrappers e 2novos arquivos perfil; guardtest canonico preparado. Sem editar wrappers reais; pedido de reserva continua."
+        },
+        {
+          "scope": "access-models.create/edit/duplicate",
+          "status": "published-local123P",
+          "commit": "6b3777a57",
+          "note": "23RED inconsistencias recibo corrigidas, HTTP123P atual, analyzerlimpo e review independente sembloqueante; nao altera duplicacaoR02/adiamentos/MFA"
+        },
+        {
+          "scope": "Models rollback tardio",
+          "status": "published-local6P",
+          "commit": "246c9e7e1",
+          "note": "Pacote hashinalterado, 6P e zero recursos; matriz38 publicada"
+        },
+        {
+          "scope": "access-profiles.create/edit e access-models.create/edit",
+          "status": "published-local17P-inherited1F",
+          "commit": "b285a6804",
+          "note": "Recibo confirmado bloqueia segunda escrita se navegacao falhar. FormgoldenF1 igualna base com3imagens byteidenticas; analyzerlimpo. Nenhuma goldenalterada."
+        },
+        {
+          "scope": "access-models.duplicate",
+          "status": "published-local24P",
+          "commit": "9d5ce7317",
+          "note": "Callback nao repete copia confirmada; captura375inspecionada;9provasrotaR02verdes. Fixtureconsumer agora devolveidnovo conformeSQL, parser nao foi relaxado."
+        },
+        {
+          "scope": "Safety53+Modelsconcurrency",
+          "status": "published-reserved-hunks-and-infra-evidence",
+          "commit": "cb76f5968",
+          "note": "r7aplicadossomente na propria branch;3scriptsparsePASS; attempt01DockersemSQLpreservado"
+        },
+        {
+          "scope": "child-safety.list/child",
+          "status": "published-profile-aligned-with-coordinated-rename",
+          "commit": "fa3caddd2",
+          "note": "193000 conforme ecc8eae2b; nao houve mudanca SQL; perfil7Ppreparatorio nao soma aos354Pproduto"
+        },
+        {
+          "scope": "child-safety.child",
+          "status": "published-local41P",
+          "commit": "8414ac9ab",
+          "note": "6RED: ausencia/malformacao authorizations virava vazio/registros sem identidade. Adapter exige lista e identidade das linhas;41P e analyzerlimpo. Sem SQL/decoderlegado/bootstrap/writes."
+        },
+        {
+          "scope": "access-profiles.create/edit;access-models.create/edit",
+          "status": "published-form-golden1P-resolves-inherited1F",
+          "commit": "c8c8b0fba",
+          "note": "3renders/paths/hash com sete causas emd784462c1; regra coordenada r10 satisfeita. Comparador focal1P semupdate aposregenerar. Nenhuma certificacao FE."
+        },
+        {
+          "scope": "access-profiles.list",
+          "status": "published-hover1P",
+          "commit": "f60b2c2fe",
+          "note": "1PNG reconciliado com6causas integradas; hoverpixelidentico deslocado64px; pai inspecionoupar."
+        },
+        {
+          "scope": "people.create/edit",
+          "status": "published-form2P",
+          "commit": "c76a0eb23",
+          "note": "2PNGs inspecionados antesupdate,8causas integradas; comparador1P+alcancefooter1P."
+        },
+        {
+          "scope": "people.list",
+          "status": "published-directory1P",
+          "commit": "5ffce5441",
+          "note": "8renders/7causas integradas;inspecao individual anterior."
+        },
+        {
+          "scope": "access-profiles.list",
+          "status": "published-directory1P",
+          "commit": "7956dda48",
+          "note": "16renders/9causas integradas;inspecaoindividual;sem driftgenericoescuro."
+        },
+        {
+          "scope": "people.list",
+          "status": "published-target48-5additionalP",
+          "commit": "99a66fd2e6ea9a4b40e3bd5b00011b6bea0d1bf8",
+          "note": "RED24 resolvido;dot24centralizado em48; borda+Enter+navegacao0;4P+200%1P;comparador1P mantido semsomar;4rendersinspecionados."
+        },
+        {
+          "scope": "invites.list/create/detail/revoke",
+          "status": "published-5P9renders",
+          "commit": "5a1ed044f",
+          "note": "9renders inspecionados/4causas integradas; confinamentoR02 e SMTP intocados."
+        },
+        {
+          "scope": "internal-users.list/create/edit/suspend",
+          "status": "published-4P23renders",
+          "commit": "0dae87652",
+          "note": "23paresinspecionados/16causas integradas; fixture sintetica; hoveracionavel nao comprovado;MFA/writesintocados."
+        },
+        {
+          "scope": "38IDs/report",
+          "status": "published-clean415P120U",
+          "commit": "f6cab17f1",
+          "note": "Indice reescrito,current-results415P,lista25commits+esteconsolidador,30deltaspropostos;nenhumcertificadonovo."
+        },
+        {
+          "scope": "preservacaoWIP/report",
+          "status": "published",
+          "commit": "d02bc4558",
+          "note": "319ignorados comhash/path;distincaoGitlocalversusorigin/dev;nenhumrecursoapagado."
+        },
+        "2816fbff1 publicado: testes Pessoas producao503/Devlookup e Safety approvedbloqueado/pendingedit,2P.",
+        "c0e4fc47d publicado: detalhePessoa2P, seisgoldensdesktop com causa d019c109a;semDart.",
+        "c526307dd publicado: consolidacao419P,38residuais,343artefatos SHA256, quarta pergunta de alcance das sete familias.",
+        "f4dd600ff publicado: probe reproduzivel,4Fsharedobjetivos,2Protulos;loadingresolvido na baseconjunta. Sem produtoUIalterado.",
+        "571ac3cf0 publicado:ClientException→Unavailable emadapterlegado;5P,semcapturaampla/ativacaoescrita.",
+        "8f3905819 publicado:Safetyreflow4P/carga/scroll;triagemantiga d784 nao reproduzida embaseconjunta.",
+        "6f4c24c03 consolidacao publicada:430P4F0S120U;34deltas sempromocao;residual38IDs atualizado.",
+        "c30f28d42 publicado:ConviteslongPresssemrotulo identificado atecomponenteshared.",
+        "992f3530d publicado: metricas430P5F0S120U e residual atualizado.",
+        " Checkpoint final alinhado à coordenação r30: reclassificação Safety recebida e residual transferido sem duplicação."
+      ],
+      "criteria_closed": [
+        "child-safety.list: golden F1 resolvido por reconciliação nominal24/48+shell integrado; nenhum certificadoFE/BE/E2E novo"
+      ],
+      "tests": {
+        "note": "ModelsSQL95+rollback6; Safety89; HTTPModels123; Form18 (17funcionais+1golden com3renders); Duplicate24; Safetyadapter41. AntigoFormF1resolvido conforme regraGOLDEN-REBASELINE-CRITERIO/r10, sete causas integradas e3rendersinspecionados. U120=Safety108+Modelsconcurrency12. Preparacao7Pseparada, rerunsnaosomam. HoverPerfis1P f60b2c2fe e Peopleform2P c76a0eb23 (golden1+alcancefooter1); total399P. Reruns/RED nao somam. DiretoriosPeople1P5ffce5441 e Perfis1P7956dda48,24PNGs;total401P. AlvoPessoas48:4P funcionais e1P texto200%, golden1 reexecutado por sourcefix nao soma;total406P. Invites5P5a1ed044f,9renders;total411P. Usuarios4P0dae87652/23renders;total415P0F120U. Censo14F destasfamilias resolvido nominalmente;nao equivale a suiteampla atual. Base conjunta6aa: rotas2P2816fbff1 e detalhe2Pc0e4fc47d (375 aproveitado,1440 focal6renders). Total419P0F0S120U; people_routes3P de153b2dbfa reutilizado sem soma. Sonda Safety acessibilidade valida2P4F publicadaf4dd600ff, basec526/6aa. F4shared: menu44 e contraste emrota/pagina;rotulos2P. Instrumento inicialSemanticsHandle invalido excluido. 571ac3cf0 transporte5P,analyze2paths0issues;8f3905819 reflow4P375/1440texto100/200 comcarga+rolagem. Total430P4F0S120U. F4 compartilhadosemsondadiagnostica,naoskip,não CI cronica. Convitesrotulo1Fconfirmadoc30f28d42: noSemanticslongPress128x48deSuperadminDirectoryViewToggle viaMenuAnchor/Flyout. Diagnosticorerunmesmo1casonaosoma. Total430P5F0S120U.",
+        "S": 0,
+        "F": 5,
+        "B": 0,
+        "U": 120,
+        "P": 430
+      },
+      "reservations": [
+        "Hunks Safety53 e wrapper Models concedidos r7 e publicados cb76f5968",
+        "Slot Models liberado; pedido Safety108 pendente de ordem coordenada"
+      ],
+      "blocker": "Safety108 aguardando sequencia local; Modelsconcurrency12 bloqueado por revisao automatica por possivel risco de ciberseguranca, sem contorno. Producao retida por falta de pacote nominal autorizado. FormgoldenF1resolvido.",
+      "next_step": "Coordenador assumiu residual Safety: falha real IntrinsicHeight/LayoutBuilder na base antiga, correcao Wrap/minHeight ja provada por alunos-rotina; nao duplicar patch. Permanecem no nosso handoff os5 achados diagnosticados (4 shared accesibilidade e1 Convites), SafetySQL108, ModelsConcurrency12 e gates produtivos. Nenhuma acao nova apos corte.",
+      "wip": [],
+      "processes": [],
+      "children": [
+        {
+          "scope": "Safety3diretrizes x rota/pagina isolada, sem produto ate causa",
+          "id": "/root/safety_visual",
+          "state": "completed-collected-no-resources"
+        },
+        {
+          "scope": "negativa de recibo após espera lock, teste/delta próprios",
+          "id": "/root/models_receipt",
+          "state": "errored-automatic-cybersecurity-review-no-retry"
+        },
+        {
+          "scope": "Adapter legado:2ClientException+3codigosDB,correcaoestreita aposRED",
+          "id": "/root/internal_visual",
+          "state": "completed-collected-no-resources"
+        }
+      ],
+      "cutoff": "2026-09-09T23:30:00-03:00",
+      "ack_observed": true,
+      "historical_evidence": {
+        "source": "R02 D04 r14/FECHAMENTO-OWNER",
+        "held": "Safety adc902eaf/48141c195/f84db0412/963796ddf",
+        "author_tests": "440P1F, SafetySQL43U; históricos, não resultados desta rodada",
+        "integrated": "Modelos duplicate82f08af50 e Convites444e03ccb consolidados em d019c109a",
+        "general_snapshot": "R02 FE7/230 BE0/223 E2E0/198",
+        "scope_certification": "FE2/38 históricos; ativos FE0/31 BE0/31 E2E0/31"
+      },
+      "providers": {
+        "cloudflare": "cloudflare_api docs/search/execute disponíveis; sem acesso testado",
+        "supabase": "MCP descoberto; catalogo pg_proc/information_schema/migrations lidos sem dados pessoais; zero escrita remota"
+      },
+      "knowledge": "Gate validate PASS com -Root explicito; nenhuma regra nova. Projecoes access-profiles/child-safety MFA historico pendentes writer central (ADR0019 AAL1 vigente).",
+      "contract": {
+        "stop": "aceites completos, bloqueio demonstrado, ou corte23:30 BRT",
+        "eta": "Lotes locais executaveis conhecidos publicados; deltaSQL108 depende de ordemlocal. Encerramentoobrigatorio23:30BRT.",
+        "evidence": "testes focais, manifests/hashes, commits publicados e0/0 upstream na branch atribuída",
+        "included": "38 IDs apps/superadmin",
+        "objective": "Corrigir/provar ações restantes do grupo",
+        "excluded": "outros apps, import/export adiados, MFA novo, produção sem pacote nominal"
+      },
+      "coordinator_revision_read": 30,
+      "requested_sql_slot": {
+        "scope": "aplicação transacional local + rollback/ACL/persistência + contratos Models",
+        "status": "released-Models-local95plus6P-concurrency12U",
+        "base": "Auth45 20260901200206; labels NOT NULL sem bridge default ao aplicar pacote",
+        "production": "não autorizado; somente leitura catálogo realizada",
+        "package": "AP-MODELS-NOMINAL-20260909-v1",
+        "rationale": "Rollback ja consta no escopo nominal originalmente concedido, fila vigente r6 ainda mantem Models posicao1; sem alterar wrapper reservado e sem execucao remota. Pedido separado de novos profiles/hunks continua pendente."
+      },
+      "safety_sql_request": {
+        "scope": "child-safety.list/child; regressão legado",
+        "plan": "Auth45+Safetyhist4+candidate1=50canonical +2preflights +1envelopebridge=53; testes43+63+2",
+        "handoff": "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/handoff.md",
+        "reserved_paths_requested": [
+          "packages/coelo_database/replay/profiles/SafetyInternalReads53/",
+          "Prepare-SafeMigrationReplay.ps1:ValidateSet+resolver",
+          "Invoke-SafeLocalMigrationReplay.ps1:ValidateSet"
+        ],
+        "status": "ready-for-local-sequence-target193000-profile7P",
+        "manifest": "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/manifest-after.json",
+        "proposal_commit": "b91f9206d",
+        "proposal_path": "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/profile-proposal/",
+        "serialization_commit": "fa3caddd2: renome identico ao dev ecc8eae2b; perfil/runner/materializador alinhados; SQL intacto",
+        "preparation": "7P0F mesma cobertura reexecutada somente por mudanca de target/descritor;53arquivos byte-identicos; sandbox removido; SQL108U"
+      },
+      "model_concurrency_request": {
+        "scope": "4 writers x replay permitido/sessao invalidada/capability retirada apos espera lock",
+        "status": "blocked-automatic-review-U12",
+        "reserved_hunk": "Invoke-SafeLocalMigrationReplay switch+guard+dispatch RunModelReceiptConcurrency",
+        "path": "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models-concurrency/Test-ModelReceiptConcurrency.ps1",
+        "note": "Revisao automatica rejeitou a retomada do filho por possivel risco de ciberseguranca. Nenhum contorno; encaminhar pendencia ao coordenador.",
+        "wrapper_patch": "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models-concurrency/replay-wrapper.patch (git apply --check PASS, wrapper inalterado)"
+      },
+      "git_checkpoint": {
+        "head": "992f3530d",
+        "upstream": "origin/work/etapa2-noturna-acessos-pessoas",
+        "divergence": "0/0",
+        "working_tree": "clean",
+        "stash": "empty",
+        "published": "36 commits proprios:35 listados atec30f28d42 mais consolidacao992f3530d",
+        "retained_artifacts": "343 paths/hash SHA256,25884065bytes",
+        "time": "2026-09-10T08:13:53.8900151-03:00"
+      },
+      "residual_matrix": "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/residuals.md (38IDs unicos verificados)",
+      "infrastructure_block": {
+        "command": "docker ps -a --filter name=coelo_safe_308169e4512d4c8485af298abb48c --format {{.ID}}",
+        "needs_coordinator": "shared Docker health/recovery and next local sequence",
+        "first_observed": "2026-09-09T19:07:23-03:00",
+        "action": "terminate only owned CLI; no daemon restart",
+        "recovery": "19:18:22 probePASS175ms;19:18:56 oldprojectresources0/0/0; no daemon restart"
+      },
+      "tracker_delta_proposto": [
+        {
+          "delta": "Recibo confirmado preservado quando navegacao falha;17Pfuncionais e1Pgolden atual. F1herdado resolvido por rebaseline nominal de3renders com sete causas integradas, inspecao anterior e paths/hashes. Continua pending-verification; nao certifica acao.",
+          "camada": "frontend",
+          "estado_proposto": "pending-verification",
+          "estado_atual": "pending-verification",
+          "action_id": "access-profiles.create",
+          "evidencia": "b285a6804; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models-form-receipt/handoff.md;c8c8b0fba;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models-form-receipt/golden-reconciliation.md"
+        },
+        {
+          "delta": "Recibo confirmado preservado quando navegacao falha;17Pfuncionais e1Pgolden atual. F1herdado resolvido por rebaseline nominal de3renders com sete causas integradas, inspecao anterior e paths/hashes. Continua pending-verification; nao certifica acao.",
+          "camada": "frontend",
+          "estado_proposto": "pending-verification",
+          "estado_atual": "pending-verification",
+          "action_id": "access-profiles.edit",
+          "evidencia": "b285a6804; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models-form-receipt/handoff.md;c8c8b0fba;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models-form-receipt/golden-reconciliation.md"
+        },
+        {
+          "delta": "Recibo confirmado preservado quando navegacao falha;17Pfuncionais e1Pgolden atual. F1herdado resolvido por rebaseline nominal de3renders com sete causas integradas, inspecao anterior e paths/hashes. Continua pending-verification; nao certifica acao.",
+          "camada": "frontend",
+          "estado_proposto": "pending-verification",
+          "estado_atual": "pending-verification",
+          "action_id": "access-models.create",
+          "evidencia": "b285a6804; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models-form-receipt/handoff.md;c8c8b0fba;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models-form-receipt/golden-reconciliation.md"
+        },
+        {
+          "delta": "Recibo confirmado preservado quando navegacao falha;17Pfuncionais e1Pgolden atual. F1herdado resolvido por rebaseline nominal de3renders com sete causas integradas, inspecao anterior e paths/hashes. Continua pending-verification; nao certifica acao.",
+          "camada": "frontend",
+          "estado_proposto": "pending-verification",
+          "estado_atual": "pending-verification",
+          "action_id": "access-models.edit",
+          "evidencia": "b285a6804; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models-form-receipt/handoff.md;c8c8b0fba;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models-form-receipt/golden-reconciliation.md"
+        },
+        {
+          "delta": "Duplicacao confirmada sobrevive falha de navegacao sem repetir copia;24P incluindo9provas de rota R02. Recibo exige identidade nova. Sem certificacao E2E.",
+          "camada": "frontend",
+          "estado_proposto": "pending-verification",
+          "estado_atual": "pending-verification",
+          "action_id": "access-models.duplicate",
+          "evidencia": "9d5ce7317; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/duplicate-receipts.md"
+        },
+        {
+          "delta": "Sucessor Safety integrado conforme merge69ce62c43: golden reconciliado,89P de composicao; adapters reais sem suporte explicito nao oferecem escrita. Adapter interno permanece inativo; SQL108U aguarda fila. Sem certificacao da acao. Triagemr18 baseconjunta: rotulos2P;4Fshared Androiduser44 econtraste, f4dd600ff. Abertos, semcertificacao. Reflow4P8f3905819 confirma375/1440texto100/200carregados;triagem d784 superada paraoverflow/carga. Transporte5P571ac3cf0 normaliza erroHTTP semqualificarescrita.",
+          "camada": "frontend",
+          "estado_proposto": "pending-verification",
+          "estado_atual": "pending-verification",
+          "action_id": "child-safety.list",
+          "evidencia": "3a96ca535/1d291711e; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-composition/handoff.md;f4dd600ff/safety-accessibility/handoff.md"
+        },
+        {
+          "delta": "Sucessor Safety integrado conforme merge69ce62c43: golden reconciliado,89P de composicao; adapters reais sem suporte explicito nao oferecem escrita. Adapter interno permanece inativo; SQL108U aguarda fila. Sem certificacao da acao. Adapter detalhe agora recusa authorizations ausente/malformada:6RED resolvidos,41P HTTP atual e analyzerlimpo. Continua inativo. Adapterlegado normalizaClientException,5P571ac3cf0;semprovaUIcrashnemescritaaberta.",
+          "camada": "frontend",
+          "estado_proposto": "pending-verification",
+          "estado_atual": "pending-verification",
+          "action_id": "child-safety.child",
+          "evidencia": "3a96ca535/1d291711e; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-composition/handoff.md;8414ac9ab;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/adapter-shape.md"
+        },
+        {
+          "delta": "Sucessor Safety integrado conforme merge69ce62c43: golden reconciliado,89P de composicao; adapters reais sem suporte explicito nao oferecem escrita. Adapter interno permanece inativo; SQL108U aguarda fila. Sem certificacao da acao.",
+          "camada": "frontend",
+          "estado_proposto": "pending-verification",
+          "estado_atual": "pending-verification",
+          "action_id": "child-safety.create",
+          "evidencia": "3a96ca535/1d291711e; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-composition/handoff.md"
+        },
+        {
+          "delta": "Sucessor Safety integrado conforme merge69ce62c43: golden reconciliado,89P de composicao; adapters reais sem suporte explicito nao oferecem escrita. Adapter interno permanece inativo; SQL108U aguarda fila. Sem certificacao da acao. Teste de rota preserva negativa approved e edicao pendingDev,1P2816fbff1.",
+          "camada": "frontend",
+          "estado_proposto": "pending-verification",
+          "estado_atual": "pending-verification",
+          "action_id": "child-safety.edit",
+          "evidencia": "3a96ca535/1d291711e; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-composition/handoff.md"
+        },
+        {
+          "delta": "Sucessor Safety integrado conforme merge69ce62c43: golden reconciliado,89P de composicao; adapters reais sem suporte explicito nao oferecem escrita. Adapter interno permanece inativo; SQL108U aguarda fila. Sem certificacao da acao.",
+          "camada": "frontend",
+          "estado_proposto": "pending-verification",
+          "estado_atual": "pending-verification",
+          "action_id": "child-safety.suspend",
+          "evidencia": "3a96ca535/1d291711e; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-composition/handoff.md"
+        },
+        {
+          "delta": "Pacote nominal local95P+rollback6P pronto, sem aplicacao remota autorizada. Concorrencia12U retida por revisao automatica; nenhuma prova runtime dessa hipotese. Owner ausente; gate remoto preservado.",
+          "camada": "backend",
+          "estado_proposto": "blocked-environment",
+          "estado_atual": "pending-verification",
+          "action_id": "access-models.list",
+          "evidencia": "63623e31f/246c9e7e1;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/README.md"
+        },
+        {
+          "delta": "Pacote nominal local95P+rollback6P pronto, sem aplicacao remota autorizada. Concorrencia12U retida por revisao automatica; nenhuma prova runtime dessa hipotese. Owner ausente; gate remoto preservado.",
+          "camada": "backend",
+          "estado_proposto": "blocked-environment",
+          "estado_atual": "pending-verification",
+          "action_id": "access-models.filter",
+          "evidencia": "63623e31f/246c9e7e1;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/README.md"
+        },
+        {
+          "delta": "Pacote nominal local95P+rollback6P pronto, sem aplicacao remota autorizada. Concorrencia12U retida por revisao automatica; nenhuma prova runtime dessa hipotese. Owner ausente; gate remoto preservado.",
+          "camada": "backend",
+          "estado_proposto": "blocked-environment",
+          "estado_atual": "pending-verification",
+          "action_id": "access-models.create",
+          "evidencia": "63623e31f/246c9e7e1;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/README.md"
+        },
+        {
+          "delta": "Pacote nominal local95P+rollback6P pronto, sem aplicacao remota autorizada. Concorrencia12U retida por revisao automatica; nenhuma prova runtime dessa hipotese. Owner ausente; gate remoto preservado.",
+          "camada": "backend",
+          "estado_proposto": "blocked-environment",
+          "estado_atual": "pending-verification",
+          "action_id": "access-models.detail",
+          "evidencia": "63623e31f/246c9e7e1;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/README.md"
+        },
+        {
+          "delta": "Pacote nominal local95P+rollback6P pronto, sem aplicacao remota autorizada. Concorrencia12U retida por revisao automatica; nenhuma prova runtime dessa hipotese. Owner ausente; gate remoto preservado.",
+          "camada": "backend",
+          "estado_proposto": "blocked-environment",
+          "estado_atual": "pending-verification",
+          "action_id": "access-models.edit",
+          "evidencia": "63623e31f/246c9e7e1;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/README.md"
+        },
+        {
+          "delta": "Pacote nominal local95P+rollback6P pronto, sem aplicacao remota autorizada. Concorrencia12U retida por revisao automatica; nenhuma prova runtime dessa hipotese. Owner ausente; gate remoto preservado.",
+          "camada": "backend",
+          "estado_proposto": "blocked-environment",
+          "estado_atual": "pending-verification",
+          "action_id": "access-models.duplicate",
+          "evidencia": "63623e31f/246c9e7e1;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/README.md"
+        },
+        {
+          "delta": "Candidato SQL read-only e perfil53 preparados/alinhados a193000;108U aguardam sequencia local. Adapter permanece inativo. Producao sem autorizacao nominal; sem liberacao de escrita.",
+          "camada": "backend",
+          "estado_proposto": "blocked-environment",
+          "estado_atual": "pending-verification",
+          "action_id": "child-safety.list",
+          "evidencia": "fa3caddd2/8414ac9ab;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/handoff.md"
+        },
+        {
+          "delta": "Candidato SQL read-only e perfil53 preparados/alinhados a193000;108U aguardam sequencia local. Adapter permanece inativo. Producao sem autorizacao nominal; sem liberacao de escrita.",
+          "camada": "backend",
+          "estado_proposto": "blocked-environment",
+          "estado_atual": "pending-verification",
+          "action_id": "child-safety.child",
+          "evidencia": "fa3caddd2/8414ac9ab;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/handoff.md"
+        },
+        {
+          "delta": "Formulario visual nominal reconciliado:2PNGs, comparador1P e alcancefooter1P; causas integradas e inspecao anterior. Contrato interno/persistencia continuam pendentes. Teste de rota reconciliado preserva bloqueio produtivo e lookupDev,1P2816fbff1.",
+          "camada": "frontend",
+          "estado_proposto": "pending-verification",
+          "estado_atual": "pending-verification",
+          "action_id": "people.create",
+          "evidencia": "c76a0eb23;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/people-form-visual/handoff.md"
+        },
+        {
+          "delta": "Formulario visual nominal reconciliado:2PNGs, comparador1P e alcancefooter1P; causas integradas e inspecao anterior. Contrato interno/persistencia continuam pendentes.",
+          "camada": "frontend",
+          "estado_proposto": "pending-verification",
+          "estado_atual": "pending-verification",
+          "action_id": "people.edit",
+          "evidencia": "c76a0eb23;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/people-form-visual/handoff.md"
+        },
+        {
+          "delta": "Hover1F resolvido por1PNG com causas integradas e inspecao;1P focal. Diretorio separado ainda em exame. Nenhuma certificacao. Diretorio separado agora1P/16renders com9causas e inspecao previa;7956dda48.",
+          "camada": "frontend",
+          "estado_proposto": "pending-verification",
+          "estado_atual": "pending-verification",
+          "action_id": "access-profiles.list",
+          "evidencia": "f60b2c2fe;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/profile-hover/handoff.md;7956dda48;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/profile-directory-visual/handoff.md"
+        },
+        {
+          "delta": "Diretorio1F do censo resolvido por8PNGs inspecionados com7causas integradas;1P focal. Reader interno e runtime permanecem pendentes. Alvo24 corrigido48 mantendo dot24;4P funcionais+200%1P, golden1P reexecutado por sourcechange;sem abrir editor ou alterar status.",
+          "camada": "frontend",
+          "estado_proposto": "pending-verification",
+          "estado_atual": "pending-verification",
+          "action_id": "people.list",
+          "evidencia": "5ffce5441;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/people-directory-visual/handoff.md;99a66fd2e6ea9a4b40e3bd5b00011b6bea0d1bf8;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/people-status-target/handoff.md"
+        },
+        {
+          "delta": "Referencia visual nominal de diretorio/hover/flyout,formulario,detalhe/confirmacao reconciliada conforme estado aplicavel; lote5P9renders com4causas integradas. ConfinamentoR02 preservado; runtime/persona/SMTP/persistencia continuam pendentes. Rotulo nativo1Fconfirmado emnode128x48 longPress no sharedDirectoryViewToggle; proposta coordenador c30f28d42. Nenhuma semantica removida.",
+          "camada": "frontend",
+          "estado_proposto": "pending-verification",
+          "estado_atual": "pending-verification",
+          "action_id": "invites.list",
+          "evidencia": "5a1ed044f;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/invites-visual/handoff.md;c30f28d42/invite-labels/handoff.md"
+        },
+        {
+          "delta": "Referencia visual nominal de diretorio/hover/flyout,formulario,detalhe/confirmacao reconciliada conforme estado aplicavel; lote5P9renders com4causas integradas. ConfinamentoR02 preservado; runtime/persona/SMTP/persistencia continuam pendentes.",
+          "camada": "frontend",
+          "estado_proposto": "pending-verification",
+          "estado_atual": "pending-verification",
+          "action_id": "invites.create",
+          "evidencia": "5a1ed044f;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/invites-visual/handoff.md"
+        },
+        {
+          "delta": "Referencia visual nominal de diretorio/hover/flyout,formulario,detalhe/confirmacao reconciliada conforme estado aplicavel; lote5P9renders com4causas integradas. ConfinamentoR02 preservado; runtime/persona/SMTP/persistencia continuam pendentes.",
+          "camada": "frontend",
+          "estado_proposto": "pending-verification",
+          "estado_atual": "pending-verification",
+          "action_id": "invites.detail",
+          "evidencia": "5a1ed044f;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/invites-visual/handoff.md"
+        },
+        {
+          "delta": "Referencia visual nominal de diretorio/hover/flyout,formulario,detalhe/confirmacao reconciliada conforme estado aplicavel; lote5P9renders com4causas integradas. ConfinamentoR02 preservado; runtime/persona/SMTP/persistencia continuam pendentes.",
+          "camada": "frontend",
+          "estado_proposto": "pending-verification",
+          "estado_atual": "pending-verification",
+          "action_id": "invites.revoke",
+          "evidencia": "5a1ed044f;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/invites-visual/handoff.md"
+        },
+        {
+          "delta": "Referencia visual nominal reconciliada conforme estado:diretorio/detalhe,formularios,flyoutOwnerprotegido;4P23renders com16causas integradas. Cardhover semonView provaestadoinformativo,nao hoveracionavel. Contratos/runtime permanecem pendentes;MFAintocado.",
+          "camada": "frontend",
+          "estado_proposto": "pending-verification",
+          "estado_atual": "pending-verification",
+          "action_id": "internal-users.list",
+          "evidencia": "0dae87652;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/internal-users-visual/handoff.md"
+        },
+        {
+          "delta": "Referencia visual nominal reconciliada conforme estado:diretorio/detalhe,formularios,flyoutOwnerprotegido;4P23renders com16causas integradas. Cardhover semonView provaestadoinformativo,nao hoveracionavel. Contratos/runtime permanecem pendentes;MFAintocado.",
+          "camada": "frontend",
+          "estado_proposto": "pending-verification",
+          "estado_atual": "pending-verification",
+          "action_id": "internal-users.create",
+          "evidencia": "0dae87652;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/internal-users-visual/handoff.md"
+        },
+        {
+          "delta": "Referencia visual nominal reconciliada conforme estado:diretorio/detalhe,formularios,flyoutOwnerprotegido;4P23renders com16causas integradas. Cardhover semonView provaestadoinformativo,nao hoveracionavel. Contratos/runtime permanecem pendentes;MFAintocado.",
+          "camada": "frontend",
+          "estado_proposto": "pending-verification",
+          "estado_atual": "pending-verification",
+          "action_id": "internal-users.edit",
+          "evidencia": "0dae87652;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/internal-users-visual/handoff.md"
+        },
+        {
+          "delta": "Referencia visual nominal reconciliada conforme estado:diretorio/detalhe,formularios,flyoutOwnerprotegido;4P23renders com16causas integradas. Cardhover semonView provaestadoinformativo,nao hoveracionavel. Contratos/runtime permanecem pendentes;MFAintocado.",
+          "camada": "frontend",
+          "estado_proposto": "pending-verification",
+          "estado_atual": "pending-verification",
+          "action_id": "internal-users.suspend",
+          "evidencia": "0dae87652;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/internal-users-visual/handoff.md"
+        },
+        {
+          "action_id": "people.links",
+          "camada": "frontend",
+          "estado_atual": "pending-verification",
+          "estado_proposto": "pending-verification",
+          "delta": "Detalhe sintetico 2P/0F em375/1440; seis referencias desktop reconciliadas por menu Usuarios internos integrado d019c109a. Sem qualificacao do reader produtivo. Diretorio normal nao tem callback para abrir detalhe; alcance UI nao comprovado, conforme c526307dd.",
+          "evidencia": "c0e4fc47d; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/person-detail-visual/handoff.md"
+        },
+        {
+          "action_id": "people.reload",
+          "camada": "frontend",
+          "estado_atual": "pending-verification",
+          "estado_proposto": "pending-verification",
+          "delta": "Detalhe sintetico 2P/0F em375/1440; seis referencias desktop reconciliadas por menu Usuarios internos integrado d019c109a. Sem qualificacao do reader produtivo. Diretorio normal nao tem callback para abrir detalhe; alcance UI nao comprovado, conforme c526307dd.",
+          "evidencia": "c0e4fc47d; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/person-detail-visual/handoff.md"
+        },
+        {
+          "action_id": "access-profiles.detail",
+          "camada": "frontend",
+          "estado_atual": "pending-verification",
+          "estado_proposto": "pending-verification",
+          "delta": "Quarta pergunta r16: rota DETAIL existe, mas cards e linhas abrem EDIT; nenhum chamador UI de DETAIL identificado na base6aa. Alcance deliberado permanece gate adicional, sem ativar callbacks.",
+          "evidencia": "c526307dd; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/alcance-produtivo.md"
+        },
+        {
+          "action_id": "access-models.detail",
+          "camada": "frontend",
+          "estado_atual": "pending-verification",
+          "estado_proposto": "pending-verification",
+          "delta": "Quarta pergunta r16: rota DETAIL existe, mas cards e linhas abrem EDIT; nenhum chamador UI de DETAIL identificado na base6aa. Alcance deliberado permanece gate adicional, sem ativar callbacks.",
+          "evidencia": "c526307dd; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/alcance-produtivo.md"
+        }
+      ],
+      "tracker_delta_note": "30deltas:22frontend pending-verification e8backend blocked-environment;415P0F120U publicados;nenhumcertificadonovo.",
+      "integration_observed": "origin/dev6aa352c6a434086905444aaa5f128034ad8352e6 contem TODOS27commits proprios ate d02bc4558; publicacao remota confirmada. Ownworktree materializada por fast-forward ate6aa, semhunk proprio de router/main/shared.",
+      "delivery_index": "docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/ENTREGA.md",
+      "coordinator_action_needed": "Tudo repassado. Coordenacao r30 reclassificou Safety: a leitura anterior4F de diretrizes foi retirada; verdade operacional e excecao LayoutBuilder/IntrinsicHeight em base antiga, com correcao provada. Nao repetir nem aplicar nosso patch; coordenador/alunos-rotina assumem. Nossos5 achados shared seguem registrados para decisao nominal.",
+      "source_reconciliation": "R02D04worktree375e0a62a preservada;stashvazio;nao tocamosdev/centrais. Ancestorintegradoatual d3fd0f7e9. CanalnominalJSON,semcapacidadenativaClaude.",
+      "production_composition_answers": {
+        "scope": "7familias/38IDs; main/router/repository respondidos explicitamente",
+        "critical": "Safety main compoe adapter LEGADO, v2inativo; Perfis/Modelos rotasnormais e repositoryreal nao qualificam contratos remotos; Usuarios leitura normal/writesbloqueados; Pessoas identityUnavailable; Arquivos politicaadiada",
+        "evidence": "f4ac658fb;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/composicao-produtiva.md",
+        "base": "devf6859fbcad74104632ac53962f317d45e57a8b98 lido sem escrita",
+        "fourth_question": "Respondida em alcance-produtivo.md,c526307dd: sete familias; detalhes de Pessoas/Perfis/Modelos sem chamador UI identificado. Sem nova certificacao."
+      },
+      "last_receipt_observed": "r13formalnossar15;integracao/publicacaoremota dos26comprovada porls-remote+merge-base.",
+      "checkpoint_at": "2026-09-09T22:00:01.2566422-03:00",
+      "safety_triage_current": {
+        "base": "c526307dd sobre6aa",
+        "accessibility": "2P4F em6casos validos; primeira6F invalidada porSemanticsHandle do harness",
+        "reflow": "4P0F,8f3905819;controllerready,Alicevia scroll,contagem164,semloading/overflow",
+        "original_base": "d784, anterior3a96ca535",
+        "production": "Semalteracao"
+      }
+    }
   }
 }

@@ -1,0 +1,247 @@
+{
+ "revision": 7,
+ "round": "E2-R03-20260910",
+ "group": "formularios-cuidado-rotina",
+ "tool": "Claude Code (VS Code)",
+ "model": "claude-opus-5[1m]",
+ "coordinator": "Claude",
+ "timezone": "America/Sao_Paulo",
+ "updatedAt": "2026-09-10T05:30:00-03:00",
+ "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-formularios-cuidado-rotina",
+ "branch": "work/etapa2-r03-formularios-cuidado-rotina",
+ "head": "bb15db748",
+ "baseNote": "coordenacao.json ainda esta na revisao 31 da rodada E2-NOTURNA-20260909 e nao tem base.fase0Head. Worktree criada a partir de dev bb15db748, mesmo HEAD usado pela worktree e2-r03-publicacoes-agenda. Rebase na base da Fase 0 assim que ela for publicada.",
+ "scope": {
+  "families": [
+   "forms_authoring",
+   "forms_responses",
+   "forms_files",
+   "health_care",
+   "medication",
+   "students",
+   "attendance",
+   "daily_routine"
+  ],
+  "actionCount": 43,
+  "confirmedAgainstInventory": true,
+  "order": [
+   "health_care + medication",
+   "students",
+   "attendance (D11: chave de idempotencia gerada no banco por RPC)",
+   "forms_authoring + forms_responses (D6: Testar por capacidade)",
+   "forms_files + forms.responses.export (XLSX no R2 privado)",
+   "daily_routine (D8: guarda de saida; D7: Lancamentos tela minima)"
+  ]
+ },
+ "currentGate": {
+  "gate": "Fase 0 nao publicada: iniciar por backend (migrations, pgTAP, repositorios, contratos) sem tocar UI de diretorio",
+  "screen": "Etapa 2 -> apps/superadmin -> Cuidado -> Perfis de cuidado / Medicacao",
+  "actionIds": [
+   "health-care.list",
+   "health-care.create",
+   "health-care.detail",
+   "health-care.edit",
+   "medication.list",
+   "medication.create",
+   "medication.detail",
+   "medication.edit",
+   "medication.evidence"
+  ],
+  "note": "Fundacao health_care/medication inexistente. Construindo o primeiro pacote SQL da familia health_care."
+ },
+ "tests": {
+  "pass": 179,
+  "fail": 0,
+  "blocked": 0,
+  "skipped": 0,
+  "notRun": 0,
+  "pgtap": "90 (daily_routine_foundation 34, daily_routine_scope_closure 6, attendance_authorization_and_idempotency 23, health_care_and_medication_plans 27)",
+  "flutter": "89 em apps/superadmin/test/features/attendance; dart analyze da feature limpo",
+  "escopo": "nao e a suite completa do app e nao e prova E2E"
+ },
+ "reservedFiles": [],
+ "blocking": [
+  {
+   "id": "B-R03-FCR-001",
+   "tipo": "ambiente compartilhado, nao bloqueia trabalho independente",
+   "o_que": "scripts/Invoke-SafeLocalMigrationReplay.ps1 serializa por mutex Local\\CoeloSafeSupabaseReplay em toda a maquina. Na primeira tentativa recebi 'another safe Supabase replay is already running' e docker ps mostrou o container coelo_safe_883c3727e92a4124abf7e0140e9e5 de outra frente, no ar ha 37 segundos.",
+   "efeito": "a prova pgTAP dos meus pacotes espera a vez. A escrita de migrations, testes e repositorios continua.",
+   "proposta_ao_coordenador": "uma fila explicita de janela de replay em coordenacao.json, do mesmo jeito que a fila SQL. Sem isso as seis frentes vao se atropelar no mesmo mutex e cada uma vai ler o erro como defeito proprio."
+  }
+ ],
+ "deltaProposals": [],
+ "nextStep": "Repositorios Supabase de Perfis de cuidado, Medicacao e Rotina no cliente; depois Formularios.",
+ "findings": [
+  {
+   "id": "F-R03-FCR-001",
+   "severity": "estrutural, muda o tamanho da rodada",
+   "titulo": "Nao sao 9 objetos app_private faltando: os schemas de daily_routine, student_tracking, health_care e medication nunca foram criados",
+   "medido": "grep sobre packages/coelo_database/migrations no HEAD bb15db748",
+   "evidencia": {
+    "tabelas_public_criadas_nas_familias": "apenas attendance_* (7 tabelas). Zero CREATE TABLE para routine_applications, routine_launches, student_tracking, health_care ou medication.",
+    "migrations_existentes_de_rotina": "somente 20260825193112_final_review_daily_routine_lint_hardening.sql, que faz CREATE OR REPLACE de funcoes app_private sobre public.routine_applications - uma tabela que nenhuma migration cria",
+    "migrations_existentes_de_alunos": "somente 20260825193123_final_review_student_tracking_read_fix.sql e 20260825180000_revoke_student_tracking_normalizer_client_execute.sql, no mesmo padrao",
+    "health_care_e_medication": "nenhuma migration. No cliente existem apenas repositorios dev (data/dev/) e UnavailableHealthCareRepository; nao ha repositorio Supabase.",
+    "objetos_app_private_referenciados_e_nunca_criados": 49
+   },
+   "consequencia": "o rastreador anterior descrevia isso como 9+4 objetos ausentes, o que sugere um pacote pequeno de correcao. O trabalho real e construir a fundacao (tabelas, RLS, capacidades, RPCs, recibos) de quatro familias, mais os repositorios Supabase no cliente. Attendance e a unica das familias de dominio proprio com fundacao real.",
+   "acao": "assumido por este grupo; nao pede decisao. Entregarei um pacote SQL por familia com migration + pgTAP + chave de composicao.",
+   "para_o_coordenador": "a estimativa desta frente nao cabe no formato 'corrigir pendencias'; e construcao. Vale conferir se outras frentes tem o mesmo padrao de migration de lint sobre tabela inexistente."
+  },
+  {
+   "id": "F-R03-FCR-002",
+   "severity": "estrutural, afeta todas as frentes",
+   "titulo": "A cadeia canonica de 186 migrations nao replica do zero; o caminho suportado e um perfil de replay parcial",
+   "medido": "supabase start com o espelho sincronizado das 187 migrations canonicas, em 2026-09-10",
+   "evidencia": "a aplicacao para em 20260812002000_child_safety_schema.sql com 23502: null value in column module_label of relation platform_permissions. A coluna nasce anulavel em 20260811215451_access_profile_management_v2, e a mesma migration a torna NOT NULL sem default; as migrations posteriores que inserem permissoes nunca passam module_label. Ha um remendo dedicado a isso em replay/20260811215452_access_profile_labels_replay_bridge.sql, que so o script de replay injeta, e uma migration 20260831130726_reconcile_permission_labels_after_replay que existe para desfazer o remendo.",
+   "consequencia": "nao existe 'supabase db reset verde' nesta base. Toda prova pgTAP local sai de scripts/Invoke-SafeLocalMigrationReplay.ps1 com -FoundationOnly (69 migrations do manifesto) mais as migrations do pacote. Quem afirmar pgTAP verde precisa dizer sobre qual perfil.",
+   "acao": "assumido: meu pacote de rotina foi escrito para ser replayavel nesse perfil, sem depender de 20260825193112, que esta fora do manifesto.",
+   "para_o_coordenador": "vale confirmar se as outras frentes sabem disso; quem tentar db reset vai perder tempo no mesmo ponto."
+  },
+  {
+   "id": "F-R03-FCR-003",
+   "severity": "bloqueia a prova pgTAP local de TODAS as frentes; urgente para o coordenador",
+   "titulo": "O perfil FoundationOnly de replay esta quebrado no HEAD atual: o manifesto exige uma migration que ele mesmo nao contem",
+   "medido": "scripts/Invoke-SafeLocalMigrationReplay.ps1 -FoundationOnly executado em 2026-09-10 sobre bb15db748",
+   "evidencia": "a aplicacao percorre 68 migrations e para em 20260901101500_superadmin_internal_chat_v2.sql com 55000: 'internal auth, audit and chat dependencies are unavailable'. O preflight daquela migration exige public.chat_attachment_metadata, criada em 20260812000000_chat_production_contract.sql, que NAO consta de replay/foundation-migrations.sha256. As quatro migrations *_v2 de 09/2026 (chat, notices, invites, circulars) entraram no manifesto sem que suas dependencias de 08/2026 entrassem junto.",
+   "consequencia": "a OQ-042 registra o perfil FoundationOnly passando 259 asserts; isso deixou de valer. Hoje nenhuma frente consegue pgTAP local pelo caminho suportado, e quem tentar vai ler a falha como defeito do proprio pacote, porque ela acontece antes das migrations do pacote.",
+   "correcao_proposta": "acrescentar 20260812000000_chat_production_contract.sql ao manifesto, com o hash normalizado, na posicao entre 20260812000847 e 20260820182000. O manifesto e escrito pelo coordenador; nao alterei o arquivo.",
+   "contorno_em_uso_aqui": "montei um projeto de replay descartavel fora do repositorio (scratchpad, project_id coelo_fcr_replay, portas 553xx) com as 69 do manifesto, as duas pontes de replay/, a dependencia ausente e os meus tres pacotes. E disposable e local; nenhuma mutacao remota."
+  }
+ ],
+ "packages": [
+  {
+   "id": "PKG-R03-FCR-ROTINA-01",
+   "familia": "daily_routine",
+   "estado": "pgTAP verde no replay descartavel",
+   "migrations": [
+    "packages/coelo_database/migrations/20260910010000_daily_routine_foundation_v1.sql",
+    "packages/coelo_database/migrations/20260910010100_daily_routine_behavior_v1.sql"
+   ],
+   "pgtap_alvo": [
+    "packages/coelo_database/supabase/tests/daily_routine_foundation_test.sql (34 asserts, preexistente e vermelho desde 25/08)",
+    "packages/coelo_database/supabase/tests/daily_routine_scope_closure_test.sql (6 asserts)"
+   ],
+   "conteudo": "13 tabelas publicas, app_private.routine_command_receipts, 8 capacidades de plataforma e 8 contextuais, 7 auxiliares de autorizacao/validacao, gatilho de hierarquia, view daily_routine_effective_applications com security_invoker, 8 RPCs publicas, RLS deny-by-default com FORCE em todas as tabelas e cliente so com SELECT.",
+   "chave_de_composicao": "a definir no cliente quando o repositorio Supabase de Rotina existir; ainda nao ha adapter para ligar",
+   "mfa": "app_private.routine_mfa_phase_enforced() devolve false na fase MVP (AAL1, ADR 0034). requires_mfa continua true nas capacidades de alto impacto e a mensagem 'MFA AAL2 required' continua nos comandos. Ligar MFA e uma migration de uma linha. Sem isso D7 (Lancamentos sobre daily-routine.publish) seria inalcancavel no MVP.",
+   "prova": {
+    "quando": "2026-09-10",
+    "onde": "projeto de replay descartavel coelo_fcr_replay, fora do repositorio (scratchpad), portas 553xx",
+    "perfil": "57 migrations: as do manifesto foundation com versao <= 20260831164937, mais replay/20260811151253 e replay/20260811215452, mais um arquivo somente-replay que repoe a sentinela de rotulo depois de 20260831130726. As *_v2 de 09/2026 (chat, notices, invites, circulars) foram deixadas de fora porque quebram antes do meu pacote e pertencem a outros grupos.",
+    "aplicacao": "as tres migrations aplicaram sem erro por psql, na ordem, sobre a base resetada",
+    "resultado": {
+     "daily_routine_foundation_test": "34 ok / 0 not ok",
+     "daily_routine_scope_closure_test": "6 ok / 0 not ok",
+     "attendance_authorization_and_idempotency_v1_test": "16 ok / 0 not ok",
+     "total": "56 asseroes, zero falhas"
+    },
+    "o_que_isso_nao_prova": [
+     "nao e prova ponta a ponta: nenhuma tela abriu, nenhum repositorio Flutter chamou estas RPCs, nada tocou o Supabase de producao",
+     "o perfil de replay nao inclui as *_v2 de 09/2026; se alguma delas alterar permissoes, policies ou helpers que meu pacote usa, isso nao foi exercitado",
+     "nenhuma acao do inventario muda de estado por causa desta prova"
+    ],
+    "defeitos_meus_que_a_execucao_pegou": [
+     "constraint UNIQUE com expressao coalesce em routine_field_conditions: sintaxe invalida, virou indice unico",
+     "as permissoes da rotina nao passavam module_label/screen_label/action_label, que sao NOT NULL na cadeia real desde 20260811215451. O replay com sentinela teria escondido isso; peguei por leitura da migration do dashboard de Assiduidade, que passa os rotulos",
+     "os wrappers publicos sao SECURITY INVOKER e nao podiam alcancar a funcao definer correspondente, nem as policies podiam avaliar routine_scope_allowed, porque eu havia revogado tudo em app_private. Corrigido para o mesmo desenho da fundacao de Assiduidade",
+     "uma assercao minha do teste de Assiduidade estava mal escrita: o LIKE com curingas casava tambem com o corpo corrigido. Trocada por comparacao de posicao entre platform.read e a abertura do case"
+    ]
+   }
+  },
+  {
+   "id": "PKG-R03-FCR-ASSIDUIDADE-01",
+   "familia": "attendance",
+   "estado": "pgTAP verde no replay descartavel",
+   "action_ids": [
+    "attendance.create",
+    "attendance.mark",
+    "attendance.correct",
+    "attendance.finish",
+    "attendance.dashboard"
+   ],
+   "migrations": [
+    "packages/coelo_database/migrations/20260910010200_attendance_authorization_and_idempotency_v1.sql"
+   ],
+   "pgtap": [
+    "packages/coelo_database/supabase/tests/attendance_authorization_and_idempotency_v1_test.sql (16 asserts, novo)"
+   ],
+   "parte_1_seguranca": {
+    "origem": "OQ-040, que ja descrevia o problema e pedia hardening forward-only prioritario",
+    "defeito_1": "app_private.can_access_attendance_child comeca por has_platform_permission('platform.read') ANTES de olhar require_manage. Quem so le plataforma satisfaz o ramo de gestao e alcanca confirmacao e reversao de registro oficial de presenca.",
+    "defeito_2": "a policy attendance_sessions_context e FOR ALL com USING de nivel de leitura. USING decide quais linhas um DELETE alcanca e DELETE nao tem WITH CHECK, entao um ator somente-leitura apaga sessoes de chamada.",
+    "defeito_3": "attendance_expected_participants_context tem o mesmo formato e o mesmo efeito sobre os participantes esperados.",
+    "defeito_4": "as sete tabelas de assiduidade tinham RLS sem FORCE, como a propria OQ-040 registra.",
+    "correcao": "o ramo de gestao passa a exigir attendance.manage; as duas policies FOR ALL viram quatro policies por operacao, com gestao exigida em insert, update e delete; FORCE ligado nas sete tabelas.",
+    "nota": "nenhuma dessas correcoes muda contrato de tela nem exige decisao nova. Sao os tres pontos que a OQ-040 mandou priorizar."
+   },
+   "parte_2_d11": {
+    "problema": "o cliente gera a chave nos quatro sitios de escrita. Em tres deles (_newUuid) ela nasce de Random.secure() a cada tentativa, entao repetir a mesma intencao produz chave nova e o servidor nao reconhece a repeticao. So createCall usa semente estavel (_draftIdempotencyKey).",
+    "solucao": "app_private.attendance_idempotency_reservations mais public.attendance_reserve_idempotency_key(command, aggregate_id, expected_version). O digest da intencao e montado no servidor a partir de comando, agregado e versao esperada; o cliente nao pode escolhe-lo, senao voltaria a trocar a chave a cada tentativa.",
+    "efeito_na_versao_esperada": "depois que a chamada avanca, a intencao antiga deixou de existir e a proxima reserva devolve outra chave. Isso e proposital.",
+    "falta": "trocar os quatro sitios do cliente para pedir a chave ao banco. Feito depois que o SQL estiver verde.",
+    "cliente": "os quatro sitios de escrita de supabase_attendance_repository.dart passaram a pedir a chave ao banco; _newUuid, _draftIdempotencyKey e _uuidFromSeed foram removidos junto dos imports de dart:math, dart:convert e crypto.",
+    "defeito_que_a_troca_revelou": "O meu primeiro digest de create_call era 'create_call::' — sem instituicao, unidade, turma, atividade ou dia. Duas chamadas diferentes do mesmo profissional teriam recebido a MESMA chave, o que e pior do que nao ter chave. Quem pegou foram os dois testes Dart que ja existiam e provavam exatamente essa semantica no cliente: eles falharam e, ao le-los, ficou claro que eu havia movido a chave para o banco e perdido a intencao no caminho. Corrigido: app_private.attendance_intent_digest recebe o contexto da chamada, e criar chamada sem contexto e recusado em vez de virar chave generica. O digest e funcao pura e separada de proposito, para a regra poder ser provada sem sessao, sem pessoa e sem fixture."
+   },
+   "prova": "pgTAP 23/23 e Flutter test/features/attendance 89/89"
+  },
+  {
+   "id": "PKG-R03-FCR-CUIDADO-01",
+   "familia": "health_care + medication",
+   "estado": "pgTAP verde no replay descartavel",
+   "action_ids": [
+    "health-care.list",
+    "health-care.create",
+    "health-care.detail",
+    "health-care.edit",
+    "medication.list",
+    "medication.create",
+    "medication.detail",
+    "medication.edit",
+    "medication.evidence"
+   ],
+   "migrations": [
+    "packages/coelo_database/migrations/20260910010300_health_care_and_medication_plans_v1.sql",
+    "packages/coelo_database/migrations/20260910010400_health_care_behavior_v1.sql"
+   ],
+   "pgtap": [
+    "packages/coelo_database/supabase/tests/health_care_and_medication_plans_v1_test.sql (27 asserts, novo)"
+   ],
+   "autorizacao_para_existir": "specs/020-superadmin-health-care.md, secao 'Decisao superveniente para o backend': em 2026-08-28 o Owner determinou que as pendencias juridicas nao bloqueiam a implementacao Supabase local, com dados sinteticos. Contrato de comportamento e seguranca em docs/superpowers/specs/2026-09-01-superadmin-access-health-care-finalization-design.md.",
+   "estado_anterior": "nem migration nem teste existiam. No cliente havia apenas repositorios /dev e UnavailableHealthCareRepository. As nove acoes nunca tiveram backend.",
+   "conteudo": "8 tabelas publicas mais recibos de comando; 5 capacidades de plataforma e 5 contextuais; RLS deny-by-default com FORCE e cliente so com SELECT; 7 RPCs (dois diretorios paginados no servidor, dois detalhes, dois comandos versionados e o comando proprio de evidencia).",
+   "decisao_de_seguranca_deliberada": "platform.read NAO alcanca dado de saude de crianca. A leitura exige health_care.read ou medication.read, de plataforma ou contextual. Quem so tem leitura geral do Superadmin nao ve saude de crianca. Isso diverge do padrao das outras familias e esta provado por assercao.",
+   "outras_decisoes": [
+    "a instituicao do agregado e derivada do contexto infantil, nunca do payload; aceitar a instituicao enviada pelo cliente permitiria anexar a crianca de um tenant a um perfil de outro",
+    "a identidade da crianca fica travada na edicao, como a spec 020 exige",
+    "mudanca no plano cria versao nova e invalida a aprovacao anterior, preservando as versoes passadas",
+    "registrar evidencia nao e editar: comando proprio, capacidade propria, append-only, e nao move a versao do agregado",
+    "toda mudanca de perfil de cuidado exige justificativa, gravada em health_care_profile_revisions alem de audit.audit_logs, porque a tela mostra o historico e audit nao tem grant de cliente"
+   ],
+   "pendencia_registrada_nao_omitida": "leitura por responsavel familiar nao entra neste pacote: exigiria uma capacidade de guardiao que ainda nao existe, e inventa-la seria decidir sozinho quem ve dado de saude de crianca. Precisa de decisao.",
+   "oq_003": "prazo de retencao, base legal e regra clinica continuam abertos. A migration nao apaga nada por tempo, nao infere consentimento e nao classifica gravidade por conta propria."
+  }
+ ],
+ "filaSQL": [
+  {
+   "ordem": 1,
+   "arquivo": "packages/coelo_database/migrations/20260910010000_daily_routine_foundation_v1.sql"
+  },
+  {
+   "ordem": 2,
+   "arquivo": "packages/coelo_database/migrations/20260910010100_daily_routine_behavior_v1.sql"
+  },
+  {
+   "ordem": 3,
+   "arquivo": "packages/coelo_database/migrations/20260910010200_attendance_authorization_and_idempotency_v1.sql"
+  },
+  {
+   "ordem": 4,
+   "arquivo": "packages/coelo_database/migrations/20260910010300_health_care_and_medication_plans_v1.sql"
+  },
+  {
+   "ordem": 5,
+   "arquivo": "packages/coelo_database/migrations/20260910010400_health_care_behavior_v1.sql"
+  }
+ ]
+}
