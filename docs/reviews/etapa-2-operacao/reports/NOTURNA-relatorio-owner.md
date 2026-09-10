@@ -206,6 +206,26 @@ Os defeitos que sobraram estão exatamente onde a solução existente não foi
 transplantada. Isso é mais acionável que uma lista de bugs: **o problema não é
 falta de conhecimento no time, é o conhecimento não chegar a todas as telas.**
 
+E o caso mais literal apareceu dentro de **um único arquivo**. Em
+`safety_pages.dart`, o assistente de criação guarda a intenção de escrita com
+rigor — reusa o `requestId` enquanto a intenção não muda, e ainda relê para
+confirmar se a escrita entrou antes de concluir — enquanto aprovar, rejeitar e
+suspender usavam a versão ingênua, gerando identificador novo no instante do
+toque. **Vinte linhas de distância.** O conhecimento não atravessou nem o arquivo
+onde mora.
+
+O mesmo vale pelo lado positivo, e é o que dá confiança nas correções: a forma
+canônica de intenção de escrita **já existia** em Circulares e em Cardápios. As
+correções desta noite em Acontece, Agora e Momentos não inventaram convenção —
+trouxeram três famílias para a convenção que já era da casa.
+
+**Um critério de decisão que a rodada produziu e que outras podem reusar:**
+latente com custo de *crash* não é a mesma coisa que latente com custo de
+*recusa*. Foi ele que separou o intervalo de datas invertido — que estoura o
+seletor ao abrir e por isso foi corrigido — de três outras inconsistências
+latentes cuja pior consequência seria o servidor recusar, e que ficaram apenas
+registradas.
+
 ## O censo de `IntrinsicHeight`
 
 Vale como exemplo do que uma varredura barata entrega. Há exatamente quatro usos
