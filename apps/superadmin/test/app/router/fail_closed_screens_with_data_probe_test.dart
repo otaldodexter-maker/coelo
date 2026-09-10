@@ -35,8 +35,15 @@ import 'package:flutter_test/flutter_test.dart';
 /// exercised nothing. Widget density does not discriminate either, since the
 /// shell alone contributes around 1400. The guard that is missing in that case
 /// is about the INPUT, not the output: assert that the identifier came from a
-/// row actually present in the listing. Another front hit exactly this and
-/// found that sixteen of twenty passing detail probes were empty pages.
+/// row actually present in the listing.
+///
+/// An earlier version of this comment attributed a count of empty detail probes
+/// to another front. That number could not be substantiated when checked, and
+/// the measurement that does exist points the other way: twenty-two
+/// parameterised routes walked with ids harvested from the listings themselves,
+/// at two viewports, all of them reaching real content. The mechanism above is
+/// real and worth guarding against; the count was not, so it is gone. Harvest
+/// the ids from the listing and the question does not arise.
 void main() {
   const probes = <({String name, String path})>[
     (name: 'Pessoas', path: SuperadminRoutes.devPeople),
