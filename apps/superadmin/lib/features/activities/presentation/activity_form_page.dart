@@ -97,6 +97,8 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
   void didUpdateWidget(covariant ActivityFormPage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.activityId == widget.activityId &&
+        oldWidget.initialInstitutionId == widget.initialInstitutionId &&
+        oldWidget.initialUnitId == widget.initialUnitId &&
         identical(oldWidget.repository, widget.repository)) {
       return;
     }
@@ -105,6 +107,7 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
     _failedCommand = null;
     _pendingAttempt = null;
     _state = _ActivityFormLoadState.loading;
+    _loadGeneration++;
     _commandGeneration++;
     WidgetsBinding.instance.addPostFrameCallback((_) => _load());
   }
@@ -123,6 +126,11 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
     final generation = ++_loadGeneration;
     final repository = widget.repository;
     final activityId = widget.activityId;
+    final initialInstitutionId = widget.initialInstitutionId;
+    final initialUnitId = widget.initialUnitId;
+    final initialTemplateId = widget.initialTemplateId;
+    final initialDraft = widget.initialDraft;
+    final initialStep = widget.initialStep;
     final isEditing = activityId != null;
     setState(() => _state = _ActivityFormLoadState.loading);
     try {
@@ -134,9 +142,9 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
       }
       ActivityFormOptions options;
       String? initialCatalogError;
-      if (isEditing || widget.initialInstitutionId != null) {
+      if (isEditing || initialInstitutionId != null) {
         options = await repository.fetchFormOptions(
-          institutionId: detail?.item.institutionId ?? widget.initialInstitutionId!,
+          institutionId: detail?.item.institutionId ?? initialInstitutionId!,
         );
       } else {
         try {
@@ -166,15 +174,15 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
           ? ActivityFormController.edit(
               options,
               detail!,
-              initialDraft: widget.initialDraft,
+              initialDraft: initialDraft,
               professionalSearcher: (institutionId, query) =>
                   repository.searchProfessionals(institutionId: institutionId, query: query),
             )
           : ActivityFormController.create(
               options,
-              initialInstitutionId: widget.initialInstitutionId,
-              initialUnitId: widget.initialUnitId,
-              initialTemplateId: widget.initialTemplateId,
+              initialInstitutionId: initialInstitutionId,
+              initialUnitId: initialUnitId,
+              initialTemplateId: initialTemplateId,
               loadScopedOptions: (institutionId) =>
                   repository.fetchFormOptions(institutionId: institutionId),
               loadTemplateOptions: (institutionId) =>
@@ -183,7 +191,7 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
               professionalSearcher: (institutionId, query) =>
                   repository.searchProfessionals(institutionId: institutionId, query: query),
             );
-      if (widget.initialStep case final step?) {
+      if (initialStep case final step?) {
         nextController.goToStep(step.index);
       }
       if (!_isCurrentLoad(generation, repository, activityId)) {
