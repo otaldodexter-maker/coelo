@@ -1,303 +1,844 @@
 {
-  "revision": 17,
-  "round": "E2-R03-20260910",
-  "respostasDoOwnerLote2": {
-    "quando": "2026-09-10 ~19:00",
-    "fechadas": "P2 e P14 feitos pelo Owner; P3 localhost:3000; P5 sim; P6 trocar; P7 todos mediante perfis e permissoes (plataforma ou instituicao); P8 Criar grupo agora (apos realm interno); P10 e P11 nada exige MFA no MVP; P13 confirmado; P15 rodape ancorado com espaco no fim; P16 caso extra bloquear com aviso",
-    "abertas": "P19 ao vivo no Agora; P20 token antigo com 25 permissoes; P21 Access na frente do Superadmin; HostGator (site, e-mail, blog)",
-    "registro": "ADR 0034 Decisao 12; tabela de estado em next-round/R03-perguntas-ao-owner-20260910.md",
-    "pacotesDerivados": ["coordenador: migration unica 'MFA fora do MVP' (requires_mfa=false no catalogo e alinhamento das funcoes que negam por AAL2; libera people_read_aal1 e a escrita de Pessoas/Perfis/Modelos)", "principal-chat + acessos-pessoas: has_platform_permission com membership de instituicao (P7)", "principal-chat: Criar grupo no Chat (P8), apos realm interno v2", "estrutura: P5 e P6 no cliente", "formularios: tipo location no MVP (P16) e P15 no frame compartilhado (respiro no fim do conteudo)"],
-    "tokensCloudflare": "os arquivos traziam a pagina inteira de sucesso da Cloudflare; o valor real ('Seu token de API') tem 53 caracteres e a extracao anterior cortava em 40. Reextraido e provado por chamada real (Pages e Stream) na rev 17; ver tokensCloudflareVerificacao"
-  },
-  "tokensCloudflareVerificacao": "2026-09-10 ~19:05: deploy (coelo-deploy-apps, 53 chars) -> GET /accounts/{id}/pages/projects OK e wrangler whoami logado com Account API Token; gravado como CLOUDFLARE_API_TOKEN e CLOUDFLARE_ACCOUNT_ID no ambiente do usuario Windows. Stream (coelo-edge-functions-stream, 53 chars) -> GET /accounts/{id}/stream OK; regravado como COELO_STREAM_API_TOKEN. R2 regravado com o arquivo atual. Os tres arquivos foram apagados. Licao: a pagina de sucesso da Cloudflare mostra o valor em 'Seu token de API' com 53 caracteres; nao cortar em 40.",
-  "avisosPreflight": {
-    "quando": "2026-09-10 18:55",
-    "resultado": "a cadeia de Avisos NAO entra em producao ainda: 20260812003000 notices_production insere em platform_permissions sem module_label (NOT NULL); 20260820204824 app_communications_contract tem defeito proprio ('missing FROM-clause entry for table p_notice'); 20260820220500 exige app_private.append_notice_audit(7 args) que nao existe; 20260820204752 aplica; 20260820212340 (runtime do worker) aplica so depois da fundacao. pgTAP: notice_production 9 ok/9 not ok, worker_runtime 21/7, communications_types 1/1",
-    "dono": "publicacoes-agenda (Codex): reentregar a fundacao de Avisos como pacote sobre a baseline com os labels e o append_notice_audit; o coordenador implanta notice-publication-worker, grava COELO_NOTICE_WORKER_SECRET e agenda o cron.schedule em seguida",
-    "espelho": "o ensaio de 003000 parou no meio sem transacao e poluiu o espelho; reconstruido por db reset + seed + lotes 1-7 antes de qualquer preflight novo"
-  },
-  "lote7": {"dump": "Coelo-backups/schema-producao-20260910-lote7.sql (18:48)", "aplicadoEm": "2026-09-10 18:55", "conteudo": ["20260910230019_superadmin_support_production_v1 (antiga 20260909217000; pgTAP 23/23 apos o coordenador trocar row_security_active(regclass,text), inexistente, por assercao sobre pg_class.relrowsecurity/relforcerowsecurity)", "20260910230020_superadmin_account_profile_v1 (antiga 20260909218000; 16/16)"], "verificado": "ledger 42; 5 RPCs superadmin_support_*, 3 superadmin_account_*, RLS forcado em support_sessions", "grupo": "operacoes (Codex), avisado pelo JSON; teste corrigido pelo coordenador e commitado em dev"},
-  "funcoesEmProducao": "circular-media v5 (R2) e moments-media v1 (R2, token unico) ACTIVE; happens-media, now-media, notice-publication-worker, meal-plan-image-cleanup e audit-export continuam sem deploy",
-  "reativacaoDasFrentes": {
-    "regra": "so quando o Owner mandar; cada frente recebe base dev atual, o usuario qa-r03@coelo.me (credencial em Coelo-backups/qa-r03.env) e o primeiro gate",
-    "estrutura": "reservas e bindings de Locais sobre a baseline (audit_append_superadmin_internal tem outra assinatura em producao), fixture de activity_save_v2 (activity_v2_denied_envelope), unit_detail_v2 candidato (nome do wrapper); depois rota normal de Unidades/Turmas/Locais com sessao",
-    "acessos-pessoas": "verificar por action_id as 18 RPCs do lote 4 com sessao; P11 quando o Owner responder; acordo D1 com principal-chat",
-    "formularios-cuidado-rotina": "rota normal de Cuidado/Rotina/Assiduidade/Alunos com sessao (chaves ligadas); P16 Local no MVP (tipo location); P15 apos o Owner",
-    "principal-chat-sistema": "migration R2 de happens/now no padrao de Circulares + fundacao do Agora com teste corrigido; deploy de happens-media e now-media na sequencia; chat depende do realm interno",
-    "publicacoes-agenda (Codex)": "corrigir notices_v2 (notice_events em analytics) e circulars_v2 (labels) como pacotes sobre a baseline; circular_delete renumerado na faixa 2026091020xxxx",
-    "operacoes (Codex)": "rota normal de Suporte e Conta com sessao (SQL em producao); Planos e Auditoria sobre o composto",
-    "realm-interno": "frente sem entrega; reatribuir a uma sessao Claude nova com o mesmo recorte",
-    "fase0": "Comunicacoes, Agenda, Assiduidade, Seguranca no composto; ARQUIVO/CHAT aguardam Owner; MENU-M"
-  },
-  "aprovacaoVisualDoOwner": {
-    "quando": "2026-09-10 noite",
-    "fonte": "goldens-claro-decisoes-2026-09-10.md (163 linhas) + goldens-acontece-cardapios-decisoes-2026-09-10.md (26) + goldens-decisoes-complementares-2026-09-10.md (Perfis de cuidado/Medicacao do artefato de01d63e, P15, RODAPE, CHAT, Locais, espacamento de Turmas), cada uma prevalecendo sobre a anterior",
-    "resultado": "180 goldens decididos mapeados por regra de prefixo para 52 action_ids em 23 familias; gravado no inventario como ownerVisualApproval {goldens, referencia, atual, fonte}; 0 arquivos sem regra (scratchpad/map-goldens.js)",
-    "promocoes": "11 diretorios ja migrados ao composto com goldens regravados apos as observacoes subiram para FE local-green (institutions, activities, groups, units, forms, health-care, medication, meal-plans, plans, circulars, notices): FE local-green 13 -> 23",
-    "metricaNova": "aprovacao visual do Owner 52/230 (22,61%), reportada ao lado de verified e local-green; nunca substitui verified"
-  },
-  "tokensDeContaComValorErrado": "coelo-edge-functions-stream e coelo-deploy-apps: os valores colados nos arquivos tinham 32 caracteres (formato de ID de token, nao de valor, que tem 40); /accounts/{id}/tokens/verify e /user/tokens/verify devolveram 400 e wrangler whoami falhou. COELO_STREAM_API_TOKEN nos secrets e CLOUDFLARE_API_TOKEN no ambiente do usuario estao com valor invalido ate o Owner girar os dois tokens no painel e salvar de novo; nenhum uso depende deles hoje. moments-media implantada com o token R2 (valido).",
-  "cloudflareFechamento": {
-    "quando": "2026-09-10 18:12 a 18:40",
-    "tokenR2": "criado pelo Owner (conta, Object Read & Write, tres buckets); gravado como COELO_R2_ENDPOINT/REGION/ACCESS_KEY_ID/SECRET_ACCESS_KEY a partir de arquivo local apagado em seguida",
-    "spike": "R2-T001 PUT assinado 200; T002 MIME divergente 403; T003 HEAD bytes/mime; T004 GET 200; T007 expirada 403; limpeza OK; T005/T006 no gateway (pgTAP); T008 lifecycle 7 dias + limpeza do catalogo; T009 varredura de segredos sem ocorrencia. Registrado em docs/spikes/media-r2/evidence-log.md (EV-007..EV-016)",
-    "funcoes": "circular-media implantada com o ramo R2 (migration 212000 ja estava em producao). moments-media: fundacao 20260910230017 + correcao de bucket 230018 aplicadas em producao (lote 6, ledger 40), funcao passa a ler COELO_R2_* (fallback) e bucket coelo-media-prod, testes 26/26; deploy na sequencia. happens-media e now-media: continuam sem deploy porque o storage_provider default e supabase_mvp; precisam de migration no padrao de Circulares (default r2, bucket por MIME) pelo grupo principal-chat-sistema; now_publication_mvp aplica na baseline mas seu pgTAP tem 1 not ok + 28 erros (drift)",
-    "stream": "token de conta coelo-edge-functions-stream (Stream Read+Edit) criado pelo Owner e gravado como COELO_STREAM_API_TOKEN + COELO_CLOUDFLARE_ACCOUNT_ID; valor nao exercitado ainda (verify de usuario devolve 400 para token de conta); custo zero ate o Agora promover video",
-    "dns": "zona coelo.me criada (Free, id 358365d64558c2cfd4f5aff62498f6ec) a pedido do Owner; nameservers atuais na HostGator dns3/dns4; pendente troca para armando/rosa.ns.cloudflare.com; nenhum registro importado; ssl full, always_use_https, tls 1.2 min, tls 1.3, http3, brotli, early hints ligados; registros dos apps so com deploy (token proprio)",
-    "pendenciasDeSegurancaNovas": "P20 token de usuario 'Cloudflare Agent Token - 2026-09-03' com 25 permissoes; P19 ao vivo no Agora e decisao de produto"
-  },
-  "posCorte": {
-    "quando": "2026-09-10 noite, apos o Owner responder P16/P17/P18 (ADR 0034 Decisao 10)",
-    "artefatoParaOOwner": "https://claude.ai/code/artifact/a8eadb47-c843-481a-bafb-053382d31d8a (explicacao simples + decisoes com imagens lado a lado)",
-    "usuarioSintetico": "qa-r03@coelo.me criado em producao pela API de administracao do Auth (id termina em ad58f5), vinculado ao realm interno v2 como owner de plataforma; login por senha provado com a chave publicavel (HTTP 200). Credencial em C:/Users/adrie/Documents/Coelo-backups/qa-r03.env (fora do Git). Insert manual em auth.users NAO funciona (GoTrue devolve 'Database error querying schema'); o guard do realm impede o mesmo auth user nos dois realms, por isso o usuario nao tem vinculo people-based. Remocao: scratchpad/gen-qa-user-sql.js em modo remover, ao fim da rodada.",
-    "lote5": {"dump": "Coelo-backups/schema-producao-20260910-lote5.sql", "aplicadoEm": "2026-09-10 noite", "conteudo": ["20260910230012_locations_capabilities_v1 (nove capacidades locations.* + concessao ao owner)", "230013 superadmin_location_catalog_v2_baseline (candidato de estrutura com revokes de ACL; pgTAP 30/30)", "230014 locations_update_status_v2 (28/28)", "230015 locations_copy_v2 (19/19)", "230016 locations_schedule_v2 (38/38)"], "verificado": "ledger 38; 9 permissoes e 9 concessoes ao owner; schedule_set_v2 presente; activity_locations sem grant a anon/authenticated", "naoEntrou": "20260908154257 activity_save_v2 (aplica, mas o pgTAP exige app_private.activity_v2_denied_envelope, ausente em producao), 20260909165000 reservations_v2 (preflight exige audit_append_superadmin_internal com 14 argumentos; producao tem outra assinatura), 180000/180100/180200 (dependem de reservas), 180300 unit_detail_v2_baseline (pgTAP 3 ok / 5 not ok: nome do wrapper). Tudo devolvido ao grupo estrutura com o erro exato."},
-    "regraNova": "pacote so entra em migrations/ com carimbo posterior a baseline; os historicos aceitos sao recarimbados na faixa do coordenador na ordem em que entram"
-  },
-  "corte1710": {
-    "shasFinais": {"fase0": "dev 5fb331f37 + wip/fase0-arquivo-chat 91e011dc6", "estrutura": "63be8a474", "acessos-pessoas": "d47e16839", "formularios-cuidado-rotina": "fdc89c488", "principal-chat-sistema": "49b92ffa3 (bridge; sem SHA de corte proprio)", "publicacoes-agenda": "3b21db696 (Codex, sem resposta ao corte)", "operacoes": "3fa07edd0 (Codex, sem resposta ao corte)", "realm-interno": "sem branch publicada (coelo-f0 nao respondeu)"},
-    "integrado": "todas as branches acima em work/etapa2-r03-coordenacao e publicadas em dev no fechamento; conflitos resolvidos pela versao do grupo em JSON/evidencias/goldens e nos arquivos de Alunos (dono formularios)",
-    "worktrees": "estrutura, acessos-pessoas, formularios, principal-chat: limpas e publicadas; publicacoes-agenda e operacoes: WIP nao commitado preservado nas worktrees (5 e 0 arquivos) por serem Codex sem resposta; checkout principal: arquivos de outros grupos preservados, Fase 0 limpa nos seus caminhos",
-    "lote5Bloqueado": "P18: nenhuma capacidade locations.* existe em producao; o candidato de catalog_v2 ja passa as duas guardas de ACL com os revokes e para na fixture de capacidade Owner-only por desenho",
-    "verificacaoSemSessao": "acessos-pessoas provou por action_id que as 18 RPCs do lote 4 existem, resolvem pela assinatura e negam anonimo (42501); nada promovido a verified; achado para principal-chat: list_visible_happens_posts do cliente envia cursor que producao nao conhece (PGRST202) ate 20260910150000 ser aplicada",
-    "pausa": "frentes paradas por ordem do Owner; reativacao so quando ele voltar",
-    "shaPublicado": "dev d6759ddf9 (2026-09-10T17:12:57-03:00); analyze limpo; validador dos rastreadores PASS; inventario: FE verified 11/230, FE local-green 13/230, BE local-green 46/223, BE com SQL aplicado em producao 27/223, BE done 0/223, E2E 0/198",
-    "worktreesNoCorte": "acessos-pessoas d47e16839, estrutura 63be8a474, formularios fdc89c488, operacoes 3fa07edd0, principal-chat a9faabd01, publicacoes-agenda 3b21db696, coordenacao d6759ddf9: todas limpas. realm-interno: worktree criada por coelo-f0 em 7ce4337b1 com milhares de arquivos modificados (ver inspecao na rev 12) e sem branch remota. Checkout principal: 10 arquivos de outros grupos preservados (principal_for_you, principal_happens, meal_plan_repository, refs coelo-ui, goldens de notices)."
-  },
-  "role": "Coordenacao e Integracao - Claude (P1)",
-  "writer": "coordenador-claude",
-  "sessionName": "coelo-2b",
-  "sessionRef": "ea1243",
-  "app": "Claude Code (VS Code)",
-  "model": "claude-fable-5-1",
-  "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-10T16:20:00-03:00",
-  "historicoDeRevisoes": {
-    "1": "2026-09-10T14:50 posse, ACK dos sete canais, estado de producao, CORS e lifecycle aplicados, fila SQL R03, perguntas P1-P10 (commit e6f40f9bc em dev)",
-    "2": "15:10 rastreadores com o estado medido, RPCs de Unidades versionadas, ADR 0034 Decisao 7, merge de estrutura",
-    "3": "15:40 merges de principal-chat-sistema, publicacoes-agenda, operacoes, formularios-cuidado-rotina; runner do spike R2",
-    "4": "16:20 merges de acessos-pessoas (local) e operacoes (commit local); deltas de estado por action_id; incidente do JSON sobrescrito assumido; perguntas P11-P14; ordem do Owner de 10/09 (tarde) incorporada",
-    "5": "base integrada publicada em dev bdd7eef82 e 552058da0 (inclui os lotes 5 e 6 da Fase 0); testes e analyze da base conjunta registrados; skills com as regras medidas; portao de conhecimento PASS",
-    "6": "16:05 (relogio real) respostas do Owner P1 B, P2, P4, P12, P14 (ADR 0034 Decisao 8); chaves publicaveis gravadas; dump logico de producao; baseline provada em projeto descartavel; preflight de quatro pacotes; DOIS PACOTES APLICADOS EM PRODUCAO; migrations/ reestruturado com a baseline; corte de handoff das frentes as 16:30 e consolidacao ate 17:45 por ordem do Owner",
-    "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina."
-  },
-  "notaDeRevisao": "O conteudo da rodada E2-NOTURNA-20260909 (revisao 31) permanece no historico do Git; nada dele vale como estado atual. Nao ha 'nenhuma rodada nova aberta': a Rodada 3 esta aberta desde a Fase 0.",
-  "relogio": "Relogio do coordenador (maquina): 14:16 -03:00 na posse. Os JSONs dos grupos carimbam 3 a 4 horas a frente; o coordenador registra pelo relogio da maquina e nao antecipa cortes por carimbo.",
-  "exclusivity": {
-    "soleIntegratorOfDev": true,
-    "soleWriterOfTrackersAndInventory": true,
-    "faseZero": "A Fase 0 (fase0.json) continua commitando lotes pequenos em dev pelo checkout principal. E o unico outro escritor de dev; os dois fazem fetch e rebase antes de push.",
-    "checkoutDoCoordenador": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-coordenacao, branch work/etapa2-r03-coordenacao, upstream origin/dev, push com git push origin HEAD:dev apos rebase. O coordenador nao edita a arvore do checkout principal."
-  },
-  "base": {
-    "root": "C:/Users/adrie/Documents/Coelo",
-    "branch": "dev",
-    "fase0Head": "1adb070c9028850ccdd7e091db5b97b63b95c750",
-    "fase0HeadShort": "1adb070c9",
-    "fase0PublishedAt": "2026-09-10T14:12:14-03:00 (hora do commit)",
-    "devRemotoAoAbrirRev4": "e6f40f9bc (origin/dev); Fase 0 sem push novo desde 8fafbe16c",
-    "baseIntegradaLocal": "work/etapa2-r03-coordenacao a partir de 2dff73c16 (rev 4 acrescenta este arquivo e os deltas de acessos-pessoas); SHA final publicado em dev fica em integracaoNoCorte.shaPublicado",
-    "arvoreDoCoordenador": "limpa apos cada commit; sem stash proprio",
-    "checkoutPrincipal": "dev local em 8fafbe16c, atras de origin/dev; 12 arquivos modificados e 1 nao rastreado da Fase 0 e do grupo principal-chat-sistema (WIP deles, intocado); stash 'r03-jsons-grupos' obsoleto do coordenador (o descarte foi bloqueado pelo classificador; pode ser descartado por qualquer um)"
-  },
-  "incidenteDoCheckoutCompartilhado": {
-    "assumido": "Foi o coordenador. As 14:15 fez git stash push dos tres JSONs de comunicacao no checkout principal para avancar dev, e o pop seguinte devolveu os arquivos ao estado do stash. Entre o push e o pop, acessos-pessoas.json voltou ao conteudo da revisao 56 (HEAD) e o utilitario do grupo leu 56 e gravou 57; as revisoes 57-83 ficaram so no historico da worktree do grupo. O grupo reconstruiu tudo na revisao 84 e versionou uma copia na propria branch. O conflito UU em principal_happens_preview_page.dart visto no mesmo minuto NAO veio do stash (conferido: o stash so tinha os JSONs) e foi resolvido por quem trabalha na arvore principal.",
-    "regraDaqui": "O coordenador nao toca a arvore do checkout principal. Grupo com worktree edita so nela e publica a branch; o JSON de comunicacao vale pela copia na branch do grupo quando o checkout principal divergir. Quem precisar do checkout principal registra no proprio JSON antes."
-  },
-  "ordemDoOwner20260910Tarde": {
-    "recebidaEm": "2026-09-10T15:50:00-03:00",
-    "resumo": "Assumir a coordenacao central; nao so auditar: reconciliar, integrar, aplicar o remoto autorizado e atualizar a documentacao ate o proximo estado verificavel. Decisoes de 10/09 sao aprovadas e nao se reabrem. Aprovacao visual nao vira verified/done/E2E. Integrar por conteudo com testes na base conjunta; sem reset --hard, clean, descarte de stash ou force-push. Rastreadores, inventario e coordenacao.json no mesmo ciclo; fechamento em formato fixo.",
-    "reafirmado": "Pesquisar no menu e botao de Bug no cabecalho em todas as telas (a Fase 0 registrou os dois no composto: Bug sempre presente, Pesquisar mantido). As decisoes por golden da lista de 10/09 continuam valendo como referencia."
-  },
-  "frentes": [
-    {"grupo": "fase0", "app": "Claude Fable", "worktree": "checkout principal", "branch": "dev", "headRecebido": "1adb070c9 (base) e 8fafbe16c (Planos e Cardapios)", "upstream": "origin/dev", "divergencia": "checkout principal atras de origin/dev desde e6f40f9bc", "wip": "12 modificados + 1 nao rastreado no checkout principal (Planos goldens, Cardapios, principal_for_you, principal_happens, teste de arquitetura, refs de coelo-ui)", "recebido": "r4", "integrado": "tudo que ela commitou esta em dev", "aplicadoEmProducao": "n/a", "e2e": "nenhum", "proximoPasso": "Comunicacoes, Circulares, Agenda eventos no composto; depois Pessoas, Convites, Perfis de acesso; fazer git pull --rebase antes de cada push porque dev avancou"},
-    {"grupo": "estrutura", "app": "Claude Opus", "worktree": "e2-r03-estrutura", "branch": "work/etapa2-r03-estrutura", "headRecebido": "b92585d38", "upstream": "origin/work/etapa2-r03-estrutura 0/0", "wip": "nenhum", "recebido": "r18", "integrado": "16 commits, merge f615575de; testes alvo na base conjunta 356 PASS / 4 FAIL (4 goldens de formulario que divergem pela decisao RODAPE)", "aplicadoEmProducao": "nenhum (fila pos 4, 6, 7 e 26 retidas por P1)", "e2e": "nenhum", "primeiroGate": "chaves publicaveis na maquina (P4) para abrir a rota normal; depois structureMutationsEnabled apos o SQL", "proximoPasso": "regravar os goldens de formulario do recorte apos RODAPE; compor SupabaseUnitDirectoryRepository/SupabaseGroupDirectoryRepository no lugar dos Unavailable* (as RPCs existem em producao); responder P5/P6 quando o Owner decidir"},
-    {"grupo": "acessos-pessoas", "app": "Claude Opus", "worktree": "e2-r03-acessos-pessoas", "branch": "work/etapa2-r03-acessos-pessoas", "headRecebido": "d10239641", "upstream": "publicada pelo coordenador em 16:05 (o push do grupo estava bloqueado pelo classificador da sessao dele)", "wip": "nenhum", "recebido": "r84 (pela copia versionada na branch)", "integrado": "17 commits, merge 25712b0e6; conflito nos dois scripts de replay resolvido pela uniao dos perfis (StructureLocationConsumersV1 + PersonDetailV2, InvitesV2, InternalUsersV2); parse PowerShell 0 erros", "aplicadoEmProducao": "nenhum (fila pos 27-33 retidas por P1)", "e2e": "nenhum", "primeiroGate": "P1 (aplicar os quatro pacotes verdes destrava 16 das 38 acoes sem Dart); P11 (AAL2 em Pessoas)", "proximoPasso": "modelo de acompanhamento D1 com principal-chat-sistema (proposta em acompanhamento-d1-proposta.md; quatro pontos a fechar entre os dois grupos, nao com o Owner); telas sobre o composto quando a Fase 0 migrar Pessoas/Convites/Perfis de acesso"},
-    {"grupo": "principal-chat-sistema", "app": "Claude Opus", "worktree": "e2-r03-principal-chat-sistema", "branch": "work/etapa2-r03-principal-chat-sistema", "headRecebido": "8921a6261", "upstream": "0/0", "wip": "trabalha tambem na arvore do checkout principal (principal_happens sem previa): registrar no JSON e mover para a worktree", "recebido": "r7", "integrado": "7 commits, merge 3f5934fb5; meal_plans/chat/attendance/circulars/happens/shell na base conjunta: 455 PASS / 24 FAIL, todos golden (attendance e formularios que divergem pela decisao RODAPE)", "aplicadoEmProducao": "nenhum (fila pos 2, 8, 10-13, 21-24 retidas por P1)", "e2e": "nenhum", "primeiroGate": "P1; realm interno v2 ausente em producao antes de chat.list e chat_conversation_preferences", "proximoPasso": "remover as mensagens de previa restantes do Acontece (D3); curtir/comentar exige pacote proprio de backend (tabela de reacoes/comentarios): escrever e entregar; P7 e P8 ao Owner"},
-    {"grupo": "publicacoes-agenda", "app": "Codex Luna", "worktree": "e2-r03-publicacoes-agenda", "branch": "work/etapa2-r03-publicacoes-agenda", "headRecebido": "54a83c9de", "upstream": "0/0", "wip": "5 arquivos modificados nao commitados (notice_directory_page.dart, 3 goldens de communication_directory, notice_card_status_layout_test.dart): preservados na worktree, nao integrados", "recebido": "r5", "integrado": "9 commits, merge abd84b042", "aplicadoEmProducao": "nenhum (pos 3, 9, 25 retidas por P1)", "e2e": "nenhum", "primeiroGate": "pgTAP de superadmin_circular_delete_v2 em perfil declarado (janela de replay)", "proximoPasso": "commitar o WIP de Avisos; corrigir 20260901185008 (notice_events esta em analytics) e 20260901191921 (labels NOT NULL) apontadas por acessos-pessoas; Agenda listar/criar/editar/detalhe"},
-    {"grupo": "operacoes", "app": "Codex Luna", "worktree": "e2-r03-operacoes", "branch": "work/etapa2-r03-operacoes", "headRecebido": "b02478937 (1 commit a frente do remoto, integrado a partir da branch local)", "upstream": "origin/work/etapa2-r03-operacoes 1/0", "wip": "nenhum", "recebido": "r6", "integrado": "12 commits, merges c6d2e5dae e b80b0b054", "aplicadoEmProducao": "nenhum (pos 1, 14, 15 retidas por P1)", "e2e": "nenhum", "primeiroGate": "pgTAP nominal de Suporte e Conta num perfil de replay declarado (usar o manifesto corrigido ou projeto descartavel proprio)", "proximoPasso": "publicar b02478937; pgTAP de 20260909217000 e 20260909218000; Planos e Auditoria sobre o composto (Planos ja migrado pela Fase 0 em 8fafbe16c)"},
-    {"grupo": "formularios-cuidado-rotina", "app": "Claude Opus", "worktree": "e2-r03-formularios-cuidado-rotina", "branch": "work/etapa2-r03-formularios-cuidado-rotina", "headRecebido": "e070506f5", "upstream": "0/0", "wip": "1 modificado nao commitado (20260813155005_forms_definition_and_capabilities.sql): preservado na worktree; se for correcao de migration ausente em producao, commitar com a justificativa", "recebido": "r7", "integrado": "6 commits, merge bfd73cc75", "aplicadoEmProducao": "nenhum (pos 16-20 retidas por P1)", "e2e": "nenhum", "primeiroGate": "P1; P9 (leitura por responsavel familiar) nao bloqueia o MVP do Superadmin", "proximoPasso": "repositorios Supabase de Perfis de cuidado, Medicacao e Rotina no cliente; Formularios (Testar por capacidade, D6); XLSX no R2 depois do token (P2)"}
+ "revision": 18,
+ "round": "E2-R03-20260910",
+ "respostasDoOwnerLote2": {
+  "quando": "2026-09-10 ~19:00",
+  "fechadas": "P2 e P14 feitos pelo Owner; P3 localhost:3000; P5 sim; P6 trocar; P7 todos mediante perfis e permissoes (plataforma ou instituicao); P8 Criar grupo agora (apos realm interno); P10 e P11 nada exige MFA no MVP; P13 confirmado; P15 rodape ancorado com espaco no fim; P16 caso extra bloquear com aviso",
+  "abertas": "P19 ao vivo no Agora; P20 token antigo com 25 permissoes; P21 Access na frente do Superadmin; HostGator (site, e-mail, blog)",
+  "registro": "ADR 0034 Decisao 12; tabela de estado em next-round/R03-perguntas-ao-owner-20260910.md",
+  "pacotesDerivados": [
+   "coordenador: migration unica 'MFA fora do MVP' (requires_mfa=false no catalogo e alinhamento das funcoes que negam por AAL2; libera people_read_aal1 e a escrita de Pessoas/Perfis/Modelos)",
+   "principal-chat + acessos-pessoas: has_platform_permission com membership de instituicao (P7)",
+   "principal-chat: Criar grupo no Chat (P8), apos realm interno v2",
+   "estrutura: P5 e P6 no cliente",
+   "formularios: tipo location no MVP (P16) e P15 no frame compartilhado (respiro no fim do conteudo)"
   ],
-  "receipts": [
-    {"grupo": "fase0", "revisaoRecebida": 5, "ack": true, "recebidoEm": "2026-09-10T16:45:00-03:00", "nota": "lotes 5 e 6 (Planos, Cardapios, Circulares, Comunicacoes) recebidos por origin/dev e incluidos na base integrada bdd7eef82"},
-    {"grupo": "estrutura", "revisaoRecebida": 18, "ack": true, "recebidoEm": "2026-09-10T14:20:00-03:00", "integradoEm": "2026-09-10T15:05:00-03:00 f615575de"},
-    {"grupo": "acessos-pessoas", "revisaoRecebida": 84, "ack": true, "recebidoEm": "2026-09-10T16:00:00-03:00", "integradoEm": "2026-09-10T16:05:00-03:00 25712b0e6", "nota": "Sobrescrita do JSON assumida pelo coordenador (ver incidente). Branch publicada em origin. Pedidos AP-D1/AP-D2/AP-D3 e o incidente de credencial foram ao Owner como P11-P14. Manifesto do replay: o coordenador refaz o hash de 20260901190432 quando o Owner responder P12 (baseline), porque a decisao muda o harness inteiro."},
-    {"grupo": "principal-chat-sistema", "revisaoRecebida": 7, "ack": true, "recebidoEm": "2026-09-10T14:20:00-03:00", "integradoEm": "2026-09-10T15:30:00-03:00 3f5934fb5"},
-    {"grupo": "publicacoes-agenda", "revisaoRecebida": 5, "ack": true, "recebidoEm": "2026-09-10T14:20:00-03:00", "integradoEm": "2026-09-10T15:35:00-03:00 abd84b042"},
-    {"grupo": "operacoes", "revisaoRecebida": 6, "ack": true, "recebidoEm": "2026-09-10T14:20:00-03:00", "integradoEm": "2026-09-10T16:05:00-03:00 c6d2e5dae + b80b0b054"},
-    {"grupo": "formularios-cuidado-rotina", "revisaoRecebida": 7, "ack": true, "recebidoEm": "2026-09-10T14:20:00-03:00", "integradoEm": "2026-09-10T15:35:00-03:00 bfd73cc75"}
+  "tokensCloudflare": "os arquivos traziam a pagina inteira de sucesso da Cloudflare; o valor real ('Seu token de API') tem 53 caracteres e a extracao anterior cortava em 40. Reextraido e provado por chamada real (Pages e Stream) na rev 17; ver tokensCloudflareVerificacao"
+ },
+ "tokensCloudflareVerificacao": "2026-09-10 ~19:05: deploy (coelo-deploy-apps, 53 chars) -> GET /accounts/{id}/pages/projects OK e wrangler whoami logado com Account API Token; gravado como CLOUDFLARE_API_TOKEN e CLOUDFLARE_ACCOUNT_ID no ambiente do usuario Windows. Stream (coelo-edge-functions-stream, 53 chars) -> GET /accounts/{id}/stream OK; regravado como COELO_STREAM_API_TOKEN. R2 regravado com o arquivo atual. Os tres arquivos foram apagados. Licao: a pagina de sucesso da Cloudflare mostra o valor em 'Seu token de API' com 53 caracteres; nao cortar em 40.",
+ "avisosPreflight": {
+  "quando": "2026-09-10 18:55",
+  "resultado": "a cadeia de Avisos NAO entra em producao ainda: 20260812003000 notices_production insere em platform_permissions sem module_label (NOT NULL); 20260820204824 app_communications_contract tem defeito proprio ('missing FROM-clause entry for table p_notice'); 20260820220500 exige app_private.append_notice_audit(7 args) que nao existe; 20260820204752 aplica; 20260820212340 (runtime do worker) aplica so depois da fundacao. pgTAP: notice_production 9 ok/9 not ok, worker_runtime 21/7, communications_types 1/1",
+  "dono": "publicacoes-agenda (Codex): reentregar a fundacao de Avisos como pacote sobre a baseline com os labels e o append_notice_audit; o coordenador implanta notice-publication-worker, grava COELO_NOTICE_WORKER_SECRET e agenda o cron.schedule em seguida",
+  "espelho": "o ensaio de 003000 parou no meio sem transacao e poluiu o espelho; reconstruido por db reset + seed + lotes 1-7 antes de qualquer preflight novo"
+ },
+ "lote7": {
+  "dump": "Coelo-backups/schema-producao-20260910-lote7.sql (18:48)",
+  "aplicadoEm": "2026-09-10 18:55",
+  "conteudo": [
+   "20260910230019_superadmin_support_production_v1 (antiga 20260909217000; pgTAP 23/23 apos o coordenador trocar row_security_active(regclass,text), inexistente, por assercao sobre pg_class.relrowsecurity/relforcerowsecurity)",
+   "20260910230020_superadmin_account_profile_v1 (antiga 20260909218000; 16/16)"
   ],
-  "classificacaoDoIntegrado": {
-    "entregaPronta": "codigo + teste + doc de cada grupo listado em frentes[].integrado; cada commit foi lido pelo titulo e o conjunto foi provado por analyze e testes de familia na base conjunta",
-    "wipNaoTerminado": "publicacoes-agenda (5 arquivos), formularios-cuidado-rotina (1 migration), Fase 0/principal-chat no checkout principal (13 arquivos): todos preservados onde estao, nenhum integrado",
-    "documentacao": "handoffs e evidencias em docs/reviews/evidence/etapa-2/r03-*/ e os JSONs de comunicacao (versao da branch de cada grupo)",
-    "artefatoDeTeste": "perfis de replay novos (StructureLocationConsumersV1, PersonDetailV2, InvitesV2, InternalUsersV2), pgTAP novos, testes Dart",
-    "alteracaoDoOwner": "RODAPE e CHAT (estrutura 4917bcade, no frame compartilhado) e Arquivos escondido (Fase 0 1adb070c9)",
-    "conflitanteOuSemDono": "scripts de replay (resolvido pela uniao); JSONs de comunicacao (versao da branch do grupo prevalece); manifesto do replay com hash pre-correcao de 20260901190432 (dono: coordenador, aguarda P12)"
+  "verificado": "ledger 42; 5 RPCs superadmin_support_*, 3 superadmin_account_*, RLS forcado em support_sessions",
+  "grupo": "operacoes (Codex), avisado pelo JSON; teste corrigido pelo coordenador e commitado em dev"
+ },
+ "funcoesEmProducao": "circular-media v5 (R2) e moments-media v1 (R2, token unico) ACTIVE; happens-media, now-media, notice-publication-worker, meal-plan-image-cleanup e audit-export continuam sem deploy",
+ "reativacaoDasFrentes": {
+  "regra": "reativacao acontece pela Rodada 4 (prompts em next-round/R04-prompts.md), em worktrees novas e2-r04-<grupo> a partir de origin/dev; cada frente recebe o usuario qa-r03@coelo.me (credencial em Coelo-backups/qa-r03.env) e o primeiro gate abaixo",
+  "estrutura": "reservas e bindings de Locais sobre a baseline (audit_append_superadmin_internal tem outra assinatura em producao), fixture de activity_save_v2 (activity_v2_denied_envelope), unit_detail_v2 candidato (nome do wrapper); depois rota normal de Unidades/Turmas/Locais com sessao",
+  "acessos-pessoas": "verificar por action_id as 18 RPCs do lote 4 com sessao; P11 quando o Owner responder; acordo D1 com principal-chat",
+  "formularios-cuidado-rotina": "rota normal de Cuidado/Rotina/Assiduidade/Alunos com sessao (chaves ligadas); P16 Local no MVP (tipo location); P15 apos o Owner",
+  "principal-chat-sistema": "migration R2 de happens/now no padrao de Circulares + fundacao do Agora com teste corrigido; deploy de happens-media e now-media na sequencia; chat depende do realm interno",
+  "publicacoes-agenda (Codex)": "corrigir notices_v2 (notice_events em analytics) e circulars_v2 (labels) como pacotes sobre a baseline; circular_delete renumerado na faixa 2026091020xxxx",
+  "operacoes (Codex)": "rota normal de Suporte e Conta com sessao (SQL em producao); Planos e Auditoria sobre o composto",
+  "realm-interno": "frente sem entrega; reatribuir a uma sessao Claude nova com o mesmo recorte",
+  "fase0": "Comunicacoes, Agenda, Assiduidade, Seguranca no composto; ARQUIVO/CHAT aguardam Owner; MENU-M"
+ },
+ "aprovacaoVisualDoOwner": {
+  "quando": "2026-09-10 noite",
+  "fonte": "goldens-claro-decisoes-2026-09-10.md (163 linhas) + goldens-acontece-cardapios-decisoes-2026-09-10.md (26) + goldens-decisoes-complementares-2026-09-10.md (Perfis de cuidado/Medicacao do artefato de01d63e, P15, RODAPE, CHAT, Locais, espacamento de Turmas), cada uma prevalecendo sobre a anterior",
+  "resultado": "180 goldens decididos mapeados por regra de prefixo para 52 action_ids em 23 familias; gravado no inventario como ownerVisualApproval {goldens, referencia, atual, fonte}; 0 arquivos sem regra (scratchpad/map-goldens.js)",
+  "promocoes": "11 diretorios ja migrados ao composto com goldens regravados apos as observacoes subiram para FE local-green (institutions, activities, groups, units, forms, health-care, medication, meal-plans, plans, circulars, notices): FE local-green 13 -> 23",
+  "metricaNova": "aprovacao visual do Owner 52/230 (22,61%), reportada ao lado de verified e local-green; nunca substitui verified"
+ },
+ "tokensDeContaComValorErrado": "coelo-edge-functions-stream e coelo-deploy-apps: os valores colados nos arquivos tinham 32 caracteres (formato de ID de token, nao de valor, que tem 40); /accounts/{id}/tokens/verify e /user/tokens/verify devolveram 400 e wrangler whoami falhou. COELO_STREAM_API_TOKEN nos secrets e CLOUDFLARE_API_TOKEN no ambiente do usuario estao com valor invalido ate o Owner girar os dois tokens no painel e salvar de novo; nenhum uso depende deles hoje. moments-media implantada com o token R2 (valido).",
+ "cloudflareFechamento": {
+  "quando": "2026-09-10 18:12 a 18:40",
+  "tokenR2": "criado pelo Owner (conta, Object Read & Write, tres buckets); gravado como COELO_R2_ENDPOINT/REGION/ACCESS_KEY_ID/SECRET_ACCESS_KEY a partir de arquivo local apagado em seguida",
+  "spike": "R2-T001 PUT assinado 200; T002 MIME divergente 403; T003 HEAD bytes/mime; T004 GET 200; T007 expirada 403; limpeza OK; T005/T006 no gateway (pgTAP); T008 lifecycle 7 dias + limpeza do catalogo; T009 varredura de segredos sem ocorrencia. Registrado em docs/spikes/media-r2/evidence-log.md (EV-007..EV-016)",
+  "funcoes": "circular-media implantada com o ramo R2 (migration 212000 ja estava em producao). moments-media: fundacao 20260910230017 + correcao de bucket 230018 aplicadas em producao (lote 6, ledger 40), funcao passa a ler COELO_R2_* (fallback) e bucket coelo-media-prod, testes 26/26; deploy na sequencia. happens-media e now-media: continuam sem deploy porque o storage_provider default e supabase_mvp; precisam de migration no padrao de Circulares (default r2, bucket por MIME) pelo grupo principal-chat-sistema; now_publication_mvp aplica na baseline mas seu pgTAP tem 1 not ok + 28 erros (drift)",
+  "stream": "token de conta coelo-edge-functions-stream (Stream Read+Edit) criado pelo Owner e gravado como COELO_STREAM_API_TOKEN + COELO_CLOUDFLARE_ACCOUNT_ID; valor nao exercitado ainda (verify de usuario devolve 400 para token de conta); custo zero ate o Agora promover video",
+  "dns": "zona coelo.me criada (Free, id 358365d64558c2cfd4f5aff62498f6ec) a pedido do Owner; nameservers atuais na HostGator dns3/dns4; pendente troca para armando/rosa.ns.cloudflare.com; nenhum registro importado; ssl full, always_use_https, tls 1.2 min, tls 1.3, http3, brotli, early hints ligados; registros dos apps so com deploy (token proprio)",
+  "pendenciasDeSegurancaNovas": "P20 token de usuario 'Cloudflare Agent Token - 2026-09-03' com 25 permissoes; P19 ao vivo no Agora e decisao de produto"
+ },
+ "posCorte": {
+  "quando": "2026-09-10 noite, apos o Owner responder P16/P17/P18 (ADR 0034 Decisao 10)",
+  "artefatoParaOOwner": "https://claude.ai/code/artifact/a8eadb47-c843-481a-bafb-053382d31d8a (explicacao simples + decisoes com imagens lado a lado)",
+  "usuarioSintetico": "qa-r03@coelo.me criado em producao pela API de administracao do Auth (id termina em ad58f5), vinculado ao realm interno v2 como owner de plataforma; login por senha provado com a chave publicavel (HTTP 200). Credencial em C:/Users/adrie/Documents/Coelo-backups/qa-r03.env (fora do Git). Insert manual em auth.users NAO funciona (GoTrue devolve 'Database error querying schema'); o guard do realm impede o mesmo auth user nos dois realms, por isso o usuario nao tem vinculo people-based. Remocao: scratchpad/gen-qa-user-sql.js em modo remover, ao fim da rodada.",
+  "lote5": {
+   "dump": "Coelo-backups/schema-producao-20260910-lote5.sql",
+   "aplicadoEm": "2026-09-10 noite",
+   "conteudo": [
+    "20260910230012_locations_capabilities_v1 (nove capacidades locations.* + concessao ao owner)",
+    "230013 superadmin_location_catalog_v2_baseline (candidato de estrutura com revokes de ACL; pgTAP 30/30)",
+    "230014 locations_update_status_v2 (28/28)",
+    "230015 locations_copy_v2 (19/19)",
+    "230016 locations_schedule_v2 (38/38)"
+   ],
+   "verificado": "ledger 38; 9 permissoes e 9 concessoes ao owner; schedule_set_v2 presente; activity_locations sem grant a anon/authenticated",
+   "naoEntrou": "20260908154257 activity_save_v2 (aplica, mas o pgTAP exige app_private.activity_v2_denied_envelope, ausente em producao), 20260909165000 reservations_v2 (preflight exige audit_append_superadmin_internal com 14 argumentos; producao tem outra assinatura), 180000/180100/180200 (dependem de reservas), 180300 unit_detail_v2_baseline (pgTAP 3 ok / 5 not ok: nome do wrapper). Tudo devolvido ao grupo estrutura com o erro exato."
   },
-  "producao": {
-    "projeto": "coelo / evvbomzejfijozbtgvpt, sa-east-1, Postgres 17",
-    "lidoEm": "2026-09-10T14:30:00-03:00 via supabase db query --linked (somente leitura)",
-    "blockedEnvironment": [
-      {"capacidade": "backup por ponto no tempo", "estado": "pitr_enabled=false, walg_enabled=true, zero backups fisicos", "efeito": "nenhuma migration aplicada (condicao 3 da Decisao 1 da ADR 0034)", "desbloqueio": "Owner responde P1 (ligar PITR ou dispensar com dump logico por lote)"},
-      {"capacidade": "criar token de API Cloudflare", "estado": "sessao OAuth do MCP recebe 9109 Unauthorized em /user/tokens e /accounts/{id}/tokens", "efeito": "token R2 minimo, migracao das tres funcoes de midia e spike retidos", "desbloqueio": "Owner cria o token no painel e grava os secrets (P2)"},
-      {"capacidade": "chaves publicaveis do Supabase na maquina", "estado": "COELO_SUPABASE_URL e COELO_SUPABASE_PUBLISHABLE_KEY ausentes", "efeito": "nenhuma frente abre a rota normal contra producao; nenhuma acao passa da regua do MVP", "desbloqueio": "Owner autoriza arquivo local ignorado pelo Git (P4)"}
-    ],
-    "ledger": {"ultimaVersaoRemota": "20260901200206", "versoesRemotas": 116, "arquivosLocais": 186, "somenteLocais": 121, "somenteRemotas": 51, "leitura": "ledger nao decide; presenca de objeto decide (evidence/etapa-2/r03-coordenacao/producao-presenca-por-migration-20260910.txt). acessos-pessoas mediu por outro caminho o mesmo: 96 das 162 RPCs chamadas pelo Superadmin nao existem em producao (rpc-cliente-vs-producao-2026-09-10.json)"},
-    "unidades": "As 13 RPCs de Unidades existem em public (security definer, execute para authenticated), 12 em app_private. Versionadas em 20260910160000 com pgTAP de contrato (units_rpcs_versioned_from_production_v1_test.sql).",
-    "workerDeAvisos": "pg_cron instalado (3 jobs de Formularios); funcoes do worker e notice-publication-worker ausentes; ordem: 20260820212340 e dependencias -> deploy -> secret -> cron.schedule; retido por P1",
-    "cardapios": "sem concessao meal_plans.* em platform_role_permissions; 20260910130000 e necessaria",
-    "migrationsQuebradasNaFila": ["20260901101500 superadmin_internal_chat_v2 (labels NOT NULL; dono principal-chat-sistema)", "20260901185008 superadmin_internal_notices_v2 (notice_events esta em analytics; dono publicacoes-agenda)", "20260901191921 superadmin_internal_circulars_v2 (labels NOT NULL; dono publicacoes-agenda)", "20260831164937 assert_unit_hierarchy_contract (contradiz producao; P13)"],
-    "incidenteDeCredencial": "supabase db dump --dry-run imprimiu PGPASSWORD do papel efemero do pooler na saida de ferramenta do grupo acessos-pessoas; nao usado nem persistido; pedido de troca de senha ao Owner (P14); regra: nao usar --dry-run em sessao de agente"
+  "regraNova": "pacote so entra em migrations/ com carimbo posterior a baseline; os historicos aceitos sao recarimbados na faixa do coordenador na ordem em que entram"
+ },
+ "corte1710": {
+  "shasFinais": {
+   "fase0": "dev 5fb331f37 + wip/fase0-arquivo-chat 91e011dc6",
+   "estrutura": "63be8a474",
+   "acessos-pessoas": "d47e16839",
+   "formularios-cuidado-rotina": "fdc89c488",
+   "principal-chat-sistema": "49b92ffa3 (bridge; sem SHA de corte proprio)",
+   "publicacoes-agenda": "3b21db696 (Codex, sem resposta ao corte)",
+   "operacoes": "3fa07edd0 (Codex, sem resposta ao corte)",
+   "realm-interno": "sem branch publicada (coelo-f0 nao respondeu)"
   },
-  "cloudflare": {
-    "corsRestrito": "APLICADO 14:35 nos tres buckets (superadmin/admin/app.coelo.me; GET, PUT, HEAD; content-type, content-md5, content-length; expose etag; maxAge 3600)",
-    "lifecycleTransitorio": "APLICADO 14:35 em coelo-transient-prod (expira objetos com 7 dias; abort de multipart mantido)",
-    "tokenR2Minimo": "blocked-environment (P2)",
-    "migracaoDasFuncoes": "pendente do token; codigo ja tem ramo R2; happens/now dependem do catalogo de midia (ausente em producao); moments de 20260821112822 (ausente)",
-    "spike": "runner pronto em packages/coelo_database/scripts/r2-spike-synthetic.ts (deno check OK); roda com COELO_R2_* no ambiente",
-    "foraDoPacote": "nada"
+  "integrado": "todas as branches acima em work/etapa2-r03-coordenacao e publicadas em dev no fechamento; conflitos resolvidos pela versao do grupo em JSON/evidencias/goldens e nos arquivos de Alunos (dono formularios)",
+  "worktrees": "estrutura, acessos-pessoas, formularios, principal-chat: limpas e publicadas; publicacoes-agenda e operacoes: WIP nao commitado preservado nas worktrees (5 e 0 arquivos) por serem Codex sem resposta; checkout principal: arquivos de outros grupos preservados, Fase 0 limpa nos seus caminhos",
+  "lote5Bloqueado": "P18: nenhuma capacidade locations.* existe em producao; o candidato de catalog_v2 ja passa as duas guardas de ACL com os revokes e para na fixture de capacidade Owner-only por desenho",
+  "verificacaoSemSessao": "acessos-pessoas provou por action_id que as 18 RPCs do lote 4 existem, resolvem pela assinatura e negam anonimo (42501); nada promovido a verified; achado para principal-chat: list_visible_happens_posts do cliente envia cursor que producao nao conhece (PGRST202) ate 20260910150000 ser aplicada",
+  "pausa": "frentes paradas por ordem do Owner; reativacao so quando ele voltar",
+  "shaPublicado": "dev d6759ddf9 (2026-09-10T17:12:57-03:00); analyze limpo; validador dos rastreadores PASS; inventario: FE verified 11/230, FE local-green 13/230, BE local-green 46/223, BE com SQL aplicado em producao 27/223, BE done 0/223, E2E 0/198",
+  "worktreesNoCorte": "acessos-pessoas d47e16839, estrutura 63be8a474, formularios fdc89c488, operacoes 3fa07edd0, principal-chat a9faabd01, publicacoes-agenda 3b21db696, coordenacao d6759ddf9: todas limpas. realm-interno: worktree criada por coelo-f0 em 7ce4337b1 com milhares de arquivos modificados (ver inspecao na rev 12) e sem branch remota. Checkout principal: 10 arquivos de outros grupos preservados (principal_for_you, principal_happens, meal_plan_repository, refs coelo-ui, goldens de notices)."
+ },
+ "role": "Coordenacao e Integracao - Claude (P1)",
+ "writer": "coordenador-claude",
+ "sessionName": "coelo-2b",
+ "sessionRef": "ea1243",
+ "app": "Claude Code (VS Code)",
+ "model": "claude-fable-5-1",
+ "timezone": "America/Sao_Paulo",
+ "updatedAt": "2026-09-10T20:30:00-03:00",
+ "historicoDeRevisoes": {
+  "1": "2026-09-10T14:50 posse, ACK dos sete canais, estado de producao, CORS e lifecycle aplicados, fila SQL R03, perguntas P1-P10 (commit e6f40f9bc em dev)",
+  "2": "15:10 rastreadores com o estado medido, RPCs de Unidades versionadas, ADR 0034 Decisao 7, merge de estrutura",
+  "3": "15:40 merges de principal-chat-sistema, publicacoes-agenda, operacoes, formularios-cuidado-rotina; runner do spike R2",
+  "4": "16:20 merges de acessos-pessoas (local) e operacoes (commit local); deltas de estado por action_id; incidente do JSON sobrescrito assumido; perguntas P11-P14; ordem do Owner de 10/09 (tarde) incorporada",
+  "5": "base integrada publicada em dev bdd7eef82 e 552058da0 (inclui os lotes 5 e 6 da Fase 0); testes e analyze da base conjunta registrados; skills com as regras medidas; portao de conhecimento PASS",
+  "6": "16:05 (relogio real) respostas do Owner P1 B, P2, P4, P12, P14 (ADR 0034 Decisao 8); chaves publicaveis gravadas; dump logico de producao; baseline provada em projeto descartavel; preflight de quatro pacotes; DOIS PACOTES APLICADOS EM PRODUCAO; migrations/ reestruturado com a baseline; corte de handoff das frentes as 16:30 e consolidacao ate 17:45 por ordem do Owner",
+  "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina.",
+  "18": "fechamento da R03 e abertura da R04: reconciliacao do Git (checkout principal limpo, rev 94 de acessos-pessoas recuperada, 26 worktrees removidas), P19/P20/P21 registradas, prompts R04 publicados"
+ },
+ "notaDeRevisao": "O conteudo da rodada E2-NOTURNA-20260909 (revisao 31) permanece no historico do Git; nada dele vale como estado atual. Nao ha 'nenhuma rodada nova aberta': a Rodada 3 esta aberta desde a Fase 0.",
+ "relogio": "Relogio do coordenador (maquina): 14:16 -03:00 na posse. Os JSONs dos grupos carimbam 3 a 4 horas a frente; o coordenador registra pelo relogio da maquina e nao antecipa cortes por carimbo.",
+ "exclusivity": {
+  "soleIntegratorOfDev": true,
+  "soleWriterOfTrackersAndInventory": true,
+  "faseZero": "A Fase 0 (fase0.json) continua commitando lotes pequenos em dev pelo checkout principal. E o unico outro escritor de dev; os dois fazem fetch e rebase antes de push.",
+  "checkoutDoCoordenador": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-coordenacao, branch work/etapa2-r03-coordenacao, upstream origin/dev, push com git push origin HEAD:dev apos rebase. O coordenador nao edita a arvore do checkout principal."
+ },
+ "base": {
+  "root": "C:/Users/adrie/Documents/Coelo",
+  "branch": "dev",
+  "fase0Head": "1adb070c9028850ccdd7e091db5b97b63b95c750",
+  "fase0HeadShort": "1adb070c9",
+  "fase0PublishedAt": "2026-09-10T14:12:14-03:00 (hora do commit)",
+  "devRemotoAoAbrirRev4": "e6f40f9bc (origin/dev); Fase 0 sem push novo desde 8fafbe16c",
+  "baseIntegradaLocal": "work/etapa2-r03-coordenacao a partir de 2dff73c16 (rev 4 acrescenta este arquivo e os deltas de acessos-pessoas); SHA final publicado em dev fica em integracaoNoCorte.shaPublicado",
+  "arvoreDoCoordenador": "limpa apos cada commit; sem stash proprio",
+  "checkoutPrincipal": "dev local em 8fafbe16c, atras de origin/dev; 12 arquivos modificados e 1 nao rastreado da Fase 0 e do grupo principal-chat-sistema (WIP deles, intocado); stash 'r03-jsons-grupos' obsoleto do coordenador (o descarte foi bloqueado pelo classificador; pode ser descartado por qualquer um)"
+ },
+ "incidenteDoCheckoutCompartilhado": {
+  "assumido": "Foi o coordenador. As 14:15 fez git stash push dos tres JSONs de comunicacao no checkout principal para avancar dev, e o pop seguinte devolveu os arquivos ao estado do stash. Entre o push e o pop, acessos-pessoas.json voltou ao conteudo da revisao 56 (HEAD) e o utilitario do grupo leu 56 e gravou 57; as revisoes 57-83 ficaram so no historico da worktree do grupo. O grupo reconstruiu tudo na revisao 84 e versionou uma copia na propria branch. O conflito UU em principal_happens_preview_page.dart visto no mesmo minuto NAO veio do stash (conferido: o stash so tinha os JSONs) e foi resolvido por quem trabalha na arvore principal.",
+  "regraDaqui": "O coordenador nao toca a arvore do checkout principal. Grupo com worktree edita so nela e publica a branch; o JSON de comunicacao vale pela copia na branch do grupo quando o checkout principal divergir. Quem precisar do checkout principal registra no proprio JSON antes."
+ },
+ "ordemDoOwner20260910Tarde": {
+  "recebidaEm": "2026-09-10T15:50:00-03:00",
+  "resumo": "Assumir a coordenacao central; nao so auditar: reconciliar, integrar, aplicar o remoto autorizado e atualizar a documentacao ate o proximo estado verificavel. Decisoes de 10/09 sao aprovadas e nao se reabrem. Aprovacao visual nao vira verified/done/E2E. Integrar por conteudo com testes na base conjunta; sem reset --hard, clean, descarte de stash ou force-push. Rastreadores, inventario e coordenacao.json no mesmo ciclo; fechamento em formato fixo.",
+  "reafirmado": "Pesquisar no menu e botao de Bug no cabecalho em todas as telas (a Fase 0 registrou os dois no composto: Bug sempre presente, Pesquisar mantido). As decisoes por golden da lista de 10/09 continuam valendo como referencia."
+ },
+ "frentes": [
+  {
+   "grupo": "fase0",
+   "app": "Claude Fable",
+   "worktree": "checkout principal",
+   "branch": "dev",
+   "headRecebido": "1adb070c9 (base) e 8fafbe16c (Planos e Cardapios)",
+   "upstream": "origin/dev",
+   "divergencia": "checkout principal atras de origin/dev desde e6f40f9bc",
+   "wip": "12 modificados + 1 nao rastreado no checkout principal (Planos goldens, Cardapios, principal_for_you, principal_happens, teste de arquitetura, refs de coelo-ui)",
+   "recebido": "r4",
+   "integrado": "tudo que ela commitou esta em dev",
+   "aplicadoEmProducao": "n/a",
+   "e2e": "nenhum",
+   "proximoPasso": "Comunicacoes, Circulares, Agenda eventos no composto; depois Pessoas, Convites, Perfis de acesso; fazer git pull --rebase antes de cada push porque dev avancou"
   },
-  "filaSqlR03": {
-    "regra": "por dependencia real, forward-only, uma por vez com preflight de objeto; toda a fila retida por P1; migration corrigida so pode ser editada quando ausente em producao (foi o caso de 20260812002100 e 20260901190432)",
-    "ordem": [
-      {"pos": 1, "migration": "20260909190000_superadmin_internal_audit_read_v2", "grupo": "operacoes", "estado": "candidato; presenca 4/6"},
-      {"pos": 2, "migration": "20260909191000_superadmin_internal_chat_receipts_edit_revoke_v2", "grupo": "principal-chat-sistema", "estado": "candidato; realm interno ausente"},
-      {"pos": 3, "migration": "20260909191100_superadmin_notice_metrics_by_generation_v1", "grupo": "publicacoes-agenda", "estado": "candidato"},
-      {"pos": 4, "migration": "20260909192000_superadmin_location_consumer_bindings_v2", "grupo": "estrutura", "estado": "pgTAP verde"},
-      {"pos": 5, "migration": "20260909193000_d04_child_safety_internal_reads", "grupo": "acessos-pessoas", "estado": "pgTAP verde (dentro de AP-CHILD-SAFETY, pos 31-33)"},
-      {"pos": 6, "migration": "20260909200000_superadmin_activity_location_create_v2", "grupo": "estrutura", "estado": "pgTAP verde; exige 20260908154257 antes"},
-      {"pos": 7, "migration": "20260909210000_superadmin_group_location_create_v2", "grupo": "estrutura", "estado": "pgTAP verde"},
-      {"pos": 8, "migration": "20260909211000_now_publication_expiry_transition_v1", "grupo": "principal-chat-sistema", "estado": "candidato; exige 20260820220000"},
-      {"pos": 9, "migration": "20260909212000_circulars_media_private_r2_v1", "grupo": "publicacoes-agenda", "estado": "PRESENTE em producao 6/6; reconciliar ledger"},
-      {"pos": 10, "migration": "20260909213000_happens_post_withdrawal_v1", "grupo": "principal-chat-sistema", "estado": "candidato; corrigir oraculo de existencia"},
-      {"pos": 11, "migration": "20260909214000_happens_mixed_feed_withdrawal_v1", "grupo": "principal-chat-sistema", "estado": "candidato sem suite propria; coberto por happens_feed_pagination_test"},
-      {"pos": 12, "migration": "20260909215000_private_media_catalog_chat_kind_v1", "grupo": "coordenador", "estado": "candidato; exige 20260908160000"},
-      {"pos": 13, "migration": "20260909216000_moments_feed_and_withdrawal_v1", "grupo": "principal-chat-sistema", "estado": "candidato; exige 20260821112822"},
-      {"pos": 14, "migration": "20260909217000_superadmin_support_production_v1", "grupo": "operacoes", "estado": "committado; pgTAP nominal pendente"},
-      {"pos": 15, "migration": "20260909218000_superadmin_account_profile_v1", "grupo": "operacoes", "estado": "committado; pgTAP nominal pendente"},
-      {"pos": 16, "migration": "20260910010000_daily_routine_foundation_v1", "grupo": "formularios-cuidado-rotina", "estado": "pgTAP verde"},
-      {"pos": 17, "migration": "20260910010100_daily_routine_behavior_v1", "grupo": "formularios-cuidado-rotina", "estado": "pgTAP verde"},
-      {"pos": 18, "migration": "20260910010200_attendance_authorization_and_idempotency_v1", "grupo": "formularios-cuidado-rotina", "estado": "pgTAP verde"},
-      {"pos": 19, "migration": "20260910010300_health_care_and_medication_plans_v1", "grupo": "formularios-cuidado-rotina", "estado": "pgTAP verde"},
-      {"pos": 20, "migration": "20260910010400_health_care_behavior_v1", "grupo": "formularios-cuidado-rotina", "estado": "pgTAP verde"},
-      {"pos": 21, "migration": "20260910120000_meal_plan_image_delete_requires_revision_v1", "grupo": "principal-chat-sistema", "estado": "pgTAP verde"},
-      {"pos": 22, "migration": "20260910130000_meal_plans_owner_permission_grants_v1", "grupo": "principal-chat-sistema", "estado": "pgTAP verde; necessaria em producao"},
-      {"pos": 23, "migration": "20260910140000_chat_conversation_preferences_v1", "grupo": "principal-chat-sistema", "estado": "pgTAP verde; realm interno ausente"},
-      {"pos": 24, "migration": "20260910150000_happens_feed_pagination_v1", "grupo": "principal-chat-sistema", "estado": "pgTAP verde; aplicar com o deploy do cliente"},
-      {"pos": 25, "migration": "superadmin_circular_delete_v2 (f15a9eec2)", "grupo": "publicacoes-agenda", "estado": "pgTAP retido"},
-      {"pos": 26, "migration": "20260910160000_units_rpcs_versioned_from_production_v1", "grupo": "coordenador", "estado": "no-op em producao; pgTAP de contrato escrito"},
-      {"pos": 27, "migration": "20260828005000_superadmin_internal_person_detail (AP-PEOPLE-DETAIL-V2)", "grupo": "acessos-pessoas", "estado": "pgTAP 42 PASS; sem chave"},
-      {"pos": 28, "migration": "20260901190432_superadmin_internal_invites_v2 corrigida (AP-INVITES-V2)", "grupo": "acessos-pessoas", "estado": "pgTAP 33 PASS; sem chave"},
-      {"pos": 29, "migration": "20260901210000_superadmin_internal_users_directory (AP-INTERNAL-USERS-V2)", "grupo": "acessos-pessoas", "estado": "pgTAP 48 PASS"},
-      {"pos": 30, "migration": "20260908021644_superadmin_internal_users_read_minimization", "grupo": "acessos-pessoas", "estado": "pgTAP 48 PASS; depois da 29"},
-      {"pos": 31, "migration": "20260812002100_child_safety_read_models corrigida (AP-CHILD-SAFETY)", "grupo": "acessos-pessoas", "estado": "pgTAP 45 PASS"},
-      {"pos": 32, "migration": "20260812002200_child_safety_security_closure", "grupo": "acessos-pessoas", "estado": "pgTAP 45 PASS"},
-      {"pos": 33, "migration": "20260909193000_d04_child_safety_internal_reads", "grupo": "acessos-pessoas", "estado": "pgTAP 45 PASS (mesma da pos 5; aplicar uma vez, nesta posicao)"}
-    ],
-    "cauda": "Dependencias ausentes em producao (chat_production_contract, now/moments publication, private_media_catalog, realm interno v2, activity_save_v2) precedem os itens que as pressupoem; P12 (baseline a partir do dump de producao) muda o metodo e por isso a fila nao roda antes de P1 e P12.",
-    "chavesDeComposicao": "nenhuma ligada; candidatos: structureMutationsEnabled (estrutura), superadminCircularDeleteEnabled (publicacoes-agenda), supportProductionRepositoryV1 e accountProfileProductionRepositoryV1 (operacoes), plansProductionRepositoryV1 (operacoes)",
-    "proximoCarimboLivre": "posterior a 20260910160000"
+  {
+   "grupo": "estrutura",
+   "app": "Claude Opus",
+   "worktree": "e2-r03-estrutura",
+   "branch": "work/etapa2-r03-estrutura",
+   "headRecebido": "b92585d38",
+   "upstream": "origin/work/etapa2-r03-estrutura 0/0",
+   "wip": "nenhum",
+   "recebido": "r18",
+   "integrado": "16 commits, merge f615575de; testes alvo na base conjunta 356 PASS / 4 FAIL (4 goldens de formulario que divergem pela decisao RODAPE)",
+   "aplicadoEmProducao": "nenhum (fila pos 4, 6, 7 e 26 retidas por P1)",
+   "e2e": "nenhum",
+   "primeiroGate": "chaves publicaveis na maquina (P4) para abrir a rota normal; depois structureMutationsEnabled apos o SQL",
+   "proximoPasso": "regravar os goldens de formulario do recorte apos RODAPE; compor SupabaseUnitDirectoryRepository/SupabaseGroupDirectoryRepository no lugar dos Unavailable* (as RPCs existem em producao); responder P5/P6 quando o Owner decidir"
   },
-  "janelaDeReplay": {
-    "regra": "primeiro a reservar: reservaDeReplay {desde, ateEstimado} no proprio JSON; ou projeto descartavel proprio em portas diferentes",
-    "manifesto": "replay/foundation-migrations.sha256 ganhou 20260812000000_chat_production_contract.sql (F-R03-FCR-003). Continua com o hash pre-correcao de 20260901190432; troca fica para depois de P12 porque dez perfis fixam esse hash."
+  {
+   "grupo": "acessos-pessoas",
+   "app": "Claude Opus",
+   "worktree": "e2-r03-acessos-pessoas",
+   "branch": "work/etapa2-r03-acessos-pessoas",
+   "headRecebido": "d10239641",
+   "upstream": "publicada pelo coordenador em 16:05 (o push do grupo estava bloqueado pelo classificador da sessao dele)",
+   "wip": "nenhum",
+   "recebido": "r84 (pela copia versionada na branch)",
+   "integrado": "17 commits, merge 25712b0e6; conflito nos dois scripts de replay resolvido pela uniao dos perfis (StructureLocationConsumersV1 + PersonDetailV2, InvitesV2, InternalUsersV2); parse PowerShell 0 erros",
+   "aplicadoEmProducao": "nenhum (fila pos 27-33 retidas por P1)",
+   "e2e": "nenhum",
+   "primeiroGate": "P1 (aplicar os quatro pacotes verdes destrava 16 das 38 acoes sem Dart); P11 (AAL2 em Pessoas)",
+   "proximoPasso": "modelo de acompanhamento D1 com principal-chat-sistema (proposta em acompanhamento-d1-proposta.md; quatro pontos a fechar entre os dois grupos, nao com o Owner); telas sobre o composto quando a Fase 0 migrar Pessoas/Convites/Perfis de acesso"
   },
-  "decisoesDoOwnerNestaRodada": [
-    {"data": "2026-09-10", "via": "grupo estrutura", "decisao": "RODAPE opcao A no SuperadminFormFrame; golden de Instituicoes 375 regravado. ADR 0034 Decisao 7."},
-    {"data": "2026-09-10", "via": "grupo estrutura", "decisao": "Sem balao de chat em criar/editar/publicar, Agora aberto e Momentos aberto. ADR 0034 Decisao 7."},
-    {"data": "2026-09-10 tarde", "via": "Owner ao coordenador", "decisao": "Decisoes de 10/09 sao aprovadas e nao se reabrem; fechamento em formato fixo; integrar por conteudo com testes; aprovacao visual nao vira verified/done/E2E."}
+  {
+   "grupo": "principal-chat-sistema",
+   "app": "Claude Opus",
+   "worktree": "e2-r03-principal-chat-sistema",
+   "branch": "work/etapa2-r03-principal-chat-sistema",
+   "headRecebido": "8921a6261",
+   "upstream": "0/0",
+   "wip": "trabalha tambem na arvore do checkout principal (principal_happens sem previa): registrar no JSON e mover para a worktree",
+   "recebido": "r7",
+   "integrado": "7 commits, merge 3f5934fb5; meal_plans/chat/attendance/circulars/happens/shell na base conjunta: 455 PASS / 24 FAIL, todos golden (attendance e formularios que divergem pela decisao RODAPE)",
+   "aplicadoEmProducao": "nenhum (fila pos 2, 8, 10-13, 21-24 retidas por P1)",
+   "e2e": "nenhum",
+   "primeiroGate": "P1; realm interno v2 ausente em producao antes de chat.list e chat_conversation_preferences",
+   "proximoPasso": "remover as mensagens de previa restantes do Acontece (D3); curtir/comentar exige pacote proprio de backend (tabela de reacoes/comentarios): escrever e entregar; P7 e P8 ao Owner"
+  },
+  {
+   "grupo": "publicacoes-agenda",
+   "app": "Codex Luna",
+   "worktree": "e2-r03-publicacoes-agenda",
+   "branch": "work/etapa2-r03-publicacoes-agenda",
+   "headRecebido": "54a83c9de",
+   "upstream": "0/0",
+   "wip": "5 arquivos modificados nao commitados (notice_directory_page.dart, 3 goldens de communication_directory, notice_card_status_layout_test.dart): preservados na worktree, nao integrados",
+   "recebido": "r5",
+   "integrado": "9 commits, merge abd84b042",
+   "aplicadoEmProducao": "nenhum (pos 3, 9, 25 retidas por P1)",
+   "e2e": "nenhum",
+   "primeiroGate": "pgTAP de superadmin_circular_delete_v2 em perfil declarado (janela de replay)",
+   "proximoPasso": "commitar o WIP de Avisos; corrigir 20260901185008 (notice_events esta em analytics) e 20260901191921 (labels NOT NULL) apontadas por acessos-pessoas; Agenda listar/criar/editar/detalhe"
+  },
+  {
+   "grupo": "operacoes",
+   "app": "Codex Luna",
+   "worktree": "e2-r03-operacoes",
+   "branch": "work/etapa2-r03-operacoes",
+   "headRecebido": "b02478937 (1 commit a frente do remoto, integrado a partir da branch local)",
+   "upstream": "origin/work/etapa2-r03-operacoes 1/0",
+   "wip": "nenhum",
+   "recebido": "r6",
+   "integrado": "12 commits, merges c6d2e5dae e b80b0b054",
+   "aplicadoEmProducao": "nenhum (pos 1, 14, 15 retidas por P1)",
+   "e2e": "nenhum",
+   "primeiroGate": "pgTAP nominal de Suporte e Conta num perfil de replay declarado (usar o manifesto corrigido ou projeto descartavel proprio)",
+   "proximoPasso": "publicar b02478937; pgTAP de 20260909217000 e 20260909218000; Planos e Auditoria sobre o composto (Planos ja migrado pela Fase 0 em 8fafbe16c)"
+  },
+  {
+   "grupo": "formularios-cuidado-rotina",
+   "app": "Claude Opus",
+   "worktree": "e2-r03-formularios-cuidado-rotina",
+   "branch": "work/etapa2-r03-formularios-cuidado-rotina",
+   "headRecebido": "e070506f5",
+   "upstream": "0/0",
+   "wip": "1 modificado nao commitado (20260813155005_forms_definition_and_capabilities.sql): preservado na worktree; se for correcao de migration ausente em producao, commitar com a justificativa",
+   "recebido": "r7",
+   "integrado": "6 commits, merge bfd73cc75",
+   "aplicadoEmProducao": "nenhum (pos 16-20 retidas por P1)",
+   "e2e": "nenhum",
+   "primeiroGate": "P1; P9 (leitura por responsavel familiar) nao bloqueia o MVP do Superadmin",
+   "proximoPasso": "repositorios Supabase de Perfis de cuidado, Medicacao e Rotina no cliente; Formularios (Testar por capacidade, D6); XLSX no R2 depois do token (P2)"
+  }
+ ],
+ "receipts": [
+  {
+   "grupo": "fase0",
+   "revisaoRecebida": 5,
+   "ack": true,
+   "recebidoEm": "2026-09-10T16:45:00-03:00",
+   "nota": "lotes 5 e 6 (Planos, Cardapios, Circulares, Comunicacoes) recebidos por origin/dev e incluidos na base integrada bdd7eef82"
+  },
+  {
+   "grupo": "estrutura",
+   "revisaoRecebida": 18,
+   "ack": true,
+   "recebidoEm": "2026-09-10T14:20:00-03:00",
+   "integradoEm": "2026-09-10T15:05:00-03:00 f615575de"
+  },
+  {
+   "grupo": "acessos-pessoas",
+   "revisaoRecebida": 84,
+   "ack": true,
+   "recebidoEm": "2026-09-10T16:00:00-03:00",
+   "integradoEm": "2026-09-10T16:05:00-03:00 25712b0e6",
+   "nota": "Sobrescrita do JSON assumida pelo coordenador (ver incidente). Branch publicada em origin. Pedidos AP-D1/AP-D2/AP-D3 e o incidente de credencial foram ao Owner como P11-P14. Manifesto do replay: o coordenador refaz o hash de 20260901190432 quando o Owner responder P12 (baseline), porque a decisao muda o harness inteiro."
+  },
+  {
+   "grupo": "principal-chat-sistema",
+   "revisaoRecebida": 7,
+   "ack": true,
+   "recebidoEm": "2026-09-10T14:20:00-03:00",
+   "integradoEm": "2026-09-10T15:30:00-03:00 3f5934fb5"
+  },
+  {
+   "grupo": "publicacoes-agenda",
+   "revisaoRecebida": 5,
+   "ack": true,
+   "recebidoEm": "2026-09-10T14:20:00-03:00",
+   "integradoEm": "2026-09-10T15:35:00-03:00 abd84b042"
+  },
+  {
+   "grupo": "operacoes",
+   "revisaoRecebida": 6,
+   "ack": true,
+   "recebidoEm": "2026-09-10T14:20:00-03:00",
+   "integradoEm": "2026-09-10T16:05:00-03:00 c6d2e5dae + b80b0b054"
+  },
+  {
+   "grupo": "formularios-cuidado-rotina",
+   "revisaoRecebida": 7,
+   "ack": true,
+   "recebidoEm": "2026-09-10T14:20:00-03:00",
+   "integradoEm": "2026-09-10T15:35:00-03:00 bfd73cc75"
+  }
+ ],
+ "classificacaoDoIntegrado": {
+  "entregaPronta": "codigo + teste + doc de cada grupo listado em frentes[].integrado; cada commit foi lido pelo titulo e o conjunto foi provado por analyze e testes de familia na base conjunta",
+  "wipNaoTerminado": "publicacoes-agenda (5 arquivos), formularios-cuidado-rotina (1 migration), Fase 0/principal-chat no checkout principal (13 arquivos): todos preservados onde estao, nenhum integrado",
+  "documentacao": "handoffs e evidencias em docs/reviews/evidence/etapa-2/r03-*/ e os JSONs de comunicacao (versao da branch de cada grupo)",
+  "artefatoDeTeste": "perfis de replay novos (StructureLocationConsumersV1, PersonDetailV2, InvitesV2, InternalUsersV2), pgTAP novos, testes Dart",
+  "alteracaoDoOwner": "RODAPE e CHAT (estrutura 4917bcade, no frame compartilhado) e Arquivos escondido (Fase 0 1adb070c9)",
+  "conflitanteOuSemDono": "scripts de replay (resolvido pela uniao); JSONs de comunicacao (versao da branch do grupo prevalece); manifesto do replay com hash pre-correcao de 20260901190432 (dono: coordenador, aguarda P12)"
+ },
+ "producao": {
+  "projeto": "coelo / evvbomzejfijozbtgvpt, sa-east-1, Postgres 17",
+  "lidoEm": "2026-09-10T14:30:00-03:00 via supabase db query --linked (somente leitura)",
+  "blockedEnvironment": [
+   {
+    "capacidade": "backup por ponto no tempo",
+    "estado": "pitr_enabled=false, walg_enabled=true, zero backups fisicos",
+    "efeito": "nenhuma migration aplicada (condicao 3 da Decisao 1 da ADR 0034)",
+    "desbloqueio": "Owner responde P1 (ligar PITR ou dispensar com dump logico por lote)"
+   },
+   {
+    "capacidade": "criar token de API Cloudflare",
+    "estado": "sessao OAuth do MCP recebe 9109 Unauthorized em /user/tokens e /accounts/{id}/tokens",
+    "efeito": "token R2 minimo, migracao das tres funcoes de midia e spike retidos",
+    "desbloqueio": "Owner cria o token no painel e grava os secrets (P2)"
+   },
+   {
+    "capacidade": "chaves publicaveis do Supabase na maquina",
+    "estado": "COELO_SUPABASE_URL e COELO_SUPABASE_PUBLISHABLE_KEY ausentes",
+    "efeito": "nenhuma frente abre a rota normal contra producao; nenhuma acao passa da regua do MVP",
+    "desbloqueio": "Owner autoriza arquivo local ignorado pelo Git (P4)"
+   }
   ],
-  "perguntasAoOwner": {
-    "arquivo": "docs/reviews/etapa-2-operacao/next-round/R03-perguntas-ao-owner-20260910.md",
-    "bloqueiam": ["P1 backup por ponto no tempo (toda a fila SQL)", "P2 token R2 (funcoes de midia e spike)", "P4 chaves publicaveis (rota normal de todas as frentes)", "P12 baseline do banco (metodo da fila)"],
-    "naoBloqueiam": ["P3 origem CORS local", "P5-P11 e P13 decisoes de produto/dominio dos grupos", "P14 troca de senha do banco (seguranca)"]
+  "ledger": {
+   "ultimaVersaoRemota": "20260901200206",
+   "versoesRemotas": 116,
+   "arquivosLocais": 186,
+   "somenteLocais": 121,
+   "somenteRemotas": 51,
+   "leitura": "ledger nao decide; presenca de objeto decide (evidence/etapa-2/r03-coordenacao/producao-presenca-por-migration-20260910.txt). acessos-pessoas mediu por outro caminho o mesmo: 96 das 162 RPCs chamadas pelo Superadmin nao existem em producao (rpc-cliente-vs-producao-2026-09-10.json)"
   },
-  "metricas": {
-    "base": "work/etapa2-r03-coordenacao 2dff73c16 + rev 4; inventario validado em 2026-09-10T16:20-03:00; ambiente: repositorio (nenhuma medicao em producao muda estado terminal)",
-    "frontendVerified": "11/230 (4,78%)",
-    "backendDone": "0/223 (0,00%)",
-    "backendLocalGreen": "41/223 (18,39%) apos os deltas desta revisao (meal_plans 6, chat.list 1, acontece.feed 1, attendance 5, health_care 4, medication 5, daily_routine 5, people 2, invites 5, internal_users 4, child_safety 5, mais os que ja estavam)",
-    "e2eVerified": "0/198 (0,00%)",
-    "nota": "contagens exatas por estado saem do validador; local-green acima e a soma dos deltas aplicados nesta revisao sobre o estado anterior e deve ser reconferida pelo proprio inventario"
-  },
-  "respostasDoOwner20260910": {
-    "P1": "B: PITR dispensado ate cliente real; dump logico local antes de cada lote (ADR 0034 Decisao 8)",
-    "P2": "Owner delega ao coordenador, mas a sessao OAuth do MCP nao cria tokens de API; roteiro de 5 minutos para o Owner na skill coelo-backend (secao 'Pendencias de seguranca que so o Owner executa'); enquanto isso nada de midia R2 nova",
-    "P4": "sim: .env.local gravado em 10/09 15:27 nos oito checkouts (principal e sete worktrees e2-r03-*), ignorado pelo Git, com COELO_SUPABASE_URL e a chave publicavel 'default' (sb_publishable_...). Cada frente roda flutter com --dart-define a partir dele (README de apps/superadmin/lib/core/config)",
-    "P12": "seguir o recomendado: baseline a partir do dump de producao",
-    "P14": "nao precisa agora; roteiro de troca de senha na mesma secao da skill"
-  },
-  "dumpLogicoDoLote": {
-    "regra": "ADR 0034 Decisao 8/P1: dump antes de cada lote SQL",
-    "lote1": {"quando": "2026-09-10T15:23:00-03:00 e 15:29", "schema": "scratchpad/baseline/schema-producao-20260910.sql sha256 9686ab744082a110... (2.088.098 bytes, 231 tabelas, 179 policies, 633 funcoes)", "dados": "scratchpad/baseline/dados-public-20260910.sql sha256 bde2c3d730913650... (472.232 bytes; 18 tabelas com linhas, entre elas people 1 e platform_memberships 1)", "onde": "fora do Git, no scratchpad da sessao do coordenador; copia a mover para um diretorio local persistente ignorado pelo Git (pendente)"}
-  },
-  "baseline": {
-    "decisao": "ADR 0034 Decisao 8/P12",
-    "arquivo": "packages/coelo_database/migrations/20260910000000_baseline_producao.sql (dump schema-only de producao de 10/09/2026, 2 MB) + packages/coelo_database/supabase/seed.sql (catalogo de referencia: 16 tabelas, sem pessoas nem memberships)",
-    "historico": "packages/coelo_database/migrations-historico/ (186 arquivos + os da rodada); deixa de ser replayado; os scripts Invoke/Prepare-SafeMigrationReplay e o manifesto foundation ficam obsoletos",
-    "prova": "projeto descartavel coelo_baseline (portas 573xx): baseline aplicou limpa em Postgres 17 local (186 tabelas public, 181 policies, 633 funcoes), seed aplicou (74 permissoes, 5 papeis, 100 concessoes, 0 pessoas)",
-    "usoPelasFrentes": "Sync-SupabaseCliMigrations.ps1 -Mode Prepare espelha migrations/ (baseline + pacotes aceitos) e supabase db reset em projeto descartavel proprio aplica baseline + seed; o pacote do grupo entra depois com psql e o pgTAP roda em cima. Pacote so entra em migrations/ quando passar esse preflight; ate la fica na branch do grupo e em migrations-historico/ se for antigo",
-    "carimbos": "todo pacote novo usa carimbo > 20260910000000; pacotes antigos aceitos sao renumerados ao entrar",
-    "ressalvaLocal": "no Postgres local os privilegios padrao do Supabase dao execute em public a anon; producao nao tinha. A migration de Unidades passou a revogar anon explicitamente; testes sobre anon precisam dessa revogacao explicita para valerem nos dois ambientes"
-  },
-  "preflightNaBaseline": {
-    "quando": "2026-09-10T15:40:00-03:00",
-    "resultados": [
-      {"pos": 26, "migration": "20260910160000_units_rpcs_versioned_from_production_v1", "aplica": true, "pgtap": "41/41 apos revoke explicito de anon e service_role"},
-      {"pos": 22, "migration": "20260910130000_meal_plans_owner_permission_grants_v1", "aplica": true, "pgtap": "6/6 (teste novo meal_plans_owner_permission_grants_v1_test); os pgTAP de 58 casos do grupo NAO passam na baseline porque exigem meal_plan_publish_unreceipted e app_private.meal_plan_command_receipts, ausentes em producao"},
-      {"pos": 21, "migration": "20260910120000_meal_plan_image_delete_requires_revision_v1", "aplica": false, "erro": "producao nao tem meal_plan_request_image_delete(uuid,uuid,integer): a cadeia de Cardapios em producao para antes de 20260820230000"},
-      {"pos": 27, "migration": "20260828005000_superadmin_internal_person_detail", "aplica": true, "pgtap": "fixture insere units.institution_type_id, que producao nao tem (unit_type_id): 151 erros; P13"}
-    ],
-    "licao": "pgTAP verde no replay do repositorio nao e pgTAP verde sobre producao. Toda prova passa a ser sobre a baseline. Os grupos precisam reexecutar seus pacotes e fixtures nela antes de o coordenador aplicar."
-  },
-  "lote2": {"dump": "C:/Users/adrie/Documents/Coelo-backups/schema-producao-20260910-lote2.sql (15:57, 2.088.694 bytes); dumps do lote 1 copiados para o mesmo diretorio, fora do Git", "preflightNaBaseline": "20260910010000..010500 aplicam; pgTAP daily_routine_foundation 34/34, scope_closure 6/6, attendance 23/23, health_care_and_medication 30/30", "aplicadoEm": "2026-09-10T16:03:00-03:00, seis migrations sem erro; ledger registrado; verificado em producao: tabelas routine_* e health/medication criadas, attendance com FORCE RLS, attendance_reserve_idempotency_key presente", "grupo": "formularios-cuidado-rotina", "efeito": "backend das familias daily_routine, attendance, health_care e medication existe em producao; falta o cliente (repositorios Supabase, rota normal, reload) para done", "naoAplicado": "20260909217000 Suporte e 20260909218000 Conta aplicam na baseline mas os pgTAP do grupo chamam row_security_active(regclass, text), helper inexistente em producao: grupo operacoes corrige o teste; 20260910120000 circular_delete nao aplica (pre-requisitos do realm interno circulars v2 ausentes; alem disso o carimbo colide com o de meal_plan_image_delete: acessos-pessoas sugeriu faixas por grupo, adotadas)"},
-  "lote3": {
-    "medidoPor": "formularios-cuidado-rotina (coelo-c7) sobre baseline + seed: 1033 assercoes pgTAP, zero falhas, 24 arquivos; reconferido pelo coordenador na propria baseline (11 migrations aplicam; guardian_read 12/12, student_link 20/20, revoke: forms_definition 31/31, forms_directory_internal_read 117/117, export_download 3 ok e depois erro de 'pending trigger events' na propria estrutura do teste, nao no pacote)",
-    "ordem": ["20260827235500_superadmin_internal_institution_list_filter (estrutura, dependencia declarada: envelope SAI_INVALID_ARGUMENT)", "20260828000500_superadmin_internal_institution_edit_core (estrutura)", "20260908000049_superadmin_forms_directory_internal_read", "20260908030000_superadmin_internal_form_drafts_v2", "20260908032100_superadmin_forms_authoring_institution_context_v2", "20260908054000_forms_internal_provenance_guards", "20260908160000_private_media_catalog_r2_v1 (com a correcao do coordenador: revoke de media_assets)", "20260908170000_forms_xlsx_private_r2_v1", "20260908191327_forms_response_edit_validation_v1", "20260908195512_forms_superadmin_operations_read_v2", "20260908215522_forms_superadmin_media_read_r2_v1", "20260910220000_health_care_guardian_read_v1 (D9 opcao 1)", "20260910220200_student_link_commands_v1 (Alunos: vincular, transferir, editar, revogar)", "20260910220100_forms_revoke_production_drift_v1 (por ultimo: revoga grants diretos de anon/authenticated nas tabelas de Formularios e o execute indevido de form_authorize_file_job_download/form_redeem_file_job_download)"],
-    "achadoDeSeguranca": "producao tinha anon com execute em form_authorize_file_job_download e authenticated em form_redeem_file_job_download; resgate de token e do service_role por contrato. Corrigido pelo revoke do lote 3.",
-    "dump": "C:/Users/adrie/Documents/Coelo-backups/schema-producao-20260910-lote3.sql (16:27)",
-    "aplicadoEm": "2026-09-10T16:32:00-03:00: 14 migrations sem erro; ledger 22 versoes de 10/09; verificado: anon sem execute em form_authorize_file_job_download, media_assets e forms sem grant a anon/authenticated; os 11 arquivos historicos entraram em migrations/ como 20260910230001..230011 (ordem preservada) porque o carimbo original, anterior a baseline, quebraria o db reset local",
-    "estado": "aplicacao em producao logo apos o dump; ledger e move dos 11 arquivos de migrations-historico/ para migrations/ no mesmo commit"
-  },
-  "lote4": {
-    "dump": "C:/Users/adrie/Documents/Coelo-backups/schema-producao-20260910-lote4.sql (16:40)",
-    "espelho": "projeto descartavel coelo_baseline reconstruido por db reset (baseline + seed) + lotes 1-3, para o preflight nao herdar resíduo dos ensaios anteriores; passa a ser o espelho de producao do coordenador",
-    "aplicadoEm": "2026-09-10T16:45:00-03:00, 11 migrations sem erro, ledger 33 versoes de 10/09",
-    "conteudo": ["20260910190000_meal_plans_media_lifecycle_receipts_v2 (a antiga 20260820230000 reconstruida sobre a baseline; pgTAP 30/30 e 22/22)", "20260910190100_meal_plan_image_delete_requires_revision_v2 (fecha a porta e revoga de anon o SELECT em meal_plans e o execute em meal_plan_list/get; 6/6)", "20260910190200_meal_plan_delete_v1", "20260910170100 person_detail (42/42)", "170200 invites_v2 (33/33)", "170300 internal_users_directory (45/45)", "170400 read_minimization (3/3)", "170500 child_safety_schema (4 tabelas novas)", "170600 child_safety_read_models", "170700 child_safety_security_closure", "170800 d04_child_safety_internal_reads (43/43)"],
-    "naoEntrou": "20260910170750_child_directory_error_envelope: obsoleta, o lote 3 ja levou SAI_INVALID_ARGUMENT ao envelope e o preflight de md5 dela parou por drift; d04 aplicou sem ela. Arquivo marcado OBSOLETO em candidatos/acessos-pessoas/. 170900 people_read_aal1 retido por P11.",
-    "verificado": "invites v2 10 funcoes, child_safety 4 tabelas, meal_plan_delete presente, anon sem execute em meal_plan_list",
-    "medicaoDoGrupo": "acessos-pessoas: a lacuna de RPCs chamadas pelo cliente e ausentes em producao cai de 123 para 105 com este lote; primeira reducao do dia"
-  },
-  "chavesLigadas": "2026-09-10T16:50: COELO_ENABLE_CARE_AND_ROUTINE_BACKEND e COELO_ENABLE_STUDENT_LINK_COMMANDS passam a defaultValue true em SuperadminAppConfig (commit 900ed78ca), porque o SQL correspondente (lotes 2 e 3) esta em producao; testes das familias em execucao antes do push",
-  "lote5Pendente": "cadeia de Locais de estrutura (catalog_v2 baseline -> activity_save_v2 -> update_status -> copy -> schedule -> reservations -> 180000/180100/180200) mais unit_detail_v2_baseline: o candidato catalog_v2 ainda falha no espelho por 'location table ACL drift' (activity_locations tem ALL para anon/authenticated por privilegio padrao); o grupo corrige com revoke antes da guarda",
-  "filhasAs1650": "vivas e respondendo: fase0 (coelo-d2, lote 7 fa404db39 + 33277a140 + 01849ec2c em dev), estrutura (coelo-3f, fc9c6e138), acessos-pessoas (coelo-94, c949067ee, assumiu Seguranca infantil no composto), formularios-cuidado-rotina (coelo-c7, 7a3b1441c), principal-chat-sistema (bridge, 49b92ffa3, conflito do checkout principal resolvido). Sem sinal desde 15:46: operacoes (Codex, 3fa07edd0) e publicacoes-agenda (Codex, 3b21db696). realm-interno (coelo-f0) sem branch publicada.",
-  "perguntasNovasAoOwner": "P15 rodape de medication_form_mobile_light; P16 tipo location em Formularios entra no MVP; P17 sessao de teste em producao para a regua do MVP (sem ela nenhuma acao chega a verified)",
-  "colisoesDeCarimbo": "20260910120000 usado por meal_plan_image_delete_requires_revision_v1 (principal-chat-sistema) e superadmin_internal_circular_delete_v1 (publicacoes-agenda); 20260910140000 por chat_conversation_preferences_v1 e student_link_commands_v1 (renumerado para 220200); 20260910150000 por happens_feed_pagination_v1 e health_care_guardian_read_v1 (renumerado para 220000); 20260910160000 por units (aplicado) e forms_revoke (renumerado para 220100). principal-chat-sistema e publicacoes-agenda renumeram os seus para as faixas 2026091019xxxx e 2026091020xxxx; nenhum dos dois aplica ainda (cadeias ausentes).",
-  "layoutDePacotes": "pacote novo nasce em packages/coelo_database/candidatos/<grupo>/; o coordenador move para migrations/ no commit em que aplica em producao (README do pacote atualizado)",
-  "preflightEstruturaNaBaseline1612": {
-    "20260908154257_superadmin_activity_save_v2": "aplica; pgTAP superadmin_activity_save_v2_test cai na fixture units.institution_type_id (96 erros) e activity_management_end_to_end_test tem 19 not ok (teste antigo contra o shape de producao). NAO aplicado em producao ate o grupo estrutura corrigir a fixture para unit_type_id (P13 decidido pela forma de producao) e reprovar",
-    "20260909165000_superadmin_location_reservations_v2": "NAO aplica: 'reservation prerequisites missing' (catalogo de Locais v2 20260907222911/20260908000049 ausente em producao)",
-    "20260909192000_superadmin_location_consumer_bindings_v2": "NAO aplica: 'reviewed reservation reader prerequisites missing'",
-    "consequencia": "a cadeia de Locais inteira (catalogo v2 -> reservas -> bindings -> activity_location -> group_location) precisa ser reentregue pelo grupo estrutura como pacotes sobre a baseline, na faixa 2026091018xxxx, provados em projeto descartavel com baseline + seed"
-  },
-  "faixasDeCarimbo": {"acessos-pessoas": "2026091017xxxx", "estrutura": "2026091018xxxx", "principal-chat-sistema": "2026091019xxxx", "publicacoes-agenda": "2026091020xxxx", "operacoes": "2026091021xxxx", "formularios-cuidado-rotina": "2026091022xxxx", "coordenador": "2026091023xxxx", "realm-interno (novo, coelo-f0)": "2026091024xxxx"},
-  "frenteNova": {"grupo": "realm-interno", "sessao": "coelo-f0 (Opus), atribuida em 15:58", "recorte": "cadeia do realm interno v2 e dependencias (chat_production_contract, chat v2, notices v2, circulars v2, invites v2, internal_users) como pacotes novos sobre a baseline, corrigindo labels NOT NULL e notice_events em analytics", "worktree": "e2-r03-realm-interno, branch work/etapa2-r03-realm-interno, JSON realm-interno.json"},
-  "estadoDasFilhas1600": "ListAgents as 16:00: nenhuma sessao interativa viva; as conversas dos grupos aparecem como Remote Control offline. Mensagens de 'continuar sem parar' e das respostas D9 ficaram enfileiradas para principal-chat-sistema, formularios-cuidado-rotina e estrutura; o Owner precisa reabrir as conversas para elas receberem. Branches publicadas antes do corte (levantamento de coelo-f0 as 15:58): estrutura 8b4e6e681, acessos-pessoas ba462c680, formularios ef86622f8, operacoes 3fa07edd0, publicacoes-agenda 3b21db696; principal-chat-sistema sem push proprio depois de 8921a6261.",
-  "aplicadoEmProducao": [
-    {"quando": "2026-09-10T16:03:00-03:00", "migration": "20260910010000_daily_routine_foundation_v1 + 010100 + 010500", "grupo": "formularios-cuidado-rotina", "verificacao": "tabelas routine_* em producao; ledger"},
-    {"quando": "2026-09-10T16:03:00-03:00", "migration": "20260910010200_attendance_authorization_and_idempotency_v1", "grupo": "formularios-cuidado-rotina", "verificacao": "FORCE RLS nas tabelas attendance_*; attendance_reserve_idempotency_key; ledger"},
-    {"quando": "2026-09-10T16:03:00-03:00", "migration": "20260910010300_health_care_and_medication_plans_v1 + 010400", "grupo": "formularios-cuidado-rotina", "verificacao": "tabelas health_care*/medication* em producao; ledger"},
-    {"quando": "2026-09-10T15:47:00-03:00", "migration": "20260910130000_meal_plans_owner_permission_grants_v1", "grupo": "principal-chat-sistema", "verificacao": "3 concessoes meal_plans.* ao owner em platform_role_permissions; ledger registrado", "efeito": "meal-plans.* deixa de ser inalcancavel para o Owner; o resto da cadeia de Cardapios continua ausente"},
-    {"quando": "2026-09-10T15:47:00-03:00", "migration": "20260910160000_units_rpcs_versioned_from_production_v1", "grupo": "coordenador", "verificacao": "5 RPCs conferidas: anon 0/5, authenticated 5/5; ledger registrado", "efeito": "divida de versionamento de Unidades fechada; anon perdeu o execute que os privilegios padrao poderiam dar"}
+  "unidades": "As 13 RPCs de Unidades existem em public (security definer, execute para authenticated), 12 em app_private. Versionadas em 20260910160000 com pgTAP de contrato (units_rpcs_versioned_from_production_v1_test.sql).",
+  "workerDeAvisos": "pg_cron instalado (3 jobs de Formularios); funcoes do worker e notice-publication-worker ausentes; ordem: 20260820212340 e dependencias -> deploy -> secret -> cron.schedule; retido por P1",
+  "cardapios": "sem concessao meal_plans.* em platform_role_permissions; 20260910130000 e necessaria",
+  "migrationsQuebradasNaFila": [
+   "20260901101500 superadmin_internal_chat_v2 (labels NOT NULL; dono principal-chat-sistema)",
+   "20260901185008 superadmin_internal_notices_v2 (notice_events esta em analytics; dono publicacoes-agenda)",
+   "20260901191921 superadmin_internal_circulars_v2 (labels NOT NULL; dono publicacoes-agenda)",
+   "20260831164937 assert_unit_hierarchy_contract (contradiz producao; P13)"
   ],
-  "integracaoNoCorte": {
-    "shaPublicado": "bdd7eef82 (origin/dev, 2026-09-10T16:50-03:00); dev local do checkout principal continua atras e a Fase 0 precisa de git pull --rebase antes do proximo push",
-    "conteudo": "coordenacao R03 rev 1-5, sete branches de grupo (estrutura, principal-chat-sistema, publicacoes-agenda, operacoes, formularios-cuidado-rotina, acessos-pessoas) + lotes 1-6 da Fase 0, migration 20260910160000 e pgTAP de contrato de Unidades, manifesto do replay, skills, ADR 0034 Decisao 7, projecao de conhecimento, inventario e rastreadores regenerados",
-    "analyze": "flutter analyze lib test em apps/superadmin: No issues found (63 s) em bdd7eef82, apos corrigir um curly_braces_in_flow_control_structures no router trazido por merge",
-    "testesNaBaseConjunta": "flutter test em architecture, institutions, units, groups, activities, meal_plans, chat, attendance, circulars, principal_happens, safety, people, invites, support, account, app/shell, app/navigation: 2243 PASS / 53 FAIL em 2dff73c16 (mesmo codigo Dart de bdd7eef82 exceto o lint). As 53 falhas sao todas golden: principal_happens_preview 20, account_pages 8, invite 5, attendance_pages 4, activity 4, institution_form_page 3, support_page 2, person 2, circular_directory 2, unit 1, group 1 e 1 caso golden dentro de safety_pages_test. Zero falha nao-golden. Causa das divergencias: RODAPE/CHAT/MENU-M/composto aplicados nesta rodada com goldens ainda nao regravados pelos donos (lista de decisoes de 10/09 e Decisao 7).",
-    "validadores": "validate-trackers.cjs PASS (230 acoes, 39 familias, FE verified 11, BE done 0, E2E 0); Test-CoeloKnowledge PASS 61 artigos; parse PowerShell dos scripts de replay 0 erros; deno check do runner do spike OK",
-    "wipPreservado": "publicacoes-agenda 5 arquivos (ATENCAO: a Fase 0 migrou notice_directory_page.dart em 850ba1838; o WIP local do grupo nesse arquivo vai conflitar no rebase, resolver pela versao do composto), formularios-cuidado-rotina 1 migration, checkout principal 13 arquivos da Fase 0/principal-chat-sistema; stash 'r03-jsons-grupos' obsoleto"
+  "incidenteDeCredencial": "supabase db dump --dry-run imprimiu PGPASSWORD do papel efemero do pooler na saida de ferramenta do grupo acessos-pessoas; nao usado nem persistido; pedido de troca de senha ao Owner (P14); regra: nao usar --dry-run em sessao de agente"
+ },
+ "cloudflare": {
+  "corsRestrito": "APLICADO 14:35 nos tres buckets (superadmin/admin/app.coelo.me; GET, PUT, HEAD; content-type, content-md5, content-length; expose etag; maxAge 3600)",
+  "lifecycleTransitorio": "APLICADO 14:35 em coelo-transient-prod (expira objetos com 7 dias; abort de multipart mantido)",
+  "tokenR2Minimo": "blocked-environment (P2)",
+  "migracaoDasFuncoes": "pendente do token; codigo ja tem ramo R2; happens/now dependem do catalogo de midia (ausente em producao); moments de 20260821112822 (ausente)",
+  "spike": "runner pronto em packages/coelo_database/scripts/r2-spike-synthetic.ts (deno check OK); roda com COELO_R2_* no ambiente",
+  "foraDoPacote": "nada"
+ },
+ "filaSqlR03": {
+  "regra": "por dependencia real, forward-only, uma por vez com preflight de objeto; toda a fila retida por P1; migration corrigida so pode ser editada quando ausente em producao (foi o caso de 20260812002100 e 20260901190432)",
+  "ordem": [
+   {
+    "pos": 1,
+    "migration": "20260909190000_superadmin_internal_audit_read_v2",
+    "grupo": "operacoes",
+    "estado": "candidato; presenca 4/6"
+   },
+   {
+    "pos": 2,
+    "migration": "20260909191000_superadmin_internal_chat_receipts_edit_revoke_v2",
+    "grupo": "principal-chat-sistema",
+    "estado": "candidato; realm interno ausente"
+   },
+   {
+    "pos": 3,
+    "migration": "20260909191100_superadmin_notice_metrics_by_generation_v1",
+    "grupo": "publicacoes-agenda",
+    "estado": "candidato"
+   },
+   {
+    "pos": 4,
+    "migration": "20260909192000_superadmin_location_consumer_bindings_v2",
+    "grupo": "estrutura",
+    "estado": "pgTAP verde"
+   },
+   {
+    "pos": 5,
+    "migration": "20260909193000_d04_child_safety_internal_reads",
+    "grupo": "acessos-pessoas",
+    "estado": "pgTAP verde (dentro de AP-CHILD-SAFETY, pos 31-33)"
+   },
+   {
+    "pos": 6,
+    "migration": "20260909200000_superadmin_activity_location_create_v2",
+    "grupo": "estrutura",
+    "estado": "pgTAP verde; exige 20260908154257 antes"
+   },
+   {
+    "pos": 7,
+    "migration": "20260909210000_superadmin_group_location_create_v2",
+    "grupo": "estrutura",
+    "estado": "pgTAP verde"
+   },
+   {
+    "pos": 8,
+    "migration": "20260909211000_now_publication_expiry_transition_v1",
+    "grupo": "principal-chat-sistema",
+    "estado": "candidato; exige 20260820220000"
+   },
+   {
+    "pos": 9,
+    "migration": "20260909212000_circulars_media_private_r2_v1",
+    "grupo": "publicacoes-agenda",
+    "estado": "PRESENTE em producao 6/6; reconciliar ledger"
+   },
+   {
+    "pos": 10,
+    "migration": "20260909213000_happens_post_withdrawal_v1",
+    "grupo": "principal-chat-sistema",
+    "estado": "candidato; corrigir oraculo de existencia"
+   },
+   {
+    "pos": 11,
+    "migration": "20260909214000_happens_mixed_feed_withdrawal_v1",
+    "grupo": "principal-chat-sistema",
+    "estado": "candidato sem suite propria; coberto por happens_feed_pagination_test"
+   },
+   {
+    "pos": 12,
+    "migration": "20260909215000_private_media_catalog_chat_kind_v1",
+    "grupo": "coordenador",
+    "estado": "candidato; exige 20260908160000"
+   },
+   {
+    "pos": 13,
+    "migration": "20260909216000_moments_feed_and_withdrawal_v1",
+    "grupo": "principal-chat-sistema",
+    "estado": "candidato; exige 20260821112822"
+   },
+   {
+    "pos": 14,
+    "migration": "20260909217000_superadmin_support_production_v1",
+    "grupo": "operacoes",
+    "estado": "committado; pgTAP nominal pendente"
+   },
+   {
+    "pos": 15,
+    "migration": "20260909218000_superadmin_account_profile_v1",
+    "grupo": "operacoes",
+    "estado": "committado; pgTAP nominal pendente"
+   },
+   {
+    "pos": 16,
+    "migration": "20260910010000_daily_routine_foundation_v1",
+    "grupo": "formularios-cuidado-rotina",
+    "estado": "pgTAP verde"
+   },
+   {
+    "pos": 17,
+    "migration": "20260910010100_daily_routine_behavior_v1",
+    "grupo": "formularios-cuidado-rotina",
+    "estado": "pgTAP verde"
+   },
+   {
+    "pos": 18,
+    "migration": "20260910010200_attendance_authorization_and_idempotency_v1",
+    "grupo": "formularios-cuidado-rotina",
+    "estado": "pgTAP verde"
+   },
+   {
+    "pos": 19,
+    "migration": "20260910010300_health_care_and_medication_plans_v1",
+    "grupo": "formularios-cuidado-rotina",
+    "estado": "pgTAP verde"
+   },
+   {
+    "pos": 20,
+    "migration": "20260910010400_health_care_behavior_v1",
+    "grupo": "formularios-cuidado-rotina",
+    "estado": "pgTAP verde"
+   },
+   {
+    "pos": 21,
+    "migration": "20260910120000_meal_plan_image_delete_requires_revision_v1",
+    "grupo": "principal-chat-sistema",
+    "estado": "pgTAP verde"
+   },
+   {
+    "pos": 22,
+    "migration": "20260910130000_meal_plans_owner_permission_grants_v1",
+    "grupo": "principal-chat-sistema",
+    "estado": "pgTAP verde; necessaria em producao"
+   },
+   {
+    "pos": 23,
+    "migration": "20260910140000_chat_conversation_preferences_v1",
+    "grupo": "principal-chat-sistema",
+    "estado": "pgTAP verde; realm interno ausente"
+   },
+   {
+    "pos": 24,
+    "migration": "20260910150000_happens_feed_pagination_v1",
+    "grupo": "principal-chat-sistema",
+    "estado": "pgTAP verde; aplicar com o deploy do cliente"
+   },
+   {
+    "pos": 25,
+    "migration": "superadmin_circular_delete_v2 (f15a9eec2)",
+    "grupo": "publicacoes-agenda",
+    "estado": "pgTAP retido"
+   },
+   {
+    "pos": 26,
+    "migration": "20260910160000_units_rpcs_versioned_from_production_v1",
+    "grupo": "coordenador",
+    "estado": "no-op em producao; pgTAP de contrato escrito"
+   },
+   {
+    "pos": 27,
+    "migration": "20260828005000_superadmin_internal_person_detail (AP-PEOPLE-DETAIL-V2)",
+    "grupo": "acessos-pessoas",
+    "estado": "pgTAP 42 PASS; sem chave"
+   },
+   {
+    "pos": 28,
+    "migration": "20260901190432_superadmin_internal_invites_v2 corrigida (AP-INVITES-V2)",
+    "grupo": "acessos-pessoas",
+    "estado": "pgTAP 33 PASS; sem chave"
+   },
+   {
+    "pos": 29,
+    "migration": "20260901210000_superadmin_internal_users_directory (AP-INTERNAL-USERS-V2)",
+    "grupo": "acessos-pessoas",
+    "estado": "pgTAP 48 PASS"
+   },
+   {
+    "pos": 30,
+    "migration": "20260908021644_superadmin_internal_users_read_minimization",
+    "grupo": "acessos-pessoas",
+    "estado": "pgTAP 48 PASS; depois da 29"
+   },
+   {
+    "pos": 31,
+    "migration": "20260812002100_child_safety_read_models corrigida (AP-CHILD-SAFETY)",
+    "grupo": "acessos-pessoas",
+    "estado": "pgTAP 45 PASS"
+   },
+   {
+    "pos": 32,
+    "migration": "20260812002200_child_safety_security_closure",
+    "grupo": "acessos-pessoas",
+    "estado": "pgTAP 45 PASS"
+   },
+   {
+    "pos": 33,
+    "migration": "20260909193000_d04_child_safety_internal_reads",
+    "grupo": "acessos-pessoas",
+    "estado": "pgTAP 45 PASS (mesma da pos 5; aplicar uma vez, nesta posicao)"
+   }
+  ],
+  "cauda": "Dependencias ausentes em producao (chat_production_contract, now/moments publication, private_media_catalog, realm interno v2, activity_save_v2) precedem os itens que as pressupoem; P12 (baseline a partir do dump de producao) muda o metodo e por isso a fila nao roda antes de P1 e P12.",
+  "chavesDeComposicao": "nenhuma ligada; candidatos: structureMutationsEnabled (estrutura), superadminCircularDeleteEnabled (publicacoes-agenda), supportProductionRepositoryV1 e accountProfileProductionRepositoryV1 (operacoes), plansProductionRepositoryV1 (operacoes)",
+  "proximoCarimboLivre": "posterior a 20260910160000"
+ },
+ "janelaDeReplay": {
+  "regra": "primeiro a reservar: reservaDeReplay {desde, ateEstimado} no proprio JSON; ou projeto descartavel proprio em portas diferentes",
+  "manifesto": "replay/foundation-migrations.sha256 ganhou 20260812000000_chat_production_contract.sql (F-R03-FCR-003). Continua com o hash pre-correcao de 20260901190432; troca fica para depois de P12 porque dez perfis fixam esse hash."
+ },
+ "decisoesDoOwnerNestaRodada": [
+  {
+   "data": "2026-09-10",
+   "via": "grupo estrutura",
+   "decisao": "RODAPE opcao A no SuperadminFormFrame; golden de Instituicoes 375 regravado. ADR 0034 Decisao 7."
   },
-  "proximoPassoRev6": "1) publicar rev 6 com a baseline; 2) cada grupo reexecuta seus pgTAP sobre a baseline (projeto descartavel proprio) e corrige fixtures (units.unit_type_id, cadeia de Cardapios); 3) coordenador aplica em producao, na ordem, cada pacote que passar, com dump antes do lote; 4) formularios-cuidado-rotina e o proximo candidato (fundacoes novas, sem dependencia de cadeia ausente); 5) Owner: P2 e P14 na skill",
-  "proximoPasso": "1) publicar rev 4 em dev; 2) resultado dos testes da base conjunta (rev 5); 3) enquanto o Owner nao responde P1/P2/P4/P12: preparar a migration unica de fase MFA do MVP (P10+P11), o pgTAP de Suporte e Conta num perfil declarado, e a correcao das tres migrations quebradas com os donos; 4) proximo action_id executavel pelo coordenador: units.list (compor o repositorio real de Unidades com structureMutationsEnabled ainda false, provado por teste de composicao)"
+  {
+   "data": "2026-09-10",
+   "via": "grupo estrutura",
+   "decisao": "Sem balao de chat em criar/editar/publicar, Agora aberto e Momentos aberto. ADR 0034 Decisao 7."
+  },
+  {
+   "data": "2026-09-10 tarde",
+   "via": "Owner ao coordenador",
+   "decisao": "Decisoes de 10/09 sao aprovadas e nao se reabrem; fechamento em formato fixo; integrar por conteudo com testes; aprovacao visual nao vira verified/done/E2E."
+  }
+ ],
+ "perguntasAoOwner": {
+  "arquivo": "docs/reviews/etapa-2-operacao/next-round/R03-perguntas-ao-owner-20260910.md",
+  "bloqueiam": [
+   "P1 backup por ponto no tempo (toda a fila SQL)",
+   "P2 token R2 (funcoes de midia e spike)",
+   "P4 chaves publicaveis (rota normal de todas as frentes)",
+   "P12 baseline do banco (metodo da fila)"
+  ],
+  "naoBloqueiam": [
+   "P3 origem CORS local",
+   "P5-P11 e P13 decisoes de produto/dominio dos grupos",
+   "P14 troca de senha do banco (seguranca)"
+  ]
+ },
+ "metricas": {
+  "base": "inventario validado em 2026-09-10T20:19-03:00 sobre a4af2b198 (validate-trackers PASS); ambiente: repositorio + producao medida nos lotes 1-7",
+  "frontendVerified": "11/230 (4,78%)",
+  "frontendLocalGreen": "23/230 (10,00%)",
+  "frontendAprovacaoVisualDoOwner": "52/230 (22,61%)",
+  "backendLocalGreen": "61/223 (27,35%)",
+  "backendSqlEmProducao": "31/223 (13,90%)",
+  "backendDone": "0/223 (0,00%)",
+  "e2eVerified": "0/198 (0,00%)",
+  "nota": "aprovacao visual nao e verified; SQL em producao nao e done (falta rota normal + CRUD + RLS + reload por action_id)"
+ },
+ "respostasDoOwner20260910": {
+  "P1": "B: PITR dispensado ate cliente real; dump logico local antes de cada lote (ADR 0034 Decisao 8)",
+  "P2": "Owner delega ao coordenador, mas a sessao OAuth do MCP nao cria tokens de API; roteiro de 5 minutos para o Owner na skill coelo-backend (secao 'Pendencias de seguranca que so o Owner executa'); enquanto isso nada de midia R2 nova",
+  "P4": "sim: .env.local gravado em 10/09 15:27 nos oito checkouts (principal e sete worktrees e2-r03-*), ignorado pelo Git, com COELO_SUPABASE_URL e a chave publicavel 'default' (sb_publishable_...). Cada frente roda flutter com --dart-define a partir dele (README de apps/superadmin/lib/core/config)",
+  "P12": "seguir o recomendado: baseline a partir do dump de producao",
+  "P14": "nao precisa agora; roteiro de troca de senha na mesma secao da skill"
+ },
+ "dumpLogicoDoLote": {
+  "regra": "ADR 0034 Decisao 8/P1: dump antes de cada lote SQL",
+  "lote1": {
+   "quando": "2026-09-10T15:23:00-03:00 e 15:29",
+   "schema": "scratchpad/baseline/schema-producao-20260910.sql sha256 9686ab744082a110... (2.088.098 bytes, 231 tabelas, 179 policies, 633 funcoes)",
+   "dados": "scratchpad/baseline/dados-public-20260910.sql sha256 bde2c3d730913650... (472.232 bytes; 18 tabelas com linhas, entre elas people 1 e platform_memberships 1)",
+   "onde": "fora do Git, no scratchpad da sessao do coordenador; copia a mover para um diretorio local persistente ignorado pelo Git (pendente)"
+  }
+ },
+ "baseline": {
+  "decisao": "ADR 0034 Decisao 8/P12",
+  "arquivo": "packages/coelo_database/migrations/20260910000000_baseline_producao.sql (dump schema-only de producao de 10/09/2026, 2 MB) + packages/coelo_database/supabase/seed.sql (catalogo de referencia: 16 tabelas, sem pessoas nem memberships)",
+  "historico": "packages/coelo_database/migrations-historico/ (186 arquivos + os da rodada); deixa de ser replayado; os scripts Invoke/Prepare-SafeMigrationReplay e o manifesto foundation ficam obsoletos",
+  "prova": "projeto descartavel coelo_baseline (portas 573xx): baseline aplicou limpa em Postgres 17 local (186 tabelas public, 181 policies, 633 funcoes), seed aplicou (74 permissoes, 5 papeis, 100 concessoes, 0 pessoas)",
+  "usoPelasFrentes": "Sync-SupabaseCliMigrations.ps1 -Mode Prepare espelha migrations/ (baseline + pacotes aceitos) e supabase db reset em projeto descartavel proprio aplica baseline + seed; o pacote do grupo entra depois com psql e o pgTAP roda em cima. Pacote so entra em migrations/ quando passar esse preflight; ate la fica na branch do grupo e em migrations-historico/ se for antigo",
+  "carimbos": "todo pacote novo usa carimbo > 20260910000000; pacotes antigos aceitos sao renumerados ao entrar",
+  "ressalvaLocal": "no Postgres local os privilegios padrao do Supabase dao execute em public a anon; producao nao tinha. A migration de Unidades passou a revogar anon explicitamente; testes sobre anon precisam dessa revogacao explicita para valerem nos dois ambientes"
+ },
+ "preflightNaBaseline": {
+  "quando": "2026-09-10T15:40:00-03:00",
+  "resultados": [
+   {
+    "pos": 26,
+    "migration": "20260910160000_units_rpcs_versioned_from_production_v1",
+    "aplica": true,
+    "pgtap": "41/41 apos revoke explicito de anon e service_role"
+   },
+   {
+    "pos": 22,
+    "migration": "20260910130000_meal_plans_owner_permission_grants_v1",
+    "aplica": true,
+    "pgtap": "6/6 (teste novo meal_plans_owner_permission_grants_v1_test); os pgTAP de 58 casos do grupo NAO passam na baseline porque exigem meal_plan_publish_unreceipted e app_private.meal_plan_command_receipts, ausentes em producao"
+   },
+   {
+    "pos": 21,
+    "migration": "20260910120000_meal_plan_image_delete_requires_revision_v1",
+    "aplica": false,
+    "erro": "producao nao tem meal_plan_request_image_delete(uuid,uuid,integer): a cadeia de Cardapios em producao para antes de 20260820230000"
+   },
+   {
+    "pos": 27,
+    "migration": "20260828005000_superadmin_internal_person_detail",
+    "aplica": true,
+    "pgtap": "fixture insere units.institution_type_id, que producao nao tem (unit_type_id): 151 erros; P13"
+   }
+  ],
+  "licao": "pgTAP verde no replay do repositorio nao e pgTAP verde sobre producao. Toda prova passa a ser sobre a baseline. Os grupos precisam reexecutar seus pacotes e fixtures nela antes de o coordenador aplicar."
+ },
+ "lote2": {
+  "dump": "C:/Users/adrie/Documents/Coelo-backups/schema-producao-20260910-lote2.sql (15:57, 2.088.694 bytes); dumps do lote 1 copiados para o mesmo diretorio, fora do Git",
+  "preflightNaBaseline": "20260910010000..010500 aplicam; pgTAP daily_routine_foundation 34/34, scope_closure 6/6, attendance 23/23, health_care_and_medication 30/30",
+  "aplicadoEm": "2026-09-10T16:03:00-03:00, seis migrations sem erro; ledger registrado; verificado em producao: tabelas routine_* e health/medication criadas, attendance com FORCE RLS, attendance_reserve_idempotency_key presente",
+  "grupo": "formularios-cuidado-rotina",
+  "efeito": "backend das familias daily_routine, attendance, health_care e medication existe em producao; falta o cliente (repositorios Supabase, rota normal, reload) para done",
+  "naoAplicado": "20260909217000 Suporte e 20260909218000 Conta aplicam na baseline mas os pgTAP do grupo chamam row_security_active(regclass, text), helper inexistente em producao: grupo operacoes corrige o teste; 20260910120000 circular_delete nao aplica (pre-requisitos do realm interno circulars v2 ausentes; alem disso o carimbo colide com o de meal_plan_image_delete: acessos-pessoas sugeriu faixas por grupo, adotadas)"
+ },
+ "lote3": {
+  "medidoPor": "formularios-cuidado-rotina (coelo-c7) sobre baseline + seed: 1033 assercoes pgTAP, zero falhas, 24 arquivos; reconferido pelo coordenador na propria baseline (11 migrations aplicam; guardian_read 12/12, student_link 20/20, revoke: forms_definition 31/31, forms_directory_internal_read 117/117, export_download 3 ok e depois erro de 'pending trigger events' na propria estrutura do teste, nao no pacote)",
+  "ordem": [
+   "20260827235500_superadmin_internal_institution_list_filter (estrutura, dependencia declarada: envelope SAI_INVALID_ARGUMENT)",
+   "20260828000500_superadmin_internal_institution_edit_core (estrutura)",
+   "20260908000049_superadmin_forms_directory_internal_read",
+   "20260908030000_superadmin_internal_form_drafts_v2",
+   "20260908032100_superadmin_forms_authoring_institution_context_v2",
+   "20260908054000_forms_internal_provenance_guards",
+   "20260908160000_private_media_catalog_r2_v1 (com a correcao do coordenador: revoke de media_assets)",
+   "20260908170000_forms_xlsx_private_r2_v1",
+   "20260908191327_forms_response_edit_validation_v1",
+   "20260908195512_forms_superadmin_operations_read_v2",
+   "20260908215522_forms_superadmin_media_read_r2_v1",
+   "20260910220000_health_care_guardian_read_v1 (D9 opcao 1)",
+   "20260910220200_student_link_commands_v1 (Alunos: vincular, transferir, editar, revogar)",
+   "20260910220100_forms_revoke_production_drift_v1 (por ultimo: revoga grants diretos de anon/authenticated nas tabelas de Formularios e o execute indevido de form_authorize_file_job_download/form_redeem_file_job_download)"
+  ],
+  "achadoDeSeguranca": "producao tinha anon com execute em form_authorize_file_job_download e authenticated em form_redeem_file_job_download; resgate de token e do service_role por contrato. Corrigido pelo revoke do lote 3.",
+  "dump": "C:/Users/adrie/Documents/Coelo-backups/schema-producao-20260910-lote3.sql (16:27)",
+  "aplicadoEm": "2026-09-10T16:32:00-03:00: 14 migrations sem erro; ledger 22 versoes de 10/09; verificado: anon sem execute em form_authorize_file_job_download, media_assets e forms sem grant a anon/authenticated; os 11 arquivos historicos entraram em migrations/ como 20260910230001..230011 (ordem preservada) porque o carimbo original, anterior a baseline, quebraria o db reset local",
+  "estado": "aplicacao em producao logo apos o dump; ledger e move dos 11 arquivos de migrations-historico/ para migrations/ no mesmo commit"
+ },
+ "lote4": {
+  "dump": "C:/Users/adrie/Documents/Coelo-backups/schema-producao-20260910-lote4.sql (16:40)",
+  "espelho": "projeto descartavel coelo_baseline reconstruido por db reset (baseline + seed) + lotes 1-3, para o preflight nao herdar resíduo dos ensaios anteriores; passa a ser o espelho de producao do coordenador",
+  "aplicadoEm": "2026-09-10T16:45:00-03:00, 11 migrations sem erro, ledger 33 versoes de 10/09",
+  "conteudo": [
+   "20260910190000_meal_plans_media_lifecycle_receipts_v2 (a antiga 20260820230000 reconstruida sobre a baseline; pgTAP 30/30 e 22/22)",
+   "20260910190100_meal_plan_image_delete_requires_revision_v2 (fecha a porta e revoga de anon o SELECT em meal_plans e o execute em meal_plan_list/get; 6/6)",
+   "20260910190200_meal_plan_delete_v1",
+   "20260910170100 person_detail (42/42)",
+   "170200 invites_v2 (33/33)",
+   "170300 internal_users_directory (45/45)",
+   "170400 read_minimization (3/3)",
+   "170500 child_safety_schema (4 tabelas novas)",
+   "170600 child_safety_read_models",
+   "170700 child_safety_security_closure",
+   "170800 d04_child_safety_internal_reads (43/43)"
+  ],
+  "naoEntrou": "20260910170750_child_directory_error_envelope: obsoleta, o lote 3 ja levou SAI_INVALID_ARGUMENT ao envelope e o preflight de md5 dela parou por drift; d04 aplicou sem ela. Arquivo marcado OBSOLETO em candidatos/acessos-pessoas/. 170900 people_read_aal1 retido por P11.",
+  "verificado": "invites v2 10 funcoes, child_safety 4 tabelas, meal_plan_delete presente, anon sem execute em meal_plan_list",
+  "medicaoDoGrupo": "acessos-pessoas: a lacuna de RPCs chamadas pelo cliente e ausentes em producao cai de 123 para 105 com este lote; primeira reducao do dia"
+ },
+ "chavesLigadas": "2026-09-10T16:50: COELO_ENABLE_CARE_AND_ROUTINE_BACKEND e COELO_ENABLE_STUDENT_LINK_COMMANDS passam a defaultValue true em SuperadminAppConfig (commit 900ed78ca), porque o SQL correspondente (lotes 2 e 3) esta em producao; testes das familias em execucao antes do push",
+ "lote5Pendente": "cadeia de Locais de estrutura (catalog_v2 baseline -> activity_save_v2 -> update_status -> copy -> schedule -> reservations -> 180000/180100/180200) mais unit_detail_v2_baseline: o candidato catalog_v2 ainda falha no espelho por 'location table ACL drift' (activity_locations tem ALL para anon/authenticated por privilegio padrao); o grupo corrige com revoke antes da guarda",
+ "filhasAs1650": "vivas e respondendo: fase0 (coelo-d2, lote 7 fa404db39 + 33277a140 + 01849ec2c em dev), estrutura (coelo-3f, fc9c6e138), acessos-pessoas (coelo-94, c949067ee, assumiu Seguranca infantil no composto), formularios-cuidado-rotina (coelo-c7, 7a3b1441c), principal-chat-sistema (bridge, 49b92ffa3, conflito do checkout principal resolvido). Sem sinal desde 15:46: operacoes (Codex, 3fa07edd0) e publicacoes-agenda (Codex, 3b21db696). realm-interno (coelo-f0) sem branch publicada.",
+ "perguntasNovasAoOwner": "P15 rodape de medication_form_mobile_light; P16 tipo location em Formularios entra no MVP; P17 sessao de teste em producao para a regua do MVP (sem ela nenhuma acao chega a verified)",
+ "colisoesDeCarimbo": "20260910120000 usado por meal_plan_image_delete_requires_revision_v1 (principal-chat-sistema) e superadmin_internal_circular_delete_v1 (publicacoes-agenda); 20260910140000 por chat_conversation_preferences_v1 e student_link_commands_v1 (renumerado para 220200); 20260910150000 por happens_feed_pagination_v1 e health_care_guardian_read_v1 (renumerado para 220000); 20260910160000 por units (aplicado) e forms_revoke (renumerado para 220100). principal-chat-sistema e publicacoes-agenda renumeram os seus para as faixas 2026091019xxxx e 2026091020xxxx; nenhum dos dois aplica ainda (cadeias ausentes).",
+ "layoutDePacotes": "pacote novo nasce em packages/coelo_database/candidatos/<grupo>/; o coordenador move para migrations/ no commit em que aplica em producao (README do pacote atualizado)",
+ "preflightEstruturaNaBaseline1612": {
+  "20260908154257_superadmin_activity_save_v2": "aplica; pgTAP superadmin_activity_save_v2_test cai na fixture units.institution_type_id (96 erros) e activity_management_end_to_end_test tem 19 not ok (teste antigo contra o shape de producao). NAO aplicado em producao ate o grupo estrutura corrigir a fixture para unit_type_id (P13 decidido pela forma de producao) e reprovar",
+  "20260909165000_superadmin_location_reservations_v2": "NAO aplica: 'reservation prerequisites missing' (catalogo de Locais v2 20260907222911/20260908000049 ausente em producao)",
+  "20260909192000_superadmin_location_consumer_bindings_v2": "NAO aplica: 'reviewed reservation reader prerequisites missing'",
+  "consequencia": "a cadeia de Locais inteira (catalogo v2 -> reservas -> bindings -> activity_location -> group_location) precisa ser reentregue pelo grupo estrutura como pacotes sobre a baseline, na faixa 2026091018xxxx, provados em projeto descartavel com baseline + seed"
+ },
+ "faixasDeCarimbo": {
+  "acessos-pessoas": "2026091017xxxx",
+  "estrutura": "2026091018xxxx",
+  "principal-chat-sistema": "2026091019xxxx",
+  "publicacoes-agenda": "2026091020xxxx",
+  "operacoes": "2026091021xxxx",
+  "formularios-cuidado-rotina": "2026091022xxxx",
+  "coordenador": "2026091023xxxx",
+  "realm-interno (novo, coelo-f0)": "2026091024xxxx"
+ },
+ "frenteNova": {
+  "grupo": "realm-interno",
+  "sessao": "coelo-f0 (Opus), atribuida em 15:58",
+  "recorte": "cadeia do realm interno v2 e dependencias (chat_production_contract, chat v2, notices v2, circulars v2, invites v2, internal_users) como pacotes novos sobre a baseline, corrigindo labels NOT NULL e notice_events em analytics",
+  "worktree": "e2-r03-realm-interno, branch work/etapa2-r03-realm-interno, JSON realm-interno.json"
+ },
+ "estadoDasFilhas1600": "ListAgents as 16:00: nenhuma sessao interativa viva; as conversas dos grupos aparecem como Remote Control offline. Mensagens de 'continuar sem parar' e das respostas D9 ficaram enfileiradas para principal-chat-sistema, formularios-cuidado-rotina e estrutura; o Owner precisa reabrir as conversas para elas receberem. Branches publicadas antes do corte (levantamento de coelo-f0 as 15:58): estrutura 8b4e6e681, acessos-pessoas ba462c680, formularios ef86622f8, operacoes 3fa07edd0, publicacoes-agenda 3b21db696; principal-chat-sistema sem push proprio depois de 8921a6261.",
+ "aplicadoEmProducao": [
+  {
+   "quando": "2026-09-10T16:03:00-03:00",
+   "migration": "20260910010000_daily_routine_foundation_v1 + 010100 + 010500",
+   "grupo": "formularios-cuidado-rotina",
+   "verificacao": "tabelas routine_* em producao; ledger"
+  },
+  {
+   "quando": "2026-09-10T16:03:00-03:00",
+   "migration": "20260910010200_attendance_authorization_and_idempotency_v1",
+   "grupo": "formularios-cuidado-rotina",
+   "verificacao": "FORCE RLS nas tabelas attendance_*; attendance_reserve_idempotency_key; ledger"
+  },
+  {
+   "quando": "2026-09-10T16:03:00-03:00",
+   "migration": "20260910010300_health_care_and_medication_plans_v1 + 010400",
+   "grupo": "formularios-cuidado-rotina",
+   "verificacao": "tabelas health_care*/medication* em producao; ledger"
+  },
+  {
+   "quando": "2026-09-10T15:47:00-03:00",
+   "migration": "20260910130000_meal_plans_owner_permission_grants_v1",
+   "grupo": "principal-chat-sistema",
+   "verificacao": "3 concessoes meal_plans.* ao owner em platform_role_permissions; ledger registrado",
+   "efeito": "meal-plans.* deixa de ser inalcancavel para o Owner; o resto da cadeia de Cardapios continua ausente"
+  },
+  {
+   "quando": "2026-09-10T15:47:00-03:00",
+   "migration": "20260910160000_units_rpcs_versioned_from_production_v1",
+   "grupo": "coordenador",
+   "verificacao": "5 RPCs conferidas: anon 0/5, authenticated 5/5; ledger registrado",
+   "efeito": "divida de versionamento de Unidades fechada; anon perdeu o execute que os privilegios padrao poderiam dar"
+  }
+ ],
+ "integracaoNoCorte": {
+  "shaPublicado": "bdd7eef82 (origin/dev, 2026-09-10T16:50-03:00); dev local do checkout principal continua atras e a Fase 0 precisa de git pull --rebase antes do proximo push",
+  "conteudo": "coordenacao R03 rev 1-5, sete branches de grupo (estrutura, principal-chat-sistema, publicacoes-agenda, operacoes, formularios-cuidado-rotina, acessos-pessoas) + lotes 1-6 da Fase 0, migration 20260910160000 e pgTAP de contrato de Unidades, manifesto do replay, skills, ADR 0034 Decisao 7, projecao de conhecimento, inventario e rastreadores regenerados",
+  "analyze": "flutter analyze lib test em apps/superadmin: No issues found (63 s) em bdd7eef82, apos corrigir um curly_braces_in_flow_control_structures no router trazido por merge",
+  "testesNaBaseConjunta": "flutter test em architecture, institutions, units, groups, activities, meal_plans, chat, attendance, circulars, principal_happens, safety, people, invites, support, account, app/shell, app/navigation: 2243 PASS / 53 FAIL em 2dff73c16 (mesmo codigo Dart de bdd7eef82 exceto o lint). As 53 falhas sao todas golden: principal_happens_preview 20, account_pages 8, invite 5, attendance_pages 4, activity 4, institution_form_page 3, support_page 2, person 2, circular_directory 2, unit 1, group 1 e 1 caso golden dentro de safety_pages_test. Zero falha nao-golden. Causa das divergencias: RODAPE/CHAT/MENU-M/composto aplicados nesta rodada com goldens ainda nao regravados pelos donos (lista de decisoes de 10/09 e Decisao 7).",
+  "validadores": "validate-trackers.cjs PASS (230 acoes, 39 familias, FE verified 11, BE done 0, E2E 0); Test-CoeloKnowledge PASS 61 artigos; parse PowerShell dos scripts de replay 0 erros; deno check do runner do spike OK",
+  "wipPreservado": "publicacoes-agenda 5 arquivos (ATENCAO: a Fase 0 migrou notice_directory_page.dart em 850ba1838; o WIP local do grupo nesse arquivo vai conflitar no rebase, resolver pela versao do composto), formularios-cuidado-rotina 1 migration, checkout principal 13 arquivos da Fase 0/principal-chat-sistema; stash 'r03-jsons-grupos' obsoleto"
+ },
+ "proximoPassoRev6": "1) publicar rev 6 com a baseline; 2) cada grupo reexecuta seus pgTAP sobre a baseline (projeto descartavel proprio) e corrige fixtures (units.unit_type_id, cadeia de Cardapios); 3) coordenador aplica em producao, na ordem, cada pacote que passar, com dump antes do lote; 4) formularios-cuidado-rotina e o proximo candidato (fundacoes novas, sem dependencia de cadeia ausente); 5) Owner: P2 e P14 na skill",
+ "proximoPasso": "1) publicar rev 4 em dev; 2) resultado dos testes da base conjunta (rev 5); 3) enquanto o Owner nao responde P1/P2/P4/P12: preparar a migration unica de fase MFA do MVP (P10+P11), o pgTAP de Suporte e Conta num perfil declarado, e a correcao das tres migrations quebradas com os donos; 4) proximo action_id executavel pelo coordenador: units.list (compor o repositorio real de Unidades com structureMutationsEnabled ainda false, provado por teste de composicao)",
+ "fechamentoR03": {
+  "quando": "2026-09-10T20:30-03:00 (relogio da maquina)",
+  "devPublicado": "a4af2b198 (origin/dev == checkout principal == e2-r03-coordenacao)",
+  "reconciliacaoGit": {
+   "checkoutPrincipal": "10 arquivos modificados eram versoes antigas ja superadas em dev (meal_plan_repository sem archive/delete, principal_happens sem paginacao), reformatacoes (largura de linha) ou copias (estrutura.json igual a dev; acessos-pessoas.json = rev 94). Unico conteudo novo: veu do Destaque em orange950 a 16% (Fase 0), guardado em docs/reviews/evidence/etapa-2/r03-fase0/veu-destaque-orange950.patch. Checkout restaurado e avancado por fast-forward para origin/dev.",
+   "acessosPessoasRev94": "o merge da branch do grupo ficou com a rev 84 do JSON (lado dev); a rev 94 (handoff do corte) foi recuperada de d47e16839 e publicada em a4af2b198",
+   "worktreesRemovidas": "3 temporarias (coelo-base-check, coelo-copia-previa, coelo-fase0-check), 9 noturna, 8 R02 (codex/*), 6 R03 de grupo; todas limpas e sem commits a frente; branches preservadas",
+   "worktreeRealmInterno": "e2-r03-realm-interno ficou com lock \"initializing\" (git worktree add interrompido as 15:57): 2692 arquivos ausentes e 87 com escrita parcial, nenhum trabalho da frente. Remocao forcada bloqueada pelo classificador; o Owner executa: git worktree unlock e2-r03-realm-interno; git worktree remove --force C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-realm-interno",
+   "commitsForaDeDevDePropositO": [
+    "wip/fase0-arquivo-chat 91e011dc6 (ARQUIVO em Cardapios/Planos + launcher do chat, sem teste) -> principal-chat-sistema na R04",
+    "work/etapa2-noturna-copia-previa 80f160599 (textos \"ainda nao esta disponivel\", D3) -> principal-chat-sistema na R04",
+    "codex/e2-r02-* (7 branches): integracao seletiva por hunks documentada em R02 FECHAMENTO-OWNER; nao copiar em bloco"
+   ]
+  },
+  "decisoesDaNoite": {
+   "P19": "Stream Live fica preparado (token com Read+Edit ja cobre); nada criado ate o Agora precisar",
+   "P20": "apagar o token antigo de 25 permissoes: acao do Owner no painel (MCP sem acesso a /user/tokens, erro 9109); pendencia 1c da skill coelo-backend ate confirmar",
+   "P21": "Cloudflare Access na frente do Superadmin: ligar depois do MVP (pendencia 1e)"
+  },
+  "codexNaR03": "publicacoes-agenda rev 12 (16:20) e operacoes rev 13 lidos; pendencias conhecidas de ambos (Avisos: migration/pgTAP/worker a revalidar; Circulares: aplicar migration e validar gateway/RLS; Agenda: contexto interno; Suporte/Conta: SQL em producao no lote 7, rota normal com sessao pendente; router sem supportController) transcritas nos rastreadores e nos prompts da R04",
+  "percentuais": {
+   "feVerified": "11/230 (4,78%)",
+   "feLocalGreen": "23/230 (10,00%)",
+   "feAprovacaoVisualDoOwner": "52/230 (22,61%)",
+   "beLocalGreen": "61/223 (27,35%)",
+   "beSqlEmProducao": "31/223 (13,90%)",
+   "beDone": "0/223 (0,00%)",
+   "e2eVerified": "0/198 (0,00%)",
+   "base": "inventario validado em 2026-09-10T20:19-03:00 sobre a4af2b198; validate-trackers PASS"
+  }
+ },
+ "rodada4": {
+  "id": "E2-R04-20260911",
+  "prompts": "docs/reviews/etapa-2-operacao/next-round/R04-prompts.md",
+  "janela": "frentes ate 04:20 de 11/09; mini-revisao de 10 min ao finalizar; coordenador consolida de 04:30 a 05:20",
+  "coordenador": "conversa nova (Claude Fable) em worktree propria e2-r04-coordenacao; unico escritor de dev, inventario e rastreadores; confere as frentes a cada 30 min",
+  "frentes": {
+   "estrutura": "Claude Opus",
+   "acessos-pessoas": "Claude Opus",
+   "formularios-cuidado-rotina": "Claude Opus",
+   "principal-chat-sistema": "Claude Opus",
+   "realm-interno-chat-backend": "Claude Fable",
+   "publicacoes-agenda": "Codex",
+   "operacoes": "Codex"
+  },
+  "primeiroPacoteDoCoordenador": "migration unica \"MFA fora do MVP\" (ADR 0034 Decisao 12): requires_mfa=false no catalogo e funcoes que negam AAL2 alinhadas; depois candidatos 170900 (people_read_aal1) e 220300 (student_links_read)"
+ }
 }

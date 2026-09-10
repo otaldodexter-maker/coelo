@@ -3,7 +3,7 @@ title: "Pendências Coelo — Back-end"
 source: "AGENTS.md; ADR 0019; ADR 0032; tracker-corrections-2026-09-08.json; inventario-etapa-2.json"
 status: "open"
 generated_at: "2026-09-08"
-updated_at: "2026-09-10T15:10:00-03:00"
+updated_at: "2026-09-10T20:30:00-03:00"
 action_count: 230
 family_count: 39
 active_mvp_action_count: 200
@@ -13,13 +13,13 @@ backend_applicable_action_count: 223
 formal_mvp_gate_action_count: 3
 deferred_post_mvp_action_count: 22
 flutter_only_action_count: 5
-tracker_sync_at: "2026-09-10T15:10:00-03:00"
-tracker_sync_revisions: "R03: fase0 r4; estrutura r18; acessos-pessoas r84; principal-chat-sistema r7; publicacoes-agenda r5; operacoes r6; formularios-cuidado-rotina r7; coordenacao r2"
+tracker_sync_at: "2026-09-10T20:30:00-03:00"
+tracker_sync_revisions: "R03 fechada: fase0 r9; estrutura r22; acessos-pessoas r94; principal-chat-sistema r8; publicacoes-agenda r12; operacoes r13; formularios-cuidado-rotina r22; coordenacao r18"
 ---
 
 # Pendências Coelo — Back-end
 
-## Estado vigente — Rodada 3 (E2-R03-20260910) em curso
+## Estado vigente — Rodada 3 (E2-R03-20260910) encerrada às 20:30 de 10/09; Rodada 4 (E2-R04-20260911) aberta
 
 Coordenação e Integração P1 (Claude, `coelo-2b`) registrou posse na
 [revisão 1 de coordenacao.json](etapa-2-operacao/comunicacao/coordenacao.json)
@@ -140,6 +140,32 @@ Unidades, RODAPÉ e CHAT decididos pelo Owner, perfil de replay
 
 Percentuais certificados **não mudaram**: backend 0/223 aplicáveis, porque
 nada foi aplicado em produção. Perguntas ao Owner em lote: P1 a P10.
+
+**Fechamento da Rodada 3 (10/09/2026, 20:30) e abertura da Rodada 4.**
+Reconciliação do Git feita pelo coordenador: o checkout principal guardava dez
+arquivos modificados que eram versões antigas do que já está em `dev`,
+reformatações ou cópias; o único conteúdo novo (véu do chip Destaque em
+orange950 a 16%, decisão da Fase 0) ficou guardado em
+`evidence/etapa-2/r03-fase0/veu-destaque-orange950.patch` para o grupo
+principal-chat-sistema aplicar junto dos goldens; o checkout principal está
+limpo e igual a `origin/dev`. A revisão 94 de `acessos-pessoas.json` (handoff do
+corte das 17:10) tinha sido perdida no merge, que ficou com a 84; recuperada em
+`a4af2b198`. Vinte e seis worktrees encerradas (noturna, R02 e R03) foram
+removidas com as branches preservadas; ficam o checkout principal,
+`e2-r03-coordenacao` e `e2-r03-realm-interno` (checkout interrompido às 15:57,
+sem trabalho dentro; o Owner remove com `git worktree remove --force`). Commits
+fora de `dev` que continuam de propósito: `wip/fase0-arquivo-chat` (ARQUIVO em
+Cardápios/Planos e launcher do chat, sem teste) e
+`work/etapa2-noturna-copia-previa` (textos "ainda não está disponível", D3),
+ambos atribuídos ao grupo principal-chat-sistema na Rodada 4; as sete branches
+`codex/e2-r02-*` seguem como integração seletiva por hunks, não são commits
+perdidos. Decisões do Owner registradas na noite: P19 (Stream Live fica
+preparado), P20 (apagar o token antigo, ação do Owner no painel), P21 (Cloudflare
+Access depois do MVP). **Rodada 4** (`E2-R04-20260911`, noite de 10→11/09):
+prompts em [R04-prompts.md](etapa-2-operacao/next-round/R04-prompts.md);
+frentes trabalham até 04:20, coordenador consolida de 04:30 a 05:20 e entrega
+os percentuais. Percentuais no fechamento da R03: os do parágrafo anterior, sem
+mudança.
 
 ## Estado anterior — Rodada noturna 09→10/09/2026 encerrada
 
