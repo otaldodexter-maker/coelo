@@ -53,6 +53,28 @@ final class _CopyProbeWriter implements LocationCatalogWriter {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
+final class _DialogRouteProbe extends NavigatorObserver {
+  final active = <Route<dynamic>>{};
+
+  @override
+  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    if (route is DialogRoute<dynamic>) active.add(route);
+    super.didPush(route, previousRoute);
+  }
+
+  @override
+  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    active.remove(route);
+    super.didPop(route, previousRoute);
+  }
+
+  @override
+  void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    active.remove(route);
+    super.didRemove(route, previousRoute);
+  }
+}
+
 void main() {
   late ControlledLocationReader reader;
 
@@ -218,6 +240,47 @@ void main() {
 
     expect(find.byKey(const Key('location-copy-dialog')), findsNothing);
     expect(find.byKey(const Key('location-copy-confirm')), findsNothing);
+    expect(writer.copyCalls, 0);
+  });
+
+  testWidgets('a second copy activation before the first frame leaves no orphaned barrier', (
+    tester,
+  ) async {
+    final writer = _CopyProbeWriter();
+    final routeProbe = _DialogRouteProbe();
+    await tester.binding.setSurfaceSize(const Size(1400, 2400));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    reader = ControlledLocationReader();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        navigatorObservers: [routeProbe],
+        home: LocationDetailPanel(
+          id: locationA,
+          scope: scopeUnitA,
+          onBack: () {},
+          reader: reader,
+          writer: writer,
+          sessionAvailable: true,
+          capabilities: const LocationCapabilities(copy: true),
+          onCopied: (_) {},
+        ),
+      ),
+    );
+    await answer(tester);
+
+    final onPressed = tester.widget<OutlinedButton>(find.byKey(_copy)).onPressed!;
+    onPressed();
+    onPressed();
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('location-copy-dialog')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('location-copy-cancel')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('location-copy-dialog')), findsNothing);
+    expect(find.byType(ModalBarrier).hitTestable(), findsNothing);
+    expect(routeProbe.active, isEmpty);
     expect(writer.copyCalls, 0);
   });
 
