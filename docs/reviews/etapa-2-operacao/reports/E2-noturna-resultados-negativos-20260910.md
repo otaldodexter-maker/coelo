@@ -124,7 +124,11 @@ alter**, e medir só a criação subconta.
 | `meal_plans.scope_level` x `MealPlanSourceType` | `activity` | `exception` | idem; só apareceu na medição corrigida |
 | `audit_logs.context_kind` x `ChatContextKind` | `global` | `conversationGroup`, `person` | falso positivo entre domínios: Auditoria não usa enum para isto, o cliente passa `Set<String>` adiante e a interface nem oferece o filtro |
 
-Ou seja: **um** defeito real em todo o aplicativo, e ele estava no meu recorte. O
+Ou seja: **um** defeito real dentro do que este heuristico enxerga, e ele estava no
+meu recorte. A ressalva importa: o heuristico so olha pares com interseccao acima de
+60%, entao ele acha renome — `closed` virando `ended` — e **nao acharia** um enum
+cujo vocabulario inteiro divergisse do da coluna, nem uma coluna sem lista de valores
+permitidos. Dizer "um defeito no aplicativo inteiro" seria mais forte que a medida. O
 heurístico tem dois falsos positivos previsíveis, e reconhecê-los custa ler quatro
 pares em vez de refazer a medição: quando duas colunas e dois enums de um mesmo
 domínio são quase iguais entre si, o cruzamento aparece nas duas direções; e

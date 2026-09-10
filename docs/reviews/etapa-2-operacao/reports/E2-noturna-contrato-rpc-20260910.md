@@ -43,7 +43,13 @@ pacote.
 | `unit_directory_filter_options` | idem e `groups/data/supabase_group_directory_repository.dart` |
 
 As outras 71 existem. Varri o repositorio inteiro, nao apenas o pacote: nenhum
-`.sql` em qualquer diretorio cria essas cinco funcoes.
+`.sql` em qualquer diretorio cria essas cinco funcoes com `create function`.
+
+Limite do instrumento, declarado: a varredura procura a declaracao literal. Uma
+funcao criada dinamicamente, por `execute format(...)` dentro de outra funcao, nao
+seria vista. Nao encontrei nada assim no pacote, mas nao procurei exaustivamente por
+esse caminho, e um `select proname from pg_proc` responde tanto isto quanto a
+pergunta principal.
 
 O que confirma que a ausencia e drift e nao descuido do meu varredor: a
 migration `20260825180500_repair_unit_import_export_runtime_contract.sql`, que
@@ -64,9 +70,16 @@ Consequencia, nas duas leituras possiveis, ambas reportaveis:
 Continuo sem escolher, mas a plausibilidade deixou de ser simetrica, e o dado vem
 de outra frente. A hipotese "instalado fora do versionamento" e **fenomeno medido
 neste repositorio**, e nao especulacao: a frente perfil-para-voce mostrou que as
-tabelas `profile_about_*` existem em producao e em migration nenhuma, provado pela
-RPC de escrita versionada que le e escreve nelas. Ha precedente comprovado do
-mesmo padrao no mesmo pacote.
+tabelas `profile_about_*` sao lidas e escritas por uma RPC versionada e nao sao
+criadas por migration nenhuma.
+
+Aqui eu aperto a afirmacao que fiz antes, porque ela era mais forte que a medicao:
+isso NAO prova que as tabelas existem em producao — ninguem leu producao esta noite.
+Prova que existem apenas duas saidas, e as duas sustentam o argumento: ou elas foram
+criadas fora do versionamento, e entao o padrao tem precedente medido no proprio
+pacote; ou nao existem, e entao a RPC versionada de escrita do Sobre tambem falha em
+producao, que e um segundo defeito da mesma familia. Nao ha terceira leitura, e
+nenhuma das duas exige acreditar em mim.
 
 A consequencia pratica para a decisao do Owner: se a leitura benigna for a
 correta, `blocked-environment` descreve a coisa certa pelo motivo errado — a
