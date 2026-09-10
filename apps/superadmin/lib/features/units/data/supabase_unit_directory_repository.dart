@@ -58,6 +58,13 @@ final class SupabaseUnitDirectoryRepository implements UnitDirectoryRepository {
               },
             );
       final saved = _record(_map(response), fallbackInstitution: record.institution);
+      // Em atualizacao o recibo tem de corresponder a unidade pedida. Sem esta
+      // conferencia, uma resposta de outra unidade entraria no cache como se
+      // fosse o registro salvo. Na criacao o identificador e atribuido pelo
+      // servidor, entao nao ha o que comparar.
+      if (record.managementVersion != 0 && saved.id != record.id) {
+        throw const UnavailableUnitDirectoryException();
+      }
       _cache[saved.id] = saved;
       if (intent != null && _pendingCreates[record.id] == intent) {
         _pendingCreates.remove(record.id);
