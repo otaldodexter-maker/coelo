@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('model and Forms production routes stay fail-closed', (tester) async {
+  testWidgets('model routes stay fail-closed and Forms production routes read authorized', (tester) async {
     final session = SuperadminSession()..signInForTesting();
     final accessRepository = _TripwireAccessProfileRepository();
     final formsApi = _TripwireFormsApi();
@@ -54,15 +54,38 @@ void main() {
       expect(formsApi.calls, 0, reason: path);
     }
 
+    // A decisao sobre esta rota mudou em 3f5449940, de 2026-09-08, "fix(forms):
+    // bind normal routes and media lifetime to authorization": rotas normais de
+    // Formularios passaram a fazer LEITURA AUTORIZADA, e so a midia ficou com o
+    // tempo de vida amarrado a autorizacao. A asserção anterior aqui, calls == 0
+    // com o painel de indisponibilidade, era de 2026-09-01 e sobreviveu sete dias
+    // a decisao; forms_fail_closed_routes_test, escrito junto com a decisao,
+    // afirma o contrario e passa. Duas asserções opostas sobre a mesma rota: o
+    // vermelho nao dizia qual estava certa, e quem lia a falha concluia que o
+    // fail-closed havia quebrado. A data fica escrita para que ninguem
+    // "conserte" isto de volta.
+    //
+    // MEDIDO em 2026-09-10, nao inferido: a rota dispara exatamente uma leitura,
+    // listFileJobs, e a pagina mostra a superficie de producao em estado de erro,
+    // nao o painel de indisponibilidade. MEDIDO tambem que a sessao deste teste
+    // NAO tem capacidade de Formularios: signInForTesting concede apenas
+    // permissionCodes {'platform.read'}, e withFormsAuthorization consulta
+    // somente session.isAuthenticated. Ou seja, o contrato de 08/09 delega a
+    // autorizacao de leitura de Formularios inteiramente ao servidor; a porta do
+    // cliente e autenticacao, nao capacidade. Isso e decisao legitima, mas e
+    // diferente de "o cliente verifica capacidade", e por isso fica registrado.
     router.go('/forms/form-1/files');
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('forms-operations-unavailable')), findsOneWidget);
-    expect(formsApi.calls, 0);
+    expect(find.byKey(const Key('forms-operations-unavailable')), findsNothing);
+    expect(formsApi.calls, 1);
 
+    // Midia continua fail-closed de verdade, e isto foi medido junto: calls nao
+    // aumenta nesta rota e o painel honesto aparece. A familia nao e uma so.
+    final callsBeforeMedia = formsApi.calls;
     router.go('/forms/media/asset-1');
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('forms-media-unavailable')), findsOneWidget);
-    expect(formsApi.calls, 0);
+    expect(formsApi.calls, callsBeforeMedia);
   });
 }
 
