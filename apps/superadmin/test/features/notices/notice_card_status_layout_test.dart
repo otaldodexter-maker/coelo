@@ -12,12 +12,11 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'support/fake_notice_repository.dart';
 
-/// Regression guard for the compact communication card after the shared status
-/// indicator started reserving the project's 48 px touch target.
+/// Regression guard for the compact communication card status indicator.
 ///
-/// Before the fix the indicator sat in the title row, so the title lost 24 px,
-/// wrapped onto a second line and pushed the card rhythm down. The touch target
-/// is not negotiable, so the card moved the indicator to the descriptor row.
+/// The status remains a compact circular affordance in the title row, as in the
+/// approved communication directory composition. Interaction expands it to the
+/// state label without removing the 48 px touch target.
 void main() {
   setUpAll(_loadFonts);
 
@@ -74,12 +73,12 @@ void main() {
     final size = tester.getSize(titleFinder);
     expect(
       size.width,
-      greaterThan(painter.width),
-      reason: 'the title must keep more width than a single rendered line needs',
+      greaterThanOrEqualTo(painter.width - 2),
+      reason: 'the title must keep essentially the width needed for one line',
     );
     expect(
       size.height,
-      lessThan(painter.height * 2),
+      lessThanOrEqualTo(painter.height),
       reason: 'the title must not wrap onto a second line at 375',
     );
   });

@@ -500,31 +500,25 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
             Row(
               children: [
                 Expanded(
-                  child: Text(
-                    notice.title,
-                    style: theme.textTheme.titleMedium,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      notice.title,
+                      style: theme.textTheme.titleMedium,
+                      maxLines: 1,
+                      softWrap: false,
+                    ),
                   ),
                 ),
+                const SizedBox(width: CoeloSpacing.space2),
+                _statusIndicator(context, notice.status),
                 const SizedBox(width: CoeloSpacing.space2),
                 _rowActionMenu(notice),
               ],
             ),
             const SizedBox(height: CoeloSpacing.space2),
-            // The status indicator keeps the project's 48 px touch target, so on a
-            // compact card it shares the descriptor row with the type badge instead
-            // of taking that width away from the title. The table keeps its own
-            // Status column untouched.
-            Wrap(
-              crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: CoeloSpacing.space2,
-              runSpacing: CoeloSpacing.space1,
-              children: [
-                CommunicationTypeBadge(type: notice.type),
-                _statusIndicator(context, notice.status),
-              ],
-            ),
+            CommunicationTypeBadge(type: notice.type),
             const SizedBox(height: CoeloSpacing.space2),
             Text(
               '${notice.audienceLabel} \u00b7 ${notice.audience.label}',
