@@ -1,12 +1,12 @@
 {
-  "revision": 10,
+  "revision": 11,
   "round": "E2-R03-20260910",
   "group": "publicacoes-agenda",
   "tool": "Codex",
   "model": "Luna medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-publicacoes-agenda",
   "branch": "work/etapa2-r03-publicacoes-agenda",
-  "head": "9ee216986c1e5ff69d8ce22d3e3b3cad4cd80d94",
+  "head": "1abe6909646cc038af33687dc829c0e95e255381",
   "coordinator": "Claude",
   "scope": {
     "app": "apps/superadmin",
@@ -42,6 +42,7 @@
       "Bateria completa apps/superadmin/test/features/agenda + notices + circulars: 475 PASS, 2 SKIP previstos, 0 falhas",
       "Goldens do recorte após aprovação visual dos anexos: matriz aprovada passou; commit de referências na base integrada: 29188430d27a57fd53075d1f58400ffca546134e",
       "Avisos: indicador circular de estado permanece na linha do título, com expansão acessível do rótulo; composição aprovada pelo Owner nos anexos",
+      "Após o rebase em 552058da0: Agenda calendar goldens 18/18, Agenda additional surfaces 24/24, Agenda remote states 23/23, Avisos diretório 4/4, Avisos formulário 1/1 e Circulares diretório 2/2",
       "flutter analyze dos arquivos alterados: No issues found",
       "supabase start/test db --local: BLOQUEADO no bootstrap da migration legada 20260820152528_forms_editor_application_capability_guard.sql, pois o schema app_private não existe; não foi criado schema manualmente nem alterada a ordem das migrations"
     ]
@@ -97,5 +98,5 @@
     "Owner aprovou os anexos visuais: Agenda e Circulares seguem integralmente as referências; em Avisos, o círculo sinaliza ativo, inativo, rascunho e demais estados. Goldens divergentes foram regravados e a matriz passou.",
     "Não declarar E2E: base.fase0Head publicada, mas Docker/Postgres local continua ocupado por outra frente e aplicação remota permanece reservada ao coordenador."
   ],
-  "updatedAt": "2026-09-10T21:10:00-03:00"
+  "updatedAt": "2026-09-10T21:25:00-03:00"
 }
