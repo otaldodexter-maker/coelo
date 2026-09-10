@@ -57,6 +57,30 @@ void main() {
     expect(find.byKey(const Key('superadmin-chat-composer-field')), findsNothing);
     expect(find.text('Mensagem autorizada'), findsWidgets);
   });
+  testWidgets('the reload after a refusal does not swap the conversation under the operator', (
+    tester,
+  ) async {
+    final repository = _TwoConversationRepository();
+    await _pump(tester, repository);
+
+    // O operador abre a SEGUNDA conversa, que nao e a primeira da lista.
+    await tester.tap(find.text('Turma Margarida'));
+    await tester.pumpAndSettle();
+    expect(find.text('mensagem da margarida'), findsOneWidget);
+
+    await tester.enterText(find.byKey(const Key('superadmin-chat-composer-field')), 'Tudo bem?');
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('superadmin-chat-send')));
+    await tester.pumpAndSettle();
+
+    // A recusa dispara releitura do inbox. Se essa releitura resselecionar o
+    // primeiro item, o operador perde a conversa que estava lendo por causa de
+    // uma recusa em OUTRA. Trocar a conversa na mao de alguem e pior que o
+    // preview desatualizado que a releitura conserta.
+    expect(find.text('mensagem da margarida'), findsOneWidget);
+    expect(find.text('mensagem da girassol'), findsNothing);
+  });
+
   testWidgets('the Principal surface treats a read-only refusal the same way', (tester) async {
     final repository = _ReadOnlyOnSendRepository();
     tester.view.devicePixelRatio = 1;
@@ -162,6 +186,68 @@ final class _ReadOnlyOnSendRepository implements ChatRepository {
     _readOnly = true;
     return Future<ChatMessage>.error(const ChatConflictException(ChatConflictReason.readOnly));
   }
+
+  @override
+  Future<ChatMessage> editMessage(ChatEditMessageCommand command) =>
+      Future<ChatMessage>.error(const ChatFailureException());
+
+  @override
+  Future<ChatMessageRevocation> revokeMessage(ChatRevokeMessageCommand command) =>
+      Future<ChatMessageRevocation>.error(const ChatFailureException());
+}
+
+/// Duas conversas, a segunda recusando o envio por somente leitura.
+final class _TwoConversationRepository implements ChatRepository {
+  @override
+  Future<int> fetchUnreadTotal() async => 0;
+
+  @override
+  Future<ChatInboxPage> fetchInbox(ChatInboxQuery query) async => ChatInboxPage(
+    totalUnread: 0,
+    items: [
+      _summary('conversation-1', 'Turma Girassol'),
+      _summary('conversation-2', 'Turma Margarida'),
+    ],
+  );
+
+  ChatConversationSummary _summary(String id, String title) => ChatConversationSummary(
+    id: id,
+    title: title,
+    preview: 'Ultima mensagem',
+    contextLabel: 'Unidade Cambui',
+    kind: 'group',
+    unreadCount: 0,
+    updatedAt: DateTime.utc(2026, 8, 12, 12),
+    isReadOnly: false,
+  );
+
+  @override
+  Future<ChatThreadPage> fetchThread(ChatThreadQuery query) async => ChatThreadPage(
+    items: [
+      ChatMessage(
+        id: 'message-${query.conversationId}',
+        conversationId: query.conversationId,
+        body: query.conversationId == 'conversation-2'
+            ? 'mensagem da margarida'
+            : 'mensagem da girassol',
+        authorName: 'Marina',
+        sentAt: DateTime.utc(2026, 8, 12, 12),
+        isMine: false,
+        kind: 'text',
+      ),
+    ],
+  );
+
+  @override
+  Future<void> markRead({required String conversationId, required String upToMessageId}) async {}
+
+  @override
+  Future<ChatRealtimeRefresh> refreshAfterRealtime({required String conversationId}) =>
+      throw UnimplementedError();
+
+  @override
+  Future<ChatMessage> sendMessage(ChatSendMessageCommand command) =>
+      Future<ChatMessage>.error(const ChatConflictException(ChatConflictReason.readOnly));
 
   @override
   Future<ChatMessage> editMessage(ChatEditMessageCommand command) =>

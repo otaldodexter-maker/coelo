@@ -123,7 +123,17 @@ final class _PrincipalChatPageState extends State<PrincipalChatPage> {
         ChatInboxQuery(search: search, pageSize: _pageSize),
       );
       if (!_isCurrentInbox(generation, requested)) return;
-      setState(() => _inboxState = ChatInboxState.loaded(page, search: search));
+      setState(() {
+        _inboxState = ChatInboxState.loaded(page, search: search);
+        // O resumo selecionado precisa vir da leitura nova, senao `isReadOnly`
+        // fica preso no valor antigo e o composer continua oferecido depois de
+        // o servidor ja ter fechado a conversa para escrita.
+        final selectedId = _selected?.id;
+        if (selectedId != null) {
+          final refreshed = page.items.where((item) => item.id == selectedId).firstOrNull;
+          if (refreshed != null) _selected = refreshed;
+        }
+      });
     } on ChatUnauthorizedException catch (error) {
       // Negação vale mesmo em recarga silenciosa: perder acesso não é detalhe.
       if (_isCurrentInbox(generation, requested)) _denyAccess(error);

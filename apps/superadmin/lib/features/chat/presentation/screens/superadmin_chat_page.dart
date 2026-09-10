@@ -126,7 +126,11 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
   // the composition root; `/dev` continues to inject its deterministic repo.
   ChatRepository _configuredRepository() => const UnavailableChatRepository();
 
-  Future<void> _loadInbox({bool reset = false}) async {
+  /// `preserveSelection` rele a inbox sem trocar a conversa aberta. A recarga
+  /// normal resseleciona o primeiro item, o que e certo na abertura e na busca,
+  /// mas seria destrutivo depois de uma recusa: o operador perderia a conversa
+  /// que estava lendo por causa de uma recusa naquela mesma conversa.
+  Future<void> _loadInbox({bool reset = false, bool preserveSelection = false}) async {
     if (reset) {
       _inboxPage = 1;
       _inboxCursor = null;
@@ -146,13 +150,27 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
         return;
       }
       setState(() => _inboxState = ChatInboxState.loaded(page, search: search));
-      if (page.items.isNotEmpty) {
-        await _select(
-          page.items.first,
-          inboxRequestGeneration: requestGeneration,
-          inboxSearch: search,
-        );
+      if (page.items.isEmpty) return;
+      if (preserveSelection) {
+        final selectedId = _selected?.id;
+        final refreshed = page.items.where((item) => item.id == selectedId).firstOrNull;
+        // Reselecionar a MESMA conversa cai no ramo que preserva a thread e o
+        // envio em voo, e so atualiza o resumo — inclusive `isReadOnly`, que e
+        // o que faz a affordance de escrita sumir sozinha.
+        if (refreshed != null) {
+          await _select(
+            refreshed,
+            inboxRequestGeneration: requestGeneration,
+            inboxSearch: search,
+          );
+        }
+        return;
       }
+      await _select(
+        page.items.first,
+        inboxRequestGeneration: requestGeneration,
+        inboxSearch: search,
+      );
     } on ChatUnauthorizedException catch (error) {
       if (!_isCurrentInboxRequest(requestGeneration, requestedRepository)) return;
       _denyAccess(error);
@@ -290,7 +308,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
         // some sozinha. A sessao e o restante da tela permanecem.
         _pendingSend = null;
         _showNotice('A conversa nao aceita novas mensagens. A tela foi atualizada.');
-        unawaited(_loadInbox());
+        unawaited(_loadInbox(preserveSelection: true));
       }
     } on ChatOfflineException {
       if (_isCurrentSend(sendGeneration, requestedRepository, conversation.id)) {
