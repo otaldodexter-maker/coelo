@@ -48,6 +48,7 @@ final class _AccessProfileDuplicatePageState extends State<AccessProfileDuplicat
   double _footerHeight = 0;
   String? _requestId;
   String? _fingerprint;
+  VoidCallback? _confirmedCompletion;
   int _contextRevision = 0;
 
   bool _isCurrent(int revision) => mounted && revision == _contextRevision;
@@ -71,6 +72,7 @@ final class _AccessProfileDuplicatePageState extends State<AccessProfileDuplicat
       _saving = false;
       _requestId = null;
       _fingerprint = null;
+      _confirmedCompletion = null;
       _name.clear();
       _reason.clear();
       _load();
@@ -99,6 +101,10 @@ final class _AccessProfileDuplicatePageState extends State<AccessProfileDuplicat
 
   Future<void> _duplicate() async {
     if (_saving || _source == null) return;
+    if (_confirmedCompletion != null) {
+      _confirmedCompletion!();
+      return;
+    }
     if (!(_formKey.currentState?.validate() ?? false)) return;
     final revision = _contextRevision;
     final onDuplicated = widget.onDuplicated;
@@ -119,7 +125,20 @@ final class _AccessProfileDuplicatePageState extends State<AccessProfileDuplicat
       if (!_isCurrent(revision)) return;
       _requestId = null;
       _fingerprint = null;
-      onDuplicated(duplicate);
+      _confirmedCompletion = () {
+        if (!_isCurrent(revision)) return;
+        try {
+          onDuplicated(duplicate);
+        } on Object {
+          if (!_isCurrent(revision)) return;
+          showSuperadminNotice(
+            context,
+            'Duplicação confirmada. Não foi possível concluir a navegação. Tente novamente.',
+            icon: Icons.error_outline_rounded,
+          );
+        }
+      };
+      _confirmedCompletion!();
     } on AccessProfileUnauthorizedException catch (error) {
       if (!_isCurrent(revision)) return;
       setState(() {
@@ -190,7 +209,14 @@ final class _AccessProfileDuplicatePageState extends State<AccessProfileDuplicat
                 currentIndex: 1,
                 onStepSelected: (_) {},
               ),
-              body: _body(),
+              body: _confirmedCompletion != null
+                  ? const CoeloStatePanel(
+                      key: Key('access-profile-duplicate-confirmed'),
+                      title: 'Duplicação confirmada',
+                      message: 'Continue para concluir.',
+                      icon: Icons.check_circle_outline_rounded,
+                    )
+                  : _body(),
               footer: _footer(),
             ),
           ),
@@ -254,7 +280,7 @@ final class _AccessProfileDuplicatePageState extends State<AccessProfileDuplicat
     tertiaryAction: TextButton(
       key: const Key('access-profile-duplicate-cancel'),
       onPressed: _saving ? null : widget.onCancel,
-      child: const Text('Cancelar'),
+      child: Text(_confirmedCompletion != null ? 'Voltar' : 'Cancelar'),
     ),
     continuationActions: [
       FilledButton.icon(
@@ -265,8 +291,8 @@ final class _AccessProfileDuplicatePageState extends State<AccessProfileDuplicat
                 dimension: CoeloSize.iconSm,
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
-            : const Icon(Icons.copy_all_outlined),
-        label: const Text('Duplicar modelo'),
+            : Icon(_confirmedCompletion != null ? Icons.check_rounded : Icons.copy_all_outlined),
+        label: Text(_confirmedCompletion != null ? 'Continuar' : 'Duplicar modelo'),
       ),
     ],
   );

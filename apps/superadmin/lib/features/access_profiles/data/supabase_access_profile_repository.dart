@@ -192,7 +192,7 @@ final class SupabaseAccessProfileRepository
       _modelWriteRpc(
         'superadmin_access_profile_model_create',
         params: {'p_request_id': requestId, 'p_draft': draft.toJson()},
-        decode: _modelFromReceipt,
+        decode: (receipt) => _modelFromReceipt(receipt, domain: draft.domain),
       );
 
   @override
@@ -200,7 +200,7 @@ final class SupabaseAccessProfileRepository
       _modelWriteRpc(
         'superadmin_access_profile_model_update',
         params: {'p_request_id': requestId, 'p_draft': draft.toJson()},
-        decode: _modelFromReceipt,
+        decode: (receipt) => _modelFromReceipt(receipt, domain: draft.domain, expectedId: draft.id),
       );
 
   @override
@@ -234,7 +234,8 @@ final class SupabaseAccessProfileRepository
       _modelWriteRpc(
         'superadmin_access_profile_model_duplicate',
         params: {'p_request_id': requestId, 'p_draft': draft.toJson()},
-        decode: _modelFromReceipt,
+        decode: (receipt) =>
+            _modelFromReceipt(receipt, domain: draft.domain, sourceId: draft.sourceModelId),
       );
 
   @override
@@ -383,8 +384,31 @@ final class SupabaseAccessProfileRepository
   }
 }
 
-AccessProfileModel _modelFromReceipt(Map<String, dynamic> response) =>
-    AccessProfileModel.fromJson(Map<String, dynamic>.from(response['model'] as Map));
+AccessProfileModel _modelFromReceipt(
+  Map<String, dynamic> response, {
+  required AccessProfileDomain domain,
+  String? expectedId,
+  String? sourceId,
+}) {
+  final model = response['model'];
+  final id = response['model_id'];
+  final version = response['version'];
+  if (model is! Map ||
+      id is! String ||
+      id.isEmpty ||
+      model['id'] != id ||
+      version is! int ||
+      version < 1 ||
+      model['version'] is! int ||
+      model['version'] != version ||
+      response['replayed'] is! bool ||
+      model['domain'] != domain.databaseValue ||
+      (expectedId != null && id.toLowerCase() != expectedId.toLowerCase()) ||
+      (sourceId != null && id.toLowerCase() == sourceId.toLowerCase())) {
+    throw const FormatException('Inconsistent model command receipt');
+  }
+  return AccessProfileModel.fromJson(Map<String, dynamic>.from(model));
+}
 
 Exception _mapError(PostgrestException error) {
   final message = error.message.toLowerCase();

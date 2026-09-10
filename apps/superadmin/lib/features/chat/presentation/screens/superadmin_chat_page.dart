@@ -64,6 +64,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
   int _inboxRequestGeneration = 0;
   int _threadRequestGeneration = 0;
   int _sendRequestGeneration = 0;
+  int _manageRequestGeneration = 0;
   int _inboxPage = 1;
   static const int _inboxPageSize = 8;
   ChatCursor? _inboxCursor;
@@ -74,6 +75,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
   ChatThreadPage? _thread;
   Object? _threadError;
   var _sending = false;
+  var _managing = false;
   _PendingChatSend? _pendingSend;
 
   @override
@@ -91,6 +93,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
     _inboxRequestGeneration++;
     _threadRequestGeneration++;
     _sendRequestGeneration++;
+    _manageRequestGeneration++;
     _repository = widget.chatRepository ?? _configuredRepository();
     _search.clear();
     _composer.clear();
@@ -98,6 +101,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
     _thread = null;
     _threadError = null;
     _sending = false;
+    _managing = false;
     _pendingSend = null;
     _inboxPage = 1;
     _inboxCursor = null;
@@ -206,6 +210,9 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
       }
       setState(() => _thread = thread);
       if (thread.items.isNotEmpty) {
+        // The receipt this write produces is read back on the next thread
+        // fetch. The page does not patch the bubbles from the command, so a
+        // rendered receipt is always one the server actually returned.
         await requestedRepository.markRead(
           conversationId: conversation.id,
           upToMessageId: thread.items.first.id,
@@ -262,6 +269,17 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
       if (_isCurrentSend(sendGeneration, requestedRepository, conversation.id)) {
         _denyAccess(error);
       }
+    } on ChatConflictException {
+      if (_isCurrentSend(sendGeneration, requestedRepository, conversation.id)) {
+        // A conversa recusou por estado proprio, nao por acesso: o instantaneo
+        // local esta velho. Sem reler, o operador repetiria a mesma intencao
+        // contra uma conversa que nunca vai aceita-la, e o composer continuaria
+        // oferecido. Recarregar traz `isReadOnly` do servidor e a affordance
+        // some sozinha. A sessao e o restante da tela permanecem.
+        _pendingSend = null;
+        _showNotice('A conversa nao aceita novas mensagens. A tela foi atualizada.');
+        unawaited(_loadInbox());
+      }
     } on ChatOfflineException {
       if (_isCurrentSend(sendGeneration, requestedRepository, conversation.id)) {
         _showNotice('Sem conexao. A mensagem nao foi enviada.');
@@ -277,6 +295,151 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
     }
   }
 
+  Future<void> _editMessage(ChatMessage message) async {
+    final conversation = _selected;
+    if (conversation == null || !message.canManage || _managing) return;
+    final edited = await _promptForEditedBody(message);
+    if (edited == null || !mounted) return;
+    final body = edited.trim();
+    if (body.isEmpty || body == message.body) return;
+    final manageGeneration = ++_manageRequestGeneration;
+    final requestedRepository = _repository;
+    setState(() => _managing = true);
+    try {
+      await requestedRepository.editMessage(
+        ChatEditMessageCommand(
+          conversationId: conversation.id,
+          messageId: message.id,
+          body: body,
+          idempotencyKey: _requestId(),
+        ),
+      );
+      if (!_isCurrentManage(manageGeneration, requestedRepository, conversation.id)) return;
+      // The edited row carries its own receipt and edit marker; re-read the
+      // thread instead of patching a single bubble from the command's echo.
+      await _reloadThread(conversation, manageGeneration, requestedRepository);
+    } on ChatUnauthorizedException catch (error) {
+      if (_isCurrentManage(manageGeneration, requestedRepository, conversation.id)) {
+        _denyAccess(error);
+      }
+    } on ChatConflictException catch (error) {
+      if (_isCurrentManage(manageGeneration, requestedRepository, conversation.id)) {
+        _showNotice(_conflictMessage(error.reason));
+      }
+    } on ChatOfflineException {
+      if (_isCurrentManage(manageGeneration, requestedRepository, conversation.id)) {
+        _showNotice('Sem conexao. A mensagem nao foi editada.');
+      }
+    } catch (_) {
+      if (_isCurrentManage(manageGeneration, requestedRepository, conversation.id)) {
+        _showNotice('Nao foi possivel editar a mensagem.');
+      }
+    } finally {
+      if (_isCurrentManage(manageGeneration, requestedRepository, conversation.id)) {
+        setState(() => _managing = false);
+      }
+    }
+  }
+
+  Future<void> _revokeMessage(ChatMessage message) async {
+    final conversation = _selected;
+    if (conversation == null || !message.canManage || _managing) return;
+    final confirmed = await _confirmRevocation();
+    if (confirmed != true || !mounted) return;
+    final manageGeneration = ++_manageRequestGeneration;
+    final requestedRepository = _repository;
+    setState(() => _managing = true);
+    try {
+      await requestedRepository.revokeMessage(
+        ChatRevokeMessageCommand(
+          conversationId: conversation.id,
+          messageId: message.id,
+          idempotencyKey: _requestId(),
+        ),
+      );
+      if (!_isCurrentManage(manageGeneration, requestedRepository, conversation.id)) return;
+      await _reloadThread(conversation, manageGeneration, requestedRepository);
+      if (_isCurrentManage(manageGeneration, requestedRepository, conversation.id)) {
+        _showNotice('Mensagem revogada.');
+      }
+    } on ChatUnauthorizedException catch (error) {
+      if (_isCurrentManage(manageGeneration, requestedRepository, conversation.id)) {
+        _denyAccess(error);
+      }
+    } on ChatConflictException catch (error) {
+      if (_isCurrentManage(manageGeneration, requestedRepository, conversation.id)) {
+        _showNotice(_conflictMessage(error.reason));
+      }
+    } on ChatOfflineException {
+      if (_isCurrentManage(manageGeneration, requestedRepository, conversation.id)) {
+        _showNotice('Sem conexao. A mensagem nao foi revogada.');
+      }
+    } catch (_) {
+      if (_isCurrentManage(manageGeneration, requestedRepository, conversation.id)) {
+        _showNotice('Nao foi possivel revogar a mensagem.');
+      }
+    } finally {
+      if (_isCurrentManage(manageGeneration, requestedRepository, conversation.id)) {
+        setState(() => _managing = false);
+      }
+    }
+  }
+
+  Future<void> _reloadThread(
+    ChatConversationSummary conversation,
+    int manageGeneration,
+    ChatRepository requestedRepository,
+  ) async {
+    final thread = await requestedRepository.fetchThread(
+      ChatThreadQuery(conversationId: conversation.id),
+    );
+    if (!_isCurrentManage(manageGeneration, requestedRepository, conversation.id)) return;
+    setState(() => _thread = thread);
+  }
+
+  Future<String?> _promptForEditedBody(ChatMessage message) => showDialog<String>(
+    context: context,
+    builder: (_) => _EditMessageDialog(initialBody: message.body),
+  );
+
+  Future<bool?> _confirmRevocation() => showDialog<bool>(
+    context: context,
+    builder: (dialogContext) => AlertDialog(
+      title: const Text('Revogar mensagem'),
+      content: const Text(
+        'A mensagem sai da conversa para todos os participantes. '
+        'O registro fica retido apenas para auditoria.',
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(dialogContext).pop(false),
+          child: const Text('Cancelar'),
+        ),
+        FilledButton(
+          key: const Key('superadmin-chat-revoke-confirm'),
+          onPressed: () => Navigator.of(dialogContext).pop(true),
+          child: const Text('Revogar'),
+        ),
+      ],
+    ),
+  );
+
+  static String _conflictMessage(ChatConflictReason reason) => switch (reason) {
+    ChatConflictReason.editWindowClosed => 'O prazo de edicao desta mensagem terminou.',
+    ChatConflictReason.alreadyRevoked => 'Esta mensagem ja foi revogada.',
+    ChatConflictReason.readOnly => 'Esta conversa e somente leitura.',
+  };
+
+  bool _isCurrentManage(
+    int generation,
+    ChatRepository requestedRepository,
+    String conversationId,
+  ) =>
+      mounted &&
+      generation == _manageRequestGeneration &&
+      identical(requestedRepository, _repository) &&
+      _selected?.id == conversationId;
+
   bool _isCurrentSend(int generation, ChatRepository requestedRepository, String conversationId) =>
       mounted &&
       generation == _sendRequestGeneration &&
@@ -290,6 +453,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
     _inboxRequestGeneration++;
     _threadRequestGeneration++;
     _sendRequestGeneration++;
+    _manageRequestGeneration++;
     _search.clear();
     _composer.clear();
     setState(() {
@@ -298,6 +462,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
       _threadError = null;
       _pendingSend = null;
       _sending = false;
+      _managing = false;
       _inboxPage = 1;
       _inboxCursor = null;
       _inboxCursorHistory.clear();
@@ -626,6 +791,14 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
                 message: message,
                 mediaReader: widget.mediaReader,
                 mediaSession: widget.mediaSession,
+                // A read-only conversation refuses the commands server-side;
+                // do not offer an affordance that cannot succeed.
+                onEdit: conversation.isReadOnly || _managing
+                    ? null
+                    : () => _editMessage(message),
+                onRevoke: conversation.isReadOnly || _managing
+                    ? null
+                    : () => _revokeMessage(message),
               );
             },
           ),
@@ -644,16 +817,35 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
 }
 
 final class _MessageBubble extends StatelessWidget {
-  const _MessageBubble({required this.message, this.mediaReader, this.mediaSession, super.key});
+  const _MessageBubble({
+    required this.message,
+    this.mediaReader,
+    this.mediaSession,
+    this.onEdit,
+    this.onRevoke,
+    super.key,
+  });
   final ChatMessage message;
   final MediaReader? mediaReader;
   final MediaSession? mediaSession;
+  final VoidCallback? onEdit;
+  final VoidCallback? onRevoke;
+
+  /// Affordances appear only where the server said this caller may manage the
+  /// message. Hiding them is presentation, never the access control itself.
+  bool get _canManage => message.canManage && (onEdit != null || onRevoke != null);
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final receiptLabel = _receiptLabel(message);
     return Semantics(
-      label: '${message.authorName}. ${message.body}',
+      label: [
+        '${message.authorName}.',
+        message.body,
+        if (message.isEdited) 'Mensagem editada.',
+        if (receiptLabel != null) '$receiptLabel.',
+      ].join(' '),
       child: Align(
         alignment: message.isMine ? Alignment.centerRight : Alignment.centerLeft,
         child: Container(
@@ -667,7 +859,40 @@ final class _MessageBubble extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(message.authorName, style: Theme.of(context).textTheme.labelSmall),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      message.authorName,
+                      style: Theme.of(context).textTheme.labelSmall,
+                    ),
+                  ),
+                  if (_canManage)
+                    PopupMenuButton<_MessageAction>(
+                      key: Key('superadmin-chat-manage-${message.id}'),
+                      tooltip: 'Acoes da mensagem',
+                      icon: const Icon(Icons.more_horiz_rounded, size: CoeloSize.iconSm),
+                      onSelected: (action) => switch (action) {
+                        _MessageAction.edit => onEdit?.call(),
+                        _MessageAction.revoke => onRevoke?.call(),
+                      },
+                      itemBuilder: (context) => [
+                        if (onEdit != null)
+                          const PopupMenuItem(
+                            key: Key('superadmin-chat-action-edit'),
+                            value: _MessageAction.edit,
+                            child: Text('Editar'),
+                          ),
+                        if (onRevoke != null)
+                          const PopupMenuItem(
+                            key: Key('superadmin-chat-action-revoke'),
+                            value: _MessageAction.revoke,
+                            child: Text('Revogar'),
+                          ),
+                      ],
+                    ),
+                ],
+              ),
               const SizedBox(height: CoeloSpacing.space1),
               Text(message.body),
               for (final attachment in message.attachments) ...[
@@ -681,17 +906,46 @@ final class _MessageBubble extends StatelessWidget {
                 ),
               ],
               const SizedBox(height: CoeloSpacing.space1),
-              Align(
-                alignment: Alignment.centerRight,
-                child: Text(
-                  MaterialLocalizations.of(context).formatTimeOfDay(
-                    TimeOfDay.fromDateTime(message.sentAt),
-                    alwaysUse24HourFormat: true,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  if (message.isEdited)
+                    Padding(
+                      padding: const EdgeInsets.only(right: CoeloSpacing.space2),
+                      child: Text(
+                        'editada',
+                        key: Key('superadmin-chat-edited-${message.id}'),
+                        style: Theme.of(
+                          context,
+                        ).textTheme.labelSmall?.copyWith(color: colors.onSurfaceVariant),
+                      ),
+                    ),
+                  Text(
+                    MaterialLocalizations.of(context).formatTimeOfDay(
+                      TimeOfDay.fromDateTime(message.sentAt),
+                      alwaysUse24HourFormat: true,
+                    ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.labelSmall?.copyWith(color: colors.onSurfaceVariant),
                   ),
-                  style: Theme.of(
-                    context,
-                  ).textTheme.labelSmall?.copyWith(color: colors.onSurfaceVariant),
-                ),
+                  if (receiptLabel != null) ...[
+                    const SizedBox(width: CoeloSpacing.space1),
+                    Icon(
+                      _receiptIcon(message.receipt!),
+                      key: Key('superadmin-chat-receipt-${message.id}'),
+                      size: CoeloSize.iconSm,
+                      color: colors.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: CoeloSpacing.space1),
+                    Text(
+                      receiptLabel,
+                      style: Theme.of(
+                        context,
+                      ).textTheme.labelSmall?.copyWith(color: colors.onSurfaceVariant),
+                    ),
+                  ],
+                ],
               ),
             ],
           ),
@@ -699,6 +953,77 @@ final class _MessageBubble extends StatelessWidget {
       ),
     );
   }
+}
+
+enum _MessageAction { edit, revoke }
+
+/// Owns its own controller so the field stays alive through the dialog's exit
+/// animation. Disposing alongside the returned future tears it down too early.
+final class _EditMessageDialog extends StatefulWidget {
+  const _EditMessageDialog({required this.initialBody});
+
+  final String initialBody;
+
+  @override
+  State<_EditMessageDialog> createState() => _EditMessageDialogState();
+}
+
+final class _EditMessageDialogState extends State<_EditMessageDialog> {
+  late final _controller = TextEditingController(text: widget.initialBody);
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+    title: const Text('Editar mensagem'),
+    content: TextField(
+      key: const Key('superadmin-chat-edit-field'),
+      controller: _controller,
+      autofocus: true,
+      maxLines: 4,
+      minLines: 1,
+      maxLength: 4000,
+      decoration: const InputDecoration(labelText: 'Mensagem'),
+    ),
+    actions: [
+      TextButton(
+        onPressed: () => Navigator.of(context).pop(),
+        child: const Text('Cancelar'),
+      ),
+      FilledButton(
+        key: const Key('superadmin-chat-edit-confirm'),
+        onPressed: () => Navigator.of(context).pop(_controller.text),
+        child: const Text('Salvar'),
+      ),
+    ],
+  );
+}
+
+/// Null whenever the server projected no receipt, so an older gateway renders
+/// nothing rather than an invented "unread" or "read" claim.
+String? _receiptLabel(ChatMessage message) {
+  final receipt = message.receipt;
+  if (receipt == null) return null;
+  if (receipt.isMine) {
+    if (receipt.recipientCount == 0) return null;
+    return 'Lida por ${receipt.readCount} de ${receipt.recipientCount}';
+  }
+  // A received message claims a receipt only once the server confirmed the
+  // read. Silence here means "not yet confirmed", never "unread".
+  return receipt.isReadByMe ? 'Lida' : null;
+}
+
+IconData _receiptIcon(ChatMessageReceipt receipt) {
+  if (receipt.isMine) {
+    if (receipt.isReadByEveryone) return Icons.done_all_rounded;
+    if (receipt.isDeliveredToEveryone) return Icons.done_rounded;
+    return Icons.schedule_rounded;
+  }
+  return receipt.isReadByMe ? Icons.done_all_rounded : Icons.mark_email_unread_outlined;
 }
 
 String _initials(String value) => value

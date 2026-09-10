@@ -138,6 +138,47 @@ final class ChatAttachment {
   final Uri? downloadUrl;
 }
 
+/// Server-computed receipt state for a single message.
+///
+/// The server decides which half of this record is meaningful: a message the
+/// caller received carries the caller's own [readAt]/[deliveredAt], while a
+/// message the caller sent carries aggregate counts over the conversation's
+/// active recipients. The UI never derives one half from the other, and never
+/// infers a receipt from the fact that a message is visible.
+final class ChatMessageReceipt {
+  const ChatMessageReceipt({
+    required this.isMine,
+    this.deliveredAt,
+    this.readAt,
+    this.recipientCount = 0,
+    this.deliveredCount = 0,
+    this.readCount = 0,
+  }) : assert(recipientCount >= 0),
+       assert(deliveredCount >= 0),
+       assert(readCount >= 0);
+
+  final bool isMine;
+
+  /// The caller's own receipt, meaningful only for a received message.
+  final DateTime? deliveredAt;
+  final DateTime? readAt;
+
+  /// Aggregates over active recipients, meaningful only for a sent message.
+  final int recipientCount;
+  final int deliveredCount;
+  final int readCount;
+
+  bool get isReadByMe => !isMine && readAt != null;
+  bool get isDeliveredToMe => !isMine && deliveredAt != null;
+
+  /// True only when every active recipient has read the message. A conversation
+  /// with no active recipient never counts as fully read.
+  bool get isReadByEveryone => isMine && recipientCount > 0 && readCount >= recipientCount;
+
+  bool get isDeliveredToEveryone =>
+      isMine && recipientCount > 0 && deliveredCount >= recipientCount;
+}
+
 final class ChatMessage {
   const ChatMessage({
     required this.id,
@@ -148,6 +189,9 @@ final class ChatMessage {
     required this.isMine,
     required this.kind,
     this.attachments = const [],
+    this.receipt,
+    this.editedAt,
+    this.canManage = false,
   });
 
   final String id;
@@ -158,6 +202,56 @@ final class ChatMessage {
   final bool isMine;
   final String kind;
   final List<ChatAttachment> attachments;
+
+  /// Null when the server projected no receipt. Absence is not "unread": the
+  /// UI renders nothing rather than asserting a state the server did not send.
+  final ChatMessageReceipt? receipt;
+
+  /// Set only when the server recorded at least one edit for this message.
+  final DateTime? editedAt;
+
+  /// Whether the server authorises this caller to edit or revoke the message.
+  /// It gates affordances only; every command is re-authorised server-side.
+  final bool canManage;
+
+  bool get isEdited => editedAt != null;
+}
+
+final class ChatEditMessageCommand {
+  const ChatEditMessageCommand({
+    required this.conversationId,
+    required this.messageId,
+    required this.body,
+    required this.idempotencyKey,
+  }) : assert(conversationId != ''),
+       assert(messageId != ''),
+       assert(idempotencyKey != '');
+
+  final String conversationId;
+  final String messageId;
+  final String body;
+  final String idempotencyKey;
+}
+
+final class ChatRevokeMessageCommand {
+  const ChatRevokeMessageCommand({
+    required this.conversationId,
+    required this.messageId,
+    required this.idempotencyKey,
+  }) : assert(conversationId != ''),
+       assert(messageId != ''),
+       assert(idempotencyKey != '');
+
+  final String conversationId;
+  final String messageId;
+  final String idempotencyKey;
+}
+
+final class ChatMessageRevocation {
+  const ChatMessageRevocation({required this.messageId, required this.revokedAt});
+
+  final String messageId;
+  final DateTime revokedAt;
 }
 
 final class ChatThreadPage {
@@ -214,6 +308,8 @@ abstract interface class ChatRepository {
   Future<ChatInboxPage> fetchInbox(ChatInboxQuery query);
   Future<ChatThreadPage> fetchThread(ChatThreadQuery query);
   Future<ChatMessage> sendMessage(ChatSendMessageCommand command);
+  Future<ChatMessage> editMessage(ChatEditMessageCommand command);
+  Future<ChatMessageRevocation> revokeMessage(ChatRevokeMessageCommand command);
   Future<void> markRead({required String conversationId, required String upToMessageId});
   Future<ChatRealtimeRefresh> refreshAfterRealtime({required String conversationId});
 }
@@ -237,6 +333,14 @@ final class UnavailableChatRepository implements ChatRepository {
       Future<ChatMessage>.error(const ChatFailureException());
 
   @override
+  Future<ChatMessage> editMessage(ChatEditMessageCommand command) =>
+      Future<ChatMessage>.error(const ChatFailureException());
+
+  @override
+  Future<ChatMessageRevocation> revokeMessage(ChatRevokeMessageCommand command) =>
+      Future<ChatMessageRevocation>.error(const ChatFailureException());
+
+  @override
   Future<void> markRead({required String conversationId, required String upToMessageId}) =>
       Future<void>.error(const ChatFailureException());
 
@@ -247,6 +351,18 @@ final class UnavailableChatRepository implements ChatRepository {
 
 final class ChatUnauthorizedException implements Exception {
   const ChatUnauthorizedException();
+}
+
+/// A command the caller may hold permission for, but that the message's own
+/// state refuses right now: the edit window closed, or it is already revoked.
+/// Distinct from [ChatUnauthorizedException] so the UI can explain the reason
+/// without implying the session lost access.
+enum ChatConflictReason { editWindowClosed, alreadyRevoked, readOnly }
+
+final class ChatConflictException implements Exception {
+  const ChatConflictException(this.reason);
+
+  final ChatConflictReason reason;
 }
 
 final class ChatOfflineException implements Exception {

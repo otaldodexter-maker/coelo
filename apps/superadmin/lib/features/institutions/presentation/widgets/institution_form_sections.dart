@@ -1,5 +1,6 @@
 import 'dart:ui' as ui;
 
+import 'package:coelo_domain/locations.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
@@ -7,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../../app/widgets/superadmin_advanced_color_picker_dialog.dart';
+import '../../../locations/domain/location_catalog_reader.dart';
+import '../../../locations/presentation/locations_map_section.dart';
 import '../../data/institution_location_service.dart';
 import '../../domain/institution_directory_item.dart';
 import '../../domain/institution_record.dart';
@@ -21,12 +24,22 @@ final class InstitutionFormSection extends StatelessWidget {
     required this.controller,
     required this.locationService,
     required this.imagePicker,
+    this.locationScope,
+    this.locationCatalogReader = const UnavailableLocationCatalogReader(),
+    this.locationSessionAvailable = false,
+    this.locationContextRevision = 0,
+    this.onOpenLocations,
     super.key,
   });
 
   final InstitutionFormController controller;
   final InstitutionLocationService locationService;
   final InstitutionLogoPicker imagePicker;
+  final LocationScope? locationScope;
+  final LocationCatalogReader locationCatalogReader;
+  final bool locationSessionAvailable;
+  final int locationContextRevision;
+  final VoidCallback? onOpenLocations;
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +48,11 @@ final class InstitutionFormSection extends StatelessWidget {
       InstitutionFormStep.location => _LocationSection(
         controller: controller,
         locationService: locationService,
+        locationScope: locationScope,
+        locationCatalogReader: locationCatalogReader,
+        locationSessionAvailable: locationSessionAvailable,
+        locationContextRevision: locationContextRevision,
+        onOpenLocations: onOpenLocations,
       ),
       InstitutionFormStep.legalRepresentatives => _LegalRepresentativesSection(
         controller: controller,
@@ -119,10 +137,23 @@ final class _ProfileSection extends StatelessWidget {
 }
 
 final class _LocationSection extends StatefulWidget {
-  const _LocationSection({required this.controller, required this.locationService});
+  const _LocationSection({
+    required this.controller,
+    required this.locationService,
+    required this.locationScope,
+    required this.locationCatalogReader,
+    required this.locationSessionAvailable,
+    required this.locationContextRevision,
+    required this.onOpenLocations,
+  });
 
   final InstitutionFormController controller;
   final InstitutionLocationService locationService;
+  final LocationScope? locationScope;
+  final LocationCatalogReader locationCatalogReader;
+  final bool locationSessionAvailable;
+  final int locationContextRevision;
+  final VoidCallback? onOpenLocations;
 
   @override
   State<_LocationSection> createState() => _LocationSectionState();
@@ -225,6 +256,15 @@ final class _LocationSectionState extends State<_LocationSection> {
               controller.text(InstitutionFormField.city),
               controller.text(InstitutionFormField.state),
             ].where((part) => part.isNotEmpty).join(', '),
+          ),
+          const SizedBox(height: CoeloSpacing.space5),
+          LocationsMapSection(
+            ownerKind: LocationOwnerKind.institution,
+            scope: widget.locationScope,
+            reader: widget.locationCatalogReader,
+            sessionAvailable: widget.locationSessionAvailable,
+            contextRevision: widget.locationContextRevision,
+            onOpenCatalog: widget.onOpenLocations,
           ),
           if (_municipalityError != null) ...[
             const SizedBox(height: CoeloSpacing.space2),

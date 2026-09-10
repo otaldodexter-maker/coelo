@@ -1,0 +1,64 @@
+{
+  "id": "SafetyInternalReads53",
+  "base": {
+    "profile": "auth",
+    "manifest": "packages/coelo_database/replay/foundation-migrations.sha256",
+    "manifest_sha256_crlf_utf8": "4279e67c9651f4049329591b6e8aad82e3a9052506c1a4e16ba8bbb693249d59",
+    "selected_canonical_count": 45,
+    "inherited_preflight_count": 2,
+    "boundary": "20260901200206"
+  },
+  "target_version": "20260909193000",
+  "canonical_additions": [
+    {
+      "file": "20260812002000_child_safety_schema.sql",
+      "sha256_crlf_utf8": "2912b2d52d46f1c87f1238db1c16c296360ab89f1be32b8ef1f375c513c41809"
+    },
+    {
+      "file": "20260812002100_child_safety_read_models.sql",
+      "sha256_crlf_utf8": "fcaccbaea2a4236ebb5d728d6b0ac9ad71d04f47fd662b22e4c80f6de2487b28"
+    },
+    {
+      "file": "20260812002200_child_safety_security_closure.sql",
+      "sha256_crlf_utf8": "94d8b1267e6186e8c9393584bf67fdbbd7da6592560e15fbb118e5eb650f2e7c"
+    },
+    {
+      "file": "20260825193116_final_review_child_safety_lint_hardening.sql",
+      "sha256_crlf_utf8": "c9991fdc9cf3414f4461608ff3f10d56cb494006ef868be628e0b96d8f8dc759"
+    },
+    {
+      "file": "20260909193000_d04_child_safety_internal_reads.sql",
+      "sha256_crlf_utf8": "601e7819412d6c5a5e1b63c8d715ec8f213f40e08f5977321c0ae0bcf5d302d8"
+    }
+  ],
+  "local_bridges": [
+    {
+      "file": "20260908051499_child_directory_error_envelope_bridge.sql",
+      "sha256_crlf_utf8": "6f9342ccad9ce145158e1667a84c5bd58e4577af022204194280b4d8cfaad17a",
+      "after": "20260901200206_defer_superadmin_internal_mfa_until_mvp_go_live.sql",
+      "before": "20260909193000_d04_child_safety_internal_reads.sql",
+      "source_note": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/notes/child-envelope-prerequisite.sql",
+      "source_note_sha256_crlf_utf8": "6f9342ccad9ce145158e1667a84c5bd58e4577af022204194280b4d8cfaad17a",
+      "approved_helper_source": "packages/coelo_database/migrations/20260827235500_superadmin_internal_institution_list_filter.sql",
+      "approved_helper_source_sha256_crlf_utf8": "c4496229e2d004907b1c878e9719cadfa60169307eeb92be67cd76c3ad5551aa",
+      "expected_before_body_md5": "b89d2dc22f032a1c3f155a77f0eaaf08",
+      "expected_after_body_md5": "bfce7b85b8d5d43e93e5d3fba3a66dc8"
+    }
+  ],
+  "inherited_preflights": [
+    {
+      "file": "20260811151253_assert_function_execute_preflight.sql",
+      "sha256_crlf_utf8": "718c2de052e9df29abc42642806d9a5e4d98c8964665453de6f14f0f8b61ab75"
+    },
+    {
+      "file": "20260811215452_access_profile_labels_replay_bridge.sql",
+      "sha256_crlf_utf8": "d97e02796fcd5897707b5657b7a1c1df690f831e09ed98df6ed21886f75f9ef3"
+    }
+  ],
+  "planned_counts": {
+    "canonical": 50,
+    "local_bridges": 1,
+    "preflight": 2,
+    "total": 53
+  }
+}

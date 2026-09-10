@@ -22,6 +22,7 @@ final class DailyRoutineWizardPage extends StatefulWidget {
     this.duplicateFromModelId,
     this.applicationFromModelId,
     this.activityController,
+    this.onDestinationSelected,
     super.key,
   });
 
@@ -32,6 +33,7 @@ final class DailyRoutineWizardPage extends StatefulWidget {
   final String? duplicateFromModelId;
   final String? applicationFromModelId;
   final SuperadminActivityController? activityController;
+  final ValueChanged<String>? onDestinationSelected;
 
   @override
   State<DailyRoutineWizardPage> createState() => _DailyRoutineWizardPageState();
@@ -58,11 +60,36 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
   var _canManage = false;
   var _loadGeneration = 0;
   var _commandGeneration = 0;
+  String? _baseline;
+  final _intents = <String, (String, String)>{};
+  var _guarded = false;
 
   @override
   void initState() {
     super.initState();
+    for (final controller in _draftControllers) {
+      controller.addListener(_handleDraftChanged);
+    }
     _load();
+  }
+
+  List<TextEditingController> get _draftControllers => [
+    _name,
+    _description,
+    _modelInstitutionId,
+    _modelOriginUnitId,
+    _startsAt,
+    _endsAt,
+    _validFrom,
+    _validUntil,
+  ];
+
+  /// Typing does not call setState, so the exit guard would keep the value it
+  /// was built with. Rebuild only when the draft crosses into or out of dirty.
+  void _handleDraftChanged() {
+    if (!mounted) return;
+    final dirty = _isDirty;
+    if (dirty != _guarded) setState(() => _guarded = dirty);
   }
 
   @override
@@ -140,6 +167,8 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
         };
         _loading = false;
       });
+      _baseline = _draftSignature();
+      _guarded = false;
     } on Object catch (error) {
       if (!_isCurrentLoad(
         generation,
@@ -268,7 +297,7 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
         'Crie uma rotina aplicada a partir de um contexto autorizado.',
       ),
       RoutineEntryKind.launch => throw const FormatException(
-        'Selecione uma rotina aplicada autorizada para criar o lancamento.',
+        'Selecione uma rotina aplicada autorizada para criar o lançamento.',
       ),
     };
   }
@@ -296,43 +325,131 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
   Widget build(BuildContext context) => SuperadminShell(
     logout: widget.logout,
     currentDestination: 'daily-routine',
+    onDestinationSelected: widget.onDestinationSelected == null ? null : _selectDestination,
     title: _title,
-    subtitle: 'Configuracao versionada e validada no servidor.',
+    subtitle: 'Configuração versionada e validada no servidor.',
     activityController: widget.activityController,
-    child: ColoredBox(
-      color: Theme.of(context).colorScheme.surface,
-      child: SuperadminFormFrame(
-        viewportWidth: MediaQuery.sizeOf(context).width,
-        navigation: const SizedBox.shrink(),
-        scrollKey: const Key('daily-routine-editor-scroll'),
-        body: _body(),
-        footer: _footer(),
+    child: PopScope(
+      canPop: !_isDirty,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _confirmExit();
+      },
+      child: ColoredBox(
+        color: Theme.of(context).colorScheme.surface,
+        child: SuperadminFormFrame(
+          viewportWidth: MediaQuery.sizeOf(context).width,
+          navigation: const SizedBox.shrink(),
+          scrollKey: const Key('daily-routine-editor-scroll'),
+          body: _body(),
+          footer: _footer(),
+        ),
       ),
     ),
   );
 
+  /// The draft is compared against the state captured when it finished loading,
+  /// so no editing path has to remember to flag itself as dirty.
+  String _draftSignature() => [
+    _name.text,
+    _description.text,
+    _modelInstitutionId.text,
+    _modelOriginUnitId.text,
+    _startsAt.text,
+    _endsAt.text,
+    _validFrom.text,
+    _validUntil.text,
+    _modelOriginScope.name,
+    _applicationStatus.name,
+    _applicationInheritance.name,
+    _applicationVisibility,
+    for (final section in _sections)
+      '${section.id}|${section.name}|${section.sortOrder}|'
+          '${section.fields.map(_fieldSignature).join(',')}',
+  ].join(String.fromCharCode(31));
+
+  String _fieldSignature(RoutineField field) =>
+      '${field.id}:${field.label}:${field.kind.name}:${field.sortOrder}:'
+      '${field.isRequired}:${field.initialValue}:${field.minimumValue}:${field.maximumValue}:'
+      '${field.options.map((option) => '${option.id}=${option.label}=${option.sortOrder}').join('+')}:'
+      '${field.conditions.length}';
+
+  /// A retry of the same draft is the same intent, so it must carry the same
+  /// request id; editing the draft first makes it a different one.
+  String _requestIdFor(String intent) {
+    final signature = _draftSignature();
+    final held = _intents[intent];
+    if (held != null && held.$1 == signature) return held.$2;
+    final id = '$intent-${DateTime.now().microsecondsSinceEpoch}';
+    _intents[intent] = (signature, id);
+    return id;
+  }
+
+  void _completeIntent(String intent) => _intents.remove(intent);
+
+  bool get _isDirty =>
+      _canManage && !_saving && _baseline != null && _draftSignature() != _baseline;
+
+  /// The shell can leave the editor without popping the route, so the same
+  /// confirmation has to guard it. Five other Superadmin forms do exactly this.
+  Future<void> _selectDestination(String destination) async {
+    final callback = widget.onDestinationSelected;
+    if (callback == null) return;
+    if (!_isDirty) {
+      callback(destination);
+      return;
+    }
+    if (await _confirmDiscard()) callback(destination);
+  }
+
+  Future<bool> _confirmDiscard() async {
+    final discard = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => CoeloAdminDialogShell(
+        dialogKey: const Key('daily-routine-exit-dialog'),
+        title: 'Sair sem salvar?',
+        body: const Text(
+          'As alterações feitas nesta rotina serão perdidas se você sair agora.',
+        ),
+        secondaryAction: OutlinedButton(
+          onPressed: () => Navigator.of(dialogContext).pop(false),
+          child: const Text('Continuar editando'),
+        ),
+        primaryAction: FilledButton(
+          onPressed: () => Navigator.of(dialogContext).pop(true),
+          child: const Text('Sair sem salvar'),
+        ),
+      ),
+    );
+    return (discard ?? false) && mounted;
+  }
+
+  Future<void> _confirmExit() async {
+    final navigator = Navigator.of(context);
+    if (await _confirmDiscard()) navigator.pop();
+  }
+
   String get _title => switch (widget.entryKind) {
     RoutineEntryKind.model => widget.entryId == null ? 'Criar modelo' : 'Editar modelo',
     RoutineEntryKind.application => 'Rotina aplicada',
-    RoutineEntryKind.launch => 'Lancamento da rotina',
+    RoutineEntryKind.launch => 'Lançamento da rotina',
   };
 
   Widget _body() {
     if (_loading) {
       return const CoeloStatePanel(
         key: Key('daily-routine-editor-loading'),
-        title: 'Carregando configuracao',
-        message: 'Aguarde enquanto os dados autorizados sao carregados.',
+        title: 'Carregando configuração',
+        message: 'Aguarde enquanto os dados autorizados são carregados.',
         loading: true,
       );
     }
     if (_error != null) {
       return CoeloStatePanel(
         key: const Key('daily-routine-editor-error'),
-        title: 'Nao foi possivel abrir esta configuracao',
+        title: 'Não foi possível abrir esta configuração',
         message: _error is FormatException
             ? (_error! as FormatException).message
-            : 'O recurso nao existe ou nao esta disponivel para este acesso.',
+            : 'O recurso não existe ou não está disponível para este acesso.',
         icon: Icons.error_outline_rounded,
         actionLabel: widget.entryId == null ? null : 'Tentar novamente',
         onAction: widget.entryId == null ? null : _load,
@@ -350,7 +467,7 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
     key: const Key('daily-routine-model-editor'),
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      Text('Identificacao', style: Theme.of(context).textTheme.titleLarge),
+      Text('Identificação', style: Theme.of(context).textTheme.titleLarge),
       const SizedBox(height: CoeloSpacing.space4),
       CoeloFormTextField(
         key: const Key('daily-routine-name'),
@@ -363,7 +480,7 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
       CoeloFormTextField(
         key: const Key('daily-routine-description'),
         controller: _description,
-        labelText: 'Descricao',
+        labelText: 'Descrição',
         prefixIcon: Icons.notes_rounded,
         maxLines: 4,
         enabled: _canManage && !_saving,
@@ -438,7 +555,7 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
     inheritanceMode: _applicationInheritance,
     effectiveVersion: current.effectiveVersion,
     expectedVersion: current.expectedVersion,
-    validFrom: _parseDate(_validFrom.text, 'inicio da validade'),
+    validFrom: _parseDate(_validFrom.text, 'início da validade'),
     validUntil: _parseDate(_validUntil.text, 'fim da validade'),
     startsAt: _optional(_startsAt.text),
     endsAt: _optional(_endsAt.text),
@@ -473,16 +590,16 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
       DailyRoutineInheritanceSummary(
         application: _applicationDraft(application),
         originLabel: application.parentApplicationId == null
-            ? 'Configuracao original da instituicao'
+            ? 'Configuração original da instituição'
             : 'Rotina de origem vinculada',
-        inheritedLabel: 'Versao ${application.effectiveVersion}',
-        effectiveLabel: 'Versao ${application.effectiveVersion}',
+        inheritedLabel: 'Versão ${application.effectiveVersion}',
+        effectiveLabel: 'Versão ${application.effectiveVersion}',
         enabled: _canManage && !_saving,
         onModeChanged: _saveApplicationMode,
         onRevert: _resetInheritance,
       ),
       const SizedBox(height: CoeloSpacing.space6),
-      Text('Aplicacao e escopo', style: Theme.of(context).textTheme.titleLarge),
+      Text('Aplicação e escopo', style: Theme.of(context).textTheme.titleLarge),
       const SizedBox(height: CoeloSpacing.space4),
       _applicationReferenceSummary(application),
       const SizedBox(height: CoeloSpacing.space5),
@@ -494,7 +611,7 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
             CoeloFormTextField(
               key: const Key('daily-routine-application-valid-from'),
               controller: _validFrom,
-              labelText: 'Inicio da validade (AAAA-MM-DD)',
+              labelText: 'Início da validade (AAAA-MM-DD)',
               prefixIcon: Icons.event_available_outlined,
               enabled: _canManage && !_saving,
             ),
@@ -585,7 +702,7 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
         ? 'Turma'
         : application.unitId != null
         ? 'Unidade'
-        : 'Instituicao';
+        : 'Instituição';
     return Semantics(
       container: true,
       label:
@@ -601,7 +718,7 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Modelo vinculado · versao ${application.effectiveVersion}'),
+              Text('Modelo vinculado · versão ${application.effectiveVersion}'),
               const SizedBox(height: CoeloSpacing.space2),
               Text(
                 'Escopo: $scope${application.activityId == null ? '' : ' · Atividade vinculada'}',
@@ -623,11 +740,11 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
     key: const Key('daily-routine-launch-editor'),
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      Text('Resumo do lancamento', style: Theme.of(context).textTheme.titleLarge),
+      Text('Resumo do lançamento', style: Theme.of(context).textTheme.titleLarge),
       const SizedBox(height: CoeloSpacing.space4),
-      Text('Data: ${launch.serviceDate.toLocal()}'),
-      Text('Status: ${launch.status.name}'),
-      Text('Versao esperada: ${launch.expectedVersion}'),
+      Text('Data: ${routineCivilDate(launch.serviceDate.toLocal())}'),
+      Text('Status: ${routineStatusLabel(launch.status.name)}'),
+      Text('Versão esperada: ${launch.expectedVersion}'),
     ],
   );
 
@@ -660,10 +777,10 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
     final result = await showDialog<String>(
       context: context,
       builder: (dialogContext) => CoeloAdminDialogShell(
-        title: 'Editar secao',
+        title: 'Editar seção',
         body: CoeloFormTextField(
           controller: controller,
-          labelText: 'Nome da secao',
+          labelText: 'Nome da seção',
           prefixIcon: Icons.view_agenda_outlined,
         ),
         secondaryAction: OutlinedButton(
@@ -748,7 +865,7 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
     final booleanValue = parent.kind == RoutineFieldKind.boolean ? true : null;
     if (optionId == null && booleanValue == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Use Sim/Nao ou escolha unica com opcoes para ramificar.')),
+        const SnackBar(content: Text('Use Sim/Não ou escolha única com opções para ramificar.')),
       );
       return;
     }
@@ -810,7 +927,7 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
         ..._sections,
         RoutineSection(
           id: 'section-$id',
-          name: '${section.name} (copia)',
+          name: '${section.name} (cópia)',
           sortOrder: _sections.length,
           fields: [
             for (var index = 0; index < section.fields.length; index++)
@@ -842,7 +959,7 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
         ..._sections,
         RoutineSection(
           id: 'section-${DateTime.now().microsecondsSinceEpoch}',
-          name: 'Nova secao',
+          name: 'Nova seção',
           sortOrder: index,
           fields: const [],
         ),
@@ -934,7 +1051,7 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
       setState(() => _saving = true);
       final id = await repository.saveModel(
         model,
-        requestId: 'save-model-${DateTime.now().microsecondsSinceEpoch}',
+        requestId: _requestIdFor('save-model'),
       );
       if (!_isCurrentCommand(generation, repository: repository, entry: current)) return;
       if (id.trim().isEmpty) {
@@ -945,6 +1062,8 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
       }
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Modelo salvo.')));
+      _completeIntent('save-model');
+      _baseline = _draftSignature();
       if (current.id.isEmpty) {
         setState(() {
           _entry = RoutineModel(
@@ -971,7 +1090,7 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
       if (mounted && _isCurrentCommand(generation, repository: repository, entry: current)) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Nao foi possivel salvar o modelo.')));
+        ).showSnackBar(const SnackBar(content: Text('Não foi possível salvar o modelo.')));
       }
     } finally {
       if (_isCurrentCommand(generation, repository: repository, entry: current)) {
@@ -987,13 +1106,13 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
     try {
       final application = _applicationDraft(current);
       if (application.modelVersionId.isEmpty || application.institutionId.isEmpty) {
-        throw const FormatException('Informe a versao do modelo e a instituicao.');
+        throw const FormatException('Informe a versão do modelo e a instituição.');
       }
       application.validate();
       setState(() => _saving = true);
       final id = await repository.saveApplication(
         application,
-        requestId: 'save-application-${DateTime.now().microsecondsSinceEpoch}',
+        requestId: _requestIdFor('save-application'),
       );
       if (!_isCurrentCommand(generation, repository: repository, entry: current)) return;
       if (id.trim().isEmpty) {
@@ -1006,6 +1125,7 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Rotina aplicada salva.')));
+      _completeIntent('save-application');
       if (current.id.isEmpty) {
         setState(() {
           _entry = RoutineApplication(
@@ -1039,7 +1159,7 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
       if (mounted && _isCurrentCommand(generation, repository: repository, entry: current)) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Nao foi possivel salvar a rotina aplicada.')));
+        ).showSnackBar(const SnackBar(content: Text('Não foi possível salvar a rotina aplicada.')));
       }
     } finally {
       if (mounted && _isCurrentCommand(generation, repository: repository, entry: current)) {
@@ -1061,12 +1181,13 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
       updated.validate();
       final id = await repository.saveApplication(
         updated,
-        requestId: 'save-application-${DateTime.now().microsecondsSinceEpoch}',
+        requestId: _requestIdFor('save-application-mode'),
       );
       if (!_isCurrentCommand(generation, repository: repository, entry: current)) return;
       if (id != current.id) {
         throw const FormatException('A rotina aplicada salva não corresponde à solicitada.');
       }
+      _completeIntent('save-application-mode');
       setState(() => _saving = false);
       await _load();
     } on Object {
@@ -1074,7 +1195,7 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
       if (_isCurrentCommand(generation, repository: repository, entry: current)) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Nao foi possivel alterar a heranca.')));
+        ).showSnackBar(const SnackBar(content: Text('Não foi possível alterar a herança.')));
       }
     } finally {
       if (_isCurrentCommand(generation, repository: repository, entry: current)) {
@@ -1092,18 +1213,19 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
       final id = await repository.revertApplicationCustomization(
         applicationId: application.id,
         expectedVersion: application.expectedVersion,
-        requestId: 'revert-application-${DateTime.now().microsecondsSinceEpoch}',
+        requestId: _requestIdFor('revert-application'),
       );
       if (!_isCurrentCommand(generation, repository: repository, entry: application)) return;
       if (id != application.id) {
         throw const FormatException('A rotina aplicada revertida não corresponde à solicitada.');
       }
+      _completeIntent('revert-application');
       setState(() => _saving = false);
       await _load();
     } on Object {
       if (mounted && _isCurrentCommand(generation, repository: repository, entry: application)) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Nao foi possivel reverter a personalizacao.')),
+          const SnackBar(content: Text('Não foi possível reverter a personalização.')),
         );
       }
     } finally {

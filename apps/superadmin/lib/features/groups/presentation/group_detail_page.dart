@@ -15,6 +15,7 @@ final class GroupDetailPage extends StatefulWidget {
     required this.logout,
     required this.onBack,
     this.onDestinationSelected,
+    this.reservationBuilder,
     super.key,
   });
   final GroupDetailRepository repository;
@@ -22,6 +23,7 @@ final class GroupDetailPage extends StatefulWidget {
   final LogoutAction logout;
   final VoidCallback onBack;
   final ValueChanged<String>? onDestinationSelected;
+  final Widget Function(BuildContext, GroupDetail)? reservationBuilder;
   @override
   State<GroupDetailPage> createState() => _GroupDetailPageState();
 }
@@ -90,6 +92,8 @@ final class _GroupDetailPageState extends State<GroupDetailPage> {
                             'Acessos': detail.inheritAccess ? 'Herdados' : 'Próprios',
                             'Atividades': detail.inheritActivities ? 'Herdadas' : 'Próprias',
                           }),
+                          if (widget.reservationBuilder != null)
+                            widget.reservationBuilder!(context, detail),
                         ] else
                           Semantics(
                             liveRegion: true,

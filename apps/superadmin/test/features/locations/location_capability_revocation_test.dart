@@ -53,6 +53,28 @@ final class _CopyProbeWriter implements LocationCatalogWriter {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
+final class _DialogRouteProbe extends NavigatorObserver {
+  final active = <Route<dynamic>>{};
+
+  @override
+  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    if (route is DialogRoute<dynamic>) active.add(route);
+    super.didPush(route, previousRoute);
+  }
+
+  @override
+  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    active.remove(route);
+    super.didPop(route, previousRoute);
+  }
+
+  @override
+  void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    active.remove(route);
+    super.didRemove(route, previousRoute);
+  }
+}
+
 void main() {
   late ControlledLocationReader reader;
 
@@ -117,6 +139,47 @@ void main() {
     String? selected,
     int contextRevision = 0,
   }) => show(tester, capabilities, selected: selected, contextRevision: contextRevision);
+
+  testWidgets('held catalog create callback cannot restore a revoked writer surface', (
+    tester,
+  ) async {
+    await pump(tester, const LocationCapabilities(create: true));
+    final activate = tester.widget<FilledButton>(find.byKey(_create)).onPressed!;
+    await regrant(tester, LocationCapabilities.none);
+    activate();
+    await answer(tester);
+    expect(find.byKey(_form), findsNothing);
+  });
+
+  testWidgets('held catalog copy callback cannot restore a revoked writer surface', (tester) async {
+    await pump(tester, const LocationCapabilities(copy: true));
+    final activate = tester.widget<OutlinedButton>(find.byKey(_bring)).onPressed!;
+    await regrant(tester, LocationCapabilities.none);
+    activate();
+    await answer(tester);
+    expect(find.byKey(const Key('locations-bring-panel')), findsNothing);
+  });
+
+  testWidgets('held catalog edit callback cannot restore a revoked writer surface', (tester) async {
+    await pump(tester, const LocationCapabilities(update: true), selected: locationA);
+    final activate = tester.widget<LocationDetailPanel>(find.byType(LocationDetailPanel)).onEdit!;
+    await regrant(tester, LocationCapabilities.none, selected: locationA);
+    activate(locationFixture(id: locationA, scope: scopeUnitA));
+    await answer(tester);
+    expect(find.byKey(Key('locations-form-$locationA')), findsNothing);
+    expect(find.byKey(Key('locations-detail-$locationA')), findsOneWidget);
+  });
+
+  testWidgets('held catalog create callback is invalid after context replacement', (tester) async {
+    const grants = LocationCapabilities(create: true);
+    await pump(tester, grants);
+    final activate = tester.widget<FilledButton>(find.byKey(_create)).onPressed!;
+    await regrant(tester, grants, contextRevision: 1);
+    activate();
+    await answer(tester);
+    expect(find.byKey(_form), findsNothing);
+    expect(find.byKey(_create), findsOneWidget);
+  });
 
   testWidgets('losing create closes the create form that was open', (tester) async {
     await pump(tester, const LocationCapabilities(create: true));
@@ -218,6 +281,47 @@ void main() {
 
     expect(find.byKey(const Key('location-copy-dialog')), findsNothing);
     expect(find.byKey(const Key('location-copy-confirm')), findsNothing);
+    expect(writer.copyCalls, 0);
+  });
+
+  testWidgets('a second copy activation before the first frame leaves no orphaned barrier', (
+    tester,
+  ) async {
+    final writer = _CopyProbeWriter();
+    final routeProbe = _DialogRouteProbe();
+    await tester.binding.setSurfaceSize(const Size(1400, 2400));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    reader = ControlledLocationReader();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        navigatorObservers: [routeProbe],
+        home: LocationDetailPanel(
+          id: locationA,
+          scope: scopeUnitA,
+          onBack: () {},
+          reader: reader,
+          writer: writer,
+          sessionAvailable: true,
+          capabilities: const LocationCapabilities(copy: true),
+          onCopied: (_) {},
+        ),
+      ),
+    );
+    await answer(tester);
+
+    final onPressed = tester.widget<OutlinedButton>(find.byKey(_copy)).onPressed!;
+    onPressed();
+    onPressed();
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('location-copy-dialog')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('location-copy-cancel')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('location-copy-dialog')), findsNothing);
+    expect(find.byType(ModalBarrier).hitTestable(), findsNothing);
+    expect(routeProbe.active, isEmpty);
     expect(writer.copyCalls, 0);
   });
 

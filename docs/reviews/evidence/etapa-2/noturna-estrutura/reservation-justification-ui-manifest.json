@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-09-09T21:34:11.163128-03:00",
+  "scope": "apps/superadmin -> Turmas/Atividades -> Locais -> Confirmar sobreposicao -> justificativa",
+  "action_ids": [
+    "groups.location",
+    "activities.location",
+    "locations.schedule"
+  ],
+  "status": "local-green; no terminal promotion",
+  "dependency": "44380219d078c17c090f68a1ce3c42919329cba1 shared1000codepoint validator",
+  "cause": "Flutter maxLength1000 counts grapheme clusters; PostgreSQL limit counts codepoints. A multi-codepoint grapheme input could reach encoder refusal after the panel froze a new request ID, preventing correction of its invalid draft.",
+  "changes": [
+    "Validate shared codepoint limit before _create and request ID generation.",
+    "Show an actionable length message while keeping assessed draft and editable justification.",
+    "Keep valid1000codepoint confirmation and genuine ambiguous transport retry unchanged."
+  ],
+  "metrics": {
+    "N": 3,
+    "E": 3,
+    "P": 3,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0
+  },
+  "dedup": "2 new UI boundary cases combining accent and emojiZWJ;1existing confirmable conflict regression. Prior invalid fixture attempts not counted.",
+  "runs": [
+    {
+      "runners": [
+        32362,
+        7618
+      ],
+      "chunks": [
+        "d4fa6e",
+        "3d38fe"
+      ],
+      "phase": "invalid initial fixture",
+      "exit_code": 1,
+      "reason": "1001 ASCII/single-codepoint emoji were truncated by maxLength to1000; assertion expected a refusal for actually valid data. Replaced samples, not evidence of product defect."
+    },
+    {
+      "runner": 20978,
+      "chunk": "ba8d9c",
+      "phase": "causal RED",
+      "F": 2,
+      "exit_code": 1,
+      "reason": "Asserted actual controller has1001codepoints in less than1000graphemes; without new guard both sent a create."
+    },
+    {
+      "runner": 83114,
+      "chunk": "c1a63c",
+      "phase": "GREEN",
+      "P": 2,
+      "exit_code": 0,
+      "filter": "reservation justification preflight"
+    },
+    {
+      "runner": 65228,
+      "chunk": "ea9c12",
+      "phase": "regression",
+      "P": 1,
+      "exit_code": 0,
+      "filter": "confirmable conflict requires capability and a justification"
+    },
+    {
+      "runner": 87360,
+      "chunk": "66328f",
+      "phase": "analyzer intermediate",
+      "exit_code": 0,
+      "issues": 1,
+      "reason": "Test string concatenation lint; changed equivalent string to interpolation."
+    },
+    {
+      "runner": 38667,
+      "chunks": [
+        "44c327",
+        "dba778"
+      ],
+      "phase": "analyzer final",
+      "exit_code": 0,
+      "issues": 0,
+      "paths": [
+        "apps/superadmin/lib/features/locations/presentation/location_reservation_panel.dart",
+        "apps/superadmin/test/features/locations/location_reservation_panel_test.dart"
+      ]
+    },
+    {
+      "chunk": "46fbaf",
+      "phase": "static visual contracts",
+      "exit_code": 0
+    }
+  ],
+  "independent_review": "bindings_review inspected preflight/retained draft/request generation; no new material finding. No duplicate tests executed for review.",
+  "limits": [
+    "Widget fixture proves preflight and editing/retry affordances, not live database persistence.",
+    "Server limit already existed; no new product decision, SQL change, permission change or remote action.",
+    "Genuine ambiguous requests remain replayable with their original request ID.",
+    "Raw tool logs were not saved as files; chunk references and exact filters identify runs without fabricating logs."
+  ],
+  "hashes": [
+    {
+      "path": "apps/superadmin/lib/features/locations/presentation/location_reservation_panel.dart",
+      "sha256": "a5e4d6ebb9e29307c72e36183b8770e3bbe1be8d48333544bf8cb03626fa679d"
+    },
+    {
+      "path": "apps/superadmin/test/features/locations/location_reservation_panel_test.dart",
+      "sha256": "5b02291834e326e8f9d45fd24d4ed632c33760b1639d2b0b34b4a7aa8d515613"
+    }
+  ]
+}

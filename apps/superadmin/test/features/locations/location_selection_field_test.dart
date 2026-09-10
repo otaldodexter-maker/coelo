@@ -48,6 +48,7 @@ void main() {
     required ControlledSelectionSource source,
     LocationScope scope = scopeA,
     bool sessionAvailable = true,
+    bool catalogOnly = false,
     LocationSelection? initial,
     required void Function(LocationSelection?) onChanged,
     bool dark = false,
@@ -64,6 +65,7 @@ void main() {
           scope: scope,
           source: source,
           sessionAvailable: sessionAvailable,
+          catalogOnly: catalogOnly,
           initialSelection: initial,
           onChanged: onChanged,
         ),
@@ -93,6 +95,21 @@ void main() {
     await tester.pumpAndSettle();
     expect(changes.last, isA<CataloguedLocationSelection>());
     expect((changes.last! as CataloguedLocationSelection).snapshot.id, locationB);
+  });
+
+  testWidgets('reservation context only offers catalogued locations', (tester) async {
+    final source = ControlledSelectionSource();
+    final changes = <LocationSelection?>[];
+    await tester.pumpWidget(field(source: source, catalogOnly: true, onChanged: changes.add));
+    source.optionResults.last.complete(LocationSelectionOptions(options: [snapshot()]));
+    await tester.pumpAndSettle();
+    expect(find.text('Pontual'), findsNothing);
+    expect(find.byKey(const Key('location-selection-one-off')), findsNothing);
+    await tester.tap(find.byKey(const Key('location-selection-option')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Sala de leitura').last);
+    await tester.pumpAndSettle();
+    expect((changes.last! as CataloguedLocationSelection).snapshot.id, locationA);
   });
 
   testWidgets('a one-off keeps its text and never becomes a catalogued id', (tester) async {

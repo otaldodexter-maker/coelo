@@ -80,6 +80,14 @@ final class SupabasePlanCatalogRepository implements PlanCatalogRepository {
             : PlanRepositoryFailureKind.unavailable,
         message,
       );
+    } on Exception {
+      // Sem isto, uma falha de transporte ou uma resposta malformada escapava do
+      // repositorio como excecao crua: o chamador so trata
+      // PlanRepositoryException e a tela ficava sem estado de erro proprio.
+      throw const PlanRepositoryException(
+        PlanRepositoryFailureKind.unavailable,
+        'Não foi possível concluir a operação.',
+      );
     }
   }
 

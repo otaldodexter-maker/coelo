@@ -53,6 +53,8 @@ import '../../features/principal_now/domain/principal_now_feed_repository.dart';
 import '../../features/principal_now_publication/data/supabase_now_publication_repository.dart';
 import '../../features/principal_now_publication/domain/now_publication.dart';
 import '../../features/principal_shared/data/supabase_principal_runtime_context_repository.dart';
+import '../../features/profile_about/data/supabase_profile_about_repository.dart';
+import '../../features/profile_about/domain/profile_about_repository.dart';
 import '../../features/principal_shared/domain/principal_runtime_context.dart';
 import '../../features/auth/domain/login_request.dart';
 import '../../features/auth/domain/logout_action.dart';
@@ -159,9 +161,10 @@ final class SuperadminAuthScope {
     this.formsMediaReader,
     this.formsMediaScope,
     this.principalRuntimeContextRepository,
+    this.profileAboutRepository,
+    this.principalCircularRepository,
     this.principalHappensFeedRepository,
     this.principalMixedFeedRepository,
-    this.principalCircularRepository,
     this.principalCircularResponseRepository,
     this.principalCircularMediaRepository,
     this.principalMomentsFeedRepository,
@@ -216,9 +219,14 @@ final class SuperadminAuthScope {
   final MediaReader? formsMediaReader;
   final SuperadminMediaScope? formsMediaScope;
   final PrincipalRuntimeContextRepository? principalRuntimeContextRepository;
+  final ProfileAboutRepository? profileAboutRepository;
+
+  /// The Principal-side circular read. It is not the administrative directory:
+  /// it projects `list_visible_profile_circulars`, which authorizes the actor
+  /// by institution, unit and group on the server.
+  final CircularRepository? principalCircularRepository;
   final PrincipalHappensFeedRepository? principalHappensFeedRepository;
   final PrincipalMixedFeedRepository? principalMixedFeedRepository;
-  final CircularRepository? principalCircularRepository;
   final CircularResponseRepository? principalCircularResponseRepository;
   final CircularMediaRepository? principalCircularMediaRepository;
   final PrincipalMomentsFeedRepository? principalMomentsFeedRepository;
@@ -387,9 +395,10 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       formsMediaReader: FormsMediaReader(gateway: formsBackend),
       formsMediaScope: formsMediaScope,
       principalRuntimeContextRepository: SupabasePrincipalRuntimeContextRepository(client),
+      profileAboutRepository: SupabaseProfileAboutRepository(client),
+      principalCircularRepository: SupabaseCircularRepository(client),
       principalHappensFeedRepository: SupabasePrincipalHappensFeedRepository(client),
       principalMixedFeedRepository: SupabasePrincipalMixedFeedRepository(client),
-      principalCircularRepository: SupabaseCircularRepository(client),
       principalCircularResponseRepository: SupabaseCircularResponseRepository(client),
       principalCircularMediaRepository: SupabaseCircularMediaRepository(client),
       principalMomentsFeedRepository: momentsFeed,
@@ -460,9 +469,10 @@ SuperadminAuthScope _createUnavailableScope(CoeloAuthLifecycleGateway auth) {
     mealPlanImageRepository: const UnavailableMealPlanImageRepository(),
     formsApi: null,
     principalRuntimeContextRepository: null,
+    profileAboutRepository: null,
+    principalCircularRepository: null,
     principalHappensFeedRepository: null,
     principalMixedFeedRepository: null,
-    principalCircularRepository: null,
     principalCircularResponseRepository: null,
     principalCircularMediaRepository: null,
     principalMomentsFeedRepository: null,

@@ -13,6 +13,7 @@ import 'package:coelo_superadmin/features/student_tracking/domain/student_tracki
 import 'package:coelo_superadmin/features/student_tracking/presentation/student_tracking_page.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -69,6 +70,48 @@ final class _PendingChildRead {
 }
 
 void main() {
+  testWidgets('the production composition is honest on both halves at once', (tester) async {
+    final read = _RecordingChildRead();
+
+    await tester.pumpWidget(
+      _app(
+        StudentTrackingPage(
+          repository: const UnavailableStudentTrackingRepository(),
+          logout: unavailableSuperadminLogout,
+          childDirectoryRead: read.call,
+          sessionAvailable: true,
+          institutionId: _institutionId,
+          revision: 1,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // This is what /students composes today: a real child directory over a
+    // tracking repository that has no production implementation.
+    expect(find.byKey(const Key('student-tracking-directory')), findsOneWidget);
+    expect(find.text('Sintética Um'), findsOneWidget);
+    // The page is a ListView, so the tracking half is built only once reached.
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('student-tracking-unavailable')),
+      200,
+      scrollable: find.descendant(
+        of: find.byKey(const Key('student-tracking-scroll')),
+        matching: find.byType(Scrollable),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('student-tracking-unavailable')), findsOneWidget);
+    expect(find.text('Acompanhamento indisponível'), findsOneWidget);
+
+    // The unavailable half must not offer a way out that does not exist.
+    final panel = tester.widget<CoeloStatePanel>(
+      find.byKey(const Key('student-tracking-unavailable')),
+    );
+    expect(panel.onAction, isNull);
+    expect(panel.actionLabel, isNull);
+  });
+
   testWidgets('composes the authorized child list above tracking', (tester) async {
     final read = _RecordingChildRead();
 

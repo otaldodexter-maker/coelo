@@ -20,27 +20,61 @@ import '../../../support/people/fake_person_directory_repository.dart';
 Future<LogoutResult> _logout() async => const LogoutResult.success();
 
 void main() {
-  Future<void> pumpDirectory(WidgetTester tester) async {
+  Future<void> pumpDirectory(WidgetTester tester, {ValueChanged<String>? onEdit}) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
       MaterialApp(
         theme: CoeloTheme.light,
-        home: PersonDirectoryPage(repository: FakePersonDirectoryRepository(), logout: _logout),
+        home: PersonDirectoryPage(
+          repository: FakePersonDirectoryRepository(),
+          logout: _logout,
+          onEdit: onEdit,
+        ),
       ),
     );
     await tester.pumpAndSettle();
   }
+
+  testWidgets('status target is 48px with centered 24px dot and isolated edge touch', (
+    tester,
+  ) async {
+    var edits = 0;
+    await pumpDirectory(tester, onEdit: (_) => edits++);
+    final chip = find.byKey(const Key('person-status-person-0'));
+    await tester.ensureVisible(chip);
+    await tester.pumpAndSettle();
+    final target = tester.getRect(chip);
+    final dot = find.descendant(of: chip, matching: find.byType(Container)).first;
+    expect(target.size, const Size.square(CoeloSize.touchMin));
+    expect(tester.getSize(dot), const Size.square(24));
+    expect(tester.getCenter(dot), target.center);
+    await tester.tapAt(target.bottomRight - const Offset(2, 2));
+    await tester.pumpAndSettle();
+    expect(tester.getSize(dot).width, greaterThan(24));
+    expect(edits, 0);
+    Focus.of(tester.element(chip)).requestFocus();
+    await tester.pumpAndSettle();
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    FocusManager.instance.primaryFocus?.unfocus();
+    await tester.pumpAndSettle();
+    expect(tester.getSize(dot), const Size.square(24));
+    expect(edits, 0);
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('the status chip answers Enter, and keeps the label open after focus leaves', (
     tester,
   ) async {
     await pumpDirectory(tester);
     // Any chip will do; the first one on screen is the one a keyboard reaches.
-    final chip = find.byWidgetPredicate(
-      (widget) => widget.key is ValueKey<String> &&
-          (widget.key! as ValueKey<String>).value.startsWith('person-status-'),
-    ).first;
+    final chip = find
+        .byWidgetPredicate(
+          (widget) =>
+              widget.key is ValueKey<String> &&
+              (widget.key! as ValueKey<String>).value.startsWith('person-status-'),
+        )
+        .first;
     expect(chip, findsOneWidget);
 
     await tester.ensureVisible(chip);

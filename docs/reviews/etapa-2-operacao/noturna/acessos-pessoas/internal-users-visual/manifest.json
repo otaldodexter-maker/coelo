@@ -1,0 +1,635 @@
+{
+  "renders": [
+    {
+      "path": "apps/superadmin/test/features/platform_users/presentation/goldens/platform_user_create_light_375.png",
+      "before_sha256": "965f2d64498e0604bf9cf8ac17529212e6bcc3d24a5a4130ce452041274317a9",
+      "inspected_sha256": "335e2f6e442ad1262c48e0e231a2c730cc13f4ef222aaf0aa10b224cc80c7c81",
+      "master_last_commit": "f546561d45da2aec1d88b8e311d50b1037c96c96",
+      "inspected_before_regeneration": true,
+      "causes": [
+        "7f918d72a",
+        "d9232a94d",
+        "057aad8f9",
+        "d8800300d",
+        "ad558c6f9",
+        "91d1ffbff",
+        "d27c307fc2",
+        "320a6f09f",
+        "d019c109a",
+        "c0823f598",
+        "a218f6cb4",
+        "d4374e399"
+      ],
+      "observed": "Composicao administrativa preservada; somente deltas rastreados a commits listados. Dados sinteticos do FakePlatformUserRepository.",
+      "after_sha256": "335e2f6e442ad1262c48e0e231a2c730cc13f4ef222aaf0aa10b224cc80c7c81",
+      "matches_inspected": true
+    },
+    {
+      "path": "apps/superadmin/test/features/platform_users/presentation/goldens/platform_user_detail_actions_open_dark_1440.png",
+      "before_sha256": "867ccb83b4ba929ad62e2bedf24c94989783d2aefc9990b0c18efedb9b25d153",
+      "inspected_sha256": "22c2dca4d6d480c1008600d95ead0e2e9f8f56783b0de74f370fb66f2277f242",
+      "master_last_commit": "d37b2ab825bf3ff003dc229f70527755e699d36e",
+      "inspected_before_regeneration": true,
+      "causes": [
+        "7f918d72a",
+        "d9232a94d",
+        "057aad8f9",
+        "d8800300d",
+        "ad558c6f9",
+        "91d1ffbff",
+        "d27c307fc2",
+        "320a6f09f",
+        "d019c109a",
+        "c0823f598"
+      ],
+      "observed": "Composicao administrativa preservada; somente deltas rastreados a commits listados. Dados sinteticos do FakePlatformUserRepository.",
+      "after_sha256": "22c2dca4d6d480c1008600d95ead0e2e9f8f56783b0de74f370fb66f2277f242",
+      "matches_inspected": true
+    },
+    {
+      "path": "apps/superadmin/test/features/platform_users/presentation/goldens/platform_user_directory_card_hover_light_1440.png",
+      "before_sha256": "74c1ec2de19f86a265d8035eb718a9a3ce5bb1da3b1b06ce41c339117193f3a8",
+      "inspected_sha256": "ec867b49fe803e62b999d6cd633c5329f8daa67c9bb63c7875e9cf8141cd3f6b",
+      "master_last_commit": "61636c33e3aaa2c8cfec4fbd673d602891cac6fb",
+      "inspected_before_regeneration": true,
+      "causes": [
+        "7f918d72a",
+        "d9232a94d",
+        "057aad8f9",
+        "d8800300d",
+        "ad558c6f9",
+        "91d1ffbff",
+        "d27c307fc2",
+        "320a6f09f",
+        "d019c109a",
+        "c0823f598",
+        "2c0dbe84b",
+        "7000ff9f8",
+        "bd476af8d",
+        "554f16c43"
+      ],
+      "observed": "Composicao administrativa preservada; somente deltas rastreados a commits listados. Dados sinteticos do FakePlatformUserRepository. onView nulo: ausencia intencional de hover; nao prova hover de card acionavel.",
+      "after_sha256": "ec867b49fe803e62b999d6cd633c5329f8daa67c9bb63c7875e9cf8141cd3f6b",
+      "matches_inspected": true
+    },
+    {
+      "path": "apps/superadmin/test/features/platform_users/presentation/goldens/platform_user_directory_cards_dark_1024.png",
+      "before_sha256": "8fb7ed2f2d9a9d393aa47bdd6209e4785864f0d09b7debddbaacb434e8410b71",
+      "inspected_sha256": "86a3d1ba9d0c626ecdeda80688750f99930deafd9acff2a1904eb09078d1b590",
+      "master_last_commit": "61636c33e3aaa2c8cfec4fbd673d602891cac6fb",
+      "inspected_before_regeneration": true,
+      "causes": [
+        "7f918d72a",
+        "d9232a94d",
+        "057aad8f9",
+        "d8800300d",
+        "ad558c6f9",
+        "91d1ffbff",
+        "d27c307fc2",
+        "320a6f09f",
+        "d019c109a",
+        "c0823f598",
+        "2c0dbe84b",
+        "7000ff9f8",
+        "bd476af8d"
+      ],
+      "observed": "Composicao administrativa preservada; somente deltas rastreados a commits listados. Dados sinteticos do FakePlatformUserRepository.",
+      "after_sha256": "86a3d1ba9d0c626ecdeda80688750f99930deafd9acff2a1904eb09078d1b590",
+      "matches_inspected": true
+    },
+    {
+      "path": "apps/superadmin/test/features/platform_users/presentation/goldens/platform_user_directory_cards_dark_1440.png",
+      "before_sha256": "217b4c6e038a24f6f6eb9b1629052ce007c5a80481a358cd6b717157180c2f24",
+      "inspected_sha256": "2c68657ff67e85e8e1c2346cad52f4cdbcacde0c13676503528dc37e8c5450b8",
+      "master_last_commit": "61636c33e3aaa2c8cfec4fbd673d602891cac6fb",
+      "inspected_before_regeneration": true,
+      "causes": [
+        "7f918d72a",
+        "d9232a94d",
+        "057aad8f9",
+        "d8800300d",
+        "ad558c6f9",
+        "91d1ffbff",
+        "d27c307fc2",
+        "320a6f09f",
+        "d019c109a",
+        "c0823f598",
+        "2c0dbe84b",
+        "7000ff9f8",
+        "bd476af8d"
+      ],
+      "observed": "Composicao administrativa preservada; somente deltas rastreados a commits listados. Dados sinteticos do FakePlatformUserRepository.",
+      "after_sha256": "2c68657ff67e85e8e1c2346cad52f4cdbcacde0c13676503528dc37e8c5450b8",
+      "matches_inspected": true
+    },
+    {
+      "path": "apps/superadmin/test/features/platform_users/presentation/goldens/platform_user_directory_cards_dark_375.png",
+      "before_sha256": "f4e7e89371572ef1fa058fd0d607fc64ecd6acbc362a820b89b42e43e60bdbc8",
+      "inspected_sha256": "76490589f3cc3057c5d5a814696008cebb756905b7224820d3af3795c3ca029f",
+      "master_last_commit": "61636c33e3aaa2c8cfec4fbd673d602891cac6fb",
+      "inspected_before_regeneration": true,
+      "causes": [
+        "7f918d72a",
+        "d9232a94d",
+        "057aad8f9",
+        "d8800300d",
+        "ad558c6f9",
+        "91d1ffbff",
+        "d27c307fc2",
+        "320a6f09f",
+        "d019c109a",
+        "c0823f598",
+        "2c0dbe84b",
+        "7000ff9f8",
+        "bd476af8d"
+      ],
+      "observed": "Composicao administrativa preservada; somente deltas rastreados a commits listados. Dados sinteticos do FakePlatformUserRepository.",
+      "after_sha256": "76490589f3cc3057c5d5a814696008cebb756905b7224820d3af3795c3ca029f",
+      "matches_inspected": true
+    },
+    {
+      "path": "apps/superadmin/test/features/platform_users/presentation/goldens/platform_user_directory_cards_dark_768.png",
+      "before_sha256": "78bb88644fb2e664059a75837d250face8539896535fffb597a6702078693c84",
+      "inspected_sha256": "97a0d67ce49f78abfddf8f700e31e25e996eba257289deb75d93ec6c3b1e8483",
+      "master_last_commit": "61636c33e3aaa2c8cfec4fbd673d602891cac6fb",
+      "inspected_before_regeneration": true,
+      "causes": [
+        "7f918d72a",
+        "d9232a94d",
+        "057aad8f9",
+        "d8800300d",
+        "ad558c6f9",
+        "91d1ffbff",
+        "d27c307fc2",
+        "320a6f09f",
+        "d019c109a",
+        "c0823f598",
+        "2c0dbe84b",
+        "7000ff9f8",
+        "bd476af8d"
+      ],
+      "observed": "Composicao administrativa preservada; somente deltas rastreados a commits listados. Dados sinteticos do FakePlatformUserRepository.",
+      "after_sha256": "97a0d67ce49f78abfddf8f700e31e25e996eba257289deb75d93ec6c3b1e8483",
+      "matches_inspected": true
+    },
+    {
+      "path": "apps/superadmin/test/features/platform_users/presentation/goldens/platform_user_directory_cards_light_1024.png",
+      "before_sha256": "bf518baded9da121f93700c4ef31a5ab051e2f7c1f853b912ee0ebd57cca78e1",
+      "inspected_sha256": "1b9535c465c819f53342da27a238e1bf559a1112d4072895a40d045d51645dc9",
+      "master_last_commit": "61636c33e3aaa2c8cfec4fbd673d602891cac6fb",
+      "inspected_before_regeneration": true,
+      "causes": [
+        "7f918d72a",
+        "d9232a94d",
+        "057aad8f9",
+        "d8800300d",
+        "ad558c6f9",
+        "91d1ffbff",
+        "d27c307fc2",
+        "320a6f09f",
+        "d019c109a",
+        "c0823f598",
+        "2c0dbe84b",
+        "7000ff9f8",
+        "bd476af8d"
+      ],
+      "observed": "Composicao administrativa preservada; somente deltas rastreados a commits listados. Dados sinteticos do FakePlatformUserRepository.",
+      "after_sha256": "1b9535c465c819f53342da27a238e1bf559a1112d4072895a40d045d51645dc9",
+      "matches_inspected": true
+    },
+    {
+      "path": "apps/superadmin/test/features/platform_users/presentation/goldens/platform_user_directory_cards_light_1440.png",
+      "before_sha256": "d0d7c8ef23d5ae8116ecda48755311a1717149806f86bbe6f19a1380790f7a60",
+      "inspected_sha256": "ec867b49fe803e62b999d6cd633c5329f8daa67c9bb63c7875e9cf8141cd3f6b",
+      "master_last_commit": "61636c33e3aaa2c8cfec4fbd673d602891cac6fb",
+      "inspected_before_regeneration": true,
+      "causes": [
+        "7f918d72a",
+        "d9232a94d",
+        "057aad8f9",
+        "d8800300d",
+        "ad558c6f9",
+        "91d1ffbff",
+        "d27c307fc2",
+        "320a6f09f",
+        "d019c109a",
+        "c0823f598",
+        "2c0dbe84b",
+        "7000ff9f8",
+        "bd476af8d"
+      ],
+      "observed": "Composicao administrativa preservada; somente deltas rastreados a commits listados. Dados sinteticos do FakePlatformUserRepository.",
+      "after_sha256": "ec867b49fe803e62b999d6cd633c5329f8daa67c9bb63c7875e9cf8141cd3f6b",
+      "matches_inspected": true
+    },
+    {
+      "path": "apps/superadmin/test/features/platform_users/presentation/goldens/platform_user_directory_cards_light_375.png",
+      "before_sha256": "59ee95df3e118e1f694c5183407b1cce434fd97562fb70f508c0b2226b7a41c2",
+      "inspected_sha256": "b7911899101254103f973d08d2f5e8254a2d7771961dcea338f1af8fc4486b4b",
+      "master_last_commit": "61636c33e3aaa2c8cfec4fbd673d602891cac6fb",
+      "inspected_before_regeneration": true,
+      "causes": [
+        "7f918d72a",
+        "d9232a94d",
+        "057aad8f9",
+        "d8800300d",
+        "ad558c6f9",
+        "91d1ffbff",
+        "d27c307fc2",
+        "320a6f09f",
+        "d019c109a",
+        "c0823f598",
+        "2c0dbe84b",
+        "7000ff9f8",
+        "bd476af8d"
+      ],
+      "observed": "Composicao administrativa preservada; somente deltas rastreados a commits listados. Dados sinteticos do FakePlatformUserRepository.",
+      "after_sha256": "b7911899101254103f973d08d2f5e8254a2d7771961dcea338f1af8fc4486b4b",
+      "matches_inspected": true
+    },
+    {
+      "path": "apps/superadmin/test/features/platform_users/presentation/goldens/platform_user_directory_cards_light_768.png",
+      "before_sha256": "b1b3c7dd322bc71e903de081e2e4326cc0bab4b053bf0de92c2ff111ed055279",
+      "inspected_sha256": "f33331620f6c21280ccc95c8ed4ecb4594df3a1e6b9354e6b33e4b05f90f0350",
+      "master_last_commit": "61636c33e3aaa2c8cfec4fbd673d602891cac6fb",
+      "inspected_before_regeneration": true,
+      "causes": [
+        "7f918d72a",
+        "d9232a94d",
+        "057aad8f9",
+        "d8800300d",
+        "ad558c6f9",
+        "91d1ffbff",
+        "d27c307fc2",
+        "320a6f09f",
+        "d019c109a",
+        "c0823f598",
+        "2c0dbe84b",
+        "7000ff9f8",
+        "bd476af8d"
+      ],
+      "observed": "Composicao administrativa preservada; somente deltas rastreados a commits listados. Dados sinteticos do FakePlatformUserRepository.",
+      "after_sha256": "f33331620f6c21280ccc95c8ed4ecb4594df3a1e6b9354e6b33e4b05f90f0350",
+      "matches_inspected": true
+    },
+    {
+      "path": "apps/superadmin/test/features/platform_users/presentation/goldens/platform_user_directory_filter_open_light_1440.png",
+      "before_sha256": "28656aeefff89226ede4e66ee27142e6190b8df089779ea10d971572d0a237e7",
+      "inspected_sha256": "465252842445fee3ddbe47686eafab9cfd2e80d4b24e2b25e0b23052250154ee",
+      "master_last_commit": "61636c33e3aaa2c8cfec4fbd673d602891cac6fb",
+      "inspected_before_regeneration": true,
+      "causes": [
+        "7f918d72a",
+        "d9232a94d",
+        "057aad8f9",
+        "d8800300d",
+        "ad558c6f9",
+        "91d1ffbff",
+        "d27c307fc2",
+        "320a6f09f",
+        "d019c109a",
+        "c0823f598",
+        "2c0dbe84b",
+        "7000ff9f8",
+        "bd476af8d"
+      ],
+      "observed": "Composicao administrativa preservada; somente deltas rastreados a commits listados. Dados sinteticos do FakePlatformUserRepository.",
+      "after_sha256": "465252842445fee3ddbe47686eafab9cfd2e80d4b24e2b25e0b23052250154ee",
+      "matches_inspected": true
+    },
+    {
+      "path": "apps/superadmin/test/features/platform_users/presentation/goldens/platform_user_directory_table_dark_1024.png",
+      "before_sha256": "08048858181aa66b1e201bffc4828bd2fd5f3aabab238be4d67380431fc6884e",
+      "inspected_sha256": "9317b82432dc7ac00dd4797402a66b1a33e0b12e358aaa912cdfb88a5d7ac60c",
+      "master_last_commit": "d37b2ab825bf3ff003dc229f70527755e699d36e",
+      "inspected_before_regeneration": true,
+      "causes": [
+        "7f918d72a",
+        "d9232a94d",
+        "057aad8f9",
+        "d8800300d",
+        "ad558c6f9",
+        "91d1ffbff",
+        "d27c307fc2",
+        "320a6f09f",
+        "d019c109a",
+        "c0823f598",
+        "2c0dbe84b",
+        "7000ff9f8",
+        "bd476af8d"
+      ],
+      "observed": "Composicao administrativa preservada; somente deltas rastreados a commits listados. Dados sinteticos do FakePlatformUserRepository.",
+      "after_sha256": "9317b82432dc7ac00dd4797402a66b1a33e0b12e358aaa912cdfb88a5d7ac60c",
+      "matches_inspected": true
+    },
+    {
+      "path": "apps/superadmin/test/features/platform_users/presentation/goldens/platform_user_directory_table_dark_1440.png",
+      "before_sha256": "9615841ccf37280deb0b6af505cd7ee256a246d8b5195655f6b0f1050bf81caf",
+      "inspected_sha256": "bc9ca3ad1762259a81071dd148c42664d7c4ed5a82f4baac084e549e9aed64c3",
+      "master_last_commit": "d37b2ab825bf3ff003dc229f70527755e699d36e",
+      "inspected_before_regeneration": true,
+      "causes": [
+        "7f918d72a",
+        "d9232a94d",
+        "057aad8f9",
+        "d8800300d",
+        "ad558c6f9",
+        "91d1ffbff",
+        "d27c307fc2",
+        "320a6f09f",
+        "d019c109a",
+        "c0823f598",
+        "2c0dbe84b",
+        "7000ff9f8",
+        "bd476af8d"
+      ],
+      "observed": "Composicao administrativa preservada; somente deltas rastreados a commits listados. Dados sinteticos do FakePlatformUserRepository.",
+      "after_sha256": "bc9ca3ad1762259a81071dd148c42664d7c4ed5a82f4baac084e549e9aed64c3",
+      "matches_inspected": true
+    },
+    {
+      "path": "apps/superadmin/test/features/platform_users/presentation/goldens/platform_user_directory_table_dark_375.png",
+      "before_sha256": "f8e00b10d3bc033daaccf43a60654e03c69b19d34e6637ba9debd6a457fe94ea",
+      "inspected_sha256": "6a8fb4258950457106e446b5a6898c0f31bb65e89b214288b43bbb69508b1423",
+      "master_last_commit": "d37b2ab825bf3ff003dc229f70527755e699d36e",
+      "inspected_before_regeneration": true,
+      "causes": [
+        "7f918d72a",
+        "d9232a94d",
+        "057aad8f9",
+        "d8800300d",
+        "ad558c6f9",
+        "91d1ffbff",
+        "d27c307fc2",
+        "320a6f09f",
+        "d019c109a",
+        "c0823f598",
+        "2c0dbe84b",
+        "7000ff9f8",
+        "bd476af8d"
+      ],
+      "observed": "Composicao administrativa preservada; somente deltas rastreados a commits listados. Dados sinteticos do FakePlatformUserRepository.",
+      "after_sha256": "6a8fb4258950457106e446b5a6898c0f31bb65e89b214288b43bbb69508b1423",
+      "matches_inspected": true
+    },
+    {
+      "path": "apps/superadmin/test/features/platform_users/presentation/goldens/platform_user_directory_table_dark_768.png",
+      "before_sha256": "cb1afaa53726429644e613e1c081470c07da7c23c960e461136c7e7d121b8f05",
+      "inspected_sha256": "5d8705d81c204b3b5ce6b10f63fec23073aaece57c45e787f3ab663e835921eb",
+      "master_last_commit": "d37b2ab825bf3ff003dc229f70527755e699d36e",
+      "inspected_before_regeneration": true,
+      "causes": [
+        "7f918d72a",
+        "d9232a94d",
+        "057aad8f9",
+        "d8800300d",
+        "ad558c6f9",
+        "91d1ffbff",
+        "d27c307fc2",
+        "320a6f09f",
+        "d019c109a",
+        "c0823f598",
+        "2c0dbe84b",
+        "7000ff9f8",
+        "bd476af8d"
+      ],
+      "observed": "Composicao administrativa preservada; somente deltas rastreados a commits listados. Dados sinteticos do FakePlatformUserRepository.",
+      "after_sha256": "5d8705d81c204b3b5ce6b10f63fec23073aaece57c45e787f3ab663e835921eb",
+      "matches_inspected": true
+    },
+    {
+      "path": "apps/superadmin/test/features/platform_users/presentation/goldens/platform_user_directory_table_light_1024.png",
+      "before_sha256": "36dbe1116236e4c589ba77b98fb215b7efc16c4999f4230e69dd651e157a6f58",
+      "inspected_sha256": "f2b6e640b5c21a5dc74ee547c3935cfe1fea3f23a443d9057b60d4820e0169de",
+      "master_last_commit": "d37b2ab825bf3ff003dc229f70527755e699d36e",
+      "inspected_before_regeneration": true,
+      "causes": [
+        "7f918d72a",
+        "d9232a94d",
+        "057aad8f9",
+        "d8800300d",
+        "ad558c6f9",
+        "91d1ffbff",
+        "d27c307fc2",
+        "320a6f09f",
+        "d019c109a",
+        "c0823f598",
+        "2c0dbe84b",
+        "7000ff9f8",
+        "bd476af8d"
+      ],
+      "observed": "Composicao administrativa preservada; somente deltas rastreados a commits listados. Dados sinteticos do FakePlatformUserRepository.",
+      "after_sha256": "f2b6e640b5c21a5dc74ee547c3935cfe1fea3f23a443d9057b60d4820e0169de",
+      "matches_inspected": true
+    },
+    {
+      "path": "apps/superadmin/test/features/platform_users/presentation/goldens/platform_user_directory_table_light_1440.png",
+      "before_sha256": "c14cc566228debe8144b7750c6194c9c0a7fc995541d2190b1a00bdbc2de49ac",
+      "inspected_sha256": "86f98ea9f836de6f8720c44577dedfa4f78193f7ac2455b651afe2a7dd91869f",
+      "master_last_commit": "d37b2ab825bf3ff003dc229f70527755e699d36e",
+      "inspected_before_regeneration": true,
+      "causes": [
+        "7f918d72a",
+        "d9232a94d",
+        "057aad8f9",
+        "d8800300d",
+        "ad558c6f9",
+        "91d1ffbff",
+        "d27c307fc2",
+        "320a6f09f",
+        "d019c109a",
+        "c0823f598",
+        "2c0dbe84b",
+        "7000ff9f8",
+        "bd476af8d"
+      ],
+      "observed": "Composicao administrativa preservada; somente deltas rastreados a commits listados. Dados sinteticos do FakePlatformUserRepository.",
+      "after_sha256": "86f98ea9f836de6f8720c44577dedfa4f78193f7ac2455b651afe2a7dd91869f",
+      "matches_inspected": true
+    },
+    {
+      "path": "apps/superadmin/test/features/platform_users/presentation/goldens/platform_user_directory_table_light_375.png",
+      "before_sha256": "8cfcc370567acbeb145a004f3a58decbf6c94518a1d9b40647aa7b7ed65ce3ea",
+      "inspected_sha256": "c4aae351a7488d2d22d1a20b7be55dda3edfcf7ffa5faf9e899924d30f8ff1a5",
+      "master_last_commit": "d37b2ab825bf3ff003dc229f70527755e699d36e",
+      "inspected_before_regeneration": true,
+      "causes": [
+        "7f918d72a",
+        "d9232a94d",
+        "057aad8f9",
+        "d8800300d",
+        "ad558c6f9",
+        "91d1ffbff",
+        "d27c307fc2",
+        "320a6f09f",
+        "d019c109a",
+        "c0823f598",
+        "2c0dbe84b",
+        "7000ff9f8",
+        "bd476af8d"
+      ],
+      "observed": "Composicao administrativa preservada; somente deltas rastreados a commits listados. Dados sinteticos do FakePlatformUserRepository.",
+      "after_sha256": "c4aae351a7488d2d22d1a20b7be55dda3edfcf7ffa5faf9e899924d30f8ff1a5",
+      "matches_inspected": true
+    },
+    {
+      "path": "apps/superadmin/test/features/platform_users/presentation/goldens/platform_user_directory_table_light_768.png",
+      "before_sha256": "f588d0f8aa897bc8af1e34089cb87875e683e4dc319684c02ebb57b2bdb56bfa",
+      "inspected_sha256": "7f9c5f1093faebb4b7b55ee10acea0ca4a7e7bb51bb5e9c33da453432e81040e",
+      "master_last_commit": "d37b2ab825bf3ff003dc229f70527755e699d36e",
+      "inspected_before_regeneration": true,
+      "causes": [
+        "7f918d72a",
+        "d9232a94d",
+        "057aad8f9",
+        "d8800300d",
+        "ad558c6f9",
+        "91d1ffbff",
+        "d27c307fc2",
+        "320a6f09f",
+        "d019c109a",
+        "c0823f598",
+        "2c0dbe84b",
+        "7000ff9f8",
+        "bd476af8d"
+      ],
+      "observed": "Composicao administrativa preservada; somente deltas rastreados a commits listados. Dados sinteticos do FakePlatformUserRepository.",
+      "after_sha256": "7f9c5f1093faebb4b7b55ee10acea0ca4a7e7bb51bb5e9c33da453432e81040e",
+      "matches_inspected": true
+    },
+    {
+      "path": "apps/superadmin/test/features/platform_users/presentation/goldens/platform_user_edit_dark_1440.png",
+      "before_sha256": "840b7743b35798eb2239dde2fe6a099f47d078418429fd37cb33469a1ef491ab",
+      "inspected_sha256": "5d2a1b99efade4fffd7776ab5b9dafaecd3c60737e5c937226f8f731587f0e27",
+      "master_last_commit": "f546561d45da2aec1d88b8e311d50b1037c96c96",
+      "inspected_before_regeneration": true,
+      "causes": [
+        "7f918d72a",
+        "d9232a94d",
+        "057aad8f9",
+        "d8800300d",
+        "ad558c6f9",
+        "91d1ffbff",
+        "d27c307fc2",
+        "320a6f09f",
+        "d019c109a",
+        "c0823f598",
+        "a218f6cb4",
+        "d4374e399"
+      ],
+      "observed": "Composicao administrativa preservada; somente deltas rastreados a commits listados. Dados sinteticos do FakePlatformUserRepository.",
+      "after_sha256": "5d2a1b99efade4fffd7776ab5b9dafaecd3c60737e5c937226f8f731587f0e27",
+      "matches_inspected": true
+    },
+    {
+      "path": "apps/superadmin/test/features/platform_users/presentation/goldens/platform_user_view_dark_1440.png",
+      "before_sha256": "7275f668f32cccaeaa73a0e57d978d692a7b0f16596de1665999b3b26940bde4",
+      "inspected_sha256": "8d5aeef1560d44d6ba8955966c7b8681235c3d5a7c8c3b32b23ad36015c59302",
+      "master_last_commit": "d37b2ab825bf3ff003dc229f70527755e699d36e",
+      "inspected_before_regeneration": true,
+      "causes": [
+        "7f918d72a",
+        "d9232a94d",
+        "057aad8f9",
+        "d8800300d",
+        "ad558c6f9",
+        "91d1ffbff",
+        "d27c307fc2",
+        "320a6f09f",
+        "d019c109a",
+        "c0823f598"
+      ],
+      "observed": "Composicao administrativa preservada; somente deltas rastreados a commits listados. Dados sinteticos do FakePlatformUserRepository.",
+      "after_sha256": "8d5aeef1560d44d6ba8955966c7b8681235c3d5a7c8c3b32b23ad36015c59302",
+      "matches_inspected": true
+    },
+    {
+      "path": "apps/superadmin/test/features/platform_users/presentation/goldens/platform_user_view_light_375.png",
+      "before_sha256": "3bc5dce7dd5771638849c2d59da1440cbceef1472a781ed2c19e0cc57903ce57",
+      "inspected_sha256": "8fb36d51c12963d7f680bb05dd35b4c0f59aa4f91c3df77df92d88d8da00143c",
+      "master_last_commit": "d37b2ab825bf3ff003dc229f70527755e699d36e",
+      "inspected_before_regeneration": true,
+      "causes": [
+        "7f918d72a",
+        "d9232a94d",
+        "057aad8f9",
+        "d8800300d",
+        "ad558c6f9",
+        "91d1ffbff",
+        "d27c307fc2",
+        "320a6f09f",
+        "d019c109a",
+        "c0823f598"
+      ],
+      "observed": "Composicao administrativa preservada; somente deltas rastreados a commits listados. Dados sinteticos do FakePlatformUserRepository.",
+      "after_sha256": "8fb36d51c12963d7f680bb05dd35b4c0f59aa4f91c3df77df92d88d8da00143c",
+      "matches_inspected": true
+    }
+  ],
+  "ancestor_checks": [
+    {
+      "commit": "7f918d72af6aa76ce85c1b46018ee362c98c513a",
+      "ancestor_of_integrated_base_d784462c1": true
+    },
+    {
+      "commit": "d9232a94d265aad6c046f442829336e4b409e02f",
+      "ancestor_of_integrated_base_d784462c1": true
+    },
+    {
+      "commit": "057aad8f9a3e5ea5ccd3140dfe7084510c238baf",
+      "ancestor_of_integrated_base_d784462c1": true
+    },
+    {
+      "commit": "d8800300d72095fd86ce65c737ceee7a410d40c0",
+      "ancestor_of_integrated_base_d784462c1": true
+    },
+    {
+      "commit": "ad558c6f953f7c12ac99ce0899a7a70c66fa7d48",
+      "ancestor_of_integrated_base_d784462c1": true
+    },
+    {
+      "commit": "91d1ffbff317e8455a26701bbe7c32fd3986d79c",
+      "ancestor_of_integrated_base_d784462c1": true
+    },
+    {
+      "commit": "d27c307fc2e9c6c8e8b13a5ddcb57318d10710c4",
+      "ancestor_of_integrated_base_d784462c1": true
+    },
+    {
+      "commit": "320a6f09f2f3db3e3ed892a739382690e205c5bb",
+      "ancestor_of_integrated_base_d784462c1": true
+    },
+    {
+      "commit": "d019c109aeb7c85688cbee64eadf32079507a516",
+      "ancestor_of_integrated_base_d784462c1": true
+    },
+    {
+      "commit": "c0823f5987b6d6acc8739cb0e36d8976376077b6",
+      "ancestor_of_integrated_base_d784462c1": true
+    },
+    {
+      "commit": "2c0dbe84be620b8a963bb3f83919beab3df25265",
+      "ancestor_of_integrated_base_d784462c1": true
+    },
+    {
+      "commit": "7000ff9f8a3039c28aba31a2b98d053bdf7aa260",
+      "ancestor_of_integrated_base_d784462c1": true
+    },
+    {
+      "commit": "a218f6cb4ddf796934ae296ba420cca2403914cb",
+      "ancestor_of_integrated_base_d784462c1": true
+    },
+    {
+      "commit": "bd476af8d96268ccd26eb90f234f9f2910dba734",
+      "ancestor_of_integrated_base_d784462c1": true
+    },
+    {
+      "commit": "554f16c43f93621accb81c8332bf759e1b31c4e7",
+      "ancestor_of_integrated_base_d784462c1": true
+    },
+    {
+      "commit": "d4374e399b5b02c4d03fd02df7b6dd290e289d09",
+      "ancestor_of_integrated_base_d784462c1": true
+    }
+  ]
+}

@@ -56,6 +56,7 @@ void main() {
       login: unavailableSuperadminLogin,
       logout: unavailableSuperadminLogout,
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      allowDevelopmentPreview: true,
       personDirectoryRepository: FakePersonDirectoryRepository(),
       onThemeModeChanged: (_) {},
     );

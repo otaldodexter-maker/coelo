@@ -1,0 +1,20 @@
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart
+00:00 +0: directory status keeps 48 px target and isolates touch and keyboard from card
+00:00 +1: table renders authoritative count without loading authorization details
+00:01 +2: detail discards prior child when route child changes
+00:01 +3: detail removes cached private content after authorization is lost
+00:01 +4: edit rejects a nonpending authorization before enabling continuation
+00:02 +5: edit preserves the authorized child and person identity
+00:02 +6: directory uses exclusive counted tabs, canonical cards and table
+00:02 +7: unauthorized fails closed without create action
+00:02 +8: keeps unavailable export visible with honest feedback
+00:03 +9: paginated directory keeps controls in a sticky footer
+00:03 +10: detail uses table at 768 and cards at 375
+00:03 +11: detail hides create action without create capability
+00:03 +12: suspension confirms, can be cancelled and reloads after success
+00:04 +13: pending request does not present inactive lifecycle as revoked
+00:04 +14: wizard searches server-side and requires child selection
+00:05 +15: wizard preselects deep-linked child and loads edit version
+00:05 +16: directory stays responsive in light and dark at 200 percent text
+00:07 +17: directory golden matches approved institution-card anatomy
+00:07 +18: All tests passed!

@@ -1,0 +1,311 @@
+{
+  "generated_at": "2026-09-09T19:05:16.312378-03:00",
+  "base": "e6c25bb94fad25c6e14eba06e3320fb6e572e6ff",
+  "component_commit": "e24f3043e9918acaa765e6f761fa1bdae9f73802",
+  "composition_proposal_commit": "b995ed1cffc77a3e93907eac5fddd2beeb85e28d",
+  "activity_sql_candidate_commit": "c56d80dcb70a86c4ec07d1476799b1a73c66fbb1",
+  "scope": "apps/superadmin -> Turmas -> detalhe autorizado -> catalogo/historico de locais -> reservas",
+  "action_ids": [
+    "groups.location",
+    "activities.location",
+    "locations.detail-links",
+    "locations.schedule"
+  ],
+  "counts": {
+    "N": 43,
+    "E": 43,
+    "P": 43,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0
+  },
+  "environment": "local Flutter unit/widget/route, injected repositories; no production E2E",
+  "cases": [
+    {
+      "name": "nominal reader sends real consumer and bounded cursor; keeps inactive history",
+      "source": "apps/superadmin/test/features/locations/supabase_location_consumer_bindings_reader_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "empty authorized history has no fabricated selection",
+      "source": "apps/superadmin/test/features/locations/supabase_location_consumer_bindings_reader_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "malformed history fails closed: foreign consumer",
+      "source": "apps/superadmin/test/features/locations/supabase_location_consumer_bindings_reader_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "malformed history fails closed: duplicate",
+      "source": "apps/superadmin/test/features/locations/supabase_location_consumer_bindings_reader_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "malformed history fails closed: bad cursor",
+      "source": "apps/superadmin/test/features/locations/supabase_location_consumer_bindings_reader_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "malformed history fails closed: mixed scope",
+      "source": "apps/superadmin/test/features/locations/supabase_location_consumer_bindings_reader_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "malformed history fails closed: unknown status",
+      "source": "apps/superadmin/test/features/locations/supabase_location_consumer_bindings_reader_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "malformed history fails closed: extra field",
+      "source": "apps/superadmin/test/features/locations/supabase_location_consumer_bindings_reader_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "malformed history fails closed: unsorted",
+      "source": "apps/superadmin/test/features/locations/supabase_location_consumer_bindings_reader_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "malformed history fails closed: backwards page",
+      "source": "apps/superadmin/test/features/locations/supabase_location_consumer_bindings_reader_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "invalid consumer and page bounds do not reach transport",
+      "source": "apps/superadmin/test/features/locations/supabase_location_consumer_bindings_reader_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "denial envelope is sanitized: SAI_PERMISSION_DENIED",
+      "source": "apps/superadmin/test/features/locations/supabase_location_consumer_bindings_reader_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "denial envelope is sanitized: SAI_MEMBERSHIP_REVOKED",
+      "source": "apps/superadmin/test/features/locations/supabase_location_consumer_bindings_reader_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "denial envelope is sanitized: SAI_SESSION_INVALID",
+      "source": "apps/superadmin/test/features/locations/supabase_location_consumer_bindings_reader_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "missing production RPC is unavailable, never fallback or raw error",
+      "source": "apps/superadmin/test/features/locations/supabase_location_consumer_bindings_reader_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "history is explicit and never auto-selects an inactive location",
+      "source": "apps/superadmin/test/features/locations/location_consumer_bindings_section_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "old response after consumer change cannot disclose or select",
+      "source": "apps/superadmin/test/features/locations/location_consumer_bindings_section_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "revision and capability loss clear history and revoke retained callbacks",
+      "source": "apps/superadmin/test/features/locations/location_consumer_bindings_section_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "foreign scope response is unavailable and never rendered",
+      "source": "apps/superadmin/test/features/locations/location_consumer_bindings_section_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "denied reload removes old references and permits explicit retry",
+      "source": "apps/superadmin/test/features/locations/location_consumer_bindings_section_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "pagination sends last location and replaces visible page without auto-selection",
+      "source": "apps/superadmin/test/features/locations/location_consumer_bindings_section_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "history width=375.0 dark=false text200",
+      "source": "apps/superadmin/test/features/locations/location_consumer_bindings_section_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "history width=375.0 dark=true text200",
+      "source": "apps/superadmin/test/features/locations/location_consumer_bindings_section_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "history width=768.0 dark=false text200",
+      "source": "apps/superadmin/test/features/locations/location_consumer_bindings_section_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "history width=768.0 dark=true text200",
+      "source": "apps/superadmin/test/features/locations/location_consumer_bindings_section_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "history width=1024.0 dark=false text200",
+      "source": "apps/superadmin/test/features/locations/location_consumer_bindings_section_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "history width=1024.0 dark=true text200",
+      "source": "apps/superadmin/test/features/locations/location_consumer_bindings_section_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "history width=1440.0 dark=false text200",
+      "source": "apps/superadmin/test/features/locations/location_consumer_bindings_section_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "history width=1440.0 dark=true text200",
+      "source": "apps/superadmin/test/features/locations/location_consumer_bindings_section_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "explicit catalog choice reads reservations for the actual persisted consumer",
+      "source": "apps/superadmin/test/features/locations/location_consumer_reservations_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "changing consumer drops the previous selection before any reservation read",
+      "source": "apps/superadmin/test/features/locations/location_consumer_reservations_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "changing owner uses its catalog and removes previous reservation context",
+      "source": "apps/superadmin/test/features/locations/location_consumer_reservations_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "authorization revision and revocation clear the selected location",
+      "source": "apps/superadmin/test/features/locations/location_consumer_reservations_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "missing or unsupported consumer never reaches the catalog",
+      "source": "apps/superadmin/test/features/locations/location_consumer_reservations_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "consumer picker fits width 375.0 dark=false at 200 percent",
+      "source": "apps/superadmin/test/features/locations/location_consumer_reservations_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "consumer picker fits width 375.0 dark=true at 200 percent",
+      "source": "apps/superadmin/test/features/locations/location_consumer_reservations_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "consumer picker fits width 768.0 dark=false at 200 percent",
+      "source": "apps/superadmin/test/features/locations/location_consumer_reservations_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "consumer picker fits width 768.0 dark=true at 200 percent",
+      "source": "apps/superadmin/test/features/locations/location_consumer_reservations_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "consumer picker fits width 1024.0 dark=false at 200 percent",
+      "source": "apps/superadmin/test/features/locations/location_consumer_reservations_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "consumer picker fits width 1024.0 dark=true at 200 percent",
+      "source": "apps/superadmin/test/features/locations/location_consumer_reservations_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "consumer picker fits width 1440.0 dark=false at 200 percent",
+      "source": "apps/superadmin/test/features/locations/location_consumer_reservations_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "consumer picker fits width 1440.0 dark=true at 200 percent",
+      "source": "apps/superadmin/test/features/locations/location_consumer_reservations_test.dart",
+      "result": "success",
+      "skipped": false
+    },
+    {
+      "name": "normal group route composes reservations from authorized detail and confines revocation",
+      "source": "apps/superadmin/test/features/locations/location_consumer_routes_test.dart",
+      "result": "success",
+      "skipped": false
+    }
+  ],
+  "analyzer": {
+    "paths": 13,
+    "result": "No issues found",
+    "resolved": "First pass lacked package configs for coelo_api; offline pub get in two pure packages resolved context. Four local lint infos fixed. Temporary untracked lockfiles removed; no dependency file changes delivered."
+  },
+  "visual_gate": "passed",
+  "resolved_defects": [
+    "Stable history key prevents extra fetch when sibling catalog key changes",
+    "Group manage requires both groups.manage and locations.reservations.manage; functional RED then GREEN",
+    "Stale replies and retained callbacks cannot disclose or select after consumer/session/scope change"
+  ],
+  "test_fixture_corrections": [
+    "Use pump while new consumer request remains pending, not pumpAndSettle",
+    "Scroll inline dropdown and history action into view"
+  ],
+  "deduplication": "43 current cases include14 materially rechecked consumer/route cases from prior47;29 new cases. Do not add reruns as new coverage.",
+  "backend": {
+    "bindings": "30 TAP U in ecc283927, no replay",
+    "activity": "33 TAP U in c56d80dcb70a86c4ec07d1476799b1a73c66fbb1, no replay"
+  },
+  "limitations": [
+    "Normal Activity reader/composition still pending",
+    "Historical binding is never current selection or implicit reservation",
+    "Current selection reverse links and atomic Group writer not delivered",
+    "Exact production packages not authorized; no full FE/BE/E2E action promoted"
+  ],
+  "memory": "No new approved durable product rule; existing design reused"
+}

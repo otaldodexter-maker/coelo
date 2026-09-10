@@ -1,0 +1,99 @@
+{
+  "revision": "through0dae87652",
+  "date_utc": "2026-09-10 00:12:59 UTC",
+  "environment": "Local disposable SQL and Flutter synthetic fixtures",
+  "base": "d784462c1",
+  "sets": [
+    {
+      "set": "Models SQL nominal",
+      "P": 95,
+      "path": "models/README.md"
+    },
+    {
+      "set": "Models late rollback",
+      "P": 6,
+      "path": "models/rollback-01.txt"
+    },
+    {
+      "set": "Safety composition includes prior18",
+      "P": 89,
+      "path": "safety-composition/handoff.md"
+    },
+    {
+      "set": "Models HTTP receipts",
+      "P": 123,
+      "path": "models/frontend-receipts.md"
+    },
+    {
+      "set": "Shared forms functional17+golden1",
+      "P": 18,
+      "path": "models-form-receipt/golden-reconciliation.md"
+    },
+    {
+      "set": "Models duplicate includes routes9",
+      "P": 24,
+      "path": "models/duplicate-receipts.md"
+    },
+    {
+      "set": "Safety HTTP detail",
+      "P": 41,
+      "path": "safety-sql/adapter-shape.md"
+    },
+    {
+      "set": "Profiles hover",
+      "P": 1,
+      "path": "profile-hover/handoff.md"
+    },
+    {
+      "set": "People form golden1+reachability1",
+      "P": 2,
+      "path": "people-form-visual/handoff.md"
+    },
+    {
+      "set": "People directory golden reused after source change",
+      "P": 1,
+      "path": "people-status-target/visual-green.txt"
+    },
+    {
+      "set": "Profiles directory",
+      "P": 1,
+      "path": "profile-directory-visual/handoff.md"
+    },
+    {
+      "set": "People target functional4+text200 one",
+      "P": 5,
+      "path": "people-status-target/handoff.md"
+    },
+    {
+      "set": "Invites goldens",
+      "P": 5,
+      "path": "invites-visual/handoff.md"
+    },
+    {
+      "set": "Internal users goldens",
+      "P": 4,
+      "path": "internal-users-visual/handoff.md"
+    }
+  ],
+  "totals": {
+    "P": 415,
+    "F": 0,
+    "S": 0,
+    "U": 120
+  },
+  "unexecuted": {
+    "SafetySQL": 108,
+    "ModelsConcurrency": 12
+  },
+  "preparation_separate": {
+    "P": 7,
+    "product_test": false
+  },
+  "certification_new": {
+    "FE": 0,
+    "BE": 0,
+    "E2E": 0
+  },
+  "historical": "R02 not summed; broad baseline ecc8eae2b5707P9S190F not current measurement",
+  "counting": "Unique tests within sets; RED/update/reruns and PNGs not added as cases"
+}

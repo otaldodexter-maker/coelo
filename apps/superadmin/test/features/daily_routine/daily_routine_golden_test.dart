@@ -73,7 +73,7 @@ void main() {
     await _pumpEditor(tester, width: 1024, brightness: Brightness.light, modelId: 'unit-model');
     await tester.ensureVisible(find.byKey(const Key('daily-routine-section-arrival')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byTooltip('Editar secao').first);
+    await tester.tap(find.byTooltip('Editar seção').first);
     await tester.pumpAndSettle();
     await _expectGolden(tester, 'daily_routine_section_dialog_light_1024.png');
   }, skip: true);

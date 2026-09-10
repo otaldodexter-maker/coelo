@@ -84,6 +84,7 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
   String? _error;
   String? _pendingSaveRequestId;
   String? _pendingSaveFingerprint;
+  VoidCallback? _confirmedCompletion;
   int _contextRevision = 0;
   final Set<DialogRoute<bool>> _ownedDialogs = {};
   bool _confirmingExit = false;
@@ -102,6 +103,7 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
   bool get _lastStep => _currentStep == _stepLabels.length - 1;
 
   bool get _isDirty {
+    if (_confirmedCompletion != null) return false;
     final original = _original;
     if (original == null) return false;
     final selected = _permissions
@@ -147,6 +149,7 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
         oldWidget.domain != widget.domain ||
         oldWidget.profileId != widget.profileId) {
       _contextRevision++;
+      _confirmedCompletion = null;
       _dismissOwnedDialogs();
       _confirmingExit = false;
       _original = null;
@@ -316,12 +319,14 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
   }
 
   void _selectStep(int index) {
+    if (_confirmedCompletion != null) return;
     if (index > _furthestStep || index == _currentStep) return;
     if (index > _currentStep && !_validateIdentity()) return;
     setState(() => _currentStep = index);
   }
 
   void _continue() {
+    if (_confirmedCompletion != null) return;
     if (_currentStep == 0 && !_validateIdentity()) return;
     if (_lastStep) return;
     setState(() {
@@ -331,12 +336,17 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
   }
 
   void _previous() {
+    if (_confirmedCompletion != null) return;
     if (_currentStep == 0) return;
     setState(() => _currentStep -= 1);
   }
 
   Future<void> _save() async {
     if (_saving || _loading || _original == null) return;
+    if (_confirmedCompletion != null) {
+      _confirmedCompletion!();
+      return;
+    }
     if (!_validateIdentity()) return;
     if (_reasonController.text.trim().isEmpty) return;
     final draft = _draft();
@@ -358,7 +368,21 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
       if (!_isCurrent(revision)) return;
       _pendingSaveRequestId = null;
       _pendingSaveFingerprint = null;
-      onSaved(saved);
+      // Confirmation survives navigation failures and is bound to this context.
+      _confirmedCompletion = () {
+        if (!_isCurrent(revision)) return;
+        try {
+          onSaved(saved);
+        } on Object {
+          if (!_isCurrent(revision)) return;
+          showSuperadminNotice(
+            context,
+            'Gravação confirmada. Não foi possível concluir a navegação. Tente novamente.',
+            icon: Icons.error_outline_rounded,
+          );
+        }
+      };
+      _confirmedCompletion!();
     } on AccessProfileConflictException {
       if (!mounted || !_isCurrent(revision)) return;
       _pendingSaveRequestId = null;
@@ -422,7 +446,7 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
     for (var index = 0; index < _stepLabels.length; index++)
       SuperadminFormStep(
         label: _stepLabels[index],
-        enabled: index <= _furthestStep,
+        enabled: _confirmedCompletion == null && index <= _furthestStep,
         status: index == _currentStep
             ? SuperadminFormStepStatus.current
             : index <= _furthestStep
@@ -432,6 +456,14 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
   ];
 
   Widget _stepContent() {
+    if (_confirmedCompletion != null) {
+      return const CoeloStatePanel(
+        key: Key('access-profile-confirmed-save'),
+        title: 'Gravação confirmada',
+        message: 'Continue para concluir.',
+        icon: Icons.check_circle_outline_rounded,
+      );
+    }
     if (_currentStep == 0) {
       return _IdentitySection(
         nameController: _nameController,
@@ -462,6 +494,25 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
       reasonController: _reasonController,
     );
   }
+
+  Widget _confirmedFooter() => SuperadminFormActionFooter(
+    surfaceKey: const Key('access-profile-form-footer-surface'),
+    onHeightChanged: (height) {
+      if (mounted && _footerHeight != height) setState(() => _footerHeight = height);
+    },
+    tertiaryAction: TextButton(
+      key: const Key('access-profile-cancel'),
+      onPressed: _requestExit,
+      child: const Text('Voltar'),
+    ),
+    continuationActions: [
+      FilledButton(
+        key: const Key('access-profile-complete'),
+        onPressed: _saving ? null : _confirmedCompletion,
+        child: const Text('Continuar'),
+      ),
+    ],
+  );
 
   @override
   Widget build(BuildContext context) => SuperadminShell(
@@ -556,21 +607,23 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
                                     ),
                                   ),
                                 ),
-                                _FormFooter(
-                                  editing: _editing,
-                                  currentStep: _currentStep,
-                                  lastStep: _lastStep,
-                                  saving: _saving,
-                                  canSave: _reasonController.text.trim().isNotEmpty,
-                                  onCancel: _requestExit,
-                                  onPrevious: _previous,
-                                  onContinue: _continue,
-                                  onSave: _save,
-                                  onHeightChanged: (height) {
-                                    if ((_footerHeight - height).abs() < .5) return;
-                                    setState(() => _footerHeight = height);
-                                  },
-                                ),
+                                _confirmedCompletion != null
+                                    ? _confirmedFooter()
+                                    : _FormFooter(
+                                        editing: _editing,
+                                        currentStep: _currentStep,
+                                        lastStep: _lastStep,
+                                        saving: _saving,
+                                        canSave: _reasonController.text.trim().isNotEmpty,
+                                        onCancel: _requestExit,
+                                        onPrevious: _previous,
+                                        onContinue: _continue,
+                                        onSave: _save,
+                                        onHeightChanged: (height) {
+                                          if ((_footerHeight - height).abs() < .5) return;
+                                          setState(() => _footerHeight = height);
+                                        },
+                                      ),
                               ],
                             ),
                           ),

@@ -23,6 +23,7 @@ final class ActivityFormSection extends StatefulWidget {
   const ActivityFormSection({
     required this.controller,
     required this.onCreateLocation,
+    this.locationSelectionBuilder,
     required this.onRetryCatalogOptions,
     required this.imagePicker,
     required this.aboutRepository,
@@ -32,6 +33,7 @@ final class ActivityFormSection extends StatefulWidget {
 
   final ActivityFormController controller;
   final ActivityLocationCreator onCreateLocation;
+  final ActivityLocationSelectionBuilder? locationSelectionBuilder;
   final Future<void> Function() onRetryCatalogOptions;
   final InstitutionLogoPicker imagePicker;
   final ActivityProfileAboutRepository aboutRepository;
@@ -78,6 +80,7 @@ final class _ActivityFormSectionState extends State<ActivityFormSection> {
               ActivityFormStep.structure => _StructureSection(
                 controller: controller,
                 onCreateLocation: widget.onCreateLocation,
+                locationSelectionBuilder: widget.locationSelectionBuilder,
               ),
               ActivityFormStep.pedagogical => _PedagogicalSection(controller: controller),
               ActivityFormStep.links => _LinksSection(controller: controller),
@@ -330,10 +333,15 @@ final class _IdentitySection extends StatelessWidget {
 }
 
 final class _StructureSection extends StatelessWidget {
-  const _StructureSection({required this.controller, required this.onCreateLocation});
+  const _StructureSection({
+    required this.controller,
+    required this.onCreateLocation,
+    this.locationSelectionBuilder,
+  });
 
   final ActivityFormController controller;
   final ActivityLocationCreator onCreateLocation;
+  final ActivityLocationSelectionBuilder? locationSelectionBuilder;
 
   Future<void> _createLocation(BuildContext context) async {
     final institutionId = controller.selectedInstitutionId;
@@ -411,53 +419,57 @@ final class _StructureSection extends StatelessWidget {
         ),
       ),
       const SizedBox(height: CoeloSpacing.space5),
-      LayoutBuilder(
-        builder: (context, constraints) {
-          final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
-          final selector = CoeloAdminSingleSelectField<String>(
-            key: const Key('activity-form-location'),
-            label: 'Local interno (opcional)',
-            value: controller.selectedLocationId ?? '',
-            options: ['', ...controller.locations.map((item) => item.id)],
-            optionLabel: (id) => id.isEmpty
-                ? 'Sem local definido'
-                : controller.locations.firstWhere((item) => item.id == id).name,
-            onChanged: controller.selectLocation,
-            enabled: controller.selectedUnitIds.isNotEmpty,
-            prefixIcon: Icons.meeting_room_outlined,
-          );
-          final createAction = OutlinedButton.icon(
-            key: const Key('activity-create-location'),
-            onPressed: controller.selectedUnitIds.isEmpty ? null : () => _createLocation(context),
-            icon: const Icon(Icons.add_location_alt_outlined),
-            label: const Text('Cadastrar local'),
-          );
-          if (compact) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+      if (locationSelectionBuilder != null)
+        locationSelectionBuilder!(context, controller)
+      else ...[
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
+            final selector = CoeloAdminSingleSelectField<String>(
+              key: const Key('activity-form-location'),
+              label: 'Local interno (opcional)',
+              value: controller.selectedLocationId ?? '',
+              options: ['', ...controller.locations.map((item) => item.id)],
+              optionLabel: (id) => id.isEmpty
+                  ? 'Sem local definido'
+                  : controller.locations.firstWhere((item) => item.id == id).name,
+              onChanged: controller.selectLocation,
+              enabled: controller.selectedUnitIds.isNotEmpty,
+              prefixIcon: Icons.meeting_room_outlined,
+            );
+            final createAction = OutlinedButton.icon(
+              key: const Key('activity-create-location'),
+              onPressed: controller.selectedUnitIds.isEmpty ? null : () => _createLocation(context),
+              icon: const Icon(Icons.add_location_alt_outlined),
+              label: const Text('Cadastrar local'),
+            );
+            if (compact) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  selector,
+                  const SizedBox(height: CoeloSpacing.space3),
+                  SizedBox(width: double.infinity, child: createAction),
+                ],
+              );
+            }
+            return Row(
               children: [
-                selector,
-                const SizedBox(height: CoeloSpacing.space3),
-                SizedBox(width: double.infinity, child: createAction),
+                Expanded(child: selector),
+                const SizedBox(width: CoeloSpacing.space3),
+                createAction,
               ],
             );
-          }
-          return Row(
-            children: [
-              Expanded(child: selector),
-              const SizedBox(width: CoeloSpacing.space3),
-              createAction,
-            ],
-          );
-        },
-      ),
-      const SizedBox(height: CoeloSpacing.space2),
-      Text(
-        'Locais são espaços internos da unidade, como laboratório, quadra ou sala temática.',
-        style: Theme.of(
-          context,
-        ).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-      ),
+          },
+        ),
+        const SizedBox(height: CoeloSpacing.space2),
+        Text(
+          'Locais são espaços internos da unidade, como laboratório, quadra ou sala temática.',
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+        ),
+      ],
     ],
   );
 }

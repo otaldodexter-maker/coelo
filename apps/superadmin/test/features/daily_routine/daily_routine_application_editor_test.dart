@@ -120,7 +120,7 @@ void main() {
         'daily-routine-application-valid-from': '2026-09-10',
         'daily-routine-application-valid-until': '2026-09-09',
       },
-      message: 'O inicio da validade nao pode ser posterior ao fim.',
+      message: 'O início da validade não pode ser posterior ao fim.',
     ),
     (
       name: 'invalid start time',
@@ -397,7 +397,7 @@ void main() {
     await tester.tap(find.byKey(const Key('daily-routine-inheritance-toggle')));
     await tester.pumpAndSettle();
 
-    expect(find.text('Nao foi possivel alterar a heranca.'), findsOneWidget);
+    expect(find.text('Não foi possível alterar a herança.'), findsOneWidget);
     expect(repository.savedApplication, isNull);
     expect(tester.widget<CoeloFormTextField>(startTime).controller.text, invalidTime);
   });

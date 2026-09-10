@@ -50,13 +50,13 @@ final class RoutineDirectoryController extends ChangeNotifier {
       if (serial != _requestSerial) return;
       _state = RoutineDirectoryViewState(
         status: _statusForRepositoryFailure(error.kind),
-        message: 'Nao foi possivel carregar a Rotina diaria.',
+        message: 'Não foi possível carregar a Rotina diária.',
       );
     } on Object {
       if (serial != _requestSerial) return;
       _state = const RoutineDirectoryViewState(
         status: RoutineDirectoryStatus.failure,
-        message: 'Nao foi possivel carregar a Rotina diaria.',
+        message: 'Não foi possível carregar a Rotina diária.',
       );
     }
     notifyListeners();
@@ -78,5 +78,5 @@ RoutineDirectoryStatus _statusForRepositoryFailure(RoutineRepositoryFailureKind 
       RoutineRepositoryFailureKind.unauthorized => RoutineDirectoryStatus.unauthorized,
       RoutineRepositoryFailureKind.notFound => RoutineDirectoryStatus.notFound,
       RoutineRepositoryFailureKind.conflict => RoutineDirectoryStatus.conflict,
-      RoutineRepositoryFailureKind.unavailable => RoutineDirectoryStatus.failure,
+      RoutineRepositoryFailureKind.unavailable => RoutineDirectoryStatus.unavailable,
     };

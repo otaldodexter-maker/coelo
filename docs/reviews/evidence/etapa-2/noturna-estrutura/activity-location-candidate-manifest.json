@@ -1,0 +1,59 @@
+{
+  "package": "ESTRUTURA-ACTIVITY-LOCATION-CREATE-V2-20260909",
+  "generated_at": "2026-09-09T19:02:50.941590-03:00",
+  "status": "reviewed local candidate; SQL unexecuted; no production authorization",
+  "files": [
+    {
+      "path": "packages/coelo_database/migrations/20260909200000_superadmin_activity_location_create_v2.sql",
+      "sha256": "a4b6a58e572920c16fbd975e8661eb0051b0c2371c1d765898dd070b4a027a93"
+    },
+    {
+      "path": "packages/coelo_database/supabase/tests/superadmin_activity_location_create_v2_test.sql",
+      "sha256": "f03409dd915020f73c99fcd87328e4415d95fc2444d90dc5f409ee91bf90a281"
+    }
+  ],
+  "required_profile": "Reviewed union of ActivityAggregateConcurrencyClock + LocationReservationsV1, then this candidate; coordinator owns profile/order/replay",
+  "counts": {
+    "N": 33,
+    "E": 0,
+    "P": 0,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 33
+  },
+  "action_ids": [
+    "activities.create",
+    "activities.location",
+    "locations.schedule"
+  ],
+  "scope": "apps/superadmin -> Atividades -> criar rascunho -> local catalogado + reserva opcional",
+  "contract": {
+    "create": "superadmin_activity_location_create_v2(p_request_id uuid,p_location_id uuid,p_activity_payload jsonb,p_reservation jsonb default null)",
+    "read": "superadmin_activity_location_selection_v2(p_activity_id uuid)",
+    "reservation": "Exactly first_occurrence,recurrence,conflict_justification; server injects location and newly persisted activity consumer"
+  },
+  "changes": [
+    "Current reference in activity_location_selections, distinct from historical location_bindings",
+    "Reuses existing aggregate save and reservation engine within one rollback boundary",
+    "Actor/request receipt plus deterministic child requests; rejects pre-existing aggregate/create leaf/reservation receipts",
+    "Owner/local lock before consumer mutation; all request locks acquired first",
+    "Final audit followed by capability/owner/consumer and wall-clock session reauthorization"
+  ],
+  "static_review": [
+    "Root checked wrappers against canonical request lock namespaces and real consumer helper capabilities",
+    "No historical migration modified; no helper replacement, provisioning or remote mutation",
+    "33 TAP assertions counted; compilation/runtime/causal concurrency unverified"
+  ],
+  "retained": [
+    "Local serialized replay slot and nominal profile union",
+    "Two-session revocation/expiry during final audit wait; not included in33TAP",
+    "One-off text needs nominal normalization/length contract",
+    "Edit/switch selection and effects on existing reservations undefined; no implicit cancellation",
+    "Publish, About follow-up and full form atomicity remain outside this narrow slice",
+    "Current selection reverse links and actual FE composition still pending",
+    "Group writer remains legacy and requires internal successor",
+    "Production exact-package authorization absent"
+  ],
+  "memory": "No new approved durable rule captured; candidate follows existing explicit reservation/atomicity design"
+}

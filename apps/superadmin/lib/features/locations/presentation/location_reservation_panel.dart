@@ -37,6 +37,7 @@ class LocationReservationPanel extends StatefulWidget {
     this.canRead = false,
     this.canManage = false,
     this.canOverride = false,
+    this.locationStatus = LocationCatalogStatus.active,
     this.requestIdFactory,
     super.key,
   });
@@ -50,6 +51,9 @@ class LocationReservationPanel extends StatefulWidget {
   final bool canRead;
   final bool canManage;
   final bool canOverride;
+
+  /// Read status hint; every write still reauthorizes the current catalog row.
+  final LocationCatalogStatus locationStatus;
   final String Function()? requestIdFactory;
 
   @override
@@ -82,6 +86,8 @@ class _LocationReservationPanelState extends State<LocationReservationPanel> {
   bool get _mayRead => widget.sessionAvailable && widget.canRead && widget.gateway.available;
 
   bool get _mayManage => _mayRead && widget.canManage;
+
+  bool get _mayCreate => _mayManage && widget.locationStatus == LocationCatalogStatus.active;
 
   bool _isCurrent(int generation, {bool manage = false}) =>
       mounted && generation == _generation && (manage ? _mayManage : _mayRead);
@@ -255,7 +261,7 @@ class _LocationReservationPanelState extends State<LocationReservationPanel> {
   }
 
   Future<void> _assess() async {
-    if (!_mayManage || _loading || _busy || _policy?.policy == null) return;
+    if (!_mayCreate || _loading || _busy || _policy?.policy == null) return;
     final draft = _draft();
     if (draft == null) return;
     final generation = _generation;
@@ -267,6 +273,10 @@ class _LocationReservationPanelState extends State<LocationReservationPanel> {
     try {
       final assessment = await widget.gateway.assess(draft);
       if (!_isCurrent(generation, manage: true)) return;
+      if (!_mayCreate) {
+        _fail(_newReservationUnavailable);
+        return;
+      }
       switch (assessment.conflict) {
         case LocationReservationConflict.none:
           await _create(draft);
@@ -291,11 +301,15 @@ class _LocationReservationPanelState extends State<LocationReservationPanel> {
   }
 
   Future<void> _confirmConflict() async {
-    if (!_mayManage || _loading || _busy) return;
+    if (!_mayCreate || _loading || _busy) return;
     final base = _pendingDraft;
     final justification = _justification.text.trim();
     if (base == null || justification.isEmpty) {
       _fail('Explique por que a sobreposição deve ser confirmada.');
+      return;
+    }
+    if (!validLocationReservationJustification(justification)) {
+      _fail('Use uma justificativa com at\u00e9 1000 caracteres.');
       return;
     }
     if (!widget.canOverride) {
@@ -315,6 +329,12 @@ class _LocationReservationPanelState extends State<LocationReservationPanel> {
 
   Future<void> _create(LocationReservationDraft draft) async {
     if (!_mayManage || _loading) return;
+    // A lost response may already have committed. Keep its existing request ID
+    // available for authoritative replay even if the location is now inactive.
+    if (_pendingRequestId == null && !_mayCreate) {
+      _fail(_newReservationUnavailable);
+      return;
+    }
     final generation = _generation;
     final requestId = _pendingRequestId ??= (widget.requestIdFactory ?? newLocationRequestId)();
     _pendingDraft = draft;
@@ -516,7 +536,14 @@ class _LocationReservationPanelState extends State<LocationReservationPanel> {
                 icon: const Icon(Icons.save_outlined),
                 label: const Text('Salvar política'),
               ),
-              if (_mayManage && _policy?.policy != null) ...[
+              if (_mayManage && !_mayCreate) ...[
+                const SizedBox(height: CoeloSpacing.space3),
+                const Text(
+                  _newReservationUnavailable,
+                  key: Key('location-reservation-new-unavailable'),
+                ),
+              ],
+              if (_mayCreate && _policy?.policy != null) ...[
                 const SizedBox(height: CoeloSpacing.space4),
                 Text('Nova reserva', style: theme.textTheme.titleSmall),
                 const SizedBox(height: CoeloSpacing.space2),
@@ -632,7 +659,7 @@ class _LocationReservationPanelState extends State<LocationReservationPanel> {
                   label: Text(_busy ? 'Verificando…' : 'Verificar e reservar'),
                 ),
               ],
-              if (_pendingDraft != null && _pendingRequestId == null) ...[
+              if (_mayCreate && _pendingDraft != null && _pendingRequestId == null) ...[
                 const SizedBox(height: CoeloSpacing.space3),
                 CoeloFormTextField(
                   fieldKey: const Key('location-reservation-justification'),
@@ -729,3 +756,6 @@ class _LocationReservationPanelState extends State<LocationReservationPanel> {
     );
   }
 }
+
+const _newReservationUnavailable =
+    'Este local n\u00e3o est\u00e1 dispon\u00edvel para novas reservas.';

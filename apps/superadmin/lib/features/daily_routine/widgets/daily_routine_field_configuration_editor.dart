@@ -269,7 +269,7 @@ final class _DailyRoutineFieldConfigurationEditorState
           optionLabel: (value) => switch (value) {
             _BooleanInitial.none => 'Sem valor inicial',
             _BooleanInitial.yes => 'Sim',
-            _BooleanInitial.no => 'Nao',
+            _BooleanInitial.no => 'Não',
           },
           enabled: widget.enabled,
           searchable: false,
@@ -302,7 +302,7 @@ final class _DailyRoutineFieldConfigurationEditorState
                   child: _NumberField(
                     fieldKey: const Key('daily-routine-number-min'),
                     controller: minimum,
-                    label: 'Valor minimo',
+                    label: 'Valor mínimo',
                     enabled: widget.enabled,
                     onChanged: emit,
                   ),
@@ -312,7 +312,7 @@ final class _DailyRoutineFieldConfigurationEditorState
                   child: _NumberField(
                     fieldKey: const Key('daily-routine-number-max'),
                     controller: maximum,
-                    label: 'Valor maximo',
+                    label: 'Valor máximo',
                     enabled: widget.enabled,
                     onChanged: emit,
                   ),
@@ -334,7 +334,7 @@ final class _DailyRoutineFieldConfigurationEditorState
       const SizedBox(height: CoeloSpacing.space3),
       CoeloAdminToggleField(
         key: const Key('daily-routine-field-required'),
-        label: 'Resposta obrigatoria',
+        label: 'Resposta obrigatória',
         description: 'Quem preenche precisa responder para avancar.',
         value: required,
         onChanged: widget.enabled
@@ -391,7 +391,7 @@ final class _DailyRoutineFieldConfigurationEditorState
           else
             CoeloAdminSingleSelectField<String>(
               key: const Key('daily-routine-condition-option'),
-              label: 'Exibir quando a opcao for',
+              label: 'Exibir quando a opção for',
               value: triggerOptionId ?? selectedParent.options.first.id,
               options: selectedParent.options.map((option) => option.id).toList(),
               optionLabel: (id) =>
@@ -448,8 +448,8 @@ int _fieldDepth(RoutineField field) {
 String _kindLabel(RoutineFieldKind kind) => switch (kind) {
   RoutineFieldKind.shortText => 'Texto curto',
   RoutineFieldKind.longText => 'Texto longo',
-  RoutineFieldKind.number => 'Numero',
-  RoutineFieldKind.boolean => 'Sim/Nao',
-  RoutineFieldKind.singleChoice => 'Escolha unica',
-  RoutineFieldKind.multipleChoice => 'Escolha multipla',
+  RoutineFieldKind.number => 'Número',
+  RoutineFieldKind.boolean => 'Sim/Não',
+  RoutineFieldKind.singleChoice => 'Escolha única',
+  RoutineFieldKind.multipleChoice => 'Escolha múltipla',
 };

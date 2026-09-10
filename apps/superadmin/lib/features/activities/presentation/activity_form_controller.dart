@@ -3,6 +3,8 @@ import 'dart:typed_data';
 
 import 'package:flutter/widgets.dart';
 import 'package:coelo_domain/profile_about.dart';
+import 'package:coelo_domain/locations.dart';
+import '../domain/activity_command.dart';
 
 import '../domain/activity_directory.dart';
 import 'activity_form_draft.dart';
@@ -118,6 +120,44 @@ final class ActivityFormController extends ChangeNotifier {
   String? selectedInstitutionId;
   final Set<String> selectedUnitIds = {};
   String? selectedLocationId;
+  CataloguedLocationSelection? _cataloguedLocationSelection;
+  ActivityCreateReservationIntent? _locationReservation;
+  CataloguedLocationSelection? get cataloguedLocationSelection => _cataloguedLocationSelection;
+  ActivityCreateReservationIntent? get locationReservation => _locationReservation;
+
+  bool _matchesLocationOwner(CataloguedLocationSelection selection) {
+    final scope = selection.snapshot.scope;
+    return scope.institutionId == selectedInstitutionId &&
+        (scope is InstitutionLocationScope ||
+            scope is UnitLocationScope && selectedUnitIds.contains(scope.unitId));
+  }
+
+  void selectCataloguedLocation(CataloguedLocationSelection? selection) {
+    if (isSubmitting) return;
+    if (isEditing) throw StateError('Catalogued selection editing is unavailable');
+    if (selection != null && !_matchesLocationOwner(selection)) {
+      throw ArgumentError('Location owner mismatch');
+    }
+    _cataloguedLocationSelection = selection;
+    _locationReservation = null;
+    selectedLocationId = null;
+    notifyListeners();
+  }
+
+  void setLocationReservation(ActivityCreateReservationIntent? reservation) {
+    if (isSubmitting) return;
+    if (isEditing || reservation != null && _cataloguedLocationSelection == null) {
+      throw StateError('A catalogued create selection is required');
+    }
+    _locationReservation = reservation;
+    notifyListeners();
+  }
+
+  void _clearCataloguedLocation() {
+    _cataloguedLocationSelection = null;
+    _locationReservation = null;
+  }
+
   final Set<String> selectedGroupIds = {};
   final List<ActivityProfessionalAssignment> assignments = [];
   final List<ActivityFormLocationOption> _sessionLocations = [];
@@ -291,6 +331,8 @@ final class ActivityFormController extends ChangeNotifier {
     selectedInstitutionId ?? '',
     selectedUnitIds.toList()..sort(),
     selectedLocationId ?? '',
+    _cataloguedLocationSelection?.snapshot.id,
+    _locationReservation?.toJson(),
     selectedGroupIds.toList()..sort(),
     _commandAssignmentSignature,
     imageName ?? '',
@@ -537,6 +579,7 @@ final class ActivityFormController extends ChangeNotifier {
   Future<void> selectInstitution(String institutionId, {bool preserveSelection = false}) async {
     if (institutionLocked) return;
     _professionalRequestSequence++;
+    if (selectedInstitutionId != institutionId) _clearCataloguedLocation();
     selectedInstitutionId = institutionId;
     if (!preserveSelection) {
       selectedUnitIds.clear();
@@ -545,6 +588,7 @@ final class ActivityFormController extends ChangeNotifier {
       studentSelection.clear();
       assignments.clear();
       selectedLocationId = null;
+      _clearCataloguedLocation();
     }
     institutionError = null;
     unitsError = null;
@@ -598,16 +642,20 @@ final class ActivityFormController extends ChangeNotifier {
     if (!locations.any((location) => location.id == selectedLocationId)) {
       selectedLocationId = null;
     }
+    final selection = _cataloguedLocationSelection;
+    if (selection != null && !_matchesLocationOwner(selection)) _clearCataloguedLocation();
     unitsError = null;
     notifyListeners();
   }
 
   void selectLocation(String? locationId) {
+    _clearCataloguedLocation();
     selectedLocationId = locationId?.isEmpty == true ? null : locationId;
     notifyListeners();
   }
 
   void addLocations(List<ActivityFormLocationOption> locations) {
+    _clearCataloguedLocation();
     _sessionLocations.addAll(locations);
     if (locations.isNotEmpty) selectedLocationId = locations.first.id;
     notifyListeners();
@@ -808,7 +856,9 @@ final class ActivityFormController extends ChangeNotifier {
     governance: governance,
     institutionId: selectedInstitutionId!,
     unitIds: Set.unmodifiable(selectedUnitIds),
-    locationId: selectedLocationId,
+    locationId: _cataloguedLocationSelection?.snapshot.id ?? selectedLocationId,
+    locationSelection: _cataloguedLocationSelection,
+    reservation: _locationReservation,
     groupIds: Set.unmodifiable(selectedGroupIds),
     assignments: List.unmodifiable(assignments),
     imageName: imageName,

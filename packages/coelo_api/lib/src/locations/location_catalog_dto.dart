@@ -47,6 +47,122 @@ LocationDirectoryResult decodeLocationDirectoryV2(
   return LocationDirectoryResult(items: items, totalCount: total);
 }
 
+/// Correlates a historical page. It does not select a location or grant access.
+LocationConsumerBindingPage decodeLocationConsumerBindingsV2(
+  Object? value, {
+  required LocationReservationConsumer requestedConsumer,
+  String? afterLocationId,
+  int limit = 20,
+}) {
+  final consumerId = _uuid(requestedConsumer.id);
+  final after = afterLocationId == null ? null : _uuid(afterLocationId);
+  if (limit < 1 ||
+      limit > 100 ||
+      !const {
+        LocationReservationConsumerKind.group,
+        LocationReservationConsumerKind.activity,
+      }.contains(requestedConsumer.kind)) {
+    _invalid();
+  }
+  final data = _map(_data(value), const {'consumer', 'items', 'next_location_id'});
+  final consumer = _map(data['consumer'], const {'kind', 'id'});
+  if (consumer['kind'] != requestedConsumer.kind.name || _uuid(consumer['id']) != consumerId) {
+    _invalid();
+  }
+  final rawItems = data['items'];
+  if (rawItems is! List || rawItems.length > limit) _invalid();
+  final items = <LocationConsumerBinding>[];
+  String? previous = after;
+  for (final raw in rawItems) {
+    final row = _map(_map(raw, const {'location'})['location'], const {
+      'id',
+      'scope_kind',
+      'institution_id',
+      'unit_id',
+      'kind',
+      'name',
+      'status',
+    });
+    final id = _uuid(row['id']);
+    if (previous != null && id.compareTo(previous) <= 0) _invalid();
+    previous = id;
+    final institution = _uuid(row['institution_id']);
+    final LocationScope scope;
+    if (row['scope_kind'] == 'institution' && row['unit_id'] == null) {
+      scope = LocationScope.institution(institutionId: institution);
+    } else if (row['scope_kind'] == 'unit') {
+      scope = LocationScope.unit(institutionId: institution, unitId: _uuid(row['unit_id']));
+    } else {
+      _invalid();
+    }
+    items.add(
+      LocationConsumerBinding(
+        location: LocationReferenceSnapshot(
+          id: id,
+          scope: scope,
+          kind: _enum(row['kind'], LocationKind.values),
+          label: _text(row['name'], 120),
+        ),
+        status: _enum(row['status'], LocationCatalogStatus.values),
+      ),
+    );
+  }
+  final next = data['next_location_id'] == null ? null : _uuid(data['next_location_id']);
+  if (next != null && (items.length != limit || next != items.last.location.id)) _invalid();
+  return LocationConsumerBindingPage(
+    consumer: LocationReservationConsumer(kind: requestedConsumer.kind, id: consumerId),
+    items: items,
+    nextLocationId: next,
+  );
+}
+
+/// Correlates the current choice; an empty choice is not a missing permission.
+LocationConsumerCurrentSelection decodeLocationConsumerSelectionV2(
+  Object? value, {
+  required LocationReservationConsumer requestedConsumer,
+}) {
+  final consumerId = _uuid(requestedConsumer.id);
+  final consumerKey = switch (requestedConsumer.kind) {
+    LocationReservationConsumerKind.group => 'group_id',
+    LocationReservationConsumerKind.activity => 'activity_id',
+    _ => _invalid(),
+  };
+  final data = _map(_data(value), {consumerKey, 'location'});
+  if (_uuid(data[consumerKey]) != consumerId) _invalid();
+  final consumer = LocationReservationConsumer(kind: requestedConsumer.kind, id: consumerId);
+  if (data['location'] == null) {
+    return LocationConsumerCurrentSelection(consumer: consumer, location: null, status: null);
+  }
+  final row = _map(data['location'], const {
+    'id',
+    'scope_kind',
+    'institution_id',
+    'unit_id',
+    'kind',
+    'name',
+    'status',
+  });
+  final institution = _uuid(row['institution_id']);
+  final LocationScope scope;
+  if (row['scope_kind'] == 'institution' && row['unit_id'] == null) {
+    scope = LocationScope.institution(institutionId: institution);
+  } else if (row['scope_kind'] == 'unit') {
+    scope = LocationScope.unit(institutionId: institution, unitId: _uuid(row['unit_id']));
+  } else {
+    _invalid();
+  }
+  return LocationConsumerCurrentSelection(
+    consumer: consumer,
+    location: LocationReferenceSnapshot(
+      id: _uuid(row['id']),
+      scope: scope,
+      kind: _enum(row['kind'], LocationKind.values),
+      label: _text(row['name'], 120),
+    ),
+    status: _enum(row['status'], LocationCatalogStatus.values),
+  );
+}
+
 Object? _data(Object? value) {
   final envelope = _map(value, const {'ok', 'data', 'error'});
   if (envelope['ok'] == false) {
@@ -581,7 +697,8 @@ LocationSchedule decodeLocationScheduleV2(Object? value, {required String reques
     // The catalog promises non-overlapping windows. Checking here means a
     // server that broke that promise is caught at the boundary instead of
     // becoming a schedule the screen quietly renders wrong.
-    if (windows.isNotEmpty && (parsed.compareTo(windows.last) <= 0 || parsed.overlaps(windows.last))) {
+    if (windows.isNotEmpty &&
+        (parsed.compareTo(windows.last) <= 0 || parsed.overlaps(windows.last))) {
       _invalid();
     }
     windows.add(parsed);

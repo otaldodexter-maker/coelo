@@ -67,8 +67,8 @@ void main() {
     expect(find.byKey(const Key('daily-routine-type-tabs')), findsOneWidget);
     expect(find.text('Modelos'), findsOneWidget);
     expect(find.text('Rotinas'), findsOneWidget);
-    expect(find.text('Lancamentos'), findsOneWidget);
-    await tester.tap(find.text('Lancamentos'));
+    expect(find.text('Lançamentos'), findsOneWidget);
+    await tester.tap(find.text('Lançamentos'));
     await tester.pumpAndSettle();
 
     expect(requestedKinds.last, RoutineEntryKind.launch);
@@ -318,7 +318,7 @@ void main() {
         pageLoader: (query) async {
           if (calls++ > 0) {
             throw const RoutineRepositoryException(
-              RoutineRepositoryFailureKind.unavailable,
+              RoutineRepositoryFailureKind.conflict,
               'temporarily unavailable',
             );
           }
@@ -340,6 +340,39 @@ void main() {
 
     expect(find.byKey(const Key('daily-routine-error')), findsOneWidget);
     expect(find.byKey(const Key('daily-routine-create-state')), findsOneWidget);
+  });
+
+  testWidgets('authorized create action also survives an unavailable backend', (tester) async {
+    var calls = 0;
+    await pumpPage(
+      tester,
+      FakeRoutineRepository(
+        pageLoader: (query) async {
+          if (calls++ > 0) {
+            throw const RoutineRepositoryException(
+              RoutineRepositoryFailureKind.unavailable,
+              'Rotina diária indisponível neste ambiente.',
+            );
+          }
+          return RoutineDirectoryPage(
+            items: const [],
+            page: query.page,
+            pageSize: query.pageSize,
+            totalCount: 0,
+            canManage: true,
+          );
+        },
+      ),
+      onCreateEntry: (_) {},
+    );
+
+    await tester.enterText(find.byKey(const Key('daily-routine-search')), 'falha');
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('daily-routine-unavailable')), findsOneWidget);
+    expect(find.byKey(const Key('daily-routine-create-state')), findsOneWidget);
+    expect(find.text('A rotina diária não está disponível neste ambiente.'), findsOneWidget);
+    expect(find.text('Tentar novamente'), findsNothing);
   });
 
   testWidgets('repository pagination is rendered in the sticky footer surface', (tester) async {

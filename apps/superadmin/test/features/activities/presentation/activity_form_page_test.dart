@@ -2,6 +2,7 @@ import 'dart:async';
 
 import '../../../support/activities/fake_activity_directory_repository.dart';
 import 'package:coelo_domain/profile_about.dart';
+import 'package:coelo_domain/locations.dart';
 import 'package:coelo_superadmin/app/dev_menu/development_activity_fixture_repository.dart';
 import 'package:coelo_superadmin/features/activities/domain/activity_directory.dart';
 import 'package:coelo_superadmin/features/activities/domain/activity_profile_about_repository.dart';
@@ -19,6 +20,133 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final failure in [false, true]) {
+    testWidgets('activity write freeze protects catalog A while pending failure=$failure', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(const Size(1440, 1000));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final pending = Completer<void>();
+      late ActivityFormController c;
+      final sent = <ActivityFormDraft>[];
+      await tester.pumpWidget(
+        _app(
+          initialInstitutionId: 'institution-1',
+          initialStep: ActivityFormStep.structure,
+          onSaveDraft: (draft) {
+            sent.add(draft);
+            return pending.future;
+          },
+          locationSelectionBuilder: (context, controller) {
+            c = controller;
+            return CoeloAdminSingleSelectField<String>(
+              key: const Key('freeze-catalog'),
+              label: 'Local catalogado',
+              value: controller.cataloguedLocationSelection?.snapshot.id ?? 'A',
+              options: const ['A', 'B'],
+              optionLabel: (value) => 'Local $value',
+              onChanged: (value) {
+                controller.name.text = 'Oficina';
+                if (controller.selectedUnitIds.isEmpty) {
+                  controller.toggleUnit('institution-1-unit-1');
+                }
+                controller.selectCataloguedLocation(
+                  CataloguedLocationSelection(
+                    LocationReferenceSnapshot(
+                      id: value,
+                      scope: const LocationScope.institution(institutionId: 'institution-1'),
+                      kind: LocationKind.internal,
+                      label: 'Local $value',
+                    ),
+                  ),
+                );
+              },
+            );
+          },
+        ),
+      );
+      await tester.pumpAndSettle();
+      final field = find.byKey(const Key('freeze-catalog'));
+      await tester.ensureVisible(field);
+      await tester.tap(field);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Local A').last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('activity-form-save-draft')));
+      await tester.pump();
+      try {
+        expect(sent, hasLength(1));
+        await tester.ensureVisible(field);
+        await tester.tap(field, warnIfMissed: false);
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(find.text('Local B'), findsNothing);
+        expect(find.text('Salvando alterações…'), findsOneWidget);
+      } finally {
+        if (failure) {
+          pending.completeError(const ActivityDirectoryUnavailableException());
+        } else {
+          pending.complete();
+        }
+        await tester.pumpAndSettle();
+      }
+      expect(sent.single.locationSelection!.snapshot.id, 'A');
+      expect(c.cataloguedLocationSelection!.snapshot.id, 'A');
+      expect(c.isDirty, failure);
+      expect(find.text('Salvando alterações…'), findsNothing);
+      await tester.tap(field);
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Local B').last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Local B').last);
+      await tester.pumpAndSettle();
+      expect(c.cataloguedLocationSelection!.snapshot.id, 'B');
+      expect(c.isDirty, isTrue);
+    });
+  }
+  testWidgets('catalog slot replaces legacy options and preserves typed draft on save', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    ActivityFormDraft? saved;
+    await tester.pumpWidget(
+      _app(
+        initialInstitutionId: 'institution-1',
+        initialStep: ActivityFormStep.structure,
+        onSaveDraft: (draft) async => saved = draft,
+        locationSelectionBuilder: (context, controller) => TextButton(
+          key: const Key('select-catalog-test'),
+          onPressed: () {
+            controller.name.text = 'Oficina';
+            controller.toggleUnit('institution-1-unit-1');
+            controller.selectCataloguedLocation(
+              const CataloguedLocationSelection(
+                LocationReferenceSnapshot(
+                  id: 'location-1',
+                  scope: LocationScope.institution(institutionId: 'institution-1'),
+                  kind: LocationKind.external,
+                  label: 'Praca',
+                ),
+              ),
+            );
+          },
+          child: const Text('Selecionar local do catalogo'),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('activity-form-location')), findsNothing);
+    await tester.ensureVisible(find.byKey(const Key('select-catalog-test')));
+    await tester.tap(find.byKey(const Key('select-catalog-test')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('activity-form-save-draft')));
+    await tester.pumpAndSettle();
+    expect(saved?.locationSelection?.snapshot.id, 'location-1');
+    expect(saved?.locationSelection?.snapshot.kind, LocationKind.external);
+    expect(saved?.locationId, 'location-1');
+    expect(saved?.requestId, matches(RegExp(r'^[0-9a-f-]{36}$')));
+  });
+
   test('command signature keeps pipe-delimited free-text drafts distinct', () {
     final first = ActivityFormController.create(const ActivityFormOptions());
     final second = ActivityFormController.create(const ActivityFormOptions());
@@ -791,6 +919,7 @@ Widget _app({
   ActivityDirectoryRepository? repository,
   String? initialInstitutionId,
   ActivityFormStep? initialStep,
+  ActivityLocationSelectionBuilder? locationSelectionBuilder,
   ActivityProfileAboutRepository? aboutRepository,
   Future<void> Function(ActivityFormDraft)? onSaveDraft,
   Future<void> Function(ActivityFormDraft)? onSubmit,
@@ -807,6 +936,7 @@ Widget _app({
     initialInstitutionId: initialInstitutionId,
     initialDraft: initialDraft,
     initialStep: initialStep,
+    locationSelectionBuilder: locationSelectionBuilder,
     repository: repository ?? _TaxonomyOptionsRepository(),
     logout: () async => const LogoutResult.success(),
     onCancel: () {},

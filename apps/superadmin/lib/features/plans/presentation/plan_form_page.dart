@@ -169,6 +169,12 @@ final class _PlanFormPageState extends State<PlanFormPage> {
             ? PlanDataState.unauthorized
             : PlanDataState.error;
       });
+    } on Object {
+      // O repositorio ja tipa falha de transporte, mas a leitura do payload
+      // acontece fora dele: uma resposta malformada deixava o formulario preso
+      // no indicador de progresso. Mesmo tratamento que o diretorio.
+      if (!isCurrent()) return;
+      setState(() => _loadState = PlanDataState.error);
     }
   }
 

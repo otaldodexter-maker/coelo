@@ -57,6 +57,30 @@ void main() {
     expect(detail.linkedInstitutions.single.startsAt, DateTime.parse('2026-08-01T00:00:00Z'));
   });
 
+  test('falha de transporte vira PlanRepositoryException indisponivel', () async {
+    // Antes, so PostgrestException era mapeada: um ClientException escapava
+    // cru e o chamador, que so trata PlanRepositoryException, ficava sem
+    // estado de erro proprio.
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-key',
+      httpClient: MockClient((request) async => throw ClientException('synthetic network failure')),
+    );
+    addTearDown(client.dispose);
+    final repository = SupabasePlanCatalogRepository(client);
+
+    await expectLater(
+      repository.list(const PlanQuery()),
+      throwsA(
+        isA<PlanRepositoryException>().having(
+          (error) => error.kind,
+          'kind',
+          PlanRepositoryFailureKind.unavailable,
+        ),
+      ),
+    );
+  });
+
   test('saves with request id, revision, reason and canonical entitlement payload', () async {
     Request? captured;
     final client = SupabaseClient(

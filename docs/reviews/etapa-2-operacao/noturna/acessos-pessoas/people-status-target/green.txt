@@ -1,0 +1,13 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:3 caractere:1
++ rtk proxy flutter test --no-pub test/features/people/presentation/per ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/people/presentation/person_status_keyboard_test.dart
+00:00 +0: C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/people/presentation/person_status_keyboard_test.dart: status target is 48px with centered 24px dot and isolated edge touch
+00:01 +1: C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/people/presentation/person_status_keyboard_test.dart: status target is 48px with centered 24px dot and isolated edge touch
+00:02 +2: C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/people/presentation/person_suspended_status_ui_test.dart: suspended indicator and filter preserve meaning in dark
+00:02 +3: C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/people/presentation/person_status_keyboard_test.dart: the status chip answers Enter, and keeps the label open after focus leaves
+00:05 +4: All tests passed!

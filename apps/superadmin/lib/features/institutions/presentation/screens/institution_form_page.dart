@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:coelo_domain/locations.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ import '../../../../app/shell/superadmin_shell.dart';
 import '../../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../../../shared/presentation/widgets/superadmin_form_frame.dart';
 import '../../../auth/domain/logout_action.dart';
+import '../../../locations/domain/location_catalog_reader.dart';
 import '../../data/institution_location_service.dart';
 import '../../domain/institution_directory_repository.dart';
 import '../view_models/institution_form_controller.dart';
@@ -28,6 +30,10 @@ final class InstitutionFormPage extends StatefulWidget {
     this.locationService,
     this.onDestinationSelected,
     this.imagePicker,
+    this.locationCatalogReader = const UnavailableLocationCatalogReader(),
+    this.locationSessionAvailable = false,
+    this.locationContextRevision = 0,
+    this.onOpenLocations,
     super.key,
   });
 
@@ -39,6 +45,10 @@ final class InstitutionFormPage extends StatefulWidget {
   final ValueChanged<InstitutionFormSaveResult> onSaved;
   final ValueChanged<String>? onDestinationSelected;
   final InstitutionLogoPicker? imagePicker;
+  final LocationCatalogReader locationCatalogReader;
+  final bool locationSessionAvailable;
+  final int locationContextRevision;
+  final VoidCallback? onOpenLocations;
 
   @override
   State<InstitutionFormPage> createState() => _InstitutionFormPageState();
@@ -263,6 +273,13 @@ final class _InstitutionFormPageState extends State<InstitutionFormPage> {
           onSave: _save,
           locationService: _locationService,
           imagePicker: widget.imagePicker ?? pickInstitutionLogo,
+          locationScope: widget.institutionId == null
+              ? null
+              : LocationScope.institution(institutionId: widget.institutionId!),
+          locationCatalogReader: widget.locationCatalogReader,
+          locationSessionAvailable: widget.locationSessionAvailable,
+          locationContextRevision: widget.locationContextRevision,
+          onOpenLocations: widget.onOpenLocations,
           onFooterHeightChanged: (height) {
             if ((_footerHeight - height).abs() < .5 || !mounted) return;
             setState(() => _footerHeight = height);
@@ -284,6 +301,11 @@ final class _FormBody extends StatelessWidget {
     required this.onSave,
     required this.locationService,
     required this.imagePicker,
+    required this.locationScope,
+    required this.locationCatalogReader,
+    required this.locationSessionAvailable,
+    required this.locationContextRevision,
+    required this.onOpenLocations,
     required this.onFooterHeightChanged,
     required this.viewportWidth,
   });
@@ -293,6 +315,11 @@ final class _FormBody extends StatelessWidget {
   final VoidCallback onSave;
   final InstitutionLocationService locationService;
   final InstitutionLogoPicker imagePicker;
+  final LocationScope? locationScope;
+  final LocationCatalogReader locationCatalogReader;
+  final bool locationSessionAvailable;
+  final int locationContextRevision;
+  final VoidCallback? onOpenLocations;
   final ValueChanged<double> onFooterHeightChanged;
   final double viewportWidth;
 
@@ -322,6 +349,11 @@ final class _FormBody extends StatelessWidget {
                   controller: controller,
                   locationService: locationService,
                   imagePicker: imagePicker,
+                  locationScope: locationScope,
+                  locationCatalogReader: locationCatalogReader,
+                  locationSessionAvailable: locationSessionAvailable,
+                  locationContextRevision: locationContextRevision,
+                  onOpenLocations: onOpenLocations,
                 ),
                 footer: _FormFooter(
                   controller: controller,

@@ -1,0 +1,975 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+
+No linha:3 caractere:1
+
++ rtk proxy flutter test --no-pub test/features/access_profiles/present ...
+
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+
+    + FullyQualifiedErrorId : NativeCommandError
+
+
+
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_golden_test.dart
+
+00:00 +0: (setUpAll)
+
+00:00 +0: matches cards and responsive table at supported widths
+
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+
+The following assertion was thrown while running async test code:
+
+Golden "goldens/access_profile_cards_light_375.png": Pixel test failed, 88.35%, 298191px diff
+
+detected.
+
+Failure feedback can be found at
+
+/C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/failures
+
+
+
+When the exception was thrown, this was the stack:
+
+#0      LocalFileComparator.compare (package:flutter_test/src/_goldens_io.dart:108:5)
+
+<asynchronous suspension>
+
+#1      MatchesGoldenFile.matchAsync.<anonymous closure> (package:flutter_test/src/_matchers_io.dart:124:32)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+#3      _expect.<anonymous closure> (package:matcher/src/expect/expect.dart:153:17)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+#5      expectLater.<anonymous closure> (package:flutter_test/src/widget_tester.dart:508:19)
+
+<asynchronous suspension>
+
+#6      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_golden_test.dart:28:9)
+
+<asynchronous suspension>
+
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+
+<asynchronous suspension>
+
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+(elided 3 frames from dart:async and package:stack_trace)
+
+
+
+The exception was caught asynchronously.
+
+════════════════════════════════════════════════════════════════════════════════════════════════════
+
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+
+The following assertion was thrown while running async test code:
+
+Golden "goldens/access_profile_table_light_375.png": Pixel test failed, 82.92%, 279860px diff
+
+detected.
+
+Failure feedback can be found at
+
+/C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/failures
+
+
+
+When the exception was thrown, this was the stack:
+
+#0      LocalFileComparator.compare (package:flutter_test/src/_goldens_io.dart:108:5)
+
+<asynchronous suspension>
+
+#1      MatchesGoldenFile.matchAsync.<anonymous closure> (package:flutter_test/src/_matchers_io.dart:124:32)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+#3      _expect.<anonymous closure> (package:matcher/src/expect/expect.dart:153:17)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+#5      expectLater.<anonymous closure> (package:flutter_test/src/widget_tester.dart:508:19)
+
+<asynchronous suspension>
+
+#6      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_golden_test.dart:35:9)
+
+<asynchronous suspension>
+
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+
+<asynchronous suspension>
+
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+(elided 3 frames from dart:async and package:stack_trace)
+
+
+
+The exception was caught asynchronously.
+
+════════════════════════════════════════════════════════════════════════════════════════════════════
+
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+
+The following assertion was thrown while running async test code:
+
+Golden "goldens/access_profile_cards_dark_375.png": Pixel test failed, 91.90%, 310149px diff
+
+detected.
+
+Failure feedback can be found at
+
+/C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/failures
+
+
+
+When the exception was thrown, this was the stack:
+
+#0      LocalFileComparator.compare (package:flutter_test/src/_goldens_io.dart:108:5)
+
+<asynchronous suspension>
+
+#1      MatchesGoldenFile.matchAsync.<anonymous closure> (package:flutter_test/src/_matchers_io.dart:124:32)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+#3      _expect.<anonymous closure> (package:matcher/src/expect/expect.dart:153:17)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+#5      expectLater.<anonymous closure> (package:flutter_test/src/widget_tester.dart:508:19)
+
+<asynchronous suspension>
+
+#6      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_golden_test.dart:28:9)
+
+<asynchronous suspension>
+
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+
+<asynchronous suspension>
+
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+(elided 3 frames from dart:async and package:stack_trace)
+
+
+
+The exception was caught asynchronously.
+
+════════════════════════════════════════════════════════════════════════════════════════════════════
+
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+
+The following assertion was thrown while running async test code:
+
+Golden "goldens/access_profile_table_dark_375.png": Pixel test failed, 85.64%, 289032px diff
+
+detected.
+
+Failure feedback can be found at
+
+/C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/failures
+
+
+
+When the exception was thrown, this was the stack:
+
+#0      LocalFileComparator.compare (package:flutter_test/src/_goldens_io.dart:108:5)
+
+<asynchronous suspension>
+
+#1      MatchesGoldenFile.matchAsync.<anonymous closure> (package:flutter_test/src/_matchers_io.dart:124:32)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+#3      _expect.<anonymous closure> (package:matcher/src/expect/expect.dart:153:17)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+#5      expectLater.<anonymous closure> (package:flutter_test/src/widget_tester.dart:508:19)
+
+<asynchronous suspension>
+
+#6      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_golden_test.dart:35:9)
+
+<asynchronous suspension>
+
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+
+<asynchronous suspension>
+
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+(elided 3 frames from dart:async and package:stack_trace)
+
+
+
+The exception was caught asynchronously.
+
+════════════════════════════════════════════════════════════════════════════════════════════════════
+
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+
+The following assertion was thrown while running async test code:
+
+Golden "goldens/access_profile_cards_light_768.png": Pixel test failed, 79.79%, 551492px diff
+
+detected.
+
+Failure feedback can be found at
+
+/C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/failures
+
+
+
+When the exception was thrown, this was the stack:
+
+#0      LocalFileComparator.compare (package:flutter_test/src/_goldens_io.dart:108:5)
+
+<asynchronous suspension>
+
+#1      MatchesGoldenFile.matchAsync.<anonymous closure> (package:flutter_test/src/_matchers_io.dart:124:32)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+#3      _expect.<anonymous closure> (package:matcher/src/expect/expect.dart:153:17)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+#5      expectLater.<anonymous closure> (package:flutter_test/src/widget_tester.dart:508:19)
+
+<asynchronous suspension>
+
+#6      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_golden_test.dart:28:9)
+
+<asynchronous suspension>
+
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+
+<asynchronous suspension>
+
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+(elided 3 frames from dart:async and package:stack_trace)
+
+
+
+The exception was caught asynchronously.
+
+════════════════════════════════════════════════════════════════════════════════════════════════════
+
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+
+The following assertion was thrown while running async test code:
+
+Golden "goldens/access_profile_table_light_768.png": Pixel test failed, 82.60%, 570964px diff
+
+detected.
+
+Failure feedback can be found at
+
+/C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/failures
+
+
+
+When the exception was thrown, this was the stack:
+
+#0      LocalFileComparator.compare (package:flutter_test/src/_goldens_io.dart:108:5)
+
+<asynchronous suspension>
+
+#1      MatchesGoldenFile.matchAsync.<anonymous closure> (package:flutter_test/src/_matchers_io.dart:124:32)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+#3      _expect.<anonymous closure> (package:matcher/src/expect/expect.dart:153:17)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+#5      expectLater.<anonymous closure> (package:flutter_test/src/widget_tester.dart:508:19)
+
+<asynchronous suspension>
+
+#6      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_golden_test.dart:35:9)
+
+<asynchronous suspension>
+
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+
+<asynchronous suspension>
+
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+(elided 3 frames from dart:async and package:stack_trace)
+
+
+
+The exception was caught asynchronously.
+
+════════════════════════════════════════════════════════════════════════════════════════════════════
+
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+
+The following assertion was thrown while running async test code:
+
+Golden "goldens/access_profile_cards_dark_768.png": Pixel test failed, 80.84%, 558779px diff
+
+detected.
+
+Failure feedback can be found at
+
+/C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/failures
+
+
+
+When the exception was thrown, this was the stack:
+
+#0      LocalFileComparator.compare (package:flutter_test/src/_goldens_io.dart:108:5)
+
+<asynchronous suspension>
+
+#1      MatchesGoldenFile.matchAsync.<anonymous closure> (package:flutter_test/src/_matchers_io.dart:124:32)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+#3      _expect.<anonymous closure> (package:matcher/src/expect/expect.dart:153:17)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+#5      expectLater.<anonymous closure> (package:flutter_test/src/widget_tester.dart:508:19)
+
+<asynchronous suspension>
+
+#6      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_golden_test.dart:28:9)
+
+<asynchronous suspension>
+
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+
+<asynchronous suspension>
+
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+(elided 3 frames from dart:async and package:stack_trace)
+
+
+
+The exception was caught asynchronously.
+
+════════════════════════════════════════════════════════════════════════════════════════════════════
+
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+
+The following assertion was thrown while running async test code:
+
+Golden "goldens/access_profile_table_dark_768.png": Pixel test failed, 84.35%, 583020px diff
+
+detected.
+
+Failure feedback can be found at
+
+/C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/failures
+
+
+
+When the exception was thrown, this was the stack:
+
+#0      LocalFileComparator.compare (package:flutter_test/src/_goldens_io.dart:108:5)
+
+<asynchronous suspension>
+
+#1      MatchesGoldenFile.matchAsync.<anonymous closure> (package:flutter_test/src/_matchers_io.dart:124:32)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+#3      _expect.<anonymous closure> (package:matcher/src/expect/expect.dart:153:17)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+#5      expectLater.<anonymous closure> (package:flutter_test/src/widget_tester.dart:508:19)
+
+<asynchronous suspension>
+
+#6      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_golden_test.dart:35:9)
+
+<asynchronous suspension>
+
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+
+<asynchronous suspension>
+
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+(elided 3 frames from dart:async and package:stack_trace)
+
+
+
+The exception was caught asynchronously.
+
+════════════════════════════════════════════════════════════════════════════════════════════════════
+
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+
+The following assertion was thrown while running async test code:
+
+Golden "goldens/access_profile_cards_light_1024.png": Pixel test failed, 24.34%, 224356px diff
+
+detected.
+
+Failure feedback can be found at
+
+/C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/failures
+
+
+
+When the exception was thrown, this was the stack:
+
+#0      LocalFileComparator.compare (package:flutter_test/src/_goldens_io.dart:108:5)
+
+<asynchronous suspension>
+
+#1      MatchesGoldenFile.matchAsync.<anonymous closure> (package:flutter_test/src/_matchers_io.dart:124:32)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+#3      _expect.<anonymous closure> (package:matcher/src/expect/expect.dart:153:17)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+#5      expectLater.<anonymous closure> (package:flutter_test/src/widget_tester.dart:508:19)
+
+<asynchronous suspension>
+
+#6      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_golden_test.dart:28:9)
+
+<asynchronous suspension>
+
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+
+<asynchronous suspension>
+
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+(elided 3 frames from dart:async and package:stack_trace)
+
+
+
+The exception was caught asynchronously.
+
+════════════════════════════════════════════════════════════════════════════════════════════════════
+
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+
+The following assertion was thrown while running async test code:
+
+Golden "goldens/access_profile_table_light_1024.png": Pixel test failed, 24.26%, 223573px diff
+
+detected.
+
+Failure feedback can be found at
+
+/C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/failures
+
+
+
+When the exception was thrown, this was the stack:
+
+#0      LocalFileComparator.compare (package:flutter_test/src/_goldens_io.dart:108:5)
+
+<asynchronous suspension>
+
+#1      MatchesGoldenFile.matchAsync.<anonymous closure> (package:flutter_test/src/_matchers_io.dart:124:32)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+#3      _expect.<anonymous closure> (package:matcher/src/expect/expect.dart:153:17)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+#5      expectLater.<anonymous closure> (package:flutter_test/src/widget_tester.dart:508:19)
+
+<asynchronous suspension>
+
+#6      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_golden_test.dart:35:9)
+
+<asynchronous suspension>
+
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+
+<asynchronous suspension>
+
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+(elided 3 frames from dart:async and package:stack_trace)
+
+
+
+The exception was caught asynchronously.
+
+════════════════════════════════════════════════════════════════════════════════════════════════════
+
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+
+The following assertion was thrown while running async test code:
+
+Golden "goldens/access_profile_cards_dark_1024.png": Pixel test failed, 27.42%, 252678px diff
+
+detected.
+
+Failure feedback can be found at
+
+/C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/failures
+
+
+
+When the exception was thrown, this was the stack:
+
+#0      LocalFileComparator.compare (package:flutter_test/src/_goldens_io.dart:108:5)
+
+<asynchronous suspension>
+
+#1      MatchesGoldenFile.matchAsync.<anonymous closure> (package:flutter_test/src/_matchers_io.dart:124:32)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+#3      _expect.<anonymous closure> (package:matcher/src/expect/expect.dart:153:17)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+#5      expectLater.<anonymous closure> (package:flutter_test/src/widget_tester.dart:508:19)
+
+<asynchronous suspension>
+
+#6      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_golden_test.dart:28:9)
+
+<asynchronous suspension>
+
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+
+<asynchronous suspension>
+
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+(elided 3 frames from dart:async and package:stack_trace)
+
+
+
+The exception was caught asynchronously.
+
+════════════════════════════════════════════════════════════════════════════════════════════════════
+
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+
+The following assertion was thrown while running async test code:
+
+Golden "goldens/access_profile_table_dark_1024.png": Pixel test failed, 27.53%, 253698px diff
+
+detected.
+
+Failure feedback can be found at
+
+/C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/failures
+
+
+
+When the exception was thrown, this was the stack:
+
+#0      LocalFileComparator.compare (package:flutter_test/src/_goldens_io.dart:108:5)
+
+<asynchronous suspension>
+
+#1      MatchesGoldenFile.matchAsync.<anonymous closure> (package:flutter_test/src/_matchers_io.dart:124:32)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+#3      _expect.<anonymous closure> (package:matcher/src/expect/expect.dart:153:17)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+#5      expectLater.<anonymous closure> (package:flutter_test/src/widget_tester.dart:508:19)
+
+<asynchronous suspension>
+
+#6      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_golden_test.dart:35:9)
+
+<asynchronous suspension>
+
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+
+<asynchronous suspension>
+
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+(elided 3 frames from dart:async and package:stack_trace)
+
+
+
+The exception was caught asynchronously.
+
+════════════════════════════════════════════════════════════════════════════════════════════════════
+
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+
+The following assertion was thrown while running async test code:
+
+Golden "goldens/access_profile_cards_light_1440.png": Pixel test failed, 20.99%, 272031px diff
+
+detected.
+
+Failure feedback can be found at
+
+/C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/failures
+
+
+
+When the exception was thrown, this was the stack:
+
+#0      LocalFileComparator.compare (package:flutter_test/src/_goldens_io.dart:108:5)
+
+<asynchronous suspension>
+
+#1      MatchesGoldenFile.matchAsync.<anonymous closure> (package:flutter_test/src/_matchers_io.dart:124:32)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+#3      _expect.<anonymous closure> (package:matcher/src/expect/expect.dart:153:17)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+#5      expectLater.<anonymous closure> (package:flutter_test/src/widget_tester.dart:508:19)
+
+<asynchronous suspension>
+
+#6      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_golden_test.dart:28:9)
+
+<asynchronous suspension>
+
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+
+<asynchronous suspension>
+
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+(elided 3 frames from dart:async and package:stack_trace)
+
+
+
+The exception was caught asynchronously.
+
+════════════════════════════════════════════════════════════════════════════════════════════════════
+
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+
+The following assertion was thrown while running async test code:
+
+Golden "goldens/access_profile_table_light_1440.png": Pixel test failed, 24.97%, 323624px diff
+
+detected.
+
+Failure feedback can be found at
+
+/C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/failures
+
+
+
+When the exception was thrown, this was the stack:
+
+#0      LocalFileComparator.compare (package:flutter_test/src/_goldens_io.dart:108:5)
+
+<asynchronous suspension>
+
+#1      MatchesGoldenFile.matchAsync.<anonymous closure> (package:flutter_test/src/_matchers_io.dart:124:32)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+#3      _expect.<anonymous closure> (package:matcher/src/expect/expect.dart:153:17)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+#5      expectLater.<anonymous closure> (package:flutter_test/src/widget_tester.dart:508:19)
+
+<asynchronous suspension>
+
+#6      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_golden_test.dart:35:9)
+
+<asynchronous suspension>
+
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+
+<asynchronous suspension>
+
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+(elided 3 frames from dart:async and package:stack_trace)
+
+
+
+The exception was caught asynchronously.
+
+════════════════════════════════════════════════════════════════════════════════════════════════════
+
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+
+The following assertion was thrown while running async test code:
+
+Golden "goldens/access_profile_cards_dark_1440.png": Pixel test failed, 23.82%, 308763px diff
+
+detected.
+
+Failure feedback can be found at
+
+/C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/failures
+
+
+
+When the exception was thrown, this was the stack:
+
+#0      LocalFileComparator.compare (package:flutter_test/src/_goldens_io.dart:108:5)
+
+<asynchronous suspension>
+
+#1      MatchesGoldenFile.matchAsync.<anonymous closure> (package:flutter_test/src/_matchers_io.dart:124:32)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+#3      _expect.<anonymous closure> (package:matcher/src/expect/expect.dart:153:17)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+#5      expectLater.<anonymous closure> (package:flutter_test/src/widget_tester.dart:508:19)
+
+<asynchronous suspension>
+
+#6      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_golden_test.dart:28:9)
+
+<asynchronous suspension>
+
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+
+<asynchronous suspension>
+
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+(elided 3 frames from dart:async and package:stack_trace)
+
+
+
+The exception was caught asynchronously.
+
+════════════════════════════════════════════════════════════════════════════════════════════════════
+
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+
+The following assertion was thrown while running async test code:
+
+Golden "goldens/access_profile_table_dark_1440.png": Pixel test failed, 28.02%, 363075px diff
+
+detected.
+
+Failure feedback can be found at
+
+/C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/failures
+
+
+
+When the exception was thrown, this was the stack:
+
+#0      LocalFileComparator.compare (package:flutter_test/src/_goldens_io.dart:108:5)
+
+<asynchronous suspension>
+
+#1      MatchesGoldenFile.matchAsync.<anonymous closure> (package:flutter_test/src/_matchers_io.dart:124:32)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+#3      _expect.<anonymous closure> (package:matcher/src/expect/expect.dart:153:17)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+#5      expectLater.<anonymous closure> (package:flutter_test/src/widget_tester.dart:508:19)
+
+<asynchronous suspension>
+
+#6      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_golden_test.dart:35:9)
+
+<asynchronous suspension>
+
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+
+<asynchronous suspension>
+
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+
+<asynchronous suspension>
+
+<asynchronous suspension>
+
+(elided 3 frames from dart:async and package:stack_trace)
+
+
+
+The exception was caught asynchronously.
+
+════════════════════════════════════════════════════════════════════════════════════════════════════
+
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+
+The following message was thrown:
+
+Multiple exceptions (16) were detected during the running of the current test, and at least one was
+
+unexpected.
+
+════════════════════════════════════════════════════════════════════════════════════════════════════
+
+00:24 +0 -1: matches cards and responsive table at supported widths [E]
+
+  Test failed. See exception logs above.
+
+  The test description was: matches cards and responsive table at supported widths
+
+
+
+00:24 +0 -1: (tearDownAll)
+
+00:24 +0 -1: Some tests failed.
+
+
+
+Failing tests:
+
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/access_profiles/presentation/access_profile_golden_test.dart: matches cards and responsive table at supported widths
