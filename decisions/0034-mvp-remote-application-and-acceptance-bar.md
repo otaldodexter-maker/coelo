@@ -164,6 +164,21 @@ pertencem e voltam a contar na revisão profunda.
   agora. A troca da senha do banco fica registrada como pendência de segurança
   na skill `coelo-backend`, com o roteiro, para o Owner executar quando quiser.
 
+## Decisão 9 — respostas do Owner ao grupo formularios-cuidado-rotina (10/09/2026, 16:00)
+
+- Goldens: `medication_form_mobile_light` volta à referência guardada;
+  `profile_form_mobile_light` regravado após a observação;
+  `profile_form_desktop_dark` regravado após a observação, seguindo a skill
+  `coelo-ui` porque o wizard não segue todo o padrão (contêiner interno).
+- "Quem pode ler dado de saúde de uma criança, além da instituição?": opção 1
+  da pergunta do grupo.
+- "Pergunta de Local no Formulário: opções fixas ou catálogo vivo?": opção 1.
+- "Resposta de Local quando o local foi revogado depois": opção 2.
+- "Quais são as seis referências da Rotina?": são o modelo de atividade,
+  para o modelo de rotina diário.
+- O grupo grava o texto das opções escolhidas na spec/skill da família ao
+  aplicar; a coordenação registra aqui a resposta como recebida.
+
 ## Consequências
 
 - O replay local com Docker deixa de ser porta obrigatória; continua útil para
