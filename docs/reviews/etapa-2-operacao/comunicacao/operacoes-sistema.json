@@ -1,6 +1,6 @@
 {
-  "revision": 49,
-  "updated_at": "2026-09-10T04:05:28-03:00",
+  "revision": 50,
+  "updated_at": "2026-09-10T04:12:32-03:00",
   "group": "operacoes-sistema",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) — claude-opus-5[1m]",
@@ -8,7 +8,7 @@
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-operacoes-sistema",
   "branch": "work/etapa2-noturna-operacoes-sistema",
-  "head": "0772a96ed",
+  "head": "73ca2e45b",
   "upstream": "origin/work/etapa2-noturna-operacoes-sistema",
   "base_observed": "d784462c168d22fdb7090b7de1ef7db554ad5107",
   "scope": [
@@ -1688,8 +1688,8 @@
   "residual_do_recorte": {
     "medida": "flutter test em agenda, plans, meal_plans, support, account, errors, audit e contracts, sobre a minha branch.",
     "resultado": "696 PASS, 4 SKIP, 38 FAIL.",
-    "natureza_das_falhas": "TODAS as 38 estao em arquivo de golden, em sete arquivos: agenda_calendar_golden 14, account_pages_golden 12, meal_plan_pages_golden 6, agenda_additional_surfaces_golden 6, audit_directory_golden 2, support_page_golden 1, plan_golden 1. Zero falha nao-golden no recorte.",
-    "leitura": "O recorte nao tem defeito funcional em aberto nas suites que eu possuo; o que resta e aceite visual, que depende de rebaseline nominal.",
+    "natureza_das_falhas": "Das 38 daquela medicao, todas estavam em arquivo de golden. CORRIGIDO: a frase original dizia 'zero falha nao-golden no recorte', e isso era verdade apenas dentro dos oito caminhos medidos. A corrida completa das 03:20 encontrou NOVE falhas nao-golden que sao minhas e que aqueles oito caminhos nao alcancavam: duas guardas de composicao em core/config, tres em dev_menu, o overflow de /dev/imports e prototype_navigation. O leitor que parasse na frase antiga concluiria que o recorte nao tinha defeito funcional aberto.",
+    "leitura": "SUPERADA pela mesma razao: 'o recorte nao tem defeito funcional em aberto' foi afirmado sobre um universo menor que o recorte. Ver pre_entrega.",
     "SUPERADO": "Medido 02:53 sobre OITO caminhos declarados, e apresentado como residual do recorte. E numero estavel medido pelo instrumento errado, portanto estavelmente errado: faltavam auth, catalog, imports e toda a estrutura residual, alem de router, shell, navigation, dev_menu, core/guards e core/config. Substituido pelo bloco pre_entrega, medido 03:20 sobre apps/superadmin/test inteiro. Fica registrado em vez de apagado, porque foi citado em mensagens ao coordenador e apagar o numero esconderia o erro em vez de corrigi-lo."
   },
   "item_1_golden_instituicoes": {
@@ -1814,5 +1814,20 @@
       "test_contracts": "14 casos, quatro arquivos, todos verdes as 04:04."
     },
     "achado_de_canal": "A minha branch carrega um retrato ANTIGO deste proprio arquivo, revisao 5 das 18:52, porque esta 264 commits atras de dev. O canal vivo e a copia do checkout principal, hoje na revisao 49 e commitada em dev. Eu nunca escrevi na copia da branch, entao um merge normal preserva a de dev; mas uma integracao que preferisse o meu lado regrediria o canal em 44 revisoes. Registro para quem integra, porque o risco e invisivel: o arquivo nao aparece como modificado em lado nenhum."
+  },
+  "releitura_por_afirmacao_forte": {
+    "hora": "2026-09-10T04:12:32-03:00",
+    "metodo": "Varri os meus proprios documentos publicados procurando palavra absoluta — todo, toda, nunca, sempre, nenhum, prova, garante — e conferi cada ocorrencia contra o que foi medido.",
+    "corrigidas": [
+      "A evidencia de profile_about dizia que as tabelas PROVADAMENTE existem em producao. Ninguem leu producao. Passou a dizer que existem apenas duas leituras e que as duas sustentam o argumento: ou foram criadas fora do versionamento, ou a RPC versionada de escrita do Sobre tambem falha em producao. Commit 48deea436.",
+      "A varredura de RPC procura declaracao literal; funcao criada por execute format dentro de outra funcao nao seria vista. Limite do instrumento declarado no relatorio, com a nota de que o mesmo select de catalogo responde as duas perguntas. Commit 48deea436.",
+      "'Um defeito real em todo o aplicativo' virou 'um defeito dentro do que este heuristico enxerga', porque ele so olha pares com interseccao acima de 60% e nao acharia vocabulario inteiramente divergente nem coluna sem lista. Commit 48deea436.",
+      "No handoff, 'a guarda de concorrencia nunca roda em producao' passou a declarar o peso da evidencia: cliente MEDIDO e fixado em teste, corpo da forma legada LIDO e nao executado. Commit c0054a9a0.",
+      "No handoff, 'o que PROVA que a origem e a lista do repositorio de desenvolvimento' passou a dar a inferencia na ordem em que foi feita: numero que nao muda com o dado injetado nao vem do dado injetado, e o construtor daquela rota usa o repositorio de desenvolvimento. Commit c0054a9a0.",
+      "Um titulo de secao dizia que o menu de perfil esta presente em todas as telas; o corpo dizia corretamente 'toda tela COM shell'. Titulo corrigido, porque titulo e o que se le de passagem. Commit 73ca2e45b.",
+      "Dentro do campo residual superado, a frase 'zero falha nao-golden no recorte' era verdadeira apenas nos oito caminhos medidos. Corrigida nesta revisao, nomeando as nove nao-golden que a corrida completa encontrou.",
+      "No artigo de limites de tamanho havia CONTRADICAO minha: o formatador nao trunca valor herdado, e ao mesmo tempo eu afirmava que a entrada limitada garante payload valido. Corrigido, e o caso residual passou de frase a MEDICAO em 32c01a094."
+    ],
+    "o_que_isso_diz": "Oito correcoes, e nenhuma delas mudou um achado: mudaram a forca com que o achado estava escrito. Foi o uso mais produtivo dos ultimos trinta minutos porque e o unico tipo de erro que ainda dava para corrigir sem risco de regressao."
   }
 }
