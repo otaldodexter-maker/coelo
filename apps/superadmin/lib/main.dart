@@ -38,6 +38,7 @@ Future<void> main() async {
       auditRepository: authScope.auditRepository,
       medicationPlanRepository: authScope.medicationPlanRepository,
       healthCareRepository: authScope.healthCareRepository,
+      studentLinkRepository: authScope.studentLinkRepository,
       institutionDirectoryRepository: authScope.institutionDirectoryRepository,
       unitDirectoryRepository: authScope.unitDirectoryRepository,
       unitBackendCommands: authScope.unitBackendCommands,

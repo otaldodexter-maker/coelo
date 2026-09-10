@@ -670,3 +670,39 @@ Cinco horas é meta, não critério de aceite. `ponytail` orienta reutilização
 menor desenho que cumpra todo o contrato, mas não simplifica segurança, RLS,
 validação, acessibilidade, testes ou integração real. Trabalho restante deve
 ser relatado; conclusão falsa é proibida.
+
+## Pergunta de Local: política decidida pelo Owner em 2026-09-10
+
+Registrado a partir da ADR 0034, Decisão 9, em resposta às duas perguntas do
+grupo `formularios-cuidado-rotina`.
+
+**Quais opções a pergunta oferece.** As opções de local ficam **fixadas no
+momento da publicação** do formulário. Todo mundo que responde vê a mesma
+lista, mesmo que um local mude, seja criado ou seja revogado depois. O catálogo
+de locais não é consultado no momento da resposta.
+
+**O que acontece quando o local foi revogado depois.** Ao reenviar ou editar
+uma resposta, o formulário **exige um local atual**: a pessoa escolhe de novo
+entre os válidos. Não se preserva o apontamento histórico e não há substituição
+automática por sucessor.
+
+As duas decisões se sustentam juntas: a lista congela na publicação, mas a
+validade é reconferida na hora de gravar. Uma resposta nunca fica apontando
+para um local que deixou de existir.
+
+**Caso ainda aberto.** Pergunta obrigatória, local revogado e **nenhuma**
+alternativa válida na lista congelada. A decisão acima obriga um local atual, e
+nesse caso não existe nenhum. Precisa de decisão: recusar o reenvio, permitir
+resposta vazia com marca, ou reabrir a lista para o catálogo atual só nesse
+caso.
+
+**Conflito de escopo a resolver antes de implementar.** Esta seção descreve a
+política, não a existência da funcionalidade. Hoje o tipo `location` não existe:
+a constraint de `form_items.kind` em produção aceita `short_text`, `integer`,
+`decimal`, `money`, `date`, `yes_no`, `single_choice`, `multiple_choice`,
+`scale`, `photo`, `gallery` e `information`, e nada no cliente trata local em
+Formulários. A seção "Fora de escopo" desta mesma spec lista localização como
+fora do MVP. Ou seja: a política está decidida, mas implementá-la exige antes
+uma decisão de escopo do Owner sobre trazer `location` para dentro do MVP.
+Enquanto isso não acontecer, `forms.location-question` e `forms.location-answer`
+continuam bloqueadas — agora por escopo, não mais por falta de política.

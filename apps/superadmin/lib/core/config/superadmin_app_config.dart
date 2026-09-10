@@ -44,6 +44,18 @@ abstract final class SuperadminAppConfig {
     'COELO_ENABLE_STUDENT_LINK_COMMANDS',
     defaultValue: true,
   );
+
+  /// Liga os comandos de vínculo de aluno (vincular, transferir, editar e
+  /// revogar) contra o Supabase real.
+  ///
+  /// Chave própria, e não a de Cuidado e Rotina, por dois motivos: o SQL é
+  /// outro pacote (20260910140000) e pode ser aplicado em outro momento; e a
+  /// autorização destes comandos passa pelo realm people-based, que é
+  /// justamente o ponto que a OQ-043 deixou em aberto para os CRUDs anteriores
+  /// à ADR 0019. Ligar é uma decisão separada.
+  static const studentLinkCommandsEnabled = bool.fromEnvironment(
+    'COELO_ENABLE_STUDENT_LINK_COMMANDS',
+  );
   static const allowDevelopmentPreview = !kReleaseMode && environment == 'local';
 
   static bool get hasSupabaseConfig => supabaseUrl.isNotEmpty && supabasePublishableKey.isNotEmpty;

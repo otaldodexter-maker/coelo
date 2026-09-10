@@ -51,7 +51,79 @@ final class StudentLinkResult {
   final String status;
 }
 
+
+final class StudentGroupLink {
+  const StudentGroupLink({
+    required this.groupLinkId,
+    required this.groupId,
+    required this.groupName,
+    required this.status,
+    this.startsAt,
+    this.endsAt,
+  });
+
+  final String groupLinkId;
+  final String groupId;
+  final String groupName;
+  final String status;
+  final DateTime? startsAt;
+  final DateTime? endsAt;
+
+  bool get isActive => status == 'active';
+}
+
+final class StudentUnitLink {
+  StudentUnitLink({
+    required this.unitLinkId,
+    required this.unitId,
+    required this.unitName,
+    required this.status,
+    List<StudentGroupLink> groupLinks = const [],
+    this.acceptedAt,
+    this.revokedAt,
+  }) : groupLinks = List.unmodifiable(groupLinks);
+
+  final String unitLinkId;
+  final String unitId;
+  final String unitName;
+  final String status;
+  final List<StudentGroupLink> groupLinks;
+  final DateTime? acceptedAt;
+  final DateTime? revokedAt;
+
+  /// Revogar não apaga, então um vínculo revogado continua na lista e precisa
+  /// ser distinguido na tela em vez de sumir.
+  bool get isRevoked => status == 'revoked';
+  bool get isCurrent => status == 'active' || status == 'awaiting_allocation';
+}
+
+final class StudentLinks {
+  StudentLinks({
+    required this.childContextId,
+    required this.childPersonId,
+    required this.displayName,
+    required this.institutionId,
+    required this.canManage,
+    List<StudentUnitLink> unitLinks = const [],
+  }) : unitLinks = List.unmodifiable(unitLinks);
+
+  final String childContextId;
+  final String childPersonId;
+  final String displayName;
+  final String institutionId;
+
+  /// Ler onde a criança está é leitura de diretório; mover exige
+  /// `people.assign_children`. O servidor calcula os dois separadamente e a
+  /// tela só desenha as ações quando este for verdadeiro — sem nunca depender
+  /// disso para autorizar, porque a autorização é refeita em cada comando.
+  final bool canManage;
+  final List<StudentUnitLink> unitLinks;
+}
+
 abstract interface class StudentLinkRepository {
+  /// Lê onde a criança está hoje: unidades, turmas e vigências.
+  Future<StudentLinks> fetchLinks(String childContextId);
+
   /// Vincula a criança a uma unidade e, opcionalmente, a uma turma.
   ///
   /// Vincular de novo a mesma unidade reativa o vínculo que existe em vez de
@@ -113,6 +185,9 @@ final class UnavailableStudentLinkRepository implements StudentLinkRepository {
     StudentLinkFailureKind.unavailable,
     'A gestão de vínculo de alunos está indisponível neste ambiente.',
   );
+
+  @override
+  Future<StudentLinks> fetchLinks(String childContextId) async => _unavailable();
 
   @override
   Future<StudentLinkResult> link({

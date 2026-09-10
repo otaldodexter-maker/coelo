@@ -706,26 +706,25 @@ final class _FormSection extends StatelessWidget {
   final String description;
   final Widget child;
 
+  /// Cabeçalho de etapa no padrão administrativo, igual a Criar instituição.
+  ///
+  /// O Owner apontou em 10/09/2026 que o wizard de Perfis de cuidado não seguia
+  /// 100% o padrão, citando o contêiner interno. Era este: o título e a
+  /// descrição da etapa viviam dentro de um card com borda, enquanto em
+  /// Instituições eles são cabeçalho do corpo da página e só os grupos
+  /// auxiliares ganham card. Uma borda diz "objeto separado"; a etapa não é um
+  /// objeto dentro da página, ela é a página.
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return Container(
-      padding: const EdgeInsets.all(CoeloSpacing.space5),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(CoeloRadius.lg),
-        border: Border.all(color: colors.outlineVariant),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(title, style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: CoeloSpacing.space1),
-          Text(description, style: Theme.of(context).textTheme.bodyMedium),
-          const SizedBox(height: CoeloSpacing.space4),
-          child,
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(title, style: Theme.of(context).textTheme.headlineSmall),
+        const SizedBox(height: CoeloSpacing.space1),
+        Text(description, style: Theme.of(context).textTheme.bodyMedium),
+        const SizedBox(height: CoeloSpacing.space5),
+        child,
+      ],
     );
   }
 }

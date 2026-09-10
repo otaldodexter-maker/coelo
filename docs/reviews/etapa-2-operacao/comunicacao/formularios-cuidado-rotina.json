@@ -1,12 +1,12 @@
 {
- "revision": 18,
+ "revision": 22,
  "round": "E2-R03-20260910",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5[1m]",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-10T17:05:00-03:00",
+ "updatedAt": "2026-09-10T17:10:00-03:00",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-formularios-cuidado-rotina",
  "branch": "work/etapa2-r03-formularios-cuidado-rotina",
  "head": "1c188091f",
@@ -55,9 +55,9 @@
   "blocked": 0,
   "skipped": 0,
   "notRun": 0,
-  "pgtap": "1033 assercoes / 0 falhas em 24 arquivos, sobre a BASELINE DE PRODUCAO mais a fila de Formularios medida",
+  "pgtap": "1037 assercoes / 0 falhas sobre a baseline de producao (1033 mais 4 da leitura de vinculos)",
   "mudanca_de_base": "as 1021 assercoes anteriores foram medidas sobre um replay reconstruido da cadeia historica. A baseline publicada pelo coordenador e a base verdadeira, e refiz tudo sobre ela.",
-  "flutter": "214 nas suites que escrevi ou alterei; dart analyze lib limpo"
+  "flutter": "225 nas suites que escrevi ou alterei (113 daily_routine, 89 attendance, 7 cuidado/medicacao, 11 alunos, 5 repositorio de alunos); dart analyze lib limpo"
  },
  "reservedFiles": [],
  "blocking": [
@@ -70,7 +70,7 @@
   }
  ],
  "deltaProposals": [],
- "nextStep": "Aplicar as decisoes visuais D9 (goldens R/A e as seis referencias da Rotina) e as duas politicas de Local.",
+ "nextStep": "Retomada pelo Owner. Primeiro gate aberto: ligar as duas chaves de composicao e provar a rota normal contra producao por action_id.",
  "findings": [
   {
    "id": "F-R03-FCR-001",
@@ -291,14 +291,14 @@
   {
    "id": "PKG-R03-FCR-ALUNOS-01",
    "familia": "students",
-   "estado": "backend verde; contrato, repositorio e chave de composicao prontos; falta a tela",
+   "estado": "completo: backend, leitura, contrato, repositorio, tela e rota",
    "action_ids": [
     "students.link",
     "students.transfer",
     "students.edit",
     "students.revoke"
    ],
-   "migration": "packages/coelo_database/migrations/20260910220200_student_link_commands_v1.sql",
+   "migration": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260910220200_student_link_commands_v1.sql",
    "pgtap": "packages/coelo_database/supabase/tests/student_link_commands_v1_test.sql, 20/20",
    "estado_anterior": "as quatro acoes estao no MVP e o adiamento nao foi autorizado, mas nao existia comando nenhum: a leitura do diretorio ja estava qualificada e as escritas nunca sairam do papel. A rota /students/:childContextId/manage abre uma tela de indisponivel.",
    "o_que_o_pacote_faz": "quatro comandos sobre as tabelas que ja existem desde 20260720180000; nenhuma estrutura nova alem dos recibos.",
@@ -320,7 +320,21 @@
     "testes": "apps/superadmin/test/features/students/data/supabase_student_link_repository_test.dart, 5/5",
     "decisao_de_contrato": "instituicao nao aparece em nenhum dos tipos do dominio, e um teste prova que nenhum dos quatro comandos a envia. Ela e derivada do contexto infantil no banco; aceita-la do cliente permitiria mover a crianca de tenant.",
     "detalhe_de_editar": "o payload distingue 'nao mexa na data de fim' de 'apague a data de fim' pela PRESENCA da chave ends_at, nao pelo valor nulo. Sem isso, editar so o inicio apagaria o fim sem querer.",
-    "falta": "a tela em /students/:childContextId/manage, hoje um SuperadminErrorScreen de indisponivel. E a unica peca do recorte que fica sem implementacao minha."
+    "falta": "nada. A tela existe em /students/:childContextId/manage e a rota deixou de abrir indisponivel."
+   },
+   "tela": {
+    "arquivo": "apps/superadmin/lib/features/students/presentation/student_manage_page.dart",
+    "testes": "apps/superadmin/test/features/students/presentation/student_manage_page_test.dart, 6 casos; 11 no total da familia",
+    "leitura_nova": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260910220300_student_links_read_v1.sql, pgTAP 24/24",
+    "decisoes": [
+     "a tela mostra onde a crianca esta ANTES de oferecer as acoes: ninguem transfere ou revoga sem ver de onde",
+     "ler exige people.read; mover exige people.assign_children. O servidor calcula can_manage a parte e a tela so desenha; a autorizacao e refeita em cada comando",
+     "vinculo revogado continua na lista, porque revogar nao apaga, e o estado e dito por texto e nao so por cor",
+     "revogar pede motivo e confirma, porque o motivo vai para a auditoria e o efeito alcanca presenca, rotina e cuidado daquela unidade",
+     "o botao de confirmar so habilita com motivo preenchido, para nao gastar uma ida ao banco que voltaria como erro de validacao"
+    ],
+    "defeito_meu_que_o_teste_pegou": "eu descartava o TextEditingController assim que showDialog retornava. A animacao de saida ainda reconstroi o dialogo depois disso, e o campo tentava ouvir um controlador ja descartado. O controlador passou a viver dentro do dialogo.",
+    "nao_implementado_na_tela": "vincular, transferir e editar tem comando, contrato e repositorio prontos e provados, mas a tela so expoe revogar. Faltam os seletores de unidade e turma, que dependem de uma leitura de unidades e turmas do escopo que nao e minha."
    }
   }
  ],
@@ -351,15 +365,15 @@
   },
   {
    "ordem": 7,
-   "arquivo": "packages/coelo_database/migrations/20260910220200_student_link_commands_v1.sql"
+   "arquivo": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260910220200_student_link_commands_v1.sql"
   },
   {
    "ordem": 8,
-   "arquivo": "packages/coelo_database/migrations/20260910220000_health_care_guardian_read_v1.sql"
+   "arquivo": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260910220000_health_care_guardian_read_v1.sql"
   },
   {
    "ordem": 9,
-   "arquivo": "packages/coelo_database/migrations/20260910220100_forms_revoke_production_drift_v1.sql"
+   "arquivo": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260910220100_forms_revoke_production_drift_v1.sql"
   }
  ],
  "chaveDeComposicao": {
@@ -499,7 +513,7 @@
    "achado": "anon podia executar form_authorize_file_job_download e authenticated podia executar form_redeem_file_job_download",
    "gravidade": "este e o unico dos quatro que NAO dependia de um segundo erro para importar. O resgate do token e server-side por contrato: quem resgata e o service_role, nao o navegador."
   },
-  "correcao": "packages/coelo_database/migrations/20260910220100_forms_revoke_production_drift_v1.sql. Forward-only e mecanica: so revoga, nao cria, nao altera corpo de funcao e nao mexe em RLS. Se algum caminho legitimo dependia de grant direto, ele falha fechado e aparece.",
+  "correcao": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260910220100_forms_revoke_production_drift_v1.sql. Forward-only e mecanica: so revoga, nao cria, nao altera corpo de funcao e nao mexe em RLS. Se algum caminho legitimo dependia de grant direto, ele falha fechado e aparece.",
   "resultado": "as quatro assercoes ficam verdes; o recorte inteiro vai a 1033 ok e 0 not ok sobre a baseline de producao."
  },
  "decisoesDoOwnerD9": {
@@ -507,7 +521,7 @@
   "saude_alem_da_instituicao": {
    "resposta": "opcao 1: o responsavel autorizado le o perfil de cuidado e os planos da propria crianca",
    "estado": "implementado e provado",
-   "migration": "packages/coelo_database/migrations/20260910220000_health_care_guardian_read_v1.sql",
+   "migration": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260910220000_health_care_guardian_read_v1.sql",
    "pgtap": "packages/coelo_database/supabase/tests/health_care_guardian_read_v1_test.sql, 12/12",
    "tres_limites": [
     "somente leitura: o ramo de guardiao so existe para health_care.read e medication.read",
@@ -523,7 +537,38 @@
    "Local com opcoes fixas na publicacao",
    "Local revogado exige local atual",
    "seis referencias da Rotina = modelo de atividade"
-  ]
+  ],
+  "goldens": {
+   "profile_form_mobile_light": {
+    "decisao": "A",
+    "observacao_aplicada": "o Owner disse que o wizard nao segue 100% o padrao e citou o conteiner interno. Era o _FormSection de health_care_form_pages.dart: titulo e descricao da etapa viviam dentro de um card com borda. Em Criar instituicao eles sao cabecalho do corpo da pagina (headlineSmall) e so os grupos auxiliares ganham card. Uma borda diz 'objeto separado', e a etapa nao e um objeto dentro da pagina: ela e a pagina.",
+    "estado": "alinhado ao padrao e golden regravado"
+   },
+   "profile_form_desktop_dark": {
+    "decisao": "A, seguindo a skill coelo-ui",
+    "estado": "mesma correcao, golden regravado"
+   },
+   "medication_form_mobile_light": {
+    "decisao": "R",
+    "estado": "NAO aplicado; conflito levado ao coordenador",
+    "por_que_nao_apliquei": "R manda o codigo voltar a referencia, e a referencia tem o rodape DENTRO do scroll: Cancelar fica cortado no fim da tela e so aparece rolando. O render atual tem o rodape ancorado, que e exatamente o que a regra RODAPE do mesmo dia 10/09 pediu, e e o que o golden APROVADO de Criar instituicao em 375 px faz. Naquele golden aprovado o rodape ancorado tambem corta o card de imagem atras dele, e isso e a referencia. Aplicar R aqui desfaria a RODAPE so nesta tela e a afastaria do padrao que ela deveria seguir.",
+    "o_que_o_owner_pode_ter_visto": "no render atual a linha 'Envio indisponivel neste contexto.' fica fatiada na fronteira do scroll com o rodape. E o mesmo efeito do golden de Instituicoes, mas ali quem e cortado e um card e aqui e uma linha de texto, o que le pior.",
+    "proposta": "manter o rodape ancorado e resolver a fatia, em vez de voltar o rodape para dentro do scroll: reservar respiro no fim do conteudo para a fronteira nao cair no meio de uma linha de texto. Preciso da confirmacao antes de mexer, porque o componente e compartilhado e a mudanca alcanca todos os formularios."
+   }
+  },
+  "seis_referencias_da_rotina": {
+   "resposta": "sao as do modelo de atividade, aplicadas ao modelo de rotina diaria",
+   "consequencia": "nao existem seis goldens de rotina esperando regravacao por conta propria. O editor de modelo de Rotina segue a familia visual do modelo de atividade.",
+   "registrado_em": ".agents/skills/coelo-ui/references/approved-superadmin-visual-baselines.md"
+  },
+  "local_no_formulario": {
+   "opcoes_fixas_na_publicacao": "opcao 1, decidida",
+   "local_revogado_exige_local_atual": "opcao 2, decidida",
+   "registrado_em": "docs/superpowers/specs/2026-08-13-superadmin-forms-end-to-end-design.md",
+   "conflito_de_escopo_que_impede_implementar": "o tipo location NAO existe: a constraint de form_items.kind em producao aceita short_text, integer, decimal, money, date, yes_no, single_choice, multiple_choice, scale, photo, gallery e information, e nada no cliente trata local em Formularios. A secao 'Fora de escopo' da propria spec lista localizacao como fora do MVP. A politica esta decidida, mas implementa-la exige antes uma decisao de escopo do Owner sobre trazer location para dentro do MVP.",
+   "caso_ainda_aberto": "pergunta obrigatoria, local revogado e NENHUMA alternativa valida na lista congelada. A opcao 2 obriga um local atual, e nesse caso nao existe nenhum.",
+   "estado_das_duas_acoes": "forms.location-question e forms.location-answer continuam bloqueadas, agora por escopo e nao mais por falta de politica."
+  }
  },
  "filaFormulariosMedida": {
   "medida_sobre": "baseline de producao mais seed, por psql",
@@ -552,5 +597,44 @@
    "20260910160000_forms_revoke_production_drift_v1 -> 20260910220100_forms_revoke_production_drift_v1"
   ],
   "colisao_que_nao_e_minha": "20260910120000 aparece duas vezes na pasta: meal_plan_image_delete_requires_revision_v1 e superadmin_internal_circular_delete_v1, de dois outros grupos. Nao renomeei nada alheio; fica o aviso."
+ },
+ "layoutDosPacotes": {
+  "regra": "pacote novo nasce em packages/coelo_database/candidatos/<grupo>/ e o coordenador move para migrations/ no commit em que aplica em producao",
+  "recebida_de": "coordenador, 2026-09-10",
+  "meus_candidatos": [
+   "20260910220000_health_care_guardian_read_v1.sql",
+   "20260910220100_forms_revoke_production_drift_v1.sql",
+   "20260910220200_student_link_commands_v1.sql"
+  ],
+  "ja_em_migrations_porque_ja_aplicados": [
+   "20260910010000 a 20260910010500, lote 2, aplicados em producao as 16:03"
+  ]
+ },
+ "handoff": "docs/reviews/etapa-2-operacao/comunicacao/formularios-cuidado-rotina-handoff.md",
+ "ledgerRemoto": {
+  "conferido_por": "supabase migration list --linked, 2026-09-10",
+  "meus_pacotes_em_producao": [
+   "20260910010000",
+   "20260910010100",
+   "20260910010200",
+   "20260910010300",
+   "20260910010400",
+   "20260910010500",
+   "20260910220000",
+   "20260910220100",
+   "20260910220200"
+  ],
+  "fila_de_formularios_em_producao": "20260910230001 a 20260910230011, onze entradas, que batem com as duas de Estrutura mais as nove de Formularios que eu havia medido",
+  "conclusao": "o backend do recorte inteiro esta aplicado em producao: rotina, assiduidade, cuidado, medicacao, alunos e formularios"
+ },
+ "provaHttpQueNaoProvaDeploy": {
+  "o_que_fiz": "chamei quatro RPCs com a chave publicavel; todas responderam HTTP 404",
+  "o_que_isso_diz": "e o esperado para funcao que anon nao pode executar, porque o PostgREST esconde o que o papel nao alcanca",
+  "o_que_isso_NAO_diz": "404 nao distingue negado de ausente. Quem prova a implantacao e o ledger, nao essa chamada. Registrado aqui para ninguem citar o 404 como prova de deploy nem como prova de negativa."
+ },
+ "fechamento": {
+  "motivo": "corte das 17:10 por ordem do Owner; nao retomo por conta propria",
+  "working_tree": "limpo, tudo commitado e publicado",
+  "wip_retido": "nenhum"
  }
 }
