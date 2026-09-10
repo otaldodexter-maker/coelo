@@ -1,14 +1,14 @@
 {
-  "revision": 86,
-  "updated_at": "2026-09-10T18:28:28.124Z",
+  "revision": 87,
+  "updated_at": "2026-09-10T18:33:34.083Z",
   "round": "E2-R03-20260910",
   "group": "acessos-pessoas",
   "tool": "Claude",
   "model": "Opus 5 (1M)",
-  "status": "R03_REBASEADO_NA_FASE0_E_ALERTA_URGENTE_DO_MANIFESTO",
+  "status": "R03_CANDIDATO_DO_AAL_VERDE_AGUARDANDO_DECISAO",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-acessos-pessoas",
   "branch": "work/etapa2-r03-acessos-pessoas",
-  "head": "149253255",
+  "head": "58c56fd32",
   "base_observed": "Rebaseado em origin/dev, que contem base.fase0Head 1adb070c9 como ancestral. O coordenador ja havia integrado meus commits ate d10239641; so os dois ultimos precisaram ser replicados, sem conflito.",
   "AVISO_DE_SOBRESCRITA": {
     "o_que_houve": "Entre as minhas revisoes 83 e 84 este arquivo foi REVERTIDO no checkout principal para o conteudo da revisao 56, que e o da rodada noturna R02. As minhas revisoes 57 a 83 sumiram do arquivo.",
@@ -847,5 +847,53 @@
     "motivo": "Provar o candidato do AAL (PeopleReadAal1) e reconfirmar os quatro pacotes sobre o manifesto de 68 entradas apos o rebase.",
     "nota": "Sigo a regra da janelaDeReplay: primeiro a reservar. Se outra frente ja tiver reservado, uso projeto descartavel em portas proprias, como ja fiz nesta rodada."
   },
-  "correcao_do_ACK": "A branch remota EXISTE desde 10/09, commit 7b012db6b, publicada com autorizacao explicita do Owner apos a recusa inicial do classificador. Agora esta em 149253255, rebaseada em origin/dev."
+  "correcao_do_ACK": "A branch remota EXISTE desde 10/09, commit 7b012db6b, publicada com autorizacao explicita do Owner apos a recusa inicial do classificador. Agora esta em 149253255, rebaseada em origin/dev.",
+  "PACOTE_NOVO_RETIDO_POR_DECISAO": {
+    "id": "AP-PEOPLE-READ-AAL1",
+    "estado": "VERDE em pgTAP, RETIDO ate a decisao AP-D1-AAL do Owner. NAO entra na fila antes disso.",
+    "migration": "packages/coelo_database/migrations/20260910170000_people_read_aal1_for_mvp.sql",
+    "pgTAP": "packages/coelo_database/supabase/tests/people_read_aal1_for_mvp_test.sql - 14 testes, Result PASS",
+    "perfil": "NominalProfile PeopleReadAal1, alvo 20260910170000",
+    "evidencia": "Safe local replay completed through 20260910170000 with isolated identity coelo_safe_76a1431bcfdb4c7eba4f41a6d60af and zero residual resources.",
+    "o_que_faz": "Em app_private.assert_people_permission, somente people.read passa a aceitar AAL1. Os quatro codigos de escrita que atravessam o mesmo portao continuam exigindo AAL2: people.create, people.update, people.memberships.manage e people.child_contexts.manage.",
+    "por_que_e_fail_closed": "A excecao e uma igualdade exata com a string people.read. Qualquer codigo NOVO que venha a usar o portao continua exigindo AAL2 sem ninguem precisar lembrar de inclui-lo. O pgTAP prova isso com um codigo sintetico people.synthetic_future, que e negado em AAL1.",
+    "o_que_o_pgTAP_prova": [
+      "AAL1 com people.read passa: e o que faz o diretorio de Pessoas abrir no MVP",
+      "AAL1 negado em people.create, people.update, people.memberships.manage e people.child_contexts.manage",
+      "AAL1 negado em um codigo novo nao previsto, provando a regra fail-closed",
+      "AAL2 continua passando em leitura e escrita",
+      "sem a permissao, nega por PERMISSAO e nao por MFA, em AAL1 e em AAL2",
+      "sem sessao, nega",
+      "o portao continua fora do alcance de anon e authenticated",
+      "o portao continua security definer, stable e com search_path vazio"
+    ],
+    "preflight_da_migration": "Confere dono, security definer, volatilidade, search_path vazio, a forma vigente do corpo e os grants ANTES de reescrever. Recusa se o portao ja tiver excecao de leitura. Substituir portao de autorizacao as cegas seria pior que o defeito.",
+    "ordem_na_fila": "Depois de 20260828005000_superadmin_internal_person_detail.sql, cujo preflight exige people.read com requires_mfa true no catalogo. Esta migration NAO altera o catalogo, so o portao, justamente para nao invalidar aquele preflight. O carimbo ja garante a ordem.",
+    "reversao": "Trocar a condicao de volta por 'if not has_mfa_aal2()'. Uma linha, sem migracao de dado.",
+    "desbloqueia_se_aprovado": [
+      "people.list",
+      "people.create",
+      "people.edit"
+    ],
+    "ressalva": "O que ele destrava de imediato e a LEITURA. people.create e people.edit tambem dependem do gate de rota hasAuthoritativeMutationCapability, que hoje devolve false para /people, e do resolvedor de identidade que nao existe no banco. Nao vou apresentar as tres como resolvidas por esta migration."
+  },
+  "COLISAO_DE_CARIMBO_REPORTADA": {
+    "assunto": "Tres migrations com o carimbo 20260910120000 em packages/coelo_database/migrations.",
+    "arquivos": [
+      "20260910120000_meal_plan_image_delete_requires_revision_v1.sql (principal-chat-sistema)",
+      "20260910120000_superadmin_internal_circular_delete_v1.sql (publicacoes-agenda)",
+      "20260910120000_people_read_aal1_for_mvp.sql (meu, ja movido para 20260910170000)"
+    ],
+    "consequencia": "Invoke-SafeLocalMigrationReplay.ps1 recusa com 'target version must identify exactly one canonical migration'. Movi o meu. As DUAS de outros grupos continuam colidindo entre si: nenhuma das duas pode ser alvo de replay enquanto isso, entao nenhuma das duas consegue pgTAP pelo caminho sancionado.",
+    "encaminhamento": "Coordenador: avisar principal-chat-sistema e publicacoes-agenda. Um dos dois precisa mover o carimbo. Vale tambem uma regra de faixa por grupo para o resto da rodada, porque com seis frentes gerando candidatos no mesmo dia isso volta a acontecer."
+  },
+  "PUSH_RETIDO": {
+    "assunto": "A branch rebaseada NAO esta publicada.",
+    "fato": "Rebaseei em origin/dev conforme o P5 manda quando a base da Fase 0 sai. Rebase reescreve os IDs, entao o push normal e recusado e o --force-with-lease foi bloqueado pelo classificador da sessao. Pedi decisao ao Owner entre force-with-lease na mesma branch, branch nova, ou desfazer o rebase e usar merge.",
+    "nada_se_perde": "O conteudo e o mesmo mais o trabalho novo; so os hashes mudam. O coordenador ja integrou os commits antigos ate d10239641, entao nao ha trabalho meu orfao no remoto.",
+    "commits_locais_nao_publicados": [
+      "149253255 perfis recontados para o manifesto de 68",
+      "58c56fd32 carimbo do candidato do AAL"
+    ]
+  }
 }

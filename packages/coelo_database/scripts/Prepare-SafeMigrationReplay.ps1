@@ -177,10 +177,10 @@ if ($NominalProfile) {
   }
   if ($NominalProfile -ceq 'SafetyInternalReads53') {
     $localBridges = @($nominal.LocalBridges)
-    if ($canonical.Count -ne 50 -or $additionalCanonical.Count -ne 5 -or
+    if ($canonical.Count -ne 51 -or $additionalCanonical.Count -ne 5 -or
         $preflight.Count -ne 2 -or $localBridges.Count -ne 1 -or
         $localBridges[0].Name -cne '20260908051499_child_directory_error_envelope_bridge.sql') {
-      throw 'SafetyInternalReads53 requires Auth45 plus Safety5, two preflights and one inherited envelope bridge'
+      throw 'SafetyInternalReads53 requires Auth46 plus Safety5, two preflights and one inherited envelope bridge'
     }
   }
   if ($NominalProfile -eq 'ChildDirectoryEnvelope') {
