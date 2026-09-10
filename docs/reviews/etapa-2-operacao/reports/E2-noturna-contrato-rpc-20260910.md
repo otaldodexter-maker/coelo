@@ -2,7 +2,7 @@
 fonte: medicao propria sobre a worktree e2-noturna-operacoes-sistema
 status: medido
 data: 2026-09-10
-base: fa4b968a3
+base: b1ec93103
 autor: executor operacoes-sistema (Claude)
 ---
 
@@ -59,6 +59,27 @@ Consequencia, nas duas leituras possiveis, ambas reportaveis:
 2. nao existem, e entao o diretorio de Unidades e os filtros de instituicao e
    unidade de Turmas falham no primeiro uso real, fail-closed.
 
+### Qual das duas leituras e mais provavel
+
+Continuo sem escolher, mas a plausibilidade deixou de ser simetrica, e o dado vem
+de outra frente. A hipotese "instalado fora do versionamento" e **fenomeno medido
+neste repositorio**, e nao especulacao: a frente perfil-para-voce mostrou que as
+tabelas `profile_about_*` existem em producao e em migration nenhuma, provado pela
+RPC de escrita versionada que le e escreve nelas. Ha precedente comprovado do
+mesmo padrao no mesmo pacote.
+
+A consequencia pratica para a decisao do Owner: se a leitura benigna for a
+correta, `blocked-environment` descreve a coisa certa pelo motivo errado — a
+superficie funciona e o que falta e revisabilidade do que esta instalado. As duas
+leituras pedem acoes opostas, e e por isso que a pergunta precisa ser respondida
+antes de promover qualquer coisa.
+
+E ela se resolve de uma vez para tres frentes: um unico `select proname from
+pg_proc` responde pelas cinco RPCs de Unidades deste relatorio, pelas cinco de
+Assiduidade levantadas por alunos-rotina e pelos 40 objetos `app_private` que o
+SQL versionado chama e nao cria, medidos por perfil-para-voce. E leitura, nao
+mutacao.
+
 Nao e possivel decidir entre as duas daqui: a rodada decidiu nao executar
 operacao remota e nao ha autorizacao nominal do Owner para leitura de producao.
 Um `select` de catalogo resolveria em segundos e e exatamente o que a proxima
@@ -104,15 +125,17 @@ tal no teste, nao silenciadas.
 
 ## O que passa a impedir a regressao
 
-`apps/superadmin/test/contracts/rpc_contract_test.dart`, 3 PASS, roda em menos de
+`apps/superadmin/test/contracts/rpc_contract_test.dart`, 4 PASS, roda em menos de
 um segundo e sem binding de Flutter. Ele falha se alguem chamar uma RPC que o
-pacote nao cria, se enviar chave fora da assinatura ou se omitir parametro
-obrigatorio de todas as sobrecargas. As cinco ausencias do Achado 1 estao numa
+pacote nao cria, se enviar chave fora da assinatura, se omitir parametro
+obrigatorio de todas as sobrecargas, ou se o cliente ler direto por PostgREST uma
+relacao que o pacote nao cria — as tres tabelas `profile_about_*` estao nessa
+quarta lista, com o plano de leitura autorizada citado. As cinco ausencias do Achado 1 estao numa
 lista nomeada com motivo, e o teste **tambem falha se uma delas passar a existir**
 e continuar na lista — sem isso a lista envelheceria e passaria a esconder o
 proximo defeito.
 
-Controle negativo rodado nos tres casos: removi um nome da lista e o primeiro
+Controle negativo rodado nos quatro casos: removi um nome da lista e o primeiro
 teste acusou `list_units_for_superadmin`; troquei `p_import_job_id` por um nome
 inexistente numa chamada real e o segundo e o terceiro testes acusaram a chave
 extra e a obrigatoria omitida, com arquivo e linha. Revertidos em seguida.
