@@ -1,5 +1,5 @@
 {
-  "revision": 8,
+  "revision": 9,
   "updated_at": "2026-09-10T09:30:00-03:00",
   "round": "E2-R03-20260910",
   "group": "operacoes",
@@ -41,6 +41,7 @@
       ],
       "commit_sha": "b172b695b8d996375fc7da7a539ed7ee78dc7e35",
       "integration_commit_sha": "b02478937",
+      "backend_revision_commit_sha": "9ae607fca",
       "delta": "adicionada camada server-side sobre support_sessions existente: campos de ticket, revisao otimista, receipts de idempotencia, list/detail/create/reply/set_status, acoes em audit.support_session_actions, RLS deny-by-default e grants somente por RPC authenticated",
       "composition_key_candidate": "supportProductionRepositoryV1",
       "criteria": {"frontend": "P(tabela/kanban/detalhe e rota de producao)", "backend": "P(adapter RPC; pgTAP pendente)", "e2e": "N", "reload": "N", "cross_tenant": "pgTAP pendente de replay nominal"}
@@ -85,10 +86,10 @@
       "criteria": {"frontend": "N/A", "backend": "N/A", "e2e": "N/A"}
     }
   ],
-  "tests": {"P": 5, "F": 0, "B": 2, "S": 0, "U": 1, "evidence": ["support-contract-static PASS: required RPCs=5, receipt=idempotency, audit schema=correct, RLS=force, test=22 assertions", "account-contract-static PASS: RPCs=3, email request, idempotency receipt, auth email read, forced RLS, test=16 assertions", "plans-audit-contract-static PASS: plans=3 RPCs + forced RLS; audit=list/filter/detail + deferred export revoke; tests present", "account Flutter analyzer PASS: apps/superadmin; only pre-existing info at router line 908", "account Flutter tests PASS: controller/profile/settings 56; account routes 5", "support Flutter analyzer PASS: targeted production/support files", "support Flutter tests PASS: controller/page/routes 51; follow-up controller/routes 30", "supabase db lint --local BLOCKED: ECONNREFUSED 127.0.0.1:54322", "supabase start --workdir packages/coelo_database BLOCKED before support migration: 20260820152528_form... fails SQLSTATE 3F000 because schema app_private is absent"], "planned": ["pgTAP nominal de conta, planos, auditoria e suporte", "preflight da migration na fila serializada", "flutter tests de Planos/Auditoria/Suporte", "E2E Supabase real apos migrations aplicadas pelo coordenador"]},
+  "tests": {"P": 6, "F": 0, "B": 2, "S": 0, "U": 1, "evidence": ["support-contract-static PASS: required RPCs=5, receipt=idempotency, audit schema=correct, RLS=force, test=22 assertions", "support-create-scope-static PASS: internal institution-null create path + 23 assertions", "account-contract-static PASS: RPCs=3, email request, idempotency receipt, auth email read, forced RLS, test=16 assertions", "plans-audit-contract-static PASS: plans=3 RPCs + forced RLS; audit=list/filter/detail + deferred export revoke; tests present", "account Flutter analyzer PASS: apps/superadmin; only pre-existing info at router line 908", "account Flutter tests PASS: controller/profile/settings 56; account routes 5", "support Flutter analyzer PASS: targeted production/support files", "support Flutter tests PASS: controller/page/routes 51; follow-up controller/routes 30", "audit production route tests PASS: 2", "supabase db lint --local BLOCKED: ECONNREFUSED 127.0.0.1:54322", "supabase start --workdir packages/coelo_database BLOCKED before support migration: 20260820152528_form... fails SQLSTATE 3F000 because schema app_private is absent"], "planned": ["pgTAP nominal de conta, planos, auditoria e suporte", "preflight da migration na fila serializada", "flutter tests de Planos/Auditoria/Suporte", "E2E Supabase real apos migrations aplicadas pelo coordenador"]},
   "blocked": [
     {"kind": "verification", "what": "nenhum replay pgTAP local nominal executado ainda; reset completo falha antes do pacote por schema app_private ausente na cadeia canonica", "owner": "coordenador/base de replay", "unblocks": "base/replay nominal corrigido ou perfil descartavel que inclua schema app_private; migration e teste ja estao no pacote"}
   ],
   "next_step": "coordenador deve aplicar/reconciliar os pacotes SQL na fila; em seguida executar replay pgTAP e E2E Supabase real das 21 acoes, começando por Conta e seguindo Planos, Auditoria e Suporte; sem declarar aceite ponta a ponta antes do replay",
-  "commits": ["b172b695b8d996375fc7da7a539ed7ee78dc7e35", "94bca84f6", "5611c6da7", "ce4939227", "b02478937"]
+  "commits": ["b172b695b8d996375fc7da7a539ed7ee78dc7e35", "94bca84f6", "5611c6da7", "ce4939227", "b02478937", "9ae607fca"]
 }
