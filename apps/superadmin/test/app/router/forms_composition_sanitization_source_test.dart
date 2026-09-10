@@ -33,18 +33,36 @@ void main() {
     }
   });
 
+  // Este teste ficou para tras quando a composicao avancou. Ele exigia que
+  // monitor, responses, responseDetail e files continuassem const sem api,
+  // mas as quatro foram deliberadamente compostas com api real sob
+  // withFormsAuthorization. O contrato de comportamento que passou a valer e
+  // forms_fail_closed_routes_test: la as quatro declaram readsFromApi e
+  // exigem expect(api.calls, 1), enquanto /test e /respond exigem 0.
+  //
+  // Quando dois testes se contradizem, o comportamental e o autoritativo. As
+  // quatro literais saem daqui e sao substituidas pela verificacao de que a
+  // composicao delas passa por withFormsAuthorization. Nao reverter para as
+  // literais const sem antes mudar forms_fail_closed_routes_test.
   test('production routes use real fail-closed Forms surfaces', () {
-    for (final surface in const [
-      'const FormsTestPage()',
-      'const FormsOperationsPage.monitor()',
-      'const FormResponsePage()',
-      'const FormsOperationsPage.responses()',
-      'const FormsOperationsPage.responseDetail()',
-      'const FormsOperationsPage.files()',
-      'FormsMediaPage(',
-    ]) {
+    // Continuam fail-closed por contrato: montam a pagina real sem api.
+    for (final surface in const ['const FormsTestPage()', 'const FormResponsePage()']) {
       expect(router, contains(surface), reason: surface);
     }
+    expect(router, contains('FormsMediaPage('));
+
+    // Compostas com api real, e por isso protegidas pela guarda de sessao.
+    for (final surface in const [
+      'FormsOperationsPage.monitor(',
+      'FormsOperationsPage.responses(',
+      'FormsOperationsPage.responseDetail(',
+      'FormsOperationsPage.files(',
+    ]) {
+      expect(router, contains(surface), reason: surface);
+      expect(router, isNot(contains('const $surface)')), reason: 'const $surface');
+    }
+    expect('withFormsAuthorization('.allMatches(router).length, greaterThanOrEqualTo(4));
+
     expect(router, isNot(contains('_unavailableFormsRoute')));
     expect(router, isNot(contains('FormsRouteCapabilities')));
     expect(router, isNot(contains('formsCapabilities')));
@@ -59,7 +77,7 @@ void main() {
     ]) {
       expect(router, contains('SuperadminRoutes.$routeName'), reason: routeName);
     }
-    expect(router, contains('const FormsOperationsPage.files()'));
+    expect(router, contains('FormsOperationsPage.files('));
     expect(router, contains('developmentStore: developmentFormsFilesStore'));
     expect(router, contains('FormsMediaPage('));
     expect(router, contains('FormsMediaPage.development('));
