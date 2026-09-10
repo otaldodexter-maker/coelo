@@ -1,0 +1,99 @@
+{
+    "generated_at":  "2026-09-09T22:20:55.7989905-03:00",
+    "scope":  "apps/superadmin \u003e Turmas \u003e diretorio cards/tabela \u003e visualizar detalhe",
+    "status":  "local-green-composition-gates-preserved",
+    "counts":  {
+                   "S":  0,
+                   "F":  0,
+                   "N":  4,
+                   "B":  0,
+                   "U":  0,
+                   "E":  4,
+                   "P":  4
+               },
+    "changes":  [
+                    "GroupDirectoryPage recebe onView opcional; onEdit preferencial preservado; callback interno usa onEdit??onView.",
+                    "Card usa semântica neutra Abrir turma, sem rotular leitura como edição. Nenhuma composição visual nova.",
+                    "Hunk13linhas do router normal encaminha ID da linha para groupDetailName quando groups.read; callback retido revalida sessão/recovery/capacidade.",
+                    "Não ativa UnavailableGroupDirectoryRepository, structureMutations, getters ou writers."
+                ],
+    "commands":  {
+                     "analyzer":  "rtk proxy dart analyze lib/features/groups/presentation/group_directory_page.dart lib/app/router/superadmin_router.dart test/features/groups/presentation/group_directory_page_test.dart test/app/router/group_routes_test.dart",
+                     "directory":  "rtk proxy flutter test --no-pub test/features/groups/presentation/group_directory_page_test.dart --plain-name \"group directory detail entry\" --concurrency=1 --reporter expanded",
+                     "combined":  "rtk proxy flutter test --no-pub test/features/groups/presentation/group_directory_page_test.dart test/app/router/group_routes_test.dart --name \"group directory (detail entry|entry opens injected detail)\" --concurrency=1 --reporter expanded",
+                     "visual":  "rtk proxy dart run tool/validate_admin_visual_contracts.dart C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura assets/admin-visual-contract-allowlist.json",
+                     "route":  "rtk proxy flutter test --no-pub test/app/router/group_routes_test.dart --plain-name \"group directory entry opens injected detail\" --concurrency=1 --reporter expanded"
+                 },
+    "runners":  [
+                    {
+                        "chunks":  [
+                                       "1a58ae",
+                                       "dfab5a",
+                                       "c44358"
+                                   ],
+                        "result":  "1P2F: onView não encaminhado em card/tabela; editar preferencial já P. Parâmetro opcional foi adicionado como scaffold antes RED, sem comportamento.",
+                        "id":  70759,
+                        "exit":  1
+                    },
+                    {
+                        "chunks":  [
+                                       "cfe599",
+                                       "c76cbc",
+                                       "90ab10"
+                                   ],
+                        "result":  "0P1F: clique permaneceu em /groups em vez do detalhe UUID.",
+                        "id":  53216,
+                        "exit":  1
+                    },
+                    {
+                        "chunks":  [
+                                       "218853",
+                                       "4f5888",
+                                       "f9b7e4"
+                                   ],
+                        "result":  "3P1F: diretório verde; rota abriu ID correto sem escrita, mas negativa revogou read com detalhe aberto e disparou nova leitura do fluxo de detalhe existente. Residual separado informado ao root.",
+                        "id":  38021,
+                        "exit":  1
+                    },
+                    {
+                        "chunks":  [
+                                       "7eec5a",
+                                       "887249"
+                                   ],
+                        "result":  "1P: rota+callback retido revogado, agora negativa isolada na lista após voltar do detalhe. Soma única4P; diretório3P reutilizado por hashes.",
+                        "id":  51239,
+                        "exit":  0
+                    },
+                    {
+                        "chunks":  [
+                                       "242f41",
+                                       "4179e2"
+                                   ],
+                        "result":  "No issues found!",
+                        "id":  55153,
+                        "exit":  0
+                    },
+                    {
+                        "chunks":  [
+                                       "0bc317",
+                                       "233e7c"
+                                   ],
+                        "result":  "Visual contract gate exit0",
+                        "id":  54579,
+                        "exit":  0
+                    }
+                ],
+    "evidence":  "Saídas reais via tool runner/report; saída bruta não persistida. Sem somar reruns.",
+    "limitations":  [
+                        "Alcance implementado localmente; repositório produtivo da lista continua Unavailable. Não afirmar navegação produtiva E2E disponível.",
+                        "Backend Group detail autoriza toda leitura; teste de revogação com detalhe aberto indicou segunda chamada, não vazamento demonstrado. Gate UI de read no detalhe é residual separado para root.",
+                        "Sem remote/SQL/Auth/shell/main/deploy/commit.",
+                        "Sem novo layout ou golden; semântica de edição passa a Abrir turma preservando callback de edição."
+                    ],
+    "hashes":  {
+                   "apps/superadmin/test/features/groups/presentation/group_directory_page_test.dart":  "676596641CB5EB4E7DD6123537AB67F0CE80BFCC315953FFE95A030101E7BD1A",
+                   "apps/superadmin/test/app/router/group_routes_test.dart":  "EADFFF8949FF71485F173973A338AC58532A216E963B5621FC41EE80489D843D",
+                   "apps/superadmin/lib/features/groups/presentation/group_directory_page.dart":  "86296FFB273B17DB5B71926C093E5ECF75B92C27EBC6C1CE50E927C361611C17",
+                   "apps/superadmin/lib/app/router/superadmin_router.dart":  "59878155908A38A75A5415E601DB44746CAA744F462C01733E97C63119541528"
+               }
+}

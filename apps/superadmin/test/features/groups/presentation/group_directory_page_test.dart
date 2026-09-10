@@ -12,6 +12,45 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final mode in ['card', 'table', 'edit-preferred']) {
+    testWidgets('group directory detail entry $mode', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1440, 1000));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final repository = FakeGroupDirectoryRepository(FakeInstitutionDirectoryRepository());
+      final first = repository.records.first;
+      final viewed = <String>[];
+      final edited = <String>[];
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoeloTheme.light,
+          home: GroupDirectoryPage(
+            repository: repository,
+            logout: () async => const LogoutResult.success(),
+            onView: viewed.add,
+            onEdit: mode == 'edit-preferred' ? edited.add : null,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      if (mode == 'table') {
+        await tester.tap(find.byKey(const Key('group-view-table')));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(Key('group-table-row-${first.id}')));
+      } else {
+        final card = find.byKey(Key('group-card-${first.id}'));
+        if (mode == 'card') {
+          expect(
+            tester.widget<CoeloAdminInteractiveCard>(card).semanticLabel,
+            'Abrir turma ${first.name}',
+          );
+        }
+        await tester.tap(card);
+      }
+      expect(viewed, mode == 'edit-preferred' ? isEmpty : [first.id]);
+      expect(edited, mode == 'edit-preferred' ? [first.id] : isEmpty);
+      expect(tester.takeException(), isNull);
+    });
+  }
   testWidgets('renders confirmed group fields and switches to the canonical table', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
