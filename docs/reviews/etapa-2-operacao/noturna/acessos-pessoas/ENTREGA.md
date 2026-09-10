@@ -12,7 +12,7 @@ Convites, Usuarios internos, Seguranca infantil e Arquivos de perfil`.
 1 gate MFA. ADR0019/AAL1, import/export adiados, duplicacao R02 e confinamento
 de Convites preservados. Somente Claude integra dev e escreve rastreadores.
 
-Resultado local unico: **430P,4F,0S,120U**; U120=Safety108+concorrenciaModelos12.
+Resultado local unico: **430P,5F,0S,120U**; U120=Safety108+concorrenciaModelos12.
 [Contagem por conjunto](current-results.json) separa testes de PNGs, preparacao
 7P e historico R02. Nenhum certificado FE/BE/E2E novo; historico FE2/38 refere-se
 aos adiamentos. Ativos FE0/31,BE0/31,E2E0/31. Nao e medicao atual da suite ampla.
@@ -116,3 +116,8 @@ duas composicoes. Sao causas compartilhadas reservadas a Claude. Token declarado
 difere da amostragem de contraste; apurar render/estilo antes de mudar token global.
 Sonda exata e logs publicados fora da suite regular, quatro falhas mantidas na
 contagem atual. Loading e overflow da triagem d784 nao reproduzidos na base6aa.
+
+Convites: [rotulo nativo](invite-labels/handoff.md)0P1F, c30f28d42.
+No longPress128x48 semlabel identificado porancestrais no SuperadminDirectoryViewToggle
+compartilhado, nao devtools. Proposta nominal ao coordenador sem editarshared.
+Total atual430P5F0S120U; cincofalhasdiagnosticas abertas, semskipoculto.

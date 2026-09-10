@@ -1,5 +1,5 @@
 {
-    "through":  "8f3905819",
+    "through":  "c30f28d42",
     "branch":  "work/etapa2-noturna-acessos-pessoas",
     "commits":  [
                     {
@@ -133,9 +133,17 @@
                     {
                         "sha":  "8f3905819e5e4586b820329ebb7f7351bb981e4b",
                         "subject":  "test(safety): verify loaded development route reflow on integrated base"
+                    },
+                    {
+                        "sha":  "6f4c24c03c908ba25af8ca758fdf1fd6de95ce43",
+                        "subject":  "docs(acessos): reconcile safety triage outcomes and open shared failures"
+                    },
+                    {
+                        "sha":  "c30f28d4208a3ca61bc9ce742d3bea33d4552ba1",
+                        "subject":  "docs(invites): identify unlabeled shared long-press semantic node"
                     }
                 ],
-    "count":  33,
+    "count":  35,
     "base":  "d784462c1",
     "materialized_integrated_base":  "6aa352c6a434086905444aaa5f128034ad8352e6; imported by fast-forward; other authors not counted"
 }
