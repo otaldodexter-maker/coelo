@@ -722,8 +722,11 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
       FormItemKind.scale => Wrap(
         spacing: CoeloSpacing.space2,
         children: [
+          // Os padroes espelham os do servidor, coalesce(scale_min, 1) e
+          // coalesce(scale_max, 10). Comecar em zero oferecia um valor que o
+          // servidor sempre recusaria numa escala sem minimo declarado.
           for (
-            var value = item.config.scaleMin ?? 0;
+            var value = item.config.scaleMin ?? 1;
             value <= (item.config.scaleMax ?? 10);
             value++
           )
