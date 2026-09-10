@@ -1,12 +1,12 @@
 {
-  "revision": 11,
+  "revision": 13,
   "updated_at": "2026-09-10T09:30:00-03:00",
   "round": "E2-R03-20260910",
   "group": "operacoes",
   "tool_model": "Codex, Luna medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-operacoes",
   "branch": "work/etapa2-r03-operacoes",
-  "head": "2ea0e5606",
+  "head": "d7ca27d93",
   "base": {
     "requested": "base.fase0Head",
     "resolved": "1adb070c9028850ccdd7e091db5b97b63b95c750",
@@ -87,22 +87,28 @@
       "criteria": {"frontend": "N/A", "backend": "N/A", "e2e": "N/A"}
     }
   ],
-  "tests": {"P": 6, "F": 3, "B": 2, "S": 0, "U": 1, "evidence": ["support-contract-static PASS: required RPCs=5, receipt=idempotency, audit schema=correct, RLS=force, test=22 assertions", "support-create-scope-static PASS: internal institution-null create path + 23 assertions", "account-contract-static PASS: RPCs=3, email request, idempotency receipt, auth email read, forced RLS, test=16 assertions", "plans-audit-contract-static PASS: plans=3 RPCs + forced RLS; audit=list/filter/detail + deferred export revoke; tests present", "account Flutter analyzer PASS: apps/superadmin; only pre-existing info at router line 908", "account Flutter tests PASS: controller/profile/settings 56; account routes 5", "support Flutter analyzer PASS: targeted production/support files", "support Flutter tests PASS: controller/page/routes 51; follow-up controller/routes 30", "audit production route tests PASS: 2", "plans/audit/support Flutter targeted PASS: 75 tests passed; Plan golden suite has 1 failing test across 8 card goldens with 0.30%-0.57% pixel delta, no golden rewritten", "Plan golden suite FAIL: 8 card goldens (light/dark x 375/768/1024/1440); table/create/capabilities/review cases pass; visual delta is limited to status indicators", "Support golden suite FAIL: 2 test cases; 24 standard kanban/table/detail golden comparisons fail with large composition deltas, and scaled toolbar case fails first at support_kanban_light_1440_text150; no golden rewritten", "supabase db lint --local BLOCKED: ECONNREFUSED 127.0.0.1:54322", "supabase start --workdir packages/coelo_database BLOCKED before support migration: 20260820152528_form... fails SQLSTATE 3F000 because schema app_private is absent"], "planned": ["pgTAP nominal de conta, planos, auditoria e suporte", "preflight da migration na fila serializada", "flutter tests de Planos/Auditoria/Suporte", "E2E Supabase real apos migrations aplicadas pelo coordenador"]},
+  "tests": {"P": 6, "F": 0, "B": 2, "S": 0, "U": 1, "evidence": ["support-contract-static PASS: required RPCs=5, receipt=idempotency, audit schema=correct, RLS=force, test=22 assertions", "support-create-scope-static PASS: internal institution-null create path + 23 assertions", "account-contract-static PASS: RPCs=3, email request, idempotency receipt, auth email read, forced RLS, test=16 assertions", "plans-audit-contract-static PASS: plans=3 RPCs + forced RLS; audit=list/filter/detail + deferred export revoke; tests present", "account Flutter analyzer PASS: apps/superadmin; only pre-existing info at router line 908", "account Flutter tests PASS: controller/profile/settings 56; account routes 5", "support Flutter analyzer PASS: targeted production/support files", "support Flutter tests PASS: controller/page/routes 51; follow-up controller/routes 30", "audit production route tests PASS: 2", "plan golden refresh PASS: 2/2 tests; 8 card goldens updated to current indicators, all table/form goldens still pass", "support golden refresh PASS: 2/2 tests; 24 standard and 8 scaled cases verified against current composition; 28 PNGs changed because 4 scaled references already matched", "supabase db lint --local BLOCKED: ECONNREFUSED 127.0.0.1:54322", "supabase start --workdir packages/coelo_database BLOCKED before support migration: 20260820152528_form... fails SQLSTATE 3F000 because schema app_private is absent"], "planned": ["pgTAP nominal de conta, planos, auditoria e suporte", "preflight da migration na fila serializada", "flutter tests de Planos/Auditoria/Suporte", "E2E Supabase real apos migrations aplicadas pelo coordenador"]},
+  "progress_snapshot": {"base": "1adb070c9028850ccdd7e091db5b97b63b95c750", "scope_actions": 21, "mvp_active_actions": 20, "deferred_actions": 1, "frontend_local": {"done": 9, "total": 21, "percent": 42.86, "ids": ["account.profile", "account.settings", "account.theme", "support.create", "support.table", "support.kanban", "support.detail", "support.reply", "support.close"]}, "backend_package_or_existing_candidate": {"done": 20, "total": 20, "percent": 100.0, "note": "pacotes/candidatos preparados; não equivale a backend done porque pgTAP nominal e aplicação permanecem pendentes"}, "pgtap_nominal": {"done": 0, "total": 20, "percent": 0.0}, "e2e_supabase_real": {"done": 0, "total": 20, "percent": 0.0}, "goldens_decididos_e_atualizados": {"plans": "8/8", "support": "32/32 casos verificados; 28 PNGs alterados"}},
   "blocked": [
     {"kind": "verification", "what": "nenhum replay pgTAP nominal executado ainda; o perfil local canônico falha antes do pacote em 20260820152528 porque a cadeia usada no reset não materializa app_private e a janela compartilhada também está ocupada", "owner": "coordenador/base de replay", "unblocks": "reservar janela ou usar projeto descartável em portas próprias com as dependências da cadeia; então executar db reset/lint e pgTAP dos quatro pacotes, incluindo RLS, grants e cross-tenant"},
-    {"kind": "production-gate", "what": "fila SQL R03 retida pelo P1 da coordenação: backup por ponto no tempo/PITR ainda não está ligado", "owner": "Owner/coordenador", "unblocks": "decisão do Owner e PITR habilitado; depois o integrador aplica forward-only na ordem, começando pela posição 1 e sem ligar composição antes do SQL"},
-    {"kind": "visual-verification", "what": "Plan golden suite terminou 75 PASS e 1 FAIL: cards light/dark em 375, 768, 1024 e 1440 divergiram 0.30%-0.57%; diferenças ficaram em failures/ e nenhum PNG aprovado foi regravado", "owner": "operacoes + coordenador/design", "unblocks": "comparar as imagens de falha com o golden aprovado e decidir se é deriva de renderer/fonte ou mudança visual; só então corrigir código ou atualizar golden com decisão"},
-    {"kind": "visual-verification", "what": "Support golden suite terminou 2 FAIL: os 24 casos padrão de kanban/tabela/detalhe e o primeiro caso escalado divergiram em composição; o golden antigo mostra Suporte, enquanto a tela atual mostra Suporte e implantação, card Criar suporte, navegação e detalhe atualizados", "owner": "Owner/coordenador/design", "unblocks": "decidir se a composição atual é a aprovada; se sim, regenerar os 24 goldens padrão e os 8 goldens escalados em mudança dedicada; se não, retornar a composição ao golden aprovado. Comparações estão em apps/superadmin/test/features/support/presentation/screens/failures/"}
+    {"kind": "production-gate", "what": "fila SQL R03 retida pelo P1 da coordenação: backup por ponto no tempo/PITR ainda não está ligado", "owner": "Owner/coordenador", "unblocks": "decisão do Owner e PITR habilitado; depois o integrador aplica forward-only na ordem, começando pela posição 1 e sem ligar composição antes do SQL"}
   ],
-  "golden_decision_request": {
-    "status": "awaiting-owner",
+  "resolved": [
+    {"kind": "visual-verification", "what": "Plan golden decision approved and executed: manter indicadores atuais; 8 card goldens atualizados e suíte sem update-goldens verde", "owner": "operacoes", "commit": "d7ca27d93"},
+    {"kind": "visual-verification", "what": "Support golden decision approved and executed: manter composição atual; 32 casos verificados, 28 PNGs alterados e suíte sem update-goldens verde", "owner": "operacoes", "commit": "d7ca27d93"}
+  ],
+  "golden_decision": {
+    "status": "approved",
+    "approved_at": "2026-09-10",
+    "attachments": {"anexo_1": "approved", "anexo_2": "approved"},
     "scope": "apps/superadmin -> Operação -> Planos e Suporte; Auditoria não possui golden próprio no recorte executado",
-    "plan_cases": "8 cards falhos: plan_cards_{light,dark}_{375,768,1024,1440}; 8 tabelas, plan_create_light_375, plan_capabilities_dark_1440 e plan_review_dark_1440 passaram",
-    "support_cases": "24 casos padrão: support_{kanban,table,detail}_{light,dark}_{375,768,1024,1440}; primeiro escalado executado: support_kanban_light_1440_text150; todos comparados falharam; os demais escalados ficaram não executados por falha antecipada",
+    "plan_cases": "8 cards plan_cards_{light,dark}_{375,768,1024,1440} atualizados; 8 tabelas, plan_create_light_375, plan_capabilities_dark_1440 e plan_review_dark_1440 passaram sem alteração",
+    "support_cases": "24 casos padrão support_{kanban,table,detail}_{light,dark}_{375,768,1024,1440} e 8 escalados de texto verificados; 28 PNGs mudaram e 4 referências escaladas já estavam iguais",
     "references": ["apps/superadmin/test/features/plans/goldens/", "apps/superadmin/test/features/plans/failures/", "apps/superadmin/test/features/support/presentation/screens/goldens/", "apps/superadmin/test/features/support/presentation/screens/failures/"],
-    "decision_needed": ["Planos: manter os indicadores atuais e atualizar os 8 goldens de cards, ou preservar os goldens e corrigir o indicador", "Suporte: aprovar a composição atual e atualizar goldens, ou exigir retorno à composição antiga"],
-    "handoff_rule": "Após decisão do Owner, registrar decisão textual, action_ids afetados, arquivos/PNG autorizados e SHA; então repassar no próximo operacoes.json ao coordenador Claude. Nenhum golden será alterado antes disso."
+    "decision": {"plans": "manter indicadores atuais e atualizar 8 goldens de cards", "support": "aprovar composição atual e atualizar 32 goldens"},
+    "recording": "decisão recebida do Owner nesta conversa; coordenador deve ler este handoff",
+    "executed_commit": "d7ca27d93cbe01aba9861c6a5f93a54725c08dd7"
   },
-  "next_step": "reservar uma janela de replay descartável em portas próprias, executar reset/lint/pgTAP nominal dos pacotes de Conta, Planos, Auditoria e Suporte, registrar os resultados; depois aguardar o gate P1 para o integrador aplicar a fila SQL (Suporte posição 14, Conta posição 15) e só então executar E2E Supabase real das 21 ações",
-  "commits": ["b172b695b8d996375fc7da7a539ed7ee78dc7e35", "94bca84f6", "5611c6da7", "ce4939227", "b02478937", "9ae607fca", "179cd6ae4", "af8ee0524", "2ea0e5606"]
+  "next_step": "coordenador deve ler este checkpoint e, quando a janela de replay e o gate P1 forem liberados, executar pgTAP nominal dos 20 action_ids ativos; depois aplicar a fila SQL forward-only e executar E2E Supabase real",
+  "commits": ["b172b695b8d996375fc7da7a539ed7ee78dc7e35", "94bca84f6", "5611c6da7", "ce4939227", "b02478937", "9ae607fca", "179cd6ae4", "af8ee0524", "2ea0e5606", "d7ca27d93"]
 }
