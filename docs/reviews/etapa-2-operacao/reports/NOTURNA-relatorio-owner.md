@@ -292,6 +292,39 @@ O teste falha também **se uma das cinco ausências passar a existir e continuar
 lista** — sem isso a lista de exceções envelhece e passa a esconder o defeito
 seguinte, que é como esse tipo de allowlist costuma morrer.
 
+## A tela de Importações não cabe em tela nenhuma, e está verde por estar fechada
+
+Um teste de fronteira falhava com `RenderFlex overflowed by 1409 pixels`, e a
+leitura óbvia era artefato de ambiente: o teste não fixa o tamanho da view, cai no
+padrão de 800×600, e o conteúdo não cabe. A correção óbvia seriam três linhas
+fixando um viewport maior. **Ela teria escondido um defeito de produto dentro de
+uma correção de teste.**
+
+O que a medição mostrou, em três viewports: `/dev/imports` **estoura em todos** —
+1409 px a 800×600, 1317 px a 390×844 e **1069 px a 1440×900**. Não é artefato do
+tamanho padrão. E o controle com pluralidade fecha a atribuição: nove rotas
+comparáveis foram exercitadas no mesmo tamanho e **apenas essa estoura**, então
+não é do shell nem do tema.
+
+**E a rota de produção monta a mesma página.** Sem repositório ela passa; **com
+repositório devolvendo dados, a 1440×900, ela estoura por 1069 pixels.**
+
+Ou seja: **Importações está verde hoje porque está fail-closed.** O estado
+carregado da tela nunca coube. No dia em que o repositório de produção for ligado,
+quem abrir Importações perde mil pixels de conteúdo de uma vez, **sem rolagem para
+alcançá-lo**. O verde atual não é evidência de que a tela funciona; é evidência de
+que ela nunca foi exercitada com dados — que é literalmente a regra de que uma
+tela `fail-closed` nunca deve ser declarada concluída ponta a ponta, aqui medida e
+não deduzida.
+
+**Registrado como achado aberto, e não como falha de teste**, e a distinção é
+prática: se alguém "consertar" o teste fixando o viewport, o vermelho some e o
+defeito fica — e some justamente o único sinal que hoje aponta para ele. A
+reprodução é barata e está documentada: compor o router com o repositório de
+importação, navegar para a rota, e ler a exceção. O widget exato não foi
+localizado; o ramo carregado da página parece correto, então a coluna que estoura
+provavelmente está acima dele.
+
 ## Triagem dos 129 goldens: a maior parte é rebaseline seguro
 
 **Esta seção foi reescrita depois de a própria medição que a sustentava se
@@ -314,7 +347,7 @@ Reabertos os diffs um a um:
 | Agenda | 14 | deslocamento — duas mudanças aprovadas de shell, separadas por largura |
 | Atividades | 16 | deslocamento — cada item da barra lateral e cada cartão aparece em dobro |
 | Conta | 8 | deslocamento — composição idêntica, empurrada em bloco pelo shell |
-| Formulários | 12 | deslocamento — a ressalva do chevron invertido foi fechada: a própria referência já contém as duas direções, porque são duas seções na mesma tela, uma recolhida e outra expandida |
+| Formulários | 12 casos, **23 imagens** | deslocamento e mudança deliberada — nenhuma regressão, nenhuma perda de cobertura. O chevron não era estado: são dois controles diferentes, um deles acrescentado por um commit nomeado |
 | Cardápios | 6 | **conteúdo** — todo o cartão desceu doze pixels, mas o ponto de status é rosa na referência e verde agora. Duas cores diferentes não são deslocamento |
 | Instituições | 4 | **conteúdo** — o cartão de criação ausente, outro fixture, outra paginação |
 
@@ -338,6 +371,14 @@ conferência natural — refazer a medida — confirma a leitura errada.
 Se a quarta categoria não tivesse aparecido, você receberia a recomendação de
 revisar humanamente 129 referências visuais quando cerca de 107 delas são
 provavelmente rebaseline seguro.
+
+**E há um caso que inverte o risco do rebaseline, encontrado na triagem de outra
+família: dois goldens protegem hoje o estado ERRADO.** Um exige um rótulo que o
+produto abandonou de propósito, por estar incorreto. O outro — com **0,72% de
+divergência**, a menor das larguras largas, a mais fácil de descartar como ruído —
+afirma um menu de ações **sem** um item que existe hoje. **Quem lesse esses
+vermelhos como defeito desfaria uma mudança correta ou apagaria uma ação.** Nesses
+casos, não regravar é o risco, e não a prudência.
 
 **As duas famílias com conteúdo continuam pedindo o dono antes do rebaseline**, e
 uma delas pela razão descrita adiante: em Instituições o que se perdeu não foi
