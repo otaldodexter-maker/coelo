@@ -4,7 +4,7 @@ knowledge_id: knowledge-index
 source: docs/knowledge/README.md
 status: validated
 generated_at: 2026-08-04
-updated_at: 2026-09-02
+updated_at: 2026-09-10
 audience: team
 surfaces:
   - documentation
@@ -19,6 +19,7 @@ review_owner: Coelo Owner
 | team | Superadmin / Home | [Central de ajuda do Superadmin](team/superadmin-help-center.md) | validated | `docs/superpowers/specs/2026-07-27-superadmin-help-center-home-design.md` |
 | team | Superadmin / Páginas de erro | [Páginas de erro do Superadmin](team/superadmin-error-pages.md) | validated | `docs/design/design-system.md`; `docs/superpowers/specs/2026-07-28-superadmin-error-pages-design.md` |
 | team | Superadmin / Perfil e configurações | [Perfil e configurações do Superadmin](team/superadmin-profile-settings.md) | validated | `docs/superpowers/specs/2026-07-28-superadmin-profile-settings-design.md` |
+| team | Superadmin / Diretórios administrativos | [Composto de diretório administrativo (CoeloAdminDirectory)](team/coelo-admin-directory-composite.md) | validated | `.agents/skills/coelo-ui/references/administrative-ui-workflow.md`; `docs/reviews/evidence/etapa-2/goldens-claro-decisoes-2026-09-10.md` |
 | team | Superadmin / Pessoas | [Diretório de Pessoas do Superadmin](team/superadmin-people-directory.md) | validated | `specs/019-superadmin-people-directory.md` |
 | team | Superadmin / Unidades | [Diretório de unidades do Superadmin](team/superadmin-unit-directory.md) | validated | `decisions/0016-unit-type-and-plan-inheritance.md`; `specs/017-superadmin-unit-schema-foundation.md`; `decisions/0010-private-media-r2.md`; `decisions/0021-operational-import-export-files.md`; `decisions/0022-superadmin-activities-and-identity-storage.md` |
 | team | Superadmin / Atividades | [Diretório de atividades do Superadmin](team/superadmin-activity-directory.md) | validated | `docs/superpowers/specs/2026-07-29-superadmin-activity-inspection-design.md` |

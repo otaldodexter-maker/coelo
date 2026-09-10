@@ -262,5 +262,20 @@ O Design System Coelo prevalece sobre recomendações genéricas.
   goldens do composto por largura ficam no pacote e as telas guardam golden só
   do que é delas. Fonte:
   [decisões dos goldens claros](../../../../docs/reviews/evidence/etapa-2/goldens-claro-decisoes-2026-09-10.md).
+- Implementação canônica (Fase 0, 10/09/2026): `CoeloAdminDirectory<TView>` em
+  `packages/coelo_ui_admin/lib/src/directory/coelo_admin_directory.dart`. A
+  feature entrega `search` (campo sem largura), `filters` (sem largura; um
+  `SizedBox` com largura própria é respeitado), `trailing` (Limpar filtros),
+  `tabs`, `leading`/`beforeResults` (abas de tipo, avisos), `create`
+  (`CoeloAdminDirectoryCreate`, visível em vazio/falha; `onPressed` nulo
+  desabilita), `cards` (widgets de domínio), `table` (linhas de domínio,
+  `*Rows`), `pagination` (`CoeloAdminDirectoryPagination`, `pageSize` opcional
+  para cursor), `fileActions` (lista; `null` esconde o botão, como em
+  Conversas), `status` + `messages` + `errorMessage` (linha secundária) e
+  `bodyOverride` para resumos. O composto aplica recuo 40/24/16, busca
+  300/216/100 %, filtros 160 px, grade de 340 px com linhas de altura igual
+  e o card Criar primeiro, banner Criar acima da tabela, rodapé fixo de
+  paginação (compacto abaixo de 600 px) e o card de estado de Instituições.
+  Gate: `apps/superadmin/test/architecture/directory_composition_test.dart`.
 - Mídia privada segue Cloudflare R2 conforme AGENTS e a ADR aprovada. Supabase
   Storage não substitui esse contrato sem nova decisão arquitetural.
