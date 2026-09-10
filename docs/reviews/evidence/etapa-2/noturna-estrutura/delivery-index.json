@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "recorded_at": "2026-09-09T22:16:14.648211-03:00",
+  "recorded_at": "2026-09-09T22:37:27.414319-03:00",
   "status": "working delivery index; not final cutoff",
   "group": "estrutura",
   "worktree": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-noturna-estrutura",
   "branch": "work/etapa2-noturna-estrutura",
   "base": "d784462c168d22fdb7090b7de1ef7db554ad5107",
-  "head_indexed": "ef751c33b4c7e859889d0fb7f24ffe125a933351",
+  "head_indexed": "36d3c6302ac1944fd06f314f02a90bb0dcf1c99b",
   "coordinator": "Claude sole dev integrator and tracker writer",
   "commits_chronological": [
     {
@@ -502,12 +502,62 @@
         "docs/reviews/evidence/etapa-2/noturna-estrutura/activity-composition-r16-manifest.json"
       ],
       "reserved_composition_proposal": false
+    },
+    {
+      "sha": "4b7714f156a1246c41e0cf382efe207b607beb64",
+      "subject": "docs(review): consolidate estrutura commits evidence and productive reachability",
+      "paths": [
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/action-handoff-map.json",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/delivery-index.json",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/group-initial-context-manifest.json",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/group-retry-context-manifest.json",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/productive-reachability-manifest.json"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "0ce8e6b2a6b02f36edfa6209092ee7f2a0d750a3",
+      "subject": "feat(superadmin): let group directory open authorized read details",
+      "paths": [
+        "apps/superadmin/lib/features/groups/presentation/group_directory_page.dart",
+        "apps/superadmin/test/app/router/group_routes_test.dart",
+        "apps/superadmin/test/features/groups/presentation/group_directory_page_test.dart",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/group-detail-entry-manifest.json"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "10d69e38bc9c201ce357bbe9d45eea96dedd3c2c",
+      "subject": "feat(superadmin): propose group read-detail entry route",
+      "paths": [
+        "apps/superadmin/lib/app/router/superadmin_router.dart"
+      ],
+      "reserved_composition_proposal": true
+    },
+    {
+      "sha": "0ebae43941ce04c73dc128c652ebbd0005a9a444",
+      "subject": "fix(superadmin): deny group detail reads before transport when capability is absent",
+      "paths": [
+        "apps/superadmin/lib/features/groups/domain/group_detail.dart",
+        "apps/superadmin/test/app/router/structure_detail_authorization_test.dart",
+        "apps/superadmin/test/app/router/structure_detail_routes_test.dart",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/group-detail-read-preflight-manifest.json"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "36d3c6302ac1944fd06f314f02a90bb0dcf1c99b",
+      "subject": "fix(superadmin): propose group detail read-capability preflight",
+      "paths": [
+        "apps/superadmin/lib/app/router/superadmin_router.dart"
+      ],
+      "reserved_composition_proposal": true
     }
   ],
   "evidence": [
     {
       "path": "action-handoff-map.json",
-      "sha256": "d094d6d8d09033a6917b382ecef4a96608957afb0567feadb0bd92439d58c669",
+      "sha256": "05c00da40ad181a56bbe74df5e57911c0c395e76a6141d7b361988a731a48381",
       "status": "see manifest",
       "action_ids": [],
       "metrics": {
@@ -582,9 +632,12 @@
     },
     {
       "path": "activity-initial-scope-manifest.json",
-      "sha256": "d45a67e907bdbbdff5b2216cffc5ae0bc7c3f8fe0959d199bf63ab282927a05a",
+      "sha256": "56bb322260d1f578150eaf0f0a50893857fa0720de8dbefacef134d25f93cbc8",
       "status": "local-green",
-      "action_ids": [],
+      "action_ids": [
+        "activities.create",
+        "activities.edit"
+      ],
       "metrics": {
         "S": 0,
         "F": 0,
@@ -828,10 +881,51 @@
       "metrics": null
     },
     {
+      "path": "group-detail-entry-manifest.json",
+      "sha256": "deda7e52924e1e0835dbbc49ac00f3d404df1f9543edfdcfa75f7a97a4fc8553",
+      "status": "local-green-composition-gates-preserved",
+      "action_ids": [
+        "groups.list",
+        "groups.location"
+      ],
+      "metrics": {
+        "S": 0,
+        "F": 0,
+        "N": 4,
+        "B": 0,
+        "U": 0,
+        "E": 4,
+        "P": 4
+      }
+    },
+    {
+      "path": "group-detail-read-preflight-manifest.json",
+      "sha256": "60b2bd0f5519d156bdd962778670a5adc34f10401a90b0eb2ebb36efedcf0e31",
+      "status": "local-green-no-backend-promotion",
+      "action_ids": [
+        "groups.list",
+        "groups.location"
+      ],
+      "metrics": {
+        "U": 0,
+        "regression_unique": 12,
+        "E": 15,
+        "S": 0,
+        "N": 15,
+        "P": 15,
+        "B": 0,
+        "F": 0,
+        "new_unique": 3
+      }
+    },
+    {
       "path": "group-initial-context-manifest.json",
-      "sha256": "b3ae2479f4b62a236c3c0df339a3ab3ffe8b1c64131565971a520b78009ddd3d",
+      "sha256": "3775835ac5f2bf341803bdaee6246d03b0667c9836b20c2a793125e254a7d45e",
       "status": "local-green",
-      "action_ids": [],
+      "action_ids": [
+        "groups.create",
+        "groups.edit"
+      ],
       "metrics": {
         "S": 0,
         "F": 0,
@@ -844,16 +938,43 @@
     },
     {
       "path": "group-location-candidate-manifest.json",
-      "sha256": "6a66f8ea05dcd06bf9828ddcafd0c7628ac5cbc1c452d387aaf68e4b5fec998c",
+      "sha256": "92481a658988a34a3894297aa3966f3675cabc5feef39fdcbfb8dde611e11b11",
       "status": "local-sql-candidate-unexecuted",
-      "action_ids": [],
-      "metrics": null
+      "action_ids": [
+        "groups.create",
+        "groups.location",
+        "locations.schedule"
+      ],
+      "metrics": {
+        "N": 46,
+        "E": 0,
+        "P": 0,
+        "F": 0,
+        "B": 0,
+        "S": 0,
+        "U": 46,
+        "evidence": "TAP authored before migration, expanded during root review. Static Python regex counted 46 assertions matching plan(46); no SQL parser, TAP runner or database invoked.",
+        "cases": [
+          "Checked authenticated entry, anon/service denial, private selection/receipt grants",
+          "Draft/heredity defaults, stable Group and reservation retry IDs, changed request rejection",
+          "Extra payload keys rejected and other type requires complement",
+          "Institution/unit catalogue, unit mismatch and inactive unit",
+          "Reference without reservation, real reservation overlap rollback",
+          "Final audit failure rolls back Group, current selection, reservation/history/occurrences and child/outer receipts and success audits",
+          "Causal session expiry triggered at the real final audit write rejects completion and rolls back new Group and the test-only expiry update",
+          "Owner authorization before empty selection, authorized empty result, revoked receipt replay and wall-clock expiry",
+          "Real tenant B CREATE against payload/location A, existing auditor without groups.manage CREATE, exact-three-key reservation rejects injected consumer; all early denials leave no Group/receipt"
+        ]
+      }
     },
     {
       "path": "group-retry-context-manifest.json",
-      "sha256": "81c568deb4a2660be5b113c0b647863c0abd0cbe954982c2db01eb08791e91d0",
+      "sha256": "d745abcc19aa66c425d3f80194d01d8c5582932fec725ea689a585a60a38381e",
       "status": "local-green",
-      "action_ids": [],
+      "action_ids": [
+        "groups.create",
+        "groups.edit"
+      ],
       "metrics": {
         "U": 0,
         "regression_unique": 4,
@@ -930,7 +1051,7 @@
     },
     {
       "path": "productive-reachability-manifest.json",
-      "sha256": "5a91f6b8390175fda42926fb53a1eb70db2b2e60dca6a94f22ada3163d7e2ed1",
+      "sha256": "bbfe41351900d5e89c1b178a9a832be0078bafc89a8e375ee8d9b543c9302b68",
       "status": "read-only-reachability-no-promotion",
       "action_ids": [],
       "metrics": null
@@ -976,6 +1097,13 @@
       }
     },
     {
+      "path": "sql-retained-handoff.json",
+      "sha256": "3952fae391321445a414e2889c4592b9c7b918a97afa19becdabdffcd355d49d",
+      "status": "hash-reconciled; SQL execution remains0",
+      "action_ids": [],
+      "metrics": null
+    },
+    {
       "path": "units-create-idempotency-manifest.json",
       "sha256": "1262f72f37a93bb44fd0d765d779b083c89f1f08d1a92563e2f8479f61d62437",
       "status": "local-green; sem execucao remota ou conclusao E2E",
@@ -1003,14 +1131,15 @@
       "sha256": "81c568deb4a2660be5b113c0b647863c0abd0cbe954982c2db01eb08791e91d0"
     }
   ],
-  "metrics_policy": "No global sum: scopes overlap. Each manifest reports its own unique plan and reused regressions; historical catalog165/Clock46+3/reservas49+2 not rerun.",
+  "metrics_policy": "No global sum: plans overlap. Manifests identify unique cases, retries and reused regressions. Evidence file hashes identify this indexed snapshot; source hashes within older manifests identify their tested revision and may differ after later qualified changes.",
   "action_map": "action-handoff-map.json",
   "productive_composition": "productive-composition-manifest.json",
   "sql_handoff": {
     "bindings": "Local30U candidate; Claude canonical integrated filename20260909192000 replaces own20260909190000, LFnormalized source identical. Do not apply both.",
     "activity": "20260909200000_superadmin_activity_location_create_v2.sql;33U; needs union ActivityAggregateConcurrencyClock and LocationReservationsV1 for local replay.",
     "group": "20260909210000_superadmin_group_location_create_v2.sql;46U; successor of reservations profile; minimal5fielddraft, not full form writer.",
-    "owner": "Claude serializes local replay/profiles/wrappers; all remote production, no nominal remote authorization in this round."
+    "owner": "Claude serializes local replay/profiles/wrappers; all remote production, no nominal remote authorization in this round.",
+    "exact_package_evidence": "sql-retained-handoff.json"
   },
   "next_steps": [
     "Integrate missing commits once, reviewing reserved main/App/router hunks without duplicating already merged proposals.",
@@ -1023,7 +1152,7 @@
     "Own branch push is not dev integration or deploy.",
     "Current-selection reader now wired but explicitly available:false. Group/Activity atomic adapters remain unqualified/defaultfalse; Group full form cannot silently become restricted draft.",
     "Goldens with known dark/text-scale drift are retained, no rebaseline or complete frontend claim.",
-    "Group read-entry WIP omitted until qualified/published; no complete productive reachability claim."
+    "One bounded Institution exit-context investigation remains active; new evidence will be appended only after qualification. No new code batches after23:10."
   ],
   "memory": "No new durable approved product decision; existing rules preserved, knowledge projection no-op.",
   "productive_reachability": "productive-reachability-manifest.json",
@@ -1032,5 +1161,13 @@
     "commit": "ef751c33b4c7e859889d0fb7f24ffe125a933351",
     "evidence": "activity-composition-r16-manifest.json",
     "next": "integrated base check by Claude"
+  },
+  "code_and_document_tip_notice": "This index covers commits through head_indexed; the commit publishing the index is necessarily a descendant and is listed in the shared estrutura.json head/commits.",
+  "action_counts": {
+    "unique": 49,
+    "mvp": 42,
+    "deferred": 7,
+    "with_night_evidence": 20,
+    "new_terminal_promotions": 0
   }
 }

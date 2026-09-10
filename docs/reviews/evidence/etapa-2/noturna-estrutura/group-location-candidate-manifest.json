@@ -80,5 +80,10 @@
   "history": [
     "Root review requested explicit CREATE cross-tenant, capability-negative and injected-consumer coverage; expanded 39 to 46 unique TAP cases, all U. Migration unchanged. Existing auditor role reused; no Auth code or role grants changed."
   ],
-  "root_review": "Root read full migration/TAP and requested three negative scenarios plus no-effects assertions, now46U. Compared owner/consumer helper and legacy group_type constraint; no code-side Auth change and no legacy writer dependency. Static qualification only; no SQL parser/replay."
+  "root_review": "Root read full migration/TAP and requested three negative scenarios plus no-effects assertions, now46U. Compared owner/consumer helper and legacy group_type constraint; no code-side Auth change and no legacy writer dependency. Static qualification only; no SQL parser/replay.",
+  "action_ids": [
+    "groups.create",
+    "groups.location",
+    "locations.schedule"
+  ]
 }

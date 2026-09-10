@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-09-09T22:17:40.101162-03:00",
+  "status": "hash-reconciled; SQL execution remains0",
+  "source_manifests": [
+    "bindings-candidate-manifest.json",
+    "activity-location-candidate-manifest.json",
+    "group-location-candidate-manifest.json"
+  ],
+  "files": [
+    {
+      "path": "packages/coelo_database/migrations/20260909190000_superadmin_location_consumer_bindings_v2.sql",
+      "sha256": "13d7631bab35b5a667286d994db017aa6999f38a774971fa07bbc1e68762053d",
+      "matched": true
+    },
+    {
+      "path": "packages/coelo_database/supabase/tests/superadmin_location_consumer_bindings_v2_test.sql",
+      "sha256": "22eb4ad94ab53e28e48548875fe1adc499c5c99ca62b433ab952feccc4234dac",
+      "matched": true
+    },
+    {
+      "path": "packages/coelo_database/migrations/20260909200000_superadmin_activity_location_create_v2.sql",
+      "sha256": "a4b6a58e572920c16fbd975e8661eb0051b0c2371c1d765898dd070b4a027a93",
+      "matched": true
+    },
+    {
+      "path": "packages/coelo_database/supabase/tests/superadmin_activity_location_create_v2_test.sql",
+      "sha256": "f03409dd915020f73c99fcd87328e4415d95fc2444d90dc5f409ee91bf90a281",
+      "matched": true
+    },
+    {
+      "path": "packages/coelo_database/migrations/20260909210000_superadmin_group_location_create_v2.sql",
+      "sha256": "4a3e2d83be4b442ad1999a1ad3510c6bc27d838f7f9a20e63986247da358a36c",
+      "matched": true
+    },
+    {
+      "path": "packages/coelo_database/supabase/tests/superadmin_group_location_create_v2_test.sql",
+      "sha256": "9f90940f1fb1cad0a904e95a99f64883f00c49b3ee6ecff80d02569e59e48a98",
+      "matched": true
+    }
+  ],
+  "planned_not_executed": {
+    "bindings": 30,
+    "activity": 33,
+    "group": 46
+  },
+  "integrator_order": "Claude owns exact descriptor union, migration order, resolver and local replay. New timestamps must be greater than20260909210000 per coordinatorr16.",
+  "bindings_rename": "Own20260909190000 maps to integrated20260909192000 per NOTURNA-fila-sql-serializada.md. Earlier recorded LF-normalized content match; do not integrate both filenames.",
+  "remaining_proofs": [
+    "Compile and run TAP against exact successor profiles; do not infer pass from assertion count.",
+    "Two-session revocation/Clock expiry while blocked on final audit for bindings and Activity remain absent; Group authored causal audit-time expiry test is not a two-session proof.",
+    "Receipt replay changed intent/actor, cross-owner IDs, forced rollback and final reauthorization must pass in same materialized base.",
+    "Only after package qualification and Owner nominal authorization may a remote production package be executed."
+  ],
+  "client_followup": [
+    "Current-selection read adapters/sections/main/App now exist but main explicitavailablefalse. Their local tests do not execute SQL.",
+    "Activity command/client and form catalog selection/reservation support the narrow new-draft aggregate candidate, availablefalse.",
+    "Group typed atomic client exists defaultfalse; Group full composition form still uses its legacy repository and cannot silently discard extra fields/status in a minimaldraft adapter.",
+    "Historical bindings and current selection are separate; cancellation/history never imply currentselection updates."
+  ],
+  "memory": "No new product decision or production mutation."
+}

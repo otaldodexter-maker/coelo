@@ -104,5 +104,16 @@
     "apps/superadmin/lib/app/navigation/superadmin_navigation.dart": "D148531FF21767DF5FA15EDE08E11720864BC7503FBE8E5946425ABF37A741E5",
     "apps/superadmin/lib/core/config/superadmin_auth_scope.dart": "1E1D66558F01838BEB2AF0376347043E214BE2A77E424D4A370DE43F1185294C"
   },
-  "encoding_note": "Root repaired mojibake from PowerShell intermediate encoding; factual text unchanged, UTF8 without BOM."
+  "encoding_note": "Root repaired mojibake from PowerShell intermediate encoding; factual text unchanged, UTF8 without BOM.",
+  "followup": {
+    "recorded_at": "2026-09-09T22:23:44.360622-03:00",
+    "commits": [
+      "0ce8e6b2a6b02f36edfa6209092ee7f2a0d750a3",
+      "10d69e38bc9c201ce357bbe9d45eea96dedd3c2c"
+    ],
+    "supersedes": "GroupDirectory has no onView entry in historical rows",
+    "current_fact": "GroupDirectory now supports readonly card/table open -> groupDetail; existing authorized edit takes precedence. Router callback requires current groups.read. Actual authScope still selects UnavailableGroupDirectoryRepository, so this is prepared entry, not verified productive directory availability.",
+    "evidence": "group-detail-entry-manifest.json",
+    "metrics": "4localP; no terminalpromotion"
+  }
 }
