@@ -13,22 +13,83 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 const _id = '11111111-1111-4111-8111-111111111111';
+// These contexts pass the local Group read preflight so existing cases continue
+// exercising backend denial and invalidation between authorized contexts.
 const _contextA = SuperadminAuthContext(
   platformRoleCode: 'operations',
   scopeKind: SuperadminAuthScopeKind.institution,
   scopeInstitutionId: 'institution-a',
-  permissionCodes: {'institution.read'},
+  permissionCodes: {'institution.read', 'groups.read'},
   aal: 'aal2',
 );
 const _contextB = SuperadminAuthContext(
   platformRoleCode: 'operations',
   scopeKind: SuperadminAuthScopeKind.institution,
   scopeInstitutionId: 'institution-b',
-  permissionCodes: {'institution.read'},
+  permissionCodes: {'institution.read', 'groups.read'},
   aal: 'aal2',
 );
 
 void main() {
+  for (final phase in ['initial-denied', 'loaded-revoked', 'pending-revoked']) {
+    testWidgets('group detail read preflight $phase', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1440, 1000));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      const denied = SuperadminAuthContext(
+        platformRoleCode: 'operations',
+        scopeKind: SuperadminAuthScopeKind.institution,
+        scopeInstitutionId: 'institution-a',
+        permissionCodes: {'institution.read'},
+        aal: 'aal2',
+      );
+      final session = SuperadminSession()
+        ..authorize(phase == 'initial-denied' ? denied : _contextA, sessionId: 'read-preflight');
+      final groups = _Groups();
+      final router = createSuperadminRouter(
+        session: session,
+        login: unavailableSuperadminLogin,
+        logout: unavailableSuperadminLogout,
+        requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+        onThemeModeChanged: (_) {},
+        groupDetailRepository: groups,
+      );
+      addTearDown(router.dispose);
+      addTearDown(session.dispose);
+      router.go('/groups/$_id');
+      await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+      await tester.pump();
+      final originalCalls = phase == 'initial-denied' ? 0 : 1;
+      expect(groups.calls, hasLength(originalCalls));
+      if (phase == 'loaded-revoked') {
+        groups.calls.single.complete(_groupA);
+        await tester.pumpAndSettle();
+        expect(find.text('Dados do contexto A'), findsOneWidget);
+      }
+      if (phase != 'initial-denied') {
+        session.authorize(denied, sessionId: 'read-preflight');
+      }
+      await tester.pump();
+      expect(groups.calls, hasLength(originalCalls));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('group-detail-denied')), findsOneWidget);
+      expect(find.text('Dados do contexto A'), findsNothing);
+      await tester.tap(find.byKey(const Key('group-detail-reload')));
+      await tester.pumpAndSettle();
+      expect(groups.calls, hasLength(originalCalls));
+      if (phase == 'pending-revoked') {
+        groups.calls.first.complete(_groupA);
+        await tester.pumpAndSettle();
+        expect(find.text('Dados do contexto A'), findsNothing);
+      }
+      session.authorize(_contextA, sessionId: 'read-preflight');
+      await tester.pump();
+      expect(groups.calls, hasLength(originalCalls + 1));
+      groups.calls.last.complete(_groupA);
+      await tester.pumpAndSettle();
+      expect(find.text('Dados do contexto A'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  }
   for (final entity in ['unit', 'group']) {
     for (final pendingA in [false, true]) {
       for (final newSession in [false, true]) {
