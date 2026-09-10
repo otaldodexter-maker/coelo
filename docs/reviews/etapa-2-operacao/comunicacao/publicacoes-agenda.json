@@ -1,5 +1,5 @@
 {
-  "revision": 7,
+  "revision": 8,
   "round": "E2-R03-20260910",
   "group": "publicacoes-agenda",
   "tool": "Codex",
@@ -42,7 +42,7 @@
       "Lote combinado Agenda/Avisos/Circulares (router, contratos, repositórios e detalhe administrativo): 158 PASS",
       "flutter analyze do recorte: sem erros; 1 informação de estilo preexistente em superadmin_router.dart:902 (curly_braces_in_flow_control_structures)",
       "Goldens do recorte: 25 falhas de pixel (Agenda/Avisos em breakpoints canônicos e Circular em texto 200%); nenhum golden foi regravado, pois a causa é deriva de baseline e exige decisão do Owner",
-      "supabase test db supabase/tests/superadmin_internal_circular_delete_v1_test.sql --local: BLOQUEADO, porta 54322 ocupada pelo Supabase local e2-r03-operacoes; não interrompido por pertencer a outra frente"
+      "supabase start/test db --local: BLOQUEADO no bootstrap da migration legada 20260820152528_forms_editor_application_capability_guard.sql, pois o schema app_private não existe; não foi criado schema manualmente nem alterada a ordem das migrations"
     ]
   },
   "reservedFiles": [
@@ -54,7 +54,7 @@
     "apps/superadmin/lib/features/notices/**",
     "apps/superadmin/lib/features/circulars/**"
   ],
-  "blocked": "Goldens do recorte estão vermelhos por deriva de baseline e aguardam decisão de rebaseline do Owner; pgTAP local retém a prova SQL porque a porta 54322 está ocupada pelo Supabase de outra frente; E2E remoto aguarda aplicação do coordenador.",
+  "blocked": "Goldens do recorte estão vermelhos por deriva de baseline e aguardam decisão de rebaseline do Owner; pgTAP local retém a prova SQL porque o bootstrap falha antes do schema app_private; E2E remoto aguarda aplicação do coordenador.",
   "next": "Não regravar goldens sem decisão. Aplicar/revalidar migrations na ordem do coordenador, executar pgTAP no ambiente liberado, habilitar superadminCircularDeleteEnabled somente após o gateway verificado e então rodar E2E ponta a ponta.",
   "changes": [
     {
@@ -82,5 +82,5 @@
     "Goldens de Agenda/Avisos/Circulares falham na base publicada com diffs de 0,47% a 37,69%; preservar os arquivos e aguardar decisão de rebaseline do Owner.",
     "Não declarar E2E: base.fase0Head publicada, mas Docker/Postgres local continua ocupado por outra frente e aplicação remota permanece reservada ao coordenador."
   ],
-  "updatedAt": "2026-09-10T19:20:00-03:00"
+  "updatedAt": "2026-09-10T19:35:00-03:00"
 }
