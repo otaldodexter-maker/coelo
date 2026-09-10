@@ -930,7 +930,7 @@ FormApiFailureKind _failureKind(String code) => switch (code) {
   '42501' || 'PGRST301' || '401' || '403' || 'unauthorized' => FormApiFailureKind.unauthorized,
   '22023' || '23514' || 'invalid_payload' || 'invalid_envelope' => FormApiFailureKind.validation,
   '40001' || '409' || '23505' => FormApiFailureKind.conflict,
-  '502' || '503' || '504' => FormApiFailureKind.unavailable,
+  '502' || '503' || '504' || formsBackendTransportCode => FormApiFailureKind.unavailable,
   _ => FormApiFailureKind.unknown,
 };
 

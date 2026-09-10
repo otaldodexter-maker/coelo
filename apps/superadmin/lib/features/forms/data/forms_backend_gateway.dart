@@ -7,6 +7,10 @@ final class FormsBackendFailure implements Exception {
   final String message;
 }
 
+/// Code used when the request never reached the backend, so there is no
+/// Postgres code and no response body to classify.
+const formsBackendTransportCode = 'transport';
+
 abstract interface class FormsBackendGateway {
   Future<Object?> rpc(String functionName, Map<String, Object?> parameters);
 
@@ -26,6 +30,15 @@ final class SupabaseFormsBackendGateway implements FormsBackendGateway {
       throw FormsBackendFailure(
         code: error.code ?? 'unknown',
         message: 'Forms backend request failed.',
+      );
+    } on Exception {
+      // The request never reached the backend: socket, DNS, TLS or timeout.
+      // The platform exception carries the address and the full URI, so it
+      // must not travel further. Only Exception is converted; an Error is a
+      // programming fault and keeps propagating.
+      throw const FormsBackendFailure(
+        code: formsBackendTransportCode,
+        message: 'Forms backend unreachable.',
       );
     }
   }
@@ -49,6 +62,11 @@ final class SupabaseFormsBackendGateway implements FormsBackendGateway {
       throw FormsBackendFailure(
         code: error.status.toString(),
         message: 'Form media request unavailable.',
+      );
+    } on Exception {
+      throw const FormsBackendFailure(
+        code: formsBackendTransportCode,
+        message: 'Form media request unreachable.',
       );
     }
   }
