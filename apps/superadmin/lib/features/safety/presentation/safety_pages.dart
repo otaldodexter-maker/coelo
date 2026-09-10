@@ -278,6 +278,8 @@ final class _SafetyLandingPageState extends State<SafetyLandingPage> {
                   : box.maxWidth >= 720
                   ? 2
                   : 1;
+              final cardWidth =
+                  (box.maxWidth - (columns - 1) * CoeloSpacing.space6) / columns;
               final cards = <Widget>[
                 if (c.canCreate && widget.onCreate != null)
                   ConstrainedBox(
@@ -298,11 +300,35 @@ final class _SafetyLandingPageState extends State<SafetyLandingPage> {
                     ),
                   ),
               ];
-              final cardWidth = (box.maxWidth - (columns - 1) * CoeloSpacing.space6) / columns;
-              return Wrap(
-                spacing: CoeloSpacing.space6,
-                runSpacing: CoeloSpacing.space6,
-                children: [for (final card in cards) SizedBox(width: cardWidth, child: card)],
+              return Column(
+                children: [
+                  for (var start = 0; start < cards.length; start += columns) ...[
+                    // ponytail: use native row measurement; the canonical status uses
+                    // LayoutBuilder and cannot participate in IntrinsicHeight.
+                    Table(
+                      defaultColumnWidth: FixedColumnWidth(cardWidth),
+                      defaultVerticalAlignment: TableCellVerticalAlignment.intrinsicHeight,
+                      columnWidths: {
+                        for (var gap = 1; gap < columns * 2 - 1; gap += 2)
+                          gap: const FixedColumnWidth(CoeloSpacing.space6),
+                      },
+                      children: [
+                        TableRow(
+                          children: [
+                            for (var column = 0; column < columns; column++) ...[
+                              if (start + column < cards.length)
+                                cards[start + column]
+                              else
+                                const SizedBox.shrink(),
+                              if (column + 1 < columns) const SizedBox(width: CoeloSpacing.space6),
+                            ],
+                          ],
+                        ),
+                      ],
+                    ),
+                    if (start + columns < cards.length) const SizedBox(height: CoeloSpacing.space6),
+                  ],
+                ],
               );
             },
           )
