@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "recorded_at": "2026-09-09T21:11:20.773768-03:00",
-  "revision": "7798fe9f1b964209fb89f6e990d2ae2d2f6f2509",
+  "recorded_at": "2026-09-09T22:15:33.540285-03:00",
+  "revision": "ef751c33b4c7e859889d0fb7f24ffe125a933351",
   "source": "docs/reviews/coelo-flutter-integrado-supabase-pendencias.md",
   "source_sha256": "7ac410734d12666d86712abdaac04390c586f4c7df2804edcd540f9c69e02296",
   "source_scope": "Inherited integrated tracker in assigned base; central writer remains Claude. This proposed handoff is not a central tracker update.",
@@ -282,9 +282,10 @@
       "inherited_state": "pending-verification",
       "proposed_state": "pending-verification",
       "night_evidence": [
-        "candidates-manifest.json"
+        "candidates-manifest.json",
+        "catalog-held-callback-manifest.json"
       ],
-      "inspection": "night delta supported by listed manifests",
+      "inspection": "Night local evidence linked; complete action remains pending integrated/backend/visual acceptance.",
       "next_step": "Complete internal directory/form-context cutover before selecting actual UnitDirectory adapter; preserve verified retry fix. Unit detail/commands are separate paths."
     },
     {
@@ -305,9 +306,13 @@
       "proposed_state": "pending-verification",
       "night_evidence": [
         "group-atomic-client-manifest.json",
-        "group-location-candidate-manifest.json"
+        "group-location-candidate-manifest.json",
+        "activity-group-reservation-correlation-manifest.json",
+        "group-retry-intent-manifest.json",
+        "group-write-freeze-manifest.json",
+        "reservation-justification-limit-manifest.json"
       ],
-      "inspection": "night delta supported by listed manifests",
+      "inspection": "Night local evidence linked; complete action remains pending integrated/backend/visual acceptance.",
       "next_step": "Complete internal form context and command coverage before composition. Restricted atomic draft must not silently discard active status, branding, links, people, professionals or invites."
     },
     {
@@ -316,8 +321,11 @@
       "scope": "mvp",
       "inherited_state": "pending-verification",
       "proposed_state": "pending-verification",
-      "night_evidence": [],
-      "inspection": "carry-forward only; no new full action certification",
+      "night_evidence": [
+        "group-retry-intent-manifest.json",
+        "group-write-freeze-manifest.json"
+      ],
+      "inspection": "Night local evidence linked; complete action remains pending integrated/backend/visual acceptance.",
       "next_step": "Complete internal form context and command coverage before composition. Restricted atomic draft must not silently discard active status, branding, links, people, professionals or invites."
     },
     {
@@ -362,9 +370,13 @@
         "current-selection-manifest.json",
         "group-atomic-client-manifest.json",
         "group-location-candidate-manifest.json",
-        "historical-reservation-status-manifest.json"
+        "historical-reservation-status-manifest.json",
+        "activity-group-reservation-correlation-manifest.json",
+        "current-selection-composition-manifest.json",
+        "reservation-justification-limit-manifest.json",
+        "reservation-justification-ui-manifest.json"
       ],
-      "inspection": "night delta supported by listed manifests",
+      "inspection": "Night local evidence linked; complete action remains pending integrated/backend/visual acceptance.",
       "next_step": "Complete internal form context and command coverage before composition. Restricted atomic draft must not silently discard active status, branding, links, people, professionals or invites."
     },
     {
@@ -373,8 +385,10 @@
       "scope": "mvp",
       "inherited_state": "pending-verification",
       "proposed_state": "pending-verification",
-      "night_evidence": [],
-      "inspection": "carry-forward only; no new full action certification",
+      "night_evidence": [
+        "activity-composition-r16-manifest.json"
+      ],
+      "inspection": "Night local evidence linked; complete action remains pending integrated/backend/visual acceptance.",
       "next_step": "Qualify SQL candidate and intended permissions before activating restricted draft path. Current selection getter is separate from history; edit/publish/About/one-off remain outside that candidate."
     },
     {
@@ -388,9 +402,13 @@
         "activity-atomic-form-manifest.json",
         "activity-catalog-ui-manifest.json",
         "activity-write-freeze-manifest.json",
-        "activity-location-candidate-manifest.json"
+        "activity-location-candidate-manifest.json",
+        "activity-composition-r16-manifest.json",
+        "activity-group-reservation-correlation-manifest.json",
+        "activity-reentry-manifest.json",
+        "reservation-justification-limit-manifest.json"
       ],
-      "inspection": "night delta supported by listed manifests",
+      "inspection": "Night local evidence linked; complete action remains pending integrated/backend/visual acceptance.",
       "next_step": "Qualify SQL candidate and intended permissions before activating restricted draft path. Current selection getter is separate from history; edit/publish/About/one-off remain outside that candidate."
     },
     {
@@ -401,9 +419,10 @@
       "proposed_state": "pending-verification",
       "night_evidence": [
         "activity-reader-manifest.json",
-        "activity-read-composition-manifest.json"
+        "activity-read-composition-manifest.json",
+        "activity-composition-r16-manifest.json"
       ],
-      "inspection": "night delta supported by listed manifests",
+      "inspection": "Night local evidence linked; complete action remains pending integrated/backend/visual acceptance.",
       "next_step": "Qualify SQL candidate and intended permissions before activating restricted draft path. Current selection getter is separate from history; edit/publish/About/one-off remain outside that candidate."
     },
     {
@@ -412,8 +431,11 @@
       "scope": "mvp",
       "inherited_state": "pending-verification",
       "proposed_state": "pending-verification",
-      "night_evidence": [],
-      "inspection": "carry-forward only; no new full action certification",
+      "night_evidence": [
+        "activity-composition-r16-manifest.json",
+        "activity-reentry-manifest.json"
+      ],
+      "inspection": "Night local evidence linked; complete action remains pending integrated/backend/visual acceptance.",
       "next_step": "Qualify SQL candidate and intended permissions before activating restricted draft path. Current selection getter is separate from history; edit/publish/About/one-off remain outside that candidate."
     },
     {
@@ -432,8 +454,10 @@
       "scope": "mvp",
       "inherited_state": "pending-verification",
       "proposed_state": "pending-verification",
-      "night_evidence": [],
-      "inspection": "carry-forward only; no new full action certification",
+      "night_evidence": [
+        "activity-composition-r16-manifest.json"
+      ],
+      "inspection": "Night local evidence linked; complete action remains pending integrated/backend/visual acceptance.",
       "next_step": "Qualify SQL candidate and intended permissions before activating restricted draft path. Current selection getter is separate from history; edit/publish/About/one-off remain outside that candidate."
     },
     {
@@ -449,9 +473,16 @@
         "activity-catalog-ui-manifest.json",
         "activity-owner-callback-manifest.json",
         "activity-write-freeze-manifest.json",
-        "historical-reservation-status-manifest.json"
+        "historical-reservation-status-manifest.json",
+        "activity-composition-r16-manifest.json",
+        "activity-group-reservation-correlation-manifest.json",
+        "activity-location-candidate-manifest.json",
+        "activity-reentry-manifest.json",
+        "current-selection-composition-manifest.json",
+        "reservation-justification-limit-manifest.json",
+        "reservation-justification-ui-manifest.json"
       ],
-      "inspection": "night delta supported by listed manifests",
+      "inspection": "Night local evidence linked; complete action remains pending integrated/backend/visual acceptance.",
       "next_step": "Qualify SQL candidate and intended permissions before activating restricted draft path. Current selection getter is separate from history; edit/publish/About/one-off remain outside that candidate."
     },
     {
@@ -463,7 +494,7 @@
       "night_evidence": [
         "assessments-draft-error-manifest.json"
       ],
-      "inspection": "night delta supported by listed manifests",
+      "inspection": "Night local evidence linked; complete action remains pending integrated/backend/visual acceptance.",
       "next_step": "Qualify real normal route and nominal command/read under actual build flag; local save-error tests do not establish real persistence."
     },
     {
@@ -475,7 +506,7 @@
       "night_evidence": [
         "assessments-draft-error-manifest.json"
       ],
-      "inspection": "night delta supported by listed manifests",
+      "inspection": "Night local evidence linked; complete action remains pending integrated/backend/visual acceptance.",
       "next_step": "Qualify real normal route and nominal command/read under actual build flag; local save-error tests do not establish real persistence."
     },
     {
@@ -527,9 +558,10 @@
       "inherited_state": "pending-verification",
       "proposed_state": "pending-verification",
       "night_evidence": [
-        "candidates-manifest.json"
+        "candidates-manifest.json",
+        "catalog-held-callback-manifest.json"
       ],
-      "inspection": "night delta supported by listed manifests",
+      "inspection": "Night local evidence linked; complete action remains pending integrated/backend/visual acceptance.",
       "next_step": "Claude qualifies binding candidate and composed catalog/reservations on integrated base. Require permitted/denied/revoked, actual owner isolation, persistence/reload and audit before terminal acceptance."
     },
     {
@@ -542,7 +574,7 @@
         "candidates-manifest.json",
         "bindings-manifest.json"
       ],
-      "inspection": "night delta supported by listed manifests",
+      "inspection": "Night local evidence linked; complete action remains pending integrated/backend/visual acceptance.",
       "next_step": "Claude qualifies binding candidate and composed catalog/reservations on integrated base. Require permitted/denied/revoked, actual owner isolation, persistence/reload and audit before terminal acceptance."
     },
     {
@@ -554,10 +586,14 @@
       "night_evidence": [
         "consumer-manifest.json",
         "bindings-manifest.json",
-        "historical-reservation-status-manifest.json"
+        "historical-reservation-status-manifest.json",
+        "activity-location-candidate-manifest.json",
+        "reservation-justification-limit-manifest.json",
+        "reservation-justification-ui-manifest.json"
       ],
-      "inspection": "night delta supported by listed manifests",
+      "inspection": "Night local evidence linked; complete action remains pending integrated/backend/visual acceptance.",
       "next_step": "Claude qualifies binding candidate and composed catalog/reservations on integrated base. Require permitted/denied/revoked, actual owner isolation, persistence/reload and audit before terminal acceptance."
     }
-  ]
+  ],
+  "productive_reachability": "productive-reachability-manifest.json"
 }

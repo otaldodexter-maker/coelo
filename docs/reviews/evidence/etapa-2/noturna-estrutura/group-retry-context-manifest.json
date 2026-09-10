@@ -1,4 +1,4 @@
-﻿{
+{
     "generated_at":  "2026-09-09T21:50:52.7062581-03:00",
     "scope":  "apps/superadmin \u003e Turmas \u003e formulario \u003e salvar: contexto e retry local",
     "environment":  "local Flutter widgets; sem SQL/remoto",

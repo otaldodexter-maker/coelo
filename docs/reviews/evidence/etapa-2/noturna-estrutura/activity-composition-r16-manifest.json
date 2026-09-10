@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-09-09T22:14:04.141176-03:00",
+  "scope": "apps/superadmin -> Atividades -> composition contracts, detail reader, assessment fields",
+  "action_ids": [
+    "activities.list",
+    "activities.detail",
+    "activities.create",
+    "activities.edit",
+    "activities.assessment",
+    "activities.location"
+  ],
+  "request": "Coordinator r16 regressaoAberta: reproduce and resolve3new failures before23:10",
+  "status": "local-green; deliberate test-contract reconciliation, no product activation",
+  "reproduced": {
+    "runner": 36551,
+    "chunk": "256c27",
+    "N": 3,
+    "E": 3,
+    "P": 0,
+    "F": 3,
+    "exit_code": 1,
+    "reason": [
+      "Old route test expected directory fetch for activity-1 using platform.read only; new authorized read projection requires UUID+activities.read and separate reader.",
+      "Source test expected4directorybuilders but detail deliberately became the dedicated projection:3directory+1readreader.",
+      "Source test expected toJson literal; d33ef498 changed only canonical empty disabled normalization to toAggregateCommandJson. Version and justification stayed wired."
+    ]
+  },
+  "intentional_changes": {
+    "read_projection": "e06eb62de87db0ac43f311757ed7324d53ec101b + d01c318ba0c6e7cd24e4a73a31645c93f2a6f8a8 replace fake/legacy detail with real read DTO and repository.",
+    "pedagogical": "d33ef4981d4de6cfe419de608e091d588d43c6de compacts ONLY canonical empty disabled configuration. Populated disabled/enabled maps preserve all fields; existing3behavioral cases reused from activity-catalog-ui-manifest."
+  },
+  "changes": [
+    "Behavioral route now proves separate reader injection with valid UUID/capability; directory call count remains stable across detail and assessment click remains blocked with zero commands.",
+    "Static test requires3directory+1readdependency, correctpage,Unavailabledefault, unchanged4command/6about bindings and no development dependency.",
+    "Pedagogical source assertion follows aggregate serializer and retains assessment version/justification checks.",
+    "Actual create route command tested both canonical disabled and populated enabled configuration with expectedVersion7 and a nonempty changeJustification."
+  ],
+  "metrics": {
+    "N": 5,
+    "E": 5,
+    "P": 5,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0
+  },
+  "dedup": "3existing contracts deliberately reconciled;1existing create test strengthened;1new populated-pedagogical route case. No reruns counted as new.",
+  "runs": [
+    {
+      "runner": 64085,
+      "chunk": "6e2a3b",
+      "phase": "GREEN3reconciled+1strengthened",
+      "P": 4,
+      "exit_code": 0
+    },
+    {
+      "runner": 22898,
+      "chunk": "f44b9d",
+      "phase": "analyzer2files",
+      "issues": 0,
+      "exit_code": 0
+    },
+    {
+      "runner": 77448,
+      "chunk": "0b51df",
+      "phase": "populated configuration added after reviewer limitation",
+      "P": 1,
+      "exit_code": 0
+    },
+    {
+      "runner": 13722,
+      "chunk": "ed33e6",
+      "phase": "analyzer final after populated case",
+      "issues": 0,
+      "exit_code": 0
+    }
+  ],
+  "review": "bindings_review no weakening: injected read-only projection, no fallback, unchanged mutation gate, actual assessment navigation still asserted. Reviewer noted initial empty fixture; added populated route case.",
+  "limits": [
+    "Own branch reproduces same3failures reported on integrated base. Claude still runs mandatory final integrated verification.",
+    "No router/main/Auth/productcode change in this reconciliation commit.",
+    "Do not interpret these5P as complete action certification; production permissions/deploy/goldens remain separate.",
+    "Raw failing source-test output expanded whole router and was not saved; recorded exact runner/filter and assertions instead."
+  ],
+  "hashes": {
+    "apps/superadmin/test/app/router/activity_routes_test.dart": "2f9ede74fbb61c4df53b95822fb130dd8b547a987066d5683c91956a7da2736a",
+    "apps/superadmin/test/app/router/development_fixture_composition_test.dart": "43e5cad9556f62f953983742dc1eeb36040c552998dff36a4944bca72c6238ef"
+  }
+}

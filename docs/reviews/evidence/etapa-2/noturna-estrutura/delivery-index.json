@@ -1,0 +1,1036 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-09-09T22:16:14.648211-03:00",
+  "status": "working delivery index; not final cutoff",
+  "group": "estrutura",
+  "worktree": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-noturna-estrutura",
+  "branch": "work/etapa2-noturna-estrutura",
+  "base": "d784462c168d22fdb7090b7de1ef7db554ad5107",
+  "head_indexed": "ef751c33b4c7e859889d0fb7f24ffe125a933351",
+  "coordinator": "Claude sole dev integrator and tracker writer",
+  "commits_chronological": [
+    {
+      "sha": "f87543b6cf88e79bfb122d6f876340945111839a",
+      "subject": "feat(superadmin): expose owner-scoped locations section in structure forms",
+      "paths": [
+        "apps/superadmin/lib/features/institutions/presentation/screens/institution_form_page.dart",
+        "apps/superadmin/lib/features/institutions/presentation/widgets/institution_form_sections.dart",
+        "apps/superadmin/lib/features/locations/presentation/locations_map_section.dart",
+        "apps/superadmin/lib/features/units/presentation/unit_form_page.dart",
+        "apps/superadmin/test/features/locations/location_form_sections_integration_test.dart",
+        "apps/superadmin/test/features/locations/locations_map_section_test.dart"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "4528c42df1d2bbcc5eb42c5a6106319c7feefd1c",
+      "subject": "fix(locations): prevent duplicate copy dialog routes",
+      "paths": [
+        "apps/superadmin/lib/features/locations/presentation/location_detail_panel.dart",
+        "apps/superadmin/test/features/locations/location_capability_revocation_test.dart"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "fc8287c57021472d5ff06bb81488bbc8a3503d57",
+      "subject": "feat(locations): compose owner-scoped catalog routes and form links",
+      "paths": [
+        "apps/superadmin/lib/app/router/superadmin_router.dart",
+        "apps/superadmin/lib/app/router/superadmin_routes.dart",
+        "apps/superadmin/lib/app/superadmin_app.dart",
+        "apps/superadmin/lib/main.dart",
+        "apps/superadmin/test/features/locations/location_routes_test.dart"
+      ],
+      "reserved_composition_proposal": true
+    },
+    {
+      "sha": "84662238122df2a7b85f5082ac9c5c8e93d8c69a",
+      "subject": "test(estrutura): qualify retained location candidates on current base",
+      "paths": [
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/candidates-flutter.jsonl",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/candidates-manifest.json"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "c899e1236d36d8d2d7ff925b463af2328fc78d38",
+      "subject": "feat(locations): compose catalog reservation context for persisted consumers",
+      "paths": [
+        "apps/superadmin/lib/features/activities/presentation/activity_detail_page.dart",
+        "apps/superadmin/lib/features/groups/presentation/group_detail_page.dart",
+        "apps/superadmin/lib/features/locations/presentation/location_consumer_reservations.dart",
+        "apps/superadmin/lib/features/locations/presentation/location_selection_field.dart",
+        "apps/superadmin/test/features/activities/presentation/activity_detail_page_test.dart",
+        "apps/superadmin/test/features/groups/presentation/group_detail_page_test.dart",
+        "apps/superadmin/test/features/locations/location_consumer_reservations_test.dart",
+        "apps/superadmin/test/features/locations/location_selection_field_test.dart"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "be96ba98b423fcf382a866ca09a4fe00af57c63a",
+      "subject": "feat(superadmin): propose group detail reservation composition",
+      "paths": [
+        "apps/superadmin/lib/app/router/superadmin_router.dart",
+        "apps/superadmin/lib/app/superadmin_app.dart",
+        "apps/superadmin/lib/main.dart",
+        "apps/superadmin/test/features/locations/location_consumer_routes_test.dart"
+      ],
+      "reserved_composition_proposal": true
+    },
+    {
+      "sha": "ecc2839278919adf9f72cad5c5c8fd76f23d713a",
+      "subject": "feat(database): prepare nominal consumer binding reader and tests",
+      "paths": [
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/bindings-candidate-manifest.json",
+        "packages/coelo_database/migrations/20260909190000_superadmin_location_consumer_bindings_v2.sql",
+        "packages/coelo_database/supabase/tests/superadmin_location_consumer_bindings_v2_test.sql"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "e6c25bb94fad25c6e14eba06e3320fb6e572e6ff",
+      "subject": "docs(evidence): record 47 consumer reservation checks",
+      "paths": [
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/consumer-flutter.jsonl",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/consumer-manifest.json"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "c56d80dcb70a86c4ec07d1476799b1a73c66fbb1",
+      "subject": "feat(database): prepare atomic activity draft with catalog location",
+      "paths": [
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/activity-location-candidate-manifest.json",
+        "packages/coelo_database/migrations/20260909200000_superadmin_activity_location_create_v2.sql",
+        "packages/coelo_database/supabase/tests/superadmin_activity_location_create_v2_test.sql"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "e24f3043e9918acaa765e6f761fa1bdae9f73802",
+      "subject": "feat(locations): read and browse historical consumer bindings",
+      "paths": [
+        "apps/superadmin/lib/features/locations/data/supabase_location_consumer_bindings_reader.dart",
+        "apps/superadmin/lib/features/locations/domain/location_consumer_bindings_reader.dart",
+        "apps/superadmin/lib/features/locations/presentation/location_consumer_bindings_section.dart",
+        "apps/superadmin/lib/features/locations/presentation/location_consumer_reservations.dart",
+        "apps/superadmin/test/features/locations/location_consumer_bindings_section_test.dart",
+        "apps/superadmin/test/features/locations/supabase_location_consumer_bindings_reader_test.dart",
+        "packages/coelo_api/lib/src/locations/location_catalog_dto.dart",
+        "packages/coelo_domain/lib/locations.dart",
+        "packages/coelo_domain/lib/src/locations/location_consumer_bindings.dart"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "b995ed1cffc77a3e93907eac5fddd2beeb85e28d",
+      "subject": "feat(superadmin): propose group binding history and manage gate",
+      "paths": [
+        "apps/superadmin/lib/app/router/superadmin_router.dart",
+        "apps/superadmin/lib/app/superadmin_app.dart",
+        "apps/superadmin/lib/main.dart",
+        "apps/superadmin/test/features/locations/location_consumer_routes_test.dart"
+      ],
+      "reserved_composition_proposal": true
+    },
+    {
+      "sha": "bf422d4f9c09ce042d64ac28dd755435859fd1f7",
+      "subject": "docs(evidence): record 43 binding history checks",
+      "paths": [
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/bindings-flutter.jsonl",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/bindings-manifest.json"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "9fa190fc32452b240814bb38baea87d76247cd56",
+      "subject": "feat(activities): decode authorized internal detail projection",
+      "paths": [
+        "apps/superadmin/lib/features/activities/data/supabase_activity_read_detail_repository.dart",
+        "apps/superadmin/lib/features/activities/domain/activity_read_detail.dart",
+        "apps/superadmin/test/features/activities/data/supabase_activity_read_detail_repository_test.dart",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/activity-reader-manifest.json"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "10ea54fedde044d35126469f1a20b19655c59fbd",
+      "subject": "feat(activities): render internal detail with guarded reservation slot",
+      "paths": [
+        "apps/superadmin/lib/features/activities/presentation/activity_read_detail_page.dart",
+        "apps/superadmin/test/features/activities/presentation/activity_read_detail_page_test.dart"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "e06eb62de87db0ac43f311757ed7324d53ec101b",
+      "subject": "feat(superadmin): propose activity detail catalog and reservation composition",
+      "paths": [
+        "apps/superadmin/lib/app/router/superadmin_router.dart",
+        "apps/superadmin/lib/app/superadmin_app.dart",
+        "apps/superadmin/lib/main.dart",
+        "apps/superadmin/test/features/locations/location_consumer_routes_test.dart"
+      ],
+      "reserved_composition_proposal": true
+    },
+    {
+      "sha": "d01c318ba0c6e7cd24e4a73a31645c93f2a6f8a8",
+      "subject": "docs(evidence): record activity reader composition and resolved layout failures",
+      "paths": [
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/activity-read-composition-before-edit-gate.jsonl",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/activity-read-composition-flutter.jsonl",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/activity-read-composition-manifest.json",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/activity-read-composition-red-scroll.jsonl",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/activity-read-composition-red-settle.jsonl",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/activity-read-composition-red.jsonl"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "62800db485ecffe00794400b3757d5e30ed3f46f",
+      "subject": "feat(activities): prepare gated atomic catalog draft command",
+      "paths": [
+        "apps/superadmin/lib/features/activities/data/supabase_activity_command_repository.dart",
+        "apps/superadmin/lib/features/activities/domain/activity_command.dart",
+        "apps/superadmin/test/features/activities/data/supabase_activity_command_repository_test.dart",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/activity-atomic-client-manifest.json"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "4dec3d4cd3c64bcc2bd970f232485b3341c5f137",
+      "subject": "fix(activities): preserve catalog draft intent and reject partial saves",
+      "paths": [
+        "apps/superadmin/lib/features/activities/application/activity_save_attempt_coordinator.dart",
+        "apps/superadmin/lib/features/activities/presentation/activity_form_controller.dart",
+        "apps/superadmin/lib/features/activities/presentation/activity_form_draft.dart",
+        "apps/superadmin/test/features/activities/application/activity_save_attempt_coordinator_test.dart",
+        "apps/superadmin/test/features/activities/presentation/activity_catalogued_location_draft_test.dart",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/activity-atomic-form-flutter.jsonl",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/activity-atomic-form-manifest.json"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "86917403215ee78382663e83596ef168bf00115f",
+      "subject": "feat(database): prepare internal atomic group catalog draft candidate",
+      "paths": [
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/group-location-candidate-manifest.json",
+        "packages/coelo_database/migrations/20260909210000_superadmin_group_location_create_v2.sql",
+        "packages/coelo_database/supabase/tests/superadmin_group_location_create_v2_test.sql"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "106a1076538a48e02166c9d446c6d294eeeade5d",
+      "subject": "feat(groups): prepare gated atomic catalog draft client",
+      "paths": [
+        "apps/superadmin/lib/features/groups/data/supabase_group_location_create_repository.dart",
+        "apps/superadmin/lib/features/groups/domain/group_location_create.dart",
+        "apps/superadmin/test/features/groups/data/supabase_group_location_create_repository_test.dart",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/group-atomic-client-manifest.json"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "d33ef4981d4de6cfe419de608e091d588d43c6de",
+      "subject": "feat(activities): add guarded catalog field to draft form",
+      "paths": [
+        "apps/superadmin/lib/features/activities/presentation/activity_catalogued_location_section.dart",
+        "apps/superadmin/lib/features/activities/presentation/activity_form_page.dart",
+        "apps/superadmin/lib/features/activities/presentation/activity_form_sections.dart",
+        "apps/superadmin/lib/features/activities/presentation/activity_pedagogical_configuration_draft.dart",
+        "apps/superadmin/test/features/activities/presentation/activity_catalogued_location_section_test.dart",
+        "apps/superadmin/test/features/activities/presentation/activity_form_page_test.dart",
+        "apps/superadmin/test/features/activities/presentation/activity_pedagogical_configuration_draft_test.dart"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "1da23e67b31717dd30143cea0c87dd9afc340d64",
+      "subject": "feat(superadmin): propose guarded activity catalog create composition",
+      "paths": [
+        "apps/superadmin/lib/app/router/superadmin_router.dart",
+        "apps/superadmin/test/features/activities/presentation/activity_location_create_route_test.dart"
+      ],
+      "reserved_composition_proposal": true
+    },
+    {
+      "sha": "d3c330b0e19abd250c80c87ce84fb90694124314",
+      "subject": "docs(evidence): record 44 activity catalog form and route checks",
+      "paths": [
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/activity-catalog-ui-manifest.json",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/activity-catalog-ui-tests.jsonl"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "ee2c35686b7e3b9f400181aa6bcfd8459e2d377e",
+      "subject": "fix(units): preserve create intent across ambiguous retries",
+      "paths": [
+        "apps/superadmin/lib/features/units/data/supabase_unit_directory_repository.dart",
+        "apps/superadmin/lib/features/units/presentation/unit_form_page.dart",
+        "apps/superadmin/test/features/units/data/supabase_unit_directory_repository_test.dart",
+        "apps/superadmin/test/features/units/presentation/unit_form_page_test.dart",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/units-create-idempotency-manifest.json"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "ecf403d08bdb9810637709b60badf758f8665c67",
+      "subject": "feat(locations): read current consumer selection separately from history",
+      "paths": [
+        "apps/superadmin/lib/features/locations/data/supabase_location_consumer_selection_reader.dart",
+        "apps/superadmin/lib/features/locations/domain/location_consumer_selection_reader.dart",
+        "apps/superadmin/lib/features/locations/presentation/location_consumer_reservations.dart",
+        "apps/superadmin/lib/features/locations/presentation/location_consumer_selection_section.dart",
+        "apps/superadmin/test/features/locations/location_consumer_selection_section_test.dart",
+        "apps/superadmin/test/features/locations/supabase_location_consumer_selection_reader_test.dart",
+        "packages/coelo_api/lib/src/locations/location_catalog_dto.dart",
+        "packages/coelo_api/test/locations/location_consumer_selection_dto_test.dart",
+        "packages/coelo_domain/lib/locations.dart",
+        "packages/coelo_domain/lib/src/locations/location_consumer_current_selection.dart"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "48fff09d0d7eb9c75c93ed081b1edab69ce4f2a2",
+      "subject": "feat(superadmin): propose current catalog choice in consumer detail routes",
+      "paths": [
+        "apps/superadmin/lib/app/router/superadmin_router.dart",
+        "apps/superadmin/test/features/locations/location_consumer_routes_test.dart"
+      ],
+      "reserved_composition_proposal": true
+    },
+    {
+      "sha": "5658023e414f516484295c3910a149abe2985dab",
+      "subject": "docs(evidence): record 68 current selection checks and resolved fixture failure",
+      "paths": [
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/current-selection-activity-route-retest.jsonl",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/current-selection-composition-tests.jsonl",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/current-selection-manifest.json",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/current-selection-tests.jsonl"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "32be87ca2e2ee18ae27cd69f699773e19e3dc3cf",
+      "subject": "fix(assessments): contain save errors and freeze edits during writes",
+      "paths": [
+        "apps/superadmin/lib/features/assessments/assessment_controller.dart",
+        "apps/superadmin/lib/features/assessments/assessment_pages.dart",
+        "apps/superadmin/test/features/assessments/assessment_controller_test.dart",
+        "apps/superadmin/test/features/assessments/assessment_entry_page_test.dart",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/assessments-draft-error-manifest.json"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "57268a881b579d168f45da8ac344c2424ab9c866",
+      "subject": "fix(activities): reject callbacks from a removed catalog owner",
+      "paths": [
+        "apps/superadmin/lib/features/activities/presentation/activity_catalogued_location_section.dart",
+        "apps/superadmin/test/features/activities/presentation/activity_catalogued_location_section_test.dart",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/activity-owner-callback-manifest.json"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "fbf964e97496c557db9c4b33efec0d96a0e913d4",
+      "subject": "docs(estrutura): distinguish normal composition from local qualification",
+      "paths": [
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/productive-composition-manifest.json"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "d2764cf187dfbf0061db2ce358a486e2c1430290",
+      "subject": "fix(activities): freeze catalog intent during pending writes",
+      "paths": [
+        "apps/superadmin/lib/features/activities/presentation/activity_form_controller.dart",
+        "apps/superadmin/lib/features/activities/presentation/activity_form_page.dart",
+        "apps/superadmin/test/features/activities/presentation/activity_catalogued_location_draft_test.dart",
+        "apps/superadmin/test/features/activities/presentation/activity_form_page_test.dart",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/activity-write-freeze-manifest.json"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "7798fe9f1b964209fb89f6e990d2ae2d2f6f2509",
+      "subject": "fix(locations): gate fresh reservations by historical catalog status",
+      "paths": [
+        "apps/superadmin/lib/features/locations/presentation/location_consumer_reservations.dart",
+        "apps/superadmin/lib/features/locations/presentation/location_reservation_panel.dart",
+        "apps/superadmin/test/features/locations/location_consumer_reservations_test.dart",
+        "apps/superadmin/test/features/locations/location_reservation_panel_test.dart",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/historical-reservation-status-manifest.json"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "81b59c490062baae039590b3c632df1401926c79",
+      "subject": "docs(estrutura): map 49 actions to evidence and remaining gates",
+      "paths": [
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/action-handoff-map.json"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "33ff95fcee51097efe4ec6e71d1addc5d872e1fa",
+      "subject": "fix(locations): correlate atomic reservation receipts with submitted intent",
+      "paths": [
+        "apps/superadmin/lib/features/activities/data/supabase_activity_command_repository.dart",
+        "apps/superadmin/lib/features/groups/data/supabase_group_location_create_repository.dart",
+        "apps/superadmin/test/features/activities/data/supabase_activity_command_repository_test.dart",
+        "apps/superadmin/test/features/groups/data/supabase_group_location_create_repository_test.dart",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/activity-group-reservation-correlation-manifest.json",
+        "packages/coelo_api/lib/src/locations/location_reservation_dto.dart"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "6797ae7667a07e2b1d799811321e8fc1b4a96fe6",
+      "subject": "fix(groups): reject duplicate pending saves and freeze form edits",
+      "paths": [
+        "apps/superadmin/lib/features/groups/presentation/group_form_page.dart",
+        "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/group-write-freeze-manifest.json"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "c970bbbe352d8c460bc95852d4f66e13c76c4c4b",
+      "subject": "fix(locations): reject stale catalog mutation entry callbacks",
+      "paths": [
+        "apps/superadmin/lib/features/locations/presentation/locations_page.dart",
+        "apps/superadmin/test/features/locations/location_capability_revocation_test.dart",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/catalog-held-callback-manifest.json"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "44380219d078c17c090f68a1ce3c42919329cba1",
+      "subject": "fix(locations): align justification preflight with server character limit",
+      "paths": [
+        "apps/superadmin/lib/features/activities/domain/activity_command.dart",
+        "apps/superadmin/lib/features/groups/domain/group_location_create.dart",
+        "apps/superadmin/test/features/activities/domain/reservation_justification_limit_test.dart",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/reservation-justification-limit-manifest.json",
+        "packages/coelo_api/lib/src/locations/location_reservation_dto.dart",
+        "packages/coelo_api/test/locations/location_reservation_dto_test.dart",
+        "packages/coelo_domain/lib/src/locations/location_reservations.dart"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "cb817ca10aa1211bf904e5d9aec168b5fa40b759",
+      "subject": "fix(locations): validate justification before freezing a write attempt",
+      "paths": [
+        "apps/superadmin/lib/features/locations/presentation/location_reservation_panel.dart",
+        "apps/superadmin/test/features/locations/location_reservation_panel_test.dart",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/reservation-justification-ui-manifest.json"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "24c8de1686529fd5df8dbe0914541c71db04ad03",
+      "subject": "fix(superadmin): preserve group retry intent and reject changed context",
+      "paths": [
+        "apps/superadmin/lib/features/groups/presentation/group_form_page.dart",
+        "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/group-retry-context-manifest.json",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/group-retry-intent-manifest.json"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "77a917de529cd07a1f26e747be87a1f399c309ea",
+      "subject": "feat(superadmin): propose closed current-location reader composition",
+      "paths": [
+        "apps/superadmin/lib/app/superadmin_app.dart",
+        "apps/superadmin/lib/main.dart"
+      ],
+      "reserved_composition_proposal": true
+    },
+    {
+      "sha": "a075ba2695679a57f5c0dd205717e5f130f647d7",
+      "subject": "test(superadmin): prove current-location app composition stays gated",
+      "paths": [
+        "apps/superadmin/test/app/location_selection_composition_test.dart",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/current-selection-composition-manifest.json",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/productive-composition-manifest.json"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "6bad96b6881e35e87c3fb0683691a519aa33b24a",
+      "subject": "fix(superadmin): reject stale group form initialization",
+      "paths": [
+        "apps/superadmin/lib/features/groups/presentation/group_form_page.dart",
+        "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/group-initial-context-manifest.json"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "60ff99a7fbf78e88eca00b95a5df417d6687986b",
+      "subject": "fix(superadmin): guard retained activity save callbacks",
+      "paths": [
+        "apps/superadmin/lib/features/activities/presentation/activity_form_page.dart",
+        "apps/superadmin/test/features/activities/presentation/activity_form_page_test.dart",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/activity-reentry-manifest.json"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "93eeddb1002997f34cc925cd790bcc207150ffc5",
+      "subject": "fix(superadmin): invalidate activity loads when initial scope changes",
+      "paths": [
+        "apps/superadmin/lib/features/activities/presentation/activity_form_page.dart",
+        "apps/superadmin/test/features/activities/presentation/activity_form_page_test.dart",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/activity-initial-scope-manifest.json"
+      ],
+      "reserved_composition_proposal": false
+    },
+    {
+      "sha": "ef751c33b4c7e859889d0fb7f24ffe125a933351",
+      "subject": "test(superadmin): reconcile activity composition with authorized read projection",
+      "paths": [
+        "apps/superadmin/test/app/router/activity_routes_test.dart",
+        "apps/superadmin/test/app/router/development_fixture_composition_test.dart",
+        "docs/reviews/evidence/etapa-2/noturna-estrutura/activity-composition-r16-manifest.json"
+      ],
+      "reserved_composition_proposal": false
+    }
+  ],
+  "evidence": [
+    {
+      "path": "action-handoff-map.json",
+      "sha256": "d094d6d8d09033a6917b382ecef4a96608957afb0567feadb0bd92439d58c669",
+      "status": "see manifest",
+      "action_ids": [],
+      "metrics": {
+        "unique_action_ids": 49,
+        "mvp": 42,
+        "deferred": 7,
+        "new_terminal_promotions": 0
+      }
+    },
+    {
+      "path": "activity-atomic-client-manifest.json",
+      "sha256": "0a9df2ce27c59c7cca9ab9cd635f7d31941c4be39efd66de99e8c413d585ade5",
+      "status": "local-candidate-gate-closed",
+      "action_ids": [],
+      "metrics": null
+    },
+    {
+      "path": "activity-atomic-form-manifest.json",
+      "sha256": "3f2eecc2237cf73b4a1942d67ae1656422ac18d12c387f8194060ac11ad43e15",
+      "status": "local-candidate; production gate closed",
+      "action_ids": [],
+      "metrics": null
+    },
+    {
+      "path": "activity-catalog-ui-manifest.json",
+      "sha256": "77c49837665d9f4221aa31dfedc71e0d4fe05eea2f7b8bbe3c7d4d6db3555208",
+      "status": "local-green-gate-closed-pending-integration",
+      "action_ids": [],
+      "metrics": null
+    },
+    {
+      "path": "activity-composition-r16-manifest.json",
+      "sha256": "afd164ce28f1b995a3ff2bb9c91165cecf5cdf734928abab2af5200320ac1719",
+      "status": "local-green; deliberate test-contract reconciliation, no product activation",
+      "action_ids": [
+        "activities.list",
+        "activities.detail",
+        "activities.create",
+        "activities.edit",
+        "activities.assessment",
+        "activities.location"
+      ],
+      "metrics": {
+        "N": 5,
+        "E": 5,
+        "P": 5,
+        "F": 0,
+        "B": 0,
+        "S": 0,
+        "U": 0
+      }
+    },
+    {
+      "path": "activity-group-reservation-correlation-manifest.json",
+      "sha256": "3342c261f625029e48a7d28c44825610b6e3f3a239da058c8be5686f6e2152ea",
+      "status": "local-green; gates permanecem defaultfalse",
+      "action_ids": [
+        "groups.create",
+        "groups.location",
+        "activities.create",
+        "activities.location"
+      ],
+      "metrics": {
+        "S": 0,
+        "F": 0,
+        "N": 19,
+        "B": 0,
+        "U": 0,
+        "E": 19,
+        "P": 19
+      }
+    },
+    {
+      "path": "activity-initial-scope-manifest.json",
+      "sha256": "d45a67e907bdbbdff5b2216cffc5ae0bc7c3f8fe0959d199bf63ab282927a05a",
+      "status": "local-green",
+      "action_ids": [],
+      "metrics": {
+        "S": 0,
+        "F": 0,
+        "N": 4,
+        "B": 0,
+        "U": 0,
+        "E": 4,
+        "P": 4
+      }
+    },
+    {
+      "path": "activity-location-candidate-manifest.json",
+      "sha256": "21ca890e57717841f607fe7adc196d76cb55213f5bf2983be38b31bcc5c8289b",
+      "status": "reviewed local candidate; SQL unexecuted; no production authorization",
+      "action_ids": [
+        "activities.create",
+        "activities.location",
+        "locations.schedule"
+      ],
+      "metrics": {
+        "N": 33,
+        "E": 0,
+        "P": 0,
+        "F": 0,
+        "B": 0,
+        "S": 0,
+        "U": 33
+      }
+    },
+    {
+      "path": "activity-owner-callback-manifest.json",
+      "sha256": "67f008a2afb460d25d6c3f919d3f65abe689bab593adebfe062ac95dc9e2cb6a",
+      "status": "local-green",
+      "action_ids": [],
+      "metrics": {
+        "N": 2,
+        "E": 2,
+        "P": 2,
+        "F": 0,
+        "B": 0,
+        "S": 0,
+        "U": 0,
+        "dedup": "1new causal test plus1 existing valid-choice regression. Prior12 widget checks and44 form batch not repeated or summed."
+      }
+    },
+    {
+      "path": "activity-read-composition-manifest.json",
+      "sha256": "5b2f586c4f3eeb15e460d06b66fdaf196339d7f67190bd6625edf0f7029c8b5f",
+      "status": "local-qualified; pending-verification",
+      "action_ids": [],
+      "metrics": null
+    },
+    {
+      "path": "activity-reader-manifest.json",
+      "sha256": "5c4f8663c768702a27ab1d0276822a8106733bd9e953e32963713449994f53d2",
+      "status": "local-qualified",
+      "action_ids": [],
+      "metrics": null
+    },
+    {
+      "path": "activity-reentry-manifest.json",
+      "sha256": "5190a9fbb05c41660ebf97c0e1759183293f6f29f425152307eb57cbbef5e180",
+      "status": "local-green; no terminal promotion",
+      "action_ids": [
+        "activities.create",
+        "activities.edit",
+        "activities.location"
+      ],
+      "metrics": {
+        "N": 4,
+        "E": 4,
+        "P": 4,
+        "F": 0,
+        "B": 0,
+        "S": 0,
+        "U": 0
+      }
+    },
+    {
+      "path": "activity-write-freeze-manifest.json",
+      "sha256": "b68d660292e0fd7fae5be2e836bf5da0549991a4f0ffe829374b779aa4292743",
+      "status": "local-green; candidato gate defaultfalse; sem certificacao integral",
+      "action_ids": [
+        "activities.create",
+        "activities.location"
+      ],
+      "metrics": {
+        "S": 0,
+        "F": 0,
+        "N": 6,
+        "B": 0,
+        "U": 0,
+        "E": 6,
+        "P": 6
+      }
+    },
+    {
+      "path": "assessments-draft-error-manifest.json",
+      "sha256": "788ee3dbe6b4dd025f3318244d2223a400e444581e87c62bc236cee45478e6a1",
+      "status": "local-green; sem certificacao integral FE/BE/E2E",
+      "action_ids": [
+        "assessments.entry",
+        "assessments.gradebook"
+      ],
+      "metrics": {
+        "S": 0,
+        "F": 0,
+        "N": 10,
+        "B": 0,
+        "U": 0,
+        "E": 10,
+        "P": 10
+      }
+    },
+    {
+      "path": "bindings-candidate-manifest.json",
+      "sha256": "e2f1734c5fd4d26f50067905c018f9f11623db3e4fb6d4f3ae5093028ce7ec96",
+      "status": "local nominal candidate; no SQL execution; no production application authorized",
+      "action_ids": [],
+      "metrics": {
+        "N": 30,
+        "E": 0,
+        "P": 0,
+        "F": 0,
+        "B": 0,
+        "S": 0,
+        "U": 30
+      }
+    },
+    {
+      "path": "bindings-manifest.json",
+      "sha256": "336bd51e3db8edf93c8abcacce544b8d803665693d1ac2ab1cd8a2b32d7b9d6c",
+      "status": "see manifest",
+      "action_ids": [
+        "groups.location",
+        "activities.location",
+        "locations.detail-links",
+        "locations.schedule"
+      ],
+      "metrics": {
+        "N": 43,
+        "E": 43,
+        "P": 43,
+        "F": 0,
+        "B": 0,
+        "S": 0,
+        "U": 0
+      }
+    },
+    {
+      "path": "candidates-manifest.json",
+      "sha256": "69d7fbfbf8469e52f8d88651c158a401070964f651f4f36eaca76efb34eb8ee0",
+      "status": "see manifest",
+      "action_ids": [],
+      "metrics": {
+        "N": 36,
+        "S": 0,
+        "F": 0,
+        "B": 0,
+        "U": 0,
+        "E": 36,
+        "P": 36
+      }
+    },
+    {
+      "path": "catalog-held-callback-manifest.json",
+      "sha256": "3f419cd40c55c79ab3a5d9103db0f292672e22eda3329e6eccf54f64581187e8",
+      "status": "local-green; no terminal promotion",
+      "action_ids": [
+        "locations.create-edit",
+        "units.copy-institution-location"
+      ],
+      "metrics": {
+        "N": 7,
+        "E": 7,
+        "P": 7,
+        "F": 0,
+        "B": 0,
+        "S": 0,
+        "U": 0
+      }
+    },
+    {
+      "path": "consumer-manifest.json",
+      "sha256": "f1ed95ecadd66b8dd9fd6c643258a9e1b396094ee8717d9a55add183c8d6a381",
+      "status": "see manifest",
+      "action_ids": [
+        "groups.location",
+        "activities.location",
+        "locations.schedule"
+      ],
+      "metrics": {
+        "N": 47,
+        "E": 47,
+        "P": 47,
+        "F": 0,
+        "B": 0,
+        "S": 0,
+        "U": 0
+      }
+    },
+    {
+      "path": "current-selection-composition-manifest.json",
+      "sha256": "9e94926f593871a239b0bac417b891250721b5372840a9c7ba0951bbc2e69a18",
+      "status": "local-green; composition proposal, unavailable in main",
+      "action_ids": [
+        "groups.location",
+        "activities.location"
+      ],
+      "metrics": {
+        "N": 2,
+        "E": 2,
+        "P": 2,
+        "F": 0,
+        "B": 0,
+        "S": 0,
+        "U": 0
+      }
+    },
+    {
+      "path": "current-selection-manifest.json",
+      "sha256": "356c7148988abdcd610b4bdffdce4cb7cde9f0a32555bf99b011eae18c4824b1",
+      "status": "local-green-gates-closed-pending-integration",
+      "action_ids": [],
+      "metrics": {
+        "N": 68,
+        "E": 68,
+        "P": 68,
+        "F": 0,
+        "B": 0,
+        "S": 0,
+        "U": 0,
+        "dedup": "53new (22DTO,12adapter,17section,2normalroutes);15existing (13consumerreservations+2normalroutes). Composite run16P1F followed by ONLY failed fixture retest1P; latest result per unique test, no rerun sum."
+      }
+    },
+    {
+      "path": "group-atomic-client-manifest.json",
+      "sha256": "bc6663a48ac7888f5c33da4873628828a6603e6ad71f654bcbe3df90edf0a218",
+      "status": "local-client-candidate-gate-closed",
+      "action_ids": [],
+      "metrics": null
+    },
+    {
+      "path": "group-initial-context-manifest.json",
+      "sha256": "b3ae2479f4b62a236c3c0df339a3ab3ffe8b1c64131565971a520b78009ddd3d",
+      "status": "local-green",
+      "action_ids": [],
+      "metrics": {
+        "S": 0,
+        "F": 0,
+        "N": 4,
+        "B": 0,
+        "U": 0,
+        "E": 4,
+        "P": 4
+      }
+    },
+    {
+      "path": "group-location-candidate-manifest.json",
+      "sha256": "6a66f8ea05dcd06bf9828ddcafd0c7628ac5cbc1c452d387aaf68e4b5fec998c",
+      "status": "local-sql-candidate-unexecuted",
+      "action_ids": [],
+      "metrics": null
+    },
+    {
+      "path": "group-retry-context-manifest.json",
+      "sha256": "81c568deb4a2660be5b113c0b647863c0abd0cbe954982c2db01eb08791e91d0",
+      "status": "local-green",
+      "action_ids": [],
+      "metrics": {
+        "U": 0,
+        "regression_unique": 4,
+        "E": 10,
+        "S": 0,
+        "N": 10,
+        "P": 10,
+        "B": 0,
+        "F": 0,
+        "new_unique": 6
+      }
+    },
+    {
+      "path": "group-retry-intent-manifest.json",
+      "sha256": "f7aa2abfd0a4eb18a6d7df16793fd06a7dfc28ff5b02592ad8b3b1412c2466e5",
+      "status": "local-green; no terminal promotion",
+      "action_ids": [
+        "groups.create",
+        "groups.edit"
+      ],
+      "metrics": {
+        "N": 13,
+        "E": 13,
+        "P": 13,
+        "F": 0,
+        "B": 0,
+        "S": 0,
+        "U": 0
+      }
+    },
+    {
+      "path": "group-write-freeze-manifest.json",
+      "sha256": "26ca6187840da9439f45b5a901adf63b0daf4ee2647dcbb2e55717701135aa22",
+      "status": "local-green; no terminal promotion",
+      "action_ids": [
+        "groups.create",
+        "groups.edit"
+      ],
+      "metrics": {
+        "N": 5,
+        "E": 5,
+        "P": 5,
+        "F": 0,
+        "B": 0,
+        "S": 0,
+        "U": 0
+      }
+    },
+    {
+      "path": "historical-reservation-status-manifest.json",
+      "sha256": "bea0ef50f96a98d455061d3e1a0db372d40fa9c4776ce8ea2d220201a72655d1",
+      "status": "local-green; pending-verification FE/BE/E2E",
+      "action_ids": [
+        "groups.location",
+        "activities.location",
+        "locations.schedule"
+      ],
+      "metrics": {
+        "N": 9,
+        "E": 9,
+        "P": 9,
+        "F": 0,
+        "B": 0,
+        "S": 0,
+        "U": 0
+      }
+    },
+    {
+      "path": "productive-composition-manifest.json",
+      "sha256": "0c23d1797fc18b612f779544a105d0c262f6e1869ab4014dda7446a3c6f0d4d5",
+      "status": "read-only-composition-audit-no-terminal-promotion",
+      "action_ids": [],
+      "metrics": null
+    },
+    {
+      "path": "productive-reachability-manifest.json",
+      "sha256": "5a91f6b8390175fda42926fb53a1eb70db2b2e60dca6a94f22ada3163d7e2ed1",
+      "status": "read-only-reachability-no-promotion",
+      "action_ids": [],
+      "metrics": null
+    },
+    {
+      "path": "reservation-justification-limit-manifest.json",
+      "sha256": "22c9d223533bbadfe0c3b9c14e61c5b06819e7ce82f93bdf12185b6a7988ae36",
+      "status": "local-green; backend e gates preservados",
+      "action_ids": [
+        "groups.create",
+        "groups.location",
+        "activities.create",
+        "activities.location",
+        "locations.schedule"
+      ],
+      "metrics": {
+        "S": 0,
+        "F": 0,
+        "N": 15,
+        "B": 0,
+        "U": 0,
+        "E": 15,
+        "P": 15
+      }
+    },
+    {
+      "path": "reservation-justification-ui-manifest.json",
+      "sha256": "0d035ef7a0c3201e787395b92a6b4b49ea04f9a66af675cb23113be6ba3c0e50",
+      "status": "local-green; no terminal promotion",
+      "action_ids": [
+        "groups.location",
+        "activities.location",
+        "locations.schedule"
+      ],
+      "metrics": {
+        "N": 3,
+        "E": 3,
+        "P": 3,
+        "F": 0,
+        "B": 0,
+        "S": 0,
+        "U": 0
+      }
+    },
+    {
+      "path": "units-create-idempotency-manifest.json",
+      "sha256": "1262f72f37a93bb44fd0d765d779b083c89f1f08d1a92563e2f8479f61d62437",
+      "status": "local-green; sem execucao remota ou conclusao E2E",
+      "action_ids": [],
+      "metrics": {
+        "S": 0,
+        "F": 0,
+        "N": 6,
+        "B": 0,
+        "U": 0,
+        "E": 6,
+        "P": 6
+      }
+    }
+  ],
+  "encoding_reconciliation": [
+    {
+      "path": "docs/reviews/evidence/etapa-2/noturna-estrutura/group-initial-context-manifest.json",
+      "previous_sha256": "375108739e47a4f80f5ecefb0a3d200d368afc6a57364997274142dac840556c",
+      "sha256": "b3ae2479f4b62a236c3c0df339a3ab3ffe8b1c64131565971a520b78009ddd3d"
+    },
+    {
+      "path": "docs/reviews/evidence/etapa-2/noturna-estrutura/group-retry-context-manifest.json",
+      "previous_sha256": "4e87beac3de1936bbf7c86a9205c916e31a65455d11a8f57d3bc54d447c1bcaa",
+      "sha256": "81c568deb4a2660be5b113c0b647863c0abd0cbe954982c2db01eb08791e91d0"
+    }
+  ],
+  "metrics_policy": "No global sum: scopes overlap. Each manifest reports its own unique plan and reused regressions; historical catalog165/Clock46+3/reservas49+2 not rerun.",
+  "action_map": "action-handoff-map.json",
+  "productive_composition": "productive-composition-manifest.json",
+  "sql_handoff": {
+    "bindings": "Local30U candidate; Claude canonical integrated filename20260909192000 replaces own20260909190000, LFnormalized source identical. Do not apply both.",
+    "activity": "20260909200000_superadmin_activity_location_create_v2.sql;33U; needs union ActivityAggregateConcurrencyClock and LocationReservationsV1 for local replay.",
+    "group": "20260909210000_superadmin_group_location_create_v2.sql;46U; successor of reservations profile; minimal5fielddraft, not full form writer.",
+    "owner": "Claude serializes local replay/profiles/wrappers; all remote production, no nominal remote authorization in this round."
+  },
+  "next_steps": [
+    "Integrate missing commits once, reviewing reserved main/App/router hunks without duplicating already merged proposals.",
+    "Materialize integrated base and run only mandatory action-specific composition/regression checks; preserve known baseline failures as dated.",
+    "Replay the three exact SQL candidates locally in reserved queue, complete any missing concurrency/Clock proofs, and qualify grants/RLS/ownership/receipts.",
+    "Prepare exact nominal production package for Owner; do not activate closed getters or atomic writers before qualification/authorization.",
+    "Carry49-ID action map and proposed deltas into central trackers, preserving7deferred and0terminalpromotions."
+  ],
+  "limits": [
+    "Own branch push is not dev integration or deploy.",
+    "Current-selection reader now wired but explicitly available:false. Group/Activity atomic adapters remain unqualified/defaultfalse; Group full form cannot silently become restricted draft.",
+    "Goldens with known dark/text-scale drift are retained, no rebaseline or complete frontend claim.",
+    "Group read-entry WIP omitted until qualified/published; no complete productive reachability claim."
+  ],
+  "memory": "No new durable approved product decision; existing rules preserved, knowledge projection no-op.",
+  "productive_reachability": "productive-reachability-manifest.json",
+  "coordinator_r16": {
+    "status": "resolvedlocally5P",
+    "commit": "ef751c33b4c7e859889d0fb7f24ffe125a933351",
+    "evidence": "activity-composition-r16-manifest.json",
+    "next": "integrated base check by Claude"
+  }
+}
