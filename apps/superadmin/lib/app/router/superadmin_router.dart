@@ -1690,13 +1690,17 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.attendance,
             name: SuperadminRoutes.attendanceName,
-            builder: (context, state) => AttendanceDashboardPage(
-              repository: attendanceRepository,
-              permissions: attendancePermissions,
-              logout: logout,
-              onCreate: null,
-              onOpenCall: null,
-              activityController: attendanceActivities,
+            builder: (context, state) => ListenableBuilder(
+              listenable: session,
+              builder: (context, child) => AttendanceDashboardPage(
+                key: ValueKey(session.authorizationInvalidationRevision),
+                repository: attendanceRepository,
+                permissions: attendancePermissions,
+                logout: logout,
+                onCreate: null,
+                onOpenCall: null,
+                activityController: attendanceActivities,
+              ),
             ),
           ),
           GoRoute(
