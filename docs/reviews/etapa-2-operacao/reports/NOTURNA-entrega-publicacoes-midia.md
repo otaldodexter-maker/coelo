@@ -36,7 +36,7 @@ Há ainda um patch **preparado e não mesclado** na branch
 
 | # | SHA | O que é |
 | ---: | --- | --- |
-| 1 | `1e39b2fcf` | Integração seletiva de L01 `3697dd49e` nas três features Principal |
+| 1 | `1e39b2fcf` | Integração seletiva de L01 `3697dd49e` nas três features Principal (o commit de origem não está na dev: vive em `origin/codex/e2-r02-l01-publicacoes`) |
 | 2 | `b10f48d1e` | Rota do leitor Principal de Circular a partir do feed misto |
 | 3 | `57006c7a7` | Composição do feed de Momentos na rota normal |
 | 4 | `1f53ec245` | União de `embedded` com o `mediaPicker` na publicação de Momentos |
@@ -61,7 +61,7 @@ Há ainda um patch **preparado e não mesclado** na branch
 | 23 | `db2726df8` | Remoção do contrato órfão de retirada de Momento |
 | 24 | `9fde22632` | Circular encerrada diz que fechou, em vez de pedir outra resposta |
 | 25 | `6e2a21287` | Diretório pinta na primeira página em vez de esperar a última |
-| 26 | `b0a11y` | Aviso de conflito de resposta passa a ser anunciado |
+| 26 | `f989b5063` | Aviso de conflito de resposta passa a ser anunciado |
 
 ## Resultado medido do recorte
 
