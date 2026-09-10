@@ -1,15 +1,15 @@
 {
-  "revision": 88,
-  "updated_at": "2026-09-10T18:53:07.729Z",
+  "revision": 91,
+  "updated_at": "2026-09-10T19:23:04.074Z",
   "round": "E2-R03-20260910",
   "group": "acessos-pessoas",
   "tool": "Claude",
   "model": "Opus 5 (1M)",
-  "status": "R03_REVISAO_FINAL_DO_CORTE_16H30",
+  "status": "R03_RETRATACAO_E_DEFEITO_PROPRIO_CORRIGIDO",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-acessos-pessoas",
   "branch": "work/etapa2-r03-acessos-pessoas",
-  "head": "58c56fd32",
-  "base_observed": "Rebaseado em origin/dev 552058da0, que contem base.fase0Head 1adb070c9 como ancestral.",
+  "head": "b21329f48",
+  "base_observed": "Rebaseado em origin/dev com a baseline 7ce4337b1. packages/coelo_database/migrations tem baseline + os dois pacotes ja aplicados + os meus recarimbados; a cadeia antiga esta em migrations-historico/.",
   "AVISO_DE_SOBRESCRITA": {
     "o_que_houve": "Entre as minhas revisoes 83 e 84 este arquivo foi REVERTIDO no checkout principal para o conteudo da revisao 56, que e o da rodada noturna R02. As minhas revisoes 57 a 83 sumiram do arquivo.",
     "como_percebi": "Meu utilitario de atualizacao le a revisao atual e incrementa. Ele leu 56 e gravou 57, quando eu esperava 84. As chaves antigas da R02 tinham voltado.",
@@ -953,5 +953,102 @@
     "pgTAP": "182 PASS / 0 FAIL nos cinco pacotes, reconfirmados do zero na base rebaseada.",
     "perfis_de_replay": "22 resolvers OK / 0 FALHOU.",
     "flutter": "714 PASS nas familias people, invites, access_profiles e platform_users; 174 PASS em safety. Medidos antes do rebase; nao alterei nenhum arquivo Dart nesta rodada."
+  },
+  "AVISO_DE_CANAL": "Tentei responder ao coordenador por mensagem direta e a sessao coelo-7a nao existe mais (provavelmente reiniciou com outro nome). Nao adivinhei entre as sessoes vivas para nao mandar coordenacao para a frente errada. Este JSON e o canal contratado; e por aqui que fica o repasse.",
+  "RECARIMBAGEM_PARA_A_FAIXA_DO_GRUPO": {
+    "por_que": "Com a baseline de producao, a cadeia antiga virou historico e TODOS os meus quatro pacotes foram para migrations-historico/. Para existirem sobre a baseline eles voltam como migrations forward-only, na faixa 2026091017xxxx que a coordenacao reservou a este grupo.",
+    "ordem": [
+      "20260910170100 superadmin_internal_person_detail   (AP-PEOPLE-DETAIL-V2)",
+      "20260910170200 superadmin_internal_invites_v2      (AP-INVITES-V2, com a correcao de extensions.gen_random_bytes)",
+      "20260910170300 superadmin_internal_users_directory (AP-INTERNAL-USERS-V2)",
+      "20260910170400 superadmin_internal_users_read_minimization",
+      "20260910170500 child_safety_schema                 (AP-CHILD-SAFETY-INTERNAL-READS)",
+      "20260910170600 child_safety_read_models            (com a correcao do alias reservado authorization)",
+      "20260910170700 child_safety_security_closure",
+      "20260910170800 d04_child_safety_internal_reads",
+      "20260910170900 people_read_aal1_for_mvp            (RETIDO, nao aplicar)"
+    ],
+    "cada_arquivo_registra_a_origem": "Todos ganharam cabecalho dizendo de qual arquivo do historico vieram, o pacote a que pertencem e por que foram recarimbados. A origem nao se perde.",
+    "o_AAL_ficou_por_ultimo_de_proposito": "20260910170900 e o maior carimbo da faixa justamente para o lote poder parar antes dele enquanto a P11 estiver com o Owner."
+  },
+  "ACHADO_QUE_O_COORDENADOR_PRECISA_VER_ANTES_DO_LOTE": {
+    "assunto": "Seguranca infantil exige QUATRO TABELAS NOVAS em producao, e isso pode nao estar no radar dele.",
+    "fato": "A baseline tem public.authorized_person_authorizations, mas NAO tem public.child_safety_restrictions, public.child_safety_alerts, public.child_safety_evidence nem app_private.child_safety_command_receipts. Sem 20260812002000_child_safety_schema o pacote de leituras internas nao aplica.",
+    "consequencia": "Precisei recarimbar tambem o schema, como 20260910170500. O lote de Seguranca infantil deixa de ser so leitura: cria estrutura. Merece conferencia antes de ir para producao.",
+    "nao_e_novidade_minha": "Essas tabelas sempre fizeram parte do pacote; o que mudou e que a baseline tornou explicito que producao nunca as recebeu."
+  },
+  "FIXTURES_AJUSTADAS_PARA_A_FORMA_CANONICA": {
+    "decisao": "A coordenacao confirmou que units.unit_type_id e a forma canonica, o que responde a AP-D3-UNITS que eu havia levantado.",
+    "o_que_mudei": "superadmin_internal_person_detail_test.sql e d04_child_safety_internal_reads_test.sql passaram de institution_type_id para unit_type_id nos inserts de public.units.",
+    "escolha_de_metodo": "Em vez de inventar um unit_type proprio, as duas apontam para o tipo semeado 'other' (3cac54bf-0a5e-4293-a643-471e1319d63b) do supabase/seed.sql. Exercita o catalogo real que vai para producao em vez de uma linha sintetica.",
+    "institutions_ficou_como_estava": "A coluna institutions.institution_type_id continua existindo na baseline, entao os inserts de instituicao nao mudaram. Nao confundir as duas colunas."
+  },
+  "MANIFESTO_E_PERFIS_ENCERRADOS": {
+    "orientacao_recebida": "Com a baseline, o harness de replay e os 22 perfis viraram historicos; nao gastar mais tempo neles.",
+    "onde_parei": "Parei assim que recebi o aviso. O reparo completo dos 22 esta commitado na branch caso a cadeia antiga volte a ser necessaria: de 4 verdes para 22, refeito por nivel. Nao investi mais nada depois disso.",
+    "leitura_honesta": "Esse trabalho perdeu valor prospectivo com a baseline. Registro sem inflar: foi necessario no momento em que ninguem conseguia provar pacote nenhum, e deixou de ser."
+  },
+  "proximo_passo": "Isolar a linha exata do ERROR do start sobre a baseline. Os grants de people.read com MFA batem com owner, entao a hipotese do preflight de grants pode nao ser a causa; preciso do codigo do erro antes de afirmar.",
+  "achados": [
+    {
+      "severidade": "ALTA, e so aparece agora porque a baseline expos os dados reais.",
+      "assunto": "Producao tem 14 CODIGOS de permissao DUPLICADOS em public.platform_permissions.",
+      "codigos": [
+        "activities.assign_people",
+        "activities.create",
+        "activities.link_groups",
+        "activities.link_units",
+        "activities.manage",
+        "activities.manage_permissions",
+        "activities.read",
+        "groups.manage",
+        "groups.read",
+        "people.read",
+        "profiles.about.manage",
+        "profiles.about.publish",
+        "profiles.about.read",
+        "profiles.about.update_official_data"
+      ],
+      "exemplo_medido": "people.read existe duas vezes no seed: 0dc96e9c com module people, screen directory, risco high e requires_mfa TRUE, concedida ao papel owner; e 01060c8e com module people, screen people, risco normal e requires_mfa FALSE, sem nenhuma concessao.",
+      "por_que_importa": "app_private.has_platform_permission resolve o codigo para um conjunto de ids (select id from platform_permissions where code=$1 and status='active') e depois procura concessao em QUALQUER um deles. Com duas linhas ativas para o mesmo codigo, conceder a linha 'fraca' passa a satisfazer o mesmo teste que a linha 'forte'. Hoje isso nao vaza nada, porque a linha sem MFA nao tem concessao nenhuma. Mas a protecao passa a depender de ninguem conceder a linha errada, e nao de uma restricao.",
+      "efeito_colateral_pratico": "Preflights que afirmam 'este codigo e concedido exatamente a estes papeis' agregam sobre as duas linhas. E exatamente o formato do preflight de superadmin_internal_person_detail.",
+      "recomendacao": "Duas coisas, na ordem: (1) constraint unica em platform_permissions(code) onde status='active', para o problema nao voltar; (2) decidir, caso a caso, qual das duas linhas de cada par e a canonica e desativar a outra. A segunda e decisao de dominio e nao e minha; a primeira e higiene e cabe ao dono do catalogo de permissoes.",
+      "nao_e_do_meu_recorte": "Onze dos catorze pares sao de Atividades, Turmas e Perfil. Levanto porque me atravessou, nao para assumir."
+    }
+  ],
+  "ACHADO_ESTRUTURAL_QUE_AFETA_TODAS_AS_FRENTES": {
+    "severidade": "ALTA. Afeta qualquer grupo cujo pacote tenha preflight que dependa de DADOS.",
+    "assunto": "Num reset limpo sobre a baseline, o seed roda DEPOIS de todas as migrations. Entao qualquer migration com preflight que consulte o catalogo falha, mesmo estando correta.",
+    "como_apareceu": "Montei projeto descartavel com a baseline e os meus pacotes juntos no diretorio de migrations. O start morreu em 20260910170100_superadmin_internal_person_detail com \"active MFA people.read capability is required\" (55000). Esse preflight so pergunta se existe a permissao people.read ativa com requires_mfa. Ela EXISTE no seed. O que nao existe e o seed no momento em que a migration roda.",
+    "por_que_nao_e_defeito_do_pacote": "Em producao as linhas de catalogo ja estao la ha meses. O preflight passaria. O problema e so do ambiente de prova reconstruido do zero.",
+    "consequencia_pratica": "Provar pacote \"sobre a baseline\" colocando tudo junto em migrations/ da FALSO NEGATIVO. Quem ler o erro sem investigar vai concluir que o proprio pacote esta quebrado e mexer no que esta certo.",
+    "como_contornei": "Reordenei a prova para reproduzir producao: primeiro um reset so com a baseline, que aplica schema e em seguida o seed; so entao os pacotes do grupo, um a um por psql; e por fim o pgTAP. E a ordem real de producao.",
+    "recomendacao_ao_coordenador": "Publicar essa ordem como o procedimento padrao de prova sobre a baseline, ou embutir o catalogo na propria baseline. Sem isso cada frente vai tropecar no mesmo falso negativo, e algumas vao \"corrigir\" preflights que estao certos."
+  },
+  "RETRATACAO_CODIGOS_DUPLICADOS": {
+    "assunto": "RETIRO o achado da revisao 90 sobre 14 codigos de permissao duplicados em producao. Estava ERRADO.",
+    "o_que_eu_disse": "Que public.platform_permissions tinha 14 codigos repetidos, entre eles people.read, e que isso enfraquecia has_platform_permission.",
+    "o_que_e_de_verdade": "Os codigos aparecem UMA vez em public.platform_permissions e UMA vez em public.institution_permissions. Sao tabelas diferentes, por desenho: permissao de escopo de plataforma e permissao de escopo de instituicao. Medido por tabela: platform_permissions tem 74 linhas e 74 codigos unicos, zero duplicados; institution_permissions tem 34 linhas e 34 codigos unicos, zero duplicados.",
+    "o_erro_que_cometi": "Minha varredura casou o padrao de INSERT no arquivo inteiro do seed, sem delimitar por tabela, e juntou as duas listas.",
+    "o_que_deveria_ter_me_alertado": "As proprias migrations do dominio usam 'on conflict (code) do update', o que so funciona com restricao unica em code. Eu tinha essa evidencia na tela e nao a confrontei com o meu numero antes de publicar.",
+    "consequencia": "Nao ha problema de duplicidade. has_platform_permission le so platform_permissions, entao nao ha ambiguidade entre as duas tabelas. Nenhuma acao e necessaria, e a recomendacao de constraint unica que eu fiz fica sem objeto.",
+    "peco": "Coordenador: se ja repassou aquilo a Atividades, Turmas ou Perfil, desfaca o encaminhamento. Nao ha o que consertar la."
+  },
+  "DEFEITO_PROPRIO_ENCONTRADO_E_CORRIGIDO": {
+    "assunto": "Sobre a baseline, DUAS migrations minhas de Seguranca infantil nao aplicavam: mesmo defeito de rotulos que eu havia reportado em Chat e Circulares.",
+    "erro": "23502, null value in column module_label of relation platform_permissions, em 20260910170500_child_safety_schema e 20260910170700_child_safety_security_closure.",
+    "por_que_so_apareceu_agora": "Na cadeia antiga essas migrations corriam ANTES de 20260831130726, que removeu os defaults dos tres rotulos. O vazio passava. Sobre a baseline de producao os defaults ja nao existem, e o insert quebra. E um exemplo direto do valor da baseline: o defeito estava la o tempo todo e so a base real o mostrou.",
+    "correcao": "Acrescentei module_label, screen_label e action_label aos values e TAMBEM ao do update, senao uma linha preexistente continuaria nula. Rotulos: modulo 'Segurança infantil'; telas 'Diretório', 'Gestão', 'Arquivos', 'Aprovações'; acoes 'Ver', 'Gerenciar', 'Exportar', 'Revisar'. Cada arquivo ganhou nota explicando por que o vazio passava antes.",
+    "honestidade": "Eu reportei esse mesmo defeito em tres migrations de outros grupos e nao tinha percebido que duas das minhas tinham o mesmo problema. So apareceu quando exerci a aplicacao real, que e exatamente o que venho recomendando que se faca com a fila."
+  },
+  "PROVA_SOBRE_A_BASELINE_PARCIAL": {
+    "aplicam_limpo": [
+      "20260910170100 superadmin_internal_person_detail",
+      "20260910170200 superadmin_internal_invites_v2",
+      "20260910170300 superadmin_internal_users_directory",
+      "20260910170400 superadmin_internal_users_read_minimization"
+    ],
+    "leitura": "AP-PEOPLE-DETAIL-V2, AP-INVITES-V2 e AP-INTERNAL-USERS-V2 aplicam sobre a baseline de producao sem nenhuma alteracao. AP-CHILD-SAFETY-INTERNAL-READS precisou das duas correcoes de rotulo acima e esta em reprova agora.",
+    "metodo": "Projeto descartavel proprio, portas proprias: reset so com a baseline (schema e depois seed), pacotes aplicados um a um por psql na ordem da faixa, pgTAP por ultimo. Sem essa ordem o preflight do person_detail da falso negativo, como registrei na revisao 90."
   }
 }
