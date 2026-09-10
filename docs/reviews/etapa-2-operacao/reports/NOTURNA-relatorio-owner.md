@@ -1186,6 +1186,19 @@ duas armadilhas armadas esperando a terceira.
     administrativas, as duas saem com seus testes; se não, falta rota, e aí é
     trabalho e não lixo.
 
+    **Verificado depois de esta seção ser escrita, e confirmado:** a
+    implementação duplicada das abas tem zero consumidores no código de produção,
+    e seus dois testes — incluindo a referência visual — passam, 19 de 19. É
+    exatamente o caso descrito: implementação pública, com nome canônico,
+    protegida por um golden verde, e inerte.
+
+    **E há um risco de execução que vale nomear junto:** o componente morto vive
+    no arquivo de uma frente e o vivo no de outra. **Dono ambíguo foi o que deixou
+    parados, nesta rodada, o alvo de toque pequeno, a deriva de cabeçalho e o
+    ícone que sumiu** — três achados reais que ninguém assumiu porque nenhum
+    pertencia claramente a alguém. Se a resposta vier, ela precisa nomear quem
+    executa, ou volta órfã.
+
 ## Pacotes remotos preparados e não aplicados
 
 Ver [fila SQL serializada](NOTURNA-fila-sql-serializada.md), com a ordem
@@ -1721,6 +1734,33 @@ antes de acreditar no veredito, onde essa regra *deveria* estar coberta?
 A inconclusiva ficou inconclusiva de propósito, porque a âncora aparecia duas
 vezes e mutar as duas mudaria o significado do teste — **não contar como pega o
 que não foi medido** é o que mantém o placar utilizável.
+
+## A classe que este relatório mais teve foi tempo verbal
+
+Este documento foi relido de ponta a ponta por uma frente que não o escreveu, com
+a mesma pergunta que a rodada aplicou às linhas de bloqueio: **qual é a fonte, e a
+fonte diz isso?** Cinco correções saíram, e estão todas aplicadas acima.
+
+**Quatro das cinco são a mesma classe, e não é número errado — é tempo verbal.**
+Afirmações escritas cedo, verdadeiras sobre o mundo de quando foram escritas e
+falsas sobre o mundo agora. A pior delas descrevia em presente, na seção que o
+próprio documento chama de defeito mais grave, um problema **corrigido às 23:35 e
+integrado horas antes** — e teria feito você priorizar um trabalho já feito.
+
+Não é descuido: é o custo previsível de um documento que cresce por acréscimo
+durante uma noite em que o código muda debaixo dele.
+
+**A prática que sai disso, para a próxima rodada:** seções que afirmam **estado** —
+o que existe, o que quebra, o que está atribuído — carregam o SHA da base em que
+foram medidas, como as medições de suíte já carregam. A defasagem fica visível sem
+depender de alguém reler tudo no fim. Seções que afirmam **método** ou **decisão**
+não precisam, porque não envelhecem.
+
+**A quinta correção era de outra natureza e vale por si:** uma afirmação de
+cobertura — "zero divergência nas 80 chamadas" — quando o instrumento examina no
+máximo 75, porque pula toda chamada cuja assinatura não existe. E as que ele pula
+são exatamente as que mais poderiam divergir. O teste estava certo; a transcrição
+para cá é que perdeu a ressalva do instrumento.
 
 ## Ler não pega; seguir pega
 

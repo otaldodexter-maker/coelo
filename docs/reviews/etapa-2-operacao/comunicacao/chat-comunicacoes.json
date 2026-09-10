@@ -1,6 +1,6 @@
 {
-  "revision": 40,
-  "updated_at": "2026-09-10T02:45:00-03:00",
+  "revision": 41,
+  "updated_at": "2026-09-10T02:48:00-03:00",
   "group": "chat-comunicacoes",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) - claude-opus-5[1m]",
@@ -737,5 +737,18 @@
     "nao_resolvido": "16 templates cujas listagens usam grade de cartoes sem chave de linha: activities, agenda/events, attendance/calls, groups, health-care (planos e perfis), institutions, internal-users, invites, meal-plans, people, plans, units. A fresta permanece aberta neles e eu nao afirmo nada a respeito.",
     "licao": "Sonda com entrada errada produz verde confiante. O que a salvou nao foi a densidade de widgets nem a ausencia de excecao, foi eu ter olhado os ids colhidos um a um e reconhecido que nao eram ids.",
     "sugestao_para_quem_continuar": "Dar chave de linha as listagens em grade de cartoes resolveria as duas coisas de uma vez: torna as listas testaveis por id e fecha a fresta. E trabalho de outra frente."
+  },
+  "minha_propria_listagem_tem_a_lacuna_que_eu_apontei_nos_outros": {
+    "achado": "Apontei dezesseis listagens de outras frentes por nao terem chave de linha, o que as torna nao testaveis por identificador. A minha listagem de Avisos tem a mesma lacuna no mobile.",
+    "medicao": "/notices com repositorio de desenvolvimento: 88 chaves contendo '-row-' a 1440x900; ZERO a 375x812 e ZERO a 320x700.",
+    "nao_e_defeito_de_produto": "Verifiquei o conteudo em vez de deduzir pela ausencia de chave. A 375 a tela renderiza os avisos como CARTOES, com titulo, publico, datas, recorrencia, contadores e paginacao ('Pagina 1 de 2'). A lista funciona; o que muda e a apresentacao.",
+    "o_que_e_entao": "Lacuna de testabilidade, nao de operacao. No mobile a tela nao pode ser exercitada por id colhido da propria listagem, que e exatamente o metodo com que eu fechei a fresta no desktop.",
+    "por_que_registro": "Eu tinha acabado de apontar isso em dezesseis telas de outras frentes. Auditar nos outros a classe que se tem em si foi a ocorrencia repetida desta noite, e esta e a minha.",
+    "escopo": "As rotas seguem OK em todos os viewports medidos: /notices e /notices/content-welcome/edit a 1440, 800, 375 e 320, sem excecao e sem desvio."
+  },
+  "higiene_de_arquivos_intermediarios": {
+    "aviso_recebido": "Duas frentes relataram que /tmp neste Windows e compartilhado entre sessoes, e uma teve rodada inteira de falso positivo por ler de volta a lista de outra frente.",
+    "minha_exposicao": "Eu tentei usar /tmp uma vez, para a lista de rotas, e a leitura FALHOU com arquivo inexistente. Troquei para arquivo dentro da propria worktree antes de qualquer medicao valer.",
+    "consequencia": "Nenhuma das varreduras publicadas leu de /tmp. A varredura das 67 rotas e as demais usaram arquivo local em apps/superadmin, criado e removido no mesmo comando."
   }
 }

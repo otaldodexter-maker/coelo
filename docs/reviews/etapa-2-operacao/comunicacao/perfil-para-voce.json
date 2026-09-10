@@ -1,6 +1,6 @@
 {
-  "revision": 32,
-  "updated_at": "2026-09-10T02:22:02-03:00",
+  "revision": 33,
+  "updated_at": "2026-09-10T02:51:43-03:00",
   "group": "perfil-para-voce",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
@@ -76,7 +76,10 @@
     "5401cec1b",
     "06876dac5",
     "c5a6fd106",
-    "0f2135398"
+    "0f2135398",
+    "cdd549e0a",
+    "ace7b32e1",
+    "1d453e2f3"
   ],
   "tracker_delta_proposto": [
     {
@@ -284,6 +287,24 @@
       "titulo": "Pacote revisavel do selo DESTAQUE",
       "resumo": "docs/reviews/evidence/etapa-2/perfil-para-voce/2026-09-10-selo-destaque-contraste.md. Contraste medido nos dois temas (3,75:1 claro, falha AA; 6,25:1 escuro, passa), curva de alfa mostrando que nenhum veu branco resolve, correcao proposta com orange950 a 16% dando 5,75:1, e o custo medido de 13 de 13 goldens. Nao aplicado: o token e compartilhado e a decisao e de coelo-ui.",
       "provas": "calculo WCAG sobre as cores reais; troca aplicada, medida e revertida com arvore limpa conferida"
+    },
+    {
+      "sha": "cdd549e0a",
+      "titulo": "Sonda das telas fail-closed com dados",
+      "resumo": "As oito telas cuja composicao de producao monta Unavailable no ramo autorizado, montadas pelas rotas /dev que usam os MESMOS page classes com repositorio que devolve dados, em 1440x900 e 375x812. Sete limpas nos dois viewports; /dev/imports transborda 1069 px nos dois. Corrobora por caminho independente a varredura de chat-comunicacoes. /imports fica FIXADO como esperado-a-transbordar, entao a suite fica verde e honesta.",
+      "provas": "16/16 PASS; guarda contra verde vazio asserindo ausencia da tela de erro em cada sonda"
+    },
+    {
+      "sha": "ace7b32e1",
+      "titulo": "Prova produtiva do grid de Seguranca infantil",
+      "resumo": "Rota /safety de PRODUCAO montada com repositorio devolvendo registros, em quatro larguras: 11 cartoes em cada, zero excecao. Contagem de cartoes ANTES de ler takeException, porque grade vazia nao exercita medicao de linha. Confirma que 089c1fafc fechou o defeito.",
+      "provas": "4/4 PASS"
+    },
+    {
+      "sha": "1d453e2f3",
+      "titulo": "Aviso sobre a fresta das rotas de detalhe",
+      "resumo": "A guarda de verde vazio nao se estende a rotas parametrizadas: id inexistente renderiza o detalhe vazio legitimo, sem acionar caminho de erro. A guarda que falta e sobre a ENTRADA. Documentado no proprio arquivo porque estender para detalhes e o passo obvio.",
+      "provas": "comentario; sem mudanca de comportamento"
     }
   ],
   "defeitos_corrigidos": 10,
@@ -569,5 +590,19 @@
     ],
     "estado_git": "HEAD 134d582f4, igual a origin/dev; upstream 0/0; worktree com 0 caminhos alterados; git rev-list --count origin/dev..HEAD devolve 0; zero stash.",
     "por_que_declarado_assim": "O coordenador reconcilia oito frentes as 05:00 e tende a assumir que quem faz conferencia de fora esta limpo. Residual meu e o que mais provavelmente escaparia, entao a declaracao e por SHA e nao por adjetivo."
-  }
+  },
+  "releitura_do_relatorio_do_owner": {
+    "achados": [
+      "Secao do defeito mais grave descrevia em presente algo corrigido as 23:35 (089c1fafc). Corrigida em df5db511c com prova produtiva propria em ace7b32e1.",
+      "'Zero divergencia nas 80 chamadas de RPC' afirmava cobertura de 80; o teste pula chamada sem assinatura declarada e as cinco de Unidades sao exatamente essas, entao a cobertura e de no maximo 75. Corrigida.",
+      "principal_real_route_test aparecia como tres falhas na rota real do Principal sem a diagnose, que e teste desatualizado pela integracao do feed misto. Corrigida.",
+      "Replay '1 a 47 limpos' sem a clausula do shim, o que faria quem reproduzisse chegar ao arquivo 28. Corrigida.",
+      "Censo de IntrinsicHeight conta DOIS COMENTARIOS como usos (access_profiles e safety, ambos ja convertidos para Table) e PERDE um uso real, o _HeroContent do hub de Para Voce, que e segunda armadilha armada.",
+      "Paragrafo desta frente em 'o que cada frente entregou' omite o recorte proprio e descreve so o servico cruzado."
+    ],
+    "confirmado_sem_correcao": "Decisao 15: PrincipalProfileContentTabs existe em principal_circulars, tem ZERO consumidor em lib e e protegida por golden verde (19/19). A implementacao viva e a copia privada dentro de principal_profile_preview_page. Dono ambiguo entre duas frentes, que e o que deixou tres achados orfaos nesta rodada.",
+    "classe_predominante": "Nao foi numero errado, foi TEMPO VERBAL: quatro dos cinco achados sao afirmacao escrita cedo, verdadeira sobre o mundo de entao e falsa sobre o mundo agora. Custo de documento que cresce por acrescimo enquanto o codigo muda debaixo dele.",
+    "pratica_sugerida": "Secoes que afirmam ESTADO carregarem o SHA da base em que foram medidas, como as medicoes de suite ja fazem. Secoes de metodo ou decisao nao precisam, porque nao envelhecem."
+  },
+  "higiene_de_medicao": "Os 40 objetos orfaos foram REFEITOS com caminhos privados da sessao apos o aviso de que /tmp e compartilhado nesta maquina: 605/527/63/40, lista byte a byte identica. Nao houve contaminacao, mas a verificacao era devida porque o numero ja estava publicado."
 }
