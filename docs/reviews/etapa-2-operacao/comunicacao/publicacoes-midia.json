@@ -1,14 +1,14 @@
 {
-  "revision": 44,
-  "updated_at": "2026-09-10T04:45:28-03:00",
+  "revision": 45,
+  "updated_at": "2026-09-10T04:47:54-03:00",
   "group": "publicacoes-midia",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
-  "status": "PRE-ENTREGA FINAL publicada (9754d64e4); congelado; parada as 05:00",
+  "status": "PRE-ENTREGA FINAL com item 8 publicada (69e377f3e); congelado; parada as 05:00",
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-publicacoes-midia",
   "branch": "work/etapa2-noturna-publicacoes-midia",
-  "head": "9754d64e4",
+  "head": "69e377f3e",
   "upstream": "origin/work/etapa2-noturna-publicacoes-midia (0/0)",
   "base": "origin/dev 447e6eea2 mesclado em 3ab29d7df",
   "ack": "coordenador: revisao 1 aceita; lote 1e39b2fcf integrado (merge d502350ce); lote b10f48d1e aceito para a proxima integracao; atribuicao de principal_real_route_test retirada por ele apos minha medicao; reserva da plataforma comum de midia mantida",
@@ -381,6 +381,12 @@
       "sha": "9754d64e4",
       "state": "publicado",
       "title": "pre-entrega final com residual pelos tres metodos e o falso positivo de ancestralidade documentado",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "69e377f3e",
+      "state": "publicado",
+      "title": "item 8 da pre-entrega: onze verificacoes erradas, ordenadas por dano",
       "touches_reserved_files": []
     }
   ],
@@ -810,7 +816,8 @@
     ],
     "efeito_colateral_positivo": "a frente perfil-para-voce passou a consumir principalMomentsFeedRepository, a mesma instancia que /principal-moments usa, em vez de abrir uma segunda fonte para o mesmo feed",
     "commits_pendentes_de_integracao": [
-      "9754d64e4"
+      "9754d64e4",
+      "69e377f3e"
     ],
     "ja_integrados": [
       "05537c3b3",
@@ -1105,5 +1112,20 @@
       "como_delimitei": "por INTERVALO (origin/dev..HEAD) ou por lista nominal de SHA produzida ao commitar; nunca --author nem --committer",
       "por_que_importa": "as seis frentes commitam com a MESMA identidade Git neste checkout (achado por alunos-rotina), entao git log --author nao isola ninguem e montaria um conjunto com os commits das outras seis dentro"
     }
+  },
+  "item8_verifiquei_errado": {
+    "criterio": "ordenado por DANO, nao por vergonha. O item 7 diz o que NAO foi verificado; este diz o que foi verificado e deu resposta ERRADA — lacuna declarada o leitor desconta, verificacao errada ele ja usou.",
+    "1": "refutei uma atribuicao CORRETA com uma medicao que nao podia ve-la; a coordenacao RETIROU a atribuicao. Agravante: arquivei bem a evidencia errada, uma hora antes, argumentando que recusa precisa sobreviver em arquivo.",
+    "2": "apontei um pacote SQL para a ARVORE ERRADA (supabase/migrations em vez de migrations). Quem revisasse antes de aplicar em producao nao acharia, e a arvore citada TEM 17 arquivos, entao acharia coisas e concluiria que o pacote nunca existiu. Achado por chat-comunicacoes.",
+    "3": "chamei SINTOMA de diagnostico e a coordenacao publicou; a linha do relatorio mudou duas vezes",
+    "4": "auditei caminhos com find -name, que aprovou um caminho truncado no DOCUMENTO DE DECISAO DO OWNER",
+    "5": "afirmei a direcao do meu proprio furo de denominador antes de terminar de medi-lo; escondia tres falhas",
+    "6": "carimbei tres revisoes com horario PROJETADO",
+    "7": "declarei residual zero por um motivo que eu nao tinha verificado (merge); nove minutos depois virou cherry-pick e o mesmo comando passou a acusar pendencia falsa",
+    "8": "procurei classes por 'Nome(', que nao enxerga construtor nomeado; era o metodo que sustentava a sexta decisao do Owner",
+    "9": "li dois relatorios de teste como inventario: expanded deu 34 de 105, e parseei o json ANTES do evento done, lendo 87 como total",
+    "10": "contei app/router como diretorio de feature, dizendo nove onde sao oito",
+    "11": "repeti NESTE documento o caminho truncado que eu tinha corrigido uma hora antes; so apareceu quando rodei contra ele a conferencia que ele mesmo descreve",
+    "padrao": "nove das onze sao a mesma coisa: uma ferramenta respondendo uma pergunta PARECIDA com a que eu fiz, e eu aceitando a resposta. find -name por caminho, 'Nome(' por mencao, expanded por inventario, json parcial por completo, ancestralidade por integracao, ausencia de uma lista por ausencia do defeito. Nenhuma falhou ruidosamente: todas devolveram resultado plausivel e bem formatado."
   }
 }

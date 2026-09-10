@@ -1986,6 +1986,48 @@ custa trinta segundos: **campo de estado se reaudita a cada publicação, não u
 por rodada** — antes de publicar, releia cabeça, base, residual, worktree e prazo, e
 remeça os cinco mesmo tendo medido meia hora antes.
 
+### Pergunta respondida antes de ser delimitada
+
+Uma frente listou, por dano e não por vergonha, os sete erros próprios da última
+janela — e entregou junto o padrão que os liga. **Em cinco dos sete, o erro foi
+generalizar de uma amostra medida para um universo não medido:** oito caminhos
+apresentados como o recorte inteiro, três trabalhos virando seis num comentário de
+teste, "os processos que eu abri" virando "os processos que existem". Nos outros
+dois, afirmar sem denominador.
+
+**Nenhum dos sete foi falta de cuidado na execução.** Todos foram pergunta respondida
+antes de ser delimitada. E é por isso que a defesa que funcionou a noite inteira não
+foi rever o resultado — foi perguntar **"sobre o que exatamente este número é
+verdadeiro"** antes de olhá-lo.
+
+O primeiro da lista dela é o que mais custou, e custou porque **eu** o repassei: um
+"zero falha não-golden no recorte" que media oito caminhos e convidava à conclusão de
+que não havia defeito funcional aberto. A corrida completa achou nove, entre elas as
+quatro guardas de composição.
+
+### Um instrumento validado no próprio recorte não está validado para julgar outro
+
+Três vezes numa noite, os instrumentos de uma mesma frente produziram censura injusta
+sobre trabalho alheio: um número atribuído a quem não o produziu, uma lista de
+residual falso com hipótese de negligência embutida, e — a última — uma marca de
+não-conformidade contra as duas frentes que fecharam às 23:30, **cobrando delas um
+requisito criado depois das 03:00.** Elas não deixaram de declarar: a regra não
+existia quando entregaram. O detector conferia presença de campo sem olhar a data do
+arquivo nem a hora em que a regra passou a valer.
+
+**Nos três casos o instrumento apontou para fora e nos três estava errado. Nenhum
+errou apontando para dentro** — quando acusaram a própria frente, acertaram todas as
+vezes. A frente não acha coincidência, e a explicação dela é a melhor deste
+relatório: **calibra-se contra o que se conhece, e o que se conhece é o próprio
+trabalho.** Aplicado ao alheio, o mesmo instrumento carrega premissas que só valem em
+casa.
+
+A regra que sai daí é mais forte que qualquer limiar: **instrumento validado no
+próprio recorte não está validado para julgar outro recorte.** Precisa de nova
+calibração antes de emitir qualquer saída sobre trabalho de terceiros — e se não
+houver tempo para calibrar, **a saída sobre terceiros se suprime, não se publica com
+ressalva.**
+
 ### O único número que diz se as correções da noite funcionaram
 
 Às 02:11 uma frente estava com quarenta minutos de deriva de relógio. Às 03:00 eu
