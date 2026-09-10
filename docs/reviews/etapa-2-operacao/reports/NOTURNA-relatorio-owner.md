@@ -2555,6 +2555,29 @@ comportamento, e a observação que a frente deixou é justa: **artefatos regene
 a cada execução vermelha não deveriam estar versionados**, porque qualquer pessoa
 que rode a suíte fica com a árvore suja sem ter tocado em nada.
 
+## "Analyze limpo" era verdade num escopo e foi lido noutro
+
+Toda vez que esta coordenação publicou "analyze limpo" nesta rodada, a medição
+tinha sido feita **dentro de `apps/superadmin`** — e para `apps/superadmin` a
+frase está correta. O que ela não dizia era o escopo, e quem lê entende
+repositório inteiro. **É exatamente a mesma forma do denominador incompleto,
+aplicada à análise estática em vez de aos testes.**
+
+Medido agora, nos sete conjuntos fora do aplicativo:
+
+| Pacote | Resultado |
+| --- | --- |
+| `coelo_api` | **2 avisos** |
+| `coelo_auth`, `coelo_domain`, `coelo_tokens`, `coelo_ui_admin`, `coelo_ui_core`, `apps/catalog` | limpos |
+
+Os dois avisos estão no mesmo arquivo de teste de Locais, na mesma linha: um tipo
+de coleção que o analisador não consegue inferir. **Não são erros**, não mudam
+comportamento, e não são desta rodada — o arquivo foi tocado em 8 de setembro.
+
+**Fica como aviso e não como bloqueio**, mas a frase muda: a partir daqui,
+"analyze limpo **em `apps/superadmin`**", ou a varredura dos sete, que custa
+menos de um minuto no total.
+
 ## Higiene e preservação
 
 - Os 90 artefatos de WIP ignorados na raiz do checkout integrador estão
