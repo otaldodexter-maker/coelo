@@ -58,7 +58,7 @@ final class MealPlanListFilter {
     'personId': personId,
     'periodStart': periodStart?.toIso8601String(),
     'periodEnd': periodEnd?.toIso8601String(),
-    'statuses': statuses.map((v) => v.name).toList(),
+    'statuses': statuses.map((v) => v.databaseValue).toList(),
     'sources': sources.map((v) => v.name).toList(),
     'hasConflict': hasConflict,
     'requiresReview': requiresReview,
@@ -742,12 +742,22 @@ final class UnavailableMealPlanRepository implements MealPlanRepository {
 
 T _enumByName<T extends Enum>(List<T> values, Object? raw, T fallback) =>
     values.firstWhere((v) => v.name == raw?.toString(), orElse: () => fallback);
+/// O banco grava `closed`; o enum do cliente chama o mesmo estado de `ended`.
+/// Os dois lados precisam atravessar esta conversao, senao a leitura cai no
+/// rascunho por omissao e o filtro pergunta por um valor que a coluna nao tem.
+extension MealPlanStatusDatabaseValue on MealPlanStatus {
+  String get databaseValue => this == MealPlanStatus.ended ? 'closed' : name;
+}
+
 MealPlanStatus _status(String value) => switch (value) {
   'inReview' || 'in_review' => MealPlanStatus.inReview,
   'scheduled' => MealPlanStatus.scheduled,
   'published' || 'active' => MealPlanStatus.published,
   'updated' => MealPlanStatus.updated,
-  'ended' => MealPlanStatus.ended,
+  // 'closed' e o valor real da coluna, conferido na restricao check de
+  // meal_plans; 'ended' fica aceito porque o repositorio de desenvolvimento e os
+  // testes existentes usam o nome do enum.
+  'closed' || 'ended' => MealPlanStatus.ended,
   'archived' => MealPlanStatus.archived,
   _ => MealPlanStatus.draft,
 };
