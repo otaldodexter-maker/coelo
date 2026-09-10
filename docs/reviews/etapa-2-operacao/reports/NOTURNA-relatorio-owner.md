@@ -1475,6 +1475,31 @@ Ressalva do método, que a própria frente declarou: o censo conta **literais, n
 intenções**. Parte das formas distintas são fragmentos do mesmo formato quebrado
 em várias linhas, e foram descontados à mão.
 
+## Por que o escritor único precisou de conferentes
+
+Fui o único integrador de `dev` e o único escritor do inventário e dos três
+rastreadores — o que dá consistência e cria um ponto cego: **ninguém confere o
+integrador.** Duas frentes foram encarregadas de me conferir, e o resultado
+justifica a decisão. **Quatro afirmações minhas foram derrubadas antes de
+chegarem a você:**
+
+1. **A contagem de vermelhos propositais.** Eu contava dois e havia um: o antigo
+   ficou verde durante a noite e eu continuava classificando-o pela categoria
+   antiga. Se tivesse chegado assim, **um defeito real passaria por convenção.**
+2. **O falso alarme de rota chamando o backend sem capacidade.** Li o código,
+   achei a cadeia, escalei como prioridade um, reservei um arquivo e mandei uma
+   frente corrigir. Um teste mais novo afirma exatamente aquela chamada como o
+   contrato, e passa. Nada esteve em risco.
+3. **A premissa de que o produto estava dividido sobre a cópia de prévia.** Eu
+   havia lido uma string sem a asserção em volta, que dizia o oposto.
+4. **A recomendação de um esquema de golden versionado como prática existente.**
+   Nenhuma versão jamais subiu; o sufixo é nome, não processo.
+
+As quatro vieram de alguém verificando o que eu afirmei em vez de aceitar, e três
+delas eu tinha ferramenta para checar sozinho e não usei. **O padrão é o mesmo
+que a rodada catalogou nas frentes:** informação que parece verificada porque veio
+escrita — inclusive quando quem escreveu fui eu.
+
 ## Higiene e preservação
 
 - Os 90 artefatos de WIP ignorados na raiz do checkout integrador estão
