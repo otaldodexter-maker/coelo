@@ -681,6 +681,51 @@ autorização em mãos**, foi medir sobre o integrado antes de executar e descob
 que o golden já passava. Teria substituído uma referência correta pela foto de um
 código desatualizado, com uma justificativa que parecia sólida.
 
+**Comparar superfícies diferentes não autoriza conclusão — nem para refutar.**
+Duas frentes bateram nisto em vinte minutos, por caminhos opostos. Uma comparou
+a imagem de referência com a atual e escreveu "o código atual", sem perguntar
+*qual* código: as duas vinham do mesmo widget montado com fixture, e não da rota
+de produção. A outra mediu um widget de cartões isolado, viu passar, e quase
+refutou um relato de acessibilidade que tinha medido a página inteira com o
+shell. A metade que engana é a segunda: refutar *parece* seguro, e uma refutação
+errada apaga um defeito real em vez de inventar um falso.
+
+**Escrever o caso adversarial antes de saber se ele falha.** A correção do envio
+no chat do Principal usava o último item da página como limite do que preservar.
+O caso adversarial — escrito antes, sem saber o resultado — falhou: quando a
+página encolhe porque algo foi removido, o último item passa a ser mais novo e a
+cauda preservada traz de volta o que sumiu. O limite correto é o **cursor
+devolvido pelo servidor**: dentro do alcance relido a página nova é a autoridade,
+fora dele preserva-se o que o leitor já via. Foi o teste que trocou o desenho, e
+não o contrário.
+
+**Projetar o conhecimento e depois aplicá-lo como checklist.** Uma frente
+corrigiu a mesma classe em quatro repositórios, escreveu o contrato de escrita
+nomeando o quinto — Instituições — como referência já existente, e ao aplicar as
+quatro perguntas do próprio artigo achou o sexto e o sétimo defeito, em arquivos
+que ela já havia lido duas vezes na mesma noite sem ver. **O checklist viu o que
+a leitura não viu**, e o artigo não é prescrição inventada: é a descrição do que
+o repositório já faz certo em um lugar, para o próximo copiar em vez de
+redescobrir.
+
+**Distinguir "pendente de verificação" de "pendente de existir".** O aceite de
+Avaliações pede conferir os goldens restantes e a família **não tem nenhum
+golden**, nem nunca teve — verificado no histórico, e os artefatos de falha que
+sugeriam o contrário vieram de uma branch que não está em `dev`. Cobertura
+perdida e cobertura que nunca existiu pedem decisões opostas, e sem esse rastreio
+a resposta teria sido a errada.
+
+**Uma classe de teste que erra o diagnóstico de propósito.** Cinco falhas em
+duas famílias tinham a mesma causa: o teste toca um botão de rodapé sem garantir
+que ele esteja visível. Em 375 px, ou em 1440 com texto a 200%, o rodapé sai da
+área visível, a etapa nunca avança, e tudo o que vem depois falha por motivos que
+**parecem** distintos — um campo ausente aqui, um `Bad state` ali, uma contagem
+de requisições errada acolá. O sintoma aponta para o controle de destino e a
+causa está no toque anterior, então a frente dona investiga o lugar errado. É por
+isso que essas falhas sobrevivem rodadas inteiras. O censo preventivo tem 67
+arquivos e 337 toques nessa forma; **nenhum falha hoje**, e por isso nenhum foi
+mexido nesta rodada.
+
 ## Higiene e preservação
 
 - Os 90 artefatos de WIP ignorados na raiz do checkout integrador estão
