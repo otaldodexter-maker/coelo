@@ -24,6 +24,19 @@ void main() {
     expect(repository.reads, 2, reason: 'o conflito precisa releiturar o detalhe autorizado');
   });
 
+  testWidgets('conflito numa circular ja encerrada diz que fecharam, nao que responda de novo', (
+    tester,
+  ) async {
+    final repository = _ReaderRepository()..closed = false;
+    await _pumpReader(tester, repository, _ResponseRepository(const CircularVersionConflict()));
+    repository.closed = true;
+
+    await _answerAndSubmit(tester);
+
+    expect(find.textContaining('foram encerradas enquanto você respondia'), findsOneWidget);
+    expect(find.textContaining('responda novamente'), findsNothing);
+  });
+
   testWidgets('circular encerrada diz que as respostas fecharam', (tester) async {
     final repository = _ReaderRepository();
     await _pumpReader(tester, repository, _ResponseRepository(const CircularNotAvailable()));
@@ -75,6 +88,7 @@ Future<void> _pumpReader(
 
 final class _ReaderRepository implements CircularRepository {
   var reads = 0;
+  var closed = false;
 
   @override
   Future<CircularDetail> getVisible(String circularId, {String? childContextId}) async {
@@ -99,7 +113,7 @@ final class _ReaderRepository implements CircularRepository {
           ],
         ),
       ],
-      status: CircularStatus.published,
+      status: closed ? CircularStatus.closed : CircularStatus.published,
       responseState: CircularResponseState.unanswered,
     );
   }
