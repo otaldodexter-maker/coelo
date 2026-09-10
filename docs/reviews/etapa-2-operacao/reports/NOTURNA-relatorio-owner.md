@@ -134,8 +134,8 @@ promoção de estado passou a exigir três respostas por escrito: main.dart comp
 caminho? o router monta a página produtiva? existe implementação de produção do
 repositório, e não só a interface?
 
-**Em menos de uma hora a mesma pergunta pegou mais três casos independentes**, e
-é esse resultado que muda o significado do painel:
+**Ao longo da noite a mesma pergunta pegou mais cinco casos independentes**, em
+cinco formas diferentes, e é esse resultado que muda o significado do painel:
 
 - `forms.respond`: a rota constrói a página sem api e descartando o
   `:occurrenceId` que o próprio path declara. A correção de limites numéricos
@@ -146,6 +146,18 @@ repositório, e não só a interface?
   nenhum dos dois. Os 182 PASS de um e os 39 do outro são verdes sobre fixture.
 - `daily_routine`: `RoutineRepository` só tem implementação Development e
   Unavailable.
+- **Autosave do editor de Formulários**: existe, está testado, e só roda no
+  construtor de autoria — `_scheduleAutosave` começa com
+  `if (widget.authoringApi == null) return`, e `SupabaseFormsAuthoringApi` não é
+  construído em lugar nenhum do app. Em produção o salvamento é sempre explícito.
+  Este é o único caso em que **o rastreador afirmava algo falso** em vez de apenas
+  omitir: a linha creditava o autosave como integrado. Já corrigida.
+
+Cinco caminhos diferentes para o mesmo resultado — código pronto, testado e
+inalcançável. E uma pergunta que nenhuma frente pode responder e que muda o valor
+de tudo que está atrás daquele construtor: `SupabaseFormsAuthoringApi` nunca é
+instanciado. Isso é **trabalho preservado para uma etapa futura, ou composição
+que ficou faltando?** Se for o segundo, o autosave volta de graça.
 
 E um caso pior que o de Suporte: em `attendance` a camada de dados **existe em
 Dart, está ligada, e chama funções que não existem no servidor**. As RPCs
