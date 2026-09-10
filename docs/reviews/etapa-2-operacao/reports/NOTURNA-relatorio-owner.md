@@ -1996,11 +1996,23 @@ que responderam, por três causas diferentes**:
   erra nos dois sentidos ao mesmo tempo, e a conferência de existência só pega a
   primeira metade.**
 
+- E **três arquivos noutro pacote** numa quarta, encontrados depois de a
+  coordenação publicar o próprio caso — e não são cobertura acessória: guardam a
+  normalização de nomes, o orçamento de cursor contado em bytes para não truncar
+  nome cadastral, a forma estrita que não vaza dados pessoais no envelope cru, e a
+  negação segura para os sete códigos de acesso. É a fronteira de dados de uma
+  tela do recorte.
+
 **E pegou também no coordenador, que a mandou.** Todas as medições de suíte desta
 rodada — inclusive as minhas, publicadas acima — cobriam `apps/superadmin` e mais
 nada, quando existem sete outros conjuntos de teste no repositório e três foram
 alterados nesta noite. **894 casos que passam nunca entraram em número nenhum, e
 duas falhas nunca foram vistas.**
+
+**São quatro alturas diferentes do mesmo defeito, e nenhuma é pega pela
+conferência de existência**, que era o único controle que a rodada tinha: família
+perdida dentro da própria árvore, por lista escrita de memória; arquivo de
+integração noutra árvore; pacote inteiro do monorepo; e arquivo noutro pacote.
 
 **Uma última exigência saiu disso, e ela evita o erro simétrico:** cada frente
 declara a **sobreposição** entre o número do próprio recorte e o do conjunto que
