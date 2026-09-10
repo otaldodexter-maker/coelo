@@ -160,6 +160,10 @@ final class FormItemConfig {
 abstract final class FormNumericLimits {
   static const _minorUnitsPerUnit = 100;
 
+  /// The server refuses short text above this when the item declares no
+  /// maximum. Mirrored here so the person is told before the command leaves.
+  static const _serverDefaultTextLength = 1000;
+
   static bool isNumeric(FormItemKind kind) =>
       kind == FormItemKind.integer || kind == FormItemKind.decimal || kind == FormItemKind.money;
 
@@ -176,9 +180,10 @@ abstract final class FormNumericLimits {
     return minorUnits.isFinite ? minorUnits.round() : null;
   }
 
-  /// Writes the item's own unit back into civil notation.
+  /// Writes the item's own unit back into civil notation, the same notation
+  /// the author types: a comma separates the decimals.
   static String format(FormItemKind kind, num value) {
-    if (kind != FormItemKind.money) return '$value';
+    if (kind != FormItemKind.money) return '$value'.replaceFirst('.', ',');
     final negative = value < 0;
     final minorUnits = value.abs().round();
     final units = minorUnits ~/ _minorUnitsPerUnit;
@@ -198,11 +203,13 @@ abstract final class FormNumericLimits {
     return null;
   }
 
-  /// Non-null when [value] is longer than the authored maximum length.
+  /// Non-null when [value] is longer than the effective maximum length.
+  ///
+  /// Counts code points, the way Postgres `char_length` does. Counting UTF-16
+  /// units would refuse a text the server accepts, one unit early per emoji.
   static String? textViolation(FormItemConfig config, String value) {
-    if (config.maxLength case final maximum? when value.length > maximum) {
-      return 'O máximo é $maximum caracteres.';
-    }
+    final maximum = config.maxLength ?? _serverDefaultTextLength;
+    if (value.runes.length > maximum) return 'O máximo é $maximum caracteres.';
     return null;
   }
 }

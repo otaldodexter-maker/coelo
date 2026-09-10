@@ -1789,6 +1789,43 @@ void main() {
     }
   });
 
+  testWidgets('a refused text says what to review, not to review numbers', (tester) async {
+    final api = limited(FormItemKind.shortText, maxLength: 5);
+    await open(tester, api);
+    await typeAndSettle(tester, 'abcdef');
+    expect(api.saveCalls, isEmpty);
+    // A recusa foi de tamanho de texto; mandar revisar valores numericos
+    // enviaria a pessoa ao campo errado.
+    expect(find.text('Revise os valores numéricos antes de salvar.'), findsNothing);
+    expect(find.text('Revise as respostas antes de salvar.'), findsWidgets);
+  });
+
+  testWidgets('repairing a refused text back to the stored value still autosaves', (tester) async {
+    final api = _ResponseApi(
+      items: [
+        FormItem(
+          id: 'item-1',
+          kind: FormItemKind.shortText,
+          label: 'Limitada',
+          position: 0,
+          config: const FormItemConfig(maxLength: 5),
+        ),
+      ],
+      initialAnswers: {'item-1': FormAnswer.shortText(itemId: 'item-1', value: 'abcde')},
+    );
+    await open(tester, api);
+    await typeAndSettle(tester, 'abcdefgh');
+    expect(api.saveCalls, isEmpty);
+
+    // Voltar exatamente ao texto ja guardado deixa as respostas iguais, entao
+    // _setAnswer sai cedo sem agendar nada. A tela mesmo assim anuncia
+    // alteracoes nao salvas, e sem reagendar o autosave nada nunca limpa isso:
+    // fica dizendo que ha mudanca pendente quando nao ha.
+    await typeAndSettle(tester, 'abcde');
+    expect(find.text('Revise as respostas antes de salvar.'), findsNothing);
+    expect(find.text('Alterações ainda não salvas.'), findsNothing);
+  });
+
   testWidgets('an out-of-range value cannot be submitted either', (tester) async {
     final api = limited(FormItemKind.integer, max: 10);
     await open(tester, api);
