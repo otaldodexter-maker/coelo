@@ -80,10 +80,17 @@ Medições anteriores desta noite deram 636 e depois 638 PASS com as mesmas 23
 falhas. Nenhuma delas cobria as doze rotas; a diferença é de escopo medido, não
 de regressão nem de correção. Foram refeitas em vez de ajustadas de cabeça.
 
-As 23 falhas são **todas** de golden e reproduzem na base sem nenhum lote deste
-grupo: 10 em `principal_happens_preview_golden_test`, 11 em
+As 23 falhas são **todas** de golden: 10 em
+`principal_happens_preview_golden_test`, 11 em
 `principal_moments_preview_golden_test` e 2 em `circular_directory_golden_test`.
 Nenhum golden foi regravado, conforme decisão da coordenação.
+
+Que elas já existiam sem nenhum lote deste grupo deixou de ser afirmação e
+passou a ser medida. Rodei os mesmos três arquivos na base pré-rodada
+`d784462c1`, num checkout separado: **10 PASS e 23 FAIL**. Comparei as duas
+listas nominais, extraídas dos marcadores `[E]` dos logs e não do resumo
+truncado do `flutter`, e os conjuntos são **idênticos, teste por teste**. Não é
+"o mesmo número de falhas": são as mesmas 23 falhas.
 
 Fora de golden, zero falhas.
 
