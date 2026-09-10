@@ -18,6 +18,7 @@ AS $function$
   );
 $function$;
 revoke all on function public.change_unit_handle_for_superadmin(p_request_id uuid, p_unit_id uuid, p_expected_version bigint, p_handle text) from public;
+revoke all on function public.change_unit_handle_for_superadmin(p_request_id uuid, p_unit_id uuid, p_expected_version bigint, p_handle text) from anon, service_role;
 grant execute on function public.change_unit_handle_for_superadmin(p_request_id uuid, p_unit_id uuid, p_expected_version bigint, p_handle text) to authenticated;
 
 -- public.create_unit_for_superadmin (acl em producao: postgres=X/postgres|authenticated=X/postgres)
@@ -30,6 +31,7 @@ AS $function$
   select app_private.create_unit_for_superadmin(p_request_id, p_payload);
 $function$;
 revoke all on function public.create_unit_for_superadmin(p_request_id uuid, p_payload jsonb) from public;
+revoke all on function public.create_unit_for_superadmin(p_request_id uuid, p_payload jsonb) from anon, service_role;
 grant execute on function public.create_unit_for_superadmin(p_request_id uuid, p_payload jsonb) to authenticated;
 
 -- public.get_unit_form_for_superadmin (acl em producao: postgres=X/postgres|authenticated=X/postgres)
@@ -42,6 +44,7 @@ AS $function$
   select app_private.get_unit_form_for_superadmin(p_unit_id);
 $function$;
 revoke all on function public.get_unit_form_for_superadmin(p_unit_id uuid) from public;
+revoke all on function public.get_unit_form_for_superadmin(p_unit_id uuid) from anon, service_role;
 grant execute on function public.get_unit_form_for_superadmin(p_unit_id uuid) to authenticated;
 
 -- public.list_units_for_superadmin (acl em producao: postgres=X/postgres|authenticated=X/postgres)
@@ -68,6 +71,7 @@ AS $function$
   );
 $function$;
 revoke all on function public.list_units_for_superadmin(p_search text, p_institution_ids uuid[], p_institution_type_ids uuid[], p_unit_type_ids uuid[], p_unit_statuses text[], p_plan_ids text[], p_states text[], p_cities text[], p_districts text[], p_sort text, p_ascending boolean, p_offset integer, p_limit integer) from public;
+revoke all on function public.list_units_for_superadmin(p_search text, p_institution_ids uuid[], p_institution_type_ids uuid[], p_unit_type_ids uuid[], p_unit_statuses text[], p_plan_ids text[], p_states text[], p_cities text[], p_districts text[], p_sort text, p_ascending boolean, p_offset integer, p_limit integer) from anon, service_role;
 grant execute on function public.list_units_for_superadmin(p_search text, p_institution_ids uuid[], p_institution_type_ids uuid[], p_unit_type_ids uuid[], p_unit_statuses text[], p_plan_ids text[], p_states text[], p_cities text[], p_districts text[], p_sort text, p_ascending boolean, p_offset integer, p_limit integer) to authenticated;
 
 -- public.preview_unit_institution_transfer_for_superadmin (acl em producao: postgres=X/postgres|authenticated=X/postgres)
@@ -83,6 +87,7 @@ AS $function$
   );
 $function$;
 revoke all on function public.preview_unit_institution_transfer_for_superadmin(p_unit_id uuid, p_destination_institution_id uuid) from public;
+revoke all on function public.preview_unit_institution_transfer_for_superadmin(p_unit_id uuid, p_destination_institution_id uuid) from anon, service_role;
 grant execute on function public.preview_unit_institution_transfer_for_superadmin(p_unit_id uuid, p_destination_institution_id uuid) to authenticated;
 
 -- public.request_unit_type_for_superadmin (acl em producao: postgres=X/postgres|authenticated=X/postgres)
@@ -100,6 +105,7 @@ AS $function$
   );
 $function$;
 revoke all on function public.request_unit_type_for_superadmin(p_request_id uuid, p_unit_id uuid, p_description text, p_context jsonb) from public;
+revoke all on function public.request_unit_type_for_superadmin(p_request_id uuid, p_unit_id uuid, p_description text, p_context jsonb) from anon, service_role;
 grant execute on function public.request_unit_type_for_superadmin(p_request_id uuid, p_unit_id uuid, p_description text, p_context jsonb) to authenticated;
 
 -- public.superadmin_prepare_unit_identity_upload (acl em producao: postgres=X/postgres|authenticated=X/postgres)
@@ -110,6 +116,7 @@ CREATE OR REPLACE FUNCTION public.superadmin_prepare_unit_identity_upload(uuid, 
  SET search_path TO ''
 AS $function$select app_private.superadmin_prepare_unit_identity_upload($1,$2,$3,$4,$5)$function$;
 revoke all on function public.superadmin_prepare_unit_identity_upload(uuid, text, text, bigint, uuid) from public;
+revoke all on function public.superadmin_prepare_unit_identity_upload(uuid, text, text, bigint, uuid) from anon, service_role;
 grant execute on function public.superadmin_prepare_unit_identity_upload(uuid, text, text, bigint, uuid) to authenticated;
 
 -- public.superadmin_request_unit_identity_delete (acl em producao: postgres=X/postgres|authenticated=X/postgres)
@@ -120,6 +127,7 @@ CREATE OR REPLACE FUNCTION public.superadmin_request_unit_identity_delete(uuid, 
  SET search_path TO ''
 AS $function$select app_private.superadmin_request_unit_identity_delete($1,$2)$function$;
 revoke all on function public.superadmin_request_unit_identity_delete(uuid, uuid) from public;
+revoke all on function public.superadmin_request_unit_identity_delete(uuid, uuid) from anon, service_role;
 grant execute on function public.superadmin_request_unit_identity_delete(uuid, uuid) to authenticated;
 
 -- public.superadmin_unit_identity_download_descriptor (acl em producao: postgres=X/postgres|authenticated=X/postgres)
@@ -130,6 +138,7 @@ CREATE OR REPLACE FUNCTION public.superadmin_unit_identity_download_descriptor(u
  SET search_path TO ''
 AS $function$select app_private.superadmin_unit_identity_download_descriptor($1)$function$;
 revoke all on function public.superadmin_unit_identity_download_descriptor(uuid) from public;
+revoke all on function public.superadmin_unit_identity_download_descriptor(uuid) from anon, service_role;
 grant execute on function public.superadmin_unit_identity_download_descriptor(uuid) to authenticated;
 
 -- public.superadmin_unit_import_template (acl em producao: postgres=X/postgres|authenticated=X/postgres)
@@ -140,6 +149,7 @@ CREATE OR REPLACE FUNCTION public.superadmin_unit_import_template()
  SET search_path TO ''
 AS $function$select app_private.superadmin_unit_import_template()$function$;
 revoke all on function public.superadmin_unit_import_template() from public;
+revoke all on function public.superadmin_unit_import_template() from anon, service_role;
 grant execute on function public.superadmin_unit_import_template() to authenticated;
 
 -- public.transfer_unit_institution_for_superadmin (acl em producao: postgres=X/postgres|authenticated=X/postgres)
@@ -158,6 +168,7 @@ AS $function$
   );
 $function$;
 revoke all on function public.transfer_unit_institution_for_superadmin(p_request_id uuid, p_unit_id uuid, p_destination_institution_id uuid, p_expected_version bigint, p_confirmed boolean) from public;
+revoke all on function public.transfer_unit_institution_for_superadmin(p_request_id uuid, p_unit_id uuid, p_destination_institution_id uuid, p_expected_version bigint, p_confirmed boolean) from anon, service_role;
 grant execute on function public.transfer_unit_institution_for_superadmin(p_request_id uuid, p_unit_id uuid, p_destination_institution_id uuid, p_expected_version bigint, p_confirmed boolean) to authenticated;
 
 -- public.unit_directory_filter_options (acl em producao: postgres=X/postgres|authenticated=X/postgres)
@@ -170,6 +181,7 @@ AS $function$
   select app_private.unit_directory_filter_options(p_states, p_cities);
 $function$;
 revoke all on function public.unit_directory_filter_options(p_states text[], p_cities text[]) from public;
+revoke all on function public.unit_directory_filter_options(p_states text[], p_cities text[]) from anon, service_role;
 grant execute on function public.unit_directory_filter_options(p_states text[], p_cities text[]) to authenticated;
 
 -- public.update_unit_for_superadmin (acl em producao: postgres=X/postgres|authenticated=X/postgres)
@@ -187,6 +199,7 @@ AS $function$
   );
 $function$;
 revoke all on function public.update_unit_for_superadmin(p_request_id uuid, p_payload jsonb, p_unit_id uuid, p_expected_version bigint) from public;
+revoke all on function public.update_unit_for_superadmin(p_request_id uuid, p_payload jsonb, p_unit_id uuid, p_expected_version bigint) from anon, service_role;
 grant execute on function public.update_unit_for_superadmin(p_request_id uuid, p_payload jsonb, p_unit_id uuid, p_expected_version bigint) to authenticated;
 
 -- app_private.change_unit_handle_for_superadmin (acl em producao: sem ACL explicita)
