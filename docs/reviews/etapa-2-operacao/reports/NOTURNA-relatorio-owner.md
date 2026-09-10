@@ -1215,6 +1215,16 @@ Esta classe apareceu quatro vezes, e três delas quase produziram decisão errad
   local. Isso quase encerrou a rodada **uma hora e quarenta antes do horário
   combinado**, com três frentes ainda trabalhando.
 
+**Aviso de leitura sobre os carimbos de hora desta rodada.** A deriva de fuso
+descrita acima não ficou só nas conversas: **ela foi gravada** no campo de data de
+várias revisões dos arquivos de coordenação, algumas com até uma hora e vinte de
+adiantamento. Uma entrega registrada como 03:35 foi escrita antes das 02:00.
+Quem reconstruir a linha do tempo por esses carimbos concluirá que frentes
+entregaram depois do congelamento; **não entregaram**. Os carimbos não foram
+reescritos de propósito — corrigir registro passado para ficar coerente é o mesmo
+tipo de coisa que se recusou a fazer com o histórico de commits. A deriva fica
+declarada aqui, uma vez, para quem ler saber descontar.
+
 **Mensagem não é registro.** Duas frentes descobriram, perto do fim, que trabalho
 real delas existia apenas nas mensagens trocadas com a coordenação: uma
 amostragem de goldens de cinco famílias, num caso, e um handoff de 27 revisões
