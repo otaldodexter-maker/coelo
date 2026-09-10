@@ -3,7 +3,7 @@ title: "Entrega do grupo operacoes-sistema — rodada noturna 09/10 de setembro"
 source: "trabalho proprio sobre a base d784462c1, branch work/etapa2-noturna-operacoes-sistema"
 status: "documento vivo; atualizado ate a pre-entrega das 04:50"
 generated_at: "2026-09-09"
-last_update: "2026-09-09 21:48 (America/Sao_Paulo)"
+last_update: "2026-09-09 22:05 (America/Sao_Paulo)"
 group: "operacoes-sistema"
 ---
 
@@ -31,6 +31,8 @@ coordenador.
 | `9a074a05c` | 96 artefatos de diff de golden destrackeados; a worktree deixa de sujar. |
 | `458277400` | Minha conta: 32 casos cobrindo largura × tema × escala. |
 | `94465f9c3` | Agenda: reprodução do transbordamento a 375 preservada como skip, com o resultado negativo da correção tentada. |
+| `87de5d09e` | Auto-revisão do meu próprio diff de Agenda, antes do review. |
+| `7b553ab75` | Hunk do router para a guarda de tenant de Cardápios — aplicado pelo coordenador em `59c842b32`. |
 
 ## Medições publicadas
 
@@ -42,7 +44,27 @@ coordenador.
 | Composição de produção | Suporte sem camada de dados; `account.profile` só em `/dev`; `account.sessions` sem tela. |
 | Overflow da tabela admin | Causa raiz nomeada; linhas inalcançáveis, não clipadas. |
 | Texto a 200% | Quatro telas falham; nenhuma largura sozinha acharia as três novas. |
-| Diretrizes a11y do Flutter | 21 de 27; `/dev/imports` falha nas três. |
+| Diretrizes a11y do Flutter, app inteiro | 81 de 99, zero não medidos; `/dev/imports` e `/dev/safety` falham nas três. |
+| Captura estreita de transporte | Oito arquivos, lista precisa, por dono. |
+
+## Entregas transversais, fora do recorte
+
+Duas varreduras usando instrumento que só existia aqui, entregues por dono e sem
+alterar nada fora de `operacoes-sistema`:
+`E2-noturna-transversal-por-dono-20260909.md`.
+
+A primeira versão do instrumento de acessibilidade usava `pumpAndSettle`, que
+nunca assenta com `CircularProgressIndicator` em tela. `/dev/safety` expirava
+depois de cinco minutos e teria sido entregue como não avaliada — justamente a
+tela que, medida com pumps limitados, falha nas três diretrizes. Refazer o
+instrumento antes de entregar evitou imputar falha a telas nunca avaliadas e
+revelou o achado mais grave da varredura.
+
+## Gate de conhecimento
+
+Dois artigos projetados em `docs/knowledge/team/`, ambos `draft`, validador PASS
+em 56 artigos: a armadilha da linha de base do sincronizador do Catálogo, e
+"suíte verde não prova que a tela existe em produção".
 
 ## Acessibilidade — o que ficou medido
 
@@ -115,3 +137,11 @@ Registradas porque mudam o que o leitor deve confiar:
    vem do redirect com location; a causa é ausência do ramo.
 4. Disse que `prototype_navigation` não mudou com a flag. O contador não mudou; o
    modo de falha mudou.
+5. Classifiquei a fiação morta de `authorizedMealPlanTenantId` como baixa
+   severidade. Faltava procurar quem **esperava** aquele valor: uma guarda de
+   fail-closed especificada em teste e nunca implementada. Fiação morta sozinha é
+   baixa; fiação morta mais guarda ausente significa que o assistente de mutação
+   abria sem tenant autorizado.
+6. Estimei "cerca de vinte" repositórios sem fechar falha de transporte. São oito.
+   A estimativa contava apenas ausência de captura ampla e ignorava que vários já
+   tratam `ClientException`.
