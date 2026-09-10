@@ -1820,6 +1820,70 @@ void main() {
       },
     );
   }
+  // Os limites autorados que eu corrigi nesta rodada foram provados em
+  // forms_editor_authoring_test, que usa FormsEditorPage.authoring. Esse
+  // construtor NAO e composto em lugar nenhum do app: nada constroi
+  // SupabaseFormsAuthoringApi. O codigo de configuracao e de serializacao e o
+  // mesmo nos dois construtores, mas "o mesmo codigo" e leitura, nao prova.
+  // Estes casos repetem o essencial pelo caminho de api, que e o que /forms/new
+  // e /forms/:formId/edit montam de verdade.
+  testWidgets('production authoring saves money limits in minor units', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 1200));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final api = _EditorApi(
+      firstItems: [FormItem(id: 'money', kind: FormItemKind.money, label: 'Valor', position: 0)],
+    );
+    await tester.pumpWidget(_app(api, 'form-1'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.widgetWithText(TextFormField, 'Valor máximo').first, '10,50');
+    await tester.pumpAndSettle();
+    final save = find.widgetWithText(OutlinedButton, 'Salvar rascunho');
+    await tester.ensureVisible(save);
+    await tester.tap(save);
+    await tester.pumpAndSettle();
+
+    expect(api.savedCommands.last.payload.sections.first.items.first.config.maxValue, 1050);
+  });
+
+  testWidgets('production authoring refuses an inverted numeric range', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 1200));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final api = _EditorApi(
+      firstItems: [
+        FormItem(id: 'number', kind: FormItemKind.integer, label: 'Número', position: 0),
+      ],
+    );
+    await tester.pumpWidget(_app(api, 'form-1'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.widgetWithText(TextFormField, 'Mínimo').first, '100');
+    await tester.enterText(find.widgetWithText(TextFormField, 'Máximo').first, '10');
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+
+    expect(api.savedCommands, isEmpty);
+    expect(find.text('O valor mínimo deve ser menor ou igual ao máximo.'), findsWidgets);
+  });
+
+  testWidgets('production authoring declares the short text maximum length', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 1200));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final api = _EditorApi(
+      firstItems: [
+        FormItem(id: 'short', kind: FormItemKind.shortText, label: 'Texto', position: 0),
+      ],
+    );
+    await tester.pumpWidget(_app(api, 'form-1'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const ValueKey('forms-editor-max-length-short')), '140');
+    await tester.pumpAndSettle();
+    final save = find.widgetWithText(OutlinedButton, 'Salvar rascunho');
+    await tester.ensureVisible(save);
+    await tester.tap(save);
+    await tester.pumpAndSettle();
+
+    expect(api.savedCommands.last.payload.sections.first.items.first.config.maxLength, 140);
+  });
+
   // Residual C02/R01, forms.publish: um formulario novo ainda nao salvo tem
   // _definition nulo, entao _openPublishDialog retornava em silencio depois da
   // confirmacao. O botao fica habilitado porque _canPublish nao depende de
