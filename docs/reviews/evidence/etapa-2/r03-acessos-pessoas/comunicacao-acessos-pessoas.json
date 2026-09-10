@@ -1,15 +1,15 @@
 {
-  "revision": 87,
-  "updated_at": "2026-09-10T18:33:34.083Z",
+  "revision": 88,
+  "updated_at": "2026-09-10T18:53:07.729Z",
   "round": "E2-R03-20260910",
   "group": "acessos-pessoas",
   "tool": "Claude",
   "model": "Opus 5 (1M)",
-  "status": "R03_CANDIDATO_DO_AAL_VERDE_AGUARDANDO_DECISAO",
+  "status": "R03_REVISAO_FINAL_DO_CORTE_16H30",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-acessos-pessoas",
   "branch": "work/etapa2-r03-acessos-pessoas",
   "head": "58c56fd32",
-  "base_observed": "Rebaseado em origin/dev, que contem base.fase0Head 1adb070c9 como ancestral. O coordenador ja havia integrado meus commits ate d10239641; so os dois ultimos precisaram ser replicados, sem conflito.",
+  "base_observed": "Rebaseado em origin/dev 552058da0, que contem base.fase0Head 1adb070c9 como ancestral.",
   "AVISO_DE_SOBRESCRITA": {
     "o_que_houve": "Entre as minhas revisoes 83 e 84 este arquivo foi REVERTIDO no checkout principal para o conteudo da revisao 56, que e o da rodada noturna R02. As minhas revisoes 57 a 83 sumiram do arquivo.",
     "como_percebi": "Meu utilitario de atualizacao le a revisao atual e incrementa. Ele leu 56 e gravou 57, quando eu esperava 84. As chaves antigas da R02 tinham voltado.",
@@ -895,5 +895,63 @@
       "149253255 perfis recontados para o manifesto de 68",
       "58c56fd32 carimbo do candidato do AAL"
     ]
+  },
+  "RESPOSTA_AO_COORDENADOR": {
+    "recebido": "Mensagem de coelo-7a com a ordem do Owner de nenhuma frente parar, o corte de 16:30, a resposta da P1 (dump logico no lugar do PITR), as chaves publicaveis e a BASELINE de producao.",
+    "ALERTA_A_BASELINE_AINDA_NAO_ESTA_EM_DEV": "Conferi agora: nao existe packages/coelo_database/migrations/20260910000000_baseline_producao.sql nem packages/coelo_database/migrations-historico/ no checkout principal (HEAD ed3a544c8) nem em origin/dev (552058da0). O unico item da mensagem que ja chegou na minha worktree e apps/superadmin/.env.local. Entao NAO consegui rebasear na baseline nem reprovar meus pacotes sobre ela. Assim que voce publicar, eu refaço as cinco provas sobre baseline + seed em projeto descartavel proprio, como voce pediu.",
+    "AP_D3_UNITS_CONSIDERO_RESPONDIDA": "Voce disse que producao usa unit_type_id e que fixtures com units.institution_type_id falham. Isso responde a decisao AP-D3-UNITS que eu tinha levantado: producao e a forma canonica. Consequencia direta no meu recorte: a fixture de d04_child_safety_internal_reads_test.sql, que eu ajustei nesta rodada para passar institution_type_id, vai precisar mudar para unit_type_id quando a baseline entrar. Nao mudei ainda porque no estado atual do repositorio ela ficaria vermelha sem motivo.",
+    "AP_D2_LEDGER_FOI_ADOTADA": "A baseline a partir do dump de producao e exatamente a opcao A que eu recomendei na revisao 61 e detalhei na 66, inclusive com o teste de que o dump aplica limpo num Postgres 17 e que so faltava semear o catalogo de permissoes. Registro so para fechar o ciclo da recomendacao."
+  },
+  "FEITO_NESTE_CICLO": {
+    "1_rebase": "Branch rebaseada em origin/dev sem conflito. O coordenador ja havia integrado meus commits ate d10239641; so dois precisaram ser replicados. Branch publicada com --force-with-lease apos autorizacao do Owner, porque rebase reescreve os IDs.",
+    "2_candidato_do_AAL": "AP-PEOPLE-READ-AAL1 escrito e VERDE: 14 testes pgTAP. Retido ate a decisao AP-D1-AAL. Detalhe no bloco PACOTE_NOVO_RETIDO_POR_DECISAO.",
+    "3_reparo_dos_22_perfis": "O acrescimo de 20260812000000 ao manifesto (F-R03-FCR-003) tinha quebrado 18 dos 22 perfis nominais. Restaurei TODOS. De 4 verdes para 22 verdes.",
+    "4_reconfirmacao": "Os cinco pacotes reprovados do zero na base rebaseada, cada um em processo isolado: 42 + 33 + 48 + 45 + 14 = 182 testes pgTAP, todos PASS, zero recurso residual em cada execucao.",
+    "5_conferencia_de_assinatura": "Para as 66 RPCs que existem em producao, nenhum parametro enviado pelo cliente e desconhecido pela funcao. Zero quebras. O problema de contrato do Superadmin e so a ausencia das funcoes."
+  },
+  "REPARO_DOS_PERFIS_DETALHE": {
+    "por_que_quebraram": "Cada profile.json fixa o SHA-256 do manifesto e cada resolver fixa o SHA-256 do seu profile.json. Alem disso a entrada nova cai abaixo da fronteira 20260812001975 que esses perfis usam para montar a base, entao a base subiu de 45 para 46 e deslocou contagens, totais e ate a POSICAO do candidato na uniao canonica, em cascata pelos derivados.",
+    "como_refiz": "Por nivel, sempre na ordem hash-do-manifesto, contagens, pins de pai e de companion, posicoes, e por ultimo o hash do proprio profile.json em cada resolver. Cinco passes ate estabilizar.",
+    "perfis_restaurados": [
+      "A01DirectoryAuditGreen",
+      "A01DirectoryAuditRed",
+      "A01DirectoryContractRed",
+      "ActivityAggregateConcurrency",
+      "ActivityAggregateConcurrencyClock",
+      "ChildDirectoryEnvelope",
+      "FReadDirectoryContractGreen",
+      "FReadDirectoryContractGreenDerived",
+      "FReadDirectoryContractRed",
+      "FReadDirectoryContractRedDerived",
+      "LocationCatalogV2",
+      "LocationReservationsV1",
+      "ModelAal1PhasePolicy",
+      "ModelReadAuthorizationGreen",
+      "ModelReadAuthorizationRed",
+      "N01PrerequisitesRed",
+      "SafetyInternalReads53",
+      "StructureLocationConsumersV1"
+    ],
+    "PRECISA_DE_CONFIRMACAO_DO_DONO": "Em A01DirectoryAuditRed eu tambem repinei o hash de 20260907222911_superadmin_activity_directory_v2_client_contract.sql. Esse pin estava desatualizado ANTES de qualquer coisa minha: o commit 40f6dc274 corrigiu a migration e repinou os outros perfis, mas deixou esse para tras. Completei a intencao daquele commit, e o grupo de Atividades deve confirmar que o conteudo pinado e mesmo o revisado.",
+    "ressalva_util": "Se a baseline substituir a cadeia antiga, boa parte desse reparo vira historico. Fiz porque no estado do repositorio de agora nenhuma frente conseguia provar pacote nenhum, e porque o reparo e reversivel."
+  },
+  "COLISAO_DE_CARIMBO_AINDA_ABERTA": {
+    "assunto": "20260910120000_meal_plan_image_delete_requires_revision_v1.sql e 20260910120000_superadmin_internal_circular_delete_v1.sql continuam com o MESMO carimbo.",
+    "consequencia": "O harness recusa com 'target version must identify exactly one canonical migration'. Nenhuma das duas consegue pgTAP pelo caminho sancionado enquanto isso.",
+    "o_meu_ja_saiu": "Movi o meu para 20260910170000.",
+    "sugestao": "Faixa de carimbo por grupo pelo resto da rodada; com seis frentes gerando candidatos no mesmo dia isso volta a acontecer."
+  },
+  "TRES_MIGRATIONS_DE_OUTROS_GRUPOS_AINDA_QUEBRADAS": {
+    "nota": "Reconferi em dev: nenhuma das tres foi corrigida.",
+    "chat_v2": "20260901101500, 23502, insert em platform_permissions sem module_label, screen_label e action_label. Modelo de correcao pronto no repositorio: 20260901210000 linha 4 faz certo.",
+    "avisos_v2": "20260901185008, 42P01, altera public.notice_events; a tabela vive em analytics desde a segunda migration da cadeia, e producao tambem a tem la.",
+    "circulares_v2": "20260901191921, 23502, mesmo defeito do chat."
+  },
+  "PRIMEIRO_GATE_ABERTO": "Reprovar os cinco pacotes sobre a baseline de producao assim que ela entrar em dev, e ajustar a fixture de Seguranca infantil de institution_type_id para unit_type_id no mesmo movimento.",
+  "WIP_NAO_COMMITADO": "Nenhum. Working tree limpo; tudo commitado e publicado.",
+  "testes_P_F": {
+    "pgTAP": "182 PASS / 0 FAIL nos cinco pacotes, reconfirmados do zero na base rebaseada.",
+    "perfis_de_replay": "22 resolvers OK / 0 FALHOU.",
+    "flutter": "714 PASS nas familias people, invites, access_profiles e platform_users; 174 PASS em safety. Medidos antes do rebase; nao alterei nenhum arquivo Dart nesta rodada."
   }
 }
