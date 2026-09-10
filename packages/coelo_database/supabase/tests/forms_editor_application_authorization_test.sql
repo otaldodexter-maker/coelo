@@ -1,7 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select plan(5);
+select plan(6);
 
 insert into auth.users(id, aud, role, email, created_at, updated_at) values
   ('86000000-0000-4000-8000-000000000001', 'authenticated', 'authenticated', 'forms-editor-reader@test.invalid', now(), now()),
@@ -97,6 +97,14 @@ select is(
   'forms.manage_applications reveals the same-institution application projection'
 );
 
+-- Este caso foi escrito contra a ordem de verificacoes anterior a
+-- 20260908030000_superadmin_internal_form_drafts_v2, quando o par forjado
+-- chegava a form_assert_distribution_target e voltava como 22023. A migration
+-- passou a conferir o proprio agregado ANTES, entao um id de aplicacao que nao
+-- existe volta como indisponivel e nunca chega a confirmar se o par
+-- formulario/instituicao seria valido. A rejeicao continua acontecendo e ficou
+-- mais opaca; o que mudou foi o codigo, nao a garantia. As duas assercoes
+-- abaixo cobrem os dois caminhos, para a intencao original nao se perder.
 select throws_ok(
   $$
     select public.form_save_application(
@@ -113,9 +121,30 @@ select throws_ok(
       )
     )
   $$,
+  'P0002',
+  'form application unavailable',
+  'aplicacao inexistente recebe negativa opaca, sem confirmar o par forjado'
+);
+
+select throws_ok(
+  $$
+    select public.form_save_application(
+      '86500000-0000-4000-8000-000000000001',
+      0,
+      jsonb_build_object(
+        'id', '86500000-0000-4000-8000-000000000001',
+        'form_id', '86400000-0000-4000-8000-000000000001',
+        'institution_id', '86300000-0000-4000-8000-000000000002',
+        'name', 'Forged target',
+        'status', 'active',
+        'opens_for_days', 7,
+        'rules', '[]'::jsonb
+      )
+    )
+  $$,
   '22023',
-  'form and institution must match',
-  'save application rejects a client-forged form and institution pairing'
+  'form application target cannot change',
+  'aplicacao existente recusa o par formulario/instituicao forjado pelo cliente'
 );
 
 reset role;

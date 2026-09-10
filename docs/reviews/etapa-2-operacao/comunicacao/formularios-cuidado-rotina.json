@@ -1,12 +1,12 @@
 {
- "revision": 9,
+ "revision": 10,
  "round": "E2-R03-20260910",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5[1m]",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-10T08:20:00-03:00",
+ "updatedAt": "2026-09-10T09:30:00-03:00",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-formularios-cuidado-rotina",
  "branch": "work/etapa2-r03-formularios-cuidado-rotina",
  "head": "bb15db748",
@@ -50,15 +50,15 @@
   "note": "Fundacao health_care/medication inexistente. Construindo o primeiro pacote SQL da familia health_care."
  },
  "tests": {
-  "pass": 192,
+  "pass": 1103,
   "fail": 0,
   "blocked": 0,
   "skipped": 0,
   "notRun": 0,
-  "pgtap": "93 nos quatro arquivos, sobre o replay descartavel",
-  "flutter": "89 attendance + 7 cuidado/medicacao + 6 rotina = 102 nas suites que eu escrevi ou alterei",
+  "pgtap": "1001 assercoes / 0 falhas nos 22 arquivos do recorte, no replay descartavel",
+  "flutter": "102 nas suites que eu escrevi ou alterei (89 attendance, 7 cuidado/medicacao, 6 rotina)",
   "analyzer": "dart analyze lib limpo em apps/superadmin",
-  "falhas_preexistentes_nas_areas_tocadas": "8, todas medidas tambem SEM as minhas mudancas por git stash: 4 goldens de health_care/presentation (pendentes das correcoes do Owner, nao regravar) e 4 de saneamento de composicao que reclamam de Activities, Access e Unidades, familias de outros grupos",
+  "falhas_preexistentes_nas_areas_tocadas": "8, medidas tambem sem as minhas mudancas: 4 goldens de health_care/presentation e 4 de saneamento de composicao de outras familias",
   "escopo": "nao e a suite completa do app e nao e prova E2E"
  },
  "reservedFiles": [],
@@ -72,7 +72,7 @@
   }
  ],
  "deltaProposals": [],
- "nextStep": "Triar as 62 falhas de Formularios, separando fixture ausente de defeito real.",
+ "nextStep": "Decisoes de tela: D6 (Testar por capacidade), D8 (guarda de saida da Rotina) e D7 (Lancamentos, tela minima).",
  "findings": [
   {
    "id": "F-R03-FCR-001",
@@ -258,11 +258,11 @@
   {
    "id": "PKG-R03-FCR-FORMULARIOS-01",
    "familia": "forms_authoring + forms_responses + forms_files",
-   "estado": "familia destravada; triagem das 62 falhas em curso",
+   "estado": "familia destravada e verde",
    "migration_corrigida": "packages/coelo_database/migrations/20260813155005_forms_definition_and_capabilities.sql",
    "resultado_pgtap": {
     "antes": "nenhuma execucao possivel: o schema nao podia ser criado",
-    "depois": "845 ok / 62 not ok em 18 arquivos",
+    "depois": "1001 ok / 0 not ok nos 22 arquivos do recorte (18 de Formularios mais os 4 meus)",
     "verdes_inteiros": [
      "forms_definition 31",
      "forms_distribution_cardinality 12",
@@ -283,7 +283,12 @@
     ],
     "ressalva": "quatro arquivos tambem acusam ERROR de SQL durante a execucao, o que costuma ser fixture ausente no meu perfil de replay e nao defeito do produto. Nao classifiquei ainda; nao contar essas falhas como defeito antes da triagem."
    },
-   "forms_responses_export": "a migration do XLSX aplica e seu teste passa com 313 assercoes. O R2 real continua fora: o pacote Cloudflare e do coordenador."
+   "forms_responses_export": "a migration do XLSX aplica e seu teste passa com 313 assercoes. O R2 real continua fora: o pacote Cloudflare e do coordenador.",
+   "triagem_das_62_falhas": {
+    "53_de_superadmin_forms_authoring_institution_context_v2_e_drafts_v2": "nao eram defeito: a suite abortava inteira num unico erro de fixture ('internal membership version mismatch'), porque o meu perfil de replay parava em 20260831164937 e nao tinha as migrations de contexto interno de 09/2026. Com 20260901124500, 190432, 191921, 200206, 170731 e 20260908182839 aplicadas, as tres suites passam inteiras.",
+    "3_de_superadmin_forms_directory_internal_read": "mesma causa",
+    "1_de_forms_editor_application_authorization": "unica falha real, e era o teste que estava desatualizado. Ele foi escrito contra a ordem de verificacoes anterior a 20260908030000, quando o par formulario/instituicao forjado chegava a form_assert_distribution_target e voltava como 22023. Aquela migration passou a conferir o proprio agregado ANTES, entao um id de aplicacao inexistente volta como indisponivel e nunca chega a confirmar se o par seria valido. A rejeicao continua acontecendo e ficou MAIS opaca. Atualizei o teste para cobrir os dois caminhos, com a explicacao no proprio arquivo, para a intencao original nao se perder."
+   }
   }
  ],
  "filaSQL": [
@@ -325,5 +330,16 @@
   "depende_de": "migrations 20260910010000 a 20260910010500 aplicadas",
   "por_que_nasce_desligada": "antes do SQL aplicado, ligar trocaria uma indisponibilidade honesta por erro obscuro contra um banco sem esses objetos",
   "mudanca_estrutural": "SuperadminAuthScope ganhou o campo healthCareRepository, que nao existia: Perfis de cuidado estava preso a UnavailableHealthCareRepository dentro do proprio router. Passa por main.dart, superadmin_app.dart e superadmin_router.dart."
+ },
+ "replayReprodutivel": {
+  "por_que": "o perfil FoundationOnly esta quebrado no HEAD (F-R03-FCR-003) e a cadeia completa nao replica (F-R03-FCR-001 e o mesmo padrao em imports). Esta e a receita que produziu as 1001 assercoes, para o coordenador reproduzir em vez de acreditar.",
+  "projeto": "descartavel, fora do repositorio, project_id coelo_fcr_replay, portas 553xx",
+  "conjunto": "94 migrations: as do manifesto foundation com versao <= 20260831164937; as 24 de Formularios; 20260908160000_private_media_catalog_r2_v1; 20260901124500, 20260901170731, 20260901190432, 20260901191921, 20260901200206 e 20260908182839; as seis minhas de 20260910; mais replay/20260811151253 e replay/20260811215452",
+  "arquivo_extra_somente_replay": "um arquivo 20260831130727 que repoe o default de sentinela dos rotulos depois de 20260831130726, porque varias migrations posteriores ainda inserem permissoes sem module_label. Nao esta no repositorio e nao e candidato a deploy.",
+  "deixadas_de_fora_e_por_que": {
+   "20260901101500_superadmin_internal_chat_v2": "conflito de tipo de retorno em chat_inbox_page; familia do grupo principal-chat-sistema",
+   "20260901185008_superadmin_internal_notices_v2": "exige public.notice_events, que nenhuma migration do conjunto cria; familia de Avisos",
+   "20260812002010_import_export_unit_source_retention": "exige app_private.unit_import_source_attestations, que nenhuma migration cria. Mesmo padrao do achado F-R03-FCR-001, agora na familia de Importacoes"
+  }
  }
 }
