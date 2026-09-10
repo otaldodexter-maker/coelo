@@ -1,15 +1,15 @@
 {
-  "revision": 31,
-  "updated_at": "2026-09-10T03:55:36-03:00",
+  "revision": 32,
+  "updated_at": "2026-09-10T04:42:32-03:00",
   "clock_note": "Relogio corrigido pelo coordenador e conferido por mim com PowerShell Get-Date: 02:00 de 10/09, fuso E. South America Standard Time, -03:00. O date do Git Bash com TZ nao tem tzdata e devolve UTC; parei de usa-lo.",
   "group": "alunos-rotina",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) - claude-opus-5[1m]",
-  "status": "PRE-ENTREGA consolidada; verificacao de testes sera reexecutada apos a corrida de fechamento do coordenador",
+  "status": "PRE-ENTREGA FECHADA",
   "coordinator": "Claude (Coordenacao e Integracao)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-alunos-rotina",
   "branch": "work/etapa2-noturna-alunos-rotina",
-  "head": "665b48d69",
+  "head": "f05ddf647",
   "upstream": "18d0127ed",
   "divergence": "HEAD 10 a frente de origin/dev. Os 10 sao merges de integracao do coordenador e lotes de OUTRAS frentes neste checkout compartilhado. NENHUM e meu: os 26 lotes citados neste arquivo foram verificados um a um como ancestrais de origin/dev. Publicar esses 10 nao e decisao minha.",
   "workingTree": "Sujo por 3 JSONs de comunicacao de frentes distintas neste checkout compartilhado. O unico que eu escrevo e alunos-rotina.json.",
@@ -712,5 +712,40 @@
       "resultado": "35 P, zero falhas. O DTO de diretorio de criancas cobre normalizacao unicode, orcamento de cursor em bytes UTF8, forma estrita contra vazamento de PII e negacao segura para os sete codigos SAI. O de Assiduidade cobre denominador da taxa, dado insuficiente em vez de zero por cento, limpeza de selecao descendente e escopo de acesso fixo.",
       "falso_positivo_do_instrumento": "A primeira varredura devolveu 35 arquivos porque eu casei a palavra 'child', que aparece como parametro child: em praticamente todo teste de widget Flutter. Refinei para diretorio de dominio em vez de mencao no texto e sobraram 3. Buscar por termo de dominio em codigo Flutter tem falso positivo estrutural nessa palavra."
     }
+  },
+  "pre_entrega_final": {
+    "base_congelada": "f05ddf647",
+    "1_residual": {
+      "por_ancestralidade": "ZERO. 33 de 33 hashes citados sao ancestrais de origin/dev apos fetch. Derivacao independente pelo log dos commits do arquivo de comunicacao: tambem zero.",
+      "ressalva_do_coordenador": "Ele integra por CHERRY-PICK e nao por merge, e me avisou que ancestralidade responderia NAO para trabalho presente se um commit meu tivesse sido colhido. No meu caso os 26 lotes SAO ancestrais, entao foram integrados por merge e a resposta vale.",
+      "por_conteudo": "Testei tambem `git diff <sha> origin/dev -- <caminhos do commit>` e 15 de 26 acusaram diferenca. NAO conclui residual disso: esse teste compara a arvore inteira naqueles caminhos, entao qualquer evolucao posterior de qualquer frente aparece como divergencia. Falso positivo estrutural.",
+      "por_assinatura": "Teste que decide, feito sobre a base congelada: Table com TableCellVerticalAlignment.intrinsicHeight em safety_pages 1 ocorrencia; _decisionRequestId 3; _draftIdempotencyKey no repositorio de Assiduidade 2; routineStatusLabel 1; texto acentuado em daily_routine_form_sections 3; authorizationInvalidationRevision no roteador 47. Seis arquivos de teste meus presentes por nome. Meu trabalho esta na base congelada."
+    },
+    "2_atribuicao": {
+      "resposta": "NENHUM numero medido por outra frente entrou em arquivo meu integrado, nem em codigo, nem em comentario, nem em mensagem de commit.",
+      "criterio": "Varri os 37 arquivos .dart tocados pelos meus 26 lotes atras de comentario com percentual, decimal com virgula ou ponto, ou contagem de pixels. Zero ocorrencias. Varri as 26 mensagens de commit com o mesmo padrao: UMA ocorrencia, em 67c48e35a, e a medicao e MINHA — contagem de glifos de acento entre 25 e 171 pixels, 0,00% a 0,05%, produzida pela minha propria amostragem de goldens.",
+      "defeito_que_a_varredura_revelou": "A minha PRIMEIRA varredura usou `git log --author='Adriel'` para isolar os meus commits. Isso NAO isola nada: todas as seis frentes commitam com a mesma identidade git neste checkout. A varredura devolveu arquivos de todas as frentes e eu quase respondi sobre trabalho alheio como se fosse meu. Refiz sobre os 26 SHAs que estao registrados como meus, que e a unica lista que de fato me identifica.",
+      "valor_para_as_seis": "Qualquer frente que tenha usado --author para delimitar o proprio trabalho nesta rodada mediu o trabalho de todo mundo. Vale conferir."
+    },
+    "3_recursos": {
+      "worktrees_criadas_por_mim": "NENHUMA. A e2-noturna-alunos-rotina foi criada pelo coordenador; conferi o estado dela em vez de presumir: limpa, stash zero, zero commits nao publicados, sem WIP retido. Pode ser arquivada sem perda.",
+      "stash": "0 no checkout principal e 0 na worktree do meu nome.",
+      "arvore": "limpa, 0/0 com origin/dev.",
+      "processos": "Get-Process dart,flutter_tester contou 28 no congelamento. DECLARADOS, nao mortos, conforme instrucao. Nenhum e meu: todas as minhas corridas terminaram com marcador type:done conferido.",
+      "subagentes": "nenhum",
+      "portas": "nenhuma",
+      "mutacao_remota": "nenhuma tentada em toda a rodada, em Supabase ou Cloudflare",
+      "sondas": "nenhuma em disco nem em commit; zero arquivos nao rastreados no fechamento"
+    },
+    "4_testes": "Ver bloco 'medicao': recorte 1282 P / 4 S / 8 F, uniao 2460 P / 6 S / 22 F, cada numero com a lista de caminhos que o produziu e a sobreposicao de 60 casos nomeada em vez de somada. Parser verificado contra o contador oficial da propria corrida: +1095 ~4 -8 contra P=1095 S=4 F=8.",
+    "5_falhas_com_dono": "22 no total, NENHUMA minha e NENHUMA regressao desta rodada. 8 goldens de institutions (theme drift, aguardando rebaseline nominal, dono frente de estrutura). 6 de rota (3 principal_real_route_test por teste desatualizado pela integracao do feed misto, 1 import_development_routes e 1 prototype_navigation anteriores a rodada, 1 RED nomeado de proposito). 8 goldens de forms (dono formularios-cuidado).",
+    "6_o_que_eu_NAO_verifiquei": [
+      "O baseline antigo de 1055 P: nao tenho registro de quais caminhos aquelas corridas usaram e nao afirmo o que ele cobria. O numero valido e o desta revisao, com caminhos nomeados.",
+      "A decisao de rebaseline dos goldens de institutions e de forms nao e minha e continua pendente com as frentes donas.",
+      "As linhas bloqueadas por schema nao versionado continuam bloqueadas: Rotina chama 9 objetos app_private nunca criados, student_tracking 4. Diagnostico estatico sobre as migrations, sem execucao.",
+      "Cache PostgREST U1 permanece nao executado: exige stack local completa e janela SQL serializada no coordenador.",
+      "Nada foi exercitado contra Supabase ou Cloudflare reais. Nenhuma tela deste recorte pode ser declarada concluida ponta a ponta.",
+      "A amostra de Formularios do bloco de goldens nao e minha: 12 casos sobre 23 imagens, medidos pela frente dona. O conjunto de 60 tem duas maos."
+    ]
   }
 }
