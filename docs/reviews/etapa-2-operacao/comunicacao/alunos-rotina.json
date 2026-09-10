@@ -1,11 +1,11 @@
 {
-  "revision": 18,
-  "updated_at": "2026-09-10T02:38:00-03:00",
+  "revision": 22,
+  "updated_at": "2026-09-10T02:56:00-03:00",
   "clock_note": "Relogio corrigido pelo coordenador e conferido por mim com PowerShell Get-Date: 02:00 de 10/09, fuso E. South America Standard Time, -03:00. O date do Git Bash com TZ nao tem tzdata e devolve UTC; parei de usa-lo.",
   "group": "alunos-rotina",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) - claude-opus-5[1m]",
-  "status": "PRE-ENTREGA publicada com folga; disponivel ate o corte",
+  "status": "PRE-ENTREGA consolidada; verificacao de testes sera reexecutada apos a corrida de fechamento do coordenador",
   "coordinator": "Claude (Coordenacao e Integracao)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-alunos-rotina",
   "branch": "work/etapa2-noturna-alunos-rotina",
@@ -308,64 +308,198 @@
     "outras": "Nao ha outra certificacao no meu recorte cuja prova eu nao consiga apontar."
   },
   "pre_entrega": {
-    "verificacao": {
-      "testes": "1055 P / 4 S / 0 F em test/features/{daily_routine,attendance,student_tracking,children,safety,access_profiles,people,platform_users}, execucao unica sobre a base integrada.",
-      "analyze": "flutter analyze em apps/superadmin inteiro: No issues found.",
-      "git": "worktree limpa, stash vazio, HEAD 0/0 com upstream.",
-      "integracao": "Os 25 lotes estao INTEGRADOS em dev, conferidos um a um com git merge-base --is-ancestor. Nada meu pendente.",
-      "skips": "Os 4 skips sao historicos de Rotina: tres de estados removidos na V2.10 e um da reconciliacao do dialogo compartilhado. Nenhum e meu."
+    "git": {
+      "head": "95b11afd4",
+      "dev_no_momento": "e7d4b3e96",
+      "worktree": "limpa",
+      "stash": "vazio",
+      "divergencia": "0/0 com upstream",
+      "integracao": "Os 25 lotes estao em dev, conferidos um a um com git merge-base --is-ancestor as 02:38.",
+      "wip_retido": "nenhum",
+      "filhos": "nenhum subagente foi criado em toda a rodada",
+      "processos_proprios": "nenhum ativo",
+      "portas": "nenhuma"
     },
-    "recortes_trabalhados": [
+    "testes": {
+      "ultima_medicao": "1055 P / 4 S / 0 F em test/features/{daily_routine,attendance,student_tracking,children,safety,access_profiles,people,platform_users}, execucao unica sobre a base integrada.",
+      "analyze": "flutter analyze em apps/superadmin inteiro: No issues found.",
+      "reexecucao": "Sera refeita apos a corrida de fechamento do coordenador terminar, para nao competir por CPU e para medir sobre a base final."
+    },
+    "quatro_recortes_trabalhados": [
       {
-        "recorte": "alunos-rotina, o original",
-        "lotes": "1 a 14",
-        "resultado": "De 235 P / 4 S / 12 F na base integrada para verde. 12 falhas nao registradas por ninguem, todas com causa raiz identificada."
+        "recorte": "alunos-rotina (original)",
+        "lotes": "1 a 14 e 24",
+        "de": "235 P / 4 S / 12 F",
+        "para": "verde",
+        "nota": "As 12 falhas nao estavam registradas por ninguem; todas com causa raiz identificada."
       },
       {
-        "recorte": "child_safety, transferido apos 23:30",
+        "recorte": "child_safety (transferido apos 23:30)",
         "lotes": "18 a 22",
-        "resultado": "De 27 P / 5 F para 170 P / 0 F. Tela que nao se dispunha em PRODUCAO passou a se dispor."
+        "de": "27 P / 5 F",
+        "para": "170 P / 0 F",
+        "nota": "Tela que nao se dispunha em PRODUCAO voltou a se dispor."
       },
       {
         "recorte": "acessos-pessoas restante",
         "lotes": "23 e 25",
-        "resultado": "Ja estava verde, 713 P / 0 F. Duas lacunas de cobertura fechadas, ambas em acoes que o rastreador ja tratava como resolvidas."
+        "de": "713 P / 0 F",
+        "para": "verde com duas lacunas fechadas",
+        "nota": "Ja estava verde; as lacunas eram em acoes que o rastreador tratava como resolvidas."
       },
       {
-        "recorte": "createCall, devolvido pelo chat-comunicacoes",
-        "lotes": "24",
-        "resultado": "Ultimo sitio vivo do meu recorte sem chave de intencao."
+        "recorte": "tarefas transversais",
+        "lotes": "—",
+        "nota": "Varredura de encolhimento de testes no app inteiro e amostragem de seis suites de golden."
       }
     ],
-    "defeitos_reais_corrigidos": [
-      "child_safety: grade nao se dispunha em producao. IntrinsicHeight sobre um LayoutBuilder, safety_pages.dart:292. Tres sintomas relatados eram a mesma linha.",
-      "daily_routine: TextEditingController usado apos dispose em todo fechamento do dialogo de renomear secao.",
-      "daily_routine: sair do editor perdia o rascunho sem aviso; aceite abandonar nao existia.",
-      "daily_routine: unavailable apresentado como falha recuperavel, com retry que nunca poderia funcionar.",
-      "daily_routine e child_safety e attendance: chave de idempotencia gerada no instante do toque em oito sitios, permitindo que um retry virasse segunda intencao. Em child_safety isso era decisao sobre retirada de crianca.",
-      "daily_routine: vazamento de valor cru na UI, DateTime completo e nome de enum.",
-      "attendance: snapshot lido sob autorizacao anterior sobrevivia a mudanca de autorizacao.",
-      "daily_routine: 73 literais sem acento, incluindo todas as mensagens de erro."
-    ],
-    "nao_corrigido_por_decisao": [
-      "IntrinsicHeight de person_directory_page: mesma forma, hoje seguro porque o cartao usa indicador proprio. Armadilha nomeada.",
-      "attendance_controller: 147 linhas nao referenciadas em lib/. Conferi que a pagina viva trata as tres excecoes, entao e redundancia de manutencao e nao lacuna. Armadilha nomeada.",
-      "studentTrackingRepository declarado no authScope e nao lido por ninguem. Armadilha nomeada.",
-      "Botao de menu do usuario do shell, 52x44 a 375, medido em DUAS telas independentes. Decisao do coordenador de nao mexer nesta rodada; vai ao Owner medido.",
-      "Golden de child_safety: NAO regravado. Sobre a base integrada ele passa."
-    ],
-    "promocoes_propostas": "NENHUMA, em dezesseis revisoes. As tres perguntas de composicao produtiva reprovam para as tres familias, e a causa mais funda apareceu hoje: schema nao reconstruivel.",
-    "erros_meus_nesta_rodada": [
-      "Carimbo de horario errado nas revisoes 5 e 6, cerca de 8 horas adiantado, por estimar em vez de consultar o relogio. Corrigido e declarado.",
-      "Sobrescrevi um arquivo de teste existente com quatro casos passando. Pego pela aritmetica da contagem antes de commitar; restaurado; conferi que nao houve outra ocorrencia.",
-      "Heuristica de chave sem referencia em teste deu falso positivo; passei a usa-la como ponto de partida para ler o teste existente, nao como evidencia.",
-      "Primeira tentativa de acentuacao usou regex que desalinhou nas aspas; refeita por palavra inteira.",
-      "Passei callback ao shell incondicionalmente e movi seis goldens; revertido para opt-in.",
-      "Liberei intencao de salvamento so num dos quatro sitios; corrigido no lote seguinte.",
-      "Reportei uma pista errada sobre access_profile_detail_page; retirei antes de ser repassada.",
-      "Primeira sonda da correcao de safety tinha o defeito, nao a correcao; achei lendo o erro real de cada cenario.",
-      "Medi acessibilidade de invites no widget isolado quando o relato media a pagina; refiz igual antes de afirmar."
-    ]
+    "contribuicoes_transversais": {
+      "varredura_de_encolhimento": "187 arquivos de teste tocados na rodada; 100 adicionados, 0 deletados, 0 renomeados; dos 87 modificados, 48 ganharam casos, 39 mantiveram, ZERO perderam. Instrumento validado antes de confiar. Terceira lacuna fechada por iniciativa propria: comparei NOMES nos 39 de contagem estavel e os cinco divergentes foram inspecionados um a um. Buraco residual declarado: teste com corpo esvaziado mantendo nome e contagem nao e detectado por nada.",
+      "amostragem_de_goldens": "Seis suites, ~60 casos, todas classificadas elemento a elemento ao final. Resultado corrigido: ~83% deslocamento e rebaseline seguro, ~17% com conteudo. A primeira leitura, que dizia o contrario, foi derrubada por mim."
+    },
+    "promocoes_propostas": "NENHUMA em vinte revisoes.",
+    "bloqueios": "Seis linhas, cinco retestadas por comando nesta madrugada, uma declarada como nao testavel por mim. Duas tiveram a CAMADA corrigida de \"falta implementar repositorio\" para \"schema nao versionado\", o que muda quem age.",
+    "certificacoes": "attendance.export tem prova localizada e forte. profile-files.import/export era certificacao sem prova e foi coberta no lote 25. Nao ha outra no meu recorte sem prova apontavel.",
+    "residual_por_sha": {
+      "comando_de_verificacao": "for s in <lista>; do git merge-base --is-ancestor $s origin/dev && echo EM-DEV || echo PENDENTE; done",
+      "executado_em": "2026-09-10T02:55 contra origin/dev",
+      "resultado": "25 de 25 EM-DEV. Zero pendentes.",
+      "lotes": [
+        {
+          "sha": "063f19c35",
+          "assunto": "test(alunos-rotina): restore the red baseline of Assiduidade and Rotina",
+          "estado": "EM-DEV"
+        },
+        {
+          "sha": "bf69016f3",
+          "assunto": "fix(daily-routine): state launch date and status in the product language",
+          "estado": "EM-DEV"
+        },
+        {
+          "sha": "5c95dbae0",
+          "assunto": "fix(daily-routine): name a duplicated section like every other copy",
+          "estado": "EM-DEV"
+        },
+        {
+          "sha": "ce4ee94c4",
+          "assunto": "fix(daily-routine): confirm before discarding an edited routine draft",
+          "estado": "EM-DEV"
+        },
+        {
+          "sha": "67c48e35a",
+          "assunto": "fix(daily-routine): write the routine screens in accented Portuguese",
+          "estado": "EM-DEV"
+        },
+        {
+          "sha": "752fbcdd9",
+          "assunto": "fix(daily-routine): guard a shell exit from an edited routine draft",
+          "estado": "EM-DEV"
+        },
+        {
+          "sha": "8d68219a0",
+          "assunto": "fix(daily-routine): keep a retried save on the same intent",
+          "estado": "EM-DEV"
+        },
+        {
+          "sha": "36b6b9739",
+          "assunto": "test(daily-routine): hold the exit confirmation to the screen acceptances",
+          "estado": "EM-DEV"
+        },
+        {
+          "sha": "d4d2fd4cc",
+          "assunto": "test(students): cover the composition /students actually serves today",
+          "estado": "EM-DEV"
+        },
+        {
+          "sha": "019cf280c",
+          "assunto": "fix(daily-routine): release every save intent, not only the model one",
+          "estado": "EM-DEV"
+        },
+        {
+          "sha": "7e764cd1f",
+          "assunto": "fix(daily-routine): tell an absent routine backend apart from a failed load",
+          "estado": "EM-DEV"
+        },
+        {
+          "sha": "af590ff18",
+          "assunto": "fix(attendance): reload the dashboard when authorization changes [ROTA, reservado]",
+          "estado": "EM-DEV"
+        },
+        {
+          "sha": "4a3f85898",
+          "assunto": "test(daily-routine): measure the editor across widths at 200 percent text",
+          "estado": "EM-DEV"
+        },
+        {
+          "sha": "f8990b3c6",
+          "assunto": "test(attendance): hold the presence actions to the minimum touch target",
+          "estado": "EM-DEV"
+        },
+        {
+          "sha": "c2140a5af",
+          "assunto": "fix(daily-routine): stop using a disposed controller when the rename closes",
+          "estado": "EM-DEV"
+        },
+        {
+          "sha": "b6080d919",
+          "assunto": "test(daily-routine): complete the field configuration dialog, not just open it",
+          "estado": "EM-DEV"
+        },
+        {
+          "sha": "bf3c31d19",
+          "assunto": "test(daily-routine): pin adding and removing a section on the page",
+          "estado": "EM-DEV"
+        },
+        {
+          "sha": "089c1fafc",
+          "assunto": "fix(safety): let the child directory grid lay out again",
+          "estado": "EM-DEV"
+        },
+        {
+          "sha": "33572247e",
+          "assunto": "test(safety): pin the directory layout and what its own surface owns",
+          "estado": "EM-DEV"
+        },
+        {
+          "sha": "07c2e3ab4",
+          "assunto": "test(safety): hold the deferred import to the policy that defers it",
+          "estado": "EM-DEV"
+        },
+        {
+          "sha": "f52d524fb",
+          "assunto": "fix(safety): keep a retried pickup decision on the same intent",
+          "estado": "EM-DEV"
+        },
+        {
+          "sha": "7b995abfe",
+          "assunto": "test(safety): secure visibility before every tap in the new tests",
+          "estado": "EM-DEV"
+        },
+        {
+          "sha": "d8ac0ed9c",
+          "assunto": "test(internal-users): pin the deferred invitation revoke like its sibling",
+          "estado": "EM-DEV"
+        },
+        {
+          "sha": "b6767f4e1",
+          "assunto": "fix(attendance): key a created call by the call, not by the attempt",
+          "estado": "EM-DEV"
+        },
+        {
+          "sha": "95b11afd4",
+          "assunto": "test(access-profiles): pin the deferred file actions the tracker already certifies",
+          "estado": "EM-DEV"
+        }
+      ]
+    },
+    "recursos_proprios": {
+      "worktrees_criadas_por_mim": "NENHUMA. Usei apenas C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-alunos-rotina, criada pelo coordenador. As outras worktrees listadas na maquina pertencem a outras frentes ou ao coordenador.",
+      "subagentes": "NENHUM em toda a rodada.",
+      "processos_em_segundo_plano": "Tres foram criados e TODOS encerrados: catalogo de falhas de rota (concluido), varredura de causa comum (concluido), listagem de metodos sem teste (concluido). Um quarto foi encerrado por mim com TaskStop quando o coordenador assumiu o catalogo.",
+      "portas_ou_servidores": "NENHUM. Nunca subi runner, servidor local, container ou stack Supabase.",
+      "arquivos_temporarios": "Cinco sondas de diagnostico criadas e removidas: _tmp_probe_test, _tmp_dialog_probe_test, _tmp_diagnostic_test, _tmp_fix_probe_test, _tmp_contrast_test, _tmp_a11y_test. Ausencia verificada por find apos cada uma.",
+      "mutacoes_remotas": "NENHUMA tentada em Supabase ou Cloudflare, em nenhum momento."
+    }
   },
   "amostragem_de_goldens": {
     "pedido": "O coordenador pediu amostras para o Owner nao receber os 129 goldens vermelhos como um bloco unico.",
@@ -419,13 +553,21 @@
         "agenda": "DESLOCAMENTO. Ja verificado por imagem na primeira passagem.",
         "atividades": "DESLOCAMENTO. Reclassificada. No diff de 1440 cada item da barra lateral aparece duas vezes deslocado, e os cartoes tambem, inclusive o de criar.",
         "conta": "DESLOCAMENTO. Reclassificada por medicao de perfil-para-voce: o controle segmentado so tinha se movido, empurrado pelo shell.",
-        "formularios": "PROVAVELMENTE DESLOCAMENTO. Linhas de icones e interruptores em dobro deslocados. Ressalva: um chevron aparece como v de um lado e ^ do outro, o que pode ser estado de expandir e nao deslocamento; nao decidivel so pela imagem.",
+        "formularios": "DESLOCAMENTO, ressalva RESOLVIDA. Eu tinha deixado em aberto se um chevron v contra ^ seria mudanca de estado. Abri o masterImage: ele JA contem as duas direcoes, porque sao duas secoes distintas, uma recolhida e outra expandida. Ver as duas no diff significa que as duas linhas se deslocaram, nao que uma mudou de estado. Reclassificada como SEGURA com confianca.",
         "cardapios": "MANTEM CONTEUDO, agora com prova elemento a elemento. Todo o conteudo e identico e o cartao desceu cerca de doze pixels, MAS o ponto de status e ROSA no master e VERDE no atual. Um elemento que so se move aparece duas vezes na MESMA cor.",
         "instituicoes": "MANTEM CONTEUDO, por motivo mais forte que cor. O master tem o cartao tracejado Criar instituicao e o atual nao tem; os dados diferem, Casa Nuvem contra Centro Horizonte; a paginacao e 2 contra 1. Ressalva de fixture continua."
       },
-      "proporcao_corrigida": "Cerca de 60 casos em seis suites. Deslocamento e rebaseline seguro: Agenda 14, Atividades 16, Conta 8, Formularios 12, cerca de 50 casos ou 83%. Com componente de conteudo: Cardapios 6 e Instituicoes 4, cerca de 10 casos ou 17%.",
+      "proporcao_corrigida": "Cerca de 60 casos em seis suites. Deslocamento e rebaseline seguro: Agenda 14, Atividades 16, Conta 8, Formularios 12, cerca de 50 casos ou 83%, todas verificadas elemento a elemento. Com componente de conteudo: Cardapios 6 e Instituicoes 4, cerca de 10 casos ou 17%, tambem verificadas elemento a elemento.",
       "recomendacao_corrigida": "A maior parte dos 129 provavelmente E rebaseline seguro. A revisao humana deve se concentrar nas suites onde a comparacao elemento a elemento mostra diferenca que NAO e deslocamento. Nas duas que tem conteudo, ele e identificavel e pequeno: uma cor de status e um cartao de criacao com dados de fixture.",
-      "licao": "Magnitude nao classifica nada; so a comparacao elemento a elemento classifica. Nas tres suites em que abri imagem eu acertei; nas duas em que julguei por numero eu errei; e numa terceira acertei pelo motivo errado."
+      "licao": "Magnitude nao classifica nada; so a comparacao elemento a elemento classifica. Nas tres suites em que abri imagem eu acertei; nas duas em que julguei por numero eu errei; e numa terceira acertei pelo motivo errado.",
+      "estado_da_amostra": "Todas as seis suites agora classificadas por comparacao elemento a elemento. Nenhuma classificacao restante se apoia em magnitude."
     }
+  },
+  "v4_19_convencao": {
+    "minha_medicao": "git log --diff-filter=D sobre \"*_v4_*.png\" retorna ZERO: nenhum golden versionado foi jamais deletado. Declarei na hora que isso NAO permitia concluir historico acumulado, porque cada nome-base aparece com um sufixo so.",
+    "medicao_do_dono_de_formularios": "Historico por arquivo: forms_directory_empty_light_375_v4_19.png tem tres commits, A na criacao e M nas duas seguintes. Criado uma vez e MODIFICADO NO LUGAR duas vezes, sempre com o mesmo nome.",
+    "conclusao_conjunta": "As duas se encaixam e a conclusao e contraria a metade que eu achei que sustentava. Nao houve delecao porque nao houve troca de arquivo: regravaram POR CIMA. Entao \"a convencao nao apaga\" e VERDADE sobre o arquivo e FALSA sobre o conteudo — e o conteudo e o que a referencia visual e. Um golden regravado no lugar perdeu a imagem anterior tao completamente quanto um deletado; a diferenca e so que o Git nao chama isso de delecao.",
+    "estado_final": "O sufixo e NOME, nao processo. Nao existe spec definindo o esquema e os numeros nao correspondem as specs das familias que os carregam. Versionar em vez de regravar entra no relatorio como PROPOSTA NOVA, nao como pratica da casa.",
+    "licao_de_metodo": "Duas medicoes parciais honestas, por caminhos diferentes, produziram uma conclusao que nenhuma das duas alcancava sozinha. A minha respondeu se houve delecao; a dele respondeu se houve sobrescrita. Eu declarei o limite da minha em vez de extrapolar, e foi isso que permitiu encaixar as duas em vez de escolher entre elas."
   }
 }
