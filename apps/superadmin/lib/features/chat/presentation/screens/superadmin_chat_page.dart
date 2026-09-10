@@ -76,6 +76,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
   Object? _threadError;
   var _sending = false;
   var _managing = false;
+  var _loadingOlder = false;
   _PendingChatSend? _pendingSend;
 
   @override
@@ -396,6 +397,59 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
     if (!_isCurrentManage(manageGeneration, requestedRepository, conversation.id)) return;
     setState(() => _thread = thread);
   }
+
+  /// A thread chega mais nova primeiro; a continuacao acrescenta as antigas ao
+  /// fim da lista, que e o topo visual por causa do `reverse: true`. Mesmo
+  /// desenho ja usado na superficie Principal, sobre a mesma RPC.
+  Future<void> _loadOlderMessages() async {
+    final conversation = _selected;
+    final current = _thread;
+    final cursor = current?.nextCursor;
+    if (conversation == null || current == null || cursor == null || _loadingOlder) return;
+    final threadGeneration = _threadRequestGeneration;
+    final requestedRepository = _repository;
+    setState(() => _loadingOlder = true);
+    try {
+      final older = await requestedRepository.fetchThread(
+        ChatThreadQuery(conversationId: conversation.id, cursor: cursor),
+      );
+      if (!_isCurrentThreadRequest(threadGeneration, requestedRepository, conversation.id)) return;
+      setState(
+        () => _thread = ChatThreadPage(
+          items: [...current.items, ...older.items],
+          nextCursor: older.nextCursor,
+          totalCount: older.totalCount,
+          hasMore: older.hasMore,
+        ),
+      );
+    } on ChatUnauthorizedException catch (error) {
+      // Perder acesso durante a continuacao invalida o instantaneo privado
+      // inteiro, pela mesma regra que ja vale para inbox, thread e envio.
+      if (_isCurrentThreadRequest(threadGeneration, requestedRepository, conversation.id)) {
+        _denyAccess(error);
+      }
+    } on ChatOfflineException {
+      if (_isCurrentThreadRequest(threadGeneration, requestedRepository, conversation.id)) {
+        _showNotice('Sem conexao. Nao foi possivel carregar mensagens anteriores.');
+      }
+    } catch (_) {
+      if (_isCurrentThreadRequest(threadGeneration, requestedRepository, conversation.id)) {
+        _showNotice('Nao foi possivel carregar mensagens anteriores.');
+      }
+    } finally {
+      if (mounted) setState(() => _loadingOlder = false);
+    }
+  }
+
+  bool _isCurrentThreadRequest(
+    int generation,
+    ChatRepository requestedRepository,
+    String conversationId,
+  ) =>
+      mounted &&
+      generation == _threadRequestGeneration &&
+      identical(requestedRepository, _repository) &&
+      _selected?.id == conversationId;
 
   Future<String?> _promptForEditedBody(ChatMessage message) => showDialog<String>(
     context: context,
@@ -783,8 +837,28 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
           child: ListView.builder(
             reverse: true,
             padding: const EdgeInsets.all(CoeloSpacing.space3),
-            itemCount: thread.items.length,
+            // O controle de continuacao so existe quando o SERVIDOR devolveu
+            // cursor. Oferece-lo sem cursor prometeria uma pagina inexistente.
+            itemCount: thread.items.length + (thread.nextCursor != null ? 1 : 0),
             itemBuilder: (context, index) {
+              if (index == thread.items.length) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space2),
+                  child: Center(
+                    child: _loadingOlder
+                        ? const SizedBox(
+                            width: CoeloSize.iconSm,
+                            height: CoeloSize.iconSm,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : TextButton(
+                            key: const Key('superadmin-chat-load-older'),
+                            onPressed: _loadOlderMessages,
+                            child: const Text('Carregar mensagens anteriores'),
+                          ),
+                  ),
+                );
+              }
               final message = thread.items[index];
               return _MessageBubble(
                 key: ValueKey(message.id),
