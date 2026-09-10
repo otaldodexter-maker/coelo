@@ -1,0 +1,92 @@
+﻿{
+    "generated_at":  "2026-09-09T21:50:52.7062581-03:00",
+    "scope":  "apps/superadmin \u003e Turmas \u003e formulario \u003e salvar: contexto e retry local",
+    "environment":  "local Flutter widgets; sem SQL/remoto",
+    "status":  "local-green",
+    "files":  [
+                  "apps/superadmin/lib/features/groups/presentation/group_form_page.dart",
+                  "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart"
+              ],
+    "counts":  {
+                   "U":  0,
+                   "regression_unique":  4,
+                   "E":  10,
+                   "S":  0,
+                   "N":  10,
+                   "P":  10,
+                   "B":  0,
+                   "F":  0,
+                   "new_unique":  6
+               },
+    "changes":  [
+                    "Latch de contexto após tentativa iniciada: repository/groupId/initialInstitutionId/initialUnitId; preserva pending request e suprime conclusão antiga.",
+                    "Painel contextual antes de not-found e guarda no callback retido.",
+                    "Fingerprint local dos valores efetivos de todos campos mutáveis do save; no-op preserva request inteiro; mudança efetiva cria intenção nova."
+                ],
+    "runners":  [
+                    {
+                        "chunks":  [
+                                       "9a3399",
+                                       "b9494e",
+                                       "103039"
+                                   ],
+                        "command":  "rtk proxy flutter test --no-pub test/features/groups/presentation/group_form_page_test.dart --plain-name \"group retry rejects changed context\" --concurrency=1 --reporter expanded",
+                        "result":  "0P4F: repository reenvia no novo repo; institution duplica request; unit aceita sucesso obsoleto; groupId fixture não encontra botão devido not-found (falha auxiliar, não RED causal).",
+                        "id":  59299,
+                        "exit":  1
+                    },
+                    {
+                        "chunks":  [
+                                       "ea16b9",
+                                       "ced2f0"
+                                   ],
+                        "command":  "rtk proxy flutter test --no-pub test/features/groups/presentation/group_form_page_test.dart --name \"group retry rejects changed context|group ambiguous retry keeps intent unless edited none\" --concurrency=1 --reporter expanded",
+                        "result":  "4P1F: groupId ocultava mensagem atrás de not-found; painel contextual antecipado corrigiu.",
+                        "id":  88379,
+                        "exit":  1
+                    },
+                    {
+                        "chunks":  [
+                                       "833223",
+                                       "24970d"
+                                   ],
+                        "command":  "rtk proxy flutter test --no-pub test/features/groups/presentation/group_form_page_test.dart --name \"group ambiguous retry keeps intent unless edited (same-status|trim-name)\" --concurrency=1 --reporter expanded",
+                        "result":  "0P2F causal: requestId diferente em mesmo status e nome trim equivalente.",
+                        "id":  78136,
+                        "exit":  1
+                    },
+                    {
+                        "chunks":  [
+                                       "a621f8",
+                                       "d98eb0",
+                                       "35775e"
+                                   ],
+                        "command":  "rtk proxy flutter test --no-pub test/features/groups/presentation/group_form_page_test.dart --name \"group retry rejects changed context|group ambiguous retry keeps intent unless edited\" --concurrency=1 --reporter expanded",
+                        "result":  "10P0F",
+                        "id":  17110,
+                        "exit":  0
+                    },
+                    {
+                        "chunks":  [
+                                       "1b3995",
+                                       "400055"
+                                   ],
+                        "command":  "rtk proxy dart analyze lib/features/groups/presentation/group_form_page.dart test/features/groups/presentation/group_form_page_test.dart",
+                        "result":  "No issues found!",
+                        "id":  76293,
+                        "exit":  0
+                    }
+                ],
+    "evidence":  "Saídas factuais via tool runner/report e chunks; saída bruta não persistida em arquivo. Reruns não somados como IDs novos.",
+    "limitations":  [
+                        "Não conclui Group FE/BE/E2E; backend e writer legado não alterados.",
+                        "Sem regra nova de compensação ou resolução automática de resultado ambíguo. Reabrir formulário é ação explícita.",
+                        "Fingerprint reflete campos mutáveis atuais; campos novos no request exigem atualização correspondente.",
+                        "Mudança de props antes da primeira tentativa e carregamento inicial não fazem parte deste gate.",
+                        "Diff inclui WIP anterior do root de retenção do request e seus quatro testes; preservado."
+                    ],
+    "hashes":  {
+                   "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart":  "41BB6C77AA821A953ACCEE39C04E7B8F7E93BB98C1A3A97C09C0C363AAA498A9",
+                   "apps/superadmin/lib/features/groups/presentation/group_form_page.dart":  "49AF593B5C63F3460D188199E73520CF99F574D167B012503EB74022A511E478"
+               }
+}
