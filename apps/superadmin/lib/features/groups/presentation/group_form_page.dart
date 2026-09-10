@@ -447,6 +447,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
   }
 
   Future<void> _save() async {
+    if (_saving) return;
     setState(() => _saveError = null);
     if (!_identityValid) {
       setState(() {
@@ -640,9 +641,28 @@ final class _GroupFormPageState extends State<GroupFormPage> {
                   child: SuperadminFormFrame(
                     key: const Key('group-form-golden-root'),
                     viewportWidth: outerConstraints.maxWidth,
-                    navigation: _navigation(),
+                    navigation: ExcludeFocus(
+                      excluding: _saving,
+                      child: AbsorbPointer(absorbing: _saving, child: _navigation()),
+                    ),
                     scrollKey: const Key('group-form-scroll'),
-                    body: _formSurface(),
+                    body: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        if (_saving)
+                          Semantics(
+                            liveRegion: true,
+                            child: const Padding(
+                              padding: EdgeInsets.only(bottom: CoeloSpacing.space3),
+                              child: Text('Salvando altera\u00e7\u00f5es\u2026'),
+                            ),
+                          ),
+                        ExcludeFocus(
+                          excluding: _saving,
+                          child: AbsorbPointer(absorbing: _saving, child: _formSurface()),
+                        ),
+                      ],
+                    ),
                     footer: _footer(),
                   ),
                 ),

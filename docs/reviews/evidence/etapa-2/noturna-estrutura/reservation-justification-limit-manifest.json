@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-09-09T21:26:57.0012988-03:00",
+  "scope": "Reserva opcional -> justificativa de conflito -> preflight Activity/Group/LocationReservationDraft encoder",
+  "status": "local-green; backend e gates preservados",
+  "source": "packages/coelo_database/migrations/20260909165000_superadmin_location_reservations_v2.sql:88-90,168-169: length(btrim) max1000",
+  "changes": [
+    "Helper publico bool validLocationReservationJustification(String? raw) em coelo_domain/locations.dart export existente; null permitido, trimvazio recusado, runes.length<=1000",
+    "Dois intents e encoder comum reutilizam helper; erro tipado e trim existentes preservados",
+    "LocationReservationDraft permanece const; seu preflight permanece no encoder comum, sem quebrar construtor"
+  ],
+  "metrics": {
+    "S": 0,
+    "F": 0,
+    "N": 15,
+    "B": 0,
+    "U": 0,
+    "E": 15,
+    "P": 15
+  },
+  "runs": [
+    {
+      "exit_code": 1,
+      "chunk": "03c883",
+      "command": "rtk proxy dart --packages=.dart_tool/package_config.json C:/Users/adrie/AppData/Local/Pub/Cache/hosted/pub.dev/test-1.32.0/bin/test.dart ../../apps/superadmin/test/features/activities/domain/reservation_justification_limit_test.dart --reporter expanded --concurrency=1",
+      "runner": 64010,
+      "cwd": "packages/coelo_domain",
+      "result": "RED8P2F; dois intents aceitavam1001ASCII"
+    },
+    {
+      "exit_code": 1,
+      "chunk": "224028",
+      "command": "rtk proxy dart --packages=.dart_tool/package_config.json C:/Users/adrie/AppData/Local/Pub/Cache/hosted/pub.dev/test-1.32.0/bin/test.dart test/locations/location_reservation_dto_test.dart --plain-name justification --reporter expanded --concurrency=1",
+      "runner": 29055,
+      "cwd": "packages/coelo_api",
+      "result": "RED novos3P1F +1 regressao incidental; encoder aceitava1001ASCII"
+    },
+    {
+      "P": 5,
+      "exit_code": 0,
+      "chunk": "310076",
+      "command": "rtk proxy dart --packages=.dart_tool/package_config.json C:/Users/adrie/AppData/Local/Pub/Cache/hosted/pub.dev/test-1.32.0/bin/test.dart test/locations/location_reservation_dto_test.dart --name \"justification encoder|encodes explicit weekly\" --reporter expanded --concurrency=1",
+      "runner": 26252,
+      "cwd": "packages/coelo_api"
+    },
+    {
+      "P": 10,
+      "exit_code": 0,
+      "chunk": "a2ce06",
+      "command": "rtk proxy flutter test --no-pub --concurrency=1 test/features/activities/domain/reservation_justification_limit_test.dart --reporter expanded",
+      "runner": 30805,
+      "cwd": "apps/superadmin"
+    },
+    {
+      "runner": 54378,
+      "command": "rtk proxy dart analyze packages/coelo_domain/lib/src/locations/location_reservations.dart apps/superadmin/lib/features/activities/domain/activity_command.dart apps/superadmin/lib/features/groups/domain/group_location_create.dart packages/coelo_api/lib/src/locations/location_reservation_dto.dart packages/coelo_api/test/locations/location_reservation_dto_test.dart apps/superadmin/test/features/activities/domain/reservation_justification_limit_test.dart",
+      "issues": 0,
+      "chunk": "5010fe",
+      "exit_code": 0
+    },
+    {
+      "chunk": "84ed65",
+      "command": "rtk git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "fixture_migration": [
+    "Tentativa inicial11563 bootstrap/caminho errado interrompida sem teste; dart run --no-pub nao existe, exit1 sem teste",
+    "Teste dos intents nasceu pureDart com imports relativos para executar sob coelo_domain; analyzer3241 recusou package:test no app e relative_lib_imports",
+    "Teste permanente migrado para flutter_test e imports package do app; runner puro66402 interrompido sem resultado. Root liberou slot para30805. Nenhum ID somado pelo rerun"
+  ],
+  "evidence": "Resultados factuais via tool runners/chunks, sem log bruto preservado ou fabricado.15IDs finais:10intents+4limitesencoder+1encodeweeklyregressao. Caso incidental RED nao incluído como novo resultado final.",
+  "limitations": [
+    "Contagem por codepoints PostgreSQL, nao UTF16 nem grapheme clusters; testes ASCII e emoji1000/1001",
+    "Trim Unicode existente no cliente preservado, sem redefinir btrim PostgreSQL",
+    "Nenhum SQL/remoto/gate foi alterado; correlacao19P nao repetida",
+    "Root assume preflight UI antes de gerar requestId para evitar tentativa congelada por justificativa invalida"
+  ],
+  "hashes": [
+    {
+      "sha256": "6CC7874C4935D6C673366B9D648FA8728A96774AE49D7890767598B4ECE03A99",
+      "path": "packages/coelo_domain/lib/src/locations/location_reservations.dart"
+    },
+    {
+      "sha256": "AD462B883FA53F28972C2042E0E113DCDA2580DC2E17FEEA11E4CBAA170113CA",
+      "path": "apps/superadmin/lib/features/activities/domain/activity_command.dart"
+    },
+    {
+      "sha256": "D6015950A38B8C0E0D87AE2AB1436D0E31E7507F26D3D810D9E2FEA7C2B2DC1C",
+      "path": "apps/superadmin/lib/features/groups/domain/group_location_create.dart"
+    },
+    {
+      "sha256": "6F6FC60733C522DAFB46FB398F0995E3A3D7D8DB27462850477CC57918833AB2",
+      "path": "packages/coelo_api/lib/src/locations/location_reservation_dto.dart"
+    },
+    {
+      "sha256": "AD9F6201B14D8BABDC21A8AAB7A2D764C5998F6D0F3127F2A06DEC0017E72775",
+      "path": "packages/coelo_api/test/locations/location_reservation_dto_test.dart"
+    },
+    {
+      "sha256": "315578849AA779E3AD5696BB18164B813E77312C5AD1FEFD415E46745D1A79ED",
+      "path": "apps/superadmin/test/features/activities/domain/reservation_justification_limit_test.dart"
+    }
+  ],
+  "root_review": "Six hashes matched; intents, shared helper, DTO and boundary cases reviewed. Existing trim and exception types retained; UI separate.",
+  "action_ids": [
+    "groups.create",
+    "groups.location",
+    "activities.create",
+    "activities.location",
+    "locations.schedule"
+  ]
+}

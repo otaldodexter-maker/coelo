@@ -33,6 +33,28 @@ Map<String, Object?> _assessment() => {
 };
 
 void main() {
+  for (final symbol in ['a', '😀']) {
+    for (final count in [1000, 1001]) {
+      test('justification encoder ${symbol.runes.first} count=$count', () {
+        final value = symbol * count;
+        final draft = LocationReservationDraft(
+          locationId: _location,
+          consumer: _consumer,
+          firstOccurrence: LocationReservationOccurrence(
+            startsAt: DateTime.utc(2026, 9, 14, 11),
+            endsAt: DateTime.utc(2026, 9, 14, 12),
+          ),
+          recurrence: const LocationReservationOnce(),
+          conflictJustification: '  $value  ',
+        );
+        if (count == 1000) {
+          expect(encodeLocationReservationDraftV2(draft)['conflict_justification'], value);
+        } else {
+          expect(() => encodeLocationReservationDraftV2(draft), throwsFormatException);
+        }
+      });
+    }
+  }
   test('encodes explicit weekly zone and calendar end without expanding occurrences', () {
     final payload = encodeLocationReservationDraftV2(
       LocationReservationDraft(

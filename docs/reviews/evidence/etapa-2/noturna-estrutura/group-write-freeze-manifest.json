@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-09-09T21:17:15.367014-03:00",
+  "scope": "apps/superadmin -> Turmas -> Criar/editar -> save pendente",
+  "action_ids": [
+    "groups.create",
+    "groups.edit"
+  ],
+  "status": "local-green; no terminal promotion",
+  "cause": "Held save callback could submit twice while pending; form navigation and edits remained available after request snapshot capture.",
+  "changes": [
+    "Reject reentry at save boundary while _saving.",
+    "AbsorbPointer and ExcludeFocus freeze form body and step navigation during save.",
+    "Live-region busy text; success/failure restores editing and preserves dirty warning for subsequent changes."
+  ],
+  "metrics": {
+    "N": 5,
+    "E": 5,
+    "P": 5,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0
+  },
+  "dedup": "2 new causal tests (success/failure) plus3 existing regressions. No golden rerun or baseline refresh.",
+  "runs": [
+    {
+      "runner": 5843,
+      "chunk": "6dd5b5",
+      "exit_code": 1,
+      "phase": "fixture compile failure",
+      "reason": "Removed invalid const around factory result before causal RED."
+    },
+    {
+      "runner": 32615,
+      "chunk": "cfb348",
+      "exit_code": 1,
+      "phase": "RED",
+      "F": 2,
+      "reason": "Each captured callback sent2 requests for one in-flight intention."
+    },
+    {
+      "chunk": "540806",
+      "exit_code": 1,
+      "phase": "implementation compile failure",
+      "reason": "Semantics constructor is not const; moved const to Padding."
+    },
+    {
+      "runner": 25193,
+      "chunk": "1e0cd2",
+      "exit_code": 0,
+      "phase": "GREEN",
+      "P": 2,
+      "command": "rtk proxy flutter test --no-pub --concurrency 1 test/features/groups/presentation/group_form_page_test.dart --plain-name 'group pending save' --reporter expanded"
+    },
+    {
+      "runner": 92099,
+      "chunk": "60c48d",
+      "exit_code": 0,
+      "phase": "regression",
+      "P": 3,
+      "filter": "supports 200 percent text|creates a custom group type|restores the save action"
+    },
+    {
+      "runner": 88695,
+      "chunk": "2e62b3",
+      "exit_code": 0,
+      "phase": "analyzer",
+      "issues": 0,
+      "paths": [
+        "apps/superadmin/lib/features/groups/presentation/group_form_page.dart",
+        "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart"
+      ]
+    },
+    {
+      "runner": 54435,
+      "chunk": "f46927",
+      "exit_code": 0,
+      "phase": "static visual contracts",
+      "command": "dart run tool/validate_admin_visual_contracts.dart <worktree> assets/admin-visual-contract-allowlist.json",
+      "cwd": "apps/catalog"
+    }
+  ],
+  "evidence": "Actual tool chunks; raw logs not preserved or reconstructed. Root reviewed minimal production diff.",
+  "limits": [
+    "Real GroupFormPage with fake directory delegate and delayed repository seam; not production persistence.",
+    "GroupDirectory remains Unavailable in actual auth scope; normal mutations remain gated.",
+    "Legacy save request IDs and full aggregate contract are not replaced by the restricted atomic draft candidate.",
+    "No SQL, router, Auth, CHILD, shell or deferred export/import changes.",
+    "No separate keyboard or screen-reader campaign; focus guard implemented and pointer behavior tested."
+  ],
+  "hashes": [
+    {
+      "path": "apps/superadmin/lib/features/groups/presentation/group_form_page.dart",
+      "sha256": "b7b3918099dca54f9e5443e5c8200de2864927748c3a7f9701965c6c491545c3"
+    },
+    {
+      "path": "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart",
+      "sha256": "118bf44865593e5b95bd69daf8884adb2bae4926c20f06b4bccf3a4a41f91926"
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-09-09T21:27:40.804499-03:00",
+  "scope": "apps/superadmin -> Instituicoes/Unidades -> Mapa e locais -> entradas de criar/editar/copiar",
+  "action_ids": [
+    "locations.create-edit",
+    "units.copy-institution-location"
+  ],
+  "status": "local-green; no terminal promotion",
+  "cause": "Held page callbacks could restore writer-bearing forms after capability removal; a create callback also survived context replacement. Existing didUpdateWidget closure only removed already-open surfaces.",
+  "changes": [
+    "Check live capability and page context generation when invoking create/copy/edit callbacks.",
+    "Preserve unrelated active edits when only copy permission is removed.",
+    "Validate selected location and actual owner before entering edit."
+  ],
+  "metrics": {
+    "N": 7,
+    "E": 7,
+    "P": 7,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0
+  },
+  "dedup": "4new causal cases +3existing regressions needed because the three mutation entry callbacks changed; did not repeat full9case baseline.",
+  "runs": [
+    {
+      "runner": 6766,
+      "chunks": [
+        "7b5e33",
+        "600252",
+        "66d1a7"
+      ],
+      "exit_code": 1,
+      "phase": "RED",
+      "F": 4,
+      "filter": "held catalog"
+    },
+    {
+      "runner": 11801,
+      "chunk": "a6a73e",
+      "exit_code": 0,
+      "phase": "GREEN",
+      "P": 4,
+      "filter": "held catalog"
+    },
+    {
+      "runner": 88135,
+      "chunk": "00bf42",
+      "exit_code": 0,
+      "phase": "regression",
+      "P": 3,
+      "filter": "losing create closes|losing copy closes the panel|losing copy does not shut"
+    },
+    {
+      "runner": 85907,
+      "chunk": "c1f855",
+      "exit_code": 0,
+      "phase": "analyzer",
+      "issues": 0,
+      "paths": [
+        "apps/superadmin/lib/features/locations/presentation/locations_page.dart",
+        "apps/superadmin/test/features/locations/location_capability_revocation_test.dart"
+      ]
+    },
+    {
+      "runner": 89526,
+      "chunk": "3f2007",
+      "exit_code": 0,
+      "phase": "static visual contracts"
+    }
+  ],
+  "evidence": "Tool outputs retained by chunk IDs; no fabricated raw log. Minimal diff reviewed by root.",
+  "limits": [
+    "Widget callbacks and controlled reader; no SQL or production request exercised.",
+    "Frontend guard is not authorization; backend checks remain mandatory.",
+    "No router/main/Auth/CHILD/shell changes, no golden rebaseline or deferred activation."
+  ],
+  "hashes": [
+    {
+      "path": "apps/superadmin/lib/features/locations/presentation/locations_page.dart",
+      "sha256": "1a3caea22e9fcd6ce72288a86b1b7bf4c3fa9886f9af16055f9ac5d01d33ae16"
+    },
+    {
+      "path": "apps/superadmin/test/features/locations/location_capability_revocation_test.dart",
+      "sha256": "90e2364a372bd970a2c3876f53275af13fbfaa712d17da0cbe6853663033ba4f"
+    }
+  ]
+}

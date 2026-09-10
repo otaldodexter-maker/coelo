@@ -241,7 +241,7 @@ String _uuid(Object? raw) {
 String? _justification(String? raw) {
   if (raw == null) return null;
   final value = raw.trim();
-  if (value.isEmpty || value.length > 2000) _invalid();
+  if (!validLocationReservationJustification(value)) _invalid();
   return value;
 }
 
