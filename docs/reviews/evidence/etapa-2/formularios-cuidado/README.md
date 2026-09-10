@@ -29,7 +29,8 @@ pergunta e nao como achado, de proposito: a correcao aparentemente obvia escolhe
 um comportamento de produto sem que ninguem tenha escolhido.
 
 As outras duas perguntas ao Owner estao no JSON do grupo, em
-`docs/reviews/etapa-2-operacao/comunicacao/formularios-cuidado.json`: o autosave
+`docs/reviews/etapa-2-operacao/comunicacao/formularios-cuidado.json` — que
+vive na base integrada e nao na branch do grupo: o autosave
 do editor, construido e inalcancavel, e de onde vem uma definicao com limites de
 selecao se nenhum autor os define pela interface.
 
