@@ -20,6 +20,63 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final change in ['institution', 'unit', 'pending', 'same-props']) {
+    testWidgets('activity initial scope reload stays current $change', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1440, 1000));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final repository = _InitialScopeRepository(delayed: change == 'pending');
+      ActivityFormController? visible;
+      Widget app(bool changed) => _app(
+        repository: repository,
+        initialInstitutionId: changed && ['institution', 'pending'].contains(change) ? 'B' : 'A',
+        initialUnitId: changed && change != 'same-props'
+            ? (change == 'unit' ? 'unit-A2' : 'unit-B')
+            : 'unit-A',
+        initialStep: ActivityFormStep.structure,
+        locationSelectionBuilder: (_, controller) {
+          visible = controller;
+          return const SizedBox.shrink();
+        },
+      );
+      await tester.pumpWidget(app(false));
+      await tester.pump();
+      if (change != 'pending') await tester.pumpAndSettle();
+      final original = visible;
+      await tester.pumpWidget(app(true));
+      await tester.pump();
+      if (change == 'pending') {
+        expect(repository.calls, ['A', 'B']);
+        repository.complete('B');
+        await tester.pumpAndSettle();
+        final current = visible;
+        repository.complete('A');
+        await tester.pumpAndSettle();
+        expect(visible, same(current));
+      } else {
+        await tester.pumpAndSettle();
+      }
+      expect(visible, isNotNull);
+      expect(
+        visible!.selectedInstitutionId,
+        ['institution', 'pending'].contains(change) ? 'B' : 'A',
+      );
+      expect(visible!.selectedUnitIds, {
+        change == 'same-props'
+            ? 'unit-A'
+            : change == 'unit'
+            ? 'unit-A2'
+            : 'unit-B',
+      });
+      if (change == 'same-props') {
+        expect(visible, same(original));
+        expect(repository.calls, ['A']);
+      } else if (change != 'pending') {
+        expect(visible, isNot(same(original)));
+        expect(repository.calls, hasLength(2));
+      }
+      expect(tester.takeException(), isNull);
+    });
+  }
   for (final disposed in [false, true]) {
     testWidgets('activity retained save callback is guarded disposed=$disposed', (tester) async {
       await tester.binding.setSurfaceSize(const Size(1440, 1000));
@@ -958,6 +1015,7 @@ Widget _app({
   ActivityFormDraft? initialDraft,
   ActivityDirectoryRepository? repository,
   String? initialInstitutionId,
+  String? initialUnitId,
   ActivityFormStep? initialStep,
   ActivityLocationSelectionBuilder? locationSelectionBuilder,
   ActivityProfileAboutRepository? aboutRepository,
@@ -974,6 +1032,7 @@ Widget _app({
   home: ActivityFormPage(
     activityId: activityId,
     initialInstitutionId: initialInstitutionId,
+    initialUnitId: initialUnitId,
     initialDraft: initialDraft,
     initialStep: initialStep,
     locationSelectionBuilder: locationSelectionBuilder,
@@ -1107,6 +1166,32 @@ final class _TaxonomyOptionsRepository implements ActivityDirectoryRepository {
   @override
   Future<ActivityDirectoryResult> fetchPage(ActivityDirectoryQuery query) =>
       _delegate.fetchPage(query);
+}
+
+final class _InitialScopeRepository extends FakeActivityDirectoryRepository {
+  _InitialScopeRepository({required this.delayed});
+  final bool delayed;
+  final calls = <String>[];
+  final pending = <String, Completer<ActivityFormOptions>>{};
+  static const options = ActivityFormOptions(
+    institutions: [
+      ActivityFormInstitutionOption(id: 'A', name: 'A'),
+      ActivityFormInstitutionOption(id: 'B', name: 'B'),
+    ],
+    units: [
+      ActivityFormUnitOption(id: 'unit-A', institutionId: 'A', name: 'A'),
+      ActivityFormUnitOption(id: 'unit-A2', institutionId: 'A', name: 'A2'),
+      ActivityFormUnitOption(id: 'unit-B', institutionId: 'B', name: 'B'),
+    ],
+  );
+  void complete(String institutionId) => pending[institutionId]!.complete(options);
+  @override
+  Future<ActivityFormOptions> fetchFormOptions({required String institutionId}) {
+    calls.add(institutionId);
+    return delayed
+        ? (pending[institutionId] ??= Completer<ActivityFormOptions>()).future
+        : Future.value(options);
+  }
 }
 
 final class _DelayedActivityRepository implements ActivityDirectoryRepository {
