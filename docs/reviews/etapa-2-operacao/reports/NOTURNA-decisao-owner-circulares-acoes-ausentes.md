@@ -129,10 +129,39 @@ Acontece e de Agora, mas ele é um **campo inline**, não um diálogo. Então:
 Não há golden do compositor, então qualquer das duas é tecnicamente barata. A
 escolha é de linguagem visual, não de custo.
 
+## Sexta decisão: uma tela inteira sem rota
+
+`PrincipalCircularComposerPage` tem 750 linhas em `lib` e 238 de teste próprio.
+As únicas referências a ela em `lib` são as cinco dentro do seu próprio
+arquivo. **Nenhuma rota, nenhum host, nenhum ponto de composição a constrói.**
+
+O custo não é o código parado. A suíte dela passa para sempre, então ela conta
+como área coberta e saudável; e quem lê conclui que existe um compositor de
+Circular na superfície do Principal, quando o que está roteado é o
+`SuperadminCircularComposerPage`, administrativo.
+
+Não foi removida porque, diferente do contrato órfão de retirada — onde havia
+dois contratos vivos para a mesma coisa e um estava ligado — aqui há uma tela
+sozinha, e não dá para distinguir código morto de tela preparada para uma
+superfície ainda não roteada.
+
+A pergunta: existe um compositor de Circular na superfície do Coelo Principal,
+ou compor Circular é ação exclusivamente administrativa? Se for exclusivamente
+administrativa, a tela e seus testes saem. Se não for, falta a rota — e aí é
+trabalho, não lixo.
+
 ## Padrão, não acidente
 
-Vale registrar como padrão da família e não como três casos isolados: em
-Circulares, três ações tinham backend completo e nenhuma tela. É a mesma doença
-que aparece do outro lado quando a tela existe e não alcança o dado — como o
-resumo de respostas, que tinha RPC, método de repositório e teste, e nenhum
-consumidor, corrigido em `536b1f222`.
+O padrão apareceu por três ângulos nesta rodada, e vale registrar como um só:
+
+1. **O dado existe e nenhuma tela o alcança** — `closeResponses` implementada em
+   quatro lugares sem afordância; o resumo de respostas com RPC, método e teste
+   e nenhum consumidor, corrigido em `536b1f222`.
+2. **A tela existe e não alcança o dado** — o leitor administrativo recebia o
+   repositório pelo tipo mais estreito, o que tornava a chamada impossível mesmo
+   com a instância certa injetada.
+3. **A tela existe e ninguém alcança a tela** — `PrincipalCircularComposerPage`,
+   750 linhas com teste e sem rota.
+
+Nos três, tudo passa: análise limpa, suíte verde, nenhum alarme. O que falta é
+sempre a ligação, e ligação não falha em teste — ela simplesmente não existe.
