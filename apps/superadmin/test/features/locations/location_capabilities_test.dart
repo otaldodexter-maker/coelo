@@ -24,7 +24,7 @@ import 'location_read_fixtures.dart';
 ///
 /// Nothing here is authorization. The server checks every command on its own;
 /// what is measured is only what gets drawn.
-const _create = Key('locations-create');
+const _create = Key('location-create-internal');
 const _bring = Key('locations-bring-from-institution');
 const _copy = Key('location-detail-copy');
 const _edit = Key('location-detail-edit');

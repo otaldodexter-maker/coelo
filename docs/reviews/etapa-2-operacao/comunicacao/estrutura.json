@@ -1,15 +1,15 @@
 {
  "grupo": "estrutura",
- "revision": 18,
+ "revision": 19,
  "round": "E2-R03-20260910",
- "updatedAt": "2026-09-10T19:55:00-03:00",
+ "updatedAt": "2026-09-10T20:40:00-03:00",
  "app": "Claude",
  "modelo": "Opus 5 (1M context)",
  "conversa": "R03-P4-estrutura",
  "coordenador": "coordenacao-integracao-claude (P1) — NAO ABERTA ate agora",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-estrutura",
  "branch": "work/etapa2-r03-estrutura",
- "head": "4917bcade",
+ "head": "115d33210",
  "upstream": "origin/work/etapa2-r03-estrutura",
  "base": "origin/dev e21f5a391 (composto da Fase 0 cobrindo as quatro familias de diretorio do recorte)",
  "incidenteDeCanal": "Esta revisao foi reconstruida. As revisoes 1 a 17 foram gravadas em docs/reviews/etapa-2-operacao/comunicacao/estrutura.json no CHECKOUT PRINCIPAL, sem commit, e desapareceram: o arquivo voltou ao conteudo da rodada anterior (revisao 52 da E2-NOTURNA). A causa provavel e a Fase 0 operar no mesmo checkout como escritora unica de dev e ter feito checkout/reset que descartou a modificacao nao commitada. Licao para a rodada: arquivo de comunicacao nao commitado no checkout principal nao e canal duravel enquanto outra frente escreve ali. A partir desta revisao passo a versionar a copia na minha worktree/branch tambem, para que o estado sobreviva.",
@@ -112,6 +112,29 @@
   "Decisao RODAPE do Owner implementada no frame compartilhado, com os tres testes que afirmavam o comportamento antigo reescritos.",
   "Regra nova do chat aplicada nos quatro formularios do recorte e gravada nas skills coelo-ui."
  ],
+ "decisaoEspacamentoTurmas": {
+  "resposta": "Ja resolveu. O composto arrumou o espacamento e a observacao de 10/09 esta cumprida.",
+  "pagina": "https://claude.ai/code/artifact/78fdeaff-1bba-47c3-8649-255c3aca7c92",
+  "encerra": "a observacao 'card com excesso de espacamento' em DOZE goldens do diretorio de Turmas (eu havia contado onze ao perguntar).",
+  "arquivos": [
+   "group_directory_bug_open_light_1440",
+   "group_directory_card_hover_light_1440",
+   "group_directory_cards_light_1024",
+   "group_directory_cards_light_1440",
+   "group_directory_cards_light_768",
+   "group_directory_create_card_hover_light_1440",
+   "group_directory_filter_selected_light_1440",
+   "group_directory_institution_filter_open_light_1440",
+   "group_directory_pagination_page_size_open_light_1440",
+   "group_directory_profile_open_light_1440",
+   "group_directory_table_light_1024",
+   "group_directory_tour_open_light_1440"
+  ],
+  "semTrabalho": "Todos passam hoje: a Fase 0 os regravou em 92ac66b68 ao migrar o diretorio para o composto. Nao ha codigo a mudar nem golden a regravar por esta decisao.",
+  "atencao": "A decisao encerra UMA observacao, nao limpa os arquivos. Continuam abertas MENU em onze dos doze (todos menos cards_light_768, e MENU e da Fase 0) e FLYOUT em profile_open_light_1440.",
+  "cardCriar375": "group_directory_cards_light_375 tinha observacao diferente (card de criar turma talvez exagerado). O Owner respondeu sem cita-la; estou tratando como encerrada tambem, com o card mantido como esta, e registrei isso de proposito para ele reabrir com uma palavra se a leitura estiver errada.",
+  "detalhe": "docs/reviews/evidence/etapa-2/r03-estrutura/decisao-espacamento-turmas.md"
+ },
  "decisaoDoOwner20260910": {
   "rodape": "Opcao A: rodape ancorado no fim da viewport em todas as larguras. O golden de Instituicoes em 375 sera regravado, consequencia aceita explicitamente.",
   "chat": "Regra nova: sem balao de chat em telas de criar, editar e publicar, nem no Agora aberto e no Momentos aberto.",
@@ -188,7 +211,7 @@
   "U": 0,
   "evidencia": "1341 nao-golden PASS nas seis familias mais test/architecture, sobre o composto da Fase 0. pgTAP dos tres pacotes: 3 arquivos, 109 assercoes, Result PASS. flutter analyze limpo em lib e test."
  },
- "goldens": "Nenhum regravado ate aqui. Antes do composto eram 30 falhas no recorte; depois do composto ficaram 10, todas em activity_golden_test.dart, que a Fase 0 preservou para este grupo. Com a decisao RODAPE e a regra do chat aplicadas, a medicao esta sendo refeita.",
+ "goldens": "Regravado apenas group_form_create_light_375, decisao minha por delegacao do Owner: e o unico cujo diff isolado e exclusivamente o rodape e o chat. Os outros 16 ficam para uma passada unica quando a Fase 0 fechar MENU e MENU-M, porque todos carregam o menu em migracao e regrava-los agora congelaria um estado intermediario como referencia aprovada. Antes disso: Antes do composto eram 30 falhas no recorte; depois do composto ficaram 10, todas em activity_golden_test.dart, que a Fase 0 preservou para este grupo. Com a decisao RODAPE e a regra do chat aplicadas, a medicao esta sendo refeita.",
  "artefatos": [
   "docs/reviews/evidence/etapa-2/r03-estrutura/sql-package-handoff.json",
   "docs/reviews/evidence/etapa-2/r03-estrutura/replay-structure-location-consumers-v1.log",

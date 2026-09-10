@@ -52,7 +52,12 @@ void main() {
     await tester.pumpWidget(page(reader: reader, onLocationOpened: opened.add));
     reader.directories.last.result.complete(locationPage());
     await tester.pumpAndSettle();
-    await tester.tap(find.byType(CoeloAdminInteractiveCard).first);
+    // O primeiro card do grid agora e o Criar do grupo, entao o teste mira o
+    // card do local pela chave dele em vez da posicao.
+    final card = find.byKey(const Key('location-card-$locationA'));
+    await tester.ensureVisible(card);
+    await tester.pumpAndSettle();
+    await tester.tap(card);
     await tester.pump();
     expect(opened, [locationA]);
     expect(find.byType(LocationDetailPanel), findsOneWidget);

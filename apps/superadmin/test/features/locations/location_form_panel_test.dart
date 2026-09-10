@@ -293,12 +293,12 @@ void main() {
     await tester.pumpWidget(page(canCreate: false));
     reader.directories.last.result.complete(locationPage());
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('locations-create')), findsNothing);
+    expect(find.byKey(const Key('location-create-internal')), findsNothing);
 
     await tester.pumpWidget(page(canCreate: true));
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('locations-create')), findsOneWidget);
-    await tester.tap(find.byKey(const Key('locations-create')));
+    expect(find.byKey(const Key('location-create-internal')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('location-create-internal')));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('locations-form')), findsOneWidget);
   });
