@@ -344,6 +344,49 @@ a família como falha sem magnitude, ou contaria errado. É a terceira classe de
 "verde ou vermelho que engana" catalogada nesta rodada, junto do teste que
 sobrescreve outro e da string lida sem a asserção em volta.
 
+## Três frentes mediram o mesmo buraco por três caminhos, e uma consulta o resolve
+
+Este é o resultado que só apareceu quando uma frente leu as linhas de bloqueio
+das outras duas — nenhuma delas podia enxergá-lo sozinha.
+
+- Uma mediu, **pelo lado do SQL**, que o repositório chama 605 objetos
+  `app_private` e cria 590: **40 chamados e nunca criados**.
+- Outra mediu, **pelo lado do cliente**, que 5 RPCs do diretório de Unidades são
+  chamadas e criadas por arquivo nenhum.
+- A terceira mediu, **pelo lado de Assiduidade**, que 5 RPCs chamadas pelo
+  cliente — detalhe de chamada, opções de contexto, criação, diretório e desfazer
+  em lote — não são criadas por migration alguma.
+
+**É o mesmo buraco.** `create_unit_for_superadmin` aparece em duas dessas listas
+ao mesmo tempo, numa como RPC pública e noutra como helper `app_private`.
+
+**E há uma assimetria dentro disso que muda a leitura de três linhas.** No ramo
+autorizado da composição, Rotina e Alunos recebem explicitamente repositórios
+indisponíveis — não é "falta implementar", é a composição de produção declarando
+indisponibilidade de propósito, e o usuário vê degradação honesta. No **mesmo**
+ramo, Assiduidade recebe o repositório Supabase real, e ele chama cinco RPCs que
+nenhuma migration cria. **As duas situações falham de formas opostas:** uma é
+degradação honesta; a outra é uma tela que parece pronta e quebraria no primeiro
+uso real, com o erro chegando como indisponibilidade genérica. Lê-las juntas como
+"sem backend" apaga essa diferença.
+
+**A bifurcação, porém, não está resolvida — e o precedente pesa para o outro
+lado.** Ou essas funções existem em produção instaladas fora do versionamento, e
+então o pacote não descreve produção; ou não existem, e as superfícies quebram no
+primeiro uso. **"Instalado fora do versionamento" é fenômeno medido neste
+repositório**: `profile_about` prova, porque suas tabelas e sua função de guarda
+não existem em migration nenhuma e existem em produção — a RPC de escrita, que é
+versionada e está aplicada, lê e escreve nelas. Então a hipótese benigna é pelo
+menos tão provável quanto a grave, e **nenhuma das três frentes deve ser lida
+como "falta construir"** sem consultar o banco.
+
+**Uma consulta resolve as três.** Um único `select proname from pg_proc` na
+próxima janela autorizada responde de uma vez pelas cinco RPCs de Unidades, pelas
+cinco de Assiduidade e pelos 40 objetos `app_private`. Segundos de execução, e
+converte três blocos inteiros de bloqueio em fato. **Enquanto isso não acontecer,
+a classificação honesta das três é falta de autorização para verificar, não
+ausência** — e é assim que elas estão registradas.
+
 ## Três testes de fronteira vermelhos, três causas sem relação
 
 A sequência do falso alarme acima produziu um resultado lateral melhor que o
