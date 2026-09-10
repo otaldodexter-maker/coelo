@@ -1859,6 +1859,34 @@ que funciona é o rastro: procurar `cherry picked from commit <sha>` no históri
 base publicada, com a ancestralidade como sinal **complementar** — quando os dois
 concordam a confiança é maior, e quando só o rastro responde, ainda assim chegou.
 
+**E o critério de conteúdo não é universalmente confiável tampouco** — ele acerta
+exatamente quando ninguém mais tocou aqueles caminhos depois, e engana nos dois
+sentidos fora disso. Uma frente cujos dois arquivos ninguém mais tocou obteve
+concordância perfeita entre os três testes; outra, cujos arquivos são disputados,
+obteve 8 de 27. **Nenhum dos três testes é o certo sozinho.** O que funciona é
+declarar os três lado a lado e explicar o desacordo, que foi o que as duas frentes
+acabaram fazendo por conta própria.
+
+### O único número que diz se as correções da noite funcionaram
+
+Às 02:11 uma frente estava com quarenta minutos de deriva de relógio. Às 03:00 eu
+estava com trinta e sete, às 04:00 com onze, e uma frente chegou a fabricar hora
+crua três vezes — e foi removida do controle de relógio a pedido próprio. A regra
+de **ler o relógio no mesmo bloco de chamada da mensagem** foi adotada às 03:00.
+
+No corte, cinco leituras entre 04:33:51 e 04:39:02: **seis relógios dentro de cinco
+minutos, na hora em que a deriva custaria mais caro.**
+
+É o único número desta rodada que mede se uma correção de processo funcionou, e
+não se um defeito de produto foi encontrado. **Medível é diferente de plausível** —
+que é exatamente a distinção que a noite inteira perseguiu.
+
+E ele veio com um erro meu embutido, achado por duas frentes: **eu comparei leituras
+tiradas em instantes diferentes como se fossem simultâneas**, e chamei de deriva o
+que era latência de mensagem. Nenhuma frente estava atrasada no corte. Cruzar
+relógios exige leituras do mesmo instante, e mensagem assíncrona não dá isso de
+graça.
+
 E a frente que mediu recusou a minha autoflagelação com um argumento melhor que ela:
 os 22 ancestrais mostram que os dois caminhos de integração coexistiram na noite, e
 o instrumento que eu distribuí **não estava errado — estava certo para uma parte e

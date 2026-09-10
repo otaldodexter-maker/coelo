@@ -1,14 +1,14 @@
 {
-  "revision": 42,
-  "updated_at": "2026-09-10T04:34:25-03:00",
+  "revision": 43,
+  "updated_at": "2026-09-10T04:39:09-03:00",
   "group": "publicacoes-midia",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
-  "status": "CONGELADO para lote novo as 04:40; pre-entrega publicada; residual zero medido",
+  "status": "PRE-ENTREGA PUBLICADA; congelado; aguardando entrega final e parada as 05:00",
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-publicacoes-midia",
   "branch": "work/etapa2-noturna-publicacoes-midia",
-  "head": "5029dfc05",
+  "head": "184dbb696",
   "upstream": "origin/work/etapa2-noturna-publicacoes-midia (0/0)",
   "base": "origin/dev 447e6eea2 mesclado em 3ab29d7df",
   "ack": "coordenador: revisao 1 aceita; lote 1e39b2fcf integrado (merge d502350ce); lote b10f48d1e aceito para a proxima integracao; atribuicao de principal_real_route_test retirada por ele apos minha medicao; reserva da plataforma comum de midia mantida",
@@ -369,6 +369,12 @@
       "sha": "5029dfc05",
       "state": "publicado",
       "title": "terceira leitura dos tres vermelhos: fixture obsoleta, com causa conferida dos dois lados",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "184dbb696",
+      "state": "publicado",
+      "title": "pre-entrega no congelamento, com residual provado por conteudo",
       "touches_reserved_files": []
     }
   ],
@@ -798,10 +804,7 @@
     ],
     "efeito_colateral_positivo": "a frente perfil-para-voce passou a consumir principalMomentsFeedRepository, a mesma instancia que /principal-moments usa, em vez de abrir uma segunda fonte para o mesmo feed",
     "commits_pendentes_de_integracao": [
-      "b69c7d00f",
-      "fbd0c54ac",
-      "376408072",
-      "5029dfc05"
+      "184dbb696"
     ],
     "ja_integrados": [
       "05537c3b3",
@@ -958,7 +961,8 @@
   "preEntrega": {
     "documento": "docs/reviews/etapa-2-operacao/reports/NOTURNA-preentrega-publicacoes-midia.md",
     "commit": "fbd0c54ac",
-    "formato": "itens 1 a 7 da coordenacao, mais 2b e 2c"
+    "formato": "itens 1 a 7 da coordenacao, mais 2b e 2c",
+    "commit_final": "184dbb696"
   },
   "retratacaoDaRefutacao": {
     "gravidade": "ALTA: reverte uma decisao que o coordenador tomou por causa da minha medicao",
@@ -1052,6 +1056,29 @@
       "stash": "vazio",
       "containers_portas_agendamentos": "nenhum",
       "residuo_que_eu_gerei": "packages/coelo_api/pubspec.lock aparece untracked na minha worktree, produzido quando rodei flutter test em coelo_api na medicao do item 2b. Conferido contra origin/dev com git show mais diff: IDENTICO ao rastreado em 9a896b993. Aparece untracked so porque a minha HEAD precede aquele commit. NAO commitado e NAO apagado: apagar destruiria copia identica a rastreada sem ganho."
+    },
+    "relogio_cruzado": {
+      "coordenacao": "04:38:01 (a MAIOR, prevalece por acordo)",
+      "publicacoes_midia": "04:36:56",
+      "chat_comunicacoes": "04:36:47",
+      "operacoes_sistema": "04:36:40",
+      "formularios_cuidado": "04:33:51",
+      "divergencia_maxima": "pouco mais de quatro minutos entre cinco frentes, contra os 37 de deriva que UMA estimativa produziu no comeco da noite"
+    },
+    "residual_reverificado": {
+      "dev_no_congelamento": "5ac61f6d7",
+      "rev_list_count_origin_dev_HEAD": 0,
+      "HEAD_e_ancestral_da_dev": true,
+      "prova_que_vale": "os cinco documentos commitados sao IDENTICOS entre HEAD e origin/dev, conferidos um a um com git diff --quiet",
+      "por_que_as_duas_primeiras_nao_bastam": "dependem de uma propriedade do metodo de integracao da coordenacao que eu NAO tinha verificado: a minha branch entrou por MERGE. Sob CHERRY-PICK o commit entra com SHA novo, deixa de ser ancestral para sempre, e o mesmo laco daria zero pelo motivo OPOSTO, sem nada no resultado denunciando a troca.",
+      "lei": "um teste que responde certo por um motivo que nao e o presumido continua respondendo certo ate a premissa mudar, e nesse dia erra em silencio. Aparece aqui dentro da propria ferramenta de reconciliacao.",
+      "quatro_estados": "publicado, recebido, aceito e integrado sao quatro estados diferentes; so o quarto responde a pergunta que interessa"
+    },
+    "wip_retido_conferido": {
+      "branch": "origin/work/etapa2-noturna-copia-previa",
+      "divergencia": "0/0",
+      "cabeca": "80f160599 fix(principal): stop production screens from calling themselves a preview",
+      "conclusao": "esta no remoto e nao so no disco temporario; a worktree pode ser removida no fechamento sem perda. O patch segue NAO mesclado e nao testado sobre a dev atual."
     }
   }
 }
