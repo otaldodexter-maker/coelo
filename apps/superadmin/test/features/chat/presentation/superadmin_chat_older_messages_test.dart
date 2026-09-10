@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/chat/domain/chat_repository.dart';
 import 'package:coelo_superadmin/features/chat/presentation/screens/superadmin_chat_page.dart';
@@ -29,6 +31,27 @@ void main() {
     expect(repository.cursorsRequested, ['message-recent']);
   });
 
+  testWidgets('sending keeps the continuation the server had offered', (tester) async {
+    final repository = _PagedThreadRepository(acceptSend: true);
+    await _pump(tester, repository);
+    expect(find.byKey(const Key('superadmin-chat-load-older')), findsOneWidget);
+
+    await tester.enterText(find.byKey(const Key('superadmin-chat-composer-field')), 'Tudo bem?');
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('superadmin-chat-send')));
+    await tester.pumpAndSettle();
+
+    // Enviar acrescenta uma mensagem ao topo; nao torna o resto da conversa
+    // inalcancavel. Descartar o cursor aqui faria o controle sumir e prenderia
+    // o operador na pagina mais recente, sem nenhum sinal de que algo mudou.
+    expect(find.text('Tudo bem?'), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-chat-load-older')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('superadmin-chat-load-older')));
+    await tester.pumpAndSettle();
+    expect(find.text('mensagem antiga'), findsOneWidget);
+  });
+
   testWidgets('offers no continuation when the server says there is none', (tester) async {
     final repository = _PagedThreadRepository(exhausted: true);
     await _pump(tester, repository);
@@ -36,6 +59,30 @@ void main() {
     // Sem cursor do servidor nao ha o que continuar. Oferecer o controle seria
     // prometer uma pagina que nao existe.
     expect(find.byKey(const Key('superadmin-chat-load-older')), findsNothing);
+  });
+
+  testWidgets('a slow continuation cannot alter the conversation opened after it', (
+    tester,
+  ) async {
+    final repository = _SlowContinuationRepository();
+    await _pump(tester, repository);
+
+    await tester.tap(find.byKey(const Key('superadmin-chat-load-older')));
+    await tester.pump();
+
+    // O operador troca de conversa enquanto a continuacao ainda esta em voo.
+    await tester.tap(find.text('Turma Margarida'));
+    await tester.pumpAndSettle();
+    expect(find.text('mensagem da margarida'), findsOneWidget);
+
+    repository.completeContinuation();
+    await tester.pumpAndSettle();
+
+    // A resposta atrasada pertence a conversa anterior. Aplica-la aqui
+    // misturaria mensagens de duas conversas na mesma thread, que e pior que
+    // perder a continuacao.
+    expect(find.text('mensagem antiga'), findsNothing);
+    expect(find.text('mensagem da margarida'), findsOneWidget);
   });
 
   testWidgets('a denied continuation purges the private snapshot', (tester) async {
@@ -66,10 +113,15 @@ Future<void> _pump(WidgetTester tester, ChatRepository repository) async {
 }
 
 final class _PagedThreadRepository implements ChatRepository {
-  _PagedThreadRepository({this.exhausted = false, this.denyContinuation = false});
+  _PagedThreadRepository({
+    this.exhausted = false,
+    this.denyContinuation = false,
+    this.acceptSend = false,
+  });
 
   final bool exhausted;
   final bool denyContinuation;
+  final bool acceptSend;
   final List<String> cursorsRequested = [];
 
   @override
@@ -125,6 +177,78 @@ final class _PagedThreadRepository implements ChatRepository {
       throw UnimplementedError();
 
   @override
+  Future<ChatMessage> sendMessage(ChatSendMessageCommand command) async {
+    if (!acceptSend) throw const ChatFailureException();
+    return _message('message-sent', command.body, 13);
+  }
+
+  @override
+  Future<ChatMessage> editMessage(ChatEditMessageCommand command) =>
+      Future<ChatMessage>.error(const ChatFailureException());
+
+  @override
+  Future<ChatMessageRevocation> revokeMessage(ChatRevokeMessageCommand command) =>
+      Future<ChatMessageRevocation>.error(const ChatFailureException());
+}
+
+/// Duas conversas, e a continuacao da primeira so responde quando mandarem.
+final class _SlowContinuationRepository implements ChatRepository {
+  final _continuation = Completer<ChatThreadPage>();
+
+  void completeContinuation() => _continuation.complete(
+    ChatThreadPage(items: [_message('message-old', 'mensagem antiga', 'conversation-1', 9)]),
+  );
+
+  @override
+  Future<int> fetchUnreadTotal() async => 0;
+
+  @override
+  Future<ChatInboxPage> fetchInbox(ChatInboxQuery query) async => ChatInboxPage(
+    totalUnread: 0,
+    items: [
+      _summary('conversation-1', 'Turma Girassol'),
+      _summary('conversation-2', 'Turma Margarida'),
+    ],
+  );
+
+  ChatConversationSummary _summary(String id, String title) => ChatConversationSummary(
+    id: id,
+    title: title,
+    preview: 'Ultima mensagem',
+    contextLabel: 'Unidade Cambui',
+    kind: 'group',
+    unreadCount: 0,
+    updatedAt: DateTime.utc(2026, 8, 12, 12),
+    isReadOnly: false,
+  );
+
+  @override
+  Future<ChatThreadPage> fetchThread(ChatThreadQuery query) {
+    if (query.cursor != null) return _continuation.future;
+    if (query.conversationId == 'conversation-2') {
+      return Future.value(
+        ChatThreadPage(
+          items: [_message('message-m', 'mensagem da margarida', 'conversation-2', 11)],
+        ),
+      );
+    }
+    return Future.value(
+      ChatThreadPage(
+        items: [_message('message-recent', 'mensagem recente', 'conversation-1', 12)],
+        nextCursor: ChatCursor(DateTime.utc(2026, 8, 12, 12), 'message-recent'),
+        hasMore: true,
+      ),
+    );
+  }
+
+  @override
+  Future<void> markRead({required String conversationId, required String upToMessageId}) async {}
+
+  @override
+  Future<ChatRealtimeRefresh> refreshAfterRealtime({required String conversationId}) =>
+      throw UnimplementedError();
+
+  @override
   Future<ChatMessage> sendMessage(ChatSendMessageCommand command) =>
       Future<ChatMessage>.error(const ChatFailureException());
 
@@ -136,3 +260,13 @@ final class _PagedThreadRepository implements ChatRepository {
   Future<ChatMessageRevocation> revokeMessage(ChatRevokeMessageCommand command) =>
       Future<ChatMessageRevocation>.error(const ChatFailureException());
 }
+
+ChatMessage _message(String id, String body, String conversationId, int hour) => ChatMessage(
+  id: id,
+  conversationId: conversationId,
+  body: body,
+  authorName: 'Marina',
+  sentAt: DateTime.utc(2026, 8, 12, hour),
+  isMine: false,
+  kind: 'text',
+);
