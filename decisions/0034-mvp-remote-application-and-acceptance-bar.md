@@ -179,6 +179,33 @@ pertencem e voltam a contar na revisão profunda.
 - O grupo grava o texto das opções escolhidas na spec/skill da família ao
   aplicar; a coordenação registra aqui a resposta como recebida.
 
+## Decisão 10 — respostas do Owner ao segundo lote de perguntas (10/09/2026, noite)
+
+- **P17, sessão de teste em produção: sim.** Existe um usuário sintético de
+  Superadmin `qa-r03@coelo.me`, criado pela API de administração do Auth (não
+  por insert manual, que quebra o login), vinculado só ao realm interno v2
+  como Owner de plataforma, AAL1. A senha foi gerada por script e vive apenas
+  em `C:/Users/adrie/Documents/Coelo-backups/qa-r03.env`, fora do Git e fora
+  do chat; as frentes leem o arquivo para abrir sessão. O usuário e os dados
+  sintéticos que ele criar são removidos ao fim das verificações da rodada
+  pelo mesmo gerador em modo de remoção.
+- **P18, capacidades de Locais: sim.** As nove `locations.*` foram
+  provisionadas em produção (`20260910230012`), Owner-only, `requires_mfa`
+  falso no MVP, risco declarado por ação. Isso destravou o catálogo v2 e os
+  pacotes de status, cópia e agenda de Locais (lote 5). Reservas, vínculos e
+  criação por Atividade/Turma seguem com o grupo estrutura, porque o preflight
+  de Reservas exige uma assinatura de `audit_append_superadmin_internal` que
+  produção não tem.
+- **P16, Local em Formulários: sim, entra no MVP** (novo tipo de item,
+  migration e cliente pelo grupo formularios-cuidado-rotina). Caso ainda
+  aberto: pergunta obrigatória com local revogado e nenhuma alternativa válida.
+- **P2 e P14:** o Owner cria o token R2 no painel e salva os dois valores num
+  arquivo local fora do projeto; o coordenador grava nos secrets e apaga o
+  arquivo. A troca da senha do banco fica para o Owner depois.
+- **Validação visual do Owner (cerca de 170 goldens em 10/09):** passa a ser
+  registrada por action_id no inventário e nos três rastreadores como
+  aprovação visual, com decisão e observação; não substitui `verified`.
+
 ## Consequências
 
 - O replay local com Docker deixa de ser porta obrigatória; continua útil para

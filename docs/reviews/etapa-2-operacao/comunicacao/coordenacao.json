@@ -1,6 +1,13 @@
 {
-  "revision": 11,
+  "revision": 12,
   "round": "E2-R03-20260910",
+  "posCorte": {
+    "quando": "2026-09-10 noite, apos o Owner responder P16/P17/P18 (ADR 0034 Decisao 10)",
+    "artefatoParaOOwner": "https://claude.ai/code/artifact/a8eadb47-c843-481a-bafb-053382d31d8a (explicacao simples + decisoes com imagens lado a lado)",
+    "usuarioSintetico": "qa-r03@coelo.me criado em producao pela API de administracao do Auth (id termina em ad58f5), vinculado ao realm interno v2 como owner de plataforma; login por senha provado com a chave publicavel (HTTP 200). Credencial em C:/Users/adrie/Documents/Coelo-backups/qa-r03.env (fora do Git). Insert manual em auth.users NAO funciona (GoTrue devolve 'Database error querying schema'); o guard do realm impede o mesmo auth user nos dois realms, por isso o usuario nao tem vinculo people-based. Remocao: scratchpad/gen-qa-user-sql.js em modo remover, ao fim da rodada.",
+    "lote5": {"dump": "Coelo-backups/schema-producao-20260910-lote5.sql", "aplicadoEm": "2026-09-10 noite", "conteudo": ["20260910230012_locations_capabilities_v1 (nove capacidades locations.* + concessao ao owner)", "230013 superadmin_location_catalog_v2_baseline (candidato de estrutura com revokes de ACL; pgTAP 30/30)", "230014 locations_update_status_v2 (28/28)", "230015 locations_copy_v2 (19/19)", "230016 locations_schedule_v2 (38/38)"], "verificado": "ledger 38; 9 permissoes e 9 concessoes ao owner; schedule_set_v2 presente; activity_locations sem grant a anon/authenticated", "naoEntrou": "20260908154257 activity_save_v2 (aplica, mas o pgTAP exige app_private.activity_v2_denied_envelope, ausente em producao), 20260909165000 reservations_v2 (preflight exige audit_append_superadmin_internal com 14 argumentos; producao tem outra assinatura), 180000/180100/180200 (dependem de reservas), 180300 unit_detail_v2_baseline (pgTAP 3 ok / 5 not ok: nome do wrapper). Tudo devolvido ao grupo estrutura com o erro exato."},
+    "regraNova": "pacote so entra em migrations/ com carimbo posterior a baseline; os historicos aceitos sao recarimbados na faixa do coordenador na ordem em que entram"
+  },
   "corte1710": {
     "shasFinais": {"fase0": "dev 5fb331f37 + wip/fase0-arquivo-chat 91e011dc6", "estrutura": "63be8a474", "acessos-pessoas": "d47e16839", "formularios-cuidado-rotina": "fdc89c488", "principal-chat-sistema": "49b92ffa3 (bridge; sem SHA de corte proprio)", "publicacoes-agenda": "3b21db696 (Codex, sem resposta ao corte)", "operacoes": "3fa07edd0 (Codex, sem resposta ao corte)", "realm-interno": "sem branch publicada (coelo-f0 nao respondeu)"},
     "integrado": "todas as branches acima em work/etapa2-r03-coordenacao e publicadas em dev no fechamento; conflitos resolvidos pela versao do grupo em JSON/evidencias/goldens e nos arquivos de Alunos (dono formularios)",

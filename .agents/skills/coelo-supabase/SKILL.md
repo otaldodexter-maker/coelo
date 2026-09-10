@@ -102,6 +102,17 @@ Segredos, buckets e Workers do Cloudflare fora do pacote da Decisão 5 (ADR 0034
 Registrar no rastreador o que ficou aberto depois da aplicação; o Owner revisa
 em ciclo semanal ou quinzenal.
 
+## Sessão de teste em produção (ADR 0034, Decisão 10 / P17)
+
+Existe um usuário sintético de Superadmin (`qa-r03@coelo.me`), Owner de
+plataforma no realm interno v2, AAL1. A credencial vive só em
+`C:/Users/adrie/Documents/Coelo-backups/qa-r03.env` (fora do Git); nunca no
+chat, no JSON de comunicação nem em commit. Regras: criar usuário de teste
+sempre pela API de administração do Auth (insert manual em `auth.users` quebra
+o login); o guard do realm interno impede o mesmo auth user no realm
+people-based; escrever só dado sintético e apagar na mesma sessão; ao fim da
+rodada o coordenador remove o usuário e o que ele criou.
+
 ## Pendências de segurança que só o Owner executa (registradas em 10/09/2026)
 
 Remover cada item no mesmo turno em que a verificação confirmar o efeito.
