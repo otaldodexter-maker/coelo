@@ -62,8 +62,10 @@ vínculo de aluno estão ligadas por padrão. Goldens que divergem de propósito
 `medication_form_mobile_light` (P15), `child_safety_directory_light_1440`
 (causa visual pré-existente), formulários mobile até a Fase 0 fechar MENU-M.
 
-**Aprovação visual do Owner (10/09/2026):** o Owner decidiu à mão 179
-goldens claros (lista de 10/09 mais Acontece/Cardápios), arquivo por arquivo,
+**Aprovação visual do Owner (10/09/2026):** o Owner decidiu à mão 180
+goldens (lista de 10/09, Acontece/Cardápios e as decisões complementares de
+Perfis de cuidado, Medicação, RODAPÉ, CHAT e Locais em
+`goldens-decisoes-complementares-2026-09-10.md`), arquivo por arquivo,
 R (volta à referência) ou A (regravar após a observação). Cada decisão está
 gravada por `action_id` no inventário, no campo `ownerVisualApproval`
 (goldens, decisão, observação e fonte): **52 ações com aprovação visual**. Não

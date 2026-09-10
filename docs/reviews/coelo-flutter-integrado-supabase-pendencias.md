@@ -43,7 +43,7 @@ produção, então nenhuma tela dessas famílias pode passar da régua do MVP se
 fila SQL. CORS e lifecycle do R2 estão aplicados; upload real pelo navegador
 ainda depende do token R2 (P2) e da origem de desenvolvimento (P3).
 
-**Aprovação visual do Owner:** 179 goldens decididos em 10/09 e gravados por
+**Aprovação visual do Owner:** 180 goldens decididos em 10/09 (três listas, a complementar prevalece) e gravados por
 `action_id` no inventário (`ownerVisualApproval`, 52 ações); detalhe por
 família no rastreador Front-end. Não substitui `verified-e2e`.
 

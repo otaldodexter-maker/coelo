@@ -3678,11 +3678,12 @@
       "ownerVisualApproval": {
         "recordedAt": "2026-09-10",
         "goldens": [
-          "profile_form_mobile_light=A (RODAPÉ; \"Criar Perfil de cuidado\" fora do padrão de criar de `coelo-ui` (Criar instituição))"
+          "profile_form_mobile_light=A (RODAPÉ; título e descrição da etapa como cabeçalho do corpo (padrão de Criar instituição), não dentro de card. Regravado pelo grupo.)",
+          "profile_form_desktop_dark=A (Seguir a skill `coelo-ui`: o wizard não seguia 100% o padrão (contêiner interno). Regravado pelo grupo.)"
         ],
         "referencia": 0,
-        "atual": 1,
-        "fonte": "goldens-claro-decisoes-2026-09-10"
+        "atual": 2,
+        "fonte": "goldens-decisoes-complementares-2026-09-10"
       }
     },
     {
@@ -3724,11 +3725,12 @@
       "ownerVisualApproval": {
         "recordedAt": "2026-09-10",
         "goldens": [
-          "profile_form_mobile_light=A (RODAPÉ; \"Criar Perfil de cuidado\" fora do padrão de criar de `coelo-ui` (Criar instituição))"
+          "profile_form_mobile_light=A (RODAPÉ; título e descrição da etapa como cabeçalho do corpo (padrão de Criar instituição), não dentro de card. Regravado pelo grupo.)",
+          "profile_form_desktop_dark=A (Seguir a skill `coelo-ui`: o wizard não seguia 100% o padrão (contêiner interno). Regravado pelo grupo.)"
         ],
         "referencia": 0,
-        "atual": 1,
-        "fonte": "goldens-claro-decisoes-2026-09-10"
+        "atual": 2,
+        "fonte": "goldens-decisoes-complementares-2026-09-10"
       }
     },
     {
@@ -3779,11 +3781,11 @@
       "ownerVisualApproval": {
         "recordedAt": "2026-09-10",
         "goldens": [
-          "medication_form_mobile_light=A"
+          "medication_form_mobile_light=A (P15 (noite): rodapé ancorado no fim da tela em todos os formulários, com espaço no fim do conteúdo para a última informação nunca ficar escondida nem inalcançável; regravar depois da correção no frame compartilhado. Supera o R da tarde.)"
         ],
         "referencia": 0,
         "atual": 1,
-        "fonte": "goldens-claro-decisoes-2026-09-10"
+        "fonte": "goldens-decisoes-complementares-2026-09-10"
       }
     },
     {
@@ -3825,11 +3827,11 @@
       "ownerVisualApproval": {
         "recordedAt": "2026-09-10",
         "goldens": [
-          "medication_form_mobile_light=A"
+          "medication_form_mobile_light=A (P15 (noite): rodapé ancorado no fim da tela em todos os formulários, com espaço no fim do conteúdo para a última informação nunca ficar escondida nem inalcançável; regravar depois da correção no frame compartilhado. Supera o R da tarde.)"
         ],
         "referencia": 0,
         "atual": 1,
-        "fonte": "goldens-claro-decisoes-2026-09-10"
+        "fonte": "goldens-decisoes-complementares-2026-09-10"
       }
     },
     {
