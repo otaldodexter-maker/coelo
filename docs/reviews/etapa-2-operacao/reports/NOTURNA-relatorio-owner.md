@@ -466,6 +466,48 @@ tempo:
 - `attendance.correct` e `attendance.finish` não têm lacuna de cliente: o
   conflito de versão tem exceção tipada, tratamento e dois testes.
 
+## Como esta rodada encontrou o que encontrou
+
+O método rendeu mais que qualquer lista de tarefas, e vale mais que os defeitos
+individuais porque se repete:
+
+**Reler a própria mudança já publicada e declarada provada.** Uma frente
+encontrou assim quatro defeitos em código que ela mesma tinha entregue naquela
+noite, nenhum deles pego pelos testes que ela havia escrito. Outra encontrou sete
+do mesmo jeito. As perguntas que funcionaram foram três: **o que isso faz quando
+há mais de um item** (cobertura com um elemento não exercita seleção), **o que
+acontece quando duas coisas ocorrem ao mesmo tempo** (cobertura sequencial não
+exercita entrelaçamento), e **o teste mede o efeito ou o mecanismo** (afirmar que
+a lista foi relida não é afirmar que o composer sumiu).
+
+**Comparar superfícies irmãs sobre o mesmo contrato.** Quando duas telas tratam o
+mesmo risco de formas diferentes, uma das duas está errada. Foi assim que
+apareceu a thread administrativa que nunca paginava, a retirada de Momento que
+não sabia a que contexto pertencia, e a única superfície de mídia que não conferia
+assinatura real de bytes.
+
+**Procurar capacidade existente sem consumidor.** Além dos cinco casos de código
+inalcançável, apareceu o inverso: `superadmin_circular_response_summary_v2`
+existe no gateway, o repositório a expõe, há teste de dados — e nenhuma tela
+chamava, num aceite que exige exatamente esse resumo. Havia uma segunda camada:
+o leitor recebia o repositório tipado pelo contrato mais estreito, então mesmo
+com o objeto certo em mãos o método era inalcançável pelo tipo. Nada falha nesse
+caso; simplesmente não existe.
+
+**Exigir ver o vermelho antes de aceitar o verde.** Três armadilhas diferentes
+apareceram só por isso: literais `const` que o compilador canonicaliza, fazendo
+uma guarda de igualdade passar contra o código defeituoso; `setSurfaceSize`
+deixando o `MediaQuery` em 800 px, de modo que a medição lia o default achando
+que era a largura real; e um widget que, por ser todo rolável ou `Wrap`, não tem
+como transbordar — cinco casos verdes que não protegiam nada.
+
+**E medir na base integrada, não na própria branch.** Duas vezes isso mudou o
+resultado: uma frente materializou a base conjunta e encontrou a rota duplicada
+que nenhuma branch isolada mostrava; outra ia regravar um golden **com
+autorização em mãos**, foi medir sobre o integrado antes de executar e descobriu
+que o golden já passava. Teria substituído uma referência correta pela foto de um
+código desatualizado, com uma justificativa que parecia sólida.
+
 ## Higiene e preservação
 
 - Os 90 artefatos de WIP ignorados na raiz do checkout integrador estão
