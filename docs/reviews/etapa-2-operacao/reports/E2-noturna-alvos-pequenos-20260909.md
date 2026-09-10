@@ -16,7 +16,7 @@ Usando o mesmo caminhador de semântica que identificou o nó sem rótulo, desta
 coletando nós com ação de toque e lado menor que 48, as causas são **três**, e duas
 são compartilhadas.
 
-## 1. Menu do usuário no shell — 242 × 44, presente em todas as telas
+## 1. Menu do usuário no shell — 242 × 44, presente em toda tela COM shell
 
 `apps/superadmin/lib/app/shell/superadmin_shell.dart`, por volta da linha 1670.
 O `InkWell` com chave `superadmin-profile-menu` tem 44 de altura:
