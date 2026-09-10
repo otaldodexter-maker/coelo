@@ -1968,6 +1968,24 @@ mesma que fez a diferença de conteúdo reprovar trabalho presente. **A rodada i
 tropeçou, nove vezes, em avaliar alguma coisa num instante que não era o instante da
 pergunta.**
 
+**E a prova mais limpa disso é uma regra desta mesma rodada que não funcionou.** Uma
+frente propôs, e eu distribuí às seis, que todo campo de estado carregasse o carimbo
+da hora em que foi medido. Uma hora depois de aplicá-la ao próprio arquivo, a frente
+reauditou e achou **sete campos podres novos** — o ponteiro de cabeça apontando para
+um commit anterior ao atual, a base observada de antes da rodada começar, o bloco de
+Git inteiro citando três commits vencidos, o prazo descrevendo uma janela já passada,
+a worktree de verificação num SHA errado.
+
+**Vários eram campos que ela tinha acabado de conferir na primeira passada.** Não
+escaparam por descuido: estavam certos quando foram olhados e apodreceram na hora
+seguinte.
+
+O carimbo diz **quando** algo foi medido; não obriga ninguém a **remedir**. Um campo
+carimbado 03:38 é honesto e inútil às 04:50. A regra que substitui é operacional e
+custa trinta segundos: **campo de estado se reaudita a cada publicação, não uma vez
+por rodada** — antes de publicar, releia cabeça, base, residual, worktree e prazo, e
+remeça os cinco mesmo tendo medido meia hora antes.
+
 ### O único número que diz se as correções da noite funcionaram
 
 Às 02:11 uma frente estava com quarenta minutos de deriva de relógio. Às 03:00 eu

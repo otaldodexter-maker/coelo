@@ -1,6 +1,6 @@
 {
-  "revision": 60,
-  "updated_at": "2026-09-10T04:45:32-03:00",
+  "revision": 61,
+  "updated_at": "2026-09-10T04:48:33-03:00",
   "group": "operacoes-sistema",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) — claude-opus-5[1m]",
@@ -1808,7 +1808,19 @@
       "groups.filters": "blocked-environment, por dependencia e nao por implementacao propria: reusa duas das cinco RPCs. Mesma bifurcacao, no texto.",
       "meal-plans.image-delete": "blocked-decision. A guarda de revisao existe no banco desde a migration de recibos e nunca roda, porque o cliente chama a forma legada de dois argumentos. BIFURCACAO, no texto: se a decisao for manter a forma legada, a guarda e codigo morto e deveria sair do banco para nao dar falsa sensacao de protecao; se for usar a de tres argumentos, o dominio de imagem precisa expor a revisao que o usuario viu, e ler a revisao no cliente logo antes do delete reproduziria o furo que a guarda fecha."
     },
-    "5_hora_lida_no_congelamento": "2026-09-10 04:38:59 -0300, saida crua de date na mesma chamada que mediu o estado. A leitura do coordenador, 04:38:01, e a que prevalece por acordo; a minha e 58 segundos depois dela, o que e o tempo entre os dois blocos."
+    "5_hora_lida_no_congelamento": "2026-09-10 04:38:59 -0300, saida crua de date na mesma chamada que mediu o estado. A leitura do coordenador, 04:38:01, e a que prevalece por acordo; a minha e 58 segundos depois dela, o que e o tempo entre os dois blocos.",
+    "8_o_que_eu_verifiquei_ERRADO": {
+      "hora": "2026-09-10T04:48:33-03:00",
+      "por_que_existe": "O item 7 declara o que eu NAO verifiquei. Isso nao cobre o que eu verifiquei e verifiquei ERRADO, que e diferente e muda mais a leitura do resto: uma ausencia declarada avisa o leitor; uma medicao errada o convence. Ordenado por DANO, do maior para o menor, e nao pela ordem em que aconteceu.",
+      "1_dano_maior": "Apresentei 696 PASS / 4 SKIP / 38 FAIL como residual DO RECORTE quando media oito caminhos, e eu havia corrigido defeitos em cinco familias fora deles na mesma noite. Dano: o coordenador repassou esse numero, e a frase 'zero falha nao-golden no recorte' dentro dele convidava a concluir que o recorte nao tinha defeito funcional aberto. A corrida completa achou NOVE nao-golden minhas, entre elas quatro guardas de composicao com contradicao de contrato. Corrigido as 04:00 e marcado no proprio campo.",
+      "2": "Mandei o numero 'calls=1' de /forms/form-1/files ao coordenador como evidencia de defeito, ANTES de descobrir qual dos dois testes em conflito encodava a decisao vigente. Dano: uma correcao de composition root chegou a ser atribuida ao dono de Formularios com base nisso; se aplicada, teria quebrado uma suite que passa 7/7 e revertido uma decisao de produto de 08/09. Foi parado porque eu li o outro teste vinte minutos depois. O numero estava certo; faltava o denominador.",
+      "3": "Publiquei que a varredura de enums cobria 82 colunas. Cobria 93: o varredor lia so o corpo do create table e ignorava alter table add constraint. Dano: subcontagem num relatorio que diz quanto do app foi examinado. Descoberto por um caso de teste que eu escrevi ESPERANDO falhar e que passou.",
+      "4": "Declarei 'processos filhos: nenhum' no item 4. Havia 32 processos dart e flutter_tester vivos, alguns de catorze horas. Dano: se as seis frentes declarassem igual, o coordenador fecharia a rodada acreditando que nao havia residuo de processo para limpar. Eu olhei o que ABRI e terminou, nao o que FICOU.",
+      "5": "Escrevi no comentario do teste de Importacoes que a pagina nao transborda em 390x844 com ate SEIS trabalhos. Transborda com seis; o limiar e cinco. Eu tinha medido com tres e generalizei. Dano: baixo, porque o arquivo nunca foi commitado com a frase errada — a propria asserção do teste falhou e me obrigou a medir linha por linha.",
+      "6": "Escrevi no artigo de conhecimento que a entrada limitada garante que nenhum payload invalido seja montado, duas frases depois de escrever que valor herdado longo NAO e truncado. Dano: contradicao logica num artefato duravel, que e o tipo que sobrevive a rodada. Corrigido e o caso residual virou medicao.",
+      "7_dano_menor": "O campo head do meu proprio arquivo ficou falso por tres minutos, entre escrever a revisao 48 e publicar o commit seguinte. Dano minimo e causa estrutural: campo de estado sem hora de medicao ao lado.",
+      "padrao_que_eu_vejo_nos_sete": "Em cinco dos sete, o erro foi generalizar de uma amostra medida para um universo nao medido — oito caminhos virando o recorte, tres trabalhos virando seis, o que eu abri virando o que ficou. Nos outros dois foi afirmar sem denominador. Nenhum foi falta de cuidado na execucao; todos foram pergunta respondida antes de ser delimitada."
+    }
   },
   "auditoria_de_campos_de_estado": {
     "hora": "2026-09-10T04:05:28-03:00",
