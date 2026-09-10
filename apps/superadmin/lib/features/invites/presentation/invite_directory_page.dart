@@ -6,7 +6,6 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../../../app/shell/superadmin_shell.dart';
-import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import '../../auth/domain/logout_action.dart';
 import '../domain/platform_invite.dart';
 import 'invite_directory_widgets.dart';
@@ -49,10 +48,8 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
   var _pageSize = 11;
   var _requestEpoch = 0;
   var _commandGeneration = 0;
-  var _display = InviteDirectoryDisplay.cards;
-  final _footerKey = GlobalKey();
+  var _display = CoeloAdminDirectoryDisplay.cards;
   var _footerHeight = 0.0;
-  var _footerMeasurementScheduled = false;
 
   InviteDirectoryQuery get _query => InviteDirectoryQuery(
     search: _searchController.text,
@@ -345,249 +342,174 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
   }
 
   @override
-  Widget build(BuildContext context) => LayoutBuilder(
-    builder: (context, constraints) {
-      final inset = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
-          ? CoeloSpacing.space10
-          : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
-          ? CoeloSpacing.space6
-          : CoeloSpacing.space4;
-      final showFooter =
-          _snapshot.state == InviteDirectoryLoadState.ready &&
-          (_snapshot.page?.totalCount ?? 0) > 0;
-      _scheduleFooterMeasurement(showFooter);
-      final footerInset = showFooter ? _footerHeight + CoeloSpacing.space4 : 0.0;
-      final content = ColoredBox(
-        key: const Key('invite-directory-page-surface'),
-        color: Theme.of(context).colorScheme.surface,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            SingleChildScrollView(
-              key: const Key('invite-directory-vertical-scroll'),
-              padding: EdgeInsets.fromLTRB(inset, inset, inset, inset + footerInset),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  InviteDirectoryToolbar(
-                    searchController: _searchController,
-                    statuses: _statuses,
-                    channels: _channels,
-                    onSearchChanged: _onSearchChanged,
-                    onStatusesChanged: (values) => _setFilters(() {
-                      _statuses
-                        ..clear()
-                        ..addAll(values);
-                    }),
-                    onChannelsChanged: (values) => _setFilters(() {
-                      _channels
-                        ..clear()
-                        ..addAll(values);
-                    }),
-                    display: _display,
-                    onDisplayChanged: _changeDisplay,
-                    onClear: _query.hasActiveFilters ? _clearFilters : null,
-                  ),
-                  const SizedBox(height: CoeloSpacing.space4),
-                  if (_snapshot.state != InviteDirectoryLoadState.unauthorized &&
-                      _display == InviteDirectoryDisplay.table &&
-                      widget.onCreate != null) ...[
-                    CoeloAdminCreateAction(
-                      key: const Key('invite-create-action'),
-                      label: 'Novo convite',
-                      description: 'Escolha contexto, perfil, destinatário e canais.',
-                      icon: Icons.mark_email_unread_outlined,
-                      variant: CoeloAdminCreateActionVariant.banner,
-                      onPressed: widget.onCreate!,
-                    ),
-                    const SizedBox(height: CoeloSpacing.space4),
-                  ],
-                  _body(),
-                ],
-              ),
-            ),
-            if (showFooter)
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: NotificationListener<SizeChangedLayoutNotification>(
-                  onNotification: (_) {
-                    _scheduleFooterMeasurement(true);
-                    return true;
-                  },
-                  child: SizeChangedLayoutNotifier(
-                    key: _footerKey,
-                    child: _pagination(_snapshot.page!, horizontalPadding: inset),
-                  ),
-                ),
-              ),
-          ],
+  Widget build(BuildContext context) {
+    final page = _snapshot.page;
+    final onCreate = widget.onCreate;
+    final content = ColoredBox(
+      key: const Key('invite-directory-page-surface'),
+      color: Theme.of(context).colorScheme.surface,
+      child: CoeloAdminDirectory<InviteDirectoryTableView>(
+        scrollKey: const Key('invite-directory-vertical-scroll'),
+        toggleKey: const Key('invite-display-toggle'),
+        cardsKey: const Key('invite-view-cards'),
+        tableKey: const Key('invite-view-table'),
+        gridKey: const Key('invite-card-grid'),
+        status: switch (_snapshot.state) {
+          InviteDirectoryLoadState.loading => CoeloAdminDirectoryStatus.loading,
+          InviteDirectoryLoadState.empty => CoeloAdminDirectoryStatus.empty,
+          InviteDirectoryLoadState.noResults => CoeloAdminDirectoryStatus.noResults,
+          InviteDirectoryLoadState.failure => CoeloAdminDirectoryStatus.failure,
+          InviteDirectoryLoadState.unauthorized => CoeloAdminDirectoryStatus.unauthorized,
+          InviteDirectoryLoadState.ready => CoeloAdminDirectoryStatus.success,
+        },
+        messages: const CoeloAdminDirectoryMessages(
+          empty: 'Nenhum convite',
+          emptyIcon: Icons.mail_outline_rounded,
+          noResults: 'Nenhum resultado',
+          noResultsIcon: Icons.search_off_rounded,
+          failure: 'Convites indisponíveis',
+          failureIcon: Icons.error_outline_rounded,
+          unauthorized: 'Acesso não autorizado',
+          unauthorizedIcon: Icons.lock_outline_rounded,
         ),
-      );
-      return SuperadminShell(
-        logout: widget.logout,
-        title: 'Convites',
-        subtitle: 'Emita, acompanhe, reenvie e revogue convites.',
-        currentDestination: 'invites',
-        onDestinationSelected: widget.onDestinationSelected,
-        chatLauncherBottomInset: _footerHeight,
-        child: content,
-      );
-    },
-  );
-
-  Widget _body() => switch (_snapshot.state) {
-    InviteDirectoryLoadState.loading => const CoeloStatePanel(
-      title: 'Carregando convites',
-      message: 'Buscando dados autorizados.',
-      icon: Icons.hourglass_top_rounded,
-    ),
-    InviteDirectoryLoadState.empty => _withCardsCreate(
-      const CoeloStatePanel(
-        title: 'Nenhum convite',
-        message: 'Crie o primeiro convite para iniciar o acompanhamento.',
-        icon: Icons.mail_outline_rounded,
-      ),
-    ),
-    InviteDirectoryLoadState.noResults => _withCardsCreate(
-      CoeloStatePanel(
-        title: 'Nenhum resultado',
-        message: 'Ajuste a busca ou os filtros.',
-        icon: Icons.search_off_rounded,
-        actionLabel: 'Limpar filtros',
-        onAction: _clearFilters,
-      ),
-    ),
-    InviteDirectoryLoadState.failure => _withCardsCreate(
-      CoeloStatePanel(
-        title: 'Convites indisponíveis',
-        message: 'Não foi possível carregar os convites.',
-        icon: Icons.error_outline_rounded,
-        actionLabel: 'Tentar novamente',
-        onAction: _load,
-      ),
-    ),
-    InviteDirectoryLoadState.unauthorized => const CoeloStatePanel(
-      title: 'Acesso não autorizado',
-      message: 'Seu contexto atual não permite consultar convites.',
-      icon: Icons.lock_outline_rounded,
-    ),
-    InviteDirectoryLoadState.ready => _ready(_snapshot.page!),
-  };
-
-  Widget _ready(InviteDirectoryResult page) => switch (_display) {
-    InviteDirectoryDisplay.cards => InviteDirectoryCards(
-      items: page.items,
-      busyInviteId: _busyInviteId,
-      onCreate: widget.onCreate,
-      onOpen: widget.onOpen,
-      allowCommands: widget.allowCommands,
-      onAction: _handleAction,
-    ),
-    InviteDirectoryDisplay.table => InviteDirectoryTable(
-      items: page.items,
-      busyInviteId: _busyInviteId,
-      onOpen: widget.onOpen,
-      allowCommands: widget.allowCommands,
-      onAction: _handleAction,
-    ),
-  };
-
-  Widget _withCardsCreate(Widget statePanel) {
-    if (_display != InviteDirectoryDisplay.cards || widget.onCreate == null) {
-      return statePanel;
-    }
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        InviteDirectoryCards(
-          items: const [],
-          busyInviteId: null,
-          onCreate: widget.onCreate,
-          allowCommands: false,
+        errorMessage: switch (_snapshot.state) {
+          InviteDirectoryLoadState.empty =>
+            'Crie o primeiro convite para iniciar o acompanhamento.',
+          InviteDirectoryLoadState.noResults => 'Ajuste a busca ou os filtros.',
+          InviteDirectoryLoadState.failure => 'Não foi possível carregar os convites.',
+          InviteDirectoryLoadState.unauthorized =>
+            'Seu contexto atual não permite consultar convites.',
+          _ => null,
+        },
+        onRetry: _load,
+        onClearFilters: _clearFilters,
+        search: CoeloSearchField(
+          controller: _searchController,
+          semanticLabel: 'Buscar convites',
+          hintText: 'Buscar destinatário',
+          onChanged: _onSearchChanged,
+        ),
+        filters: [
+          CoeloAdminMultiSelectFilter<InviteStatus>(
+            label: 'Status',
+            options: InviteStatus.values,
+            selectedValues: _statuses,
+            optionLabel: (value) => value.label,
+            onChanged: (values) => _setFilters(() {
+              _statuses
+                ..clear()
+                ..addAll(values);
+            }),
+          ),
+          CoeloAdminMultiSelectFilter<InviteChannel>(
+            label: 'Canal',
+            options: InviteChannel.values,
+            selectedValues: _channels,
+            optionLabel: (value) => value.label,
+            onChanged: (values) => _setFilters(() {
+              _channels
+                ..clear()
+                ..addAll(values);
+            }),
+          ),
+        ],
+        trailing: [
+          if (_query.hasActiveFilters)
+            TextButton.icon(
+              key: const Key('invite-clear-filters'),
+              onPressed: _clearFilters,
+              icon: const Icon(Icons.filter_alt_off_outlined),
+              label: const Text('Limpar filtros'),
+            ),
+        ],
+        display: _display,
+        onDisplayChanged: _changeDisplay,
+        groupedTableView: InviteDirectoryTableView.all,
+        selectedTableView: InviteDirectoryTableView.all,
+        tableViews: const [
+          CoeloAdminDirectoryTableViewOption(
+            value: InviteDirectoryTableView.all,
+            label: 'Todos os convites',
+          ),
+        ],
+        onTableViewSelected: (_) => _changeDisplay(CoeloAdminDirectoryDisplay.table),
+        fileActions: inviteFileActions(context),
+        create: onCreate == null
+            ? null
+            : CoeloAdminDirectoryCreate(
+                label: 'Novo convite',
+                description: 'Escolha contexto, perfil, destinatário e canais.',
+                icon: Icons.mark_email_unread_outlined,
+                onPressed: onCreate,
+                tileKey: const Key('invite-create-card'),
+                bannerKey: const Key('invite-create-action'),
+              ),
+        cards: [
+          if (page != null)
+            for (final invite in page.items)
+              InviteCard(
+                invite: invite,
+                busy: _busyInviteId == invite.id,
+                onOpen: widget.onOpen == null ? null : () => widget.onOpen!(invite.id),
+                allowCommands: widget.allowCommands,
+                onSelected: (action) => _handleAction(invite, action),
+              ),
+        ],
+        table: InviteTableRows(
+          items: page?.items ?? const [],
+          busyInviteId: _busyInviteId,
+          onOpen: widget.onOpen,
+          allowCommands: widget.allowCommands,
           onAction: _handleAction,
         ),
-        const SizedBox(height: CoeloSpacing.space4),
-        statePanel,
-      ],
+        pagination: _snapshot.state == InviteDirectoryLoadState.ready && page != null
+            ? CoeloAdminDirectoryPagination(
+                footerKey: const Key('invite-directory-pagination-footer'),
+                currentPage: page.page,
+                totalPages: page.totalPages,
+                pageSize: page.pageSize,
+                pageSizeOptions: _display == CoeloAdminDirectoryDisplay.cards
+                    ? InviteDirectoryQuery.cardPageSizes
+                    : InviteDirectoryQuery.tablePageSizes,
+                onPageSelected: _goToPage,
+                onPageSizeChanged: (value) {
+                  setState(() {
+                    _pageSize = value;
+                    _page = 1;
+                  });
+                  unawaited(_load());
+                },
+              )
+            : null,
+        onFooterHeightChanged: (height) {
+          if ((_footerHeight - height).abs() >= 0.5) setState(() => _footerHeight = height);
+        },
+      ),
+    );
+    return SuperadminShell(
+      logout: widget.logout,
+      title: 'Convites',
+      subtitle: 'Emita, acompanhe, reenvie e revogue convites.',
+      currentDestination: 'invites',
+      onDestinationSelected: widget.onDestinationSelected,
+      chatLauncherBottomInset: _footerHeight,
+      child: content,
     );
   }
 
-  void _changeDisplay(InviteDirectoryDisplay display) {
+  void _changeDisplay(CoeloAdminDirectoryDisplay display) {
     if (_display == display) return;
     setState(() {
       _display = display;
       _page = 1;
-      _pageSize = display == InviteDirectoryDisplay.cards ? 11 : 8;
+      _pageSize = display == CoeloAdminDirectoryDisplay.cards ? 11 : 8;
     });
     unawaited(_load());
   }
-
-  Widget _pagination(InviteDirectoryResult page, {required double horizontalPadding}) =>
-      SuperadminListingPaginationFooter(
-        semanticKey: const Key('invite-directory-pagination-footer'),
-        horizontalPadding: horizontalPadding,
-        compactCurrentPage: page.page,
-        compactTotalPages: page.totalPages,
-        compactOnPrevious: page.page > 1 ? () => _goToPage(page.page - 1) : null,
-        compactOnNext: page.page < page.totalPages ? () => _goToPage(page.page + 1) : null,
-        child: CoeloAdminPagination(
-          currentPage: page.page,
-          totalPages: page.totalPages,
-          pageSize: page.pageSize,
-          pageSizeOptions: _display == InviteDirectoryDisplay.cards
-              ? InviteDirectoryQuery.cardPageSizes
-              : InviteDirectoryQuery.tablePageSizes,
-          onPageSizeChanged: (value) {
-            setState(() {
-              _pageSize = value;
-              _page = 1;
-            });
-            unawaited(_load());
-          },
-          onPrevious: page.page > 1
-              ? () {
-                  _page--;
-                  unawaited(_load());
-                }
-              : null,
-          onNext: page.page < page.totalPages
-              ? () {
-                  _page++;
-                  unawaited(_load());
-                }
-              : null,
-          onPageSelected: (value) {
-            _page = value;
-            unawaited(_load());
-          },
-        ),
-      );
 
   void _goToPage(int value) {
     _page = value;
     unawaited(_load());
-  }
-
-  void _scheduleFooterMeasurement(bool visible) {
-    if (!visible) {
-      if (_footerHeight != 0) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) setState(() => _footerHeight = 0);
-        });
-      }
-      return;
-    }
-    if (_footerMeasurementScheduled) return;
-    _footerMeasurementScheduled = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _footerMeasurementScheduled = false;
-      if (!mounted) return;
-      final box = _footerKey.currentContext?.findRenderObject() as RenderBox?;
-      final height = box?.size.height ?? 0;
-      if ((_footerHeight - height).abs() >= 0.5) setState(() => _footerHeight = height);
-    });
   }
 }
 

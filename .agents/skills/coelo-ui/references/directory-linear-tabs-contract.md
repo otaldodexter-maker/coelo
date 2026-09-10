@@ -58,12 +58,14 @@ Não use:
 
 ## Implementação canônica atual
 
-No Superadmin, reutilizar `SuperadminUnderlineTabs<T>` e
-`SuperadminUnderlineTab<T>` de
-`apps/superadmin/lib/shared/presentation/widgets/superadmin_underline_tabs.dart`.
-Não recriar `TabBar`, `InkWell` ou indicadores locais dentro de uma feature
-enquanto esse compartilhado atender. Ele é uma composição compartilhada do
-Superadmin, não uma API pública de `coelo_ui_admin`.
+Desde a Fase 0 da Rodada 3 (10/09/2026), reutilizar `CoeloAdminUnderlineTabs<T>`
+e `CoeloAdminUnderlineTab<T>` de `coelo_ui_admin`
+(`packages/coelo_ui_admin/lib/src/directory/coelo_admin_underline_tabs.dart`);
+`SuperadminUnderlineTabs` em `apps/superadmin/lib/shared` é apenas um typedef
+de compatibilidade. Em diretórios, passar as abas ao slot `tabs` do
+`CoeloAdminDirectory`; para Todos/Ativos/Rascunhos/Inativos usar
+`CoeloAdminDirectoryStatusTabs`. Não recriar `TabBar`, `InkWell` ou
+indicadores locais dentro de uma feature.
 
 O exemplo estrutural permanece em `Acessos > Pessoas`, no
 `people-segment-selector`. Instituições reutiliza o mesmo componente para a

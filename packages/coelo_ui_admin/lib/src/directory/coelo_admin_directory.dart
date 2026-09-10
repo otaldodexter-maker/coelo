@@ -183,6 +183,7 @@ final class CoeloAdminDirectory<TView> extends StatefulWidget {
     this.fileActionsBusyLabel,
     this.leading = const [],
     this.tabs,
+    this.beforeResults = const [],
     this.create,
     this.cards = const [],
     this.table,
@@ -230,6 +231,10 @@ final class CoeloAdminDirectory<TView> extends StatefulWidget {
   /// Abas de status abaixo da toolbar (TABS).
   final Widget? tabs;
 
+  /// Avisos ou notas entre as abas e os resultados (aviso de demonstração,
+  /// texto de contexto).
+  final List<Widget> beforeResults;
+
   final CoeloAdminDirectoryDisplay display;
   final ValueChanged<CoeloAdminDirectoryDisplay> onDisplayChanged;
   final TView groupedTableView;
@@ -253,7 +258,8 @@ final class CoeloAdminDirectory<TView> extends StatefulWidget {
   final Widget? bodyOverride;
   final CoeloAdminDirectoryPagination? pagination;
 
-  /// Mensagem do serviço mostrada abaixo do texto de falha/não autorizado.
+  /// Linha secundária do card de estado (mensagem do serviço ou orientação),
+  /// abaixo do texto principal; omitida quando repete o principal.
   final String? errorMessage;
   final VoidCallback? onRetry;
   final VoidCallback? onClearFilters;
@@ -344,6 +350,10 @@ final class _CoeloAdminDirectoryState<TView> extends State<CoeloAdminDirectory<T
                 tabs,
               ],
               const SizedBox(height: CoeloSpacing.space4),
+              for (final item in widget.beforeResults) ...[
+                item,
+                const SizedBox(height: CoeloSpacing.space4),
+              ],
               _Results<TView>(directory: widget),
             ],
           ),
@@ -491,12 +501,17 @@ final class _Results<TView> extends StatelessWidget {
         ),
       ),
       CoeloAdminDirectoryStatus.empty => _withCreate(
-        _StateCard(icon: messages.emptyIcon, message: messages.empty),
+        _StateCard(
+          icon: messages.emptyIcon,
+          message: messages.empty,
+          detail: directory.errorMessage,
+        ),
       ),
       CoeloAdminDirectoryStatus.noResults => _withCreate(
         _StateCard(
           icon: messages.noResultsIcon,
           message: messages.noResults,
+          detail: directory.errorMessage,
           actionLabel: directory.onClearFilters == null ? null : 'Limpar filtros',
           onAction: directory.onClearFilters,
           actionKey: const Key('coelo-admin-directory-clear-filters'),
@@ -578,39 +593,82 @@ final class _CardGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
+      final columns = CoeloAdminDirectoryMetrics.columns(constraints.maxWidth);
+      final children = <Widget>[
+        if (create case final create?)
+          ConstrainedBox(
+            constraints: BoxConstraints(minHeight: cardMinHeight),
+            child: KeyedSubtree(
+              key: create.tileSurfaceKey,
+              child: CoeloAdminCreateAction(
+                key: create.tileKey,
+                label: create.label,
+                icon: create.icon,
+                onPressed: create.onPressed,
+              ),
+            ),
+          ),
+        for (final card in cards)
+          ConstrainedBox(
+            constraints: BoxConstraints(minHeight: cardMinHeight),
+            child: card,
+          ),
+      ];
+      // Cards da mesma linha têm a mesma altura, como na referência de
+      // Instituições. Table com alinhamento intrinsicHeight mede os filhos por
+      // layout real, o que funciona com cards que usam LayoutBuilder
+      // (IntrinsicHeight não suporta esses filhos).
       final width = CoeloAdminDirectoryMetrics.cardWidth(constraints.maxWidth);
-      return Wrap(
+      return Column(
         key: gridKey,
-        spacing: CoeloAdminDirectoryMetrics.cardGap,
-        runSpacing: CoeloAdminDirectoryMetrics.cardGap,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (create case final create?)
-            SizedBox(
-              width: width,
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: cardMinHeight),
-                child: KeyedSubtree(
-                  key: create.tileSurfaceKey,
-                  child: CoeloAdminCreateAction(
-                    key: create.tileKey,
-                    label: create.label,
-                    icon: create.icon,
-                    onPressed: create.onPressed,
-                  ),
+          for (var start = 0; start < children.length; start += columns) ...[
+            if (start > 0) const SizedBox(height: CoeloAdminDirectoryMetrics.cardGap),
+            Table(
+              defaultColumnWidth: FixedColumnWidth(width),
+              defaultVerticalAlignment: TableCellVerticalAlignment.intrinsicHeight,
+              columnWidths: {
+                for (var gap = 1; gap < columns * 2 - 1; gap += 2)
+                  gap: const FixedColumnWidth(CoeloAdminDirectoryMetrics.cardGap),
+              },
+              children: [
+                TableRow(
+                  children: [
+                    for (var column = 0; column < columns; column++) ...[
+                      if (column > 0) const SizedBox.shrink(),
+                      start + column < children.length
+                          ? _RowStretch(child: children[start + column])
+                          : const SizedBox.shrink(),
+                    ],
+                  ],
                 ),
-              ),
+              ],
             ),
-          for (final card in cards)
-            SizedBox(
-              width: width,
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: cardMinHeight),
-                child: card,
-              ),
-            ),
+          ],
         ],
       );
     },
+  );
+}
+
+/// Estica o card até a altura da linha sem impor altura máxima: o conteúdo
+/// que cresce um fio (hover do indicador de status) não estoura o layout.
+final class _RowStretch extends StatelessWidget {
+  const _RowStretch({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) => constraints.hasBoundedHeight
+        ? OverflowBox(
+            alignment: Alignment.topLeft,
+            minHeight: constraints.maxHeight,
+            maxHeight: double.infinity,
+            child: child,
+          )
+        : child,
   );
 }
 

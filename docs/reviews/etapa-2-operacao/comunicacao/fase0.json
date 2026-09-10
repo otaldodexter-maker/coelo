@@ -1,15 +1,15 @@
 {
   "grupo": "fase0",
-  "revision": 5,
+  "revision": 8,
   "round": "E2-R03-20260910",
-  "updatedAt": "2026-09-10T20:50:00-03:00",
+  "updatedAt": "2026-09-10T16:42:00-03:00",
   "app": "Claude",
   "modelo": "Fable 5.1",
   "conversa": "R03-P0-fase0-composto",
   "coordenador": "nenhum acima nesta fase; ordem de parar vem do Owner",
   "worktree": "C:/Users/adrie/Documents/Coelo (checkout principal)",
   "branch": "dev",
-  "head": "850ba1838",
+  "head": "fa404db39",
   "upstream": "origin/dev",
   "divergencia": "0/0",
   "base": "bb15db748 (dev no HEAD que contem R03-prompts.md)",
@@ -54,7 +54,7 @@
       ]
     }
   ],
-  "mudou": "Lotes 5 e 6 publicados: Planos, Cardapios (8fafbe16c), Circulares e Comunicacoes (850ba1838) como instancias do composto; rebase sobre e6f40f9bc do coordenador. Composto: Criar desabilitado sem callback, bodyOverride, paginacao por cursor, rodape entrega CoeloAdminPagination direto.",
+  "mudou": "Lote 7 publicado (fa404db39, rebase sobre 347d4cf8a): Pessoas, Convites e Perfis de acesso no composto; grade com linhas de altura igual via Table intrinsicHeight + card esticado sem altura maxima (IntrinsicHeight travava a suite em cards com LayoutBuilder); skill coelo-ui e conhecimento (33277a140). Goldens de todos os diretorios migrados regravados; goldens de formulario/detalhe preservados.",
   "diagnostico": {
     "menu": "Render atual difere da referencia em: item filho ativo em primaryContainer (referencia: primary preenchido, pai em tom mais escuro); Bug omitido quando onBugReportSubmitted e nulo; campo Buscar na navegacao presente no atual e deve permanecer (MENU).",
     "criar": "Instituicoes ja tem Criar no vazio/falha; Atividades so tem quando onCreate != null. Composto passa a garantir Criar primeiro em todos os estados.",
@@ -72,15 +72,17 @@
     "fase0.arquitetura: teste em apps/superadmin/test/architecture com allowlist decrescente",
     "fase0.sdk: .fvmrc/.flutter-version 3.44.2",
     "chat: Arquivos escondido em Conversas (ARQUIVOS-CHAT)",
-    "plans.list, meal_plans.list, circulars.list, notices.list: instancias do composto (goldens regravados; ARQUIVO pendente do Owner)"
+    "plans.list, meal_plans.list, circulars.list, notices.list: instancias do composto (goldens regravados; ARQUIVO pendente do Owner)",
+    "people.list, invites.list, access_profiles.list: instancias do composto",
+    "fase0.arquitetura: allowlist reduzida a agenda (3), assiduidade (1), seguranca (2), suporte (2)"
   ],
   "testes": {
-    "P": 218,
+    "P": 1082,
     "F": 0,
     "B": 0,
-    "S": 0,
+    "S": 2,
     "U": null,
-    "evidencia": "flutter test por feature (institutions, activities, groups), shell/navigation, packages/coelo_ui_admin/test/directory"
+    "evidencia": "flutter test test/features/{people,invites,access_profiles} test/architecture (611 P); goldens dos diretorios migrados (457 P, 2 S); packages/coelo_ui_admin/test/directory (14 P)"
   },
   "arquivosReservados": [
     "packages/coelo_ui_admin/**",
@@ -93,7 +95,7 @@
     ".flutter-version"
   ],
   "bloqueio": null,
-  "proximoPasso": "Pessoas, Convites e Perfis de acesso no composto, um lote por tela.",
+  "proximoPasso": "Suporte e Auditoria: toolbar de filtros no padrao do composto (com o grupo operacoes); acompanhar rebases das frentes sobre fa404db39.",
   "wip": [],
   "recursos": {
     "processos": [],

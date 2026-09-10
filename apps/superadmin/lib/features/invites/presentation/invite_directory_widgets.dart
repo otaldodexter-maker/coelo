@@ -1,154 +1,45 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
-import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../../../app/shell/superadmin_notice.dart';
-import '../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
 import '../domain/platform_invite.dart';
 import 'invite_presentation_support.dart';
 
 enum InviteRowAction { details, resend, revoke }
 
-enum InviteDirectoryDisplay { cards, table }
-
 enum InviteDirectoryTableView { all }
 
-final class InviteDirectoryToolbar extends StatelessWidget {
-  const InviteDirectoryToolbar({
-    required this.searchController,
-    required this.statuses,
-    required this.channels,
-    required this.onSearchChanged,
-    required this.onStatusesChanged,
-    required this.onChannelsChanged,
-    required this.display,
-    required this.onDisplayChanged,
-    this.onClear,
-    super.key,
-  });
-
-  final TextEditingController searchController;
-  final Set<InviteStatus> statuses;
-  final Set<InviteChannel> channels;
-  final ValueChanged<String> onSearchChanged;
-  final ValueChanged<Set<InviteStatus>> onStatusesChanged;
-  final ValueChanged<Set<InviteChannel>> onChannelsChanged;
-  final InviteDirectoryDisplay display;
-  final ValueChanged<InviteDirectoryDisplay> onDisplayChanged;
-  final VoidCallback? onClear;
-
-  @override
-  Widget build(BuildContext context) => LayoutBuilder(
-    builder: (context, constraints) {
-      final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
-      final largeText = MediaQuery.textScalerOf(context).scale(1) > 1.3;
-      final filterWidth = compact
-          ? largeText
-                ? constraints.maxWidth
-                : (constraints.maxWidth - CoeloSpacing.space3) / 2
-          : 176.0;
-      return CoeloAdminListingToolbar(
-        search: SizedBox(
-          width: compact ? constraints.maxWidth : 280,
-          height: CoeloSize.touchMin,
-          child: CoeloSearchField(
-            controller: searchController,
-            semanticLabel: 'Buscar convites',
-            hintText: 'Buscar destinatário',
-            onChanged: onSearchChanged,
-          ),
-        ),
-        filters: [
-          SizedBox(
-            width: filterWidth,
-            child: CoeloAdminMultiSelectFilter<InviteStatus>(
-              label: 'Status',
-              options: InviteStatus.values,
-              selectedValues: statuses,
-              optionLabel: (value) => value.label,
-              onChanged: onStatusesChanged,
-            ),
-          ),
-          SizedBox(
-            width: filterWidth,
-            child: CoeloAdminMultiSelectFilter<InviteChannel>(
-              label: 'Canal',
-              options: InviteChannel.values,
-              selectedValues: channels,
-              optionLabel: (value) => value.label,
-              onChanged: onChannelsChanged,
-            ),
-          ),
-          if (onClear != null)
-            TextButton.icon(
-              key: const Key('invite-clear-filters'),
-              onPressed: onClear,
-              icon: const Icon(Icons.filter_alt_off_outlined),
-              label: const Text('Limpar filtros'),
-            ),
-        ],
-        actions: [
-          SuperadminDirectoryViewToggle<InviteDirectoryTableView>(
-            key: const Key('invite-display-toggle'),
-            cardsKey: const Key('invite-view-cards'),
-            tableKey: const Key('invite-view-table'),
-            cardsSelected: display == InviteDirectoryDisplay.cards,
-            groupedView: InviteDirectoryTableView.all,
-            selectedTableView: InviteDirectoryTableView.all,
-            tableViews: const [
-              SuperadminDirectoryTableViewOption(
-                value: InviteDirectoryTableView.all,
-                label: 'Todos os convites',
-              ),
-            ],
-            onCardsSelected: () => onDisplayChanged(InviteDirectoryDisplay.cards),
-            onTableViewSelected: (_) => onDisplayChanged(InviteDirectoryDisplay.table),
-          ),
-          _InviteFileActions(compact: compact),
-        ],
-      );
-    },
-  );
-}
-
-final class _InviteFileActions extends StatelessWidget {
-  const _InviteFileActions({required this.compact});
-
-  final bool compact;
-
-  @override
-  Widget build(BuildContext context) => CoeloAdminFileActions(
-    compact: compact,
-    actions: [
-      CoeloAdminFileAction(
-        key: const Key('invite-files-import'),
-        label: 'Importar',
-        icon: Icons.upload_file_outlined,
-        onPressed: () => _unavailable(context, 'Importação'),
-      ),
-      CoeloAdminFileAction(
-        key: const Key('invite-files-export-csv'),
-        label: 'Exportar CSV',
-        icon: Icons.table_rows_outlined,
-        onPressed: () => _unavailable(context, 'Exportação'),
-      ),
-      CoeloAdminFileAction(
-        key: const Key('invite-files-export-xlsx'),
-        label: 'Exportar XLSX',
-        icon: Icons.grid_on_outlined,
-        onPressed: () => _unavailable(context, 'Exportação'),
-      ),
-    ],
-  );
-
-  void _unavailable(BuildContext context, String operation) {
+/// Ações de arquivo de Convites para o `CoeloAdminDirectory` (adiadas no MVP).
+List<CoeloAdminFileAction> inviteFileActions(BuildContext context) {
+  void unavailable(String operation) {
     showSuperadminNotice(
       context,
       '$operation de convites ainda não está disponível.',
       icon: Icons.info_outline_rounded,
     );
   }
+
+  return [
+    CoeloAdminFileAction(
+      key: const Key('invite-files-import'),
+      label: 'Importar',
+      icon: Icons.upload_file_outlined,
+      onPressed: () => unavailable('Importação'),
+    ),
+    CoeloAdminFileAction(
+      key: const Key('invite-files-export-csv'),
+      label: 'Exportar CSV',
+      icon: Icons.table_rows_outlined,
+      onPressed: () => unavailable('Exportação'),
+    ),
+    CoeloAdminFileAction(
+      key: const Key('invite-files-export-xlsx'),
+      label: 'Exportar XLSX',
+      icon: Icons.grid_on_outlined,
+      onPressed: () => unavailable('Exportação'),
+    ),
+  ];
 }
 
 final class InviteDirectoryCards extends StatelessWidget {
@@ -192,7 +83,7 @@ final class InviteDirectoryCards extends StatelessWidget {
         for (final invite in items)
           SizedBox(
             width: cardWidth,
-            child: _InviteCard(
+            child: InviteCard(
               invite: invite,
               busy: busyInviteId == invite.id,
               onOpen: onOpen == null ? null : () => onOpen!(invite.id),
@@ -240,13 +131,15 @@ final class InviteDirectoryCards extends StatelessWidget {
   );
 }
 
-final class _InviteCard extends StatelessWidget {
-  const _InviteCard({
+/// Card de domínio de um convite; largura, grade e o Criar vêm do composto.
+final class InviteCard extends StatelessWidget {
+  const InviteCard({
     required this.invite,
     required this.busy,
     required this.onOpen,
     required this.allowCommands,
     required this.onSelected,
+    super.key,
   });
 
   final PlatformInvite invite;
@@ -352,8 +245,9 @@ final class _InviteCardStatus extends StatelessWidget {
   }
 }
 
-final class InviteDirectoryTable extends StatelessWidget {
-  const InviteDirectoryTable({
+/// Linhas e colunas de domínio de Convites sobre a tabela compartilhada.
+final class InviteTableRows extends StatelessWidget {
+  const InviteTableRows({
     required this.items,
     required this.busyInviteId,
     required this.onAction,

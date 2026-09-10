@@ -115,7 +115,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      tester.widget<TextField>(find.descendant(of: search, matching: find.byType(TextField))).controller?.text,
+      tester
+          .widget<TextField>(find.descendant(of: search, matching: find.byType(TextField)))
+          .controller
+          ?.text,
       isEmpty,
       reason: 'clearing the filters has to clear the box that shows one',
     );

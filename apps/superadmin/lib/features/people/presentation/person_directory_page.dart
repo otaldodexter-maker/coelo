@@ -8,9 +8,6 @@ import 'package:flutter/material.dart';
 import '../../../app/activity/superadmin_activity.dart';
 import '../../../app/shell/superadmin_notice.dart';
 import '../../../app/shell/superadmin_shell.dart';
-import '../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
-import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
-import '../../../shared/presentation/widgets/superadmin_underline_tabs.dart';
 import '../../auth/domain/logout_action.dart';
 import '../../support/domain/support_ticket.dart';
 import '../domain/person_directory.dart';
@@ -127,7 +124,9 @@ final class _PersonDirectoryPageState extends State<PersonDirectoryPage> {
   );
 }
 
-final class _PersonDirectoryContent extends StatefulWidget {
+/// Diretório de Pessoas: instância do `CoeloAdminDirectory` com o conteúdo de
+/// domínio (busca, filtros dependentes, segmentos, cards e linhas da tabela).
+final class _PersonDirectoryContent extends StatelessWidget {
   const _PersonDirectoryContent({
     required this.viewModel,
     required this.searchController,
@@ -147,355 +146,275 @@ final class _PersonDirectoryContent extends StatefulWidget {
   final ValueChanged<double> onFooterHeightChanged;
 
   @override
-  State<_PersonDirectoryContent> createState() => _PersonDirectoryContentState();
-}
-
-final class _PersonDirectoryContentState extends State<_PersonDirectoryContent> {
-  final GlobalKey _footerKey = GlobalKey();
-  double _footerHeight = 0;
-  bool _measurementScheduled = false;
-
-  void _measureFooter(bool visible) {
-    if (_measurementScheduled) return;
-    _measurementScheduled = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _measurementScheduled = false;
-      if (!mounted) return;
-      var height = 0.0;
-      if (visible) {
-        final renderObject = _footerKey.currentContext?.findRenderObject();
-        if (renderObject is! RenderBox || !renderObject.hasSize) return;
-        height = renderObject.size.height;
-      }
-      if ((height - _footerHeight).abs() < .5) return;
-      setState(() => _footerHeight = height);
-      widget.onFooterHeightChanged(height);
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) => LayoutBuilder(
-    builder: (context, constraints) {
-      final horizontalPadding = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
-          ? CoeloSpacing.space10
-          : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
-          ? CoeloSpacing.space6
-          : CoeloSpacing.space4;
-      return AnimatedBuilder(
-        animation: widget.viewModel,
-        builder: (context, child) {
-          final showPagination = widget.viewModel.state == PersonDirectoryLoadState.success;
-          _measureFooter(showPagination);
-          final footerInset = showPagination ? _footerHeight + CoeloSpacing.space4 : 0.0;
-          if (widget.viewModel.state == PersonDirectoryLoadState.loading ||
-              widget.viewModel.state == PersonDirectoryLoadState.unauthorized) {
-            return ListView(
-              key: const Key('people-directory-scroll'),
-              padding: EdgeInsets.all(horizontalPadding),
-              children: [
-                _PersonResults(
-                  viewModel: widget.viewModel,
-                  searchController: widget.searchController,
-                  onCreate: null,
-                  onEdit: null,
-                ),
-              ],
-            );
-          }
-          return Stack(
-            fit: StackFit.expand,
-            children: [
-              ListView(
-                key: const Key('people-directory-scroll'),
-                padding: EdgeInsets.fromLTRB(
-                  horizontalPadding,
-                  horizontalPadding,
-                  horizontalPadding,
-                  horizontalPadding + footerInset,
-                ),
-                children: [
-                  _PersonToolbar(
-                    viewModel: widget.viewModel,
-                    searchController: widget.searchController,
-                    onImport: widget.onImport,
-                    onExport: widget.onExport,
-                  ),
-                  const SizedBox(height: CoeloSpacing.space4),
-                  _PersonSegmentSelector(viewModel: widget.viewModel),
-                  const SizedBox(height: CoeloSpacing.space4),
-                  _PersonResults(
-                    viewModel: widget.viewModel,
-                    searchController: widget.searchController,
-                    onCreate: widget.onCreate,
-                    onEdit: widget.onEdit,
-                  ),
-                ],
-              ),
-              if (showPagination)
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  child: SizeChangedLayoutNotifier(
-                    key: _footerKey,
-                    child: NotificationListener<SizeChangedLayoutNotification>(
-                      onNotification: (_) {
-                        _measureFooter(true);
-                        return true;
-                      },
-                      child: _PersonPaginationFooter(
-                        viewModel: widget.viewModel,
-                        horizontalPadding: horizontalPadding,
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          );
+  Widget build(BuildContext context) => AnimatedBuilder(
+    animation: viewModel,
+    builder: (context, _) {
+      final page = viewModel.page;
+      final onCreate = this.onCreate;
+      final totalPages = math.max(1, (page.totalCount / viewModel.query.pageSize).ceil());
+      return CoeloAdminDirectory<PersonDirectoryTableView>(
+        scrollKey: const Key('people-directory-scroll'),
+        toolbarKey: const Key('people-filter-toolbar'),
+        cardsKey: const Key('people-view-cards'),
+        tableKey: const Key('people-view-table'),
+        gridKey: const Key('people-card-grid'),
+        status: switch (viewModel.state) {
+          PersonDirectoryLoadState.initial ||
+          PersonDirectoryLoadState.loading => CoeloAdminDirectoryStatus.loading,
+          PersonDirectoryLoadState.empty => CoeloAdminDirectoryStatus.empty,
+          PersonDirectoryLoadState.noResults => CoeloAdminDirectoryStatus.noResults,
+          PersonDirectoryLoadState.failure => CoeloAdminDirectoryStatus.failure,
+          PersonDirectoryLoadState.unauthorized => CoeloAdminDirectoryStatus.unauthorized,
+          PersonDirectoryLoadState.success => CoeloAdminDirectoryStatus.success,
         },
-      );
-    },
-  );
-}
-
-final class _PersonSegmentSelector extends StatelessWidget {
-  const _PersonSegmentSelector({required this.viewModel});
-
-  final PersonDirectoryViewModel viewModel;
-
-  @override
-  Widget build(BuildContext context) => SuperadminUnderlineTabs<PersonDirectorySegment>(
-    key: const Key('people-segment-selector'),
-    tabs: [
-      for (final segment in PersonDirectorySegment.values)
-        SuperadminUnderlineTab(value: segment, label: segment.label),
-    ],
-    selected: viewModel.query.segment,
-    onSelected: viewModel.setSegment,
-  );
-}
-
-final class _PersonToolbar extends StatelessWidget {
-  const _PersonToolbar({
-    required this.viewModel,
-    required this.searchController,
-    required this.onImport,
-    required this.onExport,
-  });
-  final PersonDirectoryViewModel viewModel;
-  final TextEditingController searchController;
-  final VoidCallback? onImport;
-  final PersonExportAction? onExport;
-
-  @override
-  Widget build(BuildContext context) => LayoutBuilder(
-    builder: (context, constraints) {
-      final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
-      final compactFileAction = compact || constraints.maxWidth < 1000;
-      final filterWidth = compact
-          ? (constraints.maxWidth - CoeloSpacing.space3) / 2
-          : CoeloSpacing.space20 * 2;
-      final searchWidth = compact ? constraints.maxWidth : 216.0;
-      Widget filter<T>({
-        required Key key,
-        required String label,
-        required List<T> options,
-        required Set<T> selected,
-        required String Function(T) optionLabel,
-        required ValueChanged<Set<T>> changed,
-        String? searchHintText,
-      }) => SizedBox(
-        key: key,
-        width: filterWidth,
-        child: CoeloAdminMultiSelectFilter<T>(
-          label: label,
-          options: options,
-          selectedValues: selected,
-          optionLabel: optionLabel,
-          onChanged: changed,
-          searchHintText: searchHintText,
+        refreshing: viewModel.state == PersonDirectoryLoadState.loading,
+        messages: const CoeloAdminDirectoryMessages(
+          empty: 'Nenhuma pessoa cadastrada',
+          emptyIcon: Icons.people_outline_rounded,
+          noResults: 'Nenhum resultado',
+          noResultsIcon: Icons.search_off_rounded,
+          failure: 'Não foi possível carregar as pessoas',
+          failureIcon: Icons.error_outline_rounded,
+          unauthorized: 'Acesso não autorizado',
+          unauthorizedIcon: Icons.lock_outline_rounded,
         ),
-      );
-      final selectedInstitutions = viewModel.query.institutionIds;
-      final visibleUnits = viewModel.visibleUnits;
-      final visibleGroups = viewModel.visibleGroups;
-      final visibleActivities = viewModel.visibleActivities;
-      final visibleMunicipalities = viewModel.visibleMunicipalities;
-      final visibleNeighborhoods = viewModel.visibleNeighborhoods;
-      final visibleRoles = viewModel.filterOptions.roles
-          .where((option) => selectedInstitutions.contains(option.institutionId))
-          .toList(growable: false);
-      final filters = <Widget>[
-        filter<PersonType>(
-          key: const Key('people-type-filter'),
-          label: 'Tipo',
-          options: PersonType.values,
-          selected: viewModel.query.types,
-          optionLabel: (value) => value.label,
-          changed: viewModel.setTypes,
+        errorMessage: switch (viewModel.state) {
+          PersonDirectoryLoadState.empty => 'Crie a primeira pessoa para começar.',
+          PersonDirectoryLoadState.noResults => 'Revise a busca ou os filtros aplicados.',
+          PersonDirectoryLoadState.failure => 'Tente novamente em instantes.',
+          PersonDirectoryLoadState.unauthorized => 'Você não possui people.read.',
+          _ => null,
+        },
+        onRetry: viewModel.retry,
+        onClearFilters: () => clearPeopleFilters(searchController, viewModel),
+        search: CoeloSearchField(
+          controller: searchController,
+          hintText: 'Buscar por nome',
+          semanticLabel: 'Buscar pessoas por nome',
+          onChanged: viewModel.setSearch,
         ),
-        filter<PersonStatus>(
-          key: const Key('people-status-filter'),
-          label: 'Status',
-          options: PersonStatus.values,
-          selected: viewModel.query.statuses,
-          optionLabel: (value) => value.label,
-          changed: viewModel.setStatuses,
-        ),
-        filter<PersonFilterOption>(
-          key: const Key('people-institution-filter'),
-          label: 'Instituição',
-          options: viewModel.filterOptions.institutions,
-          selected: viewModel.filterOptions.institutions
-              .where((item) => viewModel.query.institutionIds.contains(item.id))
-              .toSet(),
-          optionLabel: (value) => value.label,
-          changed: (values) => viewModel.setInstitutions(values.map((item) => item.id).toSet()),
-          searchHintText: 'Buscar instituição',
-        ),
-        if (selectedInstitutions.isNotEmpty)
-          filter<PersonFilterOption>(
-            key: const Key('people-unit-filter'),
-            label: 'Unidade',
-            options: visibleUnits,
-            selected: visibleUnits
-                .where((item) => viewModel.query.unitIds.contains(item.id))
-                .toSet(),
-            optionLabel: (value) => value.label,
-            changed: (values) => viewModel.setUnits(values.map((item) => item.id).toSet()),
-            searchHintText: 'Buscar unidade',
-          ),
-        if (viewModel.query.unitIds.isNotEmpty)
-          filter<PersonFilterOption>(
-            key: const Key('people-group-filter'),
-            label: 'Turma',
-            options: visibleGroups,
-            selected: visibleGroups
-                .where((item) => viewModel.query.groupIds.contains(item.id))
-                .toSet(),
-            optionLabel: (value) => value.label,
-            changed: (values) => viewModel.setGroups(values.map((item) => item.id).toSet()),
-            searchHintText: 'Buscar grupo',
-          ),
-        if (viewModel.query.groupIds.isNotEmpty)
-          filter<PersonFilterOption>(
-            key: const Key('people-activity-filter'),
-            label: 'Atividade',
-            options: visibleActivities,
-            selected: visibleActivities
-                .where((item) => viewModel.query.activityIds.contains(item.id))
-                .toSet(),
-            optionLabel: (value) => value.label,
-            changed: (values) => viewModel.setActivities(values.map((item) => item.id).toSet()),
-            searchHintText: 'Buscar atividade',
-          ),
-        if (selectedInstitutions.isNotEmpty)
-          filter<PersonFilterOption>(
-            key: const Key('people-role-filter'),
-            label: 'Papel',
-            options: visibleRoles,
-            selected: visibleRoles
-                .where((item) => viewModel.query.contextualRoles.contains(item.id))
-                .toSet(),
-            optionLabel: (value) => value.label,
-            changed: (values) => viewModel.setRoles(values.map((item) => item.id).toSet()),
-            searchHintText: 'Buscar papel',
-          ),
-        filter<PersonFilterOption>(
-          key: const Key('people-state-filter'),
-          label: 'UF',
-          options: viewModel.filterOptions.states,
-          selected: viewModel.filterOptions.states
-              .where((item) => viewModel.query.stateCodes.contains(item.id))
-              .toSet(),
-          optionLabel: (value) => value.label,
-          changed: (values) => viewModel.setStates(values.map((item) => item.id).toSet()),
-        ),
-        if (viewModel.query.stateCodes.isNotEmpty)
-          filter<PersonFilterOption>(
-            key: const Key('people-municipality-filter'),
-            label: 'Município',
-            options: visibleMunicipalities,
-            selected: visibleMunicipalities
-                .where((item) => viewModel.query.municipalityIds.contains(item.id))
-                .toSet(),
-            optionLabel: (value) => value.label,
-            changed: (values) => viewModel.setMunicipalities(values.map((item) => item.id).toSet()),
-          ),
-        if (viewModel.query.municipalityIds.isNotEmpty)
-          filter<PersonFilterOption>(
-            key: const Key('people-neighborhood-filter'),
-            label: 'Bairro',
-            options: visibleNeighborhoods,
-            selected: visibleNeighborhoods
-                .where((item) => viewModel.query.neighborhoodIds.contains(item.id))
-                .toSet(),
-            optionLabel: (value) => value.label,
-            changed: (values) => viewModel.setNeighborhoods(values.map((item) => item.id).toSet()),
-          ),
-        filter<AuthLinkStatus>(
-          key: const Key('people-auth-filter'),
-          label: 'Auth',
-          options: AuthLinkStatus.values,
-          selected: viewModel.query.authLinks,
-          optionLabel: (value) => value.label,
-          changed: viewModel.setAuthLinks,
-        ),
-        if (viewModel.query.hasActiveFilters)
-          TextButton.icon(
-            onPressed: () => clearPeopleFilters(searchController, viewModel),
-            icon: const Icon(Icons.filter_alt_off_outlined),
-            label: const Text('Limpar filtros'),
-          ),
-      ];
-      return CoeloAdminListingToolbar(
-        key: const Key('people-filter-toolbar'),
-        search: SizedBox(
-          width: searchWidth,
-          height: CoeloSize.touchMin,
-          child: CoeloSearchField(
-            controller: searchController,
-            hintText: 'Buscar por nome',
-            semanticLabel: 'Buscar pessoas por nome',
-            onChanged: viewModel.setSearch,
-          ),
-        ),
-        filters: filters,
-        actions: [
-          SizedBox(
-            height: CoeloSize.touchMin,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SuperadminDirectoryViewToggle<PersonDirectoryTableView>(
-                  cardsSelected: viewModel.layout == PersonDirectoryLayout.cards,
-                  groupedView: PersonDirectoryTableView.grouped,
-                  selectedTableView: viewModel.tableView,
-                  tableViews: [
-                    for (final view in PersonDirectoryTableView.values)
-                      SuperadminDirectoryTableViewOption(value: view, label: view.label),
-                  ],
-                  cardsKey: const Key('people-view-cards'),
-                  tableKey: const Key('people-view-table'),
-                  onCardsSelected: () => viewModel.setLayout(PersonDirectoryLayout.cards),
-                  onTableViewSelected: viewModel.setTableView,
-                ),
-                if (viewModel.state == PersonDirectoryLoadState.success) ...[
-                  const SizedBox(width: CoeloSpacing.space2),
-                  PersonFileActions(
-                    onImport: onImport,
-                    onExport: onExport,
-                    compact: compactFileAction,
-                    tableView: viewModel.tableView,
-                  ),
-                ],
-              ],
+        filters: personFilterControls(viewModel),
+        trailing: [
+          if (viewModel.query.hasActiveFilters)
+            TextButton.icon(
+              onPressed: () => clearPeopleFilters(searchController, viewModel),
+              icon: const Icon(Icons.filter_alt_off_outlined),
+              label: const Text('Limpar filtros'),
             ),
-          ),
         ],
+        display: viewModel.layout == PersonDirectoryLayout.cards
+            ? CoeloAdminDirectoryDisplay.cards
+            : CoeloAdminDirectoryDisplay.table,
+        onDisplayChanged: (value) => viewModel.setLayout(
+          value == CoeloAdminDirectoryDisplay.cards
+              ? PersonDirectoryLayout.cards
+              : PersonDirectoryLayout.table,
+        ),
+        groupedTableView: PersonDirectoryTableView.grouped,
+        selectedTableView: viewModel.tableView,
+        tableViews: [
+          for (final view in PersonDirectoryTableView.values)
+            CoeloAdminDirectoryTableViewOption(value: view, label: view.label),
+        ],
+        onTableViewSelected: viewModel.setTableView,
+        fileActions: viewModel.state == PersonDirectoryLoadState.success
+            ? personFileActions(
+                context,
+                onImport: onImport,
+                onExport: onExport,
+                tableView: viewModel.tableView,
+              )
+            : null,
+        tabs: CoeloAdminUnderlineTabs<PersonDirectorySegment>(
+          key: const Key('people-segment-selector'),
+          tabs: [
+            for (final segment in PersonDirectorySegment.values)
+              CoeloAdminUnderlineTab(value: segment, label: segment.label),
+          ],
+          selected: viewModel.query.segment,
+          onSelected: viewModel.setSegment,
+        ),
+        create: onCreate == null
+            ? null
+            : CoeloAdminDirectoryCreate(
+                label: 'Criar pessoa',
+                description: 'Cadastre identidade e vínculos contextuais.',
+                icon: Icons.person_add_alt_1_outlined,
+                onPressed: onCreate,
+                tileKey: const Key('create-person-card'),
+                bannerKey: const Key('create-person-banner'),
+              ),
+        cards: [for (final item in page.items) _PersonCard(item: item, onEdit: onEdit)],
+        table: _PersonTableRows(
+          items: page.items,
+          onEdit: onEdit,
+          sortColumn: viewModel.query.sortColumn,
+          sortAscending: viewModel.query.sortAscending,
+          onSort: viewModel.setSort,
+          tableView: viewModel.tableView,
+        ),
+        pagination: viewModel.state == PersonDirectoryLoadState.success
+            ? CoeloAdminDirectoryPagination(
+                footerKey: const Key('people-directory-pagination-footer'),
+                currentPage: page.page + 1,
+                totalPages: totalPages,
+                pageSize: viewModel.query.pageSize,
+                pageSizeOptions: viewModel.layout == PersonDirectoryLayout.cards
+                    ? const [11, 20, 50, 100]
+                    : const [8, 20, 50, 100],
+                onPageSelected: (value) => viewModel.goToPage(value - 1),
+                onPageSizeChanged: viewModel.setPageSize,
+              )
+            : null,
+        onFooterHeightChanged: onFooterHeightChanged,
       );
     },
   );
+}
+
+/// Filtros de domínio de Pessoas, sem largura: o composto aplica a largura da
+/// família. Unidade, turma, atividade e papel dependem da instituição;
+/// município e bairro dependem da UF.
+List<Widget> personFilterControls(PersonDirectoryViewModel viewModel) {
+  Widget filter<T>({
+    required Key key,
+    required String label,
+    required List<T> options,
+    required Set<T> selected,
+    required String Function(T) optionLabel,
+    required ValueChanged<Set<T>> changed,
+    String? searchHintText,
+  }) => CoeloAdminMultiSelectFilter<T>(
+    key: key,
+    label: label,
+    options: options,
+    selectedValues: selected,
+    optionLabel: optionLabel,
+    onChanged: changed,
+    searchHintText: searchHintText,
+  );
+  final selectedInstitutions = viewModel.query.institutionIds;
+  final visibleUnits = viewModel.visibleUnits;
+  final visibleGroups = viewModel.visibleGroups;
+  final visibleActivities = viewModel.visibleActivities;
+  final visibleMunicipalities = viewModel.visibleMunicipalities;
+  final visibleNeighborhoods = viewModel.visibleNeighborhoods;
+  final visibleRoles = viewModel.filterOptions.roles
+      .where((option) => selectedInstitutions.contains(option.institutionId))
+      .toList(growable: false);
+  return [
+    filter<PersonType>(
+      key: const Key('people-type-filter'),
+      label: 'Tipo',
+      options: PersonType.values,
+      selected: viewModel.query.types,
+      optionLabel: (value) => value.label,
+      changed: viewModel.setTypes,
+    ),
+    filter<PersonStatus>(
+      key: const Key('people-status-filter'),
+      label: 'Status',
+      options: PersonStatus.values,
+      selected: viewModel.query.statuses,
+      optionLabel: (value) => value.label,
+      changed: viewModel.setStatuses,
+    ),
+    filter<PersonFilterOption>(
+      key: const Key('people-institution-filter'),
+      label: 'Instituição',
+      options: viewModel.filterOptions.institutions,
+      selected: viewModel.filterOptions.institutions
+          .where((item) => viewModel.query.institutionIds.contains(item.id))
+          .toSet(),
+      optionLabel: (value) => value.label,
+      changed: (values) => viewModel.setInstitutions(values.map((item) => item.id).toSet()),
+      searchHintText: 'Buscar instituição',
+    ),
+    if (selectedInstitutions.isNotEmpty)
+      filter<PersonFilterOption>(
+        key: const Key('people-unit-filter'),
+        label: 'Unidade',
+        options: visibleUnits,
+        selected: visibleUnits.where((item) => viewModel.query.unitIds.contains(item.id)).toSet(),
+        optionLabel: (value) => value.label,
+        changed: (values) => viewModel.setUnits(values.map((item) => item.id).toSet()),
+        searchHintText: 'Buscar unidade',
+      ),
+    if (viewModel.query.unitIds.isNotEmpty)
+      filter<PersonFilterOption>(
+        key: const Key('people-group-filter'),
+        label: 'Turma',
+        options: visibleGroups,
+        selected: visibleGroups.where((item) => viewModel.query.groupIds.contains(item.id)).toSet(),
+        optionLabel: (value) => value.label,
+        changed: (values) => viewModel.setGroups(values.map((item) => item.id).toSet()),
+        searchHintText: 'Buscar grupo',
+      ),
+    if (viewModel.query.groupIds.isNotEmpty)
+      filter<PersonFilterOption>(
+        key: const Key('people-activity-filter'),
+        label: 'Atividade',
+        options: visibleActivities,
+        selected: visibleActivities
+            .where((item) => viewModel.query.activityIds.contains(item.id))
+            .toSet(),
+        optionLabel: (value) => value.label,
+        changed: (values) => viewModel.setActivities(values.map((item) => item.id).toSet()),
+        searchHintText: 'Buscar atividade',
+      ),
+    if (selectedInstitutions.isNotEmpty)
+      filter<PersonFilterOption>(
+        key: const Key('people-role-filter'),
+        label: 'Papel',
+        options: visibleRoles,
+        selected: visibleRoles
+            .where((item) => viewModel.query.contextualRoles.contains(item.id))
+            .toSet(),
+        optionLabel: (value) => value.label,
+        changed: (values) => viewModel.setRoles(values.map((item) => item.id).toSet()),
+        searchHintText: 'Buscar papel',
+      ),
+    filter<PersonFilterOption>(
+      key: const Key('people-state-filter'),
+      label: 'UF',
+      options: viewModel.filterOptions.states,
+      selected: viewModel.filterOptions.states
+          .where((item) => viewModel.query.stateCodes.contains(item.id))
+          .toSet(),
+      optionLabel: (value) => value.label,
+      changed: (values) => viewModel.setStates(values.map((item) => item.id).toSet()),
+    ),
+    if (viewModel.query.stateCodes.isNotEmpty)
+      filter<PersonFilterOption>(
+        key: const Key('people-municipality-filter'),
+        label: 'Município',
+        options: visibleMunicipalities,
+        selected: visibleMunicipalities
+            .where((item) => viewModel.query.municipalityIds.contains(item.id))
+            .toSet(),
+        optionLabel: (value) => value.label,
+        changed: (values) => viewModel.setMunicipalities(values.map((item) => item.id).toSet()),
+      ),
+    if (viewModel.query.municipalityIds.isNotEmpty)
+      filter<PersonFilterOption>(
+        key: const Key('people-neighborhood-filter'),
+        label: 'Bairro',
+        options: visibleNeighborhoods,
+        selected: visibleNeighborhoods
+            .where((item) => viewModel.query.neighborhoodIds.contains(item.id))
+            .toSet(),
+        optionLabel: (value) => value.label,
+        changed: (values) => viewModel.setNeighborhoods(values.map((item) => item.id).toSet()),
+      ),
+    filter<AuthLinkStatus>(
+      key: const Key('people-auth-filter'),
+      label: 'Auth',
+      options: AuthLinkStatus.values,
+      selected: viewModel.query.authLinks,
+      optionLabel: (value) => value.label,
+      changed: viewModel.setAuthLinks,
+    ),
+  ];
 }
 
 /// One definition of what "Limpar filtros" means, because the screen offers it
@@ -508,133 +427,6 @@ void clearPeopleFilters(
 ) {
   searchController.clear();
   viewModel.clearFilters();
-}
-
-final class _PersonResults extends StatelessWidget {
-  const _PersonResults({
-    required this.viewModel,
-    required this.searchController,
-    required this.onCreate,
-    required this.onEdit,
-  });
-  final PersonDirectoryViewModel viewModel;
-  final TextEditingController searchController;
-  final VoidCallback? onCreate;
-  final ValueChanged<String>? onEdit;
-
-  @override
-  Widget build(BuildContext context) {
-    Widget state;
-    switch (viewModel.state) {
-      case PersonDirectoryLoadState.initial:
-      case PersonDirectoryLoadState.loading:
-        state = const CoeloStatePanel(
-          title: 'Carregando pessoas',
-          message: 'Aguarde enquanto buscamos o diretório.',
-          loading: true,
-        );
-      case PersonDirectoryLoadState.empty:
-        state = const CoeloStatePanel(
-          title: 'Nenhuma pessoa cadastrada',
-          message: 'Crie a primeira pessoa para começar.',
-          icon: Icons.people_outline_rounded,
-        );
-      case PersonDirectoryLoadState.noResults:
-        state = CoeloStatePanel(
-          title: 'Nenhum resultado',
-          message: 'Revise a busca ou os filtros aplicados.',
-          icon: Icons.search_off_rounded,
-          actionLabel: 'Limpar filtros',
-          onAction: () => clearPeopleFilters(searchController, viewModel),
-        );
-      case PersonDirectoryLoadState.failure:
-        state = CoeloStatePanel(
-          title: 'Não foi possível carregar as pessoas',
-          message: 'Tente novamente em instantes.',
-          icon: Icons.error_outline_rounded,
-          actionLabel: 'Tentar novamente',
-          onAction: viewModel.retry,
-        );
-      case PersonDirectoryLoadState.unauthorized:
-        state = const CoeloStatePanel(
-          title: 'Acesso não autorizado',
-          message: 'Você não possui people.read.',
-          icon: Icons.lock_outline_rounded,
-        );
-      case PersonDirectoryLoadState.success:
-        state = viewModel.layout == PersonDirectoryLayout.cards
-            ? _PersonCards(items: viewModel.page.items, onCreate: onCreate, onEdit: onEdit)
-            : _PersonTable(
-                items: viewModel.page.items,
-                onCreate: onCreate,
-                onEdit: onEdit,
-                sortColumn: viewModel.query.sortColumn,
-                sortAscending: viewModel.query.sortAscending,
-                onSort: viewModel.setSort,
-                tableView: viewModel.tableView,
-              );
-    }
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        if (viewModel.state == PersonDirectoryLoadState.loading) ...[
-          const LinearProgressIndicator(),
-          const SizedBox(height: CoeloSpacing.space4),
-        ],
-        state,
-      ],
-    );
-  }
-}
-
-final class _PersonCards extends StatelessWidget {
-  const _PersonCards({required this.items, required this.onCreate, required this.onEdit});
-  final List<PersonDirectoryItem> items;
-  final VoidCallback? onCreate;
-  final ValueChanged<String>? onEdit;
-
-  @override
-  Widget build(BuildContext context) => LayoutBuilder(
-    builder: (context, constraints) {
-      final columns = math.max(1, (constraints.maxWidth / 340).floor());
-      final cards = <Widget>[
-        if (onCreate != null)
-          ConstrainedBox(
-            key: const Key('create-person-card'),
-            constraints: const BoxConstraints(minHeight: 216),
-            child: CoeloAdminCreateAction(
-              label: 'Criar pessoa',
-              icon: Icons.person_add_alt_1_outlined,
-              onPressed: onCreate!,
-            ),
-          ),
-        for (final item in items) _PersonCard(item: item, onEdit: onEdit),
-      ];
-      return Column(
-        key: const Key('people-card-grid'),
-        children: [
-          for (var start = 0; start < cards.length; start += columns) ...[
-            IntrinsicHeight(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  for (var column = 0; column < columns; column++) ...[
-                    Expanded(
-                      child: start + column < cards.length
-                          ? cards[start + column]
-                          : const SizedBox.shrink(),
-                    ),
-                    if (column + 1 < columns) const SizedBox(width: CoeloSpacing.space6),
-                  ],
-                ],
-              ),
-            ),
-            if (start + columns < cards.length) const SizedBox(height: CoeloSpacing.space6),
-          ],
-        ],
-      );
-    },
-  );
 }
 
 final class _PersonCard extends StatelessWidget {
@@ -929,10 +721,10 @@ final class _PersonDetail extends StatelessWidget {
   }
 }
 
-final class _PersonTable extends StatelessWidget {
-  const _PersonTable({
+/// Linhas e colunas de domínio de Pessoas sobre a tabela compartilhada.
+final class _PersonTableRows extends StatelessWidget {
+  const _PersonTableRows({
     required this.items,
-    required this.onCreate,
     required this.onEdit,
     required this.sortColumn,
     required this.sortAscending,
@@ -940,7 +732,6 @@ final class _PersonTable extends StatelessWidget {
     required this.tableView,
   });
   final List<PersonDirectoryItem> items;
-  final VoidCallback? onCreate;
   final ValueChanged<String>? onEdit;
   final PersonDirectorySortColumn sortColumn;
   final bool sortAscending;
@@ -948,207 +739,153 @@ final class _PersonTable extends StatelessWidget {
   final PersonDirectoryTableView tableView;
 
   @override
-  Widget build(BuildContext context) => LayoutBuilder(
-    builder: (context, constraints) => Column(
-      children: [
-        if (onCreate != null)
-          SizedBox(
-            width: constraints.maxWidth,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: CoeloSpacing.space20),
-              child: CoeloAdminCreateAction(
-                key: const Key('create-person-banner'),
-                label: 'Criar pessoa',
-                description: 'Cadastre identidade e vínculos contextuais.',
-                icon: Icons.person_add_alt_1_outlined,
-                variant: CoeloAdminCreateActionVariant.banner,
-                onPressed: onCreate!,
+  Widget build(BuildContext context) => SizedBox(
+    key: const Key('people-table-viewport'),
+    child: Align(
+      alignment: Alignment.topCenter,
+      child: CoeloAdminResizableTable<PersonDirectoryItem>(
+        key: const Key('people-table'),
+        items: items,
+        rowKey: (item) => 'people-table-row-${item.id}',
+        headerHeight: 56,
+        rowHeight: 64,
+        showHorizontalScrollbar: true,
+        onRowPressed: onEdit == null ? null : (item) => onEdit!(item.id),
+        pinnedColumn: CoeloAdminTableColumn(
+          id: 'display_name',
+          label: 'Pessoa',
+          initialWidth: 240,
+          minWidth: 180,
+          maxWidth: 360,
+          sortable: true,
+          cellBuilder: (context, item) => Row(
+            children: [
+              CoeloAvatar(
+                initials: item.initials,
+                semanticLabel: 'Avatar de ${item.displayName}',
+                size: CoeloAvatarSize.small,
               ),
-            ),
-          ),
-        if (onCreate != null) const SizedBox(height: CoeloSpacing.space4),
-        SizedBox(
-          key: const Key('people-table-viewport'),
-          child: Align(
-            alignment: Alignment.topCenter,
-            child: CoeloAdminResizableTable<PersonDirectoryItem>(
-              key: const Key('people-table'),
-              items: items,
-              rowKey: (item) => 'people-table-row-${item.id}',
-              headerHeight: 56,
-              rowHeight: 64,
-              showHorizontalScrollbar: true,
-              onRowPressed: onEdit == null ? null : (item) => onEdit!(item.id),
-              pinnedColumn: CoeloAdminTableColumn(
-                id: 'display_name',
-                label: 'Pessoa',
-                initialWidth: 240,
-                minWidth: 180,
-                maxWidth: 360,
-                sortable: true,
-                cellBuilder: (context, item) => Row(
-                  children: [
-                    CoeloAvatar(
-                      initials: item.initials,
-                      semanticLabel: 'Avatar de ${item.displayName}',
-                      size: CoeloAvatarSize.small,
-                    ),
-                    const SizedBox(width: CoeloSpacing.space2),
-                    Expanded(
-                      child: Text(item.displayName, maxLines: 1, overflow: TextOverflow.ellipsis),
-                    ),
-                  ],
-                ),
-              ),
-              sortColumnId: sortColumn.databaseValue,
-              sortAscending: sortAscending,
-              onSort: (id) {
-                final column = PersonDirectorySortColumn.values
-                    .where((item) => item.databaseValue == id)
-                    .firstOrNull;
-                if (column != null) onSort(column);
-              },
-              columns: [
-                if (tableView == PersonDirectoryTableView.grouped)
-                  CoeloAdminTableColumn(
-                    id: 'type',
-                    label: 'Tipo',
-                    initialWidth: 128,
-                    minWidth: 112,
-                    maxWidth: 180,
-                    sortable: true,
-                    cellBuilder: (context, item) => Text(item.type.label),
-                  ),
-                if (tableView == PersonDirectoryTableView.grouped)
-                  CoeloAdminTableColumn(
-                    id: 'status',
-                    label: 'Status',
-                    initialWidth: 128,
-                    minWidth: 112,
-                    maxWidth: 180,
-                    sortable: true,
-                    cellBuilder: (context, item) {
-                      final (background, foreground) = _personStatusColors(context, item.status);
-                      return CoeloStatusChip(
-                        label: item.status.label,
-                        backgroundColor: background,
-                        foregroundColor: foreground,
-                      );
-                    },
-                  ),
-                CoeloAdminTableColumn(
-                  id: PersonDirectorySortColumn.institution.databaseValue,
-                  label: 'Instituição',
-                  initialWidth: 220,
-                  minWidth: 160,
-                  maxWidth: 360,
-                  sortable: true,
-                  cellBuilder: (context, item) => Text(
-                    item.institutionSummary.isEmpty ? 'Não informado' : item.institutionSummary,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                if (tableView != PersonDirectoryTableView.institutions)
-                  CoeloAdminTableColumn(
-                    id: PersonDirectorySortColumn.unit.databaseValue,
-                    label: 'Unidade',
-                    initialWidth: 180,
-                    minWidth: 140,
-                    maxWidth: 280,
-                    sortable: true,
-                    cellBuilder: (context, item) => Text(
-                      item.unitSummary.isEmpty ? 'Não informado' : item.unitSummary,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                if (tableView == PersonDirectoryTableView.grouped ||
-                    tableView == PersonDirectoryTableView.groups ||
-                    tableView == PersonDirectoryTableView.activities)
-                  CoeloAdminTableColumn(
-                    id: PersonDirectorySortColumn.group.databaseValue,
-                    label: 'Turma',
-                    initialWidth: 180,
-                    minWidth: 140,
-                    maxWidth: 280,
-                    sortable: true,
-                    cellBuilder: (context, item) => Text(
-                      item.groupSummary.isEmpty ? 'Não informado' : item.groupSummary,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                if (tableView == PersonDirectoryTableView.grouped)
-                  CoeloAdminTableColumn(
-                    id: PersonDirectorySortColumn.role.databaseValue,
-                    label: 'Papel contextual',
-                    initialWidth: 180,
-                    minWidth: 140,
-                    maxWidth: 280,
-                    sortable: true,
-                    cellBuilder: (context, item) => Text(item.roleSummary),
-                  ),
-                if (tableView == PersonDirectoryTableView.grouped)
-                  CoeloAdminTableColumn(
-                    id: PersonDirectorySortColumn.authLink.databaseValue,
-                    label: 'Auth',
-                    initialWidth: 140,
-                    minWidth: 112,
-                    maxWidth: 180,
-                    sortable: true,
-                    cellBuilder: (context, item) =>
-                        Text(item.isEditable ? item.authLink.label : 'Somente leitura'),
-                  ),
-                if (tableView == PersonDirectoryTableView.grouped ||
-                    tableView == PersonDirectoryTableView.activities)
-                  CoeloAdminTableColumn(
-                    id: 'activity',
-                    label: 'Atividades',
-                    initialWidth: 180,
-                    minWidth: 140,
-                    maxWidth: 280,
-                    cellBuilder: (context, item) => Text(
-                      item.activitySummary.isEmpty ? 'Não informado' : item.activitySummary,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-              ],
-            ),
+              const SizedBox(width: CoeloSpacing.space2),
+              Expanded(child: Text(item.displayName, maxLines: 1, overflow: TextOverflow.ellipsis)),
+            ],
           ),
         ),
-      ],
+        sortColumnId: sortColumn.databaseValue,
+        sortAscending: sortAscending,
+        onSort: (id) {
+          final column = PersonDirectorySortColumn.values
+              .where((item) => item.databaseValue == id)
+              .firstOrNull;
+          if (column != null) onSort(column);
+        },
+        columns: [
+          if (tableView == PersonDirectoryTableView.grouped)
+            CoeloAdminTableColumn(
+              id: 'type',
+              label: 'Tipo',
+              initialWidth: 128,
+              minWidth: 112,
+              maxWidth: 180,
+              sortable: true,
+              cellBuilder: (context, item) => Text(item.type.label),
+            ),
+          if (tableView == PersonDirectoryTableView.grouped)
+            CoeloAdminTableColumn(
+              id: 'status',
+              label: 'Status',
+              initialWidth: 128,
+              minWidth: 112,
+              maxWidth: 180,
+              sortable: true,
+              cellBuilder: (context, item) {
+                final (background, foreground) = _personStatusColors(context, item.status);
+                return CoeloStatusChip(
+                  label: item.status.label,
+                  backgroundColor: background,
+                  foregroundColor: foreground,
+                );
+              },
+            ),
+          CoeloAdminTableColumn(
+            id: PersonDirectorySortColumn.institution.databaseValue,
+            label: 'Instituição',
+            initialWidth: 220,
+            minWidth: 160,
+            maxWidth: 360,
+            sortable: true,
+            cellBuilder: (context, item) => Text(
+              item.institutionSummary.isEmpty ? 'Não informado' : item.institutionSummary,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          if (tableView != PersonDirectoryTableView.institutions)
+            CoeloAdminTableColumn(
+              id: PersonDirectorySortColumn.unit.databaseValue,
+              label: 'Unidade',
+              initialWidth: 180,
+              minWidth: 140,
+              maxWidth: 280,
+              sortable: true,
+              cellBuilder: (context, item) => Text(
+                item.unitSummary.isEmpty ? 'Não informado' : item.unitSummary,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          if (tableView == PersonDirectoryTableView.grouped ||
+              tableView == PersonDirectoryTableView.groups ||
+              tableView == PersonDirectoryTableView.activities)
+            CoeloAdminTableColumn(
+              id: PersonDirectorySortColumn.group.databaseValue,
+              label: 'Turma',
+              initialWidth: 180,
+              minWidth: 140,
+              maxWidth: 280,
+              sortable: true,
+              cellBuilder: (context, item) => Text(
+                item.groupSummary.isEmpty ? 'Não informado' : item.groupSummary,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          if (tableView == PersonDirectoryTableView.grouped)
+            CoeloAdminTableColumn(
+              id: PersonDirectorySortColumn.role.databaseValue,
+              label: 'Papel contextual',
+              initialWidth: 180,
+              minWidth: 140,
+              maxWidth: 280,
+              sortable: true,
+              cellBuilder: (context, item) => Text(item.roleSummary),
+            ),
+          if (tableView == PersonDirectoryTableView.grouped)
+            CoeloAdminTableColumn(
+              id: PersonDirectorySortColumn.authLink.databaseValue,
+              label: 'Auth',
+              initialWidth: 140,
+              minWidth: 112,
+              maxWidth: 180,
+              sortable: true,
+              cellBuilder: (context, item) =>
+                  Text(item.isEditable ? item.authLink.label : 'Somente leitura'),
+            ),
+          if (tableView == PersonDirectoryTableView.grouped ||
+              tableView == PersonDirectoryTableView.activities)
+            CoeloAdminTableColumn(
+              id: 'activity',
+              label: 'Atividades',
+              initialWidth: 180,
+              minWidth: 140,
+              maxWidth: 280,
+              cellBuilder: (context, item) => Text(
+                item.activitySummary.isEmpty ? 'Não informado' : item.activitySummary,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+        ],
+      ),
     ),
   );
-}
-
-final class _PersonPaginationFooter extends StatelessWidget {
-  const _PersonPaginationFooter({required this.viewModel, required this.horizontalPadding});
-  final PersonDirectoryViewModel viewModel;
-  final double horizontalPadding;
-
-  @override
-  Widget build(BuildContext context) {
-    final totalPages = math.max(1, (viewModel.page.totalCount / viewModel.query.pageSize).ceil());
-    final options = viewModel.layout == PersonDirectoryLayout.cards
-        ? const [11, 20, 50, 100]
-        : const [8, 20, 50, 100];
-    return SuperadminListingPaginationFooter(
-      semanticKey: const Key('people-directory-pagination-footer'),
-      horizontalPadding: horizontalPadding,
-      child: CoeloAdminPagination(
-        currentPage: viewModel.page.page + 1,
-        totalPages: totalPages,
-        pageSize: viewModel.query.pageSize,
-        pageSizeOptions: options,
-        onPageSelected: (page) => viewModel.goToPage(page - 1),
-        onPageSizeChanged: viewModel.setPageSize,
-        onPrevious: viewModel.page.hasPrevious
-            ? () => viewModel.goToPage(viewModel.page.page - 1)
-            : null,
-        onNext: viewModel.page.hasNext ? () => viewModel.goToPage(viewModel.page.page + 1) : null,
-      ),
-    );
-  }
 }

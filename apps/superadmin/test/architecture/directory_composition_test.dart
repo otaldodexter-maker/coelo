@@ -33,21 +33,7 @@ const _pendingMigration = <String, List<String>>{
   'lib/features/agenda/presentation/agenda_requests_page.dart': ['_RequestTable'],
   'lib/features/attendance/attendance_pages.dart': ['_AttendanceCallToolbar'],
   'lib/features/safety/presentation/safety_pages.dart': ['_SafetyTable', '_AuthorizedTable'],
-  'lib/features/access_profiles/presentation/access_profile_directory_page.dart': [
-    '_AccessProfileToolbar',
-    '_AccessProfileTable',
-    '_AccessProfilePagination',
-  ],
   'lib/features/agenda/presentation/agenda_events_page.dart': ['_EventTable'],
-  'lib/features/invites/presentation/invite_directory_widgets.dart': [
-    'InviteDirectoryToolbar',
-    'InviteDirectoryTable',
-  ],
-  'lib/features/people/presentation/person_directory_page.dart': [
-    '_PersonToolbar',
-    '_PersonTable',
-    '_PersonPaginationFooter',
-  ],
   'lib/features/support/presentation/widgets/support_filter_toolbar.dart': ['SupportFilterToolbar'],
   'lib/features/support/presentation/widgets/support_ticket_table.dart': ['SupportTicketTable'],
 };
@@ -109,7 +95,6 @@ void main() {
       'lib/features/audit/presentation/audit_directory_page.dart',
       'lib/features/daily_routine/daily_routine_pages.dart',
       'lib/features/health_care/presentation/health_care_controller.dart',
-      'lib/features/invites/presentation/invite_directory_widgets.dart',
     };
     final found = <String>{};
     for (final entity in root.listSync(recursive: true)) {

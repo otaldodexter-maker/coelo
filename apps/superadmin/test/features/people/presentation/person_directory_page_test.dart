@@ -48,20 +48,14 @@ void main() {
     expect(find.byKey(const Key('people-neighborhood-filter')), findsNothing);
 
     final institutionFilter = tester.widget<CoeloAdminMultiSelectFilter<PersonFilterOption>>(
-      find.descendant(
-        of: find.byKey(const Key('people-institution-filter')),
-        matching: find.byType(CoeloAdminMultiSelectFilter<PersonFilterOption>),
-      ),
+      find.byKey(const Key('people-institution-filter')),
     );
     institutionFilter.onChanged({institutionFilter.options.first});
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('people-unit-filter')), findsOneWidget);
 
     final stateFilter = tester.widget<CoeloAdminMultiSelectFilter<PersonFilterOption>>(
-      find.descendant(
-        of: find.byKey(const Key('people-state-filter')),
-        matching: find.byType(CoeloAdminMultiSelectFilter<PersonFilterOption>),
-      ),
+      find.byKey(const Key('people-state-filter')),
     );
     stateFilter.onChanged({stateFilter.options.first});
     await tester.pumpAndSettle();

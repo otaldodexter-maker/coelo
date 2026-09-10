@@ -34,7 +34,7 @@ void main() {
             find.byType(SuperadminDirectoryViewToggle<InviteDirectoryTableView>),
             findsOneWidget,
           );
-          expect(find.byType(InviteDirectoryCards), findsOneWidget);
+          expect(find.byKey(const Key('invite-card-grid')), findsOneWidget);
           expect(find.byType(CoeloAdminInteractiveCard), findsWidgets);
           final gridWidth = tester.getSize(find.byKey(const Key('invite-card-grid'))).width;
           final cardWidth = tester
@@ -49,7 +49,7 @@ void main() {
           await tester.tap(find.byKey(const Key('invite-view-table')));
           await tester.pumpAndSettle();
           expect(tester.takeException(), isNull);
-          expect(find.byType(InviteDirectoryTable), findsOneWidget);
+          expect(find.byType(InviteTableRows), findsOneWidget);
           expect(find.byType(CoeloAdminResizableTable<PlatformInvite>), findsOneWidget);
         },
       );
