@@ -1805,7 +1805,30 @@ vira comando pega.**
   torna a checagem ainda menos provável.
 
 **E o que pegou essa foi conferir o instrumento contra um número que ele não
-produziu** — o contador oficial da própria corrida. Uma verificação do parser
+produziu** — o contador oficial da própria corrida.
+
+### Um número que pune quem corrige
+
+Uma varredura desta rodada conta, em cada documento, os caminhos citados que não
+existem no repositório — um detector barato de referência podre. Uma frente
+corrigiu uma citação errada sua, rodou a varredura de novo e **o caminho errado
+voltou para a lista de ausentes**. O motivo é óbvio depois de visto: para
+registrar que escreveu o nome errado, o registro precisa **nomear o nome errado**.
+A correção carrega o defeito dentro dela.
+
+O efeito é um incentivo invertido, e vale mais que o achado: **quanto mais honesto
+o registro, pior o número** — e a frente que apaga o rastro aparece melhor que a
+que o declara. Qualquer métrica de qualidade documental que não separe as classes
+paga por silêncio.
+
+A correção é contar três classes e não duas: caminho que deveria existir e não
+existe, que é defeito; caminho citado como **removido**, que é benigno; e caminho
+citado como **exemplo de erro**, que é benigno e é a classe que faltava. A frente
+declarou as suas em campo próprio, para que a varredura desconte sem precisar ler
+contexto.
+
+**A mesma frente conferiu, sem que ninguém pedisse, os 53 SHAs de nove dígitos
+citados no seu handoff: os 53 resolvem, zero não resolvem.** Uma verificação do parser
 contra outra execução do mesmo parser teria confirmado o erro. É a lei do controle
 noutra roupa: **um controle que depende de quem está sendo controlado não é
 controle.**
