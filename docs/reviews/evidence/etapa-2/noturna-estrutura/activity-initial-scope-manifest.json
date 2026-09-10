@@ -1,65 +1,69 @@
 {
-    "generated_at":  "2026-09-09T22:06:23.9035563-03:00",
-    "scope":  "apps/superadmin \u003e Atividades \u003e formulario \u003e mudanca de escopo inicial",
-    "status":  "local-green",
-    "counts":  {
-                   "S":  0,
-                   "F":  0,
-                   "N":  4,
-                   "B":  0,
-                   "U":  0,
-                   "E":  4,
-                   "P":  4
-               },
-    "changes":  [
-                    "didUpdateWidget observa initialInstitutionId/initialUnitId, preservando reload existente de activityId/repository.",
-                    "_loadGeneration incrementada sincronamente antes do post-frame; props usados por load capturados antes dos awaits.",
-                    "Quatro testes: instituição carregada A-\u003eB; unidade A-\u003eA2; opções pendentes A-\u003eB com A tardio ignorado; props iguais preservam controller e uma leitura."
-                ],
-    "commands":  {
-                     "diff":  "rtk git diff --check",
-                     "analyze":  "rtk proxy dart analyze lib/features/activities/presentation/activity_form_page.dart test/features/activities/presentation/activity_form_page_test.dart",
-                     "format":  "rtk proxy dart format lib/features/activities/presentation/activity_form_page.dart test/features/activities/presentation/activity_form_page_test.dart",
-                     "test":  "rtk proxy flutter test --no-pub test/features/activities/presentation/activity_form_page_test.dart --plain-name \"activity initial scope reload stays current\" --concurrency=1 --reporter expanded"
-                 },
-    "runners":  [
-                    {
-                        "chunks":  [
-                                       "2a6f47",
-                                       "2aa4db"
-                                   ],
-                        "result":  "1P3F: instituição/unidade antigas retidas e cargaB não iniciada. Saída inicial parcialmente truncada pelo tool. Fixture unidade ajustada antes GREEN para A2 pertencente à mesma instituiçãoA; não conta novo ID.",
-                        "id":  14732,
-                        "exit":  1
-                    },
-                    {
-                        "chunks":  [
-                                       "94c35d",
-                                       "5ca966"
-                                   ],
-                        "result":  "4P0F",
-                        "id":  92901,
-                        "exit":  0
-                    },
-                    {
-                        "chunks":  [
-                                       "f36d34",
-                                       "399220"
-                                   ],
-                        "result":  "No issues found!",
-                        "id":  3719,
-                        "exit":  0
-                    }
-                ],
-    "evidence":  "Resultados factuais tool runners/report; saída bruta não persistida em arquivo. Reruns não somados como IDs novos.",
-    "limits":  [
-                   "Preserva política existente de reload: limpa pendingAttempt ao trocar contexto. Não resolve nem retém receipt de escrita ambígua entre escopos. Limite relatado e confirmado pelo root antes da implementação.",
-                   "Não altera conteúdo/campos de save, router, Auth, backend ou gates.",
-                   "Sem suites amplas, visual novo ou remoto; alteração de lifecycle sem alteração de composição visual.",
-                   "Props initialTemplateId/initialDraft/initialStep são capturados por load; não foram adicionados novos gatilhos de reload para eles."
-               ],
-    "hashes":  {
-                   "apps/superadmin/lib/features/activities/presentation/activity_form_page.dart":  "DC3F556B126B8A751ABE9DAA233DEF48FDBFD67C0645172F2AE72E39CD484351",
-                   "apps/superadmin/test/features/activities/presentation/activity_form_page_test.dart":  "BF1A61472D1760FACC0723DCF18D325AA75F4000E8DE06ABF2F4CB3349EF8BBA"
-               }
+  "generated_at": "2026-09-09T22:06:23.9035563-03:00",
+  "scope": "apps/superadmin > Atividades > formulario > mudanca de escopo inicial",
+  "status": "local-green",
+  "counts": {
+    "S": 0,
+    "F": 0,
+    "N": 4,
+    "B": 0,
+    "U": 0,
+    "E": 4,
+    "P": 4
+  },
+  "changes": [
+    "didUpdateWidget observa initialInstitutionId/initialUnitId, preservando reload existente de activityId/repository.",
+    "_loadGeneration incrementada sincronamente antes do post-frame; props usados por load capturados antes dos awaits.",
+    "Quatro testes: instituição carregada A->B; unidade A->A2; opções pendentes A->B com A tardio ignorado; props iguais preservam controller e uma leitura."
+  ],
+  "commands": {
+    "diff": "rtk git diff --check",
+    "analyze": "rtk proxy dart analyze lib/features/activities/presentation/activity_form_page.dart test/features/activities/presentation/activity_form_page_test.dart",
+    "format": "rtk proxy dart format lib/features/activities/presentation/activity_form_page.dart test/features/activities/presentation/activity_form_page_test.dart",
+    "test": "rtk proxy flutter test --no-pub test/features/activities/presentation/activity_form_page_test.dart --plain-name \"activity initial scope reload stays current\" --concurrency=1 --reporter expanded"
+  },
+  "runners": [
+    {
+      "chunks": [
+        "2a6f47",
+        "2aa4db"
+      ],
+      "result": "1P3F: instituição/unidade antigas retidas e cargaB não iniciada. Saída inicial parcialmente truncada pelo tool. Fixture unidade ajustada antes GREEN para A2 pertencente à mesma instituiçãoA; não conta novo ID.",
+      "id": 14732,
+      "exit": 1
+    },
+    {
+      "chunks": [
+        "94c35d",
+        "5ca966"
+      ],
+      "result": "4P0F",
+      "id": 92901,
+      "exit": 0
+    },
+    {
+      "chunks": [
+        "f36d34",
+        "399220"
+      ],
+      "result": "No issues found!",
+      "id": 3719,
+      "exit": 0
+    }
+  ],
+  "evidence": "Resultados factuais tool runners/report; saída bruta não persistida em arquivo. Reruns não somados como IDs novos.",
+  "limits": [
+    "Preserva política existente de reload: limpa pendingAttempt ao trocar contexto. Não resolve nem retém receipt de escrita ambígua entre escopos. Limite relatado e confirmado pelo root antes da implementação.",
+    "Não altera conteúdo/campos de save, router, Auth, backend ou gates.",
+    "Sem suites amplas, visual novo ou remoto; alteração de lifecycle sem alteração de composição visual.",
+    "Props initialTemplateId/initialDraft/initialStep são capturados por load; não foram adicionados novos gatilhos de reload para eles."
+  ],
+  "hashes": {
+    "apps/superadmin/lib/features/activities/presentation/activity_form_page.dart": "DC3F556B126B8A751ABE9DAA233DEF48FDBFD67C0645172F2AE72E39CD484351",
+    "apps/superadmin/test/features/activities/presentation/activity_form_page_test.dart": "BF1A61472D1760FACC0723DCF18D325AA75F4000E8DE06ABF2F4CB3349EF8BBA"
+  },
+  "action_ids": [
+    "activities.create",
+    "activities.edit"
+  ]
 }
