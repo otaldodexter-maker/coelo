@@ -48,6 +48,7 @@ void main() {
       VoidCallback? retainedSave;
       if (phase == 'loaded') {
         await tester.pumpAndSettle();
+        await tester.ensureVisible(find.byKey(const Key('group-form-continue')));
         await tester.tap(find.byKey(const Key('group-form-continue')));
         await tester.pumpAndSettle();
         await tester.enterText(find.byKey(const Key('group-name-field')), 'Turma anterior');
@@ -108,6 +109,7 @@ void main() {
       );
       await tester.pumpWidget(app(false));
       await tester.pumpAndSettle();
+      await tester.ensureVisible(find.byKey(const Key('group-form-continue')));
       await tester.tap(find.byKey(const Key('group-form-continue')));
       await tester.pumpAndSettle();
       await tester.enterText(find.byKey(const Key('group-name-field')), 'Turma A');
@@ -167,6 +169,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
+      await tester.ensureVisible(find.byKey(const Key('group-form-continue')));
       await tester.tap(find.byKey(const Key('group-form-continue')));
       await tester.pumpAndSettle();
       await tester.enterText(find.byKey(const Key('group-name-field')), 'Turma A');
@@ -194,6 +197,7 @@ void main() {
               .onChanged(change == 'status' ? GroupStatus.inactive : GroupStatus.active);
           await tester.pumpAndSettle();
         } else {
+          await tester.ensureVisible(find.byKey(const Key('group-form-continue')));
           await tester.tap(find.byKey(const Key('group-form-continue')));
           await tester.pumpAndSettle();
           await tester.tap(find.byKey(const Key('group-inherit-appearance')));
@@ -248,6 +252,7 @@ void main() {
           ),
         );
         await tester.pumpAndSettle();
+        await tester.ensureVisible(find.byKey(const Key('group-form-continue')));
         await tester.tap(find.byKey(const Key('group-form-continue')));
         await tester.pumpAndSettle();
         await tester.enterText(find.byKey(const Key('group-name-field')), 'Turma A');
@@ -474,16 +479,19 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    await tester.ensureVisible(find.byKey(const Key('group-form-continue')));
     await tester.tap(find.byKey(const Key('group-form-continue')));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('group-form-previous')), findsOneWidget);
 
+    await tester.ensureVisible(find.byKey(const Key('group-form-continue')));
     await tester.tap(find.byKey(const Key('group-form-continue')));
     await tester.pumpAndSettle();
     expect(find.text('Informe o nome da turma.'), findsOneWidget);
     expect(find.byKey(const Key('group-links-section')), findsNothing);
 
     await tester.enterText(find.byKey(const Key('group-name-field')), 'Turma preservada');
+    await tester.ensureVisible(find.byKey(const Key('group-form-continue')));
     await tester.tap(find.byKey(const Key('group-form-continue')));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('group-links-section')), findsOneWidget);
@@ -517,6 +525,7 @@ void main() {
     expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
     expect(find.byKey(const Key('group-institution-field')), findsOneWidget);
 
+    await tester.ensureVisible(find.byKey(const Key('group-form-continue')));
     await tester.tap(find.byKey(const Key('group-form-continue')));
     await tester.pumpAndSettle();
     expect(find.text('Ativo'), findsOneWidget);
@@ -529,6 +538,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.enterText(find.byKey(const Key('group-type-other-field')), 'Oficina maker');
 
+    await tester.ensureVisible(find.byKey(const Key('group-form-continue')));
     await tester.tap(find.byKey(const Key('group-form-continue')));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('group-handle-field')), findsNothing);
@@ -638,10 +648,12 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    await tester.ensureVisible(find.byKey(const Key('group-form-continue')));
     await tester.tap(find.byKey(const Key('group-form-continue')));
     await tester.pumpAndSettle();
     await tester.enterText(find.byKey(const Key('group-name-field')), 'Turma compacta');
     for (var step = 0; step < 4; step++) {
+      await tester.ensureVisible(find.byKey(const Key('group-form-continue')));
       await tester.tap(find.byKey(const Key('group-form-continue')));
       await tester.pumpAndSettle();
     }
@@ -707,6 +719,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(const Key('group-form-continue')));
     await tester.tap(find.byKey(const Key('group-form-continue')));
     await tester.pumpAndSettle();
     await tester.enterText(find.byKey(const Key('group-name-field')), 'Turma resiliente');
