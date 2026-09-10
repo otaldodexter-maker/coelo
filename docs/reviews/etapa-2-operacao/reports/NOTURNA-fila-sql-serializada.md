@@ -39,6 +39,36 @@ Além destes, o pacote nominal de Modelos (`AP-MODELS-NOMINAL-20260909-v1`,
 acessos-pessoas) e o candidato `get_profile_about` (perfil-para-voce) existem
 como planos em `packages/coelo_database/plans/`, sem carimbo de migration.
 
+
+## Segunda leva: candidatos L01 resgatados (09/09 21:25)
+
+Seis candidatos de mídia estavam parados em `codex/e2-r02-l01-publicacoes`
+enquanto três ações já integradas ficavam bloqueadas por RPCs que existem e
+ninguém conseguia localizar — `list_visible_moments`, `withdraw_moment` e
+`withdraw_happens_post` não aparecem em `dev` em lugar nenhum, só ali.
+
+| Ordem | Arquivo (nome final) | Carimbo original |
+| ---: | --- | --- |
+| 7 | `20260909211000_now_publication_expiry_transition_v1.sql` | `20260909131000` |
+| 8 | `20260909212000_circulars_media_private_r2_v1.sql` | `20260909132000` |
+| 9 | `20260909213000_happens_post_withdrawal_v1.sql` | `20260909133000` |
+| 10 | `20260909214000_happens_mixed_feed_withdrawal_v1.sql` | `20260909134000` |
+| 11 | `20260909215000_private_media_catalog_chat_kind_v1.sql` | `20260909135000` |
+| 12 | `20260909216000_moments_feed_and_withdrawal_v1.sql` | `20260909136000` |
+
+Os testes pgTAP correspondentes vieram junto. A ordem relativa de L01 foi
+preservada; só o prefixo mudou, para ficar depois da cauda `20260909210000`.
+
+`20260909215000` toca o catálogo de mídia privada com um `kind` de chat, ou seja
+encosta em `publicacoes-midia` e em `chat-comunicacoes` ao mesmo tempo. Nenhum
+dos dois escreve esse objeto: a serialização é do coordenador.
+
+Correção de registro: os candidatos vivem em `packages/coelo_database/migrations/`,
+que é **rastreado** e tem mais de 180 arquivos em `dev`. A regra de ignore cobre
+`packages/coelo_database/supabase/migrations/`. Eu havia registrado o contrário.
+
+Novos candidatos, a partir daqui, usam carimbo posterior a `20260909216000`.
+
 ## Consequências registradas
 
 - Manifests e handoffs dos grupos citam os carimbos **originais**. Esta tabela
