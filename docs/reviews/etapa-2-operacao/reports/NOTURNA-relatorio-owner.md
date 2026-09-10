@@ -61,9 +61,26 @@ para 17, e das 17 nenhuma é órfã.** Elas se distribuem assim:
 | 1 | `app/router/principal_mixed_feed_pagination_red_test` | **vermelho proposital**, escrito esta noite |
 | 1 | `features/forms/.../forms_editor_page_test` | asserção estrutural de foco, preexistente |
 
-Há ainda um segundo vermelho proposital antigo, `people_creation_requirements_red_test`,
-que na base atual passa. Vermelho proposital é um teste escrito para falhar até
-que o defeito que ele nomeia seja corrigido — ele documenta, não regride.
+**Correção de categoria, feita por conferência externa:** eu contava dois
+vermelhos propositais e há **um**. O antigo,
+`people_creation_requirements_red_test`, ficou verde em algum momento da noite —
+o defeito que ele nomeava foi corrigido — e eu continuava classificando-o como
+proposital. Se essa contagem tivesse chegado até aqui, **um defeito real passaria
+por convenção**. Vermelho proposital é um teste escrito para falhar até que o
+defeito que ele nomeia seja corrigido; quando fica verde, ele deixa de ser
+proposital e vira cobertura comum.
+
+**E dois dos dezessete merecem prioridade sobre os outros**, porque não são
+cosméticos: `composition_root_fail_closed_routes_test` afirma que rotas de
+produção continuam falhando fechado, e `import_development_routes_test` afirma
+que rotas de desenvolvimento nunca usam o repositório de produção. São a
+invariante de não entregar rota nem resposta antes da autorização. A leitura do
+código aponta que a página de operações de Formulários dispara a carga produtiva
+no `initState` quando um `api` é injetado, o que faria o cliente **chamar** o
+backend numa rota declarada fechada — sem vazar dado, porque o servidor continua
+autoritativo, mas contrariando o contrato. **Isso está em medição neste momento e
+não é conclusão**: a asserção que contaria as chamadas nunca chega a executar,
+porque o teste falha antes dela.
 
 **As 129 falhas de golden são aceite visual e dependem de decisão sua**, não de
 código. As duas maiores concentrações são `agenda_calendar` com 14 casos e as
