@@ -88,7 +88,7 @@ alter table public.media_variants enable row level security;
 alter table public.media_variants force row level security;
 alter table public.media_bindings enable row level security;
 alter table public.media_bindings force row level security;
-revoke all on public.media_variants,public.media_bindings from public,anon,authenticated,service_role;
+revoke all on public.media_assets,public.media_variants,public.media_bindings from public,anon,authenticated,service_role;
 
 create function app_private.private_media_catalog_key_v1(
   p_asset public.media_assets,p_rendition text,p_key text,p_mime text
