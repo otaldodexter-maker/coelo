@@ -1578,7 +1578,23 @@ Três verificações fecharam o que era verificável: nenhum commit publicado po
 frente ficou fora da base — conferido commit a commit nos 2305 das sete branches;
 os 762 goldens da base pré-rodada continuam 762; e nenhum arquivo de coordenação
 teve seu número de revisão diminuído entre commits, que é o único detector de
-cópia velha sobrescrevendo nova em documentação. **Esse detector só funciona onde
+cópia velha sobrescrevendo nova em documentação.
+
+**E a verificação de merges precisou ser refeita porque o detector estava
+errado — descoberto num ensaio antes da hora.** O comando usado listava *todos* os
+merges do intervalo, não apenas os que tiveram resolução: a opção que mostra o
+diff combinado afeta a **exibição**, não a seleção, e com saída resumida o diff
+nem aparecia. Saída vazia significava "nenhum merge", e foi lida como "nenhum
+merge com resolução".
+
+Refeita corretamente, merge a merge: **28 merges no intervalo, zero com diff
+combinado.** A conclusão sobrevive, mas agora está medida num intervalo onde o
+detector **tinha como falhar e não falhou** — e na auditoria anterior ela era
+verdadeira por um motivo mais simples do que o declarado: não havia merges.
+
+**A lição é a mesma do controle negativo, aplicada a detectores:** um detector que
+nunca disparou não está calibrado, está apenas sem contraexemplo. A única forma de
+saber se ele acha é rodá-lo onde ele **deve** achar. **Esse detector só funciona onde
 há contador monotônico**, então relatório, evidência e artigo de conhecimento
 permanecem sem auditoria dessa classe — declarado aqui em vez de omitido.
 
@@ -1619,6 +1635,12 @@ Esta classe apareceu quatro vezes, e três delas quase produziram decisão errad
   encerramento** é JSON válido, com todas as linhas corretas, e devolve um total
   errado, porque o processo ainda escrevia. **Arquivo completo e arquivo pronto
   são coisas diferentes.**
+- **E a irmã silenciosa da anterior:** passar ao executor de testes um caminho de
+  arquivo **absoluto com letra de unidade** faz o parser da opção cortar no
+  primeiro dois-pontos, e o arquivo de saída **nunca é criado**. A corrida roda
+  inteira, o código de saída é correto, e o dado simplesmente não existe. Uma
+  frente perdeu uma execução de dezenove minutos assim. **A primeira mente no
+  número; esta apaga o número e não reclama.**
 - **A pior de todas, porque acerta a metade que se confere:** o relatório
   expandido do executor de testes, redirecionado para arquivo, **trunca o nome do
   caso na largura do terminal** — e casos distintos do mesmo arquivo cujo prefixo
