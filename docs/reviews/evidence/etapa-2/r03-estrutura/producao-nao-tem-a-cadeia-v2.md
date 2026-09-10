@@ -93,3 +93,37 @@ Isso é decisão de fila, não minha: são seis pacotes de outras fatias, alguns
 tocando Atividades, e recarimbá-los por conta própria atravessaria o
 sequenciamento que você mantém. Os três meus continuam prontos e reemitidos na
 branch, esperando a cadeia.
+
+# O bloqueio final não é técnico: faltam as capacidades em produção
+
+Depois de corrigir as duas comparações literais de ACL — a da tabela e a das
+sete funções legadas — a cadeia avançou até o próprio contrato do pacote:
+
+```
+ERROR: location candidate requires separate Owner-only capability fixture (SQLSTATE 55000)
+```
+
+O pacote recusa-se a inventar capacidade, e está certo. Fui conferir o catálogo
+de produção: **não existe nenhuma permissão `locations.*` no seed**. Zero.
+
+As nove que a cadeia exige são:
+
+| Permissão | De onde vem a exigência |
+| --- | --- |
+| `locations.read`, `locations.create`, `locations.update`, `locations.status`, `locations.copy`, `locations.schedule` | catálogo v2 e as fatias de status, cópia e agendamento |
+| `locations.reservations.read`, `locations.reservations.manage`, `locations.reservations.override` | motor de reservas |
+
+Isso muda a natureza da pendência. Não é mais "recarimbar e aplicar": alguém
+precisa **decidir e provisionar** essas nove permissões no catálogo de produção,
+com código, módulo, tela, ação, rótulo, nível de risco, `requires_mfa` e a
+concessão inicial ao Owner. `locations.reservations.override` é, pelo próprio
+nome, uma capacidade de confirmar conflito de reserva — o tipo de coisa que não
+se cria por conta própria.
+
+Enquanto as capacidades não existirem, nenhuma ação de Locais funciona em
+produção, mesmo com toda a cadeia SQL aplicada: as RPCs chamam
+`require_superadmin_internal_context('locations.…')` e vão negar.
+
+**Isto é decisão do Owner**, e foi levada a ele. Não provisionei as capacidades:
+inventar permissão e concedê-la ao Owner é exatamente o tipo de mudança que a
+régua do projeto manda não fazer sozinho.

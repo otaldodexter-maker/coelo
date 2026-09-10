@@ -65,30 +65,11 @@ begin
       and qual=$def$(( SELECT app_private.has_platform_permission('activities.read'::text) AS has_platform_permission) OR app_private.has_institution_permission(institution_id, 'activities.read'::text, unit_id, NULL::uuid, false))$def$) then
     raise object_not_in_prerequisite_state using message='location index or policy drift';
   end if;
-  -- A versao historica comparava a ACL com um array literal de nove entradas.
-  -- Aquilo era o retrato de uma cadeia local, nao um invariante: muda com a
-  -- versao do Postgres (MAINTAIN so existe a partir do 17) e com qualquer
-  -- concessao adicional legitima, e por isso barrava sobre a baseline de
-  -- producao. A guarda passa a afirmar o que de fato importa para a seguranca
-  -- desta tabela, sem depender de retrato: quem nao e service_role nem dono nao
-  -- pode escrever, e nem anon nem PUBLIC podem qualquer coisa.
-  if exists(
-      select 1
-      from pg_class c
-      cross join lateral aclexplode(coalesce(c.relacl,acldefault('r',c.relowner))) a
-      left join pg_roles r on r.oid=a.grantee
-      where c.oid='public.activity_locations'::regclass
-        and a.grantee<>c.relowner
-        and (
-          -- grantee nulo em aclexplode e PUBLIC
-          r.rolname is null
-          or r.rolname='anon'
-          or (r.rolname<>'service_role'
-              and a.privilege_type in ('INSERT','UPDATE','DELETE','TRUNCATE'))
-          or a.is_grantable
-        )) then
-    raise object_not_in_prerequisite_state using message='location table ACL drift';
-  end if;
+  -- A guarda de ACL saiu daqui. Producao concede ALL a anon e a authenticated
+  -- nesta tabela por privilegio padrao do schema public, junto com outras 204
+  -- tabelas, entao exigir a ACL correta ANTES de corrigi-la so barra o pacote.
+  -- Este candidato normaliza a concessao no corpo e afirma o invariante como
+  -- pos-condicao, no fim do arquivo.
   for expected in select * from (values
     ('app_private.activity_management_payload(uuid)','dbfb21e52b0773a41815a0986be0d64f',false),
     ('app_private.superadmin_activity_directory(text,uuid[],uuid[],uuid[],text[],text[],integer,integer,text,boolean)','f1809b1c0b268ed571eaaa958a061015',false),
@@ -120,12 +101,10 @@ begin
         and proconfig=array['search_path=""']::text[]) then
       raise object_not_in_prerequisite_state using message='location legacy options metadata drift';
     end if;
-    if (select coalesce(array_agg(coalesce(r.rolname,'PUBLIC')::text||':'||a.privilege_type||':'||a.is_grantable::text order by r.rolname),'{}'::text[])
-        from pg_proc p cross join lateral aclexplode(coalesce(p.proacl,acldefault('f',p.proowner))) a
-        left join pg_roles r on r.oid=a.grantee where p.oid=actual_oid and a.grantee<>p.proowner)
-      is distinct from (case when expected.client_execute then array['authenticated:EXECUTE:false'] else '{}'::text[] end) then
-      raise object_not_in_prerequisite_state using message='location legacy helper ACL drift';
-    end if;
+    -- A guarda literal de ACL destes helpers saiu daqui, pelo mesmo motivo da
+    -- guarda da tabela: producao mantem o EXECUTE padrao para PUBLIC nas funcoes
+    -- do schema public. Exigir a ACL correta antes de corrigi-la so barra o
+    -- pacote. A normalizacao vai para o corpo e o invariante para o fim.
   end loop;
   foreach capability in array array['locations.read','locations.create'] loop
     if not exists(select 1 from public.platform_permissions where code=capability and status='active')
@@ -153,6 +132,49 @@ begin
   end if;
 end
 $preflight$;
+
+-- Endurecimento da concessao, antes de qualquer DDL desta fatia.
+-- Producao dava ALL a anon e a authenticated em public.activity_locations por
+-- privilegio padrao do schema public. A RLS forcada ja barra escrita, porque a
+-- unica politica e activity_locations_authorized_read, de SELECT, mas manter
+-- INSERT/UPDATE/DELETE concedidos a quem nao escreve deixa a tabela a um
+-- descuido de politica de virar gravavel por anonimo. O cliente nunca le esta
+-- tabela direto, so por RPC; o SELECT de authenticated fica porque a politica
+-- de leitura existe justamente para ele.
+revoke all on table public.activity_locations from public;
+revoke all on table public.activity_locations from anon;
+revoke insert, update, delete, truncate, references, trigger
+  on table public.activity_locations from authenticated;
+grant select on table public.activity_locations to authenticated;
+
+-- Mesmo endurecimento para os helpers legados de Locais. Producao concede
+-- EXECUTE a PUBLIC nas funcoes do schema public por privilegio padrao, o que
+-- torna as v1 chamaveis por anonimo. Quem pode executar e authenticated, e so
+-- nas funcoes public que o cliente realmente chama; as app_private nao sao
+-- chamaveis de fora.
+do $helpers$
+declare alvo record;
+begin
+  for alvo in select * from (values
+    ('app_private.activity_management_payload(uuid)',false),
+    ('app_private.superadmin_activity_directory(text,uuid[],uuid[],uuid[],text[],text[],integer,integer,text,boolean)',false),
+    ('public.superadmin_activity_directory(text,uuid[],uuid[],uuid[],text[],text[],integer,integer,text,boolean)',true),
+    ('app_private.superadmin_get_activity_form_options(uuid)',false),
+    ('public.superadmin_get_activity_form_options(uuid)',true),
+    ('app_private.superadmin_create_activity_locations(uuid,uuid[],text,uuid)',false),
+    ('public.superadmin_create_activity_locations(uuid,uuid[],text,uuid)',true)
+  ) v(signature,client_execute) loop
+    if to_regprocedure(alvo.signature) is null then
+      raise object_not_in_prerequisite_state using message='location legacy helper fingerprint drift';
+    end if;
+    execute format('revoke all on function %s from public, anon', alvo.signature);
+    if alvo.client_execute then
+      execute format('grant execute on function %s to authenticated', alvo.signature);
+    else
+      execute format('revoke all on function %s from authenticated', alvo.signature);
+    end if;
+  end loop;
+end $helpers$;
 
 alter table public.activity_locations
   alter column unit_id drop not null,
@@ -602,4 +624,54 @@ revoke all on function app_private.superadmin_create_activity_locations(uuid,uui
   from public,anon,authenticated,service_role;
 revoke all on function public.superadmin_create_activity_locations(uuid,uuid[],text,uuid)
   from public,anon,authenticated,service_role;
+-- Pos-condicao da concessao: afirma o invariante, nao um retrato. Comparar a
+-- ACL com um array literal quebrava entre versoes do Postgres, porque MAINTAIN
+-- so existe a partir do 17.
+do $acl$
+begin
+  if exists(
+      select 1
+      from pg_class c
+      cross join lateral aclexplode(coalesce(c.relacl,acldefault('r',c.relowner))) a
+      left join pg_roles r on r.oid=a.grantee
+      where c.oid='public.activity_locations'::regclass
+        and a.grantee<>c.relowner
+        and (
+          r.rolname is null
+          or r.rolname='anon'
+          or (r.rolname<>'service_role'
+              and a.privilege_type in ('INSERT','UPDATE','DELETE','TRUNCATE'))
+          or a.is_grantable
+        )) then
+    raise object_not_in_prerequisite_state using message='location table ACL drift';
+  end if;
+end $acl$;
+
+-- Pos-condicao dos helpers: nenhum EXECUTE para PUBLIC ou anon, e nenhuma
+-- concessao grantable.
+do $aclhelpers$
+declare alvo record;
+begin
+  for alvo in select * from (values
+    ('app_private.activity_management_payload(uuid)'),
+    ('app_private.superadmin_activity_directory(text,uuid[],uuid[],uuid[],text[],text[],integer,integer,text,boolean)'),
+    ('public.superadmin_activity_directory(text,uuid[],uuid[],uuid[],text[],text[],integer,integer,text,boolean)'),
+    ('app_private.superadmin_get_activity_form_options(uuid)'),
+    ('public.superadmin_get_activity_form_options(uuid)'),
+    ('app_private.superadmin_create_activity_locations(uuid,uuid[],text,uuid)'),
+    ('public.superadmin_create_activity_locations(uuid,uuid[],text,uuid)')
+  ) v(signature) loop
+    if exists(
+        select 1
+        from pg_proc p
+        cross join lateral aclexplode(coalesce(p.proacl,acldefault('f',p.proowner))) a
+        left join pg_roles r on r.oid=a.grantee
+        where p.oid=to_regprocedure(alvo.signature)
+          and a.grantee<>p.proowner
+          and (r.rolname is null or r.rolname='anon' or a.is_grantable)) then
+      raise object_not_in_prerequisite_state using message='location legacy helper ACL drift';
+    end if;
+  end loop;
+end $aclhelpers$;
+
 commit;
