@@ -135,6 +135,28 @@ O que isto fecha para quem vier depois: não é preciso repetir esta varredura p
 domínio. O que vale repetir é o **teste** de contrato quando uma migration nova
 mexer em lista de valores permitidos, porque aí a pergunta volta a ser aberta.
 
+### A lacuna da própria varredura: enums com `databaseValue` próprio
+
+A varredura acima compara `.name`. Vinte e oito enums do app declaram
+`databaseValue` explícito, e um deles converte de verdade — foi `ended`/`closed`.
+Se outro convertesse para snake_case, a comparação por `.name` o acusaria ou o
+perderia sem que o número dissesse qual.
+
+Fechei a lacuna medindo só os valores que parecem de banco — minúsculas,
+snake_case, sem espaço nem acento — e cruzando com as colunas. Os pares que casam
+bem casam **por inteiro**: `ActivityCommandProfessionalRole` com `assignment_role`,
+`ActivityDistribution` com `distribution_scope`, `ActivityGovernance` com
+`governance_kind`, `ActivityParticipation` com `participation_mode`,
+`AccessProfileScope` com `max_scope_kind`, e `ActivityTemplateScopeKind` com
+`scope_kind` de `activity_templates`, conferido à mão: `platform`, `institution`,
+`unit` nos dois lados. Os restos que aparecem são do meu heurístico de "melhor
+coluna", que emparelha enums pequenos com a coluna genérica `max_scope_kind`; não
+são divergência.
+
+O resto dos `databaseValue` é rótulo de interface — `Calendário`, `Aprovado`,
+`Ciência` — e não tem nada a ver com o banco. Um varredor que não separasse as
+duas coisas produziria dezenas de acusações falsas.
+
 ## Reflow dos formulários de criação — limpo
 
 16 rotas de criação, em 375 e 1440 pixels, a 100% e 200% de escala de texto: 64
