@@ -63,6 +63,7 @@ void main() {
     );
     await tester.pump();
     await tester.pump();
+    await tester.ensureVisible(find.byKey(const Key('institution-form-continue')));
     await tester.tap(find.byKey(const Key('institution-form-continue')));
     await tester.pump(const Duration(seconds: 1));
 
@@ -279,6 +280,7 @@ void main() {
     ];
     expect(textColorFields.map((finder) => tester.getTopLeft(finder).dy).toSet(), hasLength(1));
 
+    await tester.ensureVisible(find.byKey(const Key('institution-form-continue')));
     await tester.tap(find.byKey(const Key('institution-form-continue')));
     await tester.pumpAndSettle();
 
@@ -322,6 +324,7 @@ void main() {
         ),
       ),
     );
+    await tester.ensureVisible(find.byKey(const Key('institution-form-continue')));
     await tester.tap(find.byKey(const Key('institution-form-continue')));
     await tester.pumpAndSettle();
     final trigger = find.byKey(const Key('institution-bio-emoji-picker'));
@@ -389,6 +392,7 @@ void main() {
     );
 
     for (var step = 0; step < 3; step++) {
+      await tester.ensureVisible(find.byKey(const Key('institution-form-continue')));
       await tester.tap(find.byKey(const Key('institution-form-continue')));
       await tester.pumpAndSettle();
     }
@@ -440,6 +444,7 @@ void main() {
     );
 
     for (var step = 0; step < 3; step++) {
+      await tester.ensureVisible(find.byKey(const Key('institution-form-continue')));
       await tester.tap(find.byKey(const Key('institution-form-continue')));
       await tester.pumpAndSettle();
     }
@@ -988,6 +993,7 @@ void main() {
       ),
     );
     for (var step = 0; step < 5; step++) {
+      await tester.ensureVisible(find.byKey(const Key('institution-form-continue')));
       await tester.tap(find.byKey(const Key('institution-form-continue')));
       await tester.pumpAndSettle();
     }
@@ -1245,6 +1251,7 @@ void main() {
       await tester.pumpAndSettle();
 
       for (var step = 0; step < 4; step++) {
+        await tester.ensureVisible(find.byKey(const Key('institution-form-continue')));
         await tester.tap(find.byKey(const Key('institution-form-continue')));
         await tester.pumpAndSettle();
       }
@@ -1376,6 +1383,7 @@ void main() {
     await tester.pump();
 
     for (var step = 0; step < 3; step++) {
+      await tester.ensureVisible(find.byKey(const Key('institution-form-continue')));
       await tester.tap(find.byKey(const Key('institution-form-continue')));
       await tester.pumpAndSettle();
     }
@@ -1446,6 +1454,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    await tester.ensureVisible(find.byKey(const Key('institution-form-continue')));
     await tester.tap(find.byKey(const Key('institution-form-continue')));
     await tester.pumpAndSettle();
 
@@ -1468,6 +1477,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    await tester.ensureVisible(find.byKey(const Key('institution-form-continue')));
     await tester.tap(find.byKey(const Key('institution-form-continue')));
     await tester.pumpAndSettle();
     expect(find.byType(DropdownButtonFormField), findsNothing);
@@ -1573,6 +1583,12 @@ void main() {
       }
 
       for (var step = 0; step < 2; step++) {
+        // Em 375 o rodape de acao pode ficar abaixo da area visivel; sem
+        // garantir a visibilidade o toque nao avanca a etapa e a etapa de
+        // localizacao nunca e montada.
+        await tester.ensureVisible(find.byKey(const Key('institution-form-continue')));
+        await tester.pumpAndSettle();
+        await tester.ensureVisible(find.byKey(const Key('institution-form-continue')));
         await tester.tap(find.byKey(const Key('institution-form-continue')));
         await tester.pumpAndSettle();
       }
@@ -1584,6 +1600,7 @@ void main() {
       expect(tester.takeException(), isNull, reason: 'location overflow at ${width.toInt()} px');
 
       for (var step = 0; step < 3; step++) {
+        await tester.ensureVisible(find.byKey(const Key('institution-form-continue')));
         await tester.tap(find.byKey(const Key('institution-form-continue')));
         await tester.pumpAndSettle();
       }
