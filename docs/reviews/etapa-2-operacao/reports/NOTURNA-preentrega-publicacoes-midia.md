@@ -261,17 +261,51 @@ não fui eu, não o que mudou nas imagens.
 25. production Principal keeps its host at Size(390.0, 844.0)
 26. real Acontece resolves authenticated context and never uses demo fixtures
 
-**Causa, diagnosticada e não conjecturada.** `StateError: Bad state: No element`
-em `tester.widget<PrincipalHappensPreviewPage>(...)`. Na rota real, com contexto
-autenticado, a página do Acontece **não é encontrada na árvore**. O quarto caso
-do arquivo, `real route fails closed when actor has multiple active contexts`,
-**passa** — então o caminho de negação funciona e o de sucesso não monta.
+**Causa, localizada.** `StateError: Bad state: No element` em
+`tester.widget<PrincipalHappensPreviewPage>(...)`: a página do Acontece não entra
+na árvore. E o motivo é conferido dos dois lados:
+
+- A rota exige **duas** dependências. Linha 892 do router:
+  `if (repository == null || mixedRepository == null) return _unavailableCompositionRootRoute(context);`
+- O teste fornece **uma**. Nas três montagens do arquivo ele passa
+  `principalRuntimeContextRepository` e `principalHappensFeedRepository`, e nunca
+  `principalMixedFeedRepository`.
+- Os **únicos dois** pontos de composição em `lib` estão em
+  `superadmin_auth_scope.dart`: o escopo autenticado liga as duas juntas, do
+  mesmo client; o escopo fechado liga as duas como `null`, junto de todas as
+  outras. Não existe terceiro.
+
+Logo o teste constrói uma configuração que o composition root **não produz** —
+Acontece ligado e feed misto ausente — e cai no ramo indisponível, que é o
+comportamento correto para dependência faltando.
+
+O quarto caso do arquivo, `real route fails closed when actor has multiple
+active contexts`, **passa pelo motivo errado**: ele assere fechamento, e
+fechamento é o que acontece de qualquer forma com a dependência ausente. O verde
+dele não prova nada, e quem for corrigir precisa saber disso.
 
 **Procedência, medida nos três lugares:** falha `+1 -3` na base pré-rodada
 `d784462c1`, na `origin/dev` integrada e na minha branch. Não é regressão desta
 rodada nem de ninguém desta noite. Mas é do meu escopo e está na dev agora.
 
-**A retratação.** A coordenação havia me atribuído exatamente estes três
+**Três leituras, em ordem, porque a resposta mudou duas vezes.**
+
+1. *"Não são minhas"* — refutei a atribuição dizendo que o arquivo não aparece
+   entre as 33 falhas da base. **Vazia**: ele não aparecia porque a medição da
+   base não o cobria. Ausência de uma lista tratada como ausência do defeito.
+2. *"Defeito de produto, preexistente"* — medido `+1 -3` na base pré-rodada, na
+   dev integrada e na minha branch. Tinha evidência, mas de **sintoma**: falhar
+   em toda parte prova preexistência, não prova defeito. Parei no sintoma e
+   chamei de diagnóstico.
+3. *"Fixture obsoleta, com causa localizada"* — a leitura acima, que confere
+   quem exige, quem fornece e todos os pontos de composição que existem.
+
+A terceira é a que se sustenta, e o limite dela é o mesmo que declaro a noite
+toda: é leitura do composition root, não produção respondendo. **Não afirmo que
+a rota real do Acontece funciona em produção.** Afirmo que nenhuma configuração
+do composition root produz o estado contra o qual este teste falha.
+
+**A retratação que continua valendo.** A coordenação havia me atribuído estes três
 vermelhos. Eu refutei dizendo que o arquivo "não aparece entre as 33 falhas da
 base", e a atribuição foi retirada. A refutação era **vazia**: o arquivo não
 aparecia naquela lista porque a medição da base **não o cobria**. Tratei
@@ -286,10 +320,15 @@ recusa é palavra contra palavra. O princípio está certo e eu arquivei a
 evidência errada. Uma recusa mal fundamentada e bem arquivada é pior que não
 arquivada: ela deixa de ser reexaminada.
 
-**Não corrigidas, deliberadamente.** O defeito é de composição da rota real do
-Acontece. Diagnosticá-lo levou dez minutos e consertá-lo a esta altura seria
-abrir frente nova às vésperas do congelamento. Entrego localizado, com causa e
-com a prova de que precede a rodada.
+**Não corrigidas, deliberadamente.** A correção é de uma linha — acrescentar
+`principalMixedFeedRepository` às três montagens do arquivo — mas é alteração de
+teste a menos de uma hora do congelamento, num arquivo que não está no meu
+recorte declarado e que ninguém mediu a noite inteira. Entrego localizado, com
+causa, com a correção descrita e com a prova de que precede a rodada.
+
+Elas continuam **contadas** como falha nos números, porque são vermelhas de
+verdade e regravar realidade não é o meu papel. O que muda é a classificação,
+não a contagem.
 
 ## 4. Recursos, por lista
 
