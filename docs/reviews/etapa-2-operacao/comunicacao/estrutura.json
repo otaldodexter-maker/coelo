@@ -1,15 +1,15 @@
 {
  "grupo": "estrutura",
- "revision": 21,
+ "revision": 22,
  "round": "E2-R03-20260910",
- "updatedAt": "2026-09-10T18:05:00-03:00",
+ "updatedAt": "2026-09-10T17:05:00-03:00",
  "app": "Claude",
  "modelo": "Opus 5 (1M context)",
  "conversa": "R03-P4-estrutura",
  "coordenador": "coelo-af (Coordenacao R03); ACK recebido na revisao 18",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-estrutura",
  "branch": "work/etapa2-r03-estrutura",
- "head": "a61a6d862 mais os candidatos do catalogo, ver commits",
+ "head": "acd020513",
  "upstream": "origin/work/etapa2-r03-estrutura",
  "base": "origin/dev 347d4cf8a, ja com a baseline de producao 20260910000000 e os lotes 1 e 2 aplicados",
  "incidenteDeCanal": "Esta revisao foi reconstruida. As revisoes 1 a 17 foram gravadas em docs/reviews/etapa-2-operacao/comunicacao/estrutura.json no CHECKOUT PRINCIPAL, sem commit, e desapareceram: o arquivo voltou ao conteudo da rodada anterior (revisao 52 da E2-NOTURNA). A causa provavel e a Fase 0 operar no mesmo checkout como escritora unica de dev e ter feito checkout/reset que descartou a modificacao nao commitada. Licao para a rodada: arquivo de comunicacao nao commitado no checkout principal nao e canal duravel enquanto outra frente escreve ali. A partir desta revisao passo a versionar a copia na minha worktree/branch tambem, para que o estado sobreviva.",
@@ -112,6 +112,48 @@
   "Decisao RODAPE do Owner implementada no frame compartilhado, com os tres testes que afirmavam o comportamento antigo reescritos.",
   "Regra nova do chat aplicada nos quatro formularios do recorte e gravada nas skills coelo-ui."
  ],
+ "bloqueioFinalDeLocais": {
+  "urgencia": "decisao do Owner, nao tarefa de execucao",
+  "fato": "O catalogo de producao nao tem NENHUMA permissao locations.*. Zero no seed.",
+  "exigidas": [
+   "locations.read",
+   "locations.create",
+   "locations.update",
+   "locations.status",
+   "locations.copy",
+   "locations.schedule",
+   "locations.reservations.read",
+   "locations.reservations.manage",
+   "locations.reservations.override"
+  ],
+  "consequencia": "Mesmo com toda a cadeia SQL aplicada, nenhuma acao de Locais funciona em producao: as RPCs chamam require_superadmin_internal_context('locations....') e negam.",
+  "porQueNaoFiz": "Inventar permissao, definir risco e requires_mfa e conceder ao Owner e decisao de produto e de seguranca. locations.reservations.override e, pelo nome, confirmar conflito de reserva. O proprio pacote recusa-se a inventar capacidade, e esta certo.",
+  "detalhe": "docs/reviews/evidence/etapa-2/r03-estrutura/producao-nao-tem-a-cadeia-v2.md"
+ },
+ "estadoDoCandidatoDoCatalogo": {
+  "arquivo": "packages/coelo_database/candidatos/estrutura/20260910180400_superadmin_location_catalog_v2_baseline.sql",
+  "duasGuardasLiteraisCorrigidas": "A primeira, de ACL da tabela, passou depois do revoke: a prova avancou dela para a seguinte. A segunda, de ACL das sete funcoes legadas, tinha o mesmo defeito, porque producao mantem o EXECUTE padrao para PUBLIC nas funcoes do schema public. Nos dois casos a guarda literal saiu do preflight, a normalizacao foi para o corpo e o invariante virou pos-condicao.",
+  "provaFeita": "Tres execucoes sobre a baseline. A primeira barrou na ACL da tabela; corrigido, a segunda barrou na ACL das sete funcoes legadas; corrigido, a terceira barrou no contrato do proprio pacote, pedindo a fixture de capacidade. As duas comparacoes literais de ACL estao resolvidas e provadas por avanco: a prova passou de uma para a seguinte.",
+  "ordemDoLote5": [
+   "20260910180400_superadmin_location_catalog_v2_baseline (candidato)",
+   "20260908154257_superadmin_activity_save_v2",
+   "20260908190646_superadmin_locations_update_status_v2",
+   "20260908190648_superadmin_locations_copy_v2",
+   "20260908190650_superadmin_locations_schedule_v2",
+   "20260909165000_superadmin_location_reservations_v2",
+   "20260910180000_superadmin_location_consumer_bindings_v2",
+   "20260910180100_superadmin_activity_location_create_v2",
+   "20260910180200_superadmin_group_location_create_v2"
+  ]
+ },
+ "achadoDeSegurancaAnon": {
+  "urgencia": "alta, e maior que o meu recorte",
+  "fato": "Producao concede ALL (arwdDxtm) a anon e a authenticated em public.activity_locations por privilegio padrao do schema public, e o levantamento do coordenador achou o mesmo padrao em 204 tabelas.",
+  "riscoReal": "Hoje a escrita esta barrada pela RLS forcada: activity_locations tem uma unica politica, activity_locations_authorized_read, de SELECT para authenticated, e nenhuma politica de escrita. Ou seja nao ha porta aberta agora. O que existe e uma concessao de mesa que deixa a tabela a UM descuido de politica de virar gravavel por usuario anonimo.",
+  "oQueFiz": "O candidato 20260910180400 revoga tudo de PUBLIC e de anon, revoga INSERT/UPDATE/DELETE/TRUNCATE/REFERENCES/TRIGGER de authenticated e mantem apenas o SELECT dele, antes de afirmar o invariante como pos-condicao.",
+  "porQueESeguro": "Conferido antes de revogar: nenhum ponto do cliente le activity_locations direto, so por RPC; e a politica de leitura existe justamente para authenticated, entao o SELECT fica.",
+  "oQueFicaAberto": "As outras 203 tabelas seguem com a mesma concessao. Endurecer em lote e decisao do Owner, nao minha, e foi levada a ele."
+ },
  "preflightDoCoordenador": {
   "recebido": "coelo-af rodou o preflight do realm interno e da cadeia de Locais sobre a baseline as 16:45 e devolveu os erros exatos.",
   "corrigidoPorMim": [
