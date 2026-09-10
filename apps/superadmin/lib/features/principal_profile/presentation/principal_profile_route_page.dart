@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 
 import '../../principal_circulars/domain/circular_repository.dart';
 import '../../principal_happens/domain/principal_happens_feed_repository.dart';
+import '../../principal_moments/domain/principal_moments_feed_repository.dart';
 import '../../principal_shared/domain/principal_runtime_context.dart';
 import '../../profile_about/domain/profile_about_repository.dart';
 import '../domain/principal_profile_preview_data.dart';
 import 'principal_profile_happens_tab.dart';
+import 'principal_profile_moments_tab.dart';
 import 'principal_profile_preview_page.dart';
 
 /// Production composition root for `principal.profile-view`.
@@ -24,6 +26,7 @@ final class PrincipalProfileRoutePage extends StatefulWidget {
     this.circularRepository,
     this.aboutRepository,
     this.happensFeedRepository,
+    this.momentsFeedRepository,
     this.onOpenCircular,
     this.onMessage,
     this.onOpenEdit,
@@ -48,6 +51,12 @@ final class PrincipalProfileRoutePage extends StatefulWidget {
   final CircularRepository? circularRepository;
   final ProfileAboutRepository? aboutRepository;
   final PrincipalHappensFeedRepository? happensFeedRepository;
+
+  /// The authorized Momentos projection, owned by the Momentos front.
+  ///
+  /// Null keeps the tab on its honest pending state instead of inventing a
+  /// second source for the same feed.
+  final PrincipalMomentsFeedRepository? momentsFeedRepository;
   final VoidCallback onOpenAgenda;
   final ValueChanged<String>? onOpenCircular;
   final VoidCallback? onMessage;
@@ -210,6 +219,19 @@ final class _PrincipalProfileRoutePageState extends State<PrincipalProfileRouteP
     );
   }
 
+  Widget? get _momentsTab {
+    final repository = widget.momentsFeedRepository;
+    if (repository == null) return null;
+    return PrincipalProfileMomentsTab(
+      repository: repository,
+      scope: PrincipalMomentsFeedScope(
+        institutionId: widget.runtimeContext.institutionId,
+        unitId: widget.runtimeContext.unitId,
+        groupId: widget.runtimeContext.groupId,
+      ),
+    );
+  }
+
   /// Stable forwarder for "open this circular".
   ///
   /// The route builder creates a fresh closure on every build, and the
@@ -256,6 +278,7 @@ final class _PrincipalProfileRoutePageState extends State<PrincipalProfileRouteP
       embedded: widget.embedded,
       showPreviewFeeds: false,
       happensTab: _happensTab,
+      momentsTab: _momentsTab,
       aboutPage: page,
       circularRepository: widget.circularRepository,
       circularScope: widget.circularRepository == null ? null : _circularScope,
