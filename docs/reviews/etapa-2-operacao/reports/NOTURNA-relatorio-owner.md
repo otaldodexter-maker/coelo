@@ -347,6 +347,23 @@ madrugada mudaria o layout de uma dúzia de telas e invalidaria as referências
 visuais de todas, no dia em que a medição de fechamento já havia rodado. Não é
 correção contida — é a decisão que você já tem em aberto.
 
+**E a varredura que essa investigação gerou produziu um achado próprio, sobre
+instrumentos.** Ao estendê-la para rotas com parâmetro, a sonda reportou **vinte
+de vinte passando**. Ao conferir os identificadores que ela havia colhido, vários
+não eram identificadores de registro: eram chaves de modo de exibição. A rota
+respondia "cheguei" e "sem exceção" porque renderizava o **estado vazio** do
+detalhe. Endurecido o critério para aceitar apenas chaves que declaram uma linha
+de dado, restaram quatro. **Dezesseis daqueles vinte eram verde de página
+vazia** — e uma guarda contra a tela de erro não pegaria isso, porque nenhum
+caminho de erro é acionado: aparece o detalhe legítimo de um registro que não
+existe. **Sonda com entrada errada produz verde confiante.**
+
+E a razão de os dezesseis não terem sido resolvidos é ela mesma um achado:
+**dezesseis listagens em grade de cartões não têm chave de linha.** Sem ela não há
+como colher o identificador de um registro que existe para depois abrir o detalhe.
+Não é defeito visível hoje, mas é o que torna essas telas não testáveis por
+identificador. Dar chave de linha a elas resolve as duas coisas de uma vez.
+
 **O sinal foi preservado nos dois sentidos:** três casos verdes fixam o que
 funciona hoje — quatro linhas em 800×600, cinco em 390×844, oito em 1440×900 — e
 um caso carrega os números do defeito, suspenso com a razão **no próprio nome**.

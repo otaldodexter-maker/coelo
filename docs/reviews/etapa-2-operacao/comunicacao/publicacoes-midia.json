@@ -1,6 +1,6 @@
 {
-  "revision": 35,
-  "updated_at": "2026-09-10T02:39:09-03:00",
+  "revision": 36,
+  "updated_at": "2026-09-10T02:44:02-03:00",
   "group": "publicacoes-midia",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
@@ -8,7 +8,7 @@
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-publicacoes-midia",
   "branch": "work/etapa2-noturna-publicacoes-midia",
-  "head": "322ad3f5e",
+  "head": "7bf6aed75",
   "upstream": "origin/work/etapa2-noturna-publicacoes-midia (0/0)",
   "base": "origin/dev 447e6eea2 mesclado em 3ab29d7df",
   "ack": "coordenador: revisao 1 aceita; lote 1e39b2fcf integrado (merge d502350ce); lote b10f48d1e aceito para a proxima integracao; atribuicao de principal_real_route_test retirada por ele apos minha medicao; reserva da plataforma comum de midia mantida",
@@ -339,6 +339,18 @@
       "sha": "322ad3f5e",
       "state": "publicado",
       "title": "caminho truncado no documento de decisao do Owner, achado ao refazer a conferencia sem find -name",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "86ad83423",
+      "state": "publicado",
+      "title": "reverificacao da pagina sem rota pelo nome nu, no documento do Owner",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "7bf6aed75",
+      "state": "publicado",
+      "title": "reverificacao do unico negativo das nove dimensoes, com padrao largo e rastreio ate a tela",
       "touches_reserved_files": []
     }
   ],
@@ -776,7 +788,9 @@
     "commits_pendentes_de_integracao": [
       "ecefa32a1",
       "813210d27",
-      "322ad3f5e"
+      "322ad3f5e",
+      "86ad83423",
+      "7bf6aed75"
     ],
     "ja_integrados": [
       "05537c3b3",
@@ -877,5 +891,31 @@
         "commit": "322ad3f5e"
       }
     }
+  },
+  "reverificacaoDeAfirmacoesProprias": {
+    "motivo": "a licao do construtor nomeado obriga a refazer TODA afirmacao minha que repousava no padrao 'Nome(' ou em busca estreita. Reverifiquei as tres que sustentam decisoes.",
+    "1_pagina_sem_rota": {
+      "afirmacao": "PrincipalCircularComposerPage nao e construida por nada; sustenta a sexta decisao do Owner, que pede apagar ou rotear 750 linhas",
+      "metodo_antigo": "grep por 'Page(' — o MESMO padrao que depois me deu dois falsos positivos no censo de goldens",
+      "metodo_novo": "nome NU da classe em todo o lib, mais conferencia dos construtores declarados",
+      "resultado": "SE MANTEM: cinco mencoes, todas no proprio arquivo; a classe declara UM UNICO construtor, nao nomeado, sem factory nem alias de exportacao",
+      "commit": "86ad83423"
+    },
+    "2_metodos_sem_consumidor": {
+      "afirmacao": "closeResponses e o withdraw orfao eram os dois de 25 metodos sem consumidor",
+      "metodo_novo": "nome nu em todo o lib",
+      "resultado": "SE MANTEM: closeResponses tem sete mencoes, TODAS declaracao ou implementacao, zero chamadas. O contrato orfao de retirada nao aparece mais porque foi removido em db2726df8."
+    },
+    "3_vazamento_de_texto_do_servidor": {
+      "afirmacao": "nenhum vazamento — a UNICA das nove dimensoes cujo resultado e um negativo, e negativo obtido por busca vale so ate a largura do padrao usado",
+      "metodo_novo": ".toString(), error.message, e.message, interpolacao de excecao, .details e .hint nas oito features, e depois RASTREAR cada candidato ate a tela em vez de parar no casamento",
+      "candidatos_encontrados": 3,
+      "candidato_1": "CircularInvalid(error.message) CARREGA a mensagem do servidor para o dominio, em dois repositorios. Nao chega a tela: o leitor mapeia o TIPO da falha para texto proprio e descarta o code, e o host administrativo compara o code com constante conhecida e escreve texto proprio nos dois ramos.",
+      "candidato_2": "as paginas de publicacao renderizam state.message DIRETO. Conferido o outro lado: todo valor que chega ali e literal autoral ou vem de enum para texto.",
+      "candidato_3": "o compositor faz _setState(failure, error.runtimeType.toString()), que poria um nome de classe Dart na tela. Nao poe: a pagina mapeia errorCode para texto proprio e tem ramo padrao, entao o runtimeType cai no fallback.",
+      "resultado": "SE MANTEM, agora com evidencia proporcional a afirmacao",
+      "commit": "7bf6aed75"
+    },
+    "saldo": "as tres afirmacoes resistiram. O valor da reverificacao nao foi derrubar nenhuma, foi trocar evidencia estreita por evidencia rastreada ate a superficie em tres afirmacoes que sustentam decisao do Owner."
   }
 }

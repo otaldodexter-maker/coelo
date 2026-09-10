@@ -1,6 +1,6 @@
 {
-  "revision": 39,
-  "updated_at": "2026-09-10T02:39:00-03:00",
+  "revision": 40,
+  "updated_at": "2026-09-10T02:45:00-03:00",
   "group": "chat-comunicacoes",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) - claude-opus-5[1m]",
@@ -726,5 +726,16 @@
     "enumeracao_das_falhas": "Os 12 foram enumerados um a um e sao TODOS goldens: nove em superadmin_chat_page_golden_test, dois em notice_directory_golden_test e um em notice_form_golden_test.",
     "comparacao": "A medicao anterior no dev integrado dava 347/12. O numero de aprovados subiu porque o dev ganhou testes; o de falhas nao mudou e nenhuma falha nova apareceu no meu recorte.",
     "nota": "Numero medido na hora, nao herdado."
+  },
+  "fresta_das_rotas_com_parametro": {
+    "objetivo": "Fechar a segunda fresta declarada na varredura: rotas /dev COM parametro, que a varredura de 67 nao cobria.",
+    "primeira_tentativa_falhou_por_sonda": "Uma sonda que tocava a primeira linha do diretorio levou as OITO tentativas para /dev/home. Ela estava tocando o primeiro InkWell da arvore, que e um item do MENU do shell, nao uma linha da lista. Media o mecanismo, nao o efeito.",
+    "medicao_com_ids_reais": "Colhi ids reais das chaves das proprias listagens e medi 22 rotas parametrizadas de Formularios e Circulares em 1440x900 e 375x812 — incluindo as de tipo LISTA, que sao as de risco pela corroboracao de alunos-rotina: responses, files, monitor, read. Todas OK, e cada uma confirmando que a rota CHEGOU em vez de desviar.",
+    "defeito_da_minha_propria_sonda": "Ao generalizar para 20 templates, o seletor de id aceitou chaves de MODO DE EXIBICAO ('people-card-grid', 'activity-template-view-cards') como se fossem ids. As rotas responderam 'chegou' e 'sem excecao' porque renderizaram o estado VAZIO do detalhe. Densidade de widgets nao discrimina, porque so o shell ja traz cerca de 1400.",
+    "numero_que_mede_o_defeito": "Com criterio frouxo o instrumento reportou 20 de 20 OK. Com criterio estrito, aceitando apenas chave que declara uma linha de dado no formato '<algo>-row-<id>', apenas 4 dos 20 templates resolveram um id real. Dezesseis daqueles vinte 'OK' eram verde de pagina vazia.",
+    "cobertura_honesta": "Genuinamente medidos: Formularios (detalhe, edit, files, monitor, responses, test, em dois ids e dois viewports), Circulares (edit e read), Avaliacoes (fechamento) e Avisos (edicao, do meu recorte). Todos OK.",
+    "nao_resolvido": "16 templates cujas listagens usam grade de cartoes sem chave de linha: activities, agenda/events, attendance/calls, groups, health-care (planos e perfis), institutions, internal-users, invites, meal-plans, people, plans, units. A fresta permanece aberta neles e eu nao afirmo nada a respeito.",
+    "licao": "Sonda com entrada errada produz verde confiante. O que a salvou nao foi a densidade de widgets nem a ausencia de excecao, foi eu ter olhado os ids colhidos um a um e reconhecido que nao eram ids.",
+    "sugestao_para_quem_continuar": "Dar chave de linha as listagens em grade de cartoes resolveria as duas coisas de uma vez: torna as listas testaveis por id e fecha a fresta. E trabalho de outra frente."
   }
 }
