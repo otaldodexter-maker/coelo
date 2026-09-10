@@ -35,6 +35,7 @@ Future<void> main() async {
       accountProfileRepository: SupabaseAccountProfileRepository(Supabase.instance.client),
       auditRepository: authScope.auditRepository,
       medicationPlanRepository: authScope.medicationPlanRepository,
+      healthCareRepository: authScope.healthCareRepository,
       institutionDirectoryRepository: authScope.institutionDirectoryRepository,
       unitDirectoryRepository: authScope.unitDirectoryRepository,
       unitBackendCommands: authScope.unitBackendCommands,

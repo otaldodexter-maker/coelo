@@ -1,8 +1,3 @@
-import 'dart:convert';
-import 'dart:math';
-
-import 'package:crypto/crypto.dart';
-
 import 'package:coelo_domain/coelo_domain.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -133,6 +128,37 @@ final class SupabaseAttendanceRepository
     return payload == null ? null : _call(_map(payload));
   }
 
+  /// Reserva no banco a chave de idempotência desta intenção (D11, OQ-040).
+  ///
+  /// A chave era montada aqui. Em três dos quatro sítios ela nascia de
+  /// `Random.secure()` a cada tentativa, então repetir a mesma intenção
+  /// produzia uma chave nova e o servidor não tinha como reconhecer a
+  /// repetição: a proteção existia no formato e não no efeito. Agora o banco
+  /// descreve a intenção por ator, comando, agregado e versão esperada, e
+  /// devolve sempre a mesma chave enquanto aquela intenção continuar valendo.
+  ///
+  /// Criar chamada é o único comando sem agregado e sem versão esperada, então
+  /// sua intenção só pode ser descrita pelo contexto. O `scope` carrega esse
+  /// contexto — o mesmo que o comando enviará em seguida —, mas quem decide a
+  /// forma e a normalização do digest continua sendo o banco.
+  Future<String> _reserveIdempotencyKey(
+    String command, {
+    String? aggregateId,
+    int? expectedVersion,
+    Map<String, Object?>? scope,
+  }) async {
+    final reserved = await _rpc('attendance_reserve_idempotency_key', {
+      'command': command,
+      'aggregate_id': aggregateId,
+      'expected_version': expectedVersion,
+      'scope': scope,
+    });
+    if (reserved is! String || reserved.isEmpty) {
+      throw const AttendanceUnauthorizedException();
+    }
+    return reserved;
+  }
+
   @override
   Future<AttendanceCall> createCall(AttendanceCallDraft draft) async => _call(
     _map(
@@ -142,7 +168,16 @@ final class SupabaseAttendanceRepository
         'p_group_id': draft.groupId,
         'p_activity_id': draft.activityContextId,
         'p_session_date': _dateOnly(draft.date),
-        'p_idempotency_key': _draftIdempotencyKey(draft),
+        'p_idempotency_key': await _reserveIdempotencyKey(
+          'create_call',
+          scope: {
+            'institution_id': draft.institutionId,
+            'unit_id': draft.unitId,
+            'group_id': draft.groupId,
+            'activity_id': draft.activityContextId,
+            'session_date': _dateOnly(draft.date),
+          },
+        ),
       }),
     ),
   );
@@ -151,18 +186,37 @@ final class SupabaseAttendanceRepository
   Future<AttendanceBulkResult> markRemainingPresent(
     String callId, {
     required int expectedVersion,
-  }) => _bulk('superadmin_attendance_mark_remaining_present', callId, expectedVersion);
+  }) => _bulk(
+    'superadmin_attendance_mark_remaining_present',
+    'mark_remaining_present',
+    callId,
+    expectedVersion,
+  );
 
   @override
   Future<AttendanceBulkResult> clearPresenceMarks(String callId, {required int expectedVersion}) =>
-      _bulk('superadmin_attendance_clear_presence_marks', callId, expectedVersion);
+      _bulk(
+        'superadmin_attendance_clear_presence_marks',
+        'clear_presence_marks',
+        callId,
+        expectedVersion,
+      );
 
-  Future<AttendanceBulkResult> _bulk(String function, String callId, int version) async {
+  Future<AttendanceBulkResult> _bulk(
+    String function,
+    String command,
+    String callId,
+    int version,
+  ) async {
     final payload = _map(
       await _rpc(function, {
         'p_call_id': callId,
         'p_expected_version': version,
-        'p_idempotency_key': _newUuid(),
+        'p_idempotency_key': await _reserveIdempotencyKey(
+          command,
+          aggregateId: callId,
+          expectedVersion: version,
+        ),
       }),
     );
     final receipt = _map(payload['receipt']);
@@ -195,8 +249,12 @@ final class SupabaseAttendanceRepository
     String participantId,
     AttendancePresenceState state, {
     required int expectedVersion,
-  }) => _callCommand('superadmin_attendance_set_participant', {
-    'p_idempotency_key': _newUuid(),
+  }) async => _callCommand('superadmin_attendance_set_participant', {
+    'p_idempotency_key': await _reserveIdempotencyKey(
+      'set_participant',
+      aggregateId: callId,
+      expectedVersion: expectedVersion,
+    ),
     'p_call_id': callId,
     'p_participant_id': participantId,
     'p_state': _presenceToDatabase(state),
@@ -204,11 +262,15 @@ final class SupabaseAttendanceRepository
   });
 
   @override
-  Future<AttendanceCall> completeCall(String callId, {required int expectedVersion}) =>
+  Future<AttendanceCall> completeCall(String callId, {required int expectedVersion}) async =>
       _callCommand('superadmin_attendance_complete_call', {
         'p_call_id': callId,
         'p_expected_version': expectedVersion,
-        'p_idempotency_key': _newUuid(),
+        'p_idempotency_key': await _reserveIdempotencyKey(
+          'complete_call',
+          aggregateId: callId,
+          expectedVersion: expectedVersion,
+        ),
       });
 
   @override
@@ -627,36 +689,3 @@ String _dashboardStatusName(AttendanceDashboardCallStatus value) => switch (valu
   AttendanceDashboardCallStatus.inReview => 'inReview',
 };
 
-/// Creating a call is the one live write without an expected version, so a
-/// repeated attempt cannot be refused as a conflict. The key therefore has to
-/// describe the call being created rather than the attempt, or the server loses
-/// the only handle it has for recognising the repetition.
-String _draftIdempotencyKey(AttendanceCallDraft draft) => _uuidFromSeed(
-  '${draft.institutionId}:${draft.unitId}:${draft.groupId}:'
-  '${draft.activityContextId ?? ''}:${_dateOnly(draft.date)}',
-);
-
-String _uuidFromSeed(String seed) {
-  final bytes = List<int>.of(sha256.convert(utf8.encode(seed)).bytes.take(16));
-  bytes[6] = (bytes[6] & 0x0f) | 0x40;
-  bytes[8] = (bytes[8] & 0x3f) | 0x80;
-  final hex = bytes.map((value) => value.toRadixString(16).padLeft(2, '0')).join();
-  return '${hex.substring(0, 8)}-'
-      '${hex.substring(8, 12)}-'
-      '${hex.substring(12, 16)}-'
-      '${hex.substring(16, 20)}-'
-      '${hex.substring(20)}';
-}
-
-String _newUuid() {
-  final random = Random.secure();
-  final bytes = List<int>.generate(16, (_) => random.nextInt(256));
-  bytes[6] = (bytes[6] & 0x0f) | 0x40;
-  bytes[8] = (bytes[8] & 0x3f) | 0x80;
-  final hex = bytes.map((value) => value.toRadixString(16).padLeft(2, '0')).join();
-  return '${hex.substring(0, 8)}-'
-      '${hex.substring(8, 12)}-'
-      '${hex.substring(12, 16)}-'
-      '${hex.substring(16, 20)}-'
-      '${hex.substring(20)}';
-}
