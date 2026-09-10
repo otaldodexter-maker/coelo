@@ -1,5 +1,5 @@
 {
-  "revision": 9,
+  "revision": 10,
   "round": "E2-R03-20260910",
   "group": "publicacoes-agenda",
   "tool": "Codex",
@@ -23,7 +23,7 @@
     "evidence": "Commits da frente, saída dos testes locais, handoffs e este JSON; E2E somente após base integrada e aplicação remota pelo coordenador."
   },
   "knownPendencies": [
-    "base.fase0Head foi publicada como 1adb070c9 e a branch foi rebaseada nela; E2E remoto ainda depende da aplicação do pacote pelo coordenador.",
+    "base.fase0Head foi publicada como 1adb070c9; a branch foi posteriormente rebaseada na base integrada do coordenador 552058da0, preservando o composto aprovado. E2E remoto ainda depende da aplicação do pacote pelo coordenador.",
     "Avisos: migration/pgTAP e worker nominal precisam ser revalidados; pg_cron e worker pertencem ao coordenador.",
     "Circulares: detalhe produtivo agora expõe encerramento e exclusão confirmados; aplicar migration e validar gateway/RLS antes de ligar a chave de composição.",
     "Agenda: compatibilizar contexto interno039 e validar readers/comandos produtivos; telas seguem no composto publicado da Fase 0."
@@ -40,7 +40,7 @@
     "skipped": 2,
     "evidence": [
       "Bateria completa apps/superadmin/test/features/agenda + notices + circulars: 475 PASS, 2 SKIP previstos, 0 falhas",
-      "Goldens do recorte após aprovação visual dos anexos: 48/48 PASS; Agenda/Avisos/Circulares atualizados somente nos estados que divergiam da referência aprovada",
+      "Goldens do recorte após aprovação visual dos anexos: matriz aprovada passou; commit de referências na base integrada: 29188430d27a57fd53075d1f58400ffca546134e",
       "Avisos: indicador circular de estado permanece na linha do título, com expansão acessível do rótulo; composição aprovada pelo Owner nos anexos",
       "flutter analyze dos arquivos alterados: No issues found",
       "supabase start/test db --local: BLOQUEADO no bootstrap da migration legada 20260820152528_forms_editor_application_capability_guard.sql, pois o schema app_private não existe; não foi criado schema manualmente nem alterada a ordem das migrations"
@@ -78,6 +78,13 @@
       "whatChanged": "Indicador circular de estado voltou à linha do título, entre o título e o menu; o chip de tipo permanece abaixo e o título é mantido em uma linha no mobile por redução proporcional quando necessário.",
       "criteria": ["círculo distingue estados", "rótulo expande por toque, foco ou hover", "alvo mínimo de 48 px", "sem sobreposição com título ou ações", "goldens aprovados nos anexos"],
       "sha": "9ee216986c1e5ff69d8ce22d3e3b3cad4cd80d94"
+    },
+    {
+      "screen": "Etapa 2 → apps/superadmin → Agenda/Avisos/Circulares → Goldens na base integrada → action visual",
+      "actionIds": ["agenda.view", "agenda.create", "agenda.detail", "notices.list", "notices.create", "circulars.list"],
+      "whatChanged": "Referências pixel foram regeneradas somente para os estados divergentes após o rebase na composição Fase 0 integrada e aprovadas pelos anexos do Owner.",
+      "criteria": ["Agenda criação mobile claro/escuro", "Avisos diretório e formulário", "Circulares diretório e texto 200%", "suítes golden afetadas verdes"],
+      "sha": "29188430d27a57fd53075d1f58400ffca546134e"
     }
   ],
   "baselinePackages": [
@@ -90,5 +97,5 @@
     "Owner aprovou os anexos visuais: Agenda e Circulares seguem integralmente as referências; em Avisos, o círculo sinaliza ativo, inativo, rascunho e demais estados. Goldens divergentes foram regravados e a matriz passou.",
     "Não declarar E2E: base.fase0Head publicada, mas Docker/Postgres local continua ocupado por outra frente e aplicação remota permanece reservada ao coordenador."
   ],
-  "updatedAt": "2026-09-10T20:25:00-03:00"
+  "updatedAt": "2026-09-10T21:10:00-03:00"
 }
