@@ -64,6 +64,37 @@ LocationReservation decodeLocationReservationV2(
   );
 }
 
+/// Checks the intent of an atomic create after decoding its reservation.
+/// The server expands weekly occurrences in the requested timezone, including
+/// DST. Only the first interval and recurrence definition are echoed intent;
+/// later UTC intervals must not be reconstructed with fixed client durations.
+void requireLocationReservationIntentV2(
+  LocationReservation reservation, {
+  required LocationReservationOccurrence firstOccurrence,
+  required LocationReservationRecurrence recurrence,
+  required String? conflictJustification,
+}) {
+  if (reservation.occurrences.isEmpty) _invalid();
+  final first = reservation.occurrences.first;
+  if (!first.startsAt.isAtSameMomentAs(firstOccurrence.startsAt) ||
+      !first.endsAt.isAtSameMomentAs(firstOccurrence.endsAt)) {
+    _invalid();
+  }
+  final sameRecurrence = switch ((recurrence, reservation.recurrence)) {
+    (LocationReservationOnce(), LocationReservationOnce()) => true,
+    (LocationReservationWeekly expected, LocationReservationWeekly actual) =>
+      expected.timeZone == actual.timeZone &&
+          expected.until == actual.until &&
+          expected.weekdays.length == actual.weekdays.length &&
+          expected.weekdays.containsAll(actual.weekdays),
+    _ => false,
+  };
+  if (!sameRecurrence ||
+      reservation.confirmedOverConflict && (conflictJustification?.trim().isEmpty ?? true)) {
+    _invalid();
+  }
+}
+
 /// A conflict payload exposes occupied intervals, without another consumer's
 /// identity. The writer must reassess after locking; this is not a reservation.
 LocationReservationAssessment decodeLocationReservationAssessmentV2(

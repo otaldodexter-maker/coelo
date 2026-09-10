@@ -116,6 +116,15 @@ final class SupabaseGroupLocationCreateRepository implements GroupLocationCreate
               reservation.managementVersion > 9007199254740991)) {
         _fail(GroupLocationCreateFailure.unavailable);
       }
+      if (reservation != null) {
+        final intent = command.reservation!;
+        requireLocationReservationIntentV2(
+          reservation,
+          firstOccurrence: intent.firstOccurrence,
+          recurrence: intent.recurrence,
+          conflictJustification: intent.conflictJustification,
+        );
+      }
       return GroupLocationCreateResult(
         groupId: groupId,
         managementVersion: version,

@@ -153,6 +153,15 @@ final class SupabaseActivityCommandRepository implements ActivityCommandReposito
               reservation.managementVersion > 9007199254740991)) {
         _invalidAtomic();
       }
+      if (reservation != null) {
+        final intent = command.reservation!;
+        requireLocationReservationIntentV2(
+          reservation,
+          firstOccurrence: intent.firstOccurrence,
+          recurrence: intent.recurrence,
+          conflictJustification: intent.conflictJustification,
+        );
+      }
       return ActivitySaveResult(
         activityId: activityId,
         managementVersion: version,

@@ -11,6 +11,86 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  for (final mismatch in ['start', 'end', 'kind', 'days', 'until', 'zone', 'override']) {
+    test('reservation intent correlation Activity rejects $mismatch', () async {
+      final weekly = ['days', 'until', 'zone'].contains(mismatch);
+      final recurrence = weekly
+          ? LocationReservationRecurrence.weekly(
+              weekdays: {4},
+              until: DateTime.utc(2026, 9, 30),
+              timeZone: 'America/Sao_Paulo',
+            )
+          : const LocationReservationRecurrence.once();
+      final intent = ActivityCreateReservationIntent(
+        firstOccurrence: LocationReservationOccurrence(
+          startsAt: DateTime.utc(2026, 9, 10, 12),
+          endsAt: DateTime.utc(2026, 9, 10, 13),
+        ),
+        recurrence: recurrence,
+      );
+      final result = _reservationData();
+      result['recurrence'] = intent.toJson()['recurrence'];
+      switch (mismatch) {
+        case 'start':
+          (result['occurrences'] as List).first['starts_at'] = '2026-09-10T12:30:00Z';
+        case 'end':
+          (result['occurrences'] as List).first['ends_at'] = '2026-09-10T14:00:00Z';
+        case 'kind':
+          result['recurrence'] = {
+            'kind': 'weekly',
+            'weekdays': [4],
+            'until': '2026-09-30',
+            'time_zone': 'America/Sao_Paulo',
+          };
+        case 'days':
+          (result['recurrence'] as Map)['weekdays'] = [5];
+        case 'until':
+          (result['recurrence'] as Map)['until'] = '2026-10-01';
+        case 'zone':
+          (result['recurrence'] as Map)['time_zone'] = 'UTC';
+        case 'override':
+          result['confirmed_over_conflict'] = true;
+      }
+      final repo = _atomicRepository(
+        (r) async => _atomicResponse(r, {..._atomicData(), 'reservation': result}),
+        enabled: true,
+      );
+      await expectLater(
+        repo.save(_atomicCommand(reservationIntent: intent)),
+        throwsA(isA<ActivityCommandUnavailableException>()),
+      );
+    });
+  }
+  test(
+    'reservation intent correlation Activity accepts normalized instants and weekly expansion',
+    () async {
+      final intent = ActivityCreateReservationIntent(
+        firstOccurrence: LocationReservationOccurrence(
+          startsAt: DateTime.utc(2026, 9, 10, 12),
+          endsAt: DateTime.utc(2026, 9, 10, 13),
+        ),
+        recurrence: LocationReservationRecurrence.weekly(
+          weekdays: {4, 1},
+          until: DateTime.utc(2026, 9, 30),
+          timeZone: 'America/Sao_Paulo',
+        ),
+        conflictJustification: 'approved reason',
+      );
+      final result = _reservationData()..['recurrence'] = intent.toJson()['recurrence'];
+      result['occurrences'] = [
+        {'starts_at': '2026-09-10T12:00:00.000+00:00', 'ends_at': '2026-09-10T13:00:00.000+00:00'},
+        {'starts_at': '2026-09-14T12:00:00Z', 'ends_at': '2026-09-14T13:00:00Z'},
+      ];
+      final repo = _atomicRepository(
+        (r) async => _atomicResponse(r, {..._atomicData(), 'reservation': result}),
+        enabled: true,
+      );
+      expect(
+        (await repo.save(_atomicCommand(reservationIntent: intent))).reservation!.occurrences,
+        hasLength(2),
+      );
+    },
+  );
   group('catalogued Activity atomic create candidate', () {
     test('default gate rejects selection and orphan reservation before HTTP', () async {
       var calls = 0;
