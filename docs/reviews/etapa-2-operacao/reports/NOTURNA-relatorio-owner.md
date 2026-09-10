@@ -1632,6 +1632,45 @@ sempre o mesmo — reler o que já foi entregue, com três perguntas: o que isso
 com mais de um item, o que acontece com duas coisas ao mesmo tempo, e o teste
 mede o efeito ou o mecanismo.
 
+## Ler não pega; seguir pega
+
+Perto do fim, uma frente aplicou aos próprios documentos a pergunta que vinha
+aplicando ao código: **o leitor que seguir o ponteiro chega em algum lugar?** Não
+releu — extraiu cada hash e cada caminho citado e testou existência. Achou dois
+defeitos que sobreviveram a várias releituras:
+
+- **Um identificador de commit que nunca existiu**, um marcador provisório digitado
+  enquanto o lote estava aberto e nunca substituído. Estava justamente na única
+  linha de correção de acessibilidade da tabela — a linha em que alguém de fato
+  iria olhar.
+- **Catorze referências a arquivos que não existem mais**, porque a serialização da
+  fila renomeou os candidatos e o documento continuava citando os carimbos
+  originais.
+
+E o segundo caso quase virou um erro pior. A frente ia corrigir tudo como erro de
+digitação. **O que a segurou foi a tabela da fila mostrar os dois carimbos lado a
+lado**, sob o cabeçalho "arquivo final / carimbo original": era renomeação
+deliberada, não descuido. Se ali estivesse registrado apenas o nome final, uma
+decisão de coordenação teria sido "consertada" de volta, com boa-fé e com método.
+
+**A lição de registro que sai disso:** anotar a decisão *e* o estado anterior, lado
+a lado, é o que impede outra pessoa de desfazer a decisão. **Só o estado final não
+carrega a informação de que houve escolha.**
+
+A verificação foi repassada às demais frentes — custa segundos e não exige contexto
+— e aplicada também aos documentos desta coordenação, que saíram limpos. Os
+alarmes iniciais eram prefixos de checksum, identificadores de sessão, caminhos
+citados por nome-base, e duas revisões de framework que pertencem a outro
+repositório e nunca resolveriam neste.
+
+**E há uma variante da mesma classe, encontrada por outra frente auditando o
+próprio arquivo: registro publicado que foi destruído por reescrita.** A lista dos
+próprios erros existia havia dez revisões, dentro de um bloco que foi reescrito
+inteiro para consolidar a pré-entrega, e foi junto — sem que ninguém notasse,
+inclusive quem a escreveu. **A correção certa não foi restaurar o conteúdo, foi
+mudar o lugar:** dado durável guardado dentro de um bloco que se reescreve inteiro
+é o defeito, e restaurá-lo sem mover seria consertar o sintoma.
+
 ## Higiene e preservação
 
 - Os 90 artefatos de WIP ignorados na raiz do checkout integrador estão
