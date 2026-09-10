@@ -136,8 +136,11 @@ Acontece e de Agora, mas ele é um **campo inline**, não um diálogo. Então:
 - trocar o botão por um campo inline, como nas publicações irmãs, altera a
   composição aprovada do compositor.
 
-Não há golden do compositor, então qualquer das duas é tecnicamente barata. A
-escolha é de linguagem visual, não de custo.
+Não há golden do compositor **administrativo**, que é o roteado, então qualquer
+das duas é tecnicamente barata. A escolha é de linguagem visual, não de custo.
+
+(Há, sim, dez goldens de compositor — mas do `PrincipalCircularComposerPage`,
+que é o da sexta decisão abaixo: a página que nenhuma rota constrói.)
 
 ## Sexta decisão: uma tela inteira sem rota
 
@@ -149,6 +152,13 @@ O custo não é o código parado. A suíte dela passa para sempre, então ela co
 como área coberta e saudável; e quem lê conclui que existe um compositor de
 Circular na superfície do Principal, quando o que está roteado é o
 `SuperadminCircularComposerPage`, administrativo.
+
+E há mais: **dez goldens aprovados** guardam essa página, em
+`principal_circular_golden_test`, nas duas luminâncias e em quatro larguras.
+Ou seja, existe referência visual aprovada — e verde — para uma tela que
+ninguém alcança. É o mesmo que acontece com as abas duplicadas da decisão
+seguinte, e os dois casos juntos mostram que "tem golden" não é evidência de
+que a superfície exista para o usuário.
 
 Não foi removida porque, diferente do contrato órfão de retirada — onde havia
 dois contratos vivos para a mesma coisa e um estava ligado — aqui há uma tela
