@@ -924,22 +924,33 @@ seletor ao abrir e por isso foi corrigido — de três outras inconsistências
 latentes cuja pior consequência seria o servidor recusar, e que ficaram apenas
 registradas.
 
-## O censo de `IntrinsicHeight`
+## O censo de `IntrinsicHeight`, recontado
 
-Vale como exemplo do que uma varredura barata entrega. Há exatamente quatro usos
-em `apps/superadmin`, e os quatro estados diferentes contam a história inteira:
+**A primeira versão deste censo contava quatro usos e estava errada nos dois
+sentidos** — contava a mais e a menos. Contava como uso duas ocorrências que são
+**comentários**, deixados por quem já havia convertido aquelas telas; e deixava de
+fora um uso real. Provável causa: uma busca por texto, que não distingue código de
+comentário. Recontado, há **três** usos:
 
-- `access_profiles` **já bateu neste defeito, resolveu com `Table`** e deixou na
-  linha 633 um comentário dizendo que o status canônico usa `LayoutBuilder` e não
-  pode participar de `IntrinsicHeight`.
-- `errors` é seguro: envolve apenas `Text` e `VerticalDivider`.
-- `people` tem o padrão **idêntico** ao de `safety` e só não quebra porque o
-  cartão de lá usa indicador próprio em vez do canônico. É uma armadilha armada:
-  no dia em que alguém padronizar o indicador, quebra na hora.
-- `safety` é a única vítima.
+- **`errors` é seguro**: envolve apenas texto e um divisor vertical.
+- **`people` é armadilha armada**: tem o padrão idêntico ao que quebrou, e só não
+  quebra porque o cartão de lá usa um indicador próprio em vez do canônico. No dia
+  em que alguém padronizar o indicador, quebra na hora.
+- **`principal_for_you` é a segunda armadilha armada**, e não estava no censo. Ali
+  o `LayoutBuilder` é **pai** e não descendente, então o arranjo perigoso não se
+  forma — o defeito é `IntrinsicHeight` com `LayoutBuilder` na subárvore, porque é
+  a subárvore que ele interroga. Está seguro hoje **por medição, não por
+  dedução**: as referências visuais e o teste responsivo exercitam aquele herói em
+  quatro larguras e a 200% de escala, e a asserção não dispara. Mas entra na mesma
+  lista pelo mesmo motivo de `people`: no dia em que aquele conteúdo passar a
+  incluir o indicador canônico, quebra.
 
-É o argumento mais forte para tirar o `LayoutBuilder` do componente
-compartilhado, em vez de corrigir só a tela que quebrou.
+**E duas telas já bateram no defeito e resolveram do mesmo jeito** — ambas
+trocando `IntrinsicHeight` por uma composição de tabela com alinhamento vertical
+intrínseco, e ambas deixando o comentário que explica a causa. Isso **fortalece** o
+argumento de tirar o `LayoutBuilder` do componente compartilhado, em vez de
+enfraquecê-lo: não é uma tela azarada, é um padrão que já cobrou duas vezes e tem
+duas armadilhas armadas esperando a terceira.
 
 ## Decisões que dependem de você
 
