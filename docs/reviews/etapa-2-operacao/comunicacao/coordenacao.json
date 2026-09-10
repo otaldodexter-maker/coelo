@@ -7,7 +7,9 @@
     "worktrees": "estrutura, acessos-pessoas, formularios, principal-chat: limpas e publicadas; publicacoes-agenda e operacoes: WIP nao commitado preservado nas worktrees (5 e 0 arquivos) por serem Codex sem resposta; checkout principal: arquivos de outros grupos preservados, Fase 0 limpa nos seus caminhos",
     "lote5Bloqueado": "P18: nenhuma capacidade locations.* existe em producao; o candidato de catalog_v2 ja passa as duas guardas de ACL com os revokes e para na fixture de capacidade Owner-only por desenho",
     "verificacaoSemSessao": "acessos-pessoas provou por action_id que as 18 RPCs do lote 4 existem, resolvem pela assinatura e negam anonimo (42501); nada promovido a verified; achado para principal-chat: list_visible_happens_posts do cliente envia cursor que producao nao conhece (PGRST202) ate 20260910150000 ser aplicada",
-    "pausa": "frentes paradas por ordem do Owner; reativacao so quando ele voltar"
+    "pausa": "frentes paradas por ordem do Owner; reativacao so quando ele voltar",
+    "shaPublicado": "dev d6759ddf9 (2026-09-10T17:12:57-03:00); analyze limpo; validador dos rastreadores PASS; inventario: FE verified 11/230, FE local-green 13/230, BE local-green 46/223, BE com SQL aplicado em producao 27/223, BE done 0/223, E2E 0/198",
+    "worktreesNoCorte": "acessos-pessoas d47e16839, estrutura 63be8a474, formularios fdc89c488, operacoes 3fa07edd0, principal-chat a9faabd01, publicacoes-agenda 3b21db696, coordenacao d6759ddf9: todas limpas. realm-interno: worktree criada por coelo-f0 em 7ce4337b1 com milhares de arquivos modificados (ver inspecao na rev 12) e sem branch remota. Checkout principal: 10 arquivos de outros grupos preservados (principal_for_you, principal_happens, meal_plan_repository, refs coelo-ui, goldens de notices)."
   },
   "role": "Coordenacao e Integracao - Claude (P1)",
   "writer": "coordenador-claude",
