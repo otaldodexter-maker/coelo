@@ -163,6 +163,13 @@ RPC ausente da cadeia aplicada, e por isso **não completam em produção**.
   `relation "app_private.unit_import_source_attestations" does not exist`.
   Nenhuma migration rastreada cria essa tabela.
 
+  Contexto medido por outra frente na mesma noite, que reposiciona isto: o SQL
+  versionado chama **605** objetos de `app_private` e cria **590**, sobrando 40
+  chamados e nunca criados em oito domínios; e o conjunto que `supabase start`
+  aplicaria tem 17 arquivos e **zero** `create table`. Ou seja, não é lacuna
+  deste recorte nem falta de esforço: **não existe base reproduzível para
+  ninguém**.
+
 ## Ordem de aplicação que evita incidente
 
 O candidato de Circulares muda o **default** de `storage_provider` para `r2`.
