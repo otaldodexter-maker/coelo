@@ -155,17 +155,18 @@ porque lá a migration ainda nem existe.
 
 ## Verificação de sintaxe da fila inteira (10/09 00:40)
 
-Executada por `perfil-para-voce` em Postgres 15 local efêmero, container criado
-e removido, nada remoto tocado. **Zero erros de sintaxe nos 13 candidatos** e
+Executada por `perfil-para-voce` em **Postgres 17** local efêmero — a versão de
+produção — container criado e removido, nada remoto tocado. **Zero erros de sintaxe nos 13 candidatos** e
 nos 6 arquivos do pacote de Modelos e de Safety
 (`docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/` e
 `safety-sql/`).
 
-**Três candidatos ficam em categoria superior aos outros dez.**
+**Quatro candidatos ficam em categoria superior aos demais.**
 `20260909211000_now_publication_expiry_transition_v1`,
 `20260909213000_happens_post_withdrawal_v1` e
-`20260909214000_happens_mixed_feed_withdrawal_v1` aplicaram **inteiros, com zero
-erros de qualquer tipo**: todas as dependências de nome existiam no schema local
+`20260909214000_happens_mixed_feed_withdrawal_v1` — mais o pacote
+`list_my_principal_for_you` — aplicaram **inteiros, com zero erros de qualquer
+tipo**: todas as dependências de nome existiam no schema local
 e o `CREATE` completou. Para esses três a prova é substancialmente maior — não
 apenas "não tem erro de digitação", mas "aplicou". Continua sem prova de
 comportamento, de RLS e de autorização.
@@ -202,10 +203,32 @@ e `auth.jwt()` retornam nulo ou objeto vazio; `auth.users` tem só `id` e
 causa desses stubs, mas qualquer lógica que dependa do **comportamento** de
 `auth.uid()` retornando um usuário real não foi exercitada.
 
-**Duas anotações de borda, sem ação recomendada.**
-`20260812002100_child_safety_read_models.sql` e
-`20260813155005_forms_definition_and_capabilities.sql` acusaram `syntax error`
-no ambiente parcial. Ambos estão aplicados em produção há semanas; a explicação
-provável é dollar-quoting quebrado depois de um erro anterior no mesmo arquivo.
-Registrado apenas para quem refizer o experimento não se assustar com os mesmos
-dois.
+### Por que a versão do Postgres não era detalhe
+
+A primeira medição rodou em Postgres 15 e acusou `syntax error` em dois arquivos
+do histórico que estão aplicados em produção há semanas. A causa foi isolada com
+controle: `count(authorization.id)` — `authorization` é **palavra reservada no
+15 e não no 17**, e o 15 recusa usá-la como qualificador. A mesma função no 17
+não tem erro de sintaxe algum.
+
+Ou seja, medir na versão errada produziu **falso positivo de defeito**, e por
+pouco dois arquivos de produção não foram reportados como quebrados. A regra que
+fica: sem erro no 15 bastaria para o 17, mas **o inverso não vale** — verificar
+na versão de produção é condição para a afirmação valer nos dois sentidos, não
+refinamento.
+
+### A primeira quebra real do replay
+
+Independente de versão, e confirmada no 17: a cadeia de 186 migrations replayada
+do zero para no **arquivo 48**, `20260812002000_child_safety_schema.sql`, com
+`null value in column "module_label" of relation "platform_permissions"`. O
+arquivo anterior `20260811215451_access_profile_management_v2` cria a coluna
+como `NOT NULL` sem default, e o 48 insere os códigos novos — que são novos ali
+mesmo — sem informá-la. Relaxando esse `NOT NULL`, o 48 falha em seguida em
+`column "updated_at" of relation "platform_role_permissions" does not exist`:
+**duas barreiras independentes no mesmo arquivo**. Os arquivos 1 a 47 aplicam
+limpos.
+
+Não vale enumerar as barreiras seguintes: a partir do 48 a cascata contamina o
+resto e a contagem deixa de significar. A consequência está na seção do
+relatório ao Owner sobre por que a integração é 0/198.

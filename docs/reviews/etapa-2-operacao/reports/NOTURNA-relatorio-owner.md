@@ -70,6 +70,56 @@ bloqueios agora estão separados entre `blocked-decision`, onde falta uma decis�
 sua, e `blocked-environment`, onde o pacote está revisável e só falta a aplicação
 remota que esta rodada proibiu.
 
+## Por que a integração é 0/198, e por que não é falta de esforço
+
+Esta seção responde antecipadamente a pergunta óbvia diante da tabela acima. A
+leitura fácil de "0/198" é que ninguém rodou rota real contra Supabase
+autenticado, o que soa como escolha de prioridade — e levaria à instrução
+"então rodem". **A medição desta noite mostra que essa instrução não teria
+efeito.** Não existe base reproduzível para exercitar rota real contra Postgres.
+As frentes ficaram entre uma base que não existe e uma base onde não podem
+tocar.
+
+São **três buracos independentes** no mesmo caminho, cada um suficiente sozinho:
+
+1. **A cadeia versionada não atravessa.** Das 186 migrations de
+   `packages/coelo_database/migrations`, replayadas em ordem de nome numa base
+   zerada, os arquivos 1 a 47 aplicam limpos e o **48 quebra**:
+   `20260812002000_child_safety_schema.sql` insere códigos de permissão novos
+   sem `module_label`, coluna que `20260811215451_access_profile_management_v2`
+   criou como `NOT NULL` sem default. E não é a única barreira nem dentro do
+   próprio arquivo: relaxando esse `NOT NULL`, ele falha em seguida em
+   `column "updated_at" of relation "platform_role_permissions" does not exist`.
+
+2. **O que `supabase start` aplicaria é outro conjunto, e é vazio.**
+   `packages/coelo_database/supabase/migrations` tem 17 arquivos e **zero
+   `create table`** — são `CREATE OR REPLACE` de função e ajustes de privilégio.
+   Um ambiente local subido por esse caminho não tem o schema do Coelo.
+
+3. **Pelo menos um domínio inteiro não está versionado em lugar nenhum.**
+   `profile_about` não tem `create table` para `profile_about_pages`,
+   `_sections`, `_structured_fields`, `_revisions`, nem para
+   `app_private.profile_about_command_receipts` ou
+   `audit.profile_about_commands`; e `app_private.profile_about_can` e
+   `profile_about_page_for` só aparecem **sendo chamadas**, dentro do corpo de
+   `save_profile_about`. O domínio existe apenas no banco remoto.
+
+**A consequência é maior que E2E.** Recriar a base do zero — ambiente novo,
+recuperação de desastre, homologação de verdade — não é difícil hoje, é
+impossível sem um dump. E enquanto não houver caminho de recriação, homologação
+não existe; sem homologação, a única base disponível é produção; e produção é
+exatamente onde E2E não pode rodar sem autorização nominal sua. **A integração
+continuará 0 por construção, e nenhum esforço de frente muda isso.**
+
+Não proponho a solução, porque ela é de arquitetura: se o conjunto de 186 é
+corrigido, se o de 17 é completado, ou se ambos são substituídos por um caminho
+único — e a decisão precisa cobrir o schema que hoje só existe no remoto.
+
+Limite desta afirmação, declarado: a frente que mediu verificou o próprio
+domínio arquivo por arquivo e deduziu o resto do fato de o conjunto local ser o
+mesmo para todas e não criar tabela nenhuma. Se alguma frente tiver um caminho
+de seed não conhecido, é a exceção que muda o quadro.
+
 ## O defeito mais grave encontrado: Segurança infantil não se dispõe em produção
 
 Duas frentes mediram `/safety` de forma independente, e o diagnóstico mais
