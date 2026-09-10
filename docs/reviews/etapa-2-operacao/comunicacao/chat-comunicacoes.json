@@ -1,6 +1,6 @@
 {
-  "revision": 66,
-  "updated_at": "2026-09-10T04:42:00-03:00",
+  "revision": 67,
+  "updated_at": "2026-09-10T04:45:00-03:00",
   "group": "chat-comunicacoes",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) - claude-opus-5[1m]",
@@ -1070,5 +1070,15 @@
     "comando": "flutter test <17 caminhos> a partir de apps/superadmin, reporter PADRAO, caminhos testados por existencia antes de rodar: ausentes=0.",
     "resultado": "397 PASS / 12 FAIL, as 12 sendo os mesmos goldens ja enumerados um a um.",
     "estabilidade": "Mesmos 12 nomes em 0736b900f, 0032b90c7, b39e04c5a e agora 5ac61f6d7."
+  },
+  "delimitador_que_nao_delimita_o_que_parece": {
+    "pergunta_da_coordenacao": "Se alguma medicao minha usou git log --author para delimitar o proprio trabalho, ela mediu o de todas as frentes, porque as seis commitam com a mesma identidade neste checkout.",
+    "resposta": "NAO usei --author em medicao nenhuma. Delimitei por INTERVALO na propria branch (d784462c1..c1e6756c7) mais tres SHAs nomeados.",
+    "confirmacao_do_achado_alheio": "Medido: as 43 revisoes do meu intervalo carregam UMA unica identidade, Adriel B Coelho <otaldodexter@gmail.com>. O mecanismo do aviso procede — --author teria medido a rodada inteira e chamado de minha.",
+    "a_variante_que_me_atinge": "Dos 43 commits do meu intervalo, QUINZE sao cherry-pick de L02. Entao 'toquei 46 arquivos na noite' inclui trabalho originalmente feito pela sessao L02 e portado por mim.",
+    "por_que_nao_e_apropriacao": "O recorte mandava reutilizar L02, e portar sobre a base integrada resolvendo o conflito de router foi trabalho meu. Mas a frase honesta e 'arquivos que esta ENTREGA toca', e nao 'arquivos que esta frente ESCREVEU'.",
+    "o_padrao_comum": "O delimitador parece delimitar autoria e delimita outra coisa. No --author e a identidade git, comum ao checkout; no intervalo de branch e o que foi trazido para dentro dela por cherry-pick. Nos dois casos o instrumento responde a pergunta que ele sabe responder, e nao a que foi feita.",
+    "o_que_NAO_muda": "Nenhum numero. Os 46 arquivos seguem sendo os da minha entrega, o saldo de zero remocoes vale, e a incursao unica em Formularios segue retratada.",
+    "o_que_eu_nao_verifiquei": "Nao separei quais dos 46 vieram dos quinze portes e quais nasceram nesta noite. E mensuravel; nao abri por ser 04:45 e o valor nao justificar."
   }
 }

@@ -1,5 +1,5 @@
 {
-  "revision": 28,
+  "revision": 29,
   "round": "E2-NOTURNA-20260909",
   "role": "Coordenacao e Integracao - Claude",
   "writer": "coordenador-claude",
@@ -8,7 +8,7 @@
   "app": "Claude Code (VS Code)",
   "model": "claude-opus-5[1m]",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-10T03:05:00-03:00",
+  "updatedAt": "2026-09-10T04:45:00-03:00",
   "clockCorrection": {
     "referenceNow": "2026-09-09T19:03:25-03:00",
     "measuredBy": "date no checkout integrador",
@@ -485,7 +485,7 @@
     "claudeExecutorAddresses": "Fornecidos pelo Owner e verificados por envio real: as seis conversas Claude receberam ACK nominal por SendMessage em 18:18. Enderecos gravados em groups[].sessionName/sessionId para recuperacao."
   },
   "blocks": [],
-  "nextStep": "integrar ate 04:40; 04:40 congelar com leitura dupla de relogio; 04:50 receber pre-entregas no formato residual-por-SHA mais dois numeros; 05:00 consolidar, conferencia externa de Git e fechar o relatorio",
+  "nextStep": "04:50 receber as seis pre-entregas; 04:55 commitar os canais; 05:00 consolidar sem abrir rodada nova",
   "providers": {
     "supabase": {
       "cli": "supabase 2.117.0 autenticado; token no Credential Manager do Windows",
@@ -1089,5 +1089,60 @@
     "botao de reportar bug nao existe no Superadmin de producao, mesma causa raiz do 503 de Suporte",
     "salvar agendamento de formulario apaga todas as regras de publico menos a primeira — pergunta ao Owner, correcao nao e livre de decisao",
     "quinze listagens em grade de cartoes perdem a identidade das linhas no estreito — uma corrigida"
-  ]
+  ],
+  "congelamentoDeClaude": {
+    "chamadoEm": "2026-09-10T04:38:01-03:00",
+    "leituraCrua": "2026-09-10 04:38:01 -03:00",
+    "regra": "leitura maior prevalece; margem a favor do corte e nao contra ele",
+    "cruzamento": {
+      "operacoes-sistema": "04:36:40",
+      "chat-comunicacoes": "04:36:47",
+      "publicacoes-midia": "04:36:56",
+      "formularios-cuidado": "04:38:15",
+      "alunos-rotina": "fora do cruzamento a pedido proprio"
+    },
+    "convergencia": "cinco leituras dentro de cinco minutos; nenhuma frente com deriva no corte",
+    "erroDoCoordenador": "comparei leituras tiradas em instantes diferentes como se fossem simultaneas; o que eu media era latencia de mensagem, nao deriva. Retratado com as frentes e publicado no relatorio.",
+    "baseCongelada": "3789c98b7890e5f2014ebc892ca3add812abed7f",
+    "estado": {
+      "upstream": "0/0",
+      "arvore": "limpa",
+      "stash": 0,
+      "analyze": "apps/superadmin flutter analyze lib test -> No issues found",
+      "validateTrackers": "PASS actions=230 families=39 frontendCompleted=11 backendCompleted=0 e2eCompleted=0 activeE2E=198"
+    }
+  },
+  "criterioDeResidual": {
+    "revogado": "git diff <sha> origin/dev -- <caminhos> vazio",
+    "motivoDaRevogacao": "a base anda e outras frentes tocam os mesmos caminhos; alem disso o diff do SHA antigo inclui as alteracoes posteriores do proprio autor. Medido lado a lado por uma frente: ancestralidade 22/27, rastro 27/27, conteudo 8/27.",
+    "oficial": "git log origin/dev --grep=\"cherry picked from commit <sha>\"",
+    "complementares": [
+      "ancestralidade do SHA original",
+      "diferenca de conteudo por caminho",
+      "assinatura de conteudo no arquivo de destino"
+    ],
+    "regra": "declarar os tres lado a lado e explicar o desacordo; nenhum e certo sozinho",
+    "notaDoIntegrador": "integro com git cherry-pick -x, sempre. O commit entra em dev com SHA novo; ancestralidade do SHA original responde NAO para sempre.",
+    "incidente": "uma frente reportou cinco residuais \"genuinos\" pelo criterio de conteudo; quatro estavam em dev, colhidos. O instrumento ainda construiu uma hipotese de integracao parcial sobre uma frente que nao errou."
+  },
+  "achadoDaIdentidadeCompartilhada": {
+    "fato": "as seis frentes commitam com a mesma identidade git neste checkout",
+    "consequencia": "git log --author nao isola frente nenhuma; delimitar o proprio trabalho por autor mede o de todos",
+    "origem": "alunos-rotina, ao responder a pergunta da atribuicao",
+    "classe": "identidade presumida em vez de derivada; o filtro responde \"quem assinou\" e a pergunta e \"quem fez\"",
+    "derivacaoCorreta": "a lista de SHAs registrada como da frente"
+  },
+  "perguntaDaAtribuicao": {
+    "formulacao": "o arquivo commitado diz DE QUEM e a medicao e O QUE FOI CONFERIDO sobre ela?",
+    "origem": "perfil-para-voce, apos arrancar de um comentario de teste integrado um numero atribuido a outra frente que nao existia",
+    "respostas": {
+      "perfil-para-voce": "2 em arquivo commitado, corrigidas",
+      "operacoes-sistema": "4, duas sem nomear frente, corrigidas em dd1a95bcd",
+      "formularios-cuidado": "1 em registro, corrigida em 55f4b5910",
+      "chat-comunicacoes": "1 em mensagem de commit, imutavel; credito registrado no JSON e no relatorio por decisao do coordenador de nao reescrever historia",
+      "alunos-rotina": "nenhum, por varredura de 37 arquivos e 26 mensagens",
+      "publicacoes-midia": "nenhum em arquivo commitado, por varredura"
+    },
+    "respostaDoCoordenador": "o relatorio ao Owner tem 2854 linhas, cita medicao das seis frentes e nao nomeia nenhuma: 44 ocorrencias de \"uma frente\", zero atribuicoes nominais. Limitacao declarada no topo do documento, com o registro nominal apontado nos nove JSONs desta pasta. Nomes em medicao e em achado; classe em erro, exceto onde a frente pediu nominal — chat-comunicacoes pediu."
+  }
 }
