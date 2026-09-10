@@ -1954,6 +1954,34 @@ foram medidas, como as medições de suíte já carregam. A defasagem fica visí
 depender de alguém reler tudo no fim. Seções que afirmam **método** ou **decisão**
 não precisam, porque não envelhecem.
 
+**E isso não é uma peculiaridade deste relatório.** A frente que o releu aplicou a
+mesma pergunta ao próprio arquivo de coordenação — reescrito 38 vezes durante a
+noite — e encontrou **cinco campos podres em setenta e seis**. Nenhum parecia
+errado na leitura; todos só apareceram quando cada campo de estado foi conferido
+contra uma medição feita **naquele momento**, e não contra a lembrança.
+
+**O padrão é limpo e vale como regra:** o apodrecimento atingiu **apenas campos de
+estado** — números, identificadores de commit, pendências. **Nenhum campo de
+conteúdo apodreceu**: escopo, critérios, perguntas ao Owner, evidências e plano da
+próxima rodada estão intactos. Faz sentido — **conteúdo descreve o que foi feito e
+não muda sozinho; estado descreve como as coisas estão e muda sozinho, sem que
+ninguém toque no arquivo.**
+
+Dois dos cinco são exemplares. Um campo de pendência passou por três estados —
+"nada pendente", depois dois commits nomeados, depois os mesmos dois já
+integrados — e **em cada um deles a linha estava correta no momento em que foi
+escrita.** Não basta escrever a verdade; é preciso reescrevê-la quando ela muda. E
+outro campo citava como **estabilidade** o fato de um mesmo par de números se
+repetir em quatro bases sucessivas — quando era o mesmo denominador incompleto
+repetido quatro vezes. **Um número estável medido pelo instrumento errado é
+estavelmente errado.**
+
+**A regra barata que substitui reler tudo:** todo campo que carrega número,
+identificador ou pendência carrega **também a hora em que foi medido**. Um número
+sem data ao lado de números com data é lido como atual. E a pergunta que funciona
+na revisão não é "isto está correto?", é **"quando isto foi medido, e o que mudou
+desde então?"**
+
 **A quinta correção era de outra natureza e vale por si:** uma afirmação de
 cobertura — "zero divergência nas 80 chamadas" — quando o instrumento examina no
 máximo 75, porque pula toda chamada cuja assinatura não existe. E as que ele pula
