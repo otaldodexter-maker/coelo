@@ -67,9 +67,24 @@ $excludedNames = @(
   '20260901101500_superadmin_internal_chat_v2.sql',
   '20260901185008_superadmin_internal_notices_v2.sql'
 )
-$selected = @($entries | Where-Object { $_.file -cnotin $excludedNames })
-if ($selected.Count -ne 65) {
-  throw 'InternalUsersV2 requires both unreachable entries to be present in the manifest and excluded here'
+# The invites migration is verified against its own pin instead of the
+# manifest's, because 20260901190432 was corrected in this round: it called
+# gen_random_bytes without a schema inside a `security definer set search_path=''`
+# function, and pgcrypto lives in the extensions schema, so issuing or resending
+# an invitation came back as SAI_INTERNAL_ERROR 500. The manifest still records
+# the pre-fix content. Re-blessing the manifest is the harness owner's call --
+# its hash is pinned by ten other profiles -- so it is reported, not edited.
+$repinnedName = '20260901190432_superadmin_internal_invites_v2.sql'
+$selected = @($entries | Where-Object {
+  $_.file -cnotin $excludedNames -and $_.file -cne $repinnedName
+})
+if ($selected.Count -ne 64) {
+  throw 'InternalUsersV2 requires both unreachable entries and the repinned invites migration to be present in the manifest and handled here'
+}
+$repinned = Assert-InternalUsersFile (Join-Path (Join-Path $packageRoot 'migrations') $repinnedName)
+if ((Get-InternalUsersHash $repinned.FullName) -cne
+    'e213807cab3a07bf49384cc832b6074d81d7fef26269001f239463dac72d07c3') {
+  throw "InternalUsersV2 input hash mismatch: $repinnedName"
 }
 
 $additionNames = @(
@@ -93,7 +108,7 @@ $fromManifest = @($selected | ForEach-Object {
   }
   $file
 })
-$canonical = @(@($fromManifest) + @($additions) | Sort-Object Name)
+$canonical = @(@($fromManifest) + @($repinned) + @($additions) | Sort-Object Name)
 
 $preflight = @(Get-ChildItem -LiteralPath (Join-Path $packageRoot 'replay') -File -Filter '*.sql' |
   Sort-Object Name | ForEach-Object { Assert-InternalUsersFile $_.FullName })
