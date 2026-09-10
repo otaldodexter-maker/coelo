@@ -125,6 +125,11 @@ Vale também para `git cat-file -e <sha>^{commit}`, que quebra pelo mesmo motivo
 Para perguntar se um commit está integrado, use
 `git merge-base --is-ancestor <sha> origin/dev`.
 
+A recomendação sobrevive ao diagnóstico, e é por isso que ela é `ls-tree` e não
+`MSYS_NO_PATHCONV=1`: `ls-tree` não passa caminho como argumento, logo é imune a
+**qualquer** conversão, conhecida ou não. Regra que depende de conhecer a causa
+quebra quando aparece a próxima causa.
+
 ## O denominador: três perguntas, não uma
 
 Conferir que os caminhos declarados **existem** só responde a primeira. Rodar
