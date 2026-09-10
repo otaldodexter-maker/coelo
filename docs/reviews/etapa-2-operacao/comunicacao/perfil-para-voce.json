@@ -1,6 +1,6 @@
 {
-  "revision": 35,
-  "updated_at": "2026-09-10T02:53:41-03:00",
+  "revision": 37,
+  "updated_at": "2026-09-10T03:56:00-03:00",
   "group": "perfil-para-voce",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
@@ -591,5 +591,308 @@
     "encerrada": "Sete achados: quatro corrigidos pelo coordenador, o censo de IntrinsicHeight, a omissao do paragrafo desta frente (corrigida) e o detalhe da decisao 12. Mais a confirmacao da decisao 15, que nao precisou de correcao."
   },
   "higiene_de_medicao": "Os 40 objetos orfaos foram REFEITOS com caminhos privados da sessao apos o aviso de que /tmp e compartilhado nesta maquina: 605/527/63/40, lista byte a byte identica. Nao houve contaminacao, mas a verificacao era devida porque o numero ja estava publicado.",
-  "correcao_de_horario_2": "Escrevi 'Sao 03:30 medidas' numa mensagem sem ter medido; a hora real era 02:51. Terceira ocorrencia do mesmo habito contra a minha propria regra. A licao operacional: a regra pegou no JSON, onde a leitura do relogio virou COMANDO, e nao pegou nas mensagens, onde eu ainda digito. Regra que depende de disciplina no momento da escrita nao pega; a que vira comando pega."
+  "correcao_de_horario_2": "Escrevi 'Sao 03:30 medidas' numa mensagem sem ter medido; a hora real era 02:51. Terceira ocorrencia do mesmo habito contra a minha propria regra. A licao operacional: a regra pegou no JSON, onde a leitura do relogio virou COMANDO, e nao pegou nas mensagens, onde eu ainda digito. Regra que depende de disciplina no momento da escrita nao pega; a que vira comando pega.",
+  "pre_entrega_0450": {
+    "estado": "publicada as 03:35, antes do prazo. Sera reconferida as 04:50 e o que mudar sera declarado COMO MUDANCA, nao reescrito em silencio.",
+    "formato": "os sete itens obrigatorios do coordenador, mais 1b, 2b e 2c acrescentados por ele durante a madrugada",
+    "1_residual_por_sha": {
+      "metodo": "git merge-base --is-ancestor <sha> origin/dev, apos git fetch origin --prune. NAO foi usado git cat-file -e <sha>^{commit}.",
+      "medido_em": "2026-09-10T03:07:38-03:00, reconferido 03:12:33",
+      "origin_dev_na_medicao": "e35437360 docs(e2): put the essential on one page at the top",
+      "meus_shas": [
+        {
+          "sha": "ace7b32e1",
+          "assunto": "test(safety): prove the production child grid lays out with records",
+          "resultado": "INTEGRADO"
+        },
+        {
+          "sha": "1d453e2f3",
+          "assunto": "test(router): warn that the vacuous-green guard does not extend to detail routes",
+          "resultado": "INTEGRADO"
+        }
+      ],
+      "minha_branch": "origin/work/etapa2-noturna-perfil-para-voce em 1d453e2f3 -> INTEGRATED",
+      "residual_meu": "ZERO",
+      "controles_antes_de_confiar": "Controle POSITIVO (origin/dev ancestral de origin/dev) PASSOU; controle NEGATIVO (origin/dev ancestral de origin/dev~1) RECUSOU; e o glob refs/remotes/origin/work/etapa2-noturna-* casa 14 refs, o mesmo total de refs/remotes/origin/work/*, entao o laco nao esta silenciosamente vazio. Uma conferencia que nunca passa nao e rigorosa, e quebrada."
+    },
+    "1b_residual_de_outras_frentes_achado_pela_conferencia": {
+      "por_que_esta_aqui": "Meu papel as 05:00 e conferencia externa de Git. Rodei a conferencia as 03:12:33, com 86 minutos ate o congelamento, e ela achou seis commits de cinco frentes fora de origin/dev. Nao integro nada; entrego o achado.",
+      "medido_em": "2026-09-10T03:12:33-03:00",
+      "desfecho_informado_pelo_coordenador_as_03_38_01": "cinco ja entraram nos ciclos seguintes. O 8d06b8a91 do router-dedupe fica de fora DE PROPOSITO: o conteudo dele ja esta em dev e a branch esta sobre base antiga; sera apagada no fechamento com registro no manifesto. Fui incumbido de confirmar isso na conferencia das 05:00 e avisar se houver conteudo la que ele nao viu.",
+      "commits_fora_de_dev_naquele_instante": [
+        {
+          "branch": "origin/work/etapa2-noturna-chat-comunicacoes-router-dedupe",
+          "tip": "8d06b8a91",
+          "commits": [
+            "8d06b8a91 fix(router): drop the duplicated Principal chat route that breaks the router"
+          ],
+          "nota": "e a rota duplicada que eu diagnostiquei como apagao do dev; conteudo ja em dev por outro caminho"
+        },
+        {
+          "branch": "origin/work/etapa2-noturna-operacoes-sistema",
+          "tip": "646239792",
+          "commits": [
+            "646239792 fix(plans): limit the form to what the plan constraints accept",
+            "5845f01c2 fix(agenda): stop the form from building a payload the column rejects"
+          ]
+        },
+        {
+          "branch": "origin/work/etapa2-noturna-copia-previa",
+          "tip": "80f160599",
+          "commits": [
+            "80f160599 fix(principal): stop production screens from calling themselves a preview"
+          ]
+        },
+        {
+          "branch": "origin/work/etapa2-noturna-chat-volta-mobile",
+          "tip": "05fdcf2d5",
+          "commits": [
+            "05fdcf2d5 test(chat): prove the operator can switch conversations on a phone"
+          ]
+        },
+        {
+          "branch": "origin/work/etapa2-noturna-publicacoes-midia",
+          "tip": "b69c7d00f",
+          "commits": [
+            "b69c7d00f docs(e2): the recorte is eight feature directories, not nine"
+          ]
+        }
+      ],
+      "integradas_no_mesmo_instante": [
+        "acessos-pessoas 992f3530d",
+        "alunos-rotina c73f7b526",
+        "avisos-chave-de-linha cb0a386d8",
+        "chat-comunicacoes c1e6756c7",
+        "chat-comunicacoes-router c2127823f",
+        "chat-comunicacoes-router-from 48d15d8df",
+        "estrutura 6709f1473",
+        "formularios-cuidado 8111ebb67",
+        "perfil-para-voce 1d453e2f3"
+      ]
+    },
+    "2_numeros_de_teste_com_os_caminhos": {
+      "regra_aplicada": "ls em cada caminho ANTES de confiar no total, porque flutter test conta caminho inexistente como UMA falha e o total mente sem barulho.",
+      "lote_1_recorte": {
+        "resultado": "288 PASS / 10 FAIL",
+        "comando": "flutter test <os sete caminhos abaixo> -r expanded",
+        "cwd": "apps/superadmin, na worktree e2-noturna-perfil-para-voce",
+        "janela": "03:08:06 a 03:10:52",
+        "caminhos_conferidos_com_ls": [
+          "apps/superadmin/test/features/principal_profile (13 arquivos _test.dart)",
+          "apps/superadmin/test/features/profile_about (2)",
+          "apps/superadmin/test/features/principal_for_you (7)",
+          "apps/superadmin/test/app/router/principal_profile_for_you_production_routes_test.dart",
+          "apps/superadmin/test/app/router/route_name_uniqueness_test.dart",
+          "apps/superadmin/test/app/router/fail_closed_screens_with_data_probe_test.dart",
+          "apps/superadmin/test/features/safety/presentation/safety_production_grid_layout_test.dart"
+        ],
+        "nenhum_caminho_ausente": true
+      },
+      "lote_2_suite_completa_do_app": {
+        "resultado": "6390 PASS / 14 SKIP / 144 FAIL",
+        "comando": "flutter test -r expanded",
+        "cwd": "apps/superadmin, mesma worktree",
+        "janela": "03:12:47 a 03:28:09",
+        "denominador": "apps/superadmin INTEIRO. NAO cobre os outros pacotes do monorepo; ver item 2b."
+      },
+      "lote_3_json": {
+        "estado": "EM EXECUCAO, iniciada 03:31:40",
+        "comando": "flutter test --file-reporter json:<scratchpad>/lote3.json",
+        "por_que": "ver a nota de metodo em 2c; o reporter expanded gravado em arquivo trunca nome de caso e nao serve de denominador"
+      },
+      "NUMERO_VALIDO": "306 PASS / 10 FAIL em 316 casos. Os 288 declarados na rev36 tinham denominador incompleto; ver CORRECAO_rev37."
+    },
+    "2b_inversao_da_pergunta": {
+      "pergunta": "existe teste do meu escopo FORA da minha lista?",
+      "metodo": "duas varreduras no monorepo: por NOME de arquivo casando principal_profile|principal_for_you|profile_about|perfil, e por IMPORT de features/(principal_profile|principal_for_you|profile_about). Casar diretorio de dominio, nao mencao no texto: o falso positivo conhecido e casar feed e pegar feedback.",
+      "resultado": "CINCO arquivos do meu dominio estavam FORA da lista declarada",
+      "achados": [
+        {
+          "arquivo": "apps/superadmin/test/app/router/principal_for_you_preview_route_test.dart",
+          "como": "nome",
+          "arvore": "rota"
+        },
+        {
+          "arquivo": "apps/superadmin/test/app/router/principal_profile_preview_route_test.dart",
+          "como": "nome",
+          "arvore": "rota"
+        },
+        {
+          "arquivo": "apps/superadmin/test/app/router/principal_now_preview_route_test.dart",
+          "como": "SO por import",
+          "arvore": "rota"
+        },
+        {
+          "arquivo": "apps/superadmin/test/features/activities/presentation/activity_profile_about_section_test.dart",
+          "como": "nome",
+          "arvore": "feature de OUTRO recorte, mas testa o Sobre"
+        },
+        {
+          "arquivo": "packages/coelo_domain/test/profile_about/profile_about_test.dart",
+          "como": "nome",
+          "arvore": "FORA de apps/superadmin"
+        }
+      ],
+      "medidos": {
+        "os_quatro_do_superadmin": "18 PASS / 0 FAIL, flutter test, 03:25:51 a 03:27:27",
+        "o_de_coelo_domain": "9 PASS / 0 FAIL, dart test, 03:28:18"
+      },
+      "licao": "Nenhum dos cinco falha, e ainda assim os cinco importam: um denominador furado nao vira falso verde por sorte, vira falso verde por construcao. O de coelo_domain e a mesma licao que o coordenador aplicou a si mesmo: eu tambem so media apps/superadmin.",
+      "arvores_que_a_organizacao_por_feature_perde": "rota, shell, menu, core/config, shared e OUTROS PACOTES do monorepo"
+    },
+    "2c_sobreposicao": {
+      "declaracao": "A sobreposicao entre os meus dois numeros e TOTAL: o lote 1 e subconjunto proprio do lote 2. Mesmos caminhos, mesma worktree, mesmo app. Somar 288 com 6390 contaria os 288 duas vezes.",
+      "o_que_NAO_esta_contido": "os 9 casos de packages/coelo_domain/test/profile_about, que vivem em outro pacote e nao entram na suite de apps/superadmin por construcao",
+      "nota_de_metodo_para_as_seis_frentes": {
+        "problema": "Extrair o numero do recorte DA MESMA CORRIDA da suite completa e a ideia certa, mas quebra se a corrida for -r expanded redirecionada para arquivo.",
+        "prova": "Parseei a minha propria corrida e conferi o parser contra o contador oficial DELA MESMA: contador +6390 ~14 -144; casos distintos reconstruidos 733, sendo PASS 589 e FAIL 144. As 144 falhas batem EXATO. Os 6390 viraram 589.",
+        "causa": "O reporter expanded trunca o nome do caso na largura do terminal. Casos distintos do mesmo arquivo com prefixo igual colapsam num so. Falha nao colapsa porque imprime bloco [E] proprio.",
+        "consequencia": "Quem seguir o metodo com expanded entrega denominador SUBESTIMADO e lista de falhas CERTA. E o pior formato de erro, porque a metade conferivel esta certa e empresta confianca a metade errada.",
+        "correcao": "flutter test --file-reporter json:<caminho>, que emite um evento por caso com nome INTEIRO e arquivo de origem, sem depender de largura de terminal. Combina com o expanded na mesma corrida.",
+        "como_eu_peguei": "Conferindo o parser contra um numero que o proprio parser NAO produziu. E a mesma lei do relogio, numa quarta roupa: um controle que depende de quem esta sendo controlado nao e controle.",
+        "distribuida": "reportada ao coordenador as 03:33:12 e publicada por ele em 5553fd6cb"
+      }
+    },
+    "3_falhas_enumeradas": {
+      "extracao": "Juntar as linhas antes do grep, porque mensagem quebrada em duas linhas nao casa com grep de linha unica. Foi assim que uma suite com 31 falhas ja foi lida como zero nesta rodada.",
+      "minhas_dez": [
+        "matches complete profile light_375",
+        "matches complete profile light_768",
+        "matches complete profile light_1024",
+        "matches complete profile light_1440",
+        "matches complete profile dark_375",
+        "matches complete profile dark_768",
+        "matches complete profile dark_1024",
+        "matches complete profile dark_1440",
+        "matches complete profile text_200_light_375",
+        "matches complete profile text_200_dark_1440"
+      ],
+      "arquivo_a_partir_da_raiz": "apps/superadmin/test/features/principal_profile/presentation/principal_profile_preview_golden_test.dart",
+      "dono": "MINHAS. As dez sao a MESMA causa unica.",
+      "causa": "A referencia aprovada mostra botao Acompanhar e seis metricas, com Seguidores e Seguindo; a composicao atual mostra Mensagem e tres metricas.",
+      "estado": "blocked-decision, item 1 da proxima_rodada. NAO regravei golden para fechar vermelho: regravar aqui apagaria a evidencia da divergencia, que e exatamente a pergunta pendente ao Owner.",
+      "nao_e_regressao": "As dez ja falhavam antes de qualquer alteracao minha.",
+      "as_outras_134_da_suite": "NAO sao minhas. Estao em institutions, groups, forms, chat, activities, health_care, imports, locations, meal_plans, circulars, audit, help_center e em cinco casos de test/app/router de outros recortes. Atribui por caminho, nao por leitura de cada uma. Rodei a suite inteira para saber o que e MEU, nao para certificar o alheio.",
+      "tres_arquivos_de_fronteira_roteados_a_mim": "principal_profile_circulars_projection, principal_profile_happens_tab e principal_profile_happens_tab_responsive CAEM sob test/features/principal_profile/, primeiro caminho da minha lista. Entraram nos 288 e passam. Dono: perfil-para-voce. Confirmo tambem que nao ha transbordamento nos responsivos: escrevi o moments_tab espelhando o happens_tab."
+    },
+    "4_recursos_por_lista": {
+      "declaracao": "Listo tudo, inclusive o que criei fora da minha worktree. Numa revisao anterior eu declarei nenhum com a verify-dev-tmp existindo em disco; o coordenador so soube porque exigiu declaracao explicita.",
+      "itens": [
+        {
+          "recurso": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-perfil-para-voce",
+          "tipo": "worktree atribuida",
+          "estado": "0 caminhos alterados as 03:12:33",
+          "destino": "permanece ate a entrega"
+        },
+        {
+          "recurso": "C:/Users/adrie/Documents/Coelo.worktrees/verify-dev-tmp",
+          "tipo": "worktree efemera de conferencia, DETACHED",
+          "estado": "0 caminhos alterados",
+          "destino": "REMOVER apos a conferencia das 05:00, com a remocao declarada pela saida crua de git worktree list"
+        },
+        {
+          "recurso": "containers Postgres locais, postgres:15 e supabase/postgres:17.6.1.165",
+          "tipo": "container efemero",
+          "estado": "JA REMOVIDOS"
+        },
+        {
+          "recurso": "scratchpad da sessao",
+          "tipo": "arquivos temporarios",
+          "estado": "caminho privado da sessao, fora do repositorio; NADA em /tmp compartilhado"
+        }
+      ],
+      "sobre_o_aviso_de_tmp": "Refiz em caminho privado a medicao dos objetos app_private que tinha usado /tmp. Resultado byte-identico: 605 chamados / 527 funcoes / 63 tabelas / 40 sem CREATE. Sem contaminacao."
+    },
+    "5_hora_lida": {
+      "metodo": "date na MESMA chamada que produziu o dado, com segundos. Nao ha carimbo estimado nesta revisao.",
+      "leituras": {
+        "residual_por_sha": "2026-09-10 03:07:38 -03:00",
+        "conferencia_de_git": "2026-09-10 03:12:33 -03:00",
+        "lote_2b_superadmin": "2026-09-10 03:25:51 a 03:27:27",
+        "lote_2b_coelo_domain": "2026-09-10 03:28:18 -03:00",
+        "controle_do_parser": "2026-09-10 03:31:36 -03:00",
+        "esta_pre_entrega": "2026-09-10 03:35:00 -03:00"
+      },
+      "aceito_o_cruzamento": "Concordo com o protocolo das 04:40. Colo saida crua e o coordenador cruza com a dele. A lei que o justifica veio de alunos-rotina: um controle que depende de quem esta sendo controlado nao e controle.",
+      "meu_historico_honesto": "Tres vezes nesta noite eu rotulei estimativa como medicao e me corrigi tres vezes. A regra so pegou quando ler o relogio virou COMANDO, nao prosa. Por isso o cruzamento e melhor que a minha disciplina."
+    },
+    "6_citacoes_conferidas": {
+      "regra": "hash e caminho testados a partir da RAIZ do repositorio, nunca por basename",
+      "caminhos": [
+        "apps/superadmin/test/features/principal_profile/presentation/principal_profile_preview_golden_test.dart",
+        "apps/superadmin/test/app/router/fail_closed_screens_with_data_probe_test.dart",
+        "apps/superadmin/test/features/safety/presentation/safety_production_grid_layout_test.dart",
+        "apps/superadmin/test/app/router/principal_now_preview_route_test.dart",
+        "apps/superadmin/test/features/activities/presentation/activity_profile_about_section_test.dart",
+        "packages/coelo_domain/test/profile_about/profile_about_test.dart",
+        "packages/coelo_database/plans/2026-09-09-profile-about-read-rpc.sql",
+        "packages/coelo_database/plans/2026-09-09-principal-for-you-read-rpc.sql",
+        "docs/reviews/evidence/etapa-2/perfil-para-voce/2026-09-10-schema-versionado-e-replay.md",
+        "docs/reviews/evidence/etapa-2/perfil-para-voce/2026-09-10-selo-destaque-contraste.md",
+        ".agents/skills/coelo-flutter-review/references/golden-failure-triage.md"
+      ],
+      "hashes": "ace7b32e1 e 1d453e2f3 resolvidos por git log --oneline -1 <sha> na MESMA chamada do merge-base; e35437360 lido de git log --oneline -1 origin/dev"
+    },
+    "7_o_que_eu_NAO_verifiquei": [
+      "O numero da corrida com reporter JSON: iniciada 03:31:40, ainda rodando. Entra na reconferencia das 04:50.",
+      "Se a leitura por tabela do Sobre funciona HOJE em producao. Nunca consultei producao; falta autorizacao nominal. A noite toda eu classifiquei isso como bloqueado por ausencia e estava errado: esta bloqueado por falta de autorizacao para VERIFICAR.",
+      "Se get_profile_about e list_my_principal_for_you se comportam em producao. Ambos tem sintaxe verificada em Postgres 17 LOCAL e aplicam inteiros local. NAO foram aplicados remotamente.",
+      "35 dos 40 objetos app_private sem CREATE vem do metodo de conjuntos e nao foram inspecionados um a um. Cinco foram conferidos a mao. 40 nao sao 40 fatos verificados.",
+      "Se as falhas golden historicas da base tem outras causas alem das quatro assinaturas que documentei. Documentei a taxonomia, nao auditei cada falha.",
+      "As 134 falhas da suite que nao sao minhas. Atribui por caminho, nao por leitura de cada uma.",
+      "Os outros pacotes do monorepo, alem do unico arquivo de coelo_domain que e do meu dominio. O coordenador mediu sete pacotes; eu nao os rodei.",
+      "Nada de E2E. Continua zero por construcao enquanto nao existir caminho de recriacao da base.",
+      "Se o coordenador JA recebeu tudo. Reportei por mensagem as 03:33:12 e ele confirmou as 03:38:01. Reportar nao e receber; neste caso houve recibo."
+    ],
+    "CORRECAO_rev37": {
+      "numeros_corrigidos_com_reporter_json": {
+        "por_que_esta_revisao_existe": "A revisao 36 declarou 288 PASS / 10 FAIL. O numero estava CERTO para os caminhos que ele mediu e ERRADO como denominador, porque faltavam os cinco arquivos que a inversao do 2b achou. Aqui esta o numero completo, produzido com reporter JSON, que nao trunca nome de caso.",
+        "recorte_completo": {
+          "resultado": "306 PASS / 0 SKIP / 10 FAIL, em 316 casos distribuidos em 30 arquivos",
+          "comando": "flutter test <os 11 caminhos declarados> --file-reporter json:recorte.json",
+          "cwd": "apps/superadmin, worktree e2-noturna-perfil-para-voce",
+          "janela": "03:52:22 a 03:53:01",
+          "controle": "o contador da propria corrida declarou +306 -10 e o parser reconstruiu PASS 306 / FAIL 10. Bate EXATO. Comparar com a corrida gemea em expanded, onde o parser reconstruiu 589 de 6390.",
+          "aritmetica_que_fecha": "288 + 18 = 306. Os 18 sao exatamente os casos dos quatro arquivos que o 2b achou fora da lista em apps/superadmin. O 2b nao inventou escopo, recuperou escopo que faltava."
+        },
+        "fora_de_apps_superadmin": "packages/coelo_domain/test/profile_about/profile_about_test.dart: 9 PASS / 0 FAIL, dart test, 03:28:18",
+        "total_nao_duplicado_do_escopo": "325 casos, 315 passando, 10 falhando",
+        "sobreposicao": "os 316 sao subconjunto proprio dos 6390+14+144 da suite de apps/superadmin. Os 9 de coelo_domain NAO sao.",
+        "suite_do_app_medida_duas_vezes": "6390 PASS / 14 SKIP / 144 FAIL em duas corridas independentes (03:12:47-03:28:09 e 03:31:40-03:51). Numero identico nas duas."
+      },
+      "as_dez_falhas_no_contexto_do_arquivo": {
+        "arquivo": "apps/superadmin/test/features/principal_profile/presentation/principal_profile_preview_golden_test.dart",
+        "composicao": "12 casos no arquivo: 10 falham, 2 passam",
+        "causa_unica": "a referencia aprovada mostra botao Acompanhar e seis metricas, com Seguidores e Seguindo; a composicao atual mostra Mensagem e tres metricas",
+        "estado": "blocked-decision. NAO regravei golden para fechar vermelho."
+      },
+      "segunda_armadilha_de_instrumento": {
+        "titulo": "--file-reporter json:C:/caminho nao gera arquivo nenhum no Windows, e nao reclama",
+        "o_que_acontece": "o parser da flag corta no primeiro dois-pontos e o C da letra de unidade vira o nome do arquivo. A corrida roda inteira, imprime o resultado normalmente, devolve exit code correto, e o JSON simplesmente nao existe.",
+        "custo_medido": "uma corrida de 19 minutos perdida. So descobri porque fui abrir o arquivo.",
+        "familia": "e a mesma de git cat-file -e <sha>^{commit}: sintaxe que quebra por caractere de escape e falha em silencio. Pior num aspecto: o cat-file quebrado FALHA a verificacao, e falha e visivel; este deixa a verificacao sem insumo.",
+        "correcao": "caminho RELATIVO executado a partir do diretorio do pacote: --file-reporter json:recorte.json",
+        "efeito_colateral_a_limpar": "o arquivo cai DENTRO do repositorio. O meu apareceu como ?? apps/superadmin/recorte.json no git status e foi removido. Quem usar sem apagar entrega artefato de instrumento no residual.",
+        "balanco_das_duas": "a primeira armadilha mente no numero e acerta a lista; a segunda nao mente, apaga. As duas so aparecem se voce conferir o INSTRUMENTO contra algo que ele nao produziu."
+      },
+      "encargo_do_coordenador_8d06b8a91": {
+        "pedido": "confirmar, antes do apagamento da branch chat-comunicacoes-router-dedupe, se ha conteudo la que o coordenador nao viu",
+        "resposta": "NAO ha. A branch nao carrega conteudo nenhum. Apagar com registro no manifesto esta correto.",
+        "medido_em": "2026-09-10T03:54:21-03:00, com origin/dev em 4ec0de8d1",
+        "prova": "git diff --numstat 8d06b8a91^ 8d06b8a91 devolve ZERO linhas. O commit e VAZIO. git show --stat sai so com cabecalho, sem estatistica de arquivo, que e a assinatura de commit vazio.",
+        "por_que": "o merge-base com dev e ff9143ba4 'fix(router): remove the duplicated Principal conversations route', que ja esta em dev. A correcao ja tinha entrado; o 8d06b8a91 foi criado depois, encontrou o trabalho feito e nao teve o que mudar.",
+        "base_antiga_quantificada": "dev tem 518 commits desde esse merge-base",
+        "armadilha_de_leitura_que_quase_inverte_a_decisao": "git diff origin/dev <branch> devolve 452 arquivos, o que parece conteudo demais para apagar. Nao e: essa direcao mede dev MENOS branch, ou seja, tudo que a branch NAO TEM por estar 518 commits atras. Exemplo reconhecivel: a linha '0 117 .agents/skills/coelo-flutter-review/references/golden-failure-triage.md' - arquivo que EU escrevi nesta madrugada, existe em dev e nao existe na branch. Nao e conteudo a preservar, e ausencia. A direcao do diff e a pergunta inteira."
+      },
+      "estado_da_worktree_saida_crua": {
+        "medido_em": "2026-09-10T03:53:24-03:00",
+        "git_status_porcelain": "vazio",
+        "head": "1d453e2f3",
+        "upstream_ahead_behind": "0 0",
+        "residual": "ZERO",
+        "nota": "o recorte.json deixado pelo reporter foi removido antes desta medicao"
+      }
+    },
+    "lote_3_json_resultado": "a corrida com caminho absoluto NAO gerou arquivo (ver CORRECAO_rev37, segunda armadilha). Refeita com caminho relativo."
+  }
 }

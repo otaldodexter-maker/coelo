@@ -1,6 +1,6 @@
 {
-  "revision": 42,
-  "updated_at": "2026-09-10T03:27:44-03:00",
+  "revision": 43,
+  "updated_at": "2026-09-10T03:55:54-03:00",
   "group": "formularios-cuidado",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
@@ -8,7 +8,7 @@
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-formularios-cuidado",
   "branch": "work/etapa2-noturna-formularios-cuidado",
-  "head": "d1e8069c04b544e6ccd33ed014fe7252dc29872d",
+  "head": "9747a0aa25b3dc1092a8c30121f8214269048e15",
   "upstream": {
     "branch": "origin/work/etapa2-noturna-formularios-cuidado",
     "ahead": 0,
@@ -165,11 +165,9 @@
   "next_step": "seguir varrendo o recorte com as tres perguntas ate 04:40; pre-entrega 04:50 e entrega final 05:00",
   "wip": {
     "stash": "vazio",
-    "nao_rastreado": [
-      "?? packages/coelo_api/pubspec.lock",
-      "?? packages/coelo_domain/pubspec.lock"
-    ],
-    "nota": "os dois pubspec.lock nao rastreados sao preservados de proposito e nunca entram em commit; regra adotada apos eu te-los incluido por engano com git add de diretorio"
+    "nao_rastreado": "nenhum",
+    "nota": "os dois pubspec.lock deixaram de ser WIP: o coordenador os rastreou em 9a896b993. Os SHA256 que eu havia registrado — coelo_api d13534bb5f92bd24215d1441f32f19bffc2a20c883f70f03b10260371c50bb30 e coelo_domain 346534b135cb3dd196260c524418782c0a28aaa19b688744ee9d2cf67760cf39 — mudam de significado: deixam de identificar trabalho retido e passam a provar que o conteudo nao mudou entre a geracao local e o rastreamento.",
+    "retido": "ZERO, por lista e nao por adjetivo"
   },
   "artifacts": [
     "Dois pubspec.lock nao rastreados aparecem em packages/coelo_api e packages/coelo_domain apos rodar dart test. Nao pertencem ao lote, foram retirados do commit e ficam preservados como nao rastreados; nao os apago nem os adiciono ao gitignore, que nao e meu."
@@ -226,27 +224,62 @@
       "sha": "925a6e4ea",
       "tipo": "teste",
       "resumo": "padrao de tamanho de texto do servidor, achado por mutacao",
-      "integrado_em_dev": false,
+      "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev"
     },
     {
       "sha": "1e694e7e9",
       "tipo": "evidencia",
       "resumo": "a unica citacao que o leitor nao alcanca, sinalizada",
-      "integrado_em_dev": false,
+      "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev"
     },
     {
       "sha": "8111ebb67",
       "tipo": "evidencia",
       "resumo": "bateria de mutacao e a lei do instrumento, tornadas duraveis",
-      "integrado_em_dev": false,
+      "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev"
     },
     {
       "sha": "de5cdb2f8",
       "tipo": "teste",
       "resumo": "condicao composta da superficie clara de Saude e Cuidado",
+      "integrado_em_dev": true,
+      "criterio": "git merge-base --is-ancestor <sha> origin/dev"
+    },
+    {
+      "sha": "995156f15",
+      "tipo": "evidencia",
+      "resumo": "triagem dos quatro goldens de Saude e Cuidado, com o achado de conteudo",
+      "integrado_em_dev": true,
+      "criterio": "git merge-base --is-ancestor <sha> origin/dev"
+    },
+    {
+      "sha": "ff759d211",
+      "tipo": "evidencia",
+      "resumo": "o mutante equivalente, terceira forma de um nao pegou enganar",
+      "integrado_em_dev": true,
+      "criterio": "git merge-base --is-ancestor <sha> origin/dev"
+    },
+    {
+      "sha": "99d882fe2",
+      "tipo": "evidencia",
+      "resumo": "o autosave do editor nao roda no aplicativo",
+      "integrado_em_dev": true,
+      "criterio": "git merge-base --is-ancestor <sha> origin/dev"
+    },
+    {
+      "sha": "9747a0aa2",
+      "tipo": "evidencia",
+      "resumo": "varredura das dependencias que ninguem fornece, e a licao de nomeacao",
+      "integrado_em_dev": false,
+      "criterio": "git merge-base --is-ancestor <sha> origin/dev"
+    },
+    {
+      "sha": "d1e8069c0",
+      "tipo": "evidencia",
+      "resumo": "perda de regras de publico, levantada como pergunta ao Owner",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev"
     }
@@ -1139,8 +1172,9 @@
   },
   "citacoes_verificadas": {
     "metodo": "existencia testada a partir da RAIZ do repositorio e por tipo de objeto, nunca por basename",
-    "resultado": "30 caminhos alcancaveis e nenhum quebrado; 29 hashes de commit e 15 de blob validos; UM identificador nao resolve, 8f032000, anotado ao lado em vez de apagado",
-    "armadilha_encontrada": "git cat-file -e <sha>^{commit} com shell no Windows come o circunflexo e reprova TODO objeto, inclusive o SHA da base. Usar git cat-file -t e conferir o TIPO. Avisei o coordenador porque ele repassou o comando a varias frentes."
+    "resultado": "31 hashes de commit e 32 caminhos resolvem, incluindo os documentos novos desta madrugada; os nao-resolvidos continuam sendo 15 blobs validos e o unico 8f032000, ja anotado no proprio documento",
+    "armadilha_encontrada": "git cat-file -e <sha>^{commit} com shell no Windows come o circunflexo e reprova TODO objeto, inclusive o SHA da base. Usar git cat-file -t e conferir o TIPO. Avisei o coordenador porque ele repassou o comando a varias frentes.",
+    "reconferido_em": "2026-09-10T03:55:54-03:00"
   },
   "commits_fora_de_dev": [
     "8111ebb67 docs(evidence): make the mutation battery and the instrument law durable",
@@ -1154,21 +1188,26 @@
       "e2912506c",
       "79bc782b7",
       "296e349a7",
-      "de5cdb2f8"
-    ],
-    "retidos": [
       "925a6e4ea",
       "1e694e7e9",
-      "8111ebb67"
+      "8111ebb67",
+      "de5cdb2f8",
+      "995156f15",
+      "ff759d211",
+      "99d882fe2",
+      "d1e8069c0"
     ],
-    "nota": "retido aqui significa publicado na branch do grupo e ainda nao ancestral de origin/dev; nada esta apenas local"
+    "retidos": [
+      "9747a0aa2"
+    ],
+    "definicao_de_retido": "publicado na branch do grupo e ainda nao ancestral de origin/dev; NADA esta apenas local"
   },
   "recursos": {
     "processos_filhos": [],
     "portas_abertas": [],
     "tarefas_em_segundo_plano": [],
     "worktrees_criadas_por_mim": [],
-    "nota": "listas vazias sao a lista, nao um adjetivo; nada meu fica de pe"
+    "verificacao": "conferido, nao lembrado: as duas worktrees destacadas em d784462c1 que poderiam ser minhas tem dono declarado — coelo-base-check e de publicacoes-midia e e2-noturna-verificacao e do coordenador"
   },
   "pergunta_ao_owner": {
     "id": "forms.distribuicao.regras-de-publico",
@@ -1184,5 +1223,45 @@
     "A perda de regras de publico nao foi reproduzida com dado real de mais de uma regra, porque nao existe caminho no Superadmin que crie a segunda; a conclusao vem da leitura do cliente e das tres migrations.",
     "Os tres limites de distribuicao sem espelho em Dart nao ganharam teste, porque nenhuma tela os alcanca.",
     "Nao entrevistei historico de decisao alem do que o Git mostra."
-  ]
+  ],
+  "perguntas_ao_owner": [
+    {
+      "id": "forms.distribuicao.regras-de-publico",
+      "pergunta": "Quando uma aplicacao tem varias regras de publico, o dialogo de agendamento edita qual delas, e o que acontece com as demais?",
+      "porque_e_pergunta_e_nao_achado": "A correcao aparentemente obvia, preservar as demais, faria o formulario chegar a MAIS GENTE do que a tela mostra. Trocar apagar em silencio por ampliar em silencio e escolher qual dos dois males se prefere, e isso e decisao de produto sobre quem recebe formulario. Corrigir esconderia do Owner que houve escolha.",
+      "alcance": "o unico escritor de regras no Superadmin e esse dialogo e ele escreve uma, entao por esta superficie a aplicacao nunca chega a ter duas; o estado perigoso so existe se as regras vierem de carga inicial, migration ou outro caminho",
+      "evidencia": "docs/reviews/evidence/etapa-2/formularios-cuidado/2026-09-10-regras-de-publico-perdidas.md, commit d1e8069c0"
+    },
+    {
+      "id": "forms.editor.autosave-inalcancavel",
+      "pergunta": "O autor de formulario deve ter autosave, gravando rascunho sem acao explicita dele?",
+      "estado": "a funcionalidade esta construida, testada e verde, e INALCANCAVEL: _scheduleAutosave retorna quando authoringApi e nulo, e authoringApi aparece 22 vezes dentro de forms_editor_page.dart e em nenhum outro lugar de lib/. O unico fornecedor no repositorio e um arquivo de teste.",
+      "porque_e_pergunta": "ligar significa persistir trabalho nao confirmado sem o autor pedir; e decisao de produto, nao conserto de fiacao",
+      "evidencia": "commit 99d882fe2"
+    }
+  ],
+  "achados_sem_correcao": [
+    {
+      "o_que": "cartao de plano de medicacao mostra Contexto institucional indisponivel e Responsavel indisponivel",
+      "causa": "duas funcoes recebem o identificador e o ignoram; a lista responsibleOptions nunca e fornecida",
+      "origem": "entre 12 e 25 de agosto, ultima em 3f4b3bf78; nao e desta rodada",
+      "enquadramento": "coerente com specs/020 approved-for-demonstrative-ui, mas e perda de informacao de CUIDADO: a tela que diz quem responde pela medicacao de uma crianca nao diz nome nenhum",
+      "evidencia": "commit 995156f15"
+    },
+    {
+      "o_que": "FormsDirectoryPage nunca recebe visualMetadata nem onLifecycleCompleted",
+      "enquadramento": "INTENCIONAL e legivel: o tipo chama-se DevelopmentFormVisualMetadata, entao o nome ja diz que a coluna Agendamentos nao tem numero em producao porque nao deveria ter",
+      "evidencia": "commit 9747a0aa2"
+    }
+  ],
+  "metodo_generalizavel": {
+    "dependencia_que_ninguem_fornece": "contar as ocorrencias do parametro habilitador em lib/ e ver se todas caem dentro do proprio arquivo que o consome; se caem, nenhuma composicao o fornece. Custa um comando e achou uma funcionalidade inteira inalcancavel.",
+    "falso_positivo_conhecido": "aplicado a TODOS os parametros devolve ruido, porque componente interno e construido no proprio arquivo; restringir as paginas publicas torna o resultado utilizavel",
+    "licao_de_nomeacao": "onde a dependencia so existe para desenvolvimento, o TIPO diz — DevelopmentFormVisualMetadata. Onde nao diz, como authoringApi, a capacidade inalcancavel se disfarca de producao e entra nos registros como pronta.",
+    "tres_formas_de_um_nao_pegou_enganar": [
+      "mira errada: o teste que protege a linha esta em outro arquivo",
+      "lacuna real",
+      "mutante equivalente: o estado nao e alcancavel"
+    ]
+  }
 }

@@ -2356,6 +2356,70 @@ declarou duas árvores de trabalho que não sabia de quem eram, em vez de adotá
 para fechar a lista bonita ou de removê-las sem saber. **As duas tinham dono, e os
 dois donos as haviam declarado.**
 
+## Quatro guardas de composição afirmam que o produto não está ligado, e ele está
+
+**É a mesma classe do falso alarme de Formulários, quatro vezes, e desta vez com
+as datas medidas.**
+
+Quatro asserções de nível de código-fonte afirmam que a raiz de composição **nunca**
+constrói certos adaptadores. Elas falham porque o produto **foi ligado**:
+
+- Uma exige que a raiz não importe o gateway de comandos de Unidades. Ela importa.
+  A guarda foi tocada por último em **25 de agosto**; a fiação entrou em **1º de
+  setembro**. **Sete dias de diferença, guarda mais antiga que a decisão** — a
+  forma exata do caso de Formulários, onde a guarda era de 1º e a decisão de 8 de
+  setembro.
+- Outra exige que Atividades nunca construa seu repositório real. A raiz constrói,
+  desde o mesmo 1º de setembro.
+- E duas exigem que rotas de Acesso fiquem estaticamente indisponíveis sem
+  composição de página. O router compõe a página em quatro lugares — e **aqui a
+  contradição não é datável**, porque guarda e fiação foram tocadas no mesmo dia, e
+  mesmo dia não decide ordem.
+
+**Duas leituras, e a frente que mediu não escolheu — corretamente.** Ou a fiação
+violou um contrato de falha fechada que continua valendo, e então é defeito de
+segurança de composição; ou as guardas ficaram velhas quando estrutura e acesso
+foram ligados de propósito, e então são quatro expectativas superadas.
+
+**O indício aponta para a segunda:** a fiação é posterior em dois dos quatro casos,
+e existe uma porta de capacidade para mutação de estrutura que **só faz sentido se
+a composição existir**. Mas indício não é prova, e o que falta não está no código:
+falta confirmar a **intenção**, e ela é sua e dos donos de Estrutura e de Acesso.
+
+**A recomendação é a que já funcionou uma vez esta noite:** quem confirmar a
+intenção **ajusta a asserção com um comentário datado citando os dois commits**, em
+vez de remover a guarda.
+
+**E vale registrar o que essas quatro custaram para ser vistas:** estavam entre as
+doze falhas não-golden que a frente **nunca havia enumerado**, porque os oito
+caminhos que ela declarava não alcançavam nenhuma delas. É o preço concreto do
+denominador incompleto, e não é contagem: é uma contradição de contrato de
+composição que ficou invisível a rodada inteira.
+
+## Um detector que ignora o que não entende reporta silêncio como saúde
+
+Calibrando as próprias ferramentas antes da conferência final, uma frente
+descobriu um buraco no detector que ela mesma havia usado para me dar uma
+garantia. A versão anterior **pulava em silêncio** qualquer versão de arquivo que
+não parseasse. Acrescentada a contagem de pulos, apareceram **dois** — arquivos com
+marca de ordem de bytes no início, que um leitor estrito recusa e um tolerante
+aceita.
+
+A conclusão não muda: as duas eram versões históricas do mesmo arquivo, as
+vizinhas são monotônicas, e **os nove arquivos na base entregue estão limpos** — é
+nota de histórico, não pendência. **Mas o número declarado era sobre um universo
+menor do que se disse que era.**
+
+**A regra que sai disso é irmã da lei do denominador:** todo número de auditoria
+vem acompanhado de **quantos itens o instrumento não conseguiu examinar**. Zero
+pulos é uma afirmação; silêncio sobre pulos não é. Nos dois casos o erro **não
+aparece no resultado** — aparece no tamanho do universo, que ninguém olha.
+
+E as três ferramentas foram exercitadas antes de valerem: a de perda de arquivo
+foi rodada contra um commit que sabidamente apaga um, e acusou exatamente um, com
+o nome certo; a de regressão de revisão passou por autoteste com sequências
+conhecidas. **Ferramenta estreada na hora da conferência não é conferência.**
+
 ## Higiene e preservação
 
 - Os 90 artefatos de WIP ignorados na raiz do checkout integrador estão

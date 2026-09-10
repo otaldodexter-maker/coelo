@@ -1,6 +1,6 @@
 {
-  "revision": 46,
-  "updated_at": "2026-09-10T03:52:00-03:00",
+  "revision": 49,
+  "updated_at": "2026-09-10T03:56:30-03:00",
   "group": "chat-comunicacoes",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) - claude-opus-5[1m]",
@@ -842,5 +842,43 @@
     "worktrees_que_eu_nao_reivindico": "C:/Users/adrie/AppData/Local/Temp/coelo-base-check e Coelo.worktrees/e2-noturna-verificacao, ambas em d784462c1. Nao tenho registro de te-las criado e nao vou remover o que nao sei que e meu. Declaro em vez de presumir.",
     "processos_filhos_portas": "nenhum",
     "stash": "vazio"
+  },
+  "trabalho_publicado_e_nao_integrado_na_base": {
+    "motivo": "O contrato trata trabalho nao publicado como a unica perda sem correcao. Fui verificar se existia algum, e verifiquei tambem o passo seguinte: publicado mas fora da base entregue.",
+    "worktrees_verificadas": "As quatro worktrees paradas que nao sao de frente ativa estao TODAS limpas: coelo-base-check, e2-noturna-verificacao, coelo-copia-previa e verify-dev-tmp. Zero alteracoes, zero stash. Ninguem perde WIP se forem arquivadas.",
+    "branches_locais_fora_do_dev": "Onze, das quais sete sao codex/e2-r02-* da rodada anterior. As outras quatro sao desta rodada.",
+    "nenhuma_e_inedita": "As quatro estao publicadas em origin com o mesmo SHA do local. Nao ha trabalho nao publicado nesta maquina.",
+    "publicado_mas_fora_da_base": [
+      "80f160599 fix(principal): stop production screens from calling themselves a preview — NAO esta em dev e o assunto nao aparece em dev por outro caminho. Nao e meu. E correcao visivel ao operador: tela de PRODUCAO se anunciando como previa.",
+      "5029dfc05 docs(e2) de publicacoes-midia — somente documentacao.",
+      "8d06b8a91 fix(router): drop the duplicated Principal chat route — MEU, e verifiquei que esta SUPERADO: route_name_uniqueness_test passa no dev atual (f7d88ac89). O defeito foi corrigido por outro caminho, entao a branch pode ser descartada sem perda.",
+      "fb31e11dc — meu, aguardando integracao."
+    ],
+    "o_que_eu_nao_verifiquei": "Nao verifiquei se 80f160599 foi deliberadamente rejeitado. Estou reportando que esta fora, nao que foi esquecido."
+  },
+  "correcao_de_horario_minha_de_novo": {
+    "o_que_aconteceu": "Escrevi '03:52 no meu relogio, lido neste bloco' sem ter lido naquele bloco. A leitura real anterior era 03:48:08, do bloco anterior, e eu estimei.",
+    "por_que_registro": "O numero saiu quase certo — a leitura seguinte deu 03:51:59 — e por isso mesmo o erro nao teria aparecido. Acerto por sorte com metodo errado e pior que erro visivel, porque nao corrige nada.",
+    "regra": "A leitura tem de sair das MESMAS chamadas de ferramenta da mensagem, e nao de memoria recente que parece fresca."
+  },
+  "correcao_do_meu_detector_de_merge_com_resolucao": {
+    "o_que_eu_usava": "git log --merges --cc --oneline <intervalo>, lendo saida vazia como 'nenhum merge com resolucao de conflito'.",
+    "o_defeito": "O --cc afeta a exibicao do DIFF, nao a selecao dos commits. Com --oneline o diff nem aparece, entao o comando lista TODOS os merges do intervalo independentemente de haver resolucao. Saida vazia significava 'nenhum merge', e nao 'nenhum merge com resolucao'.",
+    "como_apareceu": "Ensaiei a passada das 04:20 antes da hora e o mesmo comando devolveu CINCO merges, quando antes devolvia nada. Cinco resolucoes de conflito teriam sido achado grave; eram cinco merges limpos que o comando nao sabia distinguir.",
+    "medicao_correta": "Para cada merge do intervalo, verificar se `git show --cc --format=\"\" <sha>` produz saida: diff combinado nao vazio significa resultado diferente dos DOIS pais.",
+    "resultado_medido": "Intervalo 0d847eb7a..1551fa4ca: 147 commits, 28 merges, ZERO com diff combinado. A conclusao anterior sobrevive, mas agora ela esta medida sobre 28 merges em vez de apoiada num comando que nao discriminava.",
+    "efeito_sobre_a_auditoria_item_1": "A afirmacao 'zero merges com resolucao' continua verdadeira, e naquele intervalo ela era verdadeira por um motivo mais simples do que eu disse: nao havia merges. Eu declarei a conclusao mais forte do que a evidencia sustentava, e acertei por coincidencia.",
+    "licao": "Ensaiar a ferramenta num intervalo onde ela DEVE achar algo e a unica forma de saber se ela acha. Detector que nunca disparou nao esta calibrado, esta apenas sem contraexemplo.",
+    "goldens_nas_duas_pontas": "762 no marco de 02:00 e 762 agora."
+  },
+  "calibracao_dos_tres_detectores": {
+    "principio": "Detector que nunca disparou nao esta calibrado, esta apenas sem contraexemplo. Antes da passada oficial, exercitei os tres num caso onde eles DEVEM achar.",
+    "detector_de_merge_com_resolucao": "Estava furado e foi corrigido (revisao 48). Medicao correta: 28 merges no intervalo, zero com diff combinado.",
+    "detector_de_perda_de_arquivo": "CALIBRADO. Rodado contra um commit que sabidamente apaga arquivo (c1e6756c7, o meu proprio revert), acusa exatamente 1 sumido e nomeia o arquivo certo. No intervalo 0d847eb7a..1551fa4ca: 4374 arquivos no marco de 02:00, 4394 agora, ZERO sumidos, e o git log --diff-filter=D concorda com zero delecoes.",
+    "detector_de_regressao_de_revisao": "CALIBRADO por autoteste: [1,2,3] da 0, [1,2,1] da 1, [5,3,4,2] da 2. Sobre os 9 JSONs de comunicacao rastreados no dev, 98 versoes examinadas, ZERO regressoes.",
+    "buraco_que_o_proprio_detector_escondia": "A versao anterior dele PULAVA EM SILENCIO qualquer versao que nao parseasse. Ao contar os pulos, apareceram duas: acessos-pessoas.json em ee01a06e9 e 920f23199.",
+    "diagnostico_das_duas": "Nao e JSON corrompido, e BOM UTF-8 (EF BB BF) no inicio do arquivo. Parser estrito recusa; leitor tolerante aceita. As duas versoes sao historicas e a versao ATUAL do arquivo parseia normalmente, na revisao 55.",
+    "verificacao_de_extensao": "Conferi os NOVE arquivos de comunicacao no dev atual: nenhum tem BOM. O problema nao esta vivo na base entregue.",
+    "licao": "Um detector que ignora o que nao entende reporta silencio como saude. Contar o que foi pulado e tao importante quanto contar o que foi achado."
   }
 }
