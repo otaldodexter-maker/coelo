@@ -1,0 +1,119 @@
+{
+ "revision": 3,
+ "round": "E2-R03-20260910",
+ "group": "formularios-cuidado-rotina",
+ "tool": "Claude Code (VS Code)",
+ "model": "claude-opus-5[1m]",
+ "coordinator": "Claude",
+ "timezone": "America/Sao_Paulo",
+ "updatedAt": "2026-09-10T01:40:00-03:00",
+ "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-formularios-cuidado-rotina",
+ "branch": "work/etapa2-r03-formularios-cuidado-rotina",
+ "head": "bb15db748",
+ "baseNote": "coordenacao.json ainda esta na revisao 31 da rodada E2-NOTURNA-20260909 e nao tem base.fase0Head. Worktree criada a partir de dev bb15db748, mesmo HEAD usado pela worktree e2-r03-publicacoes-agenda. Rebase na base da Fase 0 assim que ela for publicada.",
+ "scope": {
+  "families": [
+   "forms_authoring",
+   "forms_responses",
+   "forms_files",
+   "health_care",
+   "medication",
+   "students",
+   "attendance",
+   "daily_routine"
+  ],
+  "actionCount": 43,
+  "confirmedAgainstInventory": true,
+  "order": [
+   "health_care + medication",
+   "students",
+   "attendance (D11: chave de idempotencia gerada no banco por RPC)",
+   "forms_authoring + forms_responses (D6: Testar por capacidade)",
+   "forms_files + forms.responses.export (XLSX no R2 privado)",
+   "daily_routine (D8: guarda de saida; D7: Lancamentos tela minima)"
+  ]
+ },
+ "currentGate": {
+  "gate": "Fase 0 nao publicada: iniciar por backend (migrations, pgTAP, repositorios, contratos) sem tocar UI de diretorio",
+  "screen": "Etapa 2 -> apps/superadmin -> Cuidado -> Perfis de cuidado / Medicacao",
+  "actionIds": [
+   "health-care.list",
+   "health-care.create",
+   "health-care.detail",
+   "health-care.edit",
+   "medication.list",
+   "medication.create",
+   "medication.detail",
+   "medication.edit",
+   "medication.evidence"
+  ],
+  "note": "Fundacao health_care/medication inexistente. Construindo o primeiro pacote SQL da familia health_care."
+ },
+ "tests": {
+  "pass": 0,
+  "fail": 0,
+  "blocked": 0,
+  "skipped": 0,
+  "notRun": 0,
+  "note": "suite ainda nao executada nesta worktree"
+ },
+ "reservedFiles": [],
+ "blocking": [
+  {
+   "id": "B-R03-FCR-001",
+   "tipo": "ambiente compartilhado, nao bloqueia trabalho independente",
+   "o_que": "scripts/Invoke-SafeLocalMigrationReplay.ps1 serializa por mutex Local\\CoeloSafeSupabaseReplay em toda a maquina. Na primeira tentativa recebi 'another safe Supabase replay is already running' e docker ps mostrou o container coelo_safe_883c3727e92a4124abf7e0140e9e5 de outra frente, no ar ha 37 segundos.",
+   "efeito": "a prova pgTAP dos meus pacotes espera a vez. A escrita de migrations, testes e repositorios continua.",
+   "proposta_ao_coordenador": "uma fila explicita de janela de replay em coordenacao.json, do mesmo jeito que a fila SQL. Sem isso as seis frentes vao se atropelar no mesmo mutex e cada uma vai ler o erro como defeito proprio."
+  }
+ ],
+ "deltaProposals": [],
+ "nextStep": "Enquanto a janela de replay nao abre: fundacao de student_tracking (teste pgTAP preexistente student_tracking_security_test.sql) e depois health_care/medication, que sao campo aberto sem teste nem migration.",
+ "findings": [
+  {
+   "id": "F-R03-FCR-001",
+   "severity": "estrutural, muda o tamanho da rodada",
+   "titulo": "Nao sao 9 objetos app_private faltando: os schemas de daily_routine, student_tracking, health_care e medication nunca foram criados",
+   "medido": "grep sobre packages/coelo_database/migrations no HEAD bb15db748",
+   "evidencia": {
+    "tabelas_public_criadas_nas_familias": "apenas attendance_* (7 tabelas). Zero CREATE TABLE para routine_applications, routine_launches, student_tracking, health_care ou medication.",
+    "migrations_existentes_de_rotina": "somente 20260825193112_final_review_daily_routine_lint_hardening.sql, que faz CREATE OR REPLACE de funcoes app_private sobre public.routine_applications - uma tabela que nenhuma migration cria",
+    "migrations_existentes_de_alunos": "somente 20260825193123_final_review_student_tracking_read_fix.sql e 20260825180000_revoke_student_tracking_normalizer_client_execute.sql, no mesmo padrao",
+    "health_care_e_medication": "nenhuma migration. No cliente existem apenas repositorios dev (data/dev/) e UnavailableHealthCareRepository; nao ha repositorio Supabase.",
+    "objetos_app_private_referenciados_e_nunca_criados": 49
+   },
+   "consequencia": "o rastreador anterior descrevia isso como 9+4 objetos ausentes, o que sugere um pacote pequeno de correcao. O trabalho real e construir a fundacao (tabelas, RLS, capacidades, RPCs, recibos) de quatro familias, mais os repositorios Supabase no cliente. Attendance e a unica das familias de dominio proprio com fundacao real.",
+   "acao": "assumido por este grupo; nao pede decisao. Entregarei um pacote SQL por familia com migration + pgTAP + chave de composicao.",
+   "para_o_coordenador": "a estimativa desta frente nao cabe no formato 'corrigir pendencias'; e construcao. Vale conferir se outras frentes tem o mesmo padrao de migration de lint sobre tabela inexistente."
+  },
+  {
+   "id": "F-R03-FCR-002",
+   "severity": "estrutural, afeta todas as frentes",
+   "titulo": "A cadeia canonica de 186 migrations nao replica do zero; o caminho suportado e um perfil de replay parcial",
+   "medido": "supabase start com o espelho sincronizado das 187 migrations canonicas, em 2026-09-10",
+   "evidencia": "a aplicacao para em 20260812002000_child_safety_schema.sql com 23502: null value in column module_label of relation platform_permissions. A coluna nasce anulavel em 20260811215451_access_profile_management_v2, e a mesma migration a torna NOT NULL sem default; as migrations posteriores que inserem permissoes nunca passam module_label. Ha um remendo dedicado a isso em replay/20260811215452_access_profile_labels_replay_bridge.sql, que so o script de replay injeta, e uma migration 20260831130726_reconcile_permission_labels_after_replay que existe para desfazer o remendo.",
+   "consequencia": "nao existe 'supabase db reset verde' nesta base. Toda prova pgTAP local sai de scripts/Invoke-SafeLocalMigrationReplay.ps1 com -FoundationOnly (69 migrations do manifesto) mais as migrations do pacote. Quem afirmar pgTAP verde precisa dizer sobre qual perfil.",
+   "acao": "assumido: meu pacote de rotina foi escrito para ser replayavel nesse perfil, sem depender de 20260825193112, que esta fora do manifesto.",
+   "para_o_coordenador": "vale confirmar se as outras frentes sabem disso; quem tentar db reset vai perder tempo no mesmo ponto."
+  }
+ ],
+ "packages": [
+  {
+   "id": "PKG-R03-FCR-ROTINA-01",
+   "familia": "daily_routine",
+   "estado": "escrito, aguardando janela de replay para prova pgTAP",
+   "migrations": [
+    "packages/coelo_database/migrations/20260910010000_daily_routine_foundation_v1.sql",
+    "packages/coelo_database/migrations/20260910010100_daily_routine_behavior_v1.sql"
+   ],
+   "pgtap_alvo": [
+    "packages/coelo_database/supabase/tests/daily_routine_foundation_test.sql (34 asserts, preexistente e vermelho desde 25/08)",
+    "packages/coelo_database/supabase/tests/daily_routine_scope_closure_test.sql (6 asserts)"
+   ],
+   "conteudo": "13 tabelas publicas, app_private.routine_command_receipts, 8 capacidades de plataforma e 8 contextuais, 7 auxiliares de autorizacao/validacao, gatilho de hierarquia, view daily_routine_effective_applications com security_invoker, 8 RPCs publicas, RLS deny-by-default com FORCE em todas as tabelas e cliente so com SELECT.",
+   "chave_de_composicao": "a definir no cliente quando o repositorio Supabase de Rotina existir; ainda nao ha adapter para ligar",
+   "mfa": "app_private.routine_mfa_phase_enforced() devolve false na fase MVP (AAL1, ADR 0034). requires_mfa continua true nas capacidades de alto impacto e a mensagem 'MFA AAL2 required' continua nos comandos. Ligar MFA e uma migration de uma linha. Sem isso D7 (Lancamentos sobre daily-routine.publish) seria inalcancavel no MVP.",
+   "nao_provado_ainda": "nenhuma assercao pgTAP foi executada. Nada aqui pode ser declarado verde."
+  }
+ ]
+}
