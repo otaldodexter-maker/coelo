@@ -3,6 +3,7 @@ import 'package:coelo_superadmin/features/principal_circulars/domain/circular_re
 import 'package:coelo_superadmin/features/principal_circulars/presentation/principal_circular_detail_page.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Envio de resposta de Circular quando o servidor recusa.
@@ -45,6 +46,29 @@ void main() {
 
     expect(find.text('As respostas desta circular foram encerradas.'), findsOneWidget);
     expect(repository.reads, 1, reason: 'encerramento nao pede releitura');
+  });
+
+  testWidgets('o aviso do conflito e anunciado, nao so desenhado', (tester) async {
+    final handle = tester.ensureSemantics();
+    await _pumpReader(tester, _ReaderRepository(), _ResponseRepository(const CircularVersionConflict()));
+
+    await _answerAndSubmit(tester);
+
+    final node = tester.getSemantics(
+      find.descendant(
+        of: find.byKey(const Key('circular-response-conflict-notice')),
+        matching: find.byType(Text),
+      ),
+    );
+    expect(
+      node.hasFlag(SemanticsFlag.isLiveRegion) ||
+          tester
+              .widgetList<Semantics>(find.byType(Semantics))
+              .any((widget) => widget.properties.liveRegion ?? false),
+      isTrue,
+      reason: 'quem usa leitor de tela precisa ser avisado quando a recusa aparece',
+    );
+    handle.dispose();
   });
 
   testWidgets('indisponibilidade transitoria continua convidando a tentar de novo', (

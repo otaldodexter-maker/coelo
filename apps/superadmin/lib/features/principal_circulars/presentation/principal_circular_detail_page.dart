@@ -278,13 +278,19 @@ final class _PrincipalCircularDetailPageState extends State<PrincipalCircularDet
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Container(
+          // O aviso aparece logo depois de um envio recusado, que e exatamente
+          // quando quem usa leitor de tela precisa ser avisado. Sem regiao viva
+          // a explicacao existiria so para quem enxerga.
+          Semantics(
+            liveRegion: true,
+            child: Container(
             key: const Key('circular-response-conflict-notice'),
             color: Theme.of(context).colorScheme.errorContainer,
             padding: const EdgeInsets.all(CoeloSpacing.space3),
             child: Text(
               notice,
               style: TextStyle(color: Theme.of(context).colorScheme.onErrorContainer),
+            ),
             ),
           ),
           Expanded(child: reader),
