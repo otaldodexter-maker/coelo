@@ -11,7 +11,7 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../support/people/fake_person_directory_repository.dart';
 
 void main() {
-  testWidgets('create route requires identity lookup before exposing editable identity', (
+  testWidgets('development create requires identity lookup while production stays blocked', (
     tester,
   ) async {
     final session = SuperadminSession()..signInForTesting();
@@ -20,6 +20,7 @@ void main() {
       login: unavailableSuperadminLogin,
       logout: unavailableSuperadminLogout,
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      allowDevelopmentPreview: true,
       personDirectoryRepository: FakePersonDirectoryRepository(),
       onThemeModeChanged: (_) {},
     );
@@ -28,6 +29,13 @@ void main() {
 
     router.go(SuperadminRoutes.personCreate);
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('production-mutation-capability-unavailable')), findsOneWidget);
+    expect(find.byKey(const Key('person-identity-lookup-dialog')), findsNothing);
+    expect(find.byKey(const Key('person-first-name-field')), findsNothing);
+
+    router.go(SuperadminRoutes.devPersonCreate);
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('person-identity-lookup-dialog')), findsOneWidget);

@@ -1,0 +1,11 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:1
++ rtk proxy flutter test --no-pub test/app/router/people_creation_requi ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/app/router/people_creation_requirements_red_test.dart
+00:00 +0: C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/app/router/people_creation_requirements_red_test.dart: development create requires identity lookup while production stays blocked
+00:01 +1: C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/app/router/safety_routes_test.dart: development safety directory, create, detail and edit are locally navigable
+00:04 +2: All tests passed!
