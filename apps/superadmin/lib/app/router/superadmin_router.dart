@@ -5019,6 +5019,7 @@ GoRouter createSuperadminRouter({
               child: SuperadminCircularDetailPage(
                 circularId: state.pathParameters['circularId']!,
                 repository: circularRepository,
+                responseSummarySource: circularRepository,
                 onBack: () => _returnFromCircularReader(
                   context,
                   fallbackRouteName: SuperadminRoutes.circularsName,
