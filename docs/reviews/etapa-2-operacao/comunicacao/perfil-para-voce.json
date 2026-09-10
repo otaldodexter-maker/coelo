@@ -1,6 +1,6 @@
 {
-  "revision": 47,
-  "updated_at": "2026-09-10T04:34:00-03:00",
+  "revision": 48,
+  "updated_at": "2026-09-10T04:39:30-03:00",
   "group": "perfil-para-voce",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
@@ -572,18 +572,11 @@
   },
   "correcao_de_horario": "Os campos updated_at das revisoes anteriores foram TIPADOS por estimativa e nao lidos do relogio: chegaram a ficar cerca de 1h25 adiantados. A partir desta revisao o valor vem de powershell Get-Date -Format 'yyyy-MM-ddTHH:mm:ssK'. Registro porque timestamp de handoff e usado para reconciliar ordem de eventos, e numero estimado com aparencia de medido e a mesma classe de erro que passei a noite catalogando. Nota util para as outras frentes: neste Git Bash o comando date JA devolve horario local -03, conferido contra o PowerShell no mesmo minuto; o que devolve UTC e usar TZ=America/Sao_Paulo, porque nao ha tzdata e o TZ e ignorado.",
   "residual_de_integracao": {
-    "declaracao": "DOIS commits pendentes segundo a MINHA medicao, contra declaracao de zero do coordenador. Ver divergencia_no_congelamento.",
-    "medido_em": "2026-09-10T04:33:49-03:00, com origin/dev em f2a341855",
-    "metodo": "git merge-base --is-ancestor <sha> origin/dev, apos git fetch origin --prune",
-    "pendentes": [
-      "3e8de2319 test(router): drop a count I could not substantiate from a committed comment",
-      "1d46746ff docs(skill): attribute the borrowed number, and say what was checked about it"
-    ],
-    "o_que_sao": "Tres criam UM arquivo de skill novo, .agents/skills/coelo-flutter-supabase-review/references/medicao-confiavel.md, com as tres armadilhas de instrumento, a lei do controle, as tres perguntas do denominador, a sobreposicao, o apodrecimento de campos de estado e o diff que assusta. O quarto fecha, no documento de evidencia do replay, a duvida sobre a segunda arvore de migration, com credito a chat-comunicacoes.",
-    "pedido_ao_coordenador": "Ler antes de integrar o arquivo de skill: e instrucao para todo mundo, nao evidencia de uma frente, e cita medicao de cinco pessoas. Se preferir que nao entre, o conteudo ja esta no relatorio da rodada e a frente nao reabre.",
-    "os_dois_anteriores": "ace7b32e1 e 1d453e2f3 seguem INTEGRADOS desde 03:07:38.",
-    "estado_git": "upstream 0 0; worktree com 0 caminhos alterados; zero stash. Publicado na branch, pendente de integracao.",
-    "nota_de_honestidade": "A revisao 38 corrigiu este mesmo campo de DOIS PENDENTES para ZERO. Trinta minutos depois ele voltou a QUATRO, porque commitei de novo. Nao e o campo que estava errado antes: e um campo que muda sozinho a cada commit e por isso precisa ser reescrito a cada commit. E a demonstracao pratica da regra do carimbo de hora."
+    "declaracao": "RESIDUAL ZERO.",
+    "medido_em": "2026-09-10T04:39:18-03:00, com origin/dev em 5ac61f6d7",
+    "metodo": "Tres criterios independentes, porque a integracao e por cherry-pick e ancestralidade do SHA original nao responde: conteudo identico em dev, marca de cherry-pick, e ancestralidade dos SHAs novos.",
+    "todos_os_commits_desta_frente": "ace7b32e1, 1d453e2f3, 6bf733fec, 50ba6a73c, 31cff109d, 2a0da284f, f57459bed integrados por ancestralidade; 3e8de2319 e 1d46746ff integrados como 1ca8a7f81 e 58a5a6ed1.",
+    "estado_git": "worktree de trabalho 0 caminhos, HEAD 1d46746ff, upstream 0 0; worktree de verificacao 0 caminhos; stash 0."
   },
   "releitura_do_relatorio_do_owner": {
     "achados": [
@@ -1089,6 +1082,19 @@
     "nao_ha_trabalho_em_risco": "git branch -r --contains 3e8de2319 devolve origin/work/etapa2-noturna-perfil-para-voce. Os dois estao publicados; so nao estao em dev.",
     "hipotese": "merge local sem push, ou push posterior ao meu segundo fetch.",
     "por_que_insisti": "3e8de2319 e a REMOCAO da afirmacao falsa do comentario de teste. Se ele nao entrar, a base entregue ao Owner contem, dentro de codigo, um numero atribuido a outra frente que ela nao produziu, onde sera lido como medido por quem chegar sem contexto. Dos commits desta frente nesta noite, e o unico que corrige uma coisa ERRADA em vez de acrescentar uma coisa certa.",
-    "quando_reportei": "04:33:49, sete minutos antes do congelamento, e nao as 05:00, porque conferencia que so vale antes da acao tem de acontecer antes da acao."
+    "quando_reportei": "04:33:49, sete minutos antes do congelamento, e nao as 05:00, porque conferencia que so vale antes da acao tem de acontecer antes da acao.",
+    "RESOLVIDA": {
+      "causa_real": "NAO era push faltando, e a minha hipotese estava errada. O coordenador integra por CHERRY-PICK e nao por merge, entao os commits entram em dev com SHA NOVO: 3e8de2319 virou 1ca8a7f81 e 1d46746ff virou 58a5a6ed1. merge-base --is-ancestor sobre o SHA ORIGINAL responde NAO e vai responder NAO para sempre.",
+      "o_defeito_de_metodo": "O criterio de residual que a coordenacao mandou as seis frentes usar - ancestralidade do SHA original - e incompativel com o metodo de integracao que a propria coordenacao usa. Nenhuma frente tinha como saber. Uma frente que aceitasse o NAO INTEGRADO e reenviasse teria duplicado; uma que aceitasse a declaracao sem medir teria acreditado sem prova.",
+      "criterio_correto": "Residual se mede por CONTEUDO - git diff <sha> origin/dev -- <caminhos do commit> vazio - ou pela marca do cherry-pick, procurando cherry picked from commit <sha> em git log origin/dev. Ancestralidade do SHA original so vale quando o integrador faz merge.",
+      "medicao_final_por_tres_criterios": {
+        "medido_em": "2026-09-10T04:39:18-03:00, com origin/dev em 5ac61f6d7",
+        "por_conteudo": "os dois arquivos tocados pelos dois commits sao IDENTICOS em dev: apps/superadmin/test/app/router/fail_closed_screens_with_data_probe_test.dart e .agents/skills/coelo-flutter-supabase-review/references/medicao-confiavel.md, zero linhas de diff cada",
+        "pela_marca": "3e8de2319 -> cherry-pick em 1ca8a7f81; 1d46746ff -> cherry-pick em 58a5a6ed1",
+        "por_ancestralidade_dos_novos_shas": "1ca8a7f81 e 58a5a6ed1 sao ambos ancestrais de origin/dev"
+      },
+      "RESIDUAL": "ZERO. Confirmado por tres criterios independentes.",
+      "licao": "A conferencia externa serviu exatamente para o que existe: nao para achar erro do coordenador, e sim para expor que declaracao e medicao usavam vocabularios diferentes. O comportamento tinha chegado; o vocabulario e que mentia. E so apareceu porque eu insisti em vez de aceitar a declaracao, e porque ele mediu em vez de repetir a declaracao."
+    }
   }
 }

@@ -1,10 +1,10 @@
 {
-  "revision": 56,
-  "updated_at": "2026-09-10T04:38:11-03:00",
+  "revision": 57,
+  "updated_at": "2026-09-10T04:39:45-03:00",
   "group": "formularios-cuidado",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
-  "status": "ACTIVE; recorte corrigido medido na BASE INTEGRADA 3fb200dab em 1081 PASS / 3 SKIP / 14 FAIL, com as 12 do meu recorte todas de golden e triadas uma a uma, e as 2 restantes fora do meu recorte; nenhuma exige correcao de produto antes de regravar",
+  "status": "CONGELADO as 04:38. Recorte corrigido em 1080/3/15 no HEAD entregue e 1081/3/14 na base integrada, com as doze do recorte todas de golden e triadas. Residual zero. Nenhum lote novo aberto apos o congelamento.",
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-formularios-cuidado",
   "branch": "work/etapa2-noturna-formularios-cuidado",
@@ -241,9 +241,10 @@
       "resumo": "limites de selecao ditos a pessoa antes de o servidor recusar; o rascunho autosalvava e so o envio falhava",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:38:11-03:00",
+      "medido_em": "2026-09-10T04:39:45-03:00",
       "ancestral_em_dev": true,
-      "cherry_pick_em_dev": true
+      "cherry_pick_em_dev": true,
+      "conteudo_igual_em_dev": false
     },
     {
       "sha": "745b1fbdf",
@@ -251,9 +252,10 @@
       "resumo": "metodo, nove autocorrecoes, tres bloqueios falsos e censo de datas",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:38:11-03:00",
+      "medido_em": "2026-09-10T04:39:45-03:00",
       "ancestral_em_dev": true,
-      "cherry_pick_em_dev": true
+      "cherry_pick_em_dev": true,
+      "conteudo_igual_em_dev": false
     },
     {
       "sha": "e2912506c",
@@ -261,9 +263,10 @@
       "resumo": "triagem das 23 imagens de golden",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:38:11-03:00",
+      "medido_em": "2026-09-10T04:39:45-03:00",
       "ancestral_em_dev": true,
-      "cherry_pick_em_dev": true
+      "cherry_pick_em_dev": true,
+      "conteudo_igual_em_dev": false
     },
     {
       "sha": "79bc782b7",
@@ -271,9 +274,10 @@
       "resumo": "trava da semantica OU e dos padroes de selecao",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:38:11-03:00",
+      "medido_em": "2026-09-10T04:39:45-03:00",
       "ancestral_em_dev": true,
-      "cherry_pick_em_dev": true
+      "cherry_pick_em_dev": true,
+      "conteudo_igual_em_dev": false
     },
     {
       "sha": "296e349a7",
@@ -281,9 +285,10 @@
       "resumo": "trava do que significa respondida; dois testes meus corrigidos",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:38:11-03:00",
+      "medido_em": "2026-09-10T04:39:45-03:00",
       "ancestral_em_dev": true,
-      "cherry_pick_em_dev": true
+      "cherry_pick_em_dev": true,
+      "conteudo_igual_em_dev": true
     },
     {
       "sha": "925a6e4ea",
@@ -291,9 +296,10 @@
       "resumo": "padrao de tamanho de texto do servidor, achado por mutacao",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:38:11-03:00",
+      "medido_em": "2026-09-10T04:39:45-03:00",
       "ancestral_em_dev": true,
-      "cherry_pick_em_dev": true
+      "cherry_pick_em_dev": true,
+      "conteudo_igual_em_dev": true
     },
     {
       "sha": "1e694e7e9",
@@ -301,9 +307,10 @@
       "resumo": "a unica citacao que o leitor nao alcanca, sinalizada",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:38:11-03:00",
+      "medido_em": "2026-09-10T04:39:45-03:00",
       "ancestral_em_dev": true,
-      "cherry_pick_em_dev": true
+      "cherry_pick_em_dev": true,
+      "conteudo_igual_em_dev": true
     },
     {
       "sha": "8111ebb67",
@@ -311,9 +318,10 @@
       "resumo": "bateria de mutacao e a lei do instrumento, tornadas duraveis",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:38:11-03:00",
+      "medido_em": "2026-09-10T04:39:45-03:00",
       "ancestral_em_dev": true,
-      "cherry_pick_em_dev": true
+      "cherry_pick_em_dev": true,
+      "conteudo_igual_em_dev": false
     },
     {
       "sha": "de5cdb2f8",
@@ -321,9 +329,10 @@
       "resumo": "condicao composta da superficie clara de Saude e Cuidado",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:38:11-03:00",
+      "medido_em": "2026-09-10T04:39:45-03:00",
       "ancestral_em_dev": true,
-      "cherry_pick_em_dev": true
+      "cherry_pick_em_dev": true,
+      "conteudo_igual_em_dev": true
     },
     {
       "sha": "995156f15",
@@ -331,9 +340,10 @@
       "resumo": "triagem dos quatro goldens de Saude e Cuidado, com o achado de conteudo",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:38:11-03:00",
+      "medido_em": "2026-09-10T04:39:45-03:00",
       "ancestral_em_dev": true,
-      "cherry_pick_em_dev": true
+      "cherry_pick_em_dev": true,
+      "conteudo_igual_em_dev": false
     },
     {
       "sha": "ff759d211",
@@ -341,9 +351,10 @@
       "resumo": "o mutante equivalente, terceira forma de um nao pegou enganar",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:38:11-03:00",
+      "medido_em": "2026-09-10T04:39:45-03:00",
       "ancestral_em_dev": true,
-      "cherry_pick_em_dev": true
+      "cherry_pick_em_dev": true,
+      "conteudo_igual_em_dev": false
     },
     {
       "sha": "99d882fe2",
@@ -351,9 +362,10 @@
       "resumo": "o autosave do editor nao roda no aplicativo",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:38:11-03:00",
+      "medido_em": "2026-09-10T04:39:45-03:00",
       "ancestral_em_dev": true,
-      "cherry_pick_em_dev": true
+      "cherry_pick_em_dev": true,
+      "conteudo_igual_em_dev": false
     },
     {
       "sha": "9747a0aa2",
@@ -361,9 +373,10 @@
       "resumo": "varredura das dependencias que ninguem fornece, e a licao de nomeacao",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:38:11-03:00",
+      "medido_em": "2026-09-10T04:39:45-03:00",
       "ancestral_em_dev": true,
-      "cherry_pick_em_dev": true
+      "cherry_pick_em_dev": true,
+      "conteudo_igual_em_dev": false
     },
     {
       "sha": "d1e8069c0",
@@ -371,9 +384,10 @@
       "resumo": "perda de regras de publico, levantada como pergunta ao Owner",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:38:11-03:00",
+      "medido_em": "2026-09-10T04:39:45-03:00",
       "ancestral_em_dev": true,
-      "cherry_pick_em_dev": true
+      "cherry_pick_em_dev": true,
+      "conteudo_igual_em_dev": true
     },
     {
       "sha": "1d91908e9",
@@ -381,111 +395,123 @@
       "resumo": "camada pronta sem superficie: uma forma, seis tamanhos",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:38:11-03:00",
+      "medido_em": "2026-09-10T04:39:45-03:00",
       "ancestral_em_dev": true,
-      "cherry_pick_em_dev": true
+      "cherry_pick_em_dev": true,
+      "conteudo_igual_em_dev": false
     },
     {
       "sha": "be0756460",
       "tipo": "evidencia",
       "resumo": "marca de superacao dos numeros de recorte onde o leitor os encontra",
       "integrado_em_dev": true,
-      "medido_em": "2026-09-10T04:38:11-03:00",
+      "medido_em": "2026-09-10T04:39:45-03:00",
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
       "ancestral_em_dev": true,
-      "cherry_pick_em_dev": true
+      "cherry_pick_em_dev": true,
+      "conteudo_igual_em_dev": false
     },
     {
       "sha": "c0a8b498e",
       "tipo": "evidencia",
       "resumo": "quarta linha de bloqueio errada e a auditoria exaustiva",
       "integrado_em_dev": true,
-      "medido_em": "2026-09-10T04:38:11-03:00",
+      "medido_em": "2026-09-10T04:39:45-03:00",
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
       "ancestral_em_dev": true,
-      "cherry_pick_em_dev": true
+      "cherry_pick_em_dev": true,
+      "conteudo_igual_em_dev": false
     },
     {
       "sha": "5ef7c5648",
       "tipo": "evidencia",
       "resumo": "propaga a correcao das quatro linhas para o handoff",
       "integrado_em_dev": true,
-      "medido_em": "2026-09-10T04:38:11-03:00",
+      "medido_em": "2026-09-10T04:39:45-03:00",
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
       "ancestral_em_dev": true,
-      "cherry_pick_em_dev": true
+      "cherry_pick_em_dev": true,
+      "conteudo_igual_em_dev": false
     },
     {
       "sha": "60fd5f173",
       "tipo": "evidencia",
       "resumo": "desfaz uma coincidencia numerica que se lia como repeticao",
       "integrado_em_dev": true,
-      "medido_em": "2026-09-10T04:38:11-03:00",
+      "medido_em": "2026-09-10T04:39:45-03:00",
       "ancestral_em_dev": true,
-      "cherry_pick_em_dev": true
+      "cherry_pick_em_dev": true,
+      "conteudo_igual_em_dev": true
     },
     {
       "sha": "3198d61fb",
       "tipo": "evidencia",
       "resumo": "cabecalho de estado final no ponto onde o leitor abre o handoff",
       "integrado_em_dev": true,
-      "medido_em": "2026-09-10T04:38:11-03:00",
+      "medido_em": "2026-09-10T04:39:45-03:00",
       "ancestral_em_dev": true,
-      "cherry_pick_em_dev": true
+      "cherry_pick_em_dev": true,
+      "conteudo_igual_em_dev": true
     },
     {
       "sha": "f0895a0c5",
       "tipo": "ferramenta",
       "resumo": "as tres verificacoes em forma executavel, com as armadilhas ja pagas evitadas no codigo",
       "integrado_em_dev": true,
-      "medido_em": "2026-09-10T04:38:11-03:00",
+      "medido_em": "2026-09-10T04:39:45-03:00",
       "ancestral_em_dev": true,
-      "cherry_pick_em_dev": true
+      "cherry_pick_em_dev": true,
+      "conteudo_igual_em_dev": false
     },
     {
       "sha": "8f8ebea99",
       "tipo": "evidencia",
       "resumo": "declara quais imagens NAO foram triadas e por que",
       "integrado_em_dev": true,
-      "medido_em": "2026-09-10T04:38:11-03:00",
+      "medido_em": "2026-09-10T04:39:45-03:00",
       "ancestral_em_dev": true,
-      "cherry_pick_em_dev": true
+      "cherry_pick_em_dev": true,
+      "conteudo_igual_em_dev": false
     },
     {
       "sha": "fb10ded85",
       "tipo": "evidencia",
       "resumo": "indice de leitura para os quarenta documentos",
       "integrado_em_dev": true,
-      "medido_em": "2026-09-10T04:38:11-03:00",
+      "medido_em": "2026-09-10T04:39:45-03:00",
       "ancestral_em_dev": false,
-      "cherry_pick_em_dev": true
+      "cherry_pick_em_dev": true,
+      "conteudo_igual_em_dev": false
     },
     {
       "sha": "5a58383f2",
       "tipo": "evidencia",
       "resumo": "o falso positivo da propria ferramenta, achado por ela",
       "integrado_em_dev": true,
-      "medido_em": "2026-09-10T04:38:11-03:00",
+      "medido_em": "2026-09-10T04:39:45-03:00",
       "ancestral_em_dev": false,
-      "cherry_pick_em_dev": true
+      "cherry_pick_em_dev": true,
+      "conteudo_igual_em_dev": true
     },
     {
       "sha": "c03229017",
       "tipo": "evidencia",
       "resumo": "triagem do golden de operacoes e o motivo real da omissao",
       "integrado_em_dev": true,
-      "medido_em": "2026-09-10T04:38:11-03:00",
+      "medido_em": "2026-09-10T04:39:45-03:00",
       "ancestral_em_dev": false,
-      "cherry_pick_em_dev": true
+      "cherry_pick_em_dev": true,
+      "conteudo_igual_em_dev": false
     },
     {
       "sha": "467e03c98",
       "tipo": "evidencia",
       "resumo": "declara que a contagem de imagens pode estar incompleta",
       "integrado_em_dev": true,
-      "medido_em": "2026-09-10T04:38:11-03:00",
+      "medido_em": "2026-09-10T04:39:45-03:00",
       "ancestral_em_dev": false,
-      "cherry_pick_em_dev": true
+      "cherry_pick_em_dev": true,
+      "conteudo_igual_em_dev": false
     },
     {
       "sha": "55f4b5910",
@@ -494,7 +520,8 @@
       "ancestral_em_dev": false,
       "cherry_pick_em_dev": true,
       "integrado_em_dev": true,
-      "medido_em": "2026-09-10T04:38:11-03:00"
+      "medido_em": "2026-09-10T04:39:45-03:00",
+      "conteudo_igual_em_dev": true
     }
   ],
   "tracker_delta_proposto": [
@@ -1367,40 +1394,18 @@
     "925a6e4ea test(forms): pin the server default text length, found by mutation battery"
   ],
   "residual_por_sha": {
-    "integraveis": [
-      "b4d0e6af7",
-      "745b1fbdf",
-      "e2912506c",
-      "79bc782b7",
-      "296e349a7",
-      "925a6e4ea",
-      "1e694e7e9",
-      "8111ebb67",
-      "de5cdb2f8",
-      "995156f15",
-      "ff759d211",
-      "99d882fe2",
-      "9747a0aa2",
-      "d1e8069c0",
-      "1d91908e9",
-      "be0756460",
-      "c0a8b498e",
-      "5ef7c5648",
-      "60fd5f173",
-      "3198d61fb",
-      "f0895a0c5",
-      "8f8ebea99",
-      "fb10ded85",
-      "5a58383f2",
-      "c03229017",
-      "467e03c98",
-      "55f4b5910"
-    ],
+    "declarados": 27,
+    "integrados": 27,
     "retidos": [],
-    "medido_em": "2026-09-10T04:38:11-03:00",
-    "criterio_corrigido": "o coordenador integra por CHERRY-PICK, entao merge-base --is-ancestor sobre o SHA ORIGINAL responde NAO para sempre, mesmo com o commit na base. Medido por tres criterios: ancestralidade diz 22 de 26; rastro \"cherry picked from commit <sha>\" no log de origin/dev diz 26 de 26; e NENHUM commit deixou de chegar por criterio algum.",
-    "criterio_de_conteudo_nao_serve": "git diff <sha> origin/dev -- <caminhos> vazio, sugerido como alternativa, reporta apenas 8 de 26. Nao e falha do commit: dev andou e outras frentes tocaram os mesmos arquivos, entao o diff e nao vazio mesmo quando a minha mudanca chegou. Criterio confiavel e o rastro de cherry-pick.",
-    "definicao_de_retido": "publicado na branch do grupo e ausente da base por TODOS os criterios; nada apenas local"
+    "medido_em": "2026-09-10T04:39:45-03:00",
+    "por_criterio": {
+      "ancestralidade": "22 de 27",
+      "rastro_de_cherry_pick": "27 de 27",
+      "conteudo_igual": "9 de 27"
+    },
+    "criterio_adotado": "rastro de cherry-pick, com ancestralidade como sinal complementar",
+    "por_que_nao_conteudo": "reprova 19 dos 27 que CHEGARAM, porque dev andou e outras frentes tocaram os mesmos arquivos; o diff fica nao vazio mesmo com a mudanca presente. O falso positivo aponta na direcao alarmante, que e a que faz alguem agir.",
+    "definicao_de_retido": "publicado na branch do grupo e ausente da base por TODOS os criterios"
   },
   "recursos": {
     "processos_filhos": [],
@@ -1479,8 +1484,8 @@
     "achado": "a execucao da suite completa regravou 54 PNG RASTREADOS de failures/ de support e help_center, que nao sao do meu recorte. Restaurados com git checkout; nao eram trabalho e nao podiam viajar como modificacao minha.",
     "restante": "apenas os dois pubspec.lock nao rastreados, ja rastreados em dev pelo coordenador"
   },
-  "head_medido_em": "2026-09-10T04:38:11-03:00",
-  "status_medido_em": "2026-09-10T04:04:20-03:00",
+  "head_medido_em": "2026-09-10T04:39:45-03:00",
+  "status_medido_em": "2026-09-10T04:39:45-03:00",
   "auditoria_de_apodrecimento": {
     "quando": "2026-09-10T04:04:20-03:00",
     "metodo": "cada campo de ESTADO reconferido contra medicao feita na hora, nao contra memoria; a pergunta usada foi QUANDO isto foi medido e o que mudou desde entao",

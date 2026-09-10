@@ -1,10 +1,10 @@
 {
-  "revision": 64,
-  "updated_at": "2026-09-10T04:36:00-03:00",
+  "revision": 65,
+  "updated_at": "2026-09-10T04:40:00-03:00",
   "group": "chat-comunicacoes",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) - claude-opus-5[1m]",
-  "status": "consolidacao; recorte executavel entregue e integrado; aguardando chamada de congelamento das 04:40",
+  "status": "congelado; nenhum lote novo; aguardando pre-entrega das 04:50",
   "coordinator": "Claude (coelo-73)",
   "ack_received": "revisao 1 aceita; coordenacao.json rev 2, commit 920f23199",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-chat-comunicacoes",
@@ -1057,5 +1057,13 @@
     "verificacao_feita_antes_de_responder": "Contei: OITO ocorrencias exatas — um PrincipalHappensCircularItem, tres PrincipalHappensFeedCursor, tres PrincipalHappensFeedPage, um PrincipalHappensFeedRepository. E o historico: antes do meu commit o arquivo tinha UM. As duas afirmacoes dele estavam certas.",
     "o_que_NAO_fiz": "Nao reescrevi historia para corrigir mensagem de commit as 04:34. O custo de mexer na base dez minutos antes do congelamento e maior que o beneficio, e a decisao de reescrever nao e minha.",
     "regra_proposta": "Numero medido por outra frente dentro de artefato commitado precisa dizer de quem e e o que foi conferido. Nao por cortesia, por rastreabilidade: numero sem dono nao pode ser re-medido nem contestado, e vira fato por repeticao. Eu mesmo, lendo esse commit em janeiro, acreditaria que contei oito."
+  },
+  "congelamento": {
+    "hora_da_chamada": "04:38:01 -03:00 pela coordenacao, que prevaleceu por ser a maior no cruzamento.",
+    "minha_leitura_no_mesmo_bloco": "04:39:02 -03:00, saida crua. 61 segundos depois da dela, diferenca de intervalo entre blocos e nao deriva.",
+    "cruzamento": "Cinco leituras entre 04:33:51 e 04:39:02, todas dentro de cinco minutos. Nenhuma frente estava com deriva no momento do corte.",
+    "estado_meu": "HEAD 8a09d66ac, worktree com 0 alteracoes pendentes, 0 stash, nada rodando alem do que a maquina ja tinha.",
+    "processos_na_maquina": "28 processos dart/flutter_tester vivos no momento do congelamento, de varias frentes ao longo do dia. Declarados e NAO mortos, conforme protocolo: a coordenacao cruza as contagens e mata o conjunto no fechamento.",
+    "recurso_nao_fechado": "C:/cdchk, 12K de arvore vazia com um diretorio travado por processo. Registro de worktree ja removido do git. Precisa de remocao manual, ou sai sozinho quando os processos morrerem."
   }
 }

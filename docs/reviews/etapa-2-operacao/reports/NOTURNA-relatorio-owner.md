@@ -11,6 +11,19 @@ timezone: "America/Sao_Paulo"
 > Documento vivo. Os números são medidos, datados e reproduzíveis; onde falta
 > medição, está escrito que falta.
 
+> **Sobre os nomes.** Este relatório fala em "uma frente" e "outra frente" em
+> quarenta e quatro lugares e **não nomeia nenhuma**. Isso é escolha, não descuido,
+> e tem um custo que precisa ficar dito: onde a citação é de **medida**, o anonimato
+> atrapalha — quem quiser re-medir ou contestar um número precisa saber quem mediu,
+> com que comando e em que base, e número sem dono vira fato por repetição. Onde a
+> citação é de **lição** ou de **erro**, o anonimato é deliberado: a rodada funcionou
+> porque cada frente reportou o próprio erro sem que virasse acusação, e você pediu
+> estado, não avaliação individual. O registro nominal existe e está publicado — os
+> nove arquivos de comunicação em `docs/reviews/etapa-2-operacao/comunicacao/`, na
+> base, trazem cada medição com autor, comando e revisão. Uma frente pediu
+> explicitamente que os erros dela constem com nome, porque "sem dono eles não
+> ensinam"; onde isso foi pedido, o relatório atende.
+
 ## O essencial, em uma página
 
 Este documento tem duas mil linhas porque a rodada mediu muito. **Se você ler só
