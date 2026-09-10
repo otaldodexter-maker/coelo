@@ -44,12 +44,16 @@ branch `work/etapa2-noturna-publicacoes-midia`, base `d784462c1` com
 | 22 | `4a40e13aa` | Retirada repetida de Momento reapresenta a mesma chave |
 | 23 | `db2726df8` | Remoção do contrato órfão de retirada de Momento |
 | 24 | `9fde22632` | Circular encerrada diz que fechou, em vez de pedir outra resposta |
+| 25 | `6e2a21287` | Diretório pinta na primeira página em vez de esperar a última |
 
 ## Resultado medido do recorte
 
-Medido em uma execução única ao final da rodada, não somado de relatos
-anteriores: **636 PASS e 23 FAIL** nas oito features do recorte mais as seis
-rotas tocadas.
+Medido em uma execução única, não somado de relatos anteriores: **636 PASS e
+23 FAIL** nas oito features do recorte mais as seis rotas tocadas.
+
+Esta medição **precede** os lotes 24 e 25, que entraram depois. Os dois foram
+verificados nas suas suítes próprias — 4 PASS cada, e 56 PASS na suíte de
+circulars — e uma nova medição completa está registrada abaixo quando concluída.
 
 As 23 falhas são **todas** de golden e reproduzem na base sem nenhum lote deste
 grupo: 10 em `principal_happens_preview_golden_test`, 11 em
