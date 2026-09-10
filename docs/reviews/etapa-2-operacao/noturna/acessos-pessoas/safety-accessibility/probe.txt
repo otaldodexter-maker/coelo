@@ -1,0 +1,290 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:132
++ ... | Out-Null; rtk proxy flutter test --no-pub test/features/safety/pres ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/safety/presentation/safety_accessibility_probe_test.dart
+00:00 +0: (setUpAll)
+00:00 +0: Safety dev route label 1440 light
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following assertion was thrown running a test:
+A SemanticsHandle was active at the end of the test.
+All SemanticsHandle instances must be disposed by calling dispose() on the SemanticsHandle.
+
+When the exception was thrown, this was the stack:
+#0      WidgetTester._verifySemanticsHandlesWereDisposed (package:flutter_test/src/widget_tester.dart:1074:7)
+#1      WidgetTester._endOfTestVerifications (package:flutter_test/src/widget_tester.dart:1063:5)
+#2      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1968:22)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+The test description was:
+  Safety dev route label 1440 light
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:04 +0 -1: Safety dev route label 1440 light [E]
+  Test failed. See exception logs above.
+  The test description was: Safety dev route label 1440 light
+
+00:04 +0 -1: Safety dev route android 1440 light
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: Tappable objects should be at least Size(48.0, 48.0)
+  Actual: <Instance of 'WidgetTester'>
+   Which: SemanticsNode#34(Rect.fromLTRB(950.9, 22.0, 1124.0, 66.0), actions: [focus, tap], flags:
+[isFocusable], traversalParentIdentifier: _OverlayPortalState#1e33b, label: "OC\nOwner
+Coelo\nSuperadmin", tooltip: "Abrir menu do usuário", textDirection: ltr): expected tap target size
+of at least Size(48.0, 48.0), but found Size(173.1, 44.0)
+          See also: https://support.google.com/accessibility/android/answer/7101858?hl=en
+
+When the exception was thrown, this was the stack:
+#0      fail (package:matcher/src/expect/expect.dart:187:31)
+#1      _expect.<anonymous closure> (package:matcher/src/expect/expect.dart:155:13)
+<asynchronous suspension>
+<asynchronous suspension>
+#8      expectLater.<anonymous closure> (package:flutter_test/src/widget_tester.dart:508:19)
+<asynchronous suspension>
+#9      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/safety/presentation/safety_accessibility_probe_test.dart:71:9)
+<asynchronous suspension>
+#10     testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#11     TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided 7 frames from dart:async and package:stack_trace)
+
+The test description was:
+  Safety dev route android 1440 light
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:10 +0 -2: Safety dev route android 1440 light [E]
+  Test failed. See exception logs above.
+  The test description was: Safety dev route android 1440 light
+
+00:10 +0 -2: Safety dev route contrast 1440 light
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: Text contrast should follow WCAG guidelines
+  Actual: <Instance of 'WidgetTester'>
+   Which: SemanticsNode#32(Rect.fromLTRB(20.0, 52.0, 450.3, 72.0), label: "Autorizações, restrições
+e alertas com revisão auditada pela unidade.", textDirection: ltr):
+          Expected contrast ratio of at least 4.5 but found 3.50 for a font size of 14.0.
+          The computed colors was:
+          light - Color(alpha: 1.0000, red: 1.0000, green: 1.0000, blue: 1.0000, colorSpace:
+ColorSpace.sRGB), dark - Color(alpha: 1.0000, red: 0.5176, green: 0.5412, blue: 0.5569, colorSpace:
+ColorSpace.sRGB)
+          See also: https://www.w3.org/TR/UNDERSTANDING-WCAG20/visual-audio-contrast-contrast.html
+
+
+          SemanticsNode#48(Rect.fromLTRB(317.2, 0.0, 430.3, 48.0), actions: [focus, tap], flags:
+[isButton, isFocusable, hasSelectedState], label: "Atenção (11)", textDirection: ltr):
+          Expected contrast ratio of at least 4.5 but found 3.50 for a font size of 14.0.
+          The computed colors was:
+          light - Color(alpha: 1.0000, red: 1.0000, green: 1.0000, blue: 1.0000, colorSpace:
+ColorSpace.sRGB), dark - Color(alpha: 1.0000, red: 0.5176, green: 0.5412, blue: 0.5569, colorSpace:
+ColorSpace.sRGB)
+          See also: https://www.w3.org/TR/UNDERSTANDING-WCAG20/visual-audio-contrast-contrast.html
+          SemanticsNode#49(Rect.fromLTRB(430.3, 0.0, 575.1, 48.0), actions: [focus, tap], flags:
+[isButton, isFocusable, hasSelectedState], label: "Autorizadas (126)", textDirection: ltr):
+          Expected contrast ratio of at least 4.5 but found 3.50 for a font size of 14.0.
+          The computed colors was:
+          light - Color(alpha: 1.0000, red: 1.0000, green: 1.0000, blue: 1.0000, colorSpace:
+ColorSpace.sRGB), dark - Color(alpha: 1.0000, red: 0.5176, green: 0.5412, blue: 0.5569, colorSpace:
+ColorSpace.sRGB)
+          See also: https://www.w3.org/TR/UNDERSTANDING-WCAG20/visual-audio-contrast-contrast.html
+          SemanticsNode#50(Rect.fromLTRB(575.1, 0.0, 731.2, 48.0), actions: [focus, tap], flags:
+[isButton, isFocusable, hasSelectedState], label: "Sem autorização (9)", textDirection: ltr):
+          Expected contrast ratio of at least 4.5 but found 3.50 for a font size of 14.0.
+          The computed colors was:
+          light - Color(alpha: 1.0000, red: 1.0000, green: 1.0000, blue: 1.0000, colorSpace:
+ColorSpace.sRGB), dark - Color(alpha: 1.0000, red: 0.5176, green: 0.5412, blue: 0.5569, colorSpace:
+ColorSpace.sRGB)
+          See also: https://www.w3.org/TR/UNDERSTANDING-WCAG20/visual-audio-contrast-contrast.html
+
+
+
+
+
+
+
+
+
+
+          SemanticsNode#79(Rect.fromLTRB(828.9, 830.0, 838.5, 850.0), label: "…", textDirection:
+ltr):
+          Expected contrast ratio of at least 4.5 but found 2.16 for a font size of 14.0.
+          The computed colors was:
+          light - Color(alpha: 1.0000, red: 1.0000, green: 1.0000, blue: 1.0000, colorSpace:
+ColorSpace.sRGB), dark - Color(alpha: 1.0000, red: 0.6784, green: 0.6941, blue: 0.7020, colorSpace:
+ColorSpace.sRGB)
+          See also: https://www.w3.org/TR/UNDERSTANDING-WCAG20/visual-audio-contrast-contrast.html
+
+When the exception was thrown, this was the stack:
+#0      fail (package:matcher/src/expect/expect.dart:187:31)
+#1      _expect.<anonymous closure> (package:matcher/src/expect/expect.dart:155:13)
+<asynchronous suspension>
+<asynchronous suspension>
+#8      expectLater.<anonymous closure> (package:flutter_test/src/widget_tester.dart:508:19)
+<asynchronous suspension>
+#9      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/safety/presentation/safety_accessibility_probe_test.dart:71:9)
+<asynchronous suspension>
+#10     testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#11     TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided 7 frames from dart:async and package:stack_trace)
+
+The test description was:
+  Safety dev route contrast 1440 light
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:15 +0 -3: Safety dev route contrast 1440 light [E]
+  Test failed. See exception logs above.
+  The test description was: Safety dev route contrast 1440 light
+
+00:15 +0 -3: Safety page label 1440 light
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following assertion was thrown running a test:
+A SemanticsHandle was active at the end of the test.
+All SemanticsHandle instances must be disposed by calling dispose() on the SemanticsHandle.
+
+When the exception was thrown, this was the stack:
+#0      WidgetTester._verifySemanticsHandlesWereDisposed (package:flutter_test/src/widget_tester.dart:1074:7)
+#1      WidgetTester._endOfTestVerifications (package:flutter_test/src/widget_tester.dart:1063:5)
+#2      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1968:22)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+The test description was:
+  Safety page label 1440 light
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:16 +0 -4: Safety page label 1440 light [E]
+  Test failed. See exception logs above.
+  The test description was: Safety page label 1440 light
+
+00:16 +0 -4: Safety page android 1440 light
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: Tappable objects should be at least Size(48.0, 48.0)
+  Actual: <Instance of 'WidgetTester'>
+   Which: SemanticsNode#41(Rect.fromLTRB(1234.9, 34.0, 1408.0, 78.0), actions: [focus, tap], flags:
+[isFocusable], traversalParentIdentifier: _OverlayPortalState#6b3b1, label: "OC\nOwner
+Coelo\nSuperadmin", tooltip: "Abrir menu do usuário", textDirection: ltr): expected tap target size
+of at least Size(48.0, 48.0), but found Size(173.1, 44.0)
+          See also: https://support.google.com/accessibility/android/answer/7101858?hl=en
+
+When the exception was thrown, this was the stack:
+#0      fail (package:matcher/src/expect/expect.dart:187:31)
+#1      _expect.<anonymous closure> (package:matcher/src/expect/expect.dart:155:13)
+<asynchronous suspension>
+<asynchronous suspension>
+#8      expectLater.<anonymous closure> (package:flutter_test/src/widget_tester.dart:508:19)
+<asynchronous suspension>
+#9      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/safety/presentation/safety_accessibility_probe_test.dart:71:9)
+<asynchronous suspension>
+#10     testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#11     TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided 7 frames from dart:async and package:stack_trace)
+
+The test description was:
+  Safety page android 1440 light
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:19 +0 -5: Safety page android 1440 light [E]
+  Test failed. See exception logs above.
+  The test description was: Safety page android 1440 light
+
+00:19 +0 -5: Safety page contrast 1440 light
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: Text contrast should follow WCAG guidelines
+  Actual: <Instance of 'WidgetTester'>
+   Which: SemanticsNode#39(Rect.fromLTRB(304.0, 64.0, 734.3, 84.0), label: "Autorizações, restrições
+e alertas com revisão auditada pela unidade.", textDirection: ltr):
+          Expected contrast ratio of at least 4.5 but found 3.50 for a font size of 14.0.
+          The computed colors was:
+          light - Color(alpha: 1.0000, red: 1.0000, green: 1.0000, blue: 1.0000, colorSpace:
+ColorSpace.sRGB), dark - Color(alpha: 1.0000, red: 0.5176, green: 0.5412, blue: 0.5569, colorSpace:
+ColorSpace.sRGB)
+          See also: https://www.w3.org/TR/UNDERSTANDING-WCAG20/visual-audio-contrast-contrast.html
+
+
+          SemanticsNode#55(Rect.fromLTRB(317.2, 0.0, 430.3, 48.0), actions: [focus, tap], flags:
+[isButton, isFocusable, hasSelectedState], label: "Atenção (11)", textDirection: ltr):
+          Expected contrast ratio of at least 4.5 but found 3.50 for a font size of 14.0.
+          The computed colors was:
+          light - Color(alpha: 1.0000, red: 1.0000, green: 1.0000, blue: 1.0000, colorSpace:
+ColorSpace.sRGB), dark - Color(alpha: 1.0000, red: 0.5176, green: 0.5412, blue: 0.5569, colorSpace:
+ColorSpace.sRGB)
+          See also: https://www.w3.org/TR/UNDERSTANDING-WCAG20/visual-audio-contrast-contrast.html
+          SemanticsNode#56(Rect.fromLTRB(430.3, 0.0, 575.1, 48.0), actions: [focus, tap], flags:
+[isButton, isFocusable, hasSelectedState], label: "Autorizadas (126)", textDirection: ltr):
+          Expected contrast ratio of at least 4.5 but found 3.50 for a font size of 14.0.
+          The computed colors was:
+          light - Color(alpha: 1.0000, red: 1.0000, green: 1.0000, blue: 1.0000, colorSpace:
+ColorSpace.sRGB), dark - Color(alpha: 1.0000, red: 0.5176, green: 0.5412, blue: 0.5569, colorSpace:
+ColorSpace.sRGB)
+          See also: https://www.w3.org/TR/UNDERSTANDING-WCAG20/visual-audio-contrast-contrast.html
+          SemanticsNode#57(Rect.fromLTRB(575.1, 0.0, 731.2, 48.0), actions: [focus, tap], flags:
+[isButton, isFocusable, hasSelectedState], label: "Sem autorização (9)", textDirection: ltr):
+          Expected contrast ratio of at least 4.5 but found 3.50 for a font size of 14.0.
+          The computed colors was:
+          light - Color(alpha: 1.0000, red: 1.0000, green: 1.0000, blue: 1.0000, colorSpace:
+ColorSpace.sRGB), dark - Color(alpha: 1.0000, red: 0.5176, green: 0.5412, blue: 0.5569, colorSpace:
+ColorSpace.sRGB)
+          See also: https://www.w3.org/TR/UNDERSTANDING-WCAG20/visual-audio-contrast-contrast.html
+
+
+
+
+
+
+
+
+
+
+          SemanticsNode#89(Rect.fromLTRB(1112.9, 842.0, 1122.5, 862.0), label: "…", textDirection:
+ltr):
+          Expected contrast ratio of at least 4.5 but found 2.16 for a font size of 14.0.
+          The computed colors was:
+          light - Color(alpha: 1.0000, red: 1.0000, green: 1.0000, blue: 1.0000, colorSpace:
+ColorSpace.sRGB), dark - Color(alpha: 1.0000, red: 0.6784, green: 0.6941, blue: 0.7020, colorSpace:
+ColorSpace.sRGB)
+          See also: https://www.w3.org/TR/UNDERSTANDING-WCAG20/visual-audio-contrast-contrast.html
+
+When the exception was thrown, this was the stack:
+#0      fail (package:matcher/src/expect/expect.dart:187:31)
+#1      _expect.<anonymous closure> (package:matcher/src/expect/expect.dart:155:13)
+<asynchronous suspension>
+<asynchronous suspension>
+#8      expectLater.<anonymous closure> (package:flutter_test/src/widget_tester.dart:508:19)
+<asynchronous suspension>
+#9      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/safety/presentation/safety_accessibility_probe_test.dart:71:9)
+<asynchronous suspension>
+#10     testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#11     TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided 7 frames from dart:async and package:stack_trace)
+
+The test description was:
+  Safety page contrast 1440 light
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:22 +0 -6: Safety page contrast 1440 light [E]
+  Test failed. See exception logs above.
+  The test description was: Safety page contrast 1440 light
+
+00:22 +0 -6: (tearDownAll)
+00:22 +0 -6: Some tests failed.
+
+Failing tests:
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/safety/presentation/safety_accessibility_probe_test.dart: Safety dev route android 1440 light
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/safety/presentation/safety_accessibility_probe_test.dart: Safety dev route contrast 1440 light
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/safety/presentation/safety_accessibility_probe_test.dart: Safety dev route label 1440 light
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/features/safety/presentation/safety_accessibility_probe_test.dart: Safety page android 1440 light
+  ... and 2 more
