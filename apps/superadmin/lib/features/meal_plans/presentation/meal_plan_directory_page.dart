@@ -10,7 +10,7 @@ import '../domain/meal_plan_repository.dart';
 
 enum _MealPlanDirectorySection { mealPlans, models }
 
-enum _DirectoryAction { edit, duplicate, publish, review, remove }
+enum _DirectoryAction { edit, duplicate, publish, review, archive, remove }
 
 /// Recibo de escrita que nao corresponde ao cardapio solicitado.
 ///
@@ -27,6 +27,13 @@ final class _MealPlanReceiptMismatch implements Exception {
 bool _mealPlanCanPublish(MealPlan item) =>
     !item.conflictState &&
     (item.status == MealPlanStatus.inReview || item.status == MealPlanStatus.updated);
+
+/// Excluir alcanca somente o que nunca chegou ao publico ou o que ja saiu de
+/// circulacao; o servidor recusa o resto.
+bool _mealPlanCanDelete(MealPlan item) =>
+    item.status == MealPlanStatus.draft ||
+    item.status == MealPlanStatus.inReview ||
+    item.status == MealPlanStatus.archived;
 
 final class MealPlanDirectoryPage extends StatefulWidget {
   const MealPlanDirectoryPage({
@@ -436,6 +443,22 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
           icon: Icons.publish_outlined,
           label: 'Publicar',
         ),
+      // Arquivar e excluir entram por decisao do Owner de 10/09/2026 ao aprovar
+      // os goldens do diretorio. Arquivar tira do ar preservando o historico;
+      // excluir so alcanca o que nunca chegou ao publico ou o que ja foi
+      // arquivado, e o servidor recusa o resto.
+      if (item.status != MealPlanStatus.archived)
+        const CoeloAdminFlyoutItem(
+          value: _DirectoryAction.archive,
+          icon: Icons.inventory_2_outlined,
+          label: 'Arquivar',
+        ),
+      if (_canDelete(item))
+        const CoeloAdminFlyoutItem(
+          value: _DirectoryAction.remove,
+          icon: Icons.delete_outline_rounded,
+          label: 'Excluir',
+        ),
     ];
     if (items.isEmpty) return const SizedBox.shrink();
     return CoeloAdminFlyout<_DirectoryAction>(
@@ -454,8 +477,13 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
     _DirectoryAction.duplicate => _duplicate(item),
     _DirectoryAction.review => _requestReview(item),
     _DirectoryAction.publish => _publish(item),
+    _DirectoryAction.archive => _archive(item),
     _DirectoryAction.remove => _remove(item),
   };
+
+  /// A regra tambem vive no servidor; aqui ela evita oferecer uma acao que
+  /// seria recusada.
+  bool _canDelete(MealPlan item) => _mealPlanCanDelete(item);
 
   Future<void> _goEdit(String id) async {
     if (_section == _MealPlanDirectorySection.models) {
@@ -539,29 +567,72 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
     );
   }
 
-  Future<void> _remove(MealPlan item) async {
-    final shouldDelete = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => CoeloAdminDialogShell(
-        title: 'Remover card\u00e1pio',
-        onClose: () => Navigator.pop(dialogContext, false),
-        body: Text(
-          'A exclus\u00e3o de card\u00e1pio n\u00e3o est\u00e1 dispon\u00edvel nesta vers\u00e3o.\n'
-          'Abra uma solicita\u00e7\u00e3o de bloqueio e revis\u00e3o para revisar essa a\u00e7\u00e3o.',
-        ),
-        secondaryAction: OutlinedButton(
-          onPressed: () => Navigator.pop(dialogContext, false),
-          child: const Text('Fechar'),
-        ),
-        primaryAction: TextButton(
-          onPressed: () => Navigator.pop(dialogContext, true),
-          child: const Text('Confirmar'),
-        ),
-      ),
+  Future<void> _archive(MealPlan item) async {
+    final confirmado = await _confirmar(
+      titulo: 'Arquivar cardápio',
+      corpo:
+          'O cardápio sai de circulação e deixa de aparecer para as famílias. '
+          'O conteúdo e o histórico ficam preservados.',
+      confirmar: 'Arquivar',
     );
-    if (shouldDelete != true) return;
-    _feedback('A a\u00e7\u00e3o ainda n\u00e3o foi implementada no backend.');
+    if (confirmado != true) return;
+    await _runActionWithFeedback(
+      action: (repository) => _runWrite(
+        action: 'archive',
+        item: item,
+        repository: repository,
+        mismatchMessage:
+            'A confirmação do arquivamento não corresponde ao cardápio solicitado.',
+        isSettled: (receipt) => receipt.status == MealPlanStatus.archived,
+        call: (repository, requestId) => repository.archive(item.id, requestId, item.revision),
+      ),
+      successMessage: 'Cardápio arquivado.',
+      refresh: true,
+    );
   }
+
+  Future<void> _remove(MealPlan item) async {
+    final confirmado = await _confirmar(
+      titulo: 'Excluir cardápio',
+      corpo:
+          'A exclusão apaga o cardápio do sistema e não pode ser desfeita. '
+          'Para tirar do ar preservando o histórico, use Arquivar.',
+      confirmar: 'Excluir',
+    );
+    if (confirmado != true) return;
+    // A exclusao nao devolve cardapio: o objeto deixou de existir. O helper de
+    // escrita compartilhado valida recibo por identidade, entao aqui a chamada
+    // e direta e o refresh e quem prova o resultado.
+    await _runActionWithFeedback(
+      action: (repository) async {
+        await repository.delete(item.id, _requestId(), item.revision);
+        return item;
+      },
+      successMessage: 'Cardápio excluído.',
+      refresh: true,
+    );
+  }
+
+  Future<bool?> _confirmar({
+    required String titulo,
+    required String corpo,
+    required String confirmar,
+  }) => showDialog<bool>(
+    context: context,
+    builder: (dialogContext) => CoeloAdminDialogShell(
+      title: titulo,
+      onClose: () => Navigator.pop(dialogContext, false),
+      body: Text(corpo),
+      secondaryAction: OutlinedButton(
+        onPressed: () => Navigator.pop(dialogContext, false),
+        child: const Text('Cancelar'),
+      ),
+      primaryAction: TextButton(
+        onPressed: () => Navigator.pop(dialogContext, true),
+        child: Text(confirmar),
+      ),
+    ),
+  );
 
   /// Executa uma escrita reusando a mesma intencao enquanto ela nao for
   /// confirmada, e valida o recibo num unico ponto compartilhado.
@@ -897,9 +968,14 @@ final class _MealPlanCard extends StatelessWidget {
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               ),
+              // O card e a linha da tabela oferecem o mesmo conjunto de acoes:
+              // editar, duplicar, arquivar e excluir, mais revisao e publicacao
+              // quando o estado permite (decisao do Owner de 10/09/2026).
               if (onOpen != null ||
                   canDuplicate ||
                   item.status == MealPlanStatus.draft ||
+                  item.status != MealPlanStatus.archived ||
+                  _mealPlanCanDelete(item) ||
                   _mealPlanCanPublish(item))
                 CoeloAdminFlyout<_DirectoryAction>(
                   items: [
@@ -926,6 +1002,18 @@ final class _MealPlanCard extends StatelessWidget {
                         value: _DirectoryAction.publish,
                         label: 'Publicar',
                         icon: Icons.publish_outlined,
+                      ),
+                    if (item.status != MealPlanStatus.archived)
+                      const CoeloAdminFlyoutItem(
+                        value: _DirectoryAction.archive,
+                        label: 'Arquivar',
+                        icon: Icons.inventory_2_outlined,
+                      ),
+                    if (_mealPlanCanDelete(item))
+                      const CoeloAdminFlyoutItem(
+                        value: _DirectoryAction.remove,
+                        label: 'Excluir',
+                        icon: Icons.delete_outline_rounded,
                       ),
                   ],
                   onSelected: onAction,
