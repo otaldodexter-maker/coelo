@@ -104,6 +104,46 @@ com `search_path` vazio e revoke de todos os papéis.
 A revisão é estática: nenhuma suíte foi executada contra banco, nada foi
 aplicado, nenhuma autorização nominal foi usada.
 
+
+## ORDEM OBRIGATÓRIA: a trinca de Circulares não pode ser autorizada em partes
+
+`20260909212000_circulars_media_private_r2_v1` faz mais do que expor
+`storage_provider`: ele **muda o default da coluna para `r2`** e tira o default
+de `bucket_id`. A partir do instante em que a migration é aplicada, todo ativo de
+mídia de Circular novo nasce apontando para o R2, com bucket escolhido pelo MIME
+e chave opaca versionada travada por CHECK. A topologia está correta e o
+candidato está bem construído.
+
+O risco é de **ordem**. Se a migration entrar antes de a Edge Function com o ramo
+R2 estar implantada e o R2 configurado, a função que está em produção hoje recebe
+um descritor cujo bucket é `coelo-media-prod` e tenta usá-lo no Supabase Storage,
+onde esse bucket não existe. **Anexar arquivo em Circular passa a falhar para
+todo mundo**, com modo de falha confuso: a tela reporta erro de assinatura ou de
+upload incompleto, sem dizer que o destino mudou.
+
+A ordem segura é a inversa, e os três passos são inseparáveis:
+
+1. Configurar `COELO_R2_ENDPOINT`, `REGION`, `ACCESS_KEY_ID` e
+   `SECRET_ACCESS_KEY` no ambiente da função, e garantir que
+   `coelo-media-prod` e `coelo-documents-prod` existam.
+2. Implantar a Edge Function `circular-media` com o ramo R2 — já integrada em
+   código, não implantada.
+3. Só então aplicar a migration.
+
+**Autorizar apenas a migration cria o incidente.** A autorização nominal ao Owner
+tem de pedir os três de uma vez.
+
+Reduz o risco, e está correto no candidato: os dois CHECK novos entram como
+`NOT VALID`, então as linhas existentes — que ficam com `supabase` — não são
+revalidadas e o acervo antigo continua legível. O que quebra é a criação de
+ativo novo, não a leitura do que já existe.
+
+Correção de registro: o ramo R2 de `circular-media` **não** é código dormente,
+diferente dos de Acontece e Agora. Aqui a RPC devolve `storage_provider` nos
+cinco envelopes, então o código é a outra metade de um par que só falta ser
+aplicado e implantado, junto e nessa ordem. Acontece e Agora continuam retidos
+porque lá a migration ainda nem existe.
+
 ## Consequências registradas
 
 - Manifests e handoffs dos grupos citam os carimbos **originais**. Esta tabela
