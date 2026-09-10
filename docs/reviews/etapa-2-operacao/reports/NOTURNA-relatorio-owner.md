@@ -2430,8 +2430,18 @@ coisas diferentes**, e três frentes mostraram isso nesta noite.
 
 Os dois foram roteados aos donos com margem para corrigir antes do congelamento. E
 a varredura declarou também **quantas sequências o instrumento não conseguiu
-examinar** — vinte e sete, com a distribuição por frente — em vez de reportar
-apenas os seis achados.
+examinar** — vinte e sete — em vez de reportar apenas os seis achados. **As
+vinte e sete foram então conferidas à mão, e nenhuma era podre:** vinte e uma são
+citações relativas abreviadas de arquivos reais, e as seis restantes eram falha do
+próprio extrator — identificador de commit colado ao caminho, dois nomes de arquivo
+escritos lado a lado em prosa, e abreviações que pulam um segmento intermediário.
+**Quem foi procurar podridão nos outros encontrou, a mais, limitação própria.**
+
+**E o limite que a varredura declara é o que delimita o que se pode concluir dela:
+ela confere se o caminho existe, não se é o caminho certo.** Uma citação que aponte
+para um arquivo real mas errado passa limpa. Depois desta verificação, não se pode
+dizer que as citações estão corretas — pode-se dizer que **os arquivos citados
+existem, com duas exceções nomeadas**.
 
 A verificação foi repassada às demais frentes — custa segundos e não exige contexto
 — e aplicada também aos documentos desta coordenação, que saíram limpos. Os
