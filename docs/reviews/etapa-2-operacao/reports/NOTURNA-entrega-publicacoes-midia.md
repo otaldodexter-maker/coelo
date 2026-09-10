@@ -73,7 +73,7 @@ e não de reruns do mesmo conjunto:
 
 | Execução | Conjunto | Resultado |
 | --- | --- | --- |
-| 1 | nove diretórios de feature do recorte mais quatro arquivos de rota (`circular_routes`, `principal_circular_reader_route`, `principal_circular_reader_responsive`, `principal_moments_feed_route`) | 640 PASS, 23 FAIL |
+| 1 | oito diretórios de feature do recorte mais quatro arquivos de rota (`circular_routes`, `principal_circular_reader_route`, `principal_circular_reader_responsive`, `principal_moments_feed_route`) | 640 PASS, 23 FAIL |
 | 2 | as oito rotas restantes do recorte (`principal_happens_composition_gaps`, `principal_happens_preview_route`, `principal_moments_publication_media_union`, `principal_moments_publication_route`, `principal_moments_route_states`, `principal_now_authorization_revision`, `principal_now_preview_route`, `route_name_uniqueness`) | 31 PASS, 0 FAIL |
 
 Medições anteriores desta noite deram 636 e depois 638 PASS com as mesmas 23
