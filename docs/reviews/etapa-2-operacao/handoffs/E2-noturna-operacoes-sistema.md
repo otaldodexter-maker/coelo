@@ -3,7 +3,7 @@ title: "Entrega do grupo operacoes-sistema — rodada noturna 09/10 de setembro"
 source: "trabalho proprio sobre a base d784462c1, branch work/etapa2-noturna-operacoes-sistema"
 status: "documento vivo; atualizado ate a pre-entrega das 04:50"
 generated_at: "2026-09-09"
-last_update: "2026-09-09 21:02 (America/Sao_Paulo)"
+last_update: "2026-09-09 21:38 (America/Sao_Paulo)"
 group: "operacoes-sistema"
 ---
 
@@ -30,6 +30,7 @@ coordenador.
 | `ef4b423a8`, `153b2dbfa` | Cinco suítes de rota recuperadas, 19 falhas ao todo. |
 | `9a074a05c` | 96 artefatos de diff de golden destrackeados; a worktree deixa de sujar. |
 | `458277400` | Minha conta: 32 casos cobrindo largura × tema × escala. |
+| `94465f9c3` | Agenda: reprodução do transbordamento a 375 preservada como skip, com o resultado negativo da correção tentada. |
 
 ## Medições publicadas
 
@@ -40,6 +41,26 @@ coordenador.
 | Idempotência de escrita | 13 sítios fora do recorte, por dono. |
 | Composição de produção | Suporte sem camada de dados; `account.profile` só em `/dev`; `account.sessions` sem tela. |
 | Overflow da tabela admin | Causa raiz nomeada; linhas inalcançáveis, não clipadas. |
+| Texto a 200% | Quatro telas falham; nenhuma largura sozinha acharia as três novas. |
+| Diretrizes a11y do Flutter | 21 de 27; `/dev/imports` falha nas três. |
+
+## Acessibilidade — o que ficou medido
+
+Classe única nas quatro telas que transbordam: **geometria fixa que não acompanha
+a escala de texto**. `mainAxisExtent` fixo em Planos, célula quadrada em
+Cardápios, célula de calendário em Agenda, tabela sem rolagem vertical em
+Importações.
+
+Agenda é a mais severa porque ocorre com **texto a 100%** num viewport de
+telefone. A correção autorizada — estender a condição `largeText` existente para
+largura estreita — foi aplicada, medida e **não resolve**: com uma única marca o
+transbordamento permanece idêntico, porque nem o número do dia mais uma marca
+cabe em 39,6 pixels. Revertida, e registrada a correção da minha própria
+recomendação: ela não é a mais barata de aprovar.
+
+Tema não é fator em nenhum caso. Claro e escuro falham identicamente nas mesmas
+rotas, o que separa o eixo de tema do eixo de largura e dispensa metade da
+matriz para quem vier depois.
 
 ## Bloqueios, com a natureza de cada um
 
