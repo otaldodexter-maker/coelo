@@ -86,6 +86,28 @@ O método já evitou três enganos concretos:
 | `b4cf3664a` | 01:20 | 6344 PASS, 14 SKIP, 146 FAIL — 129 golden, 17 não |
 | `8e230b15a` | 02:25 | **6370 PASS, 14 SKIP, 144 FAIL — 129 golden, 15 não** |
 
+**E o meu próprio denominador estava incompleto.** Todas as medições acima cobrem
+`apps/superadmin` e mais nada. Aplicando a mim a verificação que mandei às
+frentes, existem **sete outros conjuntos de teste no monorepo** que nenhuma
+medição desta rodada tocou — e três deles foram alterados esta noite. Medidos
+agora, sobre a base entregue:
+
+| Pacote | Resultado |
+| --- | --- |
+| `coelo_api` | 416 passam, nenhuma falha |
+| `coelo_auth` | 55 passam, nenhuma falha |
+| `coelo_domain` | 78 passam, nenhuma falha |
+| `coelo_tokens` | 13 passam, nenhuma falha |
+| `coelo_ui_admin` | 138 passam, nenhuma falha |
+| `coelo_ui_core` | 55 passam, nenhuma falha |
+| `apps/catalog` | 139 passam, **2 falham** |
+
+**São 894 casos que passam e nunca entraram em número nenhum**, e duas falhas em
+`apps/catalog` que ninguém tinha visto — fora do recorte da Etapa 2, que é só
+`apps/superadmin`, mas dentro do repositório. **O total honesto da base entregue é
+7264 casos que passam e 146 que falham**, e a coluna acima é o denominador que
+faltava.
+
 Nenhum número soma reexecuções, e cada linha é uma execução completa sobre a
 base indicada. A queda de PASS entre a terceira e a quarta linha não é regressão:
 a terceira medição rodou com um conjunto de suítes diferente. O que é comparável
