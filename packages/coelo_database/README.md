@@ -23,6 +23,11 @@ Status: pacote ativo. A primeira migration real nasceu de `specs/011-superadmin-
   replayada; os scripts `Invoke-SafeLocalMigrationReplay.ps1`,
   `Prepare-SafeMigrationReplay.ps1`, os perfis em `replay/profiles/` e o
   manifesto `replay/foundation-migrations.sha256` ficam como historico.
+- `candidatos/<grupo>/`: pacotes novos entregues pelos grupos e ainda nao
+  aplicados em producao. Nascem aqui (nunca em `migrations/`), na faixa de
+  carimbo do grupo; o coordenador os move para `migrations/` no commit em que
+  os aplica em producao, para `supabase db reset` local espelhar so o que
+  producao tem.
 - `plans/`: planos tecnicos antes da execucao.
 - `tests/` e `supabase/tests/`: queries de validacao e testes pgTAP.
 
