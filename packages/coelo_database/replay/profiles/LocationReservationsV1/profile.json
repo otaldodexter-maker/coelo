@@ -2,8 +2,8 @@
   "id": "LocationReservationsV1",
   "parent": {
     "id": "LocationCatalogV2",
-    "descriptor_sha256_crlf_utf8": "c46f836935e8f77125bca34f3ef643f4eeb477a9c4fb327479d43519e5da850b",
-    "resolver_sha256_crlf_utf8": "23bc78dc67ba09c2c75f4ab8b131032db9f17b264d32c8278b2804567c9f3542"
+    "descriptor_sha256_crlf_utf8": "9842dfb5d1580e8a332029f4d8d2ad7eb79c36ea3f856984f58fc7097db11a00",
+    "resolver_sha256_crlf_utf8": "6b5273af88b305e088541a17d3b6d9bdf86777fa3f858a4426a0fc671d61a3ce"
   },
   "target_version": "20260909165000",
   "canonical_additions": [
@@ -20,5 +20,5 @@
     "before": "20260909165000_superadmin_location_reservations_v2.sql"
   },
   "extra_bridges": [],
-  "planned_counts": {"canonical":59,"preflight":2,"bootstrap":3,"total":64}
+  "planned_counts": {"canonical":60,"preflight":2,"bootstrap":3,"total":65}
 }

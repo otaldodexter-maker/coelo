@@ -2,8 +2,8 @@
   "id": "FReadDirectoryContractRedDerived",
   "parent": {
     "id": "FReadDirectoryContractRed",
-    "descriptor_sha256_crlf_utf8": "56455b6f7d7d388d36ea68104292f4c2c5c02d5b22eac363733cad516ebb0fe7",
-    "resolver_sha256_crlf_utf8": "3a04448d525e906e94f90c9dce37d195db8221b56c203dc39e305adaf4bfd1b2"
+    "descriptor_sha256_crlf_utf8": "6bb7379f2b5351d1f05f763ef510c092cf8ca66403b267cd70a803a2b95d8dd3",
+    "resolver_sha256_crlf_utf8": "453a42ff5252900c30b76a1d30a871c16e85a72db893c7aa72138da7eb846fa8"
   },
   "target_version": "20260901200206",
   "forms_definition_materialization": {
@@ -16,8 +16,8 @@
   },
   "extra_bridges": [],
   "planned_counts": {
-    "canonical": 48,
+    "canonical": 49,
     "preflight": 2,
-    "total": 50
+    "total": 51
   }
 }

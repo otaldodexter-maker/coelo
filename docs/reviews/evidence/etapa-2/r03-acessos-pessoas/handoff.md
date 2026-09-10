@@ -107,3 +107,36 @@ corretamente na linha 4.
 3. **Alterei tres artefatos compartilhados**, todos de forma aditiva ou
    justificada: os dois scripts do harness, o `profile.json` do perfil de
    Seguranca infantil e o hash do descritor no resolver dele. Tudo reversivel.
+
+## Fechamento do corte de 16:30
+
+Base: rebaseada em `origin/dev` 552058da0, publicada em
+`work/etapa2-r03-acessos-pessoas`. Working tree limpo, sem WIP retido.
+
+**Cinco pacotes verdes, 182 testes pgTAP**, todos reconfirmados do zero na base
+rebaseada, cada um em processo isolado e com zero recurso residual:
+
+| Pacote | pgTAP | Estado |
+| --- | --- | --- |
+| `AP-PEOPLE-DETAIL-V2` | 42 | na fila |
+| `AP-INVITES-V2` | 33 | na fila |
+| `AP-INTERNAL-USERS-V2` | 48 | na fila |
+| `AP-CHILD-SAFETY-INTERNAL-READS` | 45 | na fila |
+| `AP-PEOPLE-READ-AAL1` | 14 | **retido ate a decisao AP-D1-AAL** |
+
+**22 perfis de replay restaurados.** O acrescimo de `20260812000000` ao
+manifesto (F-R03-FCR-003) quebrou 18 dos 22: cada `profile.json` fixa o hash do
+manifesto, cada resolver fixa o hash do seu `profile.json`, e a base subiu de 45
+para 46 entradas, deslocando contagens, totais e posicoes em cascata pelos
+derivados. Refeito por nivel, em cinco passes. De 4 verdes para 22.
+
+**A baseline de producao ainda nao chegou.** A coordenacao anunciou
+`20260910000000_baseline_producao.sql` e `migrations-historico/`, mas nenhum dos
+dois existe em `origin/dev` nem no checkout principal no momento deste
+fechamento. So o `.env.local` chegou. Por isso as provas desta revisao sao sobre
+a cadeia de migrations, nao sobre a baseline.
+
+**Primeiro gate aberto:** reprovar os cinco pacotes sobre a baseline assim que
+ela entrar, e no mesmo movimento trocar a fixture de Seguranca infantil de
+`institution_type_id` para `unit_type_id` — a coordenacao confirmou que producao
+usa `unit_type_id`, o que responde a decisao AP-D3-UNITS que eu havia levantado.

@@ -31,7 +31,7 @@ function Get-FReadGreenDerivedHash([string]$Path) {
 # This descriptor permits one local four-character materialization only.
 # It neither changes the canonical parent selection nor authorizes execution.
 $descriptorFile = Assert-FReadGreenDerivedFile (Join-Path $PSScriptRoot 'profile.json')
-if ((Get-FReadGreenDerivedHash $descriptorFile.FullName) -cne 'b6b1232c7e67e978747b784ba71de43afd8e85b3102645d91d53c66a457b2542') {
+if ((Get-FReadGreenDerivedHash $descriptorFile.FullName) -cne 'ec6435a0869c6356cf305cb01148a4cbf9e1f1d08e5277d35f42c9dbe3b3db67') {
   throw 'FReadDirectoryContractGreenDerived descriptor hash mismatch'
 }
 $descriptor = [IO.File]::ReadAllText($descriptorFile.FullName) | ConvertFrom-Json

@@ -25,7 +25,7 @@ function Get-LocationHash([string]$Path) {
 }
 
 $descriptorFile = Assert-LocationFile (Join-Path $PSScriptRoot 'profile.json')
-if ((Get-LocationHash $descriptorFile.FullName) -cne 'c46f836935e8f77125bca34f3ef643f4eeb477a9c4fb327479d43519e5da850b') { throw 'LocationCatalogV2 descriptor hash mismatch' }
+if ((Get-LocationHash $descriptorFile.FullName) -cne '9842dfb5d1580e8a332029f4d8d2ad7eb79c36ea3f856984f58fc7097db11a00') { throw 'LocationCatalogV2 descriptor hash mismatch' }
 $descriptor = [IO.File]::ReadAllText($descriptorFile.FullName) | ConvertFrom-Json
 if ($TargetVersion -cne $descriptor.target_version) { throw "LocationCatalogV2 requires target 20260908190650; received $TargetVersion" }
 if (@($descriptor.extra_bridges).Count -ne 0) { throw 'LocationCatalogV2 does not permit extra bridges' }
@@ -61,7 +61,7 @@ $bootstraps = @($bootstrapSpecs | ForEach-Object {
   $file
 } | Sort-Object Name)
 $canonical = @($parent.Canonical) + $additions
-if ($parent.Canonical.Count -ne 49 -or $parent.Preflight.Count -ne 2 -or
+if ($parent.Canonical.Count -ne 50 -or $parent.Preflight.Count -ne 2 -or
     $canonical.Count -ne $descriptor.planned_counts.canonical -or
     $parent.Preflight.Count -ne $descriptor.planned_counts.preflight -or
     $bootstraps.Count -ne $descriptor.planned_counts.bootstrap -or

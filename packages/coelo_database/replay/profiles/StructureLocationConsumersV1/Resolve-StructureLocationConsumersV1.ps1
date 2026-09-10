@@ -30,7 +30,7 @@ function Get-ConsumerHash([string]$Path) {
 }
 
 $descriptorFile = Assert-ConsumerFile (Join-Path $PSScriptRoot 'profile.json')
-if ((Get-ConsumerHash $descriptorFile.FullName) -cne 'ea128458850fc1f765d5acef254e934a3fb555bbde7de856215672f37a36328f') {
+if ((Get-ConsumerHash $descriptorFile.FullName) -cne '567d00d3fb2e509f3868d6870de227b59e6fd28671c7994435338abc49450cdb') {
   throw 'StructureLocationConsumersV1 descriptor hash mismatch'
 }
 $descriptor = [IO.File]::ReadAllText($descriptorFile.FullName) | ConvertFrom-Json

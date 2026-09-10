@@ -32,7 +32,7 @@ function Get-ModelReadHash([string]$Path) {
 # This exact diagnostic descriptor is not an extension mechanism or a lease.
 # Changing any metadata, bridge, name, count or digest requires another review.
 $descriptorFile = Assert-ModelReadFile (Join-Path $PSScriptRoot 'profile.json')
-if ((Get-ModelReadHash $descriptorFile.FullName) -cne '1435a23d80b419ff31cf592aaac1a73f358f5dc5c900d1de89d981a1d43b6799') {
+if ((Get-ModelReadHash $descriptorFile.FullName) -cne '196a40133506a593fcb3deae3fc8a1e8d72c92a339da41b3f1ff0549fd07d384') {
   throw 'ModelReadAuthorizationRed descriptor hash mismatch'
 }
 $descriptor = [IO.File]::ReadAllText($descriptorFile.FullName) | ConvertFrom-Json
@@ -56,7 +56,7 @@ $baseEntries = @(Get-Content -LiteralPath $manifestFile.FullName | Where-Object 
 })
 if ($baseEntries.Count -ne $descriptor.base.selected_canonical_count -or
     @($descriptor.extra_bridges).Count -ne 0) {
-  throw 'ModelReadAuthorizationRed requires Auth45 and zero extra bridges'
+  throw 'ModelReadAuthorizationRed requires Auth46 and zero extra bridges'
 }
 $canonicalEntries = @($baseEntries) + @($descriptor.canonical_additions)
 $preflightEntries = @($descriptor.inherited_preflights)

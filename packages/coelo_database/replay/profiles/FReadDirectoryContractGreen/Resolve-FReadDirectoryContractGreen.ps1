@@ -32,7 +32,7 @@ function Get-FReadGreenHash([string]$Path) {
 # This exact diagnostic descriptor is not an extension mechanism or a lease.
 # Changing any metadata, bridge, name, count or digest requires another review.
 $descriptorFile = Assert-FReadGreenFile (Join-Path $PSScriptRoot 'profile.json')
-if ((Get-FReadGreenHash $descriptorFile.FullName) -cne 'baa720662ebb022633d01f2ce512b613a681046a39ff9ada97ba9abc510e6fda') {
+if ((Get-FReadGreenHash $descriptorFile.FullName) -cne '2ddff38f6479d484b16e865d38d1746ca8e9dc7e27277003a993d03628ce7b47') {
   throw 'FReadDirectoryContractGreen descriptor hash mismatch'
 }
 $descriptor = [IO.File]::ReadAllText($descriptorFile.FullName) | ConvertFrom-Json
@@ -56,7 +56,7 @@ $baseEntries = @(Get-Content -LiteralPath $manifestFile.FullName | Where-Object 
 })
 if ($baseEntries.Count -ne $descriptor.base.selected_canonical_count -or
     @($descriptor.extra_bridges).Count -ne 0) {
-  throw 'FReadDirectoryContractGreen requires Auth45 and zero extra bridges'
+  throw 'FReadDirectoryContractGreen requires Auth46 and zero extra bridges'
 }
 $canonicalEntries = @($baseEntries) + @($descriptor.canonical_additions)
 $preflightEntries = @($descriptor.inherited_preflights)

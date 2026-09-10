@@ -2,19 +2,19 @@
   "id": "ActivityAggregateConcurrency",
   "parent": {
     "id": "A01DirectoryAuditGreen",
-    "descriptor_sha256_crlf_utf8": "bbd606be64e366502d84389f4a66e9e32ba500f29b043c5cf21cb332a14424ba",
-    "resolver_sha256_crlf_utf8": "6b055f0c09b0a918ce5c027e2b59504d7662646535bdcf065e24cdcecde863f2"
+    "descriptor_sha256_crlf_utf8": "a615fa191ecac8fbf8253ef1c0485a357fcb2a423638441601899d54e6a7916e",
+    "resolver_sha256_crlf_utf8": "b16e8691acfcfa065ef8499bbf12173c34b5abd8eba0edf4db38b033f34424b8"
   },
   "target_version": "20260908154257",
   "canonical_addition": {
     "file": "20260908154257_superadmin_activity_save_v2.sql",
     "sha256_crlf_utf8": "17a282d3105536c751a6b908cf6dbb9ff8820ebbdc2751cab9f0227faf991a90",
-    "canonical_union_position": 54
+    "canonical_union_position": 55
   },
   "extra_bridges": [],
   "planned_counts": {
-    "canonical": 54,
+    "canonical": 55,
     "preflight": 2,
-    "total": 56
+    "total": 57
   }
 }

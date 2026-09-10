@@ -1,0 +1,129 @@
+{
+  "geradoEm": "2026-09-10T18:03:03.269Z",
+  "metodo": "Cada chamada delimitada por casamento de parenteses a partir de rpc( e o bloco params por casamento de chaves, ignorando conteudo de string. Comparado com os nomes de argumento das funcoes public do dump schema-only de producao de 10/09/2026. Sobrecargas resolvidas pela de maior aridade.",
+  "rpcs_do_cliente_com_params": 90,
+  "divergencias": 5,
+  "quebras": 0,
+  "detalhe": [
+    {
+      "rpc": "get_profile_about",
+      "arquivos": [
+        "features/profile_about/data/supabase_profile_about_repository.dart"
+      ],
+      "enviados_pelo_cliente": [
+        "p_subject_id",
+        "p_subject_type"
+      ],
+      "esperados_em_producao": [
+        "p_subject_type",
+        "p_subject_id",
+        "p_preview_audience"
+      ],
+      "parametros_que_producao_NAO_conhece": [],
+      "parametros_que_o_cliente_NAO_envia": [
+        "p_preview_audience"
+      ],
+      "gravidade": "usa o default do parametro"
+    },
+    {
+      "rpc": "list_visible_profile_circulars",
+      "arquivos": [
+        "features/principal_circulars/data/supabase_circular_repository.dart"
+      ],
+      "enviados_pelo_cliente": [
+        "p_before_at",
+        "p_before_id",
+        "p_limit"
+      ],
+      "esperados_em_producao": [
+        "p_institution_id",
+        "p_unit_id",
+        "p_group_id",
+        "p_activity_id",
+        "p_before_at",
+        "p_before_id",
+        "p_limit"
+      ],
+      "parametros_que_producao_NAO_conhece": [],
+      "parametros_que_o_cliente_NAO_envia": [
+        "p_institution_id",
+        "p_unit_id",
+        "p_group_id",
+        "p_activity_id"
+      ],
+      "gravidade": "usa o default do parametro"
+    },
+    {
+      "rpc": "superadmin_agenda_command",
+      "arquivos": [
+        "features/agenda/data/supabase_agenda_repository.dart"
+      ],
+      "enviados_pelo_cliente": [
+        "p_request_id"
+      ],
+      "esperados_em_producao": [
+        "p_request_id",
+        "p_event_id",
+        "p_expected_revision",
+        "p_action",
+        "p_reason"
+      ],
+      "parametros_que_producao_NAO_conhece": [],
+      "parametros_que_o_cliente_NAO_envia": [
+        "p_event_id",
+        "p_expected_revision",
+        "p_action",
+        "p_reason"
+      ],
+      "gravidade": "usa o default do parametro"
+    },
+    {
+      "rpc": "superadmin_agenda_decide_publication",
+      "arquivos": [
+        "features/agenda/data/supabase_agenda_repository.dart"
+      ],
+      "enviados_pelo_cliente": [
+        "p_request_id"
+      ],
+      "esperados_em_producao": [
+        "p_request_id",
+        "p_publication_request_id",
+        "p_approve",
+        "p_reason"
+      ],
+      "parametros_que_producao_NAO_conhece": [],
+      "parametros_que_o_cliente_NAO_envia": [
+        "p_publication_request_id",
+        "p_approve",
+        "p_reason"
+      ],
+      "gravidade": "usa o default do parametro"
+    },
+    {
+      "rpc": "superadmin_agenda_save",
+      "arquivos": [
+        "features/agenda/data/supabase_agenda_repository.dart"
+      ],
+      "enviados_pelo_cliente": [
+        "p_request_id"
+      ],
+      "esperados_em_producao": [
+        "p_request_id",
+        "p_event_id",
+        "p_expected_revision",
+        "p_payload",
+        "p_reason",
+        "p_override_reservation"
+      ],
+      "parametros_que_producao_NAO_conhece": [],
+      "parametros_que_o_cliente_NAO_envia": [
+        "p_event_id",
+        "p_expected_revision",
+        "p_payload",
+        "p_reason",
+        "p_override_reservation"
+      ],
+      "gravidade": "usa o default do parametro"
+    }
+  ]
+}

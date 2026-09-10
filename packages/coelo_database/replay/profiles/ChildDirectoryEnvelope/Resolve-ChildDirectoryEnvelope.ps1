@@ -45,7 +45,7 @@ function Get-ChildEnvelopeBodyMd5([string]$Path) {
 }
 
 $descriptorFile = Assert-ChildEnvelopeFile (Join-Path $PSScriptRoot 'profile.json')
-if ((Get-ChildEnvelopeHash $descriptorFile.FullName) -cne 'eaf56b5effc01de3c9c92c2bba698b246229fe14a22658e989f05bb95acdc18e') {
+if ((Get-ChildEnvelopeHash $descriptorFile.FullName) -cne 'cdb103ce326475f4aa537003264531bcff447da1723f04279be82e005dfb64c2') {
   throw 'ChildDirectoryEnvelope descriptor hash mismatch'
 }
 $descriptor = [IO.File]::ReadAllText($descriptorFile.FullName) | ConvertFrom-Json
@@ -70,12 +70,12 @@ $baseEntries = @(Get-Content -LiteralPath $manifestFile.FullName | Where-Object 
 })
 if ($descriptor.base.profile -cne 'auth' -or
     $descriptor.base.boundary -cne '20260901200206' -or
-    $baseEntries.Count -ne 45 -or
+    $baseEntries.Count -ne 46 -or
     $baseEntries.Count -ne $descriptor.base.selected_canonical_count -or
     @($descriptor.canonical_additions).Count -ne 1 -or
     @($descriptor.local_bridges).Count -ne 1 -or
     @($descriptor.inherited_preflights).Count -ne 2) {
-  throw 'ChildDirectoryEnvelope requires unchanged Auth45, CHILD1, bridge1 and preflight2'
+  throw 'ChildDirectoryEnvelope requires unchanged Auth46, CHILD1, bridge1 and preflight2'
 }
 
 $canonicalEntries = @($baseEntries) + @($descriptor.canonical_additions)

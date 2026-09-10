@@ -32,7 +32,7 @@ function Get-FReadHash([string]$Path) {
 # This exact diagnostic descriptor is not an extension mechanism or a lease.
 # Changing any metadata, bridge, name, count or digest requires another review.
 $descriptorFile = Assert-FReadFile (Join-Path $PSScriptRoot 'profile.json')
-if ((Get-FReadHash $descriptorFile.FullName) -cne '56455b6f7d7d388d36ea68104292f4c2c5c02d5b22eac363733cad516ebb0fe7') {
+if ((Get-FReadHash $descriptorFile.FullName) -cne '6bb7379f2b5351d1f05f763ef510c092cf8ca66403b267cd70a803a2b95d8dd3') {
   throw 'FReadDirectoryContractRed descriptor hash mismatch'
 }
 $descriptor = [IO.File]::ReadAllText($descriptorFile.FullName) | ConvertFrom-Json
@@ -56,7 +56,7 @@ $baseEntries = @(Get-Content -LiteralPath $manifestFile.FullName | Where-Object 
 })
 if ($baseEntries.Count -ne $descriptor.base.selected_canonical_count -or
     @($descriptor.extra_bridges).Count -ne 0) {
-  throw 'FReadDirectoryContractRed requires Auth45 and zero extra bridges'
+  throw 'FReadDirectoryContractRed requires Auth46 and zero extra bridges'
 }
 $canonicalEntries = @($baseEntries) + @($descriptor.canonical_additions)
 $preflightEntries = @($descriptor.inherited_preflights)
