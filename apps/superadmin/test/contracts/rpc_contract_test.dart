@@ -1,0 +1,239 @@
+import 'dart:io';
+
+import 'package:flutter_test/flutter_test.dart';
+
+/// Contrato estatico entre as chamadas RPC do Superadmin e as funcoes que o
+/// pacote `coelo_database` realmente cria.
+///
+/// Suite verde nao e producao: um nome de RPC errado, um parametro renomeado no
+/// banco ou uma funcao que nunca entrou em migration passam por todos os testes
+/// de widget e de repositorio, porque esses testes usam cliente falso ou
+/// interceptam o transporte. O erro so aparece no primeiro uso real, como
+/// PGRST202 ou undefined_function, e chega a tela como indisponibilidade
+/// generica. Este teste fecha a lacuna lendo os dois lados do contrato.
+void main() {
+  final root = _repositoryRoot();
+  final calls = _callSites(Directory('${root.path}/apps/superadmin/lib'));
+  final declared = _declaredFunctions(Directory('${root.path}/packages/coelo_database'));
+
+  test('toda RPC chamada pelo Superadmin existe no pacote de banco', () {
+    expect(calls, isNotEmpty, reason: 'o varredor nao encontrou chamadas .rpc');
+
+    final missing = <String>{
+      for (final call in calls)
+        if (!declared.containsKey(call.name)) call.name,
+    };
+
+    expect(
+      missing.difference(_rpcsAusentesConhecidas.keys.toSet()),
+      isEmpty,
+      reason:
+          'Estas RPCs sao chamadas pelo cliente e nenhum arquivo de '
+          'packages/coelo_database as cria. Ou a funcao foi instalada fora do '
+          'versionamento, e entao o pacote nao descreve producao, ou a '
+          'superficie falha no primeiro uso real.',
+    );
+
+    // O inverso tambem precisa valer: uma ausencia resolvida tem de sair da
+    // lista, senao a lista envelhece e passa a esconder o problema seguinte.
+    expect(
+      _rpcsAusentesConhecidas.keys.where(declared.containsKey),
+      isEmpty,
+      reason:
+          'A funcao passou a existir no pacote. Remova o nome de '
+          '_rpcsAusentesConhecidas em vez de manter a excecao.',
+    );
+  });
+
+  test('nenhuma chamada envia parametro fora da assinatura declarada', () {
+    final offenders = <String>[];
+    for (final call in calls) {
+      final signature = declared[call.name];
+      if (signature == null || call.keys == null) continue;
+      final extra = call.keys!.difference(signature.all);
+      if (extra.isNotEmpty) {
+        offenders.add('${call.name} recebe ${extra.toList()..sort()} em ${call.where}');
+      }
+    }
+    expect(offenders, isEmpty, reason: offenders.join('\n'));
+  });
+
+  test('nenhuma chamada omite parametro obrigatorio da assinatura', () {
+    final offenders = <String>[];
+    for (final call in calls) {
+      final signature = declared[call.name];
+      if (signature == null || call.keys == null || call.spread) continue;
+      // `required` e a intersecao das sobrecargas declaradas, entao este teste
+      // acusa apenas a chamada que nao satisfaz NENHUMA forma existente. Uma
+      // chamada que satisfaz somente a forma legada, como
+      // meal_plan_request_image_delete sem p_expected_revision, continua
+      // legitima para o banco e esta descrita no relatorio de contrato; nao
+      // cabe a este teste decidir qual sobrecarga o produto deveria usar.
+      final absent = signature.required.difference(call.keys!);
+      if (absent.isEmpty) continue;
+      offenders.add('${call.name} omite ${absent.toList()..sort()} em ${call.where}');
+    }
+    expect(offenders, isEmpty, reason: offenders.join('\n'));
+  });
+}
+
+/// Nomes chamados pelo cliente que nenhuma migration do pacote cria.
+///
+/// Medido em 2026-09-10 sobre fa4b968a3. Relatorio:
+/// docs/reviews/etapa-2-operacao/reports/E2-noturna-contrato-rpc-20260910.md
+const _rpcsAusentesConhecidas = <String, String>{
+  'create_unit_for_superadmin': 'Unidades: criacao. Nenhuma migration cria a funcao.',
+  'update_unit_for_superadmin': 'Unidades: atualizacao. Nenhuma migration cria a funcao.',
+  'get_unit_form_for_superadmin': 'Unidades: formulario. Nenhuma migration cria a funcao.',
+  'list_units_for_superadmin': 'Unidades e filtros de Turmas. Nenhuma migration cria a funcao.',
+  'unit_directory_filter_options': 'Unidades e filtros de Turmas. Nenhuma migration cria a funcao.',
+};
+
+final class _Call {
+  _Call(this.name, this.where, this.keys, this.spread);
+
+  final String name;
+  final String where;
+  final Set<String>? keys;
+  final bool spread;
+}
+
+final class _Signature {
+  _Signature(this.required, this.all);
+
+  final Set<String> required;
+  final Set<String> all;
+}
+
+Directory _repositoryRoot() {
+  var directory = Directory.current;
+  for (var level = 0; level < 6; level++) {
+    if (Directory('${directory.path}/packages/coelo_database').existsSync()) return directory;
+    directory = directory.parent;
+  }
+  throw StateError(
+    'packages/coelo_database nao encontrado a partir de ${Directory.current.path}',
+  );
+}
+
+List<_Call> _callSites(Directory lib) {
+  final calls = <_Call>[];
+  final pattern = RegExp(r'\.rpc(?:<[^>()]*>)?\(');
+  for (final file in lib.listSync(recursive: true).whereType<File>()) {
+    if (!file.path.endsWith('.dart')) continue;
+    final text = file.readAsStringSync();
+    for (final match in pattern.allMatches(text)) {
+      final close = _span(text, match.end - 1, '(', ')');
+      if (close < 0) continue;
+      final inner = text.substring(match.end, close);
+      final name = RegExp("^\\s*'([A-Za-z0-9_]+)'").firstMatch(inner);
+      if (name == null) continue;
+      final rest = inner.substring(name.end);
+      final brace = rest.indexOf('{');
+      Set<String>? keys;
+      var spread = false;
+      if (brace >= 0) {
+        final end = _span(rest, brace, '{', '}');
+        if (end > 0) {
+          final body = _topLevel(rest.substring(brace + 1, end));
+          keys = RegExp("'([A-Za-z0-9_]+)'\\s*:")
+              .allMatches(body)
+              .map((entry) => entry.group(1)!)
+              .toSet();
+          spread = body.contains('...');
+        }
+      }
+      final line = text.substring(0, match.start).split('\n').length;
+      calls.add(_Call(name.group(1)!, '${file.uri.pathSegments.last}:$line', keys, spread));
+    }
+  }
+  return calls;
+}
+
+Map<String, _Signature> _declaredFunctions(Directory package) {
+  final declared = <String, _Signature>{};
+  final pattern = RegExp(
+    r'create\s+(?:or\s+replace\s+)?function\s+(?:[A-Za-z0-9_]+\.)?([A-Za-z0-9_]+)\s*\(',
+    caseSensitive: false,
+  );
+  for (final file in package.listSync(recursive: true).whereType<File>()) {
+    if (!file.path.endsWith('.sql')) continue;
+    // Testes pgTAP criam funcoes auxiliares que nao fazem parte do contrato.
+    if (file.path.replaceAll(r'\', '/').contains('/tests/')) continue;
+    final text = file.readAsStringSync();
+    for (final match in pattern.allMatches(text)) {
+      final close = _span(text, match.end - 1, '(', ')');
+      if (close < 0) continue;
+      final required = <String>{};
+      final all = <String>{};
+      for (final argument in _splitTopLevel(text.substring(match.end, close))) {
+        final words = argument.trim().split(RegExp(r'\s+'));
+        if (words.isEmpty || words.first.isEmpty) continue;
+        final qualifier = RegExp(r'^(?:out|inout|in|variadic)$', caseSensitive: false);
+        final name = qualifier.hasMatch(words.first)
+            ? (words.length > 1 ? words[1] : '')
+            : words.first;
+        if (name.isEmpty) continue;
+        all.add(name);
+        if (!RegExp(r'\bdefault\b|=', caseSensitive: false).hasMatch(argument)) {
+          required.add(name);
+        }
+      }
+      final key = match.group(1)!;
+      final previous = declared[key];
+      declared[key] = _Signature(
+        // Sobrecargas convivem: exigir a intersecao evita acusar uma chamada
+        // que satisfaz uma das formas declaradas.
+        previous == null ? required : previous.required.intersection(required),
+        previous == null ? all : previous.all.union(all),
+      );
+    }
+  }
+  return declared;
+}
+
+int _span(String text, int start, String open, String close) {
+  var depth = 0;
+  for (var index = start; index < text.length; index++) {
+    if (text[index] == open) {
+      depth++;
+    } else if (text[index] == close) {
+      depth--;
+      if (depth == 0) return index;
+    }
+  }
+  return -1;
+}
+
+String _topLevel(String body) {
+  final buffer = StringBuffer();
+  var depth = 0;
+  for (final character in body.split('')) {
+    if ('{[('.contains(character)) {
+      depth++;
+    } else if ('}])'.contains(character)) {
+      depth--;
+    } else if (depth == 0) {
+      buffer.write(character);
+    }
+  }
+  return buffer.toString();
+}
+
+List<String> _splitTopLevel(String arguments) {
+  final parts = <String>[];
+  final buffer = StringBuffer();
+  var depth = 0;
+  for (final character in arguments.split('')) {
+    if (character == '(') depth++;
+    if (character == ')') depth--;
+    if (character == ',' && depth == 0) {
+      parts.add(buffer.toString());
+      buffer.clear();
+    } else {
+      buffer.write(character);
+    }
+  }
+  parts.add(buffer.toString());
+  return parts;
+}

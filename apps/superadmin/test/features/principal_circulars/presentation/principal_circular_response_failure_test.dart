@@ -47,6 +47,27 @@ void main() {
     expect(repository.reads, 1, reason: 'encerramento nao pede releitura');
   });
 
+  testWidgets('o aviso do conflito e anunciado, nao so desenhado', (tester) async {
+    final handle = tester.ensureSemantics();
+    await _pumpReader(tester, _ReaderRepository(), _ResponseRepository(const CircularVersionConflict()));
+
+    await _answerAndSubmit(tester);
+
+    expect(
+      tester
+          .widgetList<Semantics>(
+            find.ancestor(
+              of: find.byKey(const Key('circular-response-conflict-notice')),
+              matching: find.byType(Semantics),
+            ),
+          )
+          .any((widget) => widget.properties.liveRegion ?? false),
+      isTrue,
+      reason: 'quem usa leitor de tela precisa ser avisado quando a recusa aparece',
+    );
+    handle.dispose();
+  });
+
   testWidgets('indisponibilidade transitoria continua convidando a tentar de novo', (
     tester,
   ) async {

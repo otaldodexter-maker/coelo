@@ -61,9 +61,26 @@ para 17, e das 17 nenhuma é órfã.** Elas se distribuem assim:
 | 1 | `app/router/principal_mixed_feed_pagination_red_test` | **vermelho proposital**, escrito esta noite |
 | 1 | `features/forms/.../forms_editor_page_test` | asserção estrutural de foco, preexistente |
 
-Há ainda um segundo vermelho proposital antigo, `people_creation_requirements_red_test`,
-que na base atual passa. Vermelho proposital é um teste escrito para falhar até
-que o defeito que ele nomeia seja corrigido — ele documenta, não regride.
+**Correção de categoria, feita por conferência externa:** eu contava dois
+vermelhos propositais e há **um**. O antigo,
+`people_creation_requirements_red_test`, ficou verde em algum momento da noite —
+o defeito que ele nomeava foi corrigido — e eu continuava classificando-o como
+proposital. Se essa contagem tivesse chegado até aqui, **um defeito real passaria
+por convenção**. Vermelho proposital é um teste escrito para falhar até que o
+defeito que ele nomeia seja corrigido; quando fica verde, ele deixa de ser
+proposital e vira cobertura comum.
+
+**E dois dos dezessete merecem prioridade sobre os outros**, porque não são
+cosméticos: `composition_root_fail_closed_routes_test` afirma que rotas de
+produção continuam falhando fechado, e `import_development_routes_test` afirma
+que rotas de desenvolvimento nunca usam o repositório de produção. São a
+invariante de não entregar rota nem resposta antes da autorização. A leitura do
+código aponta que a página de operações de Formulários dispara a carga produtiva
+no `initState` quando um `api` é injetado, o que faria o cliente **chamar** o
+backend numa rota declarada fechada — sem vazar dado, porque o servidor continua
+autoritativo, mas contrariando o contrato. **Isso está em medição neste momento e
+não é conclusão**: a asserção que contaria as chamadas nunca chega a executar,
+porque o teste falha antes dela.
 
 **As 129 falhas de golden são aceite visual e dependem de decisão sua**, não de
 código. As duas maiores concentrações são `agenda_calendar` com 14 casos e as
@@ -148,6 +165,22 @@ São **três buracos independentes** no mesmo caminho, cada um suficiente sozinh
    "nunca existiu" de "existe no remoto e nunca foi versionado" — para recriar a
    base dá no mesmo, para saber quem escreveu não dá.
 
+**Ressalva que atravessa toda esta seção, e ela é a mesma evidência lida ao
+contrário:** o repositório comprovadamente **não espelha produção**. A prova está
+dentro do próprio achado — `app_private.unit_import_source_attestations` é
+referenciada por uma migration versionada e criada por nenhuma, e produção
+evidentemente a tem, senão aquela migration nunca teria sido aplicada lá. Logo,
+**ausência no repositório não prova ausência em produção**. Tudo o que está
+medido acima é sobre o repositório: a cadeia não replica, o conjunto local não
+cria tabela, e há objetos chamados e nunca criados. Nada disso afirma que uma RPC
+específica falta no banco remoto.
+
+Isso foi encontrado por uma frente auditando as próprias afirmações: ela vinha
+usando a cadeia quebrada como argumento para explicar por que não consegue provar
+SQL, e ao mesmo tempo usando o repositório como espelho fiel de produção para
+afirmar ausência. **Os dois usos são incompatíveis**, e ela tinha os dois fatos
+sem os ter cruzado.
+
 **A consequência é maior que E2E.** Recriar a base do zero — ambiente novo,
 recuperação de desastre, homologação de verdade — não é difícil hoje, é
 impossível sem um dump. E enquanto não houver caminho de recriação, homologação
@@ -163,6 +196,170 @@ Limite desta afirmação, declarado: a frente que mediu verificou o próprio
 domínio arquivo por arquivo e deduziu o resto do fato de o conjunto local ser o
 mesmo para todas e não criar tabela nenhuma. Se alguma frente tiver um caminho
 de seed não conhecido, é a exceção que muda o quadro.
+
+## Nenhum teste conferia se a RPC chamada existe, e agora confere
+
+Um teste novo, `apps/superadmin/test/contracts/rpc_contract_test.dart`, fecha uma
+lacuna que atravessava a suíte inteira: **nenhum teste do app verificava se a RPC
+que o cliente chama existe no pacote de banco**, porque todos usam cliente falso
+ou interceptam transporte. Nome errado, parâmetro renomeado em migration
+posterior ou função que nunca entrou no versionamento passavam por 6 mil testes
+verdes e falhavam no primeiro uso real — chegando à tela como indisponibilidade
+genérica, indistinguível de queda de rede. **A própria interface escondia o
+defeito.**
+
+Medidos os dois lados: 80 chamadas `.rpc`, 76 nomes distintos, contra 383 funções
+declaradas no pacote. O teste roda em menos de um segundo, sem binding de
+Flutter, e foi validado com controle negativo nos três casos.
+
+**Achado 1, e é grave: cinco RPCs do diretório de Unidades não são criadas por
+arquivo nenhum do repositório** — `create_unit_for_superadmin`,
+`update_unit_for_superadmin`, `get_unit_form_for_superadmin`,
+`list_units_for_superadmin` e `unit_directory_filter_options`. As outras 71
+existem. E não é falha do varredor: a migration versionada `20260825180500`
+**chama** `app_private.create_unit_for_superadmin` de dentro do confirmador de
+importação, e o cabeçalho dela diz textualmente "Repair locally installed Unit
+import/export worker functions". Uma migration do pacote depende de função que o
+pacote nunca cria.
+
+As duas leituras possíveis pedem decisões opostas: ou as funções existem em
+produção instaladas fora do versionamento — e aí o pacote não descreve produção —
+ou não existem, e **Unidades e os filtros de Turmas falham fechado no primeiro
+uso**. Um `select` de catálogo resolve em segundos, e é o que a próxima janela
+autorizada deve fazer **antes** de qualquer promoção de Unidades. Isto se soma
+diretamente aos 40 objetos `app_private` chamados e nunca criados: é o mesmo
+buraco, visto do lado do cliente.
+
+**Achado 2: a guarda de concorrência de imagem de Cardápios nunca roda.**
+`meal_plan_request_image_delete` tem duas formas — a migration de recibos
+`20260820230000` criou a de três argumentos com `p_expected_revision` e manteve a
+de dois por compatibilidade, cujo corpo lê a revisão corrente do próprio banco e
+a repassa. **O cliente chama a de dois.** Para o banco a chamada é legítima, por
+isso nenhum teste acusa, e o efeito é que uma exclusão disparada sobre lista
+desatualizada remove a imagem corrente em vez de ser recusada por divergência.
+Não foi corrigido por contrato, não por tempo: o domínio de imagem de Cardápios
+não tem conceito de revisão de ativo, e ler a revisão no cliente logo antes do
+delete reproduziria exatamente o furo que a guarda existe para fechar. Exige a
+leitura expor a revisão que a pessoa viu — mudança de contrato de domínio, e
+decisão sua.
+
+**Achado 3, que é resultado e não ausência de medida:** zero divergência de nome
+de parâmetro nas 80 chamadas. O pacote já tem teste próprio de nomes de
+argumento, o que mostra que essa classe já cobrou preço antes; hoje está limpa.
+
+O teste falha também **se uma das cinco ausências passar a existir e continuar na
+lista** — sem isso a lista de exceções envelhece e passa a esconder o defeito
+seguinte, que é como esse tipo de allowlist costuma morrer.
+
+## Os 129 goldens não são um bloco, e rebaseline cego apagaria produto
+
+Quatro conjuntos foram amostrados abrindo `masterImage` e `testImage` lado a lado.
+Deram **três perfis distintos**, e a conclusão prática é forte: **na amostra, a
+maioria dos casos tem componente que um rebaseline em bloco apagaria.**
+
+**Agenda, 14 casos — deriva pura de shell, rebaseline seguro.** A 1440 o diff é
+0,05% e **837 pixels**, nas duas variantes de tema, que é a assinatura exata do
+commit que fundiu o rótulo do alternador da barra lateral com a ação. A 375 e 768
+sobe para 10%–18%, e o diff isolado mostra **todo o conteúdo deslocado
+verticalmente por poucos pixels**, do título ao último dia — nenhuma diferença de
+conteúdo, a página inteira descendo. É o commit que "alinha o cabeçalho compacto
+e reserva espaço de ação", que só muda a altura do cabeçalho nas larguras
+compactas. Duas mudanças aprovadas, separadas por largura. Agenda não esconde
+nada.
+
+**Conta, 8 casos — tem mudança de produto, e era a família que eu apostava ser só
+cabeçalho.** A 375 e 768, 44%–73%, até 503 mil pixels; a 1024 e 1440, 3,9%–5,1%,
+de 36 mil a 63 mil. O que mata a hipótese: nas larguras largas o diff é **cem
+vezes** a assinatura de 837 pixels. Se fosse cabeçalho puro, 1440 daria 837 como
+em Agenda. O diff de configurações a 1440 mostra diferença no **corpo** — um
+controle segmentado de três opções com a primeira realçada, e uma linha com
+interruptor à direita.
+
+**Cardápios, 6 casos — conteúdo puro, sem componente de shell visível.**
+0,86%–8,70%. No diretório a 1440 a barra lateral não aparece no diff; o que difere
+é um cartão, com um ponto de status trocando de cor e linhas de texto sobrepostas
+onde um rótulo e uma data mudaram.
+
+**Instituições, 4 casos** — já relatado antes: cabeçalho conhecido **mais** o
+cartão tracejado "Criar instituição" presente na referência e ausente na captura
+atual, com dados e paginação diferentes. Pode ser afordância de criação sumindo
+de um diretório do MVP, ou apenas fixture diferente; barato de confirmar por quem
+tem o recorte, e nenhuma das duas respostas aparece se os 129 forem tratados como
+bloco.
+
+**A recomendação que sai disso:** rebaseline por família, não em bloco, e cada
+família com conteúdo passa antes pelo dono. Agenda pode ir hoje; Conta,
+Cardápios e Instituições, não.
+
+## Bloqueio herdado é a espécie que mente
+
+Perto do fim da rodada, uma frente descobriu que uma das próprias linhas de
+bloqueio era falsa: a ação de imagem em pergunta de Formulários estava registrada
+como esperando contrato de mídia de outro grupo, e o contrato **já existia,
+aplicado, e era do próprio grupo** — a RPC de preparação com `grant` para
+`authenticated`, a de finalização revogada porque é função de worker, a Edge
+Function conferindo o MIME real dos bytes, e até o adaptador de cliente pronto. O
+bloqueio existia apenas no registro.
+
+Isso virou tarefa para todas as frentes: **cada linha de bloqueio é uma hipótese
+que ninguém testou**, e ela é mais perigosa que um achado errado, porque bloqueio
+declarado parece informação e não pergunta. Ninguém confere. E eu ia trazer essa
+lista a você como se fosse fato — cada linha falsa aqui é uma decisão sua sobre
+um problema que não existe, ou um trabalho que você adia sem motivo.
+
+O reteste achou mais dois na mesma frente, e os dois mudam o que você decide:
+
+**Pergunta de Local em Formulários não está esperando decisão para destravar
+código pronto.** O registro dizia `blocked-decision`, sobre opções fixadas na
+publicação contra catálogo dinâmico — o que sugere implementação à espera. Não
+há: o domínio de Formulários não tem um `kind` de Local, a tela de resposta não
+tem nenhuma ocorrência, e as quatro do editor são todas outra coisa
+(`_validateLocally`, `_saveDraftLocally` e afins). O enunciado correto é **decida
+e depois construa**, não "decida e sai".
+
+**`care049` não espera autorização remota; espera aprovação de spec.** A
+`specs/049-superadmin-internal-care-profile-crud-v2.md` está com status
+`draft-for-review` — é rascunho não aprovado, e é ela que criaria o contrato real.
+E a spec vigente, `specs/020-superadmin-health-care.md`, está como
+`approved-for-demonstrative-ui`. Ou seja: **Saúde e Medicação não terem
+repositório de produção não é omissão nem gate de implantação — é o escopo
+aprovado.** São decisões diferentes, de pessoas diferentes, em prazos diferentes,
+e a linha antiga levaria você a autorizar um pacote quando o que falta é aprovar
+uma spec.
+
+E a lição que a própria frente tirou é a generalização mais útil da noite: **dos
+bloqueios dela, os três que estavam errados eram exatamente os três copiados do
+rastreador sem teste. Nenhum bloqueio que ela mesma havia verificado estava
+errado.** Bloqueio herdado é a espécie que mente.
+
+## Auditoria das onze certificações de Front-end
+
+As onze ações com Front-end `verified` foram reauditadas nesta rodada, uma a uma,
+conferindo se a evidência citada existe e o que ela de fato prova. **As onze
+apontam para arquivos que existem.** Mas a qualidade da prova não é uniforme, e a
+diferença importa:
+
+- **Quatro de erros** (`errors.403/404/500/503`) apontam para um arquivo de teste
+  no repositório. É a forma mais forte: a prova é reexecutável hoje.
+- **Quatro de autenticação** e **uma de exportação de Assiduidade** apontam para
+  documentos de reconciliação em `docs/reviews/evidence/`, que existem e estão
+  versionados.
+- **Duas — `profile-files.import` e `profile-files.export` — apontavam para um
+  relatório que cita "24/24 testes de página/estados/componente" e um log num
+  diretório temporário.** O log já não existe, e uma frente mediu esta noite que
+  **as três ações de arquivo de perfil não tinham nenhum teste no app inteiro**.
+  Os 24 testes cobriam a página; não cobriam essas ações, seus rótulos nem o
+  estado adiado. A certificação não era falsa, mas era mais fraca do que o rótulo
+  `verified` sugere.
+
+Isso foi corrigido no mesmo turno em que foi descoberto: as três ações agora têm
+teste próprio, que fixa a presença na tela, os rótulos e o estado adiado.
+
+**A lição vale mais que a correção, e é uma lição sobre o meu próprio processo:**
+uma certificação que aponta para um log em diretório temporário não é
+verificável depois que a máquina reinicia. A regra que fica é que evidência de
+certificação precisa ser um arquivo versionado no repositório — de preferência um
+teste — e não um log, um caminho local ou uma contagem citada em prosa.
 
 ## Progresso por tela
 
@@ -526,8 +723,27 @@ compartilhado, em vez de corrigir só a tela que quebrou.
 2. **Baseline visual de `errors.409`**, que nunca existiu.
 3. **Visibilidade do leitor Principal no Sobre.** Não existe token de leitura em
    `profiles.about.*`, apenas manage, publish e update_official_data.
-4. **Contraste do chip DESTAQUE em Para Você:** 3,75:1 contra o mínimo AA de
-   4,5:1 para 11 px. Corrigir altera composição aprovada e move 20 goldens.
+4. **Contraste do chip DESTAQUE em Para Você**, agora medido dos dois lados e
+   com a causa isolada. **Tema claro: 3,75:1** contra o mínimo AA de 4,5:1 — o
+   número herdado estava certo. **Tema escuro: 6,25:1, passa** — e isso ninguém
+   tinha dito, o defeito é só do tema claro.
+
+   A causa não é escolha de valor, é estrutural: no tema claro **o véu e o texto
+   são a mesma cor**, `onPrimary` branco. Qualquer véu branco aproxima o chip do
+   texto. A curva foi medida: alfa 0 dá 4,66 e passaria; 0,08 dá 4,21; 0,16, que
+   é o atual, dá 3,75; 0,24 dá 3,32. **Não existe alfa de véu branco que
+   resolva** — só remover o véu, o que apaga o chip.
+
+   O que resolveria mantendo o chip: inverter o véu para o tom escuro da própria
+   marca. `orange950` a 16% sobre `orange500` dá **5,75:1**, usa token de paleta
+   existente, e fica simétrico com o tema escuro, que já veda com `orange950`.
+
+   Não foi aplicado porque o token é `scheme.onPrimary`, compartilhado — decisão
+   do `coelo-ui`. E o custo foi medido em vez de estimado: a troca **quebra 13 de
+   13 goldens** de `principal_for_you_preview_golden_test`. Revertida, árvore
+   limpa conferida. **A decisão é entre uma tela que não cumpre AA no tema claro
+   e treze referências aprovadas que precisam ser regravadas** — com o número dos
+   dois lados, que é o que faltava.
 5. **Contrato visual de Editar perfil.**
 6. **Contrato de UX de Lançamentos** (`daily-routine.publish`): o comando existe,
    a tela não, e a spec 021 não cobre Lançamentos.
@@ -551,15 +767,29 @@ compartilhado, em vez de corrigir só a tela que quebrou.
     produtivas. Um responsável que toca em responder no Agora lê que o produto
     que ele está usando é um rascunho.
 
-    O que torna isto decisão e não correção: o repositório já tem as **duas
-    respostas contrárias**. O teste da rota do Perfil exige que a frase
-    "experiência completa" **não** apareça; o teste de Para Você **espera** a
-    frase. Duas superfícies Principal, duas decisões opostas, no mesmo produto.
-    As opções são ou a ação sumir quando não há capacidade — que é o que a
-    galeria de Acontece já faz — ou a mensagem deixar de afirmar prévia. A
-    primeira muda composição aprovada; a segunda muda linguagem do produto. As
-    duas são baratas de executar e nenhuma é decisão de frente. O patch das três
-    telas está preparado e não mesclado, à espera da resposta.
+    **Correção da minha própria leitura, feita antes de isto chegar a você.** Eu
+    havia escrito que o repositório tem as duas respostas contrárias — que o
+    teste do Perfil proíbe a frase e o de Para Você a espera. **Está errado.** A
+    ocorrência em Para Você está dentro de um `findsNothing`: o teste se chama
+    "diz claramente que um atalho sem destino está indisponível", toca em
+    Cardápio na rota real, e assere que aparece "Cardápio ainda não está
+    disponível" e que **não** aparece "estará disponível na experiência
+    completa", com o comentário "uma rota de produção nunca responde com a
+    mensagem de prévia". Eu vi a string e li como expectativa; a asserção em
+    volta dizia o oposto.
+
+    Com isso o item **encolhe e melhora**. Não há duas filosofias no produto:
+    Perfil e Para Você **já estão corrigidos e provados**, e Acontece, Agora e
+    Momentos ficaram para trás — nessas três os testes de fato esperam a frase
+    presente, com `findsOneWidget`. Então a decisão deixa de ser "escolher entre
+    duas filosofias" e passa a ser **aplicar em três telas o que duas já fazem**,
+    que é conserto com precedente e não escolha de linguagem.
+
+    As opções continuam sendo a ação sumir quando não há capacidade — o que a
+    galeria de Acontece já faz — ou a mensagem deixar de afirmar prévia. O patch
+    das três telas está preparado e não mesclado, à espera da resposta; e não há
+    versão de Para Você a fazer, porque a frase já é inalcançável na rota de
+    produção.
 
 13. **Três capacidades de Circulares travadas em graus diferentes, e nenhuma por
     falta de trabalho.** *Agendar* está desabilitada honestamente porque nenhum
