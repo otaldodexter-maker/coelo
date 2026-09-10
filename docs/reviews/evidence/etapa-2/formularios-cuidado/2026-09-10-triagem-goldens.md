@@ -15,14 +15,18 @@ Metodo: a imagem diz ONDE olhar, o codigo diz O QUE aconteceu. Comparei
 elemento a elemento entre a referencia e a captura atual, em vez de olhar o que
 acende no diff.
 
-**Precisao sobre a contagem de 23.** As imagens foram coletadas na branch do
-grupo, e ali os goldens de `forms_operations` PASSAVAM — por isso nenhuma
-imagem de operacoes aparece nas tabelas abaixo. Na base integrada `3fb200dab`
-o caso de operacoes tambem falha, o que eleva as imagens do recorte acima de
-23. A diferenca e de base e nao de leitura: a triagem elemento a elemento vale
-para as 23 que eu de fato abri, e o caso de operacoes nao foi triado imagem a
-imagem. Digo isto explicitamente para ninguem ler "23 imagens triadas" como
-"todas as imagens do recorte triadas".
+**Precisao sobre a contagem de 23, corrigida duas vezes.** Primeiro atribui a
+ausencia de operacoes a uma diferenca de base. Estava errado, e o motivo real e
+pior e mais util: a coleta de imagens usava um `grep` que assumia a mensagem de
+falha **numa linha so**, e para esse arquivo a mensagem quebrou em duas. A
+imagem existia e o meu instrumento nao a viu.
+
+Mais um caso da mesma familia das outras quatro ressalvas de instrumento desta
+madrugada — e o unico em que o instrumento SUBESTIMOU em silencio, sem reprovar
+nada, que e a forma mais dificil de notar.
+
+A imagem faltante foi triada e esta na tabela de deslocamento abaixo. Sao **24
+imagens**, nao 23.
 
 ## Resposta curta
 
@@ -55,6 +59,14 @@ Imagens nesta categoria, deslocamento em bloco puro:
 | forms_directory_empty_light_375_v4_19 | 13,39% |
 | form_response_light_375 | 12,78% |
 | forms_directory_unauthorized_light_375_200_v4_19 | 9,87% |
+| forms_operations_monitor_light_375 | medida a parte |
+
+`forms_operations_monitor_light_375` foi aberta depois das demais e e o caso mais
+limpo do conjunto: referencia e captura tem o MESMO conteudo de ponta a ponta —
+o titulo, os quatro cartoes de metrica com 128 elegiveis, 89 que responderam, 37
+que nao responderam e 2 que perderam elegibilidade, e as quatro linhas de
+contexto com numeros identicos — deslocados em bloco pelo mesmo cabecalho
+compacto mais alto. Nenhum elemento diferente.
 
 ## Causa 2 — mudancas deliberadas de produto que ninguem regravou
 
