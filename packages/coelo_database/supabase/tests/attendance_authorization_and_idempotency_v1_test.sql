@@ -4,7 +4,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(16);
+select plan(23);
 
 -- --------------------------------------------------------------------------
 -- Parte 1: ler deixou de alcancar gerir
@@ -97,17 +97,17 @@ select has_table('app_private','attendance_idempotency_reservations',
   'a reserva de chave existe');
 
 select has_function('public','attendance_reserve_idempotency_key',
-  array['text','uuid','bigint'], 'o cliente pede a chave ao banco');
+  array['text','uuid','bigint','jsonb'], 'o cliente pede a chave ao banco');
 
 select ok(
   not has_function_privilege('anon',
-    'public.attendance_reserve_idempotency_key(text,uuid,bigint)','EXECUTE')
+    'public.attendance_reserve_idempotency_key(text,uuid,bigint,jsonb)','EXECUTE')
   and has_function_privilege('authenticated',
-    'public.attendance_reserve_idempotency_key(text,uuid,bigint)','EXECUTE')
+    'public.attendance_reserve_idempotency_key(text,uuid,bigint,jsonb)','EXECUTE')
   and not has_function_privilege('anon',
-    'app_private.attendance_reserve_idempotency_key(text,uuid,bigint)','EXECUTE')
+    'app_private.attendance_reserve_idempotency_key(text,uuid,bigint,jsonb)','EXECUTE')
   and not has_function_privilege('authenticated',
-    'app_private.attendance_reserve_idempotency_key(text,uuid,bigint)','EXECUTE'),
+    'app_private.attendance_reserve_idempotency_key(text,uuid,bigint,jsonb)','EXECUTE'),
   'so o wrapper publico e chamavel, e so por sessao autenticada'
 );
 
@@ -130,31 +130,95 @@ select ok(
 
 select ok(
   pg_get_functiondef(
-    'app_private.attendance_reserve_idempotency_key(text,uuid,bigint)'::regprocedure)
+    'app_private.attendance_reserve_idempotency_key(text,uuid,bigint,jsonb)'::regprocedure)
     like '%authentication required%',
   'sessao ausente recebe negativa antes de qualquer escrita'
 );
 
 select ok(
   pg_get_functiondef(
-    'app_private.attendance_reserve_idempotency_key(text,uuid,bigint)'::regprocedure)
-    like '%digest :=%p_command%'
+    'app_private.attendance_reserve_idempotency_key(text,uuid,bigint,jsonb)'::regprocedure)
+    like '%app_private.attendance_intent_digest(%'
   and pg_get_functiondef(
-    'app_private.attendance_reserve_idempotency_key(text,uuid,bigint)'::regprocedure)
+    'app_private.attendance_reserve_idempotency_key(text,uuid,bigint,jsonb)'::regprocedure)
     not like '%p_intent_digest%',
   'o digest da intencao e montado no servidor, nunca recebido do cliente'
 );
 
+-- --------------------------------------------------------------------------
+-- A semantica de intencao, que antes vivia no cliente Flutter
+-- --------------------------------------------------------------------------
+
+-- Criar chamada e o unico comando sem agregado e sem versao esperada. Se a
+-- intencao dele nao fosse descrita pelo contexto, duas chamadas diferentes do
+-- mesmo profissional receberiam a mesma chave, que e pior do que nao ter chave.
+select is(
+  app_private.attendance_intent_digest('create_call', null, null,
+    '{"institution_id":"institution-1","unit_id":"unit-1","group_id":"group-1",
+      "activity_id":"activity-1","session_date":"2026-08-10"}'::jsonb),
+  app_private.attendance_intent_digest('create_call', null, null,
+    '{"institution_id":"institution-1","unit_id":"unit-1","group_id":"group-1",
+      "activity_id":"activity-1","session_date":"2026-08-10"}'::jsonb),
+  'repetir a mesma criacao e uma intencao repetida, nao duas chamadas'
+);
+
+select isnt(
+  app_private.attendance_intent_digest('create_call', null, null,
+    '{"institution_id":"institution-1","unit_id":"unit-1","group_id":"group-1",
+      "activity_id":"activity-1","session_date":"2026-08-10"}'::jsonb),
+  app_private.attendance_intent_digest('create_call', null, null,
+    '{"institution_id":"institution-1","unit_id":"unit-1","group_id":"group-2",
+      "activity_id":"activity-1","session_date":"2026-08-10"}'::jsonb),
+  'outra turma e outra chamada'
+);
+
+select isnt(
+  app_private.attendance_intent_digest('create_call', null, null,
+    '{"institution_id":"institution-1","unit_id":"unit-1","group_id":"group-1",
+      "activity_id":"activity-1","session_date":"2026-08-10"}'::jsonb),
+  app_private.attendance_intent_digest('create_call', null, null,
+    '{"institution_id":"institution-1","unit_id":"unit-1","group_id":"group-1",
+      "activity_id":"activity-1","session_date":"2026-08-11"}'::jsonb),
+  'outro dia e outra chamada'
+);
+
+-- Depois que a chamada avanca, a intencao antiga deixou de existir.
+select isnt(
+  app_private.attendance_intent_digest('complete_call',
+    '10000000-0000-4000-8000-000000000001'::uuid, 3, null),
+  app_private.attendance_intent_digest('complete_call',
+    '10000000-0000-4000-8000-000000000001'::uuid, 4, null),
+  'versao esperada diferente e intencao diferente'
+);
+
+select throws_ok(
+  $call$select app_private.attendance_intent_digest('create_call', null, null, null)$call$,
+  '22023', 'attendance call scope required',
+  'criar chamada sem contexto e recusado em vez de virar chave generica'
+);
+
+select throws_ok(
+  $call$select app_private.attendance_intent_digest('complete_call', null, 1, null)$call$,
+  '22023', 'attendance aggregate required',
+  'comando sobre chamada existente exige o agregado'
+);
+
+select throws_ok(
+  $call$select app_private.attendance_intent_digest('drop_everything', null, null, null)$call$,
+  '22023', 'invalid attendance command',
+  'comando fora da lista e recusado'
+);
+
 select ok(
   pg_get_functiondef(
-    'app_private.attendance_reserve_idempotency_key(text,uuid,bigint)'::regprocedure)
+    'app_private.attendance_reserve_idempotency_key(text,uuid,bigint,jsonb)'::regprocedure)
     like '%on conflict (actor_person_id, command, intent_digest) do update%',
   'a mesma intencao devolve sempre a mesma chave'
 );
 
 set local role anon;
 select throws_ok(
-  $call$select public.attendance_reserve_idempotency_key('create_call',null,null)$call$,
+  $call$select public.attendance_reserve_idempotency_key('create_call',null,null,null)$call$,
   '42501', null, 'anonimo nao reserva chave'
 );
 

@@ -245,13 +245,68 @@ revoke all on app_private.attendance_idempotency_reservations
   from public, anon, authenticated;
 grant all on app_private.attendance_idempotency_reservations to service_role;
 
--- A intencao e descrita pelo servidor a partir do que o cliente pediu, nunca
--- pelo cliente diretamente: se o cliente escolhesse o digest, ele voltaria a
--- poder trocar a chave a cada tentativa e a reserva nao valeria nada.
+-- O digest da intencao e montado pelo servidor, nunca recebido pronto: se o
+-- cliente escolhesse o digest, voltaria a poder trocar a chave a cada tentativa
+-- e a reserva nao valeria nada. O cliente informa apenas o contexto da
+-- operacao, que e o mesmo que ele ja precisa enviar no comando; a normalizacao
+-- e a forma sao decididas aqui.
+--
+-- Criar chamada e o unico comando sem agregado e sem versao esperada, entao a
+-- intencao dele so pode ser descrita pelo contexto: instituicao, unidade,
+-- turma, atividade e dia. Sem isso, duas chamadas diferentes do mesmo
+-- profissional receberiam a mesma chave, que e pior do que nao ter chave.
+--
+-- Funcao separada e pura de proposito: assim a regra de intencao pode ser
+-- provada sem sessao, sem pessoa e sem fixture.
+create or replace function app_private.attendance_intent_digest(
+  p_command text,
+  p_aggregate_id uuid,
+  p_expected_version bigint,
+  p_scope jsonb
+) returns text
+language plpgsql
+immutable
+security definer
+set search_path=''
+as $$
+begin
+  if p_command not in (
+    'create_call','set_participant','mark_remaining_present',
+    'clear_presence_marks','complete_call','reopen_call','undo_bulk'
+  ) then
+    raise invalid_parameter_value using message='invalid attendance command';
+  end if;
+
+  if p_command = 'create_call' then
+    if p_scope is null
+      or coalesce(btrim(p_scope->>'institution_id'), '') = ''
+      or coalesce(btrim(p_scope->>'group_id'), '') = ''
+      or coalesce(btrim(p_scope->>'session_date'), '') = '' then
+      raise invalid_parameter_value using message='attendance call scope required';
+    end if;
+    return 'create_call:'
+      || lower(btrim(p_scope->>'institution_id')) || ':'
+      || lower(btrim(coalesce(p_scope->>'unit_id', ''))) || ':'
+      || lower(btrim(p_scope->>'group_id')) || ':'
+      || lower(btrim(coalesce(p_scope->>'activity_id', ''))) || ':'
+      || ((p_scope->>'session_date')::date)::text;
+  end if;
+
+  if p_aggregate_id is null then
+    raise invalid_parameter_value using message='attendance aggregate required';
+  end if;
+  -- Versao esperada faz parte da intencao: depois que a chamada avanca, a
+  -- intencao antiga deixou de existir e a proxima reserva recebe outra chave.
+  return p_command || ':' || p_aggregate_id::text || ':'
+    || coalesce(p_expected_version::text, '');
+end
+$$;
+
 create or replace function app_private.attendance_reserve_idempotency_key(
   p_command text,
   p_aggregate_id uuid,
-  p_expected_version bigint
+  p_expected_version bigint,
+  p_scope jsonb
 ) returns uuid
 language plpgsql
 volatile
@@ -266,20 +321,8 @@ begin
   if actor is null then
     raise insufficient_privilege using message='authentication required';
   end if;
-  if p_command not in (
-    'create_call','set_participant','mark_remaining_present',
-    'clear_presence_marks','complete_call','reopen_call','undo_bulk'
-  ) then
-    raise invalid_parameter_value using message='invalid attendance command';
-  end if;
-  if p_command <> 'create_call' and p_aggregate_id is null then
-    raise invalid_parameter_value using message='attendance aggregate required';
-  end if;
-
-  -- Versao esperada faz parte da intencao: depois que a chamada avanca, a
-  -- intencao antiga deixou de existir e a proxima reserva recebe outra chave.
-  digest := p_command || ':' || coalesce(p_aggregate_id::text, '') || ':'
-    || coalesce(p_expected_version::text, '');
+  digest := app_private.attendance_intent_digest(
+    p_command, p_aggregate_id, p_expected_version, p_scope);
 
   insert into app_private.attendance_idempotency_reservations(
     actor_person_id, command, aggregate_id, intent_digest, idempotency_key
@@ -297,20 +340,24 @@ $$;
 create or replace function public.attendance_reserve_idempotency_key(
   command text,
   aggregate_id uuid default null,
-  expected_version bigint default null
+  expected_version bigint default null,
+  scope jsonb default null
 ) returns uuid language sql volatile security invoker set search_path='' as $$
   select app_private.attendance_reserve_idempotency_key(
-    command, aggregate_id, expected_version)
+    command, aggregate_id, expected_version, scope)
 $$;
 
 revoke all on function
-  app_private.attendance_reserve_idempotency_key(text,uuid,bigint)
+  app_private.attendance_intent_digest(text,uuid,bigint,jsonb)
   from public, anon, authenticated;
 revoke all on function
-  public.attendance_reserve_idempotency_key(text,uuid,bigint)
+  app_private.attendance_reserve_idempotency_key(text,uuid,bigint,jsonb)
+  from public, anon, authenticated;
+revoke all on function
+  public.attendance_reserve_idempotency_key(text,uuid,bigint,jsonb)
   from public, anon, authenticated;
 grant execute on function
-  public.attendance_reserve_idempotency_key(text,uuid,bigint)
+  public.attendance_reserve_idempotency_key(text,uuid,bigint,jsonb)
   to authenticated, service_role;
 
 commit;
