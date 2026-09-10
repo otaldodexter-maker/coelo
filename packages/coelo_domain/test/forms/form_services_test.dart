@@ -17,6 +17,62 @@ void main() {
     );
   });
 
+  // A regra de visibilidade vive em DUAS implementacoes: este avaliador e o
+  // SQL de app_private. Conferi que elas concordam hoje — o Dart usa `any` e o
+  // SQL usa `exists` sobre qualquer condicao que case, na migration
+  // 20260813155121. Nenhuma prova fixava isso. Sem estas afirmacoes, trocar
+  // `any` por `every` continuaria verde no cliente e passaria a divergir do
+  // servidor em silencio, escondendo ou exigindo perguntas que a outra ponta
+  // trata ao contrario.
+  test('several conditions are satisfied by ANY of them, not all', () {
+    final conditions = [
+      FormCondition.yesNo(sourceItemId: 'primeira', expected: true),
+      FormCondition.yesNo(sourceItemId: 'segunda', expected: true),
+    ];
+    final onlyTheSecond = <String, FormAnswer>{
+      'primeira': FormAnswer.yesNo(itemId: 'primeira', value: false),
+      'segunda': FormAnswer.yesNo(itemId: 'segunda', value: true),
+    };
+
+    expect(
+      const FormVisibilityEvaluator().isVisible(
+        conditions: conditions,
+        answers: onlyTheSecond,
+      ),
+      isTrue,
+    );
+  });
+
+  test('no matching condition keeps the question hidden', () {
+    final conditions = [
+      FormCondition.yesNo(sourceItemId: 'primeira', expected: true),
+      FormCondition.yesNo(sourceItemId: 'segunda', expected: true),
+    ];
+
+    expect(
+      const FormVisibilityEvaluator().isVisible(
+        conditions: conditions,
+        answers: {
+          'primeira': FormAnswer.yesNo(itemId: 'primeira', value: false),
+          'segunda': FormAnswer.yesNo(itemId: 'segunda', value: false),
+        },
+      ),
+      isFalse,
+    );
+  });
+
+  test('an unanswered source cannot reveal a branch', () {
+    // O servidor so considera condicao satisfeita quando existe resposta na
+    // origem. Ausencia nao pode valer como satisfacao aqui tambem.
+    expect(
+      const FormVisibilityEvaluator().isVisible(
+        conditions: [FormCondition.yesNo(sourceItemId: 'ausente', expected: false)],
+        answers: const {},
+      ),
+      isFalse,
+    );
+  });
+
   test('normalizer trims typed values and removes hidden answers', () {
     final normalized = const FormAnswerNormalizer().normalize(
       answers: {
