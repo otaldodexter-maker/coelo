@@ -1649,7 +1649,25 @@ Esta classe apareceu quatro vezes, e três delas quase produziram decisão errad
   inteira, o código de saída é correto, e o dado simplesmente não existe. Uma
   frente perdeu uma execução de dezenove minutos assim. **A primeira mente no
   número; esta apaga o número e não reclama.**
-- **A pior de todas, porque acerta a metade que se confere:** o relatório
+- **E a pior das três, porque faz agir:** perguntar ao Git se um caminho existe
+  numa referência remota, no shell usado por todas as frentes, **falha mesmo quando
+  o arquivo existe** — o ambiente converte o argumento, o dois-pontos vira outro
+  caractere e as barras se invertem, e o comando devolve o mesmo código de uma
+  ausência real. Uma frente recebeu "ausente" para um arquivo de 117 linhas que
+  está na base. **As outras duas armadilhas fazem confiar em menos do que se tem;
+  esta afirma que trabalho sumiu.** No fechamento de uma rodada, isso dispara
+  republicação, recuperação, ou alguém reconstruindo o que nunca se perdeu sobre
+  uma base que já o tem.
+
+  E ela **não é uniforme**, o que a torna traiçoeira: com um arquivo na raiz, sem
+  barras, o mesmo comando funciona. Qualquer teste rápido passa e confirma que a
+  ferramenta está boa.
+
+  **A regra geral, que cobre as três instâncias desta noite:** neste shell, um
+  argumento que contenha dois-pontos, circunflexo ou chaves chega convertido com
+  frequência — e **a falha se apresenta como resultado negativo, nunca como erro de
+  sintaxe**. Prefira o comando que não recebe o caminho como argumento.
+- **A que acerta a metade que se confere:** o relatório
   expandido do executor de testes, redirecionado para arquivo, **trunca o nome do
   caso na largura do terminal** — e casos distintos do mesmo arquivo cujo prefixo
   truncado coincide **colapsam num só**. Uma frente reconstruiu 733 casos de uma
