@@ -31,8 +31,16 @@ mínimo, migração das três funções de mídia e spike), executado só pelo
 coordenador da rodada.
 
 Em 10/09/2026 a coordenação da Rodada 3 mediu que o backup por ponto no tempo
-do projeto estava **desligado** (`pitr_enabled: false`); enquanto o Owner não
-decidir, a condição da ADR 0034 não está satisfeita e nenhuma migration é
-aplicada. Também foi medido que o ledger `supabase_migrations.schema_migrations`
-não espelha os arquivos locais: a aplicabilidade de um pacote é decidida por
-presença de objeto em `pg_proc`/`pg_class`, nunca pelo carimbo.
+do projeto estava **desligado** (`pitr_enabled: false`). Pela Decisão 8 da
+ADR 0034 o PITR pago fica dispensado até existir cliente real: a condição
+passa a ser um `supabase db dump` lógico local (fora do Git), tirado pelo
+coordenador antes de cada lote SQL e registrado em `coordenacao.json`.
+
+Na mesma decisão o versionamento do banco ganhou uma **baseline**: o dump
+schema-only de produção de 10/09/2026 é a migration inicial, o catálogo de
+permissões é seed versionado e a cadeia anterior fica arquivada como
+histórico. Todo pacote novo é provado por `supabase db reset` sobre a baseline
+mais pgTAP, e esse replay é o preflight antes de produção. O ledger
+`supabase_migrations.schema_migrations` não espelha os arquivos locais, então
+a aplicabilidade de um pacote antigo é decidida por presença de objeto em
+`pg_proc`/`pg_class`, nunca pelo carimbo.

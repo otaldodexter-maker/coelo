@@ -137,13 +137,32 @@ pertencem e voltam a contar na revisão profunda.
 - Registro nas skills: `coelo-ui/references/form-layout-contracts.md` e
   `coelo-ui/references/principal-visual-surfaces.md`.
 
-## Fato registrado pela coordenação da Rodada 3 (10/09/2026)
+## Decisão 8 — respostas do Owner ao lote P1–P14 da Rodada 3 (10/09/2026)
 
-O projeto `coelo` de produção respondeu `pitr_enabled: false` em 10/09/2026.
-A condição 3 da Decisão 1 não está satisfeita e a fila SQL ficou retida até o
-Owner responder à pergunta P1 de
-`docs/reviews/etapa-2-operacao/next-round/R03-perguntas-ao-owner-20260910.md`.
-A resposta entra aqui como Decisão 8.
+- **P1, backup por ponto no tempo (opção B):** o PITR pago fica dispensado
+  enquanto não houver cliente real. A condição 3 da Decisão 1 passa a ser
+  satisfeita por um `supabase db dump` lógico (schema e dados, local, fora do
+  Git) tirado pelo coordenador **antes de cada lote SQL**, com nome do arquivo
+  e SHA-256 registrados em `coordenacao.json`. O projeto respondeu
+  `pitr_enabled: false` em 10/09/2026.
+- **P2, token R2 de escopo mínimo:** a sessão OAuth do MCP da Cloudflare não
+  cria tokens de API. O token nasce no painel, pelo Owner, e é gravado nos
+  secrets das Edge Functions sem passar pelo chat. O roteiro fica na skill
+  `coelo-backend`, seção de pendências de segurança, até ser executado.
+- **P4, chaves publicáveis:** autorizado gravar `COELO_SUPABASE_URL` e
+  `COELO_SUPABASE_PUBLISHABLE_KEY` em `apps/superadmin/.env.local`, ignorado
+  pelo Git, para todas as frentes abrirem a rota normal contra produção.
+- **P12, baseline do banco:** o dump schema-only de produção de 10/09/2026
+  vira a migration inicial de `packages/coelo_database/migrations/`; o
+  catálogo de permissões vira seed versionado; a cadeia anterior de 186
+  arquivos fica arquivada como histórico e deixa de ser replayada. Todo pacote
+  novo é provado por `supabase db reset` sobre a baseline mais pgTAP, e esse
+  mesmo replay é o preflight antes de aplicar em produção. Migrations locais
+  cujos objetos não existem em produção não são "aplicadas": voltam aos grupos
+  como pacotes novos sobre a baseline.
+- **P14, credencial exposta por `db dump --dry-run`:** não é preciso agir
+  agora. A troca da senha do banco fica registrada como pendência de segurança
+  na skill `coelo-backend`, com o roteiro, para o Owner executar quando quiser.
 
 ## Consequências
 

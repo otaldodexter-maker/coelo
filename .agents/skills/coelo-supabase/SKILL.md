@@ -102,6 +102,44 @@ Segredos, buckets e Workers do Cloudflare fora do pacote da Decisão 5 (ADR 0034
 Registrar no rastreador o que ficou aberto depois da aplicação; o Owner revisa
 em ciclo semanal ou quinzenal.
 
+## Pendências de segurança que só o Owner executa (registradas em 10/09/2026)
+
+Remover cada item no mesmo turno em que a verificação confirmar o efeito.
+
+1. **Token R2 de escopo mínimo (ADR 0034, Decisão 5 e 8/P2).** A sessão OAuth
+   do MCP não cria tokens de API. Roteiro para o Owner: painel Cloudflare →
+   R2 Object Storage → *Manage R2 API Tokens* → *Create API token* → nome
+   `coelo-edge-functions-r2`, permissão **Object Read & Write**, *Specify
+   bucket(s)* com `coelo-media-prod`, `coelo-documents-prod` e
+   `coelo-transient-prod`, sem TTL, sem filtro de IP → *Create*. Na tela
+   seguinte copiar *Access Key ID* e *Secret Access Key* (só aparecem uma vez)
+   e, no PowerShell do próprio Owner, rodar:
+
+   ```powershell
+   supabase secrets set --workdir packages/coelo_database `
+     COELO_R2_ENDPOINT=https://2363eb1eadce9b73279d3c8ce46eb424.r2.cloudflarestorage.com `
+     COELO_R2_REGION=auto `
+     COELO_R2_ACCESS_KEY_ID=<Access Key ID> `
+     COELO_R2_SECRET_ACCESS_KEY=<Secret Access Key>
+   ```
+
+   Verificação pelo coordenador: `supabase secrets list` mostra os quatro
+   nomes; depois `deno run --allow-env --allow-net
+   packages/coelo_database/scripts/r2-spike-synthetic.ts` com os mesmos valores
+   no ambiente do processo (nunca em arquivo versionado). Efeito: deploy de
+   `happens-media`, `now-media` e `moments-media` e conclusão do spike.
+2. **Troca da senha do banco de produção (ADR 0034, Decisão 8/P14).** Motivo:
+   `supabase db dump --dry-run` imprimiu a credencial do papel efêmero do
+   pooler numa saída de ferramenta em 10/09/2026. Roteiro: painel Supabase →
+   projeto `coelo` → *Project Settings* → *Database* → *Database password* →
+   *Reset database password* → gerar senha nova e guardá-la só no gerenciador
+   de senhas. Nada no repositório usa a senha (o CLI autentica pelo token de
+   acesso e cria o papel efêmero a cada comando), então não há arquivo a
+   atualizar. Verificação: `supabase db query --linked` continua funcionando
+   e `supabase secrets list` mostra `SUPABASE_DB_URL` com data nova só se a
+   plataforma o regenerar. Regra permanente: não usar `--dry-run` em sessão
+   de agente.
+
 ## Segurança de credenciais
 
 - Nunca colocar `service_role`, secret key, token Cloudflare, credencial R2,
