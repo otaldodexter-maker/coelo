@@ -96,13 +96,33 @@ São **três buracos independentes** no mesmo caminho, cada um suficiente sozinh
    `create table`** — são `CREATE OR REPLACE` de função e ajustes de privilégio.
    Um ambiente local subido por esse caminho não tem o schema do Coelo.
 
-3. **Pelo menos um domínio inteiro não está versionado em lugar nenhum.**
-   `profile_about` não tem `create table` para `profile_about_pages`,
-   `_sections`, `_structured_fields`, `_revisions`, nem para
-   `app_private.profile_about_command_receipts` ou
-   `audit.profile_about_commands`; e `app_private.profile_about_can` e
+3. **Oito domínios chamam objetos que o SQL versionado nunca cria.** O primeiro
+   encontrado foi `profile_about`: sem `create table` para
+   `profile_about_pages`, `_sections`, `_structured_fields`, `_revisions`, nem
+   para `app_private.profile_about_command_receipts`; e `profile_about_can` e
    `profile_about_page_for` só aparecem **sendo chamadas**, dentro do corpo de
-   `save_profile_about`. O domínio existe apenas no banco remoto.
+   `save_profile_about`.
+
+   A frase confortável seria "`profile_about` é a exceção", e ela foi medida
+   antes de ser publicada — e é **falsa**. O SQL versionado chama 605 objetos
+   distintos de `app_private` e cria 527 funções mais 63 tabelas; **sobram 40
+   objetos chamados e nunca criados**, em `student_tracking`, `routine`,
+   `profile_about`, `meal_plan`, importação/exportação de unidades e mais alguns
+   avulsos. Cinco foram conferidos individualmente com busca que pegaria `CREATE`
+   e `DROP` — `profile_about_can`, `routine_receipt`,
+   `student_tracking_can_read` e `normalize_person_handle` têm zero ocorrências.
+
+   **E há a metade boa, que muda a decisão:** `child_safety` e `chat` estão
+   versionados corretamente — todas as tabelas, os receipts internos e dezenas
+   de funções `app_private` criadas em migration. O problema **não é sistêmico
+   por incapacidade**: existe um padrão certo dentro da própria casa, e oito
+   domínios saíram dele. A pergunta que isso coloca tem resposta possível.
+
+   Ressalvas do método, que valem tanto quanto o número: 40 é contagem de
+   **objetos**, não de defeitos, e alguns podem ser o mesmo helper compartilhado;
+   35 dos 40 vêm do método e não de inspeção individual; e o método não distingue
+   "nunca existiu" de "existe no remoto e nunca foi versionado" — para recriar a
+   base dá no mesmo, para saber quem escreveu não dá.
 
 **A consequência é maior que E2E.** Recriar a base do zero — ambiente novo,
 recuperação de desastre, homologação de verdade — não é difícil hoje, é
