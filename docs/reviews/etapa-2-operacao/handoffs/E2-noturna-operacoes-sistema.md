@@ -3,7 +3,7 @@ title: "Entrega do grupo operacoes-sistema — rodada noturna 09/10 de setembro"
 source: "trabalho proprio sobre a base d784462c1, branch work/etapa2-noturna-operacoes-sistema"
 status: "documento vivo; atualizado ate a pre-entrega das 04:50"
 generated_at: "2026-09-09"
-last_update: "2026-09-09 22:05 (America/Sao_Paulo)"
+last_update: "2026-09-09 22:31 (America/Sao_Paulo)"
 group: "operacoes-sistema"
 ---
 
@@ -44,7 +44,9 @@ coordenador.
 | Composição de produção | Suporte sem camada de dados; `account.profile` só em `/dev`; `account.sessions` sem tela. |
 | Overflow da tabela admin | Causa raiz nomeada; linhas inalcançáveis, não clipadas. |
 | Texto a 200% | Quatro telas falham; nenhuma largura sozinha acharia as três novas. |
-| Diretrizes a11y do Flutter, app inteiro | 81 de 99, zero não medidos; `/dev/imports` e `/dev/safety` falham nas três. |
+| Diretrizes a11y do Flutter, app inteiro | 13 reprovações reais, não 18; `/dev/safety` tem zero. |
+| Reflow no app inteiro | 61 de 66 a 100%, 59 de 66 a 200%; problema concentrado em 4 telas. |
+| Alvos menores que 48 | Três causas, duas compartilhadas; hunk de shell pronto. |
 | Captura estreita de transporte | Oito arquivos, lista precisa, por dono. |
 
 ## Entregas transversais, fora do recorte
@@ -145,3 +147,13 @@ Registradas porque mudam o que o leitor deve confiar:
 6. Estimei "cerca de vinte" repositórios sem fechar falha de transporte. São oito.
    A estimativa contava apenas ausência de captura ampla e ignorava que vários já
    tratam `ClientException`.
+7. **A mais grave.** Reportei `/dev/safety` reprovando as três diretrizes de
+   acessibilidade e a chamei de "o pior conjunto do app", numa tela de dados de
+   criança. Ela não reprova nenhuma. Uma exceção lançada durante o layout faz o
+   caso falhar **antes** de a diretriz ser avaliada, e eu li isso como reprovação.
+   Outra frente mediu independentemente, discordou, e estava certa. Também
+   corrigi `/dev/imports`, que reprova apenas tamanho de alvo.
+   A lição é a mesma que eu já havia declarado para o `pumpAndSettle` que não
+   assenta, e não apliquei: **medição que falha por exceção é medição não feita**,
+   e um instrumento que confunde "lançou" com "reprovou" produz acusação.
+   Declarar uma lição não é tê-la internalizado.

@@ -23,7 +23,7 @@ telas em carregamento também são avaliadas. 132 casos no total.
 
 | Tela | 375 | 1440 | Dono provável |
 | --- | --- | --- | --- |
-| `/dev/safety` | falha | falha | acessos-pessoas |
+| `/dev/safety` | lança | lança | acessos-pessoas |
 | `/dev/imports` | falha | falha | operacoes-sistema |
 | `/dev/agenda` | falha | passa | operacoes-sistema |
 
@@ -49,15 +49,23 @@ largura de telefone.
 Cardápios e Agenda só em 375. Verificar reflow numa única largura não é verificar
 reflow.
 
-## Segurança infantil é o pior conjunto do app
+## Correção: `/dev/safety` não transborda, ela lança
 
-`/dev/safety` acumula: transborda nas duas larguras **com texto padrão**, falha
-nas três diretrizes nativas de acessibilidade, e foi a tela que expirava no
-instrumento antigo por permanecer em carregamento. E, diferente de Importações,
-**não está adiada** — é funcionalidade de MVP sobre dados de criança.
+Esta seção dizia que `/dev/safety` transbordava nas duas larguras e falhava nas
+três diretrizes nativas. **As duas afirmações estavam erradas.**
 
-Não investiguei nenhuma das causas em `/dev/safety`: pertence a acessos-pessoas.
-Entrego a triagem.
+O teste verifica ausência de exceção, e em `/dev/safety` a exceção não é
+transbordamento: é `LayoutBuilder does not support returning intrinsic dimensions`.
+E, drenando a exceção antes de avaliar, a tela **passa nas três diretrizes** de
+acessibilidade — outra frente mediu independentemente e chegou ao mesmo resultado.
+
+O que é verdade sobre `/dev/safety`: ela lança exceção de layout na abertura, nas
+duas larguras, com texto padrão, e outra frente contou cerca de 20 exceções em
+cascata. Isso é mais grave que reprovar diretriz, não menos. Mas é um defeito de
+layout, não de acessibilidade, e nomear errado manda a frente dona investigar a
+coisa errada.
+
+Não investiguei: pertence a acessos-pessoas.
 
 ## Limites
 

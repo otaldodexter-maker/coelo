@@ -35,16 +35,50 @@ descartei sete hipóteses, seis por teste isolado, sem identificá-lo — ele s�
 aparece na composição completa pelo router, nunca nos componentes. Trate como
 **candidato a confirmar**, não como defeito.
 
+### Correção importante: exceção contamina a medição
+
+A primeira versão desta tabela estava **errada para duas telas**, e o erro é meu.
+
+Uma exceção lançada durante o layout faz o caso de teste falhar **antes** de a
+diretriz ser avaliada. Eu reportei esse resultado como reprovação de
+acessibilidade. Refiz drenando a exceção antes de avaliar, e o quadro muda:
+
+| Tela | Eu havia reportado | Resultado real |
+| --- | --- | --- |
+| `/dev/safety` | reprova rótulo, alvo e contraste | **não reprova nenhuma**; lança 1 exceção de layout |
+| `/dev/imports` | reprova rótulo, alvo e contraste | reprova **apenas alvo**; lança 1 exceção de layout |
+
+Em `/dev/safety` a exceção é `LayoutBuilder does not support returning intrinsic
+dimensions`; em `/dev/imports` é o transbordamento já diagnosticado. Outra frente
+mediu safety de forma independente e chegou ao mesmo resultado — rótulo e alvo
+passam — e estava certa.
+
+Com isso, as reprovações reais de diretriz são **13 e não 18**: sete de rótulo,
+todas corrigidas por `179a54532`; cinco de alvo; uma de contraste. Safety tem
+**zero**.
+
+Isso não absolve as duas telas: lançar exceção de layout é mais grave que reprovar
+uma diretriz. Só não é o mesmo problema, e chamar um de outro manda a frente dona
+investigar a coisa errada.
+
+**Por que só duas telas precisaram de correção, e não todas as 33.** A contaminação
+só atinge telas que lançam exceção na configuração medida — 1440 × 900, tema claro,
+texto padrão. A varredura de reflow mediu exatamente essa configuração para as 33
+telas e identificou que **apenas `/dev/imports` e `/dev/safety` lançam** ali;
+`/dev/agenda` lança somente em 375, e as outras 30 não lançam. Então a correção é
+delimitada por medição, não por amostragem: nenhuma outra linha da tabela está
+contaminada.
+
 ### Por dono
 
 | Dono provável | Tela | Diretrizes que falham |
 | --- | --- | --- |
-| operacoes-sistema | `/dev/imports` | rótulo, alvo, contraste |
+| operacoes-sistema | `/dev/imports` | alvo (rótulo e contraste eram contaminação) |
 | operacoes-sistema | `/dev/audit` | rótulo |
 | operacoes-sistema | `/dev/plans` | rótulo |
 | operacoes-sistema | `/dev/meal-plans` | rótulo |
 | operacoes-sistema | `/dev/support` | rótulo |
-| acessos-pessoas | `/dev/safety` | rótulo, alvo, contraste |
+| acessos-pessoas | `/dev/safety` | nenhuma; lança exceção de layout |
 | acessos-pessoas | `/dev/invites` | rótulo |
 | formularios-cuidado | `/dev/forms` | rótulo, alvo |
 | estrutura | `/dev/activities` | rótulo |
@@ -53,10 +87,15 @@ aparece na composição completa pelo router, nunca nos componentes. Trate como
 | publicacoes-midia | `/dev/circulars` | alvo |
 | publicacoes-midia | `/dev/principal-for-you` | contraste |
 
-As duas telas que falham nas três são `/dev/imports` e `/dev/safety`. Importações
-está adiada pós-MVP, o que inverte a leitura usual do adiamento: ele está
-protegendo o usuário de uma tela que não passaria. Segurança infantil não tem esse
-atenuante.
+Nenhuma tela falha nas três. A afirmação anterior — de que `/dev/imports` e
+`/dev/safety` falhavam nas três, e de que Segurança infantil acumulava o pior
+conjunto de acessibilidade do app — era consequência da contaminação e está
+retirada.
+
+O que permanece sobre essas duas: ambas lançam exceção de layout, e isso é mais
+grave que reprovar diretriz. `/dev/safety` lança
+`LayoutBuilder does not support returning intrinsic dimensions`, e outra frente
+contou cerca de 20 exceções em cascata na mesma tela.
 
 ## 2. Repositórios que não fecham falha de transporte
 
