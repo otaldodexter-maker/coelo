@@ -1,12 +1,12 @@
 {
-  "revision": 2,
+  "revision": 3,
   "updated_at": "2026-09-10T09:30:00-03:00",
   "round": "E2-R03-20260910",
   "group": "operacoes",
   "tool_model": "Codex, Luna medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-operacoes",
   "branch": "work/etapa2-r03-operacoes",
-  "head": "b172b695b8d996375fc7da7a539ed7ee78dc7e35",
+  "head": "94bca84f6",
   "base": {
     "requested": "base.fase0Head",
     "resolved": null,
@@ -65,5 +65,5 @@
     {"kind": "verification", "what": "nenhum replay pgTAP local nominal executado ainda", "owner": "grupo operacoes", "unblocks": "runner Postgres local nominal disponivel; migration e teste ja estao no pacote"}
   ],
   "next_step": "commitar o pacote Support e enviar SHA ao coordenador; depois aguardar/rebasear sobre base.fase0Head para Conta -> Planos -> Auditoria -> Support UI/E2E",
-  "commits": ["b172b695b8d996375fc7da7a539ed7ee78dc7e35"]
+  "commits": ["b172b695b8d996375fc7da7a539ed7ee78dc7e35", "94bca84f6"]
 }
