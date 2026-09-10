@@ -65,12 +65,20 @@ Há ainda um patch **preparado e não mesclado** na branch
 
 ## Resultado medido do recorte
 
-Medido em uma execução única, não somado de relatos anteriores: **638 PASS e
-23 FAIL** nas oito features do recorte mais as seis rotas tocadas, já incluindo
-todos os lotes.
+Medição de pré-entrega, feita depois do último lote e não somada de relatos
+anteriores: **671 PASS e 23 FAIL**.
 
-Uma medição anterior deu 636 PASS e as mesmas 23 falhas, mas precedia dois
-lotes; foi refeita em vez de ajustada de cabeça.
+O número vem de duas execuções que se somam porque cobrem conjuntos disjuntos,
+e não de reruns do mesmo conjunto:
+
+| Execução | Conjunto | Resultado |
+| --- | --- | --- |
+| 1 | nove diretórios de feature do recorte mais quatro arquivos de rota (`circular_routes`, `principal_circular_reader_route`, `principal_circular_reader_responsive`, `principal_moments_feed_route`) | 640 PASS, 23 FAIL |
+| 2 | as oito rotas restantes do recorte (`principal_happens_composition_gaps`, `principal_happens_preview_route`, `principal_moments_publication_media_union`, `principal_moments_publication_route`, `principal_moments_route_states`, `principal_now_authorization_revision`, `principal_now_preview_route`, `route_name_uniqueness`) | 31 PASS, 0 FAIL |
+
+Medições anteriores desta noite deram 636 e depois 638 PASS com as mesmas 23
+falhas. Nenhuma delas cobria as doze rotas; a diferença é de escopo medido, não
+de regressão nem de correção. Foram refeitas em vez de ajustadas de cabeça.
 
 As 23 falhas são **todas** de golden e reproduzem na base sem nenhum lote deste
 grupo: 10 em `principal_happens_preview_golden_test`, 11 em
@@ -79,8 +87,8 @@ Nenhum golden foi regravado, conforme decisão da coordenação.
 
 Fora de golden, zero falhas.
 
-**Plataforma comum de mídia**, medida separadamente ao final: **82 PASS e 0
-FAIL** nos quatro gateways — `circular-media` 27, `moments-media` 26,
+**Plataforma comum de mídia**, medida separadamente e reconfirmada na
+pré-entrega: **82 PASS e 0 FAIL** nos quatro gateways — `circular-media` 27, `moments-media` 26,
 `happens-media` 15 e `now-media` 14.
 
 ## Defeitos corrigidos, em ordem de gravidade
