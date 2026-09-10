@@ -51,6 +51,18 @@ Postgres 17, onde `MAINTAIN` passou a existir — por um invariante: fora
 nenhuma concessão é *grantable*. Das seis migrations da cadeia, só o catálogo
 usava comparação frágil; as outras guardam por existência.
 
+**Achado de segurança que passa do meu recorte.** Produção concede `ALL` a
+`anon` e a `authenticated` em `public.activity_locations`, por privilégio padrão
+do schema `public`, e o levantamento do coordenador achou o mesmo em **204
+tabelas**. Hoje não há porta aberta: a RLS forçada da tabela só tem a política
+`activity_locations_authorized_read`, de SELECT, e nenhuma de escrita. O que
+existe é uma concessão de mesa que deixa a tabela a **um descuido de política**
+de virar gravável por anônimo. O candidato do catálogo revoga tudo de `PUBLIC` e
+de `anon`, revoga escrita de `authenticated` e mantém só o `SELECT` — depois de
+eu confirmar que nenhum ponto do cliente lê a tabela direto, só por RPC. As
+outras 203 continuam como estão; endurecer em lote é decisão do Owner e foi
+levada a ele.
+
 ## Pendências e o primeiro gate de cada uma
 
 | Pendência | Primeiro gate |
