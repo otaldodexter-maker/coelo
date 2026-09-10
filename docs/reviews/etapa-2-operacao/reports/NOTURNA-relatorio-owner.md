@@ -692,7 +692,7 @@ código desatualizado, com uma justificativa que parecia sólida.
 
 ## O que ainda falta
 
-Fechado após o corte das 05:00; o que segue já está consolidado e datado.
+Esta seção é atualizada a cada ciclo e fechada no corte das 05:00.
 
 **Nada foi aplicado em ambiente remoto.** Treze pacotes SQL estão preparados,
 revisáveis e enfileirados em ordem forward-only, e nenhum foi executado em lugar
@@ -700,13 +700,24 @@ nenhum. Dois deles carregam condição registrada: a trinca de Circulares, que s
 pode ser autorizada junto com a configuração do R2 e o deploy da Edge Function,
 e `20260909214000`, que exige suíte mínima antes de aplicar.
 
-**A prova SQL local está bloqueada por um defeito da própria cadeia.** A
-migration `20260812002010_import_export_unit_source_retention.sql` declara uma
-variável do tipo de uma tabela que **nenhuma migration cria**. Em produção a
-tabela deve existir por um caminho fora do repositório; localmente a cadeia é
-inconsistente consigo mesma a partir dali, e qualquer suíte pgTAP cujo alvo venha
-depois não roda pelo caminho sancionado. É por isso que cada candidato precisa de
-um profile próprio de replay — não é preciosismo do harness, é contorno.
+**A prova SQL local está bloqueada por defeitos da própria cadeia, e a
+medição melhorou duas vezes durante a noite.** A primeira frente relatou
+`20260812002010_import_export_unit_source_retention.sql`, que declara uma
+variável do tipo de uma tabela que nenhuma migration cria. Uma segunda medição,
+feita por replay completo em Postgres 17, localizou uma parada **anterior**:
+`20260812002000_child_safety_schema.sql`, o arquivo 48 de 186, viola o `NOT NULL`
+de `module_label` que o arquivo anterior criou sem default — e, relaxado esse,
+falha em seguida em `updated_at` ausente. Os arquivos 1 a 47 aplicam limpos.
+
+As duas observações são compatíveis e a segunda é mais útil: não há um defeito,
+há uma cadeia que deixou de ser replayável em algum ponto e acumulou os
+seguintes sem que ninguém percebesse, porque **em produção a ordem real de
+aplicação não foi a ordem de nome**. É por isso que cada candidato precisou de um
+profile próprio de replay — não é preciosismo do harness, é contorno.
+
+A verificação de sintaxe da fila inteira, essa sim, foi concluída: **13
+candidatos e 6 arquivos de pacote sem nenhum erro de sintaxe em Postgres 17**, e
+quatro deles aplicaram inteiros. Ver `NOTURNA-fila-sql-serializada.md`.
 
 **As três medições não se movem sem decisão.** Front-end certificado em 11/230;
 backend e end-to-end em zero, e assim permanecem enquanto não houver autorização
