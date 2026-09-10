@@ -1,5 +1,5 @@
 {
-  "revision": 25,
+  "revision": 26,
   "round": "E2-NOTURNA-20260909",
   "role": "Coordenacao e Integracao - Claude",
   "writer": "coordenador-claude",
@@ -8,7 +8,7 @@
   "app": "Claude Code (VS Code)",
   "model": "claude-opus-5[1m]",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-10T01:05:00-03:00",
+  "updatedAt": "2026-09-10T01:45:00-03:00",
   "clockCorrection": {
     "referenceNow": "2026-09-09T19:03:25-03:00",
     "measuredBy": "date no checkout integrador",
@@ -40,7 +40,7 @@
     "runtimeBaselinePreserved": "d019c109a",
     "documentaryReconciliation": "8954de221",
     "verifiedAt": "2026-09-09T18:10:00-03:00",
-    "sha": "ec624e728",
+    "sha": "ac69b6055",
     "analyze": "limpo",
     "router": "407 PASS / 1 SKIP / 6 FAIL (todas goldens)"
   },
@@ -918,20 +918,27 @@
   },
   "notaDeAmbiente": "A maquina esta com dezenas de processos dart de varias frentes; flutter analyze subiu de 155s para mais de 500s ao longo da noite. Nao e sintoma de codigo. Serializem execucoes e reduzam escopo por rodada; nao matem processo alheio.",
   "conferenciaDeGit": {
-    "medidoEm": "2026-09-09T23:19:00-03:00",
-    "resultado": "As oito branches com HEAD igual ao upstream, stash vazio em todas, e TODAS integralmente ancestrais de dev. Nenhum commit de grupo ficou para tras.",
-    "porGrupo": {
-      "estrutura": "6709f1473",
-      "acessos-pessoas": "992f3530d",
-      "publicacoes-midia": "d6ff438fc",
-      "chat-comunicacoes": "a68feae79",
-      "perfil-para-voce": "5401cec1b",
-      "alunos-rotina": "bf3c31d19",
-      "formularios-cuidado": "1d589503e",
-      "operacoes-sistema": "418cda8e3"
+    "hora": "10/09 01:40",
+    "stash": "vazio em dev",
+    "worktrees": 21,
+    "naoIntegradoNoMomento": {
+      "alunos-rotina": "b6767f4e1",
+      "chat-comunicacoes": "7d264af82",
+      "formularios-cuidado": "e54f04c4a, b163f6613",
+      "publicacoes-midia": "58d02bac4, f989b5063"
     },
-    "modificacoesEmCurso": "estrutura 1, chat-comunicacoes 2, formularios-cuidado 3, todas fora de test/**/failures/. Sao trabalho em andamento, nao alteracao nao identificada.",
-    "nota": "Medicao repetida no fechamento das 05:00."
+    "branchesResiduais": {
+      "chat-comunicacoes-router-dedupe": "8d06b8a91 nao esta em dev por diff, mas o conteudo dela ja foi aplicado por mim; a branch esta sobre base antiga e nao carrega trabalho a preservar",
+      "chat-comunicacoes-router": "0 ahead",
+      "chat-comunicacoes-router-from": "0 ahead, integrada em f5a139c10",
+      "copia-previa": "branch de patch preparado e NAO mesclado, para a decisao de copia do Owner"
+    },
+    "worktreesTemporarias": [
+      "coelo-base-check em d784462c1 destacado",
+      "verify-dev-tmp em 1c5eaf0bc, ja contido em dev",
+      "e2-noturna-verificacao em d784462c1 destacado"
+    ],
+    "verificacaoDePerda": "nenhum commit publicado por frente ausente de dev alem dos listados acima como pendentes do proximo ciclo"
   },
   "fechamentoCodex": {
     "horario": "23:30 de 09/09, cumprido.",
@@ -997,5 +1004,16 @@
       "list_my_principal_for_you"
     ],
     "licao": "medir em Postgres 15 produziu falso positivo de defeito em dois arquivos de producao, porque authorization e palavra reservada no 15 e nao no 17; sem erro no 15 bastaria para o 17, mas o inverso nao vale"
+  },
+  "verificacaoExterna": {
+    "conferente": "chat-comunicacoes",
+    "razao": "sou o unico integrador e o unico escritor do inventario e dos rastreadores; ninguem conferiu o meu trabalho a noite inteira",
+    "itens": [
+      "contagem e nomes das falhas de test/app/router na base publicada",
+      "guarda de unicidade de nome de rota e flutter analyze lib",
+      "as duas migrations de chat byte a byte na fila, sem carimbo duplicado",
+      "procurar trabalho publicado por alguem e ausente de dev, ou arquivo que entregou menos que a branch"
+    ],
+    "prazo": "04:30"
   }
 }
