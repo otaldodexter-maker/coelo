@@ -545,6 +545,32 @@ void main() {
     );
   });
 
+  testWidgets('valor herdado acima do limite continua carregado, e esse e o caso residual', (
+    tester,
+  ) async {
+    // O formatador de entrada age apenas na digitacao. Isso e desejado — truncar em
+    // silencio um registro antigo seria perda de informacao do usuario — mas tem
+    // consequencia, e eu escrevi o artigo de conhecimento afirmando que a entrada
+    // limitada garantia payload valido antes de notar a contradicao.
+    //
+    // MEDIDO aqui: um titulo herdado de 300 caracteres permanece inteiro no campo, e
+    // portanto seria enviado no salvamento, onde o servidor recusa com 22023 e a tela
+    // mostra indisponibilidade generica. Fechar este caso exige validacao que explique
+    // o tamanho, que fica como proposta nomeada e nao foi implementada nesta rodada.
+    await tester.binding.setSurfaceSize(const Size(1440, 1200));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    final repositorio = store();
+    final existente = repositorio.items.first;
+    repositorio.upsertItem(existente.copyWith(title: 'z' * 300));
+
+    await tester.pumpWidget(_app(store: repositorio, eventId: existente.id));
+    await tester.pumpAndSettle();
+
+    final titulo = find.widgetWithText(TextField, 'Título');
+    expect(tester.widget<TextField>(titulo).controller!.text.length, 300);
+  });
+
   testWidgets('o formulario respeita os limites de tamanho das colunas', (tester) async {
     // superadmin_agenda_save recusa titulo acima de 240 caracteres com errcode
     // 22023, e o repositorio traduz essa recusa para indisponibilidade generica.

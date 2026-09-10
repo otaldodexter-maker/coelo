@@ -62,7 +62,8 @@ fronteira, antes de corrigir produto:
 
 Ao corrigir a expectativa superada, **ajustar a asserção é melhor que remover a
 rota do teste**: o teste continua afirmando algo sobre aquela rota, e um
-comentário com as duas datas impede que alguém "conserte" de volta em um mês.
+comentário com as duas datas dá ao próximo leitor o que faltou a três leitores
+desta vez, o que torna muito mais difícil "consertar" de volta em um mês.
 Corrigir não é desligar: se a asserção antiga era um literal que hoje seria
 falso, substituí-lo por um valor lido antes da ação preserva a força da
 verificação em vez de enfraquecê-la.
