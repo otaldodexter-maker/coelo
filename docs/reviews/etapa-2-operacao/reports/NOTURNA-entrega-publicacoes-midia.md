@@ -2,7 +2,7 @@
 title: "Entrega da rodada noturna — grupo publicacoes-midia"
 source: "Contrato em docs/reviews/etapa-2-operacao/TRABALHO-ATUAL.md; coordenação Claude da rodada de 09-10/09/2026"
 status: "delivery-report; nenhuma mutação remota executada; nenhuma autorização nominal usada"
-generated_at: "2026-09-09"
+generated_at: "2026-09-10"
 timezone: "America/Sao_Paulo"
 ---
 
@@ -192,5 +192,24 @@ Registradas para ninguém repetir:
 
 ## Recursos
 
-Nenhum container, volume ou porta permanece. O replay isolado subiu um Postgres
-em projeto temporário próprio e foi encerrado com a árvore limpa.
+Nenhum container, volume ou porta **deste grupo** permanece. O replay isolado
+subiu um Postgres em projeto temporário próprio e foi encerrado; o diretório
+temporário residual foi conferido e removido.
+
+Registro para não haver leitura errada: durante a madrugada existiu na máquina
+um container `coelo-sqlcheck` que **não é deste grupo** e não foi tocado.
+
+## Dimensões varridas nesta rodada
+
+Nove, cada uma com resultado registrado — as com defeito viraram lote, as sem
+defeito ficam aqui para ninguém repetir:
+
+1. Existência das RPCs que o recorte chama — 14 conferidas, 3 ausentes.
+2. Métodos de interface sem consumidor — 25 conferidos, 2 sem.
+3. Classes de apresentação sem consumidor — 2 encontradas.
+4. Callbacks opcionais nunca fornecidos — 5 encontrados, 3 honestos.
+5. Conferência de MIME real nas superfícies de mídia — 1 faltava.
+6. Guardas de contexto em fluxo assíncrono — 1 faltava.
+7. Idempotência por intenção — 3 famílias fora do padrão da casa.
+8. Uso do cursor de paginação — 2 superfícies descartavam.
+9. Vazamento de texto do servidor para a interface — nenhum.
