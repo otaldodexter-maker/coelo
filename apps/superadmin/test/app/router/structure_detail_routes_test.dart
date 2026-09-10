@@ -4,6 +4,7 @@ import 'package:coelo_superadmin/core/guards/superadmin_session.dart';
 import 'package:coelo_superadmin/features/auth/domain/login_request.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/auth/domain/password_recovery.dart';
+import 'package:coelo_superadmin/features/auth/domain/superadmin_auth_context.dart';
 import 'package:coelo_superadmin/features/groups/domain/group_detail.dart';
 import 'package:coelo_superadmin/features/units/domain/unit_detail.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
@@ -22,7 +23,18 @@ void main() {
           addTearDown(tester.view.resetDevicePixelRatio);
           addTearDown(tester.view.resetPhysicalSize);
           final session = SuperadminSession();
-          if (authenticated) session.signInForTesting();
+          if (authenticated) {
+            // This fixture exercises backend denial after the read preflight.
+            session.authorize(
+              const SuperadminAuthContext(
+                platformRoleCode: 'test',
+                scopeKind: SuperadminAuthScopeKind.platform,
+                permissionCodes: {'platform.read', 'groups.read'},
+                aal: 'aal1',
+              ),
+              sessionId: 'detail-route-test',
+            );
+          }
           final units = _Units();
           final groups = _Groups();
           final router = createSuperadminRouter(
