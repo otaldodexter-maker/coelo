@@ -13,9 +13,33 @@ Status: pacote ativo. A primeira migration real nasceu de `specs/011-superadmin-
 
 ## Estrutura
 
-- `migrations/`: migrations SQL aplicaveis no Supabase.
+- `migrations/`: **baseline de producao** (`20260910000000_baseline_producao.sql`,
+  dump schema-only do projeto `coelo` em 10/09/2026) mais os pacotes aplicados
+  ou aceitos depois dela (ADR 0034, Decisao 8/P12). Todo carimbo novo e
+  posterior a `20260910000000`.
+- `supabase/seed.sql`: catalogo de referencia lido de producao (permissoes,
+  papeis, concessoes, tipos, templates), sem pessoas nem memberships.
+- `migrations-historico/`: a cadeia anterior de 186 arquivos, arquivada. Nao e
+  replayada; os scripts `Invoke-SafeLocalMigrationReplay.ps1`,
+  `Prepare-SafeMigrationReplay.ps1`, os perfis em `replay/profiles/` e o
+  manifesto `replay/foundation-migrations.sha256` ficam como historico.
 - `plans/`: planos tecnicos antes da execucao.
-- `tests/`: queries de validacao e futuros testes SQL/RLS.
+- `tests/` e `supabase/tests/`: queries de validacao e testes pgTAP.
+
+## Como provar um pacote (a partir de 10/09/2026)
+
+1. `scripts/Sync-SupabaseCliMigrations.ps1 -Mode Prepare` espelha `migrations/`
+   em `supabase/migrations/`.
+2. Num projeto descartavel proprio (copiar `supabase/config.toml` com
+   `project_id` e portas diferentes), `supabase start`/`supabase db reset`
+   aplica a baseline e o seed.
+3. Aplicar o pacote com `psql` e rodar seus pgTAP em cima. Fixture que use
+   coluna ou funcao que producao nao tem (por exemplo
+   `units.institution_type_id`) falha aqui e precisa ser corrigida antes de
+   pedir aplicacao.
+4. O coordenador repete o passo 3 como preflight, tira o dump logico do lote
+   e aplica em producao com `supabase db query --linked -f`, registrando a
+   versao em `supabase_migrations.schema_migrations`.
 
 ## Schemas iniciais
 
