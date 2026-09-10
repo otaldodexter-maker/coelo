@@ -1,9 +1,12 @@
+import 'package:coelo_api/coelo_api.dart';
+import 'package:coelo_domain/coelo_domain.dart';
 import 'package:coelo_superadmin/features/forms/data/development_forms_api.dart';
 import 'package:coelo_superadmin/features/forms/presentation/directory/forms_directory_page.dart';
 import 'package:coelo_superadmin/features/forms/presentation/editor/forms_editor_page.dart';
 import 'package:coelo_superadmin/features/forms/presentation/operations/forms_operations_page.dart';
 import 'package:coelo_superadmin/features/forms/presentation/overview/forms_overview_page.dart';
 import 'package:coelo_superadmin/features/forms/presentation/response/form_response_page.dart';
+import 'package:coelo_superadmin/features/forms/presentation/response/forms_test_page.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -84,6 +87,23 @@ void main() {
     await check(tester, const FormResponsePage.development());
   });
 
+  // A tela de preview do Testar foi escrita nesta rodada e nao tinha passado
+  // pelas diretrizes. Codigo novo tem que atender a mesma barra que eu cobrei
+  // do codigo antigo.
+  testWidgets('the authored preview meets tap size, labelling and contrast', (tester) async {
+    await check(
+      tester,
+      FormsTestPage(api: _PreviewApi(), formId: 'form-1'),
+      size: const Size(1440, 2400),
+    );
+  });
+
+  testWidgets('the development test surface meets tap size, labelling and contrast', (
+    tester,
+  ) async {
+    await check(tester, const FormsTestPage.development(), size: const Size(1440, 2400));
+  });
+
   for (final (label, page) in <(String, Widget)>[
     ('monitor', FormsOperationsPage.monitor(development: true)),
     ('respostas', FormsOperationsPage.responses(development: true)),
@@ -93,4 +113,40 @@ void main() {
       await check(tester, page, size: const Size(1440, 1400));
     });
   }
+}
+
+final class _PreviewApi implements FormsApi {
+  @override
+  Future<FormEditorProjection> getEditor(String formId) async => FormEditorProjection(
+    definition: FormDefinition(
+      id: formId,
+      institutionId: 'institution-1',
+      kind: FormKind.form,
+      identityMode: FormIdentityMode.identified,
+      responseUnit: FormResponseUnit.person,
+      title: 'Autorização de saída',
+      sections: [
+        FormSection(
+          id: 'section-1',
+          title: 'Responsável',
+          position: 0,
+          items: [
+            for (final (index, kind) in FormItemKind.values.indexed)
+              FormItem(
+                id: 'item-$index',
+                kind: kind,
+                label: 'Pergunta ${kind.name}',
+                position: index,
+                options: kind == FormItemKind.singleChoice || kind == FormItemKind.multipleChoice
+                    ? const [FormOption(id: 'option-1', label: 'Única opção', position: 0)]
+                    : const [],
+              ),
+          ],
+        ),
+      ],
+    ),
+  );
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
