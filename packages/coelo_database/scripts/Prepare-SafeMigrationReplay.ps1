@@ -8,7 +8,7 @@ param(
 
   [switch]$AuthOnly,
 
-  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'ModelAal1PhasePolicy', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived', 'ChildDirectoryEnvelope', 'ActivityAggregateConcurrency', 'ActivityAggregateConcurrencyClock', 'LocationCatalogV2', 'LocationReservationsV1', 'SafetyInternalReads53')]
+  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'ModelAal1PhasePolicy', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived', 'ChildDirectoryEnvelope', 'ActivityAggregateConcurrency', 'ActivityAggregateConcurrencyClock', 'LocationCatalogV2', 'LocationReservationsV1', 'StructureLocationConsumersV1', 'SafetyInternalReads53')]
   [string]$NominalProfile,
 
   [string[]]$AdditionalMigration = @()
@@ -102,6 +102,7 @@ if ($NominalProfile) {
     'FReadDirectoryContractGreenDerived' { 'profiles\FReadDirectoryContractGreenDerived\Resolve-FReadDirectoryContractGreenDerived.ps1' }
     'LocationCatalogV2' { 'profiles\LocationCatalogV2\Resolve-LocationCatalogV2.ps1' }
     'LocationReservationsV1' { 'profiles\LocationReservationsV1\Resolve-LocationReservationsV1.ps1' }
+    'StructureLocationConsumersV1' { 'profiles\StructureLocationConsumersV1\Resolve-StructureLocationConsumersV1.ps1' }
   }
   $nominalResolver = Join-Path $preflightRoot $nominalResolverRelative
   $nominalCursor = Get-Item -LiteralPath $nominalResolver -Force -ErrorAction Stop
@@ -125,6 +126,16 @@ if ($NominalProfile) {
         $locationBootstraps[1].Name -cne '20260908030959_location_catalog_v2_capability_bootstrap_local.sql' -or
         $locationBootstraps[2].Name -cne '20260909164959_location_reservations_capability_bootstrap_local.sql') {
       throw 'LocationReservationsV1 requires 59 reviewed canonical migrations and exactly three local fixtures'
+    }
+  }
+  if ($NominalProfile -ceq 'StructureLocationConsumersV1') {
+    $locationBootstraps = @($nominal.LocationBootstrap)
+    if ($canonical.Count -ne 67 -or $additionalCanonical.Count -ne 3 -or
+        $locationBootstraps.Count -ne 3 -or
+        $locationBootstraps[0].Name -cne '20260908030958_location_form_options_remote_snapshot_local.sql' -or
+        $locationBootstraps[1].Name -cne '20260908030959_location_catalog_v2_capability_bootstrap_local.sql' -or
+        $locationBootstraps[2].Name -cne '20260909164959_location_reservations_capability_bootstrap_local.sql') {
+      throw 'StructureLocationConsumersV1 requires the reviewed 67-migration union and exactly three inherited local fixtures'
     }
   }
   if ($NominalProfile -ceq 'LocationCatalogV2') {
@@ -290,7 +301,7 @@ if ($labelBridgeIndex -lt 1 -or
   throw 'label replay bridge must immediately follow access-profile management v2 and precede audit production'
 }
 
-if ($NominalProfile -in @('FReadDirectoryContractRedDerived', 'FReadDirectoryContractGreenDerived', 'LocationCatalogV2', 'LocationReservationsV1')) {
+if ($NominalProfile -in @('FReadDirectoryContractRedDerived', 'FReadDirectoryContractGreenDerived', 'LocationCatalogV2', 'LocationReservationsV1', 'StructureLocationConsumersV1')) {
   # This reviewed local derivation runs before the remaining input copies.
   $derivedMetadata = $nominal.FormsDefinitionMaterialization
   $derivedName = '20260813155005_forms_definition_and_capabilities.sql'
@@ -349,7 +360,7 @@ if ($NominalProfile -in @('FReadDirectoryContractRedDerived', 'FReadDirectoryCon
 }
 
 foreach ($source in @($canonical) + @($preflight) + @($localBridges) + @($locationBootstraps)) {
-  if ($NominalProfile -in @('FReadDirectoryContractRedDerived', 'FReadDirectoryContractGreenDerived', 'LocationCatalogV2', 'LocationReservationsV1') -and $source.Name -ceq '20260813155005_forms_definition_and_capabilities.sql') { continue }
+  if ($NominalProfile -in @('FReadDirectoryContractRedDerived', 'FReadDirectoryContractGreenDerived', 'LocationCatalogV2', 'LocationReservationsV1', 'StructureLocationConsumersV1') -and $source.Name -ceq '20260813155005_forms_definition_and_capabilities.sql') { continue }
   $sourceFull = [IO.Path]::GetFullPath($source.FullName)
   if (($source.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
     throw "replay input cannot be a reparse point: $sourceFull"
