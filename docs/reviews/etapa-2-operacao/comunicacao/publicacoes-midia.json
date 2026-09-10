@@ -1,10 +1,10 @@
 {
-  "revision": 41,
-  "updated_at": "2026-09-10T04:22:00-03:00",
+  "revision": 42,
+  "updated_at": "2026-09-10T04:34:25-03:00",
   "group": "publicacoes-midia",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
-  "status": "pre-entrega publicada; medicao final concluida; aguardando congelamento das 04:40",
+  "status": "CONGELADO para lote novo as 04:40; pre-entrega publicada; residual zero medido",
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-publicacoes-midia",
   "branch": "work/etapa2-noturna-publicacoes-midia",
@@ -1020,5 +1020,38 @@
     },
     "metodo": "git ls-tree -r --name-only origin/dev, e NAO cat-file nem existencia no disco local: o que importa e se o leitor encontra o caminho NA BASE PUBLICADA",
     "verificacao_final": "todos os .sql citados no canal conferidos um a um contra origin/dev: os quatro que existem na dev resolvem no caminho citado; os cinco candidatos de L01 seguem ausentes da dev por serem candidatos nao integrados, que e o estado correto e declarado."
+  },
+  "congelamento": {
+    "relogio_cru": "PS> Get-Date -Format 'yyyy-MM-dd HH:mm:ss K'  ->  2026-09-10 04:34:25 -03:00",
+    "residual": {
+      "pendentes": 0,
+      "como": "MEDIDO, nao lembrado: git fetch origin dev neste bloco (dev = 3b60fae45) e git merge-base --is-ancestor sobre cada commit em origin/dev..HEAD",
+      "os_seis_que_entraram": [
+        "b69c7d00f",
+        "fbd0c54ac",
+        "376408072",
+        "5029dfc05",
+        "6ef3e0602",
+        "149751c5f"
+      ]
+    },
+    "atribuicao": {
+      "resposta": "NENHUM numero medido por outra frente em arquivo commitado meu",
+      "como": "busca nos cinco documentos commitados pelas seis frentes; dois casamentos, nenhum e medicao: uma nota de roteamento de dono e uma pergunta de desenho",
+      "ressalva_1": "este JSON NAO e arquivo commitado, mas contem material de outras frentes — resolucao de dono do selo DESTAQUE, placar de direcao das tres frentes, os quatro grupos de falso positivo da varredura do coordenador. Em todos a origem esta nomeada.",
+      "ressalva_2": "no sentido inverso, ha medicao MINHA em arquivos do coordenador (relatorio ao Owner, fila SQL). Nao verifiquei se estao atribuidas e nao editei arquivo dele as vesperas do congelamento."
+    },
+    "recursos": {
+      "processos_dart_flutter_tester": 28,
+      "acao": "DECLARADOS, nao mortos; o coordenador mata o conjunto no fechamento",
+      "worktrees": [
+        "e2-noturna-publicacoes-midia (minha, limpa)",
+        "%TEMP%/coelo-base-check (d784462c1 destacada, criada por mim, limpa)",
+        "%TEMP%/coelo-copia-previa (80f160599, WIP retido, publicada 0/0, criada por mim, limpa)"
+      ],
+      "stash": "vazio",
+      "containers_portas_agendamentos": "nenhum",
+      "residuo_que_eu_gerei": "packages/coelo_api/pubspec.lock aparece untracked na minha worktree, produzido quando rodei flutter test em coelo_api na medicao do item 2b. Conferido contra origin/dev com git show mais diff: IDENTICO ao rastreado em 9a896b993. Aparece untracked so porque a minha HEAD precede aquele commit. NAO commitado e NAO apagado: apagar destruiria copia identica a rastreada sem ganho."
+    }
   }
 }

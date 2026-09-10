@@ -1836,6 +1836,61 @@ diferença vazia nos caminhos do commit — ou procurando a linha `cherry picked
 commit <sha>` no histórico da base. Ancestralidade do SHA original só é válida
 quando o integrador faz merge, e quem define isso é o integrador, não quem mede.
 
+E uma frente fez, com o método novo, a coisa que este relatório inteiro vem
+pedindo: **validou o instrumento nos casos em que a resposta já era conhecida antes
+de confiar nele no caso desconhecido.** Dos cinco commits dela, quatro eram
+ancestrais de verdade; o teste de conteúdo concordou com a ancestralidade nos
+quatro e resolveu o quinto, onde a ancestralidade falha. Se tivesse discordado em
+algum dos quatro, não poderia ser usado no quinto. **E ela declarou o limite do
+método sem que ninguém pedisse:** diferença vazia não distingue "foi integrado" de
+"alguém escreveu o mesmo conteúdo por outro caminho", e não detectaria integração
+parcial revertida depois — quem sustenta o quinto caso é a nota de cherry-pick, não
+o diff.
+
+A mesma frente recusou a minha classificação de "pior erro da noite", com um
+argumento que eu aceito: este só morde no fechamento e mordeu a mim antes de morder
+qualquer frente, enquanto a deriva de relógio teria encurtado a rodada de seis
+frentes em meia hora sem ninguém notar. **O que ele revela vale mais que a culpa:
+eu pedi um método de verificação sem declarar como INTEGRO, e nenhuma das seis
+frentes perguntou "como o meu commit chega lá?".** É a mesma família do escopo — o
+verificador precisa conhecer o mecanismo do verificado, e ninguém confere isso
+porque parece óbvio dos dois lados.
+
+### Número emprestado vira número próprio
+
+A pergunta que fechou a rodada não foi minha: uma frente, ao arrancar de um
+comentário de código integrado um número que ela havia atribuído a outra frente e
+que **não existia em lugar nenhum** — e que contradizia o que aquela frente de fato
+mediu —, propôs perguntar às seis se alguém mais havia feito o mesmo. Depois
+melhorou a própria pergunta: não basta perguntar se alguém citou número de
+terceiro, é preciso perguntar se o arquivo diz **de quem é a medição** e **o que foi
+conferido sobre ela**.
+
+As respostas, todas medidas por varredura e não por memória: duas frentes
+responderam "nenhum" com busca feita; uma achou **uma** ocorrência, na mensagem do
+commit que acabara de entregar, com duas medições de terceiro escritas em voz
+própria; e uma achou **quatro**, duas delas sem nomear frente alguma — uma das
+quatro dentro de um arquivo de teste, que é o caso mais arriscado, porque ninguém
+espera que um comentário de código cite terceiro e o leitor assume que quem
+escreveu mediu.
+
+**O risco é assimétrico, e é isso que torna a classe grave:** se o número emprestado
+estiver errado, o erro é cobrado de quem citou, e a frente que mediu nem sabe que
+está sendo usada como fonte. E a hierarquia que todos nós invertemos é a mesma: o
+crédito foi para o relatório da rodada, que envelhece com ela, e não para o
+artefato, que viaja com o código. Uma frente disse a frase que fecha o argumento
+sobre a própria mensagem de commit: **"Eu mesmo, se ler esse commit em janeiro, vou
+acreditar que contei oito."**
+
+Uma das quatro correções trouxe junto um limite que estava implícito e precisava
+estar escrito: do achado sobre as três tabelas ausentes, o que foi verificado é que
+**nenhum arquivo do pacote as cria** — que elas existam em produção **não foi
+verificado por ninguém esta noite**.
+
+**Esta pergunta valia contra mim antes de valer contra qualquer um**, e foi uma
+quinta frente que apontou: este relatório carrega medições das seis, e eu precisava
+conferir se elas estão atribuídas.
+
 ### Um número que pune quem corrige
 
 Uma varredura desta rodada conta, em cada documento, os caminhos citados que não

@@ -1,6 +1,6 @@
 {
-  "revision": 63,
-  "updated_at": "2026-09-10T04:34:00-03:00",
+  "revision": 64,
+  "updated_at": "2026-09-10T04:36:00-03:00",
   "group": "chat-comunicacoes",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) - claude-opus-5[1m]",
@@ -810,17 +810,18 @@
     "numero": "397 PASS / 12 FAIL em 17 caminhos."
   },
   "residual_por_sha": {
-    "metodo": "git merge-base --is-ancestor <sha> origin/dev, conforme o item 1 do formato. Nao usei git cat-file -e <sha>^{commit}: o circunflexo some no cmd, e existencia e mais fraca que ancestralidade.",
-    "origin_dev_no_momento": "e864a254f",
-    "integrados": [
-      "c1e6756c7 (cabeca da branch original, logo os 43 commits dela sao ancestrais)",
-      "cb0a386d8",
-      "05fdcf2d5"
+    "correcao_de_metodo": "A coordenacao integra tambem por CHERRY-PICK. Ancestralidade responde NAO para commit cherry-picado, e vai responder NAO para sempre, mesmo integrado. O teste que eu vinha usando mentiria justamente no caso em que o trabalho ESTA na base.",
+    "metodo_novo": "Medir por CONTEUDO: git diff --name-only <sha> origin/dev -- <caminhos tocados pelo commit>. Zero arquivos diferentes significa que o conteudo esta na base, independentemente de como chegou. Complementado pela nota 'cherry picked from commit <sha>' no corpo dos commits do dev.",
+    "validacao_do_metodo_novo": "O teste de conteudo concorda com o de ancestralidade nos QUATRO casos em que a ancestralidade funciona, e resolve corretamente o quinto, onde ela falha. Controle positivo em quatro casos conhecidos antes de confiar nele no caso desconhecido.",
+    "resultado_sobre_origin_dev_3b60fae45": [
+      "c1e6756c7 — ancestral SIM, arquivos diferentes 0. INTEGRADO.",
+      "cb0a386d8 — ancestral SIM, arquivos diferentes 0. INTEGRADO.",
+      "05fdcf2d5 — ancestral SIM, arquivos diferentes 0. INTEGRADO.",
+      "fb31e11dc — ancestral SIM, arquivos diferentes 0. INTEGRADO.",
+      "8a09d66ac — ancestral NAO, arquivos diferentes 0, e o dev carrega a nota 'cherry picked from commit 8a09d66ac'. INTEGRADO por cherry-pick como e9beeae4c."
     ],
-    "pendente": [
-      "fb31e11dc (publicado em origin, aguardando integracao)"
-    ],
-    "nota": "Provar que c1e6756c7 e ancestral prova os 43 de uma vez, sem enumerar."
+    "residual": "ZERO. Cinco commits, cinco integrados, medidos por conteudo.",
+    "limite_do_teste_de_conteudo": "Ele afirma que os arquivos tocados pelo commit sao identicos entre o commit e o dev AGORA. Nao distingue 'foi integrado' de 'alguem escreveu o mesmo conteudo por outro caminho', e nao detectaria integracao parcial se um commit posterior tivesse alterado os mesmos arquivos de volta. Nos meus cinco isso nao ocorre, mas o teste sozinho nao provaria."
   },
   "tags_de_auditoria": {
     "audit-frozen-0200": "0d847eb7a — cobre do inicio da noite ate ~02:00",
