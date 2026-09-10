@@ -5,6 +5,7 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../domain/circular.dart';
 import '../domain/circular_repository.dart';
 import 'principal_circular_reader.dart';
 
@@ -152,6 +153,10 @@ final class _PrincipalCircularDetailPageState extends State<PrincipalCircularDet
     }
   }
 
+  static bool _closedForResponses(CircularDetail detail) =>
+      detail.status == CircularStatus.closed ||
+      (detail.responsesCloseAt?.isBefore(DateTime.now()) ?? false);
+
   @override
   Widget build(BuildContext context) => CallbackShortcuts(
     bindings: {const SingleActivator(LogicalKeyboardKey.escape): _return},
@@ -260,7 +265,16 @@ final class _PrincipalCircularDetailPageState extends State<PrincipalCircularDet
       mediaRepository: widget.mediaRepository,
       embedded: widget.embedded,
     );
-    if (_conflictNotice case final notice?) {
+    // O servidor sinaliza encerramento com o MESMO conflito de versao usado
+    // para conteudo obsoleto. Depois da releitura da para distinguir: se a
+    // Circular voltou encerrada, convidar a responder de novo seria o mesmo
+    // convite falso que este leitor deixou de fazer.
+    final notice = _conflictNotice == null
+        ? null
+        : (_closedForResponses(_detail!)
+              ? 'As respostas desta circular foram encerradas enquanto você respondia.'
+              : _conflictNotice);
+    if (notice case final notice?) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
