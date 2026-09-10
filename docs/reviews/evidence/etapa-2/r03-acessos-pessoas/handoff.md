@@ -20,17 +20,22 @@ Fase 0 nao existe. **Nenhuma tela de diretorio foi tocada.**
 
 ## O que fechou
 
-**Tres pacotes prontos para a fila, 123 testes pgTAP verdes.**
+**Quatro pacotes prontos para a fila, 168 testes pgTAP verdes.**
 
 | Pacote | Migrations | pgTAP | Desbloqueia |
 | --- | --- | --- | --- |
 | `AP-PEOPLE-DETAIL-V2` | `20260828005000` | 42 PASS | `people.links`, `people.reload` |
 | `AP-INVITES-V2` | `20260901190432` (com minha correcao) | 33 PASS | as 5 de Convites |
 | `AP-INTERNAL-USERS-V2` | `20260901210000` e `20260908021644` | 48 PASS | as 4 de Usuarios internos |
+| `AP-CHILD-SAFETY-INTERNAL-READS` | `20260812002100` (com minha correcao), `20260812002200`, `20260909193000` | 45 PASS | as 5 de Seguranca infantil |
 
-Sao **11 das 38 acoes** do recorte, e **nenhuma exige mudanca em Dart**: as
+Sao **16 das 38 acoes** do recorte, e **nenhuma exige mudanca em Dart**: as
 chaves de composicao ja estao ligadas no escopo produtivo. O que faltava era a
 funcao existir no banco.
+
+Fora desses quatro, `access_profile_models_aal1_phase_policy_test` passou com 34
+testes no perfil `ModelAal1PhasePolicy`, mas nao e pacote novo: as RPCs de
+Perfis e Modelos ja estao em producao.
 
 **Dois defeitos de SQL corrigidos**, ambos do meu recorte e ambos impeditivos
 em qualquer ambiente:
