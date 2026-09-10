@@ -55,6 +55,12 @@ final class SupabaseGroupDirectoryRepository implements GroupDirectoryRepository
         ),
       );
       final saved = _record(response);
+      // Em atualizacao o recibo tem de corresponder a turma pedida; sem isto uma
+      // resposta de outra turma entraria no cache como registro salvo. Na criacao
+      // o identificador vem do servidor, entao nao ha o que comparar.
+      if (request.record.managementVersion != 0 && saved.id != request.record.id) {
+        throw const GroupDirectoryUnavailableException();
+      }
       _cache[saved.id] = saved;
       return GroupDirectorySaveResult(
         requestId: request.requestId,

@@ -66,6 +66,37 @@ void main() {
     expect(result.steps.single.status, GroupDirectorySaveStepStatus.success);
   });
 
+  test('recibo de outra turma na atualizacao nao entra no cache', () async {
+    // Mesma guarda aplicada em Unidades e ja existente em Instituicoes: em
+    // atualizacao o recibo tem de corresponder a turma pedida.
+    final client = _client((request) async {
+      final outra = Map<String, Object?>.from(_groupRow());
+      outra['id'] = '44444444-4444-4444-8444-444444444444';
+      return _json(outra, request);
+    });
+    addTearDown(client.dispose);
+    final record = GroupRecord(
+      id: '33333333-3333-4333-8333-333333333333',
+      institutionId: '11111111-1111-4111-8111-111111111111',
+      institutionName: 'Casa Nuvem',
+      unitId: '22222222-2222-4222-8222-222222222222',
+      unitName: 'Unidade Centro',
+      name: 'Turma Girassol',
+      groupType: 'class',
+      status: GroupStatus.active,
+      createdAt: DateTime.utc(2026, 1, 1),
+      updatedAt: DateTime.utc(2026, 1, 1),
+      managementVersion: 2,
+    );
+
+    await expectLater(
+      SupabaseGroupDirectoryRepository(client).saveComposition(
+        GroupDirectorySaveRequest(requestId: 'group-save-edit-123', record: record),
+      ),
+      throwsA(isA<GroupDirectoryUnavailableException>()),
+    );
+  });
+
   test('maps authorization denials without falling back to fake data', () async {
     final client = _client(
       (request) async => Response(
