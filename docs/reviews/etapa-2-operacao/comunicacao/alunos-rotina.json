@@ -1,15 +1,15 @@
 {
-  "revision": 32,
-  "updated_at": "2026-09-10T04:42:32-03:00",
+  "revision": 33,
+  "updated_at": "2026-09-10T04:45:01-03:00",
   "clock_note": "Relogio corrigido pelo coordenador e conferido por mim com PowerShell Get-Date: 02:00 de 10/09, fuso E. South America Standard Time, -03:00. O date do Git Bash com TZ nao tem tzdata e devolve UTC; parei de usa-lo.",
   "group": "alunos-rotina",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) - claude-opus-5[1m]",
-  "status": "PRE-ENTREGA FECHADA",
+  "status": "ENTREGUE E PARADO",
   "coordinator": "Claude (Coordenacao e Integracao)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-alunos-rotina",
   "branch": "work/etapa2-noturna-alunos-rotina",
-  "head": "f05ddf647",
+  "head": "8211bac07",
   "upstream": "18d0127ed",
   "divergence": "HEAD 10 a frente de origin/dev. Os 10 sao merges de integracao do coordenador e lotes de OUTRAS frentes neste checkout compartilhado. NENHUM e meu: os 26 lotes citados neste arquivo foram verificados um a um como ancestrais de origin/dev. Publicar esses 10 nao e decisao minha.",
   "workingTree": "Sujo por 3 JSONs de comunicacao de frentes distintas neste checkout compartilhado. O unico que eu escrevo e alunos-rotina.json.",
@@ -747,5 +747,19 @@
       "Nada foi exercitado contra Supabase ou Cloudflare reais. Nenhuma tela deste recorte pode ser declarada concluida ponta a ponta.",
       "A amostra de Formularios do bloco de goldens nao e minha: 12 casos sobre 23 imagens, medidos pela frente dona. O conjunto de 60 tem duas maos."
     ]
+  },
+  "entrega_final": {
+    "base": "8211bac07",
+    "verificado_no_fechamento": "HEAD igual a origin/dev, 0/0 apos fetch. Arvore com zero alteracoes. Stash 0. Os 26 lotes e a r32 conferidos como ancestrais de origin/dev: zero fora. Nenhum recurso proprio aberto.",
+    "aceite": "Pre-entrega aceita integra pelo coordenador em 8211bac07.",
+    "o_que_fica_para_quem_retomar": [
+      "Rebaseline nominal dos goldens: institutions 8 casos e forms 8 casos. Nao e decisao minha e nao foi tomada. A triagem esta no bloco amostragem_de_goldens, com a proporcao CORRIGIDA de cerca de 83% deslocamento seguro e 17% com conteudo, e com a classificacao corrigida dentro de CADA amostra, nao so em chave irma.",
+      "Schema nao versionado continua bloqueando: Rotina diaria chama 9 objetos app_private que nenhuma migration cria; student_tracking chama 4. Diagnostico estatico sobre as migrations do repositorio. Enquanto isso nao existir, essas linhas nao sobem de estado por trabalho de cliente.",
+      "OQ-040 segue aberta e mantem /attendance fail-closed. Nao abrir onCreate nem onOpenCall sem decisao.",
+      "Cache PostgREST U1 nao executado: exige DB mais Auth mais PostgREST mais Kong locais e a janela SQL serializada no coordenador.",
+      "Cinco itens deliberadamente NAO corrigidos, com motivo registrado: armadilha do IntrinsicHeight em person_directory, codigo morto em attendance_controller, fiacao morta de studentTrackingRepository, alvo de toque 52x44 no shell e o golden de safety."
+    ],
+    "nada_e2e": "Reafirmado no fechamento: toda prova e local. Nenhuma tela deste recorte pode ser declarada concluida ponta a ponta. Nenhuma mutacao remota foi tentada em toda a rodada.",
+    "zero_promocoes": "Nenhuma promocao a verified foi proposta em 33 revisoes."
   }
 }
