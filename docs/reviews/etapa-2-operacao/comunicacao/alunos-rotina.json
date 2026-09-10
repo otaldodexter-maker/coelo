@@ -1,6 +1,6 @@
 {
-  "revision": 30,
-  "updated_at": "2026-09-10T03:38:46-03:00",
+  "revision": 31,
+  "updated_at": "2026-09-10T03:55:36-03:00",
   "clock_note": "Relogio corrigido pelo coordenador e conferido por mim com PowerShell Get-Date: 02:00 de 10/09, fuso E. South America Standard Time, -03:00. O date do Git Bash com TZ nao tem tzdata e devolve UTC; parei de usa-lo.",
   "group": "alunos-rotina",
   "task": "/root",
@@ -9,7 +9,7 @@
   "coordinator": "Claude (Coordenacao e Integracao)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-alunos-rotina",
   "branch": "work/etapa2-noturna-alunos-rotina",
-  "head": "c939cd120",
+  "head": "665b48d69",
   "upstream": "18d0127ed",
   "divergence": "HEAD 10 a frente de origin/dev. Os 10 sao merges de integracao do coordenador e lotes de OUTRAS frentes neste checkout compartilhado. NENHUM e meu: os 26 lotes citados neste arquivo foram verificados um a um como ancestrais de origin/dev. Publicar esses 10 nao e decisao minha.",
   "workingTree": "Sujo por 3 JSONs de comunicacao de frentes distintas neste checkout compartilhado. O unico que eu escrevo e alunos-rotina.json.",
@@ -575,7 +575,9 @@
       "o_que_eu_NAO_sei": "De onde vem o 12 de Formularios. Pode ter sido medido e nunca escrito como amostra, ou pode ter vindo da medicao de outra frente e entrado no meu texto sem virar amostra minha. Nao tenho registro que decida.",
       "o_que_eu_sei": "A minha medicao desta madrugada conta 8 TESTES de golden de forms falhando, nao 12. Teste de golden pode conter varios arquivos de referencia, entao 8 testes e 12 arquivos nao se contradizem — mas eu nao verifiquei essa correspondencia e nao vou afirmar que explica.",
       "efeito_no_numero": "Se Formularios sair da conta, a proporcao vira 38 de 48, cerca de 79% de deslocamento seguro, em vez de 83%. A CONCLUSAO nao muda: a maioria larga e deslocamento seguro, e a inversao que eu publiquei na r17 continua derrubada. Muda a precisao, nao o sentido.",
-      "acao": "Fica declarada no item 7 da pre-entrega como coisa que eu NAO verifiquei. Nao invento a origem e nao apago o numero: quem decidir o rebaseline precisa saber que a amostra de Formularios nao esta documentada aqui."
+      "acao": "Fica declarada no item 7 da pre-entrega como coisa que eu NAO verifiquei. Nao invento a origem e nao apago o numero: quem decidir o rebaseline precisa saber que a amostra de Formularios nao esta documentada aqui.",
+      "RESOLVIDA_PELO_COORDENADOR": "O 12 de Formularios tem procedencia e NAO e meu: veio da frente DONA daquelas telas, que triou os proprios goldens depois de eu parar de amostrar. Ela contou 12 casos cobrindo 23 IMAGENS, classificados por comparacao elemento a elemento, e achou ainda uma quinta diferenca de conteudo em Saude e Cuidado, um cartao de medicacao que deixou de nomear quem responde. O meu 8 e o 12 dela nao se contradizem: sao contagens de coisas diferentes na mesma familia, testes contra imagens. O conjunto de 60 casos tem DUAS MAOS, e isso agora esta dito. Sem Formularios a proporcao seria 79% em vez de 83%; a conclusao nao muda e a precisao vem de duas fontes.",
+      "licao": "Declarar em vez de inventar foi o que resolveu em minutos. Se eu tivesse presumido que o 12 era meu e saido procurando a medicao perdida, teria gasto horas atras de uma coisa que nunca esteve comigo. Numero sem procedencia num registro coletivo pode ser de outra mao — a pergunta certa nao e 'onde eu medi isso' e sim 'quem mediu isso'."
     }
   },
   "v4_19_convencao": {
@@ -641,7 +643,10 @@
     "6_tmp_compartilhado": "Arquivo intermediario vai para o scratchpad da sessao, nunca para /tmp, quando ha varias sessoes na mesma maquina. Nome generico em /tmp faz uma frente ler a medicao de outra.",
     "7_espera_que_expira": "Espera com timeout que expira PARECE espera bem sucedida. Um laco de espera precisa distinguir 'achei o marcador de fim' de 'cansei', e quem le o resultado precisa exigir a distincao. Eu parseei um arquivo de corrida ainda sendo escrito e quase reportei perda de 22 casos de cobertura em institutions que nunca existiu — os arquivos eram identicos nas duas bases, e foi isso que me salvou: arquivo igual nao perde caso, entao o defeito estava no instrumento.",
     "8_afirmar_leitura_nao_feita": "Pior que estimar em vez de ler e declarar que se leu. Eu escrevi 'sao 03:22:40, lidas agora' sem chamar o relogio; a leitura real do mesmo bloco era 03:10:49. Estimativa apresentada como medicao destroi a unica defesa que o leitor tinha, que era confiar no rotulo.",
-    "9_lista_derivada_de_memoria": "Lista de caminhos escrita de memoria erra nos dois sentidos ao mesmo tempo: inventa o que nao existe e omite o que existe. A conferencia de existencia so pega a primeira metade. A pergunta que pega a causa e se a lista foi derivada do recorte ATRIBUIDO ou da lembranca de quem mede."
+    "9_lista_derivada_de_memoria": "Lista de caminhos escrita de memoria erra nos dois sentidos ao mesmo tempo: inventa o que nao existe e omite o que existe. A conferencia de existencia so pega a primeira metade. A pergunta que pega a causa e se a lista foi derivada do recorte ATRIBUIDO ou da lembranca de quem mede.",
+    "10_file_reporter_windows": "Relato de outra frente: flutter test --file-reporter json:C:/caminho corta no primeiro dois-pontos no Windows, o 'C' vira nome do arquivo, a corrida termina com exit code correto e o JSON nao existe. AQUI NAO REPRODUZIU: usei json:<caminho absoluto com C:/> e o arquivo saiu no lugar pedido, com 703297 bytes, e o parser bateu exato com o contador oficial. Entao a armadilha e dependente de ambiente ou de shell, e o controle confiavel nao e a forma do caminho: e CONFERIR QUE O ARQUIVO EXISTE E TEM O EVENTO done antes de confiar na corrida. Conferi tambem que nao ficou residuo: zero nao rastreados no repositorio e nenhum arquivo chamado C em apps/superadmin ou packages.",
+    "11_duas_armadilhas_simetricas": "O par vale mais que cada uma: expanded parseado MENTE no numero e acerta a lista de falhas, entao a conferencia que a pessoa naturalmente faz e justamente a que passa. file-reporter mal formado APAGA o numero e nao reclama. Uma erra em silencio parecendo certa, a outra some sem avisar. As duas so aparecem conferindo o instrumento contra algo que ele NAO produziu.",
+    "12_dois_reporters_no_mesmo_run": "flutter test --reporter compact --file-reporter json:<arquivo> e UMA execucao, nao duas: o file-reporter escreve enquanto o compact vai para a tela. O cruzamento entre contador oficial e parser sai de graca e sem risco de as duas medicoes pegarem bases diferentes, que e o defeito do jeito obvio de conferir, rodar duas vezes."
   },
   "medicao": {
     "base": "c939cd120",
