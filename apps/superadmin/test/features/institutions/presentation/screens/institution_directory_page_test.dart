@@ -9,7 +9,6 @@ import 'package:coelo_superadmin/features/institutions/domain/institution_direct
 import 'package:coelo_superadmin/features/institutions/domain/institution_directory_query.dart';
 import 'package:coelo_superadmin/features/institutions/domain/institution_directory_repository.dart';
 import 'package:coelo_superadmin/features/institutions/presentation/screens/institution_directory_page.dart';
-import 'package:coelo_superadmin/features/institutions/presentation/widgets/institution_directory_toolbar.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_directory_view_toggle.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
@@ -162,9 +161,7 @@ void main() {
     await tester.pumpWidget(_app());
     await tester.pumpAndSettle();
 
-    final toolbar = tester.widget<InstitutionDirectoryToolbar>(
-      find.byType(InstitutionDirectoryToolbar),
-    );
+    final toolbar = tester.widget<Widget>(find.byKey(const Key('institution-filter-toolbar')));
     final errors = <FlutterErrorDetails>[];
     final previousErrorHandler = FlutterError.onError;
     FlutterError.onError = errors.add;

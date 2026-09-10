@@ -8,11 +8,12 @@ import '../../domain/institution_directory_query.dart';
 import '../institution_directory_table_view.dart';
 import 'institution_status_presentation.dart';
 
-class InstitutionDirectoryTable extends StatelessWidget {
-  const InstitutionDirectoryTable({
+/// Linhas e colunas de domínio de Instituições sobre a tabela compartilhada.
+/// O banner Criar, a toolbar e a paginação vêm do `CoeloAdminDirectory`.
+class InstitutionTableRows extends StatelessWidget {
+  const InstitutionTableRows({
     required this.items,
     required this.view,
-    required this.createAction,
     this.onEdit,
     required this.sortColumn,
     required this.sortAscending,
@@ -22,7 +23,6 @@ class InstitutionDirectoryTable extends StatelessWidget {
 
   final List<InstitutionDirectoryItem> items;
   final InstitutionDirectoryTableView view;
-  final Widget createAction;
   final ValueChanged<InstitutionDirectoryItem>? onEdit;
   final InstitutionDirectorySortColumn sortColumn;
   final bool sortAscending;
@@ -31,24 +31,16 @@ class InstitutionDirectoryTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
-      builder: (context, constraints) {
-        return Column(
-          children: [
-            SizedBox(width: constraints.maxWidth, child: createAction),
-            const SizedBox(height: CoeloSpacing.space4),
-            KeyedSubtree(
-              key: Key('institution-directory-table-${view.name}'),
-              child: SizedBox(
-                key: const Key('institution-directory-table-viewport'),
-                width: constraints.maxWidth,
-                child: view == InstitutionDirectoryTableView.grouped
-                    ? _groupedTable()
-                    : _detailTable(view),
-              ),
-            ),
-          ],
-        );
-      },
+      builder: (context, constraints) => KeyedSubtree(
+        key: Key('institution-directory-table-${view.name}'),
+        child: SizedBox(
+          key: const Key('institution-directory-table-viewport'),
+          width: constraints.maxWidth,
+          child: view == InstitutionDirectoryTableView.grouped
+              ? _groupedTable()
+              : _detailTable(view),
+        ),
+      ),
     );
   }
 

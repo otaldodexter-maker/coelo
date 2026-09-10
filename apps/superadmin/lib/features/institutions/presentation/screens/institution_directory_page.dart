@@ -1,4 +1,5 @@
-import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../app/activity/superadmin_activity.dart';
@@ -6,18 +7,17 @@ import '../../../../app/shell/superadmin_notice.dart';
 import '../../../../app/shell/superadmin_shell.dart';
 import '../../../auth/domain/logout_action.dart';
 import '../../../support/domain/support_ticket.dart';
-import '../../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
-import '../../../../shared/presentation/widgets/superadmin_underline_tabs.dart';
 import '../../domain/institution_directory_item.dart';
 import '../../domain/institution_directory_repository.dart';
 import '../institution_directory_table_view.dart';
 import '../view_models/institution_directory_view_model.dart';
-import '../widgets/institution_directory_cards.dart';
-import '../widgets/institution_directory_pagination.dart';
-import '../widgets/institution_directory_states.dart';
-import '../widgets/institution_directory_table.dart';
-import '../widgets/institution_directory_toolbar.dart';
+import '../widgets/institution_card.dart';
+import '../widgets/institution_file_actions.dart';
+import '../widgets/institution_filter_menu.dart';
+import '../widgets/institution_table_rows.dart';
 
+/// Diretório de Instituições: instância do `CoeloAdminDirectory` com o
+/// conteúdo de domínio (busca, filtros, cards, tabela, abas de status).
 class InstitutionDirectoryPage extends StatefulWidget {
   const InstitutionDirectoryPage({
     required this.repository,
@@ -56,32 +56,28 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
   late final InstitutionDirectoryViewModel _viewModel;
   late final TextEditingController _searchController;
   late final SuperadminActivityController _activityController;
-  InstitutionDirectoryDisplay _display = InstitutionDirectoryDisplay.cards;
+  CoeloAdminDirectoryDisplay _display = CoeloAdminDirectoryDisplay.cards;
   InstitutionDirectoryTableView _tableView = InstitutionDirectoryTableView.grouped;
   bool _noticeShown = false;
-  double _paginationFooterHeight = 0;
-
+  double _footerHeight = 0;
   bool _paginationExpected = false;
-  void _changeDisplay(InstitutionDirectoryDisplay display) {
-    if (display == _display) {
-      return;
-    }
+
+  void _changeDisplay(CoeloAdminDirectoryDisplay display) {
+    if (display == _display) return;
     setState(() => _display = display);
     _viewModel.setPageSize(
-      display == InstitutionDirectoryDisplay.cards ? 11 : 8,
-      resetSort: display == InstitutionDirectoryDisplay.cards,
+      display == CoeloAdminDirectoryDisplay.cards ? 11 : 8,
+      resetSort: display == CoeloAdminDirectoryDisplay.cards,
     );
   }
 
   void _changeTableView(InstitutionDirectoryTableView view) {
-    final wasCards = _display == InstitutionDirectoryDisplay.cards;
+    final wasCards = _display == CoeloAdminDirectoryDisplay.cards;
     setState(() {
-      _display = InstitutionDirectoryDisplay.table;
+      _display = CoeloAdminDirectoryDisplay.table;
       _tableView = view;
     });
-    if (wasCards) {
-      _viewModel.setPageSize(8);
-    }
+    if (wasCards) _viewModel.setPageSize(8);
   }
 
   void _handleDirectoryChanged() {
@@ -91,11 +87,9 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
     setState(() => _paginationExpected = expected);
   }
 
-  void _handlePaginationFooterHeightChanged(double height) {
-    if ((_paginationFooterHeight - height).abs() < 0.5) {
-      return;
-    }
-    setState(() => _paginationFooterHeight = height);
+  void _handleFooterHeightChanged(double height) {
+    if ((_footerHeight - height).abs() < 0.5) return;
+    setState(() => _footerHeight = height);
   }
 
   @override
@@ -111,9 +105,7 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
   @override
   void didUpdateWidget(covariant InstitutionDirectoryPage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.successMessage != widget.successMessage) {
-      _noticeShown = false;
-    }
+    if (oldWidget.successMessage != widget.successMessage) _noticeShown = false;
   }
 
   @override
@@ -131,9 +123,8 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
       logout: widget.logout,
       activityController: _activityController,
       showChatLauncher:
-          widget.onConversationsOpen != null &&
-          (!_paginationExpected || _paginationFooterHeight > 0),
-      chatLauncherBottomInset: _paginationFooterHeight,
+          widget.onConversationsOpen != null && (!_paginationExpected || _footerHeight > 0),
+      chatLauncherBottomInset: _footerHeight,
       onBugReportSubmitted: widget.onBugReportSubmitted,
       onOpenConversations: widget.onConversationsOpen,
       onDestinationSelected: (destination) {
@@ -160,187 +151,126 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
               }
             });
           }
-          return _InstitutionDirectoryContent(
-            viewModel: _viewModel,
-            activityController: _activityController,
-            searchController: _searchController,
-            display: _display,
-            tableView: _tableView,
-            avoidChatLauncher: widget.onConversationsOpen != null,
-            onDisplayChanged: _changeDisplay,
-            onTableViewChanged: _changeTableView,
-            onCreate: widget.onCreate,
-            onEdit: widget.onEdit,
-            onFooterHeightChanged: _handlePaginationFooterHeightChanged,
-            onClearFilters: () {
-              _searchController.clear();
-              _viewModel.clearFilters();
-            },
+          return AnimatedBuilder(
+            animation: _viewModel,
+            builder: (context, _) => _directory(context),
           );
         },
       ),
     );
   }
-}
 
-class _InstitutionDirectoryContent extends StatefulWidget {
-  const _InstitutionDirectoryContent({
-    required this.viewModel,
-    required this.activityController,
-    required this.searchController,
-    required this.display,
-    required this.tableView,
-    required this.avoidChatLauncher,
-    required this.onDisplayChanged,
-    required this.onTableViewChanged,
-    required this.onCreate,
-    required this.onEdit,
-    required this.onFooterHeightChanged,
-    required this.onClearFilters,
-  });
-
-  final InstitutionDirectoryViewModel viewModel;
-  final SuperadminActivityController activityController;
-  final TextEditingController searchController;
-  final InstitutionDirectoryDisplay display;
-  final InstitutionDirectoryTableView tableView;
-  final bool avoidChatLauncher;
-  final ValueChanged<InstitutionDirectoryDisplay> onDisplayChanged;
-  final ValueChanged<InstitutionDirectoryTableView> onTableViewChanged;
-  final VoidCallback? onCreate;
-  final ValueChanged<String>? onEdit;
-  final ValueChanged<double> onFooterHeightChanged;
-  final VoidCallback onClearFilters;
-
-  @override
-  State<_InstitutionDirectoryContent> createState() => _InstitutionDirectoryContentState();
-}
-
-class _InstitutionDirectoryContentState extends State<_InstitutionDirectoryContent> {
-  final GlobalKey _footerKey = GlobalKey();
-  double _footerHeight = 0;
-  bool _measurementScheduled = false;
-
-  void _scheduleFooterMeasurement(bool showFooter) {
-    if (_measurementScheduled) {
-      return;
-    }
-    _measurementScheduled = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _measurementScheduled = false;
-      if (!mounted) {
-        return;
-      }
-      var nextHeight = 0.0;
-      if (showFooter) {
-        final renderObject = _footerKey.currentContext?.findRenderObject();
-        if (renderObject is! RenderBox || !renderObject.hasSize) {
-          return;
-        }
-        nextHeight = renderObject.size.height;
-      }
-      if ((nextHeight - _footerHeight).abs() < 0.5) {
-        return;
-      }
-      setState(() => _footerHeight = nextHeight);
-      widget.onFooterHeightChanged(nextHeight);
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final horizontalPadding = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
-            ? CoeloSpacing.space10
-            : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
-            ? CoeloSpacing.space6
-            : CoeloSpacing.space4;
-        return AnimatedBuilder(
-          animation: widget.viewModel,
-          builder: (context, child) {
-            if (widget.viewModel.state == InstitutionDirectoryLoadState.unauthorized) {
-              _scheduleFooterMeasurement(false);
-              return ListView(
-                key: const Key('institution-directory-content-scroll'),
-                padding: EdgeInsets.all(horizontalPadding),
-                children: [
-                  InstitutionDirectoryStates(
-                    viewModel: widget.viewModel,
-                    createAction: const SizedBox.shrink(),
-                    successContent: const SizedBox.shrink(),
-                  ),
-                ],
-              );
-            }
-            final showPagination =
-                widget.viewModel.state == InstitutionDirectoryLoadState.success &&
-                widget.viewModel.page.totalCount > 0;
-            _scheduleFooterMeasurement(showPagination);
-            final footerInset = showPagination ? _footerHeight + CoeloSpacing.space4 : 0.0;
-            return Stack(
-              fit: StackFit.expand,
-              children: [
-                ListView(
-                  key: const Key('institution-directory-content-scroll'),
-                  padding: EdgeInsets.fromLTRB(
-                    horizontalPadding,
-                    horizontalPadding,
-                    horizontalPadding,
-                    horizontalPadding + footerInset,
-                  ),
-                  children: [
-                    InstitutionDirectoryToolbar(
-                      viewModel: widget.viewModel,
-                      activityController: widget.activityController,
-                      searchController: widget.searchController,
-                      display: widget.display,
-                      tableView: widget.tableView,
-                      onDisplayChanged: widget.onDisplayChanged,
-                      onTableViewChanged: widget.onTableViewChanged,
-                      onClearFilters: widget.onClearFilters,
-                    ),
-                    const SizedBox(height: CoeloSpacing.space4),
-                    _InstitutionStatusTabs(viewModel: widget.viewModel),
-                    const SizedBox(height: CoeloSpacing.space4),
-                    _InstitutionDirectoryResults(
-                      viewModel: widget.viewModel,
-                      display: widget.display,
-                      tableView: widget.tableView,
-                      onCreate: widget.onCreate,
-                      onEdit: widget.onEdit,
-                    ),
-                  ],
-                ),
-                if (showPagination)
-                  Positioned(
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    child: NotificationListener<SizeChangedLayoutNotification>(
-                      onNotification: (_) {
-                        _scheduleFooterMeasurement(true);
-                        return true;
-                      },
-                      child: SizeChangedLayoutNotifier(
-                        key: _footerKey,
-                        child: _InstitutionDirectoryPaginationFooter(
-                          viewModel: widget.viewModel,
-                          display: widget.display,
-                          horizontalPadding: horizontalPadding,
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            );
-          },
-        );
-      },
+  Widget _directory(BuildContext context) {
+    final viewModel = _viewModel;
+    final page = viewModel.page;
+    final onEdit = widget.onEdit;
+    final onCreate = widget.onCreate;
+    final showPagination =
+        viewModel.state == InstitutionDirectoryLoadState.success && page.totalCount > 0;
+    return CoeloAdminDirectory<InstitutionDirectoryTableView>(
+      scrollKey: const Key('institution-directory-content-scroll'),
+      toolbarKey: const Key('institution-filter-toolbar'),
+      filterControlsKey: const Key('institution-filter-controls'),
+      actionsKey: const Key('institution-toolbar-actions'),
+      toggleKey: const Key('institution-display-toggle'),
+      cardsKey: const Key('institution-view-cards'),
+      tableKey: const Key('institution-view-table'),
+      gridKey: const Key('institution-card-grid'),
+      status: _status(viewModel.state),
+      refreshing: viewModel.isLoading,
+      errorMessage: viewModel.errorMessage,
+      messages: const CoeloAdminDirectoryMessages(
+        empty: 'Ainda não há instituições cadastradas.',
+        emptyIcon: Icons.apartment_outlined,
+        noResults: 'Nenhuma instituição encontrada com estes filtros.',
+        failure: InstitutionDirectoryViewModel.genericErrorMessage,
+        unauthorized: InstitutionDirectoryViewModel.unauthorizedMessage,
+      ),
+      onRetry: viewModel.retry,
+      search: CoeloSearchField(
+        key: const Key('institution-directory-search'),
+        controller: _searchController,
+        hintText: 'Buscar por nome',
+        semanticLabel: 'Buscar por nome',
+        onChanged: viewModel.setSearch,
+      ),
+      filters: institutionFilterControls(viewModel),
+      trailing: [
+        if (viewModel.query.hasActiveFilters)
+          TextButton.icon(
+            onPressed: () {
+              _searchController.clear();
+              viewModel.clearFilters();
+            },
+            icon: const Icon(Icons.filter_alt_off_outlined),
+            label: const Text('Limpar filtros'),
+          ),
+      ],
+      display: _display,
+      onDisplayChanged: _changeDisplay,
+      groupedTableView: InstitutionDirectoryTableView.grouped,
+      selectedTableView: _tableView,
+      tableViews: [
+        for (final view in InstitutionDirectoryTableView.values)
+          CoeloAdminDirectoryTableViewOption(value: view, label: view.label),
+      ],
+      onTableViewSelected: _changeTableView,
+      fileActions: institutionFileActions(context),
+      tabs: _InstitutionStatusTabs(viewModel: viewModel),
+      create: onCreate == null
+          ? null
+          : CoeloAdminDirectoryCreate(
+              label: 'Criar instituição',
+              description: 'Adicionar nova instituição ao sistema.',
+              icon: Icons.add_business_outlined,
+              onPressed: onCreate,
+              tileKey: const Key('create-institution-card'),
+              tileSurfaceKey: const Key('create-institution-surface'),
+              bannerKey: const Key('create-institution-banner'),
+              bannerSurfaceKey: const Key('create-institution-banner-surface'),
+            ),
+      cards: [
+        for (final item in page.items)
+          InstitutionCard(item: item, onPressed: onEdit == null ? null : () => onEdit(item.id)),
+      ],
+      table: InstitutionTableRows(
+        items: page.items,
+        view: _tableView,
+        onEdit: onEdit == null ? null : (item) => onEdit(item.id),
+        sortColumn: viewModel.query.sortColumn,
+        sortAscending: viewModel.query.sortAscending,
+        onSort: viewModel.setSort,
+      ),
+      pagination: showPagination
+          ? CoeloAdminDirectoryPagination(
+              footerKey: const Key('institution-directory-pagination-footer'),
+              surfaceKey: const Key('institution-directory-pagination-footer-surface'),
+              currentPage: page.page + 1,
+              totalPages: (page.totalCount / viewModel.query.pageSize).ceil(),
+              pageSize: viewModel.query.pageSize,
+              pageSizeOptions: _display == CoeloAdminDirectoryDisplay.cards
+                  ? const [11, 20, 50, 100]
+                  : const [8, 20, 50, 100],
+              onPageSelected: (value) => viewModel.goToPage(value - 1),
+              onPageSizeChanged: viewModel.setPageSize,
+            )
+          : null,
+      onFooterHeightChanged: _handleFooterHeightChanged,
     );
   }
+
+  static CoeloAdminDirectoryStatus _status(InstitutionDirectoryLoadState state) => switch (state) {
+    InstitutionDirectoryLoadState.initial ||
+    InstitutionDirectoryLoadState.loading => CoeloAdminDirectoryStatus.loading,
+    InstitutionDirectoryLoadState.failure => CoeloAdminDirectoryStatus.failure,
+    InstitutionDirectoryLoadState.unauthorized => CoeloAdminDirectoryStatus.unauthorized,
+    InstitutionDirectoryLoadState.empty => CoeloAdminDirectoryStatus.empty,
+    InstitutionDirectoryLoadState.noResults => CoeloAdminDirectoryStatus.noResults,
+    InstitutionDirectoryLoadState.success => CoeloAdminDirectoryStatus.success,
+  };
 }
 
+/// Instituições é a exceção aprovada de abas de status: `Em Implantação`.
 class _InstitutionStatusTabs extends StatelessWidget {
   const _InstitutionStatusTabs({required this.viewModel});
 
@@ -349,110 +279,16 @@ class _InstitutionStatusTabs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final selected = viewModel.query.statuses.length == 1 ? viewModel.query.statuses.single : null;
-    return SuperadminUnderlineTabs<InstitutionStatus?>(
+    return CoeloAdminUnderlineTabs<InstitutionStatus?>(
       key: const Key('institution-status-tabs'),
       selected: selected,
       tabs: const [
-        SuperadminUnderlineTab(value: null, label: 'Todos'),
-        SuperadminUnderlineTab(value: InstitutionStatus.active, label: 'Ativos'),
-        SuperadminUnderlineTab(value: InstitutionStatus.onboarding, label: 'Em Implantação'),
-        SuperadminUnderlineTab(value: InstitutionStatus.inactive, label: 'Inativos'),
+        CoeloAdminUnderlineTab(value: null, label: 'Todos'),
+        CoeloAdminUnderlineTab(value: InstitutionStatus.active, label: 'Ativos'),
+        CoeloAdminUnderlineTab(value: InstitutionStatus.onboarding, label: 'Em Implantação'),
+        CoeloAdminUnderlineTab(value: InstitutionStatus.inactive, label: 'Inativos'),
       ],
       onSelected: (status) => viewModel.setStatuses(status == null ? const {} : {status}),
-    );
-  }
-}
-
-class _InstitutionDirectoryResults extends StatelessWidget {
-  const _InstitutionDirectoryResults({
-    required this.viewModel,
-    required this.display,
-    required this.tableView,
-    required this.onCreate,
-    required this.onEdit,
-  });
-
-  final InstitutionDirectoryViewModel viewModel;
-  final InstitutionDirectoryDisplay display;
-  final InstitutionDirectoryTableView tableView;
-  final VoidCallback? onCreate;
-  final ValueChanged<String>? onEdit;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        if (viewModel.isLoading) const LinearProgressIndicator(),
-        if (viewModel.isLoading) const SizedBox(height: CoeloSpacing.space4),
-        InstitutionDirectoryStates(
-          viewModel: viewModel,
-          createAction: display == InstitutionDirectoryDisplay.table
-              ? onCreate == null
-                    ? const SizedBox.shrink()
-                    : InstitutionCreateBanner(onPressed: onCreate!)
-              : InstitutionDirectoryCards(
-                  items: const [],
-                  onCreate: onCreate,
-                  onEdit: onEdit == null ? null : (item) => onEdit!(item.id),
-                ),
-          successContent: display == InstitutionDirectoryDisplay.table
-              ? InstitutionDirectoryTable(
-                  items: viewModel.page.items,
-                  view: tableView,
-                  createAction: onCreate == null
-                      ? const SizedBox.shrink()
-                      : InstitutionCreateBanner(onPressed: onCreate!),
-                  onEdit: onEdit == null ? null : (item) => onEdit!(item.id),
-                  sortColumn: viewModel.query.sortColumn,
-                  sortAscending: viewModel.query.sortAscending,
-                  onSort: viewModel.setSort,
-                )
-              : InstitutionDirectoryCards(
-                  items: viewModel.page.items,
-                  onCreate: onCreate,
-                  onEdit: onEdit == null ? null : (item) => onEdit!(item.id),
-                ),
-        ),
-      ],
-    );
-  }
-}
-
-class _InstitutionDirectoryPaginationFooter extends StatelessWidget {
-  const _InstitutionDirectoryPaginationFooter({
-    required this.viewModel,
-    required this.display,
-    required this.horizontalPadding,
-  });
-
-  final InstitutionDirectoryViewModel viewModel;
-  final InstitutionDirectoryDisplay display;
-  final double horizontalPadding;
-
-  @override
-  Widget build(BuildContext context) {
-    final page = viewModel.page;
-    final hasItems = page.totalCount > 0;
-    final totalPages = hasItems ? (page.totalCount / viewModel.query.pageSize).ceil() : null;
-
-    return SuperadminListingPaginationFooter(
-      semanticKey: const Key('institution-directory-pagination-footer'),
-      horizontalPadding: horizontalPadding,
-      compactCurrentPage: hasItems ? page.page + 1 : null,
-      compactTotalPages: totalPages,
-      compactOnPrevious: page.hasPrevious ? () => viewModel.goToPage(page.page - 1) : null,
-      compactOnNext: page.hasNext ? () => viewModel.goToPage(page.page + 1) : null,
-      child: KeyedSubtree(
-        key: const Key('institution-directory-pagination-footer-surface'),
-        child: InstitutionDirectoryPagination(
-          viewModel: viewModel,
-          pageSizeOptions: display == InstitutionDirectoryDisplay.cards
-              ? const [11, 20, 50, 100]
-              : const [8, 20, 50, 100],
-        ),
-      ),
     );
   }
 }

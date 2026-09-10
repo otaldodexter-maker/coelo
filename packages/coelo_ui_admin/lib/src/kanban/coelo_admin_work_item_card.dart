@@ -68,7 +68,10 @@ final class _CoeloAdminWorkItemCardState<T extends Object>
             widget.dragFeedback ??
             Material(
               color: Colors.transparent,
-              child: SizedBox(width: 320, child: _card(context, interactive: false, elevated: true)),
+              child: SizedBox(
+                width: 320,
+                child: _card(context, interactive: false, elevated: true),
+              ),
             ),
         childWhenDragging: Opacity(opacity: 0.4, child: card),
         child: card,

@@ -1,6 +1,6 @@
-import 'package:coelo_superadmin/app/activity/superadmin_activity.dart';
 import 'package:coelo_superadmin/features/institutions/presentation/widgets/institution_file_actions.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -9,13 +9,16 @@ void main() {
     testWidgets('keeps institution file actions visible with honest unavailability ($compact)', (
       tester,
     ) async {
-      final controller = SuperadminActivityController();
-      addTearDown(controller.dispose);
       await tester.pumpWidget(
         MaterialApp(
           theme: CoeloTheme.light,
           home: Scaffold(
-            body: InstitutionFileActions(activityController: controller, compact: compact),
+            body: Builder(
+              builder: (context) => CoeloAdminFileActions(
+                compact: compact,
+                actions: institutionFileActions(context),
+              ),
+            ),
           ),
         ),
       );
@@ -31,7 +34,6 @@ void main() {
       expect(find.text('Indisponível nesta etapa'), findsOneWidget);
       expect(find.textContaining('24 linhas'), findsNothing);
       expect(find.textContaining('2 linhas'), findsNothing);
-      expect(controller.activities, isEmpty);
     });
   }
 }

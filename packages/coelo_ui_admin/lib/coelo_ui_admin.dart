@@ -1,5 +1,9 @@
 library;
 
+export 'src/directory/coelo_admin_directory.dart';
+export 'src/directory/coelo_admin_directory_view_toggle.dart';
+export 'src/directory/coelo_admin_pagination_footer.dart';
+export 'src/directory/coelo_admin_underline_tabs.dart';
 export 'src/filter/coelo_admin_multi_select_field.dart';
 export 'src/filter/coelo_admin_multi_select_filter.dart';
 export 'src/filter/coelo_admin_single_select_field.dart';

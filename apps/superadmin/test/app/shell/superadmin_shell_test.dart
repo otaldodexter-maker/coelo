@@ -451,9 +451,10 @@ void main() {
       isA<BoxDecoration>().having(
         (decoration) => decoration.color,
         'color',
+        // MENU (10/09/2026): o item ativo usa o laranja primário preenchido.
         Theme.of(
           tester.element(find.byKey(const Key('superadmin-navigation-institutions'))),
-        ).colorScheme.primaryContainer,
+        ).colorScheme.primary,
       ),
     );
   });
@@ -879,13 +880,18 @@ void main() {
                 .widget<Container>(find.byKey(const Key('superadmin-navigation-institutions')))
                 .decoration!
             as BoxDecoration;
-    expect(activeDecoration.color, CoeloTheme.light.colorScheme.primaryContainer);
+    // MENU (10/09/2026): item ativo em laranja primário; a seção que o contém
+    // usa o laranja forte da referência de Instituições.
+    expect(activeDecoration.color, CoeloTheme.light.colorScheme.primary);
     final activeSectionDecoration =
         tester
                 .widget<Container>(find.byKey(const Key('superadmin-navigation-section-structure')))
                 .decoration!
             as BoxDecoration;
-    expect(activeSectionDecoration.color, CoeloTheme.light.colorScheme.primary);
+    expect(
+      activeSectionDecoration.color,
+      CoeloTheme.light.extension<CoeloActionColors>()!.primaryPressed,
+    );
     final inactiveSectionDecoration =
         tester
                 .widget<Container>(find.byKey(const Key('superadmin-navigation-section-access')))
@@ -1591,12 +1597,17 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 210));
 
-    final middleNavigation = Theme.of(tester.element(navigation)).colorScheme.primary;
+    final middleNavigation = Theme.of(
+      tester.element(navigation),
+    ).extension<CoeloActionColors>()!.primaryPressed;
     final middleStatus = Theme.of(
       tester.element(status),
     ).extension<CoeloStatusColors>()!.successContainer;
     expect(middleNavigation, isNot(lightNavigation));
-    expect(middleNavigation, isNot(CoeloTheme.dark.colorScheme.primary));
+    expect(
+      middleNavigation,
+      isNot(CoeloTheme.dark.extension<CoeloActionColors>()!.primaryPressed),
+    );
     expect(middleStatus, isNot(lightStatus));
     expect(middleStatus, isNot(CoeloTheme.dark.extension<CoeloStatusColors>()!.successContainer));
     expect(_surfaceDecoration(tester, navigation).color, middleNavigation);
@@ -1604,7 +1615,10 @@ void main() {
 
     await tester.pump(const Duration(milliseconds: 210));
 
-    expect(_surfaceDecoration(tester, navigation).color, CoeloTheme.dark.colorScheme.primary);
+    expect(
+      _surfaceDecoration(tester, navigation).color,
+      CoeloTheme.dark.extension<CoeloActionColors>()!.primaryPressed,
+    );
     expect(
       _surfaceDecoration(tester, statusSurface).color,
       CoeloTheme.dark.extension<CoeloStatusColors>()!.successContainer,
@@ -1626,7 +1640,10 @@ void main() {
 
     expect(tester.widget<Widget>(navigation), isA<Container>());
     expect(tester.widget<Widget>(statusSurface), isA<Container>());
-    expect(_surfaceDecoration(tester, navigation).color, CoeloTheme.dark.colorScheme.primary);
+    expect(
+      _surfaceDecoration(tester, navigation).color,
+      CoeloTheme.dark.extension<CoeloActionColors>()!.primaryPressed,
+    );
     expect(
       _surfaceDecoration(tester, statusSurface).color,
       CoeloTheme.dark.extension<CoeloStatusColors>()!.successContainer,

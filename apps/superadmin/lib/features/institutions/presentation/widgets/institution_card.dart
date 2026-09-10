@@ -1,10 +1,6 @@
-import 'dart:math' as math;
-
 import 'package:coelo_tokens/coelo_tokens.dart';
-import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../shared/presentation/widgets/superadmin_directory_create_banner.dart';
 import '../../domain/institution_directory_item.dart';
 import 'institution_status_presentation.dart';
 
@@ -12,95 +8,19 @@ Duration _interactionDuration(BuildContext context, Duration duration) {
   return MediaQuery.disableAnimationsOf(context) ? Duration.zero : duration;
 }
 
-final class InstitutionDirectoryCards extends StatelessWidget {
-  const InstitutionDirectoryCards({required this.items, this.onCreate, this.onEdit, super.key});
-
-  final List<InstitutionDirectoryItem> items;
-  final VoidCallback? onCreate;
-  final ValueChanged<InstitutionDirectoryItem>? onEdit;
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final columns = math.max(1, (constraints.maxWidth / 340).floor());
-        final cardWidth = (constraints.maxWidth - (columns - 1) * CoeloSpacing.space6) / columns;
-        return Wrap(
-          key: const Key('institution-card-grid'),
-          spacing: CoeloSpacing.space6,
-          runSpacing: CoeloSpacing.space6,
-          children: [
-            if (onCreate != null)
-              SizedBox(
-                width: cardWidth,
-                child: _CreateInstitutionCard(onPressed: onCreate!),
-              ),
-            ...items.map(
-              (item) => SizedBox(
-                width: cardWidth,
-                child: _InstitutionCard(
-                  item: item,
-                  onPressed: onEdit == null ? null : () => onEdit!(item),
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-final class InstitutionCreateBanner extends StatelessWidget {
-  const InstitutionCreateBanner({required this.onPressed, super.key});
-
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return SuperadminDirectoryCreateBanner(
-      label: 'Criar instituição',
-      description: 'Adicionar nova instituição ao sistema.',
-      onPressed: onPressed,
-      bannerKey: const Key('create-institution-banner'),
-      surfaceKey: const Key('create-institution-banner-surface'),
-    );
-  }
-}
-
-class _CreateInstitutionCard extends StatelessWidget {
-  const _CreateInstitutionCard({required this.onPressed});
-
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return ConstrainedBox(
-      key: const Key('create-institution-card'),
-      constraints: const BoxConstraints(minHeight: 216),
-      child: KeyedSubtree(
-        key: const Key('create-institution-surface'),
-        child: CoeloAdminCreateAction(
-          label: 'Criar instituição',
-          onPressed: onPressed,
-          icon: Icons.add_business_outlined,
-        ),
-      ),
-    );
-  }
-}
-
-class _InstitutionCard extends StatefulWidget {
-  const _InstitutionCard({required this.item, required this.onPressed});
+/// Card de domínio de Instituições, baseline dos cards administrativos.
+/// Largura, grade e o card Criar vêm do `CoeloAdminDirectory`.
+class InstitutionCard extends StatefulWidget {
+  const InstitutionCard({required this.item, required this.onPressed, super.key});
 
   final InstitutionDirectoryItem item;
   final VoidCallback? onPressed;
 
   @override
-  State<_InstitutionCard> createState() => _InstitutionCardState();
+  State<InstitutionCard> createState() => _InstitutionCardState();
 }
 
-class _InstitutionCardState extends State<_InstitutionCard> {
+class _InstitutionCardState extends State<InstitutionCard> {
   bool _highlighted = false;
 
   @override

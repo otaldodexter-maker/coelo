@@ -106,6 +106,13 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
     _chatLauncherPositionController = SuperadminChatLauncherPositionController(persist: true);
   }
 
+  /// O menu do shell hospedeiro respeita a checagem de capacidade do router.
+  /// Fora do hospedeiro (testes, previews e rotas isoladas) o menu completo da
+  /// referência aprovada (MENU) é exibido; visibilidade de menu não é
+  /// autorização, que continua no servidor e nas rotas.
+  CoeloNavigationCapabilityCheck? get _menuCapabilityCheck =>
+      widget.canAccessCapability ?? (widget.isHost ? null : (_) => true);
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -246,7 +253,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
                             collapsed: false,
                             currentDestination: widget.currentDestination,
                             onDestinationSelected: widget.onDestinationSelected,
-                            canAccessCapability: widget.canAccessCapability,
+                            canAccessCapability: _menuCapabilityCheck,
                           ),
                         ),
                       ],
@@ -291,7 +298,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
                           collapsed: false,
                           currentDestination: widget.currentDestination,
                           onDestinationSelected: widget.onDestinationSelected,
-                          canAccessCapability: widget.canAccessCapability,
+                          canAccessCapability: _menuCapabilityCheck,
                         ),
                       ),
                     ],
@@ -378,7 +385,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
                                       progress: _sidebarController.value,
                                       currentDestination: widget.currentDestination,
                                       onDestinationSelected: widget.onDestinationSelected,
-                                      canAccessCapability: widget.canAccessCapability,
+                                      canAccessCapability: _menuCapabilityCheck,
                                     ),
                                   ),
                                 ),
@@ -1550,7 +1557,9 @@ class _PageHeader extends StatelessWidget {
                         const SizedBox(height: CoeloSpacing.space1),
                         Text(
                           subtitle,
-                          style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: colors.onSurfaceVariant,
+                          ),
                         ),
                       ],
                     ),
@@ -1764,52 +1773,62 @@ class _HeaderUtilityActionsState extends State<_HeaderUtilityActions> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (widget.onBugReportSubmitted != null)
-          IconButton(
-            key: const Key('superadmin-report-bug'),
-            tooltip: 'Reportar bug',
-            onPressed: () async {
-              if (!mounted || _reportRoute != null) return;
-              final generation = _reportGeneration;
-              final submit = widget.onBugReportSubmitted;
-              if (submit == null) return;
-              bool isCurrent() => mounted && generation == _reportGeneration;
-              DialogRoute<SupportReportDraft>? openedRoute;
-              final draft = await showSuperadminBugReportDialog(
-                context,
-                currentScreen: widget.currentScreen,
-                isContextCurrent: isCurrent,
-                onRouteCreated: (route) {
-                  openedRoute = route;
-                  _reportRoute = route;
-                },
-                sections: {
-                  for (final section in coeloSuperadminNavigation.where(
-                    (node) => node.children.isNotEmpty,
-                  ))
-                    section.label: [...section.children.map((node) => node.label), 'Outro'],
-                  'Conta': [
-                    ..._accountDestinations.map((destination) => destination.label),
-                    'Outros',
-                  ],
-                  'Outros': const [],
-                },
-              );
-              if (identical(_reportRoute, openedRoute)) _reportRoute = null;
-              if (draft == null || !isCurrent()) {
-                return;
-              }
-              submit(draft);
-              if (!context.mounted || !isCurrent()) return;
+        // MENU/MENU-M (decisão do Owner de 10/09/2026): o botão de Bug nunca é
+        // omitido. Sem canal de envio, o relato não é descartado em silêncio:
+        // a tela avisa que o envio ainda não está conectado.
+        IconButton(
+          key: const Key('superadmin-report-bug'),
+          tooltip: 'Reportar bug',
+          onPressed: () async {
+            if (!mounted || _reportRoute != null) return;
+            final generation = _reportGeneration;
+            final submit = widget.onBugReportSubmitted;
+            bool isCurrent() => mounted && generation == _reportGeneration;
+            DialogRoute<SupportReportDraft>? openedRoute;
+            final draft = await showSuperadminBugReportDialog(
+              context,
+              currentScreen: widget.currentScreen,
+              isContextCurrent: isCurrent,
+              onRouteCreated: (route) {
+                openedRoute = route;
+                _reportRoute = route;
+              },
+              sections: {
+                for (final section in coeloSuperadminNavigation.where(
+                  (node) => node.children.isNotEmpty,
+                ))
+                  section.label: [...section.children.map((node) => node.label), 'Outro'],
+                'Conta': [
+                  ..._accountDestinations.map((destination) => destination.label),
+                  'Outros',
+                ],
+                'Outros': const [],
+              },
+            );
+            if (identical(_reportRoute, openedRoute)) _reportRoute = null;
+            if (draft == null || !isCurrent()) {
+              return;
+            }
+            if (submit == null) {
+              if (!context.mounted) return;
               showSuperadminNotice(
                 context,
-                'Relato enviado com sucesso.',
-                icon: Icons.check_circle_outline_rounded,
+                'O envio de relatos ainda não está conectado nesta tela.',
+                icon: Icons.info_outline_rounded,
               );
-            },
-            style: _headerUtilityButtonStyle(colors, hoverColor),
-            icon: const Icon(Icons.bug_report_outlined),
-          ),
+              return;
+            }
+            submit(draft);
+            if (!context.mounted || !isCurrent()) return;
+            showSuperadminNotice(
+              context,
+              'Relato enviado com sucesso.',
+              icon: Icons.check_circle_outline_rounded,
+            );
+          },
+          style: _headerUtilityButtonStyle(colors, hoverColor),
+          icon: const Icon(Icons.bug_report_outlined),
+        ),
         SuperadminActivityCenter(
           controller: widget.activityController,
           buttonStyle: _headerUtilityButtonStyle(colors, hoverColor),

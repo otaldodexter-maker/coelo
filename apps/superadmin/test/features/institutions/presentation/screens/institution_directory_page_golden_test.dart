@@ -340,7 +340,10 @@ Widget _goldenApp({
     home: InstitutionDirectoryPage(
       repository: repository ?? FakeInstitutionDirectoryRepository(),
       logout: _logout,
-      onCreate: onCreate,
+      // CRIAR (decisão do Owner de 10/09/2026): o card Criar existe em todos
+      // os estados, inclusive vazio e falha; a rota de produção sempre passa
+      // onCreate.
+      onCreate: onCreate ?? () {},
       onConversationsOpen: onConversationsOpen,
     ),
   );

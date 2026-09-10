@@ -125,12 +125,7 @@ final coeloSuperadminNavigation = <CoeloNavigationNode>[
   _screen('access', 'Acessos', Icons.manage_accounts_outlined, [
     _screen('people', 'Pessoas', Icons.people_outline, const []),
     _screen('safety', 'Segurança da criança', Icons.shield_outlined, const []),
-    _screen(
-      'internal-users',
-      'Usuários internos',
-      Icons.badge_outlined,
-      const [],
-    ),
+    _screen('internal-users', 'Usuários internos', Icons.badge_outlined, const []),
     _screen('profiles', 'Perfis e permissões', Icons.admin_panel_settings_outlined, const []),
   ]),
   _screen('health-care', 'Saúde e Cuidado', Icons.health_and_safety_outlined, [
@@ -668,21 +663,24 @@ class _NavigationTreeItemState extends State<_NavigationTreeItem> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final selectedSection = widget.level == 0 && widget.active;
+    // MENU (decisão do Owner de 10/09/2026): a referência de Instituições e
+    // Atividades vale para todas as telas. Seção que contém a tela ativa usa o
+    // laranja forte; o item ativo usa o laranja primário preenchido.
+    final actions = theme.extension<CoeloActionColors>();
+    final sectionWithActiveChild =
+        widget.level == 0 && widget.active && widget.node.children.isNotEmpty;
     final interactive = _hovered || _focused;
-    final foreground = selectedSection
+    final foreground = widget.active
         ? colors.onPrimary
-        : widget.active
-        ? colors.primary
         : interactive
         ? colors.primary
         : colors.onSurfaceVariant;
-    final background = selectedSection
-        ? colors.primary
+    final background = sectionWithActiveChild
+        ? (interactive
+              ? actions?.primaryHover ?? colors.primary
+              : actions?.primaryPressed ?? colors.primary)
         : widget.active
-        ? (widget.level >= 2
-              ? colors.primaryContainer.withValues(alpha: 0.72)
-              : colors.primaryContainer)
+        ? (interactive ? actions?.primaryHover ?? colors.primary : colors.primary)
         : interactive
         ? colors.primaryContainer
         : colors.primaryContainer.withValues(alpha: 0);
