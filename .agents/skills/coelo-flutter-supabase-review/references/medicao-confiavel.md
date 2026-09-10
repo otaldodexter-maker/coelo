@@ -155,6 +155,30 @@ Quando a inversão rende, o resultado se confere por aritmética: se o número
 antigo mais os casos recuperados dá exatamente o número novo, a varredura
 recuperou escopo em vez de inventá-lo.
 
+### O quarto critério: o nome da classe
+
+Nome de arquivo, diretório de domínio e import são todos critérios de
+**caminho**. Existe artefato do domínio que falha nos três ao mesmo tempo.
+
+Caso medido: uma composição pública de abas de Perfil — `Acontece`, `Momentos`,
+`Circulares`, `Sobre` — que mora em `features/principal_circulars/`, num arquivo
+chamado `principal_circular_surfaces.dart`, e que a página do Perfil não importa
+porque constrói as próprias abas. Nenhuma das três varreduras a encontra. Ela só
+aparece procurando pelo **nome da classe**, `PrincipalProfileContentTabs`.
+
+> Quando o domínio aparece no nome da **classe** mas não no caminho, nenhuma
+> varredura de caminho o encontra.
+
+E o achado seguinte, que a varredura por caminho nunca teria produzido: a
+composição órfã oferece **quatro** abas e a tela viva oferece **duas**. Não é
+uma cópia esquecida da tela existente, é uma composição que descreve uma tela
+**maior** do que a que existe. Duplicata é desperdício; divergência de contrato
+é decisão pendente, porque um golden aprovado é evidência de que alguém, em
+algum momento, aprovou aquilo.
+
+Vale a distinção sempre que um artefato órfão aparecer: pergunte se ele repete o
+que existe ou se descreve outra coisa. Só o segundo caso vira pergunta ao Owner.
+
 ## Sobreposição: somar dois números certos dá um total errado
 
 Ao declarar mais de um número, declare também o que está contido em quê. Um
