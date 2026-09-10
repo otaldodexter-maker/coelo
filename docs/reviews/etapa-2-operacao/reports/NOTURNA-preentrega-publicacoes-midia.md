@@ -42,10 +42,11 @@ A conferência prévia já rendeu uma correção: são **oito** diretórios de f
 não nove. Eu vinha contando `app/router` como se fosse feature na frase ao lado
 do número.
 
-### Número 1 — o recorte: 757 PASS, 23 FAIL, 780 testes
+### Número 1 — o recorte: 758 PASS, 26 FAIL, 784 testes
 
-Duas execuções, somadas com sobreposição declarada zero (ver 2c): a do recorte
-declarado e a dos cinco arquivos que o item 2b revelou estarem fora dele.
+Três execuções, somadas com sobreposição declarada zero (ver 2c): a do recorte
+declarado, a dos cinco arquivos que o item 2b revelou estarem fora dele, e a de
+um sexto arquivo que só a varredura **por import** encontrou.
 
 **Execução principal — 684 testes, 661 PASS, 23 FAIL.** Única, denominador
 único, zero testes sem resultado. Vinte caminhos, todos existentes na
@@ -92,8 +93,17 @@ packages/coelo_api/test/media/media_upload_contract_test.dart
 packages/coelo_api/test/media/media_uploader_test.dart
 ```
 
-Números anteriores desta noite — 636, 638 e 671 — mediam conjuntos menores que
-a frase ao lado deles dizia. Este substitui todos.
+**Complemento por import — 4 testes, 1 PASS, 3 FAIL:**
+
+```
+apps/superadmin/test/app/router/principal_real_route_test.dart
+```
+
+Este arquivo é o assunto da seção 3b, e é o motivo de este documento ter sido
+republicado.
+
+Números anteriores desta noite — 636, 638, 671 e 780 — mediam conjuntos menores
+que a frase ao lado deles dizia. Este substitui todos.
 
 ### Número 2 — a plataforma comum de mídia: 82 PASS, 0 FAIL
 
@@ -109,7 +119,19 @@ packages/coelo_database/supabase/functions/now-media        (index_test.ts, r2_b
 
 ## 2b. Existe teste do meu escopo fora da minha lista?
 
-Sim: **cinco arquivos, 96 casos**, todos passando.
+Sim: **seis arquivos, 100 casos**, e três deles falham.
+
+A pergunta foi respondida duas vezes, por dois métodos, e os dois erram em
+direções diferentes. Por **nome de arquivo**: 15 fora da lista, dos quais cinco
+meus, 96 casos, todos verdes. Por **import**: 23 fora, incluindo um que a busca
+por nome tinha perdido porque o nome não diz Acontece nem Agora —
+`principal_real_route_test`, com três falhas reais.
+
+Nenhum dos dois métodos sozinho fecha a pergunta. Nome perde quem não se
+anuncia, e pega quem só se parece: `coelo_state_panel_test` entrou porque o
+caminho contém `feedback`, que contém `feed`. Import pega dependência sem ser
+sujeito, e por isso exige classificação por consumidor depois. O que fecha é o
+segundo filtrando o primeiro.
 
 Conferir que os caminhos declarados existem prova que a lista é **válida**, não
 que é **completa**. São duas perguntas, e só a primeira tem verificação óbvia.
@@ -117,7 +139,8 @@ que é **completa**. São duas perguntas, e só a primeira tem verificação ób
 O método foi varrer o **repositório inteiro**, e não apenas `apps/superadmin`,
 porque a fronteira da minha árvore não é a fronteira do meu escopo. Dos 91
 arquivos de teste cujo nome toca o domínio, 15 caíam fora dos meus 20 caminhos.
-Classifiquei os 15 por **consumidor**, não por nome, porque nome não decide dono:
+Classifiquei por **consumidor**, e não por nome, porque nome não decide dono. Dos
+15 achados por nome:
 
 **Meus — cinco.** `PrincipalPublicationFrame` é consumido por três das minhas
 páginas de publicação e pelo compositor de Circular, e vive em `principal_shared`
@@ -142,8 +165,23 @@ overflow. Se aquela frente não os mede, ficam sem dono.
 porque o **caminho** contém `feedback`, que contém `feed`. Padrão largo demais
 também mente, só que na direção oposta.
 
-A direção do erro importa: os 96 casos subestimavam aprovados e **nunca
-esconderam falha**.
+Dos 23 achados por import, além dos cinco já contados, um é meu —
+`principal_real_route_test`, seção 3b — dezesseis são de outras frentes que
+importam features minhas sem que elas sejam o sujeito do teste, e **quatro são
+compartilhados que eu deliberadamente não reivindiquei**:
+`principal_global_navigation`, `principal_preview_app_bar`,
+`supabase_principal_runtime_context_repository` e `persistent_shell_routes`. São
+a moldura Principal comum a cinco superfícies. Consumo os quatro e não sou dono
+exclusivo de nenhum; adotá-los inflaria o meu número às custas da clareza sobre
+quem responde por eles. Ficam registrados como **sem dono**, que é o estado
+honesto.
+
+**A direção do erro não é garantida, e no meu caso não foi benigna.** Os 96
+casos dos cinco primeiros arquivos subestimavam aprovados e não escondiam nada.
+Mas a varredura seguinte, por import, achou um sexto arquivo com **três falhas
+reais** que nenhuma medição desta noite via. Eu havia afirmado, antes de medir
+esse sexto, que no meu caso o furo só subestimava aprovados. Era falso, e a
+afirmação precedia a medição que a testaria.
 
 ## 2c. Sobreposição entre os números
 
@@ -151,16 +189,24 @@ esconderam falha**.
 
 - Entre o número 1 e o número 2: runtimes diferentes, Flutter e Deno, execuções
   diferentes. Nenhum caso pode aparecer nos dois.
-- Dentro do número 1, entre as duas execuções: os cinco arquivos do 2b não caem
-  sob nenhum dos 20 caminhos declarados — foi exatamente esse o critério que os
-  identificou.
+- Dentro do número 1, entre as três execuções: os cinco arquivos do 2b e o sexto
+  achado por import não caem sob nenhum dos 20 caminhos declarados — foi
+  exatamente esse o critério que os identificou. E o sexto não está entre os
+  cinco: a busca por nome nunca o tinha alcançado.
 - Dentro da execução principal: os doze arquivos de rota vivem em
   `test/app/router`, fora das oito árvores de feature; foi execução única e a
   contagem é por **id de teste**, não por linha de log.
 
 Podem ser somados no consolidado sem desconto.
 
-## 3. As 23 falhas, uma a uma
+## 3. As 26 falhas, uma a uma
+
+Vinte e três de golden, mais três de rota. **Todas precedem esta rodada**, e as
+duas populações têm histórias diferentes o bastante para serem separadas.
+
+### 3a. As 23 de golden
+
+
 
 Todas de golden, e todas dentro dos meus próprios arquivos — nenhuma é de
 fronteira com outro grupo, portanto nenhuma precisa de dono provável.
@@ -206,6 +252,44 @@ idênticos, teste a teste. Não é o mesmo número de falhas — são as mesmas 
 Nenhum golden foi regravado, por decisão da coordenação. Portanto nenhuma das
 23 está resolvida, e a **causa visual** delas não foi diagnosticada: provei que
 não fui eu, não o que mudou nas imagens.
+
+### 3b. As 3 de rota, e a retratação que elas exigem
+
+`principal_real_route_test.dart` (3)
+
+24. production Principal keeps its host at Size(1440.0, 900.0)
+25. production Principal keeps its host at Size(390.0, 844.0)
+26. real Acontece resolves authenticated context and never uses demo fixtures
+
+**Causa, diagnosticada e não conjecturada.** `StateError: Bad state: No element`
+em `tester.widget<PrincipalHappensPreviewPage>(...)`. Na rota real, com contexto
+autenticado, a página do Acontece **não é encontrada na árvore**. O quarto caso
+do arquivo, `real route fails closed when actor has multiple active contexts`,
+**passa** — então o caminho de negação funciona e o de sucesso não monta.
+
+**Procedência, medida nos três lugares:** falha `+1 -3` na base pré-rodada
+`d784462c1`, na `origin/dev` integrada e na minha branch. Não é regressão desta
+rodada nem de ninguém desta noite. Mas é do meu escopo e está na dev agora.
+
+**A retratação.** A coordenação havia me atribuído exatamente estes três
+vermelhos. Eu refutei dizendo que o arquivo "não aparece entre as 33 falhas da
+base", e a atribuição foi retirada. A refutação era **vazia**: o arquivo não
+aparecia naquela lista porque a medição da base **não o cobria**. Tratei
+ausência de uma lista como prova de ausência do defeito, sem verificar se a
+lista podia contê-lo — a mesma armadilha do "log não é inventário", mas desta
+vez o custo não foi um número, e sim a retirada de uma atribuição correta.
+
+O agravante está na ordem dos fatos: uma hora antes eu havia recuperado essa
+mesma refutação do canal para arquivo, argumentando que evidência de uma
+**recusa** vale mais que evidência de um achado, porque achado alguém reproduz e
+recusa é palavra contra palavra. O princípio está certo e eu arquivei a
+evidência errada. Uma recusa mal fundamentada e bem arquivada é pior que não
+arquivada: ela deixa de ser reexaminada.
+
+**Não corrigidas, deliberadamente.** O defeito é de composição da rota real do
+Acontece. Diagnosticá-lo levou dez minutos e consertá-lo a esta altura seria
+abrir frente nova às vésperas do congelamento. Entrego localizado, com causa e
+com a prova de que precede a rodada.
 
 ## 4. Recursos, por lista
 
@@ -301,6 +385,12 @@ functions foram testadas com dependências **injetadas** e nunca exercidas contr
 um R2 real; o ramo R2 de `happens-media` e `now-media` está pronto e **retido**
 até a RPC devolver `storage_provider`.
 
+**As três falhas de rota, diagnosticadas e não corrigidas.** A causa está
+localizada e provada preexistente (seção 3b), mas **eu não corrigi** e não sei
+por que a página não monta na rota real com contexto autenticado — sei apenas
+onde o teste quebra e que o caminho de negação do mesmo arquivo funciona.
+Consertar exigiria abrir frente nova às vésperas do congelamento.
+
 **WIP retido.** O patch de cópia prévia está preparado em
 `work/etapa2-noturna-copia-previa` @ `80f160599`, publicado, **não mesclado** e
 não testado sobre a dev atual. O documento de catálogo de mídia é desenho: não
@@ -311,7 +401,12 @@ documentos e o meu JSON, não os de outras frentes. O censo de goldens mede
 reachability de **widget** — se o router constrói a página — e **não** se um
 golden retrata um **estado** que nenhuma rota consegue produzir; um golden pode
 guardar composição inalcançável dentro de página alcançável e eu não teria
-contado. A varredura do 2b usou nome de arquivo e caminho; um teste do meu
-escopo com nome que não toca o domínio continuaria invisível para ela. As nove
+contado. A primeira varredura do 2b usou nome de arquivo e caminho, e eu
+declarei aqui, como hipótese, que um teste do meu escopo com nome que não tocasse
+o domínio ficaria invisível. A hipótese **se realizou na mesma noite**:
+`principal_real_route_test` é exatamente esse caso, e carregava três falhas. A
+segunda varredura, por import, o encontrou — mas ela tem o limite simétrico, de
+pegar dependência sem ser sujeito. Um teste do meu escopo que nem se chame como o
+domínio nem importe minhas árvores continuaria invisível para as duas. As nove
 dimensões varridas são as que eu escolhi; não afirmo que sejam as nove certas
 nem que sejam suficientes.
