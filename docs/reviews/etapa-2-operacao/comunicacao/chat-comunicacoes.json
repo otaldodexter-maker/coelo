@@ -1,6 +1,6 @@
 {
-  "revision": 65,
-  "updated_at": "2026-09-10T04:40:00-03:00",
+  "revision": 66,
+  "updated_at": "2026-09-10T04:42:00-03:00",
   "group": "chat-comunicacoes",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) - claude-opus-5[1m]",
@@ -810,18 +810,17 @@
     "numero": "397 PASS / 12 FAIL em 17 caminhos."
   },
   "residual_por_sha": {
-    "correcao_de_metodo": "A coordenacao integra tambem por CHERRY-PICK. Ancestralidade responde NAO para commit cherry-picado, e vai responder NAO para sempre, mesmo integrado. O teste que eu vinha usando mentiria justamente no caso em que o trabalho ESTA na base.",
-    "metodo_novo": "Medir por CONTEUDO: git diff --name-only <sha> origin/dev -- <caminhos tocados pelo commit>. Zero arquivos diferentes significa que o conteudo esta na base, independentemente de como chegou. Complementado pela nota 'cherry picked from commit <sha>' no corpo dos commits do dev.",
-    "validacao_do_metodo_novo": "O teste de conteudo concorda com o de ancestralidade nos QUATRO casos em que a ancestralidade funciona, e resolve corretamente o quinto, onde ela falha. Controle positivo em quatro casos conhecidos antes de confiar nele no caso desconhecido.",
-    "resultado_sobre_origin_dev_3b60fae45": [
-      "c1e6756c7 — ancestral SIM, arquivos diferentes 0. INTEGRADO.",
-      "cb0a386d8 — ancestral SIM, arquivos diferentes 0. INTEGRADO.",
-      "05fdcf2d5 — ancestral SIM, arquivos diferentes 0. INTEGRADO.",
-      "fb31e11dc — ancestral SIM, arquivos diferentes 0. INTEGRADO.",
-      "8a09d66ac — ancestral NAO, arquivos diferentes 0, e o dev carrega a nota 'cherry picked from commit 8a09d66ac'. INTEGRADO por cherry-pick como e9beeae4c."
+    "metodo_vigente": "RASTRO de cherry-pick — 'cherry picked from commit <sha>' em git log origin/dev — com ANCESTRALIDADE como complementar. A uniao dos dois cobre as duas formas de integracao usadas na rodada.",
+    "criterio_de_conteudo_revogado": "O teste de conteudo (git diff <sha> origin/dev -- <caminhos>) foi revogado pela coordenacao apos medicao de outra frente que comparou os tres criterios sobre 27 commits: ancestralidade 22, rastro 27, conteudo 8. A base anda e outras frentes tocam os mesmos caminhos, entao a diferenca nao fica vazia mesmo com a mudanca integrada. Ele reportaria retido o que esta na base, na direcao alarmante.",
+    "eu_ja_tinha_declarado_o_limite": "Na revisao 64 eu escrevi que o teste de conteudo 'nao detectaria integracao parcial se um commit posterior tivesse alterado os mesmos arquivos'. Declarei a fraqueza e usei o instrumento assim mesmo, porque nos meus cinco ela nao mordia. Declarar limite nao substitui trocar de instrumento.",
+    "medicao_sobre_origin_dev_663a6a7d6": [
+      "c1e6756c7 — ancestral SIM. INTEGRADO por merge.",
+      "cb0a386d8 — ancestral SIM. INTEGRADO por merge.",
+      "05fdcf2d5 — ancestral SIM. INTEGRADO por merge.",
+      "fb31e11dc — ancestral SIM. INTEGRADO por merge.",
+      "8a09d66ac — ancestral NAO, rastro de cherry-pick SIM. INTEGRADO como e9beeae4c."
     ],
-    "residual": "ZERO. Cinco commits, cinco integrados, medidos por conteudo.",
-    "limite_do_teste_de_conteudo": "Ele afirma que os arquivos tocados pelo commit sao identicos entre o commit e o dev AGORA. Nao distingue 'foi integrado' de 'alguem escreveu o mesmo conteudo por outro caminho', e nao detectaria integracao parcial se um commit posterior tivesse alterado os mesmos arquivos de volta. Nos meus cinco isso nao ocorre, mas o teste sozinho nao provaria."
+    "residual": "ZERO. Cinco commits, cinco integrados. O numero nao mudou; mudou o instrumento que o sustenta."
   },
   "tags_de_auditoria": {
     "audit-frozen-0200": "0d847eb7a — cobre do inicio da noite ate ~02:00",
@@ -1065,5 +1064,11 @@
     "estado_meu": "HEAD 8a09d66ac, worktree com 0 alteracoes pendentes, 0 stash, nada rodando alem do que a maquina ja tinha.",
     "processos_na_maquina": "28 processos dart/flutter_tester vivos no momento do congelamento, de varias frentes ao longo do dia. Declarados e NAO mortos, conforme protocolo: a coordenacao cruza as contagens e mata o conjunto no fechamento.",
     "recurso_nao_fechado": "C:/cdchk, 12K de arvore vazia com um diretorio travado por processo. Registro de worktree ja removido do git. Precisa de remocao manual, ou sai sozinho quando os processos morrerem."
+  },
+  "medicao_sobre_a_base_congelada": {
+    "base": "5ac61f6d7, a base congelada as 04:38.",
+    "comando": "flutter test <17 caminhos> a partir de apps/superadmin, reporter PADRAO, caminhos testados por existencia antes de rodar: ausentes=0.",
+    "resultado": "397 PASS / 12 FAIL, as 12 sendo os mesmos goldens ja enumerados um a um.",
+    "estabilidade": "Mesmos 12 nomes em 0736b900f, 0032b90c7, b39e04c5a e agora 5ac61f6d7."
   }
 }

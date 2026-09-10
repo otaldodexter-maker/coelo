@@ -1,10 +1,10 @@
 {
-  "revision": 58,
-  "updated_at": "2026-09-10T04:39:19-03:00",
+  "revision": 59,
+  "updated_at": "2026-09-10T04:41:16-03:00",
   "group": "operacoes-sistema",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) — claude-opus-5[1m]",
-  "status": "congelado as 04:38 pelo relogio do coordenador; pre-entrega publicada; paro as 05:00",
+  "status": "entregue e congelado; aceito pelo coordenador as 04:40; paro as 05:00",
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-operacoes-sistema",
   "branch": "work/etapa2-noturna-operacoes-sistema",
@@ -1893,5 +1893,11 @@
     "residual": "zero por conteudo",
     "processos": "28 vivos na maquina, nenhum morto por mim",
     "operacao_remota": "nenhuma na rodada inteira"
+  },
+  "correcoes_de_protocolo_no_fechamento": {
+    "hora": "2026-09-10T04:41:16-03:00",
+    "criterio_de_residual_revogado": "O coordenador revogou o criterio de ancestralidade do SHA, porque ele integra por cherry-pick. O oficial passa a ser o rastro de cherry-pick, com ancestralidade como complementar, e o metodo que ele vai citar e o terceiro que eu usei: diff do HEAD contra dev por arquivo, mais presenca das marcas de conteudo no arquivo de dev. A razao de ser melhor e que ele prova que o COMPORTAMENTO chegou, e nao que o commit chegou.",
+    "cruzamento_de_relogio_era_invalido": "O coordenador corrigiu o proprio protocolo: ele comparava leituras tiradas em INSTANTES DIFERENTES como se fossem simultaneas, e chamava de deriva o que era latencia de mensagem. Os meus 58 segundos de diferenca, os 61 de chat-comunicacoes e os cinco minutos de formularios-cuidado eram intervalo entre blocos. NENHUMA frente estava atrasada. Isso muda o que o meu proprio registro afirma: onde eu escrevi que a leitura do coordenador prevalecia por acordo, a comparacao que sustentava essa escolha nao media o que dizia medir. A escolha em si continua segura, porque adotar a leitura MAIOR da margem a favor do corte; o que cai e a inferencia de que alguem estava atrasado.",
+    "licao_que_fica": "Cruzar relogios exige leituras do mesmo instante, e mensagem assincrona nao da isso de graca. E a quinta vez na noite que um instrumento respondeu outra pergunta com aparencia de medicao — e a unica em que o instrumento era o proprio protocolo de controle."
   }
 }
