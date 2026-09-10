@@ -253,6 +253,31 @@ void main() {
     }
   });
 
+  testWidgets('the preview mirrors the respondent shapes, inert', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    tester.view.physicalSize = const Size(1024, 4000);
+    await tester.pumpWidget(app(FormsTestPage(api: _AllKindsApi(), formId: 'form-9')));
+    await tester.pumpAndSettle();
+
+    // Escala aparece como fichas, e nao como caixa de texto, e comeca onde o
+    // servidor aceita.
+    expect(find.widgetWithText(ChoiceChip, '0'), findsNothing);
+    expect(find.widgetWithText(ChoiceChip, '1'), findsOneWidget);
+    expect(find.widgetWithText(ChoiceChip, '10'), findsOneWidget);
+
+    // Data aparece como botao, inerte.
+    final dateButton = find.widgetWithIcon(OutlinedButton, Icons.calendar_today_outlined);
+    expect(dateButton, findsOneWidget);
+    expect(tester.widget<OutlinedButton>(dateButton).onPressed, isNull);
+
+    // Nenhuma ficha da tela pode responder.
+    for (final chip in tester.widgetList<ChoiceChip>(find.byType(ChoiceChip))) {
+      expect(chip.onSelected, isNull);
+    }
+  });
+
   testWidgets('the preview shows the authored limits in civil notation', (tester) async {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetDevicePixelRatio);

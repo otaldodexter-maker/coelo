@@ -2254,8 +2254,11 @@ final class _EditorQuestionDraft {
     final declared = maxLength.text.trim();
     if (declared.isEmpty) return null;
     final value = int.tryParse(declared);
-    if (value == null || value < 1) {
-      return 'Informe um máximo de caracteres inteiro e maior que zero.';
+    // A faixa espelha o que o DTO aceita para texto curto. Sem o teto, 20000
+    // passava por aqui e o salvamento falhava com erro de formato de fio, sem
+    // mensagem util para quem esta autorando.
+    if (value == null || value < 1 || value > 10000) {
+      return 'Informe um máximo de caracteres inteiro entre 1 e 10000.';
     }
     return null;
   }
