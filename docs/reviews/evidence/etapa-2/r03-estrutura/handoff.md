@@ -33,6 +33,24 @@ prova causal, guardas assíncronas em Unidades e na assinatura, exportação de
 Unidades honesta, fail-closed das rotas de mutação provado nos dois sentidos,
 decisão RODAPÉ e regra do chat aplicadas e gravadas nas skills.
 
+**Preflight do coordenador, corrigido.** Depois que ele rodou a baseline e
+devolveu os erros exatos, corrigi as fixtures de `units` (agora com `unit_types`
+próprio, `unit_type_id` e `handle`) e as de `plans` — produção tem
+`plans.description` com default `''` e `CHECK char_length>=1`, ou seja o default
+nunca satisfaz a constraint. Atualizei o caso de AAL1 de `institution_detail`
+depois de confirmar no seed de produção que `platform.read` tem
+`requires_mfa=false`; não afrouxei asserção de segurança por indicação de
+terceiro.
+
+**Dois candidatos contra o shape de produção**, em `candidatos/estrutura/`:
+`unit_detail_v2_baseline` troca o join de `institution_types` por
+`unit_types`; `location_catalog_v2_baseline` troca a comparação literal da ACL
+de `activity_locations` — que era retrato de cadeia local e quebra com o
+Postgres 17, onde `MAINTAIN` passou a existir — por um invariante: fora
+`service_role` e o dono ninguém escreve, `anon` e `PUBLIC` não têm nada, e
+nenhuma concessão é *grantable*. Das seis migrations da cadeia, só o catálogo
+usava comparação frágil; as outras guardam por existência.
+
 ## Pendências e o primeiro gate de cada uma
 
 | Pendência | Primeiro gate |
