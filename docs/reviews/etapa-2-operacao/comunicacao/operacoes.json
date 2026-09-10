@@ -39,6 +39,7 @@
         "packages/coelo_database/migrations/20260909217000_superadmin_support_production_v1.sql",
         "packages/coelo_database/supabase/tests/superadmin_support_production_test.sql"
       ],
+      "commit_sha": "b172b695b8d996375fc7da7a539ed7ee78dc7e35",
       "delta": "adicionada camada server-side sobre support_sessions existente: campos de ticket, revisao otimista, receipts de idempotencia, list/detail/create/reply/set_status, acoes em audit.support_session_actions, RLS deny-by-default e grants somente por RPC authenticated",
       "composition_key_candidate": "supportProductionRepositoryV1",
       "criteria": {"frontend": "N", "backend": "N", "e2e": "N", "reload": "N", "cross_tenant": "pgTAP pendente de replay nominal"}
@@ -47,6 +48,7 @@
       "action_ids": ["audit.list", "audit.filter", "audit.detail"],
       "status": "candidate-existing",
       "changed": [],
+      "commit_sha": "aafde0b3d",
       "delta": "candidato 20260909190000_superadmin_internal_audit_read_v2.sql ja existe e foi preservado; aplicar/verificar fica com coordenador na fila SQL",
       "composition_key_candidate": "auditReadV2",
       "criteria": {"frontend": "N", "backend": "N", "e2e": "N"}
@@ -66,6 +68,7 @@
         "packages/coelo_database/migrations/20260909218000_superadmin_account_profile_v1.sql",
         "packages/coelo_database/supabase/tests/superadmin_account_profile_v1_test.sql"
       ],
+      "commit_sha": "efd9af79e",
       "delta": "adicionada persistencia server-side do perfil: nome/telefone em people, leitura de email Auth, pedido/cancelamento de troca de email, papel/capacidades, receipts de idempotencia e grants somente por RPC; tema continua preferencia local e MFA, sessoes/logout dependem dos contratos Auth existentes",
       "composition_key_candidate": "accountProfileProductionRepositoryV1",
       "criteria": {"frontend": "N", "backend": "N", "e2e": "N", "reload": "N", "cross_tenant": "pgTAP pendente de replay nominal"}
@@ -74,11 +77,12 @@
       "action_ids": ["audit.export"],
       "status": "deferred-post-mvp",
       "changed": [],
+      "commit_sha": "be28f0c0b",
       "delta": "mantido adiado conforme ADR 0034; nenhum entrypoint novo",
       "criteria": {"frontend": "N/A", "backend": "N/A", "e2e": "N/A"}
     }
   ],
-  "tests": {"P": 2, "F": 0, "B": 2, "S": 0, "U": 1, "evidence": ["support-contract-static PASS: required RPCs=5, receipt=idempotency, audit schema=correct, RLS=force, test=22 assertions", "account-contract-static PASS: RPCs=3, email request, idempotency receipt, auth email read, forced RLS, test=16 assertions", "supabase db lint --local BLOCKED: ECONNREFUSED 127.0.0.1:54322", "supabase start --workdir packages/coelo_database BLOCKED before support migration: 20260820152528_form... fails SQLSTATE 3F000 because schema app_private is absent"], "planned": ["pgTAP nominal de conta, planos, auditoria e suporte", "preflight da migration na fila serializada", "flutter tests somente apos base.fase0Head"]},
+  "tests": {"P": 3, "F": 0, "B": 2, "S": 0, "U": 1, "evidence": ["support-contract-static PASS: required RPCs=5, receipt=idempotency, audit schema=correct, RLS=force, test=22 assertions", "account-contract-static PASS: RPCs=3, email request, idempotency receipt, auth email read, forced RLS, test=16 assertions", "plans-audit-contract-static PASS: plans=3 RPCs + forced RLS; audit=list/filter/detail + deferred export revoke; tests present", "supabase db lint --local BLOCKED: ECONNREFUSED 127.0.0.1:54322", "supabase start --workdir packages/coelo_database BLOCKED before support migration: 20260820152528_form... fails SQLSTATE 3F000 because schema app_private is absent"], "planned": ["pgTAP nominal de conta, planos, auditoria e suporte", "preflight da migration na fila serializada", "flutter tests somente apos base.fase0Head"]},
   "blocked": [
     {"kind": "environment/integration", "what": "base.fase0Head nao publicado em coordenacao.json", "owner": "coordenador/Fase 0", "unblocks": "SHA integrado da Fase 0 e rebase desta branch antes de tocar UI"},
     {"kind": "verification", "what": "nenhum replay pgTAP local nominal executado ainda; reset completo falha antes do pacote por schema app_private ausente na cadeia canonica", "owner": "coordenador/base de replay", "unblocks": "base/replay nominal corrigido ou perfil descartavel que inclua schema app_private; migration e teste ja estao no pacote"}
