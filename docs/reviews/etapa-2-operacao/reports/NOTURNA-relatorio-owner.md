@@ -100,16 +100,24 @@ consumidor mas mexe no Design System e move goldens de outras telas. A primeira
 está atribuída para execução; a segunda fica registrada, porque qualquer tela
 que um dia envolver esse indicador em `IntrinsicHeight` cai no mesmo buraco.
 
-A divergência de medição que eu tinha registrado aqui **foi resolvida, contra
-quem a levantou primeiro**: `/safety` não reprova nenhuma das três diretrizes de
-acessibilidade. A primeira medição estava contaminada porque uma exceção lançada
-durante o layout fazia o caso falhar antes de a diretriz ser avaliada, e o
-instrumento reportava isso como reprovação. Refeita drenando a exceção, a tela
-passa nas três. A frente que mediu independentemente e discordou estava certa.
+A divergência de medição sobre acessibilidade nesta tela terminou num terceiro
+lugar, e é o mais honesto: **nenhuma das duas medições vale**. Uma frente
+reportou as três diretrizes reprovando, a outra reportou duas passando — e a
+segunda foi verificar e mostrou que a asserção de layout dispara durante
+`performLayout`, antes de qualquer avaliação. Mesmo drenando as exceções à mão, a
+árvore de render continua marcada `NEEDS-LAYOUT`, então a semântica avaliada em
+cima dela não representa a tela. Um alvo que não foi disposto pode medir zero e
+reprovar, ou não ser visitado e passar: as duas coisas são artefato do mesmo
+defeito.
 
-Isso importa além do número: **defeito de layout e reprovação de acessibilidade
-mandam a frente dona investigar coisas diferentes**. E não torna `safety` menos
-grave — lançar exceção de layout na abertura é pior que reprovar uma diretriz.
+Registro portanto a acessibilidade de `child_safety` como **não medida**, com o
+motivo, a ser remedida depois da correção de layout.
+
+E isso fecha as três observações iniciais sobre a tela — transborda, falha nas
+três diretrizes, fica presa carregando — como **três sintomas da mesma causa**,
+e a causa é uma linha. Não é uma tela com três problemas independentes; é uma
+tela que não renderiza. A prioridade continua a mesma; a natureza do trabalho
+não.
 
 ## O achado mais importante da rodada
 
