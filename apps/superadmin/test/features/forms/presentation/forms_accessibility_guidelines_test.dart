@@ -42,10 +42,25 @@ void main() {
   // 1. Alvo pequeno demais. A alca de redimensionar coluna da
   //    CoeloAdminResizableTable expoe Rect 216,0 a 228,56, ou seja 12x56 px,
   //    contra o minimo de 48x48. O rotulo existe e esta correto,
-  //    "Redimensionar coluna Nome": o que falha e so o tamanho do alvo. A
-  //    correcao provavel e area de toque de 48 px preservando o indicador
-  //    visivel de 12 px, o que nao muda pixel nenhum e por isso nao conflita
-  //    com o congelamento de golden desta rodada.
+  //    "Redimensionar coluna Nome": o que falha e so a LARGURA do alvo.
+  //
+  //    NAO e correcao invisivel, e ja foi investigado. A celula de cabecalho e
+  //    um Stack cujo PRIMEIRO filho e Positioned.fill com _SortableHeader e
+  //    onPressed de ordenacao: a celula inteira e o botao de ordenar. A alca e
+  //    o segundo filho, Positioned(right: 0), com GestureDetector opaque por
+  //    cima. Alargar a area de toque para 48 avanca 36 px para dentro da
+  //    celula e passa a engolir esse pedaco do alvo de ordenar em toda coluna
+  //    de todo diretorio administrativo. Nenhum pixel muda, mas o
+  //    comportamento muda.
+  //
+  //    Aumentar a altura nao resolve, porque a altura ja e 56. Remover o onTap
+  //    da alca faria a diretriz parar de reprovar, ja que ela so olha nos com
+  //    tap ou longPress, mas isso maquia o teste sem ajudar ninguem: 12 px
+  //    continuam dificeis de acertar. Um espaco proprio entre colunas
+  //    resolveria de verdade e e mudanca de composicao que move pixel.
+  //
+  //    Portanto isto depende de decisao de design, nao de uma correcao de
+  //    escopo estreito.
   //
   // 2. Alvo sem rotulo. Ha um no de Rect 1232,0 a 1360,48, ou seja 128x48, com
   //    actions [focus, longPress] e SEM label. Fica no topo a direita da
