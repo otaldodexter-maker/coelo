@@ -105,3 +105,24 @@ A ordem que fecha mais ações por unidade de esforço não é a ordem das telas
    no lugar dos `Unavailable*`.
 4. Aplicar os três pacotes verdes e ligar as chaves — destrava quatro ações.
 5. `COELO_ENABLE_ASSESSMENT_MUTATIONS` — destrava as quatro de Avaliações.
+
+## Correção da ordem: Turmas é mais barato do que parece
+
+Olhei o `SupabaseGroupDirectoryRepository`, hoje composto como `Unavailable`.
+Ele chama seis RPCs; **quatro têm migration versionada**
+(`superadmin_group_directory`, `superadmin_group_get`, `superadmin_group_save`,
+`superadmin_group_export_create`). As duas que faltam são justamente as
+compartilhadas com Unidades — e estão isoladas num único método,
+`fetchFilterOptions` (linhas 121 e 126).
+
+Ou seja: a **listagem** de Turmas (`fetchPage` → `superadmin_group_directory`)
+não depende de nada de Unidades. O que depende são os filtros de instituição e
+unidade do diretório.
+
+Isso separa `groups.list` do bloqueio de Unidades. Compor o repositório real de
+Turmas e tratar a falha de `fetchFilterOptions` como filtro indisponível — em vez
+de derrubar a tela — fecha `groups.list` sem esperar a leitura de `pg_proc`. Vale
+levar ao Owner como decisão de produto: um diretório de Turmas que lista e não
+filtra por unidade é melhor do que um diretório que não abre, ou é preferível
+esperar?
+
