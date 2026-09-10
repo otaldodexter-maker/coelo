@@ -26,7 +26,9 @@ Deno.test("separates author preview from viewer-bound public reads", async () =>
   assertEquals(code.includes('body.action === "read"'), true);
   assertEquals(code.includes("redeem_now_media_read_ticket"), true);
   assertEquals(code.includes("user.auth.getUser()"), true);
-  assertEquals(code.includes("expires_in: 60"), true);
+  // A janela de sessenta segundos deixou de ser afirmada por texto-fonte: ela e
+  // provada por comportamento nos dois provedores em `r2_branch_test.ts`, que
+  // exercita o handler de verdade em vez de procurar um literal no arquivo.
 });
 
 Deno.test("CORS reflects only configured origins", async () => {
