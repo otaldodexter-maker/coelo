@@ -1547,6 +1547,19 @@ ferramenta.
 conserta lendo antes de escrever** — e ele cresce, o que o torna mais plausível
 quanto pior fica.
 
+**E ele é uma classe à parte das outras três armadilhas de instrumento desta
+rodada, e é pior.** Nos outros casos — o fuso sem base de dados, a pergunta
+trocada sobre publicação, a mensagem cortada por quebra de linha — a ferramenta
+estava sendo usada e devolvia número errado para a pergunta certa. Aqui **a
+ferramenta estava disponível, correta, e ninguém perguntou**. Nenhuma verificação
+de instrumento pega isso: só medir de novo pega.
+
+**A lição operacional que fecha o assunto**, e ela veio de quem cometeu o erro
+três vezes: a regra "hora só medida" pegou onde a leitura virou **comando** — no
+script que escreve o registro — e não pegou onde ainda se digita, que são as
+mensagens. **Regra que depende de disciplina no momento da escrita não pega; a que
+vira comando pega.**
+
 **Mensagem não é registro.** Duas frentes descobriram, perto do fim, que trabalho
 real delas existia apenas nas mensagens trocadas com a coordenação: uma
 amostragem de goldens de cinco famílias, num caso, e um handoff de 27 revisões
