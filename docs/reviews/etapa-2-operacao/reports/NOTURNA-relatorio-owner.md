@@ -173,6 +173,27 @@ sobre protótipo não é verde sobre produção**. Suporte, `forms.respond`,
 `health-care` com `medication`, e `daily_routine` têm suítes verdes sobre
 repositórios que não existem em produção.
 
+## O problema não é falta de conhecimento no time
+
+Este é o enquadramento que eu levaria primeiro, se você só lesse um parágrafo.
+
+Os dois defeitos estruturais encontrados hoje **já tinham sido resolvidos neste
+mesmo codebase**, em telas diferentes, por gente diferente, e nos dois casos com
+um comentário explicando a razão:
+
+- O controller que morre antes da transição de fechamento: Rotina tinha o
+  defeito; `access_profiles` já o havia resolvido com um `DialogRoute` próprio
+  que espera `route.completed`, com o comentário "The text controller must
+  outlive the closing transition".
+- O `IntrinsicHeight` sobre um `LayoutBuilder`: `safety` quebra por isso;
+  `access_profiles` já o havia resolvido com `Table`, com o comentário dizendo
+  que o status canônico usa `LayoutBuilder` e não pode participar de
+  `IntrinsicHeight`.
+
+Os defeitos que sobraram estão exatamente onde a solução existente não foi
+transplantada. Isso é mais acionável que uma lista de bugs: **o problema não é
+falta de conhecimento no time, é o conhecimento não chegar a todas as telas.**
+
 ## O censo de `IntrinsicHeight`
 
 Vale como exemplo do que uma varredura barata entrega. Há exatamente quatro usos
