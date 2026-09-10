@@ -109,6 +109,7 @@ import '../../features/chat/data/development_chat_repository.dart';
 import '../../features/chat/domain/chat_repository.dart';
 import '../../features/children/presentation/child_directory_controller.dart';
 import '../../features/chat/presentation/screens/superadmin_chat_page.dart';
+import '../../features/chat/presentation/widgets/superadmin_chat_launcher.dart';
 import '../../features/circulars/data/development_circular_repository.dart';
 import '../../features/circulars/domain/superadmin_circular_repository.dart';
 import '../../features/circulars/presentation/circular_directory_page.dart';
@@ -584,6 +585,7 @@ GoRouter createSuperadminRouter({
     currentDestination: destination,
     activityController: operationalActivities,
     chatUnreadCountLoader: developmentChatRepository.fetchUnreadTotal,
+    chatRecentConversationsLoader: () => _recentConversations(developmentChatRepository),
     onDestinationSelected: (value) => _navigateFromDevelopmentShell(context, value),
     child: child,
   );
@@ -606,6 +608,9 @@ GoRouter createSuperadminRouter({
     chatUnreadCountLoader: chatRepository is UnavailableChatRepository
         ? null
         : chatRepository.fetchUnreadTotal,
+    chatRecentConversationsLoader: chatRepository is UnavailableChatRepository
+        ? null
+        : () => _recentConversations(chatRepository),
     onDestinationSelected: (value) => _navigateFromPersistentShell(context, value),
     child: child,
   );
@@ -929,6 +934,11 @@ GoRouter createSuperadminRouter({
                       : chatRepository is UnavailableChatRepository
                       ? null
                       : chatRepository.fetchUnreadTotal,
+                  chatRecentConversationsLoader: developmentPreview
+                      ? () => _recentConversations(developmentChatRepository)
+                      : chatRepository is UnavailableChatRepository
+                      ? null
+                      : () => _recentConversations(chatRepository),
                   onBugReportSubmitted: developmentPreview
                       ? developmentSupportController.submitReport
                       : productionSupportController?.submitReport,
@@ -6401,4 +6411,13 @@ String _activityRequestId() {
     hex.substring(16, 20),
     hex.substring(20),
   ].join('-');
+}
+
+/// Primeira pagina curta da caixa de entrada autorizada, para a faixa de
+/// iniciais do launcher de conversas.
+Future<List<ChatConversationSummary>> _recentConversations(ChatRepository repository) async {
+  final page = await repository.fetchInbox(
+    const ChatInboxQuery(pageSize: SuperadminChatLauncher.recentAvatarLimit),
+  );
+  return page.items;
 }

@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../domain/chat_repository.dart';
+
 /// Stores the launcher position independently from the authorised chat data.
 final class SuperadminChatLauncherPositionController extends ValueNotifier<Offset?> {
   SuperadminChatLauncherPositionController({this.persist = false}) : super(null) {
@@ -88,6 +90,7 @@ final class SuperadminChatLauncher extends StatefulWidget {
     this.positionController,
     this.unreadCount = 0,
     this.loadUnreadCount,
+    this.loadRecentConversations,
     super.key,
   }) : assert(bottomClearance >= 0),
        assert(unreadCount >= 0);
@@ -107,6 +110,15 @@ final class SuperadminChatLauncher extends StatefulWidget {
   /// value in place. The launcher never substitutes fixture conversations.
   final Future<int> Function()? loadUnreadCount;
 
+  /// Carrega as conversas recentes autorizadas para a faixa de iniciais do pill
+  /// (referencia CHAT aprovada pelo Owner em 10/09/2026: "Mensagens" com a
+  /// contagem e as iniciais das conversas). Sem carregador a faixa nao aparece;
+  /// o launcher nunca inventa conversas.
+  final Future<List<ChatConversationSummary>> Function()? loadRecentConversations;
+
+  /// Quantidade maxima de iniciais exibidas na faixa do pill.
+  static const recentAvatarLimit = 5;
+
   @override
   State<SuperadminChatLauncher> createState() => _SuperadminChatLauncherState();
 }
@@ -119,6 +131,7 @@ final class _SuperadminChatLauncherState extends State<SuperadminChatLauncher> {
   var _positionOffset = Offset.zero;
   var _restoreScheduled = false;
   late int _unreadCount;
+  var _recentInitials = const <String>[];
   late final SuperadminChatLauncherPositionController _positionController;
   late final bool _ownsPositionController;
 
@@ -129,7 +142,10 @@ final class _SuperadminChatLauncherState extends State<SuperadminChatLauncher> {
     _positionController = widget.positionController ?? SuperadminChatLauncherPositionController();
     _positionController.addListener(_handlePositionController);
     _unreadCount = widget.unreadCount;
-    WidgetsBinding.instance.addPostFrameCallback((_) => unawaited(_refreshUnreadCount()));
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      unawaited(_refreshUnreadCount());
+      unawaited(_refreshRecentConversations());
+    });
   }
 
   @override
@@ -140,6 +156,27 @@ final class _SuperadminChatLauncherState extends State<SuperadminChatLauncher> {
     }
     if (oldWidget.loadUnreadCount != widget.loadUnreadCount) {
       unawaited(_refreshUnreadCount());
+    }
+    if (oldWidget.loadRecentConversations != widget.loadRecentConversations) {
+      unawaited(_refreshRecentConversations());
+    }
+  }
+
+  Future<void> _refreshRecentConversations() async {
+    final loadRecentConversations = widget.loadRecentConversations;
+    if (loadRecentConversations == null) return;
+    try {
+      final conversations = await loadRecentConversations();
+      if (!mounted) return;
+      setState(() {
+        _recentInitials = conversations
+            .take(SuperadminChatLauncher.recentAvatarLimit)
+            .map((conversation) => superadminChatInitials(conversation.title))
+            .where((initials) => initials.isNotEmpty)
+            .toList(growable: false);
+      });
+    } catch (_) {
+      // Sem projecao autorizada a faixa fica como estava (ou vazia).
     }
   }
 
@@ -266,8 +303,16 @@ final class _SuperadminChatLauncherState extends State<SuperadminChatLauncher> {
       _ => '$unreadCount mensagens nao lidas',
     };
     final isCompact = MediaQuery.sizeOf(context).width < CoeloBreakpoints.medium.minWidth;
+    // Referencia CHAT (Owner, 10/09/2026): no mobile o launcher e um circulo
+    // claro com o icone de conversas em laranja; nas demais larguras e o pill
+    // laranja "Mensagens" com a contagem sobre o icone de envio e a faixa de
+    // iniciais das conversas recentes.
+    final surfaceColor = isCompact ? colors.surface : colors.primary;
+    final foregroundColor = isCompact ? colors.primary : colors.onPrimary;
     final borderSide = BorderSide(
-      color: highlighted ? colors.onPrimary.withValues(alpha: 0.72) : colors.outlineVariant,
+      color: highlighted
+          ? (isCompact ? colors.primary : colors.onPrimary.withValues(alpha: 0.72))
+          : colors.outlineVariant,
     );
     final OutlinedBorder shape = isCompact
         ? CircleBorder(side: borderSide)
@@ -277,7 +322,7 @@ final class _SuperadminChatLauncherState extends State<SuperadminChatLauncher> {
       label: Text(unreadCount > 9 ? '9+' : '$unreadCount'),
       backgroundColor: colors.error,
       textColor: colors.onError,
-      child: Icon(Icons.forum_outlined, color: colors.onPrimary),
+      child: Icon(isCompact ? Icons.forum_rounded : Icons.send_rounded, color: foregroundColor),
     );
     return Transform.translate(
       offset: _positionOffset,
@@ -299,7 +344,7 @@ final class _SuperadminChatLauncherState extends State<SuperadminChatLauncher> {
                 message: 'Conversas — $unreadLabel',
                 child: Material(
                   key: const Key('superadmin-chat-launcher-surface'),
-                  color: colors.primary,
+                  color: surfaceColor,
                   elevation: 2,
                   shadowColor: colors.shadow.withValues(alpha: 0.18),
                   shape: shape,
@@ -326,12 +371,16 @@ final class _SuperadminChatLauncherState extends State<SuperadminChatLauncher> {
                                   badge,
                                   const SizedBox(width: CoeloSpacing.space2),
                                   Text(
-                                    'Mens.',
-                                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                                    'Mensagens',
+                                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
                                       color: colors.onPrimary,
                                       fontWeight: FontWeight.w700,
                                     ),
                                   ),
+                                  if (_recentInitials.isNotEmpty) ...[
+                                    const SizedBox(width: CoeloSpacing.space3),
+                                    _RecentAvatarStrip(initials: _recentInitials),
+                                  ],
                                 ],
                               ),
                             ),
@@ -340,6 +389,67 @@ final class _SuperadminChatLauncherState extends State<SuperadminChatLauncher> {
                 ),
               ),
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Iniciais (ate duas) de um titulo de conversa, compartilhadas entre o pill do
+/// launcher e a lista de Conversas.
+String superadminChatInitials(String value) => value
+    .split(RegExp(r'\s+'))
+    .where((part) => part.isNotEmpty)
+    .take(2)
+    .map((part) => part[0])
+    .join()
+    .toUpperCase();
+
+/// Faixa clara com as iniciais das conversas recentes, sobrepostas como na
+/// referencia aprovada.
+final class _RecentAvatarStrip extends StatelessWidget {
+  const _RecentAvatarStrip({required this.initials});
+
+  final List<String> initials;
+
+  static const _avatarSize = 28.0;
+  static const _overlap = 8.0;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final textStyle = Theme.of(context).textTheme.labelMedium?.copyWith(
+      color: colors.onSurfaceVariant,
+      fontWeight: FontWeight.w700,
+    );
+    final width = _avatarSize + (initials.length - 1) * (_avatarSize - _overlap);
+    return ExcludeSemantics(
+      child: Container(
+        height: _avatarSize + CoeloSpacing.space1,
+        padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space1 / 2),
+        decoration: ShapeDecoration(color: colors.surface, shape: const StadiumBorder()),
+        child: SizedBox(
+          width: width,
+          child: Stack(
+            children: [
+              for (var index = 0; index < initials.length; index++)
+                Positioned(
+                  left: index * (_avatarSize - _overlap),
+                  top: CoeloSpacing.space1 / 2,
+                  child: Container(
+                    width: _avatarSize,
+                    height: _avatarSize,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: index.isEven ? colors.surfaceContainerHighest : colors.surface,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: colors.surface, width: 1.5),
+                    ),
+                    child: Text(initials[index], style: textStyle, maxLines: 1),
+                  ),
+                ),
+            ],
           ),
         ),
       ),

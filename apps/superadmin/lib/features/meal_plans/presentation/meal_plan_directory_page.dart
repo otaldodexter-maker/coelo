@@ -428,7 +428,7 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
       if (widget.onCreate != null)
         CoeloAdminFlyoutItem(
           value: _DirectoryAction.duplicate,
-          icon: Icons.copy_all_outlined,
+          icon: Icons.content_copy_rounded,
           label: item.isTemplate ? 'Duplicar modelo' : 'Duplicar card\u00e1pio',
         ),
       if (item.status == MealPlanStatus.draft)
@@ -938,6 +938,17 @@ final class _MealPlanCard extends StatelessWidget {
               ),
               const SizedBox(width: CoeloSpacing.space2),
               _MealPlanStatusIndicator(item: item),
+              // ARQUIVO (decisao do Owner de 10/09): duplicar segue o conceito do
+              // card de modelo de atividade, como icone direto no cabecalho.
+              if (canDuplicate)
+                IconButton(
+                  key: Key('meal-plan-card-duplicate-${item.id}'),
+                  tooltip: item.isTemplate
+                      ? 'Duplicar modelo ${item.name}'
+                      : 'Duplicar cardápio ${item.name}',
+                  onPressed: () => onAction(_DirectoryAction.duplicate),
+                  icon: const Icon(Icons.content_copy_rounded),
+                ),
             ],
           ),
           const SizedBox(height: CoeloSpacing.space3),
@@ -972,7 +983,6 @@ final class _MealPlanCard extends StatelessWidget {
               // editar, duplicar, arquivar e excluir, mais revisao e publicacao
               // quando o estado permite (decisao do Owner de 10/09/2026).
               if (onOpen != null ||
-                  canDuplicate ||
                   item.status == MealPlanStatus.draft ||
                   item.status != MealPlanStatus.archived ||
                   _mealPlanCanDelete(item) ||
@@ -984,12 +994,6 @@ final class _MealPlanCard extends StatelessWidget {
                         value: _DirectoryAction.edit,
                         label: 'Editar',
                         icon: Icons.edit_outlined,
-                      ),
-                    if (canDuplicate)
-                      CoeloAdminFlyoutItem(
-                        value: _DirectoryAction.duplicate,
-                        label: item.isTemplate ? 'Duplicar modelo' : 'Duplicar card\u00e1pio',
-                        icon: Icons.copy_all_outlined,
                       ),
                     if (item.status == MealPlanStatus.draft)
                       const CoeloAdminFlyoutItem(
