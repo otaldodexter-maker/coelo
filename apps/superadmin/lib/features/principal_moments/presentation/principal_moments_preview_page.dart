@@ -171,6 +171,20 @@ final class _PrincipalMomentsPreviewPageState extends State<PrincipalMomentsPrev
     if (repository == null || publicationId == null || publicationId.isEmpty) return;
     if (_withdrawingPublicationId != null) return;
 
+    // A confirmacao e assincrona: enquanto ela esta aberta o contexto de runtime
+    // pode trocar, e `didUpdateWidget` substitui repositorio e escopo sem
+    // destruir este State, entao `mounted` sozinho nao percebe. O momento
+    // confirmado pertence ao feed que estava em tela; se esse feed deixou de
+    // ser o atual, a confirmacao perdeu o sentido e nao pode ser aplicada.
+    // Mesma guarda que a retirada do Acontece ja fazia.
+    final generationAtOpen = _loadGeneration;
+    final scopeAtOpen = widget.feedScope;
+    bool stillTheSameFeed() =>
+        mounted &&
+        _loadGeneration == generationAtOpen &&
+        identical(widget.withdrawalRepository, repository) &&
+        widget.feedScope == scopeAtOpen;
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -194,17 +208,17 @@ final class _PrincipalMomentsPreviewPageState extends State<PrincipalMomentsPrev
         ],
       ),
     );
-    if (confirmed != true || !mounted) return;
+    if (confirmed != true || !stillTheSameFeed()) return;
 
     setState(() => _withdrawingPublicationId = publicationId);
     try {
       await repository.withdrawMoment(publicationId);
-      if (!mounted) return;
+      if (!stillTheSameFeed()) return;
       setState(() => _withdrawingPublicationId = null);
       _announce('Momento retirado.');
       await _loadFeed();
     } on PrincipalMomentsWithdrawalFailure catch (failure) {
-      if (!mounted) return;
+      if (!stillTheSameFeed()) return;
       setState(() => _withdrawingPublicationId = null);
       _announce(
         failure is PrincipalMomentsWithdrawalDenied
@@ -212,7 +226,7 @@ final class _PrincipalMomentsPreviewPageState extends State<PrincipalMomentsPrev
             : 'Não foi possível retirar agora. Tente novamente.',
       );
     } on Exception {
-      if (!mounted) return;
+      if (!stillTheSameFeed()) return;
       setState(() => _withdrawingPublicationId = null);
       _announce('Não foi possível retirar agora. Tente novamente.');
     }
