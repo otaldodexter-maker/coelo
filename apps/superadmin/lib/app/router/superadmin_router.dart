@@ -1138,7 +1138,10 @@ GoRouter createSuperadminRouter({
                   onOpenAgenda: () => context.goNamed(SuperadminRoutes.agendaName),
                   onOpenProfile: () => context.goNamed(SuperadminRoutes.principalProfileName),
                   onOpenActivities: () => context.goNamed(SuperadminRoutes.activitiesName),
-                  onOpenMessages: () => context.goNamed(SuperadminRoutes.principalConversationsName),
+                  onOpenMessages: () => context.goNamed(
+                    SuperadminRoutes.principalConversationsName,
+                    queryParameters: const {'from': 'for-you'},
+                  ),
                 );
               },
             ),
@@ -1205,8 +1208,14 @@ GoRouter createSuperadminRouter({
                 onOpenForYou: () => context.goNamed(SuperadminRoutes.principalForYouName),
                 onOpenMoments: () => context.pushNamed(SuperadminRoutes.principalMomentsName),
                 onPublishNow: () => context.goNamed(SuperadminRoutes.principalNowPublicationName),
-                onMessage: () => context.goNamed(SuperadminRoutes.principalConversationsName),
-                onOpenMessages: () => context.goNamed(SuperadminRoutes.principalConversationsName),
+                onMessage: () => context.goNamed(
+                  SuperadminRoutes.principalConversationsName,
+                  queryParameters: const {'from': 'profile'},
+                ),
+                onOpenMessages: () => context.goNamed(
+                  SuperadminRoutes.principalConversationsName,
+                  queryParameters: const {'from': 'profile'},
+                ),
               ),
             ),
           ),
@@ -1241,7 +1250,19 @@ GoRouter createSuperadminRouter({
                 : PrincipalChatPage(
                     chatRepository: chatRepository,
                     embedded: true,
-                    onBack: () => context.goNamed(SuperadminRoutes.principalHappensName),
+                    // Tres superficies Principal levam para ca. Sem o `from`,
+                    // todas voltavam para Acontece e quem entrou pelo Perfil
+                    // perdia o lugar onde estava. Reusa o mesmo parametro que a
+                    // pagina administrativa ja usa para isso, e que so decide o
+                    // destino do voltar. Origem desconhecida volta para
+                    // Acontece, que e a superficie inicial do Principal.
+                    onBack: () => context.goNamed(
+                      switch (state.uri.queryParameters['from']) {
+                        'for-you' => SuperadminRoutes.principalForYouName,
+                        'profile' => SuperadminRoutes.principalProfileName,
+                        _ => SuperadminRoutes.principalHappensName,
+                      },
+                    ),
                     onOpenProfile: () => context.goNamed(SuperadminRoutes.principalProfileName),
                   ),
           ),
