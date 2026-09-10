@@ -402,6 +402,9 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
                   : () {
                       if (isCurrent()) save();
                     },
+              // Baixar ainda nao tem caminho de servidor: nasce inerte, como
+              // compartilhar e salvar quando o host nao fornece destino.
+              onDownload: null,
             ),
     );
     _galleryRoute = route;
@@ -1433,6 +1436,7 @@ final class _HappensGallery extends StatefulWidget {
     required this.onReload,
     required this.onShare,
     required this.onSave,
+    required this.onDownload,
     required this.isContextCurrent,
   });
 
@@ -1441,6 +1445,10 @@ final class _HappensGallery extends StatefulWidget {
   final VoidCallback onReload;
   final VoidCallback? onShare;
   final VoidCallback? onSave;
+
+  /// Baixar entrou por decisao do Owner ao aprovar os goldens da galeria. Ainda
+  /// nao ha caminho de servidor, entao o controle nasce inerte, como os outros.
+  final VoidCallback? onDownload;
   final bool Function() isContextCurrent;
 
   @override
@@ -1498,7 +1506,12 @@ final class _HappensGalleryState extends State<_HappensGallery> {
                               )
                             : Center(
                                 child: AspectRatio(
-                                  aspectRatio: 4 / 3,
+                                  // O quadro do sprite e retrato: 1983/4 por
+                                  // 793 da 0,625. Com 4/3 aqui, BoxFit.fill
+                                  // esticava cada quadro mais de duas vezes na
+                                  // horizontal, que e a distorcao apontada pelo
+                                  // Owner ao decidir os goldens da galeria.
+                                  aspectRatio: _happensSpriteFrameAspect,
                                   child: _SpriteImage(
                                     asset: 'assets/principal_happens/feed-strip.png',
                                     index: widget.post.mediaIndices[_index],
@@ -1573,13 +1586,35 @@ final class _HappensGalleryState extends State<_HappensGallery> {
                   ),
                 ),
               ],
+              // GALERIA-ALINHAMENTO (decisao do Owner de 10/09/2026): as acoes
+              // ficam a esquerda e a paginacao a direita, em vez de tudo
+              // centralizado. Compartilhar, salvar e baixar seguem sem destino
+              // no servidor, entao ficam inertes em vez de anunciar previa (D3).
               Positioned(
-                left: 0,
-                right: 0,
+                left: CoeloSpacing.space4,
+                right: CoeloSpacing.space4,
                 bottom: CoeloSpacing.space4,
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    IconButton(
+                      tooltip: 'Compartilhar mídia',
+                      onPressed: widget.onShare,
+                      color: Colors.white,
+                      icon: const Icon(Icons.ios_share_rounded),
+                    ),
+                    IconButton(
+                      tooltip: 'Salvar mídia',
+                      onPressed: widget.onSave,
+                      color: Colors.white,
+                      icon: const Icon(Icons.bookmark_border_rounded),
+                    ),
+                    IconButton(
+                      tooltip: 'Baixar mídia',
+                      onPressed: widget.onDownload,
+                      color: Colors.white,
+                      icon: const Icon(Icons.download_rounded),
+                    ),
+                    const Spacer(),
                     DecoratedBox(
                       decoration: BoxDecoration(
                         color: Colors.black.withValues(alpha: .64),
@@ -1595,21 +1630,6 @@ final class _HappensGalleryState extends State<_HappensGallery> {
                           style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: CoeloSpacing.space2),
-                    IconButton(
-                      tooltip: 'Compartilhar mídia',
-                      // Sem destino no servidor, o controle fica inerte em vez
-                      // de anunciar previa (D3).
-                      onPressed: widget.onShare,
-                      color: Colors.white,
-                      icon: const Icon(Icons.ios_share_rounded),
-                    ),
-                    IconButton(
-                      tooltip: 'Salvar mídia',
-                      onPressed: widget.onSave,
-                      color: Colors.white,
-                      icon: const Icon(Icons.bookmark_border_rounded),
                     ),
                   ],
                 ),
@@ -1842,6 +1862,10 @@ final class _AuthorizedMediaState extends State<_AuthorizedMedia> with WidgetsBi
     },
   );
 }
+
+/// Proporcao real de um quadro do sprite de demonstracao do Acontece:
+/// 1983 px de largura divididos em 4 quadros, por 793 px de altura.
+const double _happensSpriteFrameAspect = 1983 / 4 / 793;
 
 final class _SpriteImage extends StatelessWidget {
   const _SpriteImage({required this.asset, required this.index, required this.count});
