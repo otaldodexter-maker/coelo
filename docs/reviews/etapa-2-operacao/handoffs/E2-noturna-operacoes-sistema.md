@@ -3,7 +3,7 @@ title: "Entrega do grupo operacoes-sistema — rodada noturna 09/10 de setembro"
 source: "trabalho proprio sobre a base d784462c1, branch work/etapa2-noturna-operacoes-sistema"
 status: "documento vivo; atualizado ate a pre-entrega das 04:50"
 generated_at: "2026-09-09"
-last_update: "2026-09-09 23:16 (America/Sao_Paulo)"
+last_update: "2026-09-10 01:50 (America/Sao_Paulo)"
 group: "operacoes-sistema"
 ---
 
@@ -145,6 +145,93 @@ outra frente alterado — as quatro suítes de rota fora do recorte são arquivo
 teste, com autorização nominal registrada. Nenhuma asserção afrouxada para
 fechar suíte.
 
+
+## Estrutura — o checklist escrito depois das correções achou mais três defeitos
+
+Corrigi a mesma classe de contrato de escrita em quatro repositórios e só então
+escrevi o artigo de conhecimento, nomeando `supabase_institution_directory_repository`
+como implementação de referência porque ele já fazia tudo. Depois apliquei o
+próprio checklist às seis famílias de estrutura, em arquivos que eu já havia lido
+na mesma noite sem ver nada:
+
+| Família | Resultado |
+| --- | --- |
+| Instituições | Nenhuma lacuna. É a referência nas quatro perguntas. |
+| Unidades | Faltava conferir o recibo na atualização. Corrigido em `65880be56`. |
+| Turmas | Faltava conferir o recibo. Corrigido em `fa4b968a3`. |
+| Atividades | Faltava fechar transporte. Corrigido em `f30cc20c2`, preservando a negação de autorização. |
+| Locais | Sem lacuna. |
+| Avaliações | Sem lacuna; já recusa gradebook com ID divergente e instituição cruzada. |
+
+Duas decisões valem tanto quanto as correções. Em Turmas eu **não** "corrigi" a
+intenção de escrita, que já estava certa no formulário com `_pendingSave ??=`;
+aplicar o checklist mecanicamente teria produzido mudança sem defeito. E rodei o
+teste existente de composição idempotente **antes** de escrever o meu, porque uma
+guarda mal escrita recusaria também o recibo correto — e esse é o modo de falha
+clássico dessa correção.
+
+Avaliações é o contraste mais limpo da noite entre cobertura funcional e aceite
+visual: é a família mais bem guardada das seis, 42 PASS e zero falha, e mesmo
+assim não promove, porque o aceite exige um golden que **nunca foi criado**.
+Rastreei o histórico de `origin/dev` para distinguir cobertura perdida de
+cobertura que nunca existiu; os artefatos de falha vêm de `cacf7cbc5`, uma branch
+que não está em dev e que inclusive apaga um golden.
+
+## O contrato RPC entre cliente e banco (`e14718844`, `5cab49f09`)
+
+Nenhum teste do app confere se a RPC chamada existe no banco, porque todos usam
+cliente falso ou interceptam transporte. Medi os dois lados: 80 chamadas, 76
+nomes distintos, contra 383 funções do pacote.
+
+**Cinco RPCs do diretório de Unidades não são criadas por nenhum arquivo do
+repositório** — e duas delas são reusadas pelos filtros de Turmas. A evidência
+que fecha a dúvida de varredura: a migration versionada `20260825180500` *chama*
+`app_private.create_unit_for_superadmin` e o cabeçalho dela diz "Repair locally
+installed Unit import/export worker functions". Uma migration do pacote depende
+de função que o pacote nunca cria. Ou as funções existem fora do versionamento, e
+então o pacote não descreve produção, ou Unidades falha fail-closed no primeiro
+uso. **Não escolho entre as duas**: um `select` de catálogo resolve em segundos e
+é o que a próxima janela autorizada deve fazer antes de qualquer promoção de
+Unidades. Units não está pendente de verificação de front-end; está pendente de
+saber se o backend dela existe.
+
+**Cardápios chama a forma legada do delete de imagem.** A migration de recibos
+criou a forma de três argumentos com `p_expected_revision` e manteve a de dois
+como compatibilidade, cujo corpo lê a revisão corrente do próprio banco. Para o
+banco a chamada é legítima, nada falha, e a guarda de concorrência nunca roda em
+produção. Não corrigi porque o domínio de imagem não tem conceito de revisão:
+**ler a revisão no cliente logo antes do delete reproduziria exatamente o furo
+que a guarda existe para fechar**.
+
+A regressão está fechada em `apps/superadmin/test/contracts/rpc_contract_test.dart`,
+4 PASS, com controle negativo nos quatro casos, incluindo a aresta de leitura
+direta por PostgREST. A lista de ausências conhecidas **também falha se uma delas
+passar a existir** e continuar na lista, senão envelhece e vira o esconderijo do
+próximo defeito.
+
+## Expectativa superada em Formulários (`c2e6bda5d`)
+
+Duas frentes leram estaticamente que `/forms/form-1/files` chamava backend em
+rota declarada fail-closed e me pediram o número. Medi: uma chamada em cada uma
+das quatro rotas de operação, zero em mídia. E então li o outro teste: o que
+passa 7/7 **exige** exatamente uma chamada, e foi escrito em `3f5449940`, de
+08/09, junto com a decisão de ligar rotas normais a leitura autorizada. O que
+falhava é de 01/09. Não havia defeito: havia duas asserções opostas sobre a mesma
+rota convivendo sete dias.
+
+Corrigi a asserção com comentário datado, em vez de remover a rota do teste, para
+que ninguém "conserte" de volta. Medi também, porque foi perguntado, que a sessão
+daquele teste **não tem capacidade de Formulários**: `signInForTesting` concede
+apenas `platform.read` e `withFormsAuthorization` consulta somente
+`isAuthenticated`. O contrato de 08/09 delega a autorização de leitura
+inteiramente ao servidor — decisão legítima, diferente de "o cliente confere
+capacidade", e registrada no próprio teste.
+
+`import_development_routes_test` é outra família: zero chamada ao repositório de
+produção nas duas rotas `/dev`. Ele falha por RenderFlex estourando 1409 pixels
+na superfície padrão, que é o overflow de `/dev/imports` já catalogado. Mesmo
+sintoma vermelho, três causas diferentes em três rotas.
+
 ## Correções que fiz contra o meu próprio relato
 
 Registradas porque mudam o que o leitor deve confiar:
@@ -180,3 +267,10 @@ Registradas porque mudam o que o leitor deve confiar:
    pré-existentes porque apareciam na mesma lista — **inferência por vizinhança,
    não medição**. As outras nove são pré-existentes, e agora isso está verificado
    e não assumido.
+9. Medi que `/forms/form-1/files` dispara uma chamada de backend e mandei o
+   número ao coordenador **antes** de saber qual dos dois testes em conflito
+   encodava a decisão vigente. Uma chamada é violação contra um contrato e
+   conformidade contra o outro: o número não estava errado, faltava o
+   denominador. A cadeia estática que eu havia confirmado provava o mecanismo e
+   não provava a infração. Uma correção de composição estava sendo atribuída com
+   base nisso e foi parada a tempo.
