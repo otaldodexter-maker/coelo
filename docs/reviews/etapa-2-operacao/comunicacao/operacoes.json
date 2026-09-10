@@ -1,0 +1,69 @@
+{
+  "revision": 2,
+  "updated_at": "2026-09-10T09:30:00-03:00",
+  "round": "E2-R03-20260910",
+  "group": "operacoes",
+  "tool_model": "Codex, Luna medio",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-operacoes",
+  "branch": "work/etapa2-r03-operacoes",
+  "head": "bb15db748b61eaa926bd7264330ba1509578410e",
+  "base": {
+    "requested": "base.fase0Head",
+    "resolved": null,
+    "fallback": "worktree materializado a partir de dev em bb15db748; backend-only ate a publicacao da Fase 0"
+  },
+  "scope": {
+    "app": "apps/superadmin",
+    "families": ["support", "account", "plans", "audit"],
+    "action_ids": [
+      "audit.list", "audit.filter", "audit.detail", "audit.export",
+      "support.create", "support.table", "support.kanban", "support.detail", "support.reply", "support.close",
+      "account.profile", "account.settings", "account.theme", "account.mfa", "account.sessions", "account.logout",
+      "plans.list", "plans.create", "plans.edit", "plans.activate", "plans.assign"
+    ],
+    "order": ["account", "plans", "audit", "support"],
+    "included": "camadas Front-end, Supabase/Postgres e E2E das 21 acoes; neste primeiro gate apenas backend independente, sem UI de diretorio",
+    "excluded_until_phase0": "UI administrativa, composto de diretorio, goldens e composicao de rota"
+  },
+  "opening_contract": {
+    "objective": "entregar contratos backend revisaveis para Conta/Planos/Auditoria e construir a camada Supabase produtiva de Suporte",
+    "known_pending": "base.fase0Head ausente; Suporte sem data/repository produtivo; Auditoria tem candidato AUDIT-READ-V2; Planos ja possui migration e pgTAP; Conta depende de camada de perfil/sessao a reconciliar",
+    "stop_criterion": "fechar gates backend locais independentes ou registrar bloqueio concreto; nao promover E2E antes de migration aplicada e composicao da Fase 0",
+    "expected_evidence": "migration forward-only, pgTAP com RLS/grants/RPC, chave de composicao proposta, SHA dos commits e estado separado FE/BE/E2E"
+  },
+  "changes": [
+    {
+      "action_ids": ["support.create", "support.table", "support.kanban", "support.detail", "support.reply", "support.close"],
+      "status": "local-package-in-progress",
+      "changed": [
+        "packages/coelo_database/migrations/20260909217000_superadmin_support_production_v1.sql",
+        "packages/coelo_database/supabase/tests/superadmin_support_production_test.sql"
+      ],
+      "delta": "adicionada camada server-side sobre support_sessions existente: campos de ticket, revisao otimista, receipts de idempotencia, list/detail/create/reply/set_status, acoes em audit.support_session_actions, RLS deny-by-default e grants somente por RPC authenticated",
+      "composition_key_candidate": "supportProductionRepositoryV1",
+      "criteria": {"frontend": "N", "backend": "N", "e2e": "N", "reload": "N", "cross_tenant": "pgTAP pendente de replay nominal"}
+    },
+    {
+      "action_ids": ["audit.list", "audit.filter", "audit.detail"],
+      "status": "candidate-existing",
+      "changed": [],
+      "delta": "candidato 20260909190000_superadmin_internal_audit_read_v2.sql ja existe e foi preservado; aplicar/verificar fica com coordenador na fila SQL",
+      "composition_key_candidate": "auditReadV2",
+      "criteria": {"frontend": "N", "backend": "N", "e2e": "N"}
+    },
+    {
+      "action_ids": ["audit.export"],
+      "status": "deferred-post-mvp",
+      "changed": [],
+      "delta": "mantido adiado conforme ADR 0034; nenhum entrypoint novo",
+      "criteria": {"frontend": "N/A", "backend": "N/A", "e2e": "N/A"}
+    }
+  ],
+  "tests": {"P": 1, "F": 0, "B": 1, "S": 0, "U": 1, "evidence": ["support-contract-static PASS: required RPCs=5, receipt=idempotency, audit schema=correct, RLS=force, test=22 assertions", "supabase db lint --local BLOCKED: ECONNREFUSED 127.0.0.1:54322; supabase start nao criou container durante pull"], "planned": ["pgTAP nominal de suporte", "preflight da migration na fila serializada", "flutter tests somente apos base.fase0Head"]},
+  "blocked": [
+    {"kind": "environment/integration", "what": "base.fase0Head nao publicado em coordenacao.json", "owner": "coordenador/Fase 0", "unblocks": "SHA integrado da Fase 0 e rebase desta branch antes de tocar UI"},
+    {"kind": "verification", "what": "nenhum replay pgTAP local nominal executado ainda", "owner": "grupo operacoes", "unblocks": "runner Postgres local nominal disponivel; migration e teste ja estao no pacote"}
+  ],
+  "next_step": "commitar o pacote Support e enviar SHA ao coordenador; depois aguardar/rebasear sobre base.fase0Head para Conta -> Planos -> Auditoria -> Support UI/E2E",
+  "commits": []
+}
