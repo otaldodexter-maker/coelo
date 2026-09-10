@@ -1,5 +1,5 @@
 {
-  "revision": 2,
+  "revision": 3,
   "round": "E2-R03-20260910",
   "role": "Coordenacao e Integracao - Claude (P1)",
   "writer": "coordenador-claude",
@@ -149,5 +149,15 @@
     {"grupo": "coordenador", "o_que": "20260910160000_units_rpcs_versioned_from_production_v1.sql (25 funcoes lidas de pg_get_functiondef em producao) + manifesto do replay com chat_production_contract + rastreadores com o estado de producao", "quando": "2026-09-10T15:10:00-03:00", "estado": "integrado em dev; migration entra na fila como pos 26, no-op em producao ate a decisao P1"}
   ],
   "updatedAtRev2": "2026-09-10T15:10:00-03:00",
+  "integradoRev3": [
+    {"grupo": "estrutura", "prova": "base integrada (worktree, apps/superadmin): flutter analyze limpo; test/architecture + institutions/presentation + units + institution_form_save_lifecycle: 356 PASS / 4 FAIL, as 4 sao goldens de formulario de Instituicoes e Unidades que divergem pela decisao RODAPE (regravacao e do grupo, nao e regressao)"},
+    {"grupo": "principal-chat-sistema", "o_que": "7 commits (49a84a321..8921a6261), merge 3f5934fb5", "estado": "integrado; SQL nao aplicado"},
+    {"grupo": "publicacoes-agenda", "o_que": "9 commits (dac463464..54a83c9de), merge abd84b042; JSON do grupo mantido na versao da branch", "estado": "integrado; SQL nao aplicado"},
+    {"grupo": "operacoes", "o_que": "11 commits (7e3f4c198..b5b439403), merge c6d2e5dae; JSON do grupo mantido na versao da branch", "estado": "integrado; pgTAP nominal pendente"},
+    {"grupo": "formularios-cuidado-rotina", "o_que": "6 commits (211bc7add..cef619e93), merge bfd73cc75, base bb15db748 rebatida sobre o composto sem conflito de codigo", "estado": "integrado; SQL nao aplicado"},
+    {"grupo": "coordenador", "o_que": "packages/coelo_database/scripts/r2-spike-synthetic.ts: runner Deno do spike (R2-T001/T002/T003/T004/T007 + limpeza) sobre o cliente das Edge Functions; roda assim que COELO_R2_* existirem (P2)"}
+  ],
+  "filaSqlR03Complemento": {"pos": 26, "migration": "20260910160000_units_rpcs_versioned_from_production_v1", "grupo": "coordenador", "estado": "no-op em producao (objetos ja existem); registra o ledger e os grants"},
+  "updatedAtRev3": "2026-09-10T15:40:00-03:00",
   "proximoPasso": "1) validar rastreadores e push da rev 2; 2) ADR 0034 Decisao 7 (RODAPE e CHAT); 3) integrar principal-chat-sistema, formularios-cuidado-rotina, publicacoes-agenda e operacoes por hunks; 4) preparar o pacote Cloudflare restante para rodar assim que o token existir; 5) inventario com os estados medidos."
 }
