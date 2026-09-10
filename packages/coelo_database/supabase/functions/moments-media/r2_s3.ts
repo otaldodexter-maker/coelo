@@ -60,6 +60,13 @@ export class MomentsR2Client {
     return this.#client.head(key).catch(compatibleError);
   }
 
+  /// Le de volta os bytes ja armazenados, limitados por [maxBytes], para que a
+  /// finalizacao possa conferir a assinatura MIME real em vez de confiar no
+  /// Content-Type que o proprio cliente declarou no PUT.
+  get(key: string, maxBytes: number) {
+    return this.#client.get(key, maxBytes).catch(compatibleError);
+  }
+
   delete(key: string) {
     return this.#client.delete(key).catch(compatibleError);
   }
