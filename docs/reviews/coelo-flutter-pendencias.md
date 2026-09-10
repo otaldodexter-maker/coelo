@@ -3,7 +3,7 @@ title: "Pendências Coelo — Front-end"
 source: "AGENTS.md; ADR 0019; ADR 0032; tracker-corrections-2026-09-08.json; inventario-etapa-2.json"
 status: "open"
 generated_at: "2026-09-08"
-updated_at: "2026-09-10T14:30:00-03:00"
+updated_at: "2026-09-10T15:10:00-03:00"
 action_count: 230
 family_count: 39
 active_mvp_action_count: 200
@@ -13,13 +13,45 @@ backend_applicable_action_count: 223
 formal_mvp_gate_action_count: 3
 deferred_post_mvp_action_count: 22
 flutter_only_action_count: 5
-tracker_sync_at: "2026-09-10T08:30:00-03:00"
-tracker_sync_revisions: "noturna: acessos-pessoas r56; estrutura r52; operacoes-sistema r61; formularios-cuidado r58; alunos-rotina r33; perfil-para-voce r51; chat-comunicacoes r68; publicacoes-midia r46; coordenacao r31"
+tracker_sync_at: "2026-09-10T15:10:00-03:00"
+tracker_sync_revisions: "R03: fase0 r4; estrutura r18; acessos-pessoas r84; principal-chat-sistema r7; publicacoes-agenda r5; operacoes r6; formularios-cuidado-rotina r7; coordenacao r2"
 ---
 
 # Pendências Coelo — Front-end
 
-## Estado vigente — Rodada noturna 09→10/09/2026 encerrada
+## Estado vigente — Rodada 3 (E2-R03-20260910) em curso
+
+Coordenação e Integração P1 (Claude, `coelo-2b`) registrou posse na
+[revisão 1 de coordenacao.json](etapa-2-operacao/comunicacao/coordenacao.json)
+em 10/09/2026 14:50, sobre `dev` `e6f40f9bc`. A Fase 0 publicou
+`base.fase0Head = 1adb070c9` (composto `CoeloAdminDirectory`, goldens do
+composto, teste de arquitetura, SDK 3.44.2 fixado em `.fvmrc`, diretórios de
+Instituições, Atividades, Turmas, Unidades, Formulários, Perfis de cuidado e
+Medicação migrados; Planos e Cardápios em `8fafbe16c`) e continua os demais
+diretórios em lotes pequenos em `dev`
+([handoff](etapa-2-operacao/next-round/R03-fase0-handoff.md)).
+
+**Integrado em `dev` nesta revisão:** a branch `work/etapa2-r03-estrutura`
+(16 commits, merge `f615575de`): confirmação de saída de Instituições corrigida
+com prova causal (2 F antes, 8 P depois); guardas de diálogo assíncrono em
+Unidades e Instituições; fail-closed das rotas de mutação provado; Exportar de
+Unidades honesto; rodapé ancorado no fim da viewport e chat fora das telas de
+criar/editar/publicar (decisões do Owner de 10/09, gravadas em
+`coelo-ui/references/form-layout-contracts.md` e
+`principal-visual-surfaces.md`). O `SuperadminFormFrame` serve 19 formulários:
+goldens mobile de formulário dos outros grupos vão divergir e **não é
+regressão**; cada grupo regrava os seus depois de aplicar a observação.
+
+**Estado de produção que muda o gate do Front-end:** as 13 RPCs de Unidades
+existem em produção; o único gate de `units.*` e metade de `groups.*` passa a
+ser a composição do cliente (`structureMutationsEnabled` e adapters
+`Unavailable*`), a ligar depois dos pacotes SQL (retidos por P1 do Owner).
+
+Percentuais certificados **não mudaram**: Front-end 11/230. Nenhuma ação
+passou pela régua do MVP porque nada foi aplicado em produção. Perguntas ao
+Owner em lote: [P1 a P10](etapa-2-operacao/next-round/R03-perguntas-ao-owner-20260910.md).
+
+## Estado anterior — Rodada noturna 09→10/09/2026 encerrada
 
 Consolidação em **2026-09-10T08:30-03:00**, sobre `dev` `0a9cb1e63` (base
 funcional e documental são a mesma). Rodada noturna coordenada por Claude

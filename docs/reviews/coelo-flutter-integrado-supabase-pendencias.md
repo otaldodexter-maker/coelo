@@ -3,7 +3,7 @@ title: "Pendências Coelo — Front-end + Back-end"
 source: "AGENTS.md; ADR 0019; ADR 0032; tracker-corrections-2026-09-08.json; inventario-etapa-2.json"
 status: "open"
 generated_at: "2026-09-08"
-updated_at: "2026-09-10T08:30:00-03:00"
+updated_at: "2026-09-10T15:10:00-03:00"
 action_count: 230
 family_count: 39
 active_mvp_action_count: 200
@@ -13,13 +13,34 @@ backend_applicable_action_count: 223
 formal_mvp_gate_action_count: 3
 deferred_post_mvp_action_count: 22
 flutter_only_action_count: 5
-tracker_sync_at: "2026-09-10T08:30:00-03:00"
-tracker_sync_revisions: "noturna: acessos-pessoas r56; estrutura r52; operacoes-sistema r61; formularios-cuidado r58; alunos-rotina r33; perfil-para-voce r51; chat-comunicacoes r68; publicacoes-midia r46; coordenacao r31"
+tracker_sync_at: "2026-09-10T15:10:00-03:00"
+tracker_sync_revisions: "R03: fase0 r4; estrutura r18; acessos-pessoas r84; principal-chat-sistema r7; publicacoes-agenda r5; operacoes r6; formularios-cuidado-rotina r7; coordenacao r2"
 ---
 
 # Pendências Coelo — Front-end + Back-end
 
-## Estado vigente — Rodada noturna 09→10/09/2026 encerrada
+## Estado vigente — Rodada 3 (E2-R03-20260910) em curso
+
+Coordenação e Integração P1 (Claude, `coelo-2b`) registrou posse na
+[revisão 1 de coordenacao.json](etapa-2-operacao/comunicacao/coordenacao.json)
+em 10/09/2026 14:50, sobre `dev` `e6f40f9bc`, com `base.fase0Head =
+1adb070c9`. Estados distintos desta rodada: **recebido** (sete canais com ACK),
+**integrado** (branch estrutura em `dev`, merge `f615575de`), **aplicado em
+produção** (nenhum: backup por ponto no tempo desligado, P1 ao Owner) e
+**verificado E2E** (nenhum).
+
+O que a leitura de produção muda para a integração: as RPCs de Unidades
+existem; o worker de Avisos e as fundações de `now`/`moments`, chat
+production, realm interno v2 e catálogo de mídia privada **não** existem em
+produção, então nenhuma tela dessas famílias pode passar da régua do MVP sem a
+fila SQL. CORS e lifecycle do R2 estão aplicados; upload real pelo navegador
+ainda depende do token R2 (P2) e da origem de desenvolvimento (P3).
+
+Percentuais certificados **não mudaram**: integração 0/198 ativas. Fila SQL,
+mapa de presença por migration e perguntas ao Owner estão nos links do
+rastreador Back-end.
+
+## Estado anterior — Rodada noturna 09→10/09/2026 encerrada
 
 Consolidação em **2026-09-10T08:30-03:00**, sobre `dev` `0a9cb1e63` (base
 funcional e documental são a mesma). Rodada noturna coordenada por Claude

@@ -3,7 +3,7 @@ title: "Pendências Coelo — Back-end"
 source: "AGENTS.md; ADR 0019; ADR 0032; tracker-corrections-2026-09-08.json; inventario-etapa-2.json"
 status: "open"
 generated_at: "2026-09-08"
-updated_at: "2026-09-10T08:30:00-03:00"
+updated_at: "2026-09-10T15:10:00-03:00"
 action_count: 230
 family_count: 39
 active_mvp_action_count: 200
@@ -13,13 +13,73 @@ backend_applicable_action_count: 223
 formal_mvp_gate_action_count: 3
 deferred_post_mvp_action_count: 22
 flutter_only_action_count: 5
-tracker_sync_at: "2026-09-10T08:30:00-03:00"
-tracker_sync_revisions: "noturna: acessos-pessoas r56; estrutura r52; operacoes-sistema r61; formularios-cuidado r58; alunos-rotina r33; perfil-para-voce r51; chat-comunicacoes r68; publicacoes-midia r46; coordenacao r31"
+tracker_sync_at: "2026-09-10T15:10:00-03:00"
+tracker_sync_revisions: "R03: fase0 r4; estrutura r18; acessos-pessoas r84; principal-chat-sistema r7; publicacoes-agenda r5; operacoes r6; formularios-cuidado-rotina r7; coordenacao r2"
 ---
 
 # Pendências Coelo — Back-end
 
-## Estado vigente — Rodada noturna 09→10/09/2026 encerrada
+## Estado vigente — Rodada 3 (E2-R03-20260910) em curso
+
+Coordenação e Integração P1 (Claude, `coelo-2b`) registrou posse na
+[revisão 1 de coordenacao.json](etapa-2-operacao/comunicacao/coordenacao.json)
+em 10/09/2026 14:50, sobre `dev` `e6f40f9bc` (Fase 0 publicou
+`base.fase0Head = 1adb070c9`). Sete canais recebidos e com ACK: fase0 r4,
+estrutura r18, acessos-pessoas r84, principal-chat-sistema r7,
+publicacoes-agenda r5, operacoes r6, formularios-cuidado-rotina r7.
+
+**Produção medida em 10/09 14:30 (somente leitura, `supabase db query --linked`):**
+
+- **Backup por ponto no tempo desligado** (`pitr_enabled: false`, zero backups
+  físicos). A condição 3 da Decisão 1 da ADR 0034 não está satisfeita; nenhuma
+  migration foi aplicada nesta rodada até a resposta do Owner
+  ([P1](etapa-2-operacao/next-round/R03-perguntas-ao-owner-20260910.md)).
+- **Ledger não decide nada:** última versão remota `20260901200206`, 116
+  versões remotas, 186 arquivos locais, 121 só locais e 51 só remotas (as de
+  29/07 a 21/08 aplicadas sob outro carimbo). A decisão de aplicabilidade é por
+  presença de objeto: [mapa por migration](evidence/etapa-2/r03-coordenacao/producao-presenca-por-migration-20260910.txt).
+  Ausentes em produção: `chat_production_contract`, `now`/`moments`
+  publication, runtime do worker de Avisos, realm interno v2 (27/08→01/09),
+  `private_media_catalog` e toda a fila de 09/09. Presente e fora da fila
+  noturna: `20260909212000_circulars_media_private_r2_v1` (6/6).
+- **Unidades:** as 13 RPCs sem migration existem em `public` (security
+  definer, execute para `authenticated`), 12 delas também em `app_private`.
+  Dívida de versionamento, não pacote novo; versionadas em
+  `20260910160000_units_rpcs_versioned_from_production_v1.sql` (corpo lido de
+  `pg_get_functiondef`, idempotente). Achado: security definer em `public` sem
+  revoke de `PUBLIC` explícito antes deste arquivo.
+- **Avisos:** `pg_cron` instalado com 3 jobs (todos de Formulários); funções
+  do worker ausentes; `notice-publication-worker` não implantada.
+- **Cardápios:** nenhuma linha `meal_plans.*` em `platform_role_permissions`;
+  a migration `20260910130000` do grupo principal-chat-sistema é necessária.
+- Edge Functions implantadas: 11 (circular-media na v1, sem ramo R2).
+  Não implantadas: happens-media, now-media, moments-media,
+  notice-publication-worker, meal-plan-image-cleanup, audit-export. Secrets
+  `COELO_R2_*` não existem.
+
+**Cloudflare (Decisão 5 da ADR 0034):** CORS restrito aplicado nos três buckets
+(`superadmin`/`admin`/`app.coelo.me`; GET, PUT, HEAD) e lifecycle de 7 dias em
+`coelo-transient-prod`. Token R2 mínimo só pode nascer no painel (a sessão
+OAuth do MCP não cria tokens): pedido ao Owner em P2; migração das três
+funções e spike ficam pendentes dele.
+
+**Fila SQL R03:** 25 posições serializadas em `coordenacao.json`
+(`filaSqlR03`), retidas por P1. Estados: 12 pgTAP verde em perfil declarado,
+2 committados sem pgTAP nominal (Suporte, Conta), 1 retido por porta ocupada,
+o restante candidato. Nenhuma chave de composição ligada. Próximo carimbo livre:
+posterior a `20260910160000`.
+
+**Integrado em `dev` nesta revisão:** a branch `work/etapa2-r03-estrutura`
+inteira (16 commits, merge `f615575de`), com a correção da confirmação de saída
+de Instituições, guardas de diálogo, fail-closed de rotas, exportação honesta de
+Unidades, RODAPÉ e CHAT decididos pelo Owner, perfil de replay
+`StructureLocationConsumersV1` e evidências. Manifesto do replay ganha
+`20260812000000_chat_production_contract.sql` (F-R03-FCR-003).
+
+Percentuais certificados **não mudaram**: backend 0/223 aplicáveis, porque
+nada foi aplicado em produção. Perguntas ao Owner em lote: P1 a P10.
+
+## Estado anterior — Rodada noturna 09→10/09/2026 encerrada
 
 Consolidação em **2026-09-10T08:30-03:00**, sobre `dev` `0a9cb1e63` (base
 funcional e documental são a mesma). Rodada noturna coordenada por Claude

@@ -125,6 +125,26 @@ pertencem e voltam a contar na revisão profunda.
 - Chave de idempotência da Assiduidade é gerada e devolvida pelo banco por RPC.
 - Botão Arquivos escondido em Conversas; cabeçalho mobile inclui o botão de Bug.
 
+## Decisão 7 — respostas do Owner durante a Rodada 3 (10/09/2026, via grupo estrutura)
+
+- Rodapé dos formulários: opção A, rodapé ancorado no fim da viewport em todas
+  as larguras, aplicado no `SuperadminFormFrame` (19 formulários); o golden de
+  Instituições em 375 é regravado. Goldens mobile de formulário dos demais
+  grupos divergem por consequência e não contam como regressão.
+- Balão de chat: não aparece em telas de criar, editar e publicar, nem no
+  Agora aberto e no Momentos aberto. Prevalece sobre a regra transversal CHAT
+  da lista de goldens de 10/09 quando houver conflito.
+- Registro nas skills: `coelo-ui/references/form-layout-contracts.md` e
+  `coelo-ui/references/principal-visual-surfaces.md`.
+
+## Fato registrado pela coordenação da Rodada 3 (10/09/2026)
+
+O projeto `coelo` de produção respondeu `pitr_enabled: false` em 10/09/2026.
+A condição 3 da Decisão 1 não está satisfeita e a fila SQL ficou retida até o
+Owner responder à pergunta P1 de
+`docs/reviews/etapa-2-operacao/next-round/R03-perguntas-ao-owner-20260910.md`.
+A resposta entra aqui como Decisão 8.
+
 ## Consequências
 
 - O replay local com Docker deixa de ser porta obrigatória; continua útil para

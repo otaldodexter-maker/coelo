@@ -1,5 +1,5 @@
 {
-  "revision": 1,
+  "revision": 2,
   "round": "E2-R03-20260910",
   "role": "Coordenacao e Integracao - Claude (P1)",
   "writer": "coordenador-claude",
@@ -144,6 +144,10 @@
     "auditoriaReplay145": "0/145; sera provado apos aplicar 20260909190000",
     "branchesR02Codex": "7 branches codex/e2-r02-* seguem como WIP retido documentado; nao copiar em bloco"
   },
-  "integrado": [],
-  "proximoPasso": "1) push desta revisao em dev; 2) integrar por hunks o commit cb55adab1 (estrutura) e os pacotes SQL verdes em dev; 3) versionar as 13 RPCs de Unidades; 4) preparar o pacote Cloudflare restante para rodar assim que o token existir; 5) atualizar os tres rastreadores e o inventario com o estado de producao medido."
+  "integrado": [
+    {"grupo": "estrutura", "o_que": "branch work/etapa2-r03-estrutura inteira (16 commits ate b92585d38), merge f615575de em dev", "quando": "2026-09-10T15:05:00-03:00", "prova": "flutter analyze e testes alvo de Instituicoes/Unidades/arquitetura na base integrada (resultado em coordenacao rev 3)", "estado": "integrado; nao aplicado em producao; nao E2E"},
+    {"grupo": "coordenador", "o_que": "20260910160000_units_rpcs_versioned_from_production_v1.sql (25 funcoes lidas de pg_get_functiondef em producao) + manifesto do replay com chat_production_contract + rastreadores com o estado de producao", "quando": "2026-09-10T15:10:00-03:00", "estado": "integrado em dev; migration entra na fila como pos 26, no-op em producao ate a decisao P1"}
+  ],
+  "updatedAtRev2": "2026-09-10T15:10:00-03:00",
+  "proximoPasso": "1) validar rastreadores e push da rev 2; 2) ADR 0034 Decisao 7 (RODAPE e CHAT); 3) integrar principal-chat-sistema, formularios-cuidado-rotina, publicacoes-agenda e operacoes por hunks; 4) preparar o pacote Cloudflare restante para rodar assim que o token existir; 5) inventario com os estados medidos."
 }
