@@ -30,7 +30,7 @@ function Get-ReservationHash([string]$Path) {
 }
 
 $descriptorFile = Assert-ReservationFile (Join-Path $PSScriptRoot 'profile.json')
-if ((Get-ReservationHash $descriptorFile.FullName) -cne '611fde347e1324b90c9d8af438ef062f2ec19aa25e74e330d0e11caec1401f85') {
+if ((Get-ReservationHash $descriptorFile.FullName) -cne '9c8453dc4d9b2b0ee09c4b37b533fe2abd4bbc6a0bde76fb6e753ae7670d6d2c') {
   throw 'LocationReservationsV1 descriptor hash mismatch'
 }
 $descriptor = [IO.File]::ReadAllText($descriptorFile.FullName) | ConvertFrom-Json
@@ -77,7 +77,7 @@ if ((Get-ReservationHash $reservationBootstrap.FullName) -cne $bootstrapSpec.sha
 
 $canonical = @(@($parent.Canonical) + $additions | Sort-Object Name -Unique)
 $bootstraps = @(@($parent.LocationBootstrap) + $reservationBootstrap | Sort-Object Name)
-if (@($parent.Canonical).Count -ne 53 -or @($parent.Preflight).Count -ne 2 -or
+if (@($parent.Canonical).Count -ne 54 -or @($parent.Preflight).Count -ne 2 -or
     @($parent.LocationBootstrap).Count -ne 2 -or $additions.Count -ne 6 -or
     $canonical.Count -ne $descriptor.planned_counts.canonical -or
     @($parent.Preflight).Count -ne $descriptor.planned_counts.preflight -or

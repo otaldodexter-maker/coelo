@@ -31,7 +31,7 @@ function Get-ActivityAggregateHash([string]$Path) {
 
 $descriptorFile = Assert-ActivityAggregateFile (Join-Path $PSScriptRoot 'profile.json')
 if ((Get-ActivityAggregateHash $descriptorFile.FullName) -cne
-    'a1b92a382fcc9f47bbd5c7dc4f3c05a7db679b5ae663ba6b964ca90e745af15c') {
+    'ff02d9402aeb62ff4423d38e8d7ef6a8208af4fb58116ffadf307000a9b6e275') {
   throw 'ActivityAggregateConcurrencyClock descriptor hash mismatch'
 }
 $descriptor = [IO.File]::ReadAllText($descriptorFile.FullName) | ConvertFrom-Json
@@ -56,9 +56,9 @@ if ((Get-ActivityAggregateHash $parentResolver.FullName) -cne
   throw 'ActivityAggregateConcurrencyClock parent resolver hash mismatch'
 }
 $parent = & $parentResolver.FullName -TargetVersion '20260908154257'
-if ($parent.Canonical.Count -ne 54 -or $parent.Preflight.Count -ne 2 -or
-    ($parent.Canonical.Count + $parent.Preflight.Count) -ne 56) {
-  throw 'ActivityAggregateConcurrencyClock requires unchanged ActivityAggregateConcurrency base56'
+if ($parent.Canonical.Count -ne 55 -or $parent.Preflight.Count -ne 2 -or
+    ($parent.Canonical.Count + $parent.Preflight.Count) -ne 57) {
+  throw 'ActivityAggregateConcurrencyClock requires unchanged ActivityAggregateConcurrency base57'
 }
 
 $addition = $descriptor.canonical_addition
@@ -88,7 +88,7 @@ if ($canonical.Count -ne $descriptor.planned_counts.canonical -or
     @($versions | Sort-Object -Unique).Count -ne $all.Count -or
     ($versions | Sort-Object)[-1] -cne $descriptor.target_version -or
     $position -ne $addition.canonical_union_position) {
-  throw 'ActivityAggregateConcurrencyClock requires 55 canonical migrations and two inherited preflights'
+  throw 'ActivityAggregateConcurrencyClock requires 56 canonical migrations and two inherited preflights'
 }
 
 [pscustomobject]@{
