@@ -520,6 +520,55 @@ compartilhado, em vez de corrigir só a tela que quebrou.
     repositório. Não é distinguível sem acesso de leitura autorizado.
 11. **Autorizações remotas nominais** para os pacotes preparados nesta rodada.
 
+12. **Superfícies produtivas do Principal dizem ao usuário que ele está numa
+    prévia.** Seis ocorrências em três telas — Acontece, Agora e Momentos —
+    respondem a um toque com "indisponível **nesta prévia**" ou "estará
+    disponível na **experiência completa**". Essas páginas *são* as rotas
+    produtivas. Um responsável que toca em responder no Agora lê que o produto
+    que ele está usando é um rascunho.
+
+    O que torna isto decisão e não correção: o repositório já tem as **duas
+    respostas contrárias**. O teste da rota do Perfil exige que a frase
+    "experiência completa" **não** apareça; o teste de Para Você **espera** a
+    frase. Duas superfícies Principal, duas decisões opostas, no mesmo produto.
+    As opções são ou a ação sumir quando não há capacidade — que é o que a
+    galeria de Acontece já faz — ou a mensagem deixar de afirmar prévia. A
+    primeira muda composição aprovada; a segunda muda linguagem do produto. As
+    duas são baratas de executar e nenhuma é decisão de frente. O patch das três
+    telas está preparado e não mesclado, à espera da resposta.
+
+13. **Três capacidades de Circulares travadas em graus diferentes, e nenhuma por
+    falta de trabalho.** *Agendar* está desabilitada honestamente porque nenhum
+    host fornece o seletor — o resto do caminho existe, incluindo o `timestamptz`
+    aceito pela RPC; falta escolher entre um diálogo, padrão que o produto hoje
+    não tem, e um campo inline como nas irmãs, que muda a composição. *Encerrar*
+    está inerte com o backend completo. *Excluir* tem o método de repositório
+    escrito e não declarado na interface, então ninguém o alcança — o que
+    barateia a opção completa em relação ao que se supunha.
+
+14. **O feed de Acontece tem teto de 20 itens e descarta a paginação que o
+    servidor oferece.** A RPC devolve cursor, o repositório o monta corretamente,
+    e a tela o joga fora. O efeito não é só "acervo antigo inalcançável": o feed
+    é **misto**, então uma sequência de publicações empurra Circulares para fora
+    da primeira página, e **uma Circular institucional recente some do Acontece
+    sem aviso**. Há um teste vermelho proposital nomeando isto em
+    `principal_mixed_feed_pagination_red_test`, escrito por uma frente vizinha
+    sem tocar no código do dono. Se o teto for decisão consciente de MVP, ainda
+    vale registrar que Circulares competem com publicações pelo mesmo espaço.
+
+15. **Duas superfícies do Principal existem e ninguém as alcança.**
+    `PrincipalCircularComposerPage` tem 750 linhas e 238 de teste próprio, e
+    nenhuma rota a constrói — o que está roteado é o compositor administrativo. E
+    `PrincipalProfileContentTabs` é uma segunda implementação das abas de
+    conteúdo do Perfil, pública, sem consumidor, **e com golden aprovado**,
+    enquanto a implementação viva é a cópia privada dentro da página do Perfil.
+    O caso das abas é o pior dos dois: quem for mexer encontra primeiro a versão
+    pública, com nome canônico e prova visual, muda, e nada acontece no produto.
+    A pergunta é única: compor Circular e as abas do Perfil pertencem à
+    superfície do Principal, ou são exclusivamente administrativas? Se são
+    administrativas, as duas saem com seus testes; se não, falta rota, e aí é
+    trabalho e não lixo.
+
 ## Pacotes remotos preparados e não aplicados
 
 Ver [fila SQL serializada](NOTURNA-fila-sql-serializada.md), com a ordem
