@@ -28,6 +28,14 @@ nada, que e a forma mais dificil de notar.
 A imagem faltante foi triada e esta na tabela de deslocamento abaixo. Sao **24
 imagens**, nao 23.
 
+**E o numero de imagens pode ainda estar incompleto.** O mesmo artefato de
+quebra de linha pode ter escondido outras, e eu nao tive tempo de recontar todas
+antes do corte da rodada. O que E confiavel e a contagem por CASO DE TESTE, que
+foi enumerada lendo os marcadores de falha e nao por extracao de texto: **doze
+casos do recorte, todos comparacao de golden**, mais dois de fora dele. Quem
+precisar do numero exato de imagens deve recoletar com extracao tolerante a
+quebra de linha; quem precisar saber o que falha e por que ja tem aqui.
+
 ## Resposta curta
 
 **Nenhuma das 23 e regressao de produto, e nenhuma e perda de cobertura.**
