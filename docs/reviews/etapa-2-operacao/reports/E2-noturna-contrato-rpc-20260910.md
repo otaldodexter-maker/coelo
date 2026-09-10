@@ -2,7 +2,7 @@
 fonte: medicao propria sobre a worktree e2-noturna-operacoes-sistema
 status: medido
 data: 2026-09-10
-base: fa4b968a3
+base: b1ec93103
 autor: executor operacoes-sistema (Claude)
 ---
 
@@ -125,15 +125,17 @@ tal no teste, nao silenciadas.
 
 ## O que passa a impedir a regressao
 
-`apps/superadmin/test/contracts/rpc_contract_test.dart`, 3 PASS, roda em menos de
+`apps/superadmin/test/contracts/rpc_contract_test.dart`, 4 PASS, roda em menos de
 um segundo e sem binding de Flutter. Ele falha se alguem chamar uma RPC que o
-pacote nao cria, se enviar chave fora da assinatura ou se omitir parametro
-obrigatorio de todas as sobrecargas. As cinco ausencias do Achado 1 estao numa
+pacote nao cria, se enviar chave fora da assinatura, se omitir parametro
+obrigatorio de todas as sobrecargas, ou se o cliente ler direto por PostgREST uma
+relacao que o pacote nao cria — as tres tabelas `profile_about_*` estao nessa
+quarta lista, com o plano de leitura autorizada citado. As cinco ausencias do Achado 1 estao numa
 lista nomeada com motivo, e o teste **tambem falha se uma delas passar a existir**
 e continuar na lista — sem isso a lista envelheceria e passaria a esconder o
 proximo defeito.
 
-Controle negativo rodado nos tres casos: removi um nome da lista e o primeiro
+Controle negativo rodado nos quatro casos: removi um nome da lista e o primeiro
 teste acusou `list_units_for_superadmin`; troquei `p_import_job_id` por um nome
 inexistente numa chamada real e o segundo e o terceiro testes acusaram a chave
 extra e a obrigatoria omitida, com arquivo e linha. Revertidos em seguida.
