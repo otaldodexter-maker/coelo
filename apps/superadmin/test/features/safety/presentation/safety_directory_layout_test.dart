@@ -29,6 +29,15 @@ Future<void> _pumpDirectory(WidgetTester tester, Size size) async {
   await tester.pumpAndSettle();
 }
 
+/// Tapping without securing visibility is how a control that moved below the
+/// fold turns into a silent failure. Content inserted above one is enough.
+Future<void> _tap(WidgetTester tester, Finder finder) async {
+  await tester.ensureVisible(finder);
+  await tester.pump();
+  await tester.tap(finder);
+  await tester.pumpAndSettle();
+}
+
 void main() {
   for (final size in const [Size(375, 900), Size(1440, 1000)]) {
     testWidgets('the child directory lays out at ${size.width}', (tester) async {
@@ -61,13 +70,11 @@ void main() {
     await _pumpDirectory(tester, const Size(1440, 1000));
     expect(find.byType(SafetyChildDirectoryCard), findsWidgets);
 
-    await tester.tap(find.byKey(const Key('safety-view-table')));
-    await tester.pumpAndSettle();
+    await _tap(tester, find.byKey(const Key('safety-view-table')));
     expect(tester.takeException(), isNull);
     expect(find.byType(SafetyChildDirectoryCard), findsNothing);
 
-    await tester.tap(find.byKey(const Key('safety-view-cards')));
-    await tester.pumpAndSettle();
+    await _tap(tester, find.byKey(const Key('safety-view-cards')));
     expect(
       tester.takeException(),
       isNull,
@@ -82,14 +89,12 @@ void main() {
     // The key lives on the action model, not on a widget, so the toolbar is
     // reached the same way its sibling export assertion reaches it.
     // The toolbar groups file actions behind an "Arquivos" menu.
-    await tester.tap(find.text('Arquivos'));
-    await tester.pumpAndSettle();
+    await _tap(tester, find.text('Arquivos'));
 
     final importAction = find.text('Importar');
     expect(importAction, findsOneWidget, reason: 'a deferred action stays visible, not hidden');
 
-    await tester.tap(importAction);
-    await tester.pumpAndSettle();
+    await _tap(tester, importAction);
 
     // The deferred policy allows the control and the honest notice, and nothing
     // else: no picker, no parser, no job. If a real import is ever wired here,
