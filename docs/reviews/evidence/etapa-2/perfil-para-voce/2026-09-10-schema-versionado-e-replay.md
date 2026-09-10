@@ -54,6 +54,15 @@ lint hardening" mais revokes. `list_my_principal_contexts` e
 
 Um `supabase start` sobe um banco praticamente vazio do ponto de vista do Coelo.
 
+E os 17 **não são um conjunto diferente**: são duplicatas exatas, por hash de
+blob, dos arquivos homônimos em `migrations/` — zero divergentes, zero
+exclusivas. Medido pela frente chat-comunicacoes em 2026-09-10 e incorporado
+aqui porque fecha a dúvida que este documento deixou aberta. O fato continua
+valendo, e agora com a explicação: o conjunto que `supabase start` aplicaria é um
+**subconjunto duplicado**, e não cria schema porque os 17 arquivos que ele
+duplica são justamente os de lint hardening.
+
+
 ## Fato 3 — 40 objetos `app_private` são chamados e nunca criados
 
 Conjunto de objetos `app_private` chamados no SQL versionado contra o conjunto

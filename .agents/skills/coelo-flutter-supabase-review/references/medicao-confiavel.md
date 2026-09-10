@@ -72,9 +72,8 @@ Correção: caminho **relativo**, a partir do diretório do pacote —
 
 ### 3. `git cat-file -e origin/dev:<caminho>` afirma que trabalho sumiu
 
-No Git Bash em Windows, a heurística de conversão de caminho do MSYS vê
-`a:b/c`, interpreta como lista de caminhos estilo `PATH` e traduz para o formato
-Windows. O erro cru:
+No Git Bash em Windows, a conversão de caminho do MSYS transforma o argumento e
+o dois-pontos vira ponto-e-vírgula. O erro cru:
 
 ```
 fatal: Not a valid object name origin\dev;.agents\skills\...\arquivo.md
@@ -87,9 +86,30 @@ confiar em *menos* do que se tem; esta faz **agir**. No fechamento de uma
 rodada, "este artefato não chegou a dev" dispara republicação, cherry-pick, ou
 alguém tentando recuperar o que nunca se perdeu, sobre uma base que já o tem.
 
-E **não é uniforme**: `git cat-file -e origin/dev:AGENTS.md` funciona, porque
-sem barra não há o que converter. Qualquer controle rápido com arquivo de raiz
-passa e confirma que a ferramenta está boa.
+**O gatilho é o ponto inicial no caminho**, e isolá-lo custou duas medições
+contraditórias. Quatro casos, mesmo shell, mesmo repositório:
+
+| caminho | resultado |
+| --- | --- |
+| `apps/superadmin/pubspec.yaml` | OK |
+| `docs/reviews/inventario-etapa-2.json` | OK |
+| `AGENTS.md` | OK |
+| `.agents/skills/coelo-knowledge/SKILL.md` | **convertido** |
+| `.gitignore` | **convertido** |
+
+`.gitignore` não tem barra alguma, então a barra não é o gatilho; `AGENTS.md`
+está na raiz e passa. É o **ponto inicial**, e só ele.
+
+Isso importa porque uma frente mediu com caminhos de aplicativo e não
+reproduziu, dezessete vezes seguidas, enquanto outra mediu com um caminho em
+`.agents/` e viu falhar sempre. As duas observações estavam certas e eram
+incompatíveis só na aparência. Causa que não reproduz numa segunda medição vira
+lenda técnica; a condição é o que a torna utilizável.
+
+E tem consequência direta neste repositório: as **skills vivem em
+`.agents/skills/`**. Qualquer conferência de presença que use `cat-file` com
+esses caminhos reporta AUSENTE para artefato que está lá — exatamente a família
+de arquivo que uma rodada de revisão entrega.
 
 Correção preferida: `git ls-tree -r --name-only origin/dev | grep -qxF <caminho>`
 — não passa caminho como argumento, então não há conversão. `MSYS_NO_PATHCONV=1`
@@ -104,6 +124,11 @@ também resolve, mas depende de lembrar de uma variável de ambiente.
 Vale também para `git cat-file -e <sha>^{commit}`, que quebra pelo mesmo motivo.
 Para perguntar se um commit está integrado, use
 `git merge-base --is-ancestor <sha> origin/dev`.
+
+A recomendação sobrevive ao diagnóstico, e é por isso que ela é `ls-tree` e não
+`MSYS_NO_PATHCONV=1`: `ls-tree` não passa caminho como argumento, logo é imune a
+**qualquer** conversão, conhecida ou não. Regra que depende de conhecer a causa
+quebra quando aparece a próxima causa.
 
 ## O denominador: três perguntas, não uma
 
