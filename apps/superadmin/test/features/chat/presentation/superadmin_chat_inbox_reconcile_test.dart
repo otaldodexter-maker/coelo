@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/chat/domain/chat_repository.dart';
 import 'package:coelo_superadmin/features/chat/presentation/screens/superadmin_chat_page.dart';
@@ -38,6 +40,28 @@ void main() {
     expect(find.text('mensagem secreta'), findsNothing);
   });
 
+  testWidgets('the reconciliation does not blink the conversation list', (tester) async {
+    final repository = _ReconcilingRepository(conversations: 2, slowInbox: true);
+    await _pump(tester, repository);
+    await tester.tap(find.text('Turma Margarida'));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byKey(const Key('superadmin-chat-composer-field')), 'Tudo bem?');
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('superadmin-chat-send')));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
+
+    // Reconciliar nao pode custar a lista que o operador ja tem. Trocar a inbox
+    // por um painel de carregamento a cada envio e pior que o preview velho que
+    // a reconciliacao veio consertar.
+    expect(find.text('Carregando conversas'), findsNothing);
+    expect(find.text('Turma Girassol'), findsWidgets);
+
+    repository.releaseInbox();
+    await tester.pumpAndSettle();
+  });
+
   testWidgets('sending reconciles the preview without swapping the open conversation', (
     tester,
   ) async {
@@ -74,9 +98,13 @@ Future<void> _pump(WidgetTester tester, ChatRepository repository) async {
 }
 
 final class _ReconcilingRepository implements ChatRepository {
-  _ReconcilingRepository({this.conversations = 1});
+  _ReconcilingRepository({this.conversations = 1, this.slowInbox = false});
 
   final int conversations;
+  final bool slowInbox;
+  Completer<void>? _inboxGate;
+
+  void releaseInbox() => _inboxGate?.complete();
   final List<String> revoked = [];
   var inboxReads = 0;
   String? _lastSent;
@@ -87,6 +115,10 @@ final class _ReconcilingRepository implements ChatRepository {
   @override
   Future<ChatInboxPage> fetchInbox(ChatInboxQuery query) async {
     inboxReads++;
+    if (slowInbox && inboxReads > 1) {
+      _inboxGate = Completer<void>();
+      await _inboxGate!.future;
+    }
     return ChatInboxPage(
       totalUnread: 0,
       items: [

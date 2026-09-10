@@ -130,7 +130,17 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
   /// normal resseleciona o primeiro item, o que e certo na abertura e na busca,
   /// mas seria destrutivo depois de uma recusa: o operador perderia a conversa
   /// que estava lendo por causa de uma recusa naquela mesma conversa.
-  Future<void> _loadInbox({bool reset = false, bool preserveSelection = false}) async {
+  /// `silent` reconcilia sem trocar a lista por um painel de carregamento.
+  /// Reconciliar nao pode custar a lista que o operador ja tem: piscar a inbox
+  /// a cada envio seria pior que o preview velho que a reconciliacao veio
+  /// consertar. Pelo mesmo motivo, uma FALHA silenciosa mantem a lista valida
+  /// em vez de troca-la por painel de erro. Negacao continua valendo em
+  /// qualquer modo: perder acesso nao e detalhe que se engula.
+  Future<void> _loadInbox({
+    bool reset = false,
+    bool preserveSelection = false,
+    bool silent = false,
+  }) async {
     if (reset) {
       _inboxPage = 1;
       _inboxCursor = null;
@@ -139,7 +149,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
     final requestGeneration = ++_inboxRequestGeneration;
     final requestedRepository = _repository;
     final search = _search.text;
-    setState(() => _inboxState = const ChatInboxState.loading());
+    if (!silent) setState(() => _inboxState = const ChatInboxState.loading());
     try {
       final page = await requestedRepository.fetchInbox(
         ChatInboxQuery(search: search, cursor: _inboxCursor, pageSize: _inboxPageSize),
@@ -175,10 +185,10 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
       if (!_isCurrentInboxRequest(requestGeneration, requestedRepository)) return;
       _denyAccess(error);
     } on ChatOfflineException catch (error) {
-      if (!_isCurrentInboxRequest(requestGeneration, requestedRepository)) return;
+      if (!_isCurrentInboxRequest(requestGeneration, requestedRepository) || silent) return;
       setState(() => _inboxState = ChatInboxState.offline(error));
     } catch (error) {
-      if (!_isCurrentInboxRequest(requestGeneration, requestedRepository)) return;
+      if (!_isCurrentInboxRequest(requestGeneration, requestedRepository) || silent) return;
       setState(() => _inboxState = ChatInboxState.failure(error));
     }
   }
@@ -299,7 +309,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
       // preview e a ordenacao continuariam anteriores ao que acabou de ser
       // enviado. `preserveSelection` reconcilia sem resselecionar o primeiro
       // item, que trocaria a conversa aberta na mao do operador.
-      unawaited(_loadInbox(preserveSelection: true));
+      unawaited(_loadInbox(preserveSelection: true, silent: true));
     } on ChatUnauthorizedException catch (error) {
       if (_isCurrentSend(sendGeneration, requestedRepository, conversation.id)) {
         _denyAccess(error);
@@ -313,7 +323,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
         // some sozinha. A sessao e o restante da tela permanecem.
         _pendingSend = null;
         _showNotice('A conversa nao aceita novas mensagens. A tela foi atualizada.');
-        unawaited(_loadInbox(preserveSelection: true));
+        unawaited(_loadInbox(preserveSelection: true, silent: true));
       }
     } on ChatOfflineException {
       if (_isCurrentSend(sendGeneration, requestedRepository, conversation.id)) {
@@ -357,7 +367,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
       // da lista. No caso de revogar isso nao e cosmetico: o servidor ja exclui
       // a mensagem revogada do preview, entao deixar o corpo antigo na tela
       // desfaz o efeito da revogacao na superficie que o operador mais olha.
-      unawaited(_loadInbox(preserveSelection: true));
+      unawaited(_loadInbox(preserveSelection: true, silent: true));
     } on ChatUnauthorizedException catch (error) {
       if (_isCurrentManage(manageGeneration, requestedRepository, conversation.id)) {
         _denyAccess(error);
@@ -403,7 +413,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
       // da lista. No caso de revogar isso nao e cosmetico: o servidor ja exclui
       // a mensagem revogada do preview, entao deixar o corpo antigo na tela
       // desfaz o efeito da revogacao na superficie que o operador mais olha.
-      unawaited(_loadInbox(preserveSelection: true));
+      unawaited(_loadInbox(preserveSelection: true, silent: true));
       if (_isCurrentManage(manageGeneration, requestedRepository, conversation.id)) {
         _showNotice('Mensagem revogada.');
       }
