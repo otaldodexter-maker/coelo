@@ -1,5 +1,5 @@
 {
-  "revision": 4,
+  "revision": 5,
   "round": "E2-R03-20260910",
   "role": "Coordenacao e Integracao - Claude (P1)",
   "writer": "coordenador-claude",
@@ -13,7 +13,8 @@
     "1": "2026-09-10T14:50 posse, ACK dos sete canais, estado de producao, CORS e lifecycle aplicados, fila SQL R03, perguntas P1-P10 (commit e6f40f9bc em dev)",
     "2": "15:10 rastreadores com o estado medido, RPCs de Unidades versionadas, ADR 0034 Decisao 7, merge de estrutura",
     "3": "15:40 merges de principal-chat-sistema, publicacoes-agenda, operacoes, formularios-cuidado-rotina; runner do spike R2",
-    "4": "16:20 merges de acessos-pessoas (local) e operacoes (commit local); deltas de estado por action_id; incidente do JSON sobrescrito assumido; perguntas P11-P14; ordem do Owner de 10/09 (tarde) incorporada"
+    "4": "16:20 merges de acessos-pessoas (local) e operacoes (commit local); deltas de estado por action_id; incidente do JSON sobrescrito assumido; perguntas P11-P14; ordem do Owner de 10/09 (tarde) incorporada",
+    "5": "16:55 base integrada publicada em dev bdd7eef82 (inclui os lotes 5 e 6 da Fase 0, 850ba1838/b404d4fc7); testes e analyze da base conjunta registrados; skills Back-end e Front-end + Back-end com as regras medidas; portao de conhecimento PASS"
   },
   "notaDeRevisao": "O conteudo da rodada E2-NOTURNA-20260909 (revisao 31) permanece no historico do Git; nada dele vale como estado atual. Nao ha 'nenhuma rodada nova aberta': a Rodada 3 esta aberta desde a Fase 0.",
   "relogio": "Relogio do coordenador (maquina): 14:16 -03:00 na posse. Os JSONs dos grupos carimbam 3 a 4 horas a frente; o coordenador registra pelo relogio da maquina e nao antecipa cortes por carimbo.",
@@ -53,7 +54,7 @@
     {"grupo": "formularios-cuidado-rotina", "app": "Claude Opus", "worktree": "e2-r03-formularios-cuidado-rotina", "branch": "work/etapa2-r03-formularios-cuidado-rotina", "headRecebido": "e070506f5", "upstream": "0/0", "wip": "1 modificado nao commitado (20260813155005_forms_definition_and_capabilities.sql): preservado na worktree; se for correcao de migration ausente em producao, commitar com a justificativa", "recebido": "r7", "integrado": "6 commits, merge bfd73cc75", "aplicadoEmProducao": "nenhum (pos 16-20 retidas por P1)", "e2e": "nenhum", "primeiroGate": "P1; P9 (leitura por responsavel familiar) nao bloqueia o MVP do Superadmin", "proximoPasso": "repositorios Supabase de Perfis de cuidado, Medicacao e Rotina no cliente; Formularios (Testar por capacidade, D6); XLSX no R2 depois do token (P2)"}
   ],
   "receipts": [
-    {"grupo": "fase0", "revisaoRecebida": 4, "ack": true, "recebidoEm": "2026-09-10T14:20:00-03:00"},
+    {"grupo": "fase0", "revisaoRecebida": 5, "ack": true, "recebidoEm": "2026-09-10T16:45:00-03:00", "nota": "lotes 5 e 6 (Planos, Cardapios, Circulares, Comunicacoes) recebidos por origin/dev e incluidos na base integrada bdd7eef82"},
     {"grupo": "estrutura", "revisaoRecebida": 18, "ack": true, "recebidoEm": "2026-09-10T14:20:00-03:00", "integradoEm": "2026-09-10T15:05:00-03:00 f615575de"},
     {"grupo": "acessos-pessoas", "revisaoRecebida": 84, "ack": true, "recebidoEm": "2026-09-10T16:00:00-03:00", "integradoEm": "2026-09-10T16:05:00-03:00 25712b0e6", "nota": "Sobrescrita do JSON assumida pelo coordenador (ver incidente). Branch publicada em origin. Pedidos AP-D1/AP-D2/AP-D3 e o incidente de credencial foram ao Owner como P11-P14. Manifesto do replay: o coordenador refaz o hash de 20260901190432 quando o Owner responder P12 (baseline), porque a decisao muda o harness inteiro."},
     {"grupo": "principal-chat-sistema", "revisaoRecebida": 7, "ack": true, "recebidoEm": "2026-09-10T14:20:00-03:00", "integradoEm": "2026-09-10T15:30:00-03:00 3f5934fb5"},
@@ -156,8 +157,12 @@
     "nota": "contagens exatas por estado saem do validador; local-green acima e a soma dos deltas aplicados nesta revisao sobre o estado anterior e deve ser reconferida pelo proprio inventario"
   },
   "integracaoNoCorte": {
-    "shaPublicado": "preenchido no push desta revisao (ver historicoDeRevisoes.5)",
-    "testesNaBaseConjunta": "analyze e testes de familia dos sete grupos em execucao no momento desta revisao; resultado na revisao 5"
+    "shaPublicado": "bdd7eef82 (origin/dev, 2026-09-10T16:50-03:00); dev local do checkout principal continua atras e a Fase 0 precisa de git pull --rebase antes do proximo push",
+    "conteudo": "coordenacao R03 rev 1-5, sete branches de grupo (estrutura, principal-chat-sistema, publicacoes-agenda, operacoes, formularios-cuidado-rotina, acessos-pessoas) + lotes 1-6 da Fase 0, migration 20260910160000 e pgTAP de contrato de Unidades, manifesto do replay, skills, ADR 0034 Decisao 7, projecao de conhecimento, inventario e rastreadores regenerados",
+    "analyze": "flutter analyze lib test em apps/superadmin: No issues found (63 s) em bdd7eef82, apos corrigir um curly_braces_in_flow_control_structures no router trazido por merge",
+    "testesNaBaseConjunta": "flutter test em architecture, institutions, units, groups, activities, meal_plans, chat, attendance, circulars, principal_happens, safety, people, invites, support, account, app/shell, app/navigation: 2243 PASS / 53 FAIL em 2dff73c16 (mesmo codigo Dart de bdd7eef82 exceto o lint). As 53 falhas sao todas golden: principal_happens_preview 20, account_pages 8, invite 5, attendance_pages 4, activity 4, institution_form_page 3, support_page 2, person 2, circular_directory 2, unit 1, group 1 e 1 caso golden dentro de safety_pages_test. Zero falha nao-golden. Causa das divergencias: RODAPE/CHAT/MENU-M/composto aplicados nesta rodada com goldens ainda nao regravados pelos donos (lista de decisoes de 10/09 e Decisao 7).",
+    "validadores": "validate-trackers.cjs PASS (230 acoes, 39 familias, FE verified 11, BE done 0, E2E 0); Test-CoeloKnowledge PASS 61 artigos; parse PowerShell dos scripts de replay 0 erros; deno check do runner do spike OK",
+    "wipPreservado": "publicacoes-agenda 5 arquivos (ATENCAO: a Fase 0 migrou notice_directory_page.dart em 850ba1838; o WIP local do grupo nesse arquivo vai conflitar no rebase, resolver pela versao do composto), formularios-cuidado-rotina 1 migration, checkout principal 13 arquivos da Fase 0/principal-chat-sistema; stash 'r03-jsons-grupos' obsoleto"
   },
   "proximoPasso": "1) publicar rev 4 em dev; 2) resultado dos testes da base conjunta (rev 5); 3) enquanto o Owner nao responde P1/P2/P4/P12: preparar a migration unica de fase MFA do MVP (P10+P11), o pgTAP de Suporte e Conta num perfil declarado, e a correcao das tres migrations quebradas com os donos; 4) proximo action_id executavel pelo coordenador: units.list (compor o repositorio real de Unidades com structureMutationsEnabled ainda false, provado por teste de composicao)"
 }
