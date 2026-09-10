@@ -359,7 +359,11 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
         : 'Configure a atividade e seus vínculos institucionais.',
     currentDestination: 'activities',
     chatLauncherBottomInset: _footerHeight == 0 ? 0 : _footerHeight + CoeloSpacing.space4,
-    onDestinationSelected: widget.onDestinationSelected == null ? null : _selectDestination,
+    // Sempre entregar o handler ao shell, como Instituicoes e Turmas ja fazem:
+    // quando ele e nulo o shell deixa de montar o balao de chat, e a regra CHAT
+    // exige o chat em todas as larguras. _selectDestination ja e inofensivo
+    // quando widget.onDestinationSelected e nulo.
+    onDestinationSelected: _selectDestination,
     onBugReportSubmitted: widget.onBugReportSubmitted,
     child: _body(MediaQuery.sizeOf(context).width),
   );
