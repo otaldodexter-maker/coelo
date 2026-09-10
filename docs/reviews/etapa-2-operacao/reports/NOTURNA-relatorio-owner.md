@@ -293,13 +293,35 @@ e reserva espaço de ação", que só muda a altura do cabeçalho nas larguras
 compactas. Duas mudanças aprovadas, separadas por largura. Agenda não esconde
 nada.
 
-**Conta, 8 casos — tem mudança de produto, e era a família que eu apostava ser só
-cabeçalho.** A 375 e 768, 44%–73%, até 503 mil pixels; a 1024 e 1440, 3,9%–5,1%,
-de 36 mil a 63 mil. O que mata a hipótese: nas larguras largas o diff é **cem
-vezes** a assinatura de 837 pixels. Se fosse cabeçalho puro, 1440 daria 837 como
-em Agenda. O diff de configurações a 1440 mostra diferença no **corpo** — um
-controle segmentado de três opções com a primeira realçada, e uma linha com
-interruptor à direita.
+**Conta, 8 casos — e aqui apareceu a quarta categoria, que é a mais enganosa de
+todas.** A primeira leitura mediu 44%–73% nas larguras compactas e 3,9%–5,1% nas
+largas, com o diff das largas valendo **cem vezes** a assinatura do shell, e viu
+no corpo um controle segmentado e uma linha com interruptor. A conclusão natural
+era mudança de produto.
+
+**Não é.** A comparação elemento a elemento das quatro capturas mostra que a
+composição de Conta **não mudou**: os mesmos dois cartões, o mesmo controle
+segmentado com a mesma opção realçada, o mesmo interruptor, os mesmos textos, nas
+mesmas posições relativas — deslocados **em bloco**. O que mudou foi o shell: a
+barra lateral ganhou um campo de busca e passou de 6 para cerca de 9 itens, o
+cabeçalho perdeu um ícone, e em 768 tudo desce cerca de 6 px sob um divisor novo.
+
+**A armadilha é do próprio diff:** um elemento idêntico que se deslocou acende
+exatamente como um elemento alterado, e a imagem não distingue os dois casos. O
+controle segmentado apareceu no diff porque se moveu, não porque mudou.
+
+Então a taxonomia fecha com **quatro** respostas, e não três: regressão de
+produto; fixture diferente; perda de cobertura, que foi Instituições; e
+**deslocamento em bloco por mudança de shell**, que é Conta. A quarta é a pior
+porque o diff mostra conteúdo da feature enquanto a feature está intacta.
+
+**E há um fio a puxar:** o ícone que sumiu do cabeçalho é **o mesmo** em Conta e
+em Instituições — duas famílias diferentes, mesma perda, no mesmo lugar do shell.
+Não pertence a nenhuma das duas, e não foi investigado. Isso muda a leitura do
+rebaseline de Conta: regravar é seguro quanto a cobertura, porque a captura atual
+exercita o que a antiga exercitava — mas **congela o shell atual como referência
+em oito imagens de uma vez**, e se aquele ícone for regressão do shell, ele passa
+a estar aprovado em oito lugares.
 
 **Cardápios, 6 casos — conteúdo puro, sem componente de shell visível.**
 0,86%–8,70%. No diretório a 1440 a barra lateral não aparece no diff; o que difere
