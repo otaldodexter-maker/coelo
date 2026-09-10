@@ -184,6 +184,26 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('switching forms never shows the previous one under the new id', (tester) async {
+    final first = _TestDefinitionApi();
+    await tester.pumpWidget(app(FormsTestPage(api: first, formId: 'form-7')));
+    await tester.pumpAndSettle();
+    expect(find.text('Quem retira a criança *'), findsOneWidget);
+
+    final gate = Completer<void>();
+    final second = _TestDefinitionApi(gate: gate.future);
+    await tester.pumpWidget(app(FormsTestPage(api: second, formId: 'form-8')));
+    await tester.pump();
+    // Enquanto o novo carrega, o formulario ANTERIOR nao pode continuar na
+    // tela: seria um formulario exibido sob o id de outro.
+    expect(find.text('Quem retira a criança *'), findsNothing);
+
+    gate.complete();
+    await tester.pumpAndSettle();
+    expect(find.text('Quem retira a criança *'), findsOneWidget);
+    expect(second.requestedFormIds, ['form-8']);
+  });
+
   testWidgets('an authorized occurrence still wins over the definition preview', (tester) async {
     final occurrence = _TestOccurrenceApi();
     await tester.pumpWidget(

@@ -475,6 +475,33 @@ void main() {
     });
   }
 
+  // Um limite que a pessoa digitou mas que nao da para interpretar era
+  // descartado em silencio: o formulario salvava sem limite e nada avisava.
+  testWidgets('an unreadable bound is refused instead of being dropped', (tester) async {
+    final api = numericApi(FormItemKind.decimal);
+    await open(tester, api);
+    await tester.enterText(find.widgetWithText(TextFormField, 'Máximo').first, 'dez');
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+
+    expect(api.commands, isEmpty);
+    expect(find.text('Informe limites numéricos válidos.'), findsWidgets);
+  });
+
+  testWidgets('a decimal bound on an integer question is refused, not dropped', (tester) async {
+    final api = numericApi(FormItemKind.integer);
+    await open(tester, api);
+    await tester.enterText(find.widgetWithText(TextFormField, 'Máximo').first, '10,5');
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+
+    expect(api.commands, isEmpty);
+    expect(
+      find.text('O mínimo e o máximo de uma pergunta de número inteiro precisam ser inteiros.'),
+      findsWidgets,
+    );
+  });
+
   testWidgets('an equal minimum and maximum is a valid single accepted value', (tester) async {
     final api = numericApi(FormItemKind.integer);
     await open(tester, api);

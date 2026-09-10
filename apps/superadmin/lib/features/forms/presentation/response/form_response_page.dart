@@ -908,7 +908,11 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
       _invalidAnswerReasons[item.id] = reason;
       _answerRevision++;
       if (_pendingCommand?.kind != _ResponseCommandKind.submit) _review = false;
-      _message = 'Revise os valores numéricos antes de salvar.';
+      // The banner names what was refused. Saying "valores numéricos" for a
+      // text length would send the person to the wrong field.
+      _message = FormNumericLimits.isNumeric(item.kind)
+          ? 'Revise os valores numéricos antes de salvar.'
+          : 'Revise as respostas antes de salvar.';
     });
   }
 
@@ -929,6 +933,10 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
     );
     if (repaired && !_autosavePaused) {
       setState(() => _message = 'Alterações ainda não salvas.');
+      // Repairing back to the stored text leaves the answers identical, so
+      // _setAnswer returned early and scheduled nothing. Without this the
+      // screen keeps announcing an unsaved change that will never be saved.
+      _scheduleAutosave();
     }
   }
 

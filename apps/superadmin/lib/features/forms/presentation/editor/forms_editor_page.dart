@@ -2236,6 +2236,14 @@ final class _EditorQuestionDraft {
     if (!FormNumericLimits.isNumeric(kind)) return null;
     final low = FormNumericLimits.parse(kind, minimum.text);
     final high = FormNumericLimits.parse(kind, maximum.text);
+    // A bound that was typed but cannot be read was dropped in silence: the
+    // form saved with no limit at all and nothing said so.
+    for (final (text, value) in [(minimum.text, low), (maximum.text, high)]) {
+      if (text.trim().isEmpty || value != null) continue;
+      return kind == FormItemKind.integer
+          ? 'O mínimo e o máximo de uma pergunta de número inteiro precisam ser inteiros.'
+          : 'Informe limites numéricos válidos.';
+    }
     if (low == null || high == null) return null;
     if (low > high) return 'O valor mínimo deve ser menor ou igual ao máximo.';
     return null;

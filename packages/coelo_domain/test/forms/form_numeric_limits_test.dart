@@ -78,9 +78,30 @@ void main() {
       expect(FormNumericLimits.textViolation(config, 'abcdef'), contains('5'));
     });
 
-    test('an absent maximum never refuses', () {
-      expect(FormNumericLimits.textViolation(const FormItemConfig(), 'a' * 5000), isNull);
+    test('counts characters the way the server does, not UTF-16 units', () {
+      // char_length no Postgres conta code points. Contar unidades UTF-16
+      // recusaria um texto que o servidor aceita, uma unidade a menos por emoji.
+      const config = FormItemConfig(maxLength: 3);
+      const three = '\u{1F600}\u{1F600}\u{1F600}';
+      expect(FormNumericLimits.textViolation(config, three), isNull);
+      expect(FormNumericLimits.textViolation(config, 'ção'), isNull);
+      expect(FormNumericLimits.textViolation(config, '$three\u{1F600}'), contains('3'));
     });
+
+    test('an absent maximum still honours the server default', () {
+      // O servidor limita texto curto a 1000 caracteres quando a pergunta nao
+      // declara maximo. Sem espelhar isso, a pessoa so descobre a recusa
+      // quando o comando chega ao backend.
+      const config = FormItemConfig();
+      expect(FormNumericLimits.textViolation(config, 'a' * 1000), isNull);
+      expect(FormNumericLimits.textViolation(config, 'a' * 1001), contains('1000'));
+    });
+  });
+
+  test('decimal limits are written with the comma the author types', () {
+    expect(FormNumericLimits.format(FormItemKind.decimal, 10.5), '10,5');
+    expect(FormNumericLimits.format(FormItemKind.integer, 7), '7');
+    expect(FormNumericLimits.parse(FormItemKind.decimal, '10,5'), 10.5);
   });
 
   test('isNumeric selects exactly the three numeric kinds', () {

@@ -83,6 +83,14 @@ final class _FormsTestPageState extends State<FormsTestPage> {
   /// arrives after dispose or after a context change is dropped.
   Future<void> _loadDefinition() async {
     final generation = ++_loadGeneration;
+    // Drop the previous form before loading the next one. Keeping it on screen
+    // would show one form's questions under another form's id while it loads.
+    if (_definition != null || _definitionRefused) {
+      setState(() {
+        _definition = null;
+        _definitionRefused = false;
+      });
+    }
     try {
       final projection = await widget.api!.getEditor(widget.formId!);
       if (!mounted || generation != _loadGeneration) return;
