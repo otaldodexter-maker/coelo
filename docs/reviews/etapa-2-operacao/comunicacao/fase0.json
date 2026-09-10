@@ -1,8 +1,8 @@
 {
   "grupo": "fase0",
-  "revision": 8,
+  "revision": 9,
   "round": "E2-R03-20260910",
-  "updatedAt": "2026-09-10T16:42:00-03:00",
+  "updatedAt": "2026-09-10T17:05:00-03:00",
   "app": "Claude",
   "modelo": "Fable 5.1",
   "conversa": "R03-P0-fase0-composto",
@@ -77,12 +77,12 @@
     "fase0.arquitetura: allowlist reduzida a agenda (3), assiduidade (1), seguranca (2), suporte (2)"
   ],
   "testes": {
-    "P": 1082,
-    "F": 0,
+    "P": 6432,
+    "F": 30,
     "B": 0,
-    "S": 2,
-    "U": null,
-    "evidencia": "flutter test test/features/{people,invites,access_profiles} test/architecture (611 P); goldens dos diretorios migrados (457 P, 2 S); packages/coelo_ui_admin/test/directory (14 P)"
+    "S": 15,
+    "U": 128,
+    "evidencia": "suite completa de apps/superadmin sobre 01849ec2c interrompida as 16:56 pelo corte (6432 P, 15 S; 158 [E] dos quais 128 'did not complete' = U). Das 30 falhas reais, 10 eram superadmin_underline_tabs_test (chave da faixa renomeada ao mover para coelo_ui_admin: corrigida nesta revisao, mas 7 casos seguem vermelhos por outras asserções do widget movido; fica aberto para a Fase 0 ao reativar) e as demais estao em areas de outros grupos (agenda, principal_*, account, daily_routine, attendance, forms editor, locations, platform_users, audit, support) ou em goldens preservados (activity_golden 4, institution_form_page_golden 3)."
   },
   "arquivosReservados": [
     "packages/coelo_ui_admin/**",
@@ -95,8 +95,10 @@
     ".flutter-version"
   ],
   "bloqueio": null,
-  "proximoPasso": "Suporte e Auditoria: toolbar de filtros no padrao do composto (com o grupo operacoes); acompanhar rebases das frentes sobre fa404db39.",
-  "wip": [],
+  "proximoPasso": "Ao reativar: fazer merge de wip/fase0-arquivo-chat em dev, ajustar os testes do launcher (Mens. -> Mensagens, forum_outlined -> forum_rounded, cor do circulo mobile), rodar plans/meal_plans/chat/shell e regravar apos observacao os goldens de shell com o launcher e os de Cardapios/Planos; depois Suporte/Auditoria com o grupo operacoes.",
+  "wip": [
+    "Branch publicada wip/fase0-arquivo-chat (91e011dc6, dono coelo-92/Fase 0): ARQUIVO nos cards de Cardapios/Planos (icone direto no cabecalho como no card de modelo de atividade) e launcher de chat pela referencia CHAT (pill 'Mensagens' com contagem e faixa de iniciais; circulo claro no mobile; shell/router passam chatRecentConversationsLoader). dart analyze limpo; suites e goldens NAO executados nem regravados. Nao esta em dev."
+  ],
   "recursos": {
     "processos": [],
     "portas": []
@@ -106,7 +108,8 @@
     "DADOS: goldens de Instituicoes usam as cinco instituicoes de desenvolvimento (take(5) de d9232a94d, 01/09), nao as doze da referencia de agosto; interpretacao de \"quantidades ja alinhadas com o Owner\" = dataset atual.",
     "Banner Criar da tabela usa o \"+\" neutro da referencia; icone de dominio so no card da grade.",
     "Bug sem canal de envio: dialogo abre e mostra \"O envio de relatos ainda nao esta conectado nesta tela\" em vez de omitir o botao; producao ainda nao passa supportController ao router (grupo operacoes).",
-    "Menu fora do shell hospedeiro (testes/previews) mostra o menu completo; visibilidade de menu nao e autorizacao."
+    "Menu fora do shell hospedeiro (testes/previews) mostra o menu completo; visibilidade de menu nao e autorizacao.",
+    "ARQUIVO e CHAT nao eram decisoes pendentes: constam na lista do Owner de 10/09 (goldens-claro-decisoes-2026-09-10.md); a lista de 10/09 e mais recente que a aprovacao do circulo 'Mens.' de 01/09 e prevalece. Implementacao ficou na branch wip por causa do corte das 17:10."
   ],
   "pendenciasParaOutrosGrupos": [
     "estrutura: activity_form_create_light_375 (RODAPE), activity_detail_*, activity_form_* continuam vermelhos por deriva anterior; nao regravados na Fase 0.",
@@ -114,6 +117,7 @@
     "operacoes: router de producao nao passa supportController; o Bug abre e avisa que o envio nao esta conectado."
   ],
   "avisos": [
-    "Outra conversa edita principal_for_you, principal_happens (marcadores de conflito em principal_happens_preview_page.dart em 20:30) e referencias do coelo-ui neste mesmo checkout; a Fase 0 nao commita esses arquivos. flutter analyze lib acusa esse arquivo enquanto o WIP nao fechar."
+    "Outra conversa edita principal_for_you, principal_happens (marcadores de conflito em principal_happens_preview_page.dart em 20:30) e referencias do coelo-ui neste mesmo checkout; a Fase 0 nao commita esses arquivos. flutter analyze lib acusa esse arquivo enquanto o WIP nao fechar.",
+    "Corte do Owner as 17:10 de 10/09 (via coordenacao coelo-af): Fase 0 nao retoma por conta propria; working tree de dev limpo nos caminhos da Fase 0, WIP dos outros grupos permanece identificado no checkout compartilhado."
   ]
 }

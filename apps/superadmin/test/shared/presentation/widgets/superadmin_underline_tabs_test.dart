@@ -111,7 +111,7 @@ void main() {
     await tester.pumpWidget(_overflowTabsApp(selected: 'all'));
     await tester.pump();
 
-    expect(find.byKey(const ValueKey('superadmin-underline-tabs-trailing-fade')), findsOneWidget);
+    expect(find.byKey(const ValueKey('coelo-admin-underline-tabs-trailing-fade')), findsOneWidget);
   });
 
   testWidgets('keyboard focus reveals a hidden tab completely', (tester) async {
@@ -152,7 +152,7 @@ void main() {
     final viewport = tester.getRect(find.byType(SingleChildScrollView));
     final tabRect = tester.getRect(tab);
     expect(tabRect.right, lessThanOrEqualTo(viewport.right - CoeloSpacing.space6));
-    expect(find.byKey(const ValueKey('superadmin-underline-tabs-trailing-fade')), findsOneWidget);
+    expect(find.byKey(const ValueKey('coelo-admin-underline-tabs-trailing-fade')), findsOneWidget);
   });
 
   testWidgets('Enter and Space select the focused tab', (tester) async {
