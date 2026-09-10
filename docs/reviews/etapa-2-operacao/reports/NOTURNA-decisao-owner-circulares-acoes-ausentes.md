@@ -105,6 +105,30 @@ A pergunta: o feed pagina por rolagem, por botão, ou o teto de 20 é decisão
 consciente de MVP? Se for consciente, ainda vale registrar que Circulares
 competem com publicações pelo mesmo teto.
 
+## Quinta decisão: agendar Circular está desabilitado em toda parte
+
+A seção **Agendamento** existe no compositor, com o botão "Escolher data e
+hora" e o subtítulo que muda quando há publicação futura. O botão está
+**desabilitado**, e honestamente: `onPressed` é nulo quando nenhum host fornece
+o seletor. Nenhum host fornece — nem o produtivo nem o de desenvolvimento.
+
+O resto do caminho está pronto: o compositor guarda `_publishAt`, passa
+`controller.publish(publishAt: _publishAt)`, e
+`superadmin_circular_publish_v2` aceita o `timestamptz`.
+
+O que falta é uma decisão pequena de UX, não código. O compositor espera
+`Future<DateTime?> Function()`, ou seja, um **diálogo** que devolve a escolha.
+O componente da casa é `CoeloDateTimeField`, usado pelas publicações de
+Acontece e de Agora, mas ele é um **campo inline**, não um diálogo. Então:
+
+- envolver `CoeloDateTimeField` num diálogo introduz um padrão que hoje não
+  existe no produto; ou
+- trocar o botão por um campo inline, como nas publicações irmãs, altera a
+  composição aprovada do compositor.
+
+Não há golden do compositor, então qualquer das duas é tecnicamente barata. A
+escolha é de linguagem visual, não de custo.
+
 ## Padrão, não acidente
 
 Vale registrar como padrão da família e não como três casos isolados: em
