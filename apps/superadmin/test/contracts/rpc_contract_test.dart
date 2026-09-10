@@ -58,6 +58,30 @@ void main() {
     expect(offenders, isEmpty, reason: offenders.join('\n'));
   });
 
+  test('toda relacao lida direto pelo cliente existe no pacote', () {
+    // Leitura direta por PostgREST e a outra aresta do mesmo contrato: a tela
+    // depende de a relacao existir e de a RLS liberar a linha, e o teste de
+    // repositorio nao ve nem uma coisa nem outra.
+    final relations = _declaredRelations(Directory('${root.path}/packages/coelo_database'));
+    final used = _relationReads(Directory('${root.path}/apps/superadmin/lib'));
+    expect(used, isNotEmpty, reason: 'o varredor nao encontrou leitura .from');
+
+    expect(
+      used.difference(relations).difference(_relacoesAusentesConhecidas.keys.toSet()),
+      isEmpty,
+      reason:
+          'O cliente le estas relacoes direto por PostgREST e nenhum arquivo de '
+          'packages/coelo_database as cria.',
+    );
+    expect(
+      _relacoesAusentesConhecidas.keys.where(relations.contains),
+      isEmpty,
+      reason:
+          'A relacao passou a existir no pacote. Remova o nome de '
+          '_relacoesAusentesConhecidas em vez de manter a excecao.',
+    );
+  });
+
   test('nenhuma chamada omite parametro obrigatorio da assinatura', () {
     final offenders = <String>[];
     for (final call in calls) {
@@ -87,6 +111,20 @@ const _rpcsAusentesConhecidas = <String, String>{
   'get_unit_form_for_superadmin': 'Unidades: formulario. Nenhuma migration cria a funcao.',
   'list_units_for_superadmin': 'Unidades e filtros de Turmas. Nenhuma migration cria a funcao.',
   'unit_directory_filter_options': 'Unidades e filtros de Turmas. Nenhuma migration cria a funcao.',
+};
+
+/// Relacoes lidas direto pelo cliente que nenhuma migration do pacote cria.
+///
+/// A unica migration versionada do dominio Sobre expoe somente a escrita, e a
+/// leitura depende inteiramente de RLS sobre tabelas que o versionamento nao
+/// descreve. A frente perfil-para-voce mediu o mesmo buraco pelo lado do SQL e
+/// deixou a proposta de leitura autorizada em
+/// packages/coelo_database/plans/2026-09-09-profile-about-read-rpc.sql, que nao
+/// e migration e nao foi aplicada.
+const _relacoesAusentesConhecidas = <String, String>{
+  'profile_about_pages': 'Sobre: pagina. Nenhuma migration cria a tabela.',
+  'profile_about_sections': 'Sobre: secoes. Nenhuma migration cria a tabela.',
+  'profile_about_structured_fields': 'Sobre: campos. Nenhuma migration cria a tabela.',
 };
 
 final class _Call {
@@ -236,4 +274,37 @@ List<String> _splitTopLevel(String arguments) {
   }
   parts.add(buffer.toString());
   return parts;
+}
+
+Set<String> _relationReads(Directory lib) {
+  final relations = <String>{};
+  final pattern = RegExp(r"\.from\(\s*'([A-Za-z0-9_]+)'");
+  for (final file in lib.listSync(recursive: true).whereType<File>()) {
+    if (!file.path.endsWith('.dart')) continue;
+    final text = file.readAsStringSync();
+    for (final match in pattern.allMatches(text)) {
+      // storage.from nomeia bucket, nao relacao do Postgres.
+      final before = text.substring(0, match.start);
+      if (before.trimRight().endsWith('storage')) continue;
+      relations.add(match.group(1)!);
+    }
+  }
+  return relations;
+}
+
+Set<String> _declaredRelations(Directory package) {
+  final relations = <String>{};
+  final pattern = RegExp(
+    r'create\s+(?:or\s+replace\s+)?(?:materialized\s+)?(?:table|view)\s+'
+    r'(?:if\s+not\s+exists\s+)?(?:[A-Za-z0-9_]+\.)?([A-Za-z0-9_]+)',
+    caseSensitive: false,
+  );
+  for (final file in package.listSync(recursive: true).whereType<File>()) {
+    if (!file.path.endsWith('.sql')) continue;
+    if (file.path.replaceAll(r'', '/').contains('/tests/')) continue;
+    for (final match in pattern.allMatches(file.readAsStringSync())) {
+      relations.add(match.group(1)!);
+    }
+  }
+  return relations;
 }
