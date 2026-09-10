@@ -2009,6 +2009,20 @@ nada, quando existem sete outros conjuntos de teste no repositório e três fora
 alterados nesta noite. **894 casos que passam nunca entraram em número nenhum, e
 duas falhas nunca foram vistas.**
 
+**E o maior caso apareceu por último, na frente com o recorte mais largo: 175
+arquivos fora da lista declarada** — famílias inteiras do próprio recorte que
+nunca haviam sido declaradas, os arquivos de integração, e duas árvores novas,
+guardas de identidade e composição. E o agravante que a frente registrou por
+conta própria: **ela corrigiu defeitos em cinco dessas famílias nesta noite**, e
+nenhuma delas entrava no número que vinha reportando como residual do recorte. As
+suítes foram executadas na hora de cada correção, e isso está nos commits — mas o
+número apresentado media um subconjunto.
+
+**A solução que ela adotou dispensa a aritmética e é a melhor das seis:** executar
+a suíte completa do aplicativo, que é superconjunto de tudo, e extrair o número do
+recorte **da mesma corrida, por arquivo** — em vez de somar duas execuções. Assim
+o recorte está contido no conjunto por construção, e **não há como inflar**.
+
 **São quatro alturas diferentes do mesmo defeito, e nenhuma é pega pela
 conferência de existência**, que era o único controle que a rodada tinha: família
 perdida dentro da própria árvore, por lista escrita de memória; arquivo de
