@@ -1,12 +1,12 @@
 {
- "revision": 10,
+ "revision": 11,
  "round": "E2-R03-20260910",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5[1m]",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-10T09:30:00-03:00",
+ "updatedAt": "2026-09-10T10:40:00-03:00",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-formularios-cuidado-rotina",
  "branch": "work/etapa2-r03-formularios-cuidado-rotina",
  "head": "bb15db748",
@@ -50,13 +50,13 @@
   "note": "Fundacao health_care/medication inexistente. Construindo o primeiro pacote SQL da familia health_care."
  },
  "tests": {
-  "pass": 1103,
+  "pass": 1210,
   "fail": 0,
   "blocked": 0,
   "skipped": 0,
   "notRun": 0,
   "pgtap": "1001 assercoes / 0 falhas nos 22 arquivos do recorte, no replay descartavel",
-  "flutter": "102 nas suites que eu escrevi ou alterei (89 attendance, 7 cuidado/medicacao, 6 rotina)",
+  "flutter": "113 daily_routine (inclui os 6 novos do D7) + 89 attendance + 7 cuidado/medicacao = 209 nas suites que escrevi ou alterei",
   "analyzer": "dart analyze lib limpo em apps/superadmin",
   "falhas_preexistentes_nas_areas_tocadas": "8, medidas tambem sem as minhas mudancas: 4 goldens de health_care/presentation e 4 de saneamento de composicao de outras familias",
   "escopo": "nao e a suite completa do app e nao e prova E2E"
@@ -72,7 +72,7 @@
   }
  ],
  "deltaProposals": [],
- "nextStep": "Decisoes de tela: D6 (Testar por capacidade), D8 (guarda de saida da Rotina) e D7 (Lancamentos, tela minima).",
+ "nextStep": "D6: rota Testar de Formularios lendo por capacidade.",
  "findings": [
   {
    "id": "F-R03-FCR-001",
@@ -340,6 +340,24 @@
    "20260901101500_superadmin_internal_chat_v2": "conflito de tipo de retorno em chat_inbox_page; familia do grupo principal-chat-sistema",
    "20260901185008_superadmin_internal_notices_v2": "exige public.notice_events, que nenhuma migration do conjunto cria; familia de Avisos",
    "20260812002010_import_export_unit_source_retention": "exige app_private.unit_import_source_attestations, que nenhuma migration cria. Mesmo padrao do achado F-R03-FCR-001, agora na familia de Importacoes"
+  }
+ },
+ "decisoesDeTela": {
+  "D8": {
+   "estado": "ja estava pronto; nao refiz",
+   "verificado": "daily_routine_form_sections.dart tem PopScope com canPop: !_isDirty, _confirmDiscard, _confirmExit e _selectDestination (a saida pelo menu tambem passa pela mesma confirmacao). O golden daily_routine_dirty_exit_light_375.png existe e daily_routine_dirty_exit_test.dart passa. A suite de Rotina esta 113/113 verde.",
+   "conclusao": "a guarda de saida esta ligada e provada. Nao encontrei goldens de Rotina pendentes na lista de decisoes de 10/09: aquele documento nao cita nenhum arquivo de rotina. Se as seis referencias que a D8 menciona sao outras, preciso saber quais; nao regravei nada."
+  },
+  "D7": {
+   "estado": "implementado e provado",
+   "o_que_faltava": "a aba Lancamentos ja existia no diretorio, mas nao tinha acao nenhuma: nao havia como publicar um lancamento pela interface, embora o comando daily-routine.publish exista.",
+   "o_que_foi_feito": "acao Publicar no proprio item da aba Lancamentos, visivel so para quem pode gerenciar e so enquanto o lancamento e rascunho. Confirma antes, porque publicar entrega a rotina as familias e nao tem desfazer nesta tela (a correcao e um comando proprio, com justificativa). O botao do item fica desabilitado enquanto o comando nao volta, para um toque repetido nao virar duas publicacoes. Depois de publicar, a lista recarrega do servidor, para a tela mostrar o que o servidor confirma e nao o que ela supos.",
+   "erros_em_portugues": "cada tipo de recusa vira uma frase propria: sem permissao, indisponivel, mudou desde o carregamento.",
+   "testes": "apps/superadmin/test/features/daily_routine/daily_routine_publish_launch_test.dart, 6 casos",
+   "nada_de_autorizacao_no_cliente": "ator, capacidade, escopo e versao esperada continuam recalculados dentro de superadmin_routine_publish_launch."
+  },
+  "D6": {
+   "estado": "proximo item"
   }
  }
 }
