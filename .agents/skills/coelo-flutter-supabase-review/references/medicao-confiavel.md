@@ -192,7 +192,11 @@ que a corrida use o relatório JSON, pelo defeito 1.
 
 E o denominador da suíte completa é o **monorepo**, não um app. Sete conjuntos
 de teste fora de `apps/superadmin` ficaram fora de toda medição da rodada, com
-894 casos e duas falhas que ninguém tinha visto.
+894 casos e duas falhas que ninguém tinha visto — medição da coordenação da
+rodada, não deste autor: `coelo_api` 416, `coelo_auth` 55, `coelo_domain` 78,
+`coelo_tokens` 13, `coelo_ui_admin` 138, `coelo_ui_core` 55 e `apps/catalog`
+139, que somam os 894. A soma foi conferida aqui; os sete totais não foram
+reexecutados.
 
 ## Campos que apodrecem sozinhos
 
