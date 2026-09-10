@@ -1,5 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
+
+import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
@@ -1793,7 +1796,7 @@ Future<void> _confirmSuspend(
   if (confirmed != true || !context.mounted) return;
   final succeeded = await controller.suspendAuthorization(
     SuspendPickupAuthorizationCommand(
-      requestId: _uuid(),
+      requestId: _decisionRequestId(authorization.id, 'suspend', authorization.version),
       childId: record.childId,
       authorizationId: authorization.id,
       reason: 'Autorização suspensa para revisão da unidade',
@@ -1822,7 +1825,7 @@ Future<void> _transition(
 ) async {
   final succeeded = await controller.transitionAuthorization(
     TransitionPickupAuthorizationCommand(
-      requestId: _uuid(),
+      requestId: _decisionRequestId(authorization.id, status.name, authorization.version),
       childId: record.childId,
       authorizationId: authorization.id,
       status: status,
@@ -1863,6 +1866,19 @@ String _initials(String name) {
   final parts = name.trim().split(RegExp(r'\s+')).where((value) => value.isNotEmpty).toList();
   if (parts.isEmpty) return '?';
   return (parts.first[0] + (parts.length > 1 ? parts.last[0] : '')).toUpperCase();
+}
+
+/// A decision is identified by what it decides, not by when it was tapped, so
+/// retrying the same decision carries the same key and cannot become a second
+/// one. Changing the decision, or acting on a newer version, is a new intent.
+String _decisionRequestId(String authorizationId, String action, int expectedVersion) {
+  final digest = sha256.convert(utf8.encode('$authorizationId:$action:$expectedVersion')).bytes;
+  final bytes = List<int>.of(digest.take(16));
+  bytes[6] = (bytes[6] & 15) | 64;
+  bytes[8] = (bytes[8] & 63) | 128;
+  final hex = bytes.map((value) => value.toRadixString(16).padLeft(2, '0')).join();
+  return '${hex.substring(0, 8)}-${hex.substring(8, 12)}-'
+      '${hex.substring(12, 16)}-${hex.substring(16, 20)}-${hex.substring(20)}';
 }
 
 String _uuid() {
