@@ -166,6 +166,16 @@ que é o da sexta decisão abaixo: a página que nenhuma rota constrói.)
 As únicas referências a ela em `lib` são as cinco dentro do seu próprio
 arquivo. **Nenhuma rota, nenhum host, nenhum ponto de composição a constrói.**
 
+Como isso foi verificado, porque a decisão pede apagar ou rotear 750 linhas e o
+método importa: procurando o **nome nu** da classe em todo o `lib`, e não a
+forma `NomeDaClasse(`. Essa diferença não é detalhe — procurar por `Page(`
+produziu dois falsos positivos meus nesta mesma auditoria, porque o router
+constrói `PrincipalHappensPreviewPage` pelos construtores **nomeados** `.demo(`
+e `.mixed(`, que aquele padrão não enxerga. Refeita a busca sem exigir
+parêntese, o resultado se mantém: cinco menções, todas no próprio arquivo, e a
+classe declara **um único construtor**, não nomeado, sem `factory` nem alias de
+exportação por onde escapar.
+
 O custo não é o código parado. A suíte dela passa para sempre, então ela conta
 como área coberta e saudável; e quem lê conclui que existe um compositor de
 Circular na superfície do Principal, quando o que está roteado é o
