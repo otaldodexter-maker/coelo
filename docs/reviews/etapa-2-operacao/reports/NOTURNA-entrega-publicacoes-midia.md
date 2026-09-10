@@ -94,6 +94,42 @@ truncado do `flutter`, e os conjuntos são **idênticos, teste por teste**. Não
 
 Fora de golden, zero falhas.
 
+## Censo de goldens: quanta cobertura visual guarda o inalcançável
+
+A coordenação perguntou o número, e "não sei quanto" não é resposta. Medido só
+no meu recorte, com rigor, e não varrido pelo app inteiro.
+
+O recorte tem **105 testes de golden**, enumerados com o reporter JSON do
+`flutter test`. Precisei trocar de método no meio: extrair os nomes do reporter
+expandido devolveu 34, porque ele imprime o teste **em execução**, não todos.
+Log não é inventário.
+
+Desses 105, **12 guardam superfície que nenhuma rota constrói — 11,4%**, todos
+no mesmo arquivo, `principal_circular_golden_test.dart`:
+
+| Grupo | Testes | Superfície | Situação |
+| --- | --- | --- | --- |
+| `composer golden` | 10 | `PrincipalCircularComposerPage` | 750 linhas, zero consumidores em `lib` além do próprio arquivo. Inalcançável por inteiro. |
+| `profile and feed golden` | 2 | `PrincipalProfileContentTabs` + `PrincipalCircularFeedCard` | composição mista: o card é usado por Acontece, mas as abas têm zero consumidores em `lib` e duplicam as que `principal_profile_preview_page` já implementa em privado. A espinha da composição é inalcançável. |
+
+Os outros 93 guardam páginas que o router constrói, verificado uma a uma.
+
+**Erro de método que eu cometi medindo isto.** Suspeitei de três páginas sem
+consumidor e **duas eram falso positivo meu**: procurei por `Page(` e isso não
+enxerga construtor **nomeado** — o router constrói `PrincipalHappensPreviewPage`
+como `.demo(` e `.mixed(`. A terceira, `PrincipalCursorPage`, nem widget é: é
+uma classe genérica de paginação no domínio, que apareceu no meu grep porque o
+arquivo de teste a menciona como tipo. Uma varredura errando por definição
+imprecisa do que conta como uso — a mesma família de erro que passei a noite
+catalogando.
+
+**O que o número quer dizer.** Não é que 12 goldens estejam errados: eles
+passam e as imagens são referências aprovadas. É que **ter golden não é
+evidência de que a superfície exista para o usuário**. Onze por cento da minha
+cobertura visual está defendendo tela que ninguém alcança, e passaria verde para
+sempre sem ninguém notar. Nenhum dos dois casos foi removido — a decisão de
+apagar ou rotear é do Owner, e está no documento de decisão.
+
 **Plataforma comum de mídia**, medida separadamente e reconfirmada na
 pré-entrega: **82 PASS e 0 FAIL** nos quatro gateways — `circular-media` 27, `moments-media` 26,
 `happens-media` 15 e `now-media` 14.
