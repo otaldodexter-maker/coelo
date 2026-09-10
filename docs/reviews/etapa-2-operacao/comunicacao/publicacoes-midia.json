@@ -1,6 +1,6 @@
 {
-  "revision": 33,
-  "updated_at": "2026-09-10T02:10:00-03:00",
+  "revision": 34,
+  "updated_at": "2026-09-10T02:36:20-03:00",
   "group": "publicacoes-midia",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
@@ -8,7 +8,7 @@
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-publicacoes-midia",
   "branch": "work/etapa2-noturna-publicacoes-midia",
-  "head": "1afc854b9",
+  "head": "813210d27",
   "upstream": "origin/work/etapa2-noturna-publicacoes-midia (0/0)",
   "base": "origin/dev 447e6eea2 mesclado em 3ab29d7df",
   "ack": "coordenador: revisao 1 aceita; lote 1e39b2fcf integrado (merge d502350ce); lote b10f48d1e aceito para a proxima integracao; atribuicao de principal_real_route_test retirada por ele apos minha medicao; reserva da plataforma comum de midia mantida",
@@ -321,6 +321,18 @@
       "sha": "1afc854b9",
       "state": "publicado",
       "title": "censo de goldens do recorte: 12 de 105 guardam superficie inalcancavel",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "ecefa32a1",
+      "state": "publicado",
+      "title": "hash invalido b0a11y corrigido para f989b5063 na tabela de lotes",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "813210d27",
+      "state": "publicado",
+      "title": "catorze referencias a nomes de migration que nao existem mais, corrigidas com o mapa de renumeracao",
       "touches_reserved_files": []
     }
   ],
@@ -756,9 +768,8 @@
     ],
     "efeito_colateral_positivo": "a frente perfil-para-voce passou a consumir principalMomentsFeedRepository, a mesma instancia que /principal-moments usa, em vez de abrir uma segunda fonte para o mesmo feed",
     "commits_pendentes_de_integracao": [
-      "53bfabff9",
-      "a6decef0e",
-      "1afc854b9"
+      "ecefa32a1",
+      "813210d27"
     ],
     "ja_integrados": [
       "05537c3b3",
@@ -834,5 +845,24 @@
     "leitura": "nao e que os 12 goldens estejam errados; eles passam e as imagens sao referencias aprovadas. E que TER GOLDEN NAO E EVIDENCIA DE QUE A SUPERFICIE EXISTA para o usuario. Onze por cento da cobertura visual do recorte defende tela que ninguem alcanca, e ficaria verde para sempre.",
     "nao_removido": "nenhum dos dois casos foi apagado nem roteado; a decisao e do Owner e esta no documento de oito pontos",
     "commit": "1afc854b9"
+  },
+  "integridadeDosMeusDocumentos": {
+    "motivo": "apliquei aos meus proprios artefatos a pergunta que venho aplicando ao codigo: o leitor que SEGUIR o ponteiro chega em algum lugar? Conferi cada hash e cada caminho de arquivo citado contra o git e contra o disco, em vez de reler.",
+    "hashes": {
+      "citados": 29,
+      "invalido_encontrado": "b0a11y na linha 26 da tabela de lotes: um placeholder que digitei enquanto o lote estava aberto e nunca substitui. Nao e commit nenhum. O leitor que seguisse essa linha receberia 'not a valid object name' justamente na UNICA correcao de acessibilidade da tabela.",
+      "corrigido_para": "f989b5063",
+      "alcancavel_mas_fora_da_dev": "3697dd49e, a entrega autoral L01, vive em origin/codex/e2-r02-l01-publicacoes e nao esta no historico da dev. Nao e erro, mas git show falha para quem so tem dev, entao a linha agora diz onde ele esta.",
+      "outros_documentos": "os outros tres documentos e este JSON: zero hashes invalidos",
+      "commit": "ecefa32a1"
+    },
+    "caminhos": {
+      "citados": 16,
+      "nao_encontrados": 2,
+      "caso_real": "a revisao dos seis candidatos SQL citava os carimbos ORIGINAIS de L01, familia 2026090913xxxx. A serializacao na fila renumerou os seis para 2026090921xxxx, para caírem depois da cauda 20260909210000. Os nomes antigos nao existem mais em lugar nenhum: as catorze referencias levavam a arquivo nenhum.",
+      "cuidado": "quase corrigi como erro de digitacao. A tabela da fila mostra os dois carimbos lado a lado, o que me fez ler o cabecalho antes de mexer: era renomeacao deliberada, nao engano. Reescrevi para os nomes finais E deixei o mapa no topo, porque quem conhece o documento pelos carimbos antigos precisa ver que sao os mesmos seis arquivos.",
+      "caso_esperado": "NOTURNA-patch-copia-previa.md nao esta nesta worktree porque vive na branch work/etapa2-noturna-copia-previa em 80f160599; o relatorio ja dizia 'naquela branch'.",
+      "commit": "813210d27"
+    }
   }
 }
