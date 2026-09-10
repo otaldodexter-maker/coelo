@@ -1195,6 +1195,34 @@ isso que essas falhas sobrevivem rodadas inteiras. O censo preventivo tem 67
 arquivos e 337 toques nessa forma; **nenhum falha hoje**, e por isso nenhum foi
 mexido nesta rodada.
 
+**Uma ferramenta que responde outra pergunta é indistinguível de uma medição.**
+Esta classe apareceu quatro vezes, e três delas quase produziram decisão errada:
+
+- Uma varredura de "capacidade sem consumidor" que só enxergava o que estava
+  **declarado na interface** escondia um método público existente só na
+  implementação; outra, que só contava referências em **outro arquivo**,
+  inventava cinco capacidades mortas — uma delas o tipo que faz cumprir limite de
+  plano por vídeo. Erros em direções opostas, mesma causa: "consumidor" nunca foi
+  definido.
+- "Essa branch tem *upstream*?" e "esse trabalho está *preservado*?" parecem a
+  mesma pergunta. A primeira marcaria três branches íntegras como trabalho em
+  risco. O critério correto é conteúdo alcançável a partir de qualquer referência
+  remota.
+- Um caminho de golden longo faz a mensagem quebrar em duas linhas, e um `grep`
+  de linha única devolve `Pixel test failed,` **sem percentual**.
+- E o relógio: `date` com `TZ=America/Sao_Paulo` dentro do Git Bash devolve UTC,
+  porque não há base de fusos ali. Três horas a mais, com aparência de leitura
+  local. Isso quase encerrou a rodada **uma hora e quarenta antes do horário
+  combinado**, com três frentes ainda trabalhando.
+
+**Mensagem não é registro.** Duas frentes descobriram, perto do fim, que trabalho
+real delas existia apenas nas mensagens trocadas com a coordenação: uma
+amostragem de goldens de cinco famílias, num caso, e um handoff de 27 revisões
+que existia como modificação não commitada, no outro. Nenhum dos dois estava
+perdido — mas nenhum dos dois estava salvo pelo caminho que seus autores
+acreditavam. **Um artefato só está entregue quando existe no destino que o leitor
+abre**, e o canal de coordenação não é esse destino.
+
 ## Higiene e preservação
 
 - Os 90 artefatos de WIP ignorados na raiz do checkout integrador estão
