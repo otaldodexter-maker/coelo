@@ -649,6 +649,28 @@ void main() {
       findsNothing,
     );
   });
+
+  testWidgets('o formulario respeita os limites das colunas de planos', (tester) async {
+    // As restricoes plans_name_length, plans_description_length e
+    // plans_code_format limitam nome a 160, descricao a 2000 e codigo a 80, e a
+    // propria RPC revalida nome e descricao. Sem limite na entrada, o usuario
+    // escreve um texto valido aos olhos dele e recebe falha generica do servidor,
+    // sem descobrir que o problema e o tamanho.
+    await tester.binding.setSurfaceSize(const Size(1024, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(_app(PlanFormPage(repository: _repository())));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byKey(const Key('plan-name-field')), 'n' * 200);
+    await tester.enterText(find.byKey(const Key('plan-code-field')), 'c' * 100);
+    await tester.enterText(find.byKey(const Key('plan-description-field')), 'd' * 2100);
+    await tester.pump();
+
+    expect(_fieldText(tester, 'plan-name-field').length, 160);
+    expect(_fieldText(tester, 'plan-code-field').length, 80);
+    expect(_fieldText(tester, 'plan-description-field').length, 2000);
+  });
 }
 
 FakePlanCatalogRepository _repository({
@@ -745,3 +767,11 @@ PlanCatalog _planNamed(String name) => PlanCatalog(
   features: const {PlanFeature.agenda},
   limits: const PlanLimits(units: 1, memberships: 1, storageGb: 1, mediaGb: 1),
 );
+
+
+String _fieldText(WidgetTester tester, String key) => tester
+    .widget<TextField>(
+      find.descendant(of: find.byKey(Key(key)), matching: find.byType(TextField)),
+    )
+    .controller!
+    .text;

@@ -348,6 +348,10 @@ final class _PlanFormPageState extends State<PlanFormPage> {
           labelText: 'Nome do plano',
           prefixIcon: Icons.loyalty_outlined,
           validator: _required,
+          // plans_name_length: entre 1 e 160. Acima disso o save e recusado no
+          // servidor e a recusa chega a tela como falha generica, sem dizer que o
+          // problema e o tamanho.
+          inputFormatters: [LengthLimitingTextInputFormatter(160)],
         ),
         const SizedBox(height: CoeloSpacing.space4),
         CoeloFormTextField(
@@ -357,7 +361,11 @@ final class _PlanFormPageState extends State<PlanFormPage> {
           prefixIcon: Icons.tag_rounded,
           enabled: !_editing,
           validator: _required,
-          inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[a-z0-9-]'))],
+          // plans_code_format limita o codigo a 80 caracteres, alem do formato.
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp('[a-z0-9-]')),
+            LengthLimitingTextInputFormatter(80),
+          ],
         ),
         const SizedBox(height: CoeloSpacing.space4),
         CoeloFormTextField(
@@ -367,6 +375,8 @@ final class _PlanFormPageState extends State<PlanFormPage> {
           prefixIcon: Icons.notes_rounded,
           maxLines: 3,
           validator: _required,
+          // plans_description_length: entre 1 e 2000.
+          inputFormatters: [LengthLimitingTextInputFormatter(2000)],
         ),
         const SizedBox(height: CoeloSpacing.space4),
         CoeloAdminSingleSelectField<PlanStatus>(
@@ -515,6 +525,8 @@ final class _PlanFormPageState extends State<PlanFormPage> {
         labelText: 'Motivo de auditoria',
         prefixIcon: Icons.fact_check_outlined,
         maxLines: 3,
+        // A coluna reason e a validacao da RPC exigem entre 1 e 1000.
+        inputFormatters: [LengthLimitingTextInputFormatter(1000)],
         errorText: _auditReasonError ? 'Informe o motivo de auditoria.' : null,
         onChanged: (value) {
           if (_auditReasonError && value.trim().isNotEmpty) {

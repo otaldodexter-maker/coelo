@@ -544,6 +544,28 @@ void main() {
       AgendaOccurrenceEditScope.thisAndFollowing,
     );
   });
+
+  testWidgets('o formulario respeita os limites de tamanho das colunas', (tester) async {
+    // superadmin_agenda_save recusa titulo acima de 240 caracteres com errcode
+    // 22023, e o repositorio traduz essa recusa para indisponibilidade generica.
+    // Quem digitasse um titulo longo veria "nao foi possivel" e tentaria de novo
+    // para sempre, sem descobrir que o problema e o tamanho. O formulario passa a
+    // impedir a montagem do payload invalido.
+    await tester.binding.setSurfaceSize(const Size(1440, 1200));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_app(store: store()));
+    await tester.pumpAndSettle();
+
+    final titulo = find.widgetWithText(TextField, 'Título');
+    await tester.enterText(titulo, 'a' * 300);
+    await tester.pump();
+    expect(tester.widget<TextField>(titulo).controller!.text.length, 240);
+
+    final descricao = find.widgetWithText(TextField, 'Descrição (opcional)');
+    await tester.enterText(descricao, 'b' * 10050);
+    await tester.pump();
+    expect(tester.widget<TextField>(descricao).controller!.text.length, 10000);
+  });
 }
 
 Widget _app({
