@@ -394,7 +394,8 @@ hora resolveria a divergencia real com risco muito menor. Nao toquei em nada.
 TODAS comparacao de golden, sob a politica desta rodada de nao regravar golden.
 Nenhuma falha de logica restante no recorte. Medido em `b4d0e6af7`.
 
-**Numero valido**, recorte corrigido com os catorze caminhos, medido sobre a
+**Numero valido**, medido sobre o recorte corrigido — os caminhos passaram de
+um para catorze — sobre a
 base integrada `3fb200dab`: **1081 PASS / 3 SKIP / 14 FAIL**. Das catorze, doze
 sao do meu recorte e TODAS sao comparacao de golden, triadas uma a uma; as duas
 restantes sao de `superadmin_form_action_footer_adoption`, que nao e do meu
