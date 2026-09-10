@@ -1,12 +1,12 @@
 {
- "revision": 14,
+ "revision": 15,
  "round": "E2-R03-20260910",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5[1m]",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-10T13:20:00-03:00",
+ "updatedAt": "2026-09-10T14:10:00-03:00",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-formularios-cuidado-rotina",
  "branch": "work/etapa2-r03-formularios-cuidado-rotina",
  "head": "1c188091f",
@@ -72,7 +72,7 @@
   }
  ],
  "deltaProposals": [],
- "nextStep": "Cliente de Alunos e, em paralelo, o lote de duvidas para o Owner.",
+ "nextStep": "Cliente de Alunos: repositorio Supabase e a tela de gestao, hoje uma tela de indisponivel.",
  "findings": [
   {
    "id": "F-R03-FCR-001",
@@ -429,5 +429,34 @@
     "o_que": "feat(formularios): rota Testar por capacidade (D6)"
    }
   ]
+ },
+ "duvidasParaOOwner": {
+  "estado": "lote unico montado e publicado; precisa do coordenador para chegar ao Owner",
+  "pagina": "https://claude.ai/code/artifact/b360f112-2ed4-4777-b9da-2354184a30bc",
+  "formato": "comparacoes lado a lado (referencia guardada, render atual, diferenca), no formato que o Owner pediu em 10/09: ele responde 'nome_do_arquivo - R ou A, observacao'",
+  "por_que_um_envio_so": "ele revisa em lote; interromper varias vezes custa mais caro do que juntar",
+  "tres_goldens": {
+   "arquivos": [
+    "medication_form_mobile_light",
+    "profile_form_mobile_light",
+    "profile_form_desktop_dark"
+   ],
+   "origem": "execucao de health_care_golden_test.dart no SDK registrado 3.44.2 stable, sobre a base integrada",
+   "bloqueiam": [
+    "health-care.create",
+    "health-care.edit",
+    "medication.create",
+    "medication.edit"
+   ],
+   "nota": "eram quatro casos antes da Fase 0; o composto resolveu um. Nenhum golden foi regravado.",
+   "observacao_do_escuro": "profile_form_desktop_dark nao pode seguir a regra 'escuro segue o claro de mesmo nome', porque o claro que falha e o de 375px e nao o de 1440px. Levei separado em vez de deduzir."
+  },
+  "quatro_regras_de_produto": [
+   "Quem le dado de saude de crianca alem da instituicao: o responsavel familiar exigiria uma capacidade de guardiao que nao existe, e cria-la seria decidir sozinho quem enxerga dado de saude de crianca",
+   "Pergunta de Local: opcoes fixadas na publicacao versus catalogo consultado ao responder (forms.location-question)",
+   "Resposta de Local com local revogado depois: preservar o historico, exigir um local atual ou substituir pelo sucessor, incluindo o caso obrigatorio sem alternativa valida (forms.location-answer)",
+   "Quais sao as seis referencias da Rotina da D8: a guarda ja esta ligada e provada, e a lista de decisoes de 10/09 nao cita nenhum arquivo de rotina"
+  ],
+  "pedido_ao_coordenador": "encaminhar a pagina ao Owner. Enquanto nao houver resposta, essas sete acoes ficam paradas por decisao e nao por implementacao; nada nelas depende de mais codigo meu."
  }
 }
