@@ -297,6 +297,64 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   }
+
+  testWidgets('detail closes responses with the loaded management version', (tester) async {
+    final repository = _Repository();
+    CircularDetail? closed;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: SuperadminCircularDetailPage(
+            circularId: 'circular-published',
+            repository: repository,
+            onBack: () {},
+            onCloseResponses: (detail) async => closed = detail,
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('circular-detail-close')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('circular-detail-confirm-action')));
+    await tester.pumpAndSettle();
+
+    expect(closed?.id, 'circular-published');
+    expect(closed?.managementVersion, 7);
+    expect(find.text('Respostas encerradas.'), findsOneWidget);
+  });
+
+  testWidgets('draft detail deletes only after confirmation and returns to directory', (
+    tester,
+  ) async {
+    final repository = _Repository()..visibleStatus = CircularStatus.draft;
+    CircularDetail? deleted;
+    var returned = false;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: SuperadminCircularDetailPage(
+            circularId: 'circular-draft',
+            repository: repository,
+            onBack: () {},
+            onDelete: (detail) async => deleted = detail,
+            onDeleted: () => returned = true,
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('circular-detail-delete')));
+    await tester.pumpAndSettle();
+    expect(find.text('Excluir rascunho?'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('circular-detail-confirm-action')));
+    await tester.pumpAndSettle();
+
+    expect(deleted?.managementVersion, 7);
+    expect(returned, isTrue);
+  });
 }
 
 CircularDetail _detail(String label) => CircularDetail(
@@ -392,6 +450,7 @@ final class _QueuedDetailRepository implements CircularRepository {
 final class _Repository implements CircularRepository {
   bool saved = false;
   bool published = false;
+  CircularStatus visibleStatus = CircularStatus.published;
 
   @override
   Future<CircularDraft?> loadDraft(CircularScope scope) async => null;
@@ -436,7 +495,8 @@ final class _Repository implements CircularRepository {
         authorName: 'Coordenação Pedagógica',
         contextLabel: 'Ensino Fundamental',
         publishedAt: DateTime.utc(2026, 8, 21),
-        status: CircularStatus.published,
+        status: visibleStatus,
+        managementVersion: 7,
         responseState: CircularResponseState.unanswered,
         blocks: const [
           CircularTextBlock(id: 'text-1', text: 'Confirme a renovação até 30 de setembro.'),

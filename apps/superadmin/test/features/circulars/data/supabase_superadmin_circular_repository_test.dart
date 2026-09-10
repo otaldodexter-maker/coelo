@@ -90,6 +90,7 @@ void main() {
 
     final detail = await SupabaseSuperadminCircularRepository(client).getVisible(_circularId);
     expect(detail.status, CircularStatus.scheduled);
+    expect(detail.managementVersion, 4);
     expect(detail.blocks.single, isA<CircularTextBlock>());
     expect(detail.contextLabel, 'Colégio Horizonte');
   });
@@ -160,6 +161,27 @@ void main() {
     expect(result.submittedCount, 79);
     expect(result.partialCount, 5);
   });
+
+  test('delete uses the internal logical-delete RPC and preserves version', () async {
+    Request? captured;
+    final client = _client((request) async {
+      captured = request;
+      return _ok(request, _deleteJson());
+    });
+    addTearDown(client.dispose);
+
+    final result = await SupabaseSuperadminCircularRepository(
+      client,
+    ).delete(requestId: _requestId, circularId: _circularId, expectedVersion: 4);
+
+    expect(captured!.url.path, endsWith('/rpc/superadmin_circular_delete_v2'));
+    final body = jsonDecode(captured!.body) as Map<String, dynamic>;
+    expect(body['p_request_id'], _requestId);
+    expect(body['p_circular_id'], _circularId);
+    expect(body['p_expected_version'], 4);
+    expect(result.version, 5);
+    expect(result.deleted, isTrue);
+  });
 }
 
 SupabaseClient _client(Future<Response> Function(Request) handler) => SupabaseClient(
@@ -196,6 +218,13 @@ Map<String, Object?> _saveJson() => {
   'revision_id': _revisionId,
   'version': 4,
   'status': 'draft',
+};
+
+Map<String, Object?> _deleteJson() => {
+  'id': _circularId,
+  'version': 5,
+  'status': 'archived',
+  'deleted': true,
 };
 
 Map<String, Object?> _draftJson({String status = 'draft'}) => {

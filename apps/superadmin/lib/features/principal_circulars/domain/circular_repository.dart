@@ -85,6 +85,7 @@ final class CircularDetail {
     this.initialAnswers = const {},
     this.responseSessionId,
     this.responseVersion = 0,
+    this.managementVersion = 0,
     this.revisedAt,
     this.responsesCloseAt,
   });
@@ -103,6 +104,7 @@ final class CircularDetail {
   final Map<String, List<String>> initialAnswers;
   final String? responseSessionId;
   final int responseVersion;
+  final int managementVersion;
 }
 
 abstract interface class CircularRepository {

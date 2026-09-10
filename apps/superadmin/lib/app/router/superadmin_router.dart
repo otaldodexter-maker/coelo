@@ -781,8 +781,7 @@ GoRouter createSuperadminRouter({
           onOpenNow: () => context.pushNamed(SuperadminRoutes.devPrincipalNowName),
           onPublishNow: () => context.goNamed(SuperadminRoutes.devPrincipalNowPublicationName),
           onCreatePost: () => context.goNamed(SuperadminRoutes.devPrincipalHappensPublishName),
-          onOpenMessages: () =>
-              context.goNamed(SuperadminRoutes.devPrincipalConversationsName),
+          onOpenMessages: () => context.goNamed(SuperadminRoutes.devPrincipalConversationsName),
         ),
       ),
       GoRoute(
@@ -894,47 +893,50 @@ GoRouter createSuperadminRouter({
               builder: (context, _) => !session.isAuthenticated || session.isPasswordRecovery
                   ? _unavailableCompositionRootRoute(context)
                   : PrincipalRuntimeContextRoute(
-              key: ValueKey('mixed-feed-${session.authorizationInvalidationRevision}'),
-              repository: principalRuntimeContextRepository,
-              builder: (context, runtimeContext) {
-                final repository = principalHappensFeedRepository;
-                final mixedRepository = principalMixedFeedRepository;
-                if (repository == null || mixedRepository == null) return _unavailableCompositionRootRoute(context);
-                return PrincipalHappensPreviewPage.mixed(
-                  mixedFeedRepository: mixedRepository,
-                  mediaRepository: repository,
-                  mixedFeedScope: CircularScope(
-                    institutionId: runtimeContext.institutionId,
-                    unitId: runtimeContext.unitId,
-                    groupId: runtimeContext.groupId,
-                  ),
-                  // Com a capacidade de leitura composta, a Circular abre no
-                  // leitor da familia Principal. Sem ela, a acao continua
-                  // informando indisponibilidade em vez de virar toque morto.
-                  onOpenCircular: (circularId) =>
-                      principalCircularRepository == null ||
-                          principalCircularResponseRepository == null
-                      ? ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'A leitura de circulares ainda não está disponível neste contexto.',
-                            ),
+                      key: ValueKey('mixed-feed-${session.authorizationInvalidationRevision}'),
+                      repository: principalRuntimeContextRepository,
+                      builder: (context, runtimeContext) {
+                        final repository = principalHappensFeedRepository;
+                        final mixedRepository = principalMixedFeedRepository;
+                        if (repository == null || mixedRepository == null)
+                          return _unavailableCompositionRootRoute(context);
+                        return PrincipalHappensPreviewPage.mixed(
+                          mixedFeedRepository: mixedRepository,
+                          mediaRepository: repository,
+                          mixedFeedScope: CircularScope(
+                            institutionId: runtimeContext.institutionId,
+                            unitId: runtimeContext.unitId,
+                            groupId: runtimeContext.groupId,
                           ),
-                        )
-                      : context.pushNamed(
-                          SuperadminRoutes.principalHappensCircularName,
-                          pathParameters: {'circularId': circularId},
-                        ),
-                  data: PrincipalHappensPreviewData.empty,
-                  embedded: true,
-                  onCreatePost: () => context.goNamed(SuperadminRoutes.principalHappensPublishName),
-                  onOpenNow: () => context.pushNamed(SuperadminRoutes.principalNowName),
-                  onPublishNow: () => context.goNamed(SuperadminRoutes.principalNowPublicationName),
-                  onOpenMessages: () =>
-                      context.goNamed(SuperadminRoutes.principalConversationsName),
-                );
-              },
-            ),
+                          // Com a capacidade de leitura composta, a Circular abre no
+                          // leitor da familia Principal. Sem ela, a acao continua
+                          // informando indisponibilidade em vez de virar toque morto.
+                          onOpenCircular: (circularId) =>
+                              principalCircularRepository == null ||
+                                  principalCircularResponseRepository == null
+                              ? ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'A leitura de circulares ainda não está disponível neste contexto.',
+                                    ),
+                                  ),
+                                )
+                              : context.pushNamed(
+                                  SuperadminRoutes.principalHappensCircularName,
+                                  pathParameters: {'circularId': circularId},
+                                ),
+                          data: PrincipalHappensPreviewData.empty,
+                          embedded: true,
+                          onCreatePost: () =>
+                              context.goNamed(SuperadminRoutes.principalHappensPublishName),
+                          onOpenNow: () => context.pushNamed(SuperadminRoutes.principalNowName),
+                          onPublishNow: () =>
+                              context.goNamed(SuperadminRoutes.principalNowPublicationName),
+                          onOpenMessages: () =>
+                              context.goNamed(SuperadminRoutes.principalConversationsName),
+                        );
+                      },
+                    ),
             ),
           ),
           GoRoute(
@@ -944,7 +946,10 @@ GoRouter createSuperadminRouter({
               final circularId = state.pathParameters['circularId'];
               final repository = principalCircularRepository;
               final responseRepository = principalCircularResponseRepository;
-              if (circularId == null || circularId.isEmpty || repository == null || responseRepository == null) {
+              if (circularId == null ||
+                  circularId.isEmpty ||
+                  repository == null ||
+                  responseRepository == null) {
                 return _unavailableCompositionRootRoute(context);
               }
               return ListenableBuilder(
@@ -963,8 +968,9 @@ GoRouter createSuperadminRouter({
                         responseRepository: responseRepository,
                         mediaRepository: principalCircularMediaRepository,
                         embedded: true,
-                        onReturn: () =>
-                            context.canPop() ? context.pop() : context.goNamed(SuperadminRoutes.principalHappensName),
+                        onReturn: () => context.canPop()
+                            ? context.pop()
+                            : context.goNamed(SuperadminRoutes.principalHappensName),
                       ),
               );
             },
@@ -1010,28 +1016,28 @@ GoRouter createSuperadminRouter({
             builder: (context, state) => ListenableBuilder(
               listenable: session,
               builder: (context, _) => PrincipalRuntimeContextRoute(
-              // Uma leitura obtida sob a autorizacao anterior nao pode
-              // sobreviver a revisao dela: o Agora rele como Acontece e
-              // Momentos ja fazem.
-              key: ValueKey('principal-now-${session.authorizationInvalidationRevision}'),
-              repository: principalRuntimeContextRepository,
-              builder: (context, runtimeContext) {
-                final repository = principalNowFeedRepository;
-                if (repository == null) return _unavailableCompositionRootRoute(context);
-                return PrincipalNowPreviewPage.authorized(
-                  embedded: true,
-                  feedRepository: repository,
-                  feedScope: PrincipalNowFeedScope(
-                    institutionId: runtimeContext.institutionId,
-                    unitId: runtimeContext.unitId,
-                    groupId: runtimeContext.groupId,
-                  ),
-                  onClose: () => context.goNamed(SuperadminRoutes.principalHappensName),
-                  onOpenHappens: () => context.goNamed(SuperadminRoutes.principalHappensName),
-                  onCreate: () => context.goNamed(SuperadminRoutes.principalNowPublicationName),
-                );
-              },
-            ),
+                // Uma leitura obtida sob a autorizacao anterior nao pode
+                // sobreviver a revisao dela: o Agora rele como Acontece e
+                // Momentos ja fazem.
+                key: ValueKey('principal-now-${session.authorizationInvalidationRevision}'),
+                repository: principalRuntimeContextRepository,
+                builder: (context, runtimeContext) {
+                  final repository = principalNowFeedRepository;
+                  if (repository == null) return _unavailableCompositionRootRoute(context);
+                  return PrincipalNowPreviewPage.authorized(
+                    embedded: true,
+                    feedRepository: repository,
+                    feedScope: PrincipalNowFeedScope(
+                      institutionId: runtimeContext.institutionId,
+                      unitId: runtimeContext.unitId,
+                      groupId: runtimeContext.groupId,
+                    ),
+                    onClose: () => context.goNamed(SuperadminRoutes.principalHappensName),
+                    onOpenHappens: () => context.goNamed(SuperadminRoutes.principalHappensName),
+                    onCreate: () => context.goNamed(SuperadminRoutes.principalNowPublicationName),
+                  );
+                },
+              ),
             ),
           ),
           GoRoute(
@@ -1126,7 +1132,10 @@ GoRouter createSuperadminRouter({
                   audienceScope: PrincipalForYouAudienceScope.fromRuntimeContext(runtimeContext),
                   supportingData: PrincipalForYouPreviewData.contextual(
                     id: runtimeContext.membershipId,
-                    label: runtimeContext.groupName ?? runtimeContext.unitName ?? runtimeContext.institutionName,
+                    label:
+                        runtimeContext.groupName ??
+                        runtimeContext.unitName ??
+                        runtimeContext.institutionName,
                     family: runtimeContext.institutionName,
                     institution: runtimeContext.institutionName,
                     unit: runtimeContext.unitName,
@@ -1154,30 +1163,33 @@ GoRouter createSuperadminRouter({
               builder: (context, _) => !session.isAuthenticated || session.isPasswordRecovery
                   ? _unavailableCompositionRootRoute(context)
                   : PrincipalRuntimeContextRoute(
-              key: ValueKey('principal-moments-${session.authorizationInvalidationRevision}'),
-              repository: principalRuntimeContextRepository,
-              builder: (context, runtimeContext) {
-                final repository = principalMomentsFeedRepository;
-                if (repository == null) return _unavailableCompositionRootRoute(context);
-                return PrincipalMomentsPreviewPage(
-                  embedded: true,
-                  feedRepository: repository,
-                  feedScope: PrincipalMomentsFeedScope(
-                    institutionId: runtimeContext.institutionId,
-                    unitId: runtimeContext.unitId,
-                    groupId: runtimeContext.groupId,
-                  ),
-                  withdrawalRepository: principalMomentsWithdrawalRepository,
-                  refreshSignal: momentsFeedRefreshSignal,
-                  onOpenHappens: () => context.goNamed(SuperadminRoutes.principalHappensName),
-                  onOpenHome: () => context.goNamed(SuperadminRoutes.principalHappensName),
-                  onCreateMoment: () =>
-                      context.goNamed(SuperadminRoutes.principalMomentsPublishName),
-                  onPublishNow: () =>
-                      context.goNamed(SuperadminRoutes.principalNowPublicationName),
-                );
-              },
-            ),
+                      key: ValueKey(
+                        'principal-moments-${session.authorizationInvalidationRevision}',
+                      ),
+                      repository: principalRuntimeContextRepository,
+                      builder: (context, runtimeContext) {
+                        final repository = principalMomentsFeedRepository;
+                        if (repository == null) return _unavailableCompositionRootRoute(context);
+                        return PrincipalMomentsPreviewPage(
+                          embedded: true,
+                          feedRepository: repository,
+                          feedScope: PrincipalMomentsFeedScope(
+                            institutionId: runtimeContext.institutionId,
+                            unitId: runtimeContext.unitId,
+                            groupId: runtimeContext.groupId,
+                          ),
+                          withdrawalRepository: principalMomentsWithdrawalRepository,
+                          refreshSignal: momentsFeedRefreshSignal,
+                          onOpenHappens: () =>
+                              context.goNamed(SuperadminRoutes.principalHappensName),
+                          onOpenHome: () => context.goNamed(SuperadminRoutes.principalHappensName),
+                          onCreateMoment: () =>
+                              context.goNamed(SuperadminRoutes.principalMomentsPublishName),
+                          onPublishNow: () =>
+                              context.goNamed(SuperadminRoutes.principalNowPublicationName),
+                        );
+                      },
+                    ),
             ),
           ),
           GoRoute(
@@ -1256,13 +1268,11 @@ GoRouter createSuperadminRouter({
                     // pagina administrativa ja usa para isso, e que so decide o
                     // destino do voltar. Origem desconhecida volta para
                     // Acontece, que e a superficie inicial do Principal.
-                    onBack: () => context.goNamed(
-                      switch (state.uri.queryParameters['from']) {
-                        'for-you' => SuperadminRoutes.principalForYouName,
-                        'profile' => SuperadminRoutes.principalProfileName,
-                        _ => SuperadminRoutes.principalHappensName,
-                      },
-                    ),
+                    onBack: () => context.goNamed(switch (state.uri.queryParameters['from']) {
+                      'for-you' => SuperadminRoutes.principalForYouName,
+                      'profile' => SuperadminRoutes.principalProfileName,
+                      _ => SuperadminRoutes.principalHappensName,
+                    }),
                     onOpenProfile: () => context.goNamed(SuperadminRoutes.principalProfileName),
                   ),
           ),
@@ -1862,7 +1872,8 @@ GoRouter createSuperadminRouter({
                   ? const SizedBox.shrink()
                   : GroupDetailPage(
                       key: ValueKey(session.authorizationInvalidationRevision),
-                      repository: session.authContext?.permissionCodes.contains('groups.read') == true
+                      repository:
+                          session.authContext?.permissionCodes.contains('groups.read') == true
                           ? groupDetailRepository
                           : const DeniedGroupDetailRepository(),
                       id: state.pathParameters['groupId']!,
@@ -1888,9 +1899,13 @@ GoRouter createSuperadminRouter({
                         gateway: locationReservationGateway,
                         bindingsReader: locationConsumerBindingsReader,
                         selectionReader: locationConsumerSelectionReader,
-                        canReadSelection: detail.status != 'archived' && session.authContext?.permissionCodes.containsAll({
-                          'groups.read', 'locations.read',
-                        }) == true,
+                        canReadSelection:
+                            detail.status != 'archived' &&
+                            session.authContext?.permissionCodes.containsAll({
+                                  'groups.read',
+                                  'locations.read',
+                                }) ==
+                                true,
                         sessionAvailable: session.isAuthenticated && !session.isPasswordRecovery,
                         contextRevision: session.authorizationInvalidationRevision,
                         canRead:
@@ -1989,9 +2004,20 @@ GoRouter createSuperadminRouter({
                       builder: (context, _) => ActivityCataloguedLocationSection(
                         scopes: [
                           if (controller.selectedInstitutionId case final institutionId?) ...[
-                            (scope: LocationScope.institution(institutionId: institutionId), label: 'Locais da institui\u00e7\u00e3o'),
-                            for (final unit in controller.units.where((unit) => controller.selectedUnitIds.contains(unit.id)))
-                              (scope: LocationScope.unit(institutionId: institutionId, unitId: unit.id), label: unit.name),
+                            (
+                              scope: LocationScope.institution(institutionId: institutionId),
+                              label: 'Locais da institui\u00e7\u00e3o',
+                            ),
+                            for (final unit in controller.units.where(
+                              (unit) => controller.selectedUnitIds.contains(unit.id),
+                            ))
+                              (
+                                scope: LocationScope.unit(
+                                  institutionId: institutionId,
+                                  unitId: unit.id,
+                                ),
+                                label: unit.name,
+                              ),
                           ],
                         ],
                         reader: locationCatalogReader,
@@ -1999,10 +2025,18 @@ GoRouter createSuperadminRouter({
                         onChanged: controller.selectCataloguedLocation,
                         sessionAvailable: session.isAuthenticated && !session.isPasswordRecovery,
                         contextRevision: session.authorizationInvalidationRevision,
-                        available: enableActivityLocationCreate && session.authContext?.permissionCodes.containsAll({
-                          'activities.create', 'activities.read', 'activities.link_units',
-                          'activities.link_groups', 'activities.assign_people', 'activities.manage_permissions', 'locations.read',
-                        }) == true,
+                        available:
+                            enableActivityLocationCreate &&
+                            session.authContext?.permissionCodes.containsAll({
+                                  'activities.create',
+                                  'activities.read',
+                                  'activities.link_units',
+                                  'activities.link_groups',
+                                  'activities.assign_people',
+                                  'activities.manage_permissions',
+                                  'locations.read',
+                                }) ==
+                                true,
                       ),
                     ),
                     aboutRepository: productionActivityAboutRepository,
@@ -2075,28 +2109,56 @@ GoRouter createSuperadminRouter({
                   queryParameters: {'institutionId': detail.institutionId},
                 ),
                 reservationBuilder: (context, detail) => LocationConsumerReservations(
-                  consumer: LocationReservationConsumer(kind: LocationReservationConsumerKind.activity, id: detail.id),
+                  consumer: LocationReservationConsumer(
+                    kind: LocationReservationConsumerKind.activity,
+                    id: detail.id,
+                  ),
                   scopes: [
-                    (scope: LocationScope.institution(institutionId: detail.institutionId), label: 'Locais da instituição'),
+                    (
+                      scope: LocationScope.institution(institutionId: detail.institutionId),
+                      label: 'Locais da instituição',
+                    ),
                     for (final unit in detail.units)
-                      (scope: LocationScope.unit(institutionId: detail.institutionId, unitId: unit.unitId), label: unit.name),
+                      (
+                        scope: LocationScope.unit(
+                          institutionId: detail.institutionId,
+                          unitId: unit.unitId,
+                        ),
+                        label: unit.name,
+                      ),
                   ],
                   reader: locationCatalogReader,
                   bindingsReader: locationConsumerBindingsReader,
                   selectionReader: locationConsumerSelectionReader,
-                  canReadSelection: detail.status != 'archived' && session.authContext?.permissionCodes.containsAll({
-                    'activities.read', 'locations.read',
-                  }) == true,
+                  canReadSelection:
+                      detail.status != 'archived' &&
+                      session.authContext?.permissionCodes.containsAll({
+                            'activities.read',
+                            'locations.read',
+                          }) ==
+                          true,
                   gateway: locationReservationGateway,
                   sessionAvailable: session.isAuthenticated && !session.isPasswordRecovery,
                   contextRevision: session.authorizationInvalidationRevision,
-                  canRead: detail.status != 'archived' && session.authContext?.permissionCodes.containsAll({
-                    'activities.read', 'locations.read', 'locations.reservations.read',
-                  }) == true,
-                  canManage: session.authContext?.permissionCodes.containsAll({
-                    'activities.manage', 'locations.reservations.manage',
-                  }) == true,
-                  canOverride: session.authContext?.permissionCodes.contains('locations.reservations.override') == true,
+                  canRead:
+                      detail.status != 'archived' &&
+                      session.authContext?.permissionCodes.containsAll({
+                            'activities.read',
+                            'locations.read',
+                            'locations.reservations.read',
+                          }) ==
+                          true,
+                  canManage:
+                      session.authContext?.permissionCodes.containsAll({
+                        'activities.manage',
+                        'locations.reservations.manage',
+                      }) ==
+                      true,
+                  canOverride:
+                      session.authContext?.permissionCodes.contains(
+                        'locations.reservations.override',
+                      ) ==
+                      true,
                 ),
                 onDestinationSelected: (destination) =>
                     _navigateFromPersistentShell(context, destination),
@@ -5070,6 +5132,21 @@ GoRouter createSuperadminRouter({
                 circularId: state.pathParameters['circularId']!,
                 repository: circularRepository,
                 responseSummarySource: circularRepository,
+                onCloseResponses: (detail) async {
+                  await circularRepository.closeResponses(
+                    requestId: newCircularRequestId(),
+                    circularId: detail.id,
+                    expectedVersion: detail.managementVersion,
+                  );
+                },
+                onDelete: (detail) async {
+                  await circularRepository.delete(
+                    requestId: newCircularRequestId(),
+                    circularId: detail.id,
+                    expectedVersion: detail.managementVersion,
+                  );
+                },
+                onDeleted: () => context.goNamed(SuperadminRoutes.circularsName),
                 onBack: () => _returnFromCircularReader(
                   context,
                   fallbackRouteName: SuperadminRoutes.circularsName,

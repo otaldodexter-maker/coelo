@@ -1,12 +1,12 @@
 {
-  "revision": 5,
+  "revision": 8,
   "round": "E2-R03-20260910",
   "group": "publicacoes-agenda",
   "tool": "Codex",
   "model": "Luna medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-publicacoes-agenda",
   "branch": "work/etapa2-r03-publicacoes-agenda",
-  "head": "53c32b265d3cbe41ea3f92fd1c28f289888a5deb",
+  "head": "e4e9b9a0356b1d71f35b00c8c0c035a6a9b5c0b1",
   "coordinator": "Claude",
   "scope": {
     "app": "apps/superadmin",
@@ -17,30 +17,32 @@
       "circulars.list", "circulars.filter", "circulars.create", "circulars.edit", "circulars.detail", "circulars.schedule", "circulars.publish", "circulars.close", "circulars.delete", "circulars.respond", "circulars.attach"
     ],
     "included": "Telas e subtelas ponta a ponta, com migration, pgTAP, repositórios/contratos e chave de composição por pacote.",
-    "excluded": "Admin, Principal e Site; pg_cron e worker de Avisos; aplicação remota pelo coordenador; UI do composto enquanto base.fase0Head não existir.",
+    "excluded": "Admin, Principal e Site; pg_cron e worker de Avisos; aplicação remota pelo coordenador; E2E remoto enquanto o coordenador não aplicar o pacote e habilitar a composição.",
     "order": ["agenda", "notices", "circulars"],
     "stop": "Finalizar as 24 ações ou receber ordem do Owner/coordenador; bloqueio retém somente a ação dependente.",
     "evidence": "Commits da frente, saída dos testes locais, handoffs e este JSON; E2E somente após base integrada e aplicação remota pelo coordenador."
   },
   "knownPendencies": [
-    "coordenacao.json não publicou base.fase0Head; worktree foi criada provisoriamente a partir de dev bb15db748.",
+    "base.fase0Head foi publicada como 1adb070c9 e a branch foi rebaseada nela; E2E remoto ainda depende da aplicação do pacote pelo coordenador.",
     "Avisos: migration/pgTAP e worker nominal precisam ser revalidados; pg_cron e worker pertencem ao coordenador.",
-    "Circulares: gateway administrativo ainda não expõe exclusão e a ação de encerramento não tem affordance produtiva; contrato backend deve ser preparado sem tocar UI de diretório antes da base.",
-    "Agenda: compatibilizar contexto interno039 e validar readers/comandos produtivos; goldens e composto aguardam Fase 0."
+    "Circulares: detalhe produtivo agora expõe encerramento e exclusão confirmados; aplicar migration e validar gateway/RLS antes de ligar a chave de composição.",
+    "Agenda: compatibilizar contexto interno039 e validar readers/comandos produtivos; telas seguem no composto publicado da Fase 0."
   ],
   "firstGate": "Backend: localizar o contrato canônico, testar existência/assinaturas, grants, RLS, capacidade, tenant e idempotência; produzir o primeiro pacote SQL/pgTAP executável sem tocar UI de diretório.",
-  "status": "backend-package-local-green-pgtap-blocked",
+  "status": "frontend-backend-local-green-golden-pgtap-blocked",
   "compositionKeys": [
     {"package": "circulars.delete", "key": "superadminCircularDeleteEnabled", "default": false, "owner": "coordenador", "reason": "ligar somente após migration aplicada e gateway verificado"}
   ],
   "tests": {
-    "passed": 120,
-    "failed": 0,
+    "passed": 158,
+    "failed": 25,
     "blocked": 1,
     "skipped": 0,
     "evidence": [
-      "apps/superadmin/test/features/agenda/data/supabase_agenda_repository_test.dart + supabase_agenda_read_repository_test.dart + apps/superadmin/test/features/notices/data/supabase_notice_repository_test.dart + apps/superadmin/test/features/circulars/data/supabase_superadmin_circular_repository_test.dart: 121 PASS",
-      "supabase test db supabase/tests/superadmin_internal_circular_delete_v1_test.sql --local: BLOQUEADO, porta 54322 ocupada pelo Supabase local e2-r03-operacoes; não interrompido por pertencer a outra frente"
+      "Lote combinado Agenda/Avisos/Circulares (router, contratos, repositórios e detalhe administrativo): 158 PASS",
+      "flutter analyze do recorte: sem erros; 1 informação de estilo preexistente em superadmin_router.dart:902 (curly_braces_in_flow_control_structures)",
+      "Goldens do recorte: 25 falhas de pixel (Agenda/Avisos em breakpoints canônicos e Circular em texto 200%); nenhum golden foi regravado, pois a causa é deriva de baseline e exige decisão do Owner",
+      "supabase start/test db --local: BLOQUEADO no bootstrap da migration legada 20260820152528_forms_editor_application_capability_guard.sql, pois o schema app_private não existe; não foi criado schema manualmente nem alterada a ordem das migrations"
     ]
   },
   "reservedFiles": [
@@ -52,8 +54,8 @@
     "apps/superadmin/lib/features/notices/**",
     "apps/superadmin/lib/features/circulars/**"
   ],
-  "blocked": "Aguardando base.fase0Head para UI e E2E; pgTAP local retém a prova SQL até Docker/Postgres estar disponível; não bloqueia o pacote backend independente.",
-  "next": "Enviar o commit ao coordenador; seguir para preflight SQL de Agenda/Avisos quando Docker estiver disponível; rebasear imediatamente quando base.fase0Head aparecer.",
+  "blocked": "Goldens do recorte estão vermelhos por deriva de baseline e aguardam decisão de rebaseline do Owner; pgTAP local retém a prova SQL porque o bootstrap falha antes do schema app_private; E2E remoto aguarda aplicação do coordenador.",
+  "next": "Não regravar goldens sem decisão. Aplicar/revalidar migrations na ordem do coordenador, executar pgTAP no ambiente liberado, habilitar superadminCircularDeleteEnabled somente após o gateway verificado e então rodar E2E ponta a ponta.",
   "changes": [
     {
       "screen": "Etapa 2 → apps/superadmin → Circulares → Diretório/Detalhe → Excluir → circulars.delete",
@@ -61,16 +63,24 @@
       "whatChanged": "Migration forward-only cria superadmin_circular_delete_v2 com capacidade circulars.manage, tenant/contexto interno, versão otimista, idempotência, auditoria e exclusão lógica; repositório/contrato chama RPC sem segredo.",
       "criteria": ["RPC nominal e grant authenticated", "anon/service_role sem execute", "deleted_at/status archived", "receipt com hash e action delete", "audit internal_circular_deleted"],
       "sha": "f15a9eec2c8bd50b3049016827741502117ba293"
+    },
+    {
+      "screen": "Etapa 2 → apps/superadmin → Circulares → Detalhe → Encerrar respostas/Excluir rascunho → circulars.close, circulars.delete",
+      "actionIds": ["circulars.detail", "circulars.close", "circulars.delete"],
+      "whatChanged": "Detalhe administrativo preserva managementVersion, expõe ações confirmadas por estado, chama os callbacks produtivos dos RPCs close/delete com request UUID e retorna ao diretório após exclusão.",
+      "criteria": ["Encerramento somente em publicada/agendada", "Exclusão somente em rascunho", "confirmação explícita", "versão otimista preservada", "router produtivo injeta gateway interno"],
+      "sha": "e4e9b9a0356b1d71f35b00c8c0c035a6a9b5c0b1"
     }
   ],
   "baselinePackages": [
     {"actionIds": ["agenda.view", "agenda.create", "agenda.detail", "agenda.edit", "agenda.request", "agenda.permissions", "agenda.location"], "migrationShas": ["be28f0c0bd5ac626df925b7dc1d577af0b0e8dca", "09bf4e71b81711cfd5a44852c94805415b5ab237"], "state": "existing-local-contract; pgTAP/remote pending"},
     {"actionIds": ["notices.list", "notices.create", "notices.edit", "notices.schedule", "notices.publish", "notices.archive"], "migrationShas": ["ca55088753b10330b1890fbec35158854118f2ed", "5ad9b9b00e5ab060d81d01aaf406cbea30e254b6"], "state": "existing-local-contract; pgTAP/worker/remote pending"},
-    {"actionIds": ["circulars.list", "circulars.filter", "circulars.create", "circulars.edit", "circulars.detail", "circulars.schedule", "circulars.publish", "circulars.close", "circulars.respond", "circulars.attach"], "migrationShas": ["1944bd957a5771b9b3b9e2cf559e15f3cacd3c02"], "state": "existing-local-contract; pgTAP/remote pending"}
+    {"actionIds": ["circulars.list", "circulars.filter", "circulars.create", "circulars.edit", "circulars.detail", "circulars.schedule", "circulars.publish", "circulars.close", "circulars.delete", "circulars.respond", "circulars.attach"], "migrationShas": ["1944bd957a5771b9b3b9e2cf559e15f3cacd3c02", "dac463464dc64bb4f79b8683d39a2157426e9f60"], "state": "local-contract-plus-detail-actions; pgTAP/remote pending"}
   ],
   "sharedFindings": [
     "O código histórico ainda modela requires_mfa/aal2 para algumas capacidades de publicação; o alinhamento R03 diz MFA fora do MVP. A remoção do bloqueio no contexto interno é compartilhada e deve ser coordenada, não duplicada nesta frente.",
-    "Não declarar E2E: base.fase0Head ausente, Docker/Postgres local indisponível e aplicação remota reservada ao coordenador."
+    "Goldens de Agenda/Avisos/Circulares falham na base publicada com diffs de 0,47% a 37,69%; preservar os arquivos e aguardar decisão de rebaseline do Owner.",
+    "Não declarar E2E: base.fase0Head publicada, mas Docker/Postgres local continua ocupado por outra frente e aplicação remota permanece reservada ao coordenador."
   ],
-  "updatedAt": "2026-09-10T01:25:00-03:00"
+  "updatedAt": "2026-09-10T19:35:00-03:00"
 }

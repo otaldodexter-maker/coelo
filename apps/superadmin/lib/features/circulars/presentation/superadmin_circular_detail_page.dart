@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
@@ -7,12 +9,17 @@ import '../../principal_circulars/domain/circular.dart';
 import '../../principal_circulars/domain/circular_repository.dart';
 import '../domain/superadmin_circular_repository.dart';
 
+typedef CircularDetailAction = Future<void> Function(CircularDetail detail);
+
 final class SuperadminCircularDetailPage extends StatefulWidget {
   const SuperadminCircularDetailPage({
     required this.circularId,
     required this.repository,
     required this.onBack,
     this.onEdit,
+    this.onCloseResponses,
+    this.onDelete,
+    this.onDeleted,
     this.responseSummarySource,
     super.key,
   });
@@ -21,6 +28,9 @@ final class SuperadminCircularDetailPage extends StatefulWidget {
   final CircularRepository repository;
   final VoidCallback onBack;
   final VoidCallback? onEdit;
+  final CircularDetailAction? onCloseResponses;
+  final CircularDetailAction? onDelete;
+  final VoidCallback? onDeleted;
 
   /// Fonte do resumo de respostas, quando a composicao a fornece.
   ///
@@ -38,6 +48,7 @@ final class _SuperadminCircularDetailPageState extends State<SuperadminCircularD
   SuperadminCircularResponseSummary? _summary;
   Object? _error;
   var _loadGeneration = 0;
+  var _actionBusy = false;
 
   @override
   void initState() {
@@ -132,13 +143,36 @@ final class _SuperadminCircularDetailPageState extends State<SuperadminCircularD
                           ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
                         ),
                       ),
-                      if (widget.onEdit != null)
-                        FilledButton.icon(
-                          key: const Key('circular-detail-edit'),
-                          onPressed: widget.onEdit,
-                          icon: const Icon(Icons.edit_outlined),
-                          label: const Text('Editar circular'),
-                        ),
+                      Wrap(
+                        spacing: CoeloSpacing.space2,
+                        runSpacing: CoeloSpacing.space2,
+                        children: [
+                          if (widget.onDelete != null && detail.status == CircularStatus.draft)
+                            OutlinedButton.icon(
+                              key: const Key('circular-detail-delete'),
+                              onPressed: _actionBusy ? null : () => _confirmDelete(detail),
+                              icon: const Icon(Icons.delete_outline_rounded),
+                              label: const Text('Excluir'),
+                            ),
+                          if (widget.onCloseResponses != null &&
+                              (detail.status == CircularStatus.published ||
+                                  detail.status == CircularStatus.scheduled) &&
+                              !(_summary?.closed ?? false))
+                            OutlinedButton.icon(
+                              key: const Key('circular-detail-close'),
+                              onPressed: _actionBusy ? null : () => _confirmClose(detail),
+                              icon: const Icon(Icons.lock_outline_rounded),
+                              label: const Text('Encerrar respostas'),
+                            ),
+                          if (widget.onEdit != null)
+                            FilledButton.icon(
+                              key: const Key('circular-detail-edit'),
+                              onPressed: _actionBusy ? null : widget.onEdit,
+                              icon: const Icon(Icons.edit_outlined),
+                              label: const Text('Editar circular'),
+                            ),
+                        ],
+                      ),
                     ],
                   ),
                   const SizedBox(height: CoeloSpacing.space6),
@@ -233,6 +267,79 @@ final class _SuperadminCircularDetailPageState extends State<SuperadminCircularD
       ),
     );
   }
+
+  Future<void> _confirmClose(CircularDetail detail) async {
+    final confirmed = await _confirm(
+      title: 'Encerrar respostas?',
+      message: 'Novas respostas deixarão de ser aceitas para esta Circular.',
+      confirmLabel: 'Encerrar respostas',
+    );
+    if (!confirmed || !mounted) return;
+    await _runAction(detail, widget.onCloseResponses!, successMessage: 'Respostas encerradas.');
+  }
+
+  Future<void> _confirmDelete(CircularDetail detail) async {
+    final confirmed = await _confirm(
+      title: 'Excluir rascunho?',
+      message: 'O rascunho será removido do diretório. Esta ação não pode ser desfeita.',
+      confirmLabel: 'Excluir rascunho',
+    );
+    if (!confirmed || !mounted) return;
+    await _runAction(detail, widget.onDelete!, onSuccess: widget.onDeleted);
+  }
+
+  Future<bool> _confirm({
+    required String title,
+    required String message,
+    required String confirmLabel,
+  }) async =>
+      await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Cancelar'),
+            ),
+            FilledButton(
+              key: const Key('circular-detail-confirm-action'),
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text(confirmLabel),
+            ),
+          ],
+        ),
+      ) ??
+      false;
+
+  Future<void> _runAction(
+    CircularDetail detail,
+    CircularDetailAction action, {
+    String? successMessage,
+    VoidCallback? onSuccess,
+  }) async {
+    setState(() => _actionBusy = true);
+    try {
+      await action(detail);
+      if (!mounted) return;
+      if (onSuccess != null) {
+        onSuccess();
+      } else {
+        await _load();
+        if (mounted && successMessage != null) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(successMessage)));
+        }
+      }
+    } on Object {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Não foi possível concluir esta ação. Tente novamente.')),
+      );
+    } finally {
+      if (mounted) setState(() => _actionBusy = false);
+    }
+  }
 }
 
 String _statusLabel(CircularStatus status) => switch (status) {
@@ -246,4 +353,11 @@ String _statusLabel(CircularStatus status) => switch (status) {
 String _date(DateTime value) {
   final local = value.toLocal();
   return '${local.day.toString().padLeft(2, '0')}/${local.month.toString().padLeft(2, '0')}/${local.year}';
+}
+
+String newCircularRequestId() {
+  final random = math.Random.secure();
+  String part(int length) =>
+      List.generate(length, (_) => random.nextInt(16).toRadixString(16)).join();
+  return '${part(8)}-${part(4)}-4${part(3)}-a${part(3)}-${part(12)}';
 }
