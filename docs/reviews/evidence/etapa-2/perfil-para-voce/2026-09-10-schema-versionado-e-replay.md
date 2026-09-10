@@ -39,7 +39,10 @@ Relaxando esse NOT NULL, o **mesmo arquivo** falha em seguida com
 `column "updated_at" of relation "platform_role_permissions" does not exist`.
 São pelo menos dois problemas independentes de replay no arquivo 48.
 
-A barreira persiste no Postgres 17, então não é diferença de versão.
+A barreira persiste no Postgres 17, então não é diferença de versão. Isso foi
+**replayado**, não deduzido: os mesmos 186 arquivos aplicados em ordem sobre a
+imagem `public.ecr.aws/supabase/postgres:17.6.1.165` param no **mesmo arquivo
+48**, com a **mesma** mensagem de `module_label`.
 
 ## Fato 2 — o conjunto que `supabase start` aplicaria não cria schema
 
