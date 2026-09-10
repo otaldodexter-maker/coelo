@@ -8,7 +8,7 @@ param(
 
   [switch]$AuthOnly,
 
-  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'ModelAal1PhasePolicy', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived', 'ChildDirectoryEnvelope', 'ActivityAggregateConcurrency', 'ActivityAggregateConcurrencyClock', 'LocationCatalogV2', 'LocationReservationsV1', 'SafetyInternalReads53', 'PersonDetailV2')]
+  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'ModelAal1PhasePolicy', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived', 'ChildDirectoryEnvelope', 'ActivityAggregateConcurrency', 'ActivityAggregateConcurrencyClock', 'LocationCatalogV2', 'LocationReservationsV1', 'SafetyInternalReads53', 'PersonDetailV2', 'InvitesV2')]
   [string]$NominalProfile,
 
   [string[]]$AdditionalMigration = @()
@@ -103,6 +103,7 @@ if ($NominalProfile) {
     'LocationCatalogV2' { 'profiles\LocationCatalogV2\Resolve-LocationCatalogV2.ps1' }
     'LocationReservationsV1' { 'profiles\LocationReservationsV1\Resolve-LocationReservationsV1.ps1' }
     'PersonDetailV2' { 'profiles\PersonDetailV2\Resolve-PersonDetailV2.ps1' }
+    'InvitesV2' { 'profiles\InvitesV2\Resolve-InvitesV2.ps1' }
   }
   $nominalResolver = Join-Path $preflightRoot $nominalResolverRelative
   $nominalCursor = Get-Item -LiteralPath $nominalResolver -Force -ErrorAction Stop
@@ -135,6 +136,12 @@ if ($NominalProfile) {
         $locationBootstraps[0].Name -cne '20260908030958_location_form_options_remote_snapshot_local.sql' -or
         $locationBootstraps[1].Name -cne '20260908030959_location_catalog_v2_capability_bootstrap_local.sql') {
       throw 'LocationCatalogV2 requires the reviewed 53 canonical migrations and exactly two local fixtures'
+    }
+  }
+  if ($NominalProfile -ceq 'InvitesV2') {
+    if ($canonical.Count -ne 66 -or $additionalCanonical.Count -ne 2 -or
+        $preflight.Count -ne 2) {
+      throw 'InvitesV2 requires 66 canonical migrations, two additions and two preflights'
     }
   }
   if ($NominalProfile -ceq 'PersonDetailV2') {
