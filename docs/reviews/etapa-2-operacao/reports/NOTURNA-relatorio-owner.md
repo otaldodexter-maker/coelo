@@ -1692,6 +1692,36 @@ sempre o mesmo — reler o que já foi entregue, com três perguntas: o que isso
 com mais de um item, o que acontece com duas coisas ao mesmo tempo, e o teste
 mede o efeito ou o mecanismo.
 
+## A bateria de mutação, e a ressalva que impede o número de vender demais
+
+Uma frente quebrou de propósito, uma a uma, as guardas que havia escrito, para ver
+cada teste falhar. **Nove mutações: sete pegas, uma lacuna real, uma inconclusiva.**
+
+As sete que caíram — faixa numérica desligada, guarda de tamanho de texto
+desligada, dinheiro deixando de virar centavos, seletor de data ignorando o
+intervalo autorado, intervalo invertido deixando de ser recusado, rótulo de
+escolha voltando a exibir o identificador interno, e o mapeamento de falha de
+transporte — são a prova de que aquelas guardas protegem o que dizem proteger.
+
+**A lacuna real é a mais instrutiva:** baixar de mil para novecentos e noventa e
+nove um limite espelhado do servidor **não derrubava nada**. Número espelhado sem
+afirmação é número que ninguém percebe mudar — e ele estava no mesmo arquivo dos
+padrões que a frente acabara de fixar, sem que ela tivesse reparado no vizinho
+descoberto. Fechada, junto com a contagem por pontos de código: trocar a contagem
+de caracteres passava batido e recusaria mil emojis que o servidor aceita.
+
+**E a ressalva, que a própria frente exigiu que fosse junto:** mutação responde
+apenas "**este arquivo de teste** protege esta linha". Um "não pegou" é ambíguo
+entre lacuna real e mira errada — e aconteceu: uma mutação foi reportada como não
+pega e a regra estava coberta, em outro arquivo. Apontada para o arquivo certo, a
+mutação cai. **O placar vale como evidência de que as guardas estão protegidas;
+não vale como medida de cobertura.** A pergunta que desambigua é sempre a mesma:
+antes de acreditar no veredito, onde essa regra *deveria* estar coberta?
+
+A inconclusiva ficou inconclusiva de propósito, porque a âncora aparecia duas
+vezes e mutar as duas mudaria o significado do teste — **não contar como pega o
+que não foi medido** é o que mantém o placar utilizável.
+
 ## Ler não pega; seguir pega
 
 Perto do fim, uma frente aplicou aos próprios documentos a pergunta que vinha
