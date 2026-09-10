@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(1);
+select no_plan();
 
 select has_function('public','superadmin_invite_directory_v2',array[
   'text','text[]','text[]','uuid[]','uuid[]','uuid[]','uuid[]',
@@ -154,10 +154,42 @@ do $diag$
 declare r record;
 begin
   for r in select label, body from invite_results order by label loop
-    raise notice 'DIAG %% => %%', r.label, left(r.body::text, 1200);
+    raise notice 'DIAG % => %', r.label, left(r.body::text, 1200);
   end loop;
 end
 $diag$;
+
+do $probe$
+declare v text; st text; msg text;
+begin
+  begin
+    select encode(extensions.digest(convert_to('x','UTF8'),'sha256'),'hex') into v;
+    raise notice 'PROBE digest ok: %', left(v,16);
+  exception when others then
+    get stacked diagnostics st=returned_sqlstate, msg=message_text;
+    raise notice 'PROBE digest FALHOU sqlstate=% msg=%', st, msg;
+  end;
+  begin
+    insert into public.invitations(
+      id,scope_kind,institution_id,unit_id,group_id,target_person_id,role_code,
+      token_hash,expires_at,status,invitation_state,invited_by,
+      invited_by_internal_identity_id,target_contact_hash,masked_destination,
+      send_count,profile_id,channels,version,updated_at
+    ) values(
+      gen_random_uuid(),'institution','9d100000-0000-4000-8000-000000000010',null,null,
+      null,null,'probe-hash',now()+interval '48 hours','active','pending',null,
+      (select id from app_private.superadmin_internal_identities limit 1),
+      'probe-contact-hash','f***@example.test',0,
+      '9d100000-0000-4000-8000-000000000030',array['link','email'],1,now()
+    );
+    raise notice 'PROBE insert invitations ok';
+  exception when others then
+    get stacked diagnostics st=returned_sqlstate, msg=message_text;
+    raise notice 'PROBE insert invitations FALHOU sqlstate=% msg=%', st, msg;
+  end;
+end
+$probe$;
+
 select pass('diagnostico dos envelopes');
 select finish();
 rollback;
