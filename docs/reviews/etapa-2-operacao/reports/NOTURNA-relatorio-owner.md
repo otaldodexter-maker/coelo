@@ -1227,6 +1227,32 @@ isso que essas falhas sobrevivem rodadas inteiras. O censo preventivo tem 67
 arquivos e 337 toques nessa forma; **nenhum falha hoje**, e por isso nenhum foi
 mexido nesta rodada.
 
+**Duas lacunas do processo de integração desta rodada, encontradas por
+conferência externa e registradas para a próxima.** Eu fui o único integrador e o
+único escritor do inventário e dos rastreadores, o que significa que ninguém
+conferia o integrador. Duas frentes foram encarregadas de conferir, e acharam:
+
+- **O gate de integração não pega arquivo de teste sobrescrito.** Eu rodo a suíte
+  e comparo o total; quatro casos a menos em sete mil não aparecem. Uma frente
+  criou um teste com o nome de um arquivo existente, substituiu quatro casos que
+  passavam por dois seus, e **a suíte continuou verde**. O que pegou foi
+  aritmética por arquivo — 223 antes, dois acrescentados, 221 depois — e foi
+  hábito dela, não do processo.
+- **O gate inspeciona merges com resolução e não inspeciona auto-merges.** São
+  riscos diferentes: o primeiro arrisca escolher o lado errado; o segundo arrisca
+  os dois lados tocarem linhas próximas e não sobrepostas, e o resultado ser
+  sintaticamente válido e semanticamente errado. **Nenhum diff combinado mostra o
+  segundo** — só leitura mostra. Os quatro merges com resolução da rodada foram
+  inspecionados; os demais, não.
+
+Três verificações fecharam o que era verificável: nenhum commit publicado por
+frente ficou fora da base — conferido commit a commit nos 2305 das sete branches;
+os 762 goldens da base pré-rodada continuam 762; e nenhum arquivo de coordenação
+teve seu número de revisão diminuído entre commits, que é o único detector de
+cópia velha sobrescrevendo nova em documentação. **Esse detector só funciona onde
+há contador monotônico**, então relatório, evidência e artigo de conhecimento
+permanecem sem auditoria dessa classe — declarado aqui em vez de omitido.
+
 **Uma ferramenta que responde outra pergunta é indistinguível de uma medição.**
 Esta classe apareceu quatro vezes, e três delas quase produziram decisão errada:
 
