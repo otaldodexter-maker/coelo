@@ -8,7 +8,7 @@ param(
 
   [switch]$AuthOnly,
 
-  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'ModelAal1PhasePolicy', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived', 'ChildDirectoryEnvelope', 'ActivityAggregateConcurrency', 'ActivityAggregateConcurrencyClock', 'LocationCatalogV2', 'LocationReservationsV1', 'StructureLocationConsumersV1', 'SafetyInternalReads53', 'PersonDetailV2', 'InvitesV2', 'InternalUsersV2')]
+  [ValidateSet('N01PrerequisitesRed', 'A01DirectoryContractRed', 'FReadDirectoryContractRed', 'FReadDirectoryContractGreen', 'ModelReadAuthorizationRed', 'A01DirectoryAuditRed', 'FReadDirectoryContractRedDerived', 'ModelReadAuthorizationGreen', 'ModelAal1PhasePolicy', 'A01DirectoryAuditGreen', 'FReadDirectoryContractGreenDerived', 'ChildDirectoryEnvelope', 'ActivityAggregateConcurrency', 'ActivityAggregateConcurrencyClock', 'LocationCatalogV2', 'LocationReservationsV1', 'StructureLocationConsumersV1', 'SafetyInternalReads53', 'PersonDetailV2', 'InvitesV2', 'InternalUsersV2', 'PeopleReadAal1')]
   [string]$NominalProfile,
 
   [string[]]$AdditionalMigration = @()
@@ -106,6 +106,7 @@ if ($NominalProfile) {
     'PersonDetailV2' { 'profiles\PersonDetailV2\Resolve-PersonDetailV2.ps1' }
     'InvitesV2' { 'profiles\InvitesV2\Resolve-InvitesV2.ps1' }
     'InternalUsersV2' { 'profiles\InternalUsersV2\Resolve-InternalUsersV2.ps1' }
+    'PeopleReadAal1' { 'profiles\PeopleReadAal1\Resolve-PeopleReadAal1.ps1' }
   }
   $nominalResolver = Join-Path $preflightRoot $nominalResolverRelative
   $nominalCursor = Get-Item -LiteralPath $nominalResolver -Force -ErrorAction Stop
@@ -150,22 +151,28 @@ if ($NominalProfile) {
       throw 'LocationCatalogV2 requires the reviewed 53 canonical migrations and exactly two local fixtures'
     }
   }
-  if ($NominalProfile -ceq 'InternalUsersV2') {
-    if ($canonical.Count -ne 66 -or $additionalCanonical.Count -ne 2 -or
+  if ($NominalProfile -ceq 'PeopleReadAal1') {
+    if ($canonical.Count -ne 66 -or $additionalCanonical.Count -ne 1 -or
         $preflight.Count -ne 2) {
-      throw 'InternalUsersV2 requires 66 canonical migrations, two candidates and two preflights'
+      throw 'PeopleReadAal1 requires 66 canonical migrations, one candidate and two preflights'
+    }
+  }
+  if ($NominalProfile -ceq 'InternalUsersV2') {
+    if ($canonical.Count -ne 67 -or $additionalCanonical.Count -ne 2 -or
+        $preflight.Count -ne 2) {
+      throw 'InternalUsersV2 requires 67 canonical migrations, two candidates and two preflights'
     }
   }
   if ($NominalProfile -ceq 'InvitesV2') {
-    if ($canonical.Count -ne 63 -or $additionalCanonical.Count -ne 1 -or
+    if ($canonical.Count -ne 64 -or $additionalCanonical.Count -ne 1 -or
         $preflight.Count -ne 2) {
-      throw 'InvitesV2 requires 63 canonical migrations, one candidate and two preflights'
+      throw 'InvitesV2 requires 64 canonical migrations, one candidate and two preflights'
     }
   }
   if ($NominalProfile -ceq 'PersonDetailV2') {
-    if ($canonical.Count -ne 51 -or $additionalCanonical.Count -ne 1 -or
+    if ($canonical.Count -ne 52 -or $additionalCanonical.Count -ne 1 -or
         $preflight.Count -ne 2) {
-      throw 'PersonDetailV2 requires 51 canonical migrations, one candidate and two preflights'
+      throw 'PersonDetailV2 requires 52 canonical migrations, one candidate and two preflights'
     }
   }
   if ($NominalProfile -ceq 'SafetyInternalReads53') {
