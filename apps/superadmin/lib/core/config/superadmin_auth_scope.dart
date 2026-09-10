@@ -62,7 +62,11 @@ import '../../features/auth/domain/password_recovery.dart';
 import '../../features/auth/domain/reset_password_action.dart';
 import '../../features/auth/data/supabase_superadmin_auth_context_gateway.dart';
 import '../../features/auth/domain/superadmin_auth_context.dart';
+import '../../features/daily_routine/data/supabase_routine_repository.dart';
 import '../../features/daily_routine/domain/routine_contract.dart';
+import '../../features/health_care/data/supabase_health_care_repository.dart';
+import '../../features/health_care/data/supabase_medication_plan_repository.dart';
+import '../../features/health_care/domain/health_care_repository.dart';
 import '../../features/health_care/domain/medication_plan_repository.dart';
 import '../../features/meal_plans/data/supabase_meal_plan_repository.dart';
 import '../../features/meal_plans/data/supabase_meal_plan_image_repository.dart';
@@ -153,6 +157,7 @@ final class SuperadminAuthScope {
     required this.auditRepository,
     required this.childSafetyRepository,
     required this.medicationPlanRepository,
+    required this.healthCareRepository,
     required this.mealPlanRepository,
     required this.mealPlanImageRepository,
     this.authorizedMealPlanTenantId,
@@ -211,6 +216,7 @@ final class SuperadminAuthScope {
   final AuditRepository auditRepository;
   final ChildSafetyRepository childSafetyRepository;
   final MedicationPlanRepository medicationPlanRepository;
+  final HealthCareRepository healthCareRepository;
   final MealPlanRepository mealPlanRepository;
   final MealPlanImageRepository mealPlanImageRepository;
   final String? authorizedMealPlanTenantId;
@@ -384,10 +390,21 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       childDirectoryRead: SupabaseChildDirectoryReader(client).fetchPage,
       studentTrackingRepository: const UnavailableStudentTrackingRepository(),
       attendancePermissions: const AttendancePermissions.backend(),
-      routineRepository: const UnavailableRoutineRepository(),
+      // Chave de composição do pacote de Cuidado, Medicação e Rotina. Enquanto
+      // as migrations 20260910010000 a 20260910010500 não estiverem aplicadas,
+      // estas três famílias continuam honestamente indisponíveis em vez de
+      // falharem contra um banco que não tem seus objetos.
+      routineRepository: SuperadminAppConfig.careAndRoutineBackendEnabled
+          ? SupabaseRoutineRepository(client)
+          : const UnavailableRoutineRepository(),
       auditRepository: SupabaseAuditRepository(client),
       childSafetyRepository: SupabaseChildSafetyRepository(client),
-      medicationPlanRepository: const UnavailableMedicationPlanRepository(),
+      medicationPlanRepository: SuperadminAppConfig.careAndRoutineBackendEnabled
+          ? SupabaseMedicationPlanRepository(client)
+          : const UnavailableMedicationPlanRepository(),
+      healthCareRepository: SuperadminAppConfig.careAndRoutineBackendEnabled
+          ? SupabaseHealthCareRepository(client)
+          : const UnavailableHealthCareRepository(),
       mealPlanRepository: SupabaseMealPlanRepository(client),
       mealPlanImageRepository: SupabaseMealPlanImageRepository(client),
       formsApi: SupabaseFormsApi(formsBackend),
@@ -465,6 +482,7 @@ SuperadminAuthScope _createUnavailableScope(CoeloAuthLifecycleGateway auth) {
     auditRepository: const UnavailableAuditRepository(),
     childSafetyRepository: const UnavailableChildSafetyRepository(),
     medicationPlanRepository: const UnavailableMedicationPlanRepository(),
+    healthCareRepository: const UnavailableHealthCareRepository(),
     mealPlanRepository: const UnavailableMealPlanRepository(),
     mealPlanImageRepository: const UnavailableMealPlanImageRepository(),
     formsApi: null,

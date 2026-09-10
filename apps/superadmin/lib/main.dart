@@ -33,6 +33,7 @@ Future<void> main() async {
       resetPassword: authScope.resetPassword,
       auditRepository: authScope.auditRepository,
       medicationPlanRepository: authScope.medicationPlanRepository,
+      healthCareRepository: authScope.healthCareRepository,
       institutionDirectoryRepository: authScope.institutionDirectoryRepository,
       unitDirectoryRepository: authScope.unitDirectoryRepository,
       unitBackendCommands: authScope.unitBackendCommands,

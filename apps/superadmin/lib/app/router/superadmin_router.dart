@@ -307,6 +307,7 @@ GoRouter createSuperadminRouter({
   RoutineRepository routineRepository = const UnavailableRoutineRepository(),
   AuditRepository auditRepository = const UnavailableAuditRepository(),
   MedicationPlanRepository medicationPlanRepository = const UnavailableMedicationPlanRepository(),
+  HealthCareRepository healthCareRepository = const UnavailableHealthCareRepository(),
   DevMedicationPlanRepository? developmentMedicationPlanRepository,
   MealPlanRepository mealPlanRepository = const UnavailableMealPlanRepository(),
   MealPlanImageRepository mealPlanImageRepository = const UnavailableMealPlanImageRepository(),
@@ -432,7 +433,9 @@ GoRouter createSuperadminRouter({
     store: developmentActivityStore,
   );
   final developmentActivityAboutRepository = DevelopmentActivityProfileAboutRepository();
-  const blockedCareProfilesRepository = UnavailableHealthCareRepository();
+  // Antes era sempre indisponivel. Agora vem da composicao: fica indisponivel
+  // enquanto a chave do pacote de Cuidado, Medicacao e Rotina estiver desligada.
+  final careProfilesRepository = healthCareRepository;
   DevHealthCareRepository? cachedCareProfilesPreviewRepository;
   DevHealthCareRepository careProfilesPreviewRepository() => cachedCareProfilesPreviewRepository ??=
       DevHealthCareRepository.content(catalog: accessHealthFixtures);
@@ -2575,7 +2578,7 @@ GoRouter createSuperadminRouter({
             path: SuperadminRoutes.healthCareProfiles,
             name: SuperadminRoutes.healthCareProfilesName,
             builder: (context, state) => HealthCareProfileDirectoryPage(
-              controller: HealthCareController(blockedCareProfilesRepository),
+              controller: HealthCareController(careProfilesRepository),
               logout: logout,
               onCreate: () => context.goNamed(SuperadminRoutes.healthCareProfileCreateName),
               onChildSelected: (childId) => context.pushNamed(

@@ -1,12 +1,12 @@
 {
- "revision": 7,
+ "revision": 8,
  "round": "E2-R03-20260910",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5[1m]",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-10T05:30:00-03:00",
+ "updatedAt": "2026-09-10T07:10:00-03:00",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-formularios-cuidado-rotina",
  "branch": "work/etapa2-r03-formularios-cuidado-rotina",
  "head": "bb15db748",
@@ -50,13 +50,15 @@
   "note": "Fundacao health_care/medication inexistente. Construindo o primeiro pacote SQL da familia health_care."
  },
  "tests": {
-  "pass": 179,
+  "pass": 192,
   "fail": 0,
   "blocked": 0,
   "skipped": 0,
   "notRun": 0,
-  "pgtap": "90 (daily_routine_foundation 34, daily_routine_scope_closure 6, attendance_authorization_and_idempotency 23, health_care_and_medication_plans 27)",
-  "flutter": "89 em apps/superadmin/test/features/attendance; dart analyze da feature limpo",
+  "pgtap": "93 nos quatro arquivos, sobre o replay descartavel",
+  "flutter": "89 attendance + 7 cuidado/medicacao + 6 rotina = 102 nas suites que eu escrevi ou alterei",
+  "analyzer": "dart analyze lib limpo em apps/superadmin",
+  "falhas_preexistentes_nas_areas_tocadas": "8, todas medidas tambem SEM as minhas mudancas por git stash: 4 goldens de health_care/presentation (pendentes das correcoes do Owner, nao regravar) e 4 de saneamento de composicao que reclamam de Activities, Access e Unidades, familias de outros grupos",
   "escopo": "nao e a suite completa do app e nao e prova E2E"
  },
  "reservedFiles": [],
@@ -70,7 +72,7 @@
   }
  ],
  "deltaProposals": [],
- "nextStep": "Repositorios Supabase de Perfis de cuidado, Medicacao e Rotina no cliente; depois Formularios.",
+ "nextStep": "Formularios: autoria, respostas, arquivos e o XLSX de forms.responses.export.",
  "findings": [
   {
    "id": "F-R03-FCR-001",
@@ -220,6 +222,27 @@
    ],
    "pendencia_registrada_nao_omitida": "leitura por responsavel familiar nao entra neste pacote: exigiria uma capacidade de guardiao que ainda nao existe, e inventa-la seria decidir sozinho quem ve dado de saude de crianca. Precisa de decisao.",
    "oq_003": "prazo de retencao, base legal e regra clinica continuam abertos. A migration nao apaga nada por tempo, nao infere consentimento e nao classifica gravidade por conta propria."
+  },
+  {
+   "id": "PKG-R03-FCR-CLIENTE-01",
+   "familia": "health_care + medication + daily_routine (cliente)",
+   "estado": "escrito, testado e ligado a chave; analyzer limpo",
+   "arquivos": [
+    "apps/superadmin/lib/features/health_care/data/supabase_health_care_repository.dart",
+    "apps/superadmin/lib/features/health_care/data/supabase_medication_plan_repository.dart",
+    "apps/superadmin/lib/features/daily_routine/data/supabase_routine_repository.dart"
+   ],
+   "testes": [
+    "apps/superadmin/test/features/health_care/data/supabase_health_care_data_test.dart (7)",
+    "apps/superadmin/test/features/daily_routine/data/supabase_routine_data_test.dart (6)"
+   ],
+   "decisoes": [
+    "os dois metodos de medicacao de HealthCareRepository falham fechados com o motivo: a spec 020 diz que os destinos sao irmaos e que o perfil nao incorpora doses, entao escrever medicacao pelo perfil seria inventar um caminho que o backend nao tem",
+    "o HealthCareActor que a interface recebe serve so para a tela desenhar; nenhuma autorizacao e feita com ele, e isso esta escrito no arquivo",
+    "escrever le a versao atual antes, para leitura obsoleta virar conflito e nunca sobrescrita silenciosa",
+    "salvar plano rele o detalhe pela leitura autorizada, para a tela nao renderizar um estado que uma nova leitura nao confirmaria",
+    "negativa de escopo do servidor e opaca e vira notFound no cliente, sem confirmar existencia"
+   ]
   }
  ],
  "filaSQL": [
@@ -242,6 +265,24 @@
   {
    "ordem": 5,
    "arquivo": "packages/coelo_database/migrations/20260910010400_health_care_behavior_v1.sql"
+  },
+  {
+   "ordem": 6,
+   "arquivo": "packages/coelo_database/migrations/20260910010500_daily_routine_client_contract_v1.sql"
   }
- ]
+ ],
+ "chaveDeComposicao": {
+  "nome": "SuperadminAppConfig.careAndRoutineBackendEnabled",
+  "variavel": "COELO_ENABLE_CARE_AND_ROUTINE_BACKEND",
+  "arquivo": "apps/superadmin/lib/core/config/superadmin_app_config.dart",
+  "estado": "declarada e ligada na composicao, valor padrao false",
+  "liga": [
+   "Perfis de cuidado (SupabaseHealthCareRepository)",
+   "Planos de medicacao (SupabaseMedicationPlanRepository)",
+   "Rotina diaria (SupabaseRoutineRepository)"
+  ],
+  "depende_de": "migrations 20260910010000 a 20260910010500 aplicadas",
+  "por_que_nasce_desligada": "antes do SQL aplicado, ligar trocaria uma indisponibilidade honesta por erro obscuro contra um banco sem esses objetos",
+  "mudanca_estrutural": "SuperadminAuthScope ganhou o campo healthCareRepository, que nao existia: Perfis de cuidado estava preso a UnavailableHealthCareRepository dentro do proprio router. Passa por main.dart, superadmin_app.dart e superadmin_router.dart."
+ }
 }
