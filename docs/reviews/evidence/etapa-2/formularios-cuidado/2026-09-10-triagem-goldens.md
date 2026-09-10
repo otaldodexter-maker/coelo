@@ -161,6 +161,60 @@ absoluto. No editor a mesma causa da 43,94% em 375, 17,01% em 768 e 4,08% em
 1024. Percentual alto em tela estreita nao e evidencia de conteudo; percentual
 que CAI com a largura e evidencia de deslocamento.
 
+## Os quatro goldens de Saude e Cuidado
+
+A primeira versao desta triagem cobria oito falhas. Ao corrigir o recorte —
+dezessete arquivos de teste meus viviam fora do caminho que eu declarava — o
+numero subiu para quinze, e quatro delas sao goldens de
+`health_care_golden_test` que eu nunca tinha triado. Estao aqui.
+
+As divergencias caem com a largura, como as de Formularios: movel claro 17,03% e
+20,09%, desktop escuro 9,99%. Mas magnitude nao classifica, entao comparei
+elemento a elemento.
+
+**Nao sao deslocamento puro.** Ha quatro diferencas reais de conteudo, e as tres
+primeiras vem do shell:
+
+- o menu lateral ganhou um campo "Buscar na navegacao" no topo, o que empurra
+  todo o menu para baixo;
+- o menu ganhou o item "Coelo (Principal)";
+- o icone de reportar defeito sumiu do cabecalho;
+- a linha de filtros reflui: na referencia "Situacao da dose" quebrava para uma
+  segunda linha e agora cabe na primeira, porque o campo de busca ficou mais
+  estreito.
+
+**E ha uma quinta, que e de conteudo e nao de layout.** O cartao de plano de
+medicacao mostrava, na referencia:
+
+> Casa, Instituicao Demo A, Instituicao Demo B • Professor Demo, Enfermagem Demo
+
+e mostra hoje:
+
+> Casa, Contexto institucional indisponivel • Responsavel indisponivel
+
+A causa esta no proprio codigo, e e explicita:
+
+```dart
+String _institutionLabel(String _) => 'Contexto institucional indisponível';
+String _responsibleLabel(String _) => 'Responsável indisponível';
+```
+
+Sao funcoes que recebem o identificador e o IGNORAM. O dado existe — o modelo
+tem `institutionId` e `recipientIds`, e a pagina os passa — mas nao existe
+resolucao de nome. O stub e honesto: mostrar "indisponivel" e melhor que mostrar
+um UUID a quem cuida de uma crianca.
+
+**Nao e regressao desta rodada.** As duas funcoes entraram entre 12 e 25 de
+agosto, a ultima em `3f4b3bf78`, "remove legacy detail flows". O golden e que
+ficou velho desde entao e ninguem o regravou. E e coerente com o escopo
+aprovado: `specs/020` esta `approved-for-demonstrative-ui`, e resolver nome de
+instituicao e de responsavel exigiria leitura que esse escopo nao contempla.
+
+Vale registrar para o Owner, ainda assim, porque a perda e de informacao de
+cuidado: a tela que diz quem responde pela medicacao de uma crianca hoje nao diz
+nome nenhum. Nao e defeito a corrigir dentro do escopo vigente; e uma
+consequencia dele que convem ser vista antes de a tela ser considerada pronta.
+
 ## Consequencia para a decisao do rebaseline
 
 Das 23 imagens, 8 sao deslocamento puro, 5 sao deslocamento amplificado e 10

@@ -186,6 +186,30 @@ Entao sete em nove vale como evidencia de que aquelas guardas estao protegidas.
 NAO vale como medida de cobertura, e um "nao pegou" so vira achado depois de
 responder onde aquela regra deveria estar coberta.
 
+### O terceiro modo de falha: o mutante equivalente
+
+Depois de corrigir o recorte, apliquei a bateria a uma invariante de seguranca
+que passa a ser minha: `SuperadminMediaScope` declara, em comentario, que *False
+is sticky — a failed purge cannot be bypassed by a later transition*. Uma purga
+de midia que falhou nao pode ser contornada por uma transicao posterior.
+
+Mutei a composicao para que so o ultimo resultado contasse, e os DOIS arquivos
+de teste que tocam essa classe continuaram verdes. Parecia lacuna grave: uma
+garantia fail-closed de midia sem protecao.
+
+Nao e. A mutacao e **inobservavel**. `_publishAfterPurge` retorna cedo quando o
+dreno falhou, entao `_current` permanece nulo para sempre; `_retire` passa a ver
+sempre `previous == null` e nunca reatribui `_drained`. Nao existe estado
+alcancavel com uma falha seguida de um sucesso para o `.every` distinguir do
+`.last`. A invariante e garantida pela guarda de publicacao, e o `.every` e
+cinto e suspensorio de um estado que o desenho ja proibe.
+
+Isso da a terceira forma de um "nao pegou" enganar, e as tres sao diferentes:
+mira errada (o teste que protege a linha esta em outro arquivo), lacuna real (o
+padrao de tamanho de texto), e mutante equivalente (aqui). Antes de registrar
+uma lacuna e preciso responder duas perguntas, nao uma: *onde essa regra deveria
+estar coberta?* e *esse estado e alcancavel?*
+
 ## Uma verificacao que nunca passa nao esta rigorosa, esta quebrada
 
 A lei acima apareceu por um caminho e se confirmou por outro no mesmo turno.
