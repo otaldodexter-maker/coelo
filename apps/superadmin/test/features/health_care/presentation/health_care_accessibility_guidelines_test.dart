@@ -1,6 +1,7 @@
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/health_care/presentation/health_care_controller.dart';
 import 'package:coelo_superadmin/features/health_care/presentation/health_care_directory_page.dart';
+import 'package:coelo_superadmin/features/health_care/presentation/health_care_form_pages.dart';
 import 'package:coelo_superadmin/features/health_care/presentation/health_medication_plan_directory_page.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
@@ -82,6 +83,33 @@ void main() {
         onCreate: () {},
       ),
     );
+  });
+
+  // Eu supus que o formulario de perfil de cuidado nao montasse o shell e que
+  // por isso desse para verificar as TRES diretrizes nele. Supus errado: ele
+  // monta, e reprova no MESMO no de 242x44 do botao de menu do usuario. Fica
+  // com rotulo e contraste, como as outras, pelo mesmo motivo.
+  testWidgets('the care profile form meets labelling and contrast', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1440, 1600);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    final handle = tester.ensureSemantics();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: HealthCareProfileFormPage(
+            logout: unavailableSuperadminLogout,
+            onCancel: () {},
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+    await expectLater(tester, meetsGuideline(textContrastGuideline));
+    handle.dispose();
   });
 
   testWidgets('the medication plan directory meets labelling and contrast', (tester) async {
