@@ -1,18 +1,34 @@
 ---
-title: "Decisão do Owner — três ações de Circulares sem afordância"
+title: "Decisão do Owner — oito pontos do recorte publicacoes-midia"
 source: "Varredura de 25 métodos de interface das famílias acontece, agora, momentos e circulars contra consumidores em presentation, application e app; rodada noturna de 09-10/09/2026"
 status: "decision-request; nenhuma tela nova criada; nenhuma mutação remota executada"
 generated_at: "2026-09-10"
 timezone: "America/Sao_Paulo"
 ---
 
-# Três ações de Circulares que existem no backend e não existem na tela
+# Oito pontos que precisam da sua decisão
 
-Este documento junta **uma** decisão em vez de três perguntas soltas. As três
-ações compartilham a mesma causa: caminho completo do banco até o repositório,
-sem nenhuma afordância que as acione.
+Este documento junta em **um só lugar** tudo o que o grupo `publicacoes-midia`
+encontrou e deliberadamente não decidiu sozinho. Cada ponto vem com o caminho
+já mapeado, para que a resposta custe uma decisão e não uma investigação.
 
-Uma delas já foi corrigida nesta rodada; as outras duas dependem de decisão.
+Ele começou com três ações de Circulares que existem no backend e não existem
+na tela — e cresceu, porque o mesmo padrão apareceu em mais cinco lugares.
+
+**Índice**
+
+1. `circulars.close` — inerte: backend completo, nenhuma afordância.
+2. `circulars.delete` — sem RPC de gateway e sem consumidor.
+3. `circulars.attach` — **já corrigido nesta rodada**, fica como referência.
+4. Teto do feed de Acontece: 20 itens, sem paginação.
+5. Agendar Circular: botão existe e está desabilitado em toda parte.
+6. Uma tela inteira sem rota, com dez goldens aprovados.
+7. Abas do Perfil implementadas duas vezes, e a viva não é a que tem golden.
+8. Telas produtivas que dizem ao usuário que ele está numa prévia — com
+   **patch já preparado** e não mesclado.
+
+Os três primeiros estão detalhados na seção seguinte; os demais têm seção
+própria.
 
 ## O que existe hoje, ação por ação
 
@@ -76,7 +92,7 @@ Se o Owner aprovar, o caminho é este e não precisa de descoberta adicional:
 4. **Auditoria**: `close_circular_responses` já registra; a exclusão precisaria
    do equivalente antes de existir.
 
-## As três perguntas, em uma
+## As três perguntas dos dois primeiros pontos
 
 1. Encerrar respostas entra pela rota `/manage` dedicada, como o portão sugere?
 2. Exclusão lógica administrativa entra no MVP, ou fica adiada como importação
@@ -85,6 +101,8 @@ Se o Owner aprovar, o caminho é este e não precisa de descoberta adicional:
    lugar?
 
 Respondidas as três, a implementação é direta e não depende de mais nada.
+
+As perguntas dos pontos 4 a 8 estão ao fim de cada seção correspondente.
 
 ## O que NÃO está sendo pedido
 
@@ -136,8 +154,11 @@ Acontece e de Agora, mas ele é um **campo inline**, não um diálogo. Então:
 - trocar o botão por um campo inline, como nas publicações irmãs, altera a
   composição aprovada do compositor.
 
-Não há golden do compositor, então qualquer das duas é tecnicamente barata. A
-escolha é de linguagem visual, não de custo.
+Não há golden do compositor **administrativo**, que é o roteado, então qualquer
+das duas é tecnicamente barata. A escolha é de linguagem visual, não de custo.
+
+(Há, sim, dez goldens de compositor — mas do `PrincipalCircularComposerPage`,
+que é o da sexta decisão abaixo: a página que nenhuma rota constrói.)
 
 ## Sexta decisão: uma tela inteira sem rota
 
@@ -149,6 +170,13 @@ O custo não é o código parado. A suíte dela passa para sempre, então ela co
 como área coberta e saudável; e quem lê conclui que existe um compositor de
 Circular na superfície do Principal, quando o que está roteado é o
 `SuperadminCircularComposerPage`, administrativo.
+
+E há mais: **dez goldens aprovados** guardam essa página, em
+`principal_circular_golden_test`, nas duas luminâncias e em quatro larguras.
+Ou seja, existe referência visual aprovada — e verde — para uma tela que
+ninguém alcança. É o mesmo que acontece com as abas duplicadas da decisão
+seguinte, e os dois casos juntos mostram que "tem golden" não é evidência de
+que a superfície exista para o usuário.
 
 Não foi removida porque, diferente do contrato órfão de retirada — onde havia
 dois contratos vivos para a mesma coisa e um estava ligado — aqui há uma tela
