@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-09-09T22:02:52.163948-03:00",
+  "scope": "apps/superadmin -> Atividades -> criar/editar -> salvar/submit",
+  "action_ids": [
+    "activities.create",
+    "activities.edit",
+    "activities.location"
+  ],
+  "status": "local-green; no terminal promotion",
+  "cause": "A callback captured while enabled could enter save twice before a UI rebuild; after disposal it validated a disposed controller.",
+  "changes": [
+    "Save and submit verify mounted/controller/pending submission before validation or any side effect.",
+    "Existing command generation, stable attempt and post-await guards remain intact."
+  ],
+  "metrics": {
+    "N": 4,
+    "E": 4,
+    "P": 4,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0
+  },
+  "dedup": "2new retained-save callback cases;2existing successful completion and ambiguous draft retry cases.",
+  "runs": [
+    {
+      "runner": 18351,
+      "chunk": "d39274",
+      "phase": "causal RED",
+      "F": 2,
+      "exit_code": 1,
+      "reason": "Two sent drafts during same pending attempt; use-after-dispose controller assertion."
+    },
+    {
+      "runner": 15633,
+      "chunk": "58ab4d",
+      "phase": "GREEN",
+      "P": 4,
+      "exit_code": 0,
+      "filter": "activity retained save callback|failed draft save exposes retry|saves a minimum draft then completes"
+    },
+    {
+      "runner": 20779,
+      "chunk": "4b35fd",
+      "phase": "analyzer final",
+      "issues": 0,
+      "exit_code": 0
+    }
+  ],
+  "review": "bindings_review static review: no material findings; isSubmitting set before first await and preserved generation guards.",
+  "limits": [
+    "New negative cases invoke retained save callback; submit shares the guard and existing completion regression, without separate retained-submit negative test.",
+    "No visual/layout change, new SQL, remote action, activation or Auth/CHILD/shell change.",
+    "Normal mutation composition stays blocked; local callbacks do not prove live backend receipt.",
+    "Raw runner output not saved; chunk IDs and filters recorded."
+  ],
+  "hashes": {
+    "apps/superadmin/lib/features/activities/presentation/activity_form_page.dart": "57f574fcc404bdbdfaf756c88bb41ee1b224804572f263f52ef76d1b5b4e471e",
+    "apps/superadmin/test/features/activities/presentation/activity_form_page_test.dart": "6032e0261ba1f0674d86dbff07d174f334149546e9e6d35d81c4e22236a6380a"
+  }
+}

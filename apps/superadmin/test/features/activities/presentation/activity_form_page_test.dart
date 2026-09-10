@@ -20,6 +20,46 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final disposed in [false, true]) {
+    testWidgets('activity retained save callback is guarded disposed=$disposed', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1440, 1000));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final pending = Completer<void>();
+      final sent = <ActivityFormDraft>[];
+      await tester.pumpWidget(
+        _app(
+          activityId: 'activity-1',
+          onSaveDraft: (draft) {
+            sent.add(draft);
+            return pending.future;
+          },
+        ),
+      );
+      await tester.pumpAndSettle();
+      final callback =
+          tester
+                  .widget<OutlinedButton>(find.byKey(const Key('activity-form-save-draft')))
+                  .onPressed!
+              as Future<void> Function();
+      if (disposed) {
+        await tester.pumpWidget(const SizedBox.shrink());
+        await callback();
+        expect(sent, isEmpty);
+      } else {
+        final first = callback();
+        final second = callback();
+        try {
+          expect(sent, hasLength(1));
+        } finally {
+          pending.complete();
+          await Future.wait([first, second]);
+          await tester.pumpAndSettle();
+        }
+      }
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   for (final failure in [false, true]) {
     testWidgets('activity write freeze protects catalog A while pending failure=$failure', (
       tester,

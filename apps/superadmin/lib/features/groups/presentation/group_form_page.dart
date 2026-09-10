@@ -162,10 +162,9 @@ final class _GroupFormPageState extends State<GroupFormPage> {
   String? _saveError;
   GroupDirectorySaveRequest? _pendingSave;
   String? _pendingSaveFingerprint;
-  bool _saveAttemptStarted = false;
   bool _saveContextInvalidated = false;
   static const _changedSaveContextMessage =
-      'O contexto mudou após uma tentativa de salvamento. Reabra o formulário para continuar.';
+      'O contexto do formulário mudou. Reabra o formulário para continuar.';
   _GroupFormStep _currentStep = _GroupFormStep.hierarchy;
   final Set<_GroupFormStep> _completedSteps = {};
   final Set<_GroupFormStep> _errorSteps = {};
@@ -198,25 +197,27 @@ final class _GroupFormPageState extends State<GroupFormPage> {
   @override
   void didUpdateWidget(covariant GroupFormPage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (_saveAttemptStarted &&
-        (!identical(oldWidget.repository, widget.repository) ||
-            oldWidget.groupId != widget.groupId ||
-            oldWidget.initialInstitutionId != widget.initialInstitutionId ||
-            oldWidget.initialUnitId != widget.initialUnitId)) {
+    if (!identical(oldWidget.repository, widget.repository) ||
+        oldWidget.groupId != widget.groupId ||
+        oldWidget.initialInstitutionId != widget.initialInstitutionId ||
+        oldWidget.initialUnitId != widget.initialUnitId) {
       _saveContextInvalidated = true;
       _saveError = _changedSaveContextMessage;
     }
   }
 
   Future<void> _loadContext() async {
+    final repository = widget.repository;
+    final groupId = widget.groupId;
+    final initialInstitutionId = widget.initialInstitutionId;
+    final initialUnitId = widget.initialUnitId;
     try {
-      final initialRecord = widget.groupId == null
-          ? null
-          : await widget.repository.findById(widget.groupId!);
-      final context = await widget.repository.fetchFormContext(
-        institutionId: widget.initialInstitutionId ?? initialRecord?.institutionId,
+      final initialRecord = groupId == null ? null : await repository.findById(groupId);
+      if (!mounted || _saveContextInvalidated) return;
+      final context = await repository.fetchFormContext(
+        institutionId: initialInstitutionId ?? initialRecord?.institutionId,
       );
-      if (!mounted) return;
+      if (!mounted || _saveContextInvalidated) return;
 
       _institutionOptions = context.institutions;
       _unitOptions = context.units;
@@ -253,10 +254,10 @@ final class _GroupFormPageState extends State<GroupFormPage> {
       _surfaceColorController.text = appearance['surface_color'] ?? '#FFFFFF';
 
       _selectedInstitution =
-          _resolveInstitution(widget.initialInstitutionId ?? initialRecord?.institutionId) ??
+          _resolveInstitution(initialInstitutionId ?? initialRecord?.institutionId) ??
           (context.institutions.isNotEmpty ? context.institutions.first : null);
       _selectedUnit = _resolveUnitForInstitution(
-        widget.initialUnitId ?? initialRecord?.unitId,
+        initialUnitId ?? initialRecord?.unitId,
         _selectedInstitution?.id,
       );
       if (_selectedUnit == null) {
@@ -268,13 +269,13 @@ final class _GroupFormPageState extends State<GroupFormPage> {
         _loading = false;
       });
     } on GroupDirectoryUnauthorizedException {
-      if (!mounted) return;
+      if (!mounted || _saveContextInvalidated) return;
       setState(() {
         _loading = false;
         _loadingError = 'Sem permissão para carregar os dados desta tela.';
       });
     } on Exception {
-      if (!mounted) return;
+      if (!mounted || _saveContextInvalidated) return;
       setState(() {
         _loading = false;
         _loadingError = 'Não foi possível carregar as opções de turma.';
@@ -615,7 +616,6 @@ final class _GroupFormPageState extends State<GroupFormPage> {
             ),
         ],
       );
-      _saveAttemptStarted = true;
       _pendingSaveFingerprint = fingerprint;
       final result = await widget.repository.saveComposition(request);
       if (!mounted) return;
@@ -690,7 +690,16 @@ final class _GroupFormPageState extends State<GroupFormPage> {
         onDestinationSelected: _selectDestination,
         onBugReportSubmitted: widget.onBugReportSubmitted,
         chatLauncherBottomInset: _footerHeight == 0 ? 0 : _footerHeight + CoeloSpacing.space4,
-        child: _loading
+        child: _saveContextInvalidated
+            ? CoeloStatePanel(
+                key: const Key('group-form-save-context-changed'),
+                title: 'Contexto alterado',
+                message: _changedSaveContextMessage,
+                icon: Icons.info_outline,
+                actionLabel: 'Voltar às turmas',
+                onAction: widget.onCancel,
+              )
+            : _loading
             ? const Center(child: CircularProgressIndicator())
             : _loadingError != null
             ? CoeloStatePanel(
@@ -698,15 +707,6 @@ final class _GroupFormPageState extends State<GroupFormPage> {
                 title: 'Não foi possível carregar',
                 message: _loadingError!,
                 icon: Icons.error_outline_outlined,
-                actionLabel: 'Voltar às turmas',
-                onAction: widget.onCancel,
-              )
-            : _saveContextInvalidated
-            ? CoeloStatePanel(
-                key: const Key('group-form-save-context-changed'),
-                title: 'Contexto alterado',
-                message: _changedSaveContextMessage,
-                icon: Icons.info_outline,
                 actionLabel: 'Voltar às turmas',
                 onAction: widget.onCancel,
               )

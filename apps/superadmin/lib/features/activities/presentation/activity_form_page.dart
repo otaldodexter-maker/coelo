@@ -245,7 +245,8 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
   }
 
   Future<void> _saveDraft() async {
-    final controller = _controller!;
+    final controller = _controller;
+    if (!mounted || controller == null || controller.isSubmitting) return;
     if (!controller.validateDraft()) return;
     if (controller.selectedLocationId != null) {
       setState(() => _failedCommand = _ActivityFormCommand.saveDraft);
@@ -275,7 +276,8 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
   }
 
   Future<void> _submit() async {
-    final controller = _controller!;
+    final controller = _controller;
+    if (!mounted || controller == null || controller.isSubmitting) return;
     if (!controller.validateCompletion()) return;
     if (controller.selectedLocationId != null ||
         controller.cataloguedLocationSelection != null ||
