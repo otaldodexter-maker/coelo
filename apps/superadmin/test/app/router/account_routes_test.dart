@@ -6,10 +6,10 @@ import 'package:coelo_superadmin/features/account/domain/user_preferences.dart';
 import 'package:coelo_superadmin/features/account/presentation/screens/settings_page.dart';
 import 'package:coelo_superadmin/features/account/presentation/screens/profile_page.dart';
 import 'package:coelo_superadmin/features/account/presentation/user_preferences_controller.dart';
+import 'package:coelo_superadmin/features/errors/presentation/screens/superadmin_error_screen.dart';
 import 'package:coelo_superadmin/features/auth/domain/login_request.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/auth/domain/password_recovery.dart';
-import 'package:coelo_superadmin/features/errors/presentation/screens/superadmin_error_screen.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -20,7 +20,7 @@ void main() {
     expect(SuperadminRoutes.settings, '/settings');
   });
 
-  testWidgets('production profile fails closed without mounting the local editor', (tester) async {
+  testWidgets('production profile mounts the production controller and fails closed on unavailable data', (tester) async {
     final session = SuperadminSession()..signInForTesting();
     final router = createSuperadminRouter(
       session: session,
@@ -36,9 +36,8 @@ void main() {
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
     await tester.pumpAndSettle();
 
-    expect(find.byType(ProfilePage), findsNothing);
-    expect(find.byType(SuperadminErrorScreen), findsOneWidget);
-    expect(find.text('503'), findsOneWidget);
+    expect(find.byType(ProfilePage), findsOneWidget);
+    expect(find.text('503'), findsNothing);
   });
 
   testWidgets('dev profile mounts only its isolated local controller', (tester) async {

@@ -138,7 +138,11 @@ final class AccountController extends ChangeNotifier {
     if (generation == null) return;
     final next = current.copyWith(clearEmailChange: true);
     try {
-      await repository.save(next);
+      if (repository case final AccountEmailChangeCancellation cancellation) {
+        await cancellation.cancelEmailChange();
+      } else {
+        await repository.save(next);
+      }
       if (!_isCurrentCommand(generation)) return;
       if (_emailActivityId != null) activities.removeActivity(_emailActivityId!);
       _emailActivityId = null;
