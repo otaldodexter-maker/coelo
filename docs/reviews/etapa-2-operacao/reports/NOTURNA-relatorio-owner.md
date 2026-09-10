@@ -3050,6 +3050,55 @@ aqui enganou quem escreveu.
   cada execução e, rastreados, fazem qualquer frente aparecer no fechamento com
   alterações que não são trabalho.
 
+## O fechamento, medido às 04:54
+
+Este bloco é o estado da entrega, lido no mesmo instante em que foi escrito.
+
+**Base entregue:** `8f5a1cf8f`, publicada, sem divergência com o remoto, árvore de
+trabalho limpa em zero linhas, nenhum arquivo guardado em stash.
+
+**Portões:** `flutter analyze lib test` em `apps/superadmin` — **nenhum problema**,
+e é a primeira vez na noite que a base fecha limpa em código **e** em teste; o
+validador dos três rastreadores — **PASS**, com 230 ações, 39 famílias, 11 de
+front-end certificadas, zero de backend, zero de ponta a ponta e 198 integrações
+ativas; o portão de conhecimento — **PASS, 61 artigos**. O próprio validador imprime
+a ressalva que precisa chegar até você sem reformulação: **validação estrutural, não
+certificação de runtime.** Ele confere consistência entre os três rastreadores; não
+diz que a tela funciona.
+
+**Trabalho não integrado, três itens, nenhum acidental e nenhum perdido:**
+
+- `80f160599` — a cópia das três telas que se declaram uma prévia ao usuário. Está
+  **retido por decisão**, publicado e sem divergência: patch preparado, não mesclado,
+  não testado sobre a base atual. É um item da sua lista, não uma pendência
+  esquecida.
+- `8d06b8a91` — commit **vazio**, zero arquivos alterados. A branch que o carrega
+  seria candidata a remoção; **deixei-a de pé**, porque apagar não traz benefício e a
+  decisão não é minha. Fica declarada em vez de silenciosamente limpa.
+- `3789c98b7` — a entrega final de uma frente, **já dentro da base**. A branch de
+  trabalho que a publica carrega junto dois commits meus, por `HEAD` ter sido
+  resolvido no momento do push numa árvore compartilhada. Não há perda; a etiqueta é
+  que ficou errada, e está dito.
+
+**O que eu NÃO verifiquei no fechamento, e não vou apresentar como verificado:**
+
+- **A suíte completa não foi reexecutada sobre a base entregue.** O último número
+  completo — 6390 aprovados, 14 ignorados, 144 falhas — é de uma base anterior, e os
+  commits desde então são de documento e de canal. **Que isso não mexa no número é
+  inferência minha, não medição.**
+- **Os 28 processos de teste vivos na máquina não têm dono conhecido.** Nenhuma
+  frente registrou identificador de processo por corrida, então nenhuma consegue
+  dizer quais são seus. A trajetória foi 32 às 04:09, 30 às 04:14, 28 no corte:
+  caem sozinhos. Nenhum foi morto por nenhuma frente.
+- **`C:/cdchk` continua aberto**: 12 KB de árvore vazia com um diretório travado por
+  processo, com o registro de worktree já removido do Git. Sai sozinho quando os
+  processos morrerem, ou precisa de remoção manual. **Declarado como não fechado.**
+- Duas etiquetas locais de congelamento de auditoria não foram publicadas e somem se
+  o repositório local for limpo.
+
+**Nada foi aplicado em ambiente remoto por nenhuma das seis frentes, em nenhum
+momento da rodada** — nem leitura, nem escrita, em Supabase ou Cloudflare.
+
 ## O que ainda falta
 
 Esta seção é atualizada a cada ciclo e fechada no corte das 05:00.
