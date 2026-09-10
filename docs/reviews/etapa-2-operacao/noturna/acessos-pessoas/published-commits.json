@@ -1,5 +1,5 @@
 {
-    "through":  "c0e4fc47d",
+    "through":  "8f3905819",
     "branch":  "work/etapa2-noturna-acessos-pessoas",
     "commits":  [
                     {
@@ -117,9 +117,25 @@
                     {
                         "sha":  "c0e4fc47dfc45dd5317663a7f01c54cefdb97035",
                         "subject":  "test(superadmin): reconcile person detail navigation goldens"
+                    },
+                    {
+                        "sha":  "c526307ddf202b022cb9c3eb6423801debcba506",
+                        "subject":  "docs(acessos): consolidate route proofs and production reachability"
+                    },
+                    {
+                        "sha":  "f4dd600ff63d8f2ead4a517fd70ebb103ffb2abc",
+                        "subject":  "docs(safety): identify shared accessibility failures on integrated base"
+                    },
+                    {
+                        "sha":  "571ac3cf059c0198303e775e66e332294a40515e",
+                        "subject":  "fix(safety): normalize legacy transport failures at repository boundary"
+                    },
+                    {
+                        "sha":  "8f3905819e5e4586b820329ebb7f7351bb981e4b",
+                        "subject":  "test(safety): verify loaded development route reflow on integrated base"
                     }
                 ],
-    "count":  29,
+    "count":  33,
     "base":  "d784462c1",
     "materialized_integrated_base":  "6aa352c6a434086905444aaa5f128034ad8352e6; imported by fast-forward; other authors not counted"
 }

@@ -8,6 +8,45 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  for (final operation in ['read', 'command']) {
+    test('$operation normalizes a transport failure as unavailable', () async {
+      final client = _client((_) async => throw ClientException('Connection interrupted'));
+      addTearDown(client.dispose);
+      final repository = SupabaseChildSafetyRepository(client);
+
+      await expectLater(
+        operation == 'read'
+            ? repository.fetchChild('child-1')
+            : repository.saveAuthorization(_command()),
+        throwsA(isA<ChildSafetyUnavailableException>()),
+      );
+    });
+  }
+
+  for (final code in ['42501', '40001', '23505']) {
+    test('transport boundary preserves database error $code', () async {
+      final client = _client(
+        (request) async => Response(
+          jsonEncode({'code': code, 'message': 'Denied or changed'}),
+          code == '42501' ? 403 : 409,
+          request: request,
+          headers: {'content-type': 'application/json'},
+        ),
+      );
+      addTearDown(client.dispose);
+      final repository = SupabaseChildSafetyRepository(client);
+
+      await expectLater(
+        repository.fetchChild('child-1'),
+        throwsA(
+          code == '42501'
+              ? isA<ChildSafetyUnauthorizedException>()
+              : isA<ChildSafetyConflictException>(),
+        ),
+      );
+    });
+  }
+
   test('create sends the mandatory audited request reason', () async {
     late Request captured;
     final client = _client((request) async {

@@ -1,5 +1,5 @@
 ---
-source: "TRABALHO-ATUAL; coordenacao r16; branch work/etapa2-noturna-acessos-pessoas; handoffs e manifests locais"
+source: "TRABALHO-ATUAL; coordenacao r18; branch work/etapa2-noturna-acessos-pessoas; handoffs e manifests locais"
 status: "checkpoint publicado; vigilancia ativa ate corte; nenhuma certificacao nova"
 generated_at: "2026-09-09"
 ---
@@ -12,7 +12,7 @@ Convites, Usuarios internos, Seguranca infantil e Arquivos de perfil`.
 1 gate MFA. ADR0019/AAL1, import/export adiados, duplicacao R02 e confinamento
 de Convites preservados. Somente Claude integra dev e escreve rastreadores.
 
-Resultado local unico: **419P,0F,0S,120U**; U120=Safety108+concorrenciaModelos12.
+Resultado local unico: **430P,4F,0S,120U**; U120=Safety108+concorrenciaModelos12.
 [Contagem por conjunto](current-results.json) separa testes de PNGs, preparacao
 7P e historico R02. Nenhum certificado FE/BE/E2E novo; historico FE2/38 refere-se
 aos adiamentos. Ativos FE0/31,BE0/31,E2E0/31. Nao e medicao atual da suite ampla.
@@ -78,7 +78,7 @@ Os testes antigos nao foram repetidos; as novas quatro provas usam6aa.
 Ancestralidade Git nao afirma verificacao integrada ou aceite de produto.
 
 Checkpoints atuais, HEAD/upstream, recursos e deltas propostos estao no canal
-compartilhado `comunicacao/acessos-pessoas.json`.32deltas:24frontend continuam
+compartilhado `comunicacao/acessos-pessoas.json`.34deltas:26frontend continuam
 pending-verification e8backend blocked-environment. Nenhum rastreador central
 foi escrito pelo executor. Tres filhos recolhidos, sem runners; concorrencia
 Modelos permanece encerrada por bloqueio automatico.
@@ -107,3 +107,12 @@ registra entradas das sete familias. Detalhes de Pessoas, Perfis e Modelos
 tem rota mas nenhum ponto de entrada UI identificado; cards de Perfis/Modelos
 levam a editar. Isso acrescenta gate de alcance aos respectivos detalhes,
 sem habilitar callbacks ou alterar decisoes. Todos os filhos recolhidos.
+
+Prioridade Safety recebida r18 foi investigada e publicada: [reflow4P](safety-reflow/handoff.md)
+8f3905819 confirma carga e alcance em375/1440texto100/200. [Transporte5P](safety-transport/handoff.md)
+571ac3cf0 normalizaClientException no adapterlegado sem captura ampla. [Diretrizes2P4F](safety-accessibility/handoff.md)
+f4dd600ff: rotulos passam; menu usuario44px e contrastes continuam falhos nas
+duas composicoes. Sao causas compartilhadas reservadas a Claude. Token declarado
+difere da amostragem de contraste; apurar render/estilo antes de mudar token global.
+Sonda exata e logs publicados fora da suite regular, quatro falhas mantidas na
+contagem atual. Loading e overflow da triagem d784 nao reproduzidos na base6aa.

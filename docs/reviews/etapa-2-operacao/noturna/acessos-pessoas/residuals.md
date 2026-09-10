@@ -42,7 +42,7 @@ BE0/223,E2E0/198, histórico e não recontado nesta rodada.
 | invites.detail | Link restrito/contexto R02 integrado | Runtime normal autorizado |
 | invites.resend | Receipt tardio/revisão descartados no R02 | Envio real nominal e composição normal |
 | invites.revoke | Overlay/revisão R02 preservados | Revogação e recarga reais com autorização nominal |
-| child-safety.list | Golden reconciliado; composição89P inclui prova anterior18 | SQL interno43, legado63, guard2; perfil53 reservado e publicado; sequência SQL pendente; depois runtime normal |
+| child-safety.list | Golden reconciliado; composição89P; reflow4P integrado; diretrizes2P4F emshared | SQL interno43, legado63, guard2; perfil53 reservado e publicado; sequência SQL pendente; depois runtime normal |
 | child-safety.child | Reader interno41P; resposta sem autorizacoes recusada; comandos explicitamente bloqueados | SQL nominal e HTTP/UI autorizado, sem ativar escrita |
 | child-safety.create | Wizard indisponível em adapters reais, confirmado localmente | Lookup adulto minimizado e contrato de ator/receipt interno |
 | child-safety.edit | Somente pending; transporte não qualificado bloqueia ação | Contrato interno e persistência/recarga; UUID People não representa ator interno |
@@ -64,7 +64,7 @@ Provas e hashes por lote: `models/README.md`, `models/frontend-receipts.md`,
 `safety-composition/handoff.md`, `safety-sql/handoff.md` e
 `safety-sql/profile-proposal/README.md`. Contagens SQL, Flutter e preparação
 são separadas; reruns não aumentam cobertura. Rollback tardio6P em
-`models/rollback-01.txt`; formulário18P/0F em models-form-receipt/golden-reconciliation.md e duplicação24P em models/duplicate-receipts.md. Total atual419P/0F/120U: Safety108U e concorrênciaModels12U.
+`models/rollback-01.txt`; formulário18P/0F em models-form-receipt/golden-reconciliation.md e duplicação24P em models/duplicate-receipts.md. Total atual430P/4F/120U: Safety108U e concorrênciaModels12U.
 
 Produção: catálogo Supabase lido sem dados pessoais, zero mutação remota.
 Ausência do Owner não autoriza pacote novo. Modelos precisa da fundação nominal
@@ -84,3 +84,5 @@ Checkpoint visual: f60b2c2fe hoverPerfis1P, c76a0eb23 formularioPessoas2P, 5ffce
 Checkpoint22:03BRT: base conjunta6aa352c6a materializada por fast-forward; todos27 commits proprios anteriores integrados e publicados em origin/dev. Novos2816fbff1 (rotas2P) e c0e4fc47d (detalhe2P) publicados na branch propria. people_routes3P de153b2dbfa reutilizado sem rerun ou soma. Os tres F adicionais ainda presentes no catalogo foram reconciliados; total419P/0F/120U. Provas de diferentes bases sao explicitadas em current-results.json, sem alegar reexecucao ampla. Nenhuma promocao.
 
 Alcance r16: ver alcance-produtivo.md. Detalhe de Pessoas usa reader mas o diretorio normal nao fornece callback para abri-lo; people.links/reload do detalhe requerem tambem ponto de entrada deliberado. Perfis/Modelos abrem EDIT pelos cards, nao DETAIL. Nao se confunde rota existente com percurso completo.
+
+Checkpoint22:23BRT: r18Safety investigado. 8f3905819 reflow4P;571ac3cf0 transporte5P semativar mutacoes;f4dd600ffdiretrizes2P4F atuais. Menuusuario44px econtraste compartilhadostem proposta paraClaude;rotulos/carga/overflow nao reproduziramtriagem d784. Total430P4F120U comF4explicitos, sem skipoucertificacao.

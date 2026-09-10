@@ -1,0 +1,41 @@
+rtk : [rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+No linha:2 caractere:199
++ ... _test.dart; rtk proxy flutter test --no-pub test/app/router/safety_re ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/app/router/safety_reflow_test.dart
+00:00 +0: development safety loads without overflow at 375.0 text 1.0
+00:01 +1: development safety loads without overflow at 375.0 text 2.0
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _TextWidgetFinder:<Found 0 widgets with text "Alice Duarte": []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/app/router/safety_reflow_test.dart:48:9)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/app/router/safety_reflow_test.dart line 48
+The test description was:
+  development safety loads without overflow at 375.0 text 2.0
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:02 +1 -1: development safety loads without overflow at 375.0 text 2.0 [E]
+  Test failed. See exception logs above.
+  The test description was: development safety loads without overflow at 375.0 text 2.0
+
+00:02 +1 -1: development safety loads without overflow at 1440.0 text 1.0
+00:04 +2 -1: development safety loads without overflow at 1440.0 text 2.0
+00:05 +3 -1: Some tests failed.
+
+Failing tests:
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-acessos-pessoas/apps/superadmin/test/app/router/safety_reflow_test.dart: development safety loads without overflow at 375.0 text 2.0
