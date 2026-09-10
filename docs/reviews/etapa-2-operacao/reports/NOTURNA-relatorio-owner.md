@@ -100,11 +100,16 @@ consumidor mas mexe no Design System e move goldens de outras telas. A primeira
 está atribuída para execução; a segunda fica registrada, porque qualquer tela
 que um dia envolver esse indicador em `IntrinsicHeight` cai no mesmo buraco.
 
-Registro também uma **divergência de medição não resolvida**: nas diretrizes
-nativas de acessibilidade, uma frente reporta as três reprovando em `safety` e a
-outra reporta rótulo e tamanho de alvo passando, com contraste sem concluir. A
-segunda levanta que a cascata de exceções pode ter contaminado a primeira
-medição. As duas ficam registradas; nenhuma foi escolhida.
+A divergência de medição que eu tinha registrado aqui **foi resolvida, contra
+quem a levantou primeiro**: `/safety` não reprova nenhuma das três diretrizes de
+acessibilidade. A primeira medição estava contaminada porque uma exceção lançada
+durante o layout fazia o caso falhar antes de a diretriz ser avaliada, e o
+instrumento reportava isso como reprovação. Refeita drenando a exceção, a tela
+passa nas três. A frente que mediu independentemente e discordou estava certa.
+
+Isso importa além do número: **defeito de layout e reprovação de acessibilidade
+mandam a frente dona investigar coisas diferentes**. E não torna `safety` menos
+grave — lançar exceção de layout na abertura é pior que reprovar uma diretriz.
 
 ## O achado mais importante da rodada
 
@@ -277,11 +282,13 @@ teste:
 
 ## Acessibilidade medida pelas diretrizes nativas
 
-Nas nove telas do recorte de Operações, 21 de 27 casos passam. As falhas se
-concentram em `/dev/imports`, que falha nas **três** diretrizes — rótulo de alvo,
-tamanho de alvo Android e contraste — e é também a única tela que transborda nas
-duas larguras. A leitura inverte o sentido usual do adiamento: **o adiamento de
-Importações está protegendo o usuário de uma tela que não passaria**.
+Depois de corrigido o instrumento, as reprovações reais de diretriz no app são
+**13 e não 18**: sete de rótulo — todas já corrigidas por uma única linha —,
+cinco de tamanho de alvo, e uma de contraste. A de contraste é o selo DESTAQUE
+em Para Você, com razão 3,75 contra os 4,5 exigidos para 11 px, e é real.
+
+`/dev/imports` reprova apenas **tamanho de alvo**, e não as três: rótulo e
+contraste eram contaminação do transbordamento da própria tela.
 
 Um candidato ficou sem identificação e está registrado como candidato, não como
 defeito: um nó de 128×48 no cabeçalho de quatro telas expõe apenas `longPress`
