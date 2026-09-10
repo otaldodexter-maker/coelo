@@ -7,6 +7,7 @@ import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/auth/domain/password_recovery.dart';
 import 'package:coelo_superadmin/features/chat/data/development_chat_repository.dart';
 import 'package:coelo_superadmin/features/chat/presentation/widgets/superadmin_chat_launcher.dart';
+import 'package:coelo_superadmin/features/principal_chat/presentation/principal_chat_page.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -35,6 +36,34 @@ void main() {
     router.go(SuperadminRoutes.principalHappens);
     await tester.pumpAndSettle();
     expect(find.byType(SuperadminChatLauncher), findsOneWidget);
+  });
+
+  testWidgets('navigating to the Principal chat preserves the host shell element', (tester) async {
+    final router = _router(tester);
+
+    router.go(SuperadminRoutes.principalHappens);
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+    final host = find.byKey(const Key('superadmin-persistent-shell'));
+    expect(host, findsOneWidget);
+    final hostElement = tester.element(host);
+
+    router.go(SuperadminRoutes.principalConversations);
+    await tester.pumpAndSettle();
+
+    // A decisao do Owner de 09/09 e que o shell hospedeiro seja PRESERVADO e a
+    // experiencia Principal fique no conteiner de conteudo. Preservar significa
+    // o MESMO elemento, nao um shell novo com a mesma aparencia: se ele fosse
+    // reconstruido, estado do hospedeiro se perderia na navegacao.
+    expect(host, findsOneWidget);
+    expect(tester.element(host), same(hostElement));
+    expect(tester.widget<PrincipalChatPage>(find.byType(PrincipalChatPage)).embedded, isTrue);
+    expect(tester.takeException(), isNull);
+
+    // E a volta tambem: sair do chat nao pode trocar o hospedeiro.
+    router.go(SuperadminRoutes.principalHappens);
+    await tester.pumpAndSettle();
+    expect(tester.element(host), same(hostElement));
   });
 
   testWidgets('the Principal menu Chat leaf reaches the Principal chat route', (tester) async {
