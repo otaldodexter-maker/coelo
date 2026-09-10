@@ -135,7 +135,19 @@ final class _InstitutionFormPageState extends State<InstitutionFormPage> {
   Future<void> _requestExit() async {
     final controller = _controller;
     if (controller?.isSaving == true) return;
-    if (controller == null || !controller.isDirty || await showInstitutionExitDialog(context)) {
+    if (controller == null || !controller.isDirty) {
+      widget.onCancel();
+      return;
+    }
+    final sequence = _loadSequence;
+    final confirmed = await showInstitutionExitDialog(context);
+    // The dialog is asynchronous: the form may have been reloaded, replaced or
+    // disposed while it was open. A confirmation answered for another context
+    // must not close the current one.
+    if (!mounted || sequence != _loadSequence || !identical(controller, _controller)) {
+      return;
+    }
+    if (confirmed) {
       widget.onCancel();
     }
   }
@@ -210,8 +222,13 @@ final class _InstitutionFormPageState extends State<InstitutionFormPage> {
   Future<void> _selectDestination(String destination) async {
     final controller = _controller;
     if (controller?.isSaving == true) return;
-    if (controller != null && controller.isDirty && !await showInstitutionExitDialog(context)) {
-      return;
+    if (controller != null && controller.isDirty) {
+      final sequence = _loadSequence;
+      final confirmed = await showInstitutionExitDialog(context);
+      if (!mounted || sequence != _loadSequence || !identical(controller, _controller)) {
+        return;
+      }
+      if (!confirmed) return;
     }
     widget.onDestinationSelected?.call(destination);
   }

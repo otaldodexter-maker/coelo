@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "round": "E2-R03-20260910",
+  "group": "estrutura",
+  "recorded_at": "2026-09-10T13:25:00-03:00",
+  "status": "verde em pgTAP local; pronto para a fila SQL do coordenador",
+  "profile": {
+    "id": "StructureLocationConsumersV1",
+    "path": "packages/coelo_database/replay/profiles/StructureLocationConsumersV1",
+    "parent": "LocationReservationsV1",
+    "companion": "ActivityAggregateConcurrencyClock",
+    "target_version": "20260909210000",
+    "counts": { "canonical": 67, "preflight": 2, "bootstrap": 3, "total": 72 },
+    "manifest_sha256": "4279e67c9651f4049329591b6e8aad82e3a9052506c1a4e16ba8bbb693249d59"
+  },
+  "result": {
+    "files": 3,
+    "assertions": 109,
+    "outcome": "PASS",
+    "residual_docker_resources": "zero, confirmado pelo wrapper no teardown",
+    "isolated_identity": "coelo_safe_46e7ba23b89f45fe94614202d69ca",
+    "log": "docs/reviews/evidence/etapa-2/r03-estrutura/replay-structure-location-consumers-v1.log"
+  },
+  "packages_in_queue_order": [
+    {
+      "migration": "packages/coelo_database/migrations/20260909192000_superadmin_location_consumer_bindings_v2.sql",
+      "test": "packages/coelo_database/supabase/tests/superadmin_location_consumer_bindings_v2_test.sql",
+      "creates": ["public.superadmin_location_consumer_bindings_v2(jsonb,uuid,integer)", "app_private.location_binding_consumer_context_v2(jsonb)"],
+      "composition_key": "SupabaseLocationConsumerBindingsReader ja composto; a chave irma e SupabaseLocationConsumerSelectionReader(available: false) em apps/superadmin/lib/main.dart:147",
+      "action_ids": ["locations.detail-links", "locations.schedule"]
+    },
+    {
+      "migration": "packages/coelo_database/migrations/20260909200000_superadmin_activity_location_create_v2.sql",
+      "test": "packages/coelo_database/supabase/tests/superadmin_activity_location_create_v2_test.sql",
+      "creates": ["public.superadmin_activity_location_create_v2(uuid,uuid,jsonb,jsonb)", "public.superadmin_activity_location_selection_v2(uuid)", "public.activity_location_selections", "app_private.activity_location_create_receipts"],
+      "composition_key": "SupabaseActivityCommandRepository(activityLocationCreateAvailable: false) em apps/superadmin/lib/features/activities/data/supabase_activity_command_repository.dart:17",
+      "action_ids": ["activities.create", "activities.location"],
+      "producao_pre_requisito": "exige o agregado Atividades v2 aplicado antes: superadmin_activity_save_v2, superadmin_location_reservation_create_v2, app_private.activity_request_uuid, app_private.superadmin_location_locked_v2 e app_private.superadmin_internal_activity_save_receipts. O preflight aborta com SQLSTATE 55000 se faltar."
+    },
+    {
+      "migration": "packages/coelo_database/migrations/20260909210000_superadmin_group_location_create_v2.sql",
+      "test": "packages/coelo_database/supabase/tests/superadmin_group_location_create_v2_test.sql",
+      "creates": ["public.superadmin_group_location_create_v2(...)"],
+      "composition_key": "SupabaseGroupLocationCreateRepository(available: false) em apps/superadmin/lib/features/groups/data/supabase_group_location_create_repository.dart:8 — hoje nem e composto na producao",
+      "action_ids": ["groups.create", "groups.location"]
+    }
+  ],
+  "nao_certifica": [
+    "Aplicacao em producao, que e do coordenador.",
+    "Comportamento ponta a ponta na tela: as chaves de composicao continuam desligadas.",
+    "Provas exaustivas (sessoes concorrentes, ID adulterado, auditoria com retry), que ficam para a revisao profunda pos-MVP."
+  ]
+}
