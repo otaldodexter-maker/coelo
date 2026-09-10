@@ -60,13 +60,13 @@
       "criteria": {"frontend": "N", "backend": "N", "e2e": "N", "reload": "N", "cross_tenant": "pgTAP pendente de replay nominal"}
     },
     {
-      "action_ids": ["account.profile", "account.settings", "account.theme", "account.sessions", "account.logout"],
+      "action_ids": ["account.profile", "account.settings", "account.theme", "account.mfa", "account.sessions", "account.logout"],
       "status": "local-package-in-progress",
       "changed": [
         "packages/coelo_database/migrations/20260909218000_superadmin_account_profile_v1.sql",
         "packages/coelo_database/supabase/tests/superadmin_account_profile_v1_test.sql"
       ],
-      "delta": "adicionada persistencia server-side do perfil: nome/telefone em people, leitura de email Auth, pedido/cancelamento de troca de email, papel/capacidades, receipts de idempotencia e grants somente por RPC; tema continua preferencia local e sessoes/logout dependem dos contratos Auth existentes",
+      "delta": "adicionada persistencia server-side do perfil: nome/telefone em people, leitura de email Auth, pedido/cancelamento de troca de email, papel/capacidades, receipts de idempotencia e grants somente por RPC; tema continua preferencia local e MFA, sessoes/logout dependem dos contratos Auth existentes",
       "composition_key_candidate": "accountProfileProductionRepositoryV1",
       "criteria": {"frontend": "N", "backend": "N", "e2e": "N", "reload": "N", "cross_tenant": "pgTAP pendente de replay nominal"}
     },
