@@ -225,9 +225,32 @@ compartilhado, em vez de corrigir só a tela que quebrou.
 
 ## Decisões que dependem de você
 
-1. **Goldens: uma mudança global de renderização, e não 144 telas redesenhadas.**
-   Esta seção foi reescrita três vezes esta noite, e é a terceira leitura que a
-   medição sustenta. Primeiro tratei tudo como deriva de ambiente; depois a
+0. **PERGUNTA BINÁRIA, e é a mais barata de responder: a composição atual do
+   Perfil do Principal é a aprovada?** A referência aprovada de
+   `principal_profile` contém um botão **"Acompanhar"** e uma faixa com
+   **Seguidores, Seguindo**, Publicações, Localização, Fundação e Colaboradores.
+   O código atual renderiza apenas "Mensagem" e três métricas — Publicações,
+   Momentos e Circulares. O resto da página é pixel a pixel idêntico.
+
+   Se a composição atual é a aprovada, isso é **reaprovação administrativa** de
+   dez referências e não há defeito. Se não é, o código removeu capacidade
+   aprovada e é defeito grave. Nenhuma frente pode decidir.
+
+   Uma inferência, identificada como inferência: seguidor e botão de seguir num
+   perfil de escola é exatamente o que a visão do produto recusa — o Coelo não é
+   rede social aberta e não deve transformar cuidado infantil em feed público.
+
+1. **Goldens: não são uma população só.** Esta seção foi reescrita quatro vezes
+   esta noite, sempre porque uma medição nova derrubou a leitura anterior, e a
+   correção mais importante é a última: **há pelo menos duas causas distintas, com
+   assinaturas opostas.** Numa, a diferença escala com a densidade da tela e
+   correlaciona com a largura — assinatura de renderização. Na outra, medida em
+   `principal_profile`, o número **absoluto** de pixels é praticamente constante
+   entre 768, 1024 e 1440, o que é assinatura de elemento de tamanho fixo, e a
+   inspeção confirmou: é mudança de conteúdo, tratada no item 0. Tratar as 144
+   como um bloco só levaria a decidir errado em pelo menos uma delas.
+
+   O que vem abaixo vale para a população de renderização, que é a maior: Primeiro tratei tudo como deriva de ambiente; depois a
    magnitude — 21 de 28 comparações acima de 8%, máximo de 43,94% — me fez
    registrar que a população grande "só podia ser mudança visual real nunca
    reaprovada". Uma frente foi mais fundo, escreveu um decodificador de PNG e
