@@ -1,5 +1,5 @@
 {
-  "revision": 22,
+  "revision": 23,
   "round": "E2-NOTURNA-20260909",
   "role": "Coordenacao e Integracao - Claude",
   "writer": "coordenador-claude",
@@ -8,7 +8,7 @@
   "app": "Claude Code (VS Code)",
   "model": "claude-opus-5[1m]",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-09T23:20:00-03:00",
+  "updatedAt": "2026-09-09T23:36:00-03:00",
   "clockCorrection": {
     "referenceNow": "2026-09-09T19:03:25-03:00",
     "measuredBy": "date no checkout integrador",
@@ -30,7 +30,7 @@
   "base": {
     "root": "C:/Users/adrie/Documents/Coelo",
     "branch": "dev",
-    "head": "507503464",
+    "head": "d0833938c",
     "previousHead": "d784462c168d22fdb7090b7de1ef7db554ad5107",
     "upstream": "origin/dev",
     "divergence": "0/0",
@@ -886,5 +886,35 @@
     },
     "modificacoesEmCurso": "estrutura 1, chat-comunicacoes 2, formularios-cuidado 3, todas fora de test/**/failures/. Sao trabalho em andamento, nao alteracao nao identificada.",
     "nota": "Medicao repetida no fechamento das 05:00."
+  },
+  "fechamentoCodex": {
+    "horario": "23:30 de 09/09, cumprido.",
+    "estrutura": {
+      "branch": "work/etapa2-noturna-estrutura",
+      "head": "6709f1473",
+      "upstream": "igual, 0/0",
+      "stash": "vazio",
+      "integrado": "SIM, integralmente ancestral de dev",
+      "wipRetido": "A propria revisao 51 declara WIP por caminho e SHA256, incluindo superadmin_router.dart e um arquivo de dominio de groups. Um teste de institution_form segue modificado na worktree. Preservado, nao apagado.",
+      "filho": "Declarou um filho ativo com prazo interno 23:00 e escopo limitado a InstitutionForm; a worktree nao mostra processo residual.",
+      "residual": "Transferido a operacoes-sistema (coelo-9e), que ja comecou."
+    },
+    "acessos-pessoas": {
+      "branch": "work/etapa2-noturna-acessos-pessoas",
+      "head": "992f3530d",
+      "upstream": "igual, 0/0",
+      "stash": "vazio",
+      "worktree": "limpa",
+      "integrado": "SIM, integralmente ancestral de dev",
+      "filhos": "Ambos declarados como completed-collected-no-resources",
+      "residual": "child_safety transferido a alunos-rotina (coelo-c4), que comecou as 23:30."
+    },
+    "oQueNaoFoiEntregue": "Nenhum dos dois publicou uma revisao final explicita depois do congelamento: estrutura parou na 51 (22:35) e acessos-pessoas na 55 (22:31). Como todo o codigo esta integrado, o Git esta 0/0 e nao ha stash nem processo residual, trato como entrega concluida com registro incompleto, e nao como trabalho perdido. Registro a lacuna em vez de fabricar o recibo."
+  },
+  "higieneDeBranches": {
+    "regra": "Toda branch local sem copia remota e publicada ou registrada explicitamente. Branch local sem remoto e invisivel para qualquer conferencia feita de outra maquina.",
+    "acao": "Publiquei as duas que estavam so nesta maquina: work/etapa2-noturna-chat-comunicacoes-router (c2127823f, ancestral de dev) e work/etapa2-noturna-chat-comunicacoes-router-dedupe (8d06b8a91, commit vazio superado pela correcao ff9143ba4).",
+    "porQueNaoApaguei": "A dedupe preserva o registro de COMO a correcao do defeito que parou o app foi feita, ainda que o conteudo tenha entrado por outro SHA. Apagar economizaria ruido e perderia a trilha.",
+    "origem": "Sugestao de perfil-para-voce durante o ensaio da conferencia externa das 05:00."
   }
 }
