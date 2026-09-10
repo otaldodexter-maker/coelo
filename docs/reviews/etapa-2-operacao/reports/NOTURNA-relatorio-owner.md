@@ -1098,6 +1098,38 @@ tempo:
   Momentos, e já têm embedded e mediaPicker convivendo.
 - `attendance.correct` e `attendance.finish` não têm lacuna de cliente: o
   conflito de versão tem exceção tipada, tratamento e dois testes.
+- **O envio de resposta de formulário trata simultaneidade melhor do que o chat
+  tratava** — e o chat foi corrigido nesta rodada exatamente nessa classe. Uma
+  frente foi procurar ali o defeito espelho do que tinha acabado de corrigir e
+  encontrou a solução superior: o envio retém o comando pendente **e** a revisão
+  das respostas juntos, então uma repetição após falha completa a intenção
+  original sem trocar o conteúdo no meio, e depois avisa que há alterações locais
+  não salvas. Não sobrescreve a edição da pessoa com o eco do servidor, e não
+  finge ter salvo o que não salvou.
+- **O caminho de mídia de Circular é seguro contra repetição nos três elos:** a
+  chave do upload é estável e vem do próprio arquivo, o preparo devolve o ativo
+  existente em vez de criar outro, o finalize é idempotente pelo estado do ativo,
+  e o controlador recusa identificador repetido. Uma falha no meio do fluxo e uma
+  nova tentativa não produzem anexo duplicado.
+- **Zero divergência de nome de parâmetro nas 80 chamadas de RPC do app.** O
+  pacote de banco já tem teste próprio de nomes de argumento — sinal de que essa
+  classe já cobrou preço antes — e hoje está limpa.
+- **Nenhum texto de erro do servidor vaza para a interface** nas cinco famílias
+  varridas. Os pontos que pareciam suspeitos não são: um usa o nome do tipo e não
+  a mensagem, e outro transforma a mensagem crua em código de falha que nenhuma
+  tela renderiza.
+- **Os 16 formulários de criação não transbordam** em 375 e 1440, a 100% e 200%
+  de escala: 64 casos, zero exceções. Isso localiza os transbordamentos desta
+  rodada em telas de diretório e lista, e poupa a próxima varredura.
+- **Nenhum comando de domínio ficou sem qualquer referência em teste** depois que
+  a última lacuna foi fechada: 149 métodos verificados, zero órfãos.
+- **Não há repositório de produção implementado duas vezes** em Rotina,
+  Acompanhamento e Crianças, com produção usando o outro — o padrão que existe em
+  Assiduidade não se repete ali.
+- **O relógio de medicação não diverge** entre o diretório e a ficha, apesar de
+  uma usar formatação crua e a outra depender de locale: sob português do Brasil
+  as duas devolvem o mesmo valor. Era uma hipótese boa, da mesma família de três
+  defeitos reais desta rodada, e a correção teria sido de problema inexistente.
 
 ## Como esta rodada encontrou o que encontrou
 
