@@ -647,7 +647,18 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
       '${item.label}${item.isRequired ? ' *' : ''}',
       style: Theme.of(context).textTheme.titleMedium,
     );
-    final help = item.helpText;
+    // O limite autorado de selecoes e regra do formulario e precisa ser dito
+    // ANTES da escolha, junto do texto de ajuda: descobrir a regra ao ser
+    // recusado e o defeito que esta correcao fecha.
+    final selectionHint = item.kind == FormItemKind.multipleChoice
+        ? FormSelectionLimits.hint(item.config)
+        : null;
+    final authoredHelp = item.helpText;
+    final help = switch ((authoredHelp, selectionHint)) {
+      (null || '', final hint) => hint,
+      (final text?, null) => text,
+      (final text?, final hint?) => '$text\n$hint',
+    };
     final field = switch (item.kind) {
       FormItemKind.shortText => TextFormField(
         key: Key('form-response-item-${item.id}'),
@@ -710,6 +721,17 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
                 if (!_isCurrent(generation)) return;
                 final selectedIds = {...?(_answers[item.id]?.value as FormChoiceValue?)?.optionIds};
                 selected ? selectedIds.add(option.id) : selectedIds.remove(option.id);
+                // Recusar a marcacao a mais, em vez de aceitar e deixar o
+                // servidor recusar o envio inteiro. Desmarcar nunca e recusado:
+                // e o unico caminho de volta para uma contagem valida.
+                if (selected) {
+                  final reason = FormSelectionLimits.violation(item.config, selectedIds.length);
+                  if (reason != null && selectedIds.length > FormSelectionLimits.maximum(item.config)) {
+                    _refuseAnswer(item, reason);
+                    return;
+                  }
+                }
+                _invalidAnswerReasons.remove(item.id);
                 update(
                   selectedIds.isEmpty
                       ? null
@@ -1068,6 +1090,15 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
 
   String? _itemValidationMessage(FormItem item) {
     if (_invalidAnswerReasons[item.id] case final reason?) return reason;
+    if (item.kind == FormItemKind.multipleChoice) {
+      final value = _answers[item.id]?.value;
+      if (value is FormChoiceValue) {
+        if (FormSelectionLimits.violation(item.config, value.optionIds.length)
+            case final reason?) {
+          return reason;
+        }
+      }
+    }
     if (item.kind == FormItemKind.gallery) {
       final value = _answers[item.id]?.value;
       if (value is FormAssetValue && value.assetIds.isNotEmpty) {
