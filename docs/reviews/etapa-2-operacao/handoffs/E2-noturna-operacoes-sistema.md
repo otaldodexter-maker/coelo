@@ -3,7 +3,7 @@ title: "Entrega do grupo operacoes-sistema — rodada noturna 09/10 de setembro"
 source: "trabalho proprio sobre a base d784462c1, branch work/etapa2-noturna-operacoes-sistema"
 status: "documento vivo; atualizado ate a pre-entrega das 04:50"
 generated_at: "2026-09-09"
-last_update: "2026-09-10 02:45 (America/Sao_Paulo)"
+last_update: "2026-09-10 04:05 (America/Sao_Paulo)"
 group: "operacoes-sistema"
 ---
 
@@ -303,6 +303,68 @@ diretório, deu zero achados e eu quase parei ali. O achado só apareceu resolve
 por basename no repositório inteiro. Seguir pega o que reler não pega, mas seguir
 com instrumento estreito também não pega.
 
+
+## Estado final medido, e o que o número significa
+
+Uma corrida só, de `apps/superadmin/test` por inteiro, iniciada 03:20 e com duração
+de 20 minutos e 36 segundos: **6342 aprovados, 15 ignorados, 144 falhos**. O número
+vem do contador oficial da própria corrida, não de parse de saída; a atribuição das
+falhas vem de deduplicação por arquivo mais nome de caso, e o que autoriza confiar
+nela é que a deduplicação devolveu exatamente 144, igual ao contador — dois caminhos
+independentes, mesmo resultado.
+
+Das 144, **83 são do meu recorte** e 61 não são. As 83 se dividem em 71 goldens já
+censados, que dependem de rebaseline nominal, e **9 não-golden**, depois de devolver
+três que outra frente mediu como fixture obsoleta e não minhas. Nenhuma das nove é
+regressão minha por edição: não toquei em `dev_menu`, em `core/config` nem em rota de
+Principal.
+
+Não extraio a parcela de **aprovados** do recorte, e o motivo é do instrumento: o
+reporter padrão atribui falha por arquivo e não atribui aprovação. Denominador
+estimado seria pior que denominador ausente, porque pareceria completo.
+
+E o recorte está contido no conjunto **por construção**, porque é a mesma corrida —
+os dois números não se somam.
+
+### O erro de medição que eu mesmo cometi, e que mudou o número
+
+Até 02:53 eu vinha reportando o residual do recorte a partir de oito caminhos
+declarados. Os oito existem — conferi — mas a lista foi derivada **do que eu havia
+medido primeiro na noite, e não do recorte que me foi atribuído**. Faltavam famílias
+inteiras que são minhas: `auth`, `catalog`, `imports`, e toda a estrutura residual —
+`units`, `groups`, `institutions`, `activities`, `assessments`, `locations` — além das
+árvores de integração `app/router`, `app/shell`, `app/navigation`, `app/dev_menu` e
+das duas que ninguém havia nomeado no meu caso, `core/guards` para identidade e
+`core/config` para composição. São 175 arquivos fora da lista.
+
+O agravante não é contagem: **eu corrigi defeitos em units, groups, institutions,
+activities e locations nesta rodada, e nenhuma dessas suítes entrava no número que eu
+apresentava como residual do recorte.** Cada uma foi rodada na hora da sua correção, e
+isso está nos commits — mas o número agregado media um subconjunto e foi apresentado
+como o todo. Conferir que um caminho existe pega metade do erro; a outra metade só
+aparece invertendo a pergunta para "existe teste meu fora da minha lista?".
+
+### Quatro guardas de composição, com a contradição datada
+
+Entre as nove não-golden há quatro asserções a nível de fonte exigindo que a raiz de
+composição **nunca** construa certos adaptadores. Elas falham porque o produto foi
+ligado: a raiz importa o gateway de Unidades e constrói o repositório de Atividades, e
+o router compõe a página de diretório de Perfis de acesso.
+
+A guarda de Unidades foi tocada por último em `8377197bf`, de 2026-08-25; a fiação
+entrou em `d9232a94d`, de 2026-09-01. **Sete dias de diferença, guarda mais antiga que
+a decisão** — a mesma forma do caso de Formulários. Para as duas de Acesso a
+contradição **não é datável**: guarda e fiação no mesmo dia, e mesmo dia não decide
+ordem.
+
+Por isso entrego as duas leituras e não escolho: ou a fiação violou um contrato
+fail-closed que continua valendo, e é defeito de composição; ou as guardas
+envelheceram quando estrutura e acesso foram ligados de propósito, e são quatro
+expectativas superadas. O indício aponta para a segunda — a fiação é posterior, e
+existe porta de capacidade para mutação de estrutura que só faz sentido se a
+composição existir — mas o que falta não está no código: falta confirmar a intenção,
+e ela é dos donos de Estrutura e de Acesso.
+
 ## Correções que fiz contra o meu próprio relato
 
 Registradas porque mudam o que o leitor deve confiar:
@@ -352,3 +414,9 @@ Registradas porque mudam o que o leitor deve confiar:
     nunca voltei na linha que o citava. Quem seguisse o nome não acharia arquivo.
     Corrigido citando os dois carimbos e a razão da troca, em vez de apenas
     trocar o número, senão o histórico perde o motivo.
+11. Apresentei como "residual do recorte" um número que media oito caminhos, quando
+    o recorte atribuído tem 175 arquivos fora deles — incluindo cinco famílias em que
+    eu **corrigi defeitos nesta mesma rodada**. A lista de caminhos foi escrita a
+    partir do que eu havia medido primeiro, não do recorte atribuído, e conferir a
+    existência dos caminhos não revela esse erro. O número corrigido está na seção de
+    estado final.
