@@ -1,37 +1,593 @@
 {
-  "revision": 1,
-  "updated_at": "2026-09-09T18:05:00-03:00",
+  "revision": 18,
+  "updated_at": "2026-09-10T00:38:00-03:00",
   "group": "publicacoes-midia",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
-  "status": "started; isolation-created; reading-sources",
+  "status": "active; 26 lotes e 2 documentos publicados",
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-publicacoes-midia",
   "branch": "work/etapa2-noturna-publicacoes-midia",
-  "head": "d784462c168d22fdb7090b7de1ef7db554ad5107",
-  "upstream": null,
-  "base": "d784462c1",
-  "scope": [
-    "apps/superadmin -> Coelo (Principal) -> Acontece",
-    "apps/superadmin -> Coelo (Principal) -> Agora",
-    "apps/superadmin -> Coelo (Principal) -> Momentos",
-    "apps/superadmin -> Circulares",
-    "midia compartilhada necessaria (sem gateway/bucket por tela)"
+  "head": "d9bde1ab0",
+  "upstream": "origin/work/etapa2-noturna-publicacoes-midia (0/0)",
+  "base": "origin/dev 447e6eea2 mesclado em 3ab29d7df",
+  "ack": "coordenador: revisao 1 aceita; lote 1e39b2fcf integrado (merge d502350ce); lote b10f48d1e aceito para a proxima integracao; atribuicao de principal_real_route_test retirada por ele apos minha medicao; reserva da plataforma comum de midia mantida",
+  "batches": [
+    {
+      "sha": "1e39b2fcf",
+      "state": "integrado em dev (merge d502350ce)",
+      "title": "integracao seletiva de L01 3697dd49e em principal_circulars, principal_happens e principal_moments"
+    },
+    {
+      "sha": "b10f48d1e",
+      "state": "publicado; aguarda integracao",
+      "title": "rota do leitor Principal de Circular a partir do feed misto",
+      "touches_reserved_files": [
+        "apps/superadmin/lib/app/router/superadmin_router.dart",
+        "apps/superadmin/lib/app/router/superadmin_routes.dart",
+        "apps/superadmin/lib/app/superadmin_app.dart",
+        "apps/superadmin/lib/core/config/superadmin_auth_scope.dart",
+        "apps/superadmin/lib/main.dart"
+      ]
+    },
+    {
+      "sha": "57006c7a7",
+      "state": "publicado; aguarda integracao",
+      "title": "composicao do feed de Momentos na rota normal /principal-moments",
+      "touches_reserved_files": [
+        "apps/superadmin/lib/app/router/superadmin_router.dart",
+        "apps/superadmin/lib/app/superadmin_app.dart",
+        "apps/superadmin/lib/core/config/superadmin_auth_scope.dart",
+        "apps/superadmin/lib/main.dart"
+      ]
+    },
+    {
+      "sha": "1f53ec245",
+      "state": "publicado; aguarda integracao",
+      "title": "uniao de embedded com a porta de midia na publicacao de Momentos",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "04acb3e7b",
+      "state": "publicado; aguarda integracao",
+      "title": "anexos de Circular pelo R2 privado na Edge Function circular-media",
+      "touches_reserved_files": [
+        "packages/coelo_database/supabase/functions/circular-media/index.ts (plataforma comum de midia, reserva deste grupo)"
+      ]
+    },
+    {
+      "sha": "5ffdae8ba",
+      "state": "publicado; aguarda integracao",
+      "title": "recusa de resposta de Circular passa a dizer o que aconteceu",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "40abfa875",
+      "state": "publicado; aguarda integracao",
+      "title": "Agora relê o feed quando a autorizacao muda",
+      "touches_reserved_files": [
+        "apps/superadmin/lib/app/router/superadmin_router.dart (8 linhas, sem reformatacao)"
+      ]
+    },
+    {
+      "sha": "728aebecf",
+      "state": "publicado; aguarda integracao",
+      "title": "publicacao repetida reapresenta a mesma chave de idempotencia",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "4e825eef5",
+      "state": "publicado; aguarda integracao",
+      "title": "compositor produtivo de Circular passa a anexar arquivos de verdade",
+      "touches_reserved_files": [
+        "apps/superadmin/lib/features/circulars/presentation/production_circular_hosts.dart (plataforma comum de midia, reserva deste grupo)"
+      ]
+    },
+    {
+      "sha": "2de205da4",
+      "state": "publicado; aguarda integracao",
+      "title": "diretorio de Circulares segue o cursor em vez de esconder o acervo antigo",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "cc445ad4c",
+      "state": "publicado; aguarda integracao",
+      "title": "cobertura do leitor Principal roteado: 375/768/1024/1440, 200%, Escape e semantica",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "283e9f339",
+      "state": "publicado; aguarda integracao",
+      "title": "cobertura dos estados da rota de Momentos",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "afec6cef6",
+      "state": "publicado; aguarda integracao",
+      "title": "revisao dos seis candidatos SQL de publicacoes-midia",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "6cb008665",
+      "state": "publicado; aguarda integracao",
+      "title": "mascara existencia na negacao de withdraw_happens_post (candidato 20260909213000), autorizado pelo coordenador",
+      "touches_reserved_files": [
+        "packages/coelo_database/migrations/20260909213000_happens_post_withdrawal_v1.sql (fila SQL do coordenador, edicao nominalmente autorizada)"
+      ]
+    },
+    {
+      "sha": "c72b2c217",
+      "state": "RETIDO; nao integrar antes da migration que exponha storage_provider",
+      "title": "ramo R2 privado em happens-media, com costura injetavel e prova de comportamento",
+      "touches_reserved_files": [
+        "packages/coelo_database/supabase/functions/happens-media/ (plataforma comum de midia, reserva deste grupo)"
+      ]
+    },
+    {
+      "sha": "65d04ba9e",
+      "state": "RETIDO; nao integrar antes da migration que exponha storage_provider",
+      "title": "ramo R2 privado em now-media, com costura injetavel e prova de comportamento",
+      "touches_reserved_files": [
+        "packages/coelo_database/supabase/functions/now-media/ (plataforma comum de midia, reserva deste grupo)"
+      ]
+    },
+    {
+      "sha": "5dfcdd134",
+      "state": "publicado; aguarda integracao",
+      "title": "cliente do Acontece obedece ao provedor anunciado em vez de fixar o bucket",
+      "touches_reserved_files": [
+        "packages/coelo_database/supabase/functions/happens-media/index.ts (plataforma comum de midia, reserva deste grupo)"
+      ]
+    },
+    {
+      "sha": "d6ff438fc",
+      "state": "publicado; aguarda integracao",
+      "title": "suite pgTAP que faltava para o candidato do feed misto (20260909214000)",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "559017727",
+      "state": "publicado; aguarda integracao",
+      "title": "moments-media confere os bytes armazenados, nao so os metadados",
+      "touches_reserved_files": [
+        "packages/coelo_database/supabase/functions/moments-media/ (plataforma comum de midia, reserva deste grupo)"
+      ]
+    },
+    {
+      "sha": "9737f7777",
+      "state": "publicado; aguarda integracao",
+      "title": "guarda de contexto na retirada de Momento",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "e46b04558",
+      "state": "publicado; aguarda integracao",
+      "title": "relatorio de entrega do grupo",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "536b1f222",
+      "state": "publicado; aguarda integracao",
+      "title": "resumo de respostas no leitor administrativo de Circular",
+      "touches_reserved_files": [
+        "apps/superadmin/lib/app/router/superadmin_router.dart (uma linha, passa a fonte do resumo)"
+      ]
+    },
+    {
+      "sha": "4a40e13aa",
+      "state": "publicado; aguarda integracao",
+      "title": "retirada repetida de Momento reapresenta a mesma chave de idempotencia",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "db2726df8",
+      "state": "publicado; aguarda integracao",
+      "title": "remocao do contrato orfao de retirada de Momento (autorizada pelo coordenador)",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "cd5361716",
+      "state": "publicado; aguarda decisao do Owner",
+      "title": "bloco de decisao das tres acoes de Circulares sem afordancia",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "9fde22632",
+      "state": "publicado; aguarda integracao",
+      "title": "Circular encerrada diz que fechou em vez de pedir outra resposta",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "3240eb346",
+      "state": "publicado; aguarda integracao",
+      "title": "relatorio de entrega com o resultado medido e o acrescimo nao anunciado",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "28641ef67",
+      "state": "publicado",
+      "title": "teto do feed de Acontece no bloco de decisao",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "f1ef2281f",
+      "state": "publicado",
+      "title": "agendamento de Circular no bloco de decisao",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "1cc17aa54",
+      "state": "publicado",
+      "title": "tabela das 23 acoes verificada nesta rodada",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "909a2620e",
+      "state": "publicado",
+      "title": "tela sem rota e os tres angulos do padrao",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "cad10a288",
+      "state": "publicado",
+      "title": "abas do Perfil implementadas duas vezes",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "fc9383a34",
+      "state": "publicado",
+      "title": "telas produtivas que se declaram previa, no bloco de decisao",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "91be5ec8a",
+      "state": "publicado",
+      "title": "relatorio: escopo do recurso e as nove dimensoes varridas",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "6e2a21287",
+      "state": "publicado; aguarda integracao",
+      "title": "diretorio de Circulares pinta na primeira pagina em vez de esperar a ultima",
+      "touches_reserved_files": []
+    },
+    {
+      "sha": "d9bde1ab0",
+      "state": "publicado",
+      "title": "relatorio: custos introduzidos declarados",
+      "touches_reserved_files": []
+    }
   ],
-  "action_ids_status": "23 IDs das familias acontece, agora, momentos, circulars; mapeamento focal em curso",
-  "changed": "Worktree e branch criadas a partir de d784462c1; contrato, rtk e ponytail lidos; L01 3697dd49e localizado para reuso seletivo.",
-  "closed_criteria": [],
-  "tests": {"P": 0, "F": 0, "B": 0, "S": 0, "U": 0, "note": "nenhum teste executado ainda"},
-  "reservations": [],
-  "blocker": "coordenacao.json ainda ausente no caminho compartilhado; inicio autorizado pelo Owner no prompt. Nao ha reserva registrada de midia compartilhada.",
-  "next_step": "Ler handoff L01 e pendencias das quatro familias; mapear os 23 action_ids e abrir pelo leitor Principal de Circular.",
+  "action_ids_touched": [
+    "acontece.feed",
+    "circulars.detail",
+    "circulars.attach",
+    "momentos.view",
+    "acontece.remove",
+    "momentos.remove",
+    "agora.expire"
+  ],
+  "changed": "Lote 9 fez o compositor produtivo de Circular anexar arquivos de verdade: a afordancia existia e era inerte, apenas anunciando que o envio seria habilitado depois. Lote 10 corrigiu o diretorio produtivo, que lia uma unica pagina e descartava o cursor do servidor, fazendo o acervo alem das 100 mais recentes desaparecer sem aviso e a busca da tela nunca encontrar uma Circular antiga.",
+  "closed_criteria": [
+    "acontece.feed: abrir Circular do feed misto entrega o leitor Principal, nao o administrativo (FE, prova local)",
+    "circulars.detail: rota Principal registrada, separada de /circulars/:circularId/read, com fail-closed sem capacidade e sem sessao"
+  ],
+  "tests": {
+    "P": 636,
+    "F": 23,
+    "B": 0,
+    "S": 0,
+    "U": 0,
+    "metodo": "medido em UMA execucao ao final da rodada, nao somado de relatos anteriores: as oito features do recorte mais as seis rotas tocadas",
+    "falhas": "as 23 sao TODAS de golden e reproduzem na base sem nenhum lote deste grupo: 10 em principal_happens_preview_golden_test, 11 em principal_moments_preview_golden_test e 2 em circular_directory_golden_test. Fora de golden, zero falhas. Nenhum golden foi regravado.",
+    "deno": "circular-media 25 PASS, happens-media 15 PASS, now-media 14 PASS, moments-media 12 PASS",
+    "analyze": "flutter analyze --no-pub na arvore inteira do superadmin: No issues found",
+    "nao_executado": "nenhuma suite pgTAP executada: o harness sancionado nao replica a cadeia canonica, falhando na 53a migration 20260812002010 com relation app_private.unit_import_source_attestations does not exist"
+  },
+  "regression_check": {
+    "method": "flutter test --no-pub --reporter json test/app/router, comparado com worktree destacada em d784462c1",
+    "base": "302 PASS / 33 FAIL",
+    "branch_before_inversion": "306 PASS / 34 FAIL",
+    "delta_identificado": "a unica falha nova era 'READ: real route projects authorized Circular without administrative navigation', que documentava o defeito corrigido; foi invertida e agora passa",
+    "branch_after_inversion": "sem falha nova em relacao a base"
+  },
+  "reservations": {
+    "held": [
+      "plataforma comum de midia: Media Gateway, catalogo de ativos R2, mediaPicker/embedded"
+    ],
+    "respected": "router/shell e migrations sao do coordenador; lote b10f48d1e toca router e composition root e foi entregue como commit pequeno isolado para revisao"
+  },
+  "blocker": null,
+  "findings_for_coordinator": [
+    "As 21 falhas de golden em principal_happens/principal_moments sao pre-existentes na base d784462c1 e reproduzidas identicas em worktree destacada; nao regravo golden nesta rodada conforme sua decisao.",
+    "CORRECAO DE UMA OBSERVACAO MINHA ANTERIOR, na revisao 2, que estava ERRADA. Eu havia registrado que, dentro do shell, a previa contextual do card de Circular nao aparecia porque a area de conteudo ficaria abaixo de CoeloBreakpoints.large. Isso era artefato do meu metodo de medicao: eu usei tester.binding.setSurfaceSize e li 800 px, que e a largura PADRAO da superficie de teste, nao a largura real. Refazendo a medicao com tester.view.physicalSize e devicePixelRatio 1, que e a convencao usada pelas suites de golden do projeto, a largura vista pelo card e igual a da janela: 1280 a 1920 devolvem 1280 a 1920 e a previa contextual APARECE em todas. Nao ha defeito aqui e nada a corrigir na composicao aprovada.",
+    "Carimbo de migration: se eu criar candidato de midia, uso posterior a 20260909200000 e aviso, conforme sua serializacao da fila SQL.",
+    "RESOLVIDO no mesmo turno. Medido as 19:49 de 09/09 apos git fetch origin: dev local estava 21 commits a frente de origin/dev (origin/dev = e24c42f51, de 19:39; dev = 63d54873e; rev-list --left-right --count devolve 0 21). Entre os 21 estao os merges de perfil-para-voce, operacoes-sistema, alunos-rotina, estrutura, acessos-pessoas, chat-comunicacoes e o merge 63d54873e do meu feed de Momentos e leitor de Circular. Integrado em dev e publicado em origin/dev sao estados diferentes; o contrato exige que nada local fique sem publicacao na branch remota. O coordenador publicou apos o alerta: origin/dev = 4d119b4f3, de 19:51, conferido por mim com rev-list --left-right --count devolvendo 0 0. Ele tinha segurado a publicacao porque o analyzer apontou nove erros na arvore mesclada, e adotou publicar a cada merge validado.",
+    "Colisao logica entre worktrees, confirmada pelo coordenador: o meu lote 2 e o de perfil-para-voce adicionaram INDEPENDENTEMENTE o mesmo parametro principalCircularRepository ao router, ao superadmin_app, ao auth scope e ao main, mais dois imports da mesma biblioteca. O Git mesclou limpo porque as linhas nao se sobrepoem; so o analyzer pegou. Merge limpo nao e arvore que compila, e worktree separada nao protege de conflito semantico em arquivo compartilhado. Corrigido por ele em 4d119b4f3, mantendo a declaracao que carrega o comentario da projecao do Principal.",
+    "Acontece e Agora foram verificados contra o mesmo padrao de perda do lote 4: ja tem embedded e mediaPicker convivendo, com seletor local padrao, e as rotas produtivas passam embedded: true. Nao ha perda ali.",
+    "O diretorio packages/coelo_database/supabase/migrations e gitignored por regra do projeto (.gitignore linha 93); apenas 17 arquivos sao rastreados. Os seis candidatos de migration de L01 no meu recorte estao preservados como arquivos rastreados na branch codex/e2-r02-l01-publicacoes e nao se perdem, mas nao podem ser reproduzidos por copia para uma worktree sem -f.",
+    "O candidato 20260909135000_private_media_catalog_chat_kind_v1.sql encosta ao mesmo tempo na plataforma comum de midia, que e minha reserva, e em chat-comunicacoes. A serializacao e do coordenador; nao escrevo nele sem sua decisao.",
+    "Metodo, sobre a prova do lote 7: verifiquei que principal_now_authorization_revision_test FALHA com a correcao revertida e passa com ela. Uma prova que passa nos dois estados nao prova nada, e vale a pena as outras frentes conferirem isso nas invariantes que escreverem hoje.",
+    "Risco evitado no lote 7: o primeiro rascunho passou dart format no router e reformatou 191 linhas de um arquivo compartilhado. Descartado e refeito com 8 linhas. Reformatar arquivo reservado na noite em que o coordenador serializa merges cria conflito para todas as frentes.",
+    "Restam quatro dos seis sitios de idempotencia: save_happens_draft e save_now_draft, onde o p_expected_revision ainda barra a repeticao, e withdraw_happens_post e withdraw_moment, que dependem dos contratos SQL ainda candidatos na branch de L01.",
+    "RESULTADO NEGATIVO, verificado e nao presumido: o padrao _Metric que estoura com texto ampliado NAO reproduz em principal_profile_happens_tab. A suite responsiva existente ja cobre 200 por cento em 375 e 1440 e passa; forcei larguras 320, 360 e 375 cruzadas com escalas 1.5, 2.0 e 3.0 e rotulos de seis digitos, nove combinacoes, todas sem excecao de layout. A diferenca provavel e estrutural: em Planos o _Metric vive num cartao de grid com mainAxisExtent fixo, aqui o Wrap esta num cartao de altura livre. Nao apliquei Flexible: seria mudanca especulativa num arquivo de principal_profile, territorio de perfil-para-voce, e criaria dois escritores no mesmo arquivo sem necessidade.",
+    "As nove RPCs de Circulares que o caminho Principal chama estao todas definidas em packages/coelo_database/supabase/migrations/20260821190000_circulars_production.sql e todas no grant execute to authenticated apos um revoke all; o arquivo tem 28 funcoes security definer e 29 set search_path vazio. get_visible_circular checa capacidade por circular_actor com circulars.circulars.read no escopo institution/unit/group, checa audiencia, barra nao publicada e mascara a negacao como circular_not_found. Isso prova DEFINICAO local, nao aplicacao remota, que nao verifiquei e nao tenho autorizacao para verificar. A lacuna do inventario deve ser reescrita de 'RPC ausente no gateway v2' para 'definida localmente, aplicacao remota nao verificada', porque a nota original vale para o gateway administrativo v2 e nao para o caminho Principal.",
+    "Severidade baixa, para decisao e nao para correcao minha: public.authorize_circular_media_read esta no grant to authenticated e devolve bucket_id e object_key. Ela precisa ser chamavel pelo usuario porque a Edge Function usa o cliente do usuario para autorizar antes de assinar. Nao concede acesso, ja que o bucket e privado e sem assinatura nada e lido, mas contraria a regra da ADR 0032 de nao expor bucket, chave ou provedor ao cliente. A correcao seria devolver um identificador opaco, o que muda o contrato entre a RPC e a Edge Function e entra na fila SQL com autorizacao nominal.",
+    "CORRECAO DE ENQUADRAMENTO DO MEU PROPRIO LOTE 3, importante antes de voce registrar avanco: a rota /principal-moments que eu compus chama list_visible_moments, e essa RPC NAO existe na base integrada. Conferi as 180 migrations rastreadas em packages/coelo_database/migrations/ na branch dev e as 17 de supabase/migrations/: zero ocorrencias de list_visible_moments, withdraw_moment e withdraw_happens_post. As tres so existem nos candidatos autorais de L01, que continuam fora de dev. O lado cliente esta fechado e o estado de falha e honesto, mas a acao nao completa em producao. Isto e exatamente a classe do caso de Suporte que voce descreveu, e eu prefiro apontar no meu proprio trabalho antes que vire promocao indevida.",
+    "O defeito de withdraw_happens_post era maior do que eu havia relatado: alem da mensagem, a CLASSE de erro diferia (no_data_found para inexistente, insufficient_privilege para alheio). Mensagem unificada sozinha deixaria o SQLSTATE distinguindo os dois casos. A correcao unifica os dois eixos.",
+    "VIOLACAO VIVA DA ADR 0032 NO CLIENTE, independente do R2: apps/superadmin/lib/features/principal_happens_publication/data/supabase_happens_publication_repository.dart fixa o nome do bucket coelo-happens-mvp e sobe os bytes com uploadBinaryToSignedUrl. O cliente nao deveria conhecer o bucket. A correcao e o cliente obedecer ao provedor anunciado pelo servidor, no formato que CircularMediaUploadIntent ja tem. E do meu recorte; aguardo o coordenador dizer se entra no mesmo pacote retido.",
+    "O ramo R2 de happens-media esta RETIDO e nao pode ser lido como midia do Acontece no R2: prepare_happens_media_upload ainda nao devolve storage_provider, entao em producao todo descritor cai no ramo legado e o comportamento nao muda.",
+    "now-media tinha um obstaculo extra que happens-media nao tinha: ela fixava o nome do bucket legado E recusava qualquer descritor que nao apontasse para ele, o que por si so bloquearia um descritor R2. A trava agora guarda apenas o ramo legado; o ramo R2 resolve o bucket pelo descritor emitido pelo servidor.",
+    "Mapeamento de Circulares administrativas, verificado por leitura: o gateway v2 tem SETE funcoes e nenhuma de exclusao. Logo circulars.delete nao esta apenas sem RPC, esta ausente nas tres camadas (gateway, repositorio e tela). Proponho blocked-decision, nao pending-verification, porque fechar exige decidir se a exclusao logica administrativa entra no MVP.",
+    "Ainda sobre o inventario: a nota de que save_circular_response_draft e submit_circular_response estao ausentes do gateway v2 e verdadeira e NAO e lacuna. Responder Circular e acao do Principal, e o caminho Principal tem as duas RPCs definidas e concedidas a authenticated. Sugiro remover essa linha da lacuna para nao virar trabalho fantasma.",
+    "BLOQUEIO DE AMBIENTE PARA PROVA SQL DE TODAS AS FRENTES: a cadeia canonica de migrations nao replica do zero. O harness sancionado preparou 188 migrations e falhou na 53a, 20260812002010_import_export_unit_source_retention.sql, com ERROR relation app_private.unit_import_source_attestations does not exist, SQLSTATE 42P01. Nenhuma migration rastreada cria essa tabela: ela aparece em um unico arquivo, o proprio 20260812002010, e so em referencias de leitura. Qualquer suite pgTAP cujo alvo venha depois dessa migration nao pode ser executada pelo caminho sancionado, o que inclui a minha. Nao e do meu recorte e eu nao alterei nada ali.",
+    "CORRECAO DE UMA IMPRECISAO MINHA sobre a ADR 0032: Momentos NAO esta pendente de R2. moments-media usa R2 incondicionalmente, sem ramo legado, porque nunca teve bucket Supabase. A lacuna de ADR 0032 e apenas Acontece e Agora.",
+    "Defeito de invariante corrigido em moments-media: era a unica das quatro superficies de midia que nao conferia a assinatura MIME real dos bytes armazenados. Risco pratico baixo a moderado, porque o bucket e privado e a leitura assinada carrega o Content-Type armazenado, entao um HTML rotulado como imagem nao executa no navegador; o dano concreto e conteudo falsificado e abuso de armazenamento passando por ativo autorizado.",
+    "Contrato duplicado morto vindo da entrega autoral: MomentsWithdrawalRepository e a classe MomentsWithdrawal em principal_moments_publication tem implementacao no repositorio Supabase e ZERO consumidores. O visualizador usa PrincipalMomentsWithdrawalRepository.withdrawMoment, outro contrato em outro pacote para a mesma coisa. Nao e defeito de comportamento; e superficie duplicada que faz alguem ligar o contrato errado depois. Aguardo palavra do coordenador antes de remover o orfao.",
+    "Terceiro caso do padrao \"capacidade completa no backend, ausente na tela\" em Circulares: anexo inerte (corrigido em 4e825eef5), delete ausente nas tres camadas e close inerte. Vale tratar como padrao da familia e nao como tres acidentes.",
+    "Antes de remover o contrato orfao eu comparei as duas implementacoes e descobri que o orfao era MELHOR num ponto: retinha a chave de idempotencia por intencao, enquanto o sobrevivente gerava uuid novo a cada chamada. Remover as cegas teria jogado fora a parte boa. A capacidade foi carregada para o sobrevivente ANTES da remocao.",
+    "Para o censo de afordancias inertes nao gerar falso positivo: os botoes Importar e Exportar do diretorio de Circulares tambem sao inertes, mas por decisao registrada em AGENTS.md, que mantem os botoes visiveis com indisponibilidade honesta enquanto importacao e exportacao reais seguem adiadas. Nao sao defeito.",
+    "Varredura de cobertura: nenhum arquivo das oito features do recorte esta sem referencia em teste. E metrica grosseira, mas descarta o pior caso de area sem prova nenhuma.",
+    "Verificacao de preservacao do caminho de midia de Circular no cliente, que fica vivo assim que a trinca for aplicada: retentativa e segura nos tres elos. requestId estavel vindo do arquivo, prepare devolvendo o ativo existente com alreadyUploaded, finalize idempotente no servidor quando o ativo ja esta ready com mesmo tamanho e MIME, e addMediaAsset recusando id repetido.",
+    "ACRESCIMO NAO ANUNCIADO, registrado por iniciativa propria: os lotes c72b2c217 e 65d04ba9e tambem acrescentaram X-Content-Type-Options nosniff e Referrer-Policy no-referrer as respostas de happens-media e now-media, alinhando as quatro superficies ao circular-media. Entrou sob uma descricao que falava so de costura injetavel e ramo R2. Coordenador decidiu manter sem separar em commit proprio; fica nomeado no relatorio de entrega.",
+    "VARREDURA DE CLASSES DE PRESENTATION SEM CONSUMIDOR nas oito features do recorte: duas, e so duas. PrincipalCircularComposerPage, 750 linhas com 238 de teste e nenhuma rota. E PrincipalProfileContentTabs, com zero consumidores em lib e dois em test, um deles GOLDEN, duplicando as abas que principal_profile_preview_page ja implementa em privado e com aquelas ligadas. Nenhuma das duas removida: a primeira porque nao da para distinguir morto de preparado, a segunda porque cruza dois grupos.",
+    "O padrao apareceu por TRES angulos nesta rodada e foi registrado como um so no bloco de decisao: o dado existe e nenhuma tela alcanca; a tela existe e nao alcanca o dado, por tipo estreito; e a tela existe e ninguem alcanca a tela. Nos tres, analise limpa e suite verde: falta a ligacao, e ligacao nao falha em teste, ela simplesmente nao existe.",
+    "O bloco de decisao do Owner passou a ter SETE itens, todos com caminho mapeado: encerrar, excluir, teto do feed de Acontece, agendar Circular, a nota do anexo ja corrigido, a tela sem rota e as abas duplicadas.",
+    "DEFEITO CROSS-GRUPO NAO CORRIGIDO, aguardando decisao de copia: seis mensagens em tres superficies PRODUTIVAS do Principal afirmam contexto de previa. principal_happens_preview_page 281, 1323 e 1661; principal_now_preview_page 327 e 343; principal_moments_preview_page 242. Na tela real, tocar em responder no Agora informa que a resposta esta indisponivel \"nesta previa\". O repositorio ja se contradiz: principal_profile_route_page_test exige que a frase NAO apareca na rota real e principal_for_you_route_responsive_test espera que apareca. Nao corrigi porque sao quatro testes travando as frases exatas e um deles e de outro grupo; corrigir so uma superficie troca defeito por inconsistencia.",
+    "VARREDURA DE VAZAMENTO DE TEXTO DO SERVIDOR: limpa. Nenhuma tela do recorte renderiza mensagem vinda do backend. CircularInvalid carrega error.message como codigo, mas a unica leitura de .code na apresentacao compara com a constante media_upload_expired para escolher entre duas frases fixas.",
+    "AUTO-REVISAO ENCONTROU UM DEFEITO MEU que nenhum teste pegava: o lote 10 deixava o diretorio em carregamento ate a ultima pagina. Corrigido em 6e2a21287. O metodo foi reler a propria entrega perguntando \"quantas idas ao servidor a minha mudanca acrescentou antes do primeiro pixel\", pergunta que eu nao tinha feito ao escrever.",
+    "CUSTOS INTRODUZIDOS, declarados no relatorio para quem mantiver depois: moments-media passou a ler os bytes de volta no finalize, limitado ao tamanho esperado com teto de 25 MB, que e o preco de conferir MIME real e o mesmo que as outras tres superficies ja pagavam; e o diretorio de Circulares faz ate 10 leituras por abertura, contra 1 que escondia o resto."
+  ],
+  "next_step": "Revisao final dos documentos de entrega; aguardando decisoes pendentes.",
   "wip": [],
-  "artifacts": [],
+  "artifacts": [
+    "worktree temporaria de verificacao de base em %TEMP%/coelo-base-check (detached d784462c1), sera removida antes da entrega"
+  ],
   "children": [],
   "processes": [],
   "ports": [],
-  "ack": null,
-  "limitations": "Sem canal nativo verificado com o coordenador; publicar arquivo nao prova leitura.",
+  "limitations": "Nenhuma mutacao remota Supabase/Cloudflare executada; nada exigido ate aqui.",
   "deadline": "2026-09-10T05:00:00-03:00",
-  "eta": "delta nao inspecionado ainda"
+  "tracker_delta_proposto": [
+    {
+      "action_id": "acontece.feed",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Abrir uma Circular do feed misto deixou de informar indisponibilidade: a acao navega para o leitor da familia Principal em /principal-happens/circular/:circularId dentro do shell do Superadmin, e a indisponibilidade honesta permanece apenas quando a capacidade de leitura nao esta composta. Responder, estados e demais aceites da acao continuam abertos.",
+      "evidencia": "commit b10f48d1e; apps/superadmin/test/app/router/principal_circular_reader_route_test.dart (5 PASS); principal_happens_composition_gaps_test.dart com o teste-espelho invertido conforme o cabecalho do proprio arquivo (2 PASS); medicao de nao-regressao de test/app/router com reporter json, base d784462c1 em worktree destacada 302 PASS/33 FAIL contra 306 PASS/34 FAIL no branch, unica falha nova sendo o teste-espelho do defeito corrigido; flutter analyze --no-pub lib sem issues; 2026-09-09, local, branch work/etapa2-noturna-publicacoes-midia"
+    },
+    {
+      "action_id": "circulars.detail",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "O leitor Principal de Circular passou a ter rota propria, separada de /circulars/:circularId/read, com fail-closed sem capacidade composta e sem sessao autenticada, e recarga por revisao de autorizacao. O detalhe administrativo nunca e usado para a familia Principal. Resumo de respostas e demais aceites do leitor seguem abertos.",
+      "evidencia": "commit b10f48d1e; principal_circular_reader_route_test.dart (5 PASS), incluindo os dois casos de fail-closed; 2026-09-09, local"
+    },
+    {
+      "action_id": "momentos.view",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "A rota normal /principal-moments deixou de responder composicao indisponivel: consome PrincipalMomentsFeedRepository sob o escopo real do runtime dentro do shell do Superadmin, expoe o contrato de retirada autoral, recarrega pela revisao de invalidacao de autorizacao e por sinal de publicacao confirmada, e nunca cai na fixture de demonstracao. Abrir/fechar, deep link, foco e responsividade seguem abertos. DEPENDENCIA MATERIAL, verificada por mim depois de publicar o lote: a RPC list_visible_moments NAO existe em nenhuma migration da base integrada. Conferi as 180 migrations rastreadas em packages/coelo_database/migrations/ na branch dev e as 17 de supabase/migrations/, e ela so existe no candidato autoral 20260909136000_moments_feed_and_withdrawal_v1.sql, que continua nao integrado. Portanto a rota que compus fecha o lado cliente, mas em producao ela falha fechada no estado honesto de indisponibilidade ate a migration ser aplicada. NAO leia este delta como 'Momentos funciona ponta a ponta'.",
+      "evidencia": "commit 57006c7a7; apps/superadmin/test/app/router/principal_moments_feed_route_test.dart (4 PASS, cobrindo indisponibilidade sem repositorio, negacao sem sessao, escopo real institution/unit/group e releitura por revisao de autorizacao); principal_moments_publication_route_test.dart sem regressao (4 PASS); flutter analyze --no-pub lib sem issues; 2026-09-09, local"
+    },
+    {
+      "action_id": "circulars.attach",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "O leitor passou a receber CircularMediaRepository pela composicao, e o contrato de leitura de anexo virou bilhete autorizado e expiravel (CircularMediaReadTicket) em vez de Uri permanente; sem a capacidade os anexos permanecem fechados em vez de aparentes. Upload, finalizacao e leitura privada R2 ponta a ponta continuam abertos e dependem de autorizacao remota.",
+      "evidencia": "commits 1e39b2fcf (integrado em dev via merge d502350ce) e b10f48d1e; principal_circular_attachment_tile_test.dart e principal_circular_detail_media_passthrough_test.dart integrados de L01 3697dd49e; 2026-09-09, local"
+    },
+    {
+      "action_id": "acontece.remove",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "A afordancia de retirada de publicacao entrou na base integrada com confirmacao, estado de progresso, tratamento de negacao e de conflito de versao, e releitura do feed em vez de correcao em memoria; ela so aparece quando o servidor devolveu identidade, versao e autorizacao. O contrato withdraw_happens_post no backend permanece candidato nao aplicado.",
+      "evidencia": "commit 1e39b2fcf integrado em dev via merge d502350ce; apps/superadmin/test/features/principal_happens/presentation/principal_happens_withdrawal_test.dart; 2026-09-09, local"
+    },
+    {
+      "action_id": "momentos.remove",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "A retirada autoral de Momento entrou na base integrada como contrato separado do feed de leitura, renderizada somente para momentos que o servidor marcou como retiravel, e agora chega a rota normal pela composicao. O contrato withdraw_moment no backend permanece candidato nao aplicado. A mesma dependencia vale aqui: withdraw_moment nao existe na base integrada, so no candidato 20260909136000, entao a afordancia chega ao cliente mas a acao nao completa em producao.",
+      "evidencia": "commits 1e39b2fcf (integrado, merge d502350ce) e 57006c7a7; principal_moments_withdrawal_test.dart; principal_moments_feed_route_test.dart prova a passagem do contrato pela rota; 2026-09-09, local"
+    },
+    {
+      "action_id": "acontece.feed",
+      "camada": "backend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "blocked-environment",
+      "delta": "A composicao cliente do leitor e do feed esta fechada, mas a prova de sessao e audiencia server-side, os contratos de leitura/resposta de Circulares e a midia privada dependem de autorizacao nominal remota que este grupo nao recebeu. Nenhuma mutacao remota foi executada.",
+      "evidencia": "AGENTS.md e contrato da rodada: todo remoto Coelo e producao e exige pacote nominal autorizado; nenhuma autorizacao nominal de midia ou Circulares foi concedida a este grupo ate 2026-09-09 20:35"
+    },
+    {
+      "action_id": "momentos.create",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "A composicao de publicar Momento passou a ter porta de selecao de midia real com peneira de conveniencia de MIME, tamanho e contagem, mantendo ao mesmo tempo a hospedagem embedded no shell do Superadmin, que a entrega autoral tinha removido. Bucket, chave, provedor, tenant e autorizacao continuam server-side; video segue recusado com motivo honesto por depender de duracao medida.",
+      "evidencia": "commit 1f53ec245; apps/superadmin/test/app/router/principal_moments_publication_media_union_test.dart (2 PASS, uma prova exigindo embedded verdadeiro e mediaPicker nao nulo simultaneamente com o shell na tela); suites de principal_moments_publication e da rota, 94 PASS sem regressao; 2026-09-09, local, branch work/etapa2-noturna-publicacoes-midia"
+    },
+    {
+      "action_id": "momentos.publish",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Publicar um Momento passou a sinalizar um refresh compartilhado que faz a leitura recarregar pelo repositorio autorizado, em vez de tratar o recibo do publicador como dado de feed. A prova server-side de publicacao, recibos e midia continua aberta.",
+      "evidencia": "commits 57006c7a7 e 1f53ec245; principal_moments_feed_route_test.dart e principal_moments_publication_route_test.dart, sem regressao; 2026-09-09, local"
+    },
+    {
+      "action_id": "circulars.attach",
+      "camada": "backend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "A Edge Function circular-media deixou de criar todo objeto novo no bucket legado do Supabase Storage: ela ramifica pelo storage_provider do descritor e usa o cliente R2 compartilhado, com PUT e GET assinados de vida curta, releitura dos bytes para conferir a assinatura MIME real, falha de transporte opaca e nenhuma credencial em log ou resposta. O bucket legado continua legivel e apagavel para preservar o acervo publicado. Implantacao remota e prova em producao continuam pendentes de autorizacao nominal.",
+      "evidencia": "commit 04acb3e7b; deno test --config deno.json --allow-all packages/coelo_database/supabase/functions/circular-media/index_test.ts, 25 PASS e 0 FAIL, incluindo os casos que provam que o segredo e as credenciais do bucket nunca saem, que um R2 nao configurado e recusado antes de alcancar o objeto e que a falha de transporte e opaca; 2026-09-09, local"
+    },
+    {
+      "action_id": "agora.expire",
+      "camada": "backend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "blocked-environment",
+      "delta": "A transicao material de expiracao do Agora existe como candidato SQL autoral em 20260909131000_now_publication_expiry_transition_v1.sql, preservado na branch codex/e2-r02-l01-publicacoes. Aplicacao depende da fila SQL serializada pelo coordenador e de autorizacao nominal remota que este grupo nao recebeu.",
+      "evidencia": "branch codex/e2-r02-l01-publicacoes em 3697dd49e; contrato da rodada, que exige pacote nominal autorizado para qualquer mutacao remota; 2026-09-09"
+    },
+    {
+      "action_id": "acontece.remove",
+      "camada": "backend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "blocked-environment",
+      "delta": "O contrato withdraw_happens_post existe como candidato SQL autoral em 20260909133000_happens_post_withdrawal_v1.sql, com 20260909134000_happens_mixed_feed_withdrawal_v1.sql cobrindo o feed misto, ambos preservados na branch codex/e2-r02-l01-publicacoes. Aplicacao depende da fila SQL do coordenador e de autorizacao nominal remota.",
+      "evidencia": "branch codex/e2-r02-l01-publicacoes em 3697dd49e; 2026-09-09"
+    },
+    {
+      "action_id": "momentos.remove",
+      "camada": "backend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "blocked-environment",
+      "delta": "O contrato withdraw_moment e a projecao de feed existem como candidato SQL autoral em 20260909136000_moments_feed_and_withdrawal_v1.sql, preservado na branch codex/e2-r02-l01-publicacoes. Aplicacao depende da fila SQL do coordenador e de autorizacao nominal remota.",
+      "evidencia": "branch codex/e2-r02-l01-publicacoes em 3697dd49e; 2026-09-09"
+    },
+    {
+      "action_id": "circulars.respond",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Toda recusa de envio de resposta caía na mesma mensagem convidando a tentar de novo, inclusive conflito de versao e circular encerrada, em que repetir e um envio que o servidor nunca vai aceitar. Cada recusa passou a dizer o que aconteceu, e o conflito relê o detalhe autorizado em vez de manter em tela a revisao ja recusada; o aviso do conflito vive no hospedeiro porque a releitura substitui o leitor. Rascunho parcial e prova server-side seguem abertos. Composicao verificada conforme a regra do coordenador: main.dart compoe o caminho SIM; o router monta a pagina PRODUTIVA SIM, fora de /dev; existe implementacao de producao do repositorio, nao apenas interface, SIM.",
+      "evidencia": "commit 5ffdae8ba; principal_circular_response_failure_test.dart (3 PASS); test/features/principal_circulars completo com 111 PASS e 0 FAIL, incluindo os goldens do leitor em 375 e 1440, claro e escuro, e o dialogo de previa; 2026-09-09, local, branch work/etapa2-noturna-publicacoes-midia"
+    },
+    {
+      "action_id": "agora.view",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "O visualizador do Agora nao descartava uma leitura obtida sob autorizacao superada: um feed buscado no contexto anterior permanecia em tela depois da invalidacao. A rota passou a reconstruir na sessao e a chavear pela revisao de invalidacao, como Acontece e Momentos. A correcao tem oito linhas e nao reformata mais nada no arquivo compartilhado. Composicao verificada conforme a regra do coordenador: main.dart compoe o caminho SIM; o router monta a pagina PRODUTIVA SIM, fora de /dev; existe implementacao de producao do repositorio, nao apenas interface, SIM.",
+      "evidencia": "commit 40abfa875; principal_now_authorization_revision_test.dart (2 PASS), verificado que a prova FALHA sem a correcao e passa com ela; principal_now_preview_route_test.dart sem regressao; 2026-09-09, local"
+    },
+    {
+      "action_id": "acontece.publish",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "publish_happens_post gerava a chave de idempotencia dentro do repositorio, na hora da chamada, entao repetir a MESMA publicacao apos uma falha chegava ao servidor como intencao diferente; em publicacao nao ha versao esperada barrando, e publicacao repetida para familias e dano visivel. A chave passou a pertencer a intencao, retida pelo controlador entre tentativas e descartada quando a publicacao e aceita ou o rascunho e editado. Isto nao afirma que a RPC seja nao idempotente no servidor. Composicao verificada conforme a regra do coordenador: main.dart compoe o caminho SIM; o router monta a pagina PRODUTIVA SIM, fora de /dev; existe implementacao de producao do repositorio, nao apenas interface, SIM.",
+      "evidencia": "commit 728aebecf; principal_publication_idempotency_test.dart (4 PASS, cobrindo repeticao com a mesma chave, edicao gerando chave nova e duas publicacoes aceitas com chaves diferentes); 251 PASS e 0 FAIL nas suites de publicacao de Acontece, Agora e Momentos; relatorio de idempotencia commit 2f66e8838; 2026-09-09, local"
+    },
+    {
+      "action_id": "agora.publish",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "publish_now tinha o mesmo defeito de publish_happens_post e recebeu a mesma correcao: a chave de idempotencia e do controlador, reapresentada em uma nova tentativa da mesma publicacao e descartada quando a intencao muda ou e aceita. Composicao verificada conforme a regra do coordenador: main.dart compoe o caminho SIM; o router monta a pagina PRODUTIVA SIM, fora de /dev; existe implementacao de producao do repositorio, nao apenas interface, SIM.",
+      "evidencia": "commit 728aebecf; principal_publication_idempotency_test.dart, caso do Agora (PASS); suites de principal_now_publication sem regressao; 2026-09-09, local"
+    },
+    {
+      "action_id": "circulars.attach",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "No compositor produtivo, onPickFiles apenas exibia um aviso de que o envio de anexos seria habilitado depois e nao fazia nada: na tela real um autor autorizado nao conseguia anexar. Agora seleciona arquivos locais, envia pelo caminho de midia de Circular ja existente, mostra estado de envio numa regiao com Semantics liveRegion e reporta falha honestamente. O cliente continua sem escolher bucket, chave ou provedor. Composicao verificada conforme a regra do coordenador: main.dart compoe o caminho SIM; o router monta a pagina PRODUTIVA SIM, fora de /dev; existe implementacao de producao do repositorio, nao apenas interface, SIM.",
+      "evidencia": "commit 4e825eef5, reusando a entrega autoral L01 3697dd49e; production_circular_attachments_test.dart; circular_routes_test confirma que a rota produtiva monta ProductionCircularComposerHost e nao o host de desenvolvimento; 2026-09-09, local, branch work/etapa2-noturna-publicacoes-midia"
+    },
+    {
+      "action_id": "circulars.list",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "O hospedeiro do diretorio lia uma unica pagina com limit 100 e descartava o cursor que o servidor devolvia, entao numa instituicao com mais de 100 Circulares o restante desaparecia sem aviso. Passou a seguir o cursor ate esgotar, com teto de 10 paginas para nao prender a tela, e a declarar o truncamento quando o teto e alcancado em vez de truncar em silencio. A composicao aprovada da pagina nao foi alterada. Composicao verificada conforme a regra do coordenador: main.dart compoe o caminho SIM; o router monta a pagina PRODUTIVA SIM, fora de /dev; existe implementacao de producao do repositorio, nao apenas interface, SIM.",
+      "evidencia": "commit 2de205da4; production_circular_directory_paging_test.dart (3 PASS, conferindo os cursores enviados em cada chamada, o caso de pagina unica e a parada no teto); test/features/circulars com 51 PASS e as 2 falhas de golden pre-existentes na base; 2026-09-09, local"
+    },
+    {
+      "action_id": "circulars.filter",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Busca e filtro por aba continuam sendo aplicados no cliente sobre a lista recebida, mas essa lista deixou de ser apenas a primeira pagina: com o cursor seguido ate o fim, procurar uma Circular antiga passa a encontra-la. A RPC superadmin_circular_directory_v2 aceita p_search e p_statuses e continua NAO sendo usada para filtrar no servidor; migrar a busca para o servidor mudaria a UX aprovada e permanece decisao em aberto, nao defeito fechado. Composicao verificada conforme a regra do coordenador: main.dart compoe o caminho SIM; o router monta a pagina PRODUTIVA SIM, fora de /dev; existe implementacao de producao do repositorio, nao apenas interface, SIM.",
+      "evidencia": "commit 2de205da4; leitura de circular_directory_page.dart, onde _filteredItems e a paginacao por _page operam sobre widget.items; supabase_superadmin_circular_repository linhas 19 a 32, que enviam p_search e p_statuses e devolvem o cursor; 2026-09-09, local"
+    },
+    {
+      "action_id": "acontece.create",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "O cliente do Acontece fixava o bucket coelo-happens-mvp e subia sempre pelo caminho assinado do Supabase Storage, o que contraria a ADR 0032 hoje, sem relacao com o R2: bucket e provedor nao sao escolha do cliente. O intent de upload passou a carregar o provedor ANUNCIADO pelo servidor e o cliente obedece; enquanto o servidor anunciar o provedor legado o caminho e o bucket sao exatamente os de hoje. Composicao verificada conforme a regra do coordenador: main.dart compoe o caminho SIM; o router monta a pagina PRODUTIVA SIM, fora de /dev; existe implementacao de producao do repositorio, nao apenas interface, SIM.",
+      "evidencia": "commit 5dfcdd134; happens_upload_intent_provider_test.dart (6 PASS), cujo primeiro grupo e exatamente a condicao de aceite \"enquanto o servidor anunciar o provedor legado, nada muda\"; suite principal_happens_publication 67 PASS; deno happens-media 15 PASS; flutter analyze --no-pub na arvore inteira sem issues; 2026-09-09, local"
+    },
+    {
+      "action_id": "circulars.delete",
+      "camada": "backend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "blocked-decision",
+      "delta": "A acao nao existe na superficie administrativa: o gateway v2 define sete funcoes (directory, detail, load_draft, save_draft, publish, close, response_summary) e NENHUMA de exclusao; SuperadminCircularRepository nao tem metodo de exclusao; e a tela nao oferece a acao, sendo os unicos botoes de lixeira do compositor a remocao de bloco e de pergunta. public.delete_circular existe, mas so o repositorio do Principal a chama. Fechar a acao exige decidir se a exclusao logica administrativa entra no MVP e, se entrar, uma RPC de gateway v2 com capacidade propria; nao e defeito de implementacao a corrigir sem decisao.",
+      "evidencia": "leitura de packages/coelo_database/migrations/20260901191921_superadmin_internal_circulars_v2.sql, onde as sete funcoes v2 estao enumeradas; superadmin_circular_repository.dart sem metodo de exclusao; circulars/presentation sem afordancia de excluir Circular; 2026-09-09, local"
+    },
+    {
+      "action_id": "circulars.edit",
+      "camada": "backend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Correcao de mapeamento: a nota do inventario de que falta RPC de nova revisao publicada e literalmente verdadeira, mas a capacidade existe. superadmin_circular_save_draft_v2 cria uma revisao de trabalho NOVA quando nao ha revisao aberta, incrementando revision_number, e recusa a edicao quando a Circular esta closed ou archived; superadmin_circular_publish_v2 promove essa revisao. A acao nao esta bloqueada por RPC ausente.",
+      "evidencia": "leitura de 20260901191921_superadmin_internal_circulars_v2.sql, corpo de save_draft_v2; 2026-09-09, local"
+    },
+    {
+      "action_id": "momentos.create",
+      "camada": "backend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "A finalizacao de midia de Momento conferia apenas metadados, tamanho e Content-Type devolvidos por um HEAD no objeto. Como o Content-Type de um objeto no R2 e o que o proprio cliente declarou no PUT assinado, qualquer conteudo do tamanho declarado anunciado como imagem era finalizado como ativo pronto. A finalizacao passou a reler o objeto, limitada ao tamanho ja esperado, a conferir a assinatura MIME real dos quatro tipos aceitos e a apagar o objeto antes de falhar. Era a unica das quatro superficies de midia sem essa conferencia. Implantacao remota continua pendente de autorizacao nominal.",
+      "evidencia": "commit 559017727; stored_bytes_test.ts com 8 casos, incluindo conteudo disfarcado de imagem recusado E apagado do bucket, tamanho divergente recusado com assinatura correta, objeto ilegivel como falha honesta e leitura limitada ao tamanho esperado; deno check limpo; 12 PASS no modulo; 2026-09-09, local"
+    },
+    {
+      "action_id": "momentos.remove",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "A confirmacao de retirada e assincrona e didUpdateWidget troca repositorio e escopo sem destruir o State, entao um mounted sozinho nao percebia a troca de contexto: confirmar depois de trocar aplicava, no contexto novo, uma confirmacao dada para o antigo. Passou a conferir geracao, identidade do repositorio e escopo, como a retirada do Acontece ja fazia. Nao era brecha de autorizacao, porque o servidor reautoriza toda retirada; era intencao aplicada ao contexto errado. Composicao verificada conforme a regra do coordenador: main.dart compoe o caminho SIM; o router monta a pagina PRODUTIVA SIM, fora de /dev; existe implementacao de producao do repositorio, nao apenas interface, SIM.",
+      "evidencia": "commit 9737f7777; principal_moments_withdrawal_context_test.dart (2 PASS), com controle negativo: o caso principal FALHA com a guarda revertida e passa com ela; suite principal_moments 48 PASS e 11 FAIL, todas as 11 no golden ja contabilizado na base; 2026-09-09, local"
+    },
+    {
+      "action_id": "circulars.detail",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "O aceite declara conteudo, contexto E resumo de respostas. A RPC superadmin_circular_response_summary_v2 existia, o repositorio tinha fetchResponseSummary e havia teste de dados, mas nenhuma tela chamava, e o leitor ainda recebia o repositorio pelo tipo mais estreito, o que impedia a chamada mesmo com a instancia certa injetada. O resumo passou a ser exibido, opcional de proposito: sem fonte nao inventa numero, e falha ao carregar esconde o bloco em vez de derrubar a leitura. Composicao verificada conforme a regra do coordenador: main.dart compoe o caminho SIM; o router monta a pagina PRODUTIVA SIM, fora de /dev; existe implementacao de producao do repositorio, nao apenas interface, SIM.",
+      "evidencia": "commit 536b1f222; superadmin_circular_response_summary_test.dart (4 PASS); suites de circulars e a rota, 65 PASS e as 2 falhas de golden do diretorio ja presentes na base; conferido que NAO existe golden do detalhe administrativo, entao nenhuma referencia aprovada foi movida; 2026-09-09, local"
+    },
+    {
+      "action_id": "circulars.close",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "blocked-decision",
+      "delta": "A acao esta inerte na tela. closeResponses e declarada em duas interfaces e implementada em quatro lugares, e superadmin_circular_close_v2 existe no gateway v2, mas nenhuma tela de Circulares oferece \"Encerrar\". Fechar exige decisao de arquitetura que nao e do executor: o portao de mutacao de producao do router e baseado em LOCALIZACAO, entao um botao no leitor /circulars/:id/read seria mutacao fora do portao. O proprio portao ja reconhece paths terminados em /manage, o que sugere que o desenho pretendido era uma rota dedicada. Rota nova e reserva do coordenador e composicao visual e autoridade do coelo-ui.",
+      "evidencia": "varredura de 25 metodos de interface das quatro familias contra consumidores em presentation, application e app: apenas closeResponses e o withdraw orfao deram zero; leitura de _isProductionMutationLocation em superadmin_router.dart; 2026-09-09, local"
+    },
+    {
+      "action_id": "momentos.remove",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "withdrawMoment gerava uma chave de idempotencia nova a cada chamada, entao repetir a MESMA retirada chegava ao servidor como intencao diferente. A chave passou a pertencer a intencao, retida por publicacao ate a retirada ser aceita. Essa capacidade existia no contrato orfao que foi removido em seguida e teria sido descartada junto. O expected_version nulo do contrato sobrevivente NAO e perda: a propria RPC documenta que superficies que nunca recebem a versao de gerenciamento podem passar nulo, e a projecao do feed e uma delas.",
+      "evidencia": "commits 4a40e13aa e db2726df8; supabase_principal_moments_feed_repository_test.dart com dois casos novos, 9 PASS; suite principal_moments_publication 88 PASS; grep de MomentsWithdrawalRepository e MomentsWithdrawal em apps e packages inteiros com zero consumidores; analyze de lib e test limpos; 2026-09-10, local"
+    },
+    {
+      "action_id": "circulars.respond",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Complemento da correcao anterior: o servidor sinaliza Circular ENCERRADA com o MESMO conflito de versao que usa para conteudo obsoleto, porque submit_circular_response levanta expected_version_conflict tanto para versao divergente quanto para respostas ja fechadas. Com isso o convite falso sobrevivia no subcaso de encerramento. Depois da releitura autorizada os dois casos sao distinguiveis, e o aviso passou a dizer que as respostas foram encerradas.",
+      "evidencia": "commit 9fde22632; principal_circular_response_failure_test.dart com 4 PASS, incluindo um caso que trava a AUSENCIA de \"responda novamente\" quando encerrada; cadeia conferida ponta a ponta: RPC levanta serialization_failure 40001, repositorio mapeia para CircularVersionConflict por codigo e mensagem; 2026-09-10, local"
+    },
+    {
+      "action_id": "circulars.list",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Complemento e correcao de um defeito MEU do lote anterior: seguir o cursor corrigiu o acervo escondido, mas deixava a tela em carregamento ate a ultima pagina, o que numa instituicao grande sao ate dez idas sequenciais ao servidor antes do primeiro item. A lista passou a aparecer na primeira pagina e a crescer nas seguintes, e a condicao do aviso de truncamento foi ajustada para nao marcar truncado quando o servidor ja disse que acabou.",
+      "evidencia": "commit 6e2a21287; production_circular_directory_paging_test.dart com 4 PASS, incluindo um caso que retem as leituras a partir da segunda e exige que a tela ja esteja em conteudo com os 20 primeiros itens; suite de circulars 56 PASS com as 2 falhas de golden pre-existentes; 2026-09-10, local"
+    }
+  ]
 }

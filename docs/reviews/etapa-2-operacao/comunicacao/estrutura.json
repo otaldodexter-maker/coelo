@@ -1,105 +1,485 @@
 {
-    "revision":  6,
-    "updated_at":  "2026-09-09T18:15:46.3399919-03:00",
-    "group":  "estrutura",
-    "task":  "/root",
-    "model":  "GPT-6 (variante nao exposta)",
-    "status":  "active",
-    "coordinator":  "Claude",
-    "worktree":  "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura",
-    "branch":  "work/etapa2-noturna-estrutura",
-    "head":  "84662238122df2a7b85f5082ac9c5c8e93d8c69a",
-    "upstream":  "origin/work/etapa2-noturna-estrutura; HEAD igual; divergencia 0/0",
-    "base_observed":  "d784462c1",
-    "scope":  [
-                  "apps/superadmin -\u003e Instituicoes",
-                  "apps/superadmin -\u003e Unidades",
-                  "apps/superadmin -\u003e Turmas",
-                  "apps/superadmin -\u003e Atividades",
-                  "apps/superadmin -\u003e Avaliacoes",
-                  "apps/superadmin -\u003e Locais"
-              ],
-    "action_ids_status":  "49 IDs confirmados no inventario: 42 MVP e 7 adiados. Recorte inicial institutions.locations-map,units.locations-map,units.copy-institution-location,locations.list,locations.create-edit,locations.detail-links; seguinte groups.location/activities.location/locations.schedule.",
-    "changed":  "Lote publicado: f87543b6c (cd03),4528c42df (42ad),fc8287c57 (proposta hunks 1345),84662238 (evidencias). 36P, analyzer13 limpo, validador visual exit0. Nenhuma escrita dev/remoto.",
-    "closed_criteria":  [
-                            "Candidatos qualificados sobre base d784; sem promocao de acao completa"
-                        ],
-    "tests":  {
-                  "E":  36,
-                  "S":  0,
-                  "U":  0,
-                  "P":  36,
-                  "B":  0,
-                  "F":  0,
-                  "evidence":  "docs/reviews/evidence/etapa-2/noturna-estrutura/candidates-manifest.json",
-                  "revision":  "fc8287c57",
-                  "N":  36
-              },
-    "reservations":  [
-                         "Router/composition: hunks pequenos na branch como proposta; integrador Claude",
-                         "Migrations: candidatos locais permitidos; replay e remoto serializados Claude"
-                     ],
-    "blocker":  null,
-    "next_step":  "Implementar consumidor real do painel em detalhe de Atividade/Turma persistida: catalogo owner-scoped -\u003e escolha explicita -\u003e reservas daquela entidade/local, reutilizando LocationDirectoryPanel e LocationReservationPanel. Selecao apenas contexto de consulta, nao local salvo no formulario. Depois reader de bindings para descoberta/reabertura; save atomico Activity separado. Router somente proposta de hunks ao Claude.",
-    "wip":  [
-
-            ],
-    "artifacts":  [
-
-                  ],
-    "children":  [
-                     {
-                         "result":  "Nao ha selecao legada atual reutilizavel; location_names era join indevido ja fechado. Motor existente suporta reserva consumidor/local escolhido explicitamente.",
-                         "task":  "/root/bindings_review",
-                         "state":  "completed read-only"
-                     }
-                 ],
-    "processes":  [
-
-                  ],
-    "ports":  [
-
-              ],
-    "ack":  "coordenacao r2 recibo estrutura r3 lido; escritor central preservado",
-    "limitations":  "Sem canal nativo Claude verificado; arquivo publicado nao comprova leitura nem desperta conversa encerrada.",
-    "deadline":  "2026-09-09T23:30:00-03:00",
-    "eta":  "Delta de implementacao ainda nao inspecionado; espera de atribuicao indeterminada.",
-    "candidate_review":  [
-                             {
-                                 "paths":  6,
-                                 "status":  "static-review; integration pending",
-                                 "sha":  "cd03b9e30f49a286ff691b993179efbe9cafc19f"
-                             },
-                             {
-                                 "status":  "static-review; shared-path reservation pending",
-                                 "note":  "Location writes usam capabilities; conferir preservacao gate enableStructureMutations na integracao; testes de origem cobrem leituras (sem teste de escrita pelo main).",
-                                 "sha":  "1345af29ff180fa8bcf7757b27663bb3964c669d"
-                             },
-                             {
-                                 "sha":  "42ad0467e69f1667a31f0cf9db51ac82a061e87f",
-                                 "status":  "static-review; focused copy guard consistent with current generation protection"
-                             }
-                         ],
-    "memory":  "Consulta knowledge com Root explicito concluida; fonte aprovada de Locais conferida; nenhuma regra nova, no-op.",
-    "opening_contract":  {
-                             "stop":  "Recorte fechado, bloqueio sem independente ou 23:30 BRT",
-                             "eta":  "Atribuicao externa pendente; ainda sem estimativa fundamentada do delta SQL/consumidores",
-                             "evidence":  "Diff seletivo, testes proporcionais causal/negativas, logs e SHAs publicados",
-                             "included":  "6 familias/49 IDs e contratos aplicaveis",
-                             "objective":  "Fechar proximo aceite executavel Estrutura reutilizando R02",
-                             "order":  "Tres candidatos -\u003e consumidores e bindings -\u003e save atomico",
-                             "excluded":  "Outros apps; adiados; Auth/CHILD/shell preservados; producao sem pacote nominal"
-                         },
-    "commits":  [
-                    "f87543b6c",
-                    "4528c42df",
-                    "fc8287c57",
-                    "84662238"
-                ],
-    "coordinator_requests":  [
-                                 "Revisar/integrar lote publicado; fc8287 candidato de composicao restrito aos5paths, sem tocar dev.",
-                                 "Autorizar hunks de injecao de reservas em detalhes reais (serao propostos na branch); capabilities read/manage/override da sessao, sem liberar save legado Group.",
-                                 "Midia: publicacoes-midia e escritor; contrato locations/map-general/photo continua dependente, sem nova plataforma."
-                             ],
-    "owner_update":  "Owner ausente; pediu continuidade sem novas aprovacoes pessoais. Cortes originais mantidos; pacote remoto nominal continua exigido pelo contrato."
+  "revision": 51,
+  "updated_at": "2026-09-09T22:35:53.520417-03:00",
+  "group": "estrutura",
+  "task": "/root",
+  "model": "GPT-6 (variante nao exposta)",
+  "status": "active",
+  "coordinator": "Claude",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-estrutura",
+  "branch": "work/etapa2-noturna-estrutura",
+  "head": "36d3c6302ac1944fd06f314f02a90bb0dcf1c99b",
+  "upstream": "origin/work/etapa2-noturna-estrutura;HEAD36d3c6302 verified0/0",
+  "base_observed": "d784462c1",
+  "scope": [
+    "apps/superadmin -> Instituicoes",
+    "apps/superadmin -> Unidades",
+    "apps/superadmin -> Turmas",
+    "apps/superadmin -> Atividades",
+    "apps/superadmin -> Avaliacoes",
+    "apps/superadmin -> Locais"
+  ],
+  "action_ids_status": "49 IDs confirmados no inventario: 42 MVP e 7 adiados. Recorte inicial institutions.locations-map,units.locations-map,units.copy-institution-location,locations.list,locations.create-edit,locations.detail-links; seguinte groups.location/activities.location/locations.schedule.",
+  "changed": "Revisita final identificou possivel confirmacao de saida obsoleta em Institutions: save revalida contexto apos await, cancel/destination nao. Filho recebeu prova causal limitada a 3 casos e correcao minima somente se reproduzir; prazo interno 23:00. Codigo anterior publicado e WIP documental preservado.",
+  "closed_criteria": [
+    "Tres candidatos R02 revisados e reaproveitados; patches de composicao isolados.",
+    "Consumidores, adapters e protecoes locais qualificados conforme manifests individuais; nenhuma certificacao integral FE/BE/E2E.",
+    "Regressao R16 reconciliada com prova do comando avaliativo preenchido.",
+    "Todos os lotes de codigo publicados; filho recolhido e runners encerrados."
+  ],
+  "tests": {
+    "latest_batch": "Group read preflight",
+    "N": 15,
+    "E": 15,
+    "P": 15,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0,
+    "evidence": "docs/reviews/evidence/etapa-2/noturna-estrutura/group-detail-read-preflight-manifest.json",
+    "note": "3new+12Groupregressions; Unit unchangednotrerun; no writegateactivation"
+  },
+  "reservations": [
+    "Router/composition: hunks pequenos na branch como proposta; integrador Claude",
+    "Migrations: candidatos locais permitidos; replay e remoto serializados Claude"
+  ],
+  "blocker": "Somente dependentes: replay SQL na fila Claude, producao sem autorizacao nominal, Group writer legado, Activity edit/About/avulso fora do candidato atomico atual.",
+  "next_step": "Fechar a prova de confirmacao obsoleta de Institutions ate 23:00; publicar se qualificada. Finalizar indice e checkpoints 23:10/23:20/23:30, sem novos lotes apos congelamento.",
+  "wip": [
+    {
+      "path": "apps/superadmin/lib/app/router/superadmin_router.dart",
+      "owner": "bindings_review",
+      "sha256": "36e05950cece0c3749305e6b1b87c625955d28cf52044f3cce29e8343f47a980"
+    },
+    {
+      "path": "apps/superadmin/lib/features/groups/domain/group_detail.dart",
+      "owner": "bindings_review",
+      "sha256": "fb4089768800f2c615ddd54059441884d449705b1c77a851b23860f111ef2f74"
+    },
+    {
+      "path": "apps/superadmin/test/app/router/structure_detail_authorization_test.dart",
+      "owner": "bindings_review",
+      "sha256": "a8c094444896fcf611be23ee67ccf5cecf568da42671354f37554655b00c1ab8"
+    },
+    {
+      "path": "apps/superadmin/test/app/router/structure_detail_routes_test.dart",
+      "owner": "bindings_review",
+      "sha256": "c7ecdb15c75c1adf76870a7be2dc4fdf5b33322e6354b623f3eda082824f4551"
+    },
+    {
+      "path": "docs/reviews/evidence/etapa-2/noturna-estrutura/action-handoff-map.json",
+      "owner": "root",
+      "sha256": "23056556002fa970e9b14641a38ad4892cbfb343ecc9202aec2d918ae232449a"
+    },
+    {
+      "path": "docs/reviews/evidence/etapa-2/noturna-estrutura/activity-initial-scope-manifest.json",
+      "owner": "root",
+      "sha256": "56bb322260d1f578150eaf0f0a50893857fa0720de8dbefacef134d25f93cbc8"
+    },
+    {
+      "path": "docs/reviews/evidence/etapa-2/noturna-estrutura/group-detail-entry-manifest.json",
+      "owner": "root",
+      "sha256": "deda7e52924e1e0835dbbc49ac00f3d404df1f9543edfdcfa75f7a97a4fc8553"
+    },
+    {
+      "path": "docs/reviews/evidence/etapa-2/noturna-estrutura/group-initial-context-manifest.json",
+      "owner": "root",
+      "sha256": "3775835ac5f2bf341803bdaee6246d03b0667c9836b20c2a793125e254a7d45e"
+    },
+    {
+      "path": "docs/reviews/evidence/etapa-2/noturna-estrutura/group-location-candidate-manifest.json",
+      "owner": "root",
+      "sha256": "92481a658988a34a3894297aa3966f3675cabc5feef39fdcbfb8dde611e11b11"
+    },
+    {
+      "path": "docs/reviews/evidence/etapa-2/noturna-estrutura/group-retry-context-manifest.json",
+      "owner": "root",
+      "sha256": "d745abcc19aa66c425d3f80194d01d8c5582932fec725ea689a585a60a38381e"
+    },
+    {
+      "path": "docs/reviews/evidence/etapa-2/noturna-estrutura/productive-reachability-manifest.json",
+      "owner": "root",
+      "sha256": "bbfe41351900d5e89c1b178a9a832be0078bafc89a8e375ee8d9b543c9302b68"
+    },
+    {
+      "path": "docs/reviews/evidence/etapa-2/noturna-estrutura/sql-retained-handoff.json",
+      "owner": "root",
+      "sha256": "3952fae391321445a414e2889c4592b9c7b918a97afa19becdabdffcd355d49d"
+    }
+  ],
+  "artifacts": [
+    "docs/reviews/evidence/etapa-2/noturna-estrutura/delivery-index.json",
+    "docs/reviews/evidence/etapa-2/noturna-estrutura/action-handoff-map.json",
+    "docs/reviews/evidence/etapa-2/noturna-estrutura/productive-composition-manifest.json",
+    "docs/reviews/evidence/etapa-2/noturna-estrutura/productive-reachability-manifest.json",
+    "docs/reviews/evidence/etapa-2/noturna-estrutura/activity-composition-r16-manifest.json"
+  ],
+  "children": [
+    {
+      "task": "/root/bindings_review",
+      "state": "active-bounded-institution-exit-context",
+      "resources": "Slot Flutter; apenas InstitutionForm/3 casos; sem router/Auth/remoto; prazo interno 23:00"
+    }
+  ],
+  "processes": [
+    "Child owns focal lifecycle test slot"
+  ],
+  "ports": [],
+  "ack": "Coordenacaor18camposnovoslidos;R16respondidoef751c33b5P. Recibonominalestrutura ainda r11, naoafirmoleituradeentregasposteriores.",
+  "limitations": "Sem canal nativo Claude verificado; arquivo publicado nao comprova leitura nem desperta conversa encerrada.",
+  "deadline": "2026-09-09T23:30:00-03:00",
+  "eta": "Codigo qualificado e publicado. Restam consolidacao documental, conferencias Git/recursos e checkpoints obrigatorios de horario.",
+  "candidate_review": [
+    {
+      "paths": 6,
+      "status": "static-review; integration pending",
+      "sha": "cd03b9e30f49a286ff691b993179efbe9cafc19f"
+    },
+    {
+      "status": "static-review; shared-path reservation pending",
+      "note": "Location writes usam capabilities; conferir preservacao gate enableStructureMutations na integracao; testes de origem cobrem leituras (sem teste de escrita pelo main).",
+      "sha": "1345af29ff180fa8bcf7757b27663bb3964c669d"
+    },
+    {
+      "sha": "42ad0467e69f1667a31f0cf9db51ac82a061e87f",
+      "status": "static-review; focused copy guard consistent with current generation protection"
+    }
+  ],
+  "memory": "Consulta knowledge com Root explicito concluida; fonte aprovada de Locais conferida; nenhuma regra nova, no-op.",
+  "opening_contract": {
+    "stop": "Recorte fechado, bloqueio sem independente ou 23:30 BRT",
+    "eta": "Atribuicao externa pendente; ainda sem estimativa fundamentada do delta SQL/consumidores",
+    "evidence": "Diff seletivo, testes proporcionais causal/negativas, logs e SHAs publicados",
+    "included": "6 familias/49 IDs e contratos aplicaveis",
+    "objective": "Fechar proximo aceite executavel Estrutura reutilizando R02",
+    "order": "Tres candidatos -> consumidores e bindings -> save atomico",
+    "excluded": "Outros apps; adiados; Auth/CHILD/shell preservados; producao sem pacote nominal"
+  },
+  "commits": [
+    "36d3c6302ac1944fd06f314f02a90bb0dcf1c99b fix(superadmin): propose group detail read-capability preflight",
+    "0ebae43941ce04c73dc128c652ebbd0005a9a444 fix(superadmin): deny group detail reads before transport when capability is absent",
+    "10d69e38bc9c201ce357bbe9d45eea96dedd3c2c feat(superadmin): propose group read-detail entry route",
+    "0ce8e6b2a6b02f36edfa6209092ee7f2a0d750a3 feat(superadmin): let group directory open authorized read details",
+    "4b7714f156a1246c41e0cf382efe207b607beb64 docs(review): consolidate estrutura commits evidence and productive reachability",
+    "ef751c33b4c7e859889d0fb7f24ffe125a933351 test(superadmin): reconcile activity composition with authorized read projection",
+    "93eeddb1002997f34cc925cd790bcc207150ffc5 fix(superadmin): invalidate activity loads when initial scope changes",
+    "60ff99a7fbf78e88eca00b95a5df417d6687986b fix(superadmin): guard retained activity save callbacks",
+    "6bad96b6881e35e87c3fb0683691a519aa33b24a fix(superadmin): reject stale group form initialization",
+    "a075ba2695679a57f5c0dd205717e5f130f647d7 test(superadmin): prove current-location app composition stays gated",
+    "77a917de529cd07a1f26e747be87a1f399c309ea feat(superadmin): propose closed current-location reader composition",
+    "24c8de1686529fd5df8dbe0914541c71db04ad03 fix(superadmin): preserve group retry intent and reject changed context",
+    "cb817ca10aa1211bf904e5d9aec168b5fa40b759 fix(locations): validate justification before freezing a write attempt",
+    "44380219d078c17c090f68a1ce3c42919329cba1 fix(locations): align justification preflight with server character limit",
+    "c970bbbe352d8c460bc95852d4f66e13c76c4c4b fix(locations): reject stale catalog mutation entry callbacks",
+    "6797ae7667a07e2b1d799811321e8fc1b4a96fe6 fix(groups): reject duplicate pending saves and freeze form edits",
+    "33ff95fcee51097efe4ec6e71d1addc5d872e1fa fix(locations): correlate atomic reservation receipts with submitted intent",
+    "81b59c490062baae039590b3c632df1401926c79 docs(estrutura): map 49 actions to evidence and remaining gates",
+    "7798fe9f1b964209fb89f6e990d2ae2d2f6f2509 fix(locations): gate fresh reservations by historical catalog status",
+    "d2764cf187dfbf0061db2ce358a486e2c1430290 fix(activities): freeze catalog intent during pending writes",
+    "fbf964e97496c557db9c4b33efec0d96a0e913d4 docs(estrutura): distinguish normal composition from local qualification",
+    "57268a881b579d168f45da8ac344c2424ab9c866 fix(activities): reject callbacks from a removed catalog owner",
+    "32be87ca2e2ee18ae27cd69f699773e19e3dc3cf fix(assessments): contain save errors and freeze edits during writes",
+    "5658023e414f516484295c3910a149abe2985dab docs(evidence): record 68 current selection checks and resolved fixture failure",
+    "48fff09d0d7eb9c75c93ed081b1edab69ce4f2a2 feat(superadmin): propose current catalog choice in consumer detail routes",
+    "ecf403d08bdb9810637709b60badf758f8665c67 feat(locations): read current consumer selection separately from history",
+    "ee2c35686b7e3b9f400181aa6bcfd8459e2d377e fix(units): preserve create intent across ambiguous retries",
+    "d3c330b0e19abd250c80c87ce84fb90694124314 docs(evidence): record 44 activity catalog form and route checks",
+    "1da23e67b31717dd30143cea0c87dd9afc340d64 feat(superadmin): propose guarded activity catalog create composition",
+    "d33ef4981d4de6cfe419de608e091d588d43c6de feat(activities): add guarded catalog field to draft form",
+    "106a1076538a48e02166c9d446c6d294eeeade5d feat(groups): prepare gated atomic catalog draft client",
+    "86917403215ee78382663e83596ef168bf00115f feat(database): prepare internal atomic group catalog draft candidate",
+    "4dec3d4cd3c64bcc2bd970f232485b3341c5f137 fix(activities): preserve catalog draft intent and reject partial saves",
+    "62800db485ecffe00794400b3757d5e30ed3f46f feat(activities): prepare gated atomic catalog draft command",
+    "d01c318ba0c6e7cd24e4a73a31645c93f2a6f8a8 docs(evidence): record activity reader composition and resolved layout failures",
+    "e06eb62de87db0ac43f311757ed7324d53ec101b feat(superadmin): propose activity detail catalog and reservation composition",
+    "10ea54fedde044d35126469f1a20b19655c59fbd feat(activities): render internal detail with guarded reservation slot",
+    "9fa190fc32452b240814bb38baea87d76247cd56 feat(activities): decode authorized internal detail projection",
+    "bf422d4f9c09ce042d64ac28dd755435859fd1f7 docs(evidence): record 43 binding history checks",
+    "b995ed1cffc77a3e93907eac5fddd2beeb85e28d feat(superadmin): propose group binding history and manage gate",
+    "e24f3043e9918acaa765e6f761fa1bdae9f73802 feat(locations): read and browse historical consumer bindings",
+    "c56d80dcb70a86c4ec07d1476799b1a73c66fbb1 feat(database): prepare atomic activity draft with catalog location",
+    "e6c25bb94fad25c6e14eba06e3320fb6e572e6ff docs(evidence): record 47 consumer reservation checks",
+    "ecc2839278919adf9f72cad5c5c8fd76f23d713a feat(database): prepare nominal consumer binding reader and tests",
+    "be96ba98b423fcf382a866ca09a4fe00af57c63a feat(superadmin): propose group detail reservation composition",
+    "c899e1236d36d8d2d7ff925b463af2328fc78d38 feat(locations): compose catalog reservation context for persisted consumers",
+    "84662238122df2a7b85f5082ac9c5c8e93d8c69a test(estrutura): qualify retained location candidates on current base",
+    "fc8287c57021472d5ff06bb81488bbc8a3503d57 feat(locations): compose owner-scoped catalog routes and form links",
+    "4528c42df1d2bbcc5eb42c5a6106319c7feefd1c fix(locations): prevent duplicate copy dialog routes",
+    "f87543b6cf88e79bfb122d6f876340945111839a feat(superadmin): expose owner-scoped locations section in structure forms"
+  ],
+  "coordinator_requests": [
+    "Integrar os commits que ainda nao forem ancestrais de dev, uma unica vez. Ultimo codigo: 36d3c6302, dependente de 0ebae4394. Propostas de router/main/App sao hunks pequenos, listados no delivery-index.json.",
+    "R16 foi reconciliada em ef751c33b: 3 falhas reproduzidas, 5 casos finais aprovados. Verificar na base integrada; nao reabrir a composicao antiga nem retirar campos avaliativos.",
+    "Serializar os tres candidatos SQL: bindings 30 U, Activity 33 U e Group 46 U. Consultar sql-retained-handoff.json, hashes e perfis exigidos. Bindings 190000 corresponde ao nome integrado 192000; nao aplicar ambos.",
+    "Manter leitores de selecao e escritores atomicos desativados ate qualificacao do pacote exato. Todo remoto e producao e permanece sem autorizacao nominal nova nesta rodada.",
+    "Aplicar tracker_delta_proposto por action_id e camada. Ha 49 IDs, 42 MVP e 7 adiados; 20 IDs possuem evidencia noturna local, sem promocao terminal. Bloqueios backend da fatia nova estao explicitos.",
+    "Assumir o residual apos 23:30: completar composicao de diretorios Group/Unit, entrada produtiva de Locais, contratos de formulario completo e provas integradas/visuais/nominais pendentes. Nao retomar o executor Codex apos o corte."
+  ],
+  "owner_update": "Owner ausente; pediu continuidade sem novas aprovacoes pessoais. Cortes originais mantidos; pacote remoto nominal continua exigido pelo contrato.",
+  "tracker_delta_proposto": [
+    {
+      "action_id": "groups.location",
+      "camada": "integrated",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Consumidor usa UUID e escopos reais; historico e selecao atual permanecem distintos. UI/adapters qualificados localmente; getters e pacote atomico aguardam replay nominal e producao.",
+      "evidencia": "106a1076538a48e02166c9d446c6d294eeeade5d; group-atomic-client-manifest.json; 869174032; 5658023e414f516484295c3910a149abe2985dab current-selection-manifest.json; 7798fe9f1b964209fb89f6e990d2ae2d2f6f2509 historical-reservation-status-manifest.json; 33ff95fcee51097efe4ec6e71d1addc5d872e1fa activity-group-reservation-correlation-manifest.json; 44380219d078c17c090f68a1ce3c42919329cba1 reservation-justification-limit-manifest.json; cb817ca10aa1211bf904e5d9aec168b5fa40b759 reservation-justification-ui-manifest.json; 77a917de5+a075ba269 current-selection-composition-manifest.json"
+    },
+    {
+      "action_id": "locations.detail-links",
+      "camada": "integrated",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Historico autorizado de vinculos foi preparado com pagina e adapter. Candidato SQL de leitura tem 30 casos ainda nao executados; aceite integrado permanece pendente.",
+      "evidencia": "bf422d4f9; docs/reviews/evidence/etapa-2/noturna-estrutura/bindings-manifest.json"
+    },
+    {
+      "action_id": "activities.location",
+      "camada": "integrated",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Detalhe usa projecao autorizada e consumidores reais. Selecao catalogada e reserva opcional chegam ao candidato atomico; ativacao depende do pacote SQL qualificado.",
+      "evidencia": "d3c330b0e19abd250c80c87ce84fb90694124314; docs/reviews/evidence/etapa-2/noturna-estrutura/activity-catalog-ui-manifest.json; 5658023e414f516484295c3910a149abe2985dab current-selection-manifest.json; 57268a881b579d168f45da8ac344c2424ab9c866 activity-owner-callback-manifest.json; 7798fe9f1b964209fb89f6e990d2ae2d2f6f2509 historical-reservation-status-manifest.json; d2764cf187dfbf0061db2ce358a486e2c1430290 activity-write-freeze-manifest.json; 33ff95fcee51097efe4ec6e71d1addc5d872e1fa activity-group-reservation-correlation-manifest.json; 44380219d078c17c090f68a1ce3c42919329cba1 reservation-justification-limit-manifest.json; cb817ca10aa1211bf904e5d9aec168b5fa40b759 reservation-justification-ui-manifest.json; 77a917de5+a075ba269 current-selection-composition-manifest.json"
+    },
+    {
+      "action_id": "locations.schedule",
+      "camada": "integrated",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Reservas preservam intencao, status historico, escopo e correlacao do recibo. Justificativa respeita 1000 codepoints antes de gerar request. Provas historicas 49+2 reutilizadas; novos escritores atomicos retidos.",
+      "evidencia": "e6c25bb94; bf422d4f9; 7798fe9f1b964209fb89f6e990d2ae2d2f6f2509 historical-reservation-status-manifest.json; 44380219d078c17c090f68a1ce3c42919329cba1 reservation-justification-limit-manifest.json; cb817ca10aa1211bf904e5d9aec168b5fa40b759 reservation-justification-ui-manifest.json"
+    },
+    {
+      "action_id": "units.create",
+      "camada": "integrated",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Retry de CREATE conserva identidade e payload, com 6 testes locais. A origem tinha um CREATE e um UPDATE, nao dois CREATE. O adapter real ainda nao e selecionado pela composicao produtiva.",
+      "evidencia": "ee2c35686b7e3b9f400181aa6bcfd8459e2d377e; docs/reviews/evidence/etapa-2/noturna-estrutura/units-create-idempotency-manifest.json"
+    },
+    {
+      "action_id": "assessments.entry",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Falha no salvamento volta a estado acionavel e edicao concorrente fica bloqueada; 10 testes compartilhados com gradebook, sem soma duplicada. Flag produtiva de mutacao nao foi ativada.",
+      "evidencia": "32be87ca2e2ee18ae27cd69f699773e19e3dc3cf; docs/reviews/evidence/etapa-2/noturna-estrutura/assessments-draft-error-manifest.json"
+    },
+    {
+      "action_id": "assessments.gradebook",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Mesmo gate de erro e edicao durante salvamento de entry; 10 casos compartilhados. Sem nova prova de persistencia remota ou ativacao de mutacoes.",
+      "evidencia": "32be87ca2e2ee18ae27cd69f699773e19e3dc3cf; docs/reviews/evidence/etapa-2/noturna-estrutura/assessments-draft-error-manifest.json"
+    },
+    {
+      "action_id": "groups.create",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Formulario congela durante escrita, conserva o request completo em retry equivalente e recusa contexto obsoleto desde o carregamento inicial. Cliente atomico restrito existe; formulario completo continua no contrato legado.",
+      "evidencia": "6797ae7667a07e2b1d799811321e8fc1b4a96fe6 group-write-freeze-manifest.json; 33ff95fcee51097efe4ec6e71d1addc5d872e1fa activity-group-reservation-correlation-manifest.json; 44380219d078c17c090f68a1ce3c42919329cba1 reservation-justification-limit-manifest.json; 24c8de168 group-retry-intent-manifest.json; 6bad96b68 group-initial-context-manifest.json"
+    },
+    {
+      "action_id": "groups.edit",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Retry equivalente preserva request e registro; alteracao efetiva cria nova intencao. Troca de contexto invalida resposta antiga e exige reabertura. Nao altera autorizacao nem contrato remoto.",
+      "evidencia": "6797ae7667a07e2b1d799811321e8fc1b4a96fe6 group-write-freeze-manifest.json; 24c8de168 group-retry-intent-manifest.json; 6bad96b68 group-initial-context-manifest.json"
+    },
+    {
+      "action_id": "activities.create",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Catalogo e reserva tipada entram no comando restrito de novo draft. Formulario protege escrita, reentrada e respostas de escopo antigo. Configuracao avaliativa permanece ligada; gates de producao continuam fechados.",
+      "evidencia": "33ff95fcee51097efe4ec6e71d1addc5d872e1fa activity-group-reservation-correlation-manifest.json; 44380219d078c17c090f68a1ce3c42919329cba1 reservation-justification-limit-manifest.json; 60ff99a7f activity-reentry-manifest.json; 93eeddb10 activity-initial-scope-manifest.json; ef751c33b activity-composition-r16-manifest.json"
+    },
+    {
+      "action_id": "locations.create-edit",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Callbacks antigos nao reabrem escrita apos revogacao ou troca de contexto. Secoes e rotas owner-scoped reutilizam o catalogo aprovado; sem novo aceite remoto.",
+      "evidencia": "c970bbbe352d8c460bc95852d4f66e13c76c4c4b catalog-held-callback-manifest.json"
+    },
+    {
+      "action_id": "units.copy-institution-location",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Copia reutiliza o catalogo aprovado; segunda ativacao e callback antigo foram corrigidos. Fluxo segue capacidades e escopo reais, sem promover a acao integral.",
+      "evidencia": "c970bbbe352d8c460bc95852d4f66e13c76c4c4b catalog-held-callback-manifest.json"
+    },
+    {
+      "action_id": "activities.edit",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Protecoes de escrita e escopo preservam o formulario e recusam callbacks descartados. R16 comprovou transporte de configuracao, versao e justificativa avaliativas. Edicao atomica de Local permanece fora do candidato novo.",
+      "evidencia": "60ff99a7f activity-reentry-manifest.json; 93eeddb10 activity-initial-scope-manifest.json; ef751c33b activity-composition-r16-manifest.json"
+    },
+    {
+      "action_id": "activities.list",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Contrato de composicao R16 agora distingue diretorio injetado e leitor autorizado de detalhe. Nenhum fallback de desenvolvimento foi introduzido; aceite integral da listagem nao foi refeito.",
+      "evidencia": "ef751c33b activity-composition-r16-manifest.json"
+    },
+    {
+      "action_id": "activities.detail",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Detalhe real usa projecao autorizada, UUID valido e capability de leitura. Teste R16 confirma reader injetado, nenhum acesso extra ao diretorio e bloqueio de mutacao na navegacao avaliativa.",
+      "evidencia": "ef751c33b activity-composition-r16-manifest.json"
+    },
+    {
+      "action_id": "activities.assessment",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "R16 confirma rota de configuracao avaliativa e transporte de configuracao preenchida, expectedVersion 7 e justificativa. Mutacao produtiva continua sujeita ao gate existente.",
+      "evidencia": "ef751c33b activity-composition-r16-manifest.json"
+    },
+    {
+      "action_id": "activities.location",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Consumidores reais, historico e selecao atual foram ligados. Main/App encaminham o reader com available:false; esta composicao nao ativa getters SQL.",
+      "evidencia": "ef751c33b activity-composition-r16-manifest.json"
+    },
+    {
+      "action_id": "groups.list",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Cards e tabela oferecem entrada de leitura quando editar nao esta disponivel; callback revalida groups.read. Diretorio produtivo permanece Unavailable. Preflight de detalhe impede chamadas sem a capability.",
+      "evidencia": "0ce8e6b2a+10d69e38b group-detail-entry-manifest.json; 0ebae4394+36d3c6302 group-detail-read-preflight-manifest.json"
+    },
+    {
+      "action_id": "groups.location",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Entrada pelo diretorio foi preparada e detalhe recusa leitura sem groups.read. Consumidores usam escopo real; selecao atual permanece desativada ate qualificar o backend.",
+      "evidencia": "0ce8e6b2a+10d69e38b group-detail-entry-manifest.json; 0ebae4394+36d3c6302 group-detail-read-preflight-manifest.json"
+    },
+    {
+      "action_id": "institutions.locations-map",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Candidatos R02 foram revisados e reutilizados para secao owner-scoped de Locais e composicao minima. Os 36 casos focais nao certificam mapa, midia ou formulario produtivo completo.",
+      "evidencia": "f87543b6c+4528c42df+fc8287c57+846622381; docs/reviews/evidence/etapa-2/noturna-estrutura/candidates-manifest.json"
+    },
+    {
+      "action_id": "units.locations-map",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Secao de Locais e rotas owner-scoped reutilizam o catalogo R02. Formulario e midia mantem seus gates; sem promocao integral a partir dos 36 testes focais.",
+      "evidencia": "f87543b6c+4528c42df+fc8287c57+846622381; docs/reviews/evidence/etapa-2/noturna-estrutura/candidates-manifest.json"
+    },
+    {
+      "action_id": "locations.list",
+      "camada": "frontend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "pending-verification",
+      "delta": "Catalogo recebeu composicao por proprietario e rotas normais a partir dos candidatos R02. Os 165 casos historicos foram reutilizados; entrada produtiva navegavel e pacote remoto seguem pendentes.",
+      "evidencia": "f87543b6c+4528c42df+fc8287c57+846622381; docs/reviews/evidence/etapa-2/noturna-estrutura/candidates-manifest.json"
+    },
+    {
+      "action_id": "groups.create",
+      "camada": "backend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "blocked-environment",
+      "delta": "Fatia nova Group46U retida: replay/perfis serializados porClaude e pacote remoto exato sem autorizacao nominal. Candidato revisavel e seis hashes conferidos;zeroexecucaoSQL. Nao invalida provas historicas nem certifica restante daacao.",
+      "evidencia": "docs/reviews/evidence/etapa-2/noturna-estrutura/sql-retained-handoff.json; bindings-candidate-manifest.json; activity-location-candidate-manifest.json; group-location-candidate-manifest.json"
+    },
+    {
+      "action_id": "groups.location",
+      "camada": "backend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "blocked-environment",
+      "delta": "Fatia nova Group46U e bindings30U retida: replay/perfis serializados porClaude e pacote remoto exato sem autorizacao nominal. Candidato revisavel e seis hashes conferidos;zeroexecucaoSQL. Nao invalida provas historicas nem certifica restante daacao.",
+      "evidencia": "docs/reviews/evidence/etapa-2/noturna-estrutura/sql-retained-handoff.json; bindings-candidate-manifest.json; activity-location-candidate-manifest.json; group-location-candidate-manifest.json"
+    },
+    {
+      "action_id": "activities.create",
+      "camada": "backend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "blocked-environment",
+      "delta": "Fatia nova Activity33U retida: replay/perfis serializados porClaude e pacote remoto exato sem autorizacao nominal. Candidato revisavel e seis hashes conferidos;zeroexecucaoSQL. Nao invalida provas historicas nem certifica restante daacao.",
+      "evidencia": "docs/reviews/evidence/etapa-2/noturna-estrutura/sql-retained-handoff.json; bindings-candidate-manifest.json; activity-location-candidate-manifest.json; group-location-candidate-manifest.json"
+    },
+    {
+      "action_id": "activities.location",
+      "camada": "backend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "blocked-environment",
+      "delta": "Fatia nova Activity33U e bindings30U retida: replay/perfis serializados porClaude e pacote remoto exato sem autorizacao nominal. Candidato revisavel e seis hashes conferidos;zeroexecucaoSQL. Nao invalida provas historicas nem certifica restante daacao.",
+      "evidencia": "docs/reviews/evidence/etapa-2/noturna-estrutura/sql-retained-handoff.json; bindings-candidate-manifest.json; activity-location-candidate-manifest.json; group-location-candidate-manifest.json"
+    },
+    {
+      "action_id": "locations.detail-links",
+      "camada": "backend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "blocked-environment",
+      "delta": "Fatia nova bindings30U retida: replay/perfis serializados porClaude e pacote remoto exato sem autorizacao nominal. Candidato revisavel e seis hashes conferidos;zeroexecucaoSQL. Nao invalida provas historicas nem certifica restante daacao.",
+      "evidencia": "docs/reviews/evidence/etapa-2/noturna-estrutura/sql-retained-handoff.json; bindings-candidate-manifest.json; activity-location-candidate-manifest.json; group-location-candidate-manifest.json"
+    },
+    {
+      "action_id": "locations.schedule",
+      "camada": "backend",
+      "estado_atual": "pending-verification",
+      "estado_proposto": "blocked-environment",
+      "delta": "Fatia nova Group46U/Activity33U para reserva atomica; reservas49+2 historicas reutilizadas retida: replay/perfis serializados porClaude e pacote remoto exato sem autorizacao nominal. Candidato revisavel e seis hashes conferidos;zeroexecucaoSQL. Nao invalida provas historicas nem certifica restante daacao.",
+      "evidencia": "docs/reviews/evidence/etapa-2/noturna-estrutura/sql-retained-handoff.json; bindings-candidate-manifest.json; activity-location-candidate-manifest.json; group-location-candidate-manifest.json"
+    }
+  ],
+  "scope_revisit": "49IDs=42MVP+7adiados;20comprovaslocaisnoturnas,29carryforward;0promocoes. BloqueiosBEexplicitosnas6acoesdependentes dos3candidatosSQL. R16reconciliadoeintegradoancestraldev63d3dd4f4;testeintegradoaindasobClaude.",
+  "working_tree": "All modified/untracked source and evidence files enumerated with SHA256 in wip; generated untracked domain lock removed after confirming not tracked; stash empty22:22.",
+  "productive_composition": "Atualizacao77a917de5: reader de selecao agora selecionado main/App com available:false; veja followup em productive-composition-manifest.json. Demais gates mantidos.",
+  "coordinator_regression_r16": {
+    "reproduced": "0P3F36551/chunk256c27",
+    "resolution_commit": "ef751c33b4c7e859889d0fb7f24ffe125a933351",
+    "qualified": "5P64085+77448;analyzer22898+13722;independentreview",
+    "interpretation": "Dedicatedauthorizedreadprojection intentional; canonicalemptydisabledserializer intentional; expectedVersion/changeJustification remainwired and populatedtestprovestransport.",
+    "pending": "Claude mandatory integratedbase verification, no actionterminalpromotion"
+  },
+  "integration_observed": {
+    "checked_at": "2026-09-09T22:29:09.681290-03:00",
+    "dev": "63d3dd4f4ebd4821641020871e1b0a701ee8484f",
+    "r16_fix_ancestor": true,
+    "group_entry_ancestor": true,
+    "method": "rtk proxy git rev-parse dev then is-ancestor against pinnedSHA",
+    "correction": "Previous dev label2cfa671ea came from filtered rtk git log; actual ref is63d3dd4f4. Use rev-parse for HEAD, not filtered log.",
+    "limit": "Ancestry proves integration only, not integrated test results/deploy. Latestpreflight36d3c6302 awaitsnextmerge."
+  },
+  "coordinator_requests_history": [
+    "Integrar9fa190fc3 reader +3commits novos ate d01c318ba0c6e7cd24e4a73a31645c93f2a6f8a8; e06eb62de e proposta minima4paths de composicao Activity.",
+    "Revisar fila SQL bindings30U e activitycreate33U; nenhuma execucao por este grupo. Mapear bindings20260909192000 na baseintegrada (LF/CRLF documentado em r15).",
+    "Atualizar deltas centrais propostos; todos IDs continuam pending-verification.",
+    "Novo candidato LOCAL Group CREATE DRAFT catalogado/reservaopcional usa carimbo20260909210000 posterior cauda200000. Comunico reserva/fila; semexecucao/perfis/remoto. Getter/primitivas propriosGroup, nao writerlegado current_person_id. Todos testes SQL U ate slot/replay Claude.",
+    "Fila nominal:869174032 Group migration20260909210000, SHA2564a3e2d83be4b442ad1999a1ad3510c6bc27d838f7f9a20e63986247da358a36c,46TAP U, perfil sucessor LocationReservationsV1. Independente candidatoActivity; gatereplay/perfil seu. Sem producao/autorizacao nova.",
+    "r11 achado Unidades recebido; exportacao Group adiada continua adiada. Inspecao local de estabilidade requestId na criacao de unidade sera proximo gate independente.",
+    "Groupcliente106a10765 publicado28P. Composicao Groupform retida: opcoes ainda legado indisponivel e criacaoactive nao pode virar draft silenciosamente; usar reader interno antes de habilitar UI. Candidato SQL+cliente preservados.",
+    "Activity UI44P publicado ate d3c330b0e19abd250c80c87ce84fb90694124314; proposta router isolada 1da23e67b31717dd30143cea0c87dd9afc340d64. Manter enableActivityLocationCreate=false. Main nao alterado neste lote. Solicito integracao hunk a hunk; sem ACK bloqueante.",
+    "Achado r11 Unidades resolvido em ee2c35686b7e3b9f400181aa6bcfd8459e2d377e com6P. Corrigir origem: ha1CREATE e1UPDATE, nao2CREATE, tanto d784 quanto branch. UPDATE preservado e testado; exportGroup adiado intocado.",
+    "Selecao atual68P publicada ate 5658023e414f516484295c3910a149abe2985dab. Proposta router isolada 48fff09d0d7eb9c75c93ed081b1edab69ce4f2a2, defaultUnavailable. Requer getters SQLcandidatos Activity/Group qualificados antesdeativar; Main/App intocados neste lote.",
+    "Avaliacoes 32be87ca2e2ee18ae27cd69f699773e19e3dc3cf publicado: entry/gradebook callbacksave e perdaedicaodurantewrite corrigidos10P. Deltaspropostos nao terminais. NenhumSQL/contratoAuth alterado.",
+    "Guarda callback de scope removido 57268a881b579d168f45da8ac344c2424ab9c866 publicada2P. Nao repetir44P/catalog165/Clock46+3/reservas49+2 sem mudanca material; qualificar base conjunta e gatesnominais permanece seu.",
+    "r12 atendida: fbf964e97496c557db9c4b33efec0d96a0e913d4 productive-composition-manifest. units.create6P=adapterrealNAOinjetado eformbloqueado; assessmentsflagdebuildnaoauditada; currentselection/atomicgatesfalse. Todosdeltascontinuampending-verification.",
+    "Dois lotes publicados: 7798fe9f1b964209fb89f6e990d2ae2d2f6f2509 fix(locations): gate fresh reservations by historical catalog status; d2764cf187dfbf0061db2ce358a486e2c1430290 fix(activities): freeze catalog intent during pending writes. Activity6P e historico reservas9P. Nenhuma promocao; integrar hunks em sua base e preservar gatesfalse. Todos os runners encerrados.",
+    "81b59c490062baae039590b3c632df1401926c79 action-handoff-map.json lista49IDs, propostas de continuidade e evidencias. IDs sem lote noturno sao carry-forward explicito, nao nova certificacao. Usar junto de productive-composition-manifest antes de atualizar os centrais.",
+    "Lotes publicados: 6797ae7667a07e2b1d799811321e8fc1b4a96fe6 fix(groups): reject duplicate pending saves and freeze form edits; 33ff95fcee51097efe4ec6e71d1addc5d872e1fa fix(locations): correlate atomic reservation receipts with submitted intent.19P correlacao+5P Groupform; sem promocao. Group legado continua fora do candidato atomico restrito; nao ativar gates por estes testes.",
+    "Publicados 44380219d078c17c090f68a1ce3c42919329cba1 fix(locations): align justification preflight with server character limit; c970bbbe352d8c460bc95852d4f66e13c76c4c4b fix(locations): reject stale catalog mutation entry callbacks.7P callbacks e15P limiteSQL1000codepoints. Root acrescenta preflight UI para diferenca de contagem graphemes; nenhuma alteracao SQL ou gate. Filho revisou ultimos patches e foi recolhido.",
+    "cb817ca10aa1211bf904e5d9aec168b5fa40b759 UIjustificativa3P publicada. Nenhum runner ou WIP semhash. Proximo gate local Groupform retry; sua fila SQL continua indispensavel e nao foi executada aqui.",
+    "Proposta DI minima proxima: main.dart/superadmin_app.dart encaminham actual SupabaseLocationConsumerSelectionReader com available:false explicito ao parametro router ja existente. Sua integracao hunk a hunk; nao muda Auth nem habilita getters SQLcandidatos."
+  ]
 }
