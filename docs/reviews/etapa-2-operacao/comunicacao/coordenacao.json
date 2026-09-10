@@ -1,5 +1,5 @@
 {
-  "revision": 13,
+  "revision": 14,
   "round": "E2-NOTURNA-20260909",
   "role": "Coordenacao e Integracao - Claude",
   "writer": "coordenador-claude",
@@ -8,7 +8,7 @@
   "app": "Claude Code (VS Code)",
   "model": "claude-opus-5[1m]",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-09T21:15:00-03:00",
+  "updatedAt": "2026-09-09T21:50:00-03:00",
   "clockCorrection": {
     "referenceNow": "2026-09-09T19:03:25-03:00",
     "measuredBy": "date no checkout integrador",
@@ -30,7 +30,7 @@
   "base": {
     "root": "C:/Users/adrie/Documents/Coelo",
     "branch": "dev",
-    "head": "ff9143ba4",
+    "head": "e76c61f9f",
     "previousHead": "d784462c168d22fdb7090b7de1ef7db554ad5107",
     "upstream": "origin/dev",
     "divergence": "0/0",
@@ -449,7 +449,7 @@
     "claudeExecutorAddresses": "Fornecidos pelo Owner e verificados por envio real: as seis conversas Claude receberam ACK nominal por SendMessage em 18:18. Enderecos gravados em groups[].sessionName/sessionId para recuperacao."
   },
   "blocks": [],
-  "nextStep": "Remedir e recatalogar as falhas sobre a base corrigida antes de rotear qualquer coisa aos donos, integrar os lotes pendentes e recolher a entrega Codex ate 23:30.",
+  "nextStep": "Recolher a entrega Codex ate 23:30, seguir integrando as frentes Claude e fechar o relatorio do Owner.",
   "providers": {
     "supabase": {
       "cli": "supabase 2.117.0 autenticado; token no Credential Manager do Windows",
@@ -677,11 +677,12 @@
     "exemploBom": "alunos-rotina revisao 3 publicou tracker_delta_proposto correto, inclusive recusando promover qualquer acao a verified por ter apenas restaurado baseline vermelha."
   },
   "baselineIntegrado": {
-    "medidoEm": "2026-09-09T19:30:00-03:00",
-    "base": "ecc8eae2b",
-    "comando": "flutter test em apps/superadmin",
-    "resultado": "5707 PASS, 9 SKIP, 190 FAIL",
-    "nota": "Baseline datado da base integrada. alunos-rotina mediu 4667 P / 6 S / 160 F em test/features apenas, o que e coerente: o restante esta em test/app e vizinhos. Nenhuma frente deve tratar lote verde proprio como sinal de saude da base."
+    "medidoEm": "2026-09-09T21:40:00-03:00",
+    "base": "b0f816560",
+    "comando": "flutter test --reporter=json em apps/superadmin",
+    "resultado": "6811 PASS, 9 SKIP, 156 FAIL",
+    "quebra": "127 em suites de golden, 29 nao-golden",
+    "tendencia": "190 FAIL no inicio da rodada (ecc8eae2b), 182 em 414b82b29, 156 agora"
   },
   "correcoesDeGrupo": [
     {
@@ -721,9 +722,20 @@
       "estrutura",
       "acessos-pessoas"
     ],
-    "mensagem": "Faltam cerca de 2h15 para o congelamento das 23:10. A partir de agora, nao inicie lote que nao caiba antes disso. Sequencia obrigatoria: 23:10 congelar novos lotes; 23:20 pre-entrega publicada; 23:30 entrega final e parada de TODOS os filhos. Antes de fechar, revisite pedidos recebidos, acoes nao terminadas, arquivos modificados, commits, stash, artefatos ignorados, falhas e testes interrompidos. Exijo HEAD igual ao upstream com divergencia 0/0, worktree sem alteracao nao identificada, WIP preservado por caminho e hash, e recursos proprios encerrados. Nao espere ACK depois do corte: eu assumo o residual.",
-    "lembreteDelta": "A entrega precisa trazer tracker_delta_proposto, senao o trabalho entra em dev como codigo sem estado no rastreador.",
-    "lembreteRegra": "Antes de qualquer promocao, responda as tres perguntas de composicao produtiva."
+    "relogioReal": "2026-09-09T21:50 -03:00. Confiram com date; ja houve deriva de horas em tres frentes hoje.",
+    "restante": "1h20 ate o congelamento das 23:10.",
+    "sequencia": "23:10 congelar novos lotes. 23:20 pre-entrega publicada. 23:30 entrega final e parada de TODOS os filhos.",
+    "checklistDeFechamento": [
+      "Revisitar pedidos recebidos, acoes nao terminadas, arquivos modificados, commits, stash, artefatos ignorados, falhas e testes interrompidos.",
+      "HEAD igual ao upstream e divergencia 0/0.",
+      "Worktree sem alteracao nao identificada. ATENCAO: rodar suite de golden reescreve artefatos sob test/**/failures/. Restaure com git checkout antes de commitar e NUNCA use git add de diretorio depois de rodar a suite.",
+      "WIP retido preservado por caminho e SHA256 antes de qualquer limpeza.",
+      "Recursos proprios encerrados: processos, portas, runners e filhos.",
+      "tracker_delta_proposto atualizado. Sem ele, o trabalho entra em dev como codigo sem estado no rastreador.",
+      "Para qualquer promocao, as tres perguntas de composicao produtiva respondidas por escrito.",
+      "Proximo passo exato registrado para quem retomar."
+    ],
+    "depoisDoCorte": "Nao esperem ACK. Eu assumo o residual e consolido. Nao reabram lote depois de 23:30."
   },
   "economiasRegistradas": [
     {
@@ -754,5 +766,6 @@
       "deteccao": "Tres frentes independentes me alertaram em minutos: chat-comunicacoes, perfil-para-voce e a minha propria verificacao. perfil-para-voce achou porque materializou a base conjunta na worktree para verificar contra o INTEGRADO em vez da propria branch, que e o que o contrato manda.",
       "licao": "Aplicar patch isolado e depois mesclar a branch de origem exige conferir se o hunk ja entrou. Analyzer limpo nao prova rota valida: o assert e de runtime na construcao. Nenhum numero de rota medido entre 20:59 e 21:12 vale."
     }
-  ]
+  ],
+  "gateDeIntegracao": "Depois de cada merge eu rodo, alem de flutter analyze lib, o guarda test/app/router/route_name_uniqueness_test.dart, escrito por perfil-para-voce e verificado contra a base quebrada. Ele pega hunk de rota aplicado duas vezes, que foi o defeito que eu introduzi as 20:59 e que nem o analyzer nem teste de rota pegam."
 }
