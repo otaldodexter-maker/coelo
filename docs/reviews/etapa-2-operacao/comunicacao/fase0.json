@@ -1,15 +1,15 @@
 {
   "grupo": "fase0",
-  "revision": 4,
+  "revision": 5,
   "round": "E2-R03-20260910",
-  "updatedAt": "2026-09-10T18:45:00-03:00",
+  "updatedAt": "2026-09-10T20:50:00-03:00",
   "app": "Claude",
   "modelo": "Fable 5.1",
   "conversa": "R03-P0-fase0-composto",
   "coordenador": "nenhum acima nesta fase; ordem de parar vem do Owner",
   "worktree": "C:/Users/adrie/Documents/Coelo (checkout principal)",
   "branch": "dev",
-  "head": "1adb070c9",
+  "head": "850ba1838",
   "upstream": "origin/dev",
   "divergencia": "0/0",
   "base": "bb15db748 (dev no HEAD que contem R03-prompts.md)",
@@ -54,7 +54,7 @@
       ]
     }
   ],
-  "mudou": "base.fase0Head publicado (1adb070c9) em coordenacao.json; handoff em next-round/R03-fase0-handoff.md. Lotes 3 e 4: Unidades, Formularios, Perfis de cuidado, Planos de medicacao; teste de arquitetura; SDK; Arquivos escondido em Conversas.",
+  "mudou": "Lotes 5 e 6 publicados: Planos, Cardapios (8fafbe16c), Circulares e Comunicacoes (850ba1838) como instancias do composto; rebase sobre e6f40f9bc do coordenador. Composto: Criar desabilitado sem callback, bodyOverride, paginacao por cursor, rodape entrega CoeloAdminPagination direto.",
   "diagnostico": {
     "menu": "Render atual difere da referencia em: item filho ativo em primaryContainer (referencia: primary preenchido, pai em tom mais escuro); Bug omitido quando onBugReportSubmitted e nulo; campo Buscar na navegacao presente no atual e deve permanecer (MENU).",
     "criar": "Instituicoes ja tem Criar no vazio/falha; Atividades so tem quando onCreate != null. Composto passa a garantir Criar primeiro em todos os estados.",
@@ -71,7 +71,8 @@
     "units.list, forms.list, health_care.profiles.list, health_care.medication.list: instancias do composto",
     "fase0.arquitetura: teste em apps/superadmin/test/architecture com allowlist decrescente",
     "fase0.sdk: .fvmrc/.flutter-version 3.44.2",
-    "chat: Arquivos escondido em Conversas (ARQUIVOS-CHAT)"
+    "chat: Arquivos escondido em Conversas (ARQUIVOS-CHAT)",
+    "plans.list, meal_plans.list, circulars.list, notices.list: instancias do composto (goldens regravados; ARQUIVO pendente do Owner)"
   ],
   "testes": {
     "P": 218,
@@ -92,7 +93,7 @@
     ".flutter-version"
   ],
   "bloqueio": null,
-  "proximoPasso": "Planos (7 testes vermelhos apos migracao), Cardapios, Comunicacoes, Circulares; depois Pessoas, Convites, Perfis de acesso.",
+  "proximoPasso": "Pessoas, Convites e Perfis de acesso no composto, um lote por tela.",
   "wip": [],
   "recursos": {
     "processos": [],
@@ -109,5 +110,8 @@
     "estrutura: activity_form_create_light_375 (RODAPE), activity_detail_*, activity_form_* continuam vermelhos por deriva anterior; nao regravados na Fase 0.",
     "principal-chat-sistema: CHAT — a referencia de Atividades (agosto) mostra o balao antigo \"Mensagens 3 | T U A M I\"; o balao atual (aprovado em 01/09) e o circulo laranja \"Mens.\". Decisao visual pendente ao Owner com imagens lado a lado (ver handoff).",
     "operacoes: router de producao nao passa supportController; o Bug abre e avisa que o envio nao esta conectado."
+  ],
+  "avisos": [
+    "Outra conversa edita principal_for_you, principal_happens (marcadores de conflito em principal_happens_preview_page.dart em 20:30) e referencias do coelo-ui neste mesmo checkout; a Fase 0 nao commita esses arquivos. flutter analyze lib acusa esse arquivo enquanto o WIP nao fechar."
   ]
 }

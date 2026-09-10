@@ -191,11 +191,7 @@ void main() {
     await _goToScheduleStep(tester);
 
     await _pickScheduleDateTime(tester, label: 'Data e hora de início', time: '23:59');
-    await _pickScheduleDateTime(
-      tester,
-      label: 'Data e hora de término (opcional)',
-      time: '00:00',
-    );
+    await _pickScheduleDateTime(tester, label: 'Data e hora de término (opcional)', time: '00:00');
 
     await _tapVisible(tester, find.widgetWithText(FilledButton, 'Continuar'));
     await tester.pump();

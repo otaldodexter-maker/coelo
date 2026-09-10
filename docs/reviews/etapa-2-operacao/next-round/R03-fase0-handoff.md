@@ -28,7 +28,8 @@ continuam em `dev` como lotes pequenos; rebase normal.
   `primary`; menu completo fora do shell hospedeiro; Pesquisar mantido.
 - **Diretórios migrados:** Instituições, Atividades (Atividades e Modelos),
   Turmas (card na altura da família), Unidades, Formulários (cursor), Perfis de
-  cuidado, Planos de medicação. Goldens desses diretórios regravados após as
+  cuidado, Planos de medicação, Planos, Cardápios, Circulares, Comunicações
+  (toggle no compacto, prévia inline ao lado da tabela em telas largas). Goldens desses diretórios regravados após as
   observações do Owner (MENU, CRIAR, TABS, DADOS, ARQUIVOS nos Modelos).
 - **Teste de arquitetura** `apps/superadmin/test/architecture/directory_composition_test.dart`:
   falha em Table/Toolbar/Pagination/PageHeader/Directory novos em feature e em
@@ -41,8 +42,8 @@ continuam em `dev` como lotes pequenos; rebase normal.
 
 | Item | Estado | Gate |
 | --- | --- | --- |
-| Planos (`plan_directory_page.dart`) | migrado no checkout, 7 testes vermelhos | Fase 0 continua (próximo lote) |
-| Cardápios, Comunicações, Circulares, Agenda eventos | não migrados | Fase 0 continua; scripts prontos para Cardápios |
+| Planos, Cardápios, Circulares, Comunicações | migrados e publicados (8fafbe16c, 850ba1838) | ARQUIVO (ícone duplicar/arquivar dos cards de Cardápios e Planos) pendente de decisão do Owner; nova regravação depois |
+| Agenda eventos | não migrado (`_EventTable` na allowlist) | grupo publicacoes-agenda ao tocar a tela |
 | Pessoas, Convites, Perfis de acesso | não migrados (na allowlist) | Fase 0 ou grupo acessos-pessoas ao tocar a tela |
 | Suporte, Auditoria | workspace com painel de detalhe; toolbar/tabela na allowlist | grupo operacoes: toolbar de filtros no padrão do composto |
 | Chat: Criar grupo, Fixar, sinalizadores | existiam até 54f2dfb69 (inbox local); exigem backend | grupo principal-chat-sistema |
@@ -54,6 +55,7 @@ continuam em `dev` como lotes pequenos; rebase normal.
 
 ## Próximo passo
 
-Fechar Planos, Cardápios, Comunicações e Circulares no composto; depois Pessoas,
-Convites e Perfis de acesso; a cada lote verde, commit e push em `dev` e este
-handoff atualizado.
+Pessoas, Convites e Perfis de acesso no composto (um lote por tela, para o
+grupo acessos-pessoas rebasear por lote); depois Suporte e Auditoria com o
+grupo operacoes. A cada lote verde, commit e push em `dev` e este handoff
+atualizado.
