@@ -40,6 +40,26 @@ void main() {
     expect(find.text('mensagem secreta'), findsNothing);
   });
 
+  testWidgets('editing the last message updates the conversation preview too', (tester) async {
+    final repository = _ReconcilingRepository(acceptEdit: true);
+    await _pump(tester, repository);
+    expect(find.text('mensagem secreta'), findsWidgets);
+
+    await tester.tap(find.byKey(const Key('superadmin-chat-manage-message-1')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('superadmin-chat-action-edit')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField).last, 'texto corrigido');
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('superadmin-chat-edit-confirm')));
+    await tester.pumpAndSettle();
+
+    // Editar tambem muda a ultima mensagem da conversa. Se o preview ficasse no
+    // texto antigo, a lista continuaria afirmando algo que a conversa ja nao diz.
+    expect(repository.edited, hasLength(1));
+    expect(find.text('mensagem secreta'), findsNothing);
+  });
+
   testWidgets('the reconciliation does not blink the conversation list', (tester) async {
     final repository = _ReconcilingRepository(conversations: 2, slowInbox: true);
     await _pump(tester, repository);
@@ -98,10 +118,17 @@ Future<void> _pump(WidgetTester tester, ChatRepository repository) async {
 }
 
 final class _ReconcilingRepository implements ChatRepository {
-  _ReconcilingRepository({this.conversations = 1, this.slowInbox = false});
+  _ReconcilingRepository({
+    this.conversations = 1,
+    this.slowInbox = false,
+    this.acceptEdit = false,
+  });
 
   final int conversations;
   final bool slowInbox;
+  final bool acceptEdit;
+  final List<String> edited = [];
+  String? _editedBody;
   Completer<void>? _inboxGate;
 
   void releaseInbox() => _inboxGate?.complete();
@@ -129,7 +156,9 @@ final class _ReconcilingRepository implements ChatRepository {
             // O servidor recalcula o preview: mensagem revogada sai, mensagem
             // enviada entra.
             preview: index == conversations
-                ? (_lastSent ?? (revoked.isEmpty ? 'mensagem secreta' : ''))
+                ? (_lastSent ??
+                      _editedBody ??
+                      (revoked.isEmpty ? 'mensagem secreta' : ''))
                 : 'Ultima mensagem',
             contextLabel: 'Unidade Cambui',
             kind: 'group',
@@ -151,7 +180,8 @@ final class _ReconcilingRepository implements ChatRepository {
           id: 'message-1',
           conversationId: query.conversationId,
           body: isLast
-              ? (conversations == 1 ? 'mensagem secreta' : 'mensagem da margarida')
+              ? (_editedBody ??
+                    (conversations == 1 ? 'mensagem secreta' : 'mensagem da margarida'))
               : 'mensagem da girassol',
           authorName: 'Marina',
           sentAt: DateTime.utc(2026, 8, 12, 12),
@@ -185,8 +215,21 @@ final class _ReconcilingRepository implements ChatRepository {
   }
 
   @override
-  Future<ChatMessage> editMessage(ChatEditMessageCommand command) =>
-      Future<ChatMessage>.error(const ChatFailureException());
+  Future<ChatMessage> editMessage(ChatEditMessageCommand command) async {
+    if (!acceptEdit) throw const ChatFailureException();
+    edited.add(command.messageId);
+    _editedBody = command.body;
+    return ChatMessage(
+      id: command.messageId,
+      conversationId: command.conversationId,
+      body: command.body,
+      authorName: 'Marina',
+      sentAt: DateTime.utc(2026, 8, 12, 12),
+      isMine: true,
+      kind: 'text',
+      canManage: true,
+    );
+  }
 
   @override
   Future<ChatMessageRevocation> revokeMessage(ChatRevokeMessageCommand command) async {
