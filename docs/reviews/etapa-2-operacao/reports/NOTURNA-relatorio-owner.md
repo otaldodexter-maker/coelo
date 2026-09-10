@@ -2260,6 +2260,33 @@ habilitador aparece no código de produção e ver se todas as ocorrências caem
 do próprio arquivo que o consome. Se caem, ninguém fornece. Serve para qualquer
 capacidade que dependa de dependência injetada — e o repositório tem várias.
 
+**Transformado em varredura, ele fechou um círculo.** A primeira versão, sobre
+todos os parâmetros do recorte, devolveu setenta e oito nomes — falso positivo
+previsível, porque componente interno é construído dentro do próprio arquivo e
+"ninguém de fora fornece" é o estado normal dele. Restrita às páginas **públicas**,
+sobraram duas. E uma delas explica o cartão de medicação da seção anterior: **a
+lista de responsáveis nunca é fornecida**, então o formulário não oferece ninguém
+para escolher e o diretório, que resolve o rótulo pela mesma lista, mostra
+"indisponível". **Não são dois achados: é um** — e a raiz é a mesma spec aprovada
+para interface demonstrativa, pela quarta vez nesta rodada.
+
+**E o contraste entre os dois casos é a lição que sobra, porque explica por que um
+foi óbvio e o outro passou uma rodada inteira despercebido.** Um dos parâmetros
+tem, no próprio nome do tipo, a palavra que diz que ele é de desenvolvimento —
+quem lê a página sabe na hora que aquela coluna não tem número em produção porque
+**não deveria ter**, e ninguém a relata como defeito. O outro **não tem marca
+nenhuma**, e se lê como dependência de produção que alguém esqueceu de ligar. Por
+isso a gravação automática pareceu funcionalidade viva, entrou nos registros como
+implementada e coberta, e levou a rodada inteira para alguém notar que não roda.
+
+**A recomendação, na forma mais fraca possível:** não é um padrão novo a impor — é
+a observação de que o repositório **já pratica isso em pelo menos um lugar, e onde
+pratica o problema não aparece.** Quando uma dependência só existe para
+desenvolvimento ou demonstração, dizer isso no nome ou no tipo custa nada; e o
+custo de não dizer não é confusão momentânea, é um registro que afirma **com
+razão** que a funcionalidade está implementada e coberta, enquanto ninguém a
+alcança.
+
 ## Ler não pega; seguir pega
 
 Perto do fim, uma frente aplicou aos próprios documentos a pergunta que vinha
