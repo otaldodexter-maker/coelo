@@ -70,17 +70,43 @@ por convenção**. Vermelho proposital é um teste escrito para falhar até que 
 defeito que ele nomeia seja corrigido; quando fica verde, ele deixa de ser
 proposital e vira cobertura comum.
 
-**E dois dos dezessete merecem prioridade sobre os outros**, porque não são
-cosméticos: `composition_root_fail_closed_routes_test` afirma que rotas de
-produção continuam falhando fechado, e `import_development_routes_test` afirma
-que rotas de desenvolvimento nunca usam o repositório de produção. São a
-invariante de não entregar rota nem resposta antes da autorização. A leitura do
-código aponta que a página de operações de Formulários dispara a carga produtiva
-no `initState` quando um `api` é injetado, o que faria o cliente **chamar** o
-backend numa rota declarada fechada — sem vazar dado, porque o servidor continua
-autoritativo, mas contrariando o contrato. **Isso está em medição neste momento e
-não é conclusão**: a asserção que contaria as chamadas nunca chega a executar,
-porque o teste falha antes dela.
+**E dois dos dezessete valem uma explicação separada, porque produziram o pior
+erro de leitura da noite — o meu.** `composition_root_fail_closed_routes_test`
+afirma que a rota `/forms/form-1/files` não chama o backend. Eu li o código,
+encontrei a cadeia que faz a chamada acontecer, e escalei como violação da
+invariante de não chamar antes da autorização. Duas frentes mediram e acharam
+`calls=1`. Eu reservei o arquivo, parei uma frente e mandei corrigir.
+
+**Estava errado, e a correção veio de uma terceira medição.** Existe um segundo
+teste, `forms_fail_closed_routes_test`, escrito uma semana depois do primeiro,
+cujo commit se chama "vincula rotas normais e tempo de vida da mídia à
+autorização", e que afirma o oposto de forma explícita: uma chamada para
+`monitor`, `responses`, `response-1` e `files`, zero para mídia. Ele passa 7/7.
+**`calls=1` não viola o contrato — `calls=1` é o contrato**, e as quatro rotas
+estão no número exato. A asserção que falha é de sete dias antes da decisão que a
+substituiu.
+
+Nenhum dado esteve em risco em nenhuma das duas leituras. O que fica registrado é
+**expectativa superada, não invariante violada** — e a correção é de uma linha no
+teste antigo, com comentário datando a decisão.
+
+**A lição é a mais cara da rodada e não é sobre Formulários.** Quando dois testes
+afirmam contratos opostos sobre a mesma rota, o vermelho **não diz qual está
+certo** — diz apenas que existe contradição, e é preciso datar as duas asserções.
+E há um corolário que explica como isso sobreviveu sete dias: o teste antigo falha
+na **primeira** asserção e nunca chega à segunda, então quem lê a falha conclui
+"fail-closed quebrou" e não vê a contradição atrás dela. Três pessoas leram como
+defeito de produto, e duas mediram números que pareciam confirmar. A frase que a
+frente que me corrigiu usou é a que fica: **a cadeia provou o mecanismo e não
+provou a infração.**
+
+E vale dizer o que a parada evitou, porque a frente que eu mandei corrigir foi
+medir antes de começar: **nenhuma das duas correções possíveis era implementável
+sem inventar política.** Uma exigiria um sinal de capacidade no router que não
+existe — `SuperadminSession` expõe apenas autenticação — e a outra exigiria que a
+página soubesse qual capacidade governa uma superfície de leitura, quando o
+contrato de Formulários só tem capacidades de gerenciar e publicar. A alternativa
+real, às duas da manhã, era inventar um portão de autorização.
 
 **As 129 falhas de golden são aceite visual e dependem de decisão sua**, não de
 código. As duas maiores concentrações são `agenda_calendar` com 14 casos e as
