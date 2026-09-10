@@ -1,0 +1,59 @@
+diff --git a/apps/superadmin/test/features/institutions/presentation/screens/institution_form_save_lifecycle_test.dart b/apps/superadmin/test/features/institutions/presentation/screens/institution_form_save_lifecycle_test.dart
+index 180e8ef0c..1db1d68d8 100644
+--- a/apps/superadmin/test/features/institutions/presentation/screens/institution_form_save_lifecycle_test.dart
++++ b/apps/superadmin/test/features/institutions/presentation/screens/institution_form_save_lifecycle_test.dart
+@@ -14,6 +14,36 @@ import 'package:flutter/services.dart';
+ import 'package:flutter_test/flutter_test.dart';
+ 
+ void main() {
++  for (final mode in ['cancel-changed', 'destination-changed', 'same-context']) {
++    testWidgets('institution exit confirmation stays scoped $mode', (tester) async {
++      final repository = _Repository();
++      await _mount(tester, repository);
++      var cancelled = 0;
++      final destinations = <String>[];
++      Widget app(String id) => _app(repository, id: id,
++        onCancel: () => cancelled++, onDestinationSelected: destinations.add);
++      await tester.pumpWidget(app('first'));
++      await tester.pumpAndSettle();
++      _controller(tester).setText(InstitutionFormField.publicName, 'Rascunho A');
++      await tester.pump();
++      if (mode == 'destination-changed') {
++        await tester.tap(find.byKey(const Key('superadmin-navigation-groups')));
++      } else {
++        await tester.tap(find.byKey(const Key('institution-form-cancel')));
++      }
++      await tester.pumpAndSettle();
++      expect(find.byKey(const Key('institution-confirm-exit-dialog')), findsOneWidget);
++      await tester.pumpWidget(app(mode == 'same-context' ? 'first' : 'second'));
++      await tester.pumpAndSettle();
++      await tester.tap(find.text('Sair sem salvar'));
++      await tester.pumpAndSettle();
++      expect(cancelled, mode == 'same-context' ? 1 : 0);
++      expect(destinations, isEmpty);
++      expect(_controller(tester).original!.id, mode == 'same-context' ? 'first' : 'second');
++      expect(repository.drafts, isEmpty);
++      expect(tester.takeException(), isNull);
++    });
++  }
+   testWidgets('unsupported edit preserves draft and never shows save success', (tester) async {
+     final repository = _Repository();
+     await _mount(tester, repository);
+@@ -139,13 +169,15 @@ void main() {
+ 
+ InstitutionFormController _controller(WidgetTester tester) =>
+     tester.widget<InstitutionFormNavigation>(find.byType(InstitutionFormNavigation)).controller;
+-Widget _app(_Repository repository, {String id = 'first'}) => MaterialApp(
++Widget _app(_Repository repository, {String id = 'first', VoidCallback? onCancel,
++  ValueChanged<String>? onDestinationSelected}) => MaterialApp(
+   theme: CoeloTheme.light,
+   home: InstitutionFormPage(
+     repository: repository,
+     institutionId: id,
+     logout: () async => const LogoutResult.success(),
+-    onCancel: () {},
++    onCancel: onCancel ?? () {},
++    onDestinationSelected: onDestinationSelected,
+     onSaved: (_) {},
+   ),
+ );
