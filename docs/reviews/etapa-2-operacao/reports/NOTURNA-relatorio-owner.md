@@ -1671,6 +1671,15 @@ Esta classe apareceu quatro vezes, e três delas quase produziram decisão errad
   diretórios que começam com ponto — e qualquer conferência de presença que os use
   como argumento **reporta ausência para coisa que está lá.**
 
+  **E o caminho até a condição é a lição maior, porque a frente que "não
+  reproduziu" diagnosticou o próprio erro:** ela variou quatro formas de
+  **invocação** — com aspas, sem aspas, por variável, com a variável de ambiente
+  que desliga a conversão — e **zero variações de caminho**. Todos os seus casos
+  começavam por letra. **Quatro repetições no eixo errado deram sensação de
+  cobertura que uma única variação no eixo certo desfez.** A formulação que fica é
+  dela: *não reproduzir é afirmação sobre o que foi variado, não sobre o defeito* —
+  o correto era "não reproduz nestes caminhos".
+
   **A regra geral, que cobre as três instâncias desta noite:** neste shell, um
   argumento que contenha dois-pontos, circunflexo ou chaves chega convertido com
   frequência — e **a falha se apresenta como resultado negativo, nunca como erro de
