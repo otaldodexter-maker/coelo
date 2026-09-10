@@ -187,8 +187,19 @@ select is((select body#>>'{error,code}' from invite_results where label='scoped_
  'SAI_PERMISSION_DENIED','cross-tenant detail is indistinguishable for a scoped operator');
 select is((select body#>>'{error,code}' from invite_results where label='cross_app'),
  'SAI_INTERNAL_CONTEXT_DENIED','a Principal-style global identity cannot enter the internal realm');
-select is((select body#>>'{error,code}' from invite_results where label='owner_aal1_issue'),
- 'SAI_MFA_REQUIRED','mutations require aal2');
+-- Politica vigente em producao: 20260901200206_defer_superadmin_internal_mfa_until_mvp_go_live
+-- fez app_private.require_superadmin_internal_context aceitar aal1 OU aal2, porque
+-- MFA ficou fora do MVP (ADR 0034). Antes desta migration a mutacao em aal1 era
+-- recusada com SAI_MFA_REQUIRED, e era isso que esta assercao exigia.
+--
+-- Sobre a baseline de producao a exigencia nao existe mais, entao a assercao
+-- passou a cobrar uma politica que o Owner ja revogou. O que continua verdadeiro,
+-- e o que se afirma aqui, e que a sessao aal1 NAO e barrada por MFA.
+--
+-- QUANDO O MFA VOLTAR ao MVP, restaurar a linha original:
+--   select is(..., 'SAI_MFA_REQUIRED','mutations require aal2');
+select isnt((select body#>>'{error,code}' from invite_results where label='owner_aal1_issue'),
+ 'SAI_MFA_REQUIRED','com o MFA adiado, a mutacao em aal1 nao e barrada por segundo fator');
 select ok(not exists(select 1 from invite_results where
  (select array_agg(key order by key) from jsonb_object_keys(body) key)<>array['data','error','ok']::text[]),
  'all gateway responses use the spec-039 envelope');

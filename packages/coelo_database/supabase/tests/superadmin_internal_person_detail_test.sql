@@ -233,11 +233,13 @@ insert into public.institutions(id,public_name,slug,status,institution_type_id) 
  ('91000000-0000-4000-8000-000000000101','Person Institution A','person-institution-a','active','91000000-0000-4000-8000-000000000201'),
  ('91000000-0000-4000-8000-000000000102','Person Institution B','person-institution-b','active','91000000-0000-4000-8000-000000000201'),
  ('91000000-0000-4000-8000-000000000103','Person Institution C','person-institution-c','active','91000000-0000-4000-8000-000000000201');
-insert into public.units(id,institution_id,name,slug,status,unit_type_id) values
- ('91000000-0000-4000-8000-000000000011','91000000-0000-4000-8000-000000000101','Person Unit A','person-unit-a','active','3cac54bf-0a5e-4293-a643-471e1319d63b'),
- ('91000000-0000-4000-8000-000000000012','91000000-0000-4000-8000-000000000102','Person Unit B','person-unit-b','active','3cac54bf-0a5e-4293-a643-471e1319d63b'),
- ('91000000-0000-4000-8000-000000000013','91000000-0000-4000-8000-000000000101','Person Unit A2','person-unit-a2','active','3cac54bf-0a5e-4293-a643-471e1319d63b'),
- ('91000000-0000-4000-8000-000000000014','91000000-0000-4000-8000-000000000101','Person Unit A3','person-unit-a3','active','3cac54bf-0a5e-4293-a643-471e1319d63b');
+insert into public.unit_types(id,code,name,status) values
+ ('91000000-0000-4000-8000-000000000301','person-detail-unit','Person Detail Unit','active');
+insert into public.units(id,institution_id,name,slug,status,unit_type_id,handle) values
+ ('91000000-0000-4000-8000-000000000011','91000000-0000-4000-8000-000000000101','Person Unit A','person-unit-a','active','91000000-0000-4000-8000-000000000301','personunita'),
+ ('91000000-0000-4000-8000-000000000012','91000000-0000-4000-8000-000000000102','Person Unit B','person-unit-b','active','91000000-0000-4000-8000-000000000301','personunitb'),
+ ('91000000-0000-4000-8000-000000000013','91000000-0000-4000-8000-000000000101','Person Unit A2','person-unit-a2','active','91000000-0000-4000-8000-000000000301','personunita2'),
+ ('91000000-0000-4000-8000-000000000014','91000000-0000-4000-8000-000000000101','Person Unit A3','person-unit-a3','active','91000000-0000-4000-8000-000000000301','personunita3');
 insert into public.groups(id,institution_id,unit_id,name,group_type,status) values
  ('91000000-0000-4000-8000-000000000021','91000000-0000-4000-8000-000000000101','91000000-0000-4000-8000-000000000011','Person Group A','class','active'),
  ('91000000-0000-4000-8000-000000000022','91000000-0000-4000-8000-000000000102','91000000-0000-4000-8000-000000000012','Person Group B','class','active'),
@@ -494,7 +496,14 @@ select ok((select body#>>'{data,type}'='service' and body#>>'{data,auth_link}'='
 -- Owner AAL1 and institution scope.
 select set_config('request.jwt.claims',jsonb_build_object('sub','92000000-0000-4000-8000-000000000001','session_id','93000000-0000-4000-8000-000000000001','aal','aal1','role','authenticated')::text,true);
 set local role authenticated; insert into person_detail_acceptance_responses values(15,public.superadmin_person_detail_v2('91000000-0000-4000-8000-000000000001')); reset role;
-select ok((select body#>>'{error,code}'='SAI_MFA_REQUIRED' from person_detail_acceptance_responses where sequence_number=15), 'Owner AAL1 is denied');
+-- MFA adiado no MVP: 20260901200206_defer_superadmin_internal_mfa_until_mvp_go_live
+-- fez o realm interno aceitar aal1, entao a leitura de detalhe por Owner em aal1
+-- deixou de ser negada e passou a ser um SUCESSO. Uma unica chamada mudou de lado.
+-- As tres contagens de auditoria abaixo deslocam exatamente por isso:
+--   sucessos platform-global 6 -> 7, sucessos totais 8 -> 9, negativas v2 18 -> 17.
+-- Nao sao numeros ajustados no escuro: sao a mesma chamada, contada do outro lado.
+-- QUANDO O MFA VOLTAR, reverter os quatro pontos juntos.
+select isnt((select body#>>'{error,code}' from person_detail_acceptance_responses where sequence_number=15), 'SAI_MFA_REQUIRED', 'com o MFA adiado, o Owner em aal1 nao e barrado por segundo fator');
 select set_config('request.jwt.claims',jsonb_build_object('sub','92000000-0000-4000-8000-000000000002','session_id','93000000-0000-4000-8000-000000000003','aal','aal2','role','authenticated')::text,true);
 set local role authenticated; insert into person_detail_acceptance_responses values
  (16,public.superadmin_person_detail_v2('91000000-0000-4000-8000-000000000001')),
@@ -610,7 +619,7 @@ select ok(not exists(select 1 from person_detail_acceptance_responses r, lateral
  'all success payloads omit forbidden PII, platform, guardian, Auth, and session fields');
 
 select ok(
-  (select count(*)=6 from audit.audit_logs
+  (select count(*)=7 from audit.audit_logs
    where action_code='person.detail' and outcome='success'
      and actor_internal_membership_id='96000000-0000-4000-8000-000000000001'
      and institution_id is null and object_type='person')
@@ -620,10 +629,10 @@ select ok(
      and institution_id='91000000-0000-4000-8000-000000000101'
      and object_type='person'),
   'success audit distinguishes platform-global and validated institution scope');
-select ok((select count(*)=8 from audit.audit_logs where action_code='person.detail' and outcome='success')
+select ok((select count(*)=9 from audit.audit_logs where action_code='person.detail' and outcome='success')
  and not exists(select 1 from audit.audit_logs where action_code='person.detail' and outcome='success' and (hash_version<>2 or payload_contract_version<>2 or permission_code<>'people.read' or object_type<>'person' or object_id is null or reason_code is not null or before_json is not null or after_json is not null or not app_private.audit_verify_entry(id))),
  'Person detail successes are minimized digest-valid v2 audit events');
-select ok((select count(*)=18 from audit.audit_logs where action_code='person.detail' and outcome='denied' and hash_version=2)
+select ok((select count(*)=17 from audit.audit_logs where action_code='person.detail' and outcome='denied' and hash_version=2)
  and (select count(*)=1 from audit.audit_logs where action_code='person.detail' and outcome='denied' and hash_version=3)
  and not exists(select 1 from audit.audit_logs where action_code='person.detail' and outcome='denied' and (reason_code is null or before_json is not null or after_json is not null or object_id is not null or institution_id is not null or not app_private.audit_verify_entry(id))),
  'Person detail denials are minimized digest-valid v2/v3 audit events');
