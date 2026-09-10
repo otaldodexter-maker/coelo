@@ -1154,6 +1154,12 @@ duas armadilhas armadas esperando a terceira.
     versão de Para Você a fazer, porque a frase já é inalcançável na rota de
     produção.
 
+    **O custo não é uniforme entre as três, e isso decide se o patch entra num
+    movimento ou em dois:** três asserções em Acontece e Agora fixam a frase e
+    precisam ser atualizadas junto — trocar a mensagem sem trocá-las deixa três
+    vermelhos. **Momentos não tem teste que espere a frase**, então lá a troca não
+    quebra nada e pode ir primeiro.
+
 13. **Três capacidades de Circulares travadas em graus diferentes, e nenhuma por
     falta de trabalho.** *Agendar* está desabilitada honestamente porque nenhum
     host fornece o seletor — o resto do caminho existe, incluindo o `timestamptz`
@@ -1761,6 +1767,44 @@ cobertura — "zero divergência nas 80 chamadas" — quando o instrumento exami
 máximo 75, porque pula toda chamada cuja assinatura não existe. E as que ele pula
 são exatamente as que mais poderiam divergir. O teste estava certo; a transcrição
 para cá é que perdeu a ressalva do instrumento.
+
+## Um cardápio encerrado aparecia como rascunho, e nada falhava
+
+**Corrigido nesta rodada**, e é o segundo defeito de produto visível ao operador
+que a noite encontrou.
+
+**A pergunta que ninguém fazia:** nenhum teste confere se os valores que uma
+coluna do banco aceita são os que o enum do cliente sabe mapear. É o mesmo desenho
+do contrato de RPC — a carga de teste é escrita à mão e só contém os valores que o
+cliente já conhece, então **o valor desconhecido nunca aparece**.
+
+**O defeito, nas duas direções.** Na leitura, o banco grava `closed` e o cliente
+só conhecia `ended`: o valor não casava com ramo nenhum e caía no padrão de
+rascunho. **Rótulo de rascunho, cor de rascunho e filtro de rascunho para um
+cardápio encerrado.** No filtro, o cliente enviava `ended`, um valor que a coluna
+nunca contém, então **filtrar por Encerrado devolvia lista vazia** em vez dos
+planos encerrados. Nada falhava em lugar nenhum.
+
+As duas consequências são de operação: o operador vê um estado que o plano não
+tem — e pode editar ou republicar um cardápio encerrado acreditando ser rascunho —
+e quem procura os encerrados conclui que não existem.
+
+Corrigido com uma conversão única usada pelos dois lados, com controle negativo
+nos dois casos. **E o que não foi corrigido ficou declarado em teste:** valor
+desconhecido continua caindo em rascunho, porque transformar desconhecido em
+exceção derrubaria a listagem inteira por causa de uma linha — que é exatamente o
+modo de falha de outra família, e não se traz isso para cá sem decisão.
+
+**A varredura ampla que a classe gerou encontrou um defeito real no aplicativo
+inteiro, e ele estava no recorte de quem varreu.** Os outros pares suspeitos são
+falsos positivos previsíveis: enums quase iguais do mesmo domínio se cruzando, e
+domínios diferentes com o mesmo vocabulário.
+
+**E o instrumento foi corrigido em público no meio do caminho:** a primeira versão
+lia apenas o corpo da criação da tabela e ignorava as restrições acrescentadas
+depois por alteração, o que subcontava — 82 colunas viraram 93. Foi descoberto por
+um caso escrito esperando falhar, que passou. **Restrição de coluna também muda
+por alteração, e medir só a criação subconta.**
 
 ## Ler não pega; seguir pega
 
