@@ -2523,7 +2523,22 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.formTest,
             name: SuperadminRoutes.formTestName,
-            builder: (context, state) => const FormsTestPage(),
+            // D6: quem pode editar o formulario pode testa-lo preenchivel, por
+            // capacidade. A rota ja carregava :formId e o construtor ja sabia
+            // pre-visualizar uma definicao, mas nada disso era passado: a tela
+            // real abria sem api e sem formulario, entao Testar nao testava
+            // coisa alguma. A leitura e a MESMA projecao autorizada que o
+            // editor usa (form_get_editor), entao a capacidade e conferida no
+            // servidor e nao aqui.
+            builder: (context, state) => withFormsAuthorization(
+              () => FormsTestPage(
+                key: ValueKey(
+                  'form-test-${state.uri}-${session.authorizationInvalidationRevision}',
+                ),
+                api: formsApi,
+                formId: state.pathParameters['formId'],
+              ),
+            ),
           ),
           GoRoute(
             path: SuperadminRoutes.formMonitor,

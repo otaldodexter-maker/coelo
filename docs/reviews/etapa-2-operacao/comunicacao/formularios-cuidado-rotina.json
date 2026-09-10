@@ -1,12 +1,12 @@
 {
- "revision": 11,
+ "revision": 12,
  "round": "E2-R03-20260910",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5[1m]",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-10T10:40:00-03:00",
+ "updatedAt": "2026-09-10T11:40:00-03:00",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-formularios-cuidado-rotina",
  "branch": "work/etapa2-r03-formularios-cuidado-rotina",
  "head": "bb15db748",
@@ -72,7 +72,7 @@
   }
  ],
  "deltaProposals": [],
- "nextStep": "D6: rota Testar de Formularios lendo por capacidade.",
+ "nextStep": "Rebase na base da Fase 0 (1adb070c9) e reverificar o recorte sobre ela.",
  "findings": [
   {
    "id": "F-R03-FCR-001",
@@ -357,7 +357,11 @@
    "nada_de_autorizacao_no_cliente": "ator, capacidade, escopo e versao esperada continuam recalculados dentro de superadmin_routine_publish_launch."
   },
   "D6": {
-   "estado": "proximo item"
+   "estado": "implementado e provado",
+   "o_que_faltava": "a rota real /forms/:formId/test montava const FormsTestPage(), sem api e sem formulario. A pagina ja sabia pre-visualizar uma definicao autorizada e ja tinha teste para isso, e a rota ja carregava :formId, mas nada era passado: Testar nao testava coisa alguma na rota normal.",
+   "o_que_foi_feito": "a rota passa a compor FormsTestPage com api real e o formId da rota, sob withFormsAuthorization, como monitor, responses, responseDetail e files. A leitura e a MESMA projecao autorizada que o editor usa (form_get_editor), entao a capacidade e conferida no servidor e nao no cliente. Uma recusa mostra o aviso de indisponibilidade e nunca um formulario neutro.",
+   "dois_testes_de_arquitetura_atualizados": "forms_composition_sanitization_source_test exigia que o router contivesse a literal const FormsTestPage(), e forms_fail_closed_routes_test exigia api.calls == 0 para /test. As duas assercoes eram o contrato anterior a D6, que mandava Testar ficar fail-closed. A decisao do Owner de 10/09 reverte isso, entao atualizei as duas com o motivo escrito no proprio arquivo, em vez de contornar.",
+   "testes": "os dois arquivos de arquitetura passam; a suite test/app/router fica com 428 aprovados e 6 falhas, todas medidas tambem SEM as minhas mudancas por git stash (import_development_routes, prototype_navigation, principal_real_route em tres larguras e um RED nomeado de proposito), todas de familias de outros grupos."
   }
  }
 }

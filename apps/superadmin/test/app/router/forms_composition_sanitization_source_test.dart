@@ -45,10 +45,18 @@ void main() {
   // composicao delas passa por withFormsAuthorization. Nao reverter para as
   // literais const sem antes mudar forms_fail_closed_routes_test.
   test('production routes use real fail-closed Forms surfaces', () {
-    // Continuam fail-closed por contrato: montam a pagina real sem api.
-    for (final surface in const ['const FormsTestPage()', 'const FormResponsePage()']) {
-      expect(router, contains(surface), reason: surface);
-    }
+    // Continua fail-closed por contrato: monta a pagina real sem api.
+    expect(router, contains('const FormResponsePage()'));
+
+    // D6, decisao do Owner em 10/09/2026: Testar deixou de ser fail-closed.
+    // Quem pode editar o formulario pode testa-lo preenchivel, por capacidade,
+    // entao a rota passou a ser composta com api real sob
+    // withFormsAuthorization, como monitor, responses, responseDetail e files.
+    // A capacidade e conferida no servidor, na mesma projecao que o editor le;
+    // uma recusa mostra o aviso de indisponibilidade e nunca um formulario
+    // neutro. O contrato de comportamento vive em forms_fail_closed_routes_test.
+    expect(router, isNot(contains('const FormsTestPage()')));
+    expect(router, contains('FormsTestPage('));
     expect(router, contains('FormsMediaPage('));
 
     // Compostas com api real, e por isso protegidas pela guarda de sessao.
@@ -61,7 +69,7 @@ void main() {
       expect(router, contains(surface), reason: surface);
       expect(router, isNot(contains('const $surface)')), reason: 'const $surface');
     }
-    expect('withFormsAuthorization('.allMatches(router).length, greaterThanOrEqualTo(4));
+    expect('withFormsAuthorization('.allMatches(router).length, greaterThanOrEqualTo(5));
 
     expect(router, isNot(contains('_unavailableFormsRoute')));
     expect(router, isNot(contains('FormsRouteCapabilities')));
