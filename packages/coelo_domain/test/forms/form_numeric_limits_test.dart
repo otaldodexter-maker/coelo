@@ -110,4 +110,83 @@ void main() {
       [FormItemKind.integer, FormItemKind.decimal, FormItemKind.money],
     );
   });
+
+  // A guarda de selecoes so tinha prova pela pagina de resposta. Ela e
+  // compartilhada e espelha padroes do servidor, entao os padroes precisam de
+  // afirmacao propria: um teste de widget nao diz QUAL numero esta espelhado.
+  group('selection limits mirror the server defaults', () {
+    test('an item without authored limits inherits coalesce(1, 50)', () {
+      const config = FormItemConfig();
+      expect(FormSelectionLimits.minimum(config), 1);
+      expect(FormSelectionLimits.maximum(config), 50);
+    });
+
+    test('authored limits win over the defaults', () {
+      const config = FormItemConfig(minSelections: 2, maxSelections: 3);
+      expect(FormSelectionLimits.minimum(config), 2);
+      expect(FormSelectionLimits.maximum(config), 3);
+    });
+
+    test('the hint stays silent when the author declared nothing', () {
+      // Anunciar o teto de cinquenta numa pergunta sem limite seria ruido, e
+      // nao e regra deste formulario, e do servidor.
+      expect(FormSelectionLimits.hint(const FormItemConfig()), isNull);
+    });
+
+    test('the hint names only what the author declared', () {
+      expect(
+        FormSelectionLimits.hint(const FormItemConfig(maxSelections: 2)),
+        'Escolha no m\u00e1ximo 2 op\u00e7\u00f5es.',
+      );
+      expect(
+        FormSelectionLimits.hint(const FormItemConfig(minSelections: 2)),
+        'Escolha ao menos 2 op\u00e7\u00f5es.',
+      );
+      final both = FormSelectionLimits.hint(
+        const FormItemConfig(minSelections: 2, maxSelections: 3),
+      );
+      // As duas metades precisam aparecer: quem le a frase tem de conseguir
+      // agir sobre qualquer um dos dois limites.
+      expect(both, contains('ao menos 2'));
+      expect(both, contains('m\u00e1ximo 3'));
+    });
+
+    test('a single option reads in the singular', () {
+      expect(
+        FormSelectionLimits.hint(const FormItemConfig(minSelections: 1)),
+        'Escolha ao menos 1 op\u00e7\u00e3o.',
+      );
+    });
+
+    test('an empty answer is never a selection violation', () {
+      // Nao ter respondido e assunto de obrigatoriedade. Dizer "escolha ao
+      // menos duas" numa pergunta que a pessoa pode pular estaria errado.
+      expect(
+        FormSelectionLimits.violation(const FormItemConfig(minSelections: 2), 0),
+        isNull,
+      );
+    });
+
+    test('counts inside the authored range pass', () {
+      const config = FormItemConfig(minSelections: 2, maxSelections: 3);
+      expect(FormSelectionLimits.violation(config, 2), isNull);
+      expect(FormSelectionLimits.violation(config, 3), isNull);
+    });
+
+    test('counts outside the authored range say which side broke', () {
+      const config = FormItemConfig(minSelections: 2, maxSelections: 3);
+      expect(FormSelectionLimits.violation(config, 1), contains('ao menos 2'));
+      expect(FormSelectionLimits.violation(config, 4), contains('m\u00e1ximo 3'));
+    });
+
+    test('the server ceiling still applies with nothing authored', () {
+      // O servidor recusa acima de cinquenta mesmo sem limite autorado, entao
+      // a guarda nao pode ser omissa ali so porque a frase de aviso e.
+      expect(FormSelectionLimits.violation(const FormItemConfig(), 50), isNull);
+      expect(
+        FormSelectionLimits.violation(const FormItemConfig(), 51),
+        contains('m\u00e1ximo 50'),
+      );
+    });
+  });
 }
