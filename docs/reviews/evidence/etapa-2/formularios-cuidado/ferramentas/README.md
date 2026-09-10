@@ -29,6 +29,22 @@ opostas:
 - exigir tipo `commit` reprova **blobs**, que sao citacoes legitimas de objeto de
   arquivo. Rigor que reprova o correto nao e rigor.
 
+### Limitacao conhecida, e ela ja produziu um falso positivo
+
+O script confere caminhos contra o **sistema de arquivos da worktree atual**, e
+nao contra a base integrada. Um caminho que existe em `origin/dev` mas ainda nao
+chegou a branch do grupo e reportado como inalcancavel.
+
+Aconteceu na primeira execucao apos publicar o indice: ele acusou
+`docs/reviews/etapa-2-operacao/comunicacao/formularios-cuidado.json`, que esta
+rastreado em `origin/dev` e simplesmente nao existia na branch, que estava
+atras. Para conferir contra a base integrada, use
+`git ls-tree -r --name-only origin/dev | grep <caminho>`.
+
+Registro isto aqui porque a lei que este conjunto de ferramentas serve vale
+tambem para as ferramentas: **uma verificacao que reprova o correto nao esta
+rigorosa, esta com o criterio errado.**
+
 ## `dependencias-nao-fornecidas.py`
 
 Para cada pagina publica do recorte, lista os parametros de construtor que
