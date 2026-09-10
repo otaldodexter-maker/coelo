@@ -183,7 +183,8 @@ de `forms_editor_golden_test`, uma de `forms_operations_golden_test` e uma de
 `form_response_golden_test`. Todas sob a decisão do Owner sobre o ambiente de
 referência.
 
-**A nona não é golden e não é defeito de produto.**
+**A nona foi corrigida** e o recorte fecha com **oito falhas, todas de golden**.
+Ela não era defeito de produto:
 `forms_editor_page_test`, "production preserves the editor hierarchy with
 neutral disabled controls", afirma que há exatamente dois `ExcludeFocus`
 excluindo na árvore inteira, e há quatro. Dois vêm do próprio editor, do helper
@@ -196,11 +197,39 @@ por `FocusableActionDetector` com `Semantics(onTap:)`, então excluir o `Switch`
 impede que o mesmo controle vire duas paradas de foco. É desenho deliberado de
 um focus stop por campo.
 
-A asserção conta a árvore toda, incluindo as entranhas de um componente de outro
-pacote, então dispara sempre que muda quantos campos de alternância são
-renderizados. Confirmado que não é desta entrega: com o editor da base
+A asserção contava a árvore toda, incluindo as entranhas de um componente de
+outro pacote, então disparava sempre que mudava quantos campos de alternância
+são renderizados. Confirmado que não era desta entrega: com o editor da base
 `d784462c1` restaurado no diretório de trabalho, o mesmo arquivo dá quatro
 também.
+
+A afirmação passou a ser de intenção — no estado fail-closed nada está focável e
+as duas regiões do editor estão excluídas — e o comentário no teste registra que
+o `ExcludeFocus` do componente está **certo**, para ninguém "consertar" o
+componente depois.
+
+# Três linhas de bloqueio minhas que estavam erradas
+
+Uma linha de bloqueio parece informação e por isso ninguém a testa, mas é uma
+hipótese não verificada. Auditei todas as minhas. **Três estavam erradas, e as
+três eram exatamente as que eu havia copiado do rastreador sem testar.** Nenhum
+bloqueio que eu mesmo verifiquei estava errado.
+
+- **question-image (I021)** não estava bloqueada por reserva de mídia. A cadeia
+  está aplicada: `form_prepare_asset_upload` com grant a `authenticated`,
+  `form_worker_finalize_asset` como função de worker, a Edge Function conferindo
+  MIME real, e o adaptador de cliente já implementado. Falta **só a interface**
+  de anexo. Decisão de projeto tomada: usa esse caminho, não espera o catálogo
+  unificado, que não tem write path para kind nenhum.
+- **`forms.location-question` e `forms.location-answer`** não são "código pronto
+  esperando decisão". Não existe kind de Local no domínio de Formulários;
+  `LocationSelectionSource` vive na feature Locais e nunca é referenciado por
+  Formulários. A decisão do Owner **precede** a construção.
+- **care049** não espera pacote nominal de produção. `specs/049` está
+  `draft-for-review` — rascunho não aprovado — e define um contrato que ainda não
+  existe. E `specs/020`, a spec vigente, está `approved-for-demonstrative-ui`, o
+  que explica a ausência de repositório de produção: **é o escopo aprovado**.
+  Falta aprovar uma spec, não autorizar um pacote.
 
 # Uma dívida medida que decidi não pagar hoje
 
