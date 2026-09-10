@@ -3,6 +3,7 @@
 begin;
 
 alter table public.support_sessions
+  alter column institution_id drop not null,
   add column if not exists subject text not null default 'Atendimento Coelo',
   add column if not exists menu_code text not null default 'support',
   add column if not exists screen_code text not null default 'support',

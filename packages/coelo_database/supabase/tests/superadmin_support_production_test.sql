@@ -1,10 +1,11 @@
 begin;
 
-select plan(22);
+select plan(23);
 
 select has_column('public', 'support_sessions', 'subject', 'support sessions have subject');
 select has_column('public', 'support_sessions', 'ticket_status', 'support sessions have product status');
 select has_column('public', 'support_sessions', 'revision', 'support sessions have optimistic revision');
+select is((select is_nullable from information_schema.columns where table_schema='public' and table_name='support_sessions' and column_name='institution_id'), 'YES', 'internal support can be created without institution scope');
 select has_table('public', 'support_command_receipts', 'support command receipts exist');
 select row_security_active('public.support_sessions'::regclass, 'support sessions RLS is active');
 select row_security_active('public.support_messages'::regclass, 'support messages RLS is active');
