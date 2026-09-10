@@ -361,8 +361,22 @@ existe. **Sonda com entrada errada produz verde confiante.**
 E a razão de os dezesseis não terem sido resolvidos é ela mesma um achado:
 **dezesseis listagens em grade de cartões não têm chave de linha.** Sem ela não há
 como colher o identificador de um registro que existe para depois abrir o detalhe.
-Não é defeito visível hoje, mas é o que torna essas telas não testáveis por
-identificador. Dar chave de linha a elas resolve as duas coisas de uma vez.
+
+**E não é apenas testabilidade.** A frente que levantou o achado foi medir a
+própria listagem e encontrou a mesma classe nela: no estreito, a tela troca a
+tabela por cartões e **perde a identidade das linhas no caminho**. A lista funciona
+— foi verificado que os cartões trazem título, público, datas, recorrência,
+contadores e paginação — mas **uma lista que muda de forma não deveria mudar de
+identidade**: quem escreve teste, automação ou atendimento não deveria precisar
+saber a largura da tela para falar da mesma comunicação.
+
+Essa frente corrigiu a própria, em seis linhas somadas e nenhuma removida, com o
+teste medindo o **efeito** e não a chave — todo item visível na largura corrente é
+alcançável pelo identificador, o toque abre o item certo, e o identificador
+sobrevive à troca de apresentação. E verificou a discriminação: removida a
+correção, dois dos três casos caem, e o de tabela continua passando, porque a
+tabela já tinha identidade. **Teste que passa com e sem a correção não prova
+nada.** As quinze restantes ficam registradas.
 
 **O sinal foi preservado nos dois sentidos:** três casos verdes fixam o que
 funciona hoje — quatro linhas em 800×600, cinco em 390×844, oito em 1440×900 — e
@@ -1837,6 +1851,35 @@ pior que contada como zero**, porque zero chama atenção e um a mais numa lista
 falhas conhecidas não chama. A frente suspendeu as próprias afirmações anteriores
 de linha de base até remedir com os nomes corretos — que é a resposta certa, já
 que não dá para saber de memória quais execuções usaram o nome certo.
+
+## Uma pergunta sobre distribuição de formulário, e ela é sua
+
+O diálogo de agendamento de Formulários monta a aplicação com **exatamente uma
+regra de público**, reaproveitando apenas o identificador da primeira que existia.
+E o servidor, ao salvar, **apaga todas as regras da aplicação e reinsere a partir
+do que recebeu** — confirmado nas três migrations que reescrevem essa função.
+
+Somando: abrir o diálogo numa aplicação com mais de uma regra de público e salvar
+**apaga todas menos a primeira, sem aviso e sem erro**.
+
+**Alcance, com a mesma precisão exigida em toda parte:** o único escritor de regras
+no Superadmin é esse diálogo, e ele escreve uma. Então, por esta superfície, a
+aplicação nunca chega a ter duas. O estado perigoso só existe se as regras vierem
+de carga inicial, migration ou outro caminho.
+
+**E a correção óbvia não é livre de decisão — por isso não foi feita.** Preservar
+as demais regras faria o formulário **chegar a mais gente do que a tela mostra**.
+Trocar apagar em silêncio por ampliar em silêncio é escolher qual dos dois males, e
+isso é decisão de produto sobre **quem recebe formulário**.
+
+A pergunta, portanto: **quando uma aplicação tem várias regras de público, o
+diálogo edita qual, e o que acontece com as demais?**
+
+Registrado junto, como lacuna latente e não como defeito: três limites do servidor
+— cinquenta regras de público, três lembretes e vinte agendamentos ativos por
+aplicação — não estão espelhados no cliente. Nenhum é violável hoje, porque o
+diálogo cria uma regra e um agendamento, e **lembrete não tem nenhuma tela que o
+referencie**, apesar de existir no domínio e na API.
 
 ## Ler não pega; seguir pega
 
