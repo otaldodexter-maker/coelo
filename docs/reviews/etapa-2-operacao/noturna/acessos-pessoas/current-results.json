@@ -1,6 +1,6 @@
 {
-    "revision":  "throughc0e4fc47d",
-    "date_utc":  "2026-09-10 01:02:39 UTC",
+    "revision":  "through8f3905819",
+    "date_utc":  "2026-09-10 01:23:19 UTC",
     "environment":  "Local disposable SQL and Flutter synthetic fixtures",
     "base":  "d784462c1",
     "sets":  [
@@ -83,11 +83,27 @@
                      "set":  "Person detail visual 375 reused and1440 reconciled",
                      "P":  2,
                      "path":  "person-detail-visual/handoff.md"
+                 },
+                 {
+                     "set":  "Safety native guidelines diagnostic",
+                     "P":  2,
+                     "F":  4,
+                     "path":  "safety-accessibility/handoff.md"
+                 },
+                 {
+                     "set":  "Safety legacy transport boundary",
+                     "P":  5,
+                     "path":  "safety-transport/handoff.md"
+                 },
+                 {
+                     "set":  "Safety integrated development route reflow",
+                     "P":  4,
+                     "path":  "safety-reflow/handoff.md"
                  }
              ],
     "totals":  {
-                   "P":  419,
-                   "F":  0,
+                   "P":  430,
+                   "F":  4,
                    "S":  0,
                    "U":  120
                },
@@ -106,5 +122,6 @@
                           },
     "historical":  "R02 not summed; broad baseline ecc8eae2b5707P9S190F not current measurement",
     "counting":  "Unique tests within sets; RED/update/reruns and PNGs not added as cases",
-    "integrated_base_for_router_residuals":  "6aa352c6a434086905444aaa5f128034ad8352e6"
+    "integrated_base_for_router_residuals":  "6aa352c6a434086905444aaa5f128034ad8352e6",
+    "failures_current":  "4 valid diagnostic failures: Android target and contrast in route/page; source in docs, not hidden as skips. First invalid SemanticsHandle run excluded."
 }
