@@ -97,6 +97,49 @@ O pacote de Perfis de cuidado nega `platform.read` a dado de saúde e exige
 uma capacidade de guardião que não existe. Criar agora ou deixar para o app
 Principal? Recomendação: deixar para quando o Principal entrar.
 
+## P11 — Pessoas exige AAL2 no banco, inclusive para listar (acessos-pessoas)
+
+`app_private.assert_people_permission` exige AAL2 sem exceção nas cinco RPCs
+de Pessoas; sem fator cadastrado o Supabase emite AAL1, então o diretório de
+Pessoas não abre em produção. Perfis e Modelos só exigem AAL2 na escrita.
+
+- (a) Escrever create/update de pessoa no realm interno v2 (AAL1 por herança).
+- (b) Adiar o AAL2 dentro de `assert_people_permission`, como
+  `20260901200206` fez para o realm interno.
+- (c) **Recomendado pelo grupo e pelo coordenador:** `people.read` aceita
+  AAL1; `people.create` e `people.update` continuam exigindo AAL2. Mesmo
+  desenho de Perfis e Modelos, reversível numa linha. Combina com P10: uma
+  migration única de fase MFA do MVP.
+
+## P12 — Baseline do banco a partir de produção (acessos-pessoas, AP-D2)
+
+O repositório não reconstrói produção (ledger para em 01/09, 51 versões sem
+arquivo local, objetos órfãos como `app_private.unit_import_source_attestations`).
+O grupo testou: o dump schema-only de produção aplica limpo num Postgres 17
+(231 tabelas, 179 policies).
+
+- (a) **Recomendado:** baseline nova. O dump schema-only vira a migration
+  inicial e o catálogo de permissões vira seed versionado; a cadeia antiga
+  fica arquivada como histórico. Todo pacote novo passa a ser provado sobre a
+  baseline real.
+- (b) Reconstruir as órfãs uma a uma (custo alto, sem fim visível).
+
+## P13 — Forma canônica de `public.units` (estrutura, levantado por acessos-pessoas)
+
+Produção tem `unit_type_id NOT NULL` e não tem `institution_type_id`. A
+migration `20260831164937` (não aplicada) exige o contrário e levantaria em
+produção. É modelagem de domínio: decidir antes da fila rodar. Recomendação
+do coordenador: produção é a forma canônica (`unit_type_id`); a migration
+`20260831164937` é corrigida ou retirada da fila.
+
+## P14 — Incidente de segurança: `supabase db dump --dry-run` imprime credencial
+
+O grupo acessos-pessoas relatou que a flag `--dry-run` imprimiu no console o
+bloco de conexão do pooler de produção com `PGPASSWORD` do papel efêmero
+`cli_login_postgres.<ref>`. Não foi usado, copiado nem persistido; ficou na
+saída de ferramenta de uma conversa. Pedido: trocar a senha do banco do projeto
+no painel (só o Owner pode) e não usar `--dry-run` em sessão de agente.
+
 ## P10 — `requires_mfa` em capacidades de publicação (publicacoes-agenda)
 
 Código histórico ainda pede AAL2 em algumas capacidades de publicação; o MVP é

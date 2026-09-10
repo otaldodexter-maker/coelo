@@ -25,4 +25,14 @@ quinzenal.
 
 Cada pacote ainda precisa de contrato aprovado, RLS deny-by-default,
 privilégios mínimos e pgTAP verde, incluindo negação de outro tenant. Segredos,
-buckets e Workers do Cloudflare continuam exigindo autorização nominal.
+buckets e Workers do Cloudflare continuam exigindo autorização nominal, exceto
+o pacote da Decisão 5 da ADR 0034 (CORS, lifecycle do transitório, token R2
+mínimo, migração das três funções de mídia e spike), executado só pelo
+coordenador da rodada.
+
+Em 10/09/2026 a coordenação da Rodada 3 mediu que o backup por ponto no tempo
+do projeto estava **desligado** (`pitr_enabled: false`); enquanto o Owner não
+decidir, a condição da ADR 0034 não está satisfeita e nenhuma migration é
+aplicada. Também foi medido que o ledger `supabase_migrations.schema_migrations`
+não espelha os arquivos locais: a aplicabilidade de um pacote é decidida por
+presença de objeto em `pg_proc`/`pg_class`, nunca pelo carimbo.

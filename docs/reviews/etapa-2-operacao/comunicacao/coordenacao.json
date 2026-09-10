@@ -1,5 +1,5 @@
 {
-  "revision": 3,
+  "revision": 4,
   "round": "E2-R03-20260910",
   "role": "Coordenacao e Integracao - Claude (P1)",
   "writer": "coordenador-claude",
@@ -8,156 +8,156 @@
   "app": "Claude Code (VS Code)",
   "model": "claude-fable-5-1",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-10T14:50:00-03:00",
-  "notaDeRevisao": "Revisao 1 da Rodada 3. O conteudo da revisao 31 (rodada E2-NOTURNA-20260909) permanece no historico do Git (commit 2043f9df2 e anteriores); o residual que ainda importa esta em residualDaRodadaAnterior.",
-  "relogio": "O relogio do checkout integrador marcava 14:16 -03:00 quando os JSONs dos grupos carimbavam 18:30-18:45 -03:00. Carimbos dos grupos estao adiantados; o coordenador usa o relogio da maquina. Nao antecipar cortes por leitura de carimbo.",
+  "updatedAt": "2026-09-10T16:20:00-03:00",
+  "historicoDeRevisoes": {
+    "1": "2026-09-10T14:50 posse, ACK dos sete canais, estado de producao, CORS e lifecycle aplicados, fila SQL R03, perguntas P1-P10 (commit e6f40f9bc em dev)",
+    "2": "15:10 rastreadores com o estado medido, RPCs de Unidades versionadas, ADR 0034 Decisao 7, merge de estrutura",
+    "3": "15:40 merges de principal-chat-sistema, publicacoes-agenda, operacoes, formularios-cuidado-rotina; runner do spike R2",
+    "4": "16:20 merges de acessos-pessoas (local) e operacoes (commit local); deltas de estado por action_id; incidente do JSON sobrescrito assumido; perguntas P11-P14; ordem do Owner de 10/09 (tarde) incorporada"
+  },
+  "notaDeRevisao": "O conteudo da rodada E2-NOTURNA-20260909 (revisao 31) permanece no historico do Git; nada dele vale como estado atual. Nao ha 'nenhuma rodada nova aberta': a Rodada 3 esta aberta desde a Fase 0.",
+  "relogio": "Relogio do coordenador (maquina): 14:16 -03:00 na posse. Os JSONs dos grupos carimbam 3 a 4 horas a frente; o coordenador registra pelo relogio da maquina e nao antecipa cortes por carimbo.",
   "exclusivity": {
     "soleIntegratorOfDev": true,
     "soleWriterOfTrackersAndInventory": true,
-    "faseZero": "A Fase 0 (fase0.json) continua commitando lotes pequenos em dev pelo checkout principal, conforme o handoff dela. E o unico outro escritor de dev nesta rodada; os dois fazem fetch e rebase antes de push.",
-    "checkoutDoCoordenador": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-coordenacao, branch work/etapa2-r03-coordenacao, push com git push origin HEAD:dev apos rebase em origin/dev. O coordenador NAO edita a arvore do checkout principal, porque a Fase 0 e o grupo principal-chat-sistema trabalham nela."
+    "faseZero": "A Fase 0 (fase0.json) continua commitando lotes pequenos em dev pelo checkout principal. E o unico outro escritor de dev; os dois fazem fetch e rebase antes de push.",
+    "checkoutDoCoordenador": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-coordenacao, branch work/etapa2-r03-coordenacao, upstream origin/dev, push com git push origin HEAD:dev apos rebase. O coordenador nao edita a arvore do checkout principal."
   },
   "base": {
     "root": "C:/Users/adrie/Documents/Coelo",
     "branch": "dev",
     "fase0Head": "1adb070c9028850ccdd7e091db5b97b63b95c750",
     "fase0HeadShort": "1adb070c9",
-    "fase0PublishedAt": "2026-09-10T14:12:14-03:00 (hora do commit; o handoff diz ~18:40 pelo carimbo adiantado)",
-    "fase0Note": "Composto CoeloAdminDirectory, goldens do composto, teste de arquitetura, SDK 3.44.2 e migracao de Instituicoes, Atividades, Turmas, Unidades, Formularios e Saude. Restante segue em dev como lotes; ver next-round/R03-fase0-handoff.md.",
-    "headAoAbrirEstaRevisao": "2043f9df2",
-    "posseConfirmadaEm": "2026-09-10T14:16:00-03:00"
+    "fase0PublishedAt": "2026-09-10T14:12:14-03:00 (hora do commit)",
+    "devRemotoAoAbrirRev4": "e6f40f9bc (origin/dev); Fase 0 sem push novo desde 8fafbe16c",
+    "baseIntegradaLocal": "work/etapa2-r03-coordenacao a partir de 2dff73c16 (rev 4 acrescenta este arquivo e os deltas de acessos-pessoas); SHA final publicado em dev fica em integracaoNoCorte.shaPublicado",
+    "arvoreDoCoordenador": "limpa apos cada commit; sem stash proprio",
+    "checkoutPrincipal": "dev local em 8fafbe16c, atras de origin/dev; 12 arquivos modificados e 1 nao rastreado da Fase 0 e do grupo principal-chat-sistema (WIP deles, intocado); stash 'r03-jsons-grupos' obsoleto do coordenador (o descarte foi bloqueado pelo classificador; pode ser descartado por qualquer um)"
   },
   "incidenteDoCheckoutCompartilhado": {
-    "oQueAconteceu": "As 14:16 o checkout principal tinha um conflito de merge nao resolvido em apps/superadmin/lib/features/principal_happens/presentation/principal_happens_preview_page.dart (marcadores UU), dois testes de principal_happens em staging, um teste novo nao rastreado (principal_happens_no_preview_test.dart) e alteracoes nao commitadas de Planos (goldens e plan_directory_page), Cardapios, principal_for_you e do teste de arquitetura. O coordenador fez apenas stash/pop dos tres JSONs de comunicacao; o stash continha somente esses JSONs (conferido com git stash show) e ficou na pilha como stash 'r03-jsons-grupos', obsoleto, porque a arvore tinha revisoes mais novas. O conflito NAO veio desse stash.",
-    "quemDeveResolver": "Fase 0 (Planos, Cardapios, chip Destaque, teste de arquitetura) e principal-chat-sistema (principal_happens sem previa). O coordenador nao tocou nesses arquivos e nao vai tocar. O stash 'r03-jsons-grupos' pode ser descartado por qualquer um.",
-    "regraDaqui": "Uma arvore de trabalho por escritor. Grupo com worktree propria edita so nela; o checkout principal e da Fase 0 ate ela encerrar. Quem precisar do checkout principal registra no proprio JSON antes."
+    "assumido": "Foi o coordenador. As 14:15 fez git stash push dos tres JSONs de comunicacao no checkout principal para avancar dev, e o pop seguinte devolveu os arquivos ao estado do stash. Entre o push e o pop, acessos-pessoas.json voltou ao conteudo da revisao 56 (HEAD) e o utilitario do grupo leu 56 e gravou 57; as revisoes 57-83 ficaram so no historico da worktree do grupo. O grupo reconstruiu tudo na revisao 84 e versionou uma copia na propria branch. O conflito UU em principal_happens_preview_page.dart visto no mesmo minuto NAO veio do stash (conferido: o stash so tinha os JSONs) e foi resolvido por quem trabalha na arvore principal.",
+    "regraDaqui": "O coordenador nao toca a arvore do checkout principal. Grupo com worktree edita so nela e publica a branch; o JSON de comunicacao vale pela copia na branch do grupo quando o checkout principal divergir. Quem precisar do checkout principal registra no proprio JSON antes."
   },
-  "receipts": [
-    {"grupo": "fase0", "revisaoRecebida": 4, "ack": true, "recebidoEm": "2026-09-10T14:20:00-03:00", "nota": "base.fase0Head 1adb070c9 aceito como base da rodada. Handoff lido. Pendencias do handoff (Planos, Cardapios, Comunicacoes, Circulares, Agenda; depois Pessoas, Convites, Perfis de acesso) continuam com a Fase 0."},
-    {"grupo": "estrutura", "revisaoRecebida": 18, "ack": true, "recebidoEm": "2026-09-10T14:20:00-03:00", "nota": "Pedidos atendidos nesta revisao: RPCs de Unidades conferidas em pg_proc (ver producao.unidades); 20260909210000 inscrito na fila entre 200000 e 211000; ordem do agregado de Atividades v2 registrada; chaves de composicao e gate-map lidos. Credenciais publicaveis: ver perguntasAoOwner. Decisoes RODAPE e CHAT do Owner registradas em decisoesDoOwnerNestaRodada."},
-    {"grupo": "acessos-pessoas", "revisaoRecebida": 84, "ack": true, "recebidoEm": "2026-09-10T14:20:00-03:00", "nota": "20260909174500 e 20260909193000 NAO estao aplicados em producao (presenca 1/1 e 0/7; ver producao.presencaPorMigration). Entram na fila. RPCs internas de Usuarios internos: conferencia em pg_proc entra no proximo ciclo com os nomes que o grupo listar no JSON. Branch remota ainda nao existe; publicar a branch."},
-    {"grupo": "principal-chat-sistema", "revisaoRecebida": 7, "ack": true, "recebidoEm": "2026-09-10T14:20:00-03:00", "nota": "Quatro pacotes da fila recebidos (meal_plan_image_delete, meal_plans_owner_grants, chat_conversation_preferences, happens_feed_pagination). Producao confirmada: platform_role_permissions NAO tem concessao de meal_plans.* (a migration nao e no-op). Achados de cadeia registrados. Perguntas ao Owner encaminhadas em lote."},
-    {"grupo": "publicacoes-agenda", "revisaoRecebida": 5, "ack": true, "recebidoEm": "2026-09-10T14:20:00-03:00", "nota": "circulars.delete (superadmin_circular_delete_v2) recebido; chave superadminCircularDeleteEnabled reservada para o coordenador. pgTAP retido por porta 54322 ocupada: ver janelaDeReplay."},
-    {"grupo": "operacoes", "revisaoRecebida": 6, "ack": true, "recebidoEm": "2026-09-10T14:20:00-03:00", "nota": "Suporte (20260909217000) e Conta (20260909218000) recebidos como pacotes committados sem pgTAP nominal. Nao entram na fila de aplicacao ate o pgTAP passar num perfil de replay declarado (ver janelaDeReplay e manifesto)."},
-    {"grupo": "formularios-cuidado-rotina", "revisaoRecebida": 7, "ack": true, "recebidoEm": "2026-09-10T14:20:00-03:00", "nota": "Cinco migrations (rotina 2, assiduidade 1, cuidado 2) verdes em replay descartavel declarado. F-R03-FCR-003 acatado: manifesto do replay ganha 20260812000000_chat_production_contract.sql nesta revisao. Pergunta sobre capacidade de guardiao encaminhada ao Owner."}
+  "ordemDoOwner20260910Tarde": {
+    "recebidaEm": "2026-09-10T15:50:00-03:00",
+    "resumo": "Assumir a coordenacao central; nao so auditar: reconciliar, integrar, aplicar o remoto autorizado e atualizar a documentacao ate o proximo estado verificavel. Decisoes de 10/09 sao aprovadas e nao se reabrem. Aprovacao visual nao vira verified/done/E2E. Integrar por conteudo com testes na base conjunta; sem reset --hard, clean, descarte de stash ou force-push. Rastreadores, inventario e coordenacao.json no mesmo ciclo; fechamento em formato fixo.",
+    "reafirmado": "Pesquisar no menu e botao de Bug no cabecalho em todas as telas (a Fase 0 registrou os dois no composto: Bug sempre presente, Pesquisar mantido). As decisoes por golden da lista de 10/09 continuam valendo como referencia."
+  },
+  "frentes": [
+    {"grupo": "fase0", "app": "Claude Fable", "worktree": "checkout principal", "branch": "dev", "headRecebido": "1adb070c9 (base) e 8fafbe16c (Planos e Cardapios)", "upstream": "origin/dev", "divergencia": "checkout principal atras de origin/dev desde e6f40f9bc", "wip": "12 modificados + 1 nao rastreado no checkout principal (Planos goldens, Cardapios, principal_for_you, principal_happens, teste de arquitetura, refs de coelo-ui)", "recebido": "r4", "integrado": "tudo que ela commitou esta em dev", "aplicadoEmProducao": "n/a", "e2e": "nenhum", "proximoPasso": "Comunicacoes, Circulares, Agenda eventos no composto; depois Pessoas, Convites, Perfis de acesso; fazer git pull --rebase antes de cada push porque dev avancou"},
+    {"grupo": "estrutura", "app": "Claude Opus", "worktree": "e2-r03-estrutura", "branch": "work/etapa2-r03-estrutura", "headRecebido": "b92585d38", "upstream": "origin/work/etapa2-r03-estrutura 0/0", "wip": "nenhum", "recebido": "r18", "integrado": "16 commits, merge f615575de; testes alvo na base conjunta 356 PASS / 4 FAIL (4 goldens de formulario que divergem pela decisao RODAPE)", "aplicadoEmProducao": "nenhum (fila pos 4, 6, 7 e 26 retidas por P1)", "e2e": "nenhum", "primeiroGate": "chaves publicaveis na maquina (P4) para abrir a rota normal; depois structureMutationsEnabled apos o SQL", "proximoPasso": "regravar os goldens de formulario do recorte apos RODAPE; compor SupabaseUnitDirectoryRepository/SupabaseGroupDirectoryRepository no lugar dos Unavailable* (as RPCs existem em producao); responder P5/P6 quando o Owner decidir"},
+    {"grupo": "acessos-pessoas", "app": "Claude Opus", "worktree": "e2-r03-acessos-pessoas", "branch": "work/etapa2-r03-acessos-pessoas", "headRecebido": "d10239641", "upstream": "publicada pelo coordenador em 16:05 (o push do grupo estava bloqueado pelo classificador da sessao dele)", "wip": "nenhum", "recebido": "r84 (pela copia versionada na branch)", "integrado": "17 commits, merge 25712b0e6; conflito nos dois scripts de replay resolvido pela uniao dos perfis (StructureLocationConsumersV1 + PersonDetailV2, InvitesV2, InternalUsersV2); parse PowerShell 0 erros", "aplicadoEmProducao": "nenhum (fila pos 27-33 retidas por P1)", "e2e": "nenhum", "primeiroGate": "P1 (aplicar os quatro pacotes verdes destrava 16 das 38 acoes sem Dart); P11 (AAL2 em Pessoas)", "proximoPasso": "modelo de acompanhamento D1 com principal-chat-sistema (proposta em acompanhamento-d1-proposta.md; quatro pontos a fechar entre os dois grupos, nao com o Owner); telas sobre o composto quando a Fase 0 migrar Pessoas/Convites/Perfis de acesso"},
+    {"grupo": "principal-chat-sistema", "app": "Claude Opus", "worktree": "e2-r03-principal-chat-sistema", "branch": "work/etapa2-r03-principal-chat-sistema", "headRecebido": "8921a6261", "upstream": "0/0", "wip": "trabalha tambem na arvore do checkout principal (principal_happens sem previa): registrar no JSON e mover para a worktree", "recebido": "r7", "integrado": "7 commits, merge 3f5934fb5; meal_plans/chat/attendance/circulars/happens/shell na base conjunta: 455 PASS / 24 FAIL, todos golden (attendance e formularios que divergem pela decisao RODAPE)", "aplicadoEmProducao": "nenhum (fila pos 2, 8, 10-13, 21-24 retidas por P1)", "e2e": "nenhum", "primeiroGate": "P1; realm interno v2 ausente em producao antes de chat.list e chat_conversation_preferences", "proximoPasso": "remover as mensagens de previa restantes do Acontece (D3); curtir/comentar exige pacote proprio de backend (tabela de reacoes/comentarios): escrever e entregar; P7 e P8 ao Owner"},
+    {"grupo": "publicacoes-agenda", "app": "Codex Luna", "worktree": "e2-r03-publicacoes-agenda", "branch": "work/etapa2-r03-publicacoes-agenda", "headRecebido": "54a83c9de", "upstream": "0/0", "wip": "5 arquivos modificados nao commitados (notice_directory_page.dart, 3 goldens de communication_directory, notice_card_status_layout_test.dart): preservados na worktree, nao integrados", "recebido": "r5", "integrado": "9 commits, merge abd84b042", "aplicadoEmProducao": "nenhum (pos 3, 9, 25 retidas por P1)", "e2e": "nenhum", "primeiroGate": "pgTAP de superadmin_circular_delete_v2 em perfil declarado (janela de replay)", "proximoPasso": "commitar o WIP de Avisos; corrigir 20260901185008 (notice_events esta em analytics) e 20260901191921 (labels NOT NULL) apontadas por acessos-pessoas; Agenda listar/criar/editar/detalhe"},
+    {"grupo": "operacoes", "app": "Codex Luna", "worktree": "e2-r03-operacoes", "branch": "work/etapa2-r03-operacoes", "headRecebido": "b02478937 (1 commit a frente do remoto, integrado a partir da branch local)", "upstream": "origin/work/etapa2-r03-operacoes 1/0", "wip": "nenhum", "recebido": "r6", "integrado": "12 commits, merges c6d2e5dae e b80b0b054", "aplicadoEmProducao": "nenhum (pos 1, 14, 15 retidas por P1)", "e2e": "nenhum", "primeiroGate": "pgTAP nominal de Suporte e Conta num perfil de replay declarado (usar o manifesto corrigido ou projeto descartavel proprio)", "proximoPasso": "publicar b02478937; pgTAP de 20260909217000 e 20260909218000; Planos e Auditoria sobre o composto (Planos ja migrado pela Fase 0 em 8fafbe16c)"},
+    {"grupo": "formularios-cuidado-rotina", "app": "Claude Opus", "worktree": "e2-r03-formularios-cuidado-rotina", "branch": "work/etapa2-r03-formularios-cuidado-rotina", "headRecebido": "e070506f5", "upstream": "0/0", "wip": "1 modificado nao commitado (20260813155005_forms_definition_and_capabilities.sql): preservado na worktree; se for correcao de migration ausente em producao, commitar com a justificativa", "recebido": "r7", "integrado": "6 commits, merge bfd73cc75", "aplicadoEmProducao": "nenhum (pos 16-20 retidas por P1)", "e2e": "nenhum", "primeiroGate": "P1; P9 (leitura por responsavel familiar) nao bloqueia o MVP do Superadmin", "proximoPasso": "repositorios Supabase de Perfis de cuidado, Medicacao e Rotina no cliente; Formularios (Testar por capacidade, D6); XLSX no R2 depois do token (P2)"}
   ],
+  "receipts": [
+    {"grupo": "fase0", "revisaoRecebida": 4, "ack": true, "recebidoEm": "2026-09-10T14:20:00-03:00"},
+    {"grupo": "estrutura", "revisaoRecebida": 18, "ack": true, "recebidoEm": "2026-09-10T14:20:00-03:00", "integradoEm": "2026-09-10T15:05:00-03:00 f615575de"},
+    {"grupo": "acessos-pessoas", "revisaoRecebida": 84, "ack": true, "recebidoEm": "2026-09-10T16:00:00-03:00", "integradoEm": "2026-09-10T16:05:00-03:00 25712b0e6", "nota": "Sobrescrita do JSON assumida pelo coordenador (ver incidente). Branch publicada em origin. Pedidos AP-D1/AP-D2/AP-D3 e o incidente de credencial foram ao Owner como P11-P14. Manifesto do replay: o coordenador refaz o hash de 20260901190432 quando o Owner responder P12 (baseline), porque a decisao muda o harness inteiro."},
+    {"grupo": "principal-chat-sistema", "revisaoRecebida": 7, "ack": true, "recebidoEm": "2026-09-10T14:20:00-03:00", "integradoEm": "2026-09-10T15:30:00-03:00 3f5934fb5"},
+    {"grupo": "publicacoes-agenda", "revisaoRecebida": 5, "ack": true, "recebidoEm": "2026-09-10T14:20:00-03:00", "integradoEm": "2026-09-10T15:35:00-03:00 abd84b042"},
+    {"grupo": "operacoes", "revisaoRecebida": 6, "ack": true, "recebidoEm": "2026-09-10T14:20:00-03:00", "integradoEm": "2026-09-10T16:05:00-03:00 c6d2e5dae + b80b0b054"},
+    {"grupo": "formularios-cuidado-rotina", "revisaoRecebida": 7, "ack": true, "recebidoEm": "2026-09-10T14:20:00-03:00", "integradoEm": "2026-09-10T15:35:00-03:00 bfd73cc75"}
+  ],
+  "classificacaoDoIntegrado": {
+    "entregaPronta": "codigo + teste + doc de cada grupo listado em frentes[].integrado; cada commit foi lido pelo titulo e o conjunto foi provado por analyze e testes de familia na base conjunta",
+    "wipNaoTerminado": "publicacoes-agenda (5 arquivos), formularios-cuidado-rotina (1 migration), Fase 0/principal-chat no checkout principal (13 arquivos): todos preservados onde estao, nenhum integrado",
+    "documentacao": "handoffs e evidencias em docs/reviews/evidence/etapa-2/r03-*/ e os JSONs de comunicacao (versao da branch de cada grupo)",
+    "artefatoDeTeste": "perfis de replay novos (StructureLocationConsumersV1, PersonDetailV2, InvitesV2, InternalUsersV2), pgTAP novos, testes Dart",
+    "alteracaoDoOwner": "RODAPE e CHAT (estrutura 4917bcade, no frame compartilhado) e Arquivos escondido (Fase 0 1adb070c9)",
+    "conflitanteOuSemDono": "scripts de replay (resolvido pela uniao); JSONs de comunicacao (versao da branch do grupo prevalece); manifesto do replay com hash pre-correcao de 20260901190432 (dono: coordenador, aguarda P12)"
+  },
   "producao": {
     "projeto": "coelo / evvbomzejfijozbtgvpt, sa-east-1, Postgres 17",
     "lidoEm": "2026-09-10T14:30:00-03:00 via supabase db query --linked (somente leitura)",
-    "backupPorPontoNoTempo": {
-      "pitr_enabled": false,
-      "walg_enabled": true,
-      "backupsFisicos": 0,
-      "consequencia": "A condicao 3 da Decisao 1 da ADR 0034 (backup por ponto no tempo ligado) NAO esta satisfeita. PITR e complemento pago do plano Pro. Nenhuma migration sera aplicada ate o Owner decidir (ver perguntasAoOwner P1). Tudo que nao depende disso continua."
-    },
-    "ledger": {
-      "ultimaVersaoRemota": "20260901200206",
-      "versoesRemotas": 116,
-      "arquivosLocais": 186,
-      "somenteLocais": 121,
-      "somenteRemotas": 51,
-      "leitura": "As 51 somente-remotas sao as migrations de 29/07, 11/08, 13/08, 20/08 e 21/08 aplicadas sob outro carimbo (people_directory, unit_management, access_profile_v2, meal_plans, forms, profile_about). Por isso o ledger nao decide nada: a decisao e por presenca de objeto."
-    },
-    "presencaPorMigration": {
-      "arquivo": "docs/reviews/evidence/etapa-2/r03-coordenacao/producao-presenca-por-migration-20260910.txt",
-      "metodo": "Para cada migration local fora do ledger, extrair funcoes/tabelas/views que ela cria e conferir em pg_proc/pg_class de producao. n/m = objetos presentes / objetos que a migration cria.",
-      "aplicadasNaPratica": ["20260729141839 15/15", "20260812001000 11/11", "20260812001975 10/10", "20260813120000 9/9", "20260820150000 7/7", "20260820160000 17/17", "20260820171000 15/15", "20260825193120 8/8", "20260827233000 26/26", "20260909212000 6/6 (circulars_media_private_r2_v1 ja esta em producao)"],
-      "parciais": ["20260820230000 6/13", "20260831134407 4/5", "20260831211945 4/27", "20260901170731 2/29", "20260908030000 19/30", "20260908170000 3/30", "20260909190000 4/6"],
-      "ausentes": "todas as demais, inclusive chat_production_contract (20260812000000), now/moments publication (20260820220000, 20260821112822), notice worker runtime (20260820212340), realm interno v2 (20260827-20260901 internal_*), private_media_catalog (20260908160000) e toda a fila de 09/09.",
-      "alerta": "20260909212000 (Circulares R2) consta como presente 6/6 apesar de a fila noturna dizer que nunca foi aplicado. Conferir se e a mesma versao (default de storage_provider = r2) antes de tratar como aplicado; circular-media em producao esta na versao 1 da funcao, anterior ao ramo R2."
-    },
-    "unidades": {
-      "pergunta": "As 13 RPCs de Unidades sem migration existem em producao?",
-      "resposta": "SIM. As 13 existem em public (security definer, grant execute a authenticated) e 11 delas tambem em app_private. Hipotese 1 do grupo estrutura confirmada: divida de versionamento, nao pacote novo. units.list/create/edit saem de blocked-environment no banco; o gate restante e a composicao do cliente (structureMutationsEnabled/Unavailable*).",
-      "acaoDeSeguimento": "Versionar as 13 funcoes por migration idempotente (create or replace com o corpo lido de pg_get_functiondef) e registrar o achado de security definer sem revoke de public no rastreador Backend."
-    },
-    "workerDeAvisos": {
-      "pg_cron": "extensao instalada; 3 jobs ativos, todos de Formularios (coelo-forms-occurrences, coelo-forms-reminders, coelo-forms-worker-dispatch)",
-      "funcoesDoWorker": "app_private.claim_notice_publication_jobs e run_notice_publication_job NAO existem em producao (20260820212340 nunca aplicada)",
-      "edgeFunction": "notice-publication-worker NAO implantada",
-      "ordem": "aplicar 20260820212340 (depois das dependencias de Avisos) -> deploy da funcao -> secret COELO_NOTICE_WORKER_SECRET -> cron.schedule com pg_net. Retido pela decisao P1."
-    },
-    "cardapios": "platform_role_permissions nao tem nenhuma linha meal_plans.*: a migration 20260910130000 do grupo principal-chat-sistema e necessaria e nao e no-op.",
-    "edgeFunctionsImplantadas": ["group-files", "unit-import", "unit-export", "institution-files", "unit-identity", "access-profile-files", "form-media", "form-export-download", "form-operations", "circular-media (v1, sem ramo R2)", "import-export-jobs"],
-    "edgeFunctionsNaoImplantadas": ["happens-media", "now-media", "moments-media", "notice-publication-worker", "meal-plan-image-cleanup", "audit-export"],
-    "secretsExistentes": "FORMS_S3_* (endpoint, region, access key, secret), CIRCULAR_MEDIA_*, COELO_ALLOWED_ORIGINS, FORMS_OPERATIONS_BEARER_TOKEN. Nao existem COELO_R2_* nem MOMENTS_R2_*."
+    "blockedEnvironment": [
+      {"capacidade": "backup por ponto no tempo", "estado": "pitr_enabled=false, walg_enabled=true, zero backups fisicos", "efeito": "nenhuma migration aplicada (condicao 3 da Decisao 1 da ADR 0034)", "desbloqueio": "Owner responde P1 (ligar PITR ou dispensar com dump logico por lote)"},
+      {"capacidade": "criar token de API Cloudflare", "estado": "sessao OAuth do MCP recebe 9109 Unauthorized em /user/tokens e /accounts/{id}/tokens", "efeito": "token R2 minimo, migracao das tres funcoes de midia e spike retidos", "desbloqueio": "Owner cria o token no painel e grava os secrets (P2)"},
+      {"capacidade": "chaves publicaveis do Supabase na maquina", "estado": "COELO_SUPABASE_URL e COELO_SUPABASE_PUBLISHABLE_KEY ausentes", "efeito": "nenhuma frente abre a rota normal contra producao; nenhuma acao passa da regua do MVP", "desbloqueio": "Owner autoriza arquivo local ignorado pelo Git (P4)"}
+    ],
+    "ledger": {"ultimaVersaoRemota": "20260901200206", "versoesRemotas": 116, "arquivosLocais": 186, "somenteLocais": 121, "somenteRemotas": 51, "leitura": "ledger nao decide; presenca de objeto decide (evidence/etapa-2/r03-coordenacao/producao-presenca-por-migration-20260910.txt). acessos-pessoas mediu por outro caminho o mesmo: 96 das 162 RPCs chamadas pelo Superadmin nao existem em producao (rpc-cliente-vs-producao-2026-09-10.json)"},
+    "unidades": "As 13 RPCs de Unidades existem em public (security definer, execute para authenticated), 12 em app_private. Versionadas em 20260910160000 com pgTAP de contrato (units_rpcs_versioned_from_production_v1_test.sql).",
+    "workerDeAvisos": "pg_cron instalado (3 jobs de Formularios); funcoes do worker e notice-publication-worker ausentes; ordem: 20260820212340 e dependencias -> deploy -> secret -> cron.schedule; retido por P1",
+    "cardapios": "sem concessao meal_plans.* em platform_role_permissions; 20260910130000 e necessaria",
+    "migrationsQuebradasNaFila": ["20260901101500 superadmin_internal_chat_v2 (labels NOT NULL; dono principal-chat-sistema)", "20260901185008 superadmin_internal_notices_v2 (notice_events esta em analytics; dono publicacoes-agenda)", "20260901191921 superadmin_internal_circulars_v2 (labels NOT NULL; dono publicacoes-agenda)", "20260831164937 assert_unit_hierarchy_contract (contradiz producao; P13)"],
+    "incidenteDeCredencial": "supabase db dump --dry-run imprimiu PGPASSWORD do papel efemero do pooler na saida de ferramenta do grupo acessos-pessoas; nao usado nem persistido; pedido de troca de senha ao Owner (P14); regra: nao usar --dry-run em sessao de agente"
   },
   "cloudflare": {
-    "conta": "2363eb1eadce9b73279d3c8ce46eb424, via MCP cloudflare-api (OAuth)",
-    "pacoteDecisao5": {
-      "corsRestrito": {"estado": "APLICADO em 2026-09-10T14:35-03:00", "buckets": ["coelo-media-prod", "coelo-documents-prod", "coelo-transient-prod"], "regra": "origins https://superadmin.coelo.me, https://admin.coelo.me, https://app.coelo.me; methods GET, PUT, HEAD; headers content-type, content-md5, content-length; expose etag; maxAge 3600", "aberto": "origem de desenvolvimento local (ver perguntasAoOwner P3)"},
-      "lifecycleTransitorio": {"estado": "APLICADO em 2026-09-10T14:35-03:00", "bucket": "coelo-transient-prod", "regra": "coelo-transient-expire-7d: apagar objetos com idade > 604800 s (7 dias), prefixo vazio; regra padrao de abort de multipart (7 dias) mantida"},
-      "tokenR2Minimo": {"estado": "BLOQUEADO: a API de tokens (/user/tokens e /accounts/{id}/tokens) devolve 9109 Unauthorized para a sessao OAuth do MCP. O token precisa ser criado pelo Owner no painel (R2 > Manage API tokens > Object Read & Write, restrito aos tres buckets). Ver perguntasAoOwner P2."},
-      "migracaoDasFuncoes": {"estado": "PENDENTE do token. O codigo das tres funcoes ja tem ramo R2 por storage_provider (happens-media, now-media) e moments-media e R2-nativa (MOMENTS_R2_*). Alem do token: happens/now dependem das migrations de catalogo (20260908160000 e a trinca de 09/09) e moments da 20260821112822, todas ausentes em producao; retidas por P1."},
-      "spike": {"estado": "PENDENTE do token. Plano: EV-001, EV-002, EV-004 e R2-T001..T009 com objeto sintetico em coelo-transient-prod, registrado em docs/spikes/media-r2/evidence-log.md."}
-    },
-    "foraDoPacote": "nada executado alem do autorizado."
+    "corsRestrito": "APLICADO 14:35 nos tres buckets (superadmin/admin/app.coelo.me; GET, PUT, HEAD; content-type, content-md5, content-length; expose etag; maxAge 3600)",
+    "lifecycleTransitorio": "APLICADO 14:35 em coelo-transient-prod (expira objetos com 7 dias; abort de multipart mantido)",
+    "tokenR2Minimo": "blocked-environment (P2)",
+    "migracaoDasFuncoes": "pendente do token; codigo ja tem ramo R2; happens/now dependem do catalogo de midia (ausente em producao); moments de 20260821112822 (ausente)",
+    "spike": "runner pronto em packages/coelo_database/scripts/r2-spike-synthetic.ts (deno check OK); roda com COELO_R2_* no ambiente",
+    "foraDoPacote": "nada"
   },
   "filaSqlR03": {
-    "regra": "Ordem por dependencia, forward-only, uma migration por vez com preflight de objeto. Retida integralmente ate a decisao P1 (backup por ponto no tempo).",
+    "regra": "por dependencia real, forward-only, uma por vez com preflight de objeto; toda a fila retida por P1; migration corrigida so pode ser editada quando ausente em producao (foi o caso de 20260812002100 e 20260901190432)",
     "ordem": [
       {"pos": 1, "migration": "20260909190000_superadmin_internal_audit_read_v2", "grupo": "operacoes", "estado": "candidato; presenca 4/6"},
-      {"pos": 2, "migration": "20260909191000_superadmin_internal_chat_receipts_edit_revoke_v2", "grupo": "principal-chat-sistema", "estado": "candidato; depende do realm interno ausente em producao"},
+      {"pos": 2, "migration": "20260909191000_superadmin_internal_chat_receipts_edit_revoke_v2", "grupo": "principal-chat-sistema", "estado": "candidato; realm interno ausente"},
       {"pos": 3, "migration": "20260909191100_superadmin_notice_metrics_by_generation_v1", "grupo": "publicacoes-agenda", "estado": "candidato"},
-      {"pos": 4, "migration": "20260909192000_superadmin_location_consumer_bindings_v2", "grupo": "estrutura", "estado": "pgTAP verde (109 assercoes no perfil StructureLocationConsumersV1)"},
-      {"pos": 5, "migration": "20260909193000_d04_child_safety_internal_reads", "grupo": "acessos-pessoas", "estado": "candidato; presenca 0/7"},
-      {"pos": 6, "migration": "20260909200000_superadmin_activity_location_create_v2", "grupo": "estrutura", "estado": "pgTAP verde; exige o agregado Atividades v2 (20260908154257, presenca 0/2) antes"},
-      {"pos": 7, "migration": "20260909210000_superadmin_group_location_create_v2", "grupo": "estrutura", "estado": "pgTAP verde; inscrito nesta revisao (pedido do grupo)"},
-      {"pos": 8, "migration": "20260909211000_now_publication_expiry_transition_v1", "grupo": "principal-chat-sistema", "estado": "candidato; depende de 20260820220000 (now_publication_mvp, ausente)"},
-      {"pos": 9, "migration": "20260909212000_circulars_media_private_r2_v1", "grupo": "publicacoes-agenda", "estado": "PRESENTE em producao 6/6; reconciliar ledger, nao reaplicar"},
-      {"pos": 10, "migration": "20260909213000_happens_post_withdrawal_v1", "grupo": "principal-chat-sistema", "estado": "candidato com correcao obrigatoria do oraculo de existencia (fila noturna)"},
-      {"pos": 11, "migration": "20260909214000_happens_mixed_feed_withdrawal_v1", "grupo": "principal-chat-sistema", "estado": "candidato sem suite; exige prova"},
-      {"pos": 12, "migration": "20260909215000_private_media_catalog_chat_kind_v1", "grupo": "coordenador", "estado": "candidato; depende de 20260908160000 (ausente)"},
-      {"pos": 13, "migration": "20260909216000_moments_feed_and_withdrawal_v1", "grupo": "principal-chat-sistema", "estado": "candidato; depende de 20260821112822 (ausente)"},
+      {"pos": 4, "migration": "20260909192000_superadmin_location_consumer_bindings_v2", "grupo": "estrutura", "estado": "pgTAP verde"},
+      {"pos": 5, "migration": "20260909193000_d04_child_safety_internal_reads", "grupo": "acessos-pessoas", "estado": "pgTAP verde (dentro de AP-CHILD-SAFETY, pos 31-33)"},
+      {"pos": 6, "migration": "20260909200000_superadmin_activity_location_create_v2", "grupo": "estrutura", "estado": "pgTAP verde; exige 20260908154257 antes"},
+      {"pos": 7, "migration": "20260909210000_superadmin_group_location_create_v2", "grupo": "estrutura", "estado": "pgTAP verde"},
+      {"pos": 8, "migration": "20260909211000_now_publication_expiry_transition_v1", "grupo": "principal-chat-sistema", "estado": "candidato; exige 20260820220000"},
+      {"pos": 9, "migration": "20260909212000_circulars_media_private_r2_v1", "grupo": "publicacoes-agenda", "estado": "PRESENTE em producao 6/6; reconciliar ledger"},
+      {"pos": 10, "migration": "20260909213000_happens_post_withdrawal_v1", "grupo": "principal-chat-sistema", "estado": "candidato; corrigir oraculo de existencia"},
+      {"pos": 11, "migration": "20260909214000_happens_mixed_feed_withdrawal_v1", "grupo": "principal-chat-sistema", "estado": "candidato sem suite propria; coberto por happens_feed_pagination_test"},
+      {"pos": 12, "migration": "20260909215000_private_media_catalog_chat_kind_v1", "grupo": "coordenador", "estado": "candidato; exige 20260908160000"},
+      {"pos": 13, "migration": "20260909216000_moments_feed_and_withdrawal_v1", "grupo": "principal-chat-sistema", "estado": "candidato; exige 20260821112822"},
       {"pos": 14, "migration": "20260909217000_superadmin_support_production_v1", "grupo": "operacoes", "estado": "committado; pgTAP nominal pendente"},
       {"pos": 15, "migration": "20260909218000_superadmin_account_profile_v1", "grupo": "operacoes", "estado": "committado; pgTAP nominal pendente"},
-      {"pos": 16, "migration": "20260910010000_daily_routine_foundation_v1", "grupo": "formularios-cuidado-rotina", "estado": "pgTAP verde (replay descartavel declarado)"},
+      {"pos": 16, "migration": "20260910010000_daily_routine_foundation_v1", "grupo": "formularios-cuidado-rotina", "estado": "pgTAP verde"},
       {"pos": 17, "migration": "20260910010100_daily_routine_behavior_v1", "grupo": "formularios-cuidado-rotina", "estado": "pgTAP verde"},
       {"pos": 18, "migration": "20260910010200_attendance_authorization_and_idempotency_v1", "grupo": "formularios-cuidado-rotina", "estado": "pgTAP verde"},
       {"pos": 19, "migration": "20260910010300_health_care_and_medication_plans_v1", "grupo": "formularios-cuidado-rotina", "estado": "pgTAP verde"},
       {"pos": 20, "migration": "20260910010400_health_care_behavior_v1", "grupo": "formularios-cuidado-rotina", "estado": "pgTAP verde"},
       {"pos": 21, "migration": "20260910120000_meal_plan_image_delete_requires_revision_v1", "grupo": "principal-chat-sistema", "estado": "pgTAP verde"},
-      {"pos": 22, "migration": "20260910130000_meal_plans_owner_permission_grants_v1", "grupo": "principal-chat-sistema", "estado": "pgTAP verde; necessaria em producao (confirmado)"},
-      {"pos": 23, "migration": "20260910140000_chat_conversation_preferences_v1", "grupo": "principal-chat-sistema", "estado": "pgTAP verde; depende de superadmin_chat_inbox_v2 (realm interno ausente)"},
-      {"pos": 24, "migration": "20260910150000_happens_feed_pagination_v1", "grupo": "principal-chat-sistema", "estado": "pgTAP verde; aplicar junto do deploy do cliente"},
-      {"pos": 25, "migration": "superadmin_circular_delete_v2 (publicacoes-agenda, f15a9eec2)", "grupo": "publicacoes-agenda", "estado": "pgTAP retido por porta ocupada"}
+      {"pos": 22, "migration": "20260910130000_meal_plans_owner_permission_grants_v1", "grupo": "principal-chat-sistema", "estado": "pgTAP verde; necessaria em producao"},
+      {"pos": 23, "migration": "20260910140000_chat_conversation_preferences_v1", "grupo": "principal-chat-sistema", "estado": "pgTAP verde; realm interno ausente"},
+      {"pos": 24, "migration": "20260910150000_happens_feed_pagination_v1", "grupo": "principal-chat-sistema", "estado": "pgTAP verde; aplicar com o deploy do cliente"},
+      {"pos": 25, "migration": "superadmin_circular_delete_v2 (f15a9eec2)", "grupo": "publicacoes-agenda", "estado": "pgTAP retido"},
+      {"pos": 26, "migration": "20260910160000_units_rpcs_versioned_from_production_v1", "grupo": "coordenador", "estado": "no-op em producao; pgTAP de contrato escrito"},
+      {"pos": 27, "migration": "20260828005000_superadmin_internal_person_detail (AP-PEOPLE-DETAIL-V2)", "grupo": "acessos-pessoas", "estado": "pgTAP 42 PASS; sem chave"},
+      {"pos": 28, "migration": "20260901190432_superadmin_internal_invites_v2 corrigida (AP-INVITES-V2)", "grupo": "acessos-pessoas", "estado": "pgTAP 33 PASS; sem chave"},
+      {"pos": 29, "migration": "20260901210000_superadmin_internal_users_directory (AP-INTERNAL-USERS-V2)", "grupo": "acessos-pessoas", "estado": "pgTAP 48 PASS"},
+      {"pos": 30, "migration": "20260908021644_superadmin_internal_users_read_minimization", "grupo": "acessos-pessoas", "estado": "pgTAP 48 PASS; depois da 29"},
+      {"pos": 31, "migration": "20260812002100_child_safety_read_models corrigida (AP-CHILD-SAFETY)", "grupo": "acessos-pessoas", "estado": "pgTAP 45 PASS"},
+      {"pos": 32, "migration": "20260812002200_child_safety_security_closure", "grupo": "acessos-pessoas", "estado": "pgTAP 45 PASS"},
+      {"pos": 33, "migration": "20260909193000_d04_child_safety_internal_reads", "grupo": "acessos-pessoas", "estado": "pgTAP 45 PASS (mesma da pos 5; aplicar uma vez, nesta posicao)"}
     ],
-    "cauda": "Antes de qualquer item acima, producao precisa das dependencias ausentes que cada pacote pressupoe (chat_production_contract, now/moments publication, private_media_catalog, realm interno v2, activity_save_v2). Isso e o 'drift' medido em presencaPorMigration e sera sequenciado por dependencia real, nunca em lote cego. Proximo carimbo livre para candidatos novos: posterior a 20260910150000.",
-    "chavesDeComposicao": "ligadas somente depois do SQL correspondente aplicado; nenhuma ligada ate agora."
+    "cauda": "Dependencias ausentes em producao (chat_production_contract, now/moments publication, private_media_catalog, realm interno v2, activity_save_v2) precedem os itens que as pressupoem; P12 (baseline a partir do dump de producao) muda o metodo e por isso a fila nao roda antes de P1 e P12.",
+    "chavesDeComposicao": "nenhuma ligada; candidatos: structureMutationsEnabled (estrutura), superadminCircularDeleteEnabled (publicacoes-agenda), supportProductionRepositoryV1 e accountProfileProductionRepositoryV1 (operacoes), plansProductionRepositoryV1 (operacoes)",
+    "proximoCarimboLivre": "posterior a 20260910160000"
   },
   "janelaDeReplay": {
-    "problema": "Invoke-SafeLocalMigrationReplay.ps1 serializa toda a maquina por mutex; supabase start local ocupa 54322. Seis frentes se atropelam e leem o erro como defeito proprio (formularios B-R03-FCR-001; publicacoes-agenda pgTAP retido).",
-    "regra": "Quem precisar da janela grava reservaDeReplay: {desde, ateEstimado} no proprio JSON; o proximo espera a liberacao ou usa projeto descartavel proprio em portas diferentes (padrao que formularios-cuidado-rotina e principal-chat-sistema ja usam). O coordenador nao arbitra em tempo real; a regra e primeiro a reservar.",
-    "manifesto": "replay/foundation-migrations.sha256 ganha 20260812000000_chat_production_contract.sql (hash CRLF 75e18de4d9108a55719acae93af011221fdb81e8259772bb93c52df37508fe47) em ordem de versao, antes de 20260812000847, nesta revisao (F-R03-FCR-003)."
+    "regra": "primeiro a reservar: reservaDeReplay {desde, ateEstimado} no proprio JSON; ou projeto descartavel proprio em portas diferentes",
+    "manifesto": "replay/foundation-migrations.sha256 ganhou 20260812000000_chat_production_contract.sql (F-R03-FCR-003). Continua com o hash pre-correcao de 20260901190432; troca fica para depois de P12 porque dez perfis fixam esse hash."
   },
   "decisoesDoOwnerNestaRodada": [
-    {"data": "2026-09-10", "via": "grupo estrutura", "decisao": "RODAPE opcao A: rodape ancorado no fim da viewport em todas as larguras nos formularios; golden de Instituicoes em 375 regravado. Gravado em coelo-ui/references/form-layout-contracts.md pelo grupo."},
-    {"data": "2026-09-10", "via": "grupo estrutura", "decisao": "Sem balao de chat em telas de criar, editar e publicar, nem no Agora aberto e no Momentos aberto. Gravado em coelo-ui/references/principal-visual-surfaces.md pelo grupo. Vale para todos os grupos; goldens mobile de formulario vao divergir e nao e regressao."}
+    {"data": "2026-09-10", "via": "grupo estrutura", "decisao": "RODAPE opcao A no SuperadminFormFrame; golden de Instituicoes 375 regravado. ADR 0034 Decisao 7."},
+    {"data": "2026-09-10", "via": "grupo estrutura", "decisao": "Sem balao de chat em criar/editar/publicar, Agora aberto e Momentos aberto. ADR 0034 Decisao 7."},
+    {"data": "2026-09-10 tarde", "via": "Owner ao coordenador", "decisao": "Decisoes de 10/09 sao aprovadas e nao se reabrem; fechamento em formato fixo; integrar por conteudo com testes; aprovacao visual nao vira verified/done/E2E."}
   ],
   "perguntasAoOwner": {
     "arquivo": "docs/reviews/etapa-2-operacao/next-round/R03-perguntas-ao-owner-20260910.md",
-    "resumo": ["P1 backup por ponto no tempo desligado (bloqueia toda a fila SQL)", "P2 token R2 minimo so pode nascer no painel", "P3 origem CORS de desenvolvimento local", "P4 chaves publicaveis para E2E dos grupos", "P5-P10 perguntas dos grupos"]
+    "bloqueiam": ["P1 backup por ponto no tempo (toda a fila SQL)", "P2 token R2 (funcoes de midia e spike)", "P4 chaves publicaveis (rota normal de todas as frentes)", "P12 baseline do banco (metodo da fila)"],
+    "naoBloqueiam": ["P3 origem CORS local", "P5-P11 e P13 decisoes de produto/dominio dos grupos", "P14 troca de senha do banco (seguranca)"]
   },
-  "residualDaRodadaAnterior": {
-    "instituicoesConfirmacaoDeSaida": "corrigido pelo grupo estrutura (cb55adab1, prova causal 2F->8P), a integrar",
-    "modelosNominal": "AP-MODELS-NOMINAL-20260909-v1 deixa de exigir autorizacao nominal (ADR 0034); entra na fila quando o grupo acessos-pessoas entregar o carimbo",
-    "auditoriaReplay145": "0/145; sera provado apos aplicar 20260909190000",
-    "branchesR02Codex": "7 branches codex/e2-r02-* seguem como WIP retido documentado; nao copiar em bloco"
+  "metricas": {
+    "base": "work/etapa2-r03-coordenacao 2dff73c16 + rev 4; inventario validado em 2026-09-10T16:20-03:00; ambiente: repositorio (nenhuma medicao em producao muda estado terminal)",
+    "frontendVerified": "11/230 (4,78%)",
+    "backendDone": "0/223 (0,00%)",
+    "backendLocalGreen": "41/223 (18,39%) apos os deltas desta revisao (meal_plans 6, chat.list 1, acontece.feed 1, attendance 5, health_care 4, medication 5, daily_routine 5, people 2, invites 5, internal_users 4, child_safety 5, mais os que ja estavam)",
+    "e2eVerified": "0/198 (0,00%)",
+    "nota": "contagens exatas por estado saem do validador; local-green acima e a soma dos deltas aplicados nesta revisao sobre o estado anterior e deve ser reconferida pelo proprio inventario"
   },
-  "integrado": [
-    {"grupo": "estrutura", "o_que": "branch work/etapa2-r03-estrutura inteira (16 commits ate b92585d38), merge f615575de em dev", "quando": "2026-09-10T15:05:00-03:00", "prova": "flutter analyze e testes alvo de Instituicoes/Unidades/arquitetura na base integrada (resultado em coordenacao rev 3)", "estado": "integrado; nao aplicado em producao; nao E2E"},
-    {"grupo": "coordenador", "o_que": "20260910160000_units_rpcs_versioned_from_production_v1.sql (25 funcoes lidas de pg_get_functiondef em producao) + manifesto do replay com chat_production_contract + rastreadores com o estado de producao", "quando": "2026-09-10T15:10:00-03:00", "estado": "integrado em dev; migration entra na fila como pos 26, no-op em producao ate a decisao P1"}
-  ],
-  "updatedAtRev2": "2026-09-10T15:10:00-03:00",
-  "integradoRev3": [
-    {"grupo": "estrutura", "prova": "base integrada (worktree, apps/superadmin): flutter analyze limpo; test/architecture + institutions/presentation + units + institution_form_save_lifecycle: 356 PASS / 4 FAIL, as 4 sao goldens de formulario de Instituicoes e Unidades que divergem pela decisao RODAPE (regravacao e do grupo, nao e regressao)"},
-    {"grupo": "principal-chat-sistema", "o_que": "7 commits (49a84a321..8921a6261), merge 3f5934fb5", "estado": "integrado; SQL nao aplicado"},
-    {"grupo": "publicacoes-agenda", "o_que": "9 commits (dac463464..54a83c9de), merge abd84b042; JSON do grupo mantido na versao da branch", "estado": "integrado; SQL nao aplicado"},
-    {"grupo": "operacoes", "o_que": "11 commits (7e3f4c198..b5b439403), merge c6d2e5dae; JSON do grupo mantido na versao da branch", "estado": "integrado; pgTAP nominal pendente"},
-    {"grupo": "formularios-cuidado-rotina", "o_que": "6 commits (211bc7add..cef619e93), merge bfd73cc75, base bb15db748 rebatida sobre o composto sem conflito de codigo", "estado": "integrado; SQL nao aplicado"},
-    {"grupo": "coordenador", "o_que": "packages/coelo_database/scripts/r2-spike-synthetic.ts: runner Deno do spike (R2-T001/T002/T003/T004/T007 + limpeza) sobre o cliente das Edge Functions; roda assim que COELO_R2_* existirem (P2)"}
-  ],
-  "filaSqlR03Complemento": {"pos": 26, "migration": "20260910160000_units_rpcs_versioned_from_production_v1", "grupo": "coordenador", "estado": "no-op em producao (objetos ja existem); registra o ledger e os grants"},
-  "updatedAtRev3": "2026-09-10T15:40:00-03:00",
-  "proximoPasso": "1) validar rastreadores e push da rev 2; 2) ADR 0034 Decisao 7 (RODAPE e CHAT); 3) integrar principal-chat-sistema, formularios-cuidado-rotina, publicacoes-agenda e operacoes por hunks; 4) preparar o pacote Cloudflare restante para rodar assim que o token existir; 5) inventario com os estados medidos."
+  "integracaoNoCorte": {
+    "shaPublicado": "preenchido no push desta revisao (ver historicoDeRevisoes.5)",
+    "testesNaBaseConjunta": "analyze e testes de familia dos sete grupos em execucao no momento desta revisao; resultado na revisao 5"
+  },
+  "proximoPasso": "1) publicar rev 4 em dev; 2) resultado dos testes da base conjunta (rev 5); 3) enquanto o Owner nao responde P1/P2/P4/P12: preparar a migration unica de fase MFA do MVP (P10+P11), o pgTAP de Suporte e Conta num perfil declarado, e a correcao das tres migrations quebradas com os donos; 4) proximo action_id executavel pelo coordenador: units.list (compor o repositorio real de Unidades com structureMutationsEnabled ainda false, provado por teste de composicao)"
 }
