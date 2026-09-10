@@ -45,15 +45,19 @@ continuam em `dev` como lotes pequenos; rebase normal.
 
 | Item | Estado | Gate |
 | --- | --- | --- |
-| Planos, Cardápios, Circulares, Comunicações | migrados e publicados (8fafbe16c, 850ba1838) | ARQUIVO (ícone duplicar/arquivar dos cards de Cardápios e Planos) pendente de decisão do Owner; nova regravação depois |
+| Planos, Cardápios, Circulares, Comunicações | migrados e publicados (8fafbe16c, 850ba1838) | ARQUIVO já decidido pelo Owner em 10/09 (conceito do card de modelo de atividade); implementado sem teste na branch `wip/fase0-arquivo-chat` (91e011dc6); testes e regravação dos goldens de Cardápios/Planos ao reativar |
 | Agenda eventos | não migrado (`_EventTable` na allowlist) | grupo publicacoes-agenda ao tocar a tela |
 | Suporte, Auditoria | workspace com painel de detalhe; toolbar/tabela na allowlist | grupo operacoes: toolbar de filtros no padrão do composto |
 | Chat: Criar grupo, Fixar, sinalizadores | existiam até 54f2dfb69 (inbox local); exigem backend | grupo principal-chat-sistema |
-| CHAT (balão) | referência de agosto mostra o balão antigo "Mensagens"; atual é o círculo "Mens." aprovado em 01/09 | decisão do Owner com imagens lado a lado |
+| CHAT (balão) | decisão do Owner de 10/09 (mais recente que 01/09): seguir a referência guardada em todas as larguras. Launcher reescrito na branch `wip/fase0-arquivo-chat` (pill "Mensagens" com contagem e iniciais; círculo claro no mobile) sem teste | ao reativar: merge, testes do launcher, regravação dos goldens de shell após observação |
 | Chip Destaque (orange950 16 %) | alterado no checkout compartilhado junto do WIP do grupo principal-chat-sistema; não commitado | quem fechar `principal_for_you_preview_page.dart` |
 | Confirmação de saída de Instituições | não reproduzida nesta fase (testes `cancel-changed`/`destination-changed` não estão em dev) | grupo estrutura |
 | Bug em produção | router não passa `supportController`; botão abre e avisa | grupo operacoes |
 | Goldens de formulário/detalhe (Atividades, Perfis de cuidado) | preservados; RODAPÉ pendente | grupos estrutura e formularios-cuidado-rotina |
+
+## Corte das 17:10 (10/09)
+
+Ordem do Owner via coordenação: parar às 17:10 e não retomar por conta própria. Suíte completa sobre 01849ec2c interrompida às 16:56 (6432 P, 15 S; 30 falhas reais, 10 delas do teste das abas sublinhadas movidas para coelo_ui_admin: a chave da faixa foi corrigida, 7 casos seguem vermelhos e ficam para a Fase 0; o resto em áreas de outros grupos ou goldens preservados). O WIP da Fase 0 está inteiro na branch publicada `wip/fase0-arquivo-chat`; dev fica limpo nos caminhos da Fase 0.
 
 ## Próximo passo
 
