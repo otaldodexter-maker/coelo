@@ -1,5 +1,5 @@
 {
-  "revision": 23,
+  "revision": 24,
   "round": "E2-NOTURNA-20260909",
   "role": "Coordenacao e Integracao - Claude",
   "writer": "coordenador-claude",
@@ -8,7 +8,7 @@
   "app": "Claude Code (VS Code)",
   "model": "claude-opus-5[1m]",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-09T23:36:00-03:00",
+  "updatedAt": "2026-09-09T23:56:00-03:00",
   "clockCorrection": {
     "referenceNow": "2026-09-09T19:03:25-03:00",
     "measuredBy": "date no checkout integrador",
@@ -916,5 +916,18 @@
     "acao": "Publiquei as duas que estavam so nesta maquina: work/etapa2-noturna-chat-comunicacoes-router (c2127823f, ancestral de dev) e work/etapa2-noturna-chat-comunicacoes-router-dedupe (8d06b8a91, commit vazio superado pela correcao ff9143ba4).",
     "porQueNaoApaguei": "A dedupe preserva o registro de COMO a correcao do defeito que parou o app foi feita, ainda que o conteudo tenha entrado por outro SHA. Apagar economizaria ruido e perderia a trilha.",
     "origem": "Sugestao de perfil-para-voce durante o ensaio da conferencia externa das 05:00."
+  },
+  "metodosQueRenderam": {
+    "proposito": "Distribuido para todas as frentes ativas. Sao os metodos que produziram a maior parte dos defeitos desta noite, e todos sao baratos.",
+    "lista": [
+      "Reler a PROPRIA mudanca ja publicada e declarada provada, com tres perguntas: o que ela faz com MAIS DE UM item; o que acontece com duas coisas ao mesmo tempo; e se o teste mede o EFEITO ou o mecanismo. Uma frente achou quatro defeitos assim numa noite, outra achou sete.",
+      "Comparar SUPERFICIES IRMAS sobre o mesmo contrato: quando duas telas tratam o mesmo risco de formas diferentes, uma das duas esta errada.",
+      "Onde existem DUAS telas que mostram o mesmo dado, comparar as duas rende mais que auditar uma. Em Formularios isso rendeu tres casos seguidos, dinheiro, data e escolha, e em todos a superficie de operacoes ja fazia certo e a de resposta carregava a versao antiga. E sedimentacao, nao descuido pontual.",
+      "Procurar CAPACIDADE EXISTENTE SEM CONSUMIDOR: metodo de repositorio com zero chamadas, RPC no gateway sem afordancia. Em Circulares apareceram tres acoes assim.",
+      "Exigir ver o VERMELHO antes de aceitar o verde. Tres armadilhas diferentes so apareceram por isso: literal const que o compilador canonicaliza, setSurfaceSize deixando o MediaQuery em 800 px, e widget que por ser rolavel ou Wrap nao tem como transbordar.",
+      "Medir na BASE INTEGRADA e nao na propria branch. Duas vezes hoje isso mudou o resultado: uma frente achou a rota duplicada que nenhuma branch mostrava, e outra ia regravar um golden com autorizacao em maos e descobriu que ele ja passava integrado.",
+      "Parar de adivinhar seletor e SONDAR a arvore renderizada. Apareceu em tres frentes diferentes.",
+      "Verificar CONTEUDO e nao SHA antes de afirmar que algo falta. SHA ausente nao prova codigo ausente: houve integracao seletiva por hunks."
+    ]
   }
 }
