@@ -1,5 +1,5 @@
 {
-  "revision": 29,
+  "revision": 30,
   "round": "E2-NOTURNA-20260909",
   "role": "Coordenacao e Integracao - Claude",
   "writer": "coordenador-claude",
@@ -8,7 +8,7 @@
   "app": "Claude Code (VS Code)",
   "model": "claude-opus-5[1m]",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-10T04:45:00-03:00",
+  "updatedAt": "2026-09-10T05:00:00-03:00",
   "clockCorrection": {
     "referenceNow": "2026-09-09T19:03:25-03:00",
     "measuredBy": "date no checkout integrador",
@@ -485,7 +485,7 @@
     "claudeExecutorAddresses": "Fornecidos pelo Owner e verificados por envio real: as seis conversas Claude receberam ACK nominal por SendMessage em 18:18. Enderecos gravados em groups[].sessionName/sessionId para recuperacao."
   },
   "blocks": [],
-  "nextStep": "04:50 receber as seis pre-entregas; 04:55 commitar os canais; 05:00 consolidar sem abrir rodada nova",
+  "nextStep": "rodada encerrada; nao abrir nova sem decisao do Owner",
   "providers": {
     "supabase": {
       "cli": "supabase 2.117.0 autenticado; token no Credential Manager do Windows",
@@ -1144,5 +1144,35 @@
       "publicacoes-midia": "nenhum em arquivo commitado, por varredura"
     },
     "respostaDoCoordenador": "o relatorio ao Owner tem 2854 linhas, cita medicao das seis frentes e nao nomeia nenhuma: 44 ocorrencias de \"uma frente\", zero atribuicoes nominais. Limitacao declarada no topo do documento, com o registro nominal apontado nos nove JSONs desta pasta. Nomes em medicao e em achado; classe em erro, exceto onde a frente pediu nominal — chat-comunicacoes pediu."
+  },
+  "fechamentoDaRodadaClaude": {
+    "horaDeclarada": "2026-09-10T05:00:00-03:00",
+    "baseEntregue": "a confirmar no commit final desta revisao",
+    "portoes": {
+      "analyze": "apps/superadmin lib+test: No issues found (confirmado por perfil-para-voce em checkout independente)",
+      "trackers": "PASS actions=230 families=39 frontendCompleted=11 backendCompleted=0 e2eCompleted=0 activeE2E=198 (reexecutado por perfil-para-voce)",
+      "conhecimento": "PASS 61 artigos"
+    },
+    "seisFrentes": {
+      "operacoes-sistema": "entregue, residual 0, r61",
+      "formularios-cuidado": "entregue, residual 0, r58",
+      "alunos-rotina": "entregue, residual 0, r33",
+      "perfil-para-voce": "entregue, residual 0, r51",
+      "chat-comunicacoes": "entregue, residual 0, r68",
+      "publicacoes-midia": "entregue, residual 0, r45"
+    },
+    "residualDeclarado": [
+      "80f160599 WIP retido por decisao do Owner",
+      "8d06b8a91 commit vazio, branch mantida por decisao de nao apagar",
+      "WIP nao commitado em e2-noturna-estrutura, preservado por caminho e hash e publicado como patch"
+    ],
+    "recursosNaoFechados": [
+      "C:/cdchk 12K com diretorio travado",
+      "tags locais audit-frozen-0200 e audit-frozen-0350 nao publicadas",
+      "28 processos dart/flutter_tester sem dono conhecido, nenhum morto"
+    ],
+    "operacaoRemota": "nenhuma, por nenhuma frente, em nenhum momento da rodada",
+    "manifesto": "docs/reviews/etapa-2-operacao/evidence/NOTURNA-wip-retido-manifesto.md",
+    "relatorioAoOwner": "docs/reviews/etapa-2-operacao/reports/NOTURNA-relatorio-owner.md"
   }
 }

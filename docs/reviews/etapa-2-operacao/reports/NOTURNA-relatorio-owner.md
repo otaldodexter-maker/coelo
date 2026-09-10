@@ -2082,6 +2082,15 @@ requisito criado depois das 03:00.** Elas não deixaram de declarar: a regra nã
 existia quando entregaram. O detector conferia presença de campo sem olhar a data do
 arquivo nem a hora em que a regra passou a valer.
 
+**E foi por isso que os três morreram em minutos:** a frente pegou sozinha todos os
+erros que cometeu **sobre si mesma**; os erros que cometeu **sobre as outras** foram
+pegos pelas outras, sempre com o dado que ela não tinha. É o argumento mais forte
+desta rodada a favor de seis frentes reportando em canal aberto em vez de cada uma
+fechar sozinha — e a explicação de por que isso funcionou não é rigor individual: **a
+contradição precisava sair barata.** Uma coordenação que trata discordância como dado
+e não como atrito produz frentes que confessam; a que arbitra entre declarações
+produz frentes que calam.
+
 **Nos três casos o instrumento apontou para fora e nos três estava errado. Nenhum
 errou apontando para dentro** — quando acusaram a própria frente, acertaram todas as
 vezes. A frente não acha coincidência, e a explicação dela é a melhor deste

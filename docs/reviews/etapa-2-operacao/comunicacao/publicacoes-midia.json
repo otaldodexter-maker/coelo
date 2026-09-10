@@ -1,10 +1,10 @@
 {
-  "revision": 45,
-  "updated_at": "2026-09-10T04:47:54-03:00",
+  "revision": 46,
+  "updated_at": "2026-09-10T04:59:24-03:00",
   "group": "publicacoes-midia",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
-  "status": "PRE-ENTREGA FINAL com item 8 publicada (69e377f3e); congelado; parada as 05:00",
+  "status": "ENTREGUE E PARADO as 05:00. Nenhum trabalho novo a partir daqui.",
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-publicacoes-midia",
   "branch": "work/etapa2-noturna-publicacoes-midia",
@@ -1127,5 +1127,39 @@
     "10": "contei app/router como diretorio de feature, dizendo nove onde sao oito",
     "11": "repeti NESTE documento o caminho truncado que eu tinha corrigido uma hora antes; so apareceu quando rodei contra ele a conferencia que ele mesmo descreve",
     "padrao": "nove das onze sao a mesma coisa: uma ferramenta respondendo uma pergunta PARECIDA com a que eu fiz, e eu aceitando a resposta. find -name por caminho, 'Nome(' por mencao, expanded por inventario, json parcial por completo, ancestralidade por integracao, ausencia de uma lista por ausencia do defeito. Nenhuma falhou ruidosamente: todas devolveram resultado plausivel e bem formatado."
+  },
+  "fechamento": {
+    "relogio_cru": "PS> Get-Date -Format 'yyyy-MM-dd HH:mm:ss K'  ->  2026-09-10 04:59:24 -03:00",
+    "base_final": "ad714e06b",
+    "residual": 0,
+    "residual_como": "medido pelos TRES metodos no fechamento, nao lembrado",
+    "meus_dois_ultimos": {
+      "9754d64e4": "integrado na dev como e8dd2ca36 (rastro de cherry-pick); nao ancestral, o que e o esperado sob cherry-pick e NAO indica pendencia",
+      "69e377f3e": "integrado na dev como e64657857 (rastro de cherry-pick); idem",
+      "conteudo": "o documento de pre-entrega e IDENTICO entre a minha HEAD e origin/dev"
+    },
+    "git": {
+      "HEAD": "69e377f3e",
+      "upstream": "0/0",
+      "stash": 0,
+      "worktree": "limpa exceto o pubspec.lock declarado"
+    },
+    "wip_retido": "80f160599, publicado, 0/0, patch preparado, NAO mesclado e nao testado sobre a base final. Registrado no manifesto publicado em docs/reviews/etapa-2-operacao/evidence/NOTURNA-wip-retido-manifesto.md como ITEM DE DECISAO DO OWNER, e nao como pendencia esquecida. A worktree em %TEMP%/coelo-copia-previa fica de pe por decisao da coordenacao.",
+    "residuo_declarado": "packages/coelo_api/pubspec.lock, untracked, conteudo identico ao rastreado na dev. Ninguem commita e ninguem apaga; o motivo esta escrito.",
+    "processos": "28 dart/flutter_tester, DECLARADOS e nao mortos; a coordenacao encerra o conjunto",
+    "entrega_final": {
+      "recorte": "784 testes, 758 PASS, 26 FAIL, em tres execucoes de sobreposicao zero declarada",
+      "plataforma_de_midia": "82 PASS, 0 FAIL",
+      "as_26": "23 goldens preexistentes, provadas nominalmente identicas as da base, mais 3 de rota preexistentes, classificadas como fixture obsoleta com causa localizada e correcao descrita",
+      "documentos": [
+        "NOTURNA-entrega-publicacoes-midia.md",
+        "NOTURNA-preentrega-publicacoes-midia.md (itens 1 a 8, mais 2b e 2c)",
+        "NOTURNA-decisao-owner-circulares-acoes-ausentes.md (oito pontos)",
+        "NOTURNA-revisao-candidatos-sql-publicacoes-midia.md",
+        "NOTURNA-pacote-catalogo-midia.md"
+      ],
+      "para_o_owner": "oito pontos de decisao, nenhum decidido por mim"
+    },
+    "nada_remoto_aplicado": "nenhuma mutacao remota foi executada em nenhum momento; nenhum pacote nominal foi autorizado a este grupo"
   }
 }
