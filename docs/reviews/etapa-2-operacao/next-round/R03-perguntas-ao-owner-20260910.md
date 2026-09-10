@@ -6,7 +6,36 @@ generated_at: "2026-09-10"
 timezone: "America/Sao_Paulo"
 ---
 
-# Perguntas ao Owner — lote 1 da Rodada 3
+# Perguntas ao Owner — Rodada 3
+
+## Estado das respostas (atualizado 10/09/2026, noite)
+
+| Pergunta | Resposta do Owner | Registro |
+| --- | --- | --- |
+| P1 backup por ponto no tempo | B: dump lógico por lote, PITR dispensado | ADR 0034 D8 |
+| P2 token R2 | feito pelo Owner; secrets gravados; spike PASS | ADR 0034 D8/D11 |
+| P3 CORS local | a: `http://localhost:3000`; outra origem só a pedido; upload de teste apagado | ADR 0034 D12 |
+| P4 chaves publicáveis | sim; `.env.local` nos oito checkouts | ADR 0034 D8 |
+| P5 Turmas sem filtro | sim, compor com filtro degradando | ADR 0034 D12 |
+| P6 importar de Unidades | trocar pela indisponibilidade honesta | ADR 0034 D12 |
+| P7 Cardápios e perfis | todos mexem mediante perfis e permissões, de plataforma ou de instituição | ADR 0034 D12 |
+| P8 Criar grupo no Chat | fazer agora (depois do realm interno v2) | ADR 0034 D12 |
+| P9 leitura de saúde por responsável | opção 1; pacote em produção | ADR 0034 D9 |
+| P10 MFA em publicação | nada exige MFA no MVP | ADR 0034 D12 |
+| P11 AAL2 em Pessoas | nada exige MFA no MVP | ADR 0034 D12 |
+| P12 baseline | seguir recomendado; feito | ADR 0034 D8 |
+| P13 `units.unit_type_id` | confirmado | ADR 0034 D12 |
+| P14 senha do banco | feito pelo Owner | ADR 0034 D8 |
+| P15 rodapé de medicação | b: ancorado, com espaço no fim para nada ficar escondido | ADR 0034 D12 |
+| P16 Local em Formulários | sim; caso extra: bloquear com aviso | ADR 0034 D10/D12 |
+| P17 sessão de teste | sim; `qa-r03@coelo.me` em produção | ADR 0034 D10 |
+| P18 capacidades de Locais | sim; nove provisionadas | ADR 0034 D10 |
+| P19 ao vivo no Agora | **aberta** | — |
+| P20 token antigo com 25 permissões | **aberta** | — |
+| P21 Access na frente do Superadmin | **aberta** (pensar depois) | — |
+| HostGator: site, e-mail, blog | **aberta** (três perguntas) | — |
+
+O texto original de cada pergunta segue abaixo, como histórico.
 
 Responder em lista `Pn - decisão, observação`. Cada resposta entra na ADR 0034
 e na skill correspondente no mesmo turno.

@@ -235,6 +235,36 @@ pertencem e voltam a contar na revisão profunda.
   e zonas. O Owner revisa (reduzir ou revogar) na próxima janela de segurança
   (P20).
 
+## Decisão 12 — respostas do Owner ao lote P3–P16 e regra geral de MFA (10/09/2026, noite)
+
+- **MFA fora do MVP, sem exceção (P10 e P11):** nenhuma capacidade exige
+  AAL2 no MVP; `requires_mfa` passa a falso em todo o catálogo de permissões
+  e toda função que hoje nega por AAL2 (Pessoas, escrita de Perfis e Modelos,
+  publicação, Rotina, Assiduidade) é alinhada por uma migration única do
+  coordenador. Vale inclusive para escrita em dado de criança, por decisão
+  explícita do Owner. A ADR 0019 (MFA) fica adiada para depois do MVP.
+- **P7, permissões por perfil em toda família:** Cardápios e qualquer outra
+  família deixam de ser Owner-only; quem tem a capacidade no perfil, de
+  plataforma ou de instituição, gerencia. `has_platform_permission` passa a
+  considerar membership de instituição; pacote dos grupos principal-chat e
+  acessos-pessoas.
+- **P8, Criar grupo no Chat: entra no MVP**, como pacote do grupo
+  principal-chat-sistema depois do realm interno v2.
+- **P3:** origem `http://localhost:3000` liberada no CORS do R2; outra
+  origem só a pedido; upload de teste é apagado depois.
+- **P5:** diretório de Turmas abre com o filtro por unidade degradando de
+  forma honesta.
+- **P6:** o diálogo de importar de Unidades vira a indisponibilidade honesta
+  de Instituições.
+- **P13:** `units.unit_type_id` é a forma canônica.
+- **P15:** rodapé ancorado no fim da tela em todos os formulários (opção b),
+  com espaço no fim do conteúdo para a última informação nunca ficar
+  escondida nem inalcançável; goldens regravados depois.
+- **P16, caso extra:** pergunta obrigatória com local revogado e nenhuma
+  alternativa válida fica bloqueada com aviso, sem forçar escolha inválida.
+- **P2 e P14:** o Owner declarou feitos (token R2 girado e senha do banco
+  trocada). Continuam abertas P19, P20 e P21.
+
 ## Consequências
 
 - O replay local com Docker deixa de ser porta obrigatória; continua útil para

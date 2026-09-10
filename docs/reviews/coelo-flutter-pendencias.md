@@ -101,6 +101,18 @@ Regras transversais reafirmadas pelo Owner em 10/09: **Pesquisar no menu** e
 **botão de Bug no cabeçalho** em todas as telas (implementados no composto da
 Fase 0; `coelo-ui` é a autoridade).
 
+**Decisões do Owner na noite de 10/09 (ADR 0034, Decisão 12) que mudam o
+Front-end:** rodapé ancorado no fim da tela em todos os formulários, com
+espaço no fim do conteúdo para a última informação nunca ficar escondida
+(P15; `medication_form_mobile_light` regravado depois); Turmas abre com o
+filtro por unidade degradando de forma honesta (P5); o diálogo de importar de
+Unidades vira a indisponibilidade honesta de Instituições (P6); pergunta de
+Local entra em Formulários, com bloqueio e aviso quando o local revogado não
+tem alternativa (P16); Criar grupo no Chat entra no MVP (P8); nenhuma tela
+exige segundo fator (P10/P11): `account.mfa` e os gates de MFA saem do
+caminho do MVP. Próximo gate de todas as frentes: rota normal contra produção
+com o usuário `qa-r03@coelo.me`.
+
 Percentuais certificados: Front-end `verified` 11/230 (4,78%), `local-green`
 23/230 (10,00%), aprovação visual do Owner 52/230 (22,61%). Nenhuma ação
 passou pela régua do MVP porque a rota normal contra produção só ganhou

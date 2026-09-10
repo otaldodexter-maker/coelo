@@ -108,6 +108,22 @@ produção usa `unit_type_id`), Suporte e Conta (teste chama
 (pré-requisitos do realm interno ausentes). Backend `done` continua 0/223
 porque `done` exige persistência real pelo cliente e reload.
 
+**Decisões do Owner na noite de 10/09 (ADR 0034, Decisões 10 a 12):**
+nenhuma capacidade exige MFA no MVP (`requires_mfa` falso em todo o catálogo
+e alinhamento das funções que negam por AAL2, migration única do coordenador,
+pendente); permissões por perfil em toda família, de plataforma ou de
+instituição (`has_platform_permission` passa a considerar membership de
+instituição, pacote de principal-chat com acessos-pessoas); Criar grupo no
+Chat entra no MVP após o realm interno v2; origem `http://localhost:3000` no
+CORS do R2 (pendente de aplicar); `units.unit_type_id` canônico; sessão de
+teste `qa-r03@coelo.me`; nove capacidades de Locais. Tokens de conta da
+Cloudflare provados por chamada real: R2 (spike), Stream (listagem) e deploy
+(`wrangler whoami` com Pages). Avisos continua fora de produção: a fundação
+`notices_production` insere permissões sem `module_label`, a
+`app_communications_contract` tem um `p_notice` fora de FROM e a de recibos
+exige `append_notice_audit` inexistente (grupo publicacoes-agenda).
+Ledger de produção: 42 versões de 10/09 em 7 lotes.
+
 **Fila SQL R03:** 25 posições serializadas em `coordenacao.json`
 (`filaSqlR03`), liberadas pela Decisão 8 (P1 B) e aplicadas uma a uma após
 preflight na baseline. Estados: 12 pgTAP verde em perfil declarado,

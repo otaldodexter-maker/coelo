@@ -47,6 +47,16 @@ ainda depende do token R2 (P2) e da origem de desenvolvimento (P3).
 `action_id` no inventário (`ownerVisualApproval`, 52 ações); detalhe por
 família no rastreador Front-end. Não substitui `verified-e2e`.
 
+**Régua do MVP a partir da noite de 10/09 (ADR 0034, Decisões 10 a 12):**
+rota normal abre com o usuário de teste `qa-r03@coelo.me` (credencial fora
+do Git), CRUD persiste no Supabase de produção, negativa cross-tenant provada
+em pgTAP sobre a baseline (execução com dois tenants reais fica para a
+revisão profunda), reload mantém. Nenhuma ação exige segundo fator. Ordem de
+fechamento E2E que já tem backend em produção: Cuidado, Medicação, Rotina,
+Assiduidade, Alunos, Formulários, Cardápios, Unidades, Turmas, Locais
+(catálogo), Pessoas detalhe, Convites, Usuários internos, Segurança infantil,
+Suporte, Conta, Momentos, Circulares (anexo em R2).
+
 Percentuais certificados **não mudaram**: integração 0/198 ativas (a sessão
 de teste `qa-r03@coelo.me` existe desde o fim do dia; a verificação por
 action_id começa na reativação das frentes). Fila SQL,

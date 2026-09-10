@@ -102,6 +102,17 @@ Segredos, buckets e Workers do Cloudflare fora do pacote da Decisão 5 (ADR 0034
 Registrar no rastreador o que ficou aberto depois da aplicação; o Owner revisa
 em ciclo semanal ou quinzenal.
 
+## MFA fora do MVP e permissões por perfil (ADR 0034, Decisão 12)
+
+Decisão do Owner em 10/09/2026: **nenhuma capacidade exige segundo fator no
+MVP**, inclusive escrita em dado de criança; `requires_mfa` é falso em todo o
+catálogo e nenhuma função nega por AAL2 (migration única do coordenador
+alinha as que ainda negam; pacotes novos nascem sem exigência). A ADR 0019
+volta depois do MVP. Também por decisão dele, **toda família obedece a
+perfis e permissões**, de plataforma ou de instituição: nada é Owner-only
+por desenho; `has_platform_permission` passa a considerar membership de
+instituição.
+
 ## Sessão de teste em produção (ADR 0034, Decisão 10 / P17)
 
 Existe um usuário sintético de Superadmin (`qa-r03@coelo.me`), Owner de
@@ -149,9 +160,12 @@ Remover cada item no mesmo turno em que a verificação confirmar o efeito.
 1b. **Stream (ADR 0034, Decisão 11).** Token de conta
    `coelo-edge-functions-stream` (Stream Read+Edit) gravado como
    `COELO_STREAM_API_TOKEN` com `COELO_CLOUDFLARE_ACCOUNT_ID` em 10/09/2026;
-   valor ainda não exercitado (token de conta não responde em
-   `/user/tokens/verify`). Primeiro uso: promoção de vídeo do Agora. Se
-   falhar, o Owner gira o token em Tokens de API da conta.
+   provado por listagem real do Stream às 19:05. Token de deploy
+   `coelo-deploy-apps` (Pages + Workers Scripts) provado por `wrangler
+   whoami` e guardado só no ambiente do usuário Windows
+   (`CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`). Lição: a página de
+   sucesso da Cloudflare entrega o valor em "Seu token de API" com 53
+   caracteres; o "ID do token" (32) não serve.
 1c. **Revisar o token de usuário "Cloudflare Agent Token - 2026-09-03"**
    (25 permissões, todas as contas e zonas): reduzir ou revogar (P20).
 1d. **DNS de `coelo.me`:** zona criada na Cloudflare em 10/09 (id

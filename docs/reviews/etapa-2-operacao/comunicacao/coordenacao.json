@@ -1,6 +1,15 @@
 {
-  "revision": 16,
+  "revision": 17,
   "round": "E2-R03-20260910",
+  "respostasDoOwnerLote2": {
+    "quando": "2026-09-10 ~19:00",
+    "fechadas": "P2 e P14 feitos pelo Owner; P3 localhost:3000; P5 sim; P6 trocar; P7 todos mediante perfis e permissoes (plataforma ou instituicao); P8 Criar grupo agora (apos realm interno); P10 e P11 nada exige MFA no MVP; P13 confirmado; P15 rodape ancorado com espaco no fim; P16 caso extra bloquear com aviso",
+    "abertas": "P19 ao vivo no Agora; P20 token antigo com 25 permissoes; P21 Access na frente do Superadmin; HostGator (site, e-mail, blog)",
+    "registro": "ADR 0034 Decisao 12; tabela de estado em next-round/R03-perguntas-ao-owner-20260910.md",
+    "pacotesDerivados": ["coordenador: migration unica 'MFA fora do MVP' (requires_mfa=false no catalogo e alinhamento das funcoes que negam por AAL2; libera people_read_aal1 e a escrita de Pessoas/Perfis/Modelos)", "principal-chat + acessos-pessoas: has_platform_permission com membership de instituicao (P7)", "principal-chat: Criar grupo no Chat (P8), apos realm interno v2", "estrutura: P5 e P6 no cliente", "formularios: tipo location no MVP (P16) e P15 no frame compartilhado (respiro no fim do conteudo)"],
+    "tokensCloudflare": "os arquivos traziam a pagina inteira de sucesso da Cloudflare; o valor real ('Seu token de API') tem 53 caracteres e a extracao anterior cortava em 40. Reextraido e provado por chamada real (Pages e Stream) na rev 17; ver tokensCloudflareVerificacao"
+  },
+  "tokensCloudflareVerificacao": "2026-09-10 ~19:05: deploy (coelo-deploy-apps, 53 chars) -> GET /accounts/{id}/pages/projects OK e wrangler whoami logado com Account API Token; gravado como CLOUDFLARE_API_TOKEN e CLOUDFLARE_ACCOUNT_ID no ambiente do usuario Windows. Stream (coelo-edge-functions-stream, 53 chars) -> GET /accounts/{id}/stream OK; regravado como COELO_STREAM_API_TOKEN. R2 regravado com o arquivo atual. Os tres arquivos foram apagados. Licao: a pagina de sucesso da Cloudflare mostra o valor em 'Seu token de API' com 53 caracteres; nao cortar em 40.",
   "avisosPreflight": {
     "quando": "2026-09-10 18:55",
     "resultado": "a cadeia de Avisos NAO entra em producao ainda: 20260812003000 notices_production insere em platform_permissions sem module_label (NOT NULL); 20260820204824 app_communications_contract tem defeito proprio ('missing FROM-clause entry for table p_notice'); 20260820220500 exige app_private.append_notice_audit(7 args) que nao existe; 20260820204752 aplica; 20260820212340 (runtime do worker) aplica so depois da fundacao. pgTAP: notice_production 9 ok/9 not ok, worker_runtime 21/7, communications_types 1/1",
