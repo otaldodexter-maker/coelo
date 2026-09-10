@@ -90,3 +90,5 @@ nova regra de produto, apenas correcao do contrato48 ja aprovado e evidencias.
 Congelar novos lotes23:10; pre-entrega23:20; entrega final e parada23:30BRT.
 Acompanhamento permanece ativo para resposta de sequencia/achado nominal.
 Nao esperar ACK alem do corte. Claude assume o residual depois23:30.
+
+Checkpoint21:18BRT: merge e648b57af incorpora todos os26commits atef6cab17f1 na arvore localdev805512a37. A consulta remota naquele instante ainda devolvia8b22e7edd (antesdessemerge), portanto nao se declarou a nova integracao publicada. Nossa branch estava publicada0/0. [Artefatos ignorados preservados](retained-artifacts.json):319arquivos,24340415bytes, cada path/SHA256; includesfixture53 e falhas brutas historicas, sem remover WIP.
