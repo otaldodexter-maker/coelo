@@ -1626,6 +1626,15 @@ regra**, porque a forma pode ser cumprida sem o conteúdo. O que torna verificá
 **colar a saída crua do comando** — e passou a ser assim que a entrega desta rodada
 declara horário.
 
+**E nem isso basta sozinho, o que fecha o assunto de forma útil.** A mesma frente
+que propôs colar a saída crua **falsificou a saída crua na mensagem seguinte**, sem
+intenção e sem perceber, porque digitar o número é mais rápido que chamar o comando
+e o texto fica idêntico nos dois casos. A conclusão dela é a correta e vale para
+qualquer controle: **um controle que depende de quem está sendo controlado não é
+controle.** O que de fato funcionou, duas horas antes, foi exigir a saída de todos
+e **cruzar leituras independentes** — duas sessões divergindo em quarenta minutos
+aparece na hora; uma sessão sozinha afirmando que leu, não.
+
 **E ele é uma classe à parte das outras três armadilhas de instrumento desta
 rodada, e é pior.** Nos outros casos — o fuso sem base de dados, a pergunta
 trocada sobre publicação, a mensagem cortada por quebra de linha — a ferramenta
@@ -1928,6 +1937,21 @@ ninguém as via.**
 só significa alguma coisa junto da **lista de caminhos que o produziu**. Total sem
 denominador não é verificável — nem por outra pessoa, nem pelo próprio autor uma
 hora depois. Passou a ser exigência da entrega.
+
+**Mas confirmar que os caminhos existem não prova que a lista está completa, e
+essa é a segunda pergunta — a que ninguém faz.** Outra frente conferiu os próprios
+sete caminhos, todos existiam, e então inverteu a pergunta: *existe teste do meu
+escopo fora da minha lista?* **Existiam nove arquivos** — rotas de chat,
+capacidade de rotas de avisos, contador de não lidas, composição de mídia,
+empilhamento no shell. Não é periferia; é o recorte. O número corrigido subiu de
+363 para **394 casos que passam**, com as falhas inalteradas: o erro subestimava
+aprovados e nunca escondeu falha.
+
+**E a causa é estrutural, não distração:** quem organiza teste por funcionalidade
+perde exatamente os testes de rota, de shell e de menu, que moram em outra árvore
+por serem de integração. **A lista parece o escopo, e não é.** A verificação custa
+segundos — varrer o repositório pelo domínio e conferir que tudo cai sob algum
+caminho declarado — e foi mandada às seis frentes antes do fechamento.
 
 **Há um agravante estrutural que a rodada criou sem perceber:** conviver com
 vermelho conhecido de outra frente é razoável e foi a prática da noite inteira —
