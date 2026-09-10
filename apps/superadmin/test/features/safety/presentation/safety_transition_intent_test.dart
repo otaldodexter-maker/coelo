@@ -58,6 +58,15 @@ Future<String> _pendingChildId(ChildSafetyRepository repository) async {
   return page.records.first.childId;
 }
 
+/// Tapping without securing visibility is how a control that moved below the
+/// fold turns into a silent failure. Content inserted above one is enough.
+Future<void> _tap(WidgetTester tester, Finder finder) async {
+  await tester.ensureVisible(finder);
+  await tester.pump();
+  await tester.tap(finder);
+  await tester.pumpAndSettle();
+}
+
 void main() {
   testWidgets('retrying a failed approval repeats the same decision', (tester) async {
     final repository = _RecordingRepository(failTransitions: 1);
@@ -86,23 +95,18 @@ void main() {
     final managers = find.text('Gerenciar').evaluate().length;
     var opened = false;
     for (var index = 0; index < managers && !opened; index++) {
-      await tester.ensureVisible(find.text('Gerenciar').at(index));
-      await tester.pump();
-      await tester.tap(find.text('Gerenciar').at(index));
-      await tester.pumpAndSettle();
+      await _tap(tester, find.text('Gerenciar').at(index));
       if (find.widgetWithText(FilledButton, 'Aprovar').evaluate().isNotEmpty) {
         opened = true;
       } else {
-        await tester.tap(find.widgetWithText(FilledButton, 'Concluir'));
-        await tester.pumpAndSettle();
+        await _tap(tester, find.widgetWithText(FilledButton, 'Concluir'));
       }
     }
     expect(opened, isTrue, reason: 'a pending authorization must offer approval');
 
     final approve = find.widgetWithText(FilledButton, 'Aprovar');
 
-    await tester.tap(approve);
-    await tester.pumpAndSettle();
+    await _tap(tester, approve);
     expect(repository.transitions, hasLength(1));
     expect(
       find.widgetWithText(FilledButton, 'Aprovar'),
@@ -110,8 +114,7 @@ void main() {
       reason: 'the failed command leaves the dialog open, so the retry is one tap away',
     );
 
-    await tester.tap(find.widgetWithText(FilledButton, 'Aprovar'));
-    await tester.pumpAndSettle();
+    await _tap(tester, find.widgetWithText(FilledButton, 'Aprovar'));
 
     expect(repository.transitions, hasLength(2));
     expect(
@@ -146,23 +149,17 @@ void main() {
     final managers = find.text('Gerenciar').evaluate().length;
     var opened = false;
     for (var index = 0; index < managers && !opened; index++) {
-      await tester.ensureVisible(find.text('Gerenciar').at(index));
-      await tester.pump();
-      await tester.tap(find.text('Gerenciar').at(index));
-      await tester.pumpAndSettle();
+      await _tap(tester, find.text('Gerenciar').at(index));
       if (find.widgetWithText(FilledButton, 'Aprovar').evaluate().isNotEmpty) {
         opened = true;
       } else {
-        await tester.tap(find.widgetWithText(FilledButton, 'Concluir'));
-        await tester.pumpAndSettle();
+        await _tap(tester, find.widgetWithText(FilledButton, 'Concluir'));
       }
     }
     expect(opened, isTrue);
 
-    await tester.tap(find.widgetWithText(FilledButton, 'Aprovar'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.widgetWithText(OutlinedButton, 'Rejeitar'));
-    await tester.pumpAndSettle();
+    await _tap(tester, find.widgetWithText(FilledButton, 'Aprovar'));
+    await _tap(tester, find.widgetWithText(OutlinedButton, 'Rejeitar'));
 
     expect(repository.transitions, hasLength(2));
     expect(
