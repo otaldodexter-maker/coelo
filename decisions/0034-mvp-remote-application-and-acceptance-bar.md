@@ -104,6 +104,27 @@ pertencem e voltam a contar na revisão profunda.
   não executa CRUD nem coordena. O Codex, com cota limitada, recebe os grupos
   mais simples e parecidos entre si; o restante roda no Claude com Opus.
 
+## Decisão 6 — respostas do Owner às decisões abertas da rodada noturna (10/09/2026)
+
+- Perfil Principal: a referência aprovada com Acompanhar, Seguidores e Seguindo
+  continua valendo. Regra de produto: ao cadastrar uma criança em unidade,
+  turma e demais níveis, ela e seus responsáveis acompanham automaticamente
+  toda a hierarquia acima, inclusive a instituição.
+- Agora: manter o Stream com a estratégia de 24 horas da ADR 0032; sem arquivo
+  não há custo. Nada além do Agora vai ao Stream.
+- Não existe prévia: Acontece, Agora e Momentos são o produto e cada ação
+  funciona de verdade, ponta a ponta; nenhuma mensagem de prévia permanece; o
+  feed do Acontece carrega mais pela paginação do servidor.
+- Circulares: Agendar com campo inline, Encerrar e Excluir entram no MVP.
+- Testar de Formulários lê o formulário por capacidade de edição.
+- Lançamentos da Rotina ganham tela mínima sobre o comando existente.
+- Guarda de saída do editor de Rotina ligada, igual a Instituições, com as
+  seis referências regravadas.
+- Sobre do Perfil ganha capacidade de leitura para membros.
+- Página de erro 409 usa a família das páginas de erro existentes.
+- Chave de idempotência da Assiduidade é gerada e devolvida pelo banco por RPC.
+- Botão Arquivos escondido em Conversas; cabeçalho mobile inclui o botão de Bug.
+
 ## Consequências
 
 - O replay local com Docker deixa de ser porta obrigatória; continua útil para
