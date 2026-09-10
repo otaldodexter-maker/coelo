@@ -105,19 +105,42 @@ Dart, está ligada, e chama funções que não existem no servidor**. As RPCs
 
 ## Decisões que dependem de você
 
-1. **Goldens: são duas populações, não uma.** O censo mediu 49 suítes sobre
-   `d784462c1`: 226 PASS, 6 SKIP, 151 FAIL em 27 features. Eu vinha tratando o
-   conjunto como deriva de ambiente, e a medição de magnitude desmontou isso. Em
-   28 comparações medidas, **21 estão acima de 8%, 12 acima de 15% e a maior é
-   43,94%**; existe uma cauda de sete entre 0,16% e 4,08%, essa sim compatível
-   com renderização de fonte. As duas populações pedem decisões diferentes: a
-   cauda pequena é reaprovar referência; a grande **só pode ser mudança visual
-   real nunca reaprovada**, e a decisão é descobrir o que mudou na tela e se
-   aquilo foi aprovado alguma vez. Foi medida magnitude, não natureza — nenhuma
-   imagem de diferença foi aberta. A consequência, se a leitura se confirmar, é
-   maior que qualquer pendência do painel: o produto mudou de aparência sem
-   passar por aprovação visual em algum ponto. Nenhuma imagem foi regravada fora
-   do critério acordado.
+1. **Goldens: uma mudança global de renderização, e não 144 telas redesenhadas.**
+   Esta seção foi reescrita três vezes esta noite, e é a terceira leitura que a
+   medição sustenta. Primeiro tratei tudo como deriva de ambiente; depois a
+   magnitude — 21 de 28 comparações acima de 8%, máximo de 43,94% — me fez
+   registrar que a população grande "só podia ser mudança visual real nunca
+   reaprovada". Uma frente foi mais fundo, escreveu um decodificador de PNG e
+   comparou master contra teste pixel a pixel, e desmontou a minha própria
+   conclusão com três fatos medidos:
+
+   - Em **355 pares comparados a dimensão da tela é idêntica em 100% deles**.
+     Nenhum golden falha porque a tela mudou de tamanho.
+   - Nas falhas grandes a diferença está **espalhada por quase toda a
+     superfície**: em `forms_editor_dark_375`, 43,94% dos pixels atingindo 93,9%
+     das linhas e 91,5% das colunas. Em `access_profile_cards_dark_375`, 91,90%
+     dos pixels atingindo **100% das linhas e 100% das colunas**. Mudança de
+     conteúdo atinge uma faixa, não a imagem inteira nos dois eixos.
+   - A diferença **correlaciona com a largura**, na mesma tela e no mesmo
+     estado: `forms_editor_light` dá 38,99% em 375, 14,38% em 768, 8,38% em 1440
+     e 3,88% em 1024. Uma tela redesenhada não muda de gravidade conforme o
+     viewport; uma mudança de métrica de texto muda, porque em 375 o texto quebra
+     apertado, um delta mínimo reflui a coluna inteira e cascateia.
+
+   O mesmo gradiente aparece em duas features independentes, de donos
+   diferentes, uma delas intocada nesta rodada. **Isso muda a decisão de
+   auditoria para decisão única:** você não precisa investigar 144 telas para
+   descobrir o que mudou em cada uma. Precisa identificar a mudança de ambiente
+   ou de toolchain entre `f71b6a9c5` e hoje, e reaprovar as referências em bloco.
+
+   E a consequência que mais importa para o painel: **enquanto a referência não
+   for reaprovada, todo golden do repositório está cego**. Não é só que 144 estão
+   vermelhos — é que os verdes também não provam nada sobre aparência, porque a
+   base de comparação não corresponde ao ambiente atual.
+
+   Nenhuma imagem foi regravada fora do critério acordado. A causa raiz não foi
+   identificada: o que está medido é dispersão, gradiente por largura e dimensão
+   idêntica.
 1b. **Pinar o SDK antes de regravar qualquer golden.** Uma frente foi atrás da
    causa e eu confirmei por conta própria no código: as suítes de golden carregam
    `MaterialIcons` do SDK **local**, por caminho relativo a
