@@ -3,7 +3,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(20);
+select plan(24);
 
 select has_table('app_private','student_link_command_receipts','recibos de comando');
 
@@ -157,6 +157,38 @@ select ok(
      ('superadmin_student_edit'),('superadmin_student_revoke')
    ) as command(name)),
   'os quatro comandos reconhecem a repeticao pelo recibo'
+);
+
+-- --------------------------------------------------------------------------
+-- Leitura dos vinculos atuais
+-- --------------------------------------------------------------------------
+
+select has_function('public','superadmin_student_links', array['uuid'],
+  'a tela de gestao consegue ler onde a crianca esta hoje');
+
+select ok(
+  not has_function_privilege('anon','public.superadmin_student_links(uuid)','EXECUTE')
+  and has_function_privilege('authenticated','public.superadmin_student_links(uuid)','EXECUTE'),
+  'a leitura e de sessao autenticada'
+);
+
+-- Ver onde a crianca esta e leitura de diretorio; mover exige assign_children.
+-- Por isso a leitura pede people.read e devolve can_manage separado.
+select ok(
+  pg_get_functiondef('app_private.superadmin_student_links(uuid)'::regprocedure)
+    like '%people.read%'
+  and pg_get_functiondef('app_private.superadmin_student_links(uuid)'::regprocedure)
+    like '%people.assign_children%',
+  'ler exige people.read; can_manage e calculado a parte com assign_children'
+);
+
+-- A negativa da crianca fora do escopo e a mesma da crianca ausente: separar
+-- confirmaria que ela existe em outra instituicao.
+select ok(
+  (select count(*) from regexp_matches(
+     pg_get_functiondef('app_private.superadmin_student_links(uuid)'::regprocedure),
+     'student link unavailable', 'g')) >= 2,
+  'crianca ausente e crianca fora do escopo recebem a mesma negativa'
 );
 
 set local role anon;

@@ -206,6 +206,8 @@ import '../../features/forms/presentation/operations/forms_operations_page.dart'
 import '../../features/forms/presentation/operations/forms_media_page.dart';
 import '../../features/forms/presentation/response/form_response_page.dart';
 import '../../features/forms/presentation/response/forms_test_page.dart';
+import '../../features/students/domain/student_link.dart';
+import '../../features/students/presentation/student_manage_page.dart';
 import '../../features/support/presentation/screens/support_page.dart';
 import '../../features/support/presentation/view_models/support_prototype_controller.dart';
 import '../../features/support/data/support_repository.dart';
@@ -358,6 +360,7 @@ GoRouter createSuperadminRouter({
   AuditRepository auditRepository = const UnavailableAuditRepository(),
   MedicationPlanRepository medicationPlanRepository = const UnavailableMedicationPlanRepository(),
   HealthCareRepository healthCareRepository = const UnavailableHealthCareRepository(),
+  StudentLinkRepository studentLinkRepository = const UnavailableStudentLinkRepository(),
   DevMedicationPlanRepository? developmentMedicationPlanRepository,
   MealPlanRepository mealPlanRepository = const UnavailableMealPlanRepository(),
   MealPlanImageRepository mealPlanImageRepository = const UnavailableMealPlanImageRepository(),
@@ -2357,10 +2360,16 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.studentManage,
             name: SuperadminRoutes.studentManageName,
-            builder: (context, state) => SuperadminErrorScreen(
-              kind: SuperadminErrorKind.unavailable,
-              actionLabel: 'Voltar ao início',
-              onAction: () => context.goNamed(SuperadminRoutes.homeName),
+            // Ate a Rodada 3 esta rota abria uma tela de indisponivel, embora
+            // vincular, transferir, editar e revogar estejam no MVP. Agora ela
+            // compoe a tela real; enquanto a chave do pacote estiver
+            // desligada, o repositorio injetado e o indisponivel e a tela diz
+            // isso com o motivo, em vez de sumir.
+            builder: (context, state) => StudentManagePage(
+              repository: studentLinkRepository,
+              childContextId: state.pathParameters['childContextId']!,
+              logout: logout,
+              onBack: () => context.goNamed(SuperadminRoutes.studentsName),
             ),
           ),
           GoRoute(

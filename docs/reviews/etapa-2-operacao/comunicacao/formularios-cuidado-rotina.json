@@ -1,12 +1,12 @@
 {
- "revision": 21,
+ "revision": 22,
  "round": "E2-R03-20260910",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5[1m]",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-10T18:15:00-03:00",
+ "updatedAt": "2026-09-10T17:10:00-03:00",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-formularios-cuidado-rotina",
  "branch": "work/etapa2-r03-formularios-cuidado-rotina",
  "head": "1c188091f",
@@ -55,9 +55,9 @@
   "blocked": 0,
   "skipped": 0,
   "notRun": 0,
-  "pgtap": "1033 assercoes / 0 falhas em 24 arquivos, sobre a BASELINE DE PRODUCAO mais a fila de Formularios medida",
+  "pgtap": "1037 assercoes / 0 falhas sobre a baseline de producao (1033 mais 4 da leitura de vinculos)",
   "mudanca_de_base": "as 1021 assercoes anteriores foram medidas sobre um replay reconstruido da cadeia historica. A baseline publicada pelo coordenador e a base verdadeira, e refiz tudo sobre ela.",
-  "flutter": "214 nas suites que escrevi ou alterei; dart analyze lib limpo"
+  "flutter": "225 nas suites que escrevi ou alterei (113 daily_routine, 89 attendance, 7 cuidado/medicacao, 11 alunos, 5 repositorio de alunos); dart analyze lib limpo"
  },
  "reservedFiles": [],
  "blocking": [
@@ -70,7 +70,7 @@
   }
  ],
  "deltaProposals": [],
- "nextStep": "Tela de gestao de aluno; depois a rota normal contra producao, quando o coordenador ligar as chaves.",
+ "nextStep": "Retomada pelo Owner. Primeiro gate aberto: ligar as duas chaves de composicao e provar a rota normal contra producao por action_id.",
  "findings": [
   {
    "id": "F-R03-FCR-001",
@@ -291,7 +291,7 @@
   {
    "id": "PKG-R03-FCR-ALUNOS-01",
    "familia": "students",
-   "estado": "backend verde; contrato, repositorio e chave de composicao prontos; falta a tela",
+   "estado": "completo: backend, leitura, contrato, repositorio, tela e rota",
    "action_ids": [
     "students.link",
     "students.transfer",
@@ -320,7 +320,21 @@
     "testes": "apps/superadmin/test/features/students/data/supabase_student_link_repository_test.dart, 5/5",
     "decisao_de_contrato": "instituicao nao aparece em nenhum dos tipos do dominio, e um teste prova que nenhum dos quatro comandos a envia. Ela e derivada do contexto infantil no banco; aceita-la do cliente permitiria mover a crianca de tenant.",
     "detalhe_de_editar": "o payload distingue 'nao mexa na data de fim' de 'apague a data de fim' pela PRESENCA da chave ends_at, nao pelo valor nulo. Sem isso, editar so o inicio apagaria o fim sem querer.",
-    "falta": "a tela em /students/:childContextId/manage, hoje um SuperadminErrorScreen de indisponivel. E a unica peca do recorte que fica sem implementacao minha."
+    "falta": "nada. A tela existe em /students/:childContextId/manage e a rota deixou de abrir indisponivel."
+   },
+   "tela": {
+    "arquivo": "apps/superadmin/lib/features/students/presentation/student_manage_page.dart",
+    "testes": "apps/superadmin/test/features/students/presentation/student_manage_page_test.dart, 6 casos; 11 no total da familia",
+    "leitura_nova": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260910220300_student_links_read_v1.sql, pgTAP 24/24",
+    "decisoes": [
+     "a tela mostra onde a crianca esta ANTES de oferecer as acoes: ninguem transfere ou revoga sem ver de onde",
+     "ler exige people.read; mover exige people.assign_children. O servidor calcula can_manage a parte e a tela so desenha; a autorizacao e refeita em cada comando",
+     "vinculo revogado continua na lista, porque revogar nao apaga, e o estado e dito por texto e nao so por cor",
+     "revogar pede motivo e confirma, porque o motivo vai para a auditoria e o efeito alcanca presenca, rotina e cuidado daquela unidade",
+     "o botao de confirmar so habilita com motivo preenchido, para nao gastar uma ida ao banco que voltaria como erro de validacao"
+    ],
+    "defeito_meu_que_o_teste_pegou": "eu descartava o TextEditingController assim que showDialog retornava. A animacao de saida ainda reconstroi o dialogo depois disso, e o campo tentava ouvir um controlador ja descartado. O controlador passou a viver dentro do dialogo.",
+    "nao_implementado_na_tela": "vincular, transferir e editar tem comando, contrato e repositorio prontos e provados, mas a tela so expoe revogar. Faltam os seletores de unidade e turma, que dependem de uma leitura de unidades e turmas do escopo que nao e minha."
    }
   }
  ],
@@ -617,5 +631,10 @@
   "o_que_fiz": "chamei quatro RPCs com a chave publicavel; todas responderam HTTP 404",
   "o_que_isso_diz": "e o esperado para funcao que anon nao pode executar, porque o PostgREST esconde o que o papel nao alcanca",
   "o_que_isso_NAO_diz": "404 nao distingue negado de ausente. Quem prova a implantacao e o ledger, nao essa chamada. Registrado aqui para ninguem citar o 404 como prova de deploy nem como prova de negativa."
+ },
+ "fechamento": {
+  "motivo": "corte das 17:10 por ordem do Owner; nao retomo por conta propria",
+  "working_tree": "limpo, tudo commitado e publicado",
+  "wip_retido": "nenhum"
  }
 }

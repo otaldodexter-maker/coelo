@@ -70,6 +70,7 @@ import '../features/access_profiles/domain/access_profile.dart';
 import '../features/platform_users/domain/platform_user.dart';
 import '../features/groups/domain/group_directory.dart';
 import '../features/health_care/domain/health_care_repository.dart';
+import '../features/students/domain/student_link.dart';
 import '../features/health_care/domain/medication_plan_repository.dart';
 import '../features/forms/data/forms_directory_reader.dart';
 import 'router/superadmin_router.dart';
@@ -166,6 +167,7 @@ class SuperadminApp extends StatefulWidget {
     this.childSafetyRepository = const UnavailableChildSafetyRepository(),
     this.medicationPlanRepository = const UnavailableMedicationPlanRepository(),
     this.healthCareRepository = const UnavailableHealthCareRepository(),
+    this.studentLinkRepository = const UnavailableStudentLinkRepository(),
     this.principalRuntimeContextRepository,
     this.profileAboutRepository,
     this.principalCircularRepository,
@@ -237,6 +239,7 @@ class SuperadminApp extends StatefulWidget {
   final ChildSafetyRepository childSafetyRepository;
   final MedicationPlanRepository medicationPlanRepository;
   final HealthCareRepository healthCareRepository;
+  final StudentLinkRepository studentLinkRepository;
   final PrincipalRuntimeContextRepository? principalRuntimeContextRepository;
   final ProfileAboutRepository? profileAboutRepository;
   final CircularRepository? principalCircularRepository;
@@ -332,6 +335,7 @@ class _SuperadminAppState extends State<SuperadminApp> {
       childSafetyController: _childSafetyController,
       medicationPlanRepository: widget.medicationPlanRepository,
       healthCareRepository: widget.healthCareRepository,
+      studentLinkRepository: widget.studentLinkRepository,
       principalRuntimeContextRepository:
           widget.principalRuntimeContextRepository ??
           const UnavailablePrincipalRuntimeContextRepository(),

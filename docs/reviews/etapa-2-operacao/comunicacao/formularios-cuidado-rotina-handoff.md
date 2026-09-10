@@ -48,11 +48,11 @@ estava aplicado: `careAndRoutineBackendEnabled` e `studentLinkCommandsEnabled`.
 
 ## Provas
 
-- **pgTAP: 1033 asserções, zero falhas**, em 24 arquivos, sobre a baseline real
+- **pgTAP: 1037 asserções, zero falhas**, em 24 arquivos, sobre a baseline real
   de produção mais a fila de Formulários. As medições anteriores (56, 90, 1001,
   1021) foram sobre um replay reconstruído da cadeia histórica; quando a
   baseline saiu, refiz tudo sobre ela, que é a base verdadeira.
-- **Flutter: 214** nas suítes que escrevi ou alterei. `dart analyze lib` limpo.
+- **Flutter: 225** nas suítes que escrevi ou alterei. `dart analyze lib` limpo.
 - Nada disso é prova ponta a ponta. Nenhuma tela abriu contra produção.
 
 ## Achados que valem para outras frentes
@@ -103,14 +103,18 @@ estava aplicado: `careAndRoutineBackendEnabled` e `studentLinkCommandsEnabled`.
 | `medication_form_mobile_light` = R | Não aplicado | Owner. R desfaria a regra RODAPÉ nesta tela e a afastaria do golden aprovado de Criar instituição, que ancora o rodapé do mesmo jeito. Pergunta e proposta no JSON. |
 | `forms.location-question` e `forms.location-answer` | Bloqueadas por escopo | Owner. A política está decidida e gravada na spec, mas o tipo `location` não existe e a própria spec lista localização como fora do MVP. |
 | Caso obrigatório sem alternativa válida em Local | Aberto | Owner. A opção 2 obriga um local atual; nesse caso não existe nenhum. |
-| Tela de gestão de aluno | Não implementada | Eu. `/students/:childContextId/manage` ainda abre indisponível. Backend, contrato e repositório prontos; falta a tela e uma leitura dos vínculos atuais da criança. |
+| Tela de gestão de aluno | Entregue, parcial | A rota deixou de abrir indisponível: mostra unidades, turmas e vigência, e oferece revogar com motivo. Vincular, transferir e editar têm comando, contrato e repositório provados, mas ainda não têm seletor de unidade e turma na tela — dependem de uma leitura de unidades e turmas do escopo que não é minha. |
 | `forms_files` ponta a ponta | Espera Cloudflare | Coordenador. O pacote R2 é dele. |
 | Ligar as duas chaves de composição | Precondição atendida | Coordenador. O SQL está em produção; pelo contrato quem liga é ele. |
 
 ## Próximo gate
 
-Tela de gestão de aluno, e a rota normal contra produção depois que as chaves
-forem ligadas.
+Ligar as duas chaves de composição e provar a rota normal contra produção por
+`action_id`: rota abre, CRUD persiste, reload mantém. Combinado com a
+coordenação que eu escrevo só dado sintético meu e apago o que criar na mesma
+sessão.
+
+Parei às 17:10 por ordem do Owner e não retomo por conta própria.
 
 ## Base
 

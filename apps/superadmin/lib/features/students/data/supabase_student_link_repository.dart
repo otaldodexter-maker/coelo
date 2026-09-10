@@ -18,6 +18,28 @@ final class SupabaseStudentLinkRepository implements StudentLinkRepository {
   final SupabaseClient _client;
 
   @override
+  Future<StudentLinks> fetchLinks(String childContextId) async {
+    final Object? payload;
+    try {
+      payload = await _client.rpc<Object?>(
+        'superadmin_student_links',
+        params: {'child_context_id': childContextId},
+      );
+    } on PostgrestException catch (error) {
+      throw _translate(error);
+    }
+    final map = payload is Map ? payload.cast<String, Object?>() : const <String, Object?>{};
+    return StudentLinks(
+      childContextId: map['child_context_id'] as String? ?? childContextId,
+      childPersonId: map['child_person_id'] as String? ?? '',
+      displayName: map['display_name'] as String? ?? '',
+      institutionId: map['institution_id'] as String? ?? '',
+      canManage: map['can_manage'] == true,
+      unitLinks: _rows(map['unit_links']).map(_unitLink).toList(growable: false),
+    );
+  }
+
+  @override
   Future<StudentLinkResult> link({
     required String requestId,
     required String childContextId,
@@ -124,6 +146,37 @@ final class SupabaseStudentLinkRepository implements StudentLinkRepository {
     _ => StudentLinkException(StudentLinkFailureKind.unavailable, error.message),
   };
 }
+
+StudentUnitLink _unitLink(Map<String, Object?> row) => StudentUnitLink(
+  unitLinkId: row['unit_link_id']! as String,
+  unitId: row['unit_id']! as String,
+  unitName: row['unit_name'] as String? ?? '',
+  status: row['status'] as String? ?? '',
+  acceptedAt: _optionalDate(row['accepted_at']),
+  revokedAt: _optionalDate(row['revoked_at']),
+  groupLinks: _rows(row['group_links'])
+      .map(
+        (group) => StudentGroupLink(
+          groupLinkId: group['group_link_id']! as String,
+          groupId: group['group_id']! as String,
+          groupName: group['group_name'] as String? ?? '',
+          status: group['status'] as String? ?? '',
+          startsAt: _optionalDate(group['starts_at']),
+          endsAt: _optionalDate(group['ends_at']),
+        ),
+      )
+      .toList(growable: false),
+);
+
+List<Map<String, Object?>> _rows(Object? value) => value is List
+    ? value
+          .whereType<Map<Object?, Object?>>()
+          .map((row) => row.cast<String, Object?>())
+          .toList(growable: false)
+    : const <Map<String, Object?>>[];
+
+DateTime? _optionalDate(Object? value) =>
+    value is String && value.isNotEmpty ? DateTime.tryParse(value) : null;
 
 StudentLinkResult _result(Map<String, Object?> payload) => StudentLinkResult(
   childContextId: payload['child_context_id'] as String? ?? '',
