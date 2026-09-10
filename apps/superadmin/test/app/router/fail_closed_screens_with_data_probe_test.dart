@@ -27,6 +27,16 @@ import 'package:flutter_test/flutter_test.dart';
 ///
 /// A clean run is a negative with value: it means the Importações overflow is
 /// an isolated case rather than a pattern.
+///
+/// WARNING FOR WHOEVER EXTENDS THIS TO DETAIL ROUTES. The error-screen guard
+/// below is not enough there. A parameterised route reached with an id that
+/// belongs to no record renders the legitimate EMPTY detail: no error path is
+/// taken, no exception is thrown, and the probe reports success while having
+/// exercised nothing. Widget density does not discriminate either, since the
+/// shell alone contributes around 1400. The guard that is missing in that case
+/// is about the INPUT, not the output: assert that the identifier came from a
+/// row actually present in the listing. Another front hit exactly this and
+/// found that sixteen of twenty passing detail probes were empty pages.
 void main() {
   const probes = <({String name, String path})>[
     (name: 'Pessoas', path: SuperadminRoutes.devPeople),
