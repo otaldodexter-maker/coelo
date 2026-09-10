@@ -107,8 +107,15 @@ apenas de costura injetável e ramo R2. Fica nomeado aqui.
 
 ## Estado por ação, ao final da rodada
 
-Leitura verificada nesta rodada, não herdada do inventário. "RPC" significa
-definida na cadeia local de migrations; não é prova de produção.
+Leitura verificada nesta rodada, não herdada do inventário. Três ressalvas de
+leitura, para nenhuma linha ser lida como mais do que diz:
+
+- **"RPC: sim"** significa definida na cadeia local de migrations. Não é prova
+  de que esteja aplicada em produção, e não tenho como obtê-la.
+- **Observações sobre gateways de mídia descrevem o código**, não o que está
+  implantado. As Edge Functions só passam a valer depois de um deploy que este
+  grupo não executou nem tem autorização para executar.
+- **"Cliente avançado"** nunca significa ação concluída ponta a ponta.
 
 | action_id | Cliente | RPC | Observação verificada |
 | --- | --- | --- | --- |
@@ -121,7 +128,7 @@ definida na cadeia local de migrations; não é prova de produção.
 | `agora.publish` | avançado | sim | Chave de idempotência por intenção |
 | `agora.expire` | satisfeito no cliente | sim | Servidor exclui expirado; transição material é candidato |
 | `momentos.view` | fechado | **não** | `list_visible_moments` só em candidato |
-| `momentos.create` | avançado | sim | Bytes conferidos contra o MIME real no gateway |
+| `momentos.create` | avançado | sim | Gateway passou a conferir MIME real dos bytes (código) |
 | `momentos.publish` | avançado | sim | Sinal de refresh compartilhado com a leitura |
 | `momentos.remove` | fechado | **não** | `withdraw_moment` só em candidato; guarda de contexto adicionada |
 | `circulars.list` | avançado | sim | Segue o cursor, pinta na 1ª página; declara truncamento |
@@ -134,7 +141,7 @@ definida na cadeia local de migrations; não é prova de produção.
 | `circulars.close` | **inerte** | sim | Backend completo, nenhuma afordância; decisão pendente |
 | `circulars.delete` | **ausente** | **não** | Ausente nas três camadas; decisão pendente |
 | `circulars.respond` | avançado | sim | Recusas dizem o que aconteceu; encerramento distinguido |
-| `circulars.attach` | avançado | sim | Bilhete autorizado e expirável; gateway em R2 |
+| `circulars.attach` | avançado | sim | Bilhete autorizado e expirável; gateway pronto para R2 |
 
 Nenhuma ação é declarada concluída ponta a ponta. Três têm cliente fechado e
 RPC ausente da cadeia aplicada, e por isso **não completam em produção**.
