@@ -1979,9 +1979,34 @@ aprovados e nunca escondeu falha.
 
 **E a causa é estrutural, não distração:** quem organiza teste por funcionalidade
 perde exatamente os testes de rota, de shell e de menu, que moram em outra árvore
-por serem de integração. **A lista parece o escopo, e não é.** A verificação custa
-segundos — varrer o repositório pelo domínio e conferir que tudo cai sob algum
-caminho declarado — e foi mandada às seis frentes antes do fechamento.
+por serem de integração. **A lista parece o escopo, e não é.**
+
+A verificação foi mandada às seis frentes, custa segundos — e **pegou em todas as
+que responderam, por três causas diferentes**:
+
+- **Nove arquivos** numa frente, pela causa acima.
+- **Dezessete** noutra, que acrescentou duas árvores que ninguém tinha nomeado:
+  **configuração**, porque os escopos de autenticação e de mídia moram sob
+  `core/config`, e **componente compartilhado**, sob `shared`. São três árvores
+  além da própria, não uma.
+- **Vinte e sete** numa terceira, e treze deles por uma causa nova e pior: **a
+  lista foi escrita de memória e nunca conferida contra o recorte atribuído.**
+  Duas famílias inteiras — com o nome do recorte na porta — nunca entraram em
+  medição nenhuma. A lei que ela formulou: **lista de caminhos escrita de memória
+  erra nos dois sentidos ao mesmo tempo, e a conferência de existência só pega a
+  primeira metade.**
+
+**E pegou também no coordenador, que a mandou.** Todas as medições de suíte desta
+rodada — inclusive as minhas, publicadas acima — cobriam `apps/superadmin` e mais
+nada, quando existem sete outros conjuntos de teste no repositório e três foram
+alterados nesta noite. **894 casos que passam nunca entraram em número nenhum, e
+duas falhas nunca foram vistas.**
+
+**Uma última exigência saiu disso, e ela evita o erro simétrico:** cada frente
+declara a **sobreposição** entre o número do próprio recorte e o do conjunto que
+executa. Sem isso, a consolidação soma conjuntos que se cruzam e o total geral fica
+**maior** que a realidade — e um total inflado é mais difícil de perceber que um
+total curto, porque parece bom.
 
 **Há um agravante estrutural que a rodada criou sem perceber:** conviver com
 vermelho conhecido de outra frente é razoável e foi a prática da noite inteira —
