@@ -16,6 +16,22 @@ Worktree `C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-publicacoes-midia`
 branch `work/etapa2-noturna-publicacoes-midia`, base `d784462c1` com
 `origin/dev` mesclado em `3ab29d7df`.
 
+## Os quatro documentos desta entrega
+
+Tudo o que este grupo produziu fora de código está nestes quatro arquivos, no
+mesmo diretório:
+
+| Arquivo | Para que serve |
+| --- | --- |
+| `NOTURNA-entrega-publicacoes-midia.md` | este: lotes, defeitos, estado por ação, o que não fechou |
+| `NOTURNA-decisao-owner-circulares-acoes-ausentes.md` | **oito decisões para o Owner**, com o caminho de cada uma já mapeado |
+| `NOTURNA-revisao-candidatos-sql-publicacoes-midia.md` | revisão dos seis candidatos SQL, com um defeito e uma lacuna de prova |
+| `NOTURNA-pacote-catalogo-midia.md` | desenho revisável da interface que falta no catálogo de mídia |
+
+Há ainda um patch **preparado e não mesclado** na branch
+`work/etapa2-noturna-copia-previa`, documentado em
+`NOTURNA-patch-copia-previa.md` naquela branch.
+
 ## Lotes publicados
 
 | # | SHA | O que é |
