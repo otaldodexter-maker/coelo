@@ -2117,6 +2117,106 @@ void main() {
     expect(find.byKey(const Key('form-response-submit')), findsNothing);
     expect(api.submitCommand, isNull);
   });
+
+  // O servidor aplica min_selections e max_selections numa multipla escolha e
+  // recusa a contagem fora da faixa com check_violation. O respondente nao via
+  // esses limites em lugar nenhum: marcava quantas quisesse, o rascunho
+  // AUTOSALVAVA, e a recusa so chegava no envio. E pior que o caso numerico,
+  // porque ali um campo isolado ficava invalido; aqui o rascunho inteiro fica
+  // impossivel de enviar sem que nada na tela diga por que.
+  _ResponseApi choiceApi({int? min, int? max, Set<String> answered = const {}}) => _ResponseApi(
+    items: [
+      FormItem(
+        id: 'item-1',
+        kind: FormItemKind.multipleChoice,
+        label: 'Quais',
+        position: 0,
+        config: FormItemConfig(minSelections: min, maxSelections: max),
+        options: const [
+          FormOption(id: 'a', label: 'Primeira', position: 0),
+          FormOption(id: 'b', label: 'Segunda', position: 1),
+          FormOption(id: 'c', label: 'Terceira', position: 2),
+        ],
+      ),
+    ],
+    initialAnswers: answered.isEmpty
+        ? const {}
+        : {'item-1': FormAnswer.multipleChoice(itemId: 'item-1', optionIds: answered)},
+  );
+
+  Future<void> tapChip(WidgetTester tester, String label) async {
+    await tester.tap(find.widgetWithText(FilterChip, label));
+    await tester.pump();
+  }
+
+  testWidgets('the authored maximum of selections is visible before choosing', (tester) async {
+    await open(tester, choiceApi(max: 2));
+    expect(find.textContaining('Escolha no máximo 2'), findsOneWidget);
+  });
+
+  testWidgets('the authored minimum of selections is visible before choosing', (tester) async {
+    await open(tester, choiceApi(min: 2));
+    expect(find.textContaining('Escolha ao menos 2'), findsOneWidget);
+  });
+
+  testWidgets('a selection beyond the authored maximum is refused', (tester) async {
+    final api = choiceApi(max: 2);
+    await open(tester, api);
+    await tapChip(tester, 'Primeira');
+    await tapChip(tester, 'Segunda');
+    await tapChip(tester, 'Terceira');
+
+    // A terceira nao entra, e a tela diz por que em vez de aceitar em silencio.
+    expect(tester.widget<FilterChip>(find.widgetWithText(FilterChip, 'Terceira')).selected, isFalse);
+    expect(find.textContaining('no máximo 2'), findsWidgets);
+  });
+
+  testWidgets('deselecting below the maximum lets the next selection through', (tester) async {
+    await open(tester, choiceApi(max: 2));
+    await tapChip(tester, 'Primeira');
+    await tapChip(tester, 'Segunda');
+    await tapChip(tester, 'Terceira');
+    await tapChip(tester, 'Primeira');
+    await tapChip(tester, 'Terceira');
+    expect(tester.widget<FilterChip>(find.widgetWithText(FilterChip, 'Terceira')).selected, isTrue);
+  });
+
+  testWidgets('a count below the authored minimum cannot be sent', (tester) async {
+    final api = choiceApi(min: 2);
+    await open(tester, api);
+    await tapChip(tester, 'Primeira');
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('form-response-review')));
+    await tester.pump();
+
+    // Uma unica escolha satisfaz "respondida" mas nao satisfaz o minimo, e era
+    // exatamente esse buraco que deixava o envio falhar no servidor.
+    expect(find.byKey(const Key('form-response-submit')), findsNothing);
+    expect(api.submitCommand, isNull);
+  });
+
+  testWidgets('reaching the authored minimum unlocks sending', (tester) async {
+    await open(tester, choiceApi(min: 2));
+    await tapChip(tester, 'Primeira');
+    await tapChip(tester, 'Segunda');
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('form-response-review')));
+    await tester.pump();
+    expect(find.byKey(const Key('form-response-submit')), findsOneWidget);
+  });
+
+  testWidgets('an item without authored selection limits keeps every option open', (tester) async {
+    await open(tester, choiceApi());
+    await tapChip(tester, 'Primeira');
+    await tapChip(tester, 'Segunda');
+    await tapChip(tester, 'Terceira');
+    for (final label in ['Primeira', 'Segunda', 'Terceira']) {
+      expect(tester.widget<FilterChip>(find.widgetWithText(FilterChip, label)).selected, isTrue);
+    }
+    expect(find.textContaining('no máximo'), findsNothing);
+  });
 }
 
 final class _ResponseApi implements FormsApi {

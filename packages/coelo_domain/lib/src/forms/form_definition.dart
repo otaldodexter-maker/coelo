@@ -150,6 +150,52 @@ final class FormItemConfig {
   final int? maxImages;
 }
 
+/// One representation for how many options a multiple choice accepts.
+///
+/// The server refuses a count outside the authored range with a
+/// `check_violation`, mirroring `coalesce(min_selections, 1)` and
+/// `coalesce(max_selections, 50)`. Those defaults are mirrored here so the
+/// person is told before the command leaves, instead of collecting a draft
+/// that can never be sent.
+abstract final class FormSelectionLimits {
+  static const _serverDefaultMinimum = 1;
+  static const _serverDefaultMaximum = 50;
+
+  static int minimum(FormItemConfig config) => config.minSelections ?? _serverDefaultMinimum;
+
+  static int maximum(FormItemConfig config) => config.maxSelections ?? _serverDefaultMaximum;
+
+  static String _options(int count) => count == 1 ? '1 opção' : '$count opções';
+
+  /// The sentence that announces the rule BEFORE the person chooses.
+  ///
+  /// Null when the author declared nothing: announcing the server's ceiling of
+  /// fifty on a question that never mentions a limit is noise, and it is not a
+  /// rule of this form.
+  static String? hint(FormItemConfig config) {
+    final low = config.minSelections;
+    final high = config.maxSelections;
+    if (low == null && high == null) return null;
+    if (low != null && high != null) {
+      return 'Escolha ao menos ${_options(low)} e no máximo ${_options(high)}.';
+    }
+    if (low != null) return 'Escolha ao menos ${_options(low)}.';
+    return 'Escolha no máximo ${_options(high!)}.';
+  }
+
+  /// Why this count cannot be sent, or null when it can.
+  ///
+  /// An empty answer returns null on purpose: not having answered is a matter
+  /// of whether the question is required, and saying "escolha ao menos duas"
+  /// on a question the person is allowed to skip would be wrong.
+  static String? violation(FormItemConfig config, int count) {
+    if (count == 0) return null;
+    if (count < minimum(config)) return 'Escolha ao menos ${_options(minimum(config))}.';
+    if (count > maximum(config)) return 'Escolha no máximo ${_options(maximum(config))}.';
+    return null;
+  }
+}
+
 /// One representation for the numeric and text limits of a form item.
 ///
 /// Money travels in minor units everywhere: in the authored `minValue`/
