@@ -1,5 +1,5 @@
 {
-  "revision": 18,
+  "revision": 19,
   "round": "E2-NOTURNA-20260909",
   "role": "Coordenacao e Integracao - Claude",
   "writer": "coordenador-claude",
@@ -8,7 +8,7 @@
   "app": "Claude Code (VS Code)",
   "model": "claude-opus-5[1m]",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-09T22:12:00-03:00",
+  "updatedAt": "2026-09-09T22:33:00-03:00",
   "clockCorrection": {
     "referenceNow": "2026-09-09T19:03:25-03:00",
     "measuredBy": "date no checkout integrador",
@@ -825,16 +825,13 @@
     "naoConfundir": "O terceiro caso, assessment settings and pedagogical command fields remain wired, e o inverso dos outros dois: ele exige que campos CONTINUEM ligados. Verifique se a composicao nova desligou algo em vez de ligar demais."
   },
   "prioridadeParaAcessosPessoas": {
-    "assunto": "/dev/safety e a tela com o pior conjunto de problemas do app inteiro, e e MVP sobre dados de crianca",
-    "fonte": "operacoes-sistema, matriz de reflow do app inteiro (commit e2739adc9) mais a varredura de diretrizes nativas (2cba8068d)",
-    "oQueFoiMedido": [
-      "Transborda nas DUAS larguras com texto PADRAO a 100%, sem o usuario ampliar nada.",
-      "Falha nas TRES diretrizes nativas de acessibilidade: rotulo de alvo, tamanho de alvo Android e contraste.",
-      "Era a tela que expirava no instrumento antigo por permanecer em carregamento na composicao de desenvolvimento, o que e suspeito por si: uma tela de desenvolvimento que nao resolve o carregamento com dados semeados."
-    ],
-    "porQuePriorizar": "A outra tela que falha nas tres, /dev/imports, esta adiada pos-MVP, o que atenua. Seguranca infantil NAO tem esse atenuante. Se houvesse uma unica tela do app para olhar, seria esta.",
-    "limite": "Nenhuma causa foi investigada e a composicao nao foi aberta: e triagem por medicao, feita por outra frente, e pertence a voces.",
-    "seNaoCouber": "Registre no seu <grupo>.json antes do congelamento das 23:10 com essa leitura, e eu levo ao Owner como prioridade da proxima rodada."
+    "assunto": "CORRIGIDO E AGRAVADO: /safety NAO reprova acessibilidade. Ela LANCA excecao de layout na abertura, em producao.",
+    "retratacao": "A afirmacao anterior de que safety falhava nas tres diretrizes foi RETIRADA pela propria frente que a fez. O instrumento dela contava excecao de layout como reprovacao de diretriz; refeito drenando a excecao, safety passa nas tres. Nao propague a versao antiga.",
+    "oQueEDeVerdade": "A grade de cartoes nao se dispoe. Vinte excecoes por largura, encabecadas por LayoutBuilder does not support returning intrinsic dimensions, com IntrinsicHeight como causador, seguidas de RenderBox was not laid out em cascata. Isso e MAIS grave que reprovar diretriz.",
+    "cadeiaRastreada": "safety_pages.dart:292 envolve a linha da grade em IntrinsicHeight; o cartao e SafetyChildDirectoryCard, que retorna CoeloAdminInteractiveCard, que contem CoeloAdminExpandableStatusIndicator, que na linha 42 de coelo_ui_admin e um LayoutBuilder. IntrinsicHeight pergunta dimensoes intrinsecas, LayoutBuilder nao responde, a assercao dispara.",
+    "alcancaProducao": "childSafetyRepository e SupabaseChildSafetyRepository real; superadmin_app.dart:231 constroi o controlador; a rota produtiva /safety monta SafetyLandingPage com ele; o modo padrao e cartoes. Basta um registro para quebrar no primeiro carregamento.",
+    "correcaoProvada": "Reproduzida e corrigida em sonda isolada por alunos-rotina: remover o IntrinsicHeight e o crossAxisAlignment stretch que so existia para ele, e dar minHeight 216 ao cartao. O 216 nao e invencao: e o que os cartoes de student_tracking ja usam. Sem excecao e altura igual preservada.",
+    "quemExecuta": "Se acessos-pessoas nao corrigir ate 23:30, a escrita sobre child_safety passa a alunos-rotina por transferencia de residual, com a correcao ja provada em maos."
   },
   "contextoDaMatrizDeReflow": {
     "resultado": "132 casos, 33 telas por duas larguras por duas escalas. A 100%: 61 de 66 passam. A 200%: 59 de 66.",
@@ -842,5 +839,13 @@
     "estadoPadrao": "Tres telas quebram sem ampliacao nenhuma: /dev/safety e /dev/imports nas duas larguras, /dev/agenda em largura de telefone.",
     "larguraImporta": "Planos quebra so em 1440 e Cardapios so em 375. Terceira confirmacao, agora com amostra do app inteiro: verificar reflow numa largura so nao e verificar reflow.",
     "limites": "Mede ausencia de excecao na abertura, em tema claro, sem interacao nem navegacao interna. Tema escuro foi medido a parte e nao foi fator em nenhum caso."
-  }
+  },
+  "reconciliacoesDeMedicao": [
+    {
+      "assunto": "Acessibilidade por diretrizes nativas",
+      "oQueMudou": "De 18 reprovacoes para 13 reais: sete de rotulo (todas ja corrigidas por 179a54532), cinco de tamanho de alvo, uma de contraste.",
+      "contraste": "O selo DESTAQUE em /dev/principal-for-you, razao 3,75 contra 4,5 exigidos para fonte 11. Real, e de perfil-para-voce ou publicacoes-midia.",
+      "licao": "Excecao lancada durante o layout fazia o caso falhar antes da diretriz ser avaliada, e o instrumento reportava como reprovacao. Instrumento que confunde expirou ou lancou com reprovou produz acusacao, nao medicao."
+    }
+  ]
 }
