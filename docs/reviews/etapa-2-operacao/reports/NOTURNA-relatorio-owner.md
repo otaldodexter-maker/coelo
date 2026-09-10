@@ -2277,6 +2277,36 @@ inclusive quem a escreveu. **A correção certa não foi restaurar o conteúdo, 
 mudar o lugar:** dado durável guardado dentro de um bloco que se reescreve inteiro
 é o defeito, e restaurá-lo sem mover seria consertar o sintoma.
 
+## Não há trabalho inédito nesta máquina, e isso foi medido
+
+O contrato desta rodada trata trabalho não publicado como a única perda sem
+correção possível. Uma frente foi verificar em vez de supor, e o resultado é uma
+afirmação que se pode fazer com método: **as quatro árvores de trabalho paradas
+estão limpas** — nenhuma alteração e nenhum rascunho guardado — e **todas as
+branches desta rodada existem no remoto com o mesmo identificador do local**.
+
+Isso é mais forte que "acho que está tudo publicado", e é o tipo de verificação
+que ninguém faz porque ninguém espera encontrar nada.
+
+**O passo seguinte, esse sim, encontrou:** um commit publicado e fora da base
+entregue, cujo assunto não aparece na base por nenhum outro caminho. É o patch
+**preparado e deliberadamente não mesclado** da decisão de cópia — o que corrige
+as três telas de produção que se anunciam como prévia. Está fora por decisão, com
+documento próprio declarando o estado e dizendo que não é reaproveitável se a
+outra opção for escolhida.
+
+**E a frente reportou exatamente o que podia:** que está fora, não que foi
+esquecido. A diferença entre as duas coisas depende do histórico de decisão, que
+ela não tinha — e chamar de esquecimento teria produzido uma correção de
+madrugada sobre uma escolha deliberada.
+
+**Uma lição de higiene que a mesma frente formulou e que vale além desta rodada:**
+uma lista de recursos que parece completa é mais perigosa que uma que admite um
+buraco — pelo mesmo motivo que uma lista de caminhos parecia ser o escopo. Ela
+declarou duas árvores de trabalho que não sabia de quem eram, em vez de adotá-las
+para fechar a lista bonita ou de removê-las sem saber. **As duas tinham dono, e os
+dois donos as haviam declarado.**
+
 ## Higiene e preservação
 
 - Os 90 artefatos de WIP ignorados na raiz do checkout integrador estão
