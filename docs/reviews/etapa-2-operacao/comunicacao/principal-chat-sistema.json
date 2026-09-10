@@ -1,6 +1,6 @@
 {
-  "revision": 7,
-  "updated_at": "2026-09-10T19:50:00-03:00",
+  "revision": 8,
+  "updated_at": "2026-09-10T16:45:00-03:00",
   "round": "E2-R03-20260910",
   "group": "principal-chat-sistema",
   "tool": "Claude Code (VS Code)",
@@ -15,7 +15,7 @@
     "O checkout principal esta agora com CONFLITO NAO RESOLVIDO em apps/superadmin/lib/features/principal_happens/presentation/principal_happens_preview_page.dart (both modified), com dois arquivos de teste de principal_happens ja staged. Nao toquei nisso: e integracao, e integracao e sua. A fonte correta para resolver e a minha branch em fca02963f, que tem o arquivo inteiro e coerente com os testes.",
     "A base.fase0Head 1adb070c9 ja esta publicada em coordenacao.json. Vou rebasear minha branch sobre ela."
   ],
-  "status": "EM EXECUCAO. Cardapios, Shell, Chat (Fixar/bandeira) e Acontece (paginacao e fim da previa) fechados localmente e publicados na branch do grupo.",
+  "status": "Decisoes dos 26 goldens recebidas do Owner e aplicadas. Cadeia de Cardapios reconstruida sobre a baseline e provada.",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos, Perfil",
     "apps/superadmin -> Chat administrativo e Principal",
@@ -27,37 +27,60 @@
       "commit": "6a5d351fa",
       "titulo": "Cardapios: apagar imagem exige a revisao lida pelo cliente",
       "achado": "A migration 20260820230000 criou a forma revisionada de meal_plan_request_image_delete mas deixou exposta a forma de dois argumentos, que le a revisao atual do banco e a passa como esperada. Com grant para authenticated e o repositorio Flutter chamando justamente essa forma, o controle otimista NUNCA disparava.",
-      "action_ids": ["meal-plans.edit", "meal-plans.publish"]
+      "action_ids": [
+        "meal-plans.edit",
+        "meal-plans.publish"
+      ]
     },
     {
       "commit": "a4a49b313",
       "titulo": "Cardapios: conceder meal_plans ao Owner e destravar a familia",
       "achado": "ACHADO MATERIAL. meal_plans.read/.manage/.publish existem no catalogo desde 20260813120000, mas NENHUMA migration as concedeu a papel algum em platform_role_permissions, e 20260729144440 ja tinha removido o bypass implicito do Owner. Toda a familia Cardapios era inalcancavel, inclusive para o Owner. Medido em replay local: as tres permissoes existem, o bypass nao existe, e nao ha uma linha de concessao.",
-      "action_ids": ["meal-plans.list", "meal-plans.create", "meal-plans.edit", "meal-plans.model-create", "meal-plans.model-edit", "meal-plans.publish"]
+      "action_ids": [
+        "meal-plans.list",
+        "meal-plans.create",
+        "meal-plans.edit",
+        "meal-plans.model-create",
+        "meal-plans.model-edit",
+        "meal-plans.publish"
+      ]
     },
     {
       "commit": "a3cec9757",
       "titulo": "Shell: mapear os cinco action_ids",
       "achado": "Os 134 casos de shell e navegacao passavam, mas nenhum dizia a qual acao pertencia, e por isso o rastreador recusava promover as cinco acoes. Um caso nominal por action_id, sobre router e sessao reais, sem fixture de rota. Controle negativo executado em shell.unauthorized.",
-      "action_ids": ["shell.load", "shell.navigate", "shell.switch-context", "shell.unauthorized", "shell.reload"]
+      "action_ids": [
+        "shell.load",
+        "shell.navigate",
+        "shell.switch-context",
+        "shell.unauthorized",
+        "shell.reload"
+      ]
     },
     {
       "commit": "6e43b957d",
       "titulo": "Chat: fixar conversa e bandeira voltam, agora persistidas",
       "achado": "A regressao apontada pelo Owner vinha de 2ffc126db, que trocou a inbox de fixture por dados reais. O estado antigo vivia so na memoria do controller (_pinnedOrder e _flags), entao restaurar do jeito anterior reintroduziria algo que o reload apaga. Agora a preferencia e do banco, por identidade interna, com RPCs v2 que revalidam contexto, capacidade e escopo. Criar grupo NAO entrou: exige criar conversa e membros, que e pacote proprio.",
-      "action_ids": ["chat.list", "chat.open"]
+      "action_ids": [
+        "chat.list",
+        "chat.open"
+      ]
     },
     {
       "commit": "df542741d",
       "titulo": "Acontece: o feed pagina de verdade, nos dois caminhos",
       "achado": "list_visible_happens_posts nao tinha cursor nenhum, so teto. E no caminho misto, que e o de producao, o defeito nao era do servidor: list_visible_happens_feed ja devolvia nextCursor desde 20260909214000 e a TELA descartava o cursor, deixando o resto do feed inalcancavel com o backend pronto.",
-      "action_ids": ["acontece.feed"]
+      "action_ids": [
+        "acontece.feed"
+      ]
     },
     {
       "commit": "fca02963f",
       "titulo": "Acontece: encerrar a previa e aplicar a regra MAIS",
       "achado": "D3: removidas todas as mensagens de previa. A regra que as substitui e que acao sem destino real fica visivel e inerte, porque na rota real o composition root fornece os destinos e um controle desabilitado passa a denunciar composicao incompleta. Comentar e compartilhar seguem desabilitados por nao existirem no servidor. MAIS aplicada.",
-      "action_ids": ["acontece.feed"]
+      "action_ids": [
+        "acontece.feed"
+      ]
     }
   ],
   "tests": {
@@ -70,42 +93,32 @@
     "analyze": "flutter analyze lib test em apps/superadmin: No issues found."
   },
   "goldens": {
-    "estado": "NAO REGRAVEI NENHUM GOLDEN.",
-    "medicao": "Base bb15db748: 10 PASS / 10 FAIL em principal_happens_preview_golden_test. Depois do lote fca02963f: 0 PASS / 20 FAIL.",
-    "porque": "Desabilitar controle sem destino e trocar a cor do botao de publicar mudam pixels. Os 20 sao decisao A com observacao (SHELL, MAIS, conteiner de imagens em 375). MAIS ja esta aplicada; SHELL vem do composto da Fase 0. Pelo contrato, golden A com observacao so e regravado depois de aplicada a observacao.",
-    "quem_desbloqueia": "Com a base 1adb070c9 publicada, posso avaliar SHELL no proximo ciclo e entao regravar os 20 no SDK registrado."
+    "estado": "DECIDIDOS PELO OWNER em 10/09/2026, pela pagina de comparacao lado a lado. Fonte: docs/reviews/evidence/etapa-2/goldens-acontece-cardapios-decisoes-2026-09-10.md",
+    "regravados": "10 do feed do Acontece (A sem observacao) + meal_plan_directory_flyout_light_1440 (A, depois do menu ganhar arquivar e excluir). SDK 3.44.2, o registrado.",
+    "pendentes": "10 da galeria do Acontece: decisao R, com quatro correcoes pedidas (paginacao a direita; compartilhar/salvar/baixar a esquerda; conferir distorcao da imagem; repensar o mobile mais proximo de Instagram). Nao iniciado.",
+    "ja_atendido": "A observacao \"botao de arquivos depois do toggle, similar a Instituicoes\" ja estava atendida pelo composto da Fase 0 quando Cardapios migrou (8fafbe16c)."
   },
   "fila_sql_para_o_coordenador": [
     {
       "ordem": 1,
-      "migration": "packages/coelo_database/migrations/20260910120000_meal_plan_image_delete_requires_revision_v1.sql",
-      "pgtap": "packages/coelo_database/supabase/tests/meal_plan_image_delete_requires_revision_test.sql",
-      "commit": "6a5d351fa",
-      "estado": "pgTAP local VERDE",
-      "observacao": "Dropa as duas sobrecargas de dois argumentos. O unico chamador era o repositorio Flutter, corrigido no mesmo commit."
+      "migration": "packages/coelo_database/migrations/20260910190000_meal_plans_media_lifecycle_receipts_v2.sql",
+      "commit": "7c30fdcad",
+      "estado": "pgTAP VERDE sobre a baseline",
+      "observacao": "E a antiga 20260820230000 com carimbo novo. Producao para antes dela: nao tem meal_plan_command_receipts, meal_plan_request_hash nem meal_plan_archive."
     },
     {
       "ordem": 2,
-      "migration": "packages/coelo_database/migrations/20260910130000_meal_plans_owner_permission_grants_v1.sql",
-      "commit": "a4a49b313",
-      "estado": "pgTAP local VERDE",
-      "observacao": "CONFERIR EM PRODUCAO ANTES: select em platform_role_permissions para meal_plans.*. Se producao ja tiver concessao manual, a migration e no-op idempotente."
+      "migration": "packages/coelo_database/migrations/20260910190100_meal_plan_image_delete_requires_revision_v2.sql",
+      "commit": "7c30fdcad",
+      "estado": "pgTAP VERDE sobre a baseline",
+      "observacao": "Fecha a porta de exclusao de imagem sem revisao E REVOGA DE anon o SELECT em public.meal_plans e o EXECUTE em meal_plan_list/meal_plan_get. Este segundo ponto e correcao de seguranca medida na baseline."
     },
     {
       "ordem": 3,
-      "migration": "packages/coelo_database/migrations/20260910140000_chat_conversation_preferences_v1.sql",
-      "pgtap": "packages/coelo_database/supabase/tests/superadmin_internal_chat_preferences_test.sql",
-      "commit": "6e43b957d",
-      "estado": "pgTAP local VERDE",
-      "observacao": "Recria superadmin_chat_inbox_v2 com dois campos novos por item (pinned_at, flag). O cliente ja le os dois e trata bandeira desconhecida como none, entao a ordem entre aplicar e publicar nao quebra nenhum lado."
-    },
-    {
-      "ordem": 4,
-      "migration": "packages/coelo_database/migrations/20260910150000_happens_feed_pagination_v1.sql",
-      "pgtap": "packages/coelo_database/supabase/tests/happens_feed_pagination_test.sql",
-      "commit": "df542741d",
-      "estado": "pgTAP local VERDE",
-      "observacao": "ATENCAO A ORDEM: dropa a assinatura antiga (uuid,uuid,uuid,integer) e cria (uuid,uuid,uuid,integer,timestamptz,uuid). Entre aplicar o SQL e publicar o app, um cliente antigo recebe erro de funcao inexistente. Aplicar junto com o deploy do cliente, ou aceitar a janela."
+      "migration": "packages/coelo_database/migrations/20260910190200_meal_plan_delete_v1.sql",
+      "commit": "7c30fdcad",
+      "estado": "pgTAP VERDE sobre a baseline",
+      "observacao": "Cria meal_plan_delete. Muda a FK do recibo para on delete set null: a trilha de auditoria impedia a propria exclusao."
     }
   ],
   "achados_de_cadeia_para_o_coordenador": [
@@ -125,7 +138,15 @@
     "meal_plan_directory_flyout_light_1440 tem observacao 'sem shell': o golden e montado fora do shell, o que e do harness de golden do composto, nao da tela."
   ],
   "nao_tocado_ainda": "UI de diretorio de Cardapios (o diretorio esta na lista dos 13 da Fase 0). Momentos, Perfil, Agora, Importacoes, Catalogo e paginas de erro seguem no meu recorte e ainda nao foram trabalhados.",
-  "blocker": "Nenhum bloqueio retendo trabalho independente.",
-  "next_step": "Rebase sobre base.fase0Head 1adb070c9; depois Momentos (IMG e acoes reais) e Perfil (D1/D9) em conjunto com acessos-pessoas.",
-  "ack": null
+  "blocker": "Preferencias de chat: dependem do chat interno v2, ausente em producao. Decisao de arquitetura.",
+  "next_step": "Galeria do Acontece: as quatro correcoes que o Owner pediu ao decidir os 10 goldens como R.",
+  "ack": null,
+  "handoff": "docs/reviews/etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md",
+  "achados_para_o_coordenador": [
+    "SEGURANCA: na baseline de producao, anon tem SELECT em public.meal_plans e EXECUTE em meal_plan_list. A RLS ainda barra, entao nao ha vazamento conhecido, mas o grant nao deveria existir. Revogado no pacote 190100. Vale varrer as outras familias pelo mesmo padrao.",
+    "A baseline confirma que superadmin_chat_inbox_v2 NAO existe em producao: o chat interno v2 nunca foi aplicado, coerente com o defeito que reportei (a migration insere em platform_permissions sem os tres labels NOT NULL). Meu pacote de preferencias de chat depende dela e fica bloqueado.",
+    "list_visible_happens_feed JA TEM CURSOR em producao (p_before_at, p_before_type, p_before_id). O carregar mais do Acontece, no caminho misto que e o de producao, funciona so com a correcao de cliente, sem migration.",
+    "ATENCAO: list_visible_happens_posts em producao tem a forma de QUATRO argumentos. Corrigi o cliente para so mandar o cursor quando ele existe; sem isso a primeira pagina falharia com funcao inexistente.",
+    "A migration de concessao vira no-op se rodar antes dos dados: em projeto descartavel as migrations rodam antes do seed e o insert nao encontra as permissoes. Em producao funcionou porque os dados ja existiam. Se for reaplicada em base recriada, conferir depois."
+  ]
 }
