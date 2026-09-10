@@ -211,6 +211,7 @@ Deno.test("keeps the legacy Supabase branch untouched", async () => {
   assertEquals(response.status, 200);
   assertEquals(body.storage_provider, "supabase_mvp");
   assertEquals(body.upload_token, "tok");
+  assertEquals(body.bucket_id, "coelo-happens-mvp");
   assertEquals(tracked.storageCalls, ["upload:coelo-happens-mvp"]);
   assertEquals(tracked.r2Calls, []);
 });

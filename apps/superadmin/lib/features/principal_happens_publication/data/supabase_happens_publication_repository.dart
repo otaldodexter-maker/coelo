@@ -1,14 +1,22 @@
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../application/happens_publication_controller.dart';
 import '../domain/happens_publication.dart';
 
 final class SupabaseHappensPublicationRepository implements HappensPublicationRepository {
-  const SupabaseHappensPublicationRepository(this._client);
+  SupabaseHappensPublicationRepository(this._client, {http.Client? httpClient})
+    : _httpClient = httpClient ?? http.Client();
   final SupabaseClient _client;
+  final http.Client _httpClient;
+
+  Future<int> _put(Uri target, Uint8List bytes, Map<String, String> headers) async {
+    final response = await _httpClient.put(target, headers: headers, body: bytes);
+    return response.statusCode;
+  }
 
   @override
   Future<HappensPostDraft?> loadDraft(HappensPublicationContext context) async {
@@ -78,6 +86,39 @@ final class SupabaseHappensPublicationRepository implements HappensPublicationRe
     }
   }
 
+  /// Transfere os bytes para o destino que o SERVIDOR anunciou.
+  ///
+  /// No provedor legado o caminho e o mesmo de sempre. No R2 o servidor emite
+  /// uma janela PUT curta e os cabecalhos exigidos, e nem bucket nem chave
+  /// chegam ao cliente.
+  Future<void> _transfer(HappensUploadIntent intent, HappensMediaDraft media) async {
+    if (intent.usesR2) {
+      final target = intent.uploadUrl;
+      if (target == null) throw Exception('media_prepare_failed');
+      if (intent.expiredAt(DateTime.now())) throw Exception('media_upload_expired');
+      final sent = await _put(
+        target,
+        media.bytes,
+        {...intent.requiredHeaders, 'content-type': media.mimeType},
+      );
+      if (sent < 200 || sent >= 300) throw Exception('media_upload_failed');
+      return;
+    }
+    final objectKey = intent.objectKey;
+    final token = intent.token;
+    if (objectKey == null || token == null) throw Exception('media_prepare_failed');
+    await _client.storage
+        // O bucket vem do servidor quando ele o anuncia; o literal de
+        // transicao vive no dominio e e coberto por teste.
+        .from(intent.legacyBucket)
+        .uploadBinaryToSignedUrl(
+          objectKey,
+          token,
+          media.bytes,
+          FileOptions(contentType: media.mimeType, upsert: true),
+        );
+  }
+
   @override
   Future<HappensUploadIntent> prepareMedia(
     HappensPublicationContext context,
@@ -99,14 +140,27 @@ final class SupabaseHappensPublicationRepository implements HappensPublicationRe
     );
     if (response.status != 200) throw Exception('media_prepare_failed');
     final json = Map<String, dynamic>.from(response.data as Map);
+    // O destino e do SERVIDOR. O cliente le o provedor anunciado e obedece; se
+    // o envelope nao trouxer provedor, e a funcao ainda nao atualizada, e o
+    // caminho legado continua valendo exatamente como antes.
+    final provider = json['storage_provider'] as String? ?? 'supabase_mvp';
+    final uploadUrl = json['upload_url'] as String?;
     return HappensUploadIntent(
       assetId: json['asset_id'] as String,
       institutionId: context.institutionId,
       postId: postId,
       requestId: media.localId,
-      objectKey: json['object_key'] as String,
-      token: json['upload_token'] as String,
       displayOrder: displayOrder,
+      storageProvider: provider,
+      objectKey: json['object_key'] as String?,
+      token: json['upload_token'] as String?,
+      bucketId: json['bucket_id'] as String?,
+      uploadUrl: uploadUrl == null ? null : Uri.parse(uploadUrl),
+      requiredHeaders: {
+        for (final entry in (json['required_headers'] as Map? ?? const {}).entries)
+          entry.key.toString(): entry.value.toString(),
+      },
+      expiresAt: DateTime.tryParse(json['expires_at'] as String? ?? ''),
     );
   }
 
@@ -115,14 +169,7 @@ final class SupabaseHappensPublicationRepository implements HappensPublicationRe
     HappensUploadIntent intent,
     HappensMediaDraft media,
   ) async {
-    await _client.storage
-        .from('coelo-happens-mvp')
-        .uploadBinaryToSignedUrl(
-          intent.objectKey,
-          intent.token,
-          media.bytes,
-          FileOptions(contentType: media.mimeType, upsert: true),
-        );
+    await _transfer(intent, media);
     final response = await _client.functions.invoke(
       'happens-media',
       body: {
