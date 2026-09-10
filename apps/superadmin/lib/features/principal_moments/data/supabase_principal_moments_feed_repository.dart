@@ -18,10 +18,18 @@ import '../domain/principal_moments_preview_data.dart';
 /// [PrincipalMomentsFeedUnavailable]. It never falls back to demo data.
 final class SupabasePrincipalMomentsFeedRepository
     implements PrincipalMomentsFeedRepository, PrincipalMomentsWithdrawalRepository {
-  const SupabasePrincipalMomentsFeedRepository(this._client, {this.pageSize = 20});
+  SupabasePrincipalMomentsFeedRepository(this._client, {this.pageSize = 20});
 
   final SupabaseClient _client;
   final int pageSize;
+
+  /// Chave de idempotencia por intencao de retirada.
+  ///
+  /// Gerar a chave a cada chamada faz o cliente perder a capacidade de repetir
+  /// a MESMA retirada: cada tentativa vira uma intencao nova aos olhos do
+  /// servidor. A chave e retida enquanto a retirada daquela publicacao nao for
+  /// aceita, e descartada quando for.
+  final _withdrawalRequestIds = <String, String>{};
 
   @override
   Future<List<PrincipalMomentPreviewItem>> listVisibleMoments(
@@ -59,12 +67,16 @@ final class SupabasePrincipalMomentsFeedRepository
       await _client.rpc<Object?>(
         'withdraw_moment',
         params: {
-          'p_request_id': _uuid(),
+          'p_request_id': _withdrawalRequestIds.putIfAbsent(publicationId, _uuid),
           'p_publication_id': publicationId,
+          // Nulo e legitimo aqui e a propria RPC documenta: a projecao do feed
+          // nao expoe a versao de gerenciamento, e autoria, tenant, escopo e
+          // permissao continuam conferidos no servidor.
           'p_expected_version': null,
           'p_reason': reason,
         },
       );
+      _withdrawalRequestIds.remove(publicationId);
     } on PostgrestException catch (error) {
       throw _mapWithdrawalError(error);
     } on Object {
