@@ -1826,6 +1826,24 @@ void main() {
     expect(find.text('Alterações ainda não salvas.'), findsNothing);
   });
 
+  // A mesma data aparecia preenchida no campo e sem zeros no resumo da
+  // revisao, entao 1 de marco lia "01/03/2026" num lugar e "1/3/2026" no
+  // outro. E o mesmo tipo de divergencia do dinheiro: um valor, duas leituras.
+  testWidgets('a date reads the same in the field and in the submitted summary', (tester) async {
+    final api = _ResponseApi(
+      items: [FormItem(id: 'item-1', kind: FormItemKind.date, label: 'Data', position: 0)],
+      initialAnswers: {
+        'item-1': FormAnswer.date(itemId: 'item-1', value: DateTime.utc(2026, 3, 1)),
+      },
+      initialStatus: FormResponseDraftStatus.submitted,
+    );
+    await open(tester, api);
+    expect(find.text('Resposta enviada'), findsOneWidget);
+    // O resumo junta rotulo e valor num unico texto.
+    expect(find.text('Data: 1/3/2026'), findsNothing);
+    expect(find.text('Data: 01/03/2026'), findsOneWidget);
+  });
+
   // O servidor aceita escala a partir de coalesce(scale_min, 1), e toda
   // pergunta de escala criada pelo editor nasce SEM minimo declarado. O
   // cliente usava scaleMin ?? 0 e portanto oferecia um valor que o servidor
