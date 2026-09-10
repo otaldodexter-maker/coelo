@@ -1,0 +1,26 @@
+[
+    {
+        "inspected_before_update":  true,
+        "path":  "apps/superadmin/test/goldens/people/person_directory_cards_light_375.png",
+        "before":  "4fcd0774b141855662982551d523d9447de25e7bd5e6c6d0a640a4572d1cf34b",
+        "after":  "31f20734f604979893d318ef2f4ad592258e5bf58c77d6fcf665eaa8d330e7c4"
+    },
+    {
+        "inspected_before_update":  true,
+        "path":  "apps/superadmin/test/goldens/people/person_directory_cards_light_768.png",
+        "before":  "0baf9b39cd63169ce9c1643a584740988f6afce22f777e2b24b1b26f9e5ad832",
+        "after":  "0e2f91f106c4d03984203a7a284e5bd53ad29d0119a8fa74b4cb076fda70edac"
+    },
+    {
+        "inspected_before_update":  true,
+        "path":  "apps/superadmin/test/goldens/people/person_directory_cards_light_1024.png",
+        "before":  "90fc30476be25028bb9fe87a1de093168436abf3359aea59147f99599dcba0bc",
+        "after":  "4f3f4929cc2a8f407c4db74923cd21eb3a9fa62ffc029d5da77c55264583f9e3"
+    },
+    {
+        "inspected_before_update":  true,
+        "path":  "apps/superadmin/test/goldens/people/person_directory_cards_light_1440.png",
+        "before":  "7b3b1b5e15d14bf4235f5bf370891908cee40d9267d8cd389c4cd06c4429c5de",
+        "after":  "bb44abb353e0c904ad580eff549a94f417ceaef67fc536fb512f87531eb8136e"
+    }
+]
