@@ -1829,6 +1829,59 @@ void main() {
   // A mesma data aparecia preenchida no campo e sem zeros no resumo da
   // revisao, entao 1 de marco lia "01/03/2026" num lugar e "1/3/2026" no
   // outro. E o mesmo tipo de divergencia do dinheiro: um valor, duas leituras.
+  // O resumo da resposta enviada mostrava os IDs internos das opcoes em vez do
+  // rotulo escolhido. Alem de ilegivel, expoe identificador interno — o teste
+  // do detalhe de resposta ja proibe isso explicitamente na outra superficie.
+  testWidgets('a choice reads as its label, never as the internal id', (tester) async {
+    final api = _ResponseApi(
+      items: [
+        FormItem(
+          id: 'item-1',
+          kind: FormItemKind.singleChoice,
+          label: 'Como foi',
+          position: 0,
+          options: const [
+            FormOption(id: 'option-1', label: 'Ótima', position: 0),
+            FormOption(id: 'option-2', label: 'Difícil', position: 1),
+          ],
+        ),
+      ],
+      initialAnswers: {
+        'item-1': FormAnswer.singleChoice(itemId: 'item-1', optionId: 'option-2'),
+      },
+      initialStatus: FormResponseDraftStatus.submitted,
+    );
+    await open(tester, api);
+    expect(find.text('Resposta enviada'), findsOneWidget);
+    expect(find.textContaining('option-2'), findsNothing);
+    expect(find.text('Como foi: Difícil'), findsOneWidget);
+  });
+
+  testWidgets('a multiple choice reads its labels in the authored order', (tester) async {
+    final api = _ResponseApi(
+      items: [
+        FormItem(
+          id: 'item-1',
+          kind: FormItemKind.multipleChoice,
+          label: 'Quais',
+          position: 0,
+          options: const [
+            FormOption(id: 'a', label: 'Primeira', position: 0),
+            FormOption(id: 'b', label: 'Segunda', position: 1),
+            FormOption(id: 'c', label: 'Terceira', position: 2),
+          ],
+        ),
+      ],
+      initialAnswers: {
+        'item-1': FormAnswer.multipleChoice(itemId: 'item-1', optionIds: {'c', 'a'}),
+      },
+      initialStatus: FormResponseDraftStatus.submitted,
+    );
+    await open(tester, api);
+    expect(find.textContaining('option'), findsNothing);
+    expect(find.text('Quais: Primeira, Terceira'), findsOneWidget);
+  });
+
   testWidgets('a date reads the same in the field and in the submitted summary', (tester) async {
     final api = _ResponseApi(
       items: [FormItem(id: 'item-1', kind: FormItemKind.date, label: 'Data', position: 0)],
