@@ -272,16 +272,14 @@ set local role authenticated;
 insert into institution_detail_responses values
   (8,public.superadmin_institution_detail_v2('61000000-0000-4000-8000-000000000001'));
 reset role;
-select ok((select body#>>'{error,code}'='SAI_MFA_REQUIRED'
+-- O detalhe exige platform.read, e no catalogo de producao essa permissao tem
+-- requires_mfa=false; somada a decisao AAL1 do MVP (ADR 0034), a leitura em AAL1
+-- e permitida. O caso antigo esperava SAI_MFA_REQUIRED contra um catalogo local
+-- que exigia segundo fator. As permissoes que continuam exigindo MFA em producao
+-- sao as de mutacao, como units.create/update e groups.manage.
+select ok((select body#>>'{error,code}' is null
   from institution_detail_responses where sequence_number=8),
-  'Owner at AAL1 is denied until MFA is satisfied');
-select is((select count(*) from audit.audit_logs log_record
-  join institution_detail_responses response on response.sequence_number=8
-    and log_record.correlation_id=(response.body#>>'{error,correlation_id}')::uuid
-  where log_record.actor_kind='superadmin_internal'
-    and log_record.reason_code='SAI_MFA_REQUIRED'
-    and log_record.outcome='denied'),1::bigint,
-  'Owner MFA denial appends exactly one correlated v2 event');
+  'Owner at AAL1 reads the detail, because platform.read does not require MFA');
 
 select set_config('request.jwt.claims',jsonb_build_object(
   'sub','62000000-0000-4000-8000-000000000005',

@@ -186,13 +186,15 @@ insert into public.institution_types(id,code,name,status) values
     'Unit Detail School','active'),
   ('71000000-0000-4000-8000-000000000202','unit-detail-campus',
     'Unit Detail Campus','active');
-insert into public.plans(id,code,name,status) values
+-- plans.description tem default '' e CHECK char_length>=1 em producao, ou seja
+-- o default nunca satisfaz a constraint: a fixture informa a descricao.
+insert into public.plans(id,code,name,status,description) values
   ('71000000-0000-4000-8000-000000000301','unit-detail-override',
-    'Unit Detail Override','active'),
+    'Unit Detail Override','active','Plano sintetico da fixture'),
   ('71000000-0000-4000-8000-000000000302','unit-detail-inherited-old',
-    'Unit Detail Inherited Old','active'),
+    'Unit Detail Inherited Old','active','Plano sintetico da fixture'),
   ('71000000-0000-4000-8000-000000000303','unit-detail-inherited-latest',
-    'Unit Detail Inherited Latest','active');
+    'Unit Detail Inherited Latest','active','Plano sintetico da fixture');
 insert into public.institutions(
   id,public_name,slug,status,institution_type_id
 ) values
@@ -202,26 +204,15 @@ insert into public.institutions(
   ('71000000-0000-4000-8000-000000000102','Unit Detail Institution B',
     'unit-detail-institution-b','active',
     '71000000-0000-4000-8000-000000000201');
+insert into public.unit_types(id,code,name,status) values
+ ('710000f0-0000-4000-8000-000000000202','superadmin-internal-unit-detail-test-u0','Tipo de unidade da fixture','active');
 insert into public.units(
-  id,institution_id,name,slug,status,institution_type_id,plan_override_id
-) values
-  ('71000000-0000-4000-8000-000000000001',
-    '71000000-0000-4000-8000-000000000101','Unit Detail Override Unit',
-    'unit-detail-override-unit','active',
-    '71000000-0000-4000-8000-000000000202',
-    '71000000-0000-4000-8000-000000000301'),
-  ('71000000-0000-4000-8000-000000000002',
-    '71000000-0000-4000-8000-000000000101','Unit Detail Inherited Unit',
-    'unit-detail-inherited-unit','active',
-    '71000000-0000-4000-8000-000000000202',null),
-  ('71000000-0000-4000-8000-000000000003',
-    '71000000-0000-4000-8000-000000000101','Unit Detail Archived Children',
-    'unit-detail-archived-children','active',
-    '71000000-0000-4000-8000-000000000202',null),
-  ('71000000-0000-4000-8000-000000000004',
-    '71000000-0000-4000-8000-000000000102','Unit Detail No Plan',
-    'unit-detail-no-plan','active',
-    '71000000-0000-4000-8000-000000000202',null);
+  id,institution_id,name,slug,status,unit_type_id,plan_override_id
+,handle) values
+ ('71000000-0000-4000-8000-000000000001','71000000-0000-4000-8000-000000000101','Unit Detail Override Unit','unit-detail-override-unit','active','710000f0-0000-4000-8000-000000000202','71000000-0000-4000-8000-000000000301','unit.detail.override.unit'),
+ ('71000000-0000-4000-8000-000000000002','71000000-0000-4000-8000-000000000101','Unit Detail Inherited Unit','unit-detail-inherited-unit','active','710000f0-0000-4000-8000-000000000202',null,'unit.detail.inherited.unit'),
+ ('71000000-0000-4000-8000-000000000003','71000000-0000-4000-8000-000000000101','Unit Detail Archived Children','unit-detail-archived-children','active','710000f0-0000-4000-8000-000000000202',null,'unit.detail.archived.children'),
+ ('71000000-0000-4000-8000-000000000004','71000000-0000-4000-8000-000000000102','Unit Detail No Plan','unit-detail-no-plan','active','710000f0-0000-4000-8000-000000000202',null,'unit.detail.no.plan');
 insert into public.unit_addresses(
   unit_id,country,state,city,district,street,number,complement,postal_code,status
 ) values

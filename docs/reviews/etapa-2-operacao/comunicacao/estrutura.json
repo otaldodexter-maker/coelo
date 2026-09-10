@@ -1,15 +1,15 @@
 {
  "grupo": "estrutura",
- "revision": 20,
+ "revision": 21,
  "round": "E2-R03-20260910",
- "updatedAt": "2026-09-10T16:50:00-03:00",
+ "updatedAt": "2026-09-10T18:05:00-03:00",
  "app": "Claude",
  "modelo": "Opus 5 (1M context)",
  "conversa": "R03-P4-estrutura",
  "coordenador": "coelo-af (Coordenacao R03); ACK recebido na revisao 18",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-estrutura",
  "branch": "work/etapa2-r03-estrutura",
- "head": "66022b341",
+ "head": "a61a6d862 mais os candidatos do catalogo, ver commits",
  "upstream": "origin/work/etapa2-r03-estrutura",
  "base": "origin/dev 347d4cf8a, ja com a baseline de producao 20260910000000 e os lotes 1 e 2 aplicados",
  "incidenteDeCanal": "Esta revisao foi reconstruida. As revisoes 1 a 17 foram gravadas em docs/reviews/etapa-2-operacao/comunicacao/estrutura.json no CHECKOUT PRINCIPAL, sem commit, e desapareceram: o arquivo voltou ao conteudo da rodada anterior (revisao 52 da E2-NOTURNA). A causa provavel e a Fase 0 operar no mesmo checkout como escritora unica de dev e ter feito checkout/reset que descartou a modificacao nao commitada. Licao para a rodada: arquivo de comunicacao nao commitado no checkout principal nao e canal duravel enquanto outra frente escreve ali. A partir desta revisao passo a versionar a copia na minha worktree/branch tambem, para que o estado sobreviva.",
@@ -112,6 +112,20 @@
   "Decisao RODAPE do Owner implementada no frame compartilhado, com os tres testes que afirmavam o comportamento antigo reescritos.",
   "Regra nova do chat aplicada nos quatro formularios do recorte e gravada nas skills coelo-ui."
  ],
+ "preflightDoCoordenador": {
+  "recebido": "coelo-af rodou o preflight do realm interno e da cadeia de Locais sobre a baseline as 16:45 e devolveu os erros exatos.",
+  "corrigidoPorMim": [
+   "Fixtures de units em group_detail, unit_detail e institution_list_filter: unit_types proprio, unit_type_id e handle derivado do slug com ponto no lugar do hifen, porque o hifen nao passa no CHECK da coluna. Cobre os 125 erros de group_detail.",
+   "Fixtures de plans em list_filter e unit_detail: producao tem plans.description com default '' e CHECK char_length>=1, ou seja o default nunca satisfaz a constraint. Cobre os 91 erros de list_filter.",
+   "Caso 15 de institution_detail (Owner em AAL1): conferido antes de mexer, porque afrouxar asserção de seguranca por indicacao de terceiro nao se faz. superadmin_institution_detail_v2 exige platform.read e no seed de producao essa permissao tem requires_mfa=false; com a decisao AAL1 do MVP a leitura e permitida. As permissoes que continuam exigindo MFA em producao sao as de mutacao (units.create, units.update, groups.manage) e seguem cobertas."
+  ],
+  "candidatosNovos": [
+   "candidatos/estrutura/20260910180300_superadmin_internal_unit_detail_v2_baseline.sql: junta public.unit_types por unit_type_id em vez de institution_types por institution_type_id, que e coluna inexistente em producao.",
+   "candidatos/estrutura/20260910180400_superadmin_location_catalog_v2_baseline.sql: a guarda de ACL deixa de comparar a ACL com um array literal de nove entradas, que era retrato de cadeia local e muda com a versao do Postgres (MAINTAIN so existe do 17 em diante), e passa a afirmar o invariante: quem nao e service_role nem dono nao escreve, anon e PUBLIC nao tem nada, e nenhuma concessao e grantable."
+  ],
+  "naoAtacado": "Caso 24 de institution_edit_core (root and address partial merge). Nao e MFA nem fixture de units/plans; pedi o erro exato ao coordenador em vez de adivinhar. Suspeita registrada: producao tem institution_addresses.country com default 'BR' enquanto o contrato exige o literal 'Brasil'.",
+  "ordem": "Se o lote 4 for aplicado antes do catalogo ficar verde, a cadeia de Locais e os tres pacotes 1800xx continuam fora, porque todos dependem dele."
+ },
  "gateDaBaseline": {
   "pedido": "Reprovar os tres pacotes de Locais sobre a baseline e compor SupabaseUnitDirectoryRepository/SupabaseGroupDirectoryRepository.",
   "reemissao": [
