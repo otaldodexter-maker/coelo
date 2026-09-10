@@ -261,9 +261,13 @@ export async function handleHappensMediaRequest(
         .from(String(descriptor.bucket_id))
         .createSignedUploadUrl(String(descriptor.object_key), { upsert: true });
       if (signed.error) throw new Error("media_sign_failed");
+      // O bucket vai ANUNCIADO no ramo legado para que o cliente pare de
+      // fixa-lo. Isso nao piora a exposicao: o cliente ja o conhecia por
+      // constante. Quem nasce no ramo R2 nao recebe bucket nem chave.
       return respond(origin, 200, {
         asset_id: descriptor.asset_id,
         storage_provider: "supabase_mvp",
+        bucket_id: descriptor.bucket_id,
         object_key: descriptor.object_key,
         upload_token: signed.data.token,
       });
