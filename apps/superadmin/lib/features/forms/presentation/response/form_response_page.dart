@@ -992,8 +992,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
     _ => '',
   };
   String? _dateValue(String itemId) => switch (_answers[itemId]?.value) {
-    FormDateValue(:final value) =>
-      '${value.day.toString().padLeft(2, '0')}/${value.month.toString().padLeft(2, '0')}/${value.year}',
+    FormDateValue(:final value) => _civilDate(value),
     _ => null,
   };
 
@@ -1231,12 +1230,18 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
   }
 }
 
+String _civilDate(DateTime value) =>
+    '${value.day.toString().padLeft(2, '0')}/'
+    '${value.month.toString().padLeft(2, '0')}/'
+    '${value.year}';
+
 String _answerLabel(FormAnswer answer) => switch (answer.value) {
   FormShortTextValue(:final value) => value,
   FormIntegerValue(:final value) => '$value',
   FormDecimalValue(:final value) => '$value',
   FormMoneyValue(:final minorUnits) => FormNumericLimits.format(FormItemKind.money, minorUnits),
-  FormDateValue(:final value) => '${value.day}/${value.month}/${value.year}',
+  // Mesmo formato do campo: um valor nao pode ter duas leituras na mesma tela.
+  FormDateValue(:final value) => _civilDate(value),
   FormYesNoValue(:final value) => value ? 'Sim' : 'Não',
   FormChoiceValue(:final optionIds) => optionIds.join(', '),
   FormScaleValue(:final value) => '$value',
