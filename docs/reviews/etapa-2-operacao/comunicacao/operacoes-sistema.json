@@ -1,6 +1,6 @@
 {
-  "revision": 50,
-  "updated_at": "2026-09-10T04:12:32-03:00",
+  "revision": 54,
+  "updated_at": "2026-09-10T04:15:27-03:00",
   "group": "operacoes-sistema",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) — claude-opus-5[1m]",
@@ -1172,7 +1172,7 @@
       "camada": "backend",
       "estado_atual": "pending-verification",
       "estado_proposto": "blocked-decision",
-      "delta": "A guarda de revisao do delete de imagem existe no banco desde a migration de recibos e nunca roda, porque o cliente chama a forma legada de dois argumentos, cujo corpo le a revisao corrente. Fechar exige o dominio de imagem expor a revisao do ativo, que e mudanca de contrato e decisao do Owner, nao correcao noturna.",
+      "delta": "A guarda de revisao do delete de imagem existe no banco desde a migration de recibos e nao e exercida pelo caminho que o cliente usa, porque o cliente chama a forma legada de dois argumentos, cujo corpo le a revisao corrente. Fechar exige o dominio de imagem expor a revisao do ativo, que e mudanca de contrato e decisao do Owner, nao correcao noturna. PESO DA EVIDENCIA: o lado do cliente esta MEDIDO e fixado no teste de contrato, so vao dois argumentos; o comportamento do corpo da forma legada foi LIDO no SQL e nao executado contra banco nenhum. O handoff ja tinha essa distincao e esta linha nao tinha.",
       "evidencia": "commit e14718844; supabase_meal_plan_image_repository.dart:117; migration 20260820230000 linhas 632 e 709"
     }
   ],
@@ -1776,7 +1776,15 @@
       "tarefas_em_segundo_plano": "nenhuma ativa.",
       "worktrees_criadas_por_mim": "nenhuma. Trabalhei na worktree que recebi, Coelo.worktrees/e2-noturna-operacoes-sistema, e nao a removo.",
       "containers": "nenhum. Nao subi Docker nem replay SQL local.",
-      "arquivos_nao_rastreados": "nenhum na minha worktree. Os rascunhos de medicao ficaram no diretorio temporario da sessao, fora do repositorio, e os quatro arquivos zz_scratch que precisei criar dentro de test/ foram apagados depois de usados. Os arquivos paramroutes.txt e sweep.txt citados em C:/cdchk NAO sao meus: nunca escrevi naquela worktree."
+      "arquivos_nao_rastreados": "nenhum na minha worktree. Os rascunhos de medicao ficaram no diretorio temporario da sessao, fora do repositorio, e os quatro arquivos zz_scratch que precisei criar dentro de test/ foram apagados depois de usados. Os arquivos paramroutes.txt e sweep.txt citados em C:/cdchk NAO sao meus: nunca escrevi naquela worktree.",
+      "processos_dart_medidos": {
+        "hora": "2026-09-10T04:13:02-03:00",
+        "comando": "Get-Process dart,flutter_tester",
+        "contagem": "32 processos vivos na maquina: 21 dart e 11 flutter_tester. O mais antigo comecou 09/09 as 14:02, catorze horas antes desta medicao.",
+        "nao_matei_nada": "Conforme o protocolo: nao matei nenhum. O coordenador cruza as seis frentes e mata o conjunto no fechamento.",
+        "CORRECAO_DO_QUE_EU_DECLAREI": "O meu item 4 dizia 'processos filhos: nenhum'. Isso estava errado pelo motivo exato que o coordenador antecipou: eu olhei o que ABRI deliberadamente e que terminou — as duas corridas em segundo plano — e nao o que FICOU na maquina. Cada corrida de flutter test deixa processos vivos, e eu rodei dezenas de corridas nesta noite. A contagem de 32 e da maquina inteira, compartilhada com as outras frentes, e eu nao consigo atribuir quantos sao meus: nao registrei PID por corrida. Declaro a contagem total e a impossibilidade de atribuir, em vez de estimar uma fatia.",
+        "licao": "Terceira ocorrencia da mesma lei na noite, agora em processo: caminho declarado, recurso declarado e processo declarado erram todos por serem escritos a partir do que o autor lembra de ter feito, e nao de uma medicao do estado."
+      }
     },
     "6_citacoes_seguidas": {
       "metodo": "45 SHAs citados nos meus documentos e nos comentarios dos testes que escrevi, verificados por ANCESTRALIDADE em origin/dev, e 40 caminhos conferidos a partir da RAIZ do repositorio, nao por basename.",
@@ -1829,5 +1837,19 @@
       "No artigo de limites de tamanho havia CONTRADICAO minha: o formatador nao trunca valor herdado, e ao mesmo tempo eu afirmava que a entrada limitada garante payload valido. Corrigido, e o caso residual passou de frase a MEDICAO em 32c01a094."
     ],
     "o_que_isso_diz": "Oito correcoes, e nenhuma delas mudou um achado: mudaram a forca com que o achado estava escrito. Foi o uso mais produtivo dos ultimos trinta minutos porque e o unico tipo de erro que ainda dava para corrigir sem risco de regressao."
+  },
+  "reverificacao_das_promocoes_terminais": {
+    "hora": "2026-09-10T04:14:10-03:00",
+    "por_que": "As unicas acoes que eu proponho levar a estado TERMINAL sao quatro: errors.403, errors.404, errors.500 e errors.503. Promocao terminal e a afirmacao mais cara da rodada, porque fecha a acao; entao ela e a ultima coisa que eu re-mediria antes de entregar.",
+    "medido_agora": "flutter test test/features/errors -> 33 PASS, 2 SKIP, 0 FAIL. E na corrida completa das 03:20, ZERO das 144 falhas esta em features/errors.",
+    "dois_skip": "Sao os dois goldens de 409, que pertencem a errors.409 e continuam em blocked-decision por falta de baseline aprovada. Nao tocam nas quatro promovidas.",
+    "conclusao": "As quatro promocoes continuam sustentadas por medicao feita nesta revisao, e nao herdadas da medicao de 19h."
+  },
+  "entrega_chegou_ao_destino": {
+    "hora": "2026-09-10T04:15:27-03:00",
+    "metodo": "git ls-tree -r --name-only origin/dev para uma lista unica, e grep -qxF de cada caminho contra ela. NAO usei git cat-file com caminho como argumento: o MSYS converte dois-pontos e barras e devolve o mesmo codigo de uma ausencia real, o que ja produziu um falso 'ausente' para outra frente.",
+    "conferidos": "14 artefatos: o handoff, os dois relatorios novos de hoje, quatro artigos de conhecimento, cinco arquivos de teste de contrato e os dois testes de Importacoes e de Cardapios.",
+    "resultado": "14 de 14 presentes em origin/dev. Publicado nao e o mesmo que entregue, e entregue nao e o mesmo que integrado: isto verifica a terceira, que e a que o Owner le.",
+    "o_que_isto_nao_prova": "Nao prova que alguem leu. Prova que o caminho que o leitor usa contem o arquivo."
   }
 }

@@ -1,6 +1,6 @@
 {
-  "revision": 49,
-  "updated_at": "2026-09-10T04:09:24-03:00",
+  "revision": 51,
+  "updated_at": "2026-09-10T04:15:57-03:00",
   "group": "formularios-cuidado",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
@@ -8,12 +8,12 @@
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-formularios-cuidado",
   "branch": "work/etapa2-noturna-formularios-cuidado",
-  "head": "1d91908e9ff1f75675840087bed5097e33f419d1",
+  "head": "3198d61fbfc2e0dbf2adb7793567864173100a99",
   "upstream": {
     "branch": "origin/work/etapa2-noturna-formularios-cuidado",
     "ahead": 0,
     "behind": 0,
-    "medido_em": "2026-09-10T04:04:20-03:00"
+    "medido_em": "2026-09-10T04:15:57-03:00"
   },
   "base": "d784462c168d22fdb7090b7de1ef7db554ad5107",
   "base_observed": "d784462c168d22fdb7090b7de1ef7db554ad5107",
@@ -234,7 +234,7 @@
       "resumo": "limites de selecao ditos a pessoa antes de o servidor recusar; o rascunho autosalvava e so o envio falhava",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:04:20-03:00"
+      "medido_em": "2026-09-10T04:15:57-03:00"
     },
     {
       "sha": "745b1fbdf",
@@ -242,7 +242,7 @@
       "resumo": "metodo, nove autocorrecoes, tres bloqueios falsos e censo de datas",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:04:20-03:00"
+      "medido_em": "2026-09-10T04:15:57-03:00"
     },
     {
       "sha": "e2912506c",
@@ -250,7 +250,7 @@
       "resumo": "triagem das 23 imagens de golden",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:04:20-03:00"
+      "medido_em": "2026-09-10T04:15:57-03:00"
     },
     {
       "sha": "79bc782b7",
@@ -258,7 +258,7 @@
       "resumo": "trava da semantica OU e dos padroes de selecao",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:04:20-03:00"
+      "medido_em": "2026-09-10T04:15:57-03:00"
     },
     {
       "sha": "296e349a7",
@@ -266,7 +266,7 @@
       "resumo": "trava do que significa respondida; dois testes meus corrigidos",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:04:20-03:00"
+      "medido_em": "2026-09-10T04:15:57-03:00"
     },
     {
       "sha": "925a6e4ea",
@@ -274,7 +274,7 @@
       "resumo": "padrao de tamanho de texto do servidor, achado por mutacao",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:04:20-03:00"
+      "medido_em": "2026-09-10T04:15:57-03:00"
     },
     {
       "sha": "1e694e7e9",
@@ -282,7 +282,7 @@
       "resumo": "a unica citacao que o leitor nao alcanca, sinalizada",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:04:20-03:00"
+      "medido_em": "2026-09-10T04:15:57-03:00"
     },
     {
       "sha": "8111ebb67",
@@ -290,7 +290,7 @@
       "resumo": "bateria de mutacao e a lei do instrumento, tornadas duraveis",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:04:20-03:00"
+      "medido_em": "2026-09-10T04:15:57-03:00"
     },
     {
       "sha": "de5cdb2f8",
@@ -298,7 +298,7 @@
       "resumo": "condicao composta da superficie clara de Saude e Cuidado",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:04:20-03:00"
+      "medido_em": "2026-09-10T04:15:57-03:00"
     },
     {
       "sha": "995156f15",
@@ -306,7 +306,7 @@
       "resumo": "triagem dos quatro goldens de Saude e Cuidado, com o achado de conteudo",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:04:20-03:00"
+      "medido_em": "2026-09-10T04:15:57-03:00"
     },
     {
       "sha": "ff759d211",
@@ -314,7 +314,7 @@
       "resumo": "o mutante equivalente, terceira forma de um nao pegou enganar",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:04:20-03:00"
+      "medido_em": "2026-09-10T04:15:57-03:00"
     },
     {
       "sha": "99d882fe2",
@@ -322,7 +322,7 @@
       "resumo": "o autosave do editor nao roda no aplicativo",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:04:20-03:00"
+      "medido_em": "2026-09-10T04:15:57-03:00"
     },
     {
       "sha": "9747a0aa2",
@@ -330,7 +330,7 @@
       "resumo": "varredura das dependencias que ninguem fornece, e a licao de nomeacao",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:04:20-03:00"
+      "medido_em": "2026-09-10T04:15:57-03:00"
     },
     {
       "sha": "d1e8069c0",
@@ -338,7 +338,7 @@
       "resumo": "perda de regras de publico, levantada como pergunta ao Owner",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:04:20-03:00"
+      "medido_em": "2026-09-10T04:15:57-03:00"
     },
     {
       "sha": "1d91908e9",
@@ -346,7 +346,45 @@
       "resumo": "camada pronta sem superficie: uma forma, seis tamanhos",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:04:20-03:00"
+      "medido_em": "2026-09-10T04:15:57-03:00"
+    },
+    {
+      "sha": "be0756460",
+      "tipo": "evidencia",
+      "resumo": "marca de superacao dos numeros de recorte onde o leitor os encontra",
+      "integrado_em_dev": true,
+      "medido_em": "2026-09-10T04:15:57-03:00",
+      "criterio": "git merge-base --is-ancestor <sha> origin/dev"
+    },
+    {
+      "sha": "c0a8b498e",
+      "tipo": "evidencia",
+      "resumo": "quarta linha de bloqueio errada e a auditoria exaustiva",
+      "integrado_em_dev": true,
+      "medido_em": "2026-09-10T04:15:57-03:00",
+      "criterio": "git merge-base --is-ancestor <sha> origin/dev"
+    },
+    {
+      "sha": "5ef7c5648",
+      "tipo": "evidencia",
+      "resumo": "propaga a correcao das quatro linhas para o handoff",
+      "integrado_em_dev": true,
+      "medido_em": "2026-09-10T04:15:57-03:00",
+      "criterio": "git merge-base --is-ancestor <sha> origin/dev"
+    },
+    {
+      "sha": "60fd5f173",
+      "tipo": "evidencia",
+      "resumo": "desfaz uma coincidencia numerica que se lia como repeticao",
+      "integrado_em_dev": false,
+      "medido_em": "2026-09-10T04:15:57-03:00"
+    },
+    {
+      "sha": "3198d61fb",
+      "tipo": "evidencia",
+      "resumo": "cabecalho de estado final no ponto onde o leitor abre o handoff",
+      "integrado_em_dev": false,
+      "medido_em": "2026-09-10T04:15:57-03:00"
     }
   ],
   "tracker_delta_proposto": [
@@ -1233,11 +1271,17 @@
       "99d882fe2",
       "9747a0aa2",
       "d1e8069c0",
-      "1d91908e9"
+      "1d91908e9",
+      "be0756460",
+      "c0a8b498e",
+      "5ef7c5648"
     ],
-    "retidos": [],
+    "retidos": [
+      "60fd5f173",
+      "3198d61fb"
+    ],
     "definicao_de_retido": "publicado na branch do grupo e ainda nao ancestral de origin/dev; NADA esta apenas local",
-    "medido_em": "2026-09-10T04:04:20-03:00"
+    "medido_em": "2026-09-10T04:15:57-03:00"
   },
   "recursos": {
     "processos_filhos": [],
@@ -1275,6 +1319,13 @@
       "estado": "a funcionalidade esta construida, testada e verde, e INALCANCAVEL: _scheduleAutosave retorna quando authoringApi e nulo, e authoringApi aparece 22 vezes dentro de forms_editor_page.dart e em nenhum outro lugar de lib/. O unico fornecedor no repositorio e um arquivo de teste.",
       "porque_e_pergunta": "ligar significa persistir trabalho nao confirmado sem o autor pedir; e decisao de produto, nao conserto de fiacao",
       "evidencia": "commit 99d882fe2"
+    },
+    {
+      "id": "forms.create.limites-de-selecao-sem-autoria",
+      "pergunta": "Se nenhum autor consegue definir minimo e maximo de selecao pela interface, de onde vem uma definicao que os tenha?",
+      "estado": "o DTO transporta min_selections e max_selections nos dois sentidos e o editor PRESERVA o que veio da definicao, mas nao ha campo para autora-los. A guarda do cliente que eu entreguei protege o respondente de qualquer forma, porque o servidor recusa a contagem fora da faixa.",
+      "porque_e_pergunta": "ou existe caminho de autoria fora do editor, ou esses limites so existem em dados de migration e seed; nos dois casos o proximo passo e o controle de autoria, e nao um detalhe",
+      "evidencia": "commit b4d0e6af7 e a nota de alcance em 2026-09-10-metodo-e-autocorrecao.md"
     }
   ],
   "achados_sem_correcao": [
@@ -1306,7 +1357,7 @@
     "achado": "a execucao da suite completa regravou 54 PNG RASTREADOS de failures/ de support e help_center, que nao sao do meu recorte. Restaurados com git checkout; nao eram trabalho e nao podiam viajar como modificacao minha.",
     "restante": "apenas os dois pubspec.lock nao rastreados, ja rastreados em dev pelo coordenador"
   },
-  "head_medido_em": "2026-09-10T04:04:20-03:00",
+  "head_medido_em": "2026-09-10T04:15:57-03:00",
   "status_medido_em": "2026-09-10T04:04:20-03:00",
   "auditoria_de_apodrecimento": {
     "quando": "2026-09-10T04:04:20-03:00",
@@ -1333,5 +1384,20 @@
     },
     "placar_final": "QUATRO linhas minhas estavam erradas e as QUATRO eram as que eu havia copiado do rastreador sem testar. Nenhuma que eu mesmo verifiquei estava errada.",
     "licao": "a taxa de erro nao caiu com o tempo porque a auditoria era oportunista; so a varredura exaustiva encerra a duvida. Uma linha de bloqueio parece informacao e por isso ninguem a testa, mas e uma hipotese nao verificada."
+  },
+  "analyze": {
+    "medido_em": "2026-09-10T04:13:34-03:00",
+    "apps_superadmin": "limpo em lib e test",
+    "packages": {
+      "coelo_api": "2 issues",
+      "coelo_auth": "limpo",
+      "coelo_domain": "limpo",
+      "coelo_tokens": "limpo",
+      "coelo_ui_admin": "limpo",
+      "coelo_ui_core": "limpo"
+    },
+    "detalhe": "os dois de coelo_api sao inference_failure_on_collection_literal no MESMO arquivo, packages/coelo_api/test/locations/location_write_commands_dto_test.dart:289. NAO sao meus: nenhum commit meu toca coelo_api, e o arquivo foi tocado por ultimo em 188cf2ba9 de 2026-09-08, de Locais.",
+    "observacao": "\"analyze limpo\" reportado na rodada cobria apps/superadmin e nao os pacotes. E a mesma familia do denominador furado, aplicada a analise: verdadeira para o caminho medido, lida como verdadeira para o repositorio. Varrer os sete pacotes custa menos de um minuto.",
+    "gravidade": "aviso, nao erro; nao bloqueia entrega e nao muda comportamento do produto"
   }
 }

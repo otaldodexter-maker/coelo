@@ -1,16 +1,16 @@
 {
-  "revision": 55,
-  "updated_at": "2026-09-10T04:10:00-03:00",
+  "revision": 58,
+  "updated_at": "2026-09-10T04:19:00-03:00",
   "group": "chat-comunicacoes",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) - claude-opus-5[1m]",
-  "status": "active; segunda conferencia externa entregue; passando o que vivia so no canal para o arquivo",
+  "status": "consolidacao; recorte executavel entregue e integrado; aguardando chamada de congelamento das 04:40",
   "coordinator": "Claude (coelo-73)",
   "ack_received": "revisao 1 aceita; coordenacao.json rev 2, commit 920f23199",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-chat-comunicacoes",
-  "branch": "work/etapa2-noturna-chat-comunicacoes",
-  "head": "c1e6756c7",
-  "upstream": "origin/work/etapa2-noturna-chat-comunicacoes = c1e6756c7 (0/0)",
+  "branch": "work/etapa2-noturna-chat-volta-mobile",
+  "head": "fb31e11dc",
+  "upstream": "origin/work/etapa2-noturna-chat-volta-mobile = fb31e11dc (0/0)",
   "base": "d784462c1",
   "router_patch_branch": {
     "branch": "work/etapa2-noturna-chat-comunicacoes-router-from",
@@ -125,10 +125,10 @@
     "E2E": "0/13. Sem aplicacao remota e sem execucao em rota normal com ator e permissao reais, nada e ponta a ponta. local-green nao e E2E."
   },
   "pacotes_remotos_aguardando_decisao_nominal": [
-    "packages/coelo_database/migrations/20260909130000_superadmin_internal_chat_receipts_edit_revoke_v2.sql - forward-only, guarda de dependencia, rotulos de permissao corrigidos em 2b1293227 (sem eles NAO aplicaria em base que ja tenha 20260811215451)",
-    "packages/coelo_database/migrations/20260909140000_superadmin_notice_metrics_by_generation_v1.sql - escopa metricas por geracao; sem regressao quando current_publication_job_id e nulo"
+    "packages/coelo_database/migrations/20260909191000_superadmin_internal_chat_receipts_edit_revoke_v2.sql - forward-only, guarda de dependencia, rotulos de permissao corrigidos em 2b1293227 (sem eles NAO aplicaria em base que ja tenha 20260811215451)",
+    "packages/coelo_database/migrations/20260909191100_superadmin_notice_metrics_by_generation_v1.sql - escopa metricas por geracao; sem regressao quando current_publication_job_id e nulo"
   ],
-  "blocker": "chat.attach: espera o candidato 20260909215000 ser APLICADO, decisao do Owner, e um gateway de escrita proprio de Chat no catalogo de midia — trabalho com precedente em Acontece e no XLSX de Formularios. Os dois pacotes SQL: esperam autorizacao nominal. notices.publish: NAO esta bloqueado por terceiro; e implementacao normal com acoplamento conhecido ao worker que ja existe desde agosto.",
+  "blocker": "chat.attach: espera o candidato 20260909215000 ser APLICADO, decisao do Owner, e um gateway de escrita proprio de Chat no catalogo de midia. E trabalho com precedente em Acontece e no XLSX de Formularios, e o discriminador 'chat-attachment' ja existe revisado. Os dois pacotes SQL esperam autorizacao nominal. notices.publish NAO esta bloqueado por terceiro: e implementacao normal com acoplamento conhecido ao worker que ja existe desde agosto — a linha de bloqueio anterior sobre pg_cron era invencao minha e foi retratada.",
   "next_step": "Consolidacao para a pre-entrega, com checkpoint a cada trinta minutos.",
   "wip": {
     "retido": "nenhum",
@@ -950,5 +950,41 @@
     "revisoes_no_dev_no_momento_da_passada": "acessos-pessoas 55, alunos-rotina 31, chat-comunicacoes 51, coordenacao 28, estrutura 51, formularios-cuidado 46, operacoes-sistema 48, perfil-para-voce 38, publicacoes-midia 40.",
     "instrumentos": "Os tres detectores foram calibrados ANTES desta passada, e um deles estava furado e foi corrigido. Nenhuma secao usa cat-file com caminho.",
     "o_que_esta_passada_NAO_cobre": "Nao verifica conteudo semantico de arquivo alterado, so presenca e contagem. Nao cobre trabalho que nunca chegou a ser commitado em maquina nenhuma. E o detector de regressao so funciona em arquivo com contador monotonico, entao relatorios em markdown e artigos de conhecimento seguem sem instrumento."
+  },
+  "medicao_final_do_recorte": {
+    "base": "origin/dev b39e04c5a",
+    "comando": "flutter test <17 caminhos> a partir de apps/superadmin, reporter PADRAO. Caminhos testados por existencia antes de rodar: ausentes=0.",
+    "resultado": "397 PASS / 12 FAIL.",
+    "as_12_enumeradas": [
+      "superadmin_chat_page_golden_test: renders authorised chat data at 1024 in dark",
+      "superadmin_chat_page_golden_test: renders authorised chat data at 1024 in light",
+      "superadmin_chat_page_golden_test: renders authorised chat data at 1440 in dark",
+      "superadmin_chat_page_golden_test: renders authorised chat data at 1440 in light",
+      "superadmin_chat_page_golden_test: renders authorised chat data at 375 in dark",
+      "superadmin_chat_page_golden_test: renders authorised chat data at 375 in light",
+      "superadmin_chat_page_golden_test: renders authorised chat data at 768 in dark",
+      "superadmin_chat_page_golden_test: renders authorised chat data at 768 in light",
+      "superadmin_chat_page_golden_test: renders authorised chat data with reduced motion",
+      "notice_directory_golden_test: matches the communication directory across canonical breakpoints",
+      "notice_directory_golden_test: matches the communication directory at 200 percent text",
+      "notice_form_golden_test: matches the initial notice wizard on mobile and desktop"
+    ],
+    "dono": "Todas goldens, e a deriva e da BASE e nao do meu recorte: diagnosticada como MaterialIcons vindo do SDK local sem pin, com o texto tambem fantasmando, o que torna insuficiente vendorizar so a fonte de icones.",
+    "estabilidade": "Os mesmos 12 nomes apareceram em 0736b900f, 0032b90c7 e b39e04c5a. Nao e contagem que coincide, sao os mesmos casos.",
+    "verificacao_de_conteudo_das_minhas_entregas": "Ancestralidade prova que o commit esta no historico, nao que o conteudo sobreviveu — eu mesmo tenho um revert na noite. Verifiquei o conteudo no dev: a chave dos cartoes de avisos esta la, a chave da volta no chat mobile esta la, e os tres arquivos de teste estao presentes.",
+    "vermelho_proposital": "principal_mixed_feed_pagination_red_test continua VERMELHO e pelo motivo certo — nenhum controle de continuacao encontrado. Verificado, porque vermelho proposital que fica verde sozinho e noticia."
+  },
+  "campos_que_estavam_velhos": {
+    "achado": "Numa revisao de consistencia do proprio arquivo, encontrei head, branch e upstream apontando para o estado de horas atras: head c1e6756c7 na branch work/etapa2-noturna-chat-comunicacoes.",
+    "por_que_enganava": "Quem lesse o campo head tomaria c1e6756c7 como o meu estado final e perderia os tres commits da madrugada — cb0a386d8, 05fdcf2d5 e fb31e11dc — que estao noutra branch.",
+    "corrigido_para": "head fb31e11dc, branch work/etapa2-noturna-chat-volta-mobile, upstream origin/work/etapa2-noturna-chat-volta-mobile = fb31e11dc (0/0).",
+    "licao": "Campo de cabecalho envelhece em silencio porque ninguem o rele: o trabalho novo vai para chaves novas e o topo do arquivo fica descrevendo a manha. E a mesma familia de 'o registro nao acompanha o dado', so que dentro do proprio registro."
+  },
+  "citacao_de_caminho_desatualizada": {
+    "achado": "A lista de pacotes remotos citava os nomes ANTIGOS das duas migrations, 20260909130000 e 20260909140000, anteriores a renomeacao para serializacao de fila.",
+    "verificacao": "Por git ls-tree contra origin/dev: os dois caminhos antigos estao AUSENTES e os dois novos, 20260909191000 e 20260909191100, estao PRESENTES.",
+    "por_que_importa": "Quem seguisse a citacao para aprovar o pacote nao acharia arquivo, e 'arquivo nao encontrado' na hora da autorizacao nominal parece pacote inexistente, nao caminho velho.",
+    "corrigido": "Os dois caminhos foram atualizados na lista.",
+    "nota_de_metodo": "Usei ls-tree e nao cat-file, porque a verificacao de caminho e justamente onde um falso AUSENTE seria indistinguivel do achado."
   }
 }
