@@ -165,6 +165,22 @@ São **três buracos independentes** no mesmo caminho, cada um suficiente sozinh
    "nunca existiu" de "existe no remoto e nunca foi versionado" — para recriar a
    base dá no mesmo, para saber quem escreveu não dá.
 
+**Ressalva que atravessa toda esta seção, e ela é a mesma evidência lida ao
+contrário:** o repositório comprovadamente **não espelha produção**. A prova está
+dentro do próprio achado — `app_private.unit_import_source_attestations` é
+referenciada por uma migration versionada e criada por nenhuma, e produção
+evidentemente a tem, senão aquela migration nunca teria sido aplicada lá. Logo,
+**ausência no repositório não prova ausência em produção**. Tudo o que está
+medido acima é sobre o repositório: a cadeia não replica, o conjunto local não
+cria tabela, e há objetos chamados e nunca criados. Nada disso afirma que uma RPC
+específica falta no banco remoto.
+
+Isso foi encontrado por uma frente auditando as próprias afirmações: ela vinha
+usando a cadeia quebrada como argumento para explicar por que não consegue provar
+SQL, e ao mesmo tempo usando o repositório como espelho fiel de produção para
+afirmar ausência. **Os dois usos são incompatíveis**, e ela tinha os dois fatos
+sem os ter cruzado.
+
 **A consequência é maior que E2E.** Recriar a base do zero — ambiente novo,
 recuperação de desastre, homologação de verdade — não é difícil hoje, é
 impossível sem um dump. E enquanto não houver caminho de recriação, homologação
@@ -667,8 +683,27 @@ compartilhado, em vez de corrigir só a tela que quebrou.
 2. **Baseline visual de `errors.409`**, que nunca existiu.
 3. **Visibilidade do leitor Principal no Sobre.** Não existe token de leitura em
    `profiles.about.*`, apenas manage, publish e update_official_data.
-4. **Contraste do chip DESTAQUE em Para Você:** 3,75:1 contra o mínimo AA de
-   4,5:1 para 11 px. Corrigir altera composição aprovada e move 20 goldens.
+4. **Contraste do chip DESTAQUE em Para Você**, agora medido dos dois lados e
+   com a causa isolada. **Tema claro: 3,75:1** contra o mínimo AA de 4,5:1 — o
+   número herdado estava certo. **Tema escuro: 6,25:1, passa** — e isso ninguém
+   tinha dito, o defeito é só do tema claro.
+
+   A causa não é escolha de valor, é estrutural: no tema claro **o véu e o texto
+   são a mesma cor**, `onPrimary` branco. Qualquer véu branco aproxima o chip do
+   texto. A curva foi medida: alfa 0 dá 4,66 e passaria; 0,08 dá 4,21; 0,16, que
+   é o atual, dá 3,75; 0,24 dá 3,32. **Não existe alfa de véu branco que
+   resolva** — só remover o véu, o que apaga o chip.
+
+   O que resolveria mantendo o chip: inverter o véu para o tom escuro da própria
+   marca. `orange950` a 16% sobre `orange500` dá **5,75:1**, usa token de paleta
+   existente, e fica simétrico com o tema escuro, que já veda com `orange950`.
+
+   Não foi aplicado porque o token é `scheme.onPrimary`, compartilhado — decisão
+   do `coelo-ui`. E o custo foi medido em vez de estimado: a troca **quebra 13 de
+   13 goldens** de `principal_for_you_preview_golden_test`. Revertida, árvore
+   limpa conferida. **A decisão é entre uma tela que não cumpre AA no tema claro
+   e treze referências aprovadas que precisam ser regravadas** — com o número dos
+   dois lados, que é o que faltava.
 5. **Contrato visual de Editar perfil.**
 6. **Contrato de UX de Lançamentos** (`daily-routine.publish`): o comando existe,
    a tela não, e a spec 021 não cobre Lançamentos.
