@@ -313,9 +313,36 @@ de um diretório do MVP, ou apenas fixture diferente; barato de confirmar por qu
 tem o recorte, e nenhuma das duas respostas aparece se os 129 forem tratados como
 bloco.
 
+**Atividades, 16 casos** — a maior das amostras, e falha em **todas** as
+larguras: 19%–32% em 375 e 768, 12%–13% em 1024, 9,8%–20,5% em 1440. Nas larguras
+largas o diff é centenas de vezes a assinatura de 837 pixels, então há conteúdo
+aqui também.
+
+**A proporção da amostra, cinco famílias e cerca de 48 casos: 14 são rebaseline
+seguro e cerca de 70% carregam componente que um rebaseline cego apagaria.** Duas
+horas antes, a hipótese de trabalho desta coordenação era que a deriva do
+cabeçalho explicaria a maior parte dos 129. Ela explica **uma** família inteira e
+a metade larga de outra.
+
 **A recomendação que sai disso:** rebaseline por família, não em bloco, e cada
 família com conteúdo passa antes pelo dono. Agenda pode ir hoje; Conta,
-Cardápios e Instituições, não.
+Cardápios, Instituições e Atividades, não. Se a decisão vier como "129 goldens,
+deriva de shell, autorizo rebaseline", ela **apaga mudança de produto em pelo
+menos quatro famílias**.
+
+Ressalvas, e elas são da própria frente que mediu: cinco famílias não são as 129;
+a amostra não é aleatória, porque duas foram escolha dela e três foram indicação
+minha; "componente de conteúdo" é o que foi medido nas imagens, sem investigar
+*qual* mudança; e parte do conteúdo pode ser fixture de teste e não produto — foi
+o que ela mesma levantou em Instituições e continua valendo para as outras.
+
+**Uma armadilha de ferramenta descoberta no caminho, que vale para quem repetir
+isto:** quando o caminho do golden é longo, o Flutter quebra a mensagem em duas
+linhas, e um `grep` de linha única devolve `Pixel test failed,` **sem percentual
+nenhum** — aconteceu em oito casos de Atividades. Quem lesse só aquilo reportaria
+a família como falha sem magnitude, ou contaria errado. É a terceira classe de
+"verde ou vermelho que engana" catalogada nesta rodada, junto do teste que
+sobrescreve outro e da string lida sem a asserção em volta.
 
 ## Bloqueio herdado é a espécie que mente
 
