@@ -89,10 +89,15 @@ limite no cliente seria regra nova, não correção.
 
 Declarar o limite numa constante do cliente resolve metade do problema: dá nome ao
 número e tira a duplicação entre campos. A outra metade é que essa constante é uma
-**cópia** do que o servidor exige, e cópia silenciosa envelhece. Outra frente mediu
-isso por mutação no mesmo dia: baixou um limite espelhado do servidor de 1000 para
-999 e **nenhum teste caiu**. O número existia, estava correto, e não havia nada
-afirmando que ele correspondia ao servidor.
+**cópia** do que o servidor exige, e cópia silenciosa envelhece. A frente
+formularios-cuidado mediu isso por mutação no mesmo dia: baixou um limite espelhado do
+servidor de 1000 para 999 e **nenhum teste caiu**. O número existia, estava correto, e
+não havia nada afirmando que ele correspondia ao servidor.
+
+Atribuição e limite do que eu conferi: a medição do 1000 para 999 é dela e **eu não a
+reproduzi**. O que eu conferi por conta própria é o fato equivalente no meu recorte —
+os limites de Agenda e de Planos não tinham nenhuma asserção até `52a9ce1ca`, e é por
+isso que o caso dela me convenceu em vez de apenas me informar.
 
 Então o contrato completo tem três partes, e a terceira é a que costuma faltar:
 

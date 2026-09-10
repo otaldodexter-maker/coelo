@@ -93,6 +93,15 @@ Assiduidade levantadas por alunos-rotina e pelos 40 objetos `app_private` que o
 SQL versionado chama e nao cria, medidos por perfil-para-voce. E leitura, nao
 mutacao.
 
+ATRIBUICAO, e o que eu conferi de cada numero. As cinco RPCs de Unidades sao medicao
+MINHA, com controle negativo e fixadas em teste. As cinco de Assiduidade sao de
+alunos-rotina e os 40 objetos `app_private` sao de perfil-para-voce: eu **nao reproduzi
+nenhum dos dois**, e os cito porque a acao que resolve e a mesma, nao porque eu os
+tenha verificado. Quem for decidir com base neles deve pedir a medicao a essas frentes.
+Do achado de `profile_about`, que tambem e de perfil-para-voce, eu conferi apenas a
+parte que entra no meu teste: que as tres tabelas nao sao criadas por nenhum arquivo do
+pacote. Que elas existam em producao nao foi verificado por ninguem esta noite.
+
 Nao e possivel decidir entre as duas daqui: a rodada decidiu nao executar
 operacao remota e nao ha autorizacao nominal do Owner para leitura de producao.
 Um `select` de catalogo resolveria em segundos e e exatamente o que a proxima

@@ -117,7 +117,9 @@ const _rpcsAusentesConhecidas = <String, String>{
 ///
 /// A unica migration versionada do dominio Sobre expoe somente a escrita, e a
 /// leitura depende inteiramente de RLS sobre tabelas que o versionamento nao
-/// descreve. A frente perfil-para-voce mediu o mesmo buraco pelo lado do SQL e
+/// descreve. As tres tabelas desta lista foram medidas por MIM, pela varredura deste
+/// proprio teste: nenhum arquivo do pacote as cria. A frente perfil-para-voce mediu o
+/// mesmo buraco pelo lado do SQL e
 /// deixou a proposta de leitura autorizada em
 /// packages/coelo_database/plans/2026-09-09-profile-about-read-rpc.sql, que nao
 /// e migration e nao foi aplicada.
