@@ -1,15 +1,15 @@
 {
- "revision": 12,
+ "revision": 13,
  "round": "E2-R03-20260910",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5[1m]",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-10T11:40:00-03:00",
+ "updatedAt": "2026-09-10T12:10:00-03:00",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-formularios-cuidado-rotina",
  "branch": "work/etapa2-r03-formularios-cuidado-rotina",
- "head": "bb15db748",
+ "head": "1c188091f",
  "baseNote": "coordenacao.json ainda esta na revisao 31 da rodada E2-NOTURNA-20260909 e nao tem base.fase0Head. Worktree criada a partir de dev bb15db748, mesmo HEAD usado pela worktree e2-r03-publicacoes-agenda. Rebase na base da Fase 0 assim que ela for publicada.",
  "scope": {
   "families": [
@@ -72,7 +72,7 @@
   }
  ],
  "deltaProposals": [],
- "nextStep": "Rebase na base da Fase 0 (1adb070c9) e reverificar o recorte sobre ela.",
+ "nextStep": "Revalidar o pgTAP do recorte sobre a base integrada e seguir para forms_files e o XLSX.",
  "findings": [
   {
    "id": "F-R03-FCR-001",
@@ -363,5 +363,40 @@
    "dois_testes_de_arquitetura_atualizados": "forms_composition_sanitization_source_test exigia que o router contivesse a literal const FormsTestPage(), e forms_fail_closed_routes_test exigia api.calls == 0 para /test. As duas assercoes eram o contrato anterior a D6, que mandava Testar ficar fail-closed. A decisao do Owner de 10/09 reverte isso, entao atualizei as duas com o motivo escrito no proprio arquivo, em vez de contornar.",
    "testes": "os dois arquivos de arquitetura passam; a suite test/app/router fica com 428 aprovados e 6 falhas, todas medidas tambem SEM as minhas mudancas por git stash (import_development_routes, prototype_navigation, principal_real_route em tres larguras e um RED nomeado de proposito), todas de familias de outros grupos."
   }
+ },
+ "integracao": {
+  "rebase": "feito em origin/dev 552058da0, limpo, sem conflito. A branch foi republicada com --force-with-lease porque o rebase reescreveu os quatro commits pendentes.",
+  "ja_integrados_pelo_coordenador": [
+   "211bc7add rotina fundacao+comportamento",
+   "6fe3c53d4 assiduidade OQ-040+D11",
+   "e3d1e2abc pacotes verdes",
+   "f196252e6 cuidado fundacao",
+   "f5ef5ff6f cliente da chave",
+   "cef619e93 repositorios e contrato",
+   "e070506f5 rotina cliente e chave de composicao"
+  ],
+  "pendentes_de_integracao": [
+   {
+    "sha": "25298e754",
+    "era": "6fcdcf39c",
+    "o_que": "fix(formularios): a fundacao da familia era PL/pgSQL invalido",
+    "urgencia": "ALTA. Conferi em origin/dev 552058da0: a correcao NAO esta la. Sem ela nenhuma migration de Formularios pode ser aplicada, em ambiente nenhum, e os 16 arquivos pgTAP da familia continuam sem poder rodar. E uma mudanca de duas linhas."
+   },
+   {
+    "sha": "b894817f5",
+    "era": "7260873b0",
+    "o_que": "test(formularios): recorte inteiro verde, 1001 assercoes"
+   },
+   {
+    "sha": "174a0ed74",
+    "era": "4d1752cdd",
+    "o_que": "feat(rotina): tela minima de Lancamentos (D7)"
+   },
+   {
+    "sha": "1c188091f",
+    "era": "9922035d5",
+    "o_que": "feat(formularios): rota Testar por capacidade (D6)"
+   }
+  ]
  }
 }
