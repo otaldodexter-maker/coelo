@@ -370,6 +370,30 @@ mesmo escondendo algo real, só que o algo real é **cobertura perdida, não
 afordância perdida** — e a diferença muda quem age. Não é a frente de Estrutura
 consertando tela; é quem mantém o golden restaurando a composição do teste.
 
+**E a correção não foi a linha que eu supus.** Medida antes de escrita, ela é
+assimétrica: restaurar o callback nas capturas de cartões aproxima o diff em
+dezessete pontos percentuais — o que **prova** que aquela referência foi
+capturada com a afordância — mas na captura de tabela do mesmo caso o diff
+**sobe**, porque essa referência é anterior ao banner. **As duas metades vivem no
+mesmo teste e têm histórias diferentes.** E aplicar o callback ao helper inteiro
+derrubaria cinco imagens de estado interativo que passam hoje — criar vermelho
+novo para restaurar cobertura é a troca que a rodada recusou em toda parte. A
+correção final passa o callback só onde a referência prova que a afordância
+pertence.
+
+**Isso também rebaixa a gravidade do achado, e é justo dizer:** nada ficou
+desprotegido no intervalo. A suíte funcional já guarda as duas direções da
+afordância — presença quando o callback existe, ausência quando as ações estão
+desligadas. A perda era **exclusivamente visual**.
+
+**A classe que isto nomeia vale mais que o caso:** um arranjo de golden composto
+de forma diferente da produção **apaga afordâncias da referência sem que nada
+fique vermelho**. O golden continua passando, ou falha por outro motivo, e ninguém
+percebe que ele parou de proteger um elemento. É parente de "suíte verde não é
+produção", com um agravante próprio: aqui a referência *é* a evidência do que
+existia, e só comparando o diff com e sem o callback se descobre o que ela
+continha.
+
 **E o método que resolveu vale para os outros pares:** a imagem levantou a
 pergunta, o código respondeu. Abrir as duas capturas diz *onde* olhar; só a cadeia
 no código diz *o que* aconteceu. Foi a mesma sequência que corrigiu a leitura do
