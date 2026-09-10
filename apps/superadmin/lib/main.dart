@@ -6,6 +6,7 @@ import 'app/superadmin_app.dart';
 import 'core/config/superadmin_auth_scope.dart';
 import 'features/auth/domain/superadmin_auth_context.dart';
 import 'features/account/data/supabase_account_profile_repository.dart';
+import 'features/support/data/support_repository.dart';
 import 'features/locations/data/supabase_location_catalog_reader.dart';
 import 'features/locations/data/supabase_location_catalog_writer.dart';
 import 'features/locations/data/supabase_location_reservation_gateway.dart';
@@ -33,6 +34,7 @@ Future<void> main() async {
       requestPasswordRecovery: authScope.requestPasswordRecovery,
       resetPassword: authScope.resetPassword,
       accountProfileRepository: SupabaseAccountProfileRepository(Supabase.instance.client),
+      supportRepository: SupabaseSupportRepository(Supabase.instance.client),
       auditRepository: authScope.auditRepository,
       medicationPlanRepository: authScope.medicationPlanRepository,
       healthCareRepository: authScope.healthCareRepository,

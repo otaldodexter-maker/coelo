@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 
+import '../../data/support_repository.dart';
 import '../../domain/support_requester_context.dart';
 import '../../domain/support_team_member.dart';
 import '../../domain/support_ticket.dart';
@@ -21,6 +24,7 @@ final class SupportPrototypeController extends ChangeNotifier {
     Iterable<SupportTicket>? initialTickets,
     DateTime Function()? clock,
     SupportRequesterContext sessionRequesterContext = defaultSessionRequesterContext,
+    this.repository,
   }) : _clock = clock ?? DateTime.now,
        _sessionRequesterContext = sessionRequesterContext {
     _tickets = List.unmodifiable(initialTickets?.toList() ?? _defaultTickets(_clock()));
@@ -61,6 +65,7 @@ final class SupportPrototypeController extends ChangeNotifier {
 
   final DateTime Function() _clock;
   final SupportRequesterContext _sessionRequesterContext;
+  final SupportRepository? repository;
   late List<SupportTicket> _tickets;
   SupportFilters _filters = SupportFilters.empty;
   String? _selectedTicketId;
@@ -109,6 +114,21 @@ final class SupportPrototypeController extends ChangeNotifier {
     return null;
   }
 
+  Future<void> loadFromRepository() async {
+    final backend = repository;
+    if (backend == null) return;
+    try {
+      final page = await backend.list(_filters, page: _currentPage, pageSize: _pageSize);
+      _tickets = List.unmodifiable(page.tickets);
+      if (_selectedTicketId != null && !_tickets.any((ticket) => ticket.id == _selectedTicketId)) {
+        _selectedTicketId = null;
+      }
+      notifyListeners();
+    } on Object {
+      // Keep the current composition when the backend is unavailable.
+    }
+  }
+
   SupportTicket submitReport(SupportReportDraft draft) {
     final now = _clock();
     final ticket = SupportTicket(
@@ -140,6 +160,10 @@ final class SupportPrototypeController extends ChangeNotifier {
     );
     _tickets = List.unmodifiable([..._tickets, ticket]);
     notifyListeners();
+    final backend = repository;
+    if (backend != null) {
+      unawaited(_persistCreate(backend, draft));
+    }
     return ticket;
   }
 
@@ -185,10 +209,12 @@ final class SupportPrototypeController extends ChangeNotifier {
       return false;
     }
     final now = _clock();
+    final expectedRevision = ticket.revision;
     _replaceTicket(
       ticketId,
       (ticket) => ticket.copyWith(
         status: status,
+        revision: ticket.revision + 1,
         updatedAt: now,
         activities: [
           ...ticket.activities,
@@ -200,6 +226,10 @@ final class SupportPrototypeController extends ChangeNotifier {
         ],
       ),
     );
+    final backend = repository;
+    if (backend != null) {
+      unawaited(_persistStatus(backend, ticketId, status, expectedRevision));
+    }
     return true;
   }
 
@@ -213,6 +243,8 @@ final class SupportPrototypeController extends ChangeNotifier {
     }
     _selectedTicketId = ticketId;
     markIncomingRead(ticketId, notify: false);
+    final backend = repository;
+    if (backend != null) unawaited(_loadDetail(backend, ticketId));
     notifyListeners();
   }
 
@@ -229,6 +261,8 @@ final class SupportPrototypeController extends ChangeNotifier {
       return;
     }
     final now = _clock();
+    final current = _ticketById(ticketId);
+    final expectedRevision = current?.revision;
     _replaceTicket(ticketId, (ticket) {
       final message = SupportMessage(
         id: '${ticket.id}-message-${ticket.messages.length + 1}',
@@ -238,6 +272,7 @@ final class SupportPrototypeController extends ChangeNotifier {
       );
       return ticket.copyWith(
         updatedAt: now,
+        revision: ticket.revision + 1,
         messages: [...ticket.messages, message],
         activities: [
           ...ticket.activities,
@@ -249,6 +284,56 @@ final class SupportPrototypeController extends ChangeNotifier {
         ],
       );
     });
+    final backend = repository;
+    if (backend != null && expectedRevision != null) {
+      unawaited(_persistReply(backend, ticketId, trimmedReply, expectedRevision));
+    }
+  }
+
+  Future<void> _persistCreate(SupportRepository backend, SupportReportDraft draft) async {
+    try {
+      await backend.create(draft);
+      await loadFromRepository();
+    } on Object {
+      // Keep the optimistic card; the next reload reconciles it.
+    }
+  }
+
+  Future<void> _persistStatus(
+    SupportRepository backend,
+    String ticketId,
+    SupportTicketStatus status,
+    int expectedRevision,
+  ) async {
+    try {
+      final saved = await backend.setStatus(ticketId, status, expectedRevision);
+      _replaceTicket(ticketId, (_) => saved);
+    } on Object {
+      await loadFromRepository();
+    }
+  }
+
+  Future<void> _persistReply(
+    SupportRepository backend,
+    String ticketId,
+    String message,
+    int expectedRevision,
+  ) async {
+    try {
+      final saved = await backend.reply(ticketId, message, expectedRevision);
+      _replaceTicket(ticketId, (_) => saved);
+    } on Object {
+      await loadFromRepository();
+    }
+  }
+
+  Future<void> _loadDetail(SupportRepository backend, String ticketId) async {
+    try {
+      final detail = await backend.get(ticketId);
+      if (_selectedTicketId == ticketId) _replaceTicket(ticketId, (_) => detail);
+    } on Object {
+      // Keep the summary visible when detail transport is unavailable.
+    }
   }
 
   void markIncomingRead(String ticketId, {bool notify = true}) {

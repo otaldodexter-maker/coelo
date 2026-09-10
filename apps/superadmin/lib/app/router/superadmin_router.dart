@@ -207,6 +207,7 @@ import '../../features/forms/presentation/response/form_response_page.dart';
 import '../../features/forms/presentation/response/forms_test_page.dart';
 import '../../features/support/presentation/screens/support_page.dart';
 import '../../features/support/presentation/view_models/support_prototype_controller.dart';
+import '../../features/support/data/support_repository.dart';
 import '../../features/student_tracking/domain/student_tracking.dart';
 import '../../features/student_tracking/presentation/student_tracking_page.dart';
 import '../../features/units/data/fake_unit_directory_repository.dart';
@@ -289,6 +290,7 @@ GoRouter createSuperadminRouter({
   ),
   ValueChanged<Uri>? openExternalCatalog,
   SupportPrototypeController? supportController,
+  SupportRepository? supportRepository,
   UserPreferencesController? userPreferencesController,
   AccountProfileRepository accountProfileRepository = const UnavailableAccountProfileRepository(),
   ImportRepository importRepository = const UnavailableImportRepository(),
@@ -345,8 +347,12 @@ GoRouter createSuperadminRouter({
   final developmentChildSafetyController = ChildSafetyController(
     DevChildSafetyRepository.content(catalog: accessHealthFixtures),
   );
-  final productionSupportController = supportController;
+  final productionSupportController = supportController ??
+      (supportRepository == null ? null : SupportPrototypeController(repository: supportRepository));
   final developmentSupportController = _createDevelopmentSupportController();
+  if (productionSupportController != null) {
+    unawaited(productionSupportController.loadFromRepository());
+  }
   final accountActivities = SuperadminActivityController();
   final productionAccountController = AccountController(
     repository: accountProfileRepository,

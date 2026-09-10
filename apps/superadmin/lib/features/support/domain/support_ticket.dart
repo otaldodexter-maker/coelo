@@ -64,6 +64,7 @@ final class SupportTicket {
     required this.createdAt,
     required this.updatedAt,
     required this.status,
+    this.revision = 1,
     this.requesterContext,
     this.ownerId,
     Set<String> assigneeIds = const {},
@@ -90,6 +91,7 @@ final class SupportTicket {
   final DateTime createdAt;
   final DateTime updatedAt;
   final SupportTicketStatus status;
+  final int revision;
   final List<SupportAttachment> attachments;
   final List<SupportMessage> messages;
   final List<SupportActivity> activities;
@@ -97,6 +99,7 @@ final class SupportTicket {
   SupportTicket copyWith({
     DateTime? updatedAt,
     SupportTicketStatus? status,
+    int? revision,
     SupportRequesterContext? requesterContext,
     String? ownerId,
     bool clearOwner = false,
@@ -133,6 +136,7 @@ final class SupportTicket {
       createdAt: createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       status: status ?? this.status,
+      revision: revision ?? this.revision,
       attachments: attachments ?? this.attachments,
       messages: messages ?? this.messages,
       activities: activities ?? this.activities,
