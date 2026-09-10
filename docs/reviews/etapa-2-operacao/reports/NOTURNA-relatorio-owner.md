@@ -53,7 +53,7 @@ para 17, e das 17 nenhuma é órfã.** Elas se distribuem assim:
 
 | Falhas | Arquivo | O que é |
 | ---: | --- | --- |
-| 3 | `app/router/principal_real_route_test` | rota real do Principal, causa diagnosticada |
+| 3 | `app/router/principal_real_route_test` | **teste desatualizado pela integração do feed misto**: a rota passou a exigir dois repositórios e o teste injeta um, então cai em indisponível. Produção compõe os dois e o fail-closed está correto |
 | 2 | `core/config/composition_root_sanitization_test` | contrato de composição |
 | 2 | `core/config/unit_fail_closed_composition_source_test` | contrato de composição |
 | 2 | `shared/.../superadmin_form_action_footer_adoption_test` | adoção do rodapé de ação |
@@ -166,7 +166,9 @@ São **três buracos independentes** no mesmo caminho, cada um suficiente sozinh
 
 1. **A cadeia versionada não atravessa.** Das 186 migrations de
    `packages/coelo_database/migrations`, replayadas em ordem de nome numa base
-   zerada, os arquivos 1 a 47 aplicam limpos e o **48 quebra**:
+   zerada **com um shim mínimo de Supabase** — os schemas, os papéis, a extensão
+   de criptografia no schema certo e stubs de usuários e storage — os arquivos 1 a
+   47 aplicam limpos e o **48 quebra**:
    `20260812002000_child_safety_schema.sql` insere códigos de permissão novos
    sem `module_label`, coluna que `20260811215451_access_profile_management_v2`
    criou como `NOT NULL` sem default. E não é a única barreira nem dentro do
@@ -284,9 +286,14 @@ delete reproduziria exatamente o furo que a guarda existe para fechar. Exige a
 leitura expor a revisão que a pessoa viu — mudança de contrato de domínio, e
 decisão sua.
 
-**Achado 3, que é resultado e não ausência de medida:** zero divergência de nome
-de parâmetro nas 80 chamadas. O pacote já tem teste próprio de nomes de
-argumento, o que mostra que essa classe já cobrou preço antes; hoje está limpa.
+**Achado 3, que é resultado e não ausência de medida, com a ressalva que a
+transcrição tinha perdido:** zero divergência de nome de parâmetro **entre as
+chamadas cuja assinatura existe no pacote**. O teste pula, por construção, toda
+chamada cuja função não está declarada — é a única coisa que ele pode fazer sem
+assinatura — e isso significa que **as cinco de Unidades, que são as que mais
+poderiam divergir, ficam fora do exame**. A cobertura é de no máximo 75 das 80. O
+pacote já tem teste próprio de nomes de argumento, o que mostra que essa classe já
+cobrou preço antes; onde é examinável, hoje está limpa.
 
 O teste falha também **se uma das cinco ausências passar a existir e continuar na
 lista** — sem isso a lista de exceções envelhece e passa a esconder o defeito
