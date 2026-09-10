@@ -27,7 +27,21 @@ void main() {
       for (final brightness in [Brightness.light, Brightness.dark]) {
         tester.view.physicalSize = Size(width, 900);
         await tester.pumpWidget(const SizedBox.shrink());
-        await tester.pumpWidget(_goldenApp(brightness: brightness));
+        // MEDIDO em 2026-09-10 sobre as referencias atuais: com onCreate, o diff
+        // de institution_directory_cards_light_375 cai de 37,57% para 20,43%, o
+        // que prova que a referencia de cartoes FOI capturada com o cartao de
+        // criar e que o arranjo do golden havia divergido da composicao de
+        // producao. Na mesma medicao o diff da tabela sobe de 35,53% para 36,40%,
+        // o que prova o contrario para aquele estado: a referencia de tabela e
+        // anterior ao banner. As duas metades ja estao vermelhas pela deriva de
+        // tema e seguem aguardando rebaseline nominal; o que esta restaurado aqui
+        // e a intencao de cobertura, para que a proxima captura aprovada contenha
+        // a afordancia em vez de perde-la em silencio.
+        //
+        // onCreate nao entra no _goldenApp inteiro de proposito: MEDIDO que o
+        // caso "approved interactive directory state references" passa hoje e
+        // passaria a falhar, o que trocaria um verde por um vermelho maior.
+        await tester.pumpWidget(_goldenApp(brightness: brightness, onCreate: () {}));
         await tester.pumpAndSettle();
 
         final themeName = brightness.name;
@@ -302,6 +316,11 @@ Widget _goldenApp({
   Brightness brightness = Brightness.light,
   InstitutionDirectoryRepository? repository,
   VoidCallback? onConversationsOpen,
+  // A rota de producao sempre fornece onCreate, e sem ele o cartao "Criar
+  // instituicao" e o banner da tabela nao sao renderizados: a referencia deixa de
+  // proteger a afordancia. Fica opcional porque as referencias dos dois estados
+  // foram capturadas em momentos diferentes, e isso esta MEDIDO abaixo.
+  VoidCallback? onCreate,
 }) {
   return MaterialApp(
     debugShowCheckedModeBanner: false,
@@ -321,6 +340,7 @@ Widget _goldenApp({
     home: InstitutionDirectoryPage(
       repository: repository ?? FakeInstitutionDirectoryRepository(),
       logout: _logout,
+      onCreate: onCreate,
       onConversationsOpen: onConversationsOpen,
     ),
   );
