@@ -1,5 +1,5 @@
 {
-  "revision": 20,
+  "revision": 21,
   "round": "E2-NOTURNA-20260909",
   "role": "Coordenacao e Integracao - Claude",
   "writer": "coordenador-claude",
@@ -8,7 +8,7 @@
   "app": "Claude Code (VS Code)",
   "model": "claude-opus-5[1m]",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-09T22:48:00-03:00",
+  "updatedAt": "2026-09-09T23:13:00-03:00",
   "clockCorrection": {
     "referenceNow": "2026-09-09T19:03:25-03:00",
     "measuredBy": "date no checkout integrador",
@@ -30,7 +30,7 @@
   "base": {
     "root": "C:/Users/adrie/Documents/Coelo",
     "branch": "dev",
-    "head": "0c75d9fa5",
+    "head": "992bb3071",
     "previousHead": "d784462c168d22fdb7090b7de1ef7db554ad5107",
     "upstream": "origin/dev",
     "divergence": "0/0",
@@ -760,24 +760,19 @@
     }
   ],
   "avisoCodex": {
-    "destinatarios": [
-      "estrutura",
-      "acessos-pessoas"
-    ],
-    "relogioReal": "2026-09-09T21:50 -03:00. Confiram com date; ja houve deriva de horas em tres frentes hoje.",
-    "restante": "1h20 ate o congelamento das 23:10.",
-    "sequencia": "23:10 congelar novos lotes. 23:20 pre-entrega publicada. 23:30 entrega final e parada de TODOS os filhos.",
-    "checklistDeFechamento": [
-      "Revisitar pedidos recebidos, acoes nao terminadas, arquivos modificados, commits, stash, artefatos ignorados, falhas e testes interrompidos.",
-      "HEAD igual ao upstream e divergencia 0/0.",
-      "Worktree sem alteracao nao identificada. ATENCAO: rodar suite de golden reescreve artefatos sob test/**/failures/. Restaure com git checkout antes de commitar e NUNCA use git add de diretorio depois de rodar a suite.",
-      "WIP retido preservado por caminho e SHA256 antes de qualquer limpeza.",
-      "Recursos proprios encerrados: processos, portas, runners e filhos.",
-      "tracker_delta_proposto atualizado. Sem ele, o trabalho entra em dev como codigo sem estado no rastreador.",
-      "Para qualquer promocao, as tres perguntas de composicao produtiva respondidas por escrito.",
+    "estado": "CONGELAMENTO ATIVO. Sao 23:13 de 09/09, conferido com date no checkout integrador.",
+    "agora": "Nao inicie lote novo. Encerre o que esta em curso, publique e feche.",
+    "sequencia": "23:20 pre-entrega publicada no seu <grupo>.json. 23:30 entrega final e parada de TODOS os filhos.",
+    "oQueEuVouConferir": [
+      "HEAD igual ao upstream e divergencia 0/0 na sua branch.",
+      "Worktree sem alteracao nao identificada. Se rodou suite de golden, restaure test/**/failures/ com git checkout antes de fechar.",
+      "Stash reconciliado e WIP retido preservado por caminho e SHA256.",
+      "Processos, portas, runners e filhos encerrados.",
+      "tracker_delta_proposto atualizado no seu JSON.",
       "Proximo passo exato registrado para quem retomar."
     ],
-    "depoisDoCorte": "Nao esperem ACK. Eu assumo o residual e consolido. Nao reabram lote depois de 23:30."
+    "depois": "Nao espere ACK. Eu assumo o residual e consolido. Nao reabra lote depois de 23:30.",
+    "transferencias": "As 23:30, child_safety e access_profile_detail_page.dart passam a alunos-rotina; o recorte de estrutura passa a operacoes-sistema. Os dois ja estao preparados e nao precisam de handoff adicional de voces alem do que ja esta no JSON."
   },
   "economiasRegistradas": [
     {
@@ -868,5 +863,12 @@
     "oQueImportaMais": "superadmin_shell_accessibility_test verifica labeledTapTargetGuideline mas NAO androidTapTargetGuideline. O shell tem teste de acessibilidade e ele so confere ROTULO. Tamanho de alvo nunca foi conferido no shell, em largura nenhuma.",
     "alcance": "Qualquer tela que use o shell reprova em tamanho de alvo, o que inclui praticamente o app inteiro. Se uma frente rodar as tres diretrizes numa tela sua e encontrar esse no, NAO e defeito dela.",
     "decisao": "Nao corrigido nesta rodada: subir 44 para 48 move pixel e o realce do InkWell cresce em toda tela com shell. Vai ao Owner como \"o teste de acessibilidade do shell nunca conferiu tamanho de alvo\", que e a lacuna que precisa de decisao; a correcao do botao em si e trivial."
-  }
+  },
+  "estadoDaIntegracaoNoCorte": {
+    "dev": "992bb3071, publicado, 0/0 com origin/dev",
+    "gates": "flutter analyze lib limpo e guarda de unicidade de nome de rota verde no ultimo ciclo",
+    "suite": "Ultima medicao completa com reporter JSON: 6553 PASS, 11 SKIP, 150 FAIL, sendo 126 de golden e 24 nao-golden. Era 190 FAIL no inicio da rodada.",
+    "ciclos": "Vinte ciclos de integracao, cada um com medicao antes e depois na base conjunta."
+  },
+  "notaDeAmbiente": "A maquina esta com dezenas de processos dart de varias frentes; flutter analyze subiu de 155s para mais de 500s ao longo da noite. Nao e sintoma de codigo. Serializem execucoes e reduzam escopo por rodada; nao matem processo alheio."
 }
