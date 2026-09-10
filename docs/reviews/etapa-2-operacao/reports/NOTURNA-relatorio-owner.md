@@ -2420,6 +2420,35 @@ foi rodada contra um commit que sabidamente apaga um, e acusou exatamente um, co
 o nome certo; a de regressão de revisão passou por autoteste com sequências
 conhecidas. **Ferramenta estreada na hora da conferência não é conferência.**
 
+## Seis instâncias de uma forma só: camada pronta sem superfície
+
+Estas seis não são seis dívidas. **São uma pergunta com seis instâncias**, e
+listá-las separadas faria parecer seis frentes de trabalho onde há uma decisão.
+
+1. O **botão de criar** que não aparece no diretório de produção porque o
+   callback que o renderiza não é fornecido — e cuja referência visual deixou de
+   protegê-lo.
+2. As **ações de Local** em Formulários, esperando decisão sobre um tipo de
+   pergunta que **não existe no domínio**.
+3. **Lembrete de agendamento**, presente no domínio e na API, **sem nenhuma tela**
+   que o referencie.
+4. A **gravação automática do editor**, quarenta e três pontos de código, cuja
+   dependência só é fornecida por um arquivo de teste.
+5. A **lista de responsáveis de medicação**, nunca fornecida — e é a mesma
+   ausência que faz o cartão não nomear ninguém.
+6. O **adaptador de anexo de pergunta**: três métodos, interface, implementação e
+   RPC mapeada, **e nenhuma tela os chama**.
+
+**A forma é sempre a mesma:** a camada de baixo está pronta e testada, a de cima
+não existe, e a suíte verde afirma **corretamente** que a de baixo funciona.
+Nenhuma é defeito de implementação — todas são consequência de escopo ou de
+decisão pendente.
+
+**E o dano não está no código, está no registro.** Cada uma delas, sozinha, pode
+ser descrita com frases verdadeiras que somam a conclusão falsa de que a
+capacidade existe para quem usa o produto. É a razão de este relatório insistir na
+diferença entre "implementado e coberto" e "alcançável".
+
 ## Higiene e preservação
 
 - Os 90 artefatos de WIP ignorados na raiz do checkout integrador estão
