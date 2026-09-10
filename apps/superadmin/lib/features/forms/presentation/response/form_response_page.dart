@@ -623,7 +623,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
                 if (_answers[item.id] case final FormAnswer answer)
                   Padding(
                     padding: const EdgeInsets.only(bottom: CoeloSpacing.space2),
-                    child: Text('${item.label}: ${_answerLabel(answer)}'),
+                    child: Text('${item.label}: ${_answerLabel(item, answer)}'),
                   ),
         ],
       ),
@@ -1235,7 +1235,7 @@ String _civilDate(DateTime value) =>
     '${value.month.toString().padLeft(2, '0')}/'
     '${value.year}';
 
-String _answerLabel(FormAnswer answer) => switch (answer.value) {
+String _answerLabel(FormItem item, FormAnswer answer) => switch (answer.value) {
   FormShortTextValue(:final value) => value,
   FormIntegerValue(:final value) => '$value',
   FormDecimalValue(:final value) => '$value',
@@ -1243,7 +1243,17 @@ String _answerLabel(FormAnswer answer) => switch (answer.value) {
   // Mesmo formato do campo: um valor nao pode ter duas leituras na mesma tela.
   FormDateValue(:final value) => _civilDate(value),
   FormYesNoValue(:final value) => value ? 'Sim' : 'Não',
-  FormChoiceValue(:final optionIds) => optionIds.join(', '),
+  // Rotulo escolhido, na ordem autorada. Juntar os IDs mostrava identificador
+  // interno a quem respondeu e nao dizia nada sobre a escolha.
+  FormChoiceValue(:final optionIds) =>
+    (item.options.where((option) => optionIds.contains(option.id)).toList()
+          ..sort(
+            (a, b) => a.position != b.position
+                ? a.position.compareTo(b.position)
+                : a.id.compareTo(b.id),
+          ))
+        .map((option) => option.label)
+        .join(', '),
   FormScaleValue(:final value) => '$value',
   FormAssetValue(:final assetIds) => '${assetIds.length} arquivo(s)',
 };
