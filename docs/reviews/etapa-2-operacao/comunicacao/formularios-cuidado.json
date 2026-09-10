@@ -1,6 +1,6 @@
 {
-  "revision": 52,
-  "updated_at": "2026-09-10T04:18:37-03:00",
+  "revision": 55,
+  "updated_at": "2026-09-10T04:29:26-03:00",
   "group": "formularios-cuidado",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
@@ -8,12 +8,12 @@
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-formularios-cuidado",
   "branch": "work/etapa2-noturna-formularios-cuidado",
-  "head": "f0895a0c5f833d10d1b83ce815ba7efae4db69f6",
+  "head": "467e03c98d822c93d454e5ab4f5e3c141481187f",
   "upstream": {
     "branch": "origin/work/etapa2-noturna-formularios-cuidado",
     "ahead": 0,
     "behind": 0,
-    "medido_em": "2026-09-10T04:18:37-03:00"
+    "medido_em": "2026-09-10T04:29:26-03:00"
   },
   "base": "d784462c168d22fdb7090b7de1ef7db554ad5107",
   "base_observed": "d784462c168d22fdb7090b7de1ef7db554ad5107",
@@ -132,7 +132,14 @@
           "acao": "a primeira falha aponta principal_happens_publication_page, que e de publicacoes-midia. A segunda compara uma lista fixa de cinco arquivos com nove reais, e entre os novos esta activities/presentation/activity_directory_page, que nao e de Formularios nem de Cuidado. Nenhum arquivo criado por mim nesta rodada entrou na lista."
         }
       ],
-      "saida_crua": "03:32 +1080 ~3 -15: Some tests failed."
+      "saida_crua": "03:32 +1080 ~3 -15: Some tests failed.",
+      "resultado_no_head_entregue": {
+        "resultado": "1080 PASS / 3 SKIP / 15 FAIL",
+        "saida_crua": "04:13 +1080 ~3 -15: Some tests failed.",
+        "head": "5a58383f2",
+        "medido_em": "2026-09-10T04:24:20-03:00",
+        "nota": "identico a medicao anterior da branch, o que confirma que os commits de documentacao desta madrugada nao moveram nada. Na base INTEGRADA o mesmo recorte da 1081/3/14, e a unica diferenca e composition_root_fail_closed_routes_test, corrigido em dev por c2e6bda5d."
+      }
     },
     "numero_2_conjunto": {
       "recorte": "apps/superadmin inteiro",
@@ -234,7 +241,7 @@
       "resumo": "limites de selecao ditos a pessoa antes de o servidor recusar; o rascunho autosalvava e so o envio falhava",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:18:37-03:00"
+      "medido_em": "2026-09-10T04:29:26-03:00"
     },
     {
       "sha": "745b1fbdf",
@@ -242,7 +249,7 @@
       "resumo": "metodo, nove autocorrecoes, tres bloqueios falsos e censo de datas",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:18:37-03:00"
+      "medido_em": "2026-09-10T04:29:26-03:00"
     },
     {
       "sha": "e2912506c",
@@ -250,7 +257,7 @@
       "resumo": "triagem das 23 imagens de golden",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:18:37-03:00"
+      "medido_em": "2026-09-10T04:29:26-03:00"
     },
     {
       "sha": "79bc782b7",
@@ -258,7 +265,7 @@
       "resumo": "trava da semantica OU e dos padroes de selecao",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:18:37-03:00"
+      "medido_em": "2026-09-10T04:29:26-03:00"
     },
     {
       "sha": "296e349a7",
@@ -266,7 +273,7 @@
       "resumo": "trava do que significa respondida; dois testes meus corrigidos",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:18:37-03:00"
+      "medido_em": "2026-09-10T04:29:26-03:00"
     },
     {
       "sha": "925a6e4ea",
@@ -274,7 +281,7 @@
       "resumo": "padrao de tamanho de texto do servidor, achado por mutacao",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:18:37-03:00"
+      "medido_em": "2026-09-10T04:29:26-03:00"
     },
     {
       "sha": "1e694e7e9",
@@ -282,7 +289,7 @@
       "resumo": "a unica citacao que o leitor nao alcanca, sinalizada",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:18:37-03:00"
+      "medido_em": "2026-09-10T04:29:26-03:00"
     },
     {
       "sha": "8111ebb67",
@@ -290,7 +297,7 @@
       "resumo": "bateria de mutacao e a lei do instrumento, tornadas duraveis",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:18:37-03:00"
+      "medido_em": "2026-09-10T04:29:26-03:00"
     },
     {
       "sha": "de5cdb2f8",
@@ -298,7 +305,7 @@
       "resumo": "condicao composta da superficie clara de Saude e Cuidado",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:18:37-03:00"
+      "medido_em": "2026-09-10T04:29:26-03:00"
     },
     {
       "sha": "995156f15",
@@ -306,7 +313,7 @@
       "resumo": "triagem dos quatro goldens de Saude e Cuidado, com o achado de conteudo",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:18:37-03:00"
+      "medido_em": "2026-09-10T04:29:26-03:00"
     },
     {
       "sha": "ff759d211",
@@ -314,7 +321,7 @@
       "resumo": "o mutante equivalente, terceira forma de um nao pegou enganar",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:18:37-03:00"
+      "medido_em": "2026-09-10T04:29:26-03:00"
     },
     {
       "sha": "99d882fe2",
@@ -322,7 +329,7 @@
       "resumo": "o autosave do editor nao roda no aplicativo",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:18:37-03:00"
+      "medido_em": "2026-09-10T04:29:26-03:00"
     },
     {
       "sha": "9747a0aa2",
@@ -330,7 +337,7 @@
       "resumo": "varredura das dependencias que ninguem fornece, e a licao de nomeacao",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:18:37-03:00"
+      "medido_em": "2026-09-10T04:29:26-03:00"
     },
     {
       "sha": "d1e8069c0",
@@ -338,7 +345,7 @@
       "resumo": "perda de regras de publico, levantada como pergunta ao Owner",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:18:37-03:00"
+      "medido_em": "2026-09-10T04:29:26-03:00"
     },
     {
       "sha": "1d91908e9",
@@ -346,14 +353,14 @@
       "resumo": "camada pronta sem superficie: uma forma, seis tamanhos",
       "integrado_em_dev": true,
       "criterio": "git merge-base --is-ancestor <sha> origin/dev",
-      "medido_em": "2026-09-10T04:18:37-03:00"
+      "medido_em": "2026-09-10T04:29:26-03:00"
     },
     {
       "sha": "be0756460",
       "tipo": "evidencia",
       "resumo": "marca de superacao dos numeros de recorte onde o leitor os encontra",
       "integrado_em_dev": true,
-      "medido_em": "2026-09-10T04:18:37-03:00",
+      "medido_em": "2026-09-10T04:29:26-03:00",
       "criterio": "git merge-base --is-ancestor <sha> origin/dev"
     },
     {
@@ -361,7 +368,7 @@
       "tipo": "evidencia",
       "resumo": "quarta linha de bloqueio errada e a auditoria exaustiva",
       "integrado_em_dev": true,
-      "medido_em": "2026-09-10T04:18:37-03:00",
+      "medido_em": "2026-09-10T04:29:26-03:00",
       "criterio": "git merge-base --is-ancestor <sha> origin/dev"
     },
     {
@@ -369,7 +376,7 @@
       "tipo": "evidencia",
       "resumo": "propaga a correcao das quatro linhas para o handoff",
       "integrado_em_dev": true,
-      "medido_em": "2026-09-10T04:18:37-03:00",
+      "medido_em": "2026-09-10T04:29:26-03:00",
       "criterio": "git merge-base --is-ancestor <sha> origin/dev"
     },
     {
@@ -377,21 +384,56 @@
       "tipo": "evidencia",
       "resumo": "desfaz uma coincidencia numerica que se lia como repeticao",
       "integrado_em_dev": true,
-      "medido_em": "2026-09-10T04:18:37-03:00"
+      "medido_em": "2026-09-10T04:29:26-03:00"
     },
     {
       "sha": "3198d61fb",
       "tipo": "evidencia",
       "resumo": "cabecalho de estado final no ponto onde o leitor abre o handoff",
       "integrado_em_dev": true,
-      "medido_em": "2026-09-10T04:18:37-03:00"
+      "medido_em": "2026-09-10T04:29:26-03:00"
     },
     {
       "sha": "f0895a0c5",
       "tipo": "ferramenta",
       "resumo": "as tres verificacoes em forma executavel, com as armadilhas ja pagas evitadas no codigo",
+      "integrado_em_dev": true,
+      "medido_em": "2026-09-10T04:29:26-03:00"
+    },
+    {
+      "sha": "8f8ebea99",
+      "tipo": "evidencia",
+      "resumo": "declara quais imagens NAO foram triadas e por que",
+      "integrado_em_dev": true,
+      "medido_em": "2026-09-10T04:29:26-03:00"
+    },
+    {
+      "sha": "fb10ded85",
+      "tipo": "evidencia",
+      "resumo": "indice de leitura para os quarenta documentos",
       "integrado_em_dev": false,
-      "medido_em": "2026-09-10T04:18:37-03:00"
+      "medido_em": "2026-09-10T04:29:26-03:00"
+    },
+    {
+      "sha": "5a58383f2",
+      "tipo": "evidencia",
+      "resumo": "o falso positivo da propria ferramenta, achado por ela",
+      "integrado_em_dev": false,
+      "medido_em": "2026-09-10T04:29:26-03:00"
+    },
+    {
+      "sha": "c03229017",
+      "tipo": "evidencia",
+      "resumo": "triagem do golden de operacoes e o motivo real da omissao",
+      "integrado_em_dev": false,
+      "medido_em": "2026-09-10T04:29:26-03:00"
+    },
+    {
+      "sha": "467e03c98",
+      "tipo": "evidencia",
+      "resumo": "declara que a contagem de imagens pode estar incompleta",
+      "integrado_em_dev": false,
+      "medido_em": "2026-09-10T04:29:26-03:00"
     }
   ],
   "tracker_delta_proposto": [
@@ -1234,7 +1276,7 @@
   "nota_de_organizacao": "Arquivo reorganizado na revisao 35, sem remover nada. O contrato pede estado corrente e nao log acumulado, e o arquivo tinha chegado a 95 chaves de topo, o que dificultava achar o estado. Os campos exigidos pelo contrato e o tracker_delta_proposto ficam no topo; todo o resto foi agrupado sob achados_e_registros com as mesmas chaves e o mesmo conteudo. A narrativa durável esta em docs/reviews/evidence/etapa-2/formularios-cuidado/2026-09-09-round-handoff.md.",
   "triagem_goldens": {
     "documento": "docs/reviews/evidence/etapa-2/formularios-cuidado/2026-09-10-triagem-goldens.md",
-    "unidade": "oito CASOS de teste cobrem 23 IMAGENS; a imagem e a unidade util porque um caso captura ate oito larguras e temas",
+    "unidade": "DOZE casos de teste do recorte, todos comparacao de golden, enumerados lendo marcadores de falha. O numero de IMAGENS e 24 e pode estar incompleto: a coleta usava extracao de texto que assumia mensagem numa linha so, e o Flutter quebrou a de forms_operations em duas. Citar CASOS e seguro; citar IMAGENS exige a ressalva.",
     "resultado": "nenhuma e regressao de produto e nenhuma e perda de cobertura",
     "causa_1": "c4a7feff8 deixou o cabecalho compacto do shell ~16px mais alto, o que empurra todo o conteudo; oito imagens sao deslocamento puro, identicas elemento por elemento",
     "causa_2": "c0b20ccd6 mudou o painel de ramos: rotulo Se Sim virou Ramos por resposta, e o painel ganhou seletor e botao; a barra de acoes saiu da folha ancorada e virou rodape embutido",
@@ -1242,7 +1284,8 @@
     "perda_de_cobertura": "procurada especificamente e NAO encontrada: os elementos aparecem em 1440 na mesma execucao e as afordancias sao exercidas por testes que passam pelo caminho produtivo",
     "risco_invertido": "DOIS goldens protegem hoje o estado ERRADO. Um exige o rotulo que o produto abandonou de proposito; forms_directory_actions_light_1440, com apenas 0,72%, afirma um menu de acoes SEM o item Duplicar, que existe. Quem lesse esses vermelhos como defeito desfaria uma mudanca correta ou apagaria uma acao.",
     "discriminador_medido": "percentual que CAI com a largura e deslocamento: a mesma causa da 43,94% em 375, 17,01% em 768 e 4,08% em 1024. forms_directory_light_375 diverge 22,24% e e deslocamento PURO, o que derruba a heuristica de magnitude.",
-    "v4_19": "investigado a pedido do coordenador: NAO e convencao viva. Nenhum documento define o esquema, os numeros nao sao de spec, e o arquivo foi criado uma vez e SOBRESCRITO no lugar duas vezes com o mesmo nome. Nenhuma versao jamais subiu."
+    "v4_19": "investigado a pedido do coordenador: NAO e convencao viva. Nenhum documento define o esquema, os numeros nao sao de spec, e o arquivo foi criado uma vez e SOBRESCRITO no lugar duas vezes com o mesmo nome. Nenhuma versao jamais subiu.",
+    "operacoes": "triada apos a declaracao da lacuna: deslocamento PURO, mesmo conteudo de ponta a ponta, incluindo os quatro cartoes de metrica e as quatro linhas de contexto com numeros identicos. Nenhum elemento diferente."
   },
   "bateria_de_mutacao": {
     "placar": "9 mutacoes, 7 pegas, 1 lacuna real fechada, 1 inconclusiva",
@@ -1283,13 +1326,18 @@
       "c0a8b498e",
       "5ef7c5648",
       "60fd5f173",
-      "3198d61fb"
+      "3198d61fb",
+      "f0895a0c5",
+      "8f8ebea99"
     ],
     "retidos": [
-      "f0895a0c5"
+      "fb10ded85",
+      "5a58383f2",
+      "c03229017",
+      "467e03c98"
     ],
     "definicao_de_retido": "publicado na branch do grupo e ainda nao ancestral de origin/dev; NADA esta apenas local",
-    "medido_em": "2026-09-10T04:18:37-03:00"
+    "medido_em": "2026-09-10T04:29:26-03:00"
   },
   "recursos": {
     "processos_filhos": [],
@@ -1311,7 +1359,10 @@
     "A hipotese sobre a divergencia entre o meu numero do conjunto e o do coordenador nao foi verificada; eu nao rodei a suite sobre a base dele.",
     "A perda de regras de publico nao foi reproduzida com dado real de mais de uma regra, porque nao existe caminho no Superadmin que crie a segunda; a conclusao vem da leitura do cliente e das tres migrations.",
     "Os tres limites de distribuicao sem espelho em Dart nao ganharam teste, porque nenhuma tela os alcanca.",
-    "Nao entrevistei historico de decisao alem do que o Git mostra."
+    "Nao entrevistei historico de decisao alem do que o Git mostra.",
+    "O golden de forms_operations NAO foi triado imagem a imagem. As 23 imagens que eu abri foram coletadas na branch do grupo, onde esse caso PASSAVA; na base integrada ele falha. A diferenca e de base e nao de leitura, mas \"23 imagens triadas\" nao significa \"todas as imagens do recorte triadas\".",
+    "As ferramentas publicadas conferem contra o sistema de arquivos da worktree atual e nao contra a base integrada; um caminho presente em origin/dev e ausente na branch e reportado como inalcancavel. Ja produziu um falso positivo, documentado no README das ferramentas.",
+    "Os dois avisos de analyze em coelo_api foram atribuidos por historico de arquivo e por eu nao ter tocado o pacote; nao reproduzi a introducao deles."
   ],
   "perguntas_ao_owner": [
     {
@@ -1365,7 +1416,7 @@
     "achado": "a execucao da suite completa regravou 54 PNG RASTREADOS de failures/ de support e help_center, que nao sao do meu recorte. Restaurados com git checkout; nao eram trabalho e nao podiam viajar como modificacao minha.",
     "restante": "apenas os dois pubspec.lock nao rastreados, ja rastreados em dev pelo coordenador"
   },
-  "head_medido_em": "2026-09-10T04:18:37-03:00",
+  "head_medido_em": "2026-09-10T04:29:26-03:00",
   "status_medido_em": "2026-09-10T04:04:20-03:00",
   "auditoria_de_apodrecimento": {
     "quando": "2026-09-10T04:04:20-03:00",
@@ -1418,5 +1469,11 @@
     "ensaiadas": "rodadas do local publicado antes de entregar, e nao so do rascunho. O auditor pegou podridao nova na mesma execucao, porque eu havia commitado depois da revisao anterior — que e exatamente o que ele existe para fazer.",
     "por_que": "metodo descrito e metodo que ninguem repete",
     "medido_em": "2026-09-10T04:18:37-03:00"
+  },
+  "seguranca_da_entrega": {
+    "medido_em": "2026-09-10T04:24:20-03:00",
+    "mudanca_no_dominio_compartilhado": "46 insercoes e ZERO remocoes em coelo_domain form_definition.dart, medido por git diff. Puramente aditivo, entao nenhum consumidor existente pode quebrar.",
+    "consumidores_dos_guardas_novos": "todos dentro de Formularios ou do proprio dominio: forms_editor_page, forms_operations_page, form_response_page e forms_test_page. Nenhum outro grupo alcanca.",
+    "artefatos_de_outros_grupos": "a execucao da suite completa regravou 54 PNG rastreados de failures/ de support e help_center; restaurados com git checkout e nao entraram em commit nenhum meu."
   }
 }

@@ -1,14 +1,14 @@
 {
-  "revision": 54,
-  "updated_at": "2026-09-10T04:15:27-03:00",
+  "revision": 56,
+  "updated_at": "2026-09-10T04:29:11-03:00",
   "group": "operacoes-sistema",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) — claude-opus-5[1m]",
-  "status": "ATIVO - residual de estrutura em andamento",
+  "status": "congelado; sem lote novo desde 04:16; disponivel para correcao apontada pelo coordenador ate 05:00",
   "coordinator": "Claude",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-operacoes-sistema",
   "branch": "work/etapa2-noturna-operacoes-sistema",
-  "head": "73ca2e45b",
+  "head": "9fed2950d",
   "upstream": "origin/work/etapa2-noturna-operacoes-sistema",
   "base_observed": "d784462c168d22fdb7090b7de1ef7db554ad5107",
   "scope": [
@@ -1851,5 +1851,22 @@
     "conferidos": "14 artefatos: o handoff, os dois relatorios novos de hoje, quatro artigos de conhecimento, cinco arquivos de teste de contrato e os dois testes de Importacoes e de Cardapios.",
     "resultado": "14 de 14 presentes em origin/dev. Publicado nao e o mesmo que entregue, e entregue nao e o mesmo que integrado: isto verifica a terceira, que e a que o Owner le.",
     "o_que_isto_nao_prova": "Nao prova que alguem leu. Prova que o caminho que o leitor usa contem o arquivo."
+  },
+  "verificacao_dirigida_do_delta": {
+    "hora": "2026-09-10T04:27:49-03:00",
+    "por_que": "A corrida completa e de 03:20 e os meus ultimos commits vieram depois. Entao rodei as suites que eles tocam, na arvore final, para a pre-entrega nao depender de numero anterior as mudancas.",
+    "caminhos": "test/contracts, test/features/agenda, test/features/plans, test/features/meal_plans, test/features/imports, test/features/units.",
+    "numero": "671 PASS, 3 SKIP, 32 FAIL, duracao 02:02, pelo CONTADOR OFICIAL.",
+    "cruzamento_que_autoriza_confiar": "As 32 batem EXATAMENTE com o que a corrida completa das 03:20 atribuiu a esses mesmos arquivos: agenda 20, meal_plans 6, imports 3, units 2 e plans 1. Duas corridas diferentes, em arvores diferentes, mesma distribuicao. Nenhuma falha nova, nenhuma falha a menos.",
+    "instrumento_que_errou_e_como_eu_soube": "Tentei extrair a atribuicao desta corrida por grep e errei DUAS vezes seguidas. Com mais de um caminho na linha de comando, o reporter padrao prefixa CADA caso com o arquivo, inclusive os que passam, entao o meu padrao contou tudo e deu mais de oitenta 'falhas'. A segunda tentativa quebrou no 'C:' do caminho do Windows ao cortar por dois-pontos. O que me salvou foi o cruzamento, nao a releitura do comando: a soma nao batia com o contador oficial, que diz 32. O mesmo padrao da noite, agora contra mim: quando o instrumento discorda do contador, o instrumento esta errado ate prova em contrario.",
+    "por_que_nao_insisti": "Parei de tentar extrair e usei a atribuicao que JA estava verificada na corrida completa, onde o arquivo de saida era pre-filtrado e a dedupe fechou em 144 igual ao contador. Faltavam dez minutos para o congelamento e persistir em afinar regex valeria menos que entregar o numero que ja tem duas fontes concordantes."
+  },
+  "estado_no_congelamento": {
+    "hora": "2026-09-10T04:29:11-03:00",
+    "head": "9fed2950d",
+    "worktree": "limpa, 0 linhas em git status --porcelain",
+    "commits_meus_fora_de_dev": "1",
+    "nota": "Os commits fora de dev sao os de documento e teste que o coordenador disse que entram no proximo ciclo. Nao integrei os commits de outras frentes para ca, de proposito: trazer a arvore inteira depois da medicao de fechamento invalidaria os numeros que eu acabei de entregar.",
+    "ultimo_lote": "9fed2950d, carimbo do handoff passando a ser lido do commit em vez de digitado a mao."
   }
 }

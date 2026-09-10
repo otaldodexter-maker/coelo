@@ -1,6 +1,6 @@
 {
-  "revision": 60,
-  "updated_at": "2026-09-10T04:24:00-03:00",
+  "revision": 62,
+  "updated_at": "2026-09-10T04:30:00-03:00",
   "group": "chat-comunicacoes",
   "task": "/root",
   "model": "Claude Opus 5 (1M context) - claude-opus-5[1m]",
@@ -8,9 +8,9 @@
   "coordinator": "Claude (coelo-73)",
   "ack_received": "revisao 1 aceita; coordenacao.json rev 2, commit 920f23199",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-chat-comunicacoes",
-  "branch": "work/etapa2-noturna-chat-volta-mobile",
-  "head": "fb31e11dc",
-  "upstream": "origin/work/etapa2-noturna-chat-volta-mobile = fb31e11dc (0/0)",
+  "branch": "work/etapa2-noturna-import-orfao",
+  "head": "8a09d66ac",
+  "upstream": "origin/work/etapa2-noturna-import-orfao = 8a09d66ac (0/0)",
   "base": "d784462c1",
   "router_patch_branch": {
     "branch": "work/etapa2-noturna-chat-comunicacoes-router-from",
@@ -1020,5 +1020,27 @@
     "as_27_puladas": "Conferidas uma a uma. Vinte e uma resolvem como caminho relativo abreviado. As seis restantes eram falha do MEU extrator: duas com SHA colado no caminho, uma com dois nomes de arquivo lado a lado em prosa lidos como um caminho so, e tres abreviacoes que pulam um segmento intermediario. Todos os arquivos existem.",
     "pulos_nao_verificados": "Zero.",
     "o_que_a_varredura_NAO_alcanca": "Confere se o caminho EXISTE, nao se e o caminho CERTO. Uma citacao que aponte para um arquivo real porem errado passa limpa, e nao ha instrumento para isso."
+  },
+  "deriva_de_golden_medida_fora_do_meu_recorte": {
+    "motivo": "A rodada inteira afirma que a deriva de golden e da BASE e nao do recorte de ninguem, e eu repeti isso ao declarar as minhas 12 falhas. Mas a evidencia que eu tinha era DIAGNOSTICO — MaterialIcons vindo do SDK local sem pin, com o texto tambem fantasmando — e diagnostico nao e medicao.",
+    "medicao": "Rodei goldens de outras frentes: institution_directory_page_golden_test e daily_routine_golden_test. Resultado 7 passando, 4 pulados, SEIS FALHANDO.",
+    "conclusao": "Duas frentes que nao sao minha, dois dominios sem relacao com chat ou avisos, mesmos sintomas. As minhas 12, as de institutions e as de daily_routine sao a MESMA coisa: a base renderiza diferente da imagem de referencia.",
+    "risco_da_leitura_errada": "Se cada frente declarar as proprias falhas de golden sem esta medida, o Owner le seis conjuntos independentes de regressao visual e conclui que a rodada degradou o visual do app em toda parte.",
+    "risco_pior_da_acao_errada": "Alguem manda regravar goldens. Regravar sobre uma base que renderiza errado CONGELA o defeito na referencia: a deriva para de aparecer e passa a ser a verdade.",
+    "o_que_eu_NAO_medi": "Nao varri todos os goldens da base. Foram dois arquivos de duas frentes. Nao afirmo o total de goldens quebrados no repositorio, apenas que a falha existe fora do meu recorte, em dominios sem relacao com ele.",
+    "por_que_esta_aqui": "E conferencia sobre trabalho de terceiro, que e exatamente a categoria que eu deixei de registrar mais cedo nesta noite. Deixa-la so no canal repetiria o erro depois de eu ter concordado com o diagnostico."
+  },
+  "entrega_import_orfao": {
+    "branch": "work/etapa2-noturna-import-orfao sobre 98ef12509",
+    "commit": "8a09d66ac fix(test): drop the orphan import from the mixed feed red test",
+    "defeito": "unused_import na linha 11 de principal_mixed_feed_pagination_red_test.dart, arquivo meu. O import nasceu orfao no unico commit que o arquivo tem, entao nao ha regressao de merge a investigar.",
+    "por_que_parecia_usado": "O arquivo tem oito ocorrencias de simbolos PrincipalHappens*, o que faz a leitura rapida concluir que o import serve. Os quatro simbolos vem de outros dois imports que ja estavam la: tres classes PrincipalHappens* moram em principal_circulars, nao em principal_happens.",
+    "causa": "Segui o NOME e nao o CAMINHO ao escrever o import. E a mesma armadilha de nomenclatura que ja tinha enganado uma busca desta rodada, agora do outro lado: antes enganou quem procurava, aqui enganou quem escrevia.",
+    "verificacoes": "Antes: flutter analyze lib test em apps/superadmin da 1 issue. Depois: No issues found. E o teste continua VERMELHO pelo motivo correto — nenhum controle de continuacao no feed misto —, porque um vermelho proposital que muda de motivo deixa de ser prova.",
+    "credito": "Diagnostico completo feito por perfil-para-voce, inclusive a explicacao de por que o import parecia usado. Eu verifiquei cada afirmacao antes de aplicar."
+  },
+  "quatro_declaracoes_estreitas_da_noite": {
+    "padrao": "Quatro vezes uma declaracao verdadeira produziu leitura errada por nao dizer o ESCOPO: 'analyze limpo' sem test; 'suite completa' cobrindo apps/superadmin sem o monorepo; o meu recorte com sete caminhos sem os outros nove; e 'processos filhos: nenhum' sobre o que foi aberto e nao sobre o que ficou rodando.",
+    "o_que_isso_prova": "Nenhuma das quatro foi mentira, e as quatro levariam o Owner a conclusao errada. E o argumento mais forte a favor de declarar ESCOPO junto de todo numero, porque nao adianta pedir honestidade: as quatro eram honestas."
   }
 }

@@ -1,6 +1,6 @@
 {
-  "revision": 41,
-  "updated_at": "2026-09-10T04:17:30-03:00",
+  "revision": 46,
+  "updated_at": "2026-09-10T04:33:00-03:00",
   "group": "perfil-para-voce",
   "task": "/root",
   "model": "Claude Opus 5 (1M context)",
@@ -572,11 +572,11 @@
   },
   "correcao_de_horario": "Os campos updated_at das revisoes anteriores foram TIPADOS por estimativa e nao lidos do relogio: chegaram a ficar cerca de 1h25 adiantados. A partir desta revisao o valor vem de powershell Get-Date -Format 'yyyy-MM-ddTHH:mm:ssK'. Registro porque timestamp de handoff e usado para reconciliar ordem de eventos, e numero estimado com aparencia de medido e a mesma classe de erro que passei a noite catalogando. Nota util para as outras frentes: neste Git Bash o comando date JA devolve horario local -03, conferido contra o PowerShell no mesmo minuto; o que devolve UTC e usar TZ=America/Sao_Paulo, porque nao ha tzdata e o TZ e ignorado.",
   "residual_de_integracao": {
-    "declaracao": "1 commit(s) pendente(s) de integracao, todos publicados na branch remota. Nada retido localmente, nada nao commitado.",
-    "medido_em": "2026-09-10T04:17:30-03:00, com origin/dev em 606e291f5",
+    "declaracao": "1 commit(s) pendente(s), publicado(s) na branch remota. Nada retido localmente, nada nao commitado.",
+    "medido_em": "2026-09-10T04:31:00-03:00, com origin/dev em 0155b4a5b",
     "metodo": "git merge-base --is-ancestor <sha> origin/dev, apos git fetch origin --prune",
     "pendentes": [
-      "f57459bed"
+      "3e8de2319"
     ],
     "o_que_sao": "Tres criam UM arquivo de skill novo, .agents/skills/coelo-flutter-supabase-review/references/medicao-confiavel.md, com as tres armadilhas de instrumento, a lei do controle, as tres perguntas do denominador, a sobreposicao, o apodrecimento de campos de estado e o diff que assusta. O quarto fecha, no documento de evidencia do replay, a duvida sobre a segunda arvore de migration, com credito a chat-comunicacoes.",
     "pedido_ao_coordenador": "Ler antes de integrar o arquivo de skill: e instrucao para todo mundo, nao evidencia de uma frente, e cita medicao de cinco pessoas. Se preferir que nao entre, o conteudo ja esta no relatorio da rodada e a frente nao reabre.",
@@ -841,7 +841,7 @@
         ".agents/skills/coelo-flutter-review/references/golden-failure-triage.md"
       ],
       "hashes": "ace7b32e1 e 1d453e2f3 resolvidos por git log --oneline -1 <sha> na MESMA chamada do merge-base; e35437360 lido de git log --oneline -1 origin/dev",
-      "CORRECAO": "O artefato citado como 2026-09-10-handoff-snapshot-rev27.json chama-se handoff-snapshot-rev27.json, sem data. Citei de memoria. Todas as 11 citacoes foram reconferidas a partir da raiz com ls-tree as 04:04:20 e as outras 10 estavam certas."
+      "CORRECAO": "O artefato citado como handoff-snapshot-rev27.json chama-se handoff-snapshot-rev27.json, sem data. Citei de memoria. Todas as 11 citacoes foram reconferidas a partir da raiz com ls-tree as 04:04:20 e as outras 10 estavam certas."
     },
     "7_o_que_eu_NAO_verifiquei": [
       "O numero da corrida com reporter JSON: iniciada 03:31:40, ainda rodando. Entra na reconferencia das 04:50.",
@@ -936,7 +936,7 @@
     "familia_e_regra_geral": "Terceira instancia na mesma noite, junto de git cat-file -e <sha>^{commit} (quebra por escape de shell) e --file-reporter json:C:/... (quebra pelo dois-pontos da unidade). No Git Bash em Windows, argumento que contem dois-pontos, circunflexo ou chaves chega mangled com frequencia, e a falha se apresenta como RESULTADO NEGATIVO, nunca como erro de sintaxe. Preferir o comando que nao recebe o caminho como argumento."
   },
   "correcao_de_citacao_minha": {
-    "erro": "Citei o artefato como docs/reviews/evidence/etapa-2/perfil-para-voce/2026-09-10-handoff-snapshot-rev27.json. O nome verdadeiro nao tem a data: handoff-snapshot-rev27.json.",
+    "erro": "Citei o artefato como docs/reviews/evidence/etapa-2/perfil-para-voce/handoff-snapshot-rev27.json. O nome verdadeiro nao tem a data: handoff-snapshot-rev27.json.",
     "como_aconteceu": "Citei de memoria em vez de conferir a partir da raiz. E o item 6 do formato do coordenador, que existe justamente contra isso.",
     "estado_real": "O arquivo esta em origin/dev, 538 linhas.",
     "consequencia": "Dos dois alarmes de ausencia, um era ferramenta quebrada e o outro era eu citando de cabeca. Nenhum era trabalho perdido - mas os dois teriam entrado no fechamento como perda se eu nao fosse conferir."
@@ -1011,5 +1011,74 @@
     "forma_conhecida": "E a sexta instancia virando setima do padrao que o coordenador catalogou como camada pronta sem superficie, agora em profile_about.",
     "toca_decisao_pendente": "A decisao 3 da proxima_rodada pergunta quais campos a tela de Editar perfil edita e quem edita. A resposta do dominio ja existe e e mais rica do que a pergunta assumia: ha uma segunda escolha, gated por permissao, que a pergunta nao contempla."
   },
-  "nao_inspecionado_e_passado_adiante": "A mesma varredura marcou HealthCareProfileCatalogGroup e HealthCareProfileCatalogItem (features/health_care/domain/health_care.dart) e HealthCareProfileUpdateCommand (features/health_care/presentation/health_care_controller.dart) como publicas sem consumidor em lib, as duas primeiras tambem sem teste algum. NAO sao deste recorte e NAO foram inspecionadas. Registrado como pista para quem tem o recorte de saude, nao como achado."
+  "nao_inspecionado_e_passado_adiante": "A mesma varredura marcou HealthCareProfileCatalogGroup e HealthCareProfileCatalogItem (features/health_care/domain/health_care.dart) e HealthCareProfileUpdateCommand (features/health_care/presentation/health_care_controller.dart) como publicas sem consumidor em lib, as duas primeiras tambem sem teste algum. NAO sao deste recorte e NAO foram inspecionadas. Registrado como pista para quem tem o recorte de saude, nao como achado.",
+  "conferencia_de_citacoes": {
+    "metodo": "Extrai TODOS os caminhos citados no arquivo por expressao regular e conferi cada um contra git ls-tree -r --name-only origin/dev. Nao por cat-file, que converte caminho iniciado por ponto, e nao por basename.",
+    "medido_em": "2026-09-10T04:21:05-03:00, com origin/dev em 5fdd243c2",
+    "resultado": "31 caminhos citados, 29 presentes em origin/dev, 2 ausentes",
+    "ausente_1_ERRO_MEU_CORRIGIDO": "docs/reviews/evidence/etapa-2/perfil-para-voce/2026-09-10-handoff-snapshot-rev27.json nao existe. O nome verdadeiro nao tem o prefixo de data: handoff-snapshot-rev27.json. Corrigido em 2 ocorrencia(s) nesta revisao.",
+    "ausente_2_LEGITIMO": "apps/superadmin/recorte.json e o artefato que o reporter JSON deixou dentro do repositorio e que eu removi de proposito. Esta citado como coisa removida, nao como coisa presente. Ausencia esperada.",
+    "a_licao_que_custou_uma_hora": "Eu identifiquei este erro de citacao as 04:02, escrevi que corrigiria na proxima revisao, publiquei a revisao 39 com uma NOTA sobre o erro, e deixei a CITACAO ERRADA no lugar. Reconhecer o defeito e propagar a correcao sao coisas diferentes. O coordenador precisou cobrar, depois de outra frente varrer 199 caminhos de nove frentes e achar seis ausentes, dois reais - este entre eles."
+  },
+  "analyze": {
+    "CORRECAO": "Este handoff declarava analyze limpo. A afirmacao era verdadeira quando escrita e nao e mais.",
+    "medido_em": "2026-09-10, janela 04:17:46 a 04:20:46",
+    "apps_superadmin_lib_test": "1 issue found - warning unused_import em test/app/router/principal_mixed_feed_pagination_red_test.dart:11:8, import de features/principal_happens/domain/principal_happens_preview_data.dart",
+    "packages_coelo_domain_lib_test": "No issues found",
+    "dono_provavel_do_issue": "NAO e deste recorte. principal_mixed_feed_pagination_red_test.dart e o teste vermelho da paginacao do feed misto, de outra frente. Nao toquei nele e nao o corrijo por conta propria a 20 minutos do congelamento; reporto.",
+    "escopo_declarado": "Estes dois escopos e nada alem deles. Nao rodei analyze nos outros pacotes do monorepo.",
+    "diagnostico_do_unico_issue": {
+      "arquivo": "apps/superadmin/test/app/router/principal_mixed_feed_pagination_red_test.dart, linha 11",
+      "nao_e_regressao_de_merge": "O arquivo tem UM unico commit em toda a historia, f4a86ed7e, que ja esta em origin/dev. O import nasceu orfao. Nenhum merge desta noite o quebrou.",
+      "por_que_parece_usado": "O arquivo tem oito ocorrencias de simbolos PrincipalHappens*, entao a leitura rapida sugere que o import serve. Nao serve: os quatro simbolos vem de outros dois imports ja presentes. PrincipalHappensCircularItem, PrincipalHappensFeedCursor e PrincipalHappensFeedPage moram em features/principal_circulars/domain/principal_happens_mixed_feed.dart; PrincipalHappensFeedRepository mora em features/principal_happens/domain/principal_happens_feed_repository.dart.",
+      "causa_provavel": "Tres classes chamadas PrincipalHappens* moram na arvore principal_circulars. Quem escreveu o import seguiu o NOME e nao o CAMINHO. E a mesma armadilha do quarto criterio de varredura, do outro lado: dessa vez o nome enganou quem escreveu, nao quem procurou.",
+      "correcao": "apagar a linha 11. Verificado simbolo a simbolo, nao por leitura.",
+      "por_que_nao_fiz": "Arquivo de outra frente, teste vermelho intencional, a 17 minutos do congelamento. Entreguei o diagnostico completo ao coordenador.",
+      "hipotese_sobre_a_declaracao_do_coordenador": "flutter analyze lib da limpo; flutter analyze lib test da 1 issue. Se as declaracoes de analyze limpo da rodada omitiram test/, nunca foram falsas, apenas mais estreitas do que o leitor entendeu."
+    }
+  },
+  "validacao_na_base_integrada": {
+    "o_que_e": "O numero do recorte medido NA BASE INTEGRADA, nao na branch da frente. E a unica medicao que responde a pergunta que o coordenador precisa: o recorte continua verde depois de tudo que entrou no dev esta noite?",
+    "base": "98ef12509, origin/dev, em worktree destacada de verificacao",
+    "medido_em": "2026-09-10, janela 04:24:13 a 04:26:14",
+    "comando": "flutter test <os 11 caminhos declarados> --file-reporter json:recorte-dev.json",
+    "resultado": "306 PASS / 0 SKIP / 10 FAIL, em 316 casos e 30 arquivos",
+    "IDENTICO_A_BRANCH": "Mesmo total, mesma distribuicao POR ARQUIVO e as MESMAS dez falhas nominais que a medicao feita na branch as 03:52. Nada que entrou no dev esta noite mexeu no recorte, e o recorte nao depende de nada que so exista na branch.",
+    "controle": "os 11 caminhos foram conferidos com ls antes da corrida; nenhum ausente. O contador da corrida declarou +306 -10 e o parser reconstruiu exatamente isso.",
+    "as_dez": "todas de principal_profile_preview_golden_test.dart, que tem 12 casos: 10 falham, 2 passam. Causa unica, blocked-decision.",
+    "artefato_removido": "recorte-dev.json foi apagado da worktree de verificacao; git status devolve 0 caminhos."
+  },
+  "defeito_no_meu_proprio_parser": {
+    "o_que_aconteceu": "A primeira analise da corrida na base integrada devolveu recorte com PASS 0, FAIL 0, total 0 - ao lado de totais CERTOS de 316 casos.",
+    "causa": "O normalizador de caminho do meu script tinha a raiz da minha worktree fixada em constante. Rodado contra outra worktree, nenhum caminho casava o prefixo, o filtro de recorte descartava tudo e o resultado era zero.",
+    "por_que_e_perigoso": "Um zero nao parece erro, parece resultado. E ele veio acompanhado do bloco de controle do parser dizendo 316 casos reconstruidos corretamente, o que empresta credibilidade. E a mesma forma da armadilha do reporter expanded: a metade conferivel esta certa.",
+    "como_peguei": "Porque eu ESPERAVA 306 e recebi 0. Expectativa e um controle fraco e nao substitui medicao, mas foi o que disparou a investigacao. Se eu nao tivesse um numero previo, teria publicado zero.",
+    "correcao": "o normalizador passou a cortar tudo ate apps/superadmin/, independente de worktree, e a razao ficou escrita no proprio script."
+  },
+  "afirmacao_falsa_minha_dentro_do_codigo": {
+    "gravidade": "A pior das quatro citacoes erradas desta noite, porque as outras tres estavam em registro da rodada e esta estava em COMENTARIO DE CODIGO INTEGRADO. Registro envelhece junto com a rodada; comentario de codigo e lido como medido por quem chega meses depois sem contexto. Ia sobreviver ao fechamento.",
+    "arquivo": "apps/superadmin/test/app/router/fail_closed_screens_with_data_probe_test.dart, integrado em 1d453e2f3",
+    "o_que_dizia": "Another front hit exactly this and found that sixteen of twenty passing detail probes were empty pages.",
+    "por_que_e_falso": "Varri os nove arquivos de comunicacao, as evidencias e o relatorio do Owner com quatro padroes diferentes: a fonte NAO EXISTE. E a medicao que existe aponta o contrario - chat-comunicacoes mediu 22 rotas parametrizadas de Formularios e Circulares, com ids colhidos das PROPRIAS listagens, em 1440x900 e 375x812, incluindo as de tipo LISTA, e TODAS OK. Atribui a outra frente um numero que ela nao produziu e que contradiz o que ela produziu.",
+    "o_que_ficou": "O mecanismo, que e verdadeiro: id que nao pertence a registro nenhum renderiza o detalhe vazio legitimo, nenhum caminho de erro e acionado, e a sonda reporta sucesso sem exercitar nada. A guarda que falta e sobre a ENTRADA e nao sobre a saida.",
+    "o_que_saiu": "a contagem. O comentario agora declara que uma versao anterior trazia numero que nao se sustentou, e cita a medicao das 22 rotas como o que de fato existe.",
+    "correcao": "3e8de2319, medido e publicado 2026-09-10T04:29:35-03:00",
+    "como_peguei": "Decidi usar os ultimos dez minutos antes do congelamento conferindo afirmacoes que EU tinha publicado, em vez de conferir as dos outros. Foi a unica coisa que a encontrou.",
+    "pergunta_para_o_fechamento_das_seis": "Alguma frente escreveu numero de OUTRA frente dentro de codigo ou de skill? Registro se corrige na proxima revisao; codigo integrado nao tem proxima revisao.",
+    "quarta_ocorrencia": "E a quarta vez esta noite que escrevo de cabeca algo lido em outro lugar e nao confiro a partir da fonte. As quatro estao registradas, que e o que impede a quinta."
+  },
+  "mencoes_intencionais_de_caminho_que_nao_existe": {
+    "para_que_serve": "Uma varredura de citacoes conta como AUSENTE todo caminho que nao esta em origin/dev. Nem toda ausencia e defeito. Este campo declara as excecoes deste arquivo para que a varredura das nove frentes nao produza falso positivo, e para que quem a rodar saiba distinguir sem ter de ler o contexto.",
+    "duas_classes": {
+      "citacao_de_REMOCAO": "apps/superadmin/recorte.json - artefato que o reporter JSON deixou dentro do repositorio e que eu removi de proposito. Citado como coisa removida.",
+      "citacao_de_ERRO": "docs/reviews/evidence/etapa-2/perfil-para-voce/2026-09-10-handoff-snapshot-rev27.json - este caminho NAO EXISTE e e citado justamente para registrar que eu o escrevi errado. O nome verdadeiro e handoff-snapshot-rev27.json, sem prefixo de data, e as citacoes reais ja usam o nome certo."
+    },
+    "a_generalizacao": "Toda varredura de presenca precisa separar tres coisas: caminho que deveria existir e nao existe (defeito), caminho citado como removido, e caminho citado como exemplo de erro. Sem essa separacao, corrigir um erro de citacao AUMENTA a contagem de ausentes, porque a correcao precisa nomear o nome errado para explicar o que foi corrigido.",
+    "conferido_em": "2026-09-10T04:32:02-03:00, com origin/dev em 0155b4a5b: 32 caminhos citados, 30 presentes, 2 ausentes e ambos desta lista."
+  },
+  "conferencia_de_shas": {
+    "metodo": "git rev-parse --verify --quiet <sha>^{commit} em todo SHA de 9 digitos citado no arquivo. Nota: aqui o ^{commit} funciona porque o argumento e passado por lista de processo e nao pela linha de comando do shell, entao nao ha conversao.",
+    "medido_em": "2026-09-10T04:32:02-03:00",
+    "resultado": "53 SHAs citados, 53 resolvem, 0 nao resolvem"
+  }
 }
