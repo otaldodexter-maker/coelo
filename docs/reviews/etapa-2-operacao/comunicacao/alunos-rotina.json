@@ -1,6 +1,6 @@
 {
-  "revision": 28,
-  "updated_at": "2026-09-10T03:23:01-03:00",
+  "revision": 30,
+  "updated_at": "2026-09-10T03:38:46-03:00",
   "clock_note": "Relogio corrigido pelo coordenador e conferido por mim com PowerShell Get-Date: 02:00 de 10/09, fuso E. South America Standard Time, -03:00. O date do Git Bash com TZ nao tem tzdata e devolve UTC; parei de usa-lo.",
   "group": "alunos-rotina",
   "task": "/root",
@@ -511,37 +511,42 @@
         "casos": 14,
         "perfil": "SHELL PURO",
         "medicao": "1440: 0,05% e 837px nas duas variantes de tema. 375 e 768: 10% a 18%, com todo o conteudo fantasmado em deslocamento vertical uniforme.",
-        "conclusao": "As duas mudancas aprovadas, separadas por largura. Nao esconde nada. Rebaseline seguro com causa nomeada."
+        "conclusao": "As duas mudancas aprovadas, separadas por largura. Nao esconde nada. Rebaseline seguro com causa nomeada.",
+        "CLASSIFICACAO_CORRIGIDA": "Confirmada DESLOCAMENTO DE BLOCO, rebaseline seguro. Esta amostra nao mudou de categoria."
       },
       {
         "suite": "institutions",
         "casos": 4,
         "perfil": "SHELL MAIS CONTEUDO",
         "medicao": "28% a 40%, de 120 mil a 200 mil pixels. Cabecalho mudou de hamburguer para marca Coelo. E o master abre com cartao tracejado Criar instituicao que o atual NAO tem; dados e paginacao tambem diferem.",
-        "ressalva": "A diferenca de dados e de paginacao indica fixture diferente, entao o cartao pode estar ausente por cenario e nao por regressao. NAO investiguei; e recorte de estrutura."
+        "ressalva": "A diferenca de dados e de paginacao indica fixture diferente, entao o cartao pode estar ausente por cenario e nao por regressao. NAO investiguei; e recorte de estrutura.",
+        "CLASSIFICACAO_CORRIGIDA": "Confirmada COM COMPONENTE DE CONTEUDO na reclassificacao elemento a elemento. Esta amostra nao mudou de categoria."
       },
       {
         "suite": "account_pages_golden_test",
         "casos": 8,
         "perfil": "SHELL MAIS CONTEUDO",
         "medicao": "375 e 768: 44% a 73%, ate 503 mil pixels. 1024 e 1440: 3,9% a 5,1%, ou seja CEM VEZES a assinatura de 837px. No corpo ha um controle segmentado de tres opcoes e uma linha com interruptor.",
-        "conclusao": "Era a familia escolhida por ser a mais provavel de ser so cabecalho, e e a que tem mais conteudo escondido."
+        "conclusao_ANTIGA_DERRUBADA": "Era a familia escolhida por ser a mais provavel de ser so cabecalho, e e a que tem mais conteudo escondido.",
+        "CLASSIFICACAO_CORRIGIDA": "CLASSIFICACAO CORRIGIDA, vale sobre qualquer conclusao anterior desta amostra: DESLOCAMENTO DE BLOCO, rebaseline seguro. A conclusao original desta amostra inferia conteudo A PARTIR DA MAGNITUDE, e essa inferencia foi derrubada: elemento identico que se DESLOCA acende no diff exatamente como elemento alterado, entao magnitude nao distingue os dois. Reclassificada elemento a elemento. Ver CORRECAO_IMPORTANTE neste mesmo bloco."
       },
       {
         "suite": "meal_plan_pages_golden_test",
         "casos": 6,
         "perfil": "CONTEUDO PURO",
         "medicao": "0,86% a 8,70%. A barra lateral NAO aparece no diff. Difere um cartao: ponto de status trocando de cor e linhas de texto onde rotulo e data mudaram.",
-        "ressalva": "Conversa com o achado de operacoes-sistema sobre guarda de concorrencia de imagem, mas NAO afirmo ligacao."
+        "ressalva": "Conversa com o achado de operacoes-sistema sobre guarda de concorrencia de imagem, mas NAO afirmo ligacao.",
+        "CLASSIFICACAO_CORRIGIDA": "Confirmada COM COMPONENTE DE CONTEUDO na reclassificacao elemento a elemento. Esta amostra nao mudou de categoria."
       },
       {
         "suite": "activities",
         "casos": 16,
         "perfil": "CONTEUDO EM TODAS AS LARGURAS",
-        "medicao": "375 e 768 entre 19% e 32%; 1024 entre 12% e 13%; 1440 entre 9,8% e 20,5%. Nas largas o diff e centenas de vezes a assinatura de 837px."
+        "medicao": "375 e 768 entre 19% e 32%; 1024 entre 12% e 13%; 1440 entre 9,8% e 20,5%. Nas largas o diff e centenas de vezes a assinatura de 837px.",
+        "conclusao_ANTIGA_DERRUBADA": "(esta amostra nao tinha conclusao escrita; a inferencia estava no proprio texto da medicao)",
+        "CLASSIFICACAO_CORRIGIDA": "CLASSIFICACAO CORRIGIDA, vale sobre qualquer conclusao anterior desta amostra: DESLOCAMENTO DE BLOCO, rebaseline seguro. A conclusao original desta amostra inferia conteudo A PARTIR DA MAGNITUDE, e essa inferencia foi derrubada: elemento identico que se DESLOCA acende no diff exatamente como elemento alterado, entao magnitude nao distingue os dois. Reclassificada elemento a elemento. Ver CORRECAO_IMPORTANTE neste mesmo bloco."
       }
     ],
-    "proporcao": "Cerca de 48 casos amostrados. 14 sao rebaseline seguro (Agenda). Os outros ~34, cerca de 70%, tem componente de conteudo que um rebaseline cego apagaria.",
     "consequencia": "A hipotese de que a deriva do cabecalho explicaria a maior parte dos 129 NAO se sustenta: ela explica uma suite inteira e a metade larga de outra. Se o Owner autorizasse rebaseline em bloco, apagaria mudanca de produto em pelo menos quatro familias.",
     "ressalvas": "Cinco suites nao sao os 129. A amostra nao e aleatoria: duas escolhi e tres o coordenador indicou. Componente de conteudo e o que MEDI nas imagens; nao investiguei QUAL mudanca de produto em nenhuma. Parte do conteudo pode ser fixture de teste e nao produto.",
     "recomendacao": "Agenda rebaselina em bloco com causa nomeada. As demais passam pelo dono do recorte antes; o custo e alto, o de apagar regressao e maior.",
@@ -561,6 +566,16 @@
       "recomendacao_corrigida": "A maior parte dos 129 provavelmente E rebaseline seguro. A revisao humana deve se concentrar nas suites onde a comparacao elemento a elemento mostra diferenca que NAO e deslocamento. Nas duas que tem conteudo, ele e identificavel e pequeno: uma cor de status e um cartao de criacao com dados de fixture.",
       "licao": "Magnitude nao classifica nada; so a comparacao elemento a elemento classifica. Nas tres suites em que abri imagem eu acertei; nas duas em que julguei por numero eu errei; e numa terceira acertei pelo motivo errado.",
       "estado_da_amostra": "Todas as seis suites agora classificadas por comparacao elemento a elemento. Nenhuma classificacao restante se apoia em magnitude."
+    },
+    "AVISO_DE_LEITURA": "Nenhuma amostra deve ser lida isolada sem a CORRECAO_IMPORTANTE deste bloco. Cada amostra agora carrega a sua CLASSIFICACAO_CORRIGIDA no proprio corpo, porque a correcao guardada em chave irma nao alcanca quem abre so uma amostra — foi assim que a proporcao errada circulou por horas.",
+    "proporcao_ANTIGA_DERRUBADA": "DERRUBADA, nao usar: Cerca de 48 casos amostrados. 14 sao rebaseline seguro (Agenda). Os outros ~34, cerca de 70%, tem componente de conteudo que um rebaseline cego apagaria. Essa conclusao vinha da inferencia por magnitude que a quarta categoria desmontou.",
+    "DISCREPANCIA_NAO_RESOLVIDA": {
+      "o_que": "A proporcao corrigida fala em SEIS suites e cerca de 60 casos, listando Formularios com 12. Mas este bloco tem CINCO amostras, somando 48 casos, e nenhuma delas e Formularios. A chave antiga dizia 48.",
+      "como_apareceu": "Achei relendo o bloco para conferir que nenhum caminho de leitura chega a proporcao errada. A conferencia pegou outra coisa.",
+      "o_que_eu_NAO_sei": "De onde vem o 12 de Formularios. Pode ter sido medido e nunca escrito como amostra, ou pode ter vindo da medicao de outra frente e entrado no meu texto sem virar amostra minha. Nao tenho registro que decida.",
+      "o_que_eu_sei": "A minha medicao desta madrugada conta 8 TESTES de golden de forms falhando, nao 12. Teste de golden pode conter varios arquivos de referencia, entao 8 testes e 12 arquivos nao se contradizem — mas eu nao verifiquei essa correspondencia e nao vou afirmar que explica.",
+      "efeito_no_numero": "Se Formularios sair da conta, a proporcao vira 38 de 48, cerca de 79% de deslocamento seguro, em vez de 83%. A CONCLUSAO nao muda: a maioria larga e deslocamento seguro, e a inversao que eu publiquei na r17 continua derrubada. Muda a precisao, nao o sentido.",
+      "acao": "Fica declarada no item 7 da pre-entrega como coisa que eu NAO verifiquei. Nao invento a origem e nao apago o numero: quem decidir o rebaseline precisa saber que a amostra de Formularios nao esta documentada aqui."
     }
   },
   "v4_19_convencao": {
