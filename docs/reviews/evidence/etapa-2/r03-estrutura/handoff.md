@@ -52,9 +52,17 @@ decisão RODAPÉ e regra do chat aplicadas e gravadas nas skills.
   eram 109 asserções PASS sobre a cadeia antiga.
 - **Flutter:** 448 PASS em `test/features/locations`; 1341 PASS nas seis famílias
   mais `test/architecture` na medição anterior; `analyze` limpo.
-- **Vermelhos conhecidos:** 3 goldens de detalhe de Locais, que já falhavam antes
-  das minhas mudanças (medido por baseline com stash), e os 16 de formulário
-  acima.
+- **`test/app` mais Unidades e Turmas:** 939 PASS, 16 FAIL. As dezesseis são
+  **preexistentes**, não da composição: nenhum dos arquivos que falham
+  referencia `unitDirectoryRepository`, `groupDirectoryRepository` ou
+  `createSuperadminAuthScope`, e revertendo o meu hunk de composição para
+  `347d4cf8a` os mesmos casos continuam falhando. São de dev_menu, dataset de
+  desenvolvimento, rotas de import de desenvolvimento, shell persistente,
+  detalhe de pessoa, Principal real, navegação de protótipo, detalhe de
+  Estrutura e páginas de erro.
+- **Vermelhos conhecidos meus:** 3 goldens de detalhe de Locais, que já falhavam
+  antes das minhas mudanças (medido por baseline com stash), e os 16 goldens de
+  formulário que esperam MENU/MENU-M.
 
 ## WIP não commitado
 
