@@ -100,6 +100,41 @@ de `happens-media` e `now-media`, alinhando as quatro superfícies de mídia ao
 `circular-media`. É melhoria real, mas entrou sob uma descrição que falava
 apenas de costura injetável e ramo R2. Fica nomeado aqui.
 
+
+## Estado por ação, ao final da rodada
+
+Leitura verificada nesta rodada, não herdada do inventário. "RPC" significa
+definida na cadeia local de migrations; não é prova de produção.
+
+| action_id | Cliente | RPC | Observação verificada |
+| --- | --- | --- | --- |
+| `acontece.feed` | avançado | sim | Abre o leitor Principal; teto de 20 sem paginação (decisão) |
+| `acontece.create` | avançado | sim | Cliente deixou de fixar bucket; provedor anunciado |
+| `acontece.publish` | avançado | sim | Chave de idempotência por intenção |
+| `acontece.remove` | fechado | **não** | `withdraw_happens_post` só em candidato |
+| `agora.view` | avançado | sim | Relê na revisão de autorização; estados honestos |
+| `agora.create` | avançado | sim | `embedded` e seletor de mídia convivendo |
+| `agora.publish` | avançado | sim | Chave de idempotência por intenção |
+| `agora.expire` | satisfeito no cliente | sim | Servidor exclui expirado; transição material é candidato |
+| `momentos.view` | fechado | **não** | `list_visible_moments` só em candidato |
+| `momentos.create` | avançado | sim | Bytes conferidos contra o MIME real no gateway |
+| `momentos.publish` | avançado | sim | Sinal de refresh compartilhado com a leitura |
+| `momentos.remove` | fechado | **não** | `withdraw_moment` só em candidato; guarda de contexto adicionada |
+| `circulars.list` | avançado | sim | Segue o cursor; declara truncamento no teto |
+| `circulars.filter` | parcial | sim | Filtra no cliente sobre a lista completa; servidor não filtra |
+| `circulars.create` | avançado | sim | Anexos passaram a funcionar |
+| `circulars.edit` | avançado | sim | Nova revisão por `save_draft_v2`; recusa fechada/arquivada |
+| `circulars.detail` | avançado | sim | Resumo de respostas passou a aparecer |
+| `circulars.schedule` | **desabilitado** | sim | Nenhum host fornece o seletor; decisão de UX pendente |
+| `circulars.publish` | avançado | sim | Versão otimista no contrato |
+| `circulars.close` | **inerte** | sim | Backend completo, nenhuma afordância; decisão pendente |
+| `circulars.delete` | **ausente** | **não** | Ausente nas três camadas; decisão pendente |
+| `circulars.respond` | avançado | sim | Recusas dizem o que aconteceu; encerramento distinguido |
+| `circulars.attach` | avançado | sim | Bilhete autorizado e expirável; gateway em R2 |
+
+Nenhuma ação é declarada concluída ponta a ponta. Três têm cliente fechado e
+RPC ausente da cadeia aplicada, e por isso **não completam em produção**.
+
 ## O que NÃO está fechado, e por quê
 
 - `withdraw_happens_post`, `list_visible_moments` e `withdraw_moment` **não
