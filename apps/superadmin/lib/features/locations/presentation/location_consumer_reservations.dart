@@ -55,6 +55,7 @@ class _LocationConsumerReservationsState extends State<LocationConsumerReservati
   late LocationSelectionSource _source;
   String? _owner;
   LocationReferenceSnapshot? _location;
+  LocationCatalogStatus? _locationStatus;
   int _generation = 0;
 
   @override
@@ -76,6 +77,7 @@ class _LocationConsumerReservationsState extends State<LocationConsumerReservati
         _scopeKeys(oldWidget) != _scopeKeys(widget)) {
       _owner = null;
       _location = null;
+      _locationStatus = null;
       ++_generation;
       _source = CatalogLocationSelectionSource(widget.reader);
     }
@@ -167,6 +169,7 @@ class _LocationConsumerReservationsState extends State<LocationConsumerReservati
               setState(() {
                 _owner = value;
                 _location = null;
+                _locationStatus = null;
                 ++_generation;
               });
             },
@@ -183,11 +186,14 @@ class _LocationConsumerReservationsState extends State<LocationConsumerReservati
           onChanged: (selection) {
             if (!mounted || generation != _generation || !_allowed) return;
             final snapshot = selection is CataloguedLocationSelection ? selection.snapshot : null;
-            setState(
-              () => _location = snapshot != null && sameLocationScope(snapshot.scope, scope)
-                  ? snapshot
-                  : null,
-            );
+            final selected = snapshot != null && sameLocationScope(snapshot.scope, scope)
+                ? snapshot
+                : null;
+            setState(() {
+              _location = selected;
+              // CatalogLocationSelectionSource only offers active new choices.
+              _locationStatus = selected == null ? null : LocationCatalogStatus.active;
+            });
           },
         ),
         const SizedBox(height: CoeloSpacing.space5),
@@ -211,6 +217,7 @@ class _LocationConsumerReservationsState extends State<LocationConsumerReservati
             setState(() {
               _owner = _ownerKey(binding.location.scope);
               _location = binding.location;
+              _locationStatus = binding.status;
               ++_generation;
             });
           },
@@ -228,6 +235,7 @@ class _LocationConsumerReservationsState extends State<LocationConsumerReservati
           LocationReservationPanel(
             key: ValueKey('consumer-reservation-$generation-${location.id}'),
             locationId: location.id,
+            locationStatus: _locationStatus ?? LocationCatalogStatus.inactive,
             scope: location.scope,
             consumer: widget.consumer,
             gateway: widget.gateway,
