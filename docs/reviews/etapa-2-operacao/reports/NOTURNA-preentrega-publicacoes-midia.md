@@ -521,3 +521,81 @@ pegar dependência sem ser sujeito. Um teste do meu escopo que nem se chame como
 domínio nem importe minhas árvores continuaria invisível para as duas. As nove
 dimensões varridas são as que eu escolhi; não afirmo que sejam as nove certas
 nem que sejam suficientes.
+
+## 8. O que eu verifiquei ERRADO nesta janela
+
+O item 7 diz o que **não** foi verificado. Isto diz o que foi verificado e deu
+resposta errada, que é coisa diferente e muda como se lê todo o resto: uma
+lacuna declarada o leitor desconta, mas uma verificação errada ele já usou.
+
+Ordenado por **dano**, não por vergonha.
+
+**1. Refutei uma atribuição correta com uma medição que não podia vê-la.**
+A coordenação me atribuiu três vermelhos em `principal_real_route_test`. Respondi
+que o arquivo "não aparece entre as 33 falhas da base" e a atribuição **foi
+retirada**. Ele não aparecia porque a minha medição da base não cobria aquele
+arquivo. Dano: fiz outra pessoa desfazer uma decisão certa, e o agravante é que
+uma hora antes eu havia arquivado essa mesma refutação argumentando que evidência
+de uma recusa precisa sobreviver — arquivei bem a evidência errada, e recusa mal
+fundamentada e bem arquivada deixa de ser reexaminada.
+
+**2. Apontei um pacote SQL para a árvore errada.**
+Citei `20260821190000_circulars_production.sql` sob
+`packages/coelo_database/supabase/migrations/`; ele vive em
+`packages/coelo_database/migrations/`. Dano: quem seguisse o caminho para revisar
+**antes de aplicar em produção** não acharia, e "não encontrado" na hora da
+autorização nominal se lê como pacote fantasma, cujo desfecho provável é a
+recusa. Pior: a árvore que citei tem 17 arquivos, então quem procurasse **acharia
+coisas** e concluiria que o pacote nunca existiu, com evidência aparente.
+Achado por chat-comunicações, não por mim.
+
+**3. Chamei sintoma de diagnóstico, e a coordenação publicou.**
+Disse que as três falhas eram defeito de produto preexistente porque falham na
+base, na dev e na minha branch. Falhar em toda parte prova **procedência**, não
+prova defeito. A linha do relatório foi alterada duas vezes por causa disso.
+
+**4. Auditei caminhos com `find -name`.**
+Isso responde "existe um arquivo com esse nome em algum lugar", não "existe este
+caminho". Dano: aprovou um caminho truncado **no documento de decisão do Owner**
+— o leitor exato para quem o documento existe. Só a versão estrita o encontrou.
+
+**5. Afirmei a direção do meu próprio furo de denominador antes de terminar de
+medi-lo.** Disse que no meu caso ele só subestimava aprovados; escondia três
+falhas. Eu concluí sobre o conjunto a partir da parte dele que já tinha medido.
+
+**6. Carimbei três revisões com horário projetado.**
+As revisões 28, 29 e 30 saíram com 02:05, 02:20 e 02:28 quando o horário real
+estava entre 01:40 e 02:00. Estimativa vestida de medição, no campo que existe
+para dizer quando.
+
+**7. Declarei residual zero por um motivo que eu não tinha verificado.**
+Às 04:36 escrevi que a ancestralidade respondera certo porque a integração fora
+por merge. Estava certo — por uma propriedade do método da coordenação que eu não
+tinha conferido. Nove minutos depois o commit seguinte entrou por cherry-pick e o
+mesmo comando passou a acusar pendência falsa. Ver seção 1.
+
+**8. Procurei classes por `Nome(`.** Não enxerga construtor nomeado. Dano: dois
+falsos positivos meus no censo, e era o método que sustentava a sexta decisão do
+Owner até eu refazê-lo pelo nome nu.
+
+**9. Li dois relatórios de teste como se fossem inventário.** O `expanded` me deu
+34 nomes de 105, porque imprime o teste em execução. E parseei o `json` **antes
+do evento `done`**, lendo 87 como total: arquivo válido, linhas corretas, número
+errado, porque o processo ainda escrevia.
+
+**10. Contei `app/router` como diretório de feature** na frase ao lado do número,
+dizendo nove onde são oito.
+
+**11. Repeti, neste documento, o defeito que eu tinha corrigido uma hora antes.**
+Escrevi `coelo_ui_core/test/...` sem o prefixo `packages/`, o mesmo caminho
+truncado que eu havia consertado no documento do Owner. Só apareceu quando rodei,
+contra este documento, a conferência que ele próprio descreve. Saber da armadilha
+não protege; rodar o teste, sim.
+
+**O padrão, já que são onze.** Nove das onze são a mesma coisa: uma ferramenta
+respondendo uma pergunta parecida com a que eu fiz, e eu aceitando a resposta.
+`find -name` por caminho, `Nome(` por menção, `expanded` por inventário, JSON
+parcial por completo, ancestralidade por integração, ausência de uma lista por
+ausência do defeito. Nenhuma delas falhou ruidosamente — todas devolveram um
+resultado plausível e bem formatado.
+
