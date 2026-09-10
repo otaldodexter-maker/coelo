@@ -200,6 +200,13 @@ Token de usuário com 25 permissões sobre todas as contas e zonas. Muito mais
 do que o Coelo usa. Revisar no painel (Meu perfil → Tokens de API): se ainda
 for necessário, reduzir; senão, revogar. Só você pode.
 
+## P21 — Cloudflare Access na frente do Superadmin (pensar depois)
+
+Registrado a seu pedido em 10/09: colocar o Cloudflare Access (Zero Trust)
+como barreira antes do login de `superadmin.coelo.me` e `admin.coelo.me`.
+Gratuito até 50 usuários; exige lista de quem entra e token próprio. Decidir
+quando o app for publicado no domínio. Também na skill `coelo-backend`.
+
 ## P10 — `requires_mfa` em capacidades de publicação (publicacoes-agenda)
 
 Código histórico ainda pede AAL2 em algumas capacidades de publicação; o MVP é

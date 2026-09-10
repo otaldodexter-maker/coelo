@@ -160,6 +160,13 @@ Remover cada item no mesmo turno em que a verificação confirmar o efeito.
    `rosa.ns.cloudflare.com`; antes, copiar MX/A existentes se houver e-mail ou
    site. Registros dos apps entram com o deploy, com token próprio de
    Pages/Workers e DNS, nunca o token de mídia.
+1e. **Cloudflare Access na frente do Superadmin (decisão futura, P21).** Em
+   10/09/2026 o Owner pediu para registrar: proteger `superadmin.coelo.me`
+   (e depois `admin.coelo.me`) com Cloudflare Access (Zero Trust, gratuito até
+   50 usuários) como segunda barreira antes do login do app. Exige política de
+   quem entra (e-mails do Owner e da equipe), token próprio com `Access: Apps`
+   e não substitui Auth, RLS nem MFA. Decidir quando o app for publicado no
+   domínio.
 2. **Troca da senha do banco de produção (ADR 0034, Decisão 8/P14).** Motivo:
    `supabase db dump --dry-run` imprimiu a credencial do papel efêmero do
    pooler numa saída de ferramenta em 10/09/2026. Roteiro: painel Supabase →
