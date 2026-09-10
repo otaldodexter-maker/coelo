@@ -1500,6 +1500,59 @@ delas eu tinha ferramenta para checar sozinho e não usei. **O padrão é o mesm
 que a rodada catalogou nas frentes:** informação que parece verificada porque veio
 escrita — inclusive quando quem escreveu fui eu.
 
+## O que cada frente entregou
+
+Seis frentes Claude trabalharam da meia-noite ao corte, em worktrees isoladas,
+integradas continuamente por revisão mais verificação na base conjunta.
+
+**Estrutura e operações do sistema.** Fechou as cinco falhas não-golden da própria
+área, todas pela mesma causa — um toque de teste que não garantia visibilidade do
+rodapé — e produziu o censo preventivo dessa forma no app inteiro sem tocá-la.
+Projetou o contrato de escrita de repositório como artigo, nomeando o arquivo que
+já fazia tudo certo como referência, e ao aplicar o próprio checklist achou mais
+dois defeitos em arquivos que já havia lido duas vezes. E escreveu o teste de
+contrato de RPC que ninguém tinha: 80 chamadas contra 383 funções declaradas.
+
+**Formulários e cuidado.** Treze lotes, e **nove defeitos encontrados relendo o
+próprio diff já publicado** — nenhum deles pego pelos testes que a própria frente
+havia escrito. Fechou a última divergência de leitura entre superfícies, cobriu um
+componente que seis telas usam e nenhuma prova tocava, e desfez duas hipóteses
+próprias por medição antes de corrigir problema inexistente. Três das próprias
+linhas de bloqueio caíram no reteste.
+
+**Publicações e mídia.** Revisou os seis candidatos SQL da plataforma, achou e
+corrigiu um vazamento de existência em um deles, deixou dois ramos de R2 prontos e
+retidos, e varreu nove dimensões do próprio recorte registrando o resultado de
+cada uma. Encontrou **um bloqueio declarado que não era real** — o contrato que
+outra frente esperava já existia, aplicado, e era dela.
+
+**Chat e comunicações.** Corrigiu a preservação do que o leitor carregou usando o
+cursor do servidor como limite, depois que o caso adversarial derrubou o desenho
+anterior. Aplicou a própria lente como diagnóstico em três frentes vizinhas sem
+tocar em arquivo alheio, e escreveu o teste vermelho que nomeia a lacuna de
+paginação do feed misto. Fez a conferência externa da integração e me corrigiu
+duas vezes.
+
+**Alunos e rotina.** Levou o próprio recorte a verde e recuperou Segurança
+infantil de 27 para 170 casos, com uma tela que não se dispunha em produção
+voltando a se dispor. Amostrou seis famílias de golden abrindo referência e
+captura lado a lado, o que produziu a triagem que muda a decisão de rebaseline. E
+varreu o app inteiro atrás de arquivo de teste que tivesse perdido casos.
+
+**Perfil para você.** Verificou a fila SQL inteira na versão de produção do
+Postgres, mediu onde a cadeia de migrations para de replayar, e descobriu que 40
+objetos são chamados e nunca criados. Fez o reteste externo de duas outras frentes
+e a triagem de dois pares de golden, uma delas terminando no botão de reportar bug
+que não existe em produção.
+
+**Duas leituras honestas sobre este conjunto.** A primeira: a maior parte do valor
+da noite não veio de código escrito, veio de **medição que desfez conclusões** —
+minhas e das frentes. A segunda: cada frente encontrou defeitos no próprio
+trabalho recente que os próprios testes não pegavam, e o método que os achou foi
+sempre o mesmo — reler o que já foi entregue, com três perguntas: o que isso faz
+com mais de um item, o que acontece com duas coisas ao mesmo tempo, e o teste
+mede o efeito ou o mecanismo.
+
 ## Higiene e preservação
 
 - Os 90 artefatos de WIP ignorados na raiz do checkout integrador estão
