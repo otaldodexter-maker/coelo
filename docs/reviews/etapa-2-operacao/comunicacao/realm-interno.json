@@ -1,15 +1,15 @@
 {
   "grupo": "realm-interno",
-  "revision": 17,
+  "revision": 18,
   "round": "E2-R05-20260911",
-  "updatedAt": "2026-09-11T12:52-03:00",
+  "updatedAt": "2026-09-11T12:43-03:00",
   "app": "Claude",
   "modelo": "Opus 5 (esforco medio)",
   "conversa": "R05 · Realm interno e Chat backend",
   "coordenador": "R05 · Coordenação da tarde (coordenacao.json)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-realm-interno",
   "branch": "work/etapa2-r05-realm-interno",
-  "head": "488a367d3",
+  "head": "ab6f0e3a0",
   "upstream": "origin/work/etapa2-r05-realm-interno (push no primeiro commit)",
   "historicoR04": {
     "miniRevisao": {
@@ -194,10 +194,10 @@
     ],
     "foraDoRecorte": "UI (estrutura, formularios, principal-chat), aplicacao em producao (coordenador), Cloudflare com custo"
   },
-  "primeiroGate": "(2) varredura de grants CRUD de authenticated sem policy: pacote de revoke por tabela (26 tabelas da Tabela B) + policy self_read em person_auth_links + pgTAP",
+  "primeiroGate": "(4) forms_files: contrato de upload/resolve/download/expire/delete no R2 sobre private_media_catalog (form-image) e form_file_jobs; medir o que 230007/230008/230011 ja tem",
   "provaLocal": "projeto descartavel coelo_realm_r05 (portas 625xx) em preparacao: baseline + seed + ordem-de-aplicacao-producao.txt via psql do container",
   "testes": {
-    "pgTAP": "38 PASS / 0 FAIL (institution_contacts_v1)"
+    "pgTAP": "38 + 12 + 28 = 78 PASS / 0 FAIL nesta rodada"
   },
   "bloqueio": null,
   "pedidosAoCoordenador": [],
@@ -211,15 +211,41 @@
       "commit": "488a367d3",
       "dependeDe": "nada novo (230002 receipts, 180330 detail_v2, baseline); cria o segredo Vault coelo_person_identity_hmac_v1 dentro da migration se nao existir (valor gerado no banco, nunca impresso)",
       "chaveDeComposicao": "nenhuma no banco; o cliente (frente estrutura) passa a chamar superadmin_institution_contacts_edit_v1 depois do edit_core_v2 e a ler representatives/administrators do detail_v2",
-      "estado": "pronto para o coordenador aplicar"
+      "estado": "APLICADO em producao pelo coordenador (lote 28, 12:33) e movido para migrations/ em dev 22c1bc44f"
+    },
+    {
+      "ordem": 2,
+      "arquivo": "packages/coelo_database/candidatos/realm-interno/20260911210100_revoke_authenticated_crud_without_policy_v1.sql",
+      "assunto": "revoke presence-based de INSERT/UPDATE/DELETE/SELECT de authenticated em tabelas com RLS e sem policy do comando (Tabela B da varredura), I/U/D em views, policy person_auth_links_self_read; sem grant novo; tabela com RLS desligada so em NOTICE",
+      "pgTAP": "supabase/tests/revoke_authenticated_crud_without_policy_v1_test.sql 12/12; regressao de 15 suites igual ao espelho",
+      "commit": "5c111f09f",
+      "dependeDe": "nada",
+      "chaveDeComposicao": "nenhuma",
+      "estado": "pronto para o coordenador aplicar; guardar o NOTICE 'N antes, 0 depois' na evidencia"
+    },
+    {
+      "ordem": 3,
+      "arquivo": "packages/coelo_database/candidatos/realm-interno/20260911210200_superadmin_internal_chat_attachments_v1.sql",
+      "assunto": "chat.attach: prepare (authenticated) -> PUT assinado pela Edge Function chat-media -> authorize_finalize (authenticated) + finalize (service_role) -> thread com attachments[] -> authorize_read; expire (service_role); tickets privados; envelope do chat com 4 codigos novos",
+      "pgTAP": "supabase/tests/superadmin_internal_chat_attachments_v1_test.sql 28/28; chat v2/receipts/cross-tenant/contract continuam verdes",
+      "commit": "ab6f0e3a0",
+      "dependeDe": "240000..240400 e 220400 em producao (ja estao)",
+      "chaveDeComposicao": "Edge Function chat-media (a escrever/implantar no padrao de moments-media: PUT assinado, HEAD+sha256 no finalize, GET assinado no read; COELO_R2_* dos secrets) + cron de expire; cliente do principal-chat-sistema liga o picker a prepare/finalize/read",
+      "estado": "pronto para o coordenador aplicar (SQL); a Edge Function e o cron ficam registrados como gate de chat.attach"
     }
   ],
-  "pendenciasRegistradas": [],
+  "pendenciasRegistradas": [
+    "superadmin_internal_institution_edit_core_test: 7 falhas pre-existentes no espelho de producao (MFA fora do MVP: testes 31/44 esperam AAL2; 24/27/28/38/39 dependem do fluxo antigo) - atualizar a suite na revisao profunda",
+    "superadmin_internal_chat_groups_v1_test: erro 'activity actor provenance denied' na fixture de atividades, pre-existente no espelho (180020-180080 mudaram a provenance); suite precisa de fixture nova",
+    "institution_directory (view) continua sem SELECT em plans para authenticated: leitura direta falha; cliente le por RPC; decisao de code review (grant em plans ou remover grant da view)",
+    "chat.attach: Edge Function chat-media e cron de expire nao fazem parte deste pacote SQL"
+  ],
   "deltaPropostoBE": {
-    "institutions.edit": "backend local-green (pacote pronto); done so depois de aplicado + cliente da estrutura persistir e recarregar na rota real"
+    "institutions.edit": "backend done quando a estrutura persistir e recarregar na rota real (SQL ja em producao, lote 28)",
+    "chat.attach": "backend local-green (contrato + pgTAP); done apos aplicar + Edge Function chat-media"
   },
   "loop": "cron 9ded10f6 a cada 15 min ate 15:45",
-  "status": "em andamento; item 1 entregue, item 2 em curso",
+  "status": "em andamento; itens 1-3 entregues, item 4 em curso",
   "contratoInstitutionContacts": {
     "rpc": "public.superadmin_institution_contacts_edit_v1(p_request_id uuid, p_institution_id uuid, p_expected_version bigint, p_payload jsonb) -> envelope {ok,data,error}",
     "capacidade": "institution.update; platform_role owner|operations; scope institution so a propria instituicao (outro tenant -> SAI_PERMISSION_DENIED, auditado)",
@@ -244,5 +270,25 @@
       "plano e marca continuam fora (subscription/branding ja sao aceitos por assert_institution_management_payload da baseline, mas o edit_core_v2 nao os recebe: pacote separado se a frente precisar)",
       "o cliente mostra contatos mascarados no reload: e o desenho LGPD da baseline (person_contacts guarda hash + mascara)"
     ]
+  },
+  "contratoChatAttach": {
+    "rpcs": {
+      "superadmin_chat_attachment_prepare_v1(p_request_id uuid, p_conversation_id uuid, p_file_name text, p_content_type text, p_byte_size bigint, p_sha256 text)": "chat.internal.send; data {message_id, attachment_id, object_key, bucket:'coelo-media-prod', file_name, content_type, byte_size, sha256, upload_status:'pending', finalize_ticket, expires_at (+30 min), replayed}; mensagem nasce draft (invisivel) com message_type 'attachment' e body_text = nome do arquivo; idempotente por (identidade, request_id) com hash de conversa+arquivo",
+      "superadmin_chat_attachment_authorize_finalize_v1(p_attachment_id uuid)": "chat.internal.send, so o dono do ticket e no escopo; data {attachment_id, object_key, bucket, content_type, byte_size, sha256, finalize_ticket, expires_at}; a Edge Function usa com o JWT do usuario antes de medir o objeto",
+      "superadmin_chat_attachment_finalize_v1(p_attachment_id uuid, p_finalize_ticket uuid, p_byte_size bigint, p_checksum_sha256 text)": "service_role (Edge Function apos HEAD/sha256 do objeto no R2); iguais ao anunciado -> anexo ready, mensagem active, ticket usado, auditoria; diferentes -> anexo failed, mensagem archived, CHAT_ATTACHMENT_MISMATCH 422 (auditado como failed)",
+      "superadmin_chat_attachment_authorize_read_v1(p_attachment_id uuid)": "chat.internal.read no escopo da conversa; so anexo ready de mensagem active; data {attachment_id, message_id, conversation_id, object_key, bucket, file_name, content_type, byte_size, sha256, ttl_seconds:300} para a Edge Function assinar o GET; auditado",
+      "superadmin_chat_attachment_expire_v1(p_limit int default 100)": "service_role (cron/worker); pendentes com ticket vencido -> failed + mensagem archived; data {expired}"
+    },
+    "limites": "image/jpeg|png|webp ate 4 MiB; application/pdf ate 10 MiB; nome ate 255 sem controle nem / ou \\; sha256 hex de 64",
+    "objectKey": "tenants/<institution_id>/chat/conversation/<conversation_id>/attachment/<attachment_id>/original/<uuid>.<ext> (bucket coelo-media-prod; sem Stream)",
+    "codigosNovos": [
+      "CHAT_ATTACHMENT_INVALID 422",
+      "CHAT_ATTACHMENT_MISMATCH 422",
+      "CHAT_ATTACHMENT_NOT_READY 409",
+      "CHAT_ATTACHMENT_TICKET_INVALID 409",
+      "outro tenant -> CHAT_NOT_FOUND 404 em prepare/authorize/read"
+    ],
+    "thread": "superadmin_chat_thread_v2 ja devolve attachments[{id,file_name,content_type,byte_size,sha256,upload_status}] (240100/240200); nada muda na assinatura",
+    "gateRestante": "Edge Function chat-media (deploy do coordenador; sem custo no nivel gratuito do R2) e cron de expire; ate la chat.attach fica backend local-green com contrato publicado"
   }
 }
