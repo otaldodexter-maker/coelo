@@ -1,115 +1,337 @@
 {
-  "revision": 13,
-  "updated_at": "2026-09-10T09:30:00-03:00",
-  "round": "E2-R03-20260910",
+  "revision": 14,
+  "updated_at": "2026-09-10T21:47:00-03:00",
+  "round": "E2-R04-20260911",
   "group": "operacoes",
-  "tool_model": "Codex, Luna medio",
-  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-operacoes",
-  "branch": "work/etapa2-r03-operacoes",
-  "head": "d7ca27d93",
+  "tool_model": "Claude, Opus 5 (1M)",
+  "conversation": "R04 · Operações",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-operacoes",
+  "branch": "work/etapa2-r04-operacoes",
+  "head": "98cc0529d",
   "base": {
-    "requested": "base.fase0Head",
-    "resolved": "1adb070c9028850ccdd7e091db5b97b63b95c750",
-    "fallback": null
+    "requested": "origin/dev",
+    "resolved": "98cc0529d6ca66195d6b05e1591666ff21a37b89",
+    "note": "HEAD que contem R04-prompts.md (posterior a a4af2b198)"
   },
   "scope": {
     "app": "apps/superadmin",
-    "families": ["support", "account", "plans", "audit"],
-    "action_ids": [
-      "audit.list", "audit.filter", "audit.detail", "audit.export",
-      "support.create", "support.table", "support.kanban", "support.detail", "support.reply", "support.close",
-      "account.profile", "account.settings", "account.theme", "account.mfa", "account.sessions", "account.logout",
-      "plans.list", "plans.create", "plans.edit", "plans.activate", "plans.assign"
+    "families": [
+      "support",
+      "account",
+      "plans",
+      "audit"
     ],
-    "order": ["account", "plans", "audit", "support"],
-    "included": "camadas Front-end, Supabase/Postgres e E2E das 21 acoes; Conta e Suporte ja possuem wiring de producao, Planos e Auditoria preservam wiring existente",
-    "excluded_until_phase0": "goldens novos, ajustes visuais fora das composicoes aprovadas e aceite E2E real ate replay nominal"
+    "action_ids": [
+      "audit.list",
+      "audit.filter",
+      "audit.detail",
+      "audit.export",
+      "support.create",
+      "support.table",
+      "support.kanban",
+      "support.detail",
+      "support.reply",
+      "support.close",
+      "account.profile",
+      "account.settings",
+      "account.theme",
+      "account.mfa",
+      "account.sessions",
+      "account.logout",
+      "plans.list",
+      "plans.create",
+      "plans.edit",
+      "plans.activate",
+      "plans.assign"
+    ],
+    "order": [
+      "account (Perfil e Configuracoes na rota normal com sessao)",
+      "support (ligar supportController no router de producao; tabela/kanban/detalhe na rota real; toolbar e tabela no composto)",
+      "plans (composto; ARQUIVO fica com principal-chat-sistema)",
+      "audit (candidato AUDIT-READ-V2 sobre a baseline em candidatos/operacoes 2026091021xxxx + pgTAP no descartavel; diretorio e filtros no padrao)",
+      "goldens (support_*, settings_*, profile_*, plan_cards_*, audit_directory_* pelas tres listas do Owner; regravar so apos observacao, SDK 3.44.2)"
+    ],
+    "included": "21 acoes ponta a ponta pela regua do MVP (rota normal abre, CRUD persiste em producao, RLS nega outro tenant em pgTAP, reload mantem)",
+    "excluded": "code review profundo (vira pendencia registrada); import/export reais (adiados, botao honesto); MFA (fora do MVP, Decisao 12); ARQUIVO nos cards de Planos (wip/fase0-arquivo-chat, grupo principal-chat-sistema)"
   },
   "opening_contract": {
-    "objective": "entregar contratos backend revisaveis para Conta/Planos/Auditoria e construir a camada Supabase produtiva de Suporte",
-    "known_pending": "replay pgTAP nominal ainda bloqueado pela cadeia canonica incompleta no perfil local e pela janela de replay; E2E Supabase real e aplicacao SQL permanecem na fila do coordenador; Auditoria tem candidato AUDIT-READ-V2; Planos ja possui migration e pgTAP",
-    "stop_criterion": "fechar gates backend locais independentes ou registrar bloqueio concreto; nao promover E2E antes de migration aplicada e composicao da Fase 0",
-    "expected_evidence": "migration forward-only, pgTAP com RLS/grants/RPC, chave de composicao proposta, SHA dos commits e estado separado FE/BE/E2E"
+    "objective": "levar Conta e Suporte a verified/done/E2E na rota normal com sessao qa-r03@coelo.me sobre o SQL do lote 7; ligar supportController no router; Planos e Auditoria sobre o composto; AUDIT-READ-V2 como pacote verde em candidatos/operacoes",
+    "received": "20260910230019 (Suporte: 5 RPCs superadmin_support_*, RLS forcado em support_sessions) e 20260910230020 (Conta: 3 RPCs superadmin_account_*) em producao; pgTAP de Suporte corrigido pelo coordenador (pg_class no lugar de row_security_active)",
+    "first_gate": "account.profile: rota normal /conta/perfil com sessao qa-r03 -> editar nome/telefone -> reload mantem; depois support.create: router de producao sem supportController",
+    "stop_criterion": "recorte concluido, 04:20 de 11/09, ou ordem do Owner/coordenador",
+    "expected_evidence": "commits pequenos em portugues na branch do grupo (push), flutter test por familia, pgTAP verde no projeto descartavel para o pacote de Auditoria, prova de rota real com sessao (sem credencial em lugar algum), proposta de delta FE/BE/E2E por action_id",
+    "time_estimate": "nao calculavel ainda; calibrar apos a primeira tela (Conta) na rota real"
   },
-  "changes": [
-    {
-      "action_ids": ["support.create", "support.table", "support.kanban", "support.detail", "support.reply", "support.close"],
-      "status": "backend-package-committed-pgTAP-blocked",
-      "changed": [
-        "packages/coelo_database/migrations/20260909217000_superadmin_support_production_v1.sql",
-        "packages/coelo_database/supabase/tests/superadmin_support_production_test.sql"
-      ],
-      "commit_sha": "b172b695b8d996375fc7da7a539ed7ee78dc7e35",
-      "integration_commit_sha": "b02478937",
-      "backend_revision_commit_sha": "9ae607fca",
-      "pagination_commit_sha": "179cd6ae4",
-      "delta": "adicionada camada server-side sobre support_sessions existente: campos de ticket, revisao otimista, receipts de idempotencia, list/detail/create/reply/set_status, acoes em audit.support_session_actions, RLS deny-by-default e grants somente por RPC authenticated",
-      "composition_key_candidate": "supportProductionRepositoryV1",
-      "criteria": {"frontend": "P(tabela/kanban/detalhe e rota de producao)", "backend": "P(adapter RPC; pgTAP pendente)", "e2e": "N", "reload": "N", "cross_tenant": "pgTAP pendente de replay nominal"}
-    },
-    {
-      "action_ids": ["audit.list", "audit.filter", "audit.detail"],
-      "status": "candidate-existing",
-      "changed": [],
-      "commit_sha": "aafde0b3d",
-      "delta": "candidato 20260909190000_superadmin_internal_audit_read_v2.sql ja existe e foi preservado; aplicar/verificar fica com coordenador na fila SQL",
-      "composition_key_candidate": "auditReadV2",
-      "criteria": {"frontend": "N", "backend": "N", "e2e": "N"}
-    },
-    {
-      "action_ids": ["plans.list", "plans.create", "plans.edit", "plans.activate", "plans.assign"],
-      "status": "candidate-existing",
-      "changed": [],
-      "commit_sha": "be28f0c0b",
-      "delta": "contrato de Planos ja existe na migration 20260901183154_superadmin_plans_production.sql com list/get/save, receipts, RLS forcado e grants somente authenticated; pgTAP existente sera levado para a fila serializada",
-      "composition_key_candidate": "plansProductionRepositoryV1",
-      "criteria": {"frontend": "N", "backend": "N", "e2e": "N", "reload": "N", "cross_tenant": "pgTAP pendente de replay nominal"}
-    },
-    {
-      "action_ids": ["account.profile", "account.settings", "account.theme", "account.mfa", "account.sessions", "account.logout"],
-      "status": "backend-package-committed-pgTAP-blocked",
-      "changed": [
-        "packages/coelo_database/migrations/20260909218000_superadmin_account_profile_v1.sql",
-        "packages/coelo_database/supabase/tests/superadmin_account_profile_v1_test.sql"
-      ],
-      "commit_sha": "efd9af79e",
-      "integration_commit_sha": "ce4939227",
-      "delta": "adicionada persistencia server-side do perfil: nome/telefone em people, leitura de email Auth, pedido/cancelamento de troca de email, papel/capacidades, receipts de idempotencia e grants somente por RPC; tema continua preferencia local e MFA, sessoes/logout dependem dos contratos Auth existentes",
-      "composition_key_candidate": "accountProfileProductionRepositoryV1",
-      "criteria": {"frontend": "P(account.profile/settings/theme); N(account.mfa/sessions/logout)", "backend": "P(contract; pgTAP pendente)", "e2e": "N", "reload": "N", "cross_tenant": "pgTAP pendente de replay nominal"}
-    },
-    {
-      "action_ids": ["audit.export"],
-      "status": "deferred-post-mvp",
-      "changed": [],
-      "commit_sha": "aafde0b3d",
-      "delta": "mantido adiado conforme ADR 0034; nenhum entrypoint novo",
-      "criteria": {"frontend": "N/A", "backend": "N/A", "e2e": "N/A"}
-    }
-  ],
-  "tests": {"P": 6, "F": 0, "B": 2, "S": 0, "U": 1, "evidence": ["support-contract-static PASS: required RPCs=5, receipt=idempotency, audit schema=correct, RLS=force, test=22 assertions", "support-create-scope-static PASS: internal institution-null create path + 23 assertions", "account-contract-static PASS: RPCs=3, email request, idempotency receipt, auth email read, forced RLS, test=16 assertions", "plans-audit-contract-static PASS: plans=3 RPCs + forced RLS; audit=list/filter/detail + deferred export revoke; tests present", "account Flutter analyzer PASS: apps/superadmin; only pre-existing info at router line 908", "account Flutter tests PASS: controller/profile/settings 56; account routes 5", "support Flutter analyzer PASS: targeted production/support files", "support Flutter tests PASS: controller/page/routes 51; follow-up controller/routes 30", "audit production route tests PASS: 2", "plan golden refresh PASS: 2/2 tests; 8 card goldens updated to current indicators, all table/form goldens still pass", "support golden refresh PASS: 2/2 tests; 24 standard and 8 scaled cases verified against current composition; 28 PNGs changed because 4 scaled references already matched", "supabase db lint --local BLOCKED: ECONNREFUSED 127.0.0.1:54322", "supabase start --workdir packages/coelo_database BLOCKED before support migration: 20260820152528_form... fails SQLSTATE 3F000 because schema app_private is absent"], "planned": ["pgTAP nominal de conta, planos, auditoria e suporte", "preflight da migration na fila serializada", "flutter tests de Planos/Auditoria/Suporte", "E2E Supabase real apos migrations aplicadas pelo coordenador"]},
-  "progress_snapshot": {"base": "1adb070c9028850ccdd7e091db5b97b63b95c750", "scope_actions": 21, "mvp_active_actions": 20, "deferred_actions": 1, "frontend_local": {"done": 9, "total": 21, "percent": 42.86, "ids": ["account.profile", "account.settings", "account.theme", "support.create", "support.table", "support.kanban", "support.detail", "support.reply", "support.close"]}, "backend_package_or_existing_candidate": {"done": 20, "total": 20, "percent": 100.0, "note": "pacotes/candidatos preparados; não equivale a backend done porque pgTAP nominal e aplicação permanecem pendentes"}, "pgtap_nominal": {"done": 0, "total": 20, "percent": 0.0}, "e2e_supabase_real": {"done": 0, "total": 20, "percent": 0.0}, "goldens_decididos_e_atualizados": {"plans": "8/8", "support": "32/32 casos verificados; 28 PNGs alterados"}},
-  "blocked": [
-    {"kind": "verification", "what": "nenhum replay pgTAP nominal executado ainda; o perfil local canônico falha antes do pacote em 20260820152528 porque a cadeia usada no reset não materializa app_private e a janela compartilhada também está ocupada", "owner": "coordenador/base de replay", "unblocks": "reservar janela ou usar projeto descartável em portas próprias com as dependências da cadeia; então executar db reset/lint e pgTAP dos quatro pacotes, incluindo RLS, grants e cross-tenant"},
-    {"kind": "production-gate", "what": "fila SQL R03 retida pelo P1 da coordenação: backup por ponto no tempo/PITR ainda não está ligado", "owner": "Owner/coordenador", "unblocks": "decisão do Owner e PITR habilitado; depois o integrador aplica forward-only na ordem, começando pela posição 1 e sem ligar composição antes do SQL"}
-  ],
-  "resolved": [
-    {"kind": "visual-verification", "what": "Plan golden decision approved and executed: manter indicadores atuais; 8 card goldens atualizados e suíte sem update-goldens verde", "owner": "operacoes", "commit": "d7ca27d93"},
-    {"kind": "visual-verification", "what": "Support golden decision approved and executed: manter composição atual; 32 casos verificados, 28 PNGs alterados e suíte sem update-goldens verde", "owner": "operacoes", "commit": "d7ca27d93"}
-  ],
-  "golden_decision": {
-    "status": "approved",
-    "approved_at": "2026-09-10",
-    "attachments": {"anexo_1": "approved", "anexo_2": "approved"},
-    "scope": "apps/superadmin -> Operação -> Planos e Suporte; Auditoria não possui golden próprio no recorte executado",
-    "plan_cases": "8 cards plan_cards_{light,dark}_{375,768,1024,1440} atualizados; 8 tabelas, plan_create_light_375, plan_capabilities_dark_1440 e plan_review_dark_1440 passaram sem alteração",
-    "support_cases": "24 casos padrão support_{kanban,table,detail}_{light,dark}_{375,768,1024,1440} e 8 escalados de texto verificados; 28 PNGs mudaram e 4 referências escaladas já estavam iguais",
-    "references": ["apps/superadmin/test/features/plans/goldens/", "apps/superadmin/test/features/plans/failures/", "apps/superadmin/test/features/support/presentation/screens/goldens/", "apps/superadmin/test/features/support/presentation/screens/failures/"],
-    "decision": {"plans": "manter indicadores atuais e atualizar 8 goldens de cards", "support": "aprovar composição atual e atualizar 32 goldens"},
-    "recording": "decisão recebida do Owner nesta conversa; coordenador deve ler este handoff",
-    "executed_commit": "d7ca27d93cbe01aba9861c6a5f93a54725c08dd7",
-    "handoff_commit": "bbfcf4b9d"
+  "loop": "/loop 15m agendado na abertura (retomar o recorte, atualizar operacoes.json, nao encerrar antes de 04:20)",
+  "changes": [],
+  "tests": {
+    "P": 0,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0,
+    "evidence": [],
+    "planned": [
+      "flutter test features/account, features/support, features/plans, features/audit",
+      "rota real Conta/Suporte/Planos/Auditoria com sessao qa-r03 em localhost:3000",
+      "pgTAP de AUDIT-READ-V2 no projeto descartavel"
+    ]
   },
-  "next_step": "coordenador deve ler este checkpoint e, quando a janela de replay e o gate P1 forem liberados, executar pgTAP nominal dos 20 action_ids ativos; depois aplicar a fila SQL forward-only e executar E2E Supabase real",
-  "commits": ["b172b695b8d996375fc7da7a539ed7ee78dc7e35", "94bca84f6", "5611c6da7", "ce4939227", "b02478937", "9ae607fca", "179cd6ae4", "af8ee0524", "2ea0e5606", "d7ca27d93"]
+  "blocked": [],
+  "resolved": [],
+  "proposed_deltas": [],
+  "packages_ready": [],
+  "questions_to_owner": [],
+  "next_step": "ler as tres listas de decisao de goldens do Owner no recorte; abrir o app em localhost:3000 com a sessao qa-r03 e provar account.profile/account.settings; em seguida ligar supportController no router",
+  "commits": [],
+  "r03_history": {
+    "revision": 13,
+    "round": "E2-R03-20260910",
+    "head": "d7ca27d93",
+    "branch": "work/etapa2-r03-operacoes",
+    "updated_at": "2026-09-10T09:30:00-03:00",
+    "changes": [
+      {
+        "action_ids": [
+          "support.create",
+          "support.table",
+          "support.kanban",
+          "support.detail",
+          "support.reply",
+          "support.close"
+        ],
+        "status": "backend-package-committed-pgTAP-blocked",
+        "changed": [
+          "packages/coelo_database/migrations/20260909217000_superadmin_support_production_v1.sql",
+          "packages/coelo_database/supabase/tests/superadmin_support_production_test.sql"
+        ],
+        "commit_sha": "b172b695b8d996375fc7da7a539ed7ee78dc7e35",
+        "integration_commit_sha": "b02478937",
+        "backend_revision_commit_sha": "9ae607fca",
+        "pagination_commit_sha": "179cd6ae4",
+        "delta": "adicionada camada server-side sobre support_sessions existente: campos de ticket, revisao otimista, receipts de idempotencia, list/detail/create/reply/set_status, acoes em audit.support_session_actions, RLS deny-by-default e grants somente por RPC authenticated",
+        "composition_key_candidate": "supportProductionRepositoryV1",
+        "criteria": {
+          "frontend": "P(tabela/kanban/detalhe e rota de producao)",
+          "backend": "P(adapter RPC; pgTAP pendente)",
+          "e2e": "N",
+          "reload": "N",
+          "cross_tenant": "pgTAP pendente de replay nominal"
+        }
+      },
+      {
+        "action_ids": [
+          "audit.list",
+          "audit.filter",
+          "audit.detail"
+        ],
+        "status": "candidate-existing",
+        "changed": [],
+        "commit_sha": "aafde0b3d",
+        "delta": "candidato 20260909190000_superadmin_internal_audit_read_v2.sql ja existe e foi preservado; aplicar/verificar fica com coordenador na fila SQL",
+        "composition_key_candidate": "auditReadV2",
+        "criteria": {
+          "frontend": "N",
+          "backend": "N",
+          "e2e": "N"
+        }
+      },
+      {
+        "action_ids": [
+          "plans.list",
+          "plans.create",
+          "plans.edit",
+          "plans.activate",
+          "plans.assign"
+        ],
+        "status": "candidate-existing",
+        "changed": [],
+        "commit_sha": "be28f0c0b",
+        "delta": "contrato de Planos ja existe na migration 20260901183154_superadmin_plans_production.sql com list/get/save, receipts, RLS forcado e grants somente authenticated; pgTAP existente sera levado para a fila serializada",
+        "composition_key_candidate": "plansProductionRepositoryV1",
+        "criteria": {
+          "frontend": "N",
+          "backend": "N",
+          "e2e": "N",
+          "reload": "N",
+          "cross_tenant": "pgTAP pendente de replay nominal"
+        }
+      },
+      {
+        "action_ids": [
+          "account.profile",
+          "account.settings",
+          "account.theme",
+          "account.mfa",
+          "account.sessions",
+          "account.logout"
+        ],
+        "status": "backend-package-committed-pgTAP-blocked",
+        "changed": [
+          "packages/coelo_database/migrations/20260909218000_superadmin_account_profile_v1.sql",
+          "packages/coelo_database/supabase/tests/superadmin_account_profile_v1_test.sql"
+        ],
+        "commit_sha": "efd9af79e",
+        "integration_commit_sha": "ce4939227",
+        "delta": "adicionada persistencia server-side do perfil: nome/telefone em people, leitura de email Auth, pedido/cancelamento de troca de email, papel/capacidades, receipts de idempotencia e grants somente por RPC; tema continua preferencia local e MFA, sessoes/logout dependem dos contratos Auth existentes",
+        "composition_key_candidate": "accountProfileProductionRepositoryV1",
+        "criteria": {
+          "frontend": "P(account.profile/settings/theme); N(account.mfa/sessions/logout)",
+          "backend": "P(contract; pgTAP pendente)",
+          "e2e": "N",
+          "reload": "N",
+          "cross_tenant": "pgTAP pendente de replay nominal"
+        }
+      },
+      {
+        "action_ids": [
+          "audit.export"
+        ],
+        "status": "deferred-post-mvp",
+        "changed": [],
+        "commit_sha": "aafde0b3d",
+        "delta": "mantido adiado conforme ADR 0034; nenhum entrypoint novo",
+        "criteria": {
+          "frontend": "N/A",
+          "backend": "N/A",
+          "e2e": "N/A"
+        }
+      }
+    ],
+    "blocked": [
+      {
+        "kind": "verification",
+        "what": "nenhum replay pgTAP nominal executado ainda; o perfil local canônico falha antes do pacote em 20260820152528 porque a cadeia usada no reset não materializa app_private e a janela compartilhada também está ocupada",
+        "owner": "coordenador/base de replay",
+        "unblocks": "reservar janela ou usar projeto descartável em portas próprias com as dependências da cadeia; então executar db reset/lint e pgTAP dos quatro pacotes, incluindo RLS, grants e cross-tenant"
+      },
+      {
+        "kind": "production-gate",
+        "what": "fila SQL R03 retida pelo P1 da coordenação: backup por ponto no tempo/PITR ainda não está ligado",
+        "owner": "Owner/coordenador",
+        "unblocks": "decisão do Owner e PITR habilitado; depois o integrador aplica forward-only na ordem, começando pela posição 1 e sem ligar composição antes do SQL"
+      }
+    ],
+    "resolved": [
+      {
+        "kind": "visual-verification",
+        "what": "Plan golden decision approved and executed: manter indicadores atuais; 8 card goldens atualizados e suíte sem update-goldens verde",
+        "owner": "operacoes",
+        "commit": "d7ca27d93"
+      },
+      {
+        "kind": "visual-verification",
+        "what": "Support golden decision approved and executed: manter composição atual; 32 casos verificados, 28 PNGs alterados e suíte sem update-goldens verde",
+        "owner": "operacoes",
+        "commit": "d7ca27d93"
+      }
+    ],
+    "golden_decision": {
+      "status": "approved",
+      "approved_at": "2026-09-10",
+      "attachments": {
+        "anexo_1": "approved",
+        "anexo_2": "approved"
+      },
+      "scope": "apps/superadmin -> Operação -> Planos e Suporte; Auditoria não possui golden próprio no recorte executado",
+      "plan_cases": "8 cards plan_cards_{light,dark}_{375,768,1024,1440} atualizados; 8 tabelas, plan_create_light_375, plan_capabilities_dark_1440 e plan_review_dark_1440 passaram sem alteração",
+      "support_cases": "24 casos padrão support_{kanban,table,detail}_{light,dark}_{375,768,1024,1440} e 8 escalados de texto verificados; 28 PNGs mudaram e 4 referências escaladas já estavam iguais",
+      "references": [
+        "apps/superadmin/test/features/plans/goldens/",
+        "apps/superadmin/test/features/plans/failures/",
+        "apps/superadmin/test/features/support/presentation/screens/goldens/",
+        "apps/superadmin/test/features/support/presentation/screens/failures/"
+      ],
+      "decision": {
+        "plans": "manter indicadores atuais e atualizar 8 goldens de cards",
+        "support": "aprovar composição atual e atualizar 32 goldens"
+      },
+      "recording": "decisão recebida do Owner nesta conversa; coordenador deve ler este handoff",
+      "executed_commit": "d7ca27d93cbe01aba9861c6a5f93a54725c08dd7",
+      "handoff_commit": "bbfcf4b9d"
+    },
+    "tests": {
+      "P": 6,
+      "F": 0,
+      "B": 2,
+      "S": 0,
+      "U": 1,
+      "evidence": [
+        "support-contract-static PASS: required RPCs=5, receipt=idempotency, audit schema=correct, RLS=force, test=22 assertions",
+        "support-create-scope-static PASS: internal institution-null create path + 23 assertions",
+        "account-contract-static PASS: RPCs=3, email request, idempotency receipt, auth email read, forced RLS, test=16 assertions",
+        "plans-audit-contract-static PASS: plans=3 RPCs + forced RLS; audit=list/filter/detail + deferred export revoke; tests present",
+        "account Flutter analyzer PASS: apps/superadmin; only pre-existing info at router line 908",
+        "account Flutter tests PASS: controller/profile/settings 56; account routes 5",
+        "support Flutter analyzer PASS: targeted production/support files",
+        "support Flutter tests PASS: controller/page/routes 51; follow-up controller/routes 30",
+        "audit production route tests PASS: 2",
+        "plan golden refresh PASS: 2/2 tests; 8 card goldens updated to current indicators, all table/form goldens still pass",
+        "support golden refresh PASS: 2/2 tests; 24 standard and 8 scaled cases verified against current composition; 28 PNGs changed because 4 scaled references already matched",
+        "supabase db lint --local BLOCKED: ECONNREFUSED 127.0.0.1:54322",
+        "supabase start --workdir packages/coelo_database BLOCKED before support migration: 20260820152528_form... fails SQLSTATE 3F000 because schema app_private is absent"
+      ],
+      "planned": [
+        "pgTAP nominal de conta, planos, auditoria e suporte",
+        "preflight da migration na fila serializada",
+        "flutter tests de Planos/Auditoria/Suporte",
+        "E2E Supabase real apos migrations aplicadas pelo coordenador"
+      ]
+    },
+    "progress_snapshot": {
+      "base": "1adb070c9028850ccdd7e091db5b97b63b95c750",
+      "scope_actions": 21,
+      "mvp_active_actions": 20,
+      "deferred_actions": 1,
+      "frontend_local": {
+        "done": 9,
+        "total": 21,
+        "percent": 42.86,
+        "ids": [
+          "account.profile",
+          "account.settings",
+          "account.theme",
+          "support.create",
+          "support.table",
+          "support.kanban",
+          "support.detail",
+          "support.reply",
+          "support.close"
+        ]
+      },
+      "backend_package_or_existing_candidate": {
+        "done": 20,
+        "total": 20,
+        "percent": 100,
+        "note": "pacotes/candidatos preparados; não equivale a backend done porque pgTAP nominal e aplicação permanecem pendentes"
+      },
+      "pgtap_nominal": {
+        "done": 0,
+        "total": 20,
+        "percent": 0
+      },
+      "e2e_supabase_real": {
+        "done": 0,
+        "total": 20,
+        "percent": 0
+      },
+      "goldens_decididos_e_atualizados": {
+        "plans": "8/8",
+        "support": "32/32 casos verificados; 28 PNGs alterados"
+      }
+    },
+    "commits": [
+      "b172b695b8d996375fc7da7a539ed7ee78dc7e35",
+      "94bca84f6",
+      "5611c6da7",
+      "ce4939227",
+      "b02478937",
+      "9ae607fca",
+      "179cd6ae4",
+      "af8ee0524",
+      "2ea0e5606",
+      "d7ca27d93"
+    ],
+    "next_step": "coordenador deve ler este checkpoint e, quando a janela de replay e o gate P1 forem liberados, executar pgTAP nominal dos 20 action_ids ativos; depois aplicar a fila SQL forward-only e executar E2E Supabase real"
+  }
 }
