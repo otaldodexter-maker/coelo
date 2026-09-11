@@ -469,10 +469,38 @@ final class _ProductionCircularComposerHostState extends State<ProductionCircula
             onCancel: widget.onCancel,
             onPublished: widget.onDone,
             onPickFiles: () => _pickAttachments(controller),
+            onChooseSchedule: _chooseSchedule,
           ),
         ),
       ],
     );
+  }
+
+  /// Agendamento pela tela (circulars.schedule, R05): o host produtivo nao
+  /// passava `onChooseSchedule`, entao o botao "Escolher data e hora" ficava
+  /// desabilitado e so o agendamento por RPC existia. Mesmos seletores Coelo
+  /// de Avisos (data unica + horario); a validacao continua no servidor.
+  Future<DateTime?> _chooseSchedule() async {
+    final now = DateTime.now();
+    final day = await showCoeloDateRangePicker(
+      context: context,
+      value: DateTimeRange(
+        start: DateTime(now.year, now.month, now.day),
+        end: DateTime(now.year, now.month, now.day),
+      ),
+      firstDate: DateTime(now.year, now.month, now.day),
+      lastDate: DateTime(now.year + 2),
+      selectionMode: CoeloDateSelectionMode.single,
+      showQuickRanges: false,
+    );
+    if (!mounted || day == null) return null;
+    final time = await showCoeloTimePicker(
+      context: context,
+      initialValue: TimeOfDay(hour: now.hour, minute: 0),
+      title: 'Horário — publicação da Circular',
+    );
+    if (!mounted || time == null) return null;
+    return DateTime(day.start.year, day.start.month, day.start.day, time.hour, time.minute);
   }
 
   Widget _attachmentBanner(BuildContext context, String status) {
