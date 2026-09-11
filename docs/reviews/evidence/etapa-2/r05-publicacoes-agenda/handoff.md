@@ -18,7 +18,8 @@ timezone: "America/Sao_Paulo"
 | `notices.schedule` | FE + E2E | `ui-13..ui-19`: data/hora pelo seletor Coelo (18/09 13:51), Publicar → "Publicação agendada", diretório após recarga completa mostra "Desde 18/09/2026"; RPC confirma `scheduled`. Worker real: aviso agendado para +2 min virou `active` com `reach 18` (P30 materializa sozinho). |
 | `circulars.respond` | BE | `20260911190000` em produção: `save_circular_response_draft` → `submit_circular_response` → `response_summary_v2` `{response_count:1, submitted_count:1}`; pgTAP 18/18 com negativas (sem membership, cross-tenant, anon). |
 | `circulars.attach` | BE | Lote 43 (190000+190200+190300) em produção: prepare presign em R2 `coelo-media-prod` (chave `tenants/…/circulars/circular/…/attachment/…/original`) → PUT → finalize ready → rascunho com bloco de mídia no gateway v2 → detail devolve asset_id → publish com mídia → read signed_url → bytes conferem; anon 401; anexo publicado imutável. Prova 34/34 (14:36). |
-| `circulars.edit` / `circulars.schedule` | BE (reforço) | RPC: edição com versão, agendar (publish_at futuro) e reload. FE pela tela não exercido (Chrome morreu por memória). |
+| `circulars.edit` | FE + BE + E2E | Rascunho criado pelo compositor real, reaberto pela aba Rascunhos → Editar circular → título editado → Salvar rascunho; recarga completa mantém (ui-32..ui-39). |
+| `circulars.schedule` | FE + BE + E2E | `66a52986f` liga o seletor (host produtivo não passava `onChooseSchedule`). Pela tela: data 25/09 + horário → "Alterar agendamento" → validação honesta de público → Agendar circular → Agendada; recarga lista 25/09/2026 na aba Agendadas; RPC `scheduled` (ui-41..ui-46). |
 
 # Pacotes SQL (candidatos/publicacoes-agenda, aplicar nesta ordem)
 
@@ -27,22 +28,21 @@ timezone: "America/Sao_Paulo"
 3. `20260911190200_circulars_media_private_r2_v1_reapply` — 45/46 — em produção (lote 43).
 4. `20260911190300_superadmin_circulars_v2_media_v1` — bridge 18/18, v2 34/34, delete 15/15 — em produção (lote 43).
 
-Deltas no formato do aplicador: `deltas-r05-pa.json` (13 entradas, ensaio apply + validate PASS).
+Deltas no formato do aplicador: `deltas-r05-pa.json` (16 entradas, ensaio apply + validate PASS: FE 76, BE 78, E2E 53).
 
 Prova limpa no descartável `coelo_pa_r05` (db 60522): baseline + seed + 107 migrations da ordem + 9 lotes de hoje + candidatos.
 
 # Aberto, com o primeiro gate
 
 - `circulars.attach` FE/E2E: anexar pela tela (composer real, FilePicker nativo não é dirigível por CDP; injetar `filePicker` no host de QA) com um Chrome.
-- `circulars.edit`, `circulars.schedule` FE: editar rascunho explícito e acionar o picker pela tela — o picker só existe a partir de `66a52986f` (o host produtivo não passava `onChooseSchedule`; botão ficava desabilitado).
 - `circulars.respond` FE: não existe tela de resposta no Superadmin (fluxo do Principal); decidir se `respond` no Superadmin é só o resumo (já verified) — pergunta ao coordenador.
-- `agenda.location` FE: criar evento com contexto de unidade pelo wizard na tela.
+- `agenda.location` FE: achado de produto no wizard (ui-51/52): "Contexto principal" só escolhe o nível e o formulário usa o primeiro contexto daquele nível (`_selectedContext`), sem seletor da unidade/turma concreta — propor seletor antes do verified.
 - Aprovação visual do Owner: P33/P34 em `duvidas-visuais.html` (R iPhone / A atual; detalhe: manter 48 px?).
 - Delete do anexo após publicar responde `media_remove_denied` — comportamento correto (mídia publicada é imutável); coberto na prova como negativa.
 
 # Achados fora do recorte
 
-- Pastilha "Aviso" da coluna Tipo esticada no diretório de Avisos após o composto `11c4bfbef` (ui-19) — coelo-ui/composto.
+- Pastilha "Aviso" esticada no diretório de Avisos após o composto `11c4bfbef` (ui-19) — corrigida em `28acbe8c3` (altura própria da pastilha).
 - Balão de chat sobre o compositor de Circular enquanto carrega o seletor de instituição (ui-22) — shell/Decisão 7.
 - `agenda_internal_realm_compat_v1_test` falha 4/22 sobre a ordem real após o lote 29 (ponte do Principal): expectativas antigas de ator interno sem pessoa; falta asserção cross-tenant — G4/G5.
 - Testes históricos `circulars_authorization_behavior_test` (fixture inválida) — pós-MVP.
