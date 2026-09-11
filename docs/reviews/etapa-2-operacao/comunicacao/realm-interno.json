@@ -1,17 +1,17 @@
 {
   "grupo": "realm-interno",
-  "revision": 2,
+  "revision": 3,
   "round": "E2-R04-20260911",
-  "updatedAt": "2026-09-10T22:08-03:00",
+  "updatedAt": "2026-09-10T22:12-03:00",
   "app": "Claude",
   "modelo": "Fable 5.1",
   "conversa": "R04 · Realm interno e Chat backend",
   "coordenador": "R04 · Coordenação noturna (coordenacao.json)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-realm-interno",
   "branch": "work/etapa2-r04-realm-interno",
-  "head": "3d65bafd9",
+  "head": "d643d0193",
   "upstream": "origin/work/etapa2-r04-realm-interno",
-  "base": "origin/dev 98cc0529d (Rodada 4 inteira no Claude)",
+  "base": "origin/dev 836c63215 (rebase feito as 22:08; lote 8 MFA fora do MVP ja em producao)",
   "historicoR03": "frente sem entrega na R03 (frenteNova coelo-f0 atribuida as 15:58; worktree e2-r03-realm-interno quebrada, nao usada). Nada a reutilizar dela.",
   "escopo": {
     "camada": "backend (Supabase/Postgres) da familia chat + realm interno v2",
@@ -70,17 +70,17 @@
     "20260910240400 chat groups v1 (Criar grupo P8)"
   ],
   "testes": {
-    "pgTAP": "89 PASS / 0 FAIL nos 4 candidatos (projeto descartavel proprio)"
+    "pgTAP": "108 PASS / 0 FAIL nos 5 candidatos (20 + 23 + 36 + 10 + 19), projeto descartavel proprio sobre baseline + seed + 44 migrations"
   },
   "bloqueio": null,
   "pedidosAoCoordenador": [
-    "aplicar candidatos/realm-interno 240000..240300 nesta ordem (dump por lote); depois eu provo com a sessao qa-r03@coelo.me",
-    "a regra do README (db reset com migrations/ inteira) nao reproduz: 20260910170100 exige o catalogo antes do seed; sugiro registrar o fluxo baseline-only + seed + psql das demais"
+    "aplicar candidatos/realm-interno 240000..240400 nesta ordem (dump por lote); depois eu provo com a sessao qa-r03@coelo.me",
+    "a regra do README (db reset com migrations/ inteira) nao reproduz: 20260910170100 exige o catalogo antes do seed; sugiro registrar o fluxo baseline-only + seed + psql das demais (README de candidatos/realm-interno descreve)"
   ],
   "perguntasParaOOwner": [],
   "respostasAoPrincipalChat": [
     "Fixar/bandeira (rev 8, bloqueio): deixa de depender do historico 20260901101500; a cadeia inteira nasce sobre a baseline nos candidatos 240000-240300. Assinaturas identicas ao que o cliente ja chama; ligar o SupabaseChatRepository real na composicao assim que o coordenador aplicar.",
-    "Criar grupo (P8): contrato em elaboracao no 240400 (proxima revisao): superadmin_chat_create_group_v2(p_request_id, p_institution_id, p_title, p_person_ids uuid[], p_unit_id?, p_group_id?, p_activity_id?) -> conversa conversation_type=group com participantes do realm de pessoas; exige chat.internal.manage; membro fora da instituicao responde CHAT_MEMBER_INVALID."
+    "Criar grupo (P8): entregue no 240400 (d643d0193). Assinatura: superadmin_chat_create_group_v2(p_request_id, p_institution_id, p_title, p_person_ids, p_unit_id, p_group_id, p_activity_id); membros do realm de pessoas; exige chat.internal.manage (owner). O criador interno nao entra como participante: le e escreve pelo escopo da membership. Detalhes em contrato.rpcs."
   ],
   "contrato": {
     "estado": "publicado nesta revisao; igual ao que SupabaseChatRepository ja chama (nenhuma mudanca de assinatura no cliente para 240000-240300)",
@@ -101,7 +101,7 @@
     "capacidades": {
       "chat.internal.read": "owner, operations (inbox, thread, unread, mark_read, realtime_refresh, set_pinned, set_flag)",
       "chat.internal.send": "owner (send_message)",
-      "chat.internal.manage": "owner (edit_message, revoke_message, create_group em 240400)"
+      "chat.internal.manage": "owner (edit_message, revoke_message, create_group)"
     },
     "rpcs": {
       "superadmin_chat_unread_total_v2()": "data {total_unread}",
@@ -113,42 +113,71 @@
       "superadmin_chat_mark_read_v2(p_conversation_id, p_through_message_id)": "data {updated_count, read_at}",
       "superadmin_chat_realtime_refresh_v2(p_conversation_id)": "data {conversation_id, latest_message_id, latest_message_at, unread_count}",
       "superadmin_chat_set_pinned_v2(p_conversation_id, p_pinned bool)": "data {conversation_id, pinned_at, flag}",
-      "superadmin_chat_set_flag_v2(p_conversation_id, p_flag in none|red|yellow|green|blue|pink|restricted)": "data {conversation_id, pinned_at, flag}"
+      "superadmin_chat_set_flag_v2(p_conversation_id, p_flag in none|red|yellow|green|blue|pink|restricted)": "data {conversation_id, pinned_at, flag}",
+      "superadmin_chat_create_group_v2(p_request_id uuid, p_institution_id uuid, p_title text 1..120, p_person_ids uuid[] 1..200, p_unit_id uuid?, p_group_id uuid?, p_activity_id uuid?)": "data {conversation_id, title, conversation_type:\"group\", scope_kind, institution_id, unit_id, group_id, activity_id, member_count, created_at, replayed}; escopo derivado (activity > group > unit > institution) e validado contra a hierarquia da instituicao; membros = pessoas ativas com institution_memberships ativo (professional/role_code) ou guardian_links ativo de crianca com child_contexts ativo na instituicao (family/responsavel); pessoa sem vinculo -> CHAT_MEMBER_INVALID 422; outro tenant -> CHAT_NOT_FOUND; idempotente por (identidade, request_id) com hash de instituicao+titulo+escopo+membros",
+      "superadmin_chat_group_members_v2(p_conversation_id)": "data {conversation_id, items[{person_id, display_name, experience_kind, role_snapshot, joined_at}], total}; chat.internal.read; outro tenant -> CHAT_NOT_FOUND"
     },
-    "escopo": "membership de plataforma ve toda conversa; membership de instituicao so ve a propria instituicao (outro tenant responde CHAT_NOT_FOUND). Anexos: so metadados; chat.attach continua dependendo do gateway de midia comum (fora deste recorte)."
+    "escopo": "membership de plataforma ve toda conversa; membership de instituicao so ve a propria instituicao (outro tenant responde CHAT_NOT_FOUND). Anexos: so metadados; chat.attach continua dependendo do gateway de midia comum (fora deste recorte).",
+    "criarGrupoNoCliente": "sugestao para SupabaseChatRepository: createGroup(ChatCreateGroupCommand{institutionId, title, personIds, unitId?, groupId?, activityId?, idempotencyKey}) -> ChatConversationSummary; o seletor de hierarquia escolhe UMA instituicao e pessoas dela (readers existentes de Pessoas/Unidades/Turmas do Superadmin); grupo entre instituicoes nao existe no modelo (conversations.institution_id NOT NULL)."
   },
-  "proximoPasso": "escrever 240400 (Criar grupo P8) com pgTAP; depois provar em producao quando aplicado",
+  "proximoPasso": "README de candidatos/realm-interno; preparar a prova em producao (script com a sessao qa-r03, sem segredo em Git/JSON); aguardar aplicacao e provar; enquanto isso, delta BE proposto por action_id",
   "pacotesProntos": [
     {
       "arquivo": "packages/coelo_database/candidatos/realm-interno/20260910240000_chat_production_contract_v1.sql",
       "assunto": "contrato de producao do chat contextual (forma final dos 4 historicos), revoke de anon nas tabelas de chat",
       "pgTAP": "supabase/tests/chat_production_contract_v1_test.sql 20/20",
-      "commit": "4df51b219",
+      "commit": "6edec06e6 (SHA apos rebase sobre origin/dev)",
       "chaveDeComposicao": "nenhuma (realm de pessoas; o Superadmin nao consome)"
     },
     {
       "arquivo": "packages/coelo_database/candidatos/realm-interno/20260910240100_superadmin_internal_chat_v2.sql",
       "assunto": "chat interno v2: permissoes com labels e sem MFA, autor interno em messages, recibos/idempotencia, 6 RPCs v2, contextuais com IS DISTINCT FROM",
       "pgTAP": "supabase/tests/superadmin_internal_chat_v2_baseline_test.sql 23/23",
-      "commit": "4df51b219",
+      "commit": "6edec06e6 (SHA apos rebase sobre origin/dev)",
       "chaveDeComposicao": "SupabaseChatRepository real na composicao do Superadmin (grupo principal-chat-sistema)"
     },
     {
       "arquivo": "packages/coelo_database/candidatos/realm-interno/20260910240200_superadmin_internal_chat_receipts_edit_revoke_v2.sql",
       "assunto": "chat.internal.manage sem MFA, trilha de edicao, recibo por mensagem, thread com receipt/edited_at/can_manage, editar (15 min) e revogar (soft delete)",
       "pgTAP": "supabase/tests/superadmin_internal_chat_receipts_edit_revoke_baseline_test.sql 36/36",
-      "commit": "3d65bafd9",
+      "commit": "e2febb3e5 (SHA apos rebase sobre origin/dev)",
       "chaveDeComposicao": "idem"
     },
     {
       "arquivo": "packages/coelo_database/candidatos/realm-interno/20260910240300_chat_conversation_preferences_v1.sql",
       "assunto": "fixar e bandeira por identidade interna; inbox v2 devolve pinned_at/flag e fixadas primeiro",
       "pgTAP": "supabase/tests/superadmin_internal_chat_preferences_baseline_test.sql 10/10",
-      "commit": "3d65bafd9",
+      "commit": "e2febb3e5 (SHA apos rebase sobre origin/dev)",
       "chaveDeComposicao": "idem"
+    },
+    {
+      "arquivo": "packages/coelo_database/candidatos/realm-interno/20260910240400_superadmin_internal_chat_groups_v1.sql",
+      "assunto": "Criar grupo (P8): superadmin_chat_create_group_v2 + superadmin_chat_group_members_v2; recibos de idempotencia proprios; chat.internal.manage",
+      "pgTAP": "supabase/tests/superadmin_internal_chat_groups_v1_test.sql 19/19",
+      "commit": "d643d0193",
+      "chaveDeComposicao": "UI de Criar grupo do grupo principal-chat-sistema (repositorio + dialogo); nenhuma chave de banco"
     }
   ],
-  "ordemDeAplicacao": "240000 -> 240100 -> 240200 -> 240300 (-> 240400 Criar grupo, em andamento). Cada um tem preflight de presenca de objeto e falha com 55000 se a dependencia faltar.",
+  "ordemDeAplicacao": "240000 -> 240100 -> 240200 -> 240300 -> 240400. Cada um tem preflight de presenca de objeto e falha com 55000 se a dependencia faltar. Todos aplicados em sequencia no mesmo projeto descartavel; pgTAP total 108 PASS / 0 FAIL.",
   "provaLocal": "projeto descartavel coelo_baseline_realm (portas 624xx): supabase start so com a baseline em migrations/ + seed (db reset com as 44 migrations em migrations/ falha: 20260910170100 exige people.read no catalogo antes do seed), depois as 44 migrations via psql na ordem (44/44 OK), depois os candidatos na ordem. Total pgTAP: 89 PASS / 0 FAIL.",
-  "ackDoCoordenador": "mensagem entre sessoes recebida (lote 8 em producao: MFA fora do MVP + student_links_read; dev em 836c63215); rebase feito nesta revisao"
+  "ackDoCoordenador": "mensagem entre sessoes recebida (lote 8 em producao: MFA fora do MVP + student_links_read; dev em 836c63215); rebase feito nesta revisao",
+  "pendenciasRegistradas": [
+    "chat.attach: sem funcao que insira em chat_attachment_metadata e sem Edge Function chat-media; depende do gateway de midia comum (fora deste recorte; ja registrado no rastreador)",
+    "Escopos unit/group/activity de Criar grupo validados por codigo e pelo trigger de producao, mas o pgTAP cobre so o escopo de instituicao e a unidade invalida (fixture de units/groups/activity_group_links fica para a revisao profunda)",
+    "Policies de conversations/messages/participants de producao (can_access_conversation com bypass platform.read) foram preservadas; o historico as trocava por can_access_chat_conversation. Decisao registrada no cabecalho do 240000; revisar na revisao profunda de seguranca",
+    "chat_inbox_page/chat_thread_page/chat_unread_total/chat_mark_read do realm de pessoas (Principal) nao sao consumidos pelo Superadmin: provados por pgTAP (20/20) mas sem cliente na Etapa 2",
+    "anon com GRANT ALL em conversations/messages/message_edits/message_receipts na baseline: revogado no 240000; varredura das outras familias fica para o coordenador/revisao",
+    "Realtime: superadmin_chat_realtime_refresh_v2 existe, mas nenhuma publication/canal Realtime para messages foi configurada neste pacote (o cliente hoje nao assina)"
+  ],
+  "deltaPropostoBE": {
+    "regra": "so depois de aplicado em producao e provado com qa-r03; ate la os cinco IDs seguem local-green com pacote pronto",
+    "chat.list": "local-green -> done apos aplicacao (240100+240300) e prova de inbox/fixar/bandeira com reload",
+    "chat.open": "local-green -> done apos aplicacao (240100+240200) e prova de thread com recibo",
+    "chat.send": "local-green -> done apos aplicacao (240100) e prova de envio idempotente",
+    "chat.edit": "local-green (240200) -> done apos aplicacao e prova de edicao na janela",
+    "chat.revoke": "local-green (240200) -> done apos aplicacao e prova de revogacao",
+    "chat.receipts": "local-green (240200) -> done apos aplicacao e prova de receipt na thread",
+    "chat.attach": "blocked-environment (gateway de midia comum ausente); sem mudanca",
+    "chat.create-group (novo, P8)": "local-green (240400); pedir ao coordenador para registrar o action_id no inventario se ainda nao existir"
+  }
 }
