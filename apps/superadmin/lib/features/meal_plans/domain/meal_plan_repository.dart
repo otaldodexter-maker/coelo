@@ -342,7 +342,7 @@ final class MealPlan {
     sourceTemplateId: j['sourceTemplateId'] as String? ?? j['source_template_id'] as String?,
     sourceTemplateVersion: _int(j['sourceTemplateVersion'] ?? j['source_template_version']),
     sourceTemplateName: j['sourceTemplateName'] as String? ?? j['source_template_name'] as String?,
-    scopeRules: _map(j['scopeRules'] ?? j['scope_rules']),
+    scopeRules: mealPlanScopeRulesMap(j['scopeRules'] ?? j['scope_rules']),
     simpleImage: (j['simpleImage'] ?? j['simple_image_meta']) is Map
         ? MealPlanAttachmentMeta.fromJson(_map(j['simpleImage'] ?? j['simple_image_meta']))
         : null,
@@ -471,7 +471,7 @@ final class MealPlanDraft {
     'visibleFrom': visibleFrom?.toIso8601String(),
     'sourceTemplateId': sourceTemplateId,
     'sourceTemplateVersion': sourceTemplateVersion,
-    'scopeRules': scopeRules,
+    'scopeRules': mealPlanScopeRulesList(scopeRules, institutionId: institutionId),
     'simpleImage': simpleImage?.toJson(),
     'simpleImageAlt': simpleImageAlt,
     'simpleNotes': simpleNotes,
@@ -756,6 +756,7 @@ final class UnavailableMealPlanRepository implements MealPlanRepository {
 
 T _enumByName<T extends Enum>(List<T> values, Object? raw, T fallback) =>
     values.firstWhere((v) => v.name == raw?.toString(), orElse: () => fallback);
+
 /// O banco grava `closed`; o enum do cliente chama o mesmo estado de `ended`.
 /// Os dois lados precisam atravessar esta conversao, senao a leitura cai no
 /// rascunho por omissao e o filtro pergunta por um valor que a coluna nao tem.
@@ -796,3 +797,46 @@ bool? _bool(Object? v) => v is bool
     : v == null
     ? null
     : v.toString() == 'true';
+
+// meal_plan_create_or_update_draft itera `scopeRules` como lista de regras
+// ({scopeLevel, scopeId, institutionId, unitId, classId, activityId, personId})
+// e devolve em meal_plan_get o mesmo valor gravado. O assistente trabalha com o
+// resumo por chave (institutionIds, unitIds, ...); as duas funcoes abaixo
+// convertem nos dois sentidos e aceitam qualquer um dos formatos na leitura.
+const _mealPlanScopeRuleKeys = <String, (String, String)>{
+  'institutionIds': ('institution', 'institutionId'),
+  'unitIds': ('unit', 'unitId'),
+  'groupIds': ('classLevel', 'classId'),
+  'activityIds': ('activity', 'activityId'),
+  'includedPersonIds': ('person', 'personId'),
+};
+
+List<Map<String, Object?>> mealPlanScopeRulesList(
+  Map<String, Object?> rules, {
+  String? institutionId,
+}) => [
+  for (final MapEntry(key: key, value: (level, idKey)) in _mealPlanScopeRuleKeys.entries)
+    for (final id in _list(rules[key]).map((v) => v.toString()).where((v) => v.isNotEmpty))
+      {
+        'scopeLevel': level,
+        'scopeId': id,
+        'institutionId': level == 'institution' ? id : institutionId,
+        idKey: id,
+      },
+];
+
+Map<String, Object?> mealPlanScopeRulesMap(Object? value) {
+  if (value is Map) return Map<String, Object?>.from(value);
+  if (value is! List) return const {};
+  final result = <String, List<String>>{for (final key in _mealPlanScopeRuleKeys.keys) key: []};
+  for (final item in value) {
+    final rule = _map(item);
+    for (final MapEntry(key: key, value: (level, idKey)) in _mealPlanScopeRuleKeys.entries) {
+      if (rule['scopeLevel'] == level) {
+        final id = (rule[idKey] ?? rule['scopeId'])?.toString();
+        if (id != null && id.isNotEmpty) result[key]!.add(id);
+      }
+    }
+  }
+  return result;
+}
