@@ -23,7 +23,11 @@ presenca de objeto e falha com `55000` se a dependencia faltar.
 Os pacotes 1 a 5 foram aplicados em produção pelo coordenador no lote 9
 (10/09 22:25) e provados com a sessão `qa-r03` (18/18, ver
 `docs/reviews/evidence/etapa-2/r04-realm-interno/prova-producao-2026-09-10.md`).
-O pacote 6 é independente dos anteriores.
+O pacote 6 é independente dos anteriores e foi aplicado em produção pelo
+coordenador (ledger `20260910240500`, conferido às 23:20 de 10/09: `anon`
+sem tabela nem função nos schemas da aplicação; `authenticated` com 339
+funções em `public` e 86 em `app_private`; sessão `qa-r03` lendo inbox e
+thread normalmente).
 
 Os testes `*_baseline_test.sql` substituem `superadmin_internal_chat_v2_test.sql`,
 `superadmin_internal_chat_receipts_edit_revoke_test.sql` e
