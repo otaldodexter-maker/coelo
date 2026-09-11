@@ -46,6 +46,8 @@ e builds so quando a memoria permitiu (um build feito as 02:19).
 | 171700 detalhe de perfil v3 (rascunho em branco + forma rica que o cliente le) | 18 | pgTAP 37/37 |
 | 171800 decisao de retirada pelo Superadmin com child_safety.manage | RETIDO ate P32 (b) | pgTAP 25/25 |
 | 171900 cast do enum em child_safety_decide_authorization (defeito de producao: nenhum ator persistia decisao) | 19 | pgTAP 4/4 (RED antes) |
+| 172000 Owner recebe child_safety.review (guarda de autoridade plena; editar/excluir perfil voltam a funcionar) | 20 | pgTAP 4/4 |
+| 172100 ambiguidade de request_reason em child_safety_edit_pending_authorization (42702 em toda edicao pendente) | pronto para aplicar (rev 112) | pgTAP 4/4 (RED antes) |
 
 Cliente (3682673da): o rascunho de perfil passa a enviar `capabilities`
 [{code, effect}] como o servidor le; antes o perfil era salvo sem concessao.
@@ -80,7 +82,7 @@ e P32 (quem decide autorizacoes de retirada em Seguranca infantil).
 
 | Aberto | Primeiro gate |
 | --- | --- |
-| invites.create/detail/resend/revoke | P31 (Owner): 0 `institution_roles` em producao; sem perfil o convite nao passa do passo 1. |
+| invites.create/detail/resend/revoke | P31 (Owner): 0 `institution_roles` em producao; sem perfil o convite nao passa do passo 1 e a RPC issue_v2 recusa (SAI_INVALID_ARGUMENT) perfil de plataforma em contexto de instituicao. Pacote retido 171600 pronto. |
 | access-profiles.create/edit/detail | 171700 aplicado (lote 18) e criar provado pela UI; a concessao selecionada so persiste com o cliente de 3682673da (build novo); assign/delete nao exercitados. |
 | child-safety.edit (decisao) / suspend | 171900 (cast) aplicado no lote 19; quem decide e P32 (171800 retido com a opcao b). Sem revisor de unidade cadastrado, o Superadmin nao decide hoje. |
 | people.create | Resolvedor de identidade (`PersonIdentityLookupGate`) sem implementacao Supabase/RPC. |
@@ -94,4 +96,6 @@ e P32 (quem decide autorizacoes de retirada em Seguranca infantil).
 - `app_private.superadmin_internal_profiles` do qa-r03 (semente 171200).
 - `public.authorized_person_authorizations` 34d29829-a8b5-4b23-aacb-46e994dce7d7.
 - `public.access_profile_templates` `qa-r04-modelo-sintetico-b6f3958c` e suas permissoes.
-- `public.platform_roles` `qa-r04-perfil-sintetico-7f6f8d16` (546c4cd2-ea2d-4488-9961-e17576e836e5).
+- `public.platform_roles` `qa-r04-perfil-sintetico-7f6f8d16`: ja apagado pela prova de delete.
+- `public.access_profile_templates` copia `qa-r04-modelo-sintetico-copia-a2dcc439` (60fb9586-8e4c-46b8-8f1a-f8bdc396e2d4).
+- `public.people` `QA R04 Pessoa sintetica` (ec2a15a2-76bc-4e71-8419-94413d0c5c98, draft).
