@@ -57,6 +57,29 @@ void main() {
     expect(detail.linkedInstitutions.single.startsAt, DateTime.parse('2026-08-01T00:00:00Z'));
   });
 
+  test('plano sem entitlements e assinatura sem data nao derrubam a tela', () async {
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'anon',
+      httpClient: MockClient((request) async {
+        if (request.url.path.endsWith('superadmin_plans_list')) {
+          final plan = Map<String, Object?>.from(_plan())..remove('entitlements');
+          return _response({'items': [plan], 'total_items': 1, 'page': 1, 'page_size': 8}, request);
+        }
+        final linked = Map<String, Object?>.from(_linkedInstitution())..['starts_at'] = null;
+        return _response({..._plan(), 'linked_institutions': [linked]}, request);
+      }),
+    );
+    addTearDown(client.dispose);
+    final repository = SupabasePlanCatalogRepository(client);
+
+    final page = await repository.list(const PlanQuery());
+    expect(page.items.single.features, isEmpty);
+    expect(page.items.single.limits.units, 0);
+    final detail = await repository.get('00000000-0000-4000-8000-000000000001');
+    expect(detail.linkedInstitutions.single.startsAt, isNull);
+  });
+
   test('falha de transporte vira PlanRepositoryException indisponivel', () async {
     // Antes, so PostgrestException era mapeada: um ClientException escapava
     // cru e o chamador, que so trata PlanRepositoryException, ficava sem

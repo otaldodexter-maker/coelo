@@ -1,0 +1,210 @@
+[
+  {
+    "action_id": "account.sessions",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R06 (11/09 20:12, rota real com qa-r06-operacoes): /settings -> card Sessoes lista a sessao real (superadmin_account_sessions_list_v1 200; pacote 20260911200200 em producao no lote 50, pgTAP 14/14 com negativa cross-user e anonimo; RPC sem parametro de usuario); segunda sessao aberta pela API do Auth aparece apos Atualizar; Encerrar as outras sessoes (1) -> POST /auth/v1/logout?scope=others (GoTrue nativo, auditado em auth.audit_log_entries) -> lista volta a 1 e aviso; reload mantem 1 sessao. P43 = B (tela minima: lista + revogar as outras) sem Edge Function.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/03-settings-sessions-revoked.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/03-settings-sessions-revoked.png",
+      "revision": "comunicacao/operacoes.json rev 43",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r06-operacoes (d43e0b7a1) em 127.0.0.1:3021, sessao qa-r06-operacoes@coelo.me, Chrome CDP 9421 com user-data-dir proprio",
+      "recordedAt": "2026-09-11T20:12:00-03:00"
+    }
+  },
+  {
+    "action_id": "account.sessions",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R06 (11/09 20:12, rota real com qa-r06-operacoes): /settings -> card Sessoes lista a sessao real (superadmin_account_sessions_list_v1 200; pacote 20260911200200 em producao no lote 50, pgTAP 14/14 com negativa cross-user e anonimo; RPC sem parametro de usuario); segunda sessao aberta pela API do Auth aparece apos Atualizar; Encerrar as outras sessoes (1) -> POST /auth/v1/logout?scope=others (GoTrue nativo, auditado em auth.audit_log_entries) -> lista volta a 1 e aviso; reload mantem 1 sessao. P43 = B (tela minima: lista + revogar as outras) sem Edge Function.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/03-settings-sessions-revoked.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/03-settings-sessions-revoked.png",
+      "revision": "comunicacao/operacoes.json rev 43",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r06-operacoes (d43e0b7a1) em 127.0.0.1:3021, sessao qa-r06-operacoes@coelo.me, Chrome CDP 9421 com user-data-dir proprio",
+      "recordedAt": "2026-09-11T20:12:00-03:00"
+    }
+  },
+  {
+    "action_id": "account.sessions",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R06 (11/09 20:12, rota real com qa-r06-operacoes): /settings -> card Sessoes lista a sessao real (superadmin_account_sessions_list_v1 200; pacote 20260911200200 em producao no lote 50, pgTAP 14/14 com negativa cross-user e anonimo; RPC sem parametro de usuario); segunda sessao aberta pela API do Auth aparece apos Atualizar; Encerrar as outras sessoes (1) -> POST /auth/v1/logout?scope=others (GoTrue nativo, auditado em auth.audit_log_entries) -> lista volta a 1 e aviso; reload mantem 1 sessao. P43 = B (tela minima: lista + revogar as outras) sem Edge Function.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/04-settings-sessions-reload.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/04-settings-sessions-reload.png",
+      "revision": "comunicacao/operacoes.json rev 43",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r06-operacoes (d43e0b7a1) em 127.0.0.1:3021, sessao qa-r06-operacoes@coelo.me, Chrome CDP 9421 com user-data-dir proprio",
+      "recordedAt": "2026-09-11T20:12:00-03:00"
+    }
+  },
+  {
+    "action_id": "account.theme",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R06 (11/09 20:15, rota real com qa-r06-operacoes): /settings -> Aparencia = Claro grava coelo.superadmin.theme-mode=light; reload mantem Claro. Reconfirmado com o usuario da R06 (persistencia local por desenho).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/05-settings-theme-light-reload.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/05-settings-theme-light-reload.png",
+      "revision": "comunicacao/operacoes.json rev 43",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r06-operacoes (d43e0b7a1) em 127.0.0.1:3021, sessao qa-r06-operacoes@coelo.me, Chrome CDP 9421 com user-data-dir proprio",
+      "recordedAt": "2026-09-11T20:15:00-03:00"
+    }
+  },
+  {
+    "action_id": "account.settings",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R06 (11/09 20:15, rota real com qa-r06-operacoes): /settings -> Aparencia = Claro grava coelo.superadmin.theme-mode=light; reload mantem Claro. Reconfirmado com o usuario da R06 (persistencia local por desenho).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/05-settings-theme-light-reload.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/05-settings-theme-light-reload.png",
+      "revision": "comunicacao/operacoes.json rev 43",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r06-operacoes (d43e0b7a1) em 127.0.0.1:3021, sessao qa-r06-operacoes@coelo.me, Chrome CDP 9421 com user-data-dir proprio",
+      "recordedAt": "2026-09-11T20:15:00-03:00"
+    }
+  },
+  {
+    "action_id": "support.table",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R06 (11/09 20:19, rota real com qa-r06-operacoes, P49 = A): /support abre em cards; toggle Tabela grava coelo.superadmin.support.display=table; na tabela as abas Todos/Novo/Em andamento/Aguardando solicitante/Concluido substituem o filtro Status (superadmin_support_list 200 com o filtro no servidor); Novo -> sem resultados; Concluido -> 1 chamado; reload reabre em tabela (persistencia por dispositivo). 24 goldens support_* regravados (aprovacao visual do Owner pendente: SUP-R06).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/14-support-reload-table-kept.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/14-support-reload-table-kept.png",
+      "revision": "comunicacao/operacoes.json rev 43",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r06-operacoes (d43e0b7a1) em 127.0.0.1:3021, sessao qa-r06-operacoes@coelo.me, Chrome CDP 9421 com user-data-dir proprio",
+      "recordedAt": "2026-09-11T20:19:00-03:00"
+    }
+  },
+  {
+    "action_id": "support.table",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R06 (11/09 20:19, rota real com qa-r06-operacoes, P49 = A): /support abre em cards; toggle Tabela grava coelo.superadmin.support.display=table; na tabela as abas Todos/Novo/Em andamento/Aguardando solicitante/Concluido substituem o filtro Status (superadmin_support_list 200 com o filtro no servidor); Novo -> sem resultados; Concluido -> 1 chamado; reload reabre em tabela (persistencia por dispositivo). 24 goldens support_* regravados (aprovacao visual do Owner pendente: SUP-R06).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/11-support-table-tabs.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/11-support-table-tabs.png",
+      "revision": "comunicacao/operacoes.json rev 43",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r06-operacoes (d43e0b7a1) em 127.0.0.1:3021, sessao qa-r06-operacoes@coelo.me, Chrome CDP 9421 com user-data-dir proprio",
+      "recordedAt": "2026-09-11T20:19:00-03:00"
+    }
+  },
+  {
+    "action_id": "support.table",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R06 (11/09 20:19, rota real com qa-r06-operacoes, P49 = A): /support abre em cards; toggle Tabela grava coelo.superadmin.support.display=table; na tabela as abas Todos/Novo/Em andamento/Aguardando solicitante/Concluido substituem o filtro Status (superadmin_support_list 200 com o filtro no servidor); Novo -> sem resultados; Concluido -> 1 chamado; reload reabre em tabela (persistencia por dispositivo). 24 goldens support_* regravados (aprovacao visual do Owner pendente: SUP-R06).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/14-support-reload-table-kept.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/14-support-reload-table-kept.png",
+      "revision": "comunicacao/operacoes.json rev 43",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r06-operacoes (d43e0b7a1) em 127.0.0.1:3021, sessao qa-r06-operacoes@coelo.me, Chrome CDP 9421 com user-data-dir proprio",
+      "recordedAt": "2026-09-11T20:19:00-03:00"
+    }
+  },
+  {
+    "action_id": "support.kanban",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R06 (11/09 20:19, rota real com qa-r06-operacoes, P49 = A): /support abre em cards; toggle Tabela grava coelo.superadmin.support.display=table; na tabela as abas Todos/Novo/Em andamento/Aguardando solicitante/Concluido substituem o filtro Status (superadmin_support_list 200 com o filtro no servidor); Novo -> sem resultados; Concluido -> 1 chamado; reload reabre em tabela (persistencia por dispositivo). 24 goldens support_* regravados (aprovacao visual do Owner pendente: SUP-R06).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/14-support-reload-table-kept.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/14-support-reload-table-kept.png",
+      "revision": "comunicacao/operacoes.json rev 43",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r06-operacoes (d43e0b7a1) em 127.0.0.1:3021, sessao qa-r06-operacoes@coelo.me, Chrome CDP 9421 com user-data-dir proprio",
+      "recordedAt": "2026-09-11T20:19:00-03:00"
+    }
+  },
+  {
+    "action_id": "support.kanban",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R06 (11/09 20:19, rota real com qa-r06-operacoes, P49 = A): /support abre em cards; toggle Tabela grava coelo.superadmin.support.display=table; na tabela as abas Todos/Novo/Em andamento/Aguardando solicitante/Concluido substituem o filtro Status (superadmin_support_list 200 com o filtro no servidor); Novo -> sem resultados; Concluido -> 1 chamado; reload reabre em tabela (persistencia por dispositivo). 24 goldens support_* regravados (aprovacao visual do Owner pendente: SUP-R06).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/11-support-table-tabs.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/11-support-table-tabs.png",
+      "revision": "comunicacao/operacoes.json rev 43",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r06-operacoes (d43e0b7a1) em 127.0.0.1:3021, sessao qa-r06-operacoes@coelo.me, Chrome CDP 9421 com user-data-dir proprio",
+      "recordedAt": "2026-09-11T20:19:00-03:00"
+    }
+  },
+  {
+    "action_id": "support.kanban",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R06 (11/09 20:19, rota real com qa-r06-operacoes, P49 = A): /support abre em cards; toggle Tabela grava coelo.superadmin.support.display=table; na tabela as abas Todos/Novo/Em andamento/Aguardando solicitante/Concluido substituem o filtro Status (superadmin_support_list 200 com o filtro no servidor); Novo -> sem resultados; Concluido -> 1 chamado; reload reabre em tabela (persistencia por dispositivo). 24 goldens support_* regravados (aprovacao visual do Owner pendente: SUP-R06).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/14-support-reload-table-kept.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/14-support-reload-table-kept.png",
+      "revision": "comunicacao/operacoes.json rev 43",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r06-operacoes (d43e0b7a1) em 127.0.0.1:3021, sessao qa-r06-operacoes@coelo.me, Chrome CDP 9421 com user-data-dir proprio",
+      "recordedAt": "2026-09-11T20:19:00-03:00"
+    }
+  },
+  {
+    "action_id": "plans.activate",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R06 (11/09 20:35, rota real com qa-r06-operacoes): plans.activate conciliado com a spec 051 como Restaurar (arquivado -> ativo): card do plano 5b0fc76b -> Arquivar plano + motivo -> superadmin_plan_save 200 (acao archive) -> Restaurar plano + motivo -> superadmin_plan_save 200 (acao restore); reload e aba Ativos mostram o plano ativo. Sem cobranca ou ativacao comercial inferida. Backend: superadmin_plan_save na baseline + 20260911200000 (lote 39), pgTAP 40/40 (negativa de outro tenant).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/24-plans-restored.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/24-plans-restored.png",
+      "revision": "comunicacao/operacoes.json rev 43",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r06-operacoes (d43e0b7a1) em 127.0.0.1:3021, sessao qa-r06-operacoes@coelo.me, Chrome CDP 9421 com user-data-dir proprio",
+      "recordedAt": "2026-09-11T20:35:00-03:00"
+    }
+  },
+  {
+    "action_id": "plans.activate",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R06 (11/09 20:35, rota real com qa-r06-operacoes): plans.activate conciliado com a spec 051 como Restaurar (arquivado -> ativo): card do plano 5b0fc76b -> Arquivar plano + motivo -> superadmin_plan_save 200 (acao archive) -> Restaurar plano + motivo -> superadmin_plan_save 200 (acao restore); reload e aba Ativos mostram o plano ativo. Sem cobranca ou ativacao comercial inferida. Backend: superadmin_plan_save na baseline + 20260911200000 (lote 39), pgTAP 40/40 (negativa de outro tenant).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/24-plans-restored.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/24-plans-restored.png",
+      "revision": "comunicacao/operacoes.json rev 43",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r06-operacoes (d43e0b7a1) em 127.0.0.1:3021, sessao qa-r06-operacoes@coelo.me, Chrome CDP 9421 com user-data-dir proprio",
+      "recordedAt": "2026-09-11T20:35:00-03:00"
+    }
+  },
+  {
+    "action_id": "plans.activate",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R06 (11/09 20:35, rota real com qa-r06-operacoes): plans.activate conciliado com a spec 051 como Restaurar (arquivado -> ativo): card do plano 5b0fc76b -> Arquivar plano + motivo -> superadmin_plan_save 200 (acao archive) -> Restaurar plano + motivo -> superadmin_plan_save 200 (acao restore); reload e aba Ativos mostram o plano ativo. Sem cobranca ou ativacao comercial inferida. Backend: superadmin_plan_save na baseline + 20260911200000 (lote 39), pgTAP 40/40 (negativa de outro tenant).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/25-plans-reload-ativos.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/25-plans-reload-ativos.png",
+      "revision": "comunicacao/operacoes.json rev 43",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r06-operacoes (d43e0b7a1) em 127.0.0.1:3021, sessao qa-r06-operacoes@coelo.me, Chrome CDP 9421 com user-data-dir proprio",
+      "recordedAt": "2026-09-11T20:35:00-03:00"
+    }
+  },
+  {
+    "action_id": "catalog.validate",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R06 (11/09 20:24, P44 = B): indice do Catalogo ganhou o composto de diretorio e seus 4 componentes (admin.directory, admin.directory-status-tabs, admin.directory-view-toggle, admin.pagination-footer, admin.underline-tabs) com builders no registry; 16 exemplos atualizados com a mudanca real da fonte; validate_catalog_index, validate_package_boundaries e validate_catalog_sync com zero diagnostico; relatorio regenerado sem caminhos absolutos. Backend Supabase nao se aplica (validacao local).",
+    "evidencia": "apps/catalog/assets/catalog-sync-report.json",
+    "certificacao": {
+      "evidence": "apps/catalog/assets/catalog-sync-report.json",
+      "revision": "comunicacao/operacoes.json rev 43",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r06-operacoes (d43e0b7a1) em 127.0.0.1:3021, sessao qa-r06-operacoes@coelo.me, Chrome CDP 9421 com user-data-dir proprio",
+      "recordedAt": "2026-09-11T20:24:00-03:00"
+    }
+  },
+  {
+    "action_id": "catalog.sync",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R06 (11/09 20:24, P44 = B): indice do Catalogo ganhou o composto de diretorio e seus 4 componentes (admin.directory, admin.directory-status-tabs, admin.directory-view-toggle, admin.pagination-footer, admin.underline-tabs) com builders no registry; 16 exemplos atualizados com a mudanca real da fonte; validate_catalog_index, validate_package_boundaries e validate_catalog_sync com zero diagnostico; relatorio regenerado sem caminhos absolutos. Backend Supabase nao se aplica (validacao local).",
+    "evidencia": "apps/catalog/assets/catalog-sync-report.json",
+    "certificacao": {
+      "evidence": "apps/catalog/assets/catalog-sync-report.json",
+      "revision": "comunicacao/operacoes.json rev 43",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r06-operacoes (d43e0b7a1) em 127.0.0.1:3021, sessao qa-r06-operacoes@coelo.me, Chrome CDP 9421 com user-data-dir proprio",
+      "recordedAt": "2026-09-11T20:24:00-03:00"
+    }
+  }
+]

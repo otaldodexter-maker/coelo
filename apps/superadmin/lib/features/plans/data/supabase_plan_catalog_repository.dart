@@ -100,7 +100,8 @@ final class SupabasePlanCatalogRepository implements PlanCatalogRepository {
             id: _requiredString(item, 'id'),
             name: _requiredString(item, 'name'),
             subscriptionStatus: _requiredString(item, 'subscription_status'),
-            startsAt: DateTime.parse(_requiredString(item, 'starts_at')),
+            // Assinatura sem data nao derruba a tela (achado da R05).
+            startsAt: DateTime.tryParse('${item['starts_at'] ?? ''}'),
             unitsWithOverride: _requiredInt(item, 'units_with_override'),
           );
         })
@@ -109,10 +110,19 @@ final class SupabasePlanCatalogRepository implements PlanCatalogRepository {
 
   PlanCatalog _plan(Object? raw) {
     final json = _requiredMap(raw);
-    final entitlements = _requiredMap(json['entitlements']);
-    bool feature(PlanFeature value) =>
-        _requiredMap(entitlements['feature.${value.name}'])['enabled'] == true;
-    int limit(String key) => _requiredInt(_requiredMap(entitlements['limit.$key']), 'value');
+    // Entitlement ausente (plano criado fora do cliente) vale como desligado
+    // ou sem limite informado, em vez de "Resposta de planos invalida".
+    final entitlements = json['entitlements'] is Map
+        ? Map<String, Object?>.from(json['entitlements'] as Map)
+        : const <String, Object?>{};
+    Map<String, Object?>? entry(String key) =>
+        entitlements[key] is Map ? Map<String, Object?>.from(entitlements[key] as Map) : null;
+    bool feature(PlanFeature value) => entry('feature.${value.name}')?['enabled'] == true;
+    int limit(String key) => switch (entry('limit.$key')?['value']) {
+      final int value => value,
+      final num value => value.toInt(),
+      _ => 0,
+    };
     return PlanCatalog(
       id: _requiredString(json, 'id'),
       name: _requiredString(json, 'name'),
