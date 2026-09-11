@@ -74,8 +74,8 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('fills the viewport with cover media at every supported width', (tester) async {
-    for (final size in [const Size(375, 900), const Size(768, 1024), const Size(1440, 1000)]) {
+  testWidgets('fills the viewport with cover media on phone and tablet widths', (tester) async {
+    for (final size in [const Size(375, 900), const Size(768, 1024)]) {
       await pumpMoments(tester, size: size);
 
       expect(
@@ -86,6 +86,20 @@ void main() {
       expect(media.fit, BoxFit.cover);
       expect(media.alignment, Alignment.topCenter);
       expect(PrincipalMomentsPreviewData.demo.moments.first.caption, endsWith('.'));
+      expect(tester.takeException(), isNull, reason: '$size');
+    }
+  });
+
+  testWidgets('frames the media on black from the expanded width on (goldens R do Owner)', (
+    tester,
+  ) async {
+    for (final size in [const Size(1024, 1000), const Size(1440, 1000)]) {
+      await pumpMoments(tester, size: size);
+
+      final pager = tester.getRect(find.byKey(const Key('principal-moments-page-view')));
+      // A moldura vertical fica centrada e o preto preenche o resto da largura.
+      expect(pager.width, lessThan(size.width / 2), reason: '$size');
+      expect(pager.height, lessThanOrEqualTo(size.height), reason: '$size');
       expect(tester.takeException(), isNull, reason: '$size');
     }
   });
@@ -212,14 +226,18 @@ void main() {
     expect(find.byKey(const Key('principal-moments-desktop-nav')), findsNothing);
   });
 
-  testWidgets('keeps the desktop viewer immersive without a contextual aside', (tester) async {
+  testWidgets('desktop viewer shows the contextual aside with Enviar momento', (tester) async {
+    // Decisao do Owner de 10/09/2026 (goldens 1024/1440 = referencia): a
+    // composicao larga volta com "Em alta na escola" e Enviar momento; navs e
+    // dock continuam fora.
     await pumpMoments(tester, size: const Size(1440, 1000));
 
     expect(find.byKey(const Key('principal-moments-mobile-nav')), findsNothing);
     expect(find.byKey(const Key('principal-global-dock')), findsNothing);
     expect(find.byKey(const Key('principal-moments-desktop-nav')), findsNothing);
-    expect(find.byKey(const Key('principal-moments-desktop-aside')), findsNothing);
-    expect(find.byKey(const Key('principal-moments-create')), findsNothing);
+    expect(find.byKey(const Key('principal-moments-desktop-aside')), findsOneWidget);
+    expect(find.text('Em alta na escola'), findsOneWidget);
+    expect(find.byKey(const Key('principal-moments-create')), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -234,7 +252,8 @@ void main() {
     expect(find.byType(AppBar), findsNothing);
     expect(find.byKey(const Key('principal-moments-desktop-nav')), findsNothing);
     expect(find.byKey(const Key('principal-moments-mobile-nav')), findsNothing);
-    expect(find.byKey(const Key('principal-moments-desktop-aside')), findsNothing);
+    // Dentro do shell web a composicao larga e a mesma: moldura e aside.
+    expect(find.byKey(const Key('principal-moments-desktop-aside')), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -381,8 +400,10 @@ void main() {
       feedScope: scope,
     );
 
+    // O feed real nunca mostra a tendencia de fixture; o cartao de Enviar
+    // momento e acao real e continua no aside.
     expect(find.text('Em alta na escola'), findsNothing);
-    expect(find.byKey(const Key('principal-moments-create')), findsNothing);
+    expect(find.byKey(const Key('principal-moments-create')), findsOneWidget);
   });
 
   for (final width in [375.0, 768.0, 1440.0]) {

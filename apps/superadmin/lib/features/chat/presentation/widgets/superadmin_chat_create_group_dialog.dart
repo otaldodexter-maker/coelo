@@ -145,7 +145,11 @@ final class _SuperadminChatCreateGroupDialogState extends State<SuperadminChatCr
             ),
             const SizedBox(height: CoeloSpacing.space3),
             if (_error != null)
-              const Text('Não foi possível carregar as pessoas desta instituição.')
+              Text(
+                _institutions.isEmpty
+                    ? 'Não foi possível carregar as instituições disponíveis para você.'
+                    : 'Não foi possível carregar as pessoas desta instituição.',
+              )
             else if (_loading)
               const Padding(
                 padding: EdgeInsets.all(CoeloSpacing.space4),
