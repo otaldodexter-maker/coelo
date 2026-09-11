@@ -157,6 +157,10 @@ Remover cada item no mesmo turno em que a verificação confirmar o efeito.
    packages/coelo_database/scripts/r2-spike-synthetic.ts` com os mesmos valores
    no ambiente do processo (nunca em arquivo versionado). Efeito: deploy de
    `happens-media`, `now-media` e `moments-media` e conclusão do spike.
+   **Feito:** `moments-media` v1 e `circular-media` v5 em 10/09 à tarde;
+   `happens-media` e `now-media` em 10/09 22:24 (lote 9), depois das
+   migrations `20260910190600` (Agora) e `190700` (Acontece) que passaram o
+   provedor padrão para `r2`.
 1b. **Stream (ADR 0034, Decisão 11).** Token de conta
    `coelo-edge-functions-stream` (Stream Read+Edit) gravado como
    `COELO_STREAM_API_TOKEN` com `COELO_CLOUDFLARE_ACCOUNT_ID` em 10/09/2026;
@@ -294,8 +298,21 @@ quando houver limite informado, preservando segurança e os gates da conclusão.
   real, bytes, dimensões, pixels, checksum e política da finalidade no servidor.
   SVG de usuário e GIF animado ficam recusados no MVP. Aplicar os limites por
   finalidade da ADR 0032 e remover EXIF/GPS por padrão.
+- **Família nova de mídia segue o padrão de Circulares** (`20260909212000`,
+  repetido em `20260910190600` Agora e `190700` Acontece): `storage_provider`
+  com default `r2`, `bucket_id` sem default e escolhido pela RPC conforme o
+  MIME, chave opaca
+  `tenants/<institution>/<domínio>/<entidade>/<id>/<finalidade>/<asset>/original/<uuid>.<ext>`,
+  restrições `NOT VALID` condicionadas ao acervo legado, `finalize` sem
+  consultar `storage.objects` quando o provedor é R2 (a prova é o checksum
+  medido pelo gateway) e todo descritor devolvido ao gateway carrega
+  `storage_provider`. Nenhum bucket novo no Supabase Storage. Substituição de
+  ativo gera chave nova; o objeto anterior fica órfão até o coletor da família
+  (Momentos tem o seu; Agora e Acontece ainda não).
 - **Agora:** master no R2; Stream HOT por até 24 h quando necessário. Após a
-  janela, apagar somente a cópia Stream.
+  janela, apagar somente a cópia Stream. Em produção desde o lote 9 (fundação
+  `190300`, audiência `190400`, expiração `190500`, R2 `190600`); a
+  expiração ainda depende de agendador (pg_cron ou worker), que não existe.
 - **Momentos:** R2 por padrão; Stream apenas por publicação nova/popular ou
   tráfego medido, sem janela fixa arbitrária; permitir nova promoção.
 - **Acontece:** R2 por padrão; Stream somente por necessidade medida.
@@ -371,6 +388,24 @@ Regras medidas na Rodada 4 (noite de 10→11/09/2026, ADR 0034 Decisão 13):
 - Anon perdeu todos os grants diretos (240500, 190900) e authenticated perdeu
   TRUNCATE/REFERENCES/TRIGGER (240600); os grants CRUD de authenticated sem
   policy correspondente estão levantados como pendência de revisão profunda.
+  A causa raiz era o privilégio padrão do Supabase (`ALTER DEFAULT PRIVILEGES
+  FOR ROLE postgres IN SCHEMA public GRANT ... TO anon`): as migrations
+  revogavam de `PUBLIC` e o grant explícito a `anon` sobrevivia. `190900`
+  revogou o padrão; função nova só chega a `anon` por grant explícito na
+  própria migration. Doze funções `SECURITY INVOKER` de `public` continuam
+  executáveis por `anon` (guardadas por RLS) e ficam para a revisão profunda.
+- Presença do nome não prova o corpo: `list_visible_happens_feed` constava
+  1/1 no mapa por migration, mas o corpo em produção não tinha o predicado de
+  retirada nem `can_withdraw`. Para migration que só faz `create or replace
+  function`, a aplicabilidade se decide comparando `pg_get_functiondef` em
+  produção com o texto esperado, não pela existência em `pg_proc`.
+- pgTAP histórico quebra de dois jeitos: literal com aspas duplas em
+  `position("...")` vira identificador e derruba o arquivo inteiro (28 erros
+  em `now_publication_mvp_test`); asserções por substring de
+  `pg_get_functiondef` caem a cada hardening (o feed do Agora trocou
+  `now_viewer_has_context` por `now_viewer_role_class`). Preferir asserções
+  comportamentais com fixture e ator autenticado, e helper `security definer`
+  em `pg_temp` para ler o id de um ativo antes de trocar de papel.
 - Memória da máquina: no máximo dois Chrome/`flutter run` por conversa, um
   `flutter test` por vez, fechar Chromes e `dart` ao fim de cada prova. Em
   11/09 às 00:27 a máquina reiniciou por esgotamento e todas as conversas

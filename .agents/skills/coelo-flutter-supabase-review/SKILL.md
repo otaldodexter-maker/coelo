@@ -171,6 +171,19 @@ rota `/dev`, golden ou teste isolado não comprovam isso.
   revertido (o coordenador aplica), handoff e push da branch. O coordenador
   registra "sem retorno" quando o push não acontece; publicar antes de provar
   vale mais que provar sem publicar.
+- Porta local compartilhada: `localhost:3000` resolveu para `[::1]`, onde
+  outra frente servia um app Dart, enquanto o build esperado estava em
+  `127.0.0.1:3000`; as capturas contra `localhost` eram de outro app. Usar o
+  endereço IPv4 explícito e conferir o `flutter_bootstrap.js` servido antes
+  de qualquer captura.
+- Negativa de outro tenant pela régua do MVP: além do pgTAP, a própria RPC de
+  produção chamada com a sessão de teste e um `institution_id` alheio ou
+  inexistente deve responder a negativa unificada (`CHAT_NOT_FOUND`,
+  `42501`), e isso vale como prova registrada por `action_id`.
+- Prova E2E que depende de fixture sintética de outro grupo (o chat usou a
+  instituição e as pessoas do realm-interno) combina os ids pelo JSON,
+  registra o que criou (conversa, mensagens) e entra na limpeza de dados
+  sintéticos ao fim da rodada (P37).
 
 ## Contrato de abertura
 
