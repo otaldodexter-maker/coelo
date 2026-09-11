@@ -1,15 +1,15 @@
 {
- "revision": 38,
+ "revision": 39,
  "round": "E2-R05-20260911",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5 (Claude, Opus, esforco medio)",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T14:58-03:00",
+ "updatedAt": "2026-09-11T15:06-03:00",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-formularios-cuidado-rotina",
  "branch": "work/etapa2-r05-formularios-cuidado-rotina",
- "head": "a1ca952cc + rev 38 (publicado)",
+ "head": "a1ca952cc + rev 39 (publicado)",
  "base": "origin/dev 2f6a6114f",
  "scope": {
   "families": [
@@ -55,7 +55,8 @@
  "blocking": [],
  "deltaProposals": [
   "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/deltas-r05-fcr.json (16, rev 37, ja aplicados pelo coordenador)",
-  "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/deltas-r05-fcr-2.json (29, rev 38; ensaiado com apply-tracker-delta + validate-trackers PASS e revertido)"
+  "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/deltas-r05-fcr-2.json (29, rev 38; ensaiado com apply-tracker-delta + validate-trackers PASS e revertido)",
+  "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/deltas-r05-fcr-3.json (16, rev 39: attendance.dashboard/create/mark/finish/correct verified-e2e; forms.responses.export BE done com gate de deploy da form-export-download)"
  ],
  "packages": [
   {
@@ -205,10 +206,20 @@
    "action_id": "attendance.*",
    "o_que": "rota real com o contrato 220100 nao exercitada nesta rodada (tempo); attendance.export segue indisponibilidade honesta",
    "gate": "FE prova"
+  },
+  {
+   "action_id": "attendance.create",
+   "o_que": "balao de chat cobre \"Lancar chamada\"/\"Concluir chamada\" no rodape da chamada (Decisao 7: sem chat em criar/editar)",
+   "gate": "FE (shell/launcher)"
+  },
+  {
+   "action_id": "attendance.mark",
+   "o_que": "primeira tentativa de Salvar mostra \"Alteracao de presenca nao salva\" e a segunda grava (corrida entre reserva de chave e envio)",
+   "gate": "FE"
   }
  ],
  "duvidasParaOOwner": [],
- "nextStep": "ate 15:45: provar o save de Rotina no build 7 e, se o Chrome aguentar, attendance.dashboard/create; depois responder a revisao das 15:50",
+ "nextStep": "ate 15:45: provar o save de Rotina no build 7 se o Chrome aguentar; responder a revisao das 15:50 no JSON",
  "finalizado": false,
  "historicoR04": {
   "revision": 33,
@@ -1444,9 +1455,33 @@
   "daily-routine.create": {
    "resultado": "parcial",
    "prova": "card Criar modelo aparece (57); editor editavel (58/59); save 22P02 -> a1ca952cc; prova do save no build 7"
+  },
+  "attendance.dashboard": {
+   "resultado": "P",
+   "prova": "attendance_dashboard_read; 60"
+  },
+  "attendance.create": {
+   "resultado": "P",
+   "prova": "superadmin_attendance_create_call 200 (d3821901); 61/62"
+  },
+  "attendance.mark": {
+   "resultado": "P",
+   "prova": "set_participant 200 versao 2; 63"
+  },
+  "attendance.finish": {
+   "resultado": "P",
+   "prova": "complete_call 200 closed versao 3; 64/65"
+  },
+  "attendance.correct": {
+   "resultado": "P",
+   "prova": "correct_participant 200 corrected versao 4; 67/68"
+  },
+  "forms.download": {
+   "resultado": "P",
+   "prova": "form-export-download 200 com download_url presignada do R2 apos origem liberada + redeploy; 69"
   }
  },
- "notaRelogio": "a rev 35 registrou 12:58 por engano; o relogio da maquina marcava 12:40",
+ "notaRelogio": "a rev 38 registrou 14:58 por engano (relogio da maquina marcava 14:38); a rev 35 idem (12:58 -> 12:40)",
  "subagentes": [
   {
    "tarefa": "pacote 20260911220100_attendance_superadmin_contract_v1 (14 RPCs do cliente de Assiduidade ausentes em producao: superadmin_attendance_directory/call_detail/create_call/set_participant/correct_participant/complete_call/reopen_call/mark_remaining_present/clear_presence_marks/undo_bulk/confirm_notice e attendance_dashboard_read/ranking_page/request_export) + pgTAP no descartavel",
@@ -1496,6 +1531,11 @@
    "tabela": "public.health_care_profiles",
    "id": "5712371e-d103-4fd2-8cc5-2087fd2cbd81",
    "nota": "perfil de cuidado da crianca d0c4...03 com alergia f3bf4a90"
+  },
+  {
+   "tabela": "public.attendance_sessions",
+   "id": "d3821901-196d-478d-9ea4-70e1c38e8c38",
+   "nota": "chamada da turma 368a5cea em 11/09, corrigida (versao 4); participante a496f56e"
   }
  ],
  "edgeFunctions": [
@@ -1510,7 +1550,7 @@
  ],
  "miniRevisao": {
   "quando": "2026-09-11T14:58-03:00",
-  "sha_final": "a1ca952cc (work/etapa2-r05-formularios-cuidado-rotina, publicado; status limpo apos este commit de docs; sem WIP retido)",
+  "sha_final": "a1ca952cc de codigo + este commit de docs (rev 39), publicados; status limpo; sem WIP",
   "fechou": [
    "forms.publish, forms.overview (rev 37, ja aplicados: verified-e2e)",
    "forms.monitor, forms.respond, forms.responses, forms.response-detail: verified-e2e (deltas rev 37)",
@@ -1520,14 +1560,15 @@
    "forms.responses.export: BE done (XLSX em R2), FE verified; download com gate de origem",
    "attendance.*: BE remote-green (contrato 220100 em producao, pgTAP 141/141)",
    "daily-routine.create: card Criar e editor editavel (local-green) apos 220000; save corrigido",
-   "form-media em R2 (implantada), spec P32, achado do cron (sem correcao)"
+   "form-media em R2 (implantada), spec P32, achado do cron (sem correcao)",
+   "attendance.dashboard/create/mark/finish/correct: verified-e2e (deltas-3)",
+   "forms.responses.export e forms.download: verified-e2e (XLSX no R2 privado com URL curta)"
   ],
   "aberto_primeiro_gate": [
    "daily-routine.create/edit/apply/publish: prova do save no build 7 (a1ca952cc)",
    "medication.create/detail/edit/evidence: seletor de hora + responsaveis (FE)",
-   "forms.download/upload/resolve-file/expire-file/delete-file: origem no COELO_ALLOWED_ORIGINS (download) e cliente Dart do question-image (upload)",
    "forms.location-answer: exige formulario com item Local publicado (220800 em producao); nao exercitado",
-   "attendance.dashboard/create/mark/correct/finish: rota real com 220100"
+   "forms.upload/resolve-file/expire-file/delete-file: cliente Dart do editor no ramo question-image da form-media (FE) e prova do cron de limpeza"
   ],
   "duvidas_ao_owner": [
    "Medicacao deve ter abas de status como Perfis de cuidado? (herdada da R04)",
