@@ -22,7 +22,9 @@ String? _profileNameError(String? value) =>
 String? _profileCodeError(String? value) {
   final code = value?.trim() ?? '';
   if (code.isEmpty) return 'Informe o código.';
-  if (!RegExp(r'^[a-z][a-z0-9._]*$').hasMatch(code)) {
+  // Hifen aceito: o servidor gera codigos como professor-qa-r05-19fa6f3d e a
+  // edicao de um perfil existente nao pode falhar na validacao do cliente.
+  if (!RegExp(r'^[a-z][a-z0-9._-]*$').hasMatch(code)) {
     return 'Use o formato exemplo.perfil.';
   }
   return null;
