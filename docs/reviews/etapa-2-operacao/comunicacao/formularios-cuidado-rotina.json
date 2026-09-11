@@ -1,15 +1,15 @@
 {
- "revision": 39,
+ "revision": 40,
  "round": "E2-R05-20260911",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5 (Claude, Opus, esforco medio)",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T15:06-03:00",
+ "updatedAt": "2026-09-11T15:12-03:00",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-formularios-cuidado-rotina",
  "branch": "work/etapa2-r05-formularios-cuidado-rotina",
- "head": "a1ca952cc + rev 39 (publicado)",
+ "head": "a1ca952cc + rev 40 (publicado)",
  "base": "origin/dev 2f6a6114f",
  "scope": {
   "families": [
@@ -40,13 +40,11 @@
   ]
  },
  "currentGate": {
-  "gate": "entrega principal fechada; restam provas na rota real que dependem do build 7 (rotina save) e do harness (XLSX download na origem 3000; Chrome/SwiftShader caindo a cada ~20 min)",
-  "screen": "Etapa 2 -> apps/superadmin -> Formularios / Seguranca infantil / Cuidado / Medicacao / Rotina / Assiduidade",
+  "gate": "recorte entregue; a partir de 15:15 so provas extras (daily-routine.apply/publish) enquanto o Chrome aguentar; revisao das 15:50 sera respondida no JSON",
+  "screen": "Etapa 2 -> apps/superadmin -> Acompanhamento -> Rotina diaria",
   "actionIds": [
-   "daily-routine.create",
-   "forms.download",
-   "medication.create",
-   "attendance.dashboard"
+   "daily-routine.apply",
+   "daily-routine.publish"
   ]
  },
  "loopAgendado": "/loop 15m, agendado na abertura (12:12)",
@@ -56,7 +54,8 @@
  "deltaProposals": [
   "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/deltas-r05-fcr.json (16, rev 37, ja aplicados pelo coordenador)",
   "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/deltas-r05-fcr-2.json (29, rev 38; ensaiado com apply-tracker-delta + validate-trackers PASS e revertido)",
-  "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/deltas-r05-fcr-3.json (16, rev 39: attendance.dashboard/create/mark/finish/correct verified-e2e; forms.responses.export BE done com gate de deploy da form-export-download)"
+  "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/deltas-r05-fcr-3.json (16, rev 39: attendance.dashboard/create/mark/finish/correct verified-e2e; forms.responses.export BE done com gate de deploy da form-export-download)",
+  "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/deltas-r05-fcr-4.json (5, rev 40: daily-routine.create verified-e2e; daily-routine.edit FE verified + BE done)"
  ],
  "packages": [
   {
@@ -1453,8 +1452,8 @@
    "prova": "etapas 1-2 preenchidas (51/52); seletor de hora nao fecha ao Aplicar e o Chrome caiu; Responsavel sem opcoes"
   },
   "daily-routine.create": {
-   "resultado": "parcial",
-   "prova": "card Criar modelo aparece (57); editor editavel (58/59); save 22P02 -> a1ca952cc; prova do save no build 7"
+   "resultado": "P",
+   "prova": "superadmin_routine_save_model 200 (176882c5) no build 7; lista e edicao reabrem o modelo; 57/58/59/70/71"
   },
   "attendance.dashboard": {
    "resultado": "P",
@@ -1479,6 +1478,10 @@
   "forms.download": {
    "resultado": "P",
    "prova": "form-export-download 200 com download_url presignada do R2 apos origem liberada + redeploy; 69"
+  },
+  "daily-routine.edit": {
+   "resultado": "P (leitura) ",
+   "prova": "edit?kind=model abre com detail 200 e Salvar; save de edicao nao exercitado; 71"
   }
  },
  "notaRelogio": "a rev 38 registrou 14:58 por engano (relogio da maquina marcava 14:38); a rev 35 idem (12:58 -> 12:40)",
@@ -1536,6 +1539,11 @@
    "tabela": "public.attendance_sessions",
    "id": "d3821901-196d-478d-9ea4-70e1c38e8c38",
    "nota": "chamada da turma 368a5cea em 11/09, corrigida (versao 4); participante a496f56e"
+  },
+  {
+   "tabela": "public.routine_models",
+   "id": "176882c5-e35f-4db9-b763-dc7ffe31b276",
+   "nota": "Modelo R05 rota real (instituicao d0c4...01), rascunho"
   }
  ],
  "edgeFunctions": [
@@ -1550,7 +1558,7 @@
  ],
  "miniRevisao": {
   "quando": "2026-09-11T14:58-03:00",
-  "sha_final": "a1ca952cc de codigo + este commit de docs (rev 39), publicados; status limpo; sem WIP",
+  "sha_final": "a1ca952cc de codigo + este commit de docs (rev 40), publicados; status limpo; sem WIP",
   "fechou": [
    "forms.publish, forms.overview (rev 37, ja aplicados: verified-e2e)",
    "forms.monitor, forms.respond, forms.responses, forms.response-detail: verified-e2e (deltas rev 37)",
@@ -1562,13 +1570,14 @@
    "daily-routine.create: card Criar e editor editavel (local-green) apos 220000; save corrigido",
    "form-media em R2 (implantada), spec P32, achado do cron (sem correcao)",
    "attendance.dashboard/create/mark/finish/correct: verified-e2e (deltas-3)",
-   "forms.responses.export e forms.download: verified-e2e (XLSX no R2 privado com URL curta)"
+   "forms.responses.export e forms.download: verified-e2e (XLSX no R2 privado com URL curta)",
+   "daily-routine.create: verified-e2e; daily-routine.edit: FE verified + BE done (deltas-4)"
   ],
   "aberto_primeiro_gate": [
-   "daily-routine.create/edit/apply/publish: prova do save no build 7 (a1ca952cc)",
    "medication.create/detail/edit/evidence: seletor de hora + responsaveis (FE)",
    "forms.location-answer: exige formulario com item Local publicado (220800 em producao); nao exercitado",
-   "forms.upload/resolve-file/expire-file/delete-file: cliente Dart do editor no ramo question-image da form-media (FE) e prova do cron de limpeza"
+   "forms.upload/resolve-file/expire-file/delete-file: cliente Dart do editor no ramo question-image da form-media (FE) e prova do cron de limpeza",
+   "daily-routine.apply/publish: criar aplicacao (aba Rotinas) e lancamento a partir do modelo 176882c5 (nao exercitado; RPCs do lote 2 em producao)"
   ],
   "duvidas_ao_owner": [
    "Medicacao deve ter abas de status como Perfis de cuidado? (herdada da R04)",
