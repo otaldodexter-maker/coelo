@@ -447,3 +447,8 @@ enabled = true
 # O handler autentica usuarios e o worker de limpeza por segredo proprio.
 [functions.moments-media]
 verify_jwt = false
+
+# Anexos do chat interno (R05): autentica usuarios pelo JWT no proprio handler e
+# o cron de expiracao por x-worker-secret (CHAT_MEDIA_WORKER_SECRET).
+[functions.chat-media]
+verify_jwt = false
