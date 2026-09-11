@@ -75,3 +75,17 @@ e é a única forma de reconstruir o espelho. Candidatos retidos por decisão do
 Owner ficam em `candidatos/<grupo>/` com o sufixo `RETIDO-Pnn` no nome.
 Dados sintéticos das provas (prefixos `[R04-QA]`, `9f040000-`, `d0c40000-`
 e o usuário `qa-r03@coelo.me`) só saem de produção com a limpeza aprovada.
+
+Fechamento da Rodada 5 (11/09/2026 à tarde, ADR 0034 Decisão 17): mais 20
+lotes (28 a 47) e 37 pacotes, com o mesmo rito; o espelho local é reconstruído
+por `db reset` da baseline seguido do `psql` de cada arquivo da ordem real
+sempre que um pacote devolvido já tinha entrado nele. Regras medidas: a prova
+de um grupo inclui os lotes que os outros grupos publicaram depois da abertura;
+as pontes de ator espelham identidades internas como pessoas de serviço
+(`person_type = 'service'`), que nunca são destinatárias de notificação nem
+"equipe"; a membership escopada espelhada sem escopo é uma pendência de
+revisão profunda (corrigida na Agenda pelo lote 44); `DELETE`/`UPDATE` dentro
+de função sempre com `WHERE`, porque o `pg_safeupdate` do PostgREST bloqueia o
+que o pgTAP via psql deixa passar; uma única frente é dona de cada Edge
+Function; a sessão do `qa-r03` é única para todas as frentes e um Sair global
+derruba as demais, por isso a Rodada 6 terá um usuário sintético por grupo.
