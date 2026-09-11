@@ -44,7 +44,11 @@ e builds so quando a memoria permitiu (um build feito as 02:19).
 | 171500 backfill do acompanhamento D1 | 16 | pgTAP 5/5 |
 | 171600 papeis de sistema de instituicao (Administrador, Coordenacao, Professor(a), Secretaria) | RETIDO ate P31 | pgTAP 7/7 |
 | 171700 detalhe de perfil v3 (rascunho em branco + forma rica que o cliente le) | pronto para aplicar (rev 106) | pgTAP 37/37 |
-| 171800 decisao de retirada pelo Superadmin com child_safety.manage | RETIDO ate P32 (b) | pgTAP proprio (ver JSON) |
+| 171800 decisao de retirada pelo Superadmin com child_safety.manage | RETIDO ate P32 (b) | pgTAP 25/25 |
+| 171900 cast do enum em child_safety_decide_authorization (defeito de producao: nenhum ator persistia decisao) | pronto para aplicar (rev 108) | pgTAP 4/4 (RED antes) |
+
+Cliente (3682673da): o rascunho de perfil passa a enviar `capabilities`
+[{code, effect}] como o servidor le; antes o perfil era salvo sem concessao.
 
 Perguntas ao Owner registradas no JSON: P31 (papeis padrao de instituicao)
 e P32 (quem decide autorizacoes de retirada em Seguranca infantil).
