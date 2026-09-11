@@ -89,6 +89,7 @@ final class _AgendaEventFormPageState extends State<_AgendaEventFormBody> {
   late bool _allDay;
   late String _timeZoneId;
   late String _context;
+  String? _contextId;
   late Set<String> _audience;
   late String _recurrence;
   String _recurrenceEnd = 'Em uma data';
@@ -125,6 +126,7 @@ final class _AgendaEventFormPageState extends State<_AgendaEventFormBody> {
     _allDay = _existing?.allDay ?? false;
     _timeZoneId = _existing?.timeZoneId ?? 'America/Sao_Paulo';
     _context = _contextFor(_existing?.audience);
+    _contextId = _contextIdFor(_existing?.audience);
     _audience = _existing?.audienceLabels.isNotEmpty == true
         ? {..._existing!.audienceLabels}
         : {'Responsáveis'};
@@ -188,6 +190,7 @@ final class _AgendaEventFormPageState extends State<_AgendaEventFormBody> {
       _allDay = item.allDay;
       _timeZoneId = item.timeZoneId;
       _context = _contextFor(item.audience);
+      _contextId = _contextIdFor(item.audience);
       _audience = item.audienceLabels.isEmpty ? {'Responsáveis'} : {...item.audienceLabels};
       _recurrence = _recurrenceLabel(item.recurrence);
       _recurrenceEnd = item.recurrence?.occurrenceCount == null
@@ -405,19 +408,27 @@ final class _AgendaEventFormPageState extends State<_AgendaEventFormBody> {
     });
   }
 
+  AgendaContextLevel? _selectedLevel() => switch (_context) {
+    'Instituição' => AgendaContextLevel.institution,
+    'Unidade' => AgendaContextLevel.unit,
+    'Turma' => AgendaContextLevel.group,
+    'Atividade' => AgendaContextLevel.activity,
+    _ => null,
+  };
+
+  List<AgendaContext> _contextsOfLevel() {
+    final level = _selectedLevel();
+    if (level == null) return const [];
+    return widget.store.contexts.where((context) => context.level == level).toList(growable: false);
+  }
+
   AgendaContext? _selectedContext() {
-    final level = switch (_context) {
-      'Instituição' => AgendaContextLevel.institution,
-      'Unidade' => AgendaContextLevel.unit,
-      'Turma' => AgendaContextLevel.group,
-      'Atividade' => AgendaContextLevel.activity,
-      _ => null,
-    };
-    if (level == null) return null;
-    for (final context in widget.store.contexts) {
-      if (context.level == level) return context;
+    final candidates = _contextsOfLevel();
+    if (candidates.isEmpty) return null;
+    for (final context in candidates) {
+      if (context.id == _contextId) return context;
     }
-    return null;
+    return candidates.first;
   }
 
   AgendaAudience _resolvedAudience(String institutionId) {
@@ -578,9 +589,24 @@ final class _AgendaEventFormPageState extends State<_AgendaEventFormBody> {
       value: _context,
       options: _contexts,
       optionLabel: (value) => value,
-      onChanged: (value) => setState(() => _context = value),
+      onChanged: (value) => setState(() {
+        _context = value;
+        _contextId = null;
+      }),
       prefixIcon: Icons.account_tree_outlined,
     ),
+    // Achado R05 (agenda.location): o nível sozinho escolhia o primeiro
+    // contexto daquele nível; com mais de um, o operador escolhe qual.
+    if (_contextsOfLevel().length > 1)
+      CoeloAdminSingleSelectField<AgendaContext>(
+        key: const Key('agenda-event-context-target'),
+        label: 'Qual $_context',
+        value: _selectedContext()!,
+        options: _contextsOfLevel(),
+        optionLabel: (value) => value.name,
+        onChanged: (value) => setState(() => _contextId = value.id),
+        prefixIcon: Icons.place_outlined,
+      ),
     CoeloAdminMultiSelectField<String>(
       key: const Key('agenda-event-audience'),
       label: 'Audiência',
@@ -991,6 +1017,14 @@ final class _Fact extends StatelessWidget {
       child: Text(value),
     ),
   );
+}
+
+String? _contextIdFor(AgendaAudience? audience) {
+  if (audience == null) return null;
+  if (audience.unitIds.isNotEmpty) return audience.unitIds.first;
+  if (audience.groupIds.isNotEmpty) return audience.groupIds.first;
+  if (audience.activityIds.isNotEmpty) return audience.activityIds.first;
+  return null;
 }
 
 String _contextFor(AgendaAudience? audience) {
