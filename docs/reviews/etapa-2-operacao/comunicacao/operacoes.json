@@ -1,13 +1,13 @@
 {
-  "revision": 28,
-  "updated_at": "2026-09-11T14:19:00-03:00",
+  "revision": 29,
+  "updated_at": "2026-09-11T14:28:00-03:00",
   "round": "E2-R05-20260911",
   "group": "operacoes",
   "tool_model": "Claude, Opus 5 (1M), esforco medio — conversa R05 · Operacoes",
   "conversation": "R05 · Operações",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-operacoes",
   "branch": "work/etapa2-r05-operacoes",
-  "head": "ca040ba49 (+ este commit)",
+  "head": "7b644fa07 (+ este commit)",
   "base": {
     "requested": "origin/dev",
     "resolved": "2f6a6114f",
@@ -237,6 +237,25 @@
         "backend": "local-green (candidato 200100 na fila)",
         "e2e": "N ate o coordenador aplicar"
       }
+    },
+    {
+      "action_ids": [
+        "plans.list",
+        "plans.create",
+        "plans.edit"
+      ],
+      "status": "BE done / E2E verified-e2e propostos (pacote 200000 em producao, lote 39)",
+      "delta": "Backend: superadmin_plans_list/plan_get/plan_save na baseline; pacote 20260911200000_superadmin_plans_platform_scope_v1 APLICADO em producao (lote 39, 13:40) com pgTAP superadmin_plans_behavior_v1_test 40/40 (anonimo 28000, sem plan.change 42501, ator escopado a instituicao 42501 = negativa de outro tenant, authenticated sem leitura direta, replay por request_id, conflito 40001) e superadmin_plans_production_test 13/13. Rota real apos o pacote: /plans lista (superadmin_plans_list 200, captura 48).",
+      "proof": "captura 48; ordem-de-aplicacao-producao.txt em origin/dev (lote 39)"
+    },
+    {
+      "action_ids": [
+        "support.close",
+        "support.detail"
+      ],
+      "status": "pendencia de responsaveis fechada na rota real (pacote 200100 em producao)",
+      "delta": "R05 (11/09 14:25, rota real com qa-r03, pacote 20260911200100 em producao): Responsaveis deixam de ser lista fixa: superadmin_support_team_members 200 lista a equipe real (pessoas de servico da ponte + Owner), Responsaveis -> Operador interno 41462594 -> superadmin_support_set_assignee 200; reload e reabertura do chamado mostram o responsavel persistido (superadmin_support_get 200 com assignee_membership_id). pgTAP superadmin_support_assignees_v1_test 28/28. Pendencia 'Responsaveis sao prototipo (defaultTeamMembers, sem RPC)' fechada.",
+      "proof": "capturas 80-84; RPCs superadmin_support_team_members/set_assignee/get 200"
     }
   ],
   "tests": {
@@ -269,6 +288,10 @@
     {
       "file": "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-audit-export-theme.json",
       "summary": "audit.export FE verified (adiado honesto); account.theme FE verified (2 deltas)"
+    },
+    {
+      "file": "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-plans-done-support-assignee.json",
+      "summary": "plans.list/create/edit BE done + E2E verified-e2e (6); support.close/detail recertificados com responsavel persistido (6)"
     }
   ],
   "packages_ready": [
@@ -276,23 +299,16 @@
       "path": "packages/coelo_database/candidatos/operacoes/20260911200000_superadmin_plans_platform_scope_v1.sql",
       "pgtap": "superadmin_plans_behavior_v1_test 40/40; superadmin_plans_production_test 13/13 (descartavel coelo_ops_r05: baseline + 107 migrations na ordem de producao)",
       "composition_key": "nenhuma (gate do cliente ja ligado em fab9b9fd0 pelo repositorio composto)",
-      "state": "pronto para o coordenador aplicar; depois: plans.list/create/edit BE done e E2E verified-e2e (FE ja provado)"
+      "state": "APLICADO em producao pelo coordenador (lote 39, 13:40)"
     },
     {
       "path": "packages/coelo_database/candidatos/operacoes/20260911200100_superadmin_support_assignees_v1.sql",
       "pgtap": "pgTAP superadmin_support_assignees_v1_test 28/28; support_production 23/23; support_create_internal_scope 17/17 (descartavel coelo_ops_r05)",
       "composition_key": "nenhuma (cliente ja consome; ate aplicar, a lista de equipe vem vazia e o menu de responsaveis fica sem opcoes, honesto)",
-      "state": "pronto para o coordenador aplicar depois do 200000; depois: support.close E2E reconfirmado com responsavel persistido"
+      "state": "APLICADO em producao (RPCs respondem 200 na rota real as 14:25); confirmar registro no ordem-de-aplicacao-producao.txt"
     }
   ],
   "questions_to_owner": [
-    {
-      "id": "G-SUP-R05",
-      "kind": "visual",
-      "what": "Aprovar os 16 goldens claros de Suporte regravados (colunas no mesmo eixo; detalhe 1024 sob a toolbar como a referencia R). Responder por arquivo: nome - decisao, observacao.",
-      "page": "https://claude.ai/code/artifact/7737ccf7-1489-4d67-ba5f-858c051150d2",
-      "fallback": "docs/reviews/evidence/etapa-2/r05-operacoes/g-sup/pagina-lado-a-lado-suporte.html"
-    },
     {
       "id": "P43-account-sessions",
       "kind": "produto",
@@ -329,7 +345,8 @@
     "0a7507fee",
     "36474dc92",
     "ca040ba49 (pacote + lookups seguros)",
-    "44c556630"
+    "44c556630",
+    "7b644fa07"
   ],
   "r04_history": {
     "revision": 20,
@@ -942,8 +959,20 @@
       "action_id": "shell.navigate",
       "tipo": "teste-pre-existente",
       "o_que": "prototype_navigation_routes_test falha com Bad state: No element tambem em origin/dev limpo (worktree detach 11/09 13:20); nao e do composto."
+    },
+    {
+      "action_id": "support.close",
+      "tipo": "fechada",
+      "o_que": "Responsaveis de lista fixa sem RPC: fechada (pacote 200100 + cliente 36474dc92/ca040ba49); a antiga chamada antes da sessao (401 em /login) tambem fechada em 13be50ae8."
     }
   ],
   "nota_relogio": "carimbos das revs 23-25 estavam adiantados ate 40 min (13:05 -> 12:57 real; 13:35/13:40 -> 13:20; 14:20 -> 13:41); os horarios nos deltas seguem o relogio da maquina a partir da rev 26.",
-  "incidente": "14:15: a conversa foi reiniciada (processo encerrado); nada perdido: tudo publicado ate 44c556630. Loop reagendado, build web refeito, servidor e Chrome reabertos."
+  "incidente": "14:15: a conversa foi reiniciada (processo encerrado); nada perdido: tudo publicado ate 44c556630. Loop reagendado, build web refeito, servidor e Chrome reabertos.",
+  "aprovacao_visual_owner_r05": {
+    "quando": "11/09/2026 ~14:25, pela coordenacao",
+    "texto": "esta tudo aprovado, ficou legal",
+    "escopo": "pagina G-SUP: 16 goldens claros de Suporte (kanban/table/detail 375/768/1024/1440 + 4 escalados) e 4 plan_table_light_* regravados apos o alinhamento das celulas no composto; escuros seguem o claro",
+    "efeito": "ownerVisualApproval=A (atual) para support_kanban_light_*, support_table_light_*, support_detail_light_* (inclusive support_detail_light_1024, que voltou a estrutura R) e plan_table_light_*; nao altera verified/done/E2E",
+    "fonte": "docs/reviews/evidence/etapa-2/r05-operacoes/g-sup/pagina-lado-a-lado-suporte.html"
+  }
 }
