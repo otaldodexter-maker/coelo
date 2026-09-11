@@ -40,3 +40,16 @@ status: "proposta ao coordenador (escritor central das skills)"
   Perfis, Arquivos, Identidade da instituição) recebe `SAI_PERMISSION_DENIED`/
   42501 até o backend passar a decidir por contexto; hoje não existe usuário
   assim em produção. Registrar como `fail-closed`, não como defeito da tela.
+
+## `coelo-backend` — regra aprendida com o lote 50 (20:12)
+
+- **Pacote marcado "pronto" não muda de conteúdo.** A frente marcou
+  `20260912210000` como pronto na rev 40 e corrigiu o arquivo na rev 42; o
+  coordenador aplicou a rev 40 em produção antes de ler a 42, e a correção
+  virou hotfix (`20260912210100`) com reativação de dados. Regra: só marcar
+  "pronto" depois da regressão comparada; qualquer mudança depois disso nasce
+  em arquivo novo com carimbo novo, nunca por edição do mesmo arquivo. O JSON
+  registra o SHA exato do arquivo que o coordenador deve aplicar.
+- **Reconciliação que desativa dados nunca filtra por status da instituição.**
+  Instituições em rascunho/arquivadas guardam memberships sintéticas válidas
+  (lote 27, P42); a reconciliação decide só por escopo.

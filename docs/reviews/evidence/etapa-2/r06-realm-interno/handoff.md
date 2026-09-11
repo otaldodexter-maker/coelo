@@ -109,3 +109,16 @@ revisão profunda: validar o CHECK e reduzi-lo a `'instructor'`.
 ## Segredos criados
 
 Nenhum nesta rodada.
+
+## Adendo (20:20) — lote 50 e hotfix
+
+O coordenador aplicou `20260912210000` em produção no lote 50 (20:12) na versão
+da rev 40 (`fc8094553`), cuja reconciliação filtrava instituições ativas e
+desativou 7 memberships de espelho de plataforma em `qa-r04-escola` (rascunho;
+os `qa-r06-*` do lote 49). O hotfix
+`candidatos/realm-interno/20260912210100_internal_actor_scope_root_v1_hotfix.sql`
+instala a versão final (rev 42) e reativa essas memberships
+(`superadmin_internal_actor_scope_reactivate_v1`, idempotente); pgTAP
+`internal_actor_scope_root_v1_hotfix_test` 4/4, provado no descartável com a
+versão do lote 50 instalada e o hotfix por cima. Lição registrada em
+`skills-deltas-r06.md`.
