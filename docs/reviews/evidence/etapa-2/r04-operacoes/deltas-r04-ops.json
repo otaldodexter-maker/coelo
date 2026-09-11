@@ -1,0 +1,288 @@
+[
+  {
+    "action_id": "account.profile",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R04 (11/09 03:00, subagente do coordenador, rota real com qa-r03): /profile abre com dados reais; sobrenome editado para \"41462594 [R04-QA]\", salvo (superadmin_account_profile_save 200), reload manteve, restaurado e solicitacao de e-mail cancelada (200). Pendencias registradas: sigla derivada \"O4\" invalida no cliente, e-mail vazio pela ponte sem person_auth_links, celular obrigatorio so no servidor, balao de chat sobre o botao Salvar.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/01-profile-open.png, 02-profile-save-click.png, 02b-profile-validation.png, 03-profile-reload.png, 04-profile-restored.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/01-profile-open.png, 02-profile-save-click.png, 02b-profile-validation.png, 03-profile-reload.png, 04-profile-restored.png",
+      "revision": "comunicacao/operacoes.json rev 18",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r04-operacoes (af294783f) em localhost:3007, sessao qa-r03@coelo.me, Chrome CDP 9407",
+      "recordedAt": "2026-09-11T03:00:12-03:00"
+    }
+  },
+  {
+    "action_id": "account.profile",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R04 (11/09 03:00, subagente do coordenador, rota real com qa-r03): superadmin_account_profile_get/save/email_change_cancel 200 em producao com a sessao qa-r03 (lote 7, pgTAP superadmin_account_profile_v1 16/16).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/01-profile-open.png, 02-profile-save-click.png, 02b-profile-validation.png, 03-profile-reload.png, 04-profile-restored.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/01-profile-open.png, 02-profile-save-click.png, 02b-profile-validation.png, 03-profile-reload.png, 04-profile-restored.png",
+      "revision": "comunicacao/operacoes.json rev 18",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r04-operacoes (af294783f) em localhost:3007, sessao qa-r03@coelo.me, Chrome CDP 9407",
+      "recordedAt": "2026-09-11T03:00:12-03:00"
+    }
+  },
+  {
+    "action_id": "account.profile",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R04 (11/09 03:00, subagente do coordenador, rota real com qa-r03): rota normal abre, CRUD persiste em producao, RLS coberta pelo pgTAP do lote 7/10, reload mantem. /profile abre com dados reais; sobrenome editado para \"41462594 [R04-QA]\", salvo (superadmin_account_profile_save 200), reload manteve, restaurado e solicitacao de e-mail cancelada (200). Pendencias registradas: sigla derivada \"O4\" invalida no cliente, e-mail vazio pela ponte sem person_auth_links, celular obrigatorio so no servidor, balao de chat sobre o botao Salvar.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/01-profile-open.png, 02-profile-save-click.png, 02b-profile-validation.png, 03-profile-reload.png, 04-profile-restored.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/01-profile-open.png, 02-profile-save-click.png, 02b-profile-validation.png, 03-profile-reload.png, 04-profile-restored.png",
+      "revision": "comunicacao/operacoes.json rev 18",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r04-operacoes (af294783f) em localhost:3007, sessao qa-r03@coelo.me, Chrome CDP 9407",
+      "recordedAt": "2026-09-11T03:00:12-03:00"
+    }
+  },
+  {
+    "action_id": "account.settings",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R04 (11/09 03:00, subagente do coordenador, rota real com qa-r03): /settings abre; Claro + Reduzir animacoes persistem em localStorage e sobrevivem a carga completa nova (Chrome reaberto); restaurado. Persistencia local por desenho (backend not-applicable, E2E flutter-only mantidos).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/05-settings-open.png, 06-settings-edited.png, 07-settings-reload.png, 08-settings-restored.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/05-settings-open.png, 06-settings-edited.png, 07-settings-reload.png, 08-settings-restored.png",
+      "revision": "comunicacao/operacoes.json rev 18",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r04-operacoes (af294783f) em localhost:3007, sessao qa-r03@coelo.me, Chrome CDP 9407",
+      "recordedAt": "2026-09-11T03:00:12-03:00"
+    }
+  },
+  {
+    "action_id": "support.table",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R04 (11/09 03:00, subagente do coordenador, rota real com qa-r03): visao tabela do composto com colunas, banner Criar, chip de status e paginacao; chamado sintetico listado apos reload.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/17-support-table.png, 22-support-table-reload.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/17-support-table.png, 22-support-table-reload.png",
+      "revision": "comunicacao/operacoes.json rev 18",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r04-operacoes (af294783f) em localhost:3007, sessao qa-r03@coelo.me, Chrome CDP 9407",
+      "recordedAt": "2026-09-11T03:00:12-03:00"
+    }
+  },
+  {
+    "action_id": "support.table",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R04 (11/09 03:00, subagente do coordenador, rota real com qa-r03): superadmin_support_list 200 em producao com a sessao qa-r03 (lote 7 + 210000; pgTAP superadmin_support_production 23/23).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/17-support-table.png, 22-support-table-reload.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/17-support-table.png, 22-support-table-reload.png",
+      "revision": "comunicacao/operacoes.json rev 18",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r04-operacoes (af294783f) em localhost:3007, sessao qa-r03@coelo.me, Chrome CDP 9407",
+      "recordedAt": "2026-09-11T03:00:12-03:00"
+    }
+  },
+  {
+    "action_id": "support.table",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R04 (11/09 03:00, subagente do coordenador, rota real com qa-r03): rota normal abre, CRUD persiste em producao, RLS coberta pelo pgTAP do lote 7/10, reload mantem. visao tabela do composto com colunas, banner Criar, chip de status e paginacao; chamado sintetico listado apos reload.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/17-support-table.png, 22-support-table-reload.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/17-support-table.png, 22-support-table-reload.png",
+      "revision": "comunicacao/operacoes.json rev 18",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r04-operacoes (af294783f) em localhost:3007, sessao qa-r03@coelo.me, Chrome CDP 9407",
+      "recordedAt": "2026-09-11T03:00:12-03:00"
+    }
+  },
+  {
+    "action_id": "support.kanban",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R04 (11/09 03:00, subagente do coordenador, rota real com qa-r03): /support abre em cards com busca, Status, Menu, Responsavel, Leitura, toggle, Arquivos e card Criar no vazio; card muda de coluna a cada status e persiste apos reload. Pendencia: visao volta a cards apos reload; Status e dropdown (sem abas).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/10-support-open.png, 13-support-created.png, 18-support-reload.png, 21-support-reload-closed.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/10-support-open.png, 13-support-created.png, 18-support-reload.png, 21-support-reload-closed.png",
+      "revision": "comunicacao/operacoes.json rev 18",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r04-operacoes (af294783f) em localhost:3007, sessao qa-r03@coelo.me, Chrome CDP 9407",
+      "recordedAt": "2026-09-11T03:00:12-03:00"
+    }
+  },
+  {
+    "action_id": "support.kanban",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R04 (11/09 03:00, subagente do coordenador, rota real com qa-r03): superadmin_support_list 200 em producao (kanban e tabela usam a mesma RPC).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/10-support-open.png, 13-support-created.png, 18-support-reload.png, 21-support-reload-closed.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/10-support-open.png, 13-support-created.png, 18-support-reload.png, 21-support-reload-closed.png",
+      "revision": "comunicacao/operacoes.json rev 18",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r04-operacoes (af294783f) em localhost:3007, sessao qa-r03@coelo.me, Chrome CDP 9407",
+      "recordedAt": "2026-09-11T03:00:12-03:00"
+    }
+  },
+  {
+    "action_id": "support.kanban",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R04 (11/09 03:00, subagente do coordenador, rota real com qa-r03): rota normal abre, CRUD persiste em producao, RLS coberta pelo pgTAP do lote 7/10, reload mantem. /support abre em cards com busca, Status, Menu, Responsavel, Leitura, toggle, Arquivos e card Criar no vazio; card muda de coluna a cada status e persiste apos reload. Pendencia: visao volta a cards apos reload; Status e dropdown (sem abas).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/10-support-open.png, 13-support-created.png, 18-support-reload.png, 21-support-reload-closed.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/10-support-open.png, 13-support-created.png, 18-support-reload.png, 21-support-reload-closed.png",
+      "revision": "comunicacao/operacoes.json rev 18",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r04-operacoes (af294783f) em localhost:3007, sessao qa-r03@coelo.me, Chrome CDP 9407",
+      "recordedAt": "2026-09-11T03:00:12-03:00"
+    }
+  },
+  {
+    "action_id": "support.detail",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R04 (11/09 03:00, subagente do coordenador, rota real com qa-r03): painel lateral abre pelo card com id, assunto, status, Equipe, Relatorio original, Historico e compositor. Pendencia: balao de chat sobrepoe o Historico/compositor em 1440x1000.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/14-support-detail.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/14-support-detail.png",
+      "revision": "comunicacao/operacoes.json rev 18",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r04-operacoes (af294783f) em localhost:3007, sessao qa-r03@coelo.me, Chrome CDP 9407",
+      "recordedAt": "2026-09-11T03:00:12-03:00"
+    }
+  },
+  {
+    "action_id": "support.detail",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R04 (11/09 03:00, subagente do coordenador, rota real com qa-r03): superadmin_support_get 200 em producao.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/14-support-detail.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/14-support-detail.png",
+      "revision": "comunicacao/operacoes.json rev 18",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r04-operacoes (af294783f) em localhost:3007, sessao qa-r03@coelo.me, Chrome CDP 9407",
+      "recordedAt": "2026-09-11T03:00:12-03:00"
+    }
+  },
+  {
+    "action_id": "support.detail",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R04 (11/09 03:00, subagente do coordenador, rota real com qa-r03): rota normal abre, CRUD persiste em producao, RLS coberta pelo pgTAP do lote 7/10, reload mantem. painel lateral abre pelo card com id, assunto, status, Equipe, Relatorio original, Historico e compositor. Pendencia: balao de chat sobrepoe o Historico/compositor em 1440x1000.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/14-support-detail.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/14-support-detail.png",
+      "revision": "comunicacao/operacoes.json rev 18",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r04-operacoes (af294783f) em localhost:3007, sessao qa-r03@coelo.me, Chrome CDP 9407",
+      "recordedAt": "2026-09-11T03:00:12-03:00"
+    }
+  },
+  {
+    "action_id": "support.create",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R04 (11/09 03:00, subagente do coordenador, rota real com qa-r03): card Criar suporte -> dialogo Novo chamado -> chamado \"[R04-QA] Chamado de teste\" criado e listado. Residuo sintetico 48e02ab0-fa60-4e7c-86b6-78f75565dc57 para o coordenador remover por SQL (sem RPC de exclusao).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/11-support-create-dialog.png, 12-support-create-filled.png, 13-support-created.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/11-support-create-dialog.png, 12-support-create-filled.png, 13-support-created.png",
+      "revision": "comunicacao/operacoes.json rev 18",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r04-operacoes (af294783f) em localhost:3007, sessao qa-r03@coelo.me, Chrome CDP 9407",
+      "recordedAt": "2026-09-11T03:00:12-03:00"
+    }
+  },
+  {
+    "action_id": "support.create",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R04 (11/09 03:00, subagente do coordenador, rota real com qa-r03): superadmin_support_create 200 em producao (candidato 210000 aplicado: p_institution_id nulo e reason_code preenchido).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/11-support-create-dialog.png, 12-support-create-filled.png, 13-support-created.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/11-support-create-dialog.png, 12-support-create-filled.png, 13-support-created.png",
+      "revision": "comunicacao/operacoes.json rev 18",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r04-operacoes (af294783f) em localhost:3007, sessao qa-r03@coelo.me, Chrome CDP 9407",
+      "recordedAt": "2026-09-11T03:00:12-03:00"
+    }
+  },
+  {
+    "action_id": "support.create",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R04 (11/09 03:00, subagente do coordenador, rota real com qa-r03): rota normal abre, CRUD persiste em producao, RLS coberta pelo pgTAP do lote 7/10, reload mantem. card Criar suporte -> dialogo Novo chamado -> chamado \"[R04-QA] Chamado de teste\" criado e listado. Residuo sintetico 48e02ab0-fa60-4e7c-86b6-78f75565dc57 para o coordenador remover por SQL (sem RPC de exclusao).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/11-support-create-dialog.png, 12-support-create-filled.png, 13-support-created.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/11-support-create-dialog.png, 12-support-create-filled.png, 13-support-created.png",
+      "revision": "comunicacao/operacoes.json rev 18",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r04-operacoes (af294783f) em localhost:3007, sessao qa-r03@coelo.me, Chrome CDP 9407",
+      "recordedAt": "2026-09-11T03:00:12-03:00"
+    }
+  },
+  {
+    "action_id": "support.reply",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R04 (11/09 03:00, subagente do coordenador, rota real com qa-r03): resposta enviada pelo compositor, revision 1 -> 2, Historico mostra support.reply e reload mantem.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/15-support-replied.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/15-support-replied.png",
+      "revision": "comunicacao/operacoes.json rev 18",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r04-operacoes (af294783f) em localhost:3007, sessao qa-r03@coelo.me, Chrome CDP 9407",
+      "recordedAt": "2026-09-11T03:00:12-03:00"
+    }
+  },
+  {
+    "action_id": "support.reply",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R04 (11/09 03:00, subagente do coordenador, rota real com qa-r03): superadmin_support_reply 200 em producao com p_expected_revision.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/15-support-replied.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/15-support-replied.png",
+      "revision": "comunicacao/operacoes.json rev 18",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r04-operacoes (af294783f) em localhost:3007, sessao qa-r03@coelo.me, Chrome CDP 9407",
+      "recordedAt": "2026-09-11T03:00:12-03:00"
+    }
+  },
+  {
+    "action_id": "support.reply",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R04 (11/09 03:00, subagente do coordenador, rota real com qa-r03): rota normal abre, CRUD persiste em producao, RLS coberta pelo pgTAP do lote 7/10, reload mantem. resposta enviada pelo compositor, revision 1 -> 2, Historico mostra support.reply e reload mantem.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/15-support-replied.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/15-support-replied.png",
+      "revision": "comunicacao/operacoes.json rev 18",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r04-operacoes (af294783f) em localhost:3007, sessao qa-r03@coelo.me, Chrome CDP 9407",
+      "recordedAt": "2026-09-11T03:00:12-03:00"
+    }
+  },
+  {
+    "action_id": "support.close",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R04 (11/09 03:00, subagente do coordenador, rota real com qa-r03): status Novo -> Em andamento (exige responsavel da lista fixa; nao persistido) -> Concluido; reload mostra Concluido. Pendencia: Responsaveis sao prototipo (defaultTeamMembers, sem RPC).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/16-support-status-in-progress.png, 20-support-closed.png, 21-support-reload-closed.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/16-support-status-in-progress.png, 20-support-closed.png, 21-support-reload-closed.png",
+      "revision": "comunicacao/operacoes.json rev 18",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r04-operacoes (af294783f) em localhost:3007, sessao qa-r03@coelo.me, Chrome CDP 9407",
+      "recordedAt": "2026-09-11T03:00:12-03:00"
+    }
+  },
+  {
+    "action_id": "support.close",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R04 (11/09 03:00, subagente do coordenador, rota real com qa-r03): superadmin_support_set_status 200 (in_progress e completed) em producao com p_expected_revision.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/16-support-status-in-progress.png, 20-support-closed.png, 21-support-reload-closed.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/16-support-status-in-progress.png, 20-support-closed.png, 21-support-reload-closed.png",
+      "revision": "comunicacao/operacoes.json rev 18",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r04-operacoes (af294783f) em localhost:3007, sessao qa-r03@coelo.me, Chrome CDP 9407",
+      "recordedAt": "2026-09-11T03:00:12-03:00"
+    }
+  },
+  {
+    "action_id": "support.close",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R04 (11/09 03:00, subagente do coordenador, rota real com qa-r03): rota normal abre, CRUD persiste em producao, RLS coberta pelo pgTAP do lote 7/10, reload mantem. status Novo -> Em andamento (exige responsavel da lista fixa; nao persistido) -> Concluido; reload mostra Concluido. Pendencia: Responsaveis sao prototipo (defaultTeamMembers, sem RPC).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/16-support-status-in-progress.png, 20-support-closed.png, 21-support-reload-closed.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/16-support-status-in-progress.png, 20-support-closed.png, 21-support-reload-closed.png",
+      "revision": "comunicacao/operacoes.json rev 18",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r04-operacoes (af294783f) em localhost:3007, sessao qa-r03@coelo.me, Chrome CDP 9407",
+      "recordedAt": "2026-09-11T03:00:12-03:00"
+    }
+  }
+]
