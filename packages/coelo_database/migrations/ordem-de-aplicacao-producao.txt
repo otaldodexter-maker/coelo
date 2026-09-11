@@ -205,3 +205,5 @@
 20260912180000_structure_handles_client_v1.sql
 # lote 52 (11/09 20:35) - R06 realm-interno: HOTFIX do lote 50 (escopo sem filtro de status; reativa as 7 memberships de espelho de qa-r04-escola)
 20260912210100_internal_actor_scope_root_v1_hotfix.sql
+# lote 53 (11/09 20:55) - R06 operacoes: e-mail da pessoa de servico no perfil da Conta
+20260911200300_account_profile_service_person_email_v1.sql
