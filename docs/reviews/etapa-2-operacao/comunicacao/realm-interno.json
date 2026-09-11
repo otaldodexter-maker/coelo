@@ -1,15 +1,15 @@
 {
   "grupo": "realm-interno",
-  "revision": 18,
+  "revision": 19,
   "round": "E2-R05-20260911",
-  "updatedAt": "2026-09-11T12:43-03:00",
+  "updatedAt": "2026-09-11T12:51-03:00",
   "app": "Claude",
   "modelo": "Opus 5 (esforco medio)",
   "conversa": "R05 · Realm interno e Chat backend",
   "coordenador": "R05 · Coordenação da tarde (coordenacao.json)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-realm-interno",
   "branch": "work/etapa2-r05-realm-interno",
-  "head": "ab6f0e3a0",
+  "head": "ceff25a81",
   "upstream": "origin/work/etapa2-r05-realm-interno (push no primeiro commit)",
   "historicoR04": {
     "miniRevisao": {
@@ -194,10 +194,10 @@
     ],
     "foraDoRecorte": "UI (estrutura, formularios, principal-chat), aplicacao em producao (coordenador), Cloudflare com custo"
   },
-  "primeiroGate": "(4) forms_files: contrato de upload/resolve/download/expire/delete no R2 sobre private_media_catalog (form-image) e form_file_jobs; medir o que 230007/230008/230011 ja tem",
+  "primeiroGate": "(5) P36 no servidor: constraints/triggers que impedem unidade sem instituicao, turma sem unidade, atividade sem turma; medir o que a baseline ja garante",
   "provaLocal": "projeto descartavel coelo_realm_r05 (portas 625xx) em preparacao: baseline + seed + ordem-de-aplicacao-producao.txt via psql do container",
   "testes": {
-    "pgTAP": "38 + 12 + 28 = 78 PASS / 0 FAIL nesta rodada"
+    "pgTAP": "38 + 12 + 28 + 25 = 103 PASS / 0 FAIL nesta rodada"
   },
   "bloqueio": null,
   "pedidosAoCoordenador": [],
@@ -232,20 +232,32 @@
       "dependeDe": "240000..240400 e 220400 em producao (ja estao)",
       "chaveDeComposicao": "Edge Function chat-media (a escrever/implantar no padrao de moments-media: PUT assinado, HEAD+sha256 no finalize, GET assinado no read; COELO_R2_* dos secrets) + cron de expire; cliente do principal-chat-sistema liga o picker a prepare/finalize/read",
       "estado": "pronto para o coordenador aplicar (SQL); a Edge Function e o cron ficam registrados como gate de chat.attach"
+    },
+    {
+      "ordem": 4,
+      "arquivo": "packages/coelo_database/candidatos/realm-interno/20260911210300_forms_question_media_r2_v1.sql",
+      "assunto": "forms_files (question-image) no R2 sobre o catalogo 230007: prepare/authorize_finalize (authenticated, forms.manage), finalize/expire/claim_cleanup/mark_purged (service_role), resolve (forms.read) e delete (forms.manage); tickets e fila de limpeza em app_private",
+      "pgTAP": "supabase/tests/forms_question_media_r2_v1_test.sql 25/25; forms_superadmin_media_read_r2_v1_test 82/82 segue verde",
+      "commit": "ceff25a81",
+      "dependeDe": "230004, 230007, 230011 em producao (ja estao)",
+      "chaveDeComposicao": "Edge Function form-media: trocar os ramos prepare/finalize/download/discard (hoje Supabase Storage FORMS_BUCKET) para R2 chamando estas RPCs (PUT assinado, HEAD+sha256+dimensoes no finalize, GET assinado no resolve) + cron de expire e worker de limpeza; cliente da frente formularios consome",
+      "estado": "pronto para o coordenador aplicar (SQL); Edge Function/cron ficam como gate de forms.upload/resolve-file/download/expire-file/delete-file"
     }
   ],
   "pendenciasRegistradas": [
     "superadmin_internal_institution_edit_core_test: 7 falhas pre-existentes no espelho de producao (MFA fora do MVP: testes 31/44 esperam AAL2; 24/27/28/38/39 dependem do fluxo antigo) - atualizar a suite na revisao profunda",
     "superadmin_internal_chat_groups_v1_test: erro 'activity actor provenance denied' na fixture de atividades, pre-existente no espelho (180020-180080 mudaram a provenance); suite precisa de fixture nova",
     "institution_directory (view) continua sem SELECT em plans para authenticated: leitura direta falha; cliente le por RPC; decisao de code review (grant em plans ou remover grant da view)",
-    "chat.attach: Edge Function chat-media e cron de expire nao fazem parte deste pacote SQL"
+    "chat.attach: Edge Function chat-media e cron de expire nao fazem parte deste pacote SQL",
+    "forms_files: answer-image (uploads de resposta) continua em form_assets + Supabase Storage no form-media; migrar para R2 e o proximo pacote (prepare/finalize anonimos com secret hash)"
   ],
   "deltaPropostoBE": {
     "institutions.edit": "backend done quando a estrutura persistir e recarregar na rota real (SQL ja em producao, lote 28)",
-    "chat.attach": "backend local-green (contrato + pgTAP); done apos aplicar + Edge Function chat-media"
+    "chat.attach": "backend local-green (contrato + pgTAP); done apos aplicar + Edge Function chat-media",
+    "forms.upload/resolve-file/download/expire-file/delete-file": "backend local-green (contrato + pgTAP) para question-image; done apos aplicar + form-media em R2"
   },
   "loop": "cron 9ded10f6 a cada 15 min ate 15:45",
-  "status": "em andamento; itens 1-3 entregues, item 4 em curso",
+  "status": "em andamento; itens 1-4 entregues, item 5 em curso",
   "contratoInstitutionContacts": {
     "rpc": "public.superadmin_institution_contacts_edit_v1(p_request_id uuid, p_institution_id uuid, p_expected_version bigint, p_payload jsonb) -> envelope {ok,data,error}",
     "capacidade": "institution.update; platform_role owner|operations; scope institution so a propria instituicao (outro tenant -> SAI_PERMISSION_DENIED, auditado)",
@@ -290,5 +302,27 @@
     ],
     "thread": "superadmin_chat_thread_v2 ja devolve attachments[{id,file_name,content_type,byte_size,sha256,upload_status}] (240100/240200); nada muda na assinatura",
     "gateRestante": "Edge Function chat-media (deploy do coordenador; sem custo no nivel gratuito do R2) e cron de expire; ate la chat.attach fica backend local-green com contrato publicado"
+  },
+  "contratoFormsFiles": {
+    "escopo": "imagem de pergunta (question-image) na autoria do Superadmin; answer-image (respostas) continua no fluxo legado form_assets + superadmin_form_authorize_media_read_v2 (230011) - migrar para R2 e pendencia registrada",
+    "rpcs": {
+      "superadmin_form_media_prepare_v2(p_request_id uuid, p_form_id uuid, p_form_version_id uuid, p_item_id uuid, p_mime_type text, p_byte_size bigint, p_sha256 text)": "forms.manage; formulario criado no realm interno e no escopo; data {asset_id, form_id, object_key, bucket:'coelo-media-prod', mime_type, byte_size, sha256, status:'pending', finalize_ticket, expires_at(+30min), replayed}; cria media_assets(form-image/question-image) + media_bindings(posicao seguinte do item) + ticket; idempotente por (identidade, request_id)",
+      "superadmin_form_media_authorize_finalize_v2(p_asset_id uuid)": "forms.manage, so a autora do ticket; data {asset_id, object_key, bucket, mime_type, finalize_ticket, expires_at}",
+      "form_media_finalize_question_r2_v1(p_asset_id uuid, p_finalize_ticket uuid, p_byte_size bigint, p_checksum_sha256 text, p_pixel_width int, p_pixel_height int)": "service_role (Edge Function apos medir o objeto); iguais ao anunciado e ate 2560px -> media_variants original + asset ready; diferentes -> asset deleted + fila de limpeza + FORM_MEDIA_MISMATCH 422",
+      "superadmin_form_media_resolve_v2(p_asset_id uuid)": "forms.read no escopo; so ready; data {asset_id, form_id, rendition:'original', bucket, object_key, mime_type, byte_size, sha256, pixel_width, pixel_height, ttl_seconds:300}; auditado (forms.download e forms.resolve-file usam a mesma RPC)",
+      "superadmin_form_media_delete_v2(p_request_id uuid, p_asset_id uuid)": "forms.manage; status deleted + chaves (original e variantes) na fila de limpeza; repetir devolve replayed=true",
+      "form_media_expire_question_r2_v1(p_limit int)": "service_role/cron; pendentes com ticket vencido -> deleted + fila; data {expired}",
+      "form_media_claim_cleanup_r2_v1(p_limit int) / form_media_mark_purged_r2_v1(p_cleanup_id uuid)": "service_role/worker; entrega ate 200 chaves (reclaim apos 10 min) e baixa cada uma apos o DELETE no R2"
+    },
+    "limites": "image/jpeg|png|webp ate 4 MiB e 2560 px (constraints do catalogo 230007); chave tenants/<inst>/forms/form/<form_id>/question-image/<asset_id>/original/<uuid>.<ext>",
+    "codigos": [
+      "FORM_MEDIA_INVALID 422",
+      "FORM_MEDIA_MISMATCH 422",
+      "FORM_MEDIA_NOT_FOUND 404 (inclui outro tenant)",
+      "FORM_MEDIA_NOT_READY 409",
+      "FORM_MEDIA_TICKET_INVALID 409",
+      "FORM_MEDIA_REPLAY_MISMATCH 409",
+      "SAI_* como nas demais RPCs internas"
+    ]
   }
 }
