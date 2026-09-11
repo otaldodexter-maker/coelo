@@ -1,15 +1,15 @@
 {
-  "revision": 34,
+  "revision": 35,
   "round": "E2-R05-20260911",
   "group": "publicacoes-agenda",
   "tool": "Claude Code",
   "model": "Opus 5 (1M), esforco medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-publicacoes-agenda",
   "branch": "work/etapa2-r05-publicacoes-agenda",
-  "head": "bc1fe917e",
+  "head": "eed26d0b2",
   "base": "origin/dev 2f6a6114f",
-  "coordinator": "Claude (R05 · Coordenacao da tarde)",
-  "updatedAt": "2026-09-11T14:10:00-03:00",
+  "coordinator": "Claude (R05 · Coordenacao da tarde, coelo-25)",
+  "updatedAt": "2026-09-11T14:33:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -61,7 +61,7 @@
     "memoryNote": "R05: maximo dois Chrome por conversa, um flutter test por vez.",
     "closedAt": "03:12: Chrome 9334 e servidor 3006 fechados de novo; nenhum processo meu restante."
   },
-  "firstGate": "circulars.edit explicito e picker de agendamento pela tela (Chrome aberto no compositor); depois attach/respond na tela apos o coordenador aplicar 20260911190000.",
+  "firstGate": "Coordenador aplicar 190100 -> 190200 -> 190300; eu reexecuto prova-producao-r05.js (bloco de midia no v2 e bucket R2). Sem Chrome (memoria), rota real de circulars.edit/schedule pela tela fica aberta.",
   "status": "em andamento",
   "findings": [
     "Presença em produção (mapa r03-coordenacao): notices_v2 185008 = 1/16 (só analytics.notice_events); circulars_v2 191921 = 0/14; circulars_media_r2 212000 = 6/6; agenda 183836/193717 presentes (superadmin_agenda_list/get/contexts/save/command/requests/decide_publication em public).",
@@ -106,6 +106,32 @@
       "gate": "Tela Aprovacoes de publicacao mostrava \"Evento <uuid>\", UUID da instituicao e da pessoa. O app (bc1fe917e) ja le os rotulos com UUID como reserva.",
       "compositionKey": "nenhuma",
       "sha": "bc1fe917e"
+    },
+    {
+      "order": 3,
+      "file": "packages/coelo_database/candidatos/publicacoes-agenda/20260911190200_circulars_media_private_r2_v1_reapply.sql",
+      "actionIds": [
+        "circulars.attach"
+      ],
+      "pgtap": "circulars_media_private_r2_v1_test 45/46 no descartavel (46o exige linha do bucket legado em storage.buckets, que producao tem); bridge 18/18 e v2 34/34 depois dele",
+      "applyNote": "Reaplicacao idempotente da migration historica 20260909212000 (ausente em producao: prepare devolve bucket coelo-circulars-private e o PUT vai ao Storage do Supabase). Preflight de dependencias no proprio arquivo; CHECKs NOT VALID; sem backfill.",
+      "gate": "ADR 0032: toda midia nova do MVP em R2; sem este pacote circular-media v5 usa o ramo legado.",
+      "compositionKey": "nenhuma",
+      "sha": "eed26d0b2"
+    },
+    {
+      "order": 4,
+      "file": "packages/coelo_database/candidatos/publicacoes-agenda/20260911190300_superadmin_circulars_v2_media_v1.sql",
+      "actionIds": [
+        "circulars.attach",
+        "circulars.edit",
+        "circulars.publish"
+      ],
+      "pgtap": "circular_actor_internal_bridge_v1_test 18/18 (asset ready -> rascunho com midia -> detail devolve asset_ids -> publish; asset alheio bloqueado); superadmin_internal_circulars_v2_baseline_test 34/34 (caso de midia atualizado); delete 15/15",
+      "applyNote": "create or replace de superadmin_circular_draft_json, superadmin_circular_save_draft_v2 (texto 200400 + midia) e superadmin_circular_publish_v2 (texto 200100 sem o bloqueio). Aplicar depois de 190200.",
+      "gate": "Gateway v2 devolve CIRCULAR_MEDIA_BLOCKED para qualquer bloco de midia (prova 14:25); o compositor faz upload e nao consegue salvar o bloco.",
+      "compositionKey": "nenhuma",
+      "sha": "eed26d0b2"
     }
   ],
   "compositionKeys": [],
@@ -123,7 +149,7 @@
     "unknown": "bateria completa do app nao repetida (um flutter test por vez); rota real ainda nao exercida nesta rodada"
   },
   "blocked": "nenhum",
-  "next": "circulars.edit/schedule pela tela; reexecutar prova-producao-r05.js quando 20260911190000 estiver em producao; agenda.location por RPC apontando para QA R04 Cuidado (d0c4...0001, que tem unidade).",
+  "next": "Handoff + mini-revisao as 15:35; reexecucao da prova apos aplicacao dos pacotes.",
   "changes": [
     {
       "sha": "5edfccef9",
@@ -173,6 +199,17 @@
       ],
       "what": "Rota real com qa-r03 (build web-qa profile em 127.0.0.1:3006, Chrome CDP 9335): ui-02 /agenda com a referencia iOS em producao (hoje em circulo, cancelados hachurados, Hoje no rodape); ui-05..ui-08 /agenda/approvals: pedido pendente criado por RPC aparece, Decidir -> motivo -> Aprovar pela tela persistiu e sobreviveu a recarga completa; ui-10..ui-19 /notices/new: aviso criado pela tela com data 18/09 13:51 escolhida no seletor Coelo (data + hora) -> \"Publicacao agendada\" -> diretorio apos recarga completa mostra \"Desde 18/09/2026\"; RPC confirma status scheduled. Worker real: aviso agendado por RPC para +2 min virou active com reach 18 (notice_receipts materializados pelo cron/worker, P30).",
       "tests": "capturas em docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/ui/"
+    },
+    {
+      "sha": "eed26d0b2",
+      "actionIds": [
+        "circulars.attach",
+        "circulars.respond",
+        "circulars.publish",
+        "agenda.location"
+      ],
+      "what": "20260911190000 confirmado em producao pela prova (14:18): circulars.attach prepare -> PUT -> finalize(ready) -> read(signed_url) -> bytes conferem -> anon 401; circulars.respond save_circular_response_draft -> submit -> response_summary_v2 {response_count:1, submitted_count:1}. agenda.location: evento com contextKind unit + local persiste e reload mantem (instituicao QA R04 Cuidado, unidade d0c4...0002), rascunho excluido. Achados: (a) R2 de Circulares nao esta em producao (bucket legado) -> 190200; (b) gateway v2 bloqueia bloco de midia -> 190300; (c) delete do anexo pelo autor interno responde media_delete_denied (remove_circular_media exige owner people-based; entra no 190300? nao: registrado como pendencia); (d) republicar circular agendada -> CIRCULAR_INVALID_STATE (comportamento do gateway; a tela deve reagendar/cancelar).",
+      "tests": "prova-producao-r05.js 29/34 (5 FAIL = gate 190300 + delete denied)"
     }
   ],
   "pendingForCoordinator": [
@@ -221,6 +258,21 @@
         "circulars.publish"
       ],
       "pending": "O balao de chat \"Mensagens\" aparece sobre o compositor de Circular enquanto carrega o seletor de instituicao (ui-22): a supressao (Decisao 7) so entra com o SuperadminFormFrame apos escolher a instituicao. Dono: principal-chat-sistema/shell."
+    },
+    {
+      "actionIds": [
+        "circulars.attach"
+      ],
+      "pending": "remove_circular_media (delete do anexo) nega o autor interno (media_delete_denied): exige owner_person_id people-based == ator; a ponte resolve a pessoa de servico mas o asset foi criado com owner_person_id = pessoa de servico... investigar (provavelmente exige circular em rascunho/asset nao vinculado). Pos-MVP ou proxima rodada."
+    },
+    {
+      "actionIds": [
+        "circulars.edit",
+        "circulars.schedule",
+        "circulars.attach",
+        "circulars.respond"
+      ],
+      "pending": "FE pela tela nao exercido nesta rodada (Chrome de CDP morreu duas vezes com 0,02 GB livres; build web-qa pronto em apps/superadmin/build/web-qa e servidor 3006 no scratchpad). Proxima rodada: editar rascunho explicito, picker de agendamento (o seletor Coelo responde a semantica: provado em Avisos), anexar pela tela apos 190200/190300."
     }
   ],
   "proposedDeltas": [
@@ -289,6 +341,24 @@
       "layer": "FE",
       "proposed": "verified (rota /agenda/permissions redireciona por design para /profiles, dde3e6229)",
       "evidence": "ui-03; contexts em producao"
+    },
+    {
+      "actionId": "circulars.respond",
+      "layer": "BE",
+      "proposed": "done",
+      "evidence": "190000 em producao + prova 14:30 (draft, submit, summary) + pgTAP 18/18 com negativas"
+    },
+    {
+      "actionId": "circulars.attach",
+      "layer": "BE",
+      "proposed": "done apos 190200+190300 (hoje: local-green com upload real no bucket legado)",
+      "evidence": "prova 14:30 + pgTAP"
+    },
+    {
+      "actionId": "agenda.location",
+      "layer": "BE",
+      "proposed": "done",
+      "evidence": "prova 14:18/14:30 (unit + local, reload) + pgTAP 200300 (unidade fora do tenant recusada)"
     }
   ],
   "questionsToOwner": [
