@@ -1,5 +1,5 @@
 {
-  "revision": 35,
+  "revision": 36,
   "updated_at": "2026-09-11T15:39:00-03:00",
   "round": "E2-R05-20260911",
   "group": "operacoes",
@@ -7,7 +7,7 @@
   "conversation": "R05 · Operações",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-operacoes",
   "branch": "work/etapa2-r05-operacoes",
-  "head": "ce1f8a5cf + este commit",
+  "head": "92adbe085 + este commit (SHA final publicado)",
   "base": {
     "requested": "origin/dev",
     "resolved": "2f6a6114f",
@@ -1084,10 +1084,10 @@
     "commit": "(golden) + 30a589972 (pagina)",
     "pagina": "https://claude.ai/code/artifact/aafedc26-2673-4f10-8310-37b367dad7f7"
   },
-  "finalizado": "sim (15:39 de 11/09; branch publicada em ce1f8a5cf + este commit; worktree limpa; sem WIP retido)",
+  "finalizado": "sim (15:39 de 11/09; branch publicada; worktree limpa; sem WIP retido; Chrome, servidor e descartavel encerrados)",
   "mini_revisao_10min_r05": {
     "para": "coordenador R05 (coelo-25)",
-    "sha_final_publicado": "work/etapa2-r05-operacoes ce1f8a5cf + este commit; git status limpo; sem stash; merge de origin/dev 24dec2f7c incluido (1b0c2c5ff, 78283f81b)",
+    "sha_final_publicado": "work/etapa2-r05-operacoes: commit desta rev 36 (ver git log); git status limpo; sem stash; merge de origin/dev 24dec2f7c incluido (1b0c2c5ff, 78283f81b)",
     "fechou_por_action_id_com_prova": {
       "audit.list / audit.filter / audit.detail": "FE verified / BE done / E2E verified-e2e — rota real com qa-r03 (RPCs 200: list, filtro, busca, cursor, detalhe, reload); pgTAP 210100 37/37 em producao; deltas-r05-ops-audit.json (9)",
       "audit.export": "FE verified (adiado honesto: Arquivos -> CSV/XLSX 'Disponivel depois do MVP', sem chamada) — deltas-r05-ops-audit-export-theme.json",
@@ -1116,7 +1116,9 @@
       "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-plans.json (6; FE verified + BE local-green, superado pelo seguinte no BE)",
       "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-audit-export-theme.json (2)",
       "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-plans-done-support-assignee.json (12)",
-      "aprovacoes visuais do Owner (G-SUP 14:25; Importacoes 14:50) para ownerVisualApproval; nunca verified/done/E2E"
+      "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-logout.json (3)",
+      "aprovacoes visuais do Owner (G-SUP 14:25; Importacoes 14:50) para ownerVisualApproval; nunca verified/done/E2E",
+      "(ja aplicados pelo coordenador ate 15:35: audit, plans FE, audit-export-theme)"
     ],
     "pacotes_sql": "20260911200000 (Planos, lote 39) e 20260911200100 (responsaveis do Suporte) ja aplicados em producao pelo coordenador; nenhum candidato pendente em candidatos/operacoes",
     "duvidas_ao_owner": "P43 account.sessions; P44 Catalogo; P45 abas/persistencia em Suporte; IMP-R05-2 conferir wizard_unavailable corrigido (+ texto 503 transversal)",
