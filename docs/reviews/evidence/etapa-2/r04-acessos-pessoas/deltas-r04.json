@@ -544,5 +544,44 @@
       "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST (lote 20 aplicado)",
       "recordedAt": "2026-09-11T03:11:00-03:00"
     }
+  },
+  {
+    "action_id": "people.create",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R04: superadmin_people_create_draft criou a pessoa sintetica 'QA R04 Pessoa sintetica' (ec2a15a2-76bc-4e71-8419-94413d0c5c98, status draft) com o payload do cliente e a sessao qa-r03 (ponte de ator + MFA fora do MVP). O gate que resta e do cliente (resolvedor de identidade antes do formulario).",
+    "evidencia": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 112, REST)",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+      "revision": "60d931e98",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST",
+      "recordedAt": "2026-09-11T03:14:00-03:00"
+    }
+  },
+  {
+    "action_id": "people.edit",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R04: superadmin_people_update com expected_updated_at persistiu display_name da pessoa sintetica; superadmin_person_detail_v2 relido confirma.",
+    "evidencia": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 112, REST)",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+      "revision": "60d931e98",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST",
+      "recordedAt": "2026-09-11T03:14:00-03:00"
+    }
+  },
+  {
+    "action_id": "child-safety.edit",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "R04: child_safety_edit_pending_authorization em producao levanta 42702 (variavel plpgsql request_reason ambigua com a coluna) em toda edicao pendente; candidato 172100 corrige so a variavel (pgTAP 4/4, RED antes) — pronto para aplicar. A decisao (aprovar/rejeitar) continua na P32.",
+    "evidencia": "packages/coelo_database/candidatos/acessos-pessoas/20260910172100_child_safety_edit_pending_ambiguity_fix_v1.sql",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+      "revision": "60d931e98",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST",
+      "recordedAt": "2026-09-11T03:14:00-03:00"
+    }
   }
 ]

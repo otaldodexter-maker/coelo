@@ -1,7 +1,7 @@
 {
-  "revision": 111,
-  "updated_at": "2026-09-11T06:11:29.573Z",
-  "relogio_local": "Fri Sep 11 2026 03:11:29 GMT-0300 (Horário Padrão de Brasília)",
+  "revision": 112,
+  "updated_at": "2026-09-11T06:14:53.999Z",
+  "relogio_local": "Fri Sep 11 2026 03:14:54 GMT-0300 (Horário Padrão de Brasília)",
   "round": "E2-R04-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
@@ -323,11 +323,21 @@
     "deltas": "42 entradas em deltas-r04.json"
   },
   "dados_sinteticos_atualizados": [
-    "perfil qa-r04-perfil-sintetico-7f6f8d16: APAGADO pela prova de delete",
-    "modelo qa-r04-modelo-sintetico-b6f3958c (cc322488-...) e a copia 60fb9586-8e4c-46b8-8f1a-f8bdc396e2d4: apagar ao fim",
-    "perfil interno de qa-r03 (job_title editado): apaga com o usuario",
-    "autorizacao 34d29829-...: apagar ao fim"
+    "pessoa ec2a15a2-76bc-4e71-8419-94413d0c5c98 (draft) — apagar ao fim"
   ],
+  "ADENDO_03h16": {
+    "pacotesProntos_novo": {
+      "id": "AP-CHILD-SAFETY-EDIT-PENDING-FIX-172100",
+      "migration": "packages/coelo_database/candidatos/acessos-pessoas/20260910172100_child_safety_edit_pending_ambiguity_fix_v1.sql",
+      "estado": "VERDE — PRONTO PARA APLICAR",
+      "pgTAP": "child_safety_edit_pending_ambiguity_fix_v1_test 4/4 (RED reproduzido com o corpo de producao: 42702)",
+      "o_que_faz": "renomeia a variavel plpgsql request_reason -> requested_reason em child_safety_edit_pending_authorization; toda edicao de autorizacao pendente falhava com 'column reference request_reason is ambiguous'. Corpo de producao identico no resto."
+    },
+    "people.create (BE)": "done: create_draft criou 'QA R04 Pessoa sintetica' (ec2a15a2-76bc-4e71-8419-94413d0c5c98, draft)",
+    "people.edit (BE)": "done: people_update persistiu display_name; detail v2 confirma",
+    "invites.create (BE)": "ver resultado da tentativa por RPC nesta revisao (issue_v2 com perfil de plataforma em contexto de instituicao)",
+    "deltas": "45 entradas"
+  },
   "historico_r03": {
     "revision": 94,
     "updated_at": "2026-09-10T19:56:30.537Z",
