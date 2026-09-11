@@ -7,11 +7,13 @@ import '../../domain/support_ticket.dart';
 import '../view_models/support_prototype_controller.dart';
 import 'support_assignee_view.dart';
 
-typedef SupportTableTicketOpenCallback =
+typedef SupportRowsTicketOpenCallback =
     void Function(SupportTicket ticket, bool Function() restoreFocus);
 
-final class SupportTicketTable extends StatefulWidget {
-  const SupportTicketTable({
+/// Linhas de domínio da tabela de Suporte; o `CoeloAdminDirectory` fornece o
+/// banner Criar acima e o rodapé de paginação.
+final class SupportTicketRows extends StatefulWidget {
+  const SupportTicketRows({
     required this.tickets,
     required this.teamMembers,
     required this.selectedTicketId,
@@ -26,17 +28,17 @@ final class SupportTicketTable extends StatefulWidget {
   final List<SupportTicket> tickets;
   final List<SupportTeamMember> teamMembers;
   final String? selectedTicketId;
-  final SupportTableTicketOpenCallback onTicketPressed;
+  final SupportRowsTicketOpenCallback onTicketPressed;
   final Widget Function(SupportTicket ticket) statusBuilder;
   final SupportSortColumn sortColumn;
   final bool sortAscending;
   final ValueChanged<SupportSortColumn> onSort;
 
   @override
-  State<SupportTicketTable> createState() => _SupportTicketTableState();
+  State<SupportTicketRows> createState() => _SupportTicketRowsState();
 }
 
-final class _SupportTicketTableState extends State<SupportTicketTable> {
+final class _SupportTicketRowsState extends State<SupportTicketRows> {
   final _tableController = CoeloAdminTableController();
 
   void _openTicket(SupportTicket ticket) {

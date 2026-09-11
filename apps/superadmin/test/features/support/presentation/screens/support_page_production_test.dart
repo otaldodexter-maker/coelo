@@ -68,18 +68,23 @@ void main() {
     await controller.loadFromRepository();
     await _pump(tester, controller);
 
-    expect(find.byKey(const Key('support-state-failure')), findsOneWidget);
-    expect(find.byKey(const Key('support-create-state')), findsOneWidget);
+    // Composto CoeloAdminDirectory: card de estado de Instituições com o
+    // Criar à frente; busca, filtros, toggle e Arquivos seguem visíveis.
     expect(find.text('Suporte indisponível'), findsOneWidget);
+    expect(find.byKey(const Key('coelo-admin-directory-retry')), findsOneWidget);
+    expect(find.byKey(const Key('support-create-state')), findsOneWidget);
     expect(find.textContaining('SUP-001'), findsNothing);
-    expect(find.byKey(const Key('support-toolbar-scroll')).evaluate().isNotEmpty ||
-        find.byType(TextField).evaluate().isNotEmpty, isTrue,
-        reason: 'busca e filtros continuam visíveis no estado de falha');
+    expect(find.byKey(const Key('support-search')), findsOneWidget);
+    expect(find.byKey(const Key('support-status-filter')), findsOneWidget);
+    expect(find.byKey(const Key('support-view-toggle-table')), findsOneWidget);
+    expect(find.byKey(const Key('coelo-admin-files-action')), findsOneWidget);
 
     repository.listError = null;
-    await tester.tap(find.text('Tentar novamente'));
+    await tester.tap(find.byKey(const Key('coelo-admin-directory-retry')));
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('support-state-failure')), findsNothing);
+    expect(find.text('Suporte indisponível'), findsNothing);
+    expect(find.text('Ainda não há chamados na operação.'), findsOneWidget);
+    expect(find.byKey(const Key('support-create-state')), findsOneWidget);
   });
 
   testWidgets('botão de Bug avisa quando o envio ao backend falha', (tester) async {
