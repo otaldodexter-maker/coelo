@@ -1,130 +1,477 @@
 {
-  "revision": 12,
-  "round": "E2-R03-20260910",
+  "revision": 14,
+  "round": "E2-R04-20260911",
   "group": "publicacoes-agenda",
-  "tool": "Codex",
-  "model": "Luna medio",
-  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-publicacoes-agenda",
-  "branch": "work/etapa2-r03-publicacoes-agenda",
-  "head": "1abe6909646cc038af33687dc829c0e95e255381",
-  "coordinator": "Claude",
+  "tool": "Claude Code",
+  "model": "Opus 5 (1M)",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-publicacoes-agenda",
+  "branch": "work/etapa2-r04-publicacoes-agenda",
+  "head": "4219b810f",
+  "base": "origin/dev 98cc0529d",
+  "coordinator": "Claude (R04 · Coordenação noturna)",
+  "updatedAt": "2026-09-10T22:40:00-03:00",
   "scope": {
     "app": "apps/superadmin",
-    "families": ["agenda", "notices", "circulars"],
-    "actionIds": [
-      "agenda.view", "agenda.create", "agenda.detail", "agenda.edit", "agenda.request", "agenda.permissions", "agenda.location",
-      "notices.list", "notices.create", "notices.edit", "notices.schedule", "notices.publish", "notices.archive",
-      "circulars.list", "circulars.filter", "circulars.create", "circulars.edit", "circulars.detail", "circulars.schedule", "circulars.publish", "circulars.close", "circulars.delete", "circulars.respond", "circulars.attach"
+    "families": [
+      "agenda",
+      "notices",
+      "circulars"
     ],
-    "included": "Telas e subtelas ponta a ponta, com migration, pgTAP, repositórios/contratos e chave de composição por pacote.",
-    "excluded": "Admin, Principal e Site; pg_cron e worker de Avisos; aplicação remota pelo coordenador; E2E remoto enquanto o coordenador não aplicar o pacote e habilitar a composição.",
-    "order": ["agenda", "notices", "circulars"],
-    "stop": "Finalizar as 24 ações ou receber ordem do Owner/coordenador; bloqueio retém somente a ação dependente.",
-    "evidence": "Commits da frente, saída dos testes locais, handoffs e este JSON; E2E somente após base integrada e aplicação remota pelo coordenador."
+    "actionIds": [
+      "agenda.view",
+      "agenda.create",
+      "agenda.detail",
+      "agenda.edit",
+      "agenda.request",
+      "agenda.permissions",
+      "agenda.location",
+      "notices.list",
+      "notices.create",
+      "notices.edit",
+      "notices.schedule",
+      "notices.publish",
+      "notices.archive",
+      "circulars.list",
+      "circulars.filter",
+      "circulars.create",
+      "circulars.edit",
+      "circulars.detail",
+      "circulars.schedule",
+      "circulars.publish",
+      "circulars.close",
+      "circulars.delete",
+      "circulars.respond",
+      "circulars.attach"
+    ],
+    "included": "24 ações ponta a ponta: pacotes SQL sobre a baseline (Avisos v2, Circulares v2 + delete), rota normal com sessão qa-r03, Agenda no composto, goldens conforme as listas do Owner.",
+    "excluded": "Admin, Principal e Site; pg_cron e notice-publication-worker (coordenador); aplicação em produção (coordenador); inventário e rastreadores (coordenador).",
+    "order": [
+      "notices (pacotes)",
+      "circulars (pacotes + rota normal)",
+      "agenda (composto + rota normal)",
+      "goldens"
+    ],
+    "stop": "Finalizar as 24 ações, 04:20 de 11/09 ou ordem do Owner/coordenador.",
+    "evidence": "Commits da branch, pgTAP no projeto descartável coelo_baseline_pa (portas 603xx: baseline + seed + 44 migrations de produção aplicadas por psql às 21:50), flutter test, rota real com sessão."
   },
-  "knownPendencies": [
-    "base.fase0Head foi publicada como 1adb070c9; a branch foi posteriormente rebaseada na base integrada do coordenador 552058da0, preservando o composto aprovado. E2E remoto ainda depende da aplicação do pacote pelo coordenador.",
-    "Avisos: migration/pgTAP e worker nominal precisam ser revalidados; pg_cron e worker pertencem ao coordenador.",
-    "Circulares: detalhe produtivo agora expõe encerramento e exclusão confirmados; aplicar migration e validar gateway/RLS antes de ligar a chave de composição.",
-    "Agenda: compatibilizar contexto interno039 e validar readers/comandos produtivos; telas seguem no composto publicado da Fase 0."
-  ],
-  "firstGate": "Backend: localizar o contrato canônico, testar existência/assinaturas, grants, RLS, capacidade, tenant e idempotência; produzir o primeiro pacote SQL/pgTAP executável sem tocar UI de diretório.",
-  "status": "frontend-backend-local-green-golden-approved-pgtap-blocked",
-  "compositionKeys": [
-    {"package": "circulars.delete", "key": "superadminCircularDeleteEnabled", "default": false, "owner": "coordenador", "reason": "ligar somente após migration aplicada e gateway verificado"}
-  ],
-  "tests": {
-    "passed": 475,
-    "failed": 0,
-    "blocked": 1,
-    "skipped": 2,
-    "evidence": [
-      "Bateria completa apps/superadmin/test/features/agenda + notices + circulars: 475 PASS, 2 SKIP previstos, 0 falhas",
-      "Goldens do recorte após aprovação visual dos anexos: matriz aprovada passou; commit de referências na base integrada: 29188430d27a57fd53075d1f58400ffca546134e",
-      "Avisos: indicador circular de estado permanece na linha do título, com expansão acessível do rótulo; composição aprovada pelo Owner nos anexos",
-      "Após o rebase em 552058da0: Agenda calendar goldens 18/18, Agenda additional surfaces 24/24, Agenda remote states 23/23, Avisos diretório 4/4, Avisos formulário 1/1 e Circulares diretório 2/2",
-      "Teste de regressão do indicador de Avisos reexecutado após o handoff: 3/3 PASS (linha única, alvo 48 px sem sobreposição, foco/semântica)",
-      "flutter analyze dos arquivos alterados: No issues found",
-      "supabase start/test db --local: BLOQUEADO no bootstrap da migration legada 20260820152528_forms_editor_application_capability_guard.sql, pois o schema app_private não existe; não foi criado schema manualmente nem alterada a ordem das migrations"
-    ]
+  "environment": {
+    "disposableProject": "coelo_baseline_pa em scratchpad/pa-project (db 60322); baseline 20260910000000 + seed + 44 migrations/ aplicadas OK em 2026-09-10 21:50; snapshot pg_dump em /tmp/pa-base.dump do contêiner",
+    "note": "db reset do CLI aplica o seed DEPOIS das migrations e a 170100 exige o catálogo; por isso o reset roda só com a baseline e as demais entram por psql na ordem (mesmo método do coordenador)."
   },
-  "reservedFiles": [
-    "packages/coelo_database/migrations/*publicacoes_agenda*",
-    "packages/coelo_database/supabase/tests/*agenda*",
-    "packages/coelo_database/supabase/tests/*notice*",
-    "packages/coelo_database/supabase/tests/*circular*",
-    "apps/superadmin/lib/features/agenda/**",
-    "apps/superadmin/lib/features/notices/**",
-    "apps/superadmin/lib/features/circulars/**"
+  "firstGate": "Circulares: rota normal com sessao qa-r03 (diretorio, criar, agendar inline, encerrar, excluir) depende de o coordenador aplicar 200100+200200 em producao; enquanto isso, Agenda (composto + readers) no cliente.",
+  "status": "pacotes-avisos-circulares-verdes-no-descartavel; prova limpa em execucao",
+  "findings": [
+    "Presença em produção (mapa r03-coordenacao): notices_v2 185008 = 1/16 (só analytics.notice_events); circulars_v2 191921 = 0/14; circulars_media_r2 212000 = 6/6; agenda 183836/193717 presentes (superadmin_agenda_list/get/contexts/save/command/requests/decide_publication em public).",
+    "O cliente Superadmin chama somente superadmin_notice_*_v2 (185008), superadmin_circular_*_v2 (191921 + delete) e superadmin_agenda_* v1. A cadeia legada de Avisos people-based (003000, 204824, 212340, 220500) NÃO é chamada pelo app: 185008 é autossuficiente (colunas com if not exists, recibos próprios, auditoria via audit_append_superadmin_internal cuja assinatura de 13 args confere com produção). Decisão: não reentregar a cadeia legada no MVP; worker/pg_cron ficam registrados como pendência de entrega ao Principal (materialização de audiência), não bloqueiam CRUD de Avisos no Superadmin.",
+    "superadmin_agenda_list_v2/get_v2/contexts_v2 (SupabaseAgendaReadRepository) não existem em produção e não estão compostos no app; o app usa SupabaseAgendaRepository (v1) que existe em produção.",
+    "20260909191100 (métricas por geração) depende de colunas de 220500 (publication_job_id) ausentes em produção: fica fora até existir worker; sem regressão (reach conta todos os recibos).",
+    "Teste historico superadmin_internal_circular_delete_v1_test era so estrutural (strings em pg_get_functiondef) e nao pegava a violacao de circulars_check1 ao excluir rascunho; o comportamental novo pega.",
+    "Padrao de defeito repetido nas cadeias historicas: audit_logs.reason_code (^[A-Z][A-Z0-9_]{0,79}$) recebia texto livre/minusculo e derrubava a RPC com SAI_INTERNAL_ERROR. Vale conferir nos outros grupos que passam p_reason ao audit_append_superadmin_internal."
   ],
-  "blocked": "pgTAP local retém a prova SQL porque o bootstrap falha antes do schema app_private; E2E remoto aguarda aplicação do coordenador.",
-  "next": "Aplicar/revalidar migrations na ordem do coordenador, executar pgTAP no ambiente liberado, habilitar superadminCircularDeleteEnabled somente após o gateway verificado e então rodar E2E ponta a ponta.",
-  "changes": [
+  "packages": [
     {
-      "screen": "Etapa 2 → apps/superadmin → Circulares → Diretório/Detalhe → Excluir → circulars.delete",
-      "actionIds": ["circulars.delete"],
-      "whatChanged": "Migration forward-only cria superadmin_circular_delete_v2 com capacidade circulars.manage, tenant/contexto interno, versão otimista, idempotência, auditoria e exclusão lógica; repositório/contrato chama RPC sem segredo.",
-      "criteria": ["RPC nominal e grant authenticated", "anon/service_role sem execute", "deleted_at/status archived", "receipt com hash e action delete", "audit internal_circular_deleted"],
-      "sha": "f15a9eec2c8bd50b3049016827741502117ba293"
+      "order": 1,
+      "file": "packages/coelo_database/candidatos/publicacoes-agenda/20260910200000_superadmin_internal_notices_v2_baseline.sql",
+      "actionIds": [
+        "notices.list",
+        "notices.create",
+        "notices.edit",
+        "notices.schedule",
+        "notices.publish",
+        "notices.archive"
+      ],
+      "pgtap": "supabase/tests/superadmin_internal_notices_v2_baseline_test.sql 38/38 PASS (descartavel coelo_baseline_pa, 22:20)",
+      "applyNote": "ALTER TYPE ... ADD VALUE fica antes do begin; aplicar com psql/db query -f como arquivo inteiro. Preflight recusa replay se superadmin_notice_directory_v2 ja existir. Zero linhas em platform_notices em producao.",
+      "fixes": [
+        "labels do catalogo",
+        "requires_mfa=false (Decisao 12)",
+        "notice_events em analytics (public.notice_events nao existe)",
+        "indice de ciclo de vida nao parcial",
+        "CTE do diretorio nao convertia para platform_notices",
+        "record next_row nao atribuido derrubava o diretorio sem proxima pagina",
+        "audit_logs.reason_code exige codigo maiusculo: motivo de inativacao vai para silencing_policy.inactive_reason"
+      ],
+      "compositionKey": "nenhuma: SupabaseNoticeRepository ja e o repositorio produtivo do router; conferir apos aplicar",
+      "sha": "a5251ed7d"
     },
     {
-      "screen": "Etapa 2 → apps/superadmin → Circulares → Detalhe → Encerrar respostas/Excluir rascunho → circulars.close, circulars.delete",
-      "actionIds": ["circulars.detail", "circulars.close", "circulars.delete"],
-      "whatChanged": "Detalhe administrativo preserva managementVersion, expõe ações confirmadas por estado, chama os callbacks produtivos dos RPCs close/delete com request UUID e retorna ao diretório após exclusão.",
-      "criteria": ["Encerramento somente em publicada/agendada", "Exclusão somente em rascunho", "confirmação explícita", "versão otimista preservada", "router produtivo injeta gateway interno"],
-      "sha": "e4e9b9a0356b1d71f35b00c8c0c035a6a9b5c0b1"
+      "order": 2,
+      "file": "packages/coelo_database/candidatos/publicacoes-agenda/20260910200100_superadmin_internal_circulars_v2_baseline.sql",
+      "actionIds": [
+        "circulars.list",
+        "circulars.filter",
+        "circulars.create",
+        "circulars.edit",
+        "circulars.detail",
+        "circulars.schedule",
+        "circulars.publish",
+        "circulars.close"
+      ],
+      "pgtap": "supabase/tests/superadmin_internal_circulars_v2_baseline_test.sql 32/32 PASS (inclui negativa cross-tenant, identidade escopada e revogada)",
+      "fixes": [
+        "labels do catalogo",
+        "requires_mfa=false",
+        "circular_audience_rules.revision_id NOT NULL em producao",
+        "reason_code normalizado no helper de auditoria",
+        "fixture: revogar membership exige version+1 (guard de producao)"
+      ],
+      "compositionKey": "nenhuma (gateway ja composto)",
+      "sha": "28a2e1dd4"
     },
     {
-      "screen": "Etapa 2 → apps/superadmin → Comunicação → Avisos → Diretório compacto → notices.list",
-      "actionIds": ["notices.list"],
-      "whatChanged": "Indicador circular de estado voltou à linha do título, entre o título e o menu; o chip de tipo permanece abaixo e o título é mantido em uma linha no mobile por redução proporcional quando necessário.",
-      "criteria": ["círculo distingue estados", "rótulo expande por toque, foco ou hover", "alvo mínimo de 48 px", "sem sobreposição com título ou ações", "goldens aprovados nos anexos"],
-      "sha": "9ee216986c1e5ff69d8ce22d3e3b3cad4cd80d94"
-    },
-    {
-      "screen": "Etapa 2 → apps/superadmin → Agenda/Avisos/Circulares → Goldens na base integrada → action visual",
-      "actionIds": ["agenda.view", "agenda.create", "agenda.detail", "notices.list", "notices.create", "circulars.list"],
-      "whatChanged": "Referências pixel foram regeneradas somente para os estados divergentes após o rebase na composição Fase 0 integrada e aprovadas pelos anexos do Owner.",
-      "criteria": ["Agenda criação mobile claro/escuro", "Avisos diretório e formulário", "Circulares diretório e texto 200%", "suítes golden afetadas verdes"],
-      "sha": "29188430d27a57fd53075d1f58400ffca546134e"
+      "order": 3,
+      "file": "packages/coelo_database/candidatos/publicacoes-agenda/20260910200200_superadmin_internal_circular_delete_v2.sql",
+      "actionIds": [
+        "circulars.delete"
+      ],
+      "pgtap": "superadmin_internal_circular_delete_v1_test.sql 10/10 (estrutural) + superadmin_internal_circular_delete_v2_behavior_test.sql 15/15 (persistencia, idempotencia, conflito, negativa de escopo, auditoria)",
+      "fixes": [
+        "renumerado de 20260910120000 (f15a9eec2)",
+        "circulars_check1 (status=draft ou publish_at) impedia arquivar rascunho: rascunho excluido mantem status e usa deleted_at"
+      ],
+      "compositionKey": "superadminCircularDeleteEnabled -> true apos aplicar (apps/superadmin composition)",
+      "sha": "4219b810f"
     }
   ],
-  "baselinePackages": [
-    {"actionIds": ["agenda.view", "agenda.create", "agenda.detail", "agenda.edit", "agenda.request", "agenda.permissions", "agenda.location"], "migrationShas": ["be28f0c0bd5ac626df925b7dc1d577af0b0e8dca", "09bf4e71b81711cfd5a44852c94805415b5ab237"], "state": "existing-local-contract; pgTAP/remote pending"},
-    {"actionIds": ["notices.list", "notices.create", "notices.edit", "notices.schedule", "notices.publish", "notices.archive"], "migrationShas": ["ca55088753b10330b1890fbec35158854118f2ed", "5ad9b9b00e5ab060d81d01aaf406cbea30e254b6"], "state": "existing-local-contract; pgTAP/worker/remote pending"},
-    {"actionIds": ["circulars.list", "circulars.filter", "circulars.create", "circulars.edit", "circulars.detail", "circulars.schedule", "circulars.publish", "circulars.close", "circulars.delete", "circulars.respond", "circulars.attach"], "migrationShas": ["1944bd957a5771b9b3b9e2cf559e15f3cacd3c02", "dac463464dc64bb4f79b8683d39a2157426e9f60"], "state": "local-contract-plus-detail-actions; pgTAP/remote pending"}
+  "compositionKeys": [
+    {
+      "package": "circulars.delete",
+      "key": "superadminCircularDeleteEnabled",
+      "default": false,
+      "owner": "coordenador",
+      "reason": "ligar somente após migration aplicada e gateway verificado"
+    }
   ],
-  "sharedFindings": [
-    "O código histórico ainda modela requires_mfa/aal2 para algumas capacidades de publicação; o alinhamento R03 diz MFA fora do MVP. A remoção do bloqueio no contexto interno é compartilhada e deve ser coordenada, não duplicada nesta frente.",
-    "Owner aprovou os anexos visuais: Agenda e Circulares seguem integralmente as referências; em Avisos, o círculo sinaliza ativo, inativo, rascunho e demais estados. Goldens divergentes foram regravados e a matriz passou.",
-    "Não declarar E2E: base.fase0Head publicada, mas Docker/Postgres local continua ocupado por outra frente e aplicação remota permanece reservada ao coordenador."
-  ],
-  "coordinatorHandoff": {
-    "generatedAt": "2026-09-10T16:20:00-03:00",
-    "base": "552058da0",
-    "branchHead": "5883ad69fbf424a9f23d7686317acd016916ef1d",
-    "progress": {
-      "overallPct": 50,
-      "basis": "2 de 4 gates ponderados fechados: FE/composição local e documentação/commits verdes; backend/pgTAP e E2E remoto retidos por ambiente/aplicação.",
-      "frontendLocal": "100% das superfícies alteradas e goldens afetados verificados; não equivale a aceite das 24 ações.",
-      "backend": "migration, contratos e pgTAP entregues; execução local bloqueada antes de app_private na migration legada.",
-      "e2e": "0% remoto; aguardando aplicação do coordenador, gateway/RLS nominal e reload contra ambiente autorizado."
-    },
-    "commits": [
-      {"sha": "9ee216986c1e5ff69d8ce22d3e3b3cad4cd80d94", "actionIds": ["notices.list"], "summary": "indicador circular de estado no cartão compacto de Avisos"},
-      {"sha": "377e1b1f9", "actionIds": ["agenda.view", "agenda.create", "agenda.detail", "notices.list", "notices.create", "circulars.list"], "summary": "aprovação visual dos três anexos"},
-      {"sha": "29188430d27a57fd53075d1f58400ffca546134e", "actionIds": ["agenda.view", "agenda.create", "agenda.detail", "notices.list", "notices.create", "circulars.list"], "summary": "goldens regenerados na base integrada"},
-      {"sha": "1abe6909646cc038af33687dc829c0e95e255381", "actionIds": ["agenda.view", "agenda.create", "agenda.detail", "notices.list", "notices.create", "circulars.list"], "summary": "rebase e goldens integrados"},
-      {"sha": "0fe5b6ad7", "actionIds": ["agenda.view", "agenda.create", "agenda.detail", "notices.list", "notices.create", "circulars.list"], "summary": "head do handoff reconciliado com a base do coordenador"},
-      {"sha": "5883ad69fbf424a9f23d7686317acd016916ef1d", "actionIds": ["notices.list"], "summary": "regressão de layout/semântica do indicador reexecutada e registrada"}
-    ],
-    "pendingForCoordinator": [
-      {"actionIds": ["agenda.view", "agenda.create", "agenda.detail", "agenda.edit", "agenda.request", "agenda.permissions", "agenda.location"], "pending": "replay nominal de readers/comandos, RLS/tenant, persistência e reload"},
-      {"actionIds": ["notices.list", "notices.create", "notices.edit", "notices.schedule", "notices.publish", "notices.archive"], "pending": "revalidar migrations/pgTAP, métricas por geração, audiência, pg_cron/worker e prova de persistência/reload; pg_cron/worker fora desta frente"},
-      {"actionIds": ["circulars.list", "circulars.filter", "circulars.create", "circulars.edit", "circulars.detail", "circulars.schedule", "circulars.publish", "circulars.close", "circulars.delete", "circulars.respond", "circulars.attach"], "pending": "validar gateway/RLS/tenant e E2E; ligar superadminCircularDeleteEnabled somente após pgTAP e gateway nominal"}
-    ],
-    "environmentBlocker": "supabase start/test db --local para na migration 20260820152528_forms_editor_application_capability_guard.sql porque app_private ainda não existe; não houve criação manual de schema nem alteração da ordem histórica.",
-    "handoffRule": "coordenador Claude deve consumir este arquivo, os actionIds e os SHAs; não há alteração direta no checkout/JSON de coordenação desta frente."
+  "tests": {
+    "passed": 95,
+    "failed": 0,
+    "blocked": 0,
+    "skipped": 0,
+    "evidence": [
+      "notices_v2_baseline 38/38",
+      "circulars_v2_baseline 32/32",
+      "circular_delete_v1 10/10",
+      "circular_delete_v2_behavior 15/15",
+      "prova limpa (db reset+seed+44+3) em execucao as 22:40; resultado na revisao seguinte"
+    ]
   },
-  "updatedAt": "2026-09-10T16:20:00-03:00"
+  "blocked": "nenhum",
+  "next": "Agenda: compatibilizar contexto interno (superadmin_agenda_* v1 em producao usa assert_agenda_permission; conferir com realm interno), composto CoeloAdminDirectory em Agenda de eventos e Comunicacoes, rota normal.",
+  "changes": [],
+  "pendingForCoordinator": [
+    {
+      "actionIds": [
+        "notices.list",
+        "notices.create",
+        "notices.edit",
+        "notices.schedule",
+        "notices.publish",
+        "notices.archive"
+      ],
+      "pending": "aplicar 20260910200000 em producao (dump do lote antes); depois provar rota normal com qa-r03. Worker/pg_cron NAO sao necessarios para o CRUD v2 (publish decide scheduled/active e refresh_lifecycle promove na leitura); materializacao de audiencia (notice_receipts) fica registrada para a entrega ao Principal."
+    },
+    {
+      "actionIds": [
+        "circulars.list",
+        "circulars.filter",
+        "circulars.create",
+        "circulars.edit",
+        "circulars.detail",
+        "circulars.schedule",
+        "circulars.publish",
+        "circulars.close",
+        "circulars.delete"
+      ],
+      "pending": "aplicar 20260910200100 e 20260910200200 nesta ordem; ligar superadminCircularDeleteEnabled; depois rota normal com qa-r03."
+    },
+    {
+      "actionIds": [
+        "notices.publish"
+      ],
+      "pending": "20260909191100 (metricas por geracao) fica fora: depende de colunas de 20260820220500 ausentes em producao; sem worker nao ha geracoes."
+    }
+  ],
+  "proposedDeltas": [],
+  "questionsToOwner": [],
+  "r03History": {
+    "revision": 12,
+    "round": "E2-R03-20260910",
+    "head": "1abe6909646cc038af33687dc829c0e95e255381",
+    "status": "frontend-backend-local-green-golden-approved-pgtap-blocked",
+    "knownPendencies": [
+      "base.fase0Head foi publicada como 1adb070c9; a branch foi posteriormente rebaseada na base integrada do coordenador 552058da0, preservando o composto aprovado. E2E remoto ainda depende da aplicação do pacote pelo coordenador.",
+      "Avisos: migration/pgTAP e worker nominal precisam ser revalidados; pg_cron e worker pertencem ao coordenador.",
+      "Circulares: detalhe produtivo agora expõe encerramento e exclusão confirmados; aplicar migration e validar gateway/RLS antes de ligar a chave de composição.",
+      "Agenda: compatibilizar contexto interno039 e validar readers/comandos produtivos; telas seguem no composto publicado da Fase 0."
+    ],
+    "tests": {
+      "passed": 475,
+      "failed": 0,
+      "blocked": 1,
+      "skipped": 2,
+      "evidence": [
+        "Bateria completa apps/superadmin/test/features/agenda + notices + circulars: 475 PASS, 2 SKIP previstos, 0 falhas",
+        "Goldens do recorte após aprovação visual dos anexos: matriz aprovada passou; commit de referências na base integrada: 29188430d27a57fd53075d1f58400ffca546134e",
+        "Avisos: indicador circular de estado permanece na linha do título, com expansão acessível do rótulo; composição aprovada pelo Owner nos anexos",
+        "Após o rebase em 552058da0: Agenda calendar goldens 18/18, Agenda additional surfaces 24/24, Agenda remote states 23/23, Avisos diretório 4/4, Avisos formulário 1/1 e Circulares diretório 2/2",
+        "Teste de regressão do indicador de Avisos reexecutado após o handoff: 3/3 PASS (linha única, alvo 48 px sem sobreposição, foco/semântica)",
+        "flutter analyze dos arquivos alterados: No issues found",
+        "supabase start/test db --local: BLOQUEADO no bootstrap da migration legada 20260820152528_forms_editor_application_capability_guard.sql, pois o schema app_private não existe; não foi criado schema manualmente nem alterada a ordem das migrations"
+      ]
+    },
+    "changes": [
+      {
+        "screen": "Etapa 2 → apps/superadmin → Circulares → Diretório/Detalhe → Excluir → circulars.delete",
+        "actionIds": [
+          "circulars.delete"
+        ],
+        "whatChanged": "Migration forward-only cria superadmin_circular_delete_v2 com capacidade circulars.manage, tenant/contexto interno, versão otimista, idempotência, auditoria e exclusão lógica; repositório/contrato chama RPC sem segredo.",
+        "criteria": [
+          "RPC nominal e grant authenticated",
+          "anon/service_role sem execute",
+          "deleted_at/status archived",
+          "receipt com hash e action delete",
+          "audit internal_circular_deleted"
+        ],
+        "sha": "f15a9eec2c8bd50b3049016827741502117ba293"
+      },
+      {
+        "screen": "Etapa 2 → apps/superadmin → Circulares → Detalhe → Encerrar respostas/Excluir rascunho → circulars.close, circulars.delete",
+        "actionIds": [
+          "circulars.detail",
+          "circulars.close",
+          "circulars.delete"
+        ],
+        "whatChanged": "Detalhe administrativo preserva managementVersion, expõe ações confirmadas por estado, chama os callbacks produtivos dos RPCs close/delete com request UUID e retorna ao diretório após exclusão.",
+        "criteria": [
+          "Encerramento somente em publicada/agendada",
+          "Exclusão somente em rascunho",
+          "confirmação explícita",
+          "versão otimista preservada",
+          "router produtivo injeta gateway interno"
+        ],
+        "sha": "e4e9b9a0356b1d71f35b00c8c0c035a6a9b5c0b1"
+      },
+      {
+        "screen": "Etapa 2 → apps/superadmin → Comunicação → Avisos → Diretório compacto → notices.list",
+        "actionIds": [
+          "notices.list"
+        ],
+        "whatChanged": "Indicador circular de estado voltou à linha do título, entre o título e o menu; o chip de tipo permanece abaixo e o título é mantido em uma linha no mobile por redução proporcional quando necessário.",
+        "criteria": [
+          "círculo distingue estados",
+          "rótulo expande por toque, foco ou hover",
+          "alvo mínimo de 48 px",
+          "sem sobreposição com título ou ações",
+          "goldens aprovados nos anexos"
+        ],
+        "sha": "9ee216986c1e5ff69d8ce22d3e3b3cad4cd80d94"
+      },
+      {
+        "screen": "Etapa 2 → apps/superadmin → Agenda/Avisos/Circulares → Goldens na base integrada → action visual",
+        "actionIds": [
+          "agenda.view",
+          "agenda.create",
+          "agenda.detail",
+          "notices.list",
+          "notices.create",
+          "circulars.list"
+        ],
+        "whatChanged": "Referências pixel foram regeneradas somente para os estados divergentes após o rebase na composição Fase 0 integrada e aprovadas pelos anexos do Owner.",
+        "criteria": [
+          "Agenda criação mobile claro/escuro",
+          "Avisos diretório e formulário",
+          "Circulares diretório e texto 200%",
+          "suítes golden afetadas verdes"
+        ],
+        "sha": "29188430d27a57fd53075d1f58400ffca546134e"
+      }
+    ],
+    "baselinePackages": [
+      {
+        "actionIds": [
+          "agenda.view",
+          "agenda.create",
+          "agenda.detail",
+          "agenda.edit",
+          "agenda.request",
+          "agenda.permissions",
+          "agenda.location"
+        ],
+        "migrationShas": [
+          "be28f0c0bd5ac626df925b7dc1d577af0b0e8dca",
+          "09bf4e71b81711cfd5a44852c94805415b5ab237"
+        ],
+        "state": "existing-local-contract; pgTAP/remote pending"
+      },
+      {
+        "actionIds": [
+          "notices.list",
+          "notices.create",
+          "notices.edit",
+          "notices.schedule",
+          "notices.publish",
+          "notices.archive"
+        ],
+        "migrationShas": [
+          "ca55088753b10330b1890fbec35158854118f2ed",
+          "5ad9b9b00e5ab060d81d01aaf406cbea30e254b6"
+        ],
+        "state": "existing-local-contract; pgTAP/worker/remote pending"
+      },
+      {
+        "actionIds": [
+          "circulars.list",
+          "circulars.filter",
+          "circulars.create",
+          "circulars.edit",
+          "circulars.detail",
+          "circulars.schedule",
+          "circulars.publish",
+          "circulars.close",
+          "circulars.delete",
+          "circulars.respond",
+          "circulars.attach"
+        ],
+        "migrationShas": [
+          "1944bd957a5771b9b3b9e2cf559e15f3cacd3c02",
+          "dac463464dc64bb4f79b8683d39a2157426e9f60"
+        ],
+        "state": "local-contract-plus-detail-actions; pgTAP/remote pending"
+      }
+    ],
+    "coordinatorHandoff": {
+      "generatedAt": "2026-09-10T16:20:00-03:00",
+      "base": "552058da0",
+      "branchHead": "5883ad69fbf424a9f23d7686317acd016916ef1d",
+      "progress": {
+        "overallPct": 50,
+        "basis": "2 de 4 gates ponderados fechados: FE/composição local e documentação/commits verdes; backend/pgTAP e E2E remoto retidos por ambiente/aplicação.",
+        "frontendLocal": "100% das superfícies alteradas e goldens afetados verificados; não equivale a aceite das 24 ações.",
+        "backend": "migration, contratos e pgTAP entregues; execução local bloqueada antes de app_private na migration legada.",
+        "e2e": "0% remoto; aguardando aplicação do coordenador, gateway/RLS nominal e reload contra ambiente autorizado."
+      },
+      "commits": [
+        {
+          "sha": "9ee216986c1e5ff69d8ce22d3e3b3cad4cd80d94",
+          "actionIds": [
+            "notices.list"
+          ],
+          "summary": "indicador circular de estado no cartão compacto de Avisos"
+        },
+        {
+          "sha": "377e1b1f9",
+          "actionIds": [
+            "agenda.view",
+            "agenda.create",
+            "agenda.detail",
+            "notices.list",
+            "notices.create",
+            "circulars.list"
+          ],
+          "summary": "aprovação visual dos três anexos"
+        },
+        {
+          "sha": "29188430d27a57fd53075d1f58400ffca546134e",
+          "actionIds": [
+            "agenda.view",
+            "agenda.create",
+            "agenda.detail",
+            "notices.list",
+            "notices.create",
+            "circulars.list"
+          ],
+          "summary": "goldens regenerados na base integrada"
+        },
+        {
+          "sha": "1abe6909646cc038af33687dc829c0e95e255381",
+          "actionIds": [
+            "agenda.view",
+            "agenda.create",
+            "agenda.detail",
+            "notices.list",
+            "notices.create",
+            "circulars.list"
+          ],
+          "summary": "rebase e goldens integrados"
+        },
+        {
+          "sha": "0fe5b6ad7",
+          "actionIds": [
+            "agenda.view",
+            "agenda.create",
+            "agenda.detail",
+            "notices.list",
+            "notices.create",
+            "circulars.list"
+          ],
+          "summary": "head do handoff reconciliado com a base do coordenador"
+        },
+        {
+          "sha": "5883ad69fbf424a9f23d7686317acd016916ef1d",
+          "actionIds": [
+            "notices.list"
+          ],
+          "summary": "regressão de layout/semântica do indicador reexecutada e registrada"
+        }
+      ],
+      "pendingForCoordinator": [
+        {
+          "actionIds": [
+            "agenda.view",
+            "agenda.create",
+            "agenda.detail",
+            "agenda.edit",
+            "agenda.request",
+            "agenda.permissions",
+            "agenda.location"
+          ],
+          "pending": "replay nominal de readers/comandos, RLS/tenant, persistência e reload"
+        },
+        {
+          "actionIds": [
+            "notices.list",
+            "notices.create",
+            "notices.edit",
+            "notices.schedule",
+            "notices.publish",
+            "notices.archive"
+          ],
+          "pending": "revalidar migrations/pgTAP, métricas por geração, audiência, pg_cron/worker e prova de persistência/reload; pg_cron/worker fora desta frente"
+        },
+        {
+          "actionIds": [
+            "circulars.list",
+            "circulars.filter",
+            "circulars.create",
+            "circulars.edit",
+            "circulars.detail",
+            "circulars.schedule",
+            "circulars.publish",
+            "circulars.close",
+            "circulars.delete",
+            "circulars.respond",
+            "circulars.attach"
+          ],
+          "pending": "validar gateway/RLS/tenant e E2E; ligar superadminCircularDeleteEnabled somente após pgTAP e gateway nominal"
+        }
+      ],
+      "environmentBlocker": "supabase start/test db --local para na migration 20260820152528_forms_editor_application_capability_guard.sql porque app_private ainda não existe; não houve criação manual de schema nem alteração da ordem histórica.",
+      "handoffRule": "coordenador Claude deve consumir este arquivo, os actionIds e os SHAs; não há alteração direta no checkout/JSON de coordenação desta frente."
+    },
+    "sharedFindings": [
+      "O código histórico ainda modela requires_mfa/aal2 para algumas capacidades de publicação; o alinhamento R03 diz MFA fora do MVP. A remoção do bloqueio no contexto interno é compartilhada e deve ser coordenada, não duplicada nesta frente.",
+      "Owner aprovou os anexos visuais: Agenda e Circulares seguem integralmente as referências; em Avisos, o círculo sinaliza ativo, inativo, rascunho e demais estados. Goldens divergentes foram regravados e a matriz passou.",
+      "Não declarar E2E: base.fase0Head publicada, mas Docker/Postgres local continua ocupado por outra frente e aplicação remota permanece reservada ao coordenador."
+    ],
+    "compositionKeys": [
+      {
+        "package": "circulars.delete",
+        "key": "superadminCircularDeleteEnabled",
+        "default": false,
+        "owner": "coordenador",
+        "reason": "ligar somente após migration aplicada e gateway verificado"
+      }
+    ]
+  }
 }
