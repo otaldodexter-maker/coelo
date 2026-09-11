@@ -5771,6 +5771,15 @@ GoRouter createSuperadminRouter({
                   context,
                   fallbackRouteName: SuperadminRoutes.circularsName,
                 ),
+                // P50 = B: a tela de resposta e o leitor do Principal hospedado
+                // no Superadmin (mesma rota do Acontece), com o repositorio real.
+                onRespond: principalCircularRepository == null ||
+                        principalCircularResponseRepository == null
+                    ? null
+                    : () => context.pushNamed(
+                        SuperadminRoutes.principalHappensCircularName,
+                        pathParameters: {'circularId': state.pathParameters['circularId']!},
+                      ),
                 onEdit: () => context.goNamed(
                   SuperadminRoutes.circularEditName,
                   pathParameters: {'circularId': state.pathParameters['circularId']!},
