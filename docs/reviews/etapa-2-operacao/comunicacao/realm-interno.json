@@ -1,15 +1,15 @@
 {
   "grupo": "realm-interno",
-  "revision": 41,
+  "revision": 42,
   "round": "E2-R06-20260911",
-  "updatedAt": "2026-09-11T20:05-03:00",
+  "updatedAt": "2026-09-11T20:14-03:00",
   "app": "Claude",
   "modelo": "Opus 5 (esforco medio)",
   "conversa": "R06 · Realm interno e segurança",
   "coordenador": "R06 · Coordenação (coordenacao.json rev 52+)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-realm-interno",
   "branch": "work/etapa2-r06-realm-interno",
-  "head": "f4afa8d4b (rev 41; head da branch e o commit seguinte)",
+  "head": "66e383d23 (pacote); JSON no commit seguinte",
   "upstream": "origin/work/etapa2-r06-realm-interno (push no primeiro commit)",
   "t0": "coordenacao.json ainda em rev 51 (sem T0 da R06); T0 assumido 19:37 (abertura); T0+2h = 21:37, revisao ate 21:47. Correcao: a rev 40 marcou 20:31 por erro de relogio; a hora real era ~19:45",
   "escopo": {
@@ -35,12 +35,12 @@
     {
       "ordem": 1,
       "arquivo": "packages/coelo_database/candidatos/realm-interno/20260912210000_internal_actor_scope_root_v1.sql",
-      "assunto": "SEGURANCA (raiz da ponte de ator): R1 superadmin_internal_actor_institution_access_sync (130000) dava membership owner + institution_admin em TODAS as instituicoes a qualquer espelho interno ativo, sem olhar o escopo -> passa a respeitar o escopo (plataforma: todas; instituicao: so a propria) e desativa (inactive + revoked_at) memberships de espelho fora do escopo; R2 has_platform_permission(text,uuid) (171000/P7): para identidade INTERNA, a membership espelhada com escopo de instituicao so conta quando institution_id e informado e coincide (generaliza o 211200 aos 12 helpers, 188 chamadores e 69 policies); pessoas do realm people-based mantem P7. Nenhum helper reescrito. Helper novo app_private.superadmin_internal_actor_scope_targets(). Backfill: sync reconciliado (0 linhas esperadas em producao: 0 escopadas)",
-      "pgTAP": "supabase/tests/internal_actor_scope_root_v1_test.sql 44/44 (antes da correcao: 16 vermelhos = 12 helpers + sync + um argumento); prova por familia: Rotina e Cuidado aceitam a escopada SO pelo contexto da propria instituicao (has_context_permission em A true, em B false); Pessoas, Seguranca infantil, Formularios (2), Suporte, Conta, Perfis (2), Arquivos e Identidade da instituicao negam 42501; controle: identidade de plataforma passa nos 12; P7 people-based intacto; ACL preservada",
+      "assunto": "SEGURANCA (raiz da ponte de ator): R1 superadmin_internal_actor_institution_access_sync (130000) dava membership owner + institution_admin em TODAS as instituicoes a qualquer espelho interno ativo, sem olhar o escopo -> passa a respeitar o escopo (plataforma: todas; instituicao: so a propria) e desativa (inactive + revoked_at) memberships de espelho fora do escopo; R2 has_platform_permission(text,uuid) (171000/P7): para identidade INTERNA, a membership espelhada com escopo de instituicao so conta quando institution_id e informado e coincide (generaliza o 211200 aos 12 helpers, 188 chamadores e 69 policies); pessoas do realm people-based mantem P7. Nenhum helper reescrito. Helper novo app_private.superadmin_internal_actor_scope_targets(). Backfill: sync reconciliado (0 linhas esperadas em producao: 0 escopadas). Revisao 42: a reconciliacao so desativa membership FORA do escopo (ou de espelho inativo); membership de espelho de plataforma numa instituicao em rascunho/arquivada (lote 27, P42) e preservada; inserts continuam so em instituicoes ativas",
+      "pgTAP": "supabase/tests/internal_actor_scope_root_v1_test.sql 46/46 (antes da correcao: 16 vermelhos = 12 helpers + sync + um argumento); prova por familia: Rotina e Cuidado aceitam a escopada SO pelo contexto da propria instituicao (has_context_permission em A true, em B false); Pessoas, Seguranca infantil, Formularios (2), Suporte, Conta, Perfis (2), Arquivos e Identidade da instituicao negam 42501; controle: identidade de plataforma passa nos 12; P7 people-based intacto; membership previa em instituicao em rascunho preservada; ACL preservada",
       "commit": "fc8094553",
       "dependeDe": "171000, 220400, 130000, 211200 (todos em producao)",
       "chaveDeComposicao": "nenhuma",
-      "estado": "pronto para o coordenador aplicar; regressao das 201 suites: 4753 ok / 231 not ok, e as 66 suites vermelhas sao identicas com as funcoes revertidas (0 regressoes; docs/reviews/evidence/etapa-2/r06-realm-interno/regressao-pgtap-2026-09-11.md)",
+      "estado": "pronto para o coordenador aplicar; regressao das 201 suites (versao da rev 40): 4753 ok / 231 not ok, 66 suites vermelhas identicas com as funcoes revertidas (0 regressoes); a versao da rev 42 reexecutou as 27 suites que tocam pontes/has_platform_permission: iguais, exceto access_profile_models_crud_catalog_test (1 falha \"oversized search input\" que ocorre tambem com as funcoes revertidas: dependente de estado do descartavel, nao do pacote)",
       "avisoG4": "P48 (item 6 da G4) muda o MESMO sync do 130000 (owner -> institution_admin, operations -> leitura): o pacote da G4 deve nascer sobre o corpo do 20260912210000 (manter app_private.superadmin_internal_actor_scope_targets() como fonte do escopo) e ser aplicado DEPOIS dele; combinado pelo JSON, nao pelo chat"
     }
   ],
@@ -53,8 +53,8 @@
     "seguranca transversal (sem action_id)": "nenhum delta de estado por action_id: o pacote fecha uma exposicao latente (0 identidades escopadas) e nao muda o estado de acoes; se o coordenador quiser, anotar nos tres md como correcao de seguranca da R06 (raiz da ponte de ator)"
   },
   "loop": "a agendar: /loop 15m",
-  "status": "itens (1), (2), (3) e (4) fechados no descartavel; pacote 20260912210000 pronto; regressao 0; handoff e skills-deltas publicados",
-  "proximoPasso": "ate T0+2h: reconferir o pacote (ponytail), responder ao coordenador no JSON se ele gravar T0/ACK; se sobrar tempo, medir em producao (somente leitura) as suites historicas que falham por MFA para a revisao profunda",
+  "status": "itens (1)-(4) fechados; pacote na rev 42 (46/46); aguardando ACK/aplicacao do coordenador; sigo em verificacoes ate T0+2h",
+  "proximoPasso": "reexecutar a regressao completa sobre a versao da rev 42 em segundo plano; responder ao coordenador no JSON",
   "contratoInstitutionContacts": {
     "rpc": "public.superadmin_institution_contacts_edit_v1(p_request_id uuid, p_institution_id uuid, p_expected_version bigint, p_payload jsonb) -> envelope {ok,data,error}",
     "capacidade": "institution.update; platform_role owner|operations; scope institution so a propria instituicao (outro tenant -> SAI_PERMISSION_DENIED, auditado)",
