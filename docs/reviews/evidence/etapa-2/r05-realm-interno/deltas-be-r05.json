@@ -1,0 +1,58 @@
+[
+  {
+    "action_id": "institutions.edit",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "R05 realm-interno: institution_contacts_v1 (20260911210000) aplicado em producao (lote 28): superadmin_institution_contacts_edit_v1 persiste documento (CNPJ), contato, representantes legais e administradores como pessoas do realm; detail_v2 devolve representatives/administrators mascarados. pgTAP 38/38 com replay, versao obsoleta, validacao e negativa cross-tenant. done quando a frente estrutura persistir e recarregar na rota real.",
+    "evidencia": "evidence/etapa-2/r05-realm-interno/handoff.md; comunicacao/realm-interno.json r17 (contratoInstitutionContacts)",
+    "certificacao": {"evidence": "evidence/etapa-2/r05-realm-interno/handoff.md", "revision": "be7ed05b0", "environment": "descartavel coelo_realm_r05 (baseline + ordem de producao) + producao lote 28", "recordedAt": "2026-09-11T13:10:00-03:00"}
+  },
+  {
+    "action_id": "chat.attach",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "R05 realm-interno: contrato de anexo do chat interno (20260911210200, lote 32): prepare/authorize_finalize/authorize_read (authenticated) e finalize/expire (service_role) sobre chat_attachment_metadata e R2 coelo-media-prod, sem Stream; thread ja devolve attachments[]. pgTAP 28/28 (limites, replay, mismatch, cross-tenant, expiracao). Gate: Edge Function chat-media + cron de expire; cliente do principal-chat.",
+    "evidencia": "evidence/etapa-2/r05-realm-interno/handoff.md; comunicacao/realm-interno.json r18 (contratoChatAttach)",
+    "certificacao": {"evidence": "evidence/etapa-2/r05-realm-interno/handoff.md", "revision": "be7ed05b0", "environment": "descartavel coelo_realm_r05 + producao lote 32", "recordedAt": "2026-09-11T13:10:00-03:00"}
+  },
+  {
+    "action_id": "forms.upload",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "R05 realm-interno: forms_question_media_r2_v1 (20260911210300, lote 33): superadmin_form_media_prepare_v2 + authorize_finalize_v2 (authenticated, forms.manage) e form_media_finalize_question_r2_v1 (service_role) sobre o catalogo 230007 (media_assets form-image/question-image + bindings + variants) no R2. pgTAP 25/25. Gate: form-media trocar os ramos de Supabase Storage por R2; answer-image (respostas) continua no fluxo legado form_assets.",
+    "evidencia": "evidence/etapa-2/r05-realm-interno/handoff.md; comunicacao/realm-interno.json r19 (contratoFormsFiles)",
+    "certificacao": {"evidence": "evidence/etapa-2/r05-realm-interno/handoff.md", "revision": "be7ed05b0", "environment": "descartavel coelo_realm_r05 + producao lote 33", "recordedAt": "2026-09-11T13:10:00-03:00"}
+  },
+  {
+    "action_id": "forms.resolve-file",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "R05 realm-interno: superadmin_form_media_resolve_v2 (forms.read, escopo, so ready, auditado; object_key + ttl 300 s para o GET assinado) no pacote 20260911210300 (lote 33). pgTAP 25/25. Gate: form-media em R2.",
+    "evidencia": "evidence/etapa-2/r05-realm-interno/handoff.md",
+    "certificacao": {"evidence": "evidence/etapa-2/r05-realm-interno/handoff.md", "revision": "be7ed05b0", "environment": "descartavel coelo_realm_r05 + producao lote 33", "recordedAt": "2026-09-11T13:10:00-03:00"}
+  },
+  {
+    "action_id": "forms.download",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "R05 realm-interno: mesma RPC de resolve (superadmin_form_media_resolve_v2) serve o download da imagem de pergunta; pgTAP 25/25. Gate: form-media em R2.",
+    "evidencia": "evidence/etapa-2/r05-realm-interno/handoff.md",
+    "certificacao": {"evidence": "evidence/etapa-2/r05-realm-interno/handoff.md", "revision": "be7ed05b0", "environment": "descartavel coelo_realm_r05 + producao lote 33", "recordedAt": "2026-09-11T13:10:00-03:00"}
+  },
+  {
+    "action_id": "forms.expire-file",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "R05 realm-interno: form_media_expire_question_r2_v1 (service_role) marca pendentes com ticket vencido como deleted e enfileira a limpeza fisica (form_media_claim_cleanup_r2_v1 / mark_purged); pgTAP 25/25. Gate: cron de expire e worker de limpeza.",
+    "evidencia": "evidence/etapa-2/r05-realm-interno/handoff.md",
+    "certificacao": {"evidence": "evidence/etapa-2/r05-realm-interno/handoff.md", "revision": "be7ed05b0", "environment": "descartavel coelo_realm_r05 + producao lote 33", "recordedAt": "2026-09-11T13:10:00-03:00"}
+  },
+  {
+    "action_id": "forms.delete-file",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "R05 realm-interno: superadmin_form_media_delete_v2 (forms.manage, idempotente, auditado) exclui o asset e enfileira as chaves para o worker apagar no R2; pgTAP 25/25. Gate: worker de limpeza.",
+    "evidencia": "evidence/etapa-2/r05-realm-interno/handoff.md",
+    "certificacao": {"evidence": "evidence/etapa-2/r05-realm-interno/handoff.md", "revision": "be7ed05b0", "environment": "descartavel coelo_realm_r05 + producao lote 33", "recordedAt": "2026-09-11T13:10:00-03:00"}
+  }
+]

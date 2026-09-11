@@ -1,15 +1,15 @@
 {
   "grupo": "realm-interno",
-  "revision": 18,
+  "revision": 22,
   "round": "E2-R05-20260911",
-  "updatedAt": "2026-09-11T12:43-03:00",
+  "updatedAt": "2026-09-11T13:25-03:00",
   "app": "Claude",
   "modelo": "Opus 5 (esforco medio)",
   "conversa": "R05 · Realm interno e Chat backend",
   "coordenador": "R05 · Coordenação da tarde (coordenacao.json)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-realm-interno",
   "branch": "work/etapa2-r05-realm-interno",
-  "head": "ab6f0e3a0",
+  "head": "4526ea75b",
   "upstream": "origin/work/etapa2-r05-realm-interno (push no primeiro commit)",
   "historicoR04": {
     "miniRevisao": {
@@ -194,10 +194,10 @@
     ],
     "foraDoRecorte": "UI (estrutura, formularios, principal-chat), aplicacao em producao (coordenador), Cloudflare com custo"
   },
-  "primeiroGate": "(4) forms_files: contrato de upload/resolve/download/expire/delete no R2 sobre private_media_catalog (form-image) e form_file_jobs; medir o que 230007/230008/230011 ja tem",
+  "primeiroGate": "(7) code review R04: 180060 create or replace e sobrecarga de 14 args de audit_append_superadmin_internal (so se sobrar tempo); antes, revisar o pacote 2 contra a producao real via coordenador e escrever handoff",
   "provaLocal": "projeto descartavel coelo_realm_r05 (portas 625xx) em preparacao: baseline + seed + ordem-de-aplicacao-producao.txt via psql do container",
   "testes": {
-    "pgTAP": "38 + 12 + 28 = 78 PASS / 0 FAIL nesta rodada"
+    "pgTAP": "136 + 4 + 14 = 154 PASS / 0 FAIL nesta rodada (9 suites novas); Deno 7/7 (chat-media 5, image_dimensions 2)"
   },
   "bloqueio": null,
   "pedidosAoCoordenador": [],
@@ -221,7 +221,7 @@
       "commit": "5c111f09f",
       "dependeDe": "nada",
       "chaveDeComposicao": "nenhuma",
-      "estado": "pronto para o coordenador aplicar; guardar o NOTICE 'N antes, 0 depois' na evidencia"
+      "estado": "APLICADO em producao (lote 30)"
     },
     {
       "ordem": 3,
@@ -231,21 +231,85 @@
       "commit": "ab6f0e3a0",
       "dependeDe": "240000..240400 e 220400 em producao (ja estao)",
       "chaveDeComposicao": "Edge Function chat-media (a escrever/implantar no padrao de moments-media: PUT assinado, HEAD+sha256 no finalize, GET assinado no read; COELO_R2_* dos secrets) + cron de expire; cliente do principal-chat-sistema liga o picker a prepare/finalize/read",
-      "estado": "pronto para o coordenador aplicar (SQL); a Edge Function e o cron ficam registrados como gate de chat.attach"
+      "estado": "APLICADO em producao (lote 32); Edge Function chat-media e cron ficam como gate"
+    },
+    {
+      "ordem": 4,
+      "arquivo": "packages/coelo_database/candidatos/realm-interno/20260911210300_forms_question_media_r2_v1.sql",
+      "assunto": "forms_files (question-image) no R2 sobre o catalogo 230007: prepare/authorize_finalize (authenticated, forms.manage), finalize/expire/claim_cleanup/mark_purged (service_role), resolve (forms.read) e delete (forms.manage); tickets e fila de limpeza em app_private",
+      "pgTAP": "supabase/tests/forms_question_media_r2_v1_test.sql 25/25; forms_superadmin_media_read_r2_v1_test 82/82 segue verde",
+      "commit": "ceff25a81",
+      "dependeDe": "230004, 230007, 230011 em producao (ja estao)",
+      "chaveDeComposicao": "Edge Function form-media: trocar os ramos prepare/finalize/download/discard (hoje Supabase Storage FORMS_BUCKET) para R2 chamando estas RPCs (PUT assinado, HEAD+sha256+dimensoes no finalize, GET assinado no resolve) + cron de expire e worker de limpeza; cliente da frente formularios consome",
+      "estado": "APLICADO em producao (lote 33); form-media em R2 e cron ficam como gate"
+    },
+    {
+      "ordem": 5,
+      "arquivo": "packages/coelo_database/candidatos/realm-interno/20260911210400_structure_hierarchy_p36_v1.sql",
+      "assunto": "P36 no servidor: atividade ativa exige ao menos um activity_group_links ativo (gatilhos diferidos activity_definition_requires_group / activity_group_links_retain_one); unidade->instituicao e turma->unidade ja garantidos pela baseline (NOT NULL + FK compostas), provados no mesmo pgTAP",
+      "pgTAP": "supabase/tests/structure_hierarchy_p36_v1_test.sql 13/13; activities v2 commands 28, directory 97, save_v2 46, location_create 33 verdes; activity_management_end_to_end_test com 16 falhas iguais ao espelho (legado Storage)",
+      "commit": "d8e5f9b48",
+      "dependeDe": "180020..180150 em producao (ja estao)",
+      "chaveDeComposicao": "nenhuma; o assistente de Atividades (frente estrutura) liga a turma antes de publicar e mapeia 23514 'activity must retain at least one active group link' (detail P36_ACTIVITY_REQUIRES_GROUP)",
+      "estado": "APLICADO em producao (lote 35)"
+    },
+    {
+      "ordem": 6,
+      "arquivo": "packages/coelo_database/candidatos/realm-interno/20260911210500_unit_care_policies_notifications_v1.sql",
+      "assunto": "P32 regra alvo: public.unit_care_policies (child_safety_mode/medication_mode accept_to_release|inclusion_only|exclusion_only[|not_tracked], notify_unit/notify_child_hierarchy/notify_other_guardians, defaults ligados) com superadmin_unit_care_policy_get_v1/set_v1 (units.read/units.update, escopo, recibo, auditoria); fan-out no sino (context_notification_events/recipients) para unidade, hierarquia da crianca e demais responsaveis por gatilho em autorizacoes (pedido/decisao/status), restricoes e planos de medicacao",
+      "pgTAP": "supabase/tests/unit_care_policies_notifications_v1_test.sql 20/20 com a ordem real do espelho (baseline + ordem de producao + 130000/170100/170200 de dev)",
+      "commit": "be7ed05b0",
+      "dependeDe": "170500..172100, 010xxx (cuidado/medicacao) e 220400 em producao (ja estao)",
+      "chaveDeComposicao": "tela de politicas macro da unidade (frente formularios-cuidado-rotina) consome get/set; o sino ja le context_notification_recipients pela policy own_read",
+      "estado": "APLICADO em producao (lote 36)"
+    },
+    {
+      "ordem": 7,
+      "arquivo": "packages/coelo_database/candidatos/realm-interno/20260911210600_institution_people_handles_v1.sql",
+      "assunto": "Decisao 16: detail_v2 devolve handle (@ de public.person_handles) em representatives[] e administrators[]",
+      "pgTAP": "supabase/tests/institution_people_handles_v1_test.sql 4/4; institution_contacts_v1_test 38/38 (asserção do @ tornada agnóstica)",
+      "commit": "e9fb559b3",
+      "dependeDe": "170100 (lote 31) e 210000 (lote 28)",
+      "chaveDeComposicao": "cliente mostra o @ e usa superadmin_person_handle_get/set/availability (170100) para editar",
+      "estado": "pronto"
+    },
+    {
+      "ordem": 8,
+      "arquivo": "packages/coelo_database/candidatos/realm-interno/20260911210700_chat_media_expire_dispatch_v1.sql",
+      "assunto": "cron coelo-chat-media-expire (*/5) chamando a Edge Function chat-media action expire com x-worker-secret; URL e segredo no Vault (chat_media_worker_url, chat_media_worker_secret); devolve null enquanto faltarem",
+      "pgTAP": "sem suite (mesmo padrao de 230023); provado no descartavel: job agendado e funcao devolve null sem Vault",
+      "commit": "3df6c8648",
+      "dependeDe": "210200; deploy de chat-media",
+      "chaveDeComposicao": "coordenador grava chat_media_worker_url/secret no Vault e CHAT_MEDIA_WORKER_SECRET nos secrets (valor gerado de arquivo local, nunca em chat)",
+      "estado": "pronto"
+    },
+    {
+      "ordem": 9,
+      "arquivo": "packages/coelo_database/candidatos/realm-interno/20260911210800_forms_answer_media_r2_v1.sql",
+      "assunto": "answer-image no R2: form_prepare_asset_upload_r2_v1 (authenticated; legado + espelho media_assets/binding), form_asset_r2_descriptor_v1 e form_media_finalize_answer_r2_v1 (service_role; chama form_finalize_asset_for_worker e grava variante/ready), gatilho de discard/expire -> deleted + fila de limpeza; leitura ja atendida por 230011",
+      "pgTAP": "supabase/tests/forms_answer_media_r2_v1_test.sql 14/14; forms_question_media 25, media_read 82, xlsx 313 seguem verdes",
+      "commit": "4526ea75b",
+      "dependeDe": "210300 (lote 33)",
+      "chaveDeComposicao": "form-media: prepare chama form_prepare_asset_upload_r2_v1 e assina PUT no object_key; finalize chama form_finalize_asset_upload (usuario) -> form_asset_r2_descriptor_v1 -> HEAD/bytes/sha256/dimensoes (_shared/image_dimensions.ts) -> form_media_finalize_answer_r2_v1; download continua em superadmin_form_authorize_media_read_v2 + presign GET",
+      "estado": "pronto"
     }
   ],
   "pendenciasRegistradas": [
     "superadmin_internal_institution_edit_core_test: 7 falhas pre-existentes no espelho de producao (MFA fora do MVP: testes 31/44 esperam AAL2; 24/27/28/38/39 dependem do fluxo antigo) - atualizar a suite na revisao profunda",
     "superadmin_internal_chat_groups_v1_test: erro 'activity actor provenance denied' na fixture de atividades, pre-existente no espelho (180020-180080 mudaram a provenance); suite precisa de fixture nova",
     "institution_directory (view) continua sem SELECT em plans para authenticated: leitura direta falha; cliente le por RPC; decisao de code review (grant em plans ou remover grant da view)",
-    "chat.attach: Edge Function chat-media e cron de expire nao fazem parte deste pacote SQL"
+    "chat.attach: Edge Function chat-media e cron de expire nao fazem parte deste pacote SQL",
+    "forms_files: answer-image (uploads de resposta) continua em form_assets + Supabase Storage no form-media; migrar para R2 e o proximo pacote (prepare/finalize anonimos com secret hash)"
   ],
   "deltaPropostoBE": {
     "institutions.edit": "backend done quando a estrutura persistir e recarregar na rota real (SQL ja em producao, lote 28)",
-    "chat.attach": "backend local-green (contrato + pgTAP); done apos aplicar + Edge Function chat-media"
+    "chat.attach": "backend local-green (contrato + pgTAP); done apos aplicar + Edge Function chat-media",
+    "forms.upload/resolve-file/download/expire-file/delete-file": "backend local-green (contrato + pgTAP) para question-image; done apos aplicar + form-media em R2",
+    "units.create/groups.create/activities.create (P36)": "sem mudanca de estado; regra do servidor pronta (pacote 5)",
+    "child-safety.create/edit, medication.create (P32 alvo)": "backend local-green do complemento (politicas + sino); done apos aplicar"
   },
   "loop": "cron 9ded10f6 a cada 15 min ate 15:45",
-  "status": "em andamento; itens 1-3 entregues, item 4 em curso",
+  "status": "entrega principal completa; trabalho independente em curso ate 15:45",
   "contratoInstitutionContacts": {
     "rpc": "public.superadmin_institution_contacts_edit_v1(p_request_id uuid, p_institution_id uuid, p_expected_version bigint, p_payload jsonb) -> envelope {ok,data,error}",
     "capacidade": "institution.update; platform_role owner|operations; scope institution so a propria instituicao (outro tenant -> SAI_PERMISSION_DENIED, auditado)",
@@ -290,5 +354,74 @@
     ],
     "thread": "superadmin_chat_thread_v2 ja devolve attachments[{id,file_name,content_type,byte_size,sha256,upload_status}] (240100/240200); nada muda na assinatura",
     "gateRestante": "Edge Function chat-media (deploy do coordenador; sem custo no nivel gratuito do R2) e cron de expire; ate la chat.attach fica backend local-green com contrato publicado"
+  },
+  "contratoFormsFiles": {
+    "escopo": "imagem de pergunta (question-image) na autoria do Superadmin; answer-image (respostas) continua no fluxo legado form_assets + superadmin_form_authorize_media_read_v2 (230011) - migrar para R2 e pendencia registrada",
+    "rpcs": {
+      "superadmin_form_media_prepare_v2(p_request_id uuid, p_form_id uuid, p_form_version_id uuid, p_item_id uuid, p_mime_type text, p_byte_size bigint, p_sha256 text)": "forms.manage; formulario criado no realm interno e no escopo; data {asset_id, form_id, object_key, bucket:'coelo-media-prod', mime_type, byte_size, sha256, status:'pending', finalize_ticket, expires_at(+30min), replayed}; cria media_assets(form-image/question-image) + media_bindings(posicao seguinte do item) + ticket; idempotente por (identidade, request_id)",
+      "superadmin_form_media_authorize_finalize_v2(p_asset_id uuid)": "forms.manage, so a autora do ticket; data {asset_id, object_key, bucket, mime_type, finalize_ticket, expires_at}",
+      "form_media_finalize_question_r2_v1(p_asset_id uuid, p_finalize_ticket uuid, p_byte_size bigint, p_checksum_sha256 text, p_pixel_width int, p_pixel_height int)": "service_role (Edge Function apos medir o objeto); iguais ao anunciado e ate 2560px -> media_variants original + asset ready; diferentes -> asset deleted + fila de limpeza + FORM_MEDIA_MISMATCH 422",
+      "superadmin_form_media_resolve_v2(p_asset_id uuid)": "forms.read no escopo; so ready; data {asset_id, form_id, rendition:'original', bucket, object_key, mime_type, byte_size, sha256, pixel_width, pixel_height, ttl_seconds:300}; auditado (forms.download e forms.resolve-file usam a mesma RPC)",
+      "superadmin_form_media_delete_v2(p_request_id uuid, p_asset_id uuid)": "forms.manage; status deleted + chaves (original e variantes) na fila de limpeza; repetir devolve replayed=true",
+      "form_media_expire_question_r2_v1(p_limit int)": "service_role/cron; pendentes com ticket vencido -> deleted + fila; data {expired}",
+      "form_media_claim_cleanup_r2_v1(p_limit int) / form_media_mark_purged_r2_v1(p_cleanup_id uuid)": "service_role/worker; entrega ate 200 chaves (reclaim apos 10 min) e baixa cada uma apos o DELETE no R2"
+    },
+    "limites": "image/jpeg|png|webp ate 4 MiB e 2560 px (constraints do catalogo 230007); chave tenants/<inst>/forms/form/<form_id>/question-image/<asset_id>/original/<uuid>.<ext>",
+    "codigos": [
+      "FORM_MEDIA_INVALID 422",
+      "FORM_MEDIA_MISMATCH 422",
+      "FORM_MEDIA_NOT_FOUND 404 (inclui outro tenant)",
+      "FORM_MEDIA_NOT_READY 409",
+      "FORM_MEDIA_TICKET_INVALID 409",
+      "FORM_MEDIA_REPLAY_MISMATCH 409",
+      "SAI_* como nas demais RPCs internas"
+    ]
+  },
+  "contratoP32": {
+    "rpcs": {
+      "superadmin_unit_care_policy_get_v1(p_unit_id uuid)": "units.read; data {unit_id, institution_id, child_safety_mode, medication_mode, notify_unit, notify_child_hierarchy, notify_other_guardians, management_version, is_default, updated_at}; unidade sem linha devolve os padroes com is_default=true",
+      "superadmin_unit_care_policy_set_v1(p_request_id uuid, p_unit_id uuid, p_payload jsonb)": "units.update, owner|operations, escopo; payload parcial com as 5 chaves; data = get + {replayed, correlation_id}; SAI_INVALID_ARGUMENT para modo/chave invalida; SAI_PERMISSION_DENIED outro tenant"
+    },
+    "notificacoes": "event_code child_safety.authorization.requested|approved|rejected|<status>, child_safety.restriction.created|<status>, medication.plan.created|<status>; destinatarios = memberships ativas da instituicao (escopo institution ou unit da unidade, exceto legal_representative) + profissionais atribuidos a crianca + memberships com escopo nas turmas da crianca + guardian_links ativos, menos o ator; cada grupo obedece a chave da politica; medication_mode not_tracked nao notifica",
+    "pendencia": "os modos (aceitar para liberar, so inclusao, so exclusao) sao registrados e devolvidos; o fluxo que os aplica no Admin/Principal (quem libera) e produto pos-Superadmin; no Superadmin a decisao continua sendo do Superadmin (171800)"
+  },
+  "handoff": "docs/reviews/evidence/etapa-2/r05-realm-interno/handoff.md",
+  "deltaPropostoArquivo": "docs/reviews/evidence/etapa-2/r05-realm-interno/deltas-be-r05.json (7 IDs backend -> local-green: institutions.edit, chat.attach, forms.upload/resolve-file/download/expire-file/delete-file; formato apply-tracker-delta.cjs, ensaiado e revertido: os 7 IDs resolvem)",
+  "skillsPropostas": "docs/reviews/evidence/etapa-2/r05-realm-interno/skills-deltas-r05.md (coelo-backend: item 3 da secao de segredos com o roteiro da chave HMAC, provar com a ordem real de producao, pessoas de servico fora de destinatarios, revoke presence-based, contrato em tres tempos de anexos no R2, constraint trigger diferido; coelo-frontend-backend: institutions.edit em duas chamadas e contatos mascarados, gates de chat.attach/forms.upload, P36 no cliente; coelo-frontend: tela de politicas P32)",
+  "codeReviewR04": {
+    "180060": "tres funcoes compartilhadas substituidas: has_activity_capability passou a exigir assignment_role='instructor' e ganhou explicit_action (MUDANCA de comportamento para policies do realm de pessoas, confirmar com produto); audit_activity_change suprime a linha legada quando o marcador interno e valido e engole erro de marcador (actor_person_id nulo no legado); audit_mask_payload so acrescenta allowlist counts (seguro)",
+    "sobrecarga14Args": "coexiste com a de 13; 11 funcoes chamam a de 14; resolucao por contagem, sem ambiguidade; nenhum papel de cliente executa nenhuma; manter e documentar",
+    "estado": "registrado no handoff; nenhuma alteracao feita (mudanca de funcao compartilhada exige decisao)"
+  },
+  "miniRevisao": {
+    "quando": "2026-09-11T13:14-03:00",
+    "1_shaFinal": "4526ea75b em origin/work/etapa2-r05-realm-interno; status limpo; sem WIP",
+    "2_fechouPorActionId": {
+      "institutions.edit": "backend local-green: 210000 em producao (lote 28), pgTAP 38/38, contrato publicado; done depende da estrutura persistir/recarregar",
+      "chat.attach": "backend local-green: 210200 em producao (lote 32), pgTAP 28/28; gate Edge Function chat-media + cron",
+      "forms.upload/resolve-file/download/expire-file/delete-file": "backend local-green: 210300 em producao (lote 33), pgTAP 25/25; gate form-media em R2 + cron/worker",
+      "seguranca transversal (sem action_id)": "210100 em producao (lote 30): zero grants CRUD de authenticated sem policy em tabelas com RLS; person_auth_links_self_read",
+      "P36 (units.create/groups.create/activities.create)": "210400 em producao (lote 35): atividade ativa exige turma; hierarquia provada; cliente mapeia 23514",
+      "P32 (child-safety.*, medication.*)": "210500 pronto e corrigido (20/20 com a ordem real): politicas macro + sino"
+    },
+    "3_abertoComPrimeiroGate": {
+      "institutions.edit E2E": "frente estrutura: segunda chamada contacts_edit_v1 + reload das listas mascaradas na rota real",
+      "chat.attach": "Edge Function chat-media (deploy do coordenador) + cron superadmin_chat_attachment_expire_v1",
+      "forms.* arquivos": "form-media em R2 (prepare/finalize/download/discard) + cron form_media_expire_question_r2_v1 + worker de limpeza; answer-image (respostas) ainda no fluxo legado form_assets",
+      "P32 no cliente": "tela de politicas macro (get/set) e fluxo que aplica os modos (produto pos-Superadmin)",
+      "@ das pessoas": "administrators[].handle null ate acessos-pessoas expor o @ (person_handles_v1 ja em producao, lote 31: proximo pacote pode ler public.person_handles no detail_v2)",
+      "institution_directory": "view sem SELECT em plans para authenticated (decisao de code review)",
+      "suites pre-existentes": "edit_core (7, MFA), chat_groups (provenance), activity e2e (16, Storage), health_care (1, MFA), child_safety_production (schemaname): atualizar na revisao profunda"
+    },
+    "4_deltasPropostos": "docs/reviews/evidence/etapa-2/r05-realm-interno/deltas-be-r05.json (7 IDs backend local-green); nenhum delta FE/E2E",
+    "5_pacotesEChaves": "210000..210500 em producao (lotes 28,30,32,33,35,36); 210600, 210700, 210800 prontos; Edge Function chat-media escrita (deploy do coordenador); chave criada: coelo_person_identity_hmac_v1 (Vault); a criar pelo coordenador ao implantar: CHAT_MEDIA_WORKER_SECRET + Vault chat_media_worker_url/secret",
+    "6_duvidasAoOwner": "nenhuma nova; a mudanca de comportamento de has_activity_capability (180060, instrutor apenas) e uma pergunta de produto para a revisao profunda, nao bloqueia",
+    "provasRegistradas": "pgTAP 136/136 nesta rodada (7 suites novas) + 25 suites de regressao iguais ao espelho; evidencia em docs/reviews/evidence/etapa-2/r05-realm-interno/"
+  },
+  "proximoPasso": "ate 15:45: revisar form-media (trocar ramos Storage por R2 chamando o contrato acima) se o coordenador quiser; senao parar o descartavel e encerrar",
+  "edgeFunctions": {
+    "chat-media": "packages/coelo_database/supabase/functions/chat-media (index.ts, r2_s3.ts, stored_bytes.ts, deno.json, testes 5/5; deno check limpo); actions prepare/finalize/read/expire; env COELO_R2_*, CHAT_MEDIA_ALLOWED_ORIGINS, CHAT_MEDIA_WORKER_SECRET; config.toml [functions.chat-media] verify_jwt=false; deploy do coordenador fecha o gate de chat.attach",
+    "_shared/image_dimensions.ts": "largura/altura do cabecalho JPEG/PNG/WebP para o finalize dos catalogos R2 (question-image, answer-image); testes 2/2",
+    "form-media": "NAO alterada nesta rodada; contrato para a troca: prepare -> form_prepare_asset_upload_r2_v1 + presign PUT; finalize -> form_finalize_asset_upload (usuario) + form_asset_r2_descriptor_v1 + HEAD/bytes + image_dimensions + form_media_finalize_answer_r2_v1; question-image -> superadmin_form_media_prepare_v2/authorize_finalize_v2 + form_media_finalize_question_r2_v1; download/resolve -> superadmin_form_media_resolve_v2 (pergunta) ou superadmin_form_authorize_media_read_v2 (resposta) + presign GET; discard -> form_discard_asset (o gatilho apaga o espelho) ou superadmin_form_media_delete_v2; expire/cleanup -> form_media_expire_question_r2_v1 + form_media_claim_cleanup_r2_v1/mark_purged com x-worker-secret"
   }
 }

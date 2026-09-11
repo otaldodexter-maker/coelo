@@ -1,13 +1,13 @@
 {
-  "revision": 22,
-  "updated_at": "2026-09-11T12:58:00-03:00",
+  "revision": 26,
+  "updated_at": "2026-09-11T13:46:00-03:00",
   "round": "E2-R05-20260911",
   "group": "operacoes",
   "tool_model": "Claude, Opus 5 (1M), esforco medio — conversa R05 · Operacoes",
   "conversation": "R05 · Operações",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-operacoes",
   "branch": "work/etapa2-r05-operacoes",
-  "head": "3b6ef24d3 (+ este commit)",
+  "head": "58e3977cc (+ este commit)",
   "base": {
     "requested": "origin/dev",
     "resolved": "2f6a6114f",
@@ -78,6 +78,139 @@
         "backend": "inalterado (done)",
         "e2e": "inalterado (verified-e2e)"
       }
+    },
+    {
+      "action_ids": [
+        "audit.list",
+        "audit.filter",
+        "audit.detail"
+      ],
+      "status": "rota-real-verificada -> proposta FE verified / BE done / E2E verified-e2e",
+      "changed": [
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/30-37*.png",
+        "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-audit.json (9 deltas, ensaiados com apply-tracker-delta + validate-trackers PASS e revertidos)"
+      ],
+      "delta": "/audit na rota normal com qa-r03 sobre o build web release: lista real (audit_list_events_for_superadmin 200, 1 de 59 paginas), filtro Resultados=Falha (0 itens, Limpar filtros) e =Negado (3 paginas reais), busca 'invite' no servidor (1 de 4), Proxima pagina por cursor (pagina 2 de 4), detalhe pelo painel lateral (audit_get_event_for_superadmin 200, motivo CHAT_MEMBER_INVALID, integridade verificada), reload mantem sessao/rota e a trilha registra superadmin.audit.list/detail do proprio ator. Nenhuma alteracao de codigo. RLS: pgTAP 210100 37/37 em producao desde o lote 10 (negativas de sessao, realm, cursor de outra instituicao e permissao).",
+      "proof": "capturas 30-37; RPCs conferidas por performance.getEntriesByType('resource') com responseStatus",
+      "criteria": {
+        "frontend": "verified (proposto)",
+        "backend": "done (proposto)",
+        "e2e": "verified-e2e (proposto)"
+      }
+    },
+    {
+      "action_ids": [
+        "plans.list",
+        "plans.create",
+        "plans.edit"
+      ],
+      "status": "rota-real-verificada; FE verified proposto; BE local-green (candidato na fila)",
+      "commits": [
+        "fab9b9fd0 (router: gate de Planos + candidato 20260911200000 + pgTAP; o pacote entrou neste commit por corrida com a cadeia em segundo plano)"
+      ],
+      "changed": [
+        "apps/superadmin/lib/app/router/superadmin_router.dart (hasAuthoritativeMutationCapability: /plans segue planCatalogRepository)",
+        "apps/superadmin/test/app/router/plan_mutation_routes_test.dart",
+        "packages/coelo_database/candidatos/operacoes/20260911200000_superadmin_plans_platform_scope_v1.sql",
+        "packages/coelo_database/supabase/tests/superadmin_plans_behavior_v1_test.sql",
+        "packages/coelo_database/supabase/tests/superadmin_plans_production_test.sql (row_security_active -> pg_class)",
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/40-47*.png",
+        "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-plans.json (6)"
+      ],
+      "delta": "GATE ENCONTRADO: /plans/new e /plans/:id/edit caiam em mutation-capability-unavailable porque hasAuthoritativeMutationCapability nao tinha ramo para /plans; as RPCs estao na baseline de producao, entao a rota passa a seguir o repositorio composto (teste de rota fechado/aberto). Rota real: criar, editar e reload provados (RPCs 200). ACHADO DE SEGURANCA (subagente, pgTAP no descartavel): apos o P7 (171000) has_platform_permission conta membership de instituicao e assert_plan_permission usava essa forma: perfil de instituicao com plan.change criava plano da plataforma. Candidato 20260911200000 troca para has_scoped_platform_permission(p, null), corrige status padrao no save (23502) e revoga grants diretos herdados no espelho. pgTAP 40/40 + 13/13.",
+      "proof": "capturas 40-47; RPCs por performance.getEntriesByType; pgTAP no descartavel coelo_ops_r05 (parado ao fim)",
+      "criteria": {
+        "frontend": "verified (proposto)",
+        "backend": "local-green (candidato na fila; done apos aplicar e RLS negando outro tenant em producao)",
+        "e2e": "N ate BE done"
+      }
+    },
+    {
+      "action_ids": [
+        "imports.list"
+      ],
+      "status": "correcao-visual",
+      "changed": [
+        "apps/superadmin/lib/app/router/superadmin_router.dart (rota /imports envolvida em productionOperationalPage)"
+      ],
+      "delta": "/imports na rota real abria sem cabecalho da tela (titulo, Bug, sino, conta): regra MENU do Owner. Envolvida como as demais telas. Nova importacao segue Disponivel depois do MVP sem picker/parser/job (captura 50).",
+      "proof": "captura 50-imports-open.png (antes); captura depois do rebuild pendente"
+    },
+    {
+      "action_ids": [
+        "access-profiles.list",
+        "forms.list",
+        "daily-routine.list",
+        "imports.list"
+      ],
+      "status": "goldens-regravados (tarefa do coordenador)",
+      "commits": [
+        "4371853e1"
+      ],
+      "delta": "29 goldens de tabelas de outras familias + Importacoes regravados apos o merge de origin/dev, causa unica = alinhamento das celulas no composto; diferenca conferida nas imagens de falha. G2 e G3 avisadas por mensagem; G2 informou que ja regravara os 8 de perfis (c227e531f), mesmo SDK.",
+      "proof": "4 suites verdes"
+    },
+    {
+      "action_ids": [
+        "profile-files.import",
+        "profile-files.export",
+        "profile-files.preview",
+        "profile-files.confirm",
+        "profile-files.status",
+        "profile-files.download"
+      ],
+      "status": "adiamento-honesto-confirmado-na-rota-real",
+      "delta": "Pessoas -> Arquivos -> Importar e Exportar XLSX respondem 'Indisponivel nesta etapa'; sem picker, parser, job, RPC ou persistencia (contagem de RPCs inalterada antes/depois). Sem mudanca de estado (import/export ja verified; demais seguem deferred).",
+      "proof": "capturas 60-63"
+    },
+    {
+      "action_ids": [
+        "imports.list"
+      ],
+      "status": "correcao-visual-provada",
+      "commits": [
+        "13be50ae8 (anterior: commit do cabecalho antes do merge)"
+      ],
+      "delta": "/imports com cabecalho da tela na rota real (captura 51). Botao Arquivos so icone e sem toggle/abas: pendencia do composto registrada.",
+      "proof": "captura 51-imports-header.png"
+    },
+    {
+      "action_ids": [
+        "support.table",
+        "account.profile"
+      ],
+      "status": "correcao",
+      "commits": [
+        "13be50ae8"
+      ],
+      "delta": "router carregava superadmin_support_list e superadmin_account_profile_get na criacao (401 em /login antes da sessao). Carga passa a esperar session.isAuthenticated e repete quando a sessao abre. Testes header_support_routing, account_routes, support_page_production e desktop_logout 15/15; analyze limpo.",
+      "proof": "flutter test 15/15"
+    },
+    {
+      "action_ids": [
+        "catalog.validate",
+        "catalog.sync",
+        "catalog.publish"
+      ],
+      "status": "gate-real-registrado (sem mudanca de estado)",
+      "delta": "validate_catalog_index OK; validate_package_boundaries 5 diagnosticos (CoeloAdminDirectory, CoeloAdminDirectoryStatusTabs, CoeloAdminDirectoryViewToggle, CoeloAdminPaginationFooter, CoeloAdminUnderlineTabs sem entrada no indice coelo-ui.index.jsonl); validate_catalog_sync 21 diagnosticos (os 5 + 7 source-example-fingerprint-mismatch: admin.flyout, admin.resizable-table, admin.work-item-card, superadmin.form-action-footer, core.date-range-picker, core.date-range-field, core.date-time-field; relatorio versionado desatualizado). Defeito da ferramenta: validate_catalog_sync regrava assets/catalog-sync-report.json com caminhos absolutos (revertido, nao commitado). catalog.publish = deploy do app do Catalogo (Cloudflare Pages, decisao nominal). Fechar validate/sync exige entradas de indice + exemplos atualizados no registry (governanca do Design System, nao CRUD do MVP): pos-MVP salvo ordem do Owner.",
+      "proof": "saida dos tres validadores em 14:00"
+    },
+    {
+      "action_ids": [
+        "audit.export"
+      ],
+      "status": "adiamento-honesto-provado -> FE verified proposto",
+      "delta": "Arquivos -> Exportar CSV/XLSX: 'Disponivel depois do MVP', sem chamada de exportacao.",
+      "proof": "capturas 38-39"
+    },
+    {
+      "action_ids": [
+        "account.theme"
+      ],
+      "status": "rota-real-verificada -> FE verified proposto",
+      "delta": "Aparencia Claro persiste em localStorage e sobrevive a carga completa; restaurado Sistema.",
+      "proof": "capturas 70-72"
     }
   ],
   "tests": {
@@ -98,8 +231,28 @@
   },
   "blocked": [],
   "resolved": [],
-  "proposed_deltas": [],
-  "packages_ready": [],
+  "proposed_deltas": [
+    {
+      "file": "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-audit.json",
+      "summary": "audit.list/filter/detail FE verified / BE done / E2E verified-e2e (9 deltas)"
+    },
+    {
+      "file": "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-plans.json",
+      "summary": "plans.list/create/edit FE verified; BE local-green (6 deltas)"
+    },
+    {
+      "file": "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-audit-export-theme.json",
+      "summary": "audit.export FE verified (adiado honesto); account.theme FE verified (2 deltas)"
+    }
+  ],
+  "packages_ready": [
+    {
+      "path": "packages/coelo_database/candidatos/operacoes/20260911200000_superadmin_plans_platform_scope_v1.sql",
+      "pgtap": "superadmin_plans_behavior_v1_test 40/40; superadmin_plans_production_test 13/13 (descartavel coelo_ops_r05: baseline + 107 migrations na ordem de producao)",
+      "composition_key": "nenhuma (gate do cliente ja ligado em fab9b9fd0 pelo repositorio composto)",
+      "state": "pronto para o coordenador aplicar; depois: plans.list/create/edit BE done e E2E verified-e2e (FE ja provado)"
+    }
+  ],
   "questions_to_owner": [
     {
       "id": "G-SUP-R05",
@@ -107,13 +260,33 @@
       "what": "Aprovar os 16 goldens claros de Suporte regravados (colunas no mesmo eixo; detalhe 1024 sob a toolbar como a referencia R). Responder por arquivo: nome - decisao, observacao.",
       "page": "https://claude.ai/code/artifact/7737ccf7-1489-4d67-ba5f-858c051150d2",
       "fallback": "docs/reviews/evidence/etapa-2/r05-operacoes/g-sup/pagina-lado-a-lado-suporte.html"
+    },
+    {
+      "id": "P43-account-sessions",
+      "kind": "produto",
+      "what": "account.sessions (listar e revogar as proprias sessoes) nao tem tela nem API de cliente: exigiria Edge Function sobre o Admin API do Auth. Entra no MVP ou fica pos-MVP? Recomendacao: pos-MVP (blocked-decision), porque Sair ja encerra a sessao e MFA esta fora do MVP.",
+      "options": "A) pos-MVP (recomendado); B) tela minima no MVP (lista + revogar todas) com Edge Function"
+    },
+    {
+      "id": "P44-catalog",
+      "kind": "processo",
+      "what": "catalog.validate/sync: 5 componentes do composto Fase 0 sem entrada no indice do Catalogo e 7 exemplos com fingerprint desatualizado. Atualizar o Catalogo (indice + exemplos) agora ou depois do MVP? Recomendacao: depois do MVP, junto da revisao de UI.",
+      "options": "A) depois do MVP (recomendado); B) agora, por uma frente de UI"
     }
   ],
-  "next_step": "(2) Auditoria na rota real: build web qa_main, servidor estatico, Chrome CDP, /audit listar/filtrar/detalhe/reload com qa-r03; conferir goldens audit_directory_* apos o composto",
+  "next_step": "15:30: avisar coordenador 5 min antes e provar account.logout (Sair no menu da conta em /profile -> reload cai no login) com o Chrome desta frente; ate la: handoff publicado, mini-revisao preparada; 15:45 finalizado",
   "commits": [
     "7df495615",
     "0e4b2f27c",
-    "3b6ef24d3"
+    "3b6ef24d3",
+    "89d64c068",
+    "fab9b9fd0",
+    "b08b6b91d",
+    "1b0c2c5ff (merge)",
+    "4371853e1",
+    "60b415707",
+    "13be50ae8",
+    "58e3977cc"
   ],
   "r04_history": {
     "revision": 20,
@@ -685,5 +858,48 @@
   "notes_to_coordinator": [
     "Composto (0e4b2f27c): toda tabela com celula crua muda de golden (texto desce para o centro da linha). Instituicoes/Unidades ja envolviam com Align e nao mudam; Auditoria (audit_event_views) e outras tabelas com Text cru mudam: frentes regravam apos merge. Auditoria e minha e regravo na rota real.",
     "Regra para a skill coelo-ui/coelo-frontend: feature nao envolve celula com Align; o composto alinha; detalhe lateral em corpo estreito no desktop usa bodyOverride para manter a toolbar (support_page.dart, comentario com a decisao)."
-  ]
+  ],
+  "pendencias_registradas_r05": [
+    {
+      "action_id": "support.table",
+      "tipo": "desempenho/seguranca-basica",
+      "o_que": "o shell chama superadmin_support_list e superadmin_account_profile_get em toda carga completa, inclusive na pagina /login antes de haver sessao (401 registrados no performance da pagina de login). Nao vaza dado (401), mas e chamada inutil e ruido de log; mover a carga para depois do bootstrap da sessao."
+    },
+    {
+      "action_id": "audit.filter",
+      "tipo": "ui",
+      "o_que": "o filtro Periodo tem aparencia distinta (rotulo flutuante 'Periodo' + icone) dos demais filtros do composto (Resultados, dropdown simples); conferir com coelo-ui se e o padrao ou se deve virar dropdown igual."
+    },
+    {
+      "action_id": "account.logout",
+      "tipo": "regra-de-rodada",
+      "o_que": "coordenador (13:00): Sair global e revogacao de sessao do qa-r03 derrubam as sessoes das outras frentes; account.logout e account.sessions ficam para depois de 15:30, com aviso 5 min antes no JSON e por mensagem. Ate la, fechar a aba em vez de Sair."
+    },
+    {
+      "action_id": "plans.create",
+      "tipo": "ui-P15",
+      "o_que": "na Revisao, o campo Motivo de auditoria (ultimo do formulario) fica escondido sob o rodape ancorado ate rolar; PlanFormPage nao usa o respiro do SuperadminFormFrame (P15)."
+    },
+    {
+      "action_id": "plans.list",
+      "tipo": "cliente",
+      "o_que": "parser do cliente exige as 13 chaves de entitlements e DateTime.parse(starts_at) com starts_at nulavel em institution_subscriptions: plano criado fora do cliente ou assinatura sem data quebraria a tela com Resposta de planos invalida (achado do subagente)."
+    },
+    {
+      "action_id": "imports.list",
+      "tipo": "composto",
+      "o_que": "ImportDirectoryPage ainda declara CoeloAdminListingToolbar/ResizableTable/Pagination proprios (fora do CoeloAdminDirectory); sem toggle cards/tabela nem abas no vazio. Familia adiada (ADR 0034); migrar ao composto na revisao profunda."
+    },
+    {
+      "action_id": "plans.create",
+      "tipo": "residuo-sintetico",
+      "o_que": "plano 5b0fc76b-51cd-4361-8d4f-e7033853eba6 (code r05-qa-plano-teste, nome [R05-QA] Plano de teste editado, 2 recibos em plan_change_receipts) fica em producao; sem RPC de exclusao (arquivar existe). Limpeza no fim da Etapa 2 (P42)."
+    },
+    {
+      "action_id": "shell.navigate",
+      "tipo": "teste-pre-existente",
+      "o_que": "prototype_navigation_routes_test falha com Bad state: No element tambem em origin/dev limpo (worktree detach 11/09 13:20); nao e do composto."
+    }
+  ],
+  "nota_relogio": "carimbos das revs 23-25 estavam adiantados ate 40 min (13:05 -> 12:57 real; 13:35/13:40 -> 13:20; 14:20 -> 13:41); os horarios nos deltas seguem o relogio da maquina a partir da rev 26."
 }

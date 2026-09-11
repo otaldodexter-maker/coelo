@@ -5,9 +5,9 @@ select plan(13);
 select has_column('public', 'plans', 'description', 'plans has description');
 select has_column('public', 'plans', 'revision', 'plans has optimistic revision');
 select has_table('public', 'plan_change_receipts', 'plan receipts exist');
-select row_security_active('public.plans'::regclass, 'plans RLS is active');
-select row_security_active('public.plan_entitlements'::regclass, 'entitlements RLS is active');
-select row_security_active('public.plan_change_receipts'::regclass, 'receipts RLS is active');
+select ok((select relrowsecurity and relforcerowsecurity from pg_class where oid='public.plans'::regclass), 'plans RLS is active');
+select ok((select relrowsecurity and relforcerowsecurity from pg_class where oid='public.plan_entitlements'::regclass), 'entitlements RLS is active');
+select ok((select relrowsecurity and relforcerowsecurity from pg_class where oid='public.plan_change_receipts'::regclass), 'receipts RLS is active');
 select function_returns(
   'public', 'superadmin_plans_list', array['text','text','text','integer','integer'], 'jsonb',
   'directory RPC returns jsonb'

@@ -7,7 +7,29 @@ import '../domain/activity_command.dart';
 import '../domain/activity_directory.dart';
 import 'activity_pedagogical_configuration_draft.dart';
 
-enum ActivityIdentityIcon { activity, sports, music, science, arts }
+enum ActivityIdentityIcon {
+  activity('school'),
+  sports('sports_soccer'),
+  music('music_note'),
+  science('science'),
+  arts('palette');
+
+  const ActivityIdentityIcon(this.databaseKey);
+
+  /// Chave aceita pelo CHECK `activity_definitions_identity_icon_check` em
+  /// producao (pool, sports_soccer, music_note, palette, menu_book, science,
+  /// school, ...). O nome do enum ('activity') era enviado como icon_key e o
+  /// save_v2 respondia SAI_INTERNAL_ERROR.
+  final String databaseKey;
+
+  static ActivityIdentityIcon? fromDatabaseKey(String? key) {
+    if (key == null) return null;
+    for (final icon in values) {
+      if (icon.databaseKey == key || icon.name == key) return icon;
+    }
+    return null;
+  }
+}
 
 enum ActivityProfessionalAccess {
   none('Nenhuma'),

@@ -19,6 +19,7 @@ final class FormsOverviewPage extends StatefulWidget {
     this.onMonitor,
     this.onResponses,
     this.onFiles,
+    this.onDistribute,
     this.canManageLifecycle = false,
     this.canTransferCrossInstitution = false,
     this.development = false,
@@ -34,6 +35,7 @@ final class FormsOverviewPage extends StatefulWidget {
     this.onFiles,
     super.key,
   }) : api = null,
+       onDistribute = null,
        canManageLifecycle = true,
        canTransferCrossInstitution = false,
        development = true;
@@ -45,6 +47,11 @@ final class FormsOverviewPage extends StatefulWidget {
   final VoidCallback? onMonitor;
   final VoidCallback? onResponses;
   final VoidCallback? onFiles;
+
+  /// Abre o fluxo produtivo de distribuicao (publico + agendamento). Recebe o
+  /// recarregamento da visao geral para as metricas refletirem o que o
+  /// servidor confirmou. Nulo quando a composicao nao oferece a acao.
+  final void Function(VoidCallback reload)? onDistribute;
   final bool canManageLifecycle;
   final bool canTransferCrossInstitution;
   final bool development;
@@ -167,6 +174,9 @@ final class _FormsOverviewPageState extends State<FormsOverviewPage> {
               onMonitor: widget.onMonitor,
               onResponses: widget.onResponses,
               onFiles: widget.onFiles,
+              onDistribute: widget.onDistribute == null
+                  ? null
+                  : () => widget.onDistribute!(() => unawaited(_load())),
             ),
             const SizedBox(height: CoeloSpacing.space6),
             LayoutBuilder(
@@ -228,6 +238,7 @@ final class _OverviewActions extends StatelessWidget {
     this.onMonitor,
     this.onResponses,
     this.onFiles,
+    this.onDistribute,
   });
 
   final VoidCallback? onEdit;
@@ -235,6 +246,7 @@ final class _OverviewActions extends StatelessWidget {
   final VoidCallback? onMonitor;
   final VoidCallback? onResponses;
   final VoidCallback? onFiles;
+  final VoidCallback? onDistribute;
 
   @override
   Widget build(BuildContext context) => Wrap(
@@ -266,6 +278,13 @@ final class _OverviewActions extends StatelessWidget {
         icon: const Icon(Icons.folder_outlined),
         label: const Text('Arquivos'),
       ),
+      if (onDistribute != null)
+        FilledButton.icon(
+          key: const Key('forms-overview-distribute'),
+          onPressed: onDistribute,
+          icon: const Icon(Icons.send_outlined),
+          label: const Text('Distribuir'),
+        ),
     ],
   );
 }

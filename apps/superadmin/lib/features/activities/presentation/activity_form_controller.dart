@@ -66,9 +66,10 @@ final class ActivityFormController extends ChangeNotifier {
     ActivityDetail source, {
     ActivityFormDraft? initialDraft,
     this.professionalSearcher,
+    this.loadTemplateOptions,
+    String? initialCatalogError,
   }) : isEditing = true,
        loadScopedOptions = null,
-       loadTemplateOptions = null,
        detail = source,
        expectedManagementVersion =
            initialDraft?.expectedManagementVersion ?? source.item.managementVersion,
@@ -81,7 +82,7 @@ final class ActivityFormController extends ChangeNotifier {
        otherActivity = TextEditingController(),
        selectedInstitutionId = initialDraft?.institutionId ?? source.item.institutionId,
        _requestedTemplateId = null,
-       catalogOptionsError = null,
+       catalogOptionsError = initialCatalogError,
        governance = initialDraft?.governance ?? source.item.governance {
     _hydrateEdit(source, initialDraft);
     _listen();
@@ -202,6 +203,23 @@ final class ActivityFormController extends ChangeNotifier {
     await selectInstitution(institutionId, preserveSelection: true);
   }
 
+  /// A v2 guarda em taxonomy_id o no escolhido na arvore legada, que pode ser
+  /// um subtipo: quando nao ha categoria com esse id, sobe ao pai para a
+  /// categoria e o subtipo baterem.
+  void _hydrateTaxonomy(String? taxonomyId, String? subtypeId) {
+    taxonomy = options.taxonomy.where((item) => item.id == taxonomyId).firstOrNull;
+    subtype = taxonomy?.subtypes.where((item) => item.id == subtypeId).firstOrNull;
+    if (taxonomy != null) return;
+    for (final parent in options.taxonomy) {
+      final child = parent.subtypes.where((item) => item.id == taxonomyId).firstOrNull;
+      if (child != null) {
+        taxonomy = parent;
+        subtype = child;
+        return;
+      }
+    }
+  }
+
   Future<void> retryCatalogOptions() async {
     final loader = loadTemplateOptions;
     if (loader == null) return;
@@ -224,6 +242,10 @@ final class ActivityFormController extends ChangeNotifier {
       );
       final templateId = template?.id ?? _requestedTemplateId;
       template = catalog.templates.where((item) => item.id == templateId).firstOrNull;
+      final source = detail;
+      if (taxonomy == null && source != null) {
+        _hydrateTaxonomy(source.taxonomyId, source.subtypeId);
+      }
       final selectedTemplate = template;
       if (selectedTemplate != null) {
         taxonomy = catalog.taxonomy
@@ -447,20 +469,15 @@ final class ActivityFormController extends ChangeNotifier {
       return;
     }
 
-    taxonomy = options.taxonomy.where((item) => item.id == source.taxonomyId).firstOrNull;
     if (source.pedagogicalConfiguration case final configuration?) {
       pedagogicalConfiguration = ActivityPedagogicalConfigurationDraft.fromJson(configuration);
     }
-    subtype = taxonomy?.subtypes.where((item) => item.id == source.subtypeId).firstOrNull;
+    _hydrateTaxonomy(source.taxonomyId, source.subtypeId);
     template = options.templates.where((item) => item.id == source.templateId).firstOrNull;
     otherActivity.text = source.taxonomyOtherDescription;
     initials.text = source.identity.initials ?? '';
     identityColor = source.identity.color ?? identityColor;
-    identityIcon =
-        ActivityIdentityIcon.values
-            .where((icon) => icon.name == source.identity.icon)
-            .firstOrNull ??
-        identityIcon;
+    identityIcon = ActivityIdentityIcon.fromDatabaseKey(source.identity.icon) ?? identityIcon;
     identityStorageRef = source.identity.storageRef;
 
     for (final linkedUnit in source.units) {

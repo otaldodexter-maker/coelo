@@ -91,8 +91,8 @@ void main() {
   );
 
   testWidgets(
-    'DIVERGÊNCIA: publicar no Acontece exige unidade e turma, então um ator de '
-    'escopo institucional cai na composição indisponível',
+    'P35: o ator de escopo institucional compoe o publicador do Acontece '
+    '(unidade e turma opcionais)',
     (tester) async {
       final session = SuperadminSession()..signInForTesting();
       final router = createSuperadminRouter(
@@ -111,133 +111,64 @@ void main() {
       await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
       await tester.pumpAndSettle();
 
-      // O repositório de publicação FOI fornecido; o que barra é a exigência de
-      // unidade e turma não nulas. O esquema aceita publicação de escopo
-      // institucional, com unit_id e group_id nulos, então a composição é mais
-      // estrita que o domínio.
-      expect(
+      // O esquema aceita publicacao de escopo institucional (unit_id e group_id
+      // nulos); desde a R05 a composicao acompanha o dominio (Superadmin ve
+      // tudo, P35).
+      final page = tester.widget<PrincipalHappensPublicationPage>(
         find.byType(PrincipalHappensPublicationPage),
-        findsNothing,
-        reason: 'observado: contexto institucional não compõe o publicador',
       );
-
-      // Se o estreitamento for intencional para o MVP, a interface deveria
-      // dizer isso em vez de devolver a mesma tela de composição indisponível
-      // que sinaliza falha de configuração. Como está, o ator não distingue
-      // "você não publica neste escopo" de "o app está quebrado".
+      expect(page.publicationContext.unitId, isNull);
+      expect(page.publicationContext.groupId, isNull);
+      expect(page.publicationContext.scopeLabel, page.publicationContext.institutionName);
+      expect(find.byType(SuperadminErrorScreen), findsNothing);
     },
   );
-  testWidgets(
-    'DEFEITO: recusa de escopo e falha de configuração devolvem a MESMA tela, '
-    'então o ator não distingue uma da outra',
-    (tester) async {
-      // Caso A: falha real de configuração — o repositório de publicação não
-      // foi fornecido à composição.
-      final brokenSession = SuperadminSession()..signInForTesting();
-      final brokenRouter = createSuperadminRouter(
-        session: brokenSession,
-        login: unavailableSuperadminLogin,
-        logout: unavailableSuperadminLogout,
-        requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
-        principalRuntimeContextRepository: const _GroupScopedContext(),
-        onThemeModeChanged: (_) {},
-      );
-      addTearDown(brokenRouter.dispose);
-      addTearDown(brokenSession.dispose);
 
-      brokenRouter.go(SuperadminRoutes.principalHappensPublish);
-      await tester.pumpWidget(
-        MaterialApp.router(theme: CoeloTheme.light, routerConfig: brokenRouter),
-      );
-      await tester.pumpAndSettle();
+  testWidgets('sem repositorio de publicacao a composicao continua indisponivel', (
+    tester,
+  ) async {
+    final session = SuperadminSession()..signInForTesting();
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      principalRuntimeContextRepository: const _GroupScopedContext(),
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
 
-      final brokenScreens = tester.widgetList<SuperadminErrorScreen>(
-        find.byType(SuperadminErrorScreen),
-      );
-      expect(brokenScreens, hasLength(1));
-      final brokenKind = brokenScreens.single.kind;
+    router.go(SuperadminRoutes.principalHappensPublish);
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
 
-      // Caso B: configuração correta, recusa legítima de escopo — o ator é
-      // institucional e a composição exige unidade e turma.
-      final scopedSession = SuperadminSession()..signInForTesting();
-      final scopedRouter = createSuperadminRouter(
-        session: scopedSession,
-        login: unavailableSuperadminLogin,
-        logout: unavailableSuperadminLogout,
-        requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
-        principalRuntimeContextRepository: const _InstitutionScopedContext(),
-        happensPublicationRepository: InMemoryHappensPublicationRepository(),
-        onThemeModeChanged: (_) {},
-      );
-      addTearDown(scopedRouter.dispose);
-      addTearDown(scopedSession.dispose);
+    final screens = tester.widgetList<SuperadminErrorScreen>(find.byType(SuperadminErrorScreen));
+    expect(screens, hasLength(1));
+    expect(screens.single.kind, SuperadminErrorKind.unavailable);
+  });
 
-      scopedRouter.go(SuperadminRoutes.principalHappensPublish);
-      await tester.pumpWidget(
-        MaterialApp.router(theme: CoeloTheme.light, routerConfig: scopedRouter),
-      );
-      await tester.pumpAndSettle();
+  testWidgets('P35: o ator de escopo institucional compoe o publicador do Agora', (tester) async {
+    final session = SuperadminSession()..signInForTesting();
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      principalRuntimeContextRepository: const _InstitutionScopedContext(),
+      nowPublicationRepository: _StubNowPublicationRepository(),
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
 
-      final scopedScreens = tester.widgetList<SuperadminErrorScreen>(
-        find.byType(SuperadminErrorScreen),
-      );
-      expect(scopedScreens, hasLength(1));
+    router.go(SuperadminRoutes.principalNowPublication);
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
 
-      // Os dois fatos são diferentes e hoje recebem a mesma resposta.
-      expect(
-        scopedScreens.single.kind,
-        brokenKind,
-        reason: 'defeito observado: recusa de escopo usa a tela de indisponibilidade '
-            'que sinaliza falha de configuração',
-      );
-
-      // Comportamento esperado depois da correção, para orientar a inversão:
-      // o ator de escopo institucional deve receber uma resposta que diga que
-      // ele não publica NESTE escopo, distinta da indisponibilidade técnica.
-      // Se o estreitamento for revertido pelo Owner, este caso deixa de existir
-      // e o teste deve ser removido junto com a regra.
-    },
-  );
-  testWidgets(
-    'DEFEITO: o mesmo beco existe em Publicar no Agora, e não só no Acontece',
-    (tester) async {
-      final session = SuperadminSession()..signInForTesting();
-      final router = createSuperadminRouter(
-        session: session,
-        login: unavailableSuperadminLogin,
-        logout: unavailableSuperadminLogout,
-        requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
-        principalRuntimeContextRepository: const _InstitutionScopedContext(),
-        nowPublicationRepository: _StubNowPublicationRepository(),
-        onThemeModeChanged: (_) {},
-      );
-      addTearDown(router.dispose);
-      addTearDown(session.dispose);
-
-      router.go(SuperadminRoutes.principalNowPublication);
-      await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
-      await tester.pumpAndSettle();
-
-      // O repositório FOI fornecido. O que barra é a mesma exigência de unidade
-      // e turma não nulas, e a resposta é a mesma tela de indisponibilidade.
-      expect(find.byType(PrincipalNowPublicationPage), findsNothing);
-      final screens = tester.widgetList<SuperadminErrorScreen>(
-        find.byType(SuperadminErrorScreen),
-      );
-      expect(screens, hasLength(1));
-      expect(
-        screens.single.kind,
-        SuperadminErrorKind.unavailable,
-        reason: 'defeito observado: publicar no Agora repete o beco do Acontece '
-            'para o ator de escopo institucional',
-      );
-
-      // Consequência de produto: a ação central do dock, "Publicar no Agora",
-      // leva esse ator à tela de aplicativo quebrado. Duas rotas de publicação
-      // do Principal com a mesma causa e a mesma resposta — é a superfície que
-      // está errada, não um descuido pontual de uma tela.
-    },
-  );
+    expect(find.byType(PrincipalNowPublicationPage), findsOneWidget);
+    expect(find.byType(SuperadminErrorScreen), findsNothing);
+  });
 }
 
 final class _EmptyFeedRepository implements PrincipalHappensFeedRepository {

@@ -1,4 +1,5 @@
 import { assertEquals } from "@std/assert";
+import { R2TransportError } from "../_shared/r2_s3.ts";
 import { type FormMediaDependencies, handleFormMediaRequest } from "./index.ts";
 
 const environment: Record<string, string> = {
@@ -590,4 +591,584 @@ Deno.test("HTTP preserves legacy finalize, download and discard for People actor
         : { state: "discarded" },
     );
   }
+});
+
+// ---------------------------------------------------------------------------
+// Ramo question-image (R2, lote 33)
+// ---------------------------------------------------------------------------
+
+const questionAsset = "44444444-4444-4444-8444-444444444444";
+const questionTicket = "55555555-5555-4555-8555-555555555555";
+const questionKey =
+  `tenants/${id}/forms/form/${id}/question-image/${questionAsset}/original/${mediaId}.png`;
+const questionNow = Date.parse("2026-09-11T22:00:00Z");
+const workerToken = "w".repeat(40);
+const pngBytes = (() => {
+  const bytes = new Uint8Array(64);
+  bytes.set([137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82]);
+  new DataView(bytes.buffer).setUint32(16, 800);
+  new DataView(bytes.buffer).setUint32(20, 600);
+  return bytes;
+})();
+const ok = (data: unknown) => ({ data: { ok: true, data, error: null } });
+const denied = (code: string, status: number) => ({
+  data: {
+    ok: false,
+    data: null,
+    error: {
+      code,
+      message: "mensagem curta",
+      http_status: status,
+      correlation_id: id,
+    },
+  },
+});
+
+function questionHarness(options: {
+  rpc?: Record<string, (parameters: Record<string, unknown>) => unknown>;
+  head?: () => Promise<{ byteSize: number; mimeType: string }>;
+  get?: () => Promise<Uint8Array>;
+  deleteFails?: Set<string>;
+  environment?: Record<string, string | undefined>;
+} = {}) {
+  const calls: { name: string; key: string; parameters: unknown }[] = [];
+  const transport: string[] = [];
+  const responses: Record<
+    string,
+    (parameters: Record<string, unknown>) => unknown
+  > = {
+    superadmin_form_media_prepare_v2: () =>
+      ok({
+        asset_id: questionAsset,
+        form_id: id,
+        object_key: questionKey,
+        bucket: "coelo-media-prod",
+        mime_type: "image/png",
+        byte_size: 64,
+        sha256: "a".repeat(64),
+        status: "pending",
+        finalize_ticket: questionTicket,
+        expires_at: "2026-09-11T22:30:00+00:00",
+        replayed: false,
+      }),
+    superadmin_form_media_authorize_finalize_v2: () =>
+      ok({
+        asset_id: questionAsset,
+        object_key: questionKey,
+        bucket: "coelo-media-prod",
+        mime_type: "image/png",
+        finalize_ticket: questionTicket,
+        expires_at: "2026-09-11T22:30:00+00:00",
+      }),
+    form_media_finalize_question_r2_v1: () =>
+      ok({
+        asset_id: questionAsset,
+        status: "ready",
+        finalized_at: "2026-09-11T22:01:00+00:00",
+      }),
+    superadmin_form_media_resolve_v2: () =>
+      ok({
+        asset_id: questionAsset,
+        form_id: id,
+        rendition: "original",
+        bucket: "coelo-media-prod",
+        object_key: questionKey,
+        mime_type: "image/png",
+        byte_size: 64,
+        sha256: "a".repeat(64),
+        pixel_width: 800,
+        pixel_height: 600,
+        ttl_seconds: 300,
+      }),
+    superadmin_form_media_delete_v2: () =>
+      ok({ asset_id: questionAsset, status: "deleted", replayed: false }),
+    form_media_expire_question_r2_v1: () => ok({ expired: 2 }),
+    form_media_claim_cleanup_r2_v1: () =>
+      ok({
+        items: [
+          {
+            cleanup_id: id,
+            bucket: "coelo-media-prod",
+            object_key: questionKey,
+          },
+          {
+            cleanup_id: mediaId,
+            bucket: "coelo-media-prod",
+            object_key: questionKey.replace(".png", "-2.png"),
+          },
+        ],
+      }),
+    form_media_mark_purged_r2_v1: (parameters) =>
+      ok({ cleanup_id: parameters.p_cleanup_id, purged: true }),
+    ...options.rpc,
+  };
+  const dependencies: FormMediaDependencies = {
+    envGet: (key) =>
+      ({
+        ...environment,
+        COELO_R2_ENDPOINT: "https://r2.example.test",
+        COELO_R2_REGION: "auto",
+        COELO_R2_ACCESS_KEY_ID: "synthetic-access",
+        COELO_R2_SECRET_ACCESS_KEY: "synthetic-secret",
+        FORMS_OPERATIONS_BEARER_TOKEN: workerToken,
+        ...options.environment,
+      })[key],
+    createClient: ((_url: string, key: string) => ({
+      auth: { getUser: () => Promise.resolve({ data: { user: { id } } }) },
+      from: () => {
+        throw new Error("question-image must not query People");
+      },
+      storage: {
+        from: () => {
+          throw new Error("question-image must not use Storage");
+        },
+      },
+      rpc: (name: string, parameters: Record<string, unknown>) => {
+        calls.push({ name, key, parameters });
+        const handler = responses[name];
+        if (!handler) throw new Error(`unexpected rpc ${name}`);
+        return Promise.resolve(handler(parameters));
+      },
+    })) as unknown as FormMediaDependencies["createClient"],
+    now: () => new Date(questionNow),
+    createR2: () => {
+      throw new Error("question-image uses createTransport");
+    },
+    createTransport: (config) => {
+      transport.push(`config:${config.bucket}`);
+      return {
+        presignPut: (key, mimeType, ttl) => {
+          transport.push(`put:${key}:${mimeType}:${ttl}`);
+          return Promise.resolve({
+            url: new URL("https://r2.example.test/put"),
+            requiredHeaders: { "content-type": mimeType },
+          });
+        },
+        presignGet: (key, ttl) => {
+          transport.push(`get-url:${key}:${ttl}`);
+          return Promise.resolve({
+            url: new URL("https://r2.example.test/get"),
+            requiredHeaders: {},
+          });
+        },
+        head: (key) => {
+          transport.push(`head:${key}`);
+          return options.head?.() ??
+            Promise.resolve({ byteSize: 64, mimeType: "image/png" });
+        },
+        get: (key, maxBytes) => {
+          transport.push(`get:${key}:${maxBytes}`);
+          return options.get?.() ?? Promise.resolve(pngBytes);
+        },
+        delete: (key) => {
+          transport.push(`delete:${key}`);
+          if (options.deleteFails?.has(key)) {
+            return Promise.reject(new Error("private transport detail"));
+          }
+          return Promise.resolve();
+        },
+      };
+    },
+  };
+  return { dependencies, calls, transport };
+}
+
+Deno.test("question-image prepare reauthorizes by JWT and signs a short PUT on coelo-media-prod", async () => {
+  const harness = questionHarness();
+  const result = await handleFormMediaRequest(
+    request({
+      action: "prepare",
+      request_id: id,
+      expected_version: 4,
+      payload: {
+        form_id: id,
+        form_version_id: id,
+        item_id: mediaId,
+        mime_type: "image/png",
+        byte_length: 64,
+        checksum: "A".repeat(64),
+        edit_secret: "s".repeat(43),
+      },
+    }),
+    harness.dependencies,
+  );
+  assertEquals(result.status, 200);
+  assertEquals(await result.json(), {
+    asset_id: questionAsset,
+    signed_upload_url: "https://r2.example.test/put",
+    upload_url: "https://r2.example.test/put",
+    required_headers: { "content-type": "image/png" },
+    finalize_ticket: questionTicket,
+    expires_at: "2026-09-11T22:05:00.000Z",
+    replayed: false,
+  });
+  assertEquals(harness.calls, [{
+    name: "superadmin_form_media_prepare_v2",
+    key: environment.SUPABASE_ANON_KEY,
+    parameters: {
+      p_request_id: id,
+      p_form_id: id,
+      p_form_version_id: id,
+      p_item_id: mediaId,
+      p_mime_type: "image/png",
+      p_byte_size: 64,
+      p_sha256: "a".repeat(64),
+    },
+  }]);
+  assertEquals(harness.transport, [
+    "config:coelo-media-prod",
+    `put:${questionKey}:image/png:300`,
+  ]);
+});
+
+Deno.test("question-image passes FORM_MEDIA and SAI codes with the database status", async () => {
+  for (
+    const [name, action, code, status] of [
+      [
+        "superadmin_form_media_prepare_v2",
+        "prepare",
+        "FORM_MEDIA_INVALID",
+        422,
+      ],
+      [
+        "superadmin_form_media_prepare_v2",
+        "prepare",
+        "SAI_PERMISSION_DENIED",
+        403,
+      ],
+      [
+        "superadmin_form_media_authorize_finalize_v2",
+        "finalize",
+        "FORM_MEDIA_TICKET_INVALID",
+        409,
+      ],
+      [
+        "superadmin_form_media_resolve_v2",
+        "download",
+        "FORM_MEDIA_NOT_FOUND",
+        404,
+      ],
+      [
+        "superadmin_form_media_resolve_v2",
+        "resolve",
+        "FORM_MEDIA_NOT_READY",
+        409,
+      ],
+      [
+        "superadmin_form_media_delete_v2",
+        "discard",
+        "FORM_MEDIA_REPLAY_MISMATCH",
+        409,
+      ],
+    ] as const
+  ) {
+    const harness = questionHarness({
+      rpc: { [name]: () => denied(code, status) },
+    });
+    const result = await handleFormMediaRequest(
+      request({
+        action,
+        request_id: id,
+        expected_version: 0,
+        payload: action === "prepare"
+          ? {
+            purpose: "question-image",
+            form_id: id,
+            form_version_id: id,
+            item_id: id,
+            mime_type: "image/png",
+            byte_size: 64,
+            sha256: "a".repeat(64),
+          }
+          : { purpose: "question-image", asset_id: questionAsset },
+      }),
+      harness.dependencies,
+    );
+    assertEquals(result.status, status);
+    assertEquals(await result.json(), {
+      error: code,
+      message: "mensagem curta",
+      correlation_id: id,
+    });
+    assertEquals(harness.transport, []);
+    assertEquals(harness.calls.length, 1);
+  }
+});
+
+Deno.test("question-image finalize measures the stored object and commits with service_role", async () => {
+  const harness = questionHarness();
+  const result = await handleFormMediaRequest(
+    request({
+      action: "finalize",
+      request_id: id,
+      expected_version: 0,
+      payload: { purpose: "question-image", asset_id: questionAsset },
+    }),
+    harness.dependencies,
+  );
+  assertEquals(result.status, 200);
+  assertEquals(await result.json(), {
+    asset_id: questionAsset,
+    status: "ready",
+    finalized_at: "2026-09-11T22:01:00+00:00",
+    mime_type: "image/png",
+    byte_size: 64,
+    pixel_width: 800,
+    pixel_height: 600,
+  });
+  const digest = [
+    ...new Uint8Array(
+      await crypto.subtle.digest("SHA-256", pngBytes),
+    ),
+  ].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+  assertEquals(harness.calls.map((call) => [call.name, call.key]), [
+    [
+      "superadmin_form_media_authorize_finalize_v2",
+      environment.SUPABASE_ANON_KEY,
+    ],
+    [
+      "form_media_finalize_question_r2_v1",
+      environment.SUPABASE_SERVICE_ROLE_KEY,
+    ],
+  ]);
+  assertEquals(harness.calls[1].parameters, {
+    p_asset_id: questionAsset,
+    p_finalize_ticket: questionTicket,
+    p_byte_size: 64,
+    p_checksum_sha256: digest,
+    p_pixel_width: 800,
+    p_pixel_height: 600,
+  });
+  assertEquals(harness.transport, [
+    "config:coelo-media-prod",
+    `head:${questionKey}`,
+    `get:${questionKey}:${4 * 1024 * 1024}`,
+  ]);
+});
+
+Deno.test("question-image finalize reports a mismatch as 422 and leaves the object to the cleanup queue", async () => {
+  for (
+    const options of [
+      { get: () => Promise.resolve(new Uint8Array([0xff, 0xd8, 0xff, 0xe0])) },
+      {
+        head: () =>
+          Promise.resolve({ byteSize: 5 * 1024 * 1024, mimeType: "image/png" }),
+      },
+    ]
+  ) {
+    const received: unknown[] = [];
+    const harness = questionHarness({
+      ...options,
+      rpc: {
+        form_media_finalize_question_r2_v1: (parameters) => {
+          received.push(parameters);
+          return denied("FORM_MEDIA_MISMATCH", 422);
+        },
+      },
+    });
+    const result = await handleFormMediaRequest(
+      request({
+        action: "finalize",
+        request_id: id,
+        expected_version: 0,
+        payload: { purpose: "question-image", asset_id: questionAsset },
+      }),
+      harness.dependencies,
+    );
+    assertEquals(result.status, 422);
+    assertEquals((await result.json()).error, "FORM_MEDIA_MISMATCH");
+    const parameters = received[0] as Record<string, unknown>;
+    assertEquals(parameters.p_pixel_width, null);
+    assertEquals(parameters.p_pixel_height, null);
+    assertEquals(
+      harness.transport.some((step) => step.startsWith("delete:")),
+      false,
+    );
+  }
+});
+
+Deno.test("question-image finalize answers NOT_READY when the object was never uploaded", async () => {
+  const harness = questionHarness({
+    head: () => Promise.reject(new R2TransportError("http_404")),
+  });
+  const result = await handleFormMediaRequest(
+    request({
+      action: "finalize",
+      request_id: id,
+      expected_version: 0,
+      payload: { purpose: "question-image", asset_id: questionAsset },
+    }),
+    harness.dependencies,
+  );
+  assertEquals(result.status, 409);
+  assertEquals(await result.json(), { error: "FORM_MEDIA_NOT_READY" });
+  assertEquals(harness.calls.length, 1);
+});
+
+Deno.test("question-image resolve signs a GET bounded by the database TTL", async () => {
+  for (
+    const [action, ttlSeconds, expectedTtl] of [
+      ["download", 300, 300],
+      ["resolve", 60, 60],
+      ["resolve", 900, 300],
+    ] as const
+  ) {
+    const harness = questionHarness({
+      rpc: {
+        superadmin_form_media_resolve_v2: () =>
+          ok({
+            asset_id: questionAsset,
+            bucket: "coelo-media-prod",
+            object_key: questionKey,
+            mime_type: "image/png",
+            byte_size: 64,
+            pixel_width: 800,
+            pixel_height: 600,
+            ttl_seconds: ttlSeconds,
+          }),
+      },
+    });
+    const result = await handleFormMediaRequest(
+      request({
+        action,
+        ...(action === "download"
+          ? { request_id: id, expected_version: 0 }
+          : {}),
+        payload: { purpose: "question-image", asset_id: questionAsset },
+      }),
+      harness.dependencies,
+    );
+    assertEquals(result.status, 200);
+    assertEquals(await result.json(), {
+      asset_id: questionAsset,
+      signed_url: "https://r2.example.test/get",
+      expires_in: expectedTtl,
+      expires_at: new Date(questionNow + expectedTtl * 1000).toISOString(),
+      mime_type: "image/png",
+      byte_size: 64,
+      pixel_width: 800,
+      pixel_height: 600,
+    });
+    assertEquals(harness.transport, [
+      "config:coelo-media-prod",
+      `get-url:${questionKey}:${expectedTtl}`,
+    ]);
+  }
+});
+
+Deno.test("question-image refuses to sign a key that is not the canonical one of the asset", async () => {
+  const harness = questionHarness({
+    rpc: {
+      superadmin_form_media_resolve_v2: () =>
+        ok({
+          asset_id: questionAsset,
+          bucket: "coelo-media-prod",
+          object_key: questionKey.replace("question-image", "answer-image"),
+          mime_type: "image/png",
+          ttl_seconds: 300,
+        }),
+    },
+  });
+  const result = await handleFormMediaRequest(
+    request({ action: "resolve", payload: { asset_id: questionAsset } }),
+    harness.dependencies,
+  );
+  assertEquals(result.status, 400);
+  assertEquals(await result.json(), { error: "media_request_failed" });
+  assertEquals(harness.transport, []);
+});
+
+Deno.test("question-image delete is idempotent through the database request id", async () => {
+  const harness = questionHarness({
+    rpc: {
+      superadmin_form_media_delete_v2: (parameters) => {
+        assertEquals(parameters, {
+          p_request_id: id,
+          p_asset_id: questionAsset,
+        });
+        return ok({
+          asset_id: questionAsset,
+          status: "deleted",
+          replayed: true,
+        });
+      },
+    },
+  });
+  const result = await handleFormMediaRequest(
+    request({
+      action: "delete",
+      request_id: id,
+      payload: { asset_id: questionAsset },
+    }),
+    harness.dependencies,
+  );
+  assertEquals(result.status, 200);
+  assertEquals(await result.json(), {
+    asset_id: questionAsset,
+    status: "deleted",
+    replayed: true,
+  });
+  assertEquals(harness.transport, []);
+});
+
+Deno.test("worker cleanup requires the forms worker bearer and never a user session", async () => {
+  for (
+    const [authorization, environmentOverride] of [
+      ["Bearer synthetic-session", {}],
+      [`Bearer ${workerToken}x`, {}],
+      [`Bearer ${workerToken}`, { FORMS_OPERATIONS_BEARER_TOKEN: undefined }],
+    ] as const
+  ) {
+    const harness = questionHarness({ environment: environmentOverride });
+    const result = await handleFormMediaRequest(
+      new Request("https://gateway.example.test", {
+        method: "POST",
+        headers: { authorization },
+        body: JSON.stringify({ action: "cleanup" }),
+      }),
+      harness.dependencies,
+    );
+    assertEquals(result.status, 401);
+    assertEquals(harness.calls, []);
+  }
+});
+
+Deno.test("worker cleanup expires, claims, deletes on R2 and marks each key purged", async () => {
+  const failingKey = questionKey.replace(".png", "-2.png");
+  const harness = questionHarness({ deleteFails: new Set([failingKey]) });
+  const result = await handleFormMediaRequest(
+    new Request("https://gateway.example.test", {
+      method: "POST",
+      headers: { authorization: `Bearer ${workerToken}` },
+      body: JSON.stringify({ action: "cleanup" }),
+    }),
+    harness.dependencies,
+  );
+  assertEquals(result.status, 200);
+  assertEquals(await result.json(), {
+    expired: 2,
+    claimed: 2,
+    purged: 1,
+    failed: 1,
+  });
+  assertEquals(harness.calls.map((call) => [call.name, call.key]), [
+    ["form_media_expire_question_r2_v1", environment.SUPABASE_SERVICE_ROLE_KEY],
+    ["form_media_claim_cleanup_r2_v1", environment.SUPABASE_SERVICE_ROLE_KEY],
+    ["form_media_mark_purged_r2_v1", environment.SUPABASE_SERVICE_ROLE_KEY],
+  ]);
+  assertEquals(harness.calls[2].parameters, { p_cleanup_id: id });
+  assertEquals(harness.transport, [
+    "config:coelo-media-prod",
+    `delete:${questionKey}`,
+    `delete:${failingKey}`,
+  ]);
+  const expireOnly = await handleFormMediaRequest(
+    new Request("https://gateway.example.test", {
+      method: "POST",
+      headers: { authorization: `Bearer ${workerToken}` },
+      body: JSON.stringify({ action: "expire" }),
+    }),
+    questionHarness().dependencies,
+  );
+  assertEquals(await expireOnly.json(), { expired: 2 });
 });

@@ -1,0 +1,37 @@
+[
+  {
+    "action_id": "audit.export",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R05 (11/09 13:42, rota real com qa-r03): Auditoria -> Arquivos -> Exportar CSV/XLSX visiveis e honestos ('Disponivel depois do MVP'); nenhuma chamada de exportacao (performance sem entradas 'export'). Adiamento da ADR 0034 confirmado na rota real, como profile-files.import.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/39-audit-export-pressed.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/39-audit-export-pressed.png",
+      "revision": "comunicacao/operacoes.json rev 26",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (13be50ae8) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+      "recordedAt": "2026-09-11T13:44:00-03:00",
+      "evidenceList": [
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/38-audit-files-menu.png",
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/39-audit-export-pressed.png"
+      ]
+    }
+  },
+  {
+    "action_id": "account.theme",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R05 (11/09 13:44, rota real com qa-r03): /settings -> Aparencia = Claro grava coelo.superadmin.theme-mode=light; carga completa nova mantem Claro (segmento selecionado e tema claro renderizado); restaurado Sistema. Persistencia local por desenho (BE not-applicable, E2E flutter-only mantidos).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/72-settings-light-reload.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/72-settings-light-reload.png",
+      "revision": "comunicacao/operacoes.json rev 26",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (13be50ae8) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+      "recordedAt": "2026-09-11T13:44:00-03:00",
+      "evidenceList": [
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/70-settings-open.png",
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/71-settings-light.png",
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/72-settings-light-reload.png"
+      ]
+    }
+  }
+]

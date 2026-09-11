@@ -377,6 +377,52 @@ void main() {
     expect(find.byKey(const Key('production-mutation-capability-unavailable')), findsOneWidget);
     expect(commands.calls, 0);
   });
+
+  testWidgets('production detail exposes Editar atividade only with structure mutations', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1100));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final session = SuperadminSession()
+      ..authorize(
+        const SuperadminAuthContext(
+          platformRoleCode: 'test',
+          scopeKind: SuperadminAuthScopeKind.platform,
+          permissionCodes: {'activities.read'},
+          aal: 'aal1',
+        ),
+        sessionId: 'read-test',
+      );
+    for (final enabled in [false, true]) {
+      final router = createSuperadminRouter(
+        session: session,
+        login: unavailableSuperadminLogin,
+        logout: unavailableSuperadminLogout,
+        requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+        activityDirectoryRepository: _TrackingActivityDirectoryRepository(),
+        activityReadDetailRepository: _TrackingReadDetailRepository(),
+        activityCommandRepository: _TripwireActivityCommandRepository(),
+        enableStructureMutations: enabled,
+        onThemeModeChanged: (_) {},
+      );
+      addTearDown(router.dispose);
+      router.go('/activities/10000000-0000-4000-8000-000000000001');
+      await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+      await tester.pumpAndSettle();
+      final button = tester.widget<OutlinedButton>(find.byKey(const Key('activity-read-edit')));
+      expect(button.onPressed, enabled ? isNotNull : isNull, reason: 'enabled=$enabled');
+      if (enabled) {
+        await tester.ensureVisible(find.byKey(const Key('activity-read-edit')));
+        await tester.tap(find.byKey(const Key('activity-read-edit')));
+        await tester.pumpAndSettle();
+        expect(
+          router.routeInformationProvider.value.uri.path,
+          '/activities/10000000-0000-4000-8000-000000000001/edit',
+        );
+      }
+    }
+    addTearDown(session.dispose);
+  });
 }
 
 final class _TrackingActivityDirectoryRepository implements ActivityDirectoryRepository {

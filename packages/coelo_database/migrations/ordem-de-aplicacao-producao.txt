@@ -149,3 +149,26 @@
 20260911170100_person_handles_v1.sql
 # lote 32 (11/09 12:56) - R05 realm-interno: anexos do chat (contrato R2, sem Edge Function ainda)
 20260911210200_superadmin_internal_chat_attachments_v1.sql
+# lote 33 (11/09 13:00) - R05 realm-interno: imagem de pergunta de Formularios no R2 (contrato; form-media ainda no fluxo legado)
+20260911210300_forms_question_media_r2_v1.sql
+# lote 34 (11/09 13:05) - R05 acessos-pessoas: hotfix follow_links_sync_child_context (DELETE sem WHERE bloqueado pelo safeupdate do PostgREST desde o lote 12)
+20260911170200_follow_links_safeupdate_fix_v1.sql
+# lote 35 (11/09 13:08) - R05 realm-interno: P36 no servidor (atividade ativa exige turma; gatilhos diferidos)
+20260911210400_structure_hierarchy_p36_v1.sql
+# lote 36 (11/09 13:16) - R05 realm-interno: P32 regra alvo (politicas macro da unidade + notificacoes no sino)
+20260911210500_unit_care_policies_notifications_v1.sql
+# lote 37 (11/09 13:27) - R05 realm-interno: @ das pessoas da instituicao no detail_v2 e cron de expiracao de anexos do chat
+20260911210600_institution_people_handles_v1.sql
+20260911210700_chat_media_expire_dispatch_v1.sql
+# lote 38 (11/09 13:33) - R05: @ nos contextos do Principal + perfil Coelo (principal-chat-sistema); contrato de Assiduidade do Superadmin (formularios-cuidado-rotina)
+20260911130100_principal_context_handles_and_coelo_profile_v1.sql
+20260911220100_attendance_superadmin_contract_v1.sql
+# lote 39 (11/09 13:40) - R05: cron de limpeza form-media R2 (formularios); answer-image no R2 (realm-interno); Planos exigem membership de plataforma (operacoes); modelo de sistema de perfil Admin (acessos-pessoas)
+20260911230000_form_media_r2_cleanup_dispatch_v1.sql
+20260911210800_forms_answer_media_r2_v1.sql
+20260911200000_superadmin_plans_platform_scope_v1.sql
+20260911170300_institution_profile_system_model_create_v1.sql
+# lote 40 (11/09 13:50) - R05 formularios-cuidado-rotina: can_manage no diretorio de Rotina
+20260911220000_daily_routine_directory_can_manage_v1.sql
+# lote 41 (11/09 13:50) - R05 publicacoes-agenda: ponte de ator interno nas Circulares (attach/respond)
+20260911190000_circular_actor_internal_bridge_v1.sql

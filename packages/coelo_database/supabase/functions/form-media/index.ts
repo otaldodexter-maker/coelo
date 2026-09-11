@@ -1,5 +1,10 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import { R2Client, type R2Config, validateR2Config } from "../_shared/r2_s3.ts";
+import {
+  R2Client,
+  type R2Config,
+  R2TransportError,
+  validateR2Config,
+} from "../_shared/r2_s3.ts";
 import {
   allowedOrigin,
   corsHeaders,
@@ -13,20 +18,39 @@ import {
   parseFormMediaReadDescriptor,
   parseFormMediaReadGrant,
   parsePrepareAsset,
+  type QuestionImageEnvelope,
   readFormMediaEnvelope,
   sha256,
   shouldVerifyFinalization,
   sniffImageMime,
   workerFinalizationSucceeded,
 } from "./media_contract.ts";
+import {
+  authorizedWorkerRequest,
+  imageDimensions,
+  QUESTION_IMAGE_BUCKET,
+  QUESTION_IMAGE_MAX_BYTES,
+  QUESTION_IMAGE_READ_TTL_SECONDS,
+  QUESTION_IMAGE_UPLOAD_TTL_SECONDS,
+  questionImageObjectKey,
+  rpcOutcome,
+} from "./question_image.ts";
 
 type Json = Record<string, unknown>;
+
+/** Superficie do R2 usada pelo ramo question-image e pelo worker. */
+export type FormMediaTransport = Pick<
+  R2Client,
+  "presignGet" | "presignPut" | "head" | "get" | "delete"
+>;
 
 export type FormMediaDependencies = Readonly<{
   envGet: (name: string) => string | undefined;
   createClient: typeof createClient;
   now?: () => Date;
   createR2?: (config: R2Config) => Pick<R2Client, "presignGet">;
+  /** Transporte completo do ramo question-image (testes injetam um falso). */
+  createTransport?: (config: R2Config) => FormMediaTransport;
 }>;
 const productionDependencies: FormMediaDependencies = {
   envGet: (name) => Deno.env.get(name),
@@ -120,6 +144,281 @@ async function readInternalMedia(
   }
 }
 
+function questionImageTransport(
+  dependencies: FormMediaDependencies,
+  bucket: string,
+  signingAt?: number,
+): FormMediaTransport {
+  const config = validateR2Config({
+    endpoint: dependencies.envGet("COELO_R2_ENDPOINT") ?? "",
+    region: dependencies.envGet("COELO_R2_REGION") ?? "auto",
+    accessKeyId: dependencies.envGet("COELO_R2_ACCESS_KEY_ID") ?? "",
+    secretAccessKey: dependencies.envGet("COELO_R2_SECRET_ACCESS_KEY") ?? "",
+    bucket,
+  });
+  return dependencies.createTransport?.(config) ??
+    new R2Client(
+      config,
+      signingAt === undefined ? {} : { now: () => new Date(signingAt) },
+    );
+}
+
+function rpcFailure(
+  origin: string | null,
+  outcome: Exclude<ReturnType<typeof rpcOutcome>, { ok: true }>,
+): Response {
+  const body: Json = { error: outcome.code };
+  if (outcome.message) body.message = outcome.message;
+  if (outcome.correlationId) body.correlation_id = outcome.correlationId;
+  return response(origin, outcome.status, body);
+}
+
+/** Ramo question-image (R2, lote 33). O ator e reautorizado pelo JWT em cada
+ * RPC `superadmin_form_media_*_v2`; somente a finalizacao medida usa
+ * service_role, e apenas com o ticket que a propria autora acabou de liberar.
+ * Nenhuma credencial, bucket ou chave sai daqui: o cliente recebe URLs
+ * assinadas de vida curta e os codigos FORM_MEDIA_* / SAI_* do banco. */
+async function handleQuestionImage(
+  origin: string | null,
+  envelope: QuestionImageEnvelope,
+  userClient: SupabaseClient,
+  serviceClient: SupabaseClient,
+  dependencies: FormMediaDependencies,
+): Promise<Response> {
+  const now = dependencies.now ?? (() => new Date());
+  try {
+    if (envelope.action === "prepare") {
+      const input = envelope.payload;
+      const prepared = rpcOutcome(
+        await userClient.rpc("superadmin_form_media_prepare_v2", {
+          p_request_id: envelope.request_id,
+          p_form_id: input.form_id,
+          p_form_version_id: input.form_version_id,
+          p_item_id: input.item_id,
+          p_mime_type: input.mime_type,
+          p_byte_size: input.byte_size,
+          p_sha256: input.sha256,
+        }),
+      );
+      if (!prepared.ok) return rpcFailure(origin, prepared);
+      const assetId = String(prepared.data.asset_id ?? "");
+      const objectKey = questionImageObjectKey(prepared.data, assetId);
+      if (prepared.data.mime_type !== input.mime_type) {
+        throw new Error("invalid_descriptor");
+      }
+      const signingAt = now().getTime();
+      const signed = await questionImageTransport(
+        dependencies,
+        QUESTION_IMAGE_BUCKET,
+        signingAt,
+      ).presignPut(
+        objectKey,
+        input.mime_type,
+        QUESTION_IMAGE_UPLOAD_TTL_SECONDS,
+      );
+      const expiresAt = Math.floor(signingAt / 1000) * 1000 +
+        QUESTION_IMAGE_UPLOAD_TTL_SECONDS * 1000;
+      return response(origin, 200, {
+        asset_id: assetId,
+        // `signed_upload_url` e o nome que o cliente Dart legado le;
+        // `upload_url` e o das demais funcoes de midia do R2.
+        signed_upload_url: signed.url.toString(),
+        upload_url: signed.url.toString(),
+        required_headers: signed.requiredHeaders,
+        finalize_ticket: prepared.data.finalize_ticket ?? null,
+        expires_at: new Date(expiresAt).toISOString(),
+        replayed: prepared.data.replayed === true,
+      });
+    }
+    if (envelope.action === "finalize") {
+      const assetId = envelope.payload.asset_id;
+      const authorized = rpcOutcome(
+        await userClient.rpc("superadmin_form_media_authorize_finalize_v2", {
+          p_asset_id: assetId,
+        }),
+      );
+      if (!authorized.ok) return rpcFailure(origin, authorized);
+      const objectKey = questionImageObjectKey(authorized.data, assetId);
+      const ticket = authorized.data.finalize_ticket;
+      const mimeType = String(authorized.data.mime_type);
+      if (typeof ticket !== "string") throw new Error("invalid_descriptor");
+      const transport = questionImageTransport(
+        dependencies,
+        QUESTION_IMAGE_BUCKET,
+      );
+      let stored;
+      try {
+        stored = await transport.head(objectKey);
+      } catch (error) {
+        if (error instanceof R2TransportError && error.code === "http_404") {
+          // O PUT ainda nao aconteceu: o ticket segue valido para repetir.
+          return response(origin, 409, { error: "FORM_MEDIA_NOT_READY" });
+        }
+        throw error;
+      }
+      // Medicao real: bytes relidos, SHA-256 calculado aqui e dimensoes do
+      // cabecalho. Content-Type e Content-Length do objeto sao o que o cliente
+      // declarou no PUT e nao provam nada. Quando o objeto excede o limite do
+      // catalogo ou nao decodifica como o tipo declarado, as medidas vao ao
+      // banco com dimensoes nulas para ele registrar a divergencia, apagar o
+      // ativo e enfileirar a limpeza (FORM_MEDIA_MISMATCH 422).
+      let byteSize = stored.byteSize;
+      let checksum = "";
+      let width: number | null = null;
+      let height: number | null = null;
+      if (byteSize <= QUESTION_IMAGE_MAX_BYTES) {
+        const bytes = await transport.get(objectKey, QUESTION_IMAGE_MAX_BYTES);
+        byteSize = bytes.byteLength;
+        checksum = await sha256(bytes);
+        if (sniffImageMime(bytes) === mimeType) {
+          const dimensions = imageDimensions(bytes, mimeType);
+          width = dimensions?.width ?? null;
+          height = dimensions?.height ?? null;
+        }
+      }
+      const finalized = rpcOutcome(
+        await serviceClient.rpc("form_media_finalize_question_r2_v1", {
+          p_asset_id: assetId,
+          p_finalize_ticket: ticket,
+          p_byte_size: byteSize,
+          p_checksum_sha256: checksum,
+          p_pixel_width: width,
+          p_pixel_height: height,
+        }),
+      );
+      if (!finalized.ok) return rpcFailure(origin, finalized);
+      return response(origin, 200, {
+        asset_id: assetId,
+        status: finalized.data.status ?? "ready",
+        finalized_at: finalized.data.finalized_at ?? null,
+        mime_type: mimeType,
+        byte_size: byteSize,
+        pixel_width: width,
+        pixel_height: height,
+      });
+    }
+    if (envelope.action === "resolve") {
+      const assetId = envelope.payload.asset_id;
+      const resolved = rpcOutcome(
+        await userClient.rpc("superadmin_form_media_resolve_v2", {
+          p_asset_id: assetId,
+        }),
+      );
+      if (!resolved.ok) return rpcFailure(origin, resolved);
+      const objectKey = questionImageObjectKey(resolved.data, assetId);
+      const granted = resolved.data.ttl_seconds;
+      const ttl = Math.min(
+        QUESTION_IMAGE_READ_TTL_SECONDS,
+        typeof granted === "number" && Number.isSafeInteger(granted)
+          ? granted
+          : 0,
+      );
+      if (ttl < 1) throw new Error("invalid_descriptor");
+      const signingAt = now().getTime();
+      const signed = await questionImageTransport(
+        dependencies,
+        QUESTION_IMAGE_BUCKET,
+        signingAt,
+      ).presignGet(objectKey, ttl);
+      const expiresAt = Math.floor(signingAt / 1000) * 1000 + ttl * 1000;
+      return response(origin, 200, {
+        asset_id: assetId,
+        signed_url: signed.url.toString(),
+        expires_in: ttl,
+        expires_at: new Date(expiresAt).toISOString(),
+        mime_type: resolved.data.mime_type,
+        byte_size: resolved.data.byte_size,
+        pixel_width: resolved.data.pixel_width,
+        pixel_height: resolved.data.pixel_height,
+      });
+    }
+    if (envelope.action !== "delete") throw new Error("invalid_request");
+    const deleted = rpcOutcome(
+      await userClient.rpc("superadmin_form_media_delete_v2", {
+        p_request_id: envelope.request_id,
+        p_asset_id: envelope.payload.asset_id,
+      }),
+    );
+    if (!deleted.ok) return rpcFailure(origin, deleted);
+    return response(origin, 200, {
+      asset_id: envelope.payload.asset_id,
+      status: "deleted",
+      replayed: deleted.data.replayed === true,
+    });
+  } catch {
+    return response(origin, 400, { error: "media_request_failed" });
+  }
+}
+
+/** Worker do cron: expira tickets vencidos, reivindica a fila de limpeza,
+ * apaga cada chave no R2 e da baixa. Uma chave que falhar no DELETE fica
+ * reivindicada e volta a fila depois de 10 minutos (regra do banco). */
+async function handleWorker(
+  origin: string | null,
+  action: "expire" | "cleanup",
+  serviceClient: SupabaseClient,
+  dependencies: FormMediaDependencies,
+): Promise<Response> {
+  try {
+    const expired = rpcOutcome(
+      await serviceClient.rpc("form_media_expire_question_r2_v1", {
+        p_limit: 100,
+      }),
+    );
+    if (!expired.ok) return rpcFailure(origin, expired);
+    const summary: Json = { expired: expired.data.expired ?? 0 };
+    if (action === "expire") return response(origin, 200, summary);
+    const claimed = rpcOutcome(
+      await serviceClient.rpc("form_media_claim_cleanup_r2_v1", {
+        p_limit: 100,
+      }),
+    );
+    if (!claimed.ok) return rpcFailure(origin, claimed);
+    const items = Array.isArray(claimed.data.items) ? claimed.data.items : [];
+    const transports = new Map<string, FormMediaTransport>();
+    let purged = 0;
+    let failed = 0;
+    for (const raw of items) {
+      const item = raw && typeof raw === "object" ? raw as Json : {};
+      const bucket = item.bucket;
+      const key = item.object_key;
+      const cleanupId = item.cleanup_id;
+      if (
+        typeof bucket !== "string" || typeof key !== "string" ||
+        typeof cleanupId !== "string"
+      ) {
+        failed++;
+        continue;
+      }
+      try {
+        let transport = transports.get(bucket);
+        if (!transport) {
+          transport = questionImageTransport(dependencies, bucket);
+          transports.set(bucket, transport);
+        }
+        await transport.delete(key);
+        const marked = rpcOutcome(
+          await serviceClient.rpc("form_media_mark_purged_r2_v1", {
+            p_cleanup_id: cleanupId,
+          }),
+        );
+        if (!marked.ok) throw new Error(marked.code);
+        purged++;
+      } catch {
+        failed++;
+      }
+    }
+    return response(origin, 200, {
+      ...summary,
+      claimed: items.length,
+      purged,
+      failed,
+    });
+  } catch {
+    return response(origin, 503, { error: "media_unavailable" });
+  }
+}
+
 export async function handleFormMediaRequest(
   request: Request,
   dependencies: FormMediaDependencies = productionDependencies,
@@ -149,6 +448,31 @@ export async function handleFormMediaRequest(
   } catch {
     return response(origin, 400, { error: "invalid_request" });
   }
+  if (body.action === "expire" || body.action === "cleanup") {
+    // Caminho do cron: bearer compartilhado do worker de Formularios, nunca
+    // um JWT de usuario. Comparacao em tempo constante; falha e 401 opaco.
+    if (
+      !authorizedWorkerRequest(
+        authorization,
+        dependencies.envGet("FORMS_OPERATIONS_BEARER_TOKEN"),
+      )
+    ) {
+      return response(origin, 401, { error: "unauthorized" });
+    }
+    try {
+      const serviceClient = dependencies.createClient(url, service, {
+        auth: { persistSession: false },
+      });
+      return await handleWorker(
+        origin,
+        body.action,
+        serviceClient,
+        dependencies,
+      );
+    } catch {
+      return response(origin, 503, { error: "media_unavailable" });
+    }
+  }
   try {
     const userClient = dependencies.createClient(url, anon, {
       global: { headers: { Authorization: authorization } },
@@ -170,6 +494,21 @@ export async function handleFormMediaRequest(
         dependencies,
       );
     }
+    if ("purpose" in body) {
+      return await handleQuestionImage(
+        origin,
+        body,
+        userClient,
+        serviceClient,
+        dependencies,
+      );
+    }
+    if (!("request_id" in body)) {
+      // Worker ja atendido antes da autenticacao de usuario; nunca chega aqui.
+      return response(origin, 400, { error: "invalid_request" });
+    }
+    // Daqui para baixo e o fluxo legado de answer-image (Supabase Storage,
+    // bucket coelo-forms-private): respostas continuam nele por contrato.
     const actorLookup = await serviceClient.from("person_auth_links").select(
       "person_id",
     )

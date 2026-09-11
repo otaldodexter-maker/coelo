@@ -484,8 +484,8 @@
       "scope": "mvp",
       "done": "Diretório e formulários locais, snapshot autorizado e lifecycle de save protegidos; não é CRUD remoto certificado. C04/r13 04c2fc93 acrescenta purga de bytes/ticket em recarga e dispose do consumidor de marca. Sete testes com builder injetado passam; caminho real de cache/rede NÃO tem prova automatizada. R01/16h: C04r15–17 entregou acessibilidade/estados e consumidor UnitDetail opt-in84a05151; pacote ainda em revisão. R02 D02:c3fb1d2c→b648379b recusa alterações fora spec042 antes da escrita e preserva rascunho/retry;35 repository+6 lifecycle PASS na basee9fdd88d. Writer não ampliado.",
       "fe": "R04 continuacao: /institutions/<id>/edit carrega a instituicao criada (detail_v2 em producao), mas o assistente exige CNPJ, representantes e administradores que a criacao v2 nao persiste; o cliente recusa salvar campos sem contrato (UnsupportedRelation). Editar so fecha quando o realm interno persistir documento/contato/pessoas. Gate: pacote novo de estrutura (institution_contacts_v2), decisao de escopo do Owner.",
-      "be": "R04: superadmin_institution_edit_core_v2 (230002, lote 3) em producao; detalhe v2 (180330) fecha o fetchById do fluxo de edicao.",
-      "evidence": "evidence/etapa-2/estruturas/; evidence/etapa-2/coordenador/rodada-2026-09-07.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C04r15–17;f147f6aa/621c2202/728feff9/d8741c60/84a05151;C04I008; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C04/r61; C04 estado47 medido02:00 e finalr61; conflito registrado; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commits 174883c4f e 741459f27; institution_form_page_test 46 PASS; evidence/etapa-2/r03-estrutura/handoff-02-pos-composto.md; evidence/etapa-2/r04-estrutura/handoff.md; evidence/etapa-2/r04-estrutura/rota-real/institutions-edit-documento-vazio.jpg",
+      "be": "R05 realm-interno: institution_contacts_v1 (20260911210000) aplicado em producao (lote 28): superadmin_institution_contacts_edit_v1 persiste documento (CNPJ), contato, representantes legais e administradores como pessoas do realm; detail_v2 devolve representatives/administrators mascarados. pgTAP 38/38 com replay, versao obsoleta, validacao e negativa cross-tenant. done quando a frente estrutura persistir e recarregar na rota real.",
+      "evidence": "evidence/etapa-2/estruturas/; evidence/etapa-2/coordenador/rodada-2026-09-07.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C04r15–17;f147f6aa/621c2202/728feff9/d8741c60/84a05151;C04I008; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C04/r61; C04 estado47 medido02:00 e finalr61; conflito registrado; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commits 174883c4f e 741459f27; institution_form_page_test 46 PASS; evidence/etapa-2/r03-estrutura/handoff-02-pos-composto.md; evidence/etapa-2/r04-estrutura/handoff.md; evidence/etapa-2/r04-estrutura/rota-real/institutions-edit-documento-vazio.jpg; evidence/etapa-2/r05-realm-interno/handoff.md; comunicacao/realm-interno.json r17 (contratoInstitutionContacts)",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
       "frontendStatus": "blocked-decision",
@@ -3026,12 +3026,12 @@
       "scope": "mvp",
       "done": "Ordem/launcher/negativas, consumer de imagem e lifecycle de contexto/retry/rota local implementados; handoff73/73 registrado. C05/r6 a6128530: fluxo local de anexo com9 aceites verdes relatados. C05/r7 2c36807f: picker de plataforma e3 testes de filtro/tipo neutro/recusa. Não integrado pela C00. R01/16h: C05r8/69354767+88dac285 validam HTTPS redimido;40306f45 testa resposta tardia de Momentos com mutação da guarda.",
       "fe": "Retido pela plataforma comum de midia: faltam o catalog_kind de chat no catalogo privado e o contrato de emissao de ticket de upload e leitura pelo gateway, escritos por publicacoes-midia. superadmin_chat_send_message_v2 e text-only e o repositorio recusa comando com anexo em vez de enviar parcialmente e fingir sucesso. Placeholder honesto preservado; nenhum gateway ou bucket criado por tela.",
-      "be": "Nao existe funcao que insira em public.chat_attachment_metadata (so service_role tem INSERT) e nao ha Edge Function de chat-media. Depende do pacote de midia comum, nao do meu recorte.",
-      "evidence": "evidence/etapa-2/comunicacao/2026-09-08-media-lifecycle-handoff.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C05r8–10; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 313c43bb19Deno,operações503 semRPC;f413c2dc50PASS/21goldenFAIL,adapterfeed;cea29b1f9aceitação/39AcontecePASS,removercliente failclosed. Quatro subagentes SQLNotices/SQLMomentos/Agora/Chat ativos relatadosr15;não visual.; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/L02.md, preservado na branch codex/e2-r02-l02-chat-comunicacoes; nenhuma implementacao especulativa nesta rodada; packages/coelo_database/migrations/20260908160000_private_media_catalog_r2_v1.sql, cujo catalog_kind nao inclui chat",
+      "be": "R05 realm-interno: contrato de anexo do chat interno (20260911210200, lote 32): prepare/authorize_finalize/authorize_read (authenticated) e finalize/expire (service_role) sobre chat_attachment_metadata e R2 coelo-media-prod, sem Stream; thread ja devolve attachments[]. pgTAP 28/28 (limites, replay, mismatch, cross-tenant, expiracao). Gate: Edge Function chat-media + cron de expire; cliente do principal-chat.",
+      "evidence": "evidence/etapa-2/comunicacao/2026-09-08-media-lifecycle-handoff.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C05r8–10; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 313c43bb19Deno,operações503 semRPC;f413c2dc50PASS/21goldenFAIL,adapterfeed;cea29b1f9aceitação/39AcontecePASS,removercliente failclosed. Quatro subagentes SQLNotices/SQLMomentos/Agora/Chat ativos relatadosr15;não visual.; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/L02.md, preservado na branch codex/e2-r02-l02-chat-comunicacoes; nenhuma implementacao especulativa nesta rodada; packages/coelo_database/migrations/20260908160000_private_media_catalog_r2_v1.sql, cujo catalog_kind nao inclui chat; evidence/etapa-2/r05-realm-interno/handoff.md; comunicacao/realm-interno.json r18 (contratoChatAttach)",
       "historicalFrontend": "audited",
       "historicalBackend": "audited",
       "frontendStatus": "blocked-environment",
-      "backendStatus": "blocked-environment",
+      "backendStatus": "local-green",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
@@ -3381,9 +3381,9 @@
       "screen": "Formulários / Diretório",
       "scope": "mvp",
       "done": "R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): /forms abre na rota normal com cabecalho, Situacao, Periodo, toggle e Arquivos; superadmin_forms_directory_v2 -> 200 vazio antes e, depois da criacao, lista \"[R04-QA] Formulario Local editado\" (management_version 2) apos carga completa. Pendencia: o card \"Criar formulario\" nunca aparece em producao porque FormsDirectoryPage so o exibe com reader == null (router passa formsDirectoryReader); /forms/new so por URL.",
-      "fe": "R04 (subagente do coordenador, rota real com qa-r03): frontend alinhado ao E2E provado (rota normal + CRUD em producao + reload). R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): /forms abre na rota normal com cabecalho, Situacao, Periodo, toggle e Arquivos; superadmin_forms_directory_v2 -> 200 vazio antes e, depois da criacao, lista \"[R04-QA] Formulario Local editado\" (management_version 2) apos carga completa. Pendencia: o card \"Criar formulario\" nunca aparece em producao porque FormsDirectoryPage so o exibe com reader == null (router passa formsDirectoryReader); /forms/new so por URL.",
+      "fe": "R05: card \"Criar formulario\" aparece em producao (F-R04-FCR-010a corrigido em f17c2fa15); diretorio com busca/filtros/toggle/Arquivos.",
       "be": "R04 (subagente do coordenador, rota real com qa-r03): backend alinhado ao E2E provado (rota normal + CRUD em producao + reload). R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): /forms abre na rota normal com cabecalho, Situacao, Periodo, toggle e Arquivos; superadmin_forms_directory_v2 -> 200 vazio antes e, depois da criacao, lista \"[R04-QA] Formulario Local editado\" (management_version 2) apos carga completa. Pendencia: o card \"Criar formulario\" nunca aparece em producao porque FormsDirectoryPage so o exibe com reader == null (router passa formsDirectoryReader); /forms/new so por URL.",
-      "evidence": "commitb61eba6e; commitce320f55; evidence/etapa-2/engenheiro-1/; commit 2e39ec739b47e5268b4fd960dd51ed93e03ba594; forms_backend_gateway_test novo, prova de transporte sem rede externa apontando o cliente para 127.0.0.1:1; 51/51 com supabase_forms_api_test; 2026-09-09; goldens-claro-decisoes-2026-09-10.md; R03-fase0-handoff.md; docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/11-forms-list.png, docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/24-forms-list-with-form.png",
+      "evidence": "commitb61eba6e; commitce320f55; evidence/etapa-2/engenheiro-1/; commit 2e39ec739b47e5268b4fd960dd51ed93e03ba594; forms_backend_gateway_test novo, prova de transporte sem rede externa apontando o cliente para 127.0.0.1:1; 51/51 com supabase_forms_api_test; 2026-09-09; goldens-claro-decisoes-2026-09-10.md; R03-fase0-handoff.md; docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/11-forms-list.png, docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/24-forms-list-with-form.png; card Criar agora aparece em producao (F-R04-FCR-010a); prova na rota real apos o rebuild; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/06-forms-list-card-criar.png",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
       "frontendStatus": "verified",
@@ -3413,10 +3413,10 @@
           "recordedAt": "2026-09-11T03:40:53-03:00"
         },
         "frontend": {
-          "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/11-forms-list.png",
-          "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
-          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
-          "recordedAt": "2026-09-11T03:40:53-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/06-forms-list-card-criar.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 37",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina em 7fe204565 (origin/dev 4bf0cfe51 mesclado) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9415 sob SwiftShader",
+          "recordedAt": "2026-09-11T13:25:00-03:00"
         },
         "backend": {
           "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/11-forms-list.png",
@@ -3485,19 +3485,39 @@
       "family": "forms_authoring",
       "screen": "Formulário / Visão geral",
       "scope": "mvp",
-      "done": "Editor, contexto1178b54e, callbacks74b56804, autosave e9e7a282 e branches a4d8be57/c0b20ccd integrados. SQL autoria é candidato. R36-r39 (origem C02; integração por lote): Overview rejeita ID divergente/erro inesperado e invalida retornos em mudança de contexto ou dispose.",
-      "fe": "Sem mudanca de estado. Conferido por leitura: guarda de geracao, guarda de identidade de api e formId, fail-closed quando a api e nula e teste de resposta fora de ordem entre rotas ja existem. Nao ha implementacao ausente; nao reimplementar.",
-      "be": "Nenhum equivalente interno overview identificado neste corte; editor de rascunho não substitui overview/publicar/testar.",
-      "evidence": "commits1178b54e/74b56804/e9e7a282/a4d8be57/c0b20ccd/7ae796ef; evidence/etapa-2/formularios-cuidado/2026-09-08-forms-provenance-guards.md; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r39-overview; Fechamento R01 C02/r48; C02r48 final; etapa-2-operacao/reports/R01-fechamento-20260909.md; forms_overview_page_test com 7 casos, base d784462c1; 2026-09-09",
+      "done": "leitura ponta a ponta com sessao qa-r03",
+      "fe": "rota normal, leitura real, reload",
+      "be": "form_get_overview em producao; leitura autorizada",
+      "evidence": "commits1178b54e/74b56804/e9e7a282/a4d8be57/c0b20ccd/7ae796ef; evidence/etapa-2/formularios-cuidado/2026-09-08-forms-provenance-guards.md; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r39-overview; Fechamento R01 C02/r48; C02r48 final; etapa-2-operacao/reports/R01-fechamento-20260909.md; forms_overview_page_test com 7 casos, base d784462c1; 2026-09-09; rota normal, leitura real, reload; form_get_overview em producao; leitura autorizada; leitura ponta a ponta com sessao qa-r03",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "pending-verification",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
       "lastSyncedHandoff": "C02/r39",
       "lastHandoffRevision": 48,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/04-forms-overview-reload.png",
+          "revision": "formularios-cuidado-rotina r36",
+          "environment": "producao evvbomzejfijozbtgvpt + repositorio dev",
+          "recordedAt": "2026-09-11T13:00:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/04-forms-overview-reload.png",
+          "revision": "formularios-cuidado-rotina r36",
+          "environment": "producao evvbomzejfijozbtgvpt + repositorio dev",
+          "recordedAt": "2026-09-11T13:00:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/04-forms-overview-reload.png",
+          "revision": "formularios-cuidado-rotina r36",
+          "environment": "producao evvbomzejfijozbtgvpt + repositorio dev",
+          "recordedAt": "2026-09-11T13:00:00-03:00"
+        }
+      }
     },
     {
       "id": "forms.edit",
@@ -3558,19 +3578,39 @@
       "family": "forms_authoring",
       "screen": "Formulário / Publicar",
       "scope": "mvp",
-      "done": "Editor, contexto1178b54e, callbacks74b56804, autosave e9e7a282 e branches a4d8be57/c0b20ccd integrados. SQL autoria é candidato. R36-r39 (origem C02; integração por lote): Nenhuma implementação nova da ação: investigação r39 distingue publicar/overview legados e ausência de preview produtivo sem resposta real.",
-      "fe": "Publicar deixa de falhar em silencio. Um formulario que passa na validacao de titulo e ordem mas nunca foi salvo tinha definicao nula e a confirmacao retornava sem publicar e sem explicar; agora responde que e preciso salvar o rascunho antes de publicar, e a falta de servico ou de permissao tambem passa a ser dita. O restante da acao ja estava implementado e coberto: validacao, dialogo, capability, RPC com requestId e expectedVersion e guarda de contexto.",
-      "be": "Diagnóstico não prova ausência de todas as implementações históricas: preserva código legado; nenhum novoRPC interno correspondente encontrado pelaC02.",
-      "evidence": "commits1178b54e/74b56804/e9e7a282/a4d8be57/c0b20ccd/7ae796ef; evidence/etapa-2/formularios-cuidado/2026-09-08-forms-provenance-guards.md; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r39-overview; Fechamento R01 C02/r48; C02r48 final; etapa-2-operacao/reports/R01-fechamento-20260909.md; commit do lote 4 nesta branch; RED verificado removendo a correcao e confirmando zero ocorrencias da mensagem; forms_editor_context_isolation_test 120/120; 2026-09-09",
+      "done": "FE verified + BE done na mesma prova",
+      "fe": "rota normal, publicacao pelo repository produtivo, reload mantem",
+      "be": "form_publish em producao persistiu com auditoria; RLS/negativas pelas suites pgTAP existentes de Formularios (forms_definition 31, forms_internal_provenance_guards 39, operations_read_v2 70)",
+      "evidence": "commits1178b54e/74b56804/e9e7a282/a4d8be57/c0b20ccd/7ae796ef; evidence/etapa-2/formularios-cuidado/2026-09-08-forms-provenance-guards.md; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r39-overview; Fechamento R01 C02/r48; C02r48 final; etapa-2-operacao/reports/R01-fechamento-20260909.md; commit do lote 4 nesta branch; RED verificado removendo a correcao e confirmando zero ocorrencias da mensagem; forms_editor_context_isolation_test 120/120; 2026-09-09; rota normal, publicacao pelo repository produtivo, reload mantem; form_publish em producao persistiu com auditoria; RLS/negativas pelas suites pgTAP existentes de Formularios (forms_definition 31, forms_internal_provenance_guards 39, operations_read_v2 70); FE verified + BE done na mesma prova",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "pending-verification",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
       "lastSyncedHandoff": "C02/r39",
       "lastHandoffRevision": 48,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/04-forms-overview-reload.png",
+          "revision": "formularios-cuidado-rotina r36",
+          "environment": "producao evvbomzejfijozbtgvpt + repositorio dev",
+          "recordedAt": "2026-09-11T13:00:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/04-forms-overview-reload.png",
+          "revision": "formularios-cuidado-rotina r36",
+          "environment": "producao evvbomzejfijozbtgvpt + repositorio dev",
+          "recordedAt": "2026-09-11T13:00:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/04-forms-overview-reload.png",
+          "revision": "formularios-cuidado-rotina r36",
+          "environment": "producao evvbomzejfijozbtgvpt + repositorio dev",
+          "recordedAt": "2026-09-11T13:00:00-03:00"
+        }
+      }
     },
     {
       "id": "forms.test",
@@ -3634,15 +3674,15 @@
       "family": "forms_responses",
       "screen": "Respostas / Monitor",
       "scope": "mvp",
-      "done": "Fluxos locais, retry08315450, autosave/revisãode51d4e7 e navegação por seção21efc6cc implementados; não é persistência real certificada. R36-r39 (origem C02; integração por lote): Adapter v2, anonimato, retry e quatro leituras SQL incluindo monitor agregado. C00 f1073f45 preserva SQL I01070 e dependências nominais; UI correspondente ainda aguarda integração.",
-      "fe": "Conferir monitor completo e gate visual operacional; preservar contratos reais.",
-      "be": "I01070 PASS local encerra a espera desse replay específico. Hierarchy/people não implementados; provedor remoto e cadeia real ainda abertos.",
-      "evidence": "commits08315450/de51d4e7/21efc6cc; evidence/etapa-2/formularios-cuidado/; R01/17:40 2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r36-api,r39-i014,r39-jobs",
+      "done": "Distribuir -> cron -> monitor com contagens reais e reload; FE verified + BE done.",
+      "fe": "R05 (13:03-13:20, rota real com qa-r03): /forms/4555ba07.../monitor abre pela projecao autorizada com a ocorrencia materializada pelo cron (4 elegiveis, 0/1 responderam); reload apos a resposta mostra 1 de 4.",
+      "be": "form_get_monitor em producao com a ocorrencia 6b0bd1ef gerada por form_run_periodic_maintenance a partir da distribuicao a0ee4530 (form_save_application/form_save_schedule 200); RLS/negativas pelas suites forms_superadmin_operations_read_v2 70/70 e forms_internal_provenance_guards 39/39.",
+      "evidence": "commits08315450/de51d4e7/21efc6cc; evidence/etapa-2/formularios-cuidado/; R01/17:40 2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r36-api,r39-i014,r39-jobs; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/13-forms-monitor.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/20-forms-monitor-reload.png",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "pending-verification",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastEvidenceAt": "2026-09-08T19:13:49-03:00",
       "lastSyncedHandoff": "C02/r39",
       "lastHandoffRevision": 48,
@@ -3655,6 +3695,26 @@
         "referencia": 0,
         "atual": 1,
         "fonte": "goldens-claro-decisoes-2026-09-10"
+      },
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/13-forms-monitor.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 37",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina em 7fe204565 (origin/dev 4bf0cfe51 mesclado) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9415 sob SwiftShader",
+          "recordedAt": "2026-09-11T13:25:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/20-forms-monitor-reload.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 37",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina em 7fe204565 (origin/dev 4bf0cfe51 mesclado) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9415 sob SwiftShader",
+          "recordedAt": "2026-09-11T13:25:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/20-forms-monitor-reload.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 37",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina em 7fe204565 (origin/dev 4bf0cfe51 mesclado) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9415 sob SwiftShader",
+          "recordedAt": "2026-09-11T13:25:00-03:00"
+        }
       }
     },
     {
@@ -3662,15 +3722,15 @@
       "family": "forms_responses",
       "screen": "Responder Formulário",
       "scope": "mvp",
-      "done": "Retry08315450, autosave/reviewde51d4e7 e seção por página21efc6cc integrados. R01/16h: C028ebf74f9 valida correlação de ocorrência/resposta/status e itens duplicados;31 testes de adapter passam, ainda não integrado. Galeria valida contagem e omite respostas vazias (57357cc8).",
-      "fe": "Mais tres correcoes de leitura na tela de resposta, todas encontradas comparando-a com o detalhe de resposta em operacoes, que ja fazia certo. Dinheiro reaberto em notacao civil; data com o mesmo formato no campo e no resumo da enviada; e escolha mostrando o rotulo em vez do ID interno da opcao, o que alem de ilegivel expunha identificador interno ao respondente. O teste do detalhe de resposta ja proibia esse ID na outra superficie.",
-      "be": "CORRECAO de descricao minha: eu havia escrito que o servidor nao valida faixa. Ele valida. app_private.form_replace_response_answers ja recusa texto acima do max_length, numero fora de min_value e max_value, data fora do intervalo, escala fora de scale_min e scale_max, contagem de selecoes fora de min_selections e max_selections e contagem de arquivos fora de min_images e max_images, com check_violation. Para dinheiro compara money_minor_units, ou seja o servidor sempre exigiu o limite em minorUnits. O meu lote 1 nao adicionou uma regra nova: alinhou o cliente ao contrato que o banco ja tinha, e falha cedo em vez de deixar o servidor recusar.",
-      "evidence": "commits08315450/de51d4e7/21efc6cc R01/16h: C02r29 fonte16:06:28;SQL20260825193120 linhas503–543;reserva20260908191327; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.; 56TAPedição e132TAPXLSX0b596c85 comprovados;novoSQL314fd92a172NÃOEXECUTADOS. multipart22Deno/motor26Deno;writerreal,cleanup,zerorespostas/limite de linhas expandidas abertos. Não transferirGREEN antigo ao novo.; Fechamento R01 C02/r48; C00173Flutter/110DTO; fonteC02r48 distingue teste anterior de SHA final; etapa-2-operacao/reports/R01-fechamento-20260909.md; commit 94b9fa18dda26b328d655009b0b9f401d45923c4, integrado em dev por bfb6a7c00; form_response_page_test 97/97; ambiente local Windows; 2026-09-09; commit 5ec63374c3aebdf5977b79534687180d0d47bd3f; form_response_page_test 100/100; RED verificado antes da correcao com 10.5 observado; 2026-09-09; packages/coelo_database/migrations/20260908191327_forms_response_edit_validation_v1.sql; packages/coelo_database/supabase/tests/forms_response_edit_validation_v1_test.sql; 2026-09-09; migrations/20260813155121_forms_commands_and_projections.sql linhas 1637 a 1668; preservado em 20260825193120_final_review_forms_runtime_hardening.sql linhas 292 a 306; 2026-09-09; commit d4c9973751abc58adbeb7347b60ceb4039fd789b; coelo_domain 62/62; form_response_page_test 102/102; RED confirmado em cada um antes da correcao; 2026-09-09; commits 32373e94744b71a02f5707200e6bf0e3835031a2 e 1d589503e1700b500a75ccaff37269ae97ced12a; form_response_page_test 107/107; RED confirmado em cada um; 2026-09-09; commits 5ec63374c, 021fcfbdb89ff292695bfaa31fc3f8a65ef44e15 e 515c12d1724f84fa1daebe2f93b14c38f758e85e; form_response_page_test 110/110; RED provado em cada um, no caso da data guardando a correcao para confirmar; 2026-09-09",
+      "done": "resposta enviada pela rota normal e relida em /responses e no detalhe; monitor recarregado 1/4.",
+      "fe": "R05: rota /forms/:id/occurrences/:occ/respond composta com api e ocorrencia (F-R04-FCR-010b); abre a ocorrencia real, autosave \"Rascunho salvo.\", Revisar -> Enviar -> \"Resposta enviada\".",
+      "be": "form_get_occurrence_for_response, form_save_response_draft e form_submit_response 200 em producao (resposta 1f365626, status submitted, texto persistido); participacao da pessoa de servico da ponte 220400 reconciliada pelo cron.",
+      "evidence": "commits08315450/de51d4e7/21efc6cc R01/16h: C02r29 fonte16:06:28;SQL20260825193120 linhas503–543;reserva20260908191327; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.; 56TAPedição e132TAPXLSX0b596c85 comprovados;novoSQL314fd92a172NÃOEXECUTADOS. multipart22Deno/motor26Deno;writerreal,cleanup,zerorespostas/limite de linhas expandidas abertos. Não transferirGREEN antigo ao novo.; Fechamento R01 C02/r48; C00173Flutter/110DTO; fonteC02r48 distingue teste anterior de SHA final; etapa-2-operacao/reports/R01-fechamento-20260909.md; commit 94b9fa18dda26b328d655009b0b9f401d45923c4, integrado em dev por bfb6a7c00; form_response_page_test 97/97; ambiente local Windows; 2026-09-09; commit 5ec63374c3aebdf5977b79534687180d0d47bd3f; form_response_page_test 100/100; RED verificado antes da correcao com 10.5 observado; 2026-09-09; packages/coelo_database/migrations/20260908191327_forms_response_edit_validation_v1.sql; packages/coelo_database/supabase/tests/forms_response_edit_validation_v1_test.sql; 2026-09-09; migrations/20260813155121_forms_commands_and_projections.sql linhas 1637 a 1668; preservado em 20260825193120_final_review_forms_runtime_hardening.sql linhas 292 a 306; 2026-09-09; commit d4c9973751abc58adbeb7347b60ceb4039fd789b; coelo_domain 62/62; form_response_page_test 102/102; RED confirmado em cada um antes da correcao; 2026-09-09; commits 32373e94744b71a02f5707200e6bf0e3835031a2 e 1d589503e1700b500a75ccaff37269ae97ced12a; form_response_page_test 107/107; RED confirmado em cada um; 2026-09-09; commits 5ec63374c, 021fcfbdb89ff292695bfaa31fc3f8a65ef44e15 e 515c12d1724f84fa1daebe2f93b14c38f758e85e; form_response_page_test 110/110; RED provado em cada um, no caso da data guardando a correcao para confirmar; 2026-09-09; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/17-forms-respond-enviado.png",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "pending-verification",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 48,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
@@ -3682,6 +3742,26 @@
         "referencia": 0,
         "atual": 1,
         "fonte": "goldens-claro-decisoes-2026-09-10"
+      },
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/17-forms-respond-enviado.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 37",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina em 7fe204565 (origin/dev 4bf0cfe51 mesclado) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9415 sob SwiftShader",
+          "recordedAt": "2026-09-11T13:25:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/17-forms-respond-enviado.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 37",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina em 7fe204565 (origin/dev 4bf0cfe51 mesclado) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9415 sob SwiftShader",
+          "recordedAt": "2026-09-11T13:25:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/17-forms-respond-enviado.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 37",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina em 7fe204565 (origin/dev 4bf0cfe51 mesclado) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9415 sob SwiftShader",
+          "recordedAt": "2026-09-11T13:25:00-03:00"
+        }
       }
     },
     {
@@ -3689,38 +3769,78 @@
       "family": "forms_responses",
       "screen": "Respostas / Lista",
       "scope": "mvp",
-      "done": "Fluxos locais, retry08315450, autosave/revisãode51d4e7 e navegação por seção21efc6cc implementados; não é persistência real certificada. R36-r39 (origem C02; integração por lote): Lista interna com identidade explícita, cursor anônimo ID-only, correlação/negativa antes de data; API real conectada a UI em teste local. C00 f1073f45 preserva SQL I01070 e dependências nominais; UI correspondente ainda aguarda integração.",
-      "fe": "Revalidar o aceite específico desta ação: Ida/volta e estados locais testados; cursor autoritativo remoto pendente.",
-      "be": "RPC interna de lista auditada em I01070 local; aplicação nominal e negativas do provedor real ainda não certificadas.",
-      "evidence": "commits08315450/de51d4e7/21efc6cc; evidence/etapa-2/formularios-cuidado/; R01/17:40 2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r36-api,r37-original,r39-i014,r39-jobs",
+      "done": "lista real apos envio; reload mantem.",
+      "fe": "R05: /forms/:id/responses lista a resposta real (operador interno, versao, ocorrencia, data) com paginacao; botao XLSX honesto nesta superficie (a exportacao real vive em Arquivos).",
+      "be": "superadmin_form_responses_v2/listResponses em producao devolvendo a resposta submetida.",
+      "evidence": "commits08315450/de51d4e7/21efc6cc; evidence/etapa-2/formularios-cuidado/; R01/17:40 2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r36-api,r37-original,r39-i014,r39-jobs; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/18-forms-responses.png",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "pending-verification",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastEvidenceAt": "2026-09-08T19:13:49-03:00",
       "lastSyncedHandoff": "C02/r39",
       "lastHandoffRevision": 48,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/18-forms-responses.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 37",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina em 7fe204565 (origin/dev 4bf0cfe51 mesclado) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9415 sob SwiftShader",
+          "recordedAt": "2026-09-11T13:25:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/18-forms-responses.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 37",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina em 7fe204565 (origin/dev 4bf0cfe51 mesclado) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9415 sob SwiftShader",
+          "recordedAt": "2026-09-11T13:25:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/18-forms-responses.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 37",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina em 7fe204565 (origin/dev 4bf0cfe51 mesclado) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9415 sob SwiftShader",
+          "recordedAt": "2026-09-11T13:25:00-03:00"
+        }
+      }
     },
     {
       "id": "forms.response-detail",
       "family": "forms_responses",
       "screen": "Resposta / Detalhe",
       "scope": "mvp",
-      "done": "Fluxos locais, retry08315450, autosave/revisãode51d4e7 e navegação por seção21efc6cc implementados; não é persistência real certificada. R36-r39 (origem C02; integração por lote): DTO/adapter/UI preservam grafo da versão respondida, ordem/branching/identityMode e clique explícito de mídia. I010 valida o grafo completo mesmo sem respostas e captura projeção no mesmo snapshot. C00 f1073f45 preserva SQL I01070 e dependências nominais; UI correspondente ainda aguarda integração.",
-      "fe": "Sem correcao de defeito nesta tela: o formatador de dinheiro dela ja estava correto. Passa a usar a mesma guarda compartilhada do editor e da resposta, removendo a segunda implementacao da regra de dinheiro que foi como as telas divergiram. Cobertura nova onde nao havia nenhuma: dinheiro em 10,50, em 10,00 com centavos zerados e em -3,05 negativo. Esta e uma superficie PRODUTIVA: main.dart compoe, existe SupabaseFormsApi de producao, e a rota /forms/:formId/responses/:responseId monta a pagina com api real sob withFormsAuthorization. As tres perguntas passam, mas nao promovo estado porque isto e guarda de regressao, nao acao concluida.",
-      "be": "Grafo completo corrigido e exercitado no I01070; não manter como implementação/correção ausente. Mídia depende I013 e catálogo R2 real.",
-      "evidence": "commits08315450/de51d4e7/21efc6cc; evidence/etapa-2/formularios-cuidado/; R01/17:40 2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r36-api,r37-original,r37-viewer,r39-i014; commit 94d28c8f28ff6850c67b0f8cd6b1c9a98b61e719; forms_original_response_detail_test 5/5; 2026-09-09",
+      "done": "detalhe real lido pela rota normal.",
+      "fe": "R05: /forms/:id/responses/:rid abre o detalhe com a secao e a resposta \"Resposta R05 rota real\".",
+      "be": "form_get_response_detail em producao com a resposta 1f365626.",
+      "evidence": "commits08315450/de51d4e7/21efc6cc; evidence/etapa-2/formularios-cuidado/; R01/17:40 2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r36-api,r37-original,r37-viewer,r39-i014; commit 94d28c8f28ff6850c67b0f8cd6b1c9a98b61e719; forms_original_response_detail_test 5/5; 2026-09-09; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/19-forms-response-detail.png",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "pending-verification",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastEvidenceAt": "2026-09-08T19:13:49-03:00",
       "lastSyncedHandoff": "C02/r39",
       "lastHandoffRevision": 48,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/19-forms-response-detail.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 37",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina em 7fe204565 (origin/dev 4bf0cfe51 mesclado) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9415 sob SwiftShader",
+          "recordedAt": "2026-09-11T13:25:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/19-forms-response-detail.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 37",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina em 7fe204565 (origin/dev 4bf0cfe51 mesclado) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9415 sob SwiftShader",
+          "recordedAt": "2026-09-11T13:25:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/19-forms-response-detail.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 37",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina em 7fe204565 (origin/dev 4bf0cfe51 mesclado) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9415 sob SwiftShader",
+          "recordedAt": "2026-09-11T13:25:00-03:00"
+        }
+      }
     },
     {
       "id": "forms.responses.export",
@@ -3728,19 +3848,27 @@
       "screen": "Formulário / Exportar respostas",
       "scope": "mvp",
       "done": "Adapter restringe formatos e gerador puro XLSX passou14/14; não certifica worker nem arquivo real. R36-r39 (origem C02; integração por lote): WriterR2/multipart sintético, serializer com schema explícito e tipos numérico/booleano/data civil, reader de jobs com versão autorizada e UI solicitando XLSX único do formulário com retry idempotente. R40: a9d0bd42 implementa clique explícito de download XLSX, reautoriza/ticket/session/expiração; 45 testes pai e112 agente sobrepostos. I005172 PASS local confirmado C00 e posteriormente integrado 882c1655. SQLnominalI005172/I01382 integrado882c1655/b82157a4; quatroblobs iguais ao perfil testado. Mensagens de erros seguros do job XLSX integradas1b8462fe; schema313 e writer128Deno já integrados no histórico.",
-      "fe": "Sem mudanca de estado. O item de ligar resolver e opener na composicao produtiva JA esta feito em dev: a rota de arquivos passa downloadResolver e openDownloadUrl, e o clique resolve o ticket, reconfere sessao e expiracao no ponto de uso e tem guarda de geracao. O que resta e backend e remoto.",
-      "be": "SQL I005172/I01382 e schema313 + writer128Deno integrados e provados localmente no histórico. A falha anterior de fixture não revoga essas provas; o claim/ciclo completo ainda exige reconciliação nominal. Restam versões sem respostas, jobs antigos, erro terminal/reconcile, arquivo XLSX real único por formulário, expiração e limpeza física R2, aplicação nominal e E2E. Sem deploy/cutover.",
-      "evidence": "evidence/etapa-2/formularios-cuidado/2026-09-07-export-adapter-policy.md; evidence/etapa-2/formularios-cuidado/2026-09-07-xlsx-column-identity.md R01/16h: C02r27/r28;I008;último replay real49PASS/abort anterior à correção de fixture; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 56TAPedição e132TAPXLSX0b596c85 comprovados;novoSQL314fd92a172NÃOEXECUTADOS. multipart22Deno/motor26Deno;writerreal,cleanup,zerorespostas/limite de linhas expandidas abertos. Não transferirGREEN antigo ao novo.; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r36-api,r36-writer,r37-schema,r38-civil,r39-i014,r39-jobs; etapa-2-operacao/reports/R01-delta-1915.md (C02r40); etapa-2-operacao/reports/R01-delta-2005.md; Fechamento R01 C02/r48; d8e6f841; r48; C00173Flutter; pgTAP313 histórico nominal, não rerun; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; superadmin_router.dart linhas 1886-1893 e forms_operations_page.dart em _downloadAction, base d784462c1; 2026-09-09",
+      "fe": "R05: em /forms/:id/files o botao \"Exportar respostas em XLSX\" solicita o job (superadmin_form_request_xlsx_v2 200) e a lista de jobs mostra pending; o download so depois do worker.",
+      "be": "job 09f86ec7 e worker job export_xlsx_r2_v1 ficam pending: a Edge Function form-operations implantada (v11, 2026-08-20) nao conhece export_xlsx_r2_v1 (repo desde 08/09). Gate: deploy de form-operations pelo coordenador; depois provar download no R2.",
+      "evidence": "evidence/etapa-2/formularios-cuidado/2026-09-07-export-adapter-policy.md; evidence/etapa-2/formularios-cuidado/2026-09-07-xlsx-column-identity.md R01/16h: C02r27/r28;I008;último replay real49PASS/abort anterior à correção de fixture; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 56TAPedição e132TAPXLSX0b596c85 comprovados;novoSQL314fd92a172NÃOEXECUTADOS. multipart22Deno/motor26Deno;writerreal,cleanup,zerorespostas/limite de linhas expandidas abertos. Não transferirGREEN antigo ao novo.; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r36-api,r36-writer,r37-schema,r38-civil,r39-i014,r39-jobs; etapa-2-operacao/reports/R01-delta-1915.md (C02r40); etapa-2-operacao/reports/R01-delta-2005.md; Fechamento R01 C02/r48; d8e6f841; r48; C00173Flutter; pgTAP313 histórico nominal, não rerun; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; superadmin_router.dart linhas 1886-1893 e forms_operations_page.dart em _downloadAction, base d784462c1; 2026-09-09; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/22-xlsx-solicitado.png",
       "historicalFrontend": "audited",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "blocked-environment",
       "integratedStatus": "pending-verification",
       "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
       "lastSyncedHandoff": "C02/r40",
       "lastHandoffRevision": 48,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
+      "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/22-xlsx-solicitado.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 37",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina em 7fe204565 (origin/dev 4bf0cfe51 mesclado) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9415 sob SwiftShader",
+          "recordedAt": "2026-09-11T13:25:00-03:00"
+        }
+      }
     },
     {
       "id": "forms.location-answer",
@@ -3767,12 +3895,12 @@
       "scope": "mvp",
       "done": "Estados locais e validação de tickets implementados; nenhum objeto R2 real certificado por testes isolados. R36-r39 (origem C02; integração por lote): Nenhum upload R2 novo certificado: reader de mídia novo não substitui pipeline legado de prepare/finalize.",
       "fe": "Revalidar o aceite específico desta ação: R2 privado, autorização, retomada remota e E2E pendentes.",
-      "be": "Midia question-image, a I021, continua sem migration, processor e adapter final. Depende da reserva nominal de midia e da fila SQL do coordenador. Conferi o merge d502350ce e ele traz passthrough de midia de Circular, nao uma plataforma de question-image que eu pudesse consumir.",
-      "evidence": "decisions/0032-mvp-private-media-r2.md; evidence/etapa-2/formularios-cuidado/; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r39-media; Fechamento R01 C02/r48; C02r48 final; não contar núcleo comum como cada fluxo concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md; inspecao de d502350ce; sem reserva nominal concedida; 2026-09-09",
+      "be": "R05 realm-interno: forms_question_media_r2_v1 (20260911210300, lote 33): superadmin_form_media_prepare_v2 + authorize_finalize_v2 (authenticated, forms.manage) e form_media_finalize_question_r2_v1 (service_role) sobre o catalogo 230007 (media_assets form-image/question-image + bindings + variants) no R2. pgTAP 25/25. Gate: form-media trocar os ramos de Supabase Storage por R2; answer-image (respostas) continua no fluxo legado form_assets.",
+      "evidence": "decisions/0032-mvp-private-media-r2.md; evidence/etapa-2/formularios-cuidado/; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r39-media; Fechamento R01 C02/r48; C02r48 final; não contar núcleo comum como cada fluxo concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md; inspecao de d502350ce; sem reserva nominal concedida; 2026-09-09; evidence/etapa-2/r05-realm-interno/handoff.md; comunicacao/realm-interno.json r19 (contratoFormsFiles)",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
       "frontendStatus": "pending-verification",
-      "backendStatus": "blocked-environment",
+      "backendStatus": "local-green",
       "integratedStatus": "pending-verification",
       "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
       "lastSyncedHandoff": "C02/r39",
@@ -3786,12 +3914,12 @@
       "scope": "mvp",
       "done": "Estados locais e validação de tickets implementados; nenhum objeto R2 real certificado por testes isolados. R36-r39 (origem C02; integração por lote): Visualizador+FormsMediaReader comuns e form-media actionread antes de People; correlaçãoform_assets, grant/redeem, variant exata, TTL e erro sanitizado. I013: 82 assertivas posteriormente aprovadas localmente e integradas b82157a4. SQLnominalI005172/I01382 integrado882c1655/b82157a4; quatroblobs iguais ao perfil testado.",
       "fe": "Revalidar o aceite específico desta ação: Resolução autorizada/assinada e E2E pendentes.",
-      "be": "Mesma dependencia da I021 e de R2 real: cliente, handler e DI ainda em fila, sem producao.",
-      "evidence": "decisions/0032-mvp-private-media-r2.md; evidence/etapa-2/formularios-cuidado/; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r37-viewer,r39-media; etapa-2-operacao/reports/R01-delta-1915.md (C02r40); I01382 log514fcc06…fc2de94a/TEMPcoelo-c02-media82-vuoxhew3; etapa-2-operacao/reports/R01-delta-2005.md; Fechamento R01 C02/r48; C02r48 final; não contar núcleo comum como cada fluxo concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; sem execucao remota autorizada; 2026-09-09",
+      "be": "R05 realm-interno: superadmin_form_media_resolve_v2 (forms.read, escopo, so ready, auditado; object_key + ttl 300 s para o GET assinado) no pacote 20260911210300 (lote 33). pgTAP 25/25. Gate: form-media em R2.",
+      "evidence": "decisions/0032-mvp-private-media-r2.md; evidence/etapa-2/formularios-cuidado/; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r37-viewer,r39-media; etapa-2-operacao/reports/R01-delta-1915.md (C02r40); I01382 log514fcc06…fc2de94a/TEMPcoelo-c02-media82-vuoxhew3; etapa-2-operacao/reports/R01-delta-2005.md; Fechamento R01 C02/r48; C02r48 final; não contar núcleo comum como cada fluxo concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; sem execucao remota autorizada; 2026-09-09; evidence/etapa-2/r05-realm-interno/handoff.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
       "frontendStatus": "pending-verification",
-      "backendStatus": "blocked-environment",
+      "backendStatus": "local-green",
       "integratedStatus": "pending-verification",
       "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
       "lastSyncedHandoff": "C02/r40",
@@ -3806,12 +3934,12 @@
       "scope": "mvp",
       "done": "Estados locais e validação de tickets implementados; nenhum objeto R2 real certificado por testes isolados. R36-r39 (origem C02; integração por lote): Reader/handler de imagem avançaram como dependência; o botão download produtivo não foi entregue por esse lote. JobsXLSX recebem contexto, mas consumo de download existente é próximo passo. R40: a9d0bd42 implementa clique explícito de download XLSX, reautoriza/ticket/session/expiração; 45 testes pai e112 agente sobrepostos. I005172 PASS local confirmado C00 e posteriormente integrado 882c1655. SQLnominalI005172/I01382 integrado882c1655/b82157a4; quatroblobs iguais ao perfil testado.",
       "fe": "Integrar/revisar UI a9d0bd42 e ligar resolver/opener na composição produtiva; testar URL/expiração/negativas/reload pela UI normal; visuais ainda abertos.",
-      "be": "O lado cliente esta completo e composto. O restante depende de ambiente e autorizacao remota: versoes sem respostas, jobs antigos, erro terminal e reconcile, arquivo XLSX real unico por formulario, expiracao e limpeza fisica no R2, aplicacao nominal e E2E. Sem deploy nem cutover nesta rodada.",
-      "evidence": "decisions/0032-mvp-private-media-r2.md; evidence/etapa-2/formularios-cuidado/; R01/17:40 2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.; 56TAPedição e132TAPXLSX0b596c85 comprovados;novoSQL314fd92a172NÃOEXECUTADOS. multipart22Deno/motor26Deno;writerreal,cleanup,zerorespostas/limite de linhas expandidas abertos. Não transferirGREEN antigo ao novo.; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r37-viewer,r39-media,r39-jobs; etapa-2-operacao/reports/R01-delta-1915.md (C02r40); etapa-2-operacao/reports/R01-delta-2005.md; Fechamento R01 C02/r48; C02r48 final; não contar núcleo comum como cada fluxo concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; sem execucao remota autorizada; 2026-09-09",
+      "be": "R05 realm-interno: mesma RPC de resolve (superadmin_form_media_resolve_v2) serve o download da imagem de pergunta; pgTAP 25/25. Gate: form-media em R2.",
+      "evidence": "decisions/0032-mvp-private-media-r2.md; evidence/etapa-2/formularios-cuidado/; R01/17:40 2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.; 56TAPedição e132TAPXLSX0b596c85 comprovados;novoSQL314fd92a172NÃOEXECUTADOS. multipart22Deno/motor26Deno;writerreal,cleanup,zerorespostas/limite de linhas expandidas abertos. Não transferirGREEN antigo ao novo.; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r37-viewer,r39-media,r39-jobs; etapa-2-operacao/reports/R01-delta-1915.md (C02r40); etapa-2-operacao/reports/R01-delta-2005.md; Fechamento R01 C02/r48; C02r48 final; não contar núcleo comum como cada fluxo concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; sem execucao remota autorizada; 2026-09-09; evidence/etapa-2/r05-realm-interno/handoff.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
       "frontendStatus": "pending-verification",
-      "backendStatus": "blocked-environment",
+      "backendStatus": "local-green",
       "integratedStatus": "pending-verification",
       "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
       "lastSyncedHandoff": "C02/r40",
@@ -3826,12 +3954,12 @@
       "scope": "mvp",
       "done": "Estados locais e validação de tickets implementados; nenhum objeto R2 real certificado por testes isolados. R36-r39 (origem C02; integração por lote): Nenhum comando novo desta ação entregue; r36 discrimina a lacuna de limpeza física R2 e multipart órfão.",
       "fe": "Revalidar o aceite específico desta ação: Comando autoritativo, auditoria remota e E2E pendentes.",
-      "be": "Depende de configuracao remota de retencao e de limpeza fisica no R2, nao de codigo local.",
-      "evidence": "decisions/0032-mvp-private-media-r2.md; evidence/etapa-2/formularios-cuidado/; R01/17:40 2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r36-writer; Fechamento R01 C02/r48; C02r48 final; não contar núcleo comum como cada fluxo concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md; sem execucao remota autorizada; 2026-09-09",
+      "be": "R05 realm-interno: form_media_expire_question_r2_v1 (service_role) marca pendentes com ticket vencido como deleted e enfileira a limpeza fisica (form_media_claim_cleanup_r2_v1 / mark_purged); pgTAP 25/25. Gate: cron de expire e worker de limpeza.",
+      "evidence": "decisions/0032-mvp-private-media-r2.md; evidence/etapa-2/formularios-cuidado/; R01/17:40 2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r36-writer; Fechamento R01 C02/r48; C02r48 final; não contar núcleo comum como cada fluxo concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md; sem execucao remota autorizada; 2026-09-09; evidence/etapa-2/r05-realm-interno/handoff.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
       "frontendStatus": "pending-verification",
-      "backendStatus": "blocked-environment",
+      "backendStatus": "local-green",
       "integratedStatus": "pending-verification",
       "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
       "lastSyncedHandoff": "C02/r39",
@@ -3845,12 +3973,12 @@
       "scope": "mvp",
       "done": "Estados locais e validação de tickets implementados; nenhum objeto R2 real certificado por testes isolados. R36-r39 (origem C02; integração por lote): Nenhum comando novo desta ação entregue; r36 discrimina a lacuna de limpeza física R2 e multipart órfão.",
       "fe": "Revalidar o aceite específico desta ação: Exclusão autoritativa, auditoria, retenção e E2E pendentes.",
-      "be": "Mesma dependencia de retencao e limpeza fisica remota.",
-      "evidence": "decisions/0032-mvp-private-media-r2.md; evidence/etapa-2/formularios-cuidado/; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r36-writer; Fechamento R01 C02/r48; C02r48 final; não contar núcleo comum como cada fluxo concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md; sem execucao remota autorizada; 2026-09-09",
+      "be": "R05 realm-interno: superadmin_form_media_delete_v2 (forms.manage, idempotente, auditado) exclui o asset e enfileira as chaves para o worker apagar no R2; pgTAP 25/25. Gate: worker de limpeza.",
+      "evidence": "decisions/0032-mvp-private-media-r2.md; evidence/etapa-2/formularios-cuidado/; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r36-writer; Fechamento R01 C02/r48; C02r48 final; não contar núcleo comum como cada fluxo concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md; sem execucao remota autorizada; 2026-09-09; evidence/etapa-2/r05-realm-interno/handoff.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
       "frontendStatus": "pending-verification",
-      "backendStatus": "blocked-environment",
+      "backendStatus": "local-green",
       "integratedStatus": "pending-verification",
       "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
       "lastSyncedHandoff": "C02/r39",
@@ -4271,12 +4399,12 @@
       "screen": "Segurança infantil / Lista",
       "scope": "mvp",
       "done": "Cadeia Safety da R01 preservada; sucessor funcional D04 adc902eaf entregue na R02 permanece retido por golden falho. Adapter 963796ddf testado (34 PASS autorais) não ativado. SQL 48141c195 e teste legado f84db0412 preparados; 43 casos não executados. Não é ausência de trabalho nem integração concluída.",
-      "fe": "R04: com a composicao legada (e17b0ee84) /safety lista a crianca sintetica com 1 autorizacao e abas com contagem; reload mantem.",
+      "fe": "R05: /safety lista a crianca sintetica com abas e contagens no build com criar/editar ligados; reload mantem.",
       "be": "R04: superadmin_child_safety_directory (legado) responde 200 ao usuario interno com a ponte de ator; v2 (lote 4, pgTAP 43/43) tambem responde.",
-      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar child-safety.list); archive/2026-09-08/coelo-supabase-pendencias.md (buscar child-safety.list) R01/16h: C02r28;coelo-c02-safety-wizard-regression.log; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C02/r48; C02r47/r48; held chain list no manifesto; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; 3a96ca535/1d291711e; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-composition/handoff.md; fa3caddd2/8414ac9ab;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/handoff.md; 3a96ca535/1d291711e; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-composition/handoff.md;f4dd600ff/safety-accessibility/handoff.md; comunicacao/acessos-pessoas.json r84 (AP-CHILD-SAFETY-INTERNAL-READS); coordenacao.json R03 rev 10; capturas 9411-b2-safety-list (scratchpad; copiar na evidencia); comunicacao/acessos-pessoas.json r100",
+      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar child-safety.list); archive/2026-09-08/coelo-supabase-pendencias.md (buscar child-safety.list) R01/16h: C02r28;coelo-c02-safety-wizard-regression.log; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C02/r48; C02r47/r48; held chain list no manifesto; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; 3a96ca535/1d291711e; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-composition/handoff.md; fa3caddd2/8414ac9ab;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/handoff.md; 3a96ca535/1d291711e; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-composition/handoff.md;f4dd600ff/safety-accessibility/handoff.md; comunicacao/acessos-pessoas.json r84 (AP-CHILD-SAFETY-INTERNAL-READS); coordenacao.json R03 rev 10; capturas 9411-b2-safety-list (scratchpad; copiar na evidencia); comunicacao/acessos-pessoas.json r100; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/12-child-safety-list.png",
       "historicalFrontend": "local-green",
       "historicalBackend": "audited",
-      "frontendStatus": "local-green",
+      "frontendStatus": "verified",
       "backendStatus": "done",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 48,
@@ -4289,6 +4417,12 @@
           "revision": "ce6f061cc",
           "environment": "producao, sessao qa-r03 via PostgREST",
           "recordedAt": "2026-09-11T00:20:00-03:00"
+        },
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/12-child-safety-list.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 37",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina em 7fe204565 (origin/dev 4bf0cfe51 mesclado) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9415 sob SwiftShader",
+          "recordedAt": "2026-09-11T13:25:00-03:00"
         }
       }
     },
@@ -4899,15 +5033,15 @@
       "family": "audit",
       "screen": "Auditoria / Lista",
       "scope": "mvp",
-      "done": "Negativas/cursor/contexto2b1b595c e DTO auth_session minimizado d93bf961 integrados; 50/50 e dois goldens registrados. C00 integrou recuperação de Error5ec75ba9 e paginação após troca de contexto1d108ea2.",
-      "fe": "R04 (11/09, f9ddaf90a): diretorio de Auditoria migrado ao composto CoeloAdminDirectory: busca e filtros Resultados/Periodo alinhados na toolbar (observacao 'ajustar filtros' do Owner aplicada), toggle Cards/Tabela, Arquivos honesto (CSV/XLSX 'Disponivel depois do MVP'), rodape de paginacao do composto (cursor: salto anda um passo por vez), toolbar visivel em todos os estados inclusive vazio. Enum local de display removido e allowlist do teste de arquitetura reduzida. Goldens audit_directory_* (6) regravados no SDK 3.44.2. Gate para verified: rota normal com sessao qa-r03 (leitura v2 ja em producao no lote 10).",
-      "be": "R04 (lote 10): AUDIT-READ-V2 renumerada 20260910210100 (SHA identico ao historico) APLICADA EM PRODUCAO; pgTAP 37/37. Gate para done: diretorio no composto e rota normal com sessao.",
-      "evidence": "commits2b1b595c/d93bf961; evidence/etapa-2/agenda-operacoes/ R01/16h: C03r11; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; etapa-2-operacao/reports/R01-delta-2005.md (AuditP1); Fechamento R01 C03/r33; C03r33 final; C0074+288 em suítes distintas, sem SQL Audit executado; etapa-2-operacao/reports/R01-fechamento-20260909.md; commits 0e7678895 e aafde0b3d; packages/coelo_database/plans/2026-09-09-audit-read-v2-package.md; coordenacao.json R04 rev 21 (lote10); apps/superadmin/lib/features/audit/presentation/audit_directory_page.dart, apps/superadmin/test/features/audit/goldens/audit_directory_desktop_light_1024.png, apps/superadmin/test/features/audit/goldens/audit_directory_empty_light_1440.png",
+      "done": "R05 (11/09 13:00, rota real com qa-r03): /audit abre pela rota normal com eventos reais (audit_list_events_for_superadmin 200, pagina 1 de 59), paginacao por cursor (Proxima -> pagina 2, RPC 200), reload mantem sessao e rota e a trilha registra superadmin.audit.list do proprio ator. RLS/negativas pelo pgTAP 210100 (37/37: auth ausente, sessao invalida, ator do realm people negado, cursor de outra instituicao rejeitado, permissao revogada). Backend: leitura v2 (20260910210100) em producao desde o lote 10.",
+      "fe": "R05 (11/09 13:00, rota real com qa-r03): /audit abre pela rota normal com eventos reais (audit_list_events_for_superadmin 200, pagina 1 de 59), paginacao por cursor (Proxima -> pagina 2, RPC 200), reload mantem sessao e rota e a trilha registra superadmin.audit.list do proprio ator. RLS/negativas pelo pgTAP 210100 (37/37: auth ausente, sessao invalida, ator do realm people negado, cursor de outra instituicao rejeitado, permissao revogada).",
+      "be": "R05 (11/09 13:00, rota real com qa-r03): /audit abre pela rota normal com eventos reais (audit_list_events_for_superadmin 200, pagina 1 de 59), paginacao por cursor (Proxima -> pagina 2, RPC 200), reload mantem sessao e rota e a trilha registra superadmin.audit.list do proprio ator. RLS/negativas pelo pgTAP 210100 (37/37: auth ausente, sessao invalida, ator do realm people negado, cursor de outra instituicao rejeitado, permissao revogada). Backend: leitura v2 (20260910210100) em producao desde o lote 10.",
+      "evidence": "commits2b1b595c/d93bf961; evidence/etapa-2/agenda-operacoes/ R01/16h: C03r11; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; etapa-2-operacao/reports/R01-delta-2005.md (AuditP1); Fechamento R01 C03/r33; C03r33 final; C0074+288 em suítes distintas, sem SQL Audit executado; etapa-2-operacao/reports/R01-fechamento-20260909.md; commits 0e7678895 e aafde0b3d; packages/coelo_database/plans/2026-09-09-audit-read-v2-package.md; coordenacao.json R04 rev 21 (lote10); apps/superadmin/lib/features/audit/presentation/audit_directory_page.dart, apps/superadmin/test/features/audit/goldens/audit_directory_desktop_light_1024.png, apps/superadmin/test/features/audit/goldens/audit_directory_empty_light_1440.png; docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/30-audit-open.png",
       "historicalFrontend": "audited",
       "historicalBackend": "local-green",
-      "frontendStatus": "local-green",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
@@ -4922,6 +5056,41 @@
         "referencia": 3,
         "atual": 1,
         "fonte": "goldens-claro-decisoes-2026-09-10"
+      },
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/30-audit-open.png",
+          "revision": "comunicacao/operacoes.json rev 23",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (3b6ef24d3) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T13:05:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/30-audit-open.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/35-audit-reload.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/37-audit-page2.png"
+          ]
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/30-audit-open.png",
+          "revision": "comunicacao/operacoes.json rev 23",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (3b6ef24d3) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T13:05:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/30-audit-open.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/35-audit-reload.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/37-audit-page2.png"
+          ]
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/30-audit-open.png",
+          "revision": "comunicacao/operacoes.json rev 23",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (3b6ef24d3) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T13:05:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/30-audit-open.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/35-audit-reload.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/37-audit-page2.png"
+          ]
+        }
       }
     },
     {
@@ -4929,15 +5098,15 @@
       "family": "audit",
       "screen": "Auditoria / Filtrar",
       "scope": "mvp",
-      "done": "Negativas/cursor/contexto2b1b595c e DTO auth_session minimizado d93bf961 integrados; 50/50 e dois goldens registrados. C00 integrou recuperação de Error5ec75ba9 e paginação após troca de contexto1d108ea2.",
-      "fe": "R04 (11/09, f9ddaf90a): filtros Resultados (multi) e Periodo (Todos/Hoje/7 dias/30 dias) como widgets de dominio sem largura propria na toolbar do composto; Limpar filtros no estado sem resultados pelo composto; teste de estados atualizado para os textos do composto. Gate para verified: rota normal com sessao.",
-      "be": "R04 (lote 10): leitura de auditoria v2 (210100) APLICADA EM PRODUCAO; pgTAP 37/37. Gate para done: rota normal com sessao.",
-      "evidence": "commits2b1b595c/d93bf961; evidence/etapa-2/agenda-operacoes/ R01/16h: C03r11; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; etapa-2-operacao/reports/R01-delta-2005.md (AuditP1); Fechamento R01 C03/r33; C03r33 final; C0074+288 em suítes distintas, sem SQL Audit executado; etapa-2-operacao/reports/R01-fechamento-20260909.md; commits 0e7678895 e aafde0b3d; coordenacao.json R04 rev 21 (lote10); apps/superadmin/lib/features/audit/presentation/widgets/audit_directory_filters.dart, apps/superadmin/test/features/audit/audit_directory_page_test.dart",
+      "done": "R05 (11/09 13:00, rota real com qa-r03): filtro Resultados=Falha devolve estado sem resultados com Limpar filtros (RPC 200, 0 itens), Resultados=Negado lista 3 paginas de eventos negados reais, busca 'invite' filtra no servidor (1 de 4 paginas); cada mudanca dispara audit_list_events_for_superadmin 200. Backend: leitura v2 (20260910210100) em producao desde o lote 10.",
+      "fe": "R05 (11/09 13:00, rota real com qa-r03): filtro Resultados=Falha devolve estado sem resultados com Limpar filtros (RPC 200, 0 itens), Resultados=Negado lista 3 paginas de eventos negados reais, busca 'invite' filtra no servidor (1 de 4 paginas); cada mudanca dispara audit_list_events_for_superadmin 200.",
+      "be": "R05 (11/09 13:00, rota real com qa-r03): filtro Resultados=Falha devolve estado sem resultados com Limpar filtros (RPC 200, 0 itens), Resultados=Negado lista 3 paginas de eventos negados reais, busca 'invite' filtra no servidor (1 de 4 paginas); cada mudanca dispara audit_list_events_for_superadmin 200. Backend: leitura v2 (20260910210100) em producao desde o lote 10.",
+      "evidence": "commits2b1b595c/d93bf961; evidence/etapa-2/agenda-operacoes/ R01/16h: C03r11; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; etapa-2-operacao/reports/R01-delta-2005.md (AuditP1); Fechamento R01 C03/r33; C03r33 final; C0074+288 em suítes distintas, sem SQL Audit executado; etapa-2-operacao/reports/R01-fechamento-20260909.md; commits 0e7678895 e aafde0b3d; coordenacao.json R04 rev 21 (lote10); apps/superadmin/lib/features/audit/presentation/widgets/audit_directory_filters.dart, apps/superadmin/test/features/audit/audit_directory_page_test.dart; docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/32-audit-filter-falha.png",
       "historicalFrontend": "audited",
       "historicalBackend": "local-green",
-      "frontendStatus": "local-green",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
@@ -4951,6 +5120,41 @@
         "referencia": 2,
         "atual": 1,
         "fonte": "goldens-claro-decisoes-2026-09-10"
+      },
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/32-audit-filter-falha.png",
+          "revision": "comunicacao/operacoes.json rev 23",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (3b6ef24d3) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T13:05:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/32-audit-filter-falha.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/33-audit-filter-negado.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/36-audit-search.png"
+          ]
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/32-audit-filter-falha.png",
+          "revision": "comunicacao/operacoes.json rev 23",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (3b6ef24d3) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T13:05:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/32-audit-filter-falha.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/33-audit-filter-negado.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/36-audit-search.png"
+          ]
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/32-audit-filter-falha.png",
+          "revision": "comunicacao/operacoes.json rev 23",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (3b6ef24d3) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T13:05:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/32-audit-filter-falha.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/33-audit-filter-negado.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/36-audit-search.png"
+          ]
+        }
       }
     },
     {
@@ -4958,18 +5162,47 @@
       "family": "audit",
       "screen": "Auditoria / Detalhe",
       "scope": "mvp",
-      "done": "Negativas/cursor/contexto2b1b595c e DTO auth_session minimizado d93bf961 integrados; 50/50 e dois goldens registrados. C00 integrou recuperação de Error5ec75ba9 e paginação após troca de contexto1d108ea2.",
-      "fe": "R04 (11/09, f9ddaf90a): painel de detalhe (AuditDetailPanel) mantido via CoeloAdminWorkspaceLayout ao lado do composto; cards (AuditEventCard) e linhas (AuditEventRows) abrem o detalhe; retry do detalhe preservado. Gate para verified: rota normal com sessao.",
-      "be": "R04 (lote 10): leitura de auditoria v2 (210100) APLICADA EM PRODUCAO; pgTAP 37/37. Gate para done: rota normal com sessao.",
-      "evidence": "commits2b1b595c/d93bf961; evidence/etapa-2/agenda-operacoes/ R01/16h: C03r11; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/C00 2026-09-08T19:00:55-03:00 60d43c00: Adapter e controller rejeitam evento de outro ID. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; etapa-2-operacao/reports/R01-delta-2005.md (AuditP1); Fechamento R01 C03/r33; C03r33 final; C0074+288 em suítes distintas, sem SQL Audit executado; etapa-2-operacao/reports/R01-fechamento-20260909.md; commits 0e7678895 e aafde0b3d; coordenacao.json R04 rev 21 (lote10); apps/superadmin/lib/features/audit/presentation/widgets/audit_event_views.dart, apps/superadmin/lib/features/audit/presentation/widgets/audit_timeline.dart",
+      "done": "R05 (11/09 13:00, rota real com qa-r03): clique na linha abre o painel Detalhe do evento via audit_get_event_for_superadmin 200 (ator, instante, acao, recurso, resultado, origem, instituicao, correlation id, motivo CHAT_MEMBER_INVALID, integridade verificada); a leitura do detalhe gera superadmin.audit.detail na trilha. Backend: leitura v2 (20260910210100) em producao desde o lote 10.",
+      "fe": "R05 (11/09 13:00, rota real com qa-r03): clique na linha abre o painel Detalhe do evento via audit_get_event_for_superadmin 200 (ator, instante, acao, recurso, resultado, origem, instituicao, correlation id, motivo CHAT_MEMBER_INVALID, integridade verificada); a leitura do detalhe gera superadmin.audit.detail na trilha.",
+      "be": "R05 (11/09 13:00, rota real com qa-r03): clique na linha abre o painel Detalhe do evento via audit_get_event_for_superadmin 200 (ator, instante, acao, recurso, resultado, origem, instituicao, correlation id, motivo CHAT_MEMBER_INVALID, integridade verificada); a leitura do detalhe gera superadmin.audit.detail na trilha. Backend: leitura v2 (20260910210100) em producao desde o lote 10.",
+      "evidence": "commits2b1b595c/d93bf961; evidence/etapa-2/agenda-operacoes/ R01/16h: C03r11; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/C00 2026-09-08T19:00:55-03:00 60d43c00: Adapter e controller rejeitam evento de outro ID. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; etapa-2-operacao/reports/R01-delta-2005.md (AuditP1); Fechamento R01 C03/r33; C03r33 final; C0074+288 em suítes distintas, sem SQL Audit executado; etapa-2-operacao/reports/R01-fechamento-20260909.md; commits 0e7678895 e aafde0b3d; coordenacao.json R04 rev 21 (lote10); apps/superadmin/lib/features/audit/presentation/widgets/audit_event_views.dart, apps/superadmin/lib/features/audit/presentation/widgets/audit_timeline.dart; docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/34-audit-detail.png",
       "historicalFrontend": "audited",
       "historicalBackend": "local-green",
-      "frontendStatus": "local-green",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
       "lastHandoffRevision": 33,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/34-audit-detail.png",
+          "revision": "comunicacao/operacoes.json rev 23",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (3b6ef24d3) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T13:05:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/34-audit-detail.png"
+          ]
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/34-audit-detail.png",
+          "revision": "comunicacao/operacoes.json rev 23",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (3b6ef24d3) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T13:05:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/34-audit-detail.png"
+          ]
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/34-audit-detail.png",
+          "revision": "comunicacao/operacoes.json rev 23",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (3b6ef24d3) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T13:05:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/34-audit-detail.png"
+          ]
+        }
+      }
     },
     {
       "id": "audit.export",
@@ -4977,18 +5210,30 @@
       "screen": "Auditoria / Exportar",
       "scope": "deferred-post-mvp",
       "done": "Botão informativo já integrado35a08f29; sem job/poll/download/URL. C03cf2cf0e7→C008842bb30: startExport/fetchExportStatus recusam localmente sem chamada Edge; política de exportação geral adiada preservada. C0027/27 adapter+página PASS.",
-      "fe": "Conferir botão visível e mensagem de indisponibilidade; nenhuma chamada de arquivo/job. Não implementar a operação real nesta rodada. R01/16h: C03r11:50 testes funcionais passam;6 goldens divergem4,86–14,84%;2 cenários auth_session passam. DTO minimiza dados; não significa fluxo remoto pronto.",
+      "fe": "R05 (11/09 13:42, rota real com qa-r03): Auditoria -> Arquivos -> Exportar CSV/XLSX visiveis e honestos ('Disponivel depois do MVP'); nenhuma chamada de exportacao (performance sem entradas 'export'). Adiamento da ADR 0034 confirmado na rota real, como profile-files.import.",
       "be": "Operação real fora do MVP. Preservar legado sem executar, remover ou habilitar jobs. R01/16h: Helper legado current_person_id ainda impede afirmar cutover interno; export permanece adiada e sem efeitos. C00 confirmou estático: readersPeople sem039/session, NULLlimit e exportSQLcliente aindaexposto; candidato localI014C03 autorizado20260908230039, semruntime/remoto. Adapterdeferido nãofechaRPCdireta.",
-      "evidence": "commits2b1b595c/d93bf961; evidence/etapa-2/agenda-operacoes/ R01/16h: C03r11; etapa-2-operacao/reports/R01-checkpoint-1600.md; etapa-2-operacao/reports/R01-delta-1915.md (C03r29 nominal); etapa-2-operacao/reports/R01-delta-2005.md (AuditP1)",
+      "evidence": "commits2b1b595c/d93bf961; evidence/etapa-2/agenda-operacoes/ R01/16h: C03r11; etapa-2-operacao/reports/R01-checkpoint-1600.md; etapa-2-operacao/reports/R01-delta-1915.md (C03r29 nominal); etapa-2-operacao/reports/R01-delta-2005.md (AuditP1); docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/39-audit-export-pressed.png",
       "historicalFrontend": "audited",
       "historicalBackend": "local-green",
-      "frontendStatus": "pending-verification",
+      "frontendStatus": "verified",
       "backendStatus": "deferred-post-mvp",
       "integratedStatus": "deferred-post-mvp",
       "lastEvidenceAt": "2026-09-08T20:04:14-03:00",
       "lastSyncedHandoff": "C03/r29 nominal; full cut remains r25",
       "lastHandoffRevision": 33,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/39-audit-export-pressed.png",
+          "revision": "comunicacao/operacoes.json rev 26",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (13be50ae8) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T13:44:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/38-audit-files-menu.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/39-audit-export-pressed.png"
+          ]
+        }
+      }
     },
     {
       "id": "support.create",
@@ -5429,16 +5674,29 @@
       "screen": "Conta / Tema",
       "scope": "mvp",
       "done": "Tema persistido em SharedPreferences com prova de navegador/reload e proteção de notices obsoletos.",
-      "fe": "Lacuna de cobertura que eu havia reportado foi FECHADA, sem criar baseline: 32 casos novos cobrem quatro larguras, dois temas e duas escalas de texto para Perfil e Configuracoes, verificando ausencia de excecao de layout e o brilho efetivo. Resultado: 32 PASS. Minha conta atravessa a matriz inteira, inclusive 200%, sem transbordar. Nao promove a acao: os 8 goldens continuam obsoletos e a baseline depende de aprovacao nominal; e account.profile continua sem caminho de producao.",
+      "fe": "R05 (11/09 13:44, rota real com qa-r03): /settings -> Aparencia = Claro grava coelo.superadmin.theme-mode=light; carga completa nova mantem Claro (segmento selecionado e tema claro renderizado); restaurado Sistema. Persistencia local por desenho (BE not-applicable, E2E flutter-only mantidos).",
       "be": "Preferência local do cliente; nenhuma tabela, RPC ou persistência remota pertence a esta ação.",
-      "evidence": "evidence/etapa-2/identidade-acessos/2026-09-07-settings-browser-persistence.md; R01/17:40 r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.; apps/superadmin/test/features/account/presentation/screens/profile_page_test.dart e settings_page_test.dart -> 45 PASS; apps/superadmin/lib/app/router/superadmin_router.dart linhas 3090-3101; commit 458277400; apps/superadmin/test/features/account/presentation/screens/account_theme_width_matrix_test.dart -> 32 PASS",
+      "evidence": "evidence/etapa-2/identidade-acessos/2026-09-07-settings-browser-persistence.md; R01/17:40 r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.; apps/superadmin/test/features/account/presentation/screens/profile_page_test.dart e settings_page_test.dart -> 45 PASS; apps/superadmin/lib/app/router/superadmin_router.dart linhas 3090-3101; commit 458277400; apps/superadmin/test/features/account/presentation/screens/account_theme_width_matrix_test.dart -> 32 PASS; docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/72-settings-light-reload.png",
       "historicalFrontend": "local-green",
       "historicalBackend": "audited",
-      "frontendStatus": "pending-verification",
+      "frontendStatus": "verified",
       "backendStatus": "not-applicable",
       "integratedStatus": "flutter-only",
       "lastHandoffRevision": 51,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/72-settings-light-reload.png",
+          "revision": "comunicacao/operacoes.json rev 26",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (13be50ae8) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T13:44:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/70-settings-open.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/71-settings-light.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/72-settings-light-reload.png"
+          ]
+        }
+      }
     },
     {
       "id": "account.mfa",
@@ -5579,13 +5837,13 @@
       "screen": "Planos / Diretório",
       "scope": "mvp",
       "done": "Spec051 aprovada, catálogo manual/backend be28f0c0, repository e5a24a82 e contexto de form c8cd7518 implementados. C00 integrou comparação por identidade do contexto do repositório60ae2b2a.",
-      "fe": "R03: diretorio de Planos no composto (Fase 0 8fafbe16c) com goldens regravados; ARQUIVO (icone de arquivar/duplicar) segue em wip/fase0-arquivo-chat. Gate para verified: rota normal com sessao (P17).",
-      "be": "Resolver conflito específico de principal People da051 versus interno039; reader/command nominal e runtime. Não exigir aprovação geral do catálogo já aprovado.",
-      "evidence": "specs/051-superadmin-plans-production.md; docs/open-questions.md; commitsbe28f0c0/e5a24a82/c8cd7518; R01-delta-1815: C03r23 52f2075f usa identidade do repository;36não-golden relatados, revisão em andamento.; Fechamento R01 C03/r33; C00288PASS; conflito039/051 mantido em open-questions; etapa-2-operacao/reports/R01-fechamento-20260909.md; commits 5f42fbcbd e 01081d3fc; apps/superadmin/test/features/plans/ -> 41 PASS; commit ac3238f7c; medicao antes e depois na mesma execucao; suite de Planos 42 PASS com a unica falha sendo plan_golden_test, ja no censo; goldens-claro-decisoes-2026-09-10.md; R03-fase0-handoff.md",
+      "fe": "R05 (11/09 13:30, rota real com qa-r03): /plans abre pela rota normal (superadmin_plans_list 200; catalogo vazio com busca, toggle, Arquivos, abas Todos/Ativos/Arquivados e card Novo plano); apos criar, lista o plano; reload mantem.",
+      "be": "R05 (11/09 13:30, rota real com qa-r03): /plans abre pela rota normal (superadmin_plans_list 200; catalogo vazio com busca, toggle, Arquivos, abas Todos/Ativos/Arquivados e card Novo plano); apos criar, lista o plano; reload mantem. Backend: superadmin_plans_list/plan_get/plan_save na baseline de producao; pgTAP comportamental superadmin_plans_behavior_v1_test 40/40 no descartavel (anonimo 28000, sem plan.change 42501, ator escopado a instituicao 42501, authenticated sem leitura direta, replay por request_id, conflito 40001) exige o candidato 20260911200000_superadmin_plans_platform_scope_v1 (escopo de plataforma) ainda NAO aplicado em producao: BE fica local-green ate o coordenador aplicar.",
+      "evidence": "specs/051-superadmin-plans-production.md; docs/open-questions.md; commitsbe28f0c0/e5a24a82/c8cd7518; R01-delta-1815: C03r23 52f2075f usa identidade do repository;36não-golden relatados, revisão em andamento.; Fechamento R01 C03/r33; C00288PASS; conflito039/051 mantido em open-questions; etapa-2-operacao/reports/R01-fechamento-20260909.md; commits 5f42fbcbd e 01081d3fc; apps/superadmin/test/features/plans/ -> 41 PASS; commit ac3238f7c; medicao antes e depois na mesma execucao; suite de Planos 42 PASS com a unica falha sendo plan_golden_test, ja no censo; goldens-claro-decisoes-2026-09-10.md; R03-fase0-handoff.md; docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/40-plans-open.png; packages/coelo_database/supabase/tests/superadmin_plans_behavior_v1_test.sql",
       "historicalFrontend": "audited",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "local-green",
-      "backendStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "local-green",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
@@ -5601,6 +5859,19 @@
         "referencia": 4,
         "atual": 0,
         "fonte": "goldens-claro-decisoes-2026-09-10"
+      },
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/40-plans-open.png",
+          "revision": "comunicacao/operacoes.json rev 24",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (fab9b9fd0) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T13:35:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/40-plans-open.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/44-plan-created.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/47-plan-edited-reload.png"
+          ]
+        }
       }
     },
     {
@@ -5609,17 +5880,32 @@
       "screen": "Criar Plano",
       "scope": "mvp",
       "done": "Spec051 aprovada, catálogo manual/backend be28f0c0, repository e5a24a82 e contexto de form c8cd7518 implementados. C00 integrou comparação por identidade do contexto do repositório60ae2b2a.",
-      "fe": "Criterio C03r33, erro inesperado no diretorio, fechado: _load e o caminho de arquivar/restaurar so capturavam PlanRepositoryException, entao qualquer outra falha deixava a tela presa no indicador de progresso e virava unhandled async error; ambos passam a fechar em PlanDataState.error. A causa raiz foi corrigida junto no repositorio, onde o helper _rpc so mapeava PostgrestException. Nao promove a acao: o aceite visual segue aberto e plan_golden_test falha na base.",
-      "be": "Resolver conflito específico de principal People da051 versus interno039; reader/command nominal e runtime. Não exigir aprovação geral do catálogo já aprovado.",
-      "evidence": "specs/051-superadmin-plans-production.md; docs/open-questions.md; commitsbe28f0c0/e5a24a82/c8cd7518; R01/C00 2026-09-08T19:00:55-03:00 9936a858: Detalhe/save rejeitam plano ou código divergente. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; Fechamento R01 C03/r33; C00288PASS; conflito039/051 mantido em open-questions; etapa-2-operacao/reports/R01-fechamento-20260909.md; commits 5f42fbcbd e 01081d3fc; apps/superadmin/test/features/plans/ -> 41 PASS",
+      "fe": "R05 (11/09 13:30, rota real com qa-r03): card Novo plano -> /plans/new (gate de mutacao ligado em fab9b9fd0 pelo repositorio composto) -> Identificacao, Capacidades (6), Limites, Revisao com motivo de auditoria -> superadmin_plan_save 200 -> plano 5b0fc76b-51cd-4361-8d4f-e7033853eba6 listado (superadmin_plans_list 200).",
+      "be": "R05 (11/09 13:30, rota real com qa-r03): card Novo plano -> /plans/new (gate de mutacao ligado em fab9b9fd0 pelo repositorio composto) -> Identificacao, Capacidades (6), Limites, Revisao com motivo de auditoria -> superadmin_plan_save 200 -> plano 5b0fc76b-51cd-4361-8d4f-e7033853eba6 listado (superadmin_plans_list 200). Backend: superadmin_plans_list/plan_get/plan_save na baseline de producao; pgTAP comportamental superadmin_plans_behavior_v1_test 40/40 no descartavel (anonimo 28000, sem plan.change 42501, ator escopado a instituicao 42501, authenticated sem leitura direta, replay por request_id, conflito 40001) exige o candidato 20260911200000_superadmin_plans_platform_scope_v1 (escopo de plataforma) ainda NAO aplicado em producao: BE fica local-green ate o coordenador aplicar.",
+      "evidence": "specs/051-superadmin-plans-production.md; docs/open-questions.md; commitsbe28f0c0/e5a24a82/c8cd7518; R01/C00 2026-09-08T19:00:55-03:00 9936a858: Detalhe/save rejeitam plano ou código divergente. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; Fechamento R01 C03/r33; C00288PASS; conflito039/051 mantido em open-questions; etapa-2-operacao/reports/R01-fechamento-20260909.md; commits 5f42fbcbd e 01081d3fc; apps/superadmin/test/features/plans/ -> 41 PASS; docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/41-plan-create-open.png; packages/coelo_database/supabase/tests/superadmin_plans_behavior_v1_test.sql",
       "historicalFrontend": "local-green",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "local-green",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:14-03:00"
+      "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/41-plan-create-open.png",
+          "revision": "comunicacao/operacoes.json rev 24",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (fab9b9fd0) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T13:35:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/41-plan-create-open.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/42-plan-create-step2.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/43-plan-create-review.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/43b-plan-motivo.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/44-plan-created.png"
+          ]
+        }
+      }
     },
     {
       "id": "plans.edit",
@@ -5627,17 +5913,30 @@
       "screen": "Editar Plano",
       "scope": "mvp",
       "done": "Spec051 aprovada, catálogo manual/backend be28f0c0, repository e5a24a82 e contexto de form c8cd7518 implementados. C00 integrou comparação por identidade do contexto do repositório60ae2b2a.",
-      "fe": "Criterio C03r33, erro inesperado no diretorio, fechado: _load e o caminho de arquivar/restaurar so capturavam PlanRepositoryException, entao qualquer outra falha deixava a tela presa no indicador de progresso e virava unhandled async error; ambos passam a fechar em PlanDataState.error. A causa raiz foi corrigida junto no repositorio, onde o helper _rpc so mapeava PostgrestException. Nao promove a acao: o aceite visual segue aberto e plan_golden_test falha na base.",
-      "be": "Resolver conflito específico de principal People da051 versus interno039; reader/command nominal e runtime. Não exigir aprovação geral do catálogo já aprovado.",
-      "evidence": "specs/051-superadmin-plans-production.md; docs/open-questions.md; commitsbe28f0c0/e5a24a82/c8cd7518; R01/C00 2026-09-08T19:00:55-03:00 9936a858: Detalhe/save rejeitam plano ou código divergente. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; Fechamento R01 C03/r33; C00288PASS; conflito039/051 mantido em open-questions; etapa-2-operacao/reports/R01-fechamento-20260909.md; commits 5f42fbcbd e 01081d3fc; apps/superadmin/test/features/plans/ -> 41 PASS",
+      "fe": "R05 (11/09 13:30, rota real com qa-r03): card -> /plans/<id>/edit (superadmin_plan_get 200), nome alterado para [R05-QA] Plano de teste editado, Revisao + motivo -> superadmin_plan_save 200 (revisao 2); reload de /plans mostra o nome editado.",
+      "be": "R05 (11/09 13:30, rota real com qa-r03): card -> /plans/<id>/edit (superadmin_plan_get 200), nome alterado para [R05-QA] Plano de teste editado, Revisao + motivo -> superadmin_plan_save 200 (revisao 2); reload de /plans mostra o nome editado. Backend: superadmin_plans_list/plan_get/plan_save na baseline de producao; pgTAP comportamental superadmin_plans_behavior_v1_test 40/40 no descartavel (anonimo 28000, sem plan.change 42501, ator escopado a instituicao 42501, authenticated sem leitura direta, replay por request_id, conflito 40001) exige o candidato 20260911200000_superadmin_plans_platform_scope_v1 (escopo de plataforma) ainda NAO aplicado em producao: BE fica local-green ate o coordenador aplicar.",
+      "evidence": "specs/051-superadmin-plans-production.md; docs/open-questions.md; commitsbe28f0c0/e5a24a82/c8cd7518; R01/C00 2026-09-08T19:00:55-03:00 9936a858: Detalhe/save rejeitam plano ou código divergente. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; Fechamento R01 C03/r33; C00288PASS; conflito039/051 mantido em open-questions; etapa-2-operacao/reports/R01-fechamento-20260909.md; commits 5f42fbcbd e 01081d3fc; apps/superadmin/test/features/plans/ -> 41 PASS; docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/45-plan-edit-open.png; packages/coelo_database/supabase/tests/superadmin_plans_behavior_v1_test.sql",
       "historicalFrontend": "local-green",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "local-green",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:14-03:00"
+      "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/45-plan-edit-open.png",
+          "revision": "comunicacao/operacoes.json rev 24",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (fab9b9fd0) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T13:35:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/45-plan-edit-open.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/46-plan-edit-review.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/47-plan-edited-reload.png"
+          ]
+        }
+      }
     },
     {
       "id": "plans.activate",
@@ -6644,7 +6943,7 @@
       "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
     }
   ],
-  "updatedAt": "2026-09-11T14:44:18.461Z",
+  "updatedAt": "2026-09-11T16:47:03.827Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,

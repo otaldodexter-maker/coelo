@@ -1,0 +1,113 @@
+{
+  "at": "2026-09-11T16:10:12.945Z",
+  "results": [
+    {
+      "id": "agenda.permissions",
+      "label": "contexts do operador interno listam instituicoes e unidades",
+      "pass": true,
+      "detail": "2 instituicoes, 1 unidades; usando QA R04 Instituicao Sintetica"
+    },
+    {
+      "id": "circulars.create",
+      "label": "rascunho com pergunta persiste",
+      "pass": true,
+      "detail": "id ddadc18f-f07e-4e64-b829-4ddc66fceeae"
+    },
+    {
+      "id": "circulars.attach",
+      "label": "prepare autoriza upload (R2 presign)",
+      "pass": false,
+      "detail": "{\"error\":\"media_prepare_denied\"}"
+    },
+    {
+      "id": "circulars.schedule",
+      "label": "agendar (publish_at futuro) persiste",
+      "pass": true,
+      "detail": "scheduled"
+    },
+    {
+      "id": "circulars.schedule",
+      "label": "reload mantem scheduled com publish_at",
+      "pass": true,
+      "detail": "ok"
+    },
+    {
+      "id": "circulars.publish",
+      "label": "publicar imediato a agendada persiste",
+      "pass": false,
+      "detail": "{\"ok\":false,\"data\":null,\"error\":{\"code\":\"CIRCULAR_INVALID_STATE\",\"message\":\"Revise os dados da Circular.\",\"http_status\":422,\"correlation_id\":\"e45247d8-5f66-4d10-98aa-a4c3fbae9aa7\"}}"
+    },
+    {
+      "id": "circulars.respond",
+      "label": "detalhe publicado expoe revision_id",
+      "pass": true,
+      "detail": "rev 09ce5d7e-2208-4eb2-9d8e-a7aecfc338ea"
+    },
+    {
+      "id": "circulars.respond",
+      "label": "rascunho de resposta (save_circular_response_draft) pelo operador interno",
+      "pass": false,
+      "detail": "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"active_membership_required\"}"
+    },
+    {
+      "id": "circulars.delete",
+      "label": "limpeza da circular",
+      "pass": true,
+      "detail": "ok"
+    },
+    {
+      "id": "circulars.attach",
+      "label": "anon nao prepara upload (negativa)",
+      "pass": true,
+      "detail": "status 401"
+    },
+    {
+      "id": "agenda.request",
+      "label": "rascunho para pedido persiste",
+      "pass": "326dab76-847e-4939-8fc5-fded154a1011",
+      "detail": "id 326dab76-847e-4939-8fc5-fded154a1011"
+    },
+    {
+      "id": "agenda.request",
+      "label": "request_publication cria pedido pendente",
+      "pass": "3d65140f-27cd-46fb-a159-7fb35f418ac5",
+      "detail": "request 3d65140f-27cd-46fb-a159-7fb35f418ac5"
+    },
+    {
+      "id": "agenda.request",
+      "label": "superadmin_agenda_requests lista o pedido (reload)",
+      "pass": true,
+      "detail": "status pending"
+    },
+    {
+      "id": "agenda.request",
+      "label": "decidir (aprovar) persiste",
+      "pass": true,
+      "detail": "status approved"
+    },
+    {
+      "id": "agenda.request",
+      "label": "reload do evento apos aprovacao",
+      "pass": true,
+      "detail": "status published rev 2"
+    },
+    {
+      "id": "agenda.request",
+      "label": "pedidos de responsaveis (guardian) abrem",
+      "pass": true,
+      "detail": "0 itens"
+    },
+    {
+      "id": "agenda.request",
+      "label": "limpeza do evento",
+      "pass": true,
+      "detail": "{\"id\":\"326dab76-847e-4939-8fc5-fded154a1011\",\"title\":\"[R05-QA 16:10:08] Evento para aprovacao\",\"origin\":\"institution\",\"status\":\"canceled\",\"all_day\":false,\"ends_at\":\"2026-09-13T17:10:12.31+00:00\",\"hist"
+    },
+    {
+      "id": "agenda.location",
+      "label": "existe unidade no contexto da instituicao sintetica",
+      "pass": false,
+      "detail": "nenhuma unidade em QA R04 Instituicao Sintetica: pacote de unidade sintetica necessario"
+    }
+  ]
+}

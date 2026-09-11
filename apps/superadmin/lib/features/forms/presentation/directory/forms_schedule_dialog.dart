@@ -354,7 +354,11 @@ final class _FormsProductionAudienceDialogState extends State<_FormsProductionAu
     final audienceId = _audienceId!;
     final previous = _application;
     final application = FormApplication(
-      id: previous?.id ?? _newScheduleRequestId(),
+      // Distribuicao nova vai ao fio com id vazio (nulo): o wrapper publico
+      // form_save_application trata id presente como distribuicao existente e
+      // responde P0002 "form application unavailable" (medido na rota real,
+      // R05); o id nasce no servidor, como no rascunho de formulario.
+      id: previous?.id ?? '',
       formId: widget.formId,
       institutionId: previous?.institutionId ?? institutionId,
       name: draft.name,

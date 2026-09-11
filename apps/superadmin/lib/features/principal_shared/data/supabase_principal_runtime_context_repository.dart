@@ -38,6 +38,8 @@ PrincipalRuntimeContext _contextFromJson(Map<String, dynamic> json) => Principal
   unitName: _optionalText(json, 'unit_name'),
   groupId: _optionalText(json, 'group_id'),
   groupName: _optionalText(json, 'group_name'),
+  institutionHandle: _optionalText(json, 'institution_handle'),
+  unitHandle: _optionalText(json, 'unit_handle'),
 );
 
 String _requiredText(Map<String, dynamic> json, String key) {
