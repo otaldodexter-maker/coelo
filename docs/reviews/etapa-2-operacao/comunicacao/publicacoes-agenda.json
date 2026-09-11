@@ -1,5 +1,5 @@
 {
-  "revision": 17,
+  "revision": 18,
   "round": "E2-R04-20260911",
   "group": "publicacoes-agenda",
   "tool": "Claude Code",
@@ -9,7 +9,7 @@
   "head": "596bf05ea (branch = dev 58bfe1fed + wip do coordenador)",
   "base": "origin/dev 98cc0529d",
   "coordinator": "Claude (R04 · Coordenação noturna)",
-  "updatedAt": "2026-09-11T02:05:00-03:00",
+  "updatedAt": "2026-09-11T02:40:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -68,7 +68,8 @@
     "20260909191100 (métricas por geração) depende de colunas de 220500 (publication_job_id) ausentes em produção: fica fora até existir worker; sem regressão (reach conta todos os recibos).",
     "Teste historico superadmin_internal_circular_delete_v1_test era so estrutural (strings em pg_get_functiondef) e nao pegava a violacao de circulars_check1 ao excluir rascunho; o comportamental novo pega.",
     "Padrao de defeito repetido nas cadeias historicas: audit_logs.reason_code (^[A-Z][A-Z0-9_]{0,79}$) recebia texto livre/minusculo e derrubava a RPC com SAI_INTERNAL_ERROR. Vale conferir nos outros grupos que passam p_reason ao audit_append_superadmin_internal.",
-    "SEGURANCA medida na baseline: tabelas agenda_* com RLS forcado e zero policies, mas SELECT/INSERT concedidos a anon/authenticated; superadmin_agenda_* executaveis por anon/service_role. Fechado no 200300. Recomendo ao coordenador varrer o mesmo padrao nas outras familias (grants default do Supabase em tabelas/funcoes criadas antes do endurecimento)."
+    "SEGURANCA medida na baseline: tabelas agenda_* com RLS forcado e zero policies, mas SELECT/INSERT concedidos a anon/authenticated; superadmin_agenda_* executaveis por anon/service_role. Fechado no 200300. Recomendo ao coordenador varrer o mesmo padrao nas outras familias (grants default do Supabase em tabelas/funcoes criadas antes do endurecimento).",
+    "UI real: balao de chat \"Mensagens\" visivel em /notices/new (criar) — Decisao 7 exige sem chat em criar/editar/publicar; regra do shell, nao da feature. Registrado para o coordenador/principal-chat-sistema."
   ],
   "packages": [
     {
@@ -168,6 +169,29 @@
       ],
       "compositionKey": "nenhuma",
       "sha": "08ed44357"
+    },
+    {
+      "order": 6,
+      "file": "packages/coelo_database/candidatos/publicacoes-agenda/20260910200500_notice_publication_worker_v2.sql",
+      "actionIds": [
+        "notices.publish",
+        "notices.schedule"
+      ],
+      "pgtap": "supabase/tests/notice_publication_worker_v2_test.sql 52/52 (claim/run como service_role materializam recibos, audiencia vazia falha o job sem tocar o aviso, superado/expirado/nao publicavel negam, authenticated/anon sem execute); regressao superadmin_internal_notices_v2_baseline_test 38/38",
+      "fixes": [
+        "fila app_private.notice_publication_jobs + indice unico parcial notice_receipts_platform_scope_uidx",
+        "claim com lease de 5 min; materialize a partir de audience_json (platform/institution/unit/group/person, role_codes, plan_ids, excluded_ids, filters) sem append_notice_audit e sem update em platform_notices; rastro em analytics.notice_events",
+        "run: notice_missing/notice_superseded/notice_expired/notice_not_publishable; primeira pagina adota o audience_json vigente",
+        "publish_v2 e change_status_v2 recriadas com insert on conflict do nothing na fila"
+      ],
+      "applyNote": "depois de 200400; sem ADD VALUE; registrar no ledger como 20260910200500/notice_publication_worker_v2. Assinaturas: claim_notice_publication_jobs_for_worker(p_worker text, p_limit int default 20) returns table(id uuid); run_notice_publication_job_for_worker(p_job_id uuid, p_limit int default 1000) returns jsonb (state processing|completed|failed). Depois: COELO_NOTICE_WORKER_SECRET, deploy do notice-publication-worker e cron.schedule (coordenador).",
+      "risks": [
+        "superado nao usa management_version (refresh_lifecycle do v2 incrementa a versao ao promover)",
+        "starts_at editado depois de publicar nao move available_at do job ja enfileirado",
+        "sem cleanup de jobs concluidos"
+      ],
+      "compositionKey": "nenhuma",
+      "sha": "pendente (commit local)"
     }
   ],
   "compositionKeys": [
@@ -282,13 +306,6 @@
     },
     {
       "actionIds": [
-        "notices.publish",
-        "notices.schedule"
-      ],
-      "pending": "pacote 20260910200500_notice_publication_worker_v2 (claim/run *_for_worker so para service_role, jobs + materializacao de recibos adaptada ao v2, publish_v2 enfileira) em elaboracao por subagente com pgTAP no descartavel; entra em pacotesProntos quando verde. Depois: secret, deploy e cron sao do coordenador."
-    },
-    {
-      "actionIds": [
         "notices.list",
         "notices.create",
         "notices.edit",
@@ -311,6 +328,13 @@
         "agenda.permissions"
       ],
       "pending": "UI real: build web (profile, qa_main.dart) servido em 127.0.0.1:3006 abre /login com $flutterDriver; o Chrome do CDP caiu tres vezes por falta de memoria da maquina (45 Chromes/11 flutter_tester de todas as frentes). Tentativa unica restante com um Chrome quando a memoria permitir; sem captura, a prova de \"rota normal abre\" fica registrada como pendente e o verified E2E nao e proposto — proposta abaixo distingue BE done (CRUD+RLS+reload provados por RPC produtiva) de FE/E2E."
+    },
+    {
+      "actionIds": [
+        "notices.publish",
+        "notices.schedule"
+      ],
+      "pending": "aplicar 20260910200500; gravar COELO_NOTICE_WORKER_SECRET; deploy de notice-publication-worker; cron.schedule; depois provar: publicar aviso pelo app → job queued → worker roda → notice_receipts com a instituicao sintetica (membros) → reach>0 no diretorio."
     }
   ],
   "proposedDeltas": [],
@@ -669,6 +693,18 @@
       "chave": "nenhuma",
       "sha": "08ed44357",
       "estado": "aplicado em producao (lotes 9 e 10, coordenador)"
+    },
+    {
+      "ordem": 6,
+      "arquivo": "packages/coelo_database/candidatos/publicacoes-agenda/20260910200500_notice_publication_worker_v2.sql",
+      "pgtap": "supabase/tests/notice_publication_worker_v2_test.sql 52/52 (claim/run como service_role materializam recibos, audiencia vazia falha o job sem tocar o aviso, superado/expirado/nao publicavel negam, authenticated/anon sem execute); regressao superadmin_internal_notices_v2_baseline_test 38/38",
+      "actionIds": [
+        "notices.publish",
+        "notices.schedule"
+      ],
+      "chave": "nenhuma",
+      "estado": "PRONTO; aplicar depois de 200400",
+      "aplicacao": "depois de 200400; sem ADD VALUE; registrar no ledger como 20260910200500/notice_publication_worker_v2. Assinaturas: claim_notice_publication_jobs_for_worker(p_worker text, p_limit int default 20) returns table(id uuid); run_notice_publication_job_for_worker(p_job_id uuid, p_limit int default 1000) returns jsonb (state processing|completed|failed). Depois: COELO_NOTICE_WORKER_SECRET, deploy do notice-publication-worker e cron.schedule (coordenador)."
     }
   ],
   "productionProof": {
@@ -691,5 +727,17 @@
       }
     ],
     "note": "Prova por RPC produtiva com a mesma assinatura que os repositorios chamam. A rota normal na UI (localhost:3006, Chrome via CDP) esta em andamento; verified so com a UI aberta."
+  },
+  "uiRouteProof": {
+    "app": "build web profile de test_driver/qa_main.dart servido em 127.0.0.1:3006 (python http.server; deep link recarrega por / + pushState), Chrome com CDP, login pelo qa_drive.dart com QA_EMAIL/QA_PASSWORD so no ambiente",
+    "captures": "scratchpad ui-01..ui-07 (copiadas para docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/ui/ na proxima revisao)",
+    "steps": [
+      "ui-02-home: sessao qa-r03 aberta (Owner Coelo) na Home",
+      "ui-03-notices: /notices abre o diretorio de Avisos no composto com os avisos [R04-QA] de producao em tabela; toolbar, abas, Criar e paginacao presentes",
+      "ui-04-notice-new: Nova comunicacao abre /notices/new (formulario real, sem fixture); ACHADO: balao de chat \"Mensagens\" aparece sobre o rodape do formulario e cobre parte do botao Continuar — viola a Decisao 7 (sem chat em criar/editar/publicar); pertence ao shell (principal-chat-sistema/coordenador)",
+      "ui-05: validacao honesta \"Informe a mensagem do aviso para continuar\" ao salvar sem mensagem",
+      "ui-06-notice-saved: Salvar rascunho persistiu em producao: \"[R04-QA UI] Aviso criado pela tela\" listado no diretorio",
+      "ui-07-notices-reload: app recarregado por completo (navegacao para / e volta a /notices) com a sessao mantida e o aviso criado pela tela presente"
+    ]
   }
 }
