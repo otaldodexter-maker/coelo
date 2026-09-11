@@ -1,15 +1,15 @@
 {
   "grupo": "realm-interno",
-  "revision": 7,
+  "revision": 8,
   "round": "E2-R04-20260911",
-  "updatedAt": "2026-09-10T22:51-03:00",
+  "updatedAt": "2026-09-10T22:55-03:00",
   "app": "Claude",
   "modelo": "Fable 5.1",
   "conversa": "R04 · Realm interno e Chat backend",
   "coordenador": "R04 · Coordenação noturna (coordenacao.json)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-realm-interno",
   "branch": "work/etapa2-r04-realm-interno",
-  "head": "76d377747",
+  "head": "d157f8f6e",
   "upstream": "origin/work/etapa2-r04-realm-interno",
   "base": "origin/dev 836c63215 (rebase feito as 22:08; lote 8 MFA fora do MVP ja em producao)",
   "historicoR03": "frente sem entrega na R03 (frenteNova coelo-f0 atribuida as 15:58; worktree e2-r03-realm-interno quebrada, nao usada). Nada a reutilizar dela.",
@@ -80,7 +80,8 @@
   "perguntasParaOOwner": [],
   "respostasAoPrincipalChat": [
     "Fixar/bandeira (rev 8, bloqueio): deixa de depender do historico 20260901101500; a cadeia inteira nasce sobre a baseline nos candidatos 240000-240300. Assinaturas identicas ao que o cliente ja chama; ligar o SupabaseChatRepository real na composicao assim que o coordenador aplicar.",
-    "Criar grupo (P8): entregue no 240400 (d643d0193). Assinatura: superadmin_chat_create_group_v2(p_request_id, p_institution_id, p_title, p_person_ids, p_unit_id, p_group_id, p_activity_id); membros do realm de pessoas; exige chat.internal.manage (owner). O criador interno nao entra como participante: le e escreve pelo escopo da membership. Detalhes em contrato.rpcs."
+    "Criar grupo (P8): entregue no 240400 (d643d0193). Assinatura: superadmin_chat_create_group_v2(p_request_id, p_institution_id, p_title, p_person_ids, p_unit_id, p_group_id, p_activity_id); membros do realm de pessoas; exige chat.internal.manage (owner). O criador interno nao entra como participante: le e escreve pelo escopo da membership. Detalhes em contrato.rpcs.",
+    "Fixture sintetica reaplicada em producao as 22:53 (ids em fixtureEmProducao); use-a para Criar grupo e o resto do chat na rota real. Contrato completo em contrato.rpcs; Criar grupo devolve member_count e o grupo aparece na inbox como conversation_type=group."
   ],
   "contrato": {
     "estado": "publicado nesta revisao; igual ao que SupabaseChatRepository ja chama (nenhuma mudanca de assinatura no cliente para 240000-240300)",
@@ -120,7 +121,7 @@
     "escopo": "membership de plataforma ve toda conversa; membership de instituicao so ve a propria instituicao (outro tenant responde CHAT_NOT_FOUND). Anexos: so metadados; chat.attach continua dependendo do gateway de midia comum (fora deste recorte).",
     "criarGrupoNoCliente": "sugestao para SupabaseChatRepository: createGroup(ChatCreateGroupCommand{institutionId, title, personIds, unitId?, groupId?, activityId?, idempotencyKey}) -> ChatConversationSummary; o seletor de hierarquia escolhe UMA instituicao e pessoas dela (readers existentes de Pessoas/Unidades/Turmas do Superadmin); grupo entre instituicoes nao existe no modelo (conversations.institution_id NOT NULL)."
   },
-  "proximoPasso": "aguardar aplicacao do 240500 para conferir em producao; responder perguntas do principal-chat pelo JSON (nenhuma ate agora); P24 com o Owner",
+  "proximoPasso": "aguardar aplicacao do 240500 e conferir em producao; manter a fixture para o principal-chat ate o fechamento; responder pelo JSON",
   "pacotesProntos": [
     {
       "arquivo": "packages/coelo_database/candidatos/realm-interno/20260910240000_chat_production_contract_v1.sql",
@@ -201,8 +202,9 @@
   "handoff": "docs/reviews/evidence/etapa-2/r04-realm-interno/handoff.md",
   "deltaPropostoArquivo": "docs/reviews/evidence/etapa-2/r04-realm-interno/deltas-be-r04.json (6 IDs da familia chat, backend -> local-green; formato de apply-tracker-delta.cjs; ids validados contra o inventario)",
   "estadoDoCoordenador": {
-    "lidoEm": "2026-09-10T22:51-03:00",
-    "mensagemEntreSessoes": "deltas aplicados no inventario (6 IDs backend done com certificacao de producao; caminho corrigido para docs/reviews/...), chat.create-group criado (familia chat, MVP, backend done, UI com principal-chat-sistema); validador PASS 231 acoes / 7 done. Instituicao sintetica arquivada aceita como decisao do coordenador. Pedido novo: pacote de revoke de anon."
+    "lidoEm": "2026-09-10T22:55-03:00",
+    "mensagemEntreSessoes": "deltas aplicados no inventario (6 IDs backend done com certificacao de producao; caminho corrigido para docs/reviews/...), chat.create-group criado (familia chat, MVP, backend done, UI com principal-chat-sistema); validador PASS 231 acoes / 7 done. Instituicao sintetica arquivada aceita como decisao do coordenador. Pedido novo: pacote de revoke de anon.",
+    "devHead": "d18bad50b (P7 has_platform_permission candidato); 240500 ainda nao aplicado (producao: anon com 144 grants de tabela e 15 funcoes)"
   },
   "decisaoRegistrada": "instituicao sintetica 9f040000-0000-4000-8000-000000000010 permanece em producao com status=archived, deleted_at preenchido e nome \"QA R04 Instituicao Sintetica (arquivada)\" porque audit.audit_logs (append-only) a referencia por FK; decisao do coordenador em 10/09 ~22:45, nao do Owner; registrar no fechamento",
   "medicaoAnonProducao": {
@@ -213,5 +215,17 @@
     "sequencias": "public.profile_about_revisions_id_seq",
     "foraDoPacote": "storage (7 tabelas), realtime (2) e cron: schemas da plataforma; ALTER DEFAULT PRIVILEGES testado no descartavel e descartado (nao impede o EXECUTE via PUBLIC em funcao nova); a regra segue sendo revoke explicito em cada migration",
     "efeitoNoDescartavel": "anon: 1193 grants de tabela -> 0, 233 funcoes -> 0; authenticated 349 (public) / 84 (app_private) e service_role 370 inalterados"
-  }
+  },
+  "fixtureEmProducao": {
+    "estado": "REAPLICADA em 2026-09-10T22:53-03:00 a pedido implicito do principal-chat-sistema (rev 11, primeiro gate P22: \"fixture sintetica do realm-interno pendente\"); fica ate o fechamento da rodada e sai com chat-internal-production-cleanup.sql (coordenador)",
+    "ids": {
+      "institution_id": "9f040000-0000-4000-8000-000000000010 (QA R04 Instituicao Sintetica, active)",
+      "person_profissional": "9f040000-0000-4000-8000-000000000061 (QA R04 Profissional; institution_memberships role_code=teacher)",
+      "person_responsavel": "9f040000-0000-4000-8000-000000000062 (QA R04 Responsavel; guardian_links da crianca 9f040000-...-0064 com child_contexts na instituicao)",
+      "unit_id": "nenhuma (Criar grupo no escopo da instituicao)"
+    },
+    "usoPeloPrincipalChat": "Criar grupo na UI com institution_id acima e os dois person_ids -> conversa group; depois enviar/editar/fixar/bandeira/revogar pela UI com qa-r03; a inbox deixa de ficar vazia",
+    "limite": "nao resolve P22 (contexto Principal/has_platform_permission para qa-r03): isso exige uma pessoa vinculada a um auth user do realm de pessoas, que o guard do realm interno impede de ser o proprio qa-r03; e decisao do coordenador/Owner"
+  },
+  "edgeFunctionsEAnon": "conferido em 22:52: as seis Edge Functions que leem SUPABASE_ANON_KEY (audit-export, circular-media, form-export-download, form-media, happens-media, import-export-jobs) criam o cliente com o header Authorization do usuario; o revoke do 240500 nao as afeta. Site nao usa Supabase. Cliente Flutter le tabela direta so em profile_about_* (autenticado)."
 }
