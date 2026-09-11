@@ -1,15 +1,15 @@
 {
-  "revision": 41,
+  "revision": 42,
   "round": "E2-R05-20260911",
   "group": "publicacoes-agenda",
   "tool": "Claude Code",
   "model": "Opus 5 (1M), esforco medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-publicacoes-agenda",
   "branch": "work/etapa2-r05-publicacoes-agenda",
-  "head": "002dddd95",
+  "head": "f8f134553",
   "base": "origin/dev 2f6a6114f",
   "coordinator": "Claude (R05 · Coordenacao da tarde, coelo-25)",
-  "updatedAt": "2026-09-11T15:22:00-03:00",
+  "updatedAt": "2026-09-11T15:30:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -249,6 +249,14 @@
       ],
       "what": "Decisao 7: host produtivo do compositor de Circular suprime o balao de chat desde o carregamento (antes so apos o seletor de instituicao; achado ui-22).",
       "tests": "test/features/circulars + architecture 68/68"
+    },
+    {
+      "sha": "f8f134553",
+      "actionIds": [
+        "circulars.attach"
+      ],
+      "what": "Gancho de QA SuperadminQaHooks.circularFilePicker (nulo no app real; qa_main entrega PNG sintetico) ligado nos dois hosts do compositor no router: destrava a prova de circulars.attach pela tela na proxima rodada. Nao provado nesta rodada (build web + Chrome nao cabiam antes do corte).",
+      "tests": "analyze limpo (1 warning pre-existente em qa_login); circulars + architecture 68/68"
     }
   ],
   "pendingForCoordinator": [
@@ -773,7 +781,7 @@
       {
         "action_id": "circulars.attach",
         "camada": "frontend",
-        "gate": "anexar pela tela: FilePicker nativo nao e dirigivel por CDP; injetar filePicker no qa_main"
+        "gate": "provar pela tela com o gancho de QA (rebuild de web-qa + Chrome): Adicionar arquivo -> R2 -> bloco de midia -> publicar -> reload"
       },
       {
         "action_id": "circulars.respond",
