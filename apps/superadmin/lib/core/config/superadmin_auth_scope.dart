@@ -87,6 +87,7 @@ import '../../features/people/data/supabase_person_directory_repository.dart';
 import '../../features/people/domain/person_directory.dart';
 import '../../features/people/domain/person_detail_reader.dart';
 import '../../features/people/data/supabase_person_handle_repository.dart';
+import '../../features/people/data/supabase_person_identity_repository.dart';
 import '../../features/people/domain/person_handle.dart';
 import '../../features/people/data/supabase_person_detail_reader.dart';
 import '../../features/people/domain/person_identity.dart';
@@ -393,7 +394,11 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       personDirectoryRepository: SupabasePersonDirectoryRepository(client, segmentFilterAvailable: true),
       personDetailReader: SupabasePersonDetailReader(client),
       personHandleRepository: enablePersonHandles ? SupabasePersonHandleRepository(client) : null,
-      personIdentityRepository: const UnavailablePersonIdentityRepository(),
+      // people.create: o resolvedor de identidade usa a RPC 170700; sem ela
+      // em producao o gate continua fail-closed (PGRST202 -> indisponivel).
+      personIdentityRepository: enablePersonHandles
+          ? SupabasePersonIdentityRepository(client)
+          : const UnavailablePersonIdentityRepository(),
       accessProfileRepository: SupabaseAccessProfileRepository(client),
       platformUserRepository: platformUsers,
       // As 13 RPCs de Unidades foram conferidas em pg_proc e versionadas em
