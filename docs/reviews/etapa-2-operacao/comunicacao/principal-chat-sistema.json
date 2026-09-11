@@ -1,6 +1,6 @@
 {
-  "revision": 11,
-  "updated_at": "2026-09-10T22:50:00-03:00",
+  "revision": 12,
+  "updated_at": "2026-09-10T23:13:00-03:00",
   "round": "E2-R04-20260911",
   "group": "principal-chat-sistema",
   "tool": "Claude Code (VS Code)",
@@ -9,9 +9,9 @@
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-principal-chat-sistema",
   "branch": "work/etapa2-r04-principal-chat-sistema",
   "base": "origin/dev 836c63215 (rebase feito 22:47)",
-  "head": "a7f114251",
-  "publicada": "origin/work/etapa2-r04-principal-chat-sistema em a7f114251",
-  "status": "Pacote 1 EM PRODUCAO (lote 9, 22:24, ledger 59) e chat v2 do realm-interno tambem. Itens 1 a 4 fechados; Criar grupo (P8) ligado na UI sobre superadmin_chat_create_group_v2; rota real com sessao qa-r03 percorrida (login, shell, reload, mobile, Sair, Cardapios, Chat, Acontece, Para voce, Importacoes, Catalogo, Agora, Momentos) com capturas em evidence/etapa-2/r04-principal-chat-sistema/rota-real; prova de producao pelas RPCs.",
+  "head": "7c6181469",
+  "publicada": "origin/work/etapa2-r04-principal-chat-sistema em 7c6181469",
+  "status": "Chat interno v2 provado ponta a ponta com a fixture sintetica do realm-interno (Criar grupo, inbox, conversa, envio pela tela real, reload, recibo, negativas). Pacote de revoke de anon (190900) verde. Momentos: composicao larga restaurada (R do Owner) e midia inteira sobre o preto; goldens regravados apos observacao. Perfil (Acompanhar/Seguidores) e o Principal continuam presos em P22/D1.",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos, Perfil",
     "apps/superadmin -> Chat administrativo e Principal",
@@ -29,7 +29,9 @@
     "5a. Criar grupo (P8) na UI: FEITO 626915ae4 (+ cabecalho no estado vazio nesta revisao)",
     "5b. rota real com sessao qa-r03: FEITA com capturas; verified so onde a regua fecha (ver proposta_delta_por_action_id)",
     "6. goldens: launcher 5, Cardapios 5, Planos 8, Para voce 8, Chat 6 regravados apos observacao; galeria mobile do Acontece (redesenho), Momentos IMG, Perfil FOTO/SHELL ficam abertos",
-    "7. erro 409: imagens candidatas + pagina lado a lado para o Owner (2335ea3c1)"
+    "7. erro 409: imagens candidatas + pagina lado a lado para o Owner (2335ea3c1)",
+    "8. pacote de revoke de anon em 199 funcoes security definer + privilegio padrao: FEITO c3f31b64b (pgTAP 7; suite do grupo 9 arquivos / 201 PASS)",
+    "9. Momentos: moldura a partir de 840, aside a partir de 1200, midia contain: FEITO (commit desta revisao); goldens 1024/1440/like_hover/text_200_dark regravados apos observacao"
   ],
   "pacote_1_candidatos": {
     "commit": "f54809201",
@@ -63,17 +65,22 @@
     "chat: Criar grupo nasce no escopo da instituicao; escopo por unidade/turma/atividade fica para quando a tela pedir (o servidor ja aceita).",
     "chat: sem instituicao/pessoas em producao, o dialogo de Criar grupo lista zero instituicoes; a prova positiva depende da fixture sintetica do realm-interno.",
     "dev: test/app/dev_menu/development_dataset_contract_test.dart ja falha em dev (5 instituicoes contra 8..14 esperadas); nao e desta rodada.",
-    "seguranca (para o revoke em lote): anon com EXECUTE em 200 funcoes security definer de public; pacote nao entregue nesta rodada."
+    "seguranca (para o revoke em lote): anon com EXECUTE em 200 funcoes security definer de public; pacote nao entregue nesta rodada.",
+    "perfil: Acompanhar/Seguidores/Seguindo (R do Owner) dependem do D1 (follow_links) do grupo acessos-pessoas, retido por decisao AP-D1-AAL; FOTO: a observacao nao diz qual foto (capa ou avatar) aparece recortada; pergunta ao Owner com as imagens",
+    "goldens: principal_profile_* (R, FOTO/SHELL) e principal_happens_gallery mobile (redesenho) continuam abertos; imports hub wizard 375 (FUNDO) nao foi tocado"
   ],
   "tests": {
     "pgTAP_pacote_1": "supabase test db, descartavel coelo_baseline_pcs, reset limpo, 22:12: 8 arquivos, 194 casos, PASS (now_publication_mvp 70, now_custom_role_audience_hardening 13, now_publication_expiry_transition 16, now_media_private_r2_v1 23, happens_media_private_r2_v1 18, happens_media_security_closure 7, happens_post_withdrawal 33, happens_mixed_feed_withdrawal 10).",
     "analyze": "flutter analyze lib test: No issues found (22:57, apos Criar grupo); rerun apos o cabecalho do estado vazio: ver tests.analyze_final",
     "suites_cliente": "chat (launcher + goldens), meal_plans/presentation, plans, principal_for_you, app/shell, principal_now preview: 533 PASS / 0 FAIL (22:36); principal_now_publication: 95 PASS; goldens regravados: 43 (chat 5, meal_plans 5, plans 8, for_you 8 + 17 escuros/estados)",
     "chat_apos_criar_grupo": "chat + principal_chat + catalogo apos Criar grupo e cabecalho no vazio: 246 PASS / 0 FAIL (23:12); analyze No issues (23:10)",
-    "rota_logout": "captura 13 (dialogo) e 14 (login apos confirmar Sair e recarregar): sessao encerrada"
+    "rota_logout": "captura 13 (dialogo) e 14 (login apos confirmar Sair e recarregar): sessao encerrada",
+    "momentos_apos_moldura": "test/features/principal_moments: ver campo momentos_final; goldens 1024/1440/like_hover/text_200_dark regravados apos observacao (preto preenche a largura; aside em 1440)",
+    "momentos_final": "test/features/principal_moments + dialogo de Criar grupo: 63 PASS (23:2x); goldens de Momentos regravados 11/11 apos observacao; analyze lib test: No issues found",
+    "analyze_final": "flutter analyze lib test: No issues found (apos Momentos e dialogo)"
   },
   "blocker": null,
-  "next_step": "Commit do cabecalho no estado vazio + Catalogo; JSON rev 12 com o resultado de Sair; pacote de revoke em lote (anon) com pgTAP se sobrar janela; handoff e mini-revisao ate 04:20.",
+  "next_step": "Handoff da R04 e mini-revisao; se sobrar janela: pergunta P-FOTO com imagens, e nova passada da rota real quando o coordenador aplicar a ponte de ator (P22).",
   "ack": null,
   "handoff": "docs/reviews/etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md (R03; sera reescrito no fechamento da R04)",
   "lotes": [
@@ -174,9 +181,9 @@
       "fe": "pending-verification (mantem; sem segundo contexto)"
     },
     "chat.list": {
-      "fe": "local-green -> verified (rota real com inbox v2 de producao; launcher e goldens A)",
-      "be": "local-green -> done (240100+240300 em producao; inbox/unread provados com qa-r03; negativa CHAT_NOT_FOUND)",
-      "e2e": "pending-verification -> verified-e2e apos a fixture do realm-interno mostrar uma conversa e o reload mante-la; ate la pending"
+      "fe": "local-green -> verified",
+      "be": "local-green -> done (inbox v2 em producao com dado real, negativa cross-tenant)",
+      "e2e": "pending-verification -> verified-e2e (rota real abre, grupo criado em producao aparece, reload mantem, RLS/tenant negado no pgTAP e na RPC)"
     },
     "chat.open/send/edit/receipts/revoke": {
       "be": "local-green -> done quando o realm-interno provar com a fixture (pacotes em producao)",
@@ -215,6 +222,33 @@
     },
     "plans.list": {
       "fe": "local-green (mantem; ARQUIVO no card e goldens R+ARQUIVO regravados)"
+    },
+    "chat.open": {
+      "fe": "local-green -> verified",
+      "be": "pending-verification -> done",
+      "e2e": "pending-verification -> verified-e2e (conversa abre com a mensagem e o recibo de producao; reload mantem)"
+    },
+    "chat.send": {
+      "fe": "local-green -> verified",
+      "be": "pending-verification -> done",
+      "e2e": "pending-verification -> verified-e2e (mensagem enviada pela tela real persiste em producao e volta apos reload; capturas 24/25)"
+    },
+    "chat.receipts": {
+      "be": "blocked-environment -> done (thread devolve receipt de producao; realm-interno provou mark_read)",
+      "e2e": "pending-verification -> verified-e2e para a leitura do recibo na tela (Lida por 0 de 2); marcar como lido pela outra ponta fica para o app Principal"
+    },
+    "chat.create-group (P8)": {
+      "fe": "novo: local-green (dialogo + repositorio + testes); rota real abre o dialogo mas o diretorio de Pessoas nega qa-r03 (P22)",
+      "be": "done pelo realm-interno (240400) e provado por RPC com a fixture",
+      "e2e": "pending: a UI precisa da ponte de ator para listar instituicoes/pessoas"
+    },
+    "chat.edit / chat.revoke": {
+      "be": "blocked-environment -> done (240200 em producao; realm-interno provou edit/revoke)",
+      "e2e": "pending (nao exercitado pela tela nesta rodada)"
+    },
+    "momentos.view": {
+      "fe": "pending-verification -> local-green (composicao larga restaurada conforme R + observacoes; midia contain; suite de Momentos verde)",
+      "e2e": "pending (P22)"
     }
   },
   "pacotesProntos": [
@@ -242,6 +276,19 @@
         "acontece.publish",
         "acontece.remove"
       ]
+    },
+    {
+      "grupo": "principal-chat-sistema",
+      "commit": "c3f31b64b",
+      "arquivo": "packages/coelo_database/candidatos/principal-chat-sistema/20260910190900_public_security_definer_revoke_anon_v1.sql",
+      "assunto": "revoke EXECUTE de anon nas 199 funcoes security definer de public (por presenca, idempotente) e no privilegio padrao de postgres em public; authenticated e service_role mantem grants explicitos; 12 funcoes invoker ficam fora (registradas)",
+      "pgTAP": "supabase/tests/public_security_definer_revoke_anon_v1_test.sql 7/7; suite do grupo apos aplicar: 9 arquivos, 201 PASS",
+      "chave_de_composicao": "nenhuma",
+      "risco": "baixo: nenhuma dessas funcoes e chamada sem sessao (todas exigem auth.uid() ou service_role); funcoes futuras precisam conceder anon explicitamente se um dia precisarem",
+      "action_ids": [
+        "shell.unauthorized",
+        "auth.login"
+      ]
     }
   ],
   "rota_real": {
@@ -262,10 +309,15 @@
       "catalog.*": "Catalogo local abre (08); texto \"Preview local\" trocado por \"Catalogo local disponivel\" (D3)",
       "errors.409": "imagens candidatas geradas; aguarda decisao do Owner"
     },
-    "prova_rpc_producao_2245": "scratchpad/prova_rpc.py (credencial em memoria): login 200; superadmin_chat_unread_total_v2 ok total_unread 0; superadmin_chat_inbox_v2 ok total 0; superadmin_chat_create_group_v2 com tenant inexistente -> CHAT_NOT_FOUND 404 (nao enumera); load_happens_draft/withdraw_happens_post -> 42501 happens_permission_denied; load_now_draft/expire_due_now_publications -> 42501 now_permission_denied"
+    "prova_rpc_producao_2245": "scratchpad/prova_rpc.py (credencial em memoria): login 200; superadmin_chat_unread_total_v2 ok total_unread 0; superadmin_chat_inbox_v2 ok total 0; superadmin_chat_create_group_v2 com tenant inexistente -> CHAT_NOT_FOUND 404 (nao enumera); load_happens_draft/withdraw_happens_post -> 42501 happens_permission_denied; load_now_draft/expire_due_now_publications -> 42501 now_permission_denied",
+    "chat_com_fixture_2259": {
+      "rpc": "superadmin_chat_create_group_v2 com a instituicao 9f04...0010 e as pessoas ...0061/...0062: ok member_count 2; replay com o mesmo request_id -> replayed true; inbox apos reload lista o grupo; group_members 2; send_message ok; thread com receipt recipient_count 2; pessoa sem vinculo -> CHAT_MEMBER_INVALID 422",
+      "tela_real": "Conversas mostra o grupo (20-chat-inbox), abre a conversa com a mensagem e \"Lida por 0 de 2\" (21), reload mantem (22), mensagem enviada PELA TELA persiste e volta apos reload (24, 25); dialogo Criar grupo abre (26) mas o diretorio de Pessoas nega o ator interno (P22): instituicoes nao carregam, mensagem honesta"
+    }
   },
   "perguntas_ao_owner_via_coordenador": [
     "P-409: aprovar error_409_light e error_409_dark como golden oficial (mesma composicao das outras variantes)? Pagina lado a lado: evidence/etapa-2/r04-principal-chat-sistema/erro-409-candidatos.html",
-    "P-CHAT-DUP: no card de Cardapios, Duplicar aparece como icone ARQUIVO no cabecalho E no menu de acoes (as duas decisoes de 10/09 pediam cada uma). Manter os dois ou so o icone?"
+    "P-CHAT-DUP: no card de Cardapios, Duplicar aparece como icone ARQUIVO no cabecalho E no menu de acoes (as duas decisoes de 10/09 pediam cada uma). Manter os dois ou so o icone?",
+    "P-FOTO: no Perfil Principal (principal_profile_light_1440, R com FOTO), qual foto aparece recortada: a capa (BoxFit.cover, corta em altura) ou o avatar redondo? Imagens: evidence/etapa-2/r04-principal-chat-sistema/perfil-foto/ (a montar na revisao 13 se houver janela)"
   ]
 }
