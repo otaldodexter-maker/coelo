@@ -3059,33 +3059,53 @@
       "family": "agenda",
       "screen": "Agenda / Solicitar",
       "scope": "mvp",
-      "done": "Spec050 aprovada; backend existente. Reader f8a04b3a/controller4daeafb9 integrados; somente view ca4c82ab ficou fora após revertfe6f6b51.",
-      "fe": "front-end -> local-green (R04 publicacoes-agenda)",
-      "be": "back-end -> local-green (R04 publicacoes-agenda)",
-      "evidence": "specs/050-superadmin-agenda-backend.md; commitsf8a04b3a/4daeafb9/fe6f6b51; codex/e2e-agenda-operacoes@ca4c82ab; Fechamento R01 C03/r33; C03r33 final; contrato de localização/composição ainda aberto; etapa-2-operacao/reports/R01-fechamento-20260909.md; commit 29fa6ff13; apps/superadmin/test/features/agenda/data/supabase_agenda_repository_test.dart -> 54 PASS; suite de Agenda 261 PASS; evidence/etapa-2/r04-publicacoes-agenda/handoff.md; superadmin_agenda_requests recriada; nao exercida com dados; ver handoff.md",
+      "done": "R05: rota normal + decisao persistida em producao + RLS (pgTAP 200300/190100) + reload.",
+      "fe": "R05: /agenda/approvals na rota normal com a sessao qa-r03 lista o pedido pendente real; Decidir -> motivo -> Aprovar publicacao pela tela persistiu (Aprovado, motivo e data) e sobreviveu a recarga completa da pagina (ui-05..ui-08). Mapper le os rotulos do 190100 com UUID como reserva.",
+      "be": "R05: rascunho -> superadmin_agenda_command request_publication -> superadmin_agenda_requests lista pending -> superadmin_agenda_decide_publication aprova -> evento published -> reload; 20260911190100 (rotulos: title, institution_name, requested_by_name, decided_by_name) em producao (lote 43), pgTAP agenda_requests_labels_v1_test 7/7; RLS/grants por 200300 (pgTAP 22 com negativas).",
+      "evidence": "specs/050-superadmin-agenda-backend.md; commitsf8a04b3a/4daeafb9/fe6f6b51; codex/e2e-agenda-operacoes@ca4c82ab; Fechamento R01 C03/r33; C03r33 final; contrato de localização/composição ainda aberto; etapa-2-operacao/reports/R01-fechamento-20260909.md; commit 29fa6ff13; apps/superadmin/test/features/agenda/data/supabase_agenda_repository_test.dart -> 54 PASS; suite de Agenda 261 PASS; evidence/etapa-2/r04-publicacoes-agenda/handoff.md; superadmin_agenda_requests recriada; nao exercida com dados; ver handoff.md; evidence/etapa-2/r05-publicacoes-agenda/prova-producao-r05-resultado.json; evidence/etapa-2/r05-publicacoes-agenda/ui/ui-07-approvals-approved.png; ui-08-approvals-reload.png; evidence/etapa-2/r05-publicacoes-agenda/handoff.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "local-green",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:14-03:00"
+      "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
+      "certifications": {
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/prova-producao-r05-resultado.json",
+          "revision": "66a52986f",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST/Edge Function (prova-producao-r05.js 34/34 as 14:36)",
+          "recordedAt": "2026-09-11T14:40:00-03:00"
+        },
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/ui/ui-08-approvals-reload.png",
+          "revision": "66a52986f",
+          "environment": "build web profile de test_driver/qa_main.dart contra producao, sessao qa-r03, Chrome via CDP",
+          "recordedAt": "2026-09-11T14:40:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/handoff.md",
+          "revision": "66a52986f",
+          "environment": "build web profile de test_driver/qa_main.dart contra producao, sessao qa-r03, Chrome via CDP",
+          "recordedAt": "2026-09-11T14:40:00-03:00"
+        }
+      }
     },
     {
       "id": "agenda.permissions",
       "family": "agenda",
       "screen": "Agenda / Permissões",
       "scope": "mvp",
-      "done": "Spec050 aprovada; backend existente. Reader f8a04b3a/controller4daeafb9 integrados; somente view ca4c82ab ficou fora após revertfe6f6b51.",
-      "fe": "front-end -> local-green (R04 publicacoes-agenda)",
+      "done": "R05: rota normal (redirect por desenho) + contexts em producao (BE done na R04) + reload.",
+      "fe": "R05: a rota /agenda/permissions redireciona por desenho para Perfis e permissoes (dde3e6229, permissoes centralizadas); abre na rota normal com a sessao qa-r03 (ui-03) e superadmin_agenda_contexts entrega instituicoes/unidades/turmas com capacidades em producao.",
       "be": "back-end -> done (R04 publicacoes-agenda)",
-      "evidence": "specs/050-superadmin-agenda-backend.md; commitsf8a04b3a/4daeafb9/fe6f6b51; codex/e2e-agenda-operacoes@ca4c82ab; Fechamento R01 C03/r33; C03r33 final; contrato de localização/composição ainda aberto; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r04-publicacoes-agenda/handoff.md; contexts com capacidades e instituicao; ver handoff.md",
+      "evidence": "specs/050-superadmin-agenda-backend.md; commitsf8a04b3a/4daeafb9/fe6f6b51; codex/e2e-agenda-operacoes@ca4c82ab; Fechamento R01 C03/r33; C03r33 final; contrato de localização/composição ainda aberto; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r04-publicacoes-agenda/handoff.md; contexts com capacidades e instituicao; ver handoff.md; evidence/etapa-2/r05-publicacoes-agenda/ui/ui-03-agenda-permissions.png; evidence/etapa-2/r05-publicacoes-agenda/handoff.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "local-green",
+      "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
@@ -3095,6 +3115,18 @@
           "revision": "3895238a5 (rev 30)",
           "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03, rota real pela UI (52 capturas em ui/); pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)",
           "recordedAt": "2026-09-11T04:00:00-03:00"
+        },
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/ui/ui-03-agenda-permissions.png",
+          "revision": "66a52986f",
+          "environment": "build web profile de test_driver/qa_main.dart contra producao, sessao qa-r03, Chrome via CDP",
+          "recordedAt": "2026-09-11T14:40:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/handoff.md",
+          "revision": "66a52986f",
+          "environment": "build web profile de test_driver/qa_main.dart contra producao, sessao qa-r03, Chrome via CDP",
+          "recordedAt": "2026-09-11T14:40:00-03:00"
         }
       }
     },
@@ -3105,16 +3137,24 @@
       "scope": "mvp",
       "done": "Spec050 aprovada; backend existente. Reader f8a04b3a/controller4daeafb9 integrados; somente view ca4c82ab ficou fora após revertfe6f6b51.",
       "fe": "front-end -> local-green (R04 publicacoes-agenda)",
-      "be": "back-end -> local-green (R04 publicacoes-agenda)",
-      "evidence": "specs/050-superadmin-agenda-backend.md; commitsf8a04b3a/4daeafb9/fe6f6b51; codex/e2e-agenda-operacoes@ca4c82ab; Fechamento R01 C03/r33; C03r33 final; contrato de localização/composição ainda aberto; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r04-publicacoes-agenda/handoff.md; contexto de unidade fora do tenant recusado (pgTAP); sem unidade sintetica; ver handoff.md",
+      "be": "R05: superadmin_agenda_save com contextKind unit + local persiste na instituicao sintetica QA R04 Cuidado (unidade d0c4...0002); superadmin_agenda_get apos reload mantem unidade e local; rascunho excluido; pgTAP 200300 recusa unidade fora do tenant (invalid_unit_context).",
+      "evidence": "specs/050-superadmin-agenda-backend.md; commitsf8a04b3a/4daeafb9/fe6f6b51; codex/e2e-agenda-operacoes@ca4c82ab; Fechamento R01 C03/r33; C03r33 final; contrato de localização/composição ainda aberto; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r04-publicacoes-agenda/handoff.md; contexto de unidade fora do tenant recusado (pgTAP); sem unidade sintetica; ver handoff.md; evidence/etapa-2/r05-publicacoes-agenda/prova-producao-r05-resultado.json",
       "historicalFrontend": "not-reviewed",
       "historicalBackend": "not-reviewed",
       "frontendStatus": "local-green",
-      "backendStatus": "local-green",
+      "backendStatus": "done",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:14-03:00"
+      "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
+      "certifications": {
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/prova-producao-r05-resultado.json",
+          "revision": "66a52986f",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST/Edge Function (prova-producao-r05.js 34/34 as 14:36)",
+          "recordedAt": "2026-09-11T14:40:00-03:00"
+        }
+      }
     },
     {
       "id": "chat.list",
@@ -3570,15 +3610,15 @@
       "family": "notices",
       "screen": "Avisos / Agendar",
       "scope": "mvp",
-      "done": "Diretório/formulários, versão v2, recibos/agendamento e overlays corrigidos no cliente. C00 integrou layout compacto do status71b74dbe. R02 L02: FE verificado na origem L02; código final em 9144f4efb e sucessor documental 45d92b9c1. Não equivale a certificado integrado nem BE aplicado.",
-      "fe": "front-end -> local-green (R04 publicacoes-agenda)",
+      "done": "R05: rota normal + scheduled em producao + worker real (cron + notice-publication-worker) materializou um aviso agendado para +2 min: scheduled -> active com reach 18 (notice_receipts) sem intervencao; RLS por 200000 (pgTAP 38) + reload.",
+      "fe": "R05: /notices/new pela tela: nome, mensagem, publico, data e hora de inicio 18/09 13:51 escolhidas no seletor Coelo (data + horario), Publicar aviso -> \"Publicacao agendada\"; diretorio apos recarga completa mostra \"Desde 18/09/2026\"; RPC confirma status scheduled (ui-13..ui-19).",
       "be": "R04 coordenacao (11/09): P30 executado. Cron coelo-notices-worker-dispatch a cada minuto, funcao app_private.notice_dispatch_publication_worker, segredo no Vault/secrets, Edge Function notice-publication-worker ACTIVE; worker respondeu 200 e consumiu o job pendente.",
-      "evidence": "evidence/etapa-2/comunicacao/; evidence/etapa-2/engenheiro-1/; Fechamento R01 C05/rfinal; C05final/C07r12; C00288PASS apenas lote focal não-golden; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/notices-worker-catalog-readonly.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; apps/superadmin/test/features/notices/notice_form_page_test.dart; flutter test, Windows local, branch work/etapa2-noturna-chat-comunicacoes revisao 51981fdc9, 2026-09-09; coordenacao.json R04 rev 20 (lote9); coordenacao.json R04 rev 24 (lote15); next-round/R04-perguntas-ao-owner-20260911.md P30; evidence/etapa-2/r04-publicacoes-agenda/handoff.md; publish com inicio futuro -> scheduled; 200500 enfileira; nao exercido pela tela; docs/reviews/evidence/etapa-2/r04-coordenacao/lotes-25-27-decisoes-do-owner.md",
+      "evidence": "evidence/etapa-2/comunicacao/; evidence/etapa-2/engenheiro-1/; Fechamento R01 C05/rfinal; C05final/C07r12; C00288PASS apenas lote focal não-golden; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/notices-worker-catalog-readonly.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; apps/superadmin/test/features/notices/notice_form_page_test.dart; flutter test, Windows local, branch work/etapa2-noturna-chat-comunicacoes revisao 51981fdc9, 2026-09-09; coordenacao.json R04 rev 20 (lote9); coordenacao.json R04 rev 24 (lote15); next-round/R04-perguntas-ao-owner-20260911.md P30; evidence/etapa-2/r04-publicacoes-agenda/handoff.md; publish com inicio futuro -> scheduled; 200500 enfileira; nao exercido pela tela; docs/reviews/evidence/etapa-2/r04-coordenacao/lotes-25-27-decisoes-do-owner.md; evidence/etapa-2/r05-publicacoes-agenda/ui/ui-19-notices-reload.png; evidence/etapa-2/r05-publicacoes-agenda/handoff.md",
       "historicalFrontend": "audited",
       "historicalBackend": "audited",
-      "frontendStatus": "local-green",
+      "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T05:32:00-03:00",
@@ -3596,6 +3636,18 @@
           "revision": "comunicacao/coordenacao.json rev 33",
           "environment": "producao Supabase evvbomzejfijozbtgvpt",
           "recordedAt": "2026-09-11T10:25:00-03:00"
+        },
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/ui/ui-19-notices-reload.png",
+          "revision": "66a52986f",
+          "environment": "build web profile de test_driver/qa_main.dart contra producao, sessao qa-r03, Chrome via CDP",
+          "recordedAt": "2026-09-11T14:40:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/handoff.md",
+          "revision": "66a52986f",
+          "environment": "build web profile de test_driver/qa_main.dart contra producao, sessao qa-r03, Chrome via CDP",
+          "recordedAt": "2026-09-11T14:40:00-03:00"
         }
       }
     },
@@ -7065,8 +7117,8 @@
       "scope": "mvp",
       "done": "Mapeamento R02 recebido de L01; existência parcial observada, sem aceite integral. Rota montada, reaproveita o mesmo composer com `circularId`",
       "fe": "front-end -> local-green (R04 publicacoes-agenda)",
-      "be": "back-end -> done (R04 publicacoes-agenda)",
-      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md; leitura de 20260901191921_superadmin_internal_circulars_v2.sql, corpo de save_draft_v2; 2026-09-09, local; coordenacao.json R04 rev 20 (lote9); coordenacao.json R04 rev 21 (lote10); evidence/etapa-2/r04-publicacoes-agenda/handoff.md; 200400; rascunho reaberto em edicao (ui-11); edicao explicita nao exercida",
+      "be": "R05: edicao do rascunho com versao otimista (inclusive bloco de midia apos 190300) e reload pela RPC; 200400 + 190300 pgTAP.",
+      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md; leitura de 20260901191921_superadmin_internal_circulars_v2.sql, corpo de save_draft_v2; 2026-09-09, local; coordenacao.json R04 rev 20 (lote9); coordenacao.json R04 rev 21 (lote10); evidence/etapa-2/r04-publicacoes-agenda/handoff.md; 200400; rascunho reaberto em edicao (ui-11); edicao explicita nao exercida; evidence/etapa-2/r05-publicacoes-agenda/prova-producao-r05-resultado.json",
       "frontendStatus": "local-green",
       "backendStatus": "done",
       "integratedStatus": "pending-verification",
@@ -7081,10 +7133,10 @@
       },
       "certifications": {
         "backend": {
-          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
-          "revision": "3895238a5 (rev 30)",
-          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03, rota real pela UI (52 capturas em ui/); pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)",
-          "recordedAt": "2026-09-11T04:00:00-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/prova-producao-r05-resultado.json",
+          "revision": "66a52986f",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST/Edge Function (prova-producao-r05.js 34/34 as 14:36)",
+          "recordedAt": "2026-09-11T14:40:00-03:00"
         }
       }
     },
@@ -7136,9 +7188,9 @@
       "screen": "Circulares / Agendar",
       "scope": "mvp",
       "done": "Mapeamento R02 recebido de L01; existência parcial observada, sem aceite integral. Seletor de agendamento e rótulo `Agendar circular`",
-      "fe": "front-end -> local-green (R04 publicacoes-agenda)",
-      "be": "back-end -> done (R04 publicacoes-agenda)",
-      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md; coordenacao.json R04 rev 20 (lote9); evidence/etapa-2/r04-publicacoes-agenda/handoff.md; publish_at futuro -> scheduled; campo inline presente (ui-14); picker nao acionado",
+      "fe": "R05: o host produtivo nao passava onChooseSchedule e o botao Escolher data e hora ficava desabilitado (gate da R04/R05 na rota real); 66a52986f liga os seletores Coelo de data e horario. Rota real pela tela pendente (Chrome caiu por memoria).",
+      "be": "R05: superadmin_circular_publish_v2 com publish_at futuro -> scheduled; detail apos reload mantem; agendada nao republica (CIRCULAR_INVALID_STATE, desenho do gateway); 200100 pgTAP 34/34.",
+      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md; coordenacao.json R04 rev 20 (lote9); evidence/etapa-2/r04-publicacoes-agenda/handoff.md; publish_at futuro -> scheduled; campo inline presente (ui-14); picker nao acionado; evidence/etapa-2/r05-publicacoes-agenda/ui/ui-30-circular-datepicker.png; evidence/etapa-2/r05-publicacoes-agenda/prova-producao-r05-resultado.json",
       "frontendStatus": "local-green",
       "backendStatus": "done",
       "integratedStatus": "pending-verification",
@@ -7153,10 +7205,10 @@
       },
       "certifications": {
         "backend": {
-          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
-          "revision": "3895238a5 (rev 30)",
-          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03, rota real pela UI (52 capturas em ui/); pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)",
-          "recordedAt": "2026-09-11T04:00:00-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/prova-producao-r05-resultado.json",
+          "revision": "66a52986f",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST/Edge Function (prova-producao-r05.js 34/34 as 14:36)",
+          "recordedAt": "2026-09-11T14:40:00-03:00"
         }
       }
     },
@@ -7293,10 +7345,10 @@
       "scope": "mvp",
       "done": "Mapeamento R02 recebido de L01; existência parcial observada, sem aceite integral. `PrincipalCircularReader` implementa seleção e envio, mas `PrincipalCircularDetailPage` **não é montado em nenhuma rota** do `lib`",
       "fe": "front-end -> pending-verification (R04 publicacoes-agenda)",
-      "be": "back-end -> pending-verification (R04 publicacoes-agenda)",
-      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md; commit 5ffdae8ba; principal_circular_response_failure_test.dart (3 PASS); test/features/principal_circulars completo com 111 PASS e 0 FAIL, incluindo os goldens do leitor em 375 e 1440, claro e escuro, e o dialogo de previa; 2026-09-09, local, branch work/etapa2-noturna-publicacoes-midia; commit 9fde22632; principal_circular_response_failure_test.dart com 4 PASS, incluindo um caso que trava a AUSENCIA de \"responda novamente\" quando encerrada; cadeia conferida ponta a ponta: RPC levanta serialization_failure 40001, repositorio mapeia para CircularVersionConflict por codigo e mensagem; 2026-09-10, local; evidence/etapa-2/r04-publicacoes-agenda/handoff.md; RPCs people-based do Principal, fora do gateway v2; ver handoff.md",
+      "be": "R05: 20260911190000 (ponte de ator em circular_actor + owner alcanca audiencia, P23/P35) em producao: save_circular_response_draft -> submit_circular_response -> superadmin_circular_response_summary_v2 {response_count:1, submitted_count:1}; pgTAP circular_actor_internal_bridge_v1_test 18/18 com negativas (sem membership, cross-tenant, anon).",
+      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md; commit 5ffdae8ba; principal_circular_response_failure_test.dart (3 PASS); test/features/principal_circulars completo com 111 PASS e 0 FAIL, incluindo os goldens do leitor em 375 e 1440, claro e escuro, e o dialogo de previa; 2026-09-09, local, branch work/etapa2-noturna-publicacoes-midia; commit 9fde22632; principal_circular_response_failure_test.dart com 4 PASS, incluindo um caso que trava a AUSENCIA de \"responda novamente\" quando encerrada; cadeia conferida ponta a ponta: RPC levanta serialization_failure 40001, repositorio mapeia para CircularVersionConflict por codigo e mensagem; 2026-09-10, local; evidence/etapa-2/r04-publicacoes-agenda/handoff.md; RPCs people-based do Principal, fora do gateway v2; ver handoff.md; evidence/etapa-2/r05-publicacoes-agenda/prova-producao-r05-resultado.json",
       "frontendStatus": "pending-verification",
-      "backendStatus": "pending-verification",
+      "backendStatus": "done",
       "integratedStatus": "pending-verification",
       "lastEvidenceAt": "2026-09-09T13:20:58.702584-03:00",
       "mappingSource": {
@@ -7306,6 +7358,14 @@
         "sourceSha256": "db41ccba27a41c81df774e7379ad46b7441b7c3e9750a0693b9dacbc848acb65",
         "substate": "Rascunho parcial, envio, conflito de versão, estado `Encerrada`",
         "observationOnly": true
+      },
+      "certifications": {
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/prova-producao-r05-resultado.json",
+          "revision": "66a52986f",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST/Edge Function (prova-producao-r05.js 34/34 as 14:36)",
+          "recordedAt": "2026-09-11T14:40:00-03:00"
+        }
       }
     },
     {
@@ -7315,10 +7375,10 @@
       "scope": "mvp",
       "done": "Mapeamento R02 recebido de L01; existência parcial observada, sem aceite integral. Lista de anexos e contador `n/4` renderizam, mas o **seletor de arquivos está desabilitado em produção** com aviso honesto",
       "fe": "front-end -> pending-verification (R04 publicacoes-agenda)",
-      "be": "back-end -> local-green (R04 publicacoes-agenda)",
-      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commits 1e39b2fcf (integrado em dev via merge d502350ce) e b10f48d1e; principal_circular_attachment_tile_test.dart e principal_circular_detail_media_passthrough_test.dart integrados de L01 3697dd49e; 2026-09-09, local; commit 04acb3e7b; deno test --config deno.json --allow-all packages/coelo_database/supabase/functions/circular-media/index_test.ts, 25 PASS e 0 FAIL, incluindo os casos que provam que o segredo e as credenciais do bucket nunca saem, que um R2 nao configurado e recusado antes de alcancar o objeto e que a falha de transporte e opaca; 2026-09-09, local; commit 4e825eef5, reusando a entrega autoral L01 3697dd49e; production_circular_attachments_test.dart; circular_routes_test confirma que a rota produtiva monta ProductionCircularComposerHost e nao o host de desenvolvimento; 2026-09-09, local, branch work/etapa2-noturna-publicacoes-midia; coordenacao.json R03 rev 13; evidence/etapa-2/r04-publicacoes-agenda/handoff.md; R2 em producao; upload real nao exercido; ver handoff.md",
+      "be": "R05: 190000 + 190200 (R2 para Circulares: prepare presign em coelo-media-prod com chave tenants/.../circulars/circular/.../attachment/.../original) + 190300 (gateway v2 aceita bloco de midia com asset ready da propria circular) em producao: prepare -> PUT no R2 -> finalize ready -> rascunho com bloco de midia -> detail devolve asset_id -> publish com midia -> read signed_url -> bytes conferem; anon 401; delete de anexo publicado recusado (imutavel). pgTAP 18/18 + v2 34/34 + r2 45/46.",
+      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commits 1e39b2fcf (integrado em dev via merge d502350ce) e b10f48d1e; principal_circular_attachment_tile_test.dart e principal_circular_detail_media_passthrough_test.dart integrados de L01 3697dd49e; 2026-09-09, local; commit 04acb3e7b; deno test --config deno.json --allow-all packages/coelo_database/supabase/functions/circular-media/index_test.ts, 25 PASS e 0 FAIL, incluindo os casos que provam que o segredo e as credenciais do bucket nunca saem, que um R2 nao configurado e recusado antes de alcancar o objeto e que a falha de transporte e opaca; 2026-09-09, local; commit 4e825eef5, reusando a entrega autoral L01 3697dd49e; production_circular_attachments_test.dart; circular_routes_test confirma que a rota produtiva monta ProductionCircularComposerHost e nao o host de desenvolvimento; 2026-09-09, local, branch work/etapa2-noturna-publicacoes-midia; coordenacao.json R03 rev 13; evidence/etapa-2/r04-publicacoes-agenda/handoff.md; R2 em producao; upload real nao exercido; ver handoff.md; evidence/etapa-2/r05-publicacoes-agenda/prova-producao-r05-resultado.json",
       "frontendStatus": "pending-verification",
-      "backendStatus": "local-green",
+      "backendStatus": "done",
       "integratedStatus": "pending-verification",
       "lastEvidenceAt": "2026-09-09T13:20:58.702584-03:00",
       "mappingSource": {
@@ -7329,10 +7389,18 @@
         "substate": "Upload, limite de 4 arquivos, MIME/tamanho, leitura assinada, remoção",
         "observationOnly": true
       },
-      "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
+      "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
+      "certifications": {
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/prova-producao-r05-resultado.json",
+          "revision": "66a52986f",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST/Edge Function (prova-producao-r05.js 34/34 as 14:36)",
+          "recordedAt": "2026-09-11T14:40:00-03:00"
+        }
+      }
     }
   ],
-  "updatedAt": "2026-09-11T17:36:23.159Z",
+  "updatedAt": "2026-09-11T17:39:20.213Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,
