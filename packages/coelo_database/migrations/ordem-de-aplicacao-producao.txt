@@ -107,3 +107,5 @@
 20260910171100_follow_links_automatic_hierarchy_v1.sql
 # lote 13 (11/09 02:01)
 20260910240600_revoke_authenticated_truncate_references_trigger_v1.sql
+# lote 14 (11/09 02:06)
+20260910171200_qa_r03_internal_profile_seed_v1.sql
