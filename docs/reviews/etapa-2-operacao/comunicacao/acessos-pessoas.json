@@ -1,12 +1,12 @@
 {
-  "revision": 117,
-  "updated_at": "2026-09-11T11:30:37.792Z",
-  "relogio_local": "Fri Sep 11 2026 08:30:37 GMT-0300 (Horário Padrão de Brasília)",
+  "revision": 118,
+  "updated_at": "2026-09-11T11:31:19.648Z",
+  "relogio_local": "Fri Sep 11 2026 08:31:19 GMT-0300 (Horário Padrão de Brasília)",
   "round": "E2-R04-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
   "model": "Claude Fable 5.1 (o prompt previa Opus; a sessao aberta pelo Owner roda Fable 5.1)",
-  "status": "finalizado_com_validacao",
+  "status": "finalizado",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-acessos-pessoas",
   "branch": "work/etapa2-r04-acessos-pessoas",
   "head": "9f4859e27 (rev 115); o commit desta rev 116 e o SHA final da branch e vai na mensagem ao coordenador",
@@ -455,6 +455,34 @@
       "pendencias_desta_rodada": "E2E de people.edit, access-profiles.create/edit, internal-users.edit e child-safety.edit dependem de build novo com 3682673da/bd0538ec6 e Chrome; invites.* e child-safety decisao/suspend dependem de P31/P32.",
       "so_depois_do_mvp": "provas exaustivas por acao (ADR 0034); revisao profunda de seguranca cross-tenant por tela; profile-files.* adiados."
     }
+  },
+  "MINI_REVISAO_08h30_PARA_O_COORDENADOR_VIA_GIT": {
+    "motivo": "ListAgents as 08:30 nao lista coelo-04 (so sessoes novas); por instrucao do Owner, tudo fica aqui e o coordenador le pelo Git.",
+    "SHA_final": "branch work/etapa2-r04-acessos-pessoas: fd9bcdaa4 (rev 117) mais o commit desta rev 118; rev 116 (3808fb2e2) ja integrada em dev 4d22c92af pelo coelo-04 as 03:2x.",
+    "fechado_por_action_id_com_prova": {
+      "access-models.create": "verified-e2e: criado pela rota real com sessao qa-r03 (build release + CDP), persistido em access_profile_templates cc322488, reload mantem (capturas em evidence/.../capturas, deltas FE verified + BE done + integrated).",
+      "access-models.list/filter/detail/edit/duplicate": "BE done por REST: cursor filtra query+status+scope; detail por p_model_id; update com expected_version (versao 2) e 409 SAI_CONCURRENT_CHANGE na versao velha; duplicata 60fb9586.",
+      "access-profiles.list/create/detail/edit/assign/delete": "BE done por REST apos 171700 (lote 18) e 172000 (lote 20); create pela UI provado; cliente corrigido (3682673da) envia capabilities.",
+      "people.list/create/edit/links": "BE done por REST: create_draft (pessoa ec2a15a2 draft), people_update persistiu display_name, person_detail_v2 rele; FE local-green com detalhe/Editar ligados (bd0538ec6).",
+      "internal-users.list/edit": "BE done por REST (perfil interno de qa-r03 editado); FE local-green com rota de edicao (ce6f061cc).",
+      "child-safety.list/child/create/edit": "list/child pela composicao legada com ponte de ator; create por REST (autorizacao 34d29829); edit pendente por REST apos 172100 (lote 21): versao 1->2.",
+      "invites.list": "vazio honesto pela rota real (0 institution_roles).",
+      "profile-files.*": "adiados e honestos na rota real (deferred-post-mvp)."
+    },
+    "aberto_com_primeiro_gate": {
+      "invites.create/detail/resend/revoke": "P31 (Owner): 0 institution_roles; issue_v2 devolve SAI_INVALID_ARGUMENT 422; 171600 RETIDO pronto (pgTAP 7/7).",
+      "child-safety.edit (decisao)/suspend": "P32 (Owner): decidir exige revisor exato de unidade; 171800 RETIDO (opcao b, pgTAP 25/25).",
+      "people.create (UI)": "PersonIdentityLookupGate sem resolvedor Supabase/RPC.",
+      "internal-users.create": "sem RPC/Edge Function de criacao (identidade + auth user).",
+      "people.edit / access-profiles.edit / internal-users.edit / access-models.edit pela UI": "build novo com 3682673da e bd0538ec6 + Chrome (memoria da maquina impediu na madrugada).",
+      "internal-users.suspend / child-safety.suspend": "escrita nao exercitada.",
+      "golden platform_user_create_light_375": "P15."
+    },
+    "deltas_propostos": "docs/reviews/evidence/etapa-2/r04-acessos-pessoas/deltas-r04.json: 48 entradas no formato {action_id, camada frontend|backend|integrated, estado_proposto, delta, evidencia, certificacao{evidence, revision, environment, recordedAt}}; 47 ja aplicadas pelo coelo-04 (dev 4d22c92af); falta aplicar a 48 (access-models.filter backend done).",
+    "dados_sinteticos_em_producao": "lista completa em DADOS_SINTETICOS_LISTA_COMPLETA (rev 116): perfil interno de qa-r03 (semente 171200), autorizacao 34d29829 (versao 2) e capacidades, modelos cc322488 e 60fb9586 (versao 2), pessoa ec2a15a2 (draft); perfil qa-r04-perfil-sintetico-7f6f8d16 ja apagado; nenhum convite criado.",
+    "pacotes": "aplicados 171000, 171100, 171200, 171300, 171500, 171700, 171900, 172000, 172100 (ja em migrations/ em dev); retidos 171600 (P31) e 171800 (P32) em candidatos/acessos-pessoas.",
+    "skills": "proposta de atualizacao das tres skills e dos tres rastreadores em PROPOSTA_DE_ATUALIZACAO_DAS_SKILLS (rev 117), com linha de origin/dev 0376a0446.",
+    "ambiente": "Chrome da frente e servidor estatico encerrados as 03:29; nenhum dart/flutter desta worktree; worktree limpa (0 modificados, 0 stash)."
   },
   "historico_r03": {
     "revision": 94,
