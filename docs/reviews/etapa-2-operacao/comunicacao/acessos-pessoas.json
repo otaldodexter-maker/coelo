@@ -1,15 +1,15 @@
 {
-  "revision": 108,
-  "updated_at": "2026-09-11T05:59:58.327Z",
-  "relogio_local": "Fri Sep 11 2026 02:59:58 GMT-0300 (Horário Padrão de Brasília)",
+  "revision": 109,
+  "updated_at": "2026-09-11T06:04:57.741Z",
+  "relogio_local": "Fri Sep 11 2026 03:04:57 GMT-0300 (Horário Padrão de Brasília)",
   "round": "E2-R04-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
   "model": "Claude Fable 5.1 (o prompt previa Opus; a sessao aberta pelo Owner roda Fable 5.1)",
-  "status": "finalizado",
+  "status": "finalizado_com_adendos",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-acessos-pessoas",
   "branch": "work/etapa2-r04-acessos-pessoas",
-  "head": "f78c10c24",
+  "head": "ver git log (commit desta revisao); mini-revisao final na rev 108",
   "base_observed": "origin/dev 98cc0529d contem a4af2b198 e o R04-prompts.md; candidatos/acessos-pessoas tem 170900 (retido) e 170750 (obsoleto); lote 4 (170100-170800) em migrations/",
   "recorte": {
     "familias": [
@@ -39,7 +39,7 @@
   "loop": "/loop 15m agendado na abertura",
   "testes_P_F_B_S_U": "nenhum teste automatizado executado ainda nesta rodada; login real 1 P",
   "bloqueio": "nenhum total",
-  "proximo_passo": "subagente do 171800 (P32, retido); rev final as 04:00 com SHA; Chrome fechado",
+  "proximo_passo": "ate 04:00: provas por REST que nao exigem Chrome nem build (memoria 1,3 GB); Chrome fechado; servidor estatico parado no fechamento",
   "ACK_ao_coordenador": "recebido o aviso do lote 8 (MFA fora do MVP + student_links_read) por mensagem entre sessoes as 22:10; respondido pelo mesmo canal; rebase feito.",
   "ROTA_NORMAL_COM_SESSAO": {
     "auth.login": "P (qa-r03 entra pela tela normal, Home como Owner Coelo / Superadmin)",
@@ -296,6 +296,12 @@
     ]
   },
   "encerramento": "Chrome fechado; servidor estatico em :3000 parado no fechamento; nenhum dart/flutter desta frente em execucao; nao retomo por conta propria depois de 04:20.",
+  "ADENDO_03h05": {
+    "171900": "em producao (lote 19) — o cast do enum; a decisao pelo Superadmin continua dependendo da P32",
+    "internal-users.edit (BE)": "done por REST: superadmin_internal_user_update com o payload do cliente persistiu job_title (version 1->2) no perfil sintetico de qa-r03; detalhe relido confirma; historico auditado",
+    "deltas": "36 entradas (o integrado de access-models.create agora em camada integrated / verified-e2e)",
+    "handoff": "docs/reviews/evidence/etapa-2/r04-acessos-pessoas/handoff.md alinhado aos lotes 18 e 19"
+  },
   "historico_r03": {
     "revision": 94,
     "updated_at": "2026-09-10T19:56:30.537Z",
