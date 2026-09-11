@@ -1,13 +1,13 @@
 {
-  "revision": 30,
-  "updated_at": "2026-09-11T14:36:00-03:00",
+  "revision": 31,
+  "updated_at": "2026-09-11T14:52:00-03:00",
   "round": "E2-R05-20260911",
   "group": "operacoes",
   "tool_model": "Claude, Opus 5 (1M), esforco medio — conversa R05 · Operacoes",
   "conversation": "R05 · Operações",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-operacoes",
   "branch": "work/etapa2-r05-operacoes",
-  "head": "3471321a5 (+ este commit)",
+  "head": "cb64ca5cc (+ este commit)",
   "base": {
     "requested": "origin/dev",
     "resolved": "2f6a6114f",
@@ -278,6 +278,17 @@
       ],
       "delta": "ImportDirectoryPage deixa de declarar CoeloAdminListingToolbar/ResizableTable/Pagination proprias e passa ao CoeloAdminDirectory: busca, filtros Entidade/Arquivo, Limpar filtros, Arquivos honestos (Importar, Exportar CSV/XLSX: Disponivel depois do MVP), Criar (Nova importacao: Disponivel depois do MVP sem picker/parser/job), toggle cards/tabela, cards, tabela, paginacao por cursor; estados vazio/sem resultados/falha/nao autorizado/adiado do composto. Regra do Owner (estado vazio mantem busca, filtros, toggle, Arquivos e card Criar) atendida. Pendencia 'ImportDirectoryPage fora do composto' fechada. Aberto: o harness de golden de Importacoes ainda renderiza sem a shell (FUNDO/MENU da decisao import_hub_wizard_light_375=R): os goldens regravados nao valem como aprovacao visual; pagina R/A ao Owner na proxima rodada.",
       "proof": "flutter test test/features/imports test/architecture 38/38 (+1 skip pre-existente); goldens regravados no SDK 3.44.2; captura na rota real apos o rebuild (pendente)"
+    },
+    {
+      "action_ids": [
+        "imports.list"
+      ],
+      "status": "goldens dentro da shell (FUNDO/MENU) e captura na rota real",
+      "commits": [
+        "cb64ca5cc"
+      ],
+      "delta": "harness import_hub_golden_test passa a montar o diretorio dentro do SuperadminShell (como Planos); 13 goldens regravados; rota real (capturas 52-53): cabecalho, busca, filtros, toggle, Arquivos com Importar/CSV/XLSX honestos e card Criar no estado adiado. Pagina R/A (8 claros): https://claude.ai/code/artifact/aafedc26-2673-4f10-8310-37b367dad7f7 e docs/reviews/evidence/etapa-2/r05-operacoes/imports-ra/.",
+      "proof": "suite imports 36/36 (+1 skip); capturas 52-53"
     }
   ],
   "tests": {
@@ -348,6 +359,13 @@
       "kind": "produto/ui",
       "what": "Suporte e implantacao: hoje o Status e um filtro (dropdown) e a visao volta a cards a cada reload. A regra 'estado vazio mantem abas de estado' pede abas por tela: em Suporte seriam Todos / Novo / Em andamento / Aguardando solicitante / Concluido (na tabela; no kanban as colunas ja fazem esse papel). Trocar o filtro por abas? E persistir a ultima visao (cards/tabela) por usuario?",
       "options": "A) abas no lugar do filtro Status + persistir visao (recomendado); B) manter filtro e nao persistir"
+    },
+    {
+      "id": "IMP-R05",
+      "kind": "visual",
+      "what": "Aprovar os 8 goldens claros de Importacoes (diretorio no composto, dentro da shell). Responder por arquivo: nome - decisao, observacao.",
+      "page": "https://claude.ai/code/artifact/aafedc26-2673-4f10-8310-37b367dad7f7",
+      "fallback": "docs/reviews/evidence/etapa-2/r05-operacoes/imports-ra/pagina-lado-a-lado-importacoes.html"
     }
   ],
   "next_step": "15:30: avisar coordenador 5 min antes e provar account.logout (Sair no menu da conta em /profile -> reload cai no login) com o Chrome desta frente; ate la: handoff publicado, mini-revisao preparada; 15:45 finalizado",
@@ -371,7 +389,9 @@
     "7b644fa07",
     "2a5fe6fbd",
     "78283f81b (merge)",
-    "3471321a5"
+    "3471321a5",
+    "b0d5b5c1f",
+    "cb64ca5cc"
   ],
   "r04_history": {
     "revision": 20,
@@ -984,11 +1004,6 @@
       "action_id": "support.close",
       "tipo": "fechada",
       "o_que": "Responsaveis de lista fixa sem RPC: fechada (pacote 200100 + cliente 36474dc92/ca040ba49); a antiga chamada antes da sessao (401 em /login) tambem fechada em 13be50ae8."
-    },
-    {
-      "action_id": "imports.list",
-      "tipo": "golden-harness",
-      "o_que": "import_hub_golden_test monta a pagina em Scaffold avulso (sem SuperadminShell): FUNDO cinza e sem cabecalho, contra a decisao R do Owner para import_hub_wizard_light_375. Migrar o harness para a shell (como Planos) e regravar com pagina R/A."
     }
   ],
   "nota_relogio": "carimbos das revs 23-25 estavam adiantados ate 40 min (13:05 -> 12:57 real; 13:35/13:40 -> 13:20; 14:20 -> 13:41); os horarios nos deltas seguem o relogio da maquina a partir da rev 26.",
