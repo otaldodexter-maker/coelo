@@ -1,331 +1,383 @@
 {
-  "grupo": "estrutura",
-  "revision": 31,
-  "round": "E2-R04-20260911",
-  "updatedAt": "2026-09-11T02:05:01-03:00",
-  "app": "Claude",
-  "modelo": "Fable 5.1",
-  "conversa": "coelo-39 (retomada do grupo estrutura apos o reinicio da maquina de 00:27; a conversa anterior caiu; designada pelo coordenador coelo-04 as 02:00)",
-  "coordenador": "coelo-04 (R04 Coordenacao noturna, coordenacao.json); designacao recebida por mensagem entre sessoes",
-  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-estrutura",
-  "branch": "work/etapa2-r04-estrutura",
-  "head": "(commit desta revisao)",
-  "upstream": "origin/work/etapa2-r04-estrutura",
-  "base": "origin/dev f51233023 (rebaseada as 02:01; lotes 10 e 11 em producao: os 21 candidatos de estrutura aplicados; structureMutationsEnabled e assessmentMutationsEnabled ligadas; ponte de ator 220400 ativa)",
-  "horario": {
-    "inicio": "2026-09-10T21:44:19-03:00",
-    "retomada": "2026-09-11T02:05:01-03:00",
-    "corte": "2026-09-11T04:20:00-03:00",
-    "miniRevisao": "04:00 (pedido do coordenador)",
-    "loop": "sem /loop: conversa dirigida por mensagens do coordenador; nao encerra o turno antes da mini-revisao"
+ "grupo": "estrutura",
+ "revision": 32,
+ "round": "E2-R04-20260911",
+ "updatedAt": "2026-09-11T08:31:24-03:00",
+ "app": "Claude",
+ "modelo": "Fable 5.1",
+ "conversa": "R04 · Estrutura (sessao original, retomada as 08:23 de 11/09 depois do reinicio de 00:27; coelo-39 cobriu de 02:00 a 02:06)",
+ "coordenador": "coelo-04 (ref de3c83), mesma conversa e worktree e2-r04-coordenacao",
+ "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-estrutura",
+ "branch": "work/etapa2-r04-estrutura",
+ "head": "(commit desta revisao)",
+ "upstream": "origin/work/etapa2-r04-estrutura",
+ "base": "origin/dev 0376a0446 (rebaseada as 08:30)",
+ "horario": {
+  "inicio": "2026-09-10T21:44:19-03:00",
+  "retomada": "2026-09-11T02:05:01-03:00",
+  "corte": "2026-09-11T04:20:00-03:00",
+  "miniRevisao": "04:00 (pedido do coordenador)",
+  "loop": "sem /loop: conversa dirigida por mensagens do coordenador; nao encerra o turno antes da mini-revisao"
+ },
+ "escopo": [
+  {
+   "tela": "Instituicoes",
+   "action_ids": [
+    "institutions.list",
+    "institutions.filter",
+    "institutions.detail",
+    "institutions.create",
+    "institutions.edit",
+    "institutions.status",
+    "institutions.files",
+    "institutions.import",
+    "institutions.export",
+    "institutions.error",
+    "institutions.access-denied",
+    "institutions.reload",
+    "institutions.locations-map"
+   ]
   },
-  "escopo": [
-    {
-      "tela": "Instituicoes",
-      "action_ids": [
-        "institutions.list",
-        "institutions.filter",
-        "institutions.detail",
-        "institutions.create",
-        "institutions.edit",
-        "institutions.status",
-        "institutions.files",
-        "institutions.import",
-        "institutions.export",
-        "institutions.error",
-        "institutions.access-denied",
-        "institutions.reload",
-        "institutions.locations-map"
-      ]
-    },
-    {
-      "tela": "Unidades",
-      "action_ids": [
-        "units.list",
-        "units.filter",
-        "units.create",
-        "units.edit",
-        "units.status",
-        "units.import",
-        "units.export",
-        "units.error",
-        "units.access-denied",
-        "units.reload",
-        "units.people-export",
-        "units.locations-map",
-        "units.copy-institution-location"
-      ]
-    },
-    {
-      "tela": "Turmas",
-      "action_ids": [
-        "groups.list",
-        "groups.create",
-        "groups.edit",
-        "groups.members",
-        "groups.import",
-        "groups.export",
-        "groups.location"
-      ]
-    },
-    {
-      "tela": "Atividades",
-      "action_ids": [
-        "activities.list",
-        "activities.create",
-        "activities.detail",
-        "activities.edit",
-        "activities.publish",
-        "activities.assessment",
-        "activities.location"
-      ]
-    },
-    {
-      "tela": "Locais",
-      "action_ids": [
-        "locations.list",
-        "locations.create-edit",
-        "locations.detail-links",
-        "locations.schedule"
-      ]
-    },
-    {
-      "tela": "Avaliacoes",
-      "action_ids": [
-        "assessments.entry",
-        "assessments.gradebook",
-        "assessments.close",
-        "assessments.reopen",
-        "assessments.detail"
-      ]
-    }
-  ],
-  "totalAcoes": 49,
-  "historicoR03": {
-    "revisaoFinal": 22,
-    "handoff": "docs/reviews/evidence/etapa-2/r03-estrutura/handoff.md",
-    "conteudoIntegral": "estrutura.json na revisao 22 esta em dev (98cc0529d); esta revisao 23 substitui o corpo pelo estado da R04 e mantem so o que continua aberto",
-    "aberto": [
-      "Cadeia de Locais: em producao entraram catalog_v2_baseline (230013), update_status (230014), copy (230015), schedule (230016) e capacidades locations.* (230012). NAO entraram: 20260908154257 activity_save_v2 (pgTAP exige app_private.activity_v2_denied_envelope), 20260909165000 reservations_v2 (preflight exige audit_append_superadmin_internal com 14 argumentos; producao tem 13), 180000/180100/180200 (dependem de reservas), 180300 unit_detail_v2_baseline (pgTAP 3 ok / 5 not ok: nome do wrapper).",
-      "institutions.* e activities.* na rota normal: as RPCs internas v2 de Instituicoes entraram no lote 3 (230001 list_filter, 230002 edit_core); conferir presenca das demais antes de compor.",
-      "Cards das unidades na tela de Locais da instituicao (depende do diretorio de Unidades composto).",
-      "structureMutationsEnabled: proposta de separar por realm ainda sem decisao (proposta-separar-chave-de-estrutura.md).",
-      "16 goldens de formulario esperando MENU/MENU-M; 30 goldens orfaos de Locais aguardando decisao de remocao.",
-      "Achado de seguranca: 203 tabelas com ALL para anon/authenticated por privilegio padrao do schema public (fora do recorte; decisao do Owner)."
-    ]
+  {
+   "tela": "Unidades",
+   "action_ids": [
+    "units.list",
+    "units.filter",
+    "units.create",
+    "units.edit",
+    "units.status",
+    "units.import",
+    "units.export",
+    "units.error",
+    "units.access-denied",
+    "units.reload",
+    "units.people-export",
+    "units.locations-map",
+    "units.copy-institution-location"
+   ]
   },
-  "ordemDaRodada": [
-    {
-      "n": 1,
-      "item": "Locais: corrigir 180000/180100/180200/180300 em candidatos/estrutura para a assinatura real de audit_append_superadmin_internal (13 argumentos) e a forma canonica (unit_type_id); trazer reservations_v2 como candidato sobre a baseline; fixture activity_v2_denied_envelope de activity_save_v2; provar no projeto descartavel com pgTAP",
-      "estado": "CONCLUIDO E APLICADO: 21 pacotes em producao (lotes 10 e 11); chaves ligadas em dev f51233023",
-      "action_ids": [
-        "locations.detail-links",
-        "locations.schedule",
-        "activities.location",
-        "groups.location",
-        "activities.create",
-        "activities.edit"
-      ]
-    },
-    {
-      "n": 2,
-      "item": "Rota normal com sessao qa-r03@coelo.me em localhost:3000: Instituicoes -> Unidades -> Turmas -> Atividades -> Locais -> Avaliacoes; verified so com CRUD em producao + RLS nega outro tenant em pgTAP + reload",
-      "estado": "retomado as 02:03 por coelo-39: app dirigido a subir em Chrome (porta 3020; 3000 ocupada por outra frente), sessao qa-r03 pelo test_driver/qa_drive.dart"
-    },
-    {
-      "n": 3,
-      "item": "P5 (Turmas com filtro por unidade degradando de forma honesta) e P6 (importar de Unidades vira indisponibilidade honesta)",
-      "estado": "P5 feito (view model + pagina + teste); P6 feito (widget morto do dialogo removido; botao ja era honesto)",
-      "action_ids": [
-        "groups.list",
-        "units.import"
-      ]
-    },
-    {
-      "n": 4,
-      "item": "P15 no SuperadminFormFrame: rodape ancorado + respiro no fim do conteudo; avisar formularios-cuidado-rotina sobre medication_form_mobile_light",
-      "estado": "feito no frame (space6 -> space10); testes Flutter em execucao"
-    },
-    {
-      "n": 5,
-      "item": "Goldens do recorte conforme as tres listas do Owner (activity_form_create_light_375 RODAPE, activity_detail_*, group_form_*), no SDK 3.44.2; espacamento de Turmas ja decidido",
-      "estado": "feito no que o Owner decidiu A e cujas observacoes estao aplicadas: 7 goldens de formulario e 3 de detalhe de Locais regravados (commits 20f497709 e 64afc1f0a); activity_form_create_light_375, activity_detail_light_375 e activity_form_location_dialog_light_375 passam hoje (sem diff); espacamento de Turmas ja decidido"
-    }
-  ],
-  "primeiroGate": "nenhum bloqueio conhecido na abertura da retomada",
-  "criteriosFechados": [
-    "Reservas de Locais sobre a baseline com a assinatura real de auditoria: 49/49",
-    "Bindings, activity_location_create e group_location_create verdes no espelho: 30/30, 33/33, 46/46",
-    "Cadeia de Atividades v2 aplica integralmente sobre baseline + 44 lotes",
-    "P15: respiro no fim do conteudo no frame compartilhado",
-    "P6: diálogo de importar de Unidades (widget morto com FilePicker e previa) removido; o botao ja mostrava indisponibilidade honesta",
-    "Cadeia de Atividades v2 (11) + Locais (4) + detalhes de Unidade e Turma (2): 17 candidatos aplicam em ordem sobre baseline + 46 lotes e 16 suites pgTAP verdes",
-    "P5: filtros de Turmas degradam de forma honesta quando fetchFilterOptions falha (view model, rotulo \"(indisponivel)\", teste)"
-  ],
-  "testes": {
-    "P": "pgTAP 692; Flutter 1079 (seis familias + shared) + 37 repositorio de Instituicoes + 5 view model de Turmas",
-    "F": "Flutter 11 pre-existentes de widgets compartilhados (fora do recorte)",
-    "B": 0,
-    "S": 0,
-    "U": 0,
-    "evidencia": "prova-integral-3.log; tarefas b32mhzji2/brvpnzs6w desta sessao"
+  {
+   "tela": "Turmas",
+   "action_ids": [
+    "groups.list",
+    "groups.create",
+    "groups.edit",
+    "groups.members",
+    "groups.import",
+    "groups.export",
+    "groups.location"
+   ]
   },
-  "pacotesProntos": [
-    {
-      "nota": "os 21 candidatos de estrutura (180000..180350) foram aplicados em producao pelo coordenador nos lotes 10 e 11 e movidos para migrations/; candidatos/estrutura esta vazio. Pacote novo nasce aqui na faixa 2026091018xxxx acima de 180350."
-    }
-  ],
-  "deltasPropostos": [],
-  "pedidosAoCoordenador": [],
-  "avisosParaOutrosGrupos": [
-    {
-      "para": "formularios-cuidado-rotina",
-      "assunto": "P15 aplicado no SuperadminFormFrame",
-      "texto": "padding inferior do scroll de conteudo passou de space6 (24px) para space10 (40px), com o rodape ja ancorado. Regravar medication_form_mobile_light depois de integrar esta branch; todos os formularios mobile ganham 16px de respiro no fim."
-    }
-  ],
-  "perguntasParaOOwner": [],
-  "pendenciasDeCodeReview": [
-    "180060 (gateways de Atividades v2) faz create or replace em audit_activity_change, has_activity_capability e audit_mask_payload, que existem em producao com outro corpo, e cria a sobrecarga de 14 argumentos de audit_append_superadmin_internal (md5 antes/depois medidos)",
-    "Assercoes que esperavam SAI_MFA_REQUIRED do Owner em AAL1 foram trocadas pela regra do MVP em 9 suites (lista em regraDosTestesAAL1); revisar quando MFA voltar",
-    "assessment_v2_save_configuration recebeu #variable_conflict use_variable: conferir as demais funcoes plpgsql de 180350 quanto a nomes de variaveis iguais a colunas (o pgTAP cobre os 12 RPCs, mas nao todo caminho)",
-    "institutions.create persiste so ROOT+ADDRESS+handle; representantes, administradores, contato, documento, plano e marca ficam vazios ate o proximo pacote",
-    "Cards das unidades dentro da tela de Locais da instituicao (desenho aprovado pelo Owner na R03) continuam por fazer: exigem injetar o diretorio de Unidades em LocationsPage"
-  ],
-  "bloqueio": null,
-  "wip": [],
-  "recursos": {
-    "processos": [
-      "flutter run -d chrome (1 Chrome) a partir de 02:05"
-    ],
-    "portas": [
-      "3020 (web-port)"
-    ]
+  {
+   "tela": "Atividades",
+   "action_ids": [
+    "activities.list",
+    "activities.create",
+    "activities.detail",
+    "activities.edit",
+    "activities.publish",
+    "activities.assessment",
+    "activities.location"
+   ]
   },
-  "ack": null,
-  "proximoPasso": "rota normal com sessao por action_id, comecando por institutions.create pelo assistente; capturas em docs/reviews/evidence/etapa-2/r04-estrutura/",
-  "espelhoLocal": {
-    "projeto": "coelo_baseline_estrutura (portas 61321/61322), scratchpad desta sessao",
-    "metodo": "supabase start com migrations/ = so a baseline + seed.sql do repositorio; os 44 lotes de producao (migrations/2026091001..230020) aplicados por psql na ordem, todos OK; 9 capacidades locations.* presentes; depois cada candidato por preflight.sh (psql -v ON_ERROR_STOP=1) seguido do pgTAP",
-    "licao": "colocar os lotes em supabase/migrations/ nao funciona: rodam antes do seed, com o catalogo vazio, e 170100 aborta no preflight de people.read",
-    "lotes": "46 (44 + lote 8: 220300 student_links_read_v1 e 230021 mfa_fora_do_mvp_v1)"
+  {
+   "tela": "Locais",
+   "action_ids": [
+    "locations.list",
+    "locations.create-edit",
+    "locations.detail-links",
+    "locations.schedule"
+   ]
   },
-  "achadoDaRodada": {
-    "titulo": "A cadeia inteira de Atividades v2 nao existe em producao",
-    "medicao": "presenca de objeto na baseline: 20260831192831 actor_attribution 0/3, 195118 provenance_hardening 0/3, 195944 provenance_semantics 0/2, 203645 permissions_receipts 0/4, 211945 internal_gateways 4/27 (os 4 sao funcoes compartilhadas ja existentes), 231645 rls_grants n/a, 234307 final_review_hardening 0/6, 20260901165125 template_unit_scope 1/4, 20260907222911 directory_v2_client_contract 0/2, 20260908154257 activity_save_v2 0/n, 20260908235110 link_end_clock 0/2; 20260828002000 unit_detail 0/2; 20260828003500 group_detail 0/2",
-    "consequencia": "activities.* (7 acoes) nao tem backend em producao; activity_save_v2 aplica sobre a baseline mas quebra em tempo de execucao (chama activity_v2_require_context, inexistente). O que o coordenador viu como fixture ausente (activity_v2_denied_envelope) e a cadeia inteira ausente.",
-    "decisao": "recarimbar a cadeia como candidatos de estrutura (180020..180120), provados no espelho: os 11 aplicam sem erro sobre baseline + lotes; superadmin_activity_save_v2_test 46/46 e superadmin_internal_activities_v2_security_contract_test 37/37 verdes; os outros 7 testes v2 usavam units.institution_type_id na fixture (corrigido para unit_type_id + unit_types + handle) e estao sendo reexecutados",
-    "atencaoDeSeguranca": "180060 (gateways) faz create or replace em tres funcoes que JA existem em producao com corpo diferente: app_private.audit_activity_change (trigger das tabelas legadas de Atividades), app_private.has_activity_capability (usada por policies contextuais) e app_private.audit_mask_payload; alem de criar a sobrecarga de 14 argumentos de audit_append_superadmin_internal. md5 antes/depois medidos no espelho do coordenador x meu espelho. E o comportamento da cadeia historica revisada (R02), mas e mudanca de funcao compartilhada em producao: registrado como pendencia de code review, nao bloqueia o MVP (sem clientes)."
-  },
-  "ordemDeAplicacao": "pelo carimbo: 180000, 180020..180120, 180140, 180150, 180200, 180300, 180310, 180320, 180330, 180340, 180350. Testes: ver provaIntegral.mapaDeTestesPorMigration mais 180330 -> institution_detail_test, 180340 -> institution_create_v2_test, 180350 -> superadmin_assessments_internal_v2_test (depende da cadeia de Atividades v2 para o marcador).",
-  "regraDosTestesAAL1": "Em producao app_private.require_superadmin_internal_context devolve requires_mfa no contexto mas nunca negou AAL1, e o lote 8 (230021) zera requires_mfa e faz has_mfa_aal2 aceitar aal1. As asserções que esperavam SAI_MFA_REQUIRED do Owner em AAL1 (unit_detail 12, group_detail 12, commands 23, read 19, relationships 22/24, hardening 13, template_unit_scope 29) passaram a afirmar o comportamento de producao, com comentario no proprio teste. Negativas cross-tenant, anon, sessao expirada e permissao revogada continuam intactas.",
-  "provaIntegral": {
-    "quando": "2026-09-10T22:22:15-03:00",
-    "log": "scratchpad da sessao (prova-integral.log); resumo abaixo",
-    "metodo": "supabase db reset (baseline + seed) -> 46 lotes de producao por psql (inclui lote 8) -> os 17 candidatos de estrutura na ordem dos carimbos, cada suite pgTAP logo apos a ultima migration que ela cobre",
-    "resultado": "17 aplicam sem erro; 16 suites verdes: reservations 49, actor_contract 39, commands 28, read 28, relationships 24, permissions_publish 18, hardening 25, security_contract 37, template_unit_scope 31, directory_contract 97, activity_save_v2 46, consumer_bindings 30, activity_location_create 33, group_location_create 46, unit_detail 31, group_detail 33 (total 594 assercoes, 0 falhas)",
-    "mapaDeTestesPorMigration": {
-      "180000": "superadmin_location_reservations_v2_test",
-      "180080": "superadmin_internal_activities_v2_{actor_contract,commands,read,relationships,permissions_publish,hardening,security_contract}_test (so depois de 180080, porque as suites cobrem grants de 180070 e hardening de 180080)",
-      "180090": "activity_template_unit_scope_test",
-      "180100": "superadmin_internal_activities_v2_directory_contract_test",
-      "180120": "superadmin_activity_save_v2_test (cobre link_end_clock de 180120)",
-      "180140": "superadmin_location_consumer_bindings_v2_test",
-      "180150": "superadmin_activity_location_create_v2_test",
-      "180200": "superadmin_group_location_create_v2_test",
-      "180300": "superadmin_internal_unit_detail_test",
-      "180310": "superadmin_internal_group_detail_test"
-    },
-    "resultado2": "2026-09-10T23:06:36-03:00: espelho novo + 46 lotes + 20 candidatos: todos aplicam; 18 suites verdes (594 + 25 + 26 = 645 assercoes, 0 falhas) - o create_v2 foi reexecutado apos duas correcoes de fixture (grants de anon na tabela temporaria; caso anonimo passa a ser sessao autenticada sem claims porque anon nem executa o wrapper, o que a suite ja afirma)",
-    "resultado3": "23:21-23:23: espelho novo (baseline + seed) + 46 lotes por psql + os 21 candidatos de estrutura na ordem dos carimbos: todos aplicam; 19 suites verdes (692 assercoes, 0 falhas): reservations 49, actor_contract 39, commands 28, read 28, relationships 24, permissions_publish 18, hardening 25, security_contract 37, template_unit_scope 31, directory_contract 97, activity_save_v2 46, consumer_bindings 30, activity_location_create 33, group_location_create 46, unit_detail 31, group_detail 33, institution_detail 25, institution_create_v2 26, assessments_internal_v2 47. Log: prova-integral-3.log no scratchpad desta sessao."
-  },
-  "pubspecTocado": "apps/superadmin/pubspec.yaml: flutter_driver (sdk) em dev_dependencies, para o ponto de entrada lib/main_driver.dart; sem mudanca no build de producao",
-  "flutter": {
-    "analyze": "limpo apos correcao de dois infos de interpolacao",
-    "testesRecorte": "apos a regravacao: groups, units, shared, activity_form_page, institutions, locations = 1079 PASS / 14 FAIL; 11 pre-existentes de widgets compartilhados (underline tabs, footer adoption) e 3 goldens de detalhe de Locais (location_detail_light_375, location_detail_focus_light_375, location_detail_dark_1440) que ja falhavam antes (R03) e tem decisao A do Owner: em analise"
-  },
-  "rotaNormal": {
-    "app": "lib/main_driver.dart em Chrome, http://localhost:3020, .env.local de producao (copiado do checkout principal, ignorado pelo Git)",
-    "sessao": "login com qa-r03@coelo.me feito pela rota real: e-mail e senha digitados pela extensao do Flutter Driver via VM Service a partir de um script node que le Coelo-backups/qa-r03.env; a credencial nao passou pelo chat, por log nem por commit",
-    "provas": [
-      {
-        "tela": "Instituicoes",
-        "action_ids": [
-          "institutions.list",
-          "institutions.filter"
-        ],
-        "resultado": "rota normal abre contra producao sem fixture nem fail-closed; estado vazio honesto (producao nao tem instituicoes); filtros mostram \"Sem tipos cadastrados\" e \"Sem UFs cadastradas\"; SEM card Criar porque structureMutationsEnabled=false esconde criar/editar (e a decisao CRIAR do Owner exige o card no vazio)",
-        "captura": "shot-inst.jpg no scratchpad desta sessao"
-      }
-    ],
-    "bloqueios": [
-      {
-        "gate": "structureMutationsEnabled=true no cliente",
-        "fato": "o classificador de permissao desta sessao bloqueou a edicao que liga a chave (e depois bloqueou ate um toque de navegacao no app dirigido). Nao contornei. O coordenador ja disse que liga a chave ao aplicar os 17 candidatos; peco que ligue tambem para Instituicoes agora, porque institution_edit_core_v2 ja esta em producao.",
-        "efeito": "institutions.edit, groups.*, units.* e activities.* nao podem ser exercidos por mim na rota normal ate a chave subir na base conjunta"
-      },
-      {
-        "gate": "catalogo de tipos vazio em producao",
-        "fato": "0 institution_types, 1 unit_type, 0 plans em producao (seed de 10/09). Nenhum caminho de criar instituicao funciona sem tipo ativo (o legado exige tipo por nome).",
-        "pacote": "candidatos/estrutura/20260910180320_structure_type_catalog_seed_v1.sql (Escola, Colegio, Creche; Sede, Filial), idempotente por code; nomes sao dados de catalogo, o Owner pode renomear"
-      },
-      {
-        "gate": "institutions.create nao existe no realm interno v2",
-        "fato": "SupabaseInstitutionDirectoryRepository.create() lanca Unavailable; o unico create em producao e create_institution_for_superadmin (people-based, current_person_id + institution.activate), que nega qa-r03 ate P22.",
-        "acao": "escrevendo superadmin_institution_create_v2 (candidato 180340) sobre os helpers de edit_core, com recibo, auditoria e pgTAP, e o create() do cliente"
-      },
-      {
-        "gate": "superadmin_institution_detail_v2 ausente em producao",
-        "fato": "o cliente chama superadmin_institution_detail_v2 em fetchById (detalhe e edicao); so directory_v2, filter_options_v2 e edit_core_v2 entraram no lote 3.",
-        "acao": "recarimbo de 20260827234500_superadmin_internal_institution_detail como candidato 180330, a provar no espelho"
-      },
-      {
-        "gate": "P22 ponte de ator",
-        "fato": "Unidades (13 RPCs people-based) e Turmas negam qa-r03; aviso do coordenador",
-        "efeito": "units.* e groups.* ficam com o primeiro gate em P22"
-      }
-    ],
-    "estado": "o Chrome do app foi fechado fora desta sessao (a porta 3020 segue com o flutter run); depois de dois bloqueios do classificador em toques de navegacao, a rota normal dirigida fica retomavel mas nao e o caminho principal ate a chave subir"
-  },
-  "cliente": {
-    "institutionsCreate": "SupabaseInstitutionDirectoryRepository.create() deixa de lancar Unavailable e chama superadmin_institution_create_v2 com ROOT+ADDRESS+slug, omite endereco em branco, rejeita tipo sem id de catalogo (local-type-*) com excecao honesta e recarrega o detalhe autoritativo; 3 testes novos no repositorio (37/37 no arquivo)",
-    "gapDeclarado": "representantes legais, administradores, contato, documento, plano e marca NAO sao persistidos pela criacao (sem contrato no realm interno); o assistente exige essas etapas, entao rejeitar deixaria a criacao impossivel: o detalhe recarregado mostra-os vazios. Proximo pacote: contatos/pessoas da instituicao no realm interno.",
-    "driver": "ponto de entrada movido de lib/main_driver.dart para test_driver/main_driver.dart (lint depend_on_referenced_packages); flutter run -t test_driver/main_driver.dart"
-  },
-  "regraCriarSempre": "Regra do Owner (via coordenador, 23:0x): busca, filtros (mesmo sem opcoes), toggle grade/lista, Arquivos, abas de status e card Criar aparecem sempre, inclusive no vazio. No composto CoeloAdminDirectory a toolbar e as abas sao renderizadas em todos os estados e _withCreate poe o Criar em vazio/sem resultados/falha; Instituicoes, Unidades, Turmas e Atividades passam create quando onCreate existe (gate structureMutationsEnabled); Locais ja tem o Criar por grupo (R03). Conferencia visual em producao depende da chave ligada.",
-  "goldens": "7 goldens de formulario do recorte que ja falhavam em dev: as diferencas sao so as regras transversais aplicadas depois da referencia (Pesquisar no menu, sem balao de chat em editar, cabecalho MENU-M, rodape ancorado); regravacao em andamento nos tres arquivos de teste; os 375 (institution_form_create, unit_form_create) so ficam se MENU-M estiver fechado pela Fase 0 - pergunta ao coordenador.",
-  "chavesDeComposicao": {
-    "structureMutationsEnabled": "ligar na composicao (coordenador); cobre institutions/units/groups/activities",
-    "assessmentMutationsEnabled": "SuperadminAppConfig.assessmentMutationsEnabled (bool.fromEnvironment): ligar por dart-define no build quando 180350 estiver em producao; o repositorio SupabaseAssessmentRepository ja e composto",
-    "locais": "catalogo v2 ja em producao; SupabaseLocationConsumerSelectionReader(available:false) em main.dart vira available:true quando 180140/180150/180200 subirem"
-  },
-  "goldensRegravados": {
-    "commit": "20f497709",
-    "arquivos": [
-      "institution_form_create_light_375",
-      "institution_form_bio_light_1440",
-      "institution_form_edit_dark_1440",
-      "institution_form_identity_unavailable_light_1440",
-      "unit_form_create_light_375",
-      "group_form_edit_dark_1440",
-      "group_form_members_dark_1440"
-    ],
-    "motivo": "diferencas exclusivamente das regras transversais aplicadas depois da referencia (Pesquisar no menu, sem chat em editar, MENU-M, rodape ancorado); o render atual esta conforme as decisoes",
-    "ressalva": "os dois em 375 congelam o cabecalho mobile atual; reverter se MENU-M mudar",
-    "locais": {
-      "commit": "64afc1f0a",
-      "arquivos": [
-        "location_detail_light_375",
-        "location_detail_focus_light_375",
-        "location_detail_dark_1440"
-      ],
-      "motivo": "texto \"Planta, marcadores e fotos ainda nao estao disponiveis.\" sem a palavra previa (D3); decisao A do Owner"
-    }
-  },
-  "retomada": {
-    "commitSobrevivente": "a22721fbe (coordenador) -> 709675f57 apos rebase: LocationDirectoryPanel ganha o slot trailing (conteudo rolando depois dos grupos) e LocationGroupHeading passa a viver em location_read_widgets.dart, para os cards das unidades na tela de Locais da instituicao (pendencia da R03)",
-    "prova": "flutter test location_read_panels_test + locations_page_test + location_read_panels_golden_test: 64/64 PASS as 02:03 (trailing nulo nao muda os goldens). WIP mantido, nao revertido.",
-    "proximo": "ligar SupabaseLocationConsumerSelectionReader(available:true) em main.dart porque 180140/180150/180200 estao em producao; subir o app dirigido (test_driver/qa_main.dart, um Chrome) e percorrer institutions.create -> units -> groups -> activities -> locations -> assessments"
+  {
+   "tela": "Avaliacoes",
+   "action_ids": [
+    "assessments.entry",
+    "assessments.gradebook",
+    "assessments.close",
+    "assessments.reopen",
+    "assessments.detail"
+   ]
   }
+ ],
+ "totalAcoes": 49,
+ "historicoR03": {
+  "revisaoFinal": 22,
+  "handoff": "docs/reviews/evidence/etapa-2/r03-estrutura/handoff.md",
+  "conteudoIntegral": "estrutura.json na revisao 22 esta em dev (98cc0529d); esta revisao 23 substitui o corpo pelo estado da R04 e mantem so o que continua aberto",
+  "aberto": [
+   "Cadeia de Locais: em producao entraram catalog_v2_baseline (230013), update_status (230014), copy (230015), schedule (230016) e capacidades locations.* (230012). NAO entraram: 20260908154257 activity_save_v2 (pgTAP exige app_private.activity_v2_denied_envelope), 20260909165000 reservations_v2 (preflight exige audit_append_superadmin_internal com 14 argumentos; producao tem 13), 180000/180100/180200 (dependem de reservas), 180300 unit_detail_v2_baseline (pgTAP 3 ok / 5 not ok: nome do wrapper).",
+   "institutions.* e activities.* na rota normal: as RPCs internas v2 de Instituicoes entraram no lote 3 (230001 list_filter, 230002 edit_core); conferir presenca das demais antes de compor.",
+   "Cards das unidades na tela de Locais da instituicao (depende do diretorio de Unidades composto).",
+   "structureMutationsEnabled: proposta de separar por realm ainda sem decisao (proposta-separar-chave-de-estrutura.md).",
+   "16 goldens de formulario esperando MENU/MENU-M; 30 goldens orfaos de Locais aguardando decisao de remocao.",
+   "Achado de seguranca: 203 tabelas com ALL para anon/authenticated por privilegio padrao do schema public (fora do recorte; decisao do Owner)."
+  ]
+ },
+ "ordemDaRodada": [
+  {
+   "n": 1,
+   "item": "Locais: corrigir 180000/180100/180200/180300 em candidatos/estrutura para a assinatura real de audit_append_superadmin_internal (13 argumentos) e a forma canonica (unit_type_id); trazer reservations_v2 como candidato sobre a baseline; fixture activity_v2_denied_envelope de activity_save_v2; provar no projeto descartavel com pgTAP",
+   "estado": "CONCLUIDO E APLICADO: 21 pacotes em producao (lotes 10 e 11); chaves ligadas em dev f51233023",
+   "action_ids": [
+    "locations.detail-links",
+    "locations.schedule",
+    "activities.location",
+    "groups.location",
+    "activities.create",
+    "activities.edit"
+   ]
+  },
+  {
+   "n": 2,
+   "item": "Rota normal com sessao qa-r03@coelo.me em localhost:3000: Instituicoes -> Unidades -> Turmas -> Atividades -> Locais -> Avaliacoes; verified so com CRUD em producao + RLS nega outro tenant em pgTAP + reload",
+   "estado": "retomado as 02:03 por coelo-39: app dirigido a subir em Chrome (porta 3020; 3000 ocupada por outra frente), sessao qa-r03 pelo test_driver/qa_drive.dart"
+  },
+  {
+   "n": 3,
+   "item": "P5 (Turmas com filtro por unidade degradando de forma honesta) e P6 (importar de Unidades vira indisponibilidade honesta)",
+   "estado": "P5 feito (view model + pagina + teste); P6 feito (widget morto do dialogo removido; botao ja era honesto)",
+   "action_ids": [
+    "groups.list",
+    "units.import"
+   ]
+  },
+  {
+   "n": 4,
+   "item": "P15 no SuperadminFormFrame: rodape ancorado + respiro no fim do conteudo; avisar formularios-cuidado-rotina sobre medication_form_mobile_light",
+   "estado": "feito no frame (space6 -> space10); testes Flutter em execucao"
+  },
+  {
+   "n": 5,
+   "item": "Goldens do recorte conforme as tres listas do Owner (activity_form_create_light_375 RODAPE, activity_detail_*, group_form_*), no SDK 3.44.2; espacamento de Turmas ja decidido",
+   "estado": "feito no que o Owner decidiu A e cujas observacoes estao aplicadas: 7 goldens de formulario e 3 de detalhe de Locais regravados (commits 20f497709 e 64afc1f0a); activity_form_create_light_375, activity_detail_light_375 e activity_form_location_dialog_light_375 passam hoje (sem diff); espacamento de Turmas ja decidido"
+  }
+ ],
+ "primeiroGate": "nenhum bloqueio conhecido na abertura da retomada",
+ "criteriosFechados": [
+  "Reservas de Locais sobre a baseline com a assinatura real de auditoria: 49/49",
+  "Bindings, activity_location_create e group_location_create verdes no espelho: 30/30, 33/33, 46/46",
+  "Cadeia de Atividades v2 aplica integralmente sobre baseline + 44 lotes",
+  "P15: respiro no fim do conteudo no frame compartilhado",
+  "P6: diálogo de importar de Unidades (widget morto com FilePicker e previa) removido; o botao ja mostrava indisponibilidade honesta",
+  "Cadeia de Atividades v2 (11) + Locais (4) + detalhes de Unidade e Turma (2): 17 candidatos aplicam em ordem sobre baseline + 46 lotes e 16 suites pgTAP verdes",
+  "P5: filtros de Turmas degradam de forma honesta quando fetchFilterOptions falha (view model, rotulo \"(indisponivel)\", teste)"
+ ],
+ "testes": {
+  "P": "pgTAP 692; Flutter 1079 (seis familias + shared) + 37 repositorio de Instituicoes + 5 view model de Turmas",
+  "F": "Flutter 11 pre-existentes de widgets compartilhados (fora do recorte)",
+  "B": 0,
+  "S": 0,
+  "U": 0,
+  "evidencia": "prova-integral-3.log; tarefas b32mhzji2/brvpnzs6w desta sessao"
+ },
+ "pacotesProntos": [
+  {
+   "nota": "os 21 candidatos de estrutura (180000..180350) foram aplicados em producao pelo coordenador nos lotes 10 e 11 e movidos para migrations/; candidatos/estrutura esta vazio. Pacote novo nasce aqui na faixa 2026091018xxxx acima de 180350."
+  }
+ ],
+ "deltasPropostos": [],
+ "pedidosAoCoordenador": [],
+ "avisosParaOutrosGrupos": [
+  {
+   "para": "formularios-cuidado-rotina",
+   "assunto": "P15 aplicado no SuperadminFormFrame",
+   "texto": "padding inferior do scroll de conteudo passou de space6 (24px) para space10 (40px), com o rodape ja ancorado. Regravar medication_form_mobile_light depois de integrar esta branch; todos os formularios mobile ganham 16px de respiro no fim."
+  }
+ ],
+ "perguntasParaOOwner": [],
+ "pendenciasDeCodeReview": [
+  "180060 (gateways de Atividades v2) faz create or replace em audit_activity_change, has_activity_capability e audit_mask_payload, que existem em producao com outro corpo, e cria a sobrecarga de 14 argumentos de audit_append_superadmin_internal (md5 antes/depois medidos)",
+  "Assercoes que esperavam SAI_MFA_REQUIRED do Owner em AAL1 foram trocadas pela regra do MVP em 9 suites (lista em regraDosTestesAAL1); revisar quando MFA voltar",
+  "assessment_v2_save_configuration recebeu #variable_conflict use_variable: conferir as demais funcoes plpgsql de 180350 quanto a nomes de variaveis iguais a colunas (o pgTAP cobre os 12 RPCs, mas nao todo caminho)",
+  "institutions.create persiste so ROOT+ADDRESS+handle; representantes, administradores, contato, documento, plano e marca ficam vazios ate o proximo pacote",
+  "Cards das unidades dentro da tela de Locais da instituicao (desenho aprovado pelo Owner na R03) continuam por fazer: exigem injetar o diretorio de Unidades em LocationsPage"
+ ],
+ "bloqueio": null,
+ "wip": [],
+ "recursos": {
+  "processos": [
+   "flutter run -d chrome (1 Chrome) a partir de 02:05"
+  ],
+  "portas": [
+   "3020 (web-port)"
+  ]
+ },
+ "ack": null,
+ "proximoPasso": "coordenador aplica os 46 deltas e integra as skills; esta frente esta finalizada na R04 (mini-revisao gravada as 2026-09-11T08:31:24-03:00)",
+ "espelhoLocal": {
+  "projeto": "coelo_baseline_estrutura (portas 61321/61322), scratchpad desta sessao",
+  "metodo": "supabase start com migrations/ = so a baseline + seed.sql do repositorio; os 44 lotes de producao (migrations/2026091001..230020) aplicados por psql na ordem, todos OK; 9 capacidades locations.* presentes; depois cada candidato por preflight.sh (psql -v ON_ERROR_STOP=1) seguido do pgTAP",
+  "licao": "colocar os lotes em supabase/migrations/ nao funciona: rodam antes do seed, com o catalogo vazio, e 170100 aborta no preflight de people.read",
+  "lotes": "46 (44 + lote 8: 220300 student_links_read_v1 e 230021 mfa_fora_do_mvp_v1)"
+ },
+ "achadoDaRodada": {
+  "titulo": "A cadeia inteira de Atividades v2 nao existe em producao",
+  "medicao": "presenca de objeto na baseline: 20260831192831 actor_attribution 0/3, 195118 provenance_hardening 0/3, 195944 provenance_semantics 0/2, 203645 permissions_receipts 0/4, 211945 internal_gateways 4/27 (os 4 sao funcoes compartilhadas ja existentes), 231645 rls_grants n/a, 234307 final_review_hardening 0/6, 20260901165125 template_unit_scope 1/4, 20260907222911 directory_v2_client_contract 0/2, 20260908154257 activity_save_v2 0/n, 20260908235110 link_end_clock 0/2; 20260828002000 unit_detail 0/2; 20260828003500 group_detail 0/2",
+  "consequencia": "activities.* (7 acoes) nao tem backend em producao; activity_save_v2 aplica sobre a baseline mas quebra em tempo de execucao (chama activity_v2_require_context, inexistente). O que o coordenador viu como fixture ausente (activity_v2_denied_envelope) e a cadeia inteira ausente.",
+  "decisao": "recarimbar a cadeia como candidatos de estrutura (180020..180120), provados no espelho: os 11 aplicam sem erro sobre baseline + lotes; superadmin_activity_save_v2_test 46/46 e superadmin_internal_activities_v2_security_contract_test 37/37 verdes; os outros 7 testes v2 usavam units.institution_type_id na fixture (corrigido para unit_type_id + unit_types + handle) e estao sendo reexecutados",
+  "atencaoDeSeguranca": "180060 (gateways) faz create or replace em tres funcoes que JA existem em producao com corpo diferente: app_private.audit_activity_change (trigger das tabelas legadas de Atividades), app_private.has_activity_capability (usada por policies contextuais) e app_private.audit_mask_payload; alem de criar a sobrecarga de 14 argumentos de audit_append_superadmin_internal. md5 antes/depois medidos no espelho do coordenador x meu espelho. E o comportamento da cadeia historica revisada (R02), mas e mudanca de funcao compartilhada em producao: registrado como pendencia de code review, nao bloqueia o MVP (sem clientes)."
+ },
+ "ordemDeAplicacao": "pelo carimbo: 180000, 180020..180120, 180140, 180150, 180200, 180300, 180310, 180320, 180330, 180340, 180350. Testes: ver provaIntegral.mapaDeTestesPorMigration mais 180330 -> institution_detail_test, 180340 -> institution_create_v2_test, 180350 -> superadmin_assessments_internal_v2_test (depende da cadeia de Atividades v2 para o marcador).",
+ "regraDosTestesAAL1": "Em producao app_private.require_superadmin_internal_context devolve requires_mfa no contexto mas nunca negou AAL1, e o lote 8 (230021) zera requires_mfa e faz has_mfa_aal2 aceitar aal1. As asserções que esperavam SAI_MFA_REQUIRED do Owner em AAL1 (unit_detail 12, group_detail 12, commands 23, read 19, relationships 22/24, hardening 13, template_unit_scope 29) passaram a afirmar o comportamento de producao, com comentario no proprio teste. Negativas cross-tenant, anon, sessao expirada e permissao revogada continuam intactas.",
+ "provaIntegral": {
+  "quando": "2026-09-10T22:22:15-03:00",
+  "log": "scratchpad da sessao (prova-integral.log); resumo abaixo",
+  "metodo": "supabase db reset (baseline + seed) -> 46 lotes de producao por psql (inclui lote 8) -> os 17 candidatos de estrutura na ordem dos carimbos, cada suite pgTAP logo apos a ultima migration que ela cobre",
+  "resultado": "17 aplicam sem erro; 16 suites verdes: reservations 49, actor_contract 39, commands 28, read 28, relationships 24, permissions_publish 18, hardening 25, security_contract 37, template_unit_scope 31, directory_contract 97, activity_save_v2 46, consumer_bindings 30, activity_location_create 33, group_location_create 46, unit_detail 31, group_detail 33 (total 594 assercoes, 0 falhas)",
+  "mapaDeTestesPorMigration": {
+   "180000": "superadmin_location_reservations_v2_test",
+   "180080": "superadmin_internal_activities_v2_{actor_contract,commands,read,relationships,permissions_publish,hardening,security_contract}_test (so depois de 180080, porque as suites cobrem grants de 180070 e hardening de 180080)",
+   "180090": "activity_template_unit_scope_test",
+   "180100": "superadmin_internal_activities_v2_directory_contract_test",
+   "180120": "superadmin_activity_save_v2_test (cobre link_end_clock de 180120)",
+   "180140": "superadmin_location_consumer_bindings_v2_test",
+   "180150": "superadmin_activity_location_create_v2_test",
+   "180200": "superadmin_group_location_create_v2_test",
+   "180300": "superadmin_internal_unit_detail_test",
+   "180310": "superadmin_internal_group_detail_test"
+  },
+  "resultado2": "2026-09-10T23:06:36-03:00: espelho novo + 46 lotes + 20 candidatos: todos aplicam; 18 suites verdes (594 + 25 + 26 = 645 assercoes, 0 falhas) - o create_v2 foi reexecutado apos duas correcoes de fixture (grants de anon na tabela temporaria; caso anonimo passa a ser sessao autenticada sem claims porque anon nem executa o wrapper, o que a suite ja afirma)",
+  "resultado3": "23:21-23:23: espelho novo (baseline + seed) + 46 lotes por psql + os 21 candidatos de estrutura na ordem dos carimbos: todos aplicam; 19 suites verdes (692 assercoes, 0 falhas): reservations 49, actor_contract 39, commands 28, read 28, relationships 24, permissions_publish 18, hardening 25, security_contract 37, template_unit_scope 31, directory_contract 97, activity_save_v2 46, consumer_bindings 30, activity_location_create 33, group_location_create 46, unit_detail 31, group_detail 33, institution_detail 25, institution_create_v2 26, assessments_internal_v2 47. Log: prova-integral-3.log no scratchpad desta sessao."
+ },
+ "pubspecTocado": "apps/superadmin/pubspec.yaml: flutter_driver (sdk) em dev_dependencies, para o ponto de entrada lib/main_driver.dart; sem mudanca no build de producao",
+ "flutter": {
+  "analyze": "limpo apos correcao de dois infos de interpolacao",
+  "testesRecorte": "apos a regravacao: groups, units, shared, activity_form_page, institutions, locations = 1079 PASS / 14 FAIL; 11 pre-existentes de widgets compartilhados (underline tabs, footer adoption) e 3 goldens de detalhe de Locais (location_detail_light_375, location_detail_focus_light_375, location_detail_dark_1440) que ja falhavam antes (R03) e tem decisao A do Owner: em analise"
+ },
+ "rotaNormal": {
+  "app": "lib/main_driver.dart em Chrome, http://localhost:3020, .env.local de producao (copiado do checkout principal, ignorado pelo Git)",
+  "sessao": "login com qa-r03@coelo.me feito pela rota real: e-mail e senha digitados pela extensao do Flutter Driver via VM Service a partir de um script node que le Coelo-backups/qa-r03.env; a credencial nao passou pelo chat, por log nem por commit",
+  "provas": [
+   {
+    "tela": "Instituicoes",
+    "action_ids": [
+     "institutions.list",
+     "institutions.filter"
+    ],
+    "resultado": "rota normal abre contra producao sem fixture nem fail-closed; estado vazio honesto (producao nao tem instituicoes); filtros mostram \"Sem tipos cadastrados\" e \"Sem UFs cadastradas\"; SEM card Criar porque structureMutationsEnabled=false esconde criar/editar (e a decisao CRIAR do Owner exige o card no vazio)",
+    "captura": "shot-inst.jpg no scratchpad desta sessao"
+   }
+  ],
+  "bloqueios": [
+   {
+    "gate": "structureMutationsEnabled=true no cliente",
+    "fato": "o classificador de permissao desta sessao bloqueou a edicao que liga a chave (e depois bloqueou ate um toque de navegacao no app dirigido). Nao contornei. O coordenador ja disse que liga a chave ao aplicar os 17 candidatos; peco que ligue tambem para Instituicoes agora, porque institution_edit_core_v2 ja esta em producao.",
+    "efeito": "institutions.edit, groups.*, units.* e activities.* nao podem ser exercidos por mim na rota normal ate a chave subir na base conjunta"
+   },
+   {
+    "gate": "catalogo de tipos vazio em producao",
+    "fato": "0 institution_types, 1 unit_type, 0 plans em producao (seed de 10/09). Nenhum caminho de criar instituicao funciona sem tipo ativo (o legado exige tipo por nome).",
+    "pacote": "candidatos/estrutura/20260910180320_structure_type_catalog_seed_v1.sql (Escola, Colegio, Creche; Sede, Filial), idempotente por code; nomes sao dados de catalogo, o Owner pode renomear"
+   },
+   {
+    "gate": "institutions.create nao existe no realm interno v2",
+    "fato": "SupabaseInstitutionDirectoryRepository.create() lanca Unavailable; o unico create em producao e create_institution_for_superadmin (people-based, current_person_id + institution.activate), que nega qa-r03 ate P22.",
+    "acao": "escrevendo superadmin_institution_create_v2 (candidato 180340) sobre os helpers de edit_core, com recibo, auditoria e pgTAP, e o create() do cliente"
+   },
+   {
+    "gate": "superadmin_institution_detail_v2 ausente em producao",
+    "fato": "o cliente chama superadmin_institution_detail_v2 em fetchById (detalhe e edicao); so directory_v2, filter_options_v2 e edit_core_v2 entraram no lote 3.",
+    "acao": "recarimbo de 20260827234500_superadmin_internal_institution_detail como candidato 180330, a provar no espelho"
+   },
+   {
+    "gate": "P22 ponte de ator",
+    "fato": "Unidades (13 RPCs people-based) e Turmas negam qa-r03; aviso do coordenador",
+    "efeito": "units.* e groups.* ficam com o primeiro gate em P22"
+   }
+  ],
+  "estado": "o Chrome do app foi fechado fora desta sessao (a porta 3020 segue com o flutter run); depois de dois bloqueios do classificador em toques de navegacao, a rota normal dirigida fica retomavel mas nao e o caminho principal ate a chave subir"
+ },
+ "cliente": {
+  "institutionsCreate": "SupabaseInstitutionDirectoryRepository.create() deixa de lancar Unavailable e chama superadmin_institution_create_v2 com ROOT+ADDRESS+slug, omite endereco em branco, rejeita tipo sem id de catalogo (local-type-*) com excecao honesta e recarrega o detalhe autoritativo; 3 testes novos no repositorio (37/37 no arquivo)",
+  "gapDeclarado": "representantes legais, administradores, contato, documento, plano e marca NAO sao persistidos pela criacao (sem contrato no realm interno); o assistente exige essas etapas, entao rejeitar deixaria a criacao impossivel: o detalhe recarregado mostra-os vazios. Proximo pacote: contatos/pessoas da instituicao no realm interno.",
+  "driver": "ponto de entrada movido de lib/main_driver.dart para test_driver/main_driver.dart (lint depend_on_referenced_packages); flutter run -t test_driver/main_driver.dart"
+ },
+ "regraCriarSempre": "Regra do Owner (via coordenador, 23:0x): busca, filtros (mesmo sem opcoes), toggle grade/lista, Arquivos, abas de status e card Criar aparecem sempre, inclusive no vazio. No composto CoeloAdminDirectory a toolbar e as abas sao renderizadas em todos os estados e _withCreate poe o Criar em vazio/sem resultados/falha; Instituicoes, Unidades, Turmas e Atividades passam create quando onCreate existe (gate structureMutationsEnabled); Locais ja tem o Criar por grupo (R03). Conferencia visual em producao depende da chave ligada.",
+ "goldens": "7 goldens de formulario do recorte que ja falhavam em dev: as diferencas sao so as regras transversais aplicadas depois da referencia (Pesquisar no menu, sem balao de chat em editar, cabecalho MENU-M, rodape ancorado); regravacao em andamento nos tres arquivos de teste; os 375 (institution_form_create, unit_form_create) so ficam se MENU-M estiver fechado pela Fase 0 - pergunta ao coordenador.",
+ "chavesDeComposicao": {
+  "structureMutationsEnabled": "ligar na composicao (coordenador); cobre institutions/units/groups/activities",
+  "assessmentMutationsEnabled": "SuperadminAppConfig.assessmentMutationsEnabled (bool.fromEnvironment): ligar por dart-define no build quando 180350 estiver em producao; o repositorio SupabaseAssessmentRepository ja e composto",
+  "locais": "catalogo v2 ja em producao; SupabaseLocationConsumerSelectionReader(available:false) em main.dart vira available:true quando 180140/180150/180200 subirem"
+ },
+ "goldensRegravados": {
+  "commit": "20f497709",
+  "arquivos": [
+   "institution_form_create_light_375",
+   "institution_form_bio_light_1440",
+   "institution_form_edit_dark_1440",
+   "institution_form_identity_unavailable_light_1440",
+   "unit_form_create_light_375",
+   "group_form_edit_dark_1440",
+   "group_form_members_dark_1440"
+  ],
+  "motivo": "diferencas exclusivamente das regras transversais aplicadas depois da referencia (Pesquisar no menu, sem chat em editar, MENU-M, rodape ancorado); o render atual esta conforme as decisoes",
+  "ressalva": "os dois em 375 congelam o cabecalho mobile atual; reverter se MENU-M mudar",
+  "locais": {
+   "commit": "64afc1f0a",
+   "arquivos": [
+    "location_detail_light_375",
+    "location_detail_focus_light_375",
+    "location_detail_dark_1440"
+   ],
+   "motivo": "texto \"Planta, marcadores e fotos ainda nao estao disponiveis.\" sem a palavra previa (D3); decisao A do Owner"
+  }
+ },
+ "retomada": {
+  "commitSobrevivente": "a22721fbe (coordenador) -> 709675f57 apos rebase: LocationDirectoryPanel ganha o slot trailing (conteudo rolando depois dos grupos) e LocationGroupHeading passa a viver em location_read_widgets.dart, para os cards das unidades na tela de Locais da instituicao (pendencia da R03)",
+  "prova": "flutter test location_read_panels_test + locations_page_test + location_read_panels_golden_test: 64/64 PASS as 02:03 (trailing nulo nao muda os goldens). WIP mantido, nao revertido.",
+  "proximo": "ligar SupabaseLocationConsumerSelectionReader(available:true) em main.dart porque 180140/180150/180200 estao em producao; subir o app dirigido (test_driver/qa_main.dart, um Chrome) e percorrer institutions.create -> units -> groups -> activities -> locations -> assessments"
+ },
+ "estado": "finalizado",
+ "validacaoDeEntrega": {
+  "quando": "2026-09-11T08:31:24-03:00",
+  "achado": "O coordenador registrou \"estrutura sem retorno desde 02:06\" porque a rev 31 (02:05) e o WIP rebaseado de Locais nunca foram publicados: a sessao coelo-39 caiu antes do push. O que estava em origin era a rev 30 (23:24) e o WIP a22721fbe pre-rebase (nao provado). Os tres subagentes lancados as 00:1x (deltas por action_id, contrato de Avaliacoes, cards de Unidades em Locais) morreram com a maquina; so o teste de Avaliacoes sobreviveu e ja esta em dev por outro caminho (6fea02635).",
+  "corrigido": [
+   "branch rebaseada em origin/dev 0376a0446 e publicada com o WIP provado (64/64) e esta rev 32 (push --force-with-lease porque origin tinha o WIP pre-rebase)",
+   "deltas por action_id gerados: evidence/etapa-2/r04-estrutura/deltas-r04-estrutura.json (46 entradas: 40 backend -> remote-green, 6 frontend -> local-green), ensaiados com apply-tracker-delta.cjs + validate-trackers.cjs (PASS, 231 acoes) na worktree do grupo e revertidos: o coordenador aplica",
+   "entrypoint duplicado test_driver/main_driver.dart removido (regra da skill: o unico e qa_main.dart)",
+   "handoff.md atualizado; propostas de skills aplicadas nas tres SKILL.md desta branch (secoes \"Regras medidas pelo grupo estrutura na Rodada 4\")"
+  ],
+  "worktrees": "e2-r04-estrutura (branch do grupo) e e2-r04-estrutura-base (detached em 836c63215, so para medir falhas pre-existentes; pode ser removida pelo coordenador). Projeto Supabase descartavel coelo_baseline_estrutura (portas 613xx) pode ser parado.",
+  "dadosSinteticosEmProducao": "nenhum criado por esta conversa. A instituicao \"QA R04 Instituicao Sintetica\" vista no diretorio as 23:4x foi criada por outra frente/coordenador; o assistente de criar (slug qa.r04.escola.sintetica) travou antes de salvar."
+ },
+ "miniRevisao": {
+  "shaPublicado": "(commit desta revisao na branch work/etapa2-r04-estrutura; ver git log)",
+  "fechouPorActionId": [
+   "BACKEND em producao (lotes 10 e 11 do coordenador), com pgTAP verde na prova integral 3 (692 assercoes): institutions.detail (180330, 25/25), institutions.create (180340, 26/26, RPC novo), institutions.filter/list (tipos de catalogo 180320); units.* detalhe (180300, 31/31) e ponte de ator; groups.members/edit detalhe (180310, 33/33), groups.location (180200, 46/46); activities.list/create/detail/edit/publish (180020..180120, 9 suites), activities.location (180150, 33/33), activities.assessment e assessments.* (180350, 47/47); locations.detail-links/schedule (180000 reservas 49/49, 180140 bindings 30/30)",
+   "FRONTEND local-green: groups.list (P5, 5/5), units.import (P6), institutions.create (create() v2, 37/37), institutions.filter (estado vazio honesto na rota real), activities.detail e locations.detail-links (goldens A regravados)",
+   "P15 no SuperadminFormFrame (respiro space10) e regra gravada em coelo-ui/form-layout-contracts.md",
+   "Goldens regravados apos observacao: 7 de formulario (institution_form_create_light_375, institution_form_bio_light_1440, institution_form_edit_dark_1440, institution_form_identity_unavailable_light_1440, unit_form_create_light_375, group_form_edit_dark_1440, group_form_members_dark_1440) e 3 de detalhe de Locais",
+   "Rota real com qa-r03 (leitura): institutions.list e institutions.filter abrem contra producao; com a chave ligada o card Criar e a instituicao sintetica aparecem e o assistente abre em /institutions/new"
+  ],
+  "abertoComPrimeiroGate": [
+   "institutions.create E2E: o assistente travou o renderer do Chrome ao avancar de Perfil (causa nao isolada; suspeita: busca de municipios/CEP ou loop de handle); gate = repetir pelo caminho CDP da skill integrada (flutter build web + qa_main) e depois o pacote de contatos/pessoas do realm interno para persistir representantes, administradores, contato, documento, plano e marca",
+   "institutions.edit/status e demais escritas: rota real pendente (a chave so subiu em dev as 23:2x e o app travou); gate = rota real com CDP",
+   "units.*, groups.*, activities.*, assessments.*, locations.* na rota real: gate = mesma sessao CDP; backend pronto",
+   "Cards das unidades na tela de Locais da instituicao: slot trailing pronto (WIP 64/64); gate = injetar UnitDirectoryRepository em LocationsPage pelo router",
+   "SupabaseLocationConsumerSelectionReader(available:false) em main.dart: virar available:true agora que 180140/180150/180200 estao em producao; nao liguei porque o classificador bloqueou edicoes de composicao nesta sessao",
+   "MENU-M: os dois goldens 375 regravados congelam o cabecalho mobile atual; reverter os PNG de 20f497709 se a Fase 0 mudar o menu",
+   "Codigo: 180060 substitui tres funcoes compartilhadas; 9 suites com AAL1 na regua do MVP; #variable_conflict em 180350 (pendenciasDeCodeReview)"
+  ],
+  "deltasPropostos": "evidence/etapa-2/r04-estrutura/deltas-r04-estrutura.json (46; formato {action_id, camada, estado_proposto, delta, evidencia}); nenhum terminal (verified/done/verified-e2e), portanto sem certificacao",
+  "pacotesProntos": "todos os 21 (180000..180350) ja aplicados pelo coordenador; candidatos/estrutura vazio; nenhum pacote novo pendente",
+  "duvidasAoOwner": [
+   "Nomes do catalogo minimo de tipos (Escola, Colegio, Creche; Sede, Filial) sao dados: renomear ou ampliar quando quiser",
+   "Os 30 goldens orfaos de Locais (test/features/locations/goldens/ raiz) continuam sem decisao de remocao"
+  ]
+ },
+ "skillsAtualizadas": {
+  "onde": "nesta branch, para o coordenador integrar em dev",
+  "coelo-backend (.agents/skills/coelo-supabase/SKILL.md)": "secao \"Regras medidas pelo grupo estrutura na Rodada 4\": migration historica que nunca aplicou (Avaliacoes: parentese e #variable_conflict), cadeia ausente x fixture ausente, 13 argumentos de audit_append_superadmin_internal, 180060 substitui funcoes compartilhadas (code review), pgTAP 1.3 sem has_fk/has_check, fixtures na forma de producao (unit_type_id, handle, inherit_plan, plans.description, handle de instituicao, marcador interno em activity_definitions), AAL1 na regua do MVP, padrao de RPC de criacao v2, catalogo de producao vazio e semeadura idempotente, grants padrao do schema public, espelho por grupo com mapa suite -> migration",
+  "coelo-frontend (.agents/skills/coelo-flutter-review/SKILL.md)": "secao \"Regras medidas pelo grupo estrutura na Rodada 4\": P5 (filtro degrada), P15 (respiro), P6 (widget morto sai), medir falhas na baseline limpa antes de atribuir ao delta (11 pre-existentes em test/shared; goldens transversais), chave de composicao esconde o Criar e o classificador pode bloquear, rota real em debug (tap/enter_text via VM Service; renderer travou no assistente), slot trailing de Locais",
+  "coelo-frontend-backend (.agents/skills/coelo-flutter-supabase-review/SKILL.md)": "dois itens em \"Regras de integracao medidas na Rodada 4\": estado de Estrutura (remote-green, nao done; gap do create v2) e entrega pelo Git quando a conversa cai (deltas ensaiados e revertidos, push antes de provar)",
+  "evolucaoEtapa2": "Back-end das seis familias saiu de 61 local-green / 31 SQL em producao (fechamento R03) para 21 pacotes em producao cobrindo as 49 acoes (proposta: 40 remote-green novos); Front-end: 6 local-green novos; E2E: nenhum (leitura de Instituicoes provada, escrita nao)",
+  "soDepoisDoMvp": [
+   "code review de 180060 (funcoes compartilhadas) e das demais plpgsql de 180350",
+   "revisao das 9 suites com AAL1 quando MFA voltar",
+   "pacote de contatos/pessoas da instituicao no realm interno (representantes, administradores, contato, documento, plano, marca)",
+   "endurecer os grants CRUD de authenticated sem policy nas 200+ tabelas (achado da R03)",
+   "decisao sobre os 30 goldens orfaos de Locais e sobre MENU-M nos goldens 375"
+  ]
+ }
 }
