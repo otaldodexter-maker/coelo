@@ -410,6 +410,47 @@ Regras medidas na Rodada 4 (noite de 10→11/09/2026, ADR 0034 Decisão 13):
   `flutter test` por vez, fechar Chromes e `dart` ao fim de cada prova. Em
   11/09 às 00:27 a máquina reiniciou por esgotamento e todas as conversas
   caíram; o dump de um lote ficou vazio e teve de ser refeito.
+- Chat do Superadmin (administrativo e Principal) roda no realm interno v2
+  em produção desde o lote 9: 12 RPCs `superadmin_chat_*_v2` (`inbox`,
+  `unread_total`, `thread`, `send_message`, `edit_message`, `revoke_message`,
+  `mark_read`, `realtime_refresh`, `set_pinned`, `set_flag`, `create_group`,
+  `group_members`), capacidades `chat.internal.read` (owner, operations),
+  `chat.internal.send` e `chat.internal.manage` (owner), envelope spec-039
+  `{ok, data, error{code, message, http_status, correlation_id}}`, códigos
+  `CHAT_*`/`SAI_*`; outro tenant responde `CHAT_NOT_FOUND` (não enumera).
+  Contrato completo em `comunicacao/realm-interno.json` → `contrato`.
+  `chat.attach` continua sem função de escrita em `chat_attachment_metadata`
+  e sem Edge Function `chat-media`: depende do gateway de mídia comum.
+- Reescrever migration histórica sobre a baseline exige, além dos labels
+  `NOT NULL`: `app_private.audit_append_superadmin_internal` com 13
+  argumentos (o histórico chamava com um 14º `jsonb` que produção não tem),
+  `requires_mfa=false` e sessões `aal1` nas fixtures. As suítes históricas
+  `superadmin_internal_chat_v2_test`, `..._receipts_edit_revoke_test` e
+  `..._preferences_test` não valem sobre a baseline; as `*_baseline_test.sql`
+  as substituem.
+- `ALTER DEFAULT PRIVILEGES ... REVOKE ... FROM anon` não protege função
+  nova: testado no descartável, função criada depois continua executável por
+  `anon` via `PUBLIC` (`proacl` nulo). A única proteção é o
+  `revoke all on function ... from public, anon, authenticated, service_role`
+  explícito antes do `grant execute` mínimo, em cada função de cada pacote.
+- Prova em produção de uma família de RPCs: script Deno que entra por senha
+  com `qa-r03` (GoTrue) e chama as RPCs por PostgREST com
+  `Prefer: params=single-object`, credenciais só no ambiente do processo
+  (`Invoke-ChatInternalProductionProof.sh` lê `Coelo-backups/qa-r03.env` e a
+  chave anon do CLI em memória), saída só `PASS|FAIL|SKIP` por caso e modo
+  `--read-only` para reconferir sem escrever na conversa de outra frente.
+  Padrão reutilizável em
+  `packages/coelo_database/scripts/chat-internal-production-proof.ts`.
+- Dado sintético que gerou auditoria não pode ser apagado: `audit.audit_logs`
+  (append-only) referencia `institution_id`, pessoa, membership e identidade
+  interna por FK. A limpeza arquiva (`status=archived`, `deleted_at`, nome
+  marcado "QA ...") em vez de `delete`, e a fixture reativa ao ser reaplicada.
+  Fixture e limpeza nascem em par, com ids fixos por prefixo do grupo,
+  registrados no JSON e no inventário de P37.
+- Não há `psql` na máquina: usar o do container
+  (`docker exec -i supabase_db_<project_id> psql -U postgres -d postgres -v ON_ERROR_STOP=1 -f -`)
+  para aplicar pacotes e rodar pgTAP no descartável (`-qtA`, contando `ok`
+  e `not ok`).
 
 Regras medidas pelo grupo estrutura na Rodada 4 (21 pacotes, 180000..180350):
 

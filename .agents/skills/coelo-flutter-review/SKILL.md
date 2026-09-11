@@ -72,6 +72,22 @@ conclusão ampla exige leitura integral.
 - Usar `coelo-frontend-backend` quando contrato, alteração ou conclusão
   atravessarem cliente e backend. Ajustar um rótulo numa tela de Auth não
   inaugura auditoria Supabase. Registrar dependências conhecidas sem certificá-las.
+- Chat (administrativo e Principal hospedado no Superadmin), desde a Rodada
+  4: `SupabaseChatRepository` é o único caminho produtivo; a composição real
+  (`superadmin_auth_scope.dart`) injeta o repositório com sessão e
+  `UnavailableChatRepository` é só o padrão do construtor. As 12 RPCs
+  `superadmin_chat_*_v2` estão em produção com o contrato de
+  `comunicacao/realm-interno.json`; a assinatura não muda sem pacote novo do
+  backend. Criar grupo (`ChatCreateGroupCommand`) exige uma instituição e
+  `personIds` do realm de pessoas (profissional com vínculo ativo ou
+  responsável com criança ativa nela); grupo entre instituições não existe
+  no modelo. `CHAT_MEMBER_INVALID` (422) é validação
+  (`ChatMemberInvalidException`), nunca perda de sessão; `CHAT_READ_ONLY`,
+  `CHAT_EDIT_WINDOW_CLOSED` e `CHAT_ALREADY_REVOKED` são conflito de estado.
+  Recibo só renderiza quando o servidor projeta `receipt`; bandeira
+  desconhecida vira `none`. Pendências: `chat.create-group` pela UI não
+  fechou na retomada da R04 (diálogo fechou sem grupo novo após reload);
+  `chat.attach` fica visível e inerte até o gateway de mídia comum.
 
 ## Progresso e limite de `verified`
 

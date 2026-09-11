@@ -184,6 +184,25 @@ rota `/dev`, golden ou teste isolado não comprovam isso.
   instituição e as pessoas do realm-interno) combina os ids pelo JSON,
   registra o que criou (conversa, mensagens) e entra na limpeza de dados
   sintéticos ao fim da rodada (P37).
+- Contrato antes da aplicação: o grupo de backend publica assinaturas,
+  envelope, códigos e capacidades no próprio JSON antes de o coordenador
+  aplicar, e o grupo de cliente liga o repositório real sem mudar assinatura.
+  Foi assim que a família chat virou o primeiro `verified-e2e` da Etapa 2
+  (backend do realm-interno no lote 9 + UI do principal-chat-sistema).
+- Fixture sintética compartilhada: ids fixos com prefixo por grupo
+  (`9f040000-` para o chat), aplicada uma vez, mantida até o fechamento e
+  repassada pelo JSON à frente que precisa dela; quem a criou responde pela
+  limpeza, que arquiva o que a auditoria referencia por FK.
+- Negativa cross-tenant no MVP quando produção não tem segunda identidade
+  escopada: pgTAP com Owner escopado a outra instituição chamando todas as
+  RPCs da família (`superadmin_internal_chat_cross_tenant_test.sql`, 21/21)
+  mais, em produção, `anon` negado e id inexistente não enumerável. Vale
+  como gate de RLS do MVP; a prova por segunda sessão real fica para a
+  revisão profunda.
+- Pacote transversal de privilégios (revoke de `anon`/`authenticated`): medir
+  antes e depois, por papel, tabelas e funções em produção e no espelho
+  (contagens iguais para os papéis preservados) e reconferir a rota real com
+  o modo somente leitura da prova da família.
 
 ## Contrato de abertura
 

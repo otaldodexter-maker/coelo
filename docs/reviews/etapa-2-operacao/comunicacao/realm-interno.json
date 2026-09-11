@@ -1,17 +1,17 @@
 {
   "grupo": "realm-interno",
-  "revision": 13,
+  "revision": 15,
   "round": "E2-R04-20260911",
-  "updatedAt": "2026-09-11T00:24-03:00",
+  "updatedAt": "2026-09-11T08:35-03:00",
   "app": "Claude",
   "modelo": "Fable 5.1",
   "conversa": "R04 · Realm interno e Chat backend",
   "coordenador": "R04 · Coordenação noturna (coordenacao.json)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-realm-interno",
   "branch": "work/etapa2-r04-realm-interno",
-  "head": "400e3395d",
+  "head": "756ccfeb2",
   "upstream": "origin/work/etapa2-r04-realm-interno",
-  "base": "origin/dev 93bedcf4e (lote 10 fechado; 240500 em migrations/); rebase feito nesta revisao",
+  "base": "origin/dev 0376a0446 (rebase as 08:25 de 11/09; os 17 commits do grupo ate d217005d1 ja estavam em dev por patch identico e foram descartados no rebase)",
   "historicoR03": "frente sem entrega na R03 (frenteNova coelo-f0 atribuida as 15:58; worktree e2-r03-realm-interno quebrada, nao usada). Nada a reutilizar dela.",
   "escopo": {
     "camada": "backend (Supabase/Postgres) da familia chat + realm interno v2",
@@ -121,7 +121,7 @@
     "escopo": "membership de plataforma ve toda conversa; membership de instituicao so ve a propria instituicao (outro tenant responde CHAT_NOT_FOUND). Anexos: so metadados; chat.attach continua dependendo do gateway de midia comum (fora deste recorte).",
     "criarGrupoNoCliente": "sugestao para SupabaseChatRepository: createGroup(ChatCreateGroupCommand{institutionId, title, personIds, unitId?, groupId?, activityId?, idempotencyKey}) -> ChatConversationSummary; o seletor de hierarquia escolhe UMA instituicao e pessoas dela (readers existentes de Pessoas/Unidades/Turmas do Superadmin); grupo entre instituicoes nao existe no modelo (conversations.institution_id NOT NULL)."
   },
-  "proximoPasso": "fechar os dois subagentes, commitar, gravar a mini-revisao atualizada ate 04:00",
+  "proximoPasso": "nenhum; descartavel coelo_baseline_realm parado",
   "pacotesProntos": [
     {
       "arquivo": "packages/coelo_database/candidatos/realm-interno/20260910240000_chat_production_contract_v1.sql",
@@ -254,7 +254,7 @@
   },
   "miniRevisao": {
     "quando": "2026-09-10T23:29-03:00",
-    "1_shaFinal": "8a0bd7e9f em origin/work/etapa2-r04-realm-interno; status limpo; sem WIP retido",
+    "1_shaFinal": "756ccfeb2 em origin/work/etapa2-r04-realm-interno (skills); conteudo anterior integrado em dev ate 0376a0446; status limpo; sem WIP",
     "2_fechouPorActionId": {
       "chat.list": "backend done (inventario, certificacao de producao): 240100 + 240300 em producao; prova qa-r03 22:32 inbox/unread/fixar/bandeira/reload; pgTAP 23 + 10",
       "chat.open": "backend done: 240100 + 240200; prova thread com receipt/can_manage e CHAT_NOT_FOUND; pgTAP 23 + 36",
@@ -262,17 +262,18 @@
       "chat.edit": "backend done: 240200; prova edicao na janela com trilha; pgTAP 36",
       "chat.receipts": "backend done: 240100 + 240200; prova receipt na thread e mark_read; pgTAP 36",
       "chat.revoke": "backend done: 240200; prova soft delete auditado; pgTAP 36",
-      "chat.create-group (P8, ID criado pelo coordenador)": "backend done: 240400; prova create + replay + members em producao; pgTAP 22; UI ligada pelo principal-chat-sistema (626915ae4) e grupo real criado por ele na rota real",
+      "chat.create-group (P8, ID criado pelo coordenador)": "backend done: 240400; prova create + replay + members em producao; pgTAP 25 (escopos institution, unit, group, activity); UI: principal-chat-sistema ligou (626915ae4) mas a criacao pela UI nao fechou na retomada (rastreador: dialogo fechou sem grupo novo)",
       "seguranca transversal (sem action_id)": "240000 revoga anon das tabelas de chat; 240500 revoga anon de todas as tabelas/sequencias/funcoes dos schemas da aplicacao (producao conferida 23:20: 144 -> 0 tabelas, 15 -> 0 funcoes; authenticated/service_role preservados)"
     },
     "3_abertoComPrimeiroGate": {
       "chat.attach": "blocked-environment: sem funcao que insira em chat_attachment_metadata e sem Edge Function chat-media; gate = pacote de midia comum (gateway) fora deste recorte",
       "chat.* E2E": "gate = principal-chat-sistema ligar SupabaseChatRepository na composicao e provar na rota normal (ja em curso na rev 11 deles)",
-      "escopo activity de Criar grupo": "validado por codigo e trigger, sem pgTAP (fixture de atividades complexa); gate = revisao profunda",
       "Realtime do chat": "nenhuma publication configurada; o cliente nao assina; gate = decisao de produto pos-MVP",
       "P24": "Criar grupo so entre identidades internas no MVP? com o Owner; se sim, variante 240600 (membros = identidades internas) em ~1 h",
       "P25": "instituicao sintetica 9f040000 fica em producao (arquivada na limpeza) por FK do audit_logs; decisao do coordenador levada ao Owner",
-      "suites historicas do chat (3 arquivos *_test.sql antigos)": "invalidas sobre a baseline; arquivar e decisao do coordenador (README dos candidatos)"
+      "suites historicas do chat (3 arquivos *_test.sql antigos)": "invalidas sobre a baseline; arquivar e decisao do coordenador (README dos candidatos)",
+      "grants CRUD de authenticated sem policy": "INSERT 23 / UPDATE 26 / DELETE 18 / SELECT 7 tabelas; varredura em varredura-authenticated-2026-09-11.md; gate = analise por tabela na revisao profunda (nao aplicar antes da demonstracao, decisao do coordenador 00:30)",
+      "chat.create-group UI": "gate = principal-chat-sistema isolar a causa do dialogo que fecha sem criar (backend provado por RPC)"
     },
     "4_deltasPropostos": "docs/reviews/evidence/etapa-2/r04-realm-interno/deltas-be-r04.json (6 IDs backend done, com certificacao; JA APLICADOS pelo coordenador as ~22:45); nenhum delta FE ou E2E proposto por mim (camadas do principal-chat-sistema)",
     "5_pacotesEChaves": "todos aplicados em producao: 240000, 240100, 240200, 240300, 240400 (lote 9, 22:25) e 240500 (lote 10, 23:17); nenhuma chave de composicao de banco; a chave do cliente e o SupabaseChatRepository real na composicao (principal-chat-sistema)",
@@ -280,7 +281,7 @@
     "provasRegistradas": "pgTAP 141/141 no descartavel (7 suites); prova em producao 18/18 (22:32) e reconferencia somente leitura 5/5 (23:20) com qa-r03; evidencia em docs/reviews/evidence/etapa-2/r04-realm-interno/",
     "handoff": "docs/reviews/evidence/etapa-2/r04-realm-interno/handoff.md"
   },
-  "status": "recorte finalizado (rev 12); reaberto para trabalho util ate 04:00 por ordem do Owner (00:00): seguranca basica de authenticated, pgTAP do escopo activity e README do fluxo, com subagentes",
+  "status": "finalizado; entrega validada e completa em 11/09 08:45 (varredura incluida)",
   "ordemDoOwner0000": "ninguem para antes da entrega (frentes 04:00, coordenador 05:00); usar o maximo de subagentes e rtk",
   "medicaoAuthenticatedProducao": {
     "quando": "2026-09-11T00:05-03:00 (somente leitura)",
@@ -292,5 +293,36 @@
     "pgTAP do escopo activity de Criar grupo (superadmin_internal_chat_groups_v1_test.sql -> plan 25)",
     "varredura de grants de authenticated sem policy (evidencia md)"
   ],
-  "readmeCandidatos": "fluxo baseline-only + seed + psql agora segue migrations/ordem-de-aplicacao-producao.txt (loop de shell no README)"
+  "readmeCandidatos": "fluxo baseline-only + seed + psql agora segue migrations/ordem-de-aplicacao-producao.txt (loop de shell no README)",
+  "validacaoDeEntrega20260911": {
+    "quando": "2026-09-11T08:30-03:00",
+    "coordenadorAtual": "coelo-04 (sessionName em coordenacao.json rev 30; a sessao nao aparece em ListAgents as 08:25, entao a entrega vai pela branch, pelo JSON e por este registro)",
+    "integradoEmDev": [
+      "migrations 240000..240600 em packages/coelo_database/migrations/ (sha256 igual aos candidatos) e em ordem-de-aplicacao-producao.txt (linhas 67-71, 77, 109); candidatos/realm-interno/ so com o README",
+      "testes: chat_production_contract_v1 20, superadmin_internal_chat_v2_baseline 23, ..._receipts_edit_revoke_baseline 36, ..._preferences_baseline 10, ..._groups_v1 25 (escopo activity incluido), revoke_anon_direct_access_v1 9, revoke_authenticated_truncate_references_trigger_v1 6, superadmin_internal_chat_cross_tenant 21 = 150 asserções",
+      "scripts: chat-internal-production-proof.ts (--read-only), Invoke-ChatInternalProductionProof.sh, chat-internal-production-fixture.sql, chat-internal-production-cleanup.sql",
+      "evidencia: prova-producao-2026-09-10.md, deltas-be-r04.json (aplicado: 7 IDs backend done com certificacao), handoff.md, realm-interno.json rev 13",
+      "producao: lote 9 (240000..240400), lote 10 (240500), lote 13 (240600); coordenacao rev 30 registra o grupo como finalizado (rev 13, d217005d1)",
+      "rastreadores: familia chat com backend done nos tres md; chat.list/open/send/edit/receipts/revoke verified-e2e pelo principal-chat-sistema; chat.create-group backend done, UI pendente"
+    ],
+    "foraDeDev": [
+      "756ccfeb2: edicoes nas tres skills (.agents/skills/coelo-supabase, coelo-flutter-review, coelo-flutter-supabase-review) + docs/reviews/evidence/etapa-2/r04-realm-interno/skills-deltas-r04.md; para o coordenador integrar",
+      "varredura-authenticated-2026-09-11.md: o subagente da noite caiu com a maquina (00:27) sem gravar o arquivo; refeita por subagente em 11/09 08:25 (somente leitura); entra no proximo commit desta branch"
+    ],
+    "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-realm-interno limpa, sem WIP; e2-r03-realm-interno (quebrada, locked) ainda existe e continua para o Owner remover; projeto descartavel coelo_baseline_realm (portas 624xx) ainda de pe no Docker, pode ser parado com supabase stop --project-id coelo_baseline_realm",
+    "correcaoParaOOwner": "P24 em R04-perguntas-ao-owner-20260911.md descreve o 240400 como \"membros sao identidades internas\"; o pacote em producao aceita pessoas da instituicao (institution_memberships ou guardian_links + child_contexts), e o criador interno nao entra como participante. Reescrever a pergunta antes da resposta; \"so identidades internas\" seria uma variante 240700 (~1 h)."
+  },
+  "skillsPropostas": "docs/reviews/evidence/etapa-2/r04-realm-interno/skills-deltas-r04.md (texto aplicado nos tres SKILL.md desta branch, secoes da Rodada 4): chat interno v2 em producao e contrato; reescrita historica exige audit de 13 args + requires_mfa=false + aal1; ALTER DEFAULT PRIVILEGES nao protege funcao nova; prova por sessao sintetica via GoTrue+PostgREST com --read-only; limpeza por arquivamento (FK do audit_logs); psql do container; fixture compartilhada com prefixo por grupo; cross-tenant por RPC como gate de RLS do MVP; medicao antes/depois em pacote de privilegios; no FE, composicao real do chat, regras de Criar grupo e mapeamento dos codigos",
+  "varreduraAuthenticated": {
+    "arquivo": "docs/reviews/evidence/etapa-2/r04-realm-interno/varredura-authenticated-2026-09-11.md",
+    "quando": "2026-09-11T08:30-03:00 (somente leitura, subagente)",
+    "resultado": "140 objetos com grant a authenticated (134 tabelas + 6 views, todos em public); sem policy: INSERT 23, UPDATE 26, DELETE 18, SELECT 7 (person_auth_links + 6 views); RLS desligada com grant: 0; TRUNCATE/REFERENCES/TRIGGER 0/0/0 (240600 efetivo); anon/PUBLIC: nenhum",
+    "achados": [
+      "nenhuma tela escreve direto nessas tabelas (Dart usa .from() so em 3 tabelas profile_about_*; 153 chamadas sao .rpc), entao o revoke futuro e neutro; decisao do coordenador (nao aplicar nesta rodada) mantida",
+      "institution_directory (security_invoker) ja falha em leitura direta por sessao autenticada: plans sem SELECT para authenticated (policy sem grant); so funciona via RPC",
+      "person_auth_links e o unico objeto com SELECT concedido e zero policies: person_directory.has_active_login sai sempre false em leitura direta; recomendacao: policy self_read em vez de so revogar",
+      "Tabela C: 8 tabelas com deny explicito e policies permissivas sem grant em INSERT 7 / UPDATE 9 / DELETE 7 (activity_*, guardian_context_permission_grants, institution_member_permission_overrides, context_notification_recipients, attendance_sessions, conversation_routing_*, *_chat_settings)"
+    ],
+    "estado": "pendencia de code review para a revisao profunda; nenhum revoke aplicado"
+  }
 }
