@@ -157,3 +157,6 @@
 20260911210400_structure_hierarchy_p36_v1.sql
 # lote 36 (11/09 13:16) - R05 realm-interno: P32 regra alvo (politicas macro da unidade + notificacoes no sino)
 20260911210500_unit_care_policies_notifications_v1.sql
+# lote 37 (11/09 13:27) - R05 realm-interno: @ das pessoas da instituicao no detail_v2 e cron de expiracao de anexos do chat
+20260911210600_institution_people_handles_v1.sql
+20260911210700_chat_media_expire_dispatch_v1.sql
