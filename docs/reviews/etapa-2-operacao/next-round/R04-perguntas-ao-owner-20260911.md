@@ -201,6 +201,26 @@ O render atual usa o indicador do composto com alvo de toque de 48 px; a
 referência guardada tem o círculo de 24 px. Mesma página lado a lado.
 Recomendação: 48 px (acessibilidade WCAG 2.2 AA, alvo mínimo), regravar A.
 
+## P35 — Contexto institucional para o usuário de teste no Principal (principal-chat-sistema)
+
+Com `list_my_principal_contexts` em produção (lote 22), o Principal (Acontece,
+Agora, Momentos, Para você, Perfil) ainda mostra "Nenhum contexto disponível"
+para `qa-r03`, porque a pessoa de serviço criada pela ponte de ator não tem
+`institution_membership` ativa em nenhuma instituição. Decisão: **(a)** semear
+por migration idempotente uma membership da pessoa de serviço de `qa-r03` na
+instituição sintética (só para a prova, removida ao fim); **(b)** fazer o
+Principal aceitar o Owner de plataforma como contexto de todas as
+instituições (regra de produto); **(c)** nada agora. Recomendação: (a) para a
+demonstração, e (b) como regra futura registrada.
+
+## P36 — Estrutura sem conversa viva na retomada
+
+A sessão que assumiu a estrutura às 02:06 não respondeu a quatro cobranças;
+os 21 pacotes de estrutura estão em produção e as chaves ligadas, mas a rota
+real de Instituições → Avaliações com a sessão não foi provada nesta rodada.
+Sugestão: abrir a conversa «R05 · Estrutura» primeiro na próxima rodada, com
+o método de prova já documentado (build web de `qa_main` + CDP).
+
 ## Atualização P22 (23:05)
 
 A frente formularios-cuidado-rotina escreveu, na própria sessão, o pacote
