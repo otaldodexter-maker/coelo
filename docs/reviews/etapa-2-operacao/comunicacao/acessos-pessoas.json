@@ -1,15 +1,15 @@
 {
-  "revision": 123,
-  "updated_at": "2026-09-11T17:03:00.016Z",
-  "relogio_local": "Fri Sep 11 2026 14:03:00 GMT-0300 (Horário Padrão de Brasília)",
+  "revision": 124,
+  "updated_at": "2026-09-11T17:35:39.125Z",
+  "relogio_local": "Fri Sep 11 2026 14:35:39 GMT-0300 (Horário Padrão de Brasília)",
   "round": "E2-R05-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
   "model": "Claude Opus 5 (esforco medio)",
-  "status": "em andamento",
+  "status": "finalizado",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-acessos-pessoas",
   "branch": "work/etapa2-r05-acessos-pessoas",
-  "head": "bf9c2f186 (publicado)",
+  "head": "1502f0219 (publicado; inclui merge de origin/dev 530613fb5)",
   "base_observed": "origin/dev 2f6a6114f; lotes 8-27 em producao; candidatos/acessos-pessoas so com 170750 e 170900 OBSOLETOS (171600 e 171800 aplicados no lote 25); ordem-de-aplicacao ate lote 27",
   "recorte": {
     "familias": [
@@ -132,6 +132,41 @@
     "qa_main: a extensao do Flutter Driver emula o teclado (enableTextEntryEmulation) e impede digitacao real por CDP; usar window.$flutterDriver enter_text nas provas (ou desligar a emulacao no qa_main).",
     "Skills: pgTAP em psql nao carrega pg_safeupdate; DELETE/UPDATE em funcao sempre com WHERE e um caso com load 'safeupdate' como supabase_admin."
   ],
+  "MINI_REVISAO_14h40": {
+    "1_sha_final": "1502f0219 publicado em origin/work/etapa2-r05-acessos-pessoas; status limpo; sem WIP retido; Chrome, servidores e descartavel coelo_acessos_r05 encerrados",
+    "2_fechou_por_action_id_com_prova": {
+      "access-profiles.list / detail": "E2E (aplicado em dev 530613fb5): modelos de sistema na aba Admin, detalhe nao editavel com Criar a partir deste modelo; capturas",
+      "access-profiles.create": "E2E proposto em deltas-r05-2: dialogo P31 + rascunho a partir do modelo + save 200 em producao (Secretaria QA R05 d6264c5d) pela rota real; 170300 em producao; BE done por REST (5afbe4a6 criado, editado, inativado)",
+      "people.list / links / reload": "E2E (aplicado): diretorio real; detalhe com @; troca do @ pela UI persistida e mantida no reload; cooldown",
+      "invites.list": "E2E proposto: lista o convite revogado na rota real; BE done por REST (create/detail/resend regra/revoke)",
+      "students.list/link/edit/revoke": "BE done por REST apos o 170200 (defeito de producao corrigido)",
+      "pacotes em producao": "170100 (lote 31), 170200 (34), 170300 (38-42)",
+      "cliente": "3b4aaa5b6 P31; 677d95682/c227e531f @; bf9c2f186 Alunos; b64bd9bf9 envelope do save; goldens 12 regravados; testes: perfis 28+13, pessoas 224, alunos 15"
+    },
+    "3_aberto_com_primeiro_gate": {
+      "invites.create/detail/resend/revoke (UI)": "Chrome estavel: passos 2-4 do assistente nao concluidos (repintura parou < 0,5 GB); FE local-green com passo 1 provado",
+      "students.link/edit/transfer (UI)": "build novo + Chrome; transfer positivo exige segunda unidade na instituicao d0c4 (estrutura)",
+      "access-models.* (UI)": "rota real nao revisitada nesta rodada (BE done desde a R04; access-models.create ja E2E)",
+      "internal-users.edit/suspend/create": "suspender o unico interno derruba a sessao; criar exige Edge Function (Auth admin)",
+      "people.create": "resolvedor de identidade sem Supabase",
+      "people.list defeitos": "clique no card nao abre o detalhe; abas nao filtram (code review)",
+      "@ interno / edicao pela instituicao": "pendencia de modelo (P44)"
+    },
+    "4_deltas": "deltas-r05.json (26) aplicados em dev 530613fb5; deltas-r05-2.json (7: access-profiles.create FE verified + BE done + E2E, access-profiles.edit FE verified, invites.list FE verified + E2E, invites.create FE local-green) ensaiados com apply+validate PASS (FE 97, BE 97, E2E 69 na base ensaiada) e revertidos; o coordenador aplica",
+    "5_pacotes": "nenhum candidato pendente em candidatos/acessos-pessoas (170100/170200/170300 aplicados); chave enablePersonHandles ligada em c227e531f",
+    "6_duvidas_ao_owner": [
+      "P43: modelo do sistema criado pelo Superadmin pode ser excluido ou so inativado? (hoje delete protegido; recomendo manter)",
+      "P44: usuarios internos tambem tem @? (hoje o @ e de public.people; recomendo @ interno na proxima rodada se ele quiser)"
+    ],
+    "handoff": "docs/reviews/evidence/etapa-2/r05-acessos-pessoas/handoff.md",
+    "licoes_para_as_skills": [
+      "pgTAP via psql nao carrega pg_safeupdate: DELETE/UPDATE em funcao sempre com WHERE (where true em temp table) e um caso com load 'safeupdate' como supabase_admin",
+      "qa_main: a extensao do Flutter Driver emula o teclado; nas provas por CDP injetar a sessao no localStorage (coelo.superadmin.auth.session) e digitar por window.$flutterDriver enter_text",
+      "envelopes de RPC: save de perfil devolve {domain, profile, version}; o cliente deve desembrulhar antes do fromJson"
+    ],
+    "dados_sinteticos": "ver handoff (convite 03e9c9d2; @ trocados; institution_roles 5afbe4a6 inactive e d6264c5d active; child_group_links 8d766ca8)"
+  },
+  "encerramento": "Chrome 9411, servidores 3000 e descartavel coelo_acessos_r05 encerrados as 14:34; nenhum dart/flutter desta worktree em execucao; respondo a revisao das 15:50 no JSON; depois de 16:00 nao retomo por conta propria.",
   "historico_r04": {
     "revision": 118,
     "updated_at": "2026-09-11T11:31:19.648Z",

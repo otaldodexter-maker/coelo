@@ -1,0 +1,87 @@
+[
+  {
+    "action_id": "access-profiles.create",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R05: 170300 em producao (lote 38-42): superadmin_access_profile_save no dominio institution criou o modelo do sistema 5afbe4a6 (is_system, 2 capacidades) pela sessao qa-r03; update (versao 2) e inativacao (versao 3) pela mesma RPC; delete_and_reassign de modelo do sistema continua protegido (42501, por desenho). Pela rota real: Secretaria QA R05 d6264c5d criada a partir do modelo Secretaria (12 capacidades, is_system).",
+    "evidencia": "comunicacao/acessos-pessoas.json rev 124",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+      "revision": "80a308394",
+      "environment": "producao, sessao qa-r03 via PostgREST",
+      "recordedAt": "2026-09-11T14:23:00-03:00"
+    }
+  },
+  {
+    "action_id": "access-profiles.create",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R05 (3b4aaa5b6, b64bd9bf9): rota real /profiles > Admin > Criar perfil abre o dialogo \"Como criar o perfil?\" (Do zero / A partir de: modelo, so modelos ativos); /profiles/new/institution?from=<uuid> carrega descricao, escopo e permissoes do modelo; identidade digitada; revisao lista as permissoes herdadas como adicionadas (comparacao com o rascunho em branco); Criar perfil enviou superadmin_access_profile_save 200. Defeito de cliente corrigido: o repositorio lia o envelope {domain, profile, version} como perfil e a UI mostrava erro apos gravar; agora desembrulha (teste do repositorio 13/13). Prova de navegacao pos-save pela UI depende de build novo.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r05-acessos-pessoas/capturas/access-profiles-create-dialogo-do-zero-ou-modelo.png; docs/reviews/evidence/etapa-2/r05-acessos-pessoas/capturas/access-profiles-create-revisao-secretaria.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-acessos-pessoas/capturas/access-profiles-create-dialogo-do-zero-ou-modelo.png",
+      "revision": "80a308394",
+      "environment": "producao, rota real (build web de qa_main + Chrome CDP 9411, sessao qa-r03)",
+      "recordedAt": "2026-09-11T14:23:00-03:00"
+    }
+  },
+  {
+    "action_id": "access-profiles.create",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R05: rota normal (dialogo P31 + formulario a partir do modelo) criou em producao o perfil Secretaria QA R05 (d6264c5d, is_system, 12 capacidades) pela sessao qa-r03 e a lista/opcoes de convite o releem apos reload (aparece em \"A partir de:\" e nos perfis do convite); negativas em pgTAP institution_profile_system_model_create_v1_test 8/8 (instituicao inexistente, modelo de plataforma protegido) e access_profile_detail_v3_test 37/37.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r05-acessos-pessoas/capturas/invites-create-perfis-do-sistema.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-acessos-pessoas/capturas/access-profiles-create-revisao-secretaria.png",
+      "revision": "80a308394",
+      "environment": "producao, rota real (build web de qa_main + Chrome CDP 9411, sessao qa-r03)",
+      "recordedAt": "2026-09-11T14:35:00-03:00"
+    }
+  },
+  {
+    "action_id": "access-profiles.edit",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R05: modelo de sistema de Admin agora editavel pela plataforma (170300): detalhe de perfil personalizado mantem Editar/Excluir; pela UI o formulario de edicao abre com dados reais (R04) e o save desembrulha o envelope (b64bd9bf9). Edicao provada em producao por REST (5afbe4a6 versao 1->2->3).",
+    "evidencia": "comunicacao/acessos-pessoas.json rev 124",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+      "revision": "80a308394",
+      "environment": "producao, rota real (build web de qa_main + Chrome CDP 9411, sessao qa-r03)",
+      "recordedAt": "2026-09-11T14:25:00-03:00"
+    }
+  },
+  {
+    "action_id": "invites.list",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R05: rota real /invites com a sessao qa-r03 lista o convite revogado 03e9c9d2 (destinatario mascarado, instituicao, perfil, canal, expiracao), busca, Status/Canal, toggle, Arquivos e card Novo convite; reload mantem.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r05-acessos-pessoas/capturas/invites-list-com-convite-revogado.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-acessos-pessoas/capturas/invites-list-com-convite-revogado.png",
+      "revision": "80a308394",
+      "environment": "producao, rota real (build web de qa_main + Chrome CDP 9411, sessao qa-r03)",
+      "recordedAt": "2026-09-11T14:30:00-03:00"
+    }
+  },
+  {
+    "action_id": "invites.list",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R05: rota normal abre com superadmin_invite_directory_v2 em producao (BE done), convite criado/revogado por REST aparece e o reload mantem; negativa por id inexistente 403 e pgTAP superadmin_internal_invites_v2_test.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r05-acessos-pessoas/capturas/invites-list-com-convite-revogado.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-acessos-pessoas/capturas/invites-list-com-convite-revogado.png",
+      "revision": "80a308394",
+      "environment": "producao, rota real (build web de qa_main + Chrome CDP 9411, sessao qa-r03)",
+      "recordedAt": "2026-09-11T14:30:00-03:00"
+    }
+  },
+  {
+    "action_id": "invites.create",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R05: rota real /invites/new: passo 1 lista os contextos reais (2 instituicoes, unidades e turma sinteticas) e, escolhida a instituicao, os perfis de sistema do lote 25 + Secretaria QA R05 (gate P31 fechado na UI). Passos 2-4 nao concluidos pela UI: o Chrome com SwiftShader parou de repintar com 0,5 GB livres; BE done por REST. Volta a verified com build/Chrome estaveis.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r05-acessos-pessoas/capturas/invites-create-passo1.png; docs/reviews/evidence/etapa-2/r05-acessos-pessoas/capturas/invites-create-contextos.png; docs/reviews/evidence/etapa-2/r05-acessos-pessoas/capturas/invites-create-perfis-do-sistema.png"
+  }
+]
