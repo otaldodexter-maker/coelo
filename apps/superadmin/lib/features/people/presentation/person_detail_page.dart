@@ -15,6 +15,7 @@ final class PersonDetailPage extends StatefulWidget {
     required this.id,
     required this.logout,
     required this.onBack,
+    this.onEdit,
     this.onDestinationSelected,
     super.key,
   });
@@ -22,6 +23,9 @@ final class PersonDetailPage extends StatefulWidget {
   final String id;
   final LogoutAction logout;
   final VoidCallback onBack;
+
+  /// Abre o editor da pessoa quando a composicao autoriza escrita.
+  final VoidCallback? onEdit;
   final ValueChanged<String>? onDestinationSelected;
   @override
   State<PersonDetailPage> createState() => _PersonDetailPageState();
@@ -151,6 +155,13 @@ final class _PersonDetailPageState extends State<PersonDetailPage> {
                     child: const Text('Voltar'),
                   ),
                   continuationActions: [
+                    if (widget.onEdit case final onEdit?)
+                      FilledButton.icon(
+                        key: const Key('person-detail-edit'),
+                        onPressed: onEdit,
+                        icon: const Icon(Icons.edit_outlined),
+                        label: const Text('Editar'),
+                      ),
                     OutlinedButton.icon(
                       key: const Key('person-detail-reload'),
                       onPressed: _controller.state == PersonDetailState.loading

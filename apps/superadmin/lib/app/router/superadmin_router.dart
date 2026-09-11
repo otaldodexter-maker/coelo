@@ -3078,6 +3078,10 @@ GoRouter createSuperadminRouter({
                       pathParameters: {'personId': id},
                     )
                   : null,
+              onOpen: (id) => context.goNamed(
+                SuperadminRoutes.personDetailName,
+                pathParameters: {'personId': id},
+              ),
               onDestinationSelected: (destination) =>
                   _navigateFromPersistentShell(context, destination),
               onBugReportSubmitted: productionSupportController?.submitReportToBackend,
@@ -3335,6 +3339,12 @@ GoRouter createSuperadminRouter({
                       id: state.pathParameters['personId']!,
                       logout: logout,
                       onBack: () => context.goNamed(SuperadminRoutes.peopleName),
+                      onEdit: hasAuthoritativeMutationCapability(SuperadminRoutes.personEdit)
+                          ? () => context.goNamed(
+                              SuperadminRoutes.personEditName,
+                              pathParameters: {'personId': state.pathParameters['personId']!},
+                            )
+                          : null,
                       onDestinationSelected: (destination) =>
                           _navigateFromPersistentShell(context, destination),
                     ),
