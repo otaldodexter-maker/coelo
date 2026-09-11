@@ -453,5 +453,18 @@
       "environment": "build web release contra producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (lote 18 aplicado)",
       "recordedAt": "2026-09-11T02:52:00-03:00"
     }
+  },
+  {
+    "action_id": "internal-users.edit",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R04: superadmin_internal_user_update persistiu a edicao do perfil interno sintetico de qa-r03 (job_title alterado, version 1->2, recibo/historico auditado) com a sessao qa-r03 via PostgREST, com o mesmo payload que o cliente envia (identity + profile_id + scope + scope_ids); superadmin_internal_user_detail devolve o valor novo apos releitura. pgTAP 45/45 (lote 4).",
+    "evidencia": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 109, REST)",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+      "revision": "07eae6925",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST",
+      "recordedAt": "2026-09-11T03:04:00-03:00"
+    }
   }
 ]
