@@ -5210,18 +5210,30 @@
       "screen": "Auditoria / Exportar",
       "scope": "deferred-post-mvp",
       "done": "Botão informativo já integrado35a08f29; sem job/poll/download/URL. C03cf2cf0e7→C008842bb30: startExport/fetchExportStatus recusam localmente sem chamada Edge; política de exportação geral adiada preservada. C0027/27 adapter+página PASS.",
-      "fe": "Conferir botão visível e mensagem de indisponibilidade; nenhuma chamada de arquivo/job. Não implementar a operação real nesta rodada. R01/16h: C03r11:50 testes funcionais passam;6 goldens divergem4,86–14,84%;2 cenários auth_session passam. DTO minimiza dados; não significa fluxo remoto pronto.",
+      "fe": "R05 (11/09 13:42, rota real com qa-r03): Auditoria -> Arquivos -> Exportar CSV/XLSX visiveis e honestos ('Disponivel depois do MVP'); nenhuma chamada de exportacao (performance sem entradas 'export'). Adiamento da ADR 0034 confirmado na rota real, como profile-files.import.",
       "be": "Operação real fora do MVP. Preservar legado sem executar, remover ou habilitar jobs. R01/16h: Helper legado current_person_id ainda impede afirmar cutover interno; export permanece adiada e sem efeitos. C00 confirmou estático: readersPeople sem039/session, NULLlimit e exportSQLcliente aindaexposto; candidato localI014C03 autorizado20260908230039, semruntime/remoto. Adapterdeferido nãofechaRPCdireta.",
-      "evidence": "commits2b1b595c/d93bf961; evidence/etapa-2/agenda-operacoes/ R01/16h: C03r11; etapa-2-operacao/reports/R01-checkpoint-1600.md; etapa-2-operacao/reports/R01-delta-1915.md (C03r29 nominal); etapa-2-operacao/reports/R01-delta-2005.md (AuditP1)",
+      "evidence": "commits2b1b595c/d93bf961; evidence/etapa-2/agenda-operacoes/ R01/16h: C03r11; etapa-2-operacao/reports/R01-checkpoint-1600.md; etapa-2-operacao/reports/R01-delta-1915.md (C03r29 nominal); etapa-2-operacao/reports/R01-delta-2005.md (AuditP1); docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/39-audit-export-pressed.png",
       "historicalFrontend": "audited",
       "historicalBackend": "local-green",
-      "frontendStatus": "pending-verification",
+      "frontendStatus": "verified",
       "backendStatus": "deferred-post-mvp",
       "integratedStatus": "deferred-post-mvp",
       "lastEvidenceAt": "2026-09-08T20:04:14-03:00",
       "lastSyncedHandoff": "C03/r29 nominal; full cut remains r25",
       "lastHandoffRevision": 33,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/39-audit-export-pressed.png",
+          "revision": "comunicacao/operacoes.json rev 26",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (13be50ae8) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T13:44:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/38-audit-files-menu.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/39-audit-export-pressed.png"
+          ]
+        }
+      }
     },
     {
       "id": "support.create",
@@ -5662,16 +5674,29 @@
       "screen": "Conta / Tema",
       "scope": "mvp",
       "done": "Tema persistido em SharedPreferences com prova de navegador/reload e proteção de notices obsoletos.",
-      "fe": "Lacuna de cobertura que eu havia reportado foi FECHADA, sem criar baseline: 32 casos novos cobrem quatro larguras, dois temas e duas escalas de texto para Perfil e Configuracoes, verificando ausencia de excecao de layout e o brilho efetivo. Resultado: 32 PASS. Minha conta atravessa a matriz inteira, inclusive 200%, sem transbordar. Nao promove a acao: os 8 goldens continuam obsoletos e a baseline depende de aprovacao nominal; e account.profile continua sem caminho de producao.",
+      "fe": "R05 (11/09 13:44, rota real com qa-r03): /settings -> Aparencia = Claro grava coelo.superadmin.theme-mode=light; carga completa nova mantem Claro (segmento selecionado e tema claro renderizado); restaurado Sistema. Persistencia local por desenho (BE not-applicable, E2E flutter-only mantidos).",
       "be": "Preferência local do cliente; nenhuma tabela, RPC ou persistência remota pertence a esta ação.",
-      "evidence": "evidence/etapa-2/identidade-acessos/2026-09-07-settings-browser-persistence.md; R01/17:40 r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.; apps/superadmin/test/features/account/presentation/screens/profile_page_test.dart e settings_page_test.dart -> 45 PASS; apps/superadmin/lib/app/router/superadmin_router.dart linhas 3090-3101; commit 458277400; apps/superadmin/test/features/account/presentation/screens/account_theme_width_matrix_test.dart -> 32 PASS",
+      "evidence": "evidence/etapa-2/identidade-acessos/2026-09-07-settings-browser-persistence.md; R01/17:40 r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.; apps/superadmin/test/features/account/presentation/screens/profile_page_test.dart e settings_page_test.dart -> 45 PASS; apps/superadmin/lib/app/router/superadmin_router.dart linhas 3090-3101; commit 458277400; apps/superadmin/test/features/account/presentation/screens/account_theme_width_matrix_test.dart -> 32 PASS; docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/72-settings-light-reload.png",
       "historicalFrontend": "local-green",
       "historicalBackend": "audited",
-      "frontendStatus": "pending-verification",
+      "frontendStatus": "verified",
       "backendStatus": "not-applicable",
       "integratedStatus": "flutter-only",
       "lastHandoffRevision": 51,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/72-settings-light-reload.png",
+          "revision": "comunicacao/operacoes.json rev 26",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (13be50ae8) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T13:44:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/70-settings-open.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/71-settings-light.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/72-settings-light-reload.png"
+          ]
+        }
+      }
     },
     {
       "id": "account.mfa",
@@ -5812,13 +5837,13 @@
       "screen": "Planos / Diretório",
       "scope": "mvp",
       "done": "Spec051 aprovada, catálogo manual/backend be28f0c0, repository e5a24a82 e contexto de form c8cd7518 implementados. C00 integrou comparação por identidade do contexto do repositório60ae2b2a.",
-      "fe": "R03: diretorio de Planos no composto (Fase 0 8fafbe16c) com goldens regravados; ARQUIVO (icone de arquivar/duplicar) segue em wip/fase0-arquivo-chat. Gate para verified: rota normal com sessao (P17).",
-      "be": "Resolver conflito específico de principal People da051 versus interno039; reader/command nominal e runtime. Não exigir aprovação geral do catálogo já aprovado.",
-      "evidence": "specs/051-superadmin-plans-production.md; docs/open-questions.md; commitsbe28f0c0/e5a24a82/c8cd7518; R01-delta-1815: C03r23 52f2075f usa identidade do repository;36não-golden relatados, revisão em andamento.; Fechamento R01 C03/r33; C00288PASS; conflito039/051 mantido em open-questions; etapa-2-operacao/reports/R01-fechamento-20260909.md; commits 5f42fbcbd e 01081d3fc; apps/superadmin/test/features/plans/ -> 41 PASS; commit ac3238f7c; medicao antes e depois na mesma execucao; suite de Planos 42 PASS com a unica falha sendo plan_golden_test, ja no censo; goldens-claro-decisoes-2026-09-10.md; R03-fase0-handoff.md",
+      "fe": "R05 (11/09 13:30, rota real com qa-r03): /plans abre pela rota normal (superadmin_plans_list 200; catalogo vazio com busca, toggle, Arquivos, abas Todos/Ativos/Arquivados e card Novo plano); apos criar, lista o plano; reload mantem.",
+      "be": "R05 (11/09 13:30, rota real com qa-r03): /plans abre pela rota normal (superadmin_plans_list 200; catalogo vazio com busca, toggle, Arquivos, abas Todos/Ativos/Arquivados e card Novo plano); apos criar, lista o plano; reload mantem. Backend: superadmin_plans_list/plan_get/plan_save na baseline de producao; pgTAP comportamental superadmin_plans_behavior_v1_test 40/40 no descartavel (anonimo 28000, sem plan.change 42501, ator escopado a instituicao 42501, authenticated sem leitura direta, replay por request_id, conflito 40001) exige o candidato 20260911200000_superadmin_plans_platform_scope_v1 (escopo de plataforma) ainda NAO aplicado em producao: BE fica local-green ate o coordenador aplicar.",
+      "evidence": "specs/051-superadmin-plans-production.md; docs/open-questions.md; commitsbe28f0c0/e5a24a82/c8cd7518; R01-delta-1815: C03r23 52f2075f usa identidade do repository;36não-golden relatados, revisão em andamento.; Fechamento R01 C03/r33; C00288PASS; conflito039/051 mantido em open-questions; etapa-2-operacao/reports/R01-fechamento-20260909.md; commits 5f42fbcbd e 01081d3fc; apps/superadmin/test/features/plans/ -> 41 PASS; commit ac3238f7c; medicao antes e depois na mesma execucao; suite de Planos 42 PASS com a unica falha sendo plan_golden_test, ja no censo; goldens-claro-decisoes-2026-09-10.md; R03-fase0-handoff.md; docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/40-plans-open.png; packages/coelo_database/supabase/tests/superadmin_plans_behavior_v1_test.sql",
       "historicalFrontend": "audited",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "local-green",
-      "backendStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "local-green",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
@@ -5834,6 +5859,19 @@
         "referencia": 4,
         "atual": 0,
         "fonte": "goldens-claro-decisoes-2026-09-10"
+      },
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/40-plans-open.png",
+          "revision": "comunicacao/operacoes.json rev 24",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (fab9b9fd0) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T13:35:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/40-plans-open.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/44-plan-created.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/47-plan-edited-reload.png"
+          ]
+        }
       }
     },
     {
@@ -5842,17 +5880,32 @@
       "screen": "Criar Plano",
       "scope": "mvp",
       "done": "Spec051 aprovada, catálogo manual/backend be28f0c0, repository e5a24a82 e contexto de form c8cd7518 implementados. C00 integrou comparação por identidade do contexto do repositório60ae2b2a.",
-      "fe": "Criterio C03r33, erro inesperado no diretorio, fechado: _load e o caminho de arquivar/restaurar so capturavam PlanRepositoryException, entao qualquer outra falha deixava a tela presa no indicador de progresso e virava unhandled async error; ambos passam a fechar em PlanDataState.error. A causa raiz foi corrigida junto no repositorio, onde o helper _rpc so mapeava PostgrestException. Nao promove a acao: o aceite visual segue aberto e plan_golden_test falha na base.",
-      "be": "Resolver conflito específico de principal People da051 versus interno039; reader/command nominal e runtime. Não exigir aprovação geral do catálogo já aprovado.",
-      "evidence": "specs/051-superadmin-plans-production.md; docs/open-questions.md; commitsbe28f0c0/e5a24a82/c8cd7518; R01/C00 2026-09-08T19:00:55-03:00 9936a858: Detalhe/save rejeitam plano ou código divergente. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; Fechamento R01 C03/r33; C00288PASS; conflito039/051 mantido em open-questions; etapa-2-operacao/reports/R01-fechamento-20260909.md; commits 5f42fbcbd e 01081d3fc; apps/superadmin/test/features/plans/ -> 41 PASS",
+      "fe": "R05 (11/09 13:30, rota real com qa-r03): card Novo plano -> /plans/new (gate de mutacao ligado em fab9b9fd0 pelo repositorio composto) -> Identificacao, Capacidades (6), Limites, Revisao com motivo de auditoria -> superadmin_plan_save 200 -> plano 5b0fc76b-51cd-4361-8d4f-e7033853eba6 listado (superadmin_plans_list 200).",
+      "be": "R05 (11/09 13:30, rota real com qa-r03): card Novo plano -> /plans/new (gate de mutacao ligado em fab9b9fd0 pelo repositorio composto) -> Identificacao, Capacidades (6), Limites, Revisao com motivo de auditoria -> superadmin_plan_save 200 -> plano 5b0fc76b-51cd-4361-8d4f-e7033853eba6 listado (superadmin_plans_list 200). Backend: superadmin_plans_list/plan_get/plan_save na baseline de producao; pgTAP comportamental superadmin_plans_behavior_v1_test 40/40 no descartavel (anonimo 28000, sem plan.change 42501, ator escopado a instituicao 42501, authenticated sem leitura direta, replay por request_id, conflito 40001) exige o candidato 20260911200000_superadmin_plans_platform_scope_v1 (escopo de plataforma) ainda NAO aplicado em producao: BE fica local-green ate o coordenador aplicar.",
+      "evidence": "specs/051-superadmin-plans-production.md; docs/open-questions.md; commitsbe28f0c0/e5a24a82/c8cd7518; R01/C00 2026-09-08T19:00:55-03:00 9936a858: Detalhe/save rejeitam plano ou código divergente. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; Fechamento R01 C03/r33; C00288PASS; conflito039/051 mantido em open-questions; etapa-2-operacao/reports/R01-fechamento-20260909.md; commits 5f42fbcbd e 01081d3fc; apps/superadmin/test/features/plans/ -> 41 PASS; docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/41-plan-create-open.png; packages/coelo_database/supabase/tests/superadmin_plans_behavior_v1_test.sql",
       "historicalFrontend": "local-green",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "local-green",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:14-03:00"
+      "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/41-plan-create-open.png",
+          "revision": "comunicacao/operacoes.json rev 24",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (fab9b9fd0) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T13:35:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/41-plan-create-open.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/42-plan-create-step2.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/43-plan-create-review.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/43b-plan-motivo.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/44-plan-created.png"
+          ]
+        }
+      }
     },
     {
       "id": "plans.edit",
@@ -5860,17 +5913,30 @@
       "screen": "Editar Plano",
       "scope": "mvp",
       "done": "Spec051 aprovada, catálogo manual/backend be28f0c0, repository e5a24a82 e contexto de form c8cd7518 implementados. C00 integrou comparação por identidade do contexto do repositório60ae2b2a.",
-      "fe": "Criterio C03r33, erro inesperado no diretorio, fechado: _load e o caminho de arquivar/restaurar so capturavam PlanRepositoryException, entao qualquer outra falha deixava a tela presa no indicador de progresso e virava unhandled async error; ambos passam a fechar em PlanDataState.error. A causa raiz foi corrigida junto no repositorio, onde o helper _rpc so mapeava PostgrestException. Nao promove a acao: o aceite visual segue aberto e plan_golden_test falha na base.",
-      "be": "Resolver conflito específico de principal People da051 versus interno039; reader/command nominal e runtime. Não exigir aprovação geral do catálogo já aprovado.",
-      "evidence": "specs/051-superadmin-plans-production.md; docs/open-questions.md; commitsbe28f0c0/e5a24a82/c8cd7518; R01/C00 2026-09-08T19:00:55-03:00 9936a858: Detalhe/save rejeitam plano ou código divergente. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; Fechamento R01 C03/r33; C00288PASS; conflito039/051 mantido em open-questions; etapa-2-operacao/reports/R01-fechamento-20260909.md; commits 5f42fbcbd e 01081d3fc; apps/superadmin/test/features/plans/ -> 41 PASS",
+      "fe": "R05 (11/09 13:30, rota real com qa-r03): card -> /plans/<id>/edit (superadmin_plan_get 200), nome alterado para [R05-QA] Plano de teste editado, Revisao + motivo -> superadmin_plan_save 200 (revisao 2); reload de /plans mostra o nome editado.",
+      "be": "R05 (11/09 13:30, rota real com qa-r03): card -> /plans/<id>/edit (superadmin_plan_get 200), nome alterado para [R05-QA] Plano de teste editado, Revisao + motivo -> superadmin_plan_save 200 (revisao 2); reload de /plans mostra o nome editado. Backend: superadmin_plans_list/plan_get/plan_save na baseline de producao; pgTAP comportamental superadmin_plans_behavior_v1_test 40/40 no descartavel (anonimo 28000, sem plan.change 42501, ator escopado a instituicao 42501, authenticated sem leitura direta, replay por request_id, conflito 40001) exige o candidato 20260911200000_superadmin_plans_platform_scope_v1 (escopo de plataforma) ainda NAO aplicado em producao: BE fica local-green ate o coordenador aplicar.",
+      "evidence": "specs/051-superadmin-plans-production.md; docs/open-questions.md; commitsbe28f0c0/e5a24a82/c8cd7518; R01/C00 2026-09-08T19:00:55-03:00 9936a858: Detalhe/save rejeitam plano ou código divergente. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; Fechamento R01 C03/r33; C00288PASS; conflito039/051 mantido em open-questions; etapa-2-operacao/reports/R01-fechamento-20260909.md; commits 5f42fbcbd e 01081d3fc; apps/superadmin/test/features/plans/ -> 41 PASS; docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/45-plan-edit-open.png; packages/coelo_database/supabase/tests/superadmin_plans_behavior_v1_test.sql",
       "historicalFrontend": "local-green",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "local-green",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:14-03:00"
+      "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/45-plan-edit-open.png",
+          "revision": "comunicacao/operacoes.json rev 24",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (fab9b9fd0) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T13:35:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/45-plan-edit-open.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/46-plan-edit-review.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/47-plan-edited-reload.png"
+          ]
+        }
+      }
     },
     {
       "id": "plans.activate",
@@ -6877,7 +6943,7 @@
       "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
     }
   ],
-  "updatedAt": "2026-09-11T16:46:46.346Z",
+  "updatedAt": "2026-09-11T16:47:03.827Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,
