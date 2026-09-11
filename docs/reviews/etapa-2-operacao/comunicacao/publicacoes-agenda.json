@@ -1,15 +1,15 @@
 {
-  "revision": 31,
+  "revision": 32,
   "round": "E2-R05-20260911",
   "group": "publicacoes-agenda",
   "tool": "Claude Code",
   "model": "Opus 5 (1M), esforco medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-publicacoes-agenda",
   "branch": "work/etapa2-r05-publicacoes-agenda",
-  "head": "2f6a6114f",
+  "head": "2a982a453",
   "base": "origin/dev 2f6a6114f",
   "coordinator": "Claude (R05 · Coordenacao da tarde)",
-  "updatedAt": "2026-09-11T12:10:00-03:00",
+  "updatedAt": "2026-09-11T13:02:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -61,7 +61,7 @@
     "memoryNote": "R05: maximo dois Chrome por conversa, um flutter test por vez.",
     "closedAt": "03:12: Chrome 9334 e servidor 3006 fechados de novo; nenhum processo meu restante."
   },
-  "firstGate": "P33 (R): calendario da Agenda conforme referencia iOS (grade fora de conteiner, cantos menos redondos, numero menor no canto sup. esq. com respiro, toggle 50/50 centralizado, pastilhas empilhadas, hoje em circulo cheio, cancelado hachurado com prefixo CANCELADO, botao Hoje no rodape) -> P34 (A+) rodape do detalhe igual ao SuperadminFormFrame -> goldens agenda_calendar_* regravados no 3.44.2 + pagina R/A ao coordenador.",
+  "firstGate": "agenda.request/permissions/location na rota real com qa-r03 (build web qa_main + Chrome CDP), depois notices.schedule pela tela e circulars.edit/schedule/respond/attach.",
   "status": "em andamento",
   "findings": [
     "Presença em produção (mapa r03-coordenacao): notices_v2 185008 = 1/16 (só analytics.notice_events); circulars_v2 191921 = 0/14; circulars_media_r2 212000 = 6/6; agenda 183836/193717 presentes (superadmin_agenda_list/get/contexts/save/command/requests/decide_publication em public).",
@@ -83,18 +83,80 @@
   "packages": [],
   "compositionKeys": [],
   "tests": {
-    "passed": null,
-    "failed": null,
-    "blocked": null,
-    "skipped": null,
-    "unknown": "nenhum teste rodado ainda nesta rodada"
+    "passed": 291,
+    "failed": 0,
+    "blocked": 0,
+    "skipped": 0,
+    "evidence": [
+      "flutter test test/features/agenda (um por vez): 291 PASS apos 2a982a453",
+      "flutter analyze apps/superadmin: 0 erros (1 warning pre-existente em test_driver/qa_login.dart)"
+    ],
+    "unknown": "bateria completa do app nao repetida (um flutter test por vez); rota real ainda nao exercida nesta rodada"
   },
   "blocked": "nenhum",
-  "next": "P33 no agenda_calendar_page.dart",
-  "changes": [],
-  "pendingForCoordinator": [],
-  "proposedDeltas": [],
-  "questionsToOwner": [],
+  "next": "(3) rota real: agenda.permissions (tela), agenda.request (superadmin_agenda_requests com solicitacao sintetica), agenda.location (contexto de unidade na instituicao sintetica).",
+  "changes": [
+    {
+      "sha": "5edfccef9",
+      "actionIds": [
+        "agenda.view"
+      ],
+      "what": "P33: calendario mensal conforme referencia iOS (grade sem conteiner, linhas finas, numero menor no canto sup. esq., hoje em circulo cheio, pastilhas empilhadas, cancelado hachurado CANCELADO+hora, toggle 50/50 centralizado, Hoje no rodape). Goldens agenda_calendar_*, agenda_list_* e agenda_http_calendar_* regravados no 3.44.2.",
+      "tests": "agenda_calendar_page_test 6/6 (novo teste da referencia iOS), agenda_approved_visual_contract_red, shell_overflow, empty_state, router, architecture: 17/17; goldens 18/18"
+    },
+    {
+      "sha": "16651dc88",
+      "actionIds": [
+        "agenda.detail"
+      ],
+      "what": "P34: detalhe do evento com SuperadminFormActionFooter ancorado (igual a criar/editar Instituicao), superficie do tema sem cinza, destrutivo a esquerda e Editar item a direita; indicador de status mantido em 48 px. Goldens agenda_detail_* regravados.",
+      "tests": "agenda_event_detail_page_test 6/6; goldens detail 6/6"
+    },
+    {
+      "sha": "2a982a453",
+      "actionIds": [
+        "agenda.detail"
+      ],
+      "what": "Falhas pre-existentes na base (agenda_remote_states_test: retry do detalhe, 2 testes) corrigidas: mock nao simulava superadmin_agenda_contexts (rev 26 da R04).",
+      "tests": "agenda_remote_states_test 23/23; suite test/features/agenda 291/291"
+    }
+  ],
+  "pendingForCoordinator": [
+    {
+      "actionIds": [
+        "agenda.view",
+        "agenda.detail"
+      ],
+      "pending": "Encaminhar duvidas-visuais.html ao Owner (R/A). Aprovacao visual nao vira verified. Goldens regravados so entram como aprovacao apos a resposta."
+    },
+    {
+      "actionIds": [
+        "agenda.view"
+      ],
+      "pending": "Regra de conteudo do P33 (calendario mostra tudo que a hierarquia permite: eventos, aniversarios, provas; filtro por crianca/perfil no menu do perfil) e do Principal/Admin: registrada como conhecimento na skill coelo-ui (ja consta na baseline) e depende de fontes de aniversarios/provas que ainda nao existem no Superadmin; fora do recorte da R05, registrar em coelo-knowledge/pendencias."
+    }
+  ],
+  "proposedDeltas": [
+    {
+      "actionId": "agenda.view",
+      "layer": "FE",
+      "proposed": "verified (mantido) + ownerVisualApproval pendente (P33 A)",
+      "evidence": "5edfccef9; goldens 3.44.2"
+    },
+    {
+      "actionId": "agenda.detail",
+      "layer": "FE",
+      "proposed": "verified (mantido) + ownerVisualApproval pendente (P34 A+)",
+      "evidence": "16651dc88, 2a982a453"
+    }
+  ],
+  "questionsToOwner": [
+    {
+      "id": "P33/P34 (R05)",
+      "file": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/duvidas-visuais.html",
+      "ask": "Aprovar A (render atual) de agenda_calendar_{light,dark}_{375,768,1440} e agenda_detail_{light,dark}_{375,768,1440} apos as correcoes P33/P34; R do calendario e a captura do iPhone. Duvida menor: manter indicador de status do detalhe em 48 px (WCAG) ou voltar ao circulo de 24 px?"
+    }
+  ],
   "r03History": {
     "revision": 12,
     "round": "E2-R03-20260910",
