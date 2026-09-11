@@ -1,15 +1,15 @@
 {
- "revision": 35,
+ "revision": 36,
  "round": "E2-R05-20260911",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5 (Claude, Opus, esforco medio)",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T12:58-03:00",
+ "updatedAt": "2026-09-11T12:59-03:00",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-formularios-cuidado-rotina",
  "branch": "work/etapa2-r05-formularios-cuidado-rotina",
- "head": "1f4b02e28 (publicado)",
+ "head": "30cb982ca (publicado)",
  "base": "origin/dev 2f6a6114f",
  "scope": {
   "families": [
@@ -40,17 +40,17 @@
   ]
  },
  "currentGate": {
-  "gate": "forms.publish e forms.overview provados na rota real; Distribuir ligado (build em andamento) para abrir monitor/responder/respostas; Seguranca infantil criar/editar ligados, prova na rota real a seguir",
-  "screen": "Etapa 2 -> apps/superadmin -> Operacao -> Formularios / Seguranca infantil",
+  "gate": "distribuicao salva em producao (form_save_application/form_save_schedule 200); aguardando o cron coelo-forms-occurrences (*/5) materializar a ocorrencia para provar monitor/responder/respostas; Seguranca infantil e Rotina ligadas no build 3",
+  "screen": "Etapa 2 -> apps/superadmin -> Operacao -> Formularios",
   "actionIds": [
-   "forms.publish",
-   "forms.overview",
    "forms.monitor",
    "forms.respond",
    "forms.responses",
+   "forms.response-detail",
    "child-safety.create",
    "child-safety.edit",
-   "child-safety.suspend"
+   "child-safety.suspend",
+   "daily-routine.create"
   ]
  },
  "loopAgendado": "/loop 15m, agendado na abertura (12:12)",
@@ -101,7 +101,17 @@
    "delta": "card Criar agora aparece em producao (F-R04-FCR-010a); prova na rota real apos o rebuild"
   }
  ],
- "packages": [],
+ "packages": [
+  {
+   "arquivo": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260911220000_daily_routine_directory_can_manage_v1.sql",
+   "action_id": [
+    "daily-routine.create",
+    "daily-routine.edit"
+   ],
+   "estado": "escrito; pgTAP pendente (sera rodado no espelho descartavel do subagente); create or replace de app_private.superadmin_routine_directory com can_manage no topo",
+   "chave_de_composicao": "nenhuma"
+  }
+ ],
  "commits": [
   {
    "sha": "f6b536aa0",
@@ -116,6 +126,20 @@
    "sha": "1f4b02e28",
    "o_que": "feat(seguranca-infantil): onCreate/onEdit ligados em /safety e /safety/children/:id (P32 B; RPCs child_safety_* e superadmin_child_safety_* conferidas em pg_proc de producao)",
    "prova": "analyzer limpo; safety_routes_test + safety_reflow_test 6/6"
+  },
+  {
+   "sha": "b05078dc3",
+   "o_que": "fix(formularios): distribuicao nova vai ao fio com id nulo; o wrapper publico form_save_application trata id presente como distribuicao existente e respondia P0002 \"form application unavailable\" (medido por Network na rota real)",
+   "prova": "supabase_forms_api_test + forms_schedule_dialog_test 57/57 (1 caso novo)"
+  },
+  {
+   "sha": "(docs) spec",
+   "o_que": "docs/superpowers/specs/2026-09-11-child-safety-medication-policies-and-notifications-design.md: spec curta da regra alvo P32 (sino para unidade/hierarquia/demais responsaveis; unit_policies com acceptance_mode e tracking_enabled; aceite auditado; medicacao nao acompanhada = recusa honesta). Nao implementada; pacote de notificacoes nao coube na R05 e pode ser absorvido pelo item 6 da G5"
+  },
+  {
+   "sha": "30cb982ca",
+   "o_que": "feat(rotina): candidato 20260911220000_daily_routine_directory_can_manage_v1 (can_manage no topo do envelope de superadmin_routine_directory, mesmo corpo do lote 2 + a chave) e cliente lendo o topo com fallback por linha; router compoe onCreateEntry/onEdit em /daily-routine (F-R04-FCR-009)",
+   "prova": "analyzer limpo; pgTAP do candidato ainda por rodar (espelho do subagente de Assiduidade)"
   }
  ],
  "pendenciasRegistradas": [
@@ -136,7 +160,7 @@
   }
  ],
  "duvidasParaOOwner": [],
- "nextStep": "rebuild web com Distribuir; na rota real: Distribuir (instituicao sintetica) -> agendamento -> ocorrencia materializada pelo cron (5 min) -> monitor/responder/respostas/detalhe; Seguranca infantil criar/editar/suspender; depois cuidado/medicacao e assiduidade/rotina",
+ "nextStep": "ocorrencia pelo cron -> monitor/responder/respostas/detalhe na rota real; Seguranca infantil criar/editar/suspender; Cuidado/Medicacao criar/detalhe/editar; XLSX (responses.export) se houver resposta",
  "finalizado": false,
  "historicoR04": {
   "revision": 33,
@@ -1302,6 +1326,42 @@
     "04-forms-overview-reload.png"
    ],
    "pendencia": "a visao geral nao mostra o status (Publicado/Rascunho), so a versao; registrar como melhoria FE"
+  },
+  "forms.distribuir": {
+   "resultado": "P (subpasso de forms.monitor/respond)",
+   "prova": "Distribuir -> Publico e agendamento (instituicao sintetica, toda a instituicao) -> Editar agendamento (uma vez, 11/09 12:55 a 11/10) -> Salvar: form_save_application 200 (application a0ee4530-469a-4c64-a7ab-9dca12746cbf), form_save_schedule 200 (schedule 2860c35a-...), form_get_overview recarregado",
+   "capturas": [
+    "09-distribuir-dialogo.png",
+    "10-agendamento.png",
+    "11-distribuido.png"
+   ],
+   "primeira_tentativa": "P0002 form application unavailable (corrigido em b05078dc3)"
+  },
+  "forms.files": {
+   "resultado": "F",
+   "prova": "/forms/4555ba07.../files: \"Acesso nao autorizado\" (form_list_file_jobs nega a sessao qa-r03); logo depois a sessao foi derrubada para /login (a invalidacao de autorizacao do withFormsAuthorization?). Gate: capacidade de arquivos para a sessao interna (BE) e conferir por que a negativa derruba a sessao (FE)"
   }
- }
+ },
+ "notaRelogio": "a rev 35 registrou 12:58 por engano; o relogio da maquina marcava 12:40",
+ "subagentes": [
+  {
+   "tarefa": "pacote 20260911220100_attendance_superadmin_contract_v1 (14 RPCs do cliente de Assiduidade ausentes em producao: superadmin_attendance_directory/call_detail/create_call/set_participant/correct_participant/complete_call/reopen_call/mark_remaining_present/clear_presence_marks/undo_bulk/confirm_notice e attendance_dashboard_read/ranking_page/request_export) + pgTAP no descartavel",
+   "estado": "em execucao desde 12:52; sem Chrome, sem flutter test, sem producao"
+  }
+ ],
+ "dadosSinteticosCriados": [
+  {
+   "tabela": "public.form_applications",
+   "id": "a0ee4530-469a-4c64-a7ab-9dca12746cbf",
+   "nome": "Distribuicao de formulario",
+   "form": "4555ba07-e4a4-4971-8ba7-d81a775169cd"
+  },
+  {
+   "tabela": "public.form_application_schedules",
+   "id": "2860c35a-e878-41f5-bb49-00746977975d"
+  },
+  {
+   "nota": "ocorrencias/participacoes geradas pelo cron a partir desta distribuicao"
+  }
+ ]
 }
