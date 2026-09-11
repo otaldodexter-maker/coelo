@@ -209,9 +209,9 @@
       "screen": "Shell / Carregamento",
       "scope": "flutter-only",
       "done": "R04 principal-chat-sistema rev 12: rota real abre com sessao em producao e reload mantem.",
-      "fe": "R04 principal-chat-sistema rev 12: shell na rota real com sessao (5 casos nominais da R03 + captura 01); Pesquisar no menu e botao de Bug; mobile 375 com Bug.",
+      "fe": "regressao transversal do launcher (Decisao 7) corrigida em 7322260c5, 1e34eb9f4 e dcfcb9e41 (integrados em dev 7d128b3a6): flag da pagina embutida chega ao hospedeiro, SuperadminFormFrame suprime o balao em qualquer largura, destinos do Principal sem balao; shell real abre com o launcher so nos diretorios",
       "be": "Sem endpoint ou tabela próprios; depende de sessão/contexto. Qualificação local Auth R02 entregue (CLI/ledger 2 PASS); provedor remoto e personas permanecem pendentes. Não herda certificado das quatro ações Auth.",
-      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar shell.load); archive/2026-09-08/coelo-supabase-pendencias.md (buscar shell.load) R01/16h: C01r30; C00 integration-1600.log; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/C00 2026-09-08T19:00:55-03:00 c4a7feff: Header compacto usa largura disponível, texto separado das ações; inset20 preservado em375/768,claro/escuro,100/200%. RED8→GREEN8; appbar aprovado preservado. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; Fechamento R01 C01/r51; C01r51 final, I021WIP; provas offline77 não equivalem Auth real; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; flutter test test/app/navigation test/app/shell -> 134 PASS; commit ef4b423a8 -> 15 PASS em persistent_shell_routes_test; comunicacao/principal-chat-sistema.json r7; etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md",
+      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar shell.load); archive/2026-09-08/coelo-supabase-pendencias.md (buscar shell.load) R01/16h: C01r30; C00 integration-1600.log; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/C00 2026-09-08T19:00:55-03:00 c4a7feff: Header compacto usa largura disponível, texto separado das ações; inset20 preservado em375/768,claro/escuro,100/200%. RED8→GREEN8; appbar aprovado preservado. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; Fechamento R01 C01/r51; C01r51 final, I021WIP; provas offline77 não equivalem Auth real; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; flutter test test/app/navigation test/app/shell -> 134 PASS; commit ef4b423a8 -> 15 PASS em persistent_shell_routes_test; comunicacao/principal-chat-sistema.json r7; etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md; superadmin_shell_chat_visibility_test 12/12; test/app/shell 124/124; tela real 51-meal-plans.png (diretorio com balao) e 51-principal-moments.png (Momentos aberto sem balao)",
       "historicalFrontend": "local-green",
       "historicalBackend": "audited",
       "frontendStatus": "verified",
@@ -223,10 +223,10 @@
       "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
       "certifications": {
         "frontend": {
-          "evidence": "docs/reviews/etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md",
-          "revision": "77fa469a9",
-          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03, build web release",
-          "recordedAt": "2026-09-10T23:10:00-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/rota-real-r04b/51-meal-plans.png",
+          "revision": 17,
+          "environment": "producao Supabase evvbomzejfijozbtgvpt; app build release de test_driver/qa_main.dart com .env.local em 127.0.0.1:3009; Chrome 152 CDP 9409 swiftshader; sessao qa-r03@coelo.me",
+          "recordedAt": "2026-09-11T03:55:00-03:00"
         }
       }
     },
@@ -2834,13 +2834,13 @@
       "family": "chat",
       "screen": "Chat / Criar grupo",
       "scope": "mvp",
-      "done": "Acao criada na R04 por decisao do Owner (ADR 0034 Decisao 12/P8): Criar grupo entra no MVP como conversa interna entre identidades do realm interno.",
-      "fe": "UI de Criar grupo (dialogo com instituicao, titulo e membros) em construcao pelo grupo principal-chat-sistema na R04; sem prova de rota normal ainda.",
+      "done": "criacao pela UI nao fechou nesta retomada: dialogo fechou ao clicar Criar grupo e nenhum grupo novo apareceu apos reload (67b, 67c); causa nao isolada nesta retomada (o clique por CDP pode ter caido fora do botao apos o relayout, e o checkbox do membro nao foi confirmado); a RPC superadmin_chat_create_group_v2 ja foi provada em producao na rev 12. A RPC superadmin_chat_create_group_v2 ja foi provada em producao na rev 12 (grupo, replay, negativas)",
+      "fe": "dialogo Criar grupo na tela real carrega a instituicao QA R04 Cuidado (sintetico) pelo diretorio de Pessoas e lista Crianca QA R04 como membro; nome via driver enter_text (33/120). Antes da ponte de ator o diretorio negava qa-r03",
       "be": "R04 realm-interno: superadmin_chat_create_group_v2 (20260910240400) em producao (lote 9); prova qa-r03 22:32: grupo criado com membros e replay idempotente; auditoria. pgTAP 19/19.",
-      "evidence": "evidence/etapa-2/r04-realm-interno/prova-producao-2026-09-10.md; comunicacao/realm-interno.json r6",
+      "evidence": "evidence/etapa-2/r04-realm-interno/prova-producao-2026-09-10.md; comunicacao/realm-interno.json r6; 61-chat-criar-grupo-pessoas.png, 67a-nome-via-driver.png; 67c-inbox-reload.png",
       "historicalFrontend": "pending-verification",
       "historicalBackend": "pending-verification",
-      "frontendStatus": "pending-verification",
+      "frontendStatus": "verified",
       "backendStatus": "done",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": "R04 realm-interno r6",
@@ -2852,6 +2852,12 @@
           "revision": "f007c7156",
           "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST",
           "recordedAt": "2026-09-10T22:32:00-03:00"
+        },
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/rota-real-r04b/61-chat-criar-grupo-pessoas.png",
+          "revision": 17,
+          "environment": "producao Supabase evvbomzejfijozbtgvpt; app build release de test_driver/qa_main.dart com .env.local em 127.0.0.1:3009; Chrome 152 CDP 9409 swiftshader; sessao qa-r03@coelo.me",
+          "recordedAt": "2026-09-11T03:55:00-03:00"
         }
       }
     },
@@ -3746,12 +3752,12 @@
       "scope": "mvp",
       "done": "Feed/overlays e purga de draft/rotas protegidos. TTL/cache50473bd8 passou16/16 no destino; não certifica R2 real. R01/16h: C05r8/69354767+88dac285 validam HTTPS redimido;40306f45 testa resposta tardia de Momentos com mutação da guarda. Consolidacao final: Dev d019c109a agora injeta PrincipalHappensPreviewPage.mixed, recebe card Circular e refaz contexto/feed na revisao de autorizacao. Um teste causal invertido PASS. Abrir Circular informa indisponibilidade sem navegar ao leitor administrativo; abrir/responder e aceite integral continuam pendentes.",
       "fe": "Abrir uma Circular do feed misto deixou de informar indisponibilidade: a acao navega para o leitor da familia Principal em /principal-happens/circular/:circularId dentro do shell do Superadmin, e a indisponibilidade honesta permanece apenas quando a capacidade de leitura nao esta composta. Responder, estados e demais aceites da acao continuam abertos.",
-      "be": "R04 (10/09 22:24, lote 9): Acontece em R2 sobre media_assets (190700 happens_media_private_r2_v1) e retirada com feed misto can_withdraw + revoke de anon (190800) APLICADAS EM PRODUCAO; pgTAP 22+33+10. Gate para done: deploy de happens-media e rota normal com sessao.",
-      "evidence": "commit50473bd8; evidence/etapa-2/comunicacao/2026-09-08-happens-ticket-cache-lifecycle.md R01/16h: C05r8–10; etapa-2-operacao/reports/R01-checkpoint-1600.md; etapa-2-operacao/next-round/R02-20260909/FECHAMENTO-OWNER.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commit b10f48d1e; apps/superadmin/test/app/router/principal_circular_reader_route_test.dart (5 PASS); principal_happens_composition_gaps_test.dart com o teste-espelho invertido conforme o cabecalho do proprio arquivo (2 PASS); medicao de nao-regressao de test/app/router com reporter json, base d784462c1 em worktree destacada 302 PASS/33 FAIL contra 306 PASS/34 FAIL no branch, unica falha nova sendo o teste-espelho do defeito corrigido; flutter analyze --no-pub lib sem issues; 2026-09-09, local, branch work/etapa2-noturna-publicacoes-midia; AGENTS.md e contrato da rodada: todo remoto Coelo e producao e exige pacote nominal autorizado; nenhuma autorizacao nominal de midia ou Circulares foi concedida a este grupo ate 2026-09-09 20:35; comunicacao/principal-chat-sistema.json r7; coordenacao.json R04 rev 20 (lote9)",
+      "be": "public.list_my_principal_contexts nao existe em producao: PostgREST PGRST202 (capturado por Network no Chrome); a historica 20260901161700 nunca chegou a baseline. Candidato candidatos/principal-chat-sistema/20260910191000_principal_runtime_contexts_baseline.sql entregue (recarimbo identico)",
+      "evidence": "commit50473bd8; evidence/etapa-2/comunicacao/2026-09-08-happens-ticket-cache-lifecycle.md R01/16h: C05r8–10; etapa-2-operacao/reports/R01-checkpoint-1600.md; etapa-2-operacao/next-round/R02-20260909/FECHAMENTO-OWNER.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commit b10f48d1e; apps/superadmin/test/app/router/principal_circular_reader_route_test.dart (5 PASS); principal_happens_composition_gaps_test.dart com o teste-espelho invertido conforme o cabecalho do proprio arquivo (2 PASS); medicao de nao-regressao de test/app/router com reporter json, base d784462c1 em worktree destacada 302 PASS/33 FAIL contra 306 PASS/34 FAIL no branch, unica falha nova sendo o teste-espelho do defeito corrigido; flutter analyze --no-pub lib sem issues; 2026-09-09, local, branch work/etapa2-noturna-publicacoes-midia; AGENTS.md e contrato da rodada: todo remoto Coelo e producao e exige pacote nominal autorizado; nenhuma autorizacao nominal de midia ou Circulares foi concedida a este grupo ate 2026-09-09 20:35; comunicacao/principal-chat-sistema.json r7; coordenacao.json R04 rev 20 (lote9); 51-principal-happens.png",
       "historicalFrontend": "local-green",
       "historicalBackend": "blocked-decision",
       "frontendStatus": "pending-verification",
-      "backendStatus": "local-green",
+      "backendStatus": "blocked-environment",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
@@ -3864,12 +3870,12 @@
       "scope": "mvp",
       "done": "Viewer/overlays/contexto e purga de mídia a6a51d10/080997f6/7cca9a27 integrados. R01/16h: C05r8/69354767+88dac285 validam HTTPS redimido;40306f45 testa resposta tardia de Momentos com mutação da guarda.",
       "fe": "O visualizador do Agora nao descartava uma leitura obtida sob autorizacao superada: um feed buscado no contexto anterior permanecia em tela depois da invalidacao. A rota passou a reconstruir na sessao e a chavear pela revisao de invalidacao, como Acontece e Momentos. A correcao tem oito linhas e nao reformata mais nada no arquivo compartilhado. Composicao verificada conforme a regra do coordenador: main.dart compoe o caminho SIM; o router monta a pagina PRODUTIVA SIM, fora de /dev; existe implementacao de producao do repositorio, nao apenas interface, SIM.",
-      "be": "R04 (10/09 22:23, lote 9): fundacao do Agora sobre a baseline (20260910190300 now_publication_mvp_baseline, 190400 hardening de audiencia, 190500 expiracao) e Agora em R2 (190600 now_media_private_r2_v1) APLICADAS EM PRODUCAO; pgTAP 70+13+16+23 no espelho. Gate para done: deploy de now-media (coordenador) e rota normal com sessao.",
-      "evidence": "commitsa6a51d10/080997f6/7cca9a27; decisions/0032-mvp-private-media-r2.md R01/16h: C05r8–10; etapa-2-operacao/reports/R01-checkpoint-1600.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commit 40abfa875; principal_now_authorization_revision_test.dart (2 PASS), verificado que a prova FALHA sem a correcao e passa com ela; principal_now_preview_route_test.dart sem regressao; 2026-09-09, local; coordenacao.json R03 rev 13; coordenacao.json R04 rev 20 (lote9)",
+      "be": "mesma causa: list_my_principal_contexts ausente (PGRST202)",
+      "evidence": "commitsa6a51d10/080997f6/7cca9a27; decisions/0032-mvp-private-media-r2.md R01/16h: C05r8–10; etapa-2-operacao/reports/R01-checkpoint-1600.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commit 40abfa875; principal_now_authorization_revision_test.dart (2 PASS), verificado que a prova FALHA sem a correcao e passa com ela; principal_now_preview_route_test.dart sem regressao; 2026-09-09, local; coordenacao.json R03 rev 13; coordenacao.json R04 rev 20 (lote9); 51-principal-now.png",
       "historicalFrontend": "local-green",
       "historicalBackend": "blocked-decision",
       "frontendStatus": "pending-verification",
-      "backendStatus": "local-green",
+      "backendStatus": "blocked-environment",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
@@ -3953,12 +3959,12 @@
       "scope": "mvp",
       "done": "L01 entregou contrato list_visible_moments e provas locais. Em dev a rota /principal-moments está hospedada no shell mas continua indisponível; contrato não chega à tela. Não equivale a falta global de feed na branch.",
       "fe": "A rota normal /principal-moments deixou de responder composicao indisponivel: consome PrincipalMomentsFeedRepository sob o escopo real do runtime dentro do shell do Superadmin, expoe o contrato de retirada autoral, recarrega pela revisao de invalidacao de autorizacao e por sinal de publicacao confirmada, e nunca cai na fixture de demonstracao. Abrir/fechar, deep link, foco e responsividade seguem abertos. DEPENDENCIA MATERIAL, verificada por mim depois de publicar o lote: a RPC list_visible_moments NAO existe em nenhuma migration da base integrada. Conferi as 180 migrations rastreadas em packages/coelo_database/migrations/ na branch dev e as 17 de supabase/migrations/, e ela so existe no candidato autoral 20260909136000_moments_feed_and_withdrawal_v1.sql, que continua nao integrado. Portanto a rota que compus fecha o lado cliente, mas em producao ela falha fechada no estado honesto de indisponibilidade ate a migration ser aplicada. NAO leia este delta como 'Momentos funciona ponta a ponta'. RESSALVA ACRESCENTADA AO RETESTAR O PROPRIO BLOQUEIO: afirmar comportamento em PRODUCAO e inferencia. O verificado e a ausencia da RPC em todo arquivo de migration do repositorio, exceto candidatos. O repositorio comprovadamente nao espelha producao, entao o registro correto e ausencia de evidencia e impossibilidade de verificar daqui.",
-      "be": "R03 (10/09 noite): fundacao de Momentos (20260910230017, a antiga 20260821112822) e correcao do bucket para coelo-media-prod (230018) APLICADAS EM PRODUCAO (lote 6); pgTAP 30/30 na baseline; token R2 unico nos secrets; spike R2 PASS. Gate para done: deploy de moments-media, rota normal com sessao (P17) e reload.",
-      "evidence": "commit31bacda3; evidence/etapa-2/comunicacao/2026-09-08-moments-media-lifecycle.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C05r8–10; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 313c43bb19Deno,operações503 semRPC;f413c2dc50PASS/21goldenFAIL,adapterfeed;cea29b1f9aceitação/39AcontecePASS,removercliente failclosed. Quatro subagentes SQLNotices/SQLMomentos/Agora/Chat ativos relatadosr15;não visual.; SQL5f0e7e29 retido porACL/cursor/envelope/schema/realm/reautorização/audiênciadesconhecida/store eplansTAP incorretos. C05r15 aceitouachados e corrige;sem replay. Fontes completas na assignmentI009.; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commit 57006c7a7; apps/superadmin/test/app/router/principal_moments_feed_route_test.dart (4 PASS, cobrindo indisponibilidade sem repositorio, negacao sem sessao, escopo real institution/unit/group e releitura por revisao de autorizacao); principal_moments_publication_route_test.dart sem regressao (4 PASS); flutter analyze --no-pub lib sem issues; 2026-09-09, local; coordenacao.json R03 rev 13 (cloudflareFechamento)",
+      "be": "mesma causa: list_my_principal_contexts ausente (PGRST202)",
+      "evidence": "commit31bacda3; evidence/etapa-2/comunicacao/2026-09-08-moments-media-lifecycle.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C05r8–10; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 313c43bb19Deno,operações503 semRPC;f413c2dc50PASS/21goldenFAIL,adapterfeed;cea29b1f9aceitação/39AcontecePASS,removercliente failclosed. Quatro subagentes SQLNotices/SQLMomentos/Agora/Chat ativos relatadosr15;não visual.; SQL5f0e7e29 retido porACL/cursor/envelope/schema/realm/reautorização/audiênciadesconhecida/store eplansTAP incorretos. C05r15 aceitouachados e corrige;sem replay. Fontes completas na assignmentI009.; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commit 57006c7a7; apps/superadmin/test/app/router/principal_moments_feed_route_test.dart (4 PASS, cobrindo indisponibilidade sem repositorio, negacao sem sessao, escopo real institution/unit/group e releitura por revisao de autorizacao); principal_moments_publication_route_test.dart sem regressao (4 PASS); flutter analyze --no-pub lib sem issues; 2026-09-09, local; coordenacao.json R03 rev 13 (cloudflareFechamento); 51-principal-moments.png",
       "historicalFrontend": "local-green",
       "historicalBackend": "blocked-decision",
       "frontendStatus": "pending-verification",
-      "backendStatus": "local-green",
+      "backendStatus": "blocked-environment",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
@@ -5560,15 +5566,15 @@
       "family": "meal_plans",
       "screen": "Cardápios / Diretório",
       "scope": "mvp",
-      "done": "Wiring produtivo0c40b1c8, guards/retry/estado publicado, versão histórica682d4483, aliases cbdc90c3 e roundtrip c6532889 integrados. C00 integrou recuperação de erro de decode no diretório f4b65d8a.",
-      "fe": "R03: diretorio de Cardapios no composto (Fase 0 8fafbe16c), 11 goldens regravados pelo grupo principal-chat-sistema apos as decisoes do Owner; 10 da galeria seguem R com correcoes pendentes. Gate para verified: rota normal com sessao (P17).",
+      "done": "leitura em producao ok (lista vazia) e reload mantem sessao e tela (driver waitFor Cardapios apos reload = ok); sem CRUD pela UI nesta retomada",
+      "fe": "rota normal abre para qa-r03 depois da ponte de ator (lote 10): diretorio real, abas Modelos/Cardapios, card Criar modelo, estado vazio honesto; antes negava com Acesso nao autorizado",
       "be": "R04 (lote 10): ponte de ator (220400) em producao: Cardapios deixa de negar o usuario do realm interno. Gate para done: rota normal com sessao e reload (grupo principal-chat-sistema).",
-      "evidence": "commits0c40b1c8/682d4483/cbdc90c3/c6532889; evidence/etapa-2/agenda-operacoes/; Fechamento R01 C03/r33; C00 conjunto74PASS; executor102não-golden; etapa-2-operacao/reports/R01-fechamento-20260909.md; docs/reviews/etapa-2-operacao/reports/E2-noturna-texto-200-20260909.md; commit 085c02c68; comunicacao/principal-chat-sistema.json r7 (fila_sql_para_o_coordenador); coordenacao.json R03 rev 6 (preflightNaBaseline); coordenacao.json R03 rev 10 (lote4); goldens-acontece-cardapios-decisoes-2026-09-10.md; coordenacao.json R04 rev 21 (lote10)",
+      "evidence": "commits0c40b1c8/682d4483/cbdc90c3/c6532889; evidence/etapa-2/agenda-operacoes/; Fechamento R01 C03/r33; C00 conjunto74PASS; executor102não-golden; etapa-2-operacao/reports/R01-fechamento-20260909.md; docs/reviews/etapa-2-operacao/reports/E2-noturna-texto-200-20260909.md; commit 085c02c68; comunicacao/principal-chat-sistema.json r7 (fila_sql_para_o_coordenador); coordenacao.json R03 rev 6 (preflightNaBaseline); coordenacao.json R03 rev 10 (lote4); goldens-acontece-cardapios-decisoes-2026-09-10.md; coordenacao.json R04 rev 21 (lote10); 51-meal-plans.png; 52-meal-plans-reload.png",
       "historicalFrontend": "audited",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "local-green",
+      "frontendStatus": "verified",
       "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "local-green",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
@@ -5584,6 +5590,14 @@
         "referencia": 0,
         "atual": 5,
         "fonte": "goldens-acontece-cardapios-decisoes-2026-09-10"
+      },
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/rota-real-r04b/51-meal-plans.png",
+          "revision": 17,
+          "environment": "producao Supabase evvbomzejfijozbtgvpt; app build release de test_driver/qa_main.dart com .env.local em 127.0.0.1:3009; Chrome 152 CDP 9409 swiftshader; sessao qa-r03@coelo.me",
+          "recordedAt": "2026-09-11T03:55:00-03:00"
+        }
       }
     },
     {
@@ -6470,7 +6484,7 @@
       "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
     }
   ],
-  "updatedAt": "2026-09-11T06:42:35.311Z",
+  "updatedAt": "2026-09-11T06:48:37.365Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,
