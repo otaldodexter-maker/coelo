@@ -149,8 +149,9 @@ const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR
     r = await rpc('superadmin_circular_close_v2', { p_request_id: uuid(), p_circular_id: circularId, p_expected_version: cVer });
     if (ok(r)) cVer = r.body.data.version;
     if (assetId) {
+      // anexo de circular publicada e imutavel (remove_circular_media exige revisao de trabalho)
       const del = await fn('circular-media', { action: 'delete', asset_id: assetId });
-      check('circulars.attach', 'delete do anexo (limpeza) aceito', del.status === 200, short(del));
+      check('circulars.attach', 'delete de anexo ja publicado e recusado (imutavel)', del.status === 403, short(del));
     }
     r = await rpc('superadmin_circular_delete_v2', { p_request_id: uuid(), p_circular_id: circularId, p_expected_version: cVer });
     check('circulars.delete', 'limpeza da circular', ok(r) && r.body.data.deleted === true, ok(r) ? 'ok' : short(r));

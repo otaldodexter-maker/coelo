@@ -1,5 +1,5 @@
 {
-  "at": "2026-09-11T17:25:34.230Z",
+  "at": "2026-09-11T17:36:17.619Z",
   "results": [
     {
       "id": "agenda.permissions",
@@ -11,25 +11,25 @@
       "id": "circulars.create",
       "label": "rascunho com pergunta persiste",
       "pass": true,
-      "detail": "id be210c2c-dc64-4a49-bc2f-90327d4182fb"
+      "detail": "id 8f68563e-08ff-40f5-b530-81bf89fb830d"
     },
     {
       "id": "circulars.attach",
       "label": "prepare autoriza upload (R2 presign)",
-      "pass": "ccbc4ec9-d933-4ede-a581-973635bc4b3e",
-      "detail": "provider r2?; expira 2026-09-11T19:25:28.554Z"
+      "pass": "c853ba25-1ad0-4f80-8dcc-00c2980ea246",
+      "detail": "provider r2?; expira 2026-09-11T17:41:07.355Z"
     },
     {
       "id": "circulars.attach",
       "label": "PUT do arquivo no R2 aceito",
       "pass": true,
-      "detail": "status 200 em evvbomzejfijozbtgvpt.supabase.co"
+      "detail": "status 200 em 2363eb1eadce9b73279d3c8ce46eb424.r2.cloudflarestorage.com"
     },
     {
       "id": "circulars.attach",
       "label": "finalize valida bytes/assinatura e marca ready",
       "pass": true,
-      "detail": "{\"status\":\"ready\",\"asset_id\":\"ccbc4ec9-d933-4ede-a581-973635bc4b3e\",\"bucket_id\":\"coelo-circulars-private\",\"object_key\":\"d0c40000-0000-4000-8000-000000000001/circulars/be210c2c-dc64-4a49-bc2f-90327d418"
+      "detail": "{\"status\":\"ready\",\"asset_id\":\"c853ba25-1ad0-4f80-8dcc-00c2980ea246\",\"bucket_id\":\"coelo-media-prod\",\"object_key\":\"tenants/d0c40000-0000-4000-8000-000000000001/circulars/circular/8f68563e-08ff-40f5-b530"
     },
     {
       "id": "circulars.attach",
@@ -40,13 +40,13 @@
     {
       "id": "circulars.edit",
       "label": "edicao do rascunho com bloco de midia persiste",
-      "pass": false,
-      "detail": "{\"ok\":false,\"data\":null,\"error\":{\"code\":\"CIRCULAR_MEDIA_BLOCKED\",\"message\":\"A mídia ainda não está disponível.\",\"http_status\":422,\"correlation_id\":\"a6733b06-9404-4988-8a23-6b9ca423ce20\"}}"
+      "pass": true,
+      "detail": "v2"
     },
     {
       "id": "circulars.attach",
       "label": "reload (detail) mantem o asset no bloco de midia",
-      "pass": false,
+      "pass": true,
       "detail": "asset presente"
     },
     {
@@ -71,13 +71,13 @@
       "id": "circulars.attach",
       "label": "anexo finalizado na circular a publicar",
       "pass": true,
-      "detail": "bucket coelo-circulars-private"
+      "detail": "bucket coelo-media-prod"
     },
     {
       "id": "circulars.attach",
       "label": "rascunho com bloco de midia persiste (gateway v2)",
-      "pass": false,
-      "detail": "{\"ok\":false,\"data\":null,\"error\":{\"code\":\"CIRCULAR_MEDIA_BLOCKED\",\"message\":\"A mídia ainda não está disponível.\",\"http_status\":422,\"correlation_id\":\"43bc4706-4ecb-4779-b6a8-4d3d98deb87c\"}}"
+      "pass": true,
+      "detail": "v2"
     },
     {
       "id": "circulars.publish",
@@ -88,7 +88,7 @@
     {
       "id": "circulars.attach",
       "label": "read devolve ticket de leitura da circular publicada",
-      "pass": "https://evvbomzejfijozbtgvpt.supabase.co/storage/v1/object/sign/coelo-circulars-private/d0c40000-0000-4000-8000-000000000001/circulars/75dadbd2-b913-4fef-b57a-91100cc95e4f/4ff305b8-d214-4bf6-8f81-3a9cc8eef932?token=eyJraWQiOiI1MjRmZDYyYS0wMTk1LTQ5NDktOTI0YS0yNGQ2ZmVkMTRlZWUiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJjb2Vsby1jaXJjdWxhcnMtcHJpdmF0ZS9kMGM0MDAwMC0wMDAwLTQwMDAtODAwMC0wMDAwMDAwMDAwMDEvY2lyY3VsYXJzLzc1ZGFkYmQyLWI5MTMtNGZlZi1iNTdhLTkxMTAwY2M5NWU0Zi80ZmYzMDViOC1kMjE0LTRiZjYtOGY4MS0zYTljYzhlZWY5MzIiLCJzY29wZSI6ImRvd25sb2FkIiwiaWF0IjoxNzg5MTQ3NTMyLCJleHAiOjE3ODkxNDc2NTJ9.jSOSq56fRrYiPJKI-xvBrMttkesRZzZWPAK6qSFivZc",
+      "pass": "https://2363eb1eadce9b73279d3c8ce46eb424.r2.cloudflarestorage.com/coelo-media-prod/tenants/d0c40000-0000-4000-8000-000000000001/circulars/circular/dd97722c-e2a3-4f9f-8f4d-00634a3cdda0/attachment/cf47f461-9ff6-4a3a-b8e8-13275e85b205/original/da3343f9-83d1-4182-8e93-a0a6adcad9d7.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=63e42467b69846a3efd5d7b07f7de27d%2F20260911%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20260911T173616Z&X-Amz-Expires=120&X-Amz-SignedHeaders=host&X-Amz-Signature=c6dc45638b3f968aebc70178b4c701d7dcd8867b80de17297e67ffd439172c14",
       "detail": "signed_url,mime_type,expires_in"
     },
     {
@@ -100,20 +100,20 @@
     {
       "id": "circulars.attach",
       "label": "reload (detail) da publicada mantem o asset no bloco de midia",
-      "pass": false,
+      "pass": true,
       "detail": "ok"
     },
     {
       "id": "circulars.respond",
       "label": "detalhe publicado expoe revision_id",
       "pass": true,
-      "detail": "rev a5d30050-334c-4f08-a5f9-15dd74daf533"
+      "detail": "rev cfbc645e-3189-48c7-855f-7b376463bcf5"
     },
     {
       "id": "circulars.respond",
       "label": "rascunho de resposta (save_circular_response_draft) pelo operador interno",
-      "pass": "97e03f7b-fa61-4e7d-9f09-d28fcfbc6c7d",
-      "detail": "session 97e03f7b-fa61-4e7d-9f09-d28fcfbc6c7d v1"
+      "pass": "5f2da5c5-4839-4485-bf4a-71c9921fbf15",
+      "detail": "session 5f2da5c5-4839-4485-bf4a-71c9921fbf15 v1"
     },
     {
       "id": "circulars.respond",
@@ -129,8 +129,8 @@
     },
     {
       "id": "circulars.attach",
-      "label": "delete do anexo (limpeza) aceito",
-      "pass": false,
+      "label": "delete de anexo ja publicado e recusado (imutavel)",
+      "pass": true,
       "detail": "{\"error\":\"media_delete_denied\"}"
     },
     {
@@ -148,14 +148,14 @@
     {
       "id": "agenda.request",
       "label": "rascunho para pedido persiste",
-      "pass": "d1e2be20-abf1-4797-ad29-85c4f59dc833",
-      "detail": "id d1e2be20-abf1-4797-ad29-85c4f59dc833"
+      "pass": "0487e261-a10c-4f18-9a60-c667dc2b631c",
+      "detail": "id 0487e261-a10c-4f18-9a60-c667dc2b631c"
     },
     {
       "id": "agenda.request",
       "label": "request_publication cria pedido pendente",
-      "pass": "15a319ae-2617-4c28-bf22-3143ed5bf31f",
-      "detail": "request 15a319ae-2617-4c28-bf22-3143ed5bf31f"
+      "pass": "e16fa908-0dd4-4e98-abb6-0def0feef56a",
+      "detail": "request e16fa908-0dd4-4e98-abb6-0def0feef56a"
     },
     {
       "id": "agenda.request",
@@ -185,13 +185,13 @@
       "id": "agenda.request",
       "label": "limpeza do evento",
       "pass": true,
-      "detail": "{\"id\":\"d1e2be20-abf1-4797-ad29-85c4f59dc833\",\"title\":\"[R05-QA 17:25:27] Evento para aprovacao\",\"origin\":\"institution\",\"status\":\"canceled\",\"all_day\":false,\"ends_at\":\"2026-09-13T18:25:33.664+00:00\",\"his"
+      "detail": "{\"id\":\"0487e261-a10c-4f18-9a60-c667dc2b631c\",\"title\":\"[R05-QA 17:36:05] Evento para aprovacao\",\"origin\":\"institution\",\"status\":\"canceled\",\"all_day\":false,\"ends_at\":\"2026-09-13T18:36:17.003+00:00\",\"his"
     },
     {
       "id": "agenda.location",
       "label": "evento com contexto de unidade e local persiste",
-      "pass": "fe05bb06-6ce4-4e35-a2e0-d0a7779fd37f",
-      "detail": "id fe05bb06-6ce4-4e35-a2e0-d0a7779fd37f"
+      "pass": "c12e6ad1-2785-4b03-9a63-20c615beb201",
+      "detail": "id c12e6ad1-2785-4b03-9a63-20c615beb201"
     },
     {
       "id": "agenda.location",
@@ -203,7 +203,7 @@
       "id": "agenda.location",
       "label": "limpeza do rascunho da unidade",
       "pass": true,
-      "detail": "{\"id\":\"fe05bb06-6ce4-4e35-a2e0-d0a7779fd37f\",\"deleted\":true}"
+      "detail": "{\"id\":\"c12e6ad1-2785-4b03-9a63-20c615beb201\",\"deleted\":true}"
     }
   ]
 }

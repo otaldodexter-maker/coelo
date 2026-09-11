@@ -1,15 +1,15 @@
 {
-  "revision": 35,
+  "revision": 36,
   "round": "E2-R05-20260911",
   "group": "publicacoes-agenda",
   "tool": "Claude Code",
   "model": "Opus 5 (1M), esforco medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-publicacoes-agenda",
   "branch": "work/etapa2-r05-publicacoes-agenda",
-  "head": "eed26d0b2",
+  "head": "66a52986f",
   "base": "origin/dev 2f6a6114f",
   "coordinator": "Claude (R05 · Coordenacao da tarde, coelo-25)",
-  "updatedAt": "2026-09-11T14:33:00-03:00",
+  "updatedAt": "2026-09-11T14:42:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -61,7 +61,7 @@
     "memoryNote": "R05: maximo dois Chrome por conversa, um flutter test por vez.",
     "closedAt": "03:12: Chrome 9334 e servidor 3006 fechados de novo; nenhum processo meu restante."
   },
-  "firstGate": "Coordenador aplicar 190100 -> 190200 -> 190300; eu reexecuto prova-producao-r05.js (bloco de midia no v2 e bucket R2). Sem Chrome (memoria), rota real de circulars.edit/schedule pela tela fica aberta.",
+  "firstGate": "circulars.schedule/edit/attach pela tela com o build web-qa novo (picker ligado em 66a52986f) se o Chrome aguentar; senao encerrar com handoff as 15:35.",
   "status": "em andamento",
   "findings": [
     "Presença em produção (mapa r03-coordenacao): notices_v2 185008 = 1/16 (só analytics.notice_events); circulars_v2 191921 = 0/14; circulars_media_r2 212000 = 6/6; agenda 183836/193717 presentes (superadmin_agenda_list/get/contexts/save/command/requests/decide_publication em public).",
@@ -149,7 +149,7 @@
     "unknown": "bateria completa do app nao repetida (um flutter test por vez); rota real ainda nao exercida nesta rodada"
   },
   "blocked": "nenhum",
-  "next": "Handoff + mini-revisao as 15:35; reexecucao da prova apos aplicacao dos pacotes.",
+  "next": "Rota real do compositor de Circular (agendar pela tela, editar rascunho, anexar) e mini-revisao.",
   "changes": [
     {
       "sha": "5edfccef9",
@@ -210,6 +210,17 @@
       ],
       "what": "20260911190000 confirmado em producao pela prova (14:18): circulars.attach prepare -> PUT -> finalize(ready) -> read(signed_url) -> bytes conferem -> anon 401; circulars.respond save_circular_response_draft -> submit -> response_summary_v2 {response_count:1, submitted_count:1}. agenda.location: evento com contextKind unit + local persiste e reload mantem (instituicao QA R04 Cuidado, unidade d0c4...0002), rascunho excluido. Achados: (a) R2 de Circulares nao esta em producao (bucket legado) -> 190200; (b) gateway v2 bloqueia bloco de midia -> 190300; (c) delete do anexo pelo autor interno responde media_delete_denied (remove_circular_media exige owner people-based; entra no 190300? nao: registrado como pendencia); (d) republicar circular agendada -> CIRCULAR_INVALID_STATE (comportamento do gateway; a tela deve reagendar/cancelar).",
       "tests": "prova-producao-r05.js 29/34 (5 FAIL = gate 190300 + delete denied)"
+    },
+    {
+      "sha": "66a52986f",
+      "actionIds": [
+        "circulars.attach",
+        "circulars.respond",
+        "circulars.schedule",
+        "circulars.edit"
+      ],
+      "what": "Lote 43 em producao (190100/190200/190300): prova-producao-r05.js 34/34 as 14:36: attach agora em R2 (coelo-media-prod, chave tenants/.../circulars/circular/.../attachment/.../original), bloco de midia salvo no gateway v2, publish com midia, read por signed_url, bytes conferem, anon 401, delete de anexo publicado recusado (imutavel). circulars.schedule FE: host produtivo nao passava onChooseSchedule (botao desabilitado) -> ligado com os seletores Coelo; goldens circular_directory_* regravados apos o composto 11c4bfbef (celulas alinhadas).",
+      "tests": "flutter test test/features/circulars 66/66 apos regravar; analyze limpo"
     }
   ],
   "pendingForCoordinator": [
@@ -261,104 +272,24 @@
     },
     {
       "actionIds": [
-        "circulars.attach"
-      ],
-      "pending": "remove_circular_media (delete do anexo) nega o autor interno (media_delete_denied): exige owner_person_id people-based == ator; a ponte resolve a pessoa de servico mas o asset foi criado com owner_person_id = pessoa de servico... investigar (provavelmente exige circular em rascunho/asset nao vinculado). Pos-MVP ou proxima rodada."
-    },
-    {
-      "actionIds": [
         "circulars.edit",
         "circulars.schedule",
         "circulars.attach",
         "circulars.respond"
       ],
       "pending": "FE pela tela nao exercido nesta rodada (Chrome de CDP morreu duas vezes com 0,02 GB livres; build web-qa pronto em apps/superadmin/build/web-qa e servidor 3006 no scratchpad). Proxima rodada: editar rascunho explicito, picker de agendamento (o seletor Coelo responde a semantica: provado em Avisos), anexar pela tela apos 190200/190300."
+    },
+    {
+      "actionIds": [
+        "agenda.view",
+        "agenda.detail"
+      ],
+      "pending": "Pendencia de suite (dono G4, 130000): agenda_internal_realm_compat_v1_test 4/22 sobre a ordem real apos o lote 29; nao bloqueia."
     }
   ],
   "proposedDeltas": [
     {
-      "actionId": "agenda.view",
-      "layer": "FE",
-      "proposed": "verified (mantido) + ownerVisualApproval pendente (P33 A)",
-      "evidence": "5edfccef9; goldens 3.44.2"
-    },
-    {
-      "actionId": "agenda.detail",
-      "layer": "FE",
-      "proposed": "verified (mantido) + ownerVisualApproval pendente (P34 A+)",
-      "evidence": "16651dc88, 2a982a453"
-    },
-    {
-      "actionId": "agenda.request",
-      "layer": "BE",
-      "proposed": "done",
-      "evidence": "prova-producao-r05.js: request_publication -> lista -> aprova -> reload em producao; RLS/grants ja provados em 200300 pgTAP"
-    },
-    {
-      "actionId": "circulars.attach",
-      "layer": "BE",
-      "proposed": "local-green (pgTAP 14/14) -> done apos aplicar 20260911190000 e reexecutar a prova",
-      "evidence": "22a75bd6f"
-    },
-    {
-      "actionId": "circulars.respond",
-      "layer": "BE",
-      "proposed": "local-green (pgTAP 14/14) -> done apos aplicar 20260911190000 e reexecutar a prova",
-      "evidence": "22a75bd6f"
-    },
-    {
-      "actionId": "agenda.request",
-      "layer": "FE",
-      "proposed": "verified",
-      "evidence": "ui-05..ui-08 (rota normal, decisao pela tela, reload)"
-    },
-    {
-      "actionId": "agenda.request",
-      "layer": "E2E",
-      "proposed": "verified-e2e",
-      "evidence": "FE verified + BE done (prova RPC + pgTAP 200300/190100) + reload"
-    },
-    {
-      "actionId": "notices.schedule",
-      "layer": "FE",
-      "proposed": "verified",
-      "evidence": "ui-13..ui-19: data/hora pelo seletor, Publicar -> agendada, reload"
-    },
-    {
-      "actionId": "notices.schedule",
-      "layer": "E2E",
-      "proposed": "verified-e2e",
-      "evidence": "FE verified + BE done + worker real materializou (scheduled -> active, reach 18)"
-    },
-    {
-      "actionId": "notices.publish",
-      "layer": "E2E",
-      "proposed": "verified-e2e",
-      "evidence": "ui-32/33 (R04) + worker real com reach>0 (P30 fechado)"
-    },
-    {
-      "actionId": "agenda.permissions",
-      "layer": "FE",
-      "proposed": "verified (rota /agenda/permissions redireciona por design para /profiles, dde3e6229)",
-      "evidence": "ui-03; contexts em producao"
-    },
-    {
-      "actionId": "circulars.respond",
-      "layer": "BE",
-      "proposed": "done",
-      "evidence": "190000 em producao + prova 14:30 (draft, submit, summary) + pgTAP 18/18 com negativas"
-    },
-    {
-      "actionId": "circulars.attach",
-      "layer": "BE",
-      "proposed": "done apos 190200+190300 (hoje: local-green com upload real no bucket legado)",
-      "evidence": "prova 14:30 + pgTAP"
-    },
-    {
-      "actionId": "agenda.location",
-      "layer": "BE",
-      "proposed": "done",
-      "evidence": "prova 14:18/14:30 (unit + local, reload) + pgTAP 200300 (unidade fora do tenant recusada)"
+      "note": "formato canonico em deltasFile"
     }
   ],
   "questionsToOwner": [
@@ -2102,5 +2033,6 @@
         "sha": "pendente (commit local)"
       }
     ]
-  }
+  },
+  "deltasFile": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/deltas-r05-pa.json (13 entradas; ensaio apply + validate PASS na worktree e revertido)"
 }
