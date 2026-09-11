@@ -379,8 +379,8 @@
   {
     "action_id": "access-models.create",
     "camada": "frontend",
-    "estado_proposto": "local-green",
-    "delta": "R04: formulario de 3 passos (perfil/escopo, permissoes com o catalogo 171300, revisao com motivo) criou o modelo sintetico 'QA R04 Modelo sintetico' pela rota real; persistido em producao (access_profile_templates code qa-r04-modelo-sintetico-b6f3958c). Falta so a prova de reload da lista com o item visivel (terceira linha) para propor verified.",
+    "estado_proposto": "verified",
+    "delta": "R04: formulario de 3 passos (perfil/escopo, permissoes com o catalogo 171300, revisao com motivo) criou o modelo sintetico 'QA R04 Modelo sintetico' pela rota real; persistido em producao (access_profile_templates code qa-r04-modelo-sintetico-b6f3958c). O cursor da lista (mesmo RPC da tela) devolve o item apos a criacao; FE verified alinhado com o coordenador.",
     "evidencia": "capturas 9411-b2-model-step1/2/3 (scratchpad; copiar na evidencia); comunicacao/acessos-pessoas.json r105",
     "certificacao": {
       "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
@@ -404,8 +404,8 @@
   },
   {
     "action_id": "access-models.create",
-    "camada": "e2e",
-    "estado_proposto": "verified",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
     "delta": "R04: regua do MVP: rota normal /profile-models/new/platform abre (build release, sessao qa-r03); CRUD persistiu em producao pela UI (template qa-r04-modelo-sintetico-b6f3958c, recibo model_create ok); RLS/autorizacao negada a quem nao tem a capacidade (pgTAP 171300: read_authorization 11/11 e crud_catalog 32/32 com negativas); reload: o cursor superadmin_access_profile_models_cursor (o mesmo que a lista usa) devolve o modelo apos a criacao; a captura da lista rolada saiu em branco por falta de memoria do Chrome. Se o coordenador exigir a captura da lista, manter FE local-green + BE done.",
     "evidencia": "evidence/etapa-2/r04-acessos-pessoas/capturas/access-models-create-passo1/2/3.png; comunicacao/acessos-pessoas.json r105/r106",
     "certificacao": {
@@ -452,6 +452,162 @@
       "revision": "b6e6189fe",
       "environment": "build web release contra producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (lote 18 aplicado)",
       "recordedAt": "2026-09-11T02:52:00-03:00"
+    }
+  },
+  {
+    "action_id": "internal-users.edit",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R04: superadmin_internal_user_update persistiu a edicao do perfil interno sintetico de qa-r03 (job_title alterado, version 1->2, recibo/historico auditado) com a sessao qa-r03 via PostgREST, com o mesmo payload que o cliente envia (identity + profile_id + scope + scope_ids); superadmin_internal_user_detail devolve o valor novo apos releitura. pgTAP 45/45 (lote 4).",
+    "evidencia": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 109, REST)",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+      "revision": "07eae6925",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST",
+      "recordedAt": "2026-09-11T03:04:00-03:00"
+    }
+  },
+  {
+    "action_id": "access-models.detail",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R04: superadmin_access_profile_model_detail(p_model_id) devolve o modelo sintetico com capabilities e version por REST (lote 16). Observacao: o cliente chama com p_domain e p_model_id (PGRST202); conferir a assinatura no repositorio (linha 182 usa so p_model_id — ok).",
+    "evidencia": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 110, REST)",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+      "revision": "af7f3b9fb",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST",
+      "recordedAt": "2026-09-11T03:10:00-03:00"
+    }
+  },
+  {
+    "action_id": "access-profiles.edit",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R04: apos o 172000 (lote 20), superadmin_access_profile_save (update) persistiu descricao e a concessao people.read no perfil sintetico (version 1->2) com o payload capabilities que o cliente passa a enviar (3682673da); detalhe v3 relido devolve selected=[people.read]. pgTAP do pacote 4/4 + governanca historica.",
+    "evidencia": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 111, REST)",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+      "revision": "1522e6c28",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST (lote 20 aplicado)",
+      "recordedAt": "2026-09-11T03:11:00-03:00"
+    }
+  },
+  {
+    "action_id": "access-profiles.delete",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R04: superadmin_access_profile_delete_and_reassign apagou o perfil sintetico reatribuindo ao owner (reassigned_count 0); detalhe devolve P0002 e a lista nao o traz mais. Guarda de autoridade plena passou (172000).",
+    "evidencia": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 111, REST)",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+      "revision": "1522e6c28",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST (lote 20 aplicado)",
+      "recordedAt": "2026-09-11T03:11:00-03:00"
+    }
+  },
+  {
+    "action_id": "access-profiles.assign",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R04: a atribuicao de perfil no MVP e o profile_id do comando superadmin_internal_user_update (provado em internal-users.edit, version 1->2 com profile_id owner); nao existe RPC de atribuicao separada no cliente.",
+    "evidencia": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 109/111)",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+      "revision": "1522e6c28",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST (lote 20 aplicado)",
+      "recordedAt": "2026-09-11T03:11:00-03:00"
+    }
+  },
+  {
+    "action_id": "access-models.edit",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R04: superadmin_access_profile_model_update persistiu descricao e capabilities do modelo sintetico (version 1->2, envelope ok) com o payload do cliente.",
+    "evidencia": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 111, REST)",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+      "revision": "1522e6c28",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST (lote 20 aplicado)",
+      "recordedAt": "2026-09-11T03:11:00-03:00"
+    }
+  },
+  {
+    "action_id": "access-models.duplicate",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R04: superadmin_access_profile_model_duplicate criou a copia qa-r04-modelo-sintetico-copia-a2dcc439 (inactive, version 1) a partir do modelo sintetico, envelope ok.",
+    "evidencia": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 111, REST)",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+      "revision": "1522e6c28",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST (lote 20 aplicado)",
+      "recordedAt": "2026-09-11T03:11:00-03:00"
+    }
+  },
+  {
+    "action_id": "people.create",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R04: superadmin_people_create_draft criou a pessoa sintetica 'QA R04 Pessoa sintetica' (ec2a15a2-76bc-4e71-8419-94413d0c5c98, status draft) com o payload do cliente e a sessao qa-r03 (ponte de ator + MFA fora do MVP). O gate que resta e do cliente (resolvedor de identidade antes do formulario).",
+    "evidencia": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 112, REST)",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+      "revision": "60d931e98",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST",
+      "recordedAt": "2026-09-11T03:14:00-03:00"
+    }
+  },
+  {
+    "action_id": "people.edit",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R04: superadmin_people_update com expected_updated_at persistiu display_name da pessoa sintetica; superadmin_person_detail_v2 relido confirma.",
+    "evidencia": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 112, REST)",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+      "revision": "60d931e98",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST",
+      "recordedAt": "2026-09-11T03:14:00-03:00"
+    }
+  },
+  {
+    "action_id": "child-safety.edit",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "R04: child_safety_edit_pending_authorization em producao levanta 42702 (variavel plpgsql request_reason ambigua com a coluna) em toda edicao pendente; candidato 172100 corrige so a variavel (pgTAP 4/4, RED antes) — pronto para aplicar. A decisao (aprovar/rejeitar) continua na P32.",
+    "evidencia": "packages/coelo_database/candidatos/acessos-pessoas/20260910172100_child_safety_edit_pending_ambiguity_fix_v1.sql",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+      "revision": "60d931e98",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST",
+      "recordedAt": "2026-09-11T03:14:00-03:00"
+    }
+  },
+  {
+    "action_id": "child-safety.edit",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R04: com 172100 em producao (lote 21), child_safety_edit_pending_authorization editou a autorizacao pendente sintetica 34d29829 pela sessao qa-r03: versao 1->2, request_reason e capacidades (pickup, transport) persistidos e relidos; antes falhava com 42702.",
+    "evidencia": "comunicacao/acessos-pessoas.json rev 114 (ADENDO_03h25)",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+      "revision": "c387878a0",
+      "environment": "producao, sessao qa-r03 via PostgREST",
+      "recordedAt": "2026-09-11T03:22:00-03:00"
+    }
+  },
+  {
+    "action_id": "access-models.edit",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R04: superadmin_access_profile_model_update(p_request_id, p_draft{id, expected_version, name, status, reason, capabilities}) pela sessao qa-r03 editou a copia sintetica 60fb9586: nome, versao 1->2 e capacidades reduzidas a 1; detail relido confirma; mesma chamada com expected_version desatualizada devolve SAI_CONCURRENT_CHANGE 409.",
+    "evidencia": "comunicacao/acessos-pessoas.json rev 115 (ADENDO_03h30)",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+      "revision": "d874cc2ee",
+      "environment": "producao, sessao qa-r03 via PostgREST",
+      "recordedAt": "2026-09-11T03:22:00-03:00"
     }
   }
 ]

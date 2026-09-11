@@ -108,3 +108,11 @@ calendário; (b) no detalhe após reload, contexto e audiência mostram o UUID d
 | ui-47, ui-48 | abas Encerradas/Rascunhos filtram o diretório de Circulares (sem resultados mantém Criar e Limpar filtros) |
 
 Ambiente ao encerrar: Chrome 9334 e servidor estático 3006 fechados (regra de memória do coordenador).
+
+## Reteste 03:05 (agenda.edit pelas chaves do wizard)
+
+| Captura | O que prova |
+| --- | --- |
+| ui-49, ui-50, ui-51 | edição do evento pelas chaves `agenda-wizard-continue`/`agenda-wizard-publish`: título editado, publicado, detalhe mostra o nome da instituição (correção da rev 26) |
+
+O "Continuar sem salvar" da ui-45 era erro de coordenada do driver (Anterior); `agenda.edit` pela tela funciona.
