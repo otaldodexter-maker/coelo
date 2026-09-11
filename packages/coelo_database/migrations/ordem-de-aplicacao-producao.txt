@@ -203,3 +203,5 @@
 20260911200200_superadmin_account_sessions_v1.sql
 # lote 51 (11/09 20:15) - R06 estrutura: save_v2 aceita definition.handle na criacao; group_management_payload devolve o @
 20260912180000_structure_handles_client_v1.sql
+# lote 52 (11/09 20:35) - R06 realm-interno: HOTFIX do lote 50 (escopo sem filtro de status; reativa as 7 memberships de espelho de qa-r04-escola)
+20260912210100_internal_actor_scope_root_v1_hotfix.sql

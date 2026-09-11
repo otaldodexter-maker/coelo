@@ -1,12 +1,12 @@
 {
- "revision": 54,
+ "revision": 55,
  "round": "E2-R06-20260911",
  "role": "Coordenacao R06 - Claude Opus 5 esforco medio (C0)",
  "writer": "coordenador-claude",
  "app": "Claude Code (VS Code)",
  "model": "claude-opus-5",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T20:19:00-03:00",
+ "updatedAt": "2026-09-11T20:40:00-03:00",
  "relogio": "relogio da maquina; posse as 19:36 -03:00 de 11/09/2026 (T0)",
  "posseR04": {
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -244,6 +244,7 @@
   "52": "19:53 posse da R06 (T0 19:36); sete usuarios qa-r06 criados no Auth e semeados em producao (lote 49); frentes liberadas (branches remotas ja existiam)",
   "53": "20:17 ACK das sete revisoes de abertura; sete branches integradas; lote 50 (4 pacotes) em producao; T0 confirmado as frentes; regra da cobranca de 30 min",
   "54": "20:19 lote 51 (estrutura) em producao; branches reintegradas; cobranca de principal-chat-sistema",
+  "55": "20:40 lote 52 (hotfix do escopo) em producao; 130400 (P48) retido e devolvido a G4; branches integradas",
   "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina."
  },
  "fechamentoR03": {
@@ -1638,20 +1639,20 @@
   },
   "principal-chat-sistema": {
    "branch": "work/etapa2-r06-principal-chat-sistema",
-   "rev": 30,
+   "rev": 31,
    "ack": true,
-   "recebidoEm": "2026-09-11T20:05:00-03:00",
-   "integradoEm": "f78ec96d9 (merge das sete branches)",
-   "resposta": "T0 = 19:36 (nao 19:17): corte 21:36, revisao ate 21:46. qa-r06-principal.env existe desde 19:44 e a semente esta em producao (lote 49). P48 (item 6): nascer sobre o corpo do 20260912210000 do realm-interno (ja em producao) mantendo superadmin_internal_actor_scope_targets() como fonte do escopo.",
-   "cobranca": "20:19: JSON sem revisao nova desde 19:40 (39 min), embora a branch tenha commits ate 20:05. RETOMAR e registrar feito/pendente/commits no JSON (ordem do Owner: a cada 30 min)."
+   "recebidoEm": "2026-09-11T20:40:00-03:00",
+   "integradoEm": "(esta revisao)",
+   "resposta": "T0 = 19:36 (nao 19:17): corte 21:36, revisao ate 21:46. qa-r06-principal.env existe desde 19:44 e a semente esta em producao (lote 49). P48 (item 6): nascer sobre o corpo do 20260912210000 do realm-interno (ja em producao) mantendo superadmin_internal_actor_scope_targets() como fonte do escopo. | 20:40: rev 31 lida; commits integrados em dev. O pacote 130400 (P48) FOI RETIDO: no espelho, aplicado por cima do lote 50+52, ele reescreve superadmin_internal_actor_institution_access_sync sem o escopo e derruba internal_actor_scope_root_v1_test (4 not ok: identidade escopada em A volta a ganhar membership em B; reconciliacao fora do escopo nao desativa). Reescrever o 130400 sobre o corpo do sync do 20260912210100 (usar app_private.superadmin_internal_actor_scope_targets() como fonte do escopo e manter a desativacao fora do escopo), rodar internal_actor_scope_root_v1_test + hotfix_test + o seu 16/16, e republicar; o coordenador aplica em seguida. O espelho foi restaurado reaplicando o hotfix (papel institution_reader do 130400 ficou criado no espelho, sem efeito).",
+   "cobranca": "resolvida 20:19 (rev 31)"
   },
   "realm-interno": {
    "branch": "work/etapa2-r06-realm-interno",
-   "rev": 43,
+   "rev": 46,
    "ack": true,
-   "recebidoEm": "2026-09-11T20:19:00-03:00",
+   "recebidoEm": "2026-09-11T20:40:00-03:00",
    "integradoEm": "(esta revisao)",
-   "resposta": "20260912210000 (raiz da ponte com escopo) APLICADO em producao no lote 50 (20:12), pgTAP 45/45 no espelho. A sua semente 20260912230000 dos qa-r06 NAO foi aplicada: o coordenador ja tinha aplicado a propria (lote 49, 20260911230100) as 19:49; arquivo descartado no merge. Item (3) 180060: registrar como decisao de produto para o Owner (nao muda comportamento nesta rodada). T0 = 19:36; corte 21:36. | 20:19: rev 43 lida (entrega completa, handoff e skills-deltas integrados em dev); a correcao de seguranca sera anotada nos tres md no fechamento. Item (3) 180060 vai como pergunta ao Owner na R06-perguntas. Pode usar o tempo restante no item (4) code review 210500/211100."
+   "resposta": "20260912210000 (raiz da ponte com escopo) APLICADO em producao no lote 50 (20:12), pgTAP 45/45 no espelho. A sua semente 20260912230000 dos qa-r06 NAO foi aplicada: o coordenador ja tinha aplicado a propria (lote 49, 20260911230100) as 19:49; arquivo descartado no merge. Item (3) 180060: registrar como decisao de produto para o Owner (nao muda comportamento nesta rodada). T0 = 19:36; corte 21:36. | 20:19: rev 43 lida (entrega completa, handoff e skills-deltas integrados em dev); a correcao de seguranca sera anotada nos tres md no fechamento. Item (3) 180060 vai como pergunta ao Owner na R06-perguntas. Pode usar o tempo restante no item (4) code review 210500/211100. | 20:35: HOTFIX 20260912210100 APLICADO em producao (lote 52); conferido: 0 memberships de espelho inactive recentes, 33 ativas. Obrigado pelo achado."
   },
   "publicacoes-agenda": {
    "branch": "work/etapa2-r06-publicacoes-agenda",
@@ -1663,9 +1664,9 @@
   },
   "operacoes": {
    "branch": "work/etapa2-r06-operacoes",
-   "rev": 41,
+   "rev": 42,
    "ack": true,
-   "recebidoEm": "2026-09-11T20:19:00-03:00",
+   "recebidoEm": "2026-09-11T20:40:00-03:00",
    "integradoEm": "(esta revisao)",
    "resposta": "200200 (sessoes da Conta) APLICADO em producao no lote 50 (20:12), pgTAP 16/16; desvio consciente aceito (logout scope=others em vez de Edge Function). T0 = 19:36 (nao 19:20); corte 21:36; revisao ate 21:46."
   }
@@ -1754,6 +1755,27 @@
    "ack": true,
    "recebidoEm": "2026-09-11T20:19:00-03:00",
    "integradoEm": "(esta revisao)"
+  },
+  {
+   "grupo": "principal-chat-sistema",
+   "revisaoRecebida": 31,
+   "ack": true,
+   "recebidoEm": "2026-09-11T20:40:00-03:00",
+   "integradoEm": "(esta revisao)"
+  },
+  {
+   "grupo": "realm-interno",
+   "revisaoRecebida": 46,
+   "ack": true,
+   "recebidoEm": "2026-09-11T20:40:00-03:00",
+   "integradoEm": "(esta revisao)"
+  },
+  {
+   "grupo": "operacoes",
+   "revisaoRecebida": 42,
+   "ack": true,
+   "recebidoEm": "2026-09-11T20:40:00-03:00",
+   "integradoEm": "(esta revisao)"
   }
  ],
  "filaSqlR06": {
@@ -1761,10 +1783,14 @@
   "aplicados": [
    "lote 49: 20260911230100 (coordenador, usuarios qa-r06)",
    "lote 50: 20260912210000 (realm-interno), 170500, 170600 (acessos-pessoas), 200200 (operacoes)",
-   "lote 51: 20260912180000 (estrutura)"
+   "lote 51: 20260912180000 (estrutura)",
+   "lote 52: 20260912210100 (realm-interno, hotfix)"
   ],
   "proximos": [
    "candidatos verdes das frentes na ordem de chegada"
+  ],
+  "retidos": [
+   "principal-chat-sistema 20260911130400 (P48): quebra o escopo do lote 50/52; devolvido a G4 para reescrever sobre o 210100"
   ]
  },
  "lote50": {
@@ -1796,5 +1822,14 @@
   "ledger": "inserido",
   "chaveDeComposicao": "nenhuma nova"
  },
- "semRevisaoNovaHa20min2019": "principal-chat-sistema (JSON 19:40; branch 20:05)"
+ "lote52": {
+  "aplicadoEm": "2026-09-11T20:35:00-03:00",
+  "dump": "schema-producao-20260911-lote52.sql",
+  "conteudo": [
+   "realm-interno 20260912210100_internal_actor_scope_root_v1_hotfix (versao final do sync/scope_targets; reativa 7 memberships de qa-r04-escola desativadas pelo lote 50)"
+  ],
+  "pgTAP": "4/4 + 47/47 + 9/9 no espelho",
+  "verificadoEmProducao": "inativas_recentes=0, ativas=33",
+  "ledger": "inserido"
+ }
 }
