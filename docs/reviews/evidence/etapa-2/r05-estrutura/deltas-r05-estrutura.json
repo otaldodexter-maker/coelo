@@ -583,5 +583,39 @@
    "environment": "producao coelo pelo build release de qa_main com qa-r03@coelo.me | provas: units-copy-detalhe-apos-copia.jpg",
    "recordedAt": "2026-09-11T14:52:00-03:00"
   }
+ },
+ {
+  "action_id": "activities.publish",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "R05 (14:55): superadmin_activity_save_v2 com p_publish=true e a turma 4214106c vinculada (P36, lote 35) publicou a atividade 95b98978 em producao (status active, management_version 24); o detalhe recarregado na rota real mostra Ativa com 1 turma. Chamada feita pela sessao do app (token do proprio Chrome via CDP, sem imprimir). Negativas: superadmin_activity_save_v2_test 46/46 e permissions_publish 18/18 no espelho (R04/R05).",
+  "evidencia": "evidence/etapa-2/r05-estrutura/rota-real/activities-detail-publicada-por-rpc.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-estrutura/rota-real/activities-detail-publicada-por-rpc.jpg",
+   "revision": "estrutura.json rev 46",
+   "environment": "producao coelo; RPC superadmin_activity_save_v2 p_publish=true ok=true status active management_version 24 | pgTAP activity_save_v2 46/46, permissions_publish 18/18",
+   "recordedAt": "2026-09-11T15:03:00-03:00"
+  }
+ },
+ {
+  "action_id": "activities.publish",
+  "camada": "frontend",
+  "estado_proposto": "local-green",
+  "delta": "R05: o botao \"Salvar alteracoes\" (publish) da edicao fecha antes do HTTP com \"Nao foi possivel salvar a atividade\" (a rota de edicao nao conhece o status corrente e publish_v2 exige draft; pendencia da rev 40) e, depois da falha, o coordenador de tentativas congela tambem o Salvar rascunho ate recarregar. Gate: decidir p_publish pelo status do detalhe (draft -> publish; active -> so save) e nao congelar o rascunho apos falha local.",
+  "evidencia": "evidence/etapa-2/r05-estrutura/rota-real/activities-publish-fechado-no-cliente.jpg"
+ },
+ {
+  "action_id": "groups.members",
+  "camada": "frontend",
+  "estado_proposto": "local-green",
+  "delta": "R05: etapa \"Pessoas da turma\" abre na rota real com estado vazio honesto, Cadastrar pessoa e Buscar por @, CPF, e-mail ou celular; inclusao de pessoa nao provada (a instituicao sintetica da turma nao tem pessoa vinculada alem da criada em institutions.edit, que pertence a outra instituicao). Gate: provar cadastro/busca de pessoa da propria instituicao.",
+  "evidencia": "evidence/etapa-2/r05-estrutura/rota-real/groups-members-vazio.jpg"
+ },
+ {
+  "action_id": "groups.location",
+  "camada": "frontend",
+  "estado_proposto": "local-green",
+  "delta": "R05: o detalhe da turma le o local vinculado (vazio honesto) e as reservas por catalogo; a ESCRITA nao tem UI: SupabaseGroupLocationCreateRepository (180200) existe sem consumidor e o assistente de Turmas nao tem secao de local. Gate: secao de local no assistente (reusar ActivityCataloguedLocationSection) + repositorio available:true na composicao.",
+  "evidencia": "evidence/etapa-2/r05-estrutura/rota-real/groups-location-detalhe-sem-local.jpg"
  }
 ]
