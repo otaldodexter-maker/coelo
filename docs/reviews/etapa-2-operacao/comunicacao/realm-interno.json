@@ -1,15 +1,15 @@
 {
   "grupo": "realm-interno",
-  "revision": 27,
+  "revision": 28,
   "round": "E2-R05-20260911",
-  "updatedAt": "2026-09-11T14:23-03:00",
+  "updatedAt": "2026-09-11T14:36-03:00",
   "app": "Claude",
   "modelo": "Opus 5 (esforco medio)",
   "conversa": "R05 · Realm interno e Chat backend",
   "coordenador": "R05 · Coordenação da tarde (coordenacao.json)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-realm-interno",
   "branch": "work/etapa2-r05-realm-interno",
-  "head": "236364834",
+  "head": "ef5d926a8 (origin/dev 530613fb5 mesclada)",
   "upstream": "origin/work/etapa2-r05-realm-interno (push no primeiro commit)",
   "historicoR04": {
     "miniRevisao": {
@@ -197,7 +197,7 @@
   "primeiroGate": "(7) code review R04: 180060 create or replace e sobrecarga de 14 args de audit_append_superadmin_internal (so se sobrar tempo); antes, revisar o pacote 2 contra a producao real via coordenador e escrever handoff",
   "provaLocal": "projeto descartavel coelo_realm_r05 (portas 625xx) em preparacao: baseline + seed + ordem-de-aplicacao-producao.txt via psql do container",
   "testes": {
-    "pgTAP": "188 PASS / 0 FAIL nesta rodada (13 suites novas) + 2 suites de detalhe atualizadas",
+    "pgTAP": "188 PASS / 0 FAIL nesta rodada (13 suites novas) + 3 suites existentes ajustadas (group/unit detail, agenda compat)",
     "deno": "chat-media 5/5, image_dimensions 2/2, form-media 38/38"
   },
   "bloqueio": null,
@@ -272,7 +272,7 @@
       "commit": "e9fb559b3",
       "dependeDe": "170100 (lote 31) e 210000 (lote 28)",
       "chaveDeComposicao": "cliente mostra o @ e usa superadmin_person_handle_get/set/availability (170100) para editar",
-      "estado": "pronto"
+      "estado": "APLICADO em producao (lotes 37-42)"
     },
     {
       "ordem": 8,
@@ -282,7 +282,7 @@
       "commit": "3df6c8648",
       "dependeDe": "210200; deploy de chat-media",
       "chaveDeComposicao": "coordenador grava chat_media_worker_url/secret no Vault e CHAT_MEDIA_WORKER_SECRET nos secrets (valor gerado de arquivo local, nunca em chat)",
-      "estado": "pronto"
+      "estado": "APLICADO em producao (lotes 37-42)"
     },
     {
       "ordem": 9,
@@ -292,7 +292,7 @@
       "commit": "4526ea75b",
       "dependeDe": "210300 (lote 33)",
       "chaveDeComposicao": "form-media: prepare chama form_prepare_asset_upload_r2_v1 e assina PUT no object_key; finalize chama form_finalize_asset_upload (usuario) -> form_asset_r2_descriptor_v1 -> HEAD/bytes/sha256/dimensoes (_shared/image_dimensions.ts) -> form_media_finalize_answer_r2_v1; download continua em superadmin_form_authorize_media_read_v2 + presign GET",
-      "estado": "pronto"
+      "estado": "APLICADO em producao (lotes 37-42)"
     },
     {
       "ordem": 10,
@@ -302,7 +302,7 @@
       "commit": "2b2532914",
       "dependeDe": "210300/210800 e deploy de form-media",
       "chaveDeComposicao": "coordenador grava forms_media_worker_url no Vault (URL da form-media); nenhum segredo novo (FORMS_MEDIA_WORKER_SECRET deixou de existir)",
-      "estado": "pronto"
+      "estado": "APLICADO em producao (lotes 37-42)"
     },
     {
       "ordem": 11,
@@ -312,7 +312,7 @@
       "commit": "cb9f0d03d",
       "dependeDe": "nada",
       "chaveDeComposicao": "nenhuma",
-      "estado": "OPCIONAL: o cliente le por RPC; aplicar se o coordenador concordar com a decisao de code review (alternativa era remover o grant da view)"
+      "estado": "APLICADO em producao (lote 42)"
     },
     {
       "ordem": 12,
@@ -322,7 +322,7 @@
       "commit": "236364834",
       "dependeDe": "20260911180000_structure_handles_v1 (G1) aplicado ANTES",
       "chaveDeComposicao": "cliente da G1: campo Identificador envia `handle` no create de Unidade/Turma/Atividade quando o usuario editar; troca posterior por superadmin_structure_handle_set_v1; ler handle/handle_last_changed_at dos detail_v2",
-      "estado": "pronto; ordem: 180000 (estrutura) -> 211100 (realm-interno)"
+      "estado": "APLICADO em producao (lote 43)"
     }
   ],
   "pendenciasRegistradas": [
@@ -331,7 +331,9 @@
     "institution_directory (view) continua sem SELECT em plans para authenticated: leitura direta falha; cliente le por RPC; decisao de code review (grant em plans ou remover grant da view)",
     "chat.attach: Edge Function chat-media e cron de expire nao fazem parte deste pacote SQL",
     "forms_files: answer-image (uploads de resposta) continua em form_assets + Supabase Storage no form-media; migrar para R2 e o proximo pacote (prepare/finalize anonimos com secret hash)",
-    "210200: superadmin_chat_attachment_finalize_v1/expire_v1 fazem coalesce(current_setting('request.jwt.claims',true),'')::jsonb; sem claims (nunca via PostgREST) cai em SAI_INTERNAL_ERROR em vez de SAI_PERMISSION_DENIED - falha fechada, corrigir com nullif na revisao profunda"
+    "210200: superadmin_chat_attachment_finalize_v1/expire_v1 fazem coalesce(current_setting('request.jwt.claims',true),'')::jsonb; sem claims (nunca via PostgREST) cai em SAI_INTERNAL_ERROR em vez de SAI_PERMISSION_DENIED - falha fechada, corrigir com nullif na revisao profunda",
+    "ponte de ator (220400/130000): a membership interna ESCOPADA em instituicao e espelhada como platform_membership sem escopo, entao has_platform_permission vale para identidades escopadas nos RPCs do realm people-based (Agenda, Rotina, Cuidado...). No teste da Agenda a identidade escopada so viu evento da propria instituicao (sem leak provado); falta prova cross-tenant por RPC people-based para identidades escopadas: revisao profunda de seguranca",
+    "agenda_internal_realm_compat_v1_test ajustado a ponte de ator (22/22); superadmin_agenda_contexts/production/read_v2_contract ja falhavam no espelho antes (fixtures antigas)"
   ],
   "deltaPropostoBE": {
     "institutions.edit": "backend done quando a estrutura persistir e recarregar na rota real (SQL ja em producao, lote 28)",
@@ -341,7 +343,7 @@
     "child-safety.create/edit, medication.create (P32 alvo)": "backend local-green do complemento (politicas + sino); done apos aplicar"
   },
   "loop": "cron 9ded10f6 a cada 15 min ate 15:45",
-  "status": "entrega completa incluindo o complemento do @ de estrutura; continuando ate 15:45",
+  "status": "tudo em producao; ate 15:45 em revisao/handoff; descartavel coelo_realm_r05 sera parado no encerramento",
   "contratoInstitutionContacts": {
     "rpc": "public.superadmin_institution_contacts_edit_v1(p_request_id uuid, p_institution_id uuid, p_expected_version bigint, p_payload jsonb) -> envelope {ok,data,error}",
     "capacidade": "institution.update; platform_role owner|operations; scope institution so a propria instituicao (outro tenant -> SAI_PERMISSION_DENIED, auditado)",
@@ -427,7 +429,7 @@
   },
   "miniRevisao": {
     "quando": "2026-09-11T13:14-03:00",
-    "1_shaFinal": "236364834 em origin/work/etapa2-r05-realm-interno; status limpo; sem WIP",
+    "1_shaFinal": "ef5d926a8 em origin/work/etapa2-r05-realm-interno (dev 530613fb5 mesclada); status limpo; sem WIP",
     "2_fechouPorActionId": {
       "institutions.edit": "backend local-green: 210000 em producao (lote 28), pgTAP 38/38, contrato publicado; done depende da estrutura persistir/recarregar",
       "chat.attach": "backend local-green: 210200 em producao (lote 32), pgTAP 28/28; gate Edge Function chat-media + cron",
@@ -446,7 +448,7 @@
       "suites pre-existentes": "edit_core (7, MFA), chat_groups (provenance), activity e2e (16, Storage), health_care (1, MFA), child_safety_production (schemaname): atualizar na revisao profunda"
     },
     "4_deltasPropostos": "docs/reviews/evidence/etapa-2/r05-realm-interno/deltas-be-r05.json (7 IDs backend local-green); nenhum delta FE/E2E",
-    "5_pacotesEChaves": "210000..210500 em producao; 210600, 210700, 210800, 210900, 211000 (opcional) e 211100 (depois do 180000 da G1) prontos; chat-media escrita; form-media com ramos R2 de respostas (env COELO_FORMS_MEDIA_PROVIDER); segredos no deploy: CHAT_MEDIA_WORKER_SECRET, CHAT_MEDIA_ALLOWED_ORIGINS, Vault chat_media_worker_url/secret, Vault forms_media_worker_url",
+    "5_pacotesEChaves": "todos os 12 pacotes aplicados em producao (lotes 28-43); chat-media e form-media implantadas pelo coordenador; COELO_FORMS_MEDIA_PROVIDER nao ligada (so quando a frente formularios trocar o cliente de respostas)",
     "6_duvidasAoOwner": "nenhuma nova; a mudanca de comportamento de has_activity_capability (180060, instrutor apenas) e uma pergunta de produto para a revisao profunda, nao bloqueia",
     "provasRegistradas": "pgTAP 166/166 (11 suites novas) + 25 suites de regressao iguais ao espelho; Deno 45/45; evidencia em docs/reviews/evidence/etapa-2/r05-realm-interno/"
   },
