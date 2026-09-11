@@ -1,7 +1,7 @@
 {
-  "revision": 106,
-  "updated_at": "2026-09-11T05:47:52.704Z",
-  "relogio_local": "Fri Sep 11 2026 02:47:52 GMT-0300 (Horário Padrão de Brasília)",
+  "revision": 107,
+  "updated_at": "2026-09-11T05:53:32.581Z",
+  "relogio_local": "Fri Sep 11 2026 02:53:32 GMT-0300 (Horário Padrão de Brasília)",
   "round": "E2-R04-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
@@ -9,7 +9,7 @@
   "status": "R04_EM_CURSO",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-acessos-pessoas",
   "branch": "work/etapa2-r04-acessos-pessoas",
-  "head": "53d3431a9 (publicado)",
+  "head": "ver git log (commit desta revisao)",
   "base_observed": "origin/dev 98cc0529d contem a4af2b198 e o R04-prompts.md; candidatos/acessos-pessoas tem 170900 (retido) e 170750 (obsoleto); lote 4 (170100-170800) em migrations/",
   "recorte": {
     "familias": [
@@ -39,7 +39,7 @@
   "loop": "/loop 15m agendado na abertura",
   "testes_P_F_B_S_U": "nenhum teste automatizado executado ainda nesta rodada; login real 1 P",
   "bloqueio": "nenhum total",
-  "proximo_passo": "P32 opcao (b) como candidato RETIDO (subagente sem Chrome); rev final as 04:00 com SHA",
+  "proximo_passo": "subagente do 171800 (P32, retido); rev final as 04:00 com SHA; Chrome fechado",
   "ACK_ao_coordenador": "recebido o aviso do lote 8 (MFA fora do MVP + student_links_read) por mensagem entre sessoes as 22:10; respondido pelo mesmo canal; rebase feito.",
   "ROTA_NORMAL_COM_SESSAO": {
     "auth.login": "P (qa-r03 entra pela tela normal, Home como Owner Coelo / Superadmin)",
@@ -232,6 +232,16 @@
     "acoes_afetadas": "access-profiles.create, access-profiles.edit, access-profiles.detail (e o mesmo formulario de Modelos quando usa o detalhe)"
   },
   "people.links_FE": "bd0538ec6: card/linha do diretorio abrem /people/:id (onOpen) e o detalhe tem Editar quando a composicao autoriza; testes de diretorio, detalhe e rotas 33/33; prova na rota real depende de novo build (memoria ~900 MB)",
+  "ROTA_NORMAL_02h52_lote_18": {
+    "access-profiles.create": "rota abre com rascunho em branco (135 permissoes/23 modulos via v3); perfil 'QA R04 Perfil sintetico' criado pela UI e persistido (platform_roles qa-r04-perfil-sintetico-7f6f8d16, recibo create ok); reload da lista mostra o card. DEFEITO: a permissao selecionada (institution.role_models.create) nao foi concedida (detalhe devolve selected=[], 0 grants) — code review do save (superadmin_access_profile_save v2) vs payload do cliente.",
+    "access-profiles.detail": "BE done por REST (v3); FE: rota DETAIL existe mas cards abrem EDIT (pendencia antiga)",
+    "access-models.create": "E2E proposto verified (rev 105)",
+    "people.links": "FE ligado (bd0538ec6) — prova em UI depende de build (memoria)"
+  },
+  "dados_sinteticos_adicionais": [
+    "public.platform_roles qa-r04-perfil-sintetico-7f6f8d16 (546c4cd2-ea2d-4488-9961-e17576e836e5)"
+  ],
+  "deltas": "docs/reviews/evidence/etapa-2/r04-acessos-pessoas/deltas-r04.json (36 entradas; +3 desta revisao)",
   "historico_r03": {
     "revision": 94,
     "updated_at": "2026-09-10T19:56:30.537Z",
