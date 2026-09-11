@@ -149,11 +149,11 @@ final class SupabaseInstitutionDirectoryRepository implements InstitutionDirecto
         'type_name': draft.typeName,
       },
     );
+    final current = await fetchById(draft.id);
+    if (current.id != draft.id) throw const InstitutionDirectoryUnavailableException();
     // A retry must replay its receipt even when the accepted write changed detail.
     if (_pendingRequest?.signature != signature) {
       _pendingRequest = null;
-      final current = await fetchById(draft.id);
-      if (current.id != draft.id) throw const InstitutionDirectoryUnavailableException();
       if (jsonEncode(_readOnlyEditValues(draft)) != jsonEncode(_readOnlyEditValues(current)) ||
           (draft.typeId == current.typeId && draft.typeName != current.typeName)) {
         throw const InstitutionDirectoryUnsupportedRelationException(
@@ -163,17 +163,22 @@ final class SupabaseInstitutionDirectoryRepository implements InstitutionDirecto
     }
     final requestId = _requestIdFor(signature);
     try {
-      final response = await _client.rpc<Object?>(
-        'superadmin_institution_edit_core_v2',
-        params: {
-          'p_request_id': requestId,
-          'p_institution_id': draft.id,
-          'p_expected_version': expectedVersion,
-          'p_payload': payload,
-        },
-      );
-      _unwrapEnvelope(response);
-      var record = await fetchById(draft.id);
+      var record = current;
+      // edit_core_v2 rejeita no-op (SAI_INVALID_ARGUMENT): quando so documento,
+      // contato ou pessoas mudaram, o nucleo nao e chamado.
+      if (jsonEncode(payload) != jsonEncode(_institutionEditCorePayload(current))) {
+        final response = await _client.rpc<Object?>(
+          'superadmin_institution_edit_core_v2',
+          params: {
+            'p_request_id': requestId,
+            'p_institution_id': draft.id,
+            'p_expected_version': expectedVersion,
+            'p_payload': payload,
+          },
+        );
+        _unwrapEnvelope(response);
+        record = await fetchById(draft.id);
+      }
       // R05 (lote 28): documento, contato, representantes e administradores
       // persistem por superadmin_institution_contacts_edit_v1, com a versao
       // que o edit_core acabou de devolver. Sem mudanca, nao ha segunda RPC.
