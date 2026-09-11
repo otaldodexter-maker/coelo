@@ -138,7 +138,8 @@ begin
     -- Suspensa ou revogada no realm interno: o espelho acompanha, e
     -- has_platform_permission deixa de reconhecer a sessao.
     update public.platform_memberships set
-      status = case when membership.status = 'suspended' then 'suspended' else 'revoked' end,
+      status = (case when membership.status = 'suspended' then 'suspended' else 'revoked' end)
+        ::public.platform_membership_status,
       revoked_at = case when membership.status = 'suspended' then null else now() end
     where id = mapping.platform_membership_id;
   end if;

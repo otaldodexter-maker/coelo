@@ -1,12 +1,12 @@
 {
- "revision": 26,
+ "revision": 27,
  "round": "E2-R04-20260911",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5 (Claude, Opus)",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-10T22:47-03:00",
+ "updatedAt": "2026-09-10T23:01-03:00",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-formularios-cuidado-rotina",
  "branch": "work/etapa2-r04-formularios-cuidado-rotina",
  "head": "d5ddfde39 (rebase em origin/dev 836c63215)",
@@ -52,12 +52,9 @@
  },
  "loopAgendado": "/loop 15m, agendado na abertura",
  "tests": {
-  "pass": null,
-  "fail": null,
-  "blocked": null,
-  "skipped": null,
-  "notRun": null,
-  "nota": "nenhuma execucao nesta rodada ainda; os numeros da R03 estao em historicoR03.tests"
+  "pgtap": "17/17 (internal_actor_service_person_v1_test)",
+  "flutter": "health_care 100% verde; goldens do recorte 38 aprovados / 4 pulados apos regravacao (medication_form_mobile_light continua pendente de P15)",
+  "nota": "dart analyze lib limpo"
  },
  "reservedFiles": [],
  "blocking": [],
@@ -71,7 +68,7 @@
  ],
  "pendenciasRegistradas": [],
  "duvidasParaOOwner": [],
- "nextStep": "terminar a prova pgTAP do 220400 no descartavel; criar instituicao + crianca sinteticas em producao (ha 0 instituicoes e 0 criancas) e provar Perfis de cuidado na rota normal",
+ "nextStep": "coordenador aplica 220400; enquanto isso capturas do estado vazio de Medicacao/Alunos/Assiduidade/Rotina/Formularios e dados sinteticos prontos (qa-r04-dados-sinteticos.sql) para provar Cuidado na rota normal",
  "handoff": "docs/reviews/etapa-2-operacao/comunicacao/formularios-cuidado-rotina-handoff.md",
  "historicoR03": {
   "updatedAt": "2026-09-10T17:10:00-03:00",
@@ -753,10 +750,28 @@
   {
    "arquivo": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260910220400_internal_actor_service_person_v1.sql",
    "pgtap": "packages/coelo_database/supabase/tests/internal_actor_service_person_v1_test.sql (17 assercoes)",
-   "estado": "escrito; prova no descartavel em andamento (reset da baseline ainda rodando)",
+   "estado": "pgTAP 17/17 verde no descartavel coelo_fcr_r04 (baseline + seed + as 45 migrations de origin/dev 836c63215 + o candidato), 2026-09-11 ~00:55",
    "o_que_faz": "F-R04-FCR-002 + F-R04-FCR-003: catalogo attendance/people.assign_children, grants ao owner, pessoa de servico + membership espelho por identidade interna (gatilho), current_person_id() com fallback ao espelho",
    "transversal": "muda app_private.current_person_id(): toda RPC people-based passa a reconhecer a sessao interna v2. Aplicar cedo na fila; nao depende de outro pacote.",
-   "chave_de_composicao": "nenhuma nova: as chaves de Cuidado/Rotina e Alunos ja estao ligadas"
+   "chave_de_composicao": "nenhuma nova: as chaves de Cuidado/Rotina e Alunos ja estao ligadas",
+   "defeitos_corrigidos_pela_prova": [
+    "status do espelho: CASE devolvia text para coluna platform_membership_status (cast adicionado; o coordenador apontou o mesmo no preflight dele)",
+    "fixture: guard do ultimo owner interno exige um segundo owner com auth link ativo antes de suspender; lifecycle guard exige version + 1 nas atualizacoes"
+   ],
+   "o_que_a_prova_nao_cobre": "nenhuma tela; a rota normal com qa-r03 so pode ser provada depois de o coordenador aplicar em producao"
   }
- ]
+ ],
+ "goldens": {
+  "regravados_em": "bbc562c6f",
+  "motivo": "diferenca unica: botao de Bug no cabecalho e realce do item de menu (regras transversais do Owner de 10/09); decisoes A de forms_directory_*, forms_editor_*, forms_operations_monitor_light_375 e form_response_light_375 aplicadas; Rotina e Assiduidade nao constam das listas do Owner mas a diferenca e a mesma do shell compartilhado",
+  "pendentes": [
+   "medication_form_mobile_light: A depois do P15 (respiro do rodape no frame compartilhado, grupo estrutura)",
+   "forms_editor: o rodape (Cancelar/Salvar) fica dentro do scroll, nao ancorado; P15 diz 'todos os formularios' e o editor de Formularios nao usa o SuperadminFormFrame. Registrado como pendencia, nao corrigido nesta rodada"
+  ]
+ },
+ "estadoVazioDosDiretorios": {
+  "regra": "Owner, 11/09 ~00:40 via coordenador: busca, filtros, toggle, Arquivos, abas de status e card Criar sempre visiveis, inclusive no vazio",
+  "health_care.list": "cumpre (captura 08-hc-list-server.png com o ator produtivo: busca, 5 filtros, toggle, Arquivos, abas Todos/Ativos/Em Implantacao/Inativos, card Criar)",
+  "demais": "capturas em andamento"
+ }
 }
