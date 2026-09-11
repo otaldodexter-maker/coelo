@@ -1,7 +1,7 @@
 {
-  "revision": 138,
-  "updated_at": "2026-09-11T22:40:36.945051Z",
-  "relogio_local": "Fri Sep 11 2026 19:40:36 GMT-0300 (Horario Padrao de Brasilia)",
+  "revision": 139,
+  "updated_at": "2026-09-11T22:56:54.688545Z",
+  "relogio_local": "Fri Sep 11 2026 19:56:54 GMT-0300 (Horario Padrao de Brasilia)",
   "round": "E2-R06-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
@@ -9,7 +9,7 @@
   "status": "em andamento",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-acessos-pessoas",
   "branch": "work/etapa2-r06-acessos-pessoas",
-  "head": "ca60b096b (origin/dev na abertura; nenhum commit proprio ainda)",
+  "head": "fb96e9374 (publicado)",
   "base_observed": "origin/dev ca60b096b (coordenacao rev 51, prompts da R06); candidatos/acessos-pessoas vazio; lotes 28-48 em producao",
   "T0": {
     "observacao": "coordenacao.json ainda na rev 51 (sem T0 nem \"usuarios qa-r06 prontos\") e Coelo-backups/qa-r06-acessos.env inexistente na abertura (19:37). T0 provisorio = 19:37 pelo relogio da maquina; T0+2h = 21:37; revisao de 10 min ate 21:47. Se o coordenador gravar T0 diferente, sigo o dele.",
@@ -39,16 +39,35 @@
       "transversal: V-11 A+ (Perfis: sem dados de demonstracao no app real; card Criar sempre presente em cards e tabela, mesmo vazio); V-13 e V-14 aprovados"
     ]
   },
-  "primeiro_gate": "credencial qa-r06-acessos.env ausente e T0 nao gravado pelo coordenador: rota real espera o usuario; enquanto isso, trabalho sem sessao (P46 pacote @ do interno, internal-users.create pela ponte de ator, people.create resolvedor de identidade, P45, V-11) e provas por pgTAP no descartavel.",
+  "primeiro_gate": "credencial qa-r06-acessos.env existe desde 19:44, mas coordenacao.json segue na rev 51 (sem T0 nem 'usuarios qa-r06 prontos'); rota real comeca assim que o perfil interno/ponte do qa-r06-acessos estiver em producao. Enquanto isso: pacotes SQL e cliente sem sessao.",
   "leitura_feita": "R06-prompts.md, R05-prompts.md e R04-prompts.md integrais; acessos-pessoas.json rev 137 (REVISAO_FINAL_15h50, gates abertos, pendencias de code review, proposta de skills); handoff r05; inventario (32 acoes com FE/BE/E2E); bloco Estado vigente R05 dos tres md; coordenacao.json rev 51 (respostasDoOwnerR05: P45=B, P46=A, V-11 A+); AGENTS.md; skills coelo-frontend-backend, coelo-backend (regras R4/R5), coelo-frontend (regras R5), coelo-ui, coelo-knowledge; rtk/ponytail/flutter-dart-code-review/supabase reutilizadas.",
   "dependencias_do_coordenador": [
-    "gravar T0 e \"usuarios qa-r06 prontos\" em coordenacao.json; criar Coelo-backups/qa-r06-acessos.env"
+    "gravar T0 e 'usuarios qa-r06 prontos' em coordenacao.json (a credencial ja existe)",
+    "aplicar em producao, na ordem: 20260911170500_internal_user_handles_v1 (P46) e 20260911170600_institution_system_model_delete_v1 (P45), ambos em candidatos/acessos-pessoas, pgTAP verde no descartavel coelo_acessos_r06 com as 140 migrations da ordem real (lotes 8-48)"
   ],
   "loop": "/loop 15m agendado na abertura (ScheduleWakeup)",
-  "testes_P_F_B_S_U": "nenhum ainda nesta rodada",
+  "testes_P_F_B_S_U": "pgTAP: internal_user_handles_v1_test 12/12 P; person_handles_v1_test 22/22 P (teste 4 reescrito: pessoa de servico fora da ponte continua sem @); institution_people_handles_v1_test 4/4 P; principal_context_handles_and_coelo_profile_v1_test 14/14 P; institution_system_model_delete_v1_test 7/7 P; institution_profile_system_model_create_v1_test 8/8 P; superadmin_internal_users_directory_test 44/45 (teste 7 'requires_mfa' pre-existente, MFA fora do MVP - nao e meu)",
   "bloqueio": "parcial: rota real sem credencial propria; trabalho independente segue",
-  "proximo_passo": "item 2 (P46) e item 5 (people.create) sem sessao: inspecionar contratos em producao/migrations e escrever os pacotes em candidatos/acessos-pessoas (faixa 2026091217xxxx); conferir a credencial a cada loop",
+  "proximo_passo": "people.create: RPC superadmin_people_identity_lookup_v1 (170700) + SupabasePersonIdentityRepository (checkHandle pelo 170100); depois cliente do @ em Usuarios internos e Excluir do modelo; depois internal-users.create (RPC + Edge Function internal-user-create + cliente); rota real quando o coordenador liberar.",
   "ACK_ao_coordenador": "abertura da G2 R06 registrada; nao espero ACK para o trabalho independente",
+  "PACOTE_170500_P46_20h20": {
+    "id": "AP-INTERNAL-USER-HANDLES-170500",
+    "migration": "packages/coelo_database/candidatos/acessos-pessoas/20260911170500_internal_user_handles_v1.sql",
+    "estado": "VERDE - PRONTO PARA APLICAR (commit fb96e9374)",
+    "pgTAP": "supabase/tests/internal_user_handles_v1_test.sql 12/12 + as tres suites do @ existentes verdes",
+    "o_que_faz": "P46 = A: o usuario interno tem @ pela pessoa de servico da ponte de ator (220400). enforce_person_handle_rules/ensure_person_handle aceitam person_type service (visibilidade sempre privada); o @ padrao nasce do nome do perfil interno (superadmin_internal_profiles) e e atribuido pela propria ponte (superadmin_internal_actor_sync recebe um bloco depois de gravar o espelho; o gatilho de people pula service); person_handle_actor_can: quem tem platform.member.read ve e platform.member.update edita o @ de pessoa de servico, alem da propria identidade; RPC nova superadmin_internal_user_service_person_v1(p_internal_identity_id) -> {ok, data:{person_id}} com a autorizacao do detalhe de Usuarios internos (SAI_PERMISSION_DENIED para id alheio/inexistente); backfill idempotente das pessoas de servico da ponte (em producao: qa-r03 e os sete qa-r06).",
+    "contrato_para_o_cliente": "tela de Usuarios internos: superadmin_internal_user_service_person_v1(id) -> person_id; depois superadmin_person_handle_get/availability/set(person_id) iguais aos de Pessoas (PersonHandleSection reutilizada).",
+    "chave_de_composicao": "nenhuma nova: o cliente so chama a RPC nova atras de enablePersonHandles (ja ligada); antes do pacote, a RPC ausente devolve PGRST202 e a secao fica oculta (fail-closed).",
+    "seguranca": "sem grant novo a tabela; funcoes app_private sem grant a cliente; trava de 30 dias, reservados e ledger inalterados; visibilidade de servico nunca publica."
+  },
+  "PACOTE_170600_P45_20h20": {
+    "id": "AP-INSTITUTION-SYSTEM-MODEL-DELETE-170600",
+    "migration": "packages/coelo_database/candidatos/acessos-pessoas/20260911170600_institution_system_model_delete_v1.sql",
+    "estado": "VERDE - PRONTO PARA APLICAR (commit fb96e9374)",
+    "pgTAP": "supabase/tests/institution_system_model_delete_v1_test.sql 7/7 + institution_profile_system_model_create_v1_test 8/8",
+    "o_que_faz": "P45 = B ('apenas conforme hierarquia, como owner'): app_private.superadmin_access_profile_delete_and_reassign, ramo institution, deixa excluir modelo do sistema (is_system) quando o ator tem institution.roles.manage em membership de PLATAFORMA sem escopo (has_scoped_platform_permission(..., null)); perfil escopado em instituicao continua recebendo 'system profile is protected'; versao esperada, substituto compativel, auditoria (membership_changed) e recibo inalterados; modelos de plataforma (owner/operations) continuam protegidos.",
+    "cliente": "detalhe do perfil de sistema (dominio institution) passa a mostrar Excluir para a plataforma; feito no commit seguinte."
+  },
   "historico_r05": {
     "revision": 137,
     "updated_at": "2026-09-11T18:50:26.650Z",
