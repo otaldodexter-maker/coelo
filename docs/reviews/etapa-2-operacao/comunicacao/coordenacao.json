@@ -1,13 +1,13 @@
 {
- "revision": 37,
- "round": "E2-R04-20260911",
- "role": "Coordenacao noturna R04 - Claude Fable (C0)",
+ "revision": 38,
+ "round": "E2-R05-20260911",
+ "role": "Coordenacao da tarde R05 - Claude Opus (C0)",
  "writer": "coordenador-claude",
  "app": "Claude Code (VS Code)",
- "model": "claude-fable-5-1",
+ "model": "claude-opus-5",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T12:15:00-03:00",
- "relogio": "relogio da maquina; posse as 21:42 -03:00 de 10/09/2026",
+ "updatedAt": "2026-09-11T12:03:00-03:00",
+ "relogio": "relogio da maquina; posse as 12:03 -03:00 de 11/09/2026",
  "posseR04": {
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
   "branch": "work/etapa2-r04-coordenacao",
@@ -224,10 +224,11 @@
   "32": "09:55 lote 24 (180360); continuacao da estrutura integrada (primeiro E2E da Estrutura); worktree quebrada da R03 removida; artefato de decisoes publicado",
   "33": "11:10 decisoes do Owner de 11/09 (duas levas) registradas e parcialmente executadas (lotes 25-27, goldens); estrutura revs 34-37 integrada; pendencias da R05 listadas",
   "34": "11:35 pausa da frente estrutura: revs 37-38 integradas, WIP preservado na branch, 16 deltas aplicados (E2E 43), worktree e processos encerrados, P40-P42 ao Owner",
-  "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina.",
   "35": "11:50 segunda pausa da frente estrutura: rev 39 integrada, WIP activities.edit preservado na branch, worktree removida; relogio corrigido; prompts da R05 com corte 15:45/15:50/16:30",
   "36": "12:05 P40/P41/P42 respondidas: regra do @ (Decisao 16) registrada; prompts da R05 atualizados",
-  "37": "12:15 complemento do Owner: @ tambem para funcionarios, responsaveis e criancas sem perfil, visivel e editavel por quem responde por eles; prompts da R05 atualizados"
+  "37": "12:15 complemento do Owner: @ tambem para funcionarios, responsaveis e criancas sem perfil, visivel e editavel por quem responde por eles; prompts da R05 atualizados",
+  "38": "12:03 posse da R05 (worktree e2-r05-coordenacao sobre 9bf60463b); frentes R05 aguardando primeira revisao; achado: e2-r04-estrutura recriada com rev 40",
+  "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina."
  },
  "fechamentoR03": {
   "quando": "2026-09-10T20:30-03:00 (relogio da maquina)",
@@ -756,5 +757,67 @@
   "P42": "dados sinteticos da frente estrutura ficam ate o fim da Etapa 2",
   "registro": "ADR 0034 Decisao 16; skills coelo-backend e coelo-frontend; rastreadores 12:05; prompt G1 da R05",
   "complemento1215": "Complemento do Owner (12:15): o @ vale também para funcionários, responsáveis e crianças, mesmo quem não tem perfil de acesso ao app; quem responde por eles (a instituição para funcionários, os responsáveis para a criança) pode ver e editar esse @, dentro da mesma regra de disponibilidade e 30 dias."
+ },
+ "posseR05": {
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-coordenacao",
+  "branch": "work/etapa2-r05-coordenacao",
+  "upstream": "origin/dev",
+  "baseAoAbrir": "9bf60463b (origin/dev = checkout principal)",
+  "loop": "/loop 30m agendado na abertura (ler JSONs das frentes, ACK, aplicar pacotes verdes, integrar, rastreadores; listar conversas paradas ha mais de 30 min e manda-las retomar)",
+  "janela": "frentes ate 15:45; revisao de 10 min pedida as 15:50 (resposta ate 16:00); encerramento 16:00-16:30",
+  "regraDeEscrita": "unica escritora de dev, inventario e tres rastreadores; JSON de cada grupo lido da branch work/etapa2-r05-<grupo> (git show), nunca do checkout principal",
+  "achadoNaAbertura": "a worktree e2-r04-estrutura existe de novo em 189cbb852 (rev 40: activities.edit ligado e verificado 180/180 sobre o WIP 44574dfda); a frente R04 seguiu depois da segunda pausa. Sera integrada quando a rev 40 for lida e o teste conferido; a frente G1 da R05 parte dela."
+ },
+ "frentesR05": {
+  "estrutura": {
+   "branch": "work/etapa2-r05-estrutura",
+   "rev": null,
+   "ack": false,
+   "estado": "aguardando primeira revisao da R05"
+  },
+  "acessos-pessoas": {
+   "branch": "work/etapa2-r05-acessos-pessoas",
+   "rev": null,
+   "ack": false,
+   "estado": "aguardando primeira revisao da R05"
+  },
+  "formularios-cuidado-rotina": {
+   "branch": "work/etapa2-r05-formularios-cuidado-rotina",
+   "rev": null,
+   "ack": false,
+   "estado": "aguardando primeira revisao da R05"
+  },
+  "principal-chat-sistema": {
+   "branch": "work/etapa2-r05-principal-chat-sistema",
+   "rev": null,
+   "ack": false,
+   "estado": "aguardando primeira revisao da R05"
+  },
+  "realm-interno": {
+   "branch": "work/etapa2-r05-realm-interno",
+   "rev": null,
+   "ack": false,
+   "estado": "aguardando primeira revisao da R05"
+  },
+  "publicacoes-agenda": {
+   "branch": "work/etapa2-r05-publicacoes-agenda",
+   "rev": null,
+   "ack": false,
+   "estado": "aguardando primeira revisao da R05"
+  },
+  "operacoes": {
+   "branch": "work/etapa2-r05-operacoes",
+   "rev": null,
+   "ack": false,
+   "estado": "aguardando primeira revisao da R05"
+  }
+ },
+ "receiptsR05": [],
+ "filaSqlR05": {
+  "regra": "pacote verde em candidatos/<grupo> -> preflight no espelho (aplicar + pgTAP) -> dump por lote -> supabase db query --linked -f <caminho relativo ao workdir> -> insert no ledger -> move para migrations/ -> chave de composicao",
+  "aplicados": [],
+  "proximos": [
+   "candidatos verdes das frentes na ordem de chegada"
+  ]
  }
 }
