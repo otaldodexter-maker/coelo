@@ -76,7 +76,7 @@ void main() {
     expect(find.byKey(const Key('support-create-state')), findsOneWidget);
     expect(find.textContaining('SUP-001'), findsNothing);
     expect(find.byKey(const Key('support-search')), findsOneWidget);
-    expect(find.byKey(const Key('support-status-filter')), findsOneWidget);
+    expect(find.byKey(const Key('support-status-filter')), findsNothing, reason: 'P49: Status virou abas na tabela');
     expect(find.byKey(const Key('support-view-toggle-table')), findsOneWidget);
     expect(find.byKey(const Key('coelo-admin-files-action')), findsOneWidget);
 

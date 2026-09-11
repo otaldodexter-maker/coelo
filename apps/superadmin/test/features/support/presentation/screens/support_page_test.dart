@@ -36,7 +36,7 @@ void main() {
       findsOneWidget,
     );
     expect(find.byKey(const Key('support-search')), findsOneWidget);
-    expect(find.byKey(const Key('support-status-filter')), findsOneWidget);
+    expect(find.byKey(const Key('support-status-filter')), findsNothing, reason: 'P49: Status virou abas na tabela');
     expect(find.byKey(const Key('support-menu-filter')), findsOneWidget);
     expect(find.byKey(const Key('support-assignee-filter')), findsOneWidget);
     expect(find.byKey(const Key('support-read-filter')), findsOneWidget);

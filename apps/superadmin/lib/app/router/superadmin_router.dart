@@ -220,6 +220,7 @@ import '../../features/students/presentation/student_manage_page.dart';
 import '../../features/support/presentation/screens/support_page.dart';
 import '../../features/support/presentation/view_models/support_prototype_controller.dart';
 import '../../features/support/data/support_repository.dart';
+import '../../features/support/data/support_display_store.dart';
 import '../../features/student_tracking/domain/student_tracking.dart';
 import '../../features/student_tracking/presentation/student_tracking_page.dart';
 import '../../features/units/data/fake_unit_directory_repository.dart';
@@ -484,6 +485,7 @@ GoRouter createSuperadminRouter({
           ? null
           : SupportPrototypeController(repository: supportRepository));
   final developmentSupportController = _createDevelopmentSupportController();
+  final productionSupportDisplayStore = SharedPreferencesSupportDisplayStore();
   final accountActivities = SuperadminActivityController();
   final productionAccountController = AccountController(
     repository: accountProfileRepository,
@@ -782,6 +784,13 @@ GoRouter createSuperadminRouter({
     key: const Key('production-mutation-capability-unavailable'),
     kind: SuperadminErrorKind.unavailable,
     actionLabel: 'Voltar ao início',
+    onAction: () => context.goNamed(SuperadminRoutes.homeName),
+  );
+  // Importar/exportar reais ficam para depois do MVP por decisao (ADR 0034):
+  // a rota diz isso, em vez de "temporariamente indisponivel" (IMP-R05-2).
+  Widget deferredFeaturePage(BuildContext context) => SuperadminErrorScreen(
+    key: const Key('production-mutation-capability-unavailable'),
+    kind: SuperadminErrorKind.deferred,
     onAction: () => context.goNamed(SuperadminRoutes.homeName),
   );
   Widget productionMealPlanWizardPage(
@@ -3855,6 +3864,7 @@ GoRouter createSuperadminRouter({
               return SupportPage(
                 controller: controller,
                 logout: logout,
+                displayStore: productionSupportDisplayStore,
                 onHomeOpen: () => context.goNamed(SuperadminRoutes.homeName),
                 onInstitutionsOpen: () => context.goNamed(SuperadminRoutes.institutionsName),
                 onUnitsOpen: () => context.goNamed(SuperadminRoutes.unitsName),
@@ -5399,7 +5409,7 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.importCreateName,
             builder: (context, state) {
               if (!hasAuthoritativeMutationCapability()) {
-                return blockedProductionMutationPage(context);
+                return deferredFeaturePage(context);
               }
               final preset = state.extra is ImportCreationPreset
                   ? state.extra as ImportCreationPreset

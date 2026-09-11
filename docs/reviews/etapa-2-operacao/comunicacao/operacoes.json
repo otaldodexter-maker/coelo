@@ -1,13 +1,13 @@
 {
-  "revision": 40,
-  "updated_at": "2026-09-11T19:55:00-03:00",
+  "revision": 41,
+  "updated_at": "2026-09-11T20:07:00-03:00",
   "round": "E2-R06-20260911",
   "group": "operacoes",
   "tool_model": "Claude, Opus 5 (1M), esforco medio — conversa R06 · Operacoes",
   "conversation": "R06 · Operações",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-operacoes",
   "branch": "work/etapa2-r06-operacoes",
-  "head": "d0adb6c32",
+  "head": "5408bd710",
   "base": {
     "requested": "origin/dev",
     "resolved": "ca60b096b",
@@ -71,6 +71,25 @@
       ],
       "what": "(1) FE: card \"Sessoes\" em Configuracoes (SettingsSessionsSection): lista (sessao atual em destaque, navegador, IP, ultima atividade), Atualizar e \"Encerrar as outras sessoes (N)\" (desabilitado quando N=0); injetado so na composicao real (main.dart -> SupabaseAccountSessionsRepository); rota /dev e goldens existentes nao mudam (sessions=null). 4 testes novos; test/features/account 125/125.",
       "commit": "d0adb6c32"
+    },
+    {
+      "when": "20:00",
+      "action_ids": [
+        "support.kanban",
+        "support.table",
+        "support.detail"
+      ],
+      "what": "(2) P49=A: filtro Status removido; na tabela entram abas Todos/Novo/Em andamento/Aguardando solicitante/Concluido (CoeloAdminUnderlineTabs no slot tabs do composto, uma aba = um status no filtro; no kanban as colunas ja fazem esse papel); visao cards/tabela persistida por dispositivo (SharedPreferencesSupportDisplayStore, chave coelo.superadmin.support.display; so na composicao real). 24 goldens support_* regravados apos conferir nas imagens de falha que a diferenca e so o filtro removido (toolbar em uma linha) e as abas. support 70/70.",
+      "commit": "d3c26b35d"
+    },
+    {
+      "when": "20:04",
+      "action_ids": [
+        "imports.create",
+        "errors.503"
+      ],
+      "what": "(5) IMP-R05-2: /imports/new (recurso adiado por decisao) passa a dizer \"Este recurso fica disponivel depois do MVP.\" com acao Voltar ao inicio (SuperadminErrorKind.deferred, mesma familia visual e codigo 503; blockedProductionMutationPage das demais rotas continua 503 \"temporariamente\"). Goldens error_503_deferred_{light,dark} novos e import_hub_wizard_unavailable_light_1440_200 regravado. errors+imports 73/73. Reversivel; entra na pagina de aprovacao do Owner como DEF-R06.",
+      "commit": "5408bd710"
     }
   ],
   "tests": [
@@ -89,6 +108,14 @@
     {
       "suite": "test/features/account",
       "result": "125/125 P"
+    },
+    {
+      "suite": "test/features/support",
+      "result": "70/70 P (24 goldens regravados)"
+    },
+    {
+      "suite": "test/features/errors + test/features/imports + composition_root_fail_closed_routes_test",
+      "result": "74/74 P"
     }
   ],
   "blocked": [],
@@ -103,7 +130,7 @@
     }
   ],
   "questions_to_owner": [],
-  "next_step": "(2) Suporte P49=A: abas de estado no lugar do filtro Status + persistir cards/tabela",
+  "next_step": "(4) Catalogo P44=B: indice + fingerprints; em paralelo build web para a rota real de Conta (settings/theme/sessions), Suporte (abas) e Planos",
   "commits": [],
   "r04_history": {
     "revision": 20,
@@ -672,7 +699,10 @@
       "skills": "proposta de atualizacao das tres skills na secao 3 de docs/reviews/evidence/etapa-2/r04-operacoes/handoff-final-e-skills.md"
     }
   },
-  "notes_to_coordinator": [],
+  "notes_to_coordinator": [
+    "Pacote 20260911200200 (account.sessions) pronto em candidatos/operacoes: pgTAP 14/14 no descartavel com a ordem real (141 migrations). Sem chave de composicao. Sem Edge Function: revogacao usa GoTrue scope=others (nativo). Aplicar quando puder; ate la o card Sessoes em /settings mostra falha honesta.",
+    "Goldens regravados nesta rodada (aprovacao visual do Owner pendente, nunca verified): support_* (24, abas P49), error_503_deferred (2), import_hub_wizard_unavailable_light_1440_200 (texto DEF-R06). Pagina lado a lado sera montada ao fim."
+  ],
   "pendencias_registradas_r05": [
     {
       "action_id": "support.table",
@@ -907,9 +937,11 @@
     ]
   },
   "t0": {
-    "nota": "coordenacao.json em origin/dev esta na rev 51 sem T0 nem \"usuarios qa-r06 prontos\"; C:/Users/adrie/Documents/Coelo-backups/qa-r06-operacoes.env NAO existe as 19:40. Assumo abertura da frente as 19:40 (T0+20) => T0 ~ 19:20, corte T0+2h ~ 21:20, revisao ate 21:30. Vou reler coordenacao.json a cada loop; enquanto a credencial nao existir, faco o trabalho que nao precisa de rota real (teste, tela de sessoes, Edge Function, abas de Suporte, Catalogo, texto 503).",
-    "pergunta_ao_coordenador": "confirmar T0 e publicar qa-r06-operacoes.env; se nao houver, digam se posso usar qa-r03 somente para provas de leitura (sem Sair/revogar)",
-    "atualizacao_1955": "qa-r06-operacoes.env existe desde ~19:50; coordenacao rev 52 ainda nao publicada (branch do coordenador com candidatos/coordenador nao commitado). Rota real fica para quando a semente (perfil interno + ponte + membership) estiver aplicada; sigo em (2) Suporte, (4) Catalogo e (5) texto 503."
+    "T0": "19:36 (coordenacao rev 52, fcdded416)",
+    "abertura_frente": "19:40 (esta conversa)",
+    "corte": "21:36 (T0+2h)",
+    "revisao_10min_ate": "21:46",
+    "nota": "lote 49 aplicado: qa-r06-operacoes com identidade interna, Owner de plataforma, ponte e memberships nas qa-r04-*; rota real comeca assim que o build web terminar"
   },
   "pendencias_registradas_r06": []
 }

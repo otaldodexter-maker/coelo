@@ -28,6 +28,13 @@ enum SuperadminErrorKind {
     code: '503',
     message: 'O Coelo está temporariamente indisponível.',
     actionLabel: 'Tentar novamente',
+  ),
+  /// Recurso adiado por decisão (ADR 0034: importações e exportações gerais):
+  /// mesma família visual do 503, texto honesto em vez de "temporariamente".
+  deferred(
+    code: '503',
+    message: 'Este recurso fica disponível depois do MVP.',
+    actionLabel: 'Voltar ao início',
   );
 
   const SuperadminErrorKind({required this.code, required this.message, required this.actionLabel});

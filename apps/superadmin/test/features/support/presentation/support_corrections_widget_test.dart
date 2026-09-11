@@ -49,6 +49,14 @@ void main() {
       expect(Focus.of(tester.element(table)).hasFocus, isTrue);
       await tester.sendKeyEvent(LogicalKeyboardKey.enter);
       await tester.pumpAndSettle();
+      // Com as abas de status (P49) acima da tabela, em 375 a 200% a tabela
+      // nasce fora da viewport da rolagem preguicosa do composto.
+      await tester.dragUntilVisible(
+        find.byKey(const Key('support-ticket-table')),
+        find.byKey(const Key('support-directory-scroll')),
+        const Offset(0, -200),
+      );
+      await tester.pumpAndSettle();
       expect(find.byKey(const Key('support-ticket-table')), findsOneWidget);
       expect(tester.takeException(), isNull);
     }
