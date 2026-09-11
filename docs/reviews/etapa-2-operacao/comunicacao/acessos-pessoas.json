@@ -1,7 +1,7 @@
 {
-  "revision": 128,
-  "updated_at": "2026-09-11T18:09:37.507Z",
-  "relogio_local": "Fri Sep 11 2026 15:09:37 GMT-0300 (Horário Padrão de Brasília)",
+  "revision": 129,
+  "updated_at": "2026-09-11T18:10:35.533Z",
+  "relogio_local": "Fri Sep 11 2026 15:10:35 GMT-0300 (Horário Padrão de Brasília)",
   "round": "E2-R05-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
@@ -164,6 +164,28 @@
   "dados_sinteticos_r05_adicional": [
     "units cce78909 'Unidade QA R05 Transferencia' e child_unit_links 5d00bc95 (inactive)"
   ],
+  "PROPOSTA_DE_ATUALIZACAO_DAS_SKILLS_R05": {
+    "nota": "deltas para o coordenador aplicar nas skills (so ele escreve nelas).",
+    "coelo-backend": [
+      "Regra de escrita: DELETE/UPDATE dentro de funcoes sempre com WHERE (em tabela temporaria usar `where true`); o pg_safeupdate esta no session_preload_libraries do authenticator do PostgREST e bloqueia mesmo dentro de security definer, mas o pgTAP via psql nao o carrega. Incluir nos pacotes que apagam/atualizam um caso com `load 'safeupdate'` rodado como supabase_admin (supautils nega load ao postgres). Caso real: 171100 quebrou toda escrita de vinculo de crianca pela API ate o 170200.",
+      "Regra do @ de pessoas (Decisao 16) em producao: person_handles + RPCs superadmin_person_handle_get/availability/set (170100); trava de 30 dias pelo ledger person_identity_correction_ledger; reservados coelo/coelo.me/admin/suporte...; quem edita: people.update de plataforma, a propria pessoa, responsaveis ativos da crianca. Pendentes: @ de usuarios internos (P44) e edicao pela instituicao (app Admin).",
+      "Perfis (P31) em producao: perfil Admin criado pela plataforma sem institution_id e modelo do sistema (is_system); com institution_id e da instituicao; modelos de sistema de Admin editaveis por institution.roles.manage, modelos de plataforma protegidos; delete de modelo do sistema protegido (P43).",
+      "Diretorio de Pessoas: p_segment em superadmin_people_list (170400, allowlist) substitui o filtro de abas que so existia no repositorio de desenvolvimento; ao trocar assinatura de RPC, DROP da sobrecarga antiga para o PostgREST nao ter duas.",
+      "@ padrao de unidade (estrutura): truncar em 30 antes de montar e normalizar o slug da instituicao sem hifen (defeito 23514 visto em create_unit_for_superadmin)."
+    ],
+    "coelo-frontend": [
+      "Prova por CDP com qa_main: a extensao do Flutter Driver emula o teclado; injetar a sessao no localStorage (chave coelo.superadmin.auth.session, JSON cru da sessao obtido por login REST no processo) e digitar por window.$flutterDriver({command:'enter_text'}); habilitar a semantica (placeholder) antes de qualquer clique se for usar a arvore; Chrome com SwiftShader para de repintar abaixo de 0,5 GB livres.",
+      "Envelopes de RPC: conferir o formato real da resposta antes do fromJson (superadmin_access_profile_save devolve {domain, profile, version}; a UI mostrava erro depois de gravar).",
+      "Codigos gerados pelo servidor (com hifen) precisam passar na validacao do cliente; validar formato so no que o operador digita.",
+      "P31 na UI: modelo de sistema abre o detalhe sem Editar/Excluir e oferece 'Criar a partir deste modelo'; Criar perfil pergunta do zero ou a partir de um modelo ativo; a revisao compara com o rascunho em branco.",
+      "Alunos (P36): vincular/transferir escolhem a turma e a unidade vem junto; as opcoes vem do diretorio de Turmas."
+    ],
+    "coelo-frontend-backend": [
+      "Chave de composicao por pacote: cliente que envia parametro novo de RPC (p_segment) fica atras de uma chave (segmentFilterAvailable) ate o pacote entrar em producao; caso contrario a rota quebra com PGRST202/300.",
+      "Provas de rota real sob memoria baixa: um Chrome, esperas de 20-30 s por tela, capturar rede com Network.enable antes da navegacao; quando a UI nao repinta, confirmar pelo POST na rede e pelo reload.",
+      "Fixture sintetica de aluno: transferir ida e volta para nao alterar o estado que as outras frentes usam (link_id reaproveitado)."
+    ]
+  },
   "historico_r04": {
     "revision": 118,
     "updated_at": "2026-09-11T11:31:19.648Z",
