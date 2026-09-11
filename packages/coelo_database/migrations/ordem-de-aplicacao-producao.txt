@@ -145,3 +145,5 @@
 20260911130000_principal_internal_actor_bridge_v1.sql
 # lote 30 (11/09 12:47) - R05 realm-interno: revoke de grants CRUD de authenticated sem policy (public/app_private/audit/analytics)
 20260911210100_revoke_authenticated_crud_without_policy_v1.sql
+# lote 31 (11/09 12:52) - R05 acessos-pessoas: @ de pessoas (person_handles_v1, Decisao 16)
+20260911170100_person_handles_v1.sql
