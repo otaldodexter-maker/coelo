@@ -4518,15 +4518,15 @@
       "family": "acontece",
       "screen": "Acontece / Feed",
       "scope": "mvp",
-      "done": "Feed/overlays e purga de draft/rotas protegidos. TTL/cache50473bd8 passou16/16 no destino; não certifica R2 real. R01/16h: C05r8/69354767+88dac285 validam HTTPS redimido;40306f45 testa resposta tardia de Momentos com mutação da guarda. Consolidacao final: Dev d019c109a agora injeta PrincipalHappensPreviewPage.mixed, recebe card Circular e refaz contexto/feed na revisao de autorizacao. Um teste causal invertido PASS. Abrir Circular informa indisponibilidade sem navegar ao leitor administrativo; abrir/responder e aceite integral continuam pendentes.",
-      "fe": "Abrir uma Circular do feed misto deixou de informar indisponibilidade: a acao navega para o leitor da familia Principal em /principal-happens/circular/:circularId dentro do shell do Superadmin, e a indisponibilidade honesta permanece apenas quando a capacidade de leitura nao esta composta. Responder, estados e demais aceites da acao continuam abertos.",
-      "be": "R04 (11/09 03:50, lote 22): public.list_my_principal_contexts (20260910191000 principal_runtime_contexts_baseline, recarimbo da historica 20260901161700 nunca aplicada) APLICADA EM PRODUCAO; pgTAP 13/13. Gate para done: contexto institucional da pessoa de servico de qa-r03 (P35) e rota normal com sessao.",
-      "evidence": "commit50473bd8; evidence/etapa-2/comunicacao/2026-09-08-happens-ticket-cache-lifecycle.md R01/16h: C05r8–10; etapa-2-operacao/reports/R01-checkpoint-1600.md; etapa-2-operacao/next-round/R02-20260909/FECHAMENTO-OWNER.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commit b10f48d1e; apps/superadmin/test/app/router/principal_circular_reader_route_test.dart (5 PASS); principal_happens_composition_gaps_test.dart com o teste-espelho invertido conforme o cabecalho do proprio arquivo (2 PASS); medicao de nao-regressao de test/app/router com reporter json, base d784462c1 em worktree destacada 302 PASS/33 FAIL contra 306 PASS/34 FAIL no branch, unica falha nova sendo o teste-espelho do defeito corrigido; flutter analyze --no-pub lib sem issues; 2026-09-09, local, branch work/etapa2-noturna-publicacoes-midia; AGENTS.md e contrato da rodada: todo remoto Coelo e producao e exige pacote nominal autorizado; nenhuma autorizacao nominal de midia ou Circulares foi concedida a este grupo ate 2026-09-09 20:35; comunicacao/principal-chat-sistema.json r7; coordenacao.json R04 rev 20 (lote9); 51-principal-happens.png; coordenacao.json R04 rev 30 (lote22)",
+      "done": "rota normal + feed de producao + negativa cross-tenant + reload mantem",
+      "fe": "rota normal abre com o contexto real (P35: seletor Vendo como com @), feed lista os posts publicados e reload mantem (01, 21, 23)",
+      "be": "130000 (ponte de ator) + 130200 (owner ve tudo) em producao; feed devolve os posts para qa-r03; tenant inexistente/alheio nega 42501 happens_permission_denied (prova RPC 12:5x)",
+      "evidence": "commit50473bd8; evidence/etapa-2/comunicacao/2026-09-08-happens-ticket-cache-lifecycle.md R01/16h: C05r8–10; etapa-2-operacao/reports/R01-checkpoint-1600.md; etapa-2-operacao/next-round/R02-20260909/FECHAMENTO-OWNER.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commit b10f48d1e; apps/superadmin/test/app/router/principal_circular_reader_route_test.dart (5 PASS); principal_happens_composition_gaps_test.dart com o teste-espelho invertido conforme o cabecalho do proprio arquivo (2 PASS); medicao de nao-regressao de test/app/router com reporter json, base d784462c1 em worktree destacada 302 PASS/33 FAIL contra 306 PASS/34 FAIL no branch, unica falha nova sendo o teste-espelho do defeito corrigido; flutter analyze --no-pub lib sem issues; 2026-09-09, local, branch work/etapa2-noturna-publicacoes-midia; AGENTS.md e contrato da rodada: todo remoto Coelo e producao e exige pacote nominal autorizado; nenhuma autorizacao nominal de midia ou Circulares foi concedida a este grupo ate 2026-09-09 20:35; comunicacao/principal-chat-sistema.json r7; coordenacao.json R04 rev 20 (lote9); 51-principal-happens.png; coordenacao.json R04 rev 30 (lote22); capturas 01/21/23; RPC list_visible_happens_feed devolve os posts do owner apos 130200; pgTAP principal_internal_actor_bridge_v1 22/22 + happens_feed_owner_visibility_v1 6/6; net-publish.log; capturas 21/23 e RPC",
       "historicalFrontend": "local-green",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T16:54:21.342597-03:00",
@@ -4558,6 +4558,26 @@
         "referencia": 10,
         "atual": 10,
         "fonte": "goldens-acontece-cardapios-decisoes-2026-09-10"
+      },
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/23-acontece-feed-reload.png",
+          "revision": "principal-chat-sistema r25",
+          "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+          "recordedAt": "2026-09-11T14:53-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/23-acontece-feed-reload.png",
+          "revision": "principal-chat-sistema r25",
+          "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+          "recordedAt": "2026-09-11T14:53-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/23-acontece-feed-reload.png",
+          "revision": "principal-chat-sistema r25",
+          "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+          "recordedAt": "2026-09-11T14:53-03:00"
+        }
       }
     },
     {
@@ -4565,15 +4585,15 @@
       "family": "acontece",
       "screen": "Acontece / Criar",
       "scope": "mvp",
-      "done": "Feed/overlays e purga de draft/rotas protegidos. TTL/cache50473bd8 passou16/16 no destino; não certifica R2 real. C00 integrou recuperação de Error dos compositores02c7456c; Agora teve teste adaptado ao passo Continuar af73c5f9, incluindo chamada real ao double, erro e retry. C00 integrou remoção de parada Tab duplicada nos chips b2c74128. R02 L01: FE verificado/entregue pelo autor; Acontece limitado ao escopo com turma. Momentos inclui porta de mídia na branch; integrar unindo mediaPicker e embedded. Não equivale a certificado de dev.",
-      "fe": "O cliente do Acontece fixava o bucket coelo-happens-mvp e subia sempre pelo caminho assinado do Supabase Storage, o que contraria a ADR 0032 hoje, sem relacao com o R2: bucket e provedor nao sao escolha do cliente. O intent de upload passou a carregar o provedor ANUNCIADO pelo servidor e o cliente obedece; enquanto o servidor anunciar o provedor legado o caminho e o bucket sao exatamente os de hoje. Composicao verificada conforme a regra do coordenador: main.dart compoe o caminho SIM; o router monta a pagina PRODUTIVA SIM, fora de /dev; existe implementacao de producao do repositorio, nao apenas interface, SIM.",
-      "be": "R04 (10/09, lote 9): Acontece em R2 (190700) APLICADA EM PRODUCAO. Gate para done: deploy de happens-media e rota normal com sessao.",
-      "evidence": "commit50473bd8; evidence/etapa-2/comunicacao/2026-09-08-happens-ticket-cache-lifecycle.md; Fechamento R01 C05/rfinal; C00 rerun288PASS; initial286PASS/2FAIL eram fluxo de teste desatualizado, não esconder histórico; etapa-2-operacao/reports/R01-fechamento-20260909.md; Fechamento R01 C05/rfinal; C05 428b62b0; C00288PASS; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commit 5dfcdd134; happens_upload_intent_provider_test.dart (6 PASS), cujo primeiro grupo e exatamente a condicao de aceite \"enquanto o servidor anunciar o provedor legado, nada muda\"; suite principal_happens_publication 67 PASS; deno happens-media 15 PASS; flutter analyze --no-pub na arvore inteira sem issues; 2026-09-09, local; coordenacao.json R03 rev 13; coordenacao.json R04 rev 20 (lote9)",
+      "done": "publicado pela tela real, persistido em producao, aparece no feed apos reload (23), negativa cross-tenant pela RPC",
+      "fe": "publicador abre para o contexto de instituicao (unidade/turma opcionais, 1da47a1cc); legenda + publico + Publicar no Acontece pela tela real (02..05, 08, 09)",
+      "be": "save_happens_draft {id, version 1} e publish_happens_post {status published} 200 na rota real (net-publish.log); 3 posts sinteticos persistidos em producao; outro tenant 42501",
+      "evidence": "commit50473bd8; evidence/etapa-2/comunicacao/2026-09-08-happens-ticket-cache-lifecycle.md; Fechamento R01 C05/rfinal; C00 rerun288PASS; initial286PASS/2FAIL eram fluxo de teste desatualizado, não esconder histórico; etapa-2-operacao/reports/R01-fechamento-20260909.md; Fechamento R01 C05/rfinal; C05 428b62b0; C00288PASS; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commit 5dfcdd134; happens_upload_intent_provider_test.dart (6 PASS), cujo primeiro grupo e exatamente a condicao de aceite \"enquanto o servidor anunciar o provedor legado, nada muda\"; suite principal_happens_publication 67 PASS; deno happens-media 15 PASS; flutter analyze --no-pub na arvore inteira sem issues; 2026-09-09, local; coordenacao.json R03 rev 13; coordenacao.json R04 rev 20 (lote9); capturas 02-09; pgTAP 22/22; RPCs 200 na rota real; capturas 05/09/23",
       "historicalFrontend": "blocked-decision",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T05:32:00-03:00",
@@ -4584,6 +4604,26 @@
         "head": "3697dd49e",
         "note": "FE verificado/entregue pelo autor; Acontece limitado ao escopo com turma. Momentos inclui porta de mídia na branch; integrar unindo mediaPicker e embedded. Não equivale a certificado de dev.",
         "evidence": "etapa-2-operacao/next-round/R02-20260909/ENTREGA-L00-PARA-D00.md"
+      },
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/05-acontece-revisao.png",
+          "revision": "principal-chat-sistema r25",
+          "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+          "recordedAt": "2026-09-11T14:53-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/09-acontece-apos-publicar.png",
+          "revision": "principal-chat-sistema r25",
+          "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+          "recordedAt": "2026-09-11T14:53-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/23-acontece-feed-reload.png",
+          "revision": "principal-chat-sistema r25",
+          "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+          "recordedAt": "2026-09-11T14:53-03:00"
+        }
       }
     },
     {
@@ -4591,15 +4631,15 @@
       "family": "acontece",
       "screen": "Acontece / Publicar",
       "scope": "mvp",
-      "done": "Feed/overlays e purga de draft/rotas protegidos. TTL/cache50473bd8 passou16/16 no destino; não certifica R2 real. C00 integrou recuperação de Error dos compositores02c7456c; Agora teve teste adaptado ao passo Continuar af73c5f9, incluindo chamada real ao double, erro e retry. C00 integrou remoção de parada Tab duplicada nos chips b2c74128. R02 L01: FE verificado/entregue pelo autor; Acontece limitado ao escopo com turma. Momentos inclui porta de mídia na branch; integrar unindo mediaPicker e embedded. Não equivale a certificado de dev.",
-      "fe": "publish_happens_post gerava a chave de idempotencia dentro do repositorio, na hora da chamada, entao repetir a MESMA publicacao apos uma falha chegava ao servidor como intencao diferente; em publicacao nao ha versao esperada barrando, e publicacao repetida para familias e dano visivel. A chave passou a pertencer a intencao, retida pelo controlador entre tentativas e descartada quando a publicacao e aceita ou o rascunho e editado. Isto nao afirma que a RPC seja nao idempotente no servidor. Composicao verificada conforme a regra do coordenador: main.dart compoe o caminho SIM; o router monta a pagina PRODUTIVA SIM, fora de /dev; existe implementacao de producao do repositorio, nao apenas interface, SIM.",
-      "be": "R04 (10/09, lote 9): Acontece em R2 (190700) APLICADA EM PRODUCAO. Gate para done: deploy de happens-media e rota normal com sessao.",
-      "evidence": "commit50473bd8; evidence/etapa-2/comunicacao/2026-09-08-happens-ticket-cache-lifecycle.md; Fechamento R01 C05/rfinal; C00 rerun288PASS; initial286PASS/2FAIL eram fluxo de teste desatualizado, não esconder histórico; etapa-2-operacao/reports/R01-fechamento-20260909.md; Fechamento R01 C05/rfinal; C05 428b62b0; C00288PASS; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commit 728aebecf; principal_publication_idempotency_test.dart (4 PASS, cobrindo repeticao com a mesma chave, edicao gerando chave nova e duas publicacoes aceitas com chaves diferentes); 251 PASS e 0 FAIL nas suites de publicacao de Acontece, Agora e Momentos; relatorio de idempotencia commit 2f66e8838; 2026-09-09, local; coordenacao.json R04 rev 20 (lote9)",
+      "done": "publicado pela tela real, persistido em producao, aparece no feed apos reload (23), negativa cross-tenant pela RPC",
+      "fe": "publicador abre para o contexto de instituicao (unidade/turma opcionais, 1da47a1cc); legenda + publico + Publicar no Acontece pela tela real (02..05, 08, 09)",
+      "be": "save_happens_draft {id, version 1} e publish_happens_post {status published} 200 na rota real (net-publish.log); 3 posts sinteticos persistidos em producao; outro tenant 42501",
+      "evidence": "commit50473bd8; evidence/etapa-2/comunicacao/2026-09-08-happens-ticket-cache-lifecycle.md; Fechamento R01 C05/rfinal; C00 rerun288PASS; initial286PASS/2FAIL eram fluxo de teste desatualizado, não esconder histórico; etapa-2-operacao/reports/R01-fechamento-20260909.md; Fechamento R01 C05/rfinal; C05 428b62b0; C00288PASS; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commit 728aebecf; principal_publication_idempotency_test.dart (4 PASS, cobrindo repeticao com a mesma chave, edicao gerando chave nova e duas publicacoes aceitas com chaves diferentes); 251 PASS e 0 FAIL nas suites de publicacao de Acontece, Agora e Momentos; relatorio de idempotencia commit 2f66e8838; 2026-09-09, local; coordenacao.json R04 rev 20 (lote9); capturas 02-09; pgTAP 22/22; RPCs 200 na rota real; capturas 05/09/23",
       "historicalFrontend": "blocked-decision",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T05:32:00-03:00",
@@ -4610,6 +4650,26 @@
         "head": "3697dd49e",
         "note": "FE verificado/entregue pelo autor; Acontece limitado ao escopo com turma. Momentos inclui porta de mídia na branch; integrar unindo mediaPicker e embedded. Não equivale a certificado de dev.",
         "evidence": "etapa-2-operacao/next-round/R02-20260909/ENTREGA-L00-PARA-D00.md"
+      },
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/05-acontece-revisao.png",
+          "revision": "principal-chat-sistema r25",
+          "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+          "recordedAt": "2026-09-11T14:53-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/09-acontece-apos-publicar.png",
+          "revision": "principal-chat-sistema r25",
+          "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+          "recordedAt": "2026-09-11T14:53-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/23-acontece-feed-reload.png",
+          "revision": "principal-chat-sistema r25",
+          "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+          "recordedAt": "2026-09-11T14:53-03:00"
+        }
       }
     },
     {
@@ -4617,19 +4677,39 @@
       "family": "acontece",
       "screen": "Acontece / Remover",
       "scope": "mvp",
-      "done": "Retirada possui cliente/contrato candidato e sucessores entregues por L01; diagnóstico de ausência na R01 foi superado na branch 3697dd49e. Integração integral e runtime reais continuam retidos conforme D00.",
-      "fe": "A afordancia de retirada de publicacao entrou na base integrada com confirmacao, estado de progresso, tratamento de negacao e de conflito de versao, e releitura do feed em vez de correcao em memoria; ela so aparece quando o servidor devolveu identidade, versao e autorizacao. O contrato withdraw_happens_post no backend permanece candidato nao aplicado.",
-      "be": "R04 (10/09, lote 9): retirada do Acontece (190800 happens_post_withdrawal_baseline) APLICADA EM PRODUCAO; pgTAP 33/33 + 10/10. Gate para done: rota normal com sessao e reload.",
-      "evidence": "commit50473bd8; evidence/etapa-2/comunicacao/2026-09-08-happens-ticket-cache-lifecycle.md R01/16h: C05r9/r10;I007; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C05/rfinal; C05final declara limites por ação; integração/contratos pendentes; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commit 1e39b2fcf integrado em dev via merge d502350ce; apps/superadmin/test/features/principal_happens/presentation/principal_happens_withdrawal_test.dart; 2026-09-09, local; branch codex/e2-r02-l01-publicacoes em 3697dd49e; 2026-09-09; coordenacao.json R04 rev 20 (lote9)",
+      "done": "retirada pela tela real persistida em producao e mantida apos reload",
+      "fe": "menu do post > Retirar publicacao > dialogo > Retirar pela tela real (24, 25); o post some do feed e continua ausente apos reload (27)",
+      "be": "withdraw_happens_post pela rota real: feed de producao passa de 3 para 2 posts (RPC 14:4x); 190800 pgTAP 33/33 + 10/10 com negativa",
+      "evidence": "commit50473bd8; evidence/etapa-2/comunicacao/2026-09-08-happens-ticket-cache-lifecycle.md R01/16h: C05r9/r10;I007; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C05/rfinal; C05final declara limites por ação; integração/contratos pendentes; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commit 1e39b2fcf integrado em dev via merge d502350ce; apps/superadmin/test/features/principal_happens/presentation/principal_happens_withdrawal_test.dart; 2026-09-09, local; branch codex/e2-r02-l01-publicacoes em 3697dd49e; 2026-09-09; coordenacao.json R04 rev 20 (lote9); capturas 24-27; RPC list_visible_happens_feed antes/depois; capturas 24-27 + RPC",
       "historicalFrontend": "blocked-decision",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T05:32:00-03:00",
-      "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
+      "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/25-acontece-retirar-dialogo.png",
+          "revision": "principal-chat-sistema r25",
+          "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+          "recordedAt": "2026-09-11T14:53-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/27-acontece-retirar-reload.png",
+          "revision": "principal-chat-sistema r25",
+          "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+          "recordedAt": "2026-09-11T14:53-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/27-acontece-retirar-reload.png",
+          "revision": "principal-chat-sistema r25",
+          "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+          "recordedAt": "2026-09-11T14:53-03:00"
+        }
+      }
     },
     {
       "id": "agora.view",
@@ -4637,17 +4717,31 @@
       "screen": "Agora / Visualizar",
       "scope": "mvp",
       "done": "Viewer/overlays/contexto e purga de mídia a6a51d10/080997f6/7cca9a27 integrados. R01/16h: C05r8/69354767+88dac285 validam HTTPS redimido;40306f45 testa resposta tardia de Momentos com mutação da guarda.",
-      "fe": "O visualizador do Agora nao descartava uma leitura obtida sob autorizacao superada: um feed buscado no contexto anterior permanecia em tela depois da invalidacao. A rota passou a reconstruir na sessao e a chavear pela revisao de invalidacao, como Acontece e Momentos. A correcao tem oito linhas e nao reformata mais nada no arquivo compartilhado. Composicao verificada conforme a regra do coordenador: main.dart compoe o caminho SIM; o router monta a pagina PRODUTIVA SIM, fora de /dev; existe implementacao de producao do repositorio, nao apenas interface, SIM.",
-      "be": "R04 (11/09 03:50, lote 22): public.list_my_principal_contexts (20260910191000 principal_runtime_contexts_baseline, recarimbo da historica 20260901161700 nunca aplicada) APLICADA EM PRODUCAO; pgTAP 13/13. Gate para done: contexto institucional da pessoa de servico de qa-r03 (P35) e rota normal com sessao.",
-      "evidence": "commitsa6a51d10/080997f6/7cca9a27; decisions/0032-mvp-private-media-r2.md R01/16h: C05r8–10; etapa-2-operacao/reports/R01-checkpoint-1600.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commit 40abfa875; principal_now_authorization_revision_test.dart (2 PASS), verificado que a prova FALHA sem a correcao e passa com ela; principal_now_preview_route_test.dart sem regressao; 2026-09-09, local; coordenacao.json R03 rev 13; coordenacao.json R04 rev 20 (lote9); 51-principal-now.png; coordenacao.json R04 rev 30 (lote22)",
+      "fe": "rota normal abre com o contexto real e estado vazio honesto 'Nada novo no Agora' (12)",
+      "be": "130000 em producao: now_actor reconhece a sessao interna; load_now_draft 200 para qa-r03 e outro tenant 42501 (prova RPC)",
+      "evidence": "commitsa6a51d10/080997f6/7cca9a27; decisions/0032-mvp-private-media-r2.md R01/16h: C05r8–10; etapa-2-operacao/reports/R01-checkpoint-1600.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commit 40abfa875; principal_now_authorization_revision_test.dart (2 PASS), verificado que a prova FALHA sem a correcao e passa com ela; principal_now_preview_route_test.dart sem regressao; 2026-09-09, local; coordenacao.json R03 rev 13; coordenacao.json R04 rev 20 (lote9); 51-principal-now.png; coordenacao.json R04 rev 30 (lote22); captura 12; pgTAP 22/22 (now_actor); RPC",
       "historicalFrontend": "local-green",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "local-green",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
+      "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/12-agora.png",
+          "revision": "principal-chat-sistema r25",
+          "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+          "recordedAt": "2026-09-11T14:53-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/12-agora.png",
+          "revision": "principal-chat-sistema r25",
+          "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+          "recordedAt": "2026-09-11T14:53-03:00"
+        }
+      }
     },
     {
       "id": "agora.create",
@@ -4655,12 +4749,12 @@
       "screen": "Agora / Criar",
       "scope": "mvp",
       "done": "Viewer/overlays/contexto e purga de mídia a6a51d10/080997f6/7cca9a27 integrados. C00 integrou recuperação de Error dos compositores02c7456c; Agora teve teste adaptado ao passo Continuar af73c5f9, incluindo chamada real ao double, erro e retry. R02 L01: FE verificado/entregue pelo autor; Acontece limitado ao escopo com turma. Momentos inclui porta de mídia na branch; integrar unindo mediaPicker e embedded. Não equivale a certificado de dev.",
-      "fe": "Reconciliar a entrega FE autoral 3697dd49e com a base integrada e fechar os aceites próprios ainda sem certificado. FE verificado/entregue pelo autor; Acontece limitado ao escopo com turma. Momentos inclui porta de mídia na branch; integrar unindo mediaPicker e embedded. Não equivale a certificado de dev.",
+      "fe": "publicador do Agora abre na rota real para o contexto de instituicao (28); publicacao com midia nao exercitada (picker via CDP)",
       "be": "R04 (10/09, lote 9): fundacao do Agora e mídia em R2 APLICADAS EM PRODUCAO (190300..190600). Gate para done: deploy de now-media e rota normal com sessao.",
-      "evidence": "commitsa6a51d10/080997f6/7cca9a27; decisions/0032-mvp-private-media-r2.md; Fechamento R01 C05/rfinal; C00 rerun288PASS; initial286PASS/2FAIL eram fluxo de teste desatualizado, não esconder histórico; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; coordenacao.json R04 rev 20 (lote9)",
+      "evidence": "commitsa6a51d10/080997f6/7cca9a27; decisions/0032-mvp-private-media-r2.md; Fechamento R01 C05/rfinal; C00 rerun288PASS; initial286PASS/2FAIL eram fluxo de teste desatualizado, não esconder histórico; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; coordenacao.json R04 rev 20 (lote9); captura 28",
       "historicalFrontend": "blocked-decision",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "pending-verification",
+      "frontendStatus": "local-green",
       "backendStatus": "local-green",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": "final",
@@ -4726,13 +4820,13 @@
       "screen": "Momentos / Visualizar",
       "scope": "mvp",
       "done": "L01 entregou contrato list_visible_moments e provas locais. Em dev a rota /principal-moments está hospedada no shell mas continua indisponível; contrato não chega à tela. Não equivale a falta global de feed na branch.",
-      "fe": "composicao larga aprovada restaurada (tela cheia ate 768, moldura sobre preto a partir de 840, aside a partir de 1200) e midia real com contain sobre preto (IMG); testes da pagina atualizados; goldens 1024/1440/like_hover/text_200 regravados apos observacao (commits 6203eeeea e 7c6181469, integrados em dev)",
-      "be": "R04 (11/09 03:50, lote 22): public.list_my_principal_contexts (20260910191000 principal_runtime_contexts_baseline, recarimbo da historica 20260901161700 nunca aplicada) APLICADA EM PRODUCAO; pgTAP 13/13. Gate para done: contexto institucional da pessoa de servico de qa-r03 (P35) e rota normal com sessao.",
-      "evidence": "commit31bacda3; evidence/etapa-2/comunicacao/2026-09-08-moments-media-lifecycle.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C05r8–10; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 313c43bb19Deno,operações503 semRPC;f413c2dc50PASS/21goldenFAIL,adapterfeed;cea29b1f9aceitação/39AcontecePASS,removercliente failclosed. Quatro subagentes SQLNotices/SQLMomentos/Agora/Chat ativos relatadosr15;não visual.; SQL5f0e7e29 retido porACL/cursor/envelope/schema/realm/reautorização/audiênciadesconhecida/store eplansTAP incorretos. C05r15 aceitouachados e corrige;sem replay. Fontes completas na assignmentI009.; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commit 57006c7a7; apps/superadmin/test/app/router/principal_moments_feed_route_test.dart (4 PASS, cobrindo indisponibilidade sem repositorio, negacao sem sessao, escopo real institution/unit/group e releitura por revisao de autorizacao); principal_moments_publication_route_test.dart sem regressao (4 PASS); flutter analyze --no-pub lib sem issues; 2026-09-09, local; coordenacao.json R03 rev 13 (cloudflareFechamento); 51-principal-moments.png; coordenacao.json R04 rev 30 (lote22); test/features/principal_moments 63 PASS; goldens principal_moments_* regravados; rota real ainda sem contexto (P35), por isso local-green e nao verified",
+      "fe": "rota normal abre apos 130300 com estado vazio honesto (22); antes respondia 'Nao foi possivel carregar' com Tentar novamente (11)",
+      "be": "130300 (list_visible_moments + withdraw_moment) em producao; list_visible_moments 200 [] para qa-r03",
+      "evidence": "commit31bacda3; evidence/etapa-2/comunicacao/2026-09-08-moments-media-lifecycle.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C05r8–10; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 313c43bb19Deno,operações503 semRPC;f413c2dc50PASS/21goldenFAIL,adapterfeed;cea29b1f9aceitação/39AcontecePASS,removercliente failclosed. Quatro subagentes SQLNotices/SQLMomentos/Agora/Chat ativos relatadosr15;não visual.; SQL5f0e7e29 retido porACL/cursor/envelope/schema/realm/reautorização/audiênciadesconhecida/store eplansTAP incorretos. C05r15 aceitouachados e corrige;sem replay. Fontes completas na assignmentI009.; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commit 57006c7a7; apps/superadmin/test/app/router/principal_moments_feed_route_test.dart (4 PASS, cobrindo indisponibilidade sem repositorio, negacao sem sessao, escopo real institution/unit/group e releitura por revisao de autorizacao); principal_moments_publication_route_test.dart sem regressao (4 PASS); flutter analyze --no-pub lib sem issues; 2026-09-09, local; coordenacao.json R03 rev 13 (cloudflareFechamento); 51-principal-moments.png; coordenacao.json R04 rev 30 (lote22); test/features/principal_moments 63 PASS; goldens principal_moments_* regravados; rota real ainda sem contexto (P35), por isso local-green e nao verified; capturas 11/22; pgTAP moments_feed_and_withdrawal 23/23; RPC",
       "historicalFrontend": "local-green",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "local-green",
-      "backendStatus": "local-green",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
@@ -4750,6 +4844,20 @@
         "referencia": 3,
         "atual": 3,
         "fonte": "goldens-claro-decisoes-2026-09-10"
+      },
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/22-momentos-apos-130300.png",
+          "revision": "principal-chat-sistema r25",
+          "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+          "recordedAt": "2026-09-11T14:53-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/22-momentos-apos-130300.png",
+          "revision": "principal-chat-sistema r25",
+          "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+          "recordedAt": "2026-09-11T14:53-03:00"
+        }
       }
     },
     {
@@ -4758,12 +4866,12 @@
       "screen": "Momentos / Criar",
       "scope": "mvp",
       "done": "Viewer e purga de draft/cache31bacda3 integrados;79/79 focais registrados. C00 integrou recuperação de Error dos compositores02c7456c; Agora teve teste adaptado ao passo Continuar af73c5f9, incluindo chamada real ao double, erro e retry. R02 L01: FE verificado/entregue pelo autor; Acontece limitado ao escopo com turma. Momentos inclui porta de mídia na branch; integrar unindo mediaPicker e embedded. Não equivale a certificado de dev.",
-      "fe": "A composicao de publicar Momento passou a ter porta de selecao de midia real com peneira de conveniencia de MIME, tamanho e contagem, mantendo ao mesmo tempo a hospedagem embedded no shell do Superadmin, que a entrega autoral tinha removido. Bucket, chave, provedor, tenant e autorizacao continuam server-side; video segue recusado com motivo honesto por depender de duracao medida.",
+      "fe": "publicador abre (15); imagem sintetica entra no compositor pelo seletor de arquivo (30) e chega a Revisao com publico (32); a publicacao com midia falhou ('Nao foi possivel publicar agora', 33) na origem 127.0.0.1:3009 e a tentativa em localhost:3000 perdeu a midia antes de publicar; gate: repetir com cdp_net na origem liberada no CORS",
       "be": "R03 (10/09 noite): fundacao em producao (lote 6); moments-media le COELO_R2_* e grava em coelo-media-prod (testes 26/26). Gate para done: deploy da funcao, upload real com sessao e reload.",
-      "evidence": "commit31bacda3; evidence/etapa-2/comunicacao/2026-09-08-moments-media-lifecycle.md; Fechamento R01 C05/rfinal; C00 rerun288PASS; initial286PASS/2FAIL eram fluxo de teste desatualizado, não esconder histórico; etapa-2-operacao/reports/R01-fechamento-20260909.md; Fechamento R01 C05/rfinal; C05final/reviewC00; não tratar tudo como bloqueio de integração; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commit 1f53ec245; apps/superadmin/test/app/router/principal_moments_publication_media_union_test.dart (2 PASS, uma prova exigindo embedded verdadeiro e mediaPicker nao nulo simultaneamente com o shell na tela); suites de principal_moments_publication e da rota, 94 PASS sem regressao; 2026-09-09, local, branch work/etapa2-noturna-publicacoes-midia; commit 559017727; stored_bytes_test.ts com 8 casos, incluindo conteudo disfarcado de imagem recusado E apagado do bucket, tamanho divergente recusado com assinatura correta, objeto ilegivel como falha honesta e leitura limitada ao tamanho esperado; deno check limpo; 12 PASS no modulo; 2026-09-09, local; coordenacao.json R03 rev 13",
+      "evidence": "commit31bacda3; evidence/etapa-2/comunicacao/2026-09-08-moments-media-lifecycle.md; Fechamento R01 C05/rfinal; C00 rerun288PASS; initial286PASS/2FAIL eram fluxo de teste desatualizado, não esconder histórico; etapa-2-operacao/reports/R01-fechamento-20260909.md; Fechamento R01 C05/rfinal; C05final/reviewC00; não tratar tudo como bloqueio de integração; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commit 1f53ec245; apps/superadmin/test/app/router/principal_moments_publication_media_union_test.dart (2 PASS, uma prova exigindo embedded verdadeiro e mediaPicker nao nulo simultaneamente com o shell na tela); suites de principal_moments_publication e da rota, 94 PASS sem regressao; 2026-09-09, local, branch work/etapa2-noturna-publicacoes-midia; commit 559017727; stored_bytes_test.ts com 8 casos, incluindo conteudo disfarcado de imagem recusado E apagado do bucket, tamanho divergente recusado com assinatura correta, objeto ilegivel como falha honesta e leitura limitada ao tamanho esperado; deno check limpo; 12 PASS no modulo; 2026-09-09, local; coordenacao.json R03 rev 13; capturas 15/30/32/33",
       "historicalFrontend": "blocked-decision",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "pending-verification",
+      "frontendStatus": "local-green",
       "backendStatus": "local-green",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": "final",
@@ -4829,12 +4937,12 @@
       "screen": "Principal / Para Você",
       "scope": "mvp",
       "done": "E2E nao certificado e dependente da decisao sobre o pacote de leitura autorizada; sem ela a audiencia continua resolvida no cliente.",
-      "fe": "Mantido em blocked-decision pelo contraste 3,75:1 do chip DESTAQUE, decisao do Owner. Progresso desta rodada, sem promocao: o hub deixou de saudar todo ator real como Fernanda, nome do fixture, porque PrincipalRuntimeContext nao carrega o nome da pessoa e a saudacao passou a omitir o nome em vez de inventar um; e os dois gatilhos de troca de contexto deixaram de renderizar com um unico contexto autorizado, ja que o seletor se recusa a abrir abaixo de dois. Verificacao de producao: main.dart compoe (linha 50, noticeRepository), o router monta PrincipalForYouRoutePage em SuperadminRoutes.principalForYou dentro do ShellRoute, linha 990, e SupabaseNoticeRepository e implementacao concreta instanciada em superadmin_auth_scope.dart linha 367.",
+      "fe": "rota normal abre com o contexto real (14) e o seletor de perfil (P28: ate 5 inline, Ver todos, hibrido)",
       "be": "R04 (11/09 03:50, lote 22): public.list_my_principal_contexts (20260910191000 principal_runtime_contexts_baseline, recarimbo da historica 20260901161700 nunca aplicada) APLICADA EM PRODUCAO; pgTAP 13/13. Gate para done: contexto institucional da pessoa de servico de qa-r03 (P35) e rota normal com sessao.",
-      "evidence": "commits3e16dfec/5e762eb4; evidence/etapa-2/comunicacao/2026-09-08-principal-circular-context.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C05r10; etapa-2-operacao/reports/R01-checkpoint-1600.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json; etapa-2-operacao/next-round/R02-20260909/ENTREGA-L00-PARA-D00.md; evidence/etapa-2/r02-d00-integration-20260909/L03highlights-result.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commits b09da7c15 e 35fff6b13; apps/superadmin/test/features/principal_for_you/; apps/superadmin/test/app/router/principal_profile_for_you_production_routes_test.dart; 2026-09-09; packages/coelo_database/plans/2026-09-09-principal-for-you-read-rpc.sql linhas 95-103, 110, 149-150 e 211-223; 2026-09-09; revisao 4 de docs/reviews/etapa-2-operacao/comunicacao/perfil-para-voce.json; 2026-09-09; commits 35fff6b13 e 9a82d5dcf; apps/superadmin/lib/main.dart:50; apps/superadmin/lib/app/router/superadmin_router.dart:990; apps/superadmin/lib/core/config/superadmin_auth_scope.dart:367; apps/superadmin/test/features/principal_for_you/; 2026-09-09; coordenacao.json R04 rev 30 (lote22)",
+      "evidence": "commits3e16dfec/5e762eb4; evidence/etapa-2/comunicacao/2026-09-08-principal-circular-context.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C05r10; etapa-2-operacao/reports/R01-checkpoint-1600.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json; etapa-2-operacao/next-round/R02-20260909/ENTREGA-L00-PARA-D00.md; evidence/etapa-2/r02-d00-integration-20260909/L03highlights-result.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commits b09da7c15 e 35fff6b13; apps/superadmin/test/features/principal_for_you/; apps/superadmin/test/app/router/principal_profile_for_you_production_routes_test.dart; 2026-09-09; packages/coelo_database/plans/2026-09-09-principal-for-you-read-rpc.sql linhas 95-103, 110, 149-150 e 211-223; 2026-09-09; revisao 4 de docs/reviews/etapa-2-operacao/comunicacao/perfil-para-voce.json; 2026-09-09; commits 35fff6b13 e 9a82d5dcf; apps/superadmin/lib/main.dart:50; apps/superadmin/lib/app/router/superadmin_router.dart:990; apps/superadmin/lib/core/config/superadmin_auth_scope.dart:367; apps/superadmin/test/features/principal_for_you/; 2026-09-09; coordenacao.json R04 rev 30 (lote22); captura 14; principal_real_route_test",
       "historicalFrontend": "local-green",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "blocked-decision",
+      "frontendStatus": "verified",
       "backendStatus": "blocked-decision",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": "final",
@@ -4854,7 +4962,15 @@
         "fullyIntegrated": false,
         "productionApplied": false
       },
-      "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
+      "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/14-para-voce.png",
+          "revision": "principal-chat-sistema r25",
+          "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+          "recordedAt": "2026-09-11T14:53-03:00"
+        }
+      }
     },
     {
       "id": "principal.profile-view",
@@ -4862,12 +4978,12 @@
       "screen": "Principal / Perfil-circulares",
       "scope": "mvp",
       "done": "E2E permanece nao certificado: nenhuma execucao de rota real contra Supabase autenticado nesta rodada. O que existe e composicao real, contrato real e provas locais de que a rota nao usa fixture e falha fechada quando o servidor nega.",
-      "fe": "Mantido, agora com a verificacao de producao respondida por simbolo. main.dart compoe o caminho (linhas 56-59, via authScope); o router monta a pagina PRODUTIVA PrincipalProfileRoutePage em SuperadminRoutes.principalProfile dentro do ShellRoute, linha 1033, e nao apenas a tela /dev; e existem implementacoes de producao concretas, SupabaseProfileAboutRepository, SupabaseCircularRepository, SupabasePrincipalHappensFeedRepository e SupabasePrincipalRuntimeContextRepository, instanciadas em superadmin_auth_scope.dart linhas 382-385. Correcoes desta rodada nesta acao: previa de circular deixou de fechar a cada rebuild da rota; bio ausente deixou de oferecer Ver mais; releitura do Sobre passou a considerar membership e pessoa.",
+      "fe": "rota normal abre com o contexto real, @ do perfil, avatar nao cortado, cabecalho igual ao mobile (17); reload mantem (18); get_profile_about nulo tratado como ausencia de Sobre",
       "be": "R04 (11/09 03:50, lote 22): public.list_my_principal_contexts (20260910191000 principal_runtime_contexts_baseline, recarimbo da historica 20260901161700 nunca aplicada) APLICADA EM PRODUCAO; pgTAP 13/13. Gate para done: contexto institucional da pessoa de servico de qa-r03 (P35) e rota normal com sessao.",
-      "evidence": "commits3e16dfec/5e762eb4; evidence/etapa-2/comunicacao/2026-09-08-principal-circular-context.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C05r10; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 313c43bb19Deno,operações503 semRPC;f413c2dc50PASS/21goldenFAIL,adapterfeed;cea29b1f9aceitação/39AcontecePASS,removercliente failclosed. Quatro subagentes SQLNotices/SQLMomentos/Agora/Chat ativos relatadosr15;não visual.; etapa-2-operacao/next-round/R02-20260909/ENTREGA-L00-PARA-D00.md; evidence/etapa-2/r02-d00-integration-20260909/L03highlights-result.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commits b09da7c15 e 0399b186e; apps/superadmin/test/app/router/principal_profile_for_you_production_routes_test.dart; apps/superadmin/test/features/principal_profile/; revisao 4 de docs/reviews/etapa-2-operacao/comunicacao/perfil-para-voce.json; ambiente local Windows sem rede e sem Supabase; 2026-09-09; commit 76e8ada8f; packages/coelo_database/plans/2026-09-09-profile-about-read-rpc.sql; apps/superadmin/test/features/profile_about/data/supabase_profile_about_repository_test.dart; 2026-09-09; revisao 4 de docs/reviews/etapa-2-operacao/comunicacao/perfil-para-voce.json; 2026-09-09; commits 0399b186e e 65e1e5000; apps/superadmin/lib/main.dart:56-59; apps/superadmin/lib/app/router/superadmin_router.dart:1033; apps/superadmin/lib/core/config/superadmin_auth_scope.dart:382-385; apps/superadmin/test/features/principal_profile/; 2026-09-09; coordenacao.json R04 rev 23 (lote12); coordenacao.json R04 rev 30 (lote22)",
+      "evidence": "commits3e16dfec/5e762eb4; evidence/etapa-2/comunicacao/2026-09-08-principal-circular-context.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C05r10; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 313c43bb19Deno,operações503 semRPC;f413c2dc50PASS/21goldenFAIL,adapterfeed;cea29b1f9aceitação/39AcontecePASS,removercliente failclosed. Quatro subagentes SQLNotices/SQLMomentos/Agora/Chat ativos relatadosr15;não visual.; etapa-2-operacao/next-round/R02-20260909/ENTREGA-L00-PARA-D00.md; evidence/etapa-2/r02-d00-integration-20260909/L03highlights-result.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commits b09da7c15 e 0399b186e; apps/superadmin/test/app/router/principal_profile_for_you_production_routes_test.dart; apps/superadmin/test/features/principal_profile/; revisao 4 de docs/reviews/etapa-2-operacao/comunicacao/perfil-para-voce.json; ambiente local Windows sem rede e sem Supabase; 2026-09-09; commit 76e8ada8f; packages/coelo_database/plans/2026-09-09-profile-about-read-rpc.sql; apps/superadmin/test/features/profile_about/data/supabase_profile_about_repository_test.dart; 2026-09-09; revisao 4 de docs/reviews/etapa-2-operacao/comunicacao/perfil-para-voce.json; 2026-09-09; commits 0399b186e e 65e1e5000; apps/superadmin/lib/main.dart:56-59; apps/superadmin/lib/app/router/superadmin_router.dart:1033; apps/superadmin/lib/core/config/superadmin_auth_scope.dart:382-385; apps/superadmin/test/features/principal_profile/; 2026-09-09; coordenacao.json R04 rev 23 (lote12); coordenacao.json R04 rev 30 (lote22); capturas 13 (antes) / 17 / 18",
       "historicalFrontend": "local-green",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "local-green",
+      "frontendStatus": "verified",
       "backendStatus": "local-green",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": "final",
@@ -4893,6 +5009,14 @@
         "referencia": 5,
         "atual": 0,
         "fonte": "goldens-claro-decisoes-2026-09-10"
+      },
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/17-perfil-apos-correcao.png",
+          "revision": "principal-chat-sistema r25",
+          "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+          "recordedAt": "2026-09-11T14:53-03:00"
+        }
       }
     },
     {
@@ -4901,12 +5025,12 @@
       "screen": "Principal / Editar perfil",
       "scope": "mvp",
       "done": "E2E nao certificado: sem rota real contra Supabase autenticado e sem prova de save_profile_about executado por ator autorizado real.",
-      "fe": "Mantido em blocked-decision por ausencia de contrato visual canonico aprovado. Verificacao de producao, para o registro: main.dart compoe via authScope.profileAboutRepository (linha 57); o router monta PrincipalProfileEditPage em SuperadminRoutes.principalProfileEdit dentro do ShellRoute, linha 1068, com a capacidade de mutacao declarada; e SupabaseProfileAboutRepository e implementacao concreta, instanciada em superadmin_auth_scope.dart linha 383. Sem repositorio real composto a rota permanece fail-closed, nao monta prototipo.",
+      "fe": "botao Editar perfil disponivel na rota real (17); edicao nao exercitada",
       "be": "R04 (lote 12): follow_links (171100) em producao para Acompanhar; leitura do Sobre para membros (D9) segue com o grupo principal-chat. Gate: ponte de ator ja ativa; rota normal com sessao.",
-      "evidence": "commits3e16dfec/5e762eb4; evidence/etapa-2/comunicacao/2026-09-08-principal-circular-context.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C05r10; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C05/rfinal; C05final reconhece entrega parcial; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/ENTREGA-L00-PARA-D00.md; evidence/etapa-2/r02-d00-integration-20260909/L03highlights-result.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commits b09da7c15, 60f32e292 e 6e58b624f; apps/superadmin/test/features/principal_profile/presentation/principal_profile_edit_page_test.dart; apps/superadmin/test/features/principal_profile/presentation/principal_profile_edit_preview_affordance_test.dart; 2026-09-09; packages/coelo_database/migrations/20260825193131_final_review_profile_about_lint_hardening.sql; packages/coelo_database/plans/2026-09-09-profile-about-read-rpc.sql; 2026-09-09; revisao 4 de docs/reviews/etapa-2-operacao/comunicacao/perfil-para-voce.json; 2026-09-09; commits b09da7c15, 60f32e292 e 6e58b624f; apps/superadmin/lib/app/router/superadmin_router.dart:1068; apps/superadmin/lib/core/config/superadmin_auth_scope.dart:383; 2026-09-09; coordenacao.json R04 rev 23 (lote12)",
+      "evidence": "commits3e16dfec/5e762eb4; evidence/etapa-2/comunicacao/2026-09-08-principal-circular-context.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C05r10; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C05/rfinal; C05final reconhece entrega parcial; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/ENTREGA-L00-PARA-D00.md; evidence/etapa-2/r02-d00-integration-20260909/L03highlights-result.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commits b09da7c15, 60f32e292 e 6e58b624f; apps/superadmin/test/features/principal_profile/presentation/principal_profile_edit_page_test.dart; apps/superadmin/test/features/principal_profile/presentation/principal_profile_edit_preview_affordance_test.dart; 2026-09-09; packages/coelo_database/migrations/20260825193131_final_review_profile_about_lint_hardening.sql; packages/coelo_database/plans/2026-09-09-profile-about-read-rpc.sql; 2026-09-09; revisao 4 de docs/reviews/etapa-2-operacao/comunicacao/perfil-para-voce.json; 2026-09-09; commits b09da7c15, 60f32e292 e 6e58b624f; apps/superadmin/lib/app/router/superadmin_router.dart:1068; apps/superadmin/lib/core/config/superadmin_auth_scope.dart:383; 2026-09-09; coordenacao.json R04 rev 23 (lote12); captura 17",
       "historicalFrontend": "blocked-decision",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "blocked-decision",
+      "frontendStatus": "local-green",
       "backendStatus": "blocked-decision",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": "final",
@@ -7074,16 +7198,24 @@
       "screen": "Erros / Tentar novamente",
       "scope": "mvp",
       "done": "Aceite integral não certificado. Consultar evidência anterior antes de implementar ou repetir testes.",
-      "fe": "Revalidar o aceite específico desta ação: Retry permitido/bloqueado, foco e uma única repetição.",
+      "fe": "Tentar novamente na rota real de Momentos (11) leva ao feed quando o servidor responde (22)",
       "be": "Conferir a implementação e fechar o aceite backend desta ação: Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento.",
-      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar errors.retry); archive/2026-09-08/coelo-supabase-pendencias.md (buscar errors.retry)",
+      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar errors.retry); archive/2026-09-08/coelo-supabase-pendencias.md (buscar errors.retry); capturas 11/22",
       "historicalFrontend": "audited",
       "historicalBackend": "audited",
-      "frontendStatus": "pending-verification",
+      "frontendStatus": "verified",
       "backendStatus": "pending-verification",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 51,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/11-momentos.png",
+          "revision": "principal-chat-sistema r25",
+          "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+          "recordedAt": "2026-09-11T14:53-03:00"
+        }
+      }
     },
     {
       "id": "locations.list",
@@ -7678,7 +7810,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-11T17:51:06.372Z",
+  "updatedAt": "2026-09-11T17:56:50.524Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,
