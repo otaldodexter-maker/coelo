@@ -1,13 +1,13 @@
 {
-  "revision": 39,
-  "updated_at": "2026-09-11T19:45:00-03:00",
+  "revision": 40,
+  "updated_at": "2026-09-11T19:55:00-03:00",
   "round": "E2-R06-20260911",
   "group": "operacoes",
   "tool_model": "Claude, Opus 5 (1M), esforco medio — conversa R06 · Operacoes",
   "conversation": "R06 · Operações",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-operacoes",
   "branch": "work/etapa2-r06-operacoes",
-  "head": "ca60b096b (= origin/dev na abertura)",
+  "head": "d0adb6c32",
   "base": {
     "requested": "origin/dev",
     "resolved": "ca60b096b",
@@ -47,14 +47,63 @@
     "time_estimate": "nao calculavel ainda; calibrar apos (0) e (1)"
   },
   "loop": "/loop 15m agendado na abertura (retomar o recorte da R06, atualizar operacoes.json, nao encerrar antes de T0+2h)",
-  "changes": [],
-  "tests": [],
+  "changes": [
+    {
+      "when": "19:47",
+      "action_ids": [
+        "imports.list"
+      ],
+      "what": "(0) fail_closed_screens_with_data_probe_test: Importacoes deixou de transbordar com dados desde a migracao ao composto (R05, 3471321a5); entrada invertida como o proprio teste instrui, sonda 16/16 verde",
+      "commit": "2a28545d3"
+    },
+    {
+      "when": "19:50",
+      "action_ids": [
+        "account.sessions"
+      ],
+      "what": "(1) BE: candidato 20260911200200_superadmin_account_sessions_v1 (RPC superadmin_account_sessions_list_v1, security definer, so o proprio auth.uid(), sessoes vivas, atual primeiro; sem parametro de usuario). pgTAP 14/14 no descartavel coelo_ops_r06 (baseline + 141 migrations na ordem real de producao + candidato). Revogacao NAO precisa de RPC nem de Edge Function: o GoTrue ja expoe POST /auth/v1/logout?scope=others (SDK signOut(scope: others)), server-side e auditado em auth.audit_log_entries — desvio consciente da leitura \"Edge Function sobre o Admin API\": menor superficie, sem deploy, sem service_role.",
+      "commit": "e92251bdf"
+    },
+    {
+      "when": "19:52",
+      "action_ids": [
+        "account.sessions"
+      ],
+      "what": "(1) FE: card \"Sessoes\" em Configuracoes (SettingsSessionsSection): lista (sessao atual em destaque, navegador, IP, ultima atividade), Atualizar e \"Encerrar as outras sessoes (N)\" (desabilitado quando N=0); injetado so na composicao real (main.dart -> SupabaseAccountSessionsRepository); rota /dev e goldens existentes nao mudam (sessions=null). 4 testes novos; test/features/account 125/125.",
+      "commit": "d0adb6c32"
+    }
+  ],
+  "tests": [
+    {
+      "suite": "test/app/router/fail_closed_screens_with_data_probe_test.dart",
+      "result": "16/16 P"
+    },
+    {
+      "suite": "pgTAP superadmin_account_sessions_v1_test",
+      "result": "14/14 P (descartavel coelo_ops_r06)"
+    },
+    {
+      "suite": "pgTAP superadmin_account_profile_v1_test",
+      "result": "16/16 P"
+    },
+    {
+      "suite": "test/features/account",
+      "result": "125/125 P"
+    }
+  ],
   "blocked": [],
   "resolved": [],
   "proposed_deltas": [],
-  "packages_ready": [],
+  "packages_ready": [
+    {
+      "path": "packages/coelo_database/candidatos/operacoes/20260911200200_superadmin_account_sessions_v1.sql",
+      "pgtap": "supabase/tests/superadmin_account_sessions_v1_test.sql 14/14 (descartavel coelo_ops_r06: baseline + 141 migrations da ordem-de-aplicacao-producao.txt)",
+      "composition_key": "nenhuma: main.dart ja injeta SupabaseAccountSessionsRepository; ate aplicar, o card mostra a falha honesta da RPC inexistente e Atualizar",
+      "state": "PRONTO para o coordenador aplicar (faixa 2026091220xxxx)"
+    }
+  ],
   "questions_to_owner": [],
-  "next_step": "(0) reproduzir a falha de fail_closed_screens_with_data_probe_test Importacoes 1440/375 e corrigir",
+  "next_step": "(2) Suporte P49=A: abas de estado no lugar do filtro Status + persistir cards/tabela",
   "commits": [],
   "r04_history": {
     "revision": 20,
@@ -859,7 +908,8 @@
   },
   "t0": {
     "nota": "coordenacao.json em origin/dev esta na rev 51 sem T0 nem \"usuarios qa-r06 prontos\"; C:/Users/adrie/Documents/Coelo-backups/qa-r06-operacoes.env NAO existe as 19:40. Assumo abertura da frente as 19:40 (T0+20) => T0 ~ 19:20, corte T0+2h ~ 21:20, revisao ate 21:30. Vou reler coordenacao.json a cada loop; enquanto a credencial nao existir, faco o trabalho que nao precisa de rota real (teste, tela de sessoes, Edge Function, abas de Suporte, Catalogo, texto 503).",
-    "pergunta_ao_coordenador": "confirmar T0 e publicar qa-r06-operacoes.env; se nao houver, digam se posso usar qa-r03 somente para provas de leitura (sem Sair/revogar)"
+    "pergunta_ao_coordenador": "confirmar T0 e publicar qa-r06-operacoes.env; se nao houver, digam se posso usar qa-r03 somente para provas de leitura (sem Sair/revogar)",
+    "atualizacao_1955": "qa-r06-operacoes.env existe desde ~19:50; coordenacao rev 52 ainda nao publicada (branch do coordenador com candidatos/coordenador nao commitado). Rota real fica para quando a semente (perfil interno + ponte + membership) estiver aplicada; sigo em (2) Suporte, (4) Catalogo e (5) texto 503."
   },
   "pendencias_registradas_r06": []
 }
