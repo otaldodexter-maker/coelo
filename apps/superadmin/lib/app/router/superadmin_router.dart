@@ -768,6 +768,12 @@ GoRouter createSuperadminRouter({
     if (location.startsWith('/daily-routine')) {
       return routineRepository is! UnavailableRoutineRepository;
     }
+    // Planos: superadmin_plans_list/plan_get/plan_save estao na baseline de
+    // producao e revalidam ator, plan.change e revisao esperada no servidor
+    // (assert_plan_permission); a rota abre quando o catalogo real esta composto.
+    if (location.startsWith(SuperadminRoutes.plans)) {
+      return planCatalogRepository is! UnavailablePlanCatalogRepository;
+    }
     return false;
   }
 
