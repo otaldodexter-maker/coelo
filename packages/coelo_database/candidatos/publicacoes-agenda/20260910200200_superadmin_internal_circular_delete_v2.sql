@@ -2,7 +2,9 @@
 -- Renumeracao de 20260910120000_superadmin_internal_circular_delete_v1 (f15a9eec2)
 -- para a faixa 2026091020xxxx do grupo publicacoes-agenda (colisao de carimbo com
 -- meal_plan_image_delete_requires_revision_v1). Depende de 20260910200100.
--- Rodada 4 (E2-R04-20260911).
+-- Correcao sobre a baseline: circulars_check1 (status=draft ou publish_at not null)
+-- impedia arquivar rascunho; a exclusao logica de rascunho mantem status e usa
+-- deleted_at. Rodada 4 (E2-R04-20260911).
 begin;
 
 do $preflight$
@@ -86,8 +88,10 @@ begin
         and status in ('pending', 'ready');
     end if;
 
+    -- producao exige status='draft' ou publish_at preenchido (circulars_check1):
+    -- rascunho excluido mantem 'draft' e e ocultado por deleted_at.
     update public.circulars
-    set status = 'archived',
+    set status = case when target.publish_at is null then target.status else 'archived'::public.circular_status end,
         deleted_at = clock_timestamp(),
         management_version = management_version + 1,
         updated_at = clock_timestamp()
