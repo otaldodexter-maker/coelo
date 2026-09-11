@@ -401,6 +401,54 @@ Unidades, Turmas e Atividades; (d) P42: os dados sintéticos da frente
 estrutura só são apagados no fim da Etapa 2, junto com as demais instituições
 sintéticas, por migration de limpeza com dump prévio.
 
+## Decisão 17 — Fechamento da Rodada 5 e decisões do Owner da tarde de 11/09/2026
+
+- **Produção recebeu 20 lotes (28 a 47) e 37 pacotes numa tarde**, todos com
+  dump lógico prévio, preflight no espelho reconstruído na ordem real de
+  aplicação e ledger inserido à mão; dois pacotes foram devolvidos por
+  asserção vermelha no espelho e corrigidos antes de entrar. Cinco Edge
+  Functions implantadas ou reimplantadas a partir de `dev` (`chat-media` nova;
+  `form-operations`, `form-media`, `form-export-download` e `moments-media`
+  estavam com versões de agosto em produção). Segredos sem custo criados pelo
+  coordenador (P30): `CHAT_MEDIA_WORKER_SECRET` (+ Vault), chave HMAC do CPF
+  no Vault; allowlists de origem alinhadas com as portas locais das frentes.
+- **E2E passou de 43 para 103 ações** pela régua do MVP (rota normal, CRUD em
+  produção, RLS, reload) em Estrutura, Acessos, Formulários/Cuidado/Rotina/
+  Assiduidade, Acontece, Agenda/Avisos/Circulares, Auditoria, Planos e Suporte.
+- **Correções de segurança encontradas e aplicadas na rodada:** perfil de
+  instituição com `plan.change` criava plano da plataforma (lote 39);
+  identidade interna escopada lia a Agenda de outra instituição pela membership
+  espelhada sem escopo das pontes (lote 44, latente: 0 identidades escopadas em
+  produção); grants CRUD de `authenticated` sem policy revogados (lote 30).
+  A raiz da ponte (espelho sem escopo) fica para a revisão profunda com prova
+  por família.
+- **Aprovações visuais do Owner:** G-SUP (Suporte/Implantação alinhados como
+  Instituições), Agenda P33/P34 (calendário iOS e rodapé do detalhe) e
+  Importações no composto (uma exceção corrigida no mesmo dia). Registradas em
+  `ownerVisualApproval`; não viram `verified`.
+- **Decisões do Owner na tarde:**
+  - usuários sintéticos **por grupo** na Rodada 6 (`qa-r06-<grupo>@coelo.me`,
+    criados pela API de administração do Auth, com perfil interno, ponte de
+    ator e membership nas instituições sintéticas, sem custo), porque a sessão
+    única compartilhada do `qa-r03` derruba as demais frentes a cada Sair;
+  - a lista de palavras proibidas como @ (e, talvez, na escrita) e a lista de @
+    exclusivos do Owner serão definidas por ele no encerramento do MVP; até lá
+    só `coelo` e `coelo.me` ficam reservados;
+  - dados sintéticos de todas as rodadas permanecem em produção até o fim da
+    Etapa 2 (P42), quando uma migration de limpeza com dump prévio os arquiva.
+- **Regras operacionais registradas nas skills:** uma única frente por Edge
+  Function e por família de RPC (G3 e G5 colidiram em `form-media`); provar
+  pacotes com a ordem real de produção incluindo os lotes de outros grupos;
+  pessoas de serviço nunca são destinatárias; `DELETE`/`UPDATE` em função
+  sempre com `WHERE` (pg_safeupdate); célula de tabela alinhada pelo composto
+  e regravação dos goldens afetados por quem muda o composto; Sair/sessões só
+  no fim da rodada; um servidor de análise Dart por conversa consome ~800 MB.
+- **Perguntas abertas P43 a P48** (sessões da Conta, Catálogo, exclusão de
+  modelo de sistema, @ de usuários internos, fail-closed de tenant em
+  Cardápios, papel do sincronizador do P35) e o A+ dos goldens
+  `agenda_create_*` em
+  `docs/reviews/etapa-2-operacao/next-round/R05-perguntas-ao-owner-20260911.md`.
+
 ## Consequências
 
 - O replay local com Docker deixa de ser porta obrigatória; continua útil para
