@@ -270,6 +270,39 @@ void main() {
     expect(page.items.single.label, 'Unidade Centro');
   });
 
+  test('rascunho novo vai a form_save_draft sem status/versao e com id nulo', () async {
+    final definition = FormDefinition(
+      id: '',
+      institutionId: 'institution-1',
+      kind: FormKind.form,
+      identityMode: FormIdentityMode.identified,
+      responseUnit: FormResponseUnit.person,
+      title: '[R04-QA] Formulario Local',
+      status: FormStatus.draft,
+      managementVersion: 0,
+      sections: const [],
+    );
+    final saved = FormDefinitionDto.fromDomain(definition).toJson()
+      ..['id'] = 'form-1'
+      ..['management_version'] = 1;
+    final backend = _Backend(saved);
+    final api = SupabaseFormsApi(backend);
+
+    final result = await api.saveDraft(
+      FormCommand(requestId: 'request-1', expectedVersion: 0, payload: definition),
+    );
+    final payload = Map<String, Object?>.from(backend.parameters!['p_payload']! as Map);
+
+    expect(backend.functionName, 'form_save_draft');
+    expect(backend.parameters!['p_expected_version'], 0);
+    expect(payload.containsKey('id'), isTrue);
+    expect(payload['id'], isNull);
+    expect(payload.containsKey('status'), isFalse);
+    expect(payload.containsKey('management_version'), isFalse);
+    expect(result.id, 'form-1');
+    expect(result.managementVersion, 1);
+  });
+
   test('response mutation preserves media kind and concurrency envelope', () async {
     final backend = _Backend({
       'id': 'response-1',
