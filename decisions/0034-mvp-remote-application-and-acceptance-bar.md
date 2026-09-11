@@ -389,6 +389,8 @@ slug e handle: "já devemos entender que o @ é uma realidade".
   mostra o padrão gerado como valor editável. Arrobas reservados: `coelo`,
   `coelo.me` e a lista que crescer (P35).
 
+**Pessoas sem perfil também têm @ (12:15):** funcionários, responsáveis e crianças recebem @ mesmo sem perfil de acesso ao app; quem responde por eles pode ver e editar o @ (responsáveis editam o da criança), com a mesma validação de disponibilidade e a trava de 30 dias.
+
 Consequências para a Etapa 2: (a) o padrão gerado pelo servidor continua
 valendo como valor inicial, mas o cliente exibe e permite editar o @ na
 criação e depois, com verificação de disponibilidade; (b) a troca é limitada a

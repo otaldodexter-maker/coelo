@@ -1,12 +1,12 @@
 {
- "revision": 36,
+ "revision": 37,
  "round": "E2-R04-20260911",
  "role": "Coordenacao noturna R04 - Claude Fable (C0)",
  "writer": "coordenador-claude",
  "app": "Claude Code (VS Code)",
  "model": "claude-fable-5-1",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T12:05:00-03:00",
+ "updatedAt": "2026-09-11T12:15:00-03:00",
  "relogio": "relogio da maquina; posse as 21:42 -03:00 de 10/09/2026",
  "posseR04": {
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -226,7 +226,8 @@
   "34": "11:35 pausa da frente estrutura: revs 37-38 integradas, WIP preservado na branch, 16 deltas aplicados (E2E 43), worktree e processos encerrados, P40-P42 ao Owner",
   "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina.",
   "35": "11:50 segunda pausa da frente estrutura: rev 39 integrada, WIP activities.edit preservado na branch, worktree removida; relogio corrigido; prompts da R05 com corte 15:45/15:50/16:30",
-  "36": "12:05 P40/P41/P42 respondidas: regra do @ (Decisao 16) registrada; prompts da R05 atualizados"
+  "36": "12:05 P40/P41/P42 respondidas: regra do @ (Decisao 16) registrada; prompts da R05 atualizados",
+  "37": "12:15 complemento do Owner: @ tambem para funcionarios, responsaveis e criancas sem perfil, visivel e editavel por quem responde por eles; prompts da R05 atualizados"
  },
  "fechamentoR03": {
   "quando": "2026-09-10T20:30-03:00 (relogio da maquina)",
@@ -753,6 +754,7 @@
   "P40": "manter @; o @ e a identidade publica de toda entidade (ADR 0034 Decisao 16)",
   "P41": "o campo Identificador e o @: nasce com padrao hierarquico (turma.unidade, unidade.instituicao), editavel com validacao de disponibilidade, troca a cada 30 dias",
   "P42": "dados sinteticos da frente estrutura ficam ate o fim da Etapa 2",
-  "registro": "ADR 0034 Decisao 16; skills coelo-backend e coelo-frontend; rastreadores 12:05; prompt G1 da R05"
+  "registro": "ADR 0034 Decisao 16; skills coelo-backend e coelo-frontend; rastreadores 12:05; prompt G1 da R05",
+  "complemento1215": "Complemento do Owner (12:15): o @ vale também para funcionários, responsáveis e crianças, mesmo quem não tem perfil de acesso ao app; quem responde por eles (a instituição para funcionários, os responsáveis para a criança) pode ver e editar esse @, dentro da mesma regra de disponibilidade e 30 dias."
  }
 }

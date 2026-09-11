@@ -144,7 +144,9 @@ rodado no fechamento da rodada seguinte à demonstração (P37, opção A).
   `coelo.me` e a lista que crescer (P35).
   Back-end: geração do padrão por hierarquia na criação, unicidade global,
   verificação de disponibilidade por RPC, `handle_last_changed_at` e a trava
-  de 30 dias em unidades, turmas, atividades e pessoas.
+  de 30 dias em unidades, turmas, atividades e pessoas. Pessoas sem login
+  (funcionários, responsáveis, crianças) também têm @; a edição do @ de uma
+  criança é autorizada aos seus responsáveis e à instituição, com auditoria.
 - **Segredos sem custo não pedem autorização (P30):** token, chave, segredo
   de Edge Function, valor no Vault e similares que não gerem custo são criados
   e gravados no secret store pelo agente; o valor nunca aparece em chat,

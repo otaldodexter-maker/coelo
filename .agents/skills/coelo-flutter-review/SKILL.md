@@ -196,8 +196,10 @@ Instituições, Unidades, Turmas e Atividades é o campo do @ público, mantém 
 ícone @, vem preenchido com o padrão hierárquico gerado pelo servidor
 (`turma.unidade`, `unidade.instituicao`) e é editável com verificação de
 disponibilidade enquanto digita; troca limitada a uma a cada 30 dias, com
-mensagem honesta quando bloqueada. Não perguntar de novo ao Owner sobre
-"slug versus handle".
+mensagem honesta quando bloqueada. Pessoas (funcionários, responsáveis e
+crianças) também têm @, mesmo sem perfil de acesso; a tela de Pessoas e a de
+Alunos mostram o @ e permitem editar a quem responde pela pessoa. Não
+perguntar de novo ao Owner sobre "slug versus handle".
 
 Regras medidas pelo grupo estrutura na Rodada 4:
 

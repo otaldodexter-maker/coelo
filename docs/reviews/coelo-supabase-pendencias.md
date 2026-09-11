@@ -3,7 +3,7 @@ title: "Pendências Coelo — Back-end"
 source: "AGENTS.md; ADR 0019; ADR 0032; tracker-corrections-2026-09-08.json; inventario-etapa-2.json"
 status: "open"
 generated_at: "2026-09-08"
-updated_at: "2026-09-11T12:05:00-03:00"
+updated_at: "2026-09-11T12:15:00-03:00"
 action_count: 231
 family_count: 39
 active_mvp_action_count: 201
@@ -13,7 +13,7 @@ backend_applicable_action_count: 224
 formal_mvp_gate_action_count: 3
 deferred_post_mvp_action_count: 22
 flutter_only_action_count: 5
-tracker_sync_at: "2026-09-11T12:05:00-03:00"
+tracker_sync_at: "2026-09-11T12:15:00-03:00"
 tracker_sync_revisions: "R04 fechada: estrutura r32; acessos-pessoas r118; principal-chat-sistema r20; realm-interno r15; publicacoes-agenda r30; operacoes r20; formularios-cuidado-rotina r33; coordenacao r31"
 ---
 
@@ -138,7 +138,9 @@ dias; o campo Identificador é o @. Dados sintéticos da frente estrutura
 ficam até o fim da Etapa 2 (P42: "no fim"). Pendências novas para estrutura
 (FE e BE): @ editável na criação/edição de Unidades, Turmas e Atividades com
 padrão hierárquico, RPC de disponibilidade, `handle_last_changed_at` e trava
-de 30 dias; acessos-pessoas: @ de pessoas.
+de 30 dias; acessos-pessoas: @ de pessoas, inclusive funcionários,
+responsáveis e crianças sem perfil de acesso, visível e editável por quem
+responde por elas (complemento do Owner às 12:15).
 
 ## Estado anterior — Rodada 3 (E2-R03-20260910) encerrada às 20:30 de 10/09
 
