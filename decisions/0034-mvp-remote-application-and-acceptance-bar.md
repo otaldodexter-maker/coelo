@@ -403,7 +403,7 @@ sintéticas, por migration de limpeza com dump prévio.
 
 ## Decisão 17 — Fechamento da Rodada 5 e decisões do Owner da tarde de 11/09/2026
 
-- **Produção recebeu 20 lotes (28 a 47) e 37 pacotes numa tarde**, todos com
+- **Produção recebeu 21 lotes (28 a 48) e 34 pacotes numa tarde**, todos com
   dump lógico prévio, preflight no espelho reconstruído na ordem real de
   aplicação e ledger inserido à mão; dois pacotes foram devolvidos por
   asserção vermelha no espelho e corrigidos antes de entrar. Cinco Edge
