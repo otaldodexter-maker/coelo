@@ -6,6 +6,7 @@ import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
+import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../domain/agenda_models.dart';
 import '../domain/agenda_repository.dart';
 import 'agenda_reservation_conflict_dialog.dart';
@@ -583,53 +584,62 @@ final class _AgendaEventDetailPageState extends State<AgendaEventDetailPage> {
   @override
   Widget build(BuildContext context) {
     if (widget.unavailable) {
-      return ListView(
+      final unavailableBody = SingleChildScrollView(
         key: const Key('agenda-event-detail'),
-        padding: const EdgeInsets.all(CoeloSpacing.space6),
-        children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: TextButton.icon(
-              onPressed: widget.onBack,
-              icon: const Icon(Icons.arrow_back_rounded),
-              label: const Text('Eventos'),
+        padding: const EdgeInsets.only(bottom: CoeloSpacing.space10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton.icon(
+                onPressed: widget.onBack,
+                icon: const Icon(Icons.arrow_back_rounded),
+                label: const Text('Eventos'),
+              ),
             ),
-          ),
-          const SizedBox(height: CoeloSpacing.space3),
-          Text('Detalhes do evento', style: Theme.of(context).textTheme.headlineMedium),
-          const SizedBox(height: CoeloSpacing.space6),
-          const CoeloStatePanel(
-            key: Key('agenda-event-unavailable'),
-            title: 'Agenda indisponível',
-            message: 'Não foi possível carregar este item agora. Nenhuma alteração foi aplicada.',
-            icon: Icons.cloud_off_outlined,
-          ),
-          const SizedBox(height: CoeloSpacing.space4),
-          const _AgendaDetailSection(
-            title: 'Descrição',
-            child: Text('Conteúdo indisponível até existir uma fonte autorizada.'),
-          ),
-          const SizedBox(height: CoeloSpacing.space4),
-          const _AgendaDetailSection(
-            title: 'Contexto e audiência',
-            child: Text('Contexto e audiência não foram consultados.'),
-          ),
-          const SizedBox(height: CoeloSpacing.space4),
-          const _AgendaDetailSection(
-            title: 'Agenda e respostas',
-            child: Text('Período, recorrência e respostas não foram consultados.'),
-          ),
-          const SizedBox(height: CoeloSpacing.space6),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: OutlinedButton.icon(
+            const SizedBox(height: CoeloSpacing.space3),
+            Text('Detalhes do evento', style: Theme.of(context).textTheme.headlineMedium),
+            const SizedBox(height: CoeloSpacing.space6),
+            const CoeloStatePanel(
+              key: Key('agenda-event-unavailable'),
+              title: 'Agenda indisponível',
+              message: 'Não foi possível carregar este item agora. Nenhuma alteração foi aplicada.',
+              icon: Icons.cloud_off_outlined,
+            ),
+            const SizedBox(height: CoeloSpacing.space4),
+            const _AgendaDetailSection(
+              title: 'Descrição',
+              child: Text('Conteúdo indisponível até existir uma fonte autorizada.'),
+            ),
+            const SizedBox(height: CoeloSpacing.space4),
+            const _AgendaDetailSection(
+              title: 'Contexto e audiência',
+              child: Text('Contexto e audiência não foram consultados.'),
+            ),
+            const SizedBox(height: CoeloSpacing.space4),
+            const _AgendaDetailSection(
+              title: 'Agenda e respostas',
+              child: Text('Período, recorrência e respostas não foram consultados.'),
+            ),
+          ],
+        ),
+      );
+      return _detailFrame(
+        context,
+        body: unavailableBody,
+        footer: SuperadminFormActionFooter(
+          surfaceKey: const Key('agenda-event-detail-footer'),
+          tertiaryAction: TextButton(onPressed: widget.onBack, child: const Text('Voltar')),
+          continuationActions: [
+            OutlinedButton.icon(
               key: const Key('agenda-event-edit-unavailable'),
               onPressed: null,
               icon: const Icon(Icons.edit_outlined),
               label: const Text('Editar item'),
             ),
-          ),
-        ],
+          ],
+        ),
       );
     }
     return AnimatedBuilder(
@@ -642,14 +652,15 @@ final class _AgendaEventDetailPageState extends State<AgendaEventDetailPage> {
         if (item == null) {
           return _readFrame(_readPanel(AgendaReadStatus.idle)!, AgendaReadStatus.idle);
         }
-        return LayoutBuilder(
-          builder: (context, constraints) {
-            final horizontalPadding = constraints.maxWidth < CoeloBreakpoints.medium.minWidth
-                ? CoeloSpacing.space4
-                : CoeloSpacing.space6;
-            return ListView(
-              key: const Key('agenda-event-detail'),
-              padding: EdgeInsets.all(horizontalPadding),
+        return _detailFrame(
+          context,
+          footer: _footer(item),
+          body: SingleChildScrollView(
+            key: const Key('agenda-event-detail'),
+            // Respiro no fim do conteúdo sob o rodapé ancorado (P15).
+            padding: const EdgeInsets.only(bottom: CoeloSpacing.space10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Align(
                   alignment: Alignment.centerLeft,
@@ -723,15 +734,39 @@ final class _AgendaEventDetailPageState extends State<AgendaEventDetailPage> {
                           ],
                         ),
                 ),
-                const SizedBox(height: CoeloSpacing.space6),
-                _actions(item),
               ],
-            );
-          },
+            ),
+          ),
         );
       },
     );
   }
+
+  /// P34 (Owner, 11/09): o detalhe usa o mesmo rodapé ancorado de criar/editar
+  /// Instituição (`SuperadminFormActionFooter`), sobre a superfície do tema,
+  /// com a ação destrutiva à esquerda e Editar à direita.
+  Widget _detailFrame(BuildContext context, {required Widget body, required Widget footer}) =>
+      LayoutBuilder(
+        builder: (context, constraints) {
+          final padding = constraints.maxWidth < CoeloBreakpoints.medium.minWidth
+              ? CoeloSpacing.space4
+              : CoeloSpacing.space6;
+          return ColoredBox(
+            color: Theme.of(context).colorScheme.surface,
+            child: Padding(
+              padding: EdgeInsets.all(padding),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(child: body),
+                  const SizedBox(height: CoeloSpacing.space4),
+                  footer,
+                ],
+              ),
+            ),
+          );
+        },
+      );
 
   Widget _readFrame(Widget panel, AgendaReadStatus status) => LayoutBuilder(
     builder: (context, constraints) => Padding(
@@ -804,46 +839,40 @@ final class _AgendaEventDetailPageState extends State<AgendaEventDetailPage> {
     ),
   };
 
-  Widget _actions(AgendaItem item) {
+  Widget _footer(AgendaItem item) {
     final colors = Theme.of(context).colorScheme;
-    return Wrap(
-      spacing: CoeloSpacing.space3,
-      runSpacing: CoeloSpacing.space3,
-      children: [
-        OutlinedButton.icon(
+    final Widget lifecycle = switch (item.status) {
+      AgendaItemStatus.scheduled || AgendaItemStatus.published => TextButton.icon(
+        key: const Key('agenda-event-cancel'),
+        style: TextButton.styleFrom(foregroundColor: colors.error),
+        onPressed: () => _confirmLifecycle(item, _AgendaLifecycleAction.cancel),
+        icon: const Icon(Icons.event_busy_outlined),
+        label: const Text('Cancelar evento'),
+      ),
+      AgendaItemStatus.canceled => TextButton.icon(
+        key: const Key('agenda-event-restore'),
+        onPressed: () => _confirmLifecycle(item, _AgendaLifecycleAction.restore),
+        icon: const Icon(Icons.restore_rounded),
+        label: const Text('Restaurar evento'),
+      ),
+      AgendaItemStatus.draft => TextButton.icon(
+        key: const Key('agenda-event-delete-draft'),
+        style: TextButton.styleFrom(foregroundColor: colors.error),
+        onPressed: () => _confirmLifecycle(item, _AgendaLifecycleAction.deleteDraft),
+        icon: const Icon(Icons.delete_outline_rounded),
+        label: const Text('Excluir rascunho'),
+      ),
+    };
+    return SuperadminFormActionFooter(
+      surfaceKey: const Key('agenda-event-detail-footer'),
+      tertiaryAction: lifecycle,
+      continuationActions: [
+        FilledButton.icon(
+          key: const Key('agenda-event-edit'),
           onPressed: widget.onEdit,
           icon: const Icon(Icons.edit_outlined),
           label: const Text('Editar item'),
         ),
-        if (item.status == AgendaItemStatus.scheduled || item.status == AgendaItemStatus.published)
-          FilledButton.icon(
-            key: const Key('agenda-event-cancel'),
-            style: FilledButton.styleFrom(
-              backgroundColor: colors.error,
-              foregroundColor: colors.onError,
-            ),
-            onPressed: () => _confirmLifecycle(item, _AgendaLifecycleAction.cancel),
-            icon: const Icon(Icons.event_busy_outlined),
-            label: const Text('Cancelar evento'),
-          ),
-        if (item.status == AgendaItemStatus.canceled)
-          FilledButton.icon(
-            key: const Key('agenda-event-restore'),
-            onPressed: () => _confirmLifecycle(item, _AgendaLifecycleAction.restore),
-            icon: const Icon(Icons.restore_rounded),
-            label: const Text('Restaurar evento'),
-          ),
-        if (item.status == AgendaItemStatus.draft)
-          FilledButton.icon(
-            key: const Key('agenda-event-delete-draft'),
-            style: FilledButton.styleFrom(
-              backgroundColor: colors.error,
-              foregroundColor: colors.onError,
-            ),
-            onPressed: () => _confirmLifecycle(item, _AgendaLifecycleAction.deleteDraft),
-            icon: const Icon(Icons.delete_outline_rounded),
-            label: const Text('Excluir rascunho'),
-          ),
       ],
     );
   }
