@@ -44,10 +44,26 @@ select ok(exists(select 1 from app_private.superadmin_internal_actor_people
   'ponte de ator espelhou a identidade interna em pessoa de servico');
 
 -- Membership owner da pessoa de servico do primeiro usuario SO na instituicao 10 (como 230024).
+-- Idempotente: a ponte do Principal (lote 29, 20260911130000) pode ja ter espelhado
+-- a membership por gatilho; nesse caso a fixture reutiliza a existente.
 insert into public.institution_memberships(person_id,institution_id,role_code,status,scope_kind)
 select actor.person_id,'9c200000-0000-4000-8000-000000000010','owner','active','institution'
 from app_private.superadmin_internal_actor_people actor
-where actor.internal_identity_id='9c200000-0000-4000-8000-000000000301';
+where actor.internal_identity_id='9c200000-0000-4000-8000-000000000301'
+  and not exists (
+    select 1 from public.institution_memberships m
+    where m.person_id=actor.person_id and m.institution_id='9c200000-0000-4000-8000-000000000010'
+      and m.status='active' and m.revoked_at is null);
+-- Garante que o segundo usuario (negativa) NAO tenha membership em instituicao alguma,
+-- mesmo se um gatilho a espelhar.
+update public.institution_memberships m set status='inactive',revoked_at=now()
+from app_private.superadmin_internal_actor_people actor
+where actor.internal_identity_id='9c200000-0000-4000-8000-000000000302' and m.person_id=actor.person_id;
+-- E que o primeiro nao tenha membership na instituicao 11 (negativa cross-tenant).
+update public.institution_memberships m set status='inactive',revoked_at=now()
+from app_private.superadmin_internal_actor_people actor
+where actor.internal_identity_id='9c200000-0000-4000-8000-000000000301' and m.person_id=actor.person_id
+  and m.institution_id='9c200000-0000-4000-8000-000000000011';
 
 create temporary table bridge_results(label text primary key,body jsonb not null);
 create temporary table bridge_errors(label text primary key,message text not null);
