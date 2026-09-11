@@ -1,15 +1,15 @@
 {
   "grupo": "realm-interno",
-  "revision": 3,
+  "revision": 4,
   "round": "E2-R04-20260911",
-  "updatedAt": "2026-09-10T22:12-03:00",
+  "updatedAt": "2026-09-10T22:16-03:00",
   "app": "Claude",
   "modelo": "Fable 5.1",
   "conversa": "R04 · Realm interno e Chat backend",
   "coordenador": "R04 · Coordenação noturna (coordenacao.json)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-realm-interno",
   "branch": "work/etapa2-r04-realm-interno",
-  "head": "d643d0193",
+  "head": "6e326885d",
   "upstream": "origin/work/etapa2-r04-realm-interno",
   "base": "origin/dev 836c63215 (rebase feito as 22:08; lote 8 MFA fora do MVP ja em producao)",
   "historicoR03": "frente sem entrega na R03 (frenteNova coelo-f0 atribuida as 15:58; worktree e2-r03-realm-interno quebrada, nao usada). Nada a reutilizar dela.",
@@ -74,8 +74,10 @@
   },
   "bloqueio": null,
   "pedidosAoCoordenador": [
-    "aplicar candidatos/realm-interno 240000..240400 nesta ordem (dump por lote); depois eu provo com a sessao qa-r03@coelo.me",
-    "a regra do README (db reset com migrations/ inteira) nao reproduz: 20260910170100 exige o catalogo antes do seed; sugiro registrar o fluxo baseline-only + seed + psql das demais (README de candidatos/realm-interno descreve)"
+    "aplicar candidatos/realm-interno 240000..240400 nesta ordem (dump por lote)",
+    "depois da aplicacao: rodar supabase db query --linked -f packages/coelo_database/scripts/chat-internal-production-fixture.sql (fixture sintetica; producao nao tem instituicao nem vinculo) e me avisar; eu rodo a prova com qa-r03 e registro; ao fim da rodada, chat-internal-production-cleanup.sql",
+    "registrar o action_id chat.create-group (P8) no inventario, familia chat, se ainda nao existir",
+    "a regra do README (db reset com migrations/ inteira) nao reproduz: 20260910170100 exige o catalogo antes do seed; fluxo baseline-only + seed + psql descrito em candidatos/realm-interno/README.md"
   ],
   "perguntasParaOOwner": [],
   "respostasAoPrincipalChat": [
@@ -120,7 +122,7 @@
     "escopo": "membership de plataforma ve toda conversa; membership de instituicao so ve a propria instituicao (outro tenant responde CHAT_NOT_FOUND). Anexos: so metadados; chat.attach continua dependendo do gateway de midia comum (fora deste recorte).",
     "criarGrupoNoCliente": "sugestao para SupabaseChatRepository: createGroup(ChatCreateGroupCommand{institutionId, title, personIds, unitId?, groupId?, activityId?, idempotencyKey}) -> ChatConversationSummary; o seletor de hierarquia escolhe UMA instituicao e pessoas dela (readers existentes de Pessoas/Unidades/Turmas do Superadmin); grupo entre instituicoes nao existe no modelo (conversations.institution_id NOT NULL)."
   },
-  "proximoPasso": "README de candidatos/realm-interno; preparar a prova em producao (script com a sessao qa-r03, sem segredo em Git/JSON); aguardar aplicacao e provar; enquanto isso, delta BE proposto por action_id",
+  "proximoPasso": "aguardando aplicacao (bloqueio so do dependente); enquanto isso: revisar o cliente SupabaseChatRepository contra o contrato (leitura), preparar o delta do rastreador por action_id",
   "pacotesProntos": [
     {
       "arquivo": "packages/coelo_database/candidatos/realm-interno/20260910240000_chat_production_contract_v1.sql",
@@ -179,5 +181,14 @@
     "chat.receipts": "local-green (240200) -> done apos aplicacao e prova de receipt na thread",
     "chat.attach": "blocked-environment (gateway de midia comum ausente); sem mudanca",
     "chat.create-group (novo, P8)": "local-green (240400); pedir ao coordenador para registrar o action_id no inventario se ainda nao existir"
+  },
+  "provaEmProducao": {
+    "estado": "preparada; aguarda o coordenador aplicar 240000..240400",
+    "script": "packages/coelo_database/scripts/Invoke-ChatInternalProductionProof.sh (bash) -> chat-internal-production-proof.ts (Deno); credencial lida de Coelo-backups/qa-r03.env e chave anon do CLI em memoria; nada impresso alem de PASS/FAIL",
+    "conectividadeConferidaEm": "2026-09-10T22:16-03:00",
+    "resultadoAntesDaAplicacao": "auth.sign_in PASS com qa-r03; superadmin_chat_unread_total_v2 e inbox_v2 respondem PGRST202 (funcao ausente), como esperado; anon recebe 404",
+    "volumesDeProducao": "institutions 0, people 1, institution_memberships 0, guardian_links 0, conversations 0, messages 0, internal_identities 4; ledger em 20260910230021",
+    "fixtureSintetica": "packages/coelo_database/scripts/chat-internal-production-fixture.sql cria 1 instituicao, 2 adultos (1 vinculo profissional, 1 responsavel de crianca com child_context) com UUIDs 9f040000-...; chat-internal-production-cleanup.sql remove tudo (inclusive grupos/mensagens criados na prova). Ambos provados no descartavel.",
+    "oQueAProvaCobre": "chat.list (unread, inbox, fixar, bandeira, reload), chat.open + chat.receipts (thread com receipt/can_manage), chat.send (+replay), chat.edit, chat.revoke (cleanup da mensagem), chat.create-group (+replay, members), negativa CHAT_NOT_FOUND e anon negado"
   }
 }
