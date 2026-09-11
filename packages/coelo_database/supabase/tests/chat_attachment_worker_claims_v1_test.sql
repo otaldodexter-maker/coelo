@@ -1,0 +1,11 @@
+begin;
+create extension if not exists pgtap with schema extensions;
+select plan(3);
+select set_config('request.jwt.claims','',true);
+select set_config('request.jwt.claim.role','',true);
+select is((public.superadmin_chat_attachment_expire_v1(10))#>>'{error,code}','SAI_PERMISSION_DENIED','expire sem claims responde SAI_PERMISSION_DENIED');
+select is((public.superadmin_chat_attachment_finalize_v1(gen_random_uuid(),gen_random_uuid(),1,repeat('a',64)))#>>'{error,code}','SAI_PERMISSION_DENIED','finalize sem claims responde SAI_PERMISSION_DENIED');
+select set_config('request.jwt.claims',jsonb_build_object('role','service_role')::text,true);
+select is((public.superadmin_chat_attachment_finalize_v1(gen_random_uuid(),gen_random_uuid(),1,repeat('a',64)))#>>'{error,code}','CHAT_NOT_FOUND','service_role com ticket inexistente responde CHAT_NOT_FOUND');
+select * from finish();
+rollback;
