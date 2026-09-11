@@ -1,15 +1,15 @@
 {
-  "revision": 43,
-  "round": "E2-R05-20260911",
+  "revision": 45,
+  "round": "E2-R06-20260911",
   "group": "publicacoes-agenda",
   "tool": "Claude Code",
   "model": "Opus 5 (1M), esforco medio",
-  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-publicacoes-agenda",
-  "branch": "work/etapa2-r05-publicacoes-agenda",
-  "head": "421d26991 (esta revisao vira o head novo)",
-  "base": "origin/dev 2f6a6114f",
-  "coordinator": "Claude (R05 · Coordenacao da tarde, coelo-25)",
-  "updatedAt": "2026-09-11T15:52:00-03:00",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-publicacoes-agenda",
+  "branch": "work/etapa2-r06-publicacoes-agenda",
+  "head": "87c449d93 (+ commit desta revisao)",
+  "base": "origin/dev ca60b096b",
+  "coordinator": "Claude (R06 · Coordenacao)",
+  "updatedAt": "2026-09-11T20:09:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -43,287 +43,91 @@
       "circulars.respond",
       "circulars.attach"
     ],
-    "included": "24 acoes; recebido da R04: lote 26 (cron do worker de Avisos + notice-publication-worker implantada). Ordem R05: (1) P33 calendario; (2) P34 rodape do detalhe + goldens agenda_calendar_* + pagina R/A; (3) agenda.request/permissions/location na rota real; (4) notices.schedule FE local-green -> verified com o worker real; (5) circulars.edit/schedule/respond/attach (attach com circular-media em R2).",
-    "excluded": "Admin, Principal e Site; pg_cron e notice-publication-worker (coordenador); aplicação em produção (coordenador); inventário e rastreadores (coordenador).",
+    "included": "24 acoes (21 em E2E). Ordem R06: (1) circulars.attach pela tela com SuperadminQaHooks.circularFilePicker; (2) circulars.respond P50=B: tela de resposta a circular no Superadmin; (3) agenda.location pela tela com o seletor de contexto; (4) respostas do Owner as telas de Avisos/Circulares (V-9, V-10 = A) e V-8 (toggle web do R restaurado); (5) sino de notificacoes no shell se sobrar tempo; (6) circulars.create/edit e agenda.create/edit reconstruidos sobre a familia Publicacao (circular-*.png, evento-*.png), golden novo comparado as imagens e prova na rota real.",
+    "excluded": "Admin, Principal e Site; deploy da Edge Function circular-media (coordenador); aplicacao em producao; inventario e rastreadores.",
     "order": [
-      "P33 calendario",
-      "P34 rodape detalhe + goldens + pagina R/A",
-      "agenda.request/permissions/location rota real",
-      "notices.schedule verified",
-      "circulars.edit/schedule/respond/attach"
+      "(6) telas Publicacao circular/evento — nao depende de credencial",
+      "(4) V-8 toggle web",
+      "(1) circulars.attach pela tela",
+      "(2) circulars.respond tela",
+      "(3) agenda.location pela tela",
+      "(5) sino"
     ],
-    "stop": "Finalizar as 24 acoes, 15:45 de 11/09 ou ordem do Owner/coordenador.",
-    "evidence": "Commits da branch, pgTAP no projeto descartável coelo_baseline_pa (portas 603xx: baseline + seed + 44 migrations de produção aplicadas por psql às 21:50), flutter test, rota real com sessão."
+    "stop": "T0+2h (provisorio 21:38) ou ordem do Owner/coordenador.",
+    "evidence": "commits da branch, flutter test por familia, goldens comparados as referencias aprovadas, rota real com qa-r06-publicacoes quando a credencial existir."
   },
   "environment": {
-    "disposableProject": "coelo_pa_r05 em scratchpad/pa-project (db 60522): baseline + seed via db reset, 107 migrations da ordem por psql, candidato por psql; parar ao encerrar (supabase stop --project-id coelo_pa_r05)",
-    "note": "db reset do CLI aplica o seed DEPOIS das migrations e a 170100 exige o catálogo; por isso o reset roda só com a baseline e as demais entram por psql na ordem (mesmo método do coordenador).",
-    "memoryNote": "R05: maximo dois Chrome por conversa, um flutter test por vez.",
-    "closedAt": "03:12: Chrome 9334 e servidor 3006 fechados de novo; nenhum processo meu restante."
+    "credencial": "Coelo-backups/qa-r06-publicacoes.env existe desde ~19:55; rota real comeca agora (build web-qa + Chrome proprio).",
+    "note": "Comeco pelo que nao depende de credencial: reconstrucao das telas de Circular e Evento na familia Publicacao e o toggle web da lista da Agenda (V-8)."
   },
-  "firstGate": "nenhum: entrega fechada; responder a revisao final do coordenador as 15:50 no JSON.",
-  "status": "finalizado",
+  "firstGate": "rota real: build web -t test_driver/qa_main.dart, Chrome --user-data-dir %TEMP%/coelo-chrome-publicacoes, provar circulars.create/attach/respond e agenda.create/location pela tela",
+  "status": "em-andamento",
   "findings": [
-    "Presença em produção (mapa r03-coordenacao): notices_v2 185008 = 1/16 (só analytics.notice_events); circulars_v2 191921 = 0/14; circulars_media_r2 212000 = 6/6; agenda 183836/193717 presentes (superadmin_agenda_list/get/contexts/save/command/requests/decide_publication em public).",
-    "O cliente Superadmin chama somente superadmin_notice_*_v2 (185008), superadmin_circular_*_v2 (191921 + delete) e superadmin_agenda_* v1. A cadeia legada de Avisos people-based (003000, 204824, 212340, 220500) NÃO é chamada pelo app: 185008 é autossuficiente (colunas com if not exists, recibos próprios, auditoria via audit_append_superadmin_internal cuja assinatura de 13 args confere com produção). Decisão: não reentregar a cadeia legada no MVP; worker/pg_cron ficam registrados como pendência de entrega ao Principal (materialização de audiência), não bloqueiam CRUD de Avisos no Superadmin.",
-    "superadmin_agenda_list_v2/get_v2/contexts_v2 (SupabaseAgendaReadRepository) não existem em produção e não estão compostos no app; o app usa SupabaseAgendaRepository (v1) que existe em produção.",
-    "20260909191100 (métricas por geração) depende de colunas de 220500 (publication_job_id) ausentes em produção: fica fora até existir worker; sem regressão (reach conta todos os recibos).",
-    "Teste historico superadmin_internal_circular_delete_v1_test era so estrutural (strings em pg_get_functiondef) e nao pegava a violacao de circulars_check1 ao excluir rascunho; o comportamental novo pega.",
-    "Padrao de defeito repetido nas cadeias historicas: audit_logs.reason_code (^[A-Z][A-Z0-9_]{0,79}$) recebia texto livre/minusculo e derrubava a RPC com SAI_INTERNAL_ERROR. Vale conferir nos outros grupos que passam p_reason ao audit_append_superadmin_internal.",
-    "SEGURANCA medida na baseline: tabelas agenda_* com RLS forcado e zero policies, mas SELECT/INSERT concedidos a anon/authenticated; superadmin_agenda_* executaveis por anon/service_role. Fechado no 200300. Recomendo ao coordenador varrer o mesmo padrao nas outras familias (grants default do Supabase em tabelas/funcoes criadas antes do endurecimento).",
-    "UI real: balao de chat \"Mensagens\" visivel em /notices/new (criar) — Decisao 7 exige sem chat em criar/editar/publicar; regra do shell, nao da feature. Registrado para o coordenador/principal-chat-sistema.",
-    "CORRIGIDO nas revs 24/25: diretorio de Circulares rele apos excluir/publicar; Editar oculto em Encerrada/Arquivada.",
-    "FE bloqueante: em /circulars/new a 1440 o balao de chat cobre inteiramente o botao Publicar (centro 1330x856); a 1024 o rodape empilha e funciona.",
-    "CORRIGIDO nas revs 24/25: diretorio de Circulares rele apos excluir/publicar; Editar oculto em Encerrada/Arquivada.",
-    "FE bloqueante: em /circulars/new a 1440 o balao de chat cobre inteiramente o botao Publicar (centro 1330x856); a 1024 o rodape empilha e funciona.",
-    "FE agenda.detail: UUID no lugar do nome CORRIGIDO na rev 26 (carrega contextos); permanece: deep link direto apos carga fria fica no spinner ate o calendario carregar (primeiro gate: reproduzir em teste de rota com store real).",
-    "Ambiente: outro processo (frente ou coordenador) passou a dirigir meu Chrome CDP 9333 (pagina foi para localhost:3000); abri o 9334. Sugestao: cada conversa usa porta CDP propria e declara no JSON.",
-    "FECHADO: agenda.edit pela tela funciona (ui-49..51); o sintoma da ui-45 era clique por coordenada em Anterior."
+    "Abertura: origin/dev ca60b096b contem os prompts da R06 e as 12 referencias da familia Publicacao; o checkout principal esta em 9bf60463b (atras).",
+    "Inventario na base: agenda.location FE local-green / E2E pending; circulars.respond e circulars.attach FE pending-verification / E2E pending; as outras 21 acoes verified/done/verified-e2e."
   ],
-  "packages": [
-    {
-      "order": 1,
-      "file": "packages/coelo_database/candidatos/publicacoes-agenda/20260911190000_circular_actor_internal_bridge_v1.sql",
-      "actionIds": [
-        "circulars.attach",
-        "circulars.respond"
-      ],
-      "pgtap": "supabase/tests/circular_actor_internal_bridge_v1_test.sql 14/14 PASS no descartavel coelo_pa_r05 (db 60522: baseline + seed + 107 migrations da ordem + candidato); regressao superadmin_internal_circulars_v2_baseline_test 34/34 e circular_delete_v2_behavior 15/15",
-      "applyNote": "Transacional (begin/commit), so create or replace em app_private (circular_internal_capability nova, circular_actor, circular_audience_matches_role, circular_person_matches_scope); sem grant a cliente; sem ADD VALUE. Aplicar com db query -f inteiro.",
-      "gate": "Prova em producao 11/09 13:10 (prova-producao-r05.js): circular-media prepare -> media_prepare_denied; save_circular_response_draft -> active_membership_required. Causa: circular_actor ignorava a ponte de ator (220400) e a capacidade interna v2; owner nao tinha audiencia.",
-      "decision": "owner da instituicao alcanca qualquer audiencia de Circular (P23 Owner faz tudo no contexto; P35 Superadmin ve tudo). Se o Owner discordar, retirar a linha owner de circular_audience_matches_role/person_matches_scope.",
-      "compositionKey": "nenhuma (SupabaseCircularMediaRepository e SupabaseCircularResponseRepository ja compostos)",
-      "sha": "22a75bd6f"
-    },
-    {
-      "order": 2,
-      "file": "packages/coelo_database/candidatos/publicacoes-agenda/20260911190100_agenda_requests_labels_v1.sql",
-      "actionIds": [
-        "agenda.request"
-      ],
-      "pgtap": "supabase/tests/agenda_requests_labels_v1_test.sql 7/7 PASS (descartavel coelo_pa_r05 com os lotes de hoje)",
-      "applyNote": "create or replace de public.superadmin_agenda_requests (mesma assinatura e guarda); acrescenta title, institution_name, requested_by_name, decided_by_name. Transacional, sem grant novo.",
-      "gate": "Tela Aprovacoes de publicacao mostrava \"Evento <uuid>\", UUID da instituicao e da pessoa. O app (bc1fe917e) ja le os rotulos com UUID como reserva.",
-      "compositionKey": "nenhuma",
-      "sha": "bc1fe917e"
-    },
-    {
-      "order": 3,
-      "file": "packages/coelo_database/candidatos/publicacoes-agenda/20260911190200_circulars_media_private_r2_v1_reapply.sql",
-      "actionIds": [
-        "circulars.attach"
-      ],
-      "pgtap": "circulars_media_private_r2_v1_test 45/46 no descartavel (46o exige linha do bucket legado em storage.buckets, que producao tem); bridge 18/18 e v2 34/34 depois dele",
-      "applyNote": "Reaplicacao idempotente da migration historica 20260909212000 (ausente em producao: prepare devolve bucket coelo-circulars-private e o PUT vai ao Storage do Supabase). Preflight de dependencias no proprio arquivo; CHECKs NOT VALID; sem backfill.",
-      "gate": "ADR 0032: toda midia nova do MVP em R2; sem este pacote circular-media v5 usa o ramo legado.",
-      "compositionKey": "nenhuma",
-      "sha": "eed26d0b2"
-    },
-    {
-      "order": 4,
-      "file": "packages/coelo_database/candidatos/publicacoes-agenda/20260911190300_superadmin_circulars_v2_media_v1.sql",
-      "actionIds": [
-        "circulars.attach",
-        "circulars.edit",
-        "circulars.publish"
-      ],
-      "pgtap": "circular_actor_internal_bridge_v1_test 18/18 (asset ready -> rascunho com midia -> detail devolve asset_ids -> publish; asset alheio bloqueado); superadmin_internal_circulars_v2_baseline_test 34/34 (caso de midia atualizado); delete 15/15",
-      "applyNote": "create or replace de superadmin_circular_draft_json, superadmin_circular_save_draft_v2 (texto 200400 + midia) e superadmin_circular_publish_v2 (texto 200100 sem o bloqueio). Aplicar depois de 190200.",
-      "gate": "Gateway v2 devolve CIRCULAR_MEDIA_BLOCKED para qualquer bloco de midia (prova 14:25); o compositor faz upload e nao consegue salvar o bloco.",
-      "compositionKey": "nenhuma",
-      "sha": "eed26d0b2"
-    }
-  ],
+  "packages": [],
   "compositionKeys": [],
   "tests": {
-    "passed": 291,
+    "passed": "circulars 66 + agenda 293 + goldens",
     "failed": 0,
     "blocked": 0,
     "skipped": 0,
     "evidence": [
-      "flutter test test/features/agenda (um por vez): 291 PASS apos 2a982a453",
-      "flutter analyze apps/superadmin: 0 erros (1 warning pre-existente em test_driver/qa_login.dart)",
-      "pgTAP circular_actor_internal_bridge_v1_test 14/14; regressao circulares v2 34/34 + delete 15/15 (descartavel coelo_pa_r05)",
-      "prova-producao-r05.js 14/18 (4 FAIL sao o gate do candidato + unidade da instituicao errada + republicar agendada)"
+      "flutter test test/features/circulars 66/66",
+      "flutter test test/features/agenda 293/293",
+      "flutter analyze apps/superadmin: 0 erros (1 warning pre-existente em test_driver/qa_login.dart)"
     ],
-    "unknown": "bateria completa do app nao repetida (um flutter test por vez); rota real ainda nao exercida nesta rodada"
+    "unknown": "suite completa nao repetida (um flutter test por vez)"
   },
-  "blocked": "nenhum",
-  "next": "Proxima rodada: circulars.attach pela tela (filePicker injetado no qa_main), agenda.location pela tela (wizard precisa de seletor de contexto concreto), circulars.respond FE (decisao: so resumo no Superadmin?).",
+  "blocked": "rota real ate existir qa-r06-publicacoes.env",
+  "next": "(1) circulars.attach pela tela com o gancho no qa_main; (2) circulars.respond tela (P50=B); (3) agenda.location pela tela; rota real com o build novo",
   "changes": [
     {
-      "sha": "5edfccef9",
+      "sha": "41a4b4dcf",
+      "actionIds": [
+        "circulars.create",
+        "circulars.edit",
+        "circulars.attach",
+        "circulars.respond"
+      ],
+      "what": "Compositor de Circular reconstruido sobre a familia Publicacao (item 6): \"Sua publicacao / Publicar Circular\", campos com rotulo acima, Anexos ate 4 com tile + e chips, Publico e contexto (card + chips Familias/Alunos/Equipe escolar/Somente responsaveis), Resposta esperada (So leitura / Confirmar ciencia / Aceitar-recusar mapeados a uma pergunta obrigatoria de escolha unica do dominio), Agendamento \"Publicar agora\", Opcoes, previa da circular a direita >=1200, rodape em card. Componente compartilhado apps/superadmin/lib/shared/presentation/widgets/publication_surface.dart (PublicationSurface, Label, TextField, Card, Row, Chip, ToggleRow, Note, PreviewPanel) para G3/G4 reutilizarem.",
+      "tests": "flutter test test/features/circulars 66/66 (+1 golden novo circular_composer_{light,dark}_{375,1440} = 4 imagens comparadas a circular-{mobile-375,web-1440}.png); analyze limpo"
+    },
+    {
+      "sha": "0322e511d",
+      "actionIds": [
+        "agenda.create",
+        "agenda.edit",
+        "agenda.location"
+      ],
+      "what": "Criar/editar evento reconstruido sobre a familia Publicacao (item 6; substitui o wizard do V-7): superficie unica com titulo, data e horario em dois cards, Local (campo + previa), Descricao, Categoria em chips (9 tipos do dominio), Publico e contexto (nivel + \"Qual <nivel>\" concreto + chips de audiencia), Lembrar 1 dia antes, previa na Agenda >=1200, \"Mais opcoes\" com dia inteiro/fuso/recorrencia/prioridade/resposta/lembretes/perguntas. Chaves agenda-wizard-save-draft/publish preservadas; agenda-wizard-continue/previous deixam de existir.",
+      "tests": "flutter test test/features/agenda 293/293 (testes do wizard adaptados; goldens agenda_create_{light,dark}_{375,768,1440} regravados = comparar a evento-{mobile-375,web-1440}.png)"
+    },
+    {
+      "sha": "87c449d93",
       "actionIds": [
         "agenda.view"
       ],
-      "what": "P33: calendario mensal conforme referencia iOS (grade sem conteiner, linhas finas, numero menor no canto sup. esq., hoje em circulo cheio, pastilhas empilhadas, cancelado hachurado CANCELADO+hora, toggle 50/50 centralizado, Hoje no rodape). Goldens agenda_calendar_*, agenda_list_* e agenda_http_calendar_* regravados no 3.44.2.",
-      "tests": "agenda_calendar_page_test 6/6 (novo teste da referencia iOS), agenda_approved_visual_contract_red, shell_overflow, empty_state, router, architecture: 17/17; goldens 18/18"
-    },
-    {
-      "sha": "16651dc88",
-      "actionIds": [
-        "agenda.detail"
-      ],
-      "what": "P34: detalhe do evento com SuperadminFormActionFooter ancorado (igual a criar/editar Instituicao), superficie do tema sem cinza, destrutivo a esquerda e Editar item a direita; indicador de status mantido em 48 px. Goldens agenda_detail_* regravados.",
-      "tests": "agenda_event_detail_page_test 6/6; goldens detail 6/6"
-    },
-    {
-      "sha": "2a982a453",
-      "actionIds": [
-        "agenda.detail"
-      ],
-      "what": "Falhas pre-existentes na base (agenda_remote_states_test: retry do detalhe, 2 testes) corrigidas: mock nao simulava superadmin_agenda_contexts (rev 26 da R04).",
-      "tests": "agenda_remote_states_test 23/23; suite test/features/agenda 291/291"
-    },
-    {
-      "sha": "22a75bd6f",
-      "actionIds": [
-        "circulars.attach",
-        "circulars.respond",
-        "circulars.edit",
-        "circulars.schedule",
-        "agenda.request",
-        "agenda.location",
-        "agenda.permissions"
-      ],
-      "what": "Prova R05 em producao por RPC/Edge Function com qa-r03 (docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/prova-producao-r05.js, resultado .json): 14/18. agenda.request PASSOU ponta a ponta no BE (rascunho -> request_publication -> superadmin_agenda_requests lista pending -> decide aprovar -> evento published -> reload -> limpeza). circulars.schedule/edit por RPC PASSARAM. circulars.attach e respond FALHARAM no gate acima -> candidato 20260911190000. agenda.location: nenhuma unidade na instituicao sintetica 9f04...0010 (a unidade d0c4...0002 pertence a QA R04 Cuidado): reexecutar apontando para d0c4...0001 (script escolhe a instituicao com unidade na proxima rodada) . circulars.publish \"publicar imediato a agendada\" -> CIRCULAR_INVALID_STATE (scheduled nao republica: comportamento esperado do gateway; ajustar script).",
-      "tests": "pgTAP 14/14 + regressao 49/49; historicos circulars_media_private_r2_v1_test (22 not ok) e circulars_authorization_behavior_test (fixture uuid invalido) ja falhavam antes do candidato: registrados como pos-MVP"
-    },
-    {
-      "sha": "bc1fe917e",
-      "actionIds": [
-        "agenda.request",
-        "agenda.view",
-        "notices.schedule",
-        "notices.publish"
-      ],
-      "what": "Rota real com qa-r03 (build web-qa profile em 127.0.0.1:3006, Chrome CDP 9335): ui-02 /agenda com a referencia iOS em producao (hoje em circulo, cancelados hachurados, Hoje no rodape); ui-05..ui-08 /agenda/approvals: pedido pendente criado por RPC aparece, Decidir -> motivo -> Aprovar pela tela persistiu e sobreviveu a recarga completa; ui-10..ui-19 /notices/new: aviso criado pela tela com data 18/09 13:51 escolhida no seletor Coelo (data + hora) -> \"Publicacao agendada\" -> diretorio apos recarga completa mostra \"Desde 18/09/2026\"; RPC confirma status scheduled. Worker real: aviso agendado por RPC para +2 min virou active com reach 18 (notice_receipts materializados pelo cron/worker, P30).",
-      "tests": "capturas em docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/ui/"
-    },
-    {
-      "sha": "eed26d0b2",
-      "actionIds": [
-        "circulars.attach",
-        "circulars.respond",
-        "circulars.publish",
-        "agenda.location"
-      ],
-      "what": "20260911190000 confirmado em producao pela prova (14:18): circulars.attach prepare -> PUT -> finalize(ready) -> read(signed_url) -> bytes conferem -> anon 401; circulars.respond save_circular_response_draft -> submit -> response_summary_v2 {response_count:1, submitted_count:1}. agenda.location: evento com contextKind unit + local persiste e reload mantem (instituicao QA R04 Cuidado, unidade d0c4...0002), rascunho excluido. Achados: (a) R2 de Circulares nao esta em producao (bucket legado) -> 190200; (b) gateway v2 bloqueia bloco de midia -> 190300; (c) delete do anexo pelo autor interno responde media_delete_denied (remove_circular_media exige owner people-based; entra no 190300? nao: registrado como pendencia); (d) republicar circular agendada -> CIRCULAR_INVALID_STATE (comportamento do gateway; a tela deve reagendar/cancelar).",
-      "tests": "prova-producao-r05.js 29/34 (5 FAIL = gate 190300 + delete denied)"
-    },
-    {
-      "sha": "66a52986f",
-      "actionIds": [
-        "circulars.attach",
-        "circulars.respond",
-        "circulars.schedule",
-        "circulars.edit"
-      ],
-      "what": "Lote 43 em producao (190100/190200/190300): prova-producao-r05.js 34/34 as 14:36: attach agora em R2 (coelo-media-prod, chave tenants/.../circulars/circular/.../attachment/.../original), bloco de midia salvo no gateway v2, publish com midia, read por signed_url, bytes conferem, anon 401, delete de anexo publicado recusado (imutavel). circulars.schedule FE: host produtivo nao passava onChooseSchedule (botao desabilitado) -> ligado com os seletores Coelo; goldens circular_directory_* regravados apos o composto 11c4bfbef (celulas alinhadas).",
-      "tests": "flutter test test/features/circulars 66/66 apos regravar; analyze limpo"
-    },
-    {
-      "sha": "28acbe8c3",
-      "actionIds": [
-        "circulars.edit",
-        "circulars.schedule",
-        "notices.list"
-      ],
-      "what": "Rota real com o build novo (66a52986f): circulars.edit pela tela (reabrir rascunho, editar titulo, Salvar rascunho, recarga completa mantem: ui-32..ui-39); circulars.schedule pela tela (seletor data 25/09 + horario 14:00, validacao honesta de publico, Agendar circular -> Agendada; recarga completa lista 25/09/2026 na aba Agendadas; RPC scheduled: ui-41..ui-46). notices.list: pastilha de tipo com altura propria (achado ui-19 corrigido), goldens communication_directory_* regravados.",
-      "tests": "flutter test notices 133/133 + circulars 66/66 apos regravar; analyze limpo"
-    },
-    {
-      "sha": "4b9483148",
-      "actionIds": [
-        "agenda.location",
-        "agenda.create"
-      ],
-      "what": "Wizard de evento ganha o campo \"Qual <nivel>\" (seletor de contexto concreto) quando ha mais de um contexto do nivel; default = primeiro (comportamento anterior). Goldens agenda_create_{light,dark}_{375,768,1440} regravados: campo novo -> A+ pendente do Owner (nao e regressao visual, e conteudo novo). agenda.location FE continua local-green (nao provado pela tela nesta rodada).",
-      "tests": "test/features/agenda 291/291"
-    },
-    {
-      "sha": "002dddd95",
-      "actionIds": [
-        "circulars.create",
-        "circulars.publish"
-      ],
-      "what": "Decisao 7: host produtivo do compositor de Circular suprime o balao de chat desde o carregamento (antes so apos o seletor de instituicao; achado ui-22).",
-      "tests": "test/features/circulars + architecture 68/68"
-    },
-    {
-      "sha": "f8f134553",
-      "actionIds": [
-        "circulars.attach"
-      ],
-      "what": "Gancho de QA SuperadminQaHooks.circularFilePicker (nulo no app real; qa_main entrega PNG sintetico) ligado nos dois hosts do compositor no router: destrava a prova de circulars.attach pela tela na proxima rodada. Nao provado nesta rodada (build web + Chrome nao cabiam antes do corte).",
-      "tests": "analyze limpo (1 warning pre-existente em qa_login); circulars + architecture 68/68"
+      "what": "V-8 (A+): no web (>=840) o par Calendario/Lista volta ao R (dois botoes de 88 px a direita da toolbar); no mobile/tablet fica o toggle 50/50 novo. Goldens agenda_calendar_*_1440 e agenda_list_*_1440 regravados.",
+      "tests": "agenda 291/291"
     }
   ],
   "pendingForCoordinator": [
     {
       "actionIds": [
-        "agenda.view",
-        "agenda.detail"
-      ],
-      "pending": "Encaminhar duvidas-visuais.html ao Owner (R/A). Aprovacao visual nao vira verified. Goldens regravados so entram como aprovacao apos a resposta."
-    },
-    {
-      "actionIds": [
-        "agenda.view"
-      ],
-      "pending": "Regra de conteudo do P33 (calendario mostra tudo que a hierarquia permite: eventos, aniversarios, provas; filtro por crianca/perfil no menu do perfil) e do Principal/Admin: registrada como conhecimento na skill coelo-ui (ja consta na baseline) e depende de fontes de aniversarios/provas que ainda nao existem no Superadmin; fora do recorte da R05, registrar em coelo-knowledge/pendencias."
-    },
-    {
-      "actionIds": [
-        "circulars.attach",
-        "circulars.respond"
-      ],
-      "pending": "Aplicar 20260911190000 em producao (dump do lote antes). Depois eu reexecuto prova-producao-r05.js para provar prepare -> PUT R2 -> finalize -> read -> reload e respond -> submit -> resumo."
-    },
-    {
-      "actionIds": [
-        "circulars.attach"
-      ],
-      "pending": "Testes historicos circulars_media_private_r2_v1_test e circulars_authorization_behavior_test falham na forma atual de producao (independente do candidato): pos-MVP, revisar/aposentar."
-    },
-    {
-      "actionIds": [
-        "agenda.view",
-        "agenda.detail"
-      ],
-      "pending": "pgTAP historico agenda_internal_realm_compat_v1_test falha 4/22 sobre a ordem real apos o lote 29 (ponte do Principal): testes 10-12 esperam colunas de pessoa nulas para o ator interno e o 16 espera negativa de leitura para identidade escopada; o comportamento novo (pessoa de servico + P7) parece intencional, mas falta uma assercao cross-tenant na lista. Dono: G4/G5/coordenador."
-    },
-    {
-      "actionIds": [
-        "agenda.view",
-        "agenda.detail"
-      ],
-      "pending": "Pendencia de suite (dono G4, 130000): agenda_internal_realm_compat_v1_test 4/22 sobre a ordem real apos o lote 29; nao bloqueia."
-    },
-    {
-      "actionIds": [
-        "circulars.attach"
-      ],
-      "pending": "FE pela tela: o FilePicker nativo nao e dirigivel por CDP; injetar filePicker no host de QA (qa_main) na proxima rodada. BE done com R2 (lote 43)."
-    },
-    {
-      "actionIds": [
-        "agenda.location"
-      ],
-      "pending": "FE pela tela: criar evento com contexto de unidade pelo wizard (BE done). Proxima rodada."
-    },
-    {
-      "actionIds": [
-        "agenda.location"
-      ],
-      "pending": "ACHADO de produto no wizard (ui-51/ui-52): \"Contexto principal\" so escolhe o NIVEL (Instituicao/Unidade/Turma/Atividade) e o formulario usa o PRIMEIRO contexto daquele nivel em store.contexts (_selectedContext), sem seletor da unidade/turma concreta; com mais de uma unidade o evento pode ir para a unidade errada. Proposta: seletor de contexto concreto (como o picker de instituicao das Circulares) antes do verified FE. BE done pela RPC."
-    },
-    {
-      "actionIds": [
+        "circulars.create",
+        "circulars.edit",
         "agenda.create",
-        "agenda.location"
+        "agenda.edit"
       ],
-      "pending": "Goldens agenda_create_* regravados com o campo novo \"Qual Instituicao/Unidade/...\": pedir A+ ao Owner (ownerVisualApproval continua o anterior ate ele responder)."
+      "pending": "Pagina R/A para o Owner (referencia aprovada x golden novo) sera entregue em docs/reviews/evidence/etapa-2/r06-publicacoes-agenda/duvidas-visuais-publicacao.html ao fim; aprovacao nao vira verified."
+    },
+    {
+      "actionIds": [
+        "*"
+      ],
+      "pending": "publication_surface.dart e o componente da familia Publicacao; G3 (Lancar chamada) e G4 (Agora/Acontece/Momentos) podem consumi-lo em vez de reimplementar. Avisar as frentes na integracao."
     }
   ],
   "proposedDeltas": [
@@ -331,18 +135,7 @@
       "note": "formato canonico em deltasFile"
     }
   ],
-  "questionsToOwner": [
-    {
-      "id": "P33/P34 (R05)",
-      "file": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/duvidas-visuais.html",
-      "ask": "Aprovar A (render atual) de agenda_calendar_{light,dark}_{375,768,1440} e agenda_detail_{light,dark}_{375,768,1440} apos as correcoes P33/P34; R do calendario e a captura do iPhone. Duvida menor: manter indicador de status do detalhe em 48 px (WCAG) ou voltar ao circulo de 24 px?"
-    },
-    {
-      "id": "agenda_create (R05)",
-      "file": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/duvidas-visuais-agenda-create.html",
-      "ask": "A+ para agenda_create_{light,dark}_{375,768,1440}: campo novo \"Qual Instituicao/Unidade/Turma\" abaixo de Contexto principal (so quando ha mais de um contexto do nivel)."
-    }
-  ],
+  "questionsToOwner": [],
   "r03History": {
     "revision": 12,
     "round": "E2-R03-20260910",
@@ -713,96 +506,10 @@
   ],
   "productionProof": null,
   "uiRouteProof": null,
-  "finalizado": {
-    "at": "2026-09-11T15:08:00-03:00",
-    "head": "ver head (rev 40)",
-    "handoff": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/handoff.md",
-    "deltas": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/deltas-r05-pa.json (16)",
-    "capturas": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/ui/ (39 png)",
-    "ambiente": "Chrome de CDP, servidor 3006 e descartavel coelo_pa_r05 encerrados; build web-qa fica em apps/superadmin/build/web-qa (ignorado pelo Git)"
-  },
+  "finalizado": null,
   "deliveryValidation": null,
   "skillDeltas": null,
-  "miniRevisao": {
-    "quando": "2026-09-11T15:08:00-03:00",
-    "destinatario": "coelo-25 (R05 · Coordenacao da tarde)",
-    "shaFinal": "ver head da revisao vigente (branch publicada; status limpo)",
-    "fechouPorActionId": [
-      {
-        "action_id": "agenda.view",
-        "prova": "P33 aplicado (5edfccef9), goldens 3.44.2, rota real ui-02, aprovacao do Owner A"
-      },
-      {
-        "action_id": "agenda.detail",
-        "prova": "P34 aplicado (16651dc88), goldens, aprovacao do Owner A; 2 testes pre-existentes corrigidos (2a982a453)"
-      },
-      {
-        "action_id": "agenda.request",
-        "prova": "BE prova RPC + 190100 em producao; FE ui-05..ui-08 (aprovar pela tela, reload); E2E"
-      },
-      {
-        "action_id": "agenda.permissions",
-        "prova": "FE rota normal (redirect por desenho) + contexts em producao; E2E"
-      },
-      {
-        "action_id": "agenda.location",
-        "prova": "BE done (unit + local, reload; negativa cross-tenant pgTAP)"
-      },
-      {
-        "action_id": "notices.schedule",
-        "prova": "FE ui-13..ui-19 (seletor Coelo, agendada, reload); worker real materializou (+2 min -> active, reach 18); E2E"
-      },
-      {
-        "action_id": "notices.publish",
-        "prova": "E2E: reach>0 pelo worker real (P30 fechado)"
-      },
-      {
-        "action_id": "circulars.respond",
-        "prova": "BE done: 190000 em producao; draft -> submit -> summary 1/1; pgTAP 18/18"
-      },
-      {
-        "action_id": "circulars.attach",
-        "prova": "BE done: 190200 (R2) + 190300 (midia no v2) em producao; prova 34/34 (prepare no R2 coelo-media-prod, finalize, bloco de midia, publish, read, bytes)"
-      },
-      {
-        "action_id": "circulars.edit",
-        "prova": "FE ui-32..ui-39 (editar e reload); BE done; E2E"
-      },
-      {
-        "action_id": "circulars.schedule",
-        "prova": "FE ui-41..ui-46 (picker ligado em 66a52986f, agendada, reload); BE done; E2E"
-      },
-      {
-        "action_id": "notices.list",
-        "prova": "pastilha de tipo corrigida (28acbe8c3), goldens regravados"
-      }
-    ],
-    "abertoComPrimeiroGate": [
-      {
-        "action_id": "circulars.attach",
-        "camada": "frontend",
-        "gate": "provar pela tela com o gancho de QA (rebuild de web-qa + Chrome): Adicionar arquivo -> R2 -> bloco de midia -> publicar -> reload"
-      },
-      {
-        "action_id": "circulars.respond",
-        "camada": "frontend",
-        "gate": "nao ha tela de resposta no Superadmin (fluxo do Principal); decidir se respond no Superadmin = resumo (ja verified)"
-      },
-      {
-        "action_id": "agenda.location",
-        "camada": "frontend",
-        "gate": "wizard sem seletor de contexto concreto (usa o primeiro do nivel): achado de produto"
-      },
-      {
-        "action_id": "agenda.view",
-        "camada": "backend",
-        "gate": "pgTAP historico agenda_internal_realm_compat_v1_test 4/22 apos o lote 29 (dono G4)"
-      }
-    ],
-    "pacotes": "190000/190100/190200/190300 aplicados (lotes 42/43); nenhum candidato pendente",
-    "duvidasAoOwner": "agenda_create_* A+ (pagina duvidas-visuais-agenda-create.html); P33/P34 ja respondidas (A)",
-    "skillDeltas": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/skill-deltas.md"
-  },
+  "miniRevisao": null,
   "r04History": {
     "finalRevision": 30,
     "head": "7367370c1",
@@ -2164,113 +1871,478 @@
       }
     ]
   },
-  "deltasFile": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/deltas-r05-pa.json (16 entradas; ensaio apply + validate PASS: FE 76, BE 78, E2E 53)",
-  "ownerVisualApproval": {
-    "at": "2026-09-11 ~14:45 via coordenador (artefato 881e760e)",
-    "decision": "A",
-    "files": [
-      "agenda_calendar_light_375",
-      "agenda_calendar_light_768",
-      "agenda_calendar_light_1440",
-      "agenda_calendar_dark_375",
-      "agenda_calendar_dark_768",
-      "agenda_calendar_dark_1440",
-      "agenda_detail_light_375",
-      "agenda_detail_light_768",
-      "agenda_detail_light_1440",
-      "agenda_detail_dark_375",
-      "agenda_detail_dark_768",
-      "agenda_detail_dark_1440"
+  "deltasFile": "docs/reviews/evidence/etapa-2/r06-publicacoes-agenda/deltas-r06-pa.json (a criar)",
+  "ownerVisualApproval": null,
+  "revisaoFinal": null,
+  "r05History": {
+    "finalRevision": 43,
+    "head": "421d26991 (a371fce6d com a rev 43)",
+    "revisaoFinal": {
+      "quando": "2026-09-11T15:52:00-03:00",
+      "pedidoPor": "coelo-25 (15:50)",
+      "entregueTudo": "Sim, dentro do que a maquina permitiu: 24 acoes do recorte tocadas; nenhum WIP; nada retido fora da branch.",
+      "shaPublicado": "421d26991 (+ o commit desta revisao 43); branch work/etapa2-r05-publicacoes-agenda publicada; status limpo; ja integrada em origin/dev (9288cdc68 contem 421d26991); sem WIP",
+      "fechadoPorActionId": [
+        {
+          "action_id": "agenda.view",
+          "prova": "P33 aplicado (5edfccef9), goldens 3.44.2, rota real ui-02; Owner aprovou (A)"
+        },
+        {
+          "action_id": "agenda.detail",
+          "prova": "P34 aplicado (16651dc88), goldens; Owner aprovou (A); 2a982a453 corrige testes pre-existentes"
+        },
+        {
+          "action_id": "agenda.request",
+          "prova": "BE RPC + 190100 em producao; FE ui-05..ui-08 (aprovar pela tela + recarga); E2E"
+        },
+        {
+          "action_id": "agenda.permissions",
+          "prova": "FE rota normal (redirect por desenho) + contexts em producao; E2E"
+        },
+        {
+          "action_id": "agenda.location",
+          "prova": "BE done (unit + local + reload; negativa cross-tenant pgTAP 200300)"
+        },
+        {
+          "action_id": "notices.schedule",
+          "prova": "FE ui-13..ui-19 (seletor Coelo, agendada, recarga); worker real materializou (+2 min -> active, reach 18); E2E"
+        },
+        {
+          "action_id": "notices.publish",
+          "prova": "E2E: reach>0 pelo worker real (P30)"
+        },
+        {
+          "action_id": "notices.list",
+          "prova": "pastilha de tipo corrigida (28acbe8c3), goldens regravados"
+        },
+        {
+          "action_id": "circulars.respond",
+          "prova": "BE done: 190000 em producao; draft -> submit -> summary 1/1; pgTAP 18/18"
+        },
+        {
+          "action_id": "circulars.attach",
+          "prova": "BE done: 190200 (R2) + 190300 (midia no v2) em producao; prova 34/34"
+        },
+        {
+          "action_id": "circulars.edit",
+          "prova": "FE ui-32..ui-39 (editar + recarga); BE done; E2E"
+        },
+        {
+          "action_id": "circulars.schedule",
+          "prova": "FE ui-41..ui-46 (picker ligado em 66a52986f, agendada, recarga); BE done; E2E"
+        },
+        {
+          "action_id": "circulars.create/publish",
+          "prova": "balao de chat suprimido no compositor desde o carregamento (002dddd95, Decisao 7)"
+        }
+      ],
+      "abertoComPrimeiroGate": [
+        {
+          "action_id": "circulars.attach",
+          "camada": "frontend",
+          "gate": "provar pela tela com o gancho SuperadminQaHooks.circularFilePicker (f8f134553): rebuild web-qa + Chrome; Adicionar arquivo -> R2 -> bloco de midia -> publicar -> recarga"
+        },
+        {
+          "action_id": "circulars.respond",
+          "camada": "frontend",
+          "gate": "nao existe tela de resposta no Superadmin (fluxo do Principal): decidir se respond no Superadmin = resumo de respostas (ja verified)"
+        },
+        {
+          "action_id": "agenda.location",
+          "camada": "frontend",
+          "gate": "A+ do Owner para agenda_create_* (campo \"Qual contexto\", 4b9483148) e prova pela tela"
+        },
+        {
+          "action_id": "agenda.view/agenda.detail",
+          "camada": "backend (suite)",
+          "gate": "agenda_internal_realm_compat_v1_test 4/22 sobre a ordem real apos o lote 29 (dono G4/130000); nao bloqueia"
+        }
+      ],
+      "deltas": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/deltas-r05-pa.json: 16 entradas, ja aplicadas pelo coordenador; nenhum delta novo alem delas (wizard e balao nao mudam estado de acao)",
+      "pacotesSqlRestantes": "nenhum: 190000, 190100, 190200 e 190300 aplicados (lotes 42/43); candidatos/publicacoes-agenda pode ser esvaziado pelo coordenador ao mover para migrations/",
+      "duvidasAoOwner": "agenda_create_{light,dark}_{375,768,1440} A+ (duvidas-visuais-agenda-create.html), ja registrado pelo coordenador; P33/P34 respondidas (A). Decisao de produto: circulars.respond no Superadmin = so resumo?",
+      "dadosSinteticosCriados": "Avisos [R05-QA UI] (agendado 18/09 pela tela, id 86988e0e) e [R05-QA worker] (active, id 11efaa4b); eventos [R05-QA ...] da Agenda nas instituicoes sinteticas (cancelados ou excluidos apos as provas; 2 pedidos de publicacao aprovados: 3d65140f, 469ac1dd, 99ab7523); circulares [R05-QA ...] das provas por RPC (encerradas/excluidas, soft) com anexos pixel.png (70 bytes) em coelo-media-prod e no bucket legado coelo-circulars-private; circular [R05-QA UI] Circular editada pela tela (v2) agendada para 25/09 (id 92ce44e7, instituicao QA R04 Cuidado). Limpeza no fim da Etapa 2 (P25/P42).",
+      "chavesCriadas": "nenhuma (nenhum segredo, token ou chave criado nesta rodada)",
+      "ambiente": "Chrome de CDP, servidor 3006 e descartavel coelo_pa_r05 encerrados; build web-qa em apps/superadmin/build/web-qa (ignorado)"
+    },
+    "finalizado": {
+      "at": "2026-09-11T15:08:00-03:00",
+      "head": "ver head (rev 40)",
+      "handoff": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/handoff.md",
+      "deltas": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/deltas-r05-pa.json (16)",
+      "capturas": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/ui/ (39 png)",
+      "ambiente": "Chrome de CDP, servidor 3006 e descartavel coelo_pa_r05 encerrados; build web-qa fica em apps/superadmin/build/web-qa (ignorado pelo Git)"
+    },
+    "miniRevisao": {
+      "quando": "2026-09-11T15:08:00-03:00",
+      "destinatario": "coelo-25 (R05 · Coordenacao da tarde)",
+      "shaFinal": "ver head da revisao vigente (branch publicada; status limpo)",
+      "fechouPorActionId": [
+        {
+          "action_id": "agenda.view",
+          "prova": "P33 aplicado (5edfccef9), goldens 3.44.2, rota real ui-02, aprovacao do Owner A"
+        },
+        {
+          "action_id": "agenda.detail",
+          "prova": "P34 aplicado (16651dc88), goldens, aprovacao do Owner A; 2 testes pre-existentes corrigidos (2a982a453)"
+        },
+        {
+          "action_id": "agenda.request",
+          "prova": "BE prova RPC + 190100 em producao; FE ui-05..ui-08 (aprovar pela tela, reload); E2E"
+        },
+        {
+          "action_id": "agenda.permissions",
+          "prova": "FE rota normal (redirect por desenho) + contexts em producao; E2E"
+        },
+        {
+          "action_id": "agenda.location",
+          "prova": "BE done (unit + local, reload; negativa cross-tenant pgTAP)"
+        },
+        {
+          "action_id": "notices.schedule",
+          "prova": "FE ui-13..ui-19 (seletor Coelo, agendada, reload); worker real materializou (+2 min -> active, reach 18); E2E"
+        },
+        {
+          "action_id": "notices.publish",
+          "prova": "E2E: reach>0 pelo worker real (P30 fechado)"
+        },
+        {
+          "action_id": "circulars.respond",
+          "prova": "BE done: 190000 em producao; draft -> submit -> summary 1/1; pgTAP 18/18"
+        },
+        {
+          "action_id": "circulars.attach",
+          "prova": "BE done: 190200 (R2) + 190300 (midia no v2) em producao; prova 34/34 (prepare no R2 coelo-media-prod, finalize, bloco de midia, publish, read, bytes)"
+        },
+        {
+          "action_id": "circulars.edit",
+          "prova": "FE ui-32..ui-39 (editar e reload); BE done; E2E"
+        },
+        {
+          "action_id": "circulars.schedule",
+          "prova": "FE ui-41..ui-46 (picker ligado em 66a52986f, agendada, reload); BE done; E2E"
+        },
+        {
+          "action_id": "notices.list",
+          "prova": "pastilha de tipo corrigida (28acbe8c3), goldens regravados"
+        }
+      ],
+      "abertoComPrimeiroGate": [
+        {
+          "action_id": "circulars.attach",
+          "camada": "frontend",
+          "gate": "provar pela tela com o gancho de QA (rebuild de web-qa + Chrome): Adicionar arquivo -> R2 -> bloco de midia -> publicar -> reload"
+        },
+        {
+          "action_id": "circulars.respond",
+          "camada": "frontend",
+          "gate": "nao ha tela de resposta no Superadmin (fluxo do Principal); decidir se respond no Superadmin = resumo (ja verified)"
+        },
+        {
+          "action_id": "agenda.location",
+          "camada": "frontend",
+          "gate": "wizard sem seletor de contexto concreto (usa o primeiro do nivel): achado de produto"
+        },
+        {
+          "action_id": "agenda.view",
+          "camada": "backend",
+          "gate": "pgTAP historico agenda_internal_realm_compat_v1_test 4/22 apos o lote 29 (dono G4)"
+        }
+      ],
+      "pacotes": "190000/190100/190200/190300 aplicados (lotes 42/43); nenhum candidato pendente",
+      "duvidasAoOwner": "agenda_create_* A+ (pagina duvidas-visuais-agenda-create.html); P33/P34 ja respondidas (A)",
+      "skillDeltas": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/skill-deltas.md"
+    },
+    "changes": [
+      {
+        "sha": "5edfccef9",
+        "actionIds": [
+          "agenda.view"
+        ],
+        "what": "P33: calendario mensal conforme referencia iOS (grade sem conteiner, linhas finas, numero menor no canto sup. esq., hoje em circulo cheio, pastilhas empilhadas, cancelado hachurado CANCELADO+hora, toggle 50/50 centralizado, Hoje no rodape). Goldens agenda_calendar_*, agenda_list_* e agenda_http_calendar_* regravados no 3.44.2.",
+        "tests": "agenda_calendar_page_test 6/6 (novo teste da referencia iOS), agenda_approved_visual_contract_red, shell_overflow, empty_state, router, architecture: 17/17; goldens 18/18"
+      },
+      {
+        "sha": "16651dc88",
+        "actionIds": [
+          "agenda.detail"
+        ],
+        "what": "P34: detalhe do evento com SuperadminFormActionFooter ancorado (igual a criar/editar Instituicao), superficie do tema sem cinza, destrutivo a esquerda e Editar item a direita; indicador de status mantido em 48 px. Goldens agenda_detail_* regravados.",
+        "tests": "agenda_event_detail_page_test 6/6; goldens detail 6/6"
+      },
+      {
+        "sha": "2a982a453",
+        "actionIds": [
+          "agenda.detail"
+        ],
+        "what": "Falhas pre-existentes na base (agenda_remote_states_test: retry do detalhe, 2 testes) corrigidas: mock nao simulava superadmin_agenda_contexts (rev 26 da R04).",
+        "tests": "agenda_remote_states_test 23/23; suite test/features/agenda 291/291"
+      },
+      {
+        "sha": "22a75bd6f",
+        "actionIds": [
+          "circulars.attach",
+          "circulars.respond",
+          "circulars.edit",
+          "circulars.schedule",
+          "agenda.request",
+          "agenda.location",
+          "agenda.permissions"
+        ],
+        "what": "Prova R05 em producao por RPC/Edge Function com qa-r03 (docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/prova-producao-r05.js, resultado .json): 14/18. agenda.request PASSOU ponta a ponta no BE (rascunho -> request_publication -> superadmin_agenda_requests lista pending -> decide aprovar -> evento published -> reload -> limpeza). circulars.schedule/edit por RPC PASSARAM. circulars.attach e respond FALHARAM no gate acima -> candidato 20260911190000. agenda.location: nenhuma unidade na instituicao sintetica 9f04...0010 (a unidade d0c4...0002 pertence a QA R04 Cuidado): reexecutar apontando para d0c4...0001 (script escolhe a instituicao com unidade na proxima rodada) . circulars.publish \"publicar imediato a agendada\" -> CIRCULAR_INVALID_STATE (scheduled nao republica: comportamento esperado do gateway; ajustar script).",
+        "tests": "pgTAP 14/14 + regressao 49/49; historicos circulars_media_private_r2_v1_test (22 not ok) e circulars_authorization_behavior_test (fixture uuid invalido) ja falhavam antes do candidato: registrados como pos-MVP"
+      },
+      {
+        "sha": "bc1fe917e",
+        "actionIds": [
+          "agenda.request",
+          "agenda.view",
+          "notices.schedule",
+          "notices.publish"
+        ],
+        "what": "Rota real com qa-r03 (build web-qa profile em 127.0.0.1:3006, Chrome CDP 9335): ui-02 /agenda com a referencia iOS em producao (hoje em circulo, cancelados hachurados, Hoje no rodape); ui-05..ui-08 /agenda/approvals: pedido pendente criado por RPC aparece, Decidir -> motivo -> Aprovar pela tela persistiu e sobreviveu a recarga completa; ui-10..ui-19 /notices/new: aviso criado pela tela com data 18/09 13:51 escolhida no seletor Coelo (data + hora) -> \"Publicacao agendada\" -> diretorio apos recarga completa mostra \"Desde 18/09/2026\"; RPC confirma status scheduled. Worker real: aviso agendado por RPC para +2 min virou active com reach 18 (notice_receipts materializados pelo cron/worker, P30).",
+        "tests": "capturas em docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/ui/"
+      },
+      {
+        "sha": "eed26d0b2",
+        "actionIds": [
+          "circulars.attach",
+          "circulars.respond",
+          "circulars.publish",
+          "agenda.location"
+        ],
+        "what": "20260911190000 confirmado em producao pela prova (14:18): circulars.attach prepare -> PUT -> finalize(ready) -> read(signed_url) -> bytes conferem -> anon 401; circulars.respond save_circular_response_draft -> submit -> response_summary_v2 {response_count:1, submitted_count:1}. agenda.location: evento com contextKind unit + local persiste e reload mantem (instituicao QA R04 Cuidado, unidade d0c4...0002), rascunho excluido. Achados: (a) R2 de Circulares nao esta em producao (bucket legado) -> 190200; (b) gateway v2 bloqueia bloco de midia -> 190300; (c) delete do anexo pelo autor interno responde media_delete_denied (remove_circular_media exige owner people-based; entra no 190300? nao: registrado como pendencia); (d) republicar circular agendada -> CIRCULAR_INVALID_STATE (comportamento do gateway; a tela deve reagendar/cancelar).",
+        "tests": "prova-producao-r05.js 29/34 (5 FAIL = gate 190300 + delete denied)"
+      },
+      {
+        "sha": "66a52986f",
+        "actionIds": [
+          "circulars.attach",
+          "circulars.respond",
+          "circulars.schedule",
+          "circulars.edit"
+        ],
+        "what": "Lote 43 em producao (190100/190200/190300): prova-producao-r05.js 34/34 as 14:36: attach agora em R2 (coelo-media-prod, chave tenants/.../circulars/circular/.../attachment/.../original), bloco de midia salvo no gateway v2, publish com midia, read por signed_url, bytes conferem, anon 401, delete de anexo publicado recusado (imutavel). circulars.schedule FE: host produtivo nao passava onChooseSchedule (botao desabilitado) -> ligado com os seletores Coelo; goldens circular_directory_* regravados apos o composto 11c4bfbef (celulas alinhadas).",
+        "tests": "flutter test test/features/circulars 66/66 apos regravar; analyze limpo"
+      },
+      {
+        "sha": "28acbe8c3",
+        "actionIds": [
+          "circulars.edit",
+          "circulars.schedule",
+          "notices.list"
+        ],
+        "what": "Rota real com o build novo (66a52986f): circulars.edit pela tela (reabrir rascunho, editar titulo, Salvar rascunho, recarga completa mantem: ui-32..ui-39); circulars.schedule pela tela (seletor data 25/09 + horario 14:00, validacao honesta de publico, Agendar circular -> Agendada; recarga completa lista 25/09/2026 na aba Agendadas; RPC scheduled: ui-41..ui-46). notices.list: pastilha de tipo com altura propria (achado ui-19 corrigido), goldens communication_directory_* regravados.",
+        "tests": "flutter test notices 133/133 + circulars 66/66 apos regravar; analyze limpo"
+      },
+      {
+        "sha": "4b9483148",
+        "actionIds": [
+          "agenda.location",
+          "agenda.create"
+        ],
+        "what": "Wizard de evento ganha o campo \"Qual <nivel>\" (seletor de contexto concreto) quando ha mais de um contexto do nivel; default = primeiro (comportamento anterior). Goldens agenda_create_{light,dark}_{375,768,1440} regravados: campo novo -> A+ pendente do Owner (nao e regressao visual, e conteudo novo). agenda.location FE continua local-green (nao provado pela tela nesta rodada).",
+        "tests": "test/features/agenda 291/291"
+      },
+      {
+        "sha": "002dddd95",
+        "actionIds": [
+          "circulars.create",
+          "circulars.publish"
+        ],
+        "what": "Decisao 7: host produtivo do compositor de Circular suprime o balao de chat desde o carregamento (antes so apos o seletor de instituicao; achado ui-22).",
+        "tests": "test/features/circulars + architecture 68/68"
+      },
+      {
+        "sha": "f8f134553",
+        "actionIds": [
+          "circulars.attach"
+        ],
+        "what": "Gancho de QA SuperadminQaHooks.circularFilePicker (nulo no app real; qa_main entrega PNG sintetico) ligado nos dois hosts do compositor no router: destrava a prova de circulars.attach pela tela na proxima rodada. Nao provado nesta rodada (build web + Chrome nao cabiam antes do corte).",
+        "tests": "analyze limpo (1 warning pre-existente em qa_login); circulars + architecture 68/68"
+      }
     ],
-    "quote": "o render atual esta perfeito e aprovado",
-    "note": "P33 e P34 fechados; indicador de status do detalhe permanece em 48 px. O coordenador grava ownerVisualApproval=A no inventario."
+    "packages": [
+      {
+        "order": 1,
+        "file": "packages/coelo_database/candidatos/publicacoes-agenda/20260911190000_circular_actor_internal_bridge_v1.sql",
+        "actionIds": [
+          "circulars.attach",
+          "circulars.respond"
+        ],
+        "pgtap": "supabase/tests/circular_actor_internal_bridge_v1_test.sql 14/14 PASS no descartavel coelo_pa_r05 (db 60522: baseline + seed + 107 migrations da ordem + candidato); regressao superadmin_internal_circulars_v2_baseline_test 34/34 e circular_delete_v2_behavior 15/15",
+        "applyNote": "Transacional (begin/commit), so create or replace em app_private (circular_internal_capability nova, circular_actor, circular_audience_matches_role, circular_person_matches_scope); sem grant a cliente; sem ADD VALUE. Aplicar com db query -f inteiro.",
+        "gate": "Prova em producao 11/09 13:10 (prova-producao-r05.js): circular-media prepare -> media_prepare_denied; save_circular_response_draft -> active_membership_required. Causa: circular_actor ignorava a ponte de ator (220400) e a capacidade interna v2; owner nao tinha audiencia.",
+        "decision": "owner da instituicao alcanca qualquer audiencia de Circular (P23 Owner faz tudo no contexto; P35 Superadmin ve tudo). Se o Owner discordar, retirar a linha owner de circular_audience_matches_role/person_matches_scope.",
+        "compositionKey": "nenhuma (SupabaseCircularMediaRepository e SupabaseCircularResponseRepository ja compostos)",
+        "sha": "22a75bd6f"
+      },
+      {
+        "order": 2,
+        "file": "packages/coelo_database/candidatos/publicacoes-agenda/20260911190100_agenda_requests_labels_v1.sql",
+        "actionIds": [
+          "agenda.request"
+        ],
+        "pgtap": "supabase/tests/agenda_requests_labels_v1_test.sql 7/7 PASS (descartavel coelo_pa_r05 com os lotes de hoje)",
+        "applyNote": "create or replace de public.superadmin_agenda_requests (mesma assinatura e guarda); acrescenta title, institution_name, requested_by_name, decided_by_name. Transacional, sem grant novo.",
+        "gate": "Tela Aprovacoes de publicacao mostrava \"Evento <uuid>\", UUID da instituicao e da pessoa. O app (bc1fe917e) ja le os rotulos com UUID como reserva.",
+        "compositionKey": "nenhuma",
+        "sha": "bc1fe917e"
+      },
+      {
+        "order": 3,
+        "file": "packages/coelo_database/candidatos/publicacoes-agenda/20260911190200_circulars_media_private_r2_v1_reapply.sql",
+        "actionIds": [
+          "circulars.attach"
+        ],
+        "pgtap": "circulars_media_private_r2_v1_test 45/46 no descartavel (46o exige linha do bucket legado em storage.buckets, que producao tem); bridge 18/18 e v2 34/34 depois dele",
+        "applyNote": "Reaplicacao idempotente da migration historica 20260909212000 (ausente em producao: prepare devolve bucket coelo-circulars-private e o PUT vai ao Storage do Supabase). Preflight de dependencias no proprio arquivo; CHECKs NOT VALID; sem backfill.",
+        "gate": "ADR 0032: toda midia nova do MVP em R2; sem este pacote circular-media v5 usa o ramo legado.",
+        "compositionKey": "nenhuma",
+        "sha": "eed26d0b2"
+      },
+      {
+        "order": 4,
+        "file": "packages/coelo_database/candidatos/publicacoes-agenda/20260911190300_superadmin_circulars_v2_media_v1.sql",
+        "actionIds": [
+          "circulars.attach",
+          "circulars.edit",
+          "circulars.publish"
+        ],
+        "pgtap": "circular_actor_internal_bridge_v1_test 18/18 (asset ready -> rascunho com midia -> detail devolve asset_ids -> publish; asset alheio bloqueado); superadmin_internal_circulars_v2_baseline_test 34/34 (caso de midia atualizado); delete 15/15",
+        "applyNote": "create or replace de superadmin_circular_draft_json, superadmin_circular_save_draft_v2 (texto 200400 + midia) e superadmin_circular_publish_v2 (texto 200100 sem o bloqueio). Aplicar depois de 190200.",
+        "gate": "Gateway v2 devolve CIRCULAR_MEDIA_BLOCKED para qualquer bloco de midia (prova 14:25); o compositor faz upload e nao consegue salvar o bloco.",
+        "compositionKey": "nenhuma",
+        "sha": "eed26d0b2"
+      }
+    ],
+    "pendingForCoordinator": [
+      {
+        "actionIds": [
+          "agenda.view",
+          "agenda.detail"
+        ],
+        "pending": "Encaminhar duvidas-visuais.html ao Owner (R/A). Aprovacao visual nao vira verified. Goldens regravados so entram como aprovacao apos a resposta."
+      },
+      {
+        "actionIds": [
+          "agenda.view"
+        ],
+        "pending": "Regra de conteudo do P33 (calendario mostra tudo que a hierarquia permite: eventos, aniversarios, provas; filtro por crianca/perfil no menu do perfil) e do Principal/Admin: registrada como conhecimento na skill coelo-ui (ja consta na baseline) e depende de fontes de aniversarios/provas que ainda nao existem no Superadmin; fora do recorte da R05, registrar em coelo-knowledge/pendencias."
+      },
+      {
+        "actionIds": [
+          "circulars.attach",
+          "circulars.respond"
+        ],
+        "pending": "Aplicar 20260911190000 em producao (dump do lote antes). Depois eu reexecuto prova-producao-r05.js para provar prepare -> PUT R2 -> finalize -> read -> reload e respond -> submit -> resumo."
+      },
+      {
+        "actionIds": [
+          "circulars.attach"
+        ],
+        "pending": "Testes historicos circulars_media_private_r2_v1_test e circulars_authorization_behavior_test falham na forma atual de producao (independente do candidato): pos-MVP, revisar/aposentar."
+      },
+      {
+        "actionIds": [
+          "agenda.view",
+          "agenda.detail"
+        ],
+        "pending": "pgTAP historico agenda_internal_realm_compat_v1_test falha 4/22 sobre a ordem real apos o lote 29 (ponte do Principal): testes 10-12 esperam colunas de pessoa nulas para o ator interno e o 16 espera negativa de leitura para identidade escopada; o comportamento novo (pessoa de servico + P7) parece intencional, mas falta uma assercao cross-tenant na lista. Dono: G4/G5/coordenador."
+      },
+      {
+        "actionIds": [
+          "agenda.view",
+          "agenda.detail"
+        ],
+        "pending": "Pendencia de suite (dono G4, 130000): agenda_internal_realm_compat_v1_test 4/22 sobre a ordem real apos o lote 29; nao bloqueia."
+      },
+      {
+        "actionIds": [
+          "circulars.attach"
+        ],
+        "pending": "FE pela tela: o FilePicker nativo nao e dirigivel por CDP; injetar filePicker no host de QA (qa_main) na proxima rodada. BE done com R2 (lote 43)."
+      },
+      {
+        "actionIds": [
+          "agenda.location"
+        ],
+        "pending": "FE pela tela: criar evento com contexto de unidade pelo wizard (BE done). Proxima rodada."
+      },
+      {
+        "actionIds": [
+          "agenda.location"
+        ],
+        "pending": "ACHADO de produto no wizard (ui-51/ui-52): \"Contexto principal\" so escolhe o NIVEL (Instituicao/Unidade/Turma/Atividade) e o formulario usa o PRIMEIRO contexto daquele nivel em store.contexts (_selectedContext), sem seletor da unidade/turma concreta; com mais de uma unidade o evento pode ir para a unidade errada. Proposta: seletor de contexto concreto (como o picker de instituicao das Circulares) antes do verified FE. BE done pela RPC."
+      },
+      {
+        "actionIds": [
+          "agenda.create",
+          "agenda.location"
+        ],
+        "pending": "Goldens agenda_create_* regravados com o campo novo \"Qual Instituicao/Unidade/...\": pedir A+ ao Owner (ownerVisualApproval continua o anterior ate ele responder)."
+      }
+    ],
+    "questionsToOwner": [
+      {
+        "id": "P33/P34 (R05)",
+        "file": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/duvidas-visuais.html",
+        "ask": "Aprovar A (render atual) de agenda_calendar_{light,dark}_{375,768,1440} e agenda_detail_{light,dark}_{375,768,1440} apos as correcoes P33/P34; R do calendario e a captura do iPhone. Duvida menor: manter indicador de status do detalhe em 48 px (WCAG) ou voltar ao circulo de 24 px?"
+      },
+      {
+        "id": "agenda_create (R05)",
+        "file": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/duvidas-visuais-agenda-create.html",
+        "ask": "A+ para agenda_create_{light,dark}_{375,768,1440}: campo novo \"Qual Instituicao/Unidade/Turma\" abaixo de Contexto principal (so quando ha mais de um contexto do nivel)."
+      }
+    ],
+    "findings": [
+      "Presença em produção (mapa r03-coordenacao): notices_v2 185008 = 1/16 (só analytics.notice_events); circulars_v2 191921 = 0/14; circulars_media_r2 212000 = 6/6; agenda 183836/193717 presentes (superadmin_agenda_list/get/contexts/save/command/requests/decide_publication em public).",
+      "O cliente Superadmin chama somente superadmin_notice_*_v2 (185008), superadmin_circular_*_v2 (191921 + delete) e superadmin_agenda_* v1. A cadeia legada de Avisos people-based (003000, 204824, 212340, 220500) NÃO é chamada pelo app: 185008 é autossuficiente (colunas com if not exists, recibos próprios, auditoria via audit_append_superadmin_internal cuja assinatura de 13 args confere com produção). Decisão: não reentregar a cadeia legada no MVP; worker/pg_cron ficam registrados como pendência de entrega ao Principal (materialização de audiência), não bloqueiam CRUD de Avisos no Superadmin.",
+      "superadmin_agenda_list_v2/get_v2/contexts_v2 (SupabaseAgendaReadRepository) não existem em produção e não estão compostos no app; o app usa SupabaseAgendaRepository (v1) que existe em produção.",
+      "20260909191100 (métricas por geração) depende de colunas de 220500 (publication_job_id) ausentes em produção: fica fora até existir worker; sem regressão (reach conta todos os recibos).",
+      "Teste historico superadmin_internal_circular_delete_v1_test era so estrutural (strings em pg_get_functiondef) e nao pegava a violacao de circulars_check1 ao excluir rascunho; o comportamental novo pega.",
+      "Padrao de defeito repetido nas cadeias historicas: audit_logs.reason_code (^[A-Z][A-Z0-9_]{0,79}$) recebia texto livre/minusculo e derrubava a RPC com SAI_INTERNAL_ERROR. Vale conferir nos outros grupos que passam p_reason ao audit_append_superadmin_internal.",
+      "SEGURANCA medida na baseline: tabelas agenda_* com RLS forcado e zero policies, mas SELECT/INSERT concedidos a anon/authenticated; superadmin_agenda_* executaveis por anon/service_role. Fechado no 200300. Recomendo ao coordenador varrer o mesmo padrao nas outras familias (grants default do Supabase em tabelas/funcoes criadas antes do endurecimento).",
+      "UI real: balao de chat \"Mensagens\" visivel em /notices/new (criar) — Decisao 7 exige sem chat em criar/editar/publicar; regra do shell, nao da feature. Registrado para o coordenador/principal-chat-sistema.",
+      "CORRIGIDO nas revs 24/25: diretorio de Circulares rele apos excluir/publicar; Editar oculto em Encerrada/Arquivada.",
+      "FE bloqueante: em /circulars/new a 1440 o balao de chat cobre inteiramente o botao Publicar (centro 1330x856); a 1024 o rodape empilha e funciona.",
+      "CORRIGIDO nas revs 24/25: diretorio de Circulares rele apos excluir/publicar; Editar oculto em Encerrada/Arquivada.",
+      "FE bloqueante: em /circulars/new a 1440 o balao de chat cobre inteiramente o botao Publicar (centro 1330x856); a 1024 o rodape empilha e funciona.",
+      "FE agenda.detail: UUID no lugar do nome CORRIGIDO na rev 26 (carrega contextos); permanece: deep link direto apos carga fria fica no spinner ate o calendario carregar (primeiro gate: reproduzir em teste de rota com store real).",
+      "Ambiente: outro processo (frente ou coordenador) passou a dirigir meu Chrome CDP 9333 (pagina foi para localhost:3000); abri o 9334. Sugestao: cada conversa usa porta CDP propria e declara no JSON.",
+      "FECHADO: agenda.edit pela tela funciona (ui-49..51); o sintoma da ui-45 era clique por coordenada em Anterior."
+    ],
+    "ownerVisualApproval": {
+      "at": "2026-09-11 ~14:45 via coordenador (artefato 881e760e)",
+      "decision": "A",
+      "files": [
+        "agenda_calendar_light_375",
+        "agenda_calendar_light_768",
+        "agenda_calendar_light_1440",
+        "agenda_calendar_dark_375",
+        "agenda_calendar_dark_768",
+        "agenda_calendar_dark_1440",
+        "agenda_detail_light_375",
+        "agenda_detail_light_768",
+        "agenda_detail_light_1440",
+        "agenda_detail_dark_375",
+        "agenda_detail_dark_768",
+        "agenda_detail_dark_1440"
+      ],
+      "quote": "o render atual esta perfeito e aprovado",
+      "note": "P33 e P34 fechados; indicador de status do detalhe permanece em 48 px. O coordenador grava ownerVisualApproval=A no inventario."
+    },
+    "deltasFile": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/deltas-r05-pa.json (16 entradas; ensaio apply + validate PASS: FE 76, BE 78, E2E 53)"
   },
-  "revisaoFinal": {
-    "quando": "2026-09-11T15:52:00-03:00",
-    "pedidoPor": "coelo-25 (15:50)",
-    "entregueTudo": "Sim, dentro do que a maquina permitiu: 24 acoes do recorte tocadas; nenhum WIP; nada retido fora da branch.",
-    "shaPublicado": "421d26991 (+ o commit desta revisao 43); branch work/etapa2-r05-publicacoes-agenda publicada; status limpo; ja integrada em origin/dev (9288cdc68 contem 421d26991); sem WIP",
-    "fechadoPorActionId": [
-      {
-        "action_id": "agenda.view",
-        "prova": "P33 aplicado (5edfccef9), goldens 3.44.2, rota real ui-02; Owner aprovou (A)"
-      },
-      {
-        "action_id": "agenda.detail",
-        "prova": "P34 aplicado (16651dc88), goldens; Owner aprovou (A); 2a982a453 corrige testes pre-existentes"
-      },
-      {
-        "action_id": "agenda.request",
-        "prova": "BE RPC + 190100 em producao; FE ui-05..ui-08 (aprovar pela tela + recarga); E2E"
-      },
-      {
-        "action_id": "agenda.permissions",
-        "prova": "FE rota normal (redirect por desenho) + contexts em producao; E2E"
-      },
-      {
-        "action_id": "agenda.location",
-        "prova": "BE done (unit + local + reload; negativa cross-tenant pgTAP 200300)"
-      },
-      {
-        "action_id": "notices.schedule",
-        "prova": "FE ui-13..ui-19 (seletor Coelo, agendada, recarga); worker real materializou (+2 min -> active, reach 18); E2E"
-      },
-      {
-        "action_id": "notices.publish",
-        "prova": "E2E: reach>0 pelo worker real (P30)"
-      },
-      {
-        "action_id": "notices.list",
-        "prova": "pastilha de tipo corrigida (28acbe8c3), goldens regravados"
-      },
-      {
-        "action_id": "circulars.respond",
-        "prova": "BE done: 190000 em producao; draft -> submit -> summary 1/1; pgTAP 18/18"
-      },
-      {
-        "action_id": "circulars.attach",
-        "prova": "BE done: 190200 (R2) + 190300 (midia no v2) em producao; prova 34/34"
-      },
-      {
-        "action_id": "circulars.edit",
-        "prova": "FE ui-32..ui-39 (editar + recarga); BE done; E2E"
-      },
-      {
-        "action_id": "circulars.schedule",
-        "prova": "FE ui-41..ui-46 (picker ligado em 66a52986f, agendada, recarga); BE done; E2E"
-      },
-      {
-        "action_id": "circulars.create/publish",
-        "prova": "balao de chat suprimido no compositor desde o carregamento (002dddd95, Decisao 7)"
-      }
-    ],
-    "abertoComPrimeiroGate": [
-      {
-        "action_id": "circulars.attach",
-        "camada": "frontend",
-        "gate": "provar pela tela com o gancho SuperadminQaHooks.circularFilePicker (f8f134553): rebuild web-qa + Chrome; Adicionar arquivo -> R2 -> bloco de midia -> publicar -> recarga"
-      },
-      {
-        "action_id": "circulars.respond",
-        "camada": "frontend",
-        "gate": "nao existe tela de resposta no Superadmin (fluxo do Principal): decidir se respond no Superadmin = resumo de respostas (ja verified)"
-      },
-      {
-        "action_id": "agenda.location",
-        "camada": "frontend",
-        "gate": "A+ do Owner para agenda_create_* (campo \"Qual contexto\", 4b9483148) e prova pela tela"
-      },
-      {
-        "action_id": "agenda.view/agenda.detail",
-        "camada": "backend (suite)",
-        "gate": "agenda_internal_realm_compat_v1_test 4/22 sobre a ordem real apos o lote 29 (dono G4/130000); nao bloqueia"
-      }
-    ],
-    "deltas": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/deltas-r05-pa.json: 16 entradas, ja aplicadas pelo coordenador; nenhum delta novo alem delas (wizard e balao nao mudam estado de acao)",
-    "pacotesSqlRestantes": "nenhum: 190000, 190100, 190200 e 190300 aplicados (lotes 42/43); candidatos/publicacoes-agenda pode ser esvaziado pelo coordenador ao mover para migrations/",
-    "duvidasAoOwner": "agenda_create_{light,dark}_{375,768,1440} A+ (duvidas-visuais-agenda-create.html), ja registrado pelo coordenador; P33/P34 respondidas (A). Decisao de produto: circulars.respond no Superadmin = so resumo?",
-    "dadosSinteticosCriados": "Avisos [R05-QA UI] (agendado 18/09 pela tela, id 86988e0e) e [R05-QA worker] (active, id 11efaa4b); eventos [R05-QA ...] da Agenda nas instituicoes sinteticas (cancelados ou excluidos apos as provas; 2 pedidos de publicacao aprovados: 3d65140f, 469ac1dd, 99ab7523); circulares [R05-QA ...] das provas por RPC (encerradas/excluidas, soft) com anexos pixel.png (70 bytes) em coelo-media-prod e no bucket legado coelo-circulars-private; circular [R05-QA UI] Circular editada pela tela (v2) agendada para 25/09 (id 92ce44e7, instituicao QA R04 Cuidado). Limpeza no fim da Etapa 2 (P25/P42).",
-    "chavesCriadas": "nenhuma (nenhum segredo, token ou chave criado nesta rodada)",
-    "ambiente": "Chrome de CDP, servidor 3006 e descartavel coelo_pa_r05 encerrados; build web-qa em apps/superadmin/build/web-qa (ignorado)"
+  "relogio": {
+    "aberturaDaFrente": "2026-09-11T19:38:00-03:00",
+    "T0DoCoordenador": "desconhecido: coordenacao.json em origin/dev continua na rev 51 (R05) e nao ha rev 52 nem qa-r06 na abertura; adoto T0+2h = 21:38 como corte provisorio e corrijo quando o coordenador gravar T0"
+  },
+  "respostasDoOwnerAplicaveis": {
+    "P50": "B: tela de resposta a circular tambem no Superadmin (owner pode tudo mediante hierarquia)",
+    "V-7": "A+ superada pela familia Publicacao (evento-*.png); sem fundo cinza",
+    "V-8": "A+: mobile mantem o toggle novo; web restaura o toggle do R",
+    "V-9": "A (Avisos diretorio)",
+    "V-10": "A (Circulares diretorio)"
   }
 }

@@ -144,6 +144,7 @@ class SuperadminApp extends StatefulWidget {
     this.personIdentityRepository = const UnavailablePersonIdentityRepository(),
     this.unitDirectoryRepository = const UnavailableUnitDirectoryRepository(),
     this.structureHandleAvailability,
+    this.structureHandleSet,
     this.unitBackendCommands = const UnavailableUnitBackendCommandsGateway(),
     this.structureMutationsEnabled = false,
     this.activityLocationCreateEnabled = false,
@@ -220,6 +221,7 @@ class SuperadminApp extends StatefulWidget {
   final PersonIdentityRepository personIdentityRepository;
   final UnitDirectoryRepository unitDirectoryRepository;
   final StructureHandleAvailabilityChecker? structureHandleAvailability;
+  final StructureHandleSetter? structureHandleSet;
   final UnitBackendCommandsGateway unitBackendCommands;
   final bool structureMutationsEnabled;
 
@@ -324,6 +326,7 @@ class _SuperadminAppState extends State<SuperadminApp> {
       personIdentityRepository: widget.personIdentityRepository,
       unitDirectoryRepository: widget.unitDirectoryRepository,
       structureHandleAvailability: widget.structureHandleAvailability,
+      structureHandleSet: widget.structureHandleSet,
       unitBackendCommands: widget.unitBackendCommands,
       enableStructureMutations: widget.structureMutationsEnabled,
       enableActivityLocationCreate: widget.activityLocationCreateEnabled,

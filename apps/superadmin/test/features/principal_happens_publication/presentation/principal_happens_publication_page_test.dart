@@ -69,13 +69,13 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(AppBar), findsNothing);
-    expect(find.byType(PrincipalPublicationFrame), findsOneWidget);
-    expect(find.byType(PrincipalPublicationStepNavigation), findsOneWidget);
+    expect(find.byType(PrincipalPublicationSheet), findsOneWidget);
+    expect(find.byType(PrincipalPublicationStepNavigation), findsNothing);
     expect(find.byType(PrincipalPublicationActionFooter), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('usa frame, etapas e rodape canonicos do wizard', (tester) async {
+  testWidgets('usa o sheet da familia Publicacao, sem etapas, com previa no desktop', (tester) async {
     tester.view.physicalSize = const Size(1440, 1000);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
@@ -89,12 +89,15 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byType(PrincipalPublicationFrame), findsOneWidget);
-    expect(find.byType(PrincipalPublicationStepNavigation), findsOneWidget);
+    expect(find.byType(PrincipalPublicationSheet), findsOneWidget);
+    expect(find.byType(PrincipalPublicationStepNavigation), findsNothing);
     expect(find.byType(PrincipalPublicationActionFooter), findsOneWidget);
-    expect(find.textContaining('Etapa 1 de 4'), findsOneWidget);
-    expect(find.text('Continuar'), findsOneWidget);
+    expect(find.textContaining('Etapa'), findsNothing);
+    expect(find.text('Continuar'), findsNothing);
     expect(find.text('Sua publicação'), findsOneWidget);
+    expect(find.text('Publicar no Acontece'), findsWidgets);
+    expect(find.text('Salvar rascunho'), findsOneWidget);
+    expect(find.text('Cancelar'), findsOneWidget);
     expect(find.byKey(const Key('happens-publication-desktop-preview')), findsOneWidget);
   });
 
@@ -114,12 +117,10 @@ void main() {
     expect(find.text('Mídia'), findsWidgets);
     expect(find.text('Sua publicação'), findsOneWidget);
     expect(find.byKey(const Key('happens-publication-desktop-preview')), findsNothing);
-    await _continue(tester);
     expect(find.text('Legenda'), findsWidgets);
-    await _continue(tester);
     expect(find.text('Público e contexto'), findsOneWidget);
-    await _continue(tester);
-    expect(find.text('Prévia do post no Acontece'), findsOneWidget);
+    // No mobile a previa nao aparece (familia Publicacao).
+    expect(find.text('Prévia do post no Acontece'), findsNothing);
   });
 
   testWidgets('publica com audiência selecionada', (tester) async {
@@ -131,6 +132,7 @@ void main() {
     await _continue(tester);
     await tester.enterText(find.byKey(const Key('happens-caption')), 'Nossa turma floresceu.');
     await _continue(tester);
+    await tester.ensureVisible(find.text('Famílias').first);
     await tester.tap(find.text('Famílias').first);
     await _continue(tester);
     await tester.ensureVisible(find.text('Publicar no Acontece').last);
@@ -155,7 +157,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('preserva o wizard em 375, 768, 1024 e 1440 px com texto a 200%', (tester) async {
+  testWidgets('preserva a tela em 375, 768, 1024 e 1440 px com texto a 200%', (tester) async {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
 
@@ -198,6 +200,7 @@ void main() {
     await tester.pumpAndSettle();
     await _continue(tester);
     await tester.ensureVisible(find.text('Salvar como rascunho').first);
+    await tester.pumpAndSettle();
     final toggle = find.bySemanticsLabel(RegExp('Salvar como rascunho'));
 
     expect(
@@ -280,7 +283,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byType(PrincipalPublicationFrame), findsNothing);
+    expect(find.byType(PrincipalPublicationSheet), findsNothing);
     expect(find.text('Publicação indisponível'), findsOneWidget);
   });
 
@@ -343,7 +346,9 @@ void main() {
     await tester.tap(find.text('Adicionar fotos ou vídeos'));
     await tester.pump();
     expect(
-      tester.widget<FilledButton>(find.widgetWithText(FilledButton, 'Continuar')).onPressed,
+      tester
+          .widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Salvar rascunho'))
+          .onPressed,
       isNull,
     );
 
@@ -386,6 +391,7 @@ void main() {
     await _continue(tester);
     await tester.enterText(find.byKey(const Key('happens-caption')), 'Legenda');
     await _continue(tester);
+    await tester.ensureVisible(find.text('Famílias').first);
     await tester.tap(find.text('Famílias').first);
     await _continue(tester);
 
@@ -405,7 +411,7 @@ void main() {
     expect(completed, 1);
   });
 
-  testWidgets('mantém o wizard para retry de save vazio', (tester) async {
+  testWidgets('mantém a tela para retry de save vazio', (tester) async {
     final repository = _FailOnceSaveRepository();
     await tester.pumpWidget(
       MaterialApp(home: PrincipalHappensPublicationPage.demo(repository: repository)),
@@ -417,7 +423,7 @@ void main() {
 
     await tester.tap(find.text('Salvar rascunho'));
     await tester.pumpAndSettle();
-    expect(find.byType(PrincipalPublicationFrame), findsOneWidget);
+    expect(find.byType(PrincipalPublicationSheet), findsOneWidget);
     expect(find.text('Não foi possível salvar o rascunho.'), findsOneWidget);
     expect(
       tester
@@ -443,18 +449,14 @@ void main() {
 
     await tester.tap(find.text('Salvar rascunho'));
     await tester.pumpAndSettle();
-    expect(find.byType(PrincipalPublicationFrame), findsNothing);
+    expect(find.byType(PrincipalPublicationSheet), findsNothing);
     expect(find.text('Rascunho alterado'), findsOneWidget);
     expect(find.text('Recarregar rascunho'), findsOneWidget);
 
     await tester.tap(find.text('Recarregar rascunho'));
     await tester.pumpAndSettle();
     expect(repository.loadCalls, 2);
-    expect(find.byType(PrincipalPublicationFrame), findsOneWidget);
-    await tester.tap(find.text('Anterior'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Anterior'));
-    await tester.pumpAndSettle();
+    expect(find.byType(PrincipalPublicationSheet), findsOneWidget);
     expect(find.text('Versão atualizada no servidor'), findsWidgets);
   });
 
@@ -467,6 +469,7 @@ void main() {
     await _continue(tester);
     await tester.enterText(find.byKey(const Key('happens-caption')), 'Legenda A');
     await _continue(tester);
+    await tester.ensureVisible(find.text('Famílias').first);
     await tester.tap(find.text('Famílias').first);
     await _continue(tester);
     await tester.tap(find.text('Salvar rascunho'));
@@ -506,8 +509,8 @@ Color? _autosaveColor(WidgetTester tester) =>
             as BoxDecoration?)
         ?.color;
 
+/// Familia Publicacao (11/09): nao ha etapas; a tela e uma coluna unica.
 Future<void> _continue(WidgetTester tester) async {
-  await tester.tap(find.text('Continuar'));
   await tester.pumpAndSettle();
 }
 

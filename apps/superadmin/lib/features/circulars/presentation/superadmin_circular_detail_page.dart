@@ -17,6 +17,7 @@ final class SuperadminCircularDetailPage extends StatefulWidget {
     required this.repository,
     required this.onBack,
     this.onEdit,
+    this.onRespond,
     this.onCloseResponses,
     this.onDelete,
     this.onDeleted,
@@ -28,6 +29,11 @@ final class SuperadminCircularDetailPage extends StatefulWidget {
   final CircularRepository repository;
   final VoidCallback onBack;
   final VoidCallback? onEdit;
+
+  /// P50 = B (Owner, 11/09/2026): o Superadmin, como owner, tambem responde a
+  /// Circular; a acao abre a tela de resposta (leitor do Principal hospedado
+  /// no Superadmin) com o repositorio real de respostas.
+  final VoidCallback? onRespond;
   final CircularDetailAction? onCloseResponses;
   final CircularDetailAction? onDelete;
   final VoidCallback? onDeleted;
@@ -153,6 +159,15 @@ final class _SuperadminCircularDetailPageState extends State<SuperadminCircularD
                               onPressed: _actionBusy ? null : () => _confirmDelete(detail),
                               icon: const Icon(Icons.delete_outline_rounded),
                               label: const Text('Excluir'),
+                            ),
+                          if (widget.onRespond != null &&
+                              detail.status == CircularStatus.published &&
+                              !(_summary?.closed ?? false))
+                            OutlinedButton.icon(
+                              key: const Key('circular-detail-respond'),
+                              onPressed: _actionBusy ? null : widget.onRespond,
+                              icon: const Icon(Icons.rate_review_outlined),
+                              label: const Text('Responder'),
                             ),
                           if (widget.onCloseResponses != null &&
                               (detail.status == CircularStatus.published ||

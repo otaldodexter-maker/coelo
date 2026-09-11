@@ -1,16 +1,22 @@
 {
-  "revision": 137,
-  "updated_at": "2026-09-11T18:50:26.650Z",
-  "relogio_local": "Fri Sep 11 2026 15:50:26 GMT-0300 (Horário Padrão de Brasília)",
-  "round": "E2-R05-20260911",
+  "revision": 139,
+  "updated_at": "2026-09-11T22:56:54.688545Z",
+  "relogio_local": "Fri Sep 11 2026 19:56:54 GMT-0300 (Horario Padrao de Brasilia)",
+  "round": "E2-R06-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
   "model": "Claude Opus 5 (esforco medio)",
-  "status": "finalizado",
-  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-acessos-pessoas",
-  "branch": "work/etapa2-r05-acessos-pessoas",
-  "head": "8ae9792a9 (publicado)",
-  "base_observed": "origin/dev 2f6a6114f; lotes 8-27 em producao; candidatos/acessos-pessoas so com 170750 e 170900 OBSOLETOS (171600 e 171800 aplicados no lote 25); ordem-de-aplicacao ate lote 27",
+  "status": "em andamento",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-acessos-pessoas",
+  "branch": "work/etapa2-r06-acessos-pessoas",
+  "head": "fb96e9374 (publicado)",
+  "base_observed": "origin/dev ca60b096b (coordenacao rev 51, prompts da R06); candidatos/acessos-pessoas vazio; lotes 28-48 em producao",
+  "T0": {
+    "observacao": "coordenacao.json ainda na rev 51 (sem T0 nem \"usuarios qa-r06 prontos\") e Coelo-backups/qa-r06-acessos.env inexistente na abertura (19:37). T0 provisorio = 19:37 pelo relogio da maquina; T0+2h = 21:37; revisao de 10 min ate 21:47. Se o coordenador gravar T0 diferente, sigo o dele.",
+    "T0_provisorio": "2026-09-11 19:37",
+    "corte": "21:37",
+    "revisao_ate": "21:47"
+  },
   "recorte": {
     "familias": [
       "people",
@@ -21,218 +27,283 @@
       "students"
     ],
     "acoes": 32,
-    "em_e2e_hoje": [
-      "access-models.create"
-    ],
+    "em_e2e_na_abertura": 11,
+    "estado_na_abertura": "E2E: people.list/links/reload, access-profiles.list/create/detail, access-models.list/filter/create/detail, invites.list. FE local-green: people.edit, access-models.edit, invites.create, students.link/transfer/edit, internal-users.list/edit. FE fail-closed: people.create. BE fail-closed: internal-users.create. BE local-green: internal-users.suspend.",
     "ordem": [
-      "1. access-profiles.list/create/detail/edit/assign/delete na rota real; modelos de sistema (P31) visiveis e nao editaveis; criar do zero ou a partir do modelo",
-      "2. people.list/create/edit/links/reload (create fail-closed: abrir com a ponte de ator)",
-      "3. access-models.list/filter/detail/edit/duplicate",
-      "4. invites.list/create/detail/resend/revoke (create blocked-decision: gate real; pacote em candidatos/acessos-pessoas 2026091117xxxx se for contrato)",
-      "5. internal-users.list/create/edit/suspend e students.list/link/transfer/edit/revoke (P36)",
-      "transversal: regra do @ (Decisao 16) para pessoas e usuarios internos; professores por turma/atividade (P31) como pendencia de modelo se faltar contrato"
+      "1. Convites: create/detail/resend/revoke pela tela (BE done)",
+      "2. Usuarios internos: list/create/edit/suspend (create fail-closed: abrir com a ponte de ator; P46=A: @ do interno pela pessoa de servico)",
+      "3. Alunos: link/transfer/edit/revoke pela tela (BE done; 170200 em producao)",
+      "4. Perfis de acesso edit/assign/delete e Modelos edit/duplicate (P45=B: modelo de sistema criado pelo Superadmin pode ser excluido, conforme hierarquia, como owner)",
+      "5. people.create e people.edit (create fail-closed: abrir)",
+      "6. @ de pessoas na tela de Pessoas e de Alunos (visivel/editavel por quem responde pela pessoa, disponibilidade enquanto digita, trava de 30 dias)",
+      "transversal: V-11 A+ (Perfis: sem dados de demonstracao no app real; card Criar sempre presente em cards e tabela, mesmo vazio); V-13 e V-14 aprovados"
     ]
   },
-  "primeiro_gate": "ambiente de prova: build web de qa_main com .env.local, servidor estatico em 127.0.0.1:3000, um Chrome CDP (porta 9411, SwiftShader), login qa-r03; memoria livre 2,0 GB na abertura (32 chrome / 22 dart / 53 node de outras frentes) - build so quando houver memoria; ate la, provas por REST e pacotes SQL",
-  "leitura_feita": "R05-prompts.md e R04-prompts.md integrais; acessos-pessoas.json rev 118 (mini-revisoes 04:00 e 08:30, gates abertos, dados sinteticos); handoff.md e capturas da r04; inventario (32 acoes do recorte com estados FE/BE/E2E); bloco Estado vigente R04 dos tres md; ADR 0034 Decisao 16; respostas P31/P36/P37; coordenacao.json rev 38; skills coelo-frontend-backend, coelo-backend (sessao de teste, regra do @, memoria)",
-  "dependencias_do_coordenador": [],
-  "loop": "/loop 15m agendado na abertura",
-  "testes_P_F_B_S_U": "nenhum ainda nesta rodada",
-  "bloqueio": "nenhum total",
-  "proximo_passo": "aguardar o pedido de revisao das 15:50 e responder no JSON; nada mais executavel sem Chrome ou sem pacote novo.",
-  "ACK_ao_coordenador": "coelo-b5 pediu identificacao as 12:20; respondi por mensagem entre sessoes (G2 R05). Continuo sem esperar ACK.",
-  "MEMORIA": "12:20: 0,02-0,3 GB livres (dartaotruntime 800 MB, 28 dart, 25 chrome, flutter_tester de outras frentes). Sem build web, Chrome ou flutter test ate liberar; provas por REST e edicao de codigo/SQL enquanto isso.",
-  "INVITES_BE_POR_REST_12h15": {
-    "gate_P31": "fechado: lote 25 (171600) semeou 4 institution_roles de sistema; superadmin_invite_options_v2 devolve profiles=[] sem p_institution_id (por contrato) e os 4 perfis com p_institution_id=9f04...0010",
-    "invites.create": "BE done: superadmin_invite_issue_v2 (perfil Administrador da instituicao 13d06367, escopo instituicao 9f04...0010, destinatario qa-r05-convite@invalid.test, canal email, 72 h) devolveu ok:true, convite 03e9c9d2-2772-4ee8-863b-2a47c0108ce8 pending, management_version 1. Regras do contrato conferidas: pessoa alvo XOR e-mail (ambos = 422); perfil com max_scope_kind unit (Professor(a)) em escopo instituicao = 403 (rank de escopo)",
-    "invites.detail": "BE done: superadmin_invite_detail_v2 rele o convite; id inexistente devolve SAI_PERMISSION_DENIED 403 (nao enumeravel)",
-    "invites.resend": "BE done com regra: superadmin_invite_resend_v2 so reenvia convite expirado (ou pending vencido); pending vigente devolve SAI_INVALID_ARGUMENT 422 por desenho. Caminho positivo depende de convite expirado (pgTAP superadmin_internal_invites_v2_test cobre; conferir caso ao ligar E2E)",
-    "invites.revoke": "BE done: superadmin_invite_revoke_v2 (expected_version 1, motivo) devolveu status revoked, timeline com 'Convite revogado'; expected_version errado devolveu SAI_CONCURRENT_CHANGE 409",
-    "invites.list": "BE done: superadmin_invite_directory_v2 lista o convite (pending antes, revoked depois)",
-    "FE": "formulario refaz fetchOptions com institutionId apos escolher o contexto e exige perfil no passo 0 (linha 201); prova pela UI espera memoria para build+Chrome"
-  },
-  "dados_sinteticos_r05": [
-    "convite 03e9c9d2 (revoked) - apagar ao fim da Etapa 2",
-    "person_handles (backfill 170100) e trocas: ec2a15a2 -> qa_r05_teste; 9f04...0061 -> qa_r05.profissional (ledger)",
-    "child_group_links 8d766ca8 (crianca d0c4...0003 na turma 368a5cea, ends_at 2026-12-15) e vinculo de unidade d0c4...0005 revogado e reativado - ficam",
-    "nenhum perfil Admin criado (23514); nada em institution_roles"
+  "primeiro_gate": "credencial qa-r06-acessos.env existe desde 19:44, mas coordenacao.json segue na rev 51 (sem T0 nem 'usuarios qa-r06 prontos'); rota real comeca assim que o perfil interno/ponte do qa-r06-acessos estiver em producao. Enquanto isso: pacotes SQL e cliente sem sessao.",
+  "leitura_feita": "R06-prompts.md, R05-prompts.md e R04-prompts.md integrais; acessos-pessoas.json rev 137 (REVISAO_FINAL_15h50, gates abertos, pendencias de code review, proposta de skills); handoff r05; inventario (32 acoes com FE/BE/E2E); bloco Estado vigente R05 dos tres md; coordenacao.json rev 51 (respostasDoOwnerR05: P45=B, P46=A, V-11 A+); AGENTS.md; skills coelo-frontend-backend, coelo-backend (regras R4/R5), coelo-frontend (regras R5), coelo-ui, coelo-knowledge; rtk/ponytail/flutter-dart-code-review/supabase reutilizadas.",
+  "dependencias_do_coordenador": [
+    "gravar T0 e 'usuarios qa-r06 prontos' em coordenacao.json (a credencial ja existe)",
+    "aplicar em producao, na ordem: 20260911170500_internal_user_handles_v1 (P46) e 20260911170600_institution_system_model_delete_v1 (P45), ambos em candidatos/acessos-pessoas, pgTAP verde no descartavel coelo_acessos_r06 com as 140 migrations da ordem real (lotes 8-48)"
   ],
-  "P31_NO_CLIENTE_12h35": {
-    "commit": "3b4aaa5b6 (feat(superadmin): perfis de acesso com modelos do sistema)",
-    "o_que_mudou": "Perfis de acesso: cards/linhas abrem o DETALHE (fecha a pendencia antiga 'cards abrem EDIT'); perfil de sistema (is_system) mostra 'Modelo do sistema: nao editavel' e o botao 'Criar a partir deste modelo', sem Editar/Excluir (o servidor ja nega: superadmin_access_profile_update -> 'system profile is protected'); 'Criar perfil' abre o dialogo 'Como criar o perfil?' com 'Do zero' e 'A partir de: <modelo>' para cada modelo de sistema listado; criacao com ?from=<uuid> carrega o rascunho em branco com as permissoes e o escopo do modelo (nome/codigo vazios para o operador definir).",
-    "servidor": "sem pacote novo: os 4 modelos de sistema do lote 25 aparecem em superadmin_access_profiles_list(p_domain='institution') com is_system=true; superadmin_access_profiles_list(platform) traz os 5 de plataforma.",
-    "testes": "test/features/access_profiles/presentation/access_profile_system_models_test.dart 3/3 + access_profile_pages_test e detail_context_test 25/25; dart analyze sem issues nos arquivos tocados.",
-    "prova_na_rota_real": "depende de build+Chrome (memoria)."
+  "loop": "/loop 15m agendado na abertura (ScheduleWakeup)",
+  "testes_P_F_B_S_U": "pgTAP: internal_user_handles_v1_test 12/12 P; person_handles_v1_test 22/22 P (teste 4 reescrito: pessoa de servico fora da ponte continua sem @); institution_people_handles_v1_test 4/4 P; principal_context_handles_and_coelo_profile_v1_test 14/14 P; institution_system_model_delete_v1_test 7/7 P; institution_profile_system_model_create_v1_test 8/8 P; superadmin_internal_users_directory_test 44/45 (teste 7 'requires_mfa' pre-existente, MFA fora do MVP - nao e meu)",
+  "bloqueio": "parcial: rota real sem credencial propria; trabalho independente segue",
+  "proximo_passo": "people.create: RPC superadmin_people_identity_lookup_v1 (170700) + SupabasePersonIdentityRepository (checkHandle pelo 170100); depois cliente do @ em Usuarios internos e Excluir do modelo; depois internal-users.create (RPC + Edge Function internal-user-create + cliente); rota real quando o coordenador liberar.",
+  "ACK_ao_coordenador": "abertura da G2 R06 registrada; nao espero ACK para o trabalho independente",
+  "PACOTE_170500_P46_20h20": {
+    "id": "AP-INTERNAL-USER-HANDLES-170500",
+    "migration": "packages/coelo_database/candidatos/acessos-pessoas/20260911170500_internal_user_handles_v1.sql",
+    "estado": "VERDE - PRONTO PARA APLICAR (commit fb96e9374)",
+    "pgTAP": "supabase/tests/internal_user_handles_v1_test.sql 12/12 + as tres suites do @ existentes verdes",
+    "o_que_faz": "P46 = A: o usuario interno tem @ pela pessoa de servico da ponte de ator (220400). enforce_person_handle_rules/ensure_person_handle aceitam person_type service (visibilidade sempre privada); o @ padrao nasce do nome do perfil interno (superadmin_internal_profiles) e e atribuido pela propria ponte (superadmin_internal_actor_sync recebe um bloco depois de gravar o espelho; o gatilho de people pula service); person_handle_actor_can: quem tem platform.member.read ve e platform.member.update edita o @ de pessoa de servico, alem da propria identidade; RPC nova superadmin_internal_user_service_person_v1(p_internal_identity_id) -> {ok, data:{person_id}} com a autorizacao do detalhe de Usuarios internos (SAI_PERMISSION_DENIED para id alheio/inexistente); backfill idempotente das pessoas de servico da ponte (em producao: qa-r03 e os sete qa-r06).",
+    "contrato_para_o_cliente": "tela de Usuarios internos: superadmin_internal_user_service_person_v1(id) -> person_id; depois superadmin_person_handle_get/availability/set(person_id) iguais aos de Pessoas (PersonHandleSection reutilizada).",
+    "chave_de_composicao": "nenhuma nova: o cliente so chama a RPC nova atras de enablePersonHandles (ja ligada); antes do pacote, a RPC ausente devolve PGRST202 e a secao fica oculta (fail-closed).",
+    "seguranca": "sem grant novo a tabela; funcoes app_private sem grant a cliente; trava de 30 dias, reservados e ledger inalterados; visibilidade de servico nunca publica."
   },
-  "PACOTE_ARROBA_PESSOAS_12h40": {
-    "id": "AP-PERSON-HANDLES-170100",
-    "migration": "packages/coelo_database/candidatos/acessos-pessoas/20260911170100_person_handles_v1.sql",
-    "estado": "VERDE - PRONTO PARA APLICAR (commit f6067c3c6)",
-    "pgTAP": "supabase/tests/person_handles_v1_test.sql 22/22 no descartavel coelo_acessos_r05 (baseline + seed + as 107 migrations da ordem de producao + candidato)",
-    "o_que_faz": "Decisao 16 para pessoas: producao ja tinha public.person_handles e o ledger person_identity_correction_ledger, mas sem escrita e com trava de 15 dias. O pacote: trava de 30 dias; reservados (coelo, coelo.me, admin, suporte...); geracao do @ padrao nome.sobrenome (sem acentos, sufixo numerico em colisao) por trigger AFTER INSERT em public.people para adultos e criancas (servico nao tem @) e backfill idempotente das pessoas existentes; RPCs superadmin_person_handle_availability(p_handle, p_person_id) {handle, available, reason: ok|invalid_format|reserved|taken}, superadmin_person_handle_get(p_person_id) {handle, last_changed_at, can_change_at, can_edit} e superadmin_person_handle_set(p_request_id, p_person_id, p_handle, p_reason). Quem ve/edita: people.read/people.update de plataforma (Superadmin), a propria pessoa e os responsaveis ativos da crianca (guardian_links). Auditoria pelo ledger (quem, quando, motivo, valor anterior/novo).",
-    "negativas_provadas": "anon 42501; terceiro sem vinculo 42501 em get e set; @ tomado, reservado, formato invalido e cooldown de 30 dias -> 22023 'person handle unavailable'; motivo obrigatorio.",
-    "efeito_em_producao": "o backfill vai dar @ a todas as pessoas existentes (Owner, pessoas sinteticas qa-r04, criancas): ids em person_handles; nada visivel ao cliente ate o FE ligar.",
-    "pendencias_de_modelo": [
-      "instituicao editando o @ do funcionario (Owner 12:15) exige contexto do app Admin: fora da Etapa 2; regra do servidor pode ganhar membership institucional depois.",
-      "usuarios internos (realm interno v2, app_private.superadmin_internal_profiles) nao tem @ neste pacote: a identidade interna nao e public.people; propor @ interno na proxima rodada se o Owner quiser.",
-      "institutions/units em producao usam trava de 15 dias (change_unit_handle_for_superadmin e trigger de institutions): a frente estrutura alinha para 30 (Decisao 16).",
-      "audit.audit_logs (cadeia com hash) nao recebe entrada propria da troca do @; o ledger de identidade e a trilha. Refinar na revisao de seguranca."
-    ],
-    "suites_vizinhas": "follow_links 24/24 e internal_actor_service_person 17/17 verdes apos o pacote; superadmin_people_directory_test (casos 1 e 3) e superadmin_internal_person_detail_test (caso 11) falham por 'requires MFA' e catalogo de permissoes: pre-existente desde o lote 8 (MFA fora do MVP), nao toca este pacote."
+  "PACOTE_170600_P45_20h20": {
+    "id": "AP-INSTITUTION-SYSTEM-MODEL-DELETE-170600",
+    "migration": "packages/coelo_database/candidatos/acessos-pessoas/20260911170600_institution_system_model_delete_v1.sql",
+    "estado": "VERDE - PRONTO PARA APLICAR (commit fb96e9374)",
+    "pgTAP": "supabase/tests/institution_system_model_delete_v1_test.sql 7/7 + institution_profile_system_model_create_v1_test 8/8",
+    "o_que_faz": "P45 = B ('apenas conforme hierarquia, como owner'): app_private.superadmin_access_profile_delete_and_reassign, ramo institution, deixa excluir modelo do sistema (is_system) quando o ator tem institution.roles.manage em membership de PLATAFORMA sem escopo (has_scoped_platform_permission(..., null)); perfil escopado em instituicao continua recebendo 'system profile is protected'; versao esperada, substituto compativel, auditoria (membership_changed) e recibo inalterados; modelos de plataforma (owner/operations) continuam protegidos.",
+    "cliente": "detalhe do perfil de sistema (dominio institution) passa a mostrar Excluir para a plataforma; feito no commit seguinte."
   },
-  "ARROBA_EM_PRODUCAO_12h58": {
-    "lote_31": "170100 aplicado pelo coordenador (12:52). Provas por REST com qa-r03: superadmin_person_handle_get(ec2a15a2) devolveu o @ gerado pelo backfill 'qar04.pessoasintetica' (display_name sem first/last no draft); availability: '@Coelo' -> reserved, 'qa.r05.teste' -> invalid_format (dois pontos), 'qa_r05_teste' -> ok; set -> 'qa_r05_teste' com can_change_at +30 dias; segunda troca -> 22023 cooldown; id inexistente com people.read -> data null.",
-    "cliente": "677d95682 + c227e531f: secao 'Identificador (@)' no detalhe da pessoa (PersonHandleSection) com icone @, 'Alterar @' (so quando can_edit e fora do cooldown), dialogo com verificacao de disponibilidade enquanto digita (debounce 400 ms), motivo obrigatorio e mensagens de cooldown/tomado/reservado/formato; chave enablePersonHandles ligada em createSuperadminAuthScope. Testes: person_handle_section_test 2/2; suite test/features/people 222 P (goldens abaixo).",
-    "dados_sinteticos": "person_handles de todas as pessoas existentes (backfill do 170100) e a troca do @ da pessoa ec2a15a2 (ledger person_identity_correction_ledger, 1 linha). Ficam ate o fim da Etapa 2."
-  },
-  "DEFEITO_DE_PRODUCAO_D1_12h55": {
-    "achado": "students.link por REST devolveu 21000 'DELETE requires a WHERE clause': app_private.follow_links_sync_child_context (171100, lote 12) faz delete sem WHERE na temp table follow_links_expected; o authenticator do PostgREST carrega pg_safeupdate (session_preload_libraries = supautils, safeupdate) e bloqueia mesmo dentro de security definer. Efeito desde o lote 12: toda insercao/alteracao de child_unit_links e child_group_links pela API falha (vincular/transferir/revogar aluno, cadastro de crianca em unidade/turma; cruza com formularios-cuidado-rotina e estrutura).",
-    "pacote": "AP-FOLLOW-LINKS-SAFEUPDATE-170200: candidatos/acessos-pessoas/20260911170200_follow_links_safeupdate_fix_v1.sql (where true; corpo identico no resto). pgTAP follow_links_safeupdate_fix_v1_test 3/3 com load 'safeupdate' (rodar como supabase_admin; supautils nega load ao postgres), RED reproduzido com o corpo de 171100. Commit ad09813cf. VERDE - PRONTO PARA APLICAR.",
-    "licao_para_as_skills": "pgTAP via psql nao carrega safeupdate: DELETE/UPDATE dentro de funcoes sempre com WHERE (where true em tabela temporaria); incluir um caso com load 'safeupdate' como supabase_admin nos pacotes que apagam/atualizam."
-  },
-  "STUDENTS_12h55": {
-    "students.list (BE)": "superadmin_student_links(child_context d0c4...0004) por REST: can_manage true, vinculo ativo com Unidade QA R04, sem turma (P36 exige turma: o vinculo sintetico da R04 nasceu sem turma).",
-    "students.link/transfer/edit/revoke (BE)": "bloqueados pelo defeito acima ate o 170200 entrar; depois: provar link com unit d0c4...0002 + group 368a5cea (turma sintetica da estrutura, P42), edit, transfer e revoke por REST.",
-    "FE": "tela /students/:id/manage so tem Revogar (R04); vincular/transferir/editar sem UI: pendencia FE registrada, entra apos o BE."
-  },
-  "GOLDENS_12h58": {
-    "regravados": "access_profile_table_{light,dark}_{375,768,1024,1440} (8) e person_directory_table_dark_{375,768,1024,1440} (4) apos o alinhamento das celulas do composto (G-SUP, dev 11c4bfbef); diff conferida em imagem: so alinhamento vertical das celulas (e rodape de paginacao nos escuros, que seguem os claros). SDK 3.44.2.",
-    "retido": "person_form_create_light_375: o golden guardado tem o rodape Continuar/Cancelar em outra posicao (P15 rodape ancorado); pre-existente, nao regravado sem conferir o respiro no fim do conteudo."
-  },
-  "ROTA_REAL_13h20_14h00": {
-    "ambiente": "build web de qa_main (13:04, com P31 e o @) servido por Node em 127.0.0.1:3000; um Chrome CDP 9411 com SwiftShader; sessao qa-r03 injetada no localStorage (chave coelo.superadmin.auth.session) a partir do login por REST porque a extensao do Flutter Driver (qa_main) emula o teclado e nenhum campo aceita digitacao por CDP; texto entra por window.$flutterDriver enter_text. Chrome lento (30-40 s por tela) com 0,5-0,8 GB livres.",
-    "access-profiles.list": "verified + E2E: aba Superadmin (5 perfis de plataforma) e aba Admin com os 4 modelos de sistema do lote 25 (Predefinido); reload mantem. capturas/access-profiles-list-*.png",
-    "access-profiles.detail": "verified + E2E: card abre o detalhe; modelo de sistema Professor(a) mostra 'Modelo do sistema: nao editavel' + 'Criar a partir deste modelo'. capturas/access-profiles-detail-modelo-sistema.png",
-    "access-profiles.create": "P31 na UI ok (rascunho a partir do modelo com descricao/escopo/permissoes; nome e codigo digitados; revisao), mas superadmin_access_profile_save no dominio institution devolveu 23514 institution_roles_global_system_check: defeito de producao, pacote 170300 abaixo. Nota de UX: na revisao, 'Permissoes adicionadas: nenhuma' porque o rascunho compara com o modelo de origem; ajustar para comparar com o rascunho em branco (pendencia pequena).",
-    "people.list": "verified + E2E: diretorio com pessoas reais; reload mantem. PENDENCIA FE: aba Criancas selecionada nao filtra os cards; clique no card nao navegou ao detalhe na rota real (por URL abre) - investigar onPressed do CoeloAdminInteractiveCard em Pessoas.",
-    "people.links / people.reload": "verified + E2E: detalhe da pessoa com a secao Identificador (@): 'coelo' reservado e 'qa.r05.profissional' formato invalido (dois pontos) enquanto digita; 'qa_r05.profissional' disponivel; salvar com motivo -> superadmin_person_handle_set 200; reload mantem o @ novo e o cooldown (Alterar @ desabilitado, 'nova troca a partir de 11/10/2026'). capturas/people-arroba-*.png"
-  },
-  "PACOTE_170300_13h26": {
-    "id": "AP-INSTITUTION-PROFILE-SYSTEM-MODEL-170300",
-    "migration": "packages/coelo_database/candidatos/acessos-pessoas/20260911170300_institution_profile_system_model_create_v1.sql",
-    "estado": "VERDE - PRONTO PARA APLICAR (commit d3d6a1535)",
-    "pgTAP": "institution_profile_system_model_create_v1_test 8/8; RED reproduzido com o corpo de producao (23514)",
-    "o_que_faz": "access_profile_create_internal: no dominio institution, sem institution_id o perfil nasce modelo do sistema (is_system, P31: so a plataforma cria os padroes); com institution_id (instituicao ativa validada) e perfil proprio da instituicao. superadmin_access_profile_update: modelos de sistema de Admin passam a ser editaveis por quem passa por access_profile_require_mutation('institution') (institution.roles.manage); modelos de plataforma (Owner, Auditor...) continuam protegidos. Sem chave de composicao.",
-    "suites_vizinhas": "access_profile_detail_v3_test 37/37 e institution_role_system_templates_v1_test 7/7 verdes; access_profile_capability_core_hardening_test (4) e access_profiles_internal_read_contract_test (4) ja falhavam antes (contrato antigo de lista/overrides), nao tocam o pacote."
-  },
-  "STUDENTS_BE_14h00": {
-    "students.link": "done: apos 170200 (lote 34) superadmin_student_link(unit d0c4...0002, group 368a5cea) -> active, group_link 8d766ca8",
-    "students.edit": "done: superadmin_student_edit ends_at 2026-12-15 persistido e relido",
-    "students.revoke": "done: revoked (turma inactive); link seguinte reativou o mesmo vinculo (fixture preservada para as outras frentes)",
-    "students.transfer": "so negativa (unidade inexistente -> P0002); a instituicao sintetica d0c4 tem uma unidade so; positivo depende de segunda unidade (estrutura)",
-    "students.list": "done por REST (links + contexto inexistente P0002)",
-    "FE": "bf9c2f186: Vincular a uma turma (turmas ativas da instituicao pelo diretorio de Turmas; a turma decide a unidade, P36), Transferir (turmas de outras unidades + motivo) e Editar vigencia (inicio/fim dd/mm/aaaa); testes 15/15; rota real depende de build novo"
-  },
-  "DELTAS": "docs/reviews/evidence/etapa-2/r05-acessos-pessoas/deltas-r05.json: 26 entradas (invites BE done x4; access-profiles.list/detail FE verified + E2E; access-profiles.create FE/BE local-green com o gate 170300; people.list/links/reload FE verified + BE done + E2E; students.list/link/edit/revoke BE done, transfer local-green, FE link/edit/transfer local-green). Ensaiadas com apply-tracker-delta.cjs + validate-trackers.cjs (PASS: FE 71, BE 77, E2E 48) e revertidas; o coordenador aplica.",
-  "PENDENCIAS_DE_CODE_REVIEW_R05": [
-    "Pessoas: clique no card nao abre o detalhe na rota real (onOpen ligado no router; conferir o CoeloAdminInteractiveCard/semantica).",
-    "Pessoas: abas Todos/Equipe/Responsaveis/Criancas nao filtram os cards na rota real.",
-    "Perfis: revisao do rascunho criado a partir do modelo compara com o modelo (mostra 'nenhuma permissao adicionada'); comparar com o rascunho em branco.",
-    "Alunos: transfer devolve HTTP 500 (P0002) para unidade inexistente; mapear para 404/422 no envelope.",
-    "qa_main: a extensao do Flutter Driver emula o teclado (enableTextEntryEmulation) e impede digitacao real por CDP; usar window.$flutterDriver enter_text nas provas (ou desligar a emulacao no qa_main).",
-    "Skills: pgTAP em psql nao carrega pg_safeupdate; DELETE/UPDATE em funcao sempre com WHERE e um caso com load 'safeupdate' como supabase_admin."
-  ],
-  "MINI_REVISAO_14h40": {
-    "1_sha_final": "8ae9792a9 publicado; status limpo; nenhum processo desta frente em execucao"
-  },
-  "encerramento": "nenhum processo desta frente em execucao; nao retomo por conta propria depois de 16:00; respondo a revisao das 15:50 no JSON.",
-  "PACOTE_170400_14h51": {
-    "id": "AP-PEOPLE-LIST-SEGMENT-170400",
-    "migration": "packages/coelo_database/candidatos/acessos-pessoas/20260911170400_people_list_segment_v1.sql",
-    "estado": "VERDE - PRONTO PARA APLICAR (commit 7058176f3)",
-    "pgTAP": "people_list_segment_v1_test 8/8 (descartavel coelo_acessos_r05 religado com as 136 migrations da ordem + candidato)",
-    "o_que_faz": "superadmin_people_list ganha p_segment (all|institutional_team|guardians|children|dual_profile, allowlist) filtrado no servidor por tipo, guardian_links e institution_memberships; DROP da sobrecarga de 12 parametros e CREATE da de 13 com default 'all' (chamadas antigas continuam validas); grants refeitos (anon revogado, authenticated/service_role executam).",
-    "chave_de_composicao": "SupabasePersonDirectoryRepository(client, segmentFilterAvailable: true) em lib/core/config/superadmin_auth_scope.dart (~linha 387); ligar so depois de aplicar.",
-    "motivo": "rota real: as abas do diretorio de Pessoas nao filtravam em producao (so o repositorio de desenvolvimento aplicava matchesSegment). Commit 3d6d7de0a (aba Criancas por p_types) fica superado por este, sem conflito."
-  },
-  "ROTA_REAL_MODELOS_15h00": {
-    "access-models.list": "verified + E2E proposto: modelos reais de plataforma na rota real; reload mantem",
-    "access-models.filter": "verified + E2E proposto: busca 'QA R04' filtra no servidor (2 modelos sinteticos)",
-    "access-models.detail": "verified + E2E proposto: detalhe do modelo cc322488 com permissoes, vinculos e auditoria",
-    "access-models.edit": "local-green: formulario abre com dados reais; DEFEITO corrigido em 0aeb9b729 (codigo com hifen gerado pelo servidor falhava na validacao do cliente e bloqueava Continuar em perfis e modelos); salvar pela UI depende de build novo",
-    "deltas": "docs/reviews/evidence/etapa-2/r05-acessos-pessoas/deltas-r05-3.json (7), ensaiados apply+validate PASS na base com origin/dev e revertidos"
-  },
-  "TESTES_DO_RECORTE_15h10": {
-    "suites": "access_profiles, invites, students, platform_users e people rodadas na branch: tudo verde exceto 3 goldens pre-existentes retidos por P15 (rodape ancorado): invite_form_mobile_light, platform_user_create_light_375 e person_form_create_light_375 (o golden guardado tem o rodape em outra posicao; nao regravar sem conferir o respiro do conteudo com o Owner).",
-    "goldens_regravados": "+6 da tabela de Usuarios internos (platform_user_directory_table_{light,dark}_{768,1024,1440}) pelo alinhamento das celulas do composto (G-SUP), diff conferida em imagem (so o chip de status). Total na rodada: 18 (8 Perfis, 4 Pessoas escuros, 6 Usuarios internos)."
-  },
-  "STUDENTS_TRANSFER_15h14": {
-    "students.transfer (BE)": "done: transferencia positiva provada em producao (Unidade QA R04 -> Unidade QA R05 Transferencia cce78909 -> de volta a Unidade QA R04 + turma 368a5cea); deltas-r05-4.json (1) ensaiado e revertido.",
-    "unidade_sintetica_nova": "units cce78909-0745-4b2e-9baf-24681080c22d 'Unidade QA R05 Transferencia' (instituicao d0c4...0001, tipo Outros, @qar05transfer.qar04cuidado) criada por create_unit_for_superadmin - dado sintetico a apagar ao fim da Etapa 2; vinculo 5d00bc95 inactive.",
-    "DEFEITO_PARA_A_ESTRUTURA": "create_unit_for_superadmin sem 'handle' gerou 'unidadeqar05transfer.qa-r04-cu' (truncado em 30 e com hifens do slug da instituicao) e falhou na check constraint de units (23514). O @ padrao de unidade (pacote de estrutura/realm-interno 180000/211100) precisa normalizar o slug da instituicao (sem hifen) e truncar antes do ponto. Com handle explicito funcionou."
-  },
-  "dados_sinteticos_r05_adicional": [
-    "units cce78909 'Unidade QA R05 Transferencia' e child_unit_links 5d00bc95 (inactive)"
-  ],
-  "PROPOSTA_DE_ATUALIZACAO_DAS_SKILLS_R05": {
-    "nota": "deltas para o coordenador aplicar nas skills (so ele escreve nelas).",
-    "coelo-backend": [
-      "Regra de escrita: DELETE/UPDATE dentro de funcoes sempre com WHERE (em tabela temporaria usar `where true`); o pg_safeupdate esta no session_preload_libraries do authenticator do PostgREST e bloqueia mesmo dentro de security definer, mas o pgTAP via psql nao o carrega. Incluir nos pacotes que apagam/atualizam um caso com `load 'safeupdate'` rodado como supabase_admin (supautils nega load ao postgres). Caso real: 171100 quebrou toda escrita de vinculo de crianca pela API ate o 170200.",
-      "Regra do @ de pessoas (Decisao 16) em producao: person_handles + RPCs superadmin_person_handle_get/availability/set (170100); trava de 30 dias pelo ledger person_identity_correction_ledger; reservados coelo/coelo.me/admin/suporte...; quem edita: people.update de plataforma, a propria pessoa, responsaveis ativos da crianca. Pendentes: @ de usuarios internos (P44) e edicao pela instituicao (app Admin).",
-      "Perfis (P31) em producao: perfil Admin criado pela plataforma sem institution_id e modelo do sistema (is_system); com institution_id e da instituicao; modelos de sistema de Admin editaveis por institution.roles.manage, modelos de plataforma protegidos; delete de modelo do sistema protegido (P43).",
-      "Diretorio de Pessoas: p_segment em superadmin_people_list (170400, allowlist) substitui o filtro de abas que so existia no repositorio de desenvolvimento; ao trocar assinatura de RPC, DROP da sobrecarga antiga para o PostgREST nao ter duas.",
-      "@ padrao de unidade (estrutura): truncar em 30 antes de montar e normalizar o slug da instituicao sem hifen (defeito 23514 visto em create_unit_for_superadmin)."
-    ],
-    "coelo-frontend": [
-      "Prova por CDP com qa_main: a extensao do Flutter Driver emula o teclado; injetar a sessao no localStorage (chave coelo.superadmin.auth.session, JSON cru da sessao obtido por login REST no processo) e digitar por window.$flutterDriver({command:'enter_text'}); habilitar a semantica (placeholder) antes de qualquer clique se for usar a arvore; Chrome com SwiftShader para de repintar abaixo de 0,5 GB livres.",
-      "Envelopes de RPC: conferir o formato real da resposta antes do fromJson (superadmin_access_profile_save devolve {domain, profile, version}; a UI mostrava erro depois de gravar).",
-      "Codigos gerados pelo servidor (com hifen) precisam passar na validacao do cliente; validar formato so no que o operador digita.",
-      "P31 na UI: modelo de sistema abre o detalhe sem Editar/Excluir e oferece 'Criar a partir deste modelo'; Criar perfil pergunta do zero ou a partir de um modelo ativo; a revisao compara com o rascunho em branco.",
-      "Alunos (P36): vincular/transferir escolhem a turma e a unidade vem junto; as opcoes vem do diretorio de Turmas."
-    ],
-    "coelo-frontend-backend": [
-      "Chave de composicao por pacote: cliente que envia parametro novo de RPC (p_segment) fica atras de uma chave (segmentFilterAvailable) ate o pacote entrar em producao; caso contrario a rota quebra com PGRST202/300.",
-      "Provas de rota real sob memoria baixa: um Chrome, esperas de 20-30 s por tela, capturar rede com Network.enable antes da navegacao; quando a UI nao repinta, confirmar pelo POST na rede e pelo reload.",
-      "Fixture sintetica de aluno: transferir ida e volta para nao alterar o estado que as outras frentes usam (link_id reaproveitado)."
-    ]
-  },
-  "P44_COMPLEMENTO_15h12": "Usuarios internos nao tem coluna de @ (superadmin_internal_identities/profiles), mas cada um tem uma pessoa de servico em public.people pela ponte de ator (220400), que o 170100 deixa sem @ de proposito (person_type service). Se o Owner quiser @ para internos, o caminho menor e permitir 'service' em enforce_person_handle_rules/ensure_person_handle e mostrar o @ na tela de Usuarios internos (pacote pequeno + FE). Recomendo perguntar antes: o @ e identidade publica no Principal e o interno nao aparece la.",
-  "ENCERRAMENTO_15h23": {
-    "ultima_tentativa": "convites pela UI (passos 2-4) com Chrome reaberto as 15:12: passo 1 de novo ok (Secretaria QA R05 selecionavel), mas o renderer do Chrome travou na captura do passo 2 (1,3 GB livres); tentativa abandonada; FE de invites.create permanece local-green com passo 1 provado.",
-    "ambiente": "Chrome 9411, servidor 3010, scripts CDP e descartavel coelo_acessos_r05 encerrados as 15:22 (o container supabase_db_coelo_realm_r05 e da frente realm-interno); nenhum processo desta frente em execucao.",
-    "sha_final": "o commit desta rev 131; worktree limpa; sem WIP retido.",
-    "a_aplicar_pelo_coordenador": "deltas-r05-2.json (7), deltas-r05-3.json (7), deltas-r05-4.json (1); pacote 170400 + chave segmentFilterAvailable; proposta de skills na rev 129; perguntas P43/P44.",
-    "nao_retomo": "depois de 16:00 nao retomo por conta propria; respondo a revisao das 15:50 no JSON."
-  },
-  "P_SEGMENT_EM_PRODUCAO_15h27": "170400 em producao (lote 46) provado por REST com qa-r03: superadmin_people_list p_segment all=13, children=2, guardians=1, institutional_team=7, dual_profile=0; 'x' -> 22023 invalid segment. Chave segmentFilterAvailable ligada pelo coordenador; prova das abas pela UI depende de build novo. Delta sugerido: people.list BE done ja consta; registrar como evidencia do filtro por aba (sem action_id proprio).",
-  "CONFERENCIA_DO_COORDENADOR_15h25": "rev 131 integrada em dev 6418194db; deltas r05-2/3/4 aplicados; 170400 lote 46; P43/P44 viraram P45/P46; defeito do @ de unidade corrigido pela G5 (lote 47). flutter analyze do app inteiro na branch: 1 aviso pre-existente (test_driver/qa_login.dart strict_raw_type), nada meu.",
-  "INTERNAL_USERS_SUSPEND_15h30": "negativa por REST: superadmin_internal_user_change_status (p_request_id, p_internal_identity_id inexistente, p_expected_version, p_status suspended, p_reason) devolve SAI_PERMISSION_DENIED 403 nao enumeravel. Caminho positivo continua sem prova: o unico usuario interno em producao e o qa-r03 e suspende-lo derruba a sessao de teste; BE fica local-green ate existir um segundo interno (exige internal-users.create: Edge Function com a API de administracao do Auth).",
-  "PEOPLE_CREATE_GATE_15h32": "gate confirmado: producao nao tem RPC de resolucao de identidade (so superadmin_people_create_draft/detail/filter_options/list/update); PersonIdentityRepository.resolve (CPF/e-mail/telefone com minimizacao LGPD) exige pacote proprio na proxima rodada. Parte ja coberta: PersonIdentityRepository.checkHandle pode usar superadmin_person_handle_availability (170100) - proposta para a proxima rodada: implementar SupabasePersonIdentityRepository com checkHandle pelo 170100 e resolve por uma RPC nova superadmin_people_identity_lookup (candidatos/acessos-pessoas 2026091117xxxx), destravando people.create.",
-  "D1_APOS_170200_15h35": "acompanhamento automatico da hierarquia (171100) volta a sincronizar em producao depois do 170200: a crianca d0c4...0003, apos link -> transfer -> transfer de volta, segue instituicao, unidade (Unidade QA R04) e turma (368a5cea) + 1 pessoa (follow_following_list: institution 1, unit 1, group 1, person 1; a unidade sintetica de transferencia cce78909 saiu do acompanhamento). Evidencia de que o sync nao apaga sem WHERE e revoga o que a estrutura nao justifica mais.",
-  "REVISAO_FINAL_15h50": {
-    "entreguei_tudo": "sim. Nada ficou fora do JSON, do handoff (evidence/etapa-2/r05-acessos-pessoas/handoff.md) ou dos deltas.",
-    "1_sha_final": "072d18eea publicado em origin/work/etapa2-r05-acessos-pessoas (inclui origin/dev ate faa7e2d5d); status limpo; sem WIP; nenhum processo desta frente em execucao (Chrome, servidores e descartavel encerrados as 15:22).",
-    "2_fechou_por_action_id_com_prova": {
-      "E2E (rota real + producao + reload)": "access-profiles.list, access-profiles.detail, access-profiles.create (P31: criacao a partir do modelo Secretaria, d6264c5d), people.list, people.links (@ trocado pela UI), people.reload, access-models.list, access-models.filter, access-models.detail, invites.list; access-models.create ja era E2E",
-      "BE done por REST em producao": "invites.create/detail/resend(regra)/revoke, students.list/link/edit/transfer/revoke, access-profiles.create/edit (170300), people.links (@ 170100)",
-      "FE verified/local-green": "access-profiles.edit verified; invites.create, students.link/edit/transfer, access-models.edit local-green",
-      "pacotes em producao": "170100 (@ de pessoas, lote 31), 170200 (safeupdate/D1, lote 34), 170300 (perfil Admin = modelo do sistema, lotes 38-42), 170400 (abas de Pessoas, lote 46)",
-      "cliente": "P31 (3b4aaa5b6), @ (677d95682/c227e531f), Alunos (bf9c2f186), envelope do save (b64bd9bf9), codigo com hifen (0aeb9b729), p_segment gateado (7058176f3), 18 goldens do composto; suites do recorte verdes salvo 3 goldens P15 pre-existentes"
+  "historico_r05": {
+    "revision": 137,
+    "updated_at": "2026-09-11T18:50:26.650Z",
+    "relogio_local": "Fri Sep 11 2026 15:50:26 GMT-0300 (Horário Padrão de Brasília)",
+    "round": "E2-R05-20260911",
+    "group": "acessos-pessoas",
+    "tool": "Claude Code (VS Code)",
+    "model": "Claude Opus 5 (esforco medio)",
+    "status": "finalizado",
+    "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-acessos-pessoas",
+    "branch": "work/etapa2-r05-acessos-pessoas",
+    "head": "8ae9792a9 (publicado)",
+    "base_observed": "origin/dev 2f6a6114f; lotes 8-27 em producao; candidatos/acessos-pessoas so com 170750 e 170900 OBSOLETOS (171600 e 171800 aplicados no lote 25); ordem-de-aplicacao ate lote 27",
+    "recorte": {
+      "familias": [
+        "people",
+        "access_profiles",
+        "access_models",
+        "invites",
+        "internal_users",
+        "students"
+      ],
+      "acoes": 32,
+      "em_e2e_hoje": [
+        "access-models.create"
+      ],
+      "ordem": [
+        "1. access-profiles.list/create/detail/edit/assign/delete na rota real; modelos de sistema (P31) visiveis e nao editaveis; criar do zero ou a partir do modelo",
+        "2. people.list/create/edit/links/reload (create fail-closed: abrir com a ponte de ator)",
+        "3. access-models.list/filter/detail/edit/duplicate",
+        "4. invites.list/create/detail/resend/revoke (create blocked-decision: gate real; pacote em candidatos/acessos-pessoas 2026091117xxxx se for contrato)",
+        "5. internal-users.list/create/edit/suspend e students.list/link/transfer/edit/revoke (P36)",
+        "transversal: regra do @ (Decisao 16) para pessoas e usuarios internos; professores por turma/atividade (P31) como pendencia de modelo se faltar contrato"
+      ]
     },
-    "3_aberto_com_primeiro_gate": {
-      "invites.create/detail/resend/revoke pela UI": "Chrome estavel (renderer travou < 1,3 GB); passo 1 provado",
-      "students.link/edit/transfer pela UI": "build novo com bf9c2f186 + Chrome",
-      "access-models.edit/duplicate pela UI": "build novo com 0aeb9b729 + Chrome",
-      "internal-users.create": "Edge Function com a API de administracao do Auth (fora do MVP salvo decisao)",
-      "internal-users.suspend/edit pela UI": "segundo usuario interno (suspender o qa-r03 derruba a sessao)",
-      "people.create": "RPC de resolucao de identidade (proposta: superadmin_people_identity_lookup + checkHandle pelo 170100)",
-      "people.list card/abas pela UI": "Chrome estavel (abas ja filtram no servidor com o 170400)",
-      "@ de usuarios internos / edicao pela instituicao": "P45/P46 (Owner) e app Admin"
+    "primeiro_gate": "ambiente de prova: build web de qa_main com .env.local, servidor estatico em 127.0.0.1:3000, um Chrome CDP (porta 9411, SwiftShader), login qa-r03; memoria livre 2,0 GB na abertura (32 chrome / 22 dart / 53 node de outras frentes) - build so quando houver memoria; ate la, provas por REST e pacotes SQL",
+    "leitura_feita": "R05-prompts.md e R04-prompts.md integrais; acessos-pessoas.json rev 118 (mini-revisoes 04:00 e 08:30, gates abertos, dados sinteticos); handoff.md e capturas da r04; inventario (32 acoes do recorte com estados FE/BE/E2E); bloco Estado vigente R04 dos tres md; ADR 0034 Decisao 16; respostas P31/P36/P37; coordenacao.json rev 38; skills coelo-frontend-backend, coelo-backend (sessao de teste, regra do @, memoria)",
+    "dependencias_do_coordenador": [],
+    "loop": "/loop 15m agendado na abertura",
+    "testes_P_F_B_S_U": "nenhum ainda nesta rodada",
+    "bloqueio": "nenhum total",
+    "proximo_passo": "aguardar o pedido de revisao das 15:50 e responder no JSON; nada mais executavel sem Chrome ou sem pacote novo.",
+    "ACK_ao_coordenador": "coelo-b5 pediu identificacao as 12:20; respondi por mensagem entre sessoes (G2 R05). Continuo sem esperar ACK.",
+    "MEMORIA": "12:20: 0,02-0,3 GB livres (dartaotruntime 800 MB, 28 dart, 25 chrome, flutter_tester de outras frentes). Sem build web, Chrome ou flutter test ate liberar; provas por REST e edicao de codigo/SQL enquanto isso.",
+    "INVITES_BE_POR_REST_12h15": {
+      "gate_P31": "fechado: lote 25 (171600) semeou 4 institution_roles de sistema; superadmin_invite_options_v2 devolve profiles=[] sem p_institution_id (por contrato) e os 4 perfis com p_institution_id=9f04...0010",
+      "invites.create": "BE done: superadmin_invite_issue_v2 (perfil Administrador da instituicao 13d06367, escopo instituicao 9f04...0010, destinatario qa-r05-convite@invalid.test, canal email, 72 h) devolveu ok:true, convite 03e9c9d2-2772-4ee8-863b-2a47c0108ce8 pending, management_version 1. Regras do contrato conferidas: pessoa alvo XOR e-mail (ambos = 422); perfil com max_scope_kind unit (Professor(a)) em escopo instituicao = 403 (rank de escopo)",
+      "invites.detail": "BE done: superadmin_invite_detail_v2 rele o convite; id inexistente devolve SAI_PERMISSION_DENIED 403 (nao enumeravel)",
+      "invites.resend": "BE done com regra: superadmin_invite_resend_v2 so reenvia convite expirado (ou pending vencido); pending vigente devolve SAI_INVALID_ARGUMENT 422 por desenho. Caminho positivo depende de convite expirado (pgTAP superadmin_internal_invites_v2_test cobre; conferir caso ao ligar E2E)",
+      "invites.revoke": "BE done: superadmin_invite_revoke_v2 (expected_version 1, motivo) devolveu status revoked, timeline com 'Convite revogado'; expected_version errado devolveu SAI_CONCURRENT_CHANGE 409",
+      "invites.list": "BE done: superadmin_invite_directory_v2 lista o convite (pending antes, revoked depois)",
+      "FE": "formulario refaz fetchOptions com institutionId apos escolher o contexto e exige perfil no passo 0 (linha 201); prova pela UI espera memoria para build+Chrome"
     },
-    "4_deltas": "deltas-r05.json (26), deltas-r05-2.json (7), deltas-r05-3.json (7), deltas-r05-4.json (1): todos aplicados pelo coordenador (dev 530613fb5 e seguintes).",
-    "5_pacotes": "nenhum candidato pendente em candidatos/acessos-pessoas; chaves enablePersonHandles e segmentFilterAvailable ligadas.",
-    "6_duvidas_ao_owner": [
-      "P45 (ex-P43): excluir modelo do sistema criado pelo Superadmin ou so inativar? recomendo inativar",
-      "P46 (ex-P44): @ para usuarios internos? recomendo perguntar antes; caminho menor e a pessoa de servico"
+    "dados_sinteticos_r05": [
+      "convite 03e9c9d2 (revoked) - apagar ao fim da Etapa 2",
+      "person_handles (backfill 170100) e trocas: ec2a15a2 -> qa_r05_teste; 9f04...0061 -> qa_r05.profissional (ledger)",
+      "child_group_links 8d766ca8 (crianca d0c4...0003 na turma 368a5cea, ends_at 2026-12-15) e vinculo de unidade d0c4...0005 revogado e reativado - ficam",
+      "nenhum perfil Admin criado (23514); nada em institution_roles"
     ],
-    "dados_sinteticos": "convite 03e9c9d2 (revoked); @ trocados (ec2a15a2, 9f04...0061); institution_roles 5afbe4a6 (inactive) e d6264c5d (active); child_group_links 8d766ca8; units cce78909 + child_unit_links 5d00bc95 (inactive)",
-    "skills": "proposta na rev 129 (coelo-backend, coelo-frontend, coelo-frontend-backend)",
-    "nao_retomo": "depois de 16:00 nao retomo por conta propria."
-  },
-  "REVISAO_FINAL_15h50_COMPLEMENTO": {
-    "pedido_do_coordenador": "recebido as 15:50; a revisao formal esta na rev 136 (REVISAO_FINAL_15h50) e vale integralmente.",
-    "chaves_criadas": "nenhuma. Nenhum segredo, token, chave de API ou valor de Vault foi criado nesta frente na R05; nada a rotacionar. Chaves de composicao (Dart): enablePersonHandles e segmentFilterAvailable, ambas ligadas.",
-    "sha_publicado": "o commit desta rev 137 (branch work/etapa2-r05-acessos-pessoas, status limpo, sem WIP)."
+    "P31_NO_CLIENTE_12h35": {
+      "commit": "3b4aaa5b6 (feat(superadmin): perfis de acesso com modelos do sistema)",
+      "o_que_mudou": "Perfis de acesso: cards/linhas abrem o DETALHE (fecha a pendencia antiga 'cards abrem EDIT'); perfil de sistema (is_system) mostra 'Modelo do sistema: nao editavel' e o botao 'Criar a partir deste modelo', sem Editar/Excluir (o servidor ja nega: superadmin_access_profile_update -> 'system profile is protected'); 'Criar perfil' abre o dialogo 'Como criar o perfil?' com 'Do zero' e 'A partir de: <modelo>' para cada modelo de sistema listado; criacao com ?from=<uuid> carrega o rascunho em branco com as permissoes e o escopo do modelo (nome/codigo vazios para o operador definir).",
+      "servidor": "sem pacote novo: os 4 modelos de sistema do lote 25 aparecem em superadmin_access_profiles_list(p_domain='institution') com is_system=true; superadmin_access_profiles_list(platform) traz os 5 de plataforma.",
+      "testes": "test/features/access_profiles/presentation/access_profile_system_models_test.dart 3/3 + access_profile_pages_test e detail_context_test 25/25; dart analyze sem issues nos arquivos tocados.",
+      "prova_na_rota_real": "depende de build+Chrome (memoria)."
+    },
+    "PACOTE_ARROBA_PESSOAS_12h40": {
+      "id": "AP-PERSON-HANDLES-170100",
+      "migration": "packages/coelo_database/candidatos/acessos-pessoas/20260911170100_person_handles_v1.sql",
+      "estado": "VERDE - PRONTO PARA APLICAR (commit f6067c3c6)",
+      "pgTAP": "supabase/tests/person_handles_v1_test.sql 22/22 no descartavel coelo_acessos_r05 (baseline + seed + as 107 migrations da ordem de producao + candidato)",
+      "o_que_faz": "Decisao 16 para pessoas: producao ja tinha public.person_handles e o ledger person_identity_correction_ledger, mas sem escrita e com trava de 15 dias. O pacote: trava de 30 dias; reservados (coelo, coelo.me, admin, suporte...); geracao do @ padrao nome.sobrenome (sem acentos, sufixo numerico em colisao) por trigger AFTER INSERT em public.people para adultos e criancas (servico nao tem @) e backfill idempotente das pessoas existentes; RPCs superadmin_person_handle_availability(p_handle, p_person_id) {handle, available, reason: ok|invalid_format|reserved|taken}, superadmin_person_handle_get(p_person_id) {handle, last_changed_at, can_change_at, can_edit} e superadmin_person_handle_set(p_request_id, p_person_id, p_handle, p_reason). Quem ve/edita: people.read/people.update de plataforma (Superadmin), a propria pessoa e os responsaveis ativos da crianca (guardian_links). Auditoria pelo ledger (quem, quando, motivo, valor anterior/novo).",
+      "negativas_provadas": "anon 42501; terceiro sem vinculo 42501 em get e set; @ tomado, reservado, formato invalido e cooldown de 30 dias -> 22023 'person handle unavailable'; motivo obrigatorio.",
+      "efeito_em_producao": "o backfill vai dar @ a todas as pessoas existentes (Owner, pessoas sinteticas qa-r04, criancas): ids em person_handles; nada visivel ao cliente ate o FE ligar.",
+      "pendencias_de_modelo": [
+        "instituicao editando o @ do funcionario (Owner 12:15) exige contexto do app Admin: fora da Etapa 2; regra do servidor pode ganhar membership institucional depois.",
+        "usuarios internos (realm interno v2, app_private.superadmin_internal_profiles) nao tem @ neste pacote: a identidade interna nao e public.people; propor @ interno na proxima rodada se o Owner quiser.",
+        "institutions/units em producao usam trava de 15 dias (change_unit_handle_for_superadmin e trigger de institutions): a frente estrutura alinha para 30 (Decisao 16).",
+        "audit.audit_logs (cadeia com hash) nao recebe entrada propria da troca do @; o ledger de identidade e a trilha. Refinar na revisao de seguranca."
+      ],
+      "suites_vizinhas": "follow_links 24/24 e internal_actor_service_person 17/17 verdes apos o pacote; superadmin_people_directory_test (casos 1 e 3) e superadmin_internal_person_detail_test (caso 11) falham por 'requires MFA' e catalogo de permissoes: pre-existente desde o lote 8 (MFA fora do MVP), nao toca este pacote."
+    },
+    "ARROBA_EM_PRODUCAO_12h58": {
+      "lote_31": "170100 aplicado pelo coordenador (12:52). Provas por REST com qa-r03: superadmin_person_handle_get(ec2a15a2) devolveu o @ gerado pelo backfill 'qar04.pessoasintetica' (display_name sem first/last no draft); availability: '@Coelo' -> reserved, 'qa.r05.teste' -> invalid_format (dois pontos), 'qa_r05_teste' -> ok; set -> 'qa_r05_teste' com can_change_at +30 dias; segunda troca -> 22023 cooldown; id inexistente com people.read -> data null.",
+      "cliente": "677d95682 + c227e531f: secao 'Identificador (@)' no detalhe da pessoa (PersonHandleSection) com icone @, 'Alterar @' (so quando can_edit e fora do cooldown), dialogo com verificacao de disponibilidade enquanto digita (debounce 400 ms), motivo obrigatorio e mensagens de cooldown/tomado/reservado/formato; chave enablePersonHandles ligada em createSuperadminAuthScope. Testes: person_handle_section_test 2/2; suite test/features/people 222 P (goldens abaixo).",
+      "dados_sinteticos": "person_handles de todas as pessoas existentes (backfill do 170100) e a troca do @ da pessoa ec2a15a2 (ledger person_identity_correction_ledger, 1 linha). Ficam ate o fim da Etapa 2."
+    },
+    "DEFEITO_DE_PRODUCAO_D1_12h55": {
+      "achado": "students.link por REST devolveu 21000 'DELETE requires a WHERE clause': app_private.follow_links_sync_child_context (171100, lote 12) faz delete sem WHERE na temp table follow_links_expected; o authenticator do PostgREST carrega pg_safeupdate (session_preload_libraries = supautils, safeupdate) e bloqueia mesmo dentro de security definer. Efeito desde o lote 12: toda insercao/alteracao de child_unit_links e child_group_links pela API falha (vincular/transferir/revogar aluno, cadastro de crianca em unidade/turma; cruza com formularios-cuidado-rotina e estrutura).",
+      "pacote": "AP-FOLLOW-LINKS-SAFEUPDATE-170200: candidatos/acessos-pessoas/20260911170200_follow_links_safeupdate_fix_v1.sql (where true; corpo identico no resto). pgTAP follow_links_safeupdate_fix_v1_test 3/3 com load 'safeupdate' (rodar como supabase_admin; supautils nega load ao postgres), RED reproduzido com o corpo de 171100. Commit ad09813cf. VERDE - PRONTO PARA APLICAR.",
+      "licao_para_as_skills": "pgTAP via psql nao carrega safeupdate: DELETE/UPDATE dentro de funcoes sempre com WHERE (where true em tabela temporaria); incluir um caso com load 'safeupdate' como supabase_admin nos pacotes que apagam/atualizam."
+    },
+    "STUDENTS_12h55": {
+      "students.list (BE)": "superadmin_student_links(child_context d0c4...0004) por REST: can_manage true, vinculo ativo com Unidade QA R04, sem turma (P36 exige turma: o vinculo sintetico da R04 nasceu sem turma).",
+      "students.link/transfer/edit/revoke (BE)": "bloqueados pelo defeito acima ate o 170200 entrar; depois: provar link com unit d0c4...0002 + group 368a5cea (turma sintetica da estrutura, P42), edit, transfer e revoke por REST.",
+      "FE": "tela /students/:id/manage so tem Revogar (R04); vincular/transferir/editar sem UI: pendencia FE registrada, entra apos o BE."
+    },
+    "GOLDENS_12h58": {
+      "regravados": "access_profile_table_{light,dark}_{375,768,1024,1440} (8) e person_directory_table_dark_{375,768,1024,1440} (4) apos o alinhamento das celulas do composto (G-SUP, dev 11c4bfbef); diff conferida em imagem: so alinhamento vertical das celulas (e rodape de paginacao nos escuros, que seguem os claros). SDK 3.44.2.",
+      "retido": "person_form_create_light_375: o golden guardado tem o rodape Continuar/Cancelar em outra posicao (P15 rodape ancorado); pre-existente, nao regravado sem conferir o respiro no fim do conteudo."
+    },
+    "ROTA_REAL_13h20_14h00": {
+      "ambiente": "build web de qa_main (13:04, com P31 e o @) servido por Node em 127.0.0.1:3000; um Chrome CDP 9411 com SwiftShader; sessao qa-r03 injetada no localStorage (chave coelo.superadmin.auth.session) a partir do login por REST porque a extensao do Flutter Driver (qa_main) emula o teclado e nenhum campo aceita digitacao por CDP; texto entra por window.$flutterDriver enter_text. Chrome lento (30-40 s por tela) com 0,5-0,8 GB livres.",
+      "access-profiles.list": "verified + E2E: aba Superadmin (5 perfis de plataforma) e aba Admin com os 4 modelos de sistema do lote 25 (Predefinido); reload mantem. capturas/access-profiles-list-*.png",
+      "access-profiles.detail": "verified + E2E: card abre o detalhe; modelo de sistema Professor(a) mostra 'Modelo do sistema: nao editavel' + 'Criar a partir deste modelo'. capturas/access-profiles-detail-modelo-sistema.png",
+      "access-profiles.create": "P31 na UI ok (rascunho a partir do modelo com descricao/escopo/permissoes; nome e codigo digitados; revisao), mas superadmin_access_profile_save no dominio institution devolveu 23514 institution_roles_global_system_check: defeito de producao, pacote 170300 abaixo. Nota de UX: na revisao, 'Permissoes adicionadas: nenhuma' porque o rascunho compara com o modelo de origem; ajustar para comparar com o rascunho em branco (pendencia pequena).",
+      "people.list": "verified + E2E: diretorio com pessoas reais; reload mantem. PENDENCIA FE: aba Criancas selecionada nao filtra os cards; clique no card nao navegou ao detalhe na rota real (por URL abre) - investigar onPressed do CoeloAdminInteractiveCard em Pessoas.",
+      "people.links / people.reload": "verified + E2E: detalhe da pessoa com a secao Identificador (@): 'coelo' reservado e 'qa.r05.profissional' formato invalido (dois pontos) enquanto digita; 'qa_r05.profissional' disponivel; salvar com motivo -> superadmin_person_handle_set 200; reload mantem o @ novo e o cooldown (Alterar @ desabilitado, 'nova troca a partir de 11/10/2026'). capturas/people-arroba-*.png"
+    },
+    "PACOTE_170300_13h26": {
+      "id": "AP-INSTITUTION-PROFILE-SYSTEM-MODEL-170300",
+      "migration": "packages/coelo_database/candidatos/acessos-pessoas/20260911170300_institution_profile_system_model_create_v1.sql",
+      "estado": "VERDE - PRONTO PARA APLICAR (commit d3d6a1535)",
+      "pgTAP": "institution_profile_system_model_create_v1_test 8/8; RED reproduzido com o corpo de producao (23514)",
+      "o_que_faz": "access_profile_create_internal: no dominio institution, sem institution_id o perfil nasce modelo do sistema (is_system, P31: so a plataforma cria os padroes); com institution_id (instituicao ativa validada) e perfil proprio da instituicao. superadmin_access_profile_update: modelos de sistema de Admin passam a ser editaveis por quem passa por access_profile_require_mutation('institution') (institution.roles.manage); modelos de plataforma (Owner, Auditor...) continuam protegidos. Sem chave de composicao.",
+      "suites_vizinhas": "access_profile_detail_v3_test 37/37 e institution_role_system_templates_v1_test 7/7 verdes; access_profile_capability_core_hardening_test (4) e access_profiles_internal_read_contract_test (4) ja falhavam antes (contrato antigo de lista/overrides), nao tocam o pacote."
+    },
+    "STUDENTS_BE_14h00": {
+      "students.link": "done: apos 170200 (lote 34) superadmin_student_link(unit d0c4...0002, group 368a5cea) -> active, group_link 8d766ca8",
+      "students.edit": "done: superadmin_student_edit ends_at 2026-12-15 persistido e relido",
+      "students.revoke": "done: revoked (turma inactive); link seguinte reativou o mesmo vinculo (fixture preservada para as outras frentes)",
+      "students.transfer": "so negativa (unidade inexistente -> P0002); a instituicao sintetica d0c4 tem uma unidade so; positivo depende de segunda unidade (estrutura)",
+      "students.list": "done por REST (links + contexto inexistente P0002)",
+      "FE": "bf9c2f186: Vincular a uma turma (turmas ativas da instituicao pelo diretorio de Turmas; a turma decide a unidade, P36), Transferir (turmas de outras unidades + motivo) e Editar vigencia (inicio/fim dd/mm/aaaa); testes 15/15; rota real depende de build novo"
+    },
+    "DELTAS": "docs/reviews/evidence/etapa-2/r05-acessos-pessoas/deltas-r05.json: 26 entradas (invites BE done x4; access-profiles.list/detail FE verified + E2E; access-profiles.create FE/BE local-green com o gate 170300; people.list/links/reload FE verified + BE done + E2E; students.list/link/edit/revoke BE done, transfer local-green, FE link/edit/transfer local-green). Ensaiadas com apply-tracker-delta.cjs + validate-trackers.cjs (PASS: FE 71, BE 77, E2E 48) e revertidas; o coordenador aplica.",
+    "PENDENCIAS_DE_CODE_REVIEW_R05": [
+      "Pessoas: clique no card nao abre o detalhe na rota real (onOpen ligado no router; conferir o CoeloAdminInteractiveCard/semantica).",
+      "Pessoas: abas Todos/Equipe/Responsaveis/Criancas nao filtram os cards na rota real.",
+      "Perfis: revisao do rascunho criado a partir do modelo compara com o modelo (mostra 'nenhuma permissao adicionada'); comparar com o rascunho em branco.",
+      "Alunos: transfer devolve HTTP 500 (P0002) para unidade inexistente; mapear para 404/422 no envelope.",
+      "qa_main: a extensao do Flutter Driver emula o teclado (enableTextEntryEmulation) e impede digitacao real por CDP; usar window.$flutterDriver enter_text nas provas (ou desligar a emulacao no qa_main).",
+      "Skills: pgTAP em psql nao carrega pg_safeupdate; DELETE/UPDATE em funcao sempre com WHERE e um caso com load 'safeupdate' como supabase_admin."
+    ],
+    "MINI_REVISAO_14h40": {
+      "1_sha_final": "8ae9792a9 publicado; status limpo; nenhum processo desta frente em execucao"
+    },
+    "encerramento": "nenhum processo desta frente em execucao; nao retomo por conta propria depois de 16:00; respondo a revisao das 15:50 no JSON.",
+    "PACOTE_170400_14h51": {
+      "id": "AP-PEOPLE-LIST-SEGMENT-170400",
+      "migration": "packages/coelo_database/candidatos/acessos-pessoas/20260911170400_people_list_segment_v1.sql",
+      "estado": "VERDE - PRONTO PARA APLICAR (commit 7058176f3)",
+      "pgTAP": "people_list_segment_v1_test 8/8 (descartavel coelo_acessos_r05 religado com as 136 migrations da ordem + candidato)",
+      "o_que_faz": "superadmin_people_list ganha p_segment (all|institutional_team|guardians|children|dual_profile, allowlist) filtrado no servidor por tipo, guardian_links e institution_memberships; DROP da sobrecarga de 12 parametros e CREATE da de 13 com default 'all' (chamadas antigas continuam validas); grants refeitos (anon revogado, authenticated/service_role executam).",
+      "chave_de_composicao": "SupabasePersonDirectoryRepository(client, segmentFilterAvailable: true) em lib/core/config/superadmin_auth_scope.dart (~linha 387); ligar so depois de aplicar.",
+      "motivo": "rota real: as abas do diretorio de Pessoas nao filtravam em producao (so o repositorio de desenvolvimento aplicava matchesSegment). Commit 3d6d7de0a (aba Criancas por p_types) fica superado por este, sem conflito."
+    },
+    "ROTA_REAL_MODELOS_15h00": {
+      "access-models.list": "verified + E2E proposto: modelos reais de plataforma na rota real; reload mantem",
+      "access-models.filter": "verified + E2E proposto: busca 'QA R04' filtra no servidor (2 modelos sinteticos)",
+      "access-models.detail": "verified + E2E proposto: detalhe do modelo cc322488 com permissoes, vinculos e auditoria",
+      "access-models.edit": "local-green: formulario abre com dados reais; DEFEITO corrigido em 0aeb9b729 (codigo com hifen gerado pelo servidor falhava na validacao do cliente e bloqueava Continuar em perfis e modelos); salvar pela UI depende de build novo",
+      "deltas": "docs/reviews/evidence/etapa-2/r05-acessos-pessoas/deltas-r05-3.json (7), ensaiados apply+validate PASS na base com origin/dev e revertidos"
+    },
+    "TESTES_DO_RECORTE_15h10": {
+      "suites": "access_profiles, invites, students, platform_users e people rodadas na branch: tudo verde exceto 3 goldens pre-existentes retidos por P15 (rodape ancorado): invite_form_mobile_light, platform_user_create_light_375 e person_form_create_light_375 (o golden guardado tem o rodape em outra posicao; nao regravar sem conferir o respiro do conteudo com o Owner).",
+      "goldens_regravados": "+6 da tabela de Usuarios internos (platform_user_directory_table_{light,dark}_{768,1024,1440}) pelo alinhamento das celulas do composto (G-SUP), diff conferida em imagem (so o chip de status). Total na rodada: 18 (8 Perfis, 4 Pessoas escuros, 6 Usuarios internos)."
+    },
+    "STUDENTS_TRANSFER_15h14": {
+      "students.transfer (BE)": "done: transferencia positiva provada em producao (Unidade QA R04 -> Unidade QA R05 Transferencia cce78909 -> de volta a Unidade QA R04 + turma 368a5cea); deltas-r05-4.json (1) ensaiado e revertido.",
+      "unidade_sintetica_nova": "units cce78909-0745-4b2e-9baf-24681080c22d 'Unidade QA R05 Transferencia' (instituicao d0c4...0001, tipo Outros, @qar05transfer.qar04cuidado) criada por create_unit_for_superadmin - dado sintetico a apagar ao fim da Etapa 2; vinculo 5d00bc95 inactive.",
+      "DEFEITO_PARA_A_ESTRUTURA": "create_unit_for_superadmin sem 'handle' gerou 'unidadeqar05transfer.qa-r04-cu' (truncado em 30 e com hifens do slug da instituicao) e falhou na check constraint de units (23514). O @ padrao de unidade (pacote de estrutura/realm-interno 180000/211100) precisa normalizar o slug da instituicao (sem hifen) e truncar antes do ponto. Com handle explicito funcionou."
+    },
+    "dados_sinteticos_r05_adicional": [
+      "units cce78909 'Unidade QA R05 Transferencia' e child_unit_links 5d00bc95 (inactive)"
+    ],
+    "PROPOSTA_DE_ATUALIZACAO_DAS_SKILLS_R05": {
+      "nota": "deltas para o coordenador aplicar nas skills (so ele escreve nelas).",
+      "coelo-backend": [
+        "Regra de escrita: DELETE/UPDATE dentro de funcoes sempre com WHERE (em tabela temporaria usar `where true`); o pg_safeupdate esta no session_preload_libraries do authenticator do PostgREST e bloqueia mesmo dentro de security definer, mas o pgTAP via psql nao o carrega. Incluir nos pacotes que apagam/atualizam um caso com `load 'safeupdate'` rodado como supabase_admin (supautils nega load ao postgres). Caso real: 171100 quebrou toda escrita de vinculo de crianca pela API ate o 170200.",
+        "Regra do @ de pessoas (Decisao 16) em producao: person_handles + RPCs superadmin_person_handle_get/availability/set (170100); trava de 30 dias pelo ledger person_identity_correction_ledger; reservados coelo/coelo.me/admin/suporte...; quem edita: people.update de plataforma, a propria pessoa, responsaveis ativos da crianca. Pendentes: @ de usuarios internos (P44) e edicao pela instituicao (app Admin).",
+        "Perfis (P31) em producao: perfil Admin criado pela plataforma sem institution_id e modelo do sistema (is_system); com institution_id e da instituicao; modelos de sistema de Admin editaveis por institution.roles.manage, modelos de plataforma protegidos; delete de modelo do sistema protegido (P43).",
+        "Diretorio de Pessoas: p_segment em superadmin_people_list (170400, allowlist) substitui o filtro de abas que so existia no repositorio de desenvolvimento; ao trocar assinatura de RPC, DROP da sobrecarga antiga para o PostgREST nao ter duas.",
+        "@ padrao de unidade (estrutura): truncar em 30 antes de montar e normalizar o slug da instituicao sem hifen (defeito 23514 visto em create_unit_for_superadmin)."
+      ],
+      "coelo-frontend": [
+        "Prova por CDP com qa_main: a extensao do Flutter Driver emula o teclado; injetar a sessao no localStorage (chave coelo.superadmin.auth.session, JSON cru da sessao obtido por login REST no processo) e digitar por window.$flutterDriver({command:'enter_text'}); habilitar a semantica (placeholder) antes de qualquer clique se for usar a arvore; Chrome com SwiftShader para de repintar abaixo de 0,5 GB livres.",
+        "Envelopes de RPC: conferir o formato real da resposta antes do fromJson (superadmin_access_profile_save devolve {domain, profile, version}; a UI mostrava erro depois de gravar).",
+        "Codigos gerados pelo servidor (com hifen) precisam passar na validacao do cliente; validar formato so no que o operador digita.",
+        "P31 na UI: modelo de sistema abre o detalhe sem Editar/Excluir e oferece 'Criar a partir deste modelo'; Criar perfil pergunta do zero ou a partir de um modelo ativo; a revisao compara com o rascunho em branco.",
+        "Alunos (P36): vincular/transferir escolhem a turma e a unidade vem junto; as opcoes vem do diretorio de Turmas."
+      ],
+      "coelo-frontend-backend": [
+        "Chave de composicao por pacote: cliente que envia parametro novo de RPC (p_segment) fica atras de uma chave (segmentFilterAvailable) ate o pacote entrar em producao; caso contrario a rota quebra com PGRST202/300.",
+        "Provas de rota real sob memoria baixa: um Chrome, esperas de 20-30 s por tela, capturar rede com Network.enable antes da navegacao; quando a UI nao repinta, confirmar pelo POST na rede e pelo reload.",
+        "Fixture sintetica de aluno: transferir ida e volta para nao alterar o estado que as outras frentes usam (link_id reaproveitado)."
+      ]
+    },
+    "P44_COMPLEMENTO_15h12": "Usuarios internos nao tem coluna de @ (superadmin_internal_identities/profiles), mas cada um tem uma pessoa de servico em public.people pela ponte de ator (220400), que o 170100 deixa sem @ de proposito (person_type service). Se o Owner quiser @ para internos, o caminho menor e permitir 'service' em enforce_person_handle_rules/ensure_person_handle e mostrar o @ na tela de Usuarios internos (pacote pequeno + FE). Recomendo perguntar antes: o @ e identidade publica no Principal e o interno nao aparece la.",
+    "ENCERRAMENTO_15h23": {
+      "ultima_tentativa": "convites pela UI (passos 2-4) com Chrome reaberto as 15:12: passo 1 de novo ok (Secretaria QA R05 selecionavel), mas o renderer do Chrome travou na captura do passo 2 (1,3 GB livres); tentativa abandonada; FE de invites.create permanece local-green com passo 1 provado.",
+      "ambiente": "Chrome 9411, servidor 3010, scripts CDP e descartavel coelo_acessos_r05 encerrados as 15:22 (o container supabase_db_coelo_realm_r05 e da frente realm-interno); nenhum processo desta frente em execucao.",
+      "sha_final": "o commit desta rev 131; worktree limpa; sem WIP retido.",
+      "a_aplicar_pelo_coordenador": "deltas-r05-2.json (7), deltas-r05-3.json (7), deltas-r05-4.json (1); pacote 170400 + chave segmentFilterAvailable; proposta de skills na rev 129; perguntas P43/P44.",
+      "nao_retomo": "depois de 16:00 nao retomo por conta propria; respondo a revisao das 15:50 no JSON."
+    },
+    "P_SEGMENT_EM_PRODUCAO_15h27": "170400 em producao (lote 46) provado por REST com qa-r03: superadmin_people_list p_segment all=13, children=2, guardians=1, institutional_team=7, dual_profile=0; 'x' -> 22023 invalid segment. Chave segmentFilterAvailable ligada pelo coordenador; prova das abas pela UI depende de build novo. Delta sugerido: people.list BE done ja consta; registrar como evidencia do filtro por aba (sem action_id proprio).",
+    "CONFERENCIA_DO_COORDENADOR_15h25": "rev 131 integrada em dev 6418194db; deltas r05-2/3/4 aplicados; 170400 lote 46; P43/P44 viraram P45/P46; defeito do @ de unidade corrigido pela G5 (lote 47). flutter analyze do app inteiro na branch: 1 aviso pre-existente (test_driver/qa_login.dart strict_raw_type), nada meu.",
+    "INTERNAL_USERS_SUSPEND_15h30": "negativa por REST: superadmin_internal_user_change_status (p_request_id, p_internal_identity_id inexistente, p_expected_version, p_status suspended, p_reason) devolve SAI_PERMISSION_DENIED 403 nao enumeravel. Caminho positivo continua sem prova: o unico usuario interno em producao e o qa-r03 e suspende-lo derruba a sessao de teste; BE fica local-green ate existir um segundo interno (exige internal-users.create: Edge Function com a API de administracao do Auth).",
+    "PEOPLE_CREATE_GATE_15h32": "gate confirmado: producao nao tem RPC de resolucao de identidade (so superadmin_people_create_draft/detail/filter_options/list/update); PersonIdentityRepository.resolve (CPF/e-mail/telefone com minimizacao LGPD) exige pacote proprio na proxima rodada. Parte ja coberta: PersonIdentityRepository.checkHandle pode usar superadmin_person_handle_availability (170100) - proposta para a proxima rodada: implementar SupabasePersonIdentityRepository com checkHandle pelo 170100 e resolve por uma RPC nova superadmin_people_identity_lookup (candidatos/acessos-pessoas 2026091117xxxx), destravando people.create.",
+    "D1_APOS_170200_15h35": "acompanhamento automatico da hierarquia (171100) volta a sincronizar em producao depois do 170200: a crianca d0c4...0003, apos link -> transfer -> transfer de volta, segue instituicao, unidade (Unidade QA R04) e turma (368a5cea) + 1 pessoa (follow_following_list: institution 1, unit 1, group 1, person 1; a unidade sintetica de transferencia cce78909 saiu do acompanhamento). Evidencia de que o sync nao apaga sem WHERE e revoga o que a estrutura nao justifica mais.",
+    "REVISAO_FINAL_15h50": {
+      "entreguei_tudo": "sim. Nada ficou fora do JSON, do handoff (evidence/etapa-2/r05-acessos-pessoas/handoff.md) ou dos deltas.",
+      "1_sha_final": "072d18eea publicado em origin/work/etapa2-r05-acessos-pessoas (inclui origin/dev ate faa7e2d5d); status limpo; sem WIP; nenhum processo desta frente em execucao (Chrome, servidores e descartavel encerrados as 15:22).",
+      "2_fechou_por_action_id_com_prova": {
+        "E2E (rota real + producao + reload)": "access-profiles.list, access-profiles.detail, access-profiles.create (P31: criacao a partir do modelo Secretaria, d6264c5d), people.list, people.links (@ trocado pela UI), people.reload, access-models.list, access-models.filter, access-models.detail, invites.list; access-models.create ja era E2E",
+        "BE done por REST em producao": "invites.create/detail/resend(regra)/revoke, students.list/link/edit/transfer/revoke, access-profiles.create/edit (170300), people.links (@ 170100)",
+        "FE verified/local-green": "access-profiles.edit verified; invites.create, students.link/edit/transfer, access-models.edit local-green",
+        "pacotes em producao": "170100 (@ de pessoas, lote 31), 170200 (safeupdate/D1, lote 34), 170300 (perfil Admin = modelo do sistema, lotes 38-42), 170400 (abas de Pessoas, lote 46)",
+        "cliente": "P31 (3b4aaa5b6), @ (677d95682/c227e531f), Alunos (bf9c2f186), envelope do save (b64bd9bf9), codigo com hifen (0aeb9b729), p_segment gateado (7058176f3), 18 goldens do composto; suites do recorte verdes salvo 3 goldens P15 pre-existentes"
+      },
+      "3_aberto_com_primeiro_gate": {
+        "invites.create/detail/resend/revoke pela UI": "Chrome estavel (renderer travou < 1,3 GB); passo 1 provado",
+        "students.link/edit/transfer pela UI": "build novo com bf9c2f186 + Chrome",
+        "access-models.edit/duplicate pela UI": "build novo com 0aeb9b729 + Chrome",
+        "internal-users.create": "Edge Function com a API de administracao do Auth (fora do MVP salvo decisao)",
+        "internal-users.suspend/edit pela UI": "segundo usuario interno (suspender o qa-r03 derruba a sessao)",
+        "people.create": "RPC de resolucao de identidade (proposta: superadmin_people_identity_lookup + checkHandle pelo 170100)",
+        "people.list card/abas pela UI": "Chrome estavel (abas ja filtram no servidor com o 170400)",
+        "@ de usuarios internos / edicao pela instituicao": "P45/P46 (Owner) e app Admin"
+      },
+      "4_deltas": "deltas-r05.json (26), deltas-r05-2.json (7), deltas-r05-3.json (7), deltas-r05-4.json (1): todos aplicados pelo coordenador (dev 530613fb5 e seguintes).",
+      "5_pacotes": "nenhum candidato pendente em candidatos/acessos-pessoas; chaves enablePersonHandles e segmentFilterAvailable ligadas.",
+      "6_duvidas_ao_owner": [
+        "P45 (ex-P43): excluir modelo do sistema criado pelo Superadmin ou so inativar? recomendo inativar",
+        "P46 (ex-P44): @ para usuarios internos? recomendo perguntar antes; caminho menor e a pessoa de servico"
+      ],
+      "dados_sinteticos": "convite 03e9c9d2 (revoked); @ trocados (ec2a15a2, 9f04...0061); institution_roles 5afbe4a6 (inactive) e d6264c5d (active); child_group_links 8d766ca8; units cce78909 + child_unit_links 5d00bc95 (inactive)",
+      "skills": "proposta na rev 129 (coelo-backend, coelo-frontend, coelo-frontend-backend)",
+      "nao_retomo": "depois de 16:00 nao retomo por conta propria."
+    },
+    "REVISAO_FINAL_15h50_COMPLEMENTO": {
+      "pedido_do_coordenador": "recebido as 15:50; a revisao formal esta na rev 136 (REVISAO_FINAL_15h50) e vale integralmente.",
+      "chaves_criadas": "nenhuma. Nenhum segredo, token, chave de API ou valor de Vault foi criado nesta frente na R05; nada a rotacionar. Chaves de composicao (Dart): enablePersonHandles e segmentFilterAvailable, ambas ligadas.",
+      "sha_publicado": "o commit desta rev 137 (branch work/etapa2-r05-acessos-pessoas, status limpo, sem WIP)."
+    }
   },
   "historico_r04": {
     "revision": 118,

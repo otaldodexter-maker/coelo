@@ -346,7 +346,16 @@ final class _AgendaToolbar extends StatelessWidget {
   final bool enabled;
 
   @override
-  Widget build(BuildContext context) => Column(
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) => _build(
+      context,
+      // V-8 (Owner, 11/09 16:45): no web o par Calendário/Lista do R (dois
+      // botões à direita da toolbar) era melhor; no mobile fica o toggle 50/50.
+      webToggle: constraints.maxWidth >= CoeloBreakpoints.expanded.minWidth,
+    ),
+  );
+
+  Widget _build(BuildContext context, {required bool webToggle}) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
       Row(
@@ -403,27 +412,70 @@ final class _AgendaToolbar extends StatelessWidget {
             ),
           ),
         ],
-        actions: const [],
+        actions: [
+          if (webToggle)
+            _AgendaViewToggle(
+              selected: view,
+              onSelected: onViewChanged,
+              enabled: enabled,
+              compact: true,
+            ),
+        ],
       ),
       const SizedBox(height: CoeloSpacing.space3),
-      // P33 (Owner, 11/09): o par Calendário/Lista divide a largura em 50%
-      // cada, maior e centralizado, em vez de dois botões pequenos à direita.
-      _AgendaViewToggle(selected: view, onSelected: onViewChanged, enabled: enabled),
-      const SizedBox(height: CoeloSpacing.space3),
+      // P33 (Owner, 11/09): no mobile o par Calendário/Lista divide a largura
+      // em 50% cada, maior e centralizado.
+      if (!webToggle) ...[
+        _AgendaViewToggle(selected: view, onSelected: onViewChanged, enabled: enabled),
+        const SizedBox(height: CoeloSpacing.space3),
+      ],
     ],
   );
 }
 
 final class _AgendaViewToggle extends StatelessWidget {
-  const _AgendaViewToggle({required this.selected, required this.onSelected, this.enabled = true});
+  const _AgendaViewToggle({
+    required this.selected,
+    required this.onSelected,
+    this.enabled = true,
+    this.compact = false,
+  });
 
   final AgendaInstitutionalView selected;
   final ValueChanged<AgendaInstitutionalView> onSelected;
   final bool enabled;
 
+  /// Web (R): dois botões de 88 px à direita da toolbar, sem preenchimento.
+  final bool compact;
+
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    if (compact) {
+      return Semantics(
+        container: true,
+        label: 'Alternar visualização da Agenda',
+        child: Wrap(
+          spacing: CoeloSpacing.space1,
+          runSpacing: CoeloSpacing.space1,
+          children: [
+            for (final value in AgendaInstitutionalView.values)
+              OutlinedButton(
+                key: Key('agenda-view-${value.name}'),
+                onPressed: enabled ? () => onSelected(value) : null,
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: selected == value ? colors.primary : colors.onSurface,
+                  side: BorderSide(
+                    color: selected == value ? colors.primary : colors.outlineVariant,
+                  ),
+                  minimumSize: const Size(88, CoeloSize.touchMin),
+                ),
+                child: Text(value.label),
+              ),
+          ],
+        ),
+      );
+    }
     return Semantics(
       container: true,
       label: 'Alternar visualização da Agenda',

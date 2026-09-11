@@ -139,7 +139,9 @@ final class MedicationPlanDetail {
     this.groupId,
     this.scopeKind,
     this.childDisplayName = '',
-  }) : schedules = List.unmodifiable(schedules);
+    List<MedicationEvidence> evidence = const [],
+  }) : schedules = List.unmodifiable(schedules),
+       evidence = List.unmodifiable(evidence);
   final String id, childPersonId, medicationName, doseUnit, administrationRoute, timezone;
   final String? routeDetails, instructions;
   // Contexto do agregado em produção (a instituição é derivada da criança no
@@ -152,6 +154,46 @@ final class MedicationPlanDetail {
   final DateTime validFrom;
   final DateTime? validUntil;
   final List<MedicationScheduleDraft> schedules;
+
+  /// Registros de dose (medication.evidence), do mais recente ao mais antigo.
+  final List<MedicationEvidence> evidence;
+}
+
+enum MedicationEvidenceOutcome { administered, notAdministered, refused }
+
+final class MedicationEvidence {
+  const MedicationEvidence({
+    required this.id,
+    required this.occurredAt,
+    required this.outcome,
+    this.reason,
+    this.note,
+  });
+  final String id;
+  final DateTime occurredAt;
+  final MedicationEvidenceOutcome outcome;
+  final String? reason, note;
+}
+
+/// Registro de uma dose; o servidor exige motivo quando não foi administrada.
+final class MedicationEvidenceCommand {
+  MedicationEvidenceCommand({
+    required this.requestId,
+    required this.planId,
+    required this.outcome,
+    this.reason,
+    this.note,
+    this.occurredAt,
+  }) {
+    if (outcome != MedicationEvidenceOutcome.administered &&
+        (reason == null || reason!.trim().isEmpty)) {
+      throw ArgumentError('Evidence requires a reason.');
+    }
+  }
+  final String requestId, planId;
+  final MedicationEvidenceOutcome outcome;
+  final String? reason, note;
+  final DateTime? occurredAt;
 }
 
 sealed class MedicationPlanException implements Exception {
@@ -184,6 +226,7 @@ abstract interface class MedicationPlanRepository {
   Future<MedicationPlanPage> fetchPage(MedicationPlanQuery query);
   Future<MedicationPlanDetail> fetchDetail(String planId);
   Future<MedicationPlanDetail> save(MedicationPlanSaveCommand command);
+  Future<MedicationEvidence> recordEvidence(MedicationEvidenceCommand command);
 }
 
 final class UnavailableMedicationPlanRepository implements MedicationPlanRepository {
@@ -195,4 +238,6 @@ final class UnavailableMedicationPlanRepository implements MedicationPlanReposit
   Future<MedicationPlanDetail> fetchDetail(String planId) async => _fail();
   @override
   Future<MedicationPlanDetail> save(MedicationPlanSaveCommand command) async => _fail();
+  @override
+  Future<MedicationEvidence> recordEvidence(MedicationEvidenceCommand command) async => _fail();
 }

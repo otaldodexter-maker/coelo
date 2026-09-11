@@ -1,22 +1,27 @@
 {
  "grupo": "estrutura",
- "revision": 53,
- "round": "E2-R05-20260911",
- "updatedAt": "2026-09-11T15:50:20-03:00",
+ "revision": 55,
+ "round": "E2-R06-20260911",
+ "updatedAt": "2026-09-11T20:01:00-03:00",
  "app": "Claude",
  "modelo": "Opus 5 (esforco medio)",
- "conversa": "R05 · Estrutura (G1)",
- "coordenador": "R05 · Coordenacao da tarde (coordenacao.json rev 38)",
- "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-estrutura",
- "branch": "work/etapa2-r05-estrutura",
- "head": "(commit desta revisao)",
- "upstream": "origin/work/etapa2-r05-estrutura",
- "base": "origin/dev 1da5c3e3c ja contem toda a branch (fast-forward em 15:29); nenhum conflito",
+ "conversa": "R06 · Estrutura (G1)",
+ "coordenador": "R06 · Coordenacao (coordenacao.json rev 52, T0 19:36)",
+ "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-estrutura",
+ "branch": "work/etapa2-r06-estrutura",
+ "head": "0434548b9 + merge de origin/dev fcdded416 (lote 49)",
+ "upstream": "origin/work/etapa2-r06-estrutura (push no primeiro commit)",
  "horario": {
-  "inicio": "2026-09-11T12:04:55-03:00",
-  "corte": "2026-09-11T15:45:00-03:00",
-  "miniRevisao": "15:45 (propria) e 15:50 (pedido do coordenador, resposta ate 16:00)",
-  "loop": "/loop 15m agendado na abertura"
+  "abertura": "2026-09-11T19:36:45-03:00",
+  "T0": "2026-09-11T19:36 (coordenacao rev 52)",
+  "corte": "2026-09-11T21:36:00-03:00",
+  "revisao": "ate 21:46",
+  "loop": "/loop 15m 6ae05dfa"
+ },
+ "usuarioSintetico": {
+  "email": "qa-r06-estrutura@coelo.me",
+  "credencial": "Coelo-backups/qa-r06-estrutura.env (existe desde ~19:55; lote 49)",
+  "chrome": "%TEMP%/coelo-chrome-estrutura, um por vez"
  },
  "escopo": [
   {
@@ -100,160 +105,32 @@
   }
  ],
  "totalAcoes": 49,
- "estadoDePartida": "inventario de dev 2f6a6114f: E2E em institutions.create, units.create, groups.create, groups.edit, locations.create-edit, locations.schedule; FE verified tambem em units.list, groups.list, activities.list, locations.list; institutions.edit blocked-decision; o resto pending-verification/local-green",
- "historicoR04": {
-  "revisaoFinal": 40,
-  "handoff": "docs/reviews/evidence/etapa-2/r04-estrutura/handoff.md",
-  "nota": "a rev 40 (189cbb852) e o commit 631f9de52 (activities.edit completo, 180/180) estao SO na branch work/etapa2-r04-estrutura; 44574dfda nao compila sozinho, 631f9de52 o completa. A worktree e2-r04-estrutura ainda existe e recebeu um build/ as 11:58: a conversa R04 pode estar viva. Esta frente NAO toca essa worktree.",
-  "pendenciasHerdadas": [
-   "180060 (gateways de Atividades v2) faz create or replace em audit_activity_change, has_activity_capability e audit_mask_payload, que existem em producao com outro corpo, e cria a sobrecarga de 14 argumentos de audit_append_superadmin_internal (md5 antes/depois medidos)",
-   "Assercoes que esperavam SAI_MFA_REQUIRED do Owner em AAL1 foram trocadas pela regra do MVP em 9 suites (lista em regraDosTestesAAL1); revisar quando MFA voltar",
-   "assessment_v2_save_configuration recebeu #variable_conflict use_variable: conferir as demais funcoes plpgsql de 180350 quanto a nomes de variaveis iguais a colunas (o pgTAP cobre os 12 RPCs, mas nao todo caminho)",
-   "institutions.create persiste so ROOT+ADDRESS+handle; representantes, administradores, contato, documento, plano e marca ficam vazios ate o proximo pacote",
-   "Cards das unidades dentro da tela de Locais da instituicao (desenho aprovado pelo Owner na R03) continuam por fazer: exigem injetar o diretorio de Unidades em LocationsPage",
-   "superadmin_location_catalog_v2_authorization_test (lote 47) nunca rodou contra a forma de producao (units.institution_type_id); corrigida aqui. Conferir se outras suites de Locais dos lotes 46-49 tem o mesmo desvio antes de cita-las como prova",
-   "Unidades: o icone @ no campo Identificador (Unidades e Instituicoes) sugere handle, mas o campo e o slug; decisao visual do Owner se troca o icone. Produto: se o Identificador deve virar o @ na criacao, o cliente precisaria mandar handle: slug no create com validador ^[a-z0-9][a-z0-9._]{1,28}[a-z0-9]$ (sem hifen). Recomendacao: manter slug interno e @ gerado ate existir a acao de handle no cliente"
-  ]
- },
- "ordemDaRodada": [
-  {
-   "n": 0,
-   "item": "Atividades: cherry-pick 44574dfda + 631f9de52; test/features/activities verde; rebuild qa_main; provar activities.create e activities.edit na rota real; reexecutar as suites pgTAP de Locais dos lotes 46-49 antes de cita-las",
-   "estado": "PROVADO na rota real com qa-r03 (build df8ef50ca servido em 127.0.0.1:3001): activities.create (save por superadmin_activity_location_create_v2 -> activity 95b98978, draft, management_version 5, local 82e92854; lista recarregada mostra), activities.detail (detail_v2, reload), activities.edit (rename por save_v2 -> management_version 11, detalhe recarregado mostra o nome novo, categoria hidratada do catalogo), activities.location (local do catalogo escolhido na criacao). Correcoes no caminho: icon_key (CHECK do banco), catalogo no modo edicao, botao Editar do detalhe (proximo build). pgTAP de Locais dos lotes 46-49 REEXECUTADO no espelho coelo_estrutura_r05 (baseline + 116 lotes): authorization 26/26, isolation 6/6, catalog 30/30, copy 19/19, schedule 38/38, update_status 28/28, reservations 49/49, consumer_bindings 30/30",
-   "action_ids": [
-    "activities.create",
-    "activities.edit"
-   ]
+ "estadoDePartida": "inventario de dev ca60b096b: E2E em institutions.list/filter/detail/create/edit/reload, units.filter/create/edit/status/reload/locations-map/copy-institution-location, groups.create/edit, activities.create/detail/edit/location, locations.create-edit/schedule (23). FE verified sem E2E: units.list, groups.list, activities.list, locations.list (BE local-green). activities.publish BE done FE local-green. Resto pending/local-green.",
+ "historicoR05": {
+  "revisaoFinal": 53,
+  "handoff": "docs/reviews/evidence/etapa-2/r05-estrutura/handoff.md",
+  "respostaARevisaoFinal": {
+   "quando": "15:50-16:00 (antecipada as 15:50)",
+   "entregouTudoMesmo": "Sim, no que cabia ao recorte executavel: todo o codigo esta publicado em work/etapa2-r05-estrutura ate c3e1ee639 e ja integrado em dev (1da5c3e3c e posteriores); status limpo, nenhum WIP retido; 51 deltas ensaiados (apply + validate PASS) em deltas-r05-estrutura.json; pacote structure_handles_v1 em producao (lote 42); handoff em evidence/etapa-2/r05-estrutura/handoff.md; 33 capturas em rota-real/; Chrome, servidor e espelho fechados; worktree base removida.",
+   "fechado": "E2E propostas: activities.create/location/detail/edit, units.edit/status/filter/reload/locations-map/copy-institution-location, institutions.edit/list/filter/detail/reload (15). BE done sem FE: activities.publish. FE verified extra: verificacao de @ em Unidades e Atividades. Correcoes: icon_key, catalogo na edicao, botao Editar, no-op do edit_core, owner_*, parsers tolerantes (regressao do lote 211100), D3 em Instituicoes.",
+   "oQueFicouEmAberto": [
+    "activities.publish no cliente (fecha antes do HTTP; decidir p_publish pelo status; nao congelar o rascunho apos falha)",
+    "groups.location escrita (sem UI; repositorio sem consumidor) e groups.members (so estado vazio)",
+    "assessments.entry/gradebook/close/reopen/detail e activities.assessment (qa-r03 sem vinculo profissional; pacote nao escrito)",
+    "institutions.status/files/error/access-denied, units.error/access-denied, locations.detail-links (nao exercidos)",
+    "Regra do @: envio de handle no payload (211100), troca por set_v1 com trava de 30 dias, campo @ em Turmas",
+    "Goldens do composto de tabela: 9 activity_golden_test + 1 institution_directory_page",
+    "Code review: pendenciasDeCodeReview (parsers estritos em Pessoas/Agenda/Forms, SAI_INTERNAL_ERROR sem SQLSTATE, no-op do edit_core, carencia de 15 dias no RPC legado de handle de Unidades, card de previa da turma ilegivel no escuro)"
+   ],
+   "duvidasAoOwner": "nenhuma nova; observacao visual do card de previa da turma registrada para a lista de decisao",
+   "dadosSinteticos": "public.groups 368a5cea (Turma QA R04 Estrutura (editada)); public.institutions 190dd028 (Escola R04 Estrutura, qa-r04-escola) + institution_addresses; public.units f5284f2f (Unidade Centro R04) + unit_addresses/unit_contacts; public.activity_locations 82e92854 (Sala R04 Estrutura, catalogo da instituicao 190dd028). Ficam ate o fim da Etapa 2 (P42). R05: activity_definitions 95b98978 (Atividade R05 Estrutura (editada), draft, unidade f5284f2f, local 82e92854) e 2e45c8bd (Atividade R05 Sonda, draft, criada por create_v2 direto para isolar o erro do icone); units f5284f2f passou a active. Ficam ate o fim da Etapa 2 (P42). institutions 190dd028 ganhou documento 11444777000161, pessoa \"Rafaela Sintetica\" (representante legal + membership owner) as 14:19. activity_locations d5461295 (copia de Sala R04 Estrutura no catalogo da unidade f5284f2f, 14:26).",
+   "shaPublicado": "c3e1ee639 (codigo) / e77c936f6 (docs); status limpo; nenhum WIP",
+   "deltas": "evidence/etapa-2/r05-estrutura/deltas-r05-estrutura.json: 51 entradas; 21 ja aplicadas pelo coordenador (530613fb5); 22-51 pendentes de aplicacao",
+   "pacotesSqlRestantes": "nenhum (structure_handles_v1 aplicado no lote 42)",
+   "chavesCriadas": "nenhuma chave, token ou segredo criado por esta frente",
+   "dadosSinteticosCriados": "activity_definitions 95b98978 (ativa) e 2e45c8bd (sonda); groups 4214106c; activity_locations d5461295; institutions 190dd028 ganhou CNPJ sintetico e pessoa \"Rafaela Sintetica\"; units f5284f2f ativada (P42: ficam ate o fim da Etapa 2)"
   },
-  {
-   "n": 1,
-   "item": "institution_contacts_v1 em candidatos/estrutura (faixa 2026091118xxxx): documento, contato, representantes/administradores como pessoas do realm interno; pgTAP verde; alinhar com realm-interno pelo JSON; fechar institutions.edit na rota real",
-   "estado": "FECHADO na rota real: institutions.edit (CNPJ, representante, administradora) persistiu por superadmin_institution_contacts_edit_v1 (lote 28 da G5) com management_version 2 e o reload mostra pessoas e documento; correcoes no cliente: contrato de contatos no repositorio, owner_* fora dos campos sem contrato, edit_core so quando o nucleo muda (servidor rejeita no-op)",
-   "action_ids": [
-    "institutions.edit"
-   ]
-  },
-  {
-   "n": 2,
-   "item": "institutions.list/filter/detail/status/files/error/access-denied/reload/locations-map e units.filter/edit/status/error/access-denied/reload/locations-map/copy-institution-location na rota normal",
-   "estado": "FECHADO na rota real: institutions.list/filter/detail/reload e units.filter/edit/status/reload/locations-map/copy-institution-location (deltas 22-45). institutions.status/files/error/access-denied e units.error/access-denied NAO provados nesta rodada (status de instituicao: \"Alteracao de status indisponivel ate a definicao das transicoes permitidas\" no proprio formulario; error/access-denied exigem simular falha/negativa: ficam para a proxima)"
-  },
-  {
-   "n": 3,
-   "item": "groups.members e groups.location",
-   "estado": "groups.members: etapa \"Pessoas da turma\" abre na rota real (vazio honesto, Cadastrar pessoa e Buscar por @/CPF/e-mail/celular) mas a inclusao de pessoa nao foi provada (sem pessoa vinculada a instituicao da turma sintetica): FE local-green. groups.location: o detalhe le o local vinculado (vazio honesto) e reservas; a ESCRITA nao tem UI (SupabaseGroupLocationCreateRepository existe sem consumidor; o assistente de Turmas nao tem secao de local): gate = secao de local no assistente (reusar ActivityCataloguedLocationSection) + repositorio available:true na composicao"
-  },
-  {
-   "n": 4,
-   "item": "activities.detail/publish/assessment/location e assessments.* (vinculo profissional do qa-r03 em candidatos/estrutura)",
-   "estado": "activities.create/detail/edit/location fechados (deltas 1-12); activities.publish BACKEND provado (save_v2 p_publish=true com turma 4214106c vinculada -> active, mv 24, detalhe recarregado mostra Ativa) e cliente local-green (publish fecha antes do HTTP; rascunho congela apos falha); activities.assessment e assessments.* nao alcancados (qa-r03 sem vinculo profissional)"
-  },
-  {
-   "n": 5,
-   "item": "locations.detail-links e locations.schedule",
-   "estado": "locations.schedule ja E2E (R04); locations.detail-links nao retomado"
-  },
-  {
-   "n": "transversal",
-   "item": "Regra do @ (ADR 0034 Decisao 16): Identificador = @ com icone @, padrao hierarquico gerado no servidor, editavel com disponibilidade enquanto digita, troca 1x/30 dias (handle_last_changed_at + RPC de disponibilidade) em unidades, turmas e atividades; P36 no formulario e no servidor; rodape cancelar esquerda/salvar direita; estado vazio completo",
-   "estado": "BACKEND em producao (lotes 42 e 211100). CLIENTE (parcial, provado na rota real): verificacao de disponibilidade do @ enquanto digita no Identificador de Unidades (3983c2443) e no \"@ da atividade\" (f3fa4e7fb), via superadmin_structure_handle_availability_v1. FALTA: enviar handle no payload de criacao/edicao (211100), trocar o @ por superadmin_structure_handle_set_v1 com mensagem honesta na trava de 30 dias, campo @ no assistente de Turmas"
-  }
- ],
- "primeiroGate": "nenhum bloqueio; o \"sessao unica\" era logout global de outra frente (coordenador segurou as provas de Conta ate 15:30)",
- "criteriosFechados": [
-  "activities.edit: modo edicao passa a combinar fetchTemplateOptions (taxonomia/modelos/instituicoes) com fetchFormOptions (unidades/turmas/pessoas) e a hidratacao sobe do subtipo ao pai quando taxonomy_id da v2 e um subtipo; catalogo indisponivel vira catalogOptionsError com Tentar novamente (nao commitado ainda: teste em andamento)",
-  "Medicao na base limpa (worktree detached em origin/dev 2f6a6114f): activity_golden_test falha 9 testes (diretorio de Atividades) TAMBEM na base; pre-existentes, nao sao do delta desta frente",
-  "activities.create/detail/edit/location na rota real com CRUD em producao e reload (capturas em evidence/etapa-2/r05-estrutura/rota-real/)",
-  "units.edit e units.status na rota real (units-edit-*.jpg, units-status-ativa-salva.jpg, units-list-apos-status.jpg)",
-  "Achado corrigido: o cliente enviava icon_key=\"activity\" (nome do enum) e activity_definitions_identity_icon_check so aceita as 12 chaves legadas -> save_v2 SAI_INTERNAL_ERROR sem detalhe. ActivityIdentityIcon.databaseKey (school, sports_soccer, music_note, science, palette) + teste",
-  "Achado corrigido: rota de detalhe de Atividades nunca passava onEdit (botao Editar sempre desligado); ligado com hasStructureMutationCapability + teste de rota",
-  "Achado: form_options_v2 so lista unidades/turmas status=active; a unidade sintetica estava draft. Ativada pela rota real (units.status)",
-  "institutions.edit na rota real (institutions-edit-*.jpg): documento + representante + administradora persistidos e recarregados",
-  "Pacote structure_handles_v1 verde (24/24) e regressao pgTAP com o candidato aplicado: group_detail 33/33, group_location_create 46/46, activity_save_v2 46/46, activities security_contract 37/37, unit_detail 31/31, institution_create_v2 31/31",
-  "institutions.list/filter/detail/reload e units.filter/reload/locations-map/copy-institution-location na rota real (institutions-list.jpg, institutions-filter-*.jpg, units-filter-*.jpg, units-locations-*.jpg, units-copy-*.jpg)",
-  "Achado corrigido (regressao causada pelo lote 211100): parsers estritos de unit_detail_v2/group_detail_v2/activity detail exigiam contagem exata de chaves e quebravam Locais da unidade e Editar turma no deep link quando o servidor passou a devolver handle; tolerancia a chaves aditivas + testes (01a8c3e27)",
-  "activities.publish backend em producao (turma 4214106c criada pelo assistente em Escola R04/Unidade Centro; vinculo salvo pela edicao mv 17; publish por save_v2 mv 24)",
-  "Regra do @ no cliente (parcial): verificacao de disponibilidade enquanto digita no Identificador de Unidades (3983c2443)",
-  "Verificacao de @ em Unidades PROVADA na rota real (disponivel / invalido com hifen / reservado coelo em uso) com superadmin_structure_handle_availability_v1 em producao (units-handle-*.jpg)",
-  "Verificacao de @ no \"@ da atividade\" PROVADA na rota real (activities-handle-disponivel.jpg)",
-  "D3 em Instituicoes: \"Previa institucional do Coelo\" -> \"Identidade institucional no Coelo\"; goldens institution_form_create_light_375, institution_form_edit_dark_1440 e institution_form_identity_unavailable_light_1440 regravados (SDK 3.44.2) so pela linha de texto: medidos verdes antes da mudanca e verdes depois da regravacao"
- ],
- "testes": {
-  "P": "flutter: activity_form_page 31, activity_form_controller 18, activity_routes 11, institutions repositorio 29, suite de Instituicoes 227/228, unit_detail/group_detail/activity_read_detail 236 (com 2 testes novos de tolerancia); pgTAP no espelho: handles 24/24, Locais 226, regressao 224",
-  "F": "goldens pre-existentes: 9 activity_golden_test + 1 institution_directory_page (composto de tabela mudou em dev)",
-  "B": 0,
-  "S": 0,
-  "U": 0,
-  "evidencia": "commits df8ef50ca, 9a9b6ee3f, fe2cf49f9, 57cd4b5b3, 5a4a0213c, 01a8c3e27"
- },
- "pacotesProntos": [
-  {
-   "carimbo": "20260911180000_structure_handles_v1",
-   "origem": "novo, sobre baseline + lotes ate 35 (opcionalmente usa reserved_handles quando existir)",
-   "mudanca": "groups.handle/handle_last_changed_at + gatilho e backfill; activity_definitions.handle_last_changed_at; structure_handle_in_use; superadmin_structure_handle_availability_v1; superadmin_structure_handle_set_v1 (30 dias, recibo, auditoria)",
-   "pgTAP": "superadmin_structure_handles_v1_test 24/24",
-   "estado": "verde no espelho coelo_estrutura_r05; commit 57cd4b5b3 publicado; coordenador avisado 14:0x"
-  }
- ],
- "deltasPropostos": "evidence/etapa-2/r05-estrutura/deltas-r05-estrutura.json: 51 entradas (1-21 ja em dev; 22-51 novas). Ensaio apply + validate PASS (E2E 63)",
- "pedidosAoCoordenador": [
-  "Aplicar as entradas 22-45 de deltas-r05-estrutura.json (as 21 primeiras ja estao em dev)",
-  "Integrar 5a4a0213c (no-op do edit_core), 01a8c3e27 (parsers tolerantes: corrige regressao do lote 211100 em Locais da unidade e Editar turma), 00056abaa/fa1b5996d/este commit (docs)",
-  "Registrar a regressao do lote 211100 x parsers estritos como regra na skill coelo-frontend-backend: contrato aditivo no servidor exige parser tolerante no cliente (ou teste de contrato antes de aplicar)",
-  "Integrar tambem 3983c2443 (verificacao de @ em Unidades; toca superadmin_auth_scope, SuperadminApp e router com parametro opcional structureHandleAvailability)",
-  "Integrar f3fa4e7fb (@ em Atividades) junto de 3983c2443",
-  "Integrar o commit de D3 (texto sem previa + 3 goldens de Instituicoes regravados so pelo texto)"
- ],
- "avisosParaOutrosGrupos": [
-  {
-   "para": "realm-interno",
-   "assunto": "lote 211100 x parsers estritos",
-   "texto": "unit_detail_v2/group_detail_v2 com handle quebraram Locais da unidade e Editar turma no cliente ate 01a8c3e27; qualquer chave nova em detail_v2 de pessoas/agenda/forms tera o mesmo efeito nos parsers dessas familias"
-  },
-  {
-   "para": "acessos-pessoas",
-   "assunto": "person_detail_v2",
-   "texto": "o parser de person_detail_v2 exige contagem exata de chaves; se o pacote de @ de pessoas acrescentou campos ao detail, a tela de Pessoas cai como caiu Locais da unidade"
-  }
- ],
- "perguntasParaOOwner": [],
- "pendenciasDeCodeReview": [
-  "Campo \"@ da atividade\" no formulario de Atividades mostra o nome como dica e nao o handle_stem do servidor no modo edicao (o detail_v2 nao expoe handle_stem no mapeamento do cliente)",
-  "SAI_INTERNAL_ERROR do save_v2 esconde o SQLSTATE: registrar o detalhe na auditoria (reason) para diagnostico",
-  "superadmin_institution_edit_core_v2 rejeita no-op com SAI_INVALID_ARGUMENT generico; o cliente contorna, mas o servidor poderia devolver o recibo idempotente",
-  "change_unit_handle_for_superadmin (people-based) continua com carencia de 15 dias; a regra do Owner e 30 (o RPC novo aplica 30)",
-  "9 goldens de activity_golden_test e 1 de institution_directory_page (disabled pagination) falham em dev pelo composto de tabela (G-SUP): regravar apos o merge final, com a lista de decisao do Owner",
-  "Card de previa da turma em \"Vinculos e aparencia\" (Criar/Editar turma) fica branco com texto claro no tema escuro (ilegivel): tokens de superficie do preview",
-  "Parsers de detalhe (people/person_detail_v2, agenda, forms, location reservation gateway, group_location_create) ainda exigem contagem exata de chaves: qualquer coluna nova no servidor derruba a tela; alinhar com a tolerancia aditiva"
- ],
- "bloqueio": null,
- "wip": {
-  "estado": "nenhum"
- },
- "recursos": {
-  "processos": [],
-  "portas": [],
-  "encerramento": "Chrome 9561, servidor 3001 e espelho fechados (15:21); worktree e2-r05-estrutura-base removida por mim"
- },
- "ack": null,
- "proximoPasso": "responder a revisao de 10 min do coordenador (15:50-16:00) no JSON; depois de 16:00 nao retomar por conta propria",
- "dadosSinteticosEmProducao": "public.groups 368a5cea (Turma QA R04 Estrutura (editada)); public.institutions 190dd028 (Escola R04 Estrutura, qa-r04-escola) + institution_addresses; public.units f5284f2f (Unidade Centro R04) + unit_addresses/unit_contacts; public.activity_locations 82e92854 (Sala R04 Estrutura, catalogo da instituicao 190dd028). Ficam ate o fim da Etapa 2 (P42). R05: activity_definitions 95b98978 (Atividade R05 Estrutura (editada), draft, unidade f5284f2f, local 82e92854) e 2e45c8bd (Atividade R05 Sonda, draft, criada por create_v2 direto para isolar o erro do icone); units f5284f2f passou a active. Ficam ate o fim da Etapa 2 (P42). institutions 190dd028 ganhou documento 11444777000161, pessoa \"Rafaela Sintetica\" (representante legal + membership owner) as 14:19. activity_locations d5461295 (copia de Sala R04 Estrutura no catalogo da unidade f5284f2f, 14:26).",
- "estado": "finalizado (resposta a revisao final gravada as 15:50; depois de 16:00 nao retomo por conta propria)",
- "cliente": {
-  "activitiesEdit": "activity_form_page._load em modo edicao busca form_options_v2 + template_options e monta ActivityFormOptions com taxonomia; ActivityFormController.edit recebe initialCatalogError; _hydrateEdit sobe do subtipo ao pai",
-  "helpersDaRotaReal": "scratchpad: serve.js (SPA), cdp.js (login/goto/click/type/shot/eval), net.js (grava RPCs), rpc.js (chama RPC com a sessao do app sem imprimir token)"
- },
- "miniRevisao": {
-  "shaPublicado": "(commit desta revisao); codigo ate o commit de D3 em Instituicoes - status limpo, sem WIP",
-  "fechouPorActionId": [
-   "E2E (FE verified + BE done): activities.create, activities.location, activities.detail, activities.edit, units.edit, units.status, units.filter, units.reload, units.locations-map, units.copy-institution-location, institutions.edit, institutions.list, institutions.filter, institutions.detail, institutions.reload (15 acoes)",
-   "BE done sem FE: activities.publish",
-   "Pacote SQL structure_handles_v1 (24/24) aplicado pelo coordenador (lote 42)",
-   "pgTAP de Locais dos lotes 46-49 reexecutado (226 assercoes) e regressao de Turmas/Atividades/Unidades/Instituicoes com o candidato (224)",
-   "units.edit FE: verificacao de disponibilidade do @ enquanto digita provada na rota real (delta 50)",
-   "activities.edit FE: verificacao de disponibilidade do @ da atividade provada na rota real (delta 51)"
-  ],
-  "abertoComPrimeiroGate": [
+  "abertoAoFimDaR05": [
    "activities.publish FE: decidir p_publish pelo status do detalhe e nao congelar o rascunho apos falha local",
    "groups.location escrita: secao de local no assistente de Turmas + SupabaseGroupLocationCreateRepository(available:true)",
    "groups.members: provar cadastro/busca de pessoa da propria instituicao",
@@ -262,35 +139,88 @@
    "Regra do @ no cliente: verificacao de disponibilidade feita em Unidades e Atividades; faltam envio de handle no payload (211100), troca por set_v1 com trava de 30 dias e campo @ em Turmas",
    "Goldens: 9 activity_golden_test + 1 institution_directory_page (composto de tabela)"
   ],
-  "pacotesProntos": "nenhum pendente (structure_handles_v1 ja em producao)",
-  "duvidasAoOwner": [
-   "Nenhuma nova. Observacao visual para a lista de decisao: o card de previa da turma em \"Vinculos e aparencia\" fica branco com texto claro no tema escuro (ilegivel); e o texto \"Previa institucional do Coelo\" na Identidade visual de Instituicoes contraria D3 (nao existe previa)"
-  ]
- },
- "propostasDeSkills": {
-  "coelo-frontend-backend": "Contrato aditivo no servidor exige parser tolerante no cliente: em 11/09 o lote 211100 (handle nos detail_v2 de Unidades/Turmas) derrubou Locais da unidade e Editar turma porque os parsers exigiam contagem exata de chaves; antes de aplicar um pacote que acrescenta campo a um detail_v2 consumido, conferir os parsers _map da familia (people/agenda/forms ainda sao estritos)",
-  "coelo-frontend": "Prova de rota real: (1) o flutter build web apaga build/web e derruba o servidor estatico no meio da prova, religar depois do build; (2) net.js/CDP Network.getResponseBody mostra o envelope real da RPC e economiza horas (icon_key, no-op do edit_core, SAI_SESSION_INVALID); (3) o logout global de outra frente (Conta > Sair) encerra a sessao do qa-r03 de todas as conversas: combinar horario pelo coordenador",
-  "coelo-backend": "save_v2 e create_v2 de Atividades devolvem SAI_INTERNAL_ERROR sem SQLSTATE para CHECKs (caso icon_key): registrar o detail da excecao no reason da auditoria de negativa; superadmin_institution_edit_core_v2 rejeita no-op com SAI_INVALID_ARGUMENT generico (o cliente contorna pulando o core); espelho descartavel so com o db: supabase start -x gotrue,realtime,storage-api,imgproxy,kong,mailpit,postgrest,postgres-meta,studio,edge-runtime,logflare,vector,supavisor + db reset + lotes por psql (3 min para 116 lotes)"
- },
- "respostaARevisaoFinal": {
-  "quando": "15:50-16:00 (antecipada as 15:50)",
-  "entregouTudoMesmo": "Sim, no que cabia ao recorte executavel: todo o codigo esta publicado em work/etapa2-r05-estrutura ate c3e1ee639 e ja integrado em dev (1da5c3e3c e posteriores); status limpo, nenhum WIP retido; 51 deltas ensaiados (apply + validate PASS) em deltas-r05-estrutura.json; pacote structure_handles_v1 em producao (lote 42); handoff em evidence/etapa-2/r05-estrutura/handoff.md; 33 capturas em rota-real/; Chrome, servidor e espelho fechados; worktree base removida.",
-  "fechado": "E2E propostas: activities.create/location/detail/edit, units.edit/status/filter/reload/locations-map/copy-institution-location, institutions.edit/list/filter/detail/reload (15). BE done sem FE: activities.publish. FE verified extra: verificacao de @ em Unidades e Atividades. Correcoes: icon_key, catalogo na edicao, botao Editar, no-op do edit_core, owner_*, parsers tolerantes (regressao do lote 211100), D3 em Instituicoes.",
-  "oQueFicouEmAberto": [
-   "activities.publish no cliente (fecha antes do HTTP; decidir p_publish pelo status; nao congelar o rascunho apos falha)",
-   "groups.location escrita (sem UI; repositorio sem consumidor) e groups.members (so estado vazio)",
-   "assessments.entry/gradebook/close/reopen/detail e activities.assessment (qa-r03 sem vinculo profissional; pacote nao escrito)",
-   "institutions.status/files/error/access-denied, units.error/access-denied, locations.detail-links (nao exercidos)",
-   "Regra do @: envio de handle no payload (211100), troca por set_v1 com trava de 30 dias, campo @ em Turmas",
-   "Goldens do composto de tabela: 9 activity_golden_test + 1 institution_directory_page",
-   "Code review: pendenciasDeCodeReview (parsers estritos em Pessoas/Agenda/Forms, SAI_INTERNAL_ERROR sem SQLSTATE, no-op do edit_core, carencia de 15 dias no RPC legado de handle de Unidades, card de previa da turma ilegivel no escuro)"
+  "pendenciasDeCodeReview": [
+   "Campo \"@ da atividade\" no formulario de Atividades mostra o nome como dica e nao o handle_stem do servidor no modo edicao (o detail_v2 nao expoe handle_stem no mapeamento do cliente)",
+   "SAI_INTERNAL_ERROR do save_v2 esconde o SQLSTATE: registrar o detalhe na auditoria (reason) para diagnostico",
+   "superadmin_institution_edit_core_v2 rejeita no-op com SAI_INVALID_ARGUMENT generico; o cliente contorna, mas o servidor poderia devolver o recibo idempotente",
+   "change_unit_handle_for_superadmin (people-based) continua com carencia de 15 dias; a regra do Owner e 30 (o RPC novo aplica 30)",
+   "9 goldens de activity_golden_test e 1 de institution_directory_page (disabled pagination) falham em dev pelo composto de tabela (G-SUP): regravar apos o merge final, com a lista de decisao do Owner",
+   "Card de previa da turma em \"Vinculos e aparencia\" (Criar/Editar turma) fica branco com texto claro no tema escuro (ilegivel): tokens de superficie do preview",
+   "Parsers de detalhe (people/person_detail_v2, agenda, forms, location reservation gateway, group_location_create) ainda exigem contagem exata de chaves: qualquer coluna nova no servidor derruba a tela; alinhar com a tolerancia aditiva"
   ],
-  "duvidasAoOwner": "nenhuma nova; observacao visual do card de previa da turma registrada para a lista de decisao",
-  "dadosSinteticos": "public.groups 368a5cea (Turma QA R04 Estrutura (editada)); public.institutions 190dd028 (Escola R04 Estrutura, qa-r04-escola) + institution_addresses; public.units f5284f2f (Unidade Centro R04) + unit_addresses/unit_contacts; public.activity_locations 82e92854 (Sala R04 Estrutura, catalogo da instituicao 190dd028). Ficam ate o fim da Etapa 2 (P42). R05: activity_definitions 95b98978 (Atividade R05 Estrutura (editada), draft, unidade f5284f2f, local 82e92854) e 2e45c8bd (Atividade R05 Sonda, draft, criada por create_v2 direto para isolar o erro do icone); units f5284f2f passou a active. Ficam ate o fim da Etapa 2 (P42). institutions 190dd028 ganhou documento 11444777000161, pessoa \"Rafaela Sintetica\" (representante legal + membership owner) as 14:19. activity_locations d5461295 (copia de Sala R04 Estrutura no catalogo da unidade f5284f2f, 14:26).",
-  "shaPublicado": "c3e1ee639 (codigo) / e77c936f6 (docs); status limpo; nenhum WIP",
-  "deltas": "evidence/etapa-2/r05-estrutura/deltas-r05-estrutura.json: 51 entradas; 21 ja aplicadas pelo coordenador (530613fb5); 22-51 pendentes de aplicacao",
-  "pacotesSqlRestantes": "nenhum (structure_handles_v1 aplicado no lote 42)",
-  "chavesCriadas": "nenhuma chave, token ou segredo criado por esta frente",
-  "dadosSinteticosCriados": "activity_definitions 95b98978 (ativa) e 2e45c8bd (sonda); groups 4214106c; activity_locations d5461295; institutions 190dd028 ganhou CNPJ sintetico e pessoa \"Rafaela Sintetica\"; units f5284f2f ativada (P42: ficam ate o fim da Etapa 2)"
- }
+  "dadosSinteticosEmProducao": "public.groups 368a5cea (Turma QA R04 Estrutura (editada)); public.institutions 190dd028 (Escola R04 Estrutura, qa-r04-escola) + institution_addresses; public.units f5284f2f (Unidade Centro R04) + unit_addresses/unit_contacts; public.activity_locations 82e92854 (Sala R04 Estrutura, catalogo da instituicao 190dd028). Ficam ate o fim da Etapa 2 (P42). R05: activity_definitions 95b98978 (Atividade R05 Estrutura (editada), draft, unidade f5284f2f, local 82e92854) e 2e45c8bd (Atividade R05 Sonda, draft, criada por create_v2 direto para isolar o erro do icone); units f5284f2f passou a active. Ficam ate o fim da Etapa 2 (P42). institutions 190dd028 ganhou documento 11444777000161, pessoa \"Rafaela Sintetica\" (representante legal + membership owner) as 14:19. activity_locations d5461295 (copia de Sala R04 Estrutura no catalogo da unidade f5284f2f, 14:26)."
+ },
+ "ordemDaRodada": [
+  {
+   "n": 1,
+   "item": "@ no cliente de Unidades, Turmas e Atividades: handle no payload dos RPCs v2 de criacao (211100) e acao Alterar @ na edicao com superadmin_structure_handle_set_v1 (trava de 30 dias com mensagem honesta); prova na rota real",
+   "estado": "CLIENTE FEITO (0434548b9, analyze limpo, test/features/units 179/179): Unidades: Identificador = @ (regex do @ sem hifen, tolerante ao valor legado), handle no payload do create_unit_for_superadmin, Alterar @ por set_v1; Turmas: campo Identificador (@) novo na etapa Identidade com disponibilidade enquanto digita, handle no payload do superadmin_group_save na criacao, Alterar @; Atividades: definition.handle no save_v2 so na criacao + Alterar @ no controller/secao. FALTA: pacote SQL (save_v2 aceitar definition.handle na criacao; group_management_payload devolver handle/handle_last_changed_at para a edicao mostrar o @ atual), testes de widget de Turmas/Atividades para o @, prova na rota real com qa-r06-estrutura",
+   "action_ids": [
+    "units.create",
+    "units.edit",
+    "groups.create",
+    "groups.edit",
+    "activities.create",
+    "activities.edit"
+   ]
+  },
+  {
+   "n": 2,
+   "item": "groups.list, groups.members, groups.location; units.list/error/access-denied",
+   "estado": "pendente"
+  },
+  {
+   "n": 3,
+   "item": "Avaliacoes: pacote em candidatos/estrutura com vinculo profissional do qa-r06-estrutura numa turma sintetica; provar assessments.entry/gradebook/close/reopen/detail e activities.assessment/publish (P36)",
+   "estado": "pendente"
+  },
+  {
+   "n": 4,
+   "item": "locations.list e locations.detail-links",
+   "estado": "pendente"
+  },
+  {
+   "n": 5,
+   "item": "9 goldens de activity_golden_test pre-existentes: causa nas imagens de falha; regravar so por regra transversal aprovada",
+   "estado": "pendente"
+  },
+  {
+   "n": 6,
+   "item": "institutions.status/files/error/access-denied",
+   "estado": "pendente"
+  }
+ ],
+ "primeiroGate": "pacote SQL 2026091218xxxx em candidatos/estrutura (save_v2 + group_management_payload) ainda nao escrito; rota real ainda nao iniciada",
+ "criteriosFechados": [
+  "Plumbing StructureHandleSetter (auth scope -> main -> app -> router -> UnitFormPage/GroupFormPage/ActivityFormPage) com SupabaseStructureHandleAvailability.set -> superadmin_structure_handle_set_v1; codigos SAI_HANDLE_COOLDOWN/TAKEN/INVALID_ARGUMENT/CONCURRENT_CHANGE viram mensagens honestas (StructureHandleChange.message)",
+  "unit_form_page_test: dois testes reescritos para a regra nova (hifen recusado; edicao mostra @ e Alterar @ chama set_v1 com kind/id/versao e trata taken/changed)"
+ ],
+ "testes": {
+  "P": "flutter analyze lib limpo; test/features/units 179/179; test/features/groups verde; test/features/activities verde exceto os 9 goldens pre-existentes (item 5)",
+  "F": "9 activity_golden_test (pre-existentes, base tambem falha)",
+  "B": 0,
+  "S": 0,
+  "U": 0,
+  "evidencia": "commit 0434548b9"
+ },
+ "pacotesProntos": [],
+ "deltasPropostos": "docs/reviews/evidence/etapa-2/r06-estrutura/deltas-r06-estrutura.json (a criar)",
+ "pedidosAoCoordenador": [
+  "ACK da rev 54/55"
+ ],
+ "avisosParaOutrosGrupos": [],
+ "perguntasParaOOwner": [],
+ "pendenciasDeCodeReview": [],
+ "bloqueio": null,
+ "wip": {
+  "estado": "nenhum"
+ },
+ "recursos": {
+  "processos": [],
+  "portas": [],
+  "encerramento": ""
+ },
+ "ack": null,
+ "proximoPasso": "escrever candidatos/estrutura/20260912180000_structure_handles_client_v1.sql (save_v2 definition.handle na criacao; SAI_HANDLE_USE_SET na edicao; group_management_payload com handle) + pgTAP; depois build qa_main e rota real do @ com qa-r06-estrutura",
+ "estado": "em andamento"
 }

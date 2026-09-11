@@ -102,12 +102,13 @@ void main() {
       ),
     );
     await tester.pumpWidget(page(controllerA));
-    await tester.ensureVisible(find.text('Escolher data e hora'));
-    await tester.tap(find.text('Escolher data e hora'));
+    await tester.ensureVisible(find.byKey(const Key('circular-choose-schedule')));
+    await tester.tap(find.byKey(const Key('circular-choose-schedule')));
     await tester.pumpWidget(page(controllerB));
     picker.complete(DateTime.now().add(const Duration(days: 1)));
     await tester.pumpAndSettle();
-    expect(find.text('Alterar agendamento'), findsNothing);
+    // Rotulo da familia Publicacao: "Publicar agora" enquanto nao ha agendamento.
+    expect(find.text('Publicar agora'), findsOneWidget);
     await tester.tap(find.byKey(const Key('circular-publish')));
     await tester.pumpAndSettle();
     expect(repositoryB.publishTimes, [null]);
@@ -323,6 +324,36 @@ void main() {
     expect(closed?.id, 'circular-published');
     expect(closed?.managementVersion, 7);
     expect(find.text('Respostas encerradas.'), findsOneWidget);
+  });
+
+  // P50 = B (Owner, 11/09/2026): o Superadmin tambem responde a Circular
+  // publicada; a acao abre a tela de resposta. Encerrada: sem Responder.
+  testWidgets('detail offers Responder only for a published open Circular', (tester) async {
+    var responded = 0;
+    Future<void> pump(CircularStatus status) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SuperadminCircularDetailPage(
+              key: ValueKey(status),
+              circularId: 'circular-$status',
+              repository: _Repository()..visibleStatus = status,
+              onBack: () {},
+              onRespond: () => responded++,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+    }
+
+    await pump(CircularStatus.published);
+    await tester.tap(find.byKey(const Key('circular-detail-respond')));
+    await tester.pump();
+    expect(responded, 1);
+
+    await pump(CircularStatus.closed);
+    expect(find.byKey(const Key('circular-detail-respond')), findsNothing);
   });
 
   // Rodada 4 (publicacoes-agenda): o servidor recusa editar Circular encerrada;

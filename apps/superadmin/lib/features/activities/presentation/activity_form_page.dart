@@ -35,6 +35,7 @@ final class ActivityFormPage extends StatefulWidget {
   const ActivityFormPage({
     required this.repository,
     this.checkHandleAvailability,
+    this.setHandle,
     required this.logout,
     required this.onCancel,
     required this.onSaveDraft,
@@ -64,6 +65,7 @@ final class ActivityFormPage extends StatefulWidget {
 
   /// Regra do @ (ADR 0034 Decisao 16): disponibilidade do stem enquanto digita.
   final StructureHandleAvailabilityChecker? checkHandleAvailability;
+  final StructureHandleSetter? setHandle;
   final LogoutAction logout;
   final VoidCallback onCancel;
   final ActivityFormSubmit onSaveDraft;
@@ -207,6 +209,7 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
               loadTemplateOptions: (institutionId) =>
                   repository.fetchTemplateOptions(institutionId: institutionId),
               handleAvailabilityChecker: widget.checkHandleAvailability,
+              handleSetter: widget.setHandle,
               professionalSearcher: (institutionId, query) =>
                   repository.searchProfessionals(institutionId: institutionId, query: query),
             )

@@ -24,11 +24,12 @@ insert into public.people(id,person_type,first_name,last_name,display_name) valu
 ('a0500000-0000-4000-8000-000000000006','service','Servico','Coelo','Servico Coelo'),
 ('a0500000-0000-4000-8000-000000000007','adult','Operador','Plataforma','Operador Plataforma');
 
--- 1-4. nascimento: nome.sobrenome, sufixo em colisao, acento removido, servico sem @
+-- 1-4. nascimento: nome.sobrenome, sufixo em colisao, acento removido, servico fora da ponte sem @
 select is(pg_temp.ph_handle('a0500000-0000-4000-8000-000000000001'), 'ana.souza', 'adulto nasce com @nome.sobrenome');
 select is(pg_temp.ph_handle('a0500000-0000-4000-8000-000000000002'), 'ana.souza1', 'homonimo recebe sufixo numerico');
 select is(pg_temp.ph_handle('a0500000-0000-4000-8000-000000000003'), 'jose.avila', 'crianca nasce com @ sem acentos');
-select is(pg_temp.ph_handle('a0500000-0000-4000-8000-000000000006'), null, 'pessoa de servico nao recebe @');
+-- Desde 20260911170500 (P46 = A) a pessoa de servico da ponte de ator tem @; fora da ponte continua sem.
+select is(pg_temp.ph_handle('a0500000-0000-4000-8000-000000000006'), null, 'pessoa de servico fora da ponte nao recebe @');
 
 -- sessoes
 insert into auth.users(id,aud,role,email,email_confirmed_at,created_at,updated_at,raw_app_meta_data,raw_user_meta_data) values

@@ -296,6 +296,48 @@ LocationCapabilities _noLocationCapabilities(SuperadminAuthContext? _) => Locati
 /// e versao esperada dentro de superadmin_routine_publish_launch; esta funcao
 /// so pede, e relata em portugues o que ele respondeu. Devolve true quando a
 /// publicacao foi confirmada, para a lista recarregar do servidor.
+/// D7: cria o rascunho do lançamento de hoje para a rotina aplicada; o
+/// servidor deriva instituição/unidade/turma da rotina e revalida
+/// routine.record. As crianças e respostas entram depois, pelo lançamento.
+Future<bool> _createRoutineLaunch(
+  BuildContext context,
+  RoutineRepository repository,
+  RoutineDirectoryItem application,
+) async {
+  try {
+    await repository.saveLaunchDraft(
+      RoutineLaunch(
+        id: '',
+        applicationId: application.id,
+        applicationRevisionId: '',
+        institutionId: '',
+        unitId: '',
+        groupId: '',
+        authorMembershipId: '',
+        serviceDate: DateTime.now(),
+        status: RoutineLaunchStatus.draft,
+        expectedVersion: 0,
+      ),
+      requestId: newRoutineRequestId(),
+    );
+    if (context.mounted) {
+      showSuperadminNotice(context, 'Lancamento de hoje criado.', icon: Icons.check_circle_outline_rounded);
+    }
+    return true;
+  } on RoutineRepositoryException catch (error) {
+    if (context.mounted) {
+      showSuperadminNotice(context, switch (error.kind) {
+        RoutineRepositoryFailureKind.unauthorized => 'Seu acesso nao permite lancar esta rotina.',
+        RoutineRepositoryFailureKind.notFound => 'Rotina indisponivel.',
+        RoutineRepositoryFailureKind.conflict =>
+          'A rotina mudou desde que a lista foi carregada. Atualize e tente de novo.',
+        RoutineRepositoryFailureKind.unavailable => error.message,
+      }, icon: Icons.error_outline_rounded);
+    }
+    return false;
+  }
+}
+
 Future<bool> _publishRoutineLaunch(
   BuildContext context,
   RoutineRepository repository,
@@ -365,6 +407,7 @@ GoRouter createSuperadminRouter({
   PersonIdentityRepository personIdentityRepository = const UnavailablePersonIdentityRepository(),
   UnitDirectoryRepository unitDirectoryRepository = const UnavailableUnitDirectoryRepository(),
   StructureHandleAvailabilityChecker? structureHandleAvailability,
+  StructureHandleSetter? structureHandleSet,
   UnitBackendCommandsGateway unitBackendCommands = const UnavailableUnitBackendCommandsGateway(),
   bool enableStructureMutations = false,
   bool enableActivityLocationCreate = false,
@@ -759,16 +802,12 @@ GoRouter createSuperadminRouter({
     String? mealPlanModelId,
     bool isTemplate = false,
   }) {
+    // P47 (Owner, 11/09, opcao A): o assistente nao falha fechado por tenant
+    // vazio no cliente. Ele deriva o tenant da instituicao escolhida (lista
+    // autorizada pelo servidor) e superadmin_meal_plan_* revalida ator,
+    // capacidade e meal_plan_scope_allowed; o cliente nao e fronteira de
+    // autorizacao. authorizedMealPlanTenantId, quando injetado, e so o padrao.
     final authorizedTenantId = authorizedMealPlanTenantId?.trim() ?? '';
-    if (authorizedTenantId.isEmpty) {
-      // Fail-closed: sem tenant autorizado o assistente de mutacao nao abre.
-      return SuperadminErrorScreen(
-        key: const Key('meal-plan-authorized-tenant-unavailable'),
-        kind: SuperadminErrorKind.unavailable,
-        actionLabel: 'Voltar ao inicio',
-        onAction: () => context.goNamed(SuperadminRoutes.homeName),
-      );
-    }
     return productionOperationalPage(
       context,
       title: title,
@@ -1766,6 +1805,7 @@ GoRouter createSuperadminRouter({
                       key: ValueKey(session.authorizationInvalidationRevision),
                       repository: unitRepository,
                       checkHandleAvailability: structureHandleAvailability,
+                      setHandle: structureHandleSet,
                       locationCatalogReader: locationCatalogReader,
                       locationSessionAvailable:
                           session.isAuthenticated &&
@@ -1829,6 +1869,7 @@ GoRouter createSuperadminRouter({
                       key: ValueKey(session.authorizationInvalidationRevision),
                       repository: unitRepository,
                       checkHandleAvailability: structureHandleAvailability,
+                      setHandle: structureHandleSet,
                       unitId: state.pathParameters['unitId'],
                       locationCatalogReader: locationCatalogReader,
                       locationSessionAvailable:
@@ -2099,6 +2140,8 @@ GoRouter createSuperadminRouter({
                 ? blockedProductionMutationPage(context)
                 : GroupFormPage(
                     repository: groupRepository,
+                    checkHandleAvailability: structureHandleAvailability,
+                    setHandle: structureHandleSet,
                     initialInstitutionId: state.uri.queryParameters['institutionId'],
                     initialUnitId: state.uri.queryParameters['unitId'],
                     logout: logout,
@@ -2117,6 +2160,8 @@ GoRouter createSuperadminRouter({
                 ? blockedProductionMutationPage(context)
                 : GroupFormPage(
                     repository: groupRepository,
+                    checkHandleAvailability: structureHandleAvailability,
+                    setHandle: structureHandleSet,
                     groupId: state.pathParameters['groupId'],
                     logout: logout,
                     onCancel: () => _returnToOr(context, state, SuperadminRoutes.groupsName),
@@ -2261,6 +2306,7 @@ GoRouter createSuperadminRouter({
                 : ActivityFormPage(
                     repository: activityDirectoryRepository,
                     checkHandleAvailability: structureHandleAvailability,
+                    setHandle: structureHandleSet,
                     initialTemplateId: state.uri.queryParameters['templateId'],
                     initialInstitutionId: state.uri.queryParameters['institutionId'],
                     initialUnitId: state.uri.queryParameters['unitId'],
@@ -2451,6 +2497,7 @@ GoRouter createSuperadminRouter({
                         : null,
                     repository: activityDirectoryRepository,
                     checkHandleAvailability: structureHandleAvailability,
+                    setHandle: structureHandleSet,
                     aboutRepository: productionActivityAboutRepository,
                     logout: logout,
                     onCancel: () => state.uri.queryParameters.containsKey('returnTo')
@@ -2672,6 +2719,8 @@ GoRouter createSuperadminRouter({
               // se pede a publicacao e se relata o que ele respondeu.
               onPublishLaunch: (item) =>
                   _publishRoutineLaunch(context, dailyRoutineRepository, item),
+              onCreateLaunch: (item) =>
+                  _createRoutineLaunch(context, dailyRoutineRepository, item),
             ),
           ),
           GoRoute(
@@ -3189,6 +3238,16 @@ GoRouter createSuperadminRouter({
                     medicationId: medicationId,
                     childId: draft.childId,
                     initialDraft: draft,
+                    evidence: detail.evidence,
+                    onRecordEvidence: ({required outcome, reason, note}) => plans.recordEvidence(
+                      MedicationEvidenceCommand(
+                        requestId: newHealthCareRequestId(),
+                        planId: medicationId,
+                        outcome: outcome,
+                        reason: reason,
+                        note: note,
+                      ),
+                    ),
                     childOptions: [
                       HealthCareFormChoice(
                         id: draft.childId,
@@ -5784,6 +5843,15 @@ GoRouter createSuperadminRouter({
                   context,
                   fallbackRouteName: SuperadminRoutes.circularsName,
                 ),
+                // P50 = B: a tela de resposta e o leitor do Principal hospedado
+                // no Superadmin (mesma rota do Acontece), com o repositorio real.
+                onRespond: principalCircularRepository == null ||
+                        principalCircularResponseRepository == null
+                    ? null
+                    : () => context.pushNamed(
+                        SuperadminRoutes.principalHappensCircularName,
+                        pathParameters: {'circularId': state.pathParameters['circularId']!},
+                      ),
                 onEdit: () => context.goNamed(
                   SuperadminRoutes.circularEditName,
                   pathParameters: {'circularId': state.pathParameters['circularId']!},

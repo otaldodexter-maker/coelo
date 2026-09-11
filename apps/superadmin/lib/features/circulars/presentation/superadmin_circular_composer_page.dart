@@ -3,7 +3,7 @@ import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
-import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
+import '../../../shared/presentation/widgets/publication_surface.dart';
 import '../../principal_circulars/application/circular_composer_controller.dart';
 import '../../principal_circulars/domain/circular.dart';
 
@@ -17,10 +17,14 @@ final class SuperadminCircularComposerPage extends StatefulWidget {
     required this.onPickFiles,
     this.onPublished,
     this.onChooseSchedule,
+    this.contextLabel,
     super.key,
   });
 
   final CircularComposerController controller;
+
+  /// Nome da instituição do contexto (linha de "Público e contexto" e prévia).
+  final String? contextLabel;
   final VoidCallback onCancel;
   final Future<void> Function() onPickFiles;
   final VoidCallback? onPublished;
@@ -34,7 +38,6 @@ final class _SuperadminCircularComposerPageState extends State<SuperadminCircula
   late final TextEditingController _title;
   late final TextEditingController _body;
   DateTime? _publishAt;
-  bool _compactPreview = false;
   int _contextGeneration = 0;
   int _scheduleGeneration = 0;
 
@@ -54,7 +57,6 @@ final class _SuperadminCircularComposerPageState extends State<SuperadminCircula
     _title.text = widget.controller.draft.title;
     _body.text = _bodyText(widget.controller.draft);
     _publishAt = null;
-    _compactPreview = false;
   }
 
   @override
@@ -108,207 +110,232 @@ final class _SuperadminCircularComposerPageState extends State<SuperadminCircula
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
     animation: widget.controller,
-    builder: (context, _) => LayoutBuilder(
-      builder: (context, constraints) {
-        final showSidePreview = constraints.maxWidth >= 1200;
-        final editor = _editor();
-        return ColoredBox(
-          color: Theme.of(context).colorScheme.surface,
-          child: Column(
-            children: [
-              Expanded(
-                child: showSidePreview
-                    ? Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Expanded(flex: 5, child: editor),
-                          const SizedBox(width: CoeloSpacing.space6),
-                          SizedBox(
-                            width: 360,
-                            child: _CircularAdminPreview(
-                              key: const Key('superadmin-circular-preview'),
-                              draft: widget.controller.draft,
-                            ),
-                          ),
-                        ],
-                      )
-                    : _compactPreview
-                    ? _CircularAdminPreview(
-                        key: const Key('superadmin-circular-preview'),
-                        draft: widget.controller.draft,
-                      )
-                    : editor,
-              ),
-              _feedback(),
-              Padding(
-                padding: const EdgeInsets.only(top: CoeloSpacing.space3),
-                child: SuperadminFormActionFooter(
-                  surfaceKey: const Key('circular-publication-footer'),
-                  inlineMinimumWidth: 840,
-                  tertiaryAction: TextButton(
-                    key: const Key('circular-cancel'),
-                    onPressed: widget.controller.busy ? null : widget.onCancel,
-                    child: const Text('Cancelar'),
-                  ),
-                  continuationActions: [
-                    if (!showSidePreview)
-                      OutlinedButton.icon(
-                        key: const Key('circular-toggle-preview'),
-                        onPressed: () => setState(() => _compactPreview = !_compactPreview),
-                        icon: Icon(
-                          _compactPreview ? Icons.edit_outlined : Icons.visibility_outlined,
-                        ),
-                        label: Text(_compactPreview ? 'Editar' : 'Prévia'),
-                      ),
-                    OutlinedButton(
-                      key: const Key('circular-save-draft'),
-                      onPressed: widget.controller.busy ? null : _save,
-                      child: const Text('Salvar rascunho'),
-                    ),
-                    FilledButton(
-                      key: const Key('circular-publish'),
-                      onPressed: widget.controller.busy ? null : _publish,
-                      child: Text(
-                        _publishAt?.isAfter(DateTime.now()) ?? false
-                            ? 'Agendar circular'
-                            : 'Publicar circular',
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+    builder: (context, _) => PublicationSurface(
+      subtitle: widget.controller.draft.id.isEmpty ? 'Publicar Circular' : 'Editar Circular',
+      scrollKey: const Key('superadmin-circular-editor'),
+      footerKey: const Key('circular-publication-footer'),
+      form: _form(),
+      preview: _CircularAdminPreview(
+        key: const Key('superadmin-circular-preview'),
+        draft: widget.controller.draft,
+        contextLabel: widget.contextLabel,
+      ),
+      feedback: _feedback(),
+      tertiaryAction: TextButton(
+        key: const Key('circular-cancel'),
+        onPressed: widget.controller.busy ? null : widget.onCancel,
+        child: const Text('Cancelar'),
+      ),
+      continuationActions: [
+        OutlinedButton(
+          key: const Key('circular-save-draft'),
+          onPressed: widget.controller.busy ? null : _save,
+          child: const Text('Salvar rascunho'),
+        ),
+        FilledButton(
+          key: const Key('circular-publish'),
+          onPressed: widget.controller.busy ? null : _publish,
+          child: Text(
+            _publishAt?.isAfter(DateTime.now()) ?? false ? 'Agendar circular' : 'Publicar circular',
           ),
-        );
-      },
+        ),
+      ],
     ),
   );
 
-  Widget _editor() {
-    final draft = widget.controller.draft;
+  Widget _form() {
+    final controller = widget.controller;
+    final draft = controller.draft;
     final media = draft.blocks.whereType<CircularMediaBlock>().firstOrNull;
     final questions = draft.blocks.whereType<CircularQuestionBlock>().toList(growable: false);
-    return SingleChildScrollView(
-      key: const Key('superadmin-circular-editor'),
-      padding: const EdgeInsets.only(bottom: CoeloSpacing.space6),
-      child: Align(
-        alignment: Alignment.topCenter,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 880),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                draft.id.isEmpty ? 'Publicar circular' : 'Editar circular',
-                style: Theme.of(
-                  context,
-                ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
-              ),
-              const SizedBox(height: CoeloSpacing.space1),
-              Text(
-                'Prepare o conteúdo, o público e a publicação em uma única superfície.',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+    final preset = _responsePreset(questions);
+    final colors = Theme.of(context).colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const PublicationLabel('Título'),
+        PublicationTextField(
+          fieldKey: const Key('circular-title'),
+          controller: _title,
+          hintText: 'Reunião de pais e responsáveis — 3º ano',
+          maxLength: CircularLimits.titleCharacters,
+          onChanged: controller.updateTitle,
+        ),
+        const PublicationLabel('Texto da circular'),
+        PublicationTextField(
+          fieldKey: const Key('circular-body'),
+          controller: _body,
+          hintText: 'Escreva a comunicação completa.',
+          maxLength: CircularLimits.bodyCharacters,
+          maxLines: 6,
+          onChanged: controller.updateBody,
+        ),
+        PublicationLabel('Anexos', hint: 'até ${CircularLimits.files} · PDF ou imagem'),
+        Wrap(
+          spacing: CoeloSpacing.space2,
+          runSpacing: CoeloSpacing.space2,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            SizedBox(
+              width: CoeloSize.touchMin,
+              height: CoeloSize.touchMin,
+              child: OutlinedButton(
+                key: const Key('circular-pick-files'),
+                onPressed: media != null && media.assetIds.length >= CircularLimits.files
+                    ? null
+                    : widget.onPickFiles,
+                style: OutlinedButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
                 ),
+                child: const Tooltip(message: 'Adicionar arquivo', child: Icon(Icons.add_rounded)),
               ),
-              const SizedBox(height: CoeloSpacing.space5),
-              CoeloFormTextField(
-                fieldKey: const Key('circular-title'),
-                controller: _title,
-                labelText: 'Título da circular',
-                hintText: 'Renovação de matrícula para 2027',
-                prefixIcon: Icons.title_rounded,
-                maxLength: CircularLimits.titleCharacters,
-                onChanged: widget.controller.updateTitle,
-              ),
-              const SizedBox(height: CoeloSpacing.space4),
-              CoeloFormTextField(
-                fieldKey: const Key('circular-body'),
-                controller: _body,
-                labelText: 'Texto da circular',
-                hintText: 'Escreva a comunicação completa.',
-                prefixIcon: Icons.notes_rounded,
-                maxLength: CircularLimits.bodyCharacters,
-                maxLines: 8,
-                onChanged: widget.controller.updateBody,
-              ),
-              const SizedBox(height: CoeloSpacing.space5),
-              _Section(
-                title: 'Arquivos e mídia',
-                subtitle: 'Fotos, vídeos ou documentos · ${media?.assetIds.length ?? 0}/4',
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    OutlinedButton.icon(
-                      key: const Key('circular-pick-files'),
-                      onPressed: media != null && media.assetIds.length >= CircularLimits.files
-                          ? null
-                          : widget.onPickFiles,
-                      icon: const Icon(Icons.add_photo_alternate_outlined),
-                      label: const Text('Adicionar arquivo'),
-                    ),
-                    if (media != null)
-                      for (final assetId in media.assetIds)
-                        ListTile(
-                          contentPadding: EdgeInsets.zero,
-                          leading: const Icon(Icons.attach_file_rounded),
-                          title: Text(assetId, maxLines: 1, overflow: TextOverflow.ellipsis),
-                          trailing: IconButton(
-                            tooltip: 'Remover arquivo',
-                            color: Theme.of(context).colorScheme.error,
-                            onPressed: () => widget.controller.removeMediaAsset(assetId),
-                            icon: const Icon(Icons.delete_outline_rounded),
-                          ),
-                        ),
-                  ],
+            ),
+            if (media != null)
+              for (final assetId in media.assetIds)
+                InputChip(
+                  avatar: const Icon(Icons.attach_file_rounded, size: CoeloSize.iconSm),
+                  label: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 220),
+                    child: Text(assetId, maxLines: 1, overflow: TextOverflow.ellipsis),
+                  ),
+                  deleteButtonTooltipMessage: 'Remover arquivo',
+                  onDeleted: () => controller.removeMediaAsset(assetId),
                 ),
+          ],
+        ),
+        const PublicationLabel('Público e contexto'),
+        PublicationRow(
+          icon: Icons.group_outlined,
+          title: 'Público e contexto',
+          lines: [
+            widget.contextLabel ?? 'Instituição selecionada',
+            'O servidor valida os vínculos e o escopo',
+          ],
+        ),
+        const SizedBox(height: CoeloSpacing.space3),
+        Wrap(
+          spacing: CoeloSpacing.space2,
+          runSpacing: CoeloSpacing.space2,
+          children: [
+            for (final entry in _audienceLabels.entries)
+              PublicationChip(
+                key: Key('circular-audience-${entry.key.name}'),
+                label: entry.value,
+                selected: draft.audiences.contains(entry.key),
+                onTap: () => controller.toggleAudience(entry.key),
               ),
-              const SizedBox(height: CoeloSpacing.space4),
-              _Section(
-                title: 'Perguntas',
-                subtitle: '${questions.length}/10 perguntas',
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    for (final question in questions) ...[
-                      _QuestionCard(
-                        key: ValueKey((widget.controller, question.id)),
-                        controller: widget.controller,
-                        question: question,
-                      ),
-                      const SizedBox(height: CoeloSpacing.space3),
-                    ],
-                    OutlinedButton.icon(
-                      key: const Key('circular-add-question'),
-                      onPressed: questions.length >= CircularLimits.questions
-                          ? null
-                          : () => widget.controller.addQuestion(CircularQuestionKind.singleChoice),
-                      icon: const Icon(Icons.add_rounded),
-                      label: const Text('Adicionar pergunta'),
-                    ),
-                  ],
-                ),
+          ],
+        ),
+        const PublicationLabel('Resposta esperada'),
+        Wrap(
+          spacing: CoeloSpacing.space2,
+          runSpacing: CoeloSpacing.space2,
+          children: [
+            for (final option in _ResponsePreset.values)
+              PublicationChip(
+                key: Key('circular-response-${option.name}'),
+                label: option.label,
+                selected: preset == option,
+                onTap: () => _applyPreset(option, questions),
               ),
-              const SizedBox(height: CoeloSpacing.space4),
-              _AudienceSection(controller: widget.controller),
-              const SizedBox(height: CoeloSpacing.space4),
-              _Section(
-                title: 'Agendamento',
-                subtitle: _publishAt == null
-                    ? 'Publicar assim que a revisão for confirmada.'
-                    : 'Publicação futura selecionada.',
-                child: OutlinedButton.icon(
-                  onPressed: widget.onChooseSchedule == null ? null : _chooseSchedule,
-                  icon: const Icon(Icons.schedule_outlined),
-                  label: Text(_publishAt == null ? 'Escolher data e hora' : 'Alterar agendamento'),
-                ),
-              ),
-            ],
+          ],
+        ),
+        if (preset == null) ...[
+          const SizedBox(height: CoeloSpacing.space3),
+          for (final question in questions) ...[
+            _QuestionCard(
+              key: ValueKey((controller, question.id)),
+              controller: controller,
+              question: question,
+            ),
+            const SizedBox(height: CoeloSpacing.space2),
+          ],
+        ],
+        Align(
+          alignment: Alignment.centerLeft,
+          child: TextButton.icon(
+            key: const Key('circular-add-question'),
+            onPressed: questions.length >= CircularLimits.questions
+                ? null
+                : () => controller.addQuestion(CircularQuestionKind.singleChoice),
+            icon: const Icon(Icons.add_rounded),
+            label: const Text('Adicionar pergunta'),
           ),
         ),
-      ),
+        const SizedBox(height: CoeloSpacing.space2),
+        PublicationRow(
+          icon: Icons.calendar_today_outlined,
+          title: 'Agendamento',
+          trailing: TextButton.icon(
+            key: const Key('circular-choose-schedule'),
+            onPressed: widget.onChooseSchedule == null ? null : _chooseSchedule,
+            iconAlignment: IconAlignment.end,
+            icon: const Icon(Icons.expand_more_rounded),
+            label: Text(_publishAt == null ? 'Publicar agora' : _scheduleLabel(_publishAt!)),
+          ),
+        ),
+        const PublicationLabel('Opções'),
+        PublicationToggleRow(
+          icon: Icons.description_outlined,
+          label: 'Salvar como rascunho',
+          value: draft.status == CircularStatus.draft && draft.id.isNotEmpty,
+          onChanged: controller.busy ? null : (_) => _save(),
+        ),
+        if (draft.status != CircularStatus.draft)
+          Padding(
+            padding: const EdgeInsets.only(top: CoeloSpacing.space2),
+            child: Text(
+              'Circular ${_statusLabel(draft.status)}: as alterações só valem ao publicar de novo.',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
+            ),
+          ),
+      ],
     );
   }
+
+  _ResponsePreset? _responsePreset(List<CircularQuestionBlock> questions) {
+    if (questions.isEmpty) return _ResponsePreset.readOnly;
+    if (questions.length != 1) return null;
+    for (final option in _ResponsePreset.values) {
+      if (option.matches(questions.first)) return option;
+    }
+    return null;
+  }
+
+  void _applyPreset(_ResponsePreset preset, List<CircularQuestionBlock> questions) {
+    final controller = widget.controller;
+    for (final question in questions) {
+      controller.removeQuestion(question.id);
+    }
+    if (preset == _ResponsePreset.readOnly) return;
+    controller.addQuestion(CircularQuestionKind.singleChoice);
+    final question = controller.draft.blocks.whereType<CircularQuestionBlock>().last;
+    controller.updateQuestion(question.id, prompt: preset.prompt, required: true);
+    for (var index = 0; index < question.options.length; index++) {
+      controller.updateOption(question.id, question.options[index].id, preset.options[index]);
+    }
+  }
+
+  static const _audienceLabels = {
+    CircularAudienceKind.families: 'Famílias',
+    CircularAudienceKind.students: 'Alunos',
+    CircularAudienceKind.schoolStaff: 'Equipe escolar',
+    CircularAudienceKind.guardiansOnly: 'Somente responsáveis',
+  };
+
+  static String _scheduleLabel(DateTime value) {
+    String two(int v) => v.toString().padLeft(2, '0');
+    return '${two(value.day)}/${two(value.month)}/${value.year} ${two(value.hour)}:${two(value.minute)}';
+  }
+
+  static String _statusLabel(CircularStatus status) => switch (status) {
+    CircularStatus.draft => 'em rascunho',
+    CircularStatus.scheduled => 'agendada',
+    CircularStatus.published => 'publicada',
+    CircularStatus.closed => 'encerrada',
+    CircularStatus.archived => 'arquivada',
+  };
 
   Widget _feedback() => switch (widget.controller.state) {
     CircularComposerState.saved => const _Feedback(message: 'Rascunho salvo', success: true),
@@ -338,42 +365,6 @@ final class _SuperadminCircularComposerPageState extends State<SuperadminCircula
     ),
     _ => const SizedBox.shrink(),
   };
-}
-
-final class _Section extends StatelessWidget {
-  const _Section({required this.title, required this.subtitle, required this.child});
-  final String title;
-  final String subtitle;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return Container(
-      padding: const EdgeInsets.all(CoeloSpacing.space4),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        border: Border.all(color: colors.outlineVariant),
-        borderRadius: BorderRadius.circular(CoeloRadius.lg),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            title,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
-          ),
-          const SizedBox(height: CoeloSpacing.space1),
-          Text(
-            subtitle,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
-          ),
-          const SizedBox(height: CoeloSpacing.space3),
-          child,
-        ],
-      ),
-    );
-  }
 }
 
 final class _QuestionCard extends StatefulWidget {
@@ -449,77 +440,140 @@ final class _QuestionCardState extends State<_QuestionCard> {
   );
 }
 
-final class _AudienceSection extends StatelessWidget {
-  const _AudienceSection({required this.controller});
-  final CircularComposerController controller;
+/// Resposta esperada da família Publicação, mapeada para o domínio existente:
+/// uma pergunta obrigatória de escolha única com duas opções (o mínimo do
+/// domínio). "Só leitura" é a ausência de perguntas.
+enum _ResponsePreset {
+  readOnly('Só leitura', '', ['', '']),
+  acknowledge(
+    'Confirmar ciência',
+    'Confirmo ciência desta circular',
+    ['Estou ciente', 'Preciso de mais informações'],
+  ),
+  acceptDecline('Aceitar / recusar', 'Você aceita?', ['Aceito', 'Recuso']);
 
-  @override
-  Widget build(BuildContext context) {
-    const labels = {
-      CircularAudienceKind.families: 'Famílias e responsáveis',
-      CircularAudienceKind.guardiansOnly: 'Somente responsáveis',
-      CircularAudienceKind.students: 'Alunos',
-      CircularAudienceKind.schoolStaff: 'Equipe autorizada',
-    };
-    return _Section(
-      title: 'Público e contexto',
-      subtitle: 'O servidor valida os vínculos e o escopo institucional.',
-      child: Column(
-        children: [
-          for (final entry in labels.entries)
-            CoeloAdminToggleField(
-              key: Key('circular-audience-${entry.key.name}'),
-              label: entry.value,
-              value: controller.draft.audiences.contains(entry.key),
-              onChanged: (_) => controller.toggleAudience(entry.key),
-            ),
-        ],
-      ),
-    );
-  }
+  const _ResponsePreset(this.label, this.prompt, this.options);
+  final String label;
+  final String prompt;
+  final List<String> options;
+
+  bool matches(CircularQuestionBlock question) =>
+      this != readOnly &&
+      question.prompt == prompt &&
+      question.options.length == 2 &&
+      question.options[0].label == options[0] &&
+      question.options[1].label == options[1];
 }
 
 final class _CircularAdminPreview extends StatelessWidget {
-  const _CircularAdminPreview({required this.draft, super.key});
+  const _CircularAdminPreview({required this.draft, this.contextLabel, super.key});
   final CircularDraft draft;
+  final String? contextLabel;
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(CoeloSpacing.space4),
-      child: Container(
-        padding: const EdgeInsets.all(CoeloSpacing.space4),
-        decoration: BoxDecoration(
-          color: colors.surface,
-          border: Border.all(color: colors.outlineVariant),
-          borderRadius: BorderRadius.circular(CoeloRadius.lg),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              'Prévia da circular',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
-            ),
-            const SizedBox(height: CoeloSpacing.space4),
-            Icon(Icons.description_outlined, color: colors.primary, size: 32),
+    final textTheme = Theme.of(context).textTheme;
+    final media = draft.blocks.whereType<CircularMediaBlock>().firstOrNull;
+    final questions = draft.blocks.whereType<CircularQuestionBlock>().toList(growable: false);
+    final institution = (contextLabel ?? '').trim().isEmpty ? 'Instituição' : contextLabel!.trim();
+    final action = questions.isEmpty
+        ? 'Ler circular'
+        : questions.length == 1 && _ResponsePreset.acknowledge.matches(questions.first)
+        ? 'Confirmar ciência'
+        : questions.length == 1 && _ResponsePreset.acceptDecline.matches(questions.first)
+        ? 'Aceitar ou recusar'
+        : 'Responder ${questions.length} pergunta${questions.length == 1 ? '' : 's'}';
+    return PublicationPreviewPanel(
+      title: 'Prévia da circular',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              CircleAvatar(
+                radius: CoeloSize.avatarSm / 2,
+                backgroundColor: colors.primary,
+                foregroundColor: colors.onPrimary,
+                child: Text(
+                  institution.length >= 2 ? institution.substring(0, 2).toUpperCase() : 'CO',
+                  style: textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w800),
+                ),
+              ),
+              const SizedBox(width: CoeloSpacing.space2),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      institution,
+                      style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
+                    ),
+                    Text(
+                      draft.audiences.isEmpty
+                          ? 'Circular'
+                          : 'Circular · ${draft.audiences.map(_audienceLabelOf).join(' · ')}',
+                      style: textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: CoeloSpacing.space3),
+          Text(
+            draft.title.trim().isEmpty ? 'Título da circular' : draft.title,
+            style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+          ),
+          const SizedBox(height: CoeloSpacing.space2),
+          Text(_bodyText(draft).trim().isEmpty ? 'O conteúdo aparecerá aqui.' : _bodyText(draft)),
+          if (media != null && media.assetIds.isNotEmpty) ...[
             const SizedBox(height: CoeloSpacing.space3),
-            Text(
-              draft.title.trim().isEmpty ? 'Título da circular' : draft.title,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
-            ),
-            const SizedBox(height: CoeloSpacing.space3),
-            Text(_bodyText(draft).trim().isEmpty ? 'O conteúdo aparecerá aqui.' : _bodyText(draft)),
-            const SizedBox(height: CoeloSpacing.space4),
-            Text(
-              '${draft.blocks.whereType<CircularMediaBlock>().firstOrNull?.assetIds.length ?? 0} arquivos · ${draft.blocks.whereType<CircularQuestionBlock>().length} perguntas',
-            ),
+            for (final assetId in media.assetIds)
+              Container(
+                margin: const EdgeInsets.only(bottom: CoeloSpacing.space1),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: CoeloSpacing.space3,
+                  vertical: CoeloSpacing.space2,
+                ),
+                decoration: BoxDecoration(
+                  color: colors.surfaceContainer,
+                  borderRadius: BorderRadius.circular(CoeloRadius.sm),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.attach_file_rounded,
+                      size: CoeloSize.iconSm,
+                      color: colors.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: CoeloSpacing.space2),
+                    Expanded(child: Text(assetId, maxLines: 1, overflow: TextOverflow.ellipsis)),
+                  ],
+                ),
+              ),
           ],
-        ),
+          const SizedBox(height: CoeloSpacing.space3),
+          FilledButton.icon(
+            onPressed: null,
+            style: FilledButton.styleFrom(
+              disabledBackgroundColor: colors.primary,
+              disabledForegroundColor: colors.onPrimary,
+            ),
+            icon: const Icon(Icons.check_rounded),
+            label: Text(action),
+          ),
+          const SizedBox(height: CoeloSpacing.space3),
+          const PublicationNote('A prévia mostra a circular como a família a verá no Principal.'),
+        ],
       ),
     );
   }
+
+  static String _audienceLabelOf(CircularAudienceKind kind) =>
+      _SuperadminCircularComposerPageState._audienceLabels[kind] ?? kind.name;
 }
 
 final class _Feedback extends StatelessWidget {

@@ -297,7 +297,9 @@ bool _supportsAggregateSave(ActivitySaveCommand command) {
       command.unitId == null &&
       command.groupParticipation.length == command.groupIds.length &&
       command.groupIds.every(command.groupParticipation.containsKey) &&
-      (command.handleStem == null || command.handleStem!.trim().isEmpty) &&
+      // Decisao 16: o @ viaja em definition.handle so na criacao (save_v2 ->
+      // create_v2, lote a aplicar); na edicao a troca passa por
+      // superadmin_structure_handle_set_v1 e o stem digitado nao e enviado.
       command.taxonomyOtherDescription.trim().isEmpty &&
       pedagogical.length == 1 &&
       pedagogical['enabled'] == false &&
@@ -335,6 +337,8 @@ Map<String, Object?> _activitySavePayload(ActivitySaveCommand command) {
       'taxonomy_id': command.taxonomyId,
       'icon_key': command.identity.icon.trim().isEmpty ? null : command.identity.icon.trim(),
       'initials': command.identity.initials.trim(),
+      if (command.activityId == null && (command.handleStem?.trim().isNotEmpty ?? false))
+        'handle': command.handleStem!.trim(),
     },
     'unit_ids': unitIds,
     'group_ids': groupIds,

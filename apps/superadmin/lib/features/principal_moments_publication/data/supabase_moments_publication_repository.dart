@@ -6,8 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../domain/moments_publication.dart';
 
-final class SupabaseMomentsPublicationRepository
-    implements MomentsPublicationRepository {
+final class SupabaseMomentsPublicationRepository implements MomentsPublicationRepository {
   SupabaseMomentsPublicationRepository(
     this._client, {
     http.Client? httpClient,

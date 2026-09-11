@@ -33,7 +33,8 @@ final class MomentsPublicationController extends ChangeNotifier {
   MomentsPublicationController({required this.repository, required this.context})
     : _state = MomentsPublicationState(draft: MomentsDraft());
 
-  static const maxCaptionCharacters = 2200;
+  // Familia Publicacao (Owner, 11/09/2026 17:19): legenda de Momentos 0/220.
+  static const maxCaptionCharacters = 220;
   static const maxMedia = 5;
 
   final MomentsPublicationRepository repository;

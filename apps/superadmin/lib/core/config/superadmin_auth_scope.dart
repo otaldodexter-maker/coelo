@@ -150,6 +150,7 @@ final class SuperadminAuthScope {
     this.unitDetailRepository = const UnavailableUnitDetailRepository(),
     required this.unitDirectoryRepository,
     this.structureHandleAvailability,
+    this.structureHandleSet,
     required this.unitBackendCommands,
     required this.structureMutationsEnabled,
     required this.importRepository,
@@ -216,6 +217,7 @@ final class SuperadminAuthScope {
 
   /// Regra do @ (ADR 0034 Decisao 16): disponibilidade enquanto digita.
   final StructureHandleAvailabilityChecker? structureHandleAvailability;
+  final StructureHandleSetter? structureHandleSet;
   final UnitBackendCommandsGateway unitBackendCommands;
   final bool structureMutationsEnabled;
   final ImportRepository importRepository;
@@ -404,6 +406,7 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       unitDetailRepository: SupabaseUnitDetailRepository(client),
       unitDirectoryRepository: SupabaseUnitDirectoryRepository(client),
       structureHandleAvailability: SupabaseStructureHandleAvailability(client).check,
+      structureHandleSet: SupabaseStructureHandleAvailability(client).set,
       unitBackendCommands: SupabaseUnitBackendCommandsGateway(client),
       // OQ-032/OQ-043: these CRUD repositories still target the legacy
       // people-based realm. Keep production mutations fail-closed until the

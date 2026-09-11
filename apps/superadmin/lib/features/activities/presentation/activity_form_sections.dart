@@ -236,9 +236,32 @@ final class _IdentitySection extends StatelessWidget {
                 )
               else
                 Text(
-                  'Opcional. O Coelo sugere a partir do nome e aplica o sufixo hierárquico no servidor.',
+                  controller.isEditing
+                      ? 'Use "Alterar @" para trocar (uma vez a cada 30 dias); o sufixo hierárquico é do servidor.'
+                      : 'Opcional. O Coelo sugere a partir do nome e aplica o sufixo hierárquico no servidor.',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
+              if (controller.isEditing && controller.handleSetter != null) ...[
+                const SizedBox(height: CoeloSpacing.space2),
+                OutlinedButton.icon(
+                  key: const Key('activity-form-handle-change-button'),
+                  onPressed: controller.canChangeHandle ? controller.changeHandle : null,
+                  icon: const Icon(Icons.alternate_email_rounded),
+                  label: Text(controller.changingHandle ? 'Alterando @…' : 'Alterar @'),
+                ),
+                if (controller.handleChangeMessage case final message?) ...[
+                  const SizedBox(height: CoeloSpacing.space1),
+                  Text(
+                    message,
+                    key: const Key('activity-form-handle-change-message'),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: controller.handleChangeFailed
+                          ? Theme.of(context).colorScheme.error
+                          : Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                ],
+              ],
             ],
           ),
           CoeloFormTextField(

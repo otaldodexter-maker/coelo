@@ -8,7 +8,6 @@ import 'package:coelo_superadmin/features/auth/domain/password_recovery.dart';
 import 'package:coelo_superadmin/features/meal_plans/data/dev/development_meal_plan_repository.dart';
 import 'package:coelo_superadmin/features/meal_plans/presentation/meal_plan_directory_page.dart';
 import 'package:coelo_superadmin/features/meal_plans/presentation/meal_plan_wizard_page.dart';
-import 'package:coelo_superadmin/features/errors/presentation/screens/superadmin_error_screen.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -65,7 +64,9 @@ void main() {
     expect(wizard.tenantId, 'tenant-authorized-by-server');
   });
 
-  testWidgets('production meal plan mutation fails closed without an authorized tenant', (
+  // P47 (Owner, 11/09, opcao A): sem tenant injetado o assistente abre mesmo
+  // assim; o tenant vem da instituicao escolhida e o servidor valida o escopo.
+  testWidgets('production meal plan mutation opens without an injected tenant (P47)', (
     tester,
   ) async {
     final session = SuperadminSession()..signInForTesting();
@@ -85,9 +86,10 @@ void main() {
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
     await tester.pumpAndSettle();
 
-    expect(find.byType(SuperadminErrorScreen), findsOneWidget);
-    expect(find.byKey(const Key('meal-plan-authorized-tenant-unavailable')), findsOneWidget);
-    expect(find.byType(MealPlanWizardPage), findsNothing);
+    expect(find.byKey(const Key('meal-plan-authorized-tenant-unavailable')), findsNothing);
+    final wizard = tester.widget<MealPlanWizardPage>(find.byType(MealPlanWizardPage));
+    expect(wizard.tenantId, isEmpty);
+    expect(wizard.isTemplate, isTrue);
   });
 
   testWidgets('production meal plan wizard routes preserve their target identifiers', (

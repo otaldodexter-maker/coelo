@@ -43,6 +43,7 @@ final class UnitFormPage extends StatefulWidget {
     this.locationContextRevision = 0,
     this.onOpenLocations,
     this.checkHandleAvailability,
+    this.setHandle,
     super.key,
   });
 
@@ -66,6 +67,10 @@ final class UnitFormPage extends StatefulWidget {
   /// 16, superadmin_structure_handle_availability_v1). Opcional: sem ela a
   /// legenda continua explicando o @ gerado pelo servidor.
   final StructureHandleAvailabilityChecker? checkHandleAvailability;
+
+  /// Acao "Alterar @" da edicao (superadmin_structure_handle_set_v1, trava de
+  /// 30 dias). Opcional: sem ela o @ e somente leitura na edicao.
+  final StructureHandleSetter? setHandle;
 
   @override
   State<UnitFormPage> createState() => _UnitFormPageState();
@@ -217,6 +222,45 @@ final class _UnitFormPageState extends State<UnitFormPage> {
     _formController.markDirty();
   }
 
+  bool _changingHandle = false;
+  String? _handleChangeMessage;
+  bool _handleChangeFailed = false;
+
+  bool get _canChangeHandle {
+    final original = _original;
+    if (original == null || widget.setHandle == null || _changingHandle) return false;
+    final value = _controllers['slug']!.text.trim();
+    return value.isNotEmpty && value != original.handle;
+  }
+
+  /// "Alterar @": superadmin_structure_handle_set_v1 com a versao corrente.
+  /// O servidor aplica a trava de 30 dias e a unicidade; aqui so a mensagem.
+  Future<void> _changeHandle() async {
+    final original = _original;
+    final setter = widget.setHandle;
+    if (original == null || setter == null) return;
+    final value = _controllers['slug']!.text.trim();
+    setState(() {
+      _changingHandle = true;
+      _handleChangeMessage = null;
+    });
+    final result = await setter('unit', original.id, original.managementVersion, value);
+    if (!mounted) return;
+    setState(() {
+      _changingHandle = false;
+      _handleChangeFailed = !result.changed;
+      _handleChangeMessage = result.message;
+      if (result.changed) {
+        _original = original.copyWith(
+          handle: result.handle,
+          managementVersion: result.managementVersion,
+        );
+        _controllers['slug']!.text = result.handle;
+        _handleAvailability = null;
+      }
+    });
+  }
+
   String _initialValue(String field) {
     final original = _original;
     if (original == null) {
@@ -237,7 +281,7 @@ final class _UnitFormPageState extends State<UnitFormPage> {
       'textColor' => original.textColor,
       'surfaceColor' => original.surfaceColor,
       'name' => original.name,
-      'slug' => original.slug,
+      'slug' => original.handle.isNotEmpty ? original.handle : original.slug,
       'postalCode' => original.postalCode,
       'country' => original.country,
       'state' => original.state,
@@ -311,7 +355,7 @@ final class _UnitFormPageState extends State<UnitFormPage> {
       final unit = InstitutionUnit(
         id: id,
         name: _text('name'),
-        slug: _text('slug'),
+        slug: _original == null ? _text('slug') : _original!.slug,
         status: _status,
         typeId: type.id,
         typeName: type.label,
@@ -350,7 +394,10 @@ final class _UnitFormPageState extends State<UnitFormPage> {
           institution: _institution,
           unit: unit,
           managementVersion: _original?.managementVersion ?? 0,
-          handle: _original?.handle ?? '',
+          // Decisao 16: o Identificador e o @. Na criacao ele viaja como
+          // `handle` (create_unit_for_superadmin, lote 211100); na edicao o @
+          // so muda pela acao "Alterar @" (trava de 30 dias).
+          handle: _original == null ? _text('slug') : _original!.handle,
         ),
       );
       if (!mounted) return;
@@ -617,14 +664,11 @@ final class _UnitFormPageState extends State<UnitFormPage> {
       );
     }
     final text = _original == null
-        ? 'O @ público é gerado pelo servidor ao criar: letras e números do '
-              'identificador (sem hífens) mais um sufixo com o código da unidade. '
-              'Não é editado por este formulário.'
+        ? 'Este é o @ público da unidade. Vazio, o servidor gera '
+              '@nomedaunidade.nomedainstituicao.'
         : handle.isEmpty
-        ? 'O @ público foi atribuído pelo servidor na criação e não é editado por '
-              'este formulário.'
-        : '@ público: @$handle · atribuído pelo servidor na criação a partir do '
-              'identificador; não é editado por este formulário.';
+        ? 'O @ público foi atribuído pelo servidor na criação.'
+        : '@ público: @$handle · use "Alterar @" para trocar (uma vez a cada 30 dias).';
     return Text(
       text,
       key: const Key('unit-handle-note'),
@@ -823,6 +867,30 @@ final class _UnitFormPageState extends State<UnitFormPage> {
               ),
               const SizedBox(height: CoeloSpacing.space1),
               _handleNote(),
+              if (_original != null && widget.setHandle != null) ...[
+                const SizedBox(height: CoeloSpacing.space2),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: OutlinedButton.icon(
+                    key: const Key('unit-handle-change-button'),
+                    onPressed: _canChangeHandle ? _changeHandle : null,
+                    icon: const Icon(Icons.alternate_email_rounded),
+                    label: Text(_changingHandle ? 'Alterando @…' : 'Alterar @'),
+                  ),
+                ),
+                if (_handleChangeMessage != null) ...[
+                  const SizedBox(height: CoeloSpacing.space1),
+                  Text(
+                    _handleChangeMessage!,
+                    key: const Key('unit-handle-change-message'),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: _handleChangeFailed
+                          ? Theme.of(context).colorScheme.error
+                          : Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                ],
+              ],
             ],
           ),
           CoeloAdminSingleSelectField<UnitFilterOption>(
@@ -1096,10 +1164,17 @@ final class _UnitFormPageState extends State<UnitFormPage> {
             !RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(normalized)) {
           return 'Informe um e-mail válido.';
         }
+        // Decisao 16: o Identificador e o @ (sem hifen). Um registro antigo
+        // mostra o valor que ja tem e so precisa obedecer a regra ao mudar.
+        final original = _original;
+        final currentIdentifier = original == null
+            ? null
+            : (original.handle.isNotEmpty ? original.handle : original.slug);
         if (id == 'slug' &&
             normalized.isNotEmpty &&
-            !RegExp(r'^[a-z0-9]+(?:-[a-z0-9]+)*$').hasMatch(normalized)) {
-          return 'Use somente letras minúsculas sem acento, números e hífens.';
+            normalized != currentIdentifier &&
+            !RegExp(r'^[a-z0-9][a-z0-9._]{1,28}[a-z0-9]$').hasMatch(normalized)) {
+          return 'Use letras minúsculas, números, ponto e sublinhado (3 a 30 caracteres).';
         }
         if (id == 'slug' &&
             normalized.isNotEmpty &&
