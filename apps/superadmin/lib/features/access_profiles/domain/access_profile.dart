@@ -238,6 +238,14 @@ final class AccessProfile {
         .where((permission) => permission.selected && !permission.inherited)
         .map((permission) => permission.code)
         .toList(growable: false),
+    // Contrato de producao (access_profile_create_internal/update): a
+    // concessao vem em `capabilities` [{code, effect}]; sem ela o perfil era
+    // salvo sem nenhuma permissao (R04, 11/09/2026). `permission_codes` fica
+    // por compatibilidade com os testes e leituras antigas.
+    'capabilities': permissions
+        .where((permission) => permission.selected && !permission.inherited)
+        .map((permission) => {'code': permission.code, 'effect': 'allow'})
+        .toList(growable: false),
   };
 }
 
