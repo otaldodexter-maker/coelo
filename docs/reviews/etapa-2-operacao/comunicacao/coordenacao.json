@@ -1,12 +1,12 @@
 {
- "revision": 28,
+ "revision": 29,
  "round": "E2-R04-20260911",
  "role": "Coordenacao noturna R04 - Claude Fable (C0)",
  "writer": "coordenador-claude",
  "app": "Claude Code (VS Code)",
  "model": "claude-fable-5-1",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T03:05:00-03:00",
+ "updatedAt": "2026-09-11T03:46:00-03:00",
  "relogio": "relogio da maquina; posse as 21:42 -03:00 de 10/09/2026",
  "posseR04": {
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -41,7 +41,7 @@
    "primeiroGate": "reemitir reservations_v2 + 180000/180100/180200/180300 sobre a baseline com audit_append_superadmin_internal de 13 argumentos",
    "ack": true,
    "recebidoEm": "2026-09-10T21:56:00-03:00",
-   "estado": "coelo-39 sem retorno desde 02:06 apesar de tres cobrancas (02:16, 02:26, 02:38, prazo 02:45); rev 30 de 23:24; WIP de Locais publicado (a22721fbe)"
+   "estado": "coelo-39 sem retorno desde 02:06 (quatro cobrancas); rev 30 de 23:24; 21 pacotes em producao; rota real nao provada nesta rodada"
   },
   "acessos-pessoas": {
    "app": "Claude Opus",
@@ -73,7 +73,7 @@
    "rev": 10,
    "head": "2335ea3c1",
    "upd": "22:4x",
-   "estado": "coelo-11 (rev 15, dcfcb9e41): launcher Decisao 7 resolvido no frame compartilhado; rota real de Cardapios/Principal em curso (driver: build com -t test_driver/qa_main.dart)",
+   "estado": "coelo-11 rev 16 92146a56d (03:10): launcher fechado; rota real de Cardapios/Principal ainda sem prova (ambiente: build de qa_main sem $flutterDriver; orientado ao metodo build web + CDP); deltas parciais em formato proprio (nao aplicaveis)",
    "ack": true,
    "recebidoEm": "2026-09-10T22:58:00-03:00"
   },
@@ -122,11 +122,14 @@
    "lote 16: 171300, 171500 (acessos-pessoas)",
    "lote 17: 220500 (formularios, subagente)",
    "lote 18: 171700 (acessos-pessoas)",
-   "lote 19: 171900 (acessos-pessoas)"
+   "lote 19: 171900 (acessos-pessoas)",
+   "lote 20: 172000",
+   "lote 21: 172100 (acessos-pessoas)"
   ],
   "proximos": [
-   "coordenador: 230023 disparo do worker de Avisos (aguarda P30)",
-   "acessos-pessoas: 171600 (aguarda P31), 171800 (aguarda P32 b)"
+   "formularios (subagente): 220600 child_context_directory_v2, 220700 attendance access/context_options, 220800 snapshot de Local no v1",
+   "coordenador: 230023 worker de Avisos (P30)",
+   "acessos: 171600 (P31), 171800 (P32)"
   ]
  },
  "receiptsR04": [
@@ -213,6 +216,7 @@
   "26": "02:43 lote 17 (P16) em producao; deltas de acessos (32), publicacoes (62) e operacoes (Suporte no composto) aplicados: FE verified 37, BE done 38, E2E 22; launcher Decisao 7 resolvido no frame; P32-P34",
   "27": "02:52 lote 18 em producao; publicacoes finalizada; P16 cliente integrado; subagentes; memoria",
   "28": "03:05 lote 19 em producao; acessos-pessoas e publicacoes finalizadas; metricas parciais FE 39 / BE done 40 / E2E 24",
+  "29": "03:46 lotes 20 e 21; acessos finalizada; rota real de operacoes e formularios por subagentes (E2E 37/199); pacotes de backend de formularios em curso",
   "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina."
  },
  "fechamentoR03": {
@@ -490,7 +494,7 @@
   "aberto": "disparo do worker (COELO_NOTICE_WORKER_SECRET nos secrets, notices_worker_url/notices_worker_secret no Vault, funcao app_private.notice_dispatch_publication_worker por pg_net e cron.schedule a cada minuto) e deploy da Edge Function: bloqueados pelo classificador da sessao do coordenador -> P30 ao Owner com os comandos prontos"
  },
  "provaDaPonteEmProducao": "02:13, supabase db query --linked somente leitura com request.jwt.claims de qa-r03 (aal1): current_person_id() resolve a pessoa de servico; has_platform_permission true para people.read, units.read, health_care.read, attendance.manage e meal_plans.manage; has_mfa_aal2() true. As familias people-based deixaram de negar o usuario de teste.",
- "semRevisaoNovaHa30min": "as 03:02: estrutura (rev 30 de 23:24; coelo-39 sem retorno desde 02:06, quatro cobrancas) e operacoes (rev 17 de 02:23; rota real em curso por subagente do coordenador)",
+ "semRevisaoNovaHa30min": "as 03:43: estrutura (rev 30 de 23:24; sem retorno), principal-chat-sistema (rev 16 de 03:10), operacoes (rev 18 de 03:00; subagente encerrado), realm-interno (finalizado), publicacoes (finalizado 03:12), acessos (finalizado 03:24)",
  "lote16": {
   "aplicadoEm": "2026-09-11T02:20 -03:00; ledger 93",
   "dump": "schema-producao-20260911-lote16.sql (02:19, 3.698.566 bytes)",
@@ -526,7 +530,7 @@
  "finalizados": {
   "publicacoes-agenda": "rev 27 763402a34 (03:08 no relogio da frente): 6 pacotes em producao, 63 deltas, 49 capturas, 3 correcoes FE pequenas (recarga de Circulares apos excluir, Editar oculto em Encerrada, contextos no detalhe do evento), duvidas visuais P33/P34",
   "realm-interno": "rev 13 d217005d1: finalizado desde 00:24",
-  "acessos-pessoas": "rev 108 f8bb3986a (03:00): 171100/171200/171300/171500/171700/171900 em producao; 35 deltas aplicados (access-models.create E2E pela UI; detalhe v3; card de Pessoas abre detalhe; capabilities no rascunho corrigidas); retidos 171600 (P31) e 171800 (P32); dados sinteticos listados para remocao"
+  "acessos-pessoas": "rev 116 3808fb2e2 (03:24): lotes 12,14,16,18,19,20,21 aplicados; 47 deltas; Modelos com CRUD real pela UI (E2E); Perfis editar/excluir/atribuir, Modelos editar/duplicar, Pessoas criar/editar, Usuarios internos editar, Seguranca infantil editar com BE done por REST; retidos 171600 (P31) e 171800 (P32); lista completa de dados sinteticos no JSON (DADOS_SINTETICOS_LISTA_COMPLETA)"
  },
  "subagentesDoCoordenador": {
   "operacoes Suporte no composto": "concluido 2bcddb469 (analyze limpo; 69 P / 2 F goldens)",
@@ -548,5 +552,29 @@
   "beDone": "40/224",
   "e2eVerified": "24/199",
   "base": "validate-trackers PASS sobre 657ebb69c (analyze em curso para o push)"
+ },
+ "lote20": {
+  "aplicadoEm": "2026-09-11T03:09 -03:00; ledger 97",
+  "dump": "schema-producao-20260911-lote20.sql",
+  "conteudo": [
+   "acessos-pessoas 20260910172000 owner_child_safety_review_grant_v1 (o Owner tinha 134/135 permissoes e a guarda assert_full_authority_remains negava editar/excluir/reatribuir perfil; grant idempotente; pgTAP 4/4; Owner 135/135)"
+  ]
+ },
+ "lote21": {
+  "aplicadoEm": "2026-09-11T03:17 -03:00; ledger 98",
+  "dump": "schema-producao-20260911-lote21.sql",
+  "conteudo": [
+   "acessos-pessoas 20260910172100 child_safety_edit_pending_ambiguity_fix_v1 (variavel request_reason ambigua, 42702, em toda edicao de autorizacao pendente; pgTAP 4/4)"
+  ]
+ },
+ "rotaRealPorSubagentes": {
+  "operacoes": "rev 18 94c705576 (03:03): account.profile, support.table/kanban/detail/create/reply/close verified-e2e; account.settings FE verified; 23 capturas; residuos sinteticos (chamado 48e02ab0-..., mobile_phone da pessoa de servico, pedido de e-mail cancelado)",
+  "formularios": "rev 32 e5d35ad37 (03:41): forms.list/create/edit e medication.list verified-e2e, forms.test verified, health-care.list FE verified; 7 gates de backend com erro exato (F-R04-FCR-005 P16 so no v2, 006 child_context_directory_v2 ausente, 007 attendance_dashboard_access/context_options ausentes, 008 students.revoke nega por has_context_permission, 009 daily-routine somente leitura, 010 balao cobre Criar local); DTO de formulario corrigido (id nulo, sem status/version); subagente novo escrevendo os pacotes 220600/220700/220800 ate 04:15"
+ },
+ "metricasParciais0348": {
+  "feVerified": "54/231",
+  "beDone": "62/224",
+  "e2eVerified": "37/199",
+  "base": "validate-trackers PASS sobre c2033d327+ (analyze em curso para o push)"
  }
 }
