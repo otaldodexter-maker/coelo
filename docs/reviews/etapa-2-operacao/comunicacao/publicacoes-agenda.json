@@ -1,15 +1,15 @@
 {
-  "revision": 16,
+  "revision": 18,
   "round": "E2-R04-20260911",
   "group": "publicacoes-agenda",
   "tool": "Claude Code",
   "model": "Opus 5 (1M)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-publicacoes-agenda",
   "branch": "work/etapa2-r04-publicacoes-agenda",
-  "head": "08ed44357",
+  "head": "596bf05ea (branch = dev 58bfe1fed + wip do coordenador)",
   "base": "origin/dev 98cc0529d",
   "coordinator": "Claude (R04 · Coordenação noturna)",
-  "updatedAt": "2026-09-10T23:10:00-03:00",
+  "updatedAt": "2026-09-11T02:40:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -56,10 +56,11 @@
   },
   "environment": {
     "disposableProject": "coelo_baseline_pa em scratchpad/pa-project (db 60322); baseline 20260910000000 + seed + 44 migrations/ aplicadas OK em 2026-09-10 21:50; snapshot pg_dump em /tmp/pa-base.dump do contêiner",
-    "note": "db reset do CLI aplica o seed DEPOIS das migrations e a 170100 exige o catálogo; por isso o reset roda só com a baseline e as demais entram por psql na ordem (mesmo método do coordenador)."
+    "note": "db reset do CLI aplica o seed DEPOIS das migrations e a 170100 exige o catálogo; por isso o reset roda só com a baseline e as demais entram por psql na ordem (mesmo método do coordenador).",
+    "memoryNote": "01:57: 754 MB livres; regra do coordenador: no maximo um Chrome alem do meu, um flutter test por vez (--concurrency=1), fechar orfaos ao terminar cada prova."
   },
-  "firstGate": "UI real: login qa-r03 em localhost:3006 (Chrome via CDP) → Comunicacoes/Avisos → Circulares → Agenda; screenshots como prova de rota normal.",
-  "status": "4 pacotes em producao (lote 9); CRUD provado em producao com qa-r03 (Avisos 12/12, Circulares 12/13, Agenda 7/7 por RPC); 200400 pronto; Agenda de eventos no composto; app em localhost:3006 para a rota normal",
+  "firstGate": "200500 verde (subagente) → pacotesProntos; goldens R/A (subagente); uma tentativa de UI real com um Chrome; mini-revisao ate 04:00.",
+  "status": "5 pacotes em producao (200000-200400); CRUD provado em producao com qa-r03 33/33 por RPC; Agenda de eventos no composto; estado vazio provado nos 3 diretorios (13 testes); worker 200500 em elaboracao por subagente; rota real pela UI ainda sem captura (Chrome caiu por falta de memoria)",
   "findings": [
     "Presença em produção (mapa r03-coordenacao): notices_v2 185008 = 1/16 (só analytics.notice_events); circulars_v2 191921 = 0/14; circulars_media_r2 212000 = 6/6; agenda 183836/193717 presentes (superadmin_agenda_list/get/contexts/save/command/requests/decide_publication em public).",
     "O cliente Superadmin chama somente superadmin_notice_*_v2 (185008), superadmin_circular_*_v2 (191921 + delete) e superadmin_agenda_* v1. A cadeia legada de Avisos people-based (003000, 204824, 212340, 220500) NÃO é chamada pelo app: 185008 é autossuficiente (colunas com if not exists, recibos próprios, auditoria via audit_append_superadmin_internal cuja assinatura de 13 args confere com produção). Decisão: não reentregar a cadeia legada no MVP; worker/pg_cron ficam registrados como pendência de entrega ao Principal (materialização de audiência), não bloqueiam CRUD de Avisos no Superadmin.",
@@ -67,7 +68,8 @@
     "20260909191100 (métricas por geração) depende de colunas de 220500 (publication_job_id) ausentes em produção: fica fora até existir worker; sem regressão (reach conta todos os recibos).",
     "Teste historico superadmin_internal_circular_delete_v1_test era so estrutural (strings em pg_get_functiondef) e nao pegava a violacao de circulars_check1 ao excluir rascunho; o comportamental novo pega.",
     "Padrao de defeito repetido nas cadeias historicas: audit_logs.reason_code (^[A-Z][A-Z0-9_]{0,79}$) recebia texto livre/minusculo e derrubava a RPC com SAI_INTERNAL_ERROR. Vale conferir nos outros grupos que passam p_reason ao audit_append_superadmin_internal.",
-    "SEGURANCA medida na baseline: tabelas agenda_* com RLS forcado e zero policies, mas SELECT/INSERT concedidos a anon/authenticated; superadmin_agenda_* executaveis por anon/service_role. Fechado no 200300. Recomendo ao coordenador varrer o mesmo padrao nas outras familias (grants default do Supabase em tabelas/funcoes criadas antes do endurecimento)."
+    "SEGURANCA medida na baseline: tabelas agenda_* com RLS forcado e zero policies, mas SELECT/INSERT concedidos a anon/authenticated; superadmin_agenda_* executaveis por anon/service_role. Fechado no 200300. Recomendo ao coordenador varrer o mesmo padrao nas outras familias (grants default do Supabase em tabelas/funcoes criadas antes do endurecimento).",
+    "UI real: balao de chat \"Mensagens\" visivel em /notices/new (criar) — Decisao 7 exige sem chat em criar/editar/publicar; regra do shell, nao da feature. Registrado para o coordenador/principal-chat-sistema."
   ],
   "packages": [
     {
@@ -167,6 +169,29 @@
       ],
       "compositionKey": "nenhuma",
       "sha": "08ed44357"
+    },
+    {
+      "order": 6,
+      "file": "packages/coelo_database/candidatos/publicacoes-agenda/20260910200500_notice_publication_worker_v2.sql",
+      "actionIds": [
+        "notices.publish",
+        "notices.schedule"
+      ],
+      "pgtap": "supabase/tests/notice_publication_worker_v2_test.sql 52/52 (claim/run como service_role materializam recibos, audiencia vazia falha o job sem tocar o aviso, superado/expirado/nao publicavel negam, authenticated/anon sem execute); regressao superadmin_internal_notices_v2_baseline_test 38/38",
+      "fixes": [
+        "fila app_private.notice_publication_jobs + indice unico parcial notice_receipts_platform_scope_uidx",
+        "claim com lease de 5 min; materialize a partir de audience_json (platform/institution/unit/group/person, role_codes, plan_ids, excluded_ids, filters) sem append_notice_audit e sem update em platform_notices; rastro em analytics.notice_events",
+        "run: notice_missing/notice_superseded/notice_expired/notice_not_publishable; primeira pagina adota o audience_json vigente",
+        "publish_v2 e change_status_v2 recriadas com insert on conflict do nothing na fila"
+      ],
+      "applyNote": "depois de 200400; sem ADD VALUE; registrar no ledger como 20260910200500/notice_publication_worker_v2. Assinaturas: claim_notice_publication_jobs_for_worker(p_worker text, p_limit int default 20) returns table(id uuid); run_notice_publication_job_for_worker(p_job_id uuid, p_limit int default 1000) returns jsonb (state processing|completed|failed). Depois: COELO_NOTICE_WORKER_SECRET, deploy do notice-publication-worker e cron.schedule (coordenador).",
+      "risks": [
+        "superado nao usa management_version (refresh_lifecycle do v2 incrementa a versao ao promover)",
+        "starts_at editado depois de publicar nao move available_at do job ja enfileirado",
+        "sem cleanup de jobs concluidos"
+      ],
+      "compositionKey": "nenhuma",
+      "sha": "pendente (commit local)"
     }
   ],
   "compositionKeys": [
@@ -206,13 +231,25 @@
       "sha": "8dc6bb76f"
     },
     {
-      "screen": "apps/superadmin → test_driver/app.dart (entrada com flutter_driver, so para provas)",
+      "screen": "apps/superadmin → test_driver (entrada de QA consolidada pelo coordenador: qa_main.dart)",
       "actionIds": [],
-      "whatChanged": "pubspec: flutter_driver em dev_dependencies (AVISO AO COORDENADOR: toque no pubspec); test_driver/app.dart chama enableFlutterDriverExtension e app.main. Nao muda a entrada de producao.",
-      "criteria": [
-        "pub get OK"
+      "whatChanged": "meu test_driver/app.dart e a linha do pubspec foram removidos (695c17f01); uso qa_main.dart do coordenador.",
+      "criteria": [],
+      "sha": "695c17f01"
+    },
+    {
+      "screen": "Etapa 2 → apps/superadmin → Comunicacoes/Avisos, Circulares, Agenda de eventos → estado vazio e sem resultados",
+      "actionIds": [
+        "notices.list",
+        "circulars.list",
+        "agenda.view"
       ],
-      "sha": "pendente de commit"
+      "whatChanged": "Testes de widget novos provam a regra do Owner de 10/09: busca, filtros, toggle, Arquivos, abas e Criar (card em grade, banner em tabela) presentes com zero itens e com busca sem resultados, em 1440 e 375 px. Os tres diretorios ja cumprem via composto; nada a corrigir.",
+      "criteria": [
+        "notice_directory_empty_state_test, circular_directory_empty_state_test, agenda_directory_empty_state_test: 13/13 PASS",
+        "flutter analyze limpo"
+      ],
+      "sha": "596bf05ea"
     }
   ],
   "pendingForCoordinator": [
@@ -261,17 +298,43 @@
     },
     {
       "actionIds": [
-        "circulars.edit"
-      ],
-      "pending": "aplicar 20260910200400 (forward-only, so a save_draft); depois repetir prova-producao.js: esperado 33/33."
-    },
-    {
-      "actionIds": [
         "agenda.view",
         "notices.list",
         "circulars.list"
       ],
       "pending": "Regra nova do Owner (toolbar, filtros, toggle, Arquivos, abas e Criar sempre visiveis, mesmo vazio): Avisos, Circulares e Agenda de eventos ja estao no composto; a conferencia do estado vazio na rota real esta na fila desta frente (screenshots); correcao, se houver, no composto (coordenador/Fase 0)."
+    },
+    {
+      "actionIds": [
+        "notices.list",
+        "notices.create",
+        "notices.edit",
+        "notices.schedule",
+        "notices.publish",
+        "notices.archive",
+        "circulars.list",
+        "circulars.filter",
+        "circulars.create",
+        "circulars.edit",
+        "circulars.detail",
+        "circulars.schedule",
+        "circulars.publish",
+        "circulars.close",
+        "circulars.delete",
+        "agenda.view",
+        "agenda.create",
+        "agenda.detail",
+        "agenda.edit",
+        "agenda.permissions"
+      ],
+      "pending": "UI real: build web (profile, qa_main.dart) servido em 127.0.0.1:3006 abre /login com $flutterDriver; o Chrome do CDP caiu tres vezes por falta de memoria da maquina (45 Chromes/11 flutter_tester de todas as frentes). Tentativa unica restante com um Chrome quando a memoria permitir; sem captura, a prova de \"rota normal abre\" fica registrada como pendente e o verified E2E nao e proposto — proposta abaixo distingue BE done (CRUD+RLS+reload provados por RPC produtiva) de FE/E2E."
+    },
+    {
+      "actionIds": [
+        "notices.publish",
+        "notices.schedule"
+      ],
+      "pending": "aplicar 20260910200500; gravar COELO_NOTICE_WORKER_SECRET; deploy de notice-publication-worker; cron.schedule; depois provar: publicar aviso pelo app → job queued → worker roda → notice_receipts com a instituicao sintetica (membros) → reach>0 no diretorio."
     }
   ],
   "proposedDeltas": [],
@@ -572,7 +635,7 @@
       ],
       "chave": "nenhuma: SupabaseNoticeRepository ja e o repositorio produtivo do router; conferir apos aplicar",
       "sha": "a5251ed7d",
-      "estado": "aplicado em producao 22:29 (lote 9, coordenador)"
+      "estado": "aplicado em producao (lotes 9 e 10, coordenador)"
     },
     {
       "ordem": 2,
@@ -590,7 +653,7 @@
       ],
       "chave": "nenhuma (gateway ja composto)",
       "sha": "28a2e1dd4",
-      "estado": "aplicado em producao 22:29 (lote 9, coordenador)"
+      "estado": "aplicado em producao (lotes 9 e 10, coordenador)"
     },
     {
       "ordem": 3,
@@ -601,7 +664,7 @@
       ],
       "chave": "superadminCircularDeleteEnabled -> true apos aplicar (apps/superadmin composition)",
       "sha": "4219b810f",
-      "estado": "aplicado em producao 22:29 (lote 9, coordenador)"
+      "estado": "aplicado em producao (lotes 9 e 10, coordenador)"
     },
     {
       "ordem": 4,
@@ -618,7 +681,7 @@
       ],
       "chave": "nenhuma: SupabaseAgendaRepository (v1) ja e o repositorio produtivo; SupabaseAgendaReadRepository (v2, superadmin_agenda_*_v2) nao esta composto e as RPCs v2 nunca existiram em SQL",
       "sha": "a63e80eec",
-      "estado": "aplicado em producao 22:29 (lote 9, coordenador)"
+      "estado": "aplicado em producao (lotes 9 e 10, coordenador)"
     },
     {
       "ordem": 5,
@@ -629,7 +692,19 @@
       ],
       "chave": "nenhuma",
       "sha": "08ed44357",
-      "estado": "pronto; aplicar"
+      "estado": "aplicado em producao (lotes 9 e 10, coordenador)"
+    },
+    {
+      "ordem": 6,
+      "arquivo": "packages/coelo_database/candidatos/publicacoes-agenda/20260910200500_notice_publication_worker_v2.sql",
+      "pgtap": "supabase/tests/notice_publication_worker_v2_test.sql 52/52 (claim/run como service_role materializam recibos, audiencia vazia falha o job sem tocar o aviso, superado/expirado/nao publicavel negam, authenticated/anon sem execute); regressao superadmin_internal_notices_v2_baseline_test 38/38",
+      "actionIds": [
+        "notices.publish",
+        "notices.schedule"
+      ],
+      "chave": "nenhuma",
+      "estado": "PRONTO; aplicar depois de 200400",
+      "aplicacao": "depois de 200400; sem ADD VALUE; registrar no ledger como 20260910200500/notice_publication_worker_v2. Assinaturas: claim_notice_publication_jobs_for_worker(p_worker text, p_limit int default 20) returns table(id uuid); run_notice_publication_job_for_worker(p_job_id uuid, p_limit int default 1000) returns jsonb (state processing|completed|failed). Depois: COELO_NOTICE_WORKER_SECRET, deploy do notice-publication-worker e cron.schedule (coordenador)."
     }
   ],
   "productionProof": {
@@ -644,8 +719,25 @@
         "at": "2026-09-10T23:00-03:00",
         "file": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/prova-producao-20260910-2300.md",
         "result": "32/33 com a instituicao sintetica 9f040000-...-0010: Circulares criar/agendar/publicar/filtrar/encerrar/excluir OK, editar FALHOU (42702, corrigido em 200400); Agenda criar/detalhe/editar+publicar/reload/cancelar OK; anon negado nas tres familias"
+      },
+      {
+        "at": "2026-09-10T23:45-03:00",
+        "file": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/prova-producao-20260910-2345.md",
+        "result": "33/33 apos 200400 em producao (circulars.edit passou)"
       }
     ],
     "note": "Prova por RPC produtiva com a mesma assinatura que os repositorios chamam. A rota normal na UI (localhost:3006, Chrome via CDP) esta em andamento; verified so com a UI aberta."
+  },
+  "uiRouteProof": {
+    "app": "build web profile de test_driver/qa_main.dart servido em 127.0.0.1:3006 (python http.server; deep link recarrega por / + pushState), Chrome com CDP, login pelo qa_drive.dart com QA_EMAIL/QA_PASSWORD so no ambiente",
+    "captures": "scratchpad ui-01..ui-07 (copiadas para docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/ui/ na proxima revisao)",
+    "steps": [
+      "ui-02-home: sessao qa-r03 aberta (Owner Coelo) na Home",
+      "ui-03-notices: /notices abre o diretorio de Avisos no composto com os avisos [R04-QA] de producao em tabela; toolbar, abas, Criar e paginacao presentes",
+      "ui-04-notice-new: Nova comunicacao abre /notices/new (formulario real, sem fixture); ACHADO: balao de chat \"Mensagens\" aparece sobre o rodape do formulario e cobre parte do botao Continuar — viola a Decisao 7 (sem chat em criar/editar/publicar); pertence ao shell (principal-chat-sistema/coordenador)",
+      "ui-05: validacao honesta \"Informe a mensagem do aviso para continuar\" ao salvar sem mensagem",
+      "ui-06-notice-saved: Salvar rascunho persistiu em producao: \"[R04-QA UI] Aviso criado pela tela\" listado no diretorio",
+      "ui-07-notices-reload: app recarregado por completo (navegacao para / e volta a /notices) com a sessao mantida e o aviso criado pela tela presente"
+    ]
   }
 }
