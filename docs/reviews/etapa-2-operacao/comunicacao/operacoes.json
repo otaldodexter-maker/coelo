@@ -1,13 +1,13 @@
 {
-  "revision": 34,
-  "updated_at": "2026-09-11T15:03:00-03:00",
+  "revision": 35,
+  "updated_at": "2026-09-11T15:39:00-03:00",
   "round": "E2-R05-20260911",
   "group": "operacoes",
   "tool_model": "Claude, Opus 5 (1M), esforco medio — conversa R05 · Operacoes",
   "conversation": "R05 · Operações",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-operacoes",
   "branch": "work/etapa2-r05-operacoes",
-  "head": "c1ad2560c (+ este commit)",
+  "head": "ce1f8a5cf + este commit",
   "base": {
     "requested": "origin/dev",
     "resolved": "2f6a6114f",
@@ -437,7 +437,8 @@
     "6285d69fd",
     "092977592",
     "134068c55",
-    "c1ad2560c"
+    "c1ad2560c",
+    "ce1f8a5cf + este commit"
   ],
   "r04_history": {
     "revision": 20,
@@ -1082,5 +1083,61 @@
     "efeito": "ownerVisualApproval=A para import_hub_directory_light_375/768/1024/1440, import_hub_empty_light_375_v4_21, import_hub_no_results_light_375_v4_21, import_hub_new_dialog_light_1440; import_hub_wizard_unavailable_light_1440_200 = A+ corrigido e regravado (pagina honesta de indisponibilidade dentro da shell, sem fundo cinza) e republicado na pagina v2 para conferencia",
     "commit": "(golden) + 30a589972 (pagina)",
     "pagina": "https://claude.ai/code/artifact/aafedc26-2673-4f10-8310-37b367dad7f7"
+  },
+  "finalizado": "sim (15:39 de 11/09; branch publicada em ce1f8a5cf + este commit; worktree limpa; sem WIP retido)",
+  "mini_revisao_10min_r05": {
+    "para": "coordenador R05 (coelo-25)",
+    "sha_final_publicado": "work/etapa2-r05-operacoes ce1f8a5cf + este commit; git status limpo; sem stash; merge de origin/dev 24dec2f7c incluido (1b0c2c5ff, 78283f81b)",
+    "fechou_por_action_id_com_prova": {
+      "audit.list / audit.filter / audit.detail": "FE verified / BE done / E2E verified-e2e — rota real com qa-r03 (RPCs 200: list, filtro, busca, cursor, detalhe, reload); pgTAP 210100 37/37 em producao; deltas-r05-ops-audit.json (9)",
+      "audit.export": "FE verified (adiado honesto: Arquivos -> CSV/XLSX 'Disponivel depois do MVP', sem chamada) — deltas-r05-ops-audit-export-theme.json",
+      "account.theme": "FE verified — Claro persiste em localStorage e sobrevive a carga completa — deltas-r05-ops-audit-export-theme.json",
+      "plans.list / plans.create / plans.edit": "FE verified / BE done / E2E verified-e2e — gate do cliente ligado (fab9b9fd0), criar/editar/reload na rota real (RPCs 200), pacote 200000 aplicado no lote 39 com pgTAP 40/40 (negativa de outro tenant) — deltas-r05-ops-plans.json (FE) + deltas-r05-ops-plans-done-support-assignee.json (BE/E2E)",
+      "support.close / support.detail": "recertificados verified/done/E2E com responsavel real persistido (200100 em producao, pgTAP 28/28; RPCs team_members/set_assignee/get 200; reload mantem) — deltas-r05-ops-plans-done-support-assignee.json",
+      "support.table / kanban / detail (G-SUP A+)": "alinhamento das celulas no composto + detalhe 1024 sob a toolbar (R) + goldens regravados; APROVADO pelo Owner (14:25); ownerVisualApproval=A (support_*_light_*, plan_table_light_*)",
+      "imports.* / profile-files.*": "adiamento honesto confirmado na rota real (sem picker/parser/job/RPC); Importacoes ganhou cabecalho e migrou ao composto; goldens na shell APROVADOS pelo Owner (14:50) exceto wizard_unavailable (A+ corrigido e regravado, conferencia IMP-R05-2)",
+      "account.logout": "FE verified / BE done / E2E verified-e2e propostos — Sair -> /auth/v1/logout 204, sessao removida, /login; reload e /profile sem sessao permanecem no login (capturas 90-94; deltas-r05-ops-logout.json)",
+      "outros": "router deixa de chamar support_list/account_profile_get antes da sessao (13be50ae8); Perfil: sigla so letras + celular validado (092977592) e sem balao (c1ad2560c); Plano: Motivo a vista na validacao (0a7507fee); 29 goldens de outras familias regravados a pedido do coordenador (4371853e1)"
+    },
+    "aberto_com_primeiro_gate": {
+      "account.sessions": "sem tela nem API de cliente; P43 ao Owner (recomendado pos-MVP) -> blocked-decision",
+      "catalog.validate / sync / publish": "5 componentes do composto sem entrada no indice + 7 fingerprints de exemplo desatualizados; ferramenta regrava o relatorio com caminhos absolutos; publish = Pages (decisao nominal); P44 ao Owner",
+      "plans.activate / plans.assign": "decisao de semantica (spec 051 arquivar/restaurar; atribuicao nao aprovada) — sem mudanca",
+      "support.kanban": "P45 ao Owner (abas de status e persistencia da visao)",
+      "support.detail": "balao Mensagens sobre o compositor em 1440x1000 (tentativa de esconder com detalhe aberto quebrou testes de foco; revertida)",
+      "audit.filter": "aparencia do filtro Periodo vs demais filtros (coelo-ui)",
+      "imports.create": "pagina generica 503 'temporariamente indisponivel' para recurso adiado (texto transversal; observacao ao Owner em IMP-R05-2)",
+      "plans.list": "parser do cliente rigido (13 chaves de entitlements; starts_at nulavel)",
+      "account.profile": "e-mail vazio na projecao da pessoa de servico (dado da ponte)",
+      "account.mfa / audit.export (BE)": "adiados por decisao (ADR 0034; Decisao 12)"
+    },
+    "deltas_propostos": [
+      "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-audit.json (9)",
+      "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-plans.json (6; FE verified + BE local-green, superado pelo seguinte no BE)",
+      "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-audit-export-theme.json (2)",
+      "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-plans-done-support-assignee.json (12)",
+      "aprovacoes visuais do Owner (G-SUP 14:25; Importacoes 14:50) para ownerVisualApproval; nunca verified/done/E2E"
+    ],
+    "pacotes_sql": "20260911200000 (Planos, lote 39) e 20260911200100 (responsaveis do Suporte) ja aplicados em producao pelo coordenador; nenhum candidato pendente em candidatos/operacoes",
+    "duvidas_ao_owner": "P43 account.sessions; P44 Catalogo; P45 abas/persistencia em Suporte; IMP-R05-2 conferir wizard_unavailable corrigido (+ texto 503 transversal)",
+    "dados_sinteticos_em_producao": [
+      {
+        "tabela": "public.plans (+ plan_entitlements, plan_change_receipts)",
+        "id": "5b0fc76b-51cd-4361-8d4f-e7033853eba6",
+        "descricao": "plano r05-qa-plano-teste '[R05-QA] Plano de teste editado', 2 recibos; sem RPC de exclusao (arquivar existe); limpeza no fim da Etapa 2"
+      },
+      {
+        "tabela": "public.support_sessions",
+        "id": "48e02ab0-fa60-4e7c-86b6-78f75565dc57",
+        "descricao": "chamado [R04-QA] recebeu responsavel e59b0b83-7a35-466d-8b79-570f80ded81f (Operador interno 41462594) + 1 recibo e 1 evento support.assign"
+      },
+      {
+        "tabela": "audit.audit_logs",
+        "id": "n/a",
+        "descricao": "eventos superadmin.audit.list/detail, plan.*, support.assign gerados pelas provas (append-only)"
+      }
+    ],
+    "skills": "secao 5 de docs/reviews/evidence/etapa-2/r05-operacoes/handoff.md",
+    "ambiente": "Chrome CDP 9408 e servidor 3008 fechados ao fim; descartavel coelo_ops_r05 parado (volume mantido para reuso); build web em apps/superadmin/build/web-r05ops (nao versionado)"
   }
 }
