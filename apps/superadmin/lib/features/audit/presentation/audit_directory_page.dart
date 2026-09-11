@@ -1,22 +1,25 @@
-import 'package:coelo_tokens/coelo_tokens.dart';
+import 'dart:async';
+
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../../../app/activity/superadmin_activity.dart';
+import '../../../app/shell/superadmin_notice.dart';
 import '../../../app/shell/superadmin_shell.dart';
-import '../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
-import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import '../../auth/domain/logout_action.dart';
 import '../domain/audit.dart';
 import 'audit_controller.dart';
 import 'audit_detail_panel.dart';
 import 'widgets/audit_directory_filters.dart';
 import 'widgets/audit_event_views.dart';
-import 'widgets/audit_export_actions.dart';
+import 'widgets/audit_timeline.dart';
 
-enum AuditDirectoryDisplay { cards, table }
-
+/// Diretório de Auditoria sobre o composto `CoeloAdminDirectory` (decisão do
+/// Owner de 10/09/2026): busca e filtros alinhados na toolbar, toggle
+/// Cards/Tabela, Arquivos honesto e rodapé de paginação do composto. A
+/// paginação do backend é por cursor: só o passo anterior/próximo existe, e
+/// um salto de página anda um passo por vez.
 final class AuditDirectoryPage extends StatefulWidget {
   const AuditDirectoryPage({
     required this.controller,
@@ -41,7 +44,7 @@ final class AuditDirectoryPage extends StatefulWidget {
 
 final class _AuditDirectoryPageState extends State<AuditDirectoryPage> {
   final _searchController = TextEditingController();
-  var _display = AuditDirectoryDisplay.table;
+  var _display = CoeloAdminDirectoryDisplay.table;
   String? _selectedEventId;
 
   @override
@@ -67,49 +70,37 @@ final class _AuditDirectoryPageState extends State<AuditDirectoryPage> {
     super.dispose();
   }
 
-  Future<void> _setDisplay(AuditDirectoryDisplay value) async {
+  int get _pageSize => _display == CoeloAdminDirectoryDisplay.cards ? 11 : 8;
+
+  Future<void> _setDisplay(CoeloAdminDirectoryDisplay value) async {
     if (_display == value) return;
     setState(() => _display = value);
-    final query = widget.controller.query;
-    await widget.controller.updateFilters(
-      AuditQuery(
-        search: query.search,
-        actorIds: query.actorIds,
-        contextKinds: query.contextKinds,
-        actionCodes: query.actionCodes,
-        resourceTypes: query.resourceTypes,
-        outcomes: query.outcomes,
-        origins: query.origins,
-        institutionId: query.institutionId,
-        from: query.from,
-        to: query.to,
-        pageSize: value == AuditDirectoryDisplay.cards ? 11 : 8,
-      ),
-    );
+    await widget.controller.updateFilters(_withPageSize(widget.controller.query, _pageSize));
   }
 
   void _loadInitial() {
     final query = widget.controller.query;
-    final pageSize = _display == AuditDirectoryDisplay.cards ? 11 : 8;
-    if (query.pageSize == pageSize) {
+    if (query.pageSize == _pageSize) {
       widget.controller.load();
       return;
     }
-    widget.controller.updateFilters(
-      AuditQuery(
-        search: query.search,
-        actorIds: query.actorIds,
-        contextKinds: query.contextKinds,
-        actionCodes: query.actionCodes,
-        resourceTypes: query.resourceTypes,
-        outcomes: query.outcomes,
-        origins: query.origins,
-        institutionId: query.institutionId,
-        from: query.from,
-        to: query.to,
-        pageSize: pageSize,
-      ),
-    );
+    widget.controller.updateFilters(_withPageSize(query, _pageSize));
+  }
+
+  Future<void> _goToPage(int target) async {
+    final controller = widget.controller;
+    // ponytail: cursor só anda um passo; salto de N páginas anda N vezes.
+    while (controller.snapshot.pageNumber < target && controller.snapshot.hasNext) {
+      await controller.next();
+    }
+    while (controller.snapshot.pageNumber > target && controller.snapshot.hasPrevious) {
+      await controller.previous();
+    }
+  }
+
+  void _clearFilters() {
+    _searchController.clear();
+    unawaited(widget.controller.updateFilters(AuditQuery(pageSize: _pageSize)));
   }
 
   @override
@@ -124,188 +115,149 @@ final class _AuditDirectoryPageState extends State<AuditDirectoryPage> {
     child: AnimatedBuilder(
       animation: widget.controller,
       builder: (context, _) => LayoutBuilder(
-        builder: (context, constraints) {
-          final padding = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
-              ? CoeloSpacing.space10
-              : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
-              ? CoeloSpacing.space6
-              : CoeloSpacing.space4;
-          return Padding(
-            padding: EdgeInsets.all(padding),
-            child: CoeloAdminWorkspaceLayout(
-              toolbar: Padding(
-                padding: const EdgeInsets.only(bottom: CoeloSpacing.space4),
-                child: _toolbar(constraints.maxWidth),
-              ),
-              body: _body(padding),
-              detailVisible: widget.controller.detail.state != AuditDetailLoadState.idle,
-              detail: widget.controller.detail.state == AuditDetailLoadState.idle
-                  ? null
-                  : AuditDetailPanel(
-                      snapshot: widget.controller.detail,
-                      onClose: () {
-                        setState(() => _selectedEventId = null);
-                        widget.controller.closeDetail();
-                      },
-                      onRetry: () {
-                        final eventId = _selectedEventId;
-                        if (eventId != null) widget.controller.loadDetail(eventId);
-                      },
-                    ),
-            ),
-          );
-        },
-      ),
-    ),
-  );
-
-  Widget _toolbar(double width) {
-    final controller = widget.controller;
-    final compact = width < CoeloBreakpoints.medium.minWidth;
-    return CoeloAdminListingToolbar(
-      key: const Key('audit-toolbar'),
-      search: AuditDirectoryFilters(
-        controller: controller,
-        searchController: _searchController,
-        clock: widget.clock,
-      ),
-      filters: const [],
-      actions: [
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SuperadminDirectoryViewToggle<AuditDirectoryDisplay>(
-              cardsKey: const Key('audit-view-cards'),
-              tableKey: const Key('audit-view-table'),
-              cardsSelected: _display == AuditDirectoryDisplay.cards,
-              groupedView: AuditDirectoryDisplay.table,
-              selectedTableView: AuditDirectoryDisplay.table,
-              tableViews: const [
-                SuperadminDirectoryTableViewOption(
-                  value: AuditDirectoryDisplay.table,
-                  label: 'Tabela',
+        builder: (context, constraints) => CoeloAdminWorkspaceLayout(
+          toolbar: const SizedBox.shrink(),
+          body: _directory(context),
+          detailVisible: widget.controller.detail.state != AuditDetailLoadState.idle,
+          detail: widget.controller.detail.state == AuditDetailLoadState.idle
+              ? null
+              : Padding(
+                  padding: EdgeInsets.all(
+                    CoeloAdminDirectoryMetrics.horizontalPadding(constraints.maxWidth),
+                  ),
+                  child: AuditDetailPanel(
+                    snapshot: widget.controller.detail,
+                    onClose: () {
+                      setState(() => _selectedEventId = null);
+                      widget.controller.closeDetail();
+                    },
+                    onRetry: () {
+                      final eventId = _selectedEventId;
+                      if (eventId != null) widget.controller.loadDetail(eventId);
+                    },
+                  ),
                 ),
-              ],
-              onCardsSelected: () => _setDisplay(AuditDirectoryDisplay.cards),
-              onTableViewSelected: _setDisplay,
-            ),
-            const SizedBox(width: CoeloSpacing.space2),
-            AuditExportActions(compact: compact),
-          ],
         ),
-      ],
-    );
-  }
-
-  Widget _body(double horizontalPadding) {
-    final snapshot = widget.controller.snapshot;
-    final content = switch (snapshot.state) {
-      AuditLoadState.loading => const _AuditState(
-        state: 'loading',
-        icon: Icons.hourglass_top_rounded,
-        message: 'Carregando eventos...',
-        loading: true,
       ),
-      AuditLoadState.empty => const _AuditState(
-        state: 'empty',
-        icon: Icons.history_rounded,
-        message: 'Ainda não há eventos de auditoria disponíveis.',
-      ),
-      AuditLoadState.noResults => const _AuditState(
-        state: 'noResults',
-        icon: Icons.search_off_rounded,
-        message: 'Nenhum evento corresponde aos filtros aplicados.',
-      ),
-      AuditLoadState.failure => _AuditState(
-        state: 'failure',
-        icon: Icons.error_outline_rounded,
-        message: 'Não foi possível carregar a auditoria.',
-        actionLabel: 'Tentar novamente',
-        onAction: widget.controller.retry,
-      ),
-      AuditLoadState.unauthorized => const _AuditState(
-        state: 'unauthorized',
-        icon: Icons.lock_outline_rounded,
-        message: 'Você não tem permissão para consultar a auditoria.',
-      ),
-      AuditLoadState.notFound => const _AuditState(
-        state: 'notFound',
-        icon: Icons.manage_search_rounded,
-        message: 'O recurso solicitado não foi encontrado.',
-      ),
-      AuditLoadState.content => AuditEventViews(
-        events: snapshot.events,
-        display: _display,
-        selectedEventId: widget.controller.detail.state == AuditDetailLoadState.idle
-            ? null
-            : _selectedEventId,
-        onSelected: (event) {
-          setState(() => _selectedEventId = event.id);
-          widget.controller.loadDetail(event.id);
-        },
-      ),
-    };
-    if (snapshot.state != AuditLoadState.content) return content;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Expanded(child: SingleChildScrollView(child: content)),
-        const SizedBox(height: CoeloSpacing.space3),
-        SuperadminListingPaginationFooter(
-          horizontalPadding: horizontalPadding,
-          compactCurrentPage: snapshot.pageNumber,
-          compactTotalPages: snapshot.totalPages,
-          compactOnPrevious: snapshot.hasPrevious ? widget.controller.previous : null,
-          compactOnNext: snapshot.hasNext ? widget.controller.next : null,
-          child: CoeloAdminPagination(
-            currentPage: snapshot.pageNumber,
-            totalPages: snapshot.totalPages,
-            onPrevious: snapshot.hasPrevious ? widget.controller.previous : null,
-            onNext: snapshot.hasNext ? widget.controller.next : null,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-final class _AuditState extends StatelessWidget {
-  const _AuditState({
-    required this.state,
-    required this.icon,
-    required this.message,
-    this.loading = false,
-    this.actionLabel,
-    this.onAction,
-  });
-
-  final String state;
-  final IconData icon;
-  final String message;
-  final bool loading;
-  final String? actionLabel;
-  final VoidCallback? onAction;
-
-  @override
-  Widget build(BuildContext context) => KeyedSubtree(
-    key: Key('audit-state-$state'),
-    child: CoeloStatePanel(
-      title: _stateTitle(state),
-      message: message,
-      icon: icon,
-      loading: loading,
-      actionLabel: actionLabel,
-      onAction: onAction,
     ),
   );
+
+  Widget _directory(BuildContext context) {
+    final controller = widget.controller;
+    final snapshot = controller.snapshot;
+    final status = switch (snapshot.state) {
+      AuditLoadState.loading => CoeloAdminDirectoryStatus.loading,
+      AuditLoadState.content => CoeloAdminDirectoryStatus.success,
+      AuditLoadState.empty => CoeloAdminDirectoryStatus.empty,
+      AuditLoadState.noResults => CoeloAdminDirectoryStatus.noResults,
+      AuditLoadState.failure || AuditLoadState.notFound => CoeloAdminDirectoryStatus.failure,
+      AuditLoadState.unauthorized => CoeloAdminDirectoryStatus.unauthorized,
+    };
+    final selectedEventId = controller.detail.state == AuditDetailLoadState.idle
+        ? null
+        : _selectedEventId;
+    void select(AuditEvent event) {
+      setState(() => _selectedEventId = event.id);
+      controller.loadDetail(event.id);
+    }
+
+    return CoeloAdminDirectory<CoeloAdminDirectoryDisplay>(
+      key: const Key('audit-directory'),
+      scrollKey: const Key('audit-directory-scroll'),
+      toolbarKey: const Key('audit-toolbar'),
+      filterControlsKey: const Key('audit-filter-controls'),
+      cardsKey: const Key('audit-view-cards'),
+      tableKey: const Key('audit-view-table'),
+      gridKey: const Key('audit-card-list'),
+      loadingKey: const Key('audit-state-loading'),
+      status: status,
+      messages: const CoeloAdminDirectoryMessages(
+        empty: 'Ainda não há eventos de auditoria disponíveis.',
+        emptyIcon: Icons.history_rounded,
+        noResults: 'Nenhum evento corresponde aos filtros aplicados.',
+        noResultsIcon: Icons.search_off_rounded,
+        failure: 'Não foi possível carregar a auditoria.',
+        failureIcon: Icons.error_outline_rounded,
+        unauthorized: 'Você não tem permissão para consultar a auditoria.',
+        unauthorizedIcon: Icons.lock_outline_rounded,
+      ),
+      errorMessage: switch (snapshot.state) {
+        AuditLoadState.notFound => 'O recurso solicitado não foi encontrado.',
+        AuditLoadState.failure => 'Tente novamente sem perder a consulta atual.',
+        _ => null,
+      },
+      onRetry: controller.retry,
+      onClearFilters: _clearFilters,
+      search: CoeloSearchField(
+        key: const Key('audit-search'),
+        controller: _searchController,
+        hintText: 'Buscar na auditoria',
+        semanticLabel: 'Buscar na auditoria',
+        onChanged: controller.updateSearch,
+      ),
+      filters: [
+        AuditOutcomeFilter(key: const Key('audit-outcome-filter'), controller: controller),
+        AuditPeriodFilter(
+          key: const Key('audit-period-filter'),
+          controller: controller,
+          clock: widget.clock,
+        ),
+      ],
+      display: _display,
+      onDisplayChanged: (value) => unawaited(_setDisplay(value)),
+      groupedTableView: CoeloAdminDirectoryDisplay.table,
+      selectedTableView: CoeloAdminDirectoryDisplay.table,
+      tableViews: const [
+        CoeloAdminDirectoryTableViewOption(
+          value: CoeloAdminDirectoryDisplay.table,
+          label: 'Tabela',
+        ),
+      ],
+      onTableViewSelected: (_) => unawaited(_setDisplay(CoeloAdminDirectoryDisplay.table)),
+      // Exportação geral adiada (ADR 0034): botão visível e honesto.
+      fileActions: [
+        CoeloAdminFileAction(
+          label: 'Exportar CSV',
+          icon: Icons.table_view_outlined,
+          onPressed: () => showSuperadminNotice(context, 'Disponível depois do MVP'),
+        ),
+        CoeloAdminFileAction(
+          label: 'Exportar XLSX',
+          icon: Icons.grid_on_outlined,
+          onPressed: () => showSuperadminNotice(context, 'Disponível depois do MVP'),
+        ),
+      ],
+      cards: [
+        for (final event in snapshot.events)
+          AuditEventCard(event: event, onPressed: () => select(event)),
+      ],
+      table: AuditEventRows(
+        events: snapshot.events,
+        selectedEventId: selectedEventId,
+        onSelected: select,
+      ),
+      pagination: snapshot.state == AuditLoadState.content
+          ? CoeloAdminDirectoryPagination(
+              footerKey: const Key('audit-pagination'),
+              currentPage: snapshot.pageNumber.clamp(1, snapshot.totalPages),
+              totalPages: snapshot.totalPages,
+              onPageSelected: (page) => unawaited(_goToPage(page)),
+            )
+          : null,
+    );
+  }
 }
 
-String _stateTitle(String state) => switch (state) {
-  'loading' => 'Carregando auditoria',
-  'empty' => 'Auditoria vazia',
-  'noResults' => 'Nenhum resultado',
-  'failure' => 'Auditoria indisponível',
-  'unauthorized' => 'Acesso negado',
-  'notFound' => 'Recurso não encontrado',
-  _ => 'Auditoria',
-};
+AuditQuery _withPageSize(AuditQuery query, int pageSize) => AuditQuery(
+  search: query.search,
+  actorIds: query.actorIds,
+  contextKinds: query.contextKinds,
+  actionCodes: query.actionCodes,
+  resourceTypes: query.resourceTypes,
+  outcomes: query.outcomes,
+  origins: query.origins,
+  institutionId: query.institutionId,
+  from: query.from,
+  to: query.to,
+  pageSize: pageSize,
+);

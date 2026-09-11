@@ -89,7 +89,6 @@ void main() {
     final root = Directory('lib/features');
     final displayEnum = RegExp(r'enum\s+\w*DirectoryDisplay\b|enum\s+_\w*Display\s*\{\s*cards');
     const pending = <String>{
-      'lib/features/audit/presentation/audit_directory_page.dart',
       'lib/features/daily_routine/daily_routine_pages.dart',
       'lib/features/health_care/presentation/health_care_controller.dart',
     };

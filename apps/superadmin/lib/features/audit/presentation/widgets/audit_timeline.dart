@@ -29,23 +29,34 @@ final class AuditTimeline extends StatelessWidget {
             for (final event in events)
               SizedBox(
                 width: width,
-                child: CoeloAdminInteractiveCard(
-                  key: Key('audit-card-${event.id}'),
-                  semanticLabel: 'Abrir evento de auditoria ${event.id}',
-                  minHeight: 216,
-                  onPressed: () => onSelected(event),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: CoeloSpacing.space6,
-                      vertical: CoeloSpacing.space4,
-                    ),
-                    child: _TimelineEvent(event: event),
-                  ),
-                ),
+                child: AuditEventCard(event: event, onPressed: () => onSelected(event)),
               ),
           ],
         );
       },
+    ),
+  );
+}
+
+/// Card de evento de auditoria; o composto de diretório dá a largura.
+final class AuditEventCard extends StatelessWidget {
+  const AuditEventCard({required this.event, required this.onPressed, super.key});
+
+  final AuditEvent event;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) => CoeloAdminInteractiveCard(
+    key: Key('audit-card-${event.id}'),
+    semanticLabel: 'Abrir evento de auditoria ${event.id}',
+    minHeight: 216,
+    onPressed: onPressed,
+    child: Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: CoeloSpacing.space6,
+        vertical: CoeloSpacing.space4,
+      ),
+      child: _TimelineEvent(event: event),
     ),
   );
 }
