@@ -1,16 +1,16 @@
 {
- "revision": 22,
- "round": "E2-R03-20260910",
+ "revision": 24,
+ "round": "E2-R04-20260911",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
- "model": "claude-opus-5[1m]",
+ "model": "claude-opus-5 (Claude, Opus)",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-10T17:10:00-03:00",
- "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-formularios-cuidado-rotina",
- "branch": "work/etapa2-r03-formularios-cuidado-rotina",
- "head": "1c188091f",
- "baseNote": "coordenacao.json ainda esta na revisao 31 da rodada E2-NOTURNA-20260909 e nao tem base.fase0Head. Worktree criada a partir de dev bb15db748, mesmo HEAD usado pela worktree e2-r03-publicacoes-agenda. Rebase na base da Fase 0 assim que ela for publicada.",
+ "updatedAt": "2026-09-10T22:04-03:00",
+ "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-formularios-cuidado-rotina",
+ "branch": "work/etapa2-r04-formularios-cuidado-rotina",
+ "head": "f3fefa306",
+ "base": "origin/dev 98cc0529d (docs(e2): Rodada 4 inteira no Claude, sem Codex)",
  "scope": {
   "families": [
    "forms_authoring",
@@ -23,21 +23,21 @@
    "daily_routine"
   ],
   "actionCount": 43,
-  "confirmedAgainstInventory": true,
   "order": [
-   "health_care + medication",
-   "students",
-   "attendance (D11: chave de idempotencia gerada no banco por RPC)",
-   "forms_authoring + forms_responses (D6: Testar por capacidade)",
-   "forms_files + forms.responses.export (XLSX no R2 privado)",
-   "daily_routine (D8: guarda de saida; D7: Lancamentos tela minima)"
+   "health_care + medication (rota normal com sessao qa-r03)",
+   "students (rota normal; student_links_read_v1 aplicado pelo coordenador)",
+   "attendance (D11 chave no banco; diretorio de Assiduidade ao composto CoeloAdminDirectory)",
+   "forms_authoring + forms_responses (D6 Testar por capacidade)",
+   "forms_files + forms.responses.export (XLSX no R2 privado via gateway)",
+   "daily_routine (D8 guarda de saida; D7 Lancamentos)",
+   "P16: tipo location em Formularios (pacote 2026091022xxxx + UI)",
+   "goldens do recorte; medication_form_mobile_light so apos P15 do grupo estrutura"
   ]
  },
  "currentGate": {
-  "gate": "Fase 0 nao publicada: iniciar por backend (migrations, pgTAP, repositorios, contratos) sem tocar UI de diretorio",
-  "screen": "Etapa 2 -> apps/superadmin -> Cuidado -> Perfis de cuidado / Medicacao",
+  "gate": "ligar criar/editar/detalhe de Perfis de cuidado e as quatro rotas de Medicacao ao repositorio Supabase no router de producao; depois CRUD com sessao",
+  "screen": "Etapa 2 -> apps/superadmin -> Saude e Cuidado -> Perfis de cuidado / Medicacao",
   "actionIds": [
-   "health-care.list",
    "health-care.create",
    "health-care.detail",
    "health-care.edit",
@@ -47,160 +47,58 @@
    "medication.edit",
    "medication.evidence"
   ],
-  "note": "Fundacao health_care/medication inexistente. Construindo o primeiro pacote SQL da familia health_care."
+  "note": "health-care.list abriu na rota normal com sessao (lista vazia em producao)."
  },
+ "loopAgendado": "/loop 15m, agendado na abertura",
  "tests": {
-  "pass": 1033,
-  "fail": 0,
-  "blocked": 0,
-  "skipped": 0,
-  "notRun": 0,
-  "pgtap": "1037 assercoes / 0 falhas sobre a baseline de producao (1033 mais 4 da leitura de vinculos)",
-  "mudanca_de_base": "as 1021 assercoes anteriores foram medidas sobre um replay reconstruido da cadeia historica. A baseline publicada pelo coordenador e a base verdadeira, e refiz tudo sobre ela.",
-  "flutter": "225 nas suites que escrevi ou alterei (113 daily_routine, 89 attendance, 7 cuidado/medicacao, 11 alunos, 5 repositorio de alunos); dart analyze lib limpo"
+  "pass": null,
+  "fail": null,
+  "blocked": null,
+  "skipped": null,
+  "notRun": null,
+  "nota": "nenhuma execucao nesta rodada ainda; os numeros da R03 estao em historicoR03.tests"
  },
  "reservedFiles": [],
- "blocking": [
-  {
-   "id": "B-R03-FCR-001",
-   "tipo": "ambiente compartilhado, nao bloqueia trabalho independente",
-   "o_que": "scripts/Invoke-SafeLocalMigrationReplay.ps1 serializa por mutex Local\\CoeloSafeSupabaseReplay em toda a maquina. Na primeira tentativa recebi 'another safe Supabase replay is already running' e docker ps mostrou o container coelo_safe_883c3727e92a4124abf7e0140e9e5 de outra frente, no ar ha 37 segundos.",
-   "efeito": "a prova pgTAP dos meus pacotes espera a vez. A escrita de migrations, testes e repositorios continua.",
-   "proposta_ao_coordenador": "uma fila explicita de janela de replay em coordenacao.json, do mesmo jeito que a fila SQL. Sem isso as seis frentes vao se atropelar no mesmo mutex e cada uma vai ler o erro como defeito proprio."
-  }
- ],
+ "blocking": [],
  "deltaProposals": [],
- "nextStep": "Retomada pelo Owner. Primeiro gate aberto: ligar as duas chaves de composicao e provar a rota normal contra producao por action_id.",
- "findings": [
-  {
-   "id": "F-R03-FCR-001",
-   "severity": "estrutural, muda o tamanho da rodada",
-   "titulo": "Nao sao 9 objetos app_private faltando: os schemas de daily_routine, student_tracking, health_care e medication nunca foram criados",
-   "medido": "grep sobre packages/coelo_database/migrations no HEAD bb15db748",
-   "evidencia": {
-    "tabelas_public_criadas_nas_familias": "apenas attendance_* (7 tabelas). Zero CREATE TABLE para routine_applications, routine_launches, student_tracking, health_care ou medication.",
-    "migrations_existentes_de_rotina": "somente 20260825193112_final_review_daily_routine_lint_hardening.sql, que faz CREATE OR REPLACE de funcoes app_private sobre public.routine_applications - uma tabela que nenhuma migration cria",
-    "migrations_existentes_de_alunos": "somente 20260825193123_final_review_student_tracking_read_fix.sql e 20260825180000_revoke_student_tracking_normalizer_client_execute.sql, no mesmo padrao",
-    "health_care_e_medication": "nenhuma migration. No cliente existem apenas repositorios dev (data/dev/) e UnavailableHealthCareRepository; nao ha repositorio Supabase.",
-    "objetos_app_private_referenciados_e_nunca_criados": 49
-   },
-   "consequencia": "o rastreador anterior descrevia isso como 9+4 objetos ausentes, o que sugere um pacote pequeno de correcao. O trabalho real e construir a fundacao (tabelas, RLS, capacidades, RPCs, recibos) de quatro familias, mais os repositorios Supabase no cliente. Attendance e a unica das familias de dominio proprio com fundacao real.",
-   "acao": "assumido por este grupo; nao pede decisao. Entregarei um pacote SQL por familia com migration + pgTAP + chave de composicao.",
-   "para_o_coordenador": "a estimativa desta frente nao cabe no formato 'corrigir pendencias'; e construcao. Vale conferir se outras frentes tem o mesmo padrao de migration de lint sobre tabela inexistente."
-  },
-  {
-   "id": "F-R03-FCR-002",
-   "severity": "estrutural, afeta todas as frentes",
-   "titulo": "A cadeia canonica de 186 migrations nao replica do zero; o caminho suportado e um perfil de replay parcial",
-   "medido": "supabase start com o espelho sincronizado das 187 migrations canonicas, em 2026-09-10",
-   "evidencia": "a aplicacao para em 20260812002000_child_safety_schema.sql com 23502: null value in column module_label of relation platform_permissions. A coluna nasce anulavel em 20260811215451_access_profile_management_v2, e a mesma migration a torna NOT NULL sem default; as migrations posteriores que inserem permissoes nunca passam module_label. Ha um remendo dedicado a isso em replay/20260811215452_access_profile_labels_replay_bridge.sql, que so o script de replay injeta, e uma migration 20260831130726_reconcile_permission_labels_after_replay que existe para desfazer o remendo.",
-   "consequencia": "nao existe 'supabase db reset verde' nesta base. Toda prova pgTAP local sai de scripts/Invoke-SafeLocalMigrationReplay.ps1 com -FoundationOnly (69 migrations do manifesto) mais as migrations do pacote. Quem afirmar pgTAP verde precisa dizer sobre qual perfil.",
-   "acao": "assumido: meu pacote de rotina foi escrito para ser replayavel nesse perfil, sem depender de 20260825193112, que esta fora do manifesto.",
-   "para_o_coordenador": "vale confirmar se as outras frentes sabem disso; quem tentar db reset vai perder tempo no mesmo ponto."
-  },
-  {
-   "id": "F-R03-FCR-003",
-   "severity": "bloqueia a prova pgTAP local de TODAS as frentes; urgente para o coordenador",
-   "titulo": "O perfil FoundationOnly de replay esta quebrado no HEAD atual: o manifesto exige uma migration que ele mesmo nao contem",
-   "medido": "scripts/Invoke-SafeLocalMigrationReplay.ps1 -FoundationOnly executado em 2026-09-10 sobre bb15db748",
-   "evidencia": "a aplicacao percorre 68 migrations e para em 20260901101500_superadmin_internal_chat_v2.sql com 55000: 'internal auth, audit and chat dependencies are unavailable'. O preflight daquela migration exige public.chat_attachment_metadata, criada em 20260812000000_chat_production_contract.sql, que NAO consta de replay/foundation-migrations.sha256. As quatro migrations *_v2 de 09/2026 (chat, notices, invites, circulars) entraram no manifesto sem que suas dependencias de 08/2026 entrassem junto.",
-   "consequencia": "a OQ-042 registra o perfil FoundationOnly passando 259 asserts; isso deixou de valer. Hoje nenhuma frente consegue pgTAP local pelo caminho suportado, e quem tentar vai ler a falha como defeito do proprio pacote, porque ela acontece antes das migrations do pacote.",
-   "correcao_proposta": "acrescentar 20260812000000_chat_production_contract.sql ao manifesto, com o hash normalizado, na posicao entre 20260812000847 e 20260820182000. O manifesto e escrito pelo coordenador; nao alterei o arquivo.",
-   "contorno_em_uso_aqui": "montei um projeto de replay descartavel fora do repositorio (scratchpad, project_id coelo_fcr_replay, portas 553xx) com as 69 do manifesto, as duas pontes de replay/, a dependencia ausente e os meus tres pacotes. E disposable e local; nenhuma mutacao remota."
-  },
-  {
-   "id": "F-R03-FCR-004",
-   "severity": "o maior achado deste grupo; desbloqueia a familia Formularios inteira",
-   "titulo": "A primeira migration de Formularios e PL/pgSQL invalido. Nenhuma das 24 migrations da familia jamais pode ter sido aplicada em lugar nenhum.",
-   "medido": "aplicacao por psql sobre o replay descartavel, 2026-09-10",
-   "causa": "20260813155005_forms_definition_and_capabilities.sql usa um CASE sem parenteses dentro da condicao de um IF, em app_private.form_item_config_valid. Em PL/pgSQL o parser encerra a condicao do IF no primeiro THEN que encontra; com o CASE sem parenteses a expressao fica pela metade e o servidor responde 'syntax error at end of input'. A funcao nao compila, e como form_items tem uma constraint CHECK que a chama, a tabela tambem nao nasce.",
-   "prova_do_diagnostico": "do $$ begin if 1 - case when true then 1 else 2 end = 0 then null; end if; end $$; falha; com parenteses em volta do CASE, passa.",
-   "consequencia": "os 16 arquivos pgTAP de Formularios nunca puderam rodar, porque o schema nunca existiu. Qualquer estado 'local-green' registrado para Formularios no rastreador nao pode ter vindo de execucao contra banco.",
-   "correcao": "parenteses em volta dos dois CASE (linhas 105 e 145). E uma correcao no proprio arquivo, e nao uma migration nova, porque nao existe forward-fix para uma funcao que nunca foi criada: o arquivo nunca rodou em ambiente nenhum, entao nao ha historico a preservar.",
-   "efeito_medido": "as 24 migrations de Formularios passam a aplicar limpo (a do XLSX exige antes 20260908160000_private_media_catalog_r2_v1). Os testes da familia passaram de zero execucoes para 845 assercoes aprovadas e 62 falhas, que agora podem ser triadas."
-  }
- ],
- "packages": [
-  {
-   "id": "PKG-R03-FCR-ROTINA-01",
-   "familia": "daily_routine",
-   "estado": "pgTAP verde no replay descartavel",
-   "migrations": [
-    "packages/coelo_database/migrations/20260910010000_daily_routine_foundation_v1.sql",
-    "packages/coelo_database/migrations/20260910010100_daily_routine_behavior_v1.sql"
+ "packages": [],
+ "commits": [],
+ "pendenciasRegistradas": [],
+ "duvidasParaOOwner": [],
+ "nextStep": "composicao de Cuidado/Medicacao no router; criar perfil sintetico em producao; reload; depois Alunos",
+ "handoff": "docs/reviews/etapa-2-operacao/comunicacao/formularios-cuidado-rotina-handoff.md",
+ "historicoR03": {
+  "updatedAt": "2026-09-10T17:10:00-03:00",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-formularios-cuidado-rotina",
+  "branch": "work/etapa2-r03-formularios-cuidado-rotina",
+  "head": "1c188091f",
+  "baseNote": "coordenacao.json ainda esta na revisao 31 da rodada E2-NOTURNA-20260909 e nao tem base.fase0Head. Worktree criada a partir de dev bb15db748, mesmo HEAD usado pela worktree e2-r03-publicacoes-agenda. Rebase na base da Fase 0 assim que ela for publicada.",
+  "scope": {
+   "families": [
+    "forms_authoring",
+    "forms_responses",
+    "forms_files",
+    "health_care",
+    "medication",
+    "students",
+    "attendance",
+    "daily_routine"
    ],
-   "pgtap_alvo": [
-    "packages/coelo_database/supabase/tests/daily_routine_foundation_test.sql (34 asserts, preexistente e vermelho desde 25/08)",
-    "packages/coelo_database/supabase/tests/daily_routine_scope_closure_test.sql (6 asserts)"
-   ],
-   "conteudo": "13 tabelas publicas, app_private.routine_command_receipts, 8 capacidades de plataforma e 8 contextuais, 7 auxiliares de autorizacao/validacao, gatilho de hierarquia, view daily_routine_effective_applications com security_invoker, 8 RPCs publicas, RLS deny-by-default com FORCE em todas as tabelas e cliente so com SELECT.",
-   "chave_de_composicao": "a definir no cliente quando o repositorio Supabase de Rotina existir; ainda nao ha adapter para ligar",
-   "mfa": "app_private.routine_mfa_phase_enforced() devolve false na fase MVP (AAL1, ADR 0034). requires_mfa continua true nas capacidades de alto impacto e a mensagem 'MFA AAL2 required' continua nos comandos. Ligar MFA e uma migration de uma linha. Sem isso D7 (Lancamentos sobre daily-routine.publish) seria inalcancavel no MVP.",
-   "prova": {
-    "quando": "2026-09-10",
-    "onde": "projeto de replay descartavel coelo_fcr_replay, fora do repositorio (scratchpad), portas 553xx",
-    "perfil": "57 migrations: as do manifesto foundation com versao <= 20260831164937, mais replay/20260811151253 e replay/20260811215452, mais um arquivo somente-replay que repoe a sentinela de rotulo depois de 20260831130726. As *_v2 de 09/2026 (chat, notices, invites, circulars) foram deixadas de fora porque quebram antes do meu pacote e pertencem a outros grupos.",
-    "aplicacao": "as tres migrations aplicaram sem erro por psql, na ordem, sobre a base resetada",
-    "resultado": {
-     "daily_routine_foundation_test": "34 ok / 0 not ok",
-     "daily_routine_scope_closure_test": "6 ok / 0 not ok",
-     "attendance_authorization_and_idempotency_v1_test": "16 ok / 0 not ok",
-     "total": "56 asseroes, zero falhas"
-    },
-    "o_que_isso_nao_prova": [
-     "nao e prova ponta a ponta: nenhuma tela abriu, nenhum repositorio Flutter chamou estas RPCs, nada tocou o Supabase de producao",
-     "o perfil de replay nao inclui as *_v2 de 09/2026; se alguma delas alterar permissoes, policies ou helpers que meu pacote usa, isso nao foi exercitado",
-     "nenhuma acao do inventario muda de estado por causa desta prova"
-    ],
-    "defeitos_meus_que_a_execucao_pegou": [
-     "constraint UNIQUE com expressao coalesce em routine_field_conditions: sintaxe invalida, virou indice unico",
-     "as permissoes da rotina nao passavam module_label/screen_label/action_label, que sao NOT NULL na cadeia real desde 20260811215451. O replay com sentinela teria escondido isso; peguei por leitura da migration do dashboard de Assiduidade, que passa os rotulos",
-     "os wrappers publicos sao SECURITY INVOKER e nao podiam alcancar a funcao definer correspondente, nem as policies podiam avaliar routine_scope_allowed, porque eu havia revogado tudo em app_private. Corrigido para o mesmo desenho da fundacao de Assiduidade",
-     "uma assercao minha do teste de Assiduidade estava mal escrita: o LIKE com curingas casava tambem com o corpo corrigido. Trocada por comparacao de posicao entre platform.read e a abertura do case"
-    ]
-   }
+   "actionCount": 43,
+   "confirmedAgainstInventory": true,
+   "order": [
+    "health_care + medication",
+    "students",
+    "attendance (D11: chave de idempotencia gerada no banco por RPC)",
+    "forms_authoring + forms_responses (D6: Testar por capacidade)",
+    "forms_files + forms.responses.export (XLSX no R2 privado)",
+    "daily_routine (D8: guarda de saida; D7: Lancamentos tela minima)"
+   ]
   },
-  {
-   "id": "PKG-R03-FCR-ASSIDUIDADE-01",
-   "familia": "attendance",
-   "estado": "pgTAP verde no replay descartavel",
-   "action_ids": [
-    "attendance.create",
-    "attendance.mark",
-    "attendance.correct",
-    "attendance.finish",
-    "attendance.dashboard"
-   ],
-   "migrations": [
-    "packages/coelo_database/migrations/20260910010200_attendance_authorization_and_idempotency_v1.sql"
-   ],
-   "pgtap": [
-    "packages/coelo_database/supabase/tests/attendance_authorization_and_idempotency_v1_test.sql (16 asserts, novo)"
-   ],
-   "parte_1_seguranca": {
-    "origem": "OQ-040, que ja descrevia o problema e pedia hardening forward-only prioritario",
-    "defeito_1": "app_private.can_access_attendance_child comeca por has_platform_permission('platform.read') ANTES de olhar require_manage. Quem so le plataforma satisfaz o ramo de gestao e alcanca confirmacao e reversao de registro oficial de presenca.",
-    "defeito_2": "a policy attendance_sessions_context e FOR ALL com USING de nivel de leitura. USING decide quais linhas um DELETE alcanca e DELETE nao tem WITH CHECK, entao um ator somente-leitura apaga sessoes de chamada.",
-    "defeito_3": "attendance_expected_participants_context tem o mesmo formato e o mesmo efeito sobre os participantes esperados.",
-    "defeito_4": "as sete tabelas de assiduidade tinham RLS sem FORCE, como a propria OQ-040 registra.",
-    "correcao": "o ramo de gestao passa a exigir attendance.manage; as duas policies FOR ALL viram quatro policies por operacao, com gestao exigida em insert, update e delete; FORCE ligado nas sete tabelas.",
-    "nota": "nenhuma dessas correcoes muda contrato de tela nem exige decisao nova. Sao os tres pontos que a OQ-040 mandou priorizar."
-   },
-   "parte_2_d11": {
-    "problema": "o cliente gera a chave nos quatro sitios de escrita. Em tres deles (_newUuid) ela nasce de Random.secure() a cada tentativa, entao repetir a mesma intencao produz chave nova e o servidor nao reconhece a repeticao. So createCall usa semente estavel (_draftIdempotencyKey).",
-    "solucao": "app_private.attendance_idempotency_reservations mais public.attendance_reserve_idempotency_key(command, aggregate_id, expected_version). O digest da intencao e montado no servidor a partir de comando, agregado e versao esperada; o cliente nao pode escolhe-lo, senao voltaria a trocar a chave a cada tentativa.",
-    "efeito_na_versao_esperada": "depois que a chamada avanca, a intencao antiga deixou de existir e a proxima reserva devolve outra chave. Isso e proposital.",
-    "falta": "trocar os quatro sitios do cliente para pedir a chave ao banco. Feito depois que o SQL estiver verde.",
-    "cliente": "os quatro sitios de escrita de supabase_attendance_repository.dart passaram a pedir a chave ao banco; _newUuid, _draftIdempotencyKey e _uuidFromSeed foram removidos junto dos imports de dart:math, dart:convert e crypto.",
-    "defeito_que_a_troca_revelou": "O meu primeiro digest de create_call era 'create_call::' — sem instituicao, unidade, turma, atividade ou dia. Duas chamadas diferentes do mesmo profissional teriam recebido a MESMA chave, o que e pior do que nao ter chave. Quem pegou foram os dois testes Dart que ja existiam e provavam exatamente essa semantica no cliente: eles falharam e, ao le-los, ficou claro que eu havia movido a chave para o banco e perdido a intencao no caminho. Corrigido: app_private.attendance_intent_digest recebe o contexto da chamada, e criar chamada sem contexto e recusado em vez de virar chave generica. O digest e funcao pura e separada de proposito, para a regra poder ser provada sem sessao, sem pessoa e sem fixture."
-   },
-   "prova": "pgTAP 23/23 e Flutter test/features/attendance 89/89"
-  },
-  {
-   "id": "PKG-R03-FCR-CUIDADO-01",
-   "familia": "health_care + medication",
-   "estado": "pgTAP verde no replay descartavel",
-   "action_ids": [
+  "currentGate": {
+   "gate": "Fase 0 nao publicada: iniciar por backend (migrations, pgTAP, repositorios, contratos) sem tocar UI de diretorio",
+   "screen": "Etapa 2 -> apps/superadmin -> Cuidado -> Perfis de cuidado / Medicacao",
+   "actionIds": [
     "health-care.list",
     "health-care.create",
     "health-care.detail",
@@ -211,430 +109,610 @@
     "medication.edit",
     "medication.evidence"
    ],
-   "migrations": [
-    "packages/coelo_database/migrations/20260910010300_health_care_and_medication_plans_v1.sql",
-    "packages/coelo_database/migrations/20260910010400_health_care_behavior_v1.sql"
-   ],
-   "pgtap": [
-    "packages/coelo_database/supabase/tests/health_care_and_medication_plans_v1_test.sql (27 asserts, novo)"
-   ],
-   "autorizacao_para_existir": "specs/020-superadmin-health-care.md, secao 'Decisao superveniente para o backend': em 2026-08-28 o Owner determinou que as pendencias juridicas nao bloqueiam a implementacao Supabase local, com dados sinteticos. Contrato de comportamento e seguranca em docs/superpowers/specs/2026-09-01-superadmin-access-health-care-finalization-design.md.",
-   "estado_anterior": "nem migration nem teste existiam. No cliente havia apenas repositorios /dev e UnavailableHealthCareRepository. As nove acoes nunca tiveram backend.",
-   "conteudo": "8 tabelas publicas mais recibos de comando; 5 capacidades de plataforma e 5 contextuais; RLS deny-by-default com FORCE e cliente so com SELECT; 7 RPCs (dois diretorios paginados no servidor, dois detalhes, dois comandos versionados e o comando proprio de evidencia).",
-   "decisao_de_seguranca_deliberada": "platform.read NAO alcanca dado de saude de crianca. A leitura exige health_care.read ou medication.read, de plataforma ou contextual. Quem so tem leitura geral do Superadmin nao ve saude de crianca. Isso diverge do padrao das outras familias e esta provado por assercao.",
-   "outras_decisoes": [
-    "a instituicao do agregado e derivada do contexto infantil, nunca do payload; aceitar a instituicao enviada pelo cliente permitiria anexar a crianca de um tenant a um perfil de outro",
-    "a identidade da crianca fica travada na edicao, como a spec 020 exige",
-    "mudanca no plano cria versao nova e invalida a aprovacao anterior, preservando as versoes passadas",
-    "registrar evidencia nao e editar: comando proprio, capacidade propria, append-only, e nao move a versao do agregado",
-    "toda mudanca de perfil de cuidado exige justificativa, gravada em health_care_profile_revisions alem de audit.audit_logs, porque a tela mostra o historico e audit nao tem grant de cliente"
-   ],
-   "pendencia_registrada_nao_omitida": "leitura por responsavel familiar nao entra neste pacote: exigiria uma capacidade de guardiao que ainda nao existe, e inventa-la seria decidir sozinho quem ve dado de saude de crianca. Precisa de decisao.",
-   "oq_003": "prazo de retencao, base legal e regra clinica continuam abertos. A migration nao apaga nada por tempo, nao infere consentimento e nao classifica gravidade por conta propria."
+   "note": "Fundacao health_care/medication inexistente. Construindo o primeiro pacote SQL da familia health_care."
   },
-  {
-   "id": "PKG-R03-FCR-CLIENTE-01",
-   "familia": "health_care + medication + daily_routine (cliente)",
-   "estado": "escrito, testado e ligado a chave; analyzer limpo",
-   "arquivos": [
-    "apps/superadmin/lib/features/health_care/data/supabase_health_care_repository.dart",
-    "apps/superadmin/lib/features/health_care/data/supabase_medication_plan_repository.dart",
-    "apps/superadmin/lib/features/daily_routine/data/supabase_routine_repository.dart"
+  "tests": {
+   "pass": 1033,
+   "fail": 0,
+   "blocked": 0,
+   "skipped": 0,
+   "notRun": 0,
+   "pgtap": "1037 assercoes / 0 falhas sobre a baseline de producao (1033 mais 4 da leitura de vinculos)",
+   "mudanca_de_base": "as 1021 assercoes anteriores foram medidas sobre um replay reconstruido da cadeia historica. A baseline publicada pelo coordenador e a base verdadeira, e refiz tudo sobre ela.",
+   "flutter": "225 nas suites que escrevi ou alterei (113 daily_routine, 89 attendance, 7 cuidado/medicacao, 11 alunos, 5 repositorio de alunos); dart analyze lib limpo"
+  },
+  "reservedFiles": [],
+  "blocking": [
+   {
+    "id": "B-R03-FCR-001",
+    "tipo": "ambiente compartilhado, nao bloqueia trabalho independente",
+    "o_que": "scripts/Invoke-SafeLocalMigrationReplay.ps1 serializa por mutex Local\\CoeloSafeSupabaseReplay em toda a maquina. Na primeira tentativa recebi 'another safe Supabase replay is already running' e docker ps mostrou o container coelo_safe_883c3727e92a4124abf7e0140e9e5 de outra frente, no ar ha 37 segundos.",
+    "efeito": "a prova pgTAP dos meus pacotes espera a vez. A escrita de migrations, testes e repositorios continua.",
+    "proposta_ao_coordenador": "uma fila explicita de janela de replay em coordenacao.json, do mesmo jeito que a fila SQL. Sem isso as seis frentes vao se atropelar no mesmo mutex e cada uma vai ler o erro como defeito proprio."
+   }
+  ],
+  "deltaProposals": [],
+  "nextStep": "Retomada pelo Owner. Primeiro gate aberto: ligar as duas chaves de composicao e provar a rota normal contra producao por action_id.",
+  "findings": [
+   {
+    "id": "F-R03-FCR-001",
+    "severity": "estrutural, muda o tamanho da rodada",
+    "titulo": "Nao sao 9 objetos app_private faltando: os schemas de daily_routine, student_tracking, health_care e medication nunca foram criados",
+    "medido": "grep sobre packages/coelo_database/migrations no HEAD bb15db748",
+    "evidencia": {
+     "tabelas_public_criadas_nas_familias": "apenas attendance_* (7 tabelas). Zero CREATE TABLE para routine_applications, routine_launches, student_tracking, health_care ou medication.",
+     "migrations_existentes_de_rotina": "somente 20260825193112_final_review_daily_routine_lint_hardening.sql, que faz CREATE OR REPLACE de funcoes app_private sobre public.routine_applications - uma tabela que nenhuma migration cria",
+     "migrations_existentes_de_alunos": "somente 20260825193123_final_review_student_tracking_read_fix.sql e 20260825180000_revoke_student_tracking_normalizer_client_execute.sql, no mesmo padrao",
+     "health_care_e_medication": "nenhuma migration. No cliente existem apenas repositorios dev (data/dev/) e UnavailableHealthCareRepository; nao ha repositorio Supabase.",
+     "objetos_app_private_referenciados_e_nunca_criados": 49
+    },
+    "consequencia": "o rastreador anterior descrevia isso como 9+4 objetos ausentes, o que sugere um pacote pequeno de correcao. O trabalho real e construir a fundacao (tabelas, RLS, capacidades, RPCs, recibos) de quatro familias, mais os repositorios Supabase no cliente. Attendance e a unica das familias de dominio proprio com fundacao real.",
+    "acao": "assumido por este grupo; nao pede decisao. Entregarei um pacote SQL por familia com migration + pgTAP + chave de composicao.",
+    "para_o_coordenador": "a estimativa desta frente nao cabe no formato 'corrigir pendencias'; e construcao. Vale conferir se outras frentes tem o mesmo padrao de migration de lint sobre tabela inexistente."
+   },
+   {
+    "id": "F-R03-FCR-002",
+    "severity": "estrutural, afeta todas as frentes",
+    "titulo": "A cadeia canonica de 186 migrations nao replica do zero; o caminho suportado e um perfil de replay parcial",
+    "medido": "supabase start com o espelho sincronizado das 187 migrations canonicas, em 2026-09-10",
+    "evidencia": "a aplicacao para em 20260812002000_child_safety_schema.sql com 23502: null value in column module_label of relation platform_permissions. A coluna nasce anulavel em 20260811215451_access_profile_management_v2, e a mesma migration a torna NOT NULL sem default; as migrations posteriores que inserem permissoes nunca passam module_label. Ha um remendo dedicado a isso em replay/20260811215452_access_profile_labels_replay_bridge.sql, que so o script de replay injeta, e uma migration 20260831130726_reconcile_permission_labels_after_replay que existe para desfazer o remendo.",
+    "consequencia": "nao existe 'supabase db reset verde' nesta base. Toda prova pgTAP local sai de scripts/Invoke-SafeLocalMigrationReplay.ps1 com -FoundationOnly (69 migrations do manifesto) mais as migrations do pacote. Quem afirmar pgTAP verde precisa dizer sobre qual perfil.",
+    "acao": "assumido: meu pacote de rotina foi escrito para ser replayavel nesse perfil, sem depender de 20260825193112, que esta fora do manifesto.",
+    "para_o_coordenador": "vale confirmar se as outras frentes sabem disso; quem tentar db reset vai perder tempo no mesmo ponto."
+   },
+   {
+    "id": "F-R03-FCR-003",
+    "severity": "bloqueia a prova pgTAP local de TODAS as frentes; urgente para o coordenador",
+    "titulo": "O perfil FoundationOnly de replay esta quebrado no HEAD atual: o manifesto exige uma migration que ele mesmo nao contem",
+    "medido": "scripts/Invoke-SafeLocalMigrationReplay.ps1 -FoundationOnly executado em 2026-09-10 sobre bb15db748",
+    "evidencia": "a aplicacao percorre 68 migrations e para em 20260901101500_superadmin_internal_chat_v2.sql com 55000: 'internal auth, audit and chat dependencies are unavailable'. O preflight daquela migration exige public.chat_attachment_metadata, criada em 20260812000000_chat_production_contract.sql, que NAO consta de replay/foundation-migrations.sha256. As quatro migrations *_v2 de 09/2026 (chat, notices, invites, circulars) entraram no manifesto sem que suas dependencias de 08/2026 entrassem junto.",
+    "consequencia": "a OQ-042 registra o perfil FoundationOnly passando 259 asserts; isso deixou de valer. Hoje nenhuma frente consegue pgTAP local pelo caminho suportado, e quem tentar vai ler a falha como defeito do proprio pacote, porque ela acontece antes das migrations do pacote.",
+    "correcao_proposta": "acrescentar 20260812000000_chat_production_contract.sql ao manifesto, com o hash normalizado, na posicao entre 20260812000847 e 20260820182000. O manifesto e escrito pelo coordenador; nao alterei o arquivo.",
+    "contorno_em_uso_aqui": "montei um projeto de replay descartavel fora do repositorio (scratchpad, project_id coelo_fcr_replay, portas 553xx) com as 69 do manifesto, as duas pontes de replay/, a dependencia ausente e os meus tres pacotes. E disposable e local; nenhuma mutacao remota."
+   },
+   {
+    "id": "F-R03-FCR-004",
+    "severity": "o maior achado deste grupo; desbloqueia a familia Formularios inteira",
+    "titulo": "A primeira migration de Formularios e PL/pgSQL invalido. Nenhuma das 24 migrations da familia jamais pode ter sido aplicada em lugar nenhum.",
+    "medido": "aplicacao por psql sobre o replay descartavel, 2026-09-10",
+    "causa": "20260813155005_forms_definition_and_capabilities.sql usa um CASE sem parenteses dentro da condicao de um IF, em app_private.form_item_config_valid. Em PL/pgSQL o parser encerra a condicao do IF no primeiro THEN que encontra; com o CASE sem parenteses a expressao fica pela metade e o servidor responde 'syntax error at end of input'. A funcao nao compila, e como form_items tem uma constraint CHECK que a chama, a tabela tambem nao nasce.",
+    "prova_do_diagnostico": "do $$ begin if 1 - case when true then 1 else 2 end = 0 then null; end if; end $$; falha; com parenteses em volta do CASE, passa.",
+    "consequencia": "os 16 arquivos pgTAP de Formularios nunca puderam rodar, porque o schema nunca existiu. Qualquer estado 'local-green' registrado para Formularios no rastreador nao pode ter vindo de execucao contra banco.",
+    "correcao": "parenteses em volta dos dois CASE (linhas 105 e 145). E uma correcao no proprio arquivo, e nao uma migration nova, porque nao existe forward-fix para uma funcao que nunca foi criada: o arquivo nunca rodou em ambiente nenhum, entao nao ha historico a preservar.",
+    "efeito_medido": "as 24 migrations de Formularios passam a aplicar limpo (a do XLSX exige antes 20260908160000_private_media_catalog_r2_v1). Os testes da familia passaram de zero execucoes para 845 assercoes aprovadas e 62 falhas, que agora podem ser triadas."
+   }
+  ],
+  "packages": [
+   {
+    "id": "PKG-R03-FCR-ROTINA-01",
+    "familia": "daily_routine",
+    "estado": "pgTAP verde no replay descartavel",
+    "migrations": [
+     "packages/coelo_database/migrations/20260910010000_daily_routine_foundation_v1.sql",
+     "packages/coelo_database/migrations/20260910010100_daily_routine_behavior_v1.sql"
+    ],
+    "pgtap_alvo": [
+     "packages/coelo_database/supabase/tests/daily_routine_foundation_test.sql (34 asserts, preexistente e vermelho desde 25/08)",
+     "packages/coelo_database/supabase/tests/daily_routine_scope_closure_test.sql (6 asserts)"
+    ],
+    "conteudo": "13 tabelas publicas, app_private.routine_command_receipts, 8 capacidades de plataforma e 8 contextuais, 7 auxiliares de autorizacao/validacao, gatilho de hierarquia, view daily_routine_effective_applications com security_invoker, 8 RPCs publicas, RLS deny-by-default com FORCE em todas as tabelas e cliente so com SELECT.",
+    "chave_de_composicao": "a definir no cliente quando o repositorio Supabase de Rotina existir; ainda nao ha adapter para ligar",
+    "mfa": "app_private.routine_mfa_phase_enforced() devolve false na fase MVP (AAL1, ADR 0034). requires_mfa continua true nas capacidades de alto impacto e a mensagem 'MFA AAL2 required' continua nos comandos. Ligar MFA e uma migration de uma linha. Sem isso D7 (Lancamentos sobre daily-routine.publish) seria inalcancavel no MVP.",
+    "prova": {
+     "quando": "2026-09-10",
+     "onde": "projeto de replay descartavel coelo_fcr_replay, fora do repositorio (scratchpad), portas 553xx",
+     "perfil": "57 migrations: as do manifesto foundation com versao <= 20260831164937, mais replay/20260811151253 e replay/20260811215452, mais um arquivo somente-replay que repoe a sentinela de rotulo depois de 20260831130726. As *_v2 de 09/2026 (chat, notices, invites, circulars) foram deixadas de fora porque quebram antes do meu pacote e pertencem a outros grupos.",
+     "aplicacao": "as tres migrations aplicaram sem erro por psql, na ordem, sobre a base resetada",
+     "resultado": {
+      "daily_routine_foundation_test": "34 ok / 0 not ok",
+      "daily_routine_scope_closure_test": "6 ok / 0 not ok",
+      "attendance_authorization_and_idempotency_v1_test": "16 ok / 0 not ok",
+      "total": "56 asseroes, zero falhas"
+     },
+     "o_que_isso_nao_prova": [
+      "nao e prova ponta a ponta: nenhuma tela abriu, nenhum repositorio Flutter chamou estas RPCs, nada tocou o Supabase de producao",
+      "o perfil de replay nao inclui as *_v2 de 09/2026; se alguma delas alterar permissoes, policies ou helpers que meu pacote usa, isso nao foi exercitado",
+      "nenhuma acao do inventario muda de estado por causa desta prova"
+     ],
+     "defeitos_meus_que_a_execucao_pegou": [
+      "constraint UNIQUE com expressao coalesce em routine_field_conditions: sintaxe invalida, virou indice unico",
+      "as permissoes da rotina nao passavam module_label/screen_label/action_label, que sao NOT NULL na cadeia real desde 20260811215451. O replay com sentinela teria escondido isso; peguei por leitura da migration do dashboard de Assiduidade, que passa os rotulos",
+      "os wrappers publicos sao SECURITY INVOKER e nao podiam alcancar a funcao definer correspondente, nem as policies podiam avaliar routine_scope_allowed, porque eu havia revogado tudo em app_private. Corrigido para o mesmo desenho da fundacao de Assiduidade",
+      "uma assercao minha do teste de Assiduidade estava mal escrita: o LIKE com curingas casava tambem com o corpo corrigido. Trocada por comparacao de posicao entre platform.read e a abertura do case"
+     ]
+    }
+   },
+   {
+    "id": "PKG-R03-FCR-ASSIDUIDADE-01",
+    "familia": "attendance",
+    "estado": "pgTAP verde no replay descartavel",
+    "action_ids": [
+     "attendance.create",
+     "attendance.mark",
+     "attendance.correct",
+     "attendance.finish",
+     "attendance.dashboard"
+    ],
+    "migrations": [
+     "packages/coelo_database/migrations/20260910010200_attendance_authorization_and_idempotency_v1.sql"
+    ],
+    "pgtap": [
+     "packages/coelo_database/supabase/tests/attendance_authorization_and_idempotency_v1_test.sql (16 asserts, novo)"
+    ],
+    "parte_1_seguranca": {
+     "origem": "OQ-040, que ja descrevia o problema e pedia hardening forward-only prioritario",
+     "defeito_1": "app_private.can_access_attendance_child comeca por has_platform_permission('platform.read') ANTES de olhar require_manage. Quem so le plataforma satisfaz o ramo de gestao e alcanca confirmacao e reversao de registro oficial de presenca.",
+     "defeito_2": "a policy attendance_sessions_context e FOR ALL com USING de nivel de leitura. USING decide quais linhas um DELETE alcanca e DELETE nao tem WITH CHECK, entao um ator somente-leitura apaga sessoes de chamada.",
+     "defeito_3": "attendance_expected_participants_context tem o mesmo formato e o mesmo efeito sobre os participantes esperados.",
+     "defeito_4": "as sete tabelas de assiduidade tinham RLS sem FORCE, como a propria OQ-040 registra.",
+     "correcao": "o ramo de gestao passa a exigir attendance.manage; as duas policies FOR ALL viram quatro policies por operacao, com gestao exigida em insert, update e delete; FORCE ligado nas sete tabelas.",
+     "nota": "nenhuma dessas correcoes muda contrato de tela nem exige decisao nova. Sao os tres pontos que a OQ-040 mandou priorizar."
+    },
+    "parte_2_d11": {
+     "problema": "o cliente gera a chave nos quatro sitios de escrita. Em tres deles (_newUuid) ela nasce de Random.secure() a cada tentativa, entao repetir a mesma intencao produz chave nova e o servidor nao reconhece a repeticao. So createCall usa semente estavel (_draftIdempotencyKey).",
+     "solucao": "app_private.attendance_idempotency_reservations mais public.attendance_reserve_idempotency_key(command, aggregate_id, expected_version). O digest da intencao e montado no servidor a partir de comando, agregado e versao esperada; o cliente nao pode escolhe-lo, senao voltaria a trocar a chave a cada tentativa.",
+     "efeito_na_versao_esperada": "depois que a chamada avanca, a intencao antiga deixou de existir e a proxima reserva devolve outra chave. Isso e proposital.",
+     "falta": "trocar os quatro sitios do cliente para pedir a chave ao banco. Feito depois que o SQL estiver verde.",
+     "cliente": "os quatro sitios de escrita de supabase_attendance_repository.dart passaram a pedir a chave ao banco; _newUuid, _draftIdempotencyKey e _uuidFromSeed foram removidos junto dos imports de dart:math, dart:convert e crypto.",
+     "defeito_que_a_troca_revelou": "O meu primeiro digest de create_call era 'create_call::' — sem instituicao, unidade, turma, atividade ou dia. Duas chamadas diferentes do mesmo profissional teriam recebido a MESMA chave, o que e pior do que nao ter chave. Quem pegou foram os dois testes Dart que ja existiam e provavam exatamente essa semantica no cliente: eles falharam e, ao le-los, ficou claro que eu havia movido a chave para o banco e perdido a intencao no caminho. Corrigido: app_private.attendance_intent_digest recebe o contexto da chamada, e criar chamada sem contexto e recusado em vez de virar chave generica. O digest e funcao pura e separada de proposito, para a regra poder ser provada sem sessao, sem pessoa e sem fixture."
+    },
+    "prova": "pgTAP 23/23 e Flutter test/features/attendance 89/89"
+   },
+   {
+    "id": "PKG-R03-FCR-CUIDADO-01",
+    "familia": "health_care + medication",
+    "estado": "pgTAP verde no replay descartavel",
+    "action_ids": [
+     "health-care.list",
+     "health-care.create",
+     "health-care.detail",
+     "health-care.edit",
+     "medication.list",
+     "medication.create",
+     "medication.detail",
+     "medication.edit",
+     "medication.evidence"
+    ],
+    "migrations": [
+     "packages/coelo_database/migrations/20260910010300_health_care_and_medication_plans_v1.sql",
+     "packages/coelo_database/migrations/20260910010400_health_care_behavior_v1.sql"
+    ],
+    "pgtap": [
+     "packages/coelo_database/supabase/tests/health_care_and_medication_plans_v1_test.sql (27 asserts, novo)"
+    ],
+    "autorizacao_para_existir": "specs/020-superadmin-health-care.md, secao 'Decisao superveniente para o backend': em 2026-08-28 o Owner determinou que as pendencias juridicas nao bloqueiam a implementacao Supabase local, com dados sinteticos. Contrato de comportamento e seguranca em docs/superpowers/specs/2026-09-01-superadmin-access-health-care-finalization-design.md.",
+    "estado_anterior": "nem migration nem teste existiam. No cliente havia apenas repositorios /dev e UnavailableHealthCareRepository. As nove acoes nunca tiveram backend.",
+    "conteudo": "8 tabelas publicas mais recibos de comando; 5 capacidades de plataforma e 5 contextuais; RLS deny-by-default com FORCE e cliente so com SELECT; 7 RPCs (dois diretorios paginados no servidor, dois detalhes, dois comandos versionados e o comando proprio de evidencia).",
+    "decisao_de_seguranca_deliberada": "platform.read NAO alcanca dado de saude de crianca. A leitura exige health_care.read ou medication.read, de plataforma ou contextual. Quem so tem leitura geral do Superadmin nao ve saude de crianca. Isso diverge do padrao das outras familias e esta provado por assercao.",
+    "outras_decisoes": [
+     "a instituicao do agregado e derivada do contexto infantil, nunca do payload; aceitar a instituicao enviada pelo cliente permitiria anexar a crianca de um tenant a um perfil de outro",
+     "a identidade da crianca fica travada na edicao, como a spec 020 exige",
+     "mudanca no plano cria versao nova e invalida a aprovacao anterior, preservando as versoes passadas",
+     "registrar evidencia nao e editar: comando proprio, capacidade propria, append-only, e nao move a versao do agregado",
+     "toda mudanca de perfil de cuidado exige justificativa, gravada em health_care_profile_revisions alem de audit.audit_logs, porque a tela mostra o historico e audit nao tem grant de cliente"
+    ],
+    "pendencia_registrada_nao_omitida": "leitura por responsavel familiar nao entra neste pacote: exigiria uma capacidade de guardiao que ainda nao existe, e inventa-la seria decidir sozinho quem ve dado de saude de crianca. Precisa de decisao.",
+    "oq_003": "prazo de retencao, base legal e regra clinica continuam abertos. A migration nao apaga nada por tempo, nao infere consentimento e nao classifica gravidade por conta propria."
+   },
+   {
+    "id": "PKG-R03-FCR-CLIENTE-01",
+    "familia": "health_care + medication + daily_routine (cliente)",
+    "estado": "escrito, testado e ligado a chave; analyzer limpo",
+    "arquivos": [
+     "apps/superadmin/lib/features/health_care/data/supabase_health_care_repository.dart",
+     "apps/superadmin/lib/features/health_care/data/supabase_medication_plan_repository.dart",
+     "apps/superadmin/lib/features/daily_routine/data/supabase_routine_repository.dart"
+    ],
+    "testes": [
+     "apps/superadmin/test/features/health_care/data/supabase_health_care_data_test.dart (7)",
+     "apps/superadmin/test/features/daily_routine/data/supabase_routine_data_test.dart (6)"
+    ],
+    "decisoes": [
+     "os dois metodos de medicacao de HealthCareRepository falham fechados com o motivo: a spec 020 diz que os destinos sao irmaos e que o perfil nao incorpora doses, entao escrever medicacao pelo perfil seria inventar um caminho que o backend nao tem",
+     "o HealthCareActor que a interface recebe serve so para a tela desenhar; nenhuma autorizacao e feita com ele, e isso esta escrito no arquivo",
+     "escrever le a versao atual antes, para leitura obsoleta virar conflito e nunca sobrescrita silenciosa",
+     "salvar plano rele o detalhe pela leitura autorizada, para a tela nao renderizar um estado que uma nova leitura nao confirmaria",
+     "negativa de escopo do servidor e opaca e vira notFound no cliente, sem confirmar existencia"
+    ]
+   },
+   {
+    "id": "PKG-R03-FCR-FORMULARIOS-01",
+    "familia": "forms_authoring + forms_responses + forms_files",
+    "estado": "familia destravada e verde",
+    "migration_corrigida": "packages/coelo_database/migrations/20260813155005_forms_definition_and_capabilities.sql",
+    "resultado_pgtap": {
+     "antes": "nenhuma execucao possivel: o schema nao podia ser criado",
+     "depois": "1001 ok / 0 not ok nos 22 arquivos do recorte (18 de Formularios mais os 4 meus)",
+     "verdes_inteiros": [
+      "forms_definition 31",
+      "forms_distribution_cardinality 12",
+      "forms_export_download_capability_hardening 13",
+      "forms_internal_provenance_guards 39",
+      "forms_response_edit_validation_v1 56",
+      "forms_superadmin_media_read_r2_v1 82",
+      "forms_superadmin_operations_read_v2 70",
+      "forms_xlsx_private_r2_v1 313"
+     ],
+     "com_falha": [
+      "superadmin_forms_authoring_institution_context_v2 36",
+      "superadmin_internal_form_drafts_v2 14",
+      "superadmin_internal_form_drafts_v2_repeatable_read 4",
+      "superadmin_internal_form_drafts_v2_serializable 4",
+      "superadmin_forms_directory_internal_read 3",
+      "forms_editor_application_authorization 1"
+     ],
+     "ressalva": "quatro arquivos tambem acusam ERROR de SQL durante a execucao, o que costuma ser fixture ausente no meu perfil de replay e nao defeito do produto. Nao classifiquei ainda; nao contar essas falhas como defeito antes da triagem."
+    },
+    "forms_responses_export": "a migration do XLSX aplica e seu teste passa com 313 assercoes. O R2 real continua fora: o pacote Cloudflare e do coordenador.",
+    "triagem_das_62_falhas": {
+     "53_de_superadmin_forms_authoring_institution_context_v2_e_drafts_v2": "nao eram defeito: a suite abortava inteira num unico erro de fixture ('internal membership version mismatch'), porque o meu perfil de replay parava em 20260831164937 e nao tinha as migrations de contexto interno de 09/2026. Com 20260901124500, 190432, 191921, 200206, 170731 e 20260908182839 aplicadas, as tres suites passam inteiras.",
+     "3_de_superadmin_forms_directory_internal_read": "mesma causa",
+     "1_de_forms_editor_application_authorization": "unica falha real, e era o teste que estava desatualizado. Ele foi escrito contra a ordem de verificacoes anterior a 20260908030000, quando o par formulario/instituicao forjado chegava a form_assert_distribution_target e voltava como 22023. Aquela migration passou a conferir o proprio agregado ANTES, entao um id de aplicacao inexistente volta como indisponivel e nunca chega a confirmar se o par seria valido. A rejeicao continua acontecendo e ficou MAIS opaca. Atualizei o teste para cobrir os dois caminhos, com a explicacao no proprio arquivo, para a intencao original nao se perder."
+    }
+   },
+   {
+    "id": "PKG-R03-FCR-ALUNOS-01",
+    "familia": "students",
+    "estado": "completo: backend, leitura, contrato, repositorio, tela e rota",
+    "action_ids": [
+     "students.link",
+     "students.transfer",
+     "students.edit",
+     "students.revoke"
+    ],
+    "migration": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260910220200_student_link_commands_v1.sql",
+    "pgtap": "packages/coelo_database/supabase/tests/student_link_commands_v1_test.sql, 20/20",
+    "estado_anterior": "as quatro acoes estao no MVP e o adiamento nao foi autorizado, mas nao existia comando nenhum: a leitura do diretorio ja estava qualificada e as escritas nunca sairam do papel. A rota /students/:childContextId/manage abre uma tela de indisponivel.",
+    "o_que_o_pacote_faz": "quatro comandos sobre as tabelas que ja existem desde 20260720180000; nenhuma estrutura nova alem dos recibos.",
+    "tres_regras_que_valem_nos_quatro": [
+     "a instituicao e derivada do contexto infantil e nunca vem do payload; aceitar a instituicao enviada pelo cliente permitiria mover a crianca de um tenant para outro",
+     "unidade e turma sao conferidas contra essa instituicao antes de qualquer escrita; um id de outro tenant recebe a mesma negativa opaca de um id que nao existe",
+     "revogar nao apaga: o vinculo vira revoked com carimbo e motivo, e o historico continua legivel, porque presenca, rotina e cuidado passados apontam para um vinculo que existiu"
+    ],
+    "decisoes": [
+     "transferir autoriza os DOIS lados: quem so pode gerir a unidade de destino nao pode retirar a crianca da origem",
+     "transferir encerra as turmas da unidade de origem, senao a crianca continuaria aparecendo em chamada e rotina de onde ja nao esta",
+     "transferir e revogar exigem motivo",
+     "vincular a mesma crianca a mesma unidade de novo reativa o vinculo existente em vez de falhar por chave duplicada"
+    ],
+    "falta": "repositorio Supabase e a tela de gestao na rota /students/:childContextId/manage, hoje uma tela de indisponivel.",
+    "cliente": {
+     "contrato": "apps/superadmin/lib/features/students/domain/student_link.dart",
+     "repositorio": "apps/superadmin/lib/features/students/data/supabase_student_link_repository.dart",
+     "testes": "apps/superadmin/test/features/students/data/supabase_student_link_repository_test.dart, 5/5",
+     "decisao_de_contrato": "instituicao nao aparece em nenhum dos tipos do dominio, e um teste prova que nenhum dos quatro comandos a envia. Ela e derivada do contexto infantil no banco; aceita-la do cliente permitiria mover a crianca de tenant.",
+     "detalhe_de_editar": "o payload distingue 'nao mexa na data de fim' de 'apague a data de fim' pela PRESENCA da chave ends_at, nao pelo valor nulo. Sem isso, editar so o inicio apagaria o fim sem querer.",
+     "falta": "nada. A tela existe em /students/:childContextId/manage e a rota deixou de abrir indisponivel."
+    },
+    "tela": {
+     "arquivo": "apps/superadmin/lib/features/students/presentation/student_manage_page.dart",
+     "testes": "apps/superadmin/test/features/students/presentation/student_manage_page_test.dart, 6 casos; 11 no total da familia",
+     "leitura_nova": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260910220300_student_links_read_v1.sql, pgTAP 24/24",
+     "decisoes": [
+      "a tela mostra onde a crianca esta ANTES de oferecer as acoes: ninguem transfere ou revoga sem ver de onde",
+      "ler exige people.read; mover exige people.assign_children. O servidor calcula can_manage a parte e a tela so desenha; a autorizacao e refeita em cada comando",
+      "vinculo revogado continua na lista, porque revogar nao apaga, e o estado e dito por texto e nao so por cor",
+      "revogar pede motivo e confirma, porque o motivo vai para a auditoria e o efeito alcanca presenca, rotina e cuidado daquela unidade",
+      "o botao de confirmar so habilita com motivo preenchido, para nao gastar uma ida ao banco que voltaria como erro de validacao"
+     ],
+     "defeito_meu_que_o_teste_pegou": "eu descartava o TextEditingController assim que showDialog retornava. A animacao de saida ainda reconstroi o dialogo depois disso, e o campo tentava ouvir um controlador ja descartado. O controlador passou a viver dentro do dialogo.",
+     "nao_implementado_na_tela": "vincular, transferir e editar tem comando, contrato e repositorio prontos e provados, mas a tela so expoe revogar. Faltam os seletores de unidade e turma, que dependem de uma leitura de unidades e turmas do escopo que nao e minha."
+    }
+   }
+  ],
+  "filaSQL": [
+   {
+    "ordem": 1,
+    "arquivo": "packages/coelo_database/migrations/20260910010000_daily_routine_foundation_v1.sql"
+   },
+   {
+    "ordem": 2,
+    "arquivo": "packages/coelo_database/migrations/20260910010100_daily_routine_behavior_v1.sql"
+   },
+   {
+    "ordem": 3,
+    "arquivo": "packages/coelo_database/migrations/20260910010200_attendance_authorization_and_idempotency_v1.sql"
+   },
+   {
+    "ordem": 4,
+    "arquivo": "packages/coelo_database/migrations/20260910010300_health_care_and_medication_plans_v1.sql"
+   },
+   {
+    "ordem": 5,
+    "arquivo": "packages/coelo_database/migrations/20260910010400_health_care_behavior_v1.sql"
+   },
+   {
+    "ordem": 6,
+    "arquivo": "packages/coelo_database/migrations/20260910010500_daily_routine_client_contract_v1.sql"
+   },
+   {
+    "ordem": 7,
+    "arquivo": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260910220200_student_link_commands_v1.sql"
+   },
+   {
+    "ordem": 8,
+    "arquivo": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260910220000_health_care_guardian_read_v1.sql"
+   },
+   {
+    "ordem": 9,
+    "arquivo": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260910220100_forms_revoke_production_drift_v1.sql"
+   }
+  ],
+  "chaveDeComposicao": {
+   "careAndRoutine": {
+    "nome": "SuperadminAppConfig.careAndRoutineBackendEnabled",
+    "variavel": "COELO_ENABLE_CARE_AND_ROUTINE_BACKEND",
+    "arquivo": "apps/superadmin/lib/core/config/superadmin_app_config.dart",
+    "estado": "declarada e ligada na composicao, valor padrao false",
+    "liga": [
+     "Perfis de cuidado (SupabaseHealthCareRepository)",
+     "Planos de medicacao (SupabaseMedicationPlanRepository)",
+     "Rotina diaria (SupabaseRoutineRepository)"
+    ],
+    "depende_de": "migrations 20260910010000 a 20260910010500 aplicadas",
+    "por_que_nasce_desligada": "antes do SQL aplicado, ligar trocaria uma indisponibilidade honesta por erro obscuro contra um banco sem esses objetos",
+    "mudanca_estrutural": "SuperadminAuthScope ganhou o campo healthCareRepository, que nao existia: Perfis de cuidado estava preso a UnavailableHealthCareRepository dentro do proprio router. Passa por main.dart, superadmin_app.dart e superadmin_router.dart."
+   },
+   "studentLink": {
+    "nome": "SuperadminAppConfig.studentLinkCommandsEnabled",
+    "variavel": "COELO_ENABLE_STUDENT_LINK_COMMANDS",
+    "estado": "declarada e ligada na composicao, valor padrao false",
+    "depende_de": "migration 20260910220200_student_link_commands_v1 aplicada",
+    "por_que_chave_separada": "o SQL e outro pacote e pode ser aplicado em outro momento; e a autorizacao destes comandos passa pelo realm people-based, que e o ponto que a OQ-043 deixou em aberto para os CRUDs anteriores a ADR 0019. Ligar e decisao separada, nao carona da chave de Cuidado e Rotina."
+   }
+  },
+  "replayReprodutivel": {
+   "por_que": "o perfil FoundationOnly esta quebrado no HEAD (F-R03-FCR-003) e a cadeia completa nao replica (F-R03-FCR-001 e o mesmo padrao em imports). Esta e a receita que produziu as 1001 assercoes, para o coordenador reproduzir em vez de acreditar.",
+   "projeto": "descartavel, fora do repositorio, project_id coelo_fcr_replay, portas 553xx",
+   "conjunto": "94 migrations: as do manifesto foundation com versao <= 20260831164937; as 24 de Formularios; 20260908160000_private_media_catalog_r2_v1; 20260901124500, 20260901170731, 20260901190432, 20260901191921, 20260901200206 e 20260908182839; as seis minhas de 20260910; mais replay/20260811151253 e replay/20260811215452",
+   "arquivo_extra_somente_replay": "um arquivo 20260831130727 que repoe o default de sentinela dos rotulos depois de 20260831130726, porque varias migrations posteriores ainda inserem permissoes sem module_label. Nao esta no repositorio e nao e candidato a deploy.",
+   "deixadas_de_fora_e_por_que": {
+    "20260901101500_superadmin_internal_chat_v2": "conflito de tipo de retorno em chat_inbox_page; familia do grupo principal-chat-sistema",
+    "20260901185008_superadmin_internal_notices_v2": "exige public.notice_events, que nenhuma migration do conjunto cria; familia de Avisos",
+    "20260812002010_import_export_unit_source_retention": "exige app_private.unit_import_source_attestations, que nenhuma migration cria. Mesmo padrao do achado F-R03-FCR-001, agora na familia de Importacoes"
+   }
+  },
+  "decisoesDeTela": {
+   "D8": {
+    "estado": "ja estava pronto; nao refiz",
+    "verificado": "daily_routine_form_sections.dart tem PopScope com canPop: !_isDirty, _confirmDiscard, _confirmExit e _selectDestination (a saida pelo menu tambem passa pela mesma confirmacao). O golden daily_routine_dirty_exit_light_375.png existe e daily_routine_dirty_exit_test.dart passa. A suite de Rotina esta 113/113 verde.",
+    "conclusao": "a guarda de saida esta ligada e provada. Nao encontrei goldens de Rotina pendentes na lista de decisoes de 10/09: aquele documento nao cita nenhum arquivo de rotina. Se as seis referencias que a D8 menciona sao outras, preciso saber quais; nao regravei nada."
+   },
+   "D7": {
+    "estado": "implementado e provado",
+    "o_que_faltava": "a aba Lancamentos ja existia no diretorio, mas nao tinha acao nenhuma: nao havia como publicar um lancamento pela interface, embora o comando daily-routine.publish exista.",
+    "o_que_foi_feito": "acao Publicar no proprio item da aba Lancamentos, visivel so para quem pode gerenciar e so enquanto o lancamento e rascunho. Confirma antes, porque publicar entrega a rotina as familias e nao tem desfazer nesta tela (a correcao e um comando proprio, com justificativa). O botao do item fica desabilitado enquanto o comando nao volta, para um toque repetido nao virar duas publicacoes. Depois de publicar, a lista recarrega do servidor, para a tela mostrar o que o servidor confirma e nao o que ela supos.",
+    "erros_em_portugues": "cada tipo de recusa vira uma frase propria: sem permissao, indisponivel, mudou desde o carregamento.",
+    "testes": "apps/superadmin/test/features/daily_routine/daily_routine_publish_launch_test.dart, 6 casos",
+    "nada_de_autorizacao_no_cliente": "ator, capacidade, escopo e versao esperada continuam recalculados dentro de superadmin_routine_publish_launch."
+   },
+   "D6": {
+    "estado": "implementado e provado",
+    "o_que_faltava": "a rota real /forms/:formId/test montava const FormsTestPage(), sem api e sem formulario. A pagina ja sabia pre-visualizar uma definicao autorizada e ja tinha teste para isso, e a rota ja carregava :formId, mas nada era passado: Testar nao testava coisa alguma na rota normal.",
+    "o_que_foi_feito": "a rota passa a compor FormsTestPage com api real e o formId da rota, sob withFormsAuthorization, como monitor, responses, responseDetail e files. A leitura e a MESMA projecao autorizada que o editor usa (form_get_editor), entao a capacidade e conferida no servidor e nao no cliente. Uma recusa mostra o aviso de indisponibilidade e nunca um formulario neutro.",
+    "dois_testes_de_arquitetura_atualizados": "forms_composition_sanitization_source_test exigia que o router contivesse a literal const FormsTestPage(), e forms_fail_closed_routes_test exigia api.calls == 0 para /test. As duas assercoes eram o contrato anterior a D6, que mandava Testar ficar fail-closed. A decisao do Owner de 10/09 reverte isso, entao atualizei as duas com o motivo escrito no proprio arquivo, em vez de contornar.",
+    "testes": "os dois arquivos de arquitetura passam; a suite test/app/router fica com 428 aprovados e 6 falhas, todas medidas tambem SEM as minhas mudancas por git stash (import_development_routes, prototype_navigation, principal_real_route em tres larguras e um RED nomeado de proposito), todas de familias de outros grupos."
+   }
+  },
+  "integracao": {
+   "rebase": "feito em origin/dev 552058da0, limpo, sem conflito. A branch foi republicada com --force-with-lease porque o rebase reescreveu os quatro commits pendentes.",
+   "ja_integrados_pelo_coordenador": [
+    "211bc7add rotina fundacao+comportamento",
+    "6fe3c53d4 assiduidade OQ-040+D11",
+    "e3d1e2abc pacotes verdes",
+    "f196252e6 cuidado fundacao",
+    "f5ef5ff6f cliente da chave",
+    "cef619e93 repositorios e contrato",
+    "e070506f5 rotina cliente e chave de composicao"
    ],
-   "testes": [
-    "apps/superadmin/test/features/health_care/data/supabase_health_care_data_test.dart (7)",
-    "apps/superadmin/test/features/daily_routine/data/supabase_routine_data_test.dart (6)"
-   ],
-   "decisoes": [
-    "os dois metodos de medicacao de HealthCareRepository falham fechados com o motivo: a spec 020 diz que os destinos sao irmaos e que o perfil nao incorpora doses, entao escrever medicacao pelo perfil seria inventar um caminho que o backend nao tem",
-    "o HealthCareActor que a interface recebe serve so para a tela desenhar; nenhuma autorizacao e feita com ele, e isso esta escrito no arquivo",
-    "escrever le a versao atual antes, para leitura obsoleta virar conflito e nunca sobrescrita silenciosa",
-    "salvar plano rele o detalhe pela leitura autorizada, para a tela nao renderizar um estado que uma nova leitura nao confirmaria",
-    "negativa de escopo do servidor e opaca e vira notFound no cliente, sem confirmar existencia"
+   "pendentes_de_integracao": [
+    {
+     "sha": "25298e754",
+     "era": "6fcdcf39c",
+     "o_que": "fix(formularios): a fundacao da familia era PL/pgSQL invalido",
+     "urgencia": "ALTA. Conferi em origin/dev 552058da0: a correcao NAO esta la. Sem ela nenhuma migration de Formularios pode ser aplicada, em ambiente nenhum, e os 16 arquivos pgTAP da familia continuam sem poder rodar. E uma mudanca de duas linhas."
+    },
+    {
+     "sha": "b894817f5",
+     "era": "7260873b0",
+     "o_que": "test(formularios): recorte inteiro verde, 1001 assercoes"
+    },
+    {
+     "sha": "174a0ed74",
+     "era": "4d1752cdd",
+     "o_que": "feat(rotina): tela minima de Lancamentos (D7)"
+    },
+    {
+     "sha": "1c188091f",
+     "era": "9922035d5",
+     "o_que": "feat(formularios): rota Testar por capacidade (D6)"
+    }
    ]
   },
-  {
-   "id": "PKG-R03-FCR-FORMULARIOS-01",
-   "familia": "forms_authoring + forms_responses + forms_files",
-   "estado": "familia destravada e verde",
-   "migration_corrigida": "packages/coelo_database/migrations/20260813155005_forms_definition_and_capabilities.sql",
-   "resultado_pgtap": {
-    "antes": "nenhuma execucao possivel: o schema nao podia ser criado",
-    "depois": "1001 ok / 0 not ok nos 22 arquivos do recorte (18 de Formularios mais os 4 meus)",
-    "verdes_inteiros": [
-     "forms_definition 31",
-     "forms_distribution_cardinality 12",
-     "forms_export_download_capability_hardening 13",
-     "forms_internal_provenance_guards 39",
-     "forms_response_edit_validation_v1 56",
-     "forms_superadmin_media_read_r2_v1 82",
-     "forms_superadmin_operations_read_v2 70",
-     "forms_xlsx_private_r2_v1 313"
+  "duvidasParaOOwner": {
+   "estado": "lote unico montado e publicado; precisa do coordenador para chegar ao Owner",
+   "pagina": "https://claude.ai/code/artifact/b360f112-2ed4-4777-b9da-2354184a30bc",
+   "formato": "comparacoes lado a lado (referencia guardada, render atual, diferenca), no formato que o Owner pediu em 10/09: ele responde 'nome_do_arquivo - R ou A, observacao'",
+   "por_que_um_envio_so": "ele revisa em lote; interromper varias vezes custa mais caro do que juntar",
+   "tres_goldens": {
+    "arquivos": [
+     "medication_form_mobile_light",
+     "profile_form_mobile_light",
+     "profile_form_desktop_dark"
     ],
-    "com_falha": [
-     "superadmin_forms_authoring_institution_context_v2 36",
-     "superadmin_internal_form_drafts_v2 14",
-     "superadmin_internal_form_drafts_v2_repeatable_read 4",
-     "superadmin_internal_form_drafts_v2_serializable 4",
-     "superadmin_forms_directory_internal_read 3",
-     "forms_editor_application_authorization 1"
+    "origem": "execucao de health_care_golden_test.dart no SDK registrado 3.44.2 stable, sobre a base integrada",
+    "bloqueiam": [
+     "health-care.create",
+     "health-care.edit",
+     "medication.create",
+     "medication.edit"
     ],
-    "ressalva": "quatro arquivos tambem acusam ERROR de SQL durante a execucao, o que costuma ser fixture ausente no meu perfil de replay e nao defeito do produto. Nao classifiquei ainda; nao contar essas falhas como defeito antes da triagem."
+    "nota": "eram quatro casos antes da Fase 0; o composto resolveu um. Nenhum golden foi regravado.",
+    "observacao_do_escuro": "profile_form_desktop_dark nao pode seguir a regra 'escuro segue o claro de mesmo nome', porque o claro que falha e o de 375px e nao o de 1440px. Levei separado em vez de deduzir."
    },
-   "forms_responses_export": "a migration do XLSX aplica e seu teste passa com 313 assercoes. O R2 real continua fora: o pacote Cloudflare e do coordenador.",
-   "triagem_das_62_falhas": {
-    "53_de_superadmin_forms_authoring_institution_context_v2_e_drafts_v2": "nao eram defeito: a suite abortava inteira num unico erro de fixture ('internal membership version mismatch'), porque o meu perfil de replay parava em 20260831164937 e nao tinha as migrations de contexto interno de 09/2026. Com 20260901124500, 190432, 191921, 200206, 170731 e 20260908182839 aplicadas, as tres suites passam inteiras.",
-    "3_de_superadmin_forms_directory_internal_read": "mesma causa",
-    "1_de_forms_editor_application_authorization": "unica falha real, e era o teste que estava desatualizado. Ele foi escrito contra a ordem de verificacoes anterior a 20260908030000, quando o par formulario/instituicao forjado chegava a form_assert_distribution_target e voltava como 22023. Aquela migration passou a conferir o proprio agregado ANTES, entao um id de aplicacao inexistente volta como indisponivel e nunca chega a confirmar se o par seria valido. A rejeicao continua acontecendo e ficou MAIS opaca. Atualizei o teste para cobrir os dois caminhos, com a explicacao no proprio arquivo, para a intencao original nao se perder."
-   }
+   "quatro_regras_de_produto": [
+    "Quem le dado de saude de crianca alem da instituicao: o responsavel familiar exigiria uma capacidade de guardiao que nao existe, e cria-la seria decidir sozinho quem enxerga dado de saude de crianca",
+    "Pergunta de Local: opcoes fixadas na publicacao versus catalogo consultado ao responder (forms.location-question)",
+    "Resposta de Local com local revogado depois: preservar o historico, exigir um local atual ou substituir pelo sucessor, incluindo o caso obrigatorio sem alternativa valida (forms.location-answer)",
+    "Quais sao as seis referencias da Rotina da D8: a guarda ja esta ligada e provada, e a lista de decisoes de 10/09 nao cita nenhum arquivo de rotina"
+   ],
+   "pedido_ao_coordenador": "encaminhar a pagina ao Owner. Enquanto nao houver resposta, essas sete acoes ficam paradas por decisao e nao por implementacao; nada nelas depende de mais codigo meu."
   },
-  {
-   "id": "PKG-R03-FCR-ALUNOS-01",
-   "familia": "students",
-   "estado": "completo: backend, leitura, contrato, repositorio, tela e rota",
-   "action_ids": [
-    "students.link",
-    "students.transfer",
-    "students.edit",
-    "students.revoke"
-   ],
-   "migration": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260910220200_student_link_commands_v1.sql",
-   "pgtap": "packages/coelo_database/supabase/tests/student_link_commands_v1_test.sql, 20/20",
-   "estado_anterior": "as quatro acoes estao no MVP e o adiamento nao foi autorizado, mas nao existia comando nenhum: a leitura do diretorio ja estava qualificada e as escritas nunca sairam do papel. A rota /students/:childContextId/manage abre uma tela de indisponivel.",
-   "o_que_o_pacote_faz": "quatro comandos sobre as tabelas que ja existem desde 20260720180000; nenhuma estrutura nova alem dos recibos.",
-   "tres_regras_que_valem_nos_quatro": [
-    "a instituicao e derivada do contexto infantil e nunca vem do payload; aceitar a instituicao enviada pelo cliente permitiria mover a crianca de um tenant para outro",
-    "unidade e turma sao conferidas contra essa instituicao antes de qualquer escrita; um id de outro tenant recebe a mesma negativa opaca de um id que nao existe",
-    "revogar nao apaga: o vinculo vira revoked com carimbo e motivo, e o historico continua legivel, porque presenca, rotina e cuidado passados apontam para um vinculo que existiu"
-   ],
-   "decisoes": [
-    "transferir autoriza os DOIS lados: quem so pode gerir a unidade de destino nao pode retirar a crianca da origem",
-    "transferir encerra as turmas da unidade de origem, senao a crianca continuaria aparecendo em chamada e rotina de onde ja nao esta",
-    "transferir e revogar exigem motivo",
-    "vincular a mesma crianca a mesma unidade de novo reativa o vinculo existente em vez de falhar por chave duplicada"
-   ],
-   "falta": "repositorio Supabase e a tela de gestao na rota /students/:childContextId/manage, hoje uma tela de indisponivel.",
-   "cliente": {
-    "contrato": "apps/superadmin/lib/features/students/domain/student_link.dart",
-    "repositorio": "apps/superadmin/lib/features/students/data/supabase_student_link_repository.dart",
-    "testes": "apps/superadmin/test/features/students/data/supabase_student_link_repository_test.dart, 5/5",
-    "decisao_de_contrato": "instituicao nao aparece em nenhum dos tipos do dominio, e um teste prova que nenhum dos quatro comandos a envia. Ela e derivada do contexto infantil no banco; aceita-la do cliente permitiria mover a crianca de tenant.",
-    "detalhe_de_editar": "o payload distingue 'nao mexa na data de fim' de 'apague a data de fim' pela PRESENCA da chave ends_at, nao pelo valor nulo. Sem isso, editar so o inicio apagaria o fim sem querer.",
-    "falta": "nada. A tela existe em /students/:childContextId/manage e a rota deixou de abrir indisponivel."
+  "correcaoDeAfirmacaoMinha": {
+   "o_que_eu_disse": "que nenhuma migration de Formularios jamais foi aplicada em lugar nenhum",
+   "o_que_e_verdade": "o diagnostico do defeito esta certo (20260813155005 e PL/pgSQL invalido: CASE sem parenteses dentro do IF), mas producao TEM forms, form_items, form_applications e form_responses, e a funcao form_item_config_valid la ja esta com os parenteses. Houve divergencia: producao foi corrigida e a correcao nunca voltou ao arquivo do repositorio.",
+   "o_que_fiz": "realinhei o commit ao texto EXATO de producao, e nao a minha propria versao, para nao criar drift novo.",
+   "como_apareceu": "a baseline de producao publicada pelo coordenador; sem ela eu teria seguido com a conclusao errada."
+  },
+  "triagemDasQuatroFalhas": {
+   "veredito": "as quatro sao drift de producao. Nenhuma e teste desatualizado.",
+   "1_grants_diretos_de_tabela": {
+    "achado": "as sete tabelas expostas de Formularios tem SELECT, INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES e TRIGGER concedidos a anon E a authenticated em producao",
+    "explorável_hoje": "nao. As sete tem RLS habilitado e FORCE com ZERO policies, entao a negativa e total e um anon que consulte public.forms recebe zero linhas. Conferi na pratica.",
+    "por_que_corrigir_mesmo_assim": "a protecao inteira esta apoiada na ausencia de policy. No dia em que qualquer policy permissiva for criada, ou o FORCE cair, esses grants viram escrita real de anonimo em dado de formulario."
    },
-   "tela": {
-    "arquivo": "apps/superadmin/lib/features/students/presentation/student_manage_page.dart",
-    "testes": "apps/superadmin/test/features/students/presentation/student_manage_page_test.dart, 6 casos; 11 no total da familia",
-    "leitura_nova": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260910220300_student_links_read_v1.sql, pgTAP 24/24",
-    "decisoes": [
-     "a tela mostra onde a crianca esta ANTES de oferecer as acoes: ninguem transfere ou revoga sem ver de onde",
-     "ler exige people.read; mover exige people.assign_children. O servidor calcula can_manage a parte e a tela so desenha; a autorizacao e refeita em cada comando",
-     "vinculo revogado continua na lista, porque revogar nao apaga, e o estado e dito por texto e nao so por cor",
-     "revogar pede motivo e confirma, porque o motivo vai para a auditoria e o efeito alcanca presenca, rotina e cuidado daquela unidade",
-     "o botao de confirmar so habilita com motivo preenchido, para nao gastar uma ida ao banco que voltaria como erro de validacao"
+   "2_tokens_de_download": {
+    "achado": "anon podia executar form_authorize_file_job_download e authenticated podia executar form_redeem_file_job_download",
+    "gravidade": "este e o unico dos quatro que NAO dependia de um segundo erro para importar. O resgate do token e server-side por contrato: quem resgata e o service_role, nao o navegador."
+   },
+   "correcao": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260910220100_forms_revoke_production_drift_v1.sql. Forward-only e mecanica: so revoga, nao cria, nao altera corpo de funcao e nao mexe em RLS. Se algum caminho legitimo dependia de grant direto, ele falha fechado e aparece.",
+   "resultado": "as quatro assercoes ficam verdes; o recorte inteiro vai a 1033 ok e 0 not ok sobre a baseline de producao."
+  },
+  "decisoesDoOwnerD9": {
+   "recebidas_em": "2026-09-10 16:00, pelo coordenador (ADR 0034, Decisao 9)",
+   "saude_alem_da_instituicao": {
+    "resposta": "opcao 1: o responsavel autorizado le o perfil de cuidado e os planos da propria crianca",
+    "estado": "implementado e provado",
+    "migration": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260910220000_health_care_guardian_read_v1.sql",
+    "pgtap": "packages/coelo_database/supabase/tests/health_care_guardian_read_v1_test.sql, 12/12",
+    "tres_limites": [
+     "somente leitura: o ramo de guardiao so existe para health_care.read e medication.read",
+     "somente a propria crianca: passa por guardian_has_capability daquele contexto infantil",
+     "sem diretorio: as duas RPCs exigem o contexto infantil e nao aceitam busca nem paginacao"
     ],
-    "defeito_meu_que_o_teste_pegou": "eu descartava o TextEditingController assim que showDialog retornava. A animacao de saida ainda reconstroi o dialogo depois disso, e o campo tentava ouvir um controlador ja descartado. O controlador passou a viver dentro do dialogo.",
-    "nao_implementado_na_tela": "vincular, transferir e editar tem comando, contrato e repositorio prontos e provados, mas a tela so expoe revogar. Faltam os seletores de unidade e turma, que dependem de uma leitura de unidades e turmas do escopo que nao e minha."
-   }
-  }
- ],
- "filaSQL": [
-  {
-   "ordem": 1,
-   "arquivo": "packages/coelo_database/migrations/20260910010000_daily_routine_foundation_v1.sql"
-  },
-  {
-   "ordem": 2,
-   "arquivo": "packages/coelo_database/migrations/20260910010100_daily_routine_behavior_v1.sql"
-  },
-  {
-   "ordem": 3,
-   "arquivo": "packages/coelo_database/migrations/20260910010200_attendance_authorization_and_idempotency_v1.sql"
-  },
-  {
-   "ordem": 4,
-   "arquivo": "packages/coelo_database/migrations/20260910010300_health_care_and_medication_plans_v1.sql"
-  },
-  {
-   "ordem": 5,
-   "arquivo": "packages/coelo_database/migrations/20260910010400_health_care_behavior_v1.sql"
-  },
-  {
-   "ordem": 6,
-   "arquivo": "packages/coelo_database/migrations/20260910010500_daily_routine_client_contract_v1.sql"
-  },
-  {
-   "ordem": 7,
-   "arquivo": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260910220200_student_link_commands_v1.sql"
-  },
-  {
-   "ordem": 8,
-   "arquivo": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260910220000_health_care_guardian_read_v1.sql"
-  },
-  {
-   "ordem": 9,
-   "arquivo": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260910220100_forms_revoke_production_drift_v1.sql"
-  }
- ],
- "chaveDeComposicao": {
-  "careAndRoutine": {
-   "nome": "SuperadminAppConfig.careAndRoutineBackendEnabled",
-   "variavel": "COELO_ENABLE_CARE_AND_ROUTINE_BACKEND",
-   "arquivo": "apps/superadmin/lib/core/config/superadmin_app_config.dart",
-   "estado": "declarada e ligada na composicao, valor padrao false",
-   "liga": [
-    "Perfis de cuidado (SupabaseHealthCareRepository)",
-    "Planos de medicacao (SupabaseMedicationPlanRepository)",
-    "Rotina diaria (SupabaseRoutineRepository)"
+    "projecao_minima": "a familia nao recebe a trilha com justificativa, nem o registro de administracao do medicamento, nem a versao esperada do agregado",
+    "porta_separada_de_proposito": "nao reaproveitei superadmin_health_care_profile_detail porque afrouxar aquele portao abriria o diretorio inteiro junto",
+    "regra_anterior_preservada": "platform.read continua sem alcancar saude de crianca, provado por assercao"
+   },
+   "pendentes_nesta_revisao": [
+    "goldens R/A",
+    "Local com opcoes fixas na publicacao",
+    "Local revogado exige local atual",
+    "seis referencias da Rotina = modelo de atividade"
    ],
-   "depende_de": "migrations 20260910010000 a 20260910010500 aplicadas",
-   "por_que_nasce_desligada": "antes do SQL aplicado, ligar trocaria uma indisponibilidade honesta por erro obscuro contra um banco sem esses objetos",
-   "mudanca_estrutural": "SuperadminAuthScope ganhou o campo healthCareRepository, que nao existia: Perfis de cuidado estava preso a UnavailableHealthCareRepository dentro do proprio router. Passa por main.dart, superadmin_app.dart e superadmin_router.dart."
-  },
-  "studentLink": {
-   "nome": "SuperadminAppConfig.studentLinkCommandsEnabled",
-   "variavel": "COELO_ENABLE_STUDENT_LINK_COMMANDS",
-   "estado": "declarada e ligada na composicao, valor padrao false",
-   "depende_de": "migration 20260910220200_student_link_commands_v1 aplicada",
-   "por_que_chave_separada": "o SQL e outro pacote e pode ser aplicado em outro momento; e a autorizacao destes comandos passa pelo realm people-based, que e o ponto que a OQ-043 deixou em aberto para os CRUDs anteriores a ADR 0019. Ligar e decisao separada, nao carona da chave de Cuidado e Rotina."
-  }
- },
- "replayReprodutivel": {
-  "por_que": "o perfil FoundationOnly esta quebrado no HEAD (F-R03-FCR-003) e a cadeia completa nao replica (F-R03-FCR-001 e o mesmo padrao em imports). Esta e a receita que produziu as 1001 assercoes, para o coordenador reproduzir em vez de acreditar.",
-  "projeto": "descartavel, fora do repositorio, project_id coelo_fcr_replay, portas 553xx",
-  "conjunto": "94 migrations: as do manifesto foundation com versao <= 20260831164937; as 24 de Formularios; 20260908160000_private_media_catalog_r2_v1; 20260901124500, 20260901170731, 20260901190432, 20260901191921, 20260901200206 e 20260908182839; as seis minhas de 20260910; mais replay/20260811151253 e replay/20260811215452",
-  "arquivo_extra_somente_replay": "um arquivo 20260831130727 que repoe o default de sentinela dos rotulos depois de 20260831130726, porque varias migrations posteriores ainda inserem permissoes sem module_label. Nao esta no repositorio e nao e candidato a deploy.",
-  "deixadas_de_fora_e_por_que": {
-   "20260901101500_superadmin_internal_chat_v2": "conflito de tipo de retorno em chat_inbox_page; familia do grupo principal-chat-sistema",
-   "20260901185008_superadmin_internal_notices_v2": "exige public.notice_events, que nenhuma migration do conjunto cria; familia de Avisos",
-   "20260812002010_import_export_unit_source_retention": "exige app_private.unit_import_source_attestations, que nenhuma migration cria. Mesmo padrao do achado F-R03-FCR-001, agora na familia de Importacoes"
-  }
- },
- "decisoesDeTela": {
-  "D8": {
-   "estado": "ja estava pronto; nao refiz",
-   "verificado": "daily_routine_form_sections.dart tem PopScope com canPop: !_isDirty, _confirmDiscard, _confirmExit e _selectDestination (a saida pelo menu tambem passa pela mesma confirmacao). O golden daily_routine_dirty_exit_light_375.png existe e daily_routine_dirty_exit_test.dart passa. A suite de Rotina esta 113/113 verde.",
-   "conclusao": "a guarda de saida esta ligada e provada. Nao encontrei goldens de Rotina pendentes na lista de decisoes de 10/09: aquele documento nao cita nenhum arquivo de rotina. Se as seis referencias que a D8 menciona sao outras, preciso saber quais; nao regravei nada."
-  },
-  "D7": {
-   "estado": "implementado e provado",
-   "o_que_faltava": "a aba Lancamentos ja existia no diretorio, mas nao tinha acao nenhuma: nao havia como publicar um lancamento pela interface, embora o comando daily-routine.publish exista.",
-   "o_que_foi_feito": "acao Publicar no proprio item da aba Lancamentos, visivel so para quem pode gerenciar e so enquanto o lancamento e rascunho. Confirma antes, porque publicar entrega a rotina as familias e nao tem desfazer nesta tela (a correcao e um comando proprio, com justificativa). O botao do item fica desabilitado enquanto o comando nao volta, para um toque repetido nao virar duas publicacoes. Depois de publicar, a lista recarrega do servidor, para a tela mostrar o que o servidor confirma e nao o que ela supos.",
-   "erros_em_portugues": "cada tipo de recusa vira uma frase propria: sem permissao, indisponivel, mudou desde o carregamento.",
-   "testes": "apps/superadmin/test/features/daily_routine/daily_routine_publish_launch_test.dart, 6 casos",
-   "nada_de_autorizacao_no_cliente": "ator, capacidade, escopo e versao esperada continuam recalculados dentro de superadmin_routine_publish_launch."
-  },
-  "D6": {
-   "estado": "implementado e provado",
-   "o_que_faltava": "a rota real /forms/:formId/test montava const FormsTestPage(), sem api e sem formulario. A pagina ja sabia pre-visualizar uma definicao autorizada e ja tinha teste para isso, e a rota ja carregava :formId, mas nada era passado: Testar nao testava coisa alguma na rota normal.",
-   "o_que_foi_feito": "a rota passa a compor FormsTestPage com api real e o formId da rota, sob withFormsAuthorization, como monitor, responses, responseDetail e files. A leitura e a MESMA projecao autorizada que o editor usa (form_get_editor), entao a capacidade e conferida no servidor e nao no cliente. Uma recusa mostra o aviso de indisponibilidade e nunca um formulario neutro.",
-   "dois_testes_de_arquitetura_atualizados": "forms_composition_sanitization_source_test exigia que o router contivesse a literal const FormsTestPage(), e forms_fail_closed_routes_test exigia api.calls == 0 para /test. As duas assercoes eram o contrato anterior a D6, que mandava Testar ficar fail-closed. A decisao do Owner de 10/09 reverte isso, entao atualizei as duas com o motivo escrito no proprio arquivo, em vez de contornar.",
-   "testes": "os dois arquivos de arquitetura passam; a suite test/app/router fica com 428 aprovados e 6 falhas, todas medidas tambem SEM as minhas mudancas por git stash (import_development_routes, prototype_navigation, principal_real_route em tres larguras e um RED nomeado de proposito), todas de familias de outros grupos."
-  }
- },
- "integracao": {
-  "rebase": "feito em origin/dev 552058da0, limpo, sem conflito. A branch foi republicada com --force-with-lease porque o rebase reescreveu os quatro commits pendentes.",
-  "ja_integrados_pelo_coordenador": [
-   "211bc7add rotina fundacao+comportamento",
-   "6fe3c53d4 assiduidade OQ-040+D11",
-   "e3d1e2abc pacotes verdes",
-   "f196252e6 cuidado fundacao",
-   "f5ef5ff6f cliente da chave",
-   "cef619e93 repositorios e contrato",
-   "e070506f5 rotina cliente e chave de composicao"
-  ],
-  "pendentes_de_integracao": [
-   {
-    "sha": "25298e754",
-    "era": "6fcdcf39c",
-    "o_que": "fix(formularios): a fundacao da familia era PL/pgSQL invalido",
-    "urgencia": "ALTA. Conferi em origin/dev 552058da0: a correcao NAO esta la. Sem ela nenhuma migration de Formularios pode ser aplicada, em ambiente nenhum, e os 16 arquivos pgTAP da familia continuam sem poder rodar. E uma mudanca de duas linhas."
+   "goldens": {
+    "profile_form_mobile_light": {
+     "decisao": "A",
+     "observacao_aplicada": "o Owner disse que o wizard nao segue 100% o padrao e citou o conteiner interno. Era o _FormSection de health_care_form_pages.dart: titulo e descricao da etapa viviam dentro de um card com borda. Em Criar instituicao eles sao cabecalho do corpo da pagina (headlineSmall) e so os grupos auxiliares ganham card. Uma borda diz 'objeto separado', e a etapa nao e um objeto dentro da pagina: ela e a pagina.",
+     "estado": "alinhado ao padrao e golden regravado"
+    },
+    "profile_form_desktop_dark": {
+     "decisao": "A, seguindo a skill coelo-ui",
+     "estado": "mesma correcao, golden regravado"
+    },
+    "medication_form_mobile_light": {
+     "decisao": "R",
+     "estado": "NAO aplicado; conflito levado ao coordenador",
+     "por_que_nao_apliquei": "R manda o codigo voltar a referencia, e a referencia tem o rodape DENTRO do scroll: Cancelar fica cortado no fim da tela e so aparece rolando. O render atual tem o rodape ancorado, que e exatamente o que a regra RODAPE do mesmo dia 10/09 pediu, e e o que o golden APROVADO de Criar instituicao em 375 px faz. Naquele golden aprovado o rodape ancorado tambem corta o card de imagem atras dele, e isso e a referencia. Aplicar R aqui desfaria a RODAPE so nesta tela e a afastaria do padrao que ela deveria seguir.",
+     "o_que_o_owner_pode_ter_visto": "no render atual a linha 'Envio indisponivel neste contexto.' fica fatiada na fronteira do scroll com o rodape. E o mesmo efeito do golden de Instituicoes, mas ali quem e cortado e um card e aqui e uma linha de texto, o que le pior.",
+     "proposta": "manter o rodape ancorado e resolver a fatia, em vez de voltar o rodape para dentro do scroll: reservar respiro no fim do conteudo para a fronteira nao cair no meio de uma linha de texto. Preciso da confirmacao antes de mexer, porque o componente e compartilhado e a mudanca alcanca todos os formularios."
+    }
    },
-   {
-    "sha": "b894817f5",
-    "era": "7260873b0",
-    "o_que": "test(formularios): recorte inteiro verde, 1001 assercoes"
+   "seis_referencias_da_rotina": {
+    "resposta": "sao as do modelo de atividade, aplicadas ao modelo de rotina diaria",
+    "consequencia": "nao existem seis goldens de rotina esperando regravacao por conta propria. O editor de modelo de Rotina segue a familia visual do modelo de atividade.",
+    "registrado_em": ".agents/skills/coelo-ui/references/approved-superadmin-visual-baselines.md"
    },
-   {
-    "sha": "174a0ed74",
-    "era": "4d1752cdd",
-    "o_que": "feat(rotina): tela minima de Lancamentos (D7)"
-   },
-   {
-    "sha": "1c188091f",
-    "era": "9922035d5",
-    "o_que": "feat(formularios): rota Testar por capacidade (D6)"
-   }
-  ]
- },
- "duvidasParaOOwner": {
-  "estado": "lote unico montado e publicado; precisa do coordenador para chegar ao Owner",
-  "pagina": "https://claude.ai/code/artifact/b360f112-2ed4-4777-b9da-2354184a30bc",
-  "formato": "comparacoes lado a lado (referencia guardada, render atual, diferenca), no formato que o Owner pediu em 10/09: ele responde 'nome_do_arquivo - R ou A, observacao'",
-  "por_que_um_envio_so": "ele revisa em lote; interromper varias vezes custa mais caro do que juntar",
-  "tres_goldens": {
-   "arquivos": [
-    "medication_form_mobile_light",
-    "profile_form_mobile_light",
-    "profile_form_desktop_dark"
-   ],
-   "origem": "execucao de health_care_golden_test.dart no SDK registrado 3.44.2 stable, sobre a base integrada",
-   "bloqueiam": [
-    "health-care.create",
-    "health-care.edit",
-    "medication.create",
-    "medication.edit"
-   ],
-   "nota": "eram quatro casos antes da Fase 0; o composto resolveu um. Nenhum golden foi regravado.",
-   "observacao_do_escuro": "profile_form_desktop_dark nao pode seguir a regra 'escuro segue o claro de mesmo nome', porque o claro que falha e o de 375px e nao o de 1440px. Levei separado em vez de deduzir."
-  },
-  "quatro_regras_de_produto": [
-   "Quem le dado de saude de crianca alem da instituicao: o responsavel familiar exigiria uma capacidade de guardiao que nao existe, e cria-la seria decidir sozinho quem enxerga dado de saude de crianca",
-   "Pergunta de Local: opcoes fixadas na publicacao versus catalogo consultado ao responder (forms.location-question)",
-   "Resposta de Local com local revogado depois: preservar o historico, exigir um local atual ou substituir pelo sucessor, incluindo o caso obrigatorio sem alternativa valida (forms.location-answer)",
-   "Quais sao as seis referencias da Rotina da D8: a guarda ja esta ligada e provada, e a lista de decisoes de 10/09 nao cita nenhum arquivo de rotina"
-  ],
-  "pedido_ao_coordenador": "encaminhar a pagina ao Owner. Enquanto nao houver resposta, essas sete acoes ficam paradas por decisao e nao por implementacao; nada nelas depende de mais codigo meu."
- },
- "correcaoDeAfirmacaoMinha": {
-  "o_que_eu_disse": "que nenhuma migration de Formularios jamais foi aplicada em lugar nenhum",
-  "o_que_e_verdade": "o diagnostico do defeito esta certo (20260813155005 e PL/pgSQL invalido: CASE sem parenteses dentro do IF), mas producao TEM forms, form_items, form_applications e form_responses, e a funcao form_item_config_valid la ja esta com os parenteses. Houve divergencia: producao foi corrigida e a correcao nunca voltou ao arquivo do repositorio.",
-  "o_que_fiz": "realinhei o commit ao texto EXATO de producao, e nao a minha propria versao, para nao criar drift novo.",
-  "como_apareceu": "a baseline de producao publicada pelo coordenador; sem ela eu teria seguido com a conclusao errada."
- },
- "triagemDasQuatroFalhas": {
-  "veredito": "as quatro sao drift de producao. Nenhuma e teste desatualizado.",
-  "1_grants_diretos_de_tabela": {
-   "achado": "as sete tabelas expostas de Formularios tem SELECT, INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES e TRIGGER concedidos a anon E a authenticated em producao",
-   "explorável_hoje": "nao. As sete tem RLS habilitado e FORCE com ZERO policies, entao a negativa e total e um anon que consulte public.forms recebe zero linhas. Conferi na pratica.",
-   "por_que_corrigir_mesmo_assim": "a protecao inteira esta apoiada na ausencia de policy. No dia em que qualquer policy permissiva for criada, ou o FORCE cair, esses grants viram escrita real de anonimo em dado de formulario."
-  },
-  "2_tokens_de_download": {
-   "achado": "anon podia executar form_authorize_file_job_download e authenticated podia executar form_redeem_file_job_download",
-   "gravidade": "este e o unico dos quatro que NAO dependia de um segundo erro para importar. O resgate do token e server-side por contrato: quem resgata e o service_role, nao o navegador."
-  },
-  "correcao": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260910220100_forms_revoke_production_drift_v1.sql. Forward-only e mecanica: so revoga, nao cria, nao altera corpo de funcao e nao mexe em RLS. Se algum caminho legitimo dependia de grant direto, ele falha fechado e aparece.",
-  "resultado": "as quatro assercoes ficam verdes; o recorte inteiro vai a 1033 ok e 0 not ok sobre a baseline de producao."
- },
- "decisoesDoOwnerD9": {
-  "recebidas_em": "2026-09-10 16:00, pelo coordenador (ADR 0034, Decisao 9)",
-  "saude_alem_da_instituicao": {
-   "resposta": "opcao 1: o responsavel autorizado le o perfil de cuidado e os planos da propria crianca",
-   "estado": "implementado e provado",
-   "migration": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260910220000_health_care_guardian_read_v1.sql",
-   "pgtap": "packages/coelo_database/supabase/tests/health_care_guardian_read_v1_test.sql, 12/12",
-   "tres_limites": [
-    "somente leitura: o ramo de guardiao so existe para health_care.read e medication.read",
-    "somente a propria crianca: passa por guardian_has_capability daquele contexto infantil",
-    "sem diretorio: as duas RPCs exigem o contexto infantil e nao aceitam busca nem paginacao"
-   ],
-   "projecao_minima": "a familia nao recebe a trilha com justificativa, nem o registro de administracao do medicamento, nem a versao esperada do agregado",
-   "porta_separada_de_proposito": "nao reaproveitei superadmin_health_care_profile_detail porque afrouxar aquele portao abriria o diretorio inteiro junto",
-   "regra_anterior_preservada": "platform.read continua sem alcancar saude de crianca, provado por assercao"
-  },
-  "pendentes_nesta_revisao": [
-   "goldens R/A",
-   "Local com opcoes fixas na publicacao",
-   "Local revogado exige local atual",
-   "seis referencias da Rotina = modelo de atividade"
-  ],
-  "goldens": {
-   "profile_form_mobile_light": {
-    "decisao": "A",
-    "observacao_aplicada": "o Owner disse que o wizard nao segue 100% o padrao e citou o conteiner interno. Era o _FormSection de health_care_form_pages.dart: titulo e descricao da etapa viviam dentro de um card com borda. Em Criar instituicao eles sao cabecalho do corpo da pagina (headlineSmall) e so os grupos auxiliares ganham card. Uma borda diz 'objeto separado', e a etapa nao e um objeto dentro da pagina: ela e a pagina.",
-    "estado": "alinhado ao padrao e golden regravado"
-   },
-   "profile_form_desktop_dark": {
-    "decisao": "A, seguindo a skill coelo-ui",
-    "estado": "mesma correcao, golden regravado"
-   },
-   "medication_form_mobile_light": {
-    "decisao": "R",
-    "estado": "NAO aplicado; conflito levado ao coordenador",
-    "por_que_nao_apliquei": "R manda o codigo voltar a referencia, e a referencia tem o rodape DENTRO do scroll: Cancelar fica cortado no fim da tela e so aparece rolando. O render atual tem o rodape ancorado, que e exatamente o que a regra RODAPE do mesmo dia 10/09 pediu, e e o que o golden APROVADO de Criar instituicao em 375 px faz. Naquele golden aprovado o rodape ancorado tambem corta o card de imagem atras dele, e isso e a referencia. Aplicar R aqui desfaria a RODAPE so nesta tela e a afastaria do padrao que ela deveria seguir.",
-    "o_que_o_owner_pode_ter_visto": "no render atual a linha 'Envio indisponivel neste contexto.' fica fatiada na fronteira do scroll com o rodape. E o mesmo efeito do golden de Instituicoes, mas ali quem e cortado e um card e aqui e uma linha de texto, o que le pior.",
-    "proposta": "manter o rodape ancorado e resolver a fatia, em vez de voltar o rodape para dentro do scroll: reservar respiro no fim do conteudo para a fronteira nao cair no meio de uma linha de texto. Preciso da confirmacao antes de mexer, porque o componente e compartilhado e a mudanca alcanca todos os formularios."
+   "local_no_formulario": {
+    "opcoes_fixas_na_publicacao": "opcao 1, decidida",
+    "local_revogado_exige_local_atual": "opcao 2, decidida",
+    "registrado_em": "docs/superpowers/specs/2026-08-13-superadmin-forms-end-to-end-design.md",
+    "conflito_de_escopo_que_impede_implementar": "o tipo location NAO existe: a constraint de form_items.kind em producao aceita short_text, integer, decimal, money, date, yes_no, single_choice, multiple_choice, scale, photo, gallery e information, e nada no cliente trata local em Formularios. A secao 'Fora de escopo' da propria spec lista localizacao como fora do MVP. A politica esta decidida, mas implementa-la exige antes uma decisao de escopo do Owner sobre trazer location para dentro do MVP.",
+    "caso_ainda_aberto": "pergunta obrigatoria, local revogado e NENHUMA alternativa valida na lista congelada. A opcao 2 obriga um local atual, e nesse caso nao existe nenhum.",
+    "estado_das_duas_acoes": "forms.location-question e forms.location-answer continuam bloqueadas, agora por escopo e nao mais por falta de politica."
    }
   },
-  "seis_referencias_da_rotina": {
-   "resposta": "sao as do modelo de atividade, aplicadas ao modelo de rotina diaria",
-   "consequencia": "nao existem seis goldens de rotina esperando regravacao por conta propria. O editor de modelo de Rotina segue a familia visual do modelo de atividade.",
-   "registrado_em": ".agents/skills/coelo-ui/references/approved-superadmin-visual-baselines.md"
+  "filaFormulariosMedida": {
+   "medida_sobre": "baseline de producao mais seed, por psql",
+   "producao_tem_formularios_ate": "~20260901194209",
+   "ordem_que_aplica_limpo": [
+    "20260827235500_superadmin_internal_institution_list_filter (de Estrutura, nao meu)",
+    "20260828000500_superadmin_internal_institution_edit_core (de Estrutura, nao meu)",
+    "20260908000049_superadmin_forms_directory_internal_read",
+    "20260908030000_superadmin_internal_form_drafts_v2",
+    "20260908032100_superadmin_forms_authoring_institution_context_v2",
+    "20260908054000_forms_internal_provenance_guards",
+    "20260908160000_private_media_catalog_r2_v1",
+    "20260908170000_forms_xlsx_private_r2_v1",
+    "20260908191327_forms_response_edit_validation_v1",
+    "20260908195512_forms_superadmin_operations_read_v2",
+    "20260908215522_forms_superadmin_media_read_r2_v1"
+   ],
+   "dependencia_cruzada": "os itens 3 a 6 FALHAM sem os dois primeiros: o preflight deles exige o envelope SAI_INVALID_ARGUMENT e o superadmin_internal_error_envelope de producao ainda devolve SAI_INTERNAL_ERROR/500 para esse codigo. Formularios nao sobe sem duas migrations de Estrutura antes."
   },
-  "local_no_formulario": {
-   "opcoes_fixas_na_publicacao": "opcao 1, decidida",
-   "local_revogado_exige_local_atual": "opcao 2, decidida",
-   "registrado_em": "docs/superpowers/specs/2026-08-13-superadmin-forms-end-to-end-design.md",
-   "conflito_de_escopo_que_impede_implementar": "o tipo location NAO existe: a constraint de form_items.kind em producao aceita short_text, integer, decimal, money, date, yes_no, single_choice, multiple_choice, scale, photo, gallery e information, e nada no cliente trata local em Formularios. A secao 'Fora de escopo' da propria spec lista localizacao como fora do MVP. A politica esta decidida, mas implementa-la exige antes uma decisao de escopo do Owner sobre trazer location para dentro do MVP.",
-   "caso_ainda_aberto": "pergunta obrigatoria, local revogado e NENHUMA alternativa valida na lista congelada. A opcao 2 obriga um local atual, e nesse caso nao existe nenhum.",
-   "estado_das_duas_acoes": "forms.location-question e forms.location-answer continuam bloqueadas, agora por escopo e nao mais por falta de politica."
+  "renumeracaoDeCarimbos": {
+   "motivo": "o coordenador apontou colisao: 20260910160000 ja era a migration de Unidades APLICADA em producao e 20260910150000 era happens_feed_pagination do principal-chat. Conferindo a pasta inteira, 20260910140000 do meu pacote de Alunos tambem colidia com chat_conversation_preferences_v1.",
+   "faixa_adotada": "2026091022xxxx, conforme o coordenador pediu",
+   "renomeados": [
+    "20260910140000_student_link_commands_v1 -> 20260910220200_student_link_commands_v1",
+    "20260910150000_health_care_guardian_read_v1 -> 20260910220000_health_care_guardian_read_v1",
+    "20260910160000_forms_revoke_production_drift_v1 -> 20260910220100_forms_revoke_production_drift_v1"
+   ],
+   "colisao_que_nao_e_minha": "20260910120000 aparece duas vezes na pasta: meal_plan_image_delete_requires_revision_v1 e superadmin_internal_circular_delete_v1, de dois outros grupos. Nao renomeei nada alheio; fica o aviso."
+  },
+  "layoutDosPacotes": {
+   "regra": "pacote novo nasce em packages/coelo_database/candidatos/<grupo>/ e o coordenador move para migrations/ no commit em que aplica em producao",
+   "recebida_de": "coordenador, 2026-09-10",
+   "meus_candidatos": [
+    "20260910220000_health_care_guardian_read_v1.sql",
+    "20260910220100_forms_revoke_production_drift_v1.sql",
+    "20260910220200_student_link_commands_v1.sql"
+   ],
+   "ja_em_migrations_porque_ja_aplicados": [
+    "20260910010000 a 20260910010500, lote 2, aplicados em producao as 16:03"
+   ]
+  },
+  "handoff": "docs/reviews/etapa-2-operacao/comunicacao/formularios-cuidado-rotina-handoff.md",
+  "ledgerRemoto": {
+   "conferido_por": "supabase migration list --linked, 2026-09-10",
+   "meus_pacotes_em_producao": [
+    "20260910010000",
+    "20260910010100",
+    "20260910010200",
+    "20260910010300",
+    "20260910010400",
+    "20260910010500",
+    "20260910220000",
+    "20260910220100",
+    "20260910220200"
+   ],
+   "fila_de_formularios_em_producao": "20260910230001 a 20260910230011, onze entradas, que batem com as duas de Estrutura mais as nove de Formularios que eu havia medido",
+   "conclusao": "o backend do recorte inteiro esta aplicado em producao: rotina, assiduidade, cuidado, medicacao, alunos e formularios"
+  },
+  "provaHttpQueNaoProvaDeploy": {
+   "o_que_fiz": "chamei quatro RPCs com a chave publicavel; todas responderam HTTP 404",
+   "o_que_isso_diz": "e o esperado para funcao que anon nao pode executar, porque o PostgREST esconde o que o papel nao alcanca",
+   "o_que_isso_NAO_diz": "404 nao distingue negado de ausente. Quem prova a implantacao e o ledger, nao essa chamada. Registrado aqui para ninguem citar o 404 como prova de deploy nem como prova de negativa."
+  },
+  "fechamento": {
+   "motivo": "corte das 17:10 por ordem do Owner; nao retomo por conta propria",
+   "working_tree": "limpo, tudo commitado e publicado",
+   "wip_retido": "nenhum"
   }
  },
- "filaFormulariosMedida": {
-  "medida_sobre": "baseline de producao mais seed, por psql",
-  "producao_tem_formularios_ate": "~20260901194209",
-  "ordem_que_aplica_limpo": [
-   "20260827235500_superadmin_internal_institution_list_filter (de Estrutura, nao meu)",
-   "20260828000500_superadmin_internal_institution_edit_core (de Estrutura, nao meu)",
-   "20260908000049_superadmin_forms_directory_internal_read",
-   "20260908030000_superadmin_internal_form_drafts_v2",
-   "20260908032100_superadmin_forms_authoring_institution_context_v2",
-   "20260908054000_forms_internal_provenance_guards",
-   "20260908160000_private_media_catalog_r2_v1",
-   "20260908170000_forms_xlsx_private_r2_v1",
-   "20260908191327_forms_response_edit_validation_v1",
-   "20260908195512_forms_superadmin_operations_read_v2",
-   "20260908215522_forms_superadmin_media_read_r2_v1"
-  ],
-  "dependencia_cruzada": "os itens 3 a 6 FALHAM sem os dois primeiros: o preflight deles exige o envelope SAI_INVALID_ARGUMENT e o superadmin_internal_error_envelope de producao ainda devolve SAI_INTERNAL_ERROR/500 para esse codigo. Formularios nao sobe sem duas migrations de Estrutura antes."
+ "ambienteDeTeste": {
+  "app": "flutter run -d chrome -t test_driver/qa_main.dart em http://localhost:3010 (a porta 3000 estava ocupada por outra frente; CORS do R2 so libera 3000, entao a prova de upload direto ao R2 tera de usar 3000 quando chegar a vez)",
+  "sessao": "qa-r03@coelo.me entrou em producao pela tela de login normal; credencial lida do arquivo local para o ambiente do processo, nunca impressa",
+  "harness": "test_driver/qa_main.dart (mesma composicao de lib/main.dart mais enableFlutterDriverExtension) e test_driver/qa_drive.dart (CDP -> window.$flutterDriver). O MCP dart/flutter_driver_command nao funciona neste app web: os finders ficam presos no frame sync; com set_frame_sync=false pelo gancho web tudo responde",
+  "pubspec": "flutter_driver entrou em dev_dependencies (aviso ao coordenador: toquei o pubspec de apps/superadmin)"
  },
- "renumeracaoDeCarimbos": {
-  "motivo": "o coordenador apontou colisao: 20260910160000 ja era a migration de Unidades APLICADA em producao e 20260910150000 era happens_feed_pagination do principal-chat. Conferindo a pasta inteira, 20260910140000 do meu pacote de Alunos tambem colidia com chat_conversation_preferences_v1.",
-  "faixa_adotada": "2026091022xxxx, conforme o coordenador pediu",
-  "renomeados": [
-   "20260910140000_student_link_commands_v1 -> 20260910220200_student_link_commands_v1",
-   "20260910150000_health_care_guardian_read_v1 -> 20260910220000_health_care_guardian_read_v1",
-   "20260910160000_forms_revoke_production_drift_v1 -> 20260910220100_forms_revoke_production_drift_v1"
-  ],
-  "colisao_que_nao_e_minha": "20260910120000 aparece duas vezes na pasta: meal_plan_image_delete_requires_revision_v1 e superadmin_internal_circular_delete_v1, de dois outros grupos. Nao renomeei nada alheio; fica o aviso."
- },
- "layoutDosPacotes": {
-  "regra": "pacote novo nasce em packages/coelo_database/candidatos/<grupo>/ e o coordenador move para migrations/ no commit em que aplica em producao",
-  "recebida_de": "coordenador, 2026-09-10",
-  "meus_candidatos": [
-   "20260910220000_health_care_guardian_read_v1.sql",
-   "20260910220100_forms_revoke_production_drift_v1.sql",
-   "20260910220200_student_link_commands_v1.sql"
-  ],
-  "ja_em_migrations_porque_ja_aplicados": [
-   "20260910010000 a 20260910010500, lote 2, aplicados em producao as 16:03"
-  ]
- },
- "handoff": "docs/reviews/etapa-2-operacao/comunicacao/formularios-cuidado-rotina-handoff.md",
- "ledgerRemoto": {
-  "conferido_por": "supabase migration list --linked, 2026-09-10",
-  "meus_pacotes_em_producao": [
-   "20260910010000",
-   "20260910010100",
-   "20260910010200",
-   "20260910010300",
-   "20260910010400",
-   "20260910010500",
-   "20260910220000",
-   "20260910220100",
-   "20260910220200"
-  ],
-  "fila_de_formularios_em_producao": "20260910230001 a 20260910230011, onze entradas, que batem com as duas de Estrutura mais as nove de Formularios que eu havia medido",
-  "conclusao": "o backend do recorte inteiro esta aplicado em producao: rotina, assiduidade, cuidado, medicacao, alunos e formularios"
- },
- "provaHttpQueNaoProvaDeploy": {
-  "o_que_fiz": "chamei quatro RPCs com a chave publicavel; todas responderam HTTP 404",
-  "o_que_isso_diz": "e o esperado para funcao que anon nao pode executar, porque o PostgREST esconde o que o papel nao alcanca",
-  "o_que_isso_NAO_diz": "404 nao distingue negado de ausente. Quem prova a implantacao e o ledger, nao essa chamada. Registrado aqui para ninguem citar o 404 como prova de deploy nem como prova de negativa."
- },
- "fechamento": {
-  "motivo": "corte das 17:10 por ordem do Owner; nao retomo por conta propria",
-  "working_tree": "limpo, tudo commitado e publicado",
-  "wip_retido": "nenhum"
- }
+ "findings": [
+  {
+   "id": "F-R04-FCR-001",
+   "titulo": "Cuidado e Medicacao: so o diretorio de Perfis esta ligado no router de producao",
+   "medido": "apps/superadmin/lib/app/router/superadmin_router.dart @ 98cc0529d, linhas 2730-2783",
+   "evidencia": "healthCareProfileCreate/Edit montam HealthCareProfileFormPage sem onSaved, loadDraft nem childOptions (a pagina cai em 'Cadastro indisponivel'); healthCareProfileDetail redireciona para mutation-capability-unavailable; as quatro rotas de Medicacao montam _unavailableMedicationPlans. O repositorio Supabase e a chave existem, mas nao chegam a essas rotas.",
+   "consequencia": "health-care.create/detail/edit e medication.* nao passam da regua do MVP por composicao, nao por backend. Assumido por este grupo: ligar as rotas ao SupabaseHealthCareRepository/SupabaseMedicationPlanRepository (criar perfil = save_profile com profile_id nulo e child_context_id; opcoes de crianca pelo leitor superadmin_child_context_directory_v2)."
+  }
+ ]
 }
