@@ -596,5 +596,18 @@
       "environment": "producao, sessao qa-r03 via PostgREST",
       "recordedAt": "2026-09-11T03:22:00-03:00"
     }
+  },
+  {
+    "action_id": "access-models.edit",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R04: superadmin_access_profile_model_update(p_request_id, p_draft{id, expected_version, name, status, reason, capabilities}) pela sessao qa-r03 editou a copia sintetica 60fb9586: nome, versao 1->2 e capacidades reduzidas a 1; detail relido confirma; mesma chamada com expected_version desatualizada devolve SAI_CONCURRENT_CHANGE 409.",
+    "evidencia": "comunicacao/acessos-pessoas.json rev 115 (ADENDO_03h30)",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+      "revision": "d874cc2ee",
+      "environment": "producao, sessao qa-r03 via PostgREST",
+      "recordedAt": "2026-09-11T03:22:00-03:00"
+    }
   }
 ]

@@ -1,7 +1,7 @@
 {
-  "revision": 114,
-  "updated_at": "2026-09-11T06:21:15.745Z",
-  "relogio_local": "Fri Sep 11 2026 03:21:15 GMT-0300 (Horário Padrão de Brasília)",
+  "revision": 115,
+  "updated_at": "2026-09-11T06:22:45.519Z",
+  "relogio_local": "Fri Sep 11 2026 03:22:45 GMT-0300 (Horário Padrão de Brasília)",
   "round": "E2-R04-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
@@ -350,6 +350,11 @@
     "child-safety.edit (decisao)": "continua P32: decidir exige revisor de unidade (171800 retido com a opcao b).",
     "deltas": "46 entradas em deltas-r04.json (nova: child-safety.edit backend done).",
     "nota_de_prova": "a segunda chamada com p_expected_version=1 (desatualizada) ficou pendente de resposta por tempo do PostgREST; nao conta como prova de conflito otimista."
+  },
+  "ADENDO_03h30": {
+    "access-models.edit (BE)": "done em producao: superadmin_access_profile_model_update com p_draft {id 60fb9586, expected_version 1, name 'QA R04 Modelo sintetico (copia editada)', status inactive, reason, capabilities [platform.role_models.read]} devolveu ok:true, version 2; superadmin_access_profile_model_detail(p_model_id) rele nome e 1 capacidade. Segunda chamada com expected_version 1 devolveu SAI_CONCURRENT_CHANGE 409 (controle otimista funciona).",
+    "assinaturas_para_o_cliente": "detail usa p_model_id (nao p_id); update usa (p_draft, p_request_id); child_safety_edit_pending_authorization usa (p_authorization_id, p_expected_version, p_payload, p_request_id). Conferir no repositorio Flutter na proxima rodada antes de ligar edicao de Modelos pela UI.",
+    "deltas": "47 entradas (nova: access-models.edit backend done)."
   },
   "historico_r03": {
     "revision": 94,
