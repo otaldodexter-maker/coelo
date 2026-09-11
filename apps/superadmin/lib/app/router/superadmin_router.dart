@@ -3147,7 +3147,10 @@ GoRouter createSuperadminRouter({
                 SuperadminRoutes.safetyChildName,
                 pathParameters: {'childId': id},
               ),
-              onCreate: null,
+              // P32 B (ADR 0034, Decisao 15; pacote 171800): o Superadmin
+              // cadastra, edita e decide autorizacoes com auditoria. A rota
+              // abre e o servidor revalida child_safety.manage em cada comando.
+              onCreate: () => context.goNamed(SuperadminRoutes.safetyCreateName),
               onExport: null,
               onDestinationSelected: (destination) =>
                   _navigateFromPersistentShell(context, destination),
@@ -3190,8 +3193,17 @@ GoRouter createSuperadminRouter({
               controller: resolvedChildSafetyController,
               logout: logout,
               onBack: () => context.goNamed(SuperadminRoutes.safetyName),
-              onCreate: null,
-              onEdit: null,
+              onCreate: () => context.goNamed(
+                SuperadminRoutes.safetyCreateName,
+                queryParameters: {'childId': state.pathParameters['childId']!},
+              ),
+              onEdit: (authorizationId) => context.goNamed(
+                SuperadminRoutes.safetyEditName,
+                pathParameters: {
+                  'childId': state.pathParameters['childId']!,
+                  'authorizationId': authorizationId,
+                },
+              ),
               onDestinationSelected: (destination) =>
                   _navigateFromPersistentShell(context, destination),
             ),
