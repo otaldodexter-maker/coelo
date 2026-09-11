@@ -3,6 +3,7 @@ import 'dart:io';
 import '../../support/import_repository_stub.dart';
 import 'package:coelo_superadmin/app/shell/superadmin_shell.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
+import 'package:coelo_superadmin/features/errors/presentation/screens/superadmin_error_screen.dart';
 import 'package:coelo_superadmin/features/imports/domain/import_repository.dart';
 import 'package:coelo_superadmin/features/imports/domain/import_job.dart';
 import 'package:coelo_superadmin/features/imports/presentation/import_directory_page.dart';
@@ -57,10 +58,13 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);
     tester.view.physicalSize = const Size(1440, 900);
-    await tester.pumpWidget(_wizardApp(Brightness.light, entity: ImportEntity.forms, textScale: 2));
+    // Decisao do Owner (11/09, IMP-R05, A+): em producao o assistente de
+    // importacao nao abre (ADR 0034): /imports/new cai na pagina honesta de
+    // indisponibilidade dentro da shell, sem fundo cinza. O golden captura
+    // esse caminho real a 200% de texto, nao o assistente do protótipo.
+    await tester.pumpWidget(_unavailableApp(textScale: 2));
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.byKey(const Key('import-entity-unavailable')));
-    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('production-mutation-capability-unavailable')), findsOneWidget);
     expect(tester.takeException(), isNull);
     await expectLater(
       find.byKey(const Key('import-hub-golden-root')),
@@ -221,6 +225,30 @@ Widget _app(Brightness brightness, ImportRepository repository) => MaterialApp(
       key: ValueKey(repository),
       repository: repository,
       onNewImport: (_) {},
+    ),
+  ),
+);
+
+Widget _unavailableApp({double textScale = 1}) => MaterialApp(
+  theme: CoeloTheme.light,
+  darkTheme: CoeloTheme.dark,
+  themeMode: ThemeMode.light,
+  builder: (context, child) => MediaQuery(
+    data: MediaQuery.of(
+      context,
+    ).copyWith(textScaler: TextScaler.linear(textScale), disableAnimations: true),
+    child: RepaintBoundary(key: const Key('import-hub-golden-root'), child: child!),
+  ),
+  home: SuperadminShell(
+    logout: () async => const LogoutResult.success(),
+    title: 'Nova importação',
+    subtitle: 'Importação adiada para depois do MVP.',
+    currentDestination: 'imports',
+    child: SuperadminErrorScreen(
+      key: const Key('production-mutation-capability-unavailable'),
+      kind: SuperadminErrorKind.unavailable,
+      actionLabel: 'Voltar ao início',
+      onAction: () {},
     ),
   ),
 );
