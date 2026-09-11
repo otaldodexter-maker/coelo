@@ -1,12 +1,12 @@
 {
- "revision": 23,
+ "revision": 24,
  "round": "E2-R04-20260911",
  "role": "Coordenacao noturna R04 - Claude Fable (C0)",
  "writer": "coordenador-claude",
  "app": "Claude Code (VS Code)",
  "model": "claude-fable-5-1",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T02:12:00-03:00",
+ "updatedAt": "2026-09-11T02:16:00-03:00",
  "relogio": "relogio da maquina; posse as 21:42 -03:00 de 10/09/2026",
  "posseR04": {
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -41,7 +41,7 @@
    "primeiroGate": "reemitir reservations_v2 + 180000/180100/180200/180300 sobre a baseline com audit_append_superadmin_internal de 13 argumentos",
    "ack": true,
    "recebidoEm": "2026-09-10T21:56:00-03:00",
-   "estado": "reatribuida a coelo-39 as 02:06: WIP de Locais publicado (a22721fbe); 21 pacotes em producao; rota real pendente"
+   "estado": "reatribuida a coelo-39 as 02:06 (sem confirmacao ate 02:20): WIP de Locais publicado (a22721fbe)"
   },
   "acessos-pessoas": {
    "app": "Claude Opus",
@@ -53,7 +53,7 @@
    "ack": true,
    "recebidoEm": "2026-09-10T21:56:00-03:00",
    "resposta": "migration de MFA aplicada (lote 8): people.list/create/edit e escrita de Perfis/Modelos liberadas no backend; 170900 ficou obsoleta, nao precisa conferir; tirar account.mfa/AAL2 do caminho do cliente (router e auth gateway ainda citam aal2)",
-   "estado": "viva (coelo-d1): D1 em producao; 171200 (semente do perfil interno de qa-r03) em prova; Seguranca infantil de volta ao legado com a ponte; rev 99"
+   "estado": "viva (coelo-d1): 171100 e 171200 em producao; Pessoas e Perfis listam com dados reais; AP-MODELS recarimbado em curso; rev 101"
   },
   "formularios-cuidado-rotina": {
    "app": "Claude Opus",
@@ -65,7 +65,7 @@
    "ack": true,
    "recebidoEm": "2026-09-10T21:56:00-03:00",
    "resposta": "220300 student_links_read aplicada em producao (lote 8); Rotina/Assiduidade sem gate de AAL2",
-   "estado": "sem conversa viva; merge local publicado (eb2ddade6); rota real de Cuidado/Rotina/Alunos e P16 abertos"
+   "estado": "sem conversa viva; subagente do coordenador no P16 (220500 SQL + pgTAP, sem cliente)"
   },
   "principal-chat-sistema": {
    "app": "Claude Opus (coelo-ce)",
@@ -73,7 +73,7 @@
    "rev": 10,
    "head": "2335ea3c1",
    "upd": "22:4x",
-   "estado": "reatribuida a coelo-11 as 02:05: WIP do launcher na worktree; chat E2E 6 acoes; Cardapios/Principal pendentes",
+   "estado": "reatribuida a coelo-11 as 02:05 (sem confirmacao ate 02:20): WIP do launcher na worktree",
    "ack": true,
    "recebidoEm": "2026-09-10T22:58:00-03:00"
   },
@@ -93,7 +93,7 @@
    "rev": 15,
    "head": "cd169f4f8",
    "upd": "22:4x",
-   "estado": "sem conversa viva; WIP publicado (596bf05ea); subagente do coordenador no pacote 200500 (worker de Avisos v2)",
+   "estado": "viva (coelo-9f, retomou): 6 pacotes em producao (200000..200500); prova 33/33 por RPC e rota real pela UI (aviso criado pela tela persistiu e sobreviveu ao reload); estado vazio provado nos tres diretorios; rev 18",
    "ack": true,
    "recebidoEm": "2026-09-10T22:58:00-03:00"
   },
@@ -103,7 +103,7 @@
    "rev": 14,
    "head": "66f17c323+",
    "upd": "21:47",
-   "estado": "sem conversa viva; WIP publicado (e2c8dcca2); subagente do coordenador termina Suporte no composto",
+   "estado": "sem conversa viva; subagente do coordenador terminando Suporte no composto sobre e2c8dcca2",
    "ack": true,
    "recebidoEm": "2026-09-10T22:58:00-03:00"
   }
@@ -116,12 +116,14 @@
    "lote 10: 240500, 171000, 210000, 210100, 180000..180340 (20), 220400, 200400",
    "lote 11: 180350 (estrutura), 190900 (principal-chat)",
    "lote 12: 171100 (acessos-pessoas)",
-   "lote 13: 240600 (realm-interno)"
+   "lote 13: 240600 (realm-interno)",
+   "lote 14: 171200 (acessos-pessoas)",
+   "lote 15: 200500 (publicacoes-agenda)"
   ],
   "proximos": [
-   "publicacoes-agenda: 200500 worker de Avisos v2 (subagente do coordenador) -> deploy do notice-publication-worker + secret + cron",
-   "acessos-pessoas: 171200 semente do perfil interno de qa-r03",
-   "formularios: P16 220500 se sair"
+   "acessos-pessoas: AP-MODELS recarimbado (1713xx)",
+   "formularios: P16 220450/220500 (subagente)",
+   "coordenador: 230023 disparo do worker de Avisos (aguarda P30)"
   ]
  },
  "receiptsR04": [
@@ -203,6 +205,7 @@
   "21": "23:27 lote 10 (26 pacotes) em producao com a ponte de ator (P22 resolvida pelo pacote do grupo formularios); structureMutationsEnabled ligada; primeiro E2E (chat); regra do Owner de estado vazio registrada (skill coelo-ui, ADR 0034 Decisao 13); P26-P28",
   "22": "23:58 lote 11 (Avaliacoes v2 + revoke anon security definer) em producao; chaves de estrutura e avaliacoes ligadas; chat.edit/revoke E2E; regressao do launcher atribuida; realm-interno finalizado",
   "23": "02:12 retomada apos o reinicio da maquina (00:27): WIP das frentes preservado nas branches; lotes 12 e 13 registrados; reatribuicoes a coelo-11 e coelo-39; subagentes em publicacoes e operacoes; dump pos-lote 12",
+  "24": "02:16 lotes 14 e 15 em producao; ponte de ator provada em producao para qa-r03; P30 (disparo do worker) ao Owner; skills coelo-backend/coelo-frontend com as regras da R04",
   "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina."
  },
  "fechamentoR03": {
@@ -463,5 +466,22 @@
   "conteudo": [
    "realm-interno 20260910240600 revoke_authenticated_truncate_references_trigger_v1 (22 tabelas de public concediam TRUNCATE/REFERENCES/TRIGGER a authenticated; TRUNCATE nao passa pelo RLS; pgTAP 6/6; producao: 0 desses privilegios, 244 grants CRUD intactos)"
   ]
- }
+ },
+ "lote14": {
+  "aplicadoEm": "2026-09-11T02:06 -03:00; ledger 90",
+  "dump": "schema-producao-20260911-lote14.sql (02:04, 3.681.123 bytes)",
+  "conteudo": [
+   "acessos-pessoas 20260910171200 qa_r03_internal_profile_seed_v1 (semente idempotente do perfil interno de qa-r03; pgTAP 6/6; 1 perfil interno em producao; libera internal-users.list/detail/edit)"
+  ]
+ },
+ "lote15": {
+  "aplicadoEm": "2026-09-11T02:09 -03:00; ledger 91",
+  "dump": "schema-producao-20260911-lote15.sql (02:08, 3.682.379 bytes)",
+  "conteudo": [
+   "publicacoes-agenda 20260910200500 notice_publication_worker_v2 (claim/run *_for_worker so service_role; jobs e recibos v2; publish_v2/change_status_v2 enfileiram; pgTAP 52/52 + Avisos v2 38/38)"
+  ],
+  "aberto": "disparo do worker (COELO_NOTICE_WORKER_SECRET nos secrets, notices_worker_url/notices_worker_secret no Vault, funcao app_private.notice_dispatch_publication_worker por pg_net e cron.schedule a cada minuto) e deploy da Edge Function: bloqueados pelo classificador da sessao do coordenador -> P30 ao Owner com os comandos prontos"
+ },
+ "provaDaPonteEmProducao": "02:13, supabase db query --linked somente leitura com request.jwt.claims de qa-r03 (aal1): current_person_id() resolve a pessoa de servico; has_platform_permission true para people.read, units.read, health_care.read, attendance.manage e meal_plans.manage; has_mfa_aal2() true. As familias people-based deixaram de negar o usuario de teste.",
+ "semRevisaoNovaHa30min": "as 02:12: estrutura (rev 30, 23:24; reatribuida), principal-chat-sistema (rev 13, 23:27; reatribuida), operacoes (rev 16, 23:26; subagente), formularios-cuidado-rotina (rev 29, 00:17; subagente), realm-interno (rev 13, 00:24; finalizado)"
 }
