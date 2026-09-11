@@ -937,9 +937,9 @@
       "screen": "Editar Unidade",
       "scope": "mvp",
       "done": "R05: edicao pela rota normal persistiu em producao, negativas por pgTAP, reload da edicao e da lista mantem.",
-      "fe": "R05 (11/09 12:55-12:58): /units/f5284f2f/edit em producao carrega a unidade (identidade herdada, Hierarquia com instituicao, identificador, tipo Filial e status); Salvar pela etapa Hierarquia aceito; reload da edicao mantem.",
+      "fe": "R05 (15:12, complemento da Decisao 16): o campo Identificador da edicao de Unidades verifica a disponibilidade do @ enquanto digita em producao: \"unidadeqar04\" -> \"@unidadeqar04 esta disponivel.\" (RPC superadmin_structure_handle_availability_v1 com p_exclude_id da propria unidade), \"qa-r04-escola\" -> invalido (hifen nao vale em unidade), \"coelo\" -> \"@coelo ja esta em uso\" (reservado, P35). Ainda nao envia handle no payload nem troca o @ (gate na rev 45).",
       "be": "R05: update_unit_for_superadmin (lote 160000, ponte de ator) aceitou o payload completo da unidade f5284f2f em producao e devolveu o registro atualizado (updated_at 15:57Z); units_rpcs_versioned e superadmin_internal_unit_detail 31/31 (negativas cross-tenant) no espelho (R04).",
-      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/estruturas/2026-09-07-detail-logout-followup.md; Fechamento R01 C04/r61; C04estado47/r61; patches/commits preservados; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-e9a582a0-4041bd81.json; evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commit e14718844; apps/superadmin/test/contracts/rpc_contract_test.dart 3 PASS; relatorio E2-noturna-contrato-rpc-20260910.md; comunicacao/coordenacao.json R03 rev 4 (producao.unidades); coordenacao.json R03 rev 6; coordenacao.json R04 rev 21 (lote10); evidence/etapa-2/r04-estrutura/handoff.md; evidence/etapa-2/r05-estrutura/rota-real/units-edit-hierarquia-draft.jpg; evidence/etapa-2/r05-estrutura/rota-real/units-status-ativa-salva.jpg; evidence/etapa-2/r05-estrutura/rota-real/units-edit-apos-reload.jpg",
+      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/estruturas/2026-09-07-detail-logout-followup.md; Fechamento R01 C04/r61; C04estado47/r61; patches/commits preservados; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-e9a582a0-4041bd81.json; evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commit e14718844; apps/superadmin/test/contracts/rpc_contract_test.dart 3 PASS; relatorio E2-noturna-contrato-rpc-20260910.md; comunicacao/coordenacao.json R03 rev 4 (producao.unidades); coordenacao.json R03 rev 6; coordenacao.json R04 rev 21 (lote10); evidence/etapa-2/r04-estrutura/handoff.md; evidence/etapa-2/r05-estrutura/rota-real/units-edit-hierarquia-draft.jpg; evidence/etapa-2/r05-estrutura/rota-real/units-status-ativa-salva.jpg; evidence/etapa-2/r05-estrutura/rota-real/units-edit-apos-reload.jpg; evidence/etapa-2/r05-estrutura/rota-real/units-handle-disponivel.jpg",
       "historicalFrontend": "local-green",
       "historicalBackend": "audited",
       "frontendStatus": "verified",
@@ -967,10 +967,10 @@
       },
       "certifications": {
         "frontend": {
-          "evidence": "docs/reviews/evidence/etapa-2/r05-estrutura/rota-real/units-edit-hierarquia-draft.jpg",
-          "revision": "estrutura.json rev 43",
-          "environment": "Chrome 152 headless (CDP 9561) contra o build release de qa_main (d95d0840c) em 127.0.0.1:3001; usuario qa-r03@coelo.me | provas: units-edit-hierarquia-draft.jpg; units-status-ativa-salva.jpg; units-edit-apos-reload.jpg",
-          "recordedAt": "2026-09-11T13:00:00-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r05-estrutura/rota-real/units-handle-disponivel.jpg",
+          "revision": "estrutura.json rev 48",
+          "environment": "Chrome 152 headless (CDP 9561) contra o build release de qa_main (3983c2443) em 127.0.0.1:3001; usuario qa-r03@coelo.me | provas: units-handle-disponivel.jpg; units-handle-invalido-hifen.jpg; units-handle-reservado-em-uso.jpg",
+          "recordedAt": "2026-09-11T15:13:00-03:00"
         },
         "backend": {
           "evidence": "docs/reviews/evidence/etapa-2/r05-estrutura/rota-real/units-status-ativa-salva.jpg",
@@ -8038,7 +8038,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-11T18:09:59.936Z",
+  "updatedAt": "2026-09-11T18:13:50.550Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,
