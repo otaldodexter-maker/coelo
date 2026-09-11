@@ -185,23 +185,28 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
   Future<void> _load() async {
     final revision = _contextRevision;
     try {
-      var profile = _editing
+      final profile = _editing
           ? await widget.repository.fetchDetail(widget.domain, widget.profileId!)
           : await widget.repository.fetchTemplate(widget.domain);
+      // A partir de um modelo (P31): o original continua o rascunho em branco,
+      // para a revisão listar as permissões herdadas como adicionadas; só o
+      // que o operador vê no formulário vem do modelo.
       final sourceProfileId = widget.sourceProfileId;
-      if (!_editing && sourceProfileId != null) {
-        final source = await widget.repository.fetchDetail(widget.domain, sourceProfileId);
-        profile = _draftFromSource(profile, source);
-      }
+      final draft = !_editing && sourceProfileId != null
+          ? _draftFromSource(
+              profile,
+              await widget.repository.fetchDetail(widget.domain, sourceProfileId),
+            )
+          : profile;
       if (!_isCurrent(revision)) return;
       _original = profile;
-      _nameController.text = profile.name;
-      _codeController.text = profile.code;
-      _descriptionController.text = profile.description;
+      _nameController.text = draft.name;
+      _codeController.text = draft.code;
+      _descriptionController.text = draft.description;
       setState(() {
-        _status = profile.status;
-        _scope = profile.maxScope;
-        _permissions = profile.permissions;
+        _status = draft.status;
+        _scope = draft.maxScope;
+        _permissions = draft.permissions;
         _loading = false;
       });
     } on AccessProfileUnauthorizedException catch (error) {
