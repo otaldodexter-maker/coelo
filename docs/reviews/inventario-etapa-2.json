@@ -4899,15 +4899,15 @@
       "family": "audit",
       "screen": "Auditoria / Lista",
       "scope": "mvp",
-      "done": "Negativas/cursor/contexto2b1b595c e DTO auth_session minimizado d93bf961 integrados; 50/50 e dois goldens registrados. C00 integrou recuperação de Error5ec75ba9 e paginação após troca de contexto1d108ea2.",
-      "fe": "R04 (11/09, f9ddaf90a): diretorio de Auditoria migrado ao composto CoeloAdminDirectory: busca e filtros Resultados/Periodo alinhados na toolbar (observacao 'ajustar filtros' do Owner aplicada), toggle Cards/Tabela, Arquivos honesto (CSV/XLSX 'Disponivel depois do MVP'), rodape de paginacao do composto (cursor: salto anda um passo por vez), toolbar visivel em todos os estados inclusive vazio. Enum local de display removido e allowlist do teste de arquitetura reduzida. Goldens audit_directory_* (6) regravados no SDK 3.44.2. Gate para verified: rota normal com sessao qa-r03 (leitura v2 ja em producao no lote 10).",
-      "be": "R04 (lote 10): AUDIT-READ-V2 renumerada 20260910210100 (SHA identico ao historico) APLICADA EM PRODUCAO; pgTAP 37/37. Gate para done: diretorio no composto e rota normal com sessao.",
-      "evidence": "commits2b1b595c/d93bf961; evidence/etapa-2/agenda-operacoes/ R01/16h: C03r11; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; etapa-2-operacao/reports/R01-delta-2005.md (AuditP1); Fechamento R01 C03/r33; C03r33 final; C0074+288 em suítes distintas, sem SQL Audit executado; etapa-2-operacao/reports/R01-fechamento-20260909.md; commits 0e7678895 e aafde0b3d; packages/coelo_database/plans/2026-09-09-audit-read-v2-package.md; coordenacao.json R04 rev 21 (lote10); apps/superadmin/lib/features/audit/presentation/audit_directory_page.dart, apps/superadmin/test/features/audit/goldens/audit_directory_desktop_light_1024.png, apps/superadmin/test/features/audit/goldens/audit_directory_empty_light_1440.png",
+      "done": "R05 (11/09 13:00, rota real com qa-r03): /audit abre pela rota normal com eventos reais (audit_list_events_for_superadmin 200, pagina 1 de 59), paginacao por cursor (Proxima -> pagina 2, RPC 200), reload mantem sessao e rota e a trilha registra superadmin.audit.list do proprio ator. RLS/negativas pelo pgTAP 210100 (37/37: auth ausente, sessao invalida, ator do realm people negado, cursor de outra instituicao rejeitado, permissao revogada). Backend: leitura v2 (20260910210100) em producao desde o lote 10.",
+      "fe": "R05 (11/09 13:00, rota real com qa-r03): /audit abre pela rota normal com eventos reais (audit_list_events_for_superadmin 200, pagina 1 de 59), paginacao por cursor (Proxima -> pagina 2, RPC 200), reload mantem sessao e rota e a trilha registra superadmin.audit.list do proprio ator. RLS/negativas pelo pgTAP 210100 (37/37: auth ausente, sessao invalida, ator do realm people negado, cursor de outra instituicao rejeitado, permissao revogada).",
+      "be": "R05 (11/09 13:00, rota real com qa-r03): /audit abre pela rota normal com eventos reais (audit_list_events_for_superadmin 200, pagina 1 de 59), paginacao por cursor (Proxima -> pagina 2, RPC 200), reload mantem sessao e rota e a trilha registra superadmin.audit.list do proprio ator. RLS/negativas pelo pgTAP 210100 (37/37: auth ausente, sessao invalida, ator do realm people negado, cursor de outra instituicao rejeitado, permissao revogada). Backend: leitura v2 (20260910210100) em producao desde o lote 10.",
+      "evidence": "commits2b1b595c/d93bf961; evidence/etapa-2/agenda-operacoes/ R01/16h: C03r11; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; etapa-2-operacao/reports/R01-delta-2005.md (AuditP1); Fechamento R01 C03/r33; C03r33 final; C0074+288 em suítes distintas, sem SQL Audit executado; etapa-2-operacao/reports/R01-fechamento-20260909.md; commits 0e7678895 e aafde0b3d; packages/coelo_database/plans/2026-09-09-audit-read-v2-package.md; coordenacao.json R04 rev 21 (lote10); apps/superadmin/lib/features/audit/presentation/audit_directory_page.dart, apps/superadmin/test/features/audit/goldens/audit_directory_desktop_light_1024.png, apps/superadmin/test/features/audit/goldens/audit_directory_empty_light_1440.png; docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/30-audit-open.png",
       "historicalFrontend": "audited",
       "historicalBackend": "local-green",
-      "frontendStatus": "local-green",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
@@ -4922,6 +4922,41 @@
         "referencia": 3,
         "atual": 1,
         "fonte": "goldens-claro-decisoes-2026-09-10"
+      },
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/30-audit-open.png",
+          "revision": "comunicacao/operacoes.json rev 23",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (3b6ef24d3) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T13:05:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/30-audit-open.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/35-audit-reload.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/37-audit-page2.png"
+          ]
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/30-audit-open.png",
+          "revision": "comunicacao/operacoes.json rev 23",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (3b6ef24d3) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T13:05:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/30-audit-open.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/35-audit-reload.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/37-audit-page2.png"
+          ]
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/30-audit-open.png",
+          "revision": "comunicacao/operacoes.json rev 23",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (3b6ef24d3) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T13:05:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/30-audit-open.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/35-audit-reload.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/37-audit-page2.png"
+          ]
+        }
       }
     },
     {
@@ -4929,15 +4964,15 @@
       "family": "audit",
       "screen": "Auditoria / Filtrar",
       "scope": "mvp",
-      "done": "Negativas/cursor/contexto2b1b595c e DTO auth_session minimizado d93bf961 integrados; 50/50 e dois goldens registrados. C00 integrou recuperação de Error5ec75ba9 e paginação após troca de contexto1d108ea2.",
-      "fe": "R04 (11/09, f9ddaf90a): filtros Resultados (multi) e Periodo (Todos/Hoje/7 dias/30 dias) como widgets de dominio sem largura propria na toolbar do composto; Limpar filtros no estado sem resultados pelo composto; teste de estados atualizado para os textos do composto. Gate para verified: rota normal com sessao.",
-      "be": "R04 (lote 10): leitura de auditoria v2 (210100) APLICADA EM PRODUCAO; pgTAP 37/37. Gate para done: rota normal com sessao.",
-      "evidence": "commits2b1b595c/d93bf961; evidence/etapa-2/agenda-operacoes/ R01/16h: C03r11; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; etapa-2-operacao/reports/R01-delta-2005.md (AuditP1); Fechamento R01 C03/r33; C03r33 final; C0074+288 em suítes distintas, sem SQL Audit executado; etapa-2-operacao/reports/R01-fechamento-20260909.md; commits 0e7678895 e aafde0b3d; coordenacao.json R04 rev 21 (lote10); apps/superadmin/lib/features/audit/presentation/widgets/audit_directory_filters.dart, apps/superadmin/test/features/audit/audit_directory_page_test.dart",
+      "done": "R05 (11/09 13:00, rota real com qa-r03): filtro Resultados=Falha devolve estado sem resultados com Limpar filtros (RPC 200, 0 itens), Resultados=Negado lista 3 paginas de eventos negados reais, busca 'invite' filtra no servidor (1 de 4 paginas); cada mudanca dispara audit_list_events_for_superadmin 200. Backend: leitura v2 (20260910210100) em producao desde o lote 10.",
+      "fe": "R05 (11/09 13:00, rota real com qa-r03): filtro Resultados=Falha devolve estado sem resultados com Limpar filtros (RPC 200, 0 itens), Resultados=Negado lista 3 paginas de eventos negados reais, busca 'invite' filtra no servidor (1 de 4 paginas); cada mudanca dispara audit_list_events_for_superadmin 200.",
+      "be": "R05 (11/09 13:00, rota real com qa-r03): filtro Resultados=Falha devolve estado sem resultados com Limpar filtros (RPC 200, 0 itens), Resultados=Negado lista 3 paginas de eventos negados reais, busca 'invite' filtra no servidor (1 de 4 paginas); cada mudanca dispara audit_list_events_for_superadmin 200. Backend: leitura v2 (20260910210100) em producao desde o lote 10.",
+      "evidence": "commits2b1b595c/d93bf961; evidence/etapa-2/agenda-operacoes/ R01/16h: C03r11; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; etapa-2-operacao/reports/R01-delta-2005.md (AuditP1); Fechamento R01 C03/r33; C03r33 final; C0074+288 em suítes distintas, sem SQL Audit executado; etapa-2-operacao/reports/R01-fechamento-20260909.md; commits 0e7678895 e aafde0b3d; coordenacao.json R04 rev 21 (lote10); apps/superadmin/lib/features/audit/presentation/widgets/audit_directory_filters.dart, apps/superadmin/test/features/audit/audit_directory_page_test.dart; docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/32-audit-filter-falha.png",
       "historicalFrontend": "audited",
       "historicalBackend": "local-green",
-      "frontendStatus": "local-green",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
@@ -4951,6 +4986,41 @@
         "referencia": 2,
         "atual": 1,
         "fonte": "goldens-claro-decisoes-2026-09-10"
+      },
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/32-audit-filter-falha.png",
+          "revision": "comunicacao/operacoes.json rev 23",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (3b6ef24d3) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T13:05:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/32-audit-filter-falha.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/33-audit-filter-negado.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/36-audit-search.png"
+          ]
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/32-audit-filter-falha.png",
+          "revision": "comunicacao/operacoes.json rev 23",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (3b6ef24d3) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T13:05:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/32-audit-filter-falha.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/33-audit-filter-negado.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/36-audit-search.png"
+          ]
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/32-audit-filter-falha.png",
+          "revision": "comunicacao/operacoes.json rev 23",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (3b6ef24d3) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T13:05:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/32-audit-filter-falha.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/33-audit-filter-negado.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/36-audit-search.png"
+          ]
+        }
       }
     },
     {
@@ -4958,18 +5028,47 @@
       "family": "audit",
       "screen": "Auditoria / Detalhe",
       "scope": "mvp",
-      "done": "Negativas/cursor/contexto2b1b595c e DTO auth_session minimizado d93bf961 integrados; 50/50 e dois goldens registrados. C00 integrou recuperação de Error5ec75ba9 e paginação após troca de contexto1d108ea2.",
-      "fe": "R04 (11/09, f9ddaf90a): painel de detalhe (AuditDetailPanel) mantido via CoeloAdminWorkspaceLayout ao lado do composto; cards (AuditEventCard) e linhas (AuditEventRows) abrem o detalhe; retry do detalhe preservado. Gate para verified: rota normal com sessao.",
-      "be": "R04 (lote 10): leitura de auditoria v2 (210100) APLICADA EM PRODUCAO; pgTAP 37/37. Gate para done: rota normal com sessao.",
-      "evidence": "commits2b1b595c/d93bf961; evidence/etapa-2/agenda-operacoes/ R01/16h: C03r11; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/C00 2026-09-08T19:00:55-03:00 60d43c00: Adapter e controller rejeitam evento de outro ID. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; etapa-2-operacao/reports/R01-delta-2005.md (AuditP1); Fechamento R01 C03/r33; C03r33 final; C0074+288 em suítes distintas, sem SQL Audit executado; etapa-2-operacao/reports/R01-fechamento-20260909.md; commits 0e7678895 e aafde0b3d; coordenacao.json R04 rev 21 (lote10); apps/superadmin/lib/features/audit/presentation/widgets/audit_event_views.dart, apps/superadmin/lib/features/audit/presentation/widgets/audit_timeline.dart",
+      "done": "R05 (11/09 13:00, rota real com qa-r03): clique na linha abre o painel Detalhe do evento via audit_get_event_for_superadmin 200 (ator, instante, acao, recurso, resultado, origem, instituicao, correlation id, motivo CHAT_MEMBER_INVALID, integridade verificada); a leitura do detalhe gera superadmin.audit.detail na trilha. Backend: leitura v2 (20260910210100) em producao desde o lote 10.",
+      "fe": "R05 (11/09 13:00, rota real com qa-r03): clique na linha abre o painel Detalhe do evento via audit_get_event_for_superadmin 200 (ator, instante, acao, recurso, resultado, origem, instituicao, correlation id, motivo CHAT_MEMBER_INVALID, integridade verificada); a leitura do detalhe gera superadmin.audit.detail na trilha.",
+      "be": "R05 (11/09 13:00, rota real com qa-r03): clique na linha abre o painel Detalhe do evento via audit_get_event_for_superadmin 200 (ator, instante, acao, recurso, resultado, origem, instituicao, correlation id, motivo CHAT_MEMBER_INVALID, integridade verificada); a leitura do detalhe gera superadmin.audit.detail na trilha. Backend: leitura v2 (20260910210100) em producao desde o lote 10.",
+      "evidence": "commits2b1b595c/d93bf961; evidence/etapa-2/agenda-operacoes/ R01/16h: C03r11; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/C00 2026-09-08T19:00:55-03:00 60d43c00: Adapter e controller rejeitam evento de outro ID. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; etapa-2-operacao/reports/R01-delta-2005.md (AuditP1); Fechamento R01 C03/r33; C03r33 final; C0074+288 em suítes distintas, sem SQL Audit executado; etapa-2-operacao/reports/R01-fechamento-20260909.md; commits 0e7678895 e aafde0b3d; coordenacao.json R04 rev 21 (lote10); apps/superadmin/lib/features/audit/presentation/widgets/audit_event_views.dart, apps/superadmin/lib/features/audit/presentation/widgets/audit_timeline.dart; docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/34-audit-detail.png",
       "historicalFrontend": "audited",
       "historicalBackend": "local-green",
-      "frontendStatus": "local-green",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
       "lastHandoffRevision": 33,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/34-audit-detail.png",
+          "revision": "comunicacao/operacoes.json rev 23",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (3b6ef24d3) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T13:05:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/34-audit-detail.png"
+          ]
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/34-audit-detail.png",
+          "revision": "comunicacao/operacoes.json rev 23",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (3b6ef24d3) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T13:05:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/34-audit-detail.png"
+          ]
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/34-audit-detail.png",
+          "revision": "comunicacao/operacoes.json rev 23",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (3b6ef24d3) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T13:05:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/34-audit-detail.png"
+          ]
+        }
+      }
     },
     {
       "id": "audit.export",
@@ -6644,7 +6743,7 @@
       "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
     }
   ],
-  "updatedAt": "2026-09-11T14:44:18.461Z",
+  "updatedAt": "2026-09-11T15:58:59.879Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,

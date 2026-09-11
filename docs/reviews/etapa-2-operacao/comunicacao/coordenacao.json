@@ -1,12 +1,12 @@
 {
- "revision": 41,
+ "revision": 42,
  "round": "E2-R05-20260911",
  "role": "Coordenacao da tarde R05 - Claude Opus (C0)",
  "writer": "coordenador-claude",
  "app": "Claude Code (VS Code)",
  "model": "claude-opus-5",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T12:57:00-03:00",
+ "updatedAt": "2026-09-11T13:10:00-03:00",
  "relogio": "relogio da maquina; posse as 12:03 -03:00 de 11/09/2026",
  "posseR04": {
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -231,6 +231,7 @@
   "39": "12:25 ACK das sete revisoes de abertura da R05; branch estrutura R04 rev 40 integrada (1d99104be); alerta de memoria; G3 conferiu o 404 do cron (sem correcao)",
   "40": "12:35 lote 28 (institution_contacts_v1) em producao; composto de tabela do G7 integrado; sessoes das sete frentes identificadas",
   "41": "12:57 lotes 29-32 em producao (ponte do Principal, revoke de authenticated, @ de pessoas, anexos do chat); G-SUP concluido pela G7; branches de G2/G4/G5/G7 integradas",
+  "42": "13:10 lotes 33-35 em producao (forms media R2, hotfix safeupdate, P36); deltas de Auditoria aplicados; regra de Sair/sessoes",
   "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina."
  },
  "fechamentoR03": {
@@ -784,8 +785,8 @@
   },
   "acessos-pessoas": {
    "branch": "work/etapa2-r05-acessos-pessoas",
-   "rev": 121,
-   "head": "dc9abcf91",
+   "rev": 122,
+   "head": "ad09813cf",
    "sessao": "coelo-a9",
    "ack": true,
    "recebidoEm": "2026-09-11T12:25:00-03:00",
@@ -814,12 +815,12 @@
   },
   "realm-interno": {
    "branch": "work/etapa2-r05-realm-interno",
-   "rev": 18,
-   "head": "e1d5520e9",
+   "rev": 20,
+   "head": "d8e5f9b48",
    "sessao": "coelo-dd (por exclusao; sem resposta)",
    "ack": true,
    "recebidoEm": "2026-09-11T12:25:00-03:00",
-   "estado": "pacotes 1-3 em producao (lotes 28, 30, 32); item 4 forms_files em curso"
+   "estado": "pacotes 1-5 em producao (lotes 28, 30, 32, 33, 35); item 6 (P32) em curso"
   },
   "publicacoes-agenda": {
    "branch": "work/etapa2-r05-publicacoes-agenda",
@@ -832,12 +833,12 @@
   },
   "operacoes": {
    "branch": "work/etapa2-r05-operacoes",
-   "rev": 22,
-   "head": "89d64c068",
+   "rev": 23,
+   "head": "2e5ebc3e1",
    "sessao": "coelo-af",
    "ack": true,
    "recebidoEm": "2026-09-11T12:25:00-03:00",
-   "estado": "G-SUP concluido (32 goldens, 71/71) com pagina lado a lado para o Owner; Auditoria na rota real em curso",
+   "estado": "Auditoria verified-e2e (3); Planos em curso; Sair/sessoes seguradas ate 15:30",
    "resposta": "G-SUP: correcao do alinhamento vertical no composto CoeloAdminResizableTable (coelo_ui_admin) muda goldens de varias familias: pedido que entre em commit proprio cedo para o coordenador integrar em dev antes das outras frentes regravarem"
   }
  },
@@ -934,7 +935,10 @@
    "lote 29: 20260911130000 (principal-chat-sistema)",
    "lote 30: 20260911210100 (realm-interno)",
    "lote 31: 20260911170100 (acessos-pessoas)",
-   "lote 32: 20260911210200 (realm-interno)"
+   "lote 32: 20260911210200 (realm-interno)",
+   "lote 33: 20260911210300 (realm-interno)",
+   "lote 34: 20260911170200 (acessos-pessoas, hotfix)",
+   "lote 35: 20260911210400 (realm-interno)"
   ],
   "proximos": [
    "candidatos verdes das frentes na ordem de chegada"
@@ -1005,5 +1009,44 @@
    "copia": "docs/reviews/evidence/etapa-2/r05-operacoes/g-sup/",
    "texto": "Suporte e Implantacao alinhados como Instituicoes: aprovar os 16 goldens claros (R referencia, A render atual)"
   }
- ]
+ ],
+ "lote33": {
+  "aplicadoEm": "13:00; ledger 20260911210300",
+  "dump": "schema-producao-20260911-lote33.sql",
+  "preflight": "25/25 + media_read 82/82",
+  "conteudo": [
+   "realm-interno 20260911210300_forms_question_media_r2_v1 (superadmin_form_media_prepare_v2/authorize_finalize_v2/resolve_v2/delete_v2 para authenticated; finalize/expire/claim_cleanup/mark_purged para service_role)"
+  ],
+  "aberto": "Edge Function form-media ainda usa Supabase Storage nos ramos prepare/finalize/download/discard; trocar para as RPCs v2 + cron de expire; answer-image no fluxo legado (pendencia)",
+  "avisar": "frente formularios (contrato em realm-interno.json rev 19, contratoFormsFiles)"
+ },
+ "lote34": {
+  "aplicadoEm": "13:05; ledger 20260911170200",
+  "dump": "schema-producao-20260911-lote34.sql",
+  "preflight": "aplicou; pgTAP 3/3 como supabase_admin (load safeupdate)",
+  "conteudo": [
+   "acessos-pessoas 20260911170200_follow_links_safeupdate_fix_v1: HOTFIX de producao desde o lote 12: follow_links_sync_child_context fazia delete sem WHERE na tabela temporaria e o pg_safeupdate do PostgREST bloqueava (21000) toda insercao/alteracao de child_unit_links/child_group_links pela API (students.link/transfer/revoke, cadastro de crianca)"
+  ],
+  "verificadoEmProducao": "pg_get_functiondef contem 'follow_links_expected where true'",
+  "regraNova": "DELETE/UPDATE em funcao sempre com WHERE (where true em temp table); pgTAP em psql nao carrega safeupdate, entao a prova precisa de load safeupdate como supabase_admin"
+ },
+ "lote35": {
+  "aplicadoEm": "13:08; ledger 20260911210400",
+  "dump": "schema-producao-20260911-lote35.sql",
+  "preflight": "13/13",
+  "conteudo": [
+   "realm-interno 20260911210400_structure_hierarchy_p36_v1 (gatilhos diferidos activity_definition_requires_group e activity_group_links_retain_one; rascunho pode existir so com unidade; ativa exige turma; 23514 P36_ACTIVITY_REQUIRES_GROUP)"
+  ],
+  "verificadoEmProducao": "2 triggers; 0 atividades ativas sem turma",
+  "avisar": "G1: assistente de Atividades liga a turma antes de publicar"
+ },
+ "deltasAplicadosR05": [
+  {
+   "grupo": "operacoes",
+   "arquivo": "evidence/etapa-2/r05-operacoes/deltas-r05-ops-audit.json",
+   "n": 9,
+   "efeito": "audit.list/filter/detail FE verified, BE done, E2E verified-e2e; totais FE 69 / BE done 72 / E2E 46"
+  }
+ ],
+ "sessaoUnicaNaoExiste": "13:00: G1 relatou SAI_SESSION_INVALID e suspeitou de sessao unica por usuario; medido em producao: auth.sessions do qa-r03 com 2 sessoes vivas (12:43 e 12:50). Causa: Sair global / revogacao de sessoes por outra frente. Regra do dia: account.logout e account.sessions so depois de 15:30 com aviso; frentes fecham a aba em vez de Sair."
 }
