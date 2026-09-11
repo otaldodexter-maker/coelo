@@ -1,8 +1,8 @@
 {
  "grupo": "estrutura",
- "revision": 49,
+ "revision": 50,
  "round": "E2-R05-20260911",
- "updatedAt": "2026-09-11T15:20:34-03:00",
+ "updatedAt": "2026-09-11T15:22:47-03:00",
  "app": "Claude",
  "modelo": "Opus 5 (esforco medio)",
  "conversa": "R05 · Estrutura (G1)",
@@ -175,7 +175,8 @@
   "activities.publish backend em producao (turma 4214106c criada pelo assistente em Escola R04/Unidade Centro; vinculo salvo pela edicao mv 17; publish por save_v2 mv 24)",
   "Regra do @ no cliente (parcial): verificacao de disponibilidade enquanto digita no Identificador de Unidades (3983c2443)",
   "Verificacao de @ em Unidades PROVADA na rota real (disponivel / invalido com hifen / reservado coelo em uso) com superadmin_structure_handle_availability_v1 em producao (units-handle-*.jpg)",
-  "Verificacao de @ no \"@ da atividade\" PROVADA na rota real (activities-handle-disponivel.jpg)"
+  "Verificacao de @ no \"@ da atividade\" PROVADA na rota real (activities-handle-disponivel.jpg)",
+  "D3 em Instituicoes: \"Previa institucional do Coelo\" -> \"Identidade institucional no Coelo\"; goldens institution_form_create_light_375, institution_form_edit_dark_1440 e institution_form_identity_unavailable_light_1440 regravados (SDK 3.44.2) so pela linha de texto: medidos verdes antes da mudanca e verdes depois da regravacao"
  ],
  "testes": {
   "P": "flutter: activity_form_page 31, activity_form_controller 18, activity_routes 11, institutions repositorio 29, suite de Instituicoes 227/228, unit_detail/group_detail/activity_read_detail 236 (com 2 testes novos de tolerancia); pgTAP no espelho: handles 24/24, Locais 226, regressao 224",
@@ -200,7 +201,8 @@
   "Integrar 5a4a0213c (no-op do edit_core), 01a8c3e27 (parsers tolerantes: corrige regressao do lote 211100 em Locais da unidade e Editar turma), 00056abaa/fa1b5996d/este commit (docs)",
   "Registrar a regressao do lote 211100 x parsers estritos como regra na skill coelo-frontend-backend: contrato aditivo no servidor exige parser tolerante no cliente (ou teste de contrato antes de aplicar)",
   "Integrar tambem 3983c2443 (verificacao de @ em Unidades; toca superadmin_auth_scope, SuperadminApp e router com parametro opcional structureHandleAvailability)",
-  "Integrar f3fa4e7fb (@ em Atividades) junto de 3983c2443"
+  "Integrar f3fa4e7fb (@ em Atividades) junto de 3983c2443",
+  "Integrar o commit de D3 (texto sem previa + 3 goldens de Instituicoes regravados so pelo texto)"
  ],
  "avisosParaOutrosGrupos": [
   {
@@ -216,7 +218,6 @@
  ],
  "perguntasParaOOwner": [],
  "pendenciasDeCodeReview": [
-  "Texto \"Previa institucional do Coelo\" na Identidade visual de Instituicoes (D3: nao existe previa): trocar por texto sem a palavra previa",
   "Campo \"@ da atividade\" no formulario de Atividades mostra o nome como dica e nao o handle_stem do servidor no modo edicao (o detail_v2 nao expoe handle_stem no mapeamento do cliente)",
   "SAI_INTERNAL_ERROR do save_v2 esconde o SQLSTATE: registrar o detalhe na auditoria (reason) para diagnostico",
   "superadmin_institution_edit_core_v2 rejeita no-op com SAI_INVALID_ARGUMENT generico; o cliente contorna, mas o servidor poderia devolver o recibo idempotente",
@@ -243,7 +244,7 @@
   "helpersDaRotaReal": "scratchpad: serve.js (SPA), cdp.js (login/goto/click/type/shot/eval), net.js (grava RPCs), rpc.js (chama RPC com a sessao do app sem imprimir token)"
  },
  "miniRevisao": {
-  "shaPublicado": "(commit desta revisao); codigo ate f3fa4e7fb - status limpo, sem WIP",
+  "shaPublicado": "(commit desta revisao); codigo ate o commit de D3 em Instituicoes - status limpo, sem WIP",
   "fechouPorActionId": [
    "E2E (FE verified + BE done): activities.create, activities.location, activities.detail, activities.edit, units.edit, units.status, units.filter, units.reload, units.locations-map, units.copy-institution-location, institutions.edit, institutions.list, institutions.filter, institutions.detail, institutions.reload (15 acoes)",
    "BE done sem FE: activities.publish",
