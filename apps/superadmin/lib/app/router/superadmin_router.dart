@@ -5170,10 +5170,18 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.imports,
             name: SuperadminRoutes.importsName,
-            builder: (context, state) => ImportDirectoryPage(
-              repository: importedRepository,
-              onNewImport: (preset) =>
-                  context.goNamed(SuperadminRoutes.importCreateName, extra: preset),
+            // Cabecalho da tela (titulo, Bug, sino, conta) como as demais
+            // telas administrativas (regra MENU do Owner, 10/09/2026).
+            builder: (context, state) => productionOperationalPage(
+              context,
+              title: 'Importações',
+              subtitle: 'Acompanhe as importações de dados da plataforma.',
+              destination: 'imports',
+              child: ImportDirectoryPage(
+                repository: importedRepository,
+                onNewImport: (preset) =>
+                    context.goNamed(SuperadminRoutes.importCreateName, extra: preset),
+              ),
             ),
           ),
           GoRoute(
