@@ -166,7 +166,8 @@ final class _AccessProfileDuplicatePageState extends State<AccessProfileDuplicat
     title: 'Duplicar modelo de perfil',
     subtitle: 'Crie uma base independente e inativa para revisar antes do uso.',
     currentDestination: 'profiles',
-    chatLauncherBottomInset: _footerHeight,
+    showChatLauncher: false, // Decisao 7: sem balao de chat em criar/editar
+    chatLauncherBottomInset: 0,
     onDestinationSelected: widget.onDestinationSelected,
     child: _source == null
         ? Padding(

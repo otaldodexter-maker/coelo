@@ -1065,6 +1065,7 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
     subtitle: 'A autorização individual nunca é herdada e depende de revisão da unidade.',
     currentDestination: 'safety',
     onDestinationSelected: widget.onDestinationSelected,
+    showChatLauncher: false, // Decisao 7: sem balao de chat em criar/editar
     child: LayoutBuilder(
       builder: (context, constraints) => SuperadminFormFrame(
         viewportWidth: constraints.maxWidth,
