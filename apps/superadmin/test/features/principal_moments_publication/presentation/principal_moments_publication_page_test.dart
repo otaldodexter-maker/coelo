@@ -137,9 +137,7 @@ void main() {
       onPublished: (_) => callbacks++,
     );
     addTearDown(oldController.dispose);
-    await tester.tap(find.byKey(const Key('moments-publication-continue')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('moments-publication-continue')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('moments-publication-publish')));
     await tester.pump();
@@ -159,7 +157,8 @@ void main() {
     expect(callbacks, 0);
     expect(find.text('Contexto B'), findsWidgets);
     expect(find.text('Momento publicado.'), findsNothing);
-    expect(find.byKey(const Key('moments-publication-publish')), findsNothing);
+    // A pagina nova esta intacta, com o proprio botao de publicar.
+    expect(find.byKey(const Key('moments-publication-publish')), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -214,14 +213,16 @@ void main() {
   testWidgets('renders the approved composer anatomy on mobile', (tester) async {
     await pumpPage(tester, size: const Size(375, 900));
 
-    expect(find.byType(PrincipalPublicationFrame), findsOneWidget);
-    expect(find.byType(PrincipalPublicationStepNavigation), findsOneWidget);
+    expect(find.byType(PrincipalPublicationSheet), findsOneWidget);
+    expect(find.byType(PrincipalPublicationStepNavigation), findsNothing);
     expect(find.byType(PrincipalPublicationActionFooter), findsOneWidget);
-    expect(find.byKey(const Key('principal-publication-step-summary')), findsOneWidget);
+    expect(find.byKey(const Key('principal-publication-step-summary')), findsNothing);
     expect(find.text('Mídia'), findsOneWidget);
     expect(find.text('Legenda'), findsWidgets);
+    expect(find.text('Público e contexto'), findsOneWidget);
     expect(find.text('Salvar rascunho'), findsOneWidget);
-    expect(find.text('Continuar'), findsOneWidget);
+    expect(find.text('Publicar agora'), findsWidgets);
+    expect(find.text('Continuar'), findsNothing);
     expect(find.byKey(const Key('moments-publication-preview')), findsNothing);
     expect(find.byType(CoeloFormTextField), findsOneWidget);
     final media = tester.widget<AspectRatio>(
@@ -268,32 +269,23 @@ void main() {
     expect(field.controller.text, isNot(contains('🌱')));
   });
 
-  testWidgets('uses the canonical wizard navigation and footer hierarchy', (tester) async {
+  testWidgets('uses the Publicacao family sheet and footer hierarchy', (tester) async {
     await pumpPage(tester, size: const Size(1440, 1000));
 
-    expect(find.text('Conteúdo'), findsOneWidget);
-    expect(find.text('Público'), findsOneWidget);
-    expect(find.text('Revisão'), findsOneWidget);
+    expect(find.text('Conteúdo'), findsNothing);
+    expect(find.text('Revisão'), findsNothing);
     expect(find.byKey(const Key('moments-publication-cancel')), findsOneWidget);
     expect(find.byKey(const Key('moments-publication-save')), findsOneWidget);
-    expect(find.byKey(const Key('moments-publication-continue')), findsOneWidget);
-    expect(find.byKey(const Key('moments-publication-publish')), findsNothing);
+    expect(find.byKey(const Key('moments-publication-continue')), findsNothing);
+    expect(find.byKey(const Key('moments-publication-publish')), findsOneWidget);
     expect(find.text('Sua publicação'), findsOneWidget);
+    expect(find.text('Publicar em Momentos'), findsOneWidget);
     expect(find.byKey(const Key('moments-publication-desktop-preview')), findsOneWidget);
-
-    await tester.tap(find.byKey(const Key('moments-publication-continue')));
-    await tester.pumpAndSettle();
-
     expect(find.text('Público e contexto'), findsOneWidget);
     expect(find.text('Agendamento'), findsOneWidget);
     expect(find.text('Opções'), findsOneWidget);
-    expect(find.byKey(const Key('moments-publication-previous')), findsOneWidget);
-
-    await tester.tap(find.byKey(const Key('moments-publication-continue')));
-    await tester.pumpAndSettle();
-
+    expect(find.byKey(const Key('moments-publication-previous')), findsNothing);
     expect(find.byKey(const Key('moments-publication-preview')), findsOneWidget);
-    expect(find.byKey(const Key('moments-publication-publish')), findsOneWidget);
   });
 
   testWidgets('context and schedule expose real injectable actions', (tester) async {
@@ -305,8 +297,8 @@ void main() {
       onSelectContext: () => contextCalls += 1,
       onOpenSchedule: () => scheduleCalls += 1,
     );
-
-    await tester.tap(find.byKey(const Key('moments-publication-continue')));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(const Key('moments-publication-context')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('moments-publication-context')));
     await tester.ensureVisible(find.byKey(const Key('moments-publication-schedule')));
@@ -319,7 +311,6 @@ void main() {
 
   testWidgets('context action resolves Coelo hover and focus states', (tester) async {
     await pumpPage(tester, size: const Size(1440, 1000));
-    await tester.tap(find.byKey(const Key('moments-publication-continue')));
     await tester.pumpAndSettle();
     final contextAction = tester.widget<OutlinedButton>(
       find.byKey(const Key('moments-publication-context')),
@@ -344,10 +335,10 @@ void main() {
       find.byKey(const Key('moments-publication-caption')),
       'Descobertas que ficam para a vida toda.',
     );
-    await tester.tap(find.byKey(const Key('moments-publication-continue')));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(const Key('moments-audience-students')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('moments-audience-students')));
-    await tester.tap(find.byKey(const Key('moments-publication-continue')));
     await tester.pump();
 
     expect(find.byKey(const Key('moments-publication-preview')), findsOneWidget);
@@ -372,7 +363,6 @@ void main() {
     await tester.ensureVisible(find.byKey(const Key('moments-publication-edit-cover')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('moments-publication-edit-cover')));
-    await tester.tap(find.byKey(const Key('moments-publication-continue')));
     await tester.pumpAndSettle();
     await tester.ensureVisible(find.byKey(const Key('moments-publication-save-toggle')));
     expect(find.byType(PrincipalPublicationToggleField), findsOneWidget);
@@ -415,10 +405,7 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('moments-media-moment-media-1')));
     await tester.pump();
     expect(find.text('2/5'), findsOneWidget);
-
-    await tester.tap(find.byKey(const Key('moments-publication-continue')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('moments-publication-continue')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('moments-publication-publish')));
     await tester.pumpAndSettle();
@@ -433,10 +420,7 @@ void main() {
     await tester.tap(find.byKey(const Key('moments-publication-save')));
     await tester.pumpAndSettle();
     expect(controller.state.phase, MomentsPublicationPhase.saved);
-
-    await tester.tap(find.byKey(const Key('moments-publication-continue')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('moments-publication-continue')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('moments-publication-publish')));
     await tester.pumpAndSettle();
@@ -498,10 +482,7 @@ void main() {
       onPublished: (_) => publishedCalls += 1,
       onClose: () => closeCalls += 1,
     );
-
-    await tester.tap(find.byKey(const Key('moments-publication-continue')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('moments-publication-continue')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('moments-publication-publish')));
     await tester.pump();
@@ -515,12 +496,6 @@ void main() {
     expect(
       tester
           .widget<ExcludeFocus>(find.byKey(const Key('moments-publication-body-focus-lock')))
-          .excluding,
-      isTrue,
-    );
-    expect(
-      tester
-          .widget<ExcludeFocus>(find.byKey(const Key('moments-publication-navigation-focus-lock')))
           .excluding,
       isTrue,
     );
@@ -545,11 +520,11 @@ void main() {
     );
   });
 
-  testWidgets('renders the canonical wizard in dark theme', (tester) async {
+  testWidgets('renders the Publicacao sheet in dark theme', (tester) async {
     await pumpPage(tester, size: const Size(1440, 1000), theme: CoeloTheme.dark);
 
-    expect(find.byType(PrincipalPublicationFrame), findsOneWidget);
-    expect(find.byType(PrincipalPublicationStepNavigation), findsOneWidget);
+    expect(find.byType(PrincipalPublicationSheet), findsOneWidget);
+    expect(find.byType(PrincipalPublicationStepNavigation), findsNothing);
     expect(find.byType(PrincipalPublicationActionFooter), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
@@ -620,7 +595,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(repository.loadCalls, 2);
-    expect(find.byType(PrincipalPublicationFrame), findsOneWidget);
+    expect(find.byType(PrincipalPublicationSheet), findsOneWidget);
   });
 
   testWidgets('falha ao salvar oferece retry da operação sem descartar o rascunho', (tester) async {
@@ -636,7 +611,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(repository.saveCalls, 2);
-    expect(find.byType(PrincipalPublicationFrame), findsOneWidget);
+    expect(find.byType(PrincipalPublicationSheet), findsOneWidget);
   });
 
   testWidgets('retry de publicação conclui o fluxo hospedeiro', (tester) async {
@@ -650,9 +625,7 @@ void main() {
       onPublished: (value) => completed = value,
       onClose: () => closeCalls += 1,
     );
-    await tester.tap(find.byKey(const Key('moments-publication-continue')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('moments-publication-continue')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('moments-publication-publish')));
     await tester.pumpAndSettle();
@@ -694,13 +667,9 @@ void main() {
 
       expect(find.byKey(const Key('moments-publication-scroll')), findsOneWidget);
       expect(tester.takeException(), isNull);
-
-      await tester.tap(find.byKey(const Key('moments-publication-continue')));
-      await tester.pumpAndSettle();
+    await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
-
-      await tester.tap(find.byKey(const Key('moments-publication-continue')));
-      await tester.pumpAndSettle();
+    await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
     });
   }

@@ -63,7 +63,6 @@ void main() {
       MaterialApp(theme: CoeloTheme.light, home: const PrincipalMomentsPublicationPage.demo()),
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('moments-publication-continue')));
     await tester.pumpAndSettle();
 
     final pointer = await tester.createGesture(kind: PointerDeviceKind.mouse);
