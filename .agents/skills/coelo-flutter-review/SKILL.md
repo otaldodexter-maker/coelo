@@ -174,3 +174,22 @@ Regras medidas na Rodada 4 (noite de 10→11/09/2026):
 - Golden só é regravado depois de aplicar a observação do Owner e no SDK
   registrado; goldens de formulário em 375 que congelam o cabeçalho mobile
   ficam retidos enquanto MENU-M estiver aberto.
+- D3, não existe prévia: nenhum texto de produção diz "prévia" ou
+  "experiência completa". Ação sem destino real fica visível e inerte, ou
+  responde "ainda não está disponível"; o Catálogo local não se chama
+  preview. Testes que procuravam o texto antigo passam a procurar o novo.
+- Ao acrescentar um método a uma interface de repositório (caso de
+  `ChatRepository.createGroup`), `flutter analyze test` lista todos os fakes
+  de teste a completar (27 no chat); completar no mesmo commit. O
+  `UnavailableXRepository` devolve a exceção de falha da família para a tela
+  responder com a mensagem honesta.
+- Principal dentro do Superadmin preserva a composição aprovada por largura:
+  Momentos é tela cheia até 768, moldura vertical centrada sobre preto que
+  preenche a largura a partir de 840 (`expanded`) e aside "Em alta na escola"
+  com Enviar momento a partir de 1200 (`large`); mídia real com
+  `BoxFit.contain` sobre preto (IMG). Goldens 1024/1440 são a referência.
+- Diálogo cuja altura depende de dados de produção (Criar grupo lista as
+  instituições e pessoas reais) não pode ser dirigido por coordenadas na
+  rota real: o clique cai fora do campo quando a lista muda. Dirigir por
+  semântica ou `Key`, e conferir a captura antes de concluir que a ação
+  falhou.

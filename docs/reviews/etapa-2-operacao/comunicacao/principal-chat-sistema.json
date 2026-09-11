@@ -1,6 +1,6 @@
 {
-  "revision": 19,
-  "updated_at": "2026-09-11T08:50:00-03:00",
+  "revision": 18,
+  "updated_at": "2026-09-11T08:33:00-03:00",
   "round": "E2-R04-20260911",
   "group": "principal-chat-sistema",
   "tool": "Claude Code (VS Code), sessao coelo-11 (renomeada coelo-f9 apos novo reinicio das sessoes)",
@@ -8,10 +8,10 @@
   "coordinator": "R04 · Coordenacao noturna (Claude, Fable)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-principal-chat-sistema",
   "branch": "work/etapa2-r04-principal-chat-sistema",
-  "base": "origin/dev a2b8d1899 (rebase 02:15)",
-  "head": "dcee6e7ca (+ este commit)",
-  "publicada": "origin/work/etapa2-r04-principal-chat-sistema em dcee6e7ca (rev 18); rev 19 neste push. Ate 889e289a8 integrado em dev",
-  "status": "FECHADO. Mini-revisao final gravada aqui por ordem do Owner (08:50): coelo-04 nao consta no ListAgents (todas as sessoes vivas sao novas), entao a entrega e pelo Git. Nada deste grupo ficou fora de origin.",
+  "base": "origin/dev 0376a0446 (worktree avancada por rebase; nada da branch ficou fora de dev)",
+  "head": "87fb238d7",
+  "publicada": "origin/work/etapa2-r04-principal-chat-sistema em 87fb238d7",
+  "status": "VALIDACAO DE ENTREGA (08:30 de 11/09, ordem do Owner): branch inteira em origin/dev; 8 pacotes (190300..191000) aplicados e movidos para migrations/; rev 17 + handoff integrados; rastreadores refletem os deltas aceitos; perguntas P23/P26/P27/P28/P35/P37 registradas. Esta revisao consolida a mini-revisao no formato pedido, reconcilia pendencias que ficaram velhas e entrega o delta das tres skills (aplicado nesta branch) para o coordenador integrar.",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos, Perfil",
     "apps/superadmin -> Chat administrativo e Principal",
@@ -69,11 +69,12 @@
     "acontece: curtir e comentar nao existem no banco (nenhuma tabela); ficam visiveis e inertes (regra D3/MAIS da R03).",
     "acontece: list_visible_happens_posts (feed direto/legado) fica em 4 argumentos como producao; a paginacao 20260910150000 continua historica porque o caminho de producao e o feed misto, que ja pagina.",
     "chat: Criar grupo nasce no escopo da instituicao; escopo por unidade/turma/atividade fica para quando a tela pedir (o servidor ja aceita).",
-    "chat: sem instituicao/pessoas em producao, o dialogo de Criar grupo lista zero instituicoes; a prova positiva depende da fixture sintetica do realm-interno.",
+    "chat: com a ponte de ator (lote 10) o dialogo de Criar grupo lista as instituicoes e pessoas sinteticas; a prova positiva pela UI falta so por automacao (ver mini_revisao_final).",
     "dev: test/app/dev_menu/development_dataset_contract_test.dart ja falha em dev (5 instituicoes contra 8..14 esperadas); nao e desta rodada.",
-    "seguranca (para o revoke em lote): anon com EXECUTE em 200 funcoes security definer de public; pacote nao entregue nesta rodada.",
-    "perfil: Acompanhar/Seguidores/Seguindo (R do Owner) dependem do D1 (follow_links) do grupo acessos-pessoas, retido por decisao AP-D1-AAL; FOTO: a observacao nao diz qual foto (capa ou avatar) aparece recortada; pergunta ao Owner com as imagens",
-    "goldens: principal_profile_* (R, FOTO/SHELL) e principal_happens_gallery mobile (redesenho) continuam abertos; imports hub wizard 375 (FUNDO) nao foi tocado"
+    "seguranca: 190900 entregue e EM PRODUCAO (lote 11); restam 12 funcoes invoker de public executaveis por anon (revisao profunda).",
+    "perfil: D1 (follow_links + backfill 171500) ja em producao (lote 16); a UI do Perfil ainda nao consome Acompanhar/Seguidores/Seguindo; FOTO em P28.",
+    "goldens: principal_profile_* (R, FOTO/SHELL) e principal_happens_gallery mobile (redesenho) continuam abertos; imports hub wizard 375 (FUNDO) nao foi tocado",
+    "agora/acontece: as Edge Functions happens-media e now-media estao implantadas (lote 9); upload real pela UI ainda nao exercitado por falta de contexto do Principal (P35)."
   ],
   "tests": {
     "pgTAP_pacote_1": "supabase test db, descartavel coelo_baseline_pcs, reset limpo, 22:12: 8 arquivos, 194 casos, PASS (now_publication_mvp 70, now_custom_role_audience_hardening 13, now_publication_expiry_transition 16, now_media_private_r2_v1 23, happens_media_private_r2_v1 18, happens_media_security_closure 7, happens_post_withdrawal 33, happens_mixed_feed_withdrawal 10).",
@@ -87,7 +88,7 @@
     "rota_chat_final": "capturas 20 a 42 em evidence/etapa-2/r04-principal-chat-sistema/rota-real/: inbox, thread, reload, envio, edicao, revogacao, dialogo de Criar grupo"
   },
   "blocker": null,
-  "next_step": "Nenhum por conta propria (ordem do Owner: gravar, push e parar). Proximo dono do recorte comeca por P35 e pela repeticao do Criar grupo pela UI.",
+  "next_step": "Parado por ordem do Owner (validacao concluida). Proxima rodada: P35 -> rota real do Principal; Criar grupo pela UI por semantica; CRUD de Cardapios; goldens de Perfil/galeria.",
   "ack": null,
   "handoff": "docs/reviews/etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md (R03; sera reescrito no fechamento da R04)",
   "lotes": [
@@ -505,5 +506,51 @@
       }
     ],
     "ambiente_encerrado": "Chrome 9409, servidor 3009 e processos dart do grupo encerrados as 03:48; nada em execucao"
+  },
+  "mini_revisao_final": {
+    "quando": "2026-09-11T08:33:00-03:00",
+    "para": "coordenador coelo-04 (nao listado no ListAgents desta sessao coelo-b7; gravado no JSON e publicado por Git, como o Owner mandou)",
+    "sha_publicado": "87fb238d7 (branch work/etapa2-r04-principal-chat-sistema; tudo anterior a 889e289a8 ja esta em origin/dev 0376a0446)",
+    "fechado_por_action_id_com_prova": [
+      "auth.login, auth.logout: verified-e2e (login/Sair pela tela real com qa-r03, reload; capturas 00-14)",
+      "shell.load, shell.navigate, shell.reload, shell.unauthorized: frontend verified (rota real; launcher Decisao 7 corrigido 7322260c5/1e34eb9f4/dcfcb9e41; shell 124/124)",
+      "chat.list, chat.open, chat.send, chat.edit, chat.receipts, chat.revoke: verified-e2e (RPCs de producao + tela real com a fixture do realm-interno; reload mantem; negativas CHAT_NOT_FOUND/CHAT_MEMBER_INVALID; capturas 20-42)",
+      "chat.create-group: frontend verified + backend done (dialogo carrega instituicao e pessoas de producao; RPC provada com replay e negativas); integrated pending",
+      "meal-plans.list: frontend verified (rota real abre para qa-r03 com a ponte de ator, reload mantem; 51/52 em rota-real-r04b)",
+      "imports.list, catalog.list: frontend verified (hub honesto; catalogo sem preview)",
+      "acontece.create/publish/remove, agora.view/create/publish/expire: backend local-green + SQL em producao (lote 9; RPCs negam qa-r03 com 42501 sem contexto)",
+      "momentos.view: frontend local-green (composicao larga R restaurada, midia contain, 63 PASS, goldens regravados) - delta ainda nao refletido no rastreador FE (esta pending-verification)"
+    ],
+    "aberto_com_primeiro_gate": [
+      "acontece.*, agora.*, momentos.*, principal_profile.* na rota real: list_my_principal_contexts ja em producao (lote 22); falta membership institucional para a pessoa de servico de qa-r03 (P35)",
+      "chat.create-group integrated: automacao por coordenadas caiu fora dos campos porque o dialogo muda de altura com os dados de producao (duas instituicoes sinteticas); nao e defeito de produto; FE menor: DropdownButtonFormField com initialValue nao mostra a selecao automatica (corrigir com ValueKey(_institutionId))",
+      "meal-plans.create/edit/model-create/model-edit/publish: CRUD pela UI sem prova nesta rodada",
+      "principal_profile: Acompanhar/Seguidores/Seguindo com D1 ja em producao (lote 16) mas UI nao consome; FOTO (P28)",
+      "goldens: principal_profile_* (R FOTO/SHELL), galeria mobile do Acontece (redesenho), imports hub wizard 375 (FUNDO)"
+    ],
+    "deltas_propostos": "docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/deltas-r04.json (rev 17, 9 itens, formato do coordenador) + deltas-r04-rev18.json (1 item novo: momentos.view frontend local-green)",
+    "pacotes_prontos": "nenhum pendente: 190300..191000 aplicados; nenhum candidato novo",
+    "dados_sinteticos_criados_em_producao_por_esta_frente": [
+      "conversa 355a3403-26bf-4f0c-9f76-9c0ba0bb04f6 \"Grupo R04 principal-chat (sintetico)\" na instituicao 9f040000-0000-4000-8000-000000000010 (fixture do realm-interno), membros 9f04...0061 e ...0062, criada por superadmin_chat_create_group_v2 as 22:59",
+      "mensagens nessa conversa: 1 revogada (soft, archived) e 2 vivas (\"Mensagem enviada pela tela real (R04, sintetica)\" e \"Mensagem para editar (R04, sintetica) [editada]\", esta com trilha de edicao); recibos e preferencias so do ator interno",
+      "nenhum objeto no R2, nenhum cardapio, nenhuma publicacao de Acontece/Agora/Momentos; nenhuma pessoa ou instituicao criada por esta frente",
+      "limpeza: cobrir na P37 junto da instituicao 9f04...0010 (a FK do audit_logs impede apagar a instituicao; arquivar e apagar conversa/mensagens)"
+    ],
+    "duvidas_ao_owner": [
+      "P26 erro 409",
+      "P27 Duplicar em Cardapios",
+      "P28 foto do Perfil",
+      "P35 contexto do Principal para qa-r03"
+    ]
+  },
+  "skills_delta_proposto": {
+    "documento": "docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/skills-delta-r04.md",
+    "aplicado_nesta_branch": [
+      ".agents/skills/coelo-supabase/SKILL.md",
+      ".agents/skills/coelo-flutter-review/SKILL.md",
+      ".agents/skills/coelo-flutter-supabase-review/SKILL.md"
+    ],
+    "resumo": "backend: deploy de happens/now-media feito, padrao de midia nova (Circulares), Agora em producao sem agendador, causa raiz do anon e 12 invoker restantes, presenca do nome nao prova o corpo, armadilhas do pgTAP; frontend: D3 sem previa, fakes ao estender interface, Momentos por largura, dialogo dependente de dados nao se dirige por coordenadas; frontend-backend: localhost x 127.0.0.1, negativa cross-tenant pela RPC, fixture sintetica de outro grupo e limpeza",
+    "sugestao_coelo_ui": "composicao de Momentos por largura e veu do Destaque (orange950 16%)"
   }
 }

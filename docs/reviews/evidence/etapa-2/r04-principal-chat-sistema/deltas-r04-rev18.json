@@ -1,0 +1,21 @@
+{
+  "grupo": "principal-chat-sistema",
+  "round": "E2-R04-20260911",
+  "revisao_json": 18,
+  "gerado_em": "2026-09-11T08:33:00-03:00",
+  "deltas": [
+    {
+      "action_id": "momentos.view",
+      "camada": "frontend",
+      "estado_proposto": "local-green",
+      "delta": "composicao larga aprovada restaurada (tela cheia ate 768, moldura sobre preto a partir de 840, aside a partir de 1200) e midia real com contain sobre preto (IMG); testes da pagina atualizados; goldens 1024/1440/like_hover/text_200 regravados apos observacao (commits 6203eeeea e 7c6181469, integrados em dev)",
+      "evidencia": "test/features/principal_moments 63 PASS; goldens principal_moments_* regravados; rota real ainda sem contexto (P35), por isso local-green e nao verified",
+      "certificacao": {
+        "evidence": "apps/superadmin/test/features/principal_moments/presentation/goldens/principal_moments_light_1440.png",
+        "revision": 18,
+        "environment": "flutter test local, SDK 3.44.2; rota real bloqueada por contexto do Principal (P35)",
+        "recordedAt": "2026-09-11T08:33:00-03:00"
+      }
+    }
+  ]
+}
