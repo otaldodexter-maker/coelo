@@ -443,7 +443,23 @@ final class _PlanCard extends StatelessWidget {
               Expanded(child: _PlanName(plan: plan)),
               _PlanStatusIndicator(plan: plan),
               const SizedBox(width: CoeloSpacing.space2),
-              _PlanActions(plan: plan, onSelected: onAction),
+              // ARQUIVO (decisao do Owner de 10/09): arquivar/restaurar segue o
+              // conceito de duplicar do card de modelo de atividade: icone direto
+              // no cabecalho, sem menu. Editar e o toque no card.
+              IconButton(
+                key: Key('plan-card-archive-${plan.id}'),
+                tooltip: plan.status == PlanStatus.active
+                    ? 'Arquivar plano ${plan.name}'
+                    : 'Restaurar plano ${plan.name}',
+                onPressed: () => onAction(
+                  plan.status == PlanStatus.active ? _PlanAction.archive : _PlanAction.restore,
+                ),
+                icon: Icon(
+                  plan.status == PlanStatus.active
+                      ? Icons.archive_outlined
+                      : Icons.unarchive_outlined,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: CoeloSpacing.space3),

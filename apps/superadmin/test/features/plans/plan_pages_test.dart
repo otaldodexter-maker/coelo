@@ -87,9 +87,7 @@ void main() {
 
       await tester.pumpWidget(_app(PlanDirectoryPage(repository: repository)));
       await tester.pumpAndSettle();
-      await tester.tap(find.byTooltip('Ações de Coelo Essencial'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Arquivar plano'));
+      await tester.tap(find.byTooltip('Arquivar plano Coelo Essencial'));
       await tester.pumpAndSettle();
 
       expect(find.byType(CoeloAdminDialogShell), findsOneWidget);
@@ -124,9 +122,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.byTooltip('Ações de Coelo Essencial'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Arquivar plano'));
+    await tester.tap(find.byTooltip('Arquivar plano Coelo Essencial'));
     await tester.pumpAndSettle();
 
     current.value = second;

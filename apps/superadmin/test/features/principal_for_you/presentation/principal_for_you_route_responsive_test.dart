@@ -385,10 +385,7 @@ void main() {
 
       // A production route never answers with the preview message.
       expect(find.text('Cardápio ainda não está disponível.'), findsOneWidget);
-      expect(
-        find.textContaining('estará disponível na experiência completa'),
-        findsNothing,
-      );
+      expect(find.textContaining('experiência completa'), findsNothing);
     });
   });
 

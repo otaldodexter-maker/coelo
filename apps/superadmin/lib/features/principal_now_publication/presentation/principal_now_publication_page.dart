@@ -454,7 +454,7 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
 
   void _unavailable(String label) => ScaffoldMessenger.of(
     context,
-  ).showSnackBar(SnackBar(content: Text('$label estará disponível na experiência completa.')));
+  ).showSnackBar(SnackBar(content: Text('$label ainda não está disponível.')));
 
   Future<void> _showTextEditor() async {
     final requestedController = controller;

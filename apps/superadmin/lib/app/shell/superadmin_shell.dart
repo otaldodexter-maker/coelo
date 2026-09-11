@@ -11,6 +11,7 @@ import '../activity/superadmin_activity.dart';
 import '../brand/superadmin_brand_mark.dart';
 import '../navigation/superadmin_navigation.dart';
 import '../../features/auth/domain/logout_action.dart';
+import '../../features/chat/domain/chat_repository.dart';
 import '../../features/chat/presentation/widgets/superadmin_chat_launcher.dart';
 import '../../features/support/domain/support_ticket.dart';
 import '../theme/superadmin_theme_mode_scope.dart';
@@ -40,6 +41,7 @@ class SuperadminShell extends StatefulWidget {
     this.onDestinationSelected,
     this.onOpenConversations,
     this.chatUnreadCountLoader,
+    this.chatRecentConversationsLoader,
     this.onBugReportSubmitted,
     this.showChatLauncher = true,
     this.chatLauncherBottomInset = 0,
@@ -56,6 +58,7 @@ class SuperadminShell extends StatefulWidget {
     this.activityController,
     this.onBugReportSubmitted,
     this.chatUnreadCountLoader,
+    this.chatRecentConversationsLoader,
     this.canAccessCapability,
     super.key,
   }) : title = '',
@@ -78,6 +81,9 @@ class SuperadminShell extends StatefulWidget {
   final ValueChanged<String>? onDestinationSelected;
   final VoidCallback? onOpenConversations;
   final Future<int> Function()? chatUnreadCountLoader;
+
+  /// Conversas recentes autorizadas para a faixa de iniciais do launcher.
+  final Future<List<ChatConversationSummary>> Function()? chatRecentConversationsLoader;
   final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
   final bool showChatLauncher;
   final double chatLauncherBottomInset;
@@ -503,6 +509,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
               bottomClearance: launcherReservedBottom,
               positionController: positionController ?? _chatLauncherPositionController,
               loadUnreadCount: widget.chatUnreadCountLoader,
+              loadRecentConversations: widget.chatRecentConversationsLoader,
             ),
           ),
       ],

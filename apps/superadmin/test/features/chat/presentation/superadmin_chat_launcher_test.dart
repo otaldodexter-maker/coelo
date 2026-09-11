@@ -1,3 +1,4 @@
+import 'package:coelo_superadmin/features/chat/domain/chat_repository.dart';
 import 'package:coelo_superadmin/features/chat/presentation/widgets/superadmin_chat_launcher.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +16,7 @@ void main() {
     final material = tester.widget<Material>(surface);
     final size = tester.getSize(surface);
 
-    expect(find.text('Mens.'), findsOneWidget);
+    expect(find.text('Mensagens'), findsOneWidget);
     expect(find.text('9+'), findsOneWidget);
     expect(material.color, CoeloTheme.light.colorScheme.primary);
     expect(material.shape, isA<StadiumBorder>());
@@ -51,7 +52,7 @@ void main() {
     expect(find.byKey(const Key('superadmin-chat-launcher-panel')), findsNothing);
   });
 
-  testWidgets('mobile launcher is the same 48px circular FAB without synthetic badge', (
+  testWidgets('mobile launcher is a light 48px circle with the orange icon and no synthetic badge', (
     tester,
   ) async {
     _viewport(tester, 375);
@@ -59,10 +60,13 @@ void main() {
 
     final surface = find.byKey(const Key('superadmin-chat-launcher-surface'));
     final material = tester.widget<Material>(surface);
-    expect(find.text('Mens.'), findsNothing);
-    expect(find.byIcon(Icons.forum_outlined), findsOneWidget);
+    expect(find.text('Mensagens'), findsNothing);
+    // Referencia CHAT (Owner, 10/09/2026): circulo claro com o icone laranja.
+    expect(find.byIcon(Icons.forum_rounded), findsOneWidget);
+    final icon = tester.widget<Icon>(find.byIcon(Icons.forum_rounded));
+    expect(icon.color, CoeloTheme.light.colorScheme.primary);
     expect(find.text('0'), findsNothing);
-    expect(material.color, CoeloTheme.light.colorScheme.primary);
+    expect(material.color, CoeloTheme.light.colorScheme.surface);
     expect(material.shape, isA<CircleBorder>());
     expect(tester.getSize(surface), const Size(CoeloSize.touchMin, CoeloSize.touchMin));
     expect(
@@ -91,10 +95,40 @@ void main() {
         reason: 'width $width',
       );
       expect(material.shape, compact ? isA<CircleBorder>() : isA<StadiumBorder>());
-      expect(find.text('Mens.'), compact ? findsNothing : findsOneWidget);
+      expect(find.text('Mensagens'), compact ? findsNothing : findsOneWidget);
       expect(tester.takeException(), isNull, reason: 'width $width at 200% text');
     }
   });
+  testWidgets('shows the initials of the authorised recent conversations, capped at five', (
+    tester,
+  ) async {
+    _viewport(tester, 1024);
+    await tester.pumpWidget(
+      _app(
+        loadRecentConversations: () async => [
+          for (final title in ['Ana Souza', 'Bruno', 'Turma Azul', 'Dora Lima', 'Eva', 'Fabio'])
+            _conversation(title),
+        ],
+      ),
+    );
+    await tester.pump();
+
+    for (final initials in ['AS', 'B', 'TA', 'DL', 'E']) {
+      expect(find.text(initials), findsOneWidget, reason: initials);
+    }
+    expect(find.text('F'), findsNothing);
+    expect(find.text('Mensagens'), findsOneWidget);
+  });
+
+  testWidgets('without a loader the launcher never invents conversations', (tester) async {
+    _viewport(tester, 1024);
+    await tester.pumpWidget(_app());
+    await tester.pump();
+
+    expect(find.text('Mensagens'), findsOneWidget);
+    expect(find.textContaining(RegExp(r'^[A-Z]{1,2}$')), findsNothing);
+  });
+
   testWidgets('drag, Alt arrows and Home reposition and reset within the safe area', (
     tester,
   ) async {
@@ -141,6 +175,7 @@ Widget _app({
   VoidCallback? onOpen,
   int unreadCount = 0,
   Future<int> Function()? loadUnreadCount,
+  Future<List<ChatConversationSummary>> Function()? loadRecentConversations,
   SuperadminChatLauncherPositionController? positionController,
   TextScaler textScaler = TextScaler.noScaling,
 }) {
@@ -156,6 +191,7 @@ Widget _app({
             child: SuperadminChatLauncher(
               unreadCount: unreadCount,
               loadUnreadCount: loadUnreadCount,
+              loadRecentConversations: loadRecentConversations,
               positionController: positionController,
               onOpenConversations: onOpen ?? () {},
             ),
@@ -172,3 +208,14 @@ void _viewport(WidgetTester tester, double width) {
   addTearDown(tester.view.resetDevicePixelRatio);
   addTearDown(tester.view.resetPhysicalSize);
 }
+
+ChatConversationSummary _conversation(String title) => ChatConversationSummary(
+  id: title,
+  title: title,
+  preview: '',
+  contextLabel: 'Contexto',
+  kind: 'group',
+  unreadCount: 0,
+  updatedAt: DateTime(2026, 9, 10),
+  isReadOnly: false,
+);

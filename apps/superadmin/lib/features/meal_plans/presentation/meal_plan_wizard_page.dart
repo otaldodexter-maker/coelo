@@ -645,7 +645,7 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
               : 'Trocar imagem',
         ),
       ),
-      if (!widget.imageSelectionEnabled) const Text('Envio de imagem indisponível nesta prévia.'),
+      if (!widget.imageSelectionEnabled) const Text('Envio de imagem ainda não está disponível.'),
       if (_simpleImage != null || _pendingSimpleImage != null) ...[
         const SizedBox(height: CoeloSpacing.space2),
         Text('Arquivo: ${_pendingSimpleImage?.fileName ?? _simpleImage!.title}'),
@@ -845,7 +845,7 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
             ),
           ),
           if (!widget.imageSelectionEnabled)
-            const Text('Envio de imagem indisponível nesta prévia.'),
+            const Text('Envio de imagem ainda não está disponível.'),
           if (meal.image != null || meal.pendingImage != null)
             Text('Arquivo: ${meal.pendingImage?.fileName ?? meal.image!.title}'),
           const SizedBox(height: CoeloSpacing.space3),

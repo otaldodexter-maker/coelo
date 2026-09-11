@@ -66,6 +66,67 @@ void main() {
     expect(uploaded.remoteAssetId, 'asset-1');
   });
 
+  test('no R2 envia os bytes por PUT assinado e nunca toca o Supabase Storage', () async {
+    final functionBodies = <Map<String, dynamic>>[];
+    http.Request? storageRequest;
+    http.Request? putRequest;
+    final client = SupabaseClient(
+      'https://coelo.test',
+      'publishable-key',
+      httpClient: MockClient((request) async {
+        if (request.url.path.contains('/functions/v1/now-media')) {
+          final body = jsonDecode(request.body) as Map<String, dynamic>;
+          functionBodies.add(body);
+          final response = body['action'] == 'prepare'
+              ? {
+                  'asset_id': 'asset-1',
+                  'storage_provider': 'r2',
+                  'upload_url': 'https://r2.test/put?X-Amz-Signature=abc',
+                  'required_headers': {'content-length': '3'},
+                  'expires_at': '2099-01-01T00:00:00Z',
+                }
+              : {'asset_id': 'asset-1', 'storage_provider': 'r2', 'object_key': 'opaque'};
+          return http.Response(
+            jsonEncode(response),
+            200,
+            headers: {'content-type': 'application/json'},
+            request: request,
+          );
+        }
+        storageRequest = request;
+        return http.Response('{}', 500, request: request);
+      }),
+    );
+    addTearDown(client.dispose);
+    final repository = SupabaseNowPublicationRepository(
+      client,
+      httpClient: MockClient((request) async {
+        putRequest = request;
+        return http.Response('', 200, request: request);
+      }),
+    );
+
+    final uploaded = await repository.uploadMedia(
+      NowPublicationContext.demo,
+      'publication-1',
+      NowMediaDraft.image(
+        localId: 'local-1',
+        name: 'foto.png',
+        mimeType: 'image/png',
+        bytes: Uint8List.fromList([1, 2, 3]),
+      ),
+    );
+
+    expect(functionBodies.map((body) => body['action']), ['prepare', 'finalize']);
+    expect(storageRequest, isNull, reason: 'o ramo R2 nunca chama o Supabase Storage');
+    expect(putRequest?.method, 'PUT');
+    expect(putRequest?.url.host, 'r2.test');
+    expect(putRequest?.headers['content-type'], 'image/png');
+    expect(putRequest?.headers['content-length'], '3');
+    expect(putRequest?.bodyBytes, [1, 2, 3]);
+    expect(uploaded.remoteAssetId, 'asset-1');
+  });
+
   test('restaura mídia do rascunho com URL assinada exclusiva do autor', () async {
     final requests = <Map<String, dynamic>>[];
     final client = SupabaseClient(

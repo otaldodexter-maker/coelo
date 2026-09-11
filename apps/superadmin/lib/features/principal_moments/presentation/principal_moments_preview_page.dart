@@ -239,7 +239,7 @@ final class _PrincipalMomentsPreviewPageState extends State<PrincipalMomentsPrev
   void _prototypeMessage(String label) {
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(SnackBar(content: Text('$label estará disponível na experiência completa.')));
+    ).showSnackBar(SnackBar(content: Text('$label ainda não está disponível.')));
   }
 
   void _invoke(VoidCallback? callback, String fallback) {
