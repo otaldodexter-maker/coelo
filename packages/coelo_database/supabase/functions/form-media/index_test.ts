@@ -1172,3 +1172,118 @@ Deno.test("worker cleanup expires, claims, deletes on R2 and marks each key purg
   );
   assertEquals(await expireOnly.json(), { expired: 2 });
 });
+
+// R05 realm-interno: respostas (answer-image) no R2 atras de COELO_FORMS_MEDIA_PROVIDER=r2.
+const answerR2Environment: Record<string, string> = {
+  ...environment,
+  COELO_FORMS_MEDIA_PROVIDER: "r2",
+  COELO_R2_ENDPOINT: "https://account.r2.cloudflarestorage.com",
+  COELO_R2_REGION: "auto",
+  COELO_R2_ACCESS_KEY_ID: "synthetic-access-key",
+  COELO_R2_SECRET_ACCESS_KEY: "synthetic-secret-key",
+};
+const answerKey =
+  `tenants/${id}/forms/form/${id}/answer-image/${mediaId}/original/${readToken}.png`;
+const answerPng = new Uint8Array([
+  137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 2, 128, 0, 0, 1, 224, 8, 6, 0, 0, 0, 0, 0, 0,
+]);
+
+function answerR2Harness(options: { finalizeOk?: boolean } = {}) {
+  const calls: string[] = [];
+  const r2: string[] = [];
+  let finalizeParameters: unknown;
+  const query = {
+    select: () => query,
+    eq: () => query,
+    maybeSingle: () => Promise.resolve({ data: { person_id: id } }),
+  };
+  const client = {
+    auth: { getUser: () => Promise.resolve({ data: { user: { id } } }) },
+    from: () => query,
+    storage: { from: () => { throw new Error("answer R2 must not use Storage"); } },
+    rpc: (name: string, parameters: unknown) => {
+      calls.push(name);
+      if (name === "form_prepare_asset_upload_r2_v1") {
+        return Promise.resolve({ data: { asset_id: id, storage_path: `ab/${id}`, expires_at: "2026-09-08T16:00:00Z",
+          media_asset_id: mediaId, bucket: "coelo-media-prod", object_key: answerKey, storage_provider: "r2" } });
+      }
+      if (name === "form_finalize_asset_upload") return Promise.resolve({ data: { asset_id: id, state: "uploaded" } });
+      if (name === "form_media_authorize_for_worker") return Promise.resolve({ data: { state: "finalized", storage_path: `ab/${id}` } });
+      if (name === "form_asset_r2_descriptor_v1") {
+        return Promise.resolve({ data: { ok: true, data: { asset_id: id, media_asset_id: mediaId, bucket: "coelo-media-prod",
+          object_key: answerKey, mime_type: "image/png", expected_byte_size: answerPng.length, expected_sha256: "x".repeat(64),
+          state: "uploaded", media_status: options.finalizeOk === undefined ? "pending" : "ready" } } });
+      }
+      if (name === "form_media_finalize_answer_r2_v1") {
+        finalizeParameters = parameters;
+        return Promise.resolve({ data: options.finalizeOk === false
+          ? { ok: false, data: null, error: { code: "FORM_MEDIA_MISMATCH" } }
+          : { ok: true, data: { asset_id: id, media_asset_id: mediaId, state: "finalized", media_status: "ready" } } });
+      }
+      throw new Error(`unexpected rpc ${name}`);
+    },
+  };
+  const transport = {
+    presignPut: (key: string, mime: string, ttl: number) => { r2.push(`put:${key}:${mime}:${ttl}`); return Promise.resolve({ url: new URL("https://r2.example.test/put"), requiredHeaders: { "content-type": mime }, expiresAt: new Date() } as never); },
+    presignGet: (key: string, ttl: number) => { r2.push(`get:${key}:${ttl}`); return Promise.resolve({ url: new URL("https://r2.example.test/get"), requiredHeaders: {}, expiresAt: new Date() } as never); },
+    head: (key: string) => { r2.push(`head:${key}`); return Promise.resolve({ byteSize: answerPng.length, mimeType: "image/png", etag: "e" } as never); },
+    get: (key: string) => { r2.push(`read:${key}`); return Promise.resolve(answerPng); },
+    delete: (key: string) => { r2.push(`delete:${key}`); return Promise.resolve(); },
+  };
+  const dependencies: FormMediaDependencies = {
+    envGet: (key) => answerR2Environment[key],
+    createClient: (() => client) as unknown as FormMediaDependencies["createClient"],
+    createTransport: () => transport,
+  };
+  return { calls, r2, dependencies, finalizeParameters: () => finalizeParameters };
+}
+
+Deno.test("answer R2 prepare usa a RPC r2 e assina o PUT na chave do catalogo, sem Storage", async () => {
+  const harness = answerR2Harness();
+  const response = await handleFormMediaRequest(request({ ...command, payload: { ...command.payload, mime_type: "image/png" } }), harness.dependencies);
+  assertEquals(response.status, 200);
+  assertEquals(harness.calls, ["form_prepare_asset_upload_r2_v1"]);
+  assertEquals(harness.r2, [`put:${answerKey}:image/png:300`]);
+  const body = await response.json();
+  assertEquals(body.asset_id, id);
+  assertEquals(body.storage_provider, "r2");
+});
+
+Deno.test("answer R2 finalize confirma pelo legado, mede bytes/sha256/dimensoes e finaliza pelo service_role", async () => {
+  const harness = answerR2Harness();
+  const response = await handleFormMediaRequest(request({ ...command, action: "finalize", payload: { asset_id: id } }), harness.dependencies);
+  assertEquals(response.status, 200);
+  assertEquals(harness.calls, ["form_finalize_asset_upload", "form_asset_r2_descriptor_v1", "form_media_finalize_answer_r2_v1"]);
+  assertEquals(harness.r2, [`head:${answerKey}`, `read:${answerKey}`]);
+  const parameters = harness.finalizeParameters() as Record<string, unknown>;
+  assertEquals(parameters.p_pixel_width, 640);
+  assertEquals(parameters.p_pixel_height, 480);
+  assertEquals(parameters.p_byte_size, answerPng.length);
+  assertEquals(await response.json(), { asset_id: id, state: "finalized", media_asset_id: mediaId });
+  const mismatch = answerR2Harness({ finalizeOk: false });
+  const failed = await handleFormMediaRequest(request({ ...command, action: "finalize", payload: { asset_id: id } }), mismatch.dependencies);
+  assertEquals(failed.status, 400);
+  assertEquals(mismatch.r2.at(-1), `delete:${answerKey}`);
+});
+
+Deno.test("answer R2 download exige legado finalized e espelho ready e assina o GET por 60 s", async () => {
+  const harness = answerR2Harness({ finalizeOk: true });
+  const response = await handleFormMediaRequest(request({ ...command, action: "download", payload: { asset_id: id } }), harness.dependencies);
+  assertEquals(response.status, 200);
+  assertEquals(harness.calls, ["form_media_authorize_for_worker", "form_asset_r2_descriptor_v1"]);
+  assertEquals(harness.r2, [`get:${answerKey}:60`]);
+  assertEquals(await response.json(), { signed_url: "https://r2.example.test/get", expires_in: 60 });
+});
+
+Deno.test("sem COELO_FORMS_MEDIA_PROVIDER o legado de respostas continua no Storage", async () => {
+  const harness = answerR2Harness();
+  const legacy: FormMediaDependencies = {
+    ...harness.dependencies,
+    envGet: (key) => key === "COELO_FORMS_MEDIA_PROVIDER" ? undefined : answerR2Environment[key],
+  };
+  const response = await handleFormMediaRequest(request({ ...command, payload: { ...command.payload, mime_type: "image/png" } }), legacy);
+  // o cliente falso nao implementa o legado: prova que a RPC chamada foi a legada, nunca a r2
+  assertEquals(response.status, 400);
+  assertEquals(harness.calls, ["form_prepare_asset_upload"]);
+  assertEquals(harness.r2, []);
+});

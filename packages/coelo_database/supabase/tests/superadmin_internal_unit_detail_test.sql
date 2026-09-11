@@ -331,7 +331,7 @@ insert into unit_detail_acceptance_responses values
  (29,public.superadmin_unit_detail_v2('71000000-0000-4000-8000-000000000003'));
 reset role;
 select ok((select (body->>'ok')::boolean and body->'error'='null'::jsonb
- and (select array_agg(key order by key) from jsonb_object_keys(body->'data') key)=array['address','contact','effective_plan','id','institution','name','slug','status','unit_type']::text[]
+ and (select array_agg(key order by key) from jsonb_object_keys(body->'data') key)=array['address','contact','effective_plan','handle','handle_last_changed_at','id','institution','name','slug','status','unit_type']::text[]
  and (select array_agg(key order by key) from jsonb_object_keys(body#>'{data,institution}') key)=array['id','name','type']::text[]
  and (select array_agg(key order by key) from jsonb_object_keys(body#>'{data,institution,type}') key)=array['id','name']::text[]
  and (select array_agg(key order by key) from jsonb_object_keys(body#>'{data,unit_type}') key)=array['id','name']::text[]
@@ -506,7 +506,7 @@ select ok(
   'revoked effective platform.read grant denies and appends exactly one v2 audit');
 
 select ok((select count(*)=11 from audit.audit_logs where action_code='unit.detail' and outcome='success')
- and not exists(select 1 from unit_detail_acceptance_responses where sequence_number in(10,11,12,13,14,15,16,27,28,29,30) and ((select array_agg(key order by key) from jsonb_object_keys(body) key)<>array['data','error','ok']::text[] or (select array_agg(key order by key) from jsonb_object_keys(body->'data') key)<>array['address','contact','effective_plan','id','institution','name','slug','status','unit_type']::text[] or body->'data' ?| array['branding','groups_count','activities_count','plan_override','document','people','created_at','updated_at']))
+ and not exists(select 1 from unit_detail_acceptance_responses where sequence_number in(10,11,12,13,14,15,16,27,28,29,30) and ((select array_agg(key order by key) from jsonb_object_keys(body) key)<>array['data','error','ok']::text[] or (select array_agg(key order by key) from jsonb_object_keys(body->'data') key)<>array['address','contact','effective_plan','handle','handle_last_changed_at','id','institution','name','slug','status','unit_type']::text[] or body->'data' ?| array['branding','groups_count','activities_count','plan_override','document','people','created_at','updated_at']))
  and not exists(select 1 from audit.audit_logs where action_code='unit.detail' and outcome='success' and (hash_version<>2 or payload_contract_version<>2 or permission_code<>'platform.read' or reason_code is not null or reason is not null or before_json is not null or after_json is not null or octet_length(session_id_hash)<>32 or object_type<>'unit' or object_id is null or institution_id is null or not app_private.audit_verify_entry(id))),
  'all successes have exact output and 1:1 minimized digest-valid v2 audit');
 select ok((select count(*)=9 from audit.audit_logs where action_code='unit.detail' and outcome='denied' and hash_version=2)

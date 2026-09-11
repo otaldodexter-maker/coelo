@@ -1,6 +1,7 @@
 import 'package:coelo_superadmin/app/shell/superadmin_shell.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/support/data/support_repository.dart';
+import 'package:coelo_superadmin/features/support/domain/support_team_member.dart';
 import 'package:coelo_superadmin/features/support/domain/support_ticket.dart';
 import 'package:coelo_superadmin/features/support/presentation/screens/support_page.dart';
 import 'package:coelo_superadmin/features/support/presentation/view_models/support_prototype_controller.dart';
@@ -118,6 +119,28 @@ void main() {
     expect(find.text('Não foi possível enviar o relato. Tente novamente.'), findsOneWidget);
     expect(find.text('Relato enviado com sucesso.'), findsNothing);
   });
+
+  test('equipe vem do repositório e o responsável persiste com a revisão do chamado', () async {
+    final repository = _FakeSupportRepository(tickets: [_ticket('t-1').copyWith(revision: 3)]);
+    final controller = SupportPrototypeController(repository: repository);
+    addTearDown(controller.dispose);
+    await controller.loadFromRepository();
+    await Future<void>.delayed(Duration.zero);
+    expect(controller.teamMembers.map((m) => m.id), ['m-1']);
+    expect(controller.teamMembers, isNot(SupportPrototypeController.defaultTeamMembers));
+
+    controller.setAssignees('t-1', {'m-1'});
+    await Future<void>.delayed(Duration.zero);
+    expect(repository.assigned, {'t-1': 'm-1'});
+    final ticket = controller.tickets.single;
+    expect(ticket.ownerId, 'm-1');
+    expect(ticket.revision, 4);
+
+    controller.setAssignees('t-1', const {});
+    await Future<void>.delayed(Duration.zero);
+    expect(repository.assigned, {'t-1': null});
+    expect(controller.tickets.single.assigneeIds, isEmpty);
+  });
 }
 
 const _draft = SupportReportDraft(
@@ -174,7 +197,12 @@ final class _FakeSupportRepository implements SupportRepository {
     listCalls++;
     final error = listError;
     if (error != null) throw error;
-    return SupportTicketPage(tickets: _tickets, totalItems: _tickets.length, page: page, pageSize: pageSize);
+    return SupportTicketPage(
+      tickets: _tickets,
+      totalItems: _tickets.length,
+      page: page,
+      pageSize: pageSize,
+    );
   }
 
   @override
@@ -195,6 +223,41 @@ final class _FakeSupportRepository implements SupportRepository {
       get(ticketId);
 
   @override
-  Future<SupportTicket> setStatus(String ticketId, SupportTicketStatus status, int expectedRevision) async =>
-      get(ticketId);
+  Future<SupportTicket> setStatus(
+    String ticketId,
+    SupportTicketStatus status,
+    int expectedRevision,
+  ) async => get(ticketId);
+
+  final teamMembers = <SupportTeamMember>[
+    const SupportTeamMember(
+      id: 'm-1',
+      name: 'Equipe QA',
+      initials: 'EQ',
+      role: SupportTeamRole.support,
+    ),
+  ];
+  final assigned = <String, String?>{};
+
+  @override
+  Future<List<SupportTeamMember>> listTeamMembers() async => teamMembers;
+
+  @override
+  Future<SupportTicket> setAssignee(
+    String ticketId,
+    String? membershipId,
+    int expectedRevision,
+  ) async {
+    assigned[ticketId] = membershipId;
+    final index = _tickets.indexWhere((t) => t.id == ticketId);
+    final saved = _tickets[index].copyWith(
+      clearOwner: membershipId == null,
+      ownerId: membershipId,
+      collaboratorIds: const {},
+      assigneeIds: {?membershipId},
+      revision: expectedRevision + 1,
+    );
+    _tickets[index] = saved;
+    return saved;
+  }
 }

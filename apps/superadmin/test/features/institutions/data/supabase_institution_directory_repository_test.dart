@@ -216,6 +216,22 @@ void main() {
     expect(representative.containsKey('cpf'), isFalse);
   });
 
+  test('skips edit_core (which rejects no-op) when only the document changed', () async {
+    final calls = <String>[];
+    final repository = _repository((request) async {
+      final rpc = request.url.pathSegments.last;
+      calls.add(rpc);
+      if (rpc == 'superadmin_institution_contacts_edit_v1') {
+        return _json(request, _ok({'institution_id': 'institution-1', 'management_version': 8}));
+      }
+      return _json(request, _ok(_detailRow(version: calls.length > 2 ? 8 : 7)));
+    });
+    final current = InstitutionRecord.fromRpcPayload(_detailRow());
+    await repository.update(current.copyWith(document: '11444777000161'), expectedVersion: 7);
+    expect(calls, isNot(contains('superadmin_institution_edit_core_v2')));
+    expect(calls.where((rpc) => rpc == 'superadmin_institution_contacts_edit_v1').length, 1);
+  });
+
   test('skips the contacts contract when only core fields changed', () async {
     final calls = <String>[];
     final repository = _repository((request) async {

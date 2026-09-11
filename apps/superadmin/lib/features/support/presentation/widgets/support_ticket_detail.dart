@@ -243,8 +243,10 @@ final class _SupportTicketDetailState extends State<SupportTicketDetail> {
           label: 'Responsáveis',
           options: widget.teamMembers.map((member) => member.id).toList(growable: false),
           selectedValues: ticket.assigneeIds,
-          optionLabel: (memberId) =>
-              _memberLabel(widget.teamMembers.singleWhere((member) => member.id == memberId)),
+          optionLabel: (memberId) {
+            final member = widget.teamMembers.where((m) => m.id == memberId).firstOrNull;
+            return member == null ? 'Responsável fora da equipe' : _memberLabel(member);
+          },
           onChanged: widget.onAssigneesChanged,
         ),
         const SizedBox(height: CoeloSpacing.space4),

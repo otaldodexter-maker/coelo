@@ -41,6 +41,7 @@ final class _PlanFormPageState extends State<PlanFormPage> {
   late final TextEditingController _storage;
   late final TextEditingController _media;
   late final TextEditingController _reason;
+  final _reasonAnchor = GlobalKey();
   final _capabilitySearch = TextEditingController();
   PlanCatalog? _original;
   List<PlanLinkedInstitution> _linked = const [];
@@ -519,21 +520,24 @@ final class _PlanFormPageState extends State<PlanFormPage> {
         onEdit: () => setState(() => _step = 2),
       ),
       const SizedBox(height: CoeloSpacing.space4),
-      CoeloFormTextField(
-        key: const Key('plan-audit-reason-field'),
-        controller: _reason,
-        labelText: 'Motivo de auditoria',
-        prefixIcon: Icons.fact_check_outlined,
-        maxLines: 3,
-        // A coluna reason e a validacao da RPC exigem entre 1 e 1000.
-        inputFormatters: [LengthLimitingTextInputFormatter(1000)],
-        errorText: _auditReasonError ? 'Informe o motivo de auditoria.' : null,
-        onChanged: (value) {
-          if (_auditReasonError && value.trim().isNotEmpty) {
-            setState(() => _auditReasonError = false);
-          }
-        },
-        validator: _required,
+      KeyedSubtree(
+        key: _reasonAnchor,
+        child: CoeloFormTextField(
+          key: const Key('plan-audit-reason-field'),
+          controller: _reason,
+          labelText: 'Motivo de auditoria',
+          prefixIcon: Icons.fact_check_outlined,
+          maxLines: 3,
+          // A coluna reason e a validacao da RPC exigem entre 1 e 1000.
+          inputFormatters: [LengthLimitingTextInputFormatter(1000)],
+          errorText: _auditReasonError ? 'Informe o motivo de auditoria.' : null,
+          onChanged: (value) {
+            if (_auditReasonError && value.trim().isNotEmpty) {
+              setState(() => _auditReasonError = false);
+            }
+          },
+          validator: _required,
+        ),
       ),
       if (_conflictMessage case final message?) ...[
         const SizedBox(height: CoeloSpacing.space4),
@@ -572,6 +576,18 @@ final class _PlanFormPageState extends State<PlanFormPage> {
     if (_saving || _loadState != PlanDataState.ready) return;
     if (_reason.text.trim().isEmpty) {
       setState(() => _auditReasonError = true);
+      // O motivo e o ultimo campo da Revisao e pode estar sob o rodape
+      // ancorado: trazer o campo a vista junto com o erro (P15).
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final context = _reasonAnchor.currentContext;
+        if (context != null) {
+          Scrollable.ensureVisible(
+            context,
+            alignment: 0.5,
+            duration: const Duration(milliseconds: 200),
+          );
+        }
+      });
       return;
     }
     if (!_identityValuesAreValid()) {

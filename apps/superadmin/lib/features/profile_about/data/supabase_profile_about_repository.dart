@@ -317,6 +317,10 @@ ProfileAboutPage? parseProfileAboutReadResponse({
   required ProfileAboutSubjectRef subject,
   required Object? response,
 }) {
+  // get_profile_about devolve null (nao um envelope) quando o sujeito ainda
+  // nao tem pagina Sobre: medido na rota real do Perfil em 11/09 (R05). Sem
+  // pagina e um estado legitimo, nao uma resposta invalida.
+  if (response == null) return null;
   if (response is! Map) throw const FormatException('invalid_read_response');
   final json = Map<String, Object?>.from(response);
   final page = json['page'];

@@ -392,9 +392,9 @@ insert into group_detail_acceptance_responses values
 reset role;
 
 select ok((select (body->>'ok')::boolean and body->'error'='null'::jsonb
- and (select array_agg(key order by key) from jsonb_object_keys(body->'data') key)=array['created_at','group_type','group_type_other_text','id','inherit_access','inherit_activities','inherit_appearance','institution','management_version','name','status','unit','updated_at']::text[]
+ and (select array_agg(key order by key) from jsonb_object_keys(body->'data') key)=array['created_at','group_type','group_type_other_text','handle','handle_last_changed_at','id','inherit_access','inherit_activities','inherit_appearance','institution','management_version','name','status','unit','updated_at']::text[]
  and (select array_agg(key order by key) from jsonb_object_keys(body#>'{data,institution}') key)=array['id','name']::text[]
- and (select array_agg(key order by key) from jsonb_object_keys(body#>'{data,unit}') key)=array['id','name']::text[]
+ and (select array_agg(key order by key) from jsonb_object_keys(body#>'{data,unit}') key)=array['handle','id','name']::text[]
  from group_detail_acceptance_responses where sequence_number=10),
  'Operations AAL1 receives the exact Group detail shape');
 select ok((select jsonb_typeof(body#>'{data,id}')='string'

@@ -21,7 +21,7 @@ pgTAP; nenhum cliente, nenhuma Edge Function implantada, nenhum Cloudflare.
 Projeto descartável `coelo_realm_r05` (portas 625xx): baseline + `seed.sql` +
 as 141 migrations de `migrations/ordem-de-aplicacao-producao.txt` via `psql`
 do container, depois os seis candidatos na ordem. pgTAP desta rodada:
-**136 PASS / 0 FAIL** (38 + 12 + 28 + 25 + 13 + 20). Regressão de 25 suítes
+**188 PASS / 0 FAIL** (38 + 12 + 28 + 25 + 13 + 20 + 4 + 14 + 6 + 6 + 4 + 18). Regressão de 25 suítes
 existentes: tudo igual ao espelho `supabase_db_coelo_baseline` do coordenador
 (as falhas listadas abaixo já existem lá sem os pacotes).
 
@@ -34,7 +34,21 @@ existentes: tudo igual ao espelho `supabase_db_coelo_baseline` do coordenador
 | 3 | `20260911210200_superadmin_internal_chat_attachments_v1.sql` | chat.attach: prepare/authorize_finalize/authorize_read (authenticated), finalize/expire (service_role), tickets privados, 4 códigos novos no envelope | `superadmin_internal_chat_attachments_v1_test.sql` 28/28 | aplicado em produção (lote 32) |
 | 4 | `20260911210300_forms_question_media_r2_v1.sql` | forms_files (question-image) no R2 sobre o catálogo 230007: prepare/authorize/finalize/resolve/delete/expire/limpeza | `forms_question_media_r2_v1_test.sql` 25/25 | aplicado em produção (lote 33) |
 | 5 | `20260911210400_structure_hierarchy_p36_v1.sql` | P36: atividade ativa exige turma ativa (gatilhos diferidos); unidade→instituição e turma→unidade já garantidos pela baseline e provados | `structure_hierarchy_p36_v1_test.sql` 13/13 | aplicado em produção (lote 35) |
-| 6 | `20260911210500_unit_care_policies_notifications_v1.sql` | P32: `unit_care_policies` + `superadmin_unit_care_policy_get/set_v1` + fan-out no sino (unidade, hierarquia da criança, demais responsáveis) por gatilho em autorizações, restrições e planos de medicação | `unit_care_policies_notifications_v1_test.sql` 20/20 | ver seção "Pacote 6" abaixo |
+| 6 | `20260911210500_unit_care_policies_notifications_v1.sql` | P32: `unit_care_policies` + `superadmin_unit_care_policy_get/set_v1` + fan-out no sino (unidade, hierarquia da criança, demais responsáveis) por gatilho em autorizações, restrições e planos de medicação; pessoas de serviço nunca recebem | `unit_care_policies_notifications_v1_test.sql` 20/20 (com a ordem real do espelho) | aplicado em produção (lote 36) |
+| 7 | `20260911210600_institution_people_handles_v1.sql` | Decisão 16: `detail_v2` devolve `handle` (@ de `person_handles`) em representantes e administradores | `institution_people_handles_v1_test.sql` 4/4 | pronto |
+| 8 | `20260911210700_chat_media_expire_dispatch_v1.sql` | cron `coelo-chat-media-expire` (*/5) → chat-media `expire`; Vault `chat_media_worker_url/secret` | padrão 230023 | pronto |
+| 9 | `20260911210800_forms_answer_media_r2_v1.sql` | answer-image no R2: `form_prepare_asset_upload_r2_v1` (legado + espelho), `form_asset_r2_descriptor_v1`, `form_media_finalize_answer_r2_v1`, gatilho de discard → fila de limpeza | `forms_answer_media_r2_v1_test.sql` 14/14 | pronto |
+| 10 | `20260911210900_forms_media_expire_dispatch_v1.sql` | cron `coelo-forms-media-expire` (*/10) → form-media `cleanup` com o Bearer do worker de Formulários já no Vault; URL nova `forms_media_worker_url` | `media_expire_dispatch_v1_test.sql` 6/6 | pronto |
+| 11 | `20260911211000_plans_select_for_institution_directory_v1.sql` | SELECT em `plans` para `authenticated` (policy já existia) para a view `institution_directory` responder | `plans_select_for_institution_directory_v1_test.sql` 4/4 | opcional; aplicado (lote 28-42) |
+| 12 | `20260911211100_structure_handles_create_payload_v1.sql` | Decisão 16 sobre o `180000` da G1: `handle` opcional na criação de turma/unidade/atividade, padrão hierárquico, disponibilidade global, handle nos `detail_v2` de Unidades e Turmas | `structure_handles_create_payload_v1_test.sql` 18/18 (+ suítes de detalhe atualizadas) | pronto; após o 180000 |
+
+## Edge Functions escritas (deploy do coordenador)
+
+| Função | O que mudou | Testes |
+| --- | --- | --- |
+| `chat-media` (nova) | prepare (PUT assinado), finalize (ticket do usuário + bytes relidos + sha256 + RPC service_role), read (GET assinado), expire (x-worker-secret); `COELO_R2_*`, `CHAT_MEDIA_ALLOWED_ORIGINS`, `CHAT_MEDIA_WORKER_SECRET`; `config.toml` `verify_jwt=false` | Deno 5/5 |
+| `_shared/image_dimensions.ts` (novo) | largura/altura do cabeçalho JPEG/PNG/WebP para preencher `pixel_width/height` a partir dos bytes | Deno 2/2 |
+| `form-media` | reconciliada com a versão da G3 (question-image e worker dela mantidos); acrescentados só os ramos R2 de RESPOSTAS (prepare/finalize/download) atrás de `COELO_FORMS_MEDIA_PROVIDER=r2` | Deno 51/51 (47 da G3 + 4) |
 
 Contratos completos (assinaturas, envelopes, códigos, limites) em
 `comunicacao/realm-interno.json`: `contratoInstitutionContacts`,
@@ -45,11 +59,11 @@ Contratos completos (assinaturas, envelopes, códigos, limites) em
 | Item | Primeiro gate |
 | --- | --- |
 | institutions.edit E2E | frente estrutura chamar `superadmin_institution_contacts_edit_v1` após o `edit_core_v2` e ler `representatives`/`administrators` do `detail_v2`; provar na rota real |
-| chat.attach | Edge Function `chat-media` (padrão moments-media: PUT assinado, HEAD+sha256 no finalize, GET assinado no read) + cron de `superadmin_chat_attachment_expire_v1`; cliente do principal-chat liga o picker |
-| forms.upload/resolve-file/download/expire-file/delete-file | `form-media` trocar os ramos prepare/finalize/download/discard (Supabase Storage) por R2 chamando as RPCs novas; cron de expire e worker de limpeza; answer-image (respostas) continua no fluxo legado `form_assets` — próximo pacote |
+| chat.attach | deploy de `chat-media` + segredos + cron 210700; cliente do principal-chat liga o picker |
+| forms.upload/resolve-file/download/expire-file/delete-file | deploy de `form-media` com `COELO_FORMS_MEDIA_PROVIDER=r2`, `FORMS_MEDIA_WORKER_SECRET` e cron 210900; cliente da frente formularios usa `question_*` (autoria) e `upload_url/required_headers` (respostas) |
 | P36 no cliente | assistente de Atividades liga a turma antes de publicar e mapeia 23514 `activity must retain at least one active group link` |
 | P32 no cliente | tela de políticas macro da unidade (get/set); os modos são registrados e devolvidos; o fluxo que os aplica (quem libera) é produto pós-Superadmin |
-| @ das pessoas (Decisão 16) | `administrators[].handle` sai `null` até a frente acessos-pessoas entregar a coluna/RPC de @ |
+| @ das pessoas (Decisão 16) | pacote 210600 devolve o @ de `person_handles`; edição pelo cliente via `superadmin_person_handle_get/set/availability` (170100) |
 | `institution_directory` (view) | `plans` sem SELECT para authenticated: leitura direta falha; cliente lê por RPC; decisão de code review |
 
 ## Code review R04 (item 7): achados, sem alteração

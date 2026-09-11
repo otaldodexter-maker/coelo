@@ -1,12 +1,12 @@
 {
- "revision": 43,
+ "revision": 44,
  "round": "E2-R05-20260911",
  "role": "Coordenacao da tarde R05 - Claude Opus (C0)",
  "writer": "coordenador-claude",
  "app": "Claude Code (VS Code)",
  "model": "claude-opus-5",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T13:18:00-03:00",
+ "updatedAt": "2026-09-11T14:30:00-03:00",
  "relogio": "relogio da maquina; posse as 12:03 -03:00 de 11/09/2026",
  "posseR04": {
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -233,6 +233,7 @@
   "41": "12:57 lotes 29-32 em producao (ponte do Principal, revoke de authenticated, @ de pessoas, anexos do chat); G-SUP concluido pela G7; branches de G2/G4/G5/G7 integradas",
   "42": "13:10 lotes 33-35 em producao (forms media R2, hotfix safeupdate, P36); deltas de Auditoria aplicados; regra de Sair/sessoes",
   "43": "13:18 lote 36 (P32) em producao apos correcao; espelho reconstruido; deltas de formularios (7) e realm-interno (7) aplicados: FE 71 / BE done 74 / E2E 48; goldens afetados pelo composto atribuidos a G7",
+  "44": "14:30 lotes 37-43 em producao (18 pacotes; total da rodada 16 lotes, 32 pacotes); chat-media, form-operations e form-media implantadas; deltas de G1/G2/G3/G7 aplicados (FE 94 / BE done 96 / E2E 67); sessoes renomeadas apos reinicio ~14:10; aprovacao G-SUP do Owner",
   "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina."
  },
  "fechamentoR03": {
@@ -470,7 +471,7 @@
   "nota": "percentuais finais com denominadores homogeneos no fechamento (04:30-05:20); aprovacao visual nao vira verified"
  },
  "ordemDoOwner2350": "Owner foi dormir: nenhuma conversa para ate a entrega (frentes ~04:00 com mini-revisao; coordenador ~05:00); coordenador acorda as filhas ociosas por mensagem; todos usam o maximo de subagentes e rtk. Seis frentes acordadas as 23:55 (estavam ociosas desde 23:43-23:49)",
- "sessionName": "coelo-04 (apos o reinicio; antes coelo-83)",
+ "sessionName": "coelo-b5 (12:00-14:10) -> coelo-25 (apos o reinicio das sessoes ~14:10; a maquina nao reiniciou, boot 00:27; RAM livre 0,85 GB as 14:20)",
  "incidenteReinicio0027": {
   "quando": "2026-09-11T00:27:49-03:00 (LastBootUpTime)",
   "causa": "esgotamento de memoria da maquina (frentes mediram RAM livre ~20 MB, 11 flutter_tester, 45 Chromes, forks falhando com 'Resource temporarily unavailable'); a maquina reiniciou e todas as conversas cairam",
@@ -778,7 +779,7 @@
    "branch": "work/etapa2-r05-estrutura",
    "rev": 41,
    "head": "22a5a6f76",
-   "sessao": "coelo-5d",
+   "sessao": "coelo-65",
    "ack": true,
    "recebidoEm": "2026-09-11T12:25:00-03:00",
    "estado": "aberta; primeira revisao da R05 lida",
@@ -788,7 +789,7 @@
    "branch": "work/etapa2-r05-acessos-pessoas",
    "rev": 122,
    "head": "ad09813cf",
-   "sessao": "coelo-a9",
+   "sessao": "coelo-5d",
    "ack": true,
    "recebidoEm": "2026-09-11T12:25:00-03:00",
    "estado": "person_handles_v1 em producao (lote 31); P31 no cliente commitado; convites provados por REST",
@@ -798,7 +799,7 @@
    "branch": "work/etapa2-r05-formularios-cuidado-rotina",
    "rev": 36,
    "head": "7fe204565+",
-   "sessao": "coelo-8b",
+   "sessao": "coelo-de",
    "ack": true,
    "recebidoEm": "2026-09-11T12:25:00-03:00",
    "estado": "forms.publish/overview E2E; candidato 220000 (rotina can_manage) com pgTAP pendente; subagentes: Edge Function form-media e contrato de Assiduidade",
@@ -808,7 +809,7 @@
    "branch": "work/etapa2-r05-principal-chat-sistema",
    "rev": 22,
    "head": "321d6bc1c",
-   "sessao": "coelo-02",
+   "sessao": "coelo-c2",
    "ack": true,
    "recebidoEm": "2026-09-11T12:25:00-03:00",
    "estado": "ponte do Principal em producao (lote 29); prova da rota real em curso",
@@ -818,7 +819,7 @@
    "branch": "work/etapa2-r05-realm-interno",
    "rev": 21,
    "head": "1c5aa804b",
-   "sessao": "coelo-dd (por exclusao; sem resposta)",
+   "sessao": "coelo-38",
    "ack": true,
    "recebidoEm": "2026-09-11T12:25:00-03:00",
    "estado": "finalizado (mini-revisao rev 21): 6 pacotes em producao (lotes 28,30,32,33,35,36); segue em trabalho independente ate 15:45"
@@ -827,7 +828,7 @@
    "branch": "work/etapa2-r05-publicacoes-agenda",
    "rev": 32,
    "head": "38b0b1f2e",
-   "sessao": "coelo-11",
+   "sessao": "coelo-da",
    "ack": true,
    "recebidoEm": "2026-09-11T12:25:00-03:00",
    "estado": "P33/P34 aplicados, goldens agenda_* regravados (291/291), pagina lado a lado duvidas-visuais.html; agenda.request/permissions/location em curso"
@@ -836,7 +837,7 @@
    "branch": "work/etapa2-r05-operacoes",
    "rev": 23,
    "head": "2e5ebc3e1",
-   "sessao": "coelo-af",
+   "sessao": "coelo-0c",
    "ack": true,
    "recebidoEm": "2026-09-11T12:25:00-03:00",
    "estado": "Auditoria verified-e2e (3); Planos em curso; Sair/sessoes seguradas ate 15:30",
@@ -961,7 +962,14 @@
    "lote 33: 20260911210300 (realm-interno)",
    "lote 34: 20260911170200 (acessos-pessoas, hotfix)",
    "lote 35: 20260911210400 (realm-interno)",
-   "lote 36: 20260911210500 (realm-interno)"
+   "lote 36: 20260911210500 (realm-interno)",
+   "lote 37: 210600, 210700 (realm-interno)",
+   "lote 38: 130100 (principal), 220100 (formularios)",
+   "lote 39: 230000 (formularios), 210800 (realm-interno), 200000 (operacoes), 170300 (acessos)",
+   "lote 40: 220000 (formularios)",
+   "lote 41: 190000 (publicacoes)",
+   "lote 42: 180000 (estrutura), 130200, 130300 (principal), 200100 (operacoes), 210900, 211000 (realm-interno)",
+   "lote 43: 211100 (realm-interno), 190100, 190200, 190300 (publicacoes)"
   ],
   "proximos": [
    "candidatos verdes das frentes na ordem de chegada"
@@ -982,7 +990,10 @@
   "destrava": "institutions.edit (G1 liga o cliente sobre o contrato de realm-interno.json rev 17)"
  },
  "chavesCriadasR05": [
-  "vault.secrets coelo_person_identity_hmac_v1 (HMAC v1 do catalogo app_private.person_identity_identifiers; lote 28; rotacao exige migration que troque a versao da chave e refaca os HMAC)"
+  "vault.secrets coelo_person_identity_hmac_v1 (HMAC v1 do catalogo app_private.person_identity_identifiers; lote 28; rotacao exige migration que troque a versao da chave e refaca os HMAC)",
+  "secret de Edge Function CHAT_MEDIA_WORKER_SECRET + Vault chat_media_worker_secret (mesmo valor; arquivo local Coelo-backups/chat-media-worker-secret.env; rotacao: gerar novo hex de 32 bytes, supabase secrets set e vault.update_secret)",
+  "secret CHAT_MEDIA_ALLOWED_ORIGINS (nao e segredo: lista de origens)",
+  "Vault chat_media_worker_url, form_media_worker_url, forms_media_worker_url (URLs publicas das funcoes, nao segredos)"
  ],
  "lote29": {
   "aplicadoEm": "12:40; ledger 20260911130000",
@@ -1038,6 +1049,16 @@
    "tipo": "visual",
    "pagina": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/duvidas-visuais.html",
    "texto": "calendario da Agenda conforme o iPhone (P33) e rodape do detalhe (P34): aprovar os goldens regravados (R iPhone, A atual)"
+  },
+  {
+   "id": "P43",
+   "frente": "operacoes",
+   "texto": "account.sessions (listar/revogar sessoes): recomendacao pos-MVP"
+  },
+  {
+   "id": "P44",
+   "frente": "operacoes",
+   "texto": "Catalogo (indice/fingerprints): recomendacao pos-MVP"
   }
  ],
  "lote33": {
@@ -1088,6 +1109,29 @@
    "arquivo": "evidence/etapa-2/r05-realm-interno/deltas-be-r05.json",
    "n": 7,
    "efeito": "BE local-green em institutions.edit, chat.attach, forms.upload/resolve-file/download/expire-file/delete-file (SQL em producao; gateway/Edge Function ainda ausente)"
+  },
+  {
+   "grupo": "formularios",
+   "arquivo": "deltas-r05-fcr.json",
+   "n": "rev 37",
+   "efeito": "forms.monitor/respond/responses/response-detail, child-safety.* etc.; E2E 52"
+  },
+  {
+   "grupo": "operacoes",
+   "arquivo": "deltas-r05-ops-plans.json + deltas-r05-ops-audit-export-theme.json + deltas-r05-ops-plans-done-support-assignee.json",
+   "efeito": "plans.list/create/edit E2E, audit.export/account.theme FE verified, support.close/detail com responsavel"
+  },
+  {
+   "grupo": "estrutura",
+   "arquivo": "deltas-r05-estrutura.json",
+   "n": 21,
+   "efeito": "institutions.edit, activities.create/detail/edit/location, units.edit/status em E2E"
+  },
+  {
+   "grupo": "acessos-pessoas",
+   "arquivo": "deltas-r05.json",
+   "n": 26,
+   "efeito": "access-profiles.list/detail, people.list/links/reload E2E; invites/students BE done"
   }
  ],
  "sessaoUnicaNaoExiste": "13:00: G1 relatou SAI_SESSION_INVALID e suspeitou de sessao unica por usuario; medido em producao: auth.sessions do qa-r03 com 2 sessoes vivas (12:43 e 12:50). Causa: Sair global / revogacao de sessoes por outra frente. Regra do dia: account.logout e account.sessions so depois de 15:30 com aviso; frentes fecham a aba em vez de Sair.",
@@ -1103,5 +1147,89 @@
   "aberto": "tela de politicas macro da unidade e consumo do sino no cliente (frente formularios-cuidado / acessos)"
  },
  "espelhoLocalR05": "coelo_baseline reconstruido as 13:05-13:13 (db reset baseline+seed + psql das 115 migrations de ordem-de-aplicacao-producao.txt) para descartar a primeira versao do 210500; script rebuild-espelho.sh no scratchpad da sessao",
- "goldensAfetadosPeloComposto": "a correcao do composto de tabela (G-SUP, 0e4b2f27c) muda goldens de diretorios de outras familias na base integrada: access_profile_golden_test (1), forms_directory_golden_test (3), daily_routine_golden_test (1); todos passavam em origin/dev 9bf60463b. Atribuido a G7 regravar em um unico commit apos conferir que a diferenca e so o alinhamento das celulas"
+ "goldensAfetadosPeloComposto": "a correcao do composto de tabela (G-SUP, 0e4b2f27c) muda goldens de diretorios de outras familias na base integrada: access_profile_golden_test (1), forms_directory_golden_test (3), daily_routine_golden_test (1); todos passavam em origin/dev 9bf60463b. Atribuido a G7 regravar em um unico commit apos conferir que a diferenca e so o alinhamento das celulas",
+ "sessoesR05Apos1410": {
+  "estrutura": "coelo-65",
+  "acessos-pessoas": "coelo-5d",
+  "formularios-cuidado-rotina": "coelo-de",
+  "principal-chat-sistema": "coelo-c2",
+  "realm-interno": "coelo-38",
+  "publicacoes-agenda": "coelo-da",
+  "operacoes": "coelo-0c",
+  "semGrupo": "coelo-f9 (sessao nova sem prompt)"
+ },
+ "lote37": {
+  "aplicadoEm": "13:27; ledger 210600, 210700",
+  "dump": "schema-producao-20260911-lote37.sql",
+  "conteudo": [
+   "realm-interno 210600 institution_people_handles_v1 (handle de representantes/administradores no detail_v2; 4/4 + contacts 38/38)",
+   "realm-interno 210700 chat_media_expire_dispatch_v1 (cron coelo-chat-media-expire */5 lendo Vault chat_media_worker_url/secret)"
+  ],
+  "deploy": "Edge Function chat-media implantada 13:25 (401 sem JWT); secrets CHAT_MEDIA_WORKER_SECRET (gerado localmente, valor so em Coelo-backups/chat-media-worker-secret.env) e CHAT_MEDIA_ALLOWED_ORIGINS; Vault chat_media_worker_url/chat_media_worker_secret"
+ },
+ "lote38": {
+  "aplicadoEm": "13:33; ledger 130100, 220100",
+  "dump": "schema-producao-20260911-lote38.sql",
+  "conteudo": [
+   "principal-chat-sistema 130100 principal_context_handles_and_coelo_profile_v1 (@ nos contextos, reserved_handles coelo/coelo.me, pessoa Coelo; 14/14 + runtime_contexts 13/13)",
+   "formularios-cuidado-rotina 220100 attendance_superadmin_contract_v1 (23 RPCs superadmin_attendance*; 141/141)"
+  ],
+  "deploy": "form-operations reimplantada a partir de dev (v11 era de 20/08 e nao tinha export_xlsx_r2_v1); form-media implantada com o ramo question-image da G3"
+ },
+ "lote39": {
+  "aplicadoEm": "13:40; ledger 230000, 210800, 200000, 170300",
+  "dump": "schema-producao-20260911-lote39.sql",
+  "conteudo": [
+   "formularios 230000 form_media_r2_cleanup_dispatch_v1 (cron coelo-form-media-r2-cleanup; Vault form_media_worker_url gravado)",
+   "realm-interno 210800 forms_answer_media_r2_v1 (answer-image no R2; 14/14)",
+   "operacoes 200000 superadmin_plans_platform_scope_v1 (achado de seguranca: perfil de instituicao com plan.change criava plano da plataforma; 40/40)",
+   "acessos-pessoas 170300 institution_profile_system_model_create_v1 (defeito 23514 ao criar perfil Admin; modelo de sistema sem institution_id; 8/8)"
+  ]
+ },
+ "lote40": {
+  "aplicadoEm": "13:50; ledger 220000",
+  "dump": "schema-producao-20260911-lote40.sql",
+  "conteudo": [
+   "formularios 220000 daily_routine_directory_can_manage_v1 (15/15)"
+  ]
+ },
+ "lote41": {
+  "aplicadoEm": "13:55; ledger 190000",
+  "dump": "schema-producao-20260911-lote41.sql",
+  "preflight": "primeira versao 5 ok + 25 erros (fixture duplicava a membership espelhada pela ponte do Principal); devolvida a G6, fixture idempotente 14/14",
+  "conteudo": [
+   "publicacoes-agenda 190000 circular_actor_internal_bridge_v1 (ator interno em attach/respond de Circulares; owner alcanca qualquer audiencia)"
+  ]
+ },
+ "lote42": {
+  "aplicadoEm": "13:55 (tres primeiros) e 14:20 (tres restantes: a aplicacao foi interrompida pelo reinicio das sessoes; conferido por objeto antes de retomar); ledger 180000, 130200, 130300, 200100, 210900, 211000",
+  "dump": "schema-producao-20260911-lote42.sql",
+  "conteudo": [
+   "estrutura 180000 structure_handles_v1 (groups.handle hierarquico com backfill, structure_handle_in_use, superadmin_structure_handle_availability_v1/set_v1 com trava de 30 dias; 24/24)",
+   "principal-chat-sistema 130200 happens_feed_owner_visibility_v1 (feed do Acontece para role_code owner; 6/6)",
+   "principal-chat-sistema 130300 moments_feed_and_withdrawal_baseline (list_visible_moments ausente em producao; 23/23)",
+   "operacoes 200100 superadmin_support_assignees_v1 (responsaveis do Suporte por RPC; 28/28)",
+   "realm-interno 210900 forms_media_expire_dispatch_v1 (cron coelo-forms-media-expire por Bearer do Vault; Vault forms_media_worker_url gravado)",
+   "realm-interno 211000 plans_select_for_institution_directory_v1 (grant SELECT que materializa a policy plans_platform_read; 4/4)"
+  ],
+  "deploy": "form-media reconciliada (G3 question-image + G5 ramos R2 de respostas atras de COELO_FORMS_MEDIA_PROVIDER, nao ligado) reimplantada 14:22"
+ },
+ "lote43": {
+  "aplicadoEm": "14:26; ledger 211100, 190100, 190200, 190300",
+  "dump": "schema-producao-20260911-lote43.sql",
+  "conteudo": [
+   "realm-interno 211100 structure_handles_create_payload_v1 (@ opcional na criacao de unidade/turma/atividade e handle nos detail_v2; 18/18 + detail 33/31)",
+   "publicacoes-agenda 190100 agenda_requests_labels_v1 (7/7)",
+   "publicacoes-agenda 190200 circulars_media_private_r2_v1_reapply (a migration historica de R2 de Circulares nao estava em producao: prepare devolvia bucket do Storage; 45/46, a 46a exige a linha do bucket legado que so producao tem)",
+   "publicacoes-agenda 190300 superadmin_circulars_v2_media_v1 (bloco de midia no gateway v2; bridge 18/18, v2 34/34)"
+  ]
+ },
+ "metricasParciais1430": {
+  "feVerified": "94/231",
+  "beDone": "96/224",
+  "e2eVerified": "67/199",
+  "base": "validate-trackers PASS na worktree da coordenacao (da1919e40+), antes do push"
+ },
+ "aprovacaoDoOwner1420": "G-SUP (artefato 7737ccf7): 'esta tudo aprovado, ficou legal' -> G7 registrou ownerVisualApproval=A em support_*_light_* e plan_table_light_*",
+ "conflitoFormMedia": "G3 e G5 escreveram a Edge Function form-media em paralelo (falha de coordenacao: o prompt da G5 tinha o item 4 forms_files e o da G3 o item 3 com a mesma funcao). Resolvido pela G5 (rev 26): mantida a versao da G3 (implantada) + ramos R2 de respostas atras de env; regra nova: uma unica frente por Edge Function, definida no prompt"
 }

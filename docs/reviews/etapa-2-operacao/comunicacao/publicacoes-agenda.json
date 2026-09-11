@@ -1,15 +1,15 @@
 {
-  "revision": 33,
+  "revision": 34,
   "round": "E2-R05-20260911",
   "group": "publicacoes-agenda",
   "tool": "Claude Code",
   "model": "Opus 5 (1M), esforco medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-publicacoes-agenda",
   "branch": "work/etapa2-r05-publicacoes-agenda",
-  "head": "22a75bd6f",
+  "head": "bc1fe917e",
   "base": "origin/dev 2f6a6114f",
   "coordinator": "Claude (R05 · Coordenacao da tarde)",
-  "updatedAt": "2026-09-11T13:28:00-03:00",
+  "updatedAt": "2026-09-11T14:10:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -61,7 +61,7 @@
     "memoryNote": "R05: maximo dois Chrome por conversa, um flutter test por vez.",
     "closedAt": "03:12: Chrome 9334 e servidor 3006 fechados de novo; nenhum processo meu restante."
   },
-  "firstGate": "Coordenador aplicar 20260911190000 em producao -> reexecutar prova-producao-r05.js (attach com R2 e respond) -> rota real com Chrome (agenda.permissions/request/location, notices.schedule, circulars.edit/schedule).",
+  "firstGate": "circulars.edit explicito e picker de agendamento pela tela (Chrome aberto no compositor); depois attach/respond na tela apos o coordenador aplicar 20260911190000.",
   "status": "em andamento",
   "findings": [
     "Presença em produção (mapa r03-coordenacao): notices_v2 185008 = 1/16 (só analytics.notice_events); circulars_v2 191921 = 0/14; circulars_media_r2 212000 = 6/6; agenda 183836/193717 presentes (superadmin_agenda_list/get/contexts/save/command/requests/decide_publication em public).",
@@ -94,6 +94,18 @@
       "decision": "owner da instituicao alcanca qualquer audiencia de Circular (P23 Owner faz tudo no contexto; P35 Superadmin ve tudo). Se o Owner discordar, retirar a linha owner de circular_audience_matches_role/person_matches_scope.",
       "compositionKey": "nenhuma (SupabaseCircularMediaRepository e SupabaseCircularResponseRepository ja compostos)",
       "sha": "22a75bd6f"
+    },
+    {
+      "order": 2,
+      "file": "packages/coelo_database/candidatos/publicacoes-agenda/20260911190100_agenda_requests_labels_v1.sql",
+      "actionIds": [
+        "agenda.request"
+      ],
+      "pgtap": "supabase/tests/agenda_requests_labels_v1_test.sql 7/7 PASS (descartavel coelo_pa_r05 com os lotes de hoje)",
+      "applyNote": "create or replace de public.superadmin_agenda_requests (mesma assinatura e guarda); acrescenta title, institution_name, requested_by_name, decided_by_name. Transacional, sem grant novo.",
+      "gate": "Tela Aprovacoes de publicacao mostrava \"Evento <uuid>\", UUID da instituicao e da pessoa. O app (bc1fe917e) ja le os rotulos com UUID como reserva.",
+      "compositionKey": "nenhuma",
+      "sha": "bc1fe917e"
     }
   ],
   "compositionKeys": [],
@@ -111,7 +123,7 @@
     "unknown": "bateria completa do app nao repetida (um flutter test por vez); rota real ainda nao exercida nesta rodada"
   },
   "blocked": "nenhum",
-  "next": "Rota real com o build web-qa ja compilado (um Chrome): agenda.permissions, agenda.request (pedido criado por RPC aparece na tela de pedidos), notices.schedule pela tela, circulars.edit explicito e picker de agendamento.",
+  "next": "circulars.edit/schedule pela tela; reexecutar prova-producao-r05.js quando 20260911190000 estiver em producao; agenda.location por RPC apontando para QA R04 Cuidado (d0c4...0001, que tem unidade).",
   "changes": [
     {
       "sha": "5edfccef9",
@@ -150,6 +162,17 @@
       ],
       "what": "Prova R05 em producao por RPC/Edge Function com qa-r03 (docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/prova-producao-r05.js, resultado .json): 14/18. agenda.request PASSOU ponta a ponta no BE (rascunho -> request_publication -> superadmin_agenda_requests lista pending -> decide aprovar -> evento published -> reload -> limpeza). circulars.schedule/edit por RPC PASSARAM. circulars.attach e respond FALHARAM no gate acima -> candidato 20260911190000. agenda.location: nenhuma unidade na instituicao sintetica 9f04...0010 (a unidade d0c4...0002 pertence a QA R04 Cuidado): reexecutar apontando para d0c4...0001 (script escolhe a instituicao com unidade na proxima rodada) . circulars.publish \"publicar imediato a agendada\" -> CIRCULAR_INVALID_STATE (scheduled nao republica: comportamento esperado do gateway; ajustar script).",
       "tests": "pgTAP 14/14 + regressao 49/49; historicos circulars_media_private_r2_v1_test (22 not ok) e circulars_authorization_behavior_test (fixture uuid invalido) ja falhavam antes do candidato: registrados como pos-MVP"
+    },
+    {
+      "sha": "bc1fe917e",
+      "actionIds": [
+        "agenda.request",
+        "agenda.view",
+        "notices.schedule",
+        "notices.publish"
+      ],
+      "what": "Rota real com qa-r03 (build web-qa profile em 127.0.0.1:3006, Chrome CDP 9335): ui-02 /agenda com a referencia iOS em producao (hoje em circulo, cancelados hachurados, Hoje no rodape); ui-05..ui-08 /agenda/approvals: pedido pendente criado por RPC aparece, Decidir -> motivo -> Aprovar pela tela persistiu e sobreviveu a recarga completa; ui-10..ui-19 /notices/new: aviso criado pela tela com data 18/09 13:51 escolhida no seletor Coelo (data + hora) -> \"Publicacao agendada\" -> diretorio apos recarga completa mostra \"Desde 18/09/2026\"; RPC confirma status scheduled. Worker real: aviso agendado por RPC para +2 min virou active com reach 18 (notice_receipts materializados pelo cron/worker, P30).",
+      "tests": "capturas em docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/ui/"
     }
   ],
   "pendingForCoordinator": [
@@ -178,6 +201,26 @@
         "circulars.attach"
       ],
       "pending": "Testes historicos circulars_media_private_r2_v1_test e circulars_authorization_behavior_test falham na forma atual de producao (independente do candidato): pos-MVP, revisar/aposentar."
+    },
+    {
+      "actionIds": [
+        "notices.list"
+      ],
+      "pending": "ACHADO visual no diretorio de Avisos apos o composto 11c4bfbef (G-SUP): a pastilha \"Aviso\" da coluna Tipo esticou para a altura da linha (ui-19). Dono: composto CoeloAdminResizableTable / coelo-ui."
+    },
+    {
+      "actionIds": [
+        "agenda.view",
+        "agenda.detail"
+      ],
+      "pending": "pgTAP historico agenda_internal_realm_compat_v1_test falha 4/22 sobre a ordem real apos o lote 29 (ponte do Principal): testes 10-12 esperam colunas de pessoa nulas para o ator interno e o 16 espera negativa de leitura para identidade escopada; o comportamento novo (pessoa de servico + P7) parece intencional, mas falta uma assercao cross-tenant na lista. Dono: G4/G5/coordenador."
+    },
+    {
+      "actionIds": [
+        "circulars.create",
+        "circulars.publish"
+      ],
+      "pending": "O balao de chat \"Mensagens\" aparece sobre o compositor de Circular enquanto carrega o seletor de instituicao (ui-22): a supressao (Decisao 7) so entra com o SuperadminFormFrame apos escolher a instituicao. Dono: principal-chat-sistema/shell."
     }
   ],
   "proposedDeltas": [
@@ -210,6 +253,42 @@
       "layer": "BE",
       "proposed": "local-green (pgTAP 14/14) -> done apos aplicar 20260911190000 e reexecutar a prova",
       "evidence": "22a75bd6f"
+    },
+    {
+      "actionId": "agenda.request",
+      "layer": "FE",
+      "proposed": "verified",
+      "evidence": "ui-05..ui-08 (rota normal, decisao pela tela, reload)"
+    },
+    {
+      "actionId": "agenda.request",
+      "layer": "E2E",
+      "proposed": "verified-e2e",
+      "evidence": "FE verified + BE done (prova RPC + pgTAP 200300/190100) + reload"
+    },
+    {
+      "actionId": "notices.schedule",
+      "layer": "FE",
+      "proposed": "verified",
+      "evidence": "ui-13..ui-19: data/hora pelo seletor, Publicar -> agendada, reload"
+    },
+    {
+      "actionId": "notices.schedule",
+      "layer": "E2E",
+      "proposed": "verified-e2e",
+      "evidence": "FE verified + BE done + worker real materializou (scheduled -> active, reach 18)"
+    },
+    {
+      "actionId": "notices.publish",
+      "layer": "E2E",
+      "proposed": "verified-e2e",
+      "evidence": "ui-32/33 (R04) + worker real com reach>0 (P30 fechado)"
+    },
+    {
+      "actionId": "agenda.permissions",
+      "layer": "FE",
+      "proposed": "verified (rota /agenda/permissions redireciona por design para /profiles, dde3e6229)",
+      "evidence": "ui-03; contexts em producao"
     }
   ],
   "questionsToOwner": [

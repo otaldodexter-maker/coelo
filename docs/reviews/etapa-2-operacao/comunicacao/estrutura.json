@@ -1,8 +1,8 @@
 {
  "grupo": "estrutura",
- "revision": 43,
+ "revision": 44,
  "round": "E2-R05-20260911",
- "updatedAt": "2026-09-11T13:26:36-03:00",
+ "updatedAt": "2026-09-11T14:21:27-03:00",
  "app": "Claude",
  "modelo": "Opus 5 (esforco medio)",
  "conversa": "R05 · Estrutura (G1)",
@@ -119,7 +119,7 @@
   {
    "n": 0,
    "item": "Atividades: cherry-pick 44574dfda + 631f9de52; test/features/activities verde; rebuild qa_main; provar activities.create e activities.edit na rota real; reexecutar as suites pgTAP de Locais dos lotes 46-49 antes de cita-las",
-   "estado": "PROVADO na rota real com qa-r03 (build df8ef50ca servido em 127.0.0.1:3001): activities.create (save por superadmin_activity_location_create_v2 -> activity 95b98978, draft, management_version 5, local 82e92854; lista recarregada mostra), activities.detail (detail_v2, reload), activities.edit (rename por save_v2 -> management_version 11, detalhe recarregado mostra o nome novo, categoria hidratada do catalogo), activities.location (local do catalogo escolhido na criacao). Correcoes no caminho: icon_key (CHECK do banco), catalogo no modo edicao, botao Editar do detalhe (proximo build). pgTAP de Locais 46-49: ainda nao reexecutado (espelho nao levantado por memoria)",
+   "estado": "PROVADO na rota real com qa-r03 (build df8ef50ca servido em 127.0.0.1:3001): activities.create (save por superadmin_activity_location_create_v2 -> activity 95b98978, draft, management_version 5, local 82e92854; lista recarregada mostra), activities.detail (detail_v2, reload), activities.edit (rename por save_v2 -> management_version 11, detalhe recarregado mostra o nome novo, categoria hidratada do catalogo), activities.location (local do catalogo escolhido na criacao). Correcoes no caminho: icon_key (CHECK do banco), catalogo no modo edicao, botao Editar do detalhe (proximo build). pgTAP de Locais dos lotes 46-49 REEXECUTADO no espelho coelo_estrutura_r05 (baseline + 116 lotes): authorization 26/26, isolation 6/6, catalog 30/30, copy 19/19, schedule 38/38, update_status 28/28, reservations 49/49, consumer_bindings 30/30",
    "action_ids": [
     "activities.create",
     "activities.edit"
@@ -128,7 +128,7 @@
   {
    "n": 1,
    "item": "institution_contacts_v1 em candidatos/estrutura (faixa 2026091118xxxx): documento, contato, representantes/administradores como pessoas do realm interno; pgTAP verde; alinhar com realm-interno pelo JSON; fechar institutions.edit na rota real",
-   "estado": "backend em producao pela G5 (lote 28, 20260911210000); cliente: repositorio de Instituicoes manda documento/contato/representantes/administradores por superadmin_institution_contacts_edit_v1 apos o edit_core e le representatives/administrators do detalhe (nao commitado: testes do repositorio a ajustar)",
+   "estado": "FECHADO na rota real: institutions.edit (CNPJ, representante, administradora) persistiu por superadmin_institution_contacts_edit_v1 (lote 28 da G5) com management_version 2 e o reload mostra pessoas e documento; correcoes no cliente: contrato de contatos no repositorio, owner_* fora dos campos sem contrato, edit_core so quando o nucleo muda (servidor rejeita no-op)",
    "action_ids": [
     "institutions.edit"
    ]
@@ -156,7 +156,7 @@
   {
    "n": "transversal",
    "item": "Regra do @ (ADR 0034 Decisao 16): Identificador = @ com icone @, padrao hierarquico gerado no servidor, editavel com disponibilidade enquanto digita, troca 1x/30 dias (handle_last_changed_at + RPC de disponibilidade) em unidades, turmas e atividades; P36 no formulario e no servidor; rodape cancelar esquerda/salvar direita; estado vazio completo",
-   "estado": "pendente"
+   "estado": "BACKEND PRONTO: candidatos/estrutura/20260911180000_structure_handles_v1.sql (groups.handle hierarquico + trava 30 dias + RPC de disponibilidade e troca), pgTAP 24/24 no espelho, commit 57cd4b5b3; coordenador aplica; G5 completa payload dos RPCs v2 e handle no detail_v2 de Turmas. CLIENTE (campo Identificador = @ com verificacao enquanto digita) ainda pendente"
   }
  ],
  "primeiroGate": "nenhum bloqueio; o \"sessao unica\" era logout global de outra frente (coordenador segurou as provas de Conta ate 15:30)",
@@ -167,18 +167,28 @@
   "units.edit e units.status na rota real (units-edit-*.jpg, units-status-ativa-salva.jpg, units-list-apos-status.jpg)",
   "Achado corrigido: o cliente enviava icon_key=\"activity\" (nome do enum) e activity_definitions_identity_icon_check so aceita as 12 chaves legadas -> save_v2 SAI_INTERNAL_ERROR sem detalhe. ActivityIdentityIcon.databaseKey (school, sports_soccer, music_note, science, palette) + teste",
   "Achado corrigido: rota de detalhe de Atividades nunca passava onEdit (botao Editar sempre desligado); ligado com hasStructureMutationCapability + teste de rota",
-  "Achado: form_options_v2 so lista unidades/turmas status=active; a unidade sintetica estava draft. Ativada pela rota real (units.status)"
+  "Achado: form_options_v2 so lista unidades/turmas status=active; a unidade sintetica estava draft. Ativada pela rota real (units.status)",
+  "institutions.edit na rota real (institutions-edit-*.jpg): documento + representante + administradora persistidos e recarregados",
+  "Pacote structure_handles_v1 verde (24/24) e regressao pgTAP com o candidato aplicado: group_detail 33/33, group_location_create 46/46, activity_save_v2 46/46, activities security_contract 37/37, unit_detail 31/31, institution_create_v2 31/31"
  ],
  "testes": {
-  "P": "activity_form_page 31 + activity_form_controller 18 + activity_routes 11 (todos verdes); test/features/activities 343 antes das correcoes",
-  "F": "9 goldens de activity_golden_test pre-existentes na base (regravar apos merge de 2ccab05f9 com o composto de tabela corrigido)",
+  "P": "activity_form_page 31, activity_form_controller 18, activity_routes 11, institutions repositorio 29, suite de Instituicoes 227/228; pgTAP: handles 24, Locais 226, regressao 224",
+  "F": "1 golden institution_directory_page (disabled pagination) e 9 goldens activity_golden_test: pre-existentes; composto de tabela mudou em dev (regravar depois do merge)",
   "B": 0,
   "S": 0,
   "U": 0,
-  "evidencia": "commits df8ef50ca e HEAD"
+  "evidencia": "commits df8ef50ca, 9a9b6ee3f, fe2cf49f9, 57cd4b5b3, 5a4a0213c"
  },
- "pacotesProntos": [],
- "deltasPropostos": "a escrever em evidence/etapa-2/r05-estrutura/deltas-r05-estrutura.json: activities.create/detail/edit/location FE verified + BE done + E2E verified-e2e; units.edit e units.status FE verified + BE done + E2E verified-e2e (RLS: pgTAP units_rpcs_versioned/unit_detail ja em producao; conferir negativa cross-tenant antes de propor)",
+ "pacotesProntos": [
+  {
+   "carimbo": "20260911180000_structure_handles_v1",
+   "origem": "novo, sobre baseline + lotes ate 35 (opcionalmente usa reserved_handles quando existir)",
+   "mudanca": "groups.handle/handle_last_changed_at + gatilho e backfill; activity_definitions.handle_last_changed_at; structure_handle_in_use; superadmin_structure_handle_availability_v1; superadmin_structure_handle_set_v1 (30 dias, recibo, auditoria)",
+   "pgTAP": "superadmin_structure_handles_v1_test 24/24",
+   "estado": "verde no espelho coelo_estrutura_r05; commit 57cd4b5b3 publicado; coordenador avisado 14:0x"
+  }
+ ],
+ "deltasPropostos": "evidence/etapa-2/r05-estrutura/deltas-r05-estrutura.json (21 entradas): activities.create/detail/edit/location, units.edit/status, institutions.edit com FE verified / BE done / E2E verified-e2e; ensaiado com apply + validate PASS (E2E 55) e revertido",
  "pedidosAoCoordenador": [
   "Nada bloqueante. Quando integrar: 3 commits desta branch (a01097422 rev 41, 016c7a714 rev 42, df8ef50ca fix icone/catalogo, e o fix do botao Editar)"
  ],
@@ -190,7 +200,13 @@
   }
  ],
  "perguntasParaOOwner": [],
- "pendenciasDeCodeReview": [],
+ "pendenciasDeCodeReview": [
+  "Texto \"Previa institucional do Coelo\" na Identidade visual de Instituicoes (D3: nao existe previa): trocar por texto sem a palavra previa",
+  "Campo \"@ da atividade\" no formulario de Atividades mostra o nome como dica e nao o handle_stem do servidor no modo edicao (o detail_v2 nao expoe handle_stem no mapeamento do cliente)",
+  "SAI_INTERNAL_ERROR do save_v2 esconde o SQLSTATE: registrar o detalhe na auditoria (reason) para diagnostico",
+  "superadmin_institution_edit_core_v2 rejeita no-op com SAI_INVALID_ARGUMENT generico; o cliente contorna, mas o servidor poderia devolver o recibo idempotente",
+  "change_unit_handle_for_superadmin (people-based) continua com carencia de 15 dias; a regra do Owner e 30 (o RPC novo aplica 30)"
+ ],
  "bloqueio": null,
  "wip": {
   "estado": "nenhum"
@@ -206,8 +222,8 @@
   ]
  },
  "ack": null,
- "proximoPasso": "testes do repositorio de Instituicoes (institutions.edit sobre contacts_edit_v1) -> rebuild -> provar institutions.edit na rota real; depois groups.members/location e assessments; regra do @ (RPC de disponibilidade) como pacote em candidatos/estrutura",
- "dadosSinteticosEmProducao": "public.groups 368a5cea (Turma QA R04 Estrutura (editada)); public.institutions 190dd028 (Escola R04 Estrutura, qa-r04-escola) + institution_addresses; public.units f5284f2f (Unidade Centro R04) + unit_addresses/unit_contacts; public.activity_locations 82e92854 (Sala R04 Estrutura, catalogo da instituicao 190dd028). Ficam ate o fim da Etapa 2 (P42). R05: activity_definitions 95b98978 (Atividade R05 Estrutura (editada), draft, unidade f5284f2f, local 82e92854) e 2e45c8bd (Atividade R05 Sonda, draft, criada por create_v2 direto para isolar o erro do icone); units f5284f2f passou a active. Ficam ate o fim da Etapa 2 (P42).",
+ "proximoPasso": "groups.members e groups.location na rota real; depois institutions.list/filter/detail/reload e units.filter/reload/locations-map/copy-institution-location (leitura); rev final antes das 15:45",
+ "dadosSinteticosEmProducao": "public.groups 368a5cea (Turma QA R04 Estrutura (editada)); public.institutions 190dd028 (Escola R04 Estrutura, qa-r04-escola) + institution_addresses; public.units f5284f2f (Unidade Centro R04) + unit_addresses/unit_contacts; public.activity_locations 82e92854 (Sala R04 Estrutura, catalogo da instituicao 190dd028). Ficam ate o fim da Etapa 2 (P42). R05: activity_definitions 95b98978 (Atividade R05 Estrutura (editada), draft, unidade f5284f2f, local 82e92854) e 2e45c8bd (Atividade R05 Sonda, draft, criada por create_v2 direto para isolar o erro do icone); units f5284f2f passou a active. Ficam ate o fim da Etapa 2 (P42). institutions 190dd028 ganhou documento 11444777000161, pessoa \"Rafaela Sintetica\" (representante legal + membership owner) as 14:19.",
  "estado": "em andamento",
  "cliente": {
   "activitiesEdit": "activity_form_page._load em modo edicao busca form_options_v2 + template_options e monta ActivityFormOptions com taxonomia; ActivityFormController.edit recebe initialCatalogError; _hydrateEdit sobe do subtipo ao pai",

@@ -21,7 +21,10 @@ import 'package:coelo_superadmin/features/chat/domain/chat_repository.dart';
 import 'package:coelo_superadmin/features/circulars/data/supabase_superadmin_circular_repository.dart';
 import 'package:coelo_superadmin/features/circulars/domain/superadmin_circular_repository.dart';
 import 'package:coelo_superadmin/features/daily_routine/domain/routine_contract.dart';
-import 'package:coelo_superadmin/features/health_care/domain/medication_plan_repository.dart';
+import 'package:coelo_superadmin/features/health_care/data/supabase_medication_plan_repository.dart';
+import 'package:coelo_superadmin/features/daily_routine/data/supabase_routine_repository.dart';
+import 'package:coelo_superadmin/features/units/data/supabase_unit_directory_repository.dart';
+import 'package:coelo_superadmin/features/groups/data/supabase_group_directory_repository.dart';
 import 'package:coelo_superadmin/features/groups/domain/group_directory.dart';
 import 'package:coelo_superadmin/features/invites/data/supabase_invite_repository.dart';
 import 'package:coelo_superadmin/features/invites/domain/platform_invite.dart';
@@ -255,16 +258,18 @@ void main() {
     expect(scope.noticeRepository, isA<SupabaseNoticeRepository>());
     expect(scope.attendanceRepository, isA<SupabaseAttendanceRepository>());
     expect(scope.studentTrackingRepository, isA<UnavailableStudentTrackingRepository>());
-    expect(scope.routineRepository, isA<UnavailableRoutineRepository>());
-    expect(scope.groupDirectoryRepository, isA<UnavailableGroupDirectoryRepository>());
-    expect(scope.unitDirectoryRepository, isA<UnavailableUnitDirectoryRepository>());
+    // Chaves ligadas na R04 (ADR 0034): Cuidado/Rotina, diretorios de Turmas e
+    // Unidades e mutacoes de estrutura compoem os adapters reais.
+    expect(scope.routineRepository, isA<SupabaseRoutineRepository>());
+    expect(scope.groupDirectoryRepository, isA<SupabaseGroupDirectoryRepository>());
+    expect(scope.unitDirectoryRepository, isA<SupabaseUnitDirectoryRepository>());
     expect(scope.unitBackendCommands, isA<SupabaseUnitBackendCommandsGateway>());
-    expect(scope.structureMutationsEnabled, isFalse);
+    expect(scope.structureMutationsEnabled, isTrue);
     expect(scope.assessmentMutationsEnabled, isTrue);
     expect(scope.attendancePermissions.canManage, isFalse);
     expect(scope.attendancePermissions.backendResolved, isTrue);
     expect(scope.auditRepository, isA<SupabaseAuditRepository>());
-    expect(scope.medicationPlanRepository, isA<UnavailableMedicationPlanRepository>());
+    expect(scope.medicationPlanRepository, isA<SupabaseMedicationPlanRepository>());
   });
 
   test('starts authenticated from a restored session and mirrors later auth changes', () async {
