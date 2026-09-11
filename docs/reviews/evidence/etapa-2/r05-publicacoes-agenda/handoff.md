@@ -17,26 +17,28 @@ timezone: "America/Sao_Paulo"
 | `agenda.permissions` | FE | rota `/agenda/permissions` redireciona por design para Perfis e permissões (`dde3e6229`); `superadmin_agenda_contexts` lista instituições/unidades/turmas em produção. |
 | `notices.schedule` | FE + E2E | `ui-13..ui-19`: data/hora pelo seletor Coelo (18/09 13:51), Publicar → "Publicação agendada", diretório após recarga completa mostra "Desde 18/09/2026"; RPC confirma `scheduled`. Worker real: aviso agendado para +2 min virou `active` com `reach 18` (P30 materializa sozinho). |
 | `circulars.respond` | BE | `20260911190000` em produção: `save_circular_response_draft` → `submit_circular_response` → `response_summary_v2` `{response_count:1, submitted_count:1}`; pgTAP 18/18 com negativas (sem membership, cross-tenant, anon). |
-| `circulars.attach` | BE (parcial) | prepare → PUT → finalize(ready) → read(signed_url) → bytes conferem → anon 401. **Ainda no bucket legado do Supabase** e o gateway v2 bloqueia o bloco de mídia: pacotes `20260911190200` e `20260911190300` verdes, aguardando aplicação. |
+| `circulars.attach` | BE | Lote 43 (190000+190200+190300) em produção: prepare presign em R2 `coelo-media-prod` (chave `tenants/…/circulars/circular/…/attachment/…/original`) → PUT → finalize ready → rascunho com bloco de mídia no gateway v2 → detail devolve asset_id → publish com mídia → read signed_url → bytes conferem; anon 401; anexo publicado imutável. Prova 34/34 (14:36). |
 | `circulars.edit` / `circulars.schedule` | BE (reforço) | RPC: edição com versão, agendar (publish_at futuro) e reload. FE pela tela não exercido (Chrome morreu por memória). |
 
 # Pacotes SQL (candidatos/publicacoes-agenda, aplicar nesta ordem)
 
-1. `20260911190000_circular_actor_internal_bridge_v1` — **já em produção** (confirmado pela prova).
-2. `20260911190100_agenda_requests_labels_v1` — pgTAP 7/7.
-3. `20260911190200_circulars_media_private_r2_v1_reapply` — 45/46 (46º exige linha do bucket legado em `storage.buckets`).
-4. `20260911190300_superadmin_circulars_v2_media_v1` — bridge 18/18, v2 34/34, delete 15/15.
+1. `20260911190000_circular_actor_internal_bridge_v1` — em produção (lote 42/43).
+2. `20260911190100_agenda_requests_labels_v1` — pgTAP 7/7 — em produção (lote 43).
+3. `20260911190200_circulars_media_private_r2_v1_reapply` — 45/46 — em produção (lote 43).
+4. `20260911190300_superadmin_circulars_v2_media_v1` — bridge 18/18, v2 34/34, delete 15/15 — em produção (lote 43).
+
+Deltas no formato do aplicador: `deltas-r05-pa.json` (13 entradas, ensaio apply + validate PASS).
 
 Prova limpa no descartável `coelo_pa_r05` (db 60522): baseline + seed + 107 migrations da ordem + 9 lotes de hoje + candidatos.
 
 # Aberto, com o primeiro gate
 
-- `circulars.attach` FE/E2E: aplicar 190200/190300 e anexar pela tela (composer real) com um Chrome.
-- `circulars.edit`, `circulars.schedule` FE: editar rascunho explícito e acionar o picker pela tela (o seletor Coelo responde à semântica — provado em Avisos).
+- `circulars.attach` FE/E2E: anexar pela tela (composer real, FilePicker nativo não é dirigível por CDP; injetar `filePicker` no host de QA) com um Chrome.
+- `circulars.edit`, `circulars.schedule` FE: editar rascunho explícito e acionar o picker pela tela — o picker só existe a partir de `66a52986f` (o host produtivo não passava `onChooseSchedule`; botão ficava desabilitado).
 - `circulars.respond` FE: não existe tela de resposta no Superadmin (fluxo do Principal); decidir se `respond` no Superadmin é só o resumo (já verified) — pergunta ao coordenador.
 - `agenda.location` FE: criar evento com contexto de unidade pelo wizard na tela.
 - Aprovação visual do Owner: P33/P34 em `duvidas-visuais.html` (R iPhone / A atual; detalhe: manter 48 px?).
-- Delete do anexo por RPC após publicar responde `media_remove_denied` — comportamento correto (mídia publicada é imutável); o script de prova deve excluir antes de publicar.
+- Delete do anexo após publicar responde `media_remove_denied` — comportamento correto (mídia publicada é imutável); coberto na prova como negativa.
 
 # Achados fora do recorte
 
