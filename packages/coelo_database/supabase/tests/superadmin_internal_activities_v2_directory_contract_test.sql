@@ -9,10 +9,14 @@ insert into public.institution_types(id,code,name,status) values
 insert into public.institutions(id,public_name,slug,status,institution_type_id) values
  ('8a200000-0000-4000-8000-000000000010','Tenant A','activities-v2-directory-a','active','8a200000-0000-4000-8000-000000000001'),
  ('8a200000-0000-4000-8000-000000000020','Tenant B','activities-v2-directory-b','active','8a200000-0000-4000-8000-000000000001');
-insert into public.units(id,institution_id,institution_type_id,name,slug,status) values
- ('8a200000-0000-4000-8000-000000000011','8a200000-0000-4000-8000-000000000010','8a200000-0000-4000-8000-000000000001','A Norte','activities-v2-directory-a-norte','active'),
- ('8a200000-0000-4000-8000-000000000012','8a200000-0000-4000-8000-000000000010','8a200000-0000-4000-8000-000000000001','A Sul','activities-v2-directory-a-sul','active'),
- ('8a200000-0000-4000-8000-000000000021','8a200000-0000-4000-8000-000000000020','8a200000-0000-4000-8000-000000000001','B Única','activities-v2-directory-b-unica','active');
+-- Forma de producao: units.unit_type_id -> public.unit_types e handle NOT NULL
+-- (a coluna institution_type_id nao existe em producao).
+insert into public.unit_types(id,code,name,status) values
+ ('8a2000f0-0000-4000-8000-000000000901','activities-v2-directory-contract-test-u0','Tipo de unidade da fixture','active');
+insert into public.units(id,institution_id,unit_type_id,name,slug,status,handle) values
+ ('8a200000-0000-4000-8000-000000000011','8a200000-0000-4000-8000-000000000010','8a2000f0-0000-4000-8000-000000000901','A Norte','activities-v2-directory-a-norte','active','activities.v2.directory.a.norte'),
+ ('8a200000-0000-4000-8000-000000000012','8a200000-0000-4000-8000-000000000010','8a2000f0-0000-4000-8000-000000000901','A Sul','activities-v2-directory-a-sul','active','activities.v2.directory.a.sul'),
+ ('8a200000-0000-4000-8000-000000000021','8a200000-0000-4000-8000-000000000020','8a2000f0-0000-4000-8000-000000000901','B Única','activities-v2-directory-b-unica','active','activities.v2.directory.b.unica');
 insert into public.groups(id,institution_id,unit_id,name,status) values
  ('8a200000-0000-4000-8000-000000000013','8a200000-0000-4000-8000-000000000010','8a200000-0000-4000-8000-000000000011','Turma A1','active'),
  ('8a200000-0000-4000-8000-000000000014','8a200000-0000-4000-8000-000000000010','8a200000-0000-4000-8000-000000000012','Turma A2 irmã','active'),

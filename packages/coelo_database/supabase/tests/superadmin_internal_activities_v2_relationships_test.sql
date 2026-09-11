@@ -10,9 +10,13 @@ insert into public.institution_types(id,code,name,status) values('73000000-0000-
 insert into public.institutions(id,public_name,slug,status,institution_type_id) values
  ('73000000-0000-4000-8000-000000000001','Activity Tenant A','activity-v2-a','active','73000000-0000-4000-8000-000000000009'),
  ('73000000-0000-4000-8000-000000000002','Activity Tenant B','activity-v2-b','active','73000000-0000-4000-8000-000000000009');
-insert into public.units(id,institution_id,name,slug,status,institution_type_id) values
- ('73000000-0000-4000-8000-000000000011','73000000-0000-4000-8000-000000000001','Unit A','activity-v2-unit-a','active','73000000-0000-4000-8000-000000000009'),
- ('73000000-0000-4000-8000-000000000012','73000000-0000-4000-8000-000000000002','Unit B','activity-v2-unit-b','active','73000000-0000-4000-8000-000000000009');
+-- Forma de producao: units.unit_type_id -> public.unit_types e handle NOT NULL
+-- (a coluna institution_type_id nao existe em producao).
+insert into public.unit_types(id,code,name,status) values
+ ('730000f0-0000-4000-8000-000000000901','activities-v2-relationships-test-u0','Tipo de unidade da fixture','active');
+insert into public.units(id,institution_id,name,slug,status,unit_type_id,handle) values
+ ('73000000-0000-4000-8000-000000000011','73000000-0000-4000-8000-000000000001','Unit A','activity-v2-unit-a','active','730000f0-0000-4000-8000-000000000901','activity.v2.unit.a'),
+ ('73000000-0000-4000-8000-000000000012','73000000-0000-4000-8000-000000000002','Unit B','activity-v2-unit-b','active','730000f0-0000-4000-8000-000000000901','activity.v2.unit.b');
 insert into public.groups(id,institution_id,unit_id,name,group_type,status) values
  ('73000000-0000-4000-8000-000000000021','73000000-0000-4000-8000-000000000001','73000000-0000-4000-8000-000000000011','Group A','class','active'),
  ('73000000-0000-4000-8000-000000000022','73000000-0000-4000-8000-000000000002','73000000-0000-4000-8000-000000000012','Group B','class','active');

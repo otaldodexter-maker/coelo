@@ -13,11 +13,15 @@ insert into public.institution_types(id,code,name,status) values
 insert into public.institutions(id,public_name,slug,status,institution_type_id) values
  ('8b100000-0000-4000-8000-000000000010','Command Tenant A','activities-v2-command-a','active','8b100000-0000-4000-8000-000000000001'),
  ('8b100000-0000-4000-8000-000000000020','Command Tenant B','activities-v2-command-b','active','8b100000-0000-4000-8000-000000000001');
-insert into public.units(id,institution_id,institution_type_id,name,slug,status) values
- ('8b100000-0000-4000-8000-000000000011','8b100000-0000-4000-8000-000000000010','8b100000-0000-4000-8000-000000000001','A Norte','activities-v2-command-a-norte','active'),
- ('8b100000-0000-4000-8000-000000000012','8b100000-0000-4000-8000-000000000010','8b100000-0000-4000-8000-000000000001','A Sul','activities-v2-command-a-sul','active'),
- ('8b100000-0000-4000-8000-000000000015','8b100000-0000-4000-8000-000000000010','8b100000-0000-4000-8000-000000000001','A Leste não vinculada','activities-v2-command-a-leste','active'),
- ('8b100000-0000-4000-8000-000000000021','8b100000-0000-4000-8000-000000000020','8b100000-0000-4000-8000-000000000001','B Única','activities-v2-command-b-unica','active');
+-- Forma de producao: units.unit_type_id -> public.unit_types e handle NOT NULL
+-- (a coluna institution_type_id nao existe em producao).
+insert into public.unit_types(id,code,name,status) values
+ ('8b0000f0-0000-4000-8000-000000000901','activities-v2-commands-test-u0','Tipo de unidade da fixture','active');
+insert into public.units(id,institution_id,unit_type_id,name,slug,status,handle) values
+ ('8b100000-0000-4000-8000-000000000011','8b100000-0000-4000-8000-000000000010','8b0000f0-0000-4000-8000-000000000901','A Norte','activities-v2-command-a-norte','active','activities.v2.command.a.norte'),
+ ('8b100000-0000-4000-8000-000000000012','8b100000-0000-4000-8000-000000000010','8b0000f0-0000-4000-8000-000000000901','A Sul','activities-v2-command-a-sul','active','activities.v2.command.a.sul'),
+ ('8b100000-0000-4000-8000-000000000015','8b100000-0000-4000-8000-000000000010','8b0000f0-0000-4000-8000-000000000901','A Leste não vinculada','activities-v2-command-a-leste','active','activities.v2.command.a.leste'),
+ ('8b100000-0000-4000-8000-000000000021','8b100000-0000-4000-8000-000000000020','8b0000f0-0000-4000-8000-000000000901','B Única','activities-v2-command-b-unica','active','activities.v2.command.b.unica');
 insert into public.groups(id,institution_id,unit_id,name,status) values
  ('8b100000-0000-4000-8000-000000000013','8b100000-0000-4000-8000-000000000010','8b100000-0000-4000-8000-000000000011','Turma A Norte','active'),
  ('8b100000-0000-4000-8000-000000000014','8b100000-0000-4000-8000-000000000010','8b100000-0000-4000-8000-000000000012','Turma A Sul','active'),

@@ -15,7 +15,12 @@ select ok(app_private.activity_v2_effective_permission(null,null,null,null,null,
 
 insert into public.institution_types(id,code,name,status) values('74000000-0000-4000-8000-000000000009','activity-v2-perm','Activity v2 permission','active');
 insert into public.institutions(id,public_name,slug,status,institution_type_id) values('74000000-0000-4000-8000-000000000001','Permission Tenant','activity-v2-perm','active','74000000-0000-4000-8000-000000000009');
-insert into public.units(id,institution_id,name,slug,status,institution_type_id) values('74000000-0000-4000-8000-000000000011','74000000-0000-4000-8000-000000000001','Permission Unit','activity-v2-perm-unit','active','74000000-0000-4000-8000-000000000009');
+-- Forma de producao: units.unit_type_id -> public.unit_types e handle NOT NULL
+-- (a coluna institution_type_id nao existe em producao).
+insert into public.unit_types(id,code,name,status) values
+ ('74p000f0-0000-4000-8000-000000000901','activities-v2-permissions-publish-test-u0','Tipo de unidade da fixture','active');
+insert into public.units(id,institution_id,name,slug,status,unit_type_id,handle) values
+ ('74000000-0000-4000-8000-000000000011','74000000-0000-4000-8000-000000000001','Permission Unit','activity-v2-perm-unit','active','74p000f0-0000-4000-8000-000000000901','activity.v2.perm.unit');
 insert into public.groups(id,institution_id,unit_id,name,group_type,status) values('74000000-0000-4000-8000-000000000021','74000000-0000-4000-8000-000000000001','74000000-0000-4000-8000-000000000011','Permission Group','class','active');
 insert into public.people(id,person_type,first_name,last_name,display_name,status) values('74000000-0000-4000-8000-000000000031','adult','Permission','Professional','Permission Professional','active');
 insert into public.institution_memberships(id,person_id,institution_id,role_code,status,scope_kind) values('74000000-0000-4000-8000-000000000041','74000000-0000-4000-8000-000000000031','74000000-0000-4000-8000-000000000001','instructor','active','institution');

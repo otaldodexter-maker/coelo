@@ -207,12 +207,13 @@ insert into public.institutions(
 insert into public.unit_types(id,code,name,status) values
  ('710000f0-0000-4000-8000-000000000202','superadmin-internal-unit-detail-test-u0','Tipo de unidade da fixture','active');
 insert into public.units(
+  -- units_plan_inheritance_check em producao: plan_override_id exige inherit_plan=false.
   id,institution_id,name,slug,status,unit_type_id,plan_override_id
-,handle) values
- ('71000000-0000-4000-8000-000000000001','71000000-0000-4000-8000-000000000101','Unit Detail Override Unit','unit-detail-override-unit','active','710000f0-0000-4000-8000-000000000202','71000000-0000-4000-8000-000000000301','unit.detail.override.unit'),
- ('71000000-0000-4000-8000-000000000002','71000000-0000-4000-8000-000000000101','Unit Detail Inherited Unit','unit-detail-inherited-unit','active','710000f0-0000-4000-8000-000000000202',null,'unit.detail.inherited.unit'),
- ('71000000-0000-4000-8000-000000000003','71000000-0000-4000-8000-000000000101','Unit Detail Archived Children','unit-detail-archived-children','active','710000f0-0000-4000-8000-000000000202',null,'unit.detail.archived.children'),
- ('71000000-0000-4000-8000-000000000004','71000000-0000-4000-8000-000000000102','Unit Detail No Plan','unit-detail-no-plan','active','710000f0-0000-4000-8000-000000000202',null,'unit.detail.no.plan');
+,handle,inherit_plan) values
+ ('71000000-0000-4000-8000-000000000001','71000000-0000-4000-8000-000000000101','Unit Detail Override Unit','unit-detail-override-unit','active','710000f0-0000-4000-8000-000000000202','71000000-0000-4000-8000-000000000301','unit.detail.override.unit',false),
+ ('71000000-0000-4000-8000-000000000002','71000000-0000-4000-8000-000000000101','Unit Detail Inherited Unit','unit-detail-inherited-unit','active','710000f0-0000-4000-8000-000000000202',null,'unit.detail.inherited.unit',true),
+ ('71000000-0000-4000-8000-000000000003','71000000-0000-4000-8000-000000000101','Unit Detail Archived Children','unit-detail-archived-children','active','710000f0-0000-4000-8000-000000000202',null,'unit.detail.archived.children',true),
+ ('71000000-0000-4000-8000-000000000004','71000000-0000-4000-8000-000000000102','Unit Detail No Plan','unit-detail-no-plan','active','710000f0-0000-4000-8000-000000000202',null,'unit.detail.no.plan',true);
 insert into public.unit_addresses(
   unit_id,country,state,city,district,street,number,complement,postal_code,status
 ) values
@@ -360,9 +361,11 @@ select set_config('request.jwt.claims',jsonb_build_object('sub','72000000-0000-4
 set local role authenticated;
 insert into unit_detail_acceptance_responses values(12,public.superadmin_unit_detail_v2('71000000-0000-4000-8000-000000000001'));
 reset role;
-select ok((select body#>>'{error,code}'='SAI_MFA_REQUIRED' from unit_detail_acceptance_responses where sequence_number=12)
- and (select count(*)=1 from audit.audit_logs l join unit_detail_acceptance_responses r on r.sequence_number=12 and l.correlation_id=(r.body#>>'{error,correlation_id}')::uuid where l.hash_version=2 and l.reason_code='SAI_MFA_REQUIRED'),
- 'Owner AAL1 is denied and correlated in v2 audit');
+-- MVP (ADR 0034, Decisao 12): platform.read tem requires_mfa=false em producao, entao
+-- o Owner em AAL1 le a unidade e gera um evento de sucesso, nao SAI_MFA_REQUIRED.
+select ok((select (body->>'ok')::boolean from unit_detail_acceptance_responses where sequence_number=12)
+ and (select count(*)=1 from audit.audit_logs where actor_internal_membership_id='76000000-0000-4000-8000-000000000003' and action_code='unit.detail' and outcome='success'),
+ 'Owner AAL1 reads in the MVP and appends one success audit');
 select set_config('request.jwt.claims',jsonb_build_object('sub','72000000-0000-4000-8000-000000000003','session_id','73000000-0000-4000-8000-000000000004','aal','aal2','role','authenticated')::text,true);
 set local role authenticated;
 insert into unit_detail_acceptance_responses values
@@ -370,7 +373,7 @@ insert into unit_detail_acceptance_responses values
  (14,public.superadmin_unit_detail_v2('71000000-0000-4000-8000-000000000004'));
 reset role;
 select ok(not exists(select 1 from unit_detail_acceptance_responses where sequence_number in(13,14) and (body->>'ok')::boolean is distinct from true)
- and (select count(*)=2 from audit.audit_logs where actor_internal_membership_id='76000000-0000-4000-8000-000000000003' and action_code='unit.detail' and outcome='success'),
+ and (select count(*)=3 from audit.audit_logs where actor_internal_membership_id='76000000-0000-4000-8000-000000000003' and action_code='unit.detail' and outcome='success'),
  'Owner AAL2 platform reads Institutions A and B with 1:1 audit');
 
 select set_config('request.jwt.claims',jsonb_build_object('sub','72000000-0000-4000-8000-000000000004','session_id','73000000-0000-4000-8000-000000000005','aal','aal1','role','authenticated')::text,true);
@@ -502,11 +505,11 @@ select ok(
       and log_record.reason_code='SAI_PERMISSION_DENIED'),
   'revoked effective platform.read grant denies and appends exactly one v2 audit');
 
-select ok((select count(*)=10 from audit.audit_logs where action_code='unit.detail' and outcome='success')
- and not exists(select 1 from unit_detail_acceptance_responses where sequence_number in(10,11,13,14,15,16,27,28,29,30) and ((select array_agg(key order by key) from jsonb_object_keys(body) key)<>array['data','error','ok']::text[] or (select array_agg(key order by key) from jsonb_object_keys(body->'data') key)<>array['address','contact','effective_plan','id','institution','name','slug','status','unit_type']::text[] or body->'data' ?| array['branding','groups_count','activities_count','plan_override','document','people','created_at','updated_at']))
+select ok((select count(*)=11 from audit.audit_logs where action_code='unit.detail' and outcome='success')
+ and not exists(select 1 from unit_detail_acceptance_responses where sequence_number in(10,11,12,13,14,15,16,27,28,29,30) and ((select array_agg(key order by key) from jsonb_object_keys(body) key)<>array['data','error','ok']::text[] or (select array_agg(key order by key) from jsonb_object_keys(body->'data') key)<>array['address','contact','effective_plan','id','institution','name','slug','status','unit_type']::text[] or body->'data' ?| array['branding','groups_count','activities_count','plan_override','document','people','created_at','updated_at']))
  and not exists(select 1 from audit.audit_logs where action_code='unit.detail' and outcome='success' and (hash_version<>2 or payload_contract_version<>2 or permission_code<>'platform.read' or reason_code is not null or reason is not null or before_json is not null or after_json is not null or octet_length(session_id_hash)<>32 or object_type<>'unit' or object_id is null or institution_id is null or not app_private.audit_verify_entry(id))),
  'all successes have exact output and 1:1 minimized digest-valid v2 audit');
-select ok((select count(*)=10 from audit.audit_logs where action_code='unit.detail' and outcome='denied' and hash_version=2)
+select ok((select count(*)=9 from audit.audit_logs where action_code='unit.detail' and outcome='denied' and hash_version=2)
  and (select count(*)=1 from audit.audit_logs where action_code='unit.detail' and outcome='denied' and hash_version=3)
  and not exists(select 1 from audit.audit_logs where action_code='unit.detail' and outcome='denied' and (reason_code is null or reason is distinct from reason_code or before_json is not null or after_json is not null or institution_id is not null or object_id is not null or octet_length(session_id_hash)<>32 or not app_private.audit_verify_entry(id))),
  'denials are 1:1 minimized digest-valid v2/v3 audit events');

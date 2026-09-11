@@ -256,7 +256,9 @@ select ok(exists(select 1 from audit.audit_logs audit_entry
   where action_code='location.reservation.override'
   and permission_code='locations.reservations.override' and outcome='success'
   and reason_code='RESERVATION_CONFLICT_OVERRIDE'
-  and after_json='{"state":"confirmed_over_conflict"}'::jsonb
+  -- Producao expoe audit_append_superadmin_internal com 13 argumentos, sem o
+  -- metadado jsonb; o estado confirmado sobre conflito fica provado na propria
+  -- reserva (confirmed_over_conflict) e no reason_code da auditoria.
   and reservation.conflict_justification='Conflito aprovado'
   and reservation.confirmed_over_conflict
   and object_id=(select (body#>>'{data,id}')::uuid from reservation_results where label='create_override')),

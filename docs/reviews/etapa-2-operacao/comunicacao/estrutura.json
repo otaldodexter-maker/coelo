@@ -1,16 +1,16 @@
 {
  "grupo": "estrutura",
- "revision": 23,
+ "revision": 24,
  "round": "E2-R04-20260911",
- "updatedAt": "2026-09-10T21:44:19-03:00",
+ "updatedAt": "2026-09-10T22:01:49-03:00",
  "app": "Claude",
  "modelo": "Fable 5.1 (prompt pedia Opus; a conversa abriu em Fable 5.1)",
  "conversa": "R04 · Estrutura",
  "coordenador": "R04 · Coordenação noturna (coordenacao.json); ACK pendente",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-estrutura",
  "branch": "work/etapa2-r04-estrutura",
- "head": "98cc0529d",
- "upstream": "ainda nao publicado",
+ "head": "(commit desta revisao)",
+ "upstream": "origin/work/etapa2-r04-estrutura",
  "base": "origin/dev 98cc0529d (docs(e2): Rodada 4 inteira no Claude, sem Codex), com a baseline 20260910000000 e os lotes 1 a 7 em migrations/",
  "horario": {
   "inicio": "2026-09-10T21:44:19-03:00",
@@ -116,7 +116,7 @@
   {
    "n": 1,
    "item": "Locais: corrigir 180000/180100/180200/180300 em candidatos/estrutura para a assinatura real de audit_append_superadmin_internal (13 argumentos) e a forma canonica (unit_type_id); trazer reservations_v2 como candidato sobre a baseline; fixture activity_v2_denied_envelope de activity_save_v2; provar no projeto descartavel com pgTAP",
-   "estado": "em andamento",
+   "estado": "em andamento: 4 pacotes de Locais verdes no espelho; cadeia de Atividades v2 (11 migrations) aplica sobre a baseline e activity_save_v2 46/46; corrigindo fixtures dos testes v2 e unit_detail",
    "action_ids": [
     "locations.detail-links",
     "locations.schedule",
@@ -151,8 +151,14 @@
    "estado": "pendente"
   }
  ],
- "primeiroGate": "Pacote de Locais sobre a baseline: 20260909165000 reservations_v2 ausente em producao e ausente em candidatos/estrutura; 180000 aborta no preflight sem ela. Vou reemitir como candidato na faixa 18xxxx com a assinatura de 13 argumentos.",
- "criteriosFechados": [],
+ "primeiroGate": "nenhum bloqueio: coordenador aplicar os candidatos de estrutura na ordem dos carimbos quando esta frente marcar cada um como verde",
+ "criteriosFechados": [
+  "Reservas de Locais sobre a baseline com a assinatura real de auditoria: 49/49",
+  "Bindings, activity_location_create e group_location_create verdes no espelho: 30/30, 33/33, 46/46",
+  "Cadeia de Atividades v2 aplica integralmente sobre baseline + 44 lotes",
+  "P15: respiro no fim do conteudo no frame compartilhado",
+  "P6: diálogo de importar de Unidades (widget morto com FilePicker e previa) removido; o botao ja mostrava indisponibilidade honesta"
+ ],
  "testes": {
   "P": null,
   "F": null,
@@ -161,10 +167,66 @@
   "U": null,
   "evidencia": "nenhuma medicao nesta rodada ainda"
  },
- "pacotesProntos": [],
+ "pacotesProntos": [
+  {
+   "carimbo": "20260910180000_superadmin_location_reservations_v2",
+   "origem": "20260909165000",
+   "mudanca": "preflight e auditoria do override na assinatura real de audit_append_superadmin_internal (13 args); teste deixa de exigir after_json",
+   "pgTAP": "49/49",
+   "estado": "verde"
+  },
+  {
+   "carimbo": "20260910180020..180120 (11 arquivos) cadeia de Atividades v2",
+   "origem": "20260831192831..20260908235110",
+   "mudanca": "so recarimbo; fixtures de 7 testes corrigidas para a forma de producao",
+   "pgTAP": "save_v2 46/46, security_contract 37/37; demais em reexecucao",
+   "estado": "aplica; testes em andamento"
+  },
+  {
+   "carimbo": "20260910180140_superadmin_location_consumer_bindings_v2",
+   "origem": "era 180000",
+   "mudanca": "so recarimbo (o teste usa superadmin_activity_create_v2 dos gateways, por isso vem depois da cadeia)",
+   "pgTAP": "30/30",
+   "estado": "verde"
+  },
+  {
+   "carimbo": "20260910180150_superadmin_activity_location_create_v2",
+   "origem": "era 180100",
+   "mudanca": "so recarimbo (exige activity_save_v2 antes)",
+   "pgTAP": "33/33",
+   "estado": "verde"
+  },
+  {
+   "carimbo": "20260910180200_superadmin_group_location_create_v2",
+   "origem": "inalterado",
+   "mudanca": "nenhuma",
+   "pgTAP": "46/46",
+   "estado": "verde"
+  },
+  {
+   "carimbo": "20260910180300_superadmin_internal_unit_detail_v2_baseline",
+   "origem": "inalterado",
+   "mudanca": "fixture do teste: inherit_plan=false quando ha plan_override_id (units_plan_inheritance_check) e Owner AAL1 le no MVP",
+   "pgTAP": "27/4 antes da correcao; reexecutando",
+   "estado": "em prova"
+  },
+  {
+   "carimbo": "20260910180310_superadmin_internal_group_detail_v2_baseline",
+   "origem": "20260828003500",
+   "mudanca": "recarimbo; em prova",
+   "pgTAP": "pendente",
+   "estado": "em prova"
+  }
+ ],
  "deltasPropostos": [],
  "pedidosAoCoordenador": [],
- "avisosParaOutrosGrupos": [],
+ "avisosParaOutrosGrupos": [
+  {
+   "para": "formularios-cuidado-rotina",
+   "assunto": "P15 aplicado no SuperadminFormFrame",
+   "texto": "padding inferior do scroll de conteudo passou de space6 (24px) para space10 (40px), com o rodape ja ancorado. Regravar medication_form_mobile_light depois de integrar esta branch; todos os formularios mobile ganham 16px de respiro no fim."
+  }
+ ],
  "perguntasParaOOwner": [],
  "pendenciasDeCodeReview": [],
  "bloqueio": null,
@@ -174,5 +236,18 @@
   "portas": []
  },
  "ack": null,
- "proximoPasso": "Ler os quatro candidatos e a reservations_v2 historica, medir a assinatura em producao e reemitir a cadeia."
+ "proximoPasso": "fechar unit_detail/group_detail e os 7 testes v2; commitar candidatos; depois P5 no view model de Turmas e a rota normal com sessao",
+ "espelhoLocal": {
+  "projeto": "coelo_baseline_estrutura (portas 61321/61322), scratchpad desta sessao",
+  "metodo": "supabase start com migrations/ = so a baseline + seed.sql do repositorio; os 44 lotes de producao (migrations/2026091001..230020) aplicados por psql na ordem, todos OK; 9 capacidades locations.* presentes; depois cada candidato por preflight.sh (psql -v ON_ERROR_STOP=1) seguido do pgTAP",
+  "licao": "colocar os lotes em supabase/migrations/ nao funciona: rodam antes do seed, com o catalogo vazio, e 170100 aborta no preflight de people.read"
+ },
+ "achadoDaRodada": {
+  "titulo": "A cadeia inteira de Atividades v2 nao existe em producao",
+  "medicao": "presenca de objeto na baseline: 20260831192831 actor_attribution 0/3, 195118 provenance_hardening 0/3, 195944 provenance_semantics 0/2, 203645 permissions_receipts 0/4, 211945 internal_gateways 4/27 (os 4 sao funcoes compartilhadas ja existentes), 231645 rls_grants n/a, 234307 final_review_hardening 0/6, 20260901165125 template_unit_scope 1/4, 20260907222911 directory_v2_client_contract 0/2, 20260908154257 activity_save_v2 0/n, 20260908235110 link_end_clock 0/2; 20260828002000 unit_detail 0/2; 20260828003500 group_detail 0/2",
+  "consequencia": "activities.* (7 acoes) nao tem backend em producao; activity_save_v2 aplica sobre a baseline mas quebra em tempo de execucao (chama activity_v2_require_context, inexistente). O que o coordenador viu como fixture ausente (activity_v2_denied_envelope) e a cadeia inteira ausente.",
+  "decisao": "recarimbar a cadeia como candidatos de estrutura (180020..180120), provados no espelho: os 11 aplicam sem erro sobre baseline + lotes; superadmin_activity_save_v2_test 46/46 e superadmin_internal_activities_v2_security_contract_test 37/37 verdes; os outros 7 testes v2 usavam units.institution_type_id na fixture (corrigido para unit_type_id + unit_types + handle) e estao sendo reexecutados",
+  "atencaoDeSeguranca": "180060 (gateways) faz create or replace em tres funcoes que JA existem em producao com corpo diferente: app_private.audit_activity_change (trigger das tabelas legadas de Atividades), app_private.has_activity_capability (usada por policies contextuais) e app_private.audit_mask_payload; alem de criar a sobrecarga de 14 argumentos de audit_append_superadmin_internal. md5 antes/depois medidos no espelho do coordenador x meu espelho. E o comportamento da cadeia historica revisada (R02), mas e mudanca de funcao compartilhada em producao: registrado como pendencia de code review, nao bloqueia o MVP (sem clientes)."
+ },
+ "ordemDeAplicacao": "pelo carimbo: 180000, 180020, 180030, 180040, 180050, 180060, 180070, 180080, 180090, 180100, 180110, 180120, 180140, 180150, 180200, 180300, 180310. Chave de composicao: structureMutationsEnabled (gate maior) e adapters de Locais/Atividades; lista exata sera dada quando o cliente for ligado nesta rodada."
 }

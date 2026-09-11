@@ -4,7 +4,7 @@ select plan(31);
 
 select has_column('public','activity_templates','unit_id','templates expose unit scope');
 select col_type_is('public','activity_templates','unit_id','uuid','unit scope uses uuid');
-select has_fk('public','activity_templates','activity_templates_unit_institution_fkey','unit hierarchy has a composite FK');
+select ok(exists(select 1 from pg_constraint where conname='activity_templates_unit_institution_fkey' and contype='f' and conrelid='public.activity_templates'::regclass),'unit hierarchy has a composite FK');
 select has_check('public','activity_templates','activity_templates_scope_kind_check','scope values are constrained');
 select has_check('public','activity_templates','activity_templates_scope_hierarchy_check','scope hierarchy is constrained');
 select has_index('public','activity_templates','activity_templates_unit_status_name_idx','unit lookup is indexed');
