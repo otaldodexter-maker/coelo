@@ -983,6 +983,7 @@ final class _MealPlanCard extends StatelessWidget {
               // editar, duplicar, arquivar e excluir, mais revisao e publicacao
               // quando o estado permite (decisao do Owner de 10/09/2026).
               if (onOpen != null ||
+                  canDuplicate ||
                   item.status == MealPlanStatus.draft ||
                   item.status != MealPlanStatus.archived ||
                   _mealPlanCanDelete(item) ||
@@ -994,6 +995,14 @@ final class _MealPlanCard extends StatelessWidget {
                         value: _DirectoryAction.edit,
                         label: 'Editar',
                         icon: Icons.edit_outlined,
+                      ),
+                    // Decisao do Owner de 10/09: o menu traz editar, duplicar,
+                    // arquivar e excluir. O icone ARQUIVO no cabecalho e atalho.
+                    if (canDuplicate)
+                      CoeloAdminFlyoutItem(
+                        value: _DirectoryAction.duplicate,
+                        label: item.isTemplate ? 'Duplicar modelo' : 'Duplicar cardápio',
+                        icon: Icons.content_copy_rounded,
                       ),
                     if (item.status == MealPlanStatus.draft)
                       const CoeloAdminFlyoutItem(
