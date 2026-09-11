@@ -109,3 +109,5 @@
 20260910240600_revoke_authenticated_truncate_references_trigger_v1.sql
 # lote 14 (11/09 02:06)
 20260910171200_qa_r03_internal_profile_seed_v1.sql
+# lote 15 (11/09 02:09)
+20260910200500_notice_publication_worker_v2.sql
