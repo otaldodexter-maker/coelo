@@ -240,6 +240,12 @@ void main() {
     expect(scope.personDirectoryRepository, isA<SupabasePersonDirectoryRepository>());
     expect(scope.activityDirectoryRepository, isA<SupabaseActivityDirectoryRepository>());
     expect(scope.activityCommandRepository, isA<SupabaseActivityCommandRepository>());
+    expect(
+      (scope.activityCommandRepository as SupabaseActivityCommandRepository)
+          .activityLocationCreateAvailable,
+      isTrue,
+      reason: '180150 esta em producao: a chave de composicao fica ligada',
+    );
     expect(scope.personIdentityRepository, isA<UnavailablePersonIdentityRepository>());
     expect(scope.accessProfileRepository, isA<SupabaseAccessProfileRepository>());
     expect(scope.platformUserRepository, isA<SupabasePlatformUserRepository>());

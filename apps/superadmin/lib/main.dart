@@ -55,6 +55,8 @@ Future<void> main() async {
       activityDirectoryRepository: authScope.activityDirectoryRepository,
       activityReadDetailRepository: _activityReadDetailRepository(),
       activityCommandRepository: authScope.activityCommandRepository,
+      // 180150 (superadmin_activity_location_create_v2) esta em producao.
+      activityLocationCreateEnabled: true,
       assessmentRepository: authScope.assessmentRepository,
       assessmentMutationsEnabled: authScope.assessmentMutationsEnabled,
       personDirectoryRepository: authScope.personDirectoryRepository,

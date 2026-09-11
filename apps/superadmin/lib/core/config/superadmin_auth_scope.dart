@@ -368,7 +368,11 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       resetPassword: createCoeloAuthResetPasswordAction(auth: auth),
       institutionDirectoryRepository: SupabaseInstitutionDirectoryRepository(client),
       activityDirectoryRepository: SupabaseActivityDirectoryRepository(client),
-      activityCommandRepository: SupabaseActivityCommandRepository(client),
+      activityCommandRepository: SupabaseActivityCommandRepository(
+        client,
+        // 180150 esta em producao; a chave so compoe, o servidor autoriza.
+        activityLocationCreateAvailable: true,
+      ),
       assessmentRepository: SupabaseAssessmentRepository(client),
       assessmentMutationsEnabled: enableAssessmentMutations,
       personDirectoryRepository: SupabasePersonDirectoryRepository(client),
