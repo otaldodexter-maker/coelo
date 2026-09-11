@@ -1,15 +1,15 @@
 {
-  "revision": 40,
+  "revision": 41,
   "round": "E2-R05-20260911",
   "group": "publicacoes-agenda",
   "tool": "Claude Code",
   "model": "Opus 5 (1M), esforco medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-publicacoes-agenda",
   "branch": "work/etapa2-r05-publicacoes-agenda",
-  "head": "5f85b1b83",
+  "head": "002dddd95",
   "base": "origin/dev 2f6a6114f",
   "coordinator": "Claude (R05 · Coordenacao da tarde, coelo-25)",
-  "updatedAt": "2026-09-11T15:16:00-03:00",
+  "updatedAt": "2026-09-11T15:22:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -240,6 +240,15 @@
       ],
       "what": "Wizard de evento ganha o campo \"Qual <nivel>\" (seletor de contexto concreto) quando ha mais de um contexto do nivel; default = primeiro (comportamento anterior). Goldens agenda_create_{light,dark}_{375,768,1440} regravados: campo novo -> A+ pendente do Owner (nao e regressao visual, e conteudo novo). agenda.location FE continua local-green (nao provado pela tela nesta rodada).",
       "tests": "test/features/agenda 291/291"
+    },
+    {
+      "sha": "002dddd95",
+      "actionIds": [
+        "circulars.create",
+        "circulars.publish"
+      ],
+      "what": "Decisao 7: host produtivo do compositor de Circular suprime o balao de chat desde o carregamento (antes so apos o seletor de instituicao; achado ui-22).",
+      "tests": "test/features/circulars + architecture 68/68"
     }
   ],
   "pendingForCoordinator": [
@@ -275,13 +284,6 @@
         "agenda.detail"
       ],
       "pending": "pgTAP historico agenda_internal_realm_compat_v1_test falha 4/22 sobre a ordem real apos o lote 29 (ponte do Principal): testes 10-12 esperam colunas de pessoa nulas para o ator interno e o 16 espera negativa de leitura para identidade escopada; o comportamento novo (pessoa de servico + P7) parece intencional, mas falta uma assercao cross-tenant na lista. Dono: G4/G5/coordenador."
-    },
-    {
-      "actionIds": [
-        "circulars.create",
-        "circulars.publish"
-      ],
-      "pending": "O balao de chat \"Mensagens\" aparece sobre o compositor de Circular enquanto carrega o seletor de instituicao (ui-22): a supressao (Decisao 7) so entra com o SuperadminFormFrame apos escolher a instituicao. Dono: principal-chat-sistema/shell."
     },
     {
       "actionIds": [
