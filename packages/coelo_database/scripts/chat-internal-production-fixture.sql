@@ -6,10 +6,13 @@
 -- chat-internal-production-cleanup.sql depois. Nenhum dado pessoal real.
 begin;
 
+-- A limpeza arquiva a instituicao em vez de apaga-la (FK do audit_logs); ao
+-- reaplicar a fixture ela volta a ativa.
 insert into public.institutions(id, public_name, slug, status, institution_type_id)
 select '9f040000-0000-4000-8000-000000000010', 'QA R04 Instituicao Sintetica', 'qa-r04-chat',
   'active', (select id from public.institution_types where status = 'active' order by code limit 1)
-on conflict (id) do nothing;
+on conflict (id) do update set status = 'active', deleted_at = null,
+  public_name = 'QA R04 Instituicao Sintetica', updated_at = now();
 
 insert into public.people(id, person_type, first_name, last_name, display_name, status) values
  ('9f040000-0000-4000-8000-000000000061', 'adult', 'QA R04', 'Profissional', 'QA R04 Profissional', 'active'),
