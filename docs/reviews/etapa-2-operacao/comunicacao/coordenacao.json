@@ -1,12 +1,12 @@
 {
- "revision": 27,
+ "revision": 28,
  "round": "E2-R04-20260911",
  "role": "Coordenacao noturna R04 - Claude Fable (C0)",
  "writer": "coordenador-claude",
  "app": "Claude Code (VS Code)",
  "model": "claude-fable-5-1",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T02:52:00-03:00",
+ "updatedAt": "2026-09-11T03:05:00-03:00",
  "relogio": "relogio da maquina; posse as 21:42 -03:00 de 10/09/2026",
  "posseR04": {
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -121,11 +121,12 @@
    "lote 15: 200500 (publicacoes-agenda)",
    "lote 16: 171300, 171500 (acessos-pessoas)",
    "lote 17: 220500 (formularios, subagente)",
-   "lote 18: 171700 (acessos-pessoas)"
+   "lote 18: 171700 (acessos-pessoas)",
+   "lote 19: 171900 (acessos-pessoas)"
   ],
   "proximos": [
    "coordenador: 230023 disparo do worker de Avisos (aguarda P30)",
-   "acessos-pessoas: 171600 papeis de instituicao (aguarda P31)"
+   "acessos-pessoas: 171600 (aguarda P31), 171800 (aguarda P32 b)"
   ]
  },
  "receiptsR04": [
@@ -211,6 +212,7 @@
   "25": "02:27 lote 16 em producao; 57 deltas de publicacoes aplicados (E2E 17/199); launcher corrigido integrado e novo achado devolvido; estrutura sem retorno",
   "26": "02:43 lote 17 (P16) em producao; deltas de acessos (32), publicacoes (62) e operacoes (Suporte no composto) aplicados: FE verified 37, BE done 38, E2E 22; launcher Decisao 7 resolvido no frame; P32-P34",
   "27": "02:52 lote 18 em producao; publicacoes finalizada; P16 cliente integrado; subagentes; memoria",
+  "28": "03:05 lote 19 em producao; acessos-pessoas e publicacoes finalizadas; metricas parciais FE 39 / BE done 40 / E2E 24",
   "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina."
  },
  "fechamentoR03": {
@@ -488,7 +490,7 @@
   "aberto": "disparo do worker (COELO_NOTICE_WORKER_SECRET nos secrets, notices_worker_url/notices_worker_secret no Vault, funcao app_private.notice_dispatch_publication_worker por pg_net e cron.schedule a cada minuto) e deploy da Edge Function: bloqueados pelo classificador da sessao do coordenador -> P30 ao Owner com os comandos prontos"
  },
  "provaDaPonteEmProducao": "02:13, supabase db query --linked somente leitura com request.jwt.claims de qa-r03 (aal1): current_person_id() resolve a pessoa de servico; has_platform_permission true para people.read, units.read, health_care.read, attendance.manage e meal_plans.manage; has_mfa_aal2() true. As familias people-based deixaram de negar o usuario de teste.",
- "semRevisaoNovaHa30min": "as 02:50: estrutura (rev 30 de 23:24; coelo-39 sem retorno desde 02:06) e realm-interno (finalizado)",
+ "semRevisaoNovaHa30min": "as 03:02: estrutura (rev 30 de 23:24; coelo-39 sem retorno desde 02:06, quatro cobrancas) e operacoes (rev 17 de 02:23; rota real em curso por subagente do coordenador)",
  "lote16": {
   "aplicadoEm": "2026-09-11T02:20 -03:00; ledger 93",
   "dump": "schema-producao-20260911-lote16.sql (02:19, 3.698.566 bytes)",
@@ -522,8 +524,9 @@
   ]
  },
  "finalizados": {
-  "publicacoes-agenda": "rev 23 c1754be00 (02:50): 6 pacotes em producao, 63 deltas aplicados, 49 capturas, handoff completo; fica ate 04:00 so em correcao pequena (recarregar Circulares apos excluir)",
-  "realm-interno": "rev 13 d217005d1: finalizado desde 00:24"
+  "publicacoes-agenda": "rev 27 763402a34 (03:08 no relogio da frente): 6 pacotes em producao, 63 deltas, 49 capturas, 3 correcoes FE pequenas (recarga de Circulares apos excluir, Editar oculto em Encerrada, contextos no detalhe do evento), duvidas visuais P33/P34",
+  "realm-interno": "rev 13 d217005d1: finalizado desde 00:24",
+  "acessos-pessoas": "rev 108 f8bb3986a (03:00): 171100/171200/171300/171500/171700/171900 em producao; 35 deltas aplicados (access-models.create E2E pela UI; detalhe v3; card de Pessoas abre detalhe; capabilities no rascunho corrigidas); retidos 171600 (P31) e 171800 (P32); dados sinteticos listados para remocao"
  },
  "subagentesDoCoordenador": {
   "operacoes Suporte no composto": "concluido 2bcddb469 (analyze limpo; 69 P / 2 F goldens)",
@@ -532,5 +535,18 @@
   "operacoes rota real de Conta/Suporte": "em curso (build web em andamento)",
   "publicacoes 200500": "parado por duplicidade (a frente estava viva)"
  },
- "memoria0250": "RAM livre 1,5 GB e 46 chrome.exe; nenhum subagente novo com Chrome; estrutura (coelo-39) segue sem retorno e sem rota real nesta rodada salvo resposta"
+ "memoria0250": "RAM livre 1,5 GB e 46 chrome.exe; nenhum subagente novo com Chrome; estrutura (coelo-39) segue sem retorno e sem rota real nesta rodada salvo resposta",
+ "lote19": {
+  "aplicadoEm": "2026-09-11T03:02 -03:00; ledger 96",
+  "dump": "schema-producao-20260911-lote19.sql (03:00, 3.773.196 bytes)",
+  "conteudo": [
+   "acessos-pessoas 20260910171900 child_safety_decision_enum_cast_fix_v1 (child_safety_decide_authorization atribuia text ao enum decision_status sem cast, 42804: nenhum ator conseguia persistir uma decisao; so o cast, corpo identico; pgTAP 4/4; verificado em app_private)"
+  ]
+ },
+ "metricasParciais0306": {
+  "feVerified": "39/231",
+  "beDone": "40/224",
+  "e2eVerified": "24/199",
+  "base": "validate-trackers PASS sobre 657ebb69c (analyze em curso para o push)"
+ }
 }
