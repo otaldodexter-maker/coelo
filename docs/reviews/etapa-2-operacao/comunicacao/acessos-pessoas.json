@@ -1,15 +1,15 @@
 {
-  "revision": 104,
-  "updated_at": "2026-09-11T05:28:29.649Z",
-  "relogio_local": "Fri Sep 11 2026 02:28:29 GMT-0300 (Horário Padrão de Brasília)",
+  "revision": 105,
+  "updated_at": "2026-09-11T05:36:00.272Z",
+  "relogio_local": "Fri Sep 11 2026 02:36:00 GMT-0300 (Horário Padrão de Brasília)",
   "round": "E2-R04-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
   "model": "Claude Fable 5.1 (o prompt previa Opus; a sessao aberta pelo Owner roda Fable 5.1)",
-  "status": "R04_EM_CURSO",
+  "status": "R04_MINI_REVISAO_PRELIMINAR",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-acessos-pessoas",
   "branch": "work/etapa2-r04-acessos-pessoas",
-  "head": "ver git log (deltas e capturas publicados apos ce6f061cc)",
+  "head": "f4a1c421c + commits seguintes (ver git log); branch publicada",
   "base_observed": "origin/dev 98cc0529d contem a4af2b198 e o R04-prompts.md; candidatos/acessos-pessoas tem 170900 (retido) e 170750 (obsoleto); lote 4 (170100-170800) em migrations/",
   "recorte": {
     "familias": [
@@ -39,7 +39,7 @@
   "loop": "/loop 15m agendado na abertura",
   "testes_P_F_B_S_U": "nenhum teste automatizado executado ainda nesta rodada; login real 1 P",
   "bloqueio": "nenhum total",
-  "proximo_passo": "Modelos: abrir detalhe e Criar modelo; fechar Chrome; mini-revisao (rev 105) ate 04:00 com SHA final, fechados/abertos, pacotes e duvidas ao Owner",
+  "proximo_passo": "fechar Chrome; atualizar handoff.md e deltas (access-models.create); rev 106 final as 04:00 com SHA",
   "ACK_ao_coordenador": "recebido o aviso do lote 8 (MFA fora do MVP + student_links_read) por mensagem entre sessoes as 22:10; respondido pelo mesmo canal; rebase feito.",
   "ROTA_NORMAL_COM_SESSAO": {
     "auth.login": "P (qa-r03 entra pela tela normal, Home como Owner Coelo / Superadmin)",
@@ -182,6 +182,46 @@
     "app_private.superadmin_internal_profiles: perfil de qa-r03 (semente 171200) — apaga com o usuario",
     "public.authorized_person_authorizations: 34d29829-a8b5-4b23-aacb-46e994dce7d7 (crianca d0c40000-...0003, pessoa 9f040000-...0062, pending) — apagar ao fim"
   ],
+  "MINI_REVISAO": {
+    "1_sha_final": "publicado em origin/work/etapa2-r04-acessos-pessoas (status limpo apos o ultimo commit; o SHA definitivo vai na rev 106 as 04:00)",
+    "2_fechou_por_action_id_com_prova": {
+      "access-models.create": "CRUD REAL PELA UI: modelo 'QA R04 Modelo sintetico' criado pelo formulario de 3 passos (perfil/escopo, permissoes, revisao com motivo) e persistido em producao (public.access_profile_templates code qa-r04-modelo-sintetico-b6f3958c, 05:30Z; recibo model_create ok). Reload da lista em prova (captura 9411-b2-models-scroll).",
+      "access-models.list": "rota abre com 6 modelos apos 171300 (lote 16); reload mantem",
+      "access-models.edit (rota)": "formulario abre com dados reais (Auditoria / platform-auditor)",
+      "child-safety.list / child-safety.child": "rota real com a crianca sintetica e a autorizacao pendente; reload mantem (composicao legada + ponte)",
+      "child-safety.create (BE)": "autorizacao 34d29829-... persistida por REST e relida",
+      "internal-users.list / internal-users.detail": "rota real com o qa-r03 (semente 171200), Editar/Acoes visiveis com capability owner",
+      "people.list / access-profiles.list / invites.list": "rota real com dados reais (Pessoas e Perfis) e vazio honesto (Convites)",
+      "people.edit (rota)": "formulario de 3 passos abre com a crianca sintetica",
+      "profile-files.import/export": "adiados e honestos na rota real (proposto FE verified)",
+      "pacotes_em_producao_nesta_rodada": "171000 (P7, lote 10), 171100 (D1, lote 12), 171200 (perfil interno qa-r03, lote 14), 171300 (catalogo/Modelos, lote 16), 171500 (backfill D1, lote 16)"
+    },
+    "3_aberto_com_primeiro_gate": {
+      "invites.create/detail/resend/revoke": "P31 (Owner): producao tem 0 institution_roles; sem perfil o convite nao passa do passo 1",
+      "access-profiles.create/edit/detail": "BE: superadmin_access_profile_detail v2 devolve P0002 para rascunho novo (id nulo) e uma forma diferente da que AccessProfile.fromJson le (permissions[]/memberships[]); contrato v3 de detalhe/rascunho",
+      "child-safety.edit (decisao) / suspend": "decisao de produto (Owner): a decisao exige revisor exato da unidade (child_safety_has_exact_unit_review); o Superadmin recebe P0002 por desenho",
+      "people.create": "BE+FE: resolvedor de identidade (PersonIdentityLookupGate) sem implementacao Supabase/RPC",
+      "people.links (FE)": "diretorio abre o editor; ligar /people/:id ao card",
+      "internal-users.create": "BE: sem RPC/Edge Function de criacao de usuario interno",
+      "internal-users.edit / suspend (prova)": "build novo do cliente com ce6f061cc (rota ligada) — memoria da maquina",
+      "people.edit / access-models.edit (salvar)": "escrita pela UI nao exercitada por tempo",
+      "golden platform_user_create_light_375": "P15 (estrutura)",
+      "Decisao 7 no build": "o launcher 'Mensagens' novo (principal-chat) ainda aparece nos formularios de Modelos e cobre o botao Criar perfil na Revisao (1440x905); showChatLauncher:false nos meus formularios so afeta o launcher antigo — conferir na base conjunta apos 0d559370c",
+      "UX": "no passo Permissoes do modelo, as capacidades platform/institution/principal.role_models.* aparecem todas como 'Criar', 'Excluir'... sem o dominio (rotulos do catalogo 171300 = action_label); ajustar screen_label por dominio no catalogo"
+    },
+    "4_deltas": "docs/reviews/evidence/etapa-2/r04-acessos-pessoas/deltas-r04.json (30 entradas) + acrescentar access-models.create BE done / FE local-green (esta revisao)",
+    "5_pacotes_prontos": "nenhum pendente de aplicacao: todos os cinco desta rodada foram aplicados pelo coordenador (lotes 10, 12, 14, 16)",
+    "6_duvidas_ao_owner": [
+      "P31: papeis padrao de instituicao (institution_roles de sistema) para Convites e para o dominio Admin de Perfis — quais e com que permissoes?",
+      "Seguranca infantil: o Superadmin pode decidir (aprovar/rejeitar) autorizacoes de retirada, ou so a unidade revisa? Hoje o backend nega ao Superadmin por desenho.",
+      "Usuarios internos: criar usuario interno no MVP exige Edge Function com a API de administracao do Auth (identidade + auth user); fica para depois do MVP?"
+    ],
+    "dados_sinteticos_para_limpeza": [
+      "app_private.superadmin_internal_profiles: perfil de qa-r03 (semente 171200)",
+      "public.authorized_person_authorizations 34d29829-a8b5-4b23-aacb-46e994dce7d7",
+      "public.access_profile_templates code qa-r04-modelo-sintetico-b6f3958c (+ permissao platform/institution.role_models.create vinculada)"
+    ]
+  },
   "historico_r03": {
     "revision": 94,
     "updated_at": "2026-09-10T19:56:30.537Z",
