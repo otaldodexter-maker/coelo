@@ -1,12 +1,12 @@
 {
- "revision": 38,
+ "revision": 42,
  "round": "E2-R05-20260911",
  "role": "Coordenacao da tarde R05 - Claude Opus (C0)",
  "writer": "coordenador-claude",
  "app": "Claude Code (VS Code)",
  "model": "claude-opus-5",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T12:03:00-03:00",
+ "updatedAt": "2026-09-11T13:10:00-03:00",
  "relogio": "relogio da maquina; posse as 12:03 -03:00 de 11/09/2026",
  "posseR04": {
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -228,6 +228,10 @@
   "36": "12:05 P40/P41/P42 respondidas: regra do @ (Decisao 16) registrada; prompts da R05 atualizados",
   "37": "12:15 complemento do Owner: @ tambem para funcionarios, responsaveis e criancas sem perfil, visivel e editavel por quem responde por eles; prompts da R05 atualizados",
   "38": "12:03 posse da R05 (worktree e2-r05-coordenacao sobre 9bf60463b); frentes R05 aguardando primeira revisao; achado: e2-r04-estrutura recriada com rev 40",
+  "39": "12:25 ACK das sete revisoes de abertura da R05; branch estrutura R04 rev 40 integrada (1d99104be); alerta de memoria; G3 conferiu o 404 do cron (sem correcao)",
+  "40": "12:35 lote 28 (institution_contacts_v1) em producao; composto de tabela do G7 integrado; sessoes das sete frentes identificadas",
+  "41": "12:57 lotes 29-32 em producao (ponte do Principal, revoke de authenticated, @ de pessoas, anexos do chat); G-SUP concluido pela G7; branches de G2/G4/G5/G7 integradas",
+  "42": "13:10 lotes 33-35 em producao (forms media R2, hotfix safeupdate, P36); deltas de Auditoria aplicados; regra de Sair/sessoes",
   "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina."
  },
  "fechamentoR03": {
@@ -771,53 +775,278 @@
  "frentesR05": {
   "estrutura": {
    "branch": "work/etapa2-r05-estrutura",
-   "rev": null,
-   "ack": false,
-   "estado": "aguardando primeira revisao da R05"
+   "rev": 41,
+   "head": "22a5a6f76",
+   "sessao": "coelo-5d",
+   "ack": true,
+   "recebidoEm": "2026-09-11T12:25:00-03:00",
+   "estado": "aberta; primeira revisao da R05 lida",
+   "resposta": "A branch work/etapa2-r04-estrutura (rev 40, 631f9de52) foi integrada pela coordenacao em 1d99104be e vai para dev apos o analyze; a conversa R04 nao aparece entre as sessoes vivas (ListAgents 12:15: 8 sessoes novas). G1: fazer merge de origin/dev; os cherry-picks 44574dfda/631f9de52 sao os mesmos commits. Goldens de Atividades (activity_golden_test, 9 casos) ja falhavam em origin/dev 9bf60463b: pendencia da G1 (regravar so apos observacao, SDK 3.44.2)."
   },
   "acessos-pessoas": {
    "branch": "work/etapa2-r05-acessos-pessoas",
-   "rev": null,
-   "ack": false,
-   "estado": "aguardando primeira revisao da R05"
+   "rev": 122,
+   "head": "ad09813cf",
+   "sessao": "coelo-a9",
+   "ack": true,
+   "recebidoEm": "2026-09-11T12:25:00-03:00",
+   "estado": "person_handles_v1 em producao (lote 31); P31 no cliente commitado; convites provados por REST",
+   "resposta": "invites.create/detail/revoke provados por REST; P31 no cliente e pacote do @ em curso. Memoria: ver alertaDeMemoria1220."
   },
   "formularios-cuidado-rotina": {
    "branch": "work/etapa2-r05-formularios-cuidado-rotina",
-   "rev": null,
-   "ack": false,
-   "estado": "aguardando primeira revisao da R05"
+   "rev": 34,
+   "head": "f6b536aa0",
+   "sessao": "coelo-8b",
+   "ack": true,
+   "recebidoEm": "2026-09-11T12:25:00-03:00",
+   "estado": "aberta; primeira revisao da R05 lida",
+   "resposta": "Cron de Formularios: achado da frente (um unico 404 as 10:41; Vault ja aponta form-operations): sem correcao necessaria; registrar no rastreador."
   },
   "principal-chat-sistema": {
    "branch": "work/etapa2-r05-principal-chat-sistema",
-   "rev": null,
-   "ack": false,
-   "estado": "aguardando primeira revisao da R05"
+   "rev": 22,
+   "head": "321d6bc1c",
+   "sessao": "coelo-02",
+   "ack": true,
+   "recebidoEm": "2026-09-11T12:25:00-03:00",
+   "estado": "ponte do Principal em producao (lote 29); prova da rota real em curso",
+   "resposta": "achado: list_my_principal_contexts e atores de Acontece/Agora/Momentos resolvem por person_auth_links; lote 27 nao basta; pacote 2026091113xxxx em curso no espelho da frente"
   },
   "realm-interno": {
    "branch": "work/etapa2-r05-realm-interno",
-   "rev": null,
-   "ack": false,
-   "estado": "aguardando primeira revisao da R05"
+   "rev": 20,
+   "head": "d8e5f9b48",
+   "sessao": "coelo-dd (por exclusao; sem resposta)",
+   "ack": true,
+   "recebidoEm": "2026-09-11T12:25:00-03:00",
+   "estado": "pacotes 1-5 em producao (lotes 28, 30, 32, 33, 35); item 6 (P32) em curso"
   },
   "publicacoes-agenda": {
    "branch": "work/etapa2-r05-publicacoes-agenda",
-   "rev": null,
-   "ack": false,
-   "estado": "aguardando primeira revisao da R05"
+   "rev": 31,
+   "head": "ddde588ac",
+   "sessao": "coelo-11",
+   "ack": true,
+   "recebidoEm": "2026-09-11T12:25:00-03:00",
+   "estado": "aberta; primeira revisao da R05 lida"
   },
   "operacoes": {
    "branch": "work/etapa2-r05-operacoes",
-   "rev": null,
-   "ack": false,
-   "estado": "aguardando primeira revisao da R05"
+   "rev": 23,
+   "head": "2e5ebc3e1",
+   "sessao": "coelo-af",
+   "ack": true,
+   "recebidoEm": "2026-09-11T12:25:00-03:00",
+   "estado": "Auditoria verified-e2e (3); Planos em curso; Sair/sessoes seguradas ate 15:30",
+   "resposta": "G-SUP: correcao do alinhamento vertical no composto CoeloAdminResizableTable (coelo_ui_admin) muda goldens de varias familias: pedido que entre em commit proprio cedo para o coordenador integrar em dev antes das outras frentes regravarem"
   }
  },
- "receiptsR05": [],
+ "receiptsR05": [
+  {
+   "grupo": "estrutura",
+   "revisaoRecebida": 41,
+   "ack": true,
+   "recebidoEm": "2026-09-11T12:25:00-03:00"
+  },
+  {
+   "grupo": "acessos-pessoas",
+   "revisaoRecebida": 119,
+   "ack": true,
+   "recebidoEm": "2026-09-11T12:25:00-03:00"
+  },
+  {
+   "grupo": "formularios-cuidado-rotina",
+   "revisaoRecebida": 34,
+   "ack": true,
+   "recebidoEm": "2026-09-11T12:25:00-03:00"
+  },
+  {
+   "grupo": "principal-chat-sistema",
+   "revisaoRecebida": 21,
+   "ack": true,
+   "recebidoEm": "2026-09-11T12:25:00-03:00"
+  },
+  {
+   "grupo": "realm-interno",
+   "revisaoRecebida": 16,
+   "ack": true,
+   "recebidoEm": "2026-09-11T12:25:00-03:00"
+  },
+  {
+   "grupo": "publicacoes-agenda",
+   "revisaoRecebida": 31,
+   "ack": true,
+   "recebidoEm": "2026-09-11T12:25:00-03:00"
+  },
+  {
+   "grupo": "operacoes",
+   "revisaoRecebida": 21,
+   "ack": true,
+   "recebidoEm": "2026-09-11T12:25:00-03:00"
+  },
+  {
+   "grupo": "realm-interno",
+   "revisaoRecebida": 17,
+   "ack": true,
+   "recebidoEm": "2026-09-11T12:31:00-03:00",
+   "integradoEm": "b303bddf9"
+  },
+  {
+   "grupo": "operacoes",
+   "revisaoRecebida": "21 + 0e4b2f27c",
+   "ack": true,
+   "recebidoEm": "2026-09-11T12:28:00-03:00",
+   "integradoEm": "11c4bfbef"
+  },
+  {
+   "grupo": "principal-chat-sistema",
+   "revisaoRecebida": 22,
+   "ack": true,
+   "recebidoEm": "2026-09-11T12:37:00-03:00",
+   "integradoEm": "5cfaad05a"
+  },
+  {
+   "grupo": "realm-interno",
+   "revisaoRecebida": 18,
+   "ack": true,
+   "recebidoEm": "2026-09-11T12:50:00-03:00",
+   "integradoEm": "fe9a8b36f"
+  },
+  {
+   "grupo": "acessos-pessoas",
+   "revisaoRecebida": 121,
+   "ack": true,
+   "recebidoEm": "2026-09-11T12:48:00-03:00",
+   "integradoEm": "b2ff0e243"
+  },
+  {
+   "grupo": "operacoes",
+   "revisaoRecebida": 22,
+   "ack": true,
+   "recebidoEm": "2026-09-11T12:53:00-03:00",
+   "integradoEm": "fe9a8b36f"
+  }
+ ],
  "filaSqlR05": {
   "regra": "pacote verde em candidatos/<grupo> -> preflight no espelho (aplicar + pgTAP) -> dump por lote -> supabase db query --linked -f <caminho relativo ao workdir> -> insert no ledger -> move para migrations/ -> chave de composicao",
-  "aplicados": [],
+  "aplicados": [
+   "lote 28: 20260911210000 (realm-interno)",
+   "lote 29: 20260911130000 (principal-chat-sistema)",
+   "lote 30: 20260911210100 (realm-interno)",
+   "lote 31: 20260911170100 (acessos-pessoas)",
+   "lote 32: 20260911210200 (realm-interno)",
+   "lote 33: 20260911210300 (realm-interno)",
+   "lote 34: 20260911170200 (acessos-pessoas, hotfix)",
+   "lote 35: 20260911210400 (realm-interno)"
+  ],
   "proximos": [
    "candidatos verdes das frentes na ordem de chegada"
   ]
- }
+ },
+ "alertaDeMemoria1220": "12:20: RAM livre 0,02 GB de 15,6; 6 dartaotruntime (analysis servers, ~700-900 MB cada, um por sessao/worktree), 28 dart, 24 chrome (139 MB no total), vmmemWSL 688 MB. Causa provavel: um servidor de analise Dart por conversa (8 conversas). Pedido ao Owner: fechar janelas do VS Code/MCP dart que nao estejam em uso; frentes so um flutter test por vez e sem build web simultaneo. Coordenador nao mata processo de outra conversa.",
+ "sessoesR05": "coelo-46 = coordenacao R04 encerrada (worktree e2-r04-coordenacao removivel no fechamento); a conversa R04 Estrutura nao esta viva",
+ "devPublicado1222": "62f284d9c: merge de work/etapa2-r04-estrutura (631f9de52 activities.edit, 189cbb852 rev 40), coordenacao revs 38-39, rastreadores 12:30; analyze limpo (340 s); test/features/activities 343 P / 9 F (goldens pre-existentes em origin/dev)",
+ "lote28": {
+  "aplicadoEm": "2026-09-11T12:33 -03:00; ledger +1 (20260911210000)",
+  "dump": "schema-producao-20260911-lote28.sql (12:32, 3.802.938 bytes)",
+  "preflight": "espelho coelo_baseline: aplicou OK; institution_contacts_v1_test 38/38",
+  "conteudo": [
+   "realm-interno 20260911210000_institution_contacts_v1 (RPC superadmin_institution_contacts_edit_v1 com document/contact/representatives/administrators; superadmin_institution_detail_v2 devolve representatives[]/administrators[] mascarados; HMAC do CPF por chave no Vault)"
+  ],
+  "verificadoEmProducao": "rpc=1, person_identity_hmac_v1=1, vault.secrets coelo_person_identity_hmac_v1=1, ledger=1",
+  "chaveCriada": "segredo Vault coelo_person_identity_hmac_v1 (gerado no banco por gen_random_bytes, nunca impresso) - registrar para rotacao futura",
+  "destrava": "institutions.edit (G1 liga o cliente sobre o contrato de realm-interno.json rev 17)"
+ },
+ "chavesCriadasR05": [
+  "vault.secrets coelo_person_identity_hmac_v1 (HMAC v1 do catalogo app_private.person_identity_identifiers; lote 28; rotacao exige migration que troque a versao da chave e refaca os HMAC)"
+ ],
+ "lote29": {
+  "aplicadoEm": "12:40; ledger 20260911130000",
+  "dump": "schema-producao-20260911-lote29.sql",
+  "preflight": "22/22",
+  "conteudo": [
+   "principal-chat-sistema 20260911130000_principal_internal_actor_bridge_v1 (list_my_principal_contexts, atores de Acontece/Agora/Momentos e tickets de midia resolvem o ator interno; institution_role_assignments sincronizadas por trigger)"
+  ],
+  "verificadoEmProducao": "sync fn 1; institution_role_assignments 8; institution_memberships 13",
+  "destrava": "Principal com qa-r03 (G4 prova a rota real)"
+ },
+ "lote30": {
+  "aplicadoEm": "12:47; ledger 20260911210100",
+  "dump": "schema-producao-20260911-lote30.sql",
+  "preflight": "12/12; NOTICE 404 antes / 0 depois no espelho",
+  "conteudo": [
+   "realm-interno 20260911210100_revoke_authenticated_crud_without_policy_v1 (schemas public/app_private/audit/analytics; storage e realtime intactos; policy person_auth_links_self_read criada antes)"
+  ],
+  "medidoEmProducao": "antes: INSERT 25 / UPDATE 28 / DELETE 20 / SELECT 7 grants de authenticated sem policy em tabelas com RLS; depois: 0 sem policy; grants com policy preservados (SELECT 134, INSERT 19, UPDATE 16, DELETE 2); prova do chat em modo somente leitura 5 PASS / 0 FAIL apos o lote",
+  "fechaPendencia": "varredura de grants de authenticated sem policy (R04)"
+ },
+ "lote31": {
+  "aplicadoEm": "12:52; ledger 20260911170100 (inserido na segunda tentativa: a primeira consulta de verificacao falhou por coluna inexistente e desfez o insert; o pacote ja estava aplicado)",
+  "dump": "schema-producao-20260911-lote31.sql",
+  "preflight": "22/22",
+  "conteudo": [
+   "acessos-pessoas 20260911170100_person_handles_v1 (tabela public.person_handles, geracao/validacao/reserva, RPCs superadmin_person_handle_get/availability; Decisao 16)"
+  ],
+  "verificadoEmProducao": "public.person_handles presente; RPC presente"
+ },
+ "lote32": {
+  "aplicadoEm": "12:56; ledger 20260911210200",
+  "dump": "schema-producao-20260911-lote32.sql",
+  "preflight": "28/28 + cross-tenant 21/21",
+  "conteudo": [
+   "realm-interno 20260911210200_superadmin_internal_chat_attachments_v1 (prepare/authorize_finalize/authorize_read para authenticated, finalize/expire para service_role, chave opaca em coelo-media-prod; superadmin_chat_error com 4 codigos novos)"
+  ],
+  "verificadoEmProducao": "5 RPCs superadmin_chat_attachment*",
+  "aberto": "Edge Function chat-media (padrao moments-media) e cron de expire: G5 oferece escrever depois dos itens 4-6; chat.attach FE continua inerte ate a funcao"
+ },
+ "perguntasAoOwnerR05": [
+  {
+   "id": "G-SUP-R05",
+   "frente": "operacoes",
+   "tipo": "visual",
+   "pagina": "https://claude.ai/code/artifact/7737ccf7-1489-4d67-ba5f-858c051150d2",
+   "copia": "docs/reviews/evidence/etapa-2/r05-operacoes/g-sup/",
+   "texto": "Suporte e Implantacao alinhados como Instituicoes: aprovar os 16 goldens claros (R referencia, A render atual)"
+  }
+ ],
+ "lote33": {
+  "aplicadoEm": "13:00; ledger 20260911210300",
+  "dump": "schema-producao-20260911-lote33.sql",
+  "preflight": "25/25 + media_read 82/82",
+  "conteudo": [
+   "realm-interno 20260911210300_forms_question_media_r2_v1 (superadmin_form_media_prepare_v2/authorize_finalize_v2/resolve_v2/delete_v2 para authenticated; finalize/expire/claim_cleanup/mark_purged para service_role)"
+  ],
+  "aberto": "Edge Function form-media ainda usa Supabase Storage nos ramos prepare/finalize/download/discard; trocar para as RPCs v2 + cron de expire; answer-image no fluxo legado (pendencia)",
+  "avisar": "frente formularios (contrato em realm-interno.json rev 19, contratoFormsFiles)"
+ },
+ "lote34": {
+  "aplicadoEm": "13:05; ledger 20260911170200",
+  "dump": "schema-producao-20260911-lote34.sql",
+  "preflight": "aplicou; pgTAP 3/3 como supabase_admin (load safeupdate)",
+  "conteudo": [
+   "acessos-pessoas 20260911170200_follow_links_safeupdate_fix_v1: HOTFIX de producao desde o lote 12: follow_links_sync_child_context fazia delete sem WHERE na tabela temporaria e o pg_safeupdate do PostgREST bloqueava (21000) toda insercao/alteracao de child_unit_links/child_group_links pela API (students.link/transfer/revoke, cadastro de crianca)"
+  ],
+  "verificadoEmProducao": "pg_get_functiondef contem 'follow_links_expected where true'",
+  "regraNova": "DELETE/UPDATE em funcao sempre com WHERE (where true em temp table); pgTAP em psql nao carrega safeupdate, entao a prova precisa de load safeupdate como supabase_admin"
+ },
+ "lote35": {
+  "aplicadoEm": "13:08; ledger 20260911210400",
+  "dump": "schema-producao-20260911-lote35.sql",
+  "preflight": "13/13",
+  "conteudo": [
+   "realm-interno 20260911210400_structure_hierarchy_p36_v1 (gatilhos diferidos activity_definition_requires_group e activity_group_links_retain_one; rascunho pode existir so com unidade; ativa exige turma; 23514 P36_ACTIVITY_REQUIRES_GROUP)"
+  ],
+  "verificadoEmProducao": "2 triggers; 0 atividades ativas sem turma",
+  "avisar": "G1: assistente de Atividades liga a turma antes de publicar"
+ },
+ "deltasAplicadosR05": [
+  {
+   "grupo": "operacoes",
+   "arquivo": "evidence/etapa-2/r05-operacoes/deltas-r05-ops-audit.json",
+   "n": 9,
+   "efeito": "audit.list/filter/detail FE verified, BE done, E2E verified-e2e; totais FE 69 / BE done 72 / E2E 46"
+  }
+ ],
+ "sessaoUnicaNaoExiste": "13:00: G1 relatou SAI_SESSION_INVALID e suspeitou de sessao unica por usuario; medido em producao: auth.sessions do qa-r03 com 2 sessoes vivas (12:43 e 12:50). Causa: Sair global / revogacao de sessoes por outra frente. Regra do dia: account.logout e account.sessions so depois de 15:30 com aviso; frentes fecham a aba em vez de Sair."
 }

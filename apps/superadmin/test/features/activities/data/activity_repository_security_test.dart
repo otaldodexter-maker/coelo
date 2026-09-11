@@ -41,22 +41,24 @@ void main() {
       throwsA(isA<ActivityDirectoryUnavailableException>()),
     );
 
-    // Somente as RPCs v2 nominais sao chamadas; o detalhe segue fechado. Os
-    // valores nao confiaveis viajam no corpo JSON, nunca na URL ou na query,
-    // e uma resposta sem envelope v2 vira indisponibilidade.
-    expect(requests, hasLength(3));
+    // Somente as RPCs v2 nominais sao chamadas. Os valores nao confiaveis
+    // viajam no corpo JSON, nunca na URL ou na query, e uma resposta sem
+    // envelope v2 vira indisponibilidade.
+    expect(requests, hasLength(4));
     expect(requests.map((request) => request.url.path), [
       '/rest/v1/rpc/superadmin_activity_directory_v2',
+      '/rest/v1/rpc/superadmin_activity_detail_v2',
       '/rest/v1/rpc/superadmin_activity_form_options_v2',
       '/rest/v1/rpc/superadmin_activity_form_options_v2',
     ]);
     expect(requests.map((request) => request.url.query), everyElement(isEmpty));
     expect((jsonDecode(requests[0].body) as Map)['p_filters']['search'], r'a,b.c\d');
+    expect((jsonDecode(requests[1].body) as Map)['p_activity_id'], 'tenant-a,tenant-b.eq.anything');
     expect(
-      (jsonDecode(requests[1].body) as Map)['p_institution_id'],
+      (jsonDecode(requests[2].body) as Map)['p_institution_id'],
       'tenant-a,tenant-b.eq.anything',
     );
-    final search = jsonDecode(requests[2].body) as Map;
+    final search = jsonDecode(requests[3].body) as Map;
     expect(search['p_institution_id'], 'tenant-a,tenant-b.eq.anything');
     expect(search['p_search'], r'a,b.c\d');
   });

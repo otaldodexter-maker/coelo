@@ -139,3 +139,19 @@
 20260910230023_notice_worker_dispatch_v1.sql
 # lote 27 (11/09 10:48) - P35 membership owner do usuario de teste nas instituicoes sinteticas
 20260910230024_qa_r03_synthetic_institution_memberships_v1.sql
+# lote 28 (11/09 12:33) - R05 realm-interno: contatos/documento/representantes/administradores da instituicao
+20260911210000_institution_contacts_v1.sql
+# lote 29 (11/09 12:40) - R05 principal-chat-sistema: ponte de ator do Principal (contextos, atores de Acontece/Agora/Momentos)
+20260911130000_principal_internal_actor_bridge_v1.sql
+# lote 30 (11/09 12:47) - R05 realm-interno: revoke de grants CRUD de authenticated sem policy (public/app_private/audit/analytics)
+20260911210100_revoke_authenticated_crud_without_policy_v1.sql
+# lote 31 (11/09 12:52) - R05 acessos-pessoas: @ de pessoas (person_handles_v1, Decisao 16)
+20260911170100_person_handles_v1.sql
+# lote 32 (11/09 12:56) - R05 realm-interno: anexos do chat (contrato R2, sem Edge Function ainda)
+20260911210200_superadmin_internal_chat_attachments_v1.sql
+# lote 33 (11/09 13:00) - R05 realm-interno: imagem de pergunta de Formularios no R2 (contrato; form-media ainda no fluxo legado)
+20260911210300_forms_question_media_r2_v1.sql
+# lote 34 (11/09 13:05) - R05 acessos-pessoas: hotfix follow_links_sync_child_context (DELETE sem WHERE bloqueado pelo safeupdate do PostgREST desde o lote 12)
+20260911170200_follow_links_safeupdate_fix_v1.sql
+# lote 35 (11/09 13:08) - R05 realm-interno: P36 no servidor (atividade ativa exige turma; gatilhos diferidos)
+20260911210400_structure_hierarchy_p36_v1.sql

@@ -187,6 +187,7 @@ import '../dev_menu/development_person_directory_repository.dart';
 import '../dev_menu/development_person_identity_repository.dart';
 import '../../features/people/domain/person_directory.dart' hide PersonDirectoryPage;
 import '../../features/people/domain/person_detail_reader.dart';
+import '../../features/people/domain/person_handle.dart';
 import '../../features/people/presentation/person_detail_page.dart';
 import '../../features/people/domain/person_identity.dart';
 import '../../features/people/presentation/person_directory_page.dart';
@@ -231,6 +232,12 @@ import '../shell/superadmin_shell.dart';
 import 'superadmin_routes.dart';
 
 const _productionMutationUnavailablePath = '/errors/mutation-capability-unavailable';
+
+/// `?from=<uuid>` da criação de perfil (P31); qualquer outro valor é ignorado.
+String? _nullableProfileId(String? raw) {
+  final value = raw?.trim() ?? '';
+  return RegExp(r'^[0-9a-fA-F-]{36}$').hasMatch(value) ? value : null;
+}
 
 AccessProfileDomain _accessProfileDomain(String? value) => AccessProfileDomain.values.firstWhere(
   (domain) => domain.databaseValue == value,
@@ -326,6 +333,7 @@ GoRouter createSuperadminRouter({
   PersonDirectoryRepository personDirectoryRepository =
       const UnavailablePersonDirectoryRepository(),
   PersonDetailReader personDetailReader = const UnavailablePersonDetailReader(),
+  PersonHandleRepository? personHandleRepository,
   PersonIdentityRepository personIdentityRepository = const UnavailablePersonIdentityRepository(),
   UnitDirectoryRepository unitDirectoryRepository = const UnavailableUnitDirectoryRepository(),
   UnitBackendCommandsGateway unitBackendCommands = const UnavailableUnitBackendCommandsGateway(),
@@ -3402,6 +3410,7 @@ GoRouter createSuperadminRouter({
                   : PersonDetailPage(
                       key: ValueKey(session.authorizationInvalidationRevision),
                       reader: personDetailReader,
+                      handleRepository: personHandleRepository,
                       id: state.pathParameters['personId']!,
                       logout: logout,
                       onBack: () => context.goNamed(SuperadminRoutes.peopleName),
@@ -3429,8 +3438,13 @@ GoRouter createSuperadminRouter({
                   SuperadminRoutes.profileCreateName,
                   pathParameters: {'domain': domain.databaseValue},
                 ),
+                onCreateFromModel: (domain, sourceProfileId) => context.goNamed(
+                  SuperadminRoutes.profileCreateName,
+                  pathParameters: {'domain': domain.databaseValue},
+                  queryParameters: {'from': sourceProfileId},
+                ),
                 onOpen: (domain, profileId) => context.goNamed(
-                  SuperadminRoutes.profileEditName,
+                  SuperadminRoutes.profileDetailName,
                   pathParameters: {'domain': domain.databaseValue, 'profileId': profileId},
                 ),
                 directoryKind: AccessProfileDirectoryKind.profiles,
@@ -3604,11 +3618,12 @@ GoRouter createSuperadminRouter({
               listenable: session,
               builder: (context, _) => AccessProfileFormPage(
                 key: ValueKey(
-                  'profile-create-${state.pathParameters}-${session.authorizationInvalidationRevision}',
+                  'profile-create-${state.pathParameters}-${state.uri.queryParameters['from']}-${session.authorizationInvalidationRevision}',
                 ),
                 repository: accessProfileRepository,
                 logout: logout,
                 domain: _accessProfileDomain(state.pathParameters['domain']),
+                sourceProfileId: _nullableProfileId(state.uri.queryParameters['from']),
                 onCancel: () => context.goNamed(SuperadminRoutes.profilesName),
                 onSaved: (_) => context.goNamed(SuperadminRoutes.profilesName),
                 onDestinationSelected: (destination) =>
@@ -3635,6 +3650,11 @@ GoRouter createSuperadminRouter({
                   pathParameters: state.pathParameters,
                 ),
                 onDeleted: () => context.goNamed(SuperadminRoutes.profilesName),
+                onCreateFromModel: () => context.goNamed(
+                  SuperadminRoutes.profileCreateName,
+                  pathParameters: {'domain': state.pathParameters['domain']!},
+                  queryParameters: {'from': state.pathParameters['profileId']!},
+                ),
                 onDestinationSelected: (destination) =>
                     _navigateFromPersistentShell(context, destination),
               ),
