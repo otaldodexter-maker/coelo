@@ -1,8 +1,8 @@
 {
   "grupo": "realm-interno",
-  "revision": 45,
+  "revision": 46,
   "round": "E2-R06-20260911",
-  "updatedAt": "2026-09-11T20:27-03:00",
+  "updatedAt": "2026-09-11T20:20-03:00",
   "app": "Claude",
   "modelo": "Opus 5 (esforco medio)",
   "conversa": "R06 · Realm interno e segurança",
@@ -65,7 +65,7 @@
     "seguranca transversal (sem action_id)": "nenhum delta de estado por action_id: o pacote fecha uma exposicao latente (0 identidades escopadas) e nao muda o estado de acoes; se o coordenador quiser, anotar nos tres md como correcao de seguranca da R06 (raiz da ponte de ator)"
   },
   "loop": "a agendar: /loop 15m",
-  "status": "hotfix urgente publicado (rev 45) apos o coordenador aplicar a versao da rev 40 no lote 50; demais itens fechados",
+  "status": "aguardando o coordenador aplicar 20260912210100 (bloqueio da rev 45 continua); nada mais executavel no recorte sem a aplicacao",
   "proximoPasso": "coordenador aplica 20260912210100; eu confiro por contagem (somente leitura) e registro",
   "contratoInstitutionContacts": {
     "rpc": "public.superadmin_institution_contacts_edit_v1(p_request_id uuid, p_institution_id uuid, p_expected_version bigint, p_payload jsonb) -> envelope {ok,data,error}",
@@ -594,5 +594,6 @@
     "211100": "structure_handle_in_use e check-then-insert: unicidade dentro da tabela vem do indice, mas entre tabelas (unidade x turma x pessoa) nao ha constraint - concorrencia entre tipos diferentes pode passar; risco baixo no MVP; revisao profunda: tabela unica de handles ou advisory lock por handle normalizado; sem achado bloqueante"
   },
   "handoff": "docs/reviews/evidence/etapa-2/r06-realm-interno/handoff.md",
-  "skillsPropostas": "docs/reviews/evidence/etapa-2/r06-realm-interno/skills-deltas-r06.md"
+  "skillsPropostas": "docs/reviews/evidence/etapa-2/r06-realm-interno/skills-deltas-r06.md",
+  "recibosDoCoordenador": "ACK rev 40 (20:05) e rev 43 (20:19) lidos em coordenacao rev 53/54; o hotfix da rev 45 ainda nao foi lido: em producao continuam 7 memberships de espelho inactive (medido 20:19, contagens) e o ledger termina em 20260912210000"
 }
