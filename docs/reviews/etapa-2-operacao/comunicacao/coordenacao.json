@@ -1,12 +1,12 @@
 {
- "revision": 53,
+ "revision": 54,
  "round": "E2-R06-20260911",
  "role": "Coordenacao R06 - Claude Opus 5 esforco medio (C0)",
  "writer": "coordenador-claude",
  "app": "Claude Code (VS Code)",
  "model": "claude-opus-5",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T20:17:00-03:00",
+ "updatedAt": "2026-09-11T20:19:00-03:00",
  "relogio": "relogio da maquina; posse as 19:36 -03:00 de 11/09/2026 (T0)",
  "posseR04": {
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -243,6 +243,7 @@
   "51": "17:32 familia Publicacao aprovada (canvas v4), prompts da R06",
   "52": "19:53 posse da R06 (T0 19:36); sete usuarios qa-r06 criados no Auth e semeados em producao (lote 49); frentes liberadas (branches remotas ja existiam)",
   "53": "20:17 ACK das sete revisoes de abertura; sete branches integradas; lote 50 (4 pacotes) em producao; T0 confirmado as frentes; regra da cobranca de 30 min",
+  "54": "20:19 lote 51 (estrutura) em producao; branches reintegradas; cobranca de principal-chat-sistema",
   "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina."
  },
  "fechamentoR03": {
@@ -1613,11 +1614,11 @@
  "frentesR06": {
   "estrutura": {
    "branch": "work/etapa2-r06-estrutura",
-   "rev": 54,
+   "rev": 55,
    "ack": true,
-   "recebidoEm": "2026-09-11T20:05:00-03:00",
-   "integradoEm": "f78ec96d9 (merge das sete branches)",
-   "resposta": "ACK rev 54; T0 confirmado 19:36."
+   "recebidoEm": "2026-09-11T20:19:00-03:00",
+   "integradoEm": "(esta revisao)",
+   "resposta": "20260912180000 (save_v2 com definition.handle; group_management_payload com @) APLICADO em producao no lote 51 (20:15), pgTAP 10/10 + 211100 20/20 no espelho. Seguir para a rota real do @ com qa-r06-estrutura."
   },
   "acessos-pessoas": {
    "branch": "work/etapa2-r06-acessos-pessoas",
@@ -1629,10 +1630,10 @@
   },
   "formularios-cuidado-rotina": {
    "branch": "work/etapa2-r06-formularios-cuidado-rotina",
-   "rev": 47,
+   "rev": 48,
    "ack": true,
-   "recebidoEm": "2026-09-11T20:05:00-03:00",
-   "integradoEm": "f78ec96d9 (merge das sete branches)",
+   "recebidoEm": "2026-09-11T20:19:00-03:00",
+   "integradoEm": "(esta revisao)",
    "resposta": "T0 = 19:36; corte 21:36."
   },
   "principal-chat-sistema": {
@@ -1641,30 +1642,31 @@
    "ack": true,
    "recebidoEm": "2026-09-11T20:05:00-03:00",
    "integradoEm": "f78ec96d9 (merge das sete branches)",
-   "resposta": "T0 = 19:36 (nao 19:17): corte 21:36, revisao ate 21:46. qa-r06-principal.env existe desde 19:44 e a semente esta em producao (lote 49). P48 (item 6): nascer sobre o corpo do 20260912210000 do realm-interno (ja em producao) mantendo superadmin_internal_actor_scope_targets() como fonte do escopo."
+   "resposta": "T0 = 19:36 (nao 19:17): corte 21:36, revisao ate 21:46. qa-r06-principal.env existe desde 19:44 e a semente esta em producao (lote 49). P48 (item 6): nascer sobre o corpo do 20260912210000 do realm-interno (ja em producao) mantendo superadmin_internal_actor_scope_targets() como fonte do escopo.",
+   "cobranca": "20:19: JSON sem revisao nova desde 19:40 (39 min), embora a branch tenha commits ate 20:05. RETOMAR e registrar feito/pendente/commits no JSON (ordem do Owner: a cada 30 min)."
   },
   "realm-interno": {
    "branch": "work/etapa2-r06-realm-interno",
-   "rev": 40,
+   "rev": 43,
    "ack": true,
-   "recebidoEm": "2026-09-11T20:05:00-03:00",
-   "integradoEm": "f78ec96d9 (merge das sete branches)",
-   "resposta": "20260912210000 (raiz da ponte com escopo) APLICADO em producao no lote 50 (20:12), pgTAP 45/45 no espelho. A sua semente 20260912230000 dos qa-r06 NAO foi aplicada: o coordenador ja tinha aplicado a propria (lote 49, 20260911230100) as 19:49; arquivo descartado no merge. Item (3) 180060: registrar como decisao de produto para o Owner (nao muda comportamento nesta rodada). T0 = 19:36; corte 21:36."
+   "recebidoEm": "2026-09-11T20:19:00-03:00",
+   "integradoEm": "(esta revisao)",
+   "resposta": "20260912210000 (raiz da ponte com escopo) APLICADO em producao no lote 50 (20:12), pgTAP 45/45 no espelho. A sua semente 20260912230000 dos qa-r06 NAO foi aplicada: o coordenador ja tinha aplicado a propria (lote 49, 20260911230100) as 19:49; arquivo descartado no merge. Item (3) 180060: registrar como decisao de produto para o Owner (nao muda comportamento nesta rodada). T0 = 19:36; corte 21:36. | 20:19: rev 43 lida (entrega completa, handoff e skills-deltas integrados em dev); a correcao de seguranca sera anotada nos tres md no fechamento. Item (3) 180060 vai como pergunta ao Owner na R06-perguntas. Pode usar o tempo restante no item (4) code review 210500/211100."
   },
   "publicacoes-agenda": {
    "branch": "work/etapa2-r06-publicacoes-agenda",
-   "rev": 44,
+   "rev": 45,
    "ack": true,
-   "recebidoEm": "2026-09-11T20:05:00-03:00",
-   "integradoEm": "f78ec96d9 (merge das sete branches)",
+   "recebidoEm": "2026-09-11T20:19:00-03:00",
+   "integradoEm": "(esta revisao)",
    "resposta": "qa-r06-publicacoes.env existe desde 19:44; semente em producao (lote 49). T0 = 19:36; corte 21:36."
   },
   "operacoes": {
    "branch": "work/etapa2-r06-operacoes",
-   "rev": 40,
+   "rev": 41,
    "ack": true,
-   "recebidoEm": "2026-09-11T20:05:00-03:00",
-   "integradoEm": "f78ec96d9 (merge das sete branches)",
+   "recebidoEm": "2026-09-11T20:19:00-03:00",
+   "integradoEm": "(esta revisao)",
    "resposta": "200200 (sessoes da Conta) APLICADO em producao no lote 50 (20:12), pgTAP 16/16; desvio consciente aceito (logout scope=others em vez de Edge Function). T0 = 19:36 (nao 19:20); corte 21:36; revisao ate 21:46."
   }
  },
@@ -1717,13 +1719,49 @@
    "ack": true,
    "recebidoEm": "2026-09-11T20:05:00-03:00",
    "integradoEm": "f78ec96d9"
+  },
+  {
+   "grupo": "estrutura",
+   "revisaoRecebida": 55,
+   "ack": true,
+   "recebidoEm": "2026-09-11T20:19:00-03:00",
+   "integradoEm": "(esta revisao)"
+  },
+  {
+   "grupo": "formularios-cuidado-rotina",
+   "revisaoRecebida": 48,
+   "ack": true,
+   "recebidoEm": "2026-09-11T20:19:00-03:00",
+   "integradoEm": "(esta revisao)"
+  },
+  {
+   "grupo": "realm-interno",
+   "revisaoRecebida": 43,
+   "ack": true,
+   "recebidoEm": "2026-09-11T20:19:00-03:00",
+   "integradoEm": "(esta revisao)"
+  },
+  {
+   "grupo": "publicacoes-agenda",
+   "revisaoRecebida": 45,
+   "ack": true,
+   "recebidoEm": "2026-09-11T20:19:00-03:00",
+   "integradoEm": "(esta revisao)"
+  },
+  {
+   "grupo": "operacoes",
+   "revisaoRecebida": 41,
+   "ack": true,
+   "recebidoEm": "2026-09-11T20:19:00-03:00",
+   "integradoEm": "(esta revisao)"
   }
  ],
  "filaSqlR06": {
   "regra": "pacote verde em candidatos/<grupo> -> preflight no espelho (aplicar + pgTAP) -> dump por lote -> supabase db query --linked -f <caminho relativo ao workdir> -> insert no ledger -> move para migrations/ -> chave de composicao",
   "aplicados": [
    "lote 49: 20260911230100 (coordenador, usuarios qa-r06)",
-   "lote 50: 20260912210000 (realm-interno), 170500, 170600 (acessos-pessoas), 200200 (operacoes)"
+   "lote 50: 20260912210000 (realm-interno), 170500, 170600 (acessos-pessoas), 200200 (operacoes)",
+   "lote 51: 20260912180000 (estrutura)"
   ],
   "proximos": [
    "candidatos verdes das frentes na ordem de chegada"
@@ -1747,5 +1785,16 @@
  },
  "cobranca30min": {
   "regra": "ordem do Owner (19:40): a cada 30 min cada frente registra no JSON feito / pendente / commits publicados; o coordenador integra e atualiza md e percentual no mesmo ciclo. Proximas cobrancas: 20:36, 21:06; revisao final 21:36."
- }
+ },
+ "lote51": {
+  "aplicadoEm": "2026-09-11T20:15:00-03:00",
+  "dump": "schema-producao-20260911-lote51.sql",
+  "conteudo": [
+   "estrutura 20260912180000_structure_handles_client_v1"
+  ],
+  "pgTAP": "10/10 + regressao 211100 20/20 no espelho",
+  "ledger": "inserido",
+  "chaveDeComposicao": "nenhuma nova"
+ },
+ "semRevisaoNovaHa20min2019": "principal-chat-sistema (JSON 19:40; branch 20:05)"
 }
