@@ -1,15 +1,15 @@
 {
   "grupo": "realm-interno",
-  "revision": 19,
+  "revision": 20,
   "round": "E2-R05-20260911",
-  "updatedAt": "2026-09-11T12:51-03:00",
+  "updatedAt": "2026-09-11T13:00-03:00",
   "app": "Claude",
   "modelo": "Opus 5 (esforco medio)",
   "conversa": "R05 · Realm interno e Chat backend",
   "coordenador": "R05 · Coordenação da tarde (coordenacao.json)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-realm-interno",
   "branch": "work/etapa2-r05-realm-interno",
-  "head": "ceff25a81",
+  "head": "152364e49",
   "upstream": "origin/work/etapa2-r05-realm-interno (push no primeiro commit)",
   "historicoR04": {
     "miniRevisao": {
@@ -194,10 +194,10 @@
     ],
     "foraDoRecorte": "UI (estrutura, formularios, principal-chat), aplicacao em producao (coordenador), Cloudflare com custo"
   },
-  "primeiroGate": "(5) P36 no servidor: constraints/triggers que impedem unidade sem instituicao, turma sem unidade, atividade sem turma; medir o que a baseline ja garante",
+  "primeiroGate": "(7) code review R04: 180060 create or replace e sobrecarga de 14 args de audit_append_superadmin_internal (so se sobrar tempo); antes, revisar o pacote 2 contra a producao real via coordenador e escrever handoff",
   "provaLocal": "projeto descartavel coelo_realm_r05 (portas 625xx) em preparacao: baseline + seed + ordem-de-aplicacao-producao.txt via psql do container",
   "testes": {
-    "pgTAP": "38 + 12 + 28 + 25 = 103 PASS / 0 FAIL nesta rodada"
+    "pgTAP": "38 + 12 + 28 + 25 + 13 + 20 = 136 PASS / 0 FAIL nesta rodada"
   },
   "bloqueio": null,
   "pedidosAoCoordenador": [],
@@ -242,6 +242,26 @@
       "dependeDe": "230004, 230007, 230011 em producao (ja estao)",
       "chaveDeComposicao": "Edge Function form-media: trocar os ramos prepare/finalize/download/discard (hoje Supabase Storage FORMS_BUCKET) para R2 chamando estas RPCs (PUT assinado, HEAD+sha256+dimensoes no finalize, GET assinado no resolve) + cron de expire e worker de limpeza; cliente da frente formularios consome",
       "estado": "pronto para o coordenador aplicar (SQL); Edge Function/cron ficam como gate de forms.upload/resolve-file/download/expire-file/delete-file"
+    },
+    {
+      "ordem": 5,
+      "arquivo": "packages/coelo_database/candidatos/realm-interno/20260911210400_structure_hierarchy_p36_v1.sql",
+      "assunto": "P36 no servidor: atividade ativa exige ao menos um activity_group_links ativo (gatilhos diferidos activity_definition_requires_group / activity_group_links_retain_one); unidade->instituicao e turma->unidade ja garantidos pela baseline (NOT NULL + FK compostas), provados no mesmo pgTAP",
+      "pgTAP": "supabase/tests/structure_hierarchy_p36_v1_test.sql 13/13; activities v2 commands 28, directory 97, save_v2 46, location_create 33 verdes; activity_management_end_to_end_test com 16 falhas iguais ao espelho (legado Storage)",
+      "commit": "d8e5f9b48",
+      "dependeDe": "180020..180150 em producao (ja estao)",
+      "chaveDeComposicao": "nenhuma; o assistente de Atividades (frente estrutura) liga a turma antes de publicar e mapeia 23514 'activity must retain at least one active group link' (detail P36_ACTIVITY_REQUIRES_GROUP)",
+      "estado": "pronto para o coordenador aplicar; NOTICE lista atividades ativas ja sem turma"
+    },
+    {
+      "ordem": 6,
+      "arquivo": "packages/coelo_database/candidatos/realm-interno/20260911210500_unit_care_policies_notifications_v1.sql",
+      "assunto": "P32 regra alvo: public.unit_care_policies (child_safety_mode/medication_mode accept_to_release|inclusion_only|exclusion_only[|not_tracked], notify_unit/notify_child_hierarchy/notify_other_guardians, defaults ligados) com superadmin_unit_care_policy_get_v1/set_v1 (units.read/units.update, escopo, recibo, auditoria); fan-out no sino (context_notification_events/recipients) para unidade, hierarquia da crianca e demais responsaveis por gatilho em autorizacoes (pedido/decisao/status), restricoes e planos de medicacao",
+      "pgTAP": "supabase/tests/unit_care_policies_notifications_v1_test.sql 20/20; child_safety_platform_decision 25, d04 reads 43, edit_pending 4 verdes; health_care_and_medication_plans (1 falha MFA) e child_safety_production (schemaname) iguais ao espelho",
+      "commit": "152364e49",
+      "dependeDe": "170500..172100, 010xxx (cuidado/medicacao) e 220400 em producao (ja estao)",
+      "chaveDeComposicao": "tela de politicas macro da unidade (frente formularios-cuidado-rotina) consome get/set; o sino ja le context_notification_recipients pela policy own_read",
+      "estado": "pronto para o coordenador aplicar"
     }
   ],
   "pendenciasRegistradas": [
@@ -254,10 +274,12 @@
   "deltaPropostoBE": {
     "institutions.edit": "backend done quando a estrutura persistir e recarregar na rota real (SQL ja em producao, lote 28)",
     "chat.attach": "backend local-green (contrato + pgTAP); done apos aplicar + Edge Function chat-media",
-    "forms.upload/resolve-file/download/expire-file/delete-file": "backend local-green (contrato + pgTAP) para question-image; done apos aplicar + form-media em R2"
+    "forms.upload/resolve-file/download/expire-file/delete-file": "backend local-green (contrato + pgTAP) para question-image; done apos aplicar + form-media em R2",
+    "units.create/groups.create/activities.create (P36)": "sem mudanca de estado; regra do servidor pronta (pacote 5)",
+    "child-safety.create/edit, medication.create (P32 alvo)": "backend local-green do complemento (politicas + sino); done apos aplicar"
   },
   "loop": "cron 9ded10f6 a cada 15 min ate 15:45",
-  "status": "em andamento; itens 1-4 entregues, item 5 em curso",
+  "status": "em andamento; itens 1-6 entregues (6 pacotes), item 7 em avaliacao",
   "contratoInstitutionContacts": {
     "rpc": "public.superadmin_institution_contacts_edit_v1(p_request_id uuid, p_institution_id uuid, p_expected_version bigint, p_payload jsonb) -> envelope {ok,data,error}",
     "capacidade": "institution.update; platform_role owner|operations; scope institution so a propria instituicao (outro tenant -> SAI_PERMISSION_DENIED, auditado)",
@@ -324,5 +346,13 @@
       "FORM_MEDIA_REPLAY_MISMATCH 409",
       "SAI_* como nas demais RPCs internas"
     ]
+  },
+  "contratoP32": {
+    "rpcs": {
+      "superadmin_unit_care_policy_get_v1(p_unit_id uuid)": "units.read; data {unit_id, institution_id, child_safety_mode, medication_mode, notify_unit, notify_child_hierarchy, notify_other_guardians, management_version, is_default, updated_at}; unidade sem linha devolve os padroes com is_default=true",
+      "superadmin_unit_care_policy_set_v1(p_request_id uuid, p_unit_id uuid, p_payload jsonb)": "units.update, owner|operations, escopo; payload parcial com as 5 chaves; data = get + {replayed, correlation_id}; SAI_INVALID_ARGUMENT para modo/chave invalida; SAI_PERMISSION_DENIED outro tenant"
+    },
+    "notificacoes": "event_code child_safety.authorization.requested|approved|rejected|<status>, child_safety.restriction.created|<status>, medication.plan.created|<status>; destinatarios = memberships ativas da instituicao (escopo institution ou unit da unidade, exceto legal_representative) + profissionais atribuidos a crianca + memberships com escopo nas turmas da crianca + guardian_links ativos, menos o ator; cada grupo obedece a chave da politica; medication_mode not_tracked nao notifica",
+    "pendencia": "os modos (aceitar para liberar, so inclusao, so exclusao) sao registrados e devolvidos; o fluxo que os aplica no Admin/Principal (quem libera) e produto pos-Superadmin; no Superadmin a decisao continua sendo do Superadmin (171800)"
   }
 }
