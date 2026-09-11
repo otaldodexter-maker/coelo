@@ -26,6 +26,9 @@ const argValue = (flag: string): string | undefined => {
 };
 const institutionArg = argValue("--institution");
 const membersArg = argValue("--members");
+// --read-only: so leituras e a negativa de anon; nao escreve em conversa alguma
+// (util para reconferir producao sem interferir na rota real de outra frente).
+const readOnly = args.includes("--read-only");
 
 const results: string[] = [];
 let failures = 0;
@@ -91,7 +94,9 @@ else report("FAIL", "chat.list.inbox", errCode(inbox));
 // 3. Criar grupo (P8) quando instituicao e membros forem informados.
 let conversationId: string | null = null;
 const requestId = crypto.randomUUID();
-if (institutionArg && membersArg) {
+if (readOnly) {
+  report("SKIP", "chat.create-group", "--read-only");
+} else if (institutionArg && membersArg) {
   const create = await rpc("superadmin_chat_create_group_v2", {
     p_request_id: requestId, p_institution_id: institutionArg, p_title: `QA R04 ${new Date().toISOString().slice(0, 16)}`,
     p_person_ids: membersArg.split(","), p_unit_id: null, p_group_id: null, p_activity_id: null,
@@ -114,7 +119,11 @@ if (institutionArg && membersArg) {
 }
 
 // 4. Enviar, ler thread com recibo, editar, fixar/bandeira, marcar lida, revogar.
-if (conversationId) {
+if (readOnly && inboxData && (inboxData.items as Record<string, unknown>[]).length > 0) {
+  const firstId = String((inboxData.items as Record<string, unknown>[])[0].conversation_id);
+  const thread = await rpc("superadmin_chat_thread_v2", { p_conversation_id: firstId, p_limit: 10, p_cursor_created_at: null, p_cursor_message_id: null });
+  if (okData(thread)) report("PASS", "chat.open.read-only", `total=${okData(thread)!.total}`); else report("FAIL", "chat.open.read-only", errCode(thread));
+} else if (conversationId) {
   const sendId = crypto.randomUUID();
   const send = await rpc("superadmin_chat_send_message_v2", { p_conversation_id: conversationId, p_body_text: "Mensagem sintetica QA R04", p_request_id: sendId });
   const sent = okData(send);
