@@ -1,152 +1,150 @@
 {
-  "revision": 8,
-  "updated_at": "2026-09-10T16:45:00-03:00",
-  "round": "E2-R03-20260910",
+  "revision": 10,
+  "updated_at": "2026-09-10T22:40:00-03:00",
+  "round": "E2-R04-20260911",
   "group": "principal-chat-sistema",
   "tool": "Claude Code (VS Code)",
-  "model": "claude-opus-5[1m]",
-  "coordinator": "Claude (P1)",
-  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-principal-chat-sistema",
-  "branch": "work/etapa2-r03-principal-chat-sistema",
-  "head": "fca02963f",
-  "publicada": "origin/work/etapa2-r03-principal-chat-sistema",
-  "aviso_ao_coordenador": [
-    "ESTE ARQUIVO FOI PERDIDO UMA VEZ. As revisoes 1 a 6 foram gravadas aqui e sumiram do checkout principal por volta de 19:40, quando dev avancou para 2043f9df2 e a arvore passou a ter alteracoes nao commitadas. Reescrevi o conteudo consolidado nesta revisao 7. Se o canal precisa sobreviver, ele precisa ser commitado por quem escreve em dev.",
-    "O checkout principal esta agora com CONFLITO NAO RESOLVIDO em apps/superadmin/lib/features/principal_happens/presentation/principal_happens_preview_page.dart (both modified), com dois arquivos de teste de principal_happens ja staged. Nao toquei nisso: e integracao, e integracao e sua. A fonte correta para resolver e a minha branch em fca02963f, que tem o arquivo inteiro e coerente com os testes.",
-    "A base.fase0Head 1adb070c9 ja esta publicada em coordenacao.json. Vou rebasear minha branch sobre ela."
-  ],
-  "status": "Decisoes dos 26 goldens recebidas do Owner e aplicadas. Cadeia de Cardapios reconstruida sobre a baseline e provada.",
+  "model": "claude-opus-5 (prompt G4, R04)",
+  "coordinator": "R04 · Coordenacao noturna (Claude, Fable)",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-principal-chat-sistema",
+  "branch": "work/etapa2-r04-principal-chat-sistema",
+  "base": "origin/dev 98cc0529d",
+  "head": "18309123d (antes do rebase sobre origin/dev 836c63215; SHA final na revisao 11)",
+  "publicada": "origin/work/etapa2-r04-principal-chat-sistema (push apos o rebase)",
+  "status": "Itens 1 a 4 fechados e committados (pacote 1 verde; WIP da Fase 0 com testes e goldens; veu do Destaque; D3 sem previa); cliente do Agora ja fala o envelope R2. Entrando no item 5 (rota real com sessao qa-r03) apos rebase sobre dev 836c63215 (lote 8 MFA fora do MVP em producao).",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos, Perfil",
     "apps/superadmin -> Chat administrativo e Principal",
-    "apps/superadmin -> Cardapios, Importacoes, Catalogo, paginas de erro, Auth, Shell"
+    "apps/superadmin -> Cardapios, Planos (composto), Importacoes, Catalogo, paginas de erro, Auth, Shell"
   ],
-  "action_ids_status": "55 IDs do inventario: acontece 4, agora 4, momentos 4, principal_profile 3, chat 7, meal_plans 6, imports 7, catalog 4, error_pages 6, auth 5, shell 5.",
-  "lotes": [
-    {
-      "commit": "6a5d351fa",
-      "titulo": "Cardapios: apagar imagem exige a revisao lida pelo cliente",
-      "achado": "A migration 20260820230000 criou a forma revisionada de meal_plan_request_image_delete mas deixou exposta a forma de dois argumentos, que le a revisao atual do banco e a passa como esperada. Com grant para authenticated e o repositorio Flutter chamando justamente essa forma, o controle otimista NUNCA disparava.",
-      "action_ids": [
-        "meal-plans.edit",
-        "meal-plans.publish"
-      ]
-    },
-    {
-      "commit": "a4a49b313",
-      "titulo": "Cardapios: conceder meal_plans ao Owner e destravar a familia",
-      "achado": "ACHADO MATERIAL. meal_plans.read/.manage/.publish existem no catalogo desde 20260813120000, mas NENHUMA migration as concedeu a papel algum em platform_role_permissions, e 20260729144440 ja tinha removido o bypass implicito do Owner. Toda a familia Cardapios era inalcancavel, inclusive para o Owner. Medido em replay local: as tres permissoes existem, o bypass nao existe, e nao ha uma linha de concessao.",
-      "action_ids": [
-        "meal-plans.list",
-        "meal-plans.create",
-        "meal-plans.edit",
-        "meal-plans.model-create",
-        "meal-plans.model-edit",
-        "meal-plans.publish"
-      ]
-    },
-    {
-      "commit": "a3cec9757",
-      "titulo": "Shell: mapear os cinco action_ids",
-      "achado": "Os 134 casos de shell e navegacao passavam, mas nenhum dizia a qual acao pertencia, e por isso o rastreador recusava promover as cinco acoes. Um caso nominal por action_id, sobre router e sessao reais, sem fixture de rota. Controle negativo executado em shell.unauthorized.",
-      "action_ids": [
-        "shell.load",
-        "shell.navigate",
-        "shell.switch-context",
-        "shell.unauthorized",
-        "shell.reload"
-      ]
-    },
-    {
-      "commit": "6e43b957d",
-      "titulo": "Chat: fixar conversa e bandeira voltam, agora persistidas",
-      "achado": "A regressao apontada pelo Owner vinha de 2ffc126db, que trocou a inbox de fixture por dados reais. O estado antigo vivia so na memoria do controller (_pinnedOrder e _flags), entao restaurar do jeito anterior reintroduziria algo que o reload apaga. Agora a preferencia e do banco, por identidade interna, com RPCs v2 que revalidam contexto, capacidade e escopo. Criar grupo NAO entrou: exige criar conversa e membros, que e pacote proprio.",
-      "action_ids": [
-        "chat.list",
-        "chat.open"
-      ]
-    },
-    {
-      "commit": "df542741d",
-      "titulo": "Acontece: o feed pagina de verdade, nos dois caminhos",
-      "achado": "list_visible_happens_posts nao tinha cursor nenhum, so teto. E no caminho misto, que e o de producao, o defeito nao era do servidor: list_visible_happens_feed ja devolvia nextCursor desde 20260909214000 e a TELA descartava o cursor, deixando o resto do feed inalcancavel com o backend pronto.",
-      "action_ids": [
-        "acontece.feed"
-      ]
-    },
-    {
-      "commit": "fca02963f",
-      "titulo": "Acontece: encerrar a previa e aplicar a regra MAIS",
-      "achado": "D3: removidas todas as mensagens de previa. A regra que as substitui e que acao sem destino real fica visivel e inerte, porque na rota real o composition root fornece os destinos e um controle desabilitado passa a denunciar composicao incompleta. Comentar e compartilhar seguem desabilitados por nao existirem no servidor. MAIS aplicada.",
-      "action_ids": [
-        "acontece.feed"
-      ]
-    }
+  "action_ids_status": "55 IDs: acontece 4, agora 4, momentos 4, principal_profile 3, chat 7, meal_plans 6, plans 5 (composto), imports 7, catalog 4, error_pages 6, auth 5, shell 5. Nenhum promovido nesta revisao; propostas de delta chegam com a rota real (item 5).",
+  "historico_r03_lido": "Revisao 8 e handoff da R03 lidos; R03-fase0-handoff.md lido (WIP wip/fase0-arquivo-chat 91e011dc6 e veu-destaque-orange950.patch agora sao meus).",
+  "primeiro_gate": "Coordenador aplicar o pacote 1 em producao (6 arquivos, ordem abaixo) e fazer o deploy de happens-media e now-media. Ate la, sigo no cliente (itens 2, 3, 4) e na rota real do que ja esta em producao (Auth, Shell, Cardapios, Momentos).",
+  "ordem_de_trabalho": [
+    "1. migrations R2 happens/now + fundacao do Agora + retirada do Acontece: FEITO f54809201",
+    "2. WIP da Fase 0: mesclado 0f398b1c9, testes do launcher + Duplicar de volta no flyout do card + 18 goldens regravados apos observacao: FEITO 314317ecf",
+    "3. veu do Destaque orange950 16% (a mao, patch nao aplicava) + 8 goldens do Para voce: FEITO d6d1b5448 + 059d81141",
+    "4. D3 sem previa: 14 ocorrencias trocadas por 'ainda nao esta disponivel': FEITO 059d81141",
+    "4b. Agora: cliente envia midia pelo envelope R2 do now-media (agora.create): FEITO 18309123d",
+    "5. rota normal com sessao qa-r03 por action_id: EM CURSO (app em localhost:3000)",
+    "6. goldens conforme as tres listas: launcher, Cardapios, Planos, Para voce feitos; Acontece galeria mobile (redesenho), Momentos IMG, Perfil FOTO/SHELL e Chat MENU pendentes"
+  ],
+  "pacote_1_candidatos": {
+    "commit": "f54809201",
+    "diretorio": "packages/coelo_database/candidatos/principal-chat-sistema/",
+    "ordem_de_aplicacao": [
+      "20260910190300_now_publication_mvp_baseline.sql (historica 20260820220000 recarimbada; SEM o bucket coelo-now-mvp do Supabase Storage)",
+      "20260910190400_now_custom_role_audience_hardening_baseline.sql (historica 20260821130000)",
+      "20260910190500_now_publication_expiry_transition_baseline.sql (historica 20260909211000; agendador continua do coordenador)",
+      "20260910190600_now_media_private_r2_v1.sql (default r2, bucket coelo-media-prod, chave opaca tenants/<inst>/now/publication/<pub>/<kind>/<asset>/original/<uuid>.<ext>, finalize sem storage.objects no R2, descritores com storage_provider)",
+      "20260910190700_happens_media_private_r2_v1.sql (padrao Circulares sobre public.media_assets, restricoes NOT VALID condicionadas a catalog_kind='legacy-happens', chave tenants/<inst>/happens/post/<post>/attachment/<asset>/original/<uuid>.<ext>)",
+      "20260910190800_happens_post_withdrawal_baseline.sql (historicas 213000 + 214000: withdraw_happens_post, colunas de retirada em posts, capacidade happens.posts.remove, feed direto 4 args com can_withdraw, feed misto com predicado de retirada e can_withdraw; revoga anon do feed misto)"
+    ],
+    "pgTAP": "packages/coelo_database/supabase/tests/: now_publication_mvp_test (corrigido: 3 asserçoes com aspas duplas viravam identificador = os 28 erros; bucket Supabase nao existe mais; feed/resgate/audiencia refletem 190400), now_custom_role_audience_hardening_test, now_publication_expiry_transition_test, now_media_private_r2_v1_test (novo, com negativa cross-tenant), happens_media_private_r2_v1_test (novo, com negativa cross-tenant), happens_media_security_closure_test, happens_post_withdrawal_test (assinatura 4 args da baseline; fixture com provedor/bucket explicitos), happens_mixed_feed_withdrawal_test (payload sem 'body'; plano 10).",
+    "estado": "VERDE. supabase test db no descartavel coelo_baseline_pcs (portas 623xx) sobre reset limpo (baseline + seed + 44 migrations + 6 candidatos), 22:12: 8 arquivos, 194 casos, PASS.",
+    "action_ids_desbloqueados": "agora.view, agora.create, agora.publish, agora.expire (fundacao + R2); acontece.create/publish (midia R2); acontece.remove (retirada no feed direto e misto). Nenhum vira done antes da aplicacao em producao e da prova pelo cliente.",
+    "chaves_de_composicao": "nenhuma nova: happens-media e now-media ja tratam storage_provider; o cliente do Acontece ja obedece ao envelope R2. O cliente do Agora (supabase_now_publication_repository.dart) ainda faz upload legado por upload_token no bucket coelo-now-mvp: correcao FE minha (item 5, agora.create) depois da aplicacao.",
+    "deploy_pelo_coordenador": "happens-media e now-media com --project-ref evvbomzejfijozbtgvpt no padrao de moments-media (COELO_R2_*; verify_jwt conforme config.toml), DEPOIS de 190600 e 190700 aplicadas."
+  },
+  "achados_para_o_coordenador": [
+    "SEGURANCA (baseline de producao): anon tem EXECUTE em public.list_visible_happens_feed e em 200 funcoes security definer do schema public. O feed exige sessao (happens_actor), entao nao ha vazamento por ele, mas a superficie esta aberta. Meu pacote 190800 revoga anon do feed misto; a varredura das outras 199 e do coordenador/revisao de seguranca.",
+    "PROCESSO: 'supabase db reset' com as 45 migrations/ + seed NAO reproduz producao num projeto novo: 20260910170100_superadmin_internal_person_detail tem preflight que exige people.read com requires_mfa=true em platform_permissions, e o seed (que traz o catalogo) roda DEPOIS das migrations. Contorno usado: reset com so a baseline + seed, depois as 44 migrations via psql em ordem (script scratchpad/baseline-pcs/reset-and-apply.sh). Depois da migration 'MFA fora do MVP' esse preflight (requires_mfa=true) vai falhar tambem em replay; vale registrar no README do pacote.",
+    "MEDICAO: 20260909214000 (feed misto) consta 1/1 presente, mas o corpo em producao NAO tem o predicado de retirada nem can_withdraw; 213000 consta 1/2 e o objeto presente e o feed direto SEM as colunas de retirada. Presenca do nome nao prova o corpo. acontece.remove estava blocked-environment por isso; 190800 fecha.",
+    "Agora: producao nunca teve a fundacao (0/17, 0/4, 0/4). Entra inteira como tres pacotes recarimbados. Diferenca unica: nao cria bucket no Supabase Storage (toda midia nova e R2).",
+    "Portas locais em uso por outras frentes: 573xx coordenador, 583xx fcr, 593xx (meu da R03, ainda de pe), 603xx (ocupada), 613xx estrutura. Uso 623xx."
+  ],
+  "pendencias_registradas_sem_bloquear": [
+    "now: substituicao de ativo (mesma publicacao/kind com metadados novos) gera chave nova e deixa o objeto anterior orfao no R2; coletor claim_stale para Agora/Acontece fica para depois (Momentos ja tem o dele).",
+    "now: agendador da expiracao (pg_cron/worker) nao esta neste pacote; agora.expire so transiciona por expire_due_now_publications acionada pela UI ou pelo sweep.",
+    "acontece: curtir e comentar nao existem no banco (nenhuma tabela); ficam visiveis e inertes (regra D3/MAIS da R03).",
+    "acontece: list_visible_happens_posts (feed direto/legado) fica em 4 argumentos como producao; a paginacao 20260910150000 continua historica porque o caminho de producao e o feed misto, que ja pagina."
   ],
   "tests": {
-    "pgTAP_cardapios": "supabase test db em replay local -> 58 PASS / 0 FAIL nos tres arquivos da familia. Antes deste turno, dois dos tres abortavam no meio e nunca completavam o plano.",
-    "pgTAP_chat": "31 PASS / 0 FAIL (superadmin_internal_chat_preferences 10 novo, superadmin_internal_chat_v2 21). O arquivo de referencia tinha 13 casos vermelhos por fixture desatualizado.",
-    "pgTAP_acontece": "92 PASS / 0 FAIL (happens_publication 53, happens_post_withdrawal 33, happens_feed_pagination 6 novo). Os dois primeiros nao completavam o plano antes.",
-    "shell_action_ids": "flutter test shell_action_ids_test -> 5 PASS. Controle negativo executado: com sessao valida, o caso de acesso negado falha.",
-    "cliente_chat": "196 PASS / 9 FAIL em test/features/chat; as 9 sao goldens ja divergentes e ja decididos pelo Owner.",
-    "cliente_acontece": "71 PASS / 20 FAIL em test/features/principal_happens; as 20 sao exclusivamente goldens, ver o campo goldens.",
-    "analyze": "flutter analyze lib test em apps/superadmin: No issues found."
+    "pgTAP_pacote_1": "supabase test db, descartavel coelo_baseline_pcs, reset limpo, 22:12: 8 arquivos, 194 casos, PASS (now_publication_mvp 70, now_custom_role_audience_hardening 13, now_publication_expiry_transition 16, now_media_private_r2_v1 23, happens_media_private_r2_v1 18, happens_media_security_closure 7, happens_post_withdrawal 33, happens_mixed_feed_withdrawal 10).",
+    "analyze": "flutter analyze lib test em apps/superadmin: No issues found (22:25, apos o merge do WIP; rerun apos os commits na revisao 11)",
+    "suites_cliente": "chat (launcher + goldens), meal_plans/presentation, plans, principal_for_you, app/shell, principal_now preview: 533 PASS / 0 FAIL (22:36); principal_now_publication: 95 PASS; goldens regravados: 43 (chat 5, meal_plans 5, plans 8, for_you 8 + 17 escuros/estados)"
   },
-  "goldens": {
-    "estado": "DECIDIDOS PELO OWNER em 10/09/2026, pela pagina de comparacao lado a lado. Fonte: docs/reviews/evidence/etapa-2/goldens-acontece-cardapios-decisoes-2026-09-10.md",
-    "regravados": "10 do feed do Acontece (A sem observacao) + meal_plan_directory_flyout_light_1440 (A, depois do menu ganhar arquivar e excluir). SDK 3.44.2, o registrado.",
-    "pendentes": "10 da galeria do Acontece: decisao R, com quatro correcoes pedidas (paginacao a direita; compartilhar/salvar/baixar a esquerda; conferir distorcao da imagem; repensar o mobile mais proximo de Instagram). Nao iniciado.",
-    "ja_atendido": "A observacao \"botao de arquivos depois do toggle, similar a Instituicoes\" ja estava atendida pelo composto da Fase 0 quando Cardapios migrou (8fafbe16c)."
-  },
-  "fila_sql_para_o_coordenador": [
+  "blocker": null,
+  "next_step": "Rebase sobre 836c63215, push, app em localhost:3000 com a sessao qa-r03: Auth/Shell -> Cardapios -> Momentos -> Chat (leitura) -> Acontece; propor deltas por action_id conforme a regua.",
+  "ack": null,
+  "handoff": "docs/reviews/etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md (R03; sera reescrito no fechamento da R04)",
+  "lotes": [
     {
-      "ordem": 1,
-      "migration": "packages/coelo_database/migrations/20260910190000_meal_plans_media_lifecycle_receipts_v2.sql",
-      "commit": "7c30fdcad",
-      "estado": "pgTAP VERDE sobre a baseline",
-      "observacao": "E a antiga 20260820230000 com carimbo novo. Producao para antes dela: nao tem meal_plan_command_receipts, meal_plan_request_hash nem meal_plan_archive."
+      "commit": "f54809201",
+      "titulo": "Fundacao do Agora, midia de Acontece e Agora no R2 e retirada do Acontece como candidatos sobre a baseline",
+      "action_ids": [
+        "agora.view",
+        "agora.create",
+        "agora.publish",
+        "agora.expire",
+        "acontece.create",
+        "acontece.publish",
+        "acontece.remove"
+      ],
+      "prova": "pgTAP 194/194 PASS no descartavel; aguarda aplicacao em producao pelo coordenador"
     },
     {
-      "ordem": 2,
-      "migration": "packages/coelo_database/migrations/20260910190100_meal_plan_image_delete_requires_revision_v2.sql",
-      "commit": "7c30fdcad",
-      "estado": "pgTAP VERDE sobre a baseline",
-      "observacao": "Fecha a porta de exclusao de imagem sem revisao E REVOGA DE anon o SELECT em public.meal_plans e o EXECUTE em meal_plan_list/meal_plan_get. Este segundo ponto e correcao de seguranca medida na baseline."
+      "commit": "314317ecf",
+      "titulo": "WIP da Fase 0 fechado: launcher Mensagens com testes, ARQUIVO nos cards e goldens regravados",
+      "action_ids": [
+        "shell.load",
+        "chat.list",
+        "meal-plans.list",
+        "plans.list"
+      ],
+      "prova": "testes do launcher 8 PASS; 18 goldens regravados apos observacao"
     },
     {
-      "ordem": 3,
-      "migration": "packages/coelo_database/migrations/20260910190200_meal_plan_delete_v1.sql",
-      "commit": "7c30fdcad",
-      "estado": "pgTAP VERDE sobre a baseline",
-      "observacao": "Cria meal_plan_delete. Muda a FK do recibo para on delete set null: a trilha de auditoria impedia a propria exclusao."
+      "commit": "059d81141",
+      "titulo": "D3 sem previa em 14 textos; goldens do Para voce com o veu",
+      "action_ids": [
+        "acontece.create",
+        "momentos.view",
+        "momentos.create",
+        "agora.view",
+        "agora.create",
+        "principal_profile.view",
+        "chat.list",
+        "meal-plans.create",
+        "meal-plans.edit"
+      ],
+      "prova": "suites 533 PASS"
+    },
+    {
+      "commit": "18309123d",
+      "titulo": "Agora envia a midia pelo envelope R2",
+      "action_ids": [
+        "agora.create"
+      ],
+      "prova": "teste de repositorio com PUT assinado e Storage nunca chamado"
     }
   ],
-  "achados_de_cadeia_para_o_coordenador": [
-    "Invoke-SafeLocalMigrationReplay aborta em 20260812002010: app_private.unit_import_source_attestations e referenciada e nunca criada. Ja relatado ao Owner na rodada noturna.",
-    "MAIS GRAVE: 20260901101500_superadmin_internal_chat_v2 insere em platform_permissions sem module_label/screen_label/action_label, que 20260811215451 tornou NOT NULL sem default. Em qualquer base recriada do zero, a migration do chat interno v2 e INAPLICAVEL. Ou nunca foi aplicada em producao, ou foi aplicada numa ordem diferente da ordem por nome. Nao editei a migration; e decisao de arquitetura. Para provar meu pacote usei um contorno declarado, somente no replay local.",
-    "20260901190927_deploy_superadmin_internal_auth tem preflight de ledger que falha em base recriada (column rollback does not exist).",
-    "PADRAO: em Cardapios, Chat e Acontece, os pgTAP existentes estavam vermelhos por fixture ou assercao desatualizada, alguns desde 09/09. A suite SQL nao vem sendo executada. Vale um gate no ciclo do coordenador."
-  ],
-  "perguntas_ao_owner_via_coordenador": [
-    "has_platform_permission so enxerga membership com scope_kind=platform e instituicao nula. Consequencia: um Owner de INSTITUICAO nunca tem meal_plans.manage, nem com a concessao nova. Para o MVP do Superadmin isso basta, mas quando Admin entrar, nenhum administrador de instituicao gerenciara cardapios. E a regra pretendida ou uma lacuna? Nao alterei a funcao.",
-    "A 20260820230000 passou os tres comandos de escrita de Cardapios de invoker para security definer (com search_path travado e revalidacao de permissao dentro). O pgTAP guardava a postura anterior. Reconciliei o teste para o contrato vigente e registro a mudanca para a ADR, em vez de reverter a migration.",
-    "Criar grupo (terceira parte da regressao do Chat) exige criar conversa e membros pelo realm interno, o que nao existe em RPC nenhuma. E pacote proprio, com regra de quem pode criar grupo e quem entra nele. Confirmar o escopo antes de eu escrever, ou deixar para depois do MVP?",
-    "Curtir e comentar no Acontece sao Set em memoria por indice e nao existem no banco: nenhuma migration cria tabela de reacao ou de comentario. Ligar ponta a ponta, como a D3 pede, exige um pacote de backend proprio. Confirmar prioridade."
-  ],
-  "observacoes_para_o_composto": [
-    "ARQUIVO: o icone de arquivar/duplicar aparece em Cardapios e em Planos, e Planos e do grupo operacoes, entao a correcao pertence ao componente compartilhado. Cardapios usa Icons.copy_all_outlined; o card de modelo de atividade, que e a referencia aprovada, usa Icons.content_copy_rounded.",
-    "meal_plan_directory_flyout_light_1440 tem observacao 'sem shell': o golden e montado fora do shell, o que e do harness de golden do composto, nao da tela."
-  ],
-  "nao_tocado_ainda": "UI de diretorio de Cardapios (o diretorio esta na lista dos 13 da Fase 0). Momentos, Perfil, Agora, Importacoes, Catalogo e paginas de erro seguem no meu recorte e ainda nao foram trabalhados.",
-  "blocker": "Preferencias de chat: dependem do chat interno v2, ausente em producao. Decisao de arquitetura.",
-  "next_step": "Galeria do Acontece: as quatro correcoes que o Owner pediu ao decidir os 10 goldens como R.",
-  "ack": null,
-  "handoff": "docs/reviews/etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md",
-  "achados_para_o_coordenador": [
-    "SEGURANCA: na baseline de producao, anon tem SELECT em public.meal_plans e EXECUTE em meal_plan_list. A RLS ainda barra, entao nao ha vazamento conhecido, mas o grant nao deveria existir. Revogado no pacote 190100. Vale varrer as outras familias pelo mesmo padrao.",
-    "A baseline confirma que superadmin_chat_inbox_v2 NAO existe em producao: o chat interno v2 nunca foi aplicado, coerente com o defeito que reportei (a migration insere em platform_permissions sem os tres labels NOT NULL). Meu pacote de preferencias de chat depende dela e fica bloqueado.",
-    "list_visible_happens_feed JA TEM CURSOR em producao (p_before_at, p_before_type, p_before_id). O carregar mais do Acontece, no caminho misto que e o de producao, funciona so com a correcao de cliente, sem migration.",
-    "ATENCAO: list_visible_happens_posts em producao tem a forma de QUATRO argumentos. Corrigi o cliente para so mandar o cursor quando ele existe; sem isso a primeira pagina falharia com funcao inexistente.",
-    "A migration de concessao vira no-op se rodar antes dos dados: em projeto descartavel as migrations rodam antes do seed e o insert nao encontra as permissoes. Em producao funcionou porque os dados ja existiam. Se for reaplicada em base recriada, conferir depois."
+  "proposta_delta_por_action_id": {},
+  "pacotesProntos": [
+    {
+      "grupo": "principal-chat-sistema",
+      "commit": "f54809201",
+      "diretorio": "packages/coelo_database/candidatos/principal-chat-sistema/",
+      "arquivos_na_ordem": [
+        "20260910190300_now_publication_mvp_baseline.sql",
+        "20260910190400_now_custom_role_audience_hardening_baseline.sql",
+        "20260910190500_now_publication_expiry_transition_baseline.sql",
+        "20260910190600_now_media_private_r2_v1.sql",
+        "20260910190700_happens_media_private_r2_v1.sql",
+        "20260910190800_happens_post_withdrawal_baseline.sql"
+      ],
+      "pgTAP": "8 arquivos, 194 casos, PASS no descartavel coelo_baseline_pcs (baseline + seed + 44 migrations + candidatos), 22:12",
+      "chave_de_composicao": "nenhuma; cliente ja obedece ao provedor anunciado (Acontece desde a R03, Agora em 18309123d)",
+      "depois_de_aplicar": "deploy de happens-media e now-media (COELO_R2_* dos secrets) com --project-ref evvbomzejfijozbtgvpt",
+      "action_ids": [
+        "agora.view",
+        "agora.create",
+        "agora.publish",
+        "agora.expire",
+        "acontece.create",
+        "acontece.publish",
+        "acontece.remove"
+      ]
+    }
   ]
 }
