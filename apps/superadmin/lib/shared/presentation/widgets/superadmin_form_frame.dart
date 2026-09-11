@@ -1,6 +1,8 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 
+import '../../../app/shell/superadmin_shell.dart';
+
 /// Canonical private frame for Superadmin entity forms.
 final class SuperadminFormFrame extends StatelessWidget {
   const SuperadminFormFrame({
@@ -64,17 +66,52 @@ final class SuperadminFormFrame extends StatelessWidget {
             ],
           ),
         );
-        return Padding(
-          padding: EdgeInsets.fromLTRB(inset, inset, inset, CoeloSpacing.space4),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (showRail) ...[navigation, const SizedBox(width: CoeloSpacing.space6)],
-              mainRegion,
-            ],
+        return _ChatLauncherSuppressor(
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(inset, inset, inset, CoeloSpacing.space4),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (showRail) ...[navigation, const SizedBox(width: CoeloSpacing.space6)],
+                mainRegion,
+              ],
+            ),
           ),
         );
       },
     );
   }
+}
+
+/// Decisao 7 do Owner (10/09/2026): sem balao de chat em criar, editar e
+/// publicar. Todo formulario passa por este frame, entao e aqui, no
+/// componente compartilhado, que o shell hospedeiro fica sabendo; assim o
+/// balao nunca cobre o rodape ancorado, em largura nenhuma, sem cada tela
+/// precisar lembrar da flag.
+final class _ChatLauncherSuppressor extends StatefulWidget {
+  const _ChatLauncherSuppressor({required this.child});
+
+  final Widget child;
+
+  @override
+  State<_ChatLauncherSuppressor> createState() => _ChatLauncherSuppressorState();
+}
+
+final class _ChatLauncherSuppressorState extends State<_ChatLauncherSuppressor> {
+  VoidCallback? _release;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _release ??= SuperadminShell.suppressChatLauncher(context);
+  }
+
+  @override
+  void dispose() {
+    _release?.call();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }
