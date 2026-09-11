@@ -5695,10 +5695,10 @@
       "family": "support",
       "screen": "Suporte / Detalhe",
       "scope": "mvp",
-      "done": "R04 (11/09 03:00, subagente do coordenador, rota real com qa-r03): rota normal abre, CRUD persiste em producao, RLS coberta pelo pgTAP do lote 7/10, reload mantem. painel lateral abre pelo card com id, assunto, status, Equipe, Relatorio original, Historico e compositor. Pendencia: balao de chat sobrepoe o Historico/compositor em 1440x1000.",
-      "fe": "R04 (11/09 03:00, subagente do coordenador, rota real com qa-r03): painel lateral abre pelo card com id, assunto, status, Equipe, Relatorio original, Historico e compositor. Pendencia: balao de chat sobrepoe o Historico/compositor em 1440x1000.",
-      "be": "R04 (11/09 03:00, subagente do coordenador, rota real com qa-r03): superadmin_support_get 200 em producao.",
-      "evidence": "commited23ec20; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; etapa-2-operacao/reports/R01-delta-1915.md; Fechamento R01 C03/r33; C00 conjunto74PASS; executor60não-golden, dívida visual mantida; etapa-2-operacao/reports/R01-fechamento-20260909.md; apps/superadmin/test/features/support/ -> 61 PASS, 24 goldens em U; censo d3ddc4a76; apps/superadmin/lib/features/support/ sem data/; apps/superadmin/lib/app/router/superadmin_router.dart linhas 3029-3037; apps/superadmin/lib/app/superadmin_app.dart sem nenhuma ocorrencia de supportController; ausencia de apps/superadmin/lib/features/support/data e de qualquer SupportTicket em packages/; superadmin_router.dart:3101-3115; grep de supportController em lib e test; censo d3ddc4a76 para os goldens; comunicacao/operacoes.json r6; coordenacao.json R03 rev 15; comunicacao/operacoes.json rev 17; docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/14-support-detail.png",
+      "done": "R05 (11/09 14:25, rota real com qa-r03, pacote 20260911200100 em producao): Responsaveis deixam de ser lista fixa: superadmin_support_team_members 200 lista a equipe real (pessoas de servico da ponte + Owner), Responsaveis -> Operador interno 41462594 -> superadmin_support_set_assignee 200; reload e reabertura do chamado mostram o responsavel persistido (superadmin_support_get 200 com assignee_membership_id). pgTAP superadmin_support_assignees_v1_test 28/28. Pendencia 'Responsaveis sao prototipo (defaultTeamMembers, sem RPC)' fechada.",
+      "fe": "R05 (11/09 14:25, rota real com qa-r03, pacote 20260911200100 em producao): Responsaveis deixam de ser lista fixa: superadmin_support_team_members 200 lista a equipe real (pessoas de servico da ponte + Owner), Responsaveis -> Operador interno 41462594 -> superadmin_support_set_assignee 200; reload e reabertura do chamado mostram o responsavel persistido (superadmin_support_get 200 com assignee_membership_id). pgTAP superadmin_support_assignees_v1_test 28/28. Pendencia 'Responsaveis sao prototipo (defaultTeamMembers, sem RPC)' fechada.",
+      "be": "R05 (11/09 14:25, rota real com qa-r03, pacote 20260911200100 em producao): Responsaveis deixam de ser lista fixa: superadmin_support_team_members 200 lista a equipe real (pessoas de servico da ponte + Owner), Responsaveis -> Operador interno 41462594 -> superadmin_support_set_assignee 200; reload e reabertura do chamado mostram o responsavel persistido (superadmin_support_get 200 com assignee_membership_id). pgTAP superadmin_support_assignees_v1_test 28/28. Pendencia 'Responsaveis sao prototipo (defaultTeamMembers, sem RPC)' fechada.",
+      "evidence": "commited23ec20; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; etapa-2-operacao/reports/R01-delta-1915.md; Fechamento R01 C03/r33; C00 conjunto74PASS; executor60não-golden, dívida visual mantida; etapa-2-operacao/reports/R01-fechamento-20260909.md; apps/superadmin/test/features/support/ -> 61 PASS, 24 goldens em U; censo d3ddc4a76; apps/superadmin/lib/features/support/ sem data/; apps/superadmin/lib/app/router/superadmin_router.dart linhas 3029-3037; apps/superadmin/lib/app/superadmin_app.dart sem nenhuma ocorrencia de supportController; ausencia de apps/superadmin/lib/features/support/data e de qualquer SupportTicket em packages/; superadmin_router.dart:3101-3115; grep de supportController em lib e test; censo d3ddc4a76 para os goldens; comunicacao/operacoes.json r6; coordenacao.json R03 rev 15; comunicacao/operacoes.json rev 17; docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/14-support-detail.png; docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/84-support-assignee-reload.png",
       "historicalFrontend": "audited",
       "historicalBackend": "fail-closed",
       "frontendStatus": "verified",
@@ -5721,22 +5721,40 @@
       },
       "certifications": {
         "frontend": {
-          "evidence": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/14-support-detail.png",
-          "revision": "comunicacao/operacoes.json rev 18",
-          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r04-operacoes (af294783f) em localhost:3007, sessao qa-r03@coelo.me, Chrome CDP 9407",
-          "recordedAt": "2026-09-11T03:00:12-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/84-support-assignee-reload.png",
+          "revision": "comunicacao/operacoes.json rev 29",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt (lotes 39 e 200100 aplicados), build web release (qa_main) da branch work/etapa2-r05-operacoes (ca040ba49) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T14:27:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/81-support-detail.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/82-support-assignee-menu.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/83-support-assignee-set.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/84-support-assignee-reload.png"
+          ]
         },
         "backend": {
-          "evidence": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/14-support-detail.png",
-          "revision": "comunicacao/operacoes.json rev 18",
-          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r04-operacoes (af294783f) em localhost:3007, sessao qa-r03@coelo.me, Chrome CDP 9407",
-          "recordedAt": "2026-09-11T03:00:12-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/84-support-assignee-reload.png",
+          "revision": "comunicacao/operacoes.json rev 29",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt (lotes 39 e 200100 aplicados), build web release (qa_main) da branch work/etapa2-r05-operacoes (ca040ba49) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T14:27:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/81-support-detail.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/82-support-assignee-menu.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/83-support-assignee-set.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/84-support-assignee-reload.png"
+          ]
         },
         "integrated": {
-          "evidence": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/14-support-detail.png",
-          "revision": "comunicacao/operacoes.json rev 18",
-          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r04-operacoes (af294783f) em localhost:3007, sessao qa-r03@coelo.me, Chrome CDP 9407",
-          "recordedAt": "2026-09-11T03:00:12-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/84-support-assignee-reload.png",
+          "revision": "comunicacao/operacoes.json rev 29",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt (lotes 39 e 200100 aplicados), build web release (qa_main) da branch work/etapa2-r05-operacoes (ca040ba49) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T14:27:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/81-support-detail.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/82-support-assignee-menu.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/83-support-assignee-set.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/84-support-assignee-reload.png"
+          ]
         }
       }
     },
@@ -5783,10 +5801,10 @@
       "family": "support",
       "screen": "Suporte / Encerrar",
       "scope": "mvp",
-      "done": "R04 (11/09 03:00, subagente do coordenador, rota real com qa-r03): rota normal abre, CRUD persiste em producao, RLS coberta pelo pgTAP do lote 7/10, reload mantem. status Novo -> Em andamento (exige responsavel da lista fixa; nao persistido) -> Concluido; reload mostra Concluido. Pendencia: Responsaveis sao prototipo (defaultTeamMembers, sem RPC).",
-      "fe": "R04 (11/09 03:00, subagente do coordenador, rota real com qa-r03): status Novo -> Em andamento (exige responsavel da lista fixa; nao persistido) -> Concluido; reload mostra Concluido. Pendencia: Responsaveis sao prototipo (defaultTeamMembers, sem RPC).",
-      "be": "R04 (11/09 03:00, subagente do coordenador, rota real com qa-r03): superadmin_support_set_status 200 (in_progress e completed) em producao com p_expected_revision.",
-      "evidence": "commited23ec20; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; etapa-2-operacao/reports/R01-delta-1915.md; Fechamento R01 C03/r33; C00 conjunto74PASS; executor60não-golden, dívida visual mantida; etapa-2-operacao/reports/R01-fechamento-20260909.md; apps/superadmin/test/features/support/ -> 61 PASS; apps/superadmin/lib/features/support/ sem data/; apps/superadmin/lib/app/router/superadmin_router.dart linhas 3029-3037; apps/superadmin/lib/app/superadmin_app.dart sem nenhuma ocorrencia de supportController; ausencia de apps/superadmin/lib/features/support/data e de qualquer SupportTicket em packages/; coordenacao.json R03 rev 15; docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/16-support-status-in-progress.png, 20-support-closed.png, 21-support-reload-closed.png",
+      "done": "R05 (11/09 14:25, rota real com qa-r03, pacote 20260911200100 em producao): Responsaveis deixam de ser lista fixa: superadmin_support_team_members 200 lista a equipe real (pessoas de servico da ponte + Owner), Responsaveis -> Operador interno 41462594 -> superadmin_support_set_assignee 200; reload e reabertura do chamado mostram o responsavel persistido (superadmin_support_get 200 com assignee_membership_id). pgTAP superadmin_support_assignees_v1_test 28/28. Pendencia 'Responsaveis sao prototipo (defaultTeamMembers, sem RPC)' fechada.",
+      "fe": "R05 (11/09 14:25, rota real com qa-r03, pacote 20260911200100 em producao): Responsaveis deixam de ser lista fixa: superadmin_support_team_members 200 lista a equipe real (pessoas de servico da ponte + Owner), Responsaveis -> Operador interno 41462594 -> superadmin_support_set_assignee 200; reload e reabertura do chamado mostram o responsavel persistido (superadmin_support_get 200 com assignee_membership_id). pgTAP superadmin_support_assignees_v1_test 28/28. Pendencia 'Responsaveis sao prototipo (defaultTeamMembers, sem RPC)' fechada.",
+      "be": "R05 (11/09 14:25, rota real com qa-r03, pacote 20260911200100 em producao): Responsaveis deixam de ser lista fixa: superadmin_support_team_members 200 lista a equipe real (pessoas de servico da ponte + Owner), Responsaveis -> Operador interno 41462594 -> superadmin_support_set_assignee 200; reload e reabertura do chamado mostram o responsavel persistido (superadmin_support_get 200 com assignee_membership_id). pgTAP superadmin_support_assignees_v1_test 28/28. Pendencia 'Responsaveis sao prototipo (defaultTeamMembers, sem RPC)' fechada.",
+      "evidence": "commited23ec20; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; etapa-2-operacao/reports/R01-delta-1915.md; Fechamento R01 C03/r33; C00 conjunto74PASS; executor60não-golden, dívida visual mantida; etapa-2-operacao/reports/R01-fechamento-20260909.md; apps/superadmin/test/features/support/ -> 61 PASS; apps/superadmin/lib/features/support/ sem data/; apps/superadmin/lib/app/router/superadmin_router.dart linhas 3029-3037; apps/superadmin/lib/app/superadmin_app.dart sem nenhuma ocorrencia de supportController; ausencia de apps/superadmin/lib/features/support/data e de qualquer SupportTicket em packages/; coordenacao.json R03 rev 15; docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/16-support-status-in-progress.png, 20-support-closed.png, 21-support-reload-closed.png; docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/84-support-assignee-reload.png",
       "historicalFrontend": "audited",
       "historicalBackend": "fail-closed",
       "frontendStatus": "verified",
@@ -5797,36 +5815,39 @@
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "certifications": {
         "frontend": {
-          "evidence": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/16-support-status-in-progress.png",
-          "revision": "comunicacao/operacoes.json rev 18",
-          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r04-operacoes (af294783f) em localhost:3007, sessao qa-r03@coelo.me, Chrome CDP 9407",
-          "recordedAt": "2026-09-11T03:00:12-03:00",
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/84-support-assignee-reload.png",
+          "revision": "comunicacao/operacoes.json rev 29",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt (lotes 39 e 200100 aplicados), build web release (qa_main) da branch work/etapa2-r05-operacoes (ca040ba49) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T14:27:00-03:00",
           "evidenceList": [
-            "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/16-support-status-in-progress.png",
-            "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/20-support-closed.png",
-            "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/21-support-reload-closed.png"
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/81-support-detail.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/82-support-assignee-menu.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/83-support-assignee-set.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/84-support-assignee-reload.png"
           ]
         },
         "backend": {
-          "evidence": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/16-support-status-in-progress.png",
-          "revision": "comunicacao/operacoes.json rev 18",
-          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r04-operacoes (af294783f) em localhost:3007, sessao qa-r03@coelo.me, Chrome CDP 9407",
-          "recordedAt": "2026-09-11T03:00:12-03:00",
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/84-support-assignee-reload.png",
+          "revision": "comunicacao/operacoes.json rev 29",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt (lotes 39 e 200100 aplicados), build web release (qa_main) da branch work/etapa2-r05-operacoes (ca040ba49) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T14:27:00-03:00",
           "evidenceList": [
-            "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/16-support-status-in-progress.png",
-            "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/20-support-closed.png",
-            "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/21-support-reload-closed.png"
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/81-support-detail.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/82-support-assignee-menu.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/83-support-assignee-set.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/84-support-assignee-reload.png"
           ]
         },
         "integrated": {
-          "evidence": "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/16-support-status-in-progress.png",
-          "revision": "comunicacao/operacoes.json rev 18",
-          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r04-operacoes (af294783f) em localhost:3007, sessao qa-r03@coelo.me, Chrome CDP 9407",
-          "recordedAt": "2026-09-11T03:00:12-03:00",
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/84-support-assignee-reload.png",
+          "revision": "comunicacao/operacoes.json rev 29",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt (lotes 39 e 200100 aplicados), build web release (qa_main) da branch work/etapa2-r05-operacoes (ca040ba49) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T14:27:00-03:00",
           "evidenceList": [
-            "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/16-support-status-in-progress.png",
-            "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/20-support-closed.png",
-            "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/21-support-reload-closed.png"
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/81-support-detail.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/82-support-assignee-menu.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/83-support-assignee-set.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/84-support-assignee-reload.png"
           ]
         }
       }
@@ -6108,15 +6129,15 @@
       "family": "plans",
       "screen": "Planos / Diretório",
       "scope": "mvp",
-      "done": "Spec051 aprovada, catálogo manual/backend be28f0c0, repository e5a24a82 e contexto de form c8cd7518 implementados. C00 integrou comparação por identidade do contexto do repositório60ae2b2a.",
+      "done": "R05 (11/09): /plans na rota normal com qa-r03: lista real (superadmin_plans_list 200) antes e depois do pacote 200000; catalogo com busca, toggle, Arquivos, abas e card Novo plano; reload mantem. Backend: superadmin_plans_list/plan_get/plan_save na baseline; pacote 20260911200000_superadmin_plans_platform_scope_v1 APLICADO em producao (lote 39, 13:40) com pgTAP superadmin_plans_behavior_v1_test 40/40 (anonimo 28000, sem plan.change 42501, ator escopado a instituicao 42501 = negativa de outro tenant, authenticated sem leitura direta, replay por request_id, conflito 40001) e superadmin_plans_production_test 13/13. Rota real apos o pacote: /plans lista (superadmin_plans_list 200, captura 48).",
       "fe": "R05 (11/09 13:30, rota real com qa-r03): /plans abre pela rota normal (superadmin_plans_list 200; catalogo vazio com busca, toggle, Arquivos, abas Todos/Ativos/Arquivados e card Novo plano); apos criar, lista o plano; reload mantem.",
-      "be": "R05 (11/09 13:30, rota real com qa-r03): /plans abre pela rota normal (superadmin_plans_list 200; catalogo vazio com busca, toggle, Arquivos, abas Todos/Ativos/Arquivados e card Novo plano); apos criar, lista o plano; reload mantem. Backend: superadmin_plans_list/plan_get/plan_save na baseline de producao; pgTAP comportamental superadmin_plans_behavior_v1_test 40/40 no descartavel (anonimo 28000, sem plan.change 42501, ator escopado a instituicao 42501, authenticated sem leitura direta, replay por request_id, conflito 40001) exige o candidato 20260911200000_superadmin_plans_platform_scope_v1 (escopo de plataforma) ainda NAO aplicado em producao: BE fica local-green ate o coordenador aplicar.",
-      "evidence": "specs/051-superadmin-plans-production.md; docs/open-questions.md; commitsbe28f0c0/e5a24a82/c8cd7518; R01-delta-1815: C03r23 52f2075f usa identidade do repository;36não-golden relatados, revisão em andamento.; Fechamento R01 C03/r33; C00288PASS; conflito039/051 mantido em open-questions; etapa-2-operacao/reports/R01-fechamento-20260909.md; commits 5f42fbcbd e 01081d3fc; apps/superadmin/test/features/plans/ -> 41 PASS; commit ac3238f7c; medicao antes e depois na mesma execucao; suite de Planos 42 PASS com a unica falha sendo plan_golden_test, ja no censo; goldens-claro-decisoes-2026-09-10.md; R03-fase0-handoff.md; docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/40-plans-open.png; packages/coelo_database/supabase/tests/superadmin_plans_behavior_v1_test.sql",
+      "be": "R05 (11/09): /plans na rota normal com qa-r03: lista real (superadmin_plans_list 200) antes e depois do pacote 200000; catalogo com busca, toggle, Arquivos, abas e card Novo plano; reload mantem. Backend: superadmin_plans_list/plan_get/plan_save na baseline; pacote 20260911200000_superadmin_plans_platform_scope_v1 APLICADO em producao (lote 39, 13:40) com pgTAP superadmin_plans_behavior_v1_test 40/40 (anonimo 28000, sem plan.change 42501, ator escopado a instituicao 42501 = negativa de outro tenant, authenticated sem leitura direta, replay por request_id, conflito 40001) e superadmin_plans_production_test 13/13. Rota real apos o pacote: /plans lista (superadmin_plans_list 200, captura 48).",
+      "evidence": "specs/051-superadmin-plans-production.md; docs/open-questions.md; commitsbe28f0c0/e5a24a82/c8cd7518; R01-delta-1815: C03r23 52f2075f usa identidade do repository;36não-golden relatados, revisão em andamento.; Fechamento R01 C03/r33; C00288PASS; conflito039/051 mantido em open-questions; etapa-2-operacao/reports/R01-fechamento-20260909.md; commits 5f42fbcbd e 01081d3fc; apps/superadmin/test/features/plans/ -> 41 PASS; commit ac3238f7c; medicao antes e depois na mesma execucao; suite de Planos 42 PASS com a unica falha sendo plan_golden_test, ja no censo; goldens-claro-decisoes-2026-09-10.md; R03-fase0-handoff.md; docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/40-plans-open.png; packages/coelo_database/supabase/tests/superadmin_plans_behavior_v1_test.sql; docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/48-plans-after-package.png",
       "historicalFrontend": "audited",
       "historicalBackend": "blocked-decision",
       "frontendStatus": "verified",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
@@ -6143,6 +6164,28 @@
             "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/44-plan-created.png",
             "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/47-plan-edited-reload.png"
           ]
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/48-plans-after-package.png",
+          "revision": "comunicacao/operacoes.json rev 29",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt (lotes 39 e 200100 aplicados), build web release (qa_main) da branch work/etapa2-r05-operacoes (ca040ba49) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T14:27:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/40-plans-open.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/47-plan-edited-reload.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/48-plans-after-package.png"
+          ]
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/48-plans-after-package.png",
+          "revision": "comunicacao/operacoes.json rev 29",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt (lotes 39 e 200100 aplicados), build web release (qa_main) da branch work/etapa2-r05-operacoes (ca040ba49) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T14:27:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/40-plans-open.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/47-plan-edited-reload.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/48-plans-after-package.png"
+          ]
         }
       }
     },
@@ -6151,15 +6194,15 @@
       "family": "plans",
       "screen": "Criar Plano",
       "scope": "mvp",
-      "done": "Spec051 aprovada, catálogo manual/backend be28f0c0, repository e5a24a82 e contexto de form c8cd7518 implementados. C00 integrou comparação por identidade do contexto do repositório60ae2b2a.",
+      "done": "R05 (11/09): Novo plano -> Identificacao/Capacidades/Limites/Revisao + motivo -> superadmin_plan_save 200 -> plano 5b0fc76b-51cd-4361-8d4f-e7033853eba6 listado; reload mantem. Backend: superadmin_plans_list/plan_get/plan_save na baseline; pacote 20260911200000_superadmin_plans_platform_scope_v1 APLICADO em producao (lote 39, 13:40) com pgTAP superadmin_plans_behavior_v1_test 40/40 (anonimo 28000, sem plan.change 42501, ator escopado a instituicao 42501 = negativa de outro tenant, authenticated sem leitura direta, replay por request_id, conflito 40001) e superadmin_plans_production_test 13/13. Rota real apos o pacote: /plans lista (superadmin_plans_list 200, captura 48).",
       "fe": "R05 (11/09 13:30, rota real com qa-r03): card Novo plano -> /plans/new (gate de mutacao ligado em fab9b9fd0 pelo repositorio composto) -> Identificacao, Capacidades (6), Limites, Revisao com motivo de auditoria -> superadmin_plan_save 200 -> plano 5b0fc76b-51cd-4361-8d4f-e7033853eba6 listado (superadmin_plans_list 200).",
-      "be": "R05 (11/09 13:30, rota real com qa-r03): card Novo plano -> /plans/new (gate de mutacao ligado em fab9b9fd0 pelo repositorio composto) -> Identificacao, Capacidades (6), Limites, Revisao com motivo de auditoria -> superadmin_plan_save 200 -> plano 5b0fc76b-51cd-4361-8d4f-e7033853eba6 listado (superadmin_plans_list 200). Backend: superadmin_plans_list/plan_get/plan_save na baseline de producao; pgTAP comportamental superadmin_plans_behavior_v1_test 40/40 no descartavel (anonimo 28000, sem plan.change 42501, ator escopado a instituicao 42501, authenticated sem leitura direta, replay por request_id, conflito 40001) exige o candidato 20260911200000_superadmin_plans_platform_scope_v1 (escopo de plataforma) ainda NAO aplicado em producao: BE fica local-green ate o coordenador aplicar.",
-      "evidence": "specs/051-superadmin-plans-production.md; docs/open-questions.md; commitsbe28f0c0/e5a24a82/c8cd7518; R01/C00 2026-09-08T19:00:55-03:00 9936a858: Detalhe/save rejeitam plano ou código divergente. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; Fechamento R01 C03/r33; C00288PASS; conflito039/051 mantido em open-questions; etapa-2-operacao/reports/R01-fechamento-20260909.md; commits 5f42fbcbd e 01081d3fc; apps/superadmin/test/features/plans/ -> 41 PASS; docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/41-plan-create-open.png; packages/coelo_database/supabase/tests/superadmin_plans_behavior_v1_test.sql",
+      "be": "R05 (11/09): Novo plano -> Identificacao/Capacidades/Limites/Revisao + motivo -> superadmin_plan_save 200 -> plano 5b0fc76b-51cd-4361-8d4f-e7033853eba6 listado; reload mantem. Backend: superadmin_plans_list/plan_get/plan_save na baseline; pacote 20260911200000_superadmin_plans_platform_scope_v1 APLICADO em producao (lote 39, 13:40) com pgTAP superadmin_plans_behavior_v1_test 40/40 (anonimo 28000, sem plan.change 42501, ator escopado a instituicao 42501 = negativa de outro tenant, authenticated sem leitura direta, replay por request_id, conflito 40001) e superadmin_plans_production_test 13/13. Rota real apos o pacote: /plans lista (superadmin_plans_list 200, captura 48).",
+      "evidence": "specs/051-superadmin-plans-production.md; docs/open-questions.md; commitsbe28f0c0/e5a24a82/c8cd7518; R01/C00 2026-09-08T19:00:55-03:00 9936a858: Detalhe/save rejeitam plano ou código divergente. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; Fechamento R01 C03/r33; C00288PASS; conflito039/051 mantido em open-questions; etapa-2-operacao/reports/R01-fechamento-20260909.md; commits 5f42fbcbd e 01081d3fc; apps/superadmin/test/features/plans/ -> 41 PASS; docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/41-plan-create-open.png; packages/coelo_database/supabase/tests/superadmin_plans_behavior_v1_test.sql; docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/44-plan-created.png",
       "historicalFrontend": "local-green",
       "historicalBackend": "blocked-decision",
       "frontendStatus": "verified",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
@@ -6176,6 +6219,28 @@
             "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/43b-plan-motivo.png",
             "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/44-plan-created.png"
           ]
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/44-plan-created.png",
+          "revision": "comunicacao/operacoes.json rev 29",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt (lotes 39 e 200100 aplicados), build web release (qa_main) da branch work/etapa2-r05-operacoes (ca040ba49) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T14:27:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/41-plan-create-open.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/43-plan-create-review.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/44-plan-created.png"
+          ]
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/44-plan-created.png",
+          "revision": "comunicacao/operacoes.json rev 29",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt (lotes 39 e 200100 aplicados), build web release (qa_main) da branch work/etapa2-r05-operacoes (ca040ba49) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T14:27:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/41-plan-create-open.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/43-plan-create-review.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/44-plan-created.png"
+          ]
         }
       }
     },
@@ -6184,15 +6249,15 @@
       "family": "plans",
       "screen": "Editar Plano",
       "scope": "mvp",
-      "done": "Spec051 aprovada, catálogo manual/backend be28f0c0, repository e5a24a82 e contexto de form c8cd7518 implementados. C00 integrou comparação por identidade do contexto do repositório60ae2b2a.",
+      "done": "R05 (11/09): /plans/<id>/edit (superadmin_plan_get 200), nome editado, Revisao + motivo -> superadmin_plan_save 200 (revisao 2); reload de /plans mostra o nome editado. Backend: superadmin_plans_list/plan_get/plan_save na baseline; pacote 20260911200000_superadmin_plans_platform_scope_v1 APLICADO em producao (lote 39, 13:40) com pgTAP superadmin_plans_behavior_v1_test 40/40 (anonimo 28000, sem plan.change 42501, ator escopado a instituicao 42501 = negativa de outro tenant, authenticated sem leitura direta, replay por request_id, conflito 40001) e superadmin_plans_production_test 13/13. Rota real apos o pacote: /plans lista (superadmin_plans_list 200, captura 48).",
       "fe": "R05 (11/09 13:30, rota real com qa-r03): card -> /plans/<id>/edit (superadmin_plan_get 200), nome alterado para [R05-QA] Plano de teste editado, Revisao + motivo -> superadmin_plan_save 200 (revisao 2); reload de /plans mostra o nome editado.",
-      "be": "R05 (11/09 13:30, rota real com qa-r03): card -> /plans/<id>/edit (superadmin_plan_get 200), nome alterado para [R05-QA] Plano de teste editado, Revisao + motivo -> superadmin_plan_save 200 (revisao 2); reload de /plans mostra o nome editado. Backend: superadmin_plans_list/plan_get/plan_save na baseline de producao; pgTAP comportamental superadmin_plans_behavior_v1_test 40/40 no descartavel (anonimo 28000, sem plan.change 42501, ator escopado a instituicao 42501, authenticated sem leitura direta, replay por request_id, conflito 40001) exige o candidato 20260911200000_superadmin_plans_platform_scope_v1 (escopo de plataforma) ainda NAO aplicado em producao: BE fica local-green ate o coordenador aplicar.",
-      "evidence": "specs/051-superadmin-plans-production.md; docs/open-questions.md; commitsbe28f0c0/e5a24a82/c8cd7518; R01/C00 2026-09-08T19:00:55-03:00 9936a858: Detalhe/save rejeitam plano ou código divergente. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; Fechamento R01 C03/r33; C00288PASS; conflito039/051 mantido em open-questions; etapa-2-operacao/reports/R01-fechamento-20260909.md; commits 5f42fbcbd e 01081d3fc; apps/superadmin/test/features/plans/ -> 41 PASS; docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/45-plan-edit-open.png; packages/coelo_database/supabase/tests/superadmin_plans_behavior_v1_test.sql",
+      "be": "R05 (11/09): /plans/<id>/edit (superadmin_plan_get 200), nome editado, Revisao + motivo -> superadmin_plan_save 200 (revisao 2); reload de /plans mostra o nome editado. Backend: superadmin_plans_list/plan_get/plan_save na baseline; pacote 20260911200000_superadmin_plans_platform_scope_v1 APLICADO em producao (lote 39, 13:40) com pgTAP superadmin_plans_behavior_v1_test 40/40 (anonimo 28000, sem plan.change 42501, ator escopado a instituicao 42501 = negativa de outro tenant, authenticated sem leitura direta, replay por request_id, conflito 40001) e superadmin_plans_production_test 13/13. Rota real apos o pacote: /plans lista (superadmin_plans_list 200, captura 48).",
+      "evidence": "specs/051-superadmin-plans-production.md; docs/open-questions.md; commitsbe28f0c0/e5a24a82/c8cd7518; R01/C00 2026-09-08T19:00:55-03:00 9936a858: Detalhe/save rejeitam plano ou código divergente. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; Fechamento R01 C03/r33; C00288PASS; conflito039/051 mantido em open-questions; etapa-2-operacao/reports/R01-fechamento-20260909.md; commits 5f42fbcbd e 01081d3fc; apps/superadmin/test/features/plans/ -> 41 PASS; docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/45-plan-edit-open.png; packages/coelo_database/supabase/tests/superadmin_plans_behavior_v1_test.sql; docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/47-plan-edited-reload.png",
       "historicalFrontend": "local-green",
       "historicalBackend": "blocked-decision",
       "frontendStatus": "verified",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
@@ -6202,6 +6267,28 @@
           "revision": "comunicacao/operacoes.json rev 24",
           "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (fab9b9fd0) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
           "recordedAt": "2026-09-11T13:35:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/45-plan-edit-open.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/46-plan-edit-review.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/47-plan-edited-reload.png"
+          ]
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/47-plan-edited-reload.png",
+          "revision": "comunicacao/operacoes.json rev 29",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt (lotes 39 e 200100 aplicados), build web release (qa_main) da branch work/etapa2-r05-operacoes (ca040ba49) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T14:27:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/45-plan-edit-open.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/46-plan-edit-review.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/47-plan-edited-reload.png"
+          ]
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/47-plan-edited-reload.png",
+          "revision": "comunicacao/operacoes.json rev 29",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt (lotes 39 e 200100 aplicados), build web release (qa_main) da branch work/etapa2-r05-operacoes (ca040ba49) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T14:27:00-03:00",
           "evidenceList": [
             "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/45-plan-edit-open.png",
             "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/46-plan-edit-review.png",
@@ -7215,7 +7302,7 @@
       "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
     }
   ],
-  "updatedAt": "2026-09-11T17:24:18.081Z",
+  "updatedAt": "2026-09-11T17:27:00.509Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,
