@@ -17,7 +17,13 @@ presenca de objeto e falha com `55000` se a dependencia faltar.
 | 2 | `20260910240100_superadmin_internal_chat_v2.sql` | chat interno v2: `chat.internal.read/send` com labels e sem MFA, autor interno em `messages`, recibos e idempotencia, 6 RPCs `superadmin_chat_*_v2` | `superadmin_internal_chat_v2_baseline_test.sql` 23/23 |
 | 3 | `20260910240200_superadmin_internal_chat_receipts_edit_revoke_v2.sql` | `chat.internal.manage`, trilha de edicao, recibo por mensagem, editar (15 min) e revogar | `superadmin_internal_chat_receipts_edit_revoke_baseline_test.sql` 36/36 |
 | 4 | `20260910240300_chat_conversation_preferences_v1.sql` | fixar e bandeira por identidade interna; inbox devolve `pinned_at`/`flag` | `superadmin_internal_chat_preferences_baseline_test.sql` 10/10 |
-| 5 | `20260910240400_superadmin_internal_chat_groups_v1.sql` | Criar grupo (P8): `superadmin_chat_create_group_v2` e `superadmin_chat_group_members_v2` | `superadmin_internal_chat_groups_v1_test.sql` 19/19 |
+| 5 | `20260910240400_superadmin_internal_chat_groups_v1.sql` | Criar grupo (P8): `superadmin_chat_create_group_v2` e `superadmin_chat_group_members_v2` | `superadmin_internal_chat_groups_v1_test.sql` 22/22 |
+| 6 | `20260910240500_revoke_anon_direct_access_v1.sql` | segurança básica: `anon` sem privilégio em tabelas, sequências e funções de `public`, `app_private`, `audit` e `analytics` (em produção: 30 tabelas e 15 funções de `app_private` via PUBLIC); authenticated e service_role preservados | `revoke_anon_direct_access_v1_test.sql` 9/9 |
+
+Os pacotes 1 a 5 foram aplicados em produção pelo coordenador no lote 9
+(10/09 22:25) e provados com a sessão `qa-r03` (18/18, ver
+`docs/reviews/evidence/etapa-2/r04-realm-interno/prova-producao-2026-09-10.md`).
+O pacote 6 é independente dos anteriores.
 
 Os testes `*_baseline_test.sql` substituem `superadmin_internal_chat_v2_test.sql`,
 `superadmin_internal_chat_receipts_edit_revoke_test.sql` e
