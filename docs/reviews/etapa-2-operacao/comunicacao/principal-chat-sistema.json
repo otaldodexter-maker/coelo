@@ -1,6 +1,6 @@
 {
-  "revision": 27,
-  "updated_at": "2026-09-11T15:20-03:00",
+  "revision": 28,
+  "updated_at": "2026-09-11T15:30-03:00",
   "round": "E2-R05-20260911",
   "group": "principal-chat-sistema",
   "tool": "Claude Code (VS Code)",
@@ -202,7 +202,7 @@
       },
       {
         "pendencia": "momentos.create / agora.create / acontece.create com midia",
-        "gate": "Edge Function moments-media responde 422 moments_r2_not_configured em producao: momentsR2Config() ignora o fallback COELO_R2_* (ver complemento_1530); correcao de 6 linhas em moments-media/r2_s3.ts + deploy pelo coordenador; depois repetir a prova (fluxo pronto, ferramentas em ferramentas/)"
+        "gate": "funcao configurada (redeploy 15:22); prova pela tela pendente: dirigir o compositor por Key/semantica e ler o corpo da resposta de moments-media (cdp_net nao capturou corpo em loadingFailed); happens-media e now-media ja leem COELO_R2_*"
       },
       {
         "pendencia": "chat.attach",
@@ -252,6 +252,7 @@
     ],
     "ambiente_encerrado": "Chrome 9409, servidores 3009/3000 e dart encerrados as 15:1x; espelho coelo_pcs5 parado (supabase stop)",
     "complemento_1510": "segunda tentativa de Momentos com midia na origem localhost:3000 (CORS liberado): imagem entra no compositor, save_moments_draft devolve {id ba75dde2-cfba-458f-807c-ee2a94e7f981, version 2, receipt_id} e a publicacao para em /functions/v1/moments-media (duas chamadas sem corpo capturado, provavel preflight + falha), tela 'Nao foi possivel publicar agora' (38). Rascunho de Momentos ba75dde2 fica em producao (dado sintetico). Gate exato para momentos.create: resposta da Edge Function moments-media a partir de localhost:3000 (ler status pelo Network ou pelos logs da funcao). Logs: rota-real/net-momentos-publicar.log e net-acontece-publicar.log (sem token). Ferramentas novas em ferramentas/ (cdp_file.dart: intercepta Page.fileChooserOpened e entrega o arquivo; rpc.py: prova de RPC com credencial so em memoria).",
-    "complemento_1530": "Depois das allowlists de origem regravadas pelo coordenador (15:03), duas novas tentativas de publicar Momentos com midia em localhost:3000: imagem no compositor, save_moments_draft version 3 e 4 (rascunho ba75dde2), publico Equipe escolar marcado (45), Publicar agora -> 'Nao foi possivel publicar agora' (46). CAUSA RAIZ medida por sonda direta (ferramentas/rpc.py + fn_probe): POST /functions/v1/moments-media responde 422 {error: moments_r2_not_configured} para qualquer origem (a allowlist ja aceita localhost:3000 e 127.0.0.1:3009). No codigo: moments-media/index.ts environment() le COELO_R2_* como fallback, mas moments-media/r2_s3.ts momentsR2Config() so usa MOMENTS_R2_ENDPOINT/REGION/ACCESS_KEY_ID/SECRET_ACCESS_KEY/BUCKET, que nao existem nos secrets de producao (so COELO_R2_*). Correcao proposta (o classificador bloqueou a edicao nesta conversa como recurso compartilhado): em momentsR2Config usar MOMENTS_R2_* ?? COELO_R2_* e bucket padrao coelo-media-prod; redeploy de moments-media; happens-media e now-media conferir o mesmo caminho (dependencies.envGet). Logs: rota-real/net-momentos-publicar-2.log e -3.log. Ambiente encerrado 15:3x."
+    "complemento_1530": "Depois das allowlists de origem regravadas pelo coordenador (15:03), duas novas tentativas de publicar Momentos com midia em localhost:3000: imagem no compositor, save_moments_draft version 3 e 4 (rascunho ba75dde2), publico Equipe escolar marcado (45), Publicar agora -> 'Nao foi possivel publicar agora' (46). CAUSA RAIZ medida por sonda direta (ferramentas/rpc.py + fn_probe): POST /functions/v1/moments-media responde 422 {error: moments_r2_not_configured} para qualquer origem (a allowlist ja aceita localhost:3000 e 127.0.0.1:3009). No codigo: moments-media/index.ts environment() le COELO_R2_* como fallback, mas moments-media/r2_s3.ts momentsR2Config() so usa MOMENTS_R2_ENDPOINT/REGION/ACCESS_KEY_ID/SECRET_ACCESS_KEY/BUCKET, que nao existem nos secrets de producao (so COELO_R2_*). Correcao proposta (o classificador bloqueou a edicao nesta conversa como recurso compartilhado): em momentsR2Config usar MOMENTS_R2_* ?? COELO_R2_* e bucket padrao coelo-media-prod; redeploy de moments-media; happens-media e now-media conferir o mesmo caminho (dependencies.envGet). Logs: rota-real/net-momentos-publicar-2.log e -3.log. Ambiente encerrado 15:3x.",
+    "complemento_1540": "moments-media reimplantada pelo coordenador as 15:22 (dev 98201b51e): a sonda direta passou de 422 moments_r2_not_configured para 422 invalid_request (payload vazio), ou seja, a funcao esta configurada. Duas tentativas de publicar pela tela depois disso ficaram inconclusivas por automacao (o chip Equipe escolar alterna a cada clique e numa delas o clique em Publicar agora nao disparou chamada alguma; noutra a tela respondeu Nao foi possivel publicar agora sem corpo capturado). Sem delta novo: momentos.create continua FE local-green com gate = repetir a prova dirigindo por Key/semantica (nao por coordenada) e capturar o corpo da resposta de moments-media. Rascunho ba75dde2 chegou a version 6. Ambiente encerrado 15:3x."
   }
 }
