@@ -1,15 +1,15 @@
 {
   "grupo": "realm-interno",
-  "revision": 6,
+  "revision": 7,
   "round": "E2-R04-20260911",
-  "updatedAt": "2026-09-10T22:35-03:00",
+  "updatedAt": "2026-09-10T22:51-03:00",
   "app": "Claude",
   "modelo": "Fable 5.1",
   "conversa": "R04 · Realm interno e Chat backend",
   "coordenador": "R04 · Coordenação noturna (coordenacao.json)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-realm-interno",
   "branch": "work/etapa2-r04-realm-interno",
-  "head": "f007c7156",
+  "head": "76d377747",
   "upstream": "origin/work/etapa2-r04-realm-interno",
   "base": "origin/dev 836c63215 (rebase feito as 22:08; lote 8 MFA fora do MVP ja em producao)",
   "historicoR03": "frente sem entrega na R03 (frenteNova coelo-f0 atribuida as 15:58; worktree e2-r03-realm-interno quebrada, nao usada). Nada a reutilizar dela.",
@@ -74,8 +74,7 @@
   },
   "bloqueio": null,
   "pedidosAoCoordenador": [
-    "aplicar deltas-be-r04.json (6 IDs -> done) e registrar chat.create-group no inventario",
-    "ao fim da rodada: a instituicao sintetica arquivada 9f040000-0000-4000-8000-000000000010 fica em producao por causa da FK do audit_logs; decidir se permanece arquivada (recomendo) ou se o Owner quer purga da auditoria (nao recomendo)",
+    "aplicar candidatos/realm-interno/20260910240500_revoke_anon_direct_access_v1.sql (independente; preflight no espelho + pgTAP 9/9); depois eu confiro em producao que anon ficou sem tabela/funcao e que qa-r03 continua operando (rerun do script de prova sem fixture: leitura e anon 401)",
     "a regra do README (db reset com migrations/ inteira) nao reproduz: 20260910170100 exige o catalogo antes do seed; fluxo baseline-only + seed + psql descrito em candidatos/realm-interno/README.md"
   ],
   "perguntasParaOOwner": [],
@@ -121,7 +120,7 @@
     "escopo": "membership de plataforma ve toda conversa; membership de instituicao so ve a propria instituicao (outro tenant responde CHAT_NOT_FOUND). Anexos: so metadados; chat.attach continua dependendo do gateway de midia comum (fora deste recorte).",
     "criarGrupoNoCliente": "sugestao para SupabaseChatRepository: createGroup(ChatCreateGroupCommand{institutionId, title, personIds, unitId?, groupId?, activityId?, idempotencyKey}) -> ChatConversationSummary; o seletor de hierarquia escolhe UMA instituicao e pessoas dela (readers existentes de Pessoas/Unidades/Turmas do Superadmin); grupo entre instituicoes nao existe no modelo (conversations.institution_id NOT NULL)."
   },
-  "proximoPasso": "recorte do backend concluido; restam so pendencias registradas (chat.attach, escopo activity sem pgTAP, Realtime, revisao profunda). Sigo disponivel ate 04:20 para perguntas de principal-chat-sistema pelo JSON e para ajustes do contrato.",
+  "proximoPasso": "aguardar aplicacao do 240500 para conferir em producao; responder perguntas do principal-chat pelo JSON (nenhuma ate agora); P24 com o Owner",
   "pacotesProntos": [
     {
       "arquivo": "packages/coelo_database/candidatos/realm-interno/20260910240000_chat_production_contract_v1.sql",
@@ -157,6 +156,14 @@
       "pgTAP": "supabase/tests/superadmin_internal_chat_groups_v1_test.sql 22/22 (escopos instituicao, unidade e turma; unidade invalida; turma sem unidade)",
       "commit": "d643d0193 + e3f04debe (teste estendido)",
       "chaveDeComposicao": "UI de Criar grupo do grupo principal-chat-sistema (repositorio + dialogo); nenhuma chave de banco"
+    },
+    {
+      "arquivo": "packages/coelo_database/candidatos/realm-interno/20260910240500_revoke_anon_direct_access_v1.sql",
+      "assunto": "seguranca basica: anon sem privilegio em tabelas/sequencias/funcoes de public, app_private, audit e analytics; funcoes que anon executava via PUBLIC (acl nula) recebem revoke de PUBLIC e re-grant explicito so do que authenticated/service_role ja tinham",
+      "pgTAP": "supabase/tests/revoke_anon_direct_access_v1_test.sql 9/9; as cinco suites do chat continuam verdes depois dele (111/111)",
+      "commit": "76d377747",
+      "chaveDeComposicao": "nenhuma",
+      "dependeDe": "nada (independente dos pacotes 1-5)"
     }
   ],
   "ordemDeAplicacao": "240000 -> 240100 -> 240200 -> 240300 -> 240400. Cada um tem preflight de presenca de objeto e falha com 55000 se a dependencia faltar. Todos aplicados em sequencia no mesmo projeto descartavel; pgTAP total 108 PASS / 0 FAIL.",
@@ -194,8 +201,17 @@
   "handoff": "docs/reviews/evidence/etapa-2/r04-realm-interno/handoff.md",
   "deltaPropostoArquivo": "docs/reviews/evidence/etapa-2/r04-realm-interno/deltas-be-r04.json (6 IDs da familia chat, backend -> local-green; formato de apply-tracker-delta.cjs; ids validados contra o inventario)",
   "estadoDoCoordenador": {
-    "lidoEm": "2026-09-10T22:35-03:00",
-    "mensagemEntreSessoes": "lote 9 em producao as 22:25 (240000..240400, ledger 59); 12 RPCs superadmin_chat_*_v2 presentes; P24 (Criar grupo so por identidades internas no MVP) ao Owner, nao bloqueia",
-    "devHead": "836c63215 (319a3b6bd anunciado, ainda nao em origin/dev as 22:31)"
+    "lidoEm": "2026-09-10T22:51-03:00",
+    "mensagemEntreSessoes": "deltas aplicados no inventario (6 IDs backend done com certificacao de producao; caminho corrigido para docs/reviews/...), chat.create-group criado (familia chat, MVP, backend done, UI com principal-chat-sistema); validador PASS 231 acoes / 7 done. Instituicao sintetica arquivada aceita como decisao do coordenador. Pedido novo: pacote de revoke de anon."
+  },
+  "decisaoRegistrada": "instituicao sintetica 9f040000-0000-4000-8000-000000000010 permanece em producao com status=archived, deleted_at preenchido e nome \"QA R04 Instituicao Sintetica (arquivada)\" porque audit.audit_logs (append-only) a referencia por FK; decisao do coordenador em 10/09 ~22:45, nao do Owner; registrar no fechamento",
+  "medicaoAnonProducao": {
+    "quando": "2026-09-10T22:40-03:00 (somente leitura)",
+    "funcoesPublic": "0 de 393 executaveis por anon (toda migration ja revoga de PUBLIC); o numero 200 medido pelo principal-chat e o do Postgres local, onde os privilegios padrao do Supabase dao execute a anon (205 no meu descartavel) - o pacote alinha local e producao",
+    "funcoesAppPrivate": "15 executaveis por anon via PUBLIC (acl nula): 11 triggers validate_*, decide_unit_type_request_for_superadmin, preview_unit_institution_transfer, meal_plan_scope_allowed, enforce_unit_branding_identity_ownership; anon nao tem USAGE em app_private, entao o caminho estava fechado",
+    "tabelasPublic": "30 tabelas com grants a anon, 24 com ALL (DELETE/TRUNCATE inclusive): institutions, people, person_*, institution_memberships, institution_settings, institution_subscriptions, platform_permissions, schema_tables, schema_columns, usage_limits, conversation_members, audience_segments, channel_policies e mais; SELECT em groups, group_branding, platform_memberships e import_*; RLS ligada barrava (nenhuma policy to anon)",
+    "sequencias": "public.profile_about_revisions_id_seq",
+    "foraDoPacote": "storage (7 tabelas), realtime (2) e cron: schemas da plataforma; ALTER DEFAULT PRIVILEGES testado no descartavel e descartado (nao impede o EXECUTE via PUBLIC em funcao nova); a regra segue sendo revoke explicito em cada migration",
+    "efeitoNoDescartavel": "anon: 1193 grants de tabela -> 0, 233 funcoes -> 0; authenticated 349 (public) / 84 (app_private) e service_role 370 inalterados"
   }
 }
