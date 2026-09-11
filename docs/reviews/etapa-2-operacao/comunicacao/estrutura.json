@@ -1,18 +1,22 @@
 {
  "grupo": "estrutura",
- "revision": 22,
- "round": "E2-R03-20260910",
- "updatedAt": "2026-09-10T17:05:00-03:00",
+ "revision": 23,
+ "round": "E2-R04-20260911",
+ "updatedAt": "2026-09-10T21:44:19-03:00",
  "app": "Claude",
- "modelo": "Opus 5 (1M context)",
- "conversa": "R03-P4-estrutura",
- "coordenador": "coelo-af (Coordenacao R03); ACK recebido na revisao 18",
- "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-estrutura",
- "branch": "work/etapa2-r03-estrutura",
- "head": "acd020513",
- "upstream": "origin/work/etapa2-r03-estrutura",
- "base": "origin/dev 347d4cf8a, ja com a baseline de producao 20260910000000 e os lotes 1 e 2 aplicados",
- "incidenteDeCanal": "Esta revisao foi reconstruida. As revisoes 1 a 17 foram gravadas em docs/reviews/etapa-2-operacao/comunicacao/estrutura.json no CHECKOUT PRINCIPAL, sem commit, e desapareceram: o arquivo voltou ao conteudo da rodada anterior (revisao 52 da E2-NOTURNA). A causa provavel e a Fase 0 operar no mesmo checkout como escritora unica de dev e ter feito checkout/reset que descartou a modificacao nao commitada. Licao para a rodada: arquivo de comunicacao nao commitado no checkout principal nao e canal duravel enquanto outra frente escreve ali. A partir desta revisao passo a versionar a copia na minha worktree/branch tambem, para que o estado sobreviva.",
+ "modelo": "Fable 5.1 (prompt pedia Opus; a conversa abriu em Fable 5.1)",
+ "conversa": "R04 · Estrutura",
+ "coordenador": "R04 · Coordenação noturna (coordenacao.json); ACK pendente",
+ "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-estrutura",
+ "branch": "work/etapa2-r04-estrutura",
+ "head": "98cc0529d",
+ "upstream": "ainda nao publicado",
+ "base": "origin/dev 98cc0529d (docs(e2): Rodada 4 inteira no Claude, sem Codex), com a baseline 20260910000000 e os lotes 1 a 7 em migrations/",
+ "horario": {
+  "inicio": "2026-09-10T21:44:19-03:00",
+  "corte": "2026-09-11T04:20:00-03:00",
+  "loop": "/loop 15m agendado na abertura"
+ },
  "escopo": [
   {
    "tela": "Instituicoes",
@@ -95,238 +99,80 @@
   }
  ],
  "totalAcoes": 49,
- "criteriosFechados": [
-  "Integridade dos seis arquivos dos tres pacotes SQL retidos conferida contra o handoff da rodada anterior: conteudo identico, divergencia so de fim de linha.",
-  "Perfil de replay StructureLocationConsumersV1 escrito como uniao revisada de LocationReservationsV1 com ActivityAggregateConcurrencyClock, encadeado por hash ao pai e ao companheiro.",
-  "Os tres pacotes SQL aplicam em ordem e passam em pgTAP local: 3 arquivos, 109 assercoes, Result PASS, zero recurso Docker residual.",
-  "Cobertura versionada auditada nas seis familias: a lacuna de RPC sem migration esta contida em Unidades, sao 13 funcoes, e duas delas sustentam tambem o diretorio de Turmas.",
-  "Chaves de composicao mapeadas por pacote SQL, incluindo o gate maior structureMutationsEnabled e os repositorios Unavailable.",
-  "Caminho de composicao das 49 acoes auditado do router ao SQL, com o gate de cada uma nomeado.",
-  "Realm do CRUD medido por familia: Instituicoes e Atividades no interno v2, Turmas e Unidades no legado people-based.",
-  "Defeito da confirmacao de saida obsoleta de Instituicoes corrigido em _requestExit e _selectDestination, com prova causal.",
-  "Padrao de dialogo assincrono sem guarda varrido nas seis familias e corrigido nas quatro ocorrencias encontradas.",
-  "Exportar de Unidades passa a cumprir a regra de indisponibilidade honesta, com o teste que afirmava o contrario reescrito.",
-  "Fail-closed das rotas de mutacao de Instituicoes e Unidades provado nos dois sentidos.",
-  "Fila SQL serializada conferida: o pacote de Turmas estava sem posicao e foi reportado.",
-  "Branch rebaseada sobre o composto da Fase 0 sem conflito, com o teste de arquitetura dela verde.",
-  "Decisao RODAPE do Owner implementada no frame compartilhado, com os tres testes que afirmavam o comportamento antigo reescritos.",
-  "Regra nova do chat aplicada nos quatro formularios do recorte e gravada nas skills coelo-ui."
- ],
- "bloqueioFinalDeLocais": {
-  "urgencia": "decisao do Owner, nao tarefa de execucao",
-  "fato": "O catalogo de producao nao tem NENHUMA permissao locations.*. Zero no seed.",
-  "exigidas": [
-   "locations.read",
-   "locations.create",
-   "locations.update",
-   "locations.status",
-   "locations.copy",
-   "locations.schedule",
-   "locations.reservations.read",
-   "locations.reservations.manage",
-   "locations.reservations.override"
-  ],
-  "consequencia": "Mesmo com toda a cadeia SQL aplicada, nenhuma acao de Locais funciona em producao: as RPCs chamam require_superadmin_internal_context('locations....') e negam.",
-  "porQueNaoFiz": "Inventar permissao, definir risco e requires_mfa e conceder ao Owner e decisao de produto e de seguranca. locations.reservations.override e, pelo nome, confirmar conflito de reserva. O proprio pacote recusa-se a inventar capacidade, e esta certo.",
-  "detalhe": "docs/reviews/evidence/etapa-2/r03-estrutura/producao-nao-tem-a-cadeia-v2.md"
- },
- "estadoDoCandidatoDoCatalogo": {
-  "arquivo": "packages/coelo_database/candidatos/estrutura/20260910180400_superadmin_location_catalog_v2_baseline.sql",
-  "duasGuardasLiteraisCorrigidas": "A primeira, de ACL da tabela, passou depois do revoke: a prova avancou dela para a seguinte. A segunda, de ACL das sete funcoes legadas, tinha o mesmo defeito, porque producao mantem o EXECUTE padrao para PUBLIC nas funcoes do schema public. Nos dois casos a guarda literal saiu do preflight, a normalizacao foi para o corpo e o invariante virou pos-condicao.",
-  "provaFeita": "Tres execucoes sobre a baseline. A primeira barrou na ACL da tabela; corrigido, a segunda barrou na ACL das sete funcoes legadas; corrigido, a terceira barrou no contrato do proprio pacote, pedindo a fixture de capacidade. As duas comparacoes literais de ACL estao resolvidas e provadas por avanco: a prova passou de uma para a seguinte.",
-  "ordemDoLote5": [
-   "20260910180400_superadmin_location_catalog_v2_baseline (candidato)",
-   "20260908154257_superadmin_activity_save_v2",
-   "20260908190646_superadmin_locations_update_status_v2",
-   "20260908190648_superadmin_locations_copy_v2",
-   "20260908190650_superadmin_locations_schedule_v2",
-   "20260909165000_superadmin_location_reservations_v2",
-   "20260910180000_superadmin_location_consumer_bindings_v2",
-   "20260910180100_superadmin_activity_location_create_v2",
-   "20260910180200_superadmin_group_location_create_v2"
+ "historicoR03": {
+  "revisaoFinal": 22,
+  "handoff": "docs/reviews/evidence/etapa-2/r03-estrutura/handoff.md",
+  "conteudoIntegral": "estrutura.json na revisao 22 esta em dev (98cc0529d); esta revisao 23 substitui o corpo pelo estado da R04 e mantem so o que continua aberto",
+  "aberto": [
+   "Cadeia de Locais: em producao entraram catalog_v2_baseline (230013), update_status (230014), copy (230015), schedule (230016) e capacidades locations.* (230012). NAO entraram: 20260908154257 activity_save_v2 (pgTAP exige app_private.activity_v2_denied_envelope), 20260909165000 reservations_v2 (preflight exige audit_append_superadmin_internal com 14 argumentos; producao tem 13), 180000/180100/180200 (dependem de reservas), 180300 unit_detail_v2_baseline (pgTAP 3 ok / 5 not ok: nome do wrapper).",
+   "institutions.* e activities.* na rota normal: as RPCs internas v2 de Instituicoes entraram no lote 3 (230001 list_filter, 230002 edit_core); conferir presenca das demais antes de compor.",
+   "Cards das unidades na tela de Locais da instituicao (depende do diretorio de Unidades composto).",
+   "structureMutationsEnabled: proposta de separar por realm ainda sem decisao (proposta-separar-chave-de-estrutura.md).",
+   "16 goldens de formulario esperando MENU/MENU-M; 30 goldens orfaos de Locais aguardando decisao de remocao.",
+   "Achado de seguranca: 203 tabelas com ALL para anon/authenticated por privilegio padrao do schema public (fora do recorte; decisao do Owner)."
   ]
  },
- "achadoDeSegurancaAnon": {
-  "urgencia": "alta, e maior que o meu recorte",
-  "fato": "Producao concede ALL (arwdDxtm) a anon e a authenticated em public.activity_locations por privilegio padrao do schema public, e o levantamento do coordenador achou o mesmo padrao em 204 tabelas.",
-  "riscoReal": "Hoje a escrita esta barrada pela RLS forcada: activity_locations tem uma unica politica, activity_locations_authorized_read, de SELECT para authenticated, e nenhuma politica de escrita. Ou seja nao ha porta aberta agora. O que existe e uma concessao de mesa que deixa a tabela a UM descuido de politica de virar gravavel por usuario anonimo.",
-  "oQueFiz": "O candidato 20260910180400 revoga tudo de PUBLIC e de anon, revoga INSERT/UPDATE/DELETE/TRUNCATE/REFERENCES/TRIGGER de authenticated e mantem apenas o SELECT dele, antes de afirmar o invariante como pos-condicao.",
-  "porQueESeguro": "Conferido antes de revogar: nenhum ponto do cliente le activity_locations direto, so por RPC; e a politica de leitura existe justamente para authenticated, entao o SELECT fica.",
-  "oQueFicaAberto": "As outras 203 tabelas seguem com a mesma concessao. Endurecer em lote e decisao do Owner, nao minha, e foi levada a ele."
- },
- "preflightDoCoordenador": {
-  "recebido": "coelo-af rodou o preflight do realm interno e da cadeia de Locais sobre a baseline as 16:45 e devolveu os erros exatos.",
-  "corrigidoPorMim": [
-   "Fixtures de units em group_detail, unit_detail e institution_list_filter: unit_types proprio, unit_type_id e handle derivado do slug com ponto no lugar do hifen, porque o hifen nao passa no CHECK da coluna. Cobre os 125 erros de group_detail.",
-   "Fixtures de plans em list_filter e unit_detail: producao tem plans.description com default '' e CHECK char_length>=1, ou seja o default nunca satisfaz a constraint. Cobre os 91 erros de list_filter.",
-   "Caso 15 de institution_detail (Owner em AAL1): conferido antes de mexer, porque afrouxar asserção de seguranca por indicacao de terceiro nao se faz. superadmin_institution_detail_v2 exige platform.read e no seed de producao essa permissao tem requires_mfa=false; com a decisao AAL1 do MVP a leitura e permitida. As permissoes que continuam exigindo MFA em producao sao as de mutacao (units.create, units.update, groups.manage) e seguem cobertas."
-  ],
-  "candidatosNovos": [
-   "candidatos/estrutura/20260910180300_superadmin_internal_unit_detail_v2_baseline.sql: junta public.unit_types por unit_type_id em vez de institution_types por institution_type_id, que e coluna inexistente em producao.",
-   "candidatos/estrutura/20260910180400_superadmin_location_catalog_v2_baseline.sql: a guarda de ACL deixa de comparar a ACL com um array literal de nove entradas, que era retrato de cadeia local e muda com a versao do Postgres (MAINTAIN so existe do 17 em diante), e passa a afirmar o invariante: quem nao e service_role nem dono nao escreve, anon e PUBLIC nao tem nada, e nenhuma concessao e grantable."
-  ],
-  "naoAtacado": "Caso 24 de institution_edit_core (root and address partial merge). Nao e MFA nem fixture de units/plans; pedi o erro exato ao coordenador em vez de adivinhar. Suspeita registrada: producao tem institution_addresses.country com default 'BR' enquanto o contrato exige o literal 'Brasil'.",
-  "ordem": "Se o lote 4 for aplicado antes do catalogo ficar verde, a cadeia de Locais e os tres pacotes 1800xx continuam fora, porque todos dependem dele."
- },
- "gateDaBaseline": {
-  "pedido": "Reprovar os tres pacotes de Locais sobre a baseline e compor SupabaseUnitDirectoryRepository/SupabaseGroupDirectoryRepository.",
-  "reemissao": [
-   "20260910180000_superadmin_location_consumer_bindings_v2",
-   "20260910180100_superadmin_activity_location_create_v2",
-   "20260910180200_superadmin_group_location_create_v2"
-  ],
-  "resultado": "NAO PASSA, e nenhuma correcao nos tres resolve. Projeto descartavel com db reset baseline+seed: o primeiro aborta no proprio preflight com 'reviewed reservation reader prerequisites missing' (SQLSTATE 55000). A cadeia de Locais v2 nunca foi aplicada em producao.",
-  "faltamEmProducao": [
-   "20260908031000_superadmin_location_catalog_v2",
-   "20260908154257_superadmin_activity_save_v2",
-   "20260908190646_superadmin_locations_update_status_v2",
-   "20260908190648_superadmin_locations_copy_v2",
-   "20260908190650_superadmin_locations_schedule_v2",
-   "20260909165000_superadmin_location_reservations_v2"
-  ],
-  "ordemPedida": "Recarimbar os seis acima depois de 20260910160000 e so entao aplicar 180000, 180100 e 180200. Nao recarimbei por conta propria: sao pacotes de outras fatias, alguns tocando Atividades, e isso atravessaria o sequenciamento do coordenador.",
-  "composicaoFeita": "SupabaseUnitDirectoryRepository e SupabaseGroupDirectoryRepository compostos no lugar dos Unavailable*, porque as RPCs deles EXISTEM em producao: as treze de Unidades versionadas em 20260910160000 e as quatro de Turmas na baseline.",
-  "detalhe": "docs/reviews/evidence/etapa-2/r03-estrutura/producao-nao-tem-a-cadeia-v2.md"
- },
- "correcaoDoMeuGateMap": {
-  "oQueEuErrei": "No gate-map-49-acoes.md eu disse que Instituicoes e Atividades tinham repositorio Supabase composto de verdade e eram as candidatas naturais a fechar primeiro. Estava certo sobre a composicao do cliente e ERRADO sobre o banco: eu media migration versionada, nao aplicada.",
-  "oQueABaselineMostra": "Dez das 23 RPCs chamadas pelo recorte nao existem em producao: as quatro internas v2 de Instituicoes, as quatro de Atividades, superadmin_unit_detail_v2 e superadmin_group_detail_v2.",
-  "conclusaoInvertida": "As familias mais perto de funcionar em producao sao Unidades e Turmas, nao Instituicoes e Atividades. Os detalhes de Unidade e de Turma seguem fail-closed por falta das duas _detail_v2."
- },
- "locaisImplementado": {
-  "decisao": "Owner aprovou o desenho (pode fazer) sobre https://claude.ai/code/artifact/de01d63e-8ca1-439f-8480-e0d3c9aa8ae6",
-  "feito": "Bolinha de status na linha do nome como no card de Instituicoes; tipo do local virou titulo de grupo (Locais internos da instituicao/unidade e Locais externos); card Criar do composto abrindo cada grupo e definindo o tipo do que sera criado; botao Novo local do cabecalho removido; card Criar tambem nos estados vazio e sem resultados pela regra CRIAR.",
-  "semConceitoNovo": "LocationKind{internal,external} e LocationScope ja existiam no dominio; a tela e que os ignorava.",
-  "naoFeito": "Cards das unidades dentro da tela de Locais da instituicao: dependem do diretorio de Unidades, que so agora saiu de Unavailable. Fica para o proximo gate.",
-  "testes": "448 PASS em test/features/locations; 3 goldens de detalhe seguem vermelhos e ja falhavam antes desta mudanca, medido por baseline com stash; 12 goldens de diretorio regravados por serem o desenho aprovado."
- },
- "goldensOrfaosDeLocais": {
-  "achado": "Locais tem DOIS conjuntos de goldens com os mesmos nomes e conteudos diferentes: 30 em test/features/locations/goldens/ e 30 em goldens/status_a11y/. So o segundo e referenciado por teste (matchesGoldenFile('goldens/status_a11y/location_...')). Os 30 da raiz nao guardam nada.",
-  "consequencia": "A pagina de revisao de Locais que mandei ao Owner usou as imagens da raiz, ou seja, mostrou arquivos orfaos como se fossem o produto. Corrigido com ele; os renders validos sao os de status_a11y.",
-  "acaoPedida": "Decidir se os 30 orfaos sao removidos. Nao removi: apagar imagem de referencia e irreversivel na pratica e nao e do meu recorte decidir."
- },
- "decisaoEspacamentoTurmas": {
-  "resposta": "Ja resolveu. O composto arrumou o espacamento e a observacao de 10/09 esta cumprida.",
-  "pagina": "https://claude.ai/code/artifact/78fdeaff-1bba-47c3-8649-255c3aca7c92",
-  "encerra": "a observacao 'card com excesso de espacamento' em DOZE goldens do diretorio de Turmas (eu havia contado onze ao perguntar).",
-  "arquivos": [
-   "group_directory_bug_open_light_1440",
-   "group_directory_card_hover_light_1440",
-   "group_directory_cards_light_1024",
-   "group_directory_cards_light_1440",
-   "group_directory_cards_light_768",
-   "group_directory_create_card_hover_light_1440",
-   "group_directory_filter_selected_light_1440",
-   "group_directory_institution_filter_open_light_1440",
-   "group_directory_pagination_page_size_open_light_1440",
-   "group_directory_profile_open_light_1440",
-   "group_directory_table_light_1024",
-   "group_directory_tour_open_light_1440"
-  ],
-  "semTrabalho": "Todos passam hoje: a Fase 0 os regravou em 92ac66b68 ao migrar o diretorio para o composto. Nao ha codigo a mudar nem golden a regravar por esta decisao.",
-  "atencao": "A decisao encerra UMA observacao, nao limpa os arquivos. Continuam abertas MENU em onze dos doze (todos menos cards_light_768, e MENU e da Fase 0) e FLYOUT em profile_open_light_1440.",
-  "cardCriar375": "group_directory_cards_light_375 tinha observacao diferente (card de criar turma talvez exagerado). O Owner respondeu sem cita-la; estou tratando como encerrada tambem, com o card mantido como esta, e registrei isso de proposito para ele reabrir com uma palavra se a leitura estiver errada.",
-  "detalhe": "docs/reviews/evidence/etapa-2/r03-estrutura/decisao-espacamento-turmas.md"
- },
- "decisaoDoOwner20260910": {
-  "rodape": "Opcao A: rodape ancorado no fim da viewport em todas as larguras. O golden de Instituicoes em 375 sera regravado, consequencia aceita explicitamente.",
-  "chat": "Regra nova: sem balao de chat em telas de criar, editar e publicar, nem no Agora aberto e no Momentos aberto.",
-  "gravadoEm": [
-   ".agents/skills/coelo-ui/references/form-layout-contracts.md",
-   ".agents/skills/coelo-ui/references/principal-visual-surfaces.md"
-  ],
-  "detalhe": "docs/reviews/evidence/etapa-2/r03-estrutura/decisao-rodape-e-chat.md",
-  "pagina": "https://claude.ai/code/artifact/555d48fb-f427-4aa3-9710-71c22ac9acdc"
- },
- "avisoParaOsOutrosGrupos": {
-  "urgencia": "alta",
-  "rodape": "SuperadminFormFrame serve 19 formularios: access_profiles, activities, agenda, assessments, daily_routine, forms, groups, health_care (dois), imports, institutions, invites, meal_plans, notices, people, platform_users, safety e units. A decisao foi aplicada no frame, que e o certo pelo principio do composto, entao o render mobile dos dezenove muda. Os goldens mobile de formulario dos outros grupos vao divergir; NAO e regressao, e a decisao do Owner chegando neles.",
-  "chat": "Apliquei showChatLauncher: false nos quatro formularios do recorte. Faltam, em outros grupos: o Agora aberto e o Momentos aberto (principal-chat-sistema), os fluxos de publicacao, e as telas access_profile_form_page, access_profile_duplicate_page, daily_routine_form_sections, health_care_form_pages, health_medication_plan_form_page, invite_form_page, person_form_page e platform_user_form_page, que montam o SuperadminShell diretamente. Telas que herdam o shell de um pai precisam de conferencia do grupo dono."
- },
- "entregaParaAFilaSql": {
-  "arquivo": "docs/reviews/evidence/etapa-2/r03-estrutura/sql-package-handoff.json",
-  "estado": "verde em pgTAP local, aguardando o coordenador aplicar e ligar as chaves",
-  "ordem": [
-   "20260909192000_superadmin_location_consumer_bindings_v2",
-   "20260909200000_superadmin_activity_location_create_v2",
-   "20260909210000_superadmin_group_location_create_v2"
-  ],
-  "atencao": "O segundo exige o agregado de Atividades v2 aplicado antes; sem ele o preflight aborta com SQLSTATE 55000."
- },
- "pedidosAoCoordenador": [
+ "ordemDaRodada": [
   {
-   "assunto": "Fila SQL incompleta",
-   "urgencia": "alta",
-   "pedido": "Inscrever 20260909210000_superadmin_group_location_create_v2.sql na fila serializada, entre as posicoes 6 e 7, SHA256 CRLF 3e76d07fa9c780befe960cf904f8a172771ceb15982715ac7e8e6edb15c2e1e4. Hoje a fila pula do 6 para o 7 e quem seguir a ordem nunca aplica esse pacote."
+   "n": 1,
+   "item": "Locais: corrigir 180000/180100/180200/180300 em candidatos/estrutura para a assinatura real de audit_append_superadmin_internal (13 argumentos) e a forma canonica (unit_type_id); trazer reservations_v2 como candidato sobre a baseline; fixture activity_v2_denied_envelope de activity_save_v2; provar no projeto descartavel com pgTAP",
+   "estado": "em andamento",
+   "action_ids": [
+    "locations.detail-links",
+    "locations.schedule",
+    "activities.location",
+    "groups.location",
+    "activities.create",
+    "activities.edit"
+   ]
   },
   {
-   "assunto": "RPCs de Unidades",
-   "pedido": "Executar a consulta de pg_proc de units-rpc-catalog-probe.md nos schemas public e app_private. Sao 13 funcoes, nao 5. Duas delas sustentam tambem o diretorio de Turmas."
+   "n": 2,
+   "item": "Rota normal com sessao qa-r03@coelo.me em localhost:3000: Instituicoes -> Unidades -> Turmas -> Atividades -> Locais -> Avaliacoes; verified so com CRUD em producao + RLS nega outro tenant em pgTAP + reload",
+   "estado": "pendente"
   },
   {
-   "assunto": "Aplicar e ligar",
-   "pedido": "Aplicar os tres pacotes verdes na ordem e ligar as chaves de composicao listadas em composition-keys.md."
+   "n": 3,
+   "item": "P5 (Turmas com filtro por unidade degradando de forma honesta) e P6 (importar de Unidades vira indisponibilidade honesta)",
+   "estado": "pendente",
+   "action_ids": [
+    "groups.list",
+    "units.import"
+   ]
   },
   {
-   "assunto": "Ordem da fila",
-   "pedido": "Ler gate-map-49-acoes.md antes de sequenciar: a ordem que fecha mais acoes por unidade de esforco nao e a ordem das telas."
+   "n": 4,
+   "item": "P15 no SuperadminFormFrame: rodape ancorado + respiro no fim do conteudo; avisar formularios-cuidado-rotina sobre medication_form_mobile_light",
+   "estado": "pendente"
   },
   {
-   "assunto": "Proposta de separar a chave de Estrutura",
-   "pedido": "Avaliar proposta-separar-chave-de-estrutura.md: cinco acoes estao fechadas por uma justificativa que ja nao vale para elas."
-  },
-  {
-   "assunto": "Base da Fase 0",
-   "pedido": "Publicar base.fase0Head. Rebaseei por conta propria em origin/dev e21f5a391 porque a Fase 0 ja passou das minhas familias."
+   "n": 5,
+   "item": "Goldens do recorte conforme as tres listas do Owner (activity_form_create_light_375 RODAPE, activity_detail_*, group_form_*), no SDK 3.44.2; espacamento de Turmas ja decidido",
+   "estado": "pendente"
   }
  ],
- "perguntasParaOOwner": [
-  {
-   "assunto": "Dialogo de importar de Unidades",
-   "pergunta": "O botao Importar abre dialogo com seletor de arquivo, previa de linhas validas e rejeitadas e texto de job auditado. A regra do AGENTS.md nomeia picker, parser e job como o que nao pode existir enquanto a importacao real estiver adiada. Trocar pela indisponibilidade honesta de Instituicoes, ou manter?",
-   "recomendacao": "Trocar."
-  },
-  {
-   "assunto": "Diretorio de Turmas sem filtro por unidade",
-   "pergunta": "Compor o repositorio real de Turmas agora, tratando a falha de fetchFilterOptions como filtro indisponivel, fecha groups.list sem esperar a leitura de pg_proc. Aceitavel um diretorio que lista e nao filtra por unidade?",
-   "recomendacao": "Compor agora."
-  },
-  {
-   "assunto": "Credenciais de E2E",
-   "pergunta": "Sem COELO_SUPABASE_URL e COELO_SUPABASE_PUBLISHABLE_KEY nesta maquina nao consigo abrir a rota normal contra producao, e nenhuma acao passa da regua do MVP do meu lado."
-  }
- ],
+ "primeiroGate": "Pacote de Locais sobre a baseline: 20260909165000 reservations_v2 ausente em producao e ausente em candidatos/estrutura; 180000 aborta no preflight sem ela. Vou reemitir como candidato na faixa 18xxxx com a assinatura de 13 argumentos.",
+ "criteriosFechados": [],
  "testes": {
-  "P": 1341,
-  "F": 0,
-  "B": 0,
-  "S": 0,
-  "U": 0,
-  "evidencia": "1341 nao-golden PASS nas seis familias mais test/architecture, sobre o composto da Fase 0. pgTAP dos tres pacotes: 3 arquivos, 109 assercoes, Result PASS. flutter analyze limpo em lib e test."
+  "P": null,
+  "F": null,
+  "B": null,
+  "S": null,
+  "U": null,
+  "evidencia": "nenhuma medicao nesta rodada ainda"
  },
- "goldens": "Regravado apenas group_form_create_light_375, decisao minha por delegacao do Owner: e o unico cujo diff isolado e exclusivamente o rodape e o chat. Os outros 16 ficam para uma passada unica quando a Fase 0 fechar MENU e MENU-M, porque todos carregam o menu em migracao e regrava-los agora congelaria um estado intermediario como referencia aprovada. Antes disso: Antes do composto eram 30 falhas no recorte; depois do composto ficaram 10, todas em activity_golden_test.dart, que a Fase 0 preservou para este grupo. Com a decisao RODAPE e a regra do chat aplicadas, a medicao esta sendo refeita.",
- "artefatos": [
-  "docs/reviews/evidence/etapa-2/r03-estrutura/sql-package-handoff.json",
-  "docs/reviews/evidence/etapa-2/r03-estrutura/replay-structure-location-consumers-v1.log",
-  "docs/reviews/evidence/etapa-2/r03-estrutura/units-rpc-catalog-probe.md",
-  "docs/reviews/evidence/etapa-2/r03-estrutura/composition-keys.md",
-  "docs/reviews/evidence/etapa-2/r03-estrutura/gate-map-49-acoes.md",
-  "docs/reviews/evidence/etapa-2/r03-estrutura/proposta-separar-chave-de-estrutura.md",
-  "docs/reviews/evidence/etapa-2/r03-estrutura/achado-import-export-unidades.md",
-  "docs/reviews/evidence/etapa-2/r03-estrutura/achado-fila-sql-sem-o-pacote-de-turmas.md",
-  "docs/reviews/evidence/etapa-2/r03-estrutura/decisao-rodape-e-chat.md",
-  "docs/reviews/evidence/etapa-2/r03-estrutura/handoff-01-instituicoes-e-fila-sql.md",
-  "docs/reviews/evidence/etapa-2/r03-estrutura/handoff-02-pos-composto.md",
-  "packages/coelo_database/replay/profiles/StructureLocationConsumersV1/"
- ],
- "alertaDeRodada": "coordenacao.json continua na revisao 31, da rodada anterior. Quatro grupos da Rodada 3 ja publicaram (acessos-pessoas, fase0, principal-chat-sistema e estrutura) e nenhum recebeu ACK ou recibo. A conversa P1 de Coordenacao e Integracao aparentemente nao foi aberta. Sem ela nada e aplicado em producao, ligado, integrado em dev, refletido nos rastreadores ou levado ao Owner.",
+ "pacotesProntos": [],
+ "deltasPropostos": [],
+ "pedidosAoCoordenador": [],
+ "avisosParaOutrosGrupos": [],
+ "perguntasParaOOwner": [],
+ "pendenciasDeCodeReview": [],
  "bloqueio": null,
  "wip": [],
  "recursos": {
   "processos": [],
   "portas": []
  },
- "filhos": [],
  "ack": null,
- "proximoPasso": "Medir os goldens do recorte depois da decisao e regravar os que tiverem a observacao integralmente aplicada, no SDK registrado (Flutter 3.44.2 stable)."
+ "proximoPasso": "Ler os quatro candidatos e a reservations_v2 historica, medir a assinatura em producao e reemitir a cadeia."
 }
