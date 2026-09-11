@@ -1,5 +1,5 @@
 {
-  "revision": 26,
+  "revision": 27,
   "round": "E2-R04-20260911",
   "group": "publicacoes-agenda",
   "tool": "Claude Code",
@@ -9,7 +9,7 @@
   "head": "8f78d3f64",
   "base": "origin/dev 98cc0529d",
   "coordinator": "Claude (R04 · Coordenação noturna)",
-  "updatedAt": "2026-09-11T03:12:00-03:00",
+  "updatedAt": "2026-09-11T03:08:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -77,7 +77,7 @@
     "FE bloqueante: em /circulars/new a 1440 o balao de chat cobre inteiramente o botao Publicar (centro 1330x856); a 1024 o rodape empilha e funciona.",
     "FE agenda.detail: UUID no lugar do nome CORRIGIDO na rev 26 (carrega contextos); permanece: deep link direto apos carga fria fica no spinner ate o calendario carregar (primeiro gate: reproduzir em teste de rota com store real).",
     "Ambiente: outro processo (frente ou coordenador) passou a dirigir meu Chrome CDP 9333 (pagina foi para localhost:3000); abri o 9334. Sugestao: cada conversa usa porta CDP propria e declara no JSON.",
-    "FE agenda.edit: na rota de edicao a etapa Revisao mostra so Continuar (sem Salvar/Publicar) e o clique nao salva; criar pelo mesmo wizard funciona (Publicar/Salvar rascunho presentes)."
+    "FE agenda.edit: NAO reproduzido em teste de widget (sonda: edicao de event-parents chega a Revisao com Publicar e Salvar rascunho); na tela real a sequencia foi dirigida por coordenadas e provavelmente tocou Anterior (y=779 na Revisao). Primeiro gate: reteste pela tela usando as chaves agenda-wizard-continue/agenda-wizard-publish."
   ],
   "packages": [
     {
@@ -704,7 +704,7 @@
       "actionId": "agenda.edit",
       "layer": "FE",
       "proposed": "local-green",
-      "evidence": "ui-44..ui-46: wizard de edicao abre e aceita o titulo, mas a Revisao so mostra Continuar e nao salva (defeito FE, primeiro gate)"
+      "evidence": "ui-44/ui-45: wizard de edicao abre com os dados e aceita o titulo; salvar pela tela nao concluido (provavel erro de coordenada do driver; widget test chega a Revisao com Publicar/Salvar). Gate: reteste pela tela."
     },
     {
       "actionId": "agenda.request",
@@ -1176,7 +1176,7 @@
     ]
   },
   "finalizado": {
-    "at": "2026-09-11T03:12:00-03:00",
+    "at": "2026-09-11T03:08:00-03:00",
     "head": "8f78d3f64",
     "handoff": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
     "capturas": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/ui/ (49 png)"
