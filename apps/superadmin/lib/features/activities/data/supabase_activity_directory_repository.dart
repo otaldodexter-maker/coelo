@@ -174,8 +174,40 @@ final class SupabaseActivityDirectoryRepository implements ActivityDirectoryRepo
     }
   }
 
+  /// Secoes pedidas ao abrir a edicao, numa unica chamada. `permissions`
+  /// entra junto de proposito: o controller hidrata cada capacidade ausente
+  /// como `both`, entao sem as acoes reais um "salvar" da edicao reescreveria
+  /// as permissoes de todos os profissionais. Quem pode salvar ja precisa de
+  /// `activities.manage_permissions` no save_v2, a mesma capacidade que a
+  /// secao exige na leitura.
+  static const _detailSections = ['participants', 'professionals', 'permissions'];
+
   @override
-  Future<ActivityDetail?> fetchById(String activityId) => _unavailable();
+  Future<ActivityDetail?> fetchById(String activityId) async {
+    try {
+      final envelope = await _client.rpc<Object?>(
+        'superadmin_activity_detail_v2',
+        params: {'p_activity_id': activityId, 'p_sections': _detailSections},
+      );
+      // ACTIVITY_NOT_FOUND cobre o id inexistente e o de outro tenant, sem
+      // distinguir; a pagina trata `null` como "nao encontrado".
+      if (_v2ErrorCode(envelope) == 'ACTIVITY_NOT_FOUND') return null;
+      return _v2Detail(_v2Data(envelope), requestedId: activityId);
+    } on PostgrestException catch (error) {
+      throw _mapError(error);
+    } on ActivityDirectoryUnauthorizedException {
+      // A negacao de autorizacao precisa sobreviver ao catch amplo abaixo. Ela
+      // e lancada de dentro do parsing, por _v2Data, e e Exception: sem este
+      // rethrow ela viraria indisponibilidade e o motivo real se perderia.
+      rethrow;
+    } on Exception {
+      throw const ActivityDirectoryUnavailableException();
+    } on TypeError {
+      throw const ActivityDirectoryUnavailableException();
+    } on StateError {
+      throw const ActivityDirectoryUnavailableException();
+    }
+  }
 
   @override
   Future<ActivityTemplateOptions> fetchTemplateOptions({String? institutionId}) async {
