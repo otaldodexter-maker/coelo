@@ -29,6 +29,7 @@ class DailyRoutineDirectoryPage extends StatefulWidget {
     this.onDuplicateModel,
     this.onCreateFromModel,
     this.onPublishLaunch,
+    this.onCreateLaunch,
     this.onImport,
     this.onExport,
     this.activityController,
@@ -50,6 +51,10 @@ class DailyRoutineDirectoryPage extends StatefulWidget {
   /// `daily-routine.publish`, que já existe. Publicar não é editar, então a
   /// ação vive aqui, no item, e não dentro do editor.
   final Future<bool> Function(RoutineDirectoryItem item)? onPublishLaunch;
+
+  /// D7: cria o rascunho do lançamento de hoje para uma rotina aplicada; o
+  /// servidor recalcula escopo e capacidade (routine.record).
+  final Future<bool> Function(RoutineDirectoryItem application)? onCreateLaunch;
   final VoidCallback? onImport;
   final VoidCallback? onExport;
   final SuperadminActivityController? activityController;
@@ -165,6 +170,66 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
       if (published) _load(page: _controller.state.page?.page ?? 1);
     } finally {
       if (mounted) setState(() => _publishing.remove(item.id));
+    }
+  }
+
+  Future<void> _createLaunch(RoutineDirectoryItem application) async {
+    final create = widget.onCreateLaunch;
+    if (create == null) return;
+    setState(() => _publishing.add(application.id));
+    try {
+      final created = await create(application);
+      if (!mounted || !created) return;
+      updateDirectory(() => _selectedType = RoutineEntryKind.launch);
+    } finally {
+      if (mounted) setState(() => _publishing.remove(application.id));
+    }
+  }
+
+  /// V-15 (Owner, 11/09): o card Criar existe em toda aba. Rotina nasce de um
+  /// modelo e lançamento nasce de uma rotina, então o card abre um seletor da
+  /// origem e segue pelo mesmo caminho das ações do card.
+  Future<void> _pickOriginAndCreate(RoutineEntryKind originKind) async {
+    final RoutineDirectoryPage origins;
+    try {
+      origins = await widget.repository.fetchPage(
+        RoutineDirectoryQuery(kind: originKind, pageSize: 50),
+      );
+    } on RoutineRepositoryException catch (error) {
+      if (mounted) showSuperadminNotice(context, error.message, icon: Icons.error_outline_rounded);
+      return;
+    }
+    if (!mounted) return;
+    final isModel = originKind == RoutineEntryKind.model;
+    final picked = await showDialog<RoutineDirectoryItem>(
+      context: context,
+      builder: (dialogContext) => SimpleDialog(
+        key: const Key('daily-routine-origin-picker'),
+        title: Text(isModel ? 'Criar rotina a partir de qual modelo?' : 'Lançar qual rotina hoje?'),
+        children: [
+          if (origins.items.isEmpty)
+            Padding(
+              padding: const EdgeInsets.all(CoeloSpacing.space4),
+              child: Text(
+                isModel
+                    ? 'Crie um modelo antes de criar uma rotina.'
+                    : 'Crie uma rotina antes de lançar.',
+              ),
+            ),
+          for (final item in origins.items)
+            SimpleDialogOption(
+              key: Key('daily-routine-origin-${item.id}'),
+              onPressed: () => Navigator.of(dialogContext).pop(item),
+              child: Text(item.name),
+            ),
+        ],
+      ),
+    );
+    if (picked == null || !mounted) return;
+    if (isModel) {
+      widget.onCreateFromModel?.call(picked);
+    } else {
+      await _createLaunch(picked);
     }
   }
 
@@ -410,45 +475,12 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
                             if (item.originLabel != null) Text('Origem: ${item.originLabel}'),
                             if (item.effectiveLabel != null)
                               Text('Efetivo: ${item.effectiveLabel}'),
-                            if (_canManage &&
-                                item.kind == RoutineEntryKind.launch &&
-                                item.status == 'draft' &&
-                                widget.onPublishLaunch != null) ...[
-                              const SizedBox(height: CoeloSpacing.space3),
-                              TextButton.icon(
-                                key: Key('daily-routine-publish-${item.id}'),
-                                onPressed: _publishing.contains(item.id)
-                                    ? null
-                                    : () => _publishLaunch(item),
-                                icon: const Icon(Icons.publish_rounded),
-                                label: Text(
-                                  _publishing.contains(item.id)
-                                      ? 'Publicando…'
-                                      : 'Publicar lançamento',
-                                ),
-                              ),
-                            ],
-                            if (_canManage && item.kind == RoutineEntryKind.model) ...[
+                            if (_itemActions(item) case final actions when actions.isNotEmpty) ...[
                               const SizedBox(height: CoeloSpacing.space3),
                               Wrap(
                                 spacing: CoeloSpacing.space2,
                                 runSpacing: CoeloSpacing.space2,
-                                children: [
-                                  if (widget.onDuplicateModel != null)
-                                    TextButton.icon(
-                                      key: Key('daily-routine-duplicate-${item.id}'),
-                                      onPressed: () => widget.onDuplicateModel!(item),
-                                      icon: const Icon(Icons.content_copy_rounded),
-                                      label: const Text('Duplicar modelo'),
-                                    ),
-                                  if (widget.onCreateFromModel != null)
-                                    TextButton.icon(
-                                      key: Key('daily-routine-apply-${item.id}'),
-                                      onPressed: () => widget.onCreateFromModel!(item),
-                                      icon: const Icon(Icons.playlist_add_rounded),
-                                      label: const Text('Criar rotina por este modelo'),
-                                    ),
-                                ],
+                                children: actions,
                               ),
                             ],
                           ],
@@ -467,6 +499,11 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
   Widget _table(RoutineDirectoryPage page) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
+      // V-15: o card Criar aparece também na tabela, mesmo com dados.
+      if (_canCreate) ...[
+        _createAction(key: const Key('daily-routine-create-banner')),
+        const SizedBox(height: CoeloSpacing.space4),
+      ],
       CoeloAdminResizableTable<RoutineDirectoryItem>(
         key: const Key('daily-routine-table'),
         items: page.items,
@@ -505,6 +542,17 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
             maxWidth: 140,
             cellBuilder: (_, item) => Text('v${item.version}'),
           ),
+          // V-15: a tabela oferece as mesmas ações do card.
+          if (_canManage)
+            CoeloAdminTableColumn(
+              id: 'actions',
+              label: 'Ações',
+              initialWidth: 120,
+              minWidth: 100,
+              maxWidth: 200,
+              cellBuilder: (_, item) =>
+                  Row(mainAxisSize: MainAxisSize.min, children: _itemActions(item, tableRow: true)),
+            ),
         ],
         headerHeight: 56,
         rowHeight: 64,
@@ -536,10 +584,64 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
     );
   }
 
+  /// Ações do item (card e tabela): modelo duplica ou vira rotina; rotina é
+  /// lançada hoje; lançamento em rascunho é publicado. Arquivar ainda não
+  /// tem comando no servidor e fica registrado como pendência.
+  List<Widget> _itemActions(RoutineDirectoryItem item, {bool tableRow = false}) {
+    if (!_canManage) return const [];
+    final busy = _publishing.contains(item.id);
+    Widget action(String id, String label, IconData icon, VoidCallback? onPressed) {
+      final key = Key('daily-routine-$id-${item.id}${tableRow ? '-row' : ''}');
+      return tableRow
+          ? IconButton(key: key, tooltip: label, onPressed: onPressed, icon: Icon(icon))
+          : TextButton.icon(key: key, onPressed: onPressed, icon: Icon(icon), label: Text(label));
+    }
+
+    return switch (item.kind) {
+      RoutineEntryKind.model => [
+        if (widget.onDuplicateModel != null)
+          action(
+            'duplicate',
+            'Duplicar modelo',
+            Icons.content_copy_rounded,
+            () => widget.onDuplicateModel!(item),
+          ),
+        if (widget.onCreateFromModel != null)
+          action(
+            'apply',
+            'Criar rotina por este modelo',
+            Icons.playlist_add_rounded,
+            () => widget.onCreateFromModel!(item),
+          ),
+      ],
+      RoutineEntryKind.application => [
+        if (widget.onCreateLaunch != null)
+          action(
+            'launch',
+            busy ? 'Lançando…' : 'Lançar hoje',
+            Icons.today_rounded,
+            busy ? null : () => _createLaunch(item),
+          ),
+      ],
+      RoutineEntryKind.launch => [
+        if (item.status == 'draft' && widget.onPublishLaunch != null)
+          action(
+            'publish',
+            busy ? 'Publicando…' : 'Publicar lançamento',
+            Icons.publish_rounded,
+            busy ? null : () => _publishLaunch(item),
+          ),
+      ],
+    };
+  }
+
   bool get _canCreate =>
       _canManage &&
-      _selectedType == RoutineEntryKind.model &&
-      (widget.onCreateEntry != null || widget.onCreate != null);
+      switch (_selectedType) {
+        RoutineEntryKind.model => widget.onCreateEntry != null || widget.onCreate != null,
+        RoutineEntryKind.application => widget.onCreateFromModel != null,
+        RoutineEntryKind.launch => widget.onCreateLaunch != null,
+      };
 
   Widget _stateWithCreate(Widget state) {
     if (!_canCreate) return state;
@@ -565,7 +667,11 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
 
   Widget _createAction({required Key key}) => CoeloAdminCreateAction(
     key: key,
-    label: 'Criar modelo',
+    label: switch (_selectedType) {
+      RoutineEntryKind.model => 'Criar modelo',
+      RoutineEntryKind.application => 'Criar rotina',
+      RoutineEntryKind.launch => 'Criar lançamento',
+    },
     onPressed: _requestCreate,
     icon: Icons.add_task_rounded,
     variant: _display == _RoutineDisplay.cards
@@ -574,11 +680,18 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
   );
 
   void _requestCreate() {
-    final callback = widget.onCreateEntry;
-    if (callback != null) {
-      callback(_selectedType);
-    } else {
-      widget.onCreate?.call();
+    switch (_selectedType) {
+      case RoutineEntryKind.model:
+        final callback = widget.onCreateEntry;
+        if (callback != null) {
+          callback(_selectedType);
+        } else {
+          widget.onCreate?.call();
+        }
+      case RoutineEntryKind.application:
+        _pickOriginAndCreate(RoutineEntryKind.model);
+      case RoutineEntryKind.launch:
+        _pickOriginAndCreate(RoutineEntryKind.application);
     }
   }
 }

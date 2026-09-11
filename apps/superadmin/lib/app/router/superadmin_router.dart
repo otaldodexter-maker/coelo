@@ -294,6 +294,48 @@ LocationCapabilities _noLocationCapabilities(SuperadminAuthContext? _) => Locati
 /// e versao esperada dentro de superadmin_routine_publish_launch; esta funcao
 /// so pede, e relata em portugues o que ele respondeu. Devolve true quando a
 /// publicacao foi confirmada, para a lista recarregar do servidor.
+/// D7: cria o rascunho do lançamento de hoje para a rotina aplicada; o
+/// servidor deriva instituição/unidade/turma da rotina e revalida
+/// routine.record. As crianças e respostas entram depois, pelo lançamento.
+Future<bool> _createRoutineLaunch(
+  BuildContext context,
+  RoutineRepository repository,
+  RoutineDirectoryItem application,
+) async {
+  try {
+    await repository.saveLaunchDraft(
+      RoutineLaunch(
+        id: '',
+        applicationId: application.id,
+        applicationRevisionId: '',
+        institutionId: '',
+        unitId: '',
+        groupId: '',
+        authorMembershipId: '',
+        serviceDate: DateTime.now(),
+        status: RoutineLaunchStatus.draft,
+        expectedVersion: 0,
+      ),
+      requestId: newRoutineRequestId(),
+    );
+    if (context.mounted) {
+      showSuperadminNotice(context, 'Lancamento de hoje criado.', icon: Icons.check_circle_outline_rounded);
+    }
+    return true;
+  } on RoutineRepositoryException catch (error) {
+    if (context.mounted) {
+      showSuperadminNotice(context, switch (error.kind) {
+        RoutineRepositoryFailureKind.unauthorized => 'Seu acesso nao permite lancar esta rotina.',
+        RoutineRepositoryFailureKind.notFound => 'Rotina indisponivel.',
+        RoutineRepositoryFailureKind.conflict =>
+          'A rotina mudou desde que a lista foi carregada. Atualize e tente de novo.',
+        RoutineRepositoryFailureKind.unavailable => error.message,
+      }, icon: Icons.error_outline_rounded);
+    }
+    return false;
+  }
+}
+
 Future<bool> _publishRoutineLaunch(
   BuildContext context,
   RoutineRepository repository,
@@ -2661,6 +2703,8 @@ GoRouter createSuperadminRouter({
               // se pede a publicacao e se relata o que ele respondeu.
               onPublishLaunch: (item) =>
                   _publishRoutineLaunch(context, dailyRoutineRepository, item),
+              onCreateLaunch: (item) =>
+                  _createRoutineLaunch(context, dailyRoutineRepository, item),
             ),
           ),
           GoRoute(
