@@ -64,9 +64,9 @@ void main() {
     final client = _clientFor(backend);
     addTearDown(client.dispose);
 
-    final page = await SupabaseRoutineRepository(client).fetchPage(
-      const RoutineDirectoryQuery(kind: RoutineEntryKind.model, page: 3, pageSize: 20),
-    );
+    final page = await SupabaseRoutineRepository(
+      client,
+    ).fetchPage(const RoutineDirectoryQuery(kind: RoutineEntryKind.model, page: 3, pageSize: 20));
 
     final params = backend.paramsOf('superadmin_routine_directory');
     expect(params['entry_kind'], 'model');
@@ -177,42 +177,47 @@ void main() {
     expect(launch.children.single.answers.single.value, 'option-1');
   });
 
-  test('criar não manda id, editar manda; a versão esperada decide', () async {
-    final backend = _Backend({
-      'superadmin_routine_save_model': {'id': 'model-9', 'management_version': 1},
-    });
-    final client = _clientFor(backend);
-    addTearDown(client.dispose);
-    final repository = SupabaseRoutineRepository(client);
+  test(
+    'criar não manda id, editar manda; o id decide (management_version 0 existe em produção)',
+    () async {
+      final backend = _Backend({
+        'superadmin_routine_save_model': {'id': 'model-9', 'management_version': 1},
+      });
+      final client = _clientFor(backend);
+      addTearDown(client.dispose);
+      final repository = SupabaseRoutineRepository(client);
 
-    const novo = RoutineModel(
-      id: 'ignorado',
-      name: 'Novo',
-      description: '',
-      version: 0,
-      status: RoutineModelStatus.draft,
-      sections: [],
-      expectedVersion: 0,
-      institutionId: 'institution-1',
-    );
-    await repository.saveModel(novo, requestId: 'request-1');
-    expect(backend.paramsOf('superadmin_routine_save_model')['model_id'], isNull);
+      // R06: o editor de producao carregou um modelo com management_version 0 e o
+      // cliente tratava expectedVersion == 0 como criacao, gerando 23505 ao editar.
+      const novo = RoutineModel(
+        id: '',
+        name: 'Novo',
+        description: '',
+        version: 0,
+        status: RoutineModelStatus.draft,
+        sections: [],
+        expectedVersion: 0,
+        institutionId: 'institution-1',
+      );
+      await repository.saveModel(novo, requestId: 'request-1');
+      expect(backend.paramsOf('superadmin_routine_save_model')['model_id'], isNull);
 
-    const existente = RoutineModel(
-      id: 'model-9',
-      name: 'Existente',
-      description: '',
-      version: 1,
-      status: RoutineModelStatus.active,
-      sections: [],
-      expectedVersion: 3,
-      institutionId: 'institution-1',
-    );
-    await repository.saveModel(existente, requestId: 'request-2');
-    final params = backend.paramsOf('superadmin_routine_save_model');
-    expect(params['model_id'], 'model-9');
-    expect(params['expected_version'], 3);
-  });
+      const existente = RoutineModel(
+        id: 'model-9',
+        name: 'Existente',
+        description: '',
+        version: 1,
+        status: RoutineModelStatus.active,
+        sections: [],
+        expectedVersion: 3,
+        institutionId: 'institution-1',
+      );
+      await repository.saveModel(existente, requestId: 'request-2');
+      final params = backend.paramsOf('superadmin_routine_save_model');
+      expect(params['model_id'], 'model-9');
+      expect(params['expected_version'], 3);
+    },
+  );
 
   test('o rascunho manda o vínculo de turma de cada criança', () async {
     final backend = _Backend({
@@ -271,9 +276,7 @@ void main() {
 
       await expectLater(
         SupabaseRoutineRepository(client).fetchModel('model-1'),
-        throwsA(
-          isA<RoutineRepositoryException>().having((error) => error.kind, 'kind', kind),
-        ),
+        throwsA(isA<RoutineRepositoryException>().having((error) => error.kind, 'kind', kind)),
         reason: 'código $code',
       );
     }

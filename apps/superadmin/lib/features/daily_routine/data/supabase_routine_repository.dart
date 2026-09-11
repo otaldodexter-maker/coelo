@@ -131,7 +131,7 @@ final class SupabaseRoutineRepository implements RoutineRepository {
     final saved = _map(
       await _rpc('superadmin_routine_save_model', {
         'request_id': requestId,
-        'model_id': model.expectedVersion == 0 ? null : model.id,
+        'model_id': model.id.isEmpty ? null : model.id,
         'expected_version': model.expectedVersion,
         'payload': {
           'institution_id': model.institutionId,
@@ -158,7 +158,7 @@ final class SupabaseRoutineRepository implements RoutineRepository {
     final saved = _map(
       await _rpc('superadmin_routine_save_application', {
         'request_id': requestId,
-        'application_id': application.expectedVersion == 0 ? null : application.id,
+        'application_id': application.id.isEmpty ? null : application.id,
         'expected_version': application.expectedVersion,
         'payload': {
           'institution_id': application.institutionId,
@@ -212,7 +212,7 @@ final class SupabaseRoutineRepository implements RoutineRepository {
     final saved = _map(
       await _rpc('superadmin_routine_save_launch_draft', {
         'request_id': requestId,
-        'launch_id': launch.expectedVersion == 0 ? null : launch.id,
+        'launch_id': launch.id.isEmpty ? null : launch.id,
         'expected_version': launch.expectedVersion,
         'payload': {
           'application_id': launch.applicationId,
@@ -294,10 +294,7 @@ final class SupabaseRoutineRepository implements RoutineRepository {
         'A rotina foi alterada. Atualize e tente novamente.',
       );
     }
-    return RoutineRepositoryException(
-      RoutineRepositoryFailureKind.unavailable,
-      error.message,
-    );
+    return RoutineRepositoryException(RoutineRepositoryFailureKind.unavailable, error.message);
   }
 }
 
@@ -438,10 +435,8 @@ RoutineChildEntryDraft _childEntry(Map<String, Object?> row) => RoutineChildEntr
   status: row['status'] as String? ?? 'draft',
   answers: _rows(row['answers'])
       .map(
-        (answer) => RoutineAnswerDraft(
-          fieldId: answer['field_id']! as String,
-          value: answer['value'],
-        ),
+        (answer) =>
+            RoutineAnswerDraft(fieldId: answer['field_id']! as String, value: answer['value']),
       )
       .toList(growable: false),
 );
