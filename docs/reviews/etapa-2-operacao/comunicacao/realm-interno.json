@@ -1,15 +1,15 @@
 {
   "grupo": "realm-interno",
-  "revision": 33,
+  "revision": 34,
   "round": "E2-R05-20260911",
-  "updatedAt": "2026-09-11T15:05-03:00",
+  "updatedAt": "2026-09-11T15:12-03:00",
   "app": "Claude",
   "modelo": "Opus 5 (esforco medio)",
   "conversa": "R05 · Realm interno e Chat backend",
   "coordenador": "R05 · Coordenação da tarde (coordenacao.json)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-realm-interno",
   "branch": "work/etapa2-r05-realm-interno",
-  "head": "bf0c70c71 (origin/dev 7da3dcf0e mesclada)",
+  "head": "1395e3ac1",
   "upstream": "origin/work/etapa2-r05-realm-interno (push no primeiro commit)",
   "historicoR04": {
     "miniRevisao": {
@@ -342,6 +342,16 @@
       "dependeDe": "210200",
       "chaveDeComposicao": "nenhuma",
       "estado": "APLICADO em producao (migrations/ em dev)"
+    },
+    {
+      "ordem": 15,
+      "arquivo": "packages/coelo_database/candidatos/realm-interno/20260911211400_unit_default_handle_fit_v1.sql",
+      "assunto": "correcao do @ padrao de unidade (achado da G2 em producao com 211100: 'unidadeqar05transfer.qa-r04-cu' violava units_handle_normalized_check): sufixo = slug da instituicao so [a-z0-9] (ate 24), segmento da unidade truncado antes do ponto para caber em 30; colisao abre espaco para _xxxx; handle explicito inalterado",
+      "pgTAP": "unit_default_handle_fit_v1_test 5/5 (caso da G2 -> unidadeq.qar04cuidadosintetico); structure_handles_create_payload 18/18",
+      "commit": "1395e3ac1",
+      "dependeDe": "211100 (lote 43)",
+      "chaveDeComposicao": "nenhuma",
+      "estado": "pronto; aplicar (corrige 23514 no create de unidade sem @)"
     }
   ],
   "pendenciasRegistradas": [
@@ -361,7 +371,7 @@
     "child-safety.create/edit, medication.create (P32 alvo)": "backend local-green do complemento (politicas + sino); done apos aplicar"
   },
   "loop": "cron 9ded10f6 a cada 15 min ate 15:45",
-  "status": "finalizado: 14 pacotes em producao; aguardando a revisao das 15:50 (resposta no JSON ate 16:00)",
+  "status": "finalizado com correcao 211400 pronta (defeito da G2); aguardando revisao das 15:50",
   "contratoInstitutionContacts": {
     "rpc": "public.superadmin_institution_contacts_edit_v1(p_request_id uuid, p_institution_id uuid, p_expected_version bigint, p_payload jsonb) -> envelope {ok,data,error}",
     "capacidade": "institution.update; platform_role owner|operations; scope institution so a propria instituicao (outro tenant -> SAI_PERMISSION_DENIED, auditado)",
