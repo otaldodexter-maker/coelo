@@ -250,6 +250,68 @@ void main() {
     });
   }
 
+  // P16: opcoes de Local trazem as tres chaves juntas na projecao; opcoes de
+  // escolha nao trazem nenhuma; a combinacao parcial e drift do servidor.
+  test('location item and its snapshot options survive the round trip', () {
+    final json = FormDefinitionDto.fromDomain(definition).toJson();
+    final section = (json['sections']! as List<Object?>).first as Map<String, Object?>;
+    final choice = (section['items']! as List<Object?>).first as Map<String, Object?>;
+    final choiceOption = (choice['options']! as List<Object?>).first as Map<String, Object?>;
+    expect(choiceOption.keys, unorderedEquals(['id', 'label', 'position']));
+
+    section['items'] = [
+      {
+        'id': 'place',
+        'kind': 'location',
+        'label': 'Em qual local?',
+        'help_text': null,
+        'position': 0,
+        'is_required': true,
+        'config': <String, Object?>{},
+        'options': [
+          {
+            'id': 'opt-1',
+            'label': 'Pátio',
+            'position': 0,
+            'location_id': 'loc-1',
+            'location_status': 'active',
+            'location_available': false,
+          },
+        ],
+        'conditions': <Object?>[],
+      },
+    ];
+    final decoded = FormDefinitionDto.fromJson(json).toDomain();
+    final item = decoded.sections.single.items.single;
+    expect(item.kind, FormItemKind.location);
+    final option = item.options.single;
+    expect((option.locationId, option.locationStatus, option.locationAvailable), ('loc-1', 'active', false));
+    expect(option.isSelectable, isFalse);
+    final reencoded = FormDefinitionDto.fromDomain(decoded).toJson();
+    final reSection = (reencoded['sections']! as List<Object?>).single as Map<String, Object?>;
+    final reItem = (reSection['items']! as List<Object?>).single as Map<String, Object?>;
+    expect(reItem['kind'], 'location');
+    expect((reItem['options']! as List<Object?>).single, {
+      'id': 'opt-1',
+      'label': 'Pátio',
+      'position': 0,
+      'location_id': 'loc-1',
+      'location_status': 'active',
+      'location_available': false,
+    });
+
+    final partial = FormDefinitionDto.fromDomain(definition).toJson();
+    final partialSection = (partial['sections']! as List<Object?>).first as Map<String, Object?>;
+    final partialItem = (partialSection['items']! as List<Object?>).first as Map<String, Object?>;
+    (partialItem['options']! as List<Object?>).first = {
+      'id': 'opt-x',
+      'label': 'X',
+      'position': 0,
+      'location_id': 'loc-x',
+    };
+    expect(() => FormDefinitionDto.fromJson(partial), throwsA(isA<WireFormatException>()));
+  });
+
   test('round-trips the complete definition contract', () {
     final json = FormDefinitionDto.fromDomain(definition).toJson();
     final decoded = FormDefinitionDto.fromJson(json).toDomain();

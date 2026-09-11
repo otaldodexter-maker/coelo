@@ -1,11 +1,18 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final class FormsBackendFailure implements Exception {
-  const FormsBackendFailure({required this.code, required this.message});
+  const FormsBackendFailure({required this.code, required this.message, this.detail});
 
   final String code;
   final String message;
+
+  /// O `detail` do erro Postgres quando e um codigo estavel do Coelo
+  /// (`FORMS_*`), nunca texto livre: o cliente traduz codigo, nao mensagem.
+  final String? detail;
 }
+
+String? formsBackendStableDetail(Object? detail) =>
+    detail is String && RegExp(r'^FORMS_[A-Z_]+$').hasMatch(detail) ? detail : null;
 
 /// Code used when the request never reached the backend, so there is no
 /// Postgres code and no response body to classify.
@@ -30,6 +37,7 @@ final class SupabaseFormsBackendGateway implements FormsBackendGateway {
       throw FormsBackendFailure(
         code: error.code ?? 'unknown',
         message: 'Forms backend request failed.',
+        detail: formsBackendStableDetail(error.details),
       );
     } on Exception {
       // The request never reached the backend: socket, DNS, TLS or timeout.

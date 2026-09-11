@@ -178,6 +178,35 @@ void main() {
     }
   });
 
+  // P16: os dois codigos estaveis do servidor viram mensagem honesta em
+  // portugues; qualquer outro detail continua na mensagem generica de 23514.
+  test('maps location detail codes to honest messages', () async {
+    const cases = <(String?, String)>[
+      (
+        'FORMS_LOCATION_REVOKED',
+        'O local escolhido não está mais disponível no catálogo da instituição. Escolha outro local.',
+      ),
+      (
+        'FORMS_LOCATION_NO_AVAILABLE_OPTION',
+        'Esta pergunta obrigatória de local não tem nenhum local disponível. A instituição precisa reativar um local antes do envio.',
+      ),
+      ('FORMS_SOMETHING_ELSE', 'Revise os dados enviados e tente novamente.'),
+      (null, 'Revise os dados enviados e tente novamente.'),
+    ];
+    for (final (detail, message) in cases) {
+      final api = SupabaseFormsApi(_Backend.failure('23514', failureDetail: detail));
+      await expectLater(
+        api.getEditor('form-1'),
+        throwsA(
+          isA<FormApiException>()
+              .having((error) => error.kind, 'kind', FormApiFailureKind.validation)
+              .having((error) => error.message, 'message', message)
+              .having((error) => error.details['code'], 'code', detail),
+        ),
+      );
+    }
+  });
+
   test('loads only explicit institution form capabilities from the context RPC', () async {
     final backend = _Backend({
       'institutions': [
@@ -1008,16 +1037,19 @@ Map<String, Object?> _applicationProjection() => {
 };
 
 final class _Backend implements FormsBackendGateway {
-  _Backend(this.response) : failureCode = null, failureMessage = '';
+  _Backend(this.response) : failureCode = null, failureMessage = '', failureDetail = null;
   _Backend.internal(Map<String, Object?> data)
     : response = {'ok': true, 'data': data, 'error': null},
       failureCode = null,
-      failureMessage = '';
-  _Backend.failure(this.failureCode, {this.failureMessage = 'denied'}) : response = null;
+      failureMessage = '',
+      failureDetail = null;
+  _Backend.failure(this.failureCode, {this.failureMessage = 'denied', this.failureDetail})
+    : response = null;
 
   final Object? response;
   final String? failureCode;
   final String failureMessage;
+  final String? failureDetail;
   String? functionName;
   Map<String, Object?>? parameters;
   Map<String, Object?>? mediaEnvelope;
@@ -1033,7 +1065,7 @@ final class _Backend implements FormsBackendGateway {
     this.functionName = functionName;
     this.parameters = parameters;
     if (failureCode case final code?) {
-      throw FormsBackendFailure(code: code, message: failureMessage);
+      throw FormsBackendFailure(code: code, message: failureMessage, detail: failureDetail);
     }
     return response;
   }

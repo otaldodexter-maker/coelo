@@ -86,6 +86,40 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  // P16 (Decisao 9): o tipo Local existe no catalogo e cria um item sem
+  // edicao manual de opcoes, com o aviso de que elas vem do catalogo de Locais.
+  testWidgets('question catalog offers Local and creates it without manual options', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_app(const FormsEditorPage.development()));
+
+    await tester.ensureVisible(find.byKey(const Key('forms-editor-add-question')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('forms-editor-add-question')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('forms-editor-catalog-location')), findsOneWidget);
+    expect(find.text('Local'), findsOneWidget);
+    await tester.ensureVisible(find.byKey(const Key('forms-editor-catalog-location')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('forms-editor-catalog-location')));
+    await tester.pumpAndSettle();
+
+    final question = find.byWidgetPredicate(
+      (widget) => widget is TextFormField && widget.controller?.text == 'Em qual local?',
+    );
+    expect(question, findsOneWidget);
+    final notice = find.byWidgetPredicate(
+      (widget) =>
+          widget.key is ValueKey<String> &&
+          (widget.key! as ValueKey<String>).value.startsWith('forms-editor-location-notice-'),
+    );
+    expect(notice, findsOneWidget);
+    expect(find.textContaining('catálogo de Locais ativos da instituição'), findsOneWidget);
+    expect(find.text('Opções'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('question catalog is vertically categorized and owns its scroll', (tester) async {
     await tester.pumpWidget(_app(const FormsEditorPage.development()));
 

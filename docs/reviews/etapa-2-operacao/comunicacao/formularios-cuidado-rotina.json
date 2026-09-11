@@ -1,16 +1,16 @@
 {
- "revision": 30,
+ "revision": 31,
  "round": "E2-R04-20260911",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5 (Claude, Opus)",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T02:30-03:00",
+ "updatedAt": "2026-09-11T02:48-03:00",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-formularios-cuidado-rotina",
  "branch": "work/etapa2-r04-formularios-cuidado-rotina",
- "head": "8db8e1cd3 (pacote P16) sobre eb2ddade6 (merge de origin/dev)",
- "base": "origin/dev 98cc0529d (docs(e2): Rodada 4 inteira no Claude, sem Codex)",
+ "head": "da905636d (P16 cliente) sobre 317f37bab (merge de origin/dev 75e4bff16)",
+ "base": "origin/dev 75e4bff16 (docs(e2): fechamento da Rodada 3, reconciliacao do Git e prompts da Rodada 4)",
  "scope": {
   "families": [
    "forms_authoring",
@@ -53,8 +53,9 @@
  "loopAgendado": "/loop 15m, agendado na abertura",
  "tests": {
   "pgtap": "17/17 (internal_actor_service_person_v1_test); 55/55 (forms_location_question_v1_test, espelho p16)",
-  "flutter": "health_care 100% verde; goldens do recorte 38 aprovados / 4 pulados apos regravacao (medication_form_mobile_light continua pendente de P15)",
-  "nota": "dart analyze lib limpo"
+  "flutter": "test/features/forms: 825 verdes / 1 pulado / 2 falhos (so forms_editor_golden_test: goldens 1440 divergentes, ver goldens.pendentes); os 6 testes novos de P16 verdes; ida e volta do editor e projecao de resposta original sem regressao apos f0df927e4",
+  "nota": "flutter analyze lib test limpo (0 issues) em da905636d",
+  "dart": "coelo_api test/forms 133/133 (inclui ida e volta da opcao de Local); coelo_domain test/forms 41/41"
  },
  "reservedFiles": [],
  "blocking": [],
@@ -73,6 +74,12 @@
    "o_que": "P16: candidato 20260910220500_forms_location_question_v1 + pgTAP forms_location_question_v1_test (subagente do coordenador apos o reinicio de 00:27)",
    "prova": "55/55 no espelho local baseline + lotes 1..14 com o pacote aplicado; pgTAP de Formularios existentes sem regressao (mesmos numeros antes/depois)",
    "sha": "8db8e1cd3"
+  },
+  {
+   "o_que": "P16 cliente (forms.location-question / forms.location-answer): FormItemKind.location + FormAnswer.location no coelo_domain; FormOption com location_id/location_status/location_available; coelo_api decodifica/encoda (chaves de Local so juntas); gateway passa o detail FORMS_* e a API traduz FORMS_LOCATION_REVOKED e FORMS_LOCATION_NO_AVAILABLE_OPTION; editor com tipo Local (sem edicao manual de opcoes, aviso do catalogo de Locais); resposta com fichas do snapshot, revogada desabilitada \"(indisponivel)\", obrigatoria sem opcao bloqueada com aviso, escolha revogada recusada antes do envio; preview de Testar inerte",
+   "prova": "flutter analyze lib test limpo; 6 widget/unit tests novos verdes no superadmin (catalogo com Local; revogada desabilitada e nao gravada; obrigatoria sem opcao bloqueia; opcional nao bloqueia; recusa do servidor inline; mapeamento dos dois codigos); coelo_api 133/133; coelo_domain 41/41",
+   "sha": "da905636d",
+   "defeito_corrigido_pela_prova": "requireOnlyKeys exige conjunto exato: aceitar as chaves de Local como opcionais quebrou toda opcao de escolha (projecao de resposta original e autosave do editor); corrigido em f0df927e4 aceitando os dois formatos que o servidor projeta"
   }
  ],
  "pendenciasRegistradas": [
@@ -98,8 +105,8 @@
   },
   {
    "action_id": "forms.location-question",
-   "o_que": "P16 backend PRONTO (candidato 20260910220500, pgTAP 55/55, commit 8db8e1cd3); falta o coordenador aplicar em producao e o cliente (enum FormItemKind.location, DTOs, widget do editor, widget de resposta com bloqueio e aviso)",
-   "gate": "BE: fila do coordenador; FE: proxima acao executavel deste grupo"
+   "o_que": "P16: backend em aplicacao pelo coordenador (lote 17); cliente FECHADO nesta branch em da905636d (dominio, DTOs, editor, resposta, Testar, codigos de erro, testes). ABERTO: rota real com sessao qa-r03 em producao (salvar rascunho com item Local e ver as opcoes resolvidas pelo servidor; responder; revogar um Local e ver a recusa; reload mantendo o estado) e goldens do editor divergentes por causa do item novo no catalogo (registrados, nao regravados)",
+   "gate": "FE + BE: prova na rota real depois do lote 17; goldens do editor para decisao do Owner"
   },
   {
    "action_id": "router",
@@ -108,7 +115,7 @@
   }
  ],
  "duvidasParaOOwner": [],
- "nextStep": "rota normal por familia com qa-r03 via subagentes; P16 em paralelo; consolidar deltas por action_id ate 04:00",
+ "nextStep": "P16: provar na rota real com qa-r03 depois do lote 17 (rascunho com item Local, resposta, revogacao, reload) e levar os goldens do editor ao Owner; demais familias conforme revisao 30",
  "handoff": "docs/reviews/etapa-2-operacao/comunicacao/formularios-cuidado-rotina-handoff.md",
  "historicoR03": {
   "updatedAt": "2026-09-10T17:10:00-03:00",
@@ -838,7 +845,8 @@
   "motivo": "diferenca unica: botao de Bug no cabecalho e realce do item de menu (regras transversais do Owner de 10/09); decisoes A de forms_directory_*, forms_editor_*, forms_operations_monitor_light_375 e form_response_light_375 aplicadas; Rotina e Assiduidade nao constam das listas do Owner mas a diferenca e a mesma do shell compartilhado",
   "pendentes": [
    "medication_form_mobile_light: A depois do P15 (respiro do rodape no frame compartilhado, grupo estrutura)",
-   "forms_editor: o rodape (Cancelar/Salvar) fica dentro do scroll, nao ancorado; P15 diz 'todos os formularios' e o editor de Formularios nao usa o SuperadminFormFrame. Registrado como pendencia, nao corrigido nesta rodada"
+   "forms_editor: o rodape (Cancelar/Salvar) fica dentro do scroll, nao ancorado; P15 diz 'todos os formularios' e o editor de Formularios nao usa o SuperadminFormFrame. Registrado como pendencia, nao corrigido nesta rodada",
+   "forms_editor_light_1440 (9,03%), forms_editor_dark_1440 (10,82%), forms_editor_date_range_light_1440 (6,54%), forms_editor_catalog_light_1440 (4,11%) e forms_editor_catalog_groups_light_1440: divergem JA NA BASE 317f37bab com os mesmos percentuais (medido 11/09 02:45 rodando o golden test com a lib da base); o item Local no catalogo (P16) so acrescenta delta em forms_editor_catalog_groups_light_1440 (4,11% -> 5,44%). Registrados, nao regravados: decisao do Owner"
   ]
  },
  "estadoVazioDosDiretorios": {
@@ -868,5 +876,5 @@
   ],
   "regra": "cada um em worktree isolada; so a conversa-mae escreve este JSON e faz commit"
  },
- "revisadoPor": "subagente do coordenador apos o reinicio de 00:27 (a conversa original de P16 caiu e nao voltou); backend somente, sem cliente, sem producao"
+ "revisadoPor": "subagente do coordenador (cliente de P16, apos a queda da conversa do grupo no reinicio); sem Chrome, sem flutter run, sem producao; um flutter test por vez"
 }

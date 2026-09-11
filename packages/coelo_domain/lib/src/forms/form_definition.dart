@@ -23,6 +23,11 @@ enum FormItemKind {
   photo,
   gallery,
   information,
+
+  /// P16 (ADR 0034, Decisoes 9, 10 e 12): pergunta de Local. As opcoes sao
+  /// resolvidas pelo servidor a partir do catalogo de Locais ativos da
+  /// instituicao ao salvar o rascunho; o cliente nunca as autora.
+  location,
 }
 
 enum FormConditionKind { yesNo, choice }
@@ -261,11 +266,29 @@ abstract final class FormNumericLimits {
 }
 
 final class FormOption {
-  const FormOption({required this.id, required this.label, required this.position});
+  const FormOption({
+    required this.id,
+    required this.label,
+    required this.position,
+    this.locationId,
+    this.locationStatus,
+    this.locationAvailable,
+  });
 
   final String id;
   final String label;
   final int position;
+
+  /// Snapshot do Local congelado na opcao (somente itens `location`).
+  final String? locationId;
+  final String? locationStatus;
+
+  /// Leitura viva do catalogo: false quando o Local foi revogado depois do
+  /// snapshot. Null fora de itens `location`.
+  final bool? locationAvailable;
+
+  /// Uma opcao de Local revogada nao pode ser escolhida (Decisao 12).
+  bool get isSelectable => locationAvailable != false;
 }
 
 final class FormCondition {

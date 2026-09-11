@@ -675,7 +675,11 @@ final class SupabaseFormsApi
       rethrow;
     } on FormsBackendFailure catch (error) {
       final kind = _failureKind(error.code);
-      throw FormApiException(kind, _failureMessage(kind));
+      throw FormApiException(
+        kind,
+        _detailMessage(error.detail) ?? _failureMessage(kind),
+        details: {if (error.detail != null) 'code': error.detail},
+      );
     } on WireFormatException {
       throw FormApiException(
         FormApiFailureKind.unknown,
@@ -932,6 +936,15 @@ FormApiFailureKind _failureKind(String code) => switch (code) {
   '40001' || '409' || '23505' => FormApiFailureKind.conflict,
   '502' || '503' || '504' || formsBackendTransportCode => FormApiFailureKind.unavailable,
   _ => FormApiFailureKind.unknown,
+};
+
+/// Codigos estaveis do servidor (P16) com mensagem honesta em portugues.
+String? _detailMessage(String? detail) => switch (detail) {
+  'FORMS_LOCATION_REVOKED' =>
+    'O local escolhido não está mais disponível no catálogo da instituição. Escolha outro local.',
+  'FORMS_LOCATION_NO_AVAILABLE_OPTION' =>
+    'Esta pergunta obrigatória de local não tem nenhum local disponível. A instituição precisa reativar um local antes do envio.',
+  _ => null,
 };
 
 String _failureMessage(FormApiFailureKind kind) => switch (kind) {

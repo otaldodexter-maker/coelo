@@ -59,6 +59,7 @@ enum FormAnswerKind {
   scale,
   photo,
   gallery,
+  location,
 }
 
 final class FormAnswer {
@@ -91,6 +92,10 @@ final class FormAnswer {
         kind: FormAnswerKind.multipleChoice,
         value: FormChoiceValue(optionIds),
       );
+
+  /// Escolha unica entre as opcoes de Local do snapshot (P16).
+  FormAnswer.location({required String itemId, required String optionId})
+    : this._(itemId: itemId, kind: FormAnswerKind.location, value: FormChoiceValue({optionId}));
 
   FormAnswer.scale({required String itemId, required int value})
     : this._(itemId: itemId, kind: FormAnswerKind.scale, value: FormScaleValue(value));

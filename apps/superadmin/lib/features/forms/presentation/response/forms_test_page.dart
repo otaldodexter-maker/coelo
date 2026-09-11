@@ -630,6 +630,24 @@ final class _PreviewItem extends StatelessWidget {
           ChoiceChip(label: Text(option.label), selected: false, onSelected: null),
       ],
     ),
+    // P16: opcoes de Local vem do snapshot do servidor; sem opcao, o preview
+    // diz de onde elas virao em vez de mostrar uma caixa de texto.
+    FormItemKind.location => item.options.isEmpty
+        ? const Text('As opções vêm do catálogo de Locais ativos da instituição.')
+        : Wrap(
+            spacing: CoeloSpacing.space2,
+            runSpacing: CoeloSpacing.space2,
+            children: [
+              for (final option in item.options)
+                ChoiceChip(
+                  label: Text(
+                    option.isSelectable ? option.label : '${option.label} (indisponível)',
+                  ),
+                  selected: false,
+                  onSelected: null,
+                ),
+            ],
+          ),
     FormItemKind.yesNo => const Wrap(
       spacing: CoeloSpacing.space2,
       children: [

@@ -707,6 +707,44 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
             ),
         ],
       ),
+      // P16 (Decisoes 9, 10 e 12): opcoes fixas do snapshot; Local revogado
+      // fica desabilitado com rotulo honesto; obrigatoria sem alternativa
+      // valida bloqueia com aviso, sem forcar escolha invalida.
+      FormItemKind.location => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (_locationBlockingMessage(item) case final blocking?) ...[
+            CoeloStatePanel(
+              key: Key('form-response-location-blocked-${item.id}'),
+              icon: Icons.location_off_outlined,
+              title: 'Nenhum local disponível',
+              message: blocking,
+            ),
+            const SizedBox(height: CoeloSpacing.space2),
+          ],
+          Wrap(
+            spacing: CoeloSpacing.space2,
+            runSpacing: CoeloSpacing.space2,
+            children: [
+              for (final option in item.options)
+                ChoiceChip(
+                  key: Key('form-response-location-${item.id}-${option.id}'),
+                  label: Text(
+                    option.isSelectable ? option.label : '${option.label} (indisponível)',
+                  ),
+                  selected:
+                      (_answers[item.id]?.value as FormChoiceValue?)?.optionIds.contains(
+                        option.id,
+                      ) ??
+                      false,
+                  onSelected: option.isSelectable
+                      ? (_) => update(FormAnswer.location(itemId: item.id, optionId: option.id))
+                      : null,
+                ),
+            ],
+          ),
+        ],
+      ),
       FormItemKind.multipleChoice => Wrap(
         spacing: CoeloSpacing.space2,
         runSpacing: CoeloSpacing.space2,
@@ -1088,8 +1126,28 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
     return fieldsValid;
   }
 
+  /// Por que uma pergunta de Local obrigatoria nao pode ser respondida agora,
+  /// ou null quando ha ao menos um Local valido (ou a pergunta e opcional).
+  String? _locationBlockingMessage(FormItem item) {
+    if (item.kind != FormItemKind.location || !item.isRequired) return null;
+    if (item.options.any((option) => option.isSelectable)) return null;
+    return item.options.isEmpty
+        ? 'Esta pergunta obrigatória ainda não tem locais do catálogo da instituição. Não é possível enviar a resposta.'
+        : 'Todos os locais desta pergunta obrigatória foram desativados pela instituição. Não é possível enviar a resposta até um local voltar a ficar disponível.';
+  }
+
   String? _itemValidationMessage(FormItem item) {
     if (_invalidAnswerReasons[item.id] case final reason?) return reason;
+    if (item.kind == FormItemKind.location) {
+      if (_locationBlockingMessage(item) case final blocking?) return blocking;
+      final value = _answers[item.id]?.value;
+      if (value is FormChoiceValue &&
+          item.options.any(
+            (option) => value.optionIds.contains(option.id) && !option.isSelectable,
+          )) {
+        return 'O local escolhido não está mais disponível. Escolha outro local.';
+      }
+    }
     if (item.kind == FormItemKind.multipleChoice) {
       final value = _answers[item.id]?.value;
       if (value is FormChoiceValue) {

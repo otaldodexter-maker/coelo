@@ -57,6 +57,10 @@ final class FormAnswerDto {
         itemId: itemId,
         optionIds: _stringList(json, 'option_ids', context).toSet(),
       ),
+      'location' => FormAnswer.location(
+        itemId: itemId,
+        optionId: _stringList(json, 'option_ids', context).single,
+      ),
       'scale' => FormAnswer.scale(
         itemId: itemId,
         value: _required<int>(json, 'scale_value', context),
@@ -388,6 +392,7 @@ const _answerKinds = {
   FormAnswerKind.scale: 'scale',
   FormAnswerKind.photo: 'photo',
   FormAnswerKind.gallery: 'gallery',
+  FormAnswerKind.location: 'location',
 };
 
 const _audienceKinds = {
