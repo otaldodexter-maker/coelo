@@ -1,8 +1,8 @@
 {
   "grupo": "realm-interno",
-  "revision": 37,
+  "revision": 38,
   "round": "E2-R05-20260911",
-  "updatedAt": "2026-09-11T15:50-03:00",
+  "updatedAt": "2026-09-11T15:52-03:00",
   "app": "Claude",
   "modelo": "Opus 5 (esforco medio)",
   "conversa": "R05 · Realm interno e Chat backend",
@@ -381,7 +381,7 @@
     "child-safety.create/edit, medication.create (P32 alvo)": "backend local-green do complemento (politicas + sino); done apos aplicar"
   },
   "loop": "cron 9ded10f6 a cada 15 min ate 15:45",
-  "status": "finalizado as 15:45: 16 pacotes em producao, branch limpa, descartavel coelo_realm_r05 parado ao encerrar; respondo a revisao das 15:50 nesta mesma secao miniRevisao",
+  "status": "finalizado; revisao final das 15:50 gravada; descartavel parado",
   "contratoInstitutionContacts": {
     "rpc": "public.superadmin_institution_contacts_edit_v1(p_request_id uuid, p_institution_id uuid, p_expected_version bigint, p_payload jsonb) -> envelope {ok,data,error}",
     "capacidade": "institution.update; platform_role owner|operations; scope institution so a propria instituicao (outro tenant -> SAI_PERMISSION_DENIED, auditado)",
@@ -502,5 +502,29 @@
     },
     "edicao": "superadmin_group_save com handle igual ao atual passa; diferente -> invalid_parameter_value 'handle changes use superadmin_structure_handle_set_v1' (detail SAI_HANDLE_USE_SET); a troca (trava de 30 dias, SAI_HANDLE_COOLDOWN) e por superadmin_structure_handle_set_v1 da G1; disponibilidade enquanto digita por superadmin_structure_handle_availability_v1 da G1",
     "detalhe": "superadmin_unit_detail_v2.data ganha handle e handle_last_changed_at; superadmin_group_detail_v2.data ganha handle, handle_last_changed_at e unit.handle"
+  },
+  "revisaoFinal1550": {
+    "entregueiTudo": "sim: os 16 pacotes do recorte (210000..211500) estao em producao (lotes 28-48), Edge Functions chat-media (nova) e form-media (reconciliada) implantadas pelo coordenador, contratos publicados neste JSON, handoff/deltas/skills em docs/reviews/evidence/etapa-2/r05-realm-interno/",
+    "shaPublicado": "4d88e3ef3 em origin/work/etapa2-r05-realm-interno (dev mesclada); status limpo; sem WIP",
+    "fechadoComProva": {
+      "institutions.edit": "backend local-green -> G1 ligou o cliente (9166c2e94) sobre 210000 (lote 28); @ das pessoas no detalhe (210600, lote 37-42)",
+      "chat.attach": "backend done candidato: 210200 (lote 32) + chat-media implantada + cron 210700; cliente do principal-chat e o gate para E2E",
+      "forms.upload/resolve-file/download/expire-file/delete-file": "backend: question-image 210300 (lote 33) + answer-image 210800 + cron 210900 + form-media implantada (ramos R2 de respostas atras de COELO_FORMS_MEDIA_PROVIDER, nao ligada); cliente da frente formularios e o gate",
+      "seguranca transversal": "210100 (grants sem policy = 0, self_read), 211000 (plans SELECT), 211200 (Agenda: identidade escopada nao le outra instituicao) em producao",
+      "P36 / P32 / Decisao 16": "210400, 210500, 211100 em producao; contratos publicados (contratoP32, contratoHandlesEstrutura)"
+    },
+    "abertoComPrimeiroGate": {
+      "chat.attach E2E": "principal-chat ligar o picker a chat-media (prepare/finalize/read) + gravar CHAT_MEDIA_WORKER_SECRET/ALLOWED_ORIGINS e Vault chat_media_* (coordenador)",
+      "forms.* E2E": "frente formularios trocar o cliente de respostas para upload_url/required_headers e ai ligar COELO_FORMS_MEDIA_PROVIDER=r2; question_* ja em producao pela versao da G3",
+      "ponte de ator (raiz)": "espelho sem escopo nas pontes 220400/130000: 12 helpers people-based herdam has_platform_permission global para identidades escopadas; prova por familia ou correcao de raiz na revisao profunda (0 escopadas em producao hoje)",
+      "180060 (code review R04)": "has_activity_capability passou a exigir instructor: confirmar com produto",
+      "suites pre-existentes": "edit_core (7, MFA), chat_groups (provenance), activity e2e (16, Storage), health_care (1), child_safety_production (schemaname), agenda contexts/production/read_v2 (fixtures antigas)"
+    },
+    "deltas": "docs/reviews/evidence/etapa-2/r05-realm-interno/deltas-be-r05.json (7 IDs backend local-green, ja aplicados); nenhum FE/E2E",
+    "pacotesRestantes": "nenhum; 211000 foi desfeito pelo 211500 (decisao da G7 sobre Planos)",
+    "duvidasAoOwner": "nenhuma",
+    "chavesCriadas": "coelo_person_identity_hmac_v1 (Vault, HMAC do CPF, criada pela migration 210000; valor nunca saiu do banco; roteiro de rotacao em skills-deltas-r05.md). Nao criei outras; forms_media_worker_url foi gravada pelo coordenador; CHAT_MEDIA_WORKER_SECRET/ALLOWED_ORIGINS e Vault chat_media_* ficam para o deploy do chat",
+    "descartavel": "coelo_realm_r05 parado as 15:51 (supabase stop --no-backup)",
+    "aposAs16": "nao retomo por conta propria"
   }
 }
