@@ -1,8 +1,8 @@
 {
   "grupo": "realm-interno",
-  "revision": 31,
+  "revision": 32,
   "round": "E2-R05-20260911",
-  "updatedAt": "2026-09-11T14:46-03:00",
+  "updatedAt": "2026-09-11T14:52-03:00",
   "app": "Claude",
   "modelo": "Opus 5 (esforco medio)",
   "conversa": "R05 · Realm interno e Chat backend",
@@ -333,6 +333,15 @@
       "dependeDe": "200300 e as pontes (ja em producao)",
       "chaveDeComposicao": "nenhuma",
       "estado": "APLICADO em producao (lote 44, 14:45)"
+    },
+    {
+      "ordem": 14,
+      "arquivo": "packages/coelo_database/candidatos/realm-interno/20260911211300_chat_attachment_worker_claims_v1.sql",
+      "assunto": "hardening: superadmin_chat_attachment_finalize_v1/expire_v1 sem claims respondem SAI_PERMISSION_DENIED (nullif) em vez de SAI_INTERNAL_ERROR; corpos iguais a 210200 fora disso",
+      "pgTAP": "chat_attachment_worker_claims_v1_test 3/3; attachments 28/28",
+      "dependeDe": "210200",
+      "chaveDeComposicao": "nenhuma",
+      "estado": "pronto (baixa prioridade; fecha a pendencia registrada)"
     }
   ],
   "pendenciasRegistradas": [
@@ -341,7 +350,6 @@
     "institution_directory (view) continua sem SELECT em plans para authenticated: leitura direta falha; cliente le por RPC; decisao de code review (grant em plans ou remover grant da view)",
     "chat.attach: Edge Function chat-media e cron de expire nao fazem parte deste pacote SQL",
     "forms_files: answer-image (uploads de resposta) continua em form_assets + Supabase Storage no form-media; migrar para R2 e o proximo pacote (prepare/finalize anonimos com secret hash)",
-    "210200: superadmin_chat_attachment_finalize_v1/expire_v1 fazem coalesce(current_setting('request.jwt.claims',true),'')::jsonb; sem claims (nunca via PostgREST) cai em SAI_INTERNAL_ERROR em vez de SAI_PERMISSION_DENIED - falha fechada, corrigir com nullif na revisao profunda",
     "agenda_internal_realm_compat_v1_test ajustado a ponte de ator (22/22); superadmin_agenda_contexts/production/read_v2_contract ja falhavam no espelho antes (fixtures antigas)",
     "SEGURANCA (revisao profunda, prioridade; exposicao latente: 0 identidades escopadas em producao em 11/09 14:44): as pontes 220400/130000 espelham a membership interna ESCOPADA em instituicao como platform_membership sem escopo. Helpers que decidem so por has_platform_permission e por isso herdam o problema: require_routine_actor, require_health_care_actor, assert_people_permission, assert_child_safety_platform, require_forms_actor, form_require_owner, assert_support_permission, assert_account_actor, access_profile_require_mutation, assert_institution_file_access, assert_institution_identity_access, require_profile_authority (medido no descartavel por pg_proc). Corrigido na Agenda (211200). Recomendacao de raiz: a ponte espelhar membership escopada como institution_membership (nao platform_membership) ou has_platform_permission ignorar espelhos de identidades escopadas; decisao de produto/coordenacao antes de existir o primeiro usuario interno escopado"
   ],
@@ -452,11 +460,10 @@
       "forms.* E2E": "frente formularios trocar o cliente de respostas para upload_url/required_headers e ai ligar COELO_FORMS_MEDIA_PROVIDER=r2; question_* ja em producao pela versao da G3",
       "ponte de ator (raiz)": "espelho sem escopo nas pontes 220400/130000: 12 helpers people-based herdam has_platform_permission global para identidades escopadas; prova por familia ou correcao de raiz na revisao profunda (0 escopadas em producao hoje)",
       "180060 (code review R04)": "has_activity_capability passou a exigir instructor: confirmar com produto",
-      "suites pre-existentes": "edit_core (7, MFA), chat_groups (provenance), activity e2e (16, Storage), health_care (1), child_safety_production (schemaname), agenda contexts/production/read_v2 (fixtures antigas)",
-      "finalize do chat (claims)": "coalesce(...)::jsonb sem claims cai em SAI_INTERNAL_ERROR (fecha); trocar por nullif na revisao profunda"
+      "suites pre-existentes": "edit_core (7, MFA), chat_groups (provenance), activity e2e (16, Storage), health_care (1), child_safety_production (schemaname), agenda contexts/production/read_v2 (fixtures antigas)"
     },
     "4_deltasPropostos": "docs/reviews/evidence/etapa-2/r05-realm-interno/deltas-be-r05.json (7 IDs backend local-green, ja aplicados pelo coordenador); nenhum delta FE/E2E",
-    "5_pacotesEChaves": "13 pacotes, todos em producao (lotes 28-44); Edge Functions chat-media (nova) e form-media (reconciliada) implantadas pelo coordenador; chave criada por migration: coelo_person_identity_hmac_v1 (Vault); a gravar no deploy do chat: CHAT_MEDIA_WORKER_SECRET, CHAT_MEDIA_ALLOWED_ORIGINS, Vault chat_media_worker_url/secret; Vault forms_media_worker_url ja gravada; COELO_FORMS_MEDIA_PROVIDER so quando o cliente trocar",
+    "5_pacotesEChaves": "13 pacotes em producao (lotes 28-44) + 211300 (hardening, pronto); Edge Functions chat-media (nova) e form-media (reconciliada) implantadas pelo coordenador; chave criada por migration: coelo_person_identity_hmac_v1 (Vault); a gravar no deploy do chat: CHAT_MEDIA_WORKER_SECRET, CHAT_MEDIA_ALLOWED_ORIGINS, Vault chat_media_worker_url/secret; Vault forms_media_worker_url ja gravada; COELO_FORMS_MEDIA_PROVIDER so quando o cliente trocar",
     "6_duvidasAoOwner": "nenhuma; a raiz da ponte de ator e decisao de coordenacao/produto registrada na revisao profunda",
     "provasRegistradas": "pgTAP 188/188 novos (13 suites) + 3 suites existentes ajustadas (group/unit detail, agenda compat); Deno 51/51 form-media + 5/5 chat-media + 2/2 image_dimensions; prova em producao somente leitura em prova-producao-2026-09-11.md; evidencias em docs/reviews/evidence/etapa-2/r05-realm-interno/",
     "handoff": "docs/reviews/evidence/etapa-2/r05-realm-interno/handoff.md; skills: skills-deltas-r05.md"
