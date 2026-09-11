@@ -1,6 +1,6 @@
 {
-  "revision": 37,
-  "updated_at": "2026-09-11T15:40:00-03:00",
+  "revision": 38,
+  "updated_at": "2026-09-11T15:52:00-03:00",
   "round": "E2-R05-20260911",
   "group": "operacoes",
   "tool_model": "Claude, Opus 5 (1M), esforco medio — conversa R05 · Operacoes",
@@ -1141,5 +1141,19 @@
     ],
     "skills": "secao 5 de docs/reviews/evidence/etapa-2/r05-operacoes/handoff.md",
     "ambiente": "Chrome CDP 9408 e servidor 3008 fechados ao fim; descartavel coelo_ops_r05 parado (volume mantido para reuso); build web em apps/superadmin/build/web-r05ops (nao versionado)"
+  },
+  "revisao_final_1550": {
+    "respondido_em": "15:52",
+    "entregou_tudo": "sim",
+    "sha_publicado": "work/etapa2-r05-operacoes 40367c21a (rev 37) + este commit; origin/dev ja continha a branch (fast-forward 4d9c2364d); git status limpo; sem stash; sem WIP retido",
+    "fechado": "audit.list/filter/detail (E2E); audit.export e account.theme (FE verified); plans.list/create/edit (FE verified, BE done, E2E); support.close/detail recertificados com responsavel real; account.logout (E2E); G-SUP aprovado pelo Owner; Importacoes com cabecalho, no composto e goldens na shell aprovados (wizard_unavailable A+ corrigido); Perfil: sigla so letras, celular validado, sem balao; router sem chamadas antes da sessao; Plano: Motivo a vista; 29 goldens de outras familias regravados a pedido da coordenacao",
+    "aberto": "account.sessions (P43, decisao); catalog.validate/sync/publish (P44, decisao); plans.activate/assign (semantica da spec 051); support.kanban abas/persistencia (P49 = meu P45); support.detail balao sobre o compositor em 1440 (tentativa revertida por quebrar foco); audit.filter aparencia do filtro Periodo (coelo-ui); imports.create texto 503 transversal (IMP-R05-2); plans.list parser rigido do cliente; account.profile e-mail vazio da pessoa de servico; account.mfa/audit.export BE adiados por decisao; prototype_navigation_routes_test pre-existente em dev",
+    "deltas": "5 arquivos em docs/reviews/evidence/etapa-2/r05-operacoes/ (audit 9, plans 6, audit-export-theme 2, plans-done-support-assignee 12, logout 3) — todos aplicados pelo coordenador (4d9c2364d); aprovacoes visuais do Owner (G-SUP 14:25; Importacoes 14:50) registradas para ownerVisualApproval, nunca verified/done/E2E",
+    "pacotes": "20260911200000_superadmin_plans_platform_scope_v1 (lote 39) e 20260911200100_superadmin_support_assignees_v1 em producao; candidatos/operacoes vazio",
+    "duvidas_ao_owner": "P43 account.sessions (recomendado pos-MVP); P44 Catalogo indice/fingerprints (recomendado pos-MVP); P49 (= P45 deste JSON) abas de status e persistencia da visao em Suporte; IMP-R05-2 conferir wizard_unavailable corrigido e texto 503 transversal",
+    "dados_sinteticos": "plano 5b0fc76b-51cd-4361-8d4f-e7033853eba6 (r05-qa-plano-teste, 2 recibos); chamado 48e02ab0-… com responsavel e59b0b83-… (+1 recibo, 1 evento support.assign); eventos de auditoria das provas (append-only); limpeza no fim da Etapa 2 (P42)",
+    "chaves_criadas": "nenhuma nesta rodada (nenhum segredo, token ou chave criado pela frente)",
+    "ambiente": "Chrome CDP 9408, servidor 3008 e descartavel coelo_ops_r05 encerrados; build web local nao versionado",
+    "skills": "propostas na secao 5 de docs/reviews/evidence/etapa-2/r05-operacoes/handoff.md"
   }
 }
