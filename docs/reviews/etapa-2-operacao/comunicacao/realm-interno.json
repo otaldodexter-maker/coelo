@@ -1,0 +1,54 @@
+{
+  "grupo": "realm-interno",
+  "revision": 1,
+  "round": "E2-R04-20260911",
+  "updatedAt": "2026-09-10T21:46-03:00",
+  "app": "Claude",
+  "modelo": "Fable 5.1",
+  "conversa": "R04 · Realm interno e Chat backend",
+  "coordenador": "R04 · Coordenação noturna (coordenacao.json)",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-realm-interno",
+  "branch": "work/etapa2-r04-realm-interno",
+  "head": "98cc0529d",
+  "upstream": "(push pendente)",
+  "base": "origin/dev 98cc0529d (Rodada 4 inteira no Claude)",
+  "historicoR03": "frente sem entrega na R03 (frenteNova coelo-f0 atribuida as 15:58; worktree e2-r03-realm-interno quebrada, nao usada). Nada a reutilizar dela.",
+  "escopo": {
+    "camada": "backend (Supabase/Postgres) da familia chat + realm interno v2",
+    "faixaDeCarimbo": "2026091024xxxx em packages/coelo_database/candidatos/realm-interno/",
+    "actionIds": [
+      "chat.list",
+      "chat.open",
+      "chat.send",
+      "chat.edit",
+      "chat.attach",
+      "chat.receipts",
+      "chat.revoke"
+    ],
+    "foraDoRecorte": "notices/circulars v2 (publicacoes-agenda), UI do chat (principal-chat-sistema), aplicacao em producao (coordenador)"
+  },
+  "medicaoProducao": {
+    "quando": "2026-09-10T21:46-03:00",
+    "metodo": "supabase db query --linked somente leitura (pg_proc/pg_class)",
+    "estado": "em andamento; ver revisao 2"
+  },
+  "primeiroGate": "listar a lacuna por objeto entre producao, o cliente (SupabaseChatRepository: 10 RPCs superadmin_chat_*_v2) e o historico (chat_production_contract, chat_v2, receipts_edit_revoke_v2, preferences_v1)",
+  "pacotesPlanejados": [
+    "20260910240000 chat_production_contract sobre a baseline",
+    "20260910240100 superadmin_internal_chat_v2 (labels NOT NULL, audit 13 args, sem AAL2)",
+    "20260910240200 chat receipts/edit/revoke v2",
+    "20260910240300 chat conversation preferences v1 (fixar/bandeira)",
+    "20260910240400 chat groups v1 (Criar grupo P8)"
+  ],
+  "testes": {
+    "pgTAP": "nao executado ainda"
+  },
+  "bloqueio": null,
+  "pedidosAoCoordenador": [],
+  "perguntasParaOOwner": [],
+  "respostasAoPrincipalChat": [],
+  "contrato": {
+    "estado": "em elaboracao; publicado na revisao seguinte"
+  },
+  "proximoPasso": "medir tabelas em producao e escrever o pacote 240000"
+}
