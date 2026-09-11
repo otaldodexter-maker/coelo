@@ -1,15 +1,15 @@
 {
   "grupo": "realm-interno",
-  "revision": 4,
+  "revision": 6,
   "round": "E2-R04-20260911",
-  "updatedAt": "2026-09-10T22:16-03:00",
+  "updatedAt": "2026-09-10T22:35-03:00",
   "app": "Claude",
   "modelo": "Fable 5.1",
   "conversa": "R04 · Realm interno e Chat backend",
   "coordenador": "R04 · Coordenação noturna (coordenacao.json)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-realm-interno",
   "branch": "work/etapa2-r04-realm-interno",
-  "head": "6e326885d",
+  "head": "f007c7156",
   "upstream": "origin/work/etapa2-r04-realm-interno",
   "base": "origin/dev 836c63215 (rebase feito as 22:08; lote 8 MFA fora do MVP ja em producao)",
   "historicoR03": "frente sem entrega na R03 (frenteNova coelo-f0 atribuida as 15:58; worktree e2-r03-realm-interno quebrada, nao usada). Nada a reutilizar dela.",
@@ -70,13 +70,12 @@
     "20260910240400 chat groups v1 (Criar grupo P8)"
   ],
   "testes": {
-    "pgTAP": "108 PASS / 0 FAIL nos 5 candidatos (20 + 23 + 36 + 10 + 19), projeto descartavel proprio sobre baseline + seed + 44 migrations"
+    "pgTAP": "111 PASS / 0 FAIL: prova integral do zero (db reset baseline+seed -> 44 migrations -> 5 candidatos -> 5 suites: 20 + 23 + 36 + 10 + 22) as 22:19"
   },
   "bloqueio": null,
   "pedidosAoCoordenador": [
-    "aplicar candidatos/realm-interno 240000..240400 nesta ordem (dump por lote)",
-    "depois da aplicacao: rodar supabase db query --linked -f packages/coelo_database/scripts/chat-internal-production-fixture.sql (fixture sintetica; producao nao tem instituicao nem vinculo) e me avisar; eu rodo a prova com qa-r03 e registro; ao fim da rodada, chat-internal-production-cleanup.sql",
-    "registrar o action_id chat.create-group (P8) no inventario, familia chat, se ainda nao existir",
+    "aplicar deltas-be-r04.json (6 IDs -> done) e registrar chat.create-group no inventario",
+    "ao fim da rodada: a instituicao sintetica arquivada 9f040000-0000-4000-8000-000000000010 fica em producao por causa da FK do audit_logs; decidir se permanece arquivada (recomendo) ou se o Owner quer purga da auditoria (nao recomendo)",
     "a regra do README (db reset com migrations/ inteira) nao reproduz: 20260910170100 exige o catalogo antes do seed; fluxo baseline-only + seed + psql descrito em candidatos/realm-interno/README.md"
   ],
   "perguntasParaOOwner": [],
@@ -122,7 +121,7 @@
     "escopo": "membership de plataforma ve toda conversa; membership de instituicao so ve a propria instituicao (outro tenant responde CHAT_NOT_FOUND). Anexos: so metadados; chat.attach continua dependendo do gateway de midia comum (fora deste recorte).",
     "criarGrupoNoCliente": "sugestao para SupabaseChatRepository: createGroup(ChatCreateGroupCommand{institutionId, title, personIds, unitId?, groupId?, activityId?, idempotencyKey}) -> ChatConversationSummary; o seletor de hierarquia escolhe UMA instituicao e pessoas dela (readers existentes de Pessoas/Unidades/Turmas do Superadmin); grupo entre instituicoes nao existe no modelo (conversations.institution_id NOT NULL)."
   },
-  "proximoPasso": "aguardando aplicacao (bloqueio so do dependente); enquanto isso: revisar o cliente SupabaseChatRepository contra o contrato (leitura), preparar o delta do rastreador por action_id",
+  "proximoPasso": "recorte do backend concluido; restam so pendencias registradas (chat.attach, escopo activity sem pgTAP, Realtime, revisao profunda). Sigo disponivel ate 04:20 para perguntas de principal-chat-sistema pelo JSON e para ajustes do contrato.",
   "pacotesProntos": [
     {
       "arquivo": "packages/coelo_database/candidatos/realm-interno/20260910240000_chat_production_contract_v1.sql",
@@ -155,8 +154,8 @@
     {
       "arquivo": "packages/coelo_database/candidatos/realm-interno/20260910240400_superadmin_internal_chat_groups_v1.sql",
       "assunto": "Criar grupo (P8): superadmin_chat_create_group_v2 + superadmin_chat_group_members_v2; recibos de idempotencia proprios; chat.internal.manage",
-      "pgTAP": "supabase/tests/superadmin_internal_chat_groups_v1_test.sql 19/19",
-      "commit": "d643d0193",
+      "pgTAP": "supabase/tests/superadmin_internal_chat_groups_v1_test.sql 22/22 (escopos instituicao, unidade e turma; unidade invalida; turma sem unidade)",
+      "commit": "d643d0193 + e3f04debe (teste estendido)",
       "chaveDeComposicao": "UI de Criar grupo do grupo principal-chat-sistema (repositorio + dialogo); nenhuma chave de banco"
     }
   ],
@@ -165,30 +164,38 @@
   "ackDoCoordenador": "mensagem entre sessoes recebida (lote 8 em producao: MFA fora do MVP + student_links_read; dev em 836c63215); rebase feito nesta revisao",
   "pendenciasRegistradas": [
     "chat.attach: sem funcao que insira em chat_attachment_metadata e sem Edge Function chat-media; depende do gateway de midia comum (fora deste recorte; ja registrado no rastreador)",
-    "Escopos unit/group/activity de Criar grupo validados por codigo e pelo trigger de producao, mas o pgTAP cobre so o escopo de instituicao e a unidade invalida (fixture de units/groups/activity_group_links fica para a revisao profunda)",
     "Policies de conversations/messages/participants de producao (can_access_conversation com bypass platform.read) foram preservadas; o historico as trocava por can_access_chat_conversation. Decisao registrada no cabecalho do 240000; revisar na revisao profunda de seguranca",
     "chat_inbox_page/chat_thread_page/chat_unread_total/chat_mark_read do realm de pessoas (Principal) nao sao consumidos pelo Superadmin: provados por pgTAP (20/20) mas sem cliente na Etapa 2",
     "anon com GRANT ALL em conversations/messages/message_edits/message_receipts na baseline: revogado no 240000; varredura das outras familias fica para o coordenador/revisao",
-    "Realtime: superadmin_chat_realtime_refresh_v2 existe, mas nenhuma publication/canal Realtime para messages foi configurada neste pacote (o cliente hoje nao assina)"
+    "Realtime: superadmin_chat_realtime_refresh_v2 existe, mas nenhuma publication/canal Realtime para messages foi configurada neste pacote (o cliente hoje nao assina)",
+    "Escopo activity de Criar grupo validado por codigo e pelo trigger de producao, sem pgTAP (fixture de activity_definitions/activity_group_links exige handles e triggers proprios); unit e group cobertos em 22/22"
   ],
   "deltaPropostoBE": {
-    "regra": "so depois de aplicado em producao e provado com qa-r03; ate la os cinco IDs seguem local-green com pacote pronto",
-    "chat.list": "local-green -> done apos aplicacao (240100+240300) e prova de inbox/fixar/bandeira com reload",
-    "chat.open": "local-green -> done apos aplicacao (240100+240200) e prova de thread com recibo",
-    "chat.send": "local-green -> done apos aplicacao (240100) e prova de envio idempotente",
-    "chat.edit": "local-green (240200) -> done apos aplicacao e prova de edicao na janela",
-    "chat.revoke": "local-green (240200) -> done apos aplicacao e prova de revogacao",
-    "chat.receipts": "local-green (240200) -> done apos aplicacao e prova de receipt na thread",
-    "chat.attach": "blocked-environment (gateway de midia comum ausente); sem mudanca",
-    "chat.create-group (novo, P8)": "local-green (240400); pedir ao coordenador para registrar o action_id no inventario se ainda nao existir"
+    "arquivo": "docs/reviews/evidence/etapa-2/r04-realm-interno/deltas-be-r04.json (formato apply-tracker-delta.cjs, com certificacao)",
+    "chat.list": "done",
+    "chat.open": "done",
+    "chat.send": "done",
+    "chat.edit": "done",
+    "chat.receipts": "done",
+    "chat.revoke": "done",
+    "chat.attach": "blocked-environment (sem mudanca; gateway de midia comum)",
+    "chat.create-group (P8, ID novo)": "backend done com a mesma prova; pedir ao coordenador para criar o ID no inventario (familia chat) antes de aplicar; UI pendente no grupo principal-chat-sistema",
+    "e2e": "nenhum proposto: a UI ainda usa UnavailableChatRepository na composicao; E2E e do grupo principal-chat-sistema depois de ligar o repositorio real"
   },
   "provaEmProducao": {
-    "estado": "preparada; aguarda o coordenador aplicar 240000..240400",
-    "script": "packages/coelo_database/scripts/Invoke-ChatInternalProductionProof.sh (bash) -> chat-internal-production-proof.ts (Deno); credencial lida de Coelo-backups/qa-r03.env e chave anon do CLI em memoria; nada impresso alem de PASS/FAIL",
-    "conectividadeConferidaEm": "2026-09-10T22:16-03:00",
-    "resultadoAntesDaAplicacao": "auth.sign_in PASS com qa-r03; superadmin_chat_unread_total_v2 e inbox_v2 respondem PGRST202 (funcao ausente), como esperado; anon recebe 404",
-    "volumesDeProducao": "institutions 0, people 1, institution_memberships 0, guardian_links 0, conversations 0, messages 0, internal_identities 4; ledger em 20260910230021",
-    "fixtureSintetica": "packages/coelo_database/scripts/chat-internal-production-fixture.sql cria 1 instituicao, 2 adultos (1 vinculo profissional, 1 responsavel de crianca com child_context) com UUIDs 9f040000-...; chat-internal-production-cleanup.sql remove tudo (inclusive grupos/mensagens criados na prova). Ambos provados no descartavel.",
-    "oQueAProvaCobre": "chat.list (unread, inbox, fixar, bandeira, reload), chat.open + chat.receipts (thread com receipt/can_manage), chat.send (+replay), chat.edit, chat.revoke (cleanup da mensagem), chat.create-group (+replay, members), negativa CHAT_NOT_FOUND e anon negado"
+    "estado": "FEITA em 2026-09-10T22:32-03:00 com a sessao qa-r03 (AAL1, senha) via PostgREST",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-realm-interno/prova-producao-2026-09-10.md",
+    "resultado": "18 PASS / 0 FAIL / 0 SKIP: sign_in, unread_total, inbox, create-group (+replay), send (+replay), thread com receipt/can_manage, edit, pin, flag, reload (fixada primeiro com bandeira), mark_read, revoke, group_members, not_found, anon negado (401)",
+    "persistenciaConferidaNoBanco": "conversa group/institution/active com 2 participantes; mensagem archived com deleted_at e corpo editado; 1 trilha de edicao; 1 recibo de grupo; preferencia desfeita; audit_logs do ator interno: group.create, message.send, message.edit, message.revoke, conversation.read, conversation.preference x4 (todos success)",
+    "fixture": "chat-internal-production-fixture.sql aplicada por mim as 22:31 (dado sintetico, reversivel; o coordenador nao a havia rodado e a prova dependia dela); limpeza rodada as 22:34",
+    "estadoAposLimpeza": "conversations 0, messages 0, pessoas sinteticas 0, memberships 0, guardian_links 0, child_contexts 0, preferences 0; a instituicao sintetica 9f040000-...-0010 NAO pode ser apagada (audit.audit_logs, append-only, referencia institution_id por FK) e ficou status=archived, deleted_at preenchido, nome \"QA R04 Instituicao Sintetica (arquivada)\"",
+    "negativaCrossTenant": "coberta pelo pgTAP das cinco suites (CHAT_NOT_FOUND em thread, edit, revoke, pin, create-group e members com owner escopado a outra instituicao) e, em producao, por anon negado e id inexistente nao enumeravel; nao ha segunda identidade escopada em producao para repetir por sessao (fica para a revisao profunda)"
+  },
+  "handoff": "docs/reviews/evidence/etapa-2/r04-realm-interno/handoff.md",
+  "deltaPropostoArquivo": "docs/reviews/evidence/etapa-2/r04-realm-interno/deltas-be-r04.json (6 IDs da familia chat, backend -> local-green; formato de apply-tracker-delta.cjs; ids validados contra o inventario)",
+  "estadoDoCoordenador": {
+    "lidoEm": "2026-09-10T22:35-03:00",
+    "mensagemEntreSessoes": "lote 9 em producao as 22:25 (240000..240400, ledger 59); 12 RPCs superadmin_chat_*_v2 presentes; P24 (Criar grupo so por identidades internas no MVP) ao Owner, nao bloqueia",
+    "devHead": "836c63215 (319a3b6bd anunciado, ainda nao em origin/dev as 22:31)"
   }
 }

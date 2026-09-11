@@ -1,0 +1,50 @@
+[
+  {
+    "action_id": "chat.list",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R04 realm-interno: cadeia do chat interno v2 reescrita sobre a baseline (240000 contrato, 240100 chat v2, 240300 fixar/bandeira), aplicada em producao no lote 9 (22:25). Prova com qa-r03 em 22:32: inbox, unread, fixar, bandeira e reload com a conversa fixada primeiro (18/18). pgTAP 20/20 + 23/23 + 10/10 com negativa cross-tenant. Aberto: UI ligar SupabaseChatRepository (principal-chat-sistema).",
+    "evidencia": "evidence/etapa-2/r04-realm-interno/prova-producao-2026-09-10.md; comunicacao/realm-interno.json r6",
+    "certificacao": {"evidence": "evidence/etapa-2/r04-realm-interno/prova-producao-2026-09-10.md", "revision": "f007c7156", "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST", "recordedAt": "2026-09-10T22:32:00-03:00"}
+  },
+  {
+    "action_id": "chat.open",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R04 realm-interno: superadmin_chat_thread_v2 (240100 + 240200) em producao; prova qa-r03: thread com receipt e can_manage, id inexistente responde CHAT_NOT_FOUND. pgTAP 23/23 + 36/36 (cross-tenant CHAT_NOT_FOUND).",
+    "evidencia": "evidence/etapa-2/r04-realm-interno/prova-producao-2026-09-10.md",
+    "certificacao": {"evidence": "evidence/etapa-2/r04-realm-interno/prova-producao-2026-09-10.md", "revision": "f007c7156", "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST", "recordedAt": "2026-09-10T22:32:00-03:00"}
+  },
+  {
+    "action_id": "chat.send",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R04 realm-interno: superadmin_chat_send_message_v2 (240100) em producao; prova qa-r03: envio persistido com author_kind=superadmin_internal e replay idempotente; auditoria chat.message.send registrada. pgTAP 23/23.",
+    "evidencia": "evidence/etapa-2/r04-realm-interno/prova-producao-2026-09-10.md",
+    "certificacao": {"evidence": "evidence/etapa-2/r04-realm-interno/prova-producao-2026-09-10.md", "revision": "f007c7156", "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST", "recordedAt": "2026-09-10T22:32:00-03:00"}
+  },
+  {
+    "action_id": "chat.edit",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R04 realm-interno: superadmin_chat_edit_message_v2 (240200) em producao; prova qa-r03: edicao na janela persistiu corpo novo e trilha em app_private; auditoria chat.message.edit. pgTAP 36/36 (nao autor, janela fechada, cross-tenant).",
+    "evidencia": "evidence/etapa-2/r04-realm-interno/prova-producao-2026-09-10.md",
+    "certificacao": {"evidence": "evidence/etapa-2/r04-realm-interno/prova-producao-2026-09-10.md", "revision": "f007c7156", "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST", "recordedAt": "2026-09-10T22:32:00-03:00"}
+  },
+  {
+    "action_id": "chat.receipts",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R04 realm-interno: recibo por mensagem projetado na thread (240200) e mark_read persistindo em app_private (240100), em producao; prova qa-r03: receipt/can_manage na thread, mark_read aceito (0 linhas: so mensagem propria na conversa sintetica). pgTAP 36/36.",
+    "evidencia": "evidence/etapa-2/r04-realm-interno/prova-producao-2026-09-10.md",
+    "certificacao": {"evidence": "evidence/etapa-2/r04-realm-interno/prova-producao-2026-09-10.md", "revision": "f007c7156", "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST", "recordedAt": "2026-09-10T22:32:00-03:00"}
+  },
+  {
+    "action_id": "chat.revoke",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R04 realm-interno: superadmin_chat_revoke_message_v2 (240200) em producao; prova qa-r03: soft delete (status archived, deleted_at) auditado. pgTAP 36/36 (ja revogada, cross-tenant).",
+    "evidencia": "evidence/etapa-2/r04-realm-interno/prova-producao-2026-09-10.md",
+    "certificacao": {"evidence": "evidence/etapa-2/r04-realm-interno/prova-producao-2026-09-10.md", "revision": "f007c7156", "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST", "recordedAt": "2026-09-10T22:32:00-03:00"}
+  }
+]

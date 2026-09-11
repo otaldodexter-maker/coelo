@@ -50,8 +50,15 @@ const session = await signIn.json();
 const accessToken: string = session.access_token;
 report("PASS", "auth.sign_in", `aal ${session.user?.aal ?? "n/d"}`);
 
-type Envelope = { ok?: boolean; data?: Record<string, unknown> | null; error?: { code?: string; http_status?: number } | null };
-const rpc = async (name: string, params: Record<string, unknown> = {}): Promise<{ status: number; body: Envelope | { code?: string; message?: string } }> => {
+// Envelope spec-039 das RPCs; `code`/`message` cobrem o erro do PostgREST (ex.: PGRST202).
+type Envelope = {
+  ok?: boolean;
+  data?: Record<string, unknown> | null;
+  error?: { code?: string; http_status?: number } | null;
+  code?: string;
+  message?: string;
+};
+const rpc = async (name: string, params: Record<string, unknown> = {}): Promise<{ status: number; body: Envelope }> => {
   const response = await fetch(`${url}/rest/v1/rpc/${name}`, {
     method: "POST",
     headers: {
@@ -69,7 +76,7 @@ const rpc = async (name: string, params: Record<string, unknown> = {}): Promise<
 const okData = (r: { status: number; body: Envelope }): Record<string, unknown> | null =>
   r.status === 200 && r.body?.ok === true && r.body.data ? r.body.data : null;
 const errCode = (r: { status: number; body: Envelope }): string =>
-  (r.body as Envelope)?.error?.code ?? (r.body as { code?: string })?.code ?? `http ${r.status}`;
+  r.body?.error?.code ?? r.body?.code ?? `http ${r.status}`;
 
 // 2. Leitura: unread e inbox (chat.internal.read).
 const unread = await rpc("superadmin_chat_unread_total_v2");
