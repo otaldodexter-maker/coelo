@@ -1,7 +1,7 @@
 {
-  "revision": 112,
-  "updated_at": "2026-09-11T06:14:53.999Z",
-  "relogio_local": "Fri Sep 11 2026 03:14:54 GMT-0300 (Horário Padrão de Brasília)",
+  "revision": 113,
+  "updated_at": "2026-09-11T06:17:40.377Z",
+  "relogio_local": "Fri Sep 11 2026 03:17:40 GMT-0300 (Horário Padrão de Brasília)",
   "round": "E2-R04-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
@@ -9,7 +9,7 @@
   "status": "finalizado_com_adendos",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-acessos-pessoas",
   "branch": "work/etapa2-r04-acessos-pessoas",
-  "head": "ver git log (commit desta revisao)",
+  "head": "a7f020b09",
   "base_observed": "origin/dev 98cc0529d contem a4af2b198 e o R04-prompts.md; candidatos/acessos-pessoas tem 170900 (retido) e 170750 (obsoleto); lote 4 (170100-170800) em migrations/",
   "recorte": {
     "familias": [
@@ -337,6 +337,12 @@
     "people.edit (BE)": "done: people_update persistiu display_name; detail v2 confirma",
     "invites.create (BE)": "ver resultado da tentativa por RPC nesta revisao (issue_v2 com perfil de plataforma em contexto de instituicao)",
     "deltas": "45 entradas"
+  },
+  "ADENDO_03h18": {
+    "handoff": "docs/reviews/evidence/etapa-2/r04-acessos-pessoas/handoff.md atualizado (a7f020b09): tabela de pacotes com 172000 (lote 20) e 172100 (pronto para aplicar), dados sinteticos completos, gate de convites com a negativa por RPC.",
+    "invites.create (BE)": "gate P31 confirmado: superadmin_invite_issue_v2 com p_profile_id = papel de plataforma (owner) em contexto de instituicao 9f04...0010, pessoa alvo 9f04...0061 e destinatario qa-r04-convite@invalid.test devolveu {ok:false, error:{code:'SAI_INVALID_ARGUMENT', http_status:422}}. Sem institution_roles em producao nao ha perfil valido para emitir; invites.detail/resend/revoke ficam sem objeto para provar. Pacote retido 171600 (quatro papeis de sistema, pgTAP 7/7) fecha o gate quando o Owner responder P31.",
+    "access-models.list filtros (BE)": "verified por REST: superadmin_access_profile_models_cursor com p_query='QA R04' + p_status='active' + p_scope='platform' devolve so o modelo cc322488 (active); com p_status='inactive' devolve so a copia 60fb9586 (inactive). Busca, status e escopo filtram no servidor.",
+    "restante_da_janela": "provas por REST ate 04:00; sem build (memoria 1,3-2 GB) e sem Chrome. Rev 108 continua sendo a mini-revisao formal; esta e a ultima trilha de adendos."
   },
   "historico_r03": {
     "revision": 94,
