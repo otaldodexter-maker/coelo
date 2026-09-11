@@ -202,3 +202,29 @@ do Coelo (`agenda.view`, `agenda_calendar_*`) segue em todas as larguras:
 
 Esta referência prevalece sobre `agenda_calendar_light_375` guardado quando o
 Owner responder P33; a regravação só acontece depois de aplicar o padrão acima.
+
+### Segunda captura (10:17): visão diária
+
+O Owner enviou também a **visão diária** do mesmo calendário (terça-feira, 8
+de setembro de 2026), a guardar em
+`docs/reviews/evidence/etapa-2/referencias/agenda-calendario-diario-ios-2026-09-11.png`.
+O que ela define para o detalhe de dia da Agenda:
+
+- **Cabeçalho**: voltar para o mês à esquerda ("< Setembro"), o mesmo grupo de
+  ações à direita, e abaixo a faixa da semana com as iniciais dos dias e os
+  números; o dia selecionado em círculo cheio escuro com o número em branco;
+  o dia de hoje em vermelho sem preenchimento; fins de semana em cinza.
+- **Título do dia** centralizado por extenso ("Terça-feira – 8 de set. de
+  2026") sobre uma linha divisória.
+- **Grade por hora**: rótulos de hora à esquerda ("04:00", "05:00"…), linhas
+  finas horizontais, altura fixa por hora; rolagem vertical.
+- **Evento no horário**: bloco que ocupa a faixa entre início e fim, com barra
+  vertical à esquerda na cor da categoria, título e subtítulo dentro; ícones
+  de recorrência e anexo no canto direito.
+- **Evento cancelado**: mesmo bloco em cinza, título **riscado**, prefixo
+  "CANCELADO:"; permanece no horário.
+- **Rodapé**: botão Hoje à esquerda e, à direita, o atalho para o mês e a
+  caixa de entrada com contador.
+
+As duas capturas juntas fixam a navegação ano → mês → dia da Agenda e o
+tratamento de evento cancelado (hachurado no mês, riscado no dia).
