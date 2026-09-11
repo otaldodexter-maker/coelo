@@ -6,7 +6,7 @@
  "app": "Claude Code (VS Code)",
  "model": "claude-opus-5",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T12:25:00-03:00",
+ "updatedAt": "2026-09-11T12:27:00-03:00",
  "relogio": "relogio da maquina; posse as 12:03 -03:00 de 11/09/2026",
  "posseR04": {
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -774,7 +774,7 @@
    "branch": "work/etapa2-r05-estrutura",
    "rev": 41,
    "head": "22a5a6f76",
-   "sessao": "coelo-?",
+   "sessao": "coelo-5d",
    "ack": true,
    "recebidoEm": "2026-09-11T12:25:00-03:00",
    "estado": "aberta; primeira revisao da R05 lida",
@@ -782,8 +782,8 @@
   },
   "acessos-pessoas": {
    "branch": "work/etapa2-r05-acessos-pessoas",
-   "rev": 119,
-   "head": "870f547a5",
+   "rev": 120,
+   "head": "ad04f85c3",
    "sessao": "coelo-a9",
    "ack": true,
    "recebidoEm": "2026-09-11T12:25:00-03:00",
@@ -804,16 +804,17 @@
    "branch": "work/etapa2-r05-principal-chat-sistema",
    "rev": 21,
    "head": "2e596c710",
-   "sessao": "a identificar",
+   "sessao": "coelo-02",
    "ack": true,
    "recebidoEm": "2026-09-11T12:25:00-03:00",
-   "estado": "aberta; primeira revisao da R05 lida"
+   "estado": "aberta; primeira revisao da R05 lida",
+   "resposta": "achado: list_my_principal_contexts e atores de Acontece/Agora/Momentos resolvem por person_auth_links; lote 27 nao basta; pacote 2026091113xxxx em curso no espelho da frente"
   },
   "realm-interno": {
    "branch": "work/etapa2-r05-realm-interno",
    "rev": 16,
    "head": "0c3668f07",
-   "sessao": "a identificar",
+   "sessao": "coelo-dd (por exclusao; sem resposta)",
    "ack": true,
    "recebidoEm": "2026-09-11T12:25:00-03:00",
    "estado": "aberta; primeira revisao da R05 lida"
@@ -822,7 +823,7 @@
    "branch": "work/etapa2-r05-publicacoes-agenda",
    "rev": 31,
    "head": "ddde588ac",
-   "sessao": "a identificar",
+   "sessao": "coelo-11",
    "ack": true,
    "recebidoEm": "2026-09-11T12:25:00-03:00",
    "estado": "aberta; primeira revisao da R05 lida"
@@ -831,10 +832,11 @@
    "branch": "work/etapa2-r05-operacoes",
    "rev": 21,
    "head": "7df495615",
-   "sessao": "a identificar",
+   "sessao": "coelo-af",
    "ack": true,
    "recebidoEm": "2026-09-11T12:25:00-03:00",
-   "estado": "aberta; primeira revisao da R05 lida"
+   "estado": "aberta; primeira revisao da R05 lida",
+   "resposta": "G-SUP: correcao do alinhamento vertical no composto CoeloAdminResizableTable (coelo_ui_admin) muda goldens de varias familias: pedido que entre em commit proprio cedo para o coordenador integrar em dev antes das outras frentes regravarem"
   }
  },
  "receiptsR05": [
@@ -888,5 +890,7 @@
    "candidatos verdes das frentes na ordem de chegada"
   ]
  },
- "alertaDeMemoria1220": "12:20: RAM livre 0,02 GB de 15,6; 6 dartaotruntime (analysis servers, ~700-900 MB cada, um por sessao/worktree), 28 dart, 24 chrome (139 MB no total), vmmemWSL 688 MB. Causa provavel: um servidor de analise Dart por conversa (8 conversas). Pedido ao Owner: fechar janelas do VS Code/MCP dart que nao estejam em uso; frentes so um flutter test por vez e sem build web simultaneo. Coordenador nao mata processo de outra conversa."
+ "alertaDeMemoria1220": "12:20: RAM livre 0,02 GB de 15,6; 6 dartaotruntime (analysis servers, ~700-900 MB cada, um por sessao/worktree), 28 dart, 24 chrome (139 MB no total), vmmemWSL 688 MB. Causa provavel: um servidor de analise Dart por conversa (8 conversas). Pedido ao Owner: fechar janelas do VS Code/MCP dart que nao estejam em uso; frentes so um flutter test por vez e sem build web simultaneo. Coordenador nao mata processo de outra conversa.",
+ "sessoesR05": "coelo-46 = coordenacao R04 encerrada (worktree e2-r04-coordenacao removivel no fechamento); a conversa R04 Estrutura nao esta viva",
+ "devPublicado1222": "62f284d9c: merge de work/etapa2-r04-estrutura (631f9de52 activities.edit, 189cbb852 rev 40), coordenacao revs 38-39, rastreadores 12:30; analyze limpo (340 s); test/features/activities 343 P / 9 F (goldens pre-existentes em origin/dev)"
 }
