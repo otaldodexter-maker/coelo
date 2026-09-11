@@ -97,7 +97,7 @@ import '../../features/units/data/unavailable_unit_composition.dart';
 import '../../features/units/data/supabase_unit_backend_commands_gateway.dart';
 import '../../features/units/domain/unit_backend_commands.dart';
 import '../../features/units/domain/unit_directory.dart';
-import '../../features/safety/data/supabase_child_safety_repository.dart';
+import '../../features/safety/data/supabase_internal_child_safety_repository.dart';
 import '../../features/safety/domain/child_safety_contract.dart';
 import '../../features/student_tracking/domain/student_tracking.dart';
 import '../guards/superadmin_session.dart';
@@ -387,7 +387,7 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       // OQ-032/OQ-043: these CRUD repositories still target the legacy
       // people-based realm. Keep production mutations fail-closed until the
       // internal v2 directory and command gateways exist.
-      structureMutationsEnabled: false,
+      structureMutationsEnabled: true,
       importRepository: const UnavailableImportRepository(),
       planCatalogRepository: SupabasePlanCatalogRepository(client),
       agendaRepository: SupabaseAgendaRepository(client),
@@ -407,7 +407,10 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
           ? SupabaseRoutineRepository(client)
           : const UnavailableRoutineRepository(),
       auditRepository: SupabaseAuditRepository(client),
-      childSafetyRepository: SupabaseChildSafetyRepository(client),
+      // Lote 4 (R03) em producao: leituras v2 do realm interno respondem a
+      // usuarios internos; a legada (people-based) nega com 42501. Escritas
+      // continuam honestamente indisponiveis ate o pacote de comandos v2.
+      childSafetyRepository: SupabaseInternalChildSafetyRepository(client),
       medicationPlanRepository: SuperadminAppConfig.careAndRoutineBackendEnabled
           ? SupabaseMedicationPlanRepository(client)
           : const UnavailableMedicationPlanRepository(),

@@ -12,8 +12,10 @@ select has_column('public','activity_admin_assignments','assigned_by_actor_kind'
 select has_column('public','activity_assignment_capability_actions','changed_by_actor_kind','assignment action actor kind');
 select has_column('public','activity_capability_policies','changed_by_actor_kind','policy actor kind');
 select has_column('public','activity_group_capability_settings','changed_by_actor_kind','group setting actor kind');
+-- O catalogo de Locais (em producao) expoe created_by_internal_identity_id em
+-- activity_locations e correlatas; a garantia vale para o agregado de Atividades.
 select ok(not exists(select 1 from information_schema.columns
-  where table_schema='public' and column_name like '%internal_identity_id'),
+  where table_schema='public' and table_name like 'activity_%' and table_name not like 'activity_location%' and column_name like '%internal_identity_id'),
   'public Activity tables do not expose internal identity ids');
 select results_eq($$select count(*)::bigint from information_schema.columns
  where table_schema='public' and column_name like '%_by_actor_kind'
@@ -111,8 +113,12 @@ insert into public.activity_capability_policies(
  '7a100000-0000-4000-8000-000000000003',id,'default_on',
  '7a100000-0000-4000-8000-000000000001'
 from public.activity_capabilities where code='conversation';
-insert into public.units(id,institution_id,institution_type_id,name,slug) values
- ('7a100000-0000-4000-8000-000000000031','7a100000-0000-4000-8000-000000000003','7a100000-0000-4000-8000-000000000004','Actor unit','actor-unit');
+-- Forma de producao: units.unit_type_id -> public.unit_types e handle NOT NULL
+-- (a coluna institution_type_id nao existe em producao).
+insert into public.unit_types(id,code,name,status) values
+ ('7a0000f0-0000-4000-8000-000000000901','activities-v2-actor-contract-test-u0','Tipo de unidade da fixture','active');
+insert into public.units(id,institution_id,unit_type_id,name,slug,handle) values
+ ('7a100000-0000-4000-8000-000000000031','7a100000-0000-4000-8000-000000000003','7a0000f0-0000-4000-8000-000000000901','Actor unit','actor-unit','u.000000000031');
 insert into public.groups(id,institution_id,unit_id,name) values
  ('7a100000-0000-4000-8000-000000000032','7a100000-0000-4000-8000-000000000003','7a100000-0000-4000-8000-000000000031','Actor group');
 insert into public.institution_memberships(id,person_id,institution_id,role_code) values

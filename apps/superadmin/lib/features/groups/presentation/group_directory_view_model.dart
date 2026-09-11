@@ -23,6 +23,7 @@ final class GroupDirectoryViewModel extends ChangeNotifier {
   );
   GroupDirectoryFilterOptions _filterOptions = const GroupDirectoryFilterOptions();
   GroupDirectoryLoadState _state = GroupDirectoryLoadState.initial;
+  bool _filterOptionsUnavailable = false;
   Timer? _searchTimer;
   int _requestVersion = 0;
   bool _isDisposed = false;
@@ -30,6 +31,11 @@ final class GroupDirectoryViewModel extends ChangeNotifier {
   GroupDirectoryQuery get query => _query;
   GroupDirectoryPage get page => _page;
   GroupDirectoryFilterOptions get filterOptions => _filterOptions;
+
+  /// P5 (decisao do Owner de 10/09/2026): quando as opcoes de filtro falham, o
+  /// diretorio continua listando e os filtros por instituicao/unidade/tipo
+  /// degradam de forma honesta em vez de derrubar a tela.
+  bool get filterOptionsUnavailable => _filterOptionsUnavailable;
   GroupDirectoryLoadState get state => _state;
   bool get isLoading => _state == GroupDirectoryLoadState.loading;
 
@@ -55,15 +61,27 @@ final class GroupDirectoryViewModel extends ChangeNotifier {
   }
 
   Future<void> setInstitutions(Set<String> value) async {
-    final options = await _repository.fetchFilterOptions(institutionIds: value);
-    final allowedUnits = {
-      for (final unit in options.units)
-        if (value.isEmpty || unit.institutionId == null || value.contains(unit.institutionId!))
-          unit.id,
-    };
+    final options = await _fetchFilterOptions(value);
+    final allowedUnits = options == null
+        ? _query.unitIds
+        : {
+            for (final unit in options.units)
+              if (value.isEmpty || unit.institutionId == null || value.contains(unit.institutionId!))
+                unit.id,
+          };
     return _replace(
       _copy(institutionIds: value, unitIds: _query.unitIds.intersection(allowedUnits)),
     );
+  }
+
+  Future<GroupDirectoryFilterOptions?> _fetchFilterOptions(Set<String> institutionIds) async {
+    try {
+      return await _repository.fetchFilterOptions(institutionIds: institutionIds);
+    } on GroupDirectoryUnauthorizedException {
+      rethrow;
+    } on Object {
+      return null;
+    }
   }
 
   Future<void> setUnits(Set<String> value) => _replace(_copy(unitIds: value));
@@ -115,13 +133,15 @@ final class GroupDirectoryViewModel extends ChangeNotifier {
     _state = GroupDirectoryLoadState.loading;
     _notifyIfActive();
     try {
-      final results = await Future.wait<Object>([
+      final results = await Future.wait<Object?>([
         _repository.fetchPage(value),
-        _repository.fetchFilterOptions(institutionIds: value.institutionIds),
+        _fetchFilterOptions(value.institutionIds),
       ], eagerError: true);
       if (_isDisposed || version != _requestVersion) return;
-      _page = results[0] as GroupDirectoryPage;
-      _filterOptions = results[1] as GroupDirectoryFilterOptions;
+      _page = results[0]! as GroupDirectoryPage;
+      final options = results[1] as GroupDirectoryFilterOptions?;
+      _filterOptionsUnavailable = options == null;
+      _filterOptions = options ?? const GroupDirectoryFilterOptions();
       _state = _page.items.isNotEmpty
           ? GroupDirectoryLoadState.success
           : value.hasActiveFilters

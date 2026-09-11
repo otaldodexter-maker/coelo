@@ -85,7 +85,7 @@ final class _PrincipalForYouPreviewPageState extends State<PrincipalForYouPrevie
   void _feedback(String label) {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text('$label estará disponível na experiência completa.')));
+      ..showSnackBar(SnackBar(content: Text('$label ainda não está disponível.')));
   }
 
   void _invoke(VoidCallback? callback, String fallback) =>
@@ -376,13 +376,11 @@ final class _HeroCard extends StatelessWidget {
                     children: [
                       DecoratedBox(
                         decoration: BoxDecoration(
-                          // Accessibility finding, 09/09/2026: white over this
-                          // veil measures 3.75:1, under the 4.5:1 AA minimum for
-                          // 11 px. Darkening the chip clears it but changes an
-                          // approved composition and breaks the reference
-                          // goldens, so the fix belongs to coelo-ui and the
-                          // Owner rather than to executor preference.
-                          color: scheme.onPrimary.withValues(alpha: .16),
+                          // Achado de acessibilidade de 09/09/2026: branco a 16%
+                          // sobre o laranja media 3,75:1 (abaixo de 4,5:1 AA).
+                          // Decisao da Fase 0 (10/09/2026): o veu usa orange950 a
+                          // 16% (5,75:1 no claro, simetrico ao escuro).
+                          color: CoeloPalette.orange950.withValues(alpha: 0.16),
                           borderRadius: BorderRadius.circular(CoeloRadius.full),
                         ),
                         child: Padding(

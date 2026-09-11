@@ -278,7 +278,7 @@ void main() {
 
     await tester.tap(find.byKey(const Key('principal-now-send-reply')));
     await tester.pump();
-    expect(find.text('Resposta indisponível nesta prévia.'), findsOneWidget);
+    expect(find.text('Resposta ainda não está disponível.'), findsOneWidget);
     expect(find.text('Obrigado pelo registro'), findsOneWidget);
   });
 

@@ -298,10 +298,75 @@ void main() {
     expect(saved.version, 8);
   });
 
-  test('fails closed for unapproved create and maps v2 authorization errors', () async {
-    var calls = 0;
+  test('creates through the internal v2 gateway then reloads authoritative detail', () async {
+    final calls = <Request>[];
     final repository = _repository((request) async {
-      calls++;
+      calls.add(request);
+      if (request.url.pathSegments.contains('superadmin_institution_create_v2')) {
+        return _json(request, _ok({'institution_id': 'institution-9', 'management_version': 1}));
+      }
+      return _json(request, _ok({..._detailRow(version: 1), 'id': 'institution-9'}));
+    });
+
+    final saved = await repository.create(_draft().copyWith(slug: 'aurora'));
+
+    expect(calls, hasLength(2));
+    expect(calls[0].url.pathSegments, contains('superadmin_institution_create_v2'));
+    final body = jsonDecode(calls[0].body) as Map<String, dynamic>;
+    expect(body['p_request_id'], isNotEmpty);
+    final payload = Map<String, dynamic>.from(body['p_payload'] as Map);
+    expect(payload.keys.toSet(), {
+      'public_name',
+      'trade_name',
+      'legal_name',
+      'timezone',
+      'locale',
+      'institution_type_id',
+      'address',
+      'slug',
+    });
+    expect(payload['slug'], 'aurora');
+    expect((jsonDecode(calls[1].body) as Map)['p_institution_id'], 'institution-9');
+    expect(saved.id, 'institution-9');
+    expect(saved.version, 1);
+  });
+
+  test('omits a blank address on create and rejects a type without catalog id', () async {
+    final calls = <Request>[];
+    final repository = _repository((request) async {
+      calls.add(request);
+      if (request.url.pathSegments.contains('superadmin_institution_create_v2')) {
+        return _json(request, _ok({'institution_id': 'institution-9', 'management_version': 1}));
+      }
+      return _json(request, _ok({..._detailRow(version: 1), 'id': 'institution-9'}));
+    });
+    final blankAddress = _draft().copyWith(
+      slug: 'aurora',
+      postalCode: '',
+      state: '',
+      city: '',
+      district: '',
+      street: '',
+      addressNumber: '',
+      complement: '',
+    );
+
+    await repository.create(blankAddress);
+    final payload = Map<String, dynamic>.from(
+      (jsonDecode(calls[0].body) as Map)['p_payload'] as Map,
+    );
+    expect(payload.containsKey('address'), isFalse);
+
+    calls.clear();
+    await expectLater(
+      repository.create(_draft().copyWith(slug: 'aurora', typeId: 'local-type-nova')),
+      throwsA(isA<InstitutionDirectoryUnsupportedRelationException>()),
+    );
+    expect(calls, isEmpty);
+  });
+
+  test('maps v2 authorization errors on create and detail', () async {
+    final repository = _repository((request) async {
       return _json(request, {
         'ok': false,
         'data': null,
@@ -310,10 +375,9 @@ void main() {
     });
 
     await expectLater(
-      repository.create(_draft()),
-      throwsA(isA<InstitutionDirectoryUnavailableException>()),
+      repository.create(_draft().copyWith(slug: 'aurora')),
+      throwsA(isA<InstitutionDirectoryUnauthorizedException>()),
     );
-    expect(calls, 0);
     await expectLater(
       repository.fetchById('institution-1'),
       throwsA(isA<InstitutionDirectoryUnauthorizedException>()),

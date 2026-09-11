@@ -224,6 +224,30 @@ final class DevelopmentChatRepository implements ChatRepository {
     required String conversationId,
     required ChatConversationFlag flag,
   }) => Future<ChatConversationPreference>.error(const ChatFailureException());
+
+  @override
+  Future<ChatGroupCreated> createGroup(ChatCreateGroupCommand command) async {
+    final now = DateTime.now();
+    final id = 'dev-chat-group-${command.requestId}';
+    _conversations.insert(
+      0,
+      _conversation(
+        id: id,
+        title: command.title,
+        preview: 'Grupo criado.',
+        context: 'Grupo · ${command.personIds.length} membros',
+        kind: 'group',
+        unread: 0,
+        updatedAt: now,
+      ),
+    );
+    _threads[id] = [];
+    return ChatGroupCreated(
+      conversationId: id,
+      title: command.title,
+      memberCount: command.personIds.length,
+    );
+  }
 }
 
 List<ChatConversationSummary> _seedConversations(DateTime now) => [

@@ -145,6 +145,9 @@ Future<void> _pump(WidgetTester tester, ChatRepository repository) async {
 }
 
 final class _PagedThreadRepository implements ChatRepository {
+  @override
+  Future<ChatGroupCreated> createGroup(ChatCreateGroupCommand command) =>
+      Future<ChatGroupCreated>.error(const ChatFailureException());
   _PagedThreadRepository({
     this.exhausted = false,
     this.denyContinuation = false,
@@ -237,6 +240,9 @@ final class _PagedThreadRepository implements ChatRepository {
 
 /// Duas conversas, e a continuacao da primeira so responde quando mandarem.
 final class _SlowContinuationRepository implements ChatRepository {
+  @override
+  Future<ChatGroupCreated> createGroup(ChatCreateGroupCommand command) =>
+      Future<ChatGroupCreated>.error(const ChatFailureException());
   final _continuation = Completer<ChatThreadPage>();
 
   void completeContinuation() => _continuation.complete(
@@ -329,6 +335,9 @@ ChatMessage _message(String id, String body, String conversationId, int hour) =>
 
 /// Continuacao lenta e envio rapido, para exercitar o entrelacamento.
 final class _InterleavedRepository implements ChatRepository {
+  @override
+  Future<ChatGroupCreated> createGroup(ChatCreateGroupCommand command) =>
+      Future<ChatGroupCreated>.error(const ChatFailureException());
   final _continuation = Completer<ChatThreadPage>();
 
   void completeContinuation() => _continuation.complete(

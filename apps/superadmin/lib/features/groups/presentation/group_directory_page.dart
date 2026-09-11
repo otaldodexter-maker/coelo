@@ -168,6 +168,8 @@ final class _GroupDirectoryContent extends StatelessWidget {
     animation: viewModel,
     builder: (context, _) {
       final options = viewModel.filterOptions;
+      // P5: filtros indisponiveis ficam visiveis, vazios e nomeados como tal.
+      final filterSuffix = viewModel.filterOptionsUnavailable ? ' (indisponível)' : '';
       final page = viewModel.page;
       final onCreate = this.onCreate;
       final totalPages = page.totalCount == 0
@@ -229,7 +231,7 @@ final class _GroupDirectoryContent extends StatelessWidget {
         filters: [
           filter<GroupDirectoryFilterOption>(
             key: const Key('group-institution-filter'),
-            label: 'Instituições',
+            label: 'Instituições$filterSuffix',
             options: options.institutions,
             selected: options.institutions
                 .where((option) => viewModel.query.institutionIds.contains(option.id))
@@ -240,7 +242,7 @@ final class _GroupDirectoryContent extends StatelessWidget {
           ),
           filter<GroupDirectoryFilterOption>(
             key: const Key('group-unit-filter'),
-            label: 'Unidades',
+            label: 'Unidades$filterSuffix',
             options: options.units,
             selected: options.units
                 .where((option) => viewModel.query.unitIds.contains(option.id))
@@ -251,7 +253,7 @@ final class _GroupDirectoryContent extends StatelessWidget {
           ),
           filter<GroupDirectoryFilterOption>(
             key: const Key('group-type-filter'),
-            label: 'Tipo da turma',
+            label: 'Tipo da turma$filterSuffix',
             options: options.types,
             selected: options.types
                 .where((option) => viewModel.query.typeIds.contains(option.id))

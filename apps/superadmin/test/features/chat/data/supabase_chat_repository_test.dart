@@ -70,6 +70,74 @@ void main() {
     });
   }
 
+  test('createGroup calls superadmin_chat_create_group_v2 with the published contract', () async {
+    Request? captured;
+    final client = _client((request) async {
+      captured = request;
+      return _json({
+        'ok': true,
+        'data': {
+          'conversation_id': 'conversation-9',
+          'title': 'Coordenacao',
+          'conversation_type': 'group',
+          'scope_kind': 'institution',
+          'institution_id': 'institution-1',
+          'member_count': 2,
+          'created_at': '2026-09-10T22:00:00Z',
+          'replayed': false,
+        },
+        'error': null,
+      }, request);
+    });
+    addTearDown(client.dispose);
+
+    final created = await SupabaseChatRepository(client).createGroup(
+      const ChatCreateGroupCommand(
+        requestId: 'request-1',
+        institutionId: 'institution-1',
+        title: ' Coordenacao ',
+        personIds: ['person-a', 'person-b'],
+      ),
+    );
+
+    expect(captured!.url.path, endsWith('/rpc/superadmin_chat_create_group_v2'));
+    expect(jsonDecode(captured!.body), {
+      'p_request_id': 'request-1',
+      'p_institution_id': 'institution-1',
+      'p_title': 'Coordenacao',
+      'p_person_ids': ['person-a', 'person-b'],
+      'p_unit_id': null,
+      'p_group_id': null,
+      'p_activity_id': null,
+    });
+    expect(created.conversationId, 'conversation-9');
+    expect(created.memberCount, 2);
+    expect(created.replayed, isFalse);
+  });
+
+  test('createGroup surfaces CHAT_MEMBER_INVALID as a member problem, not a lost session', () async {
+    final client = _client((request) async {
+      return _json({
+        'ok': false,
+        'data': null,
+        'error': {'code': 'CHAT_MEMBER_INVALID', 'message': 'member', 'http_status': 422},
+      }, request);
+    });
+    addTearDown(client.dispose);
+
+    await expectLater(
+      SupabaseChatRepository(client).createGroup(
+        const ChatCreateGroupCommand(
+          requestId: 'request-2',
+          institutionId: 'institution-1',
+          title: 'Grupo',
+          personIds: ['person-x'],
+        ),
+      ),
+      throwsA(isA<ChatMemberInvalidException>()),
+    );
+  });
+
   test('fetches the inbox through the authorised typed cursor RPC only', () async {
     Request? captured;
     final client = _client((request) async {

@@ -1,12 +1,12 @@
 {
- "revision": 19,
+ "revision": 22,
  "round": "E2-R04-20260911",
  "role": "Coordenacao noturna R04 - Claude Fable (C0)",
  "writer": "coordenador-claude",
  "app": "Claude Code (VS Code)",
  "model": "claude-fable-5-1",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-10T21:56:00-03:00",
+ "updatedAt": "2026-09-10T23:58:00-03:00",
  "relogio": "relogio da maquina; posse as 21:42 -03:00 de 10/09/2026",
  "posseR04": {
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -35,64 +35,91 @@
   "estrutura": {
    "app": "Claude Opus",
    "branch": "work/etapa2-r04-estrutura",
-   "rev": 23,
-   "upd": "21:44",
-   "head": "d31d47702",
+   "rev": 25,
+   "upd": "22:08",
+   "head": "8b1f1c0c9",
    "primeiroGate": "reemitir reservations_v2 + 180000/180100/180200/180300 sobre a baseline com audit_append_superadmin_internal de 13 argumentos",
    "ack": true,
-   "recebidoEm": "2026-09-10T21:56:00-03:00"
+   "recebidoEm": "2026-09-10T21:56:00-03:00",
+   "estado": "21 pacotes em producao (lotes 10 e 11); chaves ligadas; rota real: Instituicoes lista, /institutions/new abre; institutions.create em prova; rev 30 8b78b52ca"
   },
   "acessos-pessoas": {
    "app": "Claude Opus",
    "branch": "work/etapa2-r04-acessos-pessoas",
-   "rev": 95,
-   "upd": "21:44",
+   "rev": 96,
+   "upd": "22:2x",
    "head": "036b0a147",
    "primeiroGate": "app em localhost:3000 com qa-r03; Convites",
    "ack": true,
    "recebidoEm": "2026-09-10T21:56:00-03:00",
-   "resposta": "migration de MFA aplicada (lote 8): people.list/create/edit e escrita de Perfis/Modelos liberadas no backend; 170900 ficou obsoleta, nao precisa conferir; tirar account.mfa/AAL2 do caminho do cliente (router e auth gateway ainda citam aal2)"
+   "resposta": "migration de MFA aplicada (lote 8): people.list/create/edit e escrita de Perfis/Modelos liberadas no backend; 170900 ficou obsoleta, nao precisa conferir; tirar account.mfa/AAL2 do caminho do cliente (router e auth gateway ainda citam aal2)",
+   "estado": "P7 e ponte em producao; rerodando Pessoas/Perfis/Modelos; D1 171100 em pgTAP; /invites/new em branco no build release em diagnostico"
   },
   "formularios-cuidado-rotina": {
    "app": "Claude Opus",
    "branch": "work/etapa2-r04-formularios-cuidado-rotina",
-   "rev": 23,
-   "upd": "21:43",
-   "head": "f3fefa306",
+   "rev": 24,
+   "upd": "22:04",
+   "head": "ed32f4770+",
    "primeiroGate": "chaves de composicao + app local + Perfis de cuidado/Medicacao",
    "ack": true,
    "recebidoEm": "2026-09-10T21:56:00-03:00",
-   "resposta": "220300 student_links_read aplicada em producao (lote 8); Rotina/Assiduidade sem gate de AAL2"
+   "resposta": "220300 student_links_read aplicada em producao (lote 8); Rotina/Assiduidade sem gate de AAL2",
+   "estado": "ponte de ator em producao; rerodando Cuidado/Medicacao/Rotina/Assiduidade/Alunos; rev 27 730f2a117"
   },
   "principal-chat-sistema": {
-   "app": "Claude Opus",
-   "estado": "sem revisao R04 ate 21:56 (JSON em dev rev 8)"
+   "app": "Claude Opus (coelo-ce)",
+   "branch": "work/etapa2-r04-principal-chat-sistema",
+   "rev": 10,
+   "head": "2335ea3c1",
+   "upd": "22:4x",
+   "estado": "chat E2E 6 acoes (rev 13, 030fcd2ca); 190900 em producao; regressao do launcher (Decisao 7) a corrigir; Cardapios/Principal com a ponte de ator a refazer",
+   "ack": true,
+   "recebidoEm": "2026-09-10T22:58:00-03:00"
   },
   "realm-interno": {
-   "app": "Claude Fable",
-   "estado": "sem JSON ate 21:56"
+   "app": "Claude Fable (coelo-7a)",
+   "branch": "work/etapa2-r04-realm-interno",
+   "rev": 6,
+   "head": "f007c7156",
+   "upd": "22:40",
+   "estado": "finalizado: 6 pacotes em producao, prova cross-tenant 21/21, mini-revisao na rev 11 (b495d995e)",
+   "ack": true,
+   "recebidoEm": "2026-09-10T22:58:00-03:00"
   },
   "publicacoes-agenda": {
-   "app": "Claude Opus (era Codex)",
-   "estado": "sem revisao R04 ate 21:56 (rev 12)"
+   "app": "Claude Opus (coelo-ef)",
+   "branch": "work/etapa2-r04-publicacoes-agenda",
+   "rev": 15,
+   "head": "cd169f4f8",
+   "upd": "22:4x",
+   "estado": "5 pacotes em producao; Avisos 12/12, Circulares/Agenda 32/33, fix de circulars.edit aplicado; rev 16 695c17f01",
+   "ack": true,
+   "recebidoEm": "2026-09-10T22:58:00-03:00"
   },
   "operacoes": {
-   "app": "Claude Opus (era Codex)",
-   "estado": "sem revisao R04 ate 21:56 (rev 13)"
+   "app": "Claude Opus (coelo-9c)",
+   "branch": "work/etapa2-r04-operacoes",
+   "rev": 14,
+   "head": "66f17c323+",
+   "upd": "21:47",
+   "estado": "210000/210100 em producao; Suporte honesto na rota real; rerodando Conta/Suporte com a ponte; rev 15",
+   "ack": true,
+   "recebidoEm": "2026-09-10T22:58:00-03:00"
   }
  },
  "filaSqlR04": {
   "regra": "pacote verde em candidatos/<grupo> -> preflight no espelho (aplicar + pgTAP) -> dump por lote -> supabase db query --linked -f <caminho relativo ao workdir> -> insert no ledger -> move para migrations/ -> chave de composicao",
   "aplicados": [
-   "lote 8: 20260910230021 (coordenador), 20260910220300 (formularios)"
+   "lote 8: 20260910230021 (coordenador), 20260910220300 (formularios)",
+   "lote 9: 190300..190800 (principal-chat), 240000..240400 (realm-interno), 200000..200300 (publicacoes-agenda)",
+   "lote 10: 240500, 171000, 210000, 210100, 180000..180340 (20), 220400, 200400",
+   "lote 11: 180350 (estrutura), 190900 (principal-chat)"
   ],
   "proximos": [
-   "estrutura: reservations_v2 + 180000/180100/180200/180300 quando o grupo reemitir",
-   "acessos-pessoas: P7 has_platform_permission com membership por instituicao",
-   "principal-chat-sistema: storage_provider -> r2 de happens e now (depois deploy de happens-media e now-media)",
-   "realm-interno: chat_production_contract e chat v2",
-   "publicacoes-agenda: notices_v2 e circulars_v2 + circular_delete",
-   "operacoes: AUDIT-READ-V2"
+   "acessos-pessoas: D1 171100 (follow_links) quando verde",
+   "estrutura: proximo pacote de institution_create (representantes, administradores, contato, documento, plano, marca), se sair",
+   "worker de Avisos: pg_cron + notice-publication-worker (coordenador, depois das integracoes)"
   ]
  },
  "receiptsR04": [
@@ -113,6 +140,52 @@
    "revisaoRecebida": 23,
    "ack": true,
    "recebidoEm": "2026-09-10T21:56:00-03:00"
+  },
+  {
+   "grupo": "estrutura",
+   "revisaoRecebida": 25,
+   "ack": true,
+   "recebidoEm": "2026-09-10T22:58:00-03:00"
+  },
+  {
+   "grupo": "acessos-pessoas",
+   "revisaoRecebida": 96,
+   "ack": true,
+   "recebidoEm": "2026-09-10T22:58:00-03:00"
+  },
+  {
+   "grupo": "formularios-cuidado-rotina",
+   "revisaoRecebida": 24,
+   "ack": true,
+   "recebidoEm": "2026-09-10T22:58:00-03:00"
+  },
+  {
+   "grupo": "principal-chat-sistema",
+   "revisaoRecebida": 10,
+   "ack": true,
+   "recebidoEm": "2026-09-10T22:58:00-03:00",
+   "integradoEm": "7564b54fb"
+  },
+  {
+   "grupo": "realm-interno",
+   "revisaoRecebida": 6,
+   "ack": true,
+   "recebidoEm": "2026-09-10T22:58:00-03:00",
+   "integradoEm": "7564b54fb; deltas aplicados 460a8963f"
+  },
+  {
+   "grupo": "publicacoes-agenda",
+   "revisaoRecebida": 15,
+   "ack": true,
+   "recebidoEm": "2026-09-10T22:58:00-03:00",
+   "integradoEm": "7564b54fb"
+  },
+  {
+   "grupo": "operacoes",
+   "revisaoRecebida": 14,
+   "ack": true,
+   "recebidoEm": "2026-09-10T22:58:00-03:00",
+   "integradoEm": "7564b54fb"
   }
  ],
  "historicoDeRevisoes": {
@@ -124,6 +197,9 @@
   "6": "16:05 (relogio real) respostas do Owner P1 B, P2, P4, P12, P14 (ADR 0034 Decisao 8); chaves publicaveis gravadas; dump logico de producao; baseline provada em projeto descartavel; preflight de quatro pacotes; DOIS PACOTES APLICADOS EM PRODUCAO; migrations/ reestruturado com a baseline; corte de handoff das frentes as 16:30 e consolidacao ate 17:45 por ordem do Owner",
   "18": "fechamento da R03 e abertura da R04: reconciliacao do Git (checkout principal limpo, rev 94 de acessos-pessoas recuperada, 26 worktrees removidas), P19/P20/P21 registradas, prompts R04 publicados",
   "19": "2026-09-10 21:56 posse da R04 (worktree e2-r04-coordenacao sobre 98cc0529d); lote 8 em producao (MFA fora do MVP + student_links_read); ACK de estrutura r23, acessos-pessoas r95, formularios r23",
+  "20": "2026-09-10 22:58 lote 9 (15 pacotes) em producao; deploy de happens-media e now-media; sete branches integradas (7564b54fb); rastreadores com chat done; P22 (ponte de ator) e P25 (instituicao sintetica) bloqueadas pelo classificador e levadas ao Owner",
+  "21": "23:27 lote 10 (26 pacotes) em producao com a ponte de ator (P22 resolvida pelo pacote do grupo formularios); structureMutationsEnabled ligada; primeiro E2E (chat); regra do Owner de estado vazio registrada (skill coelo-ui, ADR 0034 Decisao 13); P26-P28",
+  "22": "23:58 lote 11 (Avaliacoes v2 + revoke anon security definer) em producao; chaves de estrutura e avaliacoes ligadas; chat.edit/revoke E2E; regressao do launcher atribuida; realm-interno finalizado",
   "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina."
  },
  "fechamentoR03": {
@@ -291,5 +367,74 @@
   "soleWriterOfTrackersAndInventory": true,
   "faseZero": "A Fase 0 (fase0.json) continua commitando lotes pequenos em dev pelo checkout principal. E o unico outro escritor de dev; os dois fazem fetch e rebase antes de push.",
   "checkoutDoCoordenador": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao, branch work/etapa2-r04-coordenacao, upstream origin/dev, push com git push origin HEAD:dev apos rebase. O coordenador nao edita a arvore do checkout principal."
- }
+ },
+ "lote9": {
+  "dump": "C:/Users/adrie/Documents/Coelo-backups/schema-producao-20260910-lote9.sql (22:22, 2.996.024 bytes, sha256 da12991d439a0fe5...)",
+  "preflight": "espelho coelo_baseline (= producao + lote 8): os 15 pacotes aplicaram em sequencia e os 16 pgTAP passaram (principal-chat 187 assercoes; realm-interno 108; publicacoes-agenda 117; log preflight-grupos-1.log)",
+  "aplicadoEm": "2026-09-10T22:22 a 22:29 -03:00; ledger 59 versoes de 10/09",
+  "conteudo": [
+   "principal-chat-sistema 20260910190300 now_publication_mvp_baseline, 190400 now_custom_role_audience_hardening, 190500 now_publication_expiry_transition, 190600 now_media_private_r2_v1, 190700 happens_media_private_r2_v1, 190800 happens_post_withdrawal_baseline",
+   "realm-interno 20260910240000 chat_production_contract_v1, 240100 superadmin_internal_chat_v2, 240200 chat_receipts_edit_revoke_v2, 240300 chat_conversation_preferences_v1, 240400 superadmin_internal_chat_groups_v1 (Criar grupo P8)",
+   "publicacoes-agenda 20260910200000 notices_v2_baseline (ALTER TYPE ADD VALUE aplicado em chamada separada: db query -f roda o arquivo numa unica transacao e o primeiro envio falhou com 55P04 sem efeito), 200100 circulars_v2_baseline, 200200 circular_delete_v2, 200300 agenda_internal_realm_compat_v1"
+  ],
+  "verificadoEmProducao": "12 RPCs superadmin_chat_*_v2; 6 RPCs de Avisos e 8 de Circulares; enums notice_status/notice_type com os valores novos; 10 concessoes agenda.*; zero execute de anon em superadmin_agenda_*; now_media_assets.storage_provider default r2; media_assets default r2",
+  "deploys": "happens-media e now-media implantadas as 22:35 e 22:37 (--project-ref evvbomzejfijozbtgvpt, verify_jwt pelo config.toml, COELO_R2_* dos secrets, bucket vindo do descritor do banco); ambas respondem 401 sem JWT",
+  "provaEmProducao": "realm-interno provou com qa-r03 via PostgREST as 22:32 (18/18): chat.list/open/send/edit/receipts/revoke e chat.create-group -> Back-end done com certificacao. publicacoes-agenda provou Avisos 12/12 (criar, replay, editar, agendar, publicar, inativar, reload, anon 401); dados [R04-QA] inativos.",
+  "regraNova": "pacote que precise de ALTER TYPE ADD VALUE entrega o ADD VALUE em arquivo proprio anterior; supabase db query -f e uma transacao por arquivo",
+  "chavesDeComposicao": "nenhuma nova: SupabaseChatRepository ja esta na composicao de producao (superadmin_auth_scope.dart); repositorios de Avisos/Circulares ja chamam as RPCs v2; superadminCircularDeleteEnabled nao existe no codigo (grupo publicacoes confirma no JSON)"
+ },
+ "ponteDeAtorP22": {
+  "achado": "producao (22:20): person_auth_links 0 linhas; os quatro auth users (Owner incluido e qa-r03) so existem no realm interno v2. Toda RPC que resolve o ator por current_person_id()/has_platform_permission (Unidades, Rotina, Assiduidade, Cuidado, Medicacao, Cardapios, Suporte, Conta, Pessoas, Perfis/Modelos, Seguranca infantil) nega para todos. Reportado por acessos-pessoas e operacoes; assumido pelo coordenador como pacote unico (candidatos/coordenador 230022).",
+  "bloqueio": "a escrita do pacote foi recusada duas vezes pelo classificador de permissoes da sessao do coordenador (mudanca de identidade/autorizacao). Nao contornado. Pergunta P22 ao Owner com o desenho (tabela de ligacao identidade interna -> pessoa de servico; current_person_id() com fallback; platform_memberships espelhada por trigger; guards de realm intactos).",
+  "efeito": "as familias acima ficam sem CRUD com sessao ate a resposta; as frentes seguem no que usa require_superadmin_internal_context e no cliente",
+  "divisao": "acessos-pessoas: P7 restrito a membership por instituicao; operacoes: so o bug de superadmin_support_create com p_institution_id null"
+ },
+ "instituicaoSinteticaP25": "producao sem instituicao ativa; insert sintetico recusado pelo classificador e pedido a outra conversa tambem; foi ao Owner como P25 (opcao A: estrutura cria pela rota normal; opcao B: liberar o insert). realm-interno deixou a instituicao 9f040000-0000-4000-8000-000000000010 archived (audit_logs append-only): decisao do coordenador de manter.",
+ "integracao2258": {
+  "base": "as sete branches work/etapa2-r04-* integradas por merge em 7564b54fb; conflitos em acessos-pessoas.json, formularios-cuidado-rotina.json, operacoes.json e test_driver/qa_drive.dart resolvidos pela versao do grupo",
+  "analyze": "pubspec com flutter_driver triplicado (tres frentes) quebrou o analyze (Duplicate mapping key); corrigido em f0549d62c com um unico entrypoint test_driver/qa_main.dart (lib/main_driver.dart e test_driver/driver_main.dart removidos). Reexecucao do analyze em andamento.",
+  "rastreadores": "inventario 231 acoes (chat.create-group criada por P8); validate-trackers PASS; Back-end done 7 (chat); deltas dos lotes 8 e 9 aplicados (460a8963f)",
+  "sessoesLocais": "nove sessoes Claude vivas (ListAgents): coelo-db acessos-pessoas, coelo-7a realm-interno, coelo-d4 estrutura, coelo-9c operacoes, coelo-ef publicacoes-agenda, coelo-ce principal-chat-sistema; coelo-12/coelo-c7/coelo-85 nao se identificaram (uma delas deve ser formularios-cuidado-rotina, que publica pelo Git)"
+ },
+ "lote10": {
+  "dump": "C:/Users/adrie/Documents/Coelo-backups/schema-producao-20260910-lote10.sql (23:14)",
+  "preflight": "espelho reconstruido na ORDEM REAL de producao (migrations/ordem-de-aplicacao-producao.txt; a ordem por carimbo falha em 170800) e os 26 pacotes aplicados em sequencia com pgTAP verde: revoke de anon 9/9 + chat 23/23; P7 20/20; Suporte 17/17; Auditoria 37/37; estrutura 18 arquivos com 683 assercoes (reservas 49, Atividades v2 39/28/97/25/18/28/24/37, template 31, save_v2 46, bindings 30, activity_location 33, group_location 46, group_detail 33, unit_detail 31) + institution_detail 25/25 + institution_create 26/26; ponte de ator 17/17 (e chat e Atividades continuam verdes depois dela); circular_save_draft fix 34/34 (logs preflight-grupos-4/5)",
+  "conteudo": [
+   "realm-interno 20260910240500 revoke_anon_direct_access_v1 (30 tabelas de public com grants a anon, 24 com ALL; funcoes com PUBLIC; app_private/audit/analytics)",
+   "acessos-pessoas 20260910171000 has_platform_permission_institution_membership_v1 (P7)",
+   "operacoes 20260910210000 support_create_internal_scope_v1 (p_institution_id nulo + ator interno), 210100 superadmin_internal_audit_read_v2 (AUDIT-READ-V2 renumerada)",
+   "estrutura 20260910180000 reservas v2, 180020..180120 cadeia de Atividades v2 recarimbada (180060 faz create or replace em 3 funcoes existentes e cria a sobrecarga de 14 args de audit_append_superadmin_internal: pendencia de code review), 180140 bindings, 180150 activity_location_create, 180200 group_location_create, 180300 unit_detail_v2, 180310 group_detail_v2, 180320 catalogo de tipos (Escola/Colegio/Creche, Sede/Filial), 180330 institution_detail_v2, 180340 institution_create_v2",
+   "formularios-cuidado-rotina 20260910220400 internal_actor_service_person_v1 (PONTE DE ATOR, P22: pessoa de servico por identidade interna, membership espelhada por trigger, current_person_id com fallback, catalogo attendance.*/people.assign_children e concessoes ao Owner; primeira versao devolvida por cast de enum e fixture do ultimo Owner, segunda 17/17)",
+   "publicacoes-agenda 20260910200400 superadmin_circular_save_draft_v2_fix (circular_id ambigua; achado da prova em producao)"
+  ],
+  "verificadoEmProducao": "ledger 85 versoes de 10/09; 4 pessoas de servico e 4 ligacoes na ponte (Owner x3 + qa-r03), 5 memberships ativas; 0 tabelas de public com SELECT para anon; institution_types 3; 22 RPCs superadmin_activity*; structureMutationsEnabled true em dev 58bfe1fed",
+  "chavesLigadas": "structureMutationsEnabled: true na composicao de producao (superadmin_auth_scope.dart) no mesmo commit; SupabaseInstitutionDirectoryRepository.create() ja chama superadmin_institution_create_v2",
+  "efeito": "qa-r03 (e os tres usuarios do Owner) passam a ter ator no realm de pessoas: Unidades, Rotina, Assiduidade, Cuidado, Medicacao, Cardapios, Suporte, Conta, Pessoas, Perfis/Modelos e Seguranca infantil deixam de negar; Atividades/Locais/Turmas/Unidades/Instituicoes com CRUD v2 em producao; anon sem grants diretos"
+ },
+ "primeiroE2E": "principal-chat-sistema rev 12 (77fa469a9): Chat fechou a regua pela tela real com a fixture do realm-interno (grupo criado, inbox, conversa com recibo, mensagem enviada pela tela persiste e volta no reload); deltas verified-e2e de chat.list/open/send/receipts aplicados no inventario nesta revisao",
+ "lote11": {
+  "dump": "C:/Users/adrie/Documents/Coelo-backups/schema-producao-20260910-lote11.sql (23:31, sha256 6f69b5210f259b96...)",
+  "aplicadoEm": "2026-09-10T23:33 -03:00; ledger 87 versoes de 10/09",
+  "conteudo": [
+   "estrutura 20260910180350 superadmin_assessments_internal_v2 (recarimbo de 20260901182838 com dois defeitos historicos corrigidos; pgTAP 47/47 no espelho depois da cadeia de Atividades v2; 12 RPCs superadmin_assessment* em producao)",
+   "principal-chat-sistema 20260910190900 public_security_definer_revoke_anon_v1 (depois do 240500 vira quase no-op nas funcoes existentes e fixa o privilegio padrao: funcoes futuras de public nascem sem anon; pgTAP 7/7; producao: 0 security definer com EXECUTE para anon, 2 default ACL)"
+  ],
+  "chavesLigadas": "assessmentMutationsEnabled (COELO_ENABLE_ASSESSMENT_MUTATIONS) passa a defaultValue true; structureMutationsEnabled ja true (lote 10)",
+  "candidatosRestantes": "nenhum em estrutura, realm-interno, principal-chat, publicacoes, operacoes, formularios; acessos-pessoas prepara D1 (171100)"
+ },
+ "integracao2345": {
+  "dev": "1eef48ee5 + rev 22",
+  "analyze": "flutter analyze lib test: No issues found (440 s) em 1eef48ee5",
+  "testes": "flutter test de app/architecture/chat/institutions/circulars/notices/support/health_care/activities: 1819 PASS / 35 FAIL / 3 skip; classificacao golden x funcional em curso por subagente (resultado na proxima revisao)",
+  "regressaoTransversal": "launcher do chat (WIP da Fase 0 mesclado pelo principal-chat) ignora showChatLauncher=false e aparece em Criar instituicao, cobrindo o botao Continuar em 1920 px (achado da estrutura na rota real). Decisao 7 do Owner. Correcao atribuida ao principal-chat-sistema com prioridade sobre goldens.",
+  "entrypointUnico": "test_driver/qa_main.dart; pubspec com flutter_driver uma vez (tres frentes tinham adicionado; um push parcial meu durante rebase interrompido publicou o pubspec triplicado em 5bb7c5648 e quebrou pub get para quem rebaseou; corrigido em 58bfe1fed)"
+ },
+ "metricasParciais2345": {
+  "base": "inventario validado sobre a base conjunta (validate-trackers PASS, 231 acoes)",
+  "feVerified": "23/231",
+  "beDone": "9/224 (chat.list/open/send/edit/receipts/revoke/create-group, auth.login/logout)",
+  "e2eVerified": "8/199 (auth.login, auth.logout, chat.list, chat.open, chat.send, chat.edit, chat.receipts, chat.revoke)",
+  "nota": "percentuais finais com denominadores homogeneos no fechamento (04:30-05:20); aprovacao visual nao vira verified"
+ },
+ "ordemDoOwner2350": "Owner foi dormir: nenhuma conversa para ate a entrega (frentes ~04:00 com mini-revisao; coordenador ~05:00); coordenador acorda as filhas ociosas por mensagem; todos usam o maximo de subagentes e rtk. Seis frentes acordadas as 23:55 (estavam ociosas desde 23:43-23:49)"
 }

@@ -13,11 +13,15 @@ insert into public.institution_types(id,code,name,status) values
 insert into public.institutions(id,public_name,slug,status,institution_type_id) values
  ('8b100000-0000-4000-8000-000000000010','Command Tenant A','activities-v2-command-a','active','8b100000-0000-4000-8000-000000000001'),
  ('8b100000-0000-4000-8000-000000000020','Command Tenant B','activities-v2-command-b','active','8b100000-0000-4000-8000-000000000001');
-insert into public.units(id,institution_id,institution_type_id,name,slug,status) values
- ('8b100000-0000-4000-8000-000000000011','8b100000-0000-4000-8000-000000000010','8b100000-0000-4000-8000-000000000001','A Norte','activities-v2-command-a-norte','active'),
- ('8b100000-0000-4000-8000-000000000012','8b100000-0000-4000-8000-000000000010','8b100000-0000-4000-8000-000000000001','A Sul','activities-v2-command-a-sul','active'),
- ('8b100000-0000-4000-8000-000000000015','8b100000-0000-4000-8000-000000000010','8b100000-0000-4000-8000-000000000001','A Leste não vinculada','activities-v2-command-a-leste','active'),
- ('8b100000-0000-4000-8000-000000000021','8b100000-0000-4000-8000-000000000020','8b100000-0000-4000-8000-000000000001','B Única','activities-v2-command-b-unica','active');
+-- Forma de producao: units.unit_type_id -> public.unit_types e handle NOT NULL
+-- (a coluna institution_type_id nao existe em producao).
+insert into public.unit_types(id,code,name,status) values
+ ('8b0000f0-0000-4000-8000-000000000901','activities-v2-commands-test-u0','Tipo de unidade da fixture','active');
+insert into public.units(id,institution_id,unit_type_id,name,slug,status,handle) values
+ ('8b100000-0000-4000-8000-000000000011','8b100000-0000-4000-8000-000000000010','8b0000f0-0000-4000-8000-000000000901','A Norte','activities-v2-command-a-norte','active','u.000000000011'),
+ ('8b100000-0000-4000-8000-000000000012','8b100000-0000-4000-8000-000000000010','8b0000f0-0000-4000-8000-000000000901','A Sul','activities-v2-command-a-sul','active','u.000000000012'),
+ ('8b100000-0000-4000-8000-000000000015','8b100000-0000-4000-8000-000000000010','8b0000f0-0000-4000-8000-000000000901','A Leste não vinculada','activities-v2-command-a-leste','active','u.000000000015'),
+ ('8b100000-0000-4000-8000-000000000021','8b100000-0000-4000-8000-000000000020','8b0000f0-0000-4000-8000-000000000901','B Única','activities-v2-command-b-unica','active','u.000000000021');
 insert into public.groups(id,institution_id,unit_id,name,status) values
  ('8b100000-0000-4000-8000-000000000013','8b100000-0000-4000-8000-000000000010','8b100000-0000-4000-8000-000000000011','Turma A Norte','active'),
  ('8b100000-0000-4000-8000-000000000014','8b100000-0000-4000-8000-000000000010','8b100000-0000-4000-8000-000000000012','Turma A Sul','active'),
@@ -164,7 +168,8 @@ select ok((select count(*)=5 and count(distinct request_id)=5 and bool_and(octet
 select ok((select count(*)=5 from audit.audit_logs log_record join app_private.superadmin_internal_activity_command_receipts receipt on receipt.correlation_id=log_record.correlation_id where receipt.activity_id=(select (body#>>'{data,activity_id}')::uuid from command_results where label='create') and log_record.outcome='success'),'each non-replay command appends exactly one correlated domain audit');
 select ok((select count(*)=1 from app_private.superadmin_internal_activity_command_receipts where request_id='8b100000-0000-4000-8000-000000000801') and (select count(*)=1 from audit.audit_logs where correlation_id=(select correlation_id from app_private.superadmin_internal_activity_command_receipts where request_id='8b100000-0000-4000-8000-000000000801')),'replay creates neither a second receipt nor a second audit');
 select is((select body#>>'{error,code}' from command_results where label='anonymous'),'SAI_AUTH_REQUIRED','missing Auth fails closed');
-select is((select body#>>'{error,code}' from command_results where label='aal1'),'SAI_MFA_REQUIRED','Owner AAL1 fails closed');
+-- MVP (ADR 0034, Decisao 12, MFA fora do MVP): em producao app_private.require_superadmin_internal_context devolve requires_mfa no contexto mas nao nega AAL1; o Owner em AAL1 nao recebe SAI_MFA_REQUIRED.
+select ok((select body#>>'{error,code}' is distinct from 'SAI_MFA_REQUIRED' from command_results where label='aal1'),'Owner AAL1 is not blocked by MFA in the MVP');
 select is((select body#>>'{error,code}' from command_results where label='revoked'),'SAI_MEMBERSHIP_REVOKED','revoked membership fails closed');
 select is((select body#>>'{error,code}' from command_results where label='people_only'),'SAI_INTERNAL_CONTEXT_DENIED','people-only cross-app actor cannot invoke internal commands');
 select is((select body#>>'{error,code}' from command_results where label='cap_denied'),'SAI_PERMISSION_DENIED','explicit capability deny fails closed');

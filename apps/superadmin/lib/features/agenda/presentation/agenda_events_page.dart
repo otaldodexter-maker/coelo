@@ -8,17 +8,14 @@ import 'package:flutter/material.dart';
 
 import '../domain/agenda_models.dart';
 import '../domain/agenda_repository.dart';
-import '../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
-import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
-import '../../../shared/presentation/widgets/superadmin_placeholder_file_actions.dart';
 import 'agenda_reservation_conflict_dialog.dart';
-
-enum _AgendaEventsDisplay { cards, table }
-
-enum _AgendaEventsTableView { all }
 
 enum _AgendaEventAction { open, edit, cancel, restore, deleteDraft }
 
+/// Diretório de eventos da Agenda sobre o composto `CoeloAdminDirectory`
+/// (Fase 0): a feature entrega busca, filtros, cards e linhas de tabela; o
+/// composto dá toolbar, toggle, Criar, estados e paginação. O cabeçalho
+/// (título e área) pertence ao `AgendaModuleShell`.
 final class AgendaEventsPage extends StatefulWidget {
   const AgendaEventsPage({
     required this.store,
@@ -41,7 +38,7 @@ final class _AgendaEventsPageState extends State<AgendaEventsPage> {
   final _search = TextEditingController();
   AgendaItemType? _type;
   AgendaItemStatus? _status;
-  _AgendaEventsDisplay _display = _AgendaEventsDisplay.cards;
+  CoeloAdminDirectoryDisplay _display = CoeloAdminDirectoryDisplay.cards;
   int _page = 1;
   int _pageSize = 11;
 
@@ -64,7 +61,7 @@ final class _AgendaEventsPageState extends State<AgendaEventsPage> {
     _type = null;
     _status = null;
     _page = 1;
-    _pageSize = _display == _AgendaEventsDisplay.cards ? 11 : 8;
+    _pageSize = _display == CoeloAdminDirectoryDisplay.cards ? 11 : 8;
     unawaited(_loadEvents());
   }
 
@@ -74,179 +71,163 @@ final class _AgendaEventsPageState extends State<AgendaEventsPage> {
     super.dispose();
   }
 
+  bool get _queried => _search.text.trim().isNotEmpty || _type != null || _status != null;
+
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
     animation: widget.store,
-    builder: (context, _) => LayoutBuilder(
-      builder: (context, constraints) {
-        final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
-        final padding = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
-            ? CoeloSpacing.space10
-            : compact
-            ? CoeloSpacing.space4
-            : CoeloSpacing.space6;
-        final filtered = widget.store.items.where((item) {
-          final query = _search.text.trim().toLowerCase();
-          return (query.isEmpty ||
-                  item.title.toLowerCase().contains(query) ||
-                  item.location.toLowerCase().contains(query)) &&
-              (_type == null || item.type == _type) &&
-              (_status == null || item.status == _status);
-        }).toList()..sort((a, b) => a.startsAt.compareTo(b.startsAt));
-        final pages = math.max(1, (filtered.length / _pageSize).ceil());
-        final safePage = math.min(_page, pages);
-        final start = (safePage - 1) * _pageSize;
-        final visible = filtered.skip(start).take(_pageSize).toList(growable: false);
-        return ListView(
-          key: const Key('agenda-events-scroll'),
-          padding: EdgeInsets.all(padding),
-          children: [
-            Text('Eventos', style: Theme.of(context).textTheme.headlineMedium),
-            const SizedBox(height: CoeloSpacing.space1),
-            Text(
-              'Busque, compare e revise os itens da agenda.',
-              style: Theme.of(context).textTheme.bodyLarge,
+    builder: (context, _) {
+      final filtered = widget.store.items.where((item) {
+        final query = _search.text.trim().toLowerCase();
+        return (query.isEmpty ||
+                item.title.toLowerCase().contains(query) ||
+                item.location.toLowerCase().contains(query)) &&
+            (_type == null || item.type == _type) &&
+            (_status == null || item.status == _status);
+      }).toList()..sort((a, b) => a.startsAt.compareTo(b.startsAt));
+      final pages = math.max(1, (filtered.length / _pageSize).ceil());
+      final safePage = math.min(_page, pages);
+      final start = (safePage - 1) * _pageSize;
+      final visible = filtered.skip(start).take(_pageSize).toList(growable: false);
+      return CoeloAdminDirectory<CoeloAdminDirectoryDisplay>(
+        scrollKey: const Key('agenda-events-scroll'),
+        toolbarKey: Key('agenda-events-page-$safePage'),
+        toggleKey: const Key('agenda-events-display-toggle'),
+        cardsKey: const Key('agenda-events-view-cards'),
+        tableKey: const Key('agenda-events-view-table'),
+        gridKey: const Key('agenda-event-card-grid'),
+        status: filtered.isEmpty
+            ? (_queried ? CoeloAdminDirectoryStatus.noResults : CoeloAdminDirectoryStatus.empty)
+            : CoeloAdminDirectoryStatus.success,
+        messages: const CoeloAdminDirectoryMessages(
+          empty: 'Nenhum item na agenda',
+          emptyIcon: Icons.event_note_outlined,
+          noResults: 'Nenhum item encontrado',
+          noResultsIcon: Icons.search_off_rounded,
+          failure: 'Não foi possível carregar',
+          unauthorized: 'Sem permissão',
+        ),
+        errorMessage: filtered.isEmpty
+            ? (_queried
+                  ? 'Ajuste a busca ou os filtros para ver outros itens.'
+                  : 'Cadastre o primeiro evento, rotina, prazo ou alteração operacional.')
+            : null,
+        onClearFilters: _queried ? _clearFilters : null,
+        search: CoeloSearchField(
+          controller: _search,
+          hintText: 'Buscar por título ou local',
+          semanticLabel: 'Buscar eventos',
+          onChanged: (_) => setState(() => _page = 1),
+        ),
+        filters: [
+          CoeloAdminSingleSelectField<AgendaItemType?>(
+            label: 'Tipo',
+            value: _type,
+            options: <AgendaItemType?>[null, ...AgendaItemType.values],
+            optionLabel: (value) => value?.label ?? 'Todos os tipos',
+            onChanged: (value) => setState(() {
+              _type = value;
+              _page = 1;
+            }),
+          ),
+          CoeloAdminSingleSelectField<AgendaItemStatus?>(
+            label: 'Status',
+            value: _status,
+            options: <AgendaItemStatus?>[null, ...AgendaItemStatus.values],
+            optionLabel: (value) => value == null ? 'Todos os status' : _enumLabel(value.name),
+            onChanged: (value) => setState(() {
+              _status = value;
+              _page = 1;
+            }),
+          ),
+        ],
+        display: _display,
+        onDisplayChanged: _changeDisplay,
+        groupedTableView: CoeloAdminDirectoryDisplay.table,
+        selectedTableView: CoeloAdminDirectoryDisplay.table,
+        tableViews: const [
+          CoeloAdminDirectoryTableViewOption(
+            value: CoeloAdminDirectoryDisplay.table,
+            label: 'Todos os eventos',
+          ),
+        ],
+        onTableViewSelected: (_) => _changeDisplay(CoeloAdminDirectoryDisplay.table),
+        fileActions: [
+          CoeloAdminFileAction(
+            label: 'Importar eventos da agenda',
+            icon: Icons.upload_file_outlined,
+            onPressed: () => _showFileActionUnavailable('Importação'),
+          ),
+          CoeloAdminFileAction(
+            label: 'Exportar eventos da agenda',
+            icon: Icons.download_outlined,
+            onPressed: () => _showFileActionUnavailable('Exportação'),
+          ),
+        ],
+        create: CoeloAdminDirectoryCreate(
+          label: 'Criar item',
+          description: 'Cadastre um evento, rotina, prazo ou alteração operacional.',
+          icon: Icons.event_available_outlined,
+          onPressed: widget.onCreate,
+          tileKey: const Key('agenda-events-create-card'),
+          bannerKey: const Key('agenda-events-create-banner'),
+        ),
+        cards: [
+          for (final item in visible)
+            CoeloAdminInteractiveCard(
+              key: Key('agenda-event-card-${item.id}'),
+              surfaceKey: Key('agenda-event-card-surface-${item.id}'),
+              minHeight: CoeloAdminDirectoryMetrics.cardMinHeight,
+              onPressed: () => widget.onOpen(item.id),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: CoeloSpacing.space6,
+                  vertical: CoeloSpacing.space4,
+                ),
+                child: _EventSummary(
+                  item: item,
+                  onOpen: () => widget.onOpen(item.id),
+                  onEdit: () => widget.onEdit(item.id),
+                  onCancel: () => _confirmLifecycle(item, _AgendaLifecycleAction.cancel),
+                  onRestore: () => _confirmLifecycle(item, _AgendaLifecycleAction.restore),
+                  onDeleteDraft: () => _confirmLifecycle(item, _AgendaLifecycleAction.deleteDraft),
+                ),
+              ),
             ),
-            const SizedBox(height: CoeloSpacing.space6),
-            CoeloAdminListingToolbar(
-              key: Key('agenda-events-page-$safePage'),
-              search: SizedBox(
-                width: compact ? constraints.maxWidth - padding * 2 : 300,
-                height: CoeloSize.touchMin,
-                child: CoeloSearchField(
-                  controller: _search,
-                  hintText: 'Buscar por título ou local',
-                  semanticLabel: 'Buscar eventos',
-                  onChanged: (_) => setState(() => _page = 1),
-                ),
+        ],
+        table: _EventTableRows(
+          items: visible,
+          onOpen: widget.onOpen,
+          onEdit: widget.onEdit,
+          onCancel: (item) => _confirmLifecycle(item, _AgendaLifecycleAction.cancel),
+          onRestore: (item) => _confirmLifecycle(item, _AgendaLifecycleAction.restore),
+          onDeleteDraft: (item) => _confirmLifecycle(item, _AgendaLifecycleAction.deleteDraft),
+        ),
+        pagination: filtered.isEmpty
+            ? null
+            : CoeloAdminDirectoryPagination(
+                currentPage: safePage,
+                totalPages: pages,
+                pageSize: _pageSize,
+                pageSizeOptions: _display == CoeloAdminDirectoryDisplay.cards
+                    ? const [11, 20, 50, 100]
+                    : const [8, 20, 50, 100],
+                onPageSelected: (value) => setState(() => _page = value),
+                onPageSizeChanged: (value) => setState(() {
+                  _pageSize = value;
+                  _page = 1;
+                }),
               ),
-              filters: [
-                SizedBox(
-                  width: compact ? 164 : 190,
-                  child: CoeloAdminSingleSelectField<AgendaItemType?>(
-                    label: 'Tipo',
-                    value: _type,
-                    options: <AgendaItemType?>[null, ...AgendaItemType.values],
-                    optionLabel: (value) => value?.label ?? 'Todos os tipos',
-                    onChanged: (value) => setState(() {
-                      _type = value;
-                      _page = 1;
-                    }),
-                  ),
-                ),
-                SizedBox(
-                  width: compact ? 164 : 180,
-                  child: CoeloAdminSingleSelectField<AgendaItemStatus?>(
-                    label: 'Status',
-                    value: _status,
-                    options: <AgendaItemStatus?>[null, ...AgendaItemStatus.values],
-                    optionLabel: (value) =>
-                        value == null ? 'Todos os status' : _enumLabel(value.name),
-                    onChanged: (value) => setState(() {
-                      _status = value;
-                      _page = 1;
-                    }),
-                  ),
-                ),
-              ],
-              actions: [
-                const SuperadminPlaceholderFileActions(resourceLabel: 'eventos da agenda'),
-                SuperadminDirectoryViewToggle<_AgendaEventsTableView>(
-                  key: const Key('agenda-events-display-toggle'),
-                  cardsKey: const Key('agenda-events-view-cards'),
-                  tableKey: const Key('agenda-events-view-table'),
-                  cardsSelected: _display == _AgendaEventsDisplay.cards,
-                  groupedView: _AgendaEventsTableView.all,
-                  selectedTableView: _AgendaEventsTableView.all,
-                  tableViews: const [
-                    SuperadminDirectoryTableViewOption(
-                      value: _AgendaEventsTableView.all,
-                      label: 'Todos os eventos',
-                    ),
-                  ],
-                  onCardsSelected: () => _changeDisplay(_AgendaEventsDisplay.cards),
-                  onTableViewSelected: (_) => _changeDisplay(_AgendaEventsDisplay.table),
-                ),
-              ],
-            ),
-            const SizedBox(height: CoeloSpacing.space4),
-            if (_display == _AgendaEventsDisplay.table) ...[
-              CoeloAdminCreateAction(
-                key: const Key('agenda-events-create-banner'),
-                label: 'Criar item',
-                description: 'Cadastre um evento, rotina, prazo ou alteração operacional.',
-                icon: Icons.event_available_outlined,
-                variant: CoeloAdminCreateActionVariant.banner,
-                onPressed: widget.onCreate,
-              ),
-              const SizedBox(height: CoeloSpacing.space4),
-            ],
-            if (_display == _AgendaEventsDisplay.cards)
-              _EventCards(
-                items: visible,
-                onCreate: widget.onCreate,
-                onOpen: widget.onOpen,
-                onEdit: widget.onEdit,
-                onCancel: (item) => _confirmLifecycle(item, _AgendaLifecycleAction.cancel),
-                onRestore: (item) => _confirmLifecycle(item, _AgendaLifecycleAction.restore),
-                onDeleteDraft: (item) =>
-                    _confirmLifecycle(item, _AgendaLifecycleAction.deleteDraft),
-              )
-            else if (visible.isNotEmpty)
-              _EventTable(
-                items: visible,
-                onOpen: widget.onOpen,
-                onEdit: widget.onEdit,
-                onCancel: (item) => _confirmLifecycle(item, _AgendaLifecycleAction.cancel),
-                onRestore: (item) => _confirmLifecycle(item, _AgendaLifecycleAction.restore),
-                onDeleteDraft: (item) =>
-                    _confirmLifecycle(item, _AgendaLifecycleAction.deleteDraft),
-              ),
-            if (visible.isEmpty) ...[
-              if (_display == _AgendaEventsDisplay.cards)
-                const SizedBox(height: CoeloSpacing.space4),
-              CoeloStatePanel(
-                key: const Key('agenda-events-no-results'),
-                title: 'Nenhum item encontrado',
-                message: 'Ajuste a busca ou os filtros para ver outros itens.',
-                icon: Icons.search_off_rounded,
-                actionLabel: 'Limpar filtros',
-                onAction: _clearFilters,
-              ),
-            ],
-            if (visible.isNotEmpty) ...[
-              const SizedBox(height: CoeloSpacing.space4),
-              SuperadminListingPaginationFooter(
-                horizontalPadding: 0,
-                child: CoeloAdminPagination(
-                  currentPage: safePage,
-                  totalPages: pages,
-                  pageSize: _pageSize,
-                  pageSizeOptions: _display == _AgendaEventsDisplay.cards
-                      ? const [11, 20, 50, 100]
-                      : const [8, 20, 50, 100],
-                  onPrevious: safePage > 1 ? () => setState(() => _page = safePage - 1) : null,
-                  onNext: safePage < pages ? () => setState(() => _page = safePage + 1) : null,
-                  onPageSelected: (value) => setState(() => _page = value),
-                  onPageSizeChanged: (value) => setState(() {
-                    _pageSize = value;
-                    _page = 1;
-                  }),
-                ),
-              ),
-            ],
-          ],
-        );
-      },
-    ),
+      );
+    },
   );
 
-  void _changeDisplay(_AgendaEventsDisplay display) {
+  void _changeDisplay(CoeloAdminDirectoryDisplay display) {
     if (_display == display) return;
     setState(() {
       _display = display;
       _page = 1;
-      _pageSize = display == _AgendaEventsDisplay.cards ? 11 : 8;
+      _pageSize = display == CoeloAdminDirectoryDisplay.cards ? 11 : 8;
     });
   }
 
@@ -256,6 +237,16 @@ final class _AgendaEventsPageState extends State<AgendaEventsPage> {
     _status = null;
     _page = 1;
   });
+
+  /// Importação e exportação reais ficam para depois do MVP (AGENTS.md): o
+  /// botão permanece visível e honesto.
+  void _showFileActionUnavailable(String action) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(content: Text('$action de eventos da agenda ainda não está disponível.')),
+      );
+  }
 
   Future<void> _confirmLifecycle(AgendaItem item, _AgendaLifecycleAction action) async {
     final confirmed = await _showAgendaLifecycleConfirmation(context, item, action);
@@ -277,79 +268,8 @@ final class _AgendaEventsPageState extends State<AgendaEventsPage> {
   }
 }
 
-final class _EventCards extends StatelessWidget {
-  const _EventCards({
-    required this.items,
-    required this.onCreate,
-    required this.onOpen,
-    required this.onEdit,
-    required this.onCancel,
-    required this.onRestore,
-    required this.onDeleteDraft,
-  });
-  final List<AgendaItem> items;
-  final VoidCallback onCreate;
-  final ValueChanged<String> onOpen;
-  final ValueChanged<String> onEdit;
-  final ValueChanged<AgendaItem> onCancel;
-  final ValueChanged<AgendaItem> onRestore;
-  final ValueChanged<AgendaItem> onDeleteDraft;
-
-  @override
-  Widget build(BuildContext context) => LayoutBuilder(
-    builder: (context, constraints) {
-      final columns = (constraints.maxWidth / 340).floor().clamp(1, 99);
-      final cardWidth = (constraints.maxWidth - (columns - 1) * CoeloSpacing.space6) / columns;
-      return Wrap(
-        key: const Key('agenda-event-card-grid'),
-        spacing: CoeloSpacing.space6,
-        runSpacing: CoeloSpacing.space6,
-        children: [
-          SizedBox(
-            width: cardWidth,
-            child: ConstrainedBox(
-              key: const Key('agenda-events-create-card'),
-              constraints: const BoxConstraints(minHeight: 216),
-              child: CoeloAdminCreateAction(
-                label: 'Criar item',
-                description: 'Cadastre um evento, rotina, prazo ou alteração operacional.',
-                icon: Icons.event_available_outlined,
-                onPressed: onCreate,
-              ),
-            ),
-          ),
-          for (final item in items)
-            SizedBox(
-              width: cardWidth,
-              child: CoeloAdminInteractiveCard(
-                key: Key('agenda-event-card-${item.id}'),
-                surfaceKey: Key('agenda-event-card-surface-${item.id}'),
-                minHeight: 216,
-                onPressed: () => onOpen(item.id),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: CoeloSpacing.space6,
-                    vertical: CoeloSpacing.space4,
-                  ),
-                  child: _EventSummary(
-                    item: item,
-                    onOpen: () => onOpen(item.id),
-                    onEdit: () => onEdit(item.id),
-                    onCancel: () => onCancel(item),
-                    onRestore: () => onRestore(item),
-                    onDeleteDraft: () => onDeleteDraft(item),
-                  ),
-                ),
-              ),
-            ),
-        ],
-      );
-    },
-  );
-}
-
-final class _EventTable extends StatelessWidget {
-  const _EventTable({
+final class _EventTableRows extends StatelessWidget {
+  const _EventTableRows({
     required this.items,
     required this.onOpen,
     required this.onEdit,

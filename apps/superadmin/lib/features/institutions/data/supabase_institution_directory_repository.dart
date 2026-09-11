@@ -84,7 +84,50 @@ final class SupabaseInstitutionDirectoryRepository implements InstitutionDirecto
 
   @override
   Future<InstitutionRecord> create(InstitutionRecord draft) async {
-    throw const InstitutionDirectoryUnavailableException();
+    // R04: superadmin_institution_create_v2 (realm interno v2) cria sempre em
+    // draft com ROOT+ADDRESS e o handle. Representantes, administradores,
+    // contato, documento, plano e marca ainda nao tem contrato de criacao no
+    // realm interno: nao sao enviados e aparecem vazios no detalhe recarregado
+    // (pendencia registrada; o assistente exige essas etapas, entao rejeitar
+    // aqui deixaria a criacao impossivel).
+    if (draft.typeId.startsWith('local-type-')) {
+      _pendingRequest = null;
+      throw const InstitutionDirectoryUnsupportedRelationException(
+        'Tipo de instituição novo ainda não pode ser criado neste fluxo. Escolha um tipo do catálogo.',
+      );
+    }
+    final core = _institutionEditCorePayload(draft);
+    final address = core['address'] as Map<String, Object?>;
+    final addressIsBlank = address.entries.every(
+      (entry) => entry.key == 'country' || entry.value == null || entry.value == '',
+    );
+    final payload = <String, Object?>{...core, 'slug': draft.slug};
+    if (addressIsBlank) payload.remove('address');
+    final signature = _requestSignature(operation: 'create', payload: payload);
+    final requestId = _requestIdFor(signature);
+    try {
+      final response = await _client.rpc<Object?>(
+        'superadmin_institution_create_v2',
+        params: {'p_request_id': requestId, 'p_payload': payload},
+      );
+      final data = _asMap(_unwrapEnvelope(response));
+      final record = await fetchById(data['institution_id'] as String);
+      _clearPendingRequest(signature, requestId);
+      return record;
+    } on PostgrestException catch (error) {
+      if (!_isUnavailableCode(error.code)) {
+        _clearPendingRequest(signature, requestId);
+      }
+      _throwMappedException(error);
+    } on ClientException {
+      throw const InstitutionDirectoryUnavailableException();
+    } on InstitutionDirectoryUnavailableException {
+      // The write may already be committed; the same request id replays it.
+      rethrow;
+    } catch (_) {
+      _clearPendingRequest(signature, requestId);
+      rethrow;
+    }
   }
 
   @override

@@ -49,6 +49,9 @@ void main() {
 }
 
 final class _Repository implements ChatRepository {
+  @override
+  Future<ChatGroupCreated> createGroup(ChatCreateGroupCommand command) =>
+      Future<ChatGroupCreated>.error(const ChatFailureException());
   final List<ChatSendMessageCommand> sent = [];
 
   @override

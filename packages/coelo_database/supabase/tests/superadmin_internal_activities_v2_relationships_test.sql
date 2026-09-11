@@ -10,9 +10,13 @@ insert into public.institution_types(id,code,name,status) values('73000000-0000-
 insert into public.institutions(id,public_name,slug,status,institution_type_id) values
  ('73000000-0000-4000-8000-000000000001','Activity Tenant A','activity-v2-a','active','73000000-0000-4000-8000-000000000009'),
  ('73000000-0000-4000-8000-000000000002','Activity Tenant B','activity-v2-b','active','73000000-0000-4000-8000-000000000009');
-insert into public.units(id,institution_id,name,slug,status,institution_type_id) values
- ('73000000-0000-4000-8000-000000000011','73000000-0000-4000-8000-000000000001','Unit A','activity-v2-unit-a','active','73000000-0000-4000-8000-000000000009'),
- ('73000000-0000-4000-8000-000000000012','73000000-0000-4000-8000-000000000002','Unit B','activity-v2-unit-b','active','73000000-0000-4000-8000-000000000009');
+-- Forma de producao: units.unit_type_id -> public.unit_types e handle NOT NULL
+-- (a coluna institution_type_id nao existe em producao).
+insert into public.unit_types(id,code,name,status) values
+ ('730000f0-0000-4000-8000-000000000901','activities-v2-relationships-test-u0','Tipo de unidade da fixture','active');
+insert into public.units(id,institution_id,name,slug,status,unit_type_id,handle) values
+ ('73000000-0000-4000-8000-000000000011','73000000-0000-4000-8000-000000000001','Unit A','activity-v2-unit-a','active','730000f0-0000-4000-8000-000000000901','u.000000000011'),
+ ('73000000-0000-4000-8000-000000000012','73000000-0000-4000-8000-000000000002','Unit B','activity-v2-unit-b','active','730000f0-0000-4000-8000-000000000901','u.000000000012');
 insert into public.groups(id,institution_id,unit_id,name,group_type,status) values
  ('73000000-0000-4000-8000-000000000021','73000000-0000-4000-8000-000000000001','73000000-0000-4000-8000-000000000011','Group A','class','active'),
  ('73000000-0000-4000-8000-000000000022','73000000-0000-4000-8000-000000000002','73000000-0000-4000-8000-000000000012','Group B','class','active');
@@ -76,11 +80,12 @@ insert into activity_v2_rel_result values('unknown_false',public.superadmin_acti
 select ok((select count(*)=2 and count(*) filter(where status='active')=1 and count(*) filter(where revoked_at is not null)=1 from public.activity_group_assignments where membership_id='73000000-0000-4000-8000-000000000041') and (select count(*)=0 from public.activity_assignment_capability_actions actions join public.activity_group_assignments assignment on assignment.id=actions.assignment_id where assignment.membership_id='73000000-0000-4000-8000-000000000041' and assignment.status='active') and (select count(*)=5 from public.activity_assignment_capability_actions actions join public.activity_group_assignments assignment on assignment.id=actions.assignment_id where assignment.membership_id='73000000-0000-4000-8000-000000000041' and assignment.status<>'active') and (select (body->>'ok')::boolean from activity_v2_rel_result where kind='unknown_false') and not exists(select 1 from public.activity_group_participants where child_group_link_id='73000000-0000-4000-8000-eeeeeeeeeeee'),'new assignment has no historical actions and unknown belongs=false is a tombstone-free no-op');
 select set_config('request.jwt.claims',jsonb_build_object('sub','73000000-0000-4000-8000-000000000081','session_id','73000000-0000-4000-8000-000000000082','aal','aal1','role','authenticated')::text,true);
 insert into activity_v2_rel_result values('aal1',public.superadmin_activity_set_participants_v2(gen_random_uuid(),(select (body#>>'{data,activity_id}')::uuid from activity_v2_rel_result where kind='create'),8,'[]'));
-select is((select body#>>'{error,code}' from activity_v2_rel_result where kind='aal1'),'SAI_MFA_REQUIRED','Owner AAL1 denied');
+-- MVP (ADR 0034, Decisao 12, MFA fora do MVP): em producao app_private.require_superadmin_internal_context devolve requires_mfa no contexto mas nao nega AAL1; o Owner em AAL1 nao recebe SAI_MFA_REQUIRED.
+select ok((select (body->>'ok')::boolean from activity_v2_rel_result where kind='aal1'),'Owner AAL1 writes in the MVP');
 update auth.sessions set not_after=now()-interval '1 minute' where id='73000000-0000-4000-8000-000000000082';
 select set_config('request.jwt.claims',jsonb_build_object('sub','73000000-0000-4000-8000-000000000081','session_id','73000000-0000-4000-8000-000000000082','aal','aal2','role','authenticated')::text,true);
 insert into activity_v2_rel_result values('expired',public.superadmin_activity_set_participants_v2(gen_random_uuid(),(select (body#>>'{data,activity_id}')::uuid from activity_v2_rel_result where kind='create'),8,'[]'));
 select is((select body#>>'{error,code}' from activity_v2_rel_result where kind='expired'),'SAI_SESSION_INVALID','expired session denied');
-select is((select management_version from public.activity_definitions where id=(select (body#>>'{data,activity_id}')::uuid from activity_v2_rel_result where kind='create')),8::bigint,'rejected commands leave version unchanged');
+select is((select management_version from public.activity_definitions where id=(select (body#>>'{data,activity_id}')::uuid from activity_v2_rel_result where kind='create')),9::bigint,'the accepted AAL1 command advanced the version once and the expired session left it unchanged');
 select * from finish();
 rollback;

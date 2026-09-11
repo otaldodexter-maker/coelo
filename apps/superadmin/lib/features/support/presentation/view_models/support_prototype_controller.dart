@@ -7,6 +7,10 @@ import '../../domain/support_requester_context.dart';
 import '../../domain/support_team_member.dart';
 import '../../domain/support_ticket.dart';
 
+/// Estado da carga pelo repositório produtivo. Sem repositório o
+/// controller continua o protótipo local e fica em `idle`.
+enum SupportLoadState { idle, loading, ready, failure }
+
 enum SupportSortColumn {
   id,
   subject,
@@ -27,7 +31,11 @@ final class SupportPrototypeController extends ChangeNotifier {
     this.repository,
   }) : _clock = clock ?? DateTime.now,
        _sessionRequesterContext = sessionRequesterContext {
-    _tickets = List.unmodifiable(initialTickets?.toList() ?? _defaultTickets(_clock()));
+    // Regra do MVP (ADR 0034): a rota normal nunca abre com fixture. Com
+    // repositório produtivo o diretório nasce vazio e espera a carga real.
+    _tickets = List.unmodifiable(
+      initialTickets?.toList() ?? (repository == null ? _defaultTickets(_clock()) : const []),
+    );
   }
 
   static const defaultTeamMembers = <SupportTeamMember>[
@@ -75,6 +83,19 @@ final class SupportPrototypeController extends ChangeNotifier {
   int? _backendTotalItems;
   SupportSortColumn _sortColumn = SupportSortColumn.updatedAt;
   bool _sortAscending = false;
+  SupportLoadState _loadState = SupportLoadState.idle;
+  String? _loadError;
+  String? _commandError;
+
+  SupportLoadState get loadState => _loadState;
+  String? get loadError => _loadError;
+
+  /// Última falha de escrita ainda não exibida; a página consome uma vez.
+  String? consumeCommandError() {
+    final error = _commandError;
+    _commandError = null;
+    return error;
+  }
 
   List<SupportTicket> get tickets => _tickets;
   List<SupportTeamMember> get teamMembers => defaultTeamMembers;
@@ -119,6 +140,8 @@ final class SupportPrototypeController extends ChangeNotifier {
   Future<void> loadFromRepository() async {
     final backend = repository;
     if (backend == null) return;
+    _loadState = SupportLoadState.loading;
+    notifyListeners();
     try {
       final page = await backend.list(_filters, page: _currentPage, pageSize: _pageSize);
       _backendTotalItems = page.totalItems;
@@ -126,10 +149,27 @@ final class SupportPrototypeController extends ChangeNotifier {
       if (_selectedTicketId != null && !_tickets.any((ticket) => ticket.id == _selectedTicketId)) {
         _selectedTicketId = null;
       }
-      notifyListeners();
-    } on Object {
-      // Keep the current composition when the backend is unavailable.
+      _loadState = SupportLoadState.ready;
+      _loadError = null;
+    } on Object catch (error) {
+      // Falha honesta: sem dados fictícios; a página mostra o estado de erro.
+      _loadState = SupportLoadState.failure;
+      _loadError = error.toString();
     }
+    notifyListeners();
+  }
+
+  /// Abre um chamado pelo repositório produtivo e recarrega o diretório;
+  /// falhas propagam para quem chamou (o botão de Bug avisa o usuário). Sem
+  /// repositório mantém o comportamento local do protótipo.
+  Future<void> submitReportToBackend(SupportReportDraft draft) async {
+    final backend = repository;
+    if (backend == null) {
+      submitReport(draft);
+      return;
+    }
+    await backend.create(draft);
+    await loadFromRepository();
   }
 
   SupportTicket submitReport(SupportReportDraft draft) {
@@ -311,7 +351,8 @@ final class SupportPrototypeController extends ChangeNotifier {
     try {
       final saved = await backend.setStatus(ticketId, status, expectedRevision);
       _replaceTicket(ticketId, (_) => saved);
-    } on Object {
+    } on Object catch (error) {
+      _commandError = 'Não foi possível alterar o status: $error';
       await loadFromRepository();
     }
   }
@@ -325,7 +366,8 @@ final class SupportPrototypeController extends ChangeNotifier {
     try {
       final saved = await backend.reply(ticketId, message, expectedRevision);
       _replaceTicket(ticketId, (_) => saved);
-    } on Object {
+    } on Object catch (error) {
+      _commandError = 'Não foi possível enviar a resposta: $error';
       await loadFromRepository();
     }
   }

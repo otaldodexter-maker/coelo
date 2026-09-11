@@ -11,6 +11,7 @@ import '../activity/superadmin_activity.dart';
 import '../brand/superadmin_brand_mark.dart';
 import '../navigation/superadmin_navigation.dart';
 import '../../features/auth/domain/logout_action.dart';
+import '../../features/chat/domain/chat_repository.dart';
 import '../../features/chat/presentation/widgets/superadmin_chat_launcher.dart';
 import '../../features/support/domain/support_ticket.dart';
 import '../theme/superadmin_theme_mode_scope.dart';
@@ -27,6 +28,10 @@ const _collapsedSidebarWidth = CoeloSpacing.space20 + CoeloSpacing.space2;
 const _shellGutter = CoeloSpacing.space3;
 const _coeloMotionCurve = Curves.easeInOut;
 
+/// Envio do relato do botão de Bug. Pode ser síncrono (protótipo local) ou
+/// assíncrono (repositório produtivo); a shell aguarda e avisa o resultado.
+typedef SuperadminBugReportSubmit = FutureOr<void> Function(SupportReportDraft draft);
+
 class SuperadminShell extends StatefulWidget {
   const SuperadminShell({
     required this.logout,
@@ -40,6 +45,7 @@ class SuperadminShell extends StatefulWidget {
     this.onDestinationSelected,
     this.onOpenConversations,
     this.chatUnreadCountLoader,
+    this.chatRecentConversationsLoader,
     this.onBugReportSubmitted,
     this.showChatLauncher = true,
     this.chatLauncherBottomInset = 0,
@@ -56,6 +62,7 @@ class SuperadminShell extends StatefulWidget {
     this.activityController,
     this.onBugReportSubmitted,
     this.chatUnreadCountLoader,
+    this.chatRecentConversationsLoader,
     this.canAccessCapability,
     super.key,
   }) : title = '',
@@ -78,7 +85,10 @@ class SuperadminShell extends StatefulWidget {
   final ValueChanged<String>? onDestinationSelected;
   final VoidCallback? onOpenConversations;
   final Future<int> Function()? chatUnreadCountLoader;
-  final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
+
+  /// Conversas recentes autorizadas para a faixa de iniciais do launcher.
+  final Future<List<ChatConversationSummary>> Function()? chatRecentConversationsLoader;
+  final SuperadminBugReportSubmit? onBugReportSubmitted;
   final bool showChatLauncher;
   final double chatLauncherBottomInset;
   final bool isHost;
@@ -503,6 +513,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
               bottomClearance: launcherReservedBottom,
               positionController: positionController ?? _chatLauncherPositionController,
               loadUnreadCount: widget.chatUnreadCountLoader,
+              loadRecentConversations: widget.chatRecentConversationsLoader,
             ),
           ),
       ],
@@ -1442,7 +1453,7 @@ class _CompactAppBar extends StatelessWidget implements PreferredSizeWidget {
   final ValueChanged<String>? onDestinationSelected;
   final SuperadminActivityController activityController;
   final String currentScreen;
-  final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
+  final SuperadminBugReportSubmit? onBugReportSubmitted;
 
   @override
   Size get preferredSize => const Size.fromHeight(CoeloSpacing.space16);
@@ -1530,7 +1541,7 @@ class _PageHeader extends StatelessWidget {
   final VoidCallback onLogout;
   final ValueChanged<String>? onDestinationSelected;
   final SuperadminActivityController activityController;
-  final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
+  final SuperadminBugReportSubmit? onBugReportSubmitted;
   final bool compact;
 
   @override
@@ -1729,7 +1740,7 @@ class _HeaderUtilityActions extends StatefulWidget {
 
   final SuperadminActivityController activityController;
   final String currentScreen;
-  final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
+  final SuperadminBugReportSubmit? onBugReportSubmitted;
 
   @override
   State<_HeaderUtilityActions> createState() => _HeaderUtilityActionsState();
@@ -1818,7 +1829,17 @@ class _HeaderUtilityActionsState extends State<_HeaderUtilityActions> {
               );
               return;
             }
-            submit(draft);
+            try {
+              await submit(draft);
+            } on Object {
+              if (!context.mounted || !isCurrent()) return;
+              showSuperadminNotice(
+                context,
+                'Não foi possível enviar o relato. Tente novamente.',
+                icon: Icons.error_outline_rounded,
+              );
+              return;
+            }
             if (!context.mounted || !isCurrent()) return;
             showSuperadminNotice(
               context,

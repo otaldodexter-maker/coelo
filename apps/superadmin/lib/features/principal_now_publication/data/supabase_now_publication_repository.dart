@@ -1,14 +1,17 @@
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../domain/now_publication.dart';
 
 final class SupabaseNowPublicationRepository implements NowPublicationRepository {
-  const SupabaseNowPublicationRepository(this._client);
+  SupabaseNowPublicationRepository(this._client, {http.Client? httpClient})
+    : _httpClient = httpClient ?? http.Client();
 
   final SupabaseClient _client;
+  final http.Client _httpClient;
 
   @override
   Future<NowPublicationDraft?> loadDraft(NowPublicationContext context) async {
@@ -192,16 +195,37 @@ final class SupabaseNowPublicationRepository implements NowPublicationRepository
     }
     final prepared = Map<String, dynamic>.from(prepareResponse.data as Map);
     final assetId = prepared['asset_id'] as String;
-    final objectKey = prepared['object_key'] as String;
-    final uploadToken = prepared['upload_token'] as String;
-    await _client.storage
-        .from('coelo-now-mvp')
-        .uploadBinaryToSignedUrl(
-          objectKey,
-          uploadToken,
-          Uint8List.fromList(bytes),
-          FileOptions(contentType: mimeType, upsert: true),
-        );
+    // O destino e do SERVIDOR (ADR 0032): no R2 chega uma janela PUT curta com
+    // os cabecalhos exigidos e nem bucket nem chave; sem provedor anunciado, o
+    // caminho legado continua valendo exatamente como antes.
+    if (prepared['storage_provider'] == 'r2') {
+      final uploadUrl = prepared['upload_url'] as String?;
+      if (uploadUrl == null) throw Exception('now_media_prepare_failed');
+      final headers = {
+        for (final entry in (prepared['required_headers'] as Map? ?? const {}).entries)
+          entry.key.toString(): entry.value.toString(),
+        'content-type': mimeType,
+      };
+      final sent = await _httpClient.put(
+        Uri.parse(uploadUrl),
+        headers: headers,
+        body: Uint8List.fromList(bytes),
+      );
+      if (sent.statusCode < 200 || sent.statusCode >= 300) {
+        throw Exception('now_media_upload_failed');
+      }
+    } else {
+      final objectKey = prepared['object_key'] as String;
+      final uploadToken = prepared['upload_token'] as String;
+      await _client.storage
+          .from('coelo-now-mvp')
+          .uploadBinaryToSignedUrl(
+            objectKey,
+            uploadToken,
+            Uint8List.fromList(bytes),
+            FileOptions(contentType: mimeType, upsert: true),
+          );
+    }
     final finalizeResponse = await _client.functions.invoke(
       'now-media',
       body: {

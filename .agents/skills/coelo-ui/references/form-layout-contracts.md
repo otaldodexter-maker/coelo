@@ -145,6 +145,11 @@ podem virar API genérica após proposta e aprovação.
   vez de esperar a rolagem chegar ao fim. Decisão do Owner de 10/09/2026,
   respondendo à observação RODAPÉ dos goldens da Etapa 2, com a consequência
   aceita de regravar o golden de Instituições em 375.
+- **Respiro no fim do conteúdo (P15).** Com o rodapé ancorado, o scroll do
+  conteúdo do `SuperadminFormFrame` termina com `CoeloSpacing.space10` (40 px)
+  de respiro, para a última linha do formulário nunca ficar colada ou
+  escondida sob o rodapé. Decisão do Owner de 10/09/2026 (P15, opção b) sobre
+  `medication_form_mobile_light`; vale para os dezenove formulários do frame.
 - **O botão flutuante de chat não aparece em telas de criar, editar ou
   publicar.** Passar `showChatLauncher: false` de forma explícita na tela. Regra
   do Owner de 10/09/2026: essas telas pedem foco na tarefa que a pessoa está

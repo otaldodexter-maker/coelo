@@ -38,7 +38,10 @@ final class SuperadminFormFrame extends StatelessWidget {
               Expanded(
                 child: SingleChildScrollView(
                   key: scrollKey,
-                  padding: const EdgeInsets.only(bottom: CoeloSpacing.space6),
+                  // Respiro no fim do conteudo (P15, decisao do Owner de 10/09/2026):
+                  // com o rodape ancorado, a ultima linha do formulario precisa de
+                  // espaco para nunca terminar colada ou escondida sob o rodape.
+                  padding: const EdgeInsets.only(bottom: CoeloSpacing.space10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [

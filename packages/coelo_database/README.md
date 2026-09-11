@@ -31,20 +31,29 @@ Status: pacote ativo. A primeira migration real nasceu de `specs/011-superadmin-
 - `plans/`: planos tecnicos antes da execucao.
 - `tests/` e `supabase/tests/`: queries de validacao e testes pgTAP.
 
-## Como provar um pacote (a partir de 10/09/2026)
+## Como provar um pacote (a partir de 10/09/2026; fluxo medido na R04)
 
-1. `scripts/Sync-SupabaseCliMigrations.ps1 -Mode Prepare` espelha `migrations/`
-   em `supabase/migrations/`.
-2. Num projeto descartavel proprio (copiar `supabase/config.toml` com
-   `project_id` e portas diferentes), `supabase start`/`supabase db reset`
-   aplica a baseline e o seed.
-3. Aplicar o pacote com `psql` e rodar seus pgTAP em cima. Fixture que use
-   coluna ou funcao que producao nao tem (por exemplo
+1. Num projeto descartavel proprio (copiar `supabase/config.toml` com
+   `project_id` e portas diferentes), `supabase/migrations/` contendo **so a
+   baseline** e `supabase db reset` aplicam a baseline e o seed.
+   `db reset` com `migrations/` inteira **nao funciona**: `20260910170100`
+   exige o catalogo (seed) antes dela e o seed so roda depois das migrations.
+2. Aplicar com `psql`, na ordem do carimbo, todas as migrations de
+   `migrations/` posteriores a baseline (as que producao ja tem).
+3. Aplicar o pacote candidato com `psql` e rodar seus pgTAP em cima. Fixture
+   que use coluna ou funcao que producao nao tem (por exemplo
    `units.institution_type_id`) falha aqui e precisa ser corrigida antes de
    pedir aplicacao.
-4. O coordenador repete o passo 3 como preflight, tira o dump logico do lote
-   e aplica em producao com `supabase db query --linked -f`, registrando a
-   versao em `supabase_migrations.schema_migrations`.
+4. O coordenador repete o passo 3 no espelho dele como preflight, tira o dump
+   logico do lote (`supabase db dump --linked -f`, nunca `--dry-run`) e aplica
+   em producao com `supabase db query --linked --workdir packages/coelo_database
+   -f <caminho relativo ao workdir>`, inserindo a versao em
+   `supabase_migrations.schema_migrations` (colunas `version`, `name`).
+
+O `supabase/seed.sql` e o catalogo lido de producao em 10/09/2026 **antes do
+lote 8** (MFA fora do MVP): ele ainda traz `requires_mfa=true` em 64 linhas,
+de proposito, porque `20260910170100` o exige e `20260910230021` zera tudo em
+seguida. Nao regenerar o seed a partir de producao sem revisar esse preflight.
 
 ## Schemas iniciais
 

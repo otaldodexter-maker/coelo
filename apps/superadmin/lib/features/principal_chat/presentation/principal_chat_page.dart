@@ -462,7 +462,7 @@ final class _PrincipalChatPageState extends State<PrincipalChatPage> {
   }
 
   void _prototype(String label) =>
-      _notify('$label estará disponível na experiência completa.');
+      _notify('$label ainda não está disponível.');
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(

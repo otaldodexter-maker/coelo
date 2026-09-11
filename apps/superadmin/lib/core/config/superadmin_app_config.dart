@@ -11,6 +11,7 @@ abstract final class SuperadminAppConfig {
   static const isDevMfaEnabled = bool.fromEnvironment('COELO_DEV_MFA');
   static const assessmentMutationsEnabled = bool.fromEnvironment(
     'COELO_ENABLE_ASSESSMENT_MUTATIONS',
+    defaultValue: true,
   );
 
   /// Liga Perfis de cuidado, Planos de medicação e Rotina diária contra o

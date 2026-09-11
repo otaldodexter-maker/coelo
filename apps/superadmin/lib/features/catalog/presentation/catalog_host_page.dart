@@ -85,7 +85,7 @@ final class CatalogHostPage extends StatelessWidget {
                 child: CoeloStatePanel(
                   key: Key('catalog-local-preview'),
                   title: 'Catálogo local',
-                  message: 'Preview local disponível sem depender do domínio externo.',
+                  message: 'Catálogo local disponível sem depender do domínio externo.',
                   icon: Icons.widgets_outlined,
                 ),
               ),

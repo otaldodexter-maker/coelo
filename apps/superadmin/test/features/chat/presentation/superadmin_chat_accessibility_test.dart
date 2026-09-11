@@ -75,6 +75,9 @@ Future<void> _pump(WidgetTester tester, {required double width, double textScale
 
 final class _Repository implements ChatRepository {
   @override
+  Future<ChatGroupCreated> createGroup(ChatCreateGroupCommand command) =>
+      Future<ChatGroupCreated>.error(const ChatFailureException());
+  @override
   Future<int> fetchUnreadTotal() async => 0;
 
   @override
