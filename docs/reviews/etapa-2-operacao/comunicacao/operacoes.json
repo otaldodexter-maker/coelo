@@ -317,6 +317,14 @@
       ],
       "delta": "Meu perfil (formulario de edicao) deixa de mostrar o balao Mensagens (cobria Salvar alteracoes em 1440x1000). Suites account 126/126 e shell 127/127.",
       "proof": "flutter test"
+    },
+    {
+      "action_ids": [
+        "account.logout"
+      ],
+      "status": "rota-real-verificada -> FE verified / BE done / E2E propostos",
+      "delta": "R05 (11/09 15:36, rota real com qa-r03, janela combinada com o coordenador): Meu perfil -> menu da conta -> Sair -> confirmacao -> POST /auth/v1/logout 204, sessao local removida (coelo.superadmin.auth.session ausente), app em /login; reload permanece em /login; /profile sem sessao redireciona para /login. Backend: Supabase Auth (signOut), sem SQL proprio.",
+      "proof": "capturas 90-94; deltas-r05-ops-logout.json (3)"
     }
   ],
   "tests": {
@@ -353,6 +361,10 @@
     {
       "file": "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-plans-done-support-assignee.json",
       "summary": "plans.list/create/edit BE done + E2E verified-e2e (6); support.close/detail recertificados com responsavel persistido (6)"
+    },
+    {
+      "file": "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-logout.json",
+      "summary": "account.logout FE verified / BE done / E2E verified-e2e (3)"
     }
   ],
   "packages_ready": [
