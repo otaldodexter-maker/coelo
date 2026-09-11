@@ -1,17 +1,17 @@
 {
-  "revision": 18,
-  "updated_at": "2026-09-11T08:40:00-03:00",
+  "revision": 19,
+  "updated_at": "2026-09-11T08:50:00-03:00",
   "round": "E2-R04-20260911",
   "group": "principal-chat-sistema",
-  "tool": "Claude Code (VS Code), sessao coelo-11",
+  "tool": "Claude Code (VS Code), sessao coelo-11 (renomeada coelo-f9 apos novo reinicio das sessoes)",
   "model": "claude-fable-5-1 (retomada apos o reinicio da maquina as 00:27; prompt G4 herdado, coordenador coelo-04)",
   "coordinator": "R04 · Coordenacao noturna (Claude, Fable)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-principal-chat-sistema",
   "branch": "work/etapa2-r04-principal-chat-sistema",
   "base": "origin/dev a2b8d1899 (rebase 02:15)",
-  "head": "889e289a8 (+ este commit)",
-  "publicada": "origin/work/etapa2-r04-principal-chat-sistema em 889e289a8 (integrado em dev); rev 18 neste push",
-  "status": "Rev 18 (08:40, pedido do Owner): validacao da entrega ao coordenador feita (8 commits em origin/dev, worktree limpa, deltas aplicados, 191000 em producao no lote 22 conferido por pg_proc), ferramentas de prova preservadas em evidence/.../ferramentas/ e deltas propostos as tres skills em evidence/.../skills-deltas-r04.md. Nao retomei o recorte; so fechamento.",
+  "head": "dcee6e7ca (+ este commit)",
+  "publicada": "origin/work/etapa2-r04-principal-chat-sistema em dcee6e7ca (rev 18); rev 19 neste push. Ate 889e289a8 integrado em dev",
+  "status": "FECHADO. Mini-revisao final gravada aqui por ordem do Owner (08:50): coelo-04 nao consta no ListAgents (todas as sessoes vivas sao novas), entao a entrega e pelo Git. Nada deste grupo ficou fora de origin.",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos, Perfil",
     "apps/superadmin -> Chat administrativo e Principal",
@@ -87,7 +87,7 @@
     "rota_chat_final": "capturas 20 a 42 em evidence/etapa-2/r04-principal-chat-sistema/rota-real/: inbox, thread, reload, envio, edicao, revogacao, dialogo de Criar grupo"
   },
   "blocker": null,
-  "next_step": "Nenhum por conta propria. Proximo dono do recorte: P35 -> rota real do Principal; CRUD de Cardapios pela UI; Criar grupo pela UI; goldens das tres listas.",
+  "next_step": "Nenhum por conta propria (ordem do Owner: gravar, push e parar). Proximo dono do recorte comeca por P35 e pela repeticao do Criar grupo pela UI.",
   "ack": null,
   "handoff": "docs/reviews/etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md (R03; sera reescrito no fechamento da R04)",
   "lotes": [
@@ -413,5 +413,97 @@
     "ambiente": "Chrome 9409, servidor 3009 e dart encerrados"
   },
   "skills_deltas": "docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/skills-deltas-r04.md (proposta; o coordenador aplica nas skills coelo-frontend, coelo-backend e coelo-frontend-backend)",
-  "ferramentas": "docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/ferramentas/ (cdp_sem, cdp_net, cdp_eval, cdp_console, cdp_close, serve.py, qa.sh, README; sem credencial)"
+  "ferramentas": "docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/ferramentas/ (cdp_sem, cdp_net, cdp_eval, cdp_console, cdp_close, serve.py, qa.sh, README; sem credencial)",
+  "mini_revisao_final_0850": {
+    "sha_final_publicado": "dcee6e7ca em origin/work/etapa2-r04-principal-chat-sistema (rev 18 + ferramentas + skills-deltas-r04.md); este commit da rev 19 vem em seguida. Em origin/dev ate 889e289a8 (coordenacao rev 30)",
+    "fechado_por_action_id_com_prova": [
+      {
+        "action_id": "shell.load",
+        "camada": "frontend",
+        "estado": "verified",
+        "prova": "7322260c5 + 1e34eb9f4 + dcfcb9e41 (launcher Decisao 7); superadmin_shell_chat_visibility_test 12/12; test/app/shell 124/124; tela real 51-meal-plans (balao no diretorio) e 51-principal-moments (sem balao)"
+      },
+      {
+        "action_id": "meal-plans.list",
+        "camada": "frontend",
+        "estado": "verified",
+        "prova": "rota real abre para qa-r03 apos a ponte de ator; diretorio real vazio honesto (rota-real-r04b/51-meal-plans.png)"
+      },
+      {
+        "action_id": "meal-plans.list",
+        "camada": "integrated",
+        "estado": "local-green",
+        "prova": "leitura em producao + reload mantem (52-meal-plans-reload.png); sem CRUD pela UI"
+      },
+      {
+        "action_id": "chat.create-group",
+        "camada": "frontend",
+        "estado": "verified",
+        "prova": "dialogo carrega instituicao QA R04 Cuidado (sintetico) e pessoa Crianca QA R04 pelo diretorio de producao; nome entra pelo driver (54..61, 67a)"
+      },
+      {
+        "action_id": "chat.list/open/send/receipts/edit/revoke",
+        "camada": "integrated",
+        "estado": "verified-e2e (revs 12 e 13, ja no inventario)",
+        "prova": "capturas 20..42 em rota-real/"
+      }
+    ],
+    "aberto_com_primeiro_gate": [
+      {
+        "pendencia": "acontece.*, agora.*, momentos.*, principal_profile.*, principal.for-you (5 telas do Principal)",
+        "gate": "P35 (Owner): membership institucional ativa para a pessoa de servico de qa-r03. O gate tecnico fechou: list_my_principal_contexts esta em producao (lote 22; conferido por pg_proc 08:30, authenticated executa, anon nao). Sem P35 a tela mostra \"Nenhum contexto disponivel\" (honesto)"
+      },
+      {
+        "pendencia": "chat.create-group (integrated)",
+        "gate": "repetir criacao pela UI com enter_text + checkbox pelo driver e resposta da RPC pela Network; dialogo fechou sem grupo novo (67b/67c); RPC ja provada (rev 12)"
+      },
+      {
+        "pendencia": "meal-plans.create/edit/model-create/model-edit/publish (UI e E2E)",
+        "gate": "so tempo; ambiente em ferramentas/README.md"
+      },
+      {
+        "pendencia": "Perfil: Acompanhar/Seguidores/Seguindo consumindo D1 follow_links (lote 12)",
+        "gate": "FE do grupo; depende do Perfil abrir (P35); FOTO: P-FOTO ao Owner"
+      },
+      {
+        "pendencia": "goldens principal_profile_* (FOTO/SHELL), principal_happens_gallery mobile (redesenho), imports hub 375 (FUNDO); erro 409 (P-409); Duplicar duplo (P-CHAT-DUP)",
+        "gate": "decisoes visuais do Owner por pagina lado a lado"
+      },
+      {
+        "pendencia": "chat.attach",
+        "gate": "gateway chat-media (blocked-environment)"
+      },
+      {
+        "pendencia": "agendador da expiracao do Agora; Stream HOT (D2)",
+        "gate": "coordenador / quando a publicacao exigir"
+      },
+      {
+        "pendencia": "pos-MVP: coletor de orfaos R2 (Agora/Acontece), curtir/comentar do Acontece, animacao do hospedeiro que impede pumpAndSettle, grants CRUD de authenticated sem policy, provas exaustivas por acao (ADR 0034)",
+        "gate": "revisao profunda apos o MVP"
+      }
+    ],
+    "deltas_propostos": "docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/deltas-r04.json (rev 17, formato {action_id, camada frontend|backend|integrated, estado_proposto, delta, evidencia, certificacao{evidence,revision,environment,recordedAt}}); ja aplicados pelo coordenador na rev 30 da coordenacao. Nenhum delta novo depois disso: a rev 18/19 nao promove estado",
+    "deltas_para_as_skills": "docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/skills-deltas-r04.md (proposta para coelo-frontend, coelo-backend e coelo-frontend-backend: regras medidas, evolucao na Etapa 2, pendencias com gate, pos-MVP)",
+    "dados_sinteticos_em_producao": [
+      {
+        "objeto": "public.conversations 355a3403-26bf-4f0c-9f76-9c0ba0bb04f6 \"Grupo R04 principal-chat (sintetico)\"",
+        "criado_em": "2026-09-10 22:59 (rev 12, sessao anterior do grupo), via superadmin_chat_create_group_v2 pela rota normal",
+        "conteudo": "3 mensagens em public.messages (uma revogada: \"Mensagem enviada pela tela real (R04, sintetica)\", \"Mensagem para editar (R04, sintetica) [editada]\" e a revogada), recibos; membros: as pessoas sinteticas ...0061/...0062 da fixture do realm-interno",
+        "limpeza": "P37 (Owner); remover pela RPC de revogacao/arquivo ou por migration idempotente, nunca delete direto"
+      },
+      {
+        "objeto": "tentativa de \"Grupo R04 UI coelo-11 (sintetico)\" pela UI (03:36-03:45)",
+        "resultado": "NAO criou nada: consulta em public.conversations por titulo R04/sintetic/coelo-11 devolve so a conversa acima (08:45)"
+      },
+      {
+        "objeto": "instituicao QA R04 Cuidado (sintetico) 9f04...0010, pessoas Crianca QA R04 e ...0061/...0062",
+        "dono": "fixture do realm-interno / formularios-cuidado-rotina; nao criada por este grupo"
+      },
+      {
+        "objeto": "sessoes de auth de qa-r03 (logins da rota real)",
+        "observacao": "nao sao dados de produto; expiram"
+      }
+    ],
+    "ambiente_encerrado": "Chrome 9409, servidor 3009 e processos dart do grupo encerrados as 03:48; nada em execucao"
+  }
 }
