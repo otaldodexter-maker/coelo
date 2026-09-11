@@ -1,24 +1,27 @@
 {
  "grupo": "estrutura",
- "revision": 54,
+ "revision": 55,
  "round": "E2-R06-20260911",
- "updatedAt": "2026-09-11T19:42:00-03:00",
+ "updatedAt": "2026-09-11T20:01:00-03:00",
  "app": "Claude",
  "modelo": "Opus 5 (esforco medio)",
  "conversa": "R06 · Estrutura (G1)",
- "coordenador": "R06 · Coordenacao (coordenacao.json rev 52 ainda nao gravada em origin/dev nem na worktree e2-r06-coordenacao no momento da abertura)",
+ "coordenador": "R06 · Coordenacao (coordenacao.json rev 52, T0 19:36)",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-estrutura",
  "branch": "work/etapa2-r06-estrutura",
- "head": "ca60b096b (origin/dev na abertura)",
+ "head": "0434548b9 + merge de origin/dev fcdded416 (lote 49)",
  "upstream": "origin/work/etapa2-r06-estrutura (push no primeiro commit)",
  "horario": {
-  "abertura": "2026-09-11T19:36:45-03:00 (relogio da maquina)",
-  "T0": "nao encontrado em coordenacao.json (rev 51); assumo T0 = 19:16 (abertura - 20 min) ate o coordenador gravar; corte provisorio T0+2h = 21:16, revisao ate 21:26",
-  "loop": "/loop 15m agendado na abertura"
+  "abertura": "2026-09-11T19:36:45-03:00",
+  "T0": "2026-09-11T19:36 (coordenacao rev 52)",
+  "corte": "2026-09-11T21:36:00-03:00",
+  "revisao": "ate 21:46",
+  "loop": "/loop 15m 6ae05dfa"
  },
  "usuarioSintetico": {
   "email": "qa-r06-estrutura@coelo.me",
-  "credencial": "Coelo-backups/qa-r06-estrutura.env AINDA NAO EXISTE (19:40); enquanto nao existir, so trabalho local (cliente, pgTAP); rota real espera o arquivo. Nao uso qa-r03."
+  "credencial": "Coelo-backups/qa-r06-estrutura.env (existe desde ~19:55; lote 49)",
+  "chrome": "%TEMP%/coelo-chrome-estrutura, um por vez"
  },
  "escopo": [
   {
@@ -151,7 +154,7 @@
   {
    "n": 1,
    "item": "@ no cliente de Unidades, Turmas e Atividades: handle no payload dos RPCs v2 de criacao (211100) e acao Alterar @ na edicao com superadmin_structure_handle_set_v1 (trava de 30 dias com mensagem honesta); prova na rota real",
-   "estado": "em andamento (inspecao do cliente)",
+   "estado": "CLIENTE FEITO (0434548b9, analyze limpo, test/features/units 179/179): Unidades: Identificador = @ (regex do @ sem hifen, tolerante ao valor legado), handle no payload do create_unit_for_superadmin, Alterar @ por set_v1; Turmas: campo Identificador (@) novo na etapa Identidade com disponibilidade enquanto digita, handle no payload do superadmin_group_save na criacao, Alterar @; Atividades: definition.handle no save_v2 so na criacao + Alterar @ no controller/secao. FALTA: pacote SQL (save_v2 aceitar definition.handle na criacao; group_management_payload devolver handle/handle_last_changed_at para a edicao mostrar o @ atual), testes de widget de Turmas/Atividades para o @, prova na rota real com qa-r06-estrutura",
    "action_ids": [
     "units.create",
     "units.edit",
@@ -187,20 +190,23 @@
    "estado": "pendente"
   }
  ],
- "primeiroGate": "credencial qa-r06-estrutura.env e T0 do coordenador ausentes na abertura (19:40); trabalho local do item 1 nao depende disso",
- "criteriosFechados": [],
+ "primeiroGate": "pacote SQL 2026091218xxxx em candidatos/estrutura (save_v2 + group_management_payload) ainda nao escrito; rota real ainda nao iniciada",
+ "criteriosFechados": [
+  "Plumbing StructureHandleSetter (auth scope -> main -> app -> router -> UnitFormPage/GroupFormPage/ActivityFormPage) com SupabaseStructureHandleAvailability.set -> superadmin_structure_handle_set_v1; codigos SAI_HANDLE_COOLDOWN/TAKEN/INVALID_ARGUMENT/CONCURRENT_CHANGE viram mensagens honestas (StructureHandleChange.message)",
+  "unit_form_page_test: dois testes reescritos para a regra nova (hifen recusado; edicao mostra @ e Alterar @ chama set_v1 com kind/id/versao e trata taken/changed)"
+ ],
  "testes": {
-  "P": "",
-  "F": "",
+  "P": "flutter analyze lib limpo; test/features/units 179/179; test/features/groups verde; test/features/activities verde exceto os 9 goldens pre-existentes (item 5)",
+  "F": "9 activity_golden_test (pre-existentes, base tambem falha)",
   "B": 0,
   "S": 0,
   "U": 0,
-  "evidencia": ""
+  "evidencia": "commit 0434548b9"
  },
  "pacotesProntos": [],
  "deltasPropostos": "docs/reviews/evidence/etapa-2/r06-estrutura/deltas-r06-estrutura.json (a criar)",
  "pedidosAoCoordenador": [
-  "Gravar T0 e confirmar qa-r06-estrutura.env (nao existia em Coelo-backups as 19:40)"
+  "ACK da rev 54/55"
  ],
  "avisosParaOutrosGrupos": [],
  "perguntasParaOOwner": [],
@@ -215,6 +221,6 @@
   "encerramento": ""
  },
  "ack": null,
- "proximoPasso": "item 1: localizar payload de criacao de Unidades/Turmas/Atividades e a RPC set_v1; implementar envio de handle e Alterar @",
+ "proximoPasso": "escrever candidatos/estrutura/20260912180000_structure_handles_client_v1.sql (save_v2 definition.handle na criacao; SAI_HANDLE_USE_SET na edicao; group_management_payload com handle) + pgTAP; depois build qa_main e rota real do @ com qa-r06-estrutura",
  "estado": "em andamento"
 }
