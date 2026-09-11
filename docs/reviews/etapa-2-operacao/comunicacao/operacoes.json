@@ -1,13 +1,13 @@
 {
-  "revision": 21,
-  "updated_at": "2026-09-11T12:20:00-03:00",
+  "revision": 22,
+  "updated_at": "2026-09-11T12:58:00-03:00",
   "round": "E2-R05-20260911",
   "group": "operacoes",
   "tool_model": "Claude, Opus 5 (1M), esforco medio — conversa R05 · Operacoes",
   "conversation": "R05 · Operações",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-operacoes",
   "branch": "work/etapa2-r05-operacoes",
-  "head": "2f6a6114f (origin/dev na abertura)",
+  "head": "3b6ef24d3 (+ este commit)",
   "base": {
     "requested": "origin/dev",
     "resolved": "2f6a6114f",
@@ -47,33 +47,74 @@
   "opening_contract": {
     "objective": "fechar G-SUP com goldens e pagina lado a lado; levar Auditoria a verified/done/E2E na rota real; registrar gate real de Conta (sessoes/sair), Catalogo e Planos; confirmar indisponibilidade honesta de Importacoes e Arquivos de perfil",
     "received": "Suporte 6/6 e account.profile em E2E (R04); 210000 e 210100 em producao (lote 10); diretorio de Auditoria no composto (f9ddaf90a, deltas FE local-green em deltas-r04-ops-audit-plans.json ainda nao aplicados); resposta do Owner G-SUP = A+ (alinhar colunas a esquerda igual a Instituicoes)",
-    "first_gate": "G-SUP: localizar a diferenca de alinhamento entre SupportTicketRows e a tabela de Instituicoes no composto CoeloAdminDirectory; corrigir; regravar 32 goldens support_*; pagina R/A",
+    "first_gate": "(concluido) G-SUP; proximo: audit.list/filter/detail na rota real",
     "stop_criterion": "recorte concluido, 15:45 de 11/09, ou ordem do Owner/coordenador",
     "expected_evidence": "commits pequenos em portugues na branch (push), flutter test por familia, pgTAP verde se houver pacote, prova de rota real com sessao qa-r03 (credencial so no arquivo), deltas por action_id em evidence/etapa-2/r05-operacoes/",
     "time_estimate": "nao calculavel ainda; calibrar apos G-SUP"
   },
   "loop": "/loop 15m agendado na abertura (retomar o recorte, atualizar operacoes.json, nao encerrar antes das 15:45)",
-  "changes": [],
+  "changes": [
+    {
+      "action_ids": [
+        "support.table",
+        "support.kanban",
+        "support.detail"
+      ],
+      "status": "g-sup-aplicado (composto + Suporte); goldens regravados; pagina R/A publicada",
+      "commits": [
+        "0e4b2f27c (composto, integrado em dev 11c4bfbef pelo coordenador)",
+        "3b6ef24d3 (Suporte)"
+      ],
+      "changed": [
+        "packages/coelo_ui_admin/lib/src/table/coelo_admin_resizable_table.dart (+8 goldens do composto)",
+        "apps/superadmin/lib/features/support/presentation/screens/support_page.dart",
+        "apps/superadmin/test/features/support/presentation/screens/goldens/support_*.png (32)",
+        "docs/reviews/evidence/etapa-2/r05-operacoes/g-sup/ (16 x referencia/atual/diff + pagina-lado-a-lado-suporte.html)"
+      ],
+      "delta": "G-SUP (A+): causa raiz no composto: CoeloAdminResizableTable nao centralizava a celula na altura da linha; cada feature envolvia com Align e a Origem do Suporte era Text cru (canto superior esquerdo). O composto passa a envolver toda celula com Align(centerLeft), como Instituicoes ja fazia: vale para todas as tabelas. Em Suporte, support_detail_light_1024 tinha decisao R (toolbar visivel acima do detalhe): no desktop com menu e corpo < 840 o detalhe entra como bodyOverride do composto (toolbar continua), em 768/375 o detalhe segue tomando o corpo (A). Altura do corpo (kanban/detalhe) considera 3 linhas de toolbar na largura media: kanban 768/1024 deixa de vazar a viewport. 32 goldens regravados no SDK 3.44.2 apos a observacao; o balao CHAT continua no diretorio (nao e criar/editar).",
+      "proof": "coelo_ui_admin 152/152; support + arquitetura 71/71; analyze limpo. Pagina lado a lado (R = referencia guardada em origin/dev, A = golden regravado, diferenca): https://claude.ai/code/artifact/7737ccf7-1489-4d67-ba5f-858c051150d2 e docs/reviews/evidence/etapa-2/r05-operacoes/g-sup/pagina-lado-a-lado-suporte.html",
+      "criteria": {
+        "frontend": "verified mantido (correcao visual sobre acoes ja verificadas; aprovacao visual do Owner pendente pela pagina)",
+        "backend": "inalterado (done)",
+        "e2e": "inalterado (verified-e2e)"
+      }
+    }
+  ],
   "tests": {
-    "P": 0,
+    "P": 2,
     "F": 0,
     "B": 0,
     "S": 0,
     "U": 0,
-    "evidence": [],
+    "evidence": [
+      "coelo_ui_admin: flutter test 152/152 apos regravar 8 goldens do composto (0e4b2f27c)",
+      "superadmin: flutter test test/features/support test/architecture 71/71 apos regravar 32 goldens (3b6ef24d3); flutter analyze lib/features/support sem issues"
+    ],
     "planned": [
-      "flutter test test/features/support (goldens apos G-SUP)",
-      "rota real /audit com qa-r03",
-      "pgTAP do pacote de auditoria se houver delta"
+      "rota real /audit com qa-r03 (build web qa_main + Chrome CDP)",
+      "pgTAP do pacote de auditoria se houver delta",
+      "account.sessions/logout: gate real"
     ]
   },
   "blocked": [],
   "resolved": [],
   "proposed_deltas": [],
   "packages_ready": [],
-  "questions_to_owner": [],
-  "next_step": "G-SUP: inspecionar support_ticket_rows.dart vs institution table no composto",
-  "commits": [],
+  "questions_to_owner": [
+    {
+      "id": "G-SUP-R05",
+      "kind": "visual",
+      "what": "Aprovar os 16 goldens claros de Suporte regravados (colunas no mesmo eixo; detalhe 1024 sob a toolbar como a referencia R). Responder por arquivo: nome - decisao, observacao.",
+      "page": "https://claude.ai/code/artifact/7737ccf7-1489-4d67-ba5f-858c051150d2",
+      "fallback": "docs/reviews/evidence/etapa-2/r05-operacoes/g-sup/pagina-lado-a-lado-suporte.html"
+    }
+  ],
+  "next_step": "(2) Auditoria na rota real: build web qa_main, servidor estatico, Chrome CDP, /audit listar/filtrar/detalhe/reload com qa-r03; conferir goldens audit_directory_* apos o composto",
+  "commits": [
+    "7df495615",
+    "0e4b2f27c",
+    "3b6ef24d3"
+  ],
   "r04_history": {
     "revision": 20,
     "updated_at": "2026-09-11T08:55:00-03:00",
@@ -640,5 +681,9 @@
       ],
       "skills": "proposta de atualizacao das tres skills na secao 3 de docs/reviews/evidence/etapa-2/r04-operacoes/handoff-final-e-skills.md"
     }
-  }
+  },
+  "notes_to_coordinator": [
+    "Composto (0e4b2f27c): toda tabela com celula crua muda de golden (texto desce para o centro da linha). Instituicoes/Unidades ja envolviam com Align e nao mudam; Auditoria (audit_event_views) e outras tabelas com Text cru mudam: frentes regravam apos merge. Auditoria e minha e regravo na rota real.",
+    "Regra para a skill coelo-ui/coelo-frontend: feature nao envolve celula com Align; o composto alinha; detalhe lateral em corpo estreito no desktop usa bodyOverride para manter a toolbar (support_page.dart, comentario com a decisao)."
+  ]
 }

@@ -115,17 +115,33 @@ class _SupportPageState extends State<SupportPage> {
     final content = KeyedSubtree(
       key: const Key('support-page-content'),
       child: LayoutBuilder(
-        builder: (context, constraints) => CoeloAdminWorkspaceLayout(
-          toolbar: const SizedBox.shrink(),
-          body: _directory(context, constraints),
-          detail: Padding(
-            padding: EdgeInsets.all(
-              CoeloAdminDirectoryMetrics.horizontalPadding(constraints.maxWidth),
+        builder: (context, constraints) {
+          // Decisão do Owner (support_detail_light_1024 = R, 10/09/2026): no
+          // desktop com menu, a toolbar do composto continua visível e o
+          // detalhe ocupa o lugar dos resultados quando o corpo é estreito;
+          // sem menu (768/375) o detalhe segue tomando o corpo inteiro (A).
+          final stackedDetail =
+              widget.controller.selectedTicket != null &&
+              MediaQuery.sizeOf(context).width >= CoeloBreakpoints.expanded.minWidth &&
+              constraints.maxWidth < CoeloBreakpoints.expanded.minWidth;
+          return CoeloAdminWorkspaceLayout(
+            toolbar: const SizedBox.shrink(),
+            body: _directory(
+              context,
+              constraints,
+              stackedDetail: stackedDetail
+                  ? SizedBox(height: _bodyHeight(context, constraints), child: _details())
+                  : null,
             ),
-            child: _details(),
-          ),
-          detailVisible: widget.controller.selectedTicket != null,
-        ),
+            detail: Padding(
+              padding: EdgeInsets.all(
+                CoeloAdminDirectoryMetrics.horizontalPadding(constraints.maxWidth),
+              ),
+              child: _details(),
+            ),
+            detailVisible: widget.controller.selectedTicket != null && !stackedDetail,
+          );
+        },
       ),
     );
     if (!isMobileOrTabletSurface) {
@@ -139,7 +155,7 @@ class _SupportPageState extends State<SupportPage> {
   /// Arquivos, o Criar, as linhas da tabela, o quadro kanban e a paginação;
   /// toolbar, toggle, banner/card Criar, card de estado e rodapé são do
   /// composto e aparecem em todos os estados, inclusive vazio e falha.
-  Widget _directory(BuildContext context, BoxConstraints constraints) {
+  Widget _directory(BuildContext context, BoxConstraints constraints, {Widget? stackedDetail}) {
     final controller = widget.controller;
     final table = _display == CoeloAdminDirectoryDisplay.table;
     final tickets = table ? controller.visibleTickets : controller.filteredTickets;
@@ -222,7 +238,7 @@ class _SupportPageState extends State<SupportPage> {
         tileKey: const Key('support-create-state'),
         bannerKey: const Key('support-create-table'),
       ),
-      bodyOverride: table ? null : _kanban(context, constraints, tickets),
+      bodyOverride: stackedDetail ?? (table ? null : _kanban(context, constraints, tickets)),
       table: SupportTicketRows(
         tickets: tickets,
         teamMembers: controller.teamMembers,
@@ -233,7 +249,7 @@ class _SupportPageState extends State<SupportPage> {
         sortAscending: controller.sortAscending,
         onSort: controller.setSort,
       ),
-      pagination: table
+      pagination: table && stackedDetail == null
           ? CoeloAdminDirectoryPagination(
               footerKey: const Key('support-pagination'),
               currentPage: controller.currentPage.clamp(1, controller.totalPages),
@@ -251,18 +267,26 @@ class _SupportPageState extends State<SupportPage> {
   /// rolagem do composto: ocupa a viewport menos o recuo e a toolbar
   /// (uma linha em largura média; busca, pares de filtros e ações empilhados
   /// no compacto), nunca abaixo de quatro alvos de toque por coluna.
-  Widget _kanban(BuildContext context, BoxConstraints constraints, List<SupportTicket> tickets) {
+  double _bodyHeight(BuildContext context, BoxConstraints constraints) {
     final padding = CoeloAdminDirectoryMetrics.horizontalPadding(constraints.maxWidth);
     final control = MediaQuery.textScalerOf(context).scale(CoeloSize.touchMin);
-    final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
-    final toolbarRows = compact ? 5 : 1;
+    // Uma linha no desktop largo; três em largura média (busca + Status,
+    // Menu + Responsável, Leitura); cinco no compacto.
+    final toolbarRows = constraints.maxWidth < CoeloBreakpoints.medium.minWidth
+        ? 5
+        : constraints.maxWidth < CoeloBreakpoints.expanded.minWidth
+        ? 3
+        : 1;
     final toolbar = toolbarRows * (control + CoeloSpacing.space2) + CoeloSpacing.space4;
-    final height = math.max(
+    return math.max(
       CoeloSize.touchMin * 4 + CoeloSpacing.space3 * 4,
       constraints.maxHeight - padding * 2 - toolbar,
     );
+  }
+
+  Widget _kanban(BuildContext context, BoxConstraints constraints, List<SupportTicket> tickets) {
     return SizedBox(
-      height: height,
+      height: _bodyHeight(context, constraints),
       child: SupportKanban(
         tickets: tickets,
         teamMembers: widget.controller.teamMembers,
