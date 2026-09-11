@@ -1,7 +1,7 @@
 {
-  "revision": 132,
-  "updated_at": "2026-09-11T18:25:59.955Z",
-  "relogio_local": "Fri Sep 11 2026 15:25:59 GMT-0300 (Horário Padrão de Brasília)",
+  "revision": 133,
+  "updated_at": "2026-09-11T18:26:36.359Z",
+  "relogio_local": "Fri Sep 11 2026 15:26:36 GMT-0300 (Horário Padrão de Brasília)",
   "round": "E2-R05-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
@@ -196,6 +196,7 @@
   },
   "P_SEGMENT_EM_PRODUCAO_15h27": "170400 em producao (lote 46) provado por REST com qa-r03: superadmin_people_list p_segment all=13, children=2, guardians=1, institutional_team=7, dual_profile=0; 'x' -> 22023 invalid segment. Chave segmentFilterAvailable ligada pelo coordenador; prova das abas pela UI depende de build novo. Delta sugerido: people.list BE done ja consta; registrar como evidencia do filtro por aba (sem action_id proprio).",
   "CONFERENCIA_DO_COORDENADOR_15h25": "rev 131 integrada em dev 6418194db; deltas r05-2/3/4 aplicados; 170400 lote 46; P43/P44 viraram P45/P46; defeito do @ de unidade corrigido pela G5 (lote 47). flutter analyze do app inteiro na branch: 1 aviso pre-existente (test_driver/qa_login.dart strict_raw_type), nada meu.",
+  "INTERNAL_USERS_SUSPEND_15h30": "negativa por REST: superadmin_internal_user_change_status (p_request_id, p_internal_identity_id inexistente, p_expected_version, p_status suspended, p_reason) devolve SAI_PERMISSION_DENIED 403 nao enumeravel. Caminho positivo continua sem prova: o unico usuario interno em producao e o qa-r03 e suspende-lo derruba a sessao de teste; BE fica local-green ate existir um segundo interno (exige internal-users.create: Edge Function com a API de administracao do Auth).",
   "historico_r04": {
     "revision": 118,
     "updated_at": "2026-09-11T11:31:19.648Z",
