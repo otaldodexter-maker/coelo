@@ -1,0 +1,41 @@
+[
+  {
+    "action_id": "audit.list",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R04 (11/09, f9ddaf90a): diretorio de Auditoria migrado ao composto CoeloAdminDirectory: busca e filtros Resultados/Periodo alinhados na toolbar (observacao 'ajustar filtros' do Owner aplicada), toggle Cards/Tabela, Arquivos honesto (CSV/XLSX 'Disponivel depois do MVP'), rodape de paginacao do composto (cursor: salto anda um passo por vez), toolbar visivel em todos os estados inclusive vazio. Enum local de display removido e allowlist do teste de arquitetura reduzida. Goldens audit_directory_* (6) regravados no SDK 3.44.2. Gate para verified: rota normal com sessao qa-r03 (leitura v2 ja em producao no lote 10).",
+    "evidencia": "apps/superadmin/lib/features/audit/presentation/audit_directory_page.dart, apps/superadmin/test/features/audit/goldens/audit_directory_desktop_light_1024.png, apps/superadmin/test/features/audit/goldens/audit_directory_empty_light_1440.png",
+    "certificacao": {
+      "evidence": "apps/superadmin/test/features/audit (62 P) e apps/superadmin/test/architecture (2 P) em f9ddaf90a; goldens audit_directory_* regravados",
+      "revision": "comunicacao/operacoes.json rev 19",
+      "environment": "flutter test local, SDK 3.44.2, branch work/etapa2-r04-operacoes (f9ddaf90a, integrada em dev)",
+      "recordedAt": "2026-09-11T08:40:00-03:00"
+    }
+  },
+  {
+    "action_id": "audit.filter",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R04 (11/09, f9ddaf90a): filtros Resultados (multi) e Periodo (Todos/Hoje/7 dias/30 dias) como widgets de dominio sem largura propria na toolbar do composto; Limpar filtros no estado sem resultados pelo composto; teste de estados atualizado para os textos do composto. Gate para verified: rota normal com sessao.",
+    "evidencia": "apps/superadmin/lib/features/audit/presentation/widgets/audit_directory_filters.dart, apps/superadmin/test/features/audit/audit_directory_page_test.dart",
+    "certificacao": {
+      "evidence": "apps/superadmin/test/features/audit/audit_directory_page_test.dart (25 P) em f9ddaf90a",
+      "revision": "comunicacao/operacoes.json rev 19",
+      "environment": "flutter test local, SDK 3.44.2, branch work/etapa2-r04-operacoes (f9ddaf90a, integrada em dev)",
+      "recordedAt": "2026-09-11T08:40:00-03:00"
+    }
+  },
+  {
+    "action_id": "audit.detail",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R04 (11/09, f9ddaf90a): painel de detalhe (AuditDetailPanel) mantido via CoeloAdminWorkspaceLayout ao lado do composto; cards (AuditEventCard) e linhas (AuditEventRows) abrem o detalhe; retry do detalhe preservado. Gate para verified: rota normal com sessao.",
+    "evidencia": "apps/superadmin/lib/features/audit/presentation/widgets/audit_event_views.dart, apps/superadmin/lib/features/audit/presentation/widgets/audit_timeline.dart",
+    "certificacao": {
+      "evidence": "apps/superadmin/test/features/audit (62 P) em f9ddaf90a",
+      "revision": "comunicacao/operacoes.json rev 19",
+      "environment": "flutter test local, SDK 3.44.2, branch work/etapa2-r04-operacoes (f9ddaf90a, integrada em dev)",
+      "recordedAt": "2026-09-11T08:40:00-03:00"
+    }
+  }
+]

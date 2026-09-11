@@ -1,13 +1,13 @@
 {
-  "revision": 18,
-  "updated_at": "2026-09-11T03:00:12-03:00",
+  "revision": 19,
+  "updated_at": "2026-09-11T08:45:00-03:00",
   "round": "E2-R04-20260911",
   "group": "operacoes",
-  "tool_model": "Claude, Opus 5 (1M) ate a rev 16; rev 17 por subagente do coordenador (Claude Fable 5.1) apos o reinicio de 00:27; rev 18 por subagente do coordenador (Claude Fable 5.1), prova na rota real",
+  "tool_model": "Claude, Opus 5 (1M) — conversa R04 · Operacoes retomada apos a queda de 00:27",
   "conversation": "R04 · Operações",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-operacoes",
   "branch": "work/etapa2-r04-operacoes",
-  "head": "af294783f (origin/dev mesclado em work/etapa2-r04-operacoes; sem conflitos)",
+  "head": "0376a0446 (origin/dev; branch integrada por conteudo)",
   "base": {
     "requested": "origin/dev",
     "resolved": "836c63215 (origin/dev com lote 8; branch rebaseada)",
@@ -287,6 +287,10 @@
     {
       "file": "docs/reviews/evidence/etapa-2/r04-operacoes/deltas-r04-ops.json",
       "summary": "account.profile FE verified / BE done / E2E verified-e2e; account.settings FE verified (BE not-applicable e E2E flutter-only mantidos); support.table/kanban/detail/create/reply/close FE verified / BE done / E2E verified-e2e"
+    },
+    {
+      "file": "docs/reviews/evidence/etapa-2/r04-operacoes/deltas-r04-ops-audit-plans.json",
+      "summary": "audit.list/filter/detail FE local-green (diretorio no composto, goldens regravados); sem mudanca de estado para plans (goldens na shell nao alteram local-green de plans.list)"
     }
   ],
   "packages_ready": [
@@ -304,7 +308,7 @@
     }
   ],
   "questions_to_owner": [],
-  "next_step": "coordenador: aplicar deltas-r04-ops.json, limpar os residuos sinteticos por SQL e avaliar as pendencias registradas (sigla/e-mail/celular do perfil, balao de chat na edicao e no detalhe, responsaveis do Suporte sem persistencia). Planos e Auditoria continuam como na rev 17.",
+  "next_step": "coordenador: aplicar deltas-r04-ops-audit-plans.json; incorporar a secao 3 do handoff nas tres skills; proxima rodada de Operacoes: rota real de Auditoria e Planos com sessao, pagina lado a lado dos 32 goldens de Suporte, defeitos de account.profile (sigla/e-mail/celular), balao de chat no detalhe de Suporte, responsaveis do Suporte; P37 limpeza dos residuos",
   "commits": [
     "e96b640c8",
     "480728d7f",
@@ -701,5 +705,17 @@
       "tipo": "ferramenta",
       "o_que": "Flutter Driver tap trava neste build release (timeout); manter cliques por CDP no metodo de prova."
     }
-  ]
+  ],
+  "finalizado": "sim (rev 18 pelo subagente do coordenador as 03:00; validacao final da frente as 08:45)",
+  "validacao_final_0845": {
+    "branch": "work/etapa2-r04-operacoes publicada; git cherry origin/dev = 0 (tudo em dev por conteudo); worktree limpa; sem stash",
+    "pacotes_em_producao": [
+      "20260910210000_support_create_internal_scope_v1 (lote 10)",
+      "20260910210100_superadmin_internal_audit_read_v2 (lote 10)"
+    ],
+    "deltas_aplicados": "22 de deltas-r04-ops.json refletidos no inventario (support 6x FE verified/BE done/E2E; account.profile FE/BE/E2E; account.settings FE)",
+    "deltas_pendentes": "docs/reviews/evidence/etapa-2/r04-operacoes/deltas-r04-ops-audit-plans.json (3): audit.list/filter/detail FE local-green (composto + goldens, f9ddaf90a); inventario ainda diz Revalidar",
+    "handoff": "docs/reviews/evidence/etapa-2/r04-operacoes/handoff-final-e-skills.md (validacao, pendencias numeradas 1-14, proposta de atualizacao das skills coelo-backend/coelo-frontend/coelo-frontend-backend, evolucao da Etapa 2 no recorte, pos-MVP)",
+    "observacao": "as revs 15 e 16 (22:34 e 23:26) chegaram a dev por merge sem recibo proprio no coordenacao.json; conteudo integrado"
+  }
 }
