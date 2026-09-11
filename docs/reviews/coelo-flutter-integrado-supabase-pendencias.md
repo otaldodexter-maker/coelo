@@ -3,7 +3,7 @@ title: "Pendências Coelo — Front-end + Back-end"
 source: "AGENTS.md; ADR 0019; ADR 0032; tracker-corrections-2026-09-08.json; inventario-etapa-2.json"
 status: "open"
 generated_at: "2026-09-08"
-updated_at: "2026-09-10T20:30:00-03:00"
+updated_at: "2026-09-11T08:50:00-03:00"
 action_count: 231
 family_count: 39
 active_mvp_action_count: 201
@@ -13,13 +13,56 @@ backend_applicable_action_count: 224
 formal_mvp_gate_action_count: 3
 deferred_post_mvp_action_count: 22
 flutter_only_action_count: 5
-tracker_sync_at: "2026-09-10T20:30:00-03:00"
-tracker_sync_revisions: "R03 fechada: fase0 r9; estrutura r22; acessos-pessoas r94; principal-chat-sistema r8; publicacoes-agenda r12; operacoes r13; formularios-cuidado-rotina r22; coordenacao r18"
+tracker_sync_at: "2026-09-11T08:50:00-03:00"
+tracker_sync_revisions: "R04 fechada: estrutura r32; acessos-pessoas r118; principal-chat-sistema r20; realm-interno r15; publicacoes-agenda r30; operacoes r20; formularios-cuidado-rotina r33; coordenacao r31"
 ---
 
 # Pendências Coelo — Front-end + Back-end
 
-## Estado vigente — Rodada 3 (E2-R03-20260910) encerrada às 20:30 de 10/09; Rodada 4 (E2-R04-20260911) aberta
+## Estado vigente — Rodada 4 (E2-R04-20260911) consolidada às 08:50 de 11/09
+
+Coordenação (Claude Fable, `coelo-83`/`coelo-04`) abriu a R04 às 21:44 de 10/09 sobre
+`origin/dev` `98cc0529d` e fechou em `dev` `4e57bed03`. Estado por camada,
+denominadores homogêneos (inventário de 231 ações; 224 com backend
+aplicável; 199 com E2E ativo no MVP (IDs de estado e adiados fora do denominador, ADR 0034 Decisão 3)), base: inventário validado
+(`validate-trackers.cjs` PASS) sobre a base conjunta; ambiente: repositório +
+produção medida nos lotes 8 a 23. Aprovação visual não é `verified`; SQL em
+produção não é `done`; nada se soma entre camadas.
+
+| Camada | Estado |
+| --- | --- |
+| Front-end `verified` | 56/231 (24,24%) |
+| Front-end `local-green` | 34/231 (14,72%) |
+| Front-end aprovação visual do Owner | 52/231 (22,51%) |
+| Back-end `local-green` | 96/224 (42,86%) |
+| Back-end SQL aplicado em produção | 129/224 (57,59%) |
+| Back-end `done` | 63/224 (28,13%) |
+| E2E `verified-e2e` | 37/199 (18,59%) |
+
+**Produção em 11/09:** lotes 8 a 23 aplicados pelo coordenador (66 pacotes;
+ledger 102 versões de 10/09): MFA fora do MVP (`has_mfa_aal2` aceita `aal1`,
+`requires_mfa` falso), Agora e Acontece em R2 (`happens-media` e `now-media`
+implantadas), chat interno v2 com Criar grupo, Avisos e Circulares v2, Agenda
+no realm interno, revoke de anon em tabelas e funções, ponte de ator
+(`20260910220400`), P7, Suporte/Auditoria, cadeia de Atividades e Locais v2,
+Instituições v2 e catálogo de tipos, Avaliações v2, D1 (`follow_links`),
+revoke de TRUNCATE/REFERENCES/TRIGGER de authenticated, perfil interno de
+`qa-r03`, worker de Avisos v2. Chaves `structureMutationsEnabled` e
+`assessmentMutationsEnabled` ligadas. Ordem real de aplicação em
+`packages/coelo_database/migrations/ordem-de-aplicacao-producao.txt`.
+
+**Primeiros E2E da Etapa 2:** `auth.login`, `auth.logout`, `chat.list`,
+`chat.open`, `chat.send`, `chat.edit`, `chat.receipts`, `chat.revoke`
+(principal-chat-sistema rev 12/13 pela tela real com a sessão `qa-r03` e a
+fixture do realm-interno).
+
+**Incidente:** a máquina reiniciou às 00:27 por esgotamento de memória
+(Chromes e `flutter_tester` das frentes); WIP sobrevivente foi preservado nas
+branches dos grupos; frentes reatribuídas a sessões novas; regra de memória
+registrada na skill `coelo-backend`. Perguntas abertas ao Owner: P22 a P37 em
+`etapa-2-operacao/next-round/R04-perguntas-ao-owner-20260911.md`.
+
+## Estado anterior — Rodada 3 (E2-R03-20260910) encerrada às 20:30 de 10/09
 
 Coordenação e Integração P1 (Claude, `coelo-2b`) registrou posse na
 [revisão 1 de coordenacao.json](etapa-2-operacao/comunicacao/coordenacao.json)
