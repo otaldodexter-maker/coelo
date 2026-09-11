@@ -2746,17 +2746,25 @@
       "scope": "mvp",
       "done": "Leitura CHILD em /students e adapter estão integrados e provados localmente na R02. Essa entrega read-only não implementa nem certifica este comando.",
       "fe": "R05 (bf9c2f186): \"Transferir\" no card da unidade abre o dialogo com as turmas de OUTRAS unidades e motivo obrigatorio e chama transfer(from, to, toGroup, reason); testes 15/15.",
-      "be": "R05: superadmin_student_transfer com unidade destino inexistente devolve P0002 (nao enumeravel); caminho positivo sem prova em producao porque a instituicao sintetica d0c4 so tem uma unidade (criar segunda unidade e da estrutura). Volta a done com a segunda unidade.",
-      "evidence": "evidence/etapa-2/estruturas/2026-09-08-child-read-state.md; Fechamento R01 C04/r61; C04estado47/r61; contradição de classificação registrada; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; coordenacao.json R04 rev 20 (lote8); docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/06-students-manage.png; comunicacao/acessos-pessoas.json rev 123; test/features/students/presentation/student_manage_actions_test.dart",
+      "be": "R05: superadmin_student_transfer pela sessao qa-r03 em producao moveu a crianca d0c4...0003 da Unidade QA R04 para a unidade sintetica nova cce78909 (Unidade QA R05 Transferencia; vinculo antigo inactive, novo active) e de volta para a unidade/turma originais (link d0c4...0005 reativado com a turma 368a5cea); destino inexistente devolve P0002. Fixture restaurada.",
+      "evidence": "evidence/etapa-2/estruturas/2026-09-08-child-read-state.md; Fechamento R01 C04/r61; C04estado47/r61; contradição de classificação registrada; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; coordenacao.json R04 rev 20 (lote8); docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/06-students-manage.png; comunicacao/acessos-pessoas.json rev 123; test/features/students/presentation/student_manage_actions_test.dart; comunicacao/acessos-pessoas.json rev 128",
       "historicalFrontend": "blocked-decision",
       "historicalBackend": "fail-closed",
       "frontendStatus": "local-green",
-      "backendStatus": "local-green",
+      "backendStatus": "done",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 61,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T05:41:00-03:00",
-      "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
+      "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
+      "certifications": {
+        "backend": {
+          "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+          "revision": "de229be72",
+          "environment": "producao, sessao qa-r03 via PostgREST",
+          "recordedAt": "2026-09-11T15:14:00-03:00"
+        }
+      }
     },
     {
       "id": "students.edit",
@@ -8030,7 +8038,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-11T18:08:16.582Z",
+  "updatedAt": "2026-09-11T18:09:59.936Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,
