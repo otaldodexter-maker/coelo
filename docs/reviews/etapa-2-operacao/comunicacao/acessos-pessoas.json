@@ -1,15 +1,15 @@
 {
-  "revision": 105,
-  "updated_at": "2026-09-11T05:36:00.272Z",
-  "relogio_local": "Fri Sep 11 2026 02:36:00 GMT-0300 (Horário Padrão de Brasília)",
+  "revision": 107,
+  "updated_at": "2026-09-11T05:53:32.581Z",
+  "relogio_local": "Fri Sep 11 2026 02:53:32 GMT-0300 (Horário Padrão de Brasília)",
   "round": "E2-R04-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
   "model": "Claude Fable 5.1 (o prompt previa Opus; a sessao aberta pelo Owner roda Fable 5.1)",
-  "status": "R04_MINI_REVISAO_PRELIMINAR",
+  "status": "R04_EM_CURSO",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-acessos-pessoas",
   "branch": "work/etapa2-r04-acessos-pessoas",
-  "head": "f4a1c421c + commits seguintes (ver git log); branch publicada",
+  "head": "ver git log (commit desta revisao)",
   "base_observed": "origin/dev 98cc0529d contem a4af2b198 e o R04-prompts.md; candidatos/acessos-pessoas tem 170900 (retido) e 170750 (obsoleto); lote 4 (170100-170800) em migrations/",
   "recorte": {
     "familias": [
@@ -39,7 +39,7 @@
   "loop": "/loop 15m agendado na abertura",
   "testes_P_F_B_S_U": "nenhum teste automatizado executado ainda nesta rodada; login real 1 P",
   "bloqueio": "nenhum total",
-  "proximo_passo": "fechar Chrome; atualizar handoff.md e deltas (access-models.create); rev 106 final as 04:00 com SHA",
+  "proximo_passo": "subagente do 171800 (P32, retido); rev final as 04:00 com SHA; Chrome fechado",
   "ACK_ao_coordenador": "recebido o aviso do lote 8 (MFA fora do MVP + student_links_read) por mensagem entre sessoes as 22:10; respondido pelo mesmo canal; rebase feito.",
   "ROTA_NORMAL_COM_SESSAO": {
     "auth.login": "P (qa-r03 entra pela tela normal, Home como Owner Coelo / Superadmin)",
@@ -222,6 +222,26 @@
       "public.access_profile_templates code qa-r04-modelo-sintetico-b6f3958c (+ permissao platform/institution.role_models.create vinculada)"
     ]
   },
+  "pacotesProntos_novo": {
+    "id": "AP-ACCESS-PROFILE-DETAIL-V3-171700",
+    "migration": "packages/coelo_database/candidatos/acessos-pessoas/20260910171700_access_profile_detail_v3_draft_and_matrix.sql",
+    "estado": "VERDE — PRONTO PARA APLICAR",
+    "pgTAP": "supabase/tests/access_profile_detail_v3_test.sql 37/37 (rascunho platform/institution, perfil existente, negativas 42501/P0002/22023, ACL, forma sem as chaves da v2); reaplicacao idempotente",
+    "o_que_faz": "app_private.access_profile_detail_v3 + wrapper public.superadmin_access_profile_detail delegando a v3; p_profile_id nulo devolve rascunho em branco com o catalogo completo (selected=false, grantable por posse do ator); perfil existente devolve permissions[] com selected, memberships[] ativos e membership_count; audit (10 eventos) quando o ator tem audit.read. v2 intacta para save/duplicate/delete.",
+    "chave_de_composicao": "nenhuma; o cliente ja chama fetchDetail/fetchTemplate por este wrapper",
+    "acoes_afetadas": "access-profiles.create, access-profiles.edit, access-profiles.detail (e o mesmo formulario de Modelos quando usa o detalhe)"
+  },
+  "people.links_FE": "bd0538ec6: card/linha do diretorio abrem /people/:id (onOpen) e o detalhe tem Editar quando a composicao autoriza; testes de diretorio, detalhe e rotas 33/33; prova na rota real depende de novo build (memoria ~900 MB)",
+  "ROTA_NORMAL_02h52_lote_18": {
+    "access-profiles.create": "rota abre com rascunho em branco (135 permissoes/23 modulos via v3); perfil 'QA R04 Perfil sintetico' criado pela UI e persistido (platform_roles qa-r04-perfil-sintetico-7f6f8d16, recibo create ok); reload da lista mostra o card. DEFEITO: a permissao selecionada (institution.role_models.create) nao foi concedida (detalhe devolve selected=[], 0 grants) — code review do save (superadmin_access_profile_save v2) vs payload do cliente.",
+    "access-profiles.detail": "BE done por REST (v3); FE: rota DETAIL existe mas cards abrem EDIT (pendencia antiga)",
+    "access-models.create": "E2E proposto verified (rev 105)",
+    "people.links": "FE ligado (bd0538ec6) — prova em UI depende de build (memoria)"
+  },
+  "dados_sinteticos_adicionais": [
+    "public.platform_roles qa-r04-perfil-sintetico-7f6f8d16 (546c4cd2-ea2d-4488-9961-e17576e836e5)"
+  ],
+  "deltas": "docs/reviews/evidence/etapa-2/r04-acessos-pessoas/deltas-r04.json (36 entradas; +3 desta revisao)",
   "historico_r03": {
     "revision": 94,
     "updated_at": "2026-09-10T19:56:30.537Z",

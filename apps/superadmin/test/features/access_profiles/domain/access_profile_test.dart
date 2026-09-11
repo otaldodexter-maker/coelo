@@ -141,5 +141,29 @@ void main() {
     );
 
     expect(profile.toDraftJson()['permission_codes'], isEmpty);
+    expect(profile.toDraftJson()['capabilities'], isEmpty);
+  });
+
+  test('draft sends selected direct grants as capabilities the server reads', () {
+    const profile = AccessProfile(
+      id: '',
+      domain: AccessProfileDomain.platform,
+      code: 'qa',
+      name: 'QA',
+      description: '',
+      status: AccessProfileStatus.active,
+      maxScope: AccessProfileScope.platform,
+      version: 0,
+      membershipCount: 0,
+      permissions: [
+        AccessPermission(code: 'people.read', module: 'people', name: 'Ler', selected: true),
+        AccessPermission(code: 'people.create', module: 'people', name: 'Criar', selected: false),
+      ],
+    );
+
+    expect(profile.toDraftJson()['permission_codes'], ['people.read']);
+    expect(profile.toDraftJson()['capabilities'], [
+      {'code': 'people.read', 'effect': 'allow'},
+    ]);
   });
 }

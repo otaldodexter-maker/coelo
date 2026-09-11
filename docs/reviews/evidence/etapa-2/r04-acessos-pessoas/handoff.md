@@ -43,7 +43,8 @@ e builds so quando a memoria permitiu (um build feito as 02:19).
 | 171300 catalogo de permissoes e Modelos de acesso sobre a baseline | 16 | pgTAP 32+11+17+12+8; politica AAL1 34/34 |
 | 171500 backfill do acompanhamento D1 | 16 | pgTAP 5/5 |
 | 171600 papeis de sistema de instituicao (Administrador, Coordenacao, Professor(a), Secretaria) | RETIDO ate P31 | pgTAP 7/7 |
-| 171700 detalhe de perfil v3 (rascunho em branco + forma rica) | ver JSON rev 106 | pgTAP proprio |
+| 171700 detalhe de perfil v3 (rascunho em branco + forma rica que o cliente le) | pronto para aplicar (rev 106) | pgTAP 37/37 |
+| 171800 decisao de retirada pelo Superadmin com child_safety.manage | RETIDO ate P32 (b) | pgTAP proprio (ver JSON) |
 
 Perguntas ao Owner registradas no JSON: P31 (papeis padrao de instituicao)
 e P32 (quem decide autorizacoes de retirada em Seguranca infantil).

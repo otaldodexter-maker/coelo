@@ -117,19 +117,6 @@
     }
   },
   {
-    "action_id": "access-profiles.create",
-    "camada": "backend",
-    "estado_proposto": "fail-closed",
-    "delta": "R04: o formulario pede superadmin_access_profile_detail(p_domain, p_profile_id=null) esperando um rascunho em branco; a v2 em producao devolve P0002 'access profile not found'. Catalogo (171300) ja em producao. Gate: contrato de rascunho em branco (BE) ou o cliente montar o rascunho local.",
-    "evidencia": "comunicacao/acessos-pessoas.json r104 (REST)",
-    "certificacao": {
-      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
-      "revision": "ce6f061cc",
-      "environment": "producao, sessao qa-r03 via PostgREST",
-      "recordedAt": "2026-09-11T02:24:00-03:00"
-    }
-  },
-  {
     "action_id": "access-models.list",
     "camada": "frontend",
     "estado_proposto": "local-green",
@@ -426,6 +413,45 @@
       "revision": "6aea1d104",
       "environment": "build web release contra producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03; cursor por PostgREST",
       "recordedAt": "2026-09-11T02:37:00-03:00"
+    }
+  },
+  {
+    "action_id": "access-profiles.create",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R04: 171700 (detalhe v3 com rascunho em branco e matriz) em producao (lote 18, pgTAP 37/37); superadmin_access_profile_save persistiu o perfil sintetico 'QA R04 Perfil sintetico' (platform_roles qa-r04-perfil-sintetico-7f6f8d16, recibo create ok) a partir da UI. PENDENCIA: a permissao selecionada no passo 2 (institution.role_models.create, oferecida pela matriz do dominio platform) nao foi concedida (0 grants; detalhe devolve selected=[]) — conferir no code review se o save descarta codigos de outro dominio ou se o cliente nao os envia.",
+    "evidencia": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 107: db query somente leitura do papel e recibo)",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+      "revision": "b6e6189fe",
+      "environment": "build web release contra producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (lote 18 aplicado)",
+      "recordedAt": "2026-09-11T02:52:00-03:00"
+    }
+  },
+  {
+    "action_id": "access-profiles.create",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R04: formulario de 3 passos abre com o rascunho em branco (135 permissoes em 23 modulos), aceita nome/codigo/descricao, permissoes e motivo, e cria o perfil; a lista recarregada mostra o card 'QA R04 Perfil sintetico'. Nao proposto verified enquanto a concessao da permissao selecionada nao persistir.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-acessos-pessoas/capturas/access-profiles-create-formulario-pos-171700.png; access-profiles-create-passo2-permissoes.png; access-profiles-create-passo3-revisao.png; access-profiles-list-com-perfil-criado.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-acessos-pessoas/capturas/access-profiles-list-com-perfil-criado.png",
+      "revision": "b6e6189fe",
+      "environment": "build web release contra producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (lote 18 aplicado)",
+      "recordedAt": "2026-09-11T02:52:00-03:00"
+    }
+  },
+  {
+    "action_id": "access-profiles.detail",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R04: superadmin_access_profile_detail (v3, lote 18) devolve id/code/name/status/version/membership_count/memberships[]/permissions[] com selected/grantable para perfil existente e rascunho para id nulo; pgTAP 37/37 com negativas 42501/P0002.",
+    "evidencia": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 107, REST)",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+      "revision": "b6e6189fe",
+      "environment": "build web release contra producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (lote 18 aplicado)",
+      "recordedAt": "2026-09-11T02:52:00-03:00"
     }
   }
 ]
