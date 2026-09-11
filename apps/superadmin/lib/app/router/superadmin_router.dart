@@ -6751,7 +6751,7 @@ ActivitySaveCommand _activitySaveCommand(
         : ActivityIdentityKind.icon,
     initials: draft.identityInitials,
     color: draft.identityColor,
-    icon: draft.identityIcon.name,
+    icon: draft.identityIcon.databaseKey,
     preserveExisting:
         activityId != null && draft.identityStorageRef != null && draft.imageBytes == null,
     imageName: draft.imageName,

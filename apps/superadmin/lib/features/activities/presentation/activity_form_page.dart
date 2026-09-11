@@ -142,10 +142,33 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
       }
       ActivityFormOptions options;
       String? initialCatalogError;
-      if (isEditing || initialInstitutionId != null) {
-        options = await repository.fetchFormOptions(
-          institutionId: detail?.item.institutionId ?? initialInstitutionId!,
+      if (isEditing) {
+        // A form_options_v2 nao devolve taxonomia nem modelos; sem a arvore o
+        // controller nao consegue hidratar a categoria e o roteador recusa
+        // salvar. O catalogo entra pela mesma chamada que a criacao usa.
+        final institutionId = detail!.item.institutionId;
+        final scoped = await repository.fetchFormOptions(institutionId: institutionId);
+        ActivityTemplateOptions catalog;
+        try {
+          catalog = await repository.fetchTemplateOptions(institutionId: institutionId);
+        } on ActivityDirectoryUnauthorizedException {
+          rethrow;
+        } on Exception {
+          catalog = const ActivityTemplateOptions();
+          initialCatalogError = 'Não foi possível carregar categorias e modelos.';
+        }
+        options = ActivityFormOptions(
+          institutions: catalog.institutions,
+          units: scoped.units,
+          locations: scoped.locations,
+          groups: scoped.groups,
+          professionals: scoped.professionals,
+          students: scoped.students,
+          taxonomy: catalog.taxonomy,
+          templates: catalog.templates,
         );
+      } else if (initialInstitutionId != null) {
+        options = await repository.fetchFormOptions(institutionId: initialInstitutionId);
       } else {
         try {
           options = _formOptionsFromTemplates(await repository.fetchTemplateOptions());
@@ -175,6 +198,9 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
               options,
               detail!,
               initialDraft: initialDraft,
+              initialCatalogError: initialCatalogError,
+              loadTemplateOptions: (institutionId) =>
+                  repository.fetchTemplateOptions(institutionId: institutionId),
               professionalSearcher: (institutionId, query) =>
                   repository.searchProfessionals(institutionId: institutionId, query: query),
             )

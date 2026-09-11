@@ -8,6 +8,17 @@ import 'package:coelo_superadmin/features/activities/presentation/activity_pedag
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('identity icon travels as the database key accepted by production', () {
+    // activity_definitions_identity_icon_check so aceita as chaves legadas;
+    // 'activity' (nome do enum) fazia o save_v2 responder SAI_INTERNAL_ERROR.
+    expect(ActivityIdentityIcon.activity.databaseKey, 'school');
+    expect(ActivityIdentityIcon.sports.databaseKey, 'sports_soccer');
+    expect(ActivityIdentityIcon.fromDatabaseKey('music_note'), ActivityIdentityIcon.music);
+    expect(ActivityIdentityIcon.fromDatabaseKey('science'), ActivityIdentityIcon.science);
+    expect(ActivityIdentityIcon.fromDatabaseKey('activity'), ActivityIdentityIcon.activity);
+    expect(ActivityIdentityIcon.fromDatabaseKey('pool'), isNull);
+  });
+
   test('wizard exposes the six canonical activity steps in order', () {
     expect(ActivityFormStep.values, [
       ActivityFormStep.identity,
