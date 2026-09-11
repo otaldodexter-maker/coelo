@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../app/shell/superadmin_shell.dart';
 import '../../../auth/domain/logout_action.dart';
+import '../../data/account_sessions_repository.dart';
 import '../user_preferences_controller.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -10,12 +11,17 @@ class SettingsPage extends StatelessWidget {
     required this.controller,
     required this.logout,
     this.onDestinationSelected,
+    this.sessions,
     super.key,
   });
 
   final UserPreferencesController controller;
   final LogoutAction logout;
   final ValueChanged<String>? onDestinationSelected;
+
+  /// Sessoes do proprio usuario (account.sessions). Sem repositorio a secao
+  /// nao aparece: a composicao de desenvolvimento nao tem sessao real.
+  final AccountSessionsRepository? sessions;
 
   @override
   Widget build(BuildContext context) => SuperadminShell(
@@ -185,6 +191,15 @@ class SettingsPage extends StatelessWidget {
                       ),
                     ),
                   ),
+                  if (sessions != null) ...[
+                    const SizedBox(height: CoeloSpacing.space5),
+                    _SettingsCard(
+                      title: 'Sessões',
+                      description:
+                          'Dispositivos e navegadores conectados com a sua conta. Encerre as outras sessões se não reconhecer alguma.',
+                      child: SettingsSessionsSection(repository: sessions!),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -256,4 +271,175 @@ class _SettingsCard extends StatelessWidget {
       ),
     ),
   );
+}
+
+/// Lista minima de sessoes (P43 = B): sessao atual em destaque, demais com
+/// navegador, IP e ultima atividade, e um unico comando "Encerrar as outras
+/// sessoes". ponytail: sem revogacao individual; o GoTrue so expoe scope=others.
+class SettingsSessionsSection extends StatefulWidget {
+  const SettingsSessionsSection({required this.repository, super.key});
+
+  final AccountSessionsRepository repository;
+
+  @override
+  State<SettingsSessionsSection> createState() => _SettingsSessionsSectionState();
+}
+
+class _SettingsSessionsSectionState extends State<SettingsSessionsSection> {
+  List<AccountSession>? _sessions;
+  String? _failure;
+  bool _busy = false;
+  String? _notice;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    setState(() {
+      _busy = true;
+      _failure = null;
+    });
+    try {
+      final sessions = await widget.repository.list();
+      if (!mounted) return;
+      setState(() => _sessions = sessions);
+    } on Object catch (error) {
+      if (!mounted) return;
+      setState(() => _failure = '$error');
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _revokeOthers() async {
+    setState(() {
+      _busy = true;
+      _failure = null;
+      _notice = null;
+    });
+    try {
+      await widget.repository.revokeOthers();
+      if (!mounted) return;
+      _notice = 'As outras sessões foram encerradas.';
+      await _load();
+    } on Object catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _failure = '$error';
+        _busy = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final sessions = _sessions;
+    final others = sessions?.where((s) => !s.isCurrent).length ?? 0;
+    return Column(
+      key: const Key('settings-sessions'),
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (_failure != null) ...[
+          Semantics(
+            liveRegion: true,
+            child: Text(
+              _failure!,
+              key: const Key('settings-sessions-failure'),
+              style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.error),
+            ),
+          ),
+          const SizedBox(height: CoeloSpacing.space3),
+        ],
+        if (_notice != null) ...[
+          Semantics(
+            liveRegion: true,
+            child: Text(_notice!, key: const Key('settings-sessions-notice')),
+          ),
+          const SizedBox(height: CoeloSpacing.space3),
+        ],
+        if (sessions == null && _busy)
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: CoeloSpacing.space4),
+            child: Center(child: CircularProgressIndicator()),
+          )
+        else if (sessions != null)
+          for (final session in sessions) _SessionRow(session: session),
+        const SizedBox(height: CoeloSpacing.space3),
+        Wrap(
+          spacing: CoeloSpacing.space3,
+          runSpacing: CoeloSpacing.space2,
+          children: [
+            OutlinedButton.icon(
+              key: const Key('settings-sessions-reload'),
+              onPressed: _busy ? null : _load,
+              icon: const Icon(Icons.refresh_rounded),
+              label: const Text('Atualizar'),
+            ),
+            FilledButton.tonalIcon(
+              key: const Key('settings-sessions-revoke-others'),
+              onPressed: _busy || others == 0 ? null : _revokeOthers,
+              icon: const Icon(Icons.logout_rounded),
+              label: Text(others == 0 ? 'Nenhuma outra sessão' : 'Encerrar as outras sessões ($others)'),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _SessionRow extends StatelessWidget {
+  const _SessionRow({required this.session});
+
+  final AccountSession session;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final agent = session.userAgent.isEmpty ? 'Navegador não identificado' : session.userAgent;
+    final details = [
+      if (session.ip.isNotEmpty) 'IP ${session.ip}',
+      if (session.refreshedAt != null) 'ativa em ${_format(session.refreshedAt!.toLocal())}',
+    ].join(' · ');
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space2),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            session.isCurrent ? Icons.verified_user_outlined : Icons.devices_other_outlined,
+            color: session.isCurrent ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
+          ),
+          const SizedBox(width: CoeloSpacing.space3),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  session.isCurrent ? '$agent (esta sessão)' : agent,
+                  style: theme.textTheme.bodyLarge,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                if (details.isNotEmpty)
+                  Text(
+                    details,
+                    style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  static String _format(DateTime value) {
+    String two(int n) => n.toString().padLeft(2, '0');
+    return '${two(value.day)}/${two(value.month)}/${value.year} ${two(value.hour)}:${two(value.minute)}';
+  }
 }

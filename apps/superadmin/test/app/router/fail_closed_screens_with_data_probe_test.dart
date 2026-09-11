@@ -25,8 +25,8 @@ import 'package:flutter_test/flutter_test.dart';
 /// question. This file walks them at a desktop viewport and reports any layout
 /// exception, which is what Flutter raises on a RenderFlex overflow.
 ///
-/// A clean run is a negative with value: it means the Importações overflow is
-/// an isolated case rather than a pattern.
+/// A clean run is a negative with value: none of these pages breaks its layout
+/// once it has rows.
 ///
 /// WARNING FOR WHOEVER EXTENDS THIS TO DETAIL ROUTES. The error-screen guard
 /// below is not enough there. A parameterised route reached with an id that
@@ -53,15 +53,13 @@ void main() {
     (name: 'Rotina', path: SuperadminRoutes.devDailyRoutine),
     (name: 'Planos de medicação', path: SuperadminRoutes.devHealthMedicationPlans),
     (name: 'Perfis de cuidado', path: SuperadminRoutes.devHealthCareProfiles),
-    // Pinned defect, not a passing case: this one DOES overflow with data, by
-    // 1069 pixels, at both viewports. It is expected to fail here so the suite
-    // stays honest and green. WHEN IT IS FIXED, invert this entry instead of
-    // deleting it: move it up with the others and the guard starts protecting
-    // the fix.
+    // Importações overflowed by 1069 pixels with data until the R05 migration
+    // to the CoeloAdminDirectory composite (3471321a5); now the guard protects
+    // that fix. Pin a new defect here by adding its name to overflowsWithData.
     (name: 'Importações', path: SuperadminRoutes.devImports),
   ];
 
-  const overflowsWithData = {'Importações'};
+  const overflowsWithData = <String>{};
 
   const viewports = <({String label, Size size})>[
     (label: '1440x900', size: Size(1440, 900)),

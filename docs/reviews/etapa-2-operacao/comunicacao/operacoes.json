@@ -1,17 +1,17 @@
 {
-  "revision": 38,
-  "updated_at": "2026-09-11T15:52:00-03:00",
-  "round": "E2-R05-20260911",
+  "revision": 40,
+  "updated_at": "2026-09-11T19:55:00-03:00",
+  "round": "E2-R06-20260911",
   "group": "operacoes",
-  "tool_model": "Claude, Opus 5 (1M), esforco medio — conversa R05 · Operacoes",
-  "conversation": "R05 · Operações",
-  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-operacoes",
-  "branch": "work/etapa2-r05-operacoes",
-  "head": "merge limpo de origin/dev 4d9c2364d sobre 2db40669a (ver git log); nada novo alem do merge",
+  "tool_model": "Claude, Opus 5 (1M), esforco medio — conversa R06 · Operacoes",
+  "conversation": "R06 · Operações",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-operacoes",
+  "branch": "work/etapa2-r06-operacoes",
+  "head": "d0adb6c32",
   "base": {
     "requested": "origin/dev",
-    "resolved": "2f6a6114f",
-    "note": "HEAD que contem R05-prompts.md e coordenacao rev 38"
+    "resolved": "ca60b096b",
+    "note": "HEAD que contem R06-prompts.md e coordenacao rev 51"
   },
   "scope": {
     "app": "apps/superadmin",
@@ -25,421 +25,86 @@
       "profile_files"
     ],
     "action_count": 38,
-    "e2e_today": [
-      "support.create",
-      "support.table",
-      "support.kanban",
-      "support.detail",
-      "support.reply",
-      "support.close",
-      "account.profile"
-    ],
+    "e2e_today": 14,
     "order": [
-      "(1) G-SUP A+: colunas da tabela de Suporte e implantacao alinhadas a esquerda no mesmo eixo, igual a Instituicoes; goldens support_* regravados apos a correcao; pagina lado a lado para o Owner",
-      "(2) audit.list/filter/detail na rota real com qa-r03 (leitura v2 210100 ja em producao no lote 10); candidato de auditoria retido da R01: revisar e, se houver delta, pacote em candidatos/operacoes 2026091120xxxx com pgTAP",
-      "(3) account.sessions e account.logout",
-      "(4) catalog.validate/sync/publish e plans.list/create/edit/activate/assign (backend pending: contrato minimo com RLS ou gate real registrado)",
-      "(5) imports.* e profile_files.*: botoes visiveis com indisponibilidade honesta, sem picker/parser/job/persistencia (ADR 0034); goldens conforme as listas do Owner"
+      "(0) fail_closed_screens_with_data_probe_test Importacoes 1440/375 (falha nova R05)",
+      "(1) Conta: settings/theme rota real; account.sessions P43=B tela minima + Edge Function sobre Admin API do Auth (candidato + funcao; deploy pelo coordenador)",
+      "(2) Suporte P49=A: abas de estado no lugar do filtro Status + persistir cards/tabela; prova rota real; IMP-R05-2 aprovado",
+      "(3) plans.activate/assign rota real (contrato minimo com RLS em candidatos/operacoes se faltar)",
+      "(4) Catalogo P44=B: indice + fingerprints agora; V-16 A+ composto sem fundo cinza, melhorar o que couber",
+      "(5) texto honesto da pagina generica de recurso adiado (Disponivel depois do MVP)",
+      "(6) audit.export rota real se sobrar tempo"
     ],
-    "included": "38 acoes pela regua do MVP (rota normal abre, CRUD persiste em producao, RLS nega outro tenant em pgTAP, reload mantem)",
-    "excluded": "code review profundo (pendencia registrada); import/export reais; MFA (Decisao 12); escrita em dev, inventario e rastreadores (coordenador)"
+    "included": "38 acoes pela regua do MVP",
+    "excluded": "code review profundo; refatoracao; escrita em dev/inventario/rastreadores (coordenador); deploy de Edge Function (coordenador)"
   },
   "opening_contract": {
-    "objective": "fechar G-SUP com goldens e pagina lado a lado; levar Auditoria a verified/done/E2E na rota real; registrar gate real de Conta (sessoes/sair), Catalogo e Planos; confirmar indisponibilidade honesta de Importacoes e Arquivos de perfil",
-    "received": "Suporte 6/6 e account.profile em E2E (R04); 210000 e 210100 em producao (lote 10); diretorio de Auditoria no composto (f9ddaf90a, deltas FE local-green em deltas-r04-ops-audit-plans.json ainda nao aplicados); resposta do Owner G-SUP = A+ (alinhar colunas a esquerda igual a Instituicoes)",
-    "first_gate": "(concluido) G-SUP; proximo: audit.list/filter/detail na rota real",
-    "stop_criterion": "recorte concluido, 15:45 de 11/09, ou ordem do Owner/coordenador",
-    "expected_evidence": "commits pequenos em portugues na branch (push), flutter test por familia, pgTAP verde se houver pacote, prova de rota real com sessao qa-r03 (credencial so no arquivo), deltas por action_id em evidence/etapa-2/r05-operacoes/",
-    "time_estimate": "nao calculavel ainda; calibrar apos G-SUP"
+    "objective": "fechar a ordem (0)-(6) do prompt G7 da R06 no maximo que couber em 2h",
+    "received": "R05 fechada com audit/plans/support/logout em E2E; respostas do Owner P43=B, P44=B, P49=A, IMP-R05-2=A, V-16=A+; candidatos/operacoes vazio",
+    "first_gate": "(0) teste de Importacoes no composto",
+    "stop_criterion": "T0+2h, ou ordem do Owner/coordenador",
+    "expected_evidence": "commits pequenos em portugues na branch (push), flutter test por familia, pgTAP verde se houver pacote, prova de rota real com qa-r06-operacoes, deltas em evidence/etapa-2/r06-operacoes/deltas-r06-ops.json",
+    "time_estimate": "nao calculavel ainda; calibrar apos (0) e (1)"
   },
-  "loop": "/loop 15m agendado na abertura (retomar o recorte, atualizar operacoes.json, nao encerrar antes das 15:45)",
+  "loop": "/loop 15m agendado na abertura (retomar o recorte da R06, atualizar operacoes.json, nao encerrar antes de T0+2h)",
   "changes": [
     {
-      "action_ids": [
-        "support.table",
-        "support.kanban",
-        "support.detail"
-      ],
-      "status": "g-sup-aplicado (composto + Suporte); goldens regravados; pagina R/A publicada",
-      "commits": [
-        "0e4b2f27c (composto, integrado em dev 11c4bfbef pelo coordenador)",
-        "3b6ef24d3 (Suporte)"
-      ],
-      "changed": [
-        "packages/coelo_ui_admin/lib/src/table/coelo_admin_resizable_table.dart (+8 goldens do composto)",
-        "apps/superadmin/lib/features/support/presentation/screens/support_page.dart",
-        "apps/superadmin/test/features/support/presentation/screens/goldens/support_*.png (32)",
-        "docs/reviews/evidence/etapa-2/r05-operacoes/g-sup/ (16 x referencia/atual/diff + pagina-lado-a-lado-suporte.html)"
-      ],
-      "delta": "G-SUP (A+): causa raiz no composto: CoeloAdminResizableTable nao centralizava a celula na altura da linha; cada feature envolvia com Align e a Origem do Suporte era Text cru (canto superior esquerdo). O composto passa a envolver toda celula com Align(centerLeft), como Instituicoes ja fazia: vale para todas as tabelas. Em Suporte, support_detail_light_1024 tinha decisao R (toolbar visivel acima do detalhe): no desktop com menu e corpo < 840 o detalhe entra como bodyOverride do composto (toolbar continua), em 768/375 o detalhe segue tomando o corpo (A). Altura do corpo (kanban/detalhe) considera 3 linhas de toolbar na largura media: kanban 768/1024 deixa de vazar a viewport. 32 goldens regravados no SDK 3.44.2 apos a observacao; o balao CHAT continua no diretorio (nao e criar/editar).",
-      "proof": "coelo_ui_admin 152/152; support + arquitetura 71/71; analyze limpo. Pagina lado a lado (R = referencia guardada em origin/dev, A = golden regravado, diferenca): https://claude.ai/code/artifact/7737ccf7-1489-4d67-ba5f-858c051150d2 e docs/reviews/evidence/etapa-2/r05-operacoes/g-sup/pagina-lado-a-lado-suporte.html",
-      "criteria": {
-        "frontend": "verified mantido (correcao visual sobre acoes ja verificadas; aprovacao visual do Owner pendente pela pagina)",
-        "backend": "inalterado (done)",
-        "e2e": "inalterado (verified-e2e)"
-      }
-    },
-    {
-      "action_ids": [
-        "audit.list",
-        "audit.filter",
-        "audit.detail"
-      ],
-      "status": "rota-real-verificada -> proposta FE verified / BE done / E2E verified-e2e",
-      "changed": [
-        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/30-37*.png",
-        "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-audit.json (9 deltas, ensaiados com apply-tracker-delta + validate-trackers PASS e revertidos)"
-      ],
-      "delta": "/audit na rota normal com qa-r03 sobre o build web release: lista real (audit_list_events_for_superadmin 200, 1 de 59 paginas), filtro Resultados=Falha (0 itens, Limpar filtros) e =Negado (3 paginas reais), busca 'invite' no servidor (1 de 4), Proxima pagina por cursor (pagina 2 de 4), detalhe pelo painel lateral (audit_get_event_for_superadmin 200, motivo CHAT_MEMBER_INVALID, integridade verificada), reload mantem sessao/rota e a trilha registra superadmin.audit.list/detail do proprio ator. Nenhuma alteracao de codigo. RLS: pgTAP 210100 37/37 em producao desde o lote 10 (negativas de sessao, realm, cursor de outra instituicao e permissao).",
-      "proof": "capturas 30-37; RPCs conferidas por performance.getEntriesByType('resource') com responseStatus",
-      "criteria": {
-        "frontend": "verified (proposto)",
-        "backend": "done (proposto)",
-        "e2e": "verified-e2e (proposto)"
-      }
-    },
-    {
-      "action_ids": [
-        "plans.list",
-        "plans.create",
-        "plans.edit"
-      ],
-      "status": "rota-real-verificada; FE verified proposto; BE local-green (candidato na fila)",
-      "commits": [
-        "fab9b9fd0 (router: gate de Planos + candidato 20260911200000 + pgTAP; o pacote entrou neste commit por corrida com a cadeia em segundo plano)"
-      ],
-      "changed": [
-        "apps/superadmin/lib/app/router/superadmin_router.dart (hasAuthoritativeMutationCapability: /plans segue planCatalogRepository)",
-        "apps/superadmin/test/app/router/plan_mutation_routes_test.dart",
-        "packages/coelo_database/candidatos/operacoes/20260911200000_superadmin_plans_platform_scope_v1.sql",
-        "packages/coelo_database/supabase/tests/superadmin_plans_behavior_v1_test.sql",
-        "packages/coelo_database/supabase/tests/superadmin_plans_production_test.sql (row_security_active -> pg_class)",
-        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/40-47*.png",
-        "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-plans.json (6)"
-      ],
-      "delta": "GATE ENCONTRADO: /plans/new e /plans/:id/edit caiam em mutation-capability-unavailable porque hasAuthoritativeMutationCapability nao tinha ramo para /plans; as RPCs estao na baseline de producao, entao a rota passa a seguir o repositorio composto (teste de rota fechado/aberto). Rota real: criar, editar e reload provados (RPCs 200). ACHADO DE SEGURANCA (subagente, pgTAP no descartavel): apos o P7 (171000) has_platform_permission conta membership de instituicao e assert_plan_permission usava essa forma: perfil de instituicao com plan.change criava plano da plataforma. Candidato 20260911200000 troca para has_scoped_platform_permission(p, null), corrige status padrao no save (23502) e revoga grants diretos herdados no espelho. pgTAP 40/40 + 13/13.",
-      "proof": "capturas 40-47; RPCs por performance.getEntriesByType; pgTAP no descartavel coelo_ops_r05 (parado ao fim)",
-      "criteria": {
-        "frontend": "verified (proposto)",
-        "backend": "local-green (candidato na fila; done apos aplicar e RLS negando outro tenant em producao)",
-        "e2e": "N ate BE done"
-      }
-    },
-    {
+      "when": "19:47",
       "action_ids": [
         "imports.list"
       ],
-      "status": "correcao-visual",
-      "changed": [
-        "apps/superadmin/lib/app/router/superadmin_router.dart (rota /imports envolvida em productionOperationalPage)"
-      ],
-      "delta": "/imports na rota real abria sem cabecalho da tela (titulo, Bug, sino, conta): regra MENU do Owner. Envolvida como as demais telas. Nova importacao segue Disponivel depois do MVP sem picker/parser/job (captura 50).",
-      "proof": "captura 50-imports-open.png (antes); captura depois do rebuild pendente"
+      "what": "(0) fail_closed_screens_with_data_probe_test: Importacoes deixou de transbordar com dados desde a migracao ao composto (R05, 3471321a5); entrada invertida como o proprio teste instrui, sonda 16/16 verde",
+      "commit": "2a28545d3"
     },
     {
+      "when": "19:50",
       "action_ids": [
-        "access-profiles.list",
-        "forms.list",
-        "daily-routine.list",
-        "imports.list"
+        "account.sessions"
       ],
-      "status": "goldens-regravados (tarefa do coordenador)",
-      "commits": [
-        "4371853e1"
-      ],
-      "delta": "29 goldens de tabelas de outras familias + Importacoes regravados apos o merge de origin/dev, causa unica = alinhamento das celulas no composto; diferenca conferida nas imagens de falha. G2 e G3 avisadas por mensagem; G2 informou que ja regravara os 8 de perfis (c227e531f), mesmo SDK.",
-      "proof": "4 suites verdes"
+      "what": "(1) BE: candidato 20260911200200_superadmin_account_sessions_v1 (RPC superadmin_account_sessions_list_v1, security definer, so o proprio auth.uid(), sessoes vivas, atual primeiro; sem parametro de usuario). pgTAP 14/14 no descartavel coelo_ops_r06 (baseline + 141 migrations na ordem real de producao + candidato). Revogacao NAO precisa de RPC nem de Edge Function: o GoTrue ja expoe POST /auth/v1/logout?scope=others (SDK signOut(scope: others)), server-side e auditado em auth.audit_log_entries — desvio consciente da leitura \"Edge Function sobre o Admin API\": menor superficie, sem deploy, sem service_role.",
+      "commit": "e92251bdf"
     },
     {
+      "when": "19:52",
       "action_ids": [
-        "profile-files.import",
-        "profile-files.export",
-        "profile-files.preview",
-        "profile-files.confirm",
-        "profile-files.status",
-        "profile-files.download"
+        "account.sessions"
       ],
-      "status": "adiamento-honesto-confirmado-na-rota-real",
-      "delta": "Pessoas -> Arquivos -> Importar e Exportar XLSX respondem 'Indisponivel nesta etapa'; sem picker, parser, job, RPC ou persistencia (contagem de RPCs inalterada antes/depois). Sem mudanca de estado (import/export ja verified; demais seguem deferred).",
-      "proof": "capturas 60-63"
-    },
-    {
-      "action_ids": [
-        "imports.list"
-      ],
-      "status": "correcao-visual-provada",
-      "commits": [
-        "13be50ae8 (anterior: commit do cabecalho antes do merge)"
-      ],
-      "delta": "/imports com cabecalho da tela na rota real (captura 51). Botao Arquivos so icone e sem toggle/abas: pendencia do composto registrada.",
-      "proof": "captura 51-imports-header.png"
-    },
-    {
-      "action_ids": [
-        "support.table",
-        "account.profile"
-      ],
-      "status": "correcao",
-      "commits": [
-        "13be50ae8"
-      ],
-      "delta": "router carregava superadmin_support_list e superadmin_account_profile_get na criacao (401 em /login antes da sessao). Carga passa a esperar session.isAuthenticated e repete quando a sessao abre. Testes header_support_routing, account_routes, support_page_production e desktop_logout 15/15; analyze limpo.",
-      "proof": "flutter test 15/15"
-    },
-    {
-      "action_ids": [
-        "catalog.validate",
-        "catalog.sync",
-        "catalog.publish"
-      ],
-      "status": "gate-real-registrado (sem mudanca de estado)",
-      "delta": "validate_catalog_index OK; validate_package_boundaries 5 diagnosticos (CoeloAdminDirectory, CoeloAdminDirectoryStatusTabs, CoeloAdminDirectoryViewToggle, CoeloAdminPaginationFooter, CoeloAdminUnderlineTabs sem entrada no indice coelo-ui.index.jsonl); validate_catalog_sync 21 diagnosticos (os 5 + 7 source-example-fingerprint-mismatch: admin.flyout, admin.resizable-table, admin.work-item-card, superadmin.form-action-footer, core.date-range-picker, core.date-range-field, core.date-time-field; relatorio versionado desatualizado). Defeito da ferramenta: validate_catalog_sync regrava assets/catalog-sync-report.json com caminhos absolutos (revertido, nao commitado). catalog.publish = deploy do app do Catalogo (Cloudflare Pages, decisao nominal). Fechar validate/sync exige entradas de indice + exemplos atualizados no registry (governanca do Design System, nao CRUD do MVP): pos-MVP salvo ordem do Owner.",
-      "proof": "saida dos tres validadores em 14:00"
-    },
-    {
-      "action_ids": [
-        "audit.export"
-      ],
-      "status": "adiamento-honesto-provado -> FE verified proposto",
-      "delta": "Arquivos -> Exportar CSV/XLSX: 'Disponivel depois do MVP', sem chamada de exportacao.",
-      "proof": "capturas 38-39"
-    },
-    {
-      "action_ids": [
-        "account.theme"
-      ],
-      "status": "rota-real-verificada -> FE verified proposto",
-      "delta": "Aparencia Claro persiste em localStorage e sobrevive a carga completa; restaurado Sistema.",
-      "proof": "capturas 70-72"
-    },
-    {
-      "action_ids": [
-        "support.close",
-        "support.detail",
-        "support.kanban"
-      ],
-      "status": "cliente ligado ao contrato de responsaveis (local-green); pacote SQL em candidatos",
-      "commits": [
-        "36474dc92 (cliente)",
-        "ca040ba49 (pacote + lookups seguros)"
-      ],
-      "changed": [
-        "apps/superadmin/lib/features/support/data/support_repository.dart (listTeamMembers, setAssignee, assignee_membership_id no get, support.assign)",
-        "apps/superadmin/lib/features/support/presentation/view_models/support_prototype_controller.dart (equipe do servidor; responsavel persistido com revisao)",
-        "apps/superadmin/test/features/support/presentation/screens/support_page_production_test.dart (+1 teste)",
-        "packages/coelo_database/candidatos/operacoes/20260911200100_superadmin_support_assignees_v1.sql",
-        "packages/coelo_database/supabase/tests/superadmin_support_assignees_v1_test.sql"
-      ],
-      "delta": "Pendencia da R04 (Responsaveis de lista fixa, setAssignees sem RPC): contrato superadmin_support_team_members() e superadmin_support_set_assignee(p_request_id, p_session_id, p_expected_revision, p_assignee_membership_id) com recibo por request_id, revisao otimista, auditoria support.assign e superadmin_support_get devolvendo assignee_membership_id. Cliente: com repositorio produtivo a equipe vem do servidor (nunca da lista do prototipo) e o responsavel escolhido persiste; um responsavel por chamado. Depois de aplicado o pacote: rebuild e prova do responsavel na rota real (Em andamento exige responsavel: hoje o menu lista a equipe real).",
-      "proof": "flutter test test/features/support 70/70; pgTAP superadmin_support_assignees_v1_test 28/28; support_production 23/23; support_create_internal_scope 17/17 (descartavel coelo_ops_r05)",
-      "criteria": {
-        "frontend": "local-green (rota real do responsavel depende do pacote em producao)",
-        "backend": "local-green (candidato 200100 na fila)",
-        "e2e": "N ate o coordenador aplicar"
-      }
-    },
-    {
-      "action_ids": [
-        "plans.list",
-        "plans.create",
-        "plans.edit"
-      ],
-      "status": "BE done / E2E verified-e2e propostos (pacote 200000 em producao, lote 39)",
-      "delta": "Backend: superadmin_plans_list/plan_get/plan_save na baseline; pacote 20260911200000_superadmin_plans_platform_scope_v1 APLICADO em producao (lote 39, 13:40) com pgTAP superadmin_plans_behavior_v1_test 40/40 (anonimo 28000, sem plan.change 42501, ator escopado a instituicao 42501 = negativa de outro tenant, authenticated sem leitura direta, replay por request_id, conflito 40001) e superadmin_plans_production_test 13/13. Rota real apos o pacote: /plans lista (superadmin_plans_list 200, captura 48).",
-      "proof": "captura 48; ordem-de-aplicacao-producao.txt em origin/dev (lote 39)"
-    },
-    {
-      "action_ids": [
-        "support.close",
-        "support.detail"
-      ],
-      "status": "pendencia de responsaveis fechada na rota real (pacote 200100 em producao)",
-      "delta": "R05 (11/09 14:25, rota real com qa-r03, pacote 20260911200100 em producao): Responsaveis deixam de ser lista fixa: superadmin_support_team_members 200 lista a equipe real (pessoas de servico da ponte + Owner), Responsaveis -> Operador interno 41462594 -> superadmin_support_set_assignee 200; reload e reabertura do chamado mostram o responsavel persistido (superadmin_support_get 200 com assignee_membership_id). pgTAP superadmin_support_assignees_v1_test 28/28. Pendencia 'Responsaveis sao prototipo (defaultTeamMembers, sem RPC)' fechada.",
-      "proof": "capturas 80-84; RPCs superadmin_support_team_members/set_assignee/get 200"
-    },
-    {
-      "action_ids": [
-        "imports.list",
-        "imports.create",
-        "imports.upload",
-        "imports.preview",
-        "imports.confirm",
-        "imports.status",
-        "imports.download"
-      ],
-      "status": "diretorio migrado ao composto (local-green; adiamento honesto mantido)",
-      "commits": [
-        "3471321a5"
-      ],
-      "changed": [
-        "apps/superadmin/lib/features/imports/presentation/import_directory_page.dart",
-        "apps/superadmin/test/features/imports/import_directory_page_test.dart",
-        "apps/superadmin/test/features/imports/goldens/import_hub_* (13 regravados)"
-      ],
-      "delta": "ImportDirectoryPage deixa de declarar CoeloAdminListingToolbar/ResizableTable/Pagination proprias e passa ao CoeloAdminDirectory: busca, filtros Entidade/Arquivo, Limpar filtros, Arquivos honestos (Importar, Exportar CSV/XLSX: Disponivel depois do MVP), Criar (Nova importacao: Disponivel depois do MVP sem picker/parser/job), toggle cards/tabela, cards, tabela, paginacao por cursor; estados vazio/sem resultados/falha/nao autorizado/adiado do composto. Regra do Owner (estado vazio mantem busca, filtros, toggle, Arquivos e card Criar) atendida. Pendencia 'ImportDirectoryPage fora do composto' fechada. Aberto: o harness de golden de Importacoes ainda renderiza sem a shell (FUNDO/MENU da decisao import_hub_wizard_light_375=R): os goldens regravados nao valem como aprovacao visual; pagina R/A ao Owner na proxima rodada.",
-      "proof": "flutter test test/features/imports test/architecture 38/38 (+1 skip pre-existente); goldens regravados no SDK 3.44.2; captura na rota real apos o rebuild (pendente)"
-    },
-    {
-      "action_ids": [
-        "imports.list"
-      ],
-      "status": "goldens dentro da shell (FUNDO/MENU) e captura na rota real",
-      "commits": [
-        "cb64ca5cc"
-      ],
-      "delta": "harness import_hub_golden_test passa a montar o diretorio dentro do SuperadminShell (como Planos); 13 goldens regravados; rota real (capturas 52-53): cabecalho, busca, filtros, toggle, Arquivos com Importar/CSV/XLSX honestos e card Criar no estado adiado. Pagina R/A (8 claros): https://claude.ai/code/artifact/aafedc26-2673-4f10-8310-37b367dad7f7 e docs/reviews/evidence/etapa-2/r05-operacoes/imports-ra/.",
-      "proof": "suite imports 36/36 (+1 skip); capturas 52-53"
-    },
-    {
-      "action_ids": [
-        "account.profile"
-      ],
-      "status": "pendencias da R04 corrigidas (cliente)",
-      "commits": [
-        "092977592"
-      ],
-      "changed": [
-        "apps/superadmin/lib/features/account/domain/account_profile.dart (AccountAvatar.lettersOnlyInitials)",
-        "apps/superadmin/lib/features/account/data/supabase_account_profile_repository.dart",
-        "apps/superadmin/lib/features/account/presentation/screens/profile_page.dart (validador de celular)",
-        "apps/superadmin/test/features/account/account_avatar_initials_test.dart"
-      ],
-      "delta": "Sigla derivada com digito (O4) deixa de reprovar: o cliente deriva das letras do nome quando a projecao nao e so letras; celular ganha validador honesto (Informe o celular / 7 a 40 caracteres) em vez do erro generico do servidor. E-mail vazio da pessoa de servico continua (dado da ponte, nao do cliente). flutter analyze lib test sem issues; suite account 121/121.",
-      "proof": "flutter test test/features/account 121/121"
-    },
-    {
-      "action_ids": [
-        "account.profile"
-      ],
-      "status": "Decisao 7 aplicada",
-      "commits": [
-        "c1ad2560c"
-      ],
-      "delta": "Meu perfil (formulario de edicao) deixa de mostrar o balao Mensagens (cobria Salvar alteracoes em 1440x1000). Suites account 126/126 e shell 127/127.",
-      "proof": "flutter test"
-    },
-    {
-      "action_ids": [
-        "account.logout"
-      ],
-      "status": "rota-real-verificada -> FE verified / BE done / E2E propostos",
-      "delta": "R05 (11/09 15:36, rota real com qa-r03, janela combinada com o coordenador): Meu perfil -> menu da conta -> Sair -> confirmacao -> POST /auth/v1/logout 204, sessao local removida (coelo.superadmin.auth.session ausente), app em /login; reload permanece em /login; /profile sem sessao redireciona para /login. Backend: Supabase Auth (signOut), sem SQL proprio.",
-      "proof": "capturas 90-94; deltas-r05-ops-logout.json (3)"
+      "what": "(1) FE: card \"Sessoes\" em Configuracoes (SettingsSessionsSection): lista (sessao atual em destaque, navegador, IP, ultima atividade), Atualizar e \"Encerrar as outras sessoes (N)\" (desabilitado quando N=0); injetado so na composicao real (main.dart -> SupabaseAccountSessionsRepository); rota /dev e goldens existentes nao mudam (sessions=null). 4 testes novos; test/features/account 125/125.",
+      "commit": "d0adb6c32"
     }
   ],
-  "tests": {
-    "P": 2,
-    "F": 0,
-    "B": 0,
-    "S": 0,
-    "U": 0,
-    "evidence": [
-      "coelo_ui_admin: flutter test 152/152 apos regravar 8 goldens do composto (0e4b2f27c)",
-      "superadmin: flutter test test/features/support test/architecture 71/71 apos regravar 32 goldens (3b6ef24d3); flutter analyze lib/features/support sem issues"
-    ],
-    "planned": [
-      "rota real /audit com qa-r03 (build web qa_main + Chrome CDP)",
-      "pgTAP do pacote de auditoria se houver delta",
-      "account.sessions/logout: gate real"
-    ]
-  },
+  "tests": [
+    {
+      "suite": "test/app/router/fail_closed_screens_with_data_probe_test.dart",
+      "result": "16/16 P"
+    },
+    {
+      "suite": "pgTAP superadmin_account_sessions_v1_test",
+      "result": "14/14 P (descartavel coelo_ops_r06)"
+    },
+    {
+      "suite": "pgTAP superadmin_account_profile_v1_test",
+      "result": "16/16 P"
+    },
+    {
+      "suite": "test/features/account",
+      "result": "125/125 P"
+    }
+  ],
   "blocked": [],
   "resolved": [],
-  "proposed_deltas": [
-    {
-      "file": "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-audit.json",
-      "summary": "audit.list/filter/detail FE verified / BE done / E2E verified-e2e (9 deltas)"
-    },
-    {
-      "file": "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-plans.json",
-      "summary": "plans.list/create/edit FE verified; BE local-green (6 deltas)"
-    },
-    {
-      "file": "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-audit-export-theme.json",
-      "summary": "audit.export FE verified (adiado honesto); account.theme FE verified (2 deltas)"
-    },
-    {
-      "file": "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-plans-done-support-assignee.json",
-      "summary": "plans.list/create/edit BE done + E2E verified-e2e (6); support.close/detail recertificados com responsavel persistido (6)"
-    },
-    {
-      "file": "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-logout.json",
-      "summary": "account.logout FE verified / BE done / E2E verified-e2e (3)"
-    }
-  ],
+  "proposed_deltas": [],
   "packages_ready": [
     {
-      "path": "packages/coelo_database/candidatos/operacoes/20260911200000_superadmin_plans_platform_scope_v1.sql",
-      "pgtap": "superadmin_plans_behavior_v1_test 40/40; superadmin_plans_production_test 13/13 (descartavel coelo_ops_r05: baseline + 107 migrations na ordem de producao)",
-      "composition_key": "nenhuma (gate do cliente ja ligado em fab9b9fd0 pelo repositorio composto)",
-      "state": "APLICADO em producao pelo coordenador (lote 39, 13:40)"
-    },
-    {
-      "path": "packages/coelo_database/candidatos/operacoes/20260911200100_superadmin_support_assignees_v1.sql",
-      "pgtap": "pgTAP superadmin_support_assignees_v1_test 28/28; support_production 23/23; support_create_internal_scope 17/17 (descartavel coelo_ops_r05)",
-      "composition_key": "nenhuma (cliente ja consome; ate aplicar, a lista de equipe vem vazia e o menu de responsaveis fica sem opcoes, honesto)",
-      "state": "APLICADO em producao (RPCs respondem 200 na rota real as 14:25); confirmar registro no ordem-de-aplicacao-producao.txt"
+      "path": "packages/coelo_database/candidatos/operacoes/20260911200200_superadmin_account_sessions_v1.sql",
+      "pgtap": "supabase/tests/superadmin_account_sessions_v1_test.sql 14/14 (descartavel coelo_ops_r06: baseline + 141 migrations da ordem-de-aplicacao-producao.txt)",
+      "composition_key": "nenhuma: main.dart ja injeta SupabaseAccountSessionsRepository; ate aplicar, o card mostra a falha honesta da RPC inexistente e Atualizar",
+      "state": "PRONTO para o coordenador aplicar (faixa 2026091220xxxx)"
     }
   ],
-  "questions_to_owner": [
-    {
-      "id": "P43-account-sessions",
-      "kind": "produto",
-      "what": "account.sessions (listar e revogar as proprias sessoes) nao tem tela nem API de cliente: exigiria Edge Function sobre o Admin API do Auth. Entra no MVP ou fica pos-MVP? Recomendacao: pos-MVP (blocked-decision), porque Sair ja encerra a sessao e MFA esta fora do MVP.",
-      "options": "A) pos-MVP (recomendado); B) tela minima no MVP (lista + revogar todas) com Edge Function"
-    },
-    {
-      "id": "P44-catalog",
-      "kind": "processo",
-      "what": "catalog.validate/sync: 5 componentes do composto Fase 0 sem entrada no indice do Catalogo e 7 exemplos com fingerprint desatualizado. Atualizar o Catalogo (indice + exemplos) agora ou depois do MVP? Recomendacao: depois do MVP, junto da revisao de UI.",
-      "options": "A) depois do MVP (recomendado); B) agora, por uma frente de UI"
-    },
-    {
-      "id": "P45-support-tabs",
-      "kind": "produto/ui",
-      "what": "Suporte e implantacao: hoje o Status e um filtro (dropdown) e a visao volta a cards a cada reload. A regra 'estado vazio mantem abas de estado' pede abas por tela: em Suporte seriam Todos / Novo / Em andamento / Aguardando solicitante / Concluido (na tabela; no kanban as colunas ja fazem esse papel). Trocar o filtro por abas? E persistir a ultima visao (cards/tabela) por usuario?",
-      "options": "A) abas no lugar do filtro Status + persistir visao (recomendado); B) manter filtro e nao persistir"
-    },
-    {
-      "id": "IMP-R05-2",
-      "kind": "visual",
-      "what": "Conferir apenas import_hub_wizard_unavailable_light_1440_200 corrigido (pagina honesta 503 dentro da shell a 200%). Observacao propria: a pagina generica diz 'temporariamente indisponivel' (503) para um recurso adiado por decisao; texto honesto seria 'Disponivel depois do MVP' (mudanca transversal em SuperadminErrorScreen, nao feita).",
-      "page": "https://claude.ai/code/artifact/aafedc26-2673-4f10-8310-37b367dad7f7"
-    }
-  ],
-  "next_step": "15:30 aviso ao coordenador; 15:35 prova de account.logout (Sair do menu da conta em /profile -> /login; reload permanece no login); 15:45 finalizado + mini-revisao",
-  "commits": [
-    "7df495615",
-    "0e4b2f27c",
-    "3b6ef24d3",
-    "89d64c068",
-    "fab9b9fd0",
-    "b08b6b91d",
-    "1b0c2c5ff (merge)",
-    "4371853e1",
-    "60b415707",
-    "13be50ae8",
-    "58e3977cc",
-    "4707876e3",
-    "0a7507fee",
-    "36474dc92",
-    "ca040ba49 (pacote + lookups seguros)",
-    "44c556630",
-    "7b644fa07",
-    "2a5fe6fbd",
-    "78283f81b (merge)",
-    "3471321a5",
-    "b0d5b5c1f",
-    "cb64ca5cc",
-    "33684e476",
-    "72c4ccedc",
-    "30a589972",
-    "6285d69fd",
-    "092977592",
-    "134068c55",
-    "c1ad2560c",
-    "ce1f8a5cf + este commit"
-  ],
+  "questions_to_owner": [],
+  "next_step": "(2) Suporte P49=A: abas de estado no lugar do filtro Status + persistir cards/tabela",
+  "commits": [],
   "r04_history": {
     "revision": 20,
     "updated_at": "2026-09-11T08:55:00-03:00",
@@ -1007,10 +672,7 @@
       "skills": "proposta de atualizacao das tres skills na secao 3 de docs/reviews/evidence/etapa-2/r04-operacoes/handoff-final-e-skills.md"
     }
   },
-  "notes_to_coordinator": [
-    "Composto (0e4b2f27c): toda tabela com celula crua muda de golden (texto desce para o centro da linha). Instituicoes/Unidades ja envolviam com Align e nao mudam; Auditoria (audit_event_views) e outras tabelas com Text cru mudam: frentes regravam apos merge. Auditoria e minha e regravo na rota real.",
-    "Regra para a skill coelo-ui/coelo-frontend: feature nao envolve celula com Align; o composto alinha; detalhe lateral em corpo estreito no desktop usa bodyOverride para manter a toolbar (support_page.dart, comentario com a decisao)."
-  ],
+  "notes_to_coordinator": [],
   "pendencias_registradas_r05": [
     {
       "action_id": "support.table",
@@ -1068,92 +730,186 @@
       "o_que": "balao Mensagens sobre o compositor do painel lateral em 1440x1000 continua: esconder o balao com o detalhe aberto exige rebuild da shell pelo controller e quebrou os testes de foco do detalhe (Escape/Enter); tentativa revertida. Alternativa: chatLauncherBottomInset maior ou deslocar o balao quando o workspace tem painel aberto (no composto/shell)."
     }
   ],
-  "nota_relogio": "carimbos das revs 23-25 estavam adiantados ate 40 min (13:05 -> 12:57 real; 13:35/13:40 -> 13:20; 14:20 -> 13:41); os horarios nos deltas seguem o relogio da maquina a partir da rev 26.",
-  "incidente": "14:15: a conversa foi reiniciada (processo encerrado); nada perdido: tudo publicado ate 44c556630. Loop reagendado, build web refeito, servidor e Chrome reabertos.",
-  "aprovacao_visual_owner_r05": {
-    "quando": "11/09/2026 ~14:25, pela coordenacao",
-    "texto": "esta tudo aprovado, ficou legal",
-    "escopo": "pagina G-SUP: 16 goldens claros de Suporte (kanban/table/detail 375/768/1024/1440 + 4 escalados) e 4 plan_table_light_* regravados apos o alinhamento das celulas no composto; escuros seguem o claro",
-    "efeito": "ownerVisualApproval=A (atual) para support_kanban_light_*, support_table_light_*, support_detail_light_* (inclusive support_detail_light_1024, que voltou a estrutura R) e plan_table_light_*; nao altera verified/done/E2E",
-    "fonte": "docs/reviews/evidence/etapa-2/r05-operacoes/g-sup/pagina-lado-a-lado-suporte.html"
-  },
-  "aprovacao_visual_owner_r05_importacoes": {
-    "quando": "11/09/2026 ~14:50, pela coordenacao",
-    "texto": "Esta correto e perfeito, apenas import_hub_wizard_unavailable_light_1440_200 esta com wizard incorreto e fundo cinza",
-    "efeito": "ownerVisualApproval=A para import_hub_directory_light_375/768/1024/1440, import_hub_empty_light_375_v4_21, import_hub_no_results_light_375_v4_21, import_hub_new_dialog_light_1440; import_hub_wizard_unavailable_light_1440_200 = A+ corrigido e regravado (pagina honesta de indisponibilidade dentro da shell, sem fundo cinza) e republicado na pagina v2 para conferencia",
-    "commit": "(golden) + 30a589972 (pagina)",
-    "pagina": "https://claude.ai/code/artifact/aafedc26-2673-4f10-8310-37b367dad7f7"
-  },
-  "finalizado": "sim (15:39 de 11/09; branch publicada; worktree limpa; sem WIP retido; Chrome, servidor e descartavel encerrados)",
-  "mini_revisao_10min_r05": {
-    "para": "coordenador R05 (coelo-25)",
-    "sha_final_publicado": "work/etapa2-r05-operacoes: commit da rev 37 (merge limpo com origin/dev 4d9c2364d, sem conflitos); git status limpo; sem stash",
-    "fechou_por_action_id_com_prova": {
-      "audit.list / audit.filter / audit.detail": "FE verified / BE done / E2E verified-e2e — rota real com qa-r03 (RPCs 200: list, filtro, busca, cursor, detalhe, reload); pgTAP 210100 37/37 em producao; deltas-r05-ops-audit.json (9)",
-      "audit.export": "FE verified (adiado honesto: Arquivos -> CSV/XLSX 'Disponivel depois do MVP', sem chamada) — deltas-r05-ops-audit-export-theme.json",
-      "account.theme": "FE verified — Claro persiste em localStorage e sobrevive a carga completa — deltas-r05-ops-audit-export-theme.json",
-      "plans.list / plans.create / plans.edit": "FE verified / BE done / E2E verified-e2e — gate do cliente ligado (fab9b9fd0), criar/editar/reload na rota real (RPCs 200), pacote 200000 aplicado no lote 39 com pgTAP 40/40 (negativa de outro tenant) — deltas-r05-ops-plans.json (FE) + deltas-r05-ops-plans-done-support-assignee.json (BE/E2E)",
-      "support.close / support.detail": "recertificados verified/done/E2E com responsavel real persistido (200100 em producao, pgTAP 28/28; RPCs team_members/set_assignee/get 200; reload mantem) — deltas-r05-ops-plans-done-support-assignee.json",
-      "support.table / kanban / detail (G-SUP A+)": "alinhamento das celulas no composto + detalhe 1024 sob a toolbar (R) + goldens regravados; APROVADO pelo Owner (14:25); ownerVisualApproval=A (support_*_light_*, plan_table_light_*)",
-      "imports.* / profile-files.*": "adiamento honesto confirmado na rota real (sem picker/parser/job/RPC); Importacoes ganhou cabecalho e migrou ao composto; goldens na shell APROVADOS pelo Owner (14:50) exceto wizard_unavailable (A+ corrigido e regravado, conferencia IMP-R05-2)",
-      "account.logout": "FE verified / BE done / E2E verified-e2e propostos — Sair -> /auth/v1/logout 204, sessao removida, /login; reload e /profile sem sessao permanecem no login (capturas 90-94; deltas-r05-ops-logout.json)",
-      "outros": "router deixa de chamar support_list/account_profile_get antes da sessao (13be50ae8); Perfil: sigla so letras + celular validado (092977592) e sem balao (c1ad2560c); Plano: Motivo a vista na validacao (0a7507fee); 29 goldens de outras familias regravados a pedido do coordenador (4371853e1)"
+  "r05_history": {
+    "revision_final": 38,
+    "updated_at": "2026-09-11T15:52:00-03:00",
+    "round": "E2-R05-20260911",
+    "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-operacoes",
+    "branch": "work/etapa2-r05-operacoes",
+    "head": "merge limpo de origin/dev 4d9c2364d sobre 2db40669a (ver git log); nada novo alem do merge",
+    "revisao_final_1550": {
+      "respondido_em": "15:52",
+      "entregou_tudo": "sim",
+      "sha_publicado": "work/etapa2-r05-operacoes 40367c21a (rev 37) + este commit; origin/dev ja continha a branch (fast-forward 4d9c2364d); git status limpo; sem stash; sem WIP retido",
+      "fechado": "audit.list/filter/detail (E2E); audit.export e account.theme (FE verified); plans.list/create/edit (FE verified, BE done, E2E); support.close/detail recertificados com responsavel real; account.logout (E2E); G-SUP aprovado pelo Owner; Importacoes com cabecalho, no composto e goldens na shell aprovados (wizard_unavailable A+ corrigido); Perfil: sigla so letras, celular validado, sem balao; router sem chamadas antes da sessao; Plano: Motivo a vista; 29 goldens de outras familias regravados a pedido da coordenacao",
+      "aberto": "account.sessions (P43, decisao); catalog.validate/sync/publish (P44, decisao); plans.activate/assign (semantica da spec 051); support.kanban abas/persistencia (P49 = meu P45); support.detail balao sobre o compositor em 1440 (tentativa revertida por quebrar foco); audit.filter aparencia do filtro Periodo (coelo-ui); imports.create texto 503 transversal (IMP-R05-2); plans.list parser rigido do cliente; account.profile e-mail vazio da pessoa de servico; account.mfa/audit.export BE adiados por decisao; prototype_navigation_routes_test pre-existente em dev",
+      "deltas": "5 arquivos em docs/reviews/evidence/etapa-2/r05-operacoes/ (audit 9, plans 6, audit-export-theme 2, plans-done-support-assignee 12, logout 3) — todos aplicados pelo coordenador (4d9c2364d); aprovacoes visuais do Owner (G-SUP 14:25; Importacoes 14:50) registradas para ownerVisualApproval, nunca verified/done/E2E",
+      "pacotes": "20260911200000_superadmin_plans_platform_scope_v1 (lote 39) e 20260911200100_superadmin_support_assignees_v1 em producao; candidatos/operacoes vazio",
+      "duvidas_ao_owner": "P43 account.sessions (recomendado pos-MVP); P44 Catalogo indice/fingerprints (recomendado pos-MVP); P49 (= P45 deste JSON) abas de status e persistencia da visao em Suporte; IMP-R05-2 conferir wizard_unavailable corrigido e texto 503 transversal",
+      "dados_sinteticos": "plano 5b0fc76b-51cd-4361-8d4f-e7033853eba6 (r05-qa-plano-teste, 2 recibos); chamado 48e02ab0-… com responsavel e59b0b83-… (+1 recibo, 1 evento support.assign); eventos de auditoria das provas (append-only); limpeza no fim da Etapa 2 (P42)",
+      "chaves_criadas": "nenhuma nesta rodada (nenhum segredo, token ou chave criado pela frente)",
+      "ambiente": "Chrome CDP 9408, servidor 3008 e descartavel coelo_ops_r05 encerrados; build web local nao versionado",
+      "skills": "propostas na secao 5 de docs/reviews/evidence/etapa-2/r05-operacoes/handoff.md"
     },
-    "aberto_com_primeiro_gate": {
-      "account.sessions": "sem tela nem API de cliente; P43 ao Owner (recomendado pos-MVP) -> blocked-decision",
-      "catalog.validate / sync / publish": "5 componentes do composto sem entrada no indice + 7 fingerprints de exemplo desatualizados; ferramenta regrava o relatorio com caminhos absolutos; publish = Pages (decisao nominal); P44 ao Owner",
-      "plans.activate / plans.assign": "decisao de semantica (spec 051 arquivar/restaurar; atribuicao nao aprovada) — sem mudanca",
-      "support.kanban": "P45 ao Owner (abas de status e persistencia da visao)",
-      "support.detail": "balao Mensagens sobre o compositor em 1440x1000 (tentativa de esconder com detalhe aberto quebrou testes de foco; revertida)",
-      "audit.filter": "aparencia do filtro Periodo vs demais filtros (coelo-ui)",
-      "imports.create": "pagina generica 503 'temporariamente indisponivel' para recurso adiado (texto transversal; observacao ao Owner em IMP-R05-2)",
-      "plans.list": "parser do cliente rigido (13 chaves de entitlements; starts_at nulavel)",
-      "account.profile": "e-mail vazio na projecao da pessoa de servico (dado da ponte)",
-      "account.mfa / audit.export (BE)": "adiados por decisao (ADR 0034; Decisao 12)"
+    "mini_revisao_10min_r05": {
+      "para": "coordenador R05 (coelo-25)",
+      "sha_final_publicado": "work/etapa2-r05-operacoes: commit da rev 37 (merge limpo com origin/dev 4d9c2364d, sem conflitos); git status limpo; sem stash",
+      "fechou_por_action_id_com_prova": {
+        "audit.list / audit.filter / audit.detail": "FE verified / BE done / E2E verified-e2e — rota real com qa-r03 (RPCs 200: list, filtro, busca, cursor, detalhe, reload); pgTAP 210100 37/37 em producao; deltas-r05-ops-audit.json (9)",
+        "audit.export": "FE verified (adiado honesto: Arquivos -> CSV/XLSX 'Disponivel depois do MVP', sem chamada) — deltas-r05-ops-audit-export-theme.json",
+        "account.theme": "FE verified — Claro persiste em localStorage e sobrevive a carga completa — deltas-r05-ops-audit-export-theme.json",
+        "plans.list / plans.create / plans.edit": "FE verified / BE done / E2E verified-e2e — gate do cliente ligado (fab9b9fd0), criar/editar/reload na rota real (RPCs 200), pacote 200000 aplicado no lote 39 com pgTAP 40/40 (negativa de outro tenant) — deltas-r05-ops-plans.json (FE) + deltas-r05-ops-plans-done-support-assignee.json (BE/E2E)",
+        "support.close / support.detail": "recertificados verified/done/E2E com responsavel real persistido (200100 em producao, pgTAP 28/28; RPCs team_members/set_assignee/get 200; reload mantem) — deltas-r05-ops-plans-done-support-assignee.json",
+        "support.table / kanban / detail (G-SUP A+)": "alinhamento das celulas no composto + detalhe 1024 sob a toolbar (R) + goldens regravados; APROVADO pelo Owner (14:25); ownerVisualApproval=A (support_*_light_*, plan_table_light_*)",
+        "imports.* / profile-files.*": "adiamento honesto confirmado na rota real (sem picker/parser/job/RPC); Importacoes ganhou cabecalho e migrou ao composto; goldens na shell APROVADOS pelo Owner (14:50) exceto wizard_unavailable (A+ corrigido e regravado, conferencia IMP-R05-2)",
+        "account.logout": "FE verified / BE done / E2E verified-e2e propostos — Sair -> /auth/v1/logout 204, sessao removida, /login; reload e /profile sem sessao permanecem no login (capturas 90-94; deltas-r05-ops-logout.json)",
+        "outros": "router deixa de chamar support_list/account_profile_get antes da sessao (13be50ae8); Perfil: sigla so letras + celular validado (092977592) e sem balao (c1ad2560c); Plano: Motivo a vista na validacao (0a7507fee); 29 goldens de outras familias regravados a pedido do coordenador (4371853e1)"
+      },
+      "aberto_com_primeiro_gate": {
+        "account.sessions": "sem tela nem API de cliente; P43 ao Owner (recomendado pos-MVP) -> blocked-decision",
+        "catalog.validate / sync / publish": "5 componentes do composto sem entrada no indice + 7 fingerprints de exemplo desatualizados; ferramenta regrava o relatorio com caminhos absolutos; publish = Pages (decisao nominal); P44 ao Owner",
+        "plans.activate / plans.assign": "decisao de semantica (spec 051 arquivar/restaurar; atribuicao nao aprovada) — sem mudanca",
+        "support.kanban": "P45 ao Owner (abas de status e persistencia da visao)",
+        "support.detail": "balao Mensagens sobre o compositor em 1440x1000 (tentativa de esconder com detalhe aberto quebrou testes de foco; revertida)",
+        "audit.filter": "aparencia do filtro Periodo vs demais filtros (coelo-ui)",
+        "imports.create": "pagina generica 503 'temporariamente indisponivel' para recurso adiado (texto transversal; observacao ao Owner em IMP-R05-2)",
+        "plans.list": "parser do cliente rigido (13 chaves de entitlements; starts_at nulavel)",
+        "account.profile": "e-mail vazio na projecao da pessoa de servico (dado da ponte)",
+        "account.mfa / audit.export (BE)": "adiados por decisao (ADR 0034; Decisao 12)"
+      },
+      "deltas_propostos": [
+        "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-audit.json (9)",
+        "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-plans.json (6; FE verified + BE local-green, superado pelo seguinte no BE)",
+        "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-audit-export-theme.json (2)",
+        "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-plans-done-support-assignee.json (12)",
+        "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-logout.json (3)",
+        "aprovacoes visuais do Owner (G-SUP 14:25; Importacoes 14:50) para ownerVisualApproval; nunca verified/done/E2E",
+        "(ja aplicados pelo coordenador ate 15:35: audit, plans FE, audit-export-theme)"
+      ],
+      "pacotes_sql": "20260911200000 (Planos, lote 39) e 20260911200100 (responsaveis do Suporte) ja aplicados em producao pelo coordenador; nenhum candidato pendente em candidatos/operacoes",
+      "duvidas_ao_owner": "P43 account.sessions; P44 Catalogo; P45 abas/persistencia em Suporte; IMP-R05-2 conferir wizard_unavailable corrigido (+ texto 503 transversal)",
+      "dados_sinteticos_em_producao": [
+        {
+          "tabela": "public.plans (+ plan_entitlements, plan_change_receipts)",
+          "id": "5b0fc76b-51cd-4361-8d4f-e7033853eba6",
+          "descricao": "plano r05-qa-plano-teste '[R05-QA] Plano de teste editado', 2 recibos; sem RPC de exclusao (arquivar existe); limpeza no fim da Etapa 2"
+        },
+        {
+          "tabela": "public.support_sessions",
+          "id": "48e02ab0-fa60-4e7c-86b6-78f75565dc57",
+          "descricao": "chamado [R04-QA] recebeu responsavel e59b0b83-7a35-466d-8b79-570f80ded81f (Operador interno 41462594) + 1 recibo e 1 evento support.assign"
+        },
+        {
+          "tabela": "audit.audit_logs",
+          "id": "n/a",
+          "descricao": "eventos superadmin.audit.list/detail, plan.*, support.assign gerados pelas provas (append-only)"
+        }
+      ],
+      "skills": "secao 5 de docs/reviews/evidence/etapa-2/r05-operacoes/handoff.md",
+      "ambiente": "Chrome CDP 9408 e servidor 3008 fechados ao fim; descartavel coelo_ops_r05 parado (volume mantido para reuso); build web em apps/superadmin/build/web-r05ops (nao versionado)"
     },
-    "deltas_propostos": [
-      "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-audit.json (9)",
-      "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-plans.json (6; FE verified + BE local-green, superado pelo seguinte no BE)",
-      "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-audit-export-theme.json (2)",
-      "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-plans-done-support-assignee.json (12)",
-      "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-logout.json (3)",
-      "aprovacoes visuais do Owner (G-SUP 14:25; Importacoes 14:50) para ownerVisualApproval; nunca verified/done/E2E",
-      "(ja aplicados pelo coordenador ate 15:35: audit, plans FE, audit-export-theme)"
-    ],
-    "pacotes_sql": "20260911200000 (Planos, lote 39) e 20260911200100 (responsaveis do Suporte) ja aplicados em producao pelo coordenador; nenhum candidato pendente em candidatos/operacoes",
-    "duvidas_ao_owner": "P43 account.sessions; P44 Catalogo; P45 abas/persistencia em Suporte; IMP-R05-2 conferir wizard_unavailable corrigido (+ texto 503 transversal)",
-    "dados_sinteticos_em_producao": [
+    "pendencias_registradas_r05": [
       {
-        "tabela": "public.plans (+ plan_entitlements, plan_change_receipts)",
-        "id": "5b0fc76b-51cd-4361-8d4f-e7033853eba6",
-        "descricao": "plano r05-qa-plano-teste '[R05-QA] Plano de teste editado', 2 recibos; sem RPC de exclusao (arquivar existe); limpeza no fim da Etapa 2"
+        "action_id": "support.table",
+        "tipo": "desempenho/seguranca-basica",
+        "o_que": "o shell chama superadmin_support_list e superadmin_account_profile_get em toda carga completa, inclusive na pagina /login antes de haver sessao (401 registrados no performance da pagina de login). Nao vaza dado (401), mas e chamada inutil e ruido de log; mover a carga para depois do bootstrap da sessao."
       },
       {
-        "tabela": "public.support_sessions",
-        "id": "48e02ab0-fa60-4e7c-86b6-78f75565dc57",
-        "descricao": "chamado [R04-QA] recebeu responsavel e59b0b83-7a35-466d-8b79-570f80ded81f (Operador interno 41462594) + 1 recibo e 1 evento support.assign"
+        "action_id": "audit.filter",
+        "tipo": "ui",
+        "o_que": "o filtro Periodo tem aparencia distinta (rotulo flutuante 'Periodo' + icone) dos demais filtros do composto (Resultados, dropdown simples); conferir com coelo-ui se e o padrao ou se deve virar dropdown igual."
       },
       {
-        "tabela": "audit.audit_logs",
-        "id": "n/a",
-        "descricao": "eventos superadmin.audit.list/detail, plan.*, support.assign gerados pelas provas (append-only)"
+        "action_id": "account.logout",
+        "tipo": "regra-de-rodada",
+        "o_que": "coordenador (13:00): Sair global e revogacao de sessao do qa-r03 derrubam as sessoes das outras frentes; account.logout e account.sessions ficam para depois de 15:30, com aviso 5 min antes no JSON e por mensagem. Ate la, fechar a aba em vez de Sair."
+      },
+      {
+        "action_id": "plans.create",
+        "tipo": "ui-P15",
+        "o_que": "na Revisao, o campo Motivo de auditoria (ultimo do formulario) fica escondido sob o rodape ancorado ate rolar; PlanFormPage nao usa o respiro do SuperadminFormFrame (P15)."
+      },
+      {
+        "action_id": "plans.list",
+        "tipo": "cliente",
+        "o_que": "parser do cliente exige as 13 chaves de entitlements e DateTime.parse(starts_at) com starts_at nulavel em institution_subscriptions: plano criado fora do cliente ou assinatura sem data quebraria a tela com Resposta de planos invalida (achado do subagente)."
+      },
+      {
+        "action_id": "plans.create",
+        "tipo": "residuo-sintetico",
+        "o_que": "plano 5b0fc76b-51cd-4361-8d4f-e7033853eba6 (code r05-qa-plano-teste, nome [R05-QA] Plano de teste editado, 2 recibos em plan_change_receipts) fica em producao; sem RPC de exclusao (arquivar existe). Limpeza no fim da Etapa 2 (P42)."
+      },
+      {
+        "action_id": "shell.navigate",
+        "tipo": "teste-pre-existente",
+        "o_que": "prototype_navigation_routes_test falha com Bad state: No element tambem em origin/dev limpo (worktree detach 11/09 13:20); nao e do composto."
+      },
+      {
+        "action_id": "support.close",
+        "tipo": "fechada",
+        "o_que": "Responsaveis de lista fixa sem RPC: fechada (pacote 200100 + cliente 36474dc92/ca040ba49); a antiga chamada antes da sessao (401 em /login) tambem fechada em 13be50ae8."
+      },
+      {
+        "action_id": "imports.create",
+        "tipo": "ux-transversal",
+        "o_que": "/imports/new (e toda rota de mutacao bloqueada) mostra SuperadminErrorScreen 503 'temporariamente indisponivel' para recurso adiado por decisao; texto honesto seria 'Disponivel depois do MVP'. Mudanca transversal do erro generico; decisao de UI."
+      },
+      {
+        "action_id": "account.profile",
+        "tipo": "fechadas",
+        "o_que": "sigla derivada O4 e celular sem validador (R04) fechadas em 092977592; ficam: e-mail vazio na projecao da pessoa de servico (dado da ponte 220400) e balao Mensagens sobre Salvar em 1440x1000 (Decisao 7, frame)."
+      },
+      {
+        "action_id": "support.detail",
+        "tipo": "ui-decisao-7",
+        "o_que": "balao Mensagens sobre o compositor do painel lateral em 1440x1000 continua: esconder o balao com o detalhe aberto exige rebuild da shell pelo controller e quebrou os testes de foco do detalhe (Escape/Enter); tentativa revertida. Alternativa: chatLauncherBottomInset maior ou deslocar o balao quando o workspace tem painel aberto (no composto/shell)."
       }
     ],
-    "skills": "secao 5 de docs/reviews/evidence/etapa-2/r05-operacoes/handoff.md",
-    "ambiente": "Chrome CDP 9408 e servidor 3008 fechados ao fim; descartavel coelo_ops_r05 parado (volume mantido para reuso); build web em apps/superadmin/build/web-r05ops (nao versionado)"
+    "questions_to_owner_r05": [
+      {
+        "id": "P43-account-sessions",
+        "kind": "produto",
+        "what": "account.sessions (listar e revogar as proprias sessoes) nao tem tela nem API de cliente: exigiria Edge Function sobre o Admin API do Auth. Entra no MVP ou fica pos-MVP? Recomendacao: pos-MVP (blocked-decision), porque Sair ja encerra a sessao e MFA esta fora do MVP.",
+        "options": "A) pos-MVP (recomendado); B) tela minima no MVP (lista + revogar todas) com Edge Function"
+      },
+      {
+        "id": "P44-catalog",
+        "kind": "processo",
+        "what": "catalog.validate/sync: 5 componentes do composto Fase 0 sem entrada no indice do Catalogo e 7 exemplos com fingerprint desatualizado. Atualizar o Catalogo (indice + exemplos) agora ou depois do MVP? Recomendacao: depois do MVP, junto da revisao de UI.",
+        "options": "A) depois do MVP (recomendado); B) agora, por uma frente de UI"
+      },
+      {
+        "id": "P45-support-tabs",
+        "kind": "produto/ui",
+        "what": "Suporte e implantacao: hoje o Status e um filtro (dropdown) e a visao volta a cards a cada reload. A regra 'estado vazio mantem abas de estado' pede abas por tela: em Suporte seriam Todos / Novo / Em andamento / Aguardando solicitante / Concluido (na tabela; no kanban as colunas ja fazem esse papel). Trocar o filtro por abas? E persistir a ultima visao (cards/tabela) por usuario?",
+        "options": "A) abas no lugar do filtro Status + persistir visao (recomendado); B) manter filtro e nao persistir"
+      },
+      {
+        "id": "IMP-R05-2",
+        "kind": "visual",
+        "what": "Conferir apenas import_hub_wizard_unavailable_light_1440_200 corrigido (pagina honesta 503 dentro da shell a 200%). Observacao propria: a pagina generica diz 'temporariamente indisponivel' (503) para um recurso adiado por decisao; texto honesto seria 'Disponivel depois do MVP' (mudanca transversal em SuperadminErrorScreen, nao feita).",
+        "page": "https://claude.ai/code/artifact/aafedc26-2673-4f10-8310-37b367dad7f7"
+      }
+    ],
+    "packages_ready_r05": [
+      {
+        "path": "packages/coelo_database/candidatos/operacoes/20260911200000_superadmin_plans_platform_scope_v1.sql",
+        "pgtap": "superadmin_plans_behavior_v1_test 40/40; superadmin_plans_production_test 13/13 (descartavel coelo_ops_r05: baseline + 107 migrations na ordem de producao)",
+        "composition_key": "nenhuma (gate do cliente ja ligado em fab9b9fd0 pelo repositorio composto)",
+        "state": "APLICADO em producao pelo coordenador (lote 39, 13:40)"
+      },
+      {
+        "path": "packages/coelo_database/candidatos/operacoes/20260911200100_superadmin_support_assignees_v1.sql",
+        "pgtap": "pgTAP superadmin_support_assignees_v1_test 28/28; support_production 23/23; support_create_internal_scope 17/17 (descartavel coelo_ops_r05)",
+        "composition_key": "nenhuma (cliente ja consome; ate aplicar, a lista de equipe vem vazia e o menu de responsaveis fica sem opcoes, honesto)",
+        "state": "APLICADO em producao (RPCs respondem 200 na rota real as 14:25); confirmar registro no ordem-de-aplicacao-producao.txt"
+      }
+    ]
   },
-  "revisao_final_1550": {
-    "respondido_em": "15:52",
-    "entregou_tudo": "sim",
-    "sha_publicado": "work/etapa2-r05-operacoes 40367c21a (rev 37) + este commit; origin/dev ja continha a branch (fast-forward 4d9c2364d); git status limpo; sem stash; sem WIP retido",
-    "fechado": "audit.list/filter/detail (E2E); audit.export e account.theme (FE verified); plans.list/create/edit (FE verified, BE done, E2E); support.close/detail recertificados com responsavel real; account.logout (E2E); G-SUP aprovado pelo Owner; Importacoes com cabecalho, no composto e goldens na shell aprovados (wizard_unavailable A+ corrigido); Perfil: sigla so letras, celular validado, sem balao; router sem chamadas antes da sessao; Plano: Motivo a vista; 29 goldens de outras familias regravados a pedido da coordenacao",
-    "aberto": "account.sessions (P43, decisao); catalog.validate/sync/publish (P44, decisao); plans.activate/assign (semantica da spec 051); support.kanban abas/persistencia (P49 = meu P45); support.detail balao sobre o compositor em 1440 (tentativa revertida por quebrar foco); audit.filter aparencia do filtro Periodo (coelo-ui); imports.create texto 503 transversal (IMP-R05-2); plans.list parser rigido do cliente; account.profile e-mail vazio da pessoa de servico; account.mfa/audit.export BE adiados por decisao; prototype_navigation_routes_test pre-existente em dev",
-    "deltas": "5 arquivos em docs/reviews/evidence/etapa-2/r05-operacoes/ (audit 9, plans 6, audit-export-theme 2, plans-done-support-assignee 12, logout 3) — todos aplicados pelo coordenador (4d9c2364d); aprovacoes visuais do Owner (G-SUP 14:25; Importacoes 14:50) registradas para ownerVisualApproval, nunca verified/done/E2E",
-    "pacotes": "20260911200000_superadmin_plans_platform_scope_v1 (lote 39) e 20260911200100_superadmin_support_assignees_v1 em producao; candidatos/operacoes vazio",
-    "duvidas_ao_owner": "P43 account.sessions (recomendado pos-MVP); P44 Catalogo indice/fingerprints (recomendado pos-MVP); P49 (= P45 deste JSON) abas de status e persistencia da visao em Suporte; IMP-R05-2 conferir wizard_unavailable corrigido e texto 503 transversal",
-    "dados_sinteticos": "plano 5b0fc76b-51cd-4361-8d4f-e7033853eba6 (r05-qa-plano-teste, 2 recibos); chamado 48e02ab0-… com responsavel e59b0b83-… (+1 recibo, 1 evento support.assign); eventos de auditoria das provas (append-only); limpeza no fim da Etapa 2 (P42)",
-    "chaves_criadas": "nenhuma nesta rodada (nenhum segredo, token ou chave criado pela frente)",
-    "ambiente": "Chrome CDP 9408, servidor 3008 e descartavel coelo_ops_r05 encerrados; build web local nao versionado",
-    "skills": "propostas na secao 5 de docs/reviews/evidence/etapa-2/r05-operacoes/handoff.md"
-  }
+  "t0": {
+    "nota": "coordenacao.json em origin/dev esta na rev 51 sem T0 nem \"usuarios qa-r06 prontos\"; C:/Users/adrie/Documents/Coelo-backups/qa-r06-operacoes.env NAO existe as 19:40. Assumo abertura da frente as 19:40 (T0+20) => T0 ~ 19:20, corte T0+2h ~ 21:20, revisao ate 21:30. Vou reler coordenacao.json a cada loop; enquanto a credencial nao existir, faco o trabalho que nao precisa de rota real (teste, tela de sessoes, Edge Function, abas de Suporte, Catalogo, texto 503).",
+    "pergunta_ao_coordenador": "confirmar T0 e publicar qa-r06-operacoes.env; se nao houver, digam se posso usar qa-r03 somente para provas de leitura (sem Sair/revogar)",
+    "atualizacao_1955": "qa-r06-operacoes.env existe desde ~19:50; coordenacao rev 52 ainda nao publicada (branch do coordenador com candidatos/coordenador nao commitado). Rota real fica para quando a semente (perfil interno + ponte + membership) estiver aplicada; sigo em (2) Suporte, (4) Catalogo e (5) texto 503."
+  },
+  "pendencias_registradas_r06": []
 }

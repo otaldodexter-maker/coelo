@@ -44,6 +44,7 @@ import '../../features/activities/presentation/activity_form_draft.dart';
 import '../../features/assessments/assessment.dart';
 import '../../features/assessments/assessment_pages.dart';
 import '../../features/account/data/account_profile_repository.dart';
+import '../../features/account/data/account_sessions_repository.dart';
 import '../../features/account/data/user_preferences_repository.dart';
 import '../../features/account/presentation/account_controller.dart';
 import '../../features/account/presentation/screens/profile_page.dart';
@@ -378,6 +379,7 @@ GoRouter createSuperadminRouter({
   SupportRepository? supportRepository,
   UserPreferencesController? userPreferencesController,
   AccountProfileRepository accountProfileRepository = const UnavailableAccountProfileRepository(),
+  AccountSessionsRepository? accountSessionsRepository,
   ImportRepository importRepository = const UnavailableImportRepository(),
   PlanCatalogRepository planCatalogRepository = const UnavailablePlanCatalogRepository(),
   AgendaRepository? agendaRepository,
@@ -3855,6 +3857,7 @@ GoRouter createSuperadminRouter({
               return SettingsPage(
                 controller: productionPreferencesController,
                 logout: logout,
+                sessions: accountSessionsRepository,
                 onDestinationSelected: (destination) => _navigateFromAccount(context, destination),
               );
             },
