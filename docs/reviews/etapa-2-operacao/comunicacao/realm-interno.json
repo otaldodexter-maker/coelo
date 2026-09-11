@@ -1,15 +1,15 @@
 {
   "grupo": "realm-interno",
-  "revision": 16,
+  "revision": 17,
   "round": "E2-R05-20260911",
-  "updatedAt": "2026-09-11T12:20-03:00",
+  "updatedAt": "2026-09-11T12:52-03:00",
   "app": "Claude",
   "modelo": "Opus 5 (esforco medio)",
   "conversa": "R05 · Realm interno e Chat backend",
   "coordenador": "R05 · Coordenação da tarde (coordenacao.json)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-realm-interno",
   "branch": "work/etapa2-r05-realm-interno",
-  "head": "9bf60463b (origin/dev na abertura)",
+  "head": "488a367d3",
   "upstream": "origin/work/etapa2-r05-realm-interno (push no primeiro commit)",
   "historicoR04": {
     "miniRevisao": {
@@ -194,17 +194,55 @@
     ],
     "foraDoRecorte": "UI (estrutura, formularios, principal-chat), aplicacao em producao (coordenador), Cloudflare com custo"
   },
-  "primeiroGate": "(1) institution_contacts_v1: medir o que a baseline ja tem (institution_contacts, institution_legal_representatives com trigger de adulto+membership ativa, institution_memberships, person_contacts hash+mask, person_identity_identifiers HMAC para CPF) e escrever RPC superadmin_institution_contacts_edit_v1 + detail_payload_v2 com representatives/administrators",
+  "primeiroGate": "(2) varredura de grants CRUD de authenticated sem policy: pacote de revoke por tabela (26 tabelas da Tabela B) + policy self_read em person_auth_links + pgTAP",
   "provaLocal": "projeto descartavel coelo_realm_r05 (portas 625xx) em preparacao: baseline + seed + ordem-de-aplicacao-producao.txt via psql do container",
   "testes": {
-    "pgTAP": "nenhum ainda nesta rodada"
+    "pgTAP": "38 PASS / 0 FAIL (institution_contacts_v1)"
   },
   "bloqueio": null,
   "pedidosAoCoordenador": [],
   "perguntasParaOOwner": [],
-  "pacotesProntos": [],
+  "pacotesProntos": [
+    {
+      "ordem": 1,
+      "arquivo": "packages/coelo_database/candidatos/realm-interno/20260911210000_institution_contacts_v1.sql",
+      "assunto": "institutions.edit: documento (CNPJ), contato da instituicao, representantes legais e administradores como pessoas do realm (people + institution_memberships + institution_legal_representatives); detail_v2 devolve representatives/administrators minimizados",
+      "pgTAP": "supabase/tests/institution_contacts_v1_test.sql 38/38 (descartavel coelo_realm_r05: baseline + seed + 141 migrations na ordem de producao + candidato)",
+      "commit": "488a367d3",
+      "dependeDe": "nada novo (230002 receipts, 180330 detail_v2, baseline); cria o segredo Vault coelo_person_identity_hmac_v1 dentro da migration se nao existir (valor gerado no banco, nunca impresso)",
+      "chaveDeComposicao": "nenhuma no banco; o cliente (frente estrutura) passa a chamar superadmin_institution_contacts_edit_v1 depois do edit_core_v2 e a ler representatives/administrators do detail_v2",
+      "estado": "pronto para o coordenador aplicar"
+    }
+  ],
   "pendenciasRegistradas": [],
-  "deltaPropostoBE": {},
+  "deltaPropostoBE": {
+    "institutions.edit": "backend local-green (pacote pronto); done so depois de aplicado + cliente da estrutura persistir e recarregar na rota real"
+  },
   "loop": "cron 9ded10f6 a cada 15 min ate 15:45",
-  "status": "em andamento"
+  "status": "em andamento; item 1 entregue, item 2 em curso",
+  "contratoInstitutionContacts": {
+    "rpc": "public.superadmin_institution_contacts_edit_v1(p_request_id uuid, p_institution_id uuid, p_expected_version bigint, p_payload jsonb) -> envelope {ok,data,error}",
+    "capacidade": "institution.update; platform_role owner|operations; scope institution so a propria instituicao (outro tenant -> SAI_PERMISSION_DENIED, auditado)",
+    "versao": "p_expected_version = management_version atual; sucesso devolve data {institution_id, management_version (+1), correlation_id, replayed}; obsoleta -> SAI_CONCURRENT_CHANGE 409; mesmo request_id repete (replayed=true) so com mesmo ator/instituicao/versao/hash, senao SAI_INVALID_ARGUMENT",
+    "payload": {
+      "document": "{document_type:'cnpj', document_ref:'11.222.333/0001-81'} (opcional; so cnpj; digitos verificados; vazio -> null)",
+      "contact": "{email, phone, mobile_phone, website_url, whatsapp_number} (opcional; chaves ausentes viram null; tudo null apaga institution_contacts; whatsapp normalizado para E.164; e-mail minusculo)",
+      "representatives": "[{person_id?, first_name, last_name, display_name?, email?, mobile_phone?, cpf?, date_of_birth?, is_primary?}] ate 20; substituicao total: quem nao vier e encerrado (inactive + ends_on); sem date_of_birth o vinculo nasce status draft (trigger da baseline exige adulto para active); um primario no maximo",
+      "administrators": "[{person_id?, first_name, last_name, display_name?, email?, mobile_phone?, cpf?, level}] ate 20; level admin_master|authorized_administrator|coordinator -> institution_memberships.role_code owner|institution_admin|coordinator; substituicao total: quem sair e rebaixado a legal_representative se continuar representante, senao membership inactive + revoked_at",
+      "pessoa": "person_id existente (adulto, nao apagado) atualiza nomes/dob; sem person_id cria people adult active; e-mail e celular vao para person_contacts como sha256 + mascara; CPF vai para app_private.person_identity_identifiers como HMAC (Vault coelo_person_identity_hmac_v1) + mascara; valores brutos nunca voltam"
+    },
+    "detail_v2": "superadmin_institution_detail_v2 agora devolve tambem representatives[{id, person_id, membership_id, is_primary, status, starts_on, first_name, last_name, display_name, date_of_birth, email_masked, mobile_phone_masked, cpf_masked}] e administrators[{membership_id, person_id, role_code, level, status, first_name, last_name, display_name, handle:null, has_active_login, invitation_status accepted|not_sent, email_masked, mobile_phone_masked, cpf_masked, source_representative_id}]",
+    "codigosDeErro": [
+      "SAI_INVALID_ARGUMENT 400 (CNPJ/CPF/e-mail/level invalidos, chave desconhecida, payload vazio, request_id reutilizado, duplicata)",
+      "SAI_CONCURRENT_CHANGE 409",
+      "SAI_PERMISSION_DENIED 403 (outro tenant, papel sem permissao)",
+      "SAI_AUTH_REQUIRED/SAI_SESSION_INVALID 401"
+    ],
+    "limitesDeclarados": [
+      "handle (@) das pessoas e da frente acessos-pessoas (Decisao 16): devolvido null ate existir coluna",
+      "invitation_status e derivado de person_auth_links (accepted) ou not_sent; historico de convites (170200) nao e cruzado neste pacote",
+      "plano e marca continuam fora (subscription/branding ja sao aceitos por assert_institution_management_payload da baseline, mas o edit_core_v2 nao os recebe: pacote separado se a frente precisar)",
+      "o cliente mostra contatos mascarados no reload: e o desenho LGPD da baseline (person_contacts guarda hash + mascara)"
+    ]
+  }
 }
