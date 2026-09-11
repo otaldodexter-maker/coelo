@@ -1,8 +1,8 @@
 {
  "grupo": "estrutura",
- "revision": 41,
+ "revision": 42,
  "round": "E2-R05-20260911",
- "updatedAt": "2026-09-11T12:04:55.670-0",
+ "updatedAt": "2026-09-11T12:51:24-03:00",
  "app": "Claude",
  "modelo": "Opus 5 (esforco medio)",
  "conversa": "R05 · Estrutura (G1)",
@@ -11,9 +11,9 @@
  "branch": "work/etapa2-r05-estrutura",
  "head": "(commit desta revisao)",
  "upstream": "origin/work/etapa2-r05-estrutura",
- "base": "origin/dev 2f6a6114f",
+ "base": "origin/dev 62f284d9c mesclada (d95d0840c); activities.edit 631f9de52 ja integrada pelo coordenador",
  "horario": {
-  "inicio": "2026-09-11T12:04:55.670-0",
+  "inicio": "2026-09-11T12:04:55-03:00",
   "corte": "2026-09-11T15:45:00-03:00",
   "miniRevisao": "15:45 (propria) e 15:50 (pedido do coordenador, resposta ate 16:00)",
   "loop": "/loop 15m agendado na abertura"
@@ -119,7 +119,7 @@
   {
    "n": 0,
    "item": "Atividades: cherry-pick 44574dfda + 631f9de52; test/features/activities verde; rebuild qa_main; provar activities.create e activities.edit na rota real; reexecutar as suites pgTAP de Locais dos lotes 46-49 antes de cita-las",
-   "estado": "em andamento",
+   "estado": "em andamento: cherry-pick feito e depois mesclado com dev; rota real aberta (login, /activities/new, Identidade preenchida, categoria de producao escolhida, instituicao Escola R04 Estrutura selecionada) e BLOQUEADA por SAI_SESSION_INVALID (sessao unica do qa-r03)",
    "action_ids": [
     "activities.create",
     "activities.edit"
@@ -159,20 +159,24 @@
    "estado": "pendente"
   }
  ],
- "primeiroGate": "nenhum bloqueio na abertura; risco: conversa R04 possivelmente ativa na mesma familia (worktree e2-r04-estrutura com build/ de 11:58)",
- "criteriosFechados": [],
+ "primeiroGate": "BLOQUEIO transversal: Auth de producao com sessao unica por usuario; auth.sessions do qa-r03 tem uma unica linha (12:43, de outra frente) e a minha sessao (12:27) foi encerrada; form_options_v2 e filter_options_v2 respondem SAI_SESSION_INVALID. Pedido ao coordenador: desligar \"Single session per user\" ou um usuario sintetico por frente",
+ "criteriosFechados": [
+  "activities.edit: modo edicao passa a combinar fetchTemplateOptions (taxonomia/modelos/instituicoes) com fetchFormOptions (unidades/turmas/pessoas) e a hidratacao sobe do subtipo ao pai quando taxonomy_id da v2 e um subtipo; catalogo indisponivel vira catalogOptionsError com Tentar novamente (nao commitado ainda: teste em andamento)",
+  "Medicao na base limpa (worktree detached em origin/dev 2f6a6114f): activity_golden_test falha 9 testes (diretorio de Atividades) TAMBEM na base; pre-existentes, nao sao do delta desta frente"
+ ],
  "testes": {
-  "P": null,
-  "F": null,
-  "B": null,
-  "S": null,
-  "U": null,
-  "evidencia": "nenhuma ainda nesta rodada"
+  "P": "test/features/activities 343 (com o cherry-pick, antes da correcao do modo edicao)",
+  "F": "9 goldens de activity_golden_test (pre-existentes na base; o composto de tabela mudou em dev 11c4bfbef, regravar depois do merge)",
+  "B": 0,
+  "S": 0,
+  "U": 0,
+  "evidencia": "tarefas bvxfj6m7m e bfonmxrcr desta sessao"
  },
  "pacotesProntos": [],
  "deltasPropostos": [],
  "pedidosAoCoordenador": [
-  "Confirmar se a conversa R04 · Estrutura ainda esta viva (build/ criado em e2-r04-estrutura as 11:58); se estiver, pedir que ela pare para nao haver duas frentes na mesma familia"
+  "Desligar \"Single session per user\" no Auth de producao (ou criar um usuario sintetico por frente): sem isso nenhuma frente prova rota real de forma estavel",
+  "Confirmar se a conversa R04 · Estrutura parou (a rev 40 dela foi integrada em 62f284d9c)"
  ],
  "avisosParaOutrosGrupos": [
   {
@@ -183,16 +187,31 @@
  ],
  "perguntasParaOOwner": [],
  "pendenciasDeCodeReview": [],
- "bloqueio": null,
+ "bloqueio": {
+  "gate": "sessao unica do qa-r03 (Auth > Sessions)",
+  "efeito": "toda prova de rota real cai quando outra frente entra; re-login derruba a outra frente",
+  "responsavel": "coordenador (painel Supabase, sem custo) ou usuario por frente",
+  "mensagem": "enviada ao coordenador as 12:51"
+ },
  "wip": {
   "estado": "nenhum"
  },
  "recursos": {
-  "processos": [],
-  "portas": []
+  "processos": [
+   "node serve.js (porta 3001, build web do qa_main desta worktree)",
+   "chrome headless --remote-debugging-port=9561 (1 Chrome)"
+  ],
+  "portas": [
+   "3001",
+   "9561"
+  ]
  },
  "ack": null,
- "proximoPasso": "cherry-pick de 44574dfda e 631f9de52; flutter test test/features/activities; build web do qa_main",
+ "proximoPasso": "ligar institutions.edit ao contrato superadmin_institution_contacts_edit_v1 (lote 28) no cliente; quando a sessao voltar, re-login e provar activities.create/edit",
  "dadosSinteticosEmProducao": "public.groups 368a5cea (Turma QA R04 Estrutura (editada)); public.institutions 190dd028 (Escola R04 Estrutura, qa-r04-escola) + institution_addresses; public.units f5284f2f (Unidade Centro R04) + unit_addresses/unit_contacts; public.activity_locations 82e92854 (Sala R04 Estrutura, catalogo da instituicao 190dd028). Ficam ate o fim da Etapa 2 (P42).",
- "estado": "em andamento"
+ "estado": "em andamento",
+ "cliente": {
+  "activitiesEdit": "activity_form_page._load em modo edicao busca form_options_v2 + template_options e monta ActivityFormOptions com taxonomia; ActivityFormController.edit recebe initialCatalogError; _hydrateEdit sobe do subtipo ao pai",
+  "helpersDaRotaReal": "scratchpad: serve.js (SPA), cdp.js (login/goto/click/type/shot/eval), net.js (grava RPCs), rpc.js (chama RPC com a sessao do app sem imprimir token)"
+ }
 }
