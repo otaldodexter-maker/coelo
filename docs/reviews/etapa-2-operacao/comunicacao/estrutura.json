@@ -1,8 +1,8 @@
 {
  "grupo": "estrutura",
- "revision": 37,
+ "revision": 38,
  "round": "E2-R04-20260911",
- "updatedAt": "2026-09-11T11:00:27-03:00",
+ "updatedAt": "2026-09-11T11:23:22-03:00",
  "app": "Claude",
  "modelo": "Fable 5.1",
  "conversa": "R04 · Estrutura (sessao coelo-b3), continuacao por ordem do Owner depois do fechamento da R04 (08:52)",
@@ -183,8 +183,16 @@
    "estado": "verde no espelho de producao (102 lotes na ordem real); aguardando o coordenador aplicar"
   }
  ],
- "deltasPropostos": "evidence/etapa-2/r04-estrutura/deltas-r04-estrutura-continuacao-2.json (13): groups.edit, institutions.create, units.create e locations.create-edit com FE verified / BE done / E2E verified-e2e; institutions.edit blocked-decision. Ensaiado com apply + validate PASS (231 acoes; E2E 42) e revertido. O ensaio mostrou units.create ainda pending-verification no inventario de dev: o coordenador ainda nao aplicou este arquivo.",
- "pedidosAoCoordenador": [],
+ "deltasPropostos": "evidence/etapa-2/r04-estrutura/deltas-r04-estrutura-continuacao-2.json (16): groups.edit, institutions.create, units.create, locations.create-edit e locations.schedule com FE verified / BE done / E2E verified-e2e; institutions.edit blocked-decision. Ensaiado com apply + validate PASS (231 acoes; E2E 43) e revertido. NAO aplicado ainda no inventario de dev (o ensaio mostrou units.create pending-verification em dev).",
+ "pedidosAoCoordenador": [
+  "Aplicar deltas-r04-estrutura-continuacao-2.json (16 entradas) com node docs/reviews/apply-tracker-delta.cjs + validate-trackers.cjs; a certificacao de cada terminal aponta para um arquivo existente em docs/reviews/evidence/etapa-2/r04-estrutura/",
+  "Integrar em dev os commits da branch work/etapa2-r04-estrutura posteriores a a276f15a8: a12160088 (rev 37, Locais criar/editar, handle de Unidades, fixture de autorizacao de Locais) e 85f66cd38 (chave activityLocationCreateEnabled) e esta revisao 38; todos enviados ao remoto",
+  "Worktree e2-r04-estrutura: contem WIP nao commitado (ver wip); preservar/identificar antes de remover. Projeto descartavel supabase coelo_baseline_estrutura (portas 613xx) pode ser parado; Chrome de QA (porta 9556) e servidor estatico (3020) desta conversa podem ser fechados",
+  "P37: remover os dados sinteticos desta conversa em producao no fechamento (groups 368a5cea, institutions 190dd028 + endereco, units f5284f2f + endereco/contatos, activity_locations 82e92854 com a semana publicada)",
+  "Levar ao Owner P38 (icone @ no campo Identificador de Unidades/Instituicoes) e P39 (Identificador vira @ na criacao?) com as recomendacoes registradas em perguntasParaOOwner",
+  "Conferir em producao public.units.slug de f5284f2f (esperado unidade-centro-r04): a consulta somente leitura foi bloqueada pelo classificador nesta conversa",
+  "Pendencias que ficam para a proxima rodada: activities.create/edit pela rota real (depois de ligar fetchFormOptions e rebuild); institution_contacts_v2 para destravar institutions.edit; assessments.entry precisa de vinculo profissional do qa-r03; tres falhas pre-existentes em composition_root_sanitization_test e superadmin_auth_scope_test (rotina e acessos, outras familias)"
+ ],
  "avisosParaOutrosGrupos": [
   {
    "para": "formularios-cuidado-rotina",
@@ -206,7 +214,15 @@
   "Unidades: o icone @ no campo Identificador (Unidades e Instituicoes) sugere handle, mas o campo e o slug; decisao visual do Owner se troca o icone. Produto: se o Identificador deve virar o @ na criacao, o cliente precisaria mandar handle: slug no create com validador ^[a-z0-9][a-z0-9._]{1,28}[a-z0-9]$ (sem hifen). Recomendacao: manter slug interno e @ gerado ate existir a acao de handle no cliente"
  ],
  "bloqueio": null,
- "wip": [],
+ "wip": {
+  "onde": "worktree C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-estrutura, NAO commitado",
+  "arquivos": [
+   "apps/superadmin/lib/features/activities/data/supabase_activity_directory_repository.dart (fetchFormOptions/searchProfessionals -> superadmin_activity_form_options_v2)",
+   "apps/superadmin/test/features/activities/data/supabase_activity_directory_repository_test.dart",
+   "apps/superadmin/test/features/activities/data/activity_repository_security_test.dart"
+  ],
+  "estado": "subagente ainda editando/testando no momento da pausa; se a conversa estrutura voltar, ela commita apos test/features/activities verde; se nao voltar, o coordenador decide: commitar como WIP identificado ou descartar (a ligacao e pequena e refazivel)"
+ },
  "recursos": {
   "processos": [
    "flutter run -d chrome (1 Chrome) a partir de 02:05"
@@ -216,7 +232,7 @@
   ]
  },
  "ack": null,
- "proximoPasso": "commit + push desta revisao; depois activities.create/edit pela rota real (cadeia v2 em producao) e locations.schedule (agenda semanal); pacote institution_contacts_v2 para destravar institutions.edit",
+ "proximoPasso": "PAUSADA. Se retomar: commitar o WIP do subagente apos verde, rebuild do qa_main, provar activities.create (rascunho com instituicao + unidade) e activities.edit pela rota real; depois institution_contacts_v2",
  "espelhoLocal": {
   "projeto": "coelo_baseline_estrutura (portas 61321/61322), scratchpad desta sessao",
   "metodo": "supabase start com migrations/ = so a baseline + seed.sql do repositorio; os 44 lotes de producao (migrations/2026091001..230020) aplicados por psql na ordem, todos OK; 9 capacidades locations.* presentes; depois cada candidato por preflight.sh (psql -v ON_ERROR_STOP=1) seguido do pgTAP",
@@ -319,6 +335,22 @@
     ],
     "resultado": "criar local pelo assistente (Identidade, Andar, Visibilidade Equipe) e editar o andar; ambos persistiram em producao (activity_locations 82e92854, versao 2) e o reload do detalhe mantem; cards das unidades visiveis no catalogo da instituicao",
     "captura": "evidence/etapa-2/r04-estrutura/rota-real/locations-create-form.jpg, locations-detail-apos-criar.jpg, locations-edit-form.jpg, locations-detail-apos-reload.jpg, locations-instituicao-com-unidades.jpg"
+   },
+   {
+    "tela": "Locais > detalhe > Agenda semanal",
+    "action_ids": [
+     "locations.schedule"
+    ],
+    "resultado": "janela publicada persiste em producao e sobrevive ao reload completo do detalhe",
+    "captura": "evidence/etapa-2/r04-estrutura/rota-real/locations-schedule-vazia.jpg, locations-schedule-janela-antes-de-publicar.jpg, locations-schedule-apos-reload.jpg"
+   },
+   {
+    "tela": "Atividades > Criar atividade",
+    "action_ids": [
+     "activities.create"
+    ],
+    "resultado": "BLOQUEADA no cliente: etapa Estrutura e locais nao carrega unidades/turmas porque fetchFormOptions nunca foi ligado a superadmin_activity_form_options_v2; o painel \"Local da atividade\" aparecia indisponivel por chave de composicao desligada (corrigido em 85f66cd38, precisa de rebuild para a rota real)",
+    "captura": "scratchpad qa-ac02..qa-ac06 (nao copiadas: prova incompleta)"
    }
   ],
   "bloqueios": [
@@ -390,7 +422,7 @@
   "prova": "flutter test location_read_panels_test + locations_page_test + location_read_panels_golden_test: 64/64 PASS as 02:03 (trailing nulo nao muda os goldens). WIP mantido, nao revertido.",
   "proximo": "ligar SupabaseLocationConsumerSelectionReader(available:true) em main.dart porque 180140/180150/180200 estao em producao; subir o app dirigido (test_driver/qa_main.dart, um Chrome) e percorrer institutions.create -> units -> groups -> activities -> locations -> assessments"
  },
- "estado": "em andamento (continuacao pos-fechamento por ordem do Owner de 11/09 manha)",
+ "estado": "PAUSADA pelo Owner em 11/09 ~11:30 (ordem: \"pause a atividade\"); entrega ao coordenador para ajustar pendencias, commits e worktree",
  "validacaoDeEntrega": {
   "quando": "2026-09-11T08:31:24-03:00",
   "achado": "O coordenador registrou \"estrutura sem retorno desde 02:06\" porque a rev 31 (02:05) e o WIP rebaseado de Locais nunca foram publicados: a sessao coelo-39 caiu antes do push. O que estava em origin era a rev 30 (23:24) e o WIP a22721fbe pre-rebase (nao provado). Os tres subagentes lancados as 00:1x (deltas por action_id, contrato de Avaliacoes, cards de Unidades em Locais) morreram com a maquina; so o teste de Avaliacoes sobreviveu e ja esta em dev por outro caminho (6fea02635).",
@@ -454,7 +486,10 @@
    "units.create pela rota real: assistente de 10 etapas (identidade herdada, hierarquia com tipo Filial do catalogo 180320, CEP por viacep, plano herdado) -> public.units f5284f2f \"Unidade Centro R04\" com audit unit.create success 13:34:01Z; lista recarregada mostra a unidade. Achado: o identificador digitado (hifens, unica forma que o cliente aceita) vira unidadecentror04_f5284f2f no servidor (CHECK de handle sem hifen): inconsistencia cliente x banco a corrigir (aceitar ponto/underscore no cliente ou mostrar o handle final)",
    "locations.create-edit pela rota real no catalogo da instituicao 190dd028: Criar local \"Sala R04 Estrutura\" (interno, andar Terreo) -> public.activity_locations 82e92854-8229-4a9d-a890-042e17d669d3 (audit location.create success 13:49:32Z); Editar local (andar \"1o andar\") -> management_version 2 (audit location.update success 13:52:08Z); detalhe recarregado mantem. No caminho: o balao de chat cobria o botao Salvar do formulario de Locais (Decisao 7) -> corrigido em a276f15a8 (showChatLauncher so no diretorio; 40/40 em location_capabilities_test). Os cards das unidades (LocationInstitutionUnitsSection) apareceram em producao na tela de Locais da instituicao (locations-instituicao-com-unidades.jpg)",
    "Negativas de Locais medidas por mim no espelho de producao: superadmin_location_catalog_v2_authorization_test 26/26 (cross-institution unit is denied; cross-scope e id inexistente indistinguiveis; sessao externa nao vira ator interno), catalog_v2 30/30, update_status_v2 28/28, isolation 6/6. A suite de autorizacao (lote 47, de outra frente) tinha fixture com units.institution_type_id, coluna que nao existe em producao: corrigida para unit_types/unit_type_id/handle (mesmo padrao das 9 suites da R04)",
-   "Achado do handle de Unidades (subagente): o servidor NAO ignora o Identificador. O Identificador e o slug (create_unit_for_superadmin grava lower(btrim(slug)) sem CHECK, hifens preservados); o \"@\" publico e outra coluna, derivada no servidor (letras/numeros do slug ate 20 + \"_\" + 8 hex do id) e so alteravel por change_unit_handle_for_superadmin (units.handle.manage, carencia de 15 dias). O cliente nunca enviava nem lia public_profile.handle. Correcao honesta: UnitRecord.handle lido de public_profile nas RPCs, legenda unit-handle-note sob o Identificador (ao criar explica que o @ e gerado; ao editar mostra o @ final); validador do slug mantido (hifens validos). 174/174 em test/features/units; goldens intactos (a etapa Hierarquia nao esta nos goldens)"
+   "Achado do handle de Unidades (subagente): o servidor NAO ignora o Identificador. O Identificador e o slug (create_unit_for_superadmin grava lower(btrim(slug)) sem CHECK, hifens preservados); o \"@\" publico e outra coluna, derivada no servidor (letras/numeros do slug ate 20 + \"_\" + 8 hex do id) e so alteravel por change_unit_handle_for_superadmin (units.handle.manage, carencia de 15 dias). O cliente nunca enviava nem lia public_profile.handle. Correcao honesta: UnitRecord.handle lido de public_profile nas RPCs, legenda unit-handle-note sob o Identificador (ao criar explica que o @ e gerado; ao editar mostra o @ final); validador do slug mantido (hifens validos). 174/174 em test/features/units; goldens intactos (a etapa Hierarquia nao esta nos goldens)",
+   "Chave de composicao do local ao criar atividade ligada (180150 em producao): SuperadminApp.activityLocationCreateEnabled -> router enableActivityLocationCreate; main.dart liga; SupabaseActivityCommandRepository(activityLocationCreateAvailable: true) no escopo de autenticacao; teste de composicao do app + assercao no teste do escopo. Commit 85f66cd38",
+   "locations.schedule pela rota real: Ver agenda (vazio honesto) -> Adicionar janela Segunda 08:00-12:00 -> Publicar semana; releitura e reload completo mantem a janela (activity_locations 82e92854). pgTAP schedule 38/38 e copy 19/19 no espelho. Tres capturas em rota-real/",
+   "activities.create pela rota real: /activities/new abre (Identidade digitada, sigla R4, Continuar); ao escolher a instituicao em Estrutura e locais aparece \"Nao foi possivel carregar os vinculos desta instituicao\". Causa: SupabaseActivityDirectoryRepository.fetchFormOptions e searchProfessionals retornam unavailable (nunca foram ligados), enquanto superadmin_activity_form_options_v2 (180060, lote 86) existe em producao. Subagente lancado para ligar os dois metodos com testes; ainda rodando na pausa (WIP nao commitado, ver wip)"
   ],
   "metodoQueFuncionou": "no build release o tap do driver trava mas enter_text pelo gancho window.$flutterDriver funciona; cliques por CDP Input.dispatchMouseEvent (press/release com 80 ms); navegacao entre rotas por Page.navigate (a sessao sobrevive com Manter sessao aberta); popstate sintetico so funcionou uma vez, nao usar. Scripts: scratchpad/goto.js, cdp-click.js, drv.js",
   "avisoAoCoordenador": "a worktree e2-r04-estrutura foi removida duas vezes enquanto esta conversa trabalhava nela (08:52 e 09:5x), apagando o build web servido e derrubando a rota real no meio de uma prova. Enquanto a continuacao estiver viva, por favor nao remover a worktree; a branch e publicada a cada commit.",
