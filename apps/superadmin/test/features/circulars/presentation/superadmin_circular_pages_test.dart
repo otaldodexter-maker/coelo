@@ -326,6 +326,36 @@ void main() {
     expect(find.text('Respostas encerradas.'), findsOneWidget);
   });
 
+  // P50 = B (Owner, 11/09/2026): o Superadmin tambem responde a Circular
+  // publicada; a acao abre a tela de resposta. Encerrada: sem Responder.
+  testWidgets('detail offers Responder only for a published open Circular', (tester) async {
+    var responded = 0;
+    Future<void> pump(CircularStatus status) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SuperadminCircularDetailPage(
+              key: ValueKey(status),
+              circularId: 'circular-$status',
+              repository: _Repository()..visibleStatus = status,
+              onBack: () {},
+              onRespond: () => responded++,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+    }
+
+    await pump(CircularStatus.published);
+    await tester.tap(find.byKey(const Key('circular-detail-respond')));
+    await tester.pump();
+    expect(responded, 1);
+
+    await pump(CircularStatus.closed);
+    expect(find.byKey(const Key('circular-detail-respond')), findsNothing);
+  });
+
   // Rodada 4 (publicacoes-agenda): o servidor recusa editar Circular encerrada;
   // o detalhe nao oferece Editar nesse estado (achado da prova em producao).
   testWidgets('detail hides Editar when the Circular is closed', (tester) async {
