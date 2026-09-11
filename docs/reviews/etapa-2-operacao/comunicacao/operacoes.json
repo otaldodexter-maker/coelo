@@ -1,13 +1,13 @@
 {
-  "revision": 44,
-  "updated_at": "2026-09-11T20:46:00-03:00",
+  "revision": 45,
+  "updated_at": "2026-09-11T20:50:00-03:00",
   "round": "E2-R06-20260911",
   "group": "operacoes",
   "tool_model": "Claude, Opus 5 (1M), esforco medio — conversa R06 · Operacoes",
   "conversation": "R06 · Operações",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-operacoes",
   "branch": "work/etapa2-r06-operacoes",
-  "head": "(commit desta rev)",
+  "head": "(commit desta rev; anterior 4c… ver git log)",
   "base": {
     "requested": "origin/dev",
     "resolved": "ca60b096b",
@@ -135,6 +135,22 @@
       ],
       "what": "(3) ROTA REAL: plans.activate conciliado com a spec 051 como Restaurar (arquivado -> ativo): Arquivar + motivo -> plan_save 200 (archive) -> Restaurar + motivo -> plan_save 200 (restore); reload e aba Ativos mantem ativo. plans.assign: spec 051 mantem vinculos institucionais somente leitura; nao ha comando de atribuicao aprovado -> pergunta P51 ao Owner (blocked-decision mantido).",
       "evidence": "rota-real/20-25"
+    },
+    {
+      "when": "20:44",
+      "action_ids": [
+        "plans.list",
+        "plans.edit"
+      ],
+      "what": "parser do cliente de Planos tolera entitlements ausentes (feature desligada, limite 0) e starts_at nulo (\"desde\" omitido); teste novo; plans 45/45 (pendencia da R05 fechada).",
+      "commit": "ef7e577c9"
+    },
+    {
+      "when": "20:49",
+      "action_ids": [
+        "account.profile"
+      ],
+      "what": "candidato 20260911200300_account_profile_service_person_email_v1: projecao do Perfil cai no e-mail do proprio auth.uid() quando a pessoa (de servico, sem person_auth_links) e o ator da sessao; pgTAP 3/3 (nao vaza e-mail para outra pessoa) + superadmin_account_profile_v1 16/16 no descartavel. Fecha \"e-mail vazio da pessoa de servico\" apos aplicar; prova na rota real depois do lote."
     }
   ],
   "tests": [
@@ -214,6 +230,12 @@
       "pgtap": "supabase/tests/superadmin_account_sessions_v1_test.sql 14/14 (descartavel coelo_ops_r06: baseline + 141 migrations da ordem-de-aplicacao-producao.txt)",
       "composition_key": "nenhuma: main.dart ja injeta SupabaseAccountSessionsRepository; ate aplicar, o card mostra a falha honesta da RPC inexistente e Atualizar",
       "state": "PRONTO para o coordenador aplicar (faixa 2026091220xxxx)"
+    },
+    {
+      "path": "packages/coelo_database/candidatos/operacoes/20260911200300_account_profile_service_person_email_v1.sql",
+      "pgtap": "supabase/tests/account_profile_service_person_email_v1_test.sql 3/3; superadmin_account_profile_v1_test 16/16 (descartavel coelo_ops_r06 com lotes ate 48 + 200200)",
+      "composition_key": "nenhuma",
+      "state": "PRONTO para o coordenador aplicar"
     }
   ],
   "questions_to_owner": [
@@ -234,7 +256,7 @@
       "what": "/imports/new diz \"Este recurso fica disponivel depois do MVP.\" (503 da mesma familia) em vez de \"temporariamente indisponivel\"; A = manter, R = voltar ao texto anterior."
     }
   ],
-  "next_step": "ate 21:36: (6) audit.export — verificar se cabe sem deploy (nao); senao, revisar goldens de outras familias afetados pelo texto 503? (nao: so /imports/new); fechar Chrome/servidor ao fim; revisao de 10 min as 21:36",
+  "next_step": "ate 21:36: prova do e-mail no Perfil se o 200300 for aplicado; senao encerrar Chrome/servidor e responder a revisao de 10 min",
   "commits": [],
   "r04_history": {
     "revision": 20,
@@ -1075,5 +1097,6 @@
     "copia": "docs/reviews/evidence/etapa-2/r06-operacoes/aprovacao-r06-ops/pagina-lado-a-lado-r06-ops.html",
     "itens": "SUP-R06 (6 pares de Suporte), DEF-R06 (2 pares), SES-R06 (captura da rota real)"
   },
-  "handoff": "docs/reviews/evidence/etapa-2/r06-operacoes/handoff.md"
+  "handoff": "docs/reviews/evidence/etapa-2/r06-operacoes/handoff.md",
+  "merge_origin_dev": "b60ac0bea (lote 52 integrado; flutter analyze lib test limpo; support+account+errors+imports+sonda 284/284)"
 }
