@@ -41,6 +41,7 @@ Future<void> main() async {
       studentLinkRepository: authScope.studentLinkRepository,
       institutionDirectoryRepository: authScope.institutionDirectoryRepository,
       unitDirectoryRepository: authScope.unitDirectoryRepository,
+      structureHandleAvailability: authScope.structureHandleAvailability,
       unitBackendCommands: authScope.unitBackendCommands,
       structureMutationsEnabled: authScope.structureMutationsEnabled,
       groupDirectoryRepository: authScope.groupDirectoryRepository,

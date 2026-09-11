@@ -99,6 +99,8 @@ import '../../features/units/data/unavailable_unit_composition.dart';
 import '../../features/units/data/supabase_unit_backend_commands_gateway.dart';
 import '../../features/units/domain/unit_backend_commands.dart';
 import '../../features/units/domain/unit_directory.dart';
+import '../../features/units/domain/unit_handle_availability.dart';
+import '../../features/units/data/supabase_structure_handle_availability.dart';
 import '../../features/safety/data/supabase_child_safety_repository.dart';
 import '../../features/safety/domain/child_safety_contract.dart';
 import '../../features/student_tracking/domain/student_tracking.dart';
@@ -147,6 +149,7 @@ final class SuperadminAuthScope {
     this.groupDetailRepository = const UnavailableGroupDetailRepository(),
     this.unitDetailRepository = const UnavailableUnitDetailRepository(),
     required this.unitDirectoryRepository,
+    this.structureHandleAvailability,
     required this.unitBackendCommands,
     required this.structureMutationsEnabled,
     required this.importRepository,
@@ -210,6 +213,9 @@ final class SuperadminAuthScope {
   final GroupDetailRepository groupDetailRepository;
   final UnitDetailRepository unitDetailRepository;
   final UnitDirectoryRepository unitDirectoryRepository;
+
+  /// Regra do @ (ADR 0034 Decisao 16): disponibilidade enquanto digita.
+  final StructureHandleAvailabilityChecker? structureHandleAvailability;
   final UnitBackendCommandsGateway unitBackendCommands;
   final bool structureMutationsEnabled;
   final ImportRepository importRepository;
@@ -397,6 +403,7 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       groupDetailRepository: SupabaseGroupDetailRepository(client),
       unitDetailRepository: SupabaseUnitDetailRepository(client),
       unitDirectoryRepository: SupabaseUnitDirectoryRepository(client),
+      structureHandleAvailability: SupabaseStructureHandleAvailability(client).check,
       unitBackendCommands: SupabaseUnitBackendCommandsGateway(client),
       // OQ-032/OQ-043: these CRUD repositories still target the legacy
       // people-based realm. Keep production mutations fail-closed until the

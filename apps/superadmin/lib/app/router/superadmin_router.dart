@@ -223,6 +223,7 @@ import '../../features/student_tracking/presentation/student_tracking_page.dart'
 import '../../features/units/data/fake_unit_directory_repository.dart';
 import '../../features/units/data/unavailable_unit_composition.dart';
 import '../../features/units/domain/unit_backend_commands.dart';
+import '../../features/units/domain/unit_handle_availability.dart';
 import '../../features/units/domain/unit_directory.dart' hide UnitDirectoryPage;
 import '../../features/units/presentation/unit_directory_page.dart';
 import '../../features/units/presentation/unit_form_page.dart';
@@ -360,6 +361,7 @@ GoRouter createSuperadminRouter({
   PersonHandleRepository? personHandleRepository,
   PersonIdentityRepository personIdentityRepository = const UnavailablePersonIdentityRepository(),
   UnitDirectoryRepository unitDirectoryRepository = const UnavailableUnitDirectoryRepository(),
+  StructureHandleAvailabilityChecker? structureHandleAvailability,
   UnitBackendCommandsGateway unitBackendCommands = const UnavailableUnitBackendCommandsGateway(),
   bool enableStructureMutations = false,
   bool enableActivityLocationCreate = false,
@@ -1751,6 +1753,7 @@ GoRouter createSuperadminRouter({
                   : UnitFormPage(
                       key: ValueKey(session.authorizationInvalidationRevision),
                       repository: unitRepository,
+                      checkHandleAvailability: structureHandleAvailability,
                       locationCatalogReader: locationCatalogReader,
                       locationSessionAvailable:
                           session.isAuthenticated &&
@@ -1813,6 +1816,7 @@ GoRouter createSuperadminRouter({
                   : UnitFormPage(
                       key: ValueKey(session.authorizationInvalidationRevision),
                       repository: unitRepository,
+                      checkHandleAvailability: structureHandleAvailability,
                       unitId: state.pathParameters['unitId'],
                       locationCatalogReader: locationCatalogReader,
                       locationSessionAvailable:

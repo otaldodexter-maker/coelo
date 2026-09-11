@@ -39,6 +39,7 @@ import '../features/locations/domain/location_consumer_bindings_reader.dart';
 import '../features/locations/domain/location_consumer_selection_reader.dart';
 import '../features/units/data/unavailable_unit_composition.dart';
 import '../features/units/domain/unit_backend_commands.dart';
+import '../features/units/domain/unit_handle_availability.dart';
 import '../features/units/domain/unit_directory.dart';
 import '../features/people/data/supabase_person_directory_repository.dart';
 import '../features/people/domain/person_directory.dart';
@@ -141,6 +142,7 @@ class SuperadminApp extends StatefulWidget {
     this.personHandleRepository,
     this.personIdentityRepository = const UnavailablePersonIdentityRepository(),
     this.unitDirectoryRepository = const UnavailableUnitDirectoryRepository(),
+    this.structureHandleAvailability,
     this.unitBackendCommands = const UnavailableUnitBackendCommandsGateway(),
     this.structureMutationsEnabled = false,
     this.activityLocationCreateEnabled = false,
@@ -215,6 +217,7 @@ class SuperadminApp extends StatefulWidget {
   final PersonHandleRepository? personHandleRepository;
   final PersonIdentityRepository personIdentityRepository;
   final UnitDirectoryRepository unitDirectoryRepository;
+  final StructureHandleAvailabilityChecker? structureHandleAvailability;
   final UnitBackendCommandsGateway unitBackendCommands;
   final bool structureMutationsEnabled;
 
@@ -317,6 +320,7 @@ class _SuperadminAppState extends State<SuperadminApp> {
       personHandleRepository: widget.personHandleRepository,
       personIdentityRepository: widget.personIdentityRepository,
       unitDirectoryRepository: widget.unitDirectoryRepository,
+      structureHandleAvailability: widget.structureHandleAvailability,
       unitBackendCommands: widget.unitBackendCommands,
       enableStructureMutations: widget.structureMutationsEnabled,
       enableActivityLocationCreate: widget.activityLocationCreateEnabled,
