@@ -5,6 +5,8 @@ import 'package:coelo_superadmin/core/guards/superadmin_session.dart';
 import 'package:coelo_superadmin/features/auth/domain/login_request.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/auth/domain/password_recovery.dart';
+import 'package:coelo_superadmin/features/principal_circulars/domain/circular_repository.dart';
+import 'package:coelo_superadmin/features/principal_circulars/domain/principal_happens_mixed_feed.dart';
 import 'package:coelo_superadmin/features/principal_happens/domain/principal_happens_feed_repository.dart';
 import 'package:coelo_superadmin/features/principal_happens/domain/principal_happens_preview_data.dart';
 import 'package:coelo_superadmin/features/principal_happens/presentation/principal_happens_preview_page.dart';
@@ -29,6 +31,7 @@ void main() {
         mealPlanImageRepository: const UnavailableMealPlanImageRepository(),
         principalRuntimeContextRepository: const _ContextRepository(),
         principalHappensFeedRepository: _RecordingFeedRepository(),
+        principalMixedFeedRepository: _RecordingMixedFeedRepository(),
         principalNowFeedRepository: _EmptyNowRepository(),
         onThemeModeChanged: (_) {},
       );
@@ -77,6 +80,7 @@ void main() {
   ) async {
     final session = SuperadminSession()..signInForTesting();
     final feed = _RecordingFeedRepository();
+    final mixed = _RecordingMixedFeedRepository();
     final router = createSuperadminRouter(
       session: session,
       login: unavailableSuperadminLogin,
@@ -85,6 +89,7 @@ void main() {
       mealPlanImageRepository: const UnavailableMealPlanImageRepository(),
       principalRuntimeContextRepository: const _ContextRepository(),
       principalHappensFeedRepository: feed,
+      principalMixedFeedRepository: mixed,
       onThemeModeChanged: (_) {},
     );
     addTearDown(router.dispose);
@@ -98,17 +103,20 @@ void main() {
       find.byType(PrincipalHappensPreviewPage),
     );
     expect(page.data, same(PrincipalHappensPreviewData.empty));
-    expect(feed.lastScope?.institutionId, 'institution-real');
-    expect(feed.lastScope?.unitId, 'unit-real');
-    expect(feed.lastScope?.groupId, 'group-real');
+    // O Acontece composto le o feed misto (posts + circulares) com o escopo real.
+    expect(mixed.lastScope?.institutionId, 'institution-real');
+    expect(mixed.lastScope?.unitId, 'unit-real');
+    expect(mixed.lastScope?.groupId, 'group-real');
+    expect(feed.lastScope, isNull);
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.principalHappens);
     expect(find.byKey(const Key('superadmin-persistent-shell')), findsOneWidget);
 
+    // P28: o "+" do dock publica no Acontece.
     await tester.tap(find.byKey(const Key('principal-happens-publish-now-action')));
     await tester.pumpAndSettle();
     expect(
       router.routeInformationProvider.value.uri.path,
-      SuperadminRoutes.principalNowPublication,
+      SuperadminRoutes.principalHappensPublish,
     );
     expect(router.routeInformationProvider.value.uri.path, isNot(startsWith('/dev/')));
 
@@ -142,6 +150,7 @@ void main() {
       mealPlanImageRepository: const UnavailableMealPlanImageRepository(),
       principalRuntimeContextRepository: const _MultipleContextRepository(),
       principalHappensFeedRepository: _RecordingFeedRepository(),
+      principalMixedFeedRepository: _RecordingMixedFeedRepository(),
       onThemeModeChanged: (_) {},
     );
     addTearDown(router.dispose);
@@ -211,6 +220,20 @@ final class _RecordingFeedRepository implements PrincipalHappensFeedRepository {
   @override
   Future<PrincipalHappensMediaRead> resolveMedia(PrincipalHappensMediaDescriptor media) =>
       throw UnimplementedError();
+}
+
+final class _RecordingMixedFeedRepository implements PrincipalMixedFeedRepository {
+  CircularScope? lastScope;
+
+  @override
+  Future<PrincipalHappensFeedPage> list(
+    CircularScope scope, {
+    PrincipalHappensFeedCursor? cursor,
+    int limit = 20,
+  }) async {
+    lastScope = scope;
+    return const PrincipalHappensFeedPage(items: [], nextCursor: null);
+  }
 }
 
 final class _MultipleContextRepository implements PrincipalRuntimeContextRepository {
