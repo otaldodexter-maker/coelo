@@ -221,6 +221,35 @@ real de Instituições → Avaliações com a sessão não foi provada nesta rod
 Sugestão: abrir a conversa «R05 · Estrutura» primeiro na próxima rodada, com
 o método de prova já documentado (build web de `qa_main` + CDP).
 
+## P37 — Dados sintéticos deixados em produção pelas provas (limpeza)
+
+O `insert`/`delete` direto em produção foi recusado ao coordenador nesta
+rodada, então a limpeza de dados sintéticos ficou pendente. Inventário (ids
+completos nos JSONs e handoffs de cada grupo):
+
+- `qa-r03@coelo.me` (Auth + realm interno + perfil interno semeado pelo
+  171200 + pessoa de serviço da ponte + memberships espelhadas): remover ao
+  fim da Etapa 2 com `scratchpad/gen-qa-user-sql.js` em modo remover (R03).
+- realm-interno: instituição `9f040000-0000-4000-8000-000000000010` (ativa,
+  fixture do chat), pessoas `…061`/`…062`, conversa/grupo criados pela UI.
+- formularios: prefixo `d0c40000-` (instituição "QA R04 Cuidado", unidade,
+  criança, vínculo), formulário `4555ba07-e4a4-4971-8ba7-d81a775169cd`, local
+  `fc446535-100c-4f35-8e30-e43d63176e3f`.
+- acessos-pessoas: autorização `34d29829-a8b5-4b23-aacb-46e994dce7d7`,
+  modelos `cc322488-…` e cópia `60fb9586-…`, papel
+  `qa-r04-perfil-sintetico-7f6f8d16` (já excluído pela prova), pessoa draft
+  `ec2a15a2-76bc-4e71-8419-94413d0c5c98`.
+- operacoes: chamado `48e02ab0-fa60-4e7c-86b6-78f75565dc57`, telefone
+  `11999990000` na pessoa de serviço `007a4ca5-…`, pedido de troca de e-mail
+  cancelado e recibos.
+- publicacoes: avisos `[R04-QA]` inativos, circulares/eventos de teste.
+
+Opções: **(a)** o Owner libera na conversa do coordenador ("P37 aprovado") um
+script único de limpeza por prefixo/ids, provado no espelho antes; **(b)**
+manter até a próxima rodada e limpar antes da demonstração. Recomendação:
+(a) no fechamento da próxima rodada, depois de conferir que nada da
+demonstração depende deles.
+
 ## Atualização P22 (23:05)
 
 A frente formularios-cuidado-rotina escreveu, na própria sessão, o pacote
