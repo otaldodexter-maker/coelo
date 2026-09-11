@@ -44,3 +44,25 @@ mais pgTAP, e esse replay é o preflight antes de produção. O ledger
 `supabase_migrations.schema_migrations` não espelha os arquivos locais, então
 a aplicabilidade de um pacote antigo é decidida por presença de objeto em
 `pg_proc`/`pg_class`, nunca pelo carimbo.
+
+Regras medidas na Rodada 4 (noite de 10→11/09/2026, ADR 0034 Decisões 12 e
+13):
+
+- **MFA fora do MVP:** `requires_mfa` é falso em todo o catálogo e
+  `app_private.has_mfa_aal2()` aceita sessão `aal1`; nenhuma função nega por
+  segundo fator. A ADR 0019 volta depois do MVP.
+- **Ordem real de aplicação:** produção não recebeu as migrations em ordem
+  de carimbo (o lote 3 entrou antes do lote 4). O espelho local só reproduz
+  produção seguindo `packages/coelo_database/migrations/ordem-de-aplicacao-producao.txt`:
+  `db reset` com só a baseline em `supabase/migrations/` (baseline + seed) e
+  depois `psql` de cada arquivo na ordem do lote. `db reset` com `migrations/`
+  inteira falha em `20260910170100` e `170800`.
+- **`supabase db query -f` executa o arquivo inteiro numa transação:**
+  `ALTER TYPE ... ADD VALUE` precisa ir em arquivo próprio anterior, senão o
+  valor novo não pode ser usado (erro 55P04). O ledger
+  `supabase_migrations.schema_migrations` é preenchido à mão (`version`,
+  `name`) no mesmo lote.
+- **Ator no realm de pessoas:** os usuários do Superadmin existem só no realm
+  interno v2; as RPCs baseadas em `current_person_id()` só os alcançam pela
+  ponte de ator (`20260910220400`: pessoa de serviço + membership espelhada +
+  fallback em `current_person_id()`), sem tocar nos guards de realm.
