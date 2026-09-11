@@ -1,12 +1,12 @@
 {
- "revision": 48,
+ "revision": 49,
  "round": "E2-R05-20260911",
  "role": "Coordenacao da tarde R05 - Claude Opus (C0)",
  "writer": "coordenador-claude",
  "app": "Claude Code (VS Code)",
  "model": "claude-opus-5",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T16:00:00-03:00",
+ "updatedAt": "2026-09-11T16:25:00-03:00",
  "relogio": "relogio da maquina; posse as 12:03 -03:00 de 11/09/2026",
  "posseR04": {
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -238,6 +238,7 @@
   "46": "15:04 lotes 45-46; form-export-download implantada; allowlists de origem alinhadas; deltas finais de G1/G3/G4/G6 aplicados (FE 131 / BE done 128 / E2E 99); P47/P48 e IMP-R05 registrados",
   "47": "15:50 pedido de revisao final as sete frentes; lotes 47-48; moments-media corrigida; todas as frentes finalizadas (FE 138 / BE done 132 / E2E 105)",
   "48": "16:00 FECHAMENTO da R05: sete frentes integradas e worktrees removidas; 21 lotes/34 pacotes; rastreadores, skills, ADR, conhecimento e fechamento publicados; percentuais finais",
+  "49": "16:25 artefato de aprovacoes da R05 publicado (17 telas + P43-P50, com Salvar); prompts da R06 (2 h + 30 min, Opus 5 medio) publicados; formato de local-green ajustado a pedido do Owner",
   "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina."
  },
  "fechamentoR03": {
@@ -1390,5 +1391,21 @@
   "suiteCompleta": "flutter test do superadmin na base integrada 45a110063: 6692 aprovados / 53 falhos / 11 pulados. Comparadas com origin/dev 9bf60463b em worktree limpa: 49 pre-existentes; 4 novas da R05 para a abertura da R06: fail_closed_screens_with_data_probe_test Importacoes 1440/375 (G7), principal_real_route_test P28 (G4), health_care_golden_test tabs hover (G3/composto)",
   "perguntasAoOwner": "P43-P50, agenda_create_* A+, IMP-R05-2 e arrobas reservados em next-round/R05-perguntas-ao-owner-20260911.md",
   "fechamento": "next-round/R05-fechamento.md (dados sinteticos, chaves, recomendacoes para a R06)"
+ },
+ "artefatoDeAprovacoesR05": {
+  "url": "https://claude.ai/code/artifact/2150f92d-3c61-4f8e-a67c-07cb8d3983fb",
+  "conteudo": "17 telas com 26 goldens claros R/A (Principal x6, Agenda criar/lista, Avisos, Circulares, seis diretorios do composto de tabela, formulario de Instituicoes), IMP-R05-2 e P43-P50; a pagina publica uma versao nova de si mesma ao Salvar (capacidade artifact); o coordenador da R06 le o <script id=state> da ultima versao e aplica",
+  "estadoR05": "publicado 16:14; aguardando o Owner"
+ },
+ "rodada6": {
+  "id": "E2-R06-<AAAAMMDD>",
+  "prompts": "docs/reviews/etapa-2-operacao/next-round/R06-prompts.md",
+  "janela": "T0 = prompt C0; usuarios qa-r06-<grupo> criados pelo coordenador ate T0+20; frentes ate T0+2h; revisao de 10 min ate T0+2h10; fechamento ate T0+2h30",
+  "modelo": "Claude Opus 5, esforco medio, em todas as conversas",
+  "decisoesDoOwner": [
+   "usuarios sinteticos por grupo (qa-r06-<grupo>@coelo.me)",
+   "local-green apresentado sobre o que ainda falta",
+   "listas de arrobas reservados so no encerramento do MVP"
+  ]
  }
 }
