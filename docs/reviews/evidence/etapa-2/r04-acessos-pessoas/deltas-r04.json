@@ -379,8 +379,8 @@
   {
     "action_id": "access-models.create",
     "camada": "frontend",
-    "estado_proposto": "local-green",
-    "delta": "R04: formulario de 3 passos (perfil/escopo, permissoes com o catalogo 171300, revisao com motivo) criou o modelo sintetico 'QA R04 Modelo sintetico' pela rota real; persistido em producao (access_profile_templates code qa-r04-modelo-sintetico-b6f3958c). Falta so a prova de reload da lista com o item visivel (terceira linha) para propor verified.",
+    "estado_proposto": "verified",
+    "delta": "R04: formulario de 3 passos (perfil/escopo, permissoes com o catalogo 171300, revisao com motivo) criou o modelo sintetico 'QA R04 Modelo sintetico' pela rota real; persistido em producao (access_profile_templates code qa-r04-modelo-sintetico-b6f3958c). O cursor da lista (mesmo RPC da tela) devolve o item apos a criacao; FE verified alinhado com o coordenador.",
     "evidencia": "capturas 9411-b2-model-step1/2/3 (scratchpad; copiar na evidencia); comunicacao/acessos-pessoas.json r105",
     "certificacao": {
       "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
@@ -465,6 +465,32 @@
       "revision": "07eae6925",
       "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST",
       "recordedAt": "2026-09-11T03:04:00-03:00"
+    }
+  },
+  {
+    "action_id": "access-models.detail",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R04: superadmin_access_profile_model_detail(p_model_id) devolve o modelo sintetico com capabilities e version por REST (lote 16). Observacao: o cliente chama com p_domain e p_model_id (PGRST202); conferir a assinatura no repositorio (linha 182 usa so p_model_id — ok).",
+    "evidencia": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 110, REST)",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+      "revision": "af7f3b9fb",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST",
+      "recordedAt": "2026-09-11T03:10:00-03:00"
+    }
+  },
+  {
+    "action_id": "access-profiles.edit",
+    "camada": "backend",
+    "estado_proposto": "fail-closed",
+    "delta": "R04: superadmin_access_profile_save (update) devolve 23514 'active full-authority MFA replacement required' em producao: a guarda assert_full_authority_remains exige uma membership de plataforma cujo papel conceda TODAS as permissoes ativas e o Owner tem 134/135 (falta child_safety.review, criada no lote 4 sem concessao). Candidato 172000 (grant idempotente ao Owner, pgTAP 4/4) destrava editar/excluir/reatribuir perfis.",
+    "evidencia": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 110, REST + db query somente leitura)",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+      "revision": "af7f3b9fb",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST",
+      "recordedAt": "2026-09-11T03:10:00-03:00"
     }
   }
 ]
