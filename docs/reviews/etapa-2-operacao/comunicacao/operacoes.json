@@ -1,338 +1,164 @@
 {
-  "revision": 20,
-  "updated_at": "2026-09-11T08:55:00-03:00",
-  "round": "E2-R04-20260911",
+  "revision": 21,
+  "updated_at": "2026-09-11T12:20:00-03:00",
+  "round": "E2-R05-20260911",
   "group": "operacoes",
-  "tool_model": "Claude, Opus 5 (1M) — conversa R04 · Operacoes retomada apos a queda de 00:27",
-  "conversation": "R04 · Operações",
-  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-operacoes",
-  "branch": "work/etapa2-r04-operacoes",
-  "head": "0376a0446 (origin/dev; branch integrada por conteudo)",
+  "tool_model": "Claude, Opus 5 (1M), esforco medio — conversa R05 · Operacoes",
+  "conversation": "R05 · Operações",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-operacoes",
+  "branch": "work/etapa2-r05-operacoes",
+  "head": "2f6a6114f (origin/dev na abertura)",
   "base": {
     "requested": "origin/dev",
-    "resolved": "836c63215 (origin/dev com lote 8; branch rebaseada)",
-    "note": "HEAD que contem R04-prompts.md (posterior a a4af2b198)"
+    "resolved": "2f6a6114f",
+    "note": "HEAD que contem R05-prompts.md e coordenacao rev 38"
   },
   "scope": {
     "app": "apps/superadmin",
     "families": [
       "support",
+      "audit",
       "account",
+      "catalog",
       "plans",
-      "audit"
+      "imports",
+      "profile_files"
     ],
-    "action_ids": [
-      "audit.list",
-      "audit.filter",
-      "audit.detail",
-      "audit.export",
+    "action_count": 38,
+    "e2e_today": [
       "support.create",
       "support.table",
       "support.kanban",
       "support.detail",
       "support.reply",
       "support.close",
-      "account.profile",
-      "account.settings",
-      "account.theme",
-      "account.mfa",
-      "account.sessions",
-      "account.logout",
-      "plans.list",
-      "plans.create",
-      "plans.edit",
-      "plans.activate",
-      "plans.assign"
+      "account.profile"
     ],
     "order": [
-      "account (Perfil e Configuracoes na rota normal com sessao)",
-      "support (ligar supportController no router de producao; tabela/kanban/detalhe na rota real; toolbar e tabela no composto)",
-      "plans (composto; ARQUIVO fica com principal-chat-sistema)",
-      "audit (candidato AUDIT-READ-V2 sobre a baseline em candidatos/operacoes 2026091021xxxx + pgTAP no descartavel; diretorio e filtros no padrao)",
-      "goldens (support_*, settings_*, profile_*, plan_cards_*, audit_directory_* pelas tres listas do Owner; regravar so apos observacao, SDK 3.44.2)"
+      "(1) G-SUP A+: colunas da tabela de Suporte e implantacao alinhadas a esquerda no mesmo eixo, igual a Instituicoes; goldens support_* regravados apos a correcao; pagina lado a lado para o Owner",
+      "(2) audit.list/filter/detail na rota real com qa-r03 (leitura v2 210100 ja em producao no lote 10); candidato de auditoria retido da R01: revisar e, se houver delta, pacote em candidatos/operacoes 2026091120xxxx com pgTAP",
+      "(3) account.sessions e account.logout",
+      "(4) catalog.validate/sync/publish e plans.list/create/edit/activate/assign (backend pending: contrato minimo com RLS ou gate real registrado)",
+      "(5) imports.* e profile_files.*: botoes visiveis com indisponibilidade honesta, sem picker/parser/job/persistencia (ADR 0034); goldens conforme as listas do Owner"
     ],
-    "included": "21 acoes ponta a ponta pela regua do MVP (rota normal abre, CRUD persiste em producao, RLS nega outro tenant em pgTAP, reload mantem)",
-    "excluded": "code review profundo (vira pendencia registrada); import/export reais (adiados, botao honesto); MFA (fora do MVP, Decisao 12); ARQUIVO nos cards de Planos (wip/fase0-arquivo-chat, grupo principal-chat-sistema)"
+    "included": "38 acoes pela regua do MVP (rota normal abre, CRUD persiste em producao, RLS nega outro tenant em pgTAP, reload mantem)",
+    "excluded": "code review profundo (pendencia registrada); import/export reais; MFA (Decisao 12); escrita em dev, inventario e rastreadores (coordenador)"
   },
   "opening_contract": {
-    "objective": "levar Conta e Suporte a verified/done/E2E na rota normal com sessao qa-r03@coelo.me sobre o SQL do lote 7; ligar supportController no router; Planos e Auditoria sobre o composto; AUDIT-READ-V2 como pacote verde em candidatos/operacoes",
-    "received": "20260910230019 (Suporte: 5 RPCs superadmin_support_*, RLS forcado em support_sessions) e 20260910230020 (Conta: 3 RPCs superadmin_account_*) em producao; pgTAP de Suporte corrigido pelo coordenador (pg_class no lugar de row_security_active)",
-    "first_gate": "account.profile: rota normal /conta/perfil com sessao qa-r03 -> editar nome/telefone -> reload mantem; depois support.create: router de producao sem supportController",
-    "stop_criterion": "recorte concluido, 04:20 de 11/09, ou ordem do Owner/coordenador",
-    "expected_evidence": "commits pequenos em portugues na branch do grupo (push), flutter test por familia, pgTAP verde no projeto descartavel para o pacote de Auditoria, prova de rota real com sessao (sem credencial em lugar algum), proposta de delta FE/BE/E2E por action_id",
-    "time_estimate": "nao calculavel ainda; calibrar apos a primeira tela (Conta) na rota real"
+    "objective": "fechar G-SUP com goldens e pagina lado a lado; levar Auditoria a verified/done/E2E na rota real; registrar gate real de Conta (sessoes/sair), Catalogo e Planos; confirmar indisponibilidade honesta de Importacoes e Arquivos de perfil",
+    "received": "Suporte 6/6 e account.profile em E2E (R04); 210000 e 210100 em producao (lote 10); diretorio de Auditoria no composto (f9ddaf90a, deltas FE local-green em deltas-r04-ops-audit-plans.json ainda nao aplicados); resposta do Owner G-SUP = A+ (alinhar colunas a esquerda igual a Instituicoes)",
+    "first_gate": "G-SUP: localizar a diferenca de alinhamento entre SupportTicketRows e a tabela de Instituicoes no composto CoeloAdminDirectory; corrigir; regravar 32 goldens support_*; pagina R/A",
+    "stop_criterion": "recorte concluido, 15:45 de 11/09, ou ordem do Owner/coordenador",
+    "expected_evidence": "commits pequenos em portugues na branch (push), flutter test por familia, pgTAP verde se houver pacote, prova de rota real com sessao qa-r03 (credencial so no arquivo), deltas por action_id em evidence/etapa-2/r05-operacoes/",
+    "time_estimate": "nao calculavel ainda; calibrar apos G-SUP"
   },
-  "loop": "/loop 15m agendado na abertura (retomar o recorte, atualizar operacoes.json, nao encerrar antes de 04:20)",
-  "changes": [
-    {
-      "action_ids": [
-        "account.profile",
-        "account.settings",
-        "support.table",
-        "support.kanban",
-        "support.detail",
-        "support.create",
-        "support.reply",
-        "support.close"
-      ],
-      "status": "rota-real-verificada",
-      "changed": [
-        "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/*.png (23 capturas)",
-        "docs/reviews/evidence/etapa-2/r04-operacoes/deltas-r04-ops.json"
-      ],
-      "delta": "Prova na rota real com sessao qa-r03 sobre o build web release desta branch: Conta e Suporte com CRUD em producao, RLS ja coberta pelo pgTAP dos lotes 7/10 (superadmin_support_production 23/23, superadmin_account_profile_v1 16/16, support_create_internal_scope 17/17) e reload mantendo estado. Nenhuma alteracao de codigo.",
-      "proof": "ver ROTA_REAL_03h00_por_action_id (metodo, corpo e status de cada RPC capturados por Network)"
+  "loop": "/loop 15m agendado na abertura (retomar o recorte, atualizar operacoes.json, nao encerrar antes das 15:45)",
+  "changes": [],
+  "tests": {
+    "P": 0,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0,
+    "evidence": [],
+    "planned": [
+      "flutter test test/features/support (goldens apos G-SUP)",
+      "rota real /audit com qa-r03",
+      "pgTAP do pacote de auditoria se houver delta"
+    ]
+  },
+  "blocked": [],
+  "resolved": [],
+  "proposed_deltas": [],
+  "packages_ready": [],
+  "questions_to_owner": [],
+  "next_step": "G-SUP: inspecionar support_ticket_rows.dart vs institution table no composto",
+  "commits": [],
+  "r04_history": {
+    "revision": 20,
+    "updated_at": "2026-09-11T08:55:00-03:00",
+    "round": "E2-R04-20260911",
+    "group": "operacoes",
+    "tool_model": "Claude, Opus 5 (1M) — conversa R04 · Operacoes retomada apos a queda de 00:27",
+    "conversation": "R04 · Operações",
+    "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-operacoes",
+    "branch": "work/etapa2-r04-operacoes",
+    "head": "0376a0446 (origin/dev; branch integrada por conteudo)",
+    "base": {
+      "requested": "origin/dev",
+      "resolved": "836c63215 (origin/dev com lote 8; branch rebaseada)",
+      "note": "HEAD que contem R04-prompts.md (posterior a a4af2b198)"
     },
-    {
-      "action_ids": [
-        "support.create",
-        "support.table",
-        "support.kanban",
-        "support.detail",
-        "support.reply",
-        "support.close"
+    "scope": {
+      "app": "apps/superadmin",
+      "families": [
+        "support",
+        "account",
+        "plans",
+        "audit"
       ],
-      "status": "backend-candidate-local-green",
-      "changed": [
-        "packages/coelo_database/candidatos/operacoes/20260910210000_support_create_internal_scope_v1.sql",
-        "packages/coelo_database/supabase/tests/superadmin_support_create_internal_scope_test.sql"
-      ],
-      "commit_sha": "480728d7f",
-      "delta": "superadmin_support_create: aceita p_institution_id nulo (o cliente envia nulo no botao de Bug; a coluna ja era nula) e preenche support_sessions.reason_code (NOT NULL sem default na baseline, o lote 7 nao preenchia: nenhum chamado podia ser criado). scope_kind platform quando sem instituicao; unidade sem instituicao rejeitada.",
-      "proof": "projeto descartavel proprio (coelo_baseline_ops, portas 64xxx): baseline + seed + lotes 1-8 (46 migrations) + candidato; pgTAP superadmin_support_create_internal_scope_test 17/17 (anonimo 28000, sem support.manage 42501, criar sem instituicao, idempotencia por request_id, reason_code, auditoria, responder rev 2, status, listar); superadmin_support_production_test 23/23 e superadmin_account_profile_v1_test 16/16 continuam verdes",
-      "criteria": {
-        "frontend": "P(wiring: main.dart ja passa SupabaseSupportRepository e o router cria productionSupportController; rota real pendente)",
-        "backend": "local-green (candidato; aplicacao pelo coordenador)",
-        "e2e": "N (ator do realm interno: ponte e pacote do coordenador)"
-      }
-    },
-    {
       "action_ids": [
-        "account.profile",
-        "account.settings",
-        "account.theme",
+        "audit.list",
+        "audit.filter",
+        "audit.detail",
+        "audit.export",
         "support.create",
         "support.table",
         "support.kanban",
         "support.detail",
         "support.reply",
         "support.close",
+        "account.profile",
+        "account.settings",
+        "account.theme",
+        "account.mfa",
+        "account.sessions",
+        "account.logout",
         "plans.list",
         "plans.create",
         "plans.edit",
-        "audit.list",
-        "audit.filter",
-        "audit.detail"
+        "plans.activate",
+        "plans.assign"
       ],
-      "status": "finding-cross-group",
-      "changed": [],
-      "delta": "ACHADO: superadmin_support_* e superadmin_account_* (e tambem Unidades 160000, Rotina, Assiduidade, Cuidado, Cardapios, Seguranca infantil) resolvem o ator por app_private.current_person_id()/has_platform_permission (realm people). O coordenador mediu em producao: person_auth_links tem 0 linhas e todos os auth users (inclusive o qa-r03) so existem no realm interno v2. Logo essas RPCs devolvem 42501 internal_actor_required para qualquer sessao real. Decisao do coordenador (22:12): a ponte entre realms e pacote unico dele em candidatos/coordenador; eu NAO altero a resolucao do ator. Meu esboco de resolver (superadmin_actor_resolve) foi descartado.",
-      "gate": "pacote de ponte do coordenador aplicado em producao (acompanhar coordenacao.json); ate la, rota real de Conta/Suporte so prova login, shell e abertura das telas"
+      "order": [
+        "account (Perfil e Configuracoes na rota normal com sessao)",
+        "support (ligar supportController no router de producao; tabela/kanban/detalhe na rota real; toolbar e tabela no composto)",
+        "plans (composto; ARQUIVO fica com principal-chat-sistema)",
+        "audit (candidato AUDIT-READ-V2 sobre a baseline em candidatos/operacoes 2026091021xxxx + pgTAP no descartavel; diretorio e filtros no padrao)",
+        "goldens (support_*, settings_*, profile_*, plan_cards_*, audit_directory_* pelas tres listas do Owner; regravar so apos observacao, SDK 3.44.2)"
+      ],
+      "included": "21 acoes ponta a ponta pela regua do MVP (rota normal abre, CRUD persiste em producao, RLS nega outro tenant em pgTAP, reload mantem)",
+      "excluded": "code review profundo (vira pendencia registrada); import/export reais (adiados, botao honesto); MFA (fora do MVP, Decisao 12); ARQUIVO nos cards de Planos (wip/fase0-arquivo-chat, grupo principal-chat-sistema)"
     },
-    {
-      "action_ids": [
-        "auth.login",
-        "shell.load"
-      ],
-      "status": "real-route-proof-in-progress",
-      "changed": [
-        "apps/superadmin/pubspec.yaml (flutter_driver em dev_dependencies)",
-        "apps/superadmin/test_driver/driver_main.dart"
-      ],
-      "commit_sha": "a208e1d6c",
-      "delta": "entrypoint do Flutter Driver sobre o composition root real; login do qa-r03 na rota normal provado: superadmin_auth_bootstrap_context devolve ok=true, papel owner, escopo platform, aal1, 1 identidade interna; shell abre em / (Home). Credencial lida de Coelo-backups/qa-r03.env por script local, nunca impressa.",
-      "proof": "log do flutter run (bootstrap-diag, diagnostico temporario nao commitado) + arvore de widgets via DTD mostrando SuperadminShell + SuperadminHelpCenterPage",
-      "note": "Chrome pausava frames com a janela oculta atras das outras frentes (Windows occlusion); relancado com --disable-backgrounding-occluded-windows e afins"
+    "opening_contract": {
+      "objective": "levar Conta e Suporte a verified/done/E2E na rota normal com sessao qa-r03@coelo.me sobre o SQL do lote 7; ligar supportController no router; Planos e Auditoria sobre o composto; AUDIT-READ-V2 como pacote verde em candidatos/operacoes",
+      "received": "20260910230019 (Suporte: 5 RPCs superadmin_support_*, RLS forcado em support_sessions) e 20260910230020 (Conta: 3 RPCs superadmin_account_*) em producao; pgTAP de Suporte corrigido pelo coordenador (pg_class no lugar de row_security_active)",
+      "first_gate": "account.profile: rota normal /conta/perfil com sessao qa-r03 -> editar nome/telefone -> reload mantem; depois support.create: router de producao sem supportController",
+      "stop_criterion": "recorte concluido, 04:20 de 11/09, ou ordem do Owner/coordenador",
+      "expected_evidence": "commits pequenos em portugues na branch do grupo (push), flutter test por familia, pgTAP verde no projeto descartavel para o pacote de Auditoria, prova de rota real com sessao (sem credencial em lugar algum), proposta de delta FE/BE/E2E por action_id",
+      "time_estimate": "nao calculavel ainda; calibrar apos a primeira tela (Conta) na rota real"
     },
-    {
-      "action_ids": [
-        "support.create",
-        "support.table",
-        "support.kanban",
-        "support.detail",
-        "support.reply",
-        "support.close"
-      ],
-      "status": "frontend-local-green (rota real honesta)",
-      "commit_sha": "b5474a80a",
-      "changed": [
-        "apps/superadmin/lib/features/support/presentation/view_models/support_prototype_controller.dart",
-        "apps/superadmin/lib/features/support/presentation/screens/support_page.dart",
-        "apps/superadmin/lib/app/shell/superadmin_shell.dart",
-        "apps/superadmin/lib/app/router/superadmin_router.dart",
-        "apps/superadmin/test/features/support/presentation/screens/support_page_production_test.dart"
-      ],
-      "delta": "ACHADO NA ROTA REAL: /support em producao exibia os chamados do prototipo (SUP-001/SUP-002, Camila Rocha, Centro Horizonte) porque o controller nascia com seed e engolia a falha do backend. Corrigido: com repositorio produtivo o controller nasce vazio, expoe loadState (loading/ready/failure) e a pagina mostra falha honesta com Tentar novamente, mantendo toolbar e o card Criar a frente (regra do Owner). Botao de Bug: a shell passa a aguardar o envio (typedef SuperadminBugReportSubmit = FutureOr<void> Function) e avisa Nao foi possivel enviar o relato em vez de Relato enviado com sucesso cego; router usa submitReportToBackend; falhas de responder/status viram aviso.",
-      "proof": "support_page_production_test 7/7; suites support + shell + rotas de suporte + arquitetura 194/194; analyze limpo",
-      "criteria": {
-        "frontend": "local-green (rota abre sem fixture; CRUD real espera ponte de ator)",
-        "backend": "local-green (candidato 210000 na fila do lote 10)",
-        "e2e": "N"
-      }
-    },
-    {
-      "action_ids": [
-        "account.profile",
-        "account.settings",
-        "account.theme"
-      ],
-      "status": "goldens-regravados",
-      "commit_sha": "0a23882cd",
-      "delta": "8 goldens de Conta regravados pela decisao A do Owner (profile/settings 375/768 light; escuros 1024/1440 seguem o claro); diferenca era MENU-M e Pesquisar no menu. Rota real: /profile abre pela rota normal e mostra Nao foi possivel carregar o perfil (RPC nega o ator interno ate a ponte); /settings abre.",
-      "proof": "account_pages_golden_test 8/8 sem update-goldens"
-    },
-    {
-      "action_ids": [
-        "audit.list",
-        "audit.filter",
-        "audit.detail"
-      ],
-      "status": "frontend-local-green (composto)",
-      "commit_sha": "a8bb6cc22",
-      "changed": [
-        "apps/superadmin/lib/features/audit/presentation/audit_directory_page.dart",
-        "apps/superadmin/lib/features/audit/presentation/widgets/audit_directory_filters.dart",
-        "apps/superadmin/lib/features/audit/presentation/widgets/audit_event_views.dart",
-        "apps/superadmin/lib/features/audit/presentation/widgets/audit_timeline.dart",
-        "apps/superadmin/test/architecture/directory_composition_test.dart"
-      ],
-      "delta": "Diretorio de Auditoria migrado ao CoeloAdminDirectory: busca + filtros Resultados/Periodo alinhados na toolbar (observacao ajustar filtros do Owner), toggle, Arquivos honesto (CSV/XLSX Disponivel depois do MVP), paginacao por cursor no rodape do composto, toolbar visivel em todos os estados inclusive vazio. Enum local de display removido e allowlist do teste de arquitetura reduzida. Goldens audit_directory_* regravados (6).",
-      "proof": "suite audit 62/62 + arquitetura; goldens regravados no SDK 3.44.2",
-      "criteria": {
-        "frontend": "local-green",
-        "backend": "candidato 210100 (AUDIT-READ-V2) na fila do lote 10",
-        "e2e": "N (rota real /audit abre; leitura real depende do pacote e do ator)"
-      }
-    },
-    {
-      "action_ids": [
-        "auth.login"
-      ],
-      "status": "incident-fixed",
-      "commit_sha": "26c7fcc01",
-      "delta": "dois prints de diagnostico temporario entraram por engano no commit 03df0769d (rev 15) e foram integrados em dev 5bb7c5648; removidos em 26c7fcc01 (arquivos iguais a 836c63215); coordenador avisado e confirmou que o proximo merge limpa dev."
-    },
-    {
-      "action_ids": [
-        "support.table",
-        "support.kanban",
-        "support.detail",
-        "support.create"
-      ],
-      "status": "frontend-local-green (composto CoeloAdminDirectory; goldens divergentes pendentes)",
-      "by": "subagente do coordenador apos o reinicio de 00:27",
-      "commit_sha": "1ad67a2e3",
-      "commits": [
-        "e2c8dcca2 (WIP recuperado)",
-        "84f2278ee",
-        "1ad67a2e3"
-      ],
-      "changed": [
-        "apps/superadmin/lib/features/support/presentation/screens/support_page.dart",
-        "apps/superadmin/lib/features/support/presentation/widgets/support_ticket_filters.dart (novo, do WIP)",
-        "apps/superadmin/lib/features/support/presentation/widgets/support_ticket_rows.dart (renomeado de support_ticket_table.dart, do WIP)",
-        "apps/superadmin/lib/features/support/presentation/widgets/support_filter_toolbar.dart (apagado, do WIP)",
-        "apps/superadmin/lib/features/support/presentation/widgets/support_ticket_detail.dart (focusNode opcional)",
-        "apps/superadmin/test/architecture/directory_composition_test.dart (allowlist -2)",
-        "apps/superadmin/test/features/support/presentation/screens/support_page_production_test.dart",
-        "apps/superadmin/test/features/support/presentation/support_corrections_widget_test.dart"
-      ],
-      "delta": "Suporte sobre o CoeloAdminDirectory: a feature entrega search, filters (Status/Menu/Responsavel/Leitura/Tela), trailing Limpar filtros, fileActions honestos (CSV/XLSX Indisponivel nesta etapa), create (tile support-create-state nos estados, banner support-create-table acima da tabela; no kanban o card Criar segue na primeira coluna), table (SupportTicketRows), bodyOverride com o kanban em altura limitada (viewport menos recuo e toolbar) e pagination no rodape fixo (support-pagination, 9/20/50/100). Nao declara Table, Toolbar, Pagination, Header ou Directory. Busca, filtros, toggle, Arquivos e Criar aparecem em vazio, sem resultados, falha e sucesso. Sem resultados no kanban mantem o quadro com colunas vazias (preserva foco dos cards); na tabela usa o card de estado do composto com Limpar filtros. Achado: a toolbar do composto passa a viver no corpo do workspace e e reconstruida (Row -> Column) quando o painel de detalhe abre em 1280; o foco do gatilho Leitura caia para o escopo e o Escape nao chegava ao detalhe. Corrigido na feature: o detalhe lateral recebe foco de fato ao abrir (no da pagina) e o fallback ao fechar avanca ao primeiro focavel do escopo. Rodape compacto do composto nao expoe chaves (so rotulo semantico): testes passam a localizar por Semantics.label; ponto do composto registrado em notes_to_coordinator.",
-      "proof": "flutter analyze lib test: No issues found. flutter test test/features/support test/architecture: 69 P / 2 F; as 2 falhas sao exclusivamente os dois testes golden (support_page_golden_test), todas por diferenca de pixels; nenhuma excecao de layout. Gravacao temporaria dos 8 goldens escalados com --update-goldens passou sem excecao e foi revertida por git checkout (nada regravado).",
-      "criteria": {
-        "frontend": "local-green (composicao; goldens pendentes de observacao do Owner)",
-        "backend": "inalterado (candidato 210000 na fila do coordenador)",
-        "e2e": "N (rota real com sessao qa-r03 fica para conversa com Chrome)"
-      }
-    }
-  ],
-  "tests": {
-    "P": 8,
-    "F": 0,
-    "B": 0,
-    "S": 0,
-    "U": 0,
-    "evidence": [
-      "rev 18 (subagente): 8 acoes na rota real com qa-r03 (P); RPCs superadmin_account_profile_get/save/email_change_cancel, superadmin_support_list/get/create/reply/set_status todas 200 em producao",
-      "rev 18: flutter test nao executado nesta revisao (regra: nenhum flutter test em paralelo com o app); estado dos testes segue a rev 17",
-      "rev 17 (subagente): flutter analyze lib test sem issues; flutter test test/features/support test/architecture 69/71 (2 F = testes golden por pixel: 24 goldens padrao + 8 escalados divergentes)",
-      "rev 17 (subagente): support_page_golden_test \"keeps scaled\" com --update-goldens temporario: 1/1 sem excecao; PNGs revertidos",
-      "ate a rev 16: pgTAP 210000 17/17; 210100 37/37; support_production 23/23; account 16/16; support_page_production_test 7/7; account_pages_golden_test 8/8; audit 62/62"
-    ],
-    "planned": [
-      "Suporte: regravar os 32 goldens support_* somente apos verificacao visual das observacoes do Owner (MENU, CHAT) sobre o composto e no SDK 3.44.2",
-      "rota real de Suporte (tabela/kanban/detalhe/criar/responder/status) com sessao qa-r03 apos a ponte de ator do coordenador; exige conversa com Chrome",
-      "Planos: FUNDO dos cards (decisao R plan_cards_* com observacao FUNDO) - goldens regravados em 6360c93b5/00c57bc42 pela conversa caida, sem revisao registrada"
-    ]
-  },
-  "blocked": [
-    {
-      "kind": "environment",
-      "what": "classificador do modo automatico bloqueia supabase db query --linked (leitura) nesta sessao; medicao de producao vem do coordenador ou do proprio app na rota real",
-      "owner": "operacoes",
-      "unblocks": "n/a: contorno pelo app real"
-    }
-  ],
-  "resolved": [
-    {
-      "what": "CRUD real de Conta e Suporte com qa-r03 (bloqueio de integracao da rev 17)",
-      "how": "ponte de ator 220400 em producao (lote 10) + candidato 210000 aplicado; provado na rota real nesta revisao"
-    },
-    {
-      "what": "rota real de Suporte sem Chrome (bloqueio de ambiente da rev 17)",
-      "how": "build web release + Chrome CDP 9407 nesta revisao"
-    }
-  ],
-  "proposed_deltas": [
-    {
-      "file": "docs/reviews/evidence/etapa-2/r04-operacoes/deltas-r04-ops.json",
-      "summary": "account.profile FE verified / BE done / E2E verified-e2e; account.settings FE verified (BE not-applicable e E2E flutter-only mantidos); support.table/kanban/detail/create/reply/close FE verified / BE done / E2E verified-e2e"
-    },
-    {
-      "file": "docs/reviews/evidence/etapa-2/r04-operacoes/deltas-r04-ops-audit-plans.json",
-      "summary": "audit.list/filter/detail FE local-green (diretorio no composto, goldens regravados); sem mudanca de estado para plans (goldens na shell nao alteram local-green de plans.list)"
-    }
-  ],
-  "packages_ready": [
-    {
-      "path": "packages/coelo_database/candidatos/operacoes/20260910210000_support_create_internal_scope_v1.sql",
-      "pgtap": "superadmin_support_create_internal_scope_test 17/17",
-      "composition_key": "nenhuma",
-      "state": "na fila do coordenador (lote 10, atras da ponte de ator 220400)"
-    },
-    {
-      "path": "packages/coelo_database/candidatos/operacoes/20260910210100_superadmin_internal_audit_read_v2.sql",
-      "pgtap": "superadmin_internal_audit_read_v2_test 37/37 (audit_production_test e auth_context_test tem falhas pre-existentes de drift, independentes)",
-      "composition_key": "nenhuma (cliente de Auditoria ja consome o envelope v2)",
-      "state": "na fila do coordenador (lote 10)"
-    }
-  ],
-  "questions_to_owner": [],
-  "next_step": "coordenador: ler mini_revisao_10min; aplicar deltas-r04-ops-audit-plans.json; incorporar a secao 3 do handoff nas skills; P37 limpeza. Frente parada por ordem do Owner ate nova rodada.",
-  "commits": [
-    "e96b640c8",
-    "480728d7f",
-    "a208e1d6c",
-    "d040f3bb6",
-    "03df0769d",
-    "786749658",
-    "b5474a80a",
-    "26c7fcc01",
-    "0a23882cd",
-    "a8bb6cc22",
-    "6360c93b5",
-    "00c57bc42",
-    "e2c8dcca2",
-    "84f2278ee",
-    "1ad67a2e3"
-  ],
-  "r03_history": {
-    "revision": 13,
-    "round": "E2-R03-20260910",
-    "head": "d7ca27d93",
-    "branch": "work/etapa2-r03-operacoes",
-    "updated_at": "2026-09-10T09:30:00-03:00",
+    "loop": "/loop 15m agendado na abertura (retomar o recorte, atualizar operacoes.json, nao encerrar antes de 04:20)",
     "changes": [
+      {
+        "action_ids": [
+          "account.profile",
+          "account.settings",
+          "support.table",
+          "support.kanban",
+          "support.detail",
+          "support.create",
+          "support.reply",
+          "support.close"
+        ],
+        "status": "rota-real-verificada",
+        "changed": [
+          "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/*.png (23 capturas)",
+          "docs/reviews/evidence/etapa-2/r04-operacoes/deltas-r04-ops.json"
+        ],
+        "delta": "Prova na rota real com sessao qa-r03 sobre o build web release desta branch: Conta e Suporte com CRUD em producao, RLS ja coberta pelo pgTAP dos lotes 7/10 (superadmin_support_production 23/23, superadmin_account_profile_v1 16/16, support_create_internal_scope 17/17) e reload mantendo estado. Nenhuma alteracao de codigo.",
+        "proof": "ver ROTA_REAL_03h00_por_action_id (metodo, corpo e status de cada RPC capturados por Network)"
+      },
       {
         "action_ids": [
           "support.create",
@@ -342,24 +168,94 @@
           "support.reply",
           "support.close"
         ],
-        "status": "backend-package-committed-pgTAP-blocked",
+        "status": "backend-candidate-local-green",
         "changed": [
-          "packages/coelo_database/migrations/20260909217000_superadmin_support_production_v1.sql",
-          "packages/coelo_database/supabase/tests/superadmin_support_production_test.sql"
+          "packages/coelo_database/candidatos/operacoes/20260910210000_support_create_internal_scope_v1.sql",
+          "packages/coelo_database/supabase/tests/superadmin_support_create_internal_scope_test.sql"
         ],
-        "commit_sha": "b172b695b8d996375fc7da7a539ed7ee78dc7e35",
-        "integration_commit_sha": "b02478937",
-        "backend_revision_commit_sha": "9ae607fca",
-        "pagination_commit_sha": "179cd6ae4",
-        "delta": "adicionada camada server-side sobre support_sessions existente: campos de ticket, revisao otimista, receipts de idempotencia, list/detail/create/reply/set_status, acoes em audit.support_session_actions, RLS deny-by-default e grants somente por RPC authenticated",
-        "composition_key_candidate": "supportProductionRepositoryV1",
+        "commit_sha": "480728d7f",
+        "delta": "superadmin_support_create: aceita p_institution_id nulo (o cliente envia nulo no botao de Bug; a coluna ja era nula) e preenche support_sessions.reason_code (NOT NULL sem default na baseline, o lote 7 nao preenchia: nenhum chamado podia ser criado). scope_kind platform quando sem instituicao; unidade sem instituicao rejeitada.",
+        "proof": "projeto descartavel proprio (coelo_baseline_ops, portas 64xxx): baseline + seed + lotes 1-8 (46 migrations) + candidato; pgTAP superadmin_support_create_internal_scope_test 17/17 (anonimo 28000, sem support.manage 42501, criar sem instituicao, idempotencia por request_id, reason_code, auditoria, responder rev 2, status, listar); superadmin_support_production_test 23/23 e superadmin_account_profile_v1_test 16/16 continuam verdes",
         "criteria": {
-          "frontend": "P(tabela/kanban/detalhe e rota de producao)",
-          "backend": "P(adapter RPC; pgTAP pendente)",
-          "e2e": "N",
-          "reload": "N",
-          "cross_tenant": "pgTAP pendente de replay nominal"
+          "frontend": "P(wiring: main.dart ja passa SupabaseSupportRepository e o router cria productionSupportController; rota real pendente)",
+          "backend": "local-green (candidato; aplicacao pelo coordenador)",
+          "e2e": "N (ator do realm interno: ponte e pacote do coordenador)"
         }
+      },
+      {
+        "action_ids": [
+          "account.profile",
+          "account.settings",
+          "account.theme",
+          "support.create",
+          "support.table",
+          "support.kanban",
+          "support.detail",
+          "support.reply",
+          "support.close",
+          "plans.list",
+          "plans.create",
+          "plans.edit",
+          "audit.list",
+          "audit.filter",
+          "audit.detail"
+        ],
+        "status": "finding-cross-group",
+        "changed": [],
+        "delta": "ACHADO: superadmin_support_* e superadmin_account_* (e tambem Unidades 160000, Rotina, Assiduidade, Cuidado, Cardapios, Seguranca infantil) resolvem o ator por app_private.current_person_id()/has_platform_permission (realm people). O coordenador mediu em producao: person_auth_links tem 0 linhas e todos os auth users (inclusive o qa-r03) so existem no realm interno v2. Logo essas RPCs devolvem 42501 internal_actor_required para qualquer sessao real. Decisao do coordenador (22:12): a ponte entre realms e pacote unico dele em candidatos/coordenador; eu NAO altero a resolucao do ator. Meu esboco de resolver (superadmin_actor_resolve) foi descartado.",
+        "gate": "pacote de ponte do coordenador aplicado em producao (acompanhar coordenacao.json); ate la, rota real de Conta/Suporte so prova login, shell e abertura das telas"
+      },
+      {
+        "action_ids": [
+          "auth.login",
+          "shell.load"
+        ],
+        "status": "real-route-proof-in-progress",
+        "changed": [
+          "apps/superadmin/pubspec.yaml (flutter_driver em dev_dependencies)",
+          "apps/superadmin/test_driver/driver_main.dart"
+        ],
+        "commit_sha": "a208e1d6c",
+        "delta": "entrypoint do Flutter Driver sobre o composition root real; login do qa-r03 na rota normal provado: superadmin_auth_bootstrap_context devolve ok=true, papel owner, escopo platform, aal1, 1 identidade interna; shell abre em / (Home). Credencial lida de Coelo-backups/qa-r03.env por script local, nunca impressa.",
+        "proof": "log do flutter run (bootstrap-diag, diagnostico temporario nao commitado) + arvore de widgets via DTD mostrando SuperadminShell + SuperadminHelpCenterPage",
+        "note": "Chrome pausava frames com a janela oculta atras das outras frentes (Windows occlusion); relancado com --disable-backgrounding-occluded-windows e afins"
+      },
+      {
+        "action_ids": [
+          "support.create",
+          "support.table",
+          "support.kanban",
+          "support.detail",
+          "support.reply",
+          "support.close"
+        ],
+        "status": "frontend-local-green (rota real honesta)",
+        "commit_sha": "b5474a80a",
+        "changed": [
+          "apps/superadmin/lib/features/support/presentation/view_models/support_prototype_controller.dart",
+          "apps/superadmin/lib/features/support/presentation/screens/support_page.dart",
+          "apps/superadmin/lib/app/shell/superadmin_shell.dart",
+          "apps/superadmin/lib/app/router/superadmin_router.dart",
+          "apps/superadmin/test/features/support/presentation/screens/support_page_production_test.dart"
+        ],
+        "delta": "ACHADO NA ROTA REAL: /support em producao exibia os chamados do prototipo (SUP-001/SUP-002, Camila Rocha, Centro Horizonte) porque o controller nascia com seed e engolia a falha do backend. Corrigido: com repositorio produtivo o controller nasce vazio, expoe loadState (loading/ready/failure) e a pagina mostra falha honesta com Tentar novamente, mantendo toolbar e o card Criar a frente (regra do Owner). Botao de Bug: a shell passa a aguardar o envio (typedef SuperadminBugReportSubmit = FutureOr<void> Function) e avisa Nao foi possivel enviar o relato em vez de Relato enviado com sucesso cego; router usa submitReportToBackend; falhas de responder/status viram aviso.",
+        "proof": "support_page_production_test 7/7; suites support + shell + rotas de suporte + arquitetura 194/194; analyze limpo",
+        "criteria": {
+          "frontend": "local-green (rota abre sem fixture; CRUD real espera ponte de ator)",
+          "backend": "local-green (candidato 210000 na fila do lote 10)",
+          "e2e": "N"
+        }
+      },
+      {
+        "action_ids": [
+          "account.profile",
+          "account.settings",
+          "account.theme"
+        ],
+        "status": "goldens-regravados",
+        "commit_sha": "0a23882cd",
+        "delta": "8 goldens de Conta regravados pela decisao A do Owner (profile/settings 375/768 light; escuros 1024/1440 seguem o claro); diferenca era MENU-M e Pesquisar no menu. Rota real: /profile abre pela rota normal e mostra Nao foi possivel carregar o perfil (RPC nega o ator interno ate a ponte); /settings abre.",
+        "proof": "account_pages_golden_test 8/8 sem update-goldens"
       },
       {
         "action_ids": [
@@ -367,451 +263,382 @@
           "audit.filter",
           "audit.detail"
         ],
-        "status": "candidate-existing",
-        "changed": [],
-        "commit_sha": "aafde0b3d",
-        "delta": "candidato 20260909190000_superadmin_internal_audit_read_v2.sql ja existe e foi preservado; aplicar/verificar fica com coordenador na fila SQL",
-        "composition_key_candidate": "auditReadV2",
-        "criteria": {
-          "frontend": "N",
-          "backend": "N",
-          "e2e": "N"
-        }
-      },
-      {
-        "action_ids": [
-          "plans.list",
-          "plans.create",
-          "plans.edit",
-          "plans.activate",
-          "plans.assign"
-        ],
-        "status": "candidate-existing",
-        "changed": [],
-        "commit_sha": "be28f0c0b",
-        "delta": "contrato de Planos ja existe na migration 20260901183154_superadmin_plans_production.sql com list/get/save, receipts, RLS forcado e grants somente authenticated; pgTAP existente sera levado para a fila serializada",
-        "composition_key_candidate": "plansProductionRepositoryV1",
-        "criteria": {
-          "frontend": "N",
-          "backend": "N",
-          "e2e": "N",
-          "reload": "N",
-          "cross_tenant": "pgTAP pendente de replay nominal"
-        }
-      },
-      {
-        "action_ids": [
-          "account.profile",
-          "account.settings",
-          "account.theme",
-          "account.mfa",
-          "account.sessions",
-          "account.logout"
-        ],
-        "status": "backend-package-committed-pgTAP-blocked",
+        "status": "frontend-local-green (composto)",
+        "commit_sha": "a8bb6cc22",
         "changed": [
-          "packages/coelo_database/migrations/20260909218000_superadmin_account_profile_v1.sql",
-          "packages/coelo_database/supabase/tests/superadmin_account_profile_v1_test.sql"
+          "apps/superadmin/lib/features/audit/presentation/audit_directory_page.dart",
+          "apps/superadmin/lib/features/audit/presentation/widgets/audit_directory_filters.dart",
+          "apps/superadmin/lib/features/audit/presentation/widgets/audit_event_views.dart",
+          "apps/superadmin/lib/features/audit/presentation/widgets/audit_timeline.dart",
+          "apps/superadmin/test/architecture/directory_composition_test.dart"
         ],
-        "commit_sha": "efd9af79e",
-        "integration_commit_sha": "ce4939227",
-        "delta": "adicionada persistencia server-side do perfil: nome/telefone em people, leitura de email Auth, pedido/cancelamento de troca de email, papel/capacidades, receipts de idempotencia e grants somente por RPC; tema continua preferencia local e MFA, sessoes/logout dependem dos contratos Auth existentes",
-        "composition_key_candidate": "accountProfileProductionRepositoryV1",
+        "delta": "Diretorio de Auditoria migrado ao CoeloAdminDirectory: busca + filtros Resultados/Periodo alinhados na toolbar (observacao ajustar filtros do Owner), toggle, Arquivos honesto (CSV/XLSX Disponivel depois do MVP), paginacao por cursor no rodape do composto, toolbar visivel em todos os estados inclusive vazio. Enum local de display removido e allowlist do teste de arquitetura reduzida. Goldens audit_directory_* regravados (6).",
+        "proof": "suite audit 62/62 + arquitetura; goldens regravados no SDK 3.44.2",
         "criteria": {
-          "frontend": "P(account.profile/settings/theme); N(account.mfa/sessions/logout)",
-          "backend": "P(contract; pgTAP pendente)",
-          "e2e": "N",
-          "reload": "N",
-          "cross_tenant": "pgTAP pendente de replay nominal"
+          "frontend": "local-green",
+          "backend": "candidato 210100 (AUDIT-READ-V2) na fila do lote 10",
+          "e2e": "N (rota real /audit abre; leitura real depende do pacote e do ator)"
         }
       },
       {
         "action_ids": [
-          "audit.export"
+          "auth.login"
         ],
-        "status": "deferred-post-mvp",
-        "changed": [],
-        "commit_sha": "aafde0b3d",
-        "delta": "mantido adiado conforme ADR 0034; nenhum entrypoint novo",
+        "status": "incident-fixed",
+        "commit_sha": "26c7fcc01",
+        "delta": "dois prints de diagnostico temporario entraram por engano no commit 03df0769d (rev 15) e foram integrados em dev 5bb7c5648; removidos em 26c7fcc01 (arquivos iguais a 836c63215); coordenador avisado e confirmou que o proximo merge limpa dev."
+      },
+      {
+        "action_ids": [
+          "support.table",
+          "support.kanban",
+          "support.detail",
+          "support.create"
+        ],
+        "status": "frontend-local-green (composto CoeloAdminDirectory; goldens divergentes pendentes)",
+        "by": "subagente do coordenador apos o reinicio de 00:27",
+        "commit_sha": "1ad67a2e3",
+        "commits": [
+          "e2c8dcca2 (WIP recuperado)",
+          "84f2278ee",
+          "1ad67a2e3"
+        ],
+        "changed": [
+          "apps/superadmin/lib/features/support/presentation/screens/support_page.dart",
+          "apps/superadmin/lib/features/support/presentation/widgets/support_ticket_filters.dart (novo, do WIP)",
+          "apps/superadmin/lib/features/support/presentation/widgets/support_ticket_rows.dart (renomeado de support_ticket_table.dart, do WIP)",
+          "apps/superadmin/lib/features/support/presentation/widgets/support_filter_toolbar.dart (apagado, do WIP)",
+          "apps/superadmin/lib/features/support/presentation/widgets/support_ticket_detail.dart (focusNode opcional)",
+          "apps/superadmin/test/architecture/directory_composition_test.dart (allowlist -2)",
+          "apps/superadmin/test/features/support/presentation/screens/support_page_production_test.dart",
+          "apps/superadmin/test/features/support/presentation/support_corrections_widget_test.dart"
+        ],
+        "delta": "Suporte sobre o CoeloAdminDirectory: a feature entrega search, filters (Status/Menu/Responsavel/Leitura/Tela), trailing Limpar filtros, fileActions honestos (CSV/XLSX Indisponivel nesta etapa), create (tile support-create-state nos estados, banner support-create-table acima da tabela; no kanban o card Criar segue na primeira coluna), table (SupportTicketRows), bodyOverride com o kanban em altura limitada (viewport menos recuo e toolbar) e pagination no rodape fixo (support-pagination, 9/20/50/100). Nao declara Table, Toolbar, Pagination, Header ou Directory. Busca, filtros, toggle, Arquivos e Criar aparecem em vazio, sem resultados, falha e sucesso. Sem resultados no kanban mantem o quadro com colunas vazias (preserva foco dos cards); na tabela usa o card de estado do composto com Limpar filtros. Achado: a toolbar do composto passa a viver no corpo do workspace e e reconstruida (Row -> Column) quando o painel de detalhe abre em 1280; o foco do gatilho Leitura caia para o escopo e o Escape nao chegava ao detalhe. Corrigido na feature: o detalhe lateral recebe foco de fato ao abrir (no da pagina) e o fallback ao fechar avanca ao primeiro focavel do escopo. Rodape compacto do composto nao expoe chaves (so rotulo semantico): testes passam a localizar por Semantics.label; ponto do composto registrado em notes_to_coordinator.",
+        "proof": "flutter analyze lib test: No issues found. flutter test test/features/support test/architecture: 69 P / 2 F; as 2 falhas sao exclusivamente os dois testes golden (support_page_golden_test), todas por diferenca de pixels; nenhuma excecao de layout. Gravacao temporaria dos 8 goldens escalados com --update-goldens passou sem excecao e foi revertida por git checkout (nada regravado).",
         "criteria": {
-          "frontend": "N/A",
-          "backend": "N/A",
-          "e2e": "N/A"
+          "frontend": "local-green (composicao; goldens pendentes de observacao do Owner)",
+          "backend": "inalterado (candidato 210000 na fila do coordenador)",
+          "e2e": "N (rota real com sessao qa-r03 fica para conversa com Chrome)"
         }
       }
     ],
+    "tests": {
+      "P": 8,
+      "F": 0,
+      "B": 0,
+      "S": 0,
+      "U": 0,
+      "evidence": [
+        "rev 18 (subagente): 8 acoes na rota real com qa-r03 (P); RPCs superadmin_account_profile_get/save/email_change_cancel, superadmin_support_list/get/create/reply/set_status todas 200 em producao",
+        "rev 18: flutter test nao executado nesta revisao (regra: nenhum flutter test em paralelo com o app); estado dos testes segue a rev 17",
+        "rev 17 (subagente): flutter analyze lib test sem issues; flutter test test/features/support test/architecture 69/71 (2 F = testes golden por pixel: 24 goldens padrao + 8 escalados divergentes)",
+        "rev 17 (subagente): support_page_golden_test \"keeps scaled\" com --update-goldens temporario: 1/1 sem excecao; PNGs revertidos",
+        "ate a rev 16: pgTAP 210000 17/17; 210100 37/37; support_production 23/23; account 16/16; support_page_production_test 7/7; account_pages_golden_test 8/8; audit 62/62"
+      ],
+      "planned": [
+        "Suporte: regravar os 32 goldens support_* somente apos verificacao visual das observacoes do Owner (MENU, CHAT) sobre o composto e no SDK 3.44.2",
+        "rota real de Suporte (tabela/kanban/detalhe/criar/responder/status) com sessao qa-r03 apos a ponte de ator do coordenador; exige conversa com Chrome",
+        "Planos: FUNDO dos cards (decisao R plan_cards_* com observacao FUNDO) - goldens regravados em 6360c93b5/00c57bc42 pela conversa caida, sem revisao registrada"
+      ]
+    },
     "blocked": [
       {
-        "kind": "verification",
-        "what": "nenhum replay pgTAP nominal executado ainda; o perfil local canônico falha antes do pacote em 20260820152528 porque a cadeia usada no reset não materializa app_private e a janela compartilhada também está ocupada",
-        "owner": "coordenador/base de replay",
-        "unblocks": "reservar janela ou usar projeto descartável em portas próprias com as dependências da cadeia; então executar db reset/lint e pgTAP dos quatro pacotes, incluindo RLS, grants e cross-tenant"
-      },
-      {
-        "kind": "production-gate",
-        "what": "fila SQL R03 retida pelo P1 da coordenação: backup por ponto no tempo/PITR ainda não está ligado",
-        "owner": "Owner/coordenador",
-        "unblocks": "decisão do Owner e PITR habilitado; depois o integrador aplica forward-only na ordem, começando pela posição 1 e sem ligar composição antes do SQL"
+        "kind": "environment",
+        "what": "classificador do modo automatico bloqueia supabase db query --linked (leitura) nesta sessao; medicao de producao vem do coordenador ou do proprio app na rota real",
+        "owner": "operacoes",
+        "unblocks": "n/a: contorno pelo app real"
       }
     ],
     "resolved": [
       {
-        "kind": "visual-verification",
-        "what": "Plan golden decision approved and executed: manter indicadores atuais; 8 card goldens atualizados e suíte sem update-goldens verde",
-        "owner": "operacoes",
-        "commit": "d7ca27d93"
+        "what": "CRUD real de Conta e Suporte com qa-r03 (bloqueio de integracao da rev 17)",
+        "how": "ponte de ator 220400 em producao (lote 10) + candidato 210000 aplicado; provado na rota real nesta revisao"
       },
       {
-        "kind": "visual-verification",
-        "what": "Support golden decision approved and executed: manter composição atual; 32 casos verificados, 28 PNGs alterados e suíte sem update-goldens verde",
-        "owner": "operacoes",
-        "commit": "d7ca27d93"
+        "what": "rota real de Suporte sem Chrome (bloqueio de ambiente da rev 17)",
+        "how": "build web release + Chrome CDP 9407 nesta revisao"
       }
     ],
-    "golden_decision": {
-      "status": "approved",
-      "approved_at": "2026-09-10",
-      "attachments": {
-        "anexo_1": "approved",
-        "anexo_2": "approved"
+    "proposed_deltas": [
+      {
+        "file": "docs/reviews/evidence/etapa-2/r04-operacoes/deltas-r04-ops.json",
+        "summary": "account.profile FE verified / BE done / E2E verified-e2e; account.settings FE verified (BE not-applicable e E2E flutter-only mantidos); support.table/kanban/detail/create/reply/close FE verified / BE done / E2E verified-e2e"
       },
-      "scope": "apps/superadmin -> Operação -> Planos e Suporte; Auditoria não possui golden próprio no recorte executado",
-      "plan_cases": "8 cards plan_cards_{light,dark}_{375,768,1024,1440} atualizados; 8 tabelas, plan_create_light_375, plan_capabilities_dark_1440 e plan_review_dark_1440 passaram sem alteração",
-      "support_cases": "24 casos padrão support_{kanban,table,detail}_{light,dark}_{375,768,1024,1440} e 8 escalados de texto verificados; 28 PNGs mudaram e 4 referências escaladas já estavam iguais",
-      "references": [
-        "apps/superadmin/test/features/plans/goldens/",
-        "apps/superadmin/test/features/plans/failures/",
-        "apps/superadmin/test/features/support/presentation/screens/goldens/",
-        "apps/superadmin/test/features/support/presentation/screens/failures/"
-      ],
-      "decision": {
-        "plans": "manter indicadores atuais e atualizar 8 goldens de cards",
-        "support": "aprovar composição atual e atualizar 32 goldens"
+      {
+        "file": "docs/reviews/evidence/etapa-2/r04-operacoes/deltas-r04-ops-audit-plans.json",
+        "summary": "audit.list/filter/detail FE local-green (diretorio no composto, goldens regravados); sem mudanca de estado para plans (goldens na shell nao alteram local-green de plans.list)"
+      }
+    ],
+    "packages_ready": [
+      {
+        "path": "packages/coelo_database/candidatos/operacoes/20260910210000_support_create_internal_scope_v1.sql",
+        "pgtap": "superadmin_support_create_internal_scope_test 17/17",
+        "composition_key": "nenhuma",
+        "state": "na fila do coordenador (lote 10, atras da ponte de ator 220400)"
       },
-      "recording": "decisão recebida do Owner nesta conversa; coordenador deve ler este handoff",
-      "executed_commit": "d7ca27d93cbe01aba9861c6a5f93a54725c08dd7",
-      "handoff_commit": "bbfcf4b9d"
-    },
-    "tests": {
-      "P": 6,
-      "F": 0,
-      "B": 2,
-      "S": 0,
-      "U": 1,
-      "evidence": [
-        "support-contract-static PASS: required RPCs=5, receipt=idempotency, audit schema=correct, RLS=force, test=22 assertions",
-        "support-create-scope-static PASS: internal institution-null create path + 23 assertions",
-        "account-contract-static PASS: RPCs=3, email request, idempotency receipt, auth email read, forced RLS, test=16 assertions",
-        "plans-audit-contract-static PASS: plans=3 RPCs + forced RLS; audit=list/filter/detail + deferred export revoke; tests present",
-        "account Flutter analyzer PASS: apps/superadmin; only pre-existing info at router line 908",
-        "account Flutter tests PASS: controller/profile/settings 56; account routes 5",
-        "support Flutter analyzer PASS: targeted production/support files",
-        "support Flutter tests PASS: controller/page/routes 51; follow-up controller/routes 30",
-        "audit production route tests PASS: 2",
-        "plan golden refresh PASS: 2/2 tests; 8 card goldens updated to current indicators, all table/form goldens still pass",
-        "support golden refresh PASS: 2/2 tests; 24 standard and 8 scaled cases verified against current composition; 28 PNGs changed because 4 scaled references already matched",
-        "supabase db lint --local BLOCKED: ECONNREFUSED 127.0.0.1:54322",
-        "supabase start --workdir packages/coelo_database BLOCKED before support migration: 20260820152528_form... fails SQLSTATE 3F000 because schema app_private is absent"
+      {
+        "path": "packages/coelo_database/candidatos/operacoes/20260910210100_superadmin_internal_audit_read_v2.sql",
+        "pgtap": "superadmin_internal_audit_read_v2_test 37/37 (audit_production_test e auth_context_test tem falhas pre-existentes de drift, independentes)",
+        "composition_key": "nenhuma (cliente de Auditoria ja consome o envelope v2)",
+        "state": "na fila do coordenador (lote 10)"
+      }
+    ],
+    "questions_to_owner": [],
+    "next_step": "coordenador: ler mini_revisao_10min; aplicar deltas-r04-ops-audit-plans.json; incorporar a secao 3 do handoff nas skills; P37 limpeza. Frente parada por ordem do Owner ate nova rodada.",
+    "commits": [
+      "e96b640c8",
+      "480728d7f",
+      "a208e1d6c",
+      "d040f3bb6",
+      "03df0769d",
+      "786749658",
+      "b5474a80a",
+      "26c7fcc01",
+      "0a23882cd",
+      "a8bb6cc22",
+      "6360c93b5",
+      "00c57bc42",
+      "e2c8dcca2",
+      "84f2278ee",
+      "1ad67a2e3"
+    ],
+    "app_port": "localhost:3007 (build web release servido por Node; CDP 9407)",
+    "pacotesProntos": [
+      {
+        "path": "packages/coelo_database/candidatos/operacoes/20260910210000_support_create_internal_scope_v1.sql",
+        "pgtap": "superadmin_support_create_internal_scope_test 17/17",
+        "composition_key": "nenhuma",
+        "state": "na fila do coordenador (lote 10, atras da ponte de ator 220400)"
+      },
+      {
+        "path": "packages/coelo_database/candidatos/operacoes/20260910210100_superadmin_internal_audit_read_v2.sql",
+        "pgtap": "superadmin_internal_audit_read_v2_test 37/37 (audit_production_test e auth_context_test tem falhas pre-existentes de drift, independentes)",
+        "composition_key": "nenhuma (cliente de Auditoria ja consome o envelope v2)",
+        "state": "na fila do coordenador (lote 10)"
+      }
+    ],
+    "author_note": "Revisao 18 gravada pelo subagente do coordenador (a conversa R04 - Operacoes caiu no reinicio da maquina). Recorte: prova na rota real de Conta (/profile, /settings) e Suporte (/support) com a sessao qa-r03@coelo.me sobre o build web release desta branch. Um Chrome, nenhum flutter test em paralelo; Chrome e servidor fechados ao fim.",
+    "goldens_divergentes": {
+      "family": "support",
+      "reason": "toolbar, banner Criar, tabela e rodape de paginacao passaram ao composto CoeloAdminDirectory (recuo 40/24/16, busca 300/216/100%, filtros 160 px, rodape fixo); decisao do Owner de 10/09: A (regravar apos aplicar a observacao) em todos os claros exceto support_detail_light_1024 (R); escuros seguem o claro",
+      "owner_observations": "filtros desalinhados (resolvido pelo composto), MENU, TABELA fora do padrao/alinhamento interno (linhas no composto), melhorar o card Criar (banner do composto), CHAT - MENU e CHAT nao verificados visualmente pelo subagente",
+      "not_rewritten": true,
+      "standard": [
+        "support_kanban_light_375",
+        "support_kanban_light_768",
+        "support_kanban_light_1024",
+        "support_kanban_light_1440",
+        "support_kanban_dark_375",
+        "support_kanban_dark_768",
+        "support_kanban_dark_1024",
+        "support_kanban_dark_1440",
+        "support_table_light_375",
+        "support_table_light_768",
+        "support_table_light_1024",
+        "support_table_light_1440",
+        "support_table_dark_375",
+        "support_table_dark_768",
+        "support_table_dark_1024",
+        "support_table_dark_1440",
+        "support_detail_light_375",
+        "support_detail_light_768",
+        "support_detail_light_1024",
+        "support_detail_light_1440",
+        "support_detail_dark_375",
+        "support_detail_dark_768",
+        "support_detail_dark_1024",
+        "support_detail_dark_1440"
       ],
-      "planned": [
-        "pgTAP nominal de conta, planos, auditoria e suporte",
-        "preflight da migration na fila serializada",
-        "flutter tests de Planos/Auditoria/Suporte",
-        "E2E Supabase real apos migrations aplicadas pelo coordenador"
-      ]
+      "scaled": [
+        "support_kanban_light_375_text200",
+        "support_kanban_light_1440_text150",
+        "support_kanban_dark_375_text200",
+        "support_kanban_dark_1440_text150",
+        "support_table_light_375_text200",
+        "support_table_light_1440_text150",
+        "support_table_dark_375_text200",
+        "support_table_dark_1440_text150"
+      ],
+      "diff_percent_sample": "kanban 5-13%, table 14-28%, detail 8-22% (log no scratchpad da sessao, nao versionado)",
+      "next": "conversa com verificacao visual: montar pagina lado a lado (R referencia, A render atual, diferenca) para o Owner via coordenador e regravar no SDK 3.44.2"
     },
-    "progress_snapshot": {
-      "base": "1adb070c9028850ccdd7e091db5b97b63b95c750",
-      "scope_actions": 21,
-      "mvp_active_actions": 20,
-      "deferred_actions": 1,
-      "frontend_local": {
-        "done": 9,
-        "total": 21,
-        "percent": 42.86,
-        "ids": [
-          "account.profile",
-          "account.settings",
-          "account.theme",
-          "support.create",
-          "support.table",
-          "support.kanban",
-          "support.detail",
-          "support.reply",
-          "support.close"
+    "notes_to_coordinator": [
+      "Composto: CoeloAdminPaginationFooter compacto (_CompactPageAction) nao expoe chaves coelo-admin-pagination-previous/next; testes de Suporte localizam por Semantics.label. Sugestao de correcao no composto (nao aplicada: fora do recorte do subagente).",
+      "Composto: CoeloAdminListingToolbar troca Row/Column por largura e recria a subarvore dos filtros quando um painel de detalhe abre no corpo do workspace (perde foco de teclado nos filtros). Suporte contorna na feature (foco no detalhe ao abrir + nextFocus no fallback); Auditoria pode ter o mesmo efeito.",
+      "Composto: estado loading nao mostra o Criar (so o spinner); a regra do Owner cita vazio/falha/antes da primeira carga para busca/filtros (mantidos). Registrado, nao alterado.",
+      "Commits 6360c93b5 e 00c57bc42 (goldens de Planos: tabela na rota real dentro da shell; cards com shell + ARQUIVO) estao na branch, feitos pela conversa caida sem revisao no JSON; sem prova registrada alem do proprio commit.",
+      "rev 18: prova na rota real de Conta e Suporte concluida (8/8 P); ver ROTA_REAL_03h00_por_action_id, pendencias_registradas_rev18 e deltas-r04-ops.json. Nenhum SQL executado em producao por esta revisao; apenas RPCs pelo app com a sessao qa-r03."
+    ],
+    "AMBIENTE_DE_PROVA": "flutter build web -t test_driver/qa_main.dart --dart-define-from-file=.env.local -o build/web-r04ops (115 s) servido por serve.js (Node, fallback de SPA) em http://localhost:3007; Chrome dedicado --remote-debugging-port=9407 --use-angle=swiftshader (perfil isolado); login pelo driver (qa_drive.dart login, credencial do Coelo-backups/qa-r03.env exportada no shell, nunca impressa) com Manter sessao aberta. Metodo: o comando tap do Flutter Driver trava (timeout 45 s) neste build release em botoes que abrem dialogo/rede; cliques por CDP Input.dispatchMouseEvent (cdp.js clickxy) e texto pelo driver enter_text; RPCs capturadas por Network (cdp.js net). O Chrome sob SwiftShader caiu duas vezes (apos reload em /settings e apos Uncaught Error do CanvasKit no dialogo de Bug); reaberto direto na rota, a sessao persistiu e a prova continuou (memoria fisica livre 1,8-2,4 GB durante a prova).",
+    "ROTA_REAL_03h00_por_action_id": {
+      "account.profile": "/profile abre com dados reais da RPC superadmin_account_profile_get (pessoa de servico da ponte 220400: Operador interno / 41462594, e-mail e celular vazios). Editado Sobrenome para \"41462594 [R04-QA]\"; salvar exigiu preencher e-mail (validador do cliente \"Informe o e-mail.\"), celular (RPC exige 7-40 caracteres) e sigla (o valor derivado \"O4\" e invalido no cliente: \"Use uma ou duas letras.\"); superadmin_account_profile_save -> 200; reload manteve \"41462594 [R04-QA]\" e o celular; restaurado \"41462594\" (save 200) e solicitacao de e-mail cancelada (superadmin_account_email_change_cancel 200). P. Capturas 01-04.",
+      "account.settings": "/settings abre; Claro + Reduzir animacoes gravados em localStorage (coelo.superadmin.theme-mode=light, reduce-motion=true); carga completa nova (Chrome reaberto) manteve os dois (switch checked=true, tema claro renderizado); restaurado Sistema + desligado. Persistencia local por desenho (SharedPreferences), sem backend. P. Capturas 05-08.",
+      "support.table": "visao tabela com colunas Chamado/Origem/Solicitante/Responsavel/Status/Anexos, banner Criar suporte, chip de status, paginacao (Itens por pagina 9, Pagina 1 de 1); chamado sintetico listado apos reload via superadmin_support_list -> 200. P. Capturas 17 e 22.",
+      "support.kanban": "/support abre em cards (padrao) com busca, Status, Menu, Responsavel, Leitura, toggle cards/tabela, Arquivos e card Criar suporte no vazio (\"Ainda nao ha chamados na operacao.\"); colunas Novo/Em andamento/Aguardando solicitante/Concluido; o card moveu de coluna a cada status. P. Capturas 10, 13, 18, 21.",
+      "support.detail": "clique no card abre o painel lateral (superadmin_support_get -> 200) com id, assunto, chip de status, Equipe, Relatorio original, Historico e compositor. P. Captura 14.",
+      "support.create": "card Criar suporte -> dialogo Novo chamado (menu Outros, assunto \"[R04-QA] Chamado de teste\", descricao) -> superadmin_support_create -> 200 (id 48e02ab0-fa60-4e7c-86b6-78f75565dc57, status new, revision 1, actor_person_id 007a4ca5-31bd-4a77-956f-ce879695042e); lista recarregada com total_items 1. P. Capturas 11-13.",
+      "support.reply": "compositor \"Responder ao chamado\" -> superadmin_support_reply -> 200 (revision 2, mensagem author support); reload manteve revision 2 e o item support.reply no Historico. P. Captura 15.",
+      "support.close": "chip de status -> Em andamento (exigiu escolher responsavel) -> superadmin_support_set_status in_progress -> 200 (revision 3); depois Concluido -> superadmin_support_set_status completed -> 200 (revision 4); reload: superadmin_support_list devolve status completed e o card esta na coluna Concluido (1 item). P. Capturas 16, 20, 21."
+    },
+    "pendencias_registradas_rev18": [
+      {
+        "action_id": "account.profile",
+        "tipo": "defeito-cliente",
+        "o_que": "sigla derivada pelo servidor (\"O4\", sobrenome numerico da pessoa de servico) reprova no validador do cliente (uma ou duas letras): o formulario nao salva sem trocar a sigla; a sigla nao e persistida (p_avatar_initials so validado)."
+      },
+      {
+        "action_id": "account.profile",
+        "tipo": "dado-da-ponte",
+        "o_que": "e-mail vazio na projecao porque a pessoa de servico da ponte 220400 nao tem person_auth_links ativo; o validador exige e-mail e cada salvamento cria account_email_change_requests pendente (cancelado ao fim). Com pessoa real vinculada o campo vem preenchido."
+      },
+      {
+        "action_id": "account.profile",
+        "tipo": "backend",
+        "o_que": "superadmin_account_profile_save exige celular 7-40 caracteres sem validador no cliente: celular vazio cai em \"Nao foi possivel salvar o perfil\" generico."
+      },
+      {
+        "action_id": "account.profile",
+        "tipo": "ui-decisao-7",
+        "o_que": "balao Mensagens sobrepoe o botao Salvar alteracoes em 1440x1000 (formulario de edicao: sem balao pela Decisao 7). Captura 02-profile-save-click."
+      },
+      {
+        "action_id": "support.detail",
+        "tipo": "ui",
+        "o_que": "balao Mensagens sobrepoe o Historico e o compositor do painel lateral em 1440x1000. Captura 14."
+      },
+      {
+        "action_id": "support.close",
+        "tipo": "prototipo",
+        "o_que": "Responsaveis vem de defaultTeamMembers (lista fixa) e setAssignees nao persiste (sem RPC): apos reload \"Sem responsavel\". Mudar para Em andamento exige escolher responsavel dessa lista fixa."
+      },
+      {
+        "action_id": "support.kanban",
+        "tipo": "composto",
+        "o_que": "\"abas de status\" nao existem em Suporte: Status e filtro em dropdown; a visao (cards/tabela) volta a cards apos reload (preferencia nao persistida)."
+      },
+      {
+        "action_id": "support.create",
+        "tipo": "residuo-sintetico",
+        "o_que": "chamado 48e02ab0-fa60-4e7c-86b6-78f75565dc57 ([R04-QA], status completed, 1 mensagem, 4 recibos) fica em producao: nao ha RPC de exclusao. Coordenador remove por SQL (support_sessions e dependentes) ao fim da rodada."
+      },
+      {
+        "action_id": "account.profile",
+        "tipo": "residuo-sintetico",
+        "o_que": "people.mobile_phone da pessoa de servico 007a4ca5-31bd-4a77-956f-ce879695042e ficou \"11999990000\" (a RPC nao aceita vazio); account_email_change_requests cancelada e 3 recibos em account_profile_command_receipts. Coordenador limpa por SQL se quiser o estado anterior."
+      },
+      {
+        "action_id": "support.*",
+        "tipo": "ferramenta",
+        "o_que": "Flutter Driver tap trava neste build release (timeout); manter cliques por CDP no metodo de prova."
+      }
+    ],
+    "finalizado": "sim (rev 18 pelo subagente do coordenador as 03:00; validacao final da frente as 08:45)",
+    "validacao_final_0845": {
+      "branch": "work/etapa2-r04-operacoes publicada; git cherry origin/dev = 0 (tudo em dev por conteudo); worktree limpa; sem stash",
+      "pacotes_em_producao": [
+        "20260910210000_support_create_internal_scope_v1 (lote 10)",
+        "20260910210100_superadmin_internal_audit_read_v2 (lote 10)"
+      ],
+      "deltas_aplicados": "22 de deltas-r04-ops.json refletidos no inventario (support 6x FE verified/BE done/E2E; account.profile FE/BE/E2E; account.settings FE)",
+      "deltas_pendentes": "docs/reviews/evidence/etapa-2/r04-operacoes/deltas-r04-ops-audit-plans.json (3): audit.list/filter/detail FE local-green (composto + goldens, f9ddaf90a); inventario ainda diz Revalidar",
+      "handoff": "docs/reviews/evidence/etapa-2/r04-operacoes/handoff-final-e-skills.md (validacao, pendencias numeradas 1-14, proposta de atualizacao das skills coelo-backend/coelo-frontend/coelo-frontend-backend, evolucao da Etapa 2 no recorte, pos-MVP)",
+      "observacao": "as revs 15 e 16 (22:34 e 23:26) chegaram a dev por merge sem recibo proprio no coordenacao.json; conteudo integrado"
+    },
+    "mini_revisao_10min": {
+      "para": "coordenador coelo-04 (nao apareceu no ListAgents as 08:50; gravado aqui e publicado por push, como ordenado)",
+      "sha_final_publicado": "work/etapa2-r04-operacoes 95389784d (rev 19) + este commit; git cherry origin/dev = 0 fora de dev antes desta revisao; worktree limpa, sem stash, sem WIP retido",
+      "fechou_por_action_id_com_prova": {
+        "support.create": "FE verified / BE done / E2E verified-e2e — rota real 03:00 com qa-r03: superadmin_support_create 200 em producao (candidato 210000 no lote 10), chamado listado apos reload; capturas rota-real/11-13; pgTAP 210000 17/17",
+        "support.table": "idem — visao tabela do composto, superadmin_support_list 200; capturas 17 e 22; pgTAP support_production 23/23",
+        "support.kanban": "idem — cards com busca/filtros/toggle/Arquivos/Criar no vazio, card muda de coluna por status e persiste; capturas 10,13,18,21",
+        "support.detail": "idem — painel lateral via superadmin_support_get 200; captura 14",
+        "support.reply": "idem — superadmin_support_reply 200 (revision 1->2), reload mantem; captura 15",
+        "support.close": "idem — superadmin_support_set_status in_progress e completed 200 (revision 3 e 4), reload mostra Concluido; capturas 16,20,21",
+        "account.profile": "FE verified / BE done / E2E verified-e2e — /profile com dados reais, sobrenome editado e salvo (superadmin_account_profile_save 200), reload manteve, restaurado, pedido de e-mail cancelado (200); capturas 01-04; pgTAP account_profile 16/16",
+        "account.settings": "FE verified (BE not-applicable, E2E flutter-only por desenho) — Claro + Reduzir animacoes persistem em localStorage e sobrevivem a carga completa; capturas 05-08",
+        "audit.list/audit.filter/audit.detail (backend)": "BE local-green pelo coordenador — AUDIT-READ-V2 (210100) aplicada em producao no lote 10, pgTAP 37/37",
+        "audit.list/audit.filter/audit.detail (frontend)": "local-green PROPOSTO (delta ainda nao aplicado) — diretorio no composto CoeloAdminDirectory com filtros alinhados (f9ddaf90a), 62 testes P + arquitetura, 6 goldens regravados no SDK 3.44.2"
+      },
+      "aberto_com_primeiro_gate": {
+        "audit.list/filter/detail": "gate: rota real /audit com sessao qa-r03 (listar, filtrar, detalhe, reload) -> propor verified/done/E2E",
+        "plans.list/create/edit": "gate: rota real /plans com sessao (assert_plan_permission agora alcancavel pela ponte 220400); plans.list segue local-green",
+        "plans.activate/plans.assign": "gate: decisao do Owner sobre semantica (arquivar/restaurar da spec 051; atribuicao nao e comando aprovado)",
+        "support.* goldens (32)": "gate: pagina lado a lado (R referencia, A atual, diferenca) para o Owner; decisao A com observacoes MENU/TABELA/CHAT; support_detail_light_1024 e R",
+        "account.profile (defeitos)": "gate: correcao no cliente/servidor — sigla derivada O4 reprovada no validador (1-2 letras) e nao persistida; e-mail vazio (pessoa da ponte sem person_auth_links); celular 7-40 so no servidor; balao Mensagens sobre Salvar em 1440x1000",
+        "support.detail": "gate: balao Mensagens sobre Historico/compositor em 1440x1000 (Decisao 7 no frame)",
+        "support.close": "gate: Responsaveis sao prototipo (defaultTeamMembers) e setAssignees nao persiste (sem RPC)",
+        "support.kanban": "gate: preferencia cards/tabela nao persiste; Status e dropdown, nao abas",
+        "audit.export / account.mfa / account.sessions / account.logout": "adiados por decisao (ADR 0034; Decisao 12; tela inexistente; ID distinto de auth.logout)",
+        "suites pgTAP legadas": "audit_production_test (has_column de 3 args, fixture de unidade) e auth_context #8 com falhas pre-existentes de drift — revisao profunda",
+        "tipo do callback do Bug": "13 paginas ainda declaram ValueChanged<SupportReportDraft>; canonico e SuperadminBugReportSubmit (FutureOr) da shell"
+      },
+      "deltas_propostos": {
+        "aplicados_pelo_coordenador": "docs/reviews/evidence/etapa-2/r04-operacoes/deltas-r04-ops.json (22 deltas, ja refletidos no inventario de dev)",
+        "pendentes": [
+          {
+            "action_id": "audit.list",
+            "camada": "frontend",
+            "estado_proposto": "local-green",
+            "delta": "R04 (11/09, f9ddaf90a): diretorio de Auditoria migrado ao composto CoeloAdminDirectory: busca e filtros Resultados/Periodo alinhados na toolbar (observacao 'ajustar filtros' do Owner aplicada), toggle Cards/Tabela, Arquivos honesto (CSV/XLSX 'Disponivel depois do MVP'), rodape de paginacao do composto (cursor: salto anda um passo por vez), toolbar visivel em todos os estados inclusive vazio. Enum local de display removido e allowlist do teste de arquitetura reduzida. Goldens audit_directory_* (6) regravados no SDK 3.44.2. Gate para verified: rota normal com sessao qa-r03 (leitura v2 ja em producao no lote 10).",
+            "evidencia": "apps/superadmin/lib/features/audit/presentation/audit_directory_page.dart, apps/superadmin/test/features/audit/goldens/audit_directory_desktop_light_1024.png, apps/superadmin/test/features/audit/goldens/audit_directory_empty_light_1440.png",
+            "certificacao": {
+              "evidence": "apps/superadmin/test/features/audit (62 P) e apps/superadmin/test/architecture (2 P) em f9ddaf90a; goldens audit_directory_* regravados",
+              "revision": "comunicacao/operacoes.json rev 19",
+              "environment": "flutter test local, SDK 3.44.2, branch work/etapa2-r04-operacoes (f9ddaf90a, integrada em dev)",
+              "recordedAt": "2026-09-11T08:40:00-03:00"
+            }
+          },
+          {
+            "action_id": "audit.filter",
+            "camada": "frontend",
+            "estado_proposto": "local-green",
+            "delta": "R04 (11/09, f9ddaf90a): filtros Resultados (multi) e Periodo (Todos/Hoje/7 dias/30 dias) como widgets de dominio sem largura propria na toolbar do composto; Limpar filtros no estado sem resultados pelo composto; teste de estados atualizado para os textos do composto. Gate para verified: rota normal com sessao.",
+            "evidencia": "apps/superadmin/lib/features/audit/presentation/widgets/audit_directory_filters.dart, apps/superadmin/test/features/audit/audit_directory_page_test.dart",
+            "certificacao": {
+              "evidence": "apps/superadmin/test/features/audit/audit_directory_page_test.dart (25 P) em f9ddaf90a",
+              "revision": "comunicacao/operacoes.json rev 19",
+              "environment": "flutter test local, SDK 3.44.2, branch work/etapa2-r04-operacoes (f9ddaf90a, integrada em dev)",
+              "recordedAt": "2026-09-11T08:40:00-03:00"
+            }
+          },
+          {
+            "action_id": "audit.detail",
+            "camada": "frontend",
+            "estado_proposto": "local-green",
+            "delta": "R04 (11/09, f9ddaf90a): painel de detalhe (AuditDetailPanel) mantido via CoeloAdminWorkspaceLayout ao lado do composto; cards (AuditEventCard) e linhas (AuditEventRows) abrem o detalhe; retry do detalhe preservado. Gate para verified: rota normal com sessao.",
+            "evidencia": "apps/superadmin/lib/features/audit/presentation/widgets/audit_event_views.dart, apps/superadmin/lib/features/audit/presentation/widgets/audit_timeline.dart",
+            "certificacao": {
+              "evidence": "apps/superadmin/test/features/audit (62 P) em f9ddaf90a",
+              "revision": "comunicacao/operacoes.json rev 19",
+              "environment": "flutter test local, SDK 3.44.2, branch work/etapa2-r04-operacoes (f9ddaf90a, integrada em dev)",
+              "recordedAt": "2026-09-11T08:40:00-03:00"
+            }
+          }
         ]
       },
-      "backend_package_or_existing_candidate": {
-        "done": 20,
-        "total": 20,
-        "percent": 100,
-        "note": "pacotes/candidatos preparados; não equivale a backend done porque pgTAP nominal e aplicação permanecem pendentes"
-      },
-      "pgtap_nominal": {
-        "done": 0,
-        "total": 20,
-        "percent": 0
-      },
-      "e2e_supabase_real": {
-        "done": 0,
-        "total": 20,
-        "percent": 0
-      },
-      "goldens_decididos_e_atualizados": {
-        "plans": "8/8",
-        "support": "32/32 casos verificados; 28 PNGs alterados"
-      }
-    },
-    "commits": [
-      "b172b695b8d996375fc7da7a539ed7ee78dc7e35",
-      "94bca84f6",
-      "5611c6da7",
-      "ce4939227",
-      "b02478937",
-      "9ae607fca",
-      "179cd6ae4",
-      "af8ee0524",
-      "2ea0e5606",
-      "d7ca27d93"
-    ],
-    "next_step": "coordenador deve ler este checkpoint e, quando a janela de replay e o gate P1 forem liberados, executar pgTAP nominal dos 20 action_ids ativos; depois aplicar a fila SQL forward-only e executar E2E Supabase real"
-  },
-  "app_port": "localhost:3007 (build web release servido por Node; CDP 9407)",
-  "pacotesProntos": [
-    {
-      "path": "packages/coelo_database/candidatos/operacoes/20260910210000_support_create_internal_scope_v1.sql",
-      "pgtap": "superadmin_support_create_internal_scope_test 17/17",
-      "composition_key": "nenhuma",
-      "state": "na fila do coordenador (lote 10, atras da ponte de ator 220400)"
-    },
-    {
-      "path": "packages/coelo_database/candidatos/operacoes/20260910210100_superadmin_internal_audit_read_v2.sql",
-      "pgtap": "superadmin_internal_audit_read_v2_test 37/37 (audit_production_test e auth_context_test tem falhas pre-existentes de drift, independentes)",
-      "composition_key": "nenhuma (cliente de Auditoria ja consome o envelope v2)",
-      "state": "na fila do coordenador (lote 10)"
-    }
-  ],
-  "author_note": "Revisao 18 gravada pelo subagente do coordenador (a conversa R04 - Operacoes caiu no reinicio da maquina). Recorte: prova na rota real de Conta (/profile, /settings) e Suporte (/support) com a sessao qa-r03@coelo.me sobre o build web release desta branch. Um Chrome, nenhum flutter test em paralelo; Chrome e servidor fechados ao fim.",
-  "goldens_divergentes": {
-    "family": "support",
-    "reason": "toolbar, banner Criar, tabela e rodape de paginacao passaram ao composto CoeloAdminDirectory (recuo 40/24/16, busca 300/216/100%, filtros 160 px, rodape fixo); decisao do Owner de 10/09: A (regravar apos aplicar a observacao) em todos os claros exceto support_detail_light_1024 (R); escuros seguem o claro",
-    "owner_observations": "filtros desalinhados (resolvido pelo composto), MENU, TABELA fora do padrao/alinhamento interno (linhas no composto), melhorar o card Criar (banner do composto), CHAT - MENU e CHAT nao verificados visualmente pelo subagente",
-    "not_rewritten": true,
-    "standard": [
-      "support_kanban_light_375",
-      "support_kanban_light_768",
-      "support_kanban_light_1024",
-      "support_kanban_light_1440",
-      "support_kanban_dark_375",
-      "support_kanban_dark_768",
-      "support_kanban_dark_1024",
-      "support_kanban_dark_1440",
-      "support_table_light_375",
-      "support_table_light_768",
-      "support_table_light_1024",
-      "support_table_light_1440",
-      "support_table_dark_375",
-      "support_table_dark_768",
-      "support_table_dark_1024",
-      "support_table_dark_1440",
-      "support_detail_light_375",
-      "support_detail_light_768",
-      "support_detail_light_1024",
-      "support_detail_light_1440",
-      "support_detail_dark_375",
-      "support_detail_dark_768",
-      "support_detail_dark_1024",
-      "support_detail_dark_1440"
-    ],
-    "scaled": [
-      "support_kanban_light_375_text200",
-      "support_kanban_light_1440_text150",
-      "support_kanban_dark_375_text200",
-      "support_kanban_dark_1440_text150",
-      "support_table_light_375_text200",
-      "support_table_light_1440_text150",
-      "support_table_dark_375_text200",
-      "support_table_dark_1440_text150"
-    ],
-    "diff_percent_sample": "kanban 5-13%, table 14-28%, detail 8-22% (log no scratchpad da sessao, nao versionado)",
-    "next": "conversa com verificacao visual: montar pagina lado a lado (R referencia, A render atual, diferenca) para o Owner via coordenador e regravar no SDK 3.44.2"
-  },
-  "notes_to_coordinator": [
-    "Composto: CoeloAdminPaginationFooter compacto (_CompactPageAction) nao expoe chaves coelo-admin-pagination-previous/next; testes de Suporte localizam por Semantics.label. Sugestao de correcao no composto (nao aplicada: fora do recorte do subagente).",
-    "Composto: CoeloAdminListingToolbar troca Row/Column por largura e recria a subarvore dos filtros quando um painel de detalhe abre no corpo do workspace (perde foco de teclado nos filtros). Suporte contorna na feature (foco no detalhe ao abrir + nextFocus no fallback); Auditoria pode ter o mesmo efeito.",
-    "Composto: estado loading nao mostra o Criar (so o spinner); a regra do Owner cita vazio/falha/antes da primeira carga para busca/filtros (mantidos). Registrado, nao alterado.",
-    "Commits 6360c93b5 e 00c57bc42 (goldens de Planos: tabela na rota real dentro da shell; cards com shell + ARQUIVO) estao na branch, feitos pela conversa caida sem revisao no JSON; sem prova registrada alem do proprio commit.",
-    "rev 18: prova na rota real de Conta e Suporte concluida (8/8 P); ver ROTA_REAL_03h00_por_action_id, pendencias_registradas_rev18 e deltas-r04-ops.json. Nenhum SQL executado em producao por esta revisao; apenas RPCs pelo app com a sessao qa-r03."
-  ],
-  "AMBIENTE_DE_PROVA": "flutter build web -t test_driver/qa_main.dart --dart-define-from-file=.env.local -o build/web-r04ops (115 s) servido por serve.js (Node, fallback de SPA) em http://localhost:3007; Chrome dedicado --remote-debugging-port=9407 --use-angle=swiftshader (perfil isolado); login pelo driver (qa_drive.dart login, credencial do Coelo-backups/qa-r03.env exportada no shell, nunca impressa) com Manter sessao aberta. Metodo: o comando tap do Flutter Driver trava (timeout 45 s) neste build release em botoes que abrem dialogo/rede; cliques por CDP Input.dispatchMouseEvent (cdp.js clickxy) e texto pelo driver enter_text; RPCs capturadas por Network (cdp.js net). O Chrome sob SwiftShader caiu duas vezes (apos reload em /settings e apos Uncaught Error do CanvasKit no dialogo de Bug); reaberto direto na rota, a sessao persistiu e a prova continuou (memoria fisica livre 1,8-2,4 GB durante a prova).",
-  "ROTA_REAL_03h00_por_action_id": {
-    "account.profile": "/profile abre com dados reais da RPC superadmin_account_profile_get (pessoa de servico da ponte 220400: Operador interno / 41462594, e-mail e celular vazios). Editado Sobrenome para \"41462594 [R04-QA]\"; salvar exigiu preencher e-mail (validador do cliente \"Informe o e-mail.\"), celular (RPC exige 7-40 caracteres) e sigla (o valor derivado \"O4\" e invalido no cliente: \"Use uma ou duas letras.\"); superadmin_account_profile_save -> 200; reload manteve \"41462594 [R04-QA]\" e o celular; restaurado \"41462594\" (save 200) e solicitacao de e-mail cancelada (superadmin_account_email_change_cancel 200). P. Capturas 01-04.",
-    "account.settings": "/settings abre; Claro + Reduzir animacoes gravados em localStorage (coelo.superadmin.theme-mode=light, reduce-motion=true); carga completa nova (Chrome reaberto) manteve os dois (switch checked=true, tema claro renderizado); restaurado Sistema + desligado. Persistencia local por desenho (SharedPreferences), sem backend. P. Capturas 05-08.",
-    "support.table": "visao tabela com colunas Chamado/Origem/Solicitante/Responsavel/Status/Anexos, banner Criar suporte, chip de status, paginacao (Itens por pagina 9, Pagina 1 de 1); chamado sintetico listado apos reload via superadmin_support_list -> 200. P. Capturas 17 e 22.",
-    "support.kanban": "/support abre em cards (padrao) com busca, Status, Menu, Responsavel, Leitura, toggle cards/tabela, Arquivos e card Criar suporte no vazio (\"Ainda nao ha chamados na operacao.\"); colunas Novo/Em andamento/Aguardando solicitante/Concluido; o card moveu de coluna a cada status. P. Capturas 10, 13, 18, 21.",
-    "support.detail": "clique no card abre o painel lateral (superadmin_support_get -> 200) com id, assunto, chip de status, Equipe, Relatorio original, Historico e compositor. P. Captura 14.",
-    "support.create": "card Criar suporte -> dialogo Novo chamado (menu Outros, assunto \"[R04-QA] Chamado de teste\", descricao) -> superadmin_support_create -> 200 (id 48e02ab0-fa60-4e7c-86b6-78f75565dc57, status new, revision 1, actor_person_id 007a4ca5-31bd-4a77-956f-ce879695042e); lista recarregada com total_items 1. P. Capturas 11-13.",
-    "support.reply": "compositor \"Responder ao chamado\" -> superadmin_support_reply -> 200 (revision 2, mensagem author support); reload manteve revision 2 e o item support.reply no Historico. P. Captura 15.",
-    "support.close": "chip de status -> Em andamento (exigiu escolher responsavel) -> superadmin_support_set_status in_progress -> 200 (revision 3); depois Concluido -> superadmin_support_set_status completed -> 200 (revision 4); reload: superadmin_support_list devolve status completed e o card esta na coluna Concluido (1 item). P. Capturas 16, 20, 21."
-  },
-  "pendencias_registradas_rev18": [
-    {
-      "action_id": "account.profile",
-      "tipo": "defeito-cliente",
-      "o_que": "sigla derivada pelo servidor (\"O4\", sobrenome numerico da pessoa de servico) reprova no validador do cliente (uma ou duas letras): o formulario nao salva sem trocar a sigla; a sigla nao e persistida (p_avatar_initials so validado)."
-    },
-    {
-      "action_id": "account.profile",
-      "tipo": "dado-da-ponte",
-      "o_que": "e-mail vazio na projecao porque a pessoa de servico da ponte 220400 nao tem person_auth_links ativo; o validador exige e-mail e cada salvamento cria account_email_change_requests pendente (cancelado ao fim). Com pessoa real vinculada o campo vem preenchido."
-    },
-    {
-      "action_id": "account.profile",
-      "tipo": "backend",
-      "o_que": "superadmin_account_profile_save exige celular 7-40 caracteres sem validador no cliente: celular vazio cai em \"Nao foi possivel salvar o perfil\" generico."
-    },
-    {
-      "action_id": "account.profile",
-      "tipo": "ui-decisao-7",
-      "o_que": "balao Mensagens sobrepoe o botao Salvar alteracoes em 1440x1000 (formulario de edicao: sem balao pela Decisao 7). Captura 02-profile-save-click."
-    },
-    {
-      "action_id": "support.detail",
-      "tipo": "ui",
-      "o_que": "balao Mensagens sobrepoe o Historico e o compositor do painel lateral em 1440x1000. Captura 14."
-    },
-    {
-      "action_id": "support.close",
-      "tipo": "prototipo",
-      "o_que": "Responsaveis vem de defaultTeamMembers (lista fixa) e setAssignees nao persiste (sem RPC): apos reload \"Sem responsavel\". Mudar para Em andamento exige escolher responsavel dessa lista fixa."
-    },
-    {
-      "action_id": "support.kanban",
-      "tipo": "composto",
-      "o_que": "\"abas de status\" nao existem em Suporte: Status e filtro em dropdown; a visao (cards/tabela) volta a cards apos reload (preferencia nao persistida)."
-    },
-    {
-      "action_id": "support.create",
-      "tipo": "residuo-sintetico",
-      "o_que": "chamado 48e02ab0-fa60-4e7c-86b6-78f75565dc57 ([R04-QA], status completed, 1 mensagem, 4 recibos) fica em producao: nao ha RPC de exclusao. Coordenador remove por SQL (support_sessions e dependentes) ao fim da rodada."
-    },
-    {
-      "action_id": "account.profile",
-      "tipo": "residuo-sintetico",
-      "o_que": "people.mobile_phone da pessoa de servico 007a4ca5-31bd-4a77-956f-ce879695042e ficou \"11999990000\" (a RPC nao aceita vazio); account_email_change_requests cancelada e 3 recibos em account_profile_command_receipts. Coordenador limpa por SQL se quiser o estado anterior."
-    },
-    {
-      "action_id": "support.*",
-      "tipo": "ferramenta",
-      "o_que": "Flutter Driver tap trava neste build release (timeout); manter cliques por CDP no metodo de prova."
-    }
-  ],
-  "finalizado": "sim (rev 18 pelo subagente do coordenador as 03:00; validacao final da frente as 08:45)",
-  "validacao_final_0845": {
-    "branch": "work/etapa2-r04-operacoes publicada; git cherry origin/dev = 0 (tudo em dev por conteudo); worktree limpa; sem stash",
-    "pacotes_em_producao": [
-      "20260910210000_support_create_internal_scope_v1 (lote 10)",
-      "20260910210100_superadmin_internal_audit_read_v2 (lote 10)"
-    ],
-    "deltas_aplicados": "22 de deltas-r04-ops.json refletidos no inventario (support 6x FE verified/BE done/E2E; account.profile FE/BE/E2E; account.settings FE)",
-    "deltas_pendentes": "docs/reviews/evidence/etapa-2/r04-operacoes/deltas-r04-ops-audit-plans.json (3): audit.list/filter/detail FE local-green (composto + goldens, f9ddaf90a); inventario ainda diz Revalidar",
-    "handoff": "docs/reviews/evidence/etapa-2/r04-operacoes/handoff-final-e-skills.md (validacao, pendencias numeradas 1-14, proposta de atualizacao das skills coelo-backend/coelo-frontend/coelo-frontend-backend, evolucao da Etapa 2 no recorte, pos-MVP)",
-    "observacao": "as revs 15 e 16 (22:34 e 23:26) chegaram a dev por merge sem recibo proprio no coordenacao.json; conteudo integrado"
-  },
-  "mini_revisao_10min": {
-    "para": "coordenador coelo-04 (nao apareceu no ListAgents as 08:50; gravado aqui e publicado por push, como ordenado)",
-    "sha_final_publicado": "work/etapa2-r04-operacoes 95389784d (rev 19) + este commit; git cherry origin/dev = 0 fora de dev antes desta revisao; worktree limpa, sem stash, sem WIP retido",
-    "fechou_por_action_id_com_prova": {
-      "support.create": "FE verified / BE done / E2E verified-e2e — rota real 03:00 com qa-r03: superadmin_support_create 200 em producao (candidato 210000 no lote 10), chamado listado apos reload; capturas rota-real/11-13; pgTAP 210000 17/17",
-      "support.table": "idem — visao tabela do composto, superadmin_support_list 200; capturas 17 e 22; pgTAP support_production 23/23",
-      "support.kanban": "idem — cards com busca/filtros/toggle/Arquivos/Criar no vazio, card muda de coluna por status e persiste; capturas 10,13,18,21",
-      "support.detail": "idem — painel lateral via superadmin_support_get 200; captura 14",
-      "support.reply": "idem — superadmin_support_reply 200 (revision 1->2), reload mantem; captura 15",
-      "support.close": "idem — superadmin_support_set_status in_progress e completed 200 (revision 3 e 4), reload mostra Concluido; capturas 16,20,21",
-      "account.profile": "FE verified / BE done / E2E verified-e2e — /profile com dados reais, sobrenome editado e salvo (superadmin_account_profile_save 200), reload manteve, restaurado, pedido de e-mail cancelado (200); capturas 01-04; pgTAP account_profile 16/16",
-      "account.settings": "FE verified (BE not-applicable, E2E flutter-only por desenho) — Claro + Reduzir animacoes persistem em localStorage e sobrevivem a carga completa; capturas 05-08",
-      "audit.list/audit.filter/audit.detail (backend)": "BE local-green pelo coordenador — AUDIT-READ-V2 (210100) aplicada em producao no lote 10, pgTAP 37/37",
-      "audit.list/audit.filter/audit.detail (frontend)": "local-green PROPOSTO (delta ainda nao aplicado) — diretorio no composto CoeloAdminDirectory com filtros alinhados (f9ddaf90a), 62 testes P + arquitetura, 6 goldens regravados no SDK 3.44.2"
-    },
-    "aberto_com_primeiro_gate": {
-      "audit.list/filter/detail": "gate: rota real /audit com sessao qa-r03 (listar, filtrar, detalhe, reload) -> propor verified/done/E2E",
-      "plans.list/create/edit": "gate: rota real /plans com sessao (assert_plan_permission agora alcancavel pela ponte 220400); plans.list segue local-green",
-      "plans.activate/plans.assign": "gate: decisao do Owner sobre semantica (arquivar/restaurar da spec 051; atribuicao nao e comando aprovado)",
-      "support.* goldens (32)": "gate: pagina lado a lado (R referencia, A atual, diferenca) para o Owner; decisao A com observacoes MENU/TABELA/CHAT; support_detail_light_1024 e R",
-      "account.profile (defeitos)": "gate: correcao no cliente/servidor — sigla derivada O4 reprovada no validador (1-2 letras) e nao persistida; e-mail vazio (pessoa da ponte sem person_auth_links); celular 7-40 so no servidor; balao Mensagens sobre Salvar em 1440x1000",
-      "support.detail": "gate: balao Mensagens sobre Historico/compositor em 1440x1000 (Decisao 7 no frame)",
-      "support.close": "gate: Responsaveis sao prototipo (defaultTeamMembers) e setAssignees nao persiste (sem RPC)",
-      "support.kanban": "gate: preferencia cards/tabela nao persiste; Status e dropdown, nao abas",
-      "audit.export / account.mfa / account.sessions / account.logout": "adiados por decisao (ADR 0034; Decisao 12; tela inexistente; ID distinto de auth.logout)",
-      "suites pgTAP legadas": "audit_production_test (has_column de 3 args, fixture de unidade) e auth_context #8 com falhas pre-existentes de drift — revisao profunda",
-      "tipo do callback do Bug": "13 paginas ainda declaram ValueChanged<SupportReportDraft>; canonico e SuperadminBugReportSubmit (FutureOr) da shell"
-    },
-    "deltas_propostos": {
-      "aplicados_pelo_coordenador": "docs/reviews/evidence/etapa-2/r04-operacoes/deltas-r04-ops.json (22 deltas, ja refletidos no inventario de dev)",
-      "pendentes": [
+      "dados_sinteticos_em_producao": [
         {
-          "action_id": "audit.list",
-          "camada": "frontend",
-          "estado_proposto": "local-green",
-          "delta": "R04 (11/09, f9ddaf90a): diretorio de Auditoria migrado ao composto CoeloAdminDirectory: busca e filtros Resultados/Periodo alinhados na toolbar (observacao 'ajustar filtros' do Owner aplicada), toggle Cards/Tabela, Arquivos honesto (CSV/XLSX 'Disponivel depois do MVP'), rodape de paginacao do composto (cursor: salto anda um passo por vez), toolbar visivel em todos os estados inclusive vazio. Enum local de display removido e allowlist do teste de arquitetura reduzida. Goldens audit_directory_* (6) regravados no SDK 3.44.2. Gate para verified: rota normal com sessao qa-r03 (leitura v2 ja em producao no lote 10).",
-          "evidencia": "apps/superadmin/lib/features/audit/presentation/audit_directory_page.dart, apps/superadmin/test/features/audit/goldens/audit_directory_desktop_light_1024.png, apps/superadmin/test/features/audit/goldens/audit_directory_empty_light_1440.png",
-          "certificacao": {
-            "evidence": "apps/superadmin/test/features/audit (62 P) e apps/superadmin/test/architecture (2 P) em f9ddaf90a; goldens audit_directory_* regravados",
-            "revision": "comunicacao/operacoes.json rev 19",
-            "environment": "flutter test local, SDK 3.44.2, branch work/etapa2-r04-operacoes (f9ddaf90a, integrada em dev)",
-            "recordedAt": "2026-09-11T08:40:00-03:00"
-          }
+          "tabela": "public.support_sessions (+ support_messages, audit.support_session_actions, support_command_receipts)",
+          "id": "48e02ab0-fa60-4e7c-86b6-78f75565dc57",
+          "descricao": "chamado [R04-QA] Chamado de teste, status completed, 1 mensagem, 4 recibos; sem RPC de exclusao — limpeza por SQL (P37)"
         },
         {
-          "action_id": "audit.filter",
-          "camada": "frontend",
-          "estado_proposto": "local-green",
-          "delta": "R04 (11/09, f9ddaf90a): filtros Resultados (multi) e Periodo (Todos/Hoje/7 dias/30 dias) como widgets de dominio sem largura propria na toolbar do composto; Limpar filtros no estado sem resultados pelo composto; teste de estados atualizado para os textos do composto. Gate para verified: rota normal com sessao.",
-          "evidencia": "apps/superadmin/lib/features/audit/presentation/widgets/audit_directory_filters.dart, apps/superadmin/test/features/audit/audit_directory_page_test.dart",
-          "certificacao": {
-            "evidence": "apps/superadmin/test/features/audit/audit_directory_page_test.dart (25 P) em f9ddaf90a",
-            "revision": "comunicacao/operacoes.json rev 19",
-            "environment": "flutter test local, SDK 3.44.2, branch work/etapa2-r04-operacoes (f9ddaf90a, integrada em dev)",
-            "recordedAt": "2026-09-11T08:40:00-03:00"
-          }
+          "tabela": "public.people",
+          "id": "007a4ca5-31bd-4a77-956f-ce879695042e",
+          "descricao": "pessoa de servico da ponte 220400: mobile_phone ficou 11999990000 (a RPC nao aceita vazio); sobrenome restaurado para 41462594"
         },
         {
-          "action_id": "audit.detail",
-          "camada": "frontend",
-          "estado_proposto": "local-green",
-          "delta": "R04 (11/09, f9ddaf90a): painel de detalhe (AuditDetailPanel) mantido via CoeloAdminWorkspaceLayout ao lado do composto; cards (AuditEventCard) e linhas (AuditEventRows) abrem o detalhe; retry do detalhe preservado. Gate para verified: rota normal com sessao.",
-          "evidencia": "apps/superadmin/lib/features/audit/presentation/widgets/audit_event_views.dart, apps/superadmin/lib/features/audit/presentation/widgets/audit_timeline.dart",
-          "certificacao": {
-            "evidence": "apps/superadmin/test/features/audit (62 P) em f9ddaf90a",
-            "revision": "comunicacao/operacoes.json rev 19",
-            "environment": "flutter test local, SDK 3.44.2, branch work/etapa2-r04-operacoes (f9ddaf90a, integrada em dev)",
-            "recordedAt": "2026-09-11T08:40:00-03:00"
-          }
+          "tabela": "public.account_email_change_requests / public.account_profile_command_receipts",
+          "id": "pessoa 007a4ca5-…",
+          "descricao": "1 pedido de troca de e-mail cancelado e 3 recibos (save, save, cancel_email_change)"
+        },
+        {
+          "tabela": "localStorage do Chrome de prova",
+          "id": "n/a",
+          "descricao": "coelo.superadmin.theme-mode / reduce-motion restaurados para Sistema/desligado; Chrome fechado"
         }
-      ]
-    },
-    "dados_sinteticos_em_producao": [
-      {
-        "tabela": "public.support_sessions (+ support_messages, audit.support_session_actions, support_command_receipts)",
-        "id": "48e02ab0-fa60-4e7c-86b6-78f75565dc57",
-        "descricao": "chamado [R04-QA] Chamado de teste, status completed, 1 mensagem, 4 recibos; sem RPC de exclusao — limpeza por SQL (P37)"
-      },
-      {
-        "tabela": "public.people",
-        "id": "007a4ca5-31bd-4a77-956f-ce879695042e",
-        "descricao": "pessoa de servico da ponte 220400: mobile_phone ficou 11999990000 (a RPC nao aceita vazio); sobrenome restaurado para 41462594"
-      },
-      {
-        "tabela": "public.account_email_change_requests / public.account_profile_command_receipts",
-        "id": "pessoa 007a4ca5-…",
-        "descricao": "1 pedido de troca de e-mail cancelado e 3 recibos (save, save, cancel_email_change)"
-      },
-      {
-        "tabela": "localStorage do Chrome de prova",
-        "id": "n/a",
-        "descricao": "coelo.superadmin.theme-mode / reduce-motion restaurados para Sistema/desligado; Chrome fechado"
-      }
-    ],
-    "skills": "proposta de atualizacao das tres skills na secao 3 de docs/reviews/evidence/etapa-2/r04-operacoes/handoff-final-e-skills.md"
+      ],
+      "skills": "proposta de atualizacao das tres skills na secao 3 de docs/reviews/evidence/etapa-2/r04-operacoes/handoff-final-e-skills.md"
+    }
   }
 }
