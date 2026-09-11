@@ -176,7 +176,7 @@ Em 11/09/2026 (10:13), ao responder as dúvidas visuais da Rodada 4, o Owner
 enviou uma captura do calendário nativo do iPhone (visão mensal, setembro de
 2026) como **referência de agenda/calendário**. O arquivo está guardado em
 `docs/reviews/evidence/etapa-2/referencias/agenda-calendario-mensal-ios-2026-09-11.png`
-(versionado em 11/09 às 14:30 a pedido do Owner); esta descrição resume o que ele fixa. O que a referência define, e que a Agenda
+(versionado em 11/09 às 10:55 a pedido do Owner); esta descrição resume o que ele fixa. O que a referência define, e que a Agenda
 do Coelo (`agenda.view`, `agenda_calendar_*`) segue em todas as larguras:
 
 - **Cabeçalho**: navegação de volta para o ano à esquerda ("< 2026"), ações à

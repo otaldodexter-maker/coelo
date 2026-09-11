@@ -295,20 +295,20 @@ próprio arquivo.
 | G-FORM | A |  |
 | WT | A |  |
 
-### Segunda leva (14:20, artefato "Pendências do Owner, 11/09")
+### Segunda leva (10:45, artefato "Pendências do Owner, 11/09")
 
 | Item | Decisão | Observação e efeito |
 | --- | --- | --- |
-| P38 golden `forms_editor_dark_1440` | A | Regravado às 14:35; suíte do editor 4/4. |
-| WT2 pastas soltas `e2-r01-c07` e `e2-r02-preserved-auth-20260909` | A | Apagadas às 14:35; o manifesto de preservação da R02 continua nos relatórios. |
+| P38 golden `forms_editor_dark_1440` | A | Regravado às 10:55; suíte do editor 4/4. |
+| WT2 pastas soltas `e2-r01-c07` e `e2-r02-preserved-auth-20260909` | A | Apagadas às 10:55; o manifesto de preservação da R02 continua nos relatórios. |
 | WT3 frente estrutura depois do fechamento | A | Branch `work/etapa2-r04-estrutura` (revs 34 a 37) integrada em `dev`; deltas continuação-2 aplicados (E2E 42/199). A worktree ficou porque a conversa ainda estava viva e commitando. |
 | REF capturas do calendário do iPhone | salvar | PNG mensal e diário versionados em `docs/reviews/evidence/etapa-2/referencias/`; baseline da skill coelo-ui aponta para eles. |
-| PUSH | pode enviar | Push feito para `dev` às 14:40. |
+| PUSH | pode enviar | Push feito para `dev` às 11:05. |
 
 Orientação do Owner na mesma resposta: decisões do artefato são para **anotar** (R05 e md de pendências), não para executar fora do ciclo das frentes. O que já tinha sido executado antes dessa orientação (lotes 25 a 27, goldens P26/G-FORM) fica registrado como feito.
 
 
-### Terceira leva (15:15, pausa da frente estrutura) — aguardam resposta
+### Terceira leva (11:35, pausa da frente estrutura; confirmada na segunda pausa às 11:50) — aguardam resposta
 
 | Item | Pergunta | Recomendação |
 | --- | --- | --- |

@@ -1421,7 +1421,7 @@
           "evidence": "docs/reviews/evidence/etapa-2/r04-coordenacao/lotes-25-27-decisoes-do-owner.md",
           "revision": "comunicacao/coordenacao.json rev 33",
           "environment": "producao Supabase evvbomzejfijozbtgvpt",
-          "recordedAt": "2026-09-11T14:05:00-03:00"
+          "recordedAt": "2026-09-11T10:25:00-03:00"
         }
       }
     },
@@ -1447,7 +1447,7 @@
           "evidence": "docs/reviews/evidence/etapa-2/r04-coordenacao/lotes-25-27-decisoes-do-owner.md",
           "revision": "comunicacao/coordenacao.json rev 33",
           "environment": "producao Supabase evvbomzejfijozbtgvpt",
-          "recordedAt": "2026-09-11T14:05:00-03:00"
+          "recordedAt": "2026-09-11T10:25:00-03:00"
         }
       }
     },
@@ -3293,7 +3293,7 @@
           "evidence": "docs/reviews/evidence/etapa-2/r04-coordenacao/lotes-25-27-decisoes-do-owner.md",
           "revision": "comunicacao/coordenacao.json rev 33",
           "environment": "producao Supabase evvbomzejfijozbtgvpt",
-          "recordedAt": "2026-09-11T14:05:00-03:00"
+          "recordedAt": "2026-09-11T10:25:00-03:00"
         }
       }
     },
@@ -3320,7 +3320,7 @@
           "evidence": "docs/reviews/evidence/etapa-2/r04-coordenacao/lotes-25-27-decisoes-do-owner.md",
           "revision": "comunicacao/coordenacao.json rev 33",
           "environment": "producao Supabase evvbomzejfijozbtgvpt",
-          "recordedAt": "2026-09-11T14:05:00-03:00"
+          "recordedAt": "2026-09-11T10:25:00-03:00"
         },
         "frontend": {
           "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
@@ -3543,7 +3543,7 @@
           "evidence": "docs/reviews/evidence/etapa-2/r04-coordenacao/lotes-25-27-decisoes-do-owner.md",
           "revision": "comunicacao/coordenacao.json rev 33",
           "environment": "local, flutter test SDK 3.44.2",
-          "recordedAt": "2026-09-11T14:05:00-03:00"
+          "recordedAt": "2026-09-11T10:25:00-03:00"
         },
         "backend": {
           "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/20-forms-edit-saved.png",
@@ -4335,7 +4335,7 @@
           "evidence": "docs/reviews/evidence/etapa-2/r04-coordenacao/lotes-25-27-decisoes-do-owner.md",
           "revision": "comunicacao/coordenacao.json rev 33",
           "environment": "producao Supabase evvbomzejfijozbtgvpt",
-          "recordedAt": "2026-09-11T14:05:00-03:00"
+          "recordedAt": "2026-09-11T10:25:00-03:00"
         }
       }
     },
@@ -4363,7 +4363,7 @@
           "evidence": "docs/reviews/evidence/etapa-2/r04-coordenacao/lotes-25-27-decisoes-do-owner.md",
           "revision": "comunicacao/coordenacao.json rev 33",
           "environment": "producao Supabase evvbomzejfijozbtgvpt",
-          "recordedAt": "2026-09-11T14:05:00-03:00"
+          "recordedAt": "2026-09-11T10:25:00-03:00"
         }
       }
     },
@@ -6644,7 +6644,7 @@
       "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
     }
   ],
-  "updatedAt": "2026-09-11T14:27:55.690Z",
+  "updatedAt": "2026-09-11T14:44:18.461Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,

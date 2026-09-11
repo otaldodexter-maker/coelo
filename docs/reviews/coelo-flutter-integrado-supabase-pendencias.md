@@ -3,7 +3,7 @@ title: "Pendências Coelo — Front-end + Back-end"
 source: "AGENTS.md; ADR 0019; ADR 0032; tracker-corrections-2026-09-08.json; inventario-etapa-2.json"
 status: "open"
 generated_at: "2026-09-08"
-updated_at: "2026-09-11T15:15:00-03:00"
+updated_at: "2026-09-11T11:50:00-03:00"
 action_count: 231
 family_count: 39
 active_mvp_action_count: 201
@@ -13,7 +13,7 @@ backend_applicable_action_count: 224
 formal_mvp_gate_action_count: 3
 deferred_post_mvp_action_count: 22
 flutter_only_action_count: 5
-tracker_sync_at: "2026-09-11T15:15:00-03:00"
+tracker_sync_at: "2026-09-11T11:50:00-03:00"
 tracker_sync_revisions: "R04 fechada: estrutura r32; acessos-pessoas r118; principal-chat-sistema r20; realm-interno r15; publicacoes-agenda r30; operacoes r20; formularios-cuidado-rotina r33; coordenacao r31"
 ---
 
@@ -62,7 +62,7 @@ branches dos grupos; frentes reatribuídas a sessões novas; regra de memória
 registrada na skill `coelo-backend`. Perguntas abertas ao Owner: P22 a P37 em
 `etapa-2-operacao/next-round/R04-perguntas-ao-owner-20260911.md`.
 
-**Atualização de 11/09 às 14:10 — decisões do Owner executadas (rev 33 de coordenacao.json).**
+**Atualização de 11/09 às 10:30 — decisões do Owner executadas (rev 33 de coordenacao.json).**
 O Owner respondeu as 18 dúvidas (P20 a P37, G-SUP, G-FORM, WT) no artefato
 "Decisões R04"; respostas integrais em
 `etapa-2-operacao/next-round/R04-perguntas-ao-owner-20260911.md` e ADR 0034
@@ -94,7 +94,7 @@ Decisão 15.
   final (P25); token antigo da Cloudflare fica para a revisão de segurança
   (P20); demais decisões de produto em ADR 0034 Decisão 15 e nas skills.
 
-**Atualização de 11/09 às 14:40 — segunda leva de respostas e integração tardia.**
+**Atualização de 11/09 às 11:05 — segunda leva de respostas e integração tardia.**
 Owner respondeu P38 (A), WT2 (A), WT3 (A), REF (salvar) e liberou o push.
 Feito: golden `forms_editor_dark_1440` regravado (suíte 4/4); pastas soltas
 apagadas; frente **estrutura** (revs 34 a 37, `work/etapa2-r04-estrutura`)
@@ -107,7 +107,7 @@ porque a conversa ainda estava viva; a R05 a fecha. Orientação do Owner:
 decisões do artefato são para anotar na R05 e nos rastreadores, não para
 executar fora do ciclo das frentes.
 
-**Atualização de 11/09 às 15:15 — pausa da frente estrutura (rev 38).**
+**Atualização de 11/09 às 11:35 — pausa da frente estrutura (rev 38).**
 Revisões 37 e 38 integradas em `dev`; 16 deltas da continuação-2 aplicados
 (locations.schedule também em E2E); WIP não verificado (ligação de
 `fetchFormOptions` ao `superadmin_activity_form_options_v2`) preservado como
@@ -120,6 +120,16 @@ activities.create/edit na rota real sobre o WIP, `institution_contacts_v2`
 para institutions.edit, vínculo profissional do qa-r03 para
 assessments.entry, três falhas pré-existentes em
 `composition_root_sanitization_test` e `superadmin_auth_scope_test`.
+
+**Atualização de 11/09 às 11:50 — segunda pausa da frente estrutura (rev 39).**
+Integrados em `dev`: chave `activityLocationCreateEnabled` (85f66cd38), rev 38,
+o WIP de `fetchFormOptions` agora verificado pela frente (a71d7ff0a, 145/145 +
+composição 2/2) e a rev 39. Novo WIP não verificado (activities.edit no
+cliente) preservado como `44574dfda` só na branch. Worktree e processos da
+frente encerrados. activities.create ficou com o cliente ligado e o build
+refeito, mas sem prova concluída (nenhuma atividade criada em produção).
+Nota de relógio: os carimbos anteriores deste bloco foram corrigidos para o
+horário real (10:30, 11:05, 11:35).
 
 ## Estado anterior — Rodada 3 (E2-R03-20260910) encerrada às 20:30 de 10/09
 
