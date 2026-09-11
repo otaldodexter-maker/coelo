@@ -13,7 +13,7 @@
 
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(9);
+select plan(10);
 
 -- ---------------------------------------------------------------------------
 -- Contrato estrutural minimo.
@@ -104,11 +104,11 @@ insert into public.post_audiences(post_id,audience_kind,institution_id) values
   ('a1400000-0000-4000-8000-000000000004','school_staff','a1200000-0000-4000-8000-000000000002');
 
 insert into public.media_assets(
-  id,institution_id,post_id,owner_person_id,upload_request_id,object_key,
+  id,institution_id,post_id,owner_person_id,upload_request_id,storage_provider,bucket_id,object_key,
   original_name,mime_type,byte_size,status,finalized_at) values
   ('a1500000-0000-4000-8000-000000000001','a1200000-0000-4000-8000-000000000001',
    'a1400000-0000-4000-8000-000000000001','a1100000-0000-4000-8000-000000000001',
-   'fixture-upload-1','a1200000-0000-4000-8000-000000000001/a1400000-0000-4000-8000-000000000001/one',
+   'fixture-upload-1','supabase_mvp','coelo-happens-mvp','a1200000-0000-4000-8000-000000000001/a1400000-0000-4000-8000-000000000001/one',
    'foto.jpg','image/jpeg',2048,'ready',now());
 
 insert into public.media_links(post_id,media_asset_id,display_order) values
@@ -127,8 +127,8 @@ begin
   set local role authenticated;
   return query
     select feed.item_id,
-           (feed.payload->'body'->>'management_version')::bigint,
-           (feed.payload->'body'->>'can_withdraw')::boolean
+           (feed.payload->>'management_version')::bigint,
+           (feed.payload->>'can_withdraw')::boolean
     from public.list_visible_happens_feed(
       p_institution, null, null, null, null, null, null, 50) feed
     where feed.item_type = 'post';
