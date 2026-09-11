@@ -196,3 +196,8 @@
 20260911211500_plans_revoke_select_reconcile_v1.sql
 # lote 49 (11/09 19:50) - R06 coordenador: usuarios sinteticos por grupo qa-r06-<grupo>@coelo.me (identidade interna, Owner de plataforma, perfil, ponte de ator, membership owner nas qa-r04-*)
 20260911230100_qa_r06_group_users_seed_v1.sql
+# lote 50 (11/09 20:12) - R06: SEGURANCA raiz da ponte de ator com escopo (realm-interno); @ de usuarios internos P46 e exclusao de modelo de sistema P45 (acessos-pessoas); sessoes da Conta P43 (operacoes)
+20260912210000_internal_actor_scope_root_v1.sql
+20260911170500_internal_user_handles_v1.sql
+20260911170600_institution_system_model_delete_v1.sql
+20260911200200_superadmin_account_sessions_v1.sql
