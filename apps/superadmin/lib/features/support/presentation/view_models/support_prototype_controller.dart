@@ -98,7 +98,11 @@ final class SupportPrototypeController extends ChangeNotifier {
   }
 
   List<SupportTicket> get tickets => _tickets;
-  List<SupportTeamMember> get teamMembers => defaultTeamMembers;
+  List<SupportTeamMember> _teamMembers = defaultTeamMembers;
+
+  /// Com repositório produtivo, a equipe vem do servidor (nunca da lista fixa
+  /// do protótipo); enquanto não carrega, fica vazia para não inventar nomes.
+  List<SupportTeamMember> get teamMembers => _teamMembers;
   SupportFilters get filters => _filters;
   bool get hasActiveFilters => _filters.hasActiveFilters;
   int get currentPage => _currentPage;
@@ -106,8 +110,10 @@ final class SupportPrototypeController extends ChangeNotifier {
   SupportSortColumn get sortColumn => _sortColumn;
   bool get sortAscending => _sortAscending;
   int get totalPages =>
-      (((_backendTotalItems ?? _sortedFilteredTickets.length) + _pageSize - 1) ~/ _pageSize)
-          .clamp(1, 1 << 31);
+      (((_backendTotalItems ?? _sortedFilteredTickets.length) + _pageSize - 1) ~/ _pageSize).clamp(
+        1,
+        1 << 31,
+      );
   List<SupportTicket> get visibleTickets {
     final start = (_currentPage - 1) * _pageSize;
     final tickets = _sortedFilteredTickets;
@@ -143,6 +149,10 @@ final class SupportPrototypeController extends ChangeNotifier {
     _loadState = SupportLoadState.loading;
     notifyListeners();
     try {
+      if (identical(_teamMembers, defaultTeamMembers)) {
+        _teamMembers = const [];
+        unawaited(_loadTeamMembers(backend));
+      }
       final page = await backend.list(_filters, page: _currentPage, pageSize: _pageSize);
       _backendTotalItems = page.totalItems;
       _tickets = List.unmodifiable(page.tickets);
@@ -223,6 +233,7 @@ final class SupportPrototypeController extends ChangeNotifier {
 
   void setAssignees(String ticketId, Set<String> memberIds) {
     final now = _clock();
+    final expectedRevision = _ticketById(ticketId)?.revision;
     _replaceTicket(
       ticketId,
       (ticket) => ticket.copyWith(
@@ -242,6 +253,35 @@ final class SupportPrototypeController extends ChangeNotifier {
         ],
       ),
     );
+    final backend = repository;
+    if (backend != null && expectedRevision != null) {
+      // O servidor guarda um responsável por chamado (assigned_to_membership_id).
+      unawaited(_persistAssignee(backend, ticketId, memberIds.firstOrNull, expectedRevision));
+    }
+  }
+
+  Future<void> _loadTeamMembers(SupportRepository backend) async {
+    try {
+      _teamMembers = await backend.listTeamMembers();
+    } on Object {
+      _teamMembers = const [];
+    }
+    notifyListeners();
+  }
+
+  Future<void> _persistAssignee(
+    SupportRepository backend,
+    String ticketId,
+    String? membershipId,
+    int expectedRevision,
+  ) async {
+    try {
+      final saved = await backend.setAssignee(ticketId, membershipId, expectedRevision);
+      _replaceTicket(ticketId, (_) => saved);
+    } on Object catch (error) {
+      _commandError = 'Não foi possível atribuir o responsável: $error';
+      await loadFromRepository();
+    }
   }
 
   bool changeStatus(String ticketId, SupportTicketStatus status) {
