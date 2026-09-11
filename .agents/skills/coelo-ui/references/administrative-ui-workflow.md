@@ -277,5 +277,14 @@ O Design System Coelo prevalece sobre recomendações genéricas.
   e o card Criar primeiro, banner Criar acima da tabela, rodapé fixo de
   paginação (compacto abaixo de 600 px) e o card de estado de Instituições.
   Gate: `apps/superadmin/test/architecture/directory_composition_test.dart`.
+- Decisão do Owner em 10/09/2026 (noite, Rodada 4), com captura de
+  Instituições em produção com zero registros: no contêiner principal ao lado
+  do shell, a busca, os filtros (mesmo sem opções, com rótulo honesto como
+  "Sem tipos cadastrados"), o toggle grade/lista, o botão Arquivos e as abas
+  de estado da tela (Todos, Ativos, Em implantação/Rascunhos, Inativos, o
+  conjunto próprio de cada tela) aparecem **sempre**: com nada cadastrado,
+  com zero resultados e antes da primeira carga. O card Criar aparece sempre,
+  também no vazio; o estado vazio honesto convive com ele, não o substitui.
+  Isso é do composto `CoeloAdminDirectory`, não de cada tela.
 - Mídia privada segue Cloudflare R2 conforme AGENTS e a ADR aprovada. Supabase
   Storage não substitui esse contrato sem nova decisão arquitetural.

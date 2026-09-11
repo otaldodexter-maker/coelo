@@ -102,6 +102,41 @@ Opções:
   aprovado, opção B") e eu crio os dois registros com ids fixos
   (`9f040000-0000-4000-8000-0000000000a1` e `...a2`), removidos ao fim.
 
+Atualização 22:53: o grupo realm-interno reaplicou a instituição sintética
+`9f040000-0000-4000-8000-000000000010` (ativa, sem unidade) para a prova do
+chat; Publicações usa essa para Circulares e Agenda. Falta só a unidade, que a
+opção A cobre.
+
+## P26 — Página de erro 409: aprovar as imagens candidatas (principal-chat-sistema)
+
+A frente montou a página lado a lado
+`docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/erro-409-candidatos.html`
+com as imagens candidatas do erro 409 na família das páginas de erro
+existentes (Decisão 6). Pergunta: aprovar como golden? Resposta em lista
+"arquivo - decisão, observação", como nas listas de goldens.
+
+## P27 — Duplicar em Cardápios: ícone e menu, ou só ícone (principal-chat-sistema)
+
+As duas decisões de goldens de Cardápios pediam Duplicar. A frente pergunta se
+Duplicar aparece como ícone no card **e** como item no menu do card, ou só como
+ícone. Recomendação: ícone no card e item no menu (o menu é o caminho
+acessível por teclado e leitor de tela; o ícone é o atalho).
+
+## Atualização P22 (23:05)
+
+A frente formularios-cuidado-rotina escreveu, na própria sessão, o pacote
+`20260910220400_internal_actor_service_person_v1` com o mesmo desenho da
+opção 2 (pessoa de serviço, membership espelhada por trigger,
+`current_person_id()` com fallback, guards intactos) mais o catálogo que
+faltava (`attendance.read`, `attendance.manage`, `people.assign_children` e
+concessões ao Owner de `health_care.*`, `medication.*`, `routine.*`,
+`attendance.*`). A primeira versão falhou no meu preflight (cast de enum e
+fixture do último Owner); a segunda foi reenviada com pgTAP 17/17. Como é um
+pacote verde da fila, entra em produção pela autorização permanente da ADR
+0034, Decisão 1; **P22 passa a ser só a confirmação do desenho pelo Owner**,
+não um bloqueio. Se você discordar do desenho, a reversão está descrita no
+próprio arquivo.
+
 ## Registro
 
 - Respostas entram em `coordenacao.json` (revisão seguinte), na ADR 0034

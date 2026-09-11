@@ -265,6 +265,36 @@ pertencem e voltam a contar na revisão profunda.
 - **P2 e P14:** o Owner declarou feitos (token R2 girado e senha do banco
   trocada). Continuam abertas P19, P20 e P21.
 
+## Decisão 13 — Rodada 4 (noite de 10→11/09/2026): estado vazio dos diretórios e ponte de ator
+
+- **Estado vazio mantém a família inteira (ordem do Owner, 10/09 noite, com
+  captura de Instituições em produção com zero registros):** no contêiner
+  principal ao lado do shell, a busca, os filtros (mesmo sem opções, com
+  rótulo honesto como "Sem tipos cadastrados"), o toggle grade/lista, o botão
+  Arquivos e as abas de estado da tela (Todos, Ativos, Em implantação ou
+  Rascunhos, Inativos, o conjunto próprio de cada tela) aparecem sempre, com
+  nada cadastrado, com zero resultados e antes da primeira carga; o card
+  Criar aparece sempre, também no vazio. É do composto `CoeloAdminDirectory`,
+  não de cada tela. Registro: `coelo-ui/references/administrative-ui-workflow.md`.
+- **Ponte de ator entre o realm interno v2 e o realm de pessoas (medida da
+  coordenação, sujeita à confirmação do Owner em P22):** em 10/09 às 22:20
+  produção tinha `person_auth_links` vazio e todos os usuários do Superadmin
+  só no realm interno, o que deixava sem ator as RPCs baseadas em
+  `current_person_id()`/`has_platform_permission` (Unidades, Rotina,
+  Assiduidade, Cuidado, Medicação, Cardápios, Suporte, Conta, Pessoas,
+  Perfis/Modelos, Segurança infantil). O pacote
+  `20260910220400_internal_actor_service_person_v1` (grupo
+  formularios-cuidado-rotina) cria uma pessoa de serviço por identidade
+  interna, espelha a membership de plataforma por trigger e faz
+  `current_person_id()` cair nessa ligação, sem tocar nos guards de realm nem
+  nas RPCs. Entra em produção pela Decisão 1 (pacote verde da fila); a
+  reversão está no próprio arquivo.
+- **Regras de aplicação medidas:** `supabase db query -f` executa o arquivo
+  inteiro em uma transação, logo `ALTER TYPE ... ADD VALUE` vai em arquivo
+  próprio anterior; a prova local é baseline-only + seed + `psql` das
+  migrations posteriores, porque `db reset` com `migrations/` inteira falha em
+  `20260910170100` (exige o catálogo antes do seed).
+
 ## Consequências
 
 - O replay local com Docker deixa de ser porta obrigatória; continua útil para
