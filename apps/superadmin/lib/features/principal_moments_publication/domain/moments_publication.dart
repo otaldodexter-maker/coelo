@@ -33,6 +33,7 @@ final class MomentsPublicationContext {
 
   final String institutionId;
   final String institutionName;
+
   /// Unidade e turma sao opcionais: o contexto de instituicao (Owner,
   /// Superadmin "ve tudo", P35) publica para a instituicao inteira. O servidor
   /// aceita nulos e autoriza pelo escopo do ator.

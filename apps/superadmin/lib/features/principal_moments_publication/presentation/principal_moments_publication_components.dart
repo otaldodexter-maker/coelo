@@ -540,7 +540,10 @@ class _MomentPreview extends StatelessWidget {
                     this.context.institutionName,
                     style: theme.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w800),
                   ),
-                  Text(this.context.unitName ?? 'Toda a instituição', style: theme.textTheme.bodySmall),
+                  Text(
+                    this.context.unitName ?? 'Toda a instituição',
+                    style: theme.textTheme.bodySmall,
+                  ),
                 ],
               ),
             ),
@@ -639,19 +642,13 @@ class _EmptyMomentMedia extends StatelessWidget {
 class _ActionFooter extends StatelessWidget {
   const _ActionFooter({
     required this.state,
-    required this.currentStep,
     required this.onCancel,
-    required this.onPrevious,
-    required this.onContinue,
     required this.onSave,
     required this.onPublish,
   });
 
   final MomentsPublicationState state;
-  final int currentStep;
   final VoidCallback onCancel;
-  final VoidCallback onPrevious;
-  final VoidCallback onContinue;
   final Future<void> Function() onSave;
   final Future<void> Function() onPublish;
 
@@ -669,35 +666,20 @@ class _ActionFooter extends StatelessWidget {
         child: const Text('Cancelar'),
       ),
       continuationActions: [
-        if (currentStep > 0)
-          OutlinedButton(
-            key: const Key('moments-publication-previous'),
-            onPressed: busy ? null : onPrevious,
-            child: const Text('Anterior'),
-          ),
-        OutlinedButton.icon(
+        OutlinedButton(
           key: const Key('moments-publication-save'),
           onPressed: busy ? null : onSave,
-          icon: const Icon(Icons.bookmark_border_rounded),
-          label: Text(
+          child: Text(
             state.phase == MomentsPublicationPhase.saving ? 'Salvando…' : 'Salvar rascunho',
           ),
         ),
-        if (currentStep == 2)
-          FilledButton.icon(
-            key: const Key('moments-publication-publish'),
-            onPressed: busy ? null : onPublish,
-            icon: const Icon(Icons.send_rounded),
-            label: Text(
-              state.phase == MomentsPublicationPhase.publishing ? 'Publicando…' : 'Publicar agora',
-            ),
-          )
-        else
-          FilledButton(
-            key: const Key('moments-publication-continue'),
-            onPressed: busy ? null : onContinue,
-            child: const Text('Continuar'),
+        FilledButton(
+          key: const Key('moments-publication-publish'),
+          onPressed: busy ? null : onPublish,
+          child: Text(
+            state.phase == MomentsPublicationPhase.publishing ? 'Publicando…' : 'Publicar agora',
           ),
+        ),
       ],
     );
   }

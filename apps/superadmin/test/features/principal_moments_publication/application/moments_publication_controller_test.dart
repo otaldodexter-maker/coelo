@@ -88,15 +88,15 @@ void main() {
       expect(controller.state.message, 'Não foi possível carregar o rascunho.');
     });
 
-    test('limits captions to 2200 grapheme clusters', () {
+    test('limits captions to 220 grapheme clusters', () {
       final controller = MomentsPublicationController(
         repository: InMemoryMomentsPublicationRepository(),
         context: MomentsPublicationContext.demo,
       );
 
-      controller.setCaption('${'a' * 2199}👨‍👩‍👧‍👦extra');
+      controller.setCaption('${'a' * 219}👨‍👩‍👧‍👦extra');
 
-      expect(controller.state.draft.captionCharacters, 2200);
+      expect(controller.state.draft.captionCharacters, 220);
       expect(controller.state.draft.caption.endsWith('👨‍👩‍👧‍👦'), isTrue);
     });
 

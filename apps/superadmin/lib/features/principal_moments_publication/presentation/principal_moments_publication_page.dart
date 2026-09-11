@@ -102,7 +102,6 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
   late final TextEditingController _captionController;
   var _controllerGeneration = 0;
   int _selectedMediaIndex = 0;
-  int _currentStep = 0;
   var _pickingMedia = false;
 
   @override
@@ -126,7 +125,6 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
     _controller = widget.demo ? _createDemoController() : widget.controller!;
     _captionController.clear();
     _selectedMediaIndex = 0;
-    _currentStep = 0;
     _pickingMedia = false;
     _controller.addListener(_syncCaption);
     unawaited(_load());
@@ -232,28 +230,23 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
             );
           }
           final publishing = _controller.state.phase == MomentsPublicationPhase.publishing;
-          return PrincipalPublicationFrame(
+          return PrincipalPublicationSheet(
             scrollKey: const Key('moments-publication-scroll'),
-            navigation: ExcludeFocus(
-              key: const Key('moments-publication-navigation-focus-lock'),
-              excluding: publishing,
-              child: AbsorbPointer(absorbing: publishing, child: _stepNavigation()),
-            ),
+            subtitle: 'Publicar em Momentos',
             body: ExcludeFocus(
               key: const Key('moments-publication-body-focus-lock'),
               excluding: publishing,
               child: AbsorbPointer(
                 key: const Key('moments-publication-body-lock'),
                 absorbing: publishing,
-                child: _stepBody(),
+                child: _publicationBody(),
               ),
             ),
+            asideKey: const Key('moments-publication-desktop-preview'),
+            aside: _previewPanel(),
             footer: _ActionFooter(
               state: _controller.state,
-              currentStep: _currentStep,
               onCancel: _cancel,
-              onPrevious: _previousStep,
-              onContinue: _continueStep,
               onSave: _saveDraft,
               onPublish: _publish,
             ),
@@ -276,152 +269,35 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
     widget.onClose?.call();
   }
 
-  Widget _stepNavigation() => PrincipalPublicationStepNavigation(
-    currentIndex: _currentStep,
-    onStepSelected: (index) => setState(() => _currentStep = index),
-    steps: [
-      for (var index = 0; index < 3; index++)
-        PrincipalPublicationStep(
-          key: Key('moments-publication-step-$index'),
-          label: const ['Conteúdo', 'Público', 'Revisão'][index],
-          enabled: index <= _currentStep,
-          status: index < _currentStep
-              ? PrincipalPublicationStepStatus.complete
-              : index == _currentStep
-              ? PrincipalPublicationStepStatus.current
-              : PrincipalPublicationStepStatus.incomplete,
-        ),
-    ],
-  );
-
-  Widget _stepBody() => Column(
+  /// Familia Publicacao (Owner, 11/09/2026 17:19, momentos-web-1440 /
+  /// momentos-mobile-375): video 9:16 (ate 520 px de altura) com a capa do
+  /// momento, depois Legenda, Publico e contexto com chips, Agendar, a nota de
+  /// contexto e Opcoes em uma coluna; previa vertical na lateral do sheet.
+  Widget _publicationBody() => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      Text(
-        'Sua publicação',
-        style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
+      _mediaPanel(),
+      const SizedBox(height: CoeloSpacing.space4),
+      _captionCard(),
+      const SizedBox(height: CoeloSpacing.space4),
+      _audienceCard(),
+      const SizedBox(height: CoeloSpacing.space4),
+      _scheduleCard(),
+      const SizedBox(height: CoeloSpacing.space3),
+      const PrincipalPublicationNote(
+        text: 'Somente pessoas do contexto selecionado poderão ver este momento.',
       ),
-      const SizedBox(height: CoeloSpacing.space2),
-      Text(
-        'Publicar em Momentos · ${const ['Conteúdo', 'Público', 'Revisão'][_currentStep]}',
-        style: Theme.of(
-          context,
-        ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-      ),
-      const SizedBox(height: CoeloSpacing.space5),
-      LayoutBuilder(
-        builder: (context, constraints) {
-          final enlargedText = MediaQuery.textScalerOf(context).scale(1) > 1.5;
-          final useColumns = constraints.maxWidth >= 700 && !enlargedText;
-          final content = switch (_currentStep) {
-            0 => _contentStep(useColumns),
-            1 => _audienceStep(useColumns),
-            _ => _reviewStep(useColumns, showPreview: constraints.maxWidth < 840 || enlargedText),
-          };
-          if (constraints.maxWidth < 840 || enlargedText) return content;
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(child: content),
-              const SizedBox(width: CoeloSpacing.space5),
-              SizedBox(
-                key: const Key('moments-publication-desktop-preview'),
-                width: 320,
-                child: _previewPanel(),
-              ),
-            ],
-          );
-        },
-      ),
+      const SizedBox(height: CoeloSpacing.space4),
+      _optionsCard(),
     ],
   );
-
-  Widget _contentStep(bool useColumns) {
-    if (!useColumns) {
-      return Column(
-        children: [
-          _mediaPanel(),
-          const SizedBox(height: CoeloSpacing.space4),
-          _captionCard(),
-        ],
-      );
-    }
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(flex: 4, child: _mediaPanel()),
-        const SizedBox(width: CoeloSpacing.space4),
-        Expanded(flex: 5, child: _captionCard()),
-      ],
-    );
-  }
-
-  Widget _audienceStep(bool useColumns) {
-    final settings = Column(
-      children: [
-        _scheduleCard(),
-        const SizedBox(height: CoeloSpacing.space4),
-        _optionsCard(),
-      ],
-    );
-    if (!useColumns) {
-      return Column(
-        children: [
-          _audienceCard(),
-          const SizedBox(height: CoeloSpacing.space4),
-          settings,
-        ],
-      );
-    }
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(child: _audienceCard()),
-        const SizedBox(width: CoeloSpacing.space4),
-        Expanded(child: settings),
-      ],
-    );
-  }
-
-  Widget _reviewStep(bool useColumns, {required bool showPreview}) {
-    final settings = Column(
-      children: [
-        _audienceCard(),
-        const SizedBox(height: CoeloSpacing.space4),
-        _scheduleCard(),
-        const SizedBox(height: CoeloSpacing.space4),
-        _optionsCard(),
-      ],
-    );
-    if (!showPreview) return settings;
-    if (!useColumns) {
-      return Column(
-        children: [
-          _previewPanel(),
-          const SizedBox(height: CoeloSpacing.space4),
-          settings,
-        ],
-      );
-    }
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(child: _previewPanel()),
-        const SizedBox(width: CoeloSpacing.space4),
-        Expanded(child: settings),
-      ],
-    );
-  }
 
   Widget _mediaPanel() {
     final media = _controller.state.draft.media;
     if (media.isEmpty) {
       return _SectionCard(
         label: 'Mídia',
-        child: AspectRatio(
-          aspectRatio: 9 / 16,
-          child: _EmptyMomentMedia(onPressed: _addMedia, busy: _pickingMedia),
-        ),
+        child: _verticalMedia(_EmptyMomentMedia(onPressed: _addMedia, busy: _pickingMedia)),
       );
     }
     final selectedIndex = media.isEmpty ? 0 : _selectedMediaIndex.clamp(0, media.length - 1);
@@ -429,11 +305,11 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
     return _SectionCard(
       label: 'Mídia',
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          AspectRatio(
+          _verticalMedia(
             key: const Key('moments-publication-primary-media'),
-            aspectRatio: 9 / 16,
-            child: Stack(
+            Stack(
               fit: StackFit.expand,
               children: [
                 _MomentAsset(media: selected, radius: CoeloRadius.md),
@@ -461,6 +337,8 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
               ],
             ),
           ),
+          const SizedBox(height: CoeloSpacing.space3),
+          Text('Capa do momento', style: Theme.of(context).textTheme.labelLarge),
           const SizedBox(height: CoeloSpacing.space2),
           SizedBox(
             height: 64,
@@ -489,9 +367,21 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
     );
   }
 
+  /// Video 9:16 alinhado a esquerda, ate 520 px de altura (300 px de largura
+  /// no web); no mobile ocupa a largura disponivel dentro do mesmo limite.
+  Widget _verticalMedia(Widget child, {Key? key}) => Align(
+    alignment: Alignment.centerLeft,
+    child: ConstrainedBox(
+      constraints: const BoxConstraints(maxHeight: 520),
+      child: AspectRatio(key: key, aspectRatio: 9 / 16, child: child),
+    ),
+  );
+
   Widget _captionCard() => _SectionCard(
     label: 'Legenda',
-    trailing: Text('${_controller.state.draft.captionCharacters}/2200'),
+    trailing: Text(
+      '${_controller.state.draft.captionCharacters}/${MomentsPublicationController.maxCaptionCharacters}',
+    ),
     child: CoeloFormTextField(
       fieldKey: const Key('moments-publication-caption'),
       controller: _captionController,
@@ -569,16 +459,6 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
       return;
     }
     Navigator.maybePop(context);
-  }
-
-  void _previousStep() {
-    if (_currentStep == 0) return;
-    setState(() => _currentStep -= 1);
-  }
-
-  void _continueStep() {
-    if (_currentStep >= 2) return;
-    setState(() => _currentStep += 1);
   }
 
   void _addMedia() {
@@ -661,8 +541,7 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
             : 'Formato não aceito. Use JPG, PNG ou WEBP.';
         continue;
       }
-      if (candidate.bytes.isEmpty ||
-          candidate.bytes.lengthInBytes > MomentsMediaLimits.maxBytes) {
+      if (candidate.bytes.isEmpty || candidate.bytes.lengthInBytes > MomentsMediaLimits.maxBytes) {
         refusal ??= 'Cada arquivo deve ter até ${MomentsMediaLimits.maxMegabytes} MB.';
         continue;
       }
@@ -684,11 +563,7 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
       return;
     }
     final added = accepted == 1 ? '1 mídia selecionada' : '$accepted mídias selecionadas';
-    _showMessage(
-      refusal == null
-          ? '$added. O envio acontece ao publicar.'
-          : '$added. $refusal',
-    );
+    _showMessage(refusal == null ? '$added. O envio acontece ao publicar.' : '$added. $refusal');
   }
 
   void _editCover() {
