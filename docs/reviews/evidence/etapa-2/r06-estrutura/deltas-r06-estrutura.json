@@ -1,0 +1,210 @@
+[
+ {
+  "action_id": "units.edit",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R06 (20:15-20:25): regra do @ no cliente de Unidades (Decisao 16): o Identificador mostra o @ atual (@unidadecentror04_f5284f2f), valida com a regra do @ (sem hifen), verifica disponibilidade enquanto digita e a acao \"Alterar @\" chama superadmin_structure_handle_set_v1 -> \"@ alterado para @centro.r04estrutura\"; segunda troca responde com a mensagem honesta do servidor \"O @ so pode ser alterado uma vez a cada 30 dias.\"; reload da edicao mostra o @ novo.",
+  "evidencia": "evidence/etapa-2/r06-estrutura/rota-real/units-handle-alterado.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-estrutura/rota-real/units-handle-alterado.jpg",
+   "revision": "estrutura.json rev 56",
+   "environment": "Chrome (CDP 9571, --user-data-dir proprio) contra o build release de test_driver/qa_main.dart (0434548b9 + merge fcdded416) servido em 127.0.0.1:3001 com .env.local de producao; usuario qa-r06-estrutura@coelo.me; login e taps pelo Flutter Driver web ($flutterDriver via CDP, set_frame_sync false) | provas: units-handle-atual.jpg; units-handle-alterado.jpg; units-handle-trava-30-dias.jpg; units-handle-reload.jpg",
+   "recordedAt": "2026-09-11T20:40:00-03:00"
+  }
+ },
+ {
+  "action_id": "units.edit",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "R06: superadmin_structure_handle_set_v1(kind=unit) em producao trocou o @ da unidade f5284f2f (management_version avancou) e negou a segunda troca com SAI_HANDLE_COOLDOWN (409); pgTAP superadmin_structure_handles_v1_test 24/24 reexecutado no espelho coelo_estrutura_r06 (baseline + 197 lotes da ordem real).",
+  "evidencia": "evidence/etapa-2/r06-estrutura/rota-real/units-handle-trava-30-dias.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-estrutura/rota-real/units-handle-trava-30-dias.jpg",
+   "revision": "estrutura.json rev 56",
+   "environment": "Chrome (CDP 9571, --user-data-dir proprio) contra o build release de test_driver/qa_main.dart (0434548b9 + merge fcdded416) servido em 127.0.0.1:3001 com .env.local de producao; usuario qa-r06-estrutura@coelo.me; login e taps pelo Flutter Driver web ($flutterDriver via CDP, set_frame_sync false) | pgTAP handles 24/24 (espelho R06, 20:05)",
+   "recordedAt": "2026-09-11T20:40:00-03:00"
+  }
+ },
+ {
+  "action_id": "units.edit",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R06: troca do @ da unidade ponta a ponta (rota real, set_v1 em producao, trava de 30 dias, reload).",
+  "evidencia": "evidence/etapa-2/r06-estrutura/rota-real/units-handle-reload.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-estrutura/rota-real/units-handle-reload.jpg",
+   "revision": "estrutura.json rev 56",
+   "environment": "Chrome (CDP 9571, --user-data-dir proprio) contra o build release de test_driver/qa_main.dart (0434548b9 + merge fcdded416) servido em 127.0.0.1:3001 com .env.local de producao; usuario qa-r06-estrutura@coelo.me; login e taps pelo Flutter Driver web ($flutterDriver via CDP, set_frame_sync false)",
+   "recordedAt": "2026-09-11T20:40:00-03:00"
+  }
+ },
+ {
+  "action_id": "units.create",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R06: o Identificador viaja como `handle` no payload de create_unit_for_superadmin (lote 211100) e a validacao do campo segue a regra do @ (letras minusculas, numeros, ponto e sublinhado, 3 a 30); unit_form_page_test 179/179 (dois testes reescritos para a regra nova). Rota real da criacao com @ escolhido nao repetida nesta rodada (units.create ja E2E na R05; o servidor aceita `handle` desde o lote 43).",
+  "evidencia": "evidence/etapa-2/r06-estrutura/rota-real/units-handle-atual.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-estrutura/rota-real/units-handle-atual.jpg",
+   "revision": "estrutura.json rev 56",
+   "environment": "Chrome (CDP 9571, --user-data-dir proprio) contra o build release de test_driver/qa_main.dart (0434548b9 + merge fcdded416) servido em 127.0.0.1:3001 com .env.local de producao; usuario qa-r06-estrutura@coelo.me; login e taps pelo Flutter Driver web ($flutterDriver via CDP, set_frame_sync false) | flutter test test/features/units 179/179",
+   "recordedAt": "2026-09-11T20:40:00-03:00"
+  }
+ },
+ {
+  "action_id": "groups.create",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R06 (20:27): campo Identificador (@) novo na etapa Identidade do assistente de Turmas, com disponibilidade enquanto digita (\"@arroba.centro.r06 esta disponivel\") e `handle` no payload de superadmin_group_save na criacao; \"Turma R06 Arroba\" criada em producao com o @ escolhido e a edicao recarregada mostra @arroba.centro.r06.",
+  "evidencia": "evidence/etapa-2/r06-estrutura/rota-real/groups-create-handle-persistido.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-estrutura/rota-real/groups-create-handle-persistido.jpg",
+   "revision": "estrutura.json rev 56",
+   "environment": "Chrome (CDP 9571, --user-data-dir proprio) contra o build release de test_driver/qa_main.dart (0434548b9 + merge fcdded416) servido em 127.0.0.1:3001 com .env.local de producao; usuario qa-r06-estrutura@coelo.me; login e taps pelo Flutter Driver web ($flutterDriver via CDP, set_frame_sync false) | provas: groups-create-handle-disponivel.jpg; groups-create-handle-persistido.jpg; groups-list.jpg",
+   "recordedAt": "2026-09-11T20:40:00-03:00"
+  }
+ },
+ {
+  "action_id": "groups.create",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "R06: superadmin_group_save com `handle` no payload (211100) gravou groups ea3986b7 com handle arroba.centro.r06 em producao; structure_handles_create_payload_v1_test 18/18 reexecutado no espelho R06.",
+  "evidencia": "evidence/etapa-2/r06-estrutura/rota-real/groups-create-handle-persistido.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-estrutura/rota-real/groups-create-handle-persistido.jpg",
+   "revision": "estrutura.json rev 56",
+   "environment": "Chrome (CDP 9571, --user-data-dir proprio) contra o build release de test_driver/qa_main.dart (0434548b9 + merge fcdded416) servido em 127.0.0.1:3001 com .env.local de producao; usuario qa-r06-estrutura@coelo.me; login e taps pelo Flutter Driver web ($flutterDriver via CDP, set_frame_sync false) | pgTAP 211100 18/18",
+   "recordedAt": "2026-09-11T20:40:00-03:00"
+  }
+ },
+ {
+  "action_id": "groups.create",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R06: criacao de turma com @ escolhido ponta a ponta (rota real, group_save em producao, reload).",
+  "evidencia": "evidence/etapa-2/r06-estrutura/rota-real/groups-create-handle-persistido.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-estrutura/rota-real/groups-create-handle-persistido.jpg",
+   "revision": "estrutura.json rev 56",
+   "environment": "Chrome (CDP 9571, --user-data-dir proprio) contra o build release de test_driver/qa_main.dart (0434548b9 + merge fcdded416) servido em 127.0.0.1:3001 com .env.local de producao; usuario qa-r06-estrutura@coelo.me; login e taps pelo Flutter Driver web ($flutterDriver via CDP, set_frame_sync false)",
+   "recordedAt": "2026-09-11T20:40:00-03:00"
+  }
+ },
+ {
+  "action_id": "groups.edit",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R06 (20:31): \"Alterar @\" na edicao da turma chama superadmin_structure_handle_set_v1(kind=group) -> \"@ alterado para @arroba.r06.centro\"; reload mostra o @ novo no Identificador.",
+  "evidencia": "evidence/etapa-2/r06-estrutura/rota-real/groups-handle-alterado.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-estrutura/rota-real/groups-handle-alterado.jpg",
+   "revision": "estrutura.json rev 56",
+   "environment": "Chrome (CDP 9571, --user-data-dir proprio) contra o build release de test_driver/qa_main.dart (0434548b9 + merge fcdded416) servido em 127.0.0.1:3001 com .env.local de producao; usuario qa-r06-estrutura@coelo.me; login e taps pelo Flutter Driver web ($flutterDriver via CDP, set_frame_sync false) | provas: groups-handle-alterado.jpg; groups-handle-reload.jpg",
+   "recordedAt": "2026-09-11T20:40:00-03:00"
+  }
+ },
+ {
+  "action_id": "groups.edit",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "R06: set_v1(kind=group) trocou o @ de groups ea3986b7 em producao; superadmin_internal_group_detail_test 33/33 e handles 24/24 no espelho R06.",
+  "evidencia": "evidence/etapa-2/r06-estrutura/rota-real/groups-handle-reload.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-estrutura/rota-real/groups-handle-reload.jpg",
+   "revision": "estrutura.json rev 56",
+   "environment": "Chrome (CDP 9571, --user-data-dir proprio) contra o build release de test_driver/qa_main.dart (0434548b9 + merge fcdded416) servido em 127.0.0.1:3001 com .env.local de producao; usuario qa-r06-estrutura@coelo.me; login e taps pelo Flutter Driver web ($flutterDriver via CDP, set_frame_sync false) | pgTAP group_detail 33/33; handles 24/24",
+   "recordedAt": "2026-09-11T20:40:00-03:00"
+  }
+ },
+ {
+  "action_id": "groups.edit",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R06: troca do @ da turma ponta a ponta (rota real, set_v1 em producao, reload).",
+  "evidencia": "evidence/etapa-2/r06-estrutura/rota-real/groups-handle-reload.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-estrutura/rota-real/groups-handle-reload.jpg",
+   "revision": "estrutura.json rev 56",
+   "environment": "Chrome (CDP 9571, --user-data-dir proprio) contra o build release de test_driver/qa_main.dart (0434548b9 + merge fcdded416) servido em 127.0.0.1:3001 com .env.local de producao; usuario qa-r06-estrutura@coelo.me; login e taps pelo Flutter Driver web ($flutterDriver via CDP, set_frame_sync false)",
+   "recordedAt": "2026-09-11T20:40:00-03:00"
+  }
+ },
+ {
+  "action_id": "groups.list",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "R06 (20:36): /groups em producao com a sessao interna de qa-r06-estrutura lista as tres turmas sinteticas (inclusive a criada nesta rodada) com unidade e instituicao; superadmin_group_directory + ponte de ator (lote 49 para o usuario novo).",
+  "evidencia": "evidence/etapa-2/r06-estrutura/rota-real/groups-list.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-estrutura/rota-real/groups-list.jpg",
+   "revision": "estrutura.json rev 56",
+   "environment": "Chrome (CDP 9571, --user-data-dir proprio) contra o build release de test_driver/qa_main.dart (0434548b9 + merge fcdded416) servido em 127.0.0.1:3001 com .env.local de producao; usuario qa-r06-estrutura@coelo.me; login e taps pelo Flutter Driver web ($flutterDriver via CDP, set_frame_sync false)",
+   "recordedAt": "2026-09-11T20:40:00-03:00"
+  }
+ },
+ {
+  "action_id": "groups.list",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R06: diretorio de Turmas ponta a ponta com o usuario sintetico da rodada (FE verified na R04, BE done nesta).",
+  "evidencia": "evidence/etapa-2/r06-estrutura/rota-real/groups-list.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-estrutura/rota-real/groups-list.jpg",
+   "revision": "estrutura.json rev 56",
+   "environment": "Chrome (CDP 9571, --user-data-dir proprio) contra o build release de test_driver/qa_main.dart (0434548b9 + merge fcdded416) servido em 127.0.0.1:3001 com .env.local de producao; usuario qa-r06-estrutura@coelo.me; login e taps pelo Flutter Driver web ($flutterDriver via CDP, set_frame_sync false)",
+   "recordedAt": "2026-09-11T20:40:00-03:00"
+  }
+ },
+ {
+  "action_id": "units.list",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "R06 (20:12): /units em producao com qa-r06-estrutura lista as quatro unidades sinteticas com instituicao, tipo, plano e contagens (list_units_for_superadmin via ponte de ator do lote 49).",
+  "evidencia": "evidence/etapa-2/r06-estrutura/rota-real/units-list.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-estrutura/rota-real/units-list.jpg",
+   "revision": "estrutura.json rev 56",
+   "environment": "Chrome (CDP 9571, --user-data-dir proprio) contra o build release de test_driver/qa_main.dart (0434548b9 + merge fcdded416) servido em 127.0.0.1:3001 com .env.local de producao; usuario qa-r06-estrutura@coelo.me; login e taps pelo Flutter Driver web ($flutterDriver via CDP, set_frame_sync false)",
+   "recordedAt": "2026-09-11T20:40:00-03:00"
+  }
+ },
+ {
+  "action_id": "units.list",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R06: diretorio de Unidades ponta a ponta com o usuario sintetico da rodada (FE verified na R04, BE done nesta).",
+  "evidencia": "evidence/etapa-2/r06-estrutura/rota-real/units-list.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-estrutura/rota-real/units-list.jpg",
+   "revision": "estrutura.json rev 56",
+   "environment": "Chrome (CDP 9571, --user-data-dir proprio) contra o build release de test_driver/qa_main.dart (0434548b9 + merge fcdded416) servido em 127.0.0.1:3001 com .env.local de producao; usuario qa-r06-estrutura@coelo.me; login e taps pelo Flutter Driver web ($flutterDriver via CDP, set_frame_sync false)",
+   "recordedAt": "2026-09-11T20:40:00-03:00"
+  }
+ },
+ {
+  "action_id": "activities.edit",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R06 (20:34): \"Alterar @\" na edicao da atividade 95b98978 chama set_v1(kind=activity) -> \"@ alterado para @estrutura-r06\" (o servidor recompoe o canonical stem.instituicao). Limite conhecido: o campo \"@ da atividade\" abre vazio porque o mapeamento do detail_v2 no cliente nao expoe handle_stem (pendencia de code review da R05).",
+  "evidencia": "evidence/etapa-2/r06-estrutura/rota-real/activities-handle-alterado.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-estrutura/rota-real/activities-handle-alterado.jpg",
+   "revision": "estrutura.json rev 56",
+   "environment": "Chrome (CDP 9571, --user-data-dir proprio) contra o build release de test_driver/qa_main.dart (0434548b9 + merge fcdded416) servido em 127.0.0.1:3001 com .env.local de producao; usuario qa-r06-estrutura@coelo.me; login e taps pelo Flutter Driver web ($flutterDriver via CDP, set_frame_sync false)",
+   "recordedAt": "2026-09-11T20:40:00-03:00"
+  }
+ },
+ {
+  "action_id": "activities.edit",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "R06: set_v1(kind=activity) trocou handle_stem de activity_definitions 95b98978 em producao; superadmin_activity_save_v2_test 46/46 e handles 24/24 no espelho R06.",
+  "evidencia": "evidence/etapa-2/r06-estrutura/rota-real/activities-handle-alterado.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-estrutura/rota-real/activities-handle-alterado.jpg",
+   "revision": "estrutura.json rev 56",
+   "environment": "Chrome (CDP 9571, --user-data-dir proprio) contra o build release de test_driver/qa_main.dart (0434548b9 + merge fcdded416) servido em 127.0.0.1:3001 com .env.local de producao; usuario qa-r06-estrutura@coelo.me; login e taps pelo Flutter Driver web ($flutterDriver via CDP, set_frame_sync false) | pgTAP save_v2 46/46; handles 24/24",
+   "recordedAt": "2026-09-11T20:40:00-03:00"
+  }
+ }
+]
