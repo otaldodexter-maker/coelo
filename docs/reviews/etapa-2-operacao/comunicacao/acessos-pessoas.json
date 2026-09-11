@@ -1,15 +1,15 @@
 {
-  "revision": 107,
-  "updated_at": "2026-09-11T05:53:32.581Z",
-  "relogio_local": "Fri Sep 11 2026 02:53:32 GMT-0300 (Horário Padrão de Brasília)",
+  "revision": 108,
+  "updated_at": "2026-09-11T05:59:58.327Z",
+  "relogio_local": "Fri Sep 11 2026 02:59:58 GMT-0300 (Horário Padrão de Brasília)",
   "round": "E2-R04-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
   "model": "Claude Fable 5.1 (o prompt previa Opus; a sessao aberta pelo Owner roda Fable 5.1)",
-  "status": "R04_EM_CURSO",
+  "status": "finalizado",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-acessos-pessoas",
   "branch": "work/etapa2-r04-acessos-pessoas",
-  "head": "ver git log (commit desta revisao)",
+  "head": "f78c10c24",
   "base_observed": "origin/dev 98cc0529d contem a4af2b198 e o R04-prompts.md; candidatos/acessos-pessoas tem 170900 (retido) e 170750 (obsoleto); lote 4 (170100-170800) em migrations/",
   "recorte": {
     "familias": [
@@ -242,6 +242,60 @@
     "public.platform_roles qa-r04-perfil-sintetico-7f6f8d16 (546c4cd2-ea2d-4488-9961-e17576e836e5)"
   ],
   "deltas": "docs/reviews/evidence/etapa-2/r04-acessos-pessoas/deltas-r04.json (36 entradas; +3 desta revisao)",
+  "MINI_REVISAO_FINAL_04h00": {
+    "1_sha_final": "f78c10c24 publicado em origin/work/etapa2-r04-acessos-pessoas; status limpo; sem WIP retido",
+    "2_fechou_por_action_id_com_prova": {
+      "access-models.create": "E2E proposto verified: rota real + CRUD em producao pela UI (template qa-r04-modelo-sintetico-b6f3958c, recibo model_create ok) + pgTAP com negativas (171300) + reload pelo cursor da lista; captura da lista rolada saiu em branco (memoria), coordenador decide se exige",
+      "access-models.list / edit(rota) / detail(rota)": "rota real com 6 modelos e formularios com dados reais apos o lote 16",
+      "child-safety.list / child-safety.child": "rota real com a crianca sintetica e a autorizacao pendente (composicao legada + ponte de ator); reload mantem",
+      "child-safety.create": "BE done: autorizacao 34d29829-... persistida e relida por REST",
+      "internal-users.list / detail": "rota real com qa-r03 (semente 171200); Editar/Acoes visiveis (capability owner)",
+      "people.list / people.edit(rota) / access-profiles.list / invites.list": "rota real com dados reais ou vazio honesto; reload mantem",
+      "profile-files.import/export": "FE verified proposto (adiados e honestos na rota real)",
+      "goldens": "23 regravados por MENU + Bug (22 Usuarios internos + child_safety_directory_light_1440); platform_user_create_light_375 retido ate o P15",
+      "SQL em producao nesta rodada": "171000 P7 (lote 10), 171100 D1 (12), 171200 perfil interno qa-r03 (14), 171300 catalogo/Modelos (16), 171500 backfill D1 (16)",
+      "access-profiles.create": "rota real apos o lote 18 (171700): formulario abre com rascunho em branco (135 permissoes), perfil 'QA R04 Perfil sintetico' criado pela UI e persistido (platform_roles qa-r04-perfil-sintetico-7f6f8d16, recibo create ok), lista recarregada mostra o card; a concessao selecionada nao persistiu por contrato (cliente enviava permission_codes; servidor le capabilities) — corrigido em 3682673da (testes 292/292), prova pela UI depende de build novo",
+      "access-profiles.detail (BE)": "v3 em producao (lote 18): detalhe rico e rascunho, pgTAP 37/37",
+      "people.links (FE)": "card/linha abrem /people/:id e o detalhe tem Editar (bd0538ec6, testes 33/33)"
+    },
+    "3_aberto_com_primeiro_gate": {
+      "invites.create/detail/resend/revoke": "P31 (Owner) — pacote RETIDO 171600 pronto (7/7) com 4 papeis de sistema de instituicao",
+      "access-profiles.create/edit/detail": "prova E2E com a concessao persistindo depende de build novo com 3682673da; access-profiles.assign/delete nao exercitados",
+      "child-safety.edit (decisao) / suspend": "171900 (cast do enum) PRONTO: sem ele nenhum ator persiste decisao; quem decide e P32 (171800 RETIDO com a opcao b)",
+      "people.create": "resolvedor de identidade sem implementacao Supabase/RPC (BE+FE)",
+      "people.links (FE)": "ligar /people/:id ao card do diretorio",
+      "internal-users.create": "sem RPC/Edge Function de criacao",
+      "internal-users.edit/suspend, people.edit, access-models.edit (salvar pela UI)": "rotas ligadas e abrindo com dados reais; escrita pela UI nao exercitada por tempo/memoria",
+      "Decisao 7 no build": "launcher novo 'Mensagens' (principal-chat) aparece em formularios de Modelos e cobre o botao Criar perfil na Revisao em 1440x905; conferir na base conjunta",
+      "UX do catalogo": "no passo Permissoes, as capacidades *.role_models.* aparecem so como 'Criar/Excluir/...' sem o dominio (screen_label igual para platform/institution/principal no 171300)",
+      "code review": "supabase_platform_user_repository invalida cache por notificacao de sessao ('unauthorized' em voo, so debug); 3 testes obsoletos em test/core/config; access_profile_models_aal1_phase_policy_test ajustado (34/34)",
+      "child_safety_production_test.sql": "quebrado no HEAD antes das assercoes (pg_policy com schemaname; a coluna e de pg_policies) — reparo de teste, fora do pacote"
+    },
+    "4_deltas": "docs/reviews/evidence/etapa-2/r04-acessos-pessoas/deltas-r04.json (35 entradas; 32 aplicadas pelo coordenador + E2E de access-models.create + BE/FE de access-profiles.create/detail)",
+    "5_pacotes": {
+      "aplicados_nesta_rodada": "171000, 171100, 171200, 171300, 171500, 171700",
+      "prontos_para_aplicar": "171900 (cast do enum da decisao de retirada, pgTAP 4/4)",
+      "retidos_por_decisao": "171600 papeis de sistema de instituicao (P31, 7/7); 171800 decisao pelo ator de plataforma (P32 b, 25/25)"
+    },
+    "6_duvidas_ao_owner": [
+      "P31: papeis padrao de instituicao — aprovar os quatro do 171600 (Administrador, Coordenacao, Professor(a), Secretaria) ou outra lista?",
+      "P32: quem decide autorizacoes de retirada em Seguranca infantil (a: so a unidade; b: Superadmin com child_safety.manage tambem, recomendado no MVP; c: Superadmin so sem revisor cadastrado)?",
+      "Criar usuario interno no MVP exige Edge Function com a API de administracao do Auth: fica para depois do MVP?"
+    ],
+    "conhecimento_duravel_para_o_gate_do_coordenador": [
+      "D1: contrato follow_links (automatico por procedencia + manual) e RPCs follow_summary/follow_following_list/follow_followers_list/follow_set — fonte canonica: 171100 e este JSON; principal-chat consome no Perfil",
+      "P7: has_platform_permission(text) conta membership por instituicao; (text, uuid) para negativa cross-tenant",
+      "Realm interno: com a ponte de ator (220400) os portoes people-based (assert_people_permission, require_profile_authority) autorizam o usuario interno; o repositorio legado de Seguranca infantil volta a ser o composto",
+      "Ambiente de prova: build web release + servidor estatico + Chrome por CDP com SwiftShader; credencial so no ambiente do processo"
+    ],
+    "dados_sinteticos_para_limpeza": [
+      "app_private.superadmin_internal_profiles do qa-r03 (semente 171200)",
+      "public.authorized_person_authorizations 34d29829-a8b5-4b23-aacb-46e994dce7d7",
+      "public.access_profile_templates qa-r04-modelo-sintetico-b6f3958c (+ permissao vinculada)",
+      "public.platform_roles qa-r04-perfil-sintetico-7f6f8d16 (546c4cd2-ea2d-4488-9961-e17576e836e5)"
+    ]
+  },
+  "encerramento": "Chrome fechado; servidor estatico em :3000 parado no fechamento; nenhum dart/flutter desta frente em execucao; nao retomo por conta propria depois de 04:20.",
   "historico_r03": {
     "revision": 94,
     "updated_at": "2026-09-10T19:56:30.537Z",
