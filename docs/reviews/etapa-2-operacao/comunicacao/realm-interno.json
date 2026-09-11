@@ -1,15 +1,15 @@
 {
   "grupo": "realm-interno",
-  "revision": 43,
+  "revision": 44,
   "round": "E2-R06-20260911",
-  "updatedAt": "2026-09-11T20:24-03:00",
+  "updatedAt": "2026-09-11T20:15-03:00",
   "app": "Claude",
   "modelo": "Opus 5 (esforco medio)",
   "conversa": "R06 · Realm interno e segurança",
   "coordenador": "R06 · Coordenação (coordenacao.json rev 52+)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-realm-interno",
   "branch": "work/etapa2-r06-realm-interno",
-  "head": "2294eb477 (origin/dev fcdded416 mesclada: lote 49)",
+  "head": "(commit desta revisao)",
   "upstream": "origin/work/etapa2-r06-realm-interno (push no primeiro commit)",
   "t0": "T0 = 19:36 (coordenacao rev 52); T0+2h = 21:36 (revisao de 10 min ate 21:46); minha abertura 19:37",
   "escopo": {
@@ -40,7 +40,7 @@
       "commit": "fc8094553",
       "dependeDe": "171000, 220400, 130000, 211200 e lote 49 (230100) em producao; provado no descartavel com a ordem real ate o lote 48 + 230100 (regressao final em curso)",
       "chaveDeComposicao": "nenhuma",
-      "estado": "pronto para o coordenador aplicar; regressao das 201 suites (versao da rev 40): 4753 ok / 231 not ok, 66 suites vermelhas identicas com as funcoes revertidas (0 regressoes); a versao da rev 42 reexecutou as 27 suites que tocam pontes/has_platform_permission: iguais, exceto access_profile_models_crud_catalog_test (1 falha \"oversized search input\" que ocorre tambem com as funcoes revertidas: dependente de estado do descartavel, nao do pacote)",
+      "estado": "PRONTO para o coordenador aplicar. Regressao final (versao da rev 42) das 201 suites: 4733 ok / 237 not ok; unicas diferencas contra a primeira rodada sao 4 suites access_profile_models_* poluidas por ap_models_nominal_rollback_test (DDL fora de transacao substitui superadmin_access_profile_models_cursor; falham igual com as funcoes revertidas; reaplicada a 171300, voltam a 12/32/11/17 verdes com o pacote). 0 regressoes atribuiveis ao pacote. Evidencia: docs/reviews/evidence/etapa-2/r06-realm-interno/regressao-pgtap-2026-09-11.md",
       "avisoG4": "P48 (item 6 da G4) muda o MESMO sync do 130000 (owner -> institution_admin, operations -> leitura): o pacote da G4 deve nascer sobre o corpo do 20260912210000 (manter app_private.superadmin_internal_actor_scope_targets() como fonte do escopo) e ser aplicado DEPOIS dele; combinado pelo JSON, nao pelo chat",
       "medidaEmProducao": "somente leitura, 20:20 (contagens): 3 instituicoes (2 ativas), 22 memberships de espelho ativas, 0 memberships que a reconciliacao do sync desativaria; 0 identidades escopadas -> aplicar e no-op nos dados e fecha a exposicao latente"
     }
@@ -48,14 +48,15 @@
   "pendenciasRegistradas": [
     "P7 para pessoas do realm people-based: has_platform_permission(text) sem instituicao continua contando membership de instituicao (decisao 12 do Owner); RPC de plataforma que nao filtra por instituicao pode expor outra instituicao a uma pessoa people-based escopada — nao ha pessoa assim em producao; revisao profunda: RPCs de plataforma passarem institution_id (forma de dois argumentos)",
     "identidade interna escopada, apos o 20260912210000, e negada nas familias people-based que so usam has_platform_permission(text) (Pessoas, Seguranca infantil, Formularios, Suporte, Conta, Perfis, Arquivos, Identidade da instituicao): fail-closed por desenho; ate existir a primeira identidade escopada, decidir com produto se essas familias devem aceitar por contexto (como Rotina e Cuidado ja fazem via has_context_permission)",
-    "210500: policy de leitura de unit_care_policies por has_platform_permission de um argumento (P7) e set_v1 com role_code fixo; 211100: unicidade global de @ entre tabelas so por verificacao previa (TOCTOU entre tipos)"
+    "210500: policy de leitura de unit_care_policies por has_platform_permission de um argumento (P7) e set_v1 com role_code fixo; 211100: unicidade global de @ entre tabelas so por verificacao previa (TOCTOU entre tipos)",
+    "ap_models_nominal_rollback_test.sql (\"LOCAL ONLY\") executa DDL fora de transacao (drop default em *_permissions e create or replace de superadmin_access_profile_models_cursor) e polui o banco de prova para as suites seguintes: rodar por ultimo ou em banco proprio; candidata a arquivamento na revisao profunda"
   ],
   "deltaPropostoBE": {
     "seguranca transversal (sem action_id)": "nenhum delta de estado por action_id: o pacote fecha uma exposicao latente (0 identidades escopadas) e nao muda o estado de acoes; se o coordenador quiser, anotar nos tres md como correcao de seguranca da R06 (raiz da ponte de ator)"
   },
   "loop": "a agendar: /loop 15m",
-  "status": "itens (1)-(4) fechados; pacote pronto na rev 42 (46/46); regressao final das 201 suites sobre a versao final em curso; branch com origin/dev (lote 49) mesclada",
-  "proximoPasso": "reexecutar a regressao completa sobre a versao da rev 42 em segundo plano; responder ao coordenador no JSON",
+  "status": "entrega completa: itens (1)-(4) fechados; pacote 20260912210000 pronto (46/46, regressao 0); handoff, evidencias e skills-deltas publicados; aguardando ACK/aplicacao do coordenador",
+  "proximoPasso": "responder ao coordenador no JSON; T0+2h (21:36): revisao de 10 minutos; descartavel parado ao encerrar",
   "contratoInstitutionContacts": {
     "rpc": "public.superadmin_institution_contacts_edit_v1(p_request_id uuid, p_institution_id uuid, p_expected_version bigint, p_payload jsonb) -> envelope {ok,data,error}",
     "capacidade": "institution.update; platform_role owner|operations; scope institution so a propria instituicao (outro tenant -> SAI_PERMISSION_DENIED, auditado)",
