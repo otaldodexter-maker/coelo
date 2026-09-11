@@ -1,7 +1,7 @@
 -- Prova do pacote 20260910240400: Criar grupo (P8) pelo realm interno.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(19);
+select plan(22);
 
 select has_function('public','superadmin_chat_create_group_v2',
  array['uuid','uuid','text','uuid[]','uuid','uuid','uuid']);
@@ -32,6 +32,12 @@ insert into public.guardian_links(guardian_person_id,child_person_id,relation_ty
  ('9c120000-0000-4000-8000-000000000062','9c120000-0000-4000-8000-000000000064','pai','9c120000-0000-4000-8000-000000000090');
 insert into public.child_contexts(child_person_id,institution_id) values
  ('9c120000-0000-4000-8000-000000000064','9c120000-0000-4000-8000-000000000010');
+-- Unidade e turma em A para os escopos unit e group.
+insert into public.units(id,institution_id,name,slug,unit_type_id,unit_type_other_description,handle) values
+ ('9c120000-0000-4000-8000-000000000011','9c120000-0000-4000-8000-000000000010','Unidade Centro','qa-unidade-centro',
+  (select id from public.unit_types where code='other'),'Unidade de teste','qa.unidade.centro');
+insert into public.groups(id,institution_id,unit_id,name) values
+ ('9c120000-0000-4000-8000-000000000012','9c120000-0000-4000-8000-000000000010','9c120000-0000-4000-8000-000000000011','Turma 1');
 
 insert into auth.users(id,aud,role,email,email_confirmed_at,created_at,updated_at,raw_app_meta_data,raw_user_meta_data) values
  ('9c120000-0000-4000-8000-000000000101','authenticated','authenticated','group-owner@invalid.test',now(),now(),now(),'{}','{}'),
@@ -82,6 +88,15 @@ insert into group_results values
  ('unit_invalid',public.superadmin_chat_create_group_v2('9c120000-0000-4000-8000-000000000904',
    '9c120000-0000-4000-8000-000000000010','Unidade inexistente',
    array['9c120000-0000-4000-8000-000000000061']::uuid[],'9c120000-0000-4000-8000-0000000000ff')),
+ ('unit_scope',public.superadmin_chat_create_group_v2('9c120000-0000-4000-8000-000000000907',
+   '9c120000-0000-4000-8000-000000000010','Equipe da unidade',
+   array['9c120000-0000-4000-8000-000000000061']::uuid[],'9c120000-0000-4000-8000-000000000011')),
+ ('group_scope',public.superadmin_chat_create_group_v2('9c120000-0000-4000-8000-000000000908',
+   '9c120000-0000-4000-8000-000000000010','Equipe da turma',
+   array['9c120000-0000-4000-8000-000000000062']::uuid[],'9c120000-0000-4000-8000-000000000011','9c120000-0000-4000-8000-000000000012')),
+ ('group_without_unit',public.superadmin_chat_create_group_v2('9c120000-0000-4000-8000-000000000909',
+   '9c120000-0000-4000-8000-000000000010','Turma sem unidade',
+   array['9c120000-0000-4000-8000-000000000061']::uuid[],null,'9c120000-0000-4000-8000-000000000012')),
  ('inbox',public.superadmin_chat_inbox_v2(null,null,30,'Equipe do Horizonte',false));
 insert into group_results values
  ('members',public.superadmin_chat_group_members_v2(
@@ -127,9 +142,17 @@ select is((select body#>>'{error,code}' from group_results where label='title_in
  'CHAT_INVALID_INPUT','a blank title is refused');
 select is((select body#>>'{error,code}' from group_results where label='unit_invalid'),
  'CHAT_INVALID_INPUT','a unit outside the institution is refused');
+select ok((select body#>>'{ok}'='true' and body#>>'{data,scope_kind}'='unit'
+   and body#>>'{data,unit_id}'='9c120000-0000-4000-8000-000000000011'
+  from group_results where label='unit_scope'),'a unit-scoped group is created inside the institution');
+select ok((select body#>>'{ok}'='true' and body#>>'{data,scope_kind}'='group'
+   and body#>>'{data,group_id}'='9c120000-0000-4000-8000-000000000012'
+  from group_results where label='group_scope'),'a class-scoped group carries unit and group');
+select is((select body#>>'{error,code}' from group_results where label='group_without_unit'),
+ 'CHAT_INVALID_INPUT','a class without its unit is refused');
 select is((select count(*) from public.conversations where conversation_type='group'
-   and institution_id='9c120000-0000-4000-8000-000000000010'),1::bigint,
- 'refused attempts create no conversation');
+   and institution_id='9c120000-0000-4000-8000-000000000010'),3::bigint,
+ 'refused attempts create no conversation (only the three accepted groups exist)');
 select ok((select body#>>'{data,total}'='1' and body#>>'{data,items,0,conversation_type}'='group'
   from group_results where label='inbox'),'the group appears in the internal inbox');
 select ok((select body#>>'{data,total}'='2' and body#>>'{data,items,0,display_name}'='Marina Souza'
