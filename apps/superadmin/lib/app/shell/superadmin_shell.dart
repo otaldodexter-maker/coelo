@@ -92,6 +92,22 @@ class SuperadminShell extends StatefulWidget {
   final bool showChatLauncher;
   final double chatLauncherBottomInset;
   final bool isHost;
+
+  /// Destinos em que o balao "Mensagens" nunca aparece, mesmo com
+  /// [showChatLauncher] verdadeiro. Conversas e o Chat do Principal porque o
+  /// launcher abriria o chat por cima do proprio chat; os demais pela Decisao 7
+  /// do Owner (10/09/2026): sem balao em criar, editar e publicar, nem no Agora
+  /// aberto e no Momentos aberto. As paginas do Principal nao embutem um shell
+  /// proprio, entao o hospedeiro decide pelo destino.
+  static const Set<String> chatLauncherHiddenDestinations = {
+    'conversations',
+    'principal-chat',
+    'principal-now',
+    'principal-now-publish',
+    'principal-happens-publish',
+    'principal-moments',
+    'principal-moments-publish',
+  };
   final CoeloNavigationCapabilityCheck? canAccessCapability;
 
   @override
@@ -106,6 +122,8 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
   late final SuperadminChatLauncherPositionController _chatLauncherPositionController;
   late bool _ownsActivityController;
   double _embeddedChatLauncherBottomInset = 0;
+  bool _embeddedChatLauncherVisible = true;
+  _SuperadminShellHostScope? _hostScope;
 
   @override
   void initState() {
@@ -153,10 +171,25 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
       _activityController.dispose();
     }
     _chatLauncherPositionController.dispose();
+    // Ao sair de uma tela sem balao, o host volta ao padrao (visivel) ate a
+    // proxima pagina embutida dizer o contrario.
+    _hostScope?.onChatLauncherVisibilityChanged(true);
     super.dispose();
   }
 
   bool get _reduceMotion => MediaQuery.maybeOf(context)?.disableAnimations ?? false;
+
+  /// Decisao 7 do Owner: sem balao de chat em criar, editar e publicar. A
+  /// pagina embutida diz ao host se o launcher pode aparecer; o host, que e
+  /// quem desenha o launcher, obedece.
+  void _handleEmbeddedChatLauncherVisibility(bool visible) {
+    if (_embeddedChatLauncherVisible == visible) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _embeddedChatLauncherVisible == visible) return;
+      setState(() => _embeddedChatLauncherVisible = visible);
+    });
+  }
+
   void _handleEmbeddedChatLauncherBottomInset(double inset) {
     if ((_embeddedChatLauncherBottomInset - inset).abs() < .5) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -220,6 +253,8 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
     final pageBody = widget.child ?? const SizedBox.expand();
     final hostScope = _SuperadminShellHostScope.maybeOf(context);
     if (!widget.isHost && hostScope != null) {
+      _hostScope = hostScope;
+      hostScope.onChatLauncherVisibilityChanged(widget.showChatLauncher);
       hostScope.onChatLauncherBottomInsetChanged(
         widget.showChatLauncher ? widget.chatLauncherBottomInset : 0,
       );
@@ -431,6 +466,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
       onDestinationSelected: widget.onDestinationSelected!,
       chatLauncherPositionController: _chatLauncherPositionController,
       onChatLauncherBottomInsetChanged: _handleEmbeddedChatLauncherBottomInset,
+      onChatLauncherVisibilityChanged: _handleEmbeddedChatLauncherVisibility,
       child: KeyedSubtree(key: const Key('superadmin-content-transition'), child: child),
     );
   }
@@ -485,7 +521,8 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
   }) {
     final destinationHandler = onDestinationSelected ?? widget.onDestinationSelected;
     if (!widget.showChatLauncher ||
-        const {'conversations', 'principal-chat'}.contains(widget.currentDestination)) {
+        (widget.isHost && !_embeddedChatLauncherVisible) ||
+        SuperadminShell.chatLauncherHiddenDestinations.contains(widget.currentDestination)) {
       return child;
     }
     final openConversations =
@@ -527,6 +564,7 @@ class _SuperadminShellHostScope extends InheritedWidget {
     required this.onDestinationSelected,
     required this.chatLauncherPositionController,
     required this.onChatLauncherBottomInsetChanged,
+    required this.onChatLauncherVisibilityChanged,
     required super.child,
   });
 
@@ -534,6 +572,7 @@ class _SuperadminShellHostScope extends InheritedWidget {
   final ValueChanged<String> onDestinationSelected;
   final SuperadminChatLauncherPositionController chatLauncherPositionController;
   final ValueChanged<double> onChatLauncherBottomInsetChanged;
+  final ValueChanged<bool> onChatLauncherVisibilityChanged;
 
   static _SuperadminShellHostScope? maybeOf(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType<_SuperadminShellHostScope>();
@@ -544,7 +583,8 @@ class _SuperadminShellHostScope extends InheritedWidget {
     return isDesktop != oldWidget.isDesktop ||
         onDestinationSelected != oldWidget.onDestinationSelected ||
         chatLauncherPositionController != oldWidget.chatLauncherPositionController ||
-        onChatLauncherBottomInsetChanged != oldWidget.onChatLauncherBottomInsetChanged;
+        onChatLauncherBottomInsetChanged != oldWidget.onChatLauncherBottomInsetChanged ||
+        onChatLauncherVisibilityChanged != oldWidget.onChatLauncherVisibilityChanged;
   }
 }
 

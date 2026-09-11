@@ -660,11 +660,15 @@ GoRouter createSuperadminRouter({
     required String subtitle,
     required String destination,
     required Widget child,
+    // Decisao 7 do Owner: telas de criar, editar e publicar passam false e o
+    // shell hospedeiro esconde o balao "Mensagens".
+    bool showChatLauncher = true,
   }) => SuperadminShell(
     logout: logout,
     title: title,
     subtitle: subtitle,
     currentDestination: destination,
+    showChatLauncher: showChatLauncher,
     activityController: operationalActivities,
     // O launcher só afirma contagem quando existe repositório autorizado.
     // `UnavailableChatRepository.fetchUnreadTotal` devolve 0, e um zero
@@ -709,6 +713,7 @@ GoRouter createSuperadminRouter({
       title: title,
       subtitle: subtitle,
       destination: 'meal-plans',
+      showChatLauncher: false,
       child: MealPlanWizardPage(
         repository: mealPlanRepository,
         imageRepository: mealPlanImageRepository,
@@ -4815,6 +4820,7 @@ GoRouter createSuperadminRouter({
               title: 'Novo plano',
               subtitle: 'Cadastre um plano da plataforma.',
               destination: 'plans',
+              showChatLauncher: false,
               child: PlanFormPage(
                 repository: planCatalogRepository,
                 onSaved: () => context.goNamed(SuperadminRoutes.plansName),
@@ -4830,6 +4836,7 @@ GoRouter createSuperadminRouter({
               title: 'Editar plano',
               subtitle: 'Altere um plano da plataforma.',
               destination: 'plans',
+              showChatLauncher: false,
               child: PlanFormPage(
                 repository: planCatalogRepository,
                 planId: state.pathParameters['planId'],
