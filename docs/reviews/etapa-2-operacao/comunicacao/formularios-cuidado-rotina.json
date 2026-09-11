@@ -1,15 +1,15 @@
 {
- "revision": 44,
+ "revision": 45,
  "round": "E2-R05-20260911",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5 (Claude, Opus, esforco medio)",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T15:38-03:00",
+ "updatedAt": "2026-09-11T15:40-03:00",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-formularios-cuidado-rotina",
  "branch": "work/etapa2-r05-formularios-cuidado-rotina",
- "head": "fac31c7c4 de codigo + rev 44 (publicado)",
+ "head": "6457387ff de codigo + rev 45 (publicado)",
  "base": "origin/dev 2f6a6114f",
  "scope": {
   "families": [
@@ -40,7 +40,7 @@
   ]
  },
  "currentGate": {
-  "gate": "finalizado as 15:34; revisao das 15:50 sera respondida neste JSON; apos 16:00 nao retomo",
+  "gate": "finalizado (15:40); revisao das 15:50 respondida neste JSON quando chegar; apos 16:00 nao retomo",
   "screen": "Etapa 2 -> apps/superadmin",
   "actionIds": []
  },
@@ -160,6 +160,11 @@
    "sha": "fac31c7c4",
    "o_que": "fix(assiduidade): showChatLauncher=false em AttendanceNewCallPage e AttendanceCallPage (Decisao 7)",
    "prova": "analyzer limpo; test/features/attendance 89/89; sem prova na rota real (Chrome encerrado as 15:34)"
+  },
+  {
+   "sha": "6457387ff",
+   "o_que": "fix(rotina): rotulos legiveis (escopo/heranca) no card da rotina aplicada",
+   "prova": "analyzer limpo; supabase_routine_data_test 6/6; suite de rotina 112 verdes + golden do composto pre-existente"
   }
  ],
  "pendenciasRegistradas": [
@@ -246,11 +251,6 @@
   {
    "action_id": "daily-routine.list",
    "o_que": "abas Rotinas e Lancamentos vazias escondem o card Criar (regra do estado vazio)",
-   "gate": "FE"
-  },
-  {
-   "action_id": "daily-routine.apply",
-   "o_que": "card da aplicacao mostra rotulos crus (institution, inherited) em vez de nome/escopo legiveis",
    "gate": "FE"
   }
  ],
@@ -1604,7 +1604,7 @@
  ],
  "miniRevisao": {
   "quando": "2026-09-11T15:34-03:00",
-  "sha_final": "fac31c7c4 (codigo) + este commit (rev 44), publicados; status limpo",
+  "sha_final": "6457387ff (codigo) + este commit (rev 45), publicados; status limpo; sem WIP",
   "fechou": [
    "forms.publish, forms.overview (rev 37, ja aplicados: verified-e2e)",
    "forms.monitor, forms.respond, forms.responses, forms.response-detail: verified-e2e (deltas rev 37)",

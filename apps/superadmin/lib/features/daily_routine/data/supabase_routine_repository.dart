@@ -330,13 +330,25 @@ RoutineDirectoryItem _directoryItem(RoutineEntryKind kind, Map<String, Object?> 
       kind: kind,
       name: switch (kind) {
         RoutineEntryKind.model => row['name'] as String? ?? '',
-        RoutineEntryKind.application => row['scope_kind'] as String? ?? '',
+        // O diretorio nao projeta nome para a aplicacao; o card mostrava o
+        // enum cru "institution" (rota real, R05). Rotulo legivel por escopo.
+        RoutineEntryKind.application => switch (row['scope_kind'] as String?) {
+          'institution' => 'Rotina da instituição',
+          'unit' => 'Rotina da unidade',
+          'group' => 'Rotina da turma',
+          'activity' => 'Rotina da atividade',
+          final other => other ?? '',
+        },
         RoutineEntryKind.launch => row['launch_date'] as String? ?? '',
       },
       status: row['status'] as String? ?? '',
       version: _asInt(row['version'] ?? row['management_version']),
       originLabel: row['origin_unit_id'] as String?,
-      effectiveLabel: row['inheritance_mode'] as String?,
+      effectiveLabel: switch (row['inheritance_mode'] as String?) {
+        'inherited' => 'Herdada da origem',
+        'customized' => 'Personalizada',
+        final other => other,
+      },
     );
 
 RoutineSection _section(Map<String, Object?> row) => RoutineSection(
