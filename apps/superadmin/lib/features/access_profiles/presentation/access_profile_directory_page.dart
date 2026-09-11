@@ -236,7 +236,9 @@ final class _AccessProfileDirectoryContent extends StatelessWidget {
       final showsDemo =
           viewModel.page.isDemo ||
           (query.domain == AccessProfileDomain.principal && viewModel.isDemo);
-      final models = viewModel.page.items.where((item) => item.isSystem).toList(growable: false);
+      final models = viewModel.page.items
+          .where((item) => item.isSystem && item.status == AccessProfileStatus.active)
+          .toList(growable: false);
       final onCreate = this.onCreate == null || principal
           ? null
           : onCreateFromModel == null || models.isEmpty

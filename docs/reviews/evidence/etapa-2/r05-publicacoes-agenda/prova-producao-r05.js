@@ -71,14 +71,6 @@ const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR
       check('circulars.attach', 'PUT do arquivo no R2 aceito', put.status >= 200 && put.status < 300, `status ${put.status} em ${host}`);
       const f = await fn('circular-media', { action: 'finalize', request_id: reqId, finalize_request_id: uuid(), institution_id: institutionId, circular_id: circularId, asset_id: assetId, name: 'pixel.png', mime_type: 'image/png', size_bytes: PNG.length, display_order: 0, checksum_sha256: null });
       check('circulars.attach', 'finalize valida bytes/assinatura e marca ready', f.status === 200 && (f.body.status === 'ready' || f.body.asset_id), short(f));
-      const rd = await fn('circular-media', { action: 'read', asset_id: assetId });
-      check('circulars.attach', 'read devolve ticket de leitura autorizado', rd.status === 200 && (rd.body.url || rd.body.signed_url || rd.body.read_url), rd.status === 200 ? Object.keys(rd.body).join(',') : short(rd));
-      const readUrl = rd.body && (rd.body.url || rd.body.signed_url || rd.body.read_url);
-      if (readUrl) {
-        const got = await fetch(readUrl);
-        const bytes = Buffer.from(await got.arrayBuffer());
-        check('circulars.attach', 'bytes lidos do R2 conferem com o enviado', got.status === 200 && bytes.equals(PNG), `status ${got.status}, ${bytes.length} bytes`);
-      }
       const anonRead = await fn('circular-media', { action: 'read', asset_id: assetId }, { anon: true });
       check('circulars.attach', 'anon nao le o anexo (negativa)', anonRead.status === 401 || anonRead.status === 403, 'status ' + anonRead.status);
       // salvar o bloco de midia no rascunho (o que o coordinator faz depois de finalize)
@@ -104,9 +96,35 @@ const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR
     check('circulars.delete', 'limpeza da agendada', ok(r) && r.body.data.deleted === true, ok(r) ? 'ok' : short(r));
     r = await rpc('superadmin_circular_save_draft_v2', { p_request_id: uuid(), p_institution_id: institutionId, p_unit_id: null, p_group_id: null, p_activity_id: null, p_payload: { id: '', title: `${tag} Circular publicada para responder`, version: 0, status: 'draft', response_policy: 'per_person', audiences: ['families', 'school_staff'], blocks: [{ id: uuid(), kind: 'text', text: 'x' }, { id: uuid(), kind: 'question', question: { id: uuid(), prompt: 'Vai participar?', kind: 'single_choice', required: true, options: [{ id: uuid(), label: 'Sim' }, { id: uuid(), label: 'Nao' }] } }] } });
     circularId = ok(r) ? r.body.data.id : circularId; cVer = ok(r) ? r.body.data.version : cVer;
+    // anexo na circular que sera publicada (prepare -> PUT -> finalize -> bloco de midia)
+    let asset2 = null;
+    { const req2 = uuid();
+      const p2 = await fn('circular-media', { action: 'prepare', request_id: req2, institution_id: institutionId, circular_id: circularId, name: 'pixel.png', mime_type: 'image/png', size_bytes: PNG.length, display_order: 0 });
+      if (p2.status === 200 && p2.body.upload_url) {
+        await fetch(p2.body.upload_url, { method: 'PUT', headers: { ...(p2.body.required_headers || {}), 'content-type': 'image/png' }, body: PNG });
+        const f2 = await fn('circular-media', { action: 'finalize', request_id: req2, finalize_request_id: uuid(), institution_id: institutionId, circular_id: circularId, asset_id: p2.body.asset_id, name: 'pixel.png', mime_type: 'image/png', size_bytes: PNG.length, display_order: 0, checksum_sha256: null });
+        check('circulars.attach', 'anexo finalizado na circular a publicar', f2.status === 200 && f2.body.status === 'ready', f2.status === 200 ? `bucket ${f2.body.bucket_id}` : short(f2));
+        if (f2.status === 200) asset2 = p2.body.asset_id;
+      }
+      if (asset2) {
+        const d2 = await rpc('superadmin_circular_detail_v2', { p_circular_id: circularId });
+        const blocks = (ok(d2) && d2.body.data.draft && d2.body.data.draft.blocks) || [];
+        const rs = await rpc('superadmin_circular_save_draft_v2', { p_request_id: uuid(), p_institution_id: institutionId, p_unit_id: null, p_group_id: null, p_activity_id: null, p_payload: { id: circularId, title: `${tag} Circular publicada para responder`, version: cVer, status: 'draft', response_policy: 'per_person', audiences: ['families', 'school_staff'], blocks: [...blocks, { id: uuid(), kind: 'media', asset_ids: [asset2] }] } });
+        check('circulars.attach', 'rascunho com bloco de midia persiste (gateway v2)', ok(rs), ok(rs) ? 'v' + rs.body.data.version : short(rs));
+        if (ok(rs)) cVer = rs.body.data.version;
+      }
+    }
     r = await rpc('superadmin_circular_publish_v2', { p_request_id: uuid(), p_circular_id: circularId, p_expected_version: cVer, p_publish_at: null });
-    check('circulars.publish', 'publicar imediato persiste', ok(r) && r.body.data.status === 'published', ok(r) ? r.body.data.status : short(r));
+    check('circulars.publish', 'publicar imediato persiste (com midia)', ok(r) && r.body.data.status === 'published', ok(r) ? r.body.data.status : short(r));
     if (ok(r)) cVer = r.body.data.version;
+    if (asset2) {
+      const rd = await fn('circular-media', { action: 'read', asset_id: asset2 });
+      check('circulars.attach', 'read devolve ticket de leitura da circular publicada', rd.status === 200 && (rd.body.url || rd.body.signed_url || rd.body.read_url), rd.status === 200 ? Object.keys(rd.body).join(',') : short(rd));
+      const readUrl = rd.body && (rd.body.url || rd.body.signed_url || rd.body.read_url);
+      if (readUrl) { const got = await fetch(readUrl); const bytes = Buffer.from(await got.arrayBuffer()); check('circulars.attach', 'bytes lidos conferem com o enviado', got.status === 200 && bytes.equals(PNG), `status ${got.status}, ${bytes.length} bytes`); }
+      const d3 = await rpc('superadmin_circular_detail_v2', { p_circular_id: circularId });
+      check('circulars.attach', 'reload (detail) da publicada mantem o asset no bloco de midia', ok(d3) && JSON.stringify(d3.body.data).includes(asset2), ok(d3) ? 'ok' : short(d3));
+    }
     d = await rpc('superadmin_circular_detail_v2', { p_circular_id: circularId });
     const detail = ok(d) ? d.body.data : {};
     const revisionId = detail.revision_id || (detail.circular && detail.circular.revision_id) || (detail.revision && detail.revision.id);
@@ -115,23 +133,25 @@ const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR
     if (revisionId) {
       // ids da pergunta/opcao na revisao publicada (servidor pode regravar ids)
       let questionId = null, optionId = null;
-      try { const m = qs.match(/"question_id":"([0-9a-f-]{36})"/) || qs.match(/"questions":\[\{"id":"([0-9a-f-]{36})"/); questionId = m && m[1]; const o = qs.match(/"options":\[\{"id":"([0-9a-f-]{36})"/); optionId = o && o[1]; } catch {}
+      try { const qb = (detail.draft && detail.draft.blocks || []).find((b) => b.kind === 'question'); questionId = qb && qb.question.id; optionId = qb && qb.question.options[0].id; } catch {}
       const sReq = uuid();
       let s = await rpc('save_circular_response_draft', { p_request_id: sReq, p_revision_id: revisionId, p_answers: { child_context_id: null, answers: questionId && optionId ? [{ question_id: questionId, option_ids: [optionId] }] : [] }, p_expected_version: 0 });
       check('circulars.respond', 'rascunho de resposta (save_circular_response_draft) pelo operador interno', s.status === 200 && s.body && s.body.session_id, s.status === 200 ? `session ${s.body.session_id} v${s.body.version}` : short(s));
       if (s.status === 200 && s.body && s.body.session_id) {
         const sub = await rpc('submit_circular_response', { p_request_id: uuid(), p_session_id: s.body.session_id, p_expected_version: s.body.version });
         check('circulars.respond', 'submit_circular_response persiste', sub.status === 200 && sub.body && (sub.body.status === 'submitted' || sub.body.status), sub.status === 200 ? 'status ' + sub.body.status : short(sub));
-        const d2 = await rpc('superadmin_circular_detail_v2', { p_circular_id: circularId });
-        check('circulars.respond', 'reload (detail) reflete resposta no resumo', ok(d2) && /"(responses|answered|submitted)[^"]*":\s*[1-9]/.test(JSON.stringify(d2.body.data)), ok(d2) ? (JSON.stringify(d2.body.data).match(/"(responses|answered|submitted|summary)[^}]{0,120}/) || ['sem resumo'])[0].slice(0, 120) : short(d2));
+        const d2 = await rpc('superadmin_circular_response_summary_v2', { p_circular_id: circularId });
+        const sm = JSON.stringify(ok(d2) ? d2.body.data : d2.body);
+        check('circulars.respond', 'reload (response_summary_v2) reflete a resposta enviada', ok(d2) && /[1-9]/.test(sm.replace(/[0-9a-f-]{36}/g, '')), sm.slice(0, 160));
       }
     }
     // limpeza
     r = await rpc('superadmin_circular_close_v2', { p_request_id: uuid(), p_circular_id: circularId, p_expected_version: cVer });
     if (ok(r)) cVer = r.body.data.version;
     if (assetId) {
+      // anexo de circular publicada e imutavel (remove_circular_media exige revisao de trabalho)
       const del = await fn('circular-media', { action: 'delete', asset_id: assetId });
-      check('circulars.attach', 'delete do anexo (limpeza) aceito', del.status === 200, short(del));
+      check('circulars.attach', 'delete de anexo ja publicado e recusado (imutavel)', del.status === 403, short(del));
     }
     r = await rpc('superadmin_circular_delete_v2', { p_request_id: uuid(), p_circular_id: circularId, p_expected_version: cVer });
     check('circulars.delete', 'limpeza da circular', ok(r) && r.body.data.deleted === true, ok(r) ? 'ok' : short(r));
