@@ -1,17 +1,17 @@
 {
   "grupo": "realm-interno",
-  "revision": 8,
+  "revision": 9,
   "round": "E2-R04-20260911",
-  "updatedAt": "2026-09-10T22:55-03:00",
+  "updatedAt": "2026-09-10T23:21-03:00",
   "app": "Claude",
   "modelo": "Fable 5.1",
   "conversa": "R04 · Realm interno e Chat backend",
   "coordenador": "R04 · Coordenação noturna (coordenacao.json)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-realm-interno",
   "branch": "work/etapa2-r04-realm-interno",
-  "head": "d157f8f6e",
+  "head": "70e686e43",
   "upstream": "origin/work/etapa2-r04-realm-interno",
-  "base": "origin/dev 836c63215 (rebase feito as 22:08; lote 8 MFA fora do MVP ja em producao)",
+  "base": "origin/dev 5bb7c5648 (rebase as 23:06); as cinco migrations 240000..240400 em migrations/ de dev sao byte a byte iguais aos candidatos entregues (sha256 conferido)",
   "historicoR03": "frente sem entrega na R03 (frenteNova coelo-f0 atribuida as 15:58; worktree e2-r03-realm-interno quebrada, nao usada). Nada a reutilizar dela.",
   "escopo": {
     "camada": "backend (Supabase/Postgres) da familia chat + realm interno v2",
@@ -74,7 +74,7 @@
   },
   "bloqueio": null,
   "pedidosAoCoordenador": [
-    "aplicar candidatos/realm-interno/20260910240500_revoke_anon_direct_access_v1.sql (independente; preflight no espelho + pgTAP 9/9); depois eu confiro em producao que anon ficou sem tabela/funcao e que qa-r03 continua operando (rerun do script de prova sem fixture: leitura e anon 401)",
+    "registrar o 240500 como aplicado (ledger 20260910240500) e mover o arquivo de candidatos/realm-interno para migrations/ (o README da pasta ja anota a aplicacao)",
     "a regra do README (db reset com migrations/ inteira) nao reproduz: 20260910170100 exige o catalogo antes do seed; fluxo baseline-only + seed + psql descrito em candidatos/realm-interno/README.md"
   ],
   "perguntasParaOOwner": [],
@@ -121,7 +121,7 @@
     "escopo": "membership de plataforma ve toda conversa; membership de instituicao so ve a propria instituicao (outro tenant responde CHAT_NOT_FOUND). Anexos: so metadados; chat.attach continua dependendo do gateway de midia comum (fora deste recorte).",
     "criarGrupoNoCliente": "sugestao para SupabaseChatRepository: createGroup(ChatCreateGroupCommand{institutionId, title, personIds, unitId?, groupId?, activityId?, idempotencyKey}) -> ChatConversationSummary; o seletor de hierarquia escolhe UMA instituicao e pessoas dela (readers existentes de Pessoas/Unidades/Turmas do Superadmin); grupo entre instituicoes nao existe no modelo (conversations.institution_id NOT NULL)."
   },
-  "proximoPasso": "aguardar aplicacao do 240500 e conferir em producao; manter a fixture para o principal-chat ate o fechamento; responder pelo JSON",
+  "proximoPasso": "recorte concluido (chat v2 em producao e provado; anon revogado e conferido); permaneco ate 04:20 para perguntas de contrato do principal-chat e ajustes; sem item independente pendente",
   "pacotesProntos": [
     {
       "arquivo": "packages/coelo_database/candidatos/realm-interno/20260910240000_chat_production_contract_v1.sql",
@@ -164,7 +164,8 @@
       "pgTAP": "supabase/tests/revoke_anon_direct_access_v1_test.sql 9/9; as cinco suites do chat continuam verdes depois dele (111/111)",
       "commit": "76d377747",
       "chaveDeComposicao": "nenhuma",
-      "dependeDe": "nada (independente dos pacotes 1-5)"
+      "dependeDe": "nada (independente dos pacotes 1-5)",
+      "estado": "APLICADO em producao pelo coordenador (ledger 20260910240500, 182 versoes) e conferido as 23:20"
     }
   ],
   "ordemDeAplicacao": "240000 -> 240100 -> 240200 -> 240300 -> 240400. Cada um tem preflight de presenca de objeto e falha com 55000 se a dependencia faltar. Todos aplicados em sequencia no mesmo projeto descartavel; pgTAP total 108 PASS / 0 FAIL.",
@@ -202,9 +203,9 @@
   "handoff": "docs/reviews/evidence/etapa-2/r04-realm-interno/handoff.md",
   "deltaPropostoArquivo": "docs/reviews/evidence/etapa-2/r04-realm-interno/deltas-be-r04.json (6 IDs da familia chat, backend -> local-green; formato de apply-tracker-delta.cjs; ids validados contra o inventario)",
   "estadoDoCoordenador": {
-    "lidoEm": "2026-09-10T22:55-03:00",
+    "lidoEm": "2026-09-10T23:21-03:00",
     "mensagemEntreSessoes": "deltas aplicados no inventario (6 IDs backend done com certificacao de producao; caminho corrigido para docs/reviews/...), chat.create-group criado (familia chat, MVP, backend done, UI com principal-chat-sistema); validador PASS 231 acoes / 7 done. Instituicao sintetica arquivada aceita como decisao do coordenador. Pedido novo: pacote de revoke de anon.",
-    "devHead": "d18bad50b (P7 has_platform_permission candidato); 240500 ainda nao aplicado (producao: anon com 144 grants de tabela e 15 funcoes)"
+    "devHead": "5bb7c5648; coordenacao rev 20 (lote 9 registrado); 240500 em producao (lote seguinte) ainda nao anotado em coordenacao.json"
   },
   "decisaoRegistrada": "instituicao sintetica 9f040000-0000-4000-8000-000000000010 permanece em producao com status=archived, deleted_at preenchido e nome \"QA R04 Instituicao Sintetica (arquivada)\" porque audit.audit_logs (append-only) a referencia por FK; decisao do coordenador em 10/09 ~22:45, nao do Owner; registrar no fechamento",
   "medicaoAnonProducao": {
@@ -227,5 +228,12 @@
     "usoPeloPrincipalChat": "Criar grupo na UI com institution_id acima e os dois person_ids -> conversa group; depois enviar/editar/fixar/bandeira/revogar pela UI com qa-r03; a inbox deixa de ficar vazia",
     "limite": "nao resolve P22 (contexto Principal/has_platform_permission para qa-r03): isso exige uma pessoa vinculada a um auth user do realm de pessoas, que o guard do realm interno impede de ser o proprio qa-r03; e decisao do coordenador/Owner"
   },
-  "edgeFunctionsEAnon": "conferido em 22:52: as seis Edge Functions que leem SUPABASE_ANON_KEY (audit-export, circular-media, form-export-download, form-media, happens-media, import-export-jobs) criam o cliente com o header Authorization do usuario; o revoke do 240500 nao as afeta. Site nao usa Supabase. Cliente Flutter le tabela direta so em profile_about_* (autenticado)."
+  "edgeFunctionsEAnon": "conferido em 22:52: as seis Edge Functions que leem SUPABASE_ANON_KEY (audit-export, circular-media, form-export-download, form-media, happens-media, import-export-jobs) criam o cliente com o header Authorization do usuario; o revoke do 240500 nao as afeta. Site nao usa Supabase. Cliente Flutter le tabela direta so em profile_about_* (autenticado).",
+  "verificacao240500EmProducao": {
+    "quando": "2026-09-10T23:21-03:00",
+    "anon": "tabelas com grant nos schemas da aplicacao: 144 -> 0; funcoes executaveis (public+app_private+audit+analytics): 15 -> 0",
+    "preservado": "authenticated executa 339 funcoes em public e 86 em app_private, 310 grants de tabela em public; service_role 289 funcoes; storage/realtime mantem os grants de plataforma a anon (9 tabelas, fora do pacote)",
+    "sessaoQaR03": "Invoke-ChatInternalProductionProof.sh --read-only as 23:20: sign_in PASS, unread_total PASS, inbox PASS (total=1: grupo criado pelo principal-chat na rota real), thread PASS (2 mensagens), anon 401 PASS; 5 PASS / 0 FAIL / 1 SKIP; nada escrito na conversa da outra frente",
+    "script": "chat-internal-production-proof.ts ganhou --read-only para reconferir producao sem interferir na rota real de outra frente"
+  }
 }
