@@ -9,7 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('keyboard reaches the scrolled compact support view control', (tester) async {
+  testWidgets('keyboard reaches the compact support view control', (tester) async {
     for (final theme in [CoeloTheme.light, CoeloTheme.dark]) {
       final controller = SupportPrototypeController(initialTickets: _tickets(12));
       addTearDown(controller.dispose);
@@ -20,8 +20,9 @@ void main() {
         theme: theme,
         textScaler: const TextScaler.linear(2),
       );
+      // Composto CoeloAdminDirectory: a toolbar empilhada fica no topo da
+      // lista do diretório e o toggle é alcançável por Tab a partir da busca.
       final table = find.byKey(const Key('support-view-toggle-table'));
-      expect(table.hitTestable(), findsNothing);
       await tester.tap(find.byKey(const Key('support-search')));
       await tester.pumpAndSettle();
       for (var step = 0; step < 20 && !Focus.of(tester.element(table)).hasFocus; step++) {
@@ -206,34 +207,37 @@ void main() {
     await tester.tap(find.byKey(const Key('support-view-toggle-table')));
     await tester.pumpAndSettle();
 
-    final verticalTableScroll = find.ancestor(
-      of: find.byKey(const Key('support-ticket-table')),
-      matching: find.byWidgetPredicate(
-        (widget) => widget is SingleChildScrollView && widget.scrollDirection == Axis.vertical,
-      ),
-    );
-    expect(verticalTableScroll, findsOneWidget);
+    // Composto CoeloAdminDirectory: toolbar, banner Criar e tabela rolam
+    // juntos na lista do diretório; o rodapé de paginação fica fixo fora dela.
+    final directoryScroll = find.byKey(const Key('support-directory-scroll'));
+    expect(directoryScroll, findsOneWidget);
     expect(
-      find.ancestor(
-        of: find.byKey(const Key('support-create-table')),
-        matching: verticalTableScroll,
-      ),
-      findsNothing,
+      find.ancestor(of: find.byKey(const Key('support-ticket-table')), matching: directoryScroll),
+      findsOneWidget,
     );
     expect(
-      find.ancestor(of: find.byKey(const Key('support-pagination')), matching: verticalTableScroll),
+      find.ancestor(of: find.byKey(const Key('support-create-table')), matching: directoryScroll),
+      findsOneWidget,
+    );
+    expect(
+      find.ancestor(of: find.byKey(const Key('support-pagination')), matching: directoryScroll),
       findsNothing,
     );
 
-    final previous = find.byKey(const Key('coelo-admin-pagination-previous'));
-    final next = find.byKey(const Key('coelo-admin-pagination-next'));
-    expect(tester.getSemantics(previous).label, contains('Página anterior'));
-    expect(tester.getSemantics(next).label, contains('Próxima página'));
+    // Rodapé compacto do composto (abaixo de 600 px): ações por rótulo semântico.
+    expect(_paginationAction('Página anterior'), findsOneWidget);
+    expect(_paginationAction('Próxima página'), findsOneWidget);
     expect(find.byKey(const Key('coelo-admin-pagination-page-size')), findsNothing);
     expect(find.byKey(const Key('coelo-admin-pagination-page-1')), findsNothing);
     expect(tester.takeException(), isNull);
   });
 }
+
+/// Ação do rodapé compacto de paginação do composto, identificada pelo rótulo
+/// semântico (o rodapé compacto não expõe chaves).
+Finder _paginationAction(String label) => find.byWidgetPredicate(
+  (widget) => widget is Semantics && widget.properties.label == label,
+);
 
 List<SupportTicket> _tickets(int count) {
   final now = DateTime.utc(2026, 7, 28, 12);
@@ -282,7 +286,7 @@ Future<void> _expectResponsiveSupportMatrix(
       );
       expect(find.byKey(const Key('support-create-table')), findsOneWidget);
       expect(find.byKey(const Key('support-pagination')), findsOneWidget);
-      final compactNext = find.byKey(const Key('coelo-admin-pagination-next'));
+      final compactNext = _paginationAction('Próxima página');
       final next = compactNext.evaluate().isNotEmpty
           ? compactNext
           : find.byKey(const Key('coelo-admin-pagination-page-2'));

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
@@ -12,10 +13,10 @@ import '../../../auth/domain/logout_action.dart';
 import '../../domain/support_team_member.dart';
 import '../../domain/support_ticket.dart';
 import '../view_models/support_prototype_controller.dart';
-import '../widgets/support_filter_toolbar.dart';
 import '../widgets/support_kanban.dart';
 import '../widgets/support_ticket_detail.dart';
-import '../widgets/support_ticket_table.dart';
+import '../widgets/support_ticket_filters.dart';
+import '../widgets/support_ticket_rows.dart';
 
 final class SupportPage extends StatefulWidget {
   const SupportPage({
@@ -45,8 +46,9 @@ class _SupportPageState extends State<SupportPage> {
     debugLabel: 'support-read-filter',
     traversalEdgeBehavior: TraversalEdgeBehavior.parentScope,
   );
+  final _detailFocusNode = FocusNode(debugLabel: 'support-detail');
   SupportFocusRestoreCallback? _restoreDetailOriginFocus;
-  SupportDisplayMode _displayMode = SupportDisplayMode.kanban;
+  CoeloAdminDirectoryDisplay _display = CoeloAdminDirectoryDisplay.cards;
   int _controllerGeneration = 0;
   DialogRoute<void>? _fullscreenDetailRoute;
 
@@ -84,6 +86,7 @@ class _SupportPageState extends State<SupportPage> {
     _invalidateFullscreenDetail();
     _search.dispose();
     _readFilterFocusScopeNode.dispose();
+    _detailFocusNode.dispose();
     super.dispose();
   }
 
@@ -109,56 +112,20 @@ class _SupportPageState extends State<SupportPage> {
     final isMobileOrTabletSurface =
         theme.brightness == Brightness.light &&
         MediaQuery.sizeOf(context).width < CoeloBreakpoints.expanded.minWidth;
-    final tickets = _displayMode == SupportDisplayMode.table
-        ? widget.controller.visibleTickets
-        : widget.controller.filteredTickets;
-    final toolbar = Padding(
-      padding: const EdgeInsets.only(bottom: CoeloSpacing.space3),
-      child: SupportFilterToolbar(
-        controller: widget.controller,
-        searchController: _search,
-        displayMode: _displayMode,
-        onDisplayModeChanged: (displayMode) => setState(() => _displayMode = displayMode),
-        readFilterFocusScopeNode: _readFilterFocusScopeNode,
-        onExportCsv: _showUnavailableExport,
-        onExportXlsx: _showUnavailableExport,
-      ),
-    );
-    final content = Padding(
+    final content = KeyedSubtree(
       key: const Key('support-page-content'),
-      padding: const EdgeInsets.all(CoeloSpacing.space4),
       child: LayoutBuilder(
-        builder: (context, constraints) {
-          final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
-          // Keep the board's fixed headers plus two touch targets of usable
-          // list space. The table also reserves its create action and pager.
-          final bodyFloor = _displayMode == SupportDisplayMode.table
-              ? 128 +
-                    CoeloSpacing.space4 +
-                    CoeloSpacing.space3 +
-                    MediaQuery.textScalerOf(context).scale(CoeloSize.touchMin) +
-                    CoeloSize.touchMin * 2
-              : CoeloSize.touchMin * 4 + CoeloSpacing.space3 * 4;
-          return CoeloAdminWorkspaceLayout(
-            toolbar: compact
-                ? ConstrainedBox(
-                    constraints: BoxConstraints(
-                      maxHeight: (constraints.maxHeight - bodyFloor).clamp(
-                        0.0,
-                        constraints.maxHeight,
-                      ),
-                    ),
-                    child: SingleChildScrollView(
-                      key: const Key('support-toolbar-scroll'),
-                      child: toolbar,
-                    ),
-                  )
-                : toolbar,
-            body: _listing(tickets),
-            detail: _details(),
-            detailVisible: widget.controller.selectedTicket != null,
-          );
-        },
+        builder: (context, constraints) => CoeloAdminWorkspaceLayout(
+          toolbar: const SizedBox.shrink(),
+          body: _directory(context, constraints),
+          detail: Padding(
+            padding: EdgeInsets.all(
+              CoeloAdminDirectoryMetrics.horizontalPadding(constraints.maxWidth),
+            ),
+            child: _details(),
+          ),
+          detailVisible: widget.controller.selectedTicket != null,
+        ),
       ),
     );
     if (!isMobileOrTabletSurface) {
@@ -167,120 +134,160 @@ class _SupportPageState extends State<SupportPage> {
     return ColoredBox(color: theme.colorScheme.surface, child: content);
   }
 
-  Widget _listing(List<SupportTicket> tickets) {
+  /// Diretório de Suporte sobre o composto `CoeloAdminDirectory` (decisão do
+  /// Owner de 10/09/2026): a feature entrega busca, filtros, Limpar filtros,
+  /// Arquivos, o Criar, as linhas da tabela, o quadro kanban e a paginação;
+  /// toolbar, toggle, banner/card Criar, card de estado e rodapé são do
+  /// composto e aparecem em todos os estados, inclusive vazio e falha.
+  Widget _directory(BuildContext context, BoxConstraints constraints) {
     final controller = widget.controller;
+    final table = _display == CoeloAdminDirectoryDisplay.table;
+    final tickets = table ? controller.visibleTickets : controller.filteredTickets;
     // Rota normal contra o repositório produtivo: carga e falha honestas,
     // sem chamados fictícios (regra do MVP, ADR 0034).
-    // CRIAR (Owner, 10/09): o card Criar precede o estado, inclusive na falha.
-    if (controller.loadState == SupportLoadState.failure) {
-      return _stateWithCreate(
-        KeyedSubtree(
-          key: const Key('support-state-failure'),
-          child: CoeloStatePanel(
-            title: 'Suporte indisponível',
-            message: 'Não foi possível carregar os chamados. Tente novamente.',
-            icon: Icons.cloud_off_outlined,
-            actionLabel: 'Tentar novamente',
-            onAction: () => unawaited(controller.loadFromRepository()),
-          ),
+    // Sem resultados, o kanban continua montado com colunas vazias honestas
+    // (preserva o foco dos cards e a composição aprovada); a tabela usa o
+    // card de estado do composto com Limpar filtros.
+    final status = switch (controller.loadState) {
+      SupportLoadState.failure => CoeloAdminDirectoryStatus.failure,
+      SupportLoadState.loading when tickets.isEmpty => CoeloAdminDirectoryStatus.loading,
+      _ when controller.tickets.isEmpty => CoeloAdminDirectoryStatus.empty,
+      _ when table && tickets.isEmpty => CoeloAdminDirectoryStatus.noResults,
+      _ => CoeloAdminDirectoryStatus.success,
+    };
+    final filters = SupportTicketFilters(
+      controller: controller,
+      searchController: _search,
+      readFilterFocusScopeNode: _readFilterFocusScopeNode,
+    );
+    return CoeloAdminDirectory<CoeloAdminDirectoryDisplay>(
+      key: const Key('support-directory'),
+      scrollKey: const Key('support-directory-scroll'),
+      toolbarKey: const Key('support-filter-toolbar'),
+      filterControlsKey: const Key('support-filter-controls'),
+      toggleKey: const Key('support-view-toggle'),
+      cardsKey: const Key('support-view-toggle-cards'),
+      tableKey: const Key('support-view-toggle-table'),
+      loadingKey: const Key('support-state-loading'),
+      status: status,
+      messages: const CoeloAdminDirectoryMessages(
+        empty: 'Ainda não há chamados na operação.',
+        emptyIcon: Icons.support_agent_outlined,
+        noResults: 'Nenhum chamado corresponde aos filtros aplicados.',
+        failure: 'Suporte indisponível',
+        failureIcon: Icons.cloud_off_outlined,
+        unauthorized: 'Você não tem permissão para consultar os chamados.',
+      ),
+      errorMessage: switch (controller.loadState) {
+        SupportLoadState.failure => 'Não foi possível carregar os chamados. Tente novamente.',
+        _ => null,
+      },
+      onRetry: () => unawaited(controller.loadFromRepository()),
+      onClearFilters: filters.clear,
+      search: filters.search,
+      filters: filters.filters,
+      trailing: filters.trailing,
+      display: _display,
+      onDisplayChanged: (display) => setState(() => _display = display),
+      groupedTableView: CoeloAdminDirectoryDisplay.table,
+      selectedTableView: CoeloAdminDirectoryDisplay.table,
+      tableViews: const [
+        CoeloAdminDirectoryTableViewOption(
+          value: CoeloAdminDirectoryDisplay.table,
+          label: 'Tabela',
         ),
-      );
-    }
-    if (controller.loadState == SupportLoadState.loading && tickets.isEmpty) {
-      return _stateWithCreate(
-        const KeyedSubtree(
-          key: Key('support-state-loading'),
-          child: CoeloStatePanel(
-            title: 'Carregando chamados',
-            message: 'Buscando os chamados da operação...',
-            icon: Icons.hourglass_top_rounded,
-            loading: true,
-          ),
+      ],
+      onTableViewSelected: (_) => setState(() => _display = CoeloAdminDirectoryDisplay.table),
+      // Exportação geral adiada (ADR 0034): botão visível e honesto.
+      fileActions: [
+        CoeloAdminFileAction(
+          key: const Key('support-files-export-csv'),
+          label: 'Exportar CSV',
+          icon: Icons.table_rows_outlined,
+          onPressed: () => _showUnavailableExport(context),
         ),
-      );
-    }
-    if (_displayMode == SupportDisplayMode.table) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          ConstrainedBox(
-            key: const Key('support-create-table'),
-            constraints: const BoxConstraints(minHeight: 128),
-            child: CoeloAdminCreateAction(label: 'Criar suporte', onPressed: _createSupport),
-          ),
-          const SizedBox(height: CoeloSpacing.space4),
-          Expanded(
-            child: LayoutBuilder(
-              builder: (context, constraints) => Align(
-                alignment: Alignment.topCenter,
-                child: SizedBox(
-                  width: constraints.maxWidth,
-                  child: SingleChildScrollView(
-                    child: SupportTicketTable(
-                      tickets: tickets,
-                      teamMembers: widget.controller.teamMembers,
-                      selectedTicketId: widget.controller.selectedTicket?.id,
-                      onTicketPressed: _open,
-                      statusBuilder: _statusMenu,
-                      sortColumn: widget.controller.sortColumn,
-                      sortAscending: widget.controller.sortAscending,
-                      onSort: widget.controller.setSort,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: CoeloSpacing.space3),
-          KeyedSubtree(
-            key: const Key('support-pagination'),
-            child: CoeloAdminPagination(
-              currentPage: widget.controller.currentPage,
-              totalPages: widget.controller.totalPages,
-              pageSize: widget.controller.pageSize,
+        CoeloAdminFileAction(
+          key: const Key('support-files-export-xlsx'),
+          label: 'Exportar XLSX',
+          icon: Icons.grid_on_outlined,
+          onPressed: () => _showUnavailableExport(context),
+        ),
+      ],
+      // CRIAR (Owner, 10/09): card na grade dos estados, banner acima da
+      // tabela; no kanban o card Criar abre a primeira coluna.
+      create: CoeloAdminDirectoryCreate(
+        label: 'Criar suporte',
+        icon: Icons.add,
+        onPressed: _createSupport,
+        tileKey: const Key('support-create-state'),
+        bannerKey: const Key('support-create-table'),
+      ),
+      bodyOverride: table ? null : _kanban(context, constraints, tickets),
+      table: SupportTicketRows(
+        tickets: tickets,
+        teamMembers: controller.teamMembers,
+        selectedTicketId: controller.selectedTicket?.id,
+        onTicketPressed: _open,
+        statusBuilder: _statusMenu,
+        sortColumn: controller.sortColumn,
+        sortAscending: controller.sortAscending,
+        onSort: controller.setSort,
+      ),
+      pagination: table
+          ? CoeloAdminDirectoryPagination(
+              footerKey: const Key('support-pagination'),
+              currentPage: controller.currentPage.clamp(1, controller.totalPages),
+              totalPages: controller.totalPages,
+              pageSize: controller.pageSize,
               pageSizeOptions: const [9, 20, 50, 100],
-              onPageSizeChanged: widget.controller.setPageSize,
-              onPageSelected: widget.controller.setPage,
-              onPrevious: widget.controller.currentPage > 1
-                  ? () => widget.controller.setPage(widget.controller.currentPage - 1)
-                  : null,
-              onNext: widget.controller.currentPage < widget.controller.totalPages
-                  ? () => widget.controller.setPage(widget.controller.currentPage + 1)
-                  : null,
-            ),
-          ),
-        ],
-      );
-    }
-    return SupportKanban(
-      tickets: tickets,
-      teamMembers: widget.controller.teamMembers,
-      selectedTicketId: widget.controller.selectedTicket?.id,
-      onTicketPressed: _open,
-      onTicketDoublePressed: _openFullscreen,
-      onStatusChanged: _requestStatus,
-      onAssigneesChanged: (ticket, memberIds) =>
-          widget.controller.setAssignees(ticket.id, memberIds),
-      onCreate: _createSupport,
+              onPageSizeChanged: controller.setPageSize,
+              onPageSelected: controller.setPage,
+            )
+          : null,
     );
   }
 
-  Widget _stateWithCreate(Widget state) => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      ConstrainedBox(
-        key: const Key('support-create-state'),
-        constraints: const BoxConstraints(minHeight: 128),
-        child: CoeloAdminCreateAction(label: 'Criar suporte', onPressed: _createSupport),
+  /// O quadro kanban rola por coluna e precisa de altura limitada dentro da
+  /// rolagem do composto: ocupa a viewport menos o recuo e a toolbar
+  /// (uma linha em largura média; busca, pares de filtros e ações empilhados
+  /// no compacto), nunca abaixo de quatro alvos de toque por coluna.
+  Widget _kanban(BuildContext context, BoxConstraints constraints, List<SupportTicket> tickets) {
+    final padding = CoeloAdminDirectoryMetrics.horizontalPadding(constraints.maxWidth);
+    final control = MediaQuery.textScalerOf(context).scale(CoeloSize.touchMin);
+    final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
+    final toolbarRows = compact ? 5 : 1;
+    final toolbar = toolbarRows * (control + CoeloSpacing.space2) + CoeloSpacing.space4;
+    final height = math.max(
+      CoeloSize.touchMin * 4 + CoeloSpacing.space3 * 4,
+      constraints.maxHeight - padding * 2 - toolbar,
+    );
+    return SizedBox(
+      height: height,
+      child: SupportKanban(
+        tickets: tickets,
+        teamMembers: widget.controller.teamMembers,
+        selectedTicketId: widget.controller.selectedTicket?.id,
+        onTicketPressed: _open,
+        onTicketDoublePressed: _openFullscreen,
+        onStatusChanged: _requestStatus,
+        onAssigneesChanged: (ticket, memberIds) =>
+            widget.controller.setAssignees(ticket.id, memberIds),
+        onCreate: _createSupport,
       ),
-      const SizedBox(height: CoeloSpacing.space4),
-      Expanded(child: state),
-    ],
-  );
+    );
+  }
 
   void _open(SupportTicket ticket, SupportFocusRestoreCallback restoreFocus) {
     _restoreDetailOriginFocus = restoreFocus;
     widget.controller.selectTicket(ticket.id);
+    // O painel lateral recebe o foco de fato: a toolbar do composto pode ser
+    // reconstruída quando o painel abre (Row -> Column), e o `autofocus` do
+    // detalhe é ignorado enquanto um filtro ainda detém o foco.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _fullscreenDetailRoute != null) return;
+      if (widget.controller.selectedTicket?.id != ticket.id) return;
+      _detailFocusNode.requestFocus();
+    });
   }
 
   Future<void> _openFullscreen(
@@ -375,6 +382,7 @@ class _SupportPageState extends State<SupportPage> {
         if (isCurrent()) controller.sendReply(ticket.id, message);
       },
       onClose: onClose ?? _closeDetails,
+      focusNode: compact ? null : _detailFocusNode,
       onHeaderDragUpdate: onHeaderDragUpdate,
       onHeaderMoveRequested: onHeaderMoveRequested,
       onHeaderResetRequested: onHeaderResetRequested,
@@ -391,6 +399,11 @@ class _SupportPageState extends State<SupportPage> {
       final restored = restoreFocus?.call() ?? false;
       if (!restored && widget.controller.filters.unreadOnly) {
         _readFilterFocusScopeNode.requestFocus();
+        // O gatilho do filtro pode ter sido recriado com a toolbar do
+        // composto; sem memória no escopo, avança ao primeiro focável dele.
+        if (_readFilterFocusScopeNode.focusedChild == null) {
+          _readFilterFocusScopeNode.nextFocus();
+        }
       }
     });
   }

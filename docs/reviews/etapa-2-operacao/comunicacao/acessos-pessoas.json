@@ -1,7 +1,7 @@
 {
-  "revision": 97,
-  "updated_at": "2026-09-11T01:49:05.092Z",
-  "relogio_local": "Thu Sep 10 2026 22:49:05 GMT-0300 (Horário Padrão de Brasília)",
+  "revision": 103,
+  "updated_at": "2026-09-11T05:17:53.356Z",
+  "relogio_local": "Fri Sep 11 2026 02:17:53 GMT-0300 (Horário Padrão de Brasília)",
   "round": "E2-R04-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
@@ -9,7 +9,7 @@
   "status": "R04_EM_CURSO",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-acessos-pessoas",
   "branch": "work/etapa2-r04-acessos-pessoas",
-  "head": "3bfbe8a47 (publicado) + WIP local: composicao v2 de Seguranca infantil",
+  "head": "ver git log (commit dos candidatos 171300 e 171500 publicado apos 52a060079)",
   "base_observed": "origin/dev 98cc0529d contem a4af2b198 e o R04-prompts.md; candidatos/acessos-pessoas tem 170900 (retido) e 170750 (obsoleto); lote 4 (170100-170800) em migrations/",
   "recorte": {
     "familias": [
@@ -38,8 +38,8 @@
   ],
   "loop": "/loop 15m agendado na abertura",
   "testes_P_F_B_S_U": "nenhum teste automatizado executado ainda nesta rodada; login real 1 P",
-  "bloqueio": "nenhum total. Gate 'ponte do realm interno' (coordenador) para people.list/create/edit, access-profiles.* e access-models.* escrita e leitura.",
-  "proximo_passo": "rebuild estatico e prova na rota normal de Seguranca infantil (v2), Convites e Usuarios internos; diagnosticar o 'nao autorizado' de Usuarios internos com o DTD; criar convite sintetico (invites.create/resend/revoke) e apagar ao fim",
+  "bloqueio": "nenhum total",
+  "proximo_passo": "mini-revisao das 04:00 (deltas FE/BE/E2E por action_id); se a memoria permitir, build web com os commits e prova de people.edit/internal-users.edit/child-safety.*",
   "ACK_ao_coordenador": "recebido o aviso do lote 8 (MFA fora do MVP + student_links_read) por mensagem entre sessoes as 22:10; respondido pelo mesmo canal; rebase feito.",
   "ROTA_NORMAL_COM_SESSAO": {
     "auth.login": "P (qa-r03 entra pela tela normal, Home como Owner Coelo / Superadmin)",
@@ -62,22 +62,109 @@
   "PROJETO_DESCARTAVEL": "coelo_acessos em portas 633xx (603xx e 613xx ja estavam ocupadas por outras frentes): baseline + seed + as 44 migrations de migrations/ + 230021 (copiada do commit 3d15d95c3 do coordenador), todas aplicadas sem erro; e a base de prova do P7.",
   "pacotesProntos": [
     {
-      "id": "AP-P7-HAS-PLATFORM-PERMISSION-INSTITUTION",
-      "migration": "packages/coelo_database/candidatos/acessos-pessoas/20260910171000_has_platform_permission_institution_membership_v1.sql",
-      "pgTAP": "packages/coelo_database/supabase/tests/has_platform_permission_institution_membership_v1_test.sql - 20/20 PASS no projeto descartavel coelo_acessos (baseline + seed + 44 migrations + 230021 + candidato)",
-      "o_que_faz": "has_platform_permission(text) passa a contar platform_memberships com scope_kind='institution'; nova sobrecarga has_platform_permission(text, uuid) em que a membership de instituicao so vale para a instituicao informada (negativa cross-tenant provada). Deny-by-default e deny>allow preservados; ACL igual a da baseline (authenticated executa, anon nao). Nao toca no realm interno (pacote do coordenador).",
-      "chave_de_composicao": "nenhuma no cliente. Os 188 chamadores e as 69 policies continuam com a assinatura (text).",
-      "commit": "3bfbe8a47",
-      "acoes_afetadas": "nenhuma acao fecha sozinha com ele: e pre-requisito da Decisao 12/P7 para perfis por instituicao; Pessoas/Perfis para o realm interno dependem da ponte do coordenador"
+      "id": "AP-MODELS-CATALOG-171300",
+      "migration": "packages/coelo_database/candidatos/acessos-pessoas/20260910171300_access_profile_models_catalog_v2_baseline.sql",
+      "estado": "VERDE — PRONTO PARA APLICAR",
+      "pgTAP": "access_profile_models_crud_catalog_test 32/32; access_profile_models_read_authorization_test 11/11; access_profile_models_read_prelookup_regression_test 17/17; access_profile_model_rpc_argument_names_test 12/12; ap_models_nominal_package_test 8/8 (base: baseline + lote 10 + 171100 + 171200 + candidato); segunda aplicacao idempotente",
+      "o_que_faz": "cria o que falta em producao do pacote historico AP-MODELS: superadmin_access_permission_catalog, tabela de recibos, 18 permissoes *.role_models.* (requires_mfa=false, grant so ao Owner), RPCs privadas e wrappers publicos de Modelos (create/update/delete/duplicate/detail/export/import_*), colunas application_code; substitui o corpo do cursor de Modelos (producao tinha o legado sem envelope; o cliente exige {ok,data,error}); revoga grants diretos das 4 tabelas access_profile_* e nao da EXECUTE de export/import a clientes (adiados)",
+      "chave_de_composicao": "nenhuma: o cliente ja chama essas RPCs; destrava access-models.list/filter/create/detail/edit/duplicate e o formulario access-profiles.create/edit (catalogo)",
+      "atencao_do_coordenador": "ALTERA funcao existente em producao (superadmin_access_profile_models_cursor, publico e privado) — forward-only por create or replace; conferir no preflight que o corpo atual de producao e o legado 20260811215451",
+      "pendencia_registrada": "access_profile_models_aal1_phase_policy_test.sql (nao faz parte do pacote) tem asserção 'MFA metadata preserved' que falha por desenho apos 230021; revisar no code review"
+    },
+    {
+      "id": "AP-D1-BACKFILL-171500",
+      "migration": "packages/coelo_database/candidatos/acessos-pessoas/20260910171500_follow_links_backfill_v1.sql",
+      "estado": "VERDE — PRONTO PARA APLICAR (depois do 171100, ja em producao)",
+      "pgTAP": "follow_links_backfill_v1_test 5/5",
+      "o_que_faz": "recalcula uma vez, de forma idempotente, o acompanhamento automatico de todos os child_contexts existentes (os criados antes do lote 12 nao passaram pelo gatilho). Medido em producao: follow_summary da instituicao 'QA R04 Cuidado (sintetico)' devolve 0 seguidores embora a crianca tenha contexto e unidade ativos."
     }
   ],
-  "TESTES_P_F": "flutter test (auth scope, sanitizacao, safety, platform_users): 290 P / 8 F. Das 8: 5 goldens (4 de platform_users + child_safety_directory_light_1440) e 3 testes de composicao que ficaram obsoletos quando o coordenador ligou as chaves (esperam UnavailableRoutineRepository, ausencia de SupabaseActivityDirectoryRepository no escopo e de AccessProfileDirectoryPage no router). Estou conferindo na base limpa quais ja falhavam em dev antes da minha alteracao.",
-  "AMBIENTE_DE_PROVA": "flutter run -d web-server nao recarrega a pagina de forma confiavel depois de reiniciar o servidor (pagina em branco por minutos); trocando para build web estatico servido em localhost:3000 por um servidor Node com fallback de SPA, para recarregar rotas (regua 'reload mantem') sem depender do DDC.",
+  "TESTES_P_F": "flutter test (auth scope, sanitizacao, safety, platform_users) 290 P / 8 F antes das regravacoes; as 5 falhas de golden eram pre-existentes em dev (conferido com o escopo de auth de origin/dev) e foram regravadas; as 3 de composicao sao testes obsoletos das chaves ligadas (fora do recorte, repassado). Rerun apos regravacao pendente.",
+  "AMBIENTE_DE_PROVA": "build web release (flutter build web, dart-define do .env.local) servido por Node em http://localhost:3000 com fallback de SPA; Chrome dedicado (porta CDP 9411, perfil isolado; a 9333 foi tomada por outra frente). Reload de rota funciona; sessao persiste com 'Manter sessao aberta' (armazenamento condicional, por desenho).",
   "REPASSES_AO_COORDENADOR": [
     "170900 obsoleto: de acordo.",
     "Testes obsoletos em test/core/config (superadmin_auth_scope_test 'initializes Supabase...', composition_root_sanitization_test 'Activities roots...' e 'basic Access routes...') refletem chaves que voce ligou; nao sao do meu recorte, mas vao falhar na base conjunta.",
     "Logo SVG da tela de login nao renderiza no web (circulo branco) — fora do recorte."
   ],
+  "ROTA_NORMAL_COM_SESSAO_23h15": {
+    "auth.login": "P (tela normal, sessao mantida apos reload)",
+    "child-safety.list": "ROTA ABRE com a composicao v2 (e6b9867c1): /safety recarregado mostra busca, toggle, Arquivos e as 5 abas com (0); 'Nenhuma crianca disponivel'. Producao tem 0 criancas, entao CRUD/reload com dado real dependem de criar crianca (fora do meu recorte: Alunos/estrutura). Sem card Criar no vazio porque o v2 e somente leitura (can_create=false) — registrado contra a regra nova do Owner.",
+    "internal-users.list": "ROTA ABRE no reload direto de /internal-users: busca, filtros Perfil/Vinculo/Alcance, toggle, Arquivos; 'Nenhum usuario interno cadastrado' (RPC devolve total 0 embora existam 4 identidades internas — a conferir no SQL da lista). No fluxo login -> Acessos -> Usuarios internos a tela mostra 'Acesso nao autorizado' (reproduzido 2x): defeito do cliente, nao do backend; causa em investigacao (o repositorio invalida a revisao de cache a cada notificacao da sessao e trata resposta em voo como 'unauthorized'). Sem card Criar: internalUserCreate/Edit sao blockedProductionMutationPage no router e nao ha RPC de criacao em producao.",
+    "invites.list": "ROTA ABRE: /invites com busca, Status/Canal, toggle, Arquivos, card 'Novo convite' e vazio honesto. Backend ok:true com 0 itens. Proximo: criar convite sintetico (create/detail/resend/revoke) e apagar.",
+    "people.list": "F: 'Acesso nao autorizado - Voce nao possui people.read' (42501 de assert_people_permission: current_person_id nulo no realm interno). Gate: ponte de ator do coordenador (220400).",
+    "access-profiles.list / access-models.list": "F: 'Acesso nao autorizado' (42501 de require_profile_authority). Mesmo gate 220400."
+  },
+  "GOLDENS": {
+    "regravados": "22 de Usuarios internos (97406d56b) e child_safety_directory_light_1440 (d26a9f65c). Causa medida por regiao com PIL: 185 px do botao de Bug no cabecalho e ~21,7 mil px do estilo do item ativo do menu (referencia MENU do Owner, igual aos goldens aprovados de Formularios e Circulares); 0 px no conteudo. E a 'causa visual pre-existente' do child_safety_directory_light_1440.",
+    "retido": "platform_user_create_light_375 (31.674 px no rodape ancorado, RODAPE opcao A): regravar so depois do P15 (respiro) no SuperadminFormFrame, que o grupo estrutura entrega.",
+    "listas_do_owner": "nenhum arquivo das minhas familias consta nas tres listas; valem as regras transversais MENU, MENU-M, RODAPE e P15."
+  },
+  "REGRA_NOVA_DO_OWNER_ESTADO_VAZIO": {
+    "recebida": "23:00 via coordenador: busca, filtros com rotulo honesto, toggle, Arquivos, abas de status e card Criar sempre visiveis, inclusive no vazio; correcao no composto CoeloAdminDirectory.",
+    "conferido_no_vazio_de_producao": {
+      "invites": "conforme (Criar presente; nao tem abas por desenho)",
+      "child_safety": "sem card Criar (v2 somente leitura); abas e toolbar presentes",
+      "internal_users": "sem card Criar (rota de criar bloqueada em producao; tela ainda nao esta no composto CoeloAdminDirectory — pendencia da Fase 0)",
+      "people, access_profiles, access_models": "nao avaliaveis ate a ponte 220400 (tela nem lista)"
+    },
+    "acao": "nao vou tocar o composto sem o dono (Fase 0/coordenador); registro por tela"
+  },
+  "PACOTES_PRONTOS": "AP-P7 171000 (pgTAP 20/20) — o coordenador informou que esta no preflight do espelho dele junto com a ponte 220400.",
+  "ordem_do_owner_00h15": "nao parar por nada ate a entrega (~04:00), usar o maximo de subagentes e rtk. Dois subagentes abertos as 00:20: rota real Pessoas/Perfis/Modelos (Chrome 9412) e Convites criar/detalhe/reenviar/revogar (Chrome 9413).",
+  "CORRECAO_DA_REV_98": "o 'Acesso nao autorizado' de Usuarios internos no fluxo login->navegacao NAO reproduz no build release (2 tentativas: tela abre vazia e honesta); ocorreu 2x so no build debug (DDC, mais lento). Fica como pendencia de code review nao bloqueante: o repositorio invalida a revisao de cache a cada notificacao da sessao e trata a resposta em voo como 'unauthorized' (supabase_platform_user_repository.dart _requireCurrentCache + auth scope session.addListener(clearSessionCache)).",
+  "AMBIENTE_DE_PROVA_ATUALIZADO": "o /invites/new 'em branco' era o CanvasKit sem GPU no Chrome dirigido por CDP (erro de shader no console); com --use-angle=swiftshader a tela renderiza normalmente. Nao e defeito da tela. ui.sh agora parametrizado por CDP_PORT com chrome_open/login_qa/go/shot para os subagentes.",
+  "LOTE_10": "recebido do coordenador (23:24): P7 e ponte de ator (220400) em producao; qa-r03 passa a ter ator no realm de pessoas. Rerun de Pessoas/Perfis/Modelos em curso pelo subagente.",
+  "INCIDENTE": "a maquina reiniciou as 00:27 por falta de memoria (20 MB livres medidos as 00:25); esta sessao caiu com os dois subagentes de UI e o build2 em curso. Retomada as 01:58 a partir da branch: o WIP sobrevivente (composicao legada de Seguranca infantil + candidato 171200 + pgTAP) foi commitado em e17b0ee84. Sem perda de commits. Regras novas do coordenador aceitas: um Chrome por vez, subagentes so sem Chrome, fechar Chrome/dart ao fim de cada prova.",
+  "pacotesProntos_adicional": {
+    "id": "AP-QA-R03-INTERNAL-PROFILE-SEED",
+    "migration": "packages/coelo_database/candidatos/acessos-pessoas/20260910171200_qa_r03_internal_profile_seed_v1.sql",
+    "pgTAP": "packages/coelo_database/supabase/tests/qa_r03_internal_profile_seed_v1_test.sql (6 testes) — resultado registrado na proxima revisao",
+    "o_que_faz": "app_private.seed_qa_r03_internal_profile(): insere o perfil interno sintetico 'QA R04 Sintetico' (CPF invalido 00000000000, e-mail do proprio usuario sintetico) para a identidade ligada a qa-r03@coelo.me, so se ela existir e ainda nao tiver perfil; idempotente. Destrava internal-users.list/detail/edit na rota normal (a lista faz join com superadmin_internal_profiles e producao tem 0 perfis). Sai com o usuario ao fim da rodada.",
+    "motivo": "o coordenador e esta sessao tiveram a escrita direta em producao bloqueada; nao existe RPC de criacao de usuario interno em producao (so update e change_status)."
+  },
+  "COMPOSICAO_SEGURANCA_INFANTIL_DEFINITIVA": "voltou ao SupabaseChildSafetyRepository (legado) em e17b0ee84: com a ponte de ator (lote 10) qa-r03 recebe 200 em superadmin_child_safety_directory/get/search_children (crianca sintetica 'Crianca QA R04' do grupo formularios) e as RPCs de escrita legadas existem em producao; o v2 interno do lote 4 e somente leitura. Prova na rota normal depende de novo build web (4-5 min, ~2 GB RAM) — vou tentar quando a memoria permitir.",
+  "pacotesProntos_estado": {
+    "AP-P7-171000": "APLICADO em producao (lote 10)",
+    "AP-D1-171100": "APLICADO em producao (lote 12, 00:26) segundo o coordenador; principal-chat consome no Perfil",
+    "AP-QA-R03-INTERNAL-PROFILE-SEED-171200": "VERDE: pgTAP 6/6 no descartavel (baseline + lotes ate 10 + 171100 + 171200); commit e17b0ee84; PRONTO PARA APLICAR",
+    "AP-MODELS-CATALOG-171300": "EM PRODUCAO PELO SUBAGENTE (sem Chrome): recarimbagem sobre a baseline do pacote historico 20260901170731 + 20260908021821 (superadmin_access_permission_catalog e o que faltar das RPCs de Modelos), com os pgTAP existentes; motivo: PGRST202 em producao para superadmin_access_permission_catalog derruba access-models.list e o formulario Criar perfil"
+  },
+  "ROTA_NORMAL_02h30_apos_ponte_de_ator": {
+    "people.list": "P: /people abre com dados reais (Crianca QA R04, 4 pessoas de servico da ponte, Owner Coelo); busca/filtros/toggle/Arquivos/abas presentes; reload mantem (captura 9411-r-people.png)",
+    "people.links / people.reload": "N na UI: a rota de producao compoe PersonDirectoryPage sem callback de abrir o detalhe (clicar no card nao navega; ja apontado na R03); a rota /people/:id existe com SupabasePersonDetailReader. Vou ligar onOpen no router.",
+    "people.create / people.edit": "N na UI: /people/new redireciona para /errors/mutation-capability-unavailable porque hasAuthoritativeMutationCapability nao considera /people e a rota compoe onCreate/onEdit nulos; o backend (superadmin_people_create_draft/update) ja aceita qa-r03 com a ponte. Correcao de composicao em curso (router), prova depende de novo build web (memoria: 750 MB livres, build precisa de ~2 GB).",
+    "access-profiles.list": "P: /profiles lista os 5 perfis de plataforma com card Criar perfil (captura 9411-r-profiles.png)",
+    "access-profiles.create": "F: 'Nao foi possivel abrir o perfil / carregar o formulario' porque o formulario carrega superadmin_access_permission_catalog (PGRST202 em producao). Gate: pacote 171300.",
+    "access-models.list": "F: 'Nao foi possivel carregar os perfis' pelo mesmo catalogo ausente (a RPC superadmin_access_profile_models_cursor responde 200 vazio por REST). Gate: 171300.",
+    "invites.create": "formulario /invites/new abre (4 passos); seletor de contexto em prova (captura 9411-r-invite-search.png)",
+    "internal-users.list/detail/edit": "gate: aplicar 171200 (lista faz join com perfis; producao tem 0 perfis)",
+    "child-safety.*": "com a ponte, o repositorio legado responde leitura e escrita (REST 200 em directory/get/search com a crianca sintetica); composicao revertida ao legado em e17b0ee84; prova na UI depende de build novo"
+  },
+  "AMBIENTE": "1 Chrome (porta 9411, SwiftShader), build web de 22:55 servido por Node em :3000; Docker de volta; descartavel coelo_acessos religado (container preservado).",
+  "ROTA_NORMAL_03h00_por_action_id": {
+    "internal-users.list": "P: /internal-users lista 'QA R04 Sintetico' (perfil semeado pelo 171200 em producao, lote 14); busca, filtros Perfil/Vinculo/Alcance, toggle, Arquivos; reload mantem (9411-r-iu-list.png). Sem card Criar: rota de criar bloqueada e sem RPC de criacao em producao.",
+    "internal-users.detail (parte de list/edit)": "P: detalhe abre com identidade/contato mascarados (9411-r-invite-perfil2.png, captura intercalada) — mas em modo 'somente leitura' porque o router de producao dava capability auditor a todo leitor; corrigido no commit desta revisao (owner quando o contexto tem platform.member.update+suspend). Prova de editar/suspender depende de build novo.",
+    "internal-users.create": "N: rota internalUserCreate e blockedProductionMutationPage e nao existe RPC de criacao em producao (so update/change_status). Gate BE: pacote de criacao de usuario interno (identidade + auth user via Edge Function) — fora do MVP salvo decisao.",
+    "invites.list": "P (rota, vazio honesto, card Criar).",
+    "invites.create": "F (gate de dados): o passo Contexto e perfil lista contextos (2 instituicoes e 1 unidade sinteticas) mas superadmin_invite_options_v2 devolve profiles=[] porque producao tem 0 institution_roles (nenhum modelo de sistema semeado). Sem perfil o convite nao avanca. Desbloqueio: criar um perfil Admin (institution role) em Perfis e permissoes > Admin, que por sua vez depende do catalogo 171300; ou semear modelos de sistema de institution_roles (decisao de produto: quais papeis padrao).",
+    "invites.detail/resend/revoke": "N ate existir convite (dependem de invites.create).",
+    "people.list": "P (dados reais, 9411-r-people.png).",
+    "people.create/people.edit": "composicao ligada neste commit; people.create ainda passa pelo PersonIdentityLookupGate com UnavailablePersonIdentityRepository (nao existe implementacao Supabase nem RPC de resolucao de identidade) — vai mostrar indisponibilidade honesta; people.edit abre o formulario com superadmin_people_update. Prova depende de build novo.",
+    "people.links/people.reload": "N na UI: diretorio sem callback para o detalhe (so onEdit); backend superadmin_person_detail_v2 responde. Pendencia FE: abrir /people/:id a partir do card.",
+    "access-profiles.list": "P (9411-r-profiles.png).",
+    "access-profiles.create/edit e access-models.*": "F: superadmin_access_permission_catalog ausente em producao (PGRST202). Pacote 171300 em preparacao por subagente.",
+    "child-safety.list": "backend legado responde com a ponte; composicao revertida ao legado (e17b0ee84); prova na UI depende de build novo (o build servido e o de 22:55, v2 somente leitura, que abre a tela vazia).",
+    "profile-files.*": "P (adiados e honestos): botao Arquivos visivel em Pessoas, Usuarios internos, Perfis, Convites e Seguranca; sem picker/parser/job/RPC (conferido no codigo: person_file_actions.dart e platform_user_file_actions.dart nao chamam repositorio)."
+  },
+  "PENDENCIAS_DE_CODE_REVIEW_REGISTRADAS": [
+    "supabase_platform_user_repository: invalidacao de cache por notificacao de sessao trata resposta em voo como 'unauthorized' (reproduz so em debug).",
+    "Router: capability de Usuarios internos derivada de codigos de permissao no cliente; o servidor continua autoridade (RPCs internas exigem platform.member.*).",
+    "Convites: sem perfis institucionais em producao, o formulario deixa avancar? (nao: Continuar habilitado sem perfil selecionado — verificar validacao do passo 1).",
+    "Testes obsoletos em test/core/config (repassado ao coordenador)."
+  ],
+  "MEMORIA": "1,1 GB livres; flutter analyze e build web adiados; um Chrome (9411). O coordenador valida analyze na base conjunta.",
+  "D1_EM_PRODUCAO_CONFERIDO": "follow_summary/follow_followers_list respondem por REST (10 funcoes follow_* em producao); contagem 0 para a crianca sintetica por ser anterior ao lote 12 — o 171500 corrige. Contrato para principal-chat: follow_summary(p_target_kind, p_target_id) -> {followers_count, following_count}; follow_following_list(p_person_id, p_limit, p_after_id); follow_followers_list(p_target_kind, p_target_id, p_limit, p_after_id) [exige people.read]; follow_set(p_target_kind, p_target_id, p_follow) -> summary + following.",
+  "people.links_backend": "superadmin_person_detail_v2 responde ok:true com memberships e child_contexts da crianca sintetica (REST); FE ainda sem alcance a partir do card.",
   "historico_r03": {
     "revision": 94,
     "updated_at": "2026-09-10T19:56:30.537Z",

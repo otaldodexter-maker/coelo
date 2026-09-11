@@ -21,6 +21,7 @@ final class SupportTicketDetail extends StatefulWidget {
     this.onHeaderDragUpdate,
     this.onHeaderMoveRequested,
     this.onHeaderResetRequested,
+    this.focusNode,
     super.key,
   });
 
@@ -34,6 +35,11 @@ final class SupportTicketDetail extends StatefulWidget {
   final GestureDragUpdateCallback? onHeaderDragUpdate;
   final ValueChanged<Offset>? onHeaderMoveRequested;
   final VoidCallback? onHeaderResetRequested;
+
+  /// Nó do painel lateral: a página o foca ao abrir um chamado, para que o
+  /// Escape e a restauração de foco funcionem mesmo quando outro controle
+  /// (um filtro da toolbar) detinha o foco e o `autofocus` seria ignorado.
+  final FocusNode? focusNode;
 
   @override
   State<SupportTicketDetail> createState() => _SupportTicketDetailState();
@@ -72,6 +78,7 @@ final class _SupportTicketDetailState extends State<SupportTicketDetail> {
           ),
         },
         child: Focus(
+          focusNode: widget.focusNode,
           autofocus: true,
           child: Card(
             key: const Key('support-detail-panel'),

@@ -19,10 +19,12 @@ select ok((select proowner='postgres'::regrole and prosecdef and provolatile='s'
     where has_function_privilege(r.name,
       'app_private.access_profile_require_model_action(text,text,boolean)','EXECUTE')),
   'helper keeps stable definer metadata and has no client execution grant');
+-- MVP (ADR 0034, Decisao 12; migration 230021): nenhuma capacidade exige MFA.
+-- A asserção antiga esperava requires_mfa=true nas duas capacidades de Modelos.
 select is((select count(*) from public.platform_permissions
   where code in('platform.role_models.create','platform.role_models.update')
-    and requires_mfa and status='active'),2::bigint,
-  'MFA metadata is preserved for the formal gate');
+    and not requires_mfa and status='active'),2::bigint,
+  'MFA metadata cleared for the MVP (Decisao 12): both model capabilities exist without requires_mfa');
 
 insert into auth.users(id,aud,role,email,email_confirmed_at,created_at,updated_at,
   raw_app_meta_data,raw_user_meta_data) values

@@ -1,13 +1,13 @@
 {
-  "revision": 15,
-  "updated_at": "2026-09-10T22:34:00-03:00",
+  "revision": 17,
+  "updated_at": "2026-09-11T02:23:00-03:00",
   "round": "E2-R04-20260911",
   "group": "operacoes",
-  "tool_model": "Claude, Opus 5 (1M)",
+  "tool_model": "Claude, Opus 5 (1M) ate a rev 16; rev 17 por subagente do coordenador (Claude Fable 5.1) apos o reinicio de 00:27",
   "conversation": "R04 · Operações",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-operacoes",
   "branch": "work/etapa2-r04-operacoes",
-  "head": "a208e1d6c",
+  "head": "1ad67a2e3",
   "base": {
     "requested": "origin/dev",
     "resolved": "836c63215 (origin/dev com lote 8; branch rebaseada)",
@@ -124,24 +124,124 @@
       "delta": "entrypoint do Flutter Driver sobre o composition root real; login do qa-r03 na rota normal provado: superadmin_auth_bootstrap_context devolve ok=true, papel owner, escopo platform, aal1, 1 identidade interna; shell abre em / (Home). Credencial lida de Coelo-backups/qa-r03.env por script local, nunca impressa.",
       "proof": "log do flutter run (bootstrap-diag, diagnostico temporario nao commitado) + arvore de widgets via DTD mostrando SuperadminShell + SuperadminHelpCenterPage",
       "note": "Chrome pausava frames com a janela oculta atras das outras frentes (Windows occlusion); relancado com --disable-backgrounding-occluded-windows e afins"
+    },
+    {
+      "action_ids": [
+        "support.create",
+        "support.table",
+        "support.kanban",
+        "support.detail",
+        "support.reply",
+        "support.close"
+      ],
+      "status": "frontend-local-green (rota real honesta)",
+      "commit_sha": "b5474a80a",
+      "changed": [
+        "apps/superadmin/lib/features/support/presentation/view_models/support_prototype_controller.dart",
+        "apps/superadmin/lib/features/support/presentation/screens/support_page.dart",
+        "apps/superadmin/lib/app/shell/superadmin_shell.dart",
+        "apps/superadmin/lib/app/router/superadmin_router.dart",
+        "apps/superadmin/test/features/support/presentation/screens/support_page_production_test.dart"
+      ],
+      "delta": "ACHADO NA ROTA REAL: /support em producao exibia os chamados do prototipo (SUP-001/SUP-002, Camila Rocha, Centro Horizonte) porque o controller nascia com seed e engolia a falha do backend. Corrigido: com repositorio produtivo o controller nasce vazio, expoe loadState (loading/ready/failure) e a pagina mostra falha honesta com Tentar novamente, mantendo toolbar e o card Criar a frente (regra do Owner). Botao de Bug: a shell passa a aguardar o envio (typedef SuperadminBugReportSubmit = FutureOr<void> Function) e avisa Nao foi possivel enviar o relato em vez de Relato enviado com sucesso cego; router usa submitReportToBackend; falhas de responder/status viram aviso.",
+      "proof": "support_page_production_test 7/7; suites support + shell + rotas de suporte + arquitetura 194/194; analyze limpo",
+      "criteria": {
+        "frontend": "local-green (rota abre sem fixture; CRUD real espera ponte de ator)",
+        "backend": "local-green (candidato 210000 na fila do lote 10)",
+        "e2e": "N"
+      }
+    },
+    {
+      "action_ids": [
+        "account.profile",
+        "account.settings",
+        "account.theme"
+      ],
+      "status": "goldens-regravados",
+      "commit_sha": "0a23882cd",
+      "delta": "8 goldens de Conta regravados pela decisao A do Owner (profile/settings 375/768 light; escuros 1024/1440 seguem o claro); diferenca era MENU-M e Pesquisar no menu. Rota real: /profile abre pela rota normal e mostra Nao foi possivel carregar o perfil (RPC nega o ator interno ate a ponte); /settings abre.",
+      "proof": "account_pages_golden_test 8/8 sem update-goldens"
+    },
+    {
+      "action_ids": [
+        "audit.list",
+        "audit.filter",
+        "audit.detail"
+      ],
+      "status": "frontend-local-green (composto)",
+      "commit_sha": "a8bb6cc22",
+      "changed": [
+        "apps/superadmin/lib/features/audit/presentation/audit_directory_page.dart",
+        "apps/superadmin/lib/features/audit/presentation/widgets/audit_directory_filters.dart",
+        "apps/superadmin/lib/features/audit/presentation/widgets/audit_event_views.dart",
+        "apps/superadmin/lib/features/audit/presentation/widgets/audit_timeline.dart",
+        "apps/superadmin/test/architecture/directory_composition_test.dart"
+      ],
+      "delta": "Diretorio de Auditoria migrado ao CoeloAdminDirectory: busca + filtros Resultados/Periodo alinhados na toolbar (observacao ajustar filtros do Owner), toggle, Arquivos honesto (CSV/XLSX Disponivel depois do MVP), paginacao por cursor no rodape do composto, toolbar visivel em todos os estados inclusive vazio. Enum local de display removido e allowlist do teste de arquitetura reduzida. Goldens audit_directory_* regravados (6).",
+      "proof": "suite audit 62/62 + arquitetura; goldens regravados no SDK 3.44.2",
+      "criteria": {
+        "frontend": "local-green",
+        "backend": "candidato 210100 (AUDIT-READ-V2) na fila do lote 10",
+        "e2e": "N (rota real /audit abre; leitura real depende do pacote e do ator)"
+      }
+    },
+    {
+      "action_ids": [
+        "auth.login"
+      ],
+      "status": "incident-fixed",
+      "commit_sha": "26c7fcc01",
+      "delta": "dois prints de diagnostico temporario entraram por engano no commit 03df0769d (rev 15) e foram integrados em dev 5bb7c5648; removidos em 26c7fcc01 (arquivos iguais a 836c63215); coordenador avisado e confirmou que o proximo merge limpa dev."
+    },
+    {
+      "action_ids": [
+        "support.table",
+        "support.kanban",
+        "support.detail",
+        "support.create"
+      ],
+      "status": "frontend-local-green (composto CoeloAdminDirectory; goldens divergentes pendentes)",
+      "by": "subagente do coordenador apos o reinicio de 00:27",
+      "commit_sha": "1ad67a2e3",
+      "commits": [
+        "e2c8dcca2 (WIP recuperado)",
+        "84f2278ee",
+        "1ad67a2e3"
+      ],
+      "changed": [
+        "apps/superadmin/lib/features/support/presentation/screens/support_page.dart",
+        "apps/superadmin/lib/features/support/presentation/widgets/support_ticket_filters.dart (novo, do WIP)",
+        "apps/superadmin/lib/features/support/presentation/widgets/support_ticket_rows.dart (renomeado de support_ticket_table.dart, do WIP)",
+        "apps/superadmin/lib/features/support/presentation/widgets/support_filter_toolbar.dart (apagado, do WIP)",
+        "apps/superadmin/lib/features/support/presentation/widgets/support_ticket_detail.dart (focusNode opcional)",
+        "apps/superadmin/test/architecture/directory_composition_test.dart (allowlist -2)",
+        "apps/superadmin/test/features/support/presentation/screens/support_page_production_test.dart",
+        "apps/superadmin/test/features/support/presentation/support_corrections_widget_test.dart"
+      ],
+      "delta": "Suporte sobre o CoeloAdminDirectory: a feature entrega search, filters (Status/Menu/Responsavel/Leitura/Tela), trailing Limpar filtros, fileActions honestos (CSV/XLSX Indisponivel nesta etapa), create (tile support-create-state nos estados, banner support-create-table acima da tabela; no kanban o card Criar segue na primeira coluna), table (SupportTicketRows), bodyOverride com o kanban em altura limitada (viewport menos recuo e toolbar) e pagination no rodape fixo (support-pagination, 9/20/50/100). Nao declara Table, Toolbar, Pagination, Header ou Directory. Busca, filtros, toggle, Arquivos e Criar aparecem em vazio, sem resultados, falha e sucesso. Sem resultados no kanban mantem o quadro com colunas vazias (preserva foco dos cards); na tabela usa o card de estado do composto com Limpar filtros. Achado: a toolbar do composto passa a viver no corpo do workspace e e reconstruida (Row -> Column) quando o painel de detalhe abre em 1280; o foco do gatilho Leitura caia para o escopo e o Escape nao chegava ao detalhe. Corrigido na feature: o detalhe lateral recebe foco de fato ao abrir (no da pagina) e o fallback ao fechar avanca ao primeiro focavel do escopo. Rodape compacto do composto nao expoe chaves (so rotulo semantico): testes passam a localizar por Semantics.label; ponto do composto registrado em notes_to_coordinator.",
+      "proof": "flutter analyze lib test: No issues found. flutter test test/features/support test/architecture: 69 P / 2 F; as 2 falhas sao exclusivamente os dois testes golden (support_page_golden_test), todas por diferenca de pixels; nenhuma excecao de layout. Gravacao temporaria dos 8 goldens escalados com --update-goldens passou sem excecao e foi revertida por git checkout (nada regravado).",
+      "criteria": {
+        "frontend": "local-green (composicao; goldens pendentes de observacao do Owner)",
+        "backend": "inalterado (candidato 210000 na fila do coordenador)",
+        "e2e": "N (rota real com sessao qa-r03 fica para conversa com Chrome)"
+      }
     }
   ],
   "tests": {
-    "P": 56,
-    "F": 0,
+    "P": 69,
+    "F": 2,
     "B": 0,
     "S": 0,
     "U": 0,
     "evidence": [
-      "pgTAP superadmin_support_create_internal_scope_test.sql 17/17 (descartavel coelo_baseline_ops sobre lotes 1-8)",
-      "pgTAP superadmin_support_production_test.sql 23/23",
-      "pgTAP superadmin_account_profile_v1_test.sql 16/16",
-      "login real qa-r03: bootstrap ok=true (owner/platform/aal1)"
+      "rev 17 (subagente): flutter analyze lib test sem issues; flutter test test/features/support test/architecture 69/71 (2 F = testes golden por pixel: 24 goldens padrao + 8 escalados divergentes)",
+      "rev 17 (subagente): support_page_golden_test \"keeps scaled\" com --update-goldens temporario: 1/1 sem excecao; PNGs revertidos",
+      "ate a rev 16: pgTAP 210000 17/17; 210100 37/37; support_production 23/23; account 16/16; support_page_production_test 7/7; account_pages_golden_test 8/8; audit 62/62"
     ],
     "planned": [
-      "flutter test features/account, support, plans, audit na base rebaseada",
-      "rota real Conta/Suporte/Planos/Auditoria (abrir telas; CRUD depende da ponte do coordenador)",
-      "goldens conforme listas do Owner"
+      "Suporte: regravar os 32 goldens support_* somente apos verificacao visual das observacoes do Owner (MENU, CHAT) sobre o composto e no SDK 3.44.2",
+      "rota real de Suporte (tabela/kanban/detalhe/criar/responder/status) com sessao qa-r03 apos a ponte de ator do coordenador; exige conversa com Chrome",
+      "Planos: FUNDO dos cards (decisao R plan_cards_* com observacao FUNDO) - goldens regravados em 6360c93b5/00c57bc42 pela conversa caida, sem revisao registrada"
     ]
   },
   "blocked": [
@@ -156,24 +256,61 @@
       "what": "classificador do modo automatico bloqueia supabase db query --linked (leitura) nesta sessao; medicao de producao vem do coordenador ou do proprio app na rota real",
       "owner": "operacoes",
       "unblocks": "n/a: contorno pelo app real"
+    },
+    {
+      "kind": "environment",
+      "what": "rota real de Suporte com sessao qa-r03 (support.table/kanban/detail/create/reply/close) nao provada nesta revisao: subagente sem Chrome e sem flutter run (maquina reiniciou por falta de memoria)",
+      "owner": "operacoes (conversa com Chrome) / coordenador",
+      "unblocks": "conversa com Chrome abre /support com qa-r03 apos a ponte de ator; ate la a prova e local-green"
     }
   ],
   "resolved": [],
-  "proposed_deltas": [],
+  "proposed_deltas": [
+    {
+      "action_ids": [
+        "support.table",
+        "support.kanban",
+        "support.detail",
+        "support.create"
+      ],
+      "frontend": "local-green (composto CoeloAdminDirectory, arquitetura verde, 69 testes)",
+      "backend": "sem mudanca",
+      "e2e": "N",
+      "visual": "goldens divergentes registrados; aprovacao visual pendente (nao vira verified)"
+    }
+  ],
   "packages_ready": [
     {
       "path": "packages/coelo_database/candidatos/operacoes/20260910210000_support_create_internal_scope_v1.sql",
-      "pgtap": "supabase/tests/superadmin_support_create_internal_scope_test.sql 17/17",
-      "composition_key": "nenhuma (RPC ja consumida pelo cliente; supportRepository ja ligado em main.dart)",
-      "order": "depois da ponte de realms do coordenador ou antes: independente"
+      "pgtap": "superadmin_support_create_internal_scope_test 17/17",
+      "composition_key": "nenhuma",
+      "state": "na fila do coordenador (lote 10, atras da ponte de ator 220400)"
+    },
+    {
+      "path": "packages/coelo_database/candidatos/operacoes/20260910210100_superadmin_internal_audit_read_v2.sql",
+      "pgtap": "superadmin_internal_audit_read_v2_test 37/37 (audit_production_test e auth_context_test tem falhas pre-existentes de drift, independentes)",
+      "composition_key": "nenhuma (cliente de Auditoria ja consome o envelope v2)",
+      "state": "na fila do coordenador (lote 10)"
     }
   ],
   "questions_to_owner": [],
-  "next_step": "abrir Conta (/conta/perfil, /conta/configuracoes) e Suporte na rota real com a shell logada; conferir supportController no botao de Bug; flutter test das quatro familias; Planos e Auditoria sobre o composto; goldens",
+  "next_step": "conversa com Chrome: rota real de Suporte com qa-r03 apos a ponte de ator; pagina lado a lado dos 32 goldens support_* para o Owner; depois regravar no SDK 3.44.2. Planos/Auditoria seguem como na rev 16.",
   "commits": [
-    "66f17c323 (abertura, reescrito no rebase como e96b640c8)",
+    "e96b640c8",
     "480728d7f",
-    "a208e1d6c"
+    "a208e1d6c",
+    "d040f3bb6",
+    "03df0769d",
+    "786749658",
+    "b5474a80a",
+    "26c7fcc01",
+    "0a23882cd",
+    "a8bb6cc22",
+    "6360c93b5",
+    "00c57bc42",
+    "e2c8dcca2",
+    "84f2278ee",
+    "1ad67a2e3"
   ],
   "r03_history": {
     "revision": 13,
@@ -429,9 +566,66 @@
   "pacotesProntos": [
     {
       "path": "packages/coelo_database/candidatos/operacoes/20260910210000_support_create_internal_scope_v1.sql",
-      "pgtap": "supabase/tests/superadmin_support_create_internal_scope_test.sql 17/17",
-      "composition_key": "nenhuma (RPC ja consumida pelo cliente; supportRepository ja ligado em main.dart)",
-      "order": "depois da ponte de realms do coordenador ou antes: independente"
+      "pgtap": "superadmin_support_create_internal_scope_test 17/17",
+      "composition_key": "nenhuma",
+      "state": "na fila do coordenador (lote 10, atras da ponte de ator 220400)"
+    },
+    {
+      "path": "packages/coelo_database/candidatos/operacoes/20260910210100_superadmin_internal_audit_read_v2.sql",
+      "pgtap": "superadmin_internal_audit_read_v2_test 37/37 (audit_production_test e auth_context_test tem falhas pre-existentes de drift, independentes)",
+      "composition_key": "nenhuma (cliente de Auditoria ja consome o envelope v2)",
+      "state": "na fila do coordenador (lote 10)"
     }
+  ],
+  "author_note": "Revisao 17 gravada pelo subagente do coordenador apos o reinicio da maquina de 00:27 (a conversa R04 - Operacoes caiu). Recorte do subagente: somente o front-end de Suporte no composto (WIP e2c8dcca2). Sem Chrome, sem flutter run, um flutter test por vez.",
+  "goldens_divergentes": {
+    "family": "support",
+    "reason": "toolbar, banner Criar, tabela e rodape de paginacao passaram ao composto CoeloAdminDirectory (recuo 40/24/16, busca 300/216/100%, filtros 160 px, rodape fixo); decisao do Owner de 10/09: A (regravar apos aplicar a observacao) em todos os claros exceto support_detail_light_1024 (R); escuros seguem o claro",
+    "owner_observations": "filtros desalinhados (resolvido pelo composto), MENU, TABELA fora do padrao/alinhamento interno (linhas no composto), melhorar o card Criar (banner do composto), CHAT - MENU e CHAT nao verificados visualmente pelo subagente",
+    "not_rewritten": true,
+    "standard": [
+      "support_kanban_light_375",
+      "support_kanban_light_768",
+      "support_kanban_light_1024",
+      "support_kanban_light_1440",
+      "support_kanban_dark_375",
+      "support_kanban_dark_768",
+      "support_kanban_dark_1024",
+      "support_kanban_dark_1440",
+      "support_table_light_375",
+      "support_table_light_768",
+      "support_table_light_1024",
+      "support_table_light_1440",
+      "support_table_dark_375",
+      "support_table_dark_768",
+      "support_table_dark_1024",
+      "support_table_dark_1440",
+      "support_detail_light_375",
+      "support_detail_light_768",
+      "support_detail_light_1024",
+      "support_detail_light_1440",
+      "support_detail_dark_375",
+      "support_detail_dark_768",
+      "support_detail_dark_1024",
+      "support_detail_dark_1440"
+    ],
+    "scaled": [
+      "support_kanban_light_375_text200",
+      "support_kanban_light_1440_text150",
+      "support_kanban_dark_375_text200",
+      "support_kanban_dark_1440_text150",
+      "support_table_light_375_text200",
+      "support_table_light_1440_text150",
+      "support_table_dark_375_text200",
+      "support_table_dark_1440_text150"
+    ],
+    "diff_percent_sample": "kanban 5-13%, table 14-28%, detail 8-22% (log no scratchpad da sessao, nao versionado)",
+    "next": "conversa com verificacao visual: montar pagina lado a lado (R referencia, A render atual, diferenca) para o Owner via coordenador e regravar no SDK 3.44.2"
+  },
+  "notes_to_coordinator": [
+    "Composto: CoeloAdminPaginationFooter compacto (_CompactPageAction) nao expoe chaves coelo-admin-pagination-previous/next; testes de Suporte localizam por Semantics.label. Sugestao de correcao no composto (nao aplicada: fora do recorte do subagente).",
+    "Composto: CoeloAdminListingToolbar troca Row/Column por largura e recria a subarvore dos filtros quando um painel de detalhe abre no corpo do workspace (perde foco de teclado nos filtros). Suporte contorna na feature (foco no detalhe ao abrir + nextFocus no fallback); Auditoria pode ter o mesmo efeito.",
+    "Composto: estado loading nao mostra o Criar (so o spinner); a regra do Owner cita vazio/falha/antes da primeira carga para busca/filtros (mantidos). Registrado, nao alterado.",
+    "Commits 6360c93b5 e 00c57bc42 (goldens de Planos: tabela na rota real dentro da shell; cards com shell + ARQUIVO) estao na branch, feitos pela conversa caida sem revisao no JSON; sem prova registrada alem do proprio commit."
   ]
 }

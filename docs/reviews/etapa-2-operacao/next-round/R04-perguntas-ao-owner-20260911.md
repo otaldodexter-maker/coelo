@@ -130,6 +130,45 @@ você apontar qual foto do Perfil está recortada de forma errada (capa, brasão
 ou avatar) e qual enquadramento vale. Resposta em lista "arquivo - decisão,
 observação".
 
+## P30 — Disparo do worker de Avisos agendados (bloqueado na sessão do coordenador)
+
+O pacote `20260910200500_notice_publication_worker_v2` (Publicações) está em
+produção com as RPCs `claim_notice_publication_jobs_for_worker` e
+`run_notice_publication_job_for_worker` (só `service_role`). Para Avisos
+agendados publicarem sozinhos faltam três coisas que só o coordenador faria e
+que o classificador da minha sessão recusou (segredo + Vault + pg_net):
+
+1. um segredo aleatório gravado como `COELO_NOTICE_WORKER_SECRET` nos secrets
+   das Edge Functions (`supabase secrets set --workdir packages/coelo_database
+   COELO_NOTICE_WORKER_SECRET=<valor>`), e o mesmo valor no Vault do banco
+   (`select vault.create_secret('<valor>', 'notices_worker_secret')` e
+   `select vault.create_secret('https://evvbomzejfijozbtgvpt.supabase.co/functions/v1/notice-publication-worker', 'notices_worker_url')`);
+2. o deploy da função (`supabase functions deploy notice-publication-worker
+   --project-ref evvbomzejfijozbtgvpt --workdir packages/coelo_database`);
+3. uma migration do coordenador com a função
+   `app_private.notice_dispatch_publication_worker()` (lê os dois segredos do
+   Vault e chama a função por `net.http_post` com o cabeçalho
+   `x-coelo-worker-secret`, igual ao dispatcher de Formulários já em produção)
+   e o `cron.schedule('coelo-notices-worker-dispatch', '* * * * *', ...)`.
+
+Opções: **A (recomendada):** você autoriza na minha conversa ("P30 aprovado")
+e eu executo os três passos e registro no `coordenacao.json` sem expor o
+valor. **B:** você mesmo roda os comandos do passo 1 no seu PowerShell e me
+avisa; eu faço os passos 2 e 3. Até lá, publicar imediato funciona e
+agendado fica enfileirado sem executar.
+
+## P31 — Papéis padrão de instituição para Convites (acessos-pessoas)
+
+Produção tem 0 `institution_roles` (nenhum modelo de sistema semeado), então
+`superadmin_invite_options_v2` devolve `profiles=[]` e nenhum convite passa
+do passo 1. Decisão de produto: quais papéis padrão de instituição existem no
+MVP? Proposta: semear por migration idempotente os modelos de sistema
+"Administrador da instituição", "Coordenação", "Professor(a)" e
+"Secretaria", cada um com o conjunto mínimo de capacidades de instituição já
+catalogadas (o grupo lista as capacidades por papel no JSON). Alternativa:
+criar um perfil Admin pela tela de Modelos (depende do catálogo 171300, em
+curso). Recomendação: semear os quatro modelos e permitir editar pela tela.
+
 ## Atualização P22 (23:05)
 
 A frente formularios-cuidado-rotina escreveu, na própria sessão, o pacote

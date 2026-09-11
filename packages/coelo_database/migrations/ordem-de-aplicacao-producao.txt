@@ -103,3 +103,14 @@
 # lote 11 (23:33)
 20260910180350_superadmin_assessments_internal_v2.sql
 20260910190900_public_security_definer_revoke_anon_v1.sql
+# lote 12 (11/09 00:26)
+20260910171100_follow_links_automatic_hierarchy_v1.sql
+# lote 13 (11/09 02:01)
+20260910240600_revoke_authenticated_truncate_references_trigger_v1.sql
+# lote 14 (11/09 02:06)
+20260910171200_qa_r03_internal_profile_seed_v1.sql
+# lote 15 (11/09 02:09)
+20260910200500_notice_publication_worker_v2.sql
+# lote 16 (11/09 02:20)
+20260910171300_access_profile_models_catalog_v2_baseline.sql
+20260910171500_follow_links_backfill_v1.sql

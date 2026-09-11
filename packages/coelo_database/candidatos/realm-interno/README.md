@@ -18,6 +18,7 @@ presenca de objeto e falha com `55000` se a dependencia faltar.
 | 3 | `20260910240200_superadmin_internal_chat_receipts_edit_revoke_v2.sql` | `chat.internal.manage`, trilha de edicao, recibo por mensagem, editar (15 min) e revogar | `superadmin_internal_chat_receipts_edit_revoke_baseline_test.sql` 36/36 |
 | 4 | `20260910240300_chat_conversation_preferences_v1.sql` | fixar e bandeira por identidade interna; inbox devolve `pinned_at`/`flag` | `superadmin_internal_chat_preferences_baseline_test.sql` 10/10 |
 | 5 | `20260910240400_superadmin_internal_chat_groups_v1.sql` | Criar grupo (P8): `superadmin_chat_create_group_v2` e `superadmin_chat_group_members_v2` | `superadmin_internal_chat_groups_v1_test.sql` 22/22 |
+| 7 | `20260910240600_revoke_authenticated_truncate_references_trigger_v1.sql` | segurança básica: `authenticated` sem TRUNCATE (que ignora RLS), REFERENCES e TRIGGER nas 22 tabelas de `public` que ainda os concediam; SELECT/INSERT/UPDATE/DELETE intactos | `revoke_authenticated_truncate_references_trigger_v1_test.sql` 6/6 |
 | 6 | `20260910240500_revoke_anon_direct_access_v1.sql` | segurança básica: `anon` sem privilégio em tabelas, sequências e funções de `public`, `app_private`, `audit` e `analytics` (em produção: 30 tabelas e 15 funções de `app_private` via PUBLIC); authenticated e service_role preservados | `revoke_anon_direct_access_v1_test.sql` 9/9 |
 
 Os pacotes 1 a 5 foram aplicados em produção pelo coordenador no lote 9
@@ -64,9 +65,21 @@ producao e:
    `supabase/migrations/` e o `seed.sql`;
 2. `supabase start -x gotrue,realtime,storage-api,imgproxy,kong,mailpit,postgrest,postgres-meta,studio,edge-runtime,logflare,vector,supavisor`
    (aplica baseline + seed);
-3. as demais `migrations/` na ordem, via
+3. as demais `migrations/` **na ordem real de produção**, lida de
+   `migrations/ordem-de-aplicacao-producao.txt` (mantido pelo coordenador a
+   cada lote; a ordem por carimbo não reproduz produção, porque o lote 3
+   entrou antes do lote 4), via
    `docker exec -i supabase_db_<project_id> psql -U postgres -d postgres -v ON_ERROR_STOP=1 -f -`
-   (44/44 aplicaram limpas em 10/09);
+   (44/44 aplicaram limpas em 10/09; hoje o arquivo lista os lotes 1 a 10):
+
+   ```bash
+   C=supabase_db_<project_id>
+   grep -v '^#' packages/coelo_database/migrations/ordem-de-aplicacao-producao.txt \
+     | sed '/^$/d' | while read -r f; do
+       docker exec -i "$C" psql -U postgres -d postgres -v ON_ERROR_STOP=1 -q -f - \
+         < "packages/coelo_database/migrations/$f" || { echo "ERRO em $f"; break; }
+     done
+   ```
 4. os cinco candidatos na ordem, pelo mesmo `psql`;
 5. cada pgTAP pelo mesmo `psql -qtA`, contando `ok`/`not ok`.
 

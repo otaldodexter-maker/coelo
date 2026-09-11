@@ -169,6 +169,7 @@ final class _AgendaCalendarPageState extends State<AgendaCalendarPage> {
       final body = _view == AgendaInstitutionalView.calendar
           ? _AgendaMonth(
               month: _month,
+              compact: mobile,
               occurrences: occurrences,
               selectedDay: _selectedDay,
               onDaySelected: (day) => setState(() => _selectedDay = day),
@@ -445,12 +446,17 @@ final class _AgendaViewToggle extends StatelessWidget {
 final class _AgendaMonth extends StatelessWidget {
   const _AgendaMonth({
     required this.month,
+    required this.compact,
     required this.occurrences,
     required this.selectedDay,
     required this.onDaySelected,
   });
 
   final DateTime month;
+
+  /// Largura compacta medida pelo `LayoutBuilder` da página (não pelo
+  /// `MediaQuery`), para valer também dentro do shell.
+  final bool compact;
   final List<AgendaOccurrence> occurrences;
   final DateTime? selectedDay;
   final ValueChanged<DateTime> onDaySelected;
@@ -459,7 +465,9 @@ final class _AgendaMonth extends StatelessWidget {
   Widget build(BuildContext context) {
     final first = DateTime(month.year, month.month);
     final visibleStart = first.subtract(Duration(days: first.weekday % 7));
-    final compact = MediaQuery.sizeOf(context).width < 600;
+    // Com texto ampliado o número do dia cresce; a célula compacta acompanha
+    // para não transbordar (a 200% volta à altura antiga).
+    final textScale = MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 2.0);
     return SingleChildScrollView(
       key: const Key('agenda-month-scroll'),
       child: Column(
@@ -478,7 +486,11 @@ final class _AgendaMonth extends StatelessWidget {
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 7,
-              childAspectRatio: compact ? .42 : .95,
+              // Decisão do Owner de 10/09 (agenda_calendar_light_375, A):
+              // em largura compacta a célula deixa de ser um retângulo alto e
+              // estreito; as ocorrências viram marcas em linha (ver
+              // `_AgendaDayCell`), então a célula fica quase quadrada.
+              childAspectRatio: compact ? .8 / textScale : .95,
             ),
             itemCount: 42,
             itemBuilder: (context, index) {
@@ -489,6 +501,7 @@ final class _AgendaMonth extends StatelessWidget {
                 inMonth: day.month == month.month,
                 selected: selectedDay != null && _sameDay(day, selectedDay!),
                 occurrences: dayOccurrences,
+                compact: compact,
                 onPressed: () => onDaySelected(day),
               );
             },
@@ -506,6 +519,7 @@ final class _AgendaDayCell extends StatelessWidget {
     required this.selected,
     required this.occurrences,
     required this.onPressed,
+    this.compact = false,
   });
 
   final DateTime day;
@@ -513,10 +527,95 @@ final class _AgendaDayCell extends StatelessWidget {
   final List<AgendaOccurrence> occurrences;
   final VoidCallback onPressed;
 
+  /// Largura compacta (telefone): a célula mostra o número do dia e as
+  /// ocorrências como marcas coloridas em linha, com o excedente em `+N`,
+  /// em vez de rótulos truncados empilhados. Decisão do Owner de 10/09.
+  final bool compact;
+
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.5;
+    final dayLabel = Text(
+      '${day.day}',
+      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+        color: inMonth ? colors.onSurface : colors.onSurfaceVariant,
+        fontWeight: FontWeight.w800,
+      ),
+    );
+    if (compact) {
+      const shown = 3;
+      return Semantics(
+        button: true,
+        selected: selected,
+        label: '${day.day} de ${_monthName(day.month)}, ${occurrences.length} eventos',
+        child: Padding(
+          padding: const EdgeInsets.all(CoeloSpacing.spaceHalf),
+          child: TextButton(
+            key: Key('agenda-day-${_isoDate(day)}'),
+            onPressed: onPressed,
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.zero,
+              backgroundColor: selected ? colors.primaryContainer : colors.surface,
+              foregroundColor: colors.onSurface,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
+              side: BorderSide(color: colors.outlineVariant),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: CoeloSpacing.spaceHalf,
+                vertical: CoeloSpacing.space1,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  dayLabel,
+                  const SizedBox(height: CoeloSpacing.spaceHalf),
+                  SizedBox(
+                    height: 12,
+                    child: Row(
+                      children: [
+                        for (final occurrence in occurrences.take(shown))
+                          Padding(
+                            padding: const EdgeInsets.only(right: 3),
+                            child: SizedBox.square(
+                              dimension: 8,
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(
+                                  color: _eventMarkColor(colors, occurrence.item.prominence),
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                            ),
+                          ),
+                        if (occurrences.length > shown)
+                          Flexible(
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                '+${occurrences.length - shown}',
+                                maxLines: 1,
+                                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                  fontSize: 9,
+                                  height: 12 / 9,
+                                  fontWeight: FontWeight.w700,
+                                  color: colors.onSurfaceVariant,
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
     return Semantics(
       button: true,
       selected: selected,
@@ -538,13 +637,7 @@ final class _AgendaDayCell extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  '${day.day}',
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: inMonth ? colors.onSurface : colors.onSurfaceVariant,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
+                dayLabel,
                 const SizedBox(height: CoeloSpacing.spaceHalf),
                 for (final occurrence in occurrences.take(largeText ? 1 : 2))
                   Padding(
@@ -923,6 +1016,16 @@ Color _eventColor(ColorScheme colors, AgendaVisualProminence value) => switch (v
   AgendaVisualProminence.group => colors.tertiaryContainer,
   AgendaVisualProminence.activity => colors.surfaceContainerHighest,
   AgendaVisualProminence.personal => colors.errorContainer,
+};
+
+/// Cor sólida das marcas compactas: o "on container" de cada proeminência,
+/// legível em 8 px onde o tom pastel do rótulo não seria.
+Color _eventMarkColor(ColorScheme colors, AgendaVisualProminence value) => switch (value) {
+  AgendaVisualProminence.institutional => colors.primary,
+  AgendaVisualProminence.unit => colors.secondary,
+  AgendaVisualProminence.group => colors.tertiary,
+  AgendaVisualProminence.activity => colors.onSurfaceVariant,
+  AgendaVisualProminence.personal => colors.onErrorContainer,
 };
 
 IconData _eventIcon(AgendaItemType value) => switch (value) {

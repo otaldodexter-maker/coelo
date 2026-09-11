@@ -1,8 +1,12 @@
+-- Base canonica (R04, 11/09/2026): baseline de producao 20260910000000 +
+-- candidatos/acessos-pessoas/20260910171300_access_profile_models_catalog_v2_baseline.sql.
+-- Exportacao/importacao ficam pos-MVP (AGENTS.md, ADR 0031): os wrappers
+-- existem, nomeados, sem EXECUTE para clientes.
 begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(11);
+select plan(12);
 
 select is(
   (select proargnames from pg_catalog.pg_proc
@@ -66,16 +70,25 @@ select is(
       ('public.superadmin_access_profile_model_create(uuid,jsonb)'::regprocedure),
       ('public.superadmin_access_profile_model_update(uuid,jsonb)'::regprocedure),
       ('public.superadmin_access_profile_model_delete(uuid,uuid,bigint,text)'::regprocedure),
-      ('public.superadmin_access_profile_model_duplicate(uuid,jsonb)'::regprocedure),
-      ('public.superadmin_access_profile_models_export(text)'::regprocedure),
-      ('public.superadmin_access_profile_models_import_preview(text,jsonb)'::regprocedure),
-      ('public.superadmin_access_profile_models_import_confirm(uuid,text,jsonb,text)'::regprocedure)
+      ('public.superadmin_access_profile_model_duplicate(uuid,jsonb)'::regprocedure)
     ) rpc(function_oid)
     where has_function_privilege('authenticated',rpc.function_oid,'EXECUTE')
       and not has_function_privilege('anon',rpc.function_oid,'EXECUTE')
       and not has_function_privilege('service_role',rpc.function_oid,'EXECUTE')),
-  9::bigint,
-  'all named gateways remain authenticated-only'
+  6::bigint,
+  'all MVP named gateways remain authenticated-only'
+);
+select is(
+  (select count(*)::bigint
+    from (values
+      ('public.superadmin_access_profile_models_export(text)'::regprocedure),
+      ('public.superadmin_access_profile_models_import_preview(text,jsonb)'::regprocedure),
+      ('public.superadmin_access_profile_models_import_confirm(uuid,text,jsonb,text)'::regprocedure)
+    ) rpc(function_oid)
+    cross join (values('public'),('anon'),('authenticated'),('service_role')) r(name)
+    where has_function_privilege(r.name,rpc.function_oid,'EXECUTE')),
+  0::bigint,
+  'export and import named gateways stay unavailable to every client until after the MVP'
 );
 
 select ok(not exists(

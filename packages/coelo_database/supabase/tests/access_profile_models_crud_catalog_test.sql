@@ -1,6 +1,12 @@
+-- Base canonica (R04, 11/09/2026): baseline de producao 20260910000000 +
+-- candidatos/acessos-pessoas/20260910171300_access_profile_models_catalog_v2_baseline.sql.
+-- Ajustes de fixture em relacao ao teste de 01/09: (a) exportacao/importacao
+-- ficam pos-MVP (AGENTS.md, ADR 0031): os tres wrappers publicos existem sem
+-- EXECUTE para clientes e sao exercitados pelas funcoes privadas como postgres;
+-- (b) MFA fora do MVP (ADR 0034, Decisao 12): mutacao em AAL1 e aceita.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(31);
+select plan(32);
 
 select has_column('public','access_profile_templates','created_by_internal_identity_id',
   'models record the isolated internal actor');
@@ -82,8 +88,15 @@ select is((select count(*)::bigint from (values
     ('public.superadmin_access_permission_catalog()'::regprocedure)) rpc(oid)
     where has_function_privilege('authenticated',oid,'EXECUTE')
       and not has_function_privilege('anon',oid,'EXECUTE')
-      and not has_function_privilege('service_role',oid,'EXECUTE')),10::bigint,
-  'all gateways are authenticated-only');
+      and not has_function_privilege('service_role',oid,'EXECUTE')),7::bigint,
+  'MVP gateways (detail, cursor, create, update, delete, duplicate, catalog) are authenticated-only');
+select is((select count(*)::bigint from (values
+    ('public.superadmin_access_profile_models_export(text)'::regprocedure),
+    ('public.superadmin_access_profile_models_import_preview(text,jsonb)'::regprocedure),
+    ('public.superadmin_access_profile_models_import_confirm(uuid,text,jsonb,text)'::regprocedure)) rpc(oid)
+    cross join (values('public'),('anon'),('authenticated'),('service_role')) r(name)
+    where has_function_privilege(name,oid,'EXECUTE')),0::bigint,
+  'export and import gateways stay unavailable to every client until after the MVP');
 
 set local role authenticated;
 select is(public.superadmin_access_profile_model_create(gen_random_uuid(),
@@ -117,8 +130,8 @@ select set_config('request.jwt.claims',jsonb_build_object(
   'aal','aal1','role','authenticated')::text,true);
 set local role authenticated;
 select is(public.superadmin_access_profile_model_create(gen_random_uuid(),
-    '{"domain":"platform","name":"Needs MFA","capabilities":[],"reason":"MFA"}'::jsonb)
-    #>>'{error,code}','SAI_MFA_REQUIRED','model mutations require AAL2');
+    '{"domain":"platform","name":"Aceita AAL1","capabilities":[],"reason":"MVP"}'::jsonb)
+    ->>'ok','true','MVP: model mutations accept AAL1 (ADR 0034 Decisao 12; AAL2 gate returns with ADR 0019)');
 reset role;
 
 select set_config('request.jwt.claims',jsonb_build_object(
@@ -147,19 +160,21 @@ select is(public.superadmin_access_profile_model_update(gen_random_uuid(),jsonb_
     'id',(select result#>>'{data,model_id}' from model_results where key='created'),
     'name','Stale','expected_version',0,'capabilities','[]'::jsonb,'reason','Stale'))
     #>>'{error,code}','SAI_CONCURRENT_CHANGE','stale writes return the conflict envelope');
-select is(public.superadmin_access_profile_models_import_preview('platform',
-    jsonb_build_array(jsonb_build_object('name','Unsafe','institution_id',gen_random_uuid(),
-      'capabilities','[]'::jsonb)))#>>'{data,rows,0,error_code}',
-  'mass_assignment_field','import rejects assignment fields');
 select is(public.superadmin_access_profile_models_cursor(
     repeat('x',121),'platform',null,null,25,null,null)#>>'{error,code}',
   'SAI_INVALID_ARGUMENT','oversized search input fails closed');
 select ok((public.superadmin_access_permission_catalog()->>'ok')::boolean,
   'catalog uses the success envelope');
-select ok(public.superadmin_access_profile_models_export('platform')#>>'{data,csv}'
+reset role;
+-- Import/export are post-MVP for clients; the private implementations are
+-- exercised as postgres with the same internal Owner JWT claims.
+select is(app_private.superadmin_access_profile_models_import_preview('platform',
+    jsonb_build_array(jsonb_build_object('name','Unsafe','institution_id',gen_random_uuid(),
+      'capabilities','[]'::jsonb)))#>>'{rows,0,error_code}',
+  'mass_assignment_field','import rejects assignment fields');
+select ok(app_private.superadmin_access_profile_models_export('platform')->>'csv'
     like 'format_version,domain,name,description,max_scope_kind,status,capabilities%',
   'export returns the versioned CSV contract');
-reset role;
 
 select ok(exists(select 1 from audit.audit_logs
   where actor_kind='superadmin_internal'

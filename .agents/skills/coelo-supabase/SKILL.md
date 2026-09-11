@@ -341,6 +341,41 @@ Regras medidas na Rodada 3 (10/09/2026) que valem daqui em diante:
   próprio JSON do grupo antes do uso; quem não reservar usa projeto descartável
   próprio em outras portas.
 
+Regras medidas na Rodada 4 (noite de 10→11/09/2026, ADR 0034 Decisão 13):
+
+- Produção não recebeu as migrations em ordem de carimbo. O espelho local só
+  reproduz produção seguindo
+  `packages/coelo_database/migrations/ordem-de-aplicacao-producao.txt`:
+  `db reset` com só a baseline em `supabase/migrations/` (baseline + seed) e
+  depois `psql` de cada arquivo na ordem do lote. `db reset` com `migrations/`
+  inteira falha em `20260910170100` e `170800`. O coordenador mantém esse
+  arquivo a cada lote.
+- `supabase db query --linked -f` executa o arquivo inteiro numa transação:
+  `ALTER TYPE ... ADD VALUE` vai em arquivo próprio anterior (erro 55P04 se
+  não). O ledger é preenchido à mão (`version`, `name`) no mesmo lote.
+- Preflight de vários grupos no mesmo espelho, em sequência: um trigger
+  defeituoso de um pacote (caso do 220400 na primeira versão) derruba os
+  pgTAP dos demais; a primeira falha inesperada em outra família é sinal para
+  reconstruir o espelho antes de devolver o pacote.
+- MFA fora do MVP: `requires_mfa` falso em todo o catálogo e
+  `app_private.has_mfa_aal2()` aceita `aal1`; pacote novo nasce sem exigência
+  de AAL2.
+- Ator do Superadmin: os usuários existem só no realm interno v2; RPCs
+  baseadas em `current_person_id()`/`has_platform_permission` só os alcançam
+  pela ponte de ator (`20260910220400`: pessoa de serviço + membership
+  espelhada por trigger + fallback em `current_person_id()`). Pacote novo do
+  Superadmin prefere `require_superadmin_internal_context`.
+- Dado sintético em produção entra por RPC da rota normal ou por migration
+  idempotente com pgTAP (caso do perfil interno de `qa-r03`, 171200), nunca
+  por `insert` direto.
+- Anon perdeu todos os grants diretos (240500, 190900) e authenticated perdeu
+  TRUNCATE/REFERENCES/TRIGGER (240600); os grants CRUD de authenticated sem
+  policy correspondente estão levantados como pendência de revisão profunda.
+- Memória da máquina: no máximo dois Chrome/`flutter run` por conversa, um
+  `flutter test` por vez, fechar Chromes e `dart` ao fim de cada prova. Em
+  11/09 às 00:27 a máquina reiniciou por esgotamento e todas as conversas
+  caíram; o dump de um lote ficou vazio e teve de ser refeito.
+
 Priorizar o primeiro gate backend que permite fechar a subtela selecionada,
 reutilizando readers, migrations e provas já válidas. Pacote verde vai para
 produção no mesmo turno; não acumular fila de candidatos. Só Cloudflare pode

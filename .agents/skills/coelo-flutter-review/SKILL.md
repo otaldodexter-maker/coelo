@@ -151,3 +151,26 @@ concluída, ação Front-end `verified` e produto pendente.
 Ao corrigir, avançar a subtela até o próximo aceite verificável do recorte;
 reabrir provas anteriores somente por mudança relevante, regressão ou evidência
 insuficiente identificada. Não repetir auditoria ampla a cada retomada.
+
+Regras medidas na Rodada 4 (noite de 10→11/09/2026):
+
+- Rota normal em produção com a sessão `qa-r03@coelo.me`: o único
+  entrypoint de driver é `apps/superadmin/test_driver/qa_main.dart`
+  (`flutter run -d chrome -t test_driver/qa_main.dart`; `qa_drive.dart`
+  dirige pelo CDP). Três frentes criaram entrypoints iguais e o `pubspec`
+  chegou com `flutter_driver` triplicado, o que quebra `pub get`; ninguém
+  toca o `pubspec` sem avisar o coordenador.
+- Memória da máquina: no máximo dois Chrome/`flutter run` por conversa, um
+  `flutter test` por vez, fechar Chromes e `dart` ao fim de cada prova. Em
+  11/09 às 00:27 a máquina reiniciou por esgotamento e todas as conversas
+  caíram.
+- Estado vazio (decisão do Owner, ADR 0034 Decisão 13): busca, filtros com
+  rótulo honesto, toggle grade/lista, Arquivos, abas de estado e o card Criar
+  aparecem sempre no composto `CoeloAdminDirectory`, inclusive com zero
+  registros; corrigir no composto, não na tela.
+- Launcher do chat (Decisão 7): o balão "Mensagens" respeita
+  `showChatLauncher=false` da tela; não aparece em criar/editar/publicar, Agora
+  aberto e Momentos aberto, e nunca cobre o rodapé do formulário.
+- Golden só é regravado depois de aplicar a observação do Owner e no SDK
+  registrado; goldens de formulário em 375 que congelam o cabeçalho mobile
+  ficam retidos enquanto MENU-M estiver aberto.

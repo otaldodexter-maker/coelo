@@ -1230,8 +1230,8 @@
       "scope": "mvp",
       "done": "Detalhe READ composto via SupabasePersonDetailReader/PERS-READ01;242/242 combinados registrados, sem certificar writes de vínculo. C00 integrou teclado de status33fccac6, preservação de busca2b1664ae, remoção de dados inventados no formulário0ecc5955 e erro de identidade incompletaff5000ef.",
       "fe": "Detalhe sintetico 2P/0F em375/1440; seis referencias desktop reconciliadas por menu Usuarios internos integrado d019c109a. Sem qualificacao do reader produtivo. Diretorio normal nao tem callback para abrir detalhe; alcance UI nao comprovado, conforme c526307dd.",
-      "be": "R03 (10/09 16:45): 20260910170100 person_detail APLICADA EM PRODUCAO (lote 4); superadmin_person_detail_v2 existe; pgTAP 42/42 no espelho. Gate para done: sessao (P17), rota normal e reload.",
-      "evidence": "evidence/etapa-2/estruturas/2026-09-07-person-read-only-detail.md; Fechamento R01 C04/r61; C04estado47/r61; C00 conjunto288PASS/analyzer34limpo; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; c0e4fc47d; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/person-detail-visual/handoff.md; comunicacao/acessos-pessoas.json r84 (AP-PEOPLE-DETAIL-V2); coordenacao.json R03 rev 6; coordenacao.json R03 rev 10",
+      "be": "R04 (11/09 00:26, lote 12): D1 em producao (20260910171100 follow_links_automatic_hierarchy_v1: follow_links com sincronizacao automatica da hierarquia ao vincular crianca a unidade/turma, leitura para o Perfil e Acompanhar; pgTAP 24/24 no espelho; 10 funcoes follow_* em producao). Gate para done: rota normal com sessao e reload.",
+      "evidence": "evidence/etapa-2/estruturas/2026-09-07-person-read-only-detail.md; Fechamento R01 C04/r61; C04estado47/r61; C00 conjunto288PASS/analyzer34limpo; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; c0e4fc47d; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/person-detail-visual/handoff.md; comunicacao/acessos-pessoas.json r84 (AP-PEOPLE-DETAIL-V2); coordenacao.json R03 rev 6; coordenacao.json R03 rev 10; coordenacao.json R04 rev 23 (lote12)",
       "historicalFrontend": "audited",
       "historicalBackend": "fail-closed",
       "frontendStatus": "pending-verification",
@@ -2319,15 +2319,15 @@
       "family": "agenda",
       "screen": "Agenda / Calendário",
       "scope": "mvp",
-      "done": "Spec050 aprovada; backend existente. Reader f8a04b3a/controller4daeafb9 integrados; somente view ca4c82ab ficou fora após revertfe6f6b51.",
-      "fe": "Agenda produz 43 excecoes de layout numa unica abertura a 375 com texto a 200%: as celulas do calendario tem geometria fixa e transbordam entre 2,4 e 56 pixels, com um flex maior em 257. Nao corrigido pelo mesmo motivo. O teste existente chamado 'matriz a 200 por cento' cobre outra superficie e passa. WCAG 2.2 AA exige reflow a 200% e AGENTS.md adota WCAG 2.2 AA, entao isto e criterio de aceite aberto e nao melhoria.",
-      "be": "Compatibilizar principal interno039 e executar replay nominal/readers ou comando conforme ação; provar atomicidade, recibos e reload. Entrega por canais de notificação fica fora da spec050.",
-      "evidence": "specs/050-superadmin-agenda-backend.md; commitsf8a04b3a/4daeafb9/fe6f6b51; codex/e2e-agenda-operacoes@ca4c82ab; Fechamento R01 C03/r33; C03r33 final; contrato de localização/composição ainda aberto; etapa-2-operacao/reports/R01-fechamento-20260909.md; docs/reviews/etapa-2-operacao/reports/E2-noturna-texto-200-20260909.md; commit 085c02c68",
+      "done": "R04 publicacoes-agenda rev 20 (24e04490d): ui-25 + pgTAP + producao",
+      "fe": "R04 publicacoes-agenda rev 20 (24e04490d): ui-25 calendario real com eventos de producao; composto na lista de eventos; goldens 375",
+      "be": "R04 publicacoes-agenda rev 20 (24e04490d): 200300; RPC com sessao",
+      "evidence": "specs/050-superadmin-agenda-backend.md; commitsf8a04b3a/4daeafb9/fe6f6b51; codex/e2e-agenda-operacoes@ca4c82ab; Fechamento R01 C03/r33; C03r33 final; contrato de localização/composição ainda aberto; etapa-2-operacao/reports/R01-fechamento-20260909.md; docs/reviews/etapa-2-operacao/reports/E2-noturna-texto-200-20260909.md; commit 085c02c68; evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "pending-verification",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
@@ -2344,6 +2344,26 @@
         "referencia": 1,
         "atual": 5,
         "fonte": "goldens-claro-decisoes-2026-09-10"
+      },
+      "certifications": {
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+          "revision": "24e04490d",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (RPC por PostgREST e rota real pela UI, capturas em evidence/etapa-2/r04-publicacoes-agenda/ui)",
+          "recordedAt": "2026-09-11T02:20:00-03:00"
+        },
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+          "revision": "24e04490d",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (RPC por PostgREST e rota real pela UI, capturas em evidence/etapa-2/r04-publicacoes-agenda/ui)",
+          "recordedAt": "2026-09-11T02:20:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+          "revision": "24e04490d",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (RPC por PostgREST e rota real pela UI, capturas em evidence/etapa-2/r04-publicacoes-agenda/ui)",
+          "recordedAt": "2026-09-11T02:20:00-03:00"
+        }
       }
     },
     {
@@ -2352,13 +2372,13 @@
       "screen": "Agenda / Criar evento",
       "scope": "mvp",
       "done": "Spec050 aprovada; backend existente. Reader f8a04b3a/controller4daeafb9 integrados; somente view ca4c82ab ficou fora após revertfe6f6b51.",
-      "fe": "Contrato de escrita corrigido em dois pontos. O p_request_id nascia dentro do repositorio, um por chamada, entao todo retry do mesmo comando virava intencao nova; na criacao, sem p_expected_revision para barrar, um retry apos falha incerta criava um segundo evento. A intencao passa a ser memorizada por comando e argumentos e descartada ao confirmar. Alem disso, os comandos so capturavam PostgrestException e FormatException, deixando ClientException de transporte escapar para a UI. Nao promove a acao: 20 goldens de Agenda falham na base e o WIP b049b163 permanece preservado e nao integrado.",
-      "be": "Compatibilizar principal interno039 e executar replay nominal/readers ou comando conforme ação; provar atomicidade, recibos e reload. Entrega por canais de notificação fica fora da spec050.",
-      "evidence": "specs/050-superadmin-agenda-backend.md; commitsf8a04b3a/4daeafb9/fe6f6b51; codex/e2e-agenda-operacoes@ca4c82ab; Fechamento R01 C03/r33; C03r33 final; contrato de localização/composição ainda aberto; etapa-2-operacao/reports/R01-fechamento-20260909.md; commit 29fa6ff13; apps/superadmin/test/features/agenda/data/supabase_agenda_repository_test.dart -> 54 PASS; suite de Agenda 261 PASS",
+      "fe": "R04 publicacoes-agenda rev 20 (24e04490d): ui-26 abre o formulario real; nao salvo pela tela",
+      "be": "R04 publicacoes-agenda rev 20 (24e04490d): ",
+      "evidence": "specs/050-superadmin-agenda-backend.md; commitsf8a04b3a/4daeafb9/fe6f6b51; codex/e2e-agenda-operacoes@ca4c82ab; Fechamento R01 C03/r33; C03r33 final; contrato de localização/composição ainda aberto; etapa-2-operacao/reports/R01-fechamento-20260909.md; commit 29fa6ff13; apps/superadmin/test/features/agenda/data/supabase_agenda_repository_test.dart -> 54 PASS; suite de Agenda 261 PASS; evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "pending-verification",
+      "frontendStatus": "local-green",
+      "backendStatus": "done",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
@@ -2371,6 +2391,14 @@
         "referencia": 1,
         "atual": 0,
         "fonte": "goldens-claro-decisoes-2026-09-10"
+      },
+      "certifications": {
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+          "revision": "24e04490d",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (RPC por PostgREST e rota real pela UI, capturas em evidence/etapa-2/r04-publicacoes-agenda/ui)",
+          "recordedAt": "2026-09-11T02:20:00-03:00"
+        }
       }
     },
     {
@@ -2379,13 +2407,13 @@
       "screen": "Agenda / Detalhe",
       "scope": "mvp",
       "done": "Spec050 aprovada; backend existente. Reader f8a04b3a/controller4daeafb9 integrados; somente view ca4c82ab ficou fora após revertfe6f6b51.",
-      "fe": "Conferir composição da ação e quatro diferenças golden do view preservado antes de reintegrar; manter reader/controller existentes. Agenda b049b163 permanece WIP preservado; separar rotas existentes e lacunas por ação, sem integrar automaticamente a view READ039 nem certificar seus goldens.",
-      "be": "Compatibilizar principal interno039 e executar replay nominal/readers ou comando conforme ação; provar atomicidade, recibos e reload. Entrega por canais de notificação fica fora da spec050.",
-      "evidence": "specs/050-superadmin-agenda-backend.md; commitsf8a04b3a/4daeafb9/fe6f6b51; codex/e2e-agenda-operacoes@ca4c82ab; Fechamento R01 C03/r33; C03r33 final; contrato de localização/composição ainda aberto; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "fe": "R04 publicacoes-agenda rev 20 (24e04490d): ",
+      "be": "R04 publicacoes-agenda rev 20 (24e04490d): ",
+      "evidence": "specs/050-superadmin-agenda-backend.md; commitsf8a04b3a/4daeafb9/fe6f6b51; codex/e2e-agenda-operacoes@ca4c82ab; Fechamento R01 C03/r33; C03r33 final; contrato de localização/composição ainda aberto; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "pending-verification",
+      "frontendStatus": "local-green",
+      "backendStatus": "done",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
@@ -2400,6 +2428,14 @@
         "referencia": 3,
         "atual": 0,
         "fonte": "goldens-claro-decisoes-2026-09-10"
+      },
+      "certifications": {
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+          "revision": "24e04490d",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (RPC por PostgREST e rota real pela UI, capturas em evidence/etapa-2/r04-publicacoes-agenda/ui)",
+          "recordedAt": "2026-09-11T02:20:00-03:00"
+        }
       }
     },
     {
@@ -2408,17 +2444,25 @@
       "screen": "Agenda / Editar",
       "scope": "mvp",
       "done": "Spec050 aprovada; backend existente. Reader f8a04b3a/controller4daeafb9 integrados; somente view ca4c82ab ficou fora após revertfe6f6b51.",
-      "fe": "Contrato de escrita corrigido em dois pontos. O p_request_id nascia dentro do repositorio, um por chamada, entao todo retry do mesmo comando virava intencao nova; na criacao, sem p_expected_revision para barrar, um retry apos falha incerta criava um segundo evento. A intencao passa a ser memorizada por comando e argumentos e descartada ao confirmar. Alem disso, os comandos so capturavam PostgrestException e FormatException, deixando ClientException de transporte escapar para a UI. Nao promove a acao: 20 goldens de Agenda falham na base e o WIP b049b163 permanece preservado e nao integrado.",
-      "be": "Compatibilizar principal interno039 e executar replay nominal/readers ou comando conforme ação; provar atomicidade, recibos e reload. Entrega por canais de notificação fica fora da spec050.",
-      "evidence": "specs/050-superadmin-agenda-backend.md; commitsf8a04b3a/4daeafb9/fe6f6b51; codex/e2e-agenda-operacoes@ca4c82ab; Fechamento R01 C03/r33; C03r33 final; contrato de localização/composição ainda aberto; etapa-2-operacao/reports/R01-fechamento-20260909.md; commit 29fa6ff13; apps/superadmin/test/features/agenda/data/supabase_agenda_repository_test.dart -> 54 PASS; suite de Agenda 261 PASS",
+      "fe": "R04 publicacoes-agenda rev 20 (24e04490d): ",
+      "be": "R04 publicacoes-agenda rev 20 (24e04490d): editar+publicar+cancelar",
+      "evidence": "specs/050-superadmin-agenda-backend.md; commitsf8a04b3a/4daeafb9/fe6f6b51; codex/e2e-agenda-operacoes@ca4c82ab; Fechamento R01 C03/r33; C03r33 final; contrato de localização/composição ainda aberto; etapa-2-operacao/reports/R01-fechamento-20260909.md; commit 29fa6ff13; apps/superadmin/test/features/agenda/data/supabase_agenda_repository_test.dart -> 54 PASS; suite de Agenda 261 PASS; evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "pending-verification",
+      "frontendStatus": "local-green",
+      "backendStatus": "done",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:14-03:00"
+      "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
+      "certifications": {
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+          "revision": "24e04490d",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (RPC por PostgREST e rota real pela UI, capturas em evidence/etapa-2/r04-publicacoes-agenda/ui)",
+          "recordedAt": "2026-09-11T02:20:00-03:00"
+        }
+      }
     },
     {
       "id": "agenda.request",
@@ -2426,13 +2470,13 @@
       "screen": "Agenda / Solicitar",
       "scope": "mvp",
       "done": "Spec050 aprovada; backend existente. Reader f8a04b3a/controller4daeafb9 integrados; somente view ca4c82ab ficou fora após revertfe6f6b51.",
-      "fe": "Contrato de escrita corrigido em dois pontos. O p_request_id nascia dentro do repositorio, um por chamada, entao todo retry do mesmo comando virava intencao nova; na criacao, sem p_expected_revision para barrar, um retry apos falha incerta criava um segundo evento. A intencao passa a ser memorizada por comando e argumentos e descartada ao confirmar. Alem disso, os comandos so capturavam PostgrestException e FormatException, deixando ClientException de transporte escapar para a UI. Nao promove a acao: 20 goldens de Agenda falham na base e o WIP b049b163 permanece preservado e nao integrado.",
-      "be": "Compatibilizar principal interno039 e executar replay nominal/readers ou comando conforme ação; provar atomicidade, recibos e reload. Entrega por canais de notificação fica fora da spec050.",
-      "evidence": "specs/050-superadmin-agenda-backend.md; commitsf8a04b3a/4daeafb9/fe6f6b51; codex/e2e-agenda-operacoes@ca4c82ab; Fechamento R01 C03/r33; C03r33 final; contrato de localização/composição ainda aberto; etapa-2-operacao/reports/R01-fechamento-20260909.md; commit 29fa6ff13; apps/superadmin/test/features/agenda/data/supabase_agenda_repository_test.dart -> 54 PASS; suite de Agenda 261 PASS",
+      "fe": "R04 publicacoes-agenda rev 20 (24e04490d): ",
+      "be": "R04 publicacoes-agenda rev 20 (24e04490d): superadmin_agenda_requests recriada; nao exercida com dados",
+      "evidence": "specs/050-superadmin-agenda-backend.md; commitsf8a04b3a/4daeafb9/fe6f6b51; codex/e2e-agenda-operacoes@ca4c82ab; Fechamento R01 C03/r33; C03r33 final; contrato de localização/composição ainda aberto; etapa-2-operacao/reports/R01-fechamento-20260909.md; commit 29fa6ff13; apps/superadmin/test/features/agenda/data/supabase_agenda_repository_test.dart -> 54 PASS; suite de Agenda 261 PASS; evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "pending-verification",
+      "frontendStatus": "local-green",
+      "backendStatus": "local-green",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
@@ -2444,17 +2488,25 @@
       "screen": "Agenda / Permissões",
       "scope": "mvp",
       "done": "Spec050 aprovada; backend existente. Reader f8a04b3a/controller4daeafb9 integrados; somente view ca4c82ab ficou fora após revertfe6f6b51.",
-      "fe": "Conferir composição da ação e quatro diferenças golden do view preservado antes de reintegrar; manter reader/controller existentes. Agenda b049b163 permanece WIP preservado; separar rotas existentes e lacunas por ação, sem integrar automaticamente a view READ039 nem certificar seus goldens.",
-      "be": "Compatibilizar principal interno039 e executar replay nominal/readers ou comando conforme ação; provar atomicidade, recibos e reload. Entrega por canais de notificação fica fora da spec050.",
-      "evidence": "specs/050-superadmin-agenda-backend.md; commitsf8a04b3a/4daeafb9/fe6f6b51; codex/e2e-agenda-operacoes@ca4c82ab; Fechamento R01 C03/r33; C03r33 final; contrato de localização/composição ainda aberto; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "fe": "R04 publicacoes-agenda rev 20 (24e04490d): ",
+      "be": "R04 publicacoes-agenda rev 20 (24e04490d): contexts com capacidades e instituicao",
+      "evidence": "specs/050-superadmin-agenda-backend.md; commitsf8a04b3a/4daeafb9/fe6f6b51; codex/e2e-agenda-operacoes@ca4c82ab; Fechamento R01 C03/r33; C03r33 final; contrato de localização/composição ainda aberto; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "pending-verification",
+      "frontendStatus": "local-green",
+      "backendStatus": "done",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:14-03:00"
+      "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
+      "certifications": {
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+          "revision": "24e04490d",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (RPC por PostgREST e rota real pela UI, capturas em evidence/etapa-2/r04-publicacoes-agenda/ui)",
+          "recordedAt": "2026-09-11T02:20:00-03:00"
+        }
+      }
     },
     {
       "id": "agenda.location",
@@ -2462,13 +2514,13 @@
       "screen": "Evento / Local",
       "scope": "mvp",
       "done": "Spec050 aprovada; backend existente. Reader f8a04b3a/controller4daeafb9 integrados; somente view ca4c82ab ficou fora após revertfe6f6b51.",
-      "fe": "Conferir composição da ação e quatro diferenças golden do view preservado antes de reintegrar; manter reader/controller existentes. Agenda b049b163 permanece WIP preservado; separar rotas existentes e lacunas por ação, sem integrar automaticamente a view READ039 nem certificar seus goldens.",
-      "be": "Compatibilizar principal interno039 e executar replay nominal/readers ou comando conforme ação; provar atomicidade, recibos e reload. Entrega por canais de notificação fica fora da spec050.",
-      "evidence": "specs/050-superadmin-agenda-backend.md; commitsf8a04b3a/4daeafb9/fe6f6b51; codex/e2e-agenda-operacoes@ca4c82ab; Fechamento R01 C03/r33; C03r33 final; contrato de localização/composição ainda aberto; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "fe": "R04 publicacoes-agenda rev 20 (24e04490d): ",
+      "be": "R04 publicacoes-agenda rev 20 (24e04490d): contexto de unidade fora do tenant recusado (pgTAP); sem unidade sintetica",
+      "evidence": "specs/050-superadmin-agenda-backend.md; commitsf8a04b3a/4daeafb9/fe6f6b51; codex/e2e-agenda-operacoes@ca4c82ab; Fechamento R01 C03/r33; C03r33 final; contrato de localização/composição ainda aberto; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
       "historicalFrontend": "not-reviewed",
       "historicalBackend": "not-reviewed",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "pending-verification",
+      "frontendStatus": "local-green",
+      "backendStatus": "local-green",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
@@ -2788,15 +2840,15 @@
       "family": "notices",
       "screen": "Avisos / Diretório",
       "scope": "mvp",
-      "done": "Diretório/formulários, versão v2, recibos/agendamento e overlays corrigidos no cliente. C00 integrou layout compacto do status71b74dbe. R02 D00 c68affc43 integradoac298c788: conflito/ausencia recarregam o diretorio; indisponibilidade informa sem recarregar. Tres casos focais PASS. Publicacao/worker e metrica current_job NULL seguem gates independentes.",
-      "fe": "R03: diretorio de Comunicacoes no composto (Fase 0 850ba1838) com goldens regravados, inclusive o toggle card/tabela pedido pelo Owner. Gate para verified: rota normal com sessao (P17).",
-      "be": "R04 (10/09 22:26, lote 9): Avisos v2 sobre a baseline (20260910200000: labels, requires_mfa=false, notice_events em analytics, tres bugs da RPC corrigidos) APLICADA EM PRODUCAO; pgTAP 38/38 no espelho. Gate para done: rota normal com sessao e reload; worker de publicacao (pg_cron + notice-publication-worker) continua com o coordenador.",
-      "evidence": "evidence/etapa-2/comunicacao/; evidence/etapa-2/engenheiro-1/; R01/17:40 SQL5f0e7e29 retido porACL/cursor/envelope/schema/realm/reautorização/audiênciadesconhecida/store eplansTAP incorretos. C05r15 aceitouachados e corrige;sem replay. Fontes completas na assignmentI009.; Fechamento R01 C05/rfinal; C05final/C07r12; C00288PASS apenas lote focal não-golden; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-notices-conflict-integrated.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; apps/superadmin/test/app/router/notice_lifecycle_action_path_test.dart + apps/superadmin/test/app/router/notice_routes_capability_test.dart; flutter test, Windows local, branch work/etapa2-noturna-chat-comunicacoes revisao 51981fdc9, 2026-09-09; goldens-claro-decisoes-2026-09-10.md; R03-fase0-handoff.md; coordenacao.json R04 rev 20 (lote9)",
+      "done": "R04 publicacoes-agenda rev 20 (24e04490d): rota normal + producao + RLS(pgTAP) + reload (ui-07)",
+      "fe": "R04 publicacoes-agenda rev 20 (24e04490d): ui-03/ui-07: rota normal com dados reais e reload",
+      "be": "R04 publicacoes-agenda rev 20 (24e04490d): 200000 em producao; RPC com sessao; anon negado; reload",
+      "evidence": "evidence/etapa-2/comunicacao/; evidence/etapa-2/engenheiro-1/; R01/17:40 SQL5f0e7e29 retido porACL/cursor/envelope/schema/realm/reautorização/audiênciadesconhecida/store eplansTAP incorretos. C05r15 aceitouachados e corrige;sem replay. Fontes completas na assignmentI009.; Fechamento R01 C05/rfinal; C05final/C07r12; C00288PASS apenas lote focal não-golden; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-notices-conflict-integrated.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; apps/superadmin/test/app/router/notice_lifecycle_action_path_test.dart + apps/superadmin/test/app/router/notice_routes_capability_test.dart; flutter test, Windows local, branch work/etapa2-noturna-chat-comunicacoes revisao 51981fdc9, 2026-09-09; goldens-claro-decisoes-2026-09-10.md; R03-fase0-handoff.md; coordenacao.json R04 rev 20 (lote9); evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "audited",
-      "frontendStatus": "local-green",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T15:57:45.129531-03:00",
@@ -2810,6 +2862,26 @@
         "referencia": 0,
         "atual": 2,
         "fonte": "goldens-claro-decisoes-2026-09-10"
+      },
+      "certifications": {
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+          "revision": "24e04490d",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (RPC por PostgREST e rota real pela UI, capturas em evidence/etapa-2/r04-publicacoes-agenda/ui)",
+          "recordedAt": "2026-09-11T02:20:00-03:00"
+        },
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+          "revision": "24e04490d",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (RPC por PostgREST e rota real pela UI, capturas em evidence/etapa-2/r04-publicacoes-agenda/ui)",
+          "recordedAt": "2026-09-11T02:20:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+          "revision": "24e04490d",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (RPC por PostgREST e rota real pela UI, capturas em evidence/etapa-2/r04-publicacoes-agenda/ui)",
+          "recordedAt": "2026-09-11T02:20:00-03:00"
+        }
       }
     },
     {
@@ -2817,15 +2889,15 @@
       "family": "notices",
       "screen": "Criar Aviso",
       "scope": "mvp",
-      "done": "Diretório/formulários, versão v2, recibos/agendamento e overlays corrigidos no cliente. C00 integrou layout compacto do status71b74dbe.",
-      "fe": "/notices/new monta o formulario com o mesmo repositorio da rota; sem capacidade autorizada responde production-mutation-capability-unavailable em vez de montar um formulario que nao teria como salvar. Coordenacao: local-green e nao verified enquanto os 9 goldens de chat e 3 de notices seguem vermelhos na base, sob decisao de rebaseline pendente do Owner. Mesma barra aplicada a support e a Minha conta.",
-      "be": "R04 (10/09, lote 9): Avisos v2 (200000) APLICADA EM PRODUCAO; pgTAP 38/38. Gate para done: rota normal com sessao e reload.",
-      "evidence": "evidence/etapa-2/comunicacao/; evidence/etapa-2/engenheiro-1/; Fechamento R01 C05/rfinal; C05final/C07r12; C00288PASS apenas lote focal não-golden; etapa-2-operacao/reports/R01-fechamento-20260909.md; apps/superadmin/test/app/router/notice_lifecycle_action_path_test.dart + apps/superadmin/test/app/router/notice_routes_capability_test.dart; flutter test, Windows local, branch work/etapa2-noturna-chat-comunicacoes revisao 51981fdc9, 2026-09-09; coordenacao.json R04 rev 20 (lote9)",
+      "done": "R04 publicacoes-agenda rev 20 (24e04490d): ui-06/ui-07 + pgTAP",
+      "fe": "R04 publicacoes-agenda rev 20 (24e04490d): ui-04..ui-07: formulario real, validacao, salvar, reload",
+      "be": "R04 publicacoes-agenda rev 20 (24e04490d): idem; idempotencia",
+      "evidence": "evidence/etapa-2/comunicacao/; evidence/etapa-2/engenheiro-1/; Fechamento R01 C05/rfinal; C05final/C07r12; C00288PASS apenas lote focal não-golden; etapa-2-operacao/reports/R01-fechamento-20260909.md; apps/superadmin/test/app/router/notice_lifecycle_action_path_test.dart + apps/superadmin/test/app/router/notice_routes_capability_test.dart; flutter test, Windows local, branch work/etapa2-noturna-chat-comunicacoes revisao 51981fdc9, 2026-09-09; coordenacao.json R04 rev 20 (lote9); evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
       "historicalFrontend": "audited",
       "historicalBackend": "audited",
-      "frontendStatus": "local-green",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T05:32:00-03:00",
@@ -2837,6 +2909,26 @@
         "referencia": 1,
         "atual": 0,
         "fonte": "goldens-claro-decisoes-2026-09-10"
+      },
+      "certifications": {
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+          "revision": "24e04490d",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (RPC por PostgREST e rota real pela UI, capturas em evidence/etapa-2/r04-publicacoes-agenda/ui)",
+          "recordedAt": "2026-09-11T02:20:00-03:00"
+        },
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+          "revision": "24e04490d",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (RPC por PostgREST e rota real pela UI, capturas em evidence/etapa-2/r04-publicacoes-agenda/ui)",
+          "recordedAt": "2026-09-11T02:20:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+          "revision": "24e04490d",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (RPC por PostgREST e rota real pela UI, capturas em evidence/etapa-2/r04-publicacoes-agenda/ui)",
+          "recordedAt": "2026-09-11T02:20:00-03:00"
+        }
       }
     },
     {
@@ -2845,17 +2937,25 @@
       "screen": "Editar Aviso",
       "scope": "mvp",
       "done": "Diretório/formulários, versão v2, recibos/agendamento e overlays corrigidos no cliente. C00 integrou layout compacto do status71b74dbe.",
-      "fe": "/notices/:noticeId/edit leva o id adiante; sem isso uma edicao abriria como criacao e viraria um aviso novo. Coordenacao: local-green e nao verified enquanto os 9 goldens de chat e 3 de notices seguem vermelhos na base, sob decisao de rebaseline pendente do Owner. Mesma barra aplicada a support e a Minha conta.",
-      "be": "R04 (10/09, lote 9): Avisos v2 (200000) APLICADA EM PRODUCAO; pgTAP 38/38. Gate para done: rota normal com sessao e reload.",
-      "evidence": "evidence/etapa-2/comunicacao/; evidence/etapa-2/engenheiro-1/; Fechamento R01 C05/rfinal; C05final/C07r12; C00288PASS apenas lote focal não-golden; etapa-2-operacao/reports/R01-fechamento-20260909.md; apps/superadmin/test/app/router/notice_lifecycle_action_path_test.dart + apps/superadmin/test/app/router/notice_routes_capability_test.dart; flutter test, Windows local, branch work/etapa2-noturna-chat-comunicacoes revisao 51981fdc9, 2026-09-09; coordenacao.json R04 rev 20 (lote9)",
+      "fe": "R04 publicacoes-agenda rev 20 (24e04490d): nao exercido pela tela",
+      "be": "R04 publicacoes-agenda rev 20 (24e04490d): edicao com versao; reload",
+      "evidence": "evidence/etapa-2/comunicacao/; evidence/etapa-2/engenheiro-1/; Fechamento R01 C05/rfinal; C05final/C07r12; C00288PASS apenas lote focal não-golden; etapa-2-operacao/reports/R01-fechamento-20260909.md; apps/superadmin/test/app/router/notice_lifecycle_action_path_test.dart + apps/superadmin/test/app/router/notice_routes_capability_test.dart; flutter test, Windows local, branch work/etapa2-noturna-chat-comunicacoes revisao 51981fdc9, 2026-09-09; coordenacao.json R04 rev 20 (lote9); evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
       "historicalFrontend": "audited",
       "historicalBackend": "audited",
       "frontendStatus": "local-green",
-      "backendStatus": "local-green",
+      "backendStatus": "done",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T05:32:00-03:00"
+      "lastEvidenceAt": "2026-09-09T05:32:00-03:00",
+      "certifications": {
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+          "revision": "24e04490d",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (RPC por PostgREST e rota real pela UI, capturas em evidence/etapa-2/r04-publicacoes-agenda/ui)",
+          "recordedAt": "2026-09-11T02:20:00-03:00"
+        }
+      }
     },
     {
       "id": "notices.schedule",
@@ -2863,13 +2963,13 @@
       "screen": "Avisos / Agendar",
       "scope": "mvp",
       "done": "Diretório/formulários, versão v2, recibos/agendamento e overlays corrigidos no cliente. C00 integrou layout compacto do status71b74dbe. R02 L02: FE verificado na origem L02; código final em 9144f4efb e sucessor documental 45d92b9c1. Não equivale a certificado integrado nem BE aplicado.",
-      "fe": "A etapa de vigencia passou a oferecer data e hora contra colunas timestamptz; termino anterior ao inicio bloqueado e a hora persiste no rascunho e no saveDraft. Coordenacao: local-green e nao verified enquanto os 9 goldens de chat e 3 de notices seguem vermelhos na base, sob decisao de rebaseline pendente do Owner. Mesma barra aplicada a support e a Minha conta.",
-      "be": "R04 (10/09, lote 9): Avisos v2 (200000) APLICADA EM PRODUCAO; pgTAP 38/38. Gate para done: worker de publicacao (pg_cron + notice-publication-worker, coordenador) e rota normal com sessao.",
-      "evidence": "evidence/etapa-2/comunicacao/; evidence/etapa-2/engenheiro-1/; Fechamento R01 C05/rfinal; C05final/C07r12; C00288PASS apenas lote focal não-golden; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/notices-worker-catalog-readonly.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; apps/superadmin/test/features/notices/notice_form_page_test.dart; flutter test, Windows local, branch work/etapa2-noturna-chat-comunicacoes revisao 51981fdc9, 2026-09-09; coordenacao.json R04 rev 20 (lote9)",
+      "fe": "R04 publicacoes-agenda rev 20 (24e04490d): nao exercido pela tela",
+      "be": "R04 publicacoes-agenda rev 20 (24e04490d): publish com inicio futuro -> scheduled; 200500 enfileira",
+      "evidence": "evidence/etapa-2/comunicacao/; evidence/etapa-2/engenheiro-1/; Fechamento R01 C05/rfinal; C05final/C07r12; C00288PASS apenas lote focal não-golden; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/notices-worker-catalog-readonly.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; apps/superadmin/test/features/notices/notice_form_page_test.dart; flutter test, Windows local, branch work/etapa2-noturna-chat-comunicacoes revisao 51981fdc9, 2026-09-09; coordenacao.json R04 rev 20 (lote9); coordenacao.json R04 rev 24 (lote15); next-round/R04-perguntas-ao-owner-20260911.md P30; evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
       "historicalFrontend": "audited",
       "historicalBackend": "audited",
       "frontendStatus": "local-green",
-      "backendStatus": "local-green",
+      "backendStatus": "done",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
@@ -2881,6 +2981,14 @@
         "head": "45d92b9c1",
         "note": "FE verificado na origem L02; código final em 9144f4efb e sucessor documental 45d92b9c1. Não equivale a certificado integrado nem BE aplicado.",
         "evidence": "etapa-2-operacao/next-round/R02-20260909/ENTREGA-L00-PARA-D00.md"
+      },
+      "certifications": {
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+          "revision": "24e04490d",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (RPC por PostgREST e rota real pela UI, capturas em evidence/etapa-2/r04-publicacoes-agenda/ui)",
+          "recordedAt": "2026-09-11T02:20:00-03:00"
+        }
       }
     },
     {
@@ -2889,18 +2997,26 @@
       "screen": "Avisos / Publicar",
       "scope": "mvp",
       "done": "Diretório/formulários, versão v2, recibos/agendamento e overlays corrigidos no cliente. C00 integrou layout compacto do status71b74dbe. R02: correção de conflito/ausência integrada ac298c788, três casos focais PASS. L02 entregou correções locais, sem certificado integral de publicação/arquivo.",
-      "fe": "Publicar exercido pela rota real: leva expectedVersion igual a managementVersion exibida e chave de intencao nao vazia; conflito de versao recarrega o diretorio em vez de deixar o operador repetir versao obsoleta indefinidamente. Coordenacao: local-green e nao verified enquanto os 9 goldens de chat e 3 de notices seguem vermelhos na base, sob decisao de rebaseline pendente do Owner. Mesma barra aplicada a support e a Minha conta.",
-      "be": "R04 (10/09, lote 9): Avisos v2 (200000) APLICADA EM PRODUCAO; pgTAP 38/38. Gate para done: rota normal com sessao e reload.",
-      "evidence": "evidence/etapa-2/comunicacao/; evidence/etapa-2/engenheiro-1/; Fechamento R01 C05/rfinal; C05final/C07r12; C00288PASS apenas lote focal não-golden; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/notices-worker-catalog-readonly.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; apps/superadmin/test/app/router/notice_lifecycle_action_path_test.dart + apps/superadmin/test/app/router/notice_routes_capability_test.dart; flutter test, Windows local, branch work/etapa2-noturna-chat-comunicacoes revisao 51981fdc9, 2026-09-09; packages/coelo_database/migrations (carimbos renomeados por voce para 20260909191000 e 20260909191100); nenhuma aplicacao remota; flutter test, Windows local, branch work/etapa2-noturna-chat-comunicacoes revisao 51981fdc9, 2026-09-09; coordenacao.json R04 rev 20 (lote9)",
+      "fe": "R04 publicacoes-agenda rev 20 (24e04490d): nao exercido pela tela; balao de chat em /notices/new (Decisao 7)",
+      "be": "R04 publicacoes-agenda rev 20 (24e04490d): publish imediato -> active; worker em producao, disparo P30",
+      "evidence": "evidence/etapa-2/comunicacao/; evidence/etapa-2/engenheiro-1/; Fechamento R01 C05/rfinal; C05final/C07r12; C00288PASS apenas lote focal não-golden; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/notices-worker-catalog-readonly.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; apps/superadmin/test/app/router/notice_lifecycle_action_path_test.dart + apps/superadmin/test/app/router/notice_routes_capability_test.dart; flutter test, Windows local, branch work/etapa2-noturna-chat-comunicacoes revisao 51981fdc9, 2026-09-09; packages/coelo_database/migrations (carimbos renomeados por voce para 20260909191000 e 20260909191100); nenhuma aplicacao remota; flutter test, Windows local, branch work/etapa2-noturna-chat-comunicacoes revisao 51981fdc9, 2026-09-09; coordenacao.json R04 rev 20 (lote9); coordenacao.json R04 rev 24 (lote15); evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
       "historicalFrontend": "audited",
       "historicalBackend": "audited",
       "frontendStatus": "local-green",
-      "backendStatus": "local-green",
+      "backendStatus": "done",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T05:32:00-03:00",
-      "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
+      "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
+      "certifications": {
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+          "revision": "24e04490d",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (RPC por PostgREST e rota real pela UI, capturas em evidence/etapa-2/r04-publicacoes-agenda/ui)",
+          "recordedAt": "2026-09-11T02:20:00-03:00"
+        }
+      }
     },
     {
       "id": "notices.archive",
@@ -2908,18 +3024,26 @@
       "screen": "Avisos / Arquivar",
       "scope": "mvp",
       "done": "Diretório/formulários, versão v2, recibos/agendamento e overlays corrigidos no cliente. C00 integrou layout compacto do status71b74dbe. R02: correção de conflito/ausência integrada ac298c788, três casos focais PASS. L02 entregou correções locais, sem certificado integral de publicação/arquivo.",
-      "fe": "Inativar exercido pela rota real: exige motivo, desistir do dialogo nao dispara comando, e o estado que chega ao servidor e cancelled com a versao vista. Coordenacao: local-green e nao verified enquanto os 9 goldens de chat e 3 de notices seguem vermelhos na base, sob decisao de rebaseline pendente do Owner. Mesma barra aplicada a support e a Minha conta.",
-      "be": "R04 (10/09, lote 9): Avisos v2 (200000) APLICADA EM PRODUCAO; pgTAP 38/38. Gate para done: rota normal com sessao e reload.",
-      "evidence": "evidence/etapa-2/comunicacao/; evidence/etapa-2/engenheiro-1/; Fechamento R01 C05/rfinal; C05final/C07r12; C00288PASS apenas lote focal não-golden; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; apps/superadmin/test/app/router/notice_lifecycle_action_path_test.dart + apps/superadmin/test/app/router/notice_routes_capability_test.dart; flutter test, Windows local, branch work/etapa2-noturna-chat-comunicacoes revisao 51981fdc9, 2026-09-09; coordenacao.json R04 rev 20 (lote9)",
+      "fe": "R04 publicacoes-agenda rev 20 (24e04490d): nao exercido pela tela",
+      "be": "R04 publicacoes-agenda rev 20 (24e04490d): inativar com motivo; reload",
+      "evidence": "evidence/etapa-2/comunicacao/; evidence/etapa-2/engenheiro-1/; Fechamento R01 C05/rfinal; C05final/C07r12; C00288PASS apenas lote focal não-golden; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; apps/superadmin/test/app/router/notice_lifecycle_action_path_test.dart + apps/superadmin/test/app/router/notice_routes_capability_test.dart; flutter test, Windows local, branch work/etapa2-noturna-chat-comunicacoes revisao 51981fdc9, 2026-09-09; coordenacao.json R04 rev 20 (lote9); evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
       "historicalFrontend": "audited",
       "historicalBackend": "audited",
       "frontendStatus": "local-green",
-      "backendStatus": "local-green",
+      "backendStatus": "done",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T05:32:00-03:00",
-      "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
+      "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
+      "certifications": {
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+          "revision": "24e04490d",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (RPC por PostgREST e rota real pela UI, capturas em evidence/etapa-2/r04-publicacoes-agenda/ui)",
+          "recordedAt": "2026-09-11T02:20:00-03:00"
+        }
+      }
     },
     {
       "id": "forms.list",
@@ -3673,12 +3797,12 @@
       "scope": "mvp",
       "done": "E2E permanece nao certificado: nenhuma execucao de rota real contra Supabase autenticado nesta rodada. O que existe e composicao real, contrato real e provas locais de que a rota nao usa fixture e falha fechada quando o servidor nega.",
       "fe": "Mantido, agora com a verificacao de producao respondida por simbolo. main.dart compoe o caminho (linhas 56-59, via authScope); o router monta a pagina PRODUTIVA PrincipalProfileRoutePage em SuperadminRoutes.principalProfile dentro do ShellRoute, linha 1033, e nao apenas a tela /dev; e existem implementacoes de producao concretas, SupabaseProfileAboutRepository, SupabaseCircularRepository, SupabasePrincipalHappensFeedRepository e SupabasePrincipalRuntimeContextRepository, instanciadas em superadmin_auth_scope.dart linhas 382-385. Correcoes desta rodada nesta acao: previa de circular deixou de fechar a cada rebuild da rota; bio ausente deixou de oferecer Ver mais; releitura do Sobre passou a considerar membership e pessoa.",
-      "be": "A leitura do Sobre passa a chamar public.get_profile_about, proposta NAO aplicada em packages/coelo_database/plans/2026-09-09-profile-about-read-rpc.sql. Enquanto a funcao nao existir no remoto o caminho real e o fallback por tabela sob RLS, entao o FE avanca e o BE nao certifica. Falta decisao do Owner sobre a regra de visibilidade do leitor Principal: nao existe token de leitura em profiles.about.*, apenas manage, publish e update_official_data, e a proposta assume visibility profile_access por ser o default dos INSERTs da RPC de escrita.",
-      "evidence": "commits3e16dfec/5e762eb4; evidence/etapa-2/comunicacao/2026-09-08-principal-circular-context.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C05r10; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 313c43bb19Deno,operações503 semRPC;f413c2dc50PASS/21goldenFAIL,adapterfeed;cea29b1f9aceitação/39AcontecePASS,removercliente failclosed. Quatro subagentes SQLNotices/SQLMomentos/Agora/Chat ativos relatadosr15;não visual.; etapa-2-operacao/next-round/R02-20260909/ENTREGA-L00-PARA-D00.md; evidence/etapa-2/r02-d00-integration-20260909/L03highlights-result.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commits b09da7c15 e 0399b186e; apps/superadmin/test/app/router/principal_profile_for_you_production_routes_test.dart; apps/superadmin/test/features/principal_profile/; revisao 4 de docs/reviews/etapa-2-operacao/comunicacao/perfil-para-voce.json; ambiente local Windows sem rede e sem Supabase; 2026-09-09; commit 76e8ada8f; packages/coelo_database/plans/2026-09-09-profile-about-read-rpc.sql; apps/superadmin/test/features/profile_about/data/supabase_profile_about_repository_test.dart; 2026-09-09; revisao 4 de docs/reviews/etapa-2-operacao/comunicacao/perfil-para-voce.json; 2026-09-09; commits 0399b186e e 65e1e5000; apps/superadmin/lib/main.dart:56-59; apps/superadmin/lib/app/router/superadmin_router.dart:1033; apps/superadmin/lib/core/config/superadmin_auth_scope.dart:382-385; apps/superadmin/test/features/principal_profile/; 2026-09-09",
+      "be": "R04 (lote 12): leitura de Acompanhar/Seguidores/Seguindo alimentada por follow_links (171100, D1 do grupo acessos-pessoas) APLICADA EM PRODUCAO; pgTAP 24/24. Gate para done: Perfil do Principal consumindo as RPCs follow_* (principal-chat-sistema) e rota normal com sessao.",
+      "evidence": "commits3e16dfec/5e762eb4; evidence/etapa-2/comunicacao/2026-09-08-principal-circular-context.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C05r10; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 313c43bb19Deno,operações503 semRPC;f413c2dc50PASS/21goldenFAIL,adapterfeed;cea29b1f9aceitação/39AcontecePASS,removercliente failclosed. Quatro subagentes SQLNotices/SQLMomentos/Agora/Chat ativos relatadosr15;não visual.; etapa-2-operacao/next-round/R02-20260909/ENTREGA-L00-PARA-D00.md; evidence/etapa-2/r02-d00-integration-20260909/L03highlights-result.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commits b09da7c15 e 0399b186e; apps/superadmin/test/app/router/principal_profile_for_you_production_routes_test.dart; apps/superadmin/test/features/principal_profile/; revisao 4 de docs/reviews/etapa-2-operacao/comunicacao/perfil-para-voce.json; ambiente local Windows sem rede e sem Supabase; 2026-09-09; commit 76e8ada8f; packages/coelo_database/plans/2026-09-09-profile-about-read-rpc.sql; apps/superadmin/test/features/profile_about/data/supabase_profile_about_repository_test.dart; 2026-09-09; revisao 4 de docs/reviews/etapa-2-operacao/comunicacao/perfil-para-voce.json; 2026-09-09; commits 0399b186e e 65e1e5000; apps/superadmin/lib/main.dart:56-59; apps/superadmin/lib/app/router/superadmin_router.dart:1033; apps/superadmin/lib/core/config/superadmin_auth_scope.dart:382-385; apps/superadmin/test/features/principal_profile/; 2026-09-09; coordenacao.json R04 rev 23 (lote12)",
       "historicalFrontend": "local-green",
       "historicalBackend": "blocked-decision",
       "frontendStatus": "local-green",
-      "backendStatus": "blocked-decision",
+      "backendStatus": "local-green",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
@@ -3712,8 +3836,8 @@
       "scope": "mvp",
       "done": "E2E nao certificado: sem rota real contra Supabase autenticado e sem prova de save_profile_about executado por ator autorizado real.",
       "fe": "Mantido em blocked-decision por ausencia de contrato visual canonico aprovado. Verificacao de producao, para o registro: main.dart compoe via authScope.profileAboutRepository (linha 57); o router monta PrincipalProfileEditPage em SuperadminRoutes.principalProfileEdit dentro do ShellRoute, linha 1068, com a capacidade de mutacao declarada; e SupabaseProfileAboutRepository e implementacao concreta, instanciada em superadmin_auth_scope.dart linha 383. Sem repositorio real composto a rota permanece fail-closed, nao monta prototipo.",
-      "be": "Escrita continua por public.save_profile_about, com a chave de idempotencia do chamador e a versao esperada preservadas. A leitura autorizada segue proposta nao aplicada, e o schema de profile_about_pages, _sections e _structured_fields continua remote-only, sem versionamento no repositorio. Aplicacao remota exige autorizacao nominal, inexistente nesta rodada.",
-      "evidence": "commits3e16dfec/5e762eb4; evidence/etapa-2/comunicacao/2026-09-08-principal-circular-context.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C05r10; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C05/rfinal; C05final reconhece entrega parcial; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/ENTREGA-L00-PARA-D00.md; evidence/etapa-2/r02-d00-integration-20260909/L03highlights-result.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commits b09da7c15, 60f32e292 e 6e58b624f; apps/superadmin/test/features/principal_profile/presentation/principal_profile_edit_page_test.dart; apps/superadmin/test/features/principal_profile/presentation/principal_profile_edit_preview_affordance_test.dart; 2026-09-09; packages/coelo_database/migrations/20260825193131_final_review_profile_about_lint_hardening.sql; packages/coelo_database/plans/2026-09-09-profile-about-read-rpc.sql; 2026-09-09; revisao 4 de docs/reviews/etapa-2-operacao/comunicacao/perfil-para-voce.json; 2026-09-09; commits b09da7c15, 60f32e292 e 6e58b624f; apps/superadmin/lib/app/router/superadmin_router.dart:1068; apps/superadmin/lib/core/config/superadmin_auth_scope.dart:383; 2026-09-09",
+      "be": "R04 (lote 12): follow_links (171100) em producao para Acompanhar; leitura do Sobre para membros (D9) segue com o grupo principal-chat. Gate: ponte de ator ja ativa; rota normal com sessao.",
+      "evidence": "commits3e16dfec/5e762eb4; evidence/etapa-2/comunicacao/2026-09-08-principal-circular-context.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C05r10; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C05/rfinal; C05final reconhece entrega parcial; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/ENTREGA-L00-PARA-D00.md; evidence/etapa-2/r02-d00-integration-20260909/L03highlights-result.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commits b09da7c15, 60f32e292 e 6e58b624f; apps/superadmin/test/features/principal_profile/presentation/principal_profile_edit_page_test.dart; apps/superadmin/test/features/principal_profile/presentation/principal_profile_edit_preview_affordance_test.dart; 2026-09-09; packages/coelo_database/migrations/20260825193131_final_review_profile_about_lint_hardening.sql; packages/coelo_database/plans/2026-09-09-profile-about-read-rpc.sql; 2026-09-09; revisao 4 de docs/reviews/etapa-2-operacao/comunicacao/perfil-para-voce.json; 2026-09-09; commits b09da7c15, 60f32e292 e 6e58b624f; apps/superadmin/lib/app/router/superadmin_router.dart:1068; apps/superadmin/lib/core/config/superadmin_auth_scope.dart:383; 2026-09-09; coordenacao.json R04 rev 23 (lote12)",
       "historicalFrontend": "blocked-decision",
       "historicalBackend": "blocked-decision",
       "frontendStatus": "blocked-decision",
@@ -4427,12 +4551,12 @@
       "screen": "Suporte / Tabela",
       "scope": "mvp",
       "done": "Toolbar, paginação e teclado corrigidos ed23ec20; 70 testes Suporte/Catálogo e oito goldens novos registrados. Detalhe/reply/close não certificados. C00 integrou status idêntico como no-op59ee9601; evita escrita redundante.",
-      "fe": "Aceite funcional exercitado com 61 PASS. O aceite visual nao fecha por decisao pendente: os 24 goldens de referencia falham na base em light e dark, em 375/768/1024/1440, com diffs de 11,5% a 90,4%, o que os separa da deriva de tema escuro. As referencias foram atualizadas pela ultima vez em ed23ec20f e receberam quatro commits de implementacao depois: 23510d7f8, b2bcf2d4c, bff822386 e 59ee9601e. Rebaseline exige aprovacao nominal e nao foi feito.",
+      "fe": "R04 (11/09 02:2x, subagente do coordenador sobre o WIP de operacoes): Suporte migrado ao composto CoeloAdminDirectory (2bcddb469: search, filtros Status/Menu/Responsavel/Leitura/Tela, Limpar filtros, fileActions honestos, Criar em todos os estados, SupportTicketRows, kanban como bodyOverride, paginacao no rodape fixo; allowlist do teste de arquitetura reduzida em 2); foco do detalhe lateral corrigido (Escape). analyze limpo; flutter test support+architecture 69 P / 2 F (so os dois goldens por pixel). 32 goldens support_* divergentes NAO regravados (decisao do Owner: A em todos os claros exceto support_detail_light_1024 R; regravar apos observacoes MENU/CHAT no SDK 3.44.2). Gate para verified: rota normal /support com sessao qa-r03 (ponte de ator ja em producao) em conversa com Chrome.",
       "be": "R04 (lote 10): ponte de ator (220400) em producao: superadmin_support_* resolve o ator. Gate para done: rota normal com sessao e reload.",
-      "evidence": "commited23ec20; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; Fechamento R01 C03/r33; C00 conjunto74PASS; executor60não-golden, dívida visual mantida; etapa-2-operacao/reports/R01-fechamento-20260909.md; apps/superadmin/test/features/support/ -> 61 PASS, 24 goldens em U; censo d3ddc4a76; apps/superadmin/lib/features/support/ sem data/; apps/superadmin/lib/app/router/superadmin_router.dart linhas 3029-3037; apps/superadmin/lib/app/superadmin_app.dart sem nenhuma ocorrencia de supportController; ausencia de apps/superadmin/lib/features/support/data e de qualquer SupportTicket em packages/; superadmin_router.dart:3101-3115; grep de supportController em lib e test; censo d3ddc4a76 para os goldens; comunicacao/operacoes.json r6; coordenacao.json R03 rev 15 (lote7); coordenacao.json R04 rev 21 (lote10)",
+      "evidence": "commited23ec20; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; Fechamento R01 C03/r33; C00 conjunto74PASS; executor60não-golden, dívida visual mantida; etapa-2-operacao/reports/R01-fechamento-20260909.md; apps/superadmin/test/features/support/ -> 61 PASS, 24 goldens em U; censo d3ddc4a76; apps/superadmin/lib/features/support/ sem data/; apps/superadmin/lib/app/router/superadmin_router.dart linhas 3029-3037; apps/superadmin/lib/app/superadmin_app.dart sem nenhuma ocorrencia de supportController; ausencia de apps/superadmin/lib/features/support/data e de qualquer SupportTicket em packages/; superadmin_router.dart:3101-3115; grep de supportController em lib e test; censo d3ddc4a76 para os goldens; comunicacao/operacoes.json r6; coordenacao.json R03 rev 15 (lote7); coordenacao.json R04 rev 21 (lote10); comunicacao/operacoes.json rev 17",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "blocked-decision",
+      "frontendStatus": "local-green",
       "backendStatus": "local-green",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
@@ -4458,12 +4582,12 @@
       "screen": "Suporte / Kanban",
       "scope": "mvp",
       "done": "Toolbar, paginação e teclado corrigidos ed23ec20; 70 testes Suporte/Catálogo e oito goldens novos registrados. Detalhe/reply/close não certificados. C00 integrou status idêntico como no-op59ee9601; evita escrita redundante.",
-      "fe": "Aceite funcional exercitado com 61 PASS. O aceite visual nao fecha por decisao pendente: os 24 goldens de referencia falham na base em light e dark, em 375/768/1024/1440, com diffs de 11,5% a 90,4%, o que os separa da deriva de tema escuro. As referencias foram atualizadas pela ultima vez em ed23ec20f e receberam quatro commits de implementacao depois: 23510d7f8, b2bcf2d4c, bff822386 e 59ee9601e. Rebaseline exige aprovacao nominal e nao foi feito.",
+      "fe": "R04 (11/09 02:2x, subagente do coordenador sobre o WIP de operacoes): Suporte migrado ao composto CoeloAdminDirectory (2bcddb469: search, filtros Status/Menu/Responsavel/Leitura/Tela, Limpar filtros, fileActions honestos, Criar em todos os estados, SupportTicketRows, kanban como bodyOverride, paginacao no rodape fixo; allowlist do teste de arquitetura reduzida em 2); foco do detalhe lateral corrigido (Escape). analyze limpo; flutter test support+architecture 69 P / 2 F (so os dois goldens por pixel). 32 goldens support_* divergentes NAO regravados (decisao do Owner: A em todos os claros exceto support_detail_light_1024 R; regravar apos observacoes MENU/CHAT no SDK 3.44.2). Gate para verified: rota normal /support com sessao qa-r03 (ponte de ator ja em producao) em conversa com Chrome.",
       "be": "R03 (10/09 noite): camada de Suporte em producao (lote 7); pgTAP 23/23. Gate para done: sessao (P17) e reload.",
-      "evidence": "commited23ec20; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; Fechamento R01 C03/r33; C00 conjunto74PASS; executor60não-golden, dívida visual mantida; etapa-2-operacao/reports/R01-fechamento-20260909.md; apps/superadmin/test/features/support/ -> 61 PASS, 24 goldens em U; censo d3ddc4a76; apps/superadmin/lib/features/support/ sem data/; apps/superadmin/lib/app/router/superadmin_router.dart linhas 3029-3037; apps/superadmin/lib/app/superadmin_app.dart sem nenhuma ocorrencia de supportController; ausencia de apps/superadmin/lib/features/support/data e de qualquer SupportTicket em packages/; superadmin_router.dart:3101-3115; grep de supportController em lib e test; censo d3ddc4a76 para os goldens; comunicacao/operacoes.json r6; coordenacao.json R03 rev 15",
+      "evidence": "commited23ec20; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; Fechamento R01 C03/r33; C00 conjunto74PASS; executor60não-golden, dívida visual mantida; etapa-2-operacao/reports/R01-fechamento-20260909.md; apps/superadmin/test/features/support/ -> 61 PASS, 24 goldens em U; censo d3ddc4a76; apps/superadmin/lib/features/support/ sem data/; apps/superadmin/lib/app/router/superadmin_router.dart linhas 3029-3037; apps/superadmin/lib/app/superadmin_app.dart sem nenhuma ocorrencia de supportController; ausencia de apps/superadmin/lib/features/support/data e de qualquer SupportTicket em packages/; superadmin_router.dart:3101-3115; grep de supportController em lib e test; censo d3ddc4a76 para os goldens; comunicacao/operacoes.json r6; coordenacao.json R03 rev 15; comunicacao/operacoes.json rev 17",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "blocked-decision",
+      "frontendStatus": "local-green",
       "backendStatus": "local-green",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
@@ -4488,12 +4612,12 @@
       "screen": "Suporte / Detalhe",
       "scope": "mvp",
       "done": "Toolbar, paginação e teclado corrigidos ed23ec20; 70 testes Suporte/Catálogo e oito goldens novos registrados. Detalhe/reply/close não certificados. C00 integrou Support23510d7f/b2bcf2d4/bff82238: identidade de rota fullscreen e callbacks vinculados ao controller/geração; 21 testes C00 PASS, analyzer2 limpo. Aceites restantes preservados. C00 integrou status idêntico como no-op59ee9601; evita escrita redundante.",
-      "fe": "Aceite funcional exercitado com 61 PASS. O aceite visual nao fecha por decisao pendente: os 24 goldens de referencia falham na base em light e dark, em 375/768/1024/1440, com diffs de 11,5% a 90,4%, o que os separa da deriva de tema escuro. As referencias foram atualizadas pela ultima vez em ed23ec20f e receberam quatro commits de implementacao depois: 23510d7f8, b2bcf2d4c, bff822386 e 59ee9601e. Rebaseline exige aprovacao nominal e nao foi feito.",
+      "fe": "R04 (11/09 02:2x, subagente do coordenador sobre o WIP de operacoes): Suporte migrado ao composto CoeloAdminDirectory (2bcddb469: search, filtros Status/Menu/Responsavel/Leitura/Tela, Limpar filtros, fileActions honestos, Criar em todos os estados, SupportTicketRows, kanban como bodyOverride, paginacao no rodape fixo; allowlist do teste de arquitetura reduzida em 2); foco do detalhe lateral corrigido (Escape). analyze limpo; flutter test support+architecture 69 P / 2 F (so os dois goldens por pixel). 32 goldens support_* divergentes NAO regravados (decisao do Owner: A em todos os claros exceto support_detail_light_1024 R; regravar apos observacoes MENU/CHAT no SDK 3.44.2). Gate para verified: rota normal /support com sessao qa-r03 (ponte de ator ja em producao) em conversa com Chrome.",
       "be": "R03 (10/09 noite): camada de Suporte em producao (lote 7); pgTAP 23/23. Gate para done: sessao (P17) e reload.",
-      "evidence": "commited23ec20; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; etapa-2-operacao/reports/R01-delta-1915.md; Fechamento R01 C03/r33; C00 conjunto74PASS; executor60não-golden, dívida visual mantida; etapa-2-operacao/reports/R01-fechamento-20260909.md; apps/superadmin/test/features/support/ -> 61 PASS, 24 goldens em U; censo d3ddc4a76; apps/superadmin/lib/features/support/ sem data/; apps/superadmin/lib/app/router/superadmin_router.dart linhas 3029-3037; apps/superadmin/lib/app/superadmin_app.dart sem nenhuma ocorrencia de supportController; ausencia de apps/superadmin/lib/features/support/data e de qualquer SupportTicket em packages/; superadmin_router.dart:3101-3115; grep de supportController em lib e test; censo d3ddc4a76 para os goldens; comunicacao/operacoes.json r6; coordenacao.json R03 rev 15",
+      "evidence": "commited23ec20; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; etapa-2-operacao/reports/R01-delta-1915.md; Fechamento R01 C03/r33; C00 conjunto74PASS; executor60não-golden, dívida visual mantida; etapa-2-operacao/reports/R01-fechamento-20260909.md; apps/superadmin/test/features/support/ -> 61 PASS, 24 goldens em U; censo d3ddc4a76; apps/superadmin/lib/features/support/ sem data/; apps/superadmin/lib/app/router/superadmin_router.dart linhas 3029-3037; apps/superadmin/lib/app/superadmin_app.dart sem nenhuma ocorrencia de supportController; ausencia de apps/superadmin/lib/features/support/data e de qualquer SupportTicket em packages/; superadmin_router.dart:3101-3115; grep de supportController em lib e test; censo d3ddc4a76 para os goldens; comunicacao/operacoes.json r6; coordenacao.json R03 rev 15; comunicacao/operacoes.json rev 17",
       "historicalFrontend": "audited",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "blocked-decision",
+      "frontendStatus": "local-green",
       "backendStatus": "local-green",
       "integratedStatus": "pending-verification",
       "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
@@ -5346,13 +5470,13 @@
       "family": "circulars",
       "screen": "Circulares / Diretório",
       "scope": "mvp",
-      "done": "Mapeamento R02 recebido de L01; existência parcial observada, sem aceite integral. Página existe e é montada em produção",
-      "fe": "R03: diretorio de Circulares no composto (Fase 0 850ba1838) com goldens regravados. Gate para verified: rota normal com sessao (P17).",
-      "be": "R04 (10/09 22:26, lote 9): Circulares v2 sobre a baseline (20260910200100: labels, MFA, revision_id NOT NULL, reason_code) APLICADA EM PRODUCAO; pgTAP 32/32 com negativa cross-tenant. Gate para done: rota normal com sessao e reload.",
-      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md; commit 2de205da4; production_circular_directory_paging_test.dart (3 PASS, conferindo os cursores enviados em cada chamada, o caso de pagina unica e a parada no teto); test/features/circulars com 51 PASS e as 2 falhas de golden pre-existentes na base; 2026-09-09, local; commit 6e2a21287; production_circular_directory_paging_test.dart com 4 PASS, incluindo um caso que retem as leituras a partir da segunda e exige que a tela ja esteja em conteudo com os 20 primeiros itens; suite de circulars 56 PASS com as 2 falhas de golden pre-existentes; 2026-09-10, local; goldens-claro-decisoes-2026-09-10.md; R03-fase0-handoff.md; coordenacao.json R04 rev 20 (lote9)",
-      "frontendStatus": "local-green",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "done": "R04 publicacoes-agenda rev 20 (24e04490d): ui-24 apos reload",
+      "fe": "R04 publicacoes-agenda rev 20 (24e04490d): ui-08/ui-24",
+      "be": "R04 publicacoes-agenda rev 20 (24e04490d): 200100",
+      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md; commit 2de205da4; production_circular_directory_paging_test.dart (3 PASS, conferindo os cursores enviados em cada chamada, o caso de pagina unica e a parada no teto); test/features/circulars com 51 PASS e as 2 falhas de golden pre-existentes na base; 2026-09-09, local; commit 6e2a21287; production_circular_directory_paging_test.dart com 4 PASS, incluindo um caso que retem as leituras a partir da segunda e exige que a tela ja esteja em conteudo com os 20 primeiros itens; suite de circulars 56 PASS com as 2 falhas de golden pre-existentes; 2026-09-10, local; goldens-claro-decisoes-2026-09-10.md; R03-fase0-handoff.md; coordenacao.json R04 rev 20 (lote9); evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastEvidenceAt": "2026-09-09T13:20:58.702584-03:00",
       "mappingSource": {
         "round": "R02",
@@ -5371,6 +5495,26 @@
         "referencia": 0,
         "atual": 2,
         "fonte": "goldens-claro-decisoes-2026-09-10"
+      },
+      "certifications": {
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+          "revision": "24e04490d",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (RPC por PostgREST e rota real pela UI, capturas em evidence/etapa-2/r04-publicacoes-agenda/ui)",
+          "recordedAt": "2026-09-11T02:20:00-03:00"
+        },
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+          "revision": "24e04490d",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (RPC por PostgREST e rota real pela UI, capturas em evidence/etapa-2/r04-publicacoes-agenda/ui)",
+          "recordedAt": "2026-09-11T02:20:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+          "revision": "24e04490d",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (RPC por PostgREST e rota real pela UI, capturas em evidence/etapa-2/r04-publicacoes-agenda/ui)",
+          "recordedAt": "2026-09-11T02:20:00-03:00"
+        }
       }
     },
     {
@@ -5379,11 +5523,11 @@
       "screen": "Circulares / Tabs, busca e filtro de contexto",
       "scope": "mvp",
       "done": "Mapeamento R02 recebido de L01; existência parcial observada, sem aceite integral. Enum de tabs e busca implementados",
-      "fe": "Busca e filtro por aba continuam sendo aplicados no cliente sobre a lista recebida, mas essa lista deixou de ser apenas a primeira pagina: com o cursor seguido ate o fim, procurar uma Circular antiga passa a encontra-la. A RPC superadmin_circular_directory_v2 aceita p_search e p_statuses e continua NAO sendo usada para filtrar no servidor; migrar a busca para o servidor mudaria a UX aprovada e permanece decisao em aberto, nao defeito fechado. Composicao verificada conforme a regra do coordenador: main.dart compoe o caminho SIM; o router monta a pagina PRODUTIVA SIM, fora de /dev; existe implementacao de producao do repositorio, nao apenas interface, SIM.",
-      "be": "R04 (10/09, lote 9): Circulares v2 (200100) APLICADA EM PRODUCAO; pgTAP 32/32. Gate para done: rota normal com sessao.",
-      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md; commit 2de205da4; leitura de circular_directory_page.dart, onde _filteredItems e a paginacao por _page operam sobre widget.items; supabase_superadmin_circular_repository linhas 19 a 32, que enviam p_search e p_statuses e devolvem o cursor; 2026-09-09, local; coordenacao.json R04 rev 20 (lote9)",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "local-green",
+      "fe": "R04 publicacoes-agenda rev 20 (24e04490d): abas/busca presentes; filtro nao exercido pela tela",
+      "be": "R04 publicacoes-agenda rev 20 (24e04490d): RPC filtra por status/busca",
+      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md; commit 2de205da4; leitura de circular_directory_page.dart, onde _filteredItems e a paginacao por _page operam sobre widget.items; supabase_superadmin_circular_repository linhas 19 a 32, que enviam p_search e p_statuses e devolvem o cursor; 2026-09-09, local; coordenacao.json R04 rev 20 (lote9); evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+      "frontendStatus": "local-green",
+      "backendStatus": "done",
       "integratedStatus": "pending-verification",
       "lastEvidenceAt": "2026-09-09T13:20:58.702584-03:00",
       "mappingSource": {
@@ -5393,6 +5537,14 @@
         "sourceSha256": "db41ccba27a41c81df774e7379ad46b7441b7c3e9750a0693b9dacbc848acb65",
         "substate": "`Todas / Rascunhos / Agendadas / Publicadas / Encerradas`, busca, filtro `Todos`",
         "observationOnly": true
+      },
+      "certifications": {
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+          "revision": "24e04490d",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (RPC por PostgREST e rota real pela UI, capturas em evidence/etapa-2/r04-publicacoes-agenda/ui)",
+          "recordedAt": "2026-09-11T02:20:00-03:00"
+        }
       }
     },
     {
@@ -5400,13 +5552,13 @@
       "family": "circulars",
       "screen": "Criar Circular",
       "scope": "mvp",
-      "done": "Mapeamento R02 recebido de L01; existência parcial observada, sem aceite integral. `SuperadminCircularComposerPage` montada via `ProductionCircularComposerHost`",
-      "fe": "Completar e provar Composer: título, blocos de texto/mídia/pergunta, rascunho. Preservar família Principal e shell Superadmin web/mobile; estados e negativas da spec037.",
-      "be": "R04 (10/09, lote 9): Circulares v2 (200100) APLICADA EM PRODUCAO; pgTAP 32/32. Gate para done: rota normal com sessao e reload.",
-      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md; coordenacao.json R04 rev 20 (lote9)",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "done": "R04 publicacoes-agenda rev 20 (24e04490d): ",
+      "fe": "R04 publicacoes-agenda rev 20 (24e04490d): ui-09..ui-11",
+      "be": "R04 publicacoes-agenda rev 20 (24e04490d): ",
+      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md; coordenacao.json R04 rev 20 (lote9); evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastEvidenceAt": "2026-09-09T13:20:58.702584-03:00",
       "mappingSource": {
         "round": "R02",
@@ -5415,6 +5567,26 @@
         "sourceSha256": "db41ccba27a41c81df774e7379ad46b7441b7c3e9750a0693b9dacbc848acb65",
         "substate": "Composer: título, blocos de texto/mídia/pergunta, rascunho",
         "observationOnly": true
+      },
+      "certifications": {
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+          "revision": "24e04490d",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (RPC por PostgREST e rota real pela UI, capturas em evidence/etapa-2/r04-publicacoes-agenda/ui)",
+          "recordedAt": "2026-09-11T02:20:00-03:00"
+        },
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+          "revision": "24e04490d",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (RPC por PostgREST e rota real pela UI, capturas em evidence/etapa-2/r04-publicacoes-agenda/ui)",
+          "recordedAt": "2026-09-11T02:20:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+          "revision": "24e04490d",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (RPC por PostgREST e rota real pela UI, capturas em evidence/etapa-2/r04-publicacoes-agenda/ui)",
+          "recordedAt": "2026-09-11T02:20:00-03:00"
+        }
       }
     },
     {
@@ -5423,11 +5595,11 @@
       "screen": "Editar Circular",
       "scope": "mvp",
       "done": "Mapeamento R02 recebido de L01; existência parcial observada, sem aceite integral. Rota montada, reaproveita o mesmo composer com `circularId`",
-      "fe": "Completar e provar Correção que cria nova revisão. Preservar família Principal e shell Superadmin web/mobile; estados e negativas da spec037.",
-      "be": "R04 (lote 10): superadmin_circular_save_draft_v2 corrigida (200400: variavel circular_id ambigua derrubava toda edicao de rascunho, achado da prova em producao 32/33) APLICADA EM PRODUCAO; pgTAP 34/34. Gate para done: reprova com sessao e reload.",
-      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md; leitura de 20260901191921_superadmin_internal_circulars_v2.sql, corpo de save_draft_v2; 2026-09-09, local; coordenacao.json R04 rev 20 (lote9); coordenacao.json R04 rev 21 (lote10)",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "local-green",
+      "fe": "R04 publicacoes-agenda rev 20 (24e04490d): rascunho reaberto em edicao (ui-11); edicao explicita nao exercida",
+      "be": "R04 publicacoes-agenda rev 20 (24e04490d): 200400",
+      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md; leitura de 20260901191921_superadmin_internal_circulars_v2.sql, corpo de save_draft_v2; 2026-09-09, local; coordenacao.json R04 rev 20 (lote9); coordenacao.json R04 rev 21 (lote10); evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+      "frontendStatus": "local-green",
+      "backendStatus": "done",
       "integratedStatus": "pending-verification",
       "lastEvidenceAt": "2026-09-09T13:20:58.702584-03:00",
       "mappingSource": {
@@ -5437,6 +5609,14 @@
         "sourceSha256": "db41ccba27a41c81df774e7379ad46b7441b7c3e9750a0693b9dacbc848acb65",
         "substate": "Correção que cria nova revisão",
         "observationOnly": true
+      },
+      "certifications": {
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+          "revision": "24e04490d",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (RPC por PostgREST e rota real pela UI, capturas em evidence/etapa-2/r04-publicacoes-agenda/ui)",
+          "recordedAt": "2026-09-11T02:20:00-03:00"
+        }
       }
     },
     {
@@ -5444,13 +5624,13 @@
       "family": "circulars",
       "screen": "Circular / Detalhe",
       "scope": "mvp",
-      "done": "Mapeamento R02 recebido de L01; existência parcial observada, sem aceite integral. `SuperadminCircularDetailPage`, com ação `Editar circular`",
-      "fe": "O aceite declara conteudo, contexto E resumo de respostas. A RPC superadmin_circular_response_summary_v2 existia, o repositorio tinha fetchResponseSummary e havia teste de dados, mas nenhuma tela chamava, e o leitor ainda recebia o repositorio pelo tipo mais estreito, o que impedia a chamada mesmo com a instancia certa injetada. O resumo passou a ser exibido, opcional de proposito: sem fonte nao inventa numero, e falha ao carregar esconde o bloco em vez de derrubar a leitura. Composicao verificada conforme a regra do coordenador: main.dart compoe o caminho SIM; o router monta a pagina PRODUTIVA SIM, fora de /dev; existe implementacao de producao do repositorio, nao apenas interface, SIM.",
-      "be": "R04 (10/09, lote 9): Circulares v2 (200100) APLICADA EM PRODUCAO; pgTAP 32/32. Gate para done: rota normal com sessao.",
-      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md; commit b10f48d1e; principal_circular_reader_route_test.dart (5 PASS), incluindo os dois casos de fail-closed; 2026-09-09, local; commit 536b1f222; superadmin_circular_response_summary_test.dart (4 PASS); suites de circulars e a rota, 65 PASS e as 2 falhas de golden do diretorio ja presentes na base; conferido que NAO existe golden do detalhe administrativo, entao nenhuma referencia aprovada foi movida; 2026-09-09, local; coordenacao.json R04 rev 20 (lote9)",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "done": "R04 publicacoes-agenda rev 20 (24e04490d): ",
+      "fe": "R04 publicacoes-agenda rev 20 (24e04490d): ui-18/ui-20",
+      "be": "R04 publicacoes-agenda rev 20 (24e04490d): ",
+      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md; commit b10f48d1e; principal_circular_reader_route_test.dart (5 PASS), incluindo os dois casos de fail-closed; 2026-09-09, local; commit 536b1f222; superadmin_circular_response_summary_test.dart (4 PASS); suites de circulars e a rota, 65 PASS e as 2 falhas de golden do diretorio ja presentes na base; conferido que NAO existe golden do detalhe administrativo, entao nenhuma referencia aprovada foi movida; 2026-09-09, local; coordenacao.json R04 rev 20 (lote9); evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastEvidenceAt": "2026-09-09T13:20:58.702584-03:00",
       "mappingSource": {
         "round": "R02",
@@ -5459,6 +5639,26 @@
         "sourceSha256": "db41ccba27a41c81df774e7379ad46b7441b7c3e9750a0693b9dacbc848acb65",
         "substate": "Leitor com conteúdo, contexto e resumo de respostas",
         "observationOnly": true
+      },
+      "certifications": {
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+          "revision": "24e04490d",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (RPC por PostgREST e rota real pela UI, capturas em evidence/etapa-2/r04-publicacoes-agenda/ui)",
+          "recordedAt": "2026-09-11T02:20:00-03:00"
+        },
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+          "revision": "24e04490d",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (RPC por PostgREST e rota real pela UI, capturas em evidence/etapa-2/r04-publicacoes-agenda/ui)",
+          "recordedAt": "2026-09-11T02:20:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+          "revision": "24e04490d",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (RPC por PostgREST e rota real pela UI, capturas em evidence/etapa-2/r04-publicacoes-agenda/ui)",
+          "recordedAt": "2026-09-11T02:20:00-03:00"
+        }
       }
     },
     {
@@ -5467,11 +5667,11 @@
       "screen": "Circulares / Agendar",
       "scope": "mvp",
       "done": "Mapeamento R02 recebido de L01; existência parcial observada, sem aceite integral. Seletor de agendamento e rótulo `Agendar circular`",
-      "fe": "Completar e provar Escolha de data/hora antes de publicar. Preservar família Principal e shell Superadmin web/mobile; estados e negativas da spec037.",
-      "be": "R04 (10/09, lote 9): Circulares v2 (200100) APLICADA EM PRODUCAO; agendar inline (D4). Gate para done: rota normal com sessao e reload.",
-      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md; coordenacao.json R04 rev 20 (lote9)",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "local-green",
+      "fe": "R04 publicacoes-agenda rev 20 (24e04490d): campo inline presente (ui-14); picker nao acionado",
+      "be": "R04 publicacoes-agenda rev 20 (24e04490d): publish_at futuro -> scheduled",
+      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md; coordenacao.json R04 rev 20 (lote9); evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+      "frontendStatus": "local-green",
+      "backendStatus": "done",
       "integratedStatus": "pending-verification",
       "lastEvidenceAt": "2026-09-09T13:20:58.702584-03:00",
       "mappingSource": {
@@ -5481,6 +5681,14 @@
         "sourceSha256": "db41ccba27a41c81df774e7379ad46b7441b7c3e9750a0693b9dacbc848acb65",
         "substate": "Escolha de data/hora antes de publicar",
         "observationOnly": true
+      },
+      "certifications": {
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+          "revision": "24e04490d",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (RPC por PostgREST e rota real pela UI, capturas em evidence/etapa-2/r04-publicacoes-agenda/ui)",
+          "recordedAt": "2026-09-11T02:20:00-03:00"
+        }
       }
     },
     {
@@ -5488,13 +5696,13 @@
       "family": "circulars",
       "screen": "Circulares / Publicar",
       "scope": "mvp",
-      "done": "Mapeamento R02 recebido de L01; existência parcial observada, sem aceite integral. Ação primária do composer",
-      "fe": "Completar e provar Publicação imediata com versão otimista. Preservar família Principal e shell Superadmin web/mobile; estados e negativas da spec037.",
-      "be": "R04 (10/09, lote 9): Circulares v2 (200100) APLICADA EM PRODUCAO; pgTAP 32/32. Gate para done: rota normal com sessao e reload.",
-      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md; coordenacao.json R04 rev 20 (lote9)",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "done": "R04 publicacoes-agenda rev 20 (24e04490d): com ressalva do balao a 1440",
+      "fe": "R04 publicacoes-agenda rev 20 (24e04490d): ui-17 a 1024; a 1440 o balao de chat cobre o botao (achado bloqueante do shell)",
+      "be": "R04 publicacoes-agenda rev 20 (24e04490d): ",
+      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md; coordenacao.json R04 rev 20 (lote9); evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastEvidenceAt": "2026-09-09T13:20:58.702584-03:00",
       "mappingSource": {
         "round": "R02",
@@ -5503,6 +5711,26 @@
         "sourceSha256": "db41ccba27a41c81df774e7379ad46b7441b7c3e9750a0693b9dacbc848acb65",
         "substate": "Publicação imediata com versão otimista",
         "observationOnly": true
+      },
+      "certifications": {
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+          "revision": "24e04490d",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (RPC por PostgREST e rota real pela UI, capturas em evidence/etapa-2/r04-publicacoes-agenda/ui)",
+          "recordedAt": "2026-09-11T02:20:00-03:00"
+        },
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+          "revision": "24e04490d",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (RPC por PostgREST e rota real pela UI, capturas em evidence/etapa-2/r04-publicacoes-agenda/ui)",
+          "recordedAt": "2026-09-11T02:20:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+          "revision": "24e04490d",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (RPC por PostgREST e rota real pela UI, capturas em evidence/etapa-2/r04-publicacoes-agenda/ui)",
+          "recordedAt": "2026-09-11T02:20:00-03:00"
+        }
       }
     },
     {
@@ -5510,13 +5738,13 @@
       "family": "circulars",
       "screen": "Circulares / Encerrar respostas",
       "scope": "mvp",
-      "done": "Mapeamento R02 recebido de L01; existência parcial observada, sem aceite integral. **Sem affordance de UI.** Só o método de repositório existe",
-      "fe": "R03: encerramento e exclusao ligados no detalhe (e4e9b9a03, grupo publicacoes-agenda), integrados em dev abd84b042; chave superadminCircularDeleteEnabled=false ate o SQL aplicar. Gate: rota normal contra producao.",
-      "be": "R04 (10/09, lote 9): Circulares v2 (200100) APLICADA EM PRODUCAO; encerrar (D4). Gate para done: rota normal com sessao e reload.",
-      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md; varredura de 25 metodos de interface das quatro familias contra consumidores em presentation, application e app: apenas closeResponses e o withdraw orfao deram zero; leitura de _isProductionMutationLocation em superadmin_router.dart; 2026-09-09, local; comunicacao/publicacoes-agenda.json r5; coordenacao.json R04 rev 20 (lote9)",
-      "frontendStatus": "blocked-decision",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "done": "R04 publicacoes-agenda rev 20 (24e04490d): ",
+      "fe": "R04 publicacoes-agenda rev 20 (24e04490d): ui-19/ui-20",
+      "be": "R04 publicacoes-agenda rev 20 (24e04490d): ",
+      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md; varredura de 25 metodos de interface das quatro familias contra consumidores em presentation, application e app: apenas closeResponses e o withdraw orfao deram zero; leitura de _isProductionMutationLocation em superadmin_router.dart; 2026-09-09, local; comunicacao/publicacoes-agenda.json r5; coordenacao.json R04 rev 20 (lote9); evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastEvidenceAt": "2026-09-09T13:20:58.702584-03:00",
       "mappingSource": {
         "round": "R02",
@@ -5525,6 +5753,26 @@
         "sourceSha256": "db41ccba27a41c81df774e7379ad46b7441b7c3e9750a0693b9dacbc848acb65",
         "substate": "Encerramento manual auditado",
         "observationOnly": true
+      },
+      "certifications": {
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+          "revision": "24e04490d",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (RPC por PostgREST e rota real pela UI, capturas em evidence/etapa-2/r04-publicacoes-agenda/ui)",
+          "recordedAt": "2026-09-11T02:20:00-03:00"
+        },
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+          "revision": "24e04490d",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (RPC por PostgREST e rota real pela UI, capturas em evidence/etapa-2/r04-publicacoes-agenda/ui)",
+          "recordedAt": "2026-09-11T02:20:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+          "revision": "24e04490d",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (RPC por PostgREST e rota real pela UI, capturas em evidence/etapa-2/r04-publicacoes-agenda/ui)",
+          "recordedAt": "2026-09-11T02:20:00-03:00"
+        }
       }
     },
     {
@@ -5532,13 +5780,13 @@
       "family": "circulars",
       "screen": "Circulares / Excluir",
       "scope": "mvp",
-      "done": "Mapeamento R02 recebido de L01; existência parcial observada, sem aceite integral. **Sem affordance de UI.** Nenhum botão `Excluir` no diretório ou no detalhe",
-      "fe": "Completar e provar Exclusão lógica quando existir histórico. Preservar família Principal e shell Superadmin web/mobile; estados e negativas da spec037.",
-      "be": "R04 (10/09 22:26, lote 9): superadmin_circular_delete_v2 (20260910200200, renumeracao de f15a9eec2 + circulars_check1) APLICADA EM PRODUCAO; pgTAP 10/10 + 15/15 comportamental. Chave superadminCircularDeleteEnabled ligada pelo coordenador. Gate para done: rota normal com sessao e reload.",
-      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md; leitura de packages/coelo_database/migrations/20260901191921_superadmin_internal_circulars_v2.sql, onde as sete funcoes v2 estao enumeradas; superadmin_circular_repository.dart sem metodo de exclusao; circulars/presentation sem afordancia de excluir Circular; 2026-09-09, local; comunicacao/publicacoes-agenda.json r5; coordenacao.json R04 rev 20 (lote9)",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "done": "R04 publicacoes-agenda rev 20 (24e04490d): ui-24",
+      "fe": "R04 publicacoes-agenda rev 20 (24e04490d): ui-22/ui-23/ui-24; diretorio so atualiza apos reload (achado)",
+      "be": "R04 publicacoes-agenda rev 20 (24e04490d): 200200 + pgTAP comportamental",
+      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md; leitura de packages/coelo_database/migrations/20260901191921_superadmin_internal_circulars_v2.sql, onde as sete funcoes v2 estao enumeradas; superadmin_circular_repository.dart sem metodo de exclusao; circulars/presentation sem afordancia de excluir Circular; 2026-09-09, local; comunicacao/publicacoes-agenda.json r5; coordenacao.json R04 rev 20 (lote9); evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastEvidenceAt": "2026-09-09T13:20:58.702584-03:00",
       "mappingSource": {
         "round": "R02",
@@ -5547,6 +5795,26 @@
         "sourceSha256": "db41ccba27a41c81df774e7379ad46b7441b7c3e9750a0693b9dacbc848acb65",
         "substate": "Exclusão lógica quando existir histórico",
         "observationOnly": true
+      },
+      "certifications": {
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+          "revision": "24e04490d",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (RPC por PostgREST e rota real pela UI, capturas em evidence/etapa-2/r04-publicacoes-agenda/ui)",
+          "recordedAt": "2026-09-11T02:20:00-03:00"
+        },
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+          "revision": "24e04490d",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (RPC por PostgREST e rota real pela UI, capturas em evidence/etapa-2/r04-publicacoes-agenda/ui)",
+          "recordedAt": "2026-09-11T02:20:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+          "revision": "24e04490d",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (RPC por PostgREST e rota real pela UI, capturas em evidence/etapa-2/r04-publicacoes-agenda/ui)",
+          "recordedAt": "2026-09-11T02:20:00-03:00"
+        }
       }
     },
     {
@@ -5555,9 +5823,9 @@
       "screen": "Responder Circular",
       "scope": "mvp",
       "done": "Mapeamento R02 recebido de L01; existência parcial observada, sem aceite integral. `PrincipalCircularReader` implementa seleção e envio, mas `PrincipalCircularDetailPage` **não é montado em nenhuma rota** do `lib`",
-      "fe": "Complemento da correcao anterior: o servidor sinaliza Circular ENCERRADA com o MESMO conflito de versao que usa para conteudo obsoleto, porque submit_circular_response levanta expected_version_conflict tanto para versao divergente quanto para respostas ja fechadas. Com isso o convite falso sobrevivia no subcaso de encerramento. Depois da releitura autorizada os dois casos sao distinguiveis, e o aviso passou a dizer que as respostas foram encerradas.",
-      "be": "Validar contrato autorizado, tenant/escopo real, versão, RLS e auditoria. RPCs `save_circular_response_draft` e `submit_circular_response`; capacidade `circulars.circulars.respond`. **Ausentes no gateway v2**",
-      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md; commit 5ffdae8ba; principal_circular_response_failure_test.dart (3 PASS); test/features/principal_circulars completo com 111 PASS e 0 FAIL, incluindo os goldens do leitor em 375 e 1440, claro e escuro, e o dialogo de previa; 2026-09-09, local, branch work/etapa2-noturna-publicacoes-midia; commit 9fde22632; principal_circular_response_failure_test.dart com 4 PASS, incluindo um caso que trava a AUSENCIA de \"responda novamente\" quando encerrada; cadeia conferida ponta a ponta: RPC levanta serialization_failure 40001, repositorio mapeia para CircularVersionConflict por codigo e mensagem; 2026-09-10, local",
+      "fe": "R04 publicacoes-agenda rev 20 (24e04490d): ",
+      "be": "R04 publicacoes-agenda rev 20 (24e04490d): RPCs people-based do Principal, fora do gateway v2",
+      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md; commit 5ffdae8ba; principal_circular_response_failure_test.dart (3 PASS); test/features/principal_circulars completo com 111 PASS e 0 FAIL, incluindo os goldens do leitor em 375 e 1440, claro e escuro, e o dialogo de previa; 2026-09-09, local, branch work/etapa2-noturna-publicacoes-midia; commit 9fde22632; principal_circular_response_failure_test.dart com 4 PASS, incluindo um caso que trava a AUSENCIA de \"responda novamente\" quando encerrada; cadeia conferida ponta a ponta: RPC levanta serialization_failure 40001, repositorio mapeia para CircularVersionConflict por codigo e mensagem; 2026-09-10, local; evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
       "frontendStatus": "pending-verification",
       "backendStatus": "pending-verification",
       "integratedStatus": "pending-verification",
@@ -5577,9 +5845,9 @@
       "screen": "Circular / Anexos",
       "scope": "mvp",
       "done": "Mapeamento R02 recebido de L01; existência parcial observada, sem aceite integral. Lista de anexos e contador `n/4` renderizam, mas o **seletor de arquivos está desabilitado em produção** com aviso honesto",
-      "fe": "No compositor produtivo, onPickFiles apenas exibia um aviso de que o envio de anexos seria habilitado depois e nao fazia nada: na tela real um autor autorizado nao conseguia anexar. Agora seleciona arquivos locais, envia pelo caminho de midia de Circular ja existente, mostra estado de envio numa regiao com Semantics liveRegion e reporta falha honestamente. O cliente continua sem escolher bucket, chave ou provedor. Composicao verificada conforme a regra do coordenador: main.dart compoe o caminho SIM; o router monta a pagina PRODUTIVA SIM, fora de /dev; existe implementacao de producao do repositorio, nao apenas interface, SIM.",
-      "be": "R03 (10/09 noite): circular-media IMPLANTADA com o ramo R2 (migration circulars_media_private_r2_v1 ja estava em producao); token R2 nos secrets; spike PASS. Gate para done: anexar arquivo real com sessao (P17), reload e negativa cross-tenant ja em pgTAP.",
-      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commits 1e39b2fcf (integrado em dev via merge d502350ce) e b10f48d1e; principal_circular_attachment_tile_test.dart e principal_circular_detail_media_passthrough_test.dart integrados de L01 3697dd49e; 2026-09-09, local; commit 04acb3e7b; deno test --config deno.json --allow-all packages/coelo_database/supabase/functions/circular-media/index_test.ts, 25 PASS e 0 FAIL, incluindo os casos que provam que o segredo e as credenciais do bucket nunca saem, que um R2 nao configurado e recusado antes de alcancar o objeto e que a falha de transporte e opaca; 2026-09-09, local; commit 4e825eef5, reusando a entrega autoral L01 3697dd49e; production_circular_attachments_test.dart; circular_routes_test confirma que a rota produtiva monta ProductionCircularComposerHost e nao o host de desenvolvimento; 2026-09-09, local, branch work/etapa2-noturna-publicacoes-midia; coordenacao.json R03 rev 13",
+      "fe": "R04 publicacoes-agenda rev 20 (24e04490d): ",
+      "be": "R04 publicacoes-agenda rev 20 (24e04490d): R2 em producao; upload real nao exercido",
+      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commits 1e39b2fcf (integrado em dev via merge d502350ce) e b10f48d1e; principal_circular_attachment_tile_test.dart e principal_circular_detail_media_passthrough_test.dart integrados de L01 3697dd49e; 2026-09-09, local; commit 04acb3e7b; deno test --config deno.json --allow-all packages/coelo_database/supabase/functions/circular-media/index_test.ts, 25 PASS e 0 FAIL, incluindo os casos que provam que o segredo e as credenciais do bucket nunca saem, que um R2 nao configurado e recusado antes de alcancar o objeto e que a falha de transporte e opaca; 2026-09-09, local; commit 4e825eef5, reusando a entrega autoral L01 3697dd49e; production_circular_attachments_test.dart; circular_routes_test confirma que a rota produtiva monta ProductionCircularComposerHost e nao o host de desenvolvimento; 2026-09-09, local, branch work/etapa2-noturna-publicacoes-midia; coordenacao.json R03 rev 13; evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
       "frontendStatus": "pending-verification",
       "backendStatus": "local-green",
       "integratedStatus": "pending-verification",
@@ -5595,7 +5863,7 @@
       "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
     }
   ],
-  "updatedAt": "2026-09-11T02:36:35.577Z",
+  "updatedAt": "2026-09-11T05:24:53.135Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,

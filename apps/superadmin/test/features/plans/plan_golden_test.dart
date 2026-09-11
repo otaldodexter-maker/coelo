@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:coelo_superadmin/app/activity/superadmin_activity.dart';
 import 'package:coelo_superadmin/app/prototype/superadmin_prototype_store.dart';
+import 'package:coelo_superadmin/app/shell/superadmin_shell.dart';
+import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/plans/data/fake_plan_catalog_repository.dart';
 import 'package:coelo_superadmin/features/plans/presentation/plan_directory_page.dart';
 import 'package:coelo_superadmin/features/plans/presentation/plan_form_page.dart';
@@ -98,7 +100,15 @@ Widget _directoryApp(Brightness brightness) => MaterialApp(
       child: child!,
     ),
   ),
-  home: Scaffold(body: PlanDirectoryPage(repository: _repository())),
+  // FUNDO (decisão do Owner de 10/09): o golden reproduz a rota real, dentro
+  // da shell (menu, cabeçalho, Bug), sem fundo cinza de Scaffold avulso.
+  home: SuperadminShell(
+    logout: () async => const LogoutResult.success(),
+    title: 'Planos',
+    subtitle: 'Configure os planos disponíveis na plataforma.',
+    currentDestination: 'plans',
+    child: PlanDirectoryPage(repository: _repository()),
+  ),
 );
 
 Widget _formApp(Widget child, Brightness brightness) => MaterialApp(

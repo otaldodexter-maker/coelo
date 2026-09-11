@@ -248,17 +248,26 @@ void main() {
     await tester.pumpAndSettle();
   });
 
-  for (final entry in <Object, String>{
-    const AuditUnauthorizedException(): 'unauthorized',
-    const AuditNotFoundException(): 'notFound',
-    const AuditUnavailableException(): 'failure',
+  // Estados do composto (CoeloAdminDirectory): o texto de cada estado é a
+  // evidência; a toolbar (busca, filtros, toggle, Arquivos) fica sempre visível.
+  for (final entry in <Object, (String, String)>{
+    const AuditUnauthorizedException(): (
+      'unauthorized',
+      'Você não tem permissão para consultar a auditoria.',
+    ),
+    const AuditNotFoundException(): ('notFound', 'O recurso solicitado não foi encontrado.'),
+    const AuditUnavailableException(): ('failure', 'Não foi possível carregar a auditoria.'),
   }.entries) {
-    testWidgets('renders ${entry.value} and retry when applicable', (tester) async {
+    testWidgets('renders ${entry.value.$1} and retry when applicable', (tester) async {
       final repository = _AuditRepository(error: entry.key);
       await _pump(tester, width: 768, repository: repository);
-      expect(find.byKey(Key('audit-state-${entry.value}')), findsOneWidget);
-      if (entry.value == 'failure') {
-        expect(find.text('Tentar novamente'), findsOneWidget);
+      expect(find.text(entry.value.$2), findsOneWidget);
+      if (entry.value.$1 != 'unauthorized') {
+        // Sem autorização o composto não expõe controles; nos demais estados a
+        // toolbar segue visível e a falha oferece Tentar novamente.
+        expect(find.byKey(const Key('audit-search')), findsOneWidget);
+        expect(find.byKey(const Key('coelo-admin-files-action')), findsOneWidget);
+        expect(find.byKey(const Key('coelo-admin-directory-retry')), findsOneWidget);
       }
     });
   }
@@ -266,8 +275,10 @@ void main() {
   testWidgets('renders empty and no-results as different server states', (tester) async {
     final emptyRepository = _AuditRepository(page: _page(events: const []));
     await _pump(tester, width: 375, repository: emptyRepository);
-    expect(find.byKey(const Key('audit-state-empty')), findsOneWidget);
-    expect(find.text('Arquivos'), findsNothing);
+    expect(find.text('Ainda não há eventos de auditoria disponíveis.'), findsOneWidget);
+    // Owner (10/09): toolbar e Arquivos aparecem mesmo sem nada cadastrado.
+    expect(find.byKey(const Key('coelo-admin-files-action')), findsOneWidget);
+    expect(find.byKey(const Key('audit-outcome-filter')), findsOneWidget);
 
     final filteredRepository = _AuditRepository(page: _page(events: const []));
     await _pump(
@@ -276,8 +287,8 @@ void main() {
       repository: filteredRepository,
       query: AuditQuery(search: 'sem resultado'),
     );
-    expect(find.byKey(const Key('audit-state-noResults')), findsOneWidget);
-    expect(find.text('Arquivos'), findsNothing);
+    expect(find.text('Nenhum evento corresponde aos filtros aplicados.'), findsOneWidget);
+    expect(find.byKey(const Key('coelo-admin-directory-clear-filters')), findsOneWidget);
   });
 
   testWidgets('stays overflow-free at required widths, themes and 200 percent text', (

@@ -500,7 +500,8 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
               ? 'Atualize a identidade e o acesso exclusivos do Superadmin.'
               : 'Crie um acesso interno exclusivo ao Superadmin.',
           currentDestination: 'internal-users',
-          chatLauncherBottomInset: _footerHeight,
+          showChatLauncher: false, // Decisao 7: sem balao de chat em criar/editar
+          chatLauncherBottomInset: 0,
           onDestinationSelected: widget.onDestinationSelected,
           child: ColoredBox(
             color: Theme.of(context).colorScheme.surface,

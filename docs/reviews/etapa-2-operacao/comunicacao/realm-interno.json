@@ -1,15 +1,15 @@
 {
   "grupo": "realm-interno",
-  "revision": 11,
+  "revision": 13,
   "round": "E2-R04-20260911",
-  "updatedAt": "2026-09-10T23:29-03:00",
+  "updatedAt": "2026-09-11T00:24-03:00",
   "app": "Claude",
   "modelo": "Fable 5.1",
   "conversa": "R04 · Realm interno e Chat backend",
   "coordenador": "R04 · Coordenação noturna (coordenacao.json)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-realm-interno",
   "branch": "work/etapa2-r04-realm-interno",
-  "head": "8a0bd7e9f",
+  "head": "400e3395d",
   "upstream": "origin/work/etapa2-r04-realm-interno",
   "base": "origin/dev 93bedcf4e (lote 10 fechado; 240500 em migrations/); rebase feito nesta revisao",
   "historicoR03": "frente sem entrega na R03 (frenteNova coelo-f0 atribuida as 15:58; worktree e2-r03-realm-interno quebrada, nao usada). Nada a reutilizar dela.",
@@ -121,7 +121,7 @@
     "escopo": "membership de plataforma ve toda conversa; membership de instituicao so ve a propria instituicao (outro tenant responde CHAT_NOT_FOUND). Anexos: so metadados; chat.attach continua dependendo do gateway de midia comum (fora deste recorte).",
     "criarGrupoNoCliente": "sugestao para SupabaseChatRepository: createGroup(ChatCreateGroupCommand{institutionId, title, personIds, unitId?, groupId?, activityId?, idempotencyKey}) -> ChatConversationSummary; o seletor de hierarquia escolhe UMA instituicao e pessoas dela (readers existentes de Pessoas/Unidades/Turmas do Superadmin); grupo entre instituicoes nao existe no modelo (conversations.institution_id NOT NULL)."
   },
-  "proximoPasso": "nenhum item pendente; responder o que chegar pelo JSON ou por mensagem do coordenador",
+  "proximoPasso": "fechar os dois subagentes, commitar, gravar a mini-revisao atualizada ate 04:00",
   "pacotesProntos": [
     {
       "arquivo": "packages/coelo_database/candidatos/realm-interno/20260910240000_chat_production_contract_v1.sql",
@@ -166,6 +166,15 @@
       "chaveDeComposicao": "nenhuma",
       "dependeDe": "nada (independente dos pacotes 1-5)",
       "estado": "APLICADO em producao pelo coordenador (ledger 20260910240500, 182 versoes) e conferido as 23:20"
+    },
+    {
+      "arquivo": "packages/coelo_database/candidatos/realm-interno/20260910240600_revoke_authenticated_truncate_references_trigger_v1.sql",
+      "assunto": "seguranca basica: authenticated sem TRUNCATE (ignora RLS), REFERENCES e TRIGGER nas 22 tabelas de public que ainda os concediam (GRANT ALL historico em people, institutions, messages, conversations, units, platform_permissions...); SELECT/INSERT/UPDATE/DELETE intactos",
+      "pgTAP": "supabase/tests/revoke_authenticated_truncate_references_trigger_v1_test.sql 6/6; no descartavel TRUNCATE 173 -> 0 grants, grants de leitura/escrita 718 -> 718; suites do chat continuam verdes",
+      "commit": "400e3395d",
+      "chaveDeComposicao": "nenhuma",
+      "dependeDe": "nada",
+      "estado": "pronto para o coordenador aplicar"
     }
   ],
   "ordemDeAplicacao": "240000 -> 240100 -> 240200 -> 240300 -> 240400. Cada um tem preflight de presenca de objeto e falha com 55000 se a dependencia faltar. Todos aplicados em sequencia no mesmo projeto descartavel; pgTAP total 108 PASS / 0 FAIL.",
@@ -271,5 +280,17 @@
     "provasRegistradas": "pgTAP 141/141 no descartavel (7 suites); prova em producao 18/18 (22:32) e reconferencia somente leitura 5/5 (23:20) com qa-r03; evidencia em docs/reviews/evidence/etapa-2/r04-realm-interno/",
     "handoff": "docs/reviews/evidence/etapa-2/r04-realm-interno/handoff.md"
   },
-  "status": "recorte concluido; disponivel ate 04:20 para perguntas de contrato e ajustes"
+  "status": "recorte finalizado (rev 12); reaberto para trabalho util ate 04:00 por ordem do Owner (00:00): seguranca basica de authenticated, pgTAP do escopo activity e README do fluxo, com subagentes",
+  "ordemDoOwner0000": "ninguem para antes da entrega (frentes 04:00, coordenador 05:00); usar o maximo de subagentes e rtk",
+  "medicaoAuthenticatedProducao": {
+    "quando": "2026-09-11T00:05-03:00 (somente leitura)",
+    "truncateReferencesTrigger": "22 tabelas de public: audience_segments, channel_policies, conversation_members, conversations, institution_memberships, institution_settings, institution_subscriptions, institutions, messages, people, person_addresses, person_auth_links, person_contacts, person_education_details, person_professional_details, person_profile_details, platform_permissions, schema_columns, schema_tables, unit_branding, units, usage_limits",
+    "grantsSemPolicy": "INSERT 23 tabelas, UPDATE 26, DELETE 18, SELECT 7 (RLS nega; revogar e neutro mas exige confirmacao por tabela); tabelas sem RLS com grant: 0; app_private: 0 grants a authenticated; total de tabelas com grant: 140",
+    "varredura": "subagente em curso, somente leitura, resultado em docs/reviews/evidence/etapa-2/r04-realm-interno/varredura-authenticated-2026-09-11.md como pendencia de code review"
+  },
+  "subagentes": [
+    "pgTAP do escopo activity de Criar grupo (superadmin_internal_chat_groups_v1_test.sql -> plan 25)",
+    "varredura de grants de authenticated sem policy (evidencia md)"
+  ],
+  "readmeCandidatos": "fluxo baseline-only + seed + psql agora segue migrations/ordem-de-aplicacao-producao.txt (loop de shell no README)"
 }
