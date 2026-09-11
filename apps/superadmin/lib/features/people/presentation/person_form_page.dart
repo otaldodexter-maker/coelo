@@ -455,7 +455,8 @@ final class _PersonFormPageState extends State<PersonFormPage> {
         : 'Altere somente dados globais e vínculos aprovados.',
     currentDestination: 'people',
     activityController: _activityController,
-    chatLauncherBottomInset: _footerHeight == 0 ? 0 : _footerHeight + CoeloSpacing.space4,
+    showChatLauncher: false, // Decisao 7: sem balao de chat em criar/editar
+    chatLauncherBottomInset: 0,
     onDestinationSelected: widget.onDestinationSelected,
     child: AnimatedBuilder(
       animation: _viewModel,

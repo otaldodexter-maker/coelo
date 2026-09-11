@@ -717,6 +717,12 @@ GoRouter createSuperadminRouter({
     if (location.startsWith('/invites')) {
       return inviteRepository is! UnavailableInviteRepository;
     }
+    // Pessoas: com a ponte de ator (lote 10) superadmin_people_create_draft e
+    // superadmin_people_update autorizam o usuario interno; a capacidade segue
+    // o repository composto, nunca o botao.
+    if (location.startsWith('/people')) {
+      return personDirectoryRepository is! UnavailablePersonDirectoryRepository;
+    }
     if (location.startsWith('/notices')) {
       return noticeRepository is! UnavailableNoticeRepository;
     }
@@ -2983,8 +2989,15 @@ GoRouter createSuperadminRouter({
               repository: personDirectoryRepository,
               logout: logout,
               successMessage: state.extra as String?,
-              onCreate: null,
-              onEdit: null,
+              onCreate: hasAuthoritativeMutationCapability(SuperadminRoutes.personCreate)
+                  ? () => context.goNamed(SuperadminRoutes.personCreateName)
+                  : null,
+              onEdit: hasAuthoritativeMutationCapability(SuperadminRoutes.personEdit)
+                  ? (id) => context.goNamed(
+                      SuperadminRoutes.personEditName,
+                      pathParameters: {'personId': id},
+                    )
+                  : null,
               onDestinationSelected: (destination) =>
                   _navigateFromPersistentShell(context, destination),
               onBugReportSubmitted: productionSupportController?.submitReportToBackend,
@@ -3063,12 +3076,20 @@ GoRouter createSuperadminRouter({
                 if (repository == null || repository.isDemo) {
                   return _unavailableCompositionRootRoute(context);
                 }
-                final canRead =
-                    session.authContext?.permissionCodes.contains('platform.member.read') == true;
+                final codes = session.authContext?.permissionCodes ?? const <String>{};
+                // Owner do realm interno tem platform.member.update/suspend; o
+                // auditor so le. A capacidade vem do contexto autorizado, nunca
+                // do botao (Decisao 12: tudo mediante perfis e permissoes).
+                final canRead = codes.contains('platform.member.read');
+                final canManage = canRead &&
+                    codes.contains('platform.member.update') &&
+                    codes.contains('platform.member.suspend');
                 return PlatformUserDirectoryPage(
                   key: ValueKey(session.authorizationInvalidationRevision),
                   repository: repository,
-                  capability: canRead
+                  capability: canManage
+                      ? PlatformUserCapability.owner
+                      : canRead
                       ? PlatformUserCapability.auditor
                       : PlatformUserCapability.unauthorized,
                   logout: logout,
@@ -3102,15 +3123,20 @@ GoRouter createSuperadminRouter({
                 if (repository == null || repository.isDemo) {
                   return _unavailableCompositionRootRoute(context);
                 }
-                final canRead =
-                    session.authContext?.permissionCodes.contains('platform.member.read') == true;
+                final codes = session.authContext?.permissionCodes ?? const <String>{};
+                final canRead = codes.contains('platform.member.read');
+                final canManage = canRead &&
+                    codes.contains('platform.member.update') &&
+                    codes.contains('platform.member.suspend');
                 return PlatformUserDetailPage(
                   key: ValueKey(
                     '${session.authorizationInvalidationRevision}:${state.pathParameters['internalUserId']}',
                   ),
                   repository: repository,
                   internalUserId: state.pathParameters['internalUserId']!,
-                  capability: canRead
+                  capability: canManage
+                      ? PlatformUserCapability.owner
+                      : canRead
                       ? PlatformUserCapability.auditor
                       : PlatformUserCapability.unauthorized,
                   logout: logout,
@@ -3125,7 +3151,7 @@ GoRouter createSuperadminRouter({
             path: SuperadminRoutes.personCreate,
             name: SuperadminRoutes.personCreateName,
             builder: (context, state) {
-              if (!hasAuthoritativeMutationCapability()) {
+              if (!hasAuthoritativeMutationCapability(SuperadminRoutes.personCreate)) {
                 return blockedProductionMutationPage(context);
               }
               final creationMode = state.uri.queryParameters['personCreationMode'];
@@ -3167,7 +3193,7 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.personEdit,
             name: SuperadminRoutes.personEditName,
-            builder: (context, state) => !hasAuthoritativeMutationCapability()
+            builder: (context, state) => !hasAuthoritativeMutationCapability(SuperadminRoutes.personEdit)
                 ? blockedProductionMutationPage(context)
                 : PersonEditRoutePage(
                     personId: state.pathParameters['personId']!,

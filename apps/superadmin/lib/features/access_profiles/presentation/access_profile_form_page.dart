@@ -521,8 +521,8 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
     subtitle: '${widget.domain.title} · configure identidade, escopo e permissões.',
     currentDestination: widget.currentDestination,
     activityController: _activityController,
-    showChatLauncher: widget.onConversationsOpen != null,
-    chatLauncherBottomInset: _footerHeight == 0 ? 0 : _footerHeight + CoeloSpacing.space4,
+    showChatLauncher: false, // Decisao 7: sem balao de chat em criar/editar
+    chatLauncherBottomInset: 0,
     onDestinationSelected: widget.onDestinationSelected == null ? null : _requestDestination,
     onBugReportSubmitted: widget.onBugReportSubmitted,
     onOpenConversations: widget.onConversationsOpen,

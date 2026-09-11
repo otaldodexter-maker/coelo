@@ -346,7 +346,8 @@ final class _InviteFormPageState extends State<InviteFormPage> {
         subtitle: 'Defina contexto, perfil, destinatário e entrega.',
         currentDestination: 'invites',
         onDestinationSelected: widget.onDestinationSelected,
-        chatLauncherBottomInset: _footerHeight == 0 ? 0 : _footerHeight + CoeloSpacing.space4,
+        showChatLauncher: false, // Decisao 7: sem balao de chat em criar/editar
+        chatLauncherBottomInset: 0,
         child: content,
       );
     },
