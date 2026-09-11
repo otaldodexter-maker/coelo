@@ -757,7 +757,7 @@ class _ContextCard extends StatelessWidget {
                   style: const TextStyle(fontWeight: FontWeight.w800),
                 ),
                 Text(
-                  '${contextData.unitName} · ${contextData.groupName}',
+                  contextData.scopeLabel,
                   style: TextStyle(fontSize: 12, color: colors.onSurfaceVariant),
                 ),
               ],

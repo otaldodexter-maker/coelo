@@ -1,6 +1,8 @@
 import 'package:characters/characters.dart';
 import 'package:flutter/foundation.dart';
 
+import '../../principal_shared/domain/principal_runtime_context.dart';
+
 enum MomentsStatus { draft, published }
 
 enum MomentsAudienceKind { families, students, schoolStaff, guardiansOnly }
@@ -23,18 +25,25 @@ final class MomentsPublicationContext {
   const MomentsPublicationContext({
     required this.institutionId,
     required this.institutionName,
-    required this.unitId,
-    required this.unitName,
-    required this.groupId,
-    required this.groupName,
+    this.unitId,
+    this.unitName,
+    this.groupId,
+    this.groupName,
   });
 
   final String institutionId;
   final String institutionName;
-  final String unitId;
-  final String unitName;
-  final String groupId;
-  final String groupName;
+  /// Unidade e turma sao opcionais: o contexto de instituicao (Owner,
+  /// Superadmin "ve tudo", P35) publica para a instituicao inteira. O servidor
+  /// aceita nulos e autoriza pelo escopo do ator.
+  final String? unitId;
+  final String? unitName;
+  final String? groupId;
+  final String? groupName;
+
+  /// Rotulo do escopo para a tela: "Unidade · Turma" ou a instituicao.
+  String get scopeLabel =>
+      [unitName, groupName].whereType<String>().join(' · ').ifEmpty(institutionName);
 
   static const demo = MomentsPublicationContext(
     institutionId: 'institution-preview',

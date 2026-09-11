@@ -1,7 +1,57 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 
+import '../../../app/brand/superadmin_brand_mark.dart';
+
 enum PrincipalDestination { home, forYou, moments, search }
+
+/// Marca do cabecalho do Principal: identica ao cabecalho mobile do shell
+/// (`SuperadminBrandMark` 36 px, "Coelo", chevron), decisao P28 do Owner.
+final class PrincipalBrandButton extends StatelessWidget {
+  const PrincipalBrandButton({required this.keyPrefix, this.onPressed, super.key});
+
+  final String keyPrefix;
+
+  /// Sem acao (publicadores) a marca e so identidade, nao botao.
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final row = FittedBox(
+      fit: BoxFit.scaleDown,
+      alignment: AlignmentDirectional.centerStart,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SuperadminBrandMark(size: 36, key: ValueKey('$keyPrefix-logo')),
+          const SizedBox(width: CoeloSpacing.space2),
+          Text('Coelo', style: Theme.of(context).textTheme.titleMedium),
+          if (onPressed != null) ...[
+            const SizedBox(width: CoeloSpacing.space1),
+            const Icon(Icons.chevron_right_rounded, size: CoeloSize.iconSm),
+          ],
+        ],
+      ),
+    );
+    if (onPressed == null) {
+      return Semantics(image: true, label: 'Coelo', excludeSemantics: true, child: row);
+    }
+    return Tooltip(
+      message: 'Abrir menu',
+      child: TextButton(
+        key: ValueKey('$keyPrefix-menu'),
+        style: TextButton.styleFrom(
+          foregroundColor: scheme.onSurface,
+          padding: EdgeInsets.zero,
+          shape: const RoundedRectangleBorder(),
+        ),
+        onPressed: onPressed,
+        child: row,
+      ),
+    );
+  }
+}
 
 final class PrincipalGlobalHeader extends StatelessWidget implements PreferredSizeWidget {
   const PrincipalGlobalHeader({
@@ -38,29 +88,18 @@ final class PrincipalGlobalHeader extends StatelessWidget implements PreferredSi
           padding: const EdgeInsets.only(left: CoeloSpacing.space4, right: CoeloSpacing.space3),
           child: Row(
             children: [
-              Semantics(
-                image: true,
-                label: 'Coelo',
-                child: _ClampedTextScale(
-                  maxScaleFactor: 1.3,
-                  child: Text(
-                    'coelo',
-                    key: ValueKey('$keyPrefix-logo'),
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      color: scheme.primary,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: -1,
-                    ),
+              // P28 (Owner, 11/09): mesma marca e espacamento do cabecalho
+              // mobile do Superadmin (logo laranja com coelho branco, "Coelo",
+              // chevron), em vez do wordmark tipografico.
+              Expanded(
+                child: Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: _ClampedTextScale(
+                    maxScaleFactor: 1.3,
+                    child: PrincipalBrandButton(keyPrefix: keyPrefix, onPressed: onOpenMenu),
                   ),
                 ),
               ),
-              IconButton(
-                key: ValueKey('$keyPrefix-menu'),
-                tooltip: 'Abrir menu',
-                onPressed: onOpenMenu,
-                icon: const Icon(Icons.keyboard_arrow_down_rounded),
-              ),
-              const Spacer(),
               IconButton(
                 key: ValueKey('$keyPrefix-report-problem'),
                 tooltip: 'Reportar problema',
@@ -125,13 +164,18 @@ final class PrincipalGlobalNavigation extends StatelessWidget {
     required this.onMoments,
     required this.onSearch,
     required this.onMessages,
+    this.canPublish = true,
     super.key,
   });
 
   final PrincipalDestination selected;
   final VoidCallback onHome;
   final VoidCallback onForYou;
+  /// Abre o publicador do Acontece (P28: o "+" adiciona no Acontece).
   final VoidCallback onPublishNow;
+
+  /// Responsavel e aluno nao publicam; o botao central some (P28).
+  final bool canPublish;
   final VoidCallback onMoments;
   final VoidCallback onSearch;
   final VoidCallback onMessages;
@@ -221,6 +265,7 @@ final class PrincipalGlobalNavigation extends StatelessWidget {
                         ],
                       ),
                     ),
+                    if (canPublish)
                     Positioned(
                       top: 0,
                       child: SizedBox(
@@ -229,10 +274,10 @@ final class PrincipalGlobalNavigation extends StatelessWidget {
                           children: [
                             Semantics(
                               button: true,
-                              label: 'Publicar no Agora',
+                              label: 'Publicar no Acontece',
                               child: IconButton.filled(
                                 key: const Key('principal-global-publish-now'),
-                                tooltip: 'Publicar no Agora',
+                                tooltip: 'Publicar no Acontece',
                                 onPressed: onPublishNow,
                                 icon: const Icon(Icons.add_rounded, size: 24),
                                 style: IconButton.styleFrom(
@@ -244,7 +289,7 @@ final class PrincipalGlobalNavigation extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              'Agora',
+                              'Publicar',
                               key: const Key('principal-global-publish-now-label'),
                               maxLines: 1,
                               style: Theme.of(context).textTheme.labelSmall?.copyWith(

@@ -10,6 +10,7 @@ final class PrincipalProfilePreviewData {
     required this.highlights,
     required this.links,
     required this.nextEvent,
+    this.handle,
   });
 
   /// Contextual identity resolved from the server-authorized Principal context.
@@ -20,6 +21,7 @@ final class PrincipalProfilePreviewData {
     required this.name,
     required this.typeLabel,
     this.bio = '',
+    this.handle,
   }) : metrics = const [],
        highlights = const [],
        links = const [],
@@ -28,6 +30,10 @@ final class PrincipalProfilePreviewData {
   final String name;
   final String typeLabel;
   final String bio;
+
+  /// O @ publico do perfil (ADR 0034 Decisao 16); null quando o servidor ainda
+  /// nao o projeta.
+  final String? handle;
   final List<PrincipalProfileMetric> metrics;
   final List<PrincipalProfileHighlight> highlights;
   final List<String> links;
@@ -35,6 +41,7 @@ final class PrincipalProfilePreviewData {
 
   static const horizon = PrincipalProfilePreviewData(
     name: 'Colégio Horizonte',
+    handle: 'colegiohorizonte',
     typeLabel: 'Instituição de Ensino',
     bio:
         'Educação que inspira, acolhe e transforma. Formamos cidadãos éticos, '

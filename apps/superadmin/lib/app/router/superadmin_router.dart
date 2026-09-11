@@ -1112,8 +1112,9 @@ GoRouter createSuperadminRouter({
                           onCreatePost: () =>
                               context.goNamed(SuperadminRoutes.principalHappensPublishName),
                           onOpenNow: () => context.pushNamed(SuperadminRoutes.principalNowName),
+                          // P28: o "+" adiciona no Acontece.
                           onPublishNow: () =>
-                              context.goNamed(SuperadminRoutes.principalNowPublicationName),
+                              context.goNamed(SuperadminRoutes.principalHappensPublishName),
                           onOpenMessages: () =>
                               context.goNamed(SuperadminRoutes.principalConversationsName),
                         );
@@ -1164,15 +1165,13 @@ GoRouter createSuperadminRouter({
               repository: principalRuntimeContextRepository,
               builder: (context, runtimeContext) {
                 final repository = happensPublicationRepository;
+                // P35: o contexto de instituicao publica para a instituicao
+                // inteira; unidade e turma sao opcionais.
                 final unitId = runtimeContext.unitId;
                 final unitName = runtimeContext.unitName;
                 final groupId = runtimeContext.groupId;
                 final groupName = runtimeContext.groupName;
-                if (repository == null ||
-                    unitId == null ||
-                    unitName == null ||
-                    groupId == null ||
-                    groupName == null) {
+                if (repository == null) {
                   return _unavailableCompositionRootRoute(context);
                 }
                 return PrincipalHappensPublicationPage(
@@ -1229,15 +1228,13 @@ GoRouter createSuperadminRouter({
               repository: principalRuntimeContextRepository,
               builder: (context, runtimeContext) {
                 final repository = nowPublicationRepository;
+                // P35: o contexto de instituicao publica para a instituicao
+                // inteira; unidade e turma sao opcionais.
                 final unitId = runtimeContext.unitId;
                 final unitName = runtimeContext.unitName;
                 final groupId = runtimeContext.groupId;
                 final groupName = runtimeContext.groupName;
-                if (repository == null ||
-                    unitId == null ||
-                    unitName == null ||
-                    groupId == null ||
-                    groupName == null) {
+                if (repository == null) {
                   return _unavailableCompositionRootRoute(context);
                 }
                 return PrincipalNowPublicationPage(
@@ -1268,15 +1265,13 @@ GoRouter createSuperadminRouter({
               repository: principalRuntimeContextRepository,
               builder: (context, runtimeContext) {
                 final repository = momentsPublicationRepository;
+                // P35: o contexto de instituicao publica para a instituicao
+                // inteira; unidade e turma sao opcionais.
                 final unitId = runtimeContext.unitId;
                 final unitName = runtimeContext.unitName;
                 final groupId = runtimeContext.groupId;
                 final groupName = runtimeContext.groupName;
-                if (repository == null ||
-                    unitId == null ||
-                    unitName == null ||
-                    groupId == null ||
-                    groupName == null) {
+                if (repository == null) {
                   return _unavailableCompositionRootRoute(context);
                 }
                 return PrincipalMomentsPublicationRoute(
@@ -1367,8 +1362,9 @@ GoRouter createSuperadminRouter({
                           onOpenHome: () => context.goNamed(SuperadminRoutes.principalHappensName),
                           onCreateMoment: () =>
                               context.goNamed(SuperadminRoutes.principalMomentsPublishName),
+                          // P28: o "+" adiciona no Acontece.
                           onPublishNow: () =>
-                              context.goNamed(SuperadminRoutes.principalNowPublicationName),
+                              context.goNamed(SuperadminRoutes.principalHappensPublishName),
                         );
                       },
                     ),
@@ -1401,7 +1397,8 @@ GoRouter createSuperadminRouter({
                 onOpenHome: () => context.goNamed(SuperadminRoutes.principalHappensName),
                 onOpenForYou: () => context.goNamed(SuperadminRoutes.principalForYouName),
                 onOpenMoments: () => context.pushNamed(SuperadminRoutes.principalMomentsName),
-                onPublishNow: () => context.goNamed(SuperadminRoutes.principalNowPublicationName),
+                // P28: o "+" adiciona no Acontece.
+                onPublishNow: () => context.goNamed(SuperadminRoutes.principalHappensPublishName),
                 onMessage: () => context.goNamed(
                   SuperadminRoutes.principalConversationsName,
                   queryParameters: const {'from': 'profile'},
