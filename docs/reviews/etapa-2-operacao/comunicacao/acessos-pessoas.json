@@ -1,7 +1,7 @@
 {
-  "revision": 97,
-  "updated_at": "2026-09-11T01:49:05.092Z",
-  "relogio_local": "Thu Sep 10 2026 22:49:05 GMT-0300 (Horário Padrão de Brasília)",
+  "revision": 98,
+  "updated_at": "2026-09-11T02:15:18.975Z",
+  "relogio_local": "Thu Sep 10 2026 23:15:18 GMT-0300 (Horário Padrão de Brasília)",
   "round": "E2-R04-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
@@ -9,7 +9,7 @@
   "status": "R04_EM_CURSO",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-acessos-pessoas",
   "branch": "work/etapa2-r04-acessos-pessoas",
-  "head": "3bfbe8a47 (publicado) + WIP local: composicao v2 de Seguranca infantil",
+  "head": "d26a9f65c (publicado)",
   "base_observed": "origin/dev 98cc0529d contem a4af2b198 e o R04-prompts.md; candidatos/acessos-pessoas tem 170900 (retido) e 170750 (obsoleto); lote 4 (170100-170800) em migrations/",
   "recorte": {
     "familias": [
@@ -38,8 +38,8 @@
   ],
   "loop": "/loop 15m agendado na abertura",
   "testes_P_F_B_S_U": "nenhum teste automatizado executado ainda nesta rodada; login real 1 P",
-  "bloqueio": "nenhum total. Gate 'ponte do realm interno' (coordenador) para people.list/create/edit, access-profiles.* e access-models.* escrita e leitura.",
-  "proximo_passo": "rebuild estatico e prova na rota normal de Seguranca infantil (v2), Convites e Usuarios internos; diagnosticar o 'nao autorizado' de Usuarios internos com o DTD; criar convite sintetico (invites.create/resend/revoke) e apagar ao fim",
+  "bloqueio": "nenhum total",
+  "proximo_passo": "Convites: criar/detalhe/reenviar/revogar com dado sintetico; corrigir o 'nao autorizado' de Usuarios internos no fluxo login->navegacao; depois D1",
   "ACK_ao_coordenador": "recebido o aviso do lote 8 (MFA fora do MVP + student_links_read) por mensagem entre sessoes as 22:10; respondido pelo mesmo canal; rebase feito.",
   "ROTA_NORMAL_COM_SESSAO": {
     "auth.login": "P (qa-r03 entra pela tela normal, Home como Owner Coelo / Superadmin)",
@@ -71,13 +71,37 @@
       "acoes_afetadas": "nenhuma acao fecha sozinha com ele: e pre-requisito da Decisao 12/P7 para perfis por instituicao; Pessoas/Perfis para o realm interno dependem da ponte do coordenador"
     }
   ],
-  "TESTES_P_F": "flutter test (auth scope, sanitizacao, safety, platform_users): 290 P / 8 F. Das 8: 5 goldens (4 de platform_users + child_safety_directory_light_1440) e 3 testes de composicao que ficaram obsoletos quando o coordenador ligou as chaves (esperam UnavailableRoutineRepository, ausencia de SupabaseActivityDirectoryRepository no escopo e de AccessProfileDirectoryPage no router). Estou conferindo na base limpa quais ja falhavam em dev antes da minha alteracao.",
-  "AMBIENTE_DE_PROVA": "flutter run -d web-server nao recarrega a pagina de forma confiavel depois de reiniciar o servidor (pagina em branco por minutos); trocando para build web estatico servido em localhost:3000 por um servidor Node com fallback de SPA, para recarregar rotas (regua 'reload mantem') sem depender do DDC.",
+  "TESTES_P_F": "flutter test (auth scope, sanitizacao, safety, platform_users) 290 P / 8 F antes das regravacoes; as 5 falhas de golden eram pre-existentes em dev (conferido com o escopo de auth de origin/dev) e foram regravadas; as 3 de composicao sao testes obsoletos das chaves ligadas (fora do recorte, repassado). Rerun apos regravacao pendente.",
+  "AMBIENTE_DE_PROVA": "build web release (flutter build web, dart-define do .env.local) servido por Node em http://localhost:3000 com fallback de SPA; Chrome dedicado (porta CDP 9411, perfil isolado; a 9333 foi tomada por outra frente). Reload de rota funciona; sessao persiste com 'Manter sessao aberta' (armazenamento condicional, por desenho).",
   "REPASSES_AO_COORDENADOR": [
     "170900 obsoleto: de acordo.",
     "Testes obsoletos em test/core/config (superadmin_auth_scope_test 'initializes Supabase...', composition_root_sanitization_test 'Activities roots...' e 'basic Access routes...') refletem chaves que voce ligou; nao sao do meu recorte, mas vao falhar na base conjunta.",
     "Logo SVG da tela de login nao renderiza no web (circulo branco) — fora do recorte."
   ],
+  "ROTA_NORMAL_COM_SESSAO_23h15": {
+    "auth.login": "P (tela normal, sessao mantida apos reload)",
+    "child-safety.list": "ROTA ABRE com a composicao v2 (e6b9867c1): /safety recarregado mostra busca, toggle, Arquivos e as 5 abas com (0); 'Nenhuma crianca disponivel'. Producao tem 0 criancas, entao CRUD/reload com dado real dependem de criar crianca (fora do meu recorte: Alunos/estrutura). Sem card Criar no vazio porque o v2 e somente leitura (can_create=false) — registrado contra a regra nova do Owner.",
+    "internal-users.list": "ROTA ABRE no reload direto de /internal-users: busca, filtros Perfil/Vinculo/Alcance, toggle, Arquivos; 'Nenhum usuario interno cadastrado' (RPC devolve total 0 embora existam 4 identidades internas — a conferir no SQL da lista). No fluxo login -> Acessos -> Usuarios internos a tela mostra 'Acesso nao autorizado' (reproduzido 2x): defeito do cliente, nao do backend; causa em investigacao (o repositorio invalida a revisao de cache a cada notificacao da sessao e trata resposta em voo como 'unauthorized'). Sem card Criar: internalUserCreate/Edit sao blockedProductionMutationPage no router e nao ha RPC de criacao em producao.",
+    "invites.list": "ROTA ABRE: /invites com busca, Status/Canal, toggle, Arquivos, card 'Novo convite' e vazio honesto. Backend ok:true com 0 itens. Proximo: criar convite sintetico (create/detail/resend/revoke) e apagar.",
+    "people.list": "F: 'Acesso nao autorizado - Voce nao possui people.read' (42501 de assert_people_permission: current_person_id nulo no realm interno). Gate: ponte de ator do coordenador (220400).",
+    "access-profiles.list / access-models.list": "F: 'Acesso nao autorizado' (42501 de require_profile_authority). Mesmo gate 220400."
+  },
+  "GOLDENS": {
+    "regravados": "22 de Usuarios internos (97406d56b) e child_safety_directory_light_1440 (d26a9f65c). Causa medida por regiao com PIL: 185 px do botao de Bug no cabecalho e ~21,7 mil px do estilo do item ativo do menu (referencia MENU do Owner, igual aos goldens aprovados de Formularios e Circulares); 0 px no conteudo. E a 'causa visual pre-existente' do child_safety_directory_light_1440.",
+    "retido": "platform_user_create_light_375 (31.674 px no rodape ancorado, RODAPE opcao A): regravar so depois do P15 (respiro) no SuperadminFormFrame, que o grupo estrutura entrega.",
+    "listas_do_owner": "nenhum arquivo das minhas familias consta nas tres listas; valem as regras transversais MENU, MENU-M, RODAPE e P15."
+  },
+  "REGRA_NOVA_DO_OWNER_ESTADO_VAZIO": {
+    "recebida": "23:00 via coordenador: busca, filtros com rotulo honesto, toggle, Arquivos, abas de status e card Criar sempre visiveis, inclusive no vazio; correcao no composto CoeloAdminDirectory.",
+    "conferido_no_vazio_de_producao": {
+      "invites": "conforme (Criar presente; nao tem abas por desenho)",
+      "child_safety": "sem card Criar (v2 somente leitura); abas e toolbar presentes",
+      "internal_users": "sem card Criar (rota de criar bloqueada em producao; tela ainda nao esta no composto CoeloAdminDirectory — pendencia da Fase 0)",
+      "people, access_profiles, access_models": "nao avaliaveis ate a ponte 220400 (tela nem lista)"
+    },
+    "acao": "nao vou tocar o composto sem o dono (Fase 0/coordenador); registro por tela"
+  },
+  "PACOTES_PRONTOS": "AP-P7 171000 (pgTAP 20/20) — o coordenador informou que esta no preflight do espelho dele junto com a ponte 220400.",
   "historico_r03": {
     "revision": 94,
     "updated_at": "2026-09-10T19:56:30.537Z",
