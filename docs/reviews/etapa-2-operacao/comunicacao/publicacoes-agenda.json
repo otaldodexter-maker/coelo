@@ -1,5 +1,5 @@
 {
-  "revision": 25,
+  "revision": 26,
   "round": "E2-R04-20260911",
   "group": "publicacoes-agenda",
   "tool": "Claude Code",
@@ -9,7 +9,7 @@
   "head": "f5d0c284a",
   "base": "origin/dev 98cc0529d",
   "coordinator": "Claude (R04 · Coordenação noturna)",
-  "updatedAt": "2026-09-11T03:00:00-03:00",
+  "updatedAt": "2026-09-11T03:12:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -75,7 +75,7 @@
     "FE bloqueante: em /circulars/new a 1440 o balao de chat cobre inteiramente o botao Publicar (centro 1330x856); a 1024 o rodape empilha e funciona.",
     "CORRIGIDO nas revs 24/25: diretorio de Circulares rele apos excluir/publicar; Editar oculto em Encerrada/Arquivada.",
     "FE bloqueante: em /circulars/new a 1440 o balao de chat cobre inteiramente o botao Publicar (centro 1330x856); a 1024 o rodape empilha e funciona.",
-    "FE agenda.detail: deep link direto apos carga fria fica no spinner ate o calendario carregar; no detalhe apos reload contexto/audiencia mostram UUID da instituicao em vez do nome.",
+    "FE agenda.detail: UUID no lugar do nome CORRIGIDO na rev 26 (carrega contextos); permanece: deep link direto apos carga fria fica no spinner ate o calendario carregar (primeiro gate: reproduzir em teste de rota com store real).",
     "Ambiente: outro processo (frente ou coordenador) passou a dirigir meu Chrome CDP 9333 (pagina foi para localhost:3000); abri o 9334. Sugestao: cada conversa usa porta CDP propria e declara no JSON.",
     "FE agenda.edit: na rota de edicao a etapa Revisao mostra so Continuar (sem Salvar/Publicar) e o clique nao salva; criar pelo mesmo wizard funciona (Publicar/Salvar rascunho presentes)."
   ],
@@ -287,6 +287,19 @@
         "analyze limpo"
       ],
       "sha": "6fd4ad64a"
+    },
+    {
+      "screen": "Etapa 2 → apps/superadmin → Agenda → Detalhe do evento → link direto → agenda.detail",
+      "actionIds": [
+        "agenda.detail"
+      ],
+      "whatChanged": "Detalhe carrega os contextos quando vazios (link direto/recarga): contexto e audiencia passam a mostrar o nome da instituicao em vez do UUID.",
+      "criteria": [
+        "agenda_event_detail_page_test 6/6 + agenda_management_test 8/8",
+        "analyze limpo",
+        "sem teste proprio: AgendaPrototypeStore e final e loadContexts e no-op"
+      ],
+      "sha": "2e2cf1bfd"
     }
   ],
   "pendingForCoordinator": [
@@ -1163,7 +1176,7 @@
     ]
   },
   "finalizado": {
-    "at": "2026-09-11T03:00:00-03:00",
+    "at": "2026-09-11T03:12:00-03:00",
     "head": "6fd4ad64a",
     "handoff": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
     "capturas": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/ui/ (49 png)"
