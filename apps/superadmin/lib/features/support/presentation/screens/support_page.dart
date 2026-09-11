@@ -10,6 +10,7 @@ import '../../../../app/shell/superadmin_notice.dart';
 import '../../../../app/shell/superadmin_bug_report_dialog.dart';
 import '../../../../app/shell/superadmin_shell.dart';
 import '../../../auth/domain/logout_action.dart';
+import '../../data/support_display_store.dart';
 import '../../domain/support_team_member.dart';
 import '../../domain/support_ticket.dart';
 import '../view_models/support_prototype_controller.dart';
@@ -27,9 +28,13 @@ final class SupportPage extends StatefulWidget {
     this.onHomeOpen,
     this.onUnitsOpen,
     this.onConversationsOpen,
+    this.displayStore,
     super.key,
   });
   final SupportPrototypeController controller;
+
+  /// Persiste a ultima visao cards/tabela por dispositivo (P49 = A).
+  final SupportDisplayStore? displayStore;
   final LogoutAction logout;
   final VoidCallback onInstitutionsOpen;
   final VoidCallback onCatalogOpen;
@@ -56,6 +61,24 @@ class _SupportPageState extends State<SupportPage> {
   void initState() {
     super.initState();
     widget.controller.addListener(_surfaceCommandError);
+    _restoreDisplay();
+  }
+
+  Future<void> _restoreDisplay() async {
+    final store = widget.displayStore;
+    if (store == null) return;
+    try {
+      final display = await store.load();
+      if (display != null && mounted && display != _display) setState(() => _display = display);
+    } on Object {
+      // Preferencia local ausente ou ilegivel: fica em cards.
+    }
+  }
+
+  void _setDisplay(CoeloAdminDirectoryDisplay display) {
+    setState(() => _display = display);
+    final store = widget.displayStore;
+    if (store != null) unawaited(store.save(display).catchError((Object _) {}));
   }
 
   /// Falha de resposta/status no repositório produtivo vira aviso na tela em
@@ -204,7 +227,10 @@ class _SupportPageState extends State<SupportPage> {
       filters: filters.filters,
       trailing: filters.trailing,
       display: _display,
-      onDisplayChanged: (display) => setState(() => _display = display),
+      onDisplayChanged: _setDisplay,
+      // P49 = A (Owner, 11/09): abas de estado no lugar do filtro Status na
+      // tabela; no kanban as colunas ja fazem esse papel.
+      tabs: table ? _statusTabs(controller) : null,
       groupedTableView: CoeloAdminDirectoryDisplay.table,
       selectedTableView: CoeloAdminDirectoryDisplay.table,
       tableViews: const [
@@ -213,7 +239,7 @@ class _SupportPageState extends State<SupportPage> {
           label: 'Tabela',
         ),
       ],
-      onTableViewSelected: (_) => setState(() => _display = CoeloAdminDirectoryDisplay.table),
+      onTableViewSelected: (_) => _setDisplay(CoeloAdminDirectoryDisplay.table),
       // Exportação geral adiada (ADR 0034): botão visível e honesto.
       fileActions: [
         CoeloAdminFileAction(
@@ -260,6 +286,29 @@ class _SupportPageState extends State<SupportPage> {
               onPageSelected: controller.setPage,
             )
           : null,
+    );
+  }
+
+  Widget _statusTabs(SupportPrototypeController controller) {
+    final statuses = controller.filters.statuses;
+    return CoeloAdminUnderlineTabs<SupportTicketStatus?>(
+      key: const Key('support-status-tabs'),
+      selected: statuses.length == 1 ? statuses.single : null,
+      tabs: [
+        const CoeloAdminUnderlineTab<SupportTicketStatus?>(value: null, label: 'Todos'),
+        for (final status in SupportTicketStatus.values)
+          CoeloAdminUnderlineTab<SupportTicketStatus?>(value: status, label: _statusLabel(status)),
+      ],
+      onSelected: (status) => controller.updateFilters(
+        SupportFilters(
+          search: controller.filters.search,
+          statuses: status == null ? const {} : {status},
+          menus: controller.filters.menus,
+          screens: controller.filters.screens,
+          assigneeIds: controller.filters.assigneeIds,
+          unreadOnly: controller.filters.unreadOnly,
+        ),
+      ),
     );
   }
 

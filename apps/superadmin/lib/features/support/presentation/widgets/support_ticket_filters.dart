@@ -39,14 +39,6 @@ final class SupportTicketFilters {
           .map((ticket) => ticket.screen),
     );
     return [
-      CoeloAdminMultiSelectFilter<SupportTicketStatus>(
-        key: const Key('support-status-filter'),
-        label: 'Status',
-        options: SupportTicketStatus.values,
-        selectedValues: controller.filters.statuses,
-        optionLabel: _statusLabel,
-        onChanged: (statuses) => _update(statuses: statuses),
-      ),
       CoeloAdminMultiSelectFilter<String>(
         key: const Key('support-menu-filter'),
         label: 'Menu',
@@ -141,12 +133,6 @@ final class SupportTicketFilters {
 
 List<String> _values(Iterable<String> values) => values.toSet().toList()..sort();
 
-String _statusLabel(SupportTicketStatus status) => switch (status) {
-  SupportTicketStatus.newRequest => 'Novo',
-  SupportTicketStatus.inProgress => 'Em andamento',
-  SupportTicketStatus.waitingRequester => 'Aguardando',
-  SupportTicketStatus.completed => 'Concluído',
-};
 
 String _menuLabel(String menu) => switch (menu) {
   'Instituicoes' => 'Instituições',
