@@ -1,15 +1,15 @@
 {
- "revision": 29,
+ "revision": 30,
  "round": "E2-R04-20260911",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5 (Claude, Opus)",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T00:17-03:00",
+ "updatedAt": "2026-09-11T02:30-03:00",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-formularios-cuidado-rotina",
  "branch": "work/etapa2-r04-formularios-cuidado-rotina",
- "head": "d5ddfde39 (rebase em origin/dev 836c63215)",
+ "head": "8db8e1cd3 (pacote P16) sobre eb2ddade6 (merge de origin/dev)",
  "base": "origin/dev 98cc0529d (docs(e2): Rodada 4 inteira no Claude, sem Codex)",
  "scope": {
   "families": [
@@ -52,7 +52,7 @@
  },
  "loopAgendado": "/loop 15m, agendado na abertura",
  "tests": {
-  "pgtap": "17/17 (internal_actor_service_person_v1_test)",
+  "pgtap": "17/17 (internal_actor_service_person_v1_test); 55/55 (forms_location_question_v1_test, espelho p16)",
   "flutter": "health_care 100% verde; goldens do recorte 38 aprovados / 4 pulados apos regravacao (medication_form_mobile_light continua pendente de P15)",
   "nota": "dart analyze lib limpo"
  },
@@ -68,6 +68,11 @@
   {
    "o_que": "cabecalho compartilhado (SuperadminShell) em todas as rotas de Formularios; builders de criar chamada e chamada passam a localizacao a guarda de mutacao; testes de rota de Assiduidade, Rotina e Cuidado atualizados ao contrato da ADR 0034 (rota abre quando o repositorio real esta composto)",
    "prova": "dart analyze limpo; attendance_routes, daily_routine_routes e health_care_routes verdes"
+  },
+  {
+   "o_que": "P16: candidato 20260910220500_forms_location_question_v1 + pgTAP forms_location_question_v1_test (subagente do coordenador apos o reinicio de 00:27)",
+   "prova": "55/55 no espelho local baseline + lotes 1..14 com o pacote aplicado; pgTAP de Formularios existentes sem regressao (mesmos numeros antes/depois)",
+   "sha": "8db8e1cd3"
   }
  ],
  "pendenciasRegistradas": [
@@ -93,8 +98,8 @@
   },
   {
    "action_id": "forms.location-question",
-   "o_que": "P16 (tipo location em Formularios): nao iniciado nesta rodada; exige constraint form_items_kind_ck/form_answers_kind_ck, form_item_config_valid, validacao de resposta, projecoes, XLSX e enum FormItemKind no cliente",
-   "gate": "tempo; proximo item apos a rota normal"
+   "o_que": "P16 backend PRONTO (candidato 20260910220500, pgTAP 55/55, commit 8db8e1cd3); falta o coordenador aplicar em producao e o cliente (enum FormItemKind.location, DTOs, widget do editor, widget de resposta com bloqueio e aviso)",
+   "gate": "BE: fila do coordenador; FE: proxima acao executavel deste grupo"
   },
   {
    "action_id": "router",
@@ -667,7 +672,8 @@
     "registrado_em": "docs/superpowers/specs/2026-08-13-superadmin-forms-end-to-end-design.md",
     "conflito_de_escopo_que_impede_implementar": "o tipo location NAO existe: a constraint de form_items.kind em producao aceita short_text, integer, decimal, money, date, yes_no, single_choice, multiple_choice, scale, photo, gallery e information, e nada no cliente trata local em Formularios. A secao 'Fora de escopo' da propria spec lista localizacao como fora do MVP. A politica esta decidida, mas implementa-la exige antes uma decisao de escopo do Owner sobre trazer location para dentro do MVP.",
     "caso_ainda_aberto": "pergunta obrigatoria, local revogado e NENHUMA alternativa valida na lista congelada. A opcao 2 obriga um local atual, e nesse caso nao existe nenhum.",
-    "estado_das_duas_acoes": "forms.location-question e forms.location-answer continuam bloqueadas, agora por escopo e nao mais por falta de politica."
+    "estado_das_duas_acoes": "revisao 30: forms.location-question e forms.location-answer desbloqueadas por decisao (Decisoes 10 e 12) e com backend pronto em packages/coelo_database/candidatos/formularios-cuidado-rotina/20260910220500_forms_location_question_v1.sql; falta aplicar em producao e o cliente",
+    "caso_extra_decidido": "Decisao 12: obrigatoria sem alternativa valida bloqueia com aviso, sem forcar escolha invalida (implementado: 23514 FORMS_LOCATION_NO_AVAILABLE_OPTION)"
    }
   },
   "filaFormulariosMedida": {
@@ -794,6 +800,37 @@
     "fixture: guard do ultimo owner interno exige um segundo owner com auth link ativo antes de suspender; lifecycle guard exige version + 1 nas atualizacoes"
    ],
    "o_que_a_prova_nao_cobre": "nenhuma tela; a rota normal com qa-r03 so pode ser provada depois de o coordenador aplicar em producao"
+  },
+  {
+   "arquivo": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260910220500_forms_location_question_v1.sql",
+   "action_id": [
+    "forms.location-question",
+    "forms.location-answer"
+   ],
+   "pgtap": "packages/coelo_database/supabase/tests/forms_location_question_v1_test.sql (55 assercoes verdes; rodado isolado no espelho local coelo_baseline_p16 = baseline 20260910000000 + seed + lotes 1..14 por psql, com o pacote aplicado com commit)",
+   "estado": "PRONTO PARA A FILA DO COORDENADOR (ADR 0034 Decisao 1): pgTAP local verde; nao aplicado em producao; sem cliente",
+   "decisoes_aplicadas": {
+    "P16 Decisao 10": "novo tipo de item `location` em form_items.kind e form_answers.answer_kind (coluna text com CHECK; nao ha enum, logo nao existe arquivo 220450 de ADD VALUE)",
+    "Decisao 9 opcao 1 (opcoes fixas)": "o servidor resolve as opcoes a partir de public.activity_locations (status='active', mesma instituicao do formulario) no salvamento do rascunho v2 (superadmin_forms_save_draft_v2) e refaz o snapshot na publicacao (form_publish); ficam congeladas em form_question_options com location_id, label=nome e location_status. Opcoes de Local enviadas pelo cliente sao ignoradas; o eco da projecao (location_id/location_status/location_available) e tolerado pelo validador do payload",
+    "Decisao 9 opcao 2 (local revogado depois)": "ao gravar, reenviar ou editar, o Local escolhido precisa existir no snapshot E continuar ativo no catalogo; nao se preserva o apontamento nem ha sucessor automatico. Erro 23514 'form location answer requires a current location' (detail FORMS_LOCATION_REVOKED). Resposta ja gravada nao e reescrita",
+    "Decisao 12 caso extra": "pergunta obrigatoria visivel sem nenhuma alternativa valida bloqueia com 23514 'required location question has no available location' (detail FORMS_LOCATION_NO_AVAILABLE_OPTION), tanto ao enviar o revogado quanto ao omitir; a projecao expoe por opcao location_available (leitura viva) para o cliente desabilitar e avisar. Opcional sem alternativa pode ser omitida"
+   },
+   "o_que_faz": "3 constraints estendidas; 2 colunas + CHECK + indice em form_question_options; 3 funcoes app_private novas (form_location_options_snapshot_v1, form_apply_location_options_v1, form_location_option_available_v1) com revoke de public/anon/authenticated/service_role; 8 funcoes substituidas na forma vigente do espelho (superadmin_form_validate_draft_payload_v2, superadmin_form_replace_draft_definition_v2, superadmin_form_validate_draft_definition_v2, validate_form_definition, form_publish, form_definition_projection(uuid,uuid), form_replace_response_answers, form_assert_required_response_answers) e o exportador XLSX superadmin_form_request_xlsx_v2 remendado por replace() com preflight de uma ocorrencia por trecho",
+   "limites": "rascunho aceita item location com zero locais ativos; publicacao exige ao menos um (23514 'location item requires at least one active location'); snapshot limitado a 200 locais; snapshot com respostas gravadas nao e substituido",
+   "defeitos_corrigidos_pela_prova": [
+    "baseline: form_replace_response_answers declarava a variavel PL/pgSQL answer_id que colide com a coluna form_answer_options.answer_id / form_answer_assets.answer_id (42702 'column reference answer_id is ambiguous') em TODA resposta de escolha unica/multipla, foto e galeria. Renomeada para inserted_answer_id neste pacote. Os pgTAP existentes nao pegavam porque so respondem texto/inteiro/sim-nao",
+    "CHECK do snapshot com NULL passava (location_id sem status): trocado por num_nonnulls in (0,2)",
+    "validador do payload v2 recusava o eco das chaves de snapshot nas opcoes: tolerado so para item location"
+   ],
+   "pgtap_existentes_de_formularios": "identicos antes e depois do pacote no mesmo espelho: forms_definition 31/31, forms_response_edit_validation_v1 56/56, drafts_v2_repeatable_read 10/10, drafts_v2_serializable 10/10, forms_xlsx_private_r2_v1 313/313, forms_superadmin_operations_read_v2 70/70, forms_internal_provenance_guards 39/39, superadmin_forms_directory_internal_read 117/117. Quatro ja quebram ANTES do pacote por fixture desalinhada da cadeia de producao (nao sao deste pacote): forms_behavioral_rpc ('version_number' ambiguo), forms_security_and_operations ('argument of AND must be boolean'), superadmin_internal_form_drafts_v2 ('internal auth link version mismatch'), superadmin_forms_authoring_institution_context_v2 ('internal membership version mismatch')",
+   "o_que_falta_no_cliente": [
+    "packages/coelo_domain/lib/src/forms/form_definition.dart: FormItemKind.location e FormOption com locationId/locationStatus/locationAvailable; form_answers.dart: FormAnswerKind.location",
+    "packages/coelo_api/lib/src/forms/form_definition_dto.dart e form_runtime_dtos.dart: mapear 'location' na definicao e na resposta (option_ids com um id, como single_choice)",
+    "apps/superadmin/lib/features/forms/presentation: no editor (forms_editor_page.dart) o item Local sem edicao de opcoes, lista somente leitura vinda do servidor e aviso 'nenhum local ativo' quando vazia; no responder/testar (form_response_page.dart, forms_test_page.dart) widget de escolha unica com opcoes location_available=false desabilitadas e marcadas como revogadas; quando obrigatoria e nenhuma opcao disponivel, bloqueio com aviso e sem envio, mapeando 23514 FORMS_LOCATION_NO_AVAILABLE_OPTION e FORMS_LOCATION_REVOKED em mensagens honestas",
+    "o worker XLSX ja recebe optionId e resolve o rotulo pela definicao; conferir a coluna no arquivo gerado depois do cliente"
+   ],
+   "o_que_a_prova_nao_cobre": "nenhuma tela; rota normal com qa-r03 so depois de o coordenador aplicar em producao e o cliente existir; exportacao XLSX com resposta location nao foi gerada ponta a ponta (so o remendo do exportador e o pgTAP existente 313/313)",
+   "commit": "8db8e1cd3 em work/etapa2-r04-formularios-cuidado-rotina (push feito)"
   }
  ],
  "goldens": {
@@ -830,5 +867,6 @@
    "P16 tipo location (backend + cliente)"
   ],
   "regra": "cada um em worktree isolada; so a conversa-mae escreve este JSON e faz commit"
- }
+ },
+ "revisadoPor": "subagente do coordenador apos o reinicio de 00:27 (a conversa original de P16 caiu e nao voltou); backend somente, sem cliente, sem producao"
 }
