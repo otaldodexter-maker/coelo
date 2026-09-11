@@ -179,3 +179,8 @@
 20260911200100_superadmin_support_assignees_v1.sql
 20260911210900_forms_media_expire_dispatch_v1.sql
 20260911211000_plans_select_for_institution_directory_v1.sql
+# lote 43 (11/09 14:35) - R05: @ opcional na criacao e handle nos detail_v2 (realm-interno); rotulos das Aprovacoes da Agenda, R2 de Circulares reaplicado, midia no gateway v2 de Circulares (publicacoes-agenda)
+20260911211100_structure_handles_create_payload_v1.sql
+20260911190100_agenda_requests_labels_v1.sql
+20260911190200_circulars_media_private_r2_v1_reapply.sql
+20260911190300_superadmin_circulars_v2_media_v1.sql
