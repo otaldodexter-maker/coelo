@@ -1,6 +1,6 @@
 {
-  "revision": 22,
-  "updated_at": "2026-09-11T12:58:00-03:00",
+  "revision": 23,
+  "updated_at": "2026-09-11T12:57:00-03:00",
   "round": "E2-R05-20260911",
   "group": "operacoes",
   "tool_model": "Claude, Opus 5 (1M), esforco medio — conversa R05 · Operacoes",
@@ -78,6 +78,25 @@
         "backend": "inalterado (done)",
         "e2e": "inalterado (verified-e2e)"
       }
+    },
+    {
+      "action_ids": [
+        "audit.list",
+        "audit.filter",
+        "audit.detail"
+      ],
+      "status": "rota-real-verificada -> proposta FE verified / BE done / E2E verified-e2e",
+      "changed": [
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/30-37*.png",
+        "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-audit.json (9 deltas, ensaiados com apply-tracker-delta + validate-trackers PASS e revertidos)"
+      ],
+      "delta": "/audit na rota normal com qa-r03 sobre o build web release: lista real (audit_list_events_for_superadmin 200, 1 de 59 paginas), filtro Resultados=Falha (0 itens, Limpar filtros) e =Negado (3 paginas reais), busca 'invite' no servidor (1 de 4), Proxima pagina por cursor (pagina 2 de 4), detalhe pelo painel lateral (audit_get_event_for_superadmin 200, motivo CHAT_MEMBER_INVALID, integridade verificada), reload mantem sessao/rota e a trilha registra superadmin.audit.list/detail do proprio ator. Nenhuma alteracao de codigo. RLS: pgTAP 210100 37/37 em producao desde o lote 10 (negativas de sessao, realm, cursor de outra instituicao e permissao).",
+      "proof": "capturas 30-37; RPCs conferidas por performance.getEntriesByType('resource') com responseStatus",
+      "criteria": {
+        "frontend": "verified (proposto)",
+        "backend": "done (proposto)",
+        "e2e": "verified-e2e (proposto)"
+      }
     }
   ],
   "tests": {
@@ -98,7 +117,12 @@
   },
   "blocked": [],
   "resolved": [],
-  "proposed_deltas": [],
+  "proposed_deltas": [
+    {
+      "file": "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-audit.json",
+      "summary": "audit.list/filter/detail FE verified / BE done / E2E verified-e2e (9 deltas)"
+    }
+  ],
   "packages_ready": [],
   "questions_to_owner": [
     {
@@ -109,11 +133,12 @@
       "fallback": "docs/reviews/evidence/etapa-2/r05-operacoes/g-sup/pagina-lado-a-lado-suporte.html"
     }
   ],
-  "next_step": "(2) Auditoria na rota real: build web qa_main, servidor estatico, Chrome CDP, /audit listar/filtrar/detalhe/reload com qa-r03; conferir goldens audit_directory_* apos o composto",
+  "next_step": "(4) plans.list/create/edit na rota real (/plans) com qa-r03; subagente prova o pgTAP comportamental de Planos no descartavel coelo_ops_r05; depois catalog.* e imports/profile_files honestos; account.sessions/logout apos 15:30",
   "commits": [
     "7df495615",
     "0e4b2f27c",
-    "3b6ef24d3"
+    "3b6ef24d3",
+    "89d64c068"
   ],
   "r04_history": {
     "revision": 20,
@@ -685,5 +710,22 @@
   "notes_to_coordinator": [
     "Composto (0e4b2f27c): toda tabela com celula crua muda de golden (texto desce para o centro da linha). Instituicoes/Unidades ja envolviam com Align e nao mudam; Auditoria (audit_event_views) e outras tabelas com Text cru mudam: frentes regravam apos merge. Auditoria e minha e regravo na rota real.",
     "Regra para a skill coelo-ui/coelo-frontend: feature nao envolve celula com Align; o composto alinha; detalhe lateral em corpo estreito no desktop usa bodyOverride para manter a toolbar (support_page.dart, comentario com a decisao)."
+  ],
+  "pendencias_registradas_r05": [
+    {
+      "action_id": "support.table",
+      "tipo": "desempenho/seguranca-basica",
+      "o_que": "o shell chama superadmin_support_list e superadmin_account_profile_get em toda carga completa, inclusive na pagina /login antes de haver sessao (401 registrados no performance da pagina de login). Nao vaza dado (401), mas e chamada inutil e ruido de log; mover a carga para depois do bootstrap da sessao."
+    },
+    {
+      "action_id": "audit.filter",
+      "tipo": "ui",
+      "o_que": "o filtro Periodo tem aparencia distinta (rotulo flutuante 'Periodo' + icone) dos demais filtros do composto (Resultados, dropdown simples); conferir com coelo-ui se e o padrao ou se deve virar dropdown igual."
+    },
+    {
+      "action_id": "account.logout",
+      "tipo": "regra-de-rodada",
+      "o_que": "coordenador (13:00): Sair global e revogacao de sessao do qa-r03 derrubam as sessoes das outras frentes; account.logout e account.sessions ficam para depois de 15:30, com aviso 5 min antes no JSON e por mensagem. Ate la, fechar a aba em vez de Sair."
+    }
   ]
 }
