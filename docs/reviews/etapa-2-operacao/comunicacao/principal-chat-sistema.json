@@ -1,6 +1,6 @@
 {
-  "revision": 16,
-  "updated_at": "2026-09-11T03:10:00-03:00",
+  "revision": 17,
+  "updated_at": "2026-09-11T03:55:00-03:00",
   "round": "E2-R04-20260911",
   "group": "principal-chat-sistema",
   "tool": "Claude Code (VS Code), sessao coelo-11",
@@ -9,9 +9,9 @@
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-principal-chat-sistema",
   "branch": "work/etapa2-r04-principal-chat-sistema",
   "base": "origin/dev a2b8d1899 (rebase 02:15)",
-  "head": "dcfcb9e41 (+ este commit)",
-  "publicada": "origin/work/etapa2-r04-principal-chat-sistema em dcfcb9e41 (integrado em dev 7d128b3a6); rev 16 neste push",
-  "status": "03:10: launcher fechado (7322260c5, 1e34eb9f4, dcfcb9e41). Rota real de Cardapios/Principal AINDA SEM PROVA nesta retomada: release/profile de qa_main nao expoem $flutterDriver; debug sem .env.local morre em Supabase.instance; relance com --dart-define-from-file=.env.local falhou por porta 3000 presa pelo flutter run anterior. Processos meus encerrados; relancando. deltas-r04.json publicado parcial (so launcher/shell).",
+  "head": "92146a56d (+ este commit)",
+  "publicada": "origin/work/etapa2-r04-principal-chat-sistema em 92146a56d (integrado); rev 17 neste push",
+  "status": "MINI-REVISAO 04:00 (coelo-11). Fechado com prova: launcher/Decisao 7 (7322260c5, 1e34eb9f4, dcfcb9e41; em dev 7d128b3a6); Cardapios abre na rota real para qa-r03 e reload mantem (51/52); Chat: dialogo Criar grupo carrega instituicao e pessoas do diretorio (54..61, 67a). Criacao do grupo pela UI: dialogo fechou ao clicar Criar grupo e nenhum grupo novo apareceu apos reload (67b, 67c); causa nao isolada nesta retomada (o clique por CDP pode ter caido fora do botao apos o relayout, e o checkbox do membro nao foi confirmado); a RPC superadmin_chat_create_group_v2 ja foi provada em producao na rev 12. Aberto: Principal inteiro bloqueado por list_my_principal_contexts ausente em producao (PGRST202) -> candidato 191000 entregue; CRUD de Cardapios pela UI nao feito; goldens nao tocados.",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos, Perfil",
     "apps/superadmin -> Chat administrativo e Principal",
@@ -87,7 +87,7 @@
     "rota_chat_final": "capturas 20 a 42 em evidence/etapa-2/r04-principal-chat-sistema/rota-real/: inbox, thread, reload, envio, edicao, revogacao, dialogo de Criar grupo"
   },
   "blocker": null,
-  "next_step": "Relancar flutter run com .env.local em 127.0.0.1:3000; login qa-r03; /meal-plans e Principal com captura e reload; rev 17 com deltas; mini-revisao as 04:00.",
+  "next_step": "Fechamento: encerrar Chrome e servidor; handoff atualizado; nao retomar por conta propria depois de 04:20.",
   "ack": null,
   "handoff": "docs/reviews/etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md (R03; sera reescrito no fechamento da R04)",
   "lotes": [
@@ -370,5 +370,29 @@
     "observacao": "ao retomar havia 29 processos chrome.exe e 10 dart.exe de outras frentes/sessoes na maquina; nao encerrei processos que nao sao meus",
     "memoria": "02:20: 0,5 GB livres de 15,6 (meu dart2js 2,2 GB + vmmemWSL 2 GB + 21-29 chrome.exe de outras frentes); um flutter_tester meu ficou 10 min a 3,3 GB por pumpAndSettle que nao assentava no hospedeiro desktop; troquei por pumps fixos no teste novo"
   },
-  "deltas_r04": "docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/deltas-r04.json (formato pedido pelo coordenador; parcial)"
+  "deltas_r04": "docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/deltas-r04.json (formato pedido pelo coordenador; parcial)",
+  "mini_revisao_0400": {
+    "sha_publicado": "92146a56d + commit da rev 17 (ver head no proximo campo); integrados em dev: 0d559370c(=7322260c5), 1e34eb9f4, dcfcb9e41, 92146a56d",
+    "fechado_por_action_id_com_prova": [
+      "shell.load (frontend verified): regressao do launcher corrigida; superadmin_shell_chat_visibility_test 12/12; test/app/shell 124/124",
+      "meal-plans.list (frontend verified; integrated local-green): rota real abre para qa-r03, diretorio real vazio honesto, reload mantem (51, 52)",
+      "chat.create-group (frontend verified): dialogo carrega instituicao e pessoas de producao pelo diretorio; nome entra pelo driver (54..61, 67a)"
+    ],
+    "aberto_com_primeiro_gate": [
+      "acontece.*, agora.*, momentos.*, principal_profile.* (5 telas): public.list_my_principal_contexts nao existe em producao (PostgREST PGRST202, capturado por Network). GATE 1: coordenador aplica candidatos/principal-chat-sistema/20260910191000_principal_runtime_contexts_baseline.sql (recarimbo identico da historica 20260901161700; tabelas e colunas conferidas em producao por pg_class/information_schema; pgTAP principal_runtime_contexts_test.sql, 13 casos, ja no repositorio, nao rodado no descartavel nesta retomada por memoria). GATE 2 (produto, P25): a pessoa de servico de qa-r03 precisa de institution_membership ativa para ter contexto; sem isso a tela mostrara \"Nenhum contexto disponivel\" (honesto).",
+      "chat.create-group (integrated): dialogo fechou ao clicar Criar grupo e nenhum grupo novo apareceu apos reload (67b, 67c); causa nao isolada nesta retomada (o clique por CDP pode ter caido fora do botao apos o relayout, e o checkbox do membro nao foi confirmado); a RPC superadmin_chat_create_group_v2 ja foi provada em producao na rev 12",
+      "meal-plans.create/edit/model-*/publish: sem prova de CRUD pela UI nesta retomada (tempo); ambiente pronto",
+      "goldens (Perfil FOTO/SHELL, galeria mobile Acontece, imports FUNDO): nao tocados",
+      "pumpAndSettle no hospedeiro desktop nao assenta: teste novo usa pumps fixos; investigar a animacao que nao para (pos-MVP)",
+      "FE menor: DropdownButtonFormField do dialogo usa initialValue, entao a selecao automatica (uma instituicao) nao aparece no campo ate o usuario abrir o menu"
+    ],
+    "deltas_propostos": "docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/deltas-r04.json (rev 17, formato do coordenador: camada frontend|backend|integrated, certificacao com evidence unico)",
+    "pacotes_prontos": [
+      "candidatos/principal-chat-sistema/20260910191000_principal_runtime_contexts_baseline.sql (pgTAP existente no repo; nao rodado nesta retomada)"
+    ],
+    "duvidas_ao_owner": [
+      "P-CTX (P25): dar a pessoa de servico do qa-r03 um vinculo institucional sintetico (institution_memberships, scope institution) na instituicao QA R04 Cuidado (sintetico) para o Principal ter contexto? Sem isso Acontece/Momentos/Agora/Para voce/Perfil nao abrem para ninguem em producao."
+    ],
+    "ambiente": "build release de test_driver/qa_main.dart com --dart-define-from-file=.env.local, servido por python (SPA fallback) em 127.0.0.1:3009; Chrome 152 --remote-debugging-port=9409 --use-angle=swiftshader, perfil isolado; login e enter_text por qa_drive.dart; cliques por CDP (Input.dispatchMouseEvent); Input.insertText NAO entra no campo Flutter (usar enter_text do driver); um Chrome, um servidor; encerrados no fechamento."
+  }
 }
