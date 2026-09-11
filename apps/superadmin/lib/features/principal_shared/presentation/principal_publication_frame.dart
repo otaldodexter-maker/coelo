@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -239,55 +237,223 @@ final class PrincipalPublicationActionFooter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(CoeloRadius.lg),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: CoeloSpacing.space3, sigmaY: CoeloSpacing.space3),
-        child: Container(
-          key: surfaceKey,
-          padding: const EdgeInsets.all(CoeloSpacing.space3),
-          decoration: BoxDecoration(
-            color: colors.surface.withValues(
-              alpha: Theme.brightnessOf(context) == Brightness.light ? 0.84 : 0.88,
+    // Familia Publicacao (Owner, 11/09/2026 17:19): rodape em card contornado
+    // dentro do conteiner, sem desfoque.
+    return Container(
+      key: surfaceKey,
+      padding: const EdgeInsets.all(CoeloSpacing.space4),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(CoeloRadius.lg),
+        border: Border.all(color: colors.outlineVariant),
+      ),
+      child: SafeArea(
+        top: false,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final compact =
+                constraints.maxWidth < CoeloBreakpoints.medium.minWidth + CoeloSpacing.space16 ||
+                MediaQuery.textScalerOf(context).scale(1) > 1.3;
+            if (compact) {
+              final actions = [...continuationActions.reversed, tertiaryAction];
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  for (var index = 0; index < actions.length; index++) ...[
+                    SizedBox(width: double.infinity, child: actions[index]),
+                    if (index < actions.length - 1) const SizedBox(height: CoeloSpacing.space2),
+                  ],
+                ],
+              );
+            }
+            // Cancelar a esquerda, rascunho e primaria a direita; se nao
+            // couber numa linha, o grupo da direita desce sem estourar.
+            return Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              runSpacing: CoeloSpacing.space2,
+              children: [
+                tertiaryAction,
+                Wrap(
+                  spacing: CoeloSpacing.space2,
+                  runSpacing: CoeloSpacing.space2,
+                  children: continuationActions,
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+/// Familia Publicacao (decisao do Owner, 11/09/2026 17:19): titulo
+/// "Sua publicacao", subtitulo "Publicar no/em ...", corpo em uma coluna
+/// (midia primeiro, depois blocos em cards), previa a direita no desktop e
+/// rodape em card. Sem etapas, sem wizard, sem fundo cinza.
+final class PrincipalPublicationSheet extends StatelessWidget {
+  const PrincipalPublicationSheet({
+    required this.subtitle,
+    required this.body,
+    required this.footer,
+    this.title = 'Sua publicação',
+    this.aside,
+    this.asideKey,
+    this.asideWidth = 360,
+    this.scrollKey,
+    super.key,
+  });
+
+  final String title;
+  final String subtitle;
+  final Widget body;
+  final Widget? aside;
+  final Key? asideKey;
+  final double asideWidth;
+  final Widget footer;
+  final Key? scrollKey;
+
+  static const double asideBreakpoint = 1024;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final textTheme = Theme.of(context).textTheme;
+      final wide = constraints.maxWidth >= CoeloBreakpoints.medium.minWidth;
+      final showAside =
+          aside != null &&
+          constraints.maxWidth >= asideBreakpoint &&
+          MediaQuery.textScalerOf(context).scale(1) <= 1.5;
+      final inset = wide ? CoeloSpacing.space6 : CoeloSpacing.space4;
+      final content = Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            title,
+            key: const Key('principal-publication-title'),
+            style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: CoeloSpacing.space1),
+          Text(
+            subtitle,
+            key: const Key('principal-publication-subtitle'),
+            style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: CoeloSpacing.space5),
+          if (showAside)
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(child: body),
+                const SizedBox(width: CoeloSpacing.space6),
+                SizedBox(key: asideKey, width: asideWidth, child: aside),
+              ],
+            )
+          else
+            body,
+        ],
+      );
+      return Padding(
+        padding: EdgeInsets.fromLTRB(inset, inset, inset, CoeloSpacing.space4),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                key: scrollKey,
+                padding: const EdgeInsets.only(bottom: CoeloSpacing.space6),
+                child: content,
+              ),
             ),
-            borderRadius: BorderRadius.circular(CoeloRadius.lg),
+            footer,
+          ],
+        ),
+      );
+    },
+  );
+}
+
+/// Bloco da familia Publicacao: rotulo acima e conteudo em card contornado
+/// (`neutral200`, raio 12).
+final class PrincipalPublicationBlock extends StatelessWidget {
+  const PrincipalPublicationBlock({
+    required this.child,
+    this.label,
+    this.trailing,
+    this.padding = const EdgeInsets.all(CoeloSpacing.space4),
+    this.blockKey,
+    super.key,
+  });
+
+  final String? label;
+  final Widget? trailing;
+  final Widget child;
+  final EdgeInsetsGeometry padding;
+  final Key? blockKey;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (label != null) ...[
+          Row(
+            children: [
+              Expanded(child: Text(label!, style: Theme.of(context).textTheme.labelLarge)),
+              ?trailing,
+            ],
+          ),
+          const SizedBox(height: CoeloSpacing.space2),
+        ],
+        Container(
+          key: blockKey,
+          padding: padding,
+          decoration: BoxDecoration(
+            color: colors.surface,
+            borderRadius: BorderRadius.circular(CoeloRadius.md),
             border: Border.all(color: colors.outlineVariant),
           ),
-          child: SafeArea(
-            top: false,
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final compact =
-                    constraints.maxWidth <
-                        CoeloBreakpoints.medium.minWidth + CoeloSpacing.space16 ||
-                    MediaQuery.textScalerOf(context).scale(1) > 1.3;
-                if (compact) {
-                  final actions = [...continuationActions.reversed, tertiaryAction];
-                  return Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      for (var index = 0; index < actions.length; index++) ...[
-                        SizedBox(width: double.infinity, child: actions[index]),
-                        if (index < actions.length - 1) const SizedBox(height: CoeloSpacing.space2),
-                      ],
-                    ],
-                  );
-                }
-                return Row(
-                  children: [
-                    tertiaryAction,
-                    const Spacer(),
-                    for (var index = 0; index < continuationActions.length; index++) ...[
-                      if (index > 0) const SizedBox(width: CoeloSpacing.space2),
-                      continuationActions[index],
-                    ],
-                  ],
-                );
-              },
-            ),
-          ),
+          child: child,
         ),
+      ],
+    );
+  }
+}
+
+/// Nota em `orange50` com icone (regra da tela: 24 horas do Agora, contexto de
+/// Momentos, simulacao da previa).
+final class PrincipalPublicationNote extends StatelessWidget {
+  const PrincipalPublicationNote({
+    required this.text,
+    this.icon = Icons.info_outline_rounded,
+    super.key,
+  });
+
+  final String text;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: CoeloSpacing.space3,
+        vertical: CoeloSpacing.space3,
+      ),
+      decoration: BoxDecoration(
+        color: colors.primaryContainer,
+        borderRadius: BorderRadius.circular(CoeloRadius.md),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: CoeloSize.iconSm, color: colors.primary),
+          const SizedBox(width: CoeloSpacing.space2),
+          Expanded(child: Text(text, style: Theme.of(context).textTheme.bodySmall)),
+        ],
       ),
     );
   }
