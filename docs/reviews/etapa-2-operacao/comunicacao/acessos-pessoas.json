@@ -1,7 +1,7 @@
 {
-  "revision": 130,
-  "updated_at": "2026-09-11T18:11:14.827Z",
-  "relogio_local": "Fri Sep 11 2026 15:11:14 GMT-0300 (Horário Padrão de Brasília)",
+  "revision": 131,
+  "updated_at": "2026-09-11T18:23:09.331Z",
+  "relogio_local": "Fri Sep 11 2026 15:23:09 GMT-0300 (Horário Padrão de Brasília)",
   "round": "E2-R05-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
@@ -187,6 +187,13 @@
     ]
   },
   "P44_COMPLEMENTO_15h12": "Usuarios internos nao tem coluna de @ (superadmin_internal_identities/profiles), mas cada um tem uma pessoa de servico em public.people pela ponte de ator (220400), que o 170100 deixa sem @ de proposito (person_type service). Se o Owner quiser @ para internos, o caminho menor e permitir 'service' em enforce_person_handle_rules/ensure_person_handle e mostrar o @ na tela de Usuarios internos (pacote pequeno + FE). Recomendo perguntar antes: o @ e identidade publica no Principal e o interno nao aparece la.",
+  "ENCERRAMENTO_15h23": {
+    "ultima_tentativa": "convites pela UI (passos 2-4) com Chrome reaberto as 15:12: passo 1 de novo ok (Secretaria QA R05 selecionavel), mas o renderer do Chrome travou na captura do passo 2 (1,3 GB livres); tentativa abandonada; FE de invites.create permanece local-green com passo 1 provado.",
+    "ambiente": "Chrome 9411, servidor 3010, scripts CDP e descartavel coelo_acessos_r05 encerrados as 15:22 (o container supabase_db_coelo_realm_r05 e da frente realm-interno); nenhum processo desta frente em execucao.",
+    "sha_final": "o commit desta rev 131; worktree limpa; sem WIP retido.",
+    "a_aplicar_pelo_coordenador": "deltas-r05-2.json (7), deltas-r05-3.json (7), deltas-r05-4.json (1); pacote 170400 + chave segmentFilterAvailable; proposta de skills na rev 129; perguntas P43/P44.",
+    "nao_retomo": "depois de 16:00 nao retomo por conta propria; respondo a revisao das 15:50 no JSON."
+  },
   "historico_r04": {
     "revision": 118,
     "updated_at": "2026-09-11T11:31:19.648Z",
