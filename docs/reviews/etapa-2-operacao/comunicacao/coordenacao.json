@@ -1,12 +1,12 @@
 {
- "revision": 29,
+ "revision": 30,
  "round": "E2-R04-20260911",
  "role": "Coordenacao noturna R04 - Claude Fable (C0)",
  "writer": "coordenador-claude",
  "app": "Claude Code (VS Code)",
  "model": "claude-fable-5-1",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T03:46:00-03:00",
+ "updatedAt": "2026-09-11T03:52:00-03:00",
  "relogio": "relogio da maquina; posse as 21:42 -03:00 de 10/09/2026",
  "posseR04": {
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -124,12 +124,14 @@
    "lote 18: 171700 (acessos-pessoas)",
    "lote 19: 171900 (acessos-pessoas)",
    "lote 20: 172000",
-   "lote 21: 172100 (acessos-pessoas)"
+   "lote 21: 172100 (acessos-pessoas)",
+   "lote 22: 191000 (principal-chat-sistema)"
   ],
   "proximos": [
-   "formularios (subagente): 220600 child_context_directory_v2, 220700 attendance access/context_options, 220800 snapshot de Local no v1",
+   "formularios (subagente): 220600/220700/220800 se verdes ate 04:15",
    "coordenador: 230023 worker de Avisos (P30)",
-   "acessos: 171600 (P31), 171800 (P32)"
+   "acessos: 171600 (P31), 171800 (P32)",
+   "principal: membership da pessoa de servico (P35)"
   ]
  },
  "receiptsR04": [
@@ -217,6 +219,7 @@
   "27": "02:52 lote 18 em producao; publicacoes finalizada; P16 cliente integrado; subagentes; memoria",
   "28": "03:05 lote 19 em producao; acessos-pessoas e publicacoes finalizadas; metricas parciais FE 39 / BE done 40 / E2E 24",
   "29": "03:46 lotes 20 e 21; acessos finalizada; rota real de operacoes e formularios por subagentes (E2E 37/199); pacotes de backend de formularios em curso",
+  "30": "03:52 lote 22 (contextos do Principal); mini-revisoes de 04:00 recebidas de seis frentes; estrutura sem retorno; P35/P36",
   "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina."
  },
  "fechamentoR03": {
@@ -530,7 +533,10 @@
  "finalizados": {
   "publicacoes-agenda": "rev 27 763402a34 (03:08 no relogio da frente): 6 pacotes em producao, 63 deltas, 49 capturas, 3 correcoes FE pequenas (recarga de Circulares apos excluir, Editar oculto em Encerrada, contextos no detalhe do evento), duvidas visuais P33/P34",
   "realm-interno": "rev 13 d217005d1: finalizado desde 00:24",
-  "acessos-pessoas": "rev 116 3808fb2e2 (03:24): lotes 12,14,16,18,19,20,21 aplicados; 47 deltas; Modelos com CRUD real pela UI (E2E); Perfis editar/excluir/atribuir, Modelos editar/duplicar, Pessoas criar/editar, Usuarios internos editar, Seguranca infantil editar com BE done por REST; retidos 171600 (P31) e 171800 (P32); lista completa de dados sinteticos no JSON (DADOS_SINTETICOS_LISTA_COMPLETA)"
+  "acessos-pessoas": "rev 116 3808fb2e2 (03:24): lotes 12,14,16,18,19,20,21 aplicados; 47 deltas; Modelos com CRUD real pela UI (E2E); Perfis editar/excluir/atribuir, Modelos editar/duplicar, Pessoas criar/editar, Usuarios internos editar, Seguranca infantil editar com BE done por REST; retidos 171600 (P31) e 171800 (P32); lista completa de dados sinteticos no JSON (DADOS_SINTETICOS_LISTA_COMPLETA)",
+  "principal-chat-sistema": "rev 17 31632cd1c + handoff 889e289a8 (04:00): launcher Decisao 7 fechado (frame suprime o balao), shell.load/meal-plans.list/chat.create-group FE verified; Cardapios abre na rota real; chat E2E 6 acoes desde a rev 13; Principal bloqueado por contexto (P35); Criar grupo pela UI nao confirmou (RPC provada)",
+  "operacoes": "rev 18 94c705576 (03:03, subagente): Conta e Suporte verified-e2e (7 acoes); Suporte no composto",
+  "formularios-cuidado-rotina": "rev 32 e5d35ad37 (03:41, subagente): forms.list/create/edit e medication.list verified-e2e; 7 gates de backend com erro exato; pacotes 220600/220700/220800 em curso por subagente ate 04:15"
  },
  "subagentesDoCoordenador": {
   "operacoes Suporte no composto": "concluido 2bcddb469 (analyze limpo; 69 P / 2 F goldens)",
@@ -576,5 +582,31 @@
   "beDone": "62/224",
   "e2eVerified": "37/199",
   "base": "validate-trackers PASS sobre c2033d327+ (analyze em curso para o push)"
+ },
+ "lote22": {
+  "aplicadoEm": "2026-09-11T03:49 -03:00; ledger 99",
+  "dump": "schema-producao-20260911-lote22.sql",
+  "conteudo": [
+   "principal-chat-sistema 20260910191000 principal_runtime_contexts_baseline (recarimbo da historica 20260901161700, nunca aplicada: public.list_my_principal_contexts; pgTAP 13/13 no espelho do coordenador). Destrava o Principal inteiro no cliente; falta contexto institucional para a pessoa de servico de qa-r03 (P35)"
+  ]
+ },
+ "miniRevisoes0400": {
+  "recebidas": [
+   "acessos-pessoas rev 116 (finalizado)",
+   "publicacoes-agenda rev 28 (finalizado)",
+   "realm-interno rev 13 (finalizado)",
+   "principal-chat-sistema rev 17 (finalizado)",
+   "operacoes rev 18 (subagente)",
+   "formularios-cuidado-rotina rev 32 (subagente)"
+  ],
+  "pendentes": [
+   "estrutura: coelo-39 sem retorno desde 02:06 apesar de cinco cobrancas; rev 30 de 23:24 e o WIP a22721fbe (nao provado) sao o estado final"
+  ]
+ },
+ "metricasParciais0355": {
+  "feVerified": "56/231",
+  "beDone": "62/224",
+  "e2eVerified": "37/199",
+  "base": "validate-trackers PASS sobre d12700d53"
  }
 }
