@@ -52,12 +52,20 @@ assinatura em relação ao cliente atual; Criar grupo é
    `*_preferences_test`) não valem sobre a baseline; as `*_baseline_test.sql`
    as substituem. Arquivar as antigas é decisão do coordenador.
 
+## Produção (lote 9, 22:25) e prova (22:32)
+
+Os cinco pacotes foram aplicados pelo coordenador e provados com a sessão
+`qa-r03@coelo.me` por PostgREST: 18 PASS / 0 FAIL, persistência conferida no
+banco, limpeza feita (a instituição sintética ficou arquivada por FK da
+auditoria). Detalhes em `prova-producao-2026-09-10.md`. Delta proposto:
+`deltas-be-r04.json` (seis IDs → backend `done`, com certificação).
+
 ## Aberto e primeiro gate
 
 | Item | Primeiro gate |
 | --- | --- |
-| chat.list/open/send/edit/receipts/revoke → `done` | coordenador aplicar 240000..240300 em produção; depois `Invoke-ChatInternalProductionProof.sh` com qa-r03 (fixture sintética `chat-internal-production-fixture.sql` antes, `cleanup` depois) |
-| Criar grupo (P8) → `done` | aplicar 240400 + mesma prova; UI do grupo principal-chat-sistema; registrar `chat.create-group` no inventário |
+| chat.* E2E | grupo principal-chat-sistema ligar `SupabaseChatRepository` na composição e provar na rota normal |
+| Criar grupo (P8) | criar `chat.create-group` no inventário; UI do grupo principal-chat-sistema; P24 (só identidades internas no MVP?) com o Owner, não bloqueia o backend entregue |
 | chat.attach | gateway de mídia comum (fora do recorte) |
 | escopo `activity` de Criar grupo | validado por código e trigger; sem pgTAP (fixture de atividades complexa); revisão profunda |
 | Realtime | nenhuma publication configurada; o cliente não assina hoje |
