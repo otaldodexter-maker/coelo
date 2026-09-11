@@ -1,6 +1,6 @@
 {
-  "revision": 15,
-  "updated_at": "2026-09-11T02:40:00-03:00",
+  "revision": 17,
+  "updated_at": "2026-09-11T03:55:00-03:00",
   "round": "E2-R04-20260911",
   "group": "principal-chat-sistema",
   "tool": "Claude Code (VS Code), sessao coelo-11",
@@ -9,9 +9,9 @@
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-principal-chat-sistema",
   "branch": "work/etapa2-r04-principal-chat-sistema",
   "base": "origin/dev a2b8d1899 (rebase 02:15)",
-  "head": "1e34eb9f4",
-  "publicada": "origin/work/etapa2-r04-principal-chat-sistema em 1e34eb9f4 (0d559370c e 1e34eb9f4 integrados pelo coordenador em 959951de2)",
-  "status": "Launcher/Decisao 7 fechado em dois commits: 7322260c5 (flag da pagina embutida chega ao hospedeiro; destinos do Principal sem balao; Cardapios/Planos criar/editar) e 1e34eb9f4 (SuperadminFormFrame registra supressao no hospedeiro em qualquer largura; Circulares e Avisos com flag explicita). Testes: superadmin_shell_chat_visibility_test 12/12; suite test/app/shell 124/124 (no 7322260c5). Rota real de Cardapios/Principal: subindo o app em debug (flutter run -d chrome, qa_main) porque os builds release e profile de qa_main nao expoem window.$flutterDriver nesta maquina.",
+  "head": "92146a56d (+ este commit)",
+  "publicada": "origin/work/etapa2-r04-principal-chat-sistema em 92146a56d (integrado); rev 17 neste push",
+  "status": "MINI-REVISAO 04:00 (coelo-11). Fechado com prova: launcher/Decisao 7 (7322260c5, 1e34eb9f4, dcfcb9e41; em dev 7d128b3a6); Cardapios abre na rota real para qa-r03 e reload mantem (51/52); Chat: dialogo Criar grupo carrega instituicao e pessoas do diretorio (54..61, 67a). Criacao do grupo pela UI: dialogo fechou ao clicar Criar grupo e nenhum grupo novo apareceu apos reload (67b, 67c); causa nao isolada nesta retomada (o clique por CDP pode ter caido fora do botao apos o relayout, e o checkbox do membro nao foi confirmado); a RPC superadmin_chat_create_group_v2 ja foi provada em producao na rev 12. Aberto: Principal inteiro bloqueado por list_my_principal_contexts ausente em producao (PGRST202) -> candidato 191000 entregue; CRUD de Cardapios pela UI nao feito; goldens nao tocados.",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos, Perfil",
     "apps/superadmin -> Chat administrativo e Principal",
@@ -60,7 +60,8 @@
     "MEDICAO: 20260909214000 (feed misto) consta 1/1 presente, mas o corpo em producao NAO tem o predicado de retirada nem can_withdraw; 213000 consta 1/2 e o objeto presente e o feed direto SEM as colunas de retirada. Presenca do nome nao prova o corpo. acontece.remove estava blocked-environment por isso; 190800 fecha.",
     "Agora: producao nunca teve a fundacao (0/17, 0/4, 0/4). Entra inteira como tres pacotes recarimbados. Diferenca unica: nao cria bucket no Supabase Storage (toda midia nova e R2).",
     "Portas locais em uso por outras frentes: 573xx coordenador, 583xx fcr, 593xx (meu da R03, ainda de pe), 603xx (ocupada), 613xx estrutura. Uso 623xx.",
-    "FERRAMENTA (rota real): flutter build web --release e --profile de test_driver/qa_main.dart geram bundle com registerWebServiceExtension (3 ocorrencias em main.dart.js), mas na pagina servida em 127.0.0.1:3000 (Chrome 152, perfil limpo) window.$flutterDriver fica indefinido: no release so $flutterDriverResult=null aparece (a atribuicao seguinte, A._functionToJS1, nao tem efeito nem lanca excecao visivel no console); no profile nem isso. Sem excecao no console. Caminho adotado: flutter run -d chrome (debug, DDC) com --web-browser-flag=--remote-debugging-port=9333, como o grupo formularios. Fallback escrito: scratchpad/cdp_sem.dart dirige pela arvore de semantica (flt-semantics) via CDP sem depender do driver."
+    "FERRAMENTA (rota real): flutter build web --release e --profile de test_driver/qa_main.dart geram bundle com registerWebServiceExtension (3 ocorrencias em main.dart.js), mas na pagina servida em 127.0.0.1:3000 (Chrome 152, perfil limpo) window.$flutterDriver fica indefinido: no release so $flutterDriverResult=null aparece (a atribuicao seguinte, A._functionToJS1, nao tem efeito nem lanca excecao visivel no console); no profile nem isso. Sem excecao no console. Caminho adotado: flutter run -d chrome (debug, DDC) com --web-browser-flag=--remote-debugging-port=9333, como o grupo formularios. Fallback escrito: scratchpad/cdp_sem.dart dirige pela arvore de semantica (flt-semantics) via CDP sem depender do driver.",
+    "FERRAMENTA (rota real, 03:05): em debug o app precisa de --dart-define-from-file=.env.local (COELO_APP_ENV, COELO_SUPABASE_URL, COELO_SUPABASE_PUBLISHABLE_KEY); sem isso lib/main.dart acessa Supabase.instance antes do initialize e o assert mata o boot (tela branca, $flutterDriver existe mas nao responde). No release o assert e omitido e a tela abre, o que mascarou a causa. Origem localhost:3000 (mapeada por host-resolver-rules) NAO boota o app em debug (so o script do bootstrap): usar 127.0.0.1:3000; upload direto ao R2 dessa origem sera negado pelo CORS (so localhost:3000). TaskStop do flutter run deixa dart + Chrome vivos: encerrar por Stop-Process antes de relancar."
   ],
   "pendencias_registradas_sem_bloquear": [
     "now: substituicao de ativo (mesma publicacao/kind com metadados novos) gera chave nova e deixa o objeto anterior orfao no R2; coletor claim_stale para Agora/Acontece fica para depois (Momentos ja tem o dele).",
@@ -86,7 +87,7 @@
     "rota_chat_final": "capturas 20 a 42 em evidence/etapa-2/r04-principal-chat-sistema/rota-real/: inbox, thread, reload, envio, edicao, revogacao, dialogo de Criar grupo"
   },
   "blocker": null,
-  "next_step": "Cardapios e Principal (Acontece/Momentos/Agora/Para voce/Perfil) na rota real com qa-r03 no app em debug (um Chrome), deltas por action_id; depois Criar grupo com o diretorio de Pessoas; mini-revisao as 04:00.",
+  "next_step": "Fechamento: encerrar Chrome e servidor; handoff atualizado; nao retomar por conta propria depois de 04:20.",
   "ack": null,
   "handoff": "docs/reviews/etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md (R03; sera reescrito no fechamento da R04)",
   "lotes": [
@@ -368,5 +369,30 @@
     "regras_da_retomada": "no maximo dois Chrome/flutter run por frente, um flutter test por vez, fechar Chrome e dart ao fim de cada prova; subagentes so para trabalho sem Chrome; rtk nos comandos",
     "observacao": "ao retomar havia 29 processos chrome.exe e 10 dart.exe de outras frentes/sessoes na maquina; nao encerrei processos que nao sao meus",
     "memoria": "02:20: 0,5 GB livres de 15,6 (meu dart2js 2,2 GB + vmmemWSL 2 GB + 21-29 chrome.exe de outras frentes); um flutter_tester meu ficou 10 min a 3,3 GB por pumpAndSettle que nao assentava no hospedeiro desktop; troquei por pumps fixos no teste novo"
+  },
+  "deltas_r04": "docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/deltas-r04.json (formato pedido pelo coordenador; parcial)",
+  "mini_revisao_0400": {
+    "sha_publicado": "92146a56d + commit da rev 17 (ver head no proximo campo); integrados em dev: 0d559370c(=7322260c5), 1e34eb9f4, dcfcb9e41, 92146a56d",
+    "fechado_por_action_id_com_prova": [
+      "shell.load (frontend verified): regressao do launcher corrigida; superadmin_shell_chat_visibility_test 12/12; test/app/shell 124/124",
+      "meal-plans.list (frontend verified; integrated local-green): rota real abre para qa-r03, diretorio real vazio honesto, reload mantem (51, 52)",
+      "chat.create-group (frontend verified): dialogo carrega instituicao e pessoas de producao pelo diretorio; nome entra pelo driver (54..61, 67a)"
+    ],
+    "aberto_com_primeiro_gate": [
+      "acontece.*, agora.*, momentos.*, principal_profile.* (5 telas): public.list_my_principal_contexts nao existe em producao (PostgREST PGRST202, capturado por Network). GATE 1: coordenador aplica candidatos/principal-chat-sistema/20260910191000_principal_runtime_contexts_baseline.sql (recarimbo identico da historica 20260901161700; tabelas e colunas conferidas em producao por pg_class/information_schema; pgTAP principal_runtime_contexts_test.sql, 13 casos, ja no repositorio, nao rodado no descartavel nesta retomada por memoria). GATE 2 (produto, P25): a pessoa de servico de qa-r03 precisa de institution_membership ativa para ter contexto; sem isso a tela mostrara \"Nenhum contexto disponivel\" (honesto).",
+      "chat.create-group (integrated): dialogo fechou ao clicar Criar grupo e nenhum grupo novo apareceu apos reload (67b, 67c); causa nao isolada nesta retomada (o clique por CDP pode ter caido fora do botao apos o relayout, e o checkbox do membro nao foi confirmado); a RPC superadmin_chat_create_group_v2 ja foi provada em producao na rev 12",
+      "meal-plans.create/edit/model-*/publish: sem prova de CRUD pela UI nesta retomada (tempo); ambiente pronto",
+      "goldens (Perfil FOTO/SHELL, galeria mobile Acontece, imports FUNDO): nao tocados",
+      "pumpAndSettle no hospedeiro desktop nao assenta: teste novo usa pumps fixos; investigar a animacao que nao para (pos-MVP)",
+      "FE menor: DropdownButtonFormField do dialogo usa initialValue, entao a selecao automatica (uma instituicao) nao aparece no campo ate o usuario abrir o menu"
+    ],
+    "deltas_propostos": "docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/deltas-r04.json (rev 17, formato do coordenador: camada frontend|backend|integrated, certificacao com evidence unico)",
+    "pacotes_prontos": [
+      "candidatos/principal-chat-sistema/20260910191000_principal_runtime_contexts_baseline.sql (pgTAP existente no repo; nao rodado nesta retomada)"
+    ],
+    "duvidas_ao_owner": [
+      "P-CTX (P25): dar a pessoa de servico do qa-r03 um vinculo institucional sintetico (institution_memberships, scope institution) na instituicao QA R04 Cuidado (sintetico) para o Principal ter contexto? Sem isso Acontece/Momentos/Agora/Para voce/Perfil nao abrem para ninguem em producao."
+    ],
+    "ambiente": "build release de test_driver/qa_main.dart com --dart-define-from-file=.env.local, servido por python (SPA fallback) em 127.0.0.1:3009; Chrome 152 --remote-debugging-port=9409 --use-angle=swiftshader, perfil isolado; login e enter_text por qa_drive.dart; cliques por CDP (Input.dispatchMouseEvent); Input.insertText NAO entra no campo Flutter (usar enter_text do driver); um Chrome, um servidor; encerrados no fechamento."
   }
 }

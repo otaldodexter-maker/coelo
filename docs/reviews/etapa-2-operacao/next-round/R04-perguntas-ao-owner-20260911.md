@@ -201,6 +201,55 @@ O render atual usa o indicador do composto com alvo de toque de 48 px; a
 referência guardada tem o círculo de 24 px. Mesma página lado a lado.
 Recomendação: 48 px (acessibilidade WCAG 2.2 AA, alvo mínimo), regravar A.
 
+## P35 — Contexto institucional para o usuário de teste no Principal (principal-chat-sistema)
+
+Com `list_my_principal_contexts` em produção (lote 22), o Principal (Acontece,
+Agora, Momentos, Para você, Perfil) ainda mostra "Nenhum contexto disponível"
+para `qa-r03`, porque a pessoa de serviço criada pela ponte de ator não tem
+`institution_membership` ativa em nenhuma instituição. Decisão: **(a)** semear
+por migration idempotente uma membership da pessoa de serviço de `qa-r03` na
+instituição sintética (só para a prova, removida ao fim); **(b)** fazer o
+Principal aceitar o Owner de plataforma como contexto de todas as
+instituições (regra de produto); **(c)** nada agora. Recomendação: (a) para a
+demonstração, e (b) como regra futura registrada.
+
+## P36 — Estrutura sem conversa viva na retomada
+
+A sessão que assumiu a estrutura às 02:06 não respondeu a quatro cobranças;
+os 21 pacotes de estrutura estão em produção e as chaves ligadas, mas a rota
+real de Instituições → Avaliações com a sessão não foi provada nesta rodada.
+Sugestão: abrir a conversa «R05 · Estrutura» primeiro na próxima rodada, com
+o método de prova já documentado (build web de `qa_main` + CDP).
+
+## P37 — Dados sintéticos deixados em produção pelas provas (limpeza)
+
+O `insert`/`delete` direto em produção foi recusado ao coordenador nesta
+rodada, então a limpeza de dados sintéticos ficou pendente. Inventário (ids
+completos nos JSONs e handoffs de cada grupo):
+
+- `qa-r03@coelo.me` (Auth + realm interno + perfil interno semeado pelo
+  171200 + pessoa de serviço da ponte + memberships espelhadas): remover ao
+  fim da Etapa 2 com `scratchpad/gen-qa-user-sql.js` em modo remover (R03).
+- realm-interno: instituição `9f040000-0000-4000-8000-000000000010` (ativa,
+  fixture do chat), pessoas `…061`/`…062`, conversa/grupo criados pela UI.
+- formularios: prefixo `d0c40000-` (instituição "QA R04 Cuidado", unidade,
+  criança, vínculo), formulário `4555ba07-e4a4-4971-8ba7-d81a775169cd`, local
+  `fc446535-100c-4f35-8e30-e43d63176e3f`.
+- acessos-pessoas: autorização `34d29829-a8b5-4b23-aacb-46e994dce7d7`,
+  modelos `cc322488-…` e cópia `60fb9586-…`, papel
+  `qa-r04-perfil-sintetico-7f6f8d16` (já excluído pela prova), pessoa draft
+  `ec2a15a2-76bc-4e71-8419-94413d0c5c98`.
+- operacoes: chamado `48e02ab0-fa60-4e7c-86b6-78f75565dc57`, telefone
+  `11999990000` na pessoa de serviço `007a4ca5-…`, pedido de troca de e-mail
+  cancelado e recibos.
+- publicacoes: avisos `[R04-QA]` inativos, circulares/eventos de teste.
+
+Opções: **(a)** o Owner libera na conversa do coordenador ("P37 aprovado") um
+script único de limpeza por prefixo/ids, provado no espelho antes; **(b)**
+manter até a próxima rodada e limpar antes da demonstração. Recomendação:
+(a) no fechamento da próxima rodada, depois de conferir que nada da
+demonstração depende deles.
+
 ## Atualização P22 (23:05)
 
 A frente formularios-cuidado-rotina escreveu, na própria sessão, o pacote

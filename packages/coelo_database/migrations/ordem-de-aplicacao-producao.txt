@@ -124,3 +124,5 @@
 20260910172000_owner_child_safety_review_grant_v1.sql
 # lote 21 (11/09 03:2x)
 20260910172100_child_safety_edit_pending_ambiguity_fix_v1.sql
+# lote 22 (11/09 03:50)
+20260910191000_principal_runtime_contexts_baseline.sql

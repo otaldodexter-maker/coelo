@@ -1,0 +1,131 @@
+{
+  "grupo": "principal-chat-sistema",
+  "round": "E2-R04-20260911",
+  "revisao_json": 17,
+  "gerado_em": "2026-09-11T03:55:00-03:00",
+  "deltas": [
+    {
+      "action_id": "shell.load",
+      "camada": "frontend",
+      "estado_proposto": "verified",
+      "delta": "regressao transversal do launcher (Decisao 7) corrigida em 7322260c5, 1e34eb9f4 e dcfcb9e41 (integrados em dev 7d128b3a6): flag da pagina embutida chega ao hospedeiro, SuperadminFormFrame suprime o balao em qualquer largura, destinos do Principal sem balao; shell real abre com o launcher so nos diretorios",
+      "evidencia": "superadmin_shell_chat_visibility_test 12/12; test/app/shell 124/124; tela real 51-meal-plans.png (diretorio com balao) e 51-principal-moments.png (Momentos aberto sem balao)",
+      "certificacao": {
+        "evidence": "docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/rota-real-r04b/51-meal-plans.png",
+        "revision": 17,
+        "environment": "producao Supabase evvbomzejfijozbtgvpt; app build release de test_driver/qa_main.dart com .env.local em 127.0.0.1:3009; Chrome 152 CDP 9409 swiftshader; sessao qa-r03@coelo.me",
+        "recordedAt": "2026-09-11T03:55:00-03:00"
+      }
+    },
+    {
+      "action_id": "meal-plans.list",
+      "camada": "frontend",
+      "estado_proposto": "verified",
+      "delta": "rota normal abre para qa-r03 depois da ponte de ator (lote 10): diretorio real, abas Modelos/Cardapios, card Criar modelo, estado vazio honesto; antes negava com Acesso nao autorizado",
+      "evidencia": "51-meal-plans.png",
+      "certificacao": {
+        "evidence": "docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/rota-real-r04b/51-meal-plans.png",
+        "revision": 17,
+        "environment": "producao Supabase evvbomzejfijozbtgvpt; app build release de test_driver/qa_main.dart com .env.local em 127.0.0.1:3009; Chrome 152 CDP 9409 swiftshader; sessao qa-r03@coelo.me",
+        "recordedAt": "2026-09-11T03:55:00-03:00"
+      }
+    },
+    {
+      "action_id": "meal-plans.list",
+      "camada": "integrated",
+      "estado_proposto": "local-green",
+      "delta": "leitura em producao ok (lista vazia) e reload mantem sessao e tela (driver waitFor Cardapios apos reload = ok); sem CRUD pela UI nesta retomada",
+      "evidencia": "52-meal-plans-reload.png",
+      "certificacao": {
+        "evidence": "docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/rota-real-r04b/52-meal-plans-reload.png",
+        "revision": 17,
+        "environment": "producao Supabase evvbomzejfijozbtgvpt; app build release de test_driver/qa_main.dart com .env.local em 127.0.0.1:3009; Chrome 152 CDP 9409 swiftshader; sessao qa-r03@coelo.me",
+        "recordedAt": "2026-09-11T03:55:00-03:00"
+      }
+    },
+    {
+      "action_id": "acontece.feed",
+      "camada": "backend",
+      "estado_proposto": "blocked-environment",
+      "delta": "public.list_my_principal_contexts nao existe em producao: PostgREST PGRST202 (capturado por Network no Chrome); a historica 20260901161700 nunca chegou a baseline. Candidato candidatos/principal-chat-sistema/20260910191000_principal_runtime_contexts_baseline.sql entregue (recarimbo identico)",
+      "evidencia": "51-principal-happens.png",
+      "certificacao": {
+        "evidence": "docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/rota-real-r04b/51-principal-happens.png",
+        "revision": 17,
+        "environment": "producao Supabase evvbomzejfijozbtgvpt; app build release de test_driver/qa_main.dart com .env.local em 127.0.0.1:3009; Chrome 152 CDP 9409 swiftshader; sessao qa-r03@coelo.me",
+        "recordedAt": "2026-09-11T03:55:00-03:00"
+      }
+    },
+    {
+      "action_id": "momentos.view",
+      "camada": "backend",
+      "estado_proposto": "blocked-environment",
+      "delta": "mesma causa: list_my_principal_contexts ausente (PGRST202)",
+      "evidencia": "51-principal-moments.png",
+      "certificacao": {
+        "evidence": "docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/rota-real-r04b/51-principal-moments.png",
+        "revision": 17,
+        "environment": "producao Supabase evvbomzejfijozbtgvpt; app build release de test_driver/qa_main.dart com .env.local em 127.0.0.1:3009; Chrome 152 CDP 9409 swiftshader; sessao qa-r03@coelo.me",
+        "recordedAt": "2026-09-11T03:55:00-03:00"
+      }
+    },
+    {
+      "action_id": "agora.view",
+      "camada": "backend",
+      "estado_proposto": "blocked-environment",
+      "delta": "mesma causa: list_my_principal_contexts ausente (PGRST202)",
+      "evidencia": "51-principal-now.png",
+      "certificacao": {
+        "evidence": "docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/rota-real-r04b/51-principal-now.png",
+        "revision": 17,
+        "environment": "producao Supabase evvbomzejfijozbtgvpt; app build release de test_driver/qa_main.dart com .env.local em 127.0.0.1:3009; Chrome 152 CDP 9409 swiftshader; sessao qa-r03@coelo.me",
+        "recordedAt": "2026-09-11T03:55:00-03:00"
+      }
+    },
+    {
+      "action_id": "principal_profile.view",
+      "camada": "backend",
+      "estado_proposto": "blocked-environment",
+      "delta": "mesma causa: list_my_principal_contexts ausente (PGRST202); vale para Para voce e Perfil",
+      "evidencia": "51-principal-profile.png",
+      "certificacao": {
+        "evidence": "docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/rota-real-r04b/51-principal-profile.png",
+        "revision": 17,
+        "environment": "producao Supabase evvbomzejfijozbtgvpt; app build release de test_driver/qa_main.dart com .env.local em 127.0.0.1:3009; Chrome 152 CDP 9409 swiftshader; sessao qa-r03@coelo.me",
+        "recordedAt": "2026-09-11T03:55:00-03:00"
+      }
+    },
+    {
+      "action_id": "chat.create-group",
+      "camada": "frontend",
+      "estado_proposto": "verified",
+      "delta": "dialogo Criar grupo na tela real carrega a instituicao QA R04 Cuidado (sintetico) pelo diretorio de Pessoas e lista Crianca QA R04 como membro; nome via driver enter_text (33/120). Antes da ponte de ator o diretorio negava qa-r03",
+      "evidencia": "61-chat-criar-grupo-pessoas.png, 67a-nome-via-driver.png",
+      "certificacao": {
+        "evidence": "docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/rota-real-r04b/61-chat-criar-grupo-pessoas.png",
+        "revision": 17,
+        "environment": "producao Supabase evvbomzejfijozbtgvpt; app build release de test_driver/qa_main.dart com .env.local em 127.0.0.1:3009; Chrome 152 CDP 9409 swiftshader; sessao qa-r03@coelo.me",
+        "recordedAt": "2026-09-11T03:55:00-03:00"
+      }
+    },
+    {
+      "action_id": "chat.create-group",
+      "camada": "integrated",
+      "estado_proposto": "pending-verification",
+      "delta": "criacao pela UI nao fechou nesta retomada: dialogo fechou ao clicar Criar grupo e nenhum grupo novo apareceu apos reload (67b, 67c); causa nao isolada nesta retomada (o clique por CDP pode ter caido fora do botao apos o relayout, e o checkbox do membro nao foi confirmado); a RPC superadmin_chat_create_group_v2 ja foi provada em producao na rev 12. A RPC superadmin_chat_create_group_v2 ja foi provada em producao na rev 12 (grupo, replay, negativas)",
+      "evidencia": "67c-inbox-reload.png",
+      "certificacao": {
+        "evidence": "docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/rota-real-r04b/67c-inbox-reload.png",
+        "revision": 17,
+        "environment": "producao Supabase evvbomzejfijozbtgvpt; app build release de test_driver/qa_main.dart com .env.local em 127.0.0.1:3009; Chrome 152 CDP 9409 swiftshader; sessao qa-r03@coelo.me",
+        "recordedAt": "2026-09-11T03:55:00-03:00"
+      }
+    }
+  ],
+  "pendentes_sem_prova_nesta_retomada": [
+    "meal-plans.create/edit/model-create/model-edit/publish (CRUD pela UI)",
+    "acontece.* agora.* momentos.* principal_profile.* (gate: candidato 191000 + membership institucional para a pessoa de servico, P25)",
+    "goldens das tres listas (Perfil FOTO/SHELL, galeria mobile do Acontece, imports FUNDO)"
+  ],
+  "primeiro_gate_dos_pendentes": "Principal: aplicar candidatos/principal-chat-sistema/20260910191000 (coordenador) e dar a pessoa de servico de qa-r03 uma institution_membership ativa (P25); Cardapios CRUD e Criar grupo pela UI: so tempo (ambiente da rota real documentado no JSON rev 17)"
+}
