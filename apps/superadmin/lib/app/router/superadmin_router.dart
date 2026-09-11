@@ -187,6 +187,7 @@ import '../dev_menu/development_person_directory_repository.dart';
 import '../dev_menu/development_person_identity_repository.dart';
 import '../../features/people/domain/person_directory.dart' hide PersonDirectoryPage;
 import '../../features/people/domain/person_detail_reader.dart';
+import '../../features/people/domain/person_handle.dart';
 import '../../features/people/presentation/person_detail_page.dart';
 import '../../features/people/domain/person_identity.dart';
 import '../../features/people/presentation/person_directory_page.dart';
@@ -331,6 +332,7 @@ GoRouter createSuperadminRouter({
   PersonDirectoryRepository personDirectoryRepository =
       const UnavailablePersonDirectoryRepository(),
   PersonDetailReader personDetailReader = const UnavailablePersonDetailReader(),
+  PersonHandleRepository? personHandleRepository,
   PersonIdentityRepository personIdentityRepository = const UnavailablePersonIdentityRepository(),
   UnitDirectoryRepository unitDirectoryRepository = const UnavailableUnitDirectoryRepository(),
   UnitBackendCommandsGateway unitBackendCommands = const UnavailableUnitBackendCommandsGateway(),
@@ -3355,6 +3357,7 @@ GoRouter createSuperadminRouter({
                   : PersonDetailPage(
                       key: ValueKey(session.authorizationInvalidationRevision),
                       reader: personDetailReader,
+                      handleRepository: personHandleRepository,
                       id: state.pathParameters['personId']!,
                       logout: logout,
                       onBack: () => context.goNamed(SuperadminRoutes.peopleName),
