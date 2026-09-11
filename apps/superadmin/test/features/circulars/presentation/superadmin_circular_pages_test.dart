@@ -102,12 +102,13 @@ void main() {
       ),
     );
     await tester.pumpWidget(page(controllerA));
-    await tester.ensureVisible(find.text('Escolher data e hora'));
-    await tester.tap(find.text('Escolher data e hora'));
+    await tester.ensureVisible(find.byKey(const Key('circular-choose-schedule')));
+    await tester.tap(find.byKey(const Key('circular-choose-schedule')));
     await tester.pumpWidget(page(controllerB));
     picker.complete(DateTime.now().add(const Duration(days: 1)));
     await tester.pumpAndSettle();
-    expect(find.text('Alterar agendamento'), findsNothing);
+    // Rotulo da familia Publicacao: "Publicar agora" enquanto nao ha agendamento.
+    expect(find.text('Publicar agora'), findsOneWidget);
     await tester.tap(find.byKey(const Key('circular-publish')));
     await tester.pumpAndSettle();
     expect(repositoryB.publishTimes, [null]);
