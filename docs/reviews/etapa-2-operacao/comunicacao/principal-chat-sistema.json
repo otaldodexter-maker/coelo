@@ -1,6 +1,6 @@
 {
-  "revision": 15,
-  "updated_at": "2026-09-11T02:40:00-03:00",
+  "revision": 16,
+  "updated_at": "2026-09-11T03:10:00-03:00",
   "round": "E2-R04-20260911",
   "group": "principal-chat-sistema",
   "tool": "Claude Code (VS Code), sessao coelo-11",
@@ -9,9 +9,9 @@
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-principal-chat-sistema",
   "branch": "work/etapa2-r04-principal-chat-sistema",
   "base": "origin/dev a2b8d1899 (rebase 02:15)",
-  "head": "1e34eb9f4",
-  "publicada": "origin/work/etapa2-r04-principal-chat-sistema em 1e34eb9f4 (0d559370c e 1e34eb9f4 integrados pelo coordenador em 959951de2)",
-  "status": "Launcher/Decisao 7 fechado em dois commits: 7322260c5 (flag da pagina embutida chega ao hospedeiro; destinos do Principal sem balao; Cardapios/Planos criar/editar) e 1e34eb9f4 (SuperadminFormFrame registra supressao no hospedeiro em qualquer largura; Circulares e Avisos com flag explicita). Testes: superadmin_shell_chat_visibility_test 12/12; suite test/app/shell 124/124 (no 7322260c5). Rota real de Cardapios/Principal: subindo o app em debug (flutter run -d chrome, qa_main) porque os builds release e profile de qa_main nao expoem window.$flutterDriver nesta maquina.",
+  "head": "dcfcb9e41 (+ este commit)",
+  "publicada": "origin/work/etapa2-r04-principal-chat-sistema em dcfcb9e41 (integrado em dev 7d128b3a6); rev 16 neste push",
+  "status": "03:10: launcher fechado (7322260c5, 1e34eb9f4, dcfcb9e41). Rota real de Cardapios/Principal AINDA SEM PROVA nesta retomada: release/profile de qa_main nao expoem $flutterDriver; debug sem .env.local morre em Supabase.instance; relance com --dart-define-from-file=.env.local falhou por porta 3000 presa pelo flutter run anterior. Processos meus encerrados; relancando. deltas-r04.json publicado parcial (so launcher/shell).",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos, Perfil",
     "apps/superadmin -> Chat administrativo e Principal",
@@ -60,7 +60,8 @@
     "MEDICAO: 20260909214000 (feed misto) consta 1/1 presente, mas o corpo em producao NAO tem o predicado de retirada nem can_withdraw; 213000 consta 1/2 e o objeto presente e o feed direto SEM as colunas de retirada. Presenca do nome nao prova o corpo. acontece.remove estava blocked-environment por isso; 190800 fecha.",
     "Agora: producao nunca teve a fundacao (0/17, 0/4, 0/4). Entra inteira como tres pacotes recarimbados. Diferenca unica: nao cria bucket no Supabase Storage (toda midia nova e R2).",
     "Portas locais em uso por outras frentes: 573xx coordenador, 583xx fcr, 593xx (meu da R03, ainda de pe), 603xx (ocupada), 613xx estrutura. Uso 623xx.",
-    "FERRAMENTA (rota real): flutter build web --release e --profile de test_driver/qa_main.dart geram bundle com registerWebServiceExtension (3 ocorrencias em main.dart.js), mas na pagina servida em 127.0.0.1:3000 (Chrome 152, perfil limpo) window.$flutterDriver fica indefinido: no release so $flutterDriverResult=null aparece (a atribuicao seguinte, A._functionToJS1, nao tem efeito nem lanca excecao visivel no console); no profile nem isso. Sem excecao no console. Caminho adotado: flutter run -d chrome (debug, DDC) com --web-browser-flag=--remote-debugging-port=9333, como o grupo formularios. Fallback escrito: scratchpad/cdp_sem.dart dirige pela arvore de semantica (flt-semantics) via CDP sem depender do driver."
+    "FERRAMENTA (rota real): flutter build web --release e --profile de test_driver/qa_main.dart geram bundle com registerWebServiceExtension (3 ocorrencias em main.dart.js), mas na pagina servida em 127.0.0.1:3000 (Chrome 152, perfil limpo) window.$flutterDriver fica indefinido: no release so $flutterDriverResult=null aparece (a atribuicao seguinte, A._functionToJS1, nao tem efeito nem lanca excecao visivel no console); no profile nem isso. Sem excecao no console. Caminho adotado: flutter run -d chrome (debug, DDC) com --web-browser-flag=--remote-debugging-port=9333, como o grupo formularios. Fallback escrito: scratchpad/cdp_sem.dart dirige pela arvore de semantica (flt-semantics) via CDP sem depender do driver.",
+    "FERRAMENTA (rota real, 03:05): em debug o app precisa de --dart-define-from-file=.env.local (COELO_APP_ENV, COELO_SUPABASE_URL, COELO_SUPABASE_PUBLISHABLE_KEY); sem isso lib/main.dart acessa Supabase.instance antes do initialize e o assert mata o boot (tela branca, $flutterDriver existe mas nao responde). No release o assert e omitido e a tela abre, o que mascarou a causa. Origem localhost:3000 (mapeada por host-resolver-rules) NAO boota o app em debug (so o script do bootstrap): usar 127.0.0.1:3000; upload direto ao R2 dessa origem sera negado pelo CORS (so localhost:3000). TaskStop do flutter run deixa dart + Chrome vivos: encerrar por Stop-Process antes de relancar."
   ],
   "pendencias_registradas_sem_bloquear": [
     "now: substituicao de ativo (mesma publicacao/kind com metadados novos) gera chave nova e deixa o objeto anterior orfao no R2; coletor claim_stale para Agora/Acontece fica para depois (Momentos ja tem o dele).",
@@ -86,7 +87,7 @@
     "rota_chat_final": "capturas 20 a 42 em evidence/etapa-2/r04-principal-chat-sistema/rota-real/: inbox, thread, reload, envio, edicao, revogacao, dialogo de Criar grupo"
   },
   "blocker": null,
-  "next_step": "Cardapios e Principal (Acontece/Momentos/Agora/Para voce/Perfil) na rota real com qa-r03 no app em debug (um Chrome), deltas por action_id; depois Criar grupo com o diretorio de Pessoas; mini-revisao as 04:00.",
+  "next_step": "Relancar flutter run com .env.local em 127.0.0.1:3000; login qa-r03; /meal-plans e Principal com captura e reload; rev 17 com deltas; mini-revisao as 04:00.",
   "ack": null,
   "handoff": "docs/reviews/etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md (R03; sera reescrito no fechamento da R04)",
   "lotes": [
@@ -368,5 +369,6 @@
     "regras_da_retomada": "no maximo dois Chrome/flutter run por frente, um flutter test por vez, fechar Chrome e dart ao fim de cada prova; subagentes so para trabalho sem Chrome; rtk nos comandos",
     "observacao": "ao retomar havia 29 processos chrome.exe e 10 dart.exe de outras frentes/sessoes na maquina; nao encerrei processos que nao sao meus",
     "memoria": "02:20: 0,5 GB livres de 15,6 (meu dart2js 2,2 GB + vmmemWSL 2 GB + 21-29 chrome.exe de outras frentes); um flutter_tester meu ficou 10 min a 3,3 GB por pumpAndSettle que nao assentava no hospedeiro desktop; troquei por pumps fixos no teste novo"
-  }
+  },
+  "deltas_r04": "docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/deltas-r04.json (formato pedido pelo coordenador; parcial)"
 }
