@@ -194,3 +194,5 @@
 20260911211400_unit_default_handle_fit_v1.sql
 # lote 48 (11/09 15:37) - R05 realm-interno: reconciliacao com o 200000 (plans sem SELECT direto de authenticated; institution_directory por RPC)
 20260911211500_plans_revoke_select_reconcile_v1.sql
+# lote 49 (11/09 19:50) - R06 coordenador: usuarios sinteticos por grupo qa-r06-<grupo>@coelo.me (identidade interna, Owner de plataforma, perfil, ponte de ator, membership owner nas qa-r04-*)
+20260911230100_qa_r06_group_users_seed_v1.sql
