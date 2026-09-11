@@ -117,19 +117,23 @@ comment on function app_private.has_platform_permission(text, uuid) is
   'P7 (ADR 0034, Decisao 12) + raiz da ponte de ator (R06): memberships de plataforma e de instituicao contam; com institution_id, a de instituicao so vale para aquela instituicao; para identidade interna (superadmin_internal_auth_links) a membership espelhada com escopo de instituicao nunca conta sem institution_id. Deny vence allow; sem membership ativa, false.';
 
 -- R1 ------------------------------------------------------------------------
--- Escopo do espelho: plataforma -> todas as instituicoes ativas; instituicao -> so a propria.
-create or replace function app_private.superadmin_internal_actor_scope_targets()
-returns table (person_id uuid, institution_id uuid)
+-- Escopo do espelho: plataforma -> todas as instituicoes (nao apagadas);
+-- instituicao -> so a propria. O status da instituicao nao entra aqui: a
+-- reconciliacao so desativa membership FORA do escopo (ou de espelho inativo),
+-- nunca a de uma instituicao em rascunho/arquivada (lote 27 e P42).
+drop function if exists app_private.superadmin_internal_actor_scope_targets();
+create function app_private.superadmin_internal_actor_scope_targets()
+returns table (person_id uuid, institution_id uuid, institution_status text)
 language sql
 stable
 security definer
 set search_path = ''
 as $$
-  select actor.person_id, inst.id
+  select actor.person_id, inst.id, inst.status::text
   from app_private.superadmin_internal_actor_people actor
   join public.platform_memberships pm on pm.id = actor.platform_membership_id
     and pm.status = 'active' and pm.revoked_at is null
-  join public.institutions inst on inst.status = 'active' and inst.deleted_at is null
+  join public.institutions inst on inst.deleted_at is null
     and (
       (pm.scope_kind = 'platform' and pm.scope_institution_id is null)
       or (pm.scope_kind = 'institution' and pm.scope_institution_id = inst.id)
@@ -169,7 +173,8 @@ begin
   insert into public.institution_memberships (person_id, institution_id, role_code, status, scope_kind)
   select t.person_id, t.institution_id, 'owner', 'active', 'institution'
   from app_private.superadmin_internal_actor_scope_targets() t
-  where not exists (
+  where t.institution_status = 'active'
+    and not exists (
     select 1 from public.institution_memberships m
     where m.person_id = t.person_id and m.institution_id = t.institution_id
       and m.status = 'active' and m.revoked_at is null
@@ -182,6 +187,7 @@ begin
   join app_private.superadmin_internal_actor_scope_targets() t
     on t.person_id = m.person_id and t.institution_id = m.institution_id
   where m.status = 'active' and m.revoked_at is null
+    and t.institution_status = 'active'
     and not exists (
       select 1 from public.institution_role_assignments a
       where a.membership_id = m.id and a.role_id = admin_role_id
