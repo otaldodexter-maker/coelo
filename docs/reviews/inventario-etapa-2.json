@@ -6764,18 +6764,59 @@
       "family": "account",
       "screen": "Conta / Sair",
       "scope": "mvp",
-      "done": "Aceite integral não certificado. Consultar evidência anterior antes de implementar ou repetir testes. C01I017 integrado90de1968/f7230db9; Error contido e resultado seguro, senha confirmada/cleanupfalho diferenciados, sessão nova preservada. C00122testes PASS/analyzer6limpo.",
-      "fe": "Aceite nao-visual exercitado com 45 PASS, incluindo foco por teclado atravessando transicao de tema, motion local combinado com o do sistema, erros de dispositivo com retry honesto e nomes acessiveis. Nao proponho blocked-decision, ao contrario de Suporte, porque aqui falta cobertura e nao apenas decisao: o teste de golden amarra tema a largura, com light so abaixo de 1024 e dark so acima, entao dark em 375/768 e light em 1024/1440 nunca sao renderizados. Metade da matriz visual nunca foi coberta. Os 8 goldens existentes tambem falham, com referencias de c6623f7e2 seguidas de 18 commits.",
-      "be": "Conferir a implementação e fechar o aceite backend desta ação: Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento.",
-      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar account.logout); archive/2026-09-08/coelo-supabase-pendencias.md (buscar account.logout); etapa-2-operacao/reports/R01-delta-2005.md (C06r16/C00fonte); etapa-2-operacao/reports/R01-delta-2005.md (I017integrado122PASS); apps/superadmin/test/features/account/presentation/screens/profile_page_test.dart e settings_page_test.dart -> 45 PASS",
+      "done": "R05 (11/09 15:36, rota real com qa-r03, janela combinada com o coordenador): Meu perfil -> menu da conta -> Sair -> confirmacao -> POST /auth/v1/logout 204, sessao local removida (coelo.superadmin.auth.session ausente), app em /login; reload permanece em /login; /profile sem sessao redireciona para /login. Backend: Supabase Auth (signOut), sem SQL proprio.",
+      "fe": "R05 (11/09 15:36, rota real com qa-r03, janela combinada com o coordenador): Meu perfil -> menu da conta -> Sair -> confirmacao -> POST /auth/v1/logout 204, sessao local removida (coelo.superadmin.auth.session ausente), app em /login; reload permanece em /login; /profile sem sessao redireciona para /login. Backend: Supabase Auth (signOut), sem SQL proprio.",
+      "be": "R05 (11/09 15:36, rota real com qa-r03, janela combinada com o coordenador): Meu perfil -> menu da conta -> Sair -> confirmacao -> POST /auth/v1/logout 204, sessao local removida (coelo.superadmin.auth.session ausente), app em /login; reload permanece em /login; /profile sem sessao redireciona para /login. Backend: Supabase Auth (signOut), sem SQL proprio.",
+      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar account.logout); archive/2026-09-08/coelo-supabase-pendencias.md (buscar account.logout); etapa-2-operacao/reports/R01-delta-2005.md (C06r16/C00fonte); etapa-2-operacao/reports/R01-delta-2005.md (I017integrado122PASS); apps/superadmin/test/features/account/presentation/screens/profile_page_test.dart e settings_page_test.dart -> 45 PASS; docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/93-after-logout.png",
       "historicalFrontend": "local-green",
       "historicalBackend": "audited",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "pending-verification",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastEvidenceAt": "2026-09-08T20:13:44-03:00",
       "lastHandoffRevision": 51,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/93-after-logout.png",
+          "revision": "comunicacao/operacoes.json rev 35",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (cb64ca5cc) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T15:37:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/90-profile-before-logout.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/91-profile-account-menu.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/92-logout-confirm.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/93-after-logout.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/94-after-logout-reload.png"
+          ]
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/93-after-logout.png",
+          "revision": "comunicacao/operacoes.json rev 35",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (cb64ca5cc) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T15:37:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/90-profile-before-logout.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/91-profile-account-menu.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/92-logout-confirm.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/93-after-logout.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/94-after-logout-reload.png"
+          ]
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/93-after-logout.png",
+          "revision": "comunicacao/operacoes.json rev 35",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (cb64ca5cc) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+          "recordedAt": "2026-09-11T15:37:00-03:00",
+          "evidenceList": [
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/90-profile-before-logout.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/91-profile-account-menu.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/92-logout-confirm.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/93-after-logout.png",
+            "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/94-after-logout-reload.png"
+          ]
+        }
+      }
     },
     {
       "id": "catalog.list",
@@ -8086,7 +8127,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-11T18:34:04.330Z",
+  "updatedAt": "2026-09-11T18:38:12.933Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,
