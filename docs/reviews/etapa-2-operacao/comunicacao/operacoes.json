@@ -1,13 +1,13 @@
 {
-  "revision": 24,
-  "updated_at": "2026-09-11T13:40:00-03:00",
+  "revision": 25,
+  "updated_at": "2026-09-11T14:20:00-03:00",
   "round": "E2-R05-20260911",
   "group": "operacoes",
   "tool_model": "Claude, Opus 5 (1M), esforco medio — conversa R05 · Operacoes",
   "conversation": "R05 · Operações",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-operacoes",
   "branch": "work/etapa2-r05-operacoes",
-  "head": "4371853e1 (merge de origin/dev 1b0c2c5ff incluido)",
+  "head": "13be50ae8 (+ este commit)",
   "base": {
     "requested": "origin/dev",
     "resolved": "2f6a6114f",
@@ -149,6 +149,52 @@
       ],
       "delta": "29 goldens de tabelas de outras familias + Importacoes regravados apos o merge de origin/dev, causa unica = alinhamento das celulas no composto; diferenca conferida nas imagens de falha. G2 e G3 avisadas por mensagem; G2 informou que ja regravara os 8 de perfis (c227e531f), mesmo SDK.",
       "proof": "4 suites verdes"
+    },
+    {
+      "action_ids": [
+        "profile-files.import",
+        "profile-files.export",
+        "profile-files.preview",
+        "profile-files.confirm",
+        "profile-files.status",
+        "profile-files.download"
+      ],
+      "status": "adiamento-honesto-confirmado-na-rota-real",
+      "delta": "Pessoas -> Arquivos -> Importar e Exportar XLSX respondem 'Indisponivel nesta etapa'; sem picker, parser, job, RPC ou persistencia (contagem de RPCs inalterada antes/depois). Sem mudanca de estado (import/export ja verified; demais seguem deferred).",
+      "proof": "capturas 60-63"
+    },
+    {
+      "action_ids": [
+        "imports.list"
+      ],
+      "status": "correcao-visual-provada",
+      "commits": [
+        "13be50ae8 (anterior: commit do cabecalho antes do merge)"
+      ],
+      "delta": "/imports com cabecalho da tela na rota real (captura 51). Botao Arquivos so icone e sem toggle/abas: pendencia do composto registrada.",
+      "proof": "captura 51-imports-header.png"
+    },
+    {
+      "action_ids": [
+        "support.table",
+        "account.profile"
+      ],
+      "status": "correcao",
+      "commits": [
+        "13be50ae8"
+      ],
+      "delta": "router carregava superadmin_support_list e superadmin_account_profile_get na criacao (401 em /login antes da sessao). Carga passa a esperar session.isAuthenticated e repete quando a sessao abre. Testes header_support_routing, account_routes, support_page_production e desktop_logout 15/15; analyze limpo.",
+      "proof": "flutter test 15/15"
+    },
+    {
+      "action_ids": [
+        "catalog.validate",
+        "catalog.sync",
+        "catalog.publish"
+      ],
+      "status": "gate-real-registrado (sem mudanca de estado)",
+      "delta": "validate_catalog_index OK; validate_package_boundaries 5 diagnosticos (CoeloAdminDirectory, CoeloAdminDirectoryStatusTabs, CoeloAdminDirectoryViewToggle, CoeloAdminPaginationFooter, CoeloAdminUnderlineTabs sem entrada no indice coelo-ui.index.jsonl); validate_catalog_sync 21 diagnosticos (os 5 + 7 source-example-fingerprint-mismatch: admin.flyout, admin.resizable-table, admin.work-item-card, superadmin.form-action-footer, core.date-range-picker, core.date-range-field, core.date-time-field; relatorio versionado desatualizado). Defeito da ferramenta: validate_catalog_sync regrava assets/catalog-sync-report.json com caminhos absolutos (revertido, nao commitado). catalog.publish = deploy do app do Catalogo (Cloudflare Pages, decisao nominal). Fechar validate/sync exige entradas de indice + exemplos atualizados no registry (governanca do Design System, nao CRUD do MVP): pos-MVP salvo ordem do Owner.",
+      "proof": "saida dos tres validadores em 14:00"
     }
   ],
   "tests": {
@@ -194,9 +240,21 @@
       "what": "Aprovar os 16 goldens claros de Suporte regravados (colunas no mesmo eixo; detalhe 1024 sob a toolbar como a referencia R). Responder por arquivo: nome - decisao, observacao.",
       "page": "https://claude.ai/code/artifact/7737ccf7-1489-4d67-ba5f-858c051150d2",
       "fallback": "docs/reviews/evidence/etapa-2/r05-operacoes/g-sup/pagina-lado-a-lado-suporte.html"
+    },
+    {
+      "id": "P43-account-sessions",
+      "kind": "produto",
+      "what": "account.sessions (listar e revogar as proprias sessoes) nao tem tela nem API de cliente: exigiria Edge Function sobre o Admin API do Auth. Entra no MVP ou fica pos-MVP? Recomendacao: pos-MVP (blocked-decision), porque Sair ja encerra a sessao e MFA esta fora do MVP.",
+      "options": "A) pos-MVP (recomendado); B) tela minima no MVP (lista + revogar todas) com Edge Function"
+    },
+    {
+      "id": "P44-catalog",
+      "kind": "processo",
+      "what": "catalog.validate/sync: 5 componentes do composto Fase 0 sem entrada no indice do Catalogo e 7 exemplos com fingerprint desatualizado. Atualizar o Catalogo (indice + exemplos) agora ou depois do MVP? Recomendacao: depois do MVP, junto da revisao de UI.",
+      "options": "A) depois do MVP (recomendado); B) agora, por uma frente de UI"
     }
   ],
-  "next_step": "rebuild web com o cabecalho de Importacoes e captura; catalog.validate/sync/publish (registrar gate real); profile_files.* na rota real (Pessoas/Usuarios internos: botao Arquivos honesto); account.sessions/logout apos 15:30 com aviso; mini-revisao",
+  "next_step": "15:30: avisar coordenador 5 min antes e provar account.logout (Sair no menu da conta em /profile -> reload cai no login) com o Chrome desta frente; ate la: handoff publicado, mini-revisao preparada; 15:45 finalizado",
   "commits": [
     "7df495615",
     "0e4b2f27c",
@@ -205,7 +263,9 @@
     "fab9b9fd0",
     "b08b6b91d",
     "1b0c2c5ff (merge)",
-    "4371853e1"
+    "4371853e1",
+    "60b415707",
+    "13be50ae8"
   ],
   "r04_history": {
     "revision": 20,
