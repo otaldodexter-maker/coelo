@@ -1,15 +1,15 @@
 {
-  "revision": 47,
+  "revision": 48,
   "round": "E2-R06-20260911",
   "group": "publicacoes-agenda",
   "tool": "Claude Code",
   "model": "Opus 5 (1M), esforco medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-publicacoes-agenda",
   "branch": "work/etapa2-r06-publicacoes-agenda",
-  "head": "c0b1ce1e3 (+ commit desta revisao)",
+  "head": "7420dc323 (+ commit desta revisao)",
   "base": "origin/dev ca60b096b",
   "coordinator": "Claude (R06 · Coordenacao)",
-  "updatedAt": "2026-09-11T20:41:00-03:00",
+  "updatedAt": "2026-09-11T20:46:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -82,7 +82,7 @@
     "unknown": "suite completa nao repetida (um flutter test por vez)"
   },
   "blocked": "rota real ate existir qa-r06-publicacoes.env",
-  "next": "pagina R/A para o Owner; conferir deploy da circular-media e provar attach; sino se sobrar",
+  "next": "conferir deploy da circular-media (attach pela tela); prova do sino na rota real com web-qa3; revisao de 10 min as 21:36",
   "changes": [
     {
       "sha": "41a4b4dcf",
@@ -130,6 +130,14 @@
       ],
       "what": "(a) ACHADO na rota real: o router nunca passava mediaRepository aos hosts do compositor de Circular -> \"Envio de anexos indisponivel nesta composicao\" (ui-02); corrigido (SupabaseCircularMediaRepository ja composto no auth scope). (b) ACHADO: com o repositorio ligado, OPTIONS 200 e POST net::ERR_FAILED em functions/v1/circular-media: o preflight pede apikey,authorization,content-type,x-client-info e a funcao so permitia os tres primeiros (supabase_flutter 2.16 envia X-Client-Info). Corrigido em circular-media/index.ts + index_test.ts (deno test 25/25). DEPLOY PELO COORDENADOR. As outras *-media (chat, moments, happens, now) tem a mesma lista sem x-client-info: provavel mesmo sintoma no navegador (avisar G4/G5). (c) Decisao 7: criar/editar evento mostrava o balao de chat cobrindo Publicar evento (ui-03): showChatLauncher=false no AgendaModuleShell dessas rotas. (d) respiro lateral (space6) na PublicationSurface.",
       "tests": "analyze limpo; deno test circular-media 25/25"
+    },
+    {
+      "sha": "7420dc323",
+      "actionIds": [
+        "shell.notifications (sem action_id proprio no inventario)"
+      ],
+      "what": "Item 5 (sino): ContextNotificationFeed le context_notification_recipients + events do ator (policies own_read/recipient_read) e grava read_at ao abrir o centro (own_update); entra no SuperadminActivityController existente (addActivities preserva lido/nao lido, onCenterOpened). Composto em SuperadminAuthScope.contextNotificationRepository -> main -> SuperadminApp -> router. Sem redesenho.",
+      "tests": "test/app/activity/context_notification_feed_test 1/1; analyze limpo; rota real pendente (build web-qa3 em andamento)"
     }
   ],
   "pendingForCoordinator": [
@@ -169,7 +177,13 @@
       "note": "formato canonico em deltasFile"
     }
   ],
-  "questionsToOwner": [],
+  "questionsToOwner": [
+    {
+      "id": "Publicacao R06",
+      "file": "docs/reviews/evidence/etapa-2/r06-publicacoes-agenda/duvidas-visuais-publicacao.html",
+      "ask": "R (referencia aprovada 17:19) x A (golden atual) de circular_composer_light_{1440,375}, agenda_create_light_{1440,375} e agenda_list_light_1440 (V-8). Observacao honesta: Categoria mostra os 9 tipos do dominio (a referencia tinha 4); Resposta esperada mapeia para uma pergunta de escolha unica com duas opcoes (minimo do dominio)."
+    }
+  ],
   "r03History": {
     "revision": 12,
     "round": "E2-R03-20260910",
@@ -551,7 +565,7 @@
   },
   "finalizado": null,
   "deliveryValidation": null,
-  "skillDeltas": null,
+  "skillDeltas": "docs/reviews/evidence/etapa-2/r06-publicacoes-agenda/skill-deltas.md",
   "miniRevisao": null,
   "r04History": {
     "finalRevision": 30,
