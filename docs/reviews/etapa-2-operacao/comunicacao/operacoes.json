@@ -1,6 +1,6 @@
 {
-  "revision": 27,
-  "updated_at": "2026-09-11T14:05:00-03:00",
+  "revision": 28,
+  "updated_at": "2026-09-11T14:19:00-03:00",
   "round": "E2-R05-20260911",
   "group": "operacoes",
   "tool_model": "Claude, Opus 5 (1M), esforco medio — conversa R05 · Operacoes",
@@ -304,6 +304,12 @@
       "kind": "processo",
       "what": "catalog.validate/sync: 5 componentes do composto Fase 0 sem entrada no indice do Catalogo e 7 exemplos com fingerprint desatualizado. Atualizar o Catalogo (indice + exemplos) agora ou depois do MVP? Recomendacao: depois do MVP, junto da revisao de UI.",
       "options": "A) depois do MVP (recomendado); B) agora, por uma frente de UI"
+    },
+    {
+      "id": "P45-support-tabs",
+      "kind": "produto/ui",
+      "what": "Suporte e implantacao: hoje o Status e um filtro (dropdown) e a visao volta a cards a cada reload. A regra 'estado vazio mantem abas de estado' pede abas por tela: em Suporte seriam Todos / Novo / Em andamento / Aguardando solicitante / Concluido (na tabela; no kanban as colunas ja fazem esse papel). Trocar o filtro por abas? E persistir a ultima visao (cards/tabela) por usuario?",
+      "options": "A) abas no lugar do filtro Status + persistir visao (recomendado); B) manter filtro e nao persistir"
     }
   ],
   "next_step": "15:30: avisar coordenador 5 min antes e provar account.logout (Sair no menu da conta em /profile -> reload cai no login) com o Chrome desta frente; ate la: handoff publicado, mini-revisao preparada; 15:45 finalizado",
@@ -322,7 +328,8 @@
     "4707876e3",
     "0a7507fee",
     "36474dc92",
-    "ca040ba49 (pacote + lookups seguros)"
+    "ca040ba49 (pacote + lookups seguros)",
+    "44c556630"
   ],
   "r04_history": {
     "revision": 20,
@@ -937,5 +944,6 @@
       "o_que": "prototype_navigation_routes_test falha com Bad state: No element tambem em origin/dev limpo (worktree detach 11/09 13:20); nao e do composto."
     }
   ],
-  "nota_relogio": "carimbos das revs 23-25 estavam adiantados ate 40 min (13:05 -> 12:57 real; 13:35/13:40 -> 13:20; 14:20 -> 13:41); os horarios nos deltas seguem o relogio da maquina a partir da rev 26."
+  "nota_relogio": "carimbos das revs 23-25 estavam adiantados ate 40 min (13:05 -> 12:57 real; 13:35/13:40 -> 13:20; 14:20 -> 13:41); os horarios nos deltas seguem o relogio da maquina a partir da rev 26.",
+  "incidente": "14:15: a conversa foi reiniciada (processo encerrado); nada perdido: tudo publicado ate 44c556630. Loop reagendado, build web refeito, servidor e Chrome reabertos."
 }
