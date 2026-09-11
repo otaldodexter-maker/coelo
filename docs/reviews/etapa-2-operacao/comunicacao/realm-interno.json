@@ -1,15 +1,15 @@
 {
   "grupo": "realm-interno",
-  "revision": 9,
+  "revision": 10,
   "round": "E2-R04-20260911",
-  "updatedAt": "2026-09-10T23:21-03:00",
+  "updatedAt": "2026-09-10T23:25-03:00",
   "app": "Claude",
   "modelo": "Fable 5.1",
   "conversa": "R04 · Realm interno e Chat backend",
   "coordenador": "R04 · Coordenação noturna (coordenacao.json)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-realm-interno",
   "branch": "work/etapa2-r04-realm-interno",
-  "head": "70e686e43",
+  "head": "9e3c2677d",
   "upstream": "origin/work/etapa2-r04-realm-interno",
   "base": "origin/dev 5bb7c5648 (rebase as 23:06); as cinco migrations 240000..240400 em migrations/ de dev sao byte a byte iguais aos candidatos entregues (sha256 conferido)",
   "historicoR03": "frente sem entrega na R03 (frenteNova coelo-f0 atribuida as 15:58; worktree e2-r03-realm-interno quebrada, nao usada). Nada a reutilizar dela.",
@@ -70,7 +70,7 @@
     "20260910240400 chat groups v1 (Criar grupo P8)"
   ],
   "testes": {
-    "pgTAP": "111 PASS / 0 FAIL: prova integral do zero (db reset baseline+seed -> 44 migrations -> 5 candidatos -> 5 suites: 20 + 23 + 36 + 10 + 22) as 22:19"
+    "pgTAP": "141 PASS / 0 FAIL: 20 + 23 + 36 + 10 + 22 (chat) + 9 (anon) + 21 (cross-tenant por RPC)"
   },
   "bloqueio": null,
   "pedidosAoCoordenador": [
@@ -121,7 +121,7 @@
     "escopo": "membership de plataforma ve toda conversa; membership de instituicao so ve a propria instituicao (outro tenant responde CHAT_NOT_FOUND). Anexos: so metadados; chat.attach continua dependendo do gateway de midia comum (fora deste recorte).",
     "criarGrupoNoCliente": "sugestao para SupabaseChatRepository: createGroup(ChatCreateGroupCommand{institutionId, title, personIds, unitId?, groupId?, activityId?, idempotencyKey}) -> ChatConversationSummary; o seletor de hierarquia escolhe UMA instituicao e pessoas dela (readers existentes de Pessoas/Unidades/Turmas do Superadmin); grupo entre instituicoes nao existe no modelo (conversations.institution_id NOT NULL)."
   },
-  "proximoPasso": "recorte concluido (chat v2 em producao e provado; anon revogado e conferido); permaneco ate 04:20 para perguntas de contrato do principal-chat e ajustes; sem item independente pendente",
+  "proximoPasso": "disponivel ate 04:20 para perguntas de contrato do principal-chat e ajustes; sem item independente pendente",
   "pacotesProntos": [
     {
       "arquivo": "packages/coelo_database/candidatos/realm-interno/20260910240000_chat_production_contract_v1.sql",
@@ -203,8 +203,8 @@
   "handoff": "docs/reviews/evidence/etapa-2/r04-realm-interno/handoff.md",
   "deltaPropostoArquivo": "docs/reviews/evidence/etapa-2/r04-realm-interno/deltas-be-r04.json (6 IDs da familia chat, backend -> local-green; formato de apply-tracker-delta.cjs; ids validados contra o inventario)",
   "estadoDoCoordenador": {
-    "lidoEm": "2026-09-10T23:21-03:00",
-    "mensagemEntreSessoes": "deltas aplicados no inventario (6 IDs backend done com certificacao de producao; caminho corrigido para docs/reviews/...), chat.create-group criado (familia chat, MVP, backend done, UI com principal-chat-sistema); validador PASS 231 acoes / 7 done. Instituicao sintetica arquivada aceita como decisao do coordenador. Pedido novo: pacote de revoke de anon.",
+    "lidoEm": "2026-09-10T23:25-03:00",
+    "mensagemEntreSessoes": "240500 confirmado em producao (lote 10, 23:17); arquivo vai para migrations/ no commit do lote 10; dev em 58bfe1fed; recorte concluido anotado; pedido de prova extra cross-tenant por RPC",
     "devHead": "5bb7c5648; coordenacao rev 20 (lote 9 registrado); 240500 em producao (lote seguinte) ainda nao anotado em coordenacao.json"
   },
   "decisaoRegistrada": "instituicao sintetica 9f040000-0000-4000-8000-000000000010 permanece em producao com status=archived, deleted_at preenchido e nome \"QA R04 Instituicao Sintetica (arquivada)\" porque audit.audit_logs (append-only) a referencia por FK; decisao do coordenador em 10/09 ~22:45, nao do Owner; registrar no fechamento",
@@ -235,5 +235,12 @@
     "preservado": "authenticated executa 339 funcoes em public e 86 em app_private, 310 grants de tabela em public; service_role 289 funcoes; storage/realtime mantem os grants de plataforma a anon (9 tabelas, fora do pacote)",
     "sessaoQaR03": "Invoke-ChatInternalProductionProof.sh --read-only as 23:20: sign_in PASS, unread_total PASS, inbox PASS (total=1: grupo criado pelo principal-chat na rota real), thread PASS (2 mensagens), anon 401 PASS; 5 PASS / 0 FAIL / 1 SKIP; nada escrito na conversa da outra frente",
     "script": "chat-internal-production-proof.ts ganhou --read-only para reconferir producao sem interferir na rota real de outra frente"
+  },
+  "provaExtraCrossTenant": {
+    "quando": "2026-09-10T23:25-03:00",
+    "arquivo": "packages/coelo_database/supabase/tests/superadmin_internal_chat_cross_tenant_test.sql",
+    "resultado": "21/21 no descartavel (baseline + seed + 44 migrations + 240000..240500)",
+    "oQueProva": "Owner escopado a instituicao B chama as 12 RPCs do chat contra a conversa da instituicao A (fixture sintetica 9f040000): inbox e unread devolvem zero; thread, send, edit, revoke, mark_read, realtime_refresh, set_pinned, set_flag, group_members e create_group em A respondem CHAT_NOT_FOUND; nada muda em A (1 mensagem intacta, sem preferencia, sem conversa extra); as negativas de B ficam auditadas com reason_code CHAT_NOT_FOUND; Owner escopado a A e Owner de plataforma enxergam a conversa",
+    "status": "prova extra registrada, nao bloqueia (pedido do coordenador as 23:22)"
   }
 }
