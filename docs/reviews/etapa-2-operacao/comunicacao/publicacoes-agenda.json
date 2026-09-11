@@ -1,15 +1,15 @@
 {
-  "revision": 42,
+  "revision": 43,
   "round": "E2-R05-20260911",
   "group": "publicacoes-agenda",
   "tool": "Claude Code",
   "model": "Opus 5 (1M), esforco medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-publicacoes-agenda",
   "branch": "work/etapa2-r05-publicacoes-agenda",
-  "head": "f8f134553",
+  "head": "421d26991 (esta revisao vira o head novo)",
   "base": "origin/dev 2f6a6114f",
   "coordinator": "Claude (R05 · Coordenacao da tarde, coelo-25)",
-  "updatedAt": "2026-09-11T15:30:00-03:00",
+  "updatedAt": "2026-09-11T15:52:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -2184,5 +2184,93 @@
     ],
     "quote": "o render atual esta perfeito e aprovado",
     "note": "P33 e P34 fechados; indicador de status do detalhe permanece em 48 px. O coordenador grava ownerVisualApproval=A no inventario."
+  },
+  "revisaoFinal": {
+    "quando": "2026-09-11T15:52:00-03:00",
+    "pedidoPor": "coelo-25 (15:50)",
+    "entregueTudo": "Sim, dentro do que a maquina permitiu: 24 acoes do recorte tocadas; nenhum WIP; nada retido fora da branch.",
+    "shaPublicado": "421d26991 (+ o commit desta revisao 43); branch work/etapa2-r05-publicacoes-agenda publicada; status limpo; ja integrada em origin/dev (9288cdc68 contem 421d26991); sem WIP",
+    "fechadoPorActionId": [
+      {
+        "action_id": "agenda.view",
+        "prova": "P33 aplicado (5edfccef9), goldens 3.44.2, rota real ui-02; Owner aprovou (A)"
+      },
+      {
+        "action_id": "agenda.detail",
+        "prova": "P34 aplicado (16651dc88), goldens; Owner aprovou (A); 2a982a453 corrige testes pre-existentes"
+      },
+      {
+        "action_id": "agenda.request",
+        "prova": "BE RPC + 190100 em producao; FE ui-05..ui-08 (aprovar pela tela + recarga); E2E"
+      },
+      {
+        "action_id": "agenda.permissions",
+        "prova": "FE rota normal (redirect por desenho) + contexts em producao; E2E"
+      },
+      {
+        "action_id": "agenda.location",
+        "prova": "BE done (unit + local + reload; negativa cross-tenant pgTAP 200300)"
+      },
+      {
+        "action_id": "notices.schedule",
+        "prova": "FE ui-13..ui-19 (seletor Coelo, agendada, recarga); worker real materializou (+2 min -> active, reach 18); E2E"
+      },
+      {
+        "action_id": "notices.publish",
+        "prova": "E2E: reach>0 pelo worker real (P30)"
+      },
+      {
+        "action_id": "notices.list",
+        "prova": "pastilha de tipo corrigida (28acbe8c3), goldens regravados"
+      },
+      {
+        "action_id": "circulars.respond",
+        "prova": "BE done: 190000 em producao; draft -> submit -> summary 1/1; pgTAP 18/18"
+      },
+      {
+        "action_id": "circulars.attach",
+        "prova": "BE done: 190200 (R2) + 190300 (midia no v2) em producao; prova 34/34"
+      },
+      {
+        "action_id": "circulars.edit",
+        "prova": "FE ui-32..ui-39 (editar + recarga); BE done; E2E"
+      },
+      {
+        "action_id": "circulars.schedule",
+        "prova": "FE ui-41..ui-46 (picker ligado em 66a52986f, agendada, recarga); BE done; E2E"
+      },
+      {
+        "action_id": "circulars.create/publish",
+        "prova": "balao de chat suprimido no compositor desde o carregamento (002dddd95, Decisao 7)"
+      }
+    ],
+    "abertoComPrimeiroGate": [
+      {
+        "action_id": "circulars.attach",
+        "camada": "frontend",
+        "gate": "provar pela tela com o gancho SuperadminQaHooks.circularFilePicker (f8f134553): rebuild web-qa + Chrome; Adicionar arquivo -> R2 -> bloco de midia -> publicar -> recarga"
+      },
+      {
+        "action_id": "circulars.respond",
+        "camada": "frontend",
+        "gate": "nao existe tela de resposta no Superadmin (fluxo do Principal): decidir se respond no Superadmin = resumo de respostas (ja verified)"
+      },
+      {
+        "action_id": "agenda.location",
+        "camada": "frontend",
+        "gate": "A+ do Owner para agenda_create_* (campo \"Qual contexto\", 4b9483148) e prova pela tela"
+      },
+      {
+        "action_id": "agenda.view/agenda.detail",
+        "camada": "backend (suite)",
+        "gate": "agenda_internal_realm_compat_v1_test 4/22 sobre a ordem real apos o lote 29 (dono G4/130000); nao bloqueia"
+      }
+    ],
+    "deltas": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/deltas-r05-pa.json: 16 entradas, ja aplicadas pelo coordenador; nenhum delta novo alem delas (wizard e balao nao mudam estado de acao)",
+    "pacotesSqlRestantes": "nenhum: 190000, 190100, 190200 e 190300 aplicados (lotes 42/43); candidatos/publicacoes-agenda pode ser esvaziado pelo coordenador ao mover para migrations/",
+    "duvidasAoOwner": "agenda_create_{light,dark}_{375,768,1440} A+ (duvidas-visuais-agenda-create.html), ja registrado pelo coordenador; P33/P34 respondidas (A). Decisao de produto: circulars.respond no Superadmin = so resumo?",
+    "dadosSinteticosCriados": "Avisos [R05-QA UI] (agendado 18/09 pela tela, id 86988e0e) e [R05-QA worker] (active, id 11efaa4b); eventos [R05-QA ...] da Agenda nas instituicoes sinteticas (cancelados ou excluidos apos as provas; 2 pedidos de publicacao aprovados: 3d65140f, 469ac1dd, 99ab7523); circulares [R05-QA ...] das provas por RPC (encerradas/excluidas, soft) com anexos pixel.png (70 bytes) em coelo-media-prod e no bucket legado coelo-circulars-private; circular [R05-QA UI] Circular editada pela tela (v2) agendada para 25/09 (id 92ce44e7, instituicao QA R04 Cuidado). Limpeza no fim da Etapa 2 (P25/P42).",
+    "chavesCriadas": "nenhuma (nenhum segredo, token ou chave criado nesta rodada)",
+    "ambiente": "Chrome de CDP, servidor 3006 e descartavel coelo_pa_r05 encerrados; build web-qa em apps/superadmin/build/web-qa (ignorado)"
   }
 }
