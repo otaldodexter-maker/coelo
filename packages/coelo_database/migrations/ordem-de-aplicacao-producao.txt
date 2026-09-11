@@ -120,3 +120,5 @@
 20260910171700_access_profile_detail_v3_draft_and_matrix.sql
 # lote 19 (11/09 03:02)
 20260910171900_child_safety_decision_enum_cast_fix_v1.sql
+# lote 20 (11/09 03:17)
+20260910172000_owner_child_safety_review_grant_v1.sql
