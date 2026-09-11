@@ -3315,12 +3315,12 @@
       "screen": "Formulário / Pergunta Local interno",
       "scope": "mvp",
       "done": "Editor, contexto1178b54e, callbacks74b56804, autosave e9e7a282 e branches a4d8be57/c0b20ccd integrados. SQL autoria é candidato. R01/16h: Contrato LocationSelectionSource023f19ea integrado C00f4f0105a e liberado ao C02 com13 testes.",
-      "fe": "Contrato LocationSelectionSource ja integrado, mas a acao depende de decisao do Owner entre opcoes fixadas na publicacao e catalogo dinamico ao responder. O contrato nao decide a politica e eu nao devo inventar essa politica.",
+      "fe": "R04 (11/09 02:48, subagente do coordenador, 4d4340376): tipo Local no editor (grupo Escolhas, sem edicao manual de opcoes, aviso do catalogo), FormItemKind/FormAnswerKind.location e FormOption com locationId/locationStatus/locationAvailable em coelo_domain/coelo_api, resposta com fichas do snapshot, revogada desabilitada, obrigatoria sem opcao bloqueia com painel, erros FORMS_LOCATION_* inline; analyze limpo; forms 825 P / 2 F (goldens 1440 ja divergentes na base) + 6 testes novos + coelo_api 133/133 + coelo_domain 41/41. Gate para verified: rota normal com sessao (rascunho com item Local, responder, revogar Local, reload).",
       "be": "R04 (11/09 02:29, lote 17): P16 em producao (20260910220500 forms_location_question_v1, escrito por subagente do coordenador sobre o recorte de formularios: kind location em form_items/answer_kind, snapshot de opcoes do catalogo de Locais no salvamento do rascunho v2 (opcao 1), local revogado nega com FORMS_LOCATION_REVOKED (opcao 2), obrigatoria sem alternativa bloqueia com FORMS_LOCATION_NO_AVAILABLE_OPTION, projecao com location_available; defeito latente de answer_id ambiguo em form_replace_response_answers corrigido de passagem); pgTAP 55/55 + Formularios 56/313 no espelho; ledger 94. Gate para done: cliente (tipo Local no editor, widget de resposta com bloqueio e aviso) em curso por subagente; rota normal com sessao e reload.",
-      "evidence": "commits1178b54e/74b56804/e9e7a282/a4d8be57/c0b20ccd/7ae796ef; evidence/etapa-2/formularios-cuidado/2026-09-08-forms-provenance-guards.md R01/16h: C02r29;docs/open-questions.md;C02I008; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.; Fechamento R01 C02/r48; C02r48 final; etapa-2-operacao/reports/R01-fechamento-20260909.md; inventario-etapa-2.json na linha da acao; Owner ausente desde 18:26; 2026-09-09; comunicacao/formularios-cuidado-rotina.json rev 30 (subagente); coordenacao.json R04 rev 26 (lote17)",
+      "evidence": "commits1178b54e/74b56804/e9e7a282/a4d8be57/c0b20ccd/7ae796ef; evidence/etapa-2/formularios-cuidado/2026-09-08-forms-provenance-guards.md R01/16h: C02r29;docs/open-questions.md;C02I008; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.; Fechamento R01 C02/r48; C02r48 final; etapa-2-operacao/reports/R01-fechamento-20260909.md; inventario-etapa-2.json na linha da acao; Owner ausente desde 18:26; 2026-09-09; comunicacao/formularios-cuidado-rotina.json rev 30 (subagente); coordenacao.json R04 rev 26 (lote17); comunicacao/formularios-cuidado-rotina.json rev 31",
       "historicalFrontend": "not-reviewed",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "blocked-decision",
+      "frontendStatus": "local-green",
       "backendStatus": "local-green",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 48,
@@ -6007,7 +6007,7 @@
       "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
     }
   ],
-  "updatedAt": "2026-09-11T05:44:12.929Z",
+  "updatedAt": "2026-09-11T05:48:34.666Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,
