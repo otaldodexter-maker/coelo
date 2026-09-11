@@ -90,12 +90,6 @@ final class SupabaseInstitutionDirectoryRepository implements InstitutionDirecto
     // realm interno: nao sao enviados e aparecem vazios no detalhe recarregado
     // (pendencia registrada; o assistente exige essas etapas, entao rejeitar
     // aqui deixaria a criacao impossivel).
-    if (draft.typeId.startsWith('local-type-')) {
-      _pendingRequest = null;
-      throw const InstitutionDirectoryUnsupportedRelationException(
-        'Tipo de instituição novo ainda não pode ser criado neste fluxo. Escolha um tipo do catálogo.',
-      );
-    }
     final core = _institutionEditCorePayload(draft);
     final address = core['address'] as Map<String, Object?>;
     final addressIsBlank = address.entries.every(
@@ -103,6 +97,16 @@ final class SupabaseInstitutionDirectoryRepository implements InstitutionDirecto
     );
     final payload = <String, Object?>{...core, 'slug': draft.slug};
     if (addressIsBlank) payload.remove('address');
+    // O assistente digita o tipo como texto e so recebe um id de catalogo ao
+    // editar; um tipo digitado chega como 'local-type-<slug>'. Desde 180360 o
+    // servidor resolve o nome contra institution_types ativos (e rejeita nome
+    // desconhecido com SAI_INVALID_ARGUMENT), entao o cliente manda o nome.
+    if (draft.typeId.startsWith('local-type-')) {
+      payload.remove('institution_type_id');
+      if (draft.typeName.trim().isNotEmpty) {
+        payload['institution_type_name'] = draft.typeName.trim();
+      }
+    }
     final signature = _requestSignature(operation: 'create', payload: payload);
     final requestId = _requestIdFor(signature);
     try {

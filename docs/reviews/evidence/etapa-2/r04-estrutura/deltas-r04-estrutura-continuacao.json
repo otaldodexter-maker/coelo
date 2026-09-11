@@ -1,0 +1,100 @@
+[
+ {
+  "action_id": "groups.create",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R04 continuacao (11/09 09:40): rota normal /groups/new em producao com qa-r03 pelo build de qa_main + CDP: Hierarquia pre-preenchida (QA R04 Cuidado / Unidade QA R04), Identidade digitada, Salvar turma -> 'Turma criada com sucesso'; lista recarregada mostra a turma.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/rota-real/groups-create-salvo.jpg",
+  "certificacao": {
+   "evidence": "evidence/etapa-2/r04-estrutura/rota-real/groups-create-salvo.jpg; evidence/etapa-2/r04-estrutura/rota-real/groups-list-apos-reload.jpg",
+   "revision": "estrutura.json rev 33",
+   "environment": "Chrome 152 (CDP 9556) contra o build release de test_driver/qa_main.dart servido em localhost:3020 com .env.local de producao; usuario qa-r03@coelo.me",
+   "recordedAt": "2026-09-11T09:41:00-03:00"
+  }
+ },
+ {
+  "action_id": "groups.create",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "R04 continuacao: superadmin_group_save (baseline, people-based) alcancado pela ponte de ator 220400; public.groups 368a5cea-2bcf-4fa4-ad1f-18da58694551 'Turma QA R04 Estrutura' criada as 12:40:58Z com audit.audit_logs group.create success; negativa cross-tenant coberta por pgTAP superadmin_internal_group_detail_test (33/33) e superadmin_group_location_create_v2_test (46/46) na prova integral 3.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md",
+  "certificacao": {
+   "evidence": "supabase db query --linked (somente leitura) em 11/09 09:41: public.groups e audit.audit_logs; pgTAP group_detail 33/33 e group_location_create 46/46 (prova-integral-3)",
+   "revision": "estrutura.json rev 33",
+   "environment": "producao coelo (evvbomzejfijozbtgvpt), lotes 10-11 aplicados",
+   "recordedAt": "2026-09-11T09:41:00-03:00"
+  }
+ },
+ {
+  "action_id": "groups.create",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R04 continuacao: rota normal abre, CRUD persiste em producao, RLS nega outro tenant por pgTAP e o reload mantem a turma (regua do MVP, ADR 0034).",
+  "evidencia": "evidence/etapa-2/r04-estrutura/rota-real/groups-list-apos-reload.jpg",
+  "certificacao": {
+   "evidence": "evidence/etapa-2/r04-estrutura/rota-real/groups-create-salvo.jpg; evidence/etapa-2/r04-estrutura/rota-real/groups-list-apos-reload.jpg; public.groups 368a5cea-2bcf-4fa4-ad1f-18da58694551",
+   "revision": "estrutura.json rev 33",
+   "environment": "producao coelo pelo build release de qa_main com qa-r03@coelo.me",
+   "recordedAt": "2026-09-11T09:41:00-03:00"
+  }
+ },
+ {
+  "action_id": "units.list",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R04 continuacao: /units em producao lista Unidade QA R04 com instituicao, tipo, plano, filtros e card Criar; reload (Page.navigate) mantem.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/rota-real/units-list.jpg",
+  "certificacao": {
+   "evidence": "evidence/etapa-2/r04-estrutura/rota-real/units-list.jpg",
+   "revision": "estrutura.json rev 33",
+   "environment": "producao pelo build release de qa_main com qa-r03@coelo.me",
+   "recordedAt": "2026-09-11T09:41:00-03:00"
+  }
+ },
+ {
+  "action_id": "groups.list",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R04 continuacao: /groups em producao abre vazio honesto com filtros carregados (ponte de ator) e card Criar; depois da criacao lista a turma; reload mantem.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/rota-real/groups-list-apos-reload.jpg",
+  "certificacao": {
+   "evidence": "evidence/etapa-2/r04-estrutura/rota-real/groups-list-vazio.jpg; evidence/etapa-2/r04-estrutura/rota-real/groups-list-apos-reload.jpg",
+   "revision": "estrutura.json rev 33",
+   "environment": "producao pelo build release de qa_main com qa-r03@coelo.me",
+   "recordedAt": "2026-09-11T09:41:00-03:00"
+  }
+ },
+ {
+  "action_id": "activities.list",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R04 continuacao: /activities em producao lista os modelos Coelo (2 paginas) com filtros e card Criar modelo; reload mantem.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/rota-real/activities-list-modelos.jpg",
+  "certificacao": {
+   "evidence": "evidence/etapa-2/r04-estrutura/rota-real/activities-list-modelos.jpg",
+   "revision": "estrutura.json rev 33",
+   "environment": "producao pelo build release de qa_main com qa-r03@coelo.me",
+   "recordedAt": "2026-09-11T09:41:00-03:00"
+  }
+ },
+ {
+  "action_id": "locations.list",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R04 continuacao: catalogo de Locais da instituicao (1 local, Criar por grupo) e da unidade (vazio honesto, Trazer da instituicao) em producao; reload mantem.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/rota-real/locations-instituicao.jpg",
+  "certificacao": {
+   "evidence": "evidence/etapa-2/r04-estrutura/rota-real/locations-instituicao.jpg; evidence/etapa-2/r04-estrutura/rota-real/locations-unidade.jpg",
+   "revision": "estrutura.json rev 33",
+   "environment": "producao pelo build release de qa_main com qa-r03@coelo.me",
+   "recordedAt": "2026-09-11T09:41:00-03:00"
+  }
+ },
+ {
+  "action_id": "assessments.entry",
+  "camada": "frontend",
+  "estado_proposto": "local-green",
+  "delta": "R04 continuacao: /assessments/entry em producao abre pelo superadmin_assessment_context_options (180350) com 'Sem atribuicoes' honesto; sem vinculo profissional do qa-r03 nao ha lancamento a provar.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/rota-real/assessments-entry.jpg"
+ }
+]

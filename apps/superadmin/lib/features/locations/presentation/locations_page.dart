@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../../app/shell/superadmin_shell.dart';
 import '../../auth/domain/logout_action.dart';
+import '../../units/domain/unit_directory.dart';
 import '../domain/location_capabilities.dart';
 import '../domain/location_catalog_reader.dart';
 import '../domain/location_catalog_writer.dart';
@@ -11,6 +12,7 @@ import 'location_detail_panel.dart';
 import 'location_directory_panel.dart';
 import 'location_form_panel.dart';
 import 'location_institution_copy_panel.dart';
+import 'location_institution_units_section.dart';
 import 'location_read_widgets.dart';
 
 /// Route target for the location catalog of one institution or unit.
@@ -41,6 +43,8 @@ final class LocationsPage extends StatefulWidget {
     this.canManage,
     this.capabilities,
     this.requestIdFactory,
+    this.unitDirectoryRepository,
+    this.onUnitLocationsOpened,
     super.key,
   });
 
@@ -86,6 +90,16 @@ final class LocationsPage extends StatefulWidget {
   final LocationCapabilities? capabilities;
 
   final String Function()? requestIdFactory;
+
+  /// Unidades da instituicao, listadas depois dos grupos de locais quando o
+  /// escopo e uma instituicao (pendencia da R03 aprovada pelo Owner). Nulo nao
+  /// mostra o grupo; num escopo de unidade ele nunca aparece.
+  final UnitDirectoryRepository? unitDirectoryRepository;
+
+  /// Chamado com o id da unidade cujo card foi tocado, para o chamador abrir o
+  /// catalogo de Locais daquela unidade pela rota que ja existe. Nulo deixa os
+  /// cards inertes.
+  final ValueChanged<String>? onUnitLocationsOpened;
 
   @override
   State<LocationsPage> createState() => _LocationsPageState();
@@ -283,6 +297,23 @@ final class _LocationsPageState extends State<LocationsPage> {
                         });
                       }
                     : null,
+                trailing: switch ((widget.scope, widget.unitDirectoryRepository)) {
+                  (InstitutionLocationScope(:final institutionId), final units?) =>
+                    LocationInstitutionUnitsSection(
+                      key: const Key('locations-units'),
+                      institutionId: institutionId,
+                      repository: units,
+                      sessionAvailable: widget.sessionAvailable,
+                      contextRevision: widget.contextRevision,
+                      onOpen: widget.onUnitLocationsOpened == null
+                          ? null
+                          : (unitId) {
+                              if (!_current(generation) || !_directoryOpen) return;
+                              widget.onUnitLocationsOpened?.call(unitId);
+                            },
+                    ),
+                  _ => null,
+                },
               )
             : LocationDetailPanel(
                 key: Key('locations-detail-$selected'),

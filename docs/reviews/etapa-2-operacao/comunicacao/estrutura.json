@@ -1,17 +1,17 @@
 {
  "grupo": "estrutura",
- "revision": 32,
+ "revision": 33,
  "round": "E2-R04-20260911",
- "updatedAt": "2026-09-11T08:31:24-03:00",
+ "updatedAt": "2026-09-11T09:43:25-03:00",
  "app": "Claude",
  "modelo": "Fable 5.1",
- "conversa": "R04 · Estrutura (sessao original, retomada as 08:23 de 11/09 depois do reinicio de 00:27; coelo-39 cobriu de 02:00 a 02:06)",
+ "conversa": "R04 · Estrutura (sessao coelo-b3), continuacao por ordem do Owner depois do fechamento da R04 (08:52)",
  "coordenador": "coelo-04 (ref de3c83), mesma conversa e worktree e2-r04-coordenacao",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-estrutura",
  "branch": "work/etapa2-r04-estrutura",
  "head": "(commit desta revisao)",
  "upstream": "origin/work/etapa2-r04-estrutura",
- "base": "origin/dev 0376a0446 (rebaseada as 08:30)",
+ "base": "origin/dev 8989f7015 (fechamento da R04); branch work/etapa2-r04-estrutura reaberta em worktree nova",
  "horario": {
   "inicio": "2026-09-10T21:44:19-03:00",
   "retomada": "2026-09-11T02:05:01-03:00",
@@ -174,9 +174,16 @@
  "pacotesProntos": [
   {
    "nota": "os 21 candidatos de estrutura (180000..180350) foram aplicados em producao pelo coordenador nos lotes 10 e 11 e movidos para migrations/; candidatos/estrutura esta vazio. Pacote novo nasce aqui na faixa 2026091018xxxx acima de 180350."
+  },
+  {
+   "carimbo": "20260910180360_superadmin_institution_create_v2_type_by_name",
+   "origem": "novo, forward-only sobre 180340 (em producao)",
+   "mudanca": "create or replace dos dois helpers privados de 180340: o validador aceita institution_type_name (string, <=120, sem controle) e o apply resolve o nome contra institution_types ativos (case-insensitive); id e nome divergentes, nome desconhecido, inativo ou em branco -> SAI_INVALID_ARGUMENT; pos-condicao confere que os helpers continuam sem execute a clientes",
+   "pgTAP": "31/31 (superadmin_internal_institution_create_v2_test estendido)",
+   "estado": "verde no espelho de producao (102 lotes na ordem real); aguardando o coordenador aplicar"
   }
  ],
- "deltasPropostos": [],
+ "deltasPropostos": "evidence/etapa-2/r04-estrutura/deltas-r04-estrutura-continuacao.json (nesta revisao): groups.create -> frontend verified + backend done + integrated verified-e2e com certificacao (rota normal, CRUD em producao, RLS por pgTAP de group_detail/group_location_create, reload); units.list/groups.list/activities.list/locations.list/assessments.entry -> frontend verified (rota normal em producao com leitura e reload) mantendo backend como esta; institutions.create backend continua remote-green ate 180360 subir",
  "pedidosAoCoordenador": [],
  "avisosParaOutrosGrupos": [
   {
@@ -204,7 +211,7 @@
   ]
  },
  "ack": null,
- "proximoPasso": "coordenador aplica os 46 deltas e integra as skills; esta frente esta finalizada na R04 (mini-revisao gravada as 2026-09-11T08:31:24-03:00)",
+ "proximoPasso": "commit + push; deltas da continuacao; provar groups.edit, units.create e locations.create-edit pela rota real; institutions.create pelo assistente depois de rebuild com o cliente novo (e de 180360 em producao)",
  "espelhoLocal": {
   "projeto": "coelo_baseline_estrutura (portas 61321/61322), scratchpad desta sessao",
   "metodo": "supabase start com migrations/ = so a baseline + seed.sql do repositorio; os 44 lotes de producao (migrations/2026091001..230020) aplicados por psql na ordem, todos OK; 9 capacidades locations.* presentes; depois cada candidato por preflight.sh (psql -v ON_ERROR_STOP=1) seguido do pgTAP",
@@ -257,6 +264,48 @@
     ],
     "resultado": "rota normal abre contra producao sem fixture nem fail-closed; estado vazio honesto (producao nao tem instituicoes); filtros mostram \"Sem tipos cadastrados\" e \"Sem UFs cadastradas\"; SEM card Criar porque structureMutationsEnabled=false esconde criar/editar (e a decisao CRIAR do Owner exige o card no vazio)",
     "captura": "shot-inst.jpg no scratchpad desta sessao"
+   },
+   {
+    "tela": "Unidades",
+    "action_ids": [
+     "units.list",
+     "units.filter"
+    ],
+    "resultado": "abre contra producao: Unidade QA R04 (instituicao QA R04 Cuidado, plano Essencial), filtros por instituicao/tipo/plano/UF, card Criar, paginacao",
+    "captura": "evidence/etapa-2/r04-estrutura/rota-real/units-list.jpg"
+   },
+   {
+    "tela": "Turmas",
+    "action_ids": [
+     "groups.list",
+     "groups.create"
+    ],
+    "resultado": "lista vazia honesta com filtros (opcoes carregadas pela ponte de ator) e card Criar; criar turma pelo assistente (Hierarquia pre-preenchida, Identidade digitada, Convites vazio, Salvar): \"Turma criada com sucesso\", persistida em producao e presente apos reload",
+    "captura": "evidence/etapa-2/r04-estrutura/rota-real/groups-create-salvo.jpg, groups-list-apos-reload.jpg"
+   },
+   {
+    "tela": "Atividades",
+    "action_ids": [
+     "activities.list"
+    ],
+    "resultado": "aba Modelos lista os modelos Coelo de producao (2 paginas), card Criar modelo, filtros Origem/Categorias",
+    "captura": "evidence/etapa-2/r04-estrutura/rota-real/activities-list-modelos.jpg"
+   },
+   {
+    "tela": "Locais",
+    "action_ids": [
+     "locations.list"
+    ],
+    "resultado": "catalogo da instituicao com 1 local ([R04-QA] Local Sala Azul, criado por outra frente) e Criar por grupo; catalogo da unidade vazio honesto com Trazer da instituicao",
+    "captura": "evidence/etapa-2/r04-estrutura/rota-real/locations-instituicao.jpg, locations-unidade.jpg"
+   },
+   {
+    "tela": "Avaliacoes",
+    "action_ids": [
+     "assessments.entry"
+    ],
+    "resultado": "Lancar avaliacoes abre com superadmin_assessment_context_options em producao (180350): \"Sem atribuicoes\" honesto porque qa-r03 nao tem vinculo profissional com atividade",
+    "captura": "evidence/etapa-2/r04-estrutura/rota-real/assessments-entry.jpg"
    }
   ],
   "bloqueios": [
@@ -328,7 +377,7 @@
   "prova": "flutter test location_read_panels_test + locations_page_test + location_read_panels_golden_test: 64/64 PASS as 02:03 (trailing nulo nao muda os goldens). WIP mantido, nao revertido.",
   "proximo": "ligar SupabaseLocationConsumerSelectionReader(available:true) em main.dart porque 180140/180150/180200 estao em producao; subir o app dirigido (test_driver/qa_main.dart, um Chrome) e percorrer institutions.create -> units -> groups -> activities -> locations -> assessments"
  },
- "estado": "finalizado",
+ "estado": "em andamento (continuacao pos-fechamento por ordem do Owner de 11/09 manha)",
  "validacaoDeEntrega": {
   "quando": "2026-09-11T08:31:24-03:00",
   "achado": "O coordenador registrou \"estrutura sem retorno desde 02:06\" porque a rev 31 (02:05) e o WIP rebaseado de Locais nunca foram publicados: a sessao coelo-39 caiu antes do push. O que estava em origin era a rev 30 (23:24) e o WIP a22721fbe pre-rebase (nao provado). Os tres subagentes lancados as 00:1x (deltas por action_id, contrato de Avaliacoes, cards de Unidades em Locais) morreram com a maquina; so o teste de Avaliacoes sobreviveu e ja esta em dev por outro caminho (6fea02635).",
@@ -379,5 +428,16 @@
    "endurecer os grants CRUD de authenticated sem policy nas 200+ tabelas (achado da R03)",
    "decisao sobre os 30 goldens orfaos de Locais e sobre MENU-M nos goldens 375"
   ]
- }
+ },
+ "continuacao": {
+  "ordem": "Owner mandou retomar o recorte (tres vezes) depois do fechamento; worktree recriada a partir de dev 8989f7015",
+  "feito": [
+   "main.dart: SupabaseLocationConsumerSelectionReader(available: true) porque 180150/180200 estao em producao (teste de composicao 61/61 verde)",
+   "Cards das unidades na tela de Locais da instituicao (pendencia da R03): LocationInstitutionUnitsSection no slot trailing, injetada pelo router com o UnitDirectoryRepository e navegando pela rota de Locais da unidade; 12 testes novos, 463/463 em test/features/locations",
+   "institutions.create: o assistente digita o tipo como texto e o cliente so recebe id de catalogo ao editar; superadmin_institution_create_v2 (180340) so aceitava id. Candidato 180360 (forward-only sobre 180340) aceita institution_type_name resolvido contra institution_types ativos; pgTAP estendido 31/31 no espelho de producao (baseline + 102 lotes na ordem real + 180360); cliente manda o nome quando o id e local-type-* (37/37 no repositorio)",
+   "Rota real com qa-r03 pelo caminho da skill (flutter build web -t test_driver/qa_main.dart, servidor estatico, Chrome 9556 com CDP): login, units.list, groups.list, activities.list (modelos), locations.list (instituicao e unidade), assessments.entry abertos contra producao; groups.create PERSISTIU em producao (public.groups 368a5cea..., audit group.create success, 12:40:58Z) e o reload da lista mantem a turma"
+  ],
+  "metodoQueFuncionou": "no build release o tap do driver trava mas enter_text pelo gancho window.$flutterDriver funciona; cliques por CDP Input.dispatchMouseEvent (press/release com 80 ms); navegacao entre rotas por Page.navigate (a sessao sobrevive com Manter sessao aberta); popstate sintetico so funcionou uma vez, nao usar. Scripts: scratchpad/goto.js, cdp-click.js, drv.js"
+ },
+ "dadosSinteticosEmProducao": "criado por esta conversa: public.groups 368a5cea-2bcf-4fa4-ad1f-18da58694551 \"Turma QA R04 Estrutura\" (unidade d0c40000-...0002, instituicao QA R04 Cuidado). Remover no fechamento junto com os demais dados sinteticos da R04."
 }

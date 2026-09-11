@@ -331,7 +331,7 @@ void main() {
     expect(saved.version, 1);
   });
 
-  test('omits a blank address on create and rejects a type without catalog id', () async {
+  test('omits a blank address on create and sends a typed type by name', () async {
     final calls = <Request>[];
     final repository = _repository((request) async {
       calls.add(request);
@@ -358,11 +358,13 @@ void main() {
     expect(payload.containsKey('address'), isFalse);
 
     calls.clear();
-    await expectLater(
-      repository.create(_draft().copyWith(slug: 'aurora', typeId: 'local-type-nova')),
-      throwsA(isA<InstitutionDirectoryUnsupportedRelationException>()),
+    // Tipo digitado no assistente: vai pelo nome (180360), nao pelo id local.
+    await repository.create(
+      _draft().copyWith(slug: 'aurora', typeId: 'local-type-creche', typeName: 'Creche'),
     );
-    expect(calls, isEmpty);
+    final typed = Map<String, dynamic>.from((jsonDecode(calls[0].body) as Map)['p_payload'] as Map);
+    expect(typed.containsKey('institution_type_id'), isFalse);
+    expect(typed['institution_type_name'], 'Creche');
   });
 
   test('maps v2 authorization errors on create and detail', () async {

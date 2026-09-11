@@ -152,8 +152,10 @@ ActivityReadDetailRepository _activityReadDetailRepository() {
 
 LocationConsumerSelectionReader _locationConsumerSelectionReader() {
   try {
-    // Candidate getters remain closed until the exact backend package is qualified.
-    return SupabaseLocationConsumerSelectionReader(Supabase.instance.client, available: false);
+    // superadmin_activity_location_selection_v2 e superadmin_group_location_selection_v2
+    // entraram em producao no lote 10 da R04 (180150 e 180200, pgTAP 33/33 e
+    // 46/46); os getters deixam de ser candidatos e passam a ler producao.
+    return SupabaseLocationConsumerSelectionReader(Supabase.instance.client, available: true);
   } on Object {
     return const UnavailableLocationConsumerSelectionReader();
   }

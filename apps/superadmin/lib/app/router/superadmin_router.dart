@@ -1849,6 +1849,14 @@ GoRouter createSuperadminRouter({
                       'locationId': id,
                     },
                   ),
+                  // Cards das unidades da instituicao no fim do catalogo; cada
+                  // um abre o catalogo de Locais da unidade pela rota que a
+                  // tela de Unidades ja usa (pendencia da R03).
+                  unitDirectoryRepository: unitRepository,
+                  onUnitLocationsOpened: (unitId) => context.goNamed(
+                    SuperadminRoutes.unitLocationsName,
+                    pathParameters: {'unitId': unitId},
+                  ),
                   onDestinationSelected: (destination) =>
                       _navigateFromPersistentShell(context, destination),
                 );
@@ -1884,6 +1892,11 @@ GoRouter createSuperadminRouter({
                   onLocationClosed: () => context.goNamed(
                     SuperadminRoutes.institutionLocationsName,
                     pathParameters: {'institutionId': state.pathParameters['institutionId']!},
+                  ),
+                  unitDirectoryRepository: unitRepository,
+                  onUnitLocationsOpened: (unitId) => context.goNamed(
+                    SuperadminRoutes.unitLocationsName,
+                    pathParameters: {'unitId': unitId},
                   ),
                   onDestinationSelected: (destination) =>
                       _navigateFromPersistentShell(context, destination),

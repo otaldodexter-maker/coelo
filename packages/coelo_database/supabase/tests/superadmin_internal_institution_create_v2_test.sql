@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(26);
+select plan(31);
 
 select has_function(
   'public','superadmin_institution_create_v2',array['uuid','jsonb'],
@@ -178,7 +178,18 @@ insert into create_responses values
   ('inactive_type',public.superadmin_institution_create_v2('98000000-0000-4000-8000-000000000003',
     pg_temp.create_payload('escola.tipo','Tipo inativo')||'{"institution_type_id":"91000000-0000-4000-8000-000000000002"}'::jsonb)),
   ('invalid',public.superadmin_institution_create_v2('98000000-0000-4000-8000-000000000004','{"public_name":"Sem handle"}'::jsonb)),
-  ('minimal',public.superadmin_institution_create_v2('98000000-0000-4000-8000-000000000005','{"slug":"minima","public_name":"Mínima"}'::jsonb));
+  ('minimal',public.superadmin_institution_create_v2('98000000-0000-4000-8000-000000000005','{"slug":"minima","public_name":"Mínima"}'::jsonb)),
+  -- 180360: tipo pelo nome (o assistente digita o tipo como texto)
+  ('by_name',public.superadmin_institution_create_v2('98000000-0000-4000-8000-000000000006',
+    (pg_temp.create_payload('escola.por.nome','Escola por nome')-'institution_type_id')||'{"institution_type_name":"  synthetic CREATE active "}'::jsonb)),
+  ('by_unknown_name',public.superadmin_institution_create_v2('98000000-0000-4000-8000-000000000007',
+    (pg_temp.create_payload('escola.tipo.x','Tipo desconhecido')-'institution_type_id')||'{"institution_type_name":"Universidade"}'::jsonb)),
+  ('by_inactive_name',public.superadmin_institution_create_v2('98000000-0000-4000-8000-000000000008',
+    (pg_temp.create_payload('escola.tipo.y','Tipo inativo por nome')-'institution_type_id')||'{"institution_type_name":"Synthetic Create Inactive"}'::jsonb)),
+  ('id_name_disagree',public.superadmin_institution_create_v2('98000000-0000-4000-8000-000000000009',
+    pg_temp.create_payload('escola.tipo.z','Id e nome divergem')||'{"institution_type_name":"Synthetic Create Inactive"}'::jsonb)),
+  ('blank_name',public.superadmin_institution_create_v2('98000000-0000-4000-8000-000000000010',
+    (pg_temp.create_payload('escola.tipo.w','Nome em branco')-'institution_type_id')||'{"institution_type_name":"   "}'::jsonb));
 reset role;
 
 select ok(
@@ -231,15 +242,31 @@ select is(
      and log_record.actor_kind='superadmin_internal' and log_record.hash_version=2
      and log_record.permission_code='institution.activate' and log_record.object_type='institution'
      and log_record.institution_id=log_record.object_id and log_record.after_json is null),
-  2::bigint,
+  3::bigint,
   'each accepted create appends exactly one minimized v2 audit event and replays append none'
 );
 select is(
   (select count(*) from app_private.superadmin_internal_institution_create_receipts
    where actor_internal_identity_id='95000000-0000-4000-8000-000000000001'),
-  2::bigint,
+  3::bigint,
   'accepted creates leave one receipt each'
 );
+
+-- 180360: tipo pelo nome ---------------------------------------------------
+select ok(
+  (select (body->>'ok')::boolean from create_responses where label='by_name')
+  and exists(select 1 from public.institutions where slug='escola.por.nome'
+    and institution_type_id='91000000-0000-4000-8000-000000000001'),
+  'the type name is trimmed, matched without case and resolved to the active catalog id'
+);
+select is((select body#>>'{error,code}' from create_responses where label='by_unknown_name'),'SAI_INVALID_ARGUMENT',
+  'an unknown type name is rejected');
+select is((select body#>>'{error,code}' from create_responses where label='by_inactive_name'),'SAI_INVALID_ARGUMENT',
+  'an inactive type name is rejected');
+select is((select body#>>'{error,code}' from create_responses where label='id_name_disagree'),'SAI_INVALID_ARGUMENT',
+  'a type id and a type name that disagree are rejected');
+select is((select body#>>'{error,code}' from create_responses where label='blank_name'),'SAI_INVALID_ARGUMENT',
+  'a blank type name is rejected');
 
 -- Negativas -----------------------------------------------------------------
 select set_config('request.jwt.claims',jsonb_build_object('sub','93000000-0000-4000-8000-000000000002',
@@ -286,7 +313,7 @@ select is(
      and log_record.actor_kind='superadmin_internal' and log_record.hash_version=2
      and log_record.reason_code in('SAI_PERMISSION_DENIED','SAI_SESSION_INVALID','SAI_INVALID_ARGUMENT')),
   -- sessao expirada e sem claims nao identificam ator: sem evento, por desenho.
-  (select count(*) from create_responses where label in('support','scoped','reused_id','taken_slug','inactive_type','invalid')),
+  (select count(*) from create_responses where label in('support','scoped','reused_id','taken_slug','inactive_type','invalid','by_unknown_name','by_inactive_name','id_name_disagree','blank_name')),
   'identified denials append one correlated v2 audit event each'
 );
 
