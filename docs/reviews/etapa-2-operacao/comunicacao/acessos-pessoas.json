@@ -1,15 +1,15 @@
 {
-  "revision": 100,
-  "updated_at": "2026-09-11T05:00:35.832Z",
-  "relogio_local": "Fri Sep 11 2026 02:00:35 GMT-0300 (Horário Padrão de Brasília)",
+  "revision": 101,
+  "updated_at": "2026-09-11T05:06:15.154Z",
+  "relogio_local": "Fri Sep 11 2026 02:06:15 GMT-0300 (Horário Padrão de Brasília)",
   "round": "E2-R04-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
   "model": "Claude Fable 5.1 (o prompt previa Opus; a sessao aberta pelo Owner roda Fable 5.1)",
-  "status": "R04_EM_CURSO_APOS_REINICIO",
+  "status": "R04_EM_CURSO",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-acessos-pessoas",
   "branch": "work/etapa2-r04-acessos-pessoas",
-  "head": "e17b0ee84 (publicado)",
+  "head": "732354e72 (publicado)",
   "base_observed": "origin/dev 98cc0529d contem a4af2b198 e o R04-prompts.md; candidatos/acessos-pessoas tem 170900 (retido) e 170750 (obsoleto); lote 4 (170100-170800) em migrations/",
   "recorte": {
     "familias": [
@@ -39,7 +39,7 @@
   "loop": "/loop 15m agendado na abertura",
   "testes_P_F_B_S_U": "nenhum teste automatizado executado ainda nesta rodada; login real 1 P",
   "bloqueio": "nenhum total",
-  "proximo_passo": "rota real Pessoas/Perfis/Modelos e Convites com um unico Chrome; pgTAP da semente; JSON as 02:30",
+  "proximo_passo": "ligar onOpen/onCreate/onEdit de Pessoas no router de producao + capacidade de mutacao para /people; prova de Convites (contexto/destinatario/entrega/revisao); esperar o subagente do 171300; JSON as 03:00",
   "ACK_ao_coordenador": "recebido o aviso do lote 8 (MFA fora do MVP + student_links_read) por mensagem entre sessoes as 22:10; respondido pelo mesmo canal; rebase feito.",
   "ROTA_NORMAL_COM_SESSAO": {
     "auth.login": "P (qa-r03 entra pela tela normal, Home como Owner Coelo / Superadmin)",
@@ -121,6 +121,24 @@
     "motivo": "o coordenador e esta sessao tiveram a escrita direta em producao bloqueada; nao existe RPC de criacao de usuario interno em producao (so update e change_status)."
   },
   "COMPOSICAO_SEGURANCA_INFANTIL_DEFINITIVA": "voltou ao SupabaseChildSafetyRepository (legado) em e17b0ee84: com a ponte de ator (lote 10) qa-r03 recebe 200 em superadmin_child_safety_directory/get/search_children (crianca sintetica 'Crianca QA R04' do grupo formularios) e as RPCs de escrita legadas existem em producao; o v2 interno do lote 4 e somente leitura. Prova na rota normal depende de novo build web (4-5 min, ~2 GB RAM) — vou tentar quando a memoria permitir.",
+  "pacotesProntos_estado": {
+    "AP-P7-171000": "APLICADO em producao (lote 10)",
+    "AP-D1-171100": "APLICADO em producao (lote 12, 00:26) segundo o coordenador; principal-chat consome no Perfil",
+    "AP-QA-R03-INTERNAL-PROFILE-SEED-171200": "VERDE: pgTAP 6/6 no descartavel (baseline + lotes ate 10 + 171100 + 171200); commit e17b0ee84; PRONTO PARA APLICAR",
+    "AP-MODELS-CATALOG-171300": "EM PRODUCAO PELO SUBAGENTE (sem Chrome): recarimbagem sobre a baseline do pacote historico 20260901170731 + 20260908021821 (superadmin_access_permission_catalog e o que faltar das RPCs de Modelos), com os pgTAP existentes; motivo: PGRST202 em producao para superadmin_access_permission_catalog derruba access-models.list e o formulario Criar perfil"
+  },
+  "ROTA_NORMAL_02h30_apos_ponte_de_ator": {
+    "people.list": "P: /people abre com dados reais (Crianca QA R04, 4 pessoas de servico da ponte, Owner Coelo); busca/filtros/toggle/Arquivos/abas presentes; reload mantem (captura 9411-r-people.png)",
+    "people.links / people.reload": "N na UI: a rota de producao compoe PersonDirectoryPage sem callback de abrir o detalhe (clicar no card nao navega; ja apontado na R03); a rota /people/:id existe com SupabasePersonDetailReader. Vou ligar onOpen no router.",
+    "people.create / people.edit": "N na UI: /people/new redireciona para /errors/mutation-capability-unavailable porque hasAuthoritativeMutationCapability nao considera /people e a rota compoe onCreate/onEdit nulos; o backend (superadmin_people_create_draft/update) ja aceita qa-r03 com a ponte. Correcao de composicao em curso (router), prova depende de novo build web (memoria: 750 MB livres, build precisa de ~2 GB).",
+    "access-profiles.list": "P: /profiles lista os 5 perfis de plataforma com card Criar perfil (captura 9411-r-profiles.png)",
+    "access-profiles.create": "F: 'Nao foi possivel abrir o perfil / carregar o formulario' porque o formulario carrega superadmin_access_permission_catalog (PGRST202 em producao). Gate: pacote 171300.",
+    "access-models.list": "F: 'Nao foi possivel carregar os perfis' pelo mesmo catalogo ausente (a RPC superadmin_access_profile_models_cursor responde 200 vazio por REST). Gate: 171300.",
+    "invites.create": "formulario /invites/new abre (4 passos); seletor de contexto em prova (captura 9411-r-invite-search.png)",
+    "internal-users.list/detail/edit": "gate: aplicar 171200 (lista faz join com perfis; producao tem 0 perfis)",
+    "child-safety.*": "com a ponte, o repositorio legado responde leitura e escrita (REST 200 em directory/get/search com a crianca sintetica); composicao revertida ao legado em e17b0ee84; prova na UI depende de build novo"
+  },
+  "AMBIENTE": "1 Chrome (porta 9411, SwiftShader), build web de 22:55 servido por Node em :3000; Docker de volta; descartavel coelo_acessos religado (container preservado).",
   "historico_r03": {
     "revision": 94,
     "updated_at": "2026-09-10T19:56:30.537Z",
