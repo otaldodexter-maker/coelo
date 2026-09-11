@@ -1,4 +1,4 @@
--- Candidate for isolated serialized Eng1 replay only. NOT EXECUTED.
+-- Prova pgTAP de public.superadmin_child_context_directory_v2 (pacote 20260910220600, recarimbado sobre a baseline).
 begin;
 set local search_path = extensions, public, pg_catalog;
 select extensions.no_plan();
