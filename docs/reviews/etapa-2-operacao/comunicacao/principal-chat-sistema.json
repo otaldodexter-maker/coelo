@@ -1,6 +1,6 @@
 {
-  "revision": 17,
-  "updated_at": "2026-09-11T03:55:00-03:00",
+  "revision": 18,
+  "updated_at": "2026-09-11T08:40:00-03:00",
   "round": "E2-R04-20260911",
   "group": "principal-chat-sistema",
   "tool": "Claude Code (VS Code), sessao coelo-11",
@@ -9,9 +9,9 @@
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-principal-chat-sistema",
   "branch": "work/etapa2-r04-principal-chat-sistema",
   "base": "origin/dev a2b8d1899 (rebase 02:15)",
-  "head": "92146a56d (+ este commit)",
-  "publicada": "origin/work/etapa2-r04-principal-chat-sistema em 92146a56d (integrado); rev 17 neste push",
-  "status": "MINI-REVISAO 04:00 (coelo-11). Fechado com prova: launcher/Decisao 7 (7322260c5, 1e34eb9f4, dcfcb9e41; em dev 7d128b3a6); Cardapios abre na rota real para qa-r03 e reload mantem (51/52); Chat: dialogo Criar grupo carrega instituicao e pessoas do diretorio (54..61, 67a). Criacao do grupo pela UI: dialogo fechou ao clicar Criar grupo e nenhum grupo novo apareceu apos reload (67b, 67c); causa nao isolada nesta retomada (o clique por CDP pode ter caido fora do botao apos o relayout, e o checkbox do membro nao foi confirmado); a RPC superadmin_chat_create_group_v2 ja foi provada em producao na rev 12. Aberto: Principal inteiro bloqueado por list_my_principal_contexts ausente em producao (PGRST202) -> candidato 191000 entregue; CRUD de Cardapios pela UI nao feito; goldens nao tocados.",
+  "head": "889e289a8 (+ este commit)",
+  "publicada": "origin/work/etapa2-r04-principal-chat-sistema em 889e289a8 (integrado em dev); rev 18 neste push",
+  "status": "Rev 18 (08:40, pedido do Owner): validacao da entrega ao coordenador feita (8 commits em origin/dev, worktree limpa, deltas aplicados, 191000 em producao no lote 22 conferido por pg_proc), ferramentas de prova preservadas em evidence/.../ferramentas/ e deltas propostos as tres skills em evidence/.../skills-deltas-r04.md. Nao retomei o recorte; so fechamento.",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos, Perfil",
     "apps/superadmin -> Chat administrativo e Principal",
@@ -87,7 +87,7 @@
     "rota_chat_final": "capturas 20 a 42 em evidence/etapa-2/r04-principal-chat-sistema/rota-real/: inbox, thread, reload, envio, edicao, revogacao, dialogo de Criar grupo"
   },
   "blocker": null,
-  "next_step": "Fechamento: encerrar Chrome e servidor; handoff atualizado; nao retomar por conta propria depois de 04:20.",
+  "next_step": "Nenhum por conta propria. Proximo dono do recorte: P35 -> rota real do Principal; CRUD de Cardapios pela UI; Criar grupo pela UI; goldens das tres listas.",
   "ack": null,
   "handoff": "docs/reviews/etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md (R03; sera reescrito no fechamento da R04)",
   "lotes": [
@@ -394,5 +394,24 @@
       "P-CTX (P25): dar a pessoa de servico do qa-r03 um vinculo institucional sintetico (institution_memberships, scope institution) na instituicao QA R04 Cuidado (sintetico) para o Principal ter contexto? Sem isso Acontece/Momentos/Agora/Para voce/Perfil nao abrem para ninguem em producao."
     ],
     "ambiente": "build release de test_driver/qa_main.dart com --dart-define-from-file=.env.local, servido por python (SPA fallback) em 127.0.0.1:3009; Chrome 152 --remote-debugging-port=9409 --use-angle=swiftshader, perfil isolado; login e enter_text por qa_drive.dart; cliques por CDP (Input.dispatchMouseEvent); Input.insertText NAO entra no campo Flutter (usar enter_text do driver); um Chrome, um servidor; encerrados no fechamento."
-  }
+  },
+  "validacao_entrega_0830": {
+    "commits_em_dev": [
+      "7322260c5",
+      "1e34eb9f4",
+      "dcfcb9e41",
+      "03c0ff34d",
+      "b5841e018",
+      "92146a56d",
+      "31632cd1c",
+      "889e289a8"
+    ],
+    "worktree": "limpa, sem stash, HEAD = origin; arquivavel pelo coordenador",
+    "deltas_aplicados": "shell.load, meal-plans.list, chat.create-group FE verified; Principal blocked-environment com gate (coordenacao rev 30)",
+    "lote_22": "list_my_principal_contexts presente em producao; authenticated executa, anon nao (pg_proc, 08:30)",
+    "pergunta_owner": "P35 (contexto da pessoa de servico) registrada pelo coordenador",
+    "ambiente": "Chrome 9409, servidor 3009 e dart encerrados"
+  },
+  "skills_deltas": "docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/skills-deltas-r04.md (proposta; o coordenador aplica nas skills coelo-frontend, coelo-backend e coelo-frontend-backend)",
+  "ferramentas": "docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/ferramentas/ (cdp_sem, cdp_net, cdp_eval, cdp_console, cdp_close, serve.py, qa.sh, README; sem credencial)"
 }
