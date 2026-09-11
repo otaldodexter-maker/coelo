@@ -141,6 +141,9 @@ Future<void> main(List<String> args) async {
         stdout.writeln(await _eval('location.href'));
       case 'url':
         stdout.writeln(await _eval('location.href'));
+      case 'eval':
+        // Diagnostico: expressao JS (ex.: entradas de performance com as RPCs).
+        stdout.writeln(jsonEncode(await _eval(args[2])));
       case 'shot':
         final response = await _cdp('Page.captureScreenshot', {'format': 'png'});
         final data = (response['result'] as Map)['data'] as String;

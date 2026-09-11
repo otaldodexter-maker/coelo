@@ -36,7 +36,12 @@ const catalogRegistryManifestJson = r'''
   "admin.work-item-card": [],
   "admin.assignee-stack": [],
   "admin.workspace-layout": [],
-  "admin.dialog-shell": ["one-action", "two-actions"]
+  "admin.dialog-shell": ["one-action", "two-actions"],
+  "admin.directory": ["cards", "table", "kanban-body-override"],
+  "admin.directory-status-tabs": [],
+  "admin.directory-view-toggle": [],
+  "admin.pagination-footer": ["expanded", "compact"],
+  "admin.underline-tabs": []
 }
 ''';
 
@@ -89,6 +94,11 @@ Map<String, CatalogExample> buildCatalogRegistry() {
     'admin.assignee-stack': (_) => const _AssigneeStackExample(),
     'admin.workspace-layout': (_) => const _WorkspaceLayoutExample(),
     'admin.dialog-shell': (_) => const _DialogShellExample(),
+    'admin.directory': (_) => const _DirectoryExample(),
+    'admin.directory-status-tabs': (_) => const _DirectoryStatusTabsExample(),
+    'admin.directory-view-toggle': (_) => const _DirectoryViewToggleExample(),
+    'admin.pagination-footer': (_) => const _PaginationFooterExample(),
+    'admin.underline-tabs': (_) => const _UnderlineTabsExample(),
   };
   final decoded = jsonDecode(catalogRegistryManifestJson) as Map<String, Object?>;
   final variants = decoded.map(
@@ -702,4 +712,156 @@ final class _ExampleRow {
 
   final String name;
   final String status;
+}
+
+// Composto de diretorio (Fase 0, decisao do Owner de 10/09/2026) e seus
+// componentes publicos, registrados na R06 (P44 = B).
+final class _DirectoryExample extends StatefulWidget {
+  const _DirectoryExample();
+
+  @override
+  State<_DirectoryExample> createState() => _DirectoryExampleState();
+}
+
+final class _DirectoryExampleState extends State<_DirectoryExample> {
+  final _search = TextEditingController();
+  var _display = CoeloAdminDirectoryDisplay.cards;
+  var _tab = CoeloAdminDirectoryStatusTab.all;
+  var _page = 1;
+
+  @override
+  void dispose() {
+    _search.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    const names = ['Aquarela', 'Girassol', 'Semente'];
+    return SizedBox(
+      height: 560,
+      child: CoeloAdminDirectory<CoeloAdminDirectoryDisplay>(
+        status: CoeloAdminDirectoryStatus.success,
+        messages: const CoeloAdminDirectoryMessages(
+          empty: 'Ainda não há instituições.',
+          noResults: 'Nenhuma instituição corresponde aos filtros.',
+          failure: 'Instituições indisponíveis',
+          unauthorized: 'Você não tem permissão para consultar instituições.',
+        ),
+        search: CoeloSearchField(
+          controller: _search,
+          onChanged: (_) {},
+          semanticLabel: 'Buscar instituições',
+          hintText: 'Buscar instituições',
+        ),
+        filters: [OutlinedButton(onPressed: () {}, child: const Text('Tipo'))],
+        tabs: CoeloAdminDirectoryStatusTabs(
+          selected: _tab,
+          onSelected: (tab) => setState(() => _tab = tab),
+        ),
+        display: _display,
+        onDisplayChanged: (display) => setState(() => _display = display),
+        groupedTableView: CoeloAdminDirectoryDisplay.table,
+        selectedTableView: CoeloAdminDirectoryDisplay.table,
+        tableViews: const [
+          CoeloAdminDirectoryTableViewOption(value: CoeloAdminDirectoryDisplay.table, label: 'Tabela'),
+        ],
+        onTableViewSelected: (_) => setState(() => _display = CoeloAdminDirectoryDisplay.table),
+        fileActions: [
+          CoeloAdminFileAction(label: 'Exportar XLSX', icon: Icons.grid_on_outlined, onPressed: () {}),
+        ],
+        create: CoeloAdminDirectoryCreate(label: 'Criar instituição', onPressed: () {}),
+        cards: [
+          for (final name in names)
+            CoeloAdminInteractiveCard(
+              semanticLabel: 'Abrir instituição $name',
+              onPressed: () {},
+              child: Padding(
+                padding: const EdgeInsets.all(CoeloSpacing.space4),
+                child: Text(name, style: Theme.of(context).textTheme.titleMedium),
+              ),
+            ),
+        ],
+        table: Column(
+          children: [for (final name in names) ListTile(title: Text(name), onTap: () {})],
+        ),
+        pagination: CoeloAdminDirectoryPagination(
+          currentPage: _page,
+          totalPages: 3,
+          onPageSelected: (page) => setState(() => _page = page),
+        ),
+      ),
+    );
+  }
+}
+
+final class _DirectoryStatusTabsExample extends StatefulWidget {
+  const _DirectoryStatusTabsExample();
+
+  @override
+  State<_DirectoryStatusTabsExample> createState() => _DirectoryStatusTabsExampleState();
+}
+
+final class _DirectoryStatusTabsExampleState extends State<_DirectoryStatusTabsExample> {
+  var _tab = CoeloAdminDirectoryStatusTab.all;
+
+  @override
+  Widget build(BuildContext context) => CoeloAdminDirectoryStatusTabs(
+    selected: _tab,
+    onSelected: (tab) => setState(() => _tab = tab),
+  );
+}
+
+final class _DirectoryViewToggleExample extends StatefulWidget {
+  const _DirectoryViewToggleExample();
+
+  @override
+  State<_DirectoryViewToggleExample> createState() => _DirectoryViewToggleExampleState();
+}
+
+final class _DirectoryViewToggleExampleState extends State<_DirectoryViewToggleExample> {
+  var _cards = true;
+
+  @override
+  Widget build(BuildContext context) => CoeloAdminDirectoryViewToggle<String>(
+    cardsSelected: _cards,
+    groupedView: 'table',
+    selectedTableView: 'table',
+    tableViews: const [CoeloAdminDirectoryTableViewOption(value: 'table', label: 'Tabela')],
+    onCardsSelected: () => setState(() => _cards = true),
+    onTableViewSelected: (_) => setState(() => _cards = false),
+  );
+}
+
+final class _PaginationFooterExample extends StatelessWidget {
+  const _PaginationFooterExample();
+
+  @override
+  Widget build(BuildContext context) => const CoeloAdminPaginationFooter(
+    horizontalPadding: CoeloSpacing.space5,
+    child: _PaginationExample(),
+  );
+}
+
+final class _UnderlineTabsExample extends StatefulWidget {
+  const _UnderlineTabsExample();
+
+  @override
+  State<_UnderlineTabsExample> createState() => _UnderlineTabsExampleState();
+}
+
+final class _UnderlineTabsExampleState extends State<_UnderlineTabsExample> {
+  String? _status;
+
+  @override
+  Widget build(BuildContext context) => CoeloAdminUnderlineTabs<String?>(
+    selected: _status,
+    tabs: const [
+      CoeloAdminUnderlineTab(value: null, label: 'Todos'),
+      CoeloAdminUnderlineTab(value: 'novo', label: 'Novo'),
+      CoeloAdminUnderlineTab(value: 'andamento', label: 'Em andamento'),
+      CoeloAdminUnderlineTab(value: 'concluido', label: 'Concluído'),
+    ],
+    onSelected: (status) => setState(() => _status = status),
+  );
 }

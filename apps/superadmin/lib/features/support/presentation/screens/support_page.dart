@@ -190,7 +190,10 @@ class _SupportPageState extends State<SupportPage> {
     final status = switch (controller.loadState) {
       SupportLoadState.failure => CoeloAdminDirectoryStatus.failure,
       SupportLoadState.loading when tickets.isEmpty => CoeloAdminDirectoryStatus.loading,
-      _ when controller.tickets.isEmpty => CoeloAdminDirectoryStatus.empty,
+      // O repositorio produtivo filtra no servidor: lista vazia com filtro
+      // ativo (abas de status, P49) e "sem resultados", nao "vazio".
+      _ when controller.tickets.isEmpty && !controller.hasActiveFilters =>
+        CoeloAdminDirectoryStatus.empty,
       _ when table && tickets.isEmpty => CoeloAdminDirectoryStatus.noResults,
       _ => CoeloAdminDirectoryStatus.success,
     };
