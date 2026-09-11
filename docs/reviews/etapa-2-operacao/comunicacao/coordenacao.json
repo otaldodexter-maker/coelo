@@ -239,8 +239,8 @@
   "47": "15:50 pedido de revisao final as sete frentes; lotes 47-48; moments-media corrigida; todas as frentes finalizadas (FE 138 / BE done 132 / E2E 105)",
   "48": "16:00 FECHAMENTO da R05: sete frentes integradas e worktrees removidas; 21 lotes/34 pacotes; rastreadores, skills, ADR, conhecimento e fechamento publicados; percentuais finais",
   "49": "16:25 artefato de aprovacoes da R05 publicado (17 telas + P43-P50, com Salvar); prompts da R06 (2 h + 30 min, Opus 5 medio) publicados; formato de local-green ajustado a pedido do Owner",
-  "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina.",
-  "50": "16:55 respostas do Owner ao artefato de aprovacoes (17 telas, IMP-R05-2, P43-P50) anotadas para a R06; familia visual Publicacao aberta na coelo-ui"
+  "50": "16:55 respostas do Owner ao artefato de aprovacoes (17 telas, IMP-R05-2, P43-P50) anotadas para a R06; familia visual Publicacao aberta na coelo-ui",
+  "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina."
  },
  "fechamentoR03": {
   "quando": "2026-09-10T20:30-03:00 (relogio da maquina)",
@@ -1565,5 +1565,10 @@
    "V-4/V-5/V-6": "REPROVADOS: o estilo de publicacao do Principal e outro (nao usa wizard); familia visual Publicacao registrada na coelo-ui com as referencias do Owner; novas telas em canvas para aprovacao (Agora, Lancar faltas, Acontece, Circulares, Eventos, Momentos)",
    "estadoVazioComCriar": "V-11 e V-15: o card Criar aparece sempre (cards e tabela), mesmo sem dados; app real sem dados de demonstracao; Rotina com criar modelo/criar rotina e duplicar/arquivar na tabela"
   }
+ },
+ "canvasPublicarNoCoelo": {
+  "url": "https://claude.ai/code/artifact/7d13d4ef-2308-4f6c-9bdd-af088e004823",
+  "conteudo": "12 artboards (Agora, Acontece, Momentos, Circular, Evento, Lancar chamada em 375 e 1440) na familia visual Publicacao; fonte dos artboards no scratchpad da sessao (gen.py); aprovacao do Owner pendente; tablet 768 depois da primeira rodada de ajustes",
+  "publicadoEm": "2026-09-11T16:55:00-03:00"
  }
 }
