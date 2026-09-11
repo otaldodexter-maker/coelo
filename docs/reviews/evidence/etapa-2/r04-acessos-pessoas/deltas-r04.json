@@ -6,7 +6,7 @@
     "delta": "R04: rota normal /people abre com a sessao qa-r03 e lista dados reais (crianca sintetica, pessoas de servico da ponte de ator, Owner); busca, filtros, toggle, Arquivos e abas presentes; reload mantem. Nao e verified: nao ha escrita a provar nesta acao e o diretorio ainda nao abre o detalhe a partir do card.",
     "evidencia": "evidence/etapa-2/r04-acessos-pessoas/capturas/people-list-pos-ponte.png; comunicacao/acessos-pessoas.json r102",
     "certificacao": {
-      "evidence": "evidence/etapa-2/r04-acessos-pessoas/capturas/people-list-pos-ponte.png",
+      "evidence": "docs/reviews/evidence/etapa-2/r04-acessos-pessoas/capturas/people-list-pos-ponte.png",
       "revision": "ce6f061cc",
       "environment": "build web release contra producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03",
       "recordedAt": "2026-09-11T02:05:00-03:00"
@@ -19,7 +19,7 @@
     "delta": "R04: superadmin_people_list responde 200 para o usuario interno apos a ponte de ator (lote 10) e o P7 (171000, pgTAP 20/20 com negativa cross-tenant por instituicao). Antes: 42501 'people permission denied'.",
     "evidencia": "comunicacao/acessos-pessoas.json r102 (REST)",
     "certificacao": {
-      "evidence": "comunicacao/acessos-pessoas.json",
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
       "revision": "ce6f061cc",
       "environment": "producao, sessao qa-r03 via PostgREST",
       "recordedAt": "2026-09-11T02:00:00-03:00"
@@ -32,7 +32,7 @@
     "delta": "R04: capacidade de mutacao ligada para /people (2891e6977); o card do diretorio abre /people/:id/edit com os dados reais da crianca sintetica (3 passos). Salvar ainda nao provado na UI.",
     "evidencia": "capturas 9411-b2-people-edit2 (scratchpad; copiar na evidencia)",
     "certificacao": {
-      "evidence": "comunicacao/acessos-pessoas.json r104",
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
       "revision": "ce6f061cc",
       "environment": "build web release contra producao, sessao qa-r03",
       "recordedAt": "2026-09-11T02:22:00-03:00"
@@ -45,7 +45,7 @@
     "delta": "R04: superadmin_people_update existe em producao e o portao assert_people_permission('people.update') aceita o usuario interno com a ponte + MFA fora do MVP; escrita real ainda nao exercitada.",
     "evidencia": "comunicacao/acessos-pessoas.json r102",
     "certificacao": {
-      "evidence": "comunicacao/acessos-pessoas.json",
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
       "revision": "ce6f061cc",
       "environment": "producao (leitura de pg_proc e portoes)",
       "recordedAt": "2026-09-11T02:00:00-03:00"
@@ -58,7 +58,7 @@
     "delta": "R04: /people/new abre o PersonIdentityLookupGate ('Verificar identidade'), mas o resolvedor de identidade composto e UnavailablePersonIdentityRepository: nao existe implementacao Supabase nem RPC de resolucao de identidade. Gate: contrato de resolucao de identidade (BE) + adapter.",
     "evidencia": "capturas 9411-b2-people-edit (dialogo Verificar identidade)",
     "certificacao": {
-      "evidence": "comunicacao/acessos-pessoas.json r104",
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
       "revision": "ce6f061cc",
       "environment": "build web release contra producao",
       "recordedAt": "2026-09-11T02:22:00-03:00"
@@ -71,7 +71,7 @@
     "delta": "R04: superadmin_person_detail_v2 (lote 4) responde ok:true com memberships e child_contexts da crianca sintetica para qa-r03; pgTAP 42/42 no lote 4.",
     "evidencia": "comunicacao/acessos-pessoas.json r103 (REST)",
     "certificacao": {
-      "evidence": "comunicacao/acessos-pessoas.json",
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
       "revision": "ce6f061cc",
       "environment": "producao, sessao qa-r03 via PostgREST",
       "recordedAt": "2026-09-11T02:16:00-03:00"
@@ -84,7 +84,7 @@
     "delta": "R04: o diretorio abre o editor (que mostra os vinculos), nao a rota /people/:id de detalhe; alcance do detalhe continua sem callback.",
     "evidencia": "comunicacao/acessos-pessoas.json r102",
     "certificacao": {
-      "evidence": "comunicacao/acessos-pessoas.json",
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
       "revision": "ce6f061cc",
       "environment": "build web release contra producao",
       "recordedAt": "2026-09-11T02:05:00-03:00"
@@ -97,7 +97,7 @@
     "delta": "R04: /profiles lista os 5 perfis de plataforma com card Criar perfil; reload mantem.",
     "evidencia": "evidence/etapa-2/r04-acessos-pessoas/capturas/access-profiles-list.png",
     "certificacao": {
-      "evidence": "evidence/etapa-2/r04-acessos-pessoas/capturas/access-profiles-list.png",
+      "evidence": "docs/reviews/evidence/etapa-2/r04-acessos-pessoas/capturas/access-profiles-list.png",
       "revision": "ce6f061cc",
       "environment": "build web release contra producao, sessao qa-r03",
       "recordedAt": "2026-09-11T02:05:00-03:00"
@@ -110,7 +110,7 @@
     "delta": "R04: superadmin_access_profiles_list responde 200 para o usuario interno apos a ponte (require_profile_authority via has_platform_permission).",
     "evidencia": "comunicacao/acessos-pessoas.json r102",
     "certificacao": {
-      "evidence": "comunicacao/acessos-pessoas.json",
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
       "revision": "ce6f061cc",
       "environment": "producao, sessao qa-r03 via PostgREST",
       "recordedAt": "2026-09-11T02:00:00-03:00"
@@ -123,7 +123,7 @@
     "delta": "R04: o formulario pede superadmin_access_profile_detail(p_domain, p_profile_id=null) esperando um rascunho em branco; a v2 em producao devolve P0002 'access profile not found'. Catalogo (171300) ja em producao. Gate: contrato de rascunho em branco (BE) ou o cliente montar o rascunho local.",
     "evidencia": "comunicacao/acessos-pessoas.json r104 (REST)",
     "certificacao": {
-      "evidence": "comunicacao/acessos-pessoas.json",
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
       "revision": "ce6f061cc",
       "environment": "producao, sessao qa-r03 via PostgREST",
       "recordedAt": "2026-09-11T02:24:00-03:00"
@@ -136,7 +136,7 @@
     "delta": "R04: /profile-models lista os 6 modelos com card Criar modelo de perfil apos o 171300 (lote 16); reload mantem.",
     "evidencia": "capturas 9411-b2-models-list (scratchpad; copiar na evidencia)",
     "certificacao": {
-      "evidence": "comunicacao/acessos-pessoas.json r104",
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
       "revision": "ce6f061cc",
       "environment": "build web release contra producao, sessao qa-r03",
       "recordedAt": "2026-09-11T02:23:00-03:00"
@@ -149,7 +149,7 @@
     "delta": "R04: 171300 em producao (lote 16): catalogo, recibos, 18 permissoes role_models, cursor com envelope, RPCs de Modelos; pgTAP 32+11+17+12+8 e politica AAL1 34/34.",
     "evidencia": "packages/coelo_database/candidatos/acessos-pessoas/20260910171300_access_profile_models_catalog_v2_baseline.sql; comunicacao/acessos-pessoas.json r103",
     "certificacao": {
-      "evidence": "comunicacao/acessos-pessoas.json",
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
       "revision": "ce6f061cc",
       "environment": "producao (lote 16) + descartavel coelo_acessos",
       "recordedAt": "2026-09-11T02:20:00-03:00"
@@ -162,7 +162,7 @@
     "delta": "R04: superadmin_access_profile_model_create em producao (171300) com pgTAP de CRUD 32/32; escrita real pela UI ainda nao exercitada.",
     "evidencia": "comunicacao/acessos-pessoas.json r103",
     "certificacao": {
-      "evidence": "comunicacao/acessos-pessoas.json",
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
       "revision": "ce6f061cc",
       "environment": "producao (lote 16) + descartavel",
       "recordedAt": "2026-09-11T02:20:00-03:00"
@@ -175,7 +175,7 @@
     "delta": "R04: superadmin_access_profile_model_update em producao (171300), pgTAP 32/32.",
     "evidencia": "comunicacao/acessos-pessoas.json r103",
     "certificacao": {
-      "evidence": "comunicacao/acessos-pessoas.json",
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
       "revision": "ce6f061cc",
       "environment": "producao (lote 16) + descartavel",
       "recordedAt": "2026-09-11T02:20:00-03:00"
@@ -188,7 +188,7 @@
     "delta": "R04: superadmin_access_profile_model_duplicate em producao (171300), pgTAP 32/32.",
     "evidencia": "comunicacao/acessos-pessoas.json r103",
     "certificacao": {
-      "evidence": "comunicacao/acessos-pessoas.json",
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
       "revision": "ce6f061cc",
       "environment": "producao (lote 16) + descartavel",
       "recordedAt": "2026-09-11T02:20:00-03:00"
@@ -201,7 +201,7 @@
     "delta": "R04: superadmin_access_profile_model_detail em producao (171300), pgTAP de leitura 11/11 e prelookup 17/17.",
     "evidencia": "comunicacao/acessos-pessoas.json r103",
     "certificacao": {
-      "evidence": "comunicacao/acessos-pessoas.json",
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
       "revision": "ce6f061cc",
       "environment": "producao (lote 16) + descartavel",
       "recordedAt": "2026-09-11T02:20:00-03:00"
@@ -214,7 +214,7 @@
     "delta": "R04: /invites abre com busca, Status/Canal, toggle, Arquivos, card Novo convite e vazio honesto; reload mantem.",
     "evidencia": "evidence/etapa-2/r04-acessos-pessoas/capturas/invites-list-vazio.png",
     "certificacao": {
-      "evidence": "evidence/etapa-2/r04-acessos-pessoas/capturas/invites-list-vazio.png",
+      "evidence": "docs/reviews/evidence/etapa-2/r04-acessos-pessoas/capturas/invites-list-vazio.png",
       "revision": "ce6f061cc",
       "environment": "build web release contra producao, sessao qa-r03",
       "recordedAt": "2026-09-10T23:20:00-03:00"
@@ -227,7 +227,7 @@
     "delta": "R04: superadmin_invite_directory_v2 (lote 4) responde ok:true para qa-r03; pgTAP 33/33 no lote 4.",
     "evidencia": "comunicacao/acessos-pessoas.json r97",
     "certificacao": {
-      "evidence": "comunicacao/acessos-pessoas.json",
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
       "revision": "ce6f061cc",
       "environment": "producao, sessao qa-r03 via PostgREST",
       "recordedAt": "2026-09-10T22:40:00-03:00"
@@ -240,7 +240,7 @@
     "delta": "R04: /invites/new abre os 4 passos e lista os contextos sinteticos, mas superadmin_invite_options_v2 devolve profiles=[] porque producao tem 0 institution_roles; sem perfil o convite nao passa do passo 1. P31 ao Owner (papeis padrao de instituicao).",
     "evidencia": "evidence/etapa-2/r04-acessos-pessoas/capturas/invites-create-contextos.png; invites-create-sem-perfil.png",
     "certificacao": {
-      "evidence": "comunicacao/acessos-pessoas.json r102",
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
       "revision": "ce6f061cc",
       "environment": "build web release contra producao, sessao qa-r03",
       "recordedAt": "2026-09-11T02:05:00-03:00"
@@ -253,7 +253,7 @@
     "delta": "R04: /internal-users lista o proprio qa-r03 apos a semente 171200 (lote 14); busca, filtros, toggle, Arquivos; reload mantem. Sem card Criar (rota bloqueada, sem RPC de criacao).",
     "evidencia": "evidence/etapa-2/r04-acessos-pessoas/capturas/internal-users-list-pos-semente.png",
     "certificacao": {
-      "evidence": "evidence/etapa-2/r04-acessos-pessoas/capturas/internal-users-list-pos-semente.png",
+      "evidence": "docs/reviews/evidence/etapa-2/r04-acessos-pessoas/capturas/internal-users-list-pos-semente.png",
       "revision": "ce6f061cc",
       "environment": "build web release contra producao, sessao qa-r03",
       "recordedAt": "2026-09-11T02:10:00-03:00"
@@ -266,7 +266,7 @@
     "delta": "R04: superadmin_internal_users_list + 171200 (semente idempotente do perfil interno de qa-r03, pgTAP 6/6) em producao; a lista deixa de devolver 0.",
     "evidencia": "packages/coelo_database/candidatos/acessos-pessoas/20260910171200_qa_r03_internal_profile_seed_v1.sql",
     "certificacao": {
-      "evidence": "comunicacao/acessos-pessoas.json r101",
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
       "revision": "ce6f061cc",
       "environment": "producao (lote 14) + descartavel",
       "recordedAt": "2026-09-11T02:06:00-03:00"
@@ -279,7 +279,7 @@
     "delta": "R04: detalhe /internal-users/:id abre com Editar e Acoes (capability owner derivada de platform.member.update+suspend, 2891e6977) e a rota de edicao passou a compor PlatformUserFormPage (ce6f061cc); salvar pela UI ainda nao exercitado.",
     "evidencia": "capturas 9411-b2-iu-detail (scratchpad; copiar na evidencia)",
     "certificacao": {
-      "evidence": "comunicacao/acessos-pessoas.json r104",
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
       "revision": "ce6f061cc",
       "environment": "build web release contra producao, sessao qa-r03",
       "recordedAt": "2026-09-11T02:22:00-03:00"
@@ -292,7 +292,7 @@
     "delta": "R04: nao existe RPC de criacao de usuario interno em producao (identidade + auth user exigem Edge Function com admin API); rota bloqueada honestamente.",
     "evidencia": "comunicacao/acessos-pessoas.json r102",
     "certificacao": {
-      "evidence": "comunicacao/acessos-pessoas.json",
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
       "revision": "ce6f061cc",
       "environment": "producao (pg_proc)",
       "recordedAt": "2026-09-11T02:00:00-03:00"
@@ -305,7 +305,7 @@
     "delta": "R04: com a composicao legada (e17b0ee84) /safety lista a crianca sintetica com 1 autorizacao e abas com contagem; reload mantem.",
     "evidencia": "capturas 9411-b2-safety-list (scratchpad; copiar na evidencia)",
     "certificacao": {
-      "evidence": "comunicacao/acessos-pessoas.json r104",
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
       "revision": "ce6f061cc",
       "environment": "build web release contra producao, sessao qa-r03",
       "recordedAt": "2026-09-11T02:21:00-03:00"
@@ -318,7 +318,7 @@
     "delta": "R04: superadmin_child_safety_directory (legado) responde 200 ao usuario interno com a ponte de ator; v2 (lote 4, pgTAP 43/43) tambem responde.",
     "evidencia": "comunicacao/acessos-pessoas.json r100",
     "certificacao": {
-      "evidence": "comunicacao/acessos-pessoas.json",
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
       "revision": "ce6f061cc",
       "environment": "producao, sessao qa-r03 via PostgREST",
       "recordedAt": "2026-09-11T00:20:00-03:00"
@@ -331,7 +331,7 @@
     "delta": "R04: /safety/children/:id abre com contexto, tabela de autorizacoes e Gerenciar; reload mantem.",
     "evidencia": "capturas 9411-b2-safety-child (scratchpad; copiar na evidencia)",
     "certificacao": {
-      "evidence": "comunicacao/acessos-pessoas.json r104",
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
       "revision": "ce6f061cc",
       "environment": "build web release contra producao, sessao qa-r03",
       "recordedAt": "2026-09-11T02:22:00-03:00"
@@ -344,7 +344,7 @@
     "delta": "R04: child_safety_request_authorization persistiu uma autorizacao sintetica (34d29829-a8b5-4b23-aacb-46e994dce7d7, pending) para a crianca sintetica com a sessao qa-r03; superadmin_child_safety_get devolve a linha apos reload. Dado sintetico a remover com o usuario.",
     "evidencia": "comunicacao/acessos-pessoas.json r104 (REST)",
     "certificacao": {
-      "evidence": "comunicacao/acessos-pessoas.json",
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
       "revision": "ce6f061cc",
       "environment": "producao, sessao qa-r03 via PostgREST",
       "recordedAt": "2026-09-11T02:19:00-03:00"
@@ -357,7 +357,7 @@
     "delta": "R04: a decisao (child_safety_decide_authorization) exige revisor exato da unidade (child_safety_has_exact_unit_review), nao permissao de plataforma: o Owner interno recebe P0002 'child safety record unavailable' por desenho. Pela UI, Aprovar+Concluir nao persistiu. Decisao de produto: Superadmin decide autorizacoes ou so a unidade?",
     "evidencia": "comunicacao/acessos-pessoas.json r104 (REST e captura 9411-b2-safety-approved-reload)",
     "certificacao": {
-      "evidence": "comunicacao/acessos-pessoas.json",
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
       "revision": "ce6f061cc",
       "environment": "producao, sessao qa-r03",
       "recordedAt": "2026-09-11T02:24:00-03:00"
@@ -370,7 +370,7 @@
     "delta": "R04: botao Arquivos visivel nas telas do recorte e honestamente indisponivel; sem picker, parser, job, RPC ou persistencia (person_file_actions.dart / platform_user_file_actions.dart). Aceite de adiamento confirmado na rota real.",
     "evidencia": "evidence/etapa-2/r04-acessos-pessoas/capturas/people-list-pos-ponte.png (botao Arquivos)",
     "certificacao": {
-      "evidence": "evidence/etapa-2/r04-acessos-pessoas/capturas/people-list-pos-ponte.png",
+      "evidence": "docs/reviews/evidence/etapa-2/r04-acessos-pessoas/capturas/people-list-pos-ponte.png",
       "revision": "ce6f061cc",
       "environment": "build web release contra producao, sessao qa-r03",
       "recordedAt": "2026-09-11T02:05:00-03:00"
@@ -383,7 +383,7 @@
     "delta": "R04: idem import: adiado e honesto na rota real.",
     "evidencia": "evidence/etapa-2/r04-acessos-pessoas/capturas/people-list-pos-ponte.png",
     "certificacao": {
-      "evidence": "evidence/etapa-2/r04-acessos-pessoas/capturas/people-list-pos-ponte.png",
+      "evidence": "docs/reviews/evidence/etapa-2/r04-acessos-pessoas/capturas/people-list-pos-ponte.png",
       "revision": "ce6f061cc",
       "environment": "build web release contra producao, sessao qa-r03",
       "recordedAt": "2026-09-11T02:05:00-03:00"
@@ -396,7 +396,7 @@
     "delta": "R04: formulario de 3 passos (perfil/escopo, permissoes com o catalogo 171300, revisao com motivo) criou o modelo sintetico 'QA R04 Modelo sintetico' pela rota real; persistido em producao (access_profile_templates code qa-r04-modelo-sintetico-b6f3958c). Falta so a prova de reload da lista com o item visivel (terceira linha) para propor verified.",
     "evidencia": "capturas 9411-b2-model-step1/2/3 (scratchpad; copiar na evidencia); comunicacao/acessos-pessoas.json r105",
     "certificacao": {
-      "evidence": "comunicacao/acessos-pessoas.json r105",
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
       "revision": "f4a1c421c",
       "environment": "build web release contra producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03",
       "recordedAt": "2026-09-11T02:31:00-03:00"
@@ -409,10 +409,23 @@
     "delta": "R04: superadmin_access_profile_model_create (171300, lote 16) persistiu o modelo sintetico com recibo model_create ok, a partir da UI com a sessao qa-r03; pgTAP 32/32 com negativa de autorizacao.",
     "evidencia": "comunicacao/acessos-pessoas.json r105 (db query somente leitura: template + recibo)",
     "certificacao": {
-      "evidence": "comunicacao/acessos-pessoas.json r105",
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
       "revision": "f4a1c421c",
       "environment": "build web release contra producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03",
       "recordedAt": "2026-09-11T02:31:00-03:00"
+    }
+  },
+  {
+    "action_id": "access-models.create",
+    "camada": "e2e",
+    "estado_proposto": "verified",
+    "delta": "R04: regua do MVP: rota normal /profile-models/new/platform abre (build release, sessao qa-r03); CRUD persistiu em producao pela UI (template qa-r04-modelo-sintetico-b6f3958c, recibo model_create ok); RLS/autorizacao negada a quem nao tem a capacidade (pgTAP 171300: read_authorization 11/11 e crud_catalog 32/32 com negativas); reload: o cursor superadmin_access_profile_models_cursor (o mesmo que a lista usa) devolve o modelo apos a criacao; a captura da lista rolada saiu em branco por falta de memoria do Chrome. Se o coordenador exigir a captura da lista, manter FE local-green + BE done.",
+    "evidencia": "evidence/etapa-2/r04-acessos-pessoas/capturas/access-models-create-passo1/2/3.png; comunicacao/acessos-pessoas.json r105/r106",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-acessos-pessoas/capturas/access-models-create-passo3-revisao.png",
+      "revision": "6aea1d104",
+      "environment": "build web release contra producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03; cursor por PostgREST",
+      "recordedAt": "2026-09-11T02:37:00-03:00"
     }
   }
 ]
