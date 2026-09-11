@@ -2781,15 +2781,15 @@
       "family": "attendance",
       "screen": "Assiduidade / Dashboard",
       "scope": "mvp",
-      "done": "55 testes funcionais e dois goldens históricos; overflow da chamada corrigido em0fbdef95 com38 testes e quatro novos goldens registrados. C00 integrou bloqueio de leitura após dispose c962ae99. R02: 852dc15e→4041bd81 fixa data civil inicial nos testes; 1 caso período/picker PASS. Produção mantém DateTime.now; não é conclusão da ação.",
-      "fe": "Snapshot lido sob autorizacao anterior deixou de sobreviver a uma mudanca de autorizacao. Patch de rota reservado.",
-      "be": "R05: contrato do cliente (14 RPCs superadmin_attendance_*/attendance_dashboard_*) escrito e aplicado em producao (20260911220100, pgTAP 141/141 no espelho limpo); rota real ainda nao exercitada nesta rodada.",
-      "evidence": "commit0fbdef95; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/2026-09-07-deferred-exports.md; R01-delta-1815: C03r24 b7082644 evita leituras apósdispose;7controller/10dashboard relatados, revisão em andamento.; Fechamento R01 C03/r33; C00288PASS; b7082644 origem; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-e9a582a0-4041bd81.json; af590ff18; comunicacao/formularios-cuidado-rotina.json r7; coordenacao.json R03 rev 7; coordenacao.json R04 rev 21 (lote10); docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/07-attendance-dashboard.png; coordenacao.json R04 rev 31 (lote23); docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/57-daily-routine-list-card-criar.png",
+      "done": "painel real lido pela rota normal; reload mantem.",
+      "fe": "R05 (14:42): /attendance abre o painel com periodo/granularidade, indicadores (\"Dados insuficientes\" honesto, 0 pendentes/faltas/revisao) e Arquivos; sem fixture. Pendencia herdada: painel fora do composto CoeloAdminDirectory.",
+      "be": "attendance_dashboard_access e attendance_dashboard_read (220100) em producao; leitura autorizada pelo escopo de plataforma; pgTAP 141/141.",
+      "evidence": "commit0fbdef95; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/2026-09-07-deferred-exports.md; R01-delta-1815: C03r24 b7082644 evita leituras apósdispose;7controller/10dashboard relatados, revisão em andamento.; Fechamento R01 C03/r33; C00288PASS; b7082644 origem; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-e9a582a0-4041bd81.json; af590ff18; comunicacao/formularios-cuidado-rotina.json r7; coordenacao.json R03 rev 7; coordenacao.json R04 rev 21 (lote10); docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/07-attendance-dashboard.png; coordenacao.json R04 rev 31 (lote23); docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/57-daily-routine-list-card-criar.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/60-attendance-dashboard.png",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "remote-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T13:37:29.319567-03:00",
@@ -2799,6 +2799,26 @@
         "recordedAt": "2026-09-09T13:37:29.319567-03:00",
         "note": "R02: 852dc15e→4041bd81 fixa data civil inicial nos testes; 1 caso período/picker PASS. Produção mantém DateTime.now; não é conclusão da ação.",
         "certifiesWholeAction": false
+      },
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/60-attendance-dashboard.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+          "recordedAt": "2026-09-11T15:05:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/60-attendance-dashboard.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+          "recordedAt": "2026-09-11T15:05:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/60-attendance-dashboard.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+          "recordedAt": "2026-09-11T15:05:00-03:00"
+        }
       }
     },
     {
@@ -2806,15 +2826,15 @@
       "family": "attendance",
       "screen": "Assiduidade / Nova chamada",
       "scope": "mvp",
-      "done": "55 testes funcionais e dois goldens históricos; overflow da chamada corrigido em0fbdef95 com38 testes e quatro novos goldens registrados. R02: d96dbd985 bloqueia seletores, data e cancelar durante envio; caso integrado PASS.",
-      "fe": "Golden attendance_new_call_context_light_375 estava vermelho e foi reconciliado; teste de rota /dev restaurado. Backend do ciclo de chamada continua ausente por F1/OQ-040.",
-      "be": "idem 220100: superadmin_attendance_create_call/set_participant/complete_call/reopen_call com idempotencia por chave reservada e auditoria; wrapper attendance_reserve_idempotency_key corrigido (era invoker sem grant).",
-      "evidence": "commit0fbdef95; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/2026-09-07-deferred-exports.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01/C00 2026-09-08T19:00:55-03:00 5f0163c1: Recibo de criação exige ID/contexto/data da chamada solicitada. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json; 063f19c35613556b24a6fc131b238ea005a24a40; supabase_attendance_repository.dart:142,162,196,208; relatorio 2f66e8838; comunicacao/formularios-cuidado-rotina.json r7 (PKG-R03-FCR-ASSIDUIDADE-01); coordenacao.json R03 rev 7 (aplicadoEmProducao); docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/08-attendance-create.png; coordenacao.json R04 rev 31 (lote23); docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/57-daily-routine-list-card-criar.png",
+      "done": "chamada criada pela rota normal e reaberta por URL apos reload.",
+      "fe": "R05 (14:44): /attendance/new com contexto real (instituicao/unidade/turma sinteticas via superadmin_attendance_context_options), Lancar chamada -> /attendance/calls/:id com o participante da turma. DEFEITO registrado: o balao de chat cobre \"Lancar chamada\"/\"Concluir chamada\" no rodape (Decisao 7).",
+      "be": "attendance_reserve_idempotency_key + superadmin_attendance_create_call 200 (chamada d3821901, open, versao 1), instituicao derivada da turma.",
+      "evidence": "commit0fbdef95; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/2026-09-07-deferred-exports.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01/C00 2026-09-08T19:00:55-03:00 5f0163c1: Recibo de criação exige ID/contexto/data da chamada solicitada. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json; 063f19c35613556b24a6fc131b238ea005a24a40; supabase_attendance_repository.dart:142,162,196,208; relatorio 2f66e8838; comunicacao/formularios-cuidado-rotina.json r7 (PKG-R03-FCR-ASSIDUIDADE-01); coordenacao.json R03 rev 7 (aplicadoEmProducao); docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/08-attendance-create.png; coordenacao.json R04 rev 31 (lote23); docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/57-daily-routine-list-card-criar.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/61-attendance-new.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/62-attendance-call.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/65-attendance-call-reload.png",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "remote-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T14:08:34.021718-03:00",
@@ -2824,6 +2844,26 @@
         "recordedAt": "2026-09-09T14:08:34.021718-03:00",
         "note": "R02: d96dbd985 bloqueia seletores, data e cancelar durante envio; caso integrado PASS.",
         "certifiesWholeAction": false
+      },
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/61-attendance-new.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+          "recordedAt": "2026-09-11T15:05:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/62-attendance-call.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+          "recordedAt": "2026-09-11T15:05:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/65-attendance-call-reload.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+          "recordedAt": "2026-09-11T15:05:00-03:00"
+        }
       }
     },
     {
@@ -2831,32 +2871,52 @@
       "family": "attendance",
       "screen": "Assiduidade / Marcar",
       "scope": "mvp",
-      "done": "R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): Depende de attendance.create (bloqueada).",
-      "fe": "O aceite de toque passou a ter medicao nas cinco acoes de presenca, inclusive a 375 com texto a 200%.",
-      "be": "idem 220100 (set_participant, mark_remaining_present, clear_presence_marks, undo_bulk).",
-      "evidence": "commit0fbdef95; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/2026-09-07-deferred-exports.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01-delta-1815: C03r25 dcd34924 valida call.id/receipt.callId;68testes não-golden relatados/sobrepostos. Revisão estática sem defeito novo; integração depende parAttendance retido. attendance.detail no handoff é alias de superfície, não action_idnovo.; Recibo18:23: retenção de código resolvida por69324bc4, conjunto integrado4de7b59f/a141b430/c33e4160/a2388ec8;45PASS C00, sem promoção.; f8990b3c6; comunicacao/formularios-cuidado-rotina.json r7; coordenacao.json R03 rev 7; docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/08-attendance-create.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/57-daily-routine-list-card-criar.png",
+      "done": "marcacao persistida e relida no reload (1 marcado).",
+      "fe": "R05: Presente -> Salvar; a primeira tentativa mostrou \"Alteracao de presenca nao salva\" (corrida da reserva de chave) e a segunda gravou; estado exibido \"Presente\".",
+      "be": "superadmin_attendance_set_participant 200 (versao 2) com chave reservada no servidor (D11).",
+      "evidence": "commit0fbdef95; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/2026-09-07-deferred-exports.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01-delta-1815: C03r25 dcd34924 valida call.id/receipt.callId;68testes não-golden relatados/sobrepostos. Revisão estática sem defeito novo; integração depende parAttendance retido. attendance.detail no handoff é alias de superfície, não action_idnovo.; Recibo18:23: retenção de código resolvida por69324bc4, conjunto integrado4de7b59f/a141b430/c33e4160/a2388ec8;45PASS C00, sem promoção.; f8990b3c6; comunicacao/formularios-cuidado-rotina.json r7; coordenacao.json R03 rev 7; docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/08-attendance-create.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/57-daily-routine-list-card-criar.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/63-attendance-marked.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/65-attendance-call-reload.png",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "remote-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 33,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/63-attendance-marked.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+          "recordedAt": "2026-09-11T15:05:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/63-attendance-marked.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+          "recordedAt": "2026-09-11T15:05:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/65-attendance-call-reload.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+          "recordedAt": "2026-09-11T15:05:00-03:00"
+        }
+      }
     },
     {
       "id": "attendance.correct",
       "family": "attendance",
       "screen": "Assiduidade / Corrigir",
       "scope": "mvp",
-      "done": "R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): Depende de attendance.create (bloqueada).",
-      "fe": "Revalidar o aceite específico desta ação: Corrigir/validar/conflito/falhar e reload.",
-      "be": "idem 220100 (correct_participant com motivo em attendance_record_revisions; status corrected).",
-      "evidence": "commit0fbdef95; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/2026-09-07-deferred-exports.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01-delta-1815: C03r23 b592dc4b corrige perda de draft de6504610a;65testes relatados. Par ainda RETIDO: C00 encontrou lookup ScaffoldMessenger usando context da página descartada no ramo em que mounted=false. Correção e cenário dialog sobrevivendo dispose pedidos nominalmente C03. Sem afirmar reprodução runtime desse achado estático.; Recibo18:23: retenção de código resolvida por69324bc4, conjunto integrado4de7b59f/a141b430/c33e4160/a2388ec8;45PASS C00, sem promoção.; evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json; evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json; comunicacao/formularios-cuidado-rotina.json r7; coordenacao.json R03 rev 7; docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/08-attendance-create.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/57-daily-routine-list-card-criar.png",
+      "done": "correcao pela rota normal persistida em producao.",
+      "fe": "R05: Corrigir chamada -> dialogo (participante, novo estado, motivo obrigatorio) -> Registrar correcao. Nota: o dropdown de novo estado nao aceitou a selecao por CDP (ficou Presente); o motivo entrou pelo driver.",
+      "be": "superadmin_attendance_correct_participant 200 (status corrected, versao 4; motivo em attendance_record_revisions).",
+      "evidence": "commit0fbdef95; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/2026-09-07-deferred-exports.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01-delta-1815: C03r23 b592dc4b corrige perda de draft de6504610a;65testes relatados. Par ainda RETIDO: C00 encontrou lookup ScaffoldMessenger usando context da página descartada no ramo em que mounted=false. Correção e cenário dialog sobrevivendo dispose pedidos nominalmente C03. Sem afirmar reprodução runtime desse achado estático.; Recibo18:23: retenção de código resolvida por69324bc4, conjunto integrado4de7b59f/a141b430/c33e4160/a2388ec8;45PASS C00, sem promoção.; evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json; evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json; comunicacao/formularios-cuidado-rotina.json r7; coordenacao.json R03 rev 7; docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/08-attendance-create.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/57-daily-routine-list-card-criar.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/67-attendance-correct-dialog.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/68-attendance-corrected.png",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "remote-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T14:08:34.021718-03:00",
@@ -2866,6 +2926,26 @@
         "recordedAt": "2026-09-09T14:08:34.021718-03:00",
         "note": "R02: 8f9b3c35b exige motivo de correção; novo caso PASS; bloqueio de campos durante envio revalidado sem somar rerun.",
         "certifiesWholeAction": false
+      },
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/67-attendance-correct-dialog.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+          "recordedAt": "2026-09-11T15:05:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/68-attendance-corrected.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+          "recordedAt": "2026-09-11T15:05:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/68-attendance-corrected.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+          "recordedAt": "2026-09-11T15:05:00-03:00"
+        }
       }
     },
     {
@@ -2873,15 +2953,15 @@
       "family": "attendance",
       "screen": "Assiduidade / Concluir",
       "scope": "mvp",
-      "done": "R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): Depende de attendance.create (bloqueada).",
-      "fe": "Revalidar o aceite específico desta ação: Concluir/cancelar/duplo envio/erro e estado final.",
-      "be": "idem 220100 (complete_call/reopen_call; confirm_notice).",
-      "evidence": "commit0fbdef95; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/2026-09-07-deferred-exports.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01-delta-1815: C03r25 dcd34924 valida call.id/receipt.callId;68testes não-golden relatados/sobrepostos. Revisão estática sem defeito novo; integração depende parAttendance retido. attendance.detail no handoff é alias de superfície, não action_idnovo.; Recibo18:23: retenção de código resolvida por69324bc4, conjunto integrado4de7b59f/a141b430/c33e4160/a2388ec8;45PASS C00, sem promoção.; evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json; comunicacao/formularios-cuidado-rotina.json r7; coordenacao.json R03 rev 7; docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/08-attendance-create.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/57-daily-routine-list-card-criar.png",
+      "done": "conclusao pela rota normal, persistida e relida.",
+      "fe": "R05: Concluir chamada (clicando acima do balao de chat) -> chamada fechada; reload mostra \"Corrigir chamada\" e \"Desfazer ultimo lote\" desabilitado.",
+      "be": "superadmin_attendance_complete_call 200 (status closed, versao 3).",
+      "evidence": "commit0fbdef95; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/2026-09-07-deferred-exports.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01-delta-1815: C03r25 dcd34924 valida call.id/receipt.callId;68testes não-golden relatados/sobrepostos. Revisão estática sem defeito novo; integração depende parAttendance retido. attendance.detail no handoff é alias de superfície, não action_idnovo.; Recibo18:23: retenção de código resolvida por69324bc4, conjunto integrado4de7b59f/a141b430/c33e4160/a2388ec8;45PASS C00, sem promoção.; evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json; comunicacao/formularios-cuidado-rotina.json r7; coordenacao.json R03 rev 7; docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/08-attendance-create.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/57-daily-routine-list-card-criar.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/64-attendance-finished.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/65-attendance-call-reload.png",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "remote-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T14:08:34.021718-03:00",
@@ -2891,6 +2971,26 @@
         "recordedAt": "2026-09-09T14:08:34.021718-03:00",
         "note": "R02: 65bd5c287 desabilita concluir durante Future, preservando guard de duplicidade; caso integrado PASS.",
         "certifiesWholeAction": false
+      },
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/64-attendance-finished.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+          "recordedAt": "2026-09-11T15:05:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/64-attendance-finished.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+          "recordedAt": "2026-09-11T15:05:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/65-attendance-call-reload.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+          "recordedAt": "2026-09-11T15:05:00-03:00"
+        }
       }
     },
     {
@@ -4377,15 +4477,15 @@
       "family": "forms_responses",
       "screen": "Formulário / Exportar respostas",
       "scope": "mvp",
-      "done": "Adapter restringe formatos e gerador puro XLSX passou14/14; não certifica worker nem arquivo real. R36-r39 (origem C02; integração por lote): WriterR2/multipart sintético, serializer com schema explícito e tipos numérico/booleano/data civil, reader de jobs com versão autorizada e UI solicitando XLSX único do formulário com retry idempotente. R40: a9d0bd42 implementa clique explícito de download XLSX, reautoriza/ticket/session/expiração; 45 testes pai e112 agente sobrepostos. I005172 PASS local confirmado C00 e posteriormente integrado 882c1655. SQLnominalI005172/I01382 integrado882c1655/b82157a4; quatroblobs iguais ao perfil testado. Mensagens de erros seguros do job XLSX integradas1b8462fe; schema313 e writer128Deno já integrados no histórico.",
-      "fe": "R05: /forms/:id/files lista a exportacao como Concluido com icone de download; o clique chama form-export-download e recebe 403 request_denied porque COELO_ALLOWED_ORIGINS nao inclui a origem do harness (127.0.0.1:3014; a 3000 esta em uso pela G2). Gate de ambiente para forms.download, nao de produto.",
-      "be": "R05: apos o deploy de form-operations pelo coordenador, o job 09f86ec7 passou a succeeded (progress 1, artifact_provider r2, 3975 bytes, completed 16:27Z); superadmin_form_request_xlsx_v2 e superadmin_forms_file_jobs_v2 200.",
-      "evidence": "evidence/etapa-2/formularios-cuidado/2026-09-07-export-adapter-policy.md; evidence/etapa-2/formularios-cuidado/2026-09-07-xlsx-column-identity.md R01/16h: C02r27/r28;I008;último replay real49PASS/abort anterior à correção de fixture; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 56TAPedição e132TAPXLSX0b596c85 comprovados;novoSQL314fd92a172NÃOEXECUTADOS. multipart22Deno/motor26Deno;writerreal,cleanup,zerorespostas/limite de linhas expandidas abertos. Não transferirGREEN antigo ao novo.; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r36-api,r36-writer,r37-schema,r38-civil,r39-i014,r39-jobs; etapa-2-operacao/reports/R01-delta-1915.md (C02r40); etapa-2-operacao/reports/R01-delta-2005.md; Fechamento R01 C02/r48; d8e6f841; r48; C00173Flutter; pgTAP313 histórico nominal, não rerun; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; superadmin_router.dart linhas 1886-1893 e forms_operations_page.dart em _downloadAction, base d784462c1; 2026-09-09; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/22-xlsx-solicitado.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/55-forms-files-xlsx-concluido.png",
+      "done": "um XLSX por formulario no R2 privado com reautorizacao server-side, expiracao (2 min de token, 24 h de artefato) e auditoria; FE verified + BE done.",
+      "fe": "R05: /forms/:id/files -> Exportar (job pending) -> Concluido -> icone de download abre a URL curta; a primeira tentativa (funcao antiga) mostrou \"Nao foi possivel iniciar o download\" honesto.",
+      "be": "R05 (15:10): com COELO_ALLOWED_ORIGINS incluindo 127.0.0.1:3014 e form-export-download reimplantada a partir de dev, o clique no download responde 200 com download_url presignada do R2 privado (coelo-transient-prod), token de download emitido (app_private.form_file_download_tokens) e auditoria superadmin.forms.export.download.authorize; objeto XLSX 3975 bytes gerado pelo worker form-operations.",
+      "evidence": "evidence/etapa-2/formularios-cuidado/2026-09-07-export-adapter-policy.md; evidence/etapa-2/formularios-cuidado/2026-09-07-xlsx-column-identity.md R01/16h: C02r27/r28;I008;último replay real49PASS/abort anterior à correção de fixture; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 56TAPedição e132TAPXLSX0b596c85 comprovados;novoSQL314fd92a172NÃOEXECUTADOS. multipart22Deno/motor26Deno;writerreal,cleanup,zerorespostas/limite de linhas expandidas abertos. Não transferirGREEN antigo ao novo.; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r36-api,r36-writer,r37-schema,r38-civil,r39-i014,r39-jobs; etapa-2-operacao/reports/R01-delta-1915.md (C02r40); etapa-2-operacao/reports/R01-delta-2005.md; Fechamento R01 C02/r48; d8e6f841; r48; C00173Flutter; pgTAP313 histórico nominal, não rerun; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; superadmin_router.dart linhas 1886-1893 e forms_operations_page.dart em _downloadAction, base d784462c1; 2026-09-09; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/22-xlsx-solicitado.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/55-forms-files-xlsx-concluido.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/69-xlsx-download.png",
       "historicalFrontend": "audited",
       "historicalBackend": "fail-closed",
       "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
       "lastSyncedHandoff": "C02/r40",
       "lastHandoffRevision": 48,
@@ -4393,16 +4493,22 @@
       "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
       "certifications": {
         "frontend": {
-          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/55-forms-files-xlsx-concluido.png",
-          "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
-          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
-          "recordedAt": "2026-09-11T14:55:00-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/69-xlsx-download.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+          "recordedAt": "2026-09-11T15:05:00-03:00"
         },
         "backend": {
-          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/55-forms-files-xlsx-concluido.png",
-          "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
-          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
-          "recordedAt": "2026-09-11T14:55:00-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/69-xlsx-download.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+          "recordedAt": "2026-09-11T15:05:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/69-xlsx-download.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+          "recordedAt": "2026-09-11T15:05:00-03:00"
         }
       }
     },
@@ -4468,20 +4574,40 @@
       "family": "forms_files",
       "screen": "Arquivos de Formulários / Baixar",
       "scope": "mvp",
-      "done": "Estados locais e validação de tickets implementados; nenhum objeto R2 real certificado por testes isolados. R36-r39 (origem C02; integração por lote): Reader/handler de imagem avançaram como dependência; o botão download produtivo não foi entregue por esse lote. JobsXLSX recebem contexto, mas consumo de download existente é próximo passo. R40: a9d0bd42 implementa clique explícito de download XLSX, reautoriza/ticket/session/expiração; 45 testes pai e112 agente sobrepostos. I005172 PASS local confirmado C00 e posteriormente integrado 882c1655. SQLnominalI005172/I01382 integrado882c1655/b82157a4; quatroblobs iguais ao perfil testado.",
-      "fe": "Integrar/revisar UI a9d0bd42 e ligar resolver/opener na composição produtiva; testar URL/expiração/negativas/reload pela UI normal; visuais ainda abertos.",
-      "be": "R05 realm-interno: mesma RPC de resolve (superadmin_form_media_resolve_v2) serve o download da imagem de pergunta; pgTAP 25/25. Gate: form-media em R2.",
-      "evidence": "decisions/0032-mvp-private-media-r2.md; evidence/etapa-2/formularios-cuidado/; R01/17:40 2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.; 56TAPedição e132TAPXLSX0b596c85 comprovados;novoSQL314fd92a172NÃOEXECUTADOS. multipart22Deno/motor26Deno;writerreal,cleanup,zerorespostas/limite de linhas expandidas abertos. Não transferirGREEN antigo ao novo.; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r37-viewer,r39-media,r39-jobs; etapa-2-operacao/reports/R01-delta-1915.md (C02r40); etapa-2-operacao/reports/R01-delta-2005.md; Fechamento R01 C02/r48; C02r48 final; não contar núcleo comum como cada fluxo concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; sem execucao remota autorizada; 2026-09-09; evidence/etapa-2/r05-realm-interno/handoff.md",
+      "done": "download pela rota normal com reautorizacao e URL presignada.",
+      "fe": "mesma prova do download do XLSX (form-export-download -> URL curta).",
+      "be": "superadmin_form_authorize_xlsx_download_v2 + form_redeem_xlsx_download_r2_v1 (service_role) em producao.",
+      "evidence": "decisions/0032-mvp-private-media-r2.md; evidence/etapa-2/formularios-cuidado/; R01/17:40 2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.; 56TAPedição e132TAPXLSX0b596c85 comprovados;novoSQL314fd92a172NÃOEXECUTADOS. multipart22Deno/motor26Deno;writerreal,cleanup,zerorespostas/limite de linhas expandidas abertos. Não transferirGREEN antigo ao novo.; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r37-viewer,r39-media,r39-jobs; etapa-2-operacao/reports/R01-delta-1915.md (C02r40); etapa-2-operacao/reports/R01-delta-2005.md; Fechamento R01 C02/r48; C02r48 final; não contar núcleo comum como cada fluxo concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; sem execucao remota autorizada; 2026-09-09; evidence/etapa-2/r05-realm-interno/handoff.md; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/69-xlsx-download.png",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
       "lastSyncedHandoff": "C02/r40",
       "lastHandoffRevision": 48,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
+      "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/69-xlsx-download.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+          "recordedAt": "2026-09-11T15:05:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/69-xlsx-download.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+          "recordedAt": "2026-09-11T15:05:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/69-xlsx-download.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+          "recordedAt": "2026-09-11T15:05:00-03:00"
+        }
+      }
     },
     {
       "id": "forms.expire-file",
@@ -7818,7 +7944,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-11T17:58:22.006Z",
+  "updatedAt": "2026-09-11T18:00:34.359Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,
