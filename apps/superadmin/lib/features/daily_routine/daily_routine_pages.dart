@@ -584,9 +584,9 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
             CoeloAdminTableColumn(
               id: 'actions',
               label: 'Ações',
-              initialWidth: 120,
-              minWidth: 100,
-              maxWidth: 200,
+              initialWidth: 168,
+              minWidth: 150,
+              maxWidth: 240,
               cellBuilder: (_, item) =>
                   Row(mainAxisSize: MainAxisSize.min, children: _itemActions(item, tableRow: true)),
             ),
