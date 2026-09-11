@@ -6,7 +6,7 @@
   "model": "Opus 5 (1M)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-publicacoes-agenda",
   "branch": "work/etapa2-r04-publicacoes-agenda",
-  "head": "c6b5d47a0",
+  "head": "7367370c1",
   "base": "origin/dev 98cc0529d",
   "coordinator": "Claude (R04 · Coordenação noturna)",
   "updatedAt": "2026-09-11T03:35:00-03:00",
@@ -1183,7 +1183,7 @@
   },
   "finalizado": {
     "at": "2026-09-11T03:12:00-03:00",
-    "head": "c6b5d47a0",
+    "head": "7367370c1",
     "handoff": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
     "capturas": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/ui/ (52 png)"
   },
@@ -1252,7 +1252,7 @@
   "miniRevisao": {
     "quando": "2026-09-11T03:35:00-03:00",
     "destinatario": "coelo-04 (coordenacao R04, ref de3c83) — nao apareceu no ListAgents as 03:33; entrega gravada aqui por instrucao do Owner",
-    "shaFinal": "preenchido apos o commit",
+    "shaFinal": "7367370c1 (branch work/etapa2-r04-publicacoes-agenda, publicada)",
     "fechouPorActionId": [
       {
         "action_id": "notices.list",
