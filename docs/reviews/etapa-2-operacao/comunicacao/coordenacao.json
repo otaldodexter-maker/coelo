@@ -836,9 +836,10 @@
    "formularios-cuidado-rotina": "Claude Opus",
    "principal-chat-sistema": "Claude Opus",
    "realm-interno-chat-backend": "Claude Fable",
-   "publicacoes-agenda": "Codex",
-   "operacoes": "Codex"
+   "publicacoes-agenda": "Claude Opus",
+   "operacoes": "Claude Opus"
   },
-  "primeiroPacoteDoCoordenador": "migration unica \"MFA fora do MVP\" (ADR 0034 Decisao 12): requires_mfa=false no catalogo e funcoes que negam AAL2 alinhadas; depois candidatos 170900 (people_read_aal1) e 220300 (student_links_read)"
+  "primeiroPacoteDoCoordenador": "migration unica \"MFA fora do MVP\" (ADR 0034 Decisao 12): requires_mfa=false no catalogo e funcoes que negam AAL2 alinhadas; depois candidatos 170900 (people_read_aal1) e 220300 (student_links_read)",
+  "ferramenta": "toda a R04 roda no Claude (decisao do Owner, 10/09 20:45); Codex nao e usado nesta rodada"
  }
 }
