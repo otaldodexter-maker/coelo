@@ -1,3 +1,4 @@
+import '../../app/activity/context_notification_feed.dart';
 import 'dart:async';
 
 import 'package:coelo_auth/coelo_auth.dart';
@@ -183,6 +184,7 @@ final class SuperadminAuthScope {
     this.principalMixedFeedRepository,
     this.principalCircularResponseRepository,
     this.principalCircularMediaRepository,
+    this.contextNotificationRepository,
     this.principalMomentsFeedRepository,
     this.principalMomentsWithdrawalRepository,
     this.happensPublicationRepository,
@@ -253,6 +255,10 @@ final class SuperadminAuthScope {
   final PrincipalMixedFeedRepository? principalMixedFeedRepository;
   final CircularResponseRepository? principalCircularResponseRepository;
   final CircularMediaRepository? principalCircularMediaRepository;
+
+  /// Sino do shell: notificacoes de contexto do ator (lote 36), leitura e
+  /// marcacao pelo repositorio real.
+  final ContextNotificationRepository? contextNotificationRepository;
   final PrincipalMomentsFeedRepository? principalMomentsFeedRepository;
   final PrincipalMomentsWithdrawalRepository? principalMomentsWithdrawalRepository;
   final HappensPublicationRepository? happensPublicationRepository;
@@ -454,6 +460,7 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       principalMixedFeedRepository: SupabasePrincipalMixedFeedRepository(client),
       principalCircularResponseRepository: SupabaseCircularResponseRepository(client),
       principalCircularMediaRepository: SupabaseCircularMediaRepository(client),
+      contextNotificationRepository: SupabaseContextNotificationRepository(client),
       principalMomentsFeedRepository: momentsFeed,
       principalMomentsWithdrawalRepository: momentsFeed,
       happensPublicationRepository: SupabaseHappensPublicationRepository(client),
@@ -530,6 +537,7 @@ SuperadminAuthScope _createUnavailableScope(CoeloAuthLifecycleGateway auth) {
     principalMixedFeedRepository: null,
     principalCircularResponseRepository: null,
     principalCircularMediaRepository: null,
+    contextNotificationRepository: null,
     principalMomentsFeedRepository: null,
     principalMomentsWithdrawalRepository: null,
     happensPublicationRepository: null,

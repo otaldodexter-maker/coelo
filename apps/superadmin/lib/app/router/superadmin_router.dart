@@ -1,3 +1,4 @@
+import '../activity/context_notification_feed.dart';
 import 'dart:async';
 import '../../features/groups/domain/group_detail.dart';
 import '../../features/groups/presentation/group_detail_page.dart';
@@ -412,6 +413,7 @@ GoRouter createSuperadminRouter({
   PrincipalHappensFeedRepository? principalHappensFeedRepository,
   PrincipalMixedFeedRepository? principalMixedFeedRepository,
   CircularResponseRepository? principalCircularResponseRepository,
+  ContextNotificationRepository? contextNotificationRepository,
   CircularMediaRepository? principalCircularMediaRepository,
   PrincipalMomentsFeedRepository? principalMomentsFeedRepository,
   PrincipalMomentsWithdrawalRepository? principalMomentsWithdrawalRepository,
@@ -445,6 +447,17 @@ GoRouter createSuperadminRouter({
     activities: accountActivities,
   );
   final operationalActivities = SuperadminActivityController();
+  // Sino (R06): notificacoes de contexto reais entram no mesmo centro de
+  // atividades do shell; sem repositorio (composicao de desenvolvimento) o
+  // sino segue so com as atividades locais.
+  if (contextNotificationRepository != null) {
+    unawaited(
+      ContextNotificationFeed(
+        repository: contextNotificationRepository,
+        controller: operationalActivities,
+      ).load(),
+    );
+  }
   final operationalStore = SuperadminPrototypeStore(activityController: operationalActivities);
   final developmentAssessmentRepository = DevelopmentAssessmentRepository();
   final developmentNoticeRepository = DevelopmentNoticeRepository();
