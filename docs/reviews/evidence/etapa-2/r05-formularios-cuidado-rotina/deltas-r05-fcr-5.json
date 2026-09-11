@@ -1,0 +1,41 @@
+[
+ {
+  "action_id": "daily-routine.apply",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R05 (15:33): card do modelo -> Criar rotina por este modelo -> /daily-routine/new?applicationFrom=176882c5 (heranca, escopo instituicao, validade/horario) -> Salvar rotina; a aba Rotinas lista a aplicacao. Duas recusas corrigidas no cliente antes: model_version_id como rotulo id:vN (22P02, 518d15953) e visibility=institution (23514, 0b8ee7a75). Pendencias: rotulos crus (institution/inherited) no card; acoes do card invisiveis a tecnologia assistiva (ExcludeSemantics no composto).",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/77-routine-aplicacoes-com-item.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/77-routine-aplicacoes-com-item.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 43",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (0b8ee7a75) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9424 sob SwiftShader",
+   "recordedAt": "2026-09-11T15:34:00-03:00"
+  }
+ },
+ {
+  "action_id": "daily-routine.apply",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "superadmin_routine_save_application 200 (aplicacao 3d9f0a32, revisao 1, revision_id ae32076c) ligada ao modelo 176882c5/versao 83c48a8e; escopo institution, herdada; RLS/negativas pelas suites de rotina (foundation, scope_closure, directory_can_manage).",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/76-routine-apply-saved.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/76-routine-apply-saved.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 43",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (0b8ee7a75) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9424 sob SwiftShader",
+   "recordedAt": "2026-09-11T15:34:00-03:00"
+  }
+ },
+ {
+  "action_id": "daily-routine.apply",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "aplicacao criada pela rota normal a partir do modelo, persistida e listada apos recarga.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/77-routine-aplicacoes-com-item.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/77-routine-aplicacoes-com-item.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 43",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (0b8ee7a75) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9424 sob SwiftShader",
+   "recordedAt": "2026-09-11T15:34:00-03:00"
+  }
+ }
+]
