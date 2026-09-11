@@ -573,7 +573,11 @@ final class _AgendaEventDetailPageState extends State<AgendaEventDetailPage> {
   @override
   void initState() {
     super.initState();
-    if (!widget.unavailable) unawaited(widget.store.loadItem(widget.eventId));
+    if (widget.unavailable) return;
+    unawaited(widget.store.loadItem(widget.eventId));
+    // Aberto por link direto (recarga do navegador) os contextos ainda nao
+    // foram lidos e o detalhe mostrava o UUID da instituicao no lugar do nome.
+    if (widget.store.contexts.isEmpty) unawaited(widget.store.loadContexts());
   }
 
   @override
