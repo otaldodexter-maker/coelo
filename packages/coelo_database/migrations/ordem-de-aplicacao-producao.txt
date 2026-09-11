@@ -184,3 +184,5 @@
 20260911190100_agenda_requests_labels_v1.sql
 20260911190200_circulars_media_private_r2_v1_reapply.sql
 20260911190300_superadmin_circulars_v2_media_v1.sql
+# lote 44 (11/09 14:45) - R05 realm-interno: SEGURANCA: identidade interna escopada em instituicao nao le a Agenda de outra instituicao (espelho sem escopo da ponte)
+20260911211200_agenda_scoped_internal_identity_denied_v1.sql
