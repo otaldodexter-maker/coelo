@@ -1,15 +1,15 @@
 {
- "revision": 34,
+ "revision": 35,
  "round": "E2-R05-20260911",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5 (Claude, Opus, esforco medio)",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T12:12-03:00",
+ "updatedAt": "2026-09-11T12:58-03:00",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-formularios-cuidado-rotina",
  "branch": "work/etapa2-r05-formularios-cuidado-rotina",
- "head": "2f6a6114f (origin/dev, coordenacao rev 38)",
+ "head": "1f4b02e28 (publicado)",
  "base": "origin/dev 2f6a6114f",
  "scope": {
   "families": [
@@ -40,24 +40,103 @@
   ]
  },
  "currentGate": {
-  "gate": "abertura: leitura concluida (R05/R04 prompts, rev 33, evidencias R04, skills); iniciando o achado do cron de Formularios",
-  "screen": "Etapa 2 -> apps/superadmin -> Operacao -> Formularios",
+  "gate": "forms.publish e forms.overview provados na rota real; Distribuir ligado (build em andamento) para abrir monitor/responder/respostas; Seguranca infantil criar/editar ligados, prova na rota real a seguir",
+  "screen": "Etapa 2 -> apps/superadmin -> Operacao -> Formularios / Seguranca infantil",
   "actionIds": [
    "forms.publish",
-   "forms.overview"
-  ],
-  "note": "nenhum codigo alterado ainda"
+   "forms.overview",
+   "forms.monitor",
+   "forms.respond",
+   "forms.responses",
+   "child-safety.create",
+   "child-safety.edit",
+   "child-safety.suspend"
+  ]
  },
  "loopAgendado": "/loop 15m, agendado na abertura (12:12)",
  "tests": {},
  "reservedFiles": [],
  "blocking": [],
- "deltaProposals": [],
+ "deltaProposals": [
+  {
+   "action_id": "forms.publish",
+   "camada": "frontend",
+   "estado_proposto": "verified",
+   "delta": "rota normal, publicacao pelo repository produtivo, reload mantem"
+  },
+  {
+   "action_id": "forms.publish",
+   "camada": "backend",
+   "estado_proposto": "done",
+   "delta": "form_publish em producao persistiu com auditoria; RLS/negativas pelas suites pgTAP existentes de Formularios (forms_definition 31, forms_internal_provenance_guards 39, operations_read_v2 70)"
+  },
+  {
+   "action_id": "forms.publish",
+   "camada": "integrated",
+   "estado_proposto": "verified-e2e",
+   "delta": "FE verified + BE done na mesma prova"
+  },
+  {
+   "action_id": "forms.overview",
+   "camada": "frontend",
+   "estado_proposto": "verified",
+   "delta": "rota normal, leitura real, reload"
+  },
+  {
+   "action_id": "forms.overview",
+   "camada": "backend",
+   "estado_proposto": "done",
+   "delta": "form_get_overview em producao; leitura autorizada"
+  },
+  {
+   "action_id": "forms.overview",
+   "camada": "integrated",
+   "estado_proposto": "verified-e2e",
+   "delta": "leitura ponta a ponta com sessao qa-r03"
+  },
+  {
+   "action_id": "forms.list",
+   "camada": "frontend",
+   "estado_proposto": "verified",
+   "delta": "card Criar agora aparece em producao (F-R04-FCR-010a); prova na rota real apos o rebuild"
+  }
+ ],
  "packages": [],
- "commits": [],
- "pendenciasRegistradas": [],
+ "commits": [
+  {
+   "sha": "f6b536aa0",
+   "o_que": "rev 34 (abertura)"
+  },
+  {
+   "sha": "f17c2fa15",
+   "o_que": "fix(formularios): card Criar no diretorio de producao (F-R04-FCR-010a, canManage da composicao, servidor revalida forms.manage); rota /respond composta com api e occurrenceId sob withFormsAuthorization (F-R04-FCR-010b); botao Distribuir na visao geral abrindo showFormsProductionScheduleDialog (existia sem chamador) com reload das metricas; evidencias forms.publish/overview",
+   "prova": "flutter analyze limpo; forms_fail_closed_routes_test + forms_composition_sanitization_source_test 10/10; forms_directory (48/48 apos corrigir o comentario que disparava a assercao textual); forms_overview_page_test 18/18 (1 caso novo)"
+  },
+  {
+   "sha": "1f4b02e28",
+   "o_que": "feat(seguranca-infantil): onCreate/onEdit ligados em /safety e /safety/children/:id (P32 B; RPCs child_safety_* e superadmin_child_safety_* conferidas em pg_proc de producao)",
+   "prova": "analyzer limpo; safety_routes_test + safety_reflow_test 6/6"
+  }
+ ],
+ "pendenciasRegistradas": [
+  {
+   "action_id": "forms.overview",
+   "o_que": "mostrar o status do formulario (rascunho/publicado) alem da versao de gestao",
+   "gate": "FE"
+  },
+  {
+   "action_id": "forms.edit",
+   "o_que": "campo Instituicao do editor com 133 px e nome quebrado em 6 linhas (captura 01); herdado da R04 (F-R04-FCR-010 captura 14)",
+   "gate": "FE"
+  },
+  {
+   "action_id": "forms.overview",
+   "o_que": "balao de chat aparece na visao geral (nao e criar/editar/publicar; conferir com a Decisao 7 se a visao geral conta como tela de publicar)",
+   "gate": "decisao de UX"
+  }
+ ],
  "duvidasParaOOwner": [],
- "nextStep": "conferir forms_worker_url no Vault de producao (somente nome da funcao) contra a Edge Function implantada; corrigir por pacote sem segredo; depois forms.publish/overview na rota real com qa-r03",
+ "nextStep": "rebuild web com Distribuir; na rota real: Distribuir (instituicao sintetica) -> agendamento -> ocorrencia materializada pelo cron (5 min) -> monitor/responder/respostas/detalhe; Seguranca infantil criar/editar/suspender; depois cuidado/medicacao e assiduidade/rotina",
  "finalizado": false,
  "historicoR04": {
   "revision": 33,
@@ -1199,6 +1278,30 @@
    "motivo": "corte das 17:10 por ordem do Owner; nao retomo por conta propria",
    "working_tree": "limpo, tudo commitado e publicado",
    "wip_retido": "nenhum"
+  }
+ },
+ "achadoCron": {
+  "resultado": "sem correcao necessaria",
+  "medido": "net._http_response de producao, 36 h ate 12:07 de 11/09: 430 respostas 200 ({\"claimed\":0,...}), 16 sem status (timeout de 5 s) e UM 404 as 10:41 (relogio local). O ultimo segmento da URL em forms_worker_url e form-operations, no host do projeto, e a funcao form-operations esta ACTIVE (v11, verify_jwt=false). O 404 foi transitorio; nenhum vault.update_secret emitido. Valor do segredo nunca lido nem impresso (consulta so do ultimo segmento e de dois booleanos)."
+ },
+ "rotaReal": {
+  "ambiente": "flutter build web -t test_driver/qa_main.dart --dart-define-from-file=.env.local -o build/web-r05fcr servido por node (SPA fallback) em http://127.0.0.1:3014; Chrome dedicado --remote-debugging-port=9415 --use-angle=swiftshader (o primeiro, 9414, travou ao navegar e ficou como processo zumbi; reaberto em porta nova com copia do perfil, sessao preservada); login qa-r03 pelo driver (credencial so no ambiente do processo)",
+  "forms.publish": {
+   "resultado": "P",
+   "prova": "/forms/4555ba07.../edit -> Publicar ou agendar -> Publicar agora -> \"Formulario publicado.\"; producao: forms.status=published, management_version 2->3, published_version_id preenchido, working_version_id nulo, first_published_at 15:24:43Z, audit.audit_logs forms.publish=1; reload em /forms/4555ba07... mostra Versao de gestao 3",
+   "capturas": [
+    "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/01-forms-edit-publicar.png",
+    "02-forms-publish-dialogo.png",
+    "03-forms-publish-publicado.png"
+   ]
+  },
+  "forms.overview": {
+   "resultado": "P",
+   "prova": "/forms/4555ba07... abre pela projecao autorizada (form_get_overview), titulo + Versao de gestao 3 + Distribuicoes 0 / Ocorrencias 0 / Respostas 0; reload (Chrome novo na URL) mantem",
+   "capturas": [
+    "04-forms-overview-reload.png"
+   ],
+   "pendencia": "a visao geral nao mostra o status (Publicado/Rascunho), so a versao; registrar como melhoria FE"
   }
  }
 }
