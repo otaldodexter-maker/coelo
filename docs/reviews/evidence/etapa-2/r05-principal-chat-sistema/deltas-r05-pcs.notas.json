@@ -1,0 +1,11 @@
+{
+  "grupo": "principal-chat-sistema",
+  "round": "E2-R05-20260911",
+  "revisao_json": 25,
+  "gerado_em": "2026-09-11T14:53-03:00",
+  "observacoes": [
+    "verified-e2e so onde FE verified + BE done + reload provados na mesma acao (acontece.feed/create/publish/remove)",
+    "meal-plans.create/edit/model-create/model-edit/publish: sem mudanca de estado; gate registrado no JSON (authorizedMealPlanTenantId nunca injetado -> 503)",
+    "errors.409: sem mudanca; gate registrado"
+  ]
+}
