@@ -1,15 +1,15 @@
 {
-  "revision": 30,
-  "round": "E2-R04-20260911",
+  "revision": 31,
+  "round": "E2-R05-20260911",
   "group": "publicacoes-agenda",
   "tool": "Claude Code",
-  "model": "Opus 5 (1M)",
-  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-publicacoes-agenda",
-  "branch": "work/etapa2-r04-publicacoes-agenda",
-  "head": "7367370c1",
-  "base": "origin/dev 98cc0529d",
-  "coordinator": "Claude (R04 · Coordenação noturna)",
-  "updatedAt": "2026-09-11T03:35:00-03:00",
+  "model": "Opus 5 (1M), esforco medio",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-publicacoes-agenda",
+  "branch": "work/etapa2-r05-publicacoes-agenda",
+  "head": "2f6a6114f",
+  "base": "origin/dev 2f6a6114f",
+  "coordinator": "Claude (R05 · Coordenacao da tarde)",
+  "updatedAt": "2026-09-11T12:10:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -43,25 +43,26 @@
       "circulars.respond",
       "circulars.attach"
     ],
-    "included": "24 ações ponta a ponta: pacotes SQL sobre a baseline (Avisos v2, Circulares v2 + delete), rota normal com sessão qa-r03, Agenda no composto, goldens conforme as listas do Owner.",
+    "included": "24 acoes; recebido da R04: lote 26 (cron do worker de Avisos + notice-publication-worker implantada). Ordem R05: (1) P33 calendario; (2) P34 rodape do detalhe + goldens agenda_calendar_* + pagina R/A; (3) agenda.request/permissions/location na rota real; (4) notices.schedule FE local-green -> verified com o worker real; (5) circulars.edit/schedule/respond/attach (attach com circular-media em R2).",
     "excluded": "Admin, Principal e Site; pg_cron e notice-publication-worker (coordenador); aplicação em produção (coordenador); inventário e rastreadores (coordenador).",
     "order": [
-      "notices (pacotes)",
-      "circulars (pacotes + rota normal)",
-      "agenda (composto + rota normal)",
-      "goldens"
+      "P33 calendario",
+      "P34 rodape detalhe + goldens + pagina R/A",
+      "agenda.request/permissions/location rota real",
+      "notices.schedule verified",
+      "circulars.edit/schedule/respond/attach"
     ],
-    "stop": "Finalizar as 24 ações, 04:20 de 11/09 ou ordem do Owner/coordenador.",
+    "stop": "Finalizar as 24 acoes, 15:45 de 11/09 ou ordem do Owner/coordenador.",
     "evidence": "Commits da branch, pgTAP no projeto descartável coelo_baseline_pa (portas 603xx: baseline + seed + 44 migrations de produção aplicadas por psql às 21:50), flutter test, rota real com sessão."
   },
   "environment": {
     "disposableProject": "coelo_baseline_pa em scratchpad/pa-project (db 60322); baseline 20260910000000 + seed + 44 migrations/ aplicadas OK em 2026-09-10 21:50; snapshot pg_dump em /tmp/pa-base.dump do contêiner",
     "note": "db reset do CLI aplica o seed DEPOIS das migrations e a 170100 exige o catálogo; por isso o reset roda só com a baseline e as demais entram por psql na ordem (mesmo método do coordenador).",
-    "memoryNote": "01:57: 754 MB livres; regra do coordenador: no maximo um Chrome alem do meu, um flutter test por vez (--concurrency=1), fechar orfaos ao terminar cada prova.",
+    "memoryNote": "R05: maximo dois Chrome por conversa, um flutter test por vez.",
     "closedAt": "03:12: Chrome 9334 e servidor 3006 fechados de novo; nenhum processo meu restante."
   },
-  "firstGate": "200500 verde (subagente) → pacotesProntos; goldens R/A (subagente); uma tentativa de UI real com um Chrome; mini-revisao ate 04:00.",
-  "status": "finalizado",
+  "firstGate": "P33 (R): calendario da Agenda conforme referencia iOS (grade fora de conteiner, cantos menos redondos, numero menor no canto sup. esq. com respiro, toggle 50/50 centralizado, pastilhas empilhadas, hoje em circulo cheio, cancelado hachurado com prefixo CANCELADO, botao Hoje no rodape) -> P34 (A+) rodape do detalhe igual ao SuperadminFormFrame -> goldens agenda_calendar_* regravados no 3.44.2 + pagina R/A ao coordenador.",
+  "status": "em andamento",
   "findings": [
     "Presença em produção (mapa r03-coordenacao): notices_v2 185008 = 1/16 (só analytics.notice_events); circulars_v2 191921 = 0/14; circulars_media_r2 212000 = 6/6; agenda 183836/193717 presentes (superadmin_agenda_list/get/contexts/save/command/requests/decide_publication em public).",
     "O cliente Superadmin chama somente superadmin_notice_*_v2 (185008), superadmin_circular_*_v2 (191921 + delete) e superadmin_agenda_* v1. A cadeia legada de Avisos people-based (003000, 204824, 212340, 220500) NÃO é chamada pelo app: 185008 é autossuficiente (colunas com if not exists, recibos próprios, auditoria via audit_append_superadmin_internal cuja assinatura de 13 args confere com produção). Decisão: não reentregar a cadeia legada no MVP; worker/pg_cron ficam registrados como pendência de entrega ao Principal (materialização de audiência), não bloqueiam CRUD de Avisos no Superadmin.",
@@ -79,705 +80,21 @@
     "Ambiente: outro processo (frente ou coordenador) passou a dirigir meu Chrome CDP 9333 (pagina foi para localhost:3000); abri o 9334. Sugestao: cada conversa usa porta CDP propria e declara no JSON.",
     "FECHADO: agenda.edit pela tela funciona (ui-49..51); o sintoma da ui-45 era clique por coordenada em Anterior."
   ],
-  "packages": [
-    {
-      "order": 1,
-      "file": "packages/coelo_database/candidatos/publicacoes-agenda/20260910200000_superadmin_internal_notices_v2_baseline.sql",
-      "actionIds": [
-        "notices.list",
-        "notices.create",
-        "notices.edit",
-        "notices.schedule",
-        "notices.publish",
-        "notices.archive"
-      ],
-      "pgtap": "supabase/tests/superadmin_internal_notices_v2_baseline_test.sql 38/38 PASS (descartavel coelo_baseline_pa, 22:20)",
-      "applyNote": "ALTER TYPE ... ADD VALUE fica antes do begin; aplicar com psql/db query -f como arquivo inteiro. Preflight recusa replay se superadmin_notice_directory_v2 ja existir. Zero linhas em platform_notices em producao.",
-      "fixes": [
-        "labels do catalogo",
-        "requires_mfa=false (Decisao 12)",
-        "notice_events em analytics (public.notice_events nao existe)",
-        "indice de ciclo de vida nao parcial",
-        "CTE do diretorio nao convertia para platform_notices",
-        "record next_row nao atribuido derrubava o diretorio sem proxima pagina",
-        "audit_logs.reason_code exige codigo maiusculo: motivo de inativacao vai para silencing_policy.inactive_reason"
-      ],
-      "compositionKey": "nenhuma: SupabaseNoticeRepository ja e o repositorio produtivo do router; conferir apos aplicar",
-      "sha": "a5251ed7d"
-    },
-    {
-      "order": 2,
-      "file": "packages/coelo_database/candidatos/publicacoes-agenda/20260910200100_superadmin_internal_circulars_v2_baseline.sql",
-      "actionIds": [
-        "circulars.list",
-        "circulars.filter",
-        "circulars.create",
-        "circulars.edit",
-        "circulars.detail",
-        "circulars.schedule",
-        "circulars.publish",
-        "circulars.close"
-      ],
-      "pgtap": "supabase/tests/superadmin_internal_circulars_v2_baseline_test.sql 32/32 PASS (inclui negativa cross-tenant, identidade escopada e revogada)",
-      "fixes": [
-        "labels do catalogo",
-        "requires_mfa=false",
-        "circular_audience_rules.revision_id NOT NULL em producao",
-        "reason_code normalizado no helper de auditoria",
-        "fixture: revogar membership exige version+1 (guard de producao)"
-      ],
-      "compositionKey": "nenhuma (gateway ja composto)",
-      "sha": "28a2e1dd4"
-    },
-    {
-      "order": 3,
-      "file": "packages/coelo_database/candidatos/publicacoes-agenda/20260910200200_superadmin_internal_circular_delete_v2.sql",
-      "actionIds": [
-        "circulars.delete"
-      ],
-      "pgtap": "superadmin_internal_circular_delete_v1_test.sql 10/10 (estrutural) + superadmin_internal_circular_delete_v2_behavior_test.sql 15/15 (persistencia, idempotencia, conflito, negativa de escopo, auditoria)",
-      "fixes": [
-        "renumerado de 20260910120000 (f15a9eec2)",
-        "circulars_check1 (status=draft ou publish_at) impedia arquivar rascunho: rascunho excluido mantem status e usa deleted_at"
-      ],
-      "compositionKey": "superadminCircularDeleteEnabled -> true apos aplicar (apps/superadmin composition)",
-      "sha": "4219b810f"
-    },
-    {
-      "order": 4,
-      "file": "packages/coelo_database/candidatos/publicacoes-agenda/20260910200300_agenda_internal_realm_compat_v1.sql",
-      "actionIds": [
-        "agenda.view",
-        "agenda.create",
-        "agenda.detail",
-        "agenda.edit",
-        "agenda.request",
-        "agenda.permissions",
-        "agenda.location"
-      ],
-      "pgtap": "supabase/tests/agenda_internal_realm_compat_v1_test.sql 22/22 (Owner interno cria/edita/publica/relê; content le e nao cria; identidade escopada em instituicao negada; pessoa sem membership negada; contexto de unidade fora do tenant recusado; trigger roteia ator; grants fechados)",
-      "fixes": [
-        "RPCs de producao sao people-based (current_person_id + FKs para people): colunas *_internal_identity_id + trigger de roteamento + agenda_actor_id/agenda_has_permission + assert_agenda_permission; 7 RPCs recriadas do texto de producao trocando so has_platform_permission -> agenda_has_permission (has_platform_permission intocado: e do grupo acessos-pessoas/P7)",
-        "superadmin_agenda_contexts inclui instituicoes do membership interno",
-        "producao NAO tinha nenhuma concessao de agenda.* a papel algum: concede read a owner/content/operations e o resto ao owner",
-        "SEGURANCA (baseline): anon/authenticated tinham SELECT/INSERT nas 5 tabelas agenda_* e PUBLIC tinha EXECUTE nas 7 RPCs; o pacote revoga e concede so a authenticated"
-      ],
-      "compositionKey": "nenhuma: SupabaseAgendaRepository (v1) ja e o repositorio produtivo; SupabaseAgendaReadRepository (v2, superadmin_agenda_*_v2) nao esta composto e as RPCs v2 nunca existiram em SQL",
-      "sha": "a63e80eec"
-    },
-    {
-      "order": 5,
-      "file": "packages/coelo_database/candidatos/publicacoes-agenda/20260910200400_superadmin_circular_save_draft_v2_fix.sql",
-      "actionIds": [
-        "circulars.edit"
-      ],
-      "pgtap": "superadmin_internal_circulars_v2_baseline_test.sql 34/34 (ganhou asserts de edicao)",
-      "fixes": [
-        "variavel plpgsql circular_id ambigua com a coluna (42702) derrubava toda edicao de rascunho; encontrada na prova em producao"
-      ],
-      "compositionKey": "nenhuma",
-      "sha": "08ed44357"
-    },
-    {
-      "order": 6,
-      "file": "packages/coelo_database/candidatos/publicacoes-agenda/20260910200500_notice_publication_worker_v2.sql",
-      "actionIds": [
-        "notices.publish",
-        "notices.schedule"
-      ],
-      "pgtap": "supabase/tests/notice_publication_worker_v2_test.sql 52/52 (claim/run como service_role materializam recibos, audiencia vazia falha o job sem tocar o aviso, superado/expirado/nao publicavel negam, authenticated/anon sem execute); regressao superadmin_internal_notices_v2_baseline_test 38/38",
-      "fixes": [
-        "fila app_private.notice_publication_jobs + indice unico parcial notice_receipts_platform_scope_uidx",
-        "claim com lease de 5 min; materialize a partir de audience_json (platform/institution/unit/group/person, role_codes, plan_ids, excluded_ids, filters) sem append_notice_audit e sem update em platform_notices; rastro em analytics.notice_events",
-        "run: notice_missing/notice_superseded/notice_expired/notice_not_publishable; primeira pagina adota o audience_json vigente",
-        "publish_v2 e change_status_v2 recriadas com insert on conflict do nothing na fila"
-      ],
-      "applyNote": "depois de 200400; sem ADD VALUE; registrar no ledger como 20260910200500/notice_publication_worker_v2. Assinaturas: claim_notice_publication_jobs_for_worker(p_worker text, p_limit int default 20) returns table(id uuid); run_notice_publication_job_for_worker(p_job_id uuid, p_limit int default 1000) returns jsonb (state processing|completed|failed). Depois: COELO_NOTICE_WORKER_SECRET, deploy do notice-publication-worker e cron.schedule (coordenador).",
-      "risks": [
-        "superado nao usa management_version (refresh_lifecycle do v2 incrementa a versao ao promover)",
-        "starts_at editado depois de publicar nao move available_at do job ja enfileirado",
-        "sem cleanup de jobs concluidos"
-      ],
-      "compositionKey": "nenhuma",
-      "sha": "pendente (commit local)"
-    }
-  ],
-  "compositionKeys": [
-    {
-      "package": "circulars.delete",
-      "key": "superadminCircularDeleteEnabled",
-      "default": false,
-      "owner": "coordenador",
-      "reason": "ligar somente após migration aplicada e gateway verificado"
-    }
-  ],
+  "packages": [],
+  "compositionKeys": [],
   "tests": {
     "passed": null,
-    "failed": 0,
-    "blocked": 0,
-    "skipped": 2,
-    "evidence": [
-      "pgTAP: 38+34+10+15+22+52 = 171 PASS no descartavel (prova limpa 117/117 ate 200300)",
-      "producao por RPC com qa-r03: 33/33",
-      "flutter: bateria agenda+notices+circulars+architecture 477 PASS/2 SKIP apos o composto; estado vazio 13/13; goldens do recorte 48/48 + regressao 36/36 (um arquivo por vez)"
-    ],
-    "unknown": "bateria completa nao repetida apos os goldens 375 por falta de memoria da maquina (um flutter test por vez)"
+    "failed": null,
+    "blocked": null,
+    "skipped": null,
+    "unknown": "nenhum teste rodado ainda nesta rodada"
   },
   "blocked": "nenhum",
-  "next": "Coordenador: aplicar os deltas novos (notices.edit/publish/archive FE verified + E2E; agenda.create/detail FE verified + E2E); shell sem balao em criar/editar/publicar; P30. Proxima rodada: picker de agendamento da Circular, circulars.filter/edit explicitos pela tela, circulars.respond/attach, agenda.edit/request/permissions/location pela tela, deep link do detalhe da Agenda.",
-  "changes": [
-    {
-      "screen": "Etapa 2 → apps/superadmin → Agenda → Eventos → diretorio → agenda.view",
-      "actionIds": [
-        "agenda.view"
-      ],
-      "whatChanged": "AgendaEventsPage migrada ao composto CoeloAdminDirectory (_EventTable e enum local removidos da allowlist do teste de arquitetura); titulo da area fica no AgendaModuleShell; Arquivos honesto (importar/exportar indisponiveis).",
-      "criteria": [
-        "directory_composition_test verde",
-        "agenda_management_test 8/8",
-        "agenda_event_detail_page_test 6/6",
-        "bateria agenda+notices+circulars 477 PASS 2 SKIP"
-      ],
-      "sha": "8dc6bb76f"
-    },
-    {
-      "screen": "apps/superadmin → test_driver (entrada de QA consolidada pelo coordenador: qa_main.dart)",
-      "actionIds": [],
-      "whatChanged": "meu test_driver/app.dart e a linha do pubspec foram removidos (695c17f01); uso qa_main.dart do coordenador.",
-      "criteria": [],
-      "sha": "695c17f01"
-    },
-    {
-      "screen": "Etapa 2 → apps/superadmin → Comunicacoes/Avisos, Circulares, Agenda de eventos → estado vazio e sem resultados",
-      "actionIds": [
-        "notices.list",
-        "circulars.list",
-        "agenda.view"
-      ],
-      "whatChanged": "Testes de widget novos provam a regra do Owner de 10/09: busca, filtros, toggle, Arquivos, abas e Criar (card em grade, banner em tabela) presentes com zero itens e com busca sem resultados, em 1440 e 375 px. Os tres diretorios ja cumprem via composto; nada a corrigir.",
-      "criteria": [
-        "notice_directory_empty_state_test, circular_directory_empty_state_test, agenda_directory_empty_state_test: 13/13 PASS",
-        "flutter analyze limpo"
-      ],
-      "sha": "596bf05ea"
-    },
-    {
-      "screen": "Etapa 2 → apps/superadmin → Circulares → Detalhe → Excluir/Publicar → volta ao diretorio",
-      "actionIds": [
-        "circulars.delete",
-        "circulars.publish",
-        "circulars.list"
-      ],
-      "whatChanged": "Router: ao voltar de publicar (composer onDone) ou excluir (detalhe onDeleted) o diretorio de producao renasce com chave nova e rele o servidor; antes mostrava o rascunho excluido ate recarregar (achado das capturas ui-23/ui-24).",
-      "criteria": [
-        "circular_routes_test 11/11; o teste novo falha sem a correcao",
-        "flutter analyze limpo"
-      ],
-      "sha": "f326b4fec"
-    },
-    {
-      "screen": "Etapa 2 → apps/superadmin → Circulares → Detalhe → Encerrada/Arquivada → circulars.edit",
-      "actionIds": [
-        "circulars.edit",
-        "circulars.detail"
-      ],
-      "whatChanged": "Detalhe nao oferece Editar quando a Circular esta encerrada ou arquivada (o servidor recusa a edicao); teste novo e pagina 21/21.",
-      "criteria": [
-        "superadmin_circular_pages_test 21/21",
-        "analyze limpo"
-      ],
-      "sha": "6fd4ad64a"
-    },
-    {
-      "screen": "Etapa 2 → apps/superadmin → Agenda → Detalhe do evento → link direto → agenda.detail",
-      "actionIds": [
-        "agenda.detail"
-      ],
-      "whatChanged": "Detalhe carrega os contextos quando vazios (link direto/recarga): contexto e audiencia passam a mostrar o nome da instituicao em vez do UUID.",
-      "criteria": [
-        "agenda_event_detail_page_test 6/6 + agenda_management_test 8/8",
-        "analyze limpo",
-        "sem teste proprio: AgendaPrototypeStore e final e loadContexts e no-op"
-      ],
-      "sha": "2e2cf1bfd"
-    }
-  ],
-  "pendingForCoordinator": [
-    {
-      "actionIds": [
-        "notices.list",
-        "notices.create",
-        "notices.edit",
-        "notices.schedule",
-        "notices.publish",
-        "notices.archive"
-      ],
-      "pending": "aplicar 20260910200000 em producao (dump do lote antes); depois provar rota normal com qa-r03. Worker/pg_cron NAO sao necessarios para o CRUD v2 (publish decide scheduled/active e refresh_lifecycle promove na leitura); materializacao de audiencia (notice_receipts) fica registrada para a entrega ao Principal."
-    },
-    {
-      "actionIds": [
-        "circulars.list",
-        "circulars.filter",
-        "circulars.create",
-        "circulars.edit",
-        "circulars.detail",
-        "circulars.schedule",
-        "circulars.publish",
-        "circulars.close",
-        "circulars.delete"
-      ],
-      "pending": "aplicar 20260910200100 e 20260910200200 nesta ordem; ligar superadminCircularDeleteEnabled; depois rota normal com qa-r03."
-    },
-    {
-      "actionIds": [
-        "notices.publish"
-      ],
-      "pending": "20260909191100 (metricas por geracao) fica fora: depende de colunas de 20260820220500 ausentes em producao; sem worker nao ha geracoes."
-    },
-    {
-      "actionIds": [
-        "agenda.view",
-        "agenda.create",
-        "agenda.detail",
-        "agenda.edit",
-        "agenda.request",
-        "agenda.permissions",
-        "agenda.location"
-      ],
-      "pending": "aplicar 20260910200300 depois de 200200 (independente dos anteriores, mas na ordem da faixa); avisar acessos-pessoas: agenda_has_permission chama has_platform_permission, entao o P7 (membership por instituicao) se propaga sem conflito; membership interno escopado em instituicao continua sem Agenda (deny-by-default, decisao registrada)."
-    },
-    {
-      "actionIds": [
-        "agenda.view",
-        "notices.list",
-        "circulars.list"
-      ],
-      "pending": "Regra nova do Owner (toolbar, filtros, toggle, Arquivos, abas e Criar sempre visiveis, mesmo vazio): Avisos, Circulares e Agenda de eventos ja estao no composto; a conferencia do estado vazio na rota real esta na fila desta frente (screenshots); correcao, se houver, no composto (coordenador/Fase 0)."
-    },
-    {
-      "actionIds": [
-        "notices.list",
-        "notices.create",
-        "notices.edit",
-        "notices.schedule",
-        "notices.publish",
-        "notices.archive",
-        "circulars.list",
-        "circulars.filter",
-        "circulars.create",
-        "circulars.edit",
-        "circulars.detail",
-        "circulars.schedule",
-        "circulars.publish",
-        "circulars.close",
-        "circulars.delete",
-        "agenda.view",
-        "agenda.create",
-        "agenda.detail",
-        "agenda.edit",
-        "agenda.permissions"
-      ],
-      "pending": "UI real: build web (profile, qa_main.dart) servido em 127.0.0.1:3006 abre /login com $flutterDriver; o Chrome do CDP caiu tres vezes por falta de memoria da maquina (45 Chromes/11 flutter_tester de todas as frentes). Tentativa unica restante com um Chrome quando a memoria permitir; sem captura, a prova de \"rota normal abre\" fica registrada como pendente e o verified E2E nao e proposto — proposta abaixo distingue BE done (CRUD+RLS+reload provados por RPC produtiva) de FE/E2E."
-    },
-    {
-      "actionIds": [
-        "notices.publish",
-        "notices.schedule"
-      ],
-      "pending": "aplicar 20260910200500; gravar COELO_NOTICE_WORKER_SECRET; deploy de notice-publication-worker; cron.schedule; depois provar: publicar aviso pelo app → job queued → worker roda → notice_receipts com a instituicao sintetica (membros) → reach>0 no diretorio."
-    }
-  ],
-  "proposedDeltas": [
-    {
-      "actionId": "notices.list",
-      "layer": "BE",
-      "proposed": "done",
-      "evidence": "200000 em producao; RPC com sessao; anon negado; reload"
-    },
-    {
-      "actionId": "notices.create",
-      "layer": "BE",
-      "proposed": "done",
-      "evidence": "idem; idempotencia"
-    },
-    {
-      "actionId": "notices.edit",
-      "layer": "BE",
-      "proposed": "done",
-      "evidence": "edicao com versao; reload"
-    },
-    {
-      "actionId": "notices.schedule",
-      "layer": "BE",
-      "proposed": "done",
-      "evidence": "publish com inicio futuro -> scheduled; 200500 enfileira"
-    },
-    {
-      "actionId": "notices.publish",
-      "layer": "BE",
-      "proposed": "done",
-      "evidence": "publish imediato -> active; worker em producao, disparo P30"
-    },
-    {
-      "actionId": "notices.archive",
-      "layer": "BE",
-      "proposed": "done",
-      "evidence": "inativar com motivo; reload"
-    },
-    {
-      "actionId": "notices.list",
-      "layer": "FE",
-      "proposed": "verified",
-      "evidence": "ui-03/ui-07: rota normal com dados reais e reload"
-    },
-    {
-      "actionId": "notices.create",
-      "layer": "FE",
-      "proposed": "verified",
-      "evidence": "ui-04..ui-07: formulario real, validacao, salvar, reload"
-    },
-    {
-      "actionId": "notices.edit",
-      "layer": "FE",
-      "proposed": "verified",
-      "evidence": "ui-27/ui-28/ui-30: edicao pela tela persistiu"
-    },
-    {
-      "actionId": "notices.schedule",
-      "layer": "FE",
-      "proposed": "local-green",
-      "evidence": "nao exercido pela tela"
-    },
-    {
-      "actionId": "notices.publish",
-      "layer": "FE",
-      "proposed": "verified",
-      "evidence": "ui-32/ui-33: Publicar pelo menu de acoes -> ativo"
-    },
-    {
-      "actionId": "notices.archive",
-      "layer": "FE",
-      "proposed": "verified",
-      "evidence": "ui-34..ui-36: Inativar com motivo -> inativo"
-    },
-    {
-      "actionId": "notices.list",
-      "layer": "E2E",
-      "proposed": "verified-e2e",
-      "evidence": "rota normal + producao + RLS(pgTAP) + reload (ui-07)"
-    },
-    {
-      "actionId": "notices.create",
-      "layer": "E2E",
-      "proposed": "verified-e2e",
-      "evidence": "ui-06/ui-07 + pgTAP"
-    },
-    {
-      "actionId": "circulars.list",
-      "layer": "BE",
-      "proposed": "done",
-      "evidence": "200100"
-    },
-    {
-      "actionId": "circulars.filter",
-      "layer": "BE",
-      "proposed": "done",
-      "evidence": "RPC filtra por status/busca"
-    },
-    {
-      "actionId": "circulars.create",
-      "layer": "BE",
-      "proposed": "done",
-      "evidence": ""
-    },
-    {
-      "actionId": "circulars.edit",
-      "layer": "BE",
-      "proposed": "done",
-      "evidence": "200400"
-    },
-    {
-      "actionId": "circulars.detail",
-      "layer": "BE",
-      "proposed": "done",
-      "evidence": ""
-    },
-    {
-      "actionId": "circulars.schedule",
-      "layer": "BE",
-      "proposed": "done",
-      "evidence": "publish_at futuro -> scheduled"
-    },
-    {
-      "actionId": "circulars.publish",
-      "layer": "BE",
-      "proposed": "done",
-      "evidence": ""
-    },
-    {
-      "actionId": "circulars.close",
-      "layer": "BE",
-      "proposed": "done",
-      "evidence": ""
-    },
-    {
-      "actionId": "circulars.delete",
-      "layer": "BE",
-      "proposed": "done",
-      "evidence": "200200 + pgTAP comportamental"
-    },
-    {
-      "actionId": "circulars.respond",
-      "layer": "BE",
-      "proposed": "pending-verification",
-      "evidence": "RPCs people-based do Principal, fora do gateway v2"
-    },
-    {
-      "actionId": "circulars.attach",
-      "layer": "BE",
-      "proposed": "local-green",
-      "evidence": "R2 em producao; upload real nao exercido"
-    },
-    {
-      "actionId": "circulars.list",
-      "layer": "FE",
-      "proposed": "verified",
-      "evidence": "ui-08/ui-24"
-    },
-    {
-      "actionId": "circulars.filter",
-      "layer": "FE",
-      "proposed": "verified",
-      "evidence": "ui-47/ui-48: abas Encerradas/Rascunhos filtram; sem resultados mantem Criar e Limpar filtros"
-    },
-    {
-      "actionId": "circulars.create",
-      "layer": "FE",
-      "proposed": "verified",
-      "evidence": "ui-09..ui-11"
-    },
-    {
-      "actionId": "circulars.edit",
-      "layer": "FE",
-      "proposed": "local-green",
-      "evidence": "rascunho reaberto em edicao (ui-11); edicao explicita nao exercida"
-    },
-    {
-      "actionId": "circulars.detail",
-      "layer": "FE",
-      "proposed": "verified",
-      "evidence": "ui-18/ui-20"
-    },
-    {
-      "actionId": "circulars.schedule",
-      "layer": "FE",
-      "proposed": "local-green",
-      "evidence": "campo inline presente (ui-14); picker nao acionado"
-    },
-    {
-      "actionId": "circulars.publish",
-      "layer": "FE",
-      "proposed": "verified",
-      "evidence": "ui-17 a 1024; a 1440 o balao de chat cobre o botao (achado bloqueante do shell)"
-    },
-    {
-      "actionId": "circulars.close",
-      "layer": "FE",
-      "proposed": "verified",
-      "evidence": "ui-19/ui-20"
-    },
-    {
-      "actionId": "circulars.delete",
-      "layer": "FE",
-      "proposed": "verified",
-      "evidence": "ui-22/ui-23/ui-24; recarga apos excluir corrigida no router (circular_routes_test)"
-    },
-    {
-      "actionId": "circulars.respond",
-      "layer": "FE",
-      "proposed": "pending-verification",
-      "evidence": ""
-    },
-    {
-      "actionId": "circulars.attach",
-      "layer": "FE",
-      "proposed": "pending-verification",
-      "evidence": ""
-    },
-    {
-      "actionId": "circulars.list",
-      "layer": "E2E",
-      "proposed": "verified-e2e",
-      "evidence": "ui-24 apos reload"
-    },
-    {
-      "actionId": "circulars.create",
-      "layer": "E2E",
-      "proposed": "verified-e2e",
-      "evidence": ""
-    },
-    {
-      "actionId": "circulars.detail",
-      "layer": "E2E",
-      "proposed": "verified-e2e",
-      "evidence": ""
-    },
-    {
-      "actionId": "circulars.publish",
-      "layer": "E2E",
-      "proposed": "verified-e2e",
-      "evidence": "com ressalva do balao a 1440"
-    },
-    {
-      "actionId": "circulars.close",
-      "layer": "E2E",
-      "proposed": "verified-e2e",
-      "evidence": ""
-    },
-    {
-      "actionId": "circulars.delete",
-      "layer": "E2E",
-      "proposed": "verified-e2e",
-      "evidence": "ui-24"
-    },
-    {
-      "actionId": "agenda.view",
-      "layer": "BE",
-      "proposed": "done",
-      "evidence": "200300; RPC com sessao"
-    },
-    {
-      "actionId": "agenda.create",
-      "layer": "BE",
-      "proposed": "done",
-      "evidence": ""
-    },
-    {
-      "actionId": "agenda.detail",
-      "layer": "BE",
-      "proposed": "done",
-      "evidence": ""
-    },
-    {
-      "actionId": "agenda.edit",
-      "layer": "BE",
-      "proposed": "done",
-      "evidence": "editar+publicar+cancelar"
-    },
-    {
-      "actionId": "agenda.permissions",
-      "layer": "BE",
-      "proposed": "done",
-      "evidence": "contexts com capacidades e instituicao"
-    },
-    {
-      "actionId": "agenda.request",
-      "layer": "BE",
-      "proposed": "local-green",
-      "evidence": "superadmin_agenda_requests recriada; nao exercida com dados"
-    },
-    {
-      "actionId": "agenda.location",
-      "layer": "BE",
-      "proposed": "local-green",
-      "evidence": "contexto de unidade fora do tenant recusado (pgTAP); sem unidade sintetica"
-    },
-    {
-      "actionId": "agenda.view",
-      "layer": "FE",
-      "proposed": "verified",
-      "evidence": "ui-25 calendario real com eventos de producao; composto na lista de eventos; goldens 375"
-    },
-    {
-      "actionId": "agenda.create",
-      "layer": "FE",
-      "proposed": "verified",
-      "evidence": "ui-37..ui-40: wizard real, Publicar, detalhe"
-    },
-    {
-      "actionId": "agenda.detail",
-      "layer": "FE",
-      "proposed": "verified",
-      "evidence": "ui-40/ui-41; achados: deep link frio fica em spinner; UUID no lugar do nome ate contexts carregar"
-    },
-    {
-      "actionId": "agenda.edit",
-      "layer": "FE",
-      "proposed": "verified",
-      "evidence": "ui-49..ui-51: edicao pela tela (chaves do wizard), publicada, detalhe com nome da instituicao"
-    },
-    {
-      "actionId": "agenda.request",
-      "layer": "FE",
-      "proposed": "local-green",
-      "evidence": ""
-    },
-    {
-      "actionId": "agenda.permissions",
-      "layer": "FE",
-      "proposed": "local-green",
-      "evidence": ""
-    },
-    {
-      "actionId": "agenda.location",
-      "layer": "FE",
-      "proposed": "local-green",
-      "evidence": ""
-    },
-    {
-      "actionId": "agenda.view",
-      "layer": "E2E",
-      "proposed": "verified-e2e",
-      "evidence": "ui-25 + pgTAP + producao"
-    },
-    {
-      "actionId": "notices.edit",
-      "layer": "E2E",
-      "proposed": "verified-e2e",
-      "evidence": "UI + producao + pgTAP + reload (ui-42)"
-    },
-    {
-      "actionId": "notices.publish",
-      "layer": "E2E",
-      "proposed": "verified-e2e",
-      "evidence": "UI + producao + pgTAP"
-    },
-    {
-      "actionId": "notices.archive",
-      "layer": "E2E",
-      "proposed": "verified-e2e",
-      "evidence": "UI + producao + pgTAP"
-    },
-    {
-      "actionId": "agenda.create",
-      "layer": "E2E",
-      "proposed": "verified-e2e",
-      "evidence": "UI + producao (superadmin_agenda_save) + pgTAP + reload ui-41"
-    },
-    {
-      "actionId": "agenda.detail",
-      "layer": "E2E",
-      "proposed": "verified-e2e",
-      "evidence": "ui-41 apos reload"
-    },
-    {
-      "actionId": "circulars.filter",
-      "layer": "E2E",
-      "proposed": "verified-e2e",
-      "evidence": "UI + RPC filtra em producao (prova 33/33) + pgTAP"
-    },
-    {
-      "actionId": "agenda.edit",
-      "layer": "E2E",
-      "proposed": "verified-e2e",
-      "evidence": "UI + producao (superadmin_agenda_save rev 3) + pgTAP"
-    }
-  ],
-  "questionsToOwner": [
-    "agenda_calendar_light_375: a leitura de \"retangulos muito amassados\" foi celula quase quadrada com marcas coloridas e +N (render atual) em vez de rotulos truncados; confirmar (imagens: git show 58bfe1fed:...goldens/agenda_calendar_light_375.png vs HEAD).",
-    "agenda_detail_light_375/768/1440 (R): manter o indicador de status com alvo de 48 px (render atual, do composto) ou voltar ao circulo de 24 px da referencia?",
-    "Balao de chat em criar/editar/publicar (Decisao 7): a 1440 cobre o botao Publicar da Circular; confirmar que o shell deve esconde-lo nessas rotas (dono: principal-chat-sistema)."
-  ],
+  "next": "P33 no agenda_calendar_page.dart",
+  "changes": [],
+  "pendingForCoordinator": [],
+  "proposedDeltas": [],
+  "questionsToOwner": [],
   "r03History": {
     "revision": 12,
     "round": "E2-R03-20260910",
@@ -1146,762 +463,1371 @@
       "aplicacao": "depois de 200400; sem ADD VALUE; registrar no ledger como 20260910200500/notice_publication_worker_v2. Assinaturas: claim_notice_publication_jobs_for_worker(p_worker text, p_limit int default 20) returns table(id uuid); run_notice_publication_job_for_worker(p_job_id uuid, p_limit int default 1000) returns jsonb (state processing|completed|failed). Depois: COELO_NOTICE_WORKER_SECRET, deploy do notice-publication-worker e cron.schedule (coordenador)."
     }
   ],
-  "productionProof": {
-    "session": "qa-r03@coelo.me AAL1 via login por senha + PostgREST (script docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/prova-producao.js)",
-    "runs": [
+  "productionProof": null,
+  "uiRouteProof": null,
+  "finalizado": null,
+  "deliveryValidation": null,
+  "skillDeltas": null,
+  "miniRevisao": null,
+  "r04History": {
+    "finalRevision": 30,
+    "head": "7367370c1",
+    "finalizado": {
+      "at": "2026-09-11T03:12:00-03:00",
+      "head": "7367370c1",
+      "handoff": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+      "capturas": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/ui/ (52 png)"
+    },
+    "miniRevisao": {
+      "quando": "2026-09-11T03:35:00-03:00",
+      "destinatario": "coelo-04 (coordenacao R04, ref de3c83) — nao apareceu no ListAgents as 03:33; entrega gravada aqui por instrucao do Owner",
+      "shaFinal": "7367370c1 (branch work/etapa2-r04-publicacoes-agenda, publicada)",
+      "fechouPorActionId": [
+        {
+          "action_id": "notices.list",
+          "prova": "200000 em producao; RPC com sessao; ui-03/ui-07 com reload; anon 401"
+        },
+        {
+          "action_id": "notices.create",
+          "prova": "RPC + replay idempotente; ui-04..ui-07 pela tela + reload"
+        },
+        {
+          "action_id": "notices.edit",
+          "prova": "RPC com versao otimista + reload; ui-27/ui-28/ui-30 pela tela"
+        },
+        {
+          "action_id": "notices.publish",
+          "prova": "RPC (inicio passado -> active); ui-32/ui-33 pelo menu de acoes"
+        },
+        {
+          "action_id": "notices.archive",
+          "prova": "RPC inativar com motivo + reload; ui-34..ui-36 pela tela"
+        },
+        {
+          "action_id": "circulars.list",
+          "prova": "200100 em producao; ui-08/ui-24 (vazio e apos reload)"
+        },
+        {
+          "action_id": "circulars.filter",
+          "prova": "RPC filtra por status/busca; ui-47/ui-48 abas"
+        },
+        {
+          "action_id": "circulars.create",
+          "prova": "RPC; ui-09..ui-11 compositor real"
+        },
+        {
+          "action_id": "circulars.detail",
+          "prova": "RPC; ui-18/ui-20"
+        },
+        {
+          "action_id": "circulars.publish",
+          "prova": "RPC imediato -> published; ui-17 (a 1024; a 1440 o balao cobria o botao)"
+        },
+        {
+          "action_id": "circulars.close",
+          "prova": "RPC -> closed; ui-19/ui-20 com confirmacao"
+        },
+        {
+          "action_id": "circulars.delete",
+          "prova": "200200 + pgTAP comportamental 15/15; ui-22..ui-24 com confirmacao e reload"
+        },
+        {
+          "action_id": "agenda.view",
+          "prova": "200300 em producao; RPC list; ui-25 calendario real; composto na lista de eventos"
+        },
+        {
+          "action_id": "agenda.create",
+          "prova": "RPC save; ui-37..ui-40 wizard real, publicado"
+        },
+        {
+          "action_id": "agenda.detail",
+          "prova": "RPC get; ui-40/ui-41 (reload); contextos carregados (rev 26)"
+        },
+        {
+          "action_id": "agenda.edit",
+          "prova": "RPC editar+publicar+cancelar; ui-49..ui-51 pelas chaves do wizard"
+        }
+      ],
+      "abertoComPrimeiroGate": [
+        {
+          "action_id": "notices.schedule",
+          "camada": "frontend",
+          "gate": "agendar pela tela (data futura no formulario) e ver scheduled no diretorio; BE done"
+        },
+        {
+          "action_id": "circulars.edit",
+          "camada": "frontend",
+          "gate": "editar explicitamente uma Circular existente pela tela (reabrir rascunho e salvar); BE done (200400)"
+        },
+        {
+          "action_id": "circulars.schedule",
+          "camada": "frontend",
+          "gate": "acionar o seletor de data/hora do agendamento inline pela tela; BE done"
+        },
+        {
+          "action_id": "circulars.respond",
+          "camada": "backend",
+          "gate": "RPCs people-based do Principal (save_circular_response_draft/submit) fora do gateway v2; decidir se entra no MVP do Superadmin"
+        },
+        {
+          "action_id": "circulars.attach",
+          "camada": "backend",
+          "gate": "anexar arquivo real pela tela com R2 (circular-media v5) e reload; CORS exige origem localhost:3000"
+        },
+        {
+          "action_id": "agenda.request",
+          "camada": "backend",
+          "gate": "exercitar superadmin_agenda_requests com solicitacao sintetica (precisa de responsavel/pessoa no realm people-based)"
+        },
+        {
+          "action_id": "agenda.permissions",
+          "camada": "frontend",
+          "gate": "tela de permissoes pela rota real; BE done (contexts)"
+        },
+        {
+          "action_id": "agenda.location",
+          "camada": "backend",
+          "gate": "unidade sintetica na instituicao 9f040000-...-0010 para contexto de unidade; pgTAP ja nega cross-tenant"
+        },
+        {
+          "action_id": "agenda.detail",
+          "camada": "frontend",
+          "gate": "deep link direto apos carga fria fica em spinner ate passar pelo calendario (reproduzir em teste de rota com store real); nome da instituicao ja corrigido"
+        },
+        {
+          "action_id": "circulars.publish",
+          "camada": "frontend",
+          "gate": "confirmar na base que o balao de chat nao cobre mais Publicar a 1440 (dcfcb9e41 do principal-chat)"
+        }
+      ],
+      "deltasPropostos": [
+        {
+          "action_id": "notices.list",
+          "camada": "backend",
+          "estado_proposto": "done",
+          "delta": "back-end -> done (R04 publicacoes-agenda)",
+          "evidencia": "200000 em producao; RPC com sessao; anon negado; reload",
+          "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
+        },
+        {
+          "action_id": "notices.create",
+          "camada": "backend",
+          "estado_proposto": "done",
+          "delta": "back-end -> done (R04 publicacoes-agenda)",
+          "evidencia": "idem; idempotencia",
+          "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
+        },
+        {
+          "action_id": "notices.edit",
+          "camada": "backend",
+          "estado_proposto": "done",
+          "delta": "back-end -> done (R04 publicacoes-agenda)",
+          "evidencia": "edicao com versao; reload",
+          "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
+        },
+        {
+          "action_id": "notices.schedule",
+          "camada": "backend",
+          "estado_proposto": "done",
+          "delta": "back-end -> done (R04 publicacoes-agenda)",
+          "evidencia": "publish com inicio futuro -> scheduled; 200500 enfileira",
+          "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
+        },
+        {
+          "action_id": "notices.publish",
+          "camada": "backend",
+          "estado_proposto": "done",
+          "delta": "back-end -> done (R04 publicacoes-agenda)",
+          "evidencia": "publish imediato -> active; worker em producao, disparo P30",
+          "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
+        },
+        {
+          "action_id": "notices.archive",
+          "camada": "backend",
+          "estado_proposto": "done",
+          "delta": "back-end -> done (R04 publicacoes-agenda)",
+          "evidencia": "inativar com motivo; reload",
+          "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
+        },
+        {
+          "action_id": "notices.list",
+          "camada": "frontend",
+          "estado_proposto": "verified",
+          "delta": "front-end -> verified (R04 publicacoes-agenda)",
+          "evidencia": "ui-03/ui-07: rota normal com dados reais e reload",
+          "certificacao": "aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/)"
+        },
+        {
+          "action_id": "notices.create",
+          "camada": "frontend",
+          "estado_proposto": "verified",
+          "delta": "front-end -> verified (R04 publicacoes-agenda)",
+          "evidencia": "ui-04..ui-07: formulario real, validacao, salvar, reload",
+          "certificacao": "aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/)"
+        },
+        {
+          "action_id": "notices.edit",
+          "camada": "frontend",
+          "estado_proposto": "verified",
+          "delta": "front-end -> verified (R04 publicacoes-agenda)",
+          "evidencia": "ui-27/ui-28/ui-30: edicao pela tela persistiu",
+          "certificacao": "aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/)"
+        },
+        {
+          "action_id": "notices.schedule",
+          "camada": "frontend",
+          "estado_proposto": "local-green",
+          "delta": "front-end -> local-green (R04 publicacoes-agenda)",
+          "evidencia": "nao exercido pela tela",
+          "certificacao": "sem certificado; prova local"
+        },
+        {
+          "action_id": "notices.publish",
+          "camada": "frontend",
+          "estado_proposto": "verified",
+          "delta": "front-end -> verified (R04 publicacoes-agenda)",
+          "evidencia": "ui-32/ui-33: Publicar pelo menu de acoes -> ativo",
+          "certificacao": "aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/)"
+        },
+        {
+          "action_id": "notices.archive",
+          "camada": "frontend",
+          "estado_proposto": "verified",
+          "delta": "front-end -> verified (R04 publicacoes-agenda)",
+          "evidencia": "ui-34..ui-36: Inativar com motivo -> inativo",
+          "certificacao": "aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/)"
+        },
+        {
+          "action_id": "notices.list",
+          "camada": "integrated",
+          "estado_proposto": "verified-e2e",
+          "delta": "integrado -> verified-e2e (R04 publicacoes-agenda)",
+          "evidencia": "rota normal + producao + RLS(pgTAP) + reload (ui-07)",
+          "certificacao": "rota normal + CRUD em producao + RLS (pgTAP) + reload, mesma acao nas duas camadas"
+        },
+        {
+          "action_id": "notices.create",
+          "camada": "integrated",
+          "estado_proposto": "verified-e2e",
+          "delta": "integrado -> verified-e2e (R04 publicacoes-agenda)",
+          "evidencia": "ui-06/ui-07 + pgTAP",
+          "certificacao": "rota normal + CRUD em producao + RLS (pgTAP) + reload, mesma acao nas duas camadas"
+        },
+        {
+          "action_id": "circulars.list",
+          "camada": "backend",
+          "estado_proposto": "done",
+          "delta": "back-end -> done (R04 publicacoes-agenda)",
+          "evidencia": "200100",
+          "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
+        },
+        {
+          "action_id": "circulars.filter",
+          "camada": "backend",
+          "estado_proposto": "done",
+          "delta": "back-end -> done (R04 publicacoes-agenda)",
+          "evidencia": "RPC filtra por status/busca",
+          "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
+        },
+        {
+          "action_id": "circulars.create",
+          "camada": "backend",
+          "estado_proposto": "done",
+          "delta": "back-end -> done (R04 publicacoes-agenda)",
+          "evidencia": "ver handoff.md",
+          "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
+        },
+        {
+          "action_id": "circulars.edit",
+          "camada": "backend",
+          "estado_proposto": "done",
+          "delta": "back-end -> done (R04 publicacoes-agenda)",
+          "evidencia": "200400",
+          "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
+        },
+        {
+          "action_id": "circulars.detail",
+          "camada": "backend",
+          "estado_proposto": "done",
+          "delta": "back-end -> done (R04 publicacoes-agenda)",
+          "evidencia": "ver handoff.md",
+          "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
+        },
+        {
+          "action_id": "circulars.schedule",
+          "camada": "backend",
+          "estado_proposto": "done",
+          "delta": "back-end -> done (R04 publicacoes-agenda)",
+          "evidencia": "publish_at futuro -> scheduled",
+          "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
+        },
+        {
+          "action_id": "circulars.publish",
+          "camada": "backend",
+          "estado_proposto": "done",
+          "delta": "back-end -> done (R04 publicacoes-agenda)",
+          "evidencia": "ver handoff.md",
+          "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
+        },
+        {
+          "action_id": "circulars.close",
+          "camada": "backend",
+          "estado_proposto": "done",
+          "delta": "back-end -> done (R04 publicacoes-agenda)",
+          "evidencia": "ver handoff.md",
+          "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
+        },
+        {
+          "action_id": "circulars.delete",
+          "camada": "backend",
+          "estado_proposto": "done",
+          "delta": "back-end -> done (R04 publicacoes-agenda)",
+          "evidencia": "200200 + pgTAP comportamental",
+          "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
+        },
+        {
+          "action_id": "circulars.respond",
+          "camada": "backend",
+          "estado_proposto": "pending-verification",
+          "delta": "back-end -> pending-verification (R04 publicacoes-agenda)",
+          "evidencia": "RPCs people-based do Principal, fora do gateway v2",
+          "certificacao": "sem certificado; prova local ou RPC nao exercida com dados"
+        },
+        {
+          "action_id": "circulars.attach",
+          "camada": "backend",
+          "estado_proposto": "local-green",
+          "delta": "back-end -> local-green (R04 publicacoes-agenda)",
+          "evidencia": "R2 em producao; upload real nao exercido",
+          "certificacao": "sem certificado; prova local ou RPC nao exercida com dados"
+        },
+        {
+          "action_id": "circulars.list",
+          "camada": "frontend",
+          "estado_proposto": "verified",
+          "delta": "front-end -> verified (R04 publicacoes-agenda)",
+          "evidencia": "ui-08/ui-24",
+          "certificacao": "aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/)"
+        },
+        {
+          "action_id": "circulars.filter",
+          "camada": "frontend",
+          "estado_proposto": "verified",
+          "delta": "front-end -> verified (R04 publicacoes-agenda)",
+          "evidencia": "ui-47/ui-48: abas Encerradas/Rascunhos filtram; sem resultados mantem Criar e Limpar filtros",
+          "certificacao": "aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/)"
+        },
+        {
+          "action_id": "circulars.create",
+          "camada": "frontend",
+          "estado_proposto": "verified",
+          "delta": "front-end -> verified (R04 publicacoes-agenda)",
+          "evidencia": "ui-09..ui-11",
+          "certificacao": "aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/)"
+        },
+        {
+          "action_id": "circulars.edit",
+          "camada": "frontend",
+          "estado_proposto": "local-green",
+          "delta": "front-end -> local-green (R04 publicacoes-agenda)",
+          "evidencia": "rascunho reaberto em edicao (ui-11); edicao explicita nao exercida",
+          "certificacao": "sem certificado; prova local"
+        },
+        {
+          "action_id": "circulars.detail",
+          "camada": "frontend",
+          "estado_proposto": "verified",
+          "delta": "front-end -> verified (R04 publicacoes-agenda)",
+          "evidencia": "ui-18/ui-20",
+          "certificacao": "aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/)"
+        },
+        {
+          "action_id": "circulars.schedule",
+          "camada": "frontend",
+          "estado_proposto": "local-green",
+          "delta": "front-end -> local-green (R04 publicacoes-agenda)",
+          "evidencia": "campo inline presente (ui-14); picker nao acionado",
+          "certificacao": "sem certificado; prova local"
+        },
+        {
+          "action_id": "circulars.publish",
+          "camada": "frontend",
+          "estado_proposto": "verified",
+          "delta": "front-end -> verified (R04 publicacoes-agenda)",
+          "evidencia": "ui-17 a 1024; a 1440 o balao de chat cobre o botao (achado bloqueante do shell)",
+          "certificacao": "aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/)"
+        },
+        {
+          "action_id": "circulars.close",
+          "camada": "frontend",
+          "estado_proposto": "verified",
+          "delta": "front-end -> verified (R04 publicacoes-agenda)",
+          "evidencia": "ui-19/ui-20",
+          "certificacao": "aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/)"
+        },
+        {
+          "action_id": "circulars.delete",
+          "camada": "frontend",
+          "estado_proposto": "verified",
+          "delta": "front-end -> verified (R04 publicacoes-agenda)",
+          "evidencia": "ui-22/ui-23/ui-24; recarga apos excluir corrigida no router (circular_routes_test)",
+          "certificacao": "aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/)"
+        },
+        {
+          "action_id": "circulars.respond",
+          "camada": "frontend",
+          "estado_proposto": "pending-verification",
+          "delta": "front-end -> pending-verification (R04 publicacoes-agenda)",
+          "evidencia": "ver handoff.md",
+          "certificacao": "sem certificado; prova local"
+        },
+        {
+          "action_id": "circulars.attach",
+          "camada": "frontend",
+          "estado_proposto": "pending-verification",
+          "delta": "front-end -> pending-verification (R04 publicacoes-agenda)",
+          "evidencia": "ver handoff.md",
+          "certificacao": "sem certificado; prova local"
+        },
+        {
+          "action_id": "circulars.list",
+          "camada": "integrated",
+          "estado_proposto": "verified-e2e",
+          "delta": "integrado -> verified-e2e (R04 publicacoes-agenda)",
+          "evidencia": "ui-24 apos reload",
+          "certificacao": "rota normal + CRUD em producao + RLS (pgTAP) + reload, mesma acao nas duas camadas"
+        },
+        {
+          "action_id": "circulars.create",
+          "camada": "integrated",
+          "estado_proposto": "verified-e2e",
+          "delta": "integrado -> verified-e2e (R04 publicacoes-agenda)",
+          "evidencia": "ver handoff.md",
+          "certificacao": "rota normal + CRUD em producao + RLS (pgTAP) + reload, mesma acao nas duas camadas"
+        },
+        {
+          "action_id": "circulars.detail",
+          "camada": "integrated",
+          "estado_proposto": "verified-e2e",
+          "delta": "integrado -> verified-e2e (R04 publicacoes-agenda)",
+          "evidencia": "ver handoff.md",
+          "certificacao": "rota normal + CRUD em producao + RLS (pgTAP) + reload, mesma acao nas duas camadas"
+        },
+        {
+          "action_id": "circulars.publish",
+          "camada": "integrated",
+          "estado_proposto": "verified-e2e",
+          "delta": "integrado -> verified-e2e (R04 publicacoes-agenda)",
+          "evidencia": "com ressalva do balao a 1440",
+          "certificacao": "rota normal + CRUD em producao + RLS (pgTAP) + reload, mesma acao nas duas camadas"
+        },
+        {
+          "action_id": "circulars.close",
+          "camada": "integrated",
+          "estado_proposto": "verified-e2e",
+          "delta": "integrado -> verified-e2e (R04 publicacoes-agenda)",
+          "evidencia": "ver handoff.md",
+          "certificacao": "rota normal + CRUD em producao + RLS (pgTAP) + reload, mesma acao nas duas camadas"
+        },
+        {
+          "action_id": "circulars.delete",
+          "camada": "integrated",
+          "estado_proposto": "verified-e2e",
+          "delta": "integrado -> verified-e2e (R04 publicacoes-agenda)",
+          "evidencia": "ui-24",
+          "certificacao": "rota normal + CRUD em producao + RLS (pgTAP) + reload, mesma acao nas duas camadas"
+        },
+        {
+          "action_id": "agenda.view",
+          "camada": "backend",
+          "estado_proposto": "done",
+          "delta": "back-end -> done (R04 publicacoes-agenda)",
+          "evidencia": "200300; RPC com sessao",
+          "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
+        },
+        {
+          "action_id": "agenda.create",
+          "camada": "backend",
+          "estado_proposto": "done",
+          "delta": "back-end -> done (R04 publicacoes-agenda)",
+          "evidencia": "ver handoff.md",
+          "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
+        },
+        {
+          "action_id": "agenda.detail",
+          "camada": "backend",
+          "estado_proposto": "done",
+          "delta": "back-end -> done (R04 publicacoes-agenda)",
+          "evidencia": "ver handoff.md",
+          "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
+        },
+        {
+          "action_id": "agenda.edit",
+          "camada": "backend",
+          "estado_proposto": "done",
+          "delta": "back-end -> done (R04 publicacoes-agenda)",
+          "evidencia": "editar+publicar+cancelar",
+          "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
+        },
+        {
+          "action_id": "agenda.permissions",
+          "camada": "backend",
+          "estado_proposto": "done",
+          "delta": "back-end -> done (R04 publicacoes-agenda)",
+          "evidencia": "contexts com capacidades e instituicao",
+          "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
+        },
+        {
+          "action_id": "agenda.request",
+          "camada": "backend",
+          "estado_proposto": "local-green",
+          "delta": "back-end -> local-green (R04 publicacoes-agenda)",
+          "evidencia": "superadmin_agenda_requests recriada; nao exercida com dados",
+          "certificacao": "sem certificado; prova local ou RPC nao exercida com dados"
+        },
+        {
+          "action_id": "agenda.location",
+          "camada": "backend",
+          "estado_proposto": "local-green",
+          "delta": "back-end -> local-green (R04 publicacoes-agenda)",
+          "evidencia": "contexto de unidade fora do tenant recusado (pgTAP); sem unidade sintetica",
+          "certificacao": "sem certificado; prova local ou RPC nao exercida com dados"
+        },
+        {
+          "action_id": "agenda.view",
+          "camada": "frontend",
+          "estado_proposto": "verified",
+          "delta": "front-end -> verified (R04 publicacoes-agenda)",
+          "evidencia": "ui-25 calendario real com eventos de producao; composto na lista de eventos; goldens 375",
+          "certificacao": "aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/)"
+        },
+        {
+          "action_id": "agenda.create",
+          "camada": "frontend",
+          "estado_proposto": "verified",
+          "delta": "front-end -> verified (R04 publicacoes-agenda)",
+          "evidencia": "ui-37..ui-40: wizard real, Publicar, detalhe",
+          "certificacao": "aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/)"
+        },
+        {
+          "action_id": "agenda.detail",
+          "camada": "frontend",
+          "estado_proposto": "verified",
+          "delta": "front-end -> verified (R04 publicacoes-agenda)",
+          "evidencia": "ui-40/ui-41; achados: deep link frio fica em spinner; UUID no lugar do nome ate contexts carregar",
+          "certificacao": "aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/)"
+        },
+        {
+          "action_id": "agenda.edit",
+          "camada": "frontend",
+          "estado_proposto": "verified",
+          "delta": "front-end -> verified (R04 publicacoes-agenda)",
+          "evidencia": "ui-49..ui-51: edicao pela tela (chaves do wizard), publicada, detalhe com nome da instituicao",
+          "certificacao": "aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/)"
+        },
+        {
+          "action_id": "agenda.request",
+          "camada": "frontend",
+          "estado_proposto": "local-green",
+          "delta": "front-end -> local-green (R04 publicacoes-agenda)",
+          "evidencia": "ver handoff.md",
+          "certificacao": "sem certificado; prova local"
+        },
+        {
+          "action_id": "agenda.permissions",
+          "camada": "frontend",
+          "estado_proposto": "local-green",
+          "delta": "front-end -> local-green (R04 publicacoes-agenda)",
+          "evidencia": "ver handoff.md",
+          "certificacao": "sem certificado; prova local"
+        },
+        {
+          "action_id": "agenda.location",
+          "camada": "frontend",
+          "estado_proposto": "local-green",
+          "delta": "front-end -> local-green (R04 publicacoes-agenda)",
+          "evidencia": "ver handoff.md",
+          "certificacao": "sem certificado; prova local"
+        },
+        {
+          "action_id": "agenda.view",
+          "camada": "integrated",
+          "estado_proposto": "verified-e2e",
+          "delta": "integrado -> verified-e2e (R04 publicacoes-agenda)",
+          "evidencia": "ui-25 + pgTAP + producao",
+          "certificacao": "rota normal + CRUD em producao + RLS (pgTAP) + reload, mesma acao nas duas camadas"
+        },
+        {
+          "action_id": "notices.edit",
+          "camada": "integrated",
+          "estado_proposto": "verified-e2e",
+          "delta": "integrado -> verified-e2e (R04 publicacoes-agenda)",
+          "evidencia": "UI + producao + pgTAP + reload (ui-42)",
+          "certificacao": "rota normal + CRUD em producao + RLS (pgTAP) + reload, mesma acao nas duas camadas"
+        },
+        {
+          "action_id": "notices.publish",
+          "camada": "integrated",
+          "estado_proposto": "verified-e2e",
+          "delta": "integrado -> verified-e2e (R04 publicacoes-agenda)",
+          "evidencia": "UI + producao + pgTAP",
+          "certificacao": "rota normal + CRUD em producao + RLS (pgTAP) + reload, mesma acao nas duas camadas"
+        },
+        {
+          "action_id": "notices.archive",
+          "camada": "integrated",
+          "estado_proposto": "verified-e2e",
+          "delta": "integrado -> verified-e2e (R04 publicacoes-agenda)",
+          "evidencia": "UI + producao + pgTAP",
+          "certificacao": "rota normal + CRUD em producao + RLS (pgTAP) + reload, mesma acao nas duas camadas"
+        },
+        {
+          "action_id": "agenda.create",
+          "camada": "integrated",
+          "estado_proposto": "verified-e2e",
+          "delta": "integrado -> verified-e2e (R04 publicacoes-agenda)",
+          "evidencia": "UI + producao (superadmin_agenda_save) + pgTAP + reload ui-41",
+          "certificacao": "rota normal + CRUD em producao + RLS (pgTAP) + reload, mesma acao nas duas camadas"
+        },
+        {
+          "action_id": "agenda.detail",
+          "camada": "integrated",
+          "estado_proposto": "verified-e2e",
+          "delta": "integrado -> verified-e2e (R04 publicacoes-agenda)",
+          "evidencia": "ui-41 apos reload",
+          "certificacao": "rota normal + CRUD em producao + RLS (pgTAP) + reload, mesma acao nas duas camadas"
+        },
+        {
+          "action_id": "circulars.filter",
+          "camada": "integrated",
+          "estado_proposto": "verified-e2e",
+          "delta": "integrado -> verified-e2e (R04 publicacoes-agenda)",
+          "evidencia": "UI + RPC filtra em producao (prova 33/33) + pgTAP",
+          "certificacao": "rota normal + CRUD em producao + RLS (pgTAP) + reload, mesma acao nas duas camadas"
+        },
+        {
+          "action_id": "agenda.edit",
+          "camada": "integrated",
+          "estado_proposto": "verified-e2e",
+          "delta": "integrado -> verified-e2e (R04 publicacoes-agenda)",
+          "evidencia": "UI + producao (superadmin_agenda_save rev 3) + pgTAP",
+          "certificacao": "rota normal + CRUD em producao + RLS (pgTAP) + reload, mesma acao nas duas camadas"
+        }
+      ],
+      "dadosSinteticosEmProducao": {
+        "instituicao": "9f040000-0000-4000-8000-000000000010 (QA R04 Instituicao Sintetica, criada pelo realm-interno; nao e minha)",
+        "avisos": "[R04-QA hh:mm:ss] Aviso imediato/editado (pares por rodada de prova-producao.js: 01:42:59, 02:00:55, 03:15:19 UTC) + [R04-QA UI] Aviso editado pela tela — todos deixados com status inactive (o v2 nao exclui); tabela public.platform_notices",
+        "circulares": "[R04-QA ...] Circular editada / Rascunho a excluir / Publicada imediata (por rodada do script) e [R04-QA UI] Circular criada pela tela (closed) + [R04-QA UI] Rascunho para excluir — excluidas (deleted_at) ou closed; public.circulars, circular_revisions, circular_blocks, circular_audience_rules; recibos em app_private.superadmin_circular_command_receipts",
+        "eventos": "[R04-QA ...] Reuniao editada (canceladas pelo script) e [R04-QA UI] Evento editado pela tela (published) — public.agenda_events e agenda_history_receipts na instituicao sintetica",
+        "auditoria": "audit.audit_logs e app_private.circular_audit com entradas do qa-r03 (identidade interna do usuario sintetico); append-only",
+        "limpeza": "coordenador ao fim da rodada: filtrar por titulo com prefixo [R04-QA] nas tres tabelas"
+      },
+      "pacotesEmProducao": [
+        "20260910200000",
+        "20260910200100",
+        "20260910200200",
+        "20260910200300",
+        "20260910200400",
+        "20260910200500"
+      ],
+      "skillDeltas": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/skill-deltas.md",
+      "duvidasAoOwner": "P33/P34 em docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/duvidas-visuais.html"
+    },
+    "proposedDeltas": [
       {
-        "at": "2026-09-10T22:45-03:00",
-        "file": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/prova-producao-20260910-2245.md",
-        "result": "16/17 (Avisos CRUD completo; Circulares/Agenda so leitura: producao sem instituicao)"
+        "actionId": "notices.list",
+        "layer": "BE",
+        "proposed": "done",
+        "evidence": "200000 em producao; RPC com sessao; anon negado; reload"
       },
       {
-        "at": "2026-09-10T23:00-03:00",
-        "file": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/prova-producao-20260910-2300.md",
-        "result": "32/33 com a instituicao sintetica 9f040000-...-0010: Circulares criar/agendar/publicar/filtrar/encerrar/excluir OK, editar FALHOU (42702, corrigido em 200400); Agenda criar/detalhe/editar+publicar/reload/cancelar OK; anon negado nas tres familias"
+        "actionId": "notices.create",
+        "layer": "BE",
+        "proposed": "done",
+        "evidence": "idem; idempotencia"
       },
       {
-        "at": "2026-09-10T23:45-03:00",
-        "file": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/prova-producao-20260910-2345.md",
-        "result": "33/33 apos 200400 em producao (circulars.edit passou)"
+        "actionId": "notices.edit",
+        "layer": "BE",
+        "proposed": "done",
+        "evidence": "edicao com versao; reload"
+      },
+      {
+        "actionId": "notices.schedule",
+        "layer": "BE",
+        "proposed": "done",
+        "evidence": "publish com inicio futuro -> scheduled; 200500 enfileira"
+      },
+      {
+        "actionId": "notices.publish",
+        "layer": "BE",
+        "proposed": "done",
+        "evidence": "publish imediato -> active; worker em producao, disparo P30"
+      },
+      {
+        "actionId": "notices.archive",
+        "layer": "BE",
+        "proposed": "done",
+        "evidence": "inativar com motivo; reload"
+      },
+      {
+        "actionId": "notices.list",
+        "layer": "FE",
+        "proposed": "verified",
+        "evidence": "ui-03/ui-07: rota normal com dados reais e reload"
+      },
+      {
+        "actionId": "notices.create",
+        "layer": "FE",
+        "proposed": "verified",
+        "evidence": "ui-04..ui-07: formulario real, validacao, salvar, reload"
+      },
+      {
+        "actionId": "notices.edit",
+        "layer": "FE",
+        "proposed": "verified",
+        "evidence": "ui-27/ui-28/ui-30: edicao pela tela persistiu"
+      },
+      {
+        "actionId": "notices.schedule",
+        "layer": "FE",
+        "proposed": "local-green",
+        "evidence": "nao exercido pela tela"
+      },
+      {
+        "actionId": "notices.publish",
+        "layer": "FE",
+        "proposed": "verified",
+        "evidence": "ui-32/ui-33: Publicar pelo menu de acoes -> ativo"
+      },
+      {
+        "actionId": "notices.archive",
+        "layer": "FE",
+        "proposed": "verified",
+        "evidence": "ui-34..ui-36: Inativar com motivo -> inativo"
+      },
+      {
+        "actionId": "notices.list",
+        "layer": "E2E",
+        "proposed": "verified-e2e",
+        "evidence": "rota normal + producao + RLS(pgTAP) + reload (ui-07)"
+      },
+      {
+        "actionId": "notices.create",
+        "layer": "E2E",
+        "proposed": "verified-e2e",
+        "evidence": "ui-06/ui-07 + pgTAP"
+      },
+      {
+        "actionId": "circulars.list",
+        "layer": "BE",
+        "proposed": "done",
+        "evidence": "200100"
+      },
+      {
+        "actionId": "circulars.filter",
+        "layer": "BE",
+        "proposed": "done",
+        "evidence": "RPC filtra por status/busca"
+      },
+      {
+        "actionId": "circulars.create",
+        "layer": "BE",
+        "proposed": "done",
+        "evidence": ""
+      },
+      {
+        "actionId": "circulars.edit",
+        "layer": "BE",
+        "proposed": "done",
+        "evidence": "200400"
+      },
+      {
+        "actionId": "circulars.detail",
+        "layer": "BE",
+        "proposed": "done",
+        "evidence": ""
+      },
+      {
+        "actionId": "circulars.schedule",
+        "layer": "BE",
+        "proposed": "done",
+        "evidence": "publish_at futuro -> scheduled"
+      },
+      {
+        "actionId": "circulars.publish",
+        "layer": "BE",
+        "proposed": "done",
+        "evidence": ""
+      },
+      {
+        "actionId": "circulars.close",
+        "layer": "BE",
+        "proposed": "done",
+        "evidence": ""
+      },
+      {
+        "actionId": "circulars.delete",
+        "layer": "BE",
+        "proposed": "done",
+        "evidence": "200200 + pgTAP comportamental"
+      },
+      {
+        "actionId": "circulars.respond",
+        "layer": "BE",
+        "proposed": "pending-verification",
+        "evidence": "RPCs people-based do Principal, fora do gateway v2"
+      },
+      {
+        "actionId": "circulars.attach",
+        "layer": "BE",
+        "proposed": "local-green",
+        "evidence": "R2 em producao; upload real nao exercido"
+      },
+      {
+        "actionId": "circulars.list",
+        "layer": "FE",
+        "proposed": "verified",
+        "evidence": "ui-08/ui-24"
+      },
+      {
+        "actionId": "circulars.filter",
+        "layer": "FE",
+        "proposed": "verified",
+        "evidence": "ui-47/ui-48: abas Encerradas/Rascunhos filtram; sem resultados mantem Criar e Limpar filtros"
+      },
+      {
+        "actionId": "circulars.create",
+        "layer": "FE",
+        "proposed": "verified",
+        "evidence": "ui-09..ui-11"
+      },
+      {
+        "actionId": "circulars.edit",
+        "layer": "FE",
+        "proposed": "local-green",
+        "evidence": "rascunho reaberto em edicao (ui-11); edicao explicita nao exercida"
+      },
+      {
+        "actionId": "circulars.detail",
+        "layer": "FE",
+        "proposed": "verified",
+        "evidence": "ui-18/ui-20"
+      },
+      {
+        "actionId": "circulars.schedule",
+        "layer": "FE",
+        "proposed": "local-green",
+        "evidence": "campo inline presente (ui-14); picker nao acionado"
+      },
+      {
+        "actionId": "circulars.publish",
+        "layer": "FE",
+        "proposed": "verified",
+        "evidence": "ui-17 a 1024; a 1440 o balao de chat cobre o botao (achado bloqueante do shell)"
+      },
+      {
+        "actionId": "circulars.close",
+        "layer": "FE",
+        "proposed": "verified",
+        "evidence": "ui-19/ui-20"
+      },
+      {
+        "actionId": "circulars.delete",
+        "layer": "FE",
+        "proposed": "verified",
+        "evidence": "ui-22/ui-23/ui-24; recarga apos excluir corrigida no router (circular_routes_test)"
+      },
+      {
+        "actionId": "circulars.respond",
+        "layer": "FE",
+        "proposed": "pending-verification",
+        "evidence": ""
+      },
+      {
+        "actionId": "circulars.attach",
+        "layer": "FE",
+        "proposed": "pending-verification",
+        "evidence": ""
+      },
+      {
+        "actionId": "circulars.list",
+        "layer": "E2E",
+        "proposed": "verified-e2e",
+        "evidence": "ui-24 apos reload"
+      },
+      {
+        "actionId": "circulars.create",
+        "layer": "E2E",
+        "proposed": "verified-e2e",
+        "evidence": ""
+      },
+      {
+        "actionId": "circulars.detail",
+        "layer": "E2E",
+        "proposed": "verified-e2e",
+        "evidence": ""
+      },
+      {
+        "actionId": "circulars.publish",
+        "layer": "E2E",
+        "proposed": "verified-e2e",
+        "evidence": "com ressalva do balao a 1440"
+      },
+      {
+        "actionId": "circulars.close",
+        "layer": "E2E",
+        "proposed": "verified-e2e",
+        "evidence": ""
+      },
+      {
+        "actionId": "circulars.delete",
+        "layer": "E2E",
+        "proposed": "verified-e2e",
+        "evidence": "ui-24"
+      },
+      {
+        "actionId": "agenda.view",
+        "layer": "BE",
+        "proposed": "done",
+        "evidence": "200300; RPC com sessao"
+      },
+      {
+        "actionId": "agenda.create",
+        "layer": "BE",
+        "proposed": "done",
+        "evidence": ""
+      },
+      {
+        "actionId": "agenda.detail",
+        "layer": "BE",
+        "proposed": "done",
+        "evidence": ""
+      },
+      {
+        "actionId": "agenda.edit",
+        "layer": "BE",
+        "proposed": "done",
+        "evidence": "editar+publicar+cancelar"
+      },
+      {
+        "actionId": "agenda.permissions",
+        "layer": "BE",
+        "proposed": "done",
+        "evidence": "contexts com capacidades e instituicao"
+      },
+      {
+        "actionId": "agenda.request",
+        "layer": "BE",
+        "proposed": "local-green",
+        "evidence": "superadmin_agenda_requests recriada; nao exercida com dados"
+      },
+      {
+        "actionId": "agenda.location",
+        "layer": "BE",
+        "proposed": "local-green",
+        "evidence": "contexto de unidade fora do tenant recusado (pgTAP); sem unidade sintetica"
+      },
+      {
+        "actionId": "agenda.view",
+        "layer": "FE",
+        "proposed": "verified",
+        "evidence": "ui-25 calendario real com eventos de producao; composto na lista de eventos; goldens 375"
+      },
+      {
+        "actionId": "agenda.create",
+        "layer": "FE",
+        "proposed": "verified",
+        "evidence": "ui-37..ui-40: wizard real, Publicar, detalhe"
+      },
+      {
+        "actionId": "agenda.detail",
+        "layer": "FE",
+        "proposed": "verified",
+        "evidence": "ui-40/ui-41; achados: deep link frio fica em spinner; UUID no lugar do nome ate contexts carregar"
+      },
+      {
+        "actionId": "agenda.edit",
+        "layer": "FE",
+        "proposed": "verified",
+        "evidence": "ui-49..ui-51: edicao pela tela (chaves do wizard), publicada, detalhe com nome da instituicao"
+      },
+      {
+        "actionId": "agenda.request",
+        "layer": "FE",
+        "proposed": "local-green",
+        "evidence": ""
+      },
+      {
+        "actionId": "agenda.permissions",
+        "layer": "FE",
+        "proposed": "local-green",
+        "evidence": ""
+      },
+      {
+        "actionId": "agenda.location",
+        "layer": "FE",
+        "proposed": "local-green",
+        "evidence": ""
+      },
+      {
+        "actionId": "agenda.view",
+        "layer": "E2E",
+        "proposed": "verified-e2e",
+        "evidence": "ui-25 + pgTAP + producao"
+      },
+      {
+        "actionId": "notices.edit",
+        "layer": "E2E",
+        "proposed": "verified-e2e",
+        "evidence": "UI + producao + pgTAP + reload (ui-42)"
+      },
+      {
+        "actionId": "notices.publish",
+        "layer": "E2E",
+        "proposed": "verified-e2e",
+        "evidence": "UI + producao + pgTAP"
+      },
+      {
+        "actionId": "notices.archive",
+        "layer": "E2E",
+        "proposed": "verified-e2e",
+        "evidence": "UI + producao + pgTAP"
+      },
+      {
+        "actionId": "agenda.create",
+        "layer": "E2E",
+        "proposed": "verified-e2e",
+        "evidence": "UI + producao (superadmin_agenda_save) + pgTAP + reload ui-41"
+      },
+      {
+        "actionId": "agenda.detail",
+        "layer": "E2E",
+        "proposed": "verified-e2e",
+        "evidence": "ui-41 apos reload"
+      },
+      {
+        "actionId": "circulars.filter",
+        "layer": "E2E",
+        "proposed": "verified-e2e",
+        "evidence": "UI + RPC filtra em producao (prova 33/33) + pgTAP"
+      },
+      {
+        "actionId": "agenda.edit",
+        "layer": "E2E",
+        "proposed": "verified-e2e",
+        "evidence": "UI + producao (superadmin_agenda_save rev 3) + pgTAP"
       }
     ],
-    "note": "Prova por RPC produtiva com a mesma assinatura que os repositorios chamam. A rota normal na UI (localhost:3006, Chrome via CDP) esta em andamento; verified so com a UI aberta."
-  },
-  "uiRouteProof": {
-    "app": "build web profile de test_driver/qa_main.dart servido em 127.0.0.1:3006 (python http.server; deep link recarrega por / + pushState), Chrome com CDP, login pelo qa_drive.dart com QA_EMAIL/QA_PASSWORD so no ambiente",
-    "captures": "scratchpad ui-01..ui-07 (copiadas para docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/ui/ na proxima revisao)",
-    "steps": [
-      "ui-02-home: sessao qa-r03 aberta (Owner Coelo) na Home",
-      "ui-03-notices: /notices abre o diretorio de Avisos no composto com os avisos [R04-QA] de producao em tabela; toolbar, abas, Criar e paginacao presentes",
-      "ui-04-notice-new: Nova comunicacao abre /notices/new (formulario real, sem fixture); ACHADO: balao de chat \"Mensagens\" aparece sobre o rodape do formulario e cobre parte do botao Continuar — viola a Decisao 7 (sem chat em criar/editar/publicar); pertence ao shell (principal-chat-sistema/coordenador)",
-      "ui-05: validacao honesta \"Informe a mensagem do aviso para continuar\" ao salvar sem mensagem",
-      "ui-06-notice-saved: Salvar rascunho persistiu em producao: \"[R04-QA UI] Aviso criado pela tela\" listado no diretorio",
-      "ui-07-notices-reload: app recarregado por completo (navegacao para / e volta a /notices) com a sessao mantida e o aviso criado pela tela presente",
-      "ui-27..ui-36: Avisos editar/publicar/inativar pela tela (viewport 1024, segundo Chrome 9334 porque outro processo passou a usar o 9333)",
-      "ui-37..ui-41: evento criado e publicado pela tela, detalhe apos reload"
-    ]
-  },
-  "finalizado": {
-    "at": "2026-09-11T03:12:00-03:00",
-    "head": "7367370c1",
-    "handoff": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
-    "capturas": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/ui/ (52 png)"
-  },
-  "deliveryValidation": {
-    "at": "2026-09-11T03:20:00-03:00",
-    "branchHead": "f0b3b72e4",
-    "commitsForaDeDev": 0,
-    "arvoreLimpa": true,
-    "pacotesEmMigrations": [
-      "20260910200000",
-      "20260910200100",
-      "20260910200200",
-      "20260910200300",
-      "20260910200400",
-      "20260910200500"
+    "pendingForCoordinator": [
+      {
+        "actionIds": [
+          "notices.list",
+          "notices.create",
+          "notices.edit",
+          "notices.schedule",
+          "notices.publish",
+          "notices.archive"
+        ],
+        "pending": "aplicar 20260910200000 em producao (dump do lote antes); depois provar rota normal com qa-r03. Worker/pg_cron NAO sao necessarios para o CRUD v2 (publish decide scheduled/active e refresh_lifecycle promove na leitura); materializacao de audiencia (notice_receipts) fica registrada para a entrega ao Principal."
+      },
+      {
+        "actionIds": [
+          "circulars.list",
+          "circulars.filter",
+          "circulars.create",
+          "circulars.edit",
+          "circulars.detail",
+          "circulars.schedule",
+          "circulars.publish",
+          "circulars.close",
+          "circulars.delete"
+        ],
+        "pending": "aplicar 20260910200100 e 20260910200200 nesta ordem; ligar superadminCircularDeleteEnabled; depois rota normal com qa-r03."
+      },
+      {
+        "actionIds": [
+          "notices.publish"
+        ],
+        "pending": "20260909191100 (metricas por geracao) fica fora: depende de colunas de 20260820220500 ausentes em producao; sem worker nao ha geracoes."
+      },
+      {
+        "actionIds": [
+          "agenda.view",
+          "agenda.create",
+          "agenda.detail",
+          "agenda.edit",
+          "agenda.request",
+          "agenda.permissions",
+          "agenda.location"
+        ],
+        "pending": "aplicar 20260910200300 depois de 200200 (independente dos anteriores, mas na ordem da faixa); avisar acessos-pessoas: agenda_has_permission chama has_platform_permission, entao o P7 (membership por instituicao) se propaga sem conflito; membership interno escopado em instituicao continua sem Agenda (deny-by-default, decisao registrada)."
+      },
+      {
+        "actionIds": [
+          "agenda.view",
+          "notices.list",
+          "circulars.list"
+        ],
+        "pending": "Regra nova do Owner (toolbar, filtros, toggle, Arquivos, abas e Criar sempre visiveis, mesmo vazio): Avisos, Circulares e Agenda de eventos ja estao no composto; a conferencia do estado vazio na rota real esta na fila desta frente (screenshots); correcao, se houver, no composto (coordenador/Fase 0)."
+      },
+      {
+        "actionIds": [
+          "notices.list",
+          "notices.create",
+          "notices.edit",
+          "notices.schedule",
+          "notices.publish",
+          "notices.archive",
+          "circulars.list",
+          "circulars.filter",
+          "circulars.create",
+          "circulars.edit",
+          "circulars.detail",
+          "circulars.schedule",
+          "circulars.publish",
+          "circulars.close",
+          "circulars.delete",
+          "agenda.view",
+          "agenda.create",
+          "agenda.detail",
+          "agenda.edit",
+          "agenda.permissions"
+        ],
+        "pending": "UI real: build web (profile, qa_main.dart) servido em 127.0.0.1:3006 abre /login com $flutterDriver; o Chrome do CDP caiu tres vezes por falta de memoria da maquina (45 Chromes/11 flutter_tester de todas as frentes). Tentativa unica restante com um Chrome quando a memoria permitir; sem captura, a prova de \"rota normal abre\" fica registrada como pendente e o verified E2E nao e proposto — proposta abaixo distingue BE done (CRUD+RLS+reload provados por RPC produtiva) de FE/E2E."
+      },
+      {
+        "actionIds": [
+          "notices.publish",
+          "notices.schedule"
+        ],
+        "pending": "aplicar 20260910200500; gravar COELO_NOTICE_WORKER_SECRET; deploy de notice-publication-worker; cron.schedule; depois provar: publicar aviso pelo app → job queued → worker roda → notice_receipts com a instituicao sintetica (membros) → reach>0 no diretorio."
+      }
     ],
-    "candidatosRestantes": 0,
-    "coordenacaoRecibo": "rev 30 registra publicacoes-agenda rev 28 (finalizado)",
-    "inventarioRecorte": {
-      "feVerified": 16,
-      "beDone": 20,
-      "e2eVerified": 16,
-      "total": 24
+    "questionsToOwner": [
+      "agenda_calendar_light_375: a leitura de \"retangulos muito amassados\" foi celula quase quadrada com marcas coloridas e +N (render atual) em vez de rotulos truncados; confirmar (imagens: git show 58bfe1fed:...goldens/agenda_calendar_light_375.png vs HEAD).",
+      "agenda_detail_light_375/768/1440 (R): manter o indicador de status com alvo de 48 px (render atual, do composto) ou voltar ao circulo de 24 px da referencia?",
+      "Balao de chat em criar/editar/publicar (Decisao 7): a 1440 cobre o botao Publicar da Circular; confirmar que o shell deve esconde-lo nessas rotas (dono: principal-chat-sistema)."
+    ],
+    "productionProof": {
+      "session": "qa-r03@coelo.me AAL1 via login por senha + PostgREST (script docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/prova-producao.js)",
+      "runs": [
+        {
+          "at": "2026-09-10T22:45-03:00",
+          "file": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/prova-producao-20260910-2245.md",
+          "result": "16/17 (Avisos CRUD completo; Circulares/Agenda so leitura: producao sem instituicao)"
+        },
+        {
+          "at": "2026-09-10T23:00-03:00",
+          "file": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/prova-producao-20260910-2300.md",
+          "result": "32/33 com a instituicao sintetica 9f040000-...-0010: Circulares criar/agendar/publicar/filtrar/encerrar/excluir OK, editar FALHOU (42702, corrigido em 200400); Agenda criar/detalhe/editar+publicar/reload/cancelar OK; anon negado nas tres familias"
+        },
+        {
+          "at": "2026-09-10T23:45-03:00",
+          "file": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/prova-producao-20260910-2345.md",
+          "result": "33/33 apos 200400 em producao (circulars.edit passou)"
+        }
+      ],
+      "note": "Prova por RPC produtiva com a mesma assinatura que os repositorios chamam. A rota normal na UI (localhost:3006, Chrome via CDP) esta em andamento; verified so com a UI aberta."
     },
-    "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-publicacoes-agenda sem WIP; pode ser removida (branch preservada)",
-    "processos": "nenhum Chrome/servidor/descartavel meu rodando"
-  },
-  "skillDeltas": {
-    "file": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/skill-deltas.md",
-    "resumo": {
-      "coelo-backend": [
-        "ADD VALUE em arquivo proprio (db query -f e transacional)",
-        "audit_logs.reason_code exige codigo maiusculo; helper normaliza",
-        "forma de producao: labels, revision_id NOT NULL, circulars_check1, unit_type_id, analytics.notice_events, sem row_security_active, proconfig search_path=\"\"",
-        "pgTAP comportamental obrigatorio (42702, record nao atribuido, CTE com coluna extra)",
-        "grants default do Supabase: revoke explicito em todo pacote + varredura",
-        "realm interno em RPC people-based: colunas internas + trigger + has_permission somado; nunca people para interno",
-        "catalogo: conferir platform_role_permissions (agenda.* nao tinha)",
-        "descartavel: reset so com baseline, resto por psql; portas proprias; script de prova limpa",
-        "prova BE por RPC com sessao (GoTrue+PostgREST)",
-        "worker v2: so service_role; disparo = P30"
-      ],
-      "coelo-frontend": [
-        "rota real por build web + servidor estatico + CDP quando dwds falha; porta CDP por conversa; deep link por pushState",
-        "tap por ByValueKey, nao por coordenada; frame sync off com animacao; balao de chat intercepta (Decisao 7, corrigido em dcfcb9e41)",
-        "composto: pumpAndSettle antes de interagir; titulo no shell; Arquivos honesto; teste de estado vazio por diretorio",
-        "regras de tela: diretorio rele ao voltar de mutacao; acao so quando servidor aceita; detalhe carrega contextos",
-        "goldens A/R aplicados; FUNDO depende do SuperadminFormFrame; P33/P34 lado a lado",
-        "um flutter test por vez (--concurrency=1)"
-      ],
-      "coelo-frontend-backend": [
-        "regua do MVP por action_id e sequencia pacote→aplicacao→RPC→UI→deltas",
-        "instituicao sintetica e pre-requisito; dados [R04-QA] em producao para limpeza",
-        "achados abertos com gate: balao, deep link frio, picker, respond/attach, request/permissions/location, notices.schedule pela tela"
+    "uiRouteProof": {
+      "app": "build web profile de test_driver/qa_main.dart servido em 127.0.0.1:3006 (python http.server; deep link recarrega por / + pushState), Chrome com CDP, login pelo qa_drive.dart com QA_EMAIL/QA_PASSWORD so no ambiente",
+      "captures": "scratchpad ui-01..ui-07 (copiadas para docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/ui/ na proxima revisao)",
+      "steps": [
+        "ui-02-home: sessao qa-r03 aberta (Owner Coelo) na Home",
+        "ui-03-notices: /notices abre o diretorio de Avisos no composto com os avisos [R04-QA] de producao em tabela; toolbar, abas, Criar e paginacao presentes",
+        "ui-04-notice-new: Nova comunicacao abre /notices/new (formulario real, sem fixture); ACHADO: balao de chat \"Mensagens\" aparece sobre o rodape do formulario e cobre parte do botao Continuar — viola a Decisao 7 (sem chat em criar/editar/publicar); pertence ao shell (principal-chat-sistema/coordenador)",
+        "ui-05: validacao honesta \"Informe a mensagem do aviso para continuar\" ao salvar sem mensagem",
+        "ui-06-notice-saved: Salvar rascunho persistiu em producao: \"[R04-QA UI] Aviso criado pela tela\" listado no diretorio",
+        "ui-07-notices-reload: app recarregado por completo (navegacao para / e volta a /notices) com a sessao mantida e o aviso criado pela tela presente",
+        "ui-27..ui-36: Avisos editar/publicar/inativar pela tela (viewport 1024, segundo Chrome 9334 porque outro processo passou a usar o 9333)",
+        "ui-37..ui-41: evento criado e publicado pela tela, detalhe apos reload"
       ]
     },
-    "posMvp": [
-      "cadeia legada de Avisos e metricas por geracao",
-      "disparo do worker (P30) e reach>0",
-      "pgTAP historicos de Agenda",
-      "revisao profunda de seguranca (concorrencia, IDOR por tela, grants default)",
-      "membership interno escopado na Agenda",
-      "cleanup de jobs e available_at apos editar starts_at"
-    ]
-  },
-  "miniRevisao": {
-    "quando": "2026-09-11T03:35:00-03:00",
-    "destinatario": "coelo-04 (coordenacao R04, ref de3c83) — nao apareceu no ListAgents as 03:33; entrega gravada aqui por instrucao do Owner",
-    "shaFinal": "7367370c1 (branch work/etapa2-r04-publicacoes-agenda, publicada)",
-    "fechouPorActionId": [
-      {
-        "action_id": "notices.list",
-        "prova": "200000 em producao; RPC com sessao; ui-03/ui-07 com reload; anon 401"
-      },
-      {
-        "action_id": "notices.create",
-        "prova": "RPC + replay idempotente; ui-04..ui-07 pela tela + reload"
-      },
-      {
-        "action_id": "notices.edit",
-        "prova": "RPC com versao otimista + reload; ui-27/ui-28/ui-30 pela tela"
-      },
-      {
-        "action_id": "notices.publish",
-        "prova": "RPC (inicio passado -> active); ui-32/ui-33 pelo menu de acoes"
-      },
-      {
-        "action_id": "notices.archive",
-        "prova": "RPC inativar com motivo + reload; ui-34..ui-36 pela tela"
-      },
-      {
-        "action_id": "circulars.list",
-        "prova": "200100 em producao; ui-08/ui-24 (vazio e apos reload)"
-      },
-      {
-        "action_id": "circulars.filter",
-        "prova": "RPC filtra por status/busca; ui-47/ui-48 abas"
-      },
-      {
-        "action_id": "circulars.create",
-        "prova": "RPC; ui-09..ui-11 compositor real"
-      },
-      {
-        "action_id": "circulars.detail",
-        "prova": "RPC; ui-18/ui-20"
-      },
-      {
-        "action_id": "circulars.publish",
-        "prova": "RPC imediato -> published; ui-17 (a 1024; a 1440 o balao cobria o botao)"
-      },
-      {
-        "action_id": "circulars.close",
-        "prova": "RPC -> closed; ui-19/ui-20 com confirmacao"
-      },
-      {
-        "action_id": "circulars.delete",
-        "prova": "200200 + pgTAP comportamental 15/15; ui-22..ui-24 com confirmacao e reload"
-      },
-      {
-        "action_id": "agenda.view",
-        "prova": "200300 em producao; RPC list; ui-25 calendario real; composto na lista de eventos"
-      },
-      {
-        "action_id": "agenda.create",
-        "prova": "RPC save; ui-37..ui-40 wizard real, publicado"
-      },
-      {
-        "action_id": "agenda.detail",
-        "prova": "RPC get; ui-40/ui-41 (reload); contextos carregados (rev 26)"
-      },
-      {
-        "action_id": "agenda.edit",
-        "prova": "RPC editar+publicar+cancelar; ui-49..ui-51 pelas chaves do wizard"
-      }
-    ],
-    "abertoComPrimeiroGate": [
-      {
-        "action_id": "notices.schedule",
-        "camada": "frontend",
-        "gate": "agendar pela tela (data futura no formulario) e ver scheduled no diretorio; BE done"
-      },
-      {
-        "action_id": "circulars.edit",
-        "camada": "frontend",
-        "gate": "editar explicitamente uma Circular existente pela tela (reabrir rascunho e salvar); BE done (200400)"
-      },
-      {
-        "action_id": "circulars.schedule",
-        "camada": "frontend",
-        "gate": "acionar o seletor de data/hora do agendamento inline pela tela; BE done"
-      },
-      {
-        "action_id": "circulars.respond",
-        "camada": "backend",
-        "gate": "RPCs people-based do Principal (save_circular_response_draft/submit) fora do gateway v2; decidir se entra no MVP do Superadmin"
-      },
-      {
-        "action_id": "circulars.attach",
-        "camada": "backend",
-        "gate": "anexar arquivo real pela tela com R2 (circular-media v5) e reload; CORS exige origem localhost:3000"
-      },
-      {
-        "action_id": "agenda.request",
-        "camada": "backend",
-        "gate": "exercitar superadmin_agenda_requests com solicitacao sintetica (precisa de responsavel/pessoa no realm people-based)"
-      },
-      {
-        "action_id": "agenda.permissions",
-        "camada": "frontend",
-        "gate": "tela de permissoes pela rota real; BE done (contexts)"
-      },
-      {
-        "action_id": "agenda.location",
-        "camada": "backend",
-        "gate": "unidade sintetica na instituicao 9f040000-...-0010 para contexto de unidade; pgTAP ja nega cross-tenant"
-      },
-      {
-        "action_id": "agenda.detail",
-        "camada": "frontend",
-        "gate": "deep link direto apos carga fria fica em spinner ate passar pelo calendario (reproduzir em teste de rota com store real); nome da instituicao ja corrigido"
-      },
-      {
-        "action_id": "circulars.publish",
-        "camada": "frontend",
-        "gate": "confirmar na base que o balao de chat nao cobre mais Publicar a 1440 (dcfcb9e41 do principal-chat)"
-      }
-    ],
-    "deltasPropostos": [
-      {
-        "action_id": "notices.list",
-        "camada": "backend",
-        "estado_proposto": "done",
-        "delta": "back-end -> done (R04 publicacoes-agenda)",
-        "evidencia": "200000 em producao; RPC com sessao; anon negado; reload",
-        "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
-      },
-      {
-        "action_id": "notices.create",
-        "camada": "backend",
-        "estado_proposto": "done",
-        "delta": "back-end -> done (R04 publicacoes-agenda)",
-        "evidencia": "idem; idempotencia",
-        "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
-      },
-      {
-        "action_id": "notices.edit",
-        "camada": "backend",
-        "estado_proposto": "done",
-        "delta": "back-end -> done (R04 publicacoes-agenda)",
-        "evidencia": "edicao com versao; reload",
-        "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
-      },
-      {
-        "action_id": "notices.schedule",
-        "camada": "backend",
-        "estado_proposto": "done",
-        "delta": "back-end -> done (R04 publicacoes-agenda)",
-        "evidencia": "publish com inicio futuro -> scheduled; 200500 enfileira",
-        "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
-      },
-      {
-        "action_id": "notices.publish",
-        "camada": "backend",
-        "estado_proposto": "done",
-        "delta": "back-end -> done (R04 publicacoes-agenda)",
-        "evidencia": "publish imediato -> active; worker em producao, disparo P30",
-        "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
-      },
-      {
-        "action_id": "notices.archive",
-        "camada": "backend",
-        "estado_proposto": "done",
-        "delta": "back-end -> done (R04 publicacoes-agenda)",
-        "evidencia": "inativar com motivo; reload",
-        "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
-      },
-      {
-        "action_id": "notices.list",
-        "camada": "frontend",
-        "estado_proposto": "verified",
-        "delta": "front-end -> verified (R04 publicacoes-agenda)",
-        "evidencia": "ui-03/ui-07: rota normal com dados reais e reload",
-        "certificacao": "aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/)"
-      },
-      {
-        "action_id": "notices.create",
-        "camada": "frontend",
-        "estado_proposto": "verified",
-        "delta": "front-end -> verified (R04 publicacoes-agenda)",
-        "evidencia": "ui-04..ui-07: formulario real, validacao, salvar, reload",
-        "certificacao": "aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/)"
-      },
-      {
-        "action_id": "notices.edit",
-        "camada": "frontend",
-        "estado_proposto": "verified",
-        "delta": "front-end -> verified (R04 publicacoes-agenda)",
-        "evidencia": "ui-27/ui-28/ui-30: edicao pela tela persistiu",
-        "certificacao": "aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/)"
-      },
-      {
-        "action_id": "notices.schedule",
-        "camada": "frontend",
-        "estado_proposto": "local-green",
-        "delta": "front-end -> local-green (R04 publicacoes-agenda)",
-        "evidencia": "nao exercido pela tela",
-        "certificacao": "sem certificado; prova local"
-      },
-      {
-        "action_id": "notices.publish",
-        "camada": "frontend",
-        "estado_proposto": "verified",
-        "delta": "front-end -> verified (R04 publicacoes-agenda)",
-        "evidencia": "ui-32/ui-33: Publicar pelo menu de acoes -> ativo",
-        "certificacao": "aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/)"
-      },
-      {
-        "action_id": "notices.archive",
-        "camada": "frontend",
-        "estado_proposto": "verified",
-        "delta": "front-end -> verified (R04 publicacoes-agenda)",
-        "evidencia": "ui-34..ui-36: Inativar com motivo -> inativo",
-        "certificacao": "aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/)"
-      },
-      {
-        "action_id": "notices.list",
-        "camada": "integrated",
-        "estado_proposto": "verified-e2e",
-        "delta": "integrado -> verified-e2e (R04 publicacoes-agenda)",
-        "evidencia": "rota normal + producao + RLS(pgTAP) + reload (ui-07)",
-        "certificacao": "rota normal + CRUD em producao + RLS (pgTAP) + reload, mesma acao nas duas camadas"
-      },
-      {
-        "action_id": "notices.create",
-        "camada": "integrated",
-        "estado_proposto": "verified-e2e",
-        "delta": "integrado -> verified-e2e (R04 publicacoes-agenda)",
-        "evidencia": "ui-06/ui-07 + pgTAP",
-        "certificacao": "rota normal + CRUD em producao + RLS (pgTAP) + reload, mesma acao nas duas camadas"
-      },
-      {
-        "action_id": "circulars.list",
-        "camada": "backend",
-        "estado_proposto": "done",
-        "delta": "back-end -> done (R04 publicacoes-agenda)",
-        "evidencia": "200100",
-        "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
-      },
-      {
-        "action_id": "circulars.filter",
-        "camada": "backend",
-        "estado_proposto": "done",
-        "delta": "back-end -> done (R04 publicacoes-agenda)",
-        "evidencia": "RPC filtra por status/busca",
-        "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
-      },
-      {
-        "action_id": "circulars.create",
-        "camada": "backend",
-        "estado_proposto": "done",
-        "delta": "back-end -> done (R04 publicacoes-agenda)",
-        "evidencia": "ver handoff.md",
-        "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
-      },
-      {
-        "action_id": "circulars.edit",
-        "camada": "backend",
-        "estado_proposto": "done",
-        "delta": "back-end -> done (R04 publicacoes-agenda)",
-        "evidencia": "200400",
-        "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
-      },
-      {
-        "action_id": "circulars.detail",
-        "camada": "backend",
-        "estado_proposto": "done",
-        "delta": "back-end -> done (R04 publicacoes-agenda)",
-        "evidencia": "ver handoff.md",
-        "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
-      },
-      {
-        "action_id": "circulars.schedule",
-        "camada": "backend",
-        "estado_proposto": "done",
-        "delta": "back-end -> done (R04 publicacoes-agenda)",
-        "evidencia": "publish_at futuro -> scheduled",
-        "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
-      },
-      {
-        "action_id": "circulars.publish",
-        "camada": "backend",
-        "estado_proposto": "done",
-        "delta": "back-end -> done (R04 publicacoes-agenda)",
-        "evidencia": "ver handoff.md",
-        "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
-      },
-      {
-        "action_id": "circulars.close",
-        "camada": "backend",
-        "estado_proposto": "done",
-        "delta": "back-end -> done (R04 publicacoes-agenda)",
-        "evidencia": "ver handoff.md",
-        "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
-      },
-      {
-        "action_id": "circulars.delete",
-        "camada": "backend",
-        "estado_proposto": "done",
-        "delta": "back-end -> done (R04 publicacoes-agenda)",
-        "evidencia": "200200 + pgTAP comportamental",
-        "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
-      },
-      {
-        "action_id": "circulars.respond",
-        "camada": "backend",
-        "estado_proposto": "pending-verification",
-        "delta": "back-end -> pending-verification (R04 publicacoes-agenda)",
-        "evidencia": "RPCs people-based do Principal, fora do gateway v2",
-        "certificacao": "sem certificado; prova local ou RPC nao exercida com dados"
-      },
-      {
-        "action_id": "circulars.attach",
-        "camada": "backend",
-        "estado_proposto": "local-green",
-        "delta": "back-end -> local-green (R04 publicacoes-agenda)",
-        "evidencia": "R2 em producao; upload real nao exercido",
-        "certificacao": "sem certificado; prova local ou RPC nao exercida com dados"
-      },
-      {
-        "action_id": "circulars.list",
-        "camada": "frontend",
-        "estado_proposto": "verified",
-        "delta": "front-end -> verified (R04 publicacoes-agenda)",
-        "evidencia": "ui-08/ui-24",
-        "certificacao": "aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/)"
-      },
-      {
-        "action_id": "circulars.filter",
-        "camada": "frontend",
-        "estado_proposto": "verified",
-        "delta": "front-end -> verified (R04 publicacoes-agenda)",
-        "evidencia": "ui-47/ui-48: abas Encerradas/Rascunhos filtram; sem resultados mantem Criar e Limpar filtros",
-        "certificacao": "aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/)"
-      },
-      {
-        "action_id": "circulars.create",
-        "camada": "frontend",
-        "estado_proposto": "verified",
-        "delta": "front-end -> verified (R04 publicacoes-agenda)",
-        "evidencia": "ui-09..ui-11",
-        "certificacao": "aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/)"
-      },
-      {
-        "action_id": "circulars.edit",
-        "camada": "frontend",
-        "estado_proposto": "local-green",
-        "delta": "front-end -> local-green (R04 publicacoes-agenda)",
-        "evidencia": "rascunho reaberto em edicao (ui-11); edicao explicita nao exercida",
-        "certificacao": "sem certificado; prova local"
-      },
-      {
-        "action_id": "circulars.detail",
-        "camada": "frontend",
-        "estado_proposto": "verified",
-        "delta": "front-end -> verified (R04 publicacoes-agenda)",
-        "evidencia": "ui-18/ui-20",
-        "certificacao": "aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/)"
-      },
-      {
-        "action_id": "circulars.schedule",
-        "camada": "frontend",
-        "estado_proposto": "local-green",
-        "delta": "front-end -> local-green (R04 publicacoes-agenda)",
-        "evidencia": "campo inline presente (ui-14); picker nao acionado",
-        "certificacao": "sem certificado; prova local"
-      },
-      {
-        "action_id": "circulars.publish",
-        "camada": "frontend",
-        "estado_proposto": "verified",
-        "delta": "front-end -> verified (R04 publicacoes-agenda)",
-        "evidencia": "ui-17 a 1024; a 1440 o balao de chat cobre o botao (achado bloqueante do shell)",
-        "certificacao": "aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/)"
-      },
-      {
-        "action_id": "circulars.close",
-        "camada": "frontend",
-        "estado_proposto": "verified",
-        "delta": "front-end -> verified (R04 publicacoes-agenda)",
-        "evidencia": "ui-19/ui-20",
-        "certificacao": "aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/)"
-      },
-      {
-        "action_id": "circulars.delete",
-        "camada": "frontend",
-        "estado_proposto": "verified",
-        "delta": "front-end -> verified (R04 publicacoes-agenda)",
-        "evidencia": "ui-22/ui-23/ui-24; recarga apos excluir corrigida no router (circular_routes_test)",
-        "certificacao": "aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/)"
-      },
-      {
-        "action_id": "circulars.respond",
-        "camada": "frontend",
-        "estado_proposto": "pending-verification",
-        "delta": "front-end -> pending-verification (R04 publicacoes-agenda)",
-        "evidencia": "ver handoff.md",
-        "certificacao": "sem certificado; prova local"
-      },
-      {
-        "action_id": "circulars.attach",
-        "camada": "frontend",
-        "estado_proposto": "pending-verification",
-        "delta": "front-end -> pending-verification (R04 publicacoes-agenda)",
-        "evidencia": "ver handoff.md",
-        "certificacao": "sem certificado; prova local"
-      },
-      {
-        "action_id": "circulars.list",
-        "camada": "integrated",
-        "estado_proposto": "verified-e2e",
-        "delta": "integrado -> verified-e2e (R04 publicacoes-agenda)",
-        "evidencia": "ui-24 apos reload",
-        "certificacao": "rota normal + CRUD em producao + RLS (pgTAP) + reload, mesma acao nas duas camadas"
-      },
-      {
-        "action_id": "circulars.create",
-        "camada": "integrated",
-        "estado_proposto": "verified-e2e",
-        "delta": "integrado -> verified-e2e (R04 publicacoes-agenda)",
-        "evidencia": "ver handoff.md",
-        "certificacao": "rota normal + CRUD em producao + RLS (pgTAP) + reload, mesma acao nas duas camadas"
-      },
-      {
-        "action_id": "circulars.detail",
-        "camada": "integrated",
-        "estado_proposto": "verified-e2e",
-        "delta": "integrado -> verified-e2e (R04 publicacoes-agenda)",
-        "evidencia": "ver handoff.md",
-        "certificacao": "rota normal + CRUD em producao + RLS (pgTAP) + reload, mesma acao nas duas camadas"
-      },
-      {
-        "action_id": "circulars.publish",
-        "camada": "integrated",
-        "estado_proposto": "verified-e2e",
-        "delta": "integrado -> verified-e2e (R04 publicacoes-agenda)",
-        "evidencia": "com ressalva do balao a 1440",
-        "certificacao": "rota normal + CRUD em producao + RLS (pgTAP) + reload, mesma acao nas duas camadas"
-      },
-      {
-        "action_id": "circulars.close",
-        "camada": "integrated",
-        "estado_proposto": "verified-e2e",
-        "delta": "integrado -> verified-e2e (R04 publicacoes-agenda)",
-        "evidencia": "ver handoff.md",
-        "certificacao": "rota normal + CRUD em producao + RLS (pgTAP) + reload, mesma acao nas duas camadas"
-      },
-      {
-        "action_id": "circulars.delete",
-        "camada": "integrated",
-        "estado_proposto": "verified-e2e",
-        "delta": "integrado -> verified-e2e (R04 publicacoes-agenda)",
-        "evidencia": "ui-24",
-        "certificacao": "rota normal + CRUD em producao + RLS (pgTAP) + reload, mesma acao nas duas camadas"
-      },
-      {
-        "action_id": "agenda.view",
-        "camada": "backend",
-        "estado_proposto": "done",
-        "delta": "back-end -> done (R04 publicacoes-agenda)",
-        "evidencia": "200300; RPC com sessao",
-        "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
-      },
-      {
-        "action_id": "agenda.create",
-        "camada": "backend",
-        "estado_proposto": "done",
-        "delta": "back-end -> done (R04 publicacoes-agenda)",
-        "evidencia": "ver handoff.md",
-        "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
-      },
-      {
-        "action_id": "agenda.detail",
-        "camada": "backend",
-        "estado_proposto": "done",
-        "delta": "back-end -> done (R04 publicacoes-agenda)",
-        "evidencia": "ver handoff.md",
-        "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
-      },
-      {
-        "action_id": "agenda.edit",
-        "camada": "backend",
-        "estado_proposto": "done",
-        "delta": "back-end -> done (R04 publicacoes-agenda)",
-        "evidencia": "editar+publicar+cancelar",
-        "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
-      },
-      {
-        "action_id": "agenda.permissions",
-        "camada": "backend",
-        "estado_proposto": "done",
-        "delta": "back-end -> done (R04 publicacoes-agenda)",
-        "evidencia": "contexts com capacidades e instituicao",
-        "certificacao": "pacote em producao + pgTAP verde com negativa cross-tenant + persistencia/reload por RPC com a sessao qa-r03 (prova-producao 33/33)"
-      },
-      {
-        "action_id": "agenda.request",
-        "camada": "backend",
-        "estado_proposto": "local-green",
-        "delta": "back-end -> local-green (R04 publicacoes-agenda)",
-        "evidencia": "superadmin_agenda_requests recriada; nao exercida com dados",
-        "certificacao": "sem certificado; prova local ou RPC nao exercida com dados"
-      },
-      {
-        "action_id": "agenda.location",
-        "camada": "backend",
-        "estado_proposto": "local-green",
-        "delta": "back-end -> local-green (R04 publicacoes-agenda)",
-        "evidencia": "contexto de unidade fora do tenant recusado (pgTAP); sem unidade sintetica",
-        "certificacao": "sem certificado; prova local ou RPC nao exercida com dados"
-      },
-      {
-        "action_id": "agenda.view",
-        "camada": "frontend",
-        "estado_proposto": "verified",
-        "delta": "front-end -> verified (R04 publicacoes-agenda)",
-        "evidencia": "ui-25 calendario real com eventos de producao; composto na lista de eventos; goldens 375",
-        "certificacao": "aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/)"
-      },
-      {
-        "action_id": "agenda.create",
-        "camada": "frontend",
-        "estado_proposto": "verified",
-        "delta": "front-end -> verified (R04 publicacoes-agenda)",
-        "evidencia": "ui-37..ui-40: wizard real, Publicar, detalhe",
-        "certificacao": "aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/)"
-      },
-      {
-        "action_id": "agenda.detail",
-        "camada": "frontend",
-        "estado_proposto": "verified",
-        "delta": "front-end -> verified (R04 publicacoes-agenda)",
-        "evidencia": "ui-40/ui-41; achados: deep link frio fica em spinner; UUID no lugar do nome ate contexts carregar",
-        "certificacao": "aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/)"
-      },
-      {
-        "action_id": "agenda.edit",
-        "camada": "frontend",
-        "estado_proposto": "verified",
-        "delta": "front-end -> verified (R04 publicacoes-agenda)",
-        "evidencia": "ui-49..ui-51: edicao pela tela (chaves do wizard), publicada, detalhe com nome da instituicao",
-        "certificacao": "aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/)"
-      },
-      {
-        "action_id": "agenda.request",
-        "camada": "frontend",
-        "estado_proposto": "local-green",
-        "delta": "front-end -> local-green (R04 publicacoes-agenda)",
-        "evidencia": "ver handoff.md",
-        "certificacao": "sem certificado; prova local"
-      },
-      {
-        "action_id": "agenda.permissions",
-        "camada": "frontend",
-        "estado_proposto": "local-green",
-        "delta": "front-end -> local-green (R04 publicacoes-agenda)",
-        "evidencia": "ver handoff.md",
-        "certificacao": "sem certificado; prova local"
-      },
-      {
-        "action_id": "agenda.location",
-        "camada": "frontend",
-        "estado_proposto": "local-green",
-        "delta": "front-end -> local-green (R04 publicacoes-agenda)",
-        "evidencia": "ver handoff.md",
-        "certificacao": "sem certificado; prova local"
-      },
-      {
-        "action_id": "agenda.view",
-        "camada": "integrated",
-        "estado_proposto": "verified-e2e",
-        "delta": "integrado -> verified-e2e (R04 publicacoes-agenda)",
-        "evidencia": "ui-25 + pgTAP + producao",
-        "certificacao": "rota normal + CRUD em producao + RLS (pgTAP) + reload, mesma acao nas duas camadas"
-      },
-      {
-        "action_id": "notices.edit",
-        "camada": "integrated",
-        "estado_proposto": "verified-e2e",
-        "delta": "integrado -> verified-e2e (R04 publicacoes-agenda)",
-        "evidencia": "UI + producao + pgTAP + reload (ui-42)",
-        "certificacao": "rota normal + CRUD em producao + RLS (pgTAP) + reload, mesma acao nas duas camadas"
-      },
-      {
-        "action_id": "notices.publish",
-        "camada": "integrated",
-        "estado_proposto": "verified-e2e",
-        "delta": "integrado -> verified-e2e (R04 publicacoes-agenda)",
-        "evidencia": "UI + producao + pgTAP",
-        "certificacao": "rota normal + CRUD em producao + RLS (pgTAP) + reload, mesma acao nas duas camadas"
-      },
-      {
-        "action_id": "notices.archive",
-        "camada": "integrated",
-        "estado_proposto": "verified-e2e",
-        "delta": "integrado -> verified-e2e (R04 publicacoes-agenda)",
-        "evidencia": "UI + producao + pgTAP",
-        "certificacao": "rota normal + CRUD em producao + RLS (pgTAP) + reload, mesma acao nas duas camadas"
-      },
-      {
-        "action_id": "agenda.create",
-        "camada": "integrated",
-        "estado_proposto": "verified-e2e",
-        "delta": "integrado -> verified-e2e (R04 publicacoes-agenda)",
-        "evidencia": "UI + producao (superadmin_agenda_save) + pgTAP + reload ui-41",
-        "certificacao": "rota normal + CRUD em producao + RLS (pgTAP) + reload, mesma acao nas duas camadas"
-      },
-      {
-        "action_id": "agenda.detail",
-        "camada": "integrated",
-        "estado_proposto": "verified-e2e",
-        "delta": "integrado -> verified-e2e (R04 publicacoes-agenda)",
-        "evidencia": "ui-41 apos reload",
-        "certificacao": "rota normal + CRUD em producao + RLS (pgTAP) + reload, mesma acao nas duas camadas"
-      },
-      {
-        "action_id": "circulars.filter",
-        "camada": "integrated",
-        "estado_proposto": "verified-e2e",
-        "delta": "integrado -> verified-e2e (R04 publicacoes-agenda)",
-        "evidencia": "UI + RPC filtra em producao (prova 33/33) + pgTAP",
-        "certificacao": "rota normal + CRUD em producao + RLS (pgTAP) + reload, mesma acao nas duas camadas"
-      },
-      {
-        "action_id": "agenda.edit",
-        "camada": "integrated",
-        "estado_proposto": "verified-e2e",
-        "delta": "integrado -> verified-e2e (R04 publicacoes-agenda)",
-        "evidencia": "UI + producao (superadmin_agenda_save rev 3) + pgTAP",
-        "certificacao": "rota normal + CRUD em producao + RLS (pgTAP) + reload, mesma acao nas duas camadas"
-      }
-    ],
-    "dadosSinteticosEmProducao": {
-      "instituicao": "9f040000-0000-4000-8000-000000000010 (QA R04 Instituicao Sintetica, criada pelo realm-interno; nao e minha)",
-      "avisos": "[R04-QA hh:mm:ss] Aviso imediato/editado (pares por rodada de prova-producao.js: 01:42:59, 02:00:55, 03:15:19 UTC) + [R04-QA UI] Aviso editado pela tela — todos deixados com status inactive (o v2 nao exclui); tabela public.platform_notices",
-      "circulares": "[R04-QA ...] Circular editada / Rascunho a excluir / Publicada imediata (por rodada do script) e [R04-QA UI] Circular criada pela tela (closed) + [R04-QA UI] Rascunho para excluir — excluidas (deleted_at) ou closed; public.circulars, circular_revisions, circular_blocks, circular_audience_rules; recibos em app_private.superadmin_circular_command_receipts",
-      "eventos": "[R04-QA ...] Reuniao editada (canceladas pelo script) e [R04-QA UI] Evento editado pela tela (published) — public.agenda_events e agenda_history_receipts na instituicao sintetica",
-      "auditoria": "audit.audit_logs e app_private.circular_audit com entradas do qa-r03 (identidade interna do usuario sintetico); append-only",
-      "limpeza": "coordenador ao fim da rodada: filtrar por titulo com prefixo [R04-QA] nas tres tabelas"
+    "skillDeltas": {
+      "file": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/skill-deltas.md",
+      "resumo": {
+        "coelo-backend": [
+          "ADD VALUE em arquivo proprio (db query -f e transacional)",
+          "audit_logs.reason_code exige codigo maiusculo; helper normaliza",
+          "forma de producao: labels, revision_id NOT NULL, circulars_check1, unit_type_id, analytics.notice_events, sem row_security_active, proconfig search_path=\"\"",
+          "pgTAP comportamental obrigatorio (42702, record nao atribuido, CTE com coluna extra)",
+          "grants default do Supabase: revoke explicito em todo pacote + varredura",
+          "realm interno em RPC people-based: colunas internas + trigger + has_permission somado; nunca people para interno",
+          "catalogo: conferir platform_role_permissions (agenda.* nao tinha)",
+          "descartavel: reset so com baseline, resto por psql; portas proprias; script de prova limpa",
+          "prova BE por RPC com sessao (GoTrue+PostgREST)",
+          "worker v2: so service_role; disparo = P30"
+        ],
+        "coelo-frontend": [
+          "rota real por build web + servidor estatico + CDP quando dwds falha; porta CDP por conversa; deep link por pushState",
+          "tap por ByValueKey, nao por coordenada; frame sync off com animacao; balao de chat intercepta (Decisao 7, corrigido em dcfcb9e41)",
+          "composto: pumpAndSettle antes de interagir; titulo no shell; Arquivos honesto; teste de estado vazio por diretorio",
+          "regras de tela: diretorio rele ao voltar de mutacao; acao so quando servidor aceita; detalhe carrega contextos",
+          "goldens A/R aplicados; FUNDO depende do SuperadminFormFrame; P33/P34 lado a lado",
+          "um flutter test por vez (--concurrency=1)"
+        ],
+        "coelo-frontend-backend": [
+          "regua do MVP por action_id e sequencia pacote→aplicacao→RPC→UI→deltas",
+          "instituicao sintetica e pre-requisito; dados [R04-QA] em producao para limpeza",
+          "achados abertos com gate: balao, deep link frio, picker, respond/attach, request/permissions/location, notices.schedule pela tela"
+        ]
+      },
+      "posMvp": [
+        "cadeia legada de Avisos e metricas por geracao",
+        "disparo do worker (P30) e reach>0",
+        "pgTAP historicos de Agenda",
+        "revisao profunda de seguranca (concorrencia, IDOR por tela, grants default)",
+        "membership interno escopado na Agenda",
+        "cleanup de jobs e available_at apos editar starts_at"
+      ]
     },
-    "pacotesEmProducao": [
-      "20260910200000",
-      "20260910200100",
-      "20260910200200",
-      "20260910200300",
-      "20260910200400",
-      "20260910200500"
-    ],
-    "skillDeltas": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/skill-deltas.md",
-    "duvidasAoOwner": "P33/P34 em docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/duvidas-visuais.html"
+    "deliveryValidation": {
+      "at": "2026-09-11T03:20:00-03:00",
+      "branchHead": "f0b3b72e4",
+      "commitsForaDeDev": 0,
+      "arvoreLimpa": true,
+      "pacotesEmMigrations": [
+        "20260910200000",
+        "20260910200100",
+        "20260910200200",
+        "20260910200300",
+        "20260910200400",
+        "20260910200500"
+      ],
+      "candidatosRestantes": 0,
+      "coordenacaoRecibo": "rev 30 registra publicacoes-agenda rev 28 (finalizado)",
+      "inventarioRecorte": {
+        "feVerified": 16,
+        "beDone": 20,
+        "e2eVerified": 16,
+        "total": 24
+      },
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-publicacoes-agenda sem WIP; pode ser removida (branch preservada)",
+      "processos": "nenhum Chrome/servidor/descartavel meu rodando"
+    },
+    "packages": [
+      {
+        "order": 1,
+        "file": "packages/coelo_database/candidatos/publicacoes-agenda/20260910200000_superadmin_internal_notices_v2_baseline.sql",
+        "actionIds": [
+          "notices.list",
+          "notices.create",
+          "notices.edit",
+          "notices.schedule",
+          "notices.publish",
+          "notices.archive"
+        ],
+        "pgtap": "supabase/tests/superadmin_internal_notices_v2_baseline_test.sql 38/38 PASS (descartavel coelo_baseline_pa, 22:20)",
+        "applyNote": "ALTER TYPE ... ADD VALUE fica antes do begin; aplicar com psql/db query -f como arquivo inteiro. Preflight recusa replay se superadmin_notice_directory_v2 ja existir. Zero linhas em platform_notices em producao.",
+        "fixes": [
+          "labels do catalogo",
+          "requires_mfa=false (Decisao 12)",
+          "notice_events em analytics (public.notice_events nao existe)",
+          "indice de ciclo de vida nao parcial",
+          "CTE do diretorio nao convertia para platform_notices",
+          "record next_row nao atribuido derrubava o diretorio sem proxima pagina",
+          "audit_logs.reason_code exige codigo maiusculo: motivo de inativacao vai para silencing_policy.inactive_reason"
+        ],
+        "compositionKey": "nenhuma: SupabaseNoticeRepository ja e o repositorio produtivo do router; conferir apos aplicar",
+        "sha": "a5251ed7d"
+      },
+      {
+        "order": 2,
+        "file": "packages/coelo_database/candidatos/publicacoes-agenda/20260910200100_superadmin_internal_circulars_v2_baseline.sql",
+        "actionIds": [
+          "circulars.list",
+          "circulars.filter",
+          "circulars.create",
+          "circulars.edit",
+          "circulars.detail",
+          "circulars.schedule",
+          "circulars.publish",
+          "circulars.close"
+        ],
+        "pgtap": "supabase/tests/superadmin_internal_circulars_v2_baseline_test.sql 32/32 PASS (inclui negativa cross-tenant, identidade escopada e revogada)",
+        "fixes": [
+          "labels do catalogo",
+          "requires_mfa=false",
+          "circular_audience_rules.revision_id NOT NULL em producao",
+          "reason_code normalizado no helper de auditoria",
+          "fixture: revogar membership exige version+1 (guard de producao)"
+        ],
+        "compositionKey": "nenhuma (gateway ja composto)",
+        "sha": "28a2e1dd4"
+      },
+      {
+        "order": 3,
+        "file": "packages/coelo_database/candidatos/publicacoes-agenda/20260910200200_superadmin_internal_circular_delete_v2.sql",
+        "actionIds": [
+          "circulars.delete"
+        ],
+        "pgtap": "superadmin_internal_circular_delete_v1_test.sql 10/10 (estrutural) + superadmin_internal_circular_delete_v2_behavior_test.sql 15/15 (persistencia, idempotencia, conflito, negativa de escopo, auditoria)",
+        "fixes": [
+          "renumerado de 20260910120000 (f15a9eec2)",
+          "circulars_check1 (status=draft ou publish_at) impedia arquivar rascunho: rascunho excluido mantem status e usa deleted_at"
+        ],
+        "compositionKey": "superadminCircularDeleteEnabled -> true apos aplicar (apps/superadmin composition)",
+        "sha": "4219b810f"
+      },
+      {
+        "order": 4,
+        "file": "packages/coelo_database/candidatos/publicacoes-agenda/20260910200300_agenda_internal_realm_compat_v1.sql",
+        "actionIds": [
+          "agenda.view",
+          "agenda.create",
+          "agenda.detail",
+          "agenda.edit",
+          "agenda.request",
+          "agenda.permissions",
+          "agenda.location"
+        ],
+        "pgtap": "supabase/tests/agenda_internal_realm_compat_v1_test.sql 22/22 (Owner interno cria/edita/publica/relê; content le e nao cria; identidade escopada em instituicao negada; pessoa sem membership negada; contexto de unidade fora do tenant recusado; trigger roteia ator; grants fechados)",
+        "fixes": [
+          "RPCs de producao sao people-based (current_person_id + FKs para people): colunas *_internal_identity_id + trigger de roteamento + agenda_actor_id/agenda_has_permission + assert_agenda_permission; 7 RPCs recriadas do texto de producao trocando so has_platform_permission -> agenda_has_permission (has_platform_permission intocado: e do grupo acessos-pessoas/P7)",
+          "superadmin_agenda_contexts inclui instituicoes do membership interno",
+          "producao NAO tinha nenhuma concessao de agenda.* a papel algum: concede read a owner/content/operations e o resto ao owner",
+          "SEGURANCA (baseline): anon/authenticated tinham SELECT/INSERT nas 5 tabelas agenda_* e PUBLIC tinha EXECUTE nas 7 RPCs; o pacote revoga e concede so a authenticated"
+        ],
+        "compositionKey": "nenhuma: SupabaseAgendaRepository (v1) ja e o repositorio produtivo; SupabaseAgendaReadRepository (v2, superadmin_agenda_*_v2) nao esta composto e as RPCs v2 nunca existiram em SQL",
+        "sha": "a63e80eec"
+      },
+      {
+        "order": 5,
+        "file": "packages/coelo_database/candidatos/publicacoes-agenda/20260910200400_superadmin_circular_save_draft_v2_fix.sql",
+        "actionIds": [
+          "circulars.edit"
+        ],
+        "pgtap": "superadmin_internal_circulars_v2_baseline_test.sql 34/34 (ganhou asserts de edicao)",
+        "fixes": [
+          "variavel plpgsql circular_id ambigua com a coluna (42702) derrubava toda edicao de rascunho; encontrada na prova em producao"
+        ],
+        "compositionKey": "nenhuma",
+        "sha": "08ed44357"
+      },
+      {
+        "order": 6,
+        "file": "packages/coelo_database/candidatos/publicacoes-agenda/20260910200500_notice_publication_worker_v2.sql",
+        "actionIds": [
+          "notices.publish",
+          "notices.schedule"
+        ],
+        "pgtap": "supabase/tests/notice_publication_worker_v2_test.sql 52/52 (claim/run como service_role materializam recibos, audiencia vazia falha o job sem tocar o aviso, superado/expirado/nao publicavel negam, authenticated/anon sem execute); regressao superadmin_internal_notices_v2_baseline_test 38/38",
+        "fixes": [
+          "fila app_private.notice_publication_jobs + indice unico parcial notice_receipts_platform_scope_uidx",
+          "claim com lease de 5 min; materialize a partir de audience_json (platform/institution/unit/group/person, role_codes, plan_ids, excluded_ids, filters) sem append_notice_audit e sem update em platform_notices; rastro em analytics.notice_events",
+          "run: notice_missing/notice_superseded/notice_expired/notice_not_publishable; primeira pagina adota o audience_json vigente",
+          "publish_v2 e change_status_v2 recriadas com insert on conflict do nothing na fila"
+        ],
+        "applyNote": "depois de 200400; sem ADD VALUE; registrar no ledger como 20260910200500/notice_publication_worker_v2. Assinaturas: claim_notice_publication_jobs_for_worker(p_worker text, p_limit int default 20) returns table(id uuid); run_notice_publication_job_for_worker(p_job_id uuid, p_limit int default 1000) returns jsonb (state processing|completed|failed). Depois: COELO_NOTICE_WORKER_SECRET, deploy do notice-publication-worker e cron.schedule (coordenador).",
+        "risks": [
+          "superado nao usa management_version (refresh_lifecycle do v2 incrementa a versao ao promover)",
+          "starts_at editado depois de publicar nao move available_at do job ja enfileirado",
+          "sem cleanup de jobs concluidos"
+        ],
+        "compositionKey": "nenhuma",
+        "sha": "pendente (commit local)"
+      }
+    ]
   }
 }
