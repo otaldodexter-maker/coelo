@@ -44,9 +44,6 @@ LoginAction createCoeloAuthLoginAction({
           }
         }
         final latestState = auth.currentSessionState;
-        // TEMP-DIAG (nao commitar)
-        // ignore: avoid_print
-        print('login-diag: mediaPrepared=$mediaPrepared context=${context != null} authKind=${authenticatedState.kind} sid=${authenticatedState.sessionId != null} latestKind=${latestState.kind} sameSid=${latestState.sessionId == authenticatedState.sessionId} rev=${session.authorizationInvalidationRevision}/$expectedRevision');
         final authorized =
             mediaPrepared &&
             context != null &&
@@ -95,15 +92,9 @@ LoginAction createCoeloAuthLoginAction({
           return const LoginResult.failure(CoeloAuthSignInResult.genericFailureMessage);
         }
         onAuthorizationCommitted?.call();
-        // TEMP-DIAG (nao commitar)
-        // ignore: avoid_print
-        print('login-diag: success');
         return const LoginResult.success();
       }
 
-      // TEMP-DIAG (nao commitar)
-      // ignore: avoid_print
-      print('login-diag: signIn failed: ${result.message}');
       return LoginResult.failure(result.message ?? CoeloAuthSignInResult.genericFailureMessage);
     } finally {
       inProgress = false;
