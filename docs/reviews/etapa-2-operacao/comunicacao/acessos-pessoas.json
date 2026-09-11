@@ -1,15 +1,15 @@
 {
-  "revision": 95,
-  "updated_at": "2026-09-11T00:44:48.220Z",
-  "relogio_local": "Thu Sep 10 2026 21:44:48 GMT-0300 (Horário Padrão de Brasília)",
+  "revision": 96,
+  "updated_at": "2026-09-11T01:13:03.665Z",
+  "relogio_local": "Thu Sep 10 2026 22:13:03 GMT-0300 (Horário Padrão de Brasília)",
   "round": "E2-R04-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
   "model": "Claude Fable 5.1 (o prompt previa Opus; a sessao aberta pelo Owner roda Fable 5.1)",
-  "status": "R04_ABERTURA",
+  "status": "R04_EM_CURSO",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-acessos-pessoas",
   "branch": "work/etapa2-r04-acessos-pessoas",
-  "head": "98cc0529d (origin/dev no fetch de 21:42)",
+  "head": "65a7600cd (rebase sobre origin/dev 836c63215, coordenacao rev 19)",
   "base_observed": "origin/dev 98cc0529d contem a4af2b198 e o R04-prompts.md; candidatos/acessos-pessoas tem 170900 (retido) e 170750 (obsoleto); lote 4 (170100-170800) em migrations/",
   "recorte": {
     "familias": [
@@ -37,9 +37,25 @@
     "aplicacao de candidatos/acessos-pessoas/20260910170900_people_read_aal1_for_mvp.sql (pode ficar redundante se a migration de MFA ja zerar requires_mfa e alinhar assert_people_permission; vou conferir e avisar)"
   ],
   "loop": "/loop 15m agendado na abertura",
-  "testes_P_F_B_S_U": "nenhum executado ainda nesta rodada",
-  "bloqueio": "nenhum",
-  "proximo_passo": "copiar .env.local para a worktree, subir flutter web em localhost:3000, entrar com qa-r03 e percorrer Convites",
+  "testes_P_F_B_S_U": "nenhum teste automatizado executado ainda nesta rodada; login real 1 P",
+  "bloqueio": "nenhum bloqueio total; escritas de Pessoas/Perfis/Modelos para o realm interno dependem da decisao acima (gate registrado)",
+  "proximo_passo": "Convites na rota normal (listar/detalhe/criar/reenviar/revogar) com captura; em paralelo escrever candidatos/acessos-pessoas/20260910171000_has_platform_permission_membership_v1.sql + pgTAP e provar no descartavel",
+  "ACK_ao_coordenador": "recebido o aviso do lote 8 (MFA fora do MVP + student_links_read) por mensagem entre sessoes as 22:10; respondido pelo mesmo canal; rebase feito.",
+  "ROTA_NORMAL_COM_SESSAO": {
+    "app": "flutter run -d web-server em http://localhost:3000 na worktree, .env.local (URL + chave publicavel), Chrome dedicado dirigido por CDP (porta 9333, perfil isolado); credencial lida do qa-r03.env so no ambiente do processo, nunca impressa",
+    "auth.login": "qa-r03@coelo.me entrou pela tela normal; Home abriu como 'Owner Coelo / Superadmin' (captura pos-login.png no scratchpad da sessao; sera anexada na evidencia da branch)",
+    "observacao_fora_do_recorte": "na tela de login o logo SVG da marca nao renderiza no modo web-server (circulo branco); nao e do meu recorte, registrado para o coordenador"
+  },
+  "ACHADO_QUE_MUDA_O_PLANO_DE_PESSOAS_E_PERFIS": {
+    "fato": "qa-r03 existe SO no realm interno v2 (superadmin_internal_auth_links ativo, membership platform/owner ativa) e NAO tem person_auth_links. app_private.current_person_id() devolve NULL para ele.",
+    "consequencia": "app_private.has_platform_permission(text) resolve permissao SOMENTE por public.platform_memberships via current_person_id(); para o realm interno devolve false. Assim assert_people_permission (Pessoas listar/criar/editar), require_profile_authority (Perfis e Modelos LER) e access_profile_require_mutation (Perfis e Modelos escrever) NEGAM qa-r03 mesmo com o MFA fora do MVP aplicado. A afirmacao da R03 de que 'leitura de Perfis ja funciona' valia so para usuario do realm people-based; nao vale para o usuario sintetico de producao.",
+    "medido_em_producao": "somente leitura via supabase db query --linked as 22:05: has_mfa_aal2 aceita aal1; requires_mfa=0 em 105 permissoes; ledger 20260910230021 mfa_fora_do_mvp_v1; guard person_auth_links_internal_realm_guard impede dar a qa-r03 uma person_auth_link.",
+    "o_que_o_pacote_P7_vai_fazer": "has_platform_permission(text) passa a considerar (a) platform_memberships com scope_kind='institution' (membership por instituicao, Decisao 12/P7) e (b) memberships do realm interno v2 (superadmin_internal_auth_links ativo + superadmin_internal_memberships ativa -> platform_role_permissions), mantendo deny-by-default e deny vence allow. Nova sobrecarga has_platform_permission(text, uuid) para negativa cross-tenant por instituicao. Isso destrava LEITURA de Pessoas e de Perfis/Modelos para o realm interno.",
+    "o_que_NAO_destrava": "escritas que passam por require_profile_authority/access_profile_require_mutation devolvem 'actor' = current_person_id() e usam esse uuid como autor; para usuario do realm interno o actor continua NULL. Opcoes: (i) fallback em current_person_id para uma pessoa-sombra da identidade interna (nao existe coluna person_id em superadmin_internal_identities), (ii) reescrever esses portoes para aceitar identidade interna como autor. E decisao de modelagem; vou registrar como gate das escritas de Perfis/Modelos e de Pessoas e perguntar ao coordenador/Owner em lote."
+  },
+  "PACOTE_170900": "obsoleto, coberto pela 230021 do coordenador (has_mfa_aal2 aceita aal1). Concordo com a marcacao OBSOLETO.",
+  "COMPOSICAO_SEGURANCA_INFANTIL": "superadmin_auth_scope.dart compoe SupabaseChildSafetyRepository (RPCs legadas superadmin_child_safety_directory/get/search_children, que tambem existem em producao) e nao o SupabaseInternalChildSafetyRepository (v2 do lote 4). Vou provar na rota normal qual caminho responde a qa-r03 e ligar a v2 se a legada negar.",
+  "PROJETO_DESCARTAVEL": "coelo_acessos em portas 633xx (603xx e 613xx ja estavam ocupadas por outras frentes): baseline + seed + as 44 migrations de migrations/ + 230021 (copiada do commit 3d15d95c3 do coordenador), todas aplicadas sem erro; e a base de prova do P7.",
   "historico_r03": {
     "revision": 94,
     "updated_at": "2026-09-10T19:56:30.537Z",
