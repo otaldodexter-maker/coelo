@@ -5,7 +5,7 @@ import 'package:coelo_superadmin/features/agenda/domain/agenda_models.dart';
 import 'package:coelo_superadmin/features/agenda/presentation/agenda_event_form_page.dart';
 import 'package:coelo_superadmin/features/agenda/presentation/agenda_events_page.dart';
 import 'package:coelo_superadmin/features/agenda/presentation/agenda_permissions_page.dart';
-import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_frame.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/publication_surface.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
@@ -40,19 +40,14 @@ void main() {
     await tester.pumpWidget(
       app(AgendaEventFormPage(store: prototype, onCancel: () {}, onSaved: (_) {})),
     );
-    expect(find.byType(SuperadminFormFrame), findsOneWidget);
-    expect(find.byType(SuperadminFormStepNavigation), findsOneWidget);
+    // Familia Publicacao (R06): superficie unica "Sua publicacao", sem wizard.
+    expect(find.byType(PublicationSurface), findsOneWidget);
+    expect(find.byType(SuperadminFormStepNavigation), findsNothing);
+    expect(find.text('Sua publicação'), findsOneWidget);
     expect(find.textContaining('somente nesta sessão local'), findsNothing);
-    await tester.enterText(find.byType(TextFormField).first, 'Encontro da turma');
-    await tester.tap(find.byKey(const Key('agenda-wizard-continue')));
+    await tester.enterText(find.byKey(const Key('agenda-event-title')), 'Encontro da turma');
     await tester.pump();
-    expect(
-      tester.widget<OutlinedButton>(find.byKey(const Key('agenda-wizard-continue'))),
-      isA<OutlinedButton>(),
-    );
-    await tester.tap(find.byKey(const Key('agenda-wizard-previous')));
-    await tester.pump();
-    expect(find.text('Encontro da turma'), findsOneWidget);
+    expect(find.text('Encontro da turma'), findsAtLeastNWidgets(1));
   });
 
   testWidgets('eventos alterna Cards e Tabela com criação e paginação canônicas', (tester) async {
