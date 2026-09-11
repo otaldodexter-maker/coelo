@@ -9,7 +9,7 @@
   "coordenador": "R06 · Coordenação (coordenacao.json rev 52+)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-realm-interno",
   "branch": "work/etapa2-r06-realm-interno",
-  "head": "(commit desta revisao)",
+  "head": "f4afa8d4b (rev 41; head da branch e o commit seguinte)",
   "upstream": "origin/work/etapa2-r06-realm-interno (push no primeiro commit)",
   "t0": "coordenacao.json ainda em rev 51 (sem T0 da R06); T0 assumido 19:37 (abertura); T0+2h = 21:37, revisao ate 21:47. Correcao: a rev 40 marcou 20:31 por erro de relogio; a hora real era ~19:45",
   "escopo": {
