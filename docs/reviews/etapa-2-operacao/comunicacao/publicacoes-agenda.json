@@ -1,15 +1,15 @@
 {
-  "revision": 48,
+  "revision": 49,
   "round": "E2-R06-20260911",
   "group": "publicacoes-agenda",
   "tool": "Claude Code",
   "model": "Opus 5 (1M), esforco medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-publicacoes-agenda",
   "branch": "work/etapa2-r06-publicacoes-agenda",
-  "head": "7420dc323 (+ commit desta revisao)",
+  "head": "6c74d6b04 (+ commit desta revisao)",
   "base": "origin/dev ca60b096b",
   "coordinator": "Claude (R06 · Coordenacao)",
-  "updatedAt": "2026-09-11T20:46:00-03:00",
+  "updatedAt": "2026-09-11T20:56:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -77,12 +77,14 @@
     "evidence": [
       "flutter test test/features/circulars 66/66",
       "flutter test test/features/agenda 293/293",
-      "flutter analyze apps/superadmin: 0 erros (1 warning pre-existente em test_driver/qa_login.dart)"
+      "flutter analyze apps/superadmin: 0 erros (1 warning pre-existente em test_driver/qa_login.dart)",
+      "test/app/activity/context_notification_feed_test 1/1",
+      "flutter test test/app: 633 ok / 20 falhos / 1 pulado; os 20 sao pre-existentes (Importacoes G7, principal_real_route G4, structure_detail G1, dev_menu, person_detail, persistent_shell, error_routes): persistent_shell_routes e superadmin_error_routes conferidos na base limpa ca60b096b (falham igual)"
     ],
     "unknown": "suite completa nao repetida (um flutter test por vez)"
   },
   "blocked": "rota real ate existir qa-r06-publicacoes.env",
-  "next": "conferir deploy da circular-media (attach pela tela); prova do sino na rota real com web-qa3; revisao de 10 min as 21:36",
+  "next": "aguardar deploy da circular-media para provar attach pela tela; revisao de 10 min as 21:36",
   "changes": [
     {
       "sha": "41a4b4dcf",
@@ -561,7 +563,8 @@
     "circulars.create": "/circulars/new abre a familia Publicacao (ui-01); rascunho salvo automaticamente pelo compositor ao anexar (superadmin_circular_save_draft_v2 200, ids bd439ba5/5f8d2aee/cb77ed7f = rascunhos sinteticos [R06-QA UI]).",
     "circulars.attach": "ABERTO: gate = deploy da circular-media (CORS x-client-info). Prova pela tela repete-se apos o deploy (gancho do qa_main funcionou: o fluxo chegou ao prepare).",
     "circulars.respond": "FECHADO pela tela (P50=B): detalhe -> Responder (ui-12) -> tela de resposta no Superadmin (ui-13) -> Estou ciente -> Enviar respostas (save_circular_response_draft partial v1 -> submit_circular_response submitted v2, ui-14) -> recarga completa: diretorio mostra Respostas 1 (ui-15). Proposta FE verified + E2E.",
-    "circulars.create/publish": "Circular [R06-QA UI] publicada pela tela nova com Resposta esperada = Confirmar ciencia (ui-10, ui-11: \"0 anexos · 1 pergunta\"); ja eram verified/E2E; a familia nova nao regrediu o fluxo."
+    "circulars.create/publish": "Circular [R06-QA UI] publicada pela tela nova com Resposta esperada = Confirmar ciencia (ui-10, ui-11: \"0 anexos · 1 pergunta\"); ja eram verified/E2E; a familia nova nao regrediu o fluxo.",
+    "sino": "build web-qa3 (7420dc323): ao abrir o shell, GET rest/v1/context_notification_recipients?select=...event:context_notification_events(...) responde 200 com [] para qa-r06-publicacoes (RLS own_read aplicada; a pessoa de servico ainda nao e destinataria de nenhum evento). Leitura provada; marcacao (update read_at) so tem prova unitaria ate existir um evento para este ator (gate: um evento do lote 36 gerado por G3 para a instituicao sintetica, ou insert pelo coordenador com service_role). ui-16."
   },
   "finalizado": null,
   "deliveryValidation": null,
@@ -2403,5 +2406,7 @@
     "V-8": "A+: mobile mantem o toggle novo; web restaura o toggle do R",
     "V-9": "A (Avisos diretorio)",
     "V-10": "A (Circulares diretorio)"
-  }
+  },
+  "handoff": "docs/reviews/evidence/etapa-2/r06-publicacoes-agenda/handoff.md",
+  "dadosSinteticos": "evento c7cf7370 (published, Unidade QA R05 Transferencia); circulares [R06-QA UI]: 3 rascunhos (bd439ba5, 5f8d2aee, cb77ed7f) e 1 publicada com 1 resposta submetida; nenhuma chave criada"
 }
