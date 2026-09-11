@@ -398,13 +398,10 @@ Map<String, Object?> _readOnlyEditValues(InstitutionRecord record) {
         'contact',
       }.contains(key),
     );
+  // owner_* derivam do representante principal, que agora persiste pelo
+  // contrato de contatos: nao entram mais na comparacao.
   return {
     ...values,
-    'owner_first_name': record.ownerFirstName,
-    'owner_last_name': record.ownerLastName,
-    'owner_display_name': record.ownerDisplayName,
-    'owner_email': record.ownerEmail,
-    'owner_mobile_phone': record.ownerMobilePhone,
     'has_logo': record.hasSimulatedLogo,
     'has_cover': record.hasSimulatedCover,
     'secondary_surface_color': record.secondarySurfaceColor,

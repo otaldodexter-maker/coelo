@@ -15,11 +15,6 @@ void main() {
   for (final (field, draft) in <(String, InstitutionRecord)>[
     ('slug', _draft().copyWith(slug: 'sentinel-slug')),
     ('primaryDomain', _draft().copyWith(primaryDomain: 'sentinel-primaryDomain')),
-    ('ownerFirstName', _draft().copyWith(ownerFirstName: 'sentinel-ownerFirstName')),
-    ('ownerLastName', _draft().copyWith(ownerLastName: 'sentinel-ownerLastName')),
-    ('ownerDisplayName', _draft().copyWith(ownerDisplayName: 'sentinel-ownerDisplayName')),
-    ('ownerEmail', _draft().copyWith(ownerEmail: 'sentinel-ownerEmail')),
-    ('ownerMobilePhone', _draft().copyWith(ownerMobilePhone: 'sentinel-ownerMobilePhone')),
     ('brandDisplayName', _draft().copyWith(brandDisplayName: 'sentinel-brandDisplayName')),
     ('profileBio', _draft().copyWith(profileBio: 'sentinel-profileBio')),
     ('accentColor', _draft().copyWith(accentColor: 'sentinel-accentColor')),
