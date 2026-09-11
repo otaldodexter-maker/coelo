@@ -7,7 +7,7 @@
 -- aceitam a identidade interna de plataforma (controle).
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(44);
+select plan(46);
 
 insert into auth.users(id,aud,role,email,email_confirmed_at,created_at,updated_at,raw_app_meta_data,raw_user_meta_data) values
  ('9c600000-0000-4000-8000-000000000101','authenticated','authenticated','scope-root-platform@invalid.test',now(),now(),now(),'{}','{}'),
@@ -80,6 +80,26 @@ select is(
     where a.internal_identity_id='9c600000-0000-4000-8000-000000000302'
       and m.institution_id='9c600000-0000-4000-8000-00000000000b'),
   'inactive:true','membership fora do escopo fica inactive + revoked_at');
+
+-- Instituicao em rascunho (lote 27 / P42): membership previa do espelho de PLATAFORMA e preservada
+insert into public.institutions(id,public_name,slug,status,institution_type_id) values
+ ('9c600000-0000-4000-8000-00000000000c','Instituição C (rascunho)','scope-root-c','draft','9c600000-0000-4000-8000-000000000001');
+insert into public.institution_memberships(person_id,institution_id,role_code,status,scope_kind)
+select a.person_id,'9c600000-0000-4000-8000-00000000000c','owner','active','institution'
+from app_private.superadmin_internal_actor_people a where a.internal_identity_id='9c600000-0000-4000-8000-000000000301';
+select app_private.superadmin_internal_actor_institution_access_sync();
+select is(
+  (select m.status::text from public.institution_memberships m
+     join app_private.superadmin_internal_actor_people a on a.person_id=m.person_id
+    where a.internal_identity_id='9c600000-0000-4000-8000-000000000301'
+      and m.institution_id='9c600000-0000-4000-8000-00000000000c'),
+  'active','membership do espelho de plataforma numa instituicao em rascunho e preservada pelo sync');
+select is(
+  (select count(*)::int from public.institution_memberships m
+     join app_private.superadmin_internal_actor_people a on a.person_id=m.person_id
+    where a.internal_identity_id='9c600000-0000-4000-8000-000000000302'
+      and m.institution_id='9c600000-0000-4000-8000-00000000000c'),
+  0,'sync nao cria membership em instituicao fora do escopo nem em rascunho para a escopada');
 
 -- ---------------------------------------------------------------------------
 -- R2: has_platform_permission para a identidade escopada
