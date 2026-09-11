@@ -270,10 +270,46 @@ final class _PrincipalMomentsPreviewPageState extends State<PrincipalMomentsPrev
     child: _buildLayout(),
   );
 
-  Widget _buildLayout() =>
-      Scaffold(backgroundColor: Theme.of(context).colorScheme.surface, body: _buildFeedSurface());
+  // IMG (decisao do Owner de 10/09/2026, goldens 1024/1440 = referencia):
+  // ate 768 o Momentos e tela cheia; a partir de 840 (expanded) a midia vive numa
+  // moldura vertical centrada e o preto preenche toda a largura disponivel; a
+  // partir de 1200 entra o aside "Em alta na escola" com Enviar momento.
+  Widget _buildLayout() => LayoutBuilder(
+    builder: (context, constraints) {
+      final framed = constraints.maxWidth >= CoeloBreakpoints.expanded.minWidth;
+      final desktop = constraints.maxWidth >= CoeloBreakpoints.large.minWidth;
+      final surface = _buildFeedSurface(framed: framed);
+      return Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        body: !framed
+            ? surface
+            : Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: CoeloSpacing.space4,
+                  vertical: CoeloSpacing.space3,
+                ),
+                child: Row(
+                  children: [
+                    Expanded(child: surface),
+                    if (desktop) ...[
+                      const SizedBox(width: CoeloSpacing.space4),
+                      SizedBox(
+                        width: 280,
+                        child: _DesktopAside(
+                          items: _usesRemoteFeed ? const [] : widget.data.trending,
+                          onSend: () => _invoke(widget.onCreateMoment, 'Publicação de Momentos'),
+                          onOpen: () => _prototypeMessage('Momento em alta'),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+      );
+    },
+  );
 
-  Widget _buildFeedSurface() {
+  Widget _buildFeedSurface({required bool framed}) {
     if (_feedConfigurationInvalid) {
       return _buildExitState(
         _MomentsStateSurface(
@@ -343,6 +379,7 @@ final class _PrincipalMomentsPreviewPageState extends State<PrincipalMomentsPrev
       withdrawingPublicationId: _withdrawingPublicationId,
       onWithdraw: _confirmWithdrawal,
       embedded: widget.embedded,
+      framed: framed,
     );
   }
 
@@ -429,6 +466,7 @@ final class _MomentPager extends StatelessWidget {
     required this.withdrawingPublicationId,
     required this.onWithdraw,
     required this.embedded,
+    this.framed = false,
   });
 
   final PageController controller;
@@ -450,10 +488,13 @@ final class _MomentPager extends StatelessWidget {
   final ValueChanged<PrincipalMomentPreviewItem> onWithdraw;
   final bool embedded;
 
+  /// Moldura vertical centrada sobre o preto (a partir de 1024); abaixo disso
+  /// a midia ocupa a tela inteira.
+  final bool framed;
+
   @override
-  Widget build(BuildContext context) => ColoredBox(
-    color: Colors.black,
-    child: Focus(
+  Widget build(BuildContext context) {
+    final pager = Focus(
       autofocus: true,
       focusNode: focusNode,
       onKeyEvent: (_, event) {
@@ -494,8 +535,19 @@ final class _MomentPager extends StatelessWidget {
           embedded: embedded,
         ),
       ),
-    ),
-  );
+    );
+    return ColoredBox(
+      color: Colors.black,
+      child: framed
+          ? Center(
+              child: AspectRatio(
+                aspectRatio: (1672 / 5) / 941,
+                child: ClipRRect(borderRadius: BorderRadius.circular(CoeloRadius.lg), child: pager),
+              ),
+            )
+          : pager,
+    );
+  }
 }
 
 final class _MomentFrame extends StatelessWidget {
@@ -801,15 +853,158 @@ final class _MomentSurface extends StatelessWidget {
     if (moment.media.isEmpty) {
       return _SpriteImage(index: moment.imageIndex, count: 5);
     }
-    return Image.network(
-      moment.media.first.signedUrl,
-      key: const Key('principal-moments-media'),
-      fit: BoxFit.cover,
-      alignment: Alignment.topCenter,
-      excludeFromSemantics: true,
-      errorBuilder: (context, error, stackTrace) => const ColoredBox(color: Colors.black),
+    // IMG (decisao do Owner de 10/09/2026): a midia nao pode ser perdida nem
+    // cortada; ela cabe inteira sobre o preto em vez de preencher cortando.
+    return ColoredBox(
+      color: Colors.black,
+      child: Image.network(
+        moment.media.first.signedUrl,
+        key: const Key('principal-moments-media'),
+        fit: BoxFit.contain,
+        alignment: Alignment.center,
+        excludeFromSemantics: true,
+        errorBuilder: (context, error, stackTrace) => const ColoredBox(color: Colors.black),
+      ),
     );
   }
+}
+
+final class _DesktopAside extends StatelessWidget {
+  const _DesktopAside({required this.items, required this.onSend, required this.onOpen});
+
+  final List<PrincipalMomentTrendingItem> items;
+  final VoidCallback onSend;
+  final VoidCallback onOpen;
+
+  @override
+  Widget build(BuildContext context) => ListView(
+    key: const Key('principal-moments-desktop-aside'),
+    children: [
+      if (items.isNotEmpty) ...[
+        _AsideCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Em alta na escola', style: Theme.of(context).textTheme.titleSmall),
+              const SizedBox(height: CoeloSpacing.space3),
+              for (final item in items)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: CoeloSpacing.space3),
+                  child: TextButton(
+                    onPressed: onOpen,
+                    style: _discreteTextButtonStyle(context).copyWith(
+                      minimumSize: const WidgetStatePropertyAll(
+                        Size(double.infinity, CoeloSize.touchMin),
+                      ),
+                      padding: const WidgetStatePropertyAll(EdgeInsets.zero),
+                      alignment: Alignment.centerLeft,
+                      shape: WidgetStatePropertyAll(
+                        RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 86,
+                          height: 62,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(CoeloRadius.md),
+                            child: Stack(
+                              fit: StackFit.expand,
+                              children: [
+                                _SpriteImage(index: item.imageIndex, count: 5),
+                                Positioned(
+                                  right: 4,
+                                  bottom: 3,
+                                  child: Text(
+                                    item.duration,
+                                    style: const TextStyle(color: Colors.white, fontSize: 9),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: CoeloSpacing.space2),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(item.title, maxLines: 2, overflow: TextOverflow.ellipsis),
+                              Text(item.context, style: Theme.of(context).textTheme.bodySmall),
+                              Text('Há 4h', style: Theme.of(context).textTheme.bodySmall),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+        const SizedBox(height: CoeloSpacing.space3),
+      ],
+      _AsideCard(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Compartilhe momentos que inspiram',
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+            const SizedBox(height: CoeloSpacing.space2),
+            Text(
+              'Registre conquistas, aprendizados e experiências que merecem ser lembradas.',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            const SizedBox(height: CoeloSpacing.space3),
+            FilledButton.icon(
+              key: const Key('principal-moments-create'),
+              onPressed: onSend,
+              icon: const Icon(Icons.upload_outlined),
+              label: const Text('Enviar momento'),
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+final class _AsideCard extends StatelessWidget {
+  const _AsideCard({required this.child});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => DecoratedBox(
+    decoration: BoxDecoration(
+      color: Theme.of(context).colorScheme.surface,
+      border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+      borderRadius: BorderRadius.circular(CoeloRadius.lg),
+    ),
+    child: Padding(padding: const EdgeInsets.all(CoeloSpacing.space4), child: child),
+  );
+}
+
+ButtonStyle _discreteTextButtonStyle(BuildContext context, {Color? restingForeground}) {
+  final colors = Theme.of(context).colorScheme;
+  return TextButton.styleFrom(
+    foregroundColor: restingForeground ?? colors.onSurface,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
+  ).copyWith(
+    foregroundColor: WidgetStateProperty.resolveWith((states) {
+      final highlighted =
+          states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
+      return highlighted ? colors.primary : (restingForeground ?? colors.onSurface);
+    }),
+    backgroundColor: WidgetStateProperty.resolveWith((states) {
+      final highlighted =
+          states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
+      return highlighted ? colors.primaryContainer : Colors.transparent;
+    }),
+    overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+  );
 }
 
 final class _SpriteImage extends StatelessWidget {
