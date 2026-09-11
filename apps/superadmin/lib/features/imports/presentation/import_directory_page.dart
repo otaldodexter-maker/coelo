@@ -5,12 +5,10 @@ import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
-import '../../../shared/presentation/widgets/superadmin_placeholder_file_actions.dart';
 import '../../../app/shell/superadmin_notice.dart';
 
 import '../domain/import_job.dart';
 import '../domain/import_repository.dart';
-import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 
 final class ImportDirectoryPage extends StatefulWidget {
   const ImportDirectoryPage({required this.repository, required this.onNewImport, super.key});
@@ -121,241 +119,157 @@ final class _ImportDirectoryPageState extends State<ImportDirectoryPage> {
     showSuperadminNotice(context, 'Disponível depois do MVP', icon: Icons.info_outline_rounded);
   }
 
-  @override
-  Widget build(BuildContext context) => LayoutBuilder(
-    builder: (context, box) {
-      final width = box.maxWidth < CoeloBreakpoints.medium.minWidth ? box.maxWidth : 256.0;
-      if (_unauthorized) {
-        return ColoredBox(
-          color: Theme.of(context).colorScheme.surface,
-          child: const Padding(
-            padding: EdgeInsets.all(CoeloSpacing.space4),
-            child: CoeloStatePanel(
-              title: 'Acesso não autorizado',
-              message: 'Seu perfil não possui permissão para consultar importações.',
-              icon: Icons.lock_outline_rounded,
-            ),
-          ),
-        );
-      }
-      return ColoredBox(
-        color: Theme.of(context).colorScheme.surface,
-        child: Padding(
-          padding: const EdgeInsets.all(CoeloSpacing.space4),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              CoeloAdminListingToolbar(
-                search: SizedBox(
-                  width: width,
-                  child: CoeloSearchField(
-                    controller: _search,
-                    semanticLabel: 'Buscar importações e exportações',
-                    hintText: 'Buscar por arquivo',
-                    onChanged: (_) {
-                      _searchDebounce?.cancel();
-                      _searchDebounce = Timer(
-                        const Duration(milliseconds: 350),
-                        () => _load(reset: true),
-                      );
-                    },
-                  ),
-                ),
-                filters: [
-                  SizedBox(
-                    width: width,
-                    child: CoeloAdminMultiSelectFilter<ImportEntity>(
-                      label: 'Entidade',
-                      options: ImportEntity.values,
-                      selectedValues: _entities,
-                      optionLabel: (value) => value.label,
-                      onChanged: (values) {
-                        setState(() {
-                          _entities
-                            ..clear()
-                            ..addAll(values);
-                        });
-                        _load(reset: true);
-                      },
-                    ),
-                  ),
-                  SizedBox(
-                    width: width,
-                    child: CoeloAdminSingleSelectField<ImportFileFixture?>(
-                      label: 'Arquivo',
-                      value: _format,
-                      options: const [null, ImportFileFixture.csv, ImportFileFixture.xlsx],
-                      optionLabel: (value) => value == null ? 'Todos' : value.name.toUpperCase(),
-                      onChanged: (value) {
-                        setState(() => _format = value);
-                        _load(reset: true);
-                      },
-                      searchable: false,
-                    ),
-                  ),
-                ],
-                actions: [
-                  const SuperadminPlaceholderFileActions(
-                    resourceLabel: 'importações e exportações',
-                  ),
-                  if (_hasFilters)
-                    TextButton.icon(
-                      onPressed: _clear,
-                      icon: const Icon(Icons.filter_alt_off_outlined),
-                      label: const Text('Limpar filtros'),
-                    ),
-                ],
-              ),
-              const SizedBox(height: CoeloSpacing.space4),
-              Expanded(child: _content()),
-            ],
-          ),
-        ),
-      );
-    },
-  );
+  var _display = CoeloAdminDirectoryDisplay.table;
 
-  Widget _content() {
-    if (!_executionAvailable) {
-      return Column(
-        children: [
-          _create(),
-          const SizedBox(height: CoeloSpacing.space4),
-          const Expanded(
-            child: CoeloStatePanel(
-              title: 'Importações adiadas',
-              message:
-                  'Importação e exportação reais estarão disponíveis depois do MVP. '
-                  'Nenhum arquivo será selecionado ou processado nesta etapa.',
-              icon: Icons.schedule_outlined,
-            ),
-          ),
-        ],
-      );
-    }
-    if (_loading) return const Center(child: CircularProgressIndicator());
-    if (_failed) {
-      return Column(
-        children: [
-          _create(),
-          const SizedBox(height: CoeloSpacing.space4),
-          Expanded(
-            child: CoeloStatePanel(
-              title: 'Importações indisponíveis',
-              message: 'Não foi possível consultar o histórico autorizado.',
-              icon: Icons.cloud_off_outlined,
-              actionLabel: 'Tentar novamente',
-              onAction: _load,
-            ),
-          ),
-        ],
-      );
-    }
-    if (_page.items.isEmpty) {
-      return Column(
-        children: [
-          _create(),
-          const SizedBox(height: CoeloSpacing.space4),
-          Expanded(
-            child: CoeloStatePanel(
-              title: _hasFilters ? 'Sem resultados' : 'Nenhuma importação ainda',
-              message: _hasFilters
-                  ? 'Ajuste os filtros e tente novamente.'
-                  : 'Quando houver jobs, eles aparecerão aqui.',
-              icon: _hasFilters ? Icons.search_off_outlined : Icons.file_upload_outlined,
-              actionLabel: _hasFilters ? 'Limpar filtros' : null,
-              onAction: _hasFilters ? _clear : null,
-            ),
-          ),
-        ],
-      );
-    }
-    return Column(
-      children: [
-        _create(),
-        const SizedBox(height: CoeloSpacing.space4),
-        Expanded(
-          child: CoeloAdminResizableTable<ImportJob>(
-            key: const Key('import-table'),
-            items: _page.items,
-            rowKey: (job) => 'import-row-${job.id}',
-            headerHeight: 56,
-            rowHeight: 64,
-            showHorizontalScrollbar: true,
-            pinnedColumn: CoeloAdminTableColumn<ImportJob>(
-              id: 'file',
-              label: 'Arquivo',
-              initialWidth: 260,
-              minWidth: 200,
-              maxWidth: 340,
-              cellBuilder: (_, job) => Text(job.displayFileName),
-            ),
-            columns: [
-              CoeloAdminTableColumn<ImportJob>(
-                id: 'entity',
-                label: 'Entidade',
-                initialWidth: 150,
-                minWidth: 120,
-                maxWidth: 200,
-                cellBuilder: (_, job) => Text(job.entity.label),
-              ),
-              CoeloAdminTableColumn<ImportJob>(
-                id: 'context',
-                label: 'Destino',
-                initialWidth: 180,
-                minWidth: 140,
-                maxWidth: 240,
-                cellBuilder: (_, job) => Text(job.context),
-              ),
-              CoeloAdminTableColumn<ImportJob>(
-                id: 'records',
-                label: 'Registros',
-                initialWidth: 120,
-                minWidth: 110,
-                maxWidth: 160,
-                cellBuilder: (_, job) => Text('${job.previewRows.length} registros'),
-              ),
-              CoeloAdminTableColumn<ImportJob>(
-                id: 'status',
-                label: 'Status',
-                initialWidth: 150,
-                minWidth: 130,
-                maxWidth: 180,
-                cellBuilder: (_, job) => Text(_status(job.status)),
-              ),
-              CoeloAdminTableColumn<ImportJob>(
-                id: 'created',
-                label: 'Criado em',
-                initialWidth: 150,
-                minWidth: 130,
-                maxWidth: 180,
-                cellBuilder: (_, job) => Text(_date(job.createdAt)),
-              ),
-              CoeloAdminTableColumn<ImportJob>(
-                id: 'actor',
-                label: 'Responsável',
-                initialWidth: 180,
-                minWidth: 140,
-                maxWidth: 240,
-                cellBuilder: (_, job) => Text(job.actor),
-              ),
-            ],
-          ),
+  /// Importações sobre o composto `CoeloAdminDirectory` (decisão do Owner de
+  /// 10/09/2026): a feature entrega busca, filtros, Limpar filtros, Arquivos,
+  /// o Criar, as linhas da tabela, os cards e a paginação; toolbar, toggle,
+  /// banner/card Criar, card de estado e rodapé são do composto e aparecem
+  /// em todos os estados, inclusive na indisponibilidade honesta do MVP.
+  @override
+  Widget build(BuildContext context) {
+    final status = !_executionAvailable
+        ? CoeloAdminDirectoryStatus.empty
+        : _unauthorized
+        ? CoeloAdminDirectoryStatus.unauthorized
+        : _loading
+        ? CoeloAdminDirectoryStatus.loading
+        : _failed
+        ? CoeloAdminDirectoryStatus.failure
+        : _page.items.isEmpty
+        ? (_hasFilters ? CoeloAdminDirectoryStatus.noResults : CoeloAdminDirectoryStatus.empty)
+        : CoeloAdminDirectoryStatus.success;
+    final totalPages = _page.nextCursor == null ? _index + 1 : _index + 2;
+    return CoeloAdminDirectory<CoeloAdminDirectoryDisplay>(
+      key: const Key('imports-directory'),
+      scrollKey: const Key('imports-directory-scroll'),
+      toolbarKey: const Key('imports-toolbar'),
+      filterControlsKey: const Key('imports-filter-controls'),
+      cardsKey: const Key('imports-view-cards'),
+      tableKey: const Key('imports-view-table'),
+      gridKey: const Key('imports-card-list'),
+      loadingKey: const Key('imports-state-loading'),
+      status: status,
+      messages: CoeloAdminDirectoryMessages(
+        empty: _executionAvailable ? 'Nenhuma importação ainda' : 'Importações adiadas',
+        emptyIcon: _executionAvailable ? Icons.file_upload_outlined : Icons.schedule_outlined,
+        noResults: 'Nenhuma importação corresponde aos filtros aplicados.',
+        noResultsIcon: Icons.search_off_outlined,
+        failure: 'Importações indisponíveis',
+        failureIcon: Icons.cloud_off_outlined,
+        unauthorized: 'Seu perfil não possui permissão para consultar importações.',
+        unauthorizedIcon: Icons.lock_outline_rounded,
+      ),
+      errorMessage: switch (status) {
+        CoeloAdminDirectoryStatus.empty when !_executionAvailable =>
+          'Importação e exportação reais estarão disponíveis depois do MVP. '
+              'Nenhum arquivo será selecionado ou processado nesta etapa.',
+        CoeloAdminDirectoryStatus.empty => 'Quando houver jobs, eles aparecerão aqui.',
+        CoeloAdminDirectoryStatus.failure => 'Não foi possível consultar o histórico autorizado.',
+        _ => null,
+      },
+      onRetry: _executionAvailable ? _load : null,
+      onClearFilters: _clear,
+      search: CoeloSearchField(
+        controller: _search,
+        semanticLabel: 'Buscar importações e exportações',
+        hintText: 'Buscar por arquivo',
+        onChanged: (_) {
+          _searchDebounce?.cancel();
+          _searchDebounce = Timer(const Duration(milliseconds: 350), () => _load(reset: true));
+        },
+      ),
+      filters: [
+        CoeloAdminMultiSelectFilter<ImportEntity>(
+          label: 'Entidade',
+          options: ImportEntity.values,
+          selectedValues: _entities,
+          optionLabel: (value) => value.label,
+          onChanged: (values) {
+            setState(() {
+              _entities
+                ..clear()
+                ..addAll(values);
+            });
+            _load(reset: true);
+          },
         ),
-        _pagination(),
+        CoeloAdminSingleSelectField<ImportFileFixture?>(
+          label: 'Arquivo',
+          value: _format,
+          options: const [null, ImportFileFixture.csv, ImportFileFixture.xlsx],
+          optionLabel: (value) => value == null ? 'Todos' : value.name.toUpperCase(),
+          onChanged: (value) {
+            setState(() => _format = value);
+            _load(reset: true);
+          },
+          searchable: false,
+        ),
       ],
+      trailing: [
+        if (_hasFilters)
+          TextButton.icon(
+            onPressed: _clear,
+            icon: const Icon(Icons.filter_alt_off_outlined),
+            label: const Text('Limpar filtros'),
+          ),
+      ],
+      display: _display,
+      onDisplayChanged: (value) => setState(() => _display = value),
+      groupedTableView: CoeloAdminDirectoryDisplay.table,
+      selectedTableView: CoeloAdminDirectoryDisplay.table,
+      tableViews: const [
+        CoeloAdminDirectoryTableViewOption(
+          value: CoeloAdminDirectoryDisplay.table,
+          label: 'Tabela',
+        ),
+      ],
+      onTableViewSelected: (_) => setState(() => _display = CoeloAdminDirectoryDisplay.table),
+      // Importação/exportação reais adiadas (ADR 0034): botões visíveis e honestos.
+      fileActions: [
+        CoeloAdminFileAction(
+          label: 'Importar',
+          icon: Icons.upload_file_outlined,
+          onPressed: _showDeferred,
+        ),
+        CoeloAdminFileAction(
+          label: 'Exportar CSV',
+          icon: Icons.table_view_outlined,
+          onPressed: _showDeferred,
+        ),
+        CoeloAdminFileAction(
+          label: 'Exportar XLSX',
+          icon: Icons.grid_on_outlined,
+          onPressed: _showDeferred,
+        ),
+      ],
+      create: CoeloAdminDirectoryCreate(
+        label: 'Nova importação',
+        description: _executionAvailable
+            ? 'Envie um arquivo para validação'
+            : 'Disponível depois do MVP',
+        icon: Icons.upload_file_outlined,
+        onPressed: _executionAvailable ? _newImport : _showDeferred,
+        tileKey: const Key('imports-create-state'),
+        bannerKey: const Key('imports-create-table'),
+      ),
+      cards: [for (final job in _page.items) _ImportJobCard(job: job)],
+      table: _ImportJobRows(jobs: _page.items),
+      pagination: status == CoeloAdminDirectoryStatus.success
+          ? CoeloAdminDirectoryPagination(
+              footerKey: const Key('imports-directory-pagination-footer'),
+              currentPage: _index + 1,
+              totalPages: totalPages,
+              // Paginação por cursor: um passo por vez, como na Auditoria.
+              onPageSelected: (page) {
+                if (page < _index + 1 && _index > 0) _previousPage();
+                if (page > _index + 1 && _page.nextCursor != null) _nextPage();
+              },
+            )
+          : null,
     );
   }
 
-  Widget _create() => CoeloAdminCreateAction(
-    label: 'Nova importação',
-    description: _executionAvailable
-        ? 'Envie um arquivo para validação'
-        : 'Disponível depois do MVP',
-    icon: Icons.upload_file_outlined,
-    variant: CoeloAdminCreateActionVariant.banner,
-    onPressed: _executionAvailable ? _newImport : _showDeferred,
-  );
   void _previousPage() {
     setState(() => _index--);
     _load(cursor: _cursors[_index]);
@@ -371,21 +285,123 @@ final class _ImportDirectoryPageState extends State<ImportDirectoryPage> {
     });
     _load(cursor: next);
   }
+}
 
-  Widget _pagination() {
-    final totalPages = _page.nextCursor == null ? _index + 1 : _index + 2;
-    return SuperadminListingPaginationFooter(
-      semanticKey: const Key('imports-directory-pagination-footer'),
-      horizontalPadding: CoeloSpacing.space4,
-      compactCurrentPage: _index + 1,
-      compactTotalPages: totalPages,
-      compactOnPrevious: _index > 0 ? _previousPage : null,
-      compactOnNext: _page.nextCursor != null ? _nextPage : null,
-      child: CoeloAdminPagination(
-        currentPage: _index + 1,
-        totalPages: totalPages,
-        onPrevious: _index > 0 ? _previousPage : null,
-        onNext: _page.nextCursor != null ? _nextPage : null,
+/// Linhas de domínio da tabela de Importações; o composto fornece o banner
+/// Criar acima e o rodapé de paginação.
+final class _ImportJobRows extends StatelessWidget {
+  const _ImportJobRows({required this.jobs});
+
+  final List<ImportJob> jobs;
+
+  @override
+  Widget build(BuildContext context) => CoeloAdminResizableTable<ImportJob>(
+    key: const Key('import-table'),
+    items: jobs,
+    rowKey: (job) => 'import-row-${job.id}',
+    headerHeight: 56,
+    rowHeight: 64,
+    showHorizontalScrollbar: true,
+    pinnedColumn: CoeloAdminTableColumn<ImportJob>(
+      id: 'file',
+      label: 'Arquivo',
+      initialWidth: 260,
+      minWidth: 200,
+      maxWidth: 340,
+      cellBuilder: (_, job) => Text(job.displayFileName),
+    ),
+    columns: [
+      CoeloAdminTableColumn<ImportJob>(
+        id: 'entity',
+        label: 'Entidade',
+        initialWidth: 150,
+        minWidth: 120,
+        maxWidth: 200,
+        cellBuilder: (_, job) => Text(job.entity.label),
+      ),
+      CoeloAdminTableColumn<ImportJob>(
+        id: 'context',
+        label: 'Destino',
+        initialWidth: 180,
+        minWidth: 140,
+        maxWidth: 240,
+        cellBuilder: (_, job) => Text(job.context),
+      ),
+      CoeloAdminTableColumn<ImportJob>(
+        id: 'records',
+        label: 'Registros',
+        initialWidth: 120,
+        minWidth: 110,
+        maxWidth: 160,
+        cellBuilder: (_, job) => Text('${job.previewRows.length} registros'),
+      ),
+      CoeloAdminTableColumn<ImportJob>(
+        id: 'status',
+        label: 'Status',
+        initialWidth: 150,
+        minWidth: 130,
+        maxWidth: 180,
+        cellBuilder: (_, job) => Text(_status(job.status)),
+      ),
+      CoeloAdminTableColumn<ImportJob>(
+        id: 'created',
+        label: 'Criado em',
+        initialWidth: 150,
+        minWidth: 130,
+        maxWidth: 180,
+        cellBuilder: (_, job) => Text(_date(job.createdAt)),
+      ),
+      CoeloAdminTableColumn<ImportJob>(
+        id: 'actor',
+        label: 'Responsável',
+        initialWidth: 180,
+        minWidth: 140,
+        maxWidth: 240,
+        cellBuilder: (_, job) => Text(job.actor),
+      ),
+    ],
+  );
+}
+
+final class _ImportJobCard extends StatelessWidget {
+  const _ImportJobCard({required this.job});
+
+  final ImportJob job;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return CoeloAdminInteractiveCard(
+      key: Key('import-card-${job.id}'),
+      semanticLabel: 'Importação ${job.displayFileName}',
+      minHeight: 168,
+      onPressed: null,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: CoeloSpacing.space6,
+          vertical: CoeloSpacing.space4,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              job.displayFileName,
+              style: theme.textTheme.titleSmall,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: CoeloSpacing.space2),
+            Text('${job.entity.label} · ${job.context}', style: theme.textTheme.bodySmall),
+            const SizedBox(height: CoeloSpacing.space2),
+            Text(
+              '${job.previewRows.length} registros · ${_status(job.status)}',
+              style: theme.textTheme.bodySmall,
+            ),
+            const SizedBox(height: CoeloSpacing.space2),
+            Text('${_date(job.createdAt)} · ${job.actor}', style: theme.textTheme.bodySmall),
+          ],
+        ),
       ),
     );
   }

@@ -58,7 +58,9 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Acesso não autorizado'), findsOneWidget);
+    // Composto: o estado sem permissão mostra só o card de estado, sem
+    // toolbar nem Criar.
+    expect(find.text('Seu perfil não possui permissão para consultar importações.'), findsOneWidget);
     expect(find.byType(CoeloAdminListingToolbar), findsNothing);
     expect(find.text('Nova importação'), findsNothing);
   });
