@@ -1,7 +1,7 @@
 {
-  "revision": 120,
-  "updated_at": "2026-09-11T15:17:30.252Z",
-  "relogio_local": "Fri Sep 11 2026 12:17:30 GMT-0300 (Horário Padrão de Brasília)",
+  "revision": 121,
+  "updated_at": "2026-09-11T15:42:02.500Z",
+  "relogio_local": "Fri Sep 11 2026 12:42:02 GMT-0300 (Horário Padrão de Brasília)",
   "round": "E2-R05-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
@@ -9,7 +9,7 @@
   "status": "em andamento",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-acessos-pessoas",
   "branch": "work/etapa2-r05-acessos-pessoas",
-  "head": "2f6a6114f (origin/dev na abertura, coordenacao rev 38)",
+  "head": "f6067c3c6 (publicado; inclui merge de origin/dev 11c4bfbef)",
   "base_observed": "origin/dev 2f6a6114f; lotes 8-27 em producao; candidatos/acessos-pessoas so com 170750 e 170900 OBSOLETOS (171600 e 171800 aplicados no lote 25); ordem-de-aplicacao ate lote 27",
   "recorte": {
     "familias": [
@@ -39,7 +39,7 @@
   "loop": "/loop 15m agendado na abertura",
   "testes_P_F_B_S_U": "nenhum ainda nesta rodada",
   "bloqueio": "nenhum total",
-  "proximo_passo": "P31 no cliente: cards de Perfis abrem o detalhe; perfil de sistema sem Editar/Excluir (servidor ja nega 'system profile is protected'); Criar perfil oferece 'do zero' ou 'a partir de um modelo'; depois pacote SQL do @ para pessoas/usuarios internos",
+  "proximo_passo": "ligar o @ no cliente de Pessoas (detalhe/edicao: campo Identificador com icone @, disponibilidade enquanto digita, troca com motivo) atras das RPCs do 170100; depois REST de people.create/edit/links e access-models/internal-users; build+Chrome quando a memoria permitir",
   "ACK_ao_coordenador": "coelo-b5 pediu identificacao as 12:20; respondi por mensagem entre sessoes (G2 R05). Continuo sem esperar ACK.",
   "MEMORIA": "12:20: 0,02-0,3 GB livres (dartaotruntime 800 MB, 28 dart, 25 chrome, flutter_tester de outras frentes). Sem build web, Chrome ou flutter test ate liberar; provas por REST e edicao de codigo/SQL enquanto isso.",
   "INVITES_BE_POR_REST_12h15": {
@@ -54,6 +54,29 @@
   "dados_sinteticos_r05": [
     "public.* convite 03e9c9d2-2772-4ee8-863b-2a47c0108ce8 (revoked; destinatario qa-r05-convite@invalid.test, instituicao 9f04...0010) - apagar ao fim da Etapa 2"
   ],
+  "P31_NO_CLIENTE_12h35": {
+    "commit": "3b4aaa5b6 (feat(superadmin): perfis de acesso com modelos do sistema)",
+    "o_que_mudou": "Perfis de acesso: cards/linhas abrem o DETALHE (fecha a pendencia antiga 'cards abrem EDIT'); perfil de sistema (is_system) mostra 'Modelo do sistema: nao editavel' e o botao 'Criar a partir deste modelo', sem Editar/Excluir (o servidor ja nega: superadmin_access_profile_update -> 'system profile is protected'); 'Criar perfil' abre o dialogo 'Como criar o perfil?' com 'Do zero' e 'A partir de: <modelo>' para cada modelo de sistema listado; criacao com ?from=<uuid> carrega o rascunho em branco com as permissoes e o escopo do modelo (nome/codigo vazios para o operador definir).",
+    "servidor": "sem pacote novo: os 4 modelos de sistema do lote 25 aparecem em superadmin_access_profiles_list(p_domain='institution') com is_system=true; superadmin_access_profiles_list(platform) traz os 5 de plataforma.",
+    "testes": "test/features/access_profiles/presentation/access_profile_system_models_test.dart 3/3 + access_profile_pages_test e detail_context_test 25/25; dart analyze sem issues nos arquivos tocados.",
+    "prova_na_rota_real": "depende de build+Chrome (memoria)."
+  },
+  "PACOTE_ARROBA_PESSOAS_12h40": {
+    "id": "AP-PERSON-HANDLES-170100",
+    "migration": "packages/coelo_database/candidatos/acessos-pessoas/20260911170100_person_handles_v1.sql",
+    "estado": "VERDE - PRONTO PARA APLICAR (commit f6067c3c6)",
+    "pgTAP": "supabase/tests/person_handles_v1_test.sql 22/22 no descartavel coelo_acessos_r05 (baseline + seed + as 107 migrations da ordem de producao + candidato)",
+    "o_que_faz": "Decisao 16 para pessoas: producao ja tinha public.person_handles e o ledger person_identity_correction_ledger, mas sem escrita e com trava de 15 dias. O pacote: trava de 30 dias; reservados (coelo, coelo.me, admin, suporte...); geracao do @ padrao nome.sobrenome (sem acentos, sufixo numerico em colisao) por trigger AFTER INSERT em public.people para adultos e criancas (servico nao tem @) e backfill idempotente das pessoas existentes; RPCs superadmin_person_handle_availability(p_handle, p_person_id) {handle, available, reason: ok|invalid_format|reserved|taken}, superadmin_person_handle_get(p_person_id) {handle, last_changed_at, can_change_at, can_edit} e superadmin_person_handle_set(p_request_id, p_person_id, p_handle, p_reason). Quem ve/edita: people.read/people.update de plataforma (Superadmin), a propria pessoa e os responsaveis ativos da crianca (guardian_links). Auditoria pelo ledger (quem, quando, motivo, valor anterior/novo).",
+    "negativas_provadas": "anon 42501; terceiro sem vinculo 42501 em get e set; @ tomado, reservado, formato invalido e cooldown de 30 dias -> 22023 'person handle unavailable'; motivo obrigatorio.",
+    "efeito_em_producao": "o backfill vai dar @ a todas as pessoas existentes (Owner, pessoas sinteticas qa-r04, criancas): ids em person_handles; nada visivel ao cliente ate o FE ligar.",
+    "pendencias_de_modelo": [
+      "instituicao editando o @ do funcionario (Owner 12:15) exige contexto do app Admin: fora da Etapa 2; regra do servidor pode ganhar membership institucional depois.",
+      "usuarios internos (realm interno v2, app_private.superadmin_internal_profiles) nao tem @ neste pacote: a identidade interna nao e public.people; propor @ interno na proxima rodada se o Owner quiser.",
+      "institutions/units em producao usam trava de 15 dias (change_unit_handle_for_superadmin e trigger de institutions): a frente estrutura alinha para 30 (Decisao 16).",
+      "audit.audit_logs (cadeia com hash) nao recebe entrada propria da troca do @; o ledger de identidade e a trilha. Refinar na revisao de seguranca."
+    ],
+    "suites_vizinhas": "follow_links 24/24 e internal_actor_service_person 17/17 verdes apos o pacote; superadmin_people_directory_test (casos 1 e 3) e superadmin_internal_person_detail_test (caso 11) falham por 'requires MFA' e catalogo de permissoes: pre-existente desde o lote 8 (MFA fora do MVP), nao toca este pacote."
+  },
   "historico_r04": {
     "revision": 118,
     "updated_at": "2026-09-11T11:31:19.648Z",
