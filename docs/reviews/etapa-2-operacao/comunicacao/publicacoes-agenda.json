@@ -1,5 +1,5 @@
 {
-  "revision": 22,
+  "revision": 23,
   "round": "E2-R04-20260911",
   "group": "publicacoes-agenda",
   "tool": "Claude Code",
@@ -9,7 +9,7 @@
   "head": "2ee41c843",
   "base": "origin/dev 98cc0529d",
   "coordinator": "Claude (R04 · Coordenação noturna)",
-  "updatedAt": "2026-09-11T02:36:00-03:00",
+  "updatedAt": "2026-09-11T02:52:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -57,10 +57,11 @@
   "environment": {
     "disposableProject": "coelo_baseline_pa em scratchpad/pa-project (db 60322); baseline 20260910000000 + seed + 44 migrations/ aplicadas OK em 2026-09-10 21:50; snapshot pg_dump em /tmp/pa-base.dump do contêiner",
     "note": "db reset do CLI aplica o seed DEPOIS das migrations e a 170100 exige o catálogo; por isso o reset roda só com a baseline e as demais entram por psql na ordem (mesmo método do coordenador).",
-    "memoryNote": "01:57: 754 MB livres; regra do coordenador: no maximo um Chrome alem do meu, um flutter test por vez (--concurrency=1), fechar orfaos ao terminar cada prova."
+    "memoryNote": "01:57: 754 MB livres; regra do coordenador: no maximo um Chrome alem do meu, um flutter test por vez (--concurrency=1), fechar orfaos ao terminar cada prova.",
+    "closedAt": "02:52: Chrome 9334 e servidor estatico 3006 fechados; projeto descartavel coelo_baseline_pa segue de pe para o coordenador (docker supabase_db_coelo_baseline_pa) — pode ser parado com supabase stop --project-id coelo_baseline_pa."
   },
   "firstGate": "200500 verde (subagente) → pacotesProntos; goldens R/A (subagente); uma tentativa de UI real com um Chrome; mini-revisao ate 04:00.",
-  "status": "em andamento (revisao 21 e o estado consolidado; continua ate 04:00)",
+  "status": "finalizado",
   "findings": [
     "Presença em produção (mapa r03-coordenacao): notices_v2 185008 = 1/16 (só analytics.notice_events); circulars_v2 191921 = 0/14; circulars_media_r2 212000 = 6/6; agenda 183836/193717 presentes (superadmin_agenda_list/get/contexts/save/command/requests/decide_publication em public).",
     "O cliente Superadmin chama somente superadmin_notice_*_v2 (185008), superadmin_circular_*_v2 (191921 + delete) e superadmin_agenda_* v1. A cadeia legada de Avisos people-based (003000, 204824, 212340, 220500) NÃO é chamada pelo app: 185008 é autossuficiente (colunas com if not exists, recibos próprios, auditoria via audit_append_superadmin_internal cuja assinatura de 13 args confere com produção). Decisão: não reentregar a cadeia legada no MVP; worker/pg_cron ficam registrados como pendência de entrega ao Principal (materialização de audiência), não bloqueiam CRUD de Avisos no Superadmin.",
@@ -75,7 +76,8 @@
     "FE: diretorio de Circulares nao recarrega apos excluir (mostra o rascunho ate recarregar); \"Editar circular\" oferecido em Encerrada (servidor recusa).",
     "FE bloqueante: em /circulars/new a 1440 o balao de chat cobre inteiramente o botao Publicar (centro 1330x856); a 1024 o rodape empilha e funciona.",
     "FE agenda.detail: deep link direto apos carga fria fica no spinner ate o calendario carregar; no detalhe apos reload contexto/audiencia mostram UUID da instituicao em vez do nome.",
-    "Ambiente: outro processo (frente ou coordenador) passou a dirigir meu Chrome CDP 9333 (pagina foi para localhost:3000); abri o 9334. Sugestao: cada conversa usa porta CDP propria e declara no JSON."
+    "Ambiente: outro processo (frente ou coordenador) passou a dirigir meu Chrome CDP 9333 (pagina foi para localhost:3000); abri o 9334. Sugestao: cada conversa usa porta CDP propria e declara no JSON.",
+    "FE agenda.edit: na rota de edicao a etapa Revisao mostra so Continuar (sem Salvar/Publicar) e o clique nao salva; criar pelo mesmo wizard funciona (Publicar/Salvar rascunho presentes)."
   ],
   "packages": [
     {
@@ -505,8 +507,8 @@
     {
       "actionId": "circulars.filter",
       "layer": "FE",
-      "proposed": "local-green",
-      "evidence": "abas/busca presentes; filtro nao exercido pela tela"
+      "proposed": "verified",
+      "evidence": "ui-47/ui-48: abas Encerradas/Rascunhos filtram; sem resultados mantem Criar e Limpar filtros"
     },
     {
       "actionId": "circulars.create",
@@ -662,7 +664,7 @@
       "actionId": "agenda.edit",
       "layer": "FE",
       "proposed": "local-green",
-      "evidence": ""
+      "evidence": "ui-44..ui-46: wizard de edicao abre e aceita o titulo, mas a Revisao so mostra Continuar e nao salva (defeito FE, primeiro gate)"
     },
     {
       "actionId": "agenda.request",
@@ -717,6 +719,12 @@
       "layer": "E2E",
       "proposed": "verified-e2e",
       "evidence": "ui-41 apos reload"
+    },
+    {
+      "actionId": "circulars.filter",
+      "layer": "E2E",
+      "proposed": "verified-e2e",
+      "evidence": "UI + RPC filtra em producao (prova 33/33) + pgTAP"
     }
   ],
   "questionsToOwner": [
@@ -1128,9 +1136,9 @@
     ]
   },
   "finalizado": {
-    "at": "preliminar 02:34 (relogio real); definitivo ate 04:00",
+    "at": "2026-09-11T02:52:00-03:00",
     "head": "2ee41c843",
     "handoff": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
-    "capturas": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/ui/ (41 png)"
+    "capturas": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/ui/ (49 png)"
   }
 }

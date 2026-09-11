@@ -99,3 +99,12 @@ criar/editar evento pela tela, Agenda de eventos (lista) em produção, `circula
 Achados adicionais: (a) deep link direto para `/agenda/events/:id` após carga fria fica no spinner até passar pelo
 calendário; (b) no detalhe após reload, contexto e audiência mostram o UUID da instituição em vez do nome
 (contexts ainda não carregados). Ambos FE, `agenda.detail`.
+
+## Complemento 02:36–02:50
+
+| Captura | O que prova |
+| --- | --- |
+| ui-44, ui-45, ui-46 | `/agenda/events/:id/edit` abre o wizard real com os dados; título editado; **achado**: na Revisão o rodapé só mostra "Continuar" e o clique não salva (agenda.edit fica local-green) |
+| ui-47, ui-48 | abas Encerradas/Rascunhos filtram o diretório de Circulares (sem resultados mantém Criar e Limpar filtros) |
+
+Ambiente ao encerrar: Chrome 9334 e servidor estático 3006 fechados (regra de memória do coordenador).
