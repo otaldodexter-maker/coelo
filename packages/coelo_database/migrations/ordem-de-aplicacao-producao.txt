@@ -149,3 +149,5 @@
 20260911170100_person_handles_v1.sql
 # lote 32 (11/09 12:56) - R05 realm-interno: anexos do chat (contrato R2, sem Edge Function ainda)
 20260911210200_superadmin_internal_chat_attachments_v1.sql
+# lote 33 (11/09 13:00) - R05 realm-interno: imagem de pergunta de Formularios no R2 (contrato; form-media ainda no fluxo legado)
+20260911210300_forms_question_media_r2_v1.sql
