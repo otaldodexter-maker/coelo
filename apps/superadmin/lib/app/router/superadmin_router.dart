@@ -522,17 +522,27 @@ GoRouter createSuperadminRouter({
   // Opcoes de crianca para criar perfil ou plano: o mesmo leitor autorizado do
   // diretorio de Alunos (superadmin_child_context_directory_v2); o id e o
   // contexto infantil, que e o que o comando de criacao recebe.
-  Future<List<HealthCareProfileChildOption>> loadChildOptions() async {
-    final page = await childDirectoryRead(const ChildDirectoryRequest(limit: 50));
-    return [
-      for (final item in page.items)
-        HealthCareProfileChildOption(
-          id: item.contextId,
-          label: item.institutionName.isEmpty
-              ? item.personName
-              : '${item.personName} · ${item.institutionName}',
-        ),
-    ];
+  // A leitura e memorizada por rota aberta: um FutureBuilder que recria o
+  // future a cada rebuild do shell nunca termina de carregar.
+  Future<List<HealthCareProfileChildOption>>? childOptionsFuture;
+  Future<List<HealthCareProfileChildOption>> loadChildOptions() {
+    return childOptionsFuture ??= () async {
+      try {
+        final page = await childDirectoryRead(const ChildDirectoryRequest(limit: 50));
+        return [
+          for (final item in page.items)
+            HealthCareProfileChildOption(
+              id: item.contextId,
+              label: item.institutionName.isEmpty
+                  ? item.personName
+                  : '${item.personName} · ${item.institutionName}',
+            ),
+        ];
+      } catch (_) {
+        childOptionsFuture = null;
+        rethrow;
+      }
+    }();
   }
 
   Widget withChildOptions(
@@ -2973,7 +2983,10 @@ GoRouter createSuperadminRouter({
               if (plans == null || saver == null) return _unavailableMedicationPlans(context);
               final medicationId = state.pathParameters['medicationId']!;
               return FutureBuilder<MedicationPlanDetail>(
-                future: plans.fetchDetail(medicationId),
+                future: medicationPlanLoadFutures.putIfAbsent(
+                  'prod-$medicationId',
+                  () => plans.fetchDetail(medicationId),
+                ),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState != ConnectionState.done) {
                     return SuperadminShell(
@@ -3012,10 +3025,15 @@ GoRouter createSuperadminRouter({
                             'Criança do plano',
                       ),
                     ],
-                    onCancel: () => context.goNamed(SuperadminRoutes.healthMedicationPlansName),
+                    onCancel: () {
+                      medicationPlanLoadFutures.remove('prod-$medicationId');
+                      context.goNamed(SuperadminRoutes.healthMedicationPlansName);
+                    },
                     onDraftSaved: saver.call,
-                    onSaved: () async =>
-                        context.goNamed(SuperadminRoutes.healthMedicationPlansName),
+                    onSaved: () async {
+                      medicationPlanLoadFutures.remove('prod-$medicationId');
+                      context.goNamed(SuperadminRoutes.healthMedicationPlansName);
+                    },
                   );
                 },
               );
