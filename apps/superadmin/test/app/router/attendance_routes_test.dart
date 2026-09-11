@@ -195,7 +195,9 @@ void main() {
     }
   });
 
-  testWidgets('production attendance reads data and blocks mutation routes', (tester) async {
+  // ADR 0034 (R04): com o repositorio real composto, as rotas de mutacao de
+  // Assiduidade abrem; o servidor revalida ator, capacidade e tenant.
+  testWidgets('production attendance reads data and opens mutation routes', (tester) async {
     final session = SuperadminSession()..signInForTesting();
     final repository = _TrackingAttendanceRepository();
     final router = createSuperadminRouter(
@@ -213,27 +215,23 @@ void main() {
 
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
 
-    for (final routeCase in const [
-      (path: '/attendance', expectedCalls: ['fetchAccess', 'fetchDashboard']),
-      (path: '/attendance/new', expectedCalls: <String>[]),
-      (path: '/attendance/calls/call-progress', expectedCalls: <String>[]),
-    ]) {
-      repository.calls.clear();
-      router.go(routeCase.path);
-      await tester.pumpAndSettle();
+    repository.calls.clear();
+    router.go('/attendance');
+    await tester.pumpAndSettle();
+    expect(repository.calls, ['fetchAccess', 'fetchDashboard']);
+    expect(find.text('Nova chamada'), findsNothing);
+    expect(find.text('Ações'), findsNothing);
+    expect(find.byKey(const ValueKey('attendance-open-call-progress')), findsNothing);
 
-      expect(repository.calls, routeCase.expectedCalls, reason: routeCase.path);
-      if (routeCase.path == '/attendance') {
-        expect(find.text('Nova chamada'), findsNothing);
-        expect(find.text('Ações'), findsNothing);
-        expect(find.byKey(const ValueKey('attendance-open-call-progress')), findsNothing);
-      } else {
-        expect(
-          router.routeInformationProvider.value.uri.path,
-          '/errors/mutation-capability-unavailable',
-          reason: routeCase.path,
-        );
-      }
+    for (final path in const ['/attendance/new', '/attendance/calls/call-progress']) {
+      router.go(path);
+      await tester.pumpAndSettle();
+      expect(router.routeInformationProvider.value.uri.path, path, reason: path);
+      expect(
+        find.byKey(const Key('production-mutation-capability-unavailable')),
+        findsNothing,
+        reason: path,
+      );
     }
   });
 }

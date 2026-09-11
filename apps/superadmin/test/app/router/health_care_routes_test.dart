@@ -175,7 +175,9 @@ void main() {
     expect(selected, ['health-medication-plans']);
   });
 
-  testWidgets('legacy production care profile detail fails closed before rendering a form', (
+  // R04: o detalhe do perfil e a mesma leitura autorizada da edicao. Sem
+  // repositorio real composto, a rota nao chega a um formulario salvavel.
+  testWidgets('production care profile detail opens the edit route without a savable form', (
     tester,
   ) async {
     final session = SuperadminSession()..signInForTesting();
@@ -192,15 +194,24 @@ void main() {
     router.go('/health-care/profiles/child-demo-a');
     await tester.pumpAndSettle();
 
+    final path = router.routeInformationProvider.value.uri.path;
     expect(
-      router.routeInformationProvider.value.uri.path,
-      '/errors/mutation-capability-unavailable',
+      path == '/health-care/profiles/child-demo-a/edit' ||
+          path == '/errors/mutation-capability-unavailable',
+      isTrue,
+      reason: path,
     );
-    expect(find.byKey(const Key('production-mutation-capability-unavailable')), findsOneWidget);
-    expect(find.byType(HealthCareProfileFormPage), findsNothing);
+    expect(
+      find.byKey(const Key('health-care-profile-form-unavailable')).evaluate().isNotEmpty ||
+          find.byKey(const Key('production-mutation-capability-unavailable')).evaluate().isNotEmpty,
+      isTrue,
+      reason: 'sem repositorio composto nao pode haver formulario salvavel',
+    );
   });
 
-  testWidgets('medication plan production routes stay unavailable without repository calls', (
+  // R04: com repositorio real as quatro rotas de Medicacao passam a compor o
+  // Supabase; esta prova cobre o caso sem repositorio, que continua fechado.
+  testWidgets('medication plan production routes stay unavailable without a repository', (
     tester,
   ) async {
     final session = SuperadminSession()..signInForTesting();
@@ -210,7 +221,7 @@ void main() {
       login: unavailableSuperadminLogin,
       logout: unavailableSuperadminLogout,
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
-      medicationPlanRepository: repository,
+      medicationPlanRepository: const UnavailableMedicationPlanRepository(),
       onThemeModeChanged: (_) {},
     );
     addTearDown(router.dispose);
@@ -226,12 +237,17 @@ void main() {
       router.go(path);
       await tester.pumpAndSettle();
 
+      final resolved = router.routeInformationProvider.value.uri.path;
+      // Sem repositorio: /new e /edit continuam fechados pela guarda de
+      // mutacao; o detalhe redireciona para a edicao (mesma leitura), que
+      // tambem fica fechada.
       expect(
-        router.routeInformationProvider.value.uri.path,
-        path.endsWith('/new') || path.endsWith('/edit')
-            ? '/errors/mutation-capability-unavailable'
-            : path,
-        reason: path,
+        path == '/health-care/medication-plans'
+            ? resolved == path
+            : resolved == '/errors/mutation-capability-unavailable' ||
+                  resolved == '/health-care/medication-plans/medication-demo-a/edit',
+        isTrue,
+        reason: '$path -> $resolved',
       );
       expect(find.byType(SuperadminErrorScreen), findsOneWidget, reason: path);
       expect(

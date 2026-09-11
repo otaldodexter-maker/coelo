@@ -837,6 +837,18 @@ GoRouter createSuperadminRouter({
   final formsAuthorization = formsMediaScope == null
       ? session
       : Listenable.merge([session, formsMediaScope]);
+  // As telas de Formularios nao trazem cabecalho proprio (titulo, subtitulo,
+  // Bug e conta): nos goldens aprovados ele vem do SuperadminShell em volta da
+  // pagina, e em producao ninguem o colocava. Mesma composicao dos goldens.
+  Widget formsShell({required String title, required String subtitle, required Widget child}) =>
+      SuperadminShell(
+        logout: logout,
+        currentDestination: 'forms',
+        title: title,
+        subtitle: subtitle,
+        child: child,
+      );
+
   Widget withFormsAuthorization(Widget Function() build) => ListenableBuilder(
     listenable: formsAuthorization,
     builder: (context, child) => session.isAuthenticated ? build() : const SizedBox.shrink(),
@@ -2462,7 +2474,7 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.attendanceCreate,
             name: SuperadminRoutes.attendanceCreateName,
-            builder: (context, state) => !hasAuthoritativeMutationCapability()
+            builder: (context, state) => !hasAuthoritativeMutationCapability(state.matchedLocation)
                 ? blockedProductionMutationPage(context)
                 : AttendanceNewCallPage(
                     repository: attendanceRepository,
@@ -2483,7 +2495,7 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.attendanceCall,
             name: SuperadminRoutes.attendanceCallName,
-            builder: (context, state) => !hasAuthoritativeMutationCapability()
+            builder: (context, state) => !hasAuthoritativeMutationCapability(state.matchedLocation)
                 ? blockedProductionMutationPage(context)
                 : AttendanceCallPage(
                     repository: attendanceRepository,
@@ -2540,56 +2552,68 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.forms,
             name: SuperadminRoutes.formsName,
-            builder: (context, state) => FormsDirectoryPage(
-              api: null,
-              reader: formsDirectoryReader,
-              onCreate: () => context.goNamed(SuperadminRoutes.formCreateName),
-              onOpen: (form) => context.goNamed(
-                SuperadminRoutes.formOverviewName,
-                pathParameters: {'formId': form.id},
-              ),
-              onResponses: (form) => context.goNamed(
-                SuperadminRoutes.formResponsesName,
-                pathParameters: {'formId': form.id},
-              ),
-              onEdit: (form) => context.goNamed(
-                SuperadminRoutes.formEditName,
-                pathParameters: {'formId': form.id},
+            builder: (context, state) => formsShell(
+              title: 'Formulários',
+              subtitle: 'Crie, publique, copie e agende formulários por contexto.',
+              child: FormsDirectoryPage(
+                api: null,
+                reader: formsDirectoryReader,
+                onCreate: () => context.goNamed(SuperadminRoutes.formCreateName),
+                onOpen: (form) => context.goNamed(
+                  SuperadminRoutes.formOverviewName,
+                  pathParameters: {'formId': form.id},
+                ),
+                onResponses: (form) => context.goNamed(
+                  SuperadminRoutes.formResponsesName,
+                  pathParameters: {'formId': form.id},
+                ),
+                onEdit: (form) => context.goNamed(
+                  SuperadminRoutes.formEditName,
+                  pathParameters: {'formId': form.id},
+                ),
               ),
             ),
           ),
           GoRoute(
             path: SuperadminRoutes.formCreate,
             name: SuperadminRoutes.formCreateName,
-            builder: (context, state) => FormsEditorPage(api: formsApi),
+            builder: (context, state) => formsShell(
+              title: 'Criar formulário',
+              subtitle: 'Organize seções e perguntas para a rotina das equipes.',
+              child: FormsEditorPage(api: formsApi),
+            ),
           ),
           GoRoute(
             path: SuperadminRoutes.formOverview,
             name: SuperadminRoutes.formOverviewName,
             builder: (context, state) {
               final formId = state.pathParameters['formId']!;
-              return FormsOverviewPage(
-                api: formsApi,
-                formId: formId,
-                onEdit: () => context.goNamed(
-                  SuperadminRoutes.formEditName,
-                  pathParameters: {'formId': formId},
-                ),
-                onTest: () => context.goNamed(
-                  SuperadminRoutes.formTestName,
-                  pathParameters: {'formId': formId},
-                ),
-                onMonitor: () => context.goNamed(
-                  SuperadminRoutes.formMonitorName,
-                  pathParameters: {'formId': formId},
-                ),
-                onResponses: () => context.goNamed(
-                  SuperadminRoutes.formResponsesName,
-                  pathParameters: {'formId': formId},
-                ),
-                onFiles: () => context.goNamed(
-                  SuperadminRoutes.formFilesName,
-                  pathParameters: {'formId': formId},
+              return formsShell(
+                title: 'Formulário',
+                subtitle: 'Visão geral, publicação e acompanhamento do formulário.',
+                child: FormsOverviewPage(
+                  api: formsApi,
+                  formId: formId,
+                  onEdit: () => context.goNamed(
+                    SuperadminRoutes.formEditName,
+                    pathParameters: {'formId': formId},
+                  ),
+                  onTest: () => context.goNamed(
+                    SuperadminRoutes.formTestName,
+                    pathParameters: {'formId': formId},
+                  ),
+                  onMonitor: () => context.goNamed(
+                    SuperadminRoutes.formMonitorName,
+                    pathParameters: {'formId': formId},
+                  ),
+                  onResponses: () => context.goNamed(
+                    SuperadminRoutes.formResponsesName,
+                    pathParameters: {'formId': formId},
+                  ),
+                  onFiles: () => context.goNamed(
+                    SuperadminRoutes.formFilesName,
+                    pathParameters: {'formId': formId},
+                  ),
                 ),
               );
             },
@@ -2597,8 +2621,11 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.formEdit,
             name: SuperadminRoutes.formEditName,
-            builder: (context, state) =>
-                FormsEditorPage(api: formsApi, formId: state.pathParameters['formId']),
+            builder: (context, state) => formsShell(
+              title: 'Editar formulário',
+              subtitle: 'Organize seções e perguntas para a rotina das equipes.',
+              child: FormsEditorPage(api: formsApi, formId: state.pathParameters['formId']),
+            ),
           ),
           GoRoute(
             path: SuperadminRoutes.formTest,
@@ -2610,67 +2637,95 @@ GoRouter createSuperadminRouter({
             // coisa alguma. A leitura e a MESMA projecao autorizada que o
             // editor usa (form_get_editor), entao a capacidade e conferida no
             // servidor e nao aqui.
-            builder: (context, state) => withFormsAuthorization(
-              () => FormsTestPage(
-                key: ValueKey(
-                  'form-test-${state.uri}-${session.authorizationInvalidationRevision}',
+            builder: (context, state) => formsShell(
+              title: 'Testar formulário',
+              subtitle: 'Preencha o formulário como quem responde, sem gravar respostas.',
+              child: withFormsAuthorization(
+                () => FormsTestPage(
+                  key: ValueKey(
+                    'form-test-${state.uri}-${session.authorizationInvalidationRevision}',
+                  ),
+                  api: formsApi,
+                  formId: state.pathParameters['formId'],
                 ),
-                api: formsApi,
-                formId: state.pathParameters['formId'],
               ),
             ),
           ),
           GoRoute(
             path: SuperadminRoutes.formMonitor,
             name: SuperadminRoutes.formMonitorName,
-            builder: (context, state) => withFormsAuthorization(
-              () => FormsOperationsPage.monitor(
-                key: ValueKey('monitor-${state.uri}-${session.authorizationInvalidationRevision}'),
-                api: formsApi,
-                formId: state.pathParameters['formId'],
+            builder: (context, state) => formsShell(
+              title: 'Monitor de respostas',
+              subtitle: 'Acompanhe o andamento das respostas do formulário.',
+              child: withFormsAuthorization(
+                () => FormsOperationsPage.monitor(
+                  key: ValueKey(
+                    'monitor-${state.uri}-${session.authorizationInvalidationRevision}',
+                  ),
+                  api: formsApi,
+                  formId: state.pathParameters['formId'],
+                ),
               ),
             ),
           ),
           GoRoute(
             path: SuperadminRoutes.formRespond,
             name: SuperadminRoutes.formRespondName,
-            builder: (context, state) => const FormResponsePage(),
+            builder: (context, state) => formsShell(
+              title: 'Responder formulário',
+              subtitle: 'Retome, revise e envie uma resposta.',
+              child: const FormResponsePage(),
+            ),
           ),
           GoRoute(
             path: SuperadminRoutes.formResponses,
             name: SuperadminRoutes.formResponsesName,
-            builder: (context, state) => withFormsAuthorization(
-              () => FormsOperationsPage.responses(
-                key: ValueKey(
-                  'responses-${state.uri}-${session.authorizationInvalidationRevision}',
+            builder: (context, state) => formsShell(
+              title: 'Respostas',
+              subtitle: 'Respostas recebidas do formulário e exportação em XLSX.',
+              child: withFormsAuthorization(
+                () => FormsOperationsPage.responses(
+                  key: ValueKey(
+                    'responses-${state.uri}-${session.authorizationInvalidationRevision}',
+                  ),
+                  api: formsApi,
+                  formId: state.pathParameters['formId'],
                 ),
-                api: formsApi,
-                formId: state.pathParameters['formId'],
               ),
             ),
           ),
           GoRoute(
             path: SuperadminRoutes.formResponseDetail,
             name: SuperadminRoutes.formResponseDetailName,
-            builder: (context, state) => withFormsAuthorization(
-              () => FormsOperationsPage.responseDetail(
-                key: ValueKey('response-${state.uri}-${session.authorizationInvalidationRevision}'),
-                formId: state.pathParameters['formId'],
-                api: formsApi,
-                responseId: state.pathParameters['responseId'],
+            builder: (context, state) => formsShell(
+              title: 'Resposta',
+              subtitle: 'Detalhe de uma resposta recebida.',
+              child: withFormsAuthorization(
+                () => FormsOperationsPage.responseDetail(
+                  key: ValueKey(
+                    'response-${state.uri}-${session.authorizationInvalidationRevision}',
+                  ),
+                  formId: state.pathParameters['formId'],
+                  api: formsApi,
+                  responseId: state.pathParameters['responseId'],
+                ),
               ),
             ),
           ),
           GoRoute(
             path: SuperadminRoutes.formFiles,
             name: SuperadminRoutes.formFilesName,
-            builder: (context, state) => withFormsAuthorization(
-              () => FormsOperationsPage.files(
-                key: ValueKey('files-${state.uri}-${session.authorizationInvalidationRevision}'),
-                api: formsApi,
-                formId: state.pathParameters['formId'],
-                downloadResolver: formsMediaScope?.downloadResolver,
-                openDownloadUrl: openDownloadUrl,
+            builder: (context, state) => formsShell(
+              title: 'Arquivos de formulários',
+              subtitle: 'Arquivos e exportações gerados a partir das respostas.',
+              child: withFormsAuthorization(
+                () => FormsOperationsPage.files(
+                  key: ValueKey('files-${state.uri}-${session.authorizationInvalidationRevision}'),
+                  api: formsApi,
+                  formId: state.pathParameters['formId'],
+                  downloadResolver: formsMediaScope?.downloadResolver,
+                  openDownloadUrl: openDownloadUrl,
+                ),
               ),
             ),
           ),
