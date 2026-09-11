@@ -1,7 +1,7 @@
 ---
 title: "Handoff R04 — publicacoes-agenda (Avisos, Circulares, Agenda)"
 source: "comunicacao/publicacoes-agenda.json rev 19; commits da branch work/etapa2-r04-publicacoes-agenda; provas em producao (prova-producao-*.md) e capturas ui/"
-status: "mini-revisao de 10 minutos (03:25-03:50 de 11/09/2026)"
+status: "handoff em andamento (revisoes 19-21 gravadas 02:19-02:34 de 11/09/2026; definitivo ate 04:00)"
 generated_at: "2026-09-11"
 ---
 
@@ -84,3 +84,18 @@ criar/editar evento pela tela, Agenda de eventos (lista) em produção, `circula
   composto) ou voltar ao círculo de 24 px da referência?
 - FUNDO em `agenda_create_light_375`, `agenda_detail_*`, `notice_form_initial_mobile_light_375`: origem no
   `SuperadminFormFrame` compartilhado; regravar só após a correção do frame.
+
+## Complemento 02:20–02:34 (segundo Chrome, viewport 1024)
+
+| Captura | O que prova |
+| --- | --- |
+| ui-27-notice-open | `/notices/:id/edit` abre o aviso criado pela tela com os dados reais |
+| ui-28-notice-edited, ui-30 | título editado e salvo; diretório mostra "[R04-QA UI] Aviso editado pela tela" |
+| ui-31, ui-32, ui-33 | grade de cards; menu de ações (Pré-visualizar, Editar, Publicar, Inativar); Publicar → indicador passa a ativo |
+| ui-34, ui-35, ui-36 | Inativar com motivo obrigatório → indicador vermelho (inativo) |
+| ui-37, ui-38, ui-39, ui-40 | Criar evento pela tela: passos, revisão, Publicar → detalhe publicado na instituição sintética |
+| ui-41-agenda-detail-reload | após recarregar o app o evento persiste (via calendário) |
+
+Achados adicionais: (a) deep link direto para `/agenda/events/:id` após carga fria fica no spinner até passar pelo
+calendário; (b) no detalhe após reload, contexto e audiência mostram o UUID da instituição em vez do nome
+(contexts ainda não carregados). Ambos FE, `agenda.detail`.

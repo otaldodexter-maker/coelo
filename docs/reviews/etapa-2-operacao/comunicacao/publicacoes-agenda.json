@@ -1,15 +1,15 @@
 {
-  "revision": 20,
+  "revision": 22,
   "round": "E2-R04-20260911",
   "group": "publicacoes-agenda",
   "tool": "Claude Code",
   "model": "Opus 5 (1M)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-publicacoes-agenda",
   "branch": "work/etapa2-r04-publicacoes-agenda",
-  "head": "ca70dd552",
+  "head": "2ee41c843",
   "base": "origin/dev 98cc0529d",
   "coordinator": "Claude (R04 · Coordenação noturna)",
-  "updatedAt": "2026-09-11T02:20:00-03:00",
+  "updatedAt": "2026-09-11T02:36:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -60,7 +60,7 @@
     "memoryNote": "01:57: 754 MB livres; regra do coordenador: no maximo um Chrome alem do meu, um flutter test por vez (--concurrency=1), fechar orfaos ao terminar cada prova."
   },
   "firstGate": "200500 verde (subagente) → pacotesProntos; goldens R/A (subagente); uma tentativa de UI real com um Chrome; mini-revisao ate 04:00.",
-  "status": "em andamento (mini-revisao preliminar gravada na rev 19; continua ate 04:00)",
+  "status": "em andamento (revisao 21 e o estado consolidado; continua ate 04:00)",
   "findings": [
     "Presença em produção (mapa r03-coordenacao): notices_v2 185008 = 1/16 (só analytics.notice_events); circulars_v2 191921 = 0/14; circulars_media_r2 212000 = 6/6; agenda 183836/193717 presentes (superadmin_agenda_list/get/contexts/save/command/requests/decide_publication em public).",
     "O cliente Superadmin chama somente superadmin_notice_*_v2 (185008), superadmin_circular_*_v2 (191921 + delete) e superadmin_agenda_* v1. A cadeia legada de Avisos people-based (003000, 204824, 212340, 220500) NÃO é chamada pelo app: 185008 é autossuficiente (colunas com if not exists, recibos próprios, auditoria via audit_append_superadmin_internal cuja assinatura de 13 args confere com produção). Decisão: não reentregar a cadeia legada no MVP; worker/pg_cron ficam registrados como pendência de entrega ao Principal (materialização de audiência), não bloqueiam CRUD de Avisos no Superadmin.",
@@ -73,7 +73,9 @@
     "FE: diretorio de Circulares nao recarrega apos excluir (mostra o rascunho ate recarregar); \"Editar circular\" oferecido em Encerrada (servidor recusa).",
     "FE bloqueante: em /circulars/new a 1440 o balao de chat cobre inteiramente o botao Publicar (centro 1330x856); a 1024 o rodape empilha e funciona.",
     "FE: diretorio de Circulares nao recarrega apos excluir (mostra o rascunho ate recarregar); \"Editar circular\" oferecido em Encerrada (servidor recusa).",
-    "FE bloqueante: em /circulars/new a 1440 o balao de chat cobre inteiramente o botao Publicar (centro 1330x856); a 1024 o rodape empilha e funciona."
+    "FE bloqueante: em /circulars/new a 1440 o balao de chat cobre inteiramente o botao Publicar (centro 1330x856); a 1024 o rodape empilha e funciona.",
+    "FE agenda.detail: deep link direto apos carga fria fica no spinner ate o calendario carregar; no detalhe apos reload contexto/audiencia mostram UUID da instituicao em vez do nome.",
+    "Ambiente: outro processo (frente ou coordenador) passou a dirigir meu Chrome CDP 9333 (pagina foi para localhost:3000); abri o 9334. Sugestao: cada conversa usa porta CDP propria e declara no JSON."
   ],
   "packages": [
     {
@@ -220,7 +222,7 @@
     "unknown": "bateria completa nao repetida apos os goldens 375 por falta de memoria da maquina (um flutter test por vez)"
   },
   "blocked": "nenhum",
-  "next": "Coordenador: aplicar deltas; shell sem balao em criar/editar/publicar; P30 (disparo do worker). Proxima rodada: UI de editar/publicar/inativar aviso, picker de agendamento, criar/editar evento pela tela, circulars.respond/attach, unidade sintetica para agenda.location.",
+  "next": "Coordenador: aplicar os deltas novos (notices.edit/publish/archive FE verified + E2E; agenda.create/detail FE verified + E2E); shell sem balao em criar/editar/publicar; P30. Proxima rodada: picker de agendamento da Circular, circulars.filter/edit explicitos pela tela, circulars.respond/attach, agenda.edit/request/permissions/location pela tela, deep link do detalhe da Agenda.",
   "changes": [
     {
       "screen": "Etapa 2 → apps/superadmin → Agenda → Eventos → diretorio → agenda.view",
@@ -395,8 +397,8 @@
     {
       "actionId": "notices.edit",
       "layer": "FE",
-      "proposed": "local-green",
-      "evidence": "nao exercido pela tela"
+      "proposed": "verified",
+      "evidence": "ui-27/ui-28/ui-30: edicao pela tela persistiu"
     },
     {
       "actionId": "notices.schedule",
@@ -407,14 +409,14 @@
     {
       "actionId": "notices.publish",
       "layer": "FE",
-      "proposed": "local-green",
-      "evidence": "nao exercido pela tela; balao de chat em /notices/new (Decisao 7)"
+      "proposed": "verified",
+      "evidence": "ui-32/ui-33: Publicar pelo menu de acoes -> ativo"
     },
     {
       "actionId": "notices.archive",
       "layer": "FE",
-      "proposed": "local-green",
-      "evidence": "nao exercido pela tela"
+      "proposed": "verified",
+      "evidence": "ui-34..ui-36: Inativar com motivo -> inativo"
     },
     {
       "actionId": "notices.list",
@@ -647,14 +649,14 @@
     {
       "actionId": "agenda.create",
       "layer": "FE",
-      "proposed": "local-green",
-      "evidence": "ui-26 abre o formulario real; nao salvo pela tela"
+      "proposed": "verified",
+      "evidence": "ui-37..ui-40: wizard real, Publicar, detalhe"
     },
     {
       "actionId": "agenda.detail",
       "layer": "FE",
-      "proposed": "local-green",
-      "evidence": ""
+      "proposed": "verified",
+      "evidence": "ui-40/ui-41; achados: deep link frio fica em spinner; UUID no lugar do nome ate contexts carregar"
     },
     {
       "actionId": "agenda.edit",
@@ -685,6 +687,36 @@
       "layer": "E2E",
       "proposed": "verified-e2e",
       "evidence": "ui-25 + pgTAP + producao"
+    },
+    {
+      "actionId": "notices.edit",
+      "layer": "E2E",
+      "proposed": "verified-e2e",
+      "evidence": "UI + producao + pgTAP + reload (ui-42)"
+    },
+    {
+      "actionId": "notices.publish",
+      "layer": "E2E",
+      "proposed": "verified-e2e",
+      "evidence": "UI + producao + pgTAP"
+    },
+    {
+      "actionId": "notices.archive",
+      "layer": "E2E",
+      "proposed": "verified-e2e",
+      "evidence": "UI + producao + pgTAP"
+    },
+    {
+      "actionId": "agenda.create",
+      "layer": "E2E",
+      "proposed": "verified-e2e",
+      "evidence": "UI + producao (superadmin_agenda_save) + pgTAP + reload ui-41"
+    },
+    {
+      "actionId": "agenda.detail",
+      "layer": "E2E",
+      "proposed": "verified-e2e",
+      "evidence": "ui-41 apos reload"
     }
   ],
   "questionsToOwner": [
@@ -1090,13 +1122,15 @@
       "ui-04-notice-new: Nova comunicacao abre /notices/new (formulario real, sem fixture); ACHADO: balao de chat \"Mensagens\" aparece sobre o rodape do formulario e cobre parte do botao Continuar — viola a Decisao 7 (sem chat em criar/editar/publicar); pertence ao shell (principal-chat-sistema/coordenador)",
       "ui-05: validacao honesta \"Informe a mensagem do aviso para continuar\" ao salvar sem mensagem",
       "ui-06-notice-saved: Salvar rascunho persistiu em producao: \"[R04-QA UI] Aviso criado pela tela\" listado no diretorio",
-      "ui-07-notices-reload: app recarregado por completo (navegacao para / e volta a /notices) com a sessao mantida e o aviso criado pela tela presente"
+      "ui-07-notices-reload: app recarregado por completo (navegacao para / e volta a /notices) com a sessao mantida e o aviso criado pela tela presente",
+      "ui-27..ui-36: Avisos editar/publicar/inativar pela tela (viewport 1024, segundo Chrome 9334 porque outro processo passou a usar o 9333)",
+      "ui-37..ui-41: evento criado e publicado pela tela, detalhe apos reload"
     ]
   },
   "finalizado": {
-    "at": "preliminar 02:20; definitivo ate 04:00",
-    "head": "ca70dd552",
+    "at": "preliminar 02:34 (relogio real); definitivo ate 04:00",
+    "head": "2ee41c843",
     "handoff": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
-    "capturas": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/ui/ (27 png)"
+    "capturas": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/ui/ (41 png)"
   }
 }
