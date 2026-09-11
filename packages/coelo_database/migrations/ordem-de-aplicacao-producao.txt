@@ -168,3 +168,5 @@
 20260911210800_forms_answer_media_r2_v1.sql
 20260911200000_superadmin_plans_platform_scope_v1.sql
 20260911170300_institution_profile_system_model_create_v1.sql
+# lote 40 (11/09 13:50) - R05 formularios-cuidado-rotina: can_manage no diretorio de Rotina
+20260911220000_daily_routine_directory_can_manage_v1.sql

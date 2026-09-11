@@ -783,6 +783,11 @@ GoRouter createSuperadminRouter({
     if (location.startsWith(SuperadminRoutes.plans)) {
       return planCatalogRepository is! UnavailablePlanCatalogRepository;
     }
+    // Seguranca infantil: /safety/new e .../edit abrem quando o adapter real
+    // esta composto (P32 B); o servidor revalida child_safety.manage.
+    if (location.startsWith('/safety')) {
+      return resolvedChildSafetyController.mutationsEnabled;
+    }
     return false;
   }
 
