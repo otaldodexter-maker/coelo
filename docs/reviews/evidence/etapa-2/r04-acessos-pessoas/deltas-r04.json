@@ -609,5 +609,18 @@
       "environment": "producao, sessao qa-r03 via PostgREST",
       "recordedAt": "2026-09-11T03:22:00-03:00"
     }
+  },
+  {
+    "action_id": "access-models.filter",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R04: superadmin_access_profile_models_cursor filtra no servidor pela sessao qa-r03 em producao: p_query=QA R04 + p_status=active + p_scope=platform devolve so o modelo cc322488 (active); p_status=inactive devolve so a copia 60fb9586 (inactive). Substitui blocked-environment.",
+    "evidencia": "comunicacao/acessos-pessoas.json rev 113 (ADENDO_03h18) e rev 117",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+      "revision": "c387878a0",
+      "environment": "producao, sessao qa-r03 via PostgREST",
+      "recordedAt": "2026-09-11T03:18:00-03:00"
+    }
   }
 ]
