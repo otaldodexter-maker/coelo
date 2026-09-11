@@ -16,13 +16,14 @@ group: "operacoes"
 | support.table / support.kanban | verified (P49) | done | verified-e2e (recertificado) | P49 = A: abas Todos/Novo/Em andamento/Aguardando solicitante/Concluído na tabela no lugar do filtro Status; visão cards/tabela persistida por dispositivo (`coelo.superadmin.support.display`); `superadmin_support_list` 200 com o filtro no servidor; reload reabre em tabela. 24 goldens regravados (SUP-R06). Capturas `rota-real/10-14`. |
 | plans.activate | verified (proposto) | done (proposto) | verified-e2e (proposto) | Conciliado com a spec 051 como Restaurar (arquivado → ativo): Arquivar + motivo → `plan_save` 200 → Restaurar + motivo → `plan_save` 200; reload e aba Ativos mantêm. Capturas `rota-real/20-25`. |
 | catalog.validate / catalog.sync | verified (proposto) | n/a (validação local) | — | P44 = B: composto de diretório e 4 componentes no índice e no registry; 16 exemplos atualizados; `validate_catalog_index`, `validate_package_boundaries` e `validate_catalog_sync` com zero diagnóstico; relatório regenerado sem caminhos absolutos. |
-| imports.create (texto) | — | — | — | IMP-R05-2: `/imports/new` diz "Este recurso fica disponível depois do MVP." (`SuperadminErrorKind.deferred`, mesma família do 503). Goldens `error_503_deferred_*` e `import_hub_wizard_unavailable_light_1440_200` regravados (DEF-R06). |
+| imports.create (texto + rota) | verified (proposto: adiamento honesto) | deferred | deferred | IMP-R05-2: `/imports/new` diz "Este recurso fica disponível depois do MVP." (`SuperadminErrorKind.deferred`, mesma família do 503). Goldens `error_503_deferred_*` e `import_hub_wizard_unavailable_light_1440_200` regravados (DEF-R06). **Achado da rota real:** `/imports/new` caía no redirect genérico do router (fora da shell, fundo escuro), diferente do golden aprovado; a rota saiu do redirect e mostra a página honesta dentro do `SuperadminShell` (1e94633a5). Captura `rota-real/31`. |
 
 Deltas: `deltas-r06-ops.json` (16), ensaiado com `apply-tracker-delta.cjs` + `validate-trackers.cjs` PASS e revertido.
 
 # 2. Pacotes SQL
 
 - `20260911200200_superadmin_account_sessions_v1.sql` — aplicado pelo coordenador no lote 50. Sem chave de composição. Sem Edge Function: a revogação usa o endpoint nativo do GoTrue.
+- `20260911200300_account_profile_service_person_email_v1.sql` — **pronto** (pgTAP 3/3 + perfil 16/16): o Perfil da conta mostra o e-mail do próprio `auth.uid()` quando a pessoa de serviço da ponte não tem `person_auth_links`. Sem chave de composição.
 
 # 3. O que ficou aberto (primeiro gate)
 
@@ -30,13 +31,15 @@ Deltas: `deltas-r06-ops.json` (16), ensaiado com `apply-tracker-delta.cjs` + `va
 2. **catalog.publish** — deploy do app do Catálogo (Cloudflare Pages): decisão nominal do Owner.
 3. **audit.export** — não iniciado (Edge Function `audit-export` sem deploy); continua adiado pela ADR 0034.
 4. **Aprovação visual** — SUP-R06 (24 goldens de Suporte), DEF-R06 (texto do recurso adiado) e SES-R06 (card Sessões): página https://claude.ai/code/artifact/1d18a357-f2ed-40ee-827b-63798967a700 (cópia em `aprovacao-r06-ops/`).
-5. **Testes pré-existentes em apps/catalog** (falham também na base limpa `2a579335e`): `catalog_app_test` (modo público temporário) e `validate_admin_visual_contracts_test` (usos crus em `agenda_calendar_page`, `superadmin_chat_page`, `superadmin_chat_create_group_dialog`, `institution_card`, `institution_filter_menu`; 3 arquivos allowlistados que não existem mais).
+5. **Testes pré-existentes em test/app/router** (em `ca60b096b`, antes da R06): `superadmin_error_routes_test` "unavailable /profile", `persistent_shell_routes_test` (2), `prototype_navigation_routes_test`; também `structure_detail_golden_test` (4), `person_detail_golden_test` (2), `principal_moments_publication_route_test`, `people_creation_requirements_red_test` (outras frentes).
+6. **Testes pré-existentes em apps/catalog** (falham também na base limpa `2a579335e`): `catalog_app_test` (modo público temporário) e `validate_admin_visual_contracts_test` (usos crus em `agenda_calendar_page`, `superadmin_chat_page`, `superadmin_chat_create_group_dialog`, `institution_card`, `institution_filter_menu`; 3 arquivos allowlistados que não existem mais).
 
 # 4. Pendências novas registradas
 
 - `account.sessions`: sem auditoria própria em `audit.audit_logs` (GoTrue registra em `auth.audit_log_entries`); sem revogação individual (GoTrue só expõe `scope=others`). Revisão profunda.
 - `support.table`: a 1424 px úteis a toolbar quebra o filtro Leitura para a segunda linha (golden 1440 em uma linha).
 - `support.table`: corrigido em 8776eb424 — lista vazia com filtro ativo mostrava a mensagem de vazio; agora "sem resultados" na tabela (o repositório filtra no servidor); kanban mantém colunas vazias.
+- `plans.list`/`plans.edit`: parser tolera entitlements ausentes e `starts_at` nulo (ef7e577c9; pendência da R05 fechada).
 - `qa_drive.dart` ganhou o comando `eval` (diagnóstico de rede por `performance`).
 - Resíduos sintéticos: plano `5b0fc76b-…` arquivado e restaurado (2 recibos novos em `plan_change_receipts`); sessões do `qa-r06-operacoes` (uma revogada); eventos de auditoria das provas.
 
@@ -44,6 +47,6 @@ Deltas: `deltas-r06-ops.json` (16), ensaiado com `apply-tracker-delta.cjs` + `va
 
 - **coelo-backend:** listar sessões do próprio usuário é RPC `security definer` sobre `auth.sessions` filtrando por `auth.uid()` e marcando a atual pelo claim `session_id`; nunca aceita `user_id`. Revogar as outras é `POST /auth/v1/logout?scope=others` (SDK `signOut(scope: SignOutScope.others)`), server-side e auditado pelo GoTrue — não precisa de Edge Function nem de Admin API.
 - **coelo-frontend / coelo-ui:** abas de status com conjunto próprio usam `CoeloAdminUnderlineTabs<T?>` no slot `tabs` do composto (`null` = Todos) e valem só na tabela quando o kanban já tem colunas por estado (Suporte, P49). Preferência de visão cards/tabela é local por dispositivo (`SharedPreferencesAsync`, chave `coelo.superadmin.<tela>.display`), injetada só na composição real.
-- **coelo-frontend:** recurso adiado por decisão usa `SuperadminErrorKind.deferred` ("fica disponível depois do MVP"); `unavailable` (503 "temporariamente") fica para indisponibilidade real.
+- **coelo-frontend:** rota de recurso adiado por decisão (Importações) fica fora do redirect genérico de mutação e renderiza a página honesta dentro da shell; golden montado à mão precisa refletir o caminho real (o de IMP-R05-2 não refletia). Recurso adiado usa `SuperadminErrorKind.deferred` ("fica disponível depois do MVP"); `unavailable` (503 "temporariamente") fica para indisponibilidade real.
 - **coelo-frontend:** teste que rola a página do Catálogo rola pela `ScrollPosition`, porque o composto de diretório no registry captura o gesto no centro da viewport.
 - **coelo-frontend-backend:** `dart run` pelo `dart.bat` passa por `cmd.exe` e quebra expressões JS com `>`; usar `dart.exe` do SDK diretamente e `MSYS_NO_PATHCONV=1` no Git Bash. Campo de diálogo no release: clique por CDP na coordenada do campo (o `tap` por texto do rótulo trava) e `enter_text` do driver.
