@@ -1,0 +1,210 @@
+[
+  {
+    "action_id": "invites.create",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R06: /invites/new pela tela com qa-r06-acessos: contexto QA R04 Instituicao Sintetica, perfil Coordenacao (modelo do sistema), destinatario novo e-mail sintetico, canal E-mail, 48 h, revisao e Emitir convite -> 'Convite emitido' (superadmin_invite_issue_v2 200); convite a5496b70 aparece na lista apos reload (pendente, expira 13/09 23:21). Pendencias pequenas: 'Concluir' no estado emitido nao volta a lista; texto 'Entrega por e-mail nao solicitada' com canal E-mail marcado.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r06-acessos-pessoas/capturas/invites-create-emitido.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-acessos-pessoas/capturas/invites-create-emitido.png",
+      "revision": "ee35cce3a",
+      "environment": "producao, rota real (build web de qa_main ee35cce3a servido em 127.0.0.1:3016 + Chrome CDP 9416 com perfil proprio, sessao qa-r06-acessos@coelo.me)",
+      "recordedAt": "2026-09-11T23:22:00-03:00"
+    }
+  },
+  {
+    "action_id": "invites.create",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R06: rota normal + CRUD em producao (superadmin_invite_issue_v2, BE done na R05) + reload mantem (lista apos reload). Negativas em pgTAP superadmin_internal_invites_v2_test e por REST na R05 (pessoa XOR e-mail 422, escopo 403).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r06-acessos-pessoas/capturas/invites-list-apos-reload.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-acessos-pessoas/capturas/invites-list-apos-reload.png",
+      "revision": "ee35cce3a",
+      "environment": "producao, rota real (build web de qa_main ee35cce3a servido em 127.0.0.1:3016 + Chrome CDP 9416 com perfil proprio, sessao qa-r06-acessos@coelo.me)",
+      "recordedAt": "2026-09-11T23:24:00-03:00"
+    }
+  },
+  {
+    "action_id": "invites.detail",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R06: card da lista abre /invites/<id> pela tela: detalhe com status Pendente, contexto, perfil, canais, emissor, criado/expira e linha do tempo (superadmin_invite_detail_v2 200); reload mantem.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r06-acessos-pessoas/capturas/invites-detail.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-acessos-pessoas/capturas/invites-detail.png",
+      "revision": "ee35cce3a",
+      "environment": "producao, rota real (build web de qa_main ee35cce3a servido em 127.0.0.1:3016 + Chrome CDP 9416 com perfil proprio, sessao qa-r06-acessos@coelo.me)",
+      "recordedAt": "2026-09-11T23:25:00-03:00"
+    }
+  },
+  {
+    "action_id": "invites.detail",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R06: rota normal + superadmin_invite_detail_v2 em producao (BE done na R05; id inexistente = SAI_PERMISSION_DENIED 403 nao enumeravel) + reload mantem.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r06-acessos-pessoas/capturas/invites-detail.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-acessos-pessoas/capturas/invites-detail.png",
+      "revision": "ee35cce3a",
+      "environment": "producao, rota real (build web de qa_main ee35cce3a servido em 127.0.0.1:3016 + Chrome CDP 9416 com perfil proprio, sessao qa-r06-acessos@coelo.me)",
+      "recordedAt": "2026-09-11T23:25:00-03:00"
+    }
+  },
+  {
+    "action_id": "invites.revoke",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R06: 'Revogar convite' no detalhe abre a confirmacao e revoga pela tela (superadmin_invite_revoke_v2 200); apos reload o status e Revogado e a linha do tempo mostra 'Convite revogado 23:27'.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r06-acessos-pessoas/capturas/invites-revoke-apos-reload.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-acessos-pessoas/capturas/invites-revoke-apos-reload.png",
+      "revision": "ee35cce3a",
+      "environment": "producao, rota real (build web de qa_main ee35cce3a servido em 127.0.0.1:3016 + Chrome CDP 9416 com perfil proprio, sessao qa-r06-acessos@coelo.me)",
+      "recordedAt": "2026-09-11T23:27:00-03:00"
+    }
+  },
+  {
+    "action_id": "invites.revoke",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R06: rota normal + superadmin_invite_revoke_v2 em producao (BE done na R05; expected_version errado = 409) + reload mantem o estado revogado.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r06-acessos-pessoas/capturas/invites-revoke-apos-reload.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-acessos-pessoas/capturas/invites-revoke-apos-reload.png",
+      "revision": "ee35cce3a",
+      "environment": "producao, rota real (build web de qa_main ee35cce3a servido em 127.0.0.1:3016 + Chrome CDP 9416 com perfil proprio, sessao qa-r06-acessos@coelo.me)",
+      "recordedAt": "2026-09-11T23:27:00-03:00"
+    }
+  },
+  {
+    "action_id": "students.list",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R06: /students lista os contextos de crianca reais (superadmin_child_context_directory_v2) e /students/<childContextId>/manage mostra os vinculos reais da Crianca QA R04 (superadmin_student_links): unidade ativa, turma com vigencia, unidade encerrada. Pendencia: o card da lista nao navega para a tela de gerir (so por URL).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r06-acessos-pessoas/capturas/students-manage.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-acessos-pessoas/capturas/students-manage.png",
+      "revision": "ee35cce3a",
+      "environment": "producao, rota real (build web de qa_main ee35cce3a servido em 127.0.0.1:3016 + Chrome CDP 9416 com perfil proprio, sessao qa-r06-acessos@coelo.me)",
+      "recordedAt": "2026-09-11T23:31:00-03:00"
+    }
+  },
+  {
+    "action_id": "students.list",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R06: rota normal + superadmin_student_links em producao (BE done na R05; contexto inexistente P0002) + reload mantem.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r06-acessos-pessoas/capturas/students-manage.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-acessos-pessoas/capturas/students-manage.png",
+      "revision": "ee35cce3a",
+      "environment": "producao, rota real (build web de qa_main ee35cce3a servido em 127.0.0.1:3016 + Chrome CDP 9416 com perfil proprio, sessao qa-r06-acessos@coelo.me)",
+      "recordedAt": "2026-09-11T23:31:00-03:00"
+    }
+  },
+  {
+    "action_id": "students.edit",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R06: icone de vigencia abre 'Vigencia em Turma QA R04 Estrutura (editada)'; fim 20/12/2026 digitado e salvo pela tela (superadmin_student_edit 200); a linha passa a 'de 11/09/2026 ate 20/12/2026'.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r06-acessos-pessoas/capturas/students-edit-salvo.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-acessos-pessoas/capturas/students-edit-salvo.png",
+      "revision": "ee35cce3a",
+      "environment": "producao, rota real (build web de qa_main ee35cce3a servido em 127.0.0.1:3016 + Chrome CDP 9416 com perfil proprio, sessao qa-r06-acessos@coelo.me)",
+      "recordedAt": "2026-09-11T23:36:00-03:00"
+    }
+  },
+  {
+    "action_id": "students.edit",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R06: rota normal + superadmin_student_edit em producao (BE done na R05) + reload (a tela recarregada mostrou a vigencia antes das acoes seguintes).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r06-acessos-pessoas/capturas/students-edit-salvo.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-acessos-pessoas/capturas/students-edit-salvo.png",
+      "revision": "ee35cce3a",
+      "environment": "producao, rota real (build web de qa_main ee35cce3a servido em 127.0.0.1:3016 + Chrome CDP 9416 com perfil proprio, sessao qa-r06-acessos@coelo.me)",
+      "recordedAt": "2026-09-11T23:36:00-03:00"
+    }
+  },
+  {
+    "action_id": "students.transfer",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R06: 'Transferir' lista as turmas de outras unidades (superadmin_group_directory), turma 'Turma QA R06 Transferencia - Unidade QA R05 Transferencia' escolhida com motivo e transferida pela tela (superadmin_student_transfer 200): Unidade QA R04 encerrada, Unidade QA R05 Transferencia ativa com a turma nova. Nota: a primeira carga das turmas demora ~20 s (o dialogo mostra 'Nao foi possivel listar' se a chamada falha e nao oferece tentar de novo).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r06-acessos-pessoas/capturas/students-transfer-salvo.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-acessos-pessoas/capturas/students-transfer-salvo.png",
+      "revision": "ee35cce3a",
+      "environment": "producao, rota real (build web de qa_main ee35cce3a servido em 127.0.0.1:3016 + Chrome CDP 9416 com perfil proprio, sessao qa-r06-acessos@coelo.me)",
+      "recordedAt": "2026-09-11T23:44:00-03:00"
+    }
+  },
+  {
+    "action_id": "students.transfer",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R06: rota normal + superadmin_student_transfer em producao (BE done na R05) + reload mantem (tela recarregada apos link mostra o vinculo de transferencia revogado e o original ativo).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r06-acessos-pessoas/capturas/students-transfer-salvo.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-acessos-pessoas/capturas/students-transfer-salvo.png",
+      "revision": "ee35cce3a",
+      "environment": "producao, rota real (build web de qa_main ee35cce3a servido em 127.0.0.1:3016 + Chrome CDP 9416 com perfil proprio, sessao qa-r06-acessos@coelo.me)",
+      "recordedAt": "2026-09-11T23:44:00-03:00"
+    }
+  },
+  {
+    "action_id": "students.revoke",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R06: 'Revogar vinculo' com motivo pela tela (superadmin_student_revoke 200): a unidade passa a 'Vinculo revogado' e a turma 'encerrada'.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r06-acessos-pessoas/capturas/students-revoke-salvo.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-acessos-pessoas/capturas/students-revoke-salvo.png",
+      "revision": "ee35cce3a",
+      "environment": "producao, rota real (build web de qa_main ee35cce3a servido em 127.0.0.1:3016 + Chrome CDP 9416 com perfil proprio, sessao qa-r06-acessos@coelo.me)",
+      "recordedAt": "2026-09-11T23:47:00-03:00"
+    }
+  },
+  {
+    "action_id": "students.revoke",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R06: rota normal + superadmin_student_revoke em producao (BE done na R05) + reload mantem (students-link-apos-reload.png mostra a Unidade QA R05 Transferencia revogada).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r06-acessos-pessoas/capturas/students-link-apos-reload.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-acessos-pessoas/capturas/students-link-apos-reload.png",
+      "revision": "ee35cce3a",
+      "environment": "producao, rota real (build web de qa_main ee35cce3a servido em 127.0.0.1:3016 + Chrome CDP 9416 com perfil proprio, sessao qa-r06-acessos@coelo.me)",
+      "recordedAt": "2026-09-11T23:50:00-03:00"
+    }
+  },
+  {
+    "action_id": "students.link",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R06: 'Vincular a uma turma' lista as turmas ativas da instituicao (a turma decide a unidade, P36); Turma QA R04 Estrutura (editada) escolhida e vinculada pela tela (superadmin_student_link 200); apos reload a Unidade QA R04 esta ativa com a turma.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r06-acessos-pessoas/capturas/students-link-apos-reload.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-acessos-pessoas/capturas/students-link-apos-reload.png",
+      "revision": "ee35cce3a",
+      "environment": "producao, rota real (build web de qa_main ee35cce3a servido em 127.0.0.1:3016 + Chrome CDP 9416 com perfil proprio, sessao qa-r06-acessos@coelo.me)",
+      "recordedAt": "2026-09-11T23:50:00-03:00"
+    }
+  },
+  {
+    "action_id": "students.link",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R06: rota normal + superadmin_student_link em producao (BE done na R05, hotfix 170200) + reload mantem. Fixture das outras frentes restaurada (crianca d0c4...0003 na turma 368a5cea, sem data de fim).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r06-acessos-pessoas/capturas/students-link-apos-reload.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-acessos-pessoas/capturas/students-link-apos-reload.png",
+      "revision": "ee35cce3a",
+      "environment": "producao, rota real (build web de qa_main ee35cce3a servido em 127.0.0.1:3016 + Chrome CDP 9416 com perfil proprio, sessao qa-r06-acessos@coelo.me)",
+      "recordedAt": "2026-09-11T23:50:00-03:00"
+    }
+  }
+]

@@ -1,7 +1,7 @@
 {
-  "revision": 139,
-  "updated_at": "2026-09-11T22:56:54.688545Z",
-  "relogio_local": "Fri Sep 11 2026 19:56:54 GMT-0300 (Horario Padrao de Brasilia)",
+  "revision": 140,
+  "updated_at": "2026-09-11T23:54:05.446149Z",
+  "relogio_local": "Fri Sep 11 2026 20:54:05 GMT-0300 (Horario Padrao de Brasilia)",
   "round": "E2-R06-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
@@ -9,13 +9,13 @@
   "status": "em andamento",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-acessos-pessoas",
   "branch": "work/etapa2-r06-acessos-pessoas",
-  "head": "fb96e9374 (publicado)",
+  "head": "o commit desta rev 140 (publicado); inclui ee35cce3a (170700) e o merge de origin/dev fcdded416 (lote 49)",
   "base_observed": "origin/dev ca60b096b (coordenacao rev 51, prompts da R06); candidatos/acessos-pessoas vazio; lotes 28-48 em producao",
   "T0": {
-    "observacao": "coordenacao.json ainda na rev 51 (sem T0 nem \"usuarios qa-r06 prontos\") e Coelo-backups/qa-r06-acessos.env inexistente na abertura (19:37). T0 provisorio = 19:37 pelo relogio da maquina; T0+2h = 21:37; revisao de 10 min ate 21:47. Se o coordenador gravar T0 diferente, sigo o dele.",
-    "T0_provisorio": "2026-09-11 19:37",
-    "corte": "21:37",
-    "revisao_ate": "21:47"
+    "observacao": "coordenacao rev 52 lida: T0 = 19:36; T0+2h = 21:36 (revisao de 10 min); paro em 21:46.",
+    "T0": "2026-09-11 19:36",
+    "corte": "21:36",
+    "revisao_ate": "21:46"
   },
   "recorte": {
     "familias": [
@@ -39,16 +39,16 @@
       "transversal: V-11 A+ (Perfis: sem dados de demonstracao no app real; card Criar sempre presente em cards e tabela, mesmo vazio); V-13 e V-14 aprovados"
     ]
   },
-  "primeiro_gate": "credencial qa-r06-acessos.env existe desde 19:44, mas coordenacao.json segue na rev 51 (sem T0 nem 'usuarios qa-r06 prontos'); rota real comeca assim que o perfil interno/ponte do qa-r06-acessos estiver em producao. Enquanto isso: pacotes SQL e cliente sem sessao.",
+  "primeiro_gate": "nenhum bloqueio total; rota real em andamento com qa-r06-acessos (build ee35cce3a em 127.0.0.1:3016, Chrome CDP 9416 com perfil proprio C:/Users/adrie/AppData/Local/Temp/coelo-chrome-acessos).",
   "leitura_feita": "R06-prompts.md, R05-prompts.md e R04-prompts.md integrais; acessos-pessoas.json rev 137 (REVISAO_FINAL_15h50, gates abertos, pendencias de code review, proposta de skills); handoff r05; inventario (32 acoes com FE/BE/E2E); bloco Estado vigente R05 dos tres md; coordenacao.json rev 51 (respostasDoOwnerR05: P45=B, P46=A, V-11 A+); AGENTS.md; skills coelo-frontend-backend, coelo-backend (regras R4/R5), coelo-frontend (regras R5), coelo-ui, coelo-knowledge; rtk/ponytail/flutter-dart-code-review/supabase reutilizadas.",
   "dependencias_do_coordenador": [
-    "gravar T0 e 'usuarios qa-r06 prontos' em coordenacao.json (a credencial ja existe)",
-    "aplicar em producao, na ordem: 20260911170500_internal_user_handles_v1 (P46) e 20260911170600_institution_system_model_delete_v1 (P45), ambos em candidatos/acessos-pessoas, pgTAP verde no descartavel coelo_acessos_r06 com as 140 migrations da ordem real (lotes 8-48)"
+    "aplicar em producao, na ordem: 20260911170500_internal_user_handles_v1 (P46), 20260911170600_institution_system_model_delete_v1 (P45) e 20260911170700_people_identity_lookup_v1 (people.create), todos em candidatos/acessos-pessoas, pgTAP verde no descartavel coelo_acessos_r06 (baseline + 141 migrations da ordem real incluindo o lote 49 + candidatos)",
+    "aplicar deltas-r06.json (16 entradas) com apply-tracker-delta.cjs: ensaiado nesta worktree + validate-trackers.cjs PASS (FE 146, BE 132, E2E 113) e revertido"
   ],
   "loop": "/loop 15m agendado na abertura (ScheduleWakeup)",
-  "testes_P_F_B_S_U": "pgTAP: internal_user_handles_v1_test 12/12 P; person_handles_v1_test 22/22 P (teste 4 reescrito: pessoa de servico fora da ponte continua sem @); institution_people_handles_v1_test 4/4 P; principal_context_handles_and_coelo_profile_v1_test 14/14 P; institution_system_model_delete_v1_test 7/7 P; institution_profile_system_model_create_v1_test 8/8 P; superadmin_internal_users_directory_test 44/45 (teste 7 'requires_mfa' pre-existente, MFA fora do MVP - nao e meu)",
+  "testes_P_F_B_S_U": "pgTAP: internal_user_handles_v1_test 12/12 P (reprovado apos o lote 49); person_handles_v1_test 22/22 P; institution_people_handles_v1_test 4/4 P; principal_context_handles_and_coelo_profile_v1_test 14/14 P; institution_system_model_delete_v1_test 7/7 P; institution_profile_system_model_create_v1_test 8/8 P; people_identity_lookup_v1_test 11/11 P; superadmin_internal_users_directory_test 44/45 (teste 7 requires_mfa pre-existente). Rota real: 8 acoes provadas (abaixo).",
   "bloqueio": "parcial: rota real sem credencial propria; trabalho independente segue",
-  "proximo_passo": "people.create: RPC superadmin_people_identity_lookup_v1 (170700) + SupabasePersonIdentityRepository (checkHandle pelo 170100); depois cliente do @ em Usuarios internos e Excluir do modelo; depois internal-users.create (RPC + Edge Function internal-user-create + cliente); rota real quando o coordenador liberar.",
+  "proximo_passo": "cliente: SupabasePersonIdentityRepository (people.create), @ na tela de Usuarios internos (170500) e Excluir modelo de sistema (170600); flutter test das familias; commit; revisao de 10 min as 21:36.",
   "ACK_ao_coordenador": "abertura da G2 R06 registrada; nao espero ACK para o trabalho independente",
   "PACOTE_170500_P46_20h20": {
     "id": "AP-INTERNAL-USER-HANDLES-170500",
@@ -68,6 +68,37 @@
     "o_que_faz": "P45 = B ('apenas conforme hierarquia, como owner'): app_private.superadmin_access_profile_delete_and_reassign, ramo institution, deixa excluir modelo do sistema (is_system) quando o ator tem institution.roles.manage em membership de PLATAFORMA sem escopo (has_scoped_platform_permission(..., null)); perfil escopado em instituicao continua recebendo 'system profile is protected'; versao esperada, substituto compativel, auditoria (membership_changed) e recibo inalterados; modelos de plataforma (owner/operations) continuam protegidos.",
     "cliente": "detalhe do perfil de sistema (dominio institution) passa a mostrar Excluir para a plataforma; feito no commit seguinte."
   },
+  "ROTA_REAL_20h20_20h50": {
+    "ambiente": "sessao qa-r06-acessos aberta pelo driver (qa_drive login, credencial so no ambiente); cliques por CDP Input.dispatchMouseEvent com buttons=1 (sem buttons o Flutter web ignora o clique); texto por window.$flutterDriver enter_text; taps do driver chamados por Runtime.evaluate sem esperar resposta (o processo Dart trava esperando). Um Chrome, um build.",
+    "invites.create": "E2E: contexto -> perfil Coordenacao -> novo e-mail sintetico -> canal E-mail -> revisao -> Emitir (superadmin_invite_issue_v2 200); convite a5496b70 na lista apos reload. capturas/invites-create-passo1..4, invites-create-emitido, invites-list-apos-reload",
+    "invites.detail": "E2E: card abre /invites/<id> com detalhe e linha do tempo (superadmin_invite_detail_v2 200). capturas/invites-detail.png",
+    "invites.revoke": "E2E: Revogar convite com confirmacao (superadmin_invite_revoke_v2 200); reload mostra Revogado + linha do tempo. capturas/invites-revoke*.png",
+    "invites.resend": "aberto: o botao Reenviar so aparece para convite expirado (regra do v2) e producao nao tem convite expirado; gate = fixture expirada (UPDATE de expires_at por pacote sintetico) ou esperar 48 h. BE done desde a R05.",
+    "students.list": "E2E: /students (contextos reais) e /students/d0c4...0004/manage (vinculos reais). capturas/students-list.png, students-manage.png",
+    "students.edit": "E2E: vigencia fim 20/12/2026 pela tela (superadmin_student_edit 200). capturas/students-edit-*.png",
+    "students.transfer": "E2E: transferencia para a turma sintetica nova 'Turma QA R06 Transferencia' (Unidade QA R05 Transferencia) pela tela (superadmin_student_transfer 200). capturas/students-transfer-*.png",
+    "students.revoke": "E2E: revogacao com motivo pela tela (superadmin_student_revoke 200). capturas/students-revoke-*.png",
+    "students.link": "E2E: vinculo de volta a Turma QA R04 Estrutura (superadmin_student_link 200); reload mantem. capturas/students-link-*.png",
+    "pendencias_de_code_review_novas": [
+      "Convites: 'Concluir' no estado 'Convite emitido' nao volta a lista (URL fica /invites/new).",
+      "Convites: resumo apos emitir diz 'Entrega por e-mail nao solicitada' mesmo com canal E-mail marcado (conferir o envelope do issue_v2 / envio real sem SMTP).",
+      "Alunos: o card de /students (Acompanhamento de alunos) nao navega para /students/<id>/manage; a tela de gerir so abre por URL.",
+      "Alunos: a primeira carga de superadmin_group_directory no dialogo demora ~20 s e, se falhar, o dialogo fica em 'Nao foi possivel listar as turmas' sem tentar de novo."
+    ]
+  },
+  "PACOTE_170700_PEOPLE_CREATE_20h15": {
+    "id": "AP-PEOPLE-IDENTITY-LOOKUP-170700",
+    "migration": "packages/coelo_database/candidatos/acessos-pessoas/20260911170700_people_identity_lookup_v1.sql",
+    "estado": "VERDE - PRONTO PARA APLICAR (commit ee35cce3a)",
+    "pgTAP": "supabase/tests/people_identity_lookup_v1_test.sql 11/11",
+    "o_que_faz": "superadmin_people_identity_lookup_v1(p_kind email|phone|cpf|handle|name, p_query, p_institution_id, p_unit_id) -> {ok, data:[{person_id, display_name, person_type, matched_by, masked_match, access edit_global|link_only}]}; exige people.create; e-mail (lower, sha256 em person_contacts), telefone (digitos, sha256), CPF (11 digitos, HMAC v1 em person_identity_identifiers), @ (person_handles), nome (ilike, max 10); valor consultado nunca gravado (auditoria so com ator/contexto). Destrava o PersonIdentityLookupGate de people.create.",
+    "cliente": "SupabasePersonIdentityRepository (resolve pela RPC nova; checkHandle por superadmin_person_handle_availability do 170100) ligado no createSuperadminAuthScope atras da chave enablePersonHandles - commit seguinte."
+  },
+  "dados_sinteticos_r06": [
+    "invitations a5496b70-c2d0-4b5b-98e2-ccca6a858e4f (revoked, e-mail sintetico, instituicao 9f04...0010, perfil Coordenacao)",
+    "groups 1a247741-1bc8-4bbd-bf81-a0787d57f77a 'Turma QA R06 Transferencia' (unidade cce78909, instituicao d0c4...0001, @turmaqar06transferen.qar05transfer.qar04cuidado) - criada por superadmin_group_save para provar a transferencia; fica ate o fim da Etapa 2",
+    "child_unit_links/child_group_links da crianca d0c4...0003: transferida e revogada na Unidade QA R05 Transferencia e vinculada de volta a Turma QA R04 Estrutura (368a5cea) sem data de fim (antes: 2026-12-15)"
+  ],
   "historico_r05": {
     "revision": 137,
     "updated_at": "2026-09-11T18:50:26.650Z",
