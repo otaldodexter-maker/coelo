@@ -259,9 +259,9 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
   String supabaseUrl = SuperadminAppConfig.supabaseUrl,
   String supabasePublishableKey = SuperadminAppConfig.supabasePublishableKey,
   bool enableAssessmentMutations = SuperadminAppConfig.assessmentMutationsEnabled,
-  // Chave de composicao do @ de pessoas: ligar quando 20260911170100 estiver
-  // em producao (o servidor autoriza; o cliente so pede e renderiza).
-  bool enablePersonHandles = false,
+  // 20260911170100 (@ de pessoas) esta em producao (lote 31); a chave so
+  // compoe, o servidor autoriza.
+  bool enablePersonHandles = true,
   SupabaseInitializer initializeSupabase = _initializeSupabase,
   CoeloAuthGatewayFactory createAuthGateway = _createAuthGateway,
   SuperadminAuthContextGatewayFactory createAuthContextGateway = _createAuthContextGateway,
