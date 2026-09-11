@@ -44,6 +44,7 @@ final class GroupRecord {
     this.invites = const [],
     this.studentCount = 0,
     this.teacherOrResponsibleNames = const [],
+    this.handle = '',
   });
 
   final String id;
@@ -68,6 +69,11 @@ final class GroupRecord {
   final List<String> activityIds;
   final List<GroupDirectoryInviteBinding> invites;
   final int studentCount;
+
+  /// @ publico da turma (ADR 0034 Decisao 16). Na criacao viaja como `handle`
+  /// no payload de superadmin_group_save (lote 211100); depois so muda por
+  /// superadmin_structure_handle_set_v1. Vazio quando o servidor nao devolveu.
+  final String handle;
   final List<String> teacherOrResponsibleNames;
 
   String get groupTypeLabel => groupTypeLabelFor(groupType);
@@ -103,6 +109,7 @@ final class GroupRecord {
     List<GroupDirectoryInviteBinding>? invites,
     int? studentCount,
     List<String>? teacherOrResponsibleNames,
+    String? handle,
   }) {
     if (institutionId != null && institutionId != this.institutionId) {
       throw ArgumentError('Changing an existing group institution is not supported.');
@@ -133,6 +140,7 @@ final class GroupRecord {
       activityIds: activityIds ?? this.activityIds,
       invites: invites ?? this.invites,
       studentCount: studentCount ?? this.studentCount,
+      handle: handle ?? this.handle,
       teacherOrResponsibleNames: teacherOrResponsibleNames ?? this.teacherOrResponsibleNames,
     );
   }
