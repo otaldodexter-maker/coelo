@@ -1,15 +1,15 @@
 {
-  "revision": 36,
+  "revision": 37,
   "round": "E2-R05-20260911",
   "group": "publicacoes-agenda",
   "tool": "Claude Code",
   "model": "Opus 5 (1M), esforco medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-publicacoes-agenda",
   "branch": "work/etapa2-r05-publicacoes-agenda",
-  "head": "66a52986f",
+  "head": "28acbe8c3",
   "base": "origin/dev 2f6a6114f",
   "coordinator": "Claude (R05 · Coordenacao da tarde, coelo-25)",
-  "updatedAt": "2026-09-11T14:42:00-03:00",
+  "updatedAt": "2026-09-11T15:05:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -61,7 +61,7 @@
     "memoryNote": "R05: maximo dois Chrome por conversa, um flutter test por vez.",
     "closedAt": "03:12: Chrome 9334 e servidor 3006 fechados de novo; nenhum processo meu restante."
   },
-  "firstGate": "circulars.schedule/edit/attach pela tela com o build web-qa novo (picker ligado em 66a52986f) se o Chrome aguentar; senao encerrar com handoff as 15:35.",
+  "firstGate": "Fechamento: mini-revisao ate 15:45; encerrar Chrome/servidor 3006/descartavel.",
   "status": "em andamento",
   "findings": [
     "Presença em produção (mapa r03-coordenacao): notices_v2 185008 = 1/16 (só analytics.notice_events); circulars_v2 191921 = 0/14; circulars_media_r2 212000 = 6/6; agenda 183836/193717 presentes (superadmin_agenda_list/get/contexts/save/command/requests/decide_publication em public).",
@@ -149,7 +149,7 @@
     "unknown": "bateria completa do app nao repetida (um flutter test por vez); rota real ainda nao exercida nesta rodada"
   },
   "blocked": "nenhum",
-  "next": "Rota real do compositor de Circular (agendar pela tela, editar rascunho, anexar) e mini-revisao.",
+  "next": "Mini-revisao de 10 minutos e resposta ao coordenador as 15:50.",
   "changes": [
     {
       "sha": "5edfccef9",
@@ -221,6 +221,16 @@
       ],
       "what": "Lote 43 em producao (190100/190200/190300): prova-producao-r05.js 34/34 as 14:36: attach agora em R2 (coelo-media-prod, chave tenants/.../circulars/circular/.../attachment/.../original), bloco de midia salvo no gateway v2, publish com midia, read por signed_url, bytes conferem, anon 401, delete de anexo publicado recusado (imutavel). circulars.schedule FE: host produtivo nao passava onChooseSchedule (botao desabilitado) -> ligado com os seletores Coelo; goldens circular_directory_* regravados apos o composto 11c4bfbef (celulas alinhadas).",
       "tests": "flutter test test/features/circulars 66/66 apos regravar; analyze limpo"
+    },
+    {
+      "sha": "28acbe8c3",
+      "actionIds": [
+        "circulars.edit",
+        "circulars.schedule",
+        "notices.list"
+      ],
+      "what": "Rota real com o build novo (66a52986f): circulars.edit pela tela (reabrir rascunho, editar titulo, Salvar rascunho, recarga completa mantem: ui-32..ui-39); circulars.schedule pela tela (seletor data 25/09 + horario 14:00, validacao honesta de publico, Agendar circular -> Agendada; recarga completa lista 25/09/2026 na aba Agendadas; RPC scheduled: ui-41..ui-46). notices.list: pastilha de tipo com altura propria (achado ui-19 corrigido), goldens communication_directory_* regravados.",
+      "tests": "flutter test notices 133/133 + circulars 66/66 apos regravar; analyze limpo"
     }
   ],
   "pendingForCoordinator": [
@@ -252,12 +262,6 @@
     },
     {
       "actionIds": [
-        "notices.list"
-      ],
-      "pending": "ACHADO visual no diretorio de Avisos apos o composto 11c4bfbef (G-SUP): a pastilha \"Aviso\" da coluna Tipo esticou para a altura da linha (ui-19). Dono: composto CoeloAdminResizableTable / coelo-ui."
-    },
-    {
-      "actionIds": [
         "agenda.view",
         "agenda.detail"
       ],
@@ -272,19 +276,22 @@
     },
     {
       "actionIds": [
-        "circulars.edit",
-        "circulars.schedule",
-        "circulars.attach",
-        "circulars.respond"
-      ],
-      "pending": "FE pela tela nao exercido nesta rodada (Chrome de CDP morreu duas vezes com 0,02 GB livres; build web-qa pronto em apps/superadmin/build/web-qa e servidor 3006 no scratchpad). Proxima rodada: editar rascunho explicito, picker de agendamento (o seletor Coelo responde a semantica: provado em Avisos), anexar pela tela apos 190200/190300."
-    },
-    {
-      "actionIds": [
         "agenda.view",
         "agenda.detail"
       ],
       "pending": "Pendencia de suite (dono G4, 130000): agenda_internal_realm_compat_v1_test 4/22 sobre a ordem real apos o lote 29; nao bloqueia."
+    },
+    {
+      "actionIds": [
+        "circulars.attach"
+      ],
+      "pending": "FE pela tela: o FilePicker nativo nao e dirigivel por CDP; injetar filePicker no host de QA (qa_main) na proxima rodada. BE done com R2 (lote 43)."
+    },
+    {
+      "actionIds": [
+        "agenda.location"
+      ],
+      "pending": "FE pela tela: criar evento com contexto de unidade pelo wizard (BE done). Proxima rodada."
     }
   ],
   "proposedDeltas": [
@@ -2034,5 +2041,25 @@
       }
     ]
   },
-  "deltasFile": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/deltas-r05-pa.json (13 entradas; ensaio apply + validate PASS na worktree e revertido)"
+  "deltasFile": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/deltas-r05-pa.json (16 entradas; ensaio apply + validate PASS: FE 76, BE 78, E2E 53)",
+  "ownerVisualApproval": {
+    "at": "2026-09-11 ~14:45 via coordenador (artefato 881e760e)",
+    "decision": "A",
+    "files": [
+      "agenda_calendar_light_375",
+      "agenda_calendar_light_768",
+      "agenda_calendar_light_1440",
+      "agenda_calendar_dark_375",
+      "agenda_calendar_dark_768",
+      "agenda_calendar_dark_1440",
+      "agenda_detail_light_375",
+      "agenda_detail_light_768",
+      "agenda_detail_light_1440",
+      "agenda_detail_dark_375",
+      "agenda_detail_dark_768",
+      "agenda_detail_dark_1440"
+    ],
+    "quote": "o render atual esta perfeito e aprovado",
+    "note": "P33 e P34 fechados; indicador de status do detalhe permanece em 48 px. O coordenador grava ownerVisualApproval=A no inventario."
+  }
 }

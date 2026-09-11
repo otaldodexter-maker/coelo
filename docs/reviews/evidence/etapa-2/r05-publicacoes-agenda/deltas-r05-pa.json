@@ -131,13 +131,6 @@
   },
   {
     "action_id": "circulars.schedule",
-    "camada": "frontend",
-    "estado_proposto": "local-green",
-    "delta": "R05: o host produtivo nao passava onChooseSchedule e o botao Escolher data e hora ficava desabilitado (gate da R04/R05 na rota real); 66a52986f liga os seletores Coelo de data e horario. Rota real pela tela pendente (Chrome caiu por memoria).",
-    "evidencia": "evidence/etapa-2/r05-publicacoes-agenda/ui/ui-30-circular-datepicker.png"
-  },
-  {
-    "action_id": "circulars.schedule",
     "camada": "backend",
     "estado_proposto": "done",
     "delta": "R05: superadmin_circular_publish_v2 com publish_at futuro -> scheduled; detail apos reload mantem; agendada nao republica (CIRCULAR_INVALID_STATE, desenho do gateway); 200100 pgTAP 34/34.",
@@ -160,6 +153,58 @@
       "revision": "66a52986f",
       "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST/Edge Function (prova-producao-r05.js 34/34 as 14:36)",
       "recordedAt": "2026-09-11T14:40:00-03:00"
+    }
+  },
+  {
+    "action_id": "circulars.edit",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R05: rascunho criado pelo compositor real (ui-27/28), reaberto pela aba Rascunhos -> Editar circular (ui-32/33), titulo editado e Salvar rascunho -> \"Rascunho salvo\" (ui-34); apos recarga completa a aba Rascunhos e o detalhe mostram o titulo editado (ui-37, ui-39).",
+    "evidencia": "evidence/etapa-2/r05-publicacoes-agenda/ui/ui-39-circular-detail-edited-reload.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/ui/ui-39-circular-detail-edited-reload.png",
+      "revision": "28acbe8c3",
+      "environment": "build web profile de test_driver/qa_main.dart (66a52986f) contra producao, sessao qa-r03, Chrome via CDP",
+      "recordedAt": "2026-09-11T15:03:00-03:00"
+    }
+  },
+  {
+    "action_id": "circulars.edit",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R05: rota normal + edicao persistida em producao (v2 do gateway, 200400/190300) + RLS (pgTAP 34/34 com negativas) + reload.",
+    "evidencia": "evidence/etapa-2/r05-publicacoes-agenda/handoff.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/handoff.md",
+      "revision": "28acbe8c3",
+      "environment": "build web profile de test_driver/qa_main.dart (66a52986f) contra producao, sessao qa-r03, Chrome via CDP",
+      "recordedAt": "2026-09-11T15:03:00-03:00"
+    }
+  },
+  {
+    "action_id": "circulars.schedule",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R05: 66a52986f liga o seletor (o host produtivo nao passava onChooseSchedule; botao ficava desabilitado). Pela tela: Escolher data e hora -> 25/09 -> Aplicar -> horario 14:00 -> Aplicar -> \"Alterar agendamento\" e rodape \"Agendar circular\" (ui-41..ui-43); validacao honesta de publico (ui-44); Agendar -> detalhe \"Agendada\" (ui-45); apos recarga completa a aba Agendadas lista 25/09/2026 (ui-46); RPC confirma scheduled com publish_at 2026-09-25T17:00Z.",
+    "evidencia": "evidence/etapa-2/r05-publicacoes-agenda/ui/ui-46-scheduled-tab-reload.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/ui/ui-46-scheduled-tab-reload.png",
+      "revision": "28acbe8c3",
+      "environment": "build web profile de test_driver/qa_main.dart (66a52986f) contra producao, sessao qa-r03, Chrome via CDP",
+      "recordedAt": "2026-09-11T15:03:00-03:00"
+    }
+  },
+  {
+    "action_id": "circulars.schedule",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R05: rota normal + scheduled em producao + RLS (pgTAP 200100) + reload.",
+    "evidencia": "evidence/etapa-2/r05-publicacoes-agenda/handoff.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/handoff.md",
+      "revision": "28acbe8c3",
+      "environment": "build web profile de test_driver/qa_main.dart (66a52986f) contra producao, sessao qa-r03, Chrome via CDP",
+      "recordedAt": "2026-09-11T15:03:00-03:00"
     }
   }
 ]
