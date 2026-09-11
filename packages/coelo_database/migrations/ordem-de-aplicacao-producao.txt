@@ -163,3 +163,8 @@
 # lote 38 (11/09 13:33) - R05: @ nos contextos do Principal + perfil Coelo (principal-chat-sistema); contrato de Assiduidade do Superadmin (formularios-cuidado-rotina)
 20260911130100_principal_context_handles_and_coelo_profile_v1.sql
 20260911220100_attendance_superadmin_contract_v1.sql
+# lote 39 (11/09 13:40) - R05: cron de limpeza form-media R2 (formularios); answer-image no R2 (realm-interno); Planos exigem membership de plataforma (operacoes); modelo de sistema de perfil Admin (acessos-pessoas)
+20260911230000_form_media_r2_cleanup_dispatch_v1.sql
+20260911210800_forms_answer_media_r2_v1.sql
+20260911200000_superadmin_plans_platform_scope_v1.sql
+20260911170300_institution_profile_system_model_create_v1.sql
