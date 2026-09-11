@@ -53,7 +53,9 @@ final class SupabaseMedicationPlanRepository implements MedicationPlanRepository
         'plan_id': command.planId,
         'expected_version': command.expectedVersion,
         'payload': {
-          'child_person_id': command.childPersonId,
+          // Na criação a criança chega pelo contexto infantil; um id vazio
+          // precisa virar nulo, senão o servidor tenta convertê-lo em uuid.
+          'child_person_id': command.childPersonId.isEmpty ? null : command.childPersonId,
           'child_context_id': command.childContextId,
           'institution_id': command.institutionId,
           'unit_id': command.unitId,
@@ -128,6 +130,8 @@ MedicationPlanSummary _summary(Map<String, Object?> row) => MedicationPlanSummar
   route: row['administration_route'] as String? ?? '',
   validFrom: _date(row['valid_from']),
   validUntil: _optionalDate(row['valid_until']),
+  childContextId: row['child_context_id'] as String?,
+  childDisplayName: row['display_name'] as String? ?? '',
 );
 
 MedicationPlanDetail _detail(Map<String, Object?> payload) {
@@ -136,7 +140,9 @@ MedicationPlanDetail _detail(Map<String, Object?> payload) {
     id: payload['id']! as String,
     childPersonId: payload['child_person_id'] as String? ?? '',
     status: _statusFromDatabase(payload['status'] as String?),
-    currentVersion: _asInt(version['version']),
+    // A versão esperada pelo comando é a do agregado (management_version),
+    // não o número da versão clínica.
+    currentVersion: _asInt(payload['management_version']),
     medicationName: version['medication_name'] as String? ?? '',
     doseAmount: (version['dose_amount'] as num?) ?? 0,
     doseUnit: version['dose_unit'] as String? ?? '',
@@ -147,6 +153,12 @@ MedicationPlanDetail _detail(Map<String, Object?> payload) {
     routeDetails: version['route_details'] as String?,
     instructions: version['instructions'] as String?,
     schedules: _rows(payload['schedules']).map(_schedule).toList(growable: false),
+    childContextId: payload['child_context_id'] as String?,
+    institutionId: payload['institution_id'] as String?,
+    unitId: payload['unit_id'] as String?,
+    groupId: payload['group_id'] as String?,
+    scopeKind: payload['scope_kind'] as String?,
+    childDisplayName: payload['display_name'] as String? ?? '',
   );
 }
 
