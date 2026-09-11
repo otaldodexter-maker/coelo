@@ -85,6 +85,10 @@ void main() {
           // formulario, porque a recusa vem do servidor e a tela mostra o
           // aviso de indisponibilidade em vez de um formulario neutro.
           expect(find.byType(SuperadminErrorScreen), findsNothing, reason: path);
+        } else if (path.endsWith('/respond')) {
+          // F-R04-FCR-010b (R05): responder le a ocorrencia pela projecao
+          // autorizada; a recusa do servidor vira aviso, nunca tela de erro.
+          expect(find.byType(SuperadminErrorScreen), findsNothing, reason: path);
         } else if (productionSurface == null) {
           expect(find.textContaining('indispon'), findsWidgets, reason: path);
         } else {
@@ -97,7 +101,9 @@ void main() {
           path.endsWith('response-1') ||
           path.endsWith('/files') ||
           // D6: Testar passou a ler a projecao autorizada do formulario.
-          path.endsWith('/test');
+          path.endsWith('/test') ||
+          // F-R04-FCR-010b: responder le a ocorrencia autorizada.
+          path.endsWith('/respond');
       expect(api.calls, readsFromApi ? 1 : 0, reason: path);
     }
   });
@@ -366,6 +372,12 @@ final class _TripwireFormsApi implements FormsApi {
   }) async {
     calls++;
     return FormCursorPage(items: const [], nextCursor: null);
+  }
+
+  @override
+  Future<FormOccurrenceForResponse> getOccurrenceForResponse(String occurrenceId) async {
+    calls++;
+    throw const FormApiException(FormApiFailureKind.unauthorized, 'Resposta indisponível.');
   }
 
   @override
