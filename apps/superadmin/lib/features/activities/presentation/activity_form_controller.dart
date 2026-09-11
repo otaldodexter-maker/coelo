@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -7,6 +8,7 @@ import 'package:coelo_domain/locations.dart';
 import '../domain/activity_command.dart';
 
 import '../domain/activity_directory.dart';
+import '../../units/domain/unit_handle_availability.dart';
 import 'activity_form_draft.dart';
 import 'activity_pedagogical_configuration_draft.dart';
 
@@ -28,6 +30,7 @@ final class ActivityFormController extends ChangeNotifier {
     this.loadTemplateOptions,
     String? initialCatalogError,
     this.professionalSearcher,
+    this.handleAvailabilityChecker,
   }) : isEditing = false,
        detail = null,
        expectedManagementVersion = 0,
@@ -68,6 +71,7 @@ final class ActivityFormController extends ChangeNotifier {
     this.professionalSearcher,
     this.loadTemplateOptions,
     String? initialCatalogError,
+    this.handleAvailabilityChecker,
   }) : isEditing = true,
        loadScopedOptions = null,
        detail = source,
@@ -93,6 +97,51 @@ final class ActivityFormController extends ChangeNotifier {
   final ActivityScopedOptionsLoader? loadScopedOptions;
   final ActivityTemplateOptionsLoader? loadTemplateOptions;
   final ActivityProfessionalSearcher? professionalSearcher;
+
+  /// Regra do @ (ADR 0034 Decisao 16): verificacao de disponibilidade do
+  /// stem enquanto digita; opcional, nunca bloqueia o formulario.
+  final StructureHandleAvailabilityChecker? handleAvailabilityChecker;
+  UnitHandleAvailability? handleAvailability;
+  String _handleChecked = '';
+  Timer? _handleCheckTimer;
+  int _handleCheckSequence = 0;
+
+  /// Texto vivo da legenda do @, ou nulo quando nao ha verificacao valida
+  /// para o texto atual.
+  String? get handleAvailabilityMessage {
+    final result = handleAvailability;
+    if (result == null || _handleChecked != handleStem.text.trim()) return null;
+    return switch (result.reason) {
+      UnitHandleAvailabilityReason.available => '@${result.normalized} está disponível.',
+      UnitHandleAvailabilityReason.taken => '@${result.normalized} já está em uso. Escolha outro.',
+      UnitHandleAvailabilityReason.invalid => 'Use de 3 a 64 caracteres, letras, números e hífens.',
+      UnitHandleAvailabilityReason.empty => null,
+      UnitHandleAvailabilityReason.unavailable =>
+        'Não foi possível verificar a disponibilidade agora; o servidor confere ao salvar.',
+    };
+  }
+
+  void _scheduleHandleCheck() {
+    final checker = handleAvailabilityChecker;
+    if (checker == null) return;
+    final value = handleStem.text.trim();
+    _handleCheckTimer?.cancel();
+    if (value.isEmpty || value == (detail?.item.handleStem ?? '')) {
+      if (handleAvailability != null) {
+        handleAvailability = null;
+        notifyListeners();
+      }
+      return;
+    }
+    final sequence = ++_handleCheckSequence;
+    _handleCheckTimer = Timer(const Duration(milliseconds: 300), () async {
+      final result = await checker('activity', value, excludeId: detail?.item.id);
+      if (sequence != _handleCheckSequence) return;
+      handleAvailability = result;
+      _handleChecked = value;
+      notifyListeners();
+    });
+  }
   final ActivityDetail? detail;
   final bool isEditing;
   final int expectedManagementVersion;
@@ -551,6 +600,7 @@ final class ActivityFormController extends ChangeNotifier {
   void _listen() {
     name.addListener(_changed);
     handleStem.addListener(_changed);
+    handleStem.addListener(_scheduleHandleCheck);
     description.addListener(_changed);
     initials.addListener(_changed);
     otherActivity.addListener(_changed);
@@ -918,6 +968,7 @@ final class ActivityFormController extends ChangeNotifier {
 
   @override
   void dispose() {
+    _handleCheckTimer?.cancel();
     name
       ..removeListener(_changed)
       ..dispose();

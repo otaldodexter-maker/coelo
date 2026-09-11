@@ -224,10 +224,21 @@ final class _IdentitySection extends StatelessWidget {
                 textInputAction: TextInputAction.next,
               ),
               const SizedBox(height: CoeloSpacing.space1),
-              Text(
-                'Opcional. O Coelo sugere a partir do nome e aplica o sufixo hierárquico no servidor.',
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
+              if (controller.handleAvailabilityMessage case final live?)
+                Text(
+                  live,
+                  key: const Key('activity-form-handle-availability'),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: controller.handleAvailability?.isAvailable == true
+                        ? Theme.of(context).colorScheme.primary
+                        : Theme.of(context).colorScheme.error,
+                  ),
+                )
+              else
+                Text(
+                  'Opcional. O Coelo sugere a partir do nome e aplica o sufixo hierárquico no servidor.',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
             ],
           ),
           CoeloFormTextField(
