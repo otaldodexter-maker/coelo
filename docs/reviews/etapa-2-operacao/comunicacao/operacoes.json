@@ -1,13 +1,13 @@
 {
-  "revision": 36,
-  "updated_at": "2026-09-11T15:39:00-03:00",
+  "revision": 37,
+  "updated_at": "2026-09-11T15:40:00-03:00",
   "round": "E2-R05-20260911",
   "group": "operacoes",
   "tool_model": "Claude, Opus 5 (1M), esforco medio — conversa R05 · Operacoes",
   "conversation": "R05 · Operações",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-operacoes",
   "branch": "work/etapa2-r05-operacoes",
-  "head": "92adbe085 + este commit (SHA final publicado)",
+  "head": "merge limpo de origin/dev 4d9c2364d sobre 2db40669a (ver git log); nada novo alem do merge",
   "base": {
     "requested": "origin/dev",
     "resolved": "2f6a6114f",
@@ -1087,7 +1087,7 @@
   "finalizado": "sim (15:39 de 11/09; branch publicada; worktree limpa; sem WIP retido; Chrome, servidor e descartavel encerrados)",
   "mini_revisao_10min_r05": {
     "para": "coordenador R05 (coelo-25)",
-    "sha_final_publicado": "work/etapa2-r05-operacoes: commit desta rev 36 (ver git log); git status limpo; sem stash; merge de origin/dev 24dec2f7c incluido (1b0c2c5ff, 78283f81b)",
+    "sha_final_publicado": "work/etapa2-r05-operacoes: commit da rev 37 (merge limpo com origin/dev 4d9c2364d, sem conflitos); git status limpo; sem stash",
     "fechou_por_action_id_com_prova": {
       "audit.list / audit.filter / audit.detail": "FE verified / BE done / E2E verified-e2e — rota real com qa-r03 (RPCs 200: list, filtro, busca, cursor, detalhe, reload); pgTAP 210100 37/37 em producao; deltas-r05-ops-audit.json (9)",
       "audit.export": "FE verified (adiado honesto: Arquivos -> CSV/XLSX 'Disponivel depois do MVP', sem chamada) — deltas-r05-ops-audit-export-theme.json",
