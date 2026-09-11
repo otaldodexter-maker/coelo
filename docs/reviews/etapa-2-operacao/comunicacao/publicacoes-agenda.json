@@ -1,5 +1,5 @@
 {
-  "revision": 27,
+  "revision": 28,
   "round": "E2-R04-20260911",
   "group": "publicacoes-agenda",
   "tool": "Claude Code",
@@ -9,7 +9,7 @@
   "head": "1b453fc19",
   "base": "origin/dev 98cc0529d",
   "coordinator": "Claude (R04 · Coordenação noturna)",
-  "updatedAt": "2026-09-11T03:08:00-03:00",
+  "updatedAt": "2026-09-11T03:12:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -58,7 +58,7 @@
     "disposableProject": "coelo_baseline_pa em scratchpad/pa-project (db 60322); baseline 20260910000000 + seed + 44 migrations/ aplicadas OK em 2026-09-10 21:50; snapshot pg_dump em /tmp/pa-base.dump do contêiner",
     "note": "db reset do CLI aplica o seed DEPOIS das migrations e a 170100 exige o catálogo; por isso o reset roda só com a baseline e as demais entram por psql na ordem (mesmo método do coordenador).",
     "memoryNote": "01:57: 754 MB livres; regra do coordenador: no maximo um Chrome alem do meu, um flutter test por vez (--concurrency=1), fechar orfaos ao terminar cada prova.",
-    "closedAt": "02:52: Chrome 9334 e servidor estatico 3006 fechados; projeto descartavel coelo_baseline_pa segue de pe para o coordenador (docker supabase_db_coelo_baseline_pa) — pode ser parado com supabase stop --project-id coelo_baseline_pa."
+    "closedAt": "03:12: Chrome 9334 e servidor 3006 fechados de novo; nenhum processo meu restante."
   },
   "firstGate": "200500 verde (subagente) → pacotesProntos; goldens R/A (subagente); uma tentativa de UI real com um Chrome; mini-revisao ate 04:00.",
   "status": "finalizado",
@@ -77,7 +77,7 @@
     "FE bloqueante: em /circulars/new a 1440 o balao de chat cobre inteiramente o botao Publicar (centro 1330x856); a 1024 o rodape empilha e funciona.",
     "FE agenda.detail: UUID no lugar do nome CORRIGIDO na rev 26 (carrega contextos); permanece: deep link direto apos carga fria fica no spinner ate o calendario carregar (primeiro gate: reproduzir em teste de rota com store real).",
     "Ambiente: outro processo (frente ou coordenador) passou a dirigir meu Chrome CDP 9333 (pagina foi para localhost:3000); abri o 9334. Sugestao: cada conversa usa porta CDP propria e declara no JSON.",
-    "FE agenda.edit: NAO reproduzido em teste de widget (sonda: edicao de event-parents chega a Revisao com Publicar e Salvar rascunho); na tela real a sequencia foi dirigida por coordenadas e provavelmente tocou Anterior (y=779 na Revisao). Primeiro gate: reteste pela tela usando as chaves agenda-wizard-continue/agenda-wizard-publish."
+    "FECHADO: agenda.edit pela tela funciona (ui-49..51); o sintoma da ui-45 era clique por coordenada em Anterior."
   ],
   "packages": [
     {
@@ -703,8 +703,8 @@
     {
       "actionId": "agenda.edit",
       "layer": "FE",
-      "proposed": "local-green",
-      "evidence": "ui-44/ui-45: wizard de edicao abre com os dados e aceita o titulo; salvar pela tela nao concluido (provavel erro de coordenada do driver; widget test chega a Revisao com Publicar/Salvar). Gate: reteste pela tela."
+      "proposed": "verified",
+      "evidence": "ui-49..ui-51: edicao pela tela (chaves do wizard), publicada, detalhe com nome da instituicao"
     },
     {
       "actionId": "agenda.request",
@@ -765,6 +765,12 @@
       "layer": "E2E",
       "proposed": "verified-e2e",
       "evidence": "UI + RPC filtra em producao (prova 33/33) + pgTAP"
+    },
+    {
+      "actionId": "agenda.edit",
+      "layer": "E2E",
+      "proposed": "verified-e2e",
+      "evidence": "UI + producao (superadmin_agenda_save rev 3) + pgTAP"
     }
   ],
   "questionsToOwner": [
@@ -1176,9 +1182,9 @@
     ]
   },
   "finalizado": {
-    "at": "2026-09-11T03:08:00-03:00",
+    "at": "2026-09-11T03:12:00-03:00",
     "head": "1b453fc19",
     "handoff": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
-    "capturas": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/ui/ (49 png)"
+    "capturas": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/ui/ (52 png)"
   }
 }
