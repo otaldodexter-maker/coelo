@@ -108,9 +108,9 @@ select ok((select r->>'status'='active' and (r->>'is_primary')::boolean and r->>
   from responses, jsonb_array_elements(body->'data'->'representatives') r where k='detail1' limit 1),
   'representante ativo (maior de idade), primario e com contatos mascarados');
 select is((select jsonb_array_length(body->'data'->'administrators') from responses where k='detail1'),2,'dois administradores no detalhe');
-select ok((select bool_and((a->>'level') in ('admin_master','coordinator') and a->>'invitation_status'='not_sent' and a->>'handle' is null)
+select ok((select bool_and((a->>'level') in ('admin_master','coordinator') and a->>'invitation_status'='not_sent')
   from responses, jsonb_array_elements(body->'data'->'administrators') a where k='detail1'),
-  'administradores com level mapeado, sem login e sem @ (contrato do @ e da frente acessos)');
+  'administradores com level mapeado e sem login (o @ vem de person_handles quando 170100/210600 existem)');
 select ok(not exists (select 1 from jsonb_each_text((select body->'data' from responses where k='detail1')) e
   where e.value like '%529982247%' or e.value like '%ana@exemplo.com%'),
   'nenhum CPF ou e-mail bruto de pessoa sai no detalhe');
