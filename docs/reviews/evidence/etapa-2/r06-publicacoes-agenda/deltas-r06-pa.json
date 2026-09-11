@@ -1,0 +1,67 @@
+[
+  {
+    "action_id": "agenda.location",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R06: /agenda/events/new na familia Publicacao; Contexto principal=Unidade -> \"Qual Unidade\" lista as duas unidades reais da instituicao sintetica; escolhida a segunda (Unidade QA R05 Transferencia); Local \"Patio central R06\"; Publicar evento -> detalhe c7cf7370 com o contexto e o local escolhidos; recarga completa mantem.",
+    "evidencia": "evidence/etapa-2/r06-publicacoes-agenda/ui/ui-04-agenda-qual-unidade.png; evidence/etapa-2/r06-publicacoes-agenda/ui/ui-06-agenda-unidade-escolhida.png; evidence/etapa-2/r06-publicacoes-agenda/ui/ui-07-agenda-evento-publicado.png; evidence/etapa-2/r06-publicacoes-agenda/ui/ui-08-agenda-evento-reload.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-publicacoes-agenda/ui/ui-04-agenda-qual-unidade.png",
+      "revision": "0322e511d",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, rota real com a sessao qa-r06-publicacoes (build web-qa profile de qa_main servido em 127.0.0.1:3000, Chrome CDP 9337)",
+      "recordedAt": "2026-09-11T20:22:00-03:00"
+    }
+  },
+  {
+    "action_id": "agenda.location",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R06: cliente real (seletor concreto) -> superadmin_agenda_save/command em producao -> detalhe -> reload; BE done desde a R05 (unit + local; pgTAP 200300 nega unidade fora do tenant).",
+    "evidencia": "evidence/etapa-2/r06-publicacoes-agenda/ui/ui-07-agenda-evento-publicado.png; evidence/etapa-2/r06-publicacoes-agenda/ui/ui-08-agenda-evento-reload.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-publicacoes-agenda/ui/ui-07-agenda-evento-publicado.png",
+      "revision": "0322e511d",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, rota real com a sessao qa-r06-publicacoes (build web-qa profile de qa_main servido em 127.0.0.1:3000, Chrome CDP 9337)",
+      "recordedAt": "2026-09-11T20:22:00-03:00"
+    }
+  },
+  {
+    "action_id": "circulars.respond",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R06 (P50=B): acao Responder no detalhe da Circular publicada abre a tela de resposta no Superadmin (leitor do Principal hospedado); \"Estou ciente\" -> Enviar respostas -> \"Respostas enviadas\"; apos recarga completa o diretorio mostra Respostas = 1.",
+    "evidencia": "evidence/etapa-2/r06-publicacoes-agenda/ui/ui-12-circulars-detalhe-responder.png; evidence/etapa-2/r06-publicacoes-agenda/ui/ui-13-circulars-tela-de-resposta.png; evidence/etapa-2/r06-publicacoes-agenda/ui/ui-14-circulars-resposta-enviada.png; evidence/etapa-2/r06-publicacoes-agenda/ui/ui-15-circulars-reload-respostas-1.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-publicacoes-agenda/ui/ui-12-circulars-detalhe-responder.png",
+      "revision": "5c02a50d2",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, rota real com a sessao qa-r06-publicacoes (build web-qa profile de qa_main servido em 127.0.0.1:3000, Chrome CDP 9337)",
+      "recordedAt": "2026-09-11T20:36:00-03:00"
+    }
+  },
+  {
+    "action_id": "circulars.respond",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R06: save_circular_response_draft (partial, v1) -> submit_circular_response (submitted, v2) em producao pela tela; reload mostra Respostas 1 no diretorio; BE done (190000, pgTAP 18/18 com negativas sem membership, cross-tenant e anon).",
+    "evidencia": "evidence/etapa-2/r06-publicacoes-agenda/ui/ui-14-circulars-resposta-enviada.png; evidence/etapa-2/r06-publicacoes-agenda/ui/ui-15-circulars-reload-respostas-1.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-publicacoes-agenda/ui/ui-14-circulars-resposta-enviada.png",
+      "revision": "5c02a50d2",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, rota real com a sessao qa-r06-publicacoes (build web-qa profile de qa_main servido em 127.0.0.1:3000, Chrome CDP 9337)",
+      "recordedAt": "2026-09-11T20:36:00-03:00"
+    }
+  },
+  {
+    "action_id": "circulars.attach",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R06: gancho SuperadminQaHooks.circularFilePicker chega ao prepare (rascunho salvo + OPTIONS 200 em circular-media) mas o POST falha no preflight por x-client-info; funcao corrigida (b2e61a22e) e o router passa a entregar o repositorio de midia ao compositor. Gate: deploy da circular-media pelo coordenador; depois repetir a prova pela tela.",
+    "evidencia": "evidence/etapa-2/r06-publicacoes-agenda/ui/ui-09-circulars-attach-preflight-x-client-info.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-publicacoes-agenda/ui/ui-09-circulars-attach-preflight-x-client-info.png",
+      "revision": "b2e61a22e",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, rota real com a sessao qa-r06-publicacoes (build web-qa profile de qa_main servido em 127.0.0.1:3000, Chrome CDP 9337)",
+      "recordedAt": "2026-09-11T20:31:00-03:00"
+    }
+  }
+]

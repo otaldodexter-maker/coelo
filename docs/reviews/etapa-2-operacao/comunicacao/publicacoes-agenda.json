@@ -1,15 +1,15 @@
 {
-  "revision": 46,
+  "revision": 47,
   "round": "E2-R06-20260911",
   "group": "publicacoes-agenda",
   "tool": "Claude Code",
   "model": "Opus 5 (1M), esforco medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-publicacoes-agenda",
   "branch": "work/etapa2-r06-publicacoes-agenda",
-  "head": "b2e61a22e (+ commit desta revisao)",
+  "head": "c0b1ce1e3 (+ commit desta revisao)",
   "base": "origin/dev ca60b096b",
   "coordinator": "Claude (R06 · Coordenacao)",
-  "updatedAt": "2026-09-11T20:34:00-03:00",
+  "updatedAt": "2026-09-11T20:41:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -82,7 +82,7 @@
     "unknown": "suite completa nao repetida (um flutter test por vez)"
   },
   "blocked": "rota real ate existir qa-r06-publicacoes.env",
-  "next": "circulars.create/publish pela tela nova sem anexo; circulars.respond pela tela (Responder -> leitor -> enviar resposta); depois deltas + pagina R/A; sino se sobrar.",
+  "next": "pagina R/A para o Owner; conferir deploy da circular-media e provar attach; sino se sobrar",
   "changes": [
     {
       "sha": "41a4b4dcf",
@@ -137,7 +137,7 @@
       "actionIds": [
         "circulars.attach"
       ],
-      "pending": "DEPLOY da Edge Function circular-media a partir de b2e61a22e (Allow-Headers + x-client-info). Sem custo; sem segredo novo. Depois eu provo attach pela tela."
+      "pending": "DEPLOY da Edge Function circular-media a partir de b2e61a22e (Allow-Headers + x-client-info). Sem custo; sem segredo novo. Depois eu provo attach pela tela. Deltas em deltas-r06-pa.json (5)."
     },
     {
       "actionIds": [
@@ -545,7 +545,9 @@
     "agenda.location": "FECHADO pela tela: /agenda/events/new na familia Publicacao (ui-03) -> Contexto principal=Unidade -> \"Qual Unidade\" lista as duas unidades reais da instituicao sintetica (ui-04) -> escolhida a SEGUNDA (Unidade QA R05 Transferencia, ui-06) -> Local \"Patio central R06\" (ui-05) -> Publicar evento -> detalhe c7cf7370 com Contexto principal = Unidade QA R05 Transferencia e local (ui-07) -> recarga completa mantem (ui-08). BE done (R05) + RLS pgTAP 200300 -> proposta verified/verified-e2e.",
     "agenda.create": "mesma prova (evento criado e publicado pela tela nova; reload mantem).",
     "circulars.create": "/circulars/new abre a familia Publicacao (ui-01); rascunho salvo automaticamente pelo compositor ao anexar (superadmin_circular_save_draft_v2 200, ids bd439ba5/5f8d2aee/cb77ed7f = rascunhos sinteticos [R06-QA UI]).",
-    "circulars.attach": "ABERTO: gate = deploy da circular-media (CORS x-client-info). Prova pela tela repete-se apos o deploy (gancho do qa_main funcionou: o fluxo chegou ao prepare)."
+    "circulars.attach": "ABERTO: gate = deploy da circular-media (CORS x-client-info). Prova pela tela repete-se apos o deploy (gancho do qa_main funcionou: o fluxo chegou ao prepare).",
+    "circulars.respond": "FECHADO pela tela (P50=B): detalhe -> Responder (ui-12) -> tela de resposta no Superadmin (ui-13) -> Estou ciente -> Enviar respostas (save_circular_response_draft partial v1 -> submit_circular_response submitted v2, ui-14) -> recarga completa: diretorio mostra Respostas 1 (ui-15). Proposta FE verified + E2E.",
+    "circulars.create/publish": "Circular [R06-QA UI] publicada pela tela nova com Resposta esperada = Confirmar ciencia (ui-10, ui-11: \"0 anexos · 1 pergunta\"); ja eram verified/E2E; a familia nova nao regrediu o fluxo."
   },
   "finalizado": null,
   "deliveryValidation": null,
@@ -1912,7 +1914,7 @@
       }
     ]
   },
-  "deltasFile": "docs/reviews/evidence/etapa-2/r06-publicacoes-agenda/deltas-r06-pa.json (a criar)",
+  "deltasFile": "docs/reviews/evidence/etapa-2/r06-publicacoes-agenda/deltas-r06-pa.json (5 entradas; ensaio apply + validate PASS: FE 140, BE 132, E2E 107; revertido)",
   "ownerVisualApproval": null,
   "revisaoFinal": null,
   "r05History": {
