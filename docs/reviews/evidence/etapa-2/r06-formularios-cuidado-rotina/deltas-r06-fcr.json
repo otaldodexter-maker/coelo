@@ -1,0 +1,327 @@
+[
+ {
+  "action_id": "health-care.list",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "superadmin_health_care_directory 200 na rota normal com a sessao qa-r06 (perfil 5712371e listado) e no reload; negativas da familia no pgTAP de 010400 (30/30 na baseline) e ponte de ator 220400.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/02-health-care-list-reload.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/02-health-care-list-reload.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
+   "recordedAt": "2026-09-11T20:08:00-03:00"
+  }
+ },
+ {
+  "action_id": "health-care.list",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "/health-care/profiles abre pela rota normal com o composto, lista o perfil real e o reload mantem.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/02-health-care-list-reload.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/02-health-care-list-reload.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
+   "recordedAt": "2026-09-11T20:08:00-03:00"
+  }
+ },
+ {
+  "action_id": "medication.create",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "criar plano pela rota normal: crianca real, Dipirona R06 2.5 ml oral, vigencia 11/09 (seletor de data fecha com clique de 300 ms de hover: a falha da R05 era do harness), Criar plano -> lista; detalhe abre o editor carregado; edicao da dose 2.5 -> 5 salva; reload mantem. Pendencias: Responsavel sem opcoes (contrato sem responsaveis); \"Crianca do plano\" no lugar do nome apos reload direto; imagem/prescricao indisponiveis (sem gateway).",
+  "evidencia": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/10-medication-criado-lista.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/10-medication-criado-lista.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
+   "recordedAt": "2026-09-11T20:21:00-03:00"
+  }
+ },
+ {
+  "action_id": "medication.create",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "superadmin_medication_plan_save 200 -> plano 12f816e8 (versao 1); superadmin_medication_plan_detail relido; id inexistente/alheio responde P0002 \"medication plan unavailable\" (negativa unificada); pgTAP 010400 30/30.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/10-medication-criado.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/10-medication-criado.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
+   "recordedAt": "2026-09-11T20:21:00-03:00"
+  }
+ },
+ {
+  "action_id": "medication.create",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "plano criado pela tela, persistido em producao e listado/reaberto apos reload.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/15-medication-edit-reload.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/15-medication-edit-reload.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
+   "recordedAt": "2026-09-11T20:24:00-03:00"
+  }
+ },
+ {
+  "action_id": "medication.detail",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "/health-care/medication-plans/12f816e8 redireciona ao editor carregado com o plano real (superadmin_medication_plan_detail 200); reload mantem. Pendencia: nao existe detalhe somente leitura (redireciona ao editor), como em health-care.detail.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/11-medication-detail-editor.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/11-medication-detail-editor.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
+   "recordedAt": "2026-09-11T20:22:00-03:00"
+  }
+ },
+ {
+  "action_id": "medication.detail",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "superadmin_medication_plan_detail 200 com current_version, schedules e evidence; P0002 para id alheio.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/11-medication-detail-editor.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/11-medication-detail-editor.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
+   "recordedAt": "2026-09-11T20:22:00-03:00"
+  }
+ },
+ {
+  "action_id": "medication.detail",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "detalhe pela rota normal, dados de producao, reload mantem.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/15-medication-edit-reload.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/15-medication-edit-reload.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
+   "recordedAt": "2026-09-11T20:24:00-03:00"
+  }
+ },
+ {
+  "action_id": "medication.edit",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "dose 2.5 -> 5 e Salvar alteracoes: superadmin_medication_plan_save 200 (management_version 2); reload do editor mostra 5 ml. Teste pre-existente medication_plan_ui_contract_test 375/200% falha na base (overflow do frame), registrado.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/15-medication-edit-reload.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/15-medication-edit-reload.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
+   "recordedAt": "2026-09-11T20:24:00-03:00"
+  }
+ },
+ {
+  "action_id": "medication.edit",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "superadmin_medication_plan_save com plan_id + expected_version 1 -> versao 2, management_version 2; conflito 40001 traduzido no cliente; negativa P0002.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/15-medication-edit-reload.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/15-medication-edit-reload.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
+   "recordedAt": "2026-09-11T20:24:00-03:00"
+  }
+ },
+ {
+  "action_id": "medication.edit",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "edicao persistida em producao e mantida no reload.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/15-medication-edit-reload.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/15-medication-edit-reload.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
+   "recordedAt": "2026-09-11T20:24:00-03:00"
+  }
+ },
+ {
+  "action_id": "medication.evidence",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "7ab1a05f8: secao Registros de dose na revisao do plano em edicao + dialogo Registrar dose (Administrada/Nao administrada/Recusada, motivo obrigatorio fora de Administrada, observacao); registrado \"Recusada - Crianca recusou R06\" pela tela; reload do detalhe traz o registro. Pendencias: rotulo Administrada quebra em duas linhas no dialogo de 420 px; imagem da dose (media_asset_id) sem gateway.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/14-medication-evidence-registrada.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/14-medication-evidence-registrada.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
+   "recordedAt": "2026-09-11T20:23:00-03:00"
+  }
+ },
+ {
+  "action_id": "medication.evidence",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "superadmin_medication_plan_record_evidence 200 -> evidencia 42e77772 (outcome refused, reason) no plano 12f816e8; detail devolve evidence[]; auditoria medication.evidence.record; P0002 para plano alheio.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/14-medication-evidence-registrada.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/14-medication-evidence-registrada.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
+   "recordedAt": "2026-09-11T20:23:00-03:00"
+  }
+ },
+ {
+  "action_id": "medication.evidence",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "dose registrada pela tela, persistida e relida apos reload do detalhe.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/15-medication-edit-reload.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/15-medication-edit-reload.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
+   "recordedAt": "2026-09-11T20:24:00-03:00"
+  }
+ },
+ {
+  "action_id": "daily-routine.list",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "V-15 A+ aplicado (03ccdbf41): card Criar em Modelos/Rotinas/Lancamentos em cards e tabela mesmo com dados, acoes da tabela iguais ao card; rota normal lista modelo, rotina e lancamento reais; reload mantem. Golden da tabela regravado apos a observacao. Pendencia: Arquivar sem comando no servidor.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/23-routine-lancar-hoje.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/23-routine-lancar-hoje.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
+   "recordedAt": "2026-09-11T20:26:00-03:00"
+  }
+ },
+ {
+  "action_id": "daily-routine.list",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "superadmin_routine_directory 200 por kind (model/application/launch) com can_manage no topo (220000); pgTAP 15/15 + suites de rotina.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/28-routine-list-reload.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/28-routine-list-reload.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
+   "recordedAt": "2026-09-11T20:37:00-03:00"
+  }
+ },
+ {
+  "action_id": "daily-routine.list",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "diretorio pela rota normal nas tres abas com dados de producao e reload.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/28-routine-list-reload.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/28-routine-list-reload.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
+   "recordedAt": "2026-09-11T20:37:00-03:00"
+  }
+ },
+ {
+  "action_id": "daily-routine.edit",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "2164739b3: editar enviava model_id nulo quando management_version era 0 (23505 medido); corrigido, superadmin_routine_save_model 200 (versao 2, management_version 1) e a lista recarregada mostra o nome novo.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/28-routine-list-reload.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/28-routine-list-reload.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
+   "recordedAt": "2026-09-11T20:37:00-03:00"
+  }
+ },
+ {
+  "action_id": "daily-routine.publish",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "D7 pela tela: Lancar hoje na rotina aplicada cria o rascunho (superadmin_routine_save_launch_draft 200 -> 880b12a8) e leva a Lancamentos; Publicar lancamento pede confirmacao e publica; reload mantem.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/25-routine-publicado.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/25-routine-publicado.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
+   "recordedAt": "2026-09-11T20:28:00-03:00"
+  }
+ },
+ {
+  "action_id": "daily-routine.publish",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "superadmin_routine_publish_launch 200 -> status published, management_version 2 (auditoria do 010100); rascunho criado por save_launch_draft com escopo derivado da rotina no servidor.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/25-routine-publicado.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/25-routine-publicado.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
+   "recordedAt": "2026-09-11T20:28:00-03:00"
+  }
+ },
+ {
+  "action_id": "daily-routine.publish",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "lancamento criado e publicado pela rota normal, persistido e mantido no reload.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/25-routine-publicado.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/25-routine-publicado.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
+   "recordedAt": "2026-09-11T20:28:00-03:00"
+  }
+ },
+ {
+  "action_id": "child-safety.list",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "/safety pela rota normal com qa-r06: superadmin_child_safety_directory 200, crianca sintetica com abas e contagens; reload mantem.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/30-safety-list.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/30-safety-list.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
+   "recordedAt": "2026-09-11T20:32:00-03:00"
+  }
+ },
+ {
+  "action_id": "child-safety.child",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "/safety/children/d0c4...03 abre pelo card, tabela de autorizacoes (2) com Gerenciar; reload direto na URL mantem. Pendencia herdada: Relacao em enum cru (mother/father).",
+  "evidencia": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/32-safety-child-reload.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/32-safety-child-reload.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
+   "recordedAt": "2026-09-11T20:33:00-03:00"
+  }
+ },
+ {
+  "action_id": "child-safety.child",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "superadmin_child_safety_get 200 no reload; RLS/negativas no pgTAP v2 (43/43, lote 4) e decisao P32 (171800).",
+  "evidencia": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/32-safety-child-reload.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/32-safety-child-reload.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
+   "recordedAt": "2026-09-11T20:33:00-03:00"
+  }
+ },
+ {
+  "action_id": "child-safety.child",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "contexto da crianca pela rota normal com dados de producao e reload.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/32-safety-child-reload.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/32-safety-child-reload.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
+   "recordedAt": "2026-09-11T20:33:00-03:00"
+  }
+ }
+]
