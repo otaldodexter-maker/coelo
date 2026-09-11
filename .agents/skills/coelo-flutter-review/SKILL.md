@@ -246,3 +246,22 @@ Regras medidas pelo grupo estrutura na Rodada 4:
   rota real: o clique cai fora do campo quando a lista muda. Dirigir por
   semântica ou `Key`, e conferir a captura antes de concluir que a ação
   falhou.
+
+Decisões visuais do Owner de 11/09/2026 (respostas à Rodada 4; detalhe por
+tela em `coelo-ui/references/approved-superadmin-visual-baselines.md`, seção
+"Respostas do Owner de 2026-09-11"):
+
+- **Aprovado regravar (A):** erro 409 clara e escura (P26), editor de
+  Formulários em 1440 (G-FORM, 5 goldens).
+- **Regravar só depois da observação (A+):** Suporte no composto (G-SUP): a
+  tabela de Suporte e a de Em implantação ainda têm colunas desalinhadas
+  (ex.: Origem no canto superior esquerdo); alinhar à esquerda igual à tabela
+  de Instituições, no composto. Detalhe do evento da Agenda (P34): sem fundo
+  cinza, ações de cancelar/excluir à esquerda e salvar/continuar à direita,
+  rodapé igual ao de criar/editar Instituição.
+- **Manter a referência e corrigir o render (R):** Perfil do Principal (P28)
+  e calendário da Agenda (P33); as correções pedidas estão na referência da
+  skill `coelo-ui` e são pendências das frentes principal-chat e publicações.
+- Regra geral reafirmada: cancelar/excluir fica à esquerda e salvar/continuar
+  à direita em todo rodapé de formulário; nenhum fundo cinza fora dos tokens
+  do Design System.

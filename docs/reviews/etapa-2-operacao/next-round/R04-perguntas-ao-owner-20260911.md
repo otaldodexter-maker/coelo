@@ -1,7 +1,7 @@
 ---
 title: "Rodada 4 — perguntas ao Owner (noite de 10→11/09/2026)"
 source: "coordenacao.json R04; JSONs das frentes; producao medida por supabase db query --linked (somente leitura)"
-status: "open"
+status: "answered-2026-09-11"
 generated_at: "2026-09-10"
 timezone: "America/Sao_Paulo"
 ---
@@ -270,6 +270,44 @@ pacote verde da fila, entra em produção pela autorização permanente da ADR
 0034, Decisão 1; **P22 passa a ser só a confirmação do desenho pelo Owner**,
 não um bloqueio. Se você discordar do desenho, a reversão está descrita no
 próprio arquivo.
+
+
+## Respostas do Owner (11/09/2026, 10:40, pela página de decisões)
+
+| Item | Decisão | Observação do Owner |
+| --- | --- | --- |
+| P20 | C |  |
+| P22 | A | Se isso funcionar sempre, sem problemas. |
+| P23 | A | Mas além disso, em perfil e permissões vamos liberar quem pode fazer isso. Entenda que o Owner de Insituição e Unidade pode fazer tudo dentro do seu contexto. |
+| P24 | C | Grupos podem ter quaisquer tipos de perfis e responsáveis. |
+| P25 | A | Pode usar ela para teste e valdiação assim que finalizar me pergunte se quero apagar |
+| P26 | A |  |
+| P28 | R | Veja que o circulo que fica a foto de perfil, avatar está sendo "Cortado" embaixo , como se o nome estivesse cortando ele. Outro detalhe é que o cabelho onde temos bug, sininho, perfil, logo, está diferente do contexto mobile, essa logo nem é nossa, o espeçamento parece incorreto.  E nas telas que estamos trabalhnado do Coelo (Principal) ao clicar em perfil, além das opções que já temos, ali podemos fazer "filtragens", exemplo, ao abrir estou vendo todas as minhas crianças, mas se eu quiser ver apenas um filho, seleciono o nome dele, se quiser ver todos seleciono em todos, aparecendo até 5 perfis, caso tenha mais aparece ver todos, e leva para um popup simples com a lista para ele selecionar.. Isso na visão dos responsáveis. O Responsavel não tem o botão de + Agora para adiconar, pois ele não adiciona nada. Esse botão de + Agora, não é para adicionar o Agora e sim adicionar no Acontece, é é visivel paenas para quem pode adicioanr algo, como professor. O @ do perfil deve aparecer. Ainda sobre a opção de perfil no cabeçalho, para usuário hibridos (responsáveis e funcionários) devemos ter a opção de ver como Responsável, ver como "Funcionário" e ambos, assim ele viria o feed e agora de todos. Assim como um responsável filtra por criança, ele pode filtrar pelo seus respectivos perfis, como turmas, insituições e outros, aparecendo até 5 perfis, caso tenha mais aparece ver todos, e leva para um popup simples com a lista para ele selecionar. Caso ele queria publicar seja o agora, acontece ou outra coisa que o funcionario pode fazer por hierarquia, e ele não estiver no perfil flagado, antes de ele publicar algo deve aparecer em qual perfil vai publicar. Outro detalhe é os avatares de vinculos (que estão laranja por default) estão sobrepostos e isso é bonito, porém não tem nenum divisão, como um contorno branco ou preto para dark, ou outro tom do nosso laranja e paraece uma coisa só. |
+| P30 | A | Sempre que tiver que criar token, key, e similares e não gere custo, pode fazer. Em pendencias pode dexiar registrado caso ache que chaves estão sendo vazadas e eu tenha que redefinir depois que o projeto for realmente finalizado, e vc me ensina como gerar de cada chave quando for o caso. |
+| P31 | A | Pode criar nome padrões e permissões para todos os tipos de convites e perfis e permissões, como convites para o Superadmin, Admin e principal. E caso necessário tbm tenho a opção de criar mais perfis e permissões. Esses perfis, já são criado e existem app, fazendo hierarquias, rls, o que cada um pode fazer e quais telas e subtelas podem ver, ler, acessar, editar e por ai vai. Quando eu quiser criar um novo perfil posso iniciar do zero, ou partir de um dos modelos pre definidos para edição. Esse perfis padrões só podem ser alterado pelo owner e pela IA conforme minha autorização, assim se o usuário (exemplo unidades) quiser um perfil de professor ele usa o padrão, mas se quiser alguma particulariada de colcoar mais acesso ou menos acesso, ele criar um perfil do zero ou a partir do de professor. Mas o que são do sistema ele não consegue modificar. Atenção pois professores são atrelados a turma e atividades, e podem fazer coisas diferentes e turmas diferentes de unidades diferentes. |
+| P32 | B | A e B, no caso não que eu queira ou revisor de retirada ou entrada de pessoas na segurança infantil. Quando um pai cadastrar ou retirar alguém a unidade é notificada e os que estão relacionados a hierarquia da criança na escola tbm, como professores, coordenadores, diretores e por ai vai, lá no sininho. Assim como os outros responsáveis da criança tbm são notificados. A unidade ou instituição em si, pode definir se a segurança da criança, quando um resposnável alterar ela tenha que: Aceitar para liberar, Aceitar apenas inclusão, Aceitar apenas exclusão e outras possiveis variações. Teria que ter um tela de padrões que a unidade/escola define alguma politicas macro do app, essa seria uma delas, podemos começar com ela e ir crescendo. O mesmo conceito para medicação. Assim a unidade/insituição pode colocar o que falei acima, e inclusive não acompanhamos medicação. |
+| P33 | R | Ficou legal, mas ainda falta alguns ajustes pequeno no calendário. Acho que tem que ser mais proximo do calendário o iphone. O canto arrendondado está muito "Rendodo", talvez diminuir um pouco. A fonte com a data deve ser um pouco menor para que tenha mais espaço do quadrado e colocado bem na esquerda superior, não colado para ter respiro. Madei prints do calendário do iphone para ver. Acho que talvez o grande problema seja o calendário está dentro de conteiner Além disso, o botão de calendário e lista podem dividir 50% para cada para ser maior e ocupar mais espaço e centralizar O calendário aparece tudo que tem direito mediante a hierarquia. Eventos, anviersário de amigos de turmas, de funcionários caso a insituição/unidade libere, provas. O responsável ver de todas as crianças mas pode fazer filtragem lá na opção de perfil, mesmo conceito para funcionários que podem ver por turmas, instituiç~eos e outros e para pessoas hibridas. |
+| P34 | AO | Não está legal. Fundo cinza, bem fora da nossa skill. Se não me engano sempre que é cancelar, exlcuir, ou algo do tipo, fica do lado esquerdo e algo como salvar, contnuar do lado direto. Também está dirferente do rodapé de criar/editar insituição |
+| P35 | C | Na verdade A agora e B agora. Pode similar, mas o superadmin, entra no app vendo tudo. Vamos criar o perfil/usuario, Coelo, que é o nosso app, onde todos Acompanham (Seguir) e ele acompanha todos. Pois posteriormente ele terá um perfil que publicarei dicas do app, para estimular o feed. Assim como criarei outros perfis. Caso queira, pode criar esse perfil, o Nome é Coelo, como a nossa logo de fundo laranja e coelho branco e um capa bem nosso padrão falando do nosso apenas, algo como Coelo é..., e ninguém poderá usar o arroba de coelo, coelo.me e depois podemos aumentar essa lista para que o usuário não se sinta enganado achando que é a gente. |
+| P36 | A | lembrando das hierarquias, não existe unidades sem insituição, não existe turmas sem unidades, não existe atividade que não pertença a unidade ou insituição, atividade é sempre dentro de uma (ou mais) turma(s) e nunca solta. |
+| P37 | A | Esse usuário qa-r03@coelo.me tbm deverá ser usado pelo codex, passe essa informação para ele, para ele tbm verificar. |
+| G-SUP | AO | Ficou muito bom, apenas ainda temos desalinhamento nas table de suporte e implantação, alinho a esquerda, mas tem colunas como origem que está na esquerda superir, precisa ser igual a table de instituições |
+| G-FORM | A |  |
+| WT | A |  |
+
+### Segunda leva (14:20, artefato "Pendências do Owner, 11/09")
+
+| Item | Decisão | Observação e efeito |
+| --- | --- | --- |
+| P38 golden `forms_editor_dark_1440` | A | Regravado às 14:35; suíte do editor 4/4. |
+| WT2 pastas soltas `e2-r01-c07` e `e2-r02-preserved-auth-20260909` | A | Apagadas às 14:35; o manifesto de preservação da R02 continua nos relatórios. |
+| WT3 frente estrutura depois do fechamento | A | Branch `work/etapa2-r04-estrutura` (revs 34 a 37) integrada em `dev`; deltas continuação-2 aplicados (E2E 42/199). A worktree ficou porque a conversa ainda estava viva e commitando. |
+| REF capturas do calendário do iPhone | salvar | PNG mensal e diário versionados em `docs/reviews/evidence/etapa-2/referencias/`; baseline da skill coelo-ui aponta para eles. |
+| PUSH | pode enviar | Push feito para `dev` às 14:40. |
+
+Orientação do Owner na mesma resposta: decisões do artefato são para **anotar** (R05 e md de pendências), não para executar fora do ciclo das frentes. O que já tinha sido executado antes dessa orientação (lotes 25 a 27, goldens P26/G-FORM) fica registrado como feito.
+
+Registro: ADR 0034 Decisão 15; skills coelo-backend, coelo-frontend, coelo-frontend-backend e coelo-ui (baselines aprovadas); coordenacao.json rev 33.
 
 ## Registro
 

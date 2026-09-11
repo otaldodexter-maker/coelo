@@ -122,7 +122,56 @@ chat, no JSON de comunicação nem em commit. Regras: criar usuário de teste
 sempre pela API de administração do Auth (insert manual em `auth.users` quebra
 o login); o guard do realm interno impede o mesmo auth user no realm
 people-based; escrever só dado sintético e apagar na mesma sessão; ao fim da
-rodada o coordenador remove o usuário e o que ele criou.
+rodada o coordenador remove o usuário e o que ele criou. Decisão do Owner de
+11/09/2026 (P37): o mesmo usuário é usado pelas conversas Codex para
+verificar; a credencial chega a elas pelo arquivo, nunca pelo chat. A
+instituição sintética `9f040000-0000-4000-8000-000000000010` pode ser usada
+para teste e validação; ao finalizar, perguntar ao Owner se ele quer apagar
+(P25). A limpeza dos dados sintéticos é um script único, provado no espelho,
+rodado no fechamento da rodada seguinte à demonstração (P37, opção A).
+
+## Decisões do Owner de 11/09/2026 (respostas à Rodada 4, ADR 0034 Decisão 15)
+
+- **Segredos sem custo não pedem autorização (P30):** token, chave, segredo
+  de Edge Function, valor no Vault e similares que não gerem custo são criados
+  e gravados no secret store pelo agente; o valor nunca aparece em chat,
+  commit, log ou JSON. Suspeita de vazamento vira item na seção de pendências
+  abaixo, com o roteiro de redefinição, para o Owner rotacionar ao fim do
+  projeto; cada tipo de chave criada ganha ali o roteiro de como gerá-la,
+  porque o Owner quer aprender. Recursos com custo (Stream, PITR, planos
+  pagos) continuam nominais.
+- **Perfis padrão do sistema (P31):** existem modelos de sistema de perfil e
+  permissão para Superadmin, Admin e Principal (Administrador da instituição,
+  Coordenação, Professor(a), Secretaria e os que forem necessários), com
+  hierarquia, RLS e o que cada um vê, lê, acessa e edita por tela e subtela.
+  Só o Owner e a IA com autorização dele alteram modelos de sistema; a
+  unidade usa o padrão ou cria perfil do zero ou a partir de um modelo, sem
+  editar o modelo. Professores são atrelados a turmas e atividades e podem
+  ter papéis diferentes em turmas de unidades diferentes. Pacote 171600
+  aplicado como primeiro conjunto.
+- **Segurança infantil e Medicação (P32, opção B agora):** o Superadmin com
+  `child_safety.manage` também decide, com auditoria (pacote 171800). Regra
+  alvo, a construir: quando um responsável cadastra ou retira alguém, a
+  unidade, toda a hierarquia da criança (professores, coordenação, direção)
+  e os demais responsáveis são notificados no sino; a unidade ou instituição
+  define, numa tela de políticas macro do app, se a alteração exige aceite
+  para liberar, aceite só na inclusão, só na exclusão ou outras variações.
+  Mesmo conceito para Medicação, incluindo a opção de não acompanhar
+  medicação. Essa tela de políticas é a primeira do gênero e cresce depois.
+- **Owner de instituição e de unidade fazem tudo dentro do seu contexto
+  (P23);** o restante é liberado em Perfis e permissões. P22 (ponte de ator)
+  e P24 (grupos do chat com qualquer perfil e responsáveis; os dois modelos
+  no MVP) confirmados.
+- **Principal (P35):** regra de produto: o Superadmin entra no app vendo
+  tudo. Semear já a membership da pessoa de serviço de `qa-r03` para a prova
+  e criar o perfil/usuário **Coelo** (o app): segue todos e é seguido por
+  todos, logo com fundo laranja e coelho branco, capa no padrão da marca
+  ("Coelo é..."), e ninguém pode usar os arrobas `coelo` e `coelo.me` (lista
+  reservada cresce depois). O Owner publicará dicas do app por ele.
+- **Hierarquia (P36):** não existe unidade sem instituição, turma sem
+  unidade, atividade fora de unidade ou instituição; atividade é sempre
+  dentro de uma ou mais turmas, nunca solta. Migrations e RLS novas respeitam
+  isso.
 
 ## Pendências de segurança que só o Owner executa (registradas em 10/09/2026)
 

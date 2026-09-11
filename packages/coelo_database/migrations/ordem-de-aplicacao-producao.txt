@@ -132,3 +132,10 @@
 20260910220800_forms_location_snapshot_v1_route.sql
 # lote 24 (11/09 09:5x)
 20260910180360_superadmin_institution_create_v2_type_by_name.sql
+# lote 25 (11/09 10:35) - P31 e P32 liberados pelo Owner
+20260910171600_institution_role_system_templates_v1.sql
+20260910171800_child_safety_platform_decision_v1.sql
+# lote 26 (11/09 10:40) - P30 dispatch do worker de notices
+20260910230023_notice_worker_dispatch_v1.sql
+# lote 27 (11/09 10:48) - P35 membership owner do usuario de teste nas instituicoes sinteticas
+20260910230024_qa_r03_synthetic_institution_memberships_v1.sql

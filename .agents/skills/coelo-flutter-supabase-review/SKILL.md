@@ -241,3 +241,24 @@ gate aberto e ETA. Declarar conclusão do recorte quando seus gates estiverem co
 segredos ausentes e evidências preservadas. Commit, merge e deploy são etapas
 separadas quando solicitadas; mudanças alheias não bloqueiam relatar uma
 correção local verificada. Não confundir isso com integração ou publicação.
+
+### Decisões do Owner de 11/09/2026 que atravessam as camadas (ADR 0034, Decisão 15)
+
+- Owner de instituição e de unidade fazem tudo dentro do seu contexto; o
+  resto é liberado em Perfis e permissões (P23). Perfis padrão do sistema só
+  o Owner altera (P31).
+- Hierarquia obrigatória: unidade dentro de instituição, turma dentro de
+  unidade, atividade dentro de uma ou mais turmas, nunca solta (P36). A
+  Rodada 5 começa pela Estrutura na rota real.
+- Principal: o Superadmin vê tudo; perfil/usuário Coelo segue e é seguido por
+  todos; arrobas `coelo` e `coelo.me` reservados (P35). No cabeçalho do
+  Principal a opção de perfil filtra o que se vê: responsável filtra por
+  criança, funcionário por turma/instituição, híbrido escolhe ver como
+  responsável, como funcionário ou ambos; até 5 perfis inline e "ver todos"
+  abre um popup; antes de publicar fora do perfil selecionado, o app pergunta
+  em qual perfil vai publicar; o botão "+ Agora" adiciona no Acontece e só
+  aparece para quem pode publicar (P28).
+- Segurança infantil e Medicação: Superadmin decide com auditoria agora;
+  regra alvo com notificações à hierarquia e políticas por unidade (P32).
+- Grupos do chat com qualquer perfil e responsáveis (P24). Usuário de teste
+  compartilhado com o Codex (P37).

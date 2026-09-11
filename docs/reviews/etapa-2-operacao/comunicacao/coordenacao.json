@@ -1,12 +1,12 @@
 {
- "revision": 32,
+ "revision": 33,
  "round": "E2-R04-20260911",
  "role": "Coordenacao noturna R04 - Claude Fable (C0)",
  "writer": "coordenador-claude",
  "app": "Claude Code (VS Code)",
  "model": "claude-fable-5-1",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T09:55:00-03:00",
+ "updatedAt": "2026-09-11T14:45:00-03:00",
  "relogio": "relogio da maquina; posse as 21:42 -03:00 de 10/09/2026",
  "posseR04": {
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -222,6 +222,7 @@
   "30": "03:52 lote 22 (contextos do Principal); mini-revisoes de 04:00 recebidas de seis frentes; estrutura sem retorno; P35/P36",
   "31": "08:52 FECHAMENTO da R04: sete frentes integradas e worktrees removidas; lote 23; rastreadores e skills consolidados; percentuais finais",
   "32": "09:55 lote 24 (180360); continuacao da estrutura integrada (primeiro E2E da Estrutura); worktree quebrada da R03 removida; artefato de decisoes publicado",
+  "33": "14:45 decisoes do Owner de 11/09 (duas levas) registradas e parcialmente executadas (lotes 25-27, goldens); estrutura revs 34-37 integrada; pendencias da R05 listadas",
   "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina."
  },
  "fechamentoR03": {
@@ -669,5 +670,46 @@
  },
  "continuacaoEstrutura": "a sessao coelo-b3 seguiu depois do fechamento (337fb911c, f99c2279b): rota real com turma criada em producao (groups.create verified-e2e, primeiro E2E da Estrutura), Unidades/Turmas/Atividades/Locais listar verified, cards das unidades em Locais, leitor de selecao de Locais ligado; worktree e2-r04-estrutura recriada por ela (removida de novo no fechamento)",
  "worktreeR03": "e2-r03-realm-interno destravada e removida pelo coordenador as 09:47 a pedido do Owner; branch preservada",
- "artefatoDeDecisoes": "https://claude.ai/code/artifact/f98e8848-2349-49e1-a74a-7bcf4375511b (P20-P37 + 21 pares R/A; o Owner grava as respostas na propria pagina)"
+ "artefatoDeDecisoes": "https://claude.ai/code/artifact/f98e8848-2349-49e1-a74a-7bcf4375511b (P20-P37 + 21 pares R/A; o Owner grava as respostas na propria pagina)",
+ "decisoesDoOwner1109": {
+  "fonte": "artefato Decisoes R04 (18 respostas) + artefato Pendencias do Owner 11/09 (5 respostas); integrais em next-round/R04-perguntas-ao-owner-20260911.md; ADR 0034 Decisao 15",
+  "executadoAntesDaOrientacaoDeSoAnotar": {
+   "lote25": "P31 (20260910171600 modelos de sistema de perfis, pgTAP 7/7) e P32 (20260910171800 decisao de seguranca infantil pelo Superadmin, 25/25); dump schema-producao-20260911-lote25.sql",
+   "lote26": "P30: app_private.notice_dispatch_publication_worker + cron coelo-notices-worker-dispatch (* * * * *); segredo COELO_NOTICE_WORKER_SECRET nos secrets e notices_worker_url/notices_worker_secret no Vault (valor so em Coelo-backups/notice-worker-secret.env); notice-publication-worker implantada; worker respondeu 200 e consumiu job pendente",
+   "lote27": "P35 A agora: pessoa de servico do qa-r03 com membership owner/active em qa-r04-chat, qa-r04-cuidado-sintetico e qa-r04-escola (20260910230024)",
+   "goldens": "P26: error_409_light/dark criados dos candidatos aprovados, skip removido (10/10); G-FORM: quatro goldens claros 1440 do editor; P38: forms_editor_dark_1440 (segunda leva)"
+  },
+  "segundaLeva1420": {
+   "P38": "A, regravado",
+   "WT2": "A, pastas e2-r01-c07 e e2-r02-preserved-auth-20260909 apagadas",
+   "WT3": "A, work/etapa2-r04-estrutura revs 34-37 integrada e deltas continuacao-2 aplicados; worktree mantida porque a conversa segue viva",
+   "REF": "PNG mensal e diario do calendario iOS versionados em evidence/etapa-2/referencias/",
+   "PUSH": "liberado"
+  },
+  "orientacaoDoOwner": "decisoes do artefato sao para anotar (R05 e md de pendencias), nao para executar fora do ciclo das frentes",
+  "pendenciasParaR05": [
+   "P35 B: Superadmin ve tudo no Principal + perfil/usuario Coelo com arroba reservado (principal-chat)",
+   "P28 R: foto do Perfil com quatro correcoes e filtros por perfil no cabecalho (principal-chat)",
+   "P33 R: celulas compactas da Agenda conforme referencia iOS (publicacoes-agenda)",
+   "P34 A+: indicador de status/rodape da Agenda igual ao de Instituicoes, cancelar a esquerda e salvar a direita (publicacoes-agenda)",
+   "G-SUP A+: alinhamento das tabelas de Suporte e Implantacao igual a Instituicoes (operacoes)",
+   "P32 regra alvo: notificacoes no sino e tela de politicas macro da unidade para Seguranca infantil e Medicacao (formularios-cuidado)",
+   "P31: perfis padrao do sistema visiveis e nao editaveis pela unidade; criar do zero ou a partir do modelo (acessos-pessoas)",
+   "institutions.edit blocked-decision: realm interno persistir documento/contato/pessoas (estrutura + realm-interno)",
+   "dispatch de Formularios respondeu 404: conferir forms_worker_url do Vault vs funcao implantada (formularios)",
+   "P37: passar credencial qa-r03 (arquivo em Coelo-backups, nunca o valor) as conversas Codex",
+   "fechar a worktree e2-r04-estrutura quando a conversa encerrar",
+   "P25: ao final, perguntar ao Owner se apaga a instituicao sintetica"
+  ]
+ },
+ "percentuais1440": {
+  "feVerified": "65/231 (28,14%)",
+  "feLocalGreen": "32/231 (13,85%)",
+  "feAprovacaoVisualDoOwner": "52/231 (22,51%)",
+  "beLocalGreen": "91/224 (40,63%)",
+  "beSqlEmProducao": "132/224 (58,93%)",
+  "beDone": "68/224 (30,36%)",
+  "e2eVerified": "42/199 (21,11%)",
+  "base": "inventario validado (validate-trackers PASS) as 14:40 de 11/09; ambiente repositorio + producao medida nos lotes 8 a 27"
+ }
 }
