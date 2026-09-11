@@ -372,6 +372,33 @@ integral das observações em `docs/reviews/etapa-2-operacao/next-round/R04-perg
   1440: A.
 - **WT** worktree quebrada da R03: removida pelo coordenador a pedido dele.
 
+## Decisão 16 — o @ é a identidade pública de toda entidade (11/09/2026, 12:05)
+
+Resposta do Owner a P40 e P41 (dúvidas da frente estrutura sobre o campo
+Identificador de Unidades/Instituições). Ele não reconheceu a distinção entre
+slug e handle: "já devemos entender que o @ é uma realidade".
+
+- **Regra do @ (P40/P41, 11/09 12:05):** o @ é a referência única de toda
+  entidade (usuário, instituição, unidade, turma, atividade) e "é uma
+  realidade" do produto. A entidade nasce com um @ que faz sentido; o usuário
+  pode mudar depois, com validação de disponibilidade enquanto digita, no
+  máximo uma vez a cada 30 dias. Padrões: turma `@nomedaturma.nomedaunidade`,
+  atividade no mesmo conceito dentro de instituição e unidade, unidade
+  `@nomedaunidade.nomedainstituicao`. Não existe "slug técnico separado do
+  @" para o Owner: o campo Identificador é o campo do @, mantém o ícone @ e
+  mostra o padrão gerado como valor editável. Arrobas reservados: `coelo`,
+  `coelo.me` e a lista que crescer (P35).
+
+Consequências para a Etapa 2: (a) o padrão gerado pelo servidor continua
+valendo como valor inicial, mas o cliente exibe e permite editar o @ na
+criação e depois, com verificação de disponibilidade; (b) a troca é limitada a
+uma a cada 30 dias por entidade (`handle_last_changed_at` já existe em
+`institutions`; replicar nas demais); (c) os padrões hierárquicos
+(`turma.unidade`, `unidade.instituicao`) entram no contrato de criação de
+Unidades, Turmas e Atividades; (d) P42: os dados sintéticos da frente
+estrutura só são apagados no fim da Etapa 2, junto com as demais instituições
+sintéticas, por migration de limpeza com dump prévio.
+
 ## Consequências
 
 - O replay local com Docker deixa de ser porta obrigatória; continua útil para

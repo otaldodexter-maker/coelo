@@ -132,6 +132,19 @@ rodado no fechamento da rodada seguinte à demonstração (P37, opção A).
 
 ## Decisões do Owner de 11/09/2026 (respostas à Rodada 4, ADR 0034 Decisão 15)
 
+- **Regra do @ (ADR 0034 Decisão 16) (P40/P41, 11/09 12:05):** o @ é a referência única de toda
+  entidade (usuário, instituição, unidade, turma, atividade) e "é uma
+  realidade" do produto. A entidade nasce com um @ que faz sentido; o usuário
+  pode mudar depois, com validação de disponibilidade enquanto digita, no
+  máximo uma vez a cada 30 dias. Padrões: turma `@nomedaturma.nomedaunidade`,
+  atividade no mesmo conceito dentro de instituição e unidade, unidade
+  `@nomedaunidade.nomedainstituicao`. Não existe "slug técnico separado do
+  @" para o Owner: o campo Identificador é o campo do @, mantém o ícone @ e
+  mostra o padrão gerado como valor editável. Arrobas reservados: `coelo`,
+  `coelo.me` e a lista que crescer (P35).
+  Back-end: geração do padrão por hierarquia na criação, unicidade global,
+  verificação de disponibilidade por RPC, `handle_last_changed_at` e a trava
+  de 30 dias em unidades, turmas, atividades e pessoas.
 - **Segredos sem custo não pedem autorização (P30):** token, chave, segredo
   de Edge Function, valor no Vault e similares que não gerem custo são criados
   e gravados no secret store pelo agente; o valor nunca aparece em chat,

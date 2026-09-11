@@ -191,6 +191,14 @@ Regras medidas na Rodada 4 (noite de 10→11/09/2026):
   registrado; goldens de formulário em 375 que congelam o cabeçalho mobile
   ficam retidos enquanto MENU-M estiver aberto.
 
+Regra do @ (Owner, 11/09/2026, ADR 0034 Decisão 16): o campo Identificador de
+Instituições, Unidades, Turmas e Atividades é o campo do @ público, mantém o
+ícone @, vem preenchido com o padrão hierárquico gerado pelo servidor
+(`turma.unidade`, `unidade.instituicao`) e é editável com verificação de
+disponibilidade enquanto digita; troca limitada a uma a cada 30 dias, com
+mensagem honesta quando bloqueada. Não perguntar de novo ao Owner sobre
+"slug versus handle".
+
 Regras medidas pelo grupo estrutura na Rodada 4:
 
 - Filtro que depende de opções remotas degrada, não derruba a tela (P5):

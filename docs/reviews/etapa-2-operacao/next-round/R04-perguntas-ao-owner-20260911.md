@@ -308,13 +308,13 @@ próprio arquivo.
 Orientação do Owner na mesma resposta: decisões do artefato são para **anotar** (R05 e md de pendências), não para executar fora do ciclo das frentes. O que já tinha sido executado antes dessa orientação (lotes 25 a 27, goldens P26/G-FORM) fica registrado como feito.
 
 
-### Terceira leva (11:35, pausa da frente estrutura; confirmada na segunda pausa às 11:50) — aguardam resposta
+### Terceira leva (11:35, pausa da frente estrutura; confirmada na segunda pausa às 11:50) — respondida às 12:05
 
 | Item | Pergunta | Recomendação |
 | --- | --- | --- |
-| P40 (Unidades/Instituições, visual) | O campo Identificador usa o ícone @ mas grava o slug; o @ público é gerado pelo servidor. Trocar o ícone (link/tag) ou manter? | Trocar, porque o @ induz a ler o campo como handle. |
-| P41 (Unidades, produto) | O Identificador digitado deve virar o @ público na criação (exigiria proibir hífen no cliente) ou o @ continua derivado pelo servidor? | Manter derivado até existir a ação "Alterar @" no cliente. |
-| P42 (dados sintéticos) | A frente pediu remover em produção groups 368a5cea, institutions 190dd028 (qa-r04-escola), units f5284f2f e activity_locations 82e92854. A instituição 190dd028 recebeu membership do qa-r03 no lote 27 e é usada nos prompts da R05. Apagar agora ou no fim da Etapa 2, junto com as outras sintéticas (P25)? | No fim da Etapa 2, tudo junto, por migration de limpeza com dump prévio. |
+| P40 (Unidades/Instituições, visual) — **Resposta: manter @; regra do @ na ADR 0034 Decisão 16** | O campo Identificador usa o ícone @ mas grava o slug; o @ público é gerado pelo servidor. Trocar o ícone (link/tag) ou manter? | Trocar, porque o @ induz a ler o campo como handle. |
+| P41 (Unidades, produto) — **Resposta: o @ é uma realidade; o campo é o @, nasce com padrão e é editável com validação, troca a cada 30 dias** | O Identificador digitado deve virar o @ público na criação (exigiria proibir hífen no cliente) ou o @ continua derivado pelo servidor? | Manter derivado até existir a ação "Alterar @" no cliente. |
+| P42 (dados sintéticos) — **Resposta: no fim** | A frente pediu remover em produção groups 368a5cea, institutions 190dd028 (qa-r04-escola), units f5284f2f e activity_locations 82e92854. A instituição 190dd028 recebeu membership do qa-r03 no lote 27 e é usada nos prompts da R05. Apagar agora ou no fim da Etapa 2, junto com as outras sintéticas (P25)? | No fim da Etapa 2, tudo junto, por migration de limpeza com dump prévio. |
 
 Registro: ADR 0034 Decisão 15; skills coelo-backend, coelo-frontend, coelo-frontend-backend e coelo-ui (baselines aprovadas); coordenacao.json rev 33.
 
@@ -322,3 +322,5 @@ Registro: ADR 0034 Decisão 15; skills coelo-backend, coelo-frontend, coelo-fron
 
 - Respostas entram em `coordenacao.json` (revisão seguinte), na ADR 0034
   (Decisão 13) e nas skills afetadas no mesmo turno.
+
+Resposta integral do Owner a P40/P41 (12:05): "não entendi, não sei o que é isso de link mas todos tem que ter arroba, o arroba é uma referencia unica, ao criar o usuário ele já nasce com um arroba que faz sentido e caso ele queira mudar e ir escrevendo valida se tem disponível, só pode mudar a cada 30 dias. Turmas, atividades, na hora de criarem o seu arroba, vem como padrão @nomedaturma.nomedaunidade, e se quiser mudar tudo bem e atividade tbm, mas tem conceito de instituição e unidade. unidade tbm, mas com o . nome de instituição" / "não entendi, pois já devemos entender que o @ é uma realidade". P42: "No fim".
