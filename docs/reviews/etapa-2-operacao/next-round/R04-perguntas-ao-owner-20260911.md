@@ -72,14 +72,18 @@ resolve isso se você confirmar que é a regra pretendida: **quem tem a
 capacidade no perfil de instituição gerencia os cardápios dessa instituição.**
 Recomendação: sim (é a sua Decisão 12/P7 aplicada a Cardápios).
 
-## P24 — Criar grupo no Chat: quem pode criar e quem entra (realm-interno)
+## P24 — Criar grupo no Chat: quem entra no grupo (realm-interno, corrigida)
 
-O pacote `20260910240400` (Criar grupo, P8) está pronto com a regra: quem tem
-`chat.internal.manage` cria grupo; membros são identidades internas ativas
-(conversa interna do Superadmin), com auditoria. Confirmar que no MVP o grupo
-é **só entre identidades internas** (equipe Coelo) e que grupos com famílias
-ou instituições ficam para o chat contextual (realm de pessoas), fora desta
-rodada. Recomendação: sim.
+Correção da frente realm-interno (rev 15): o pacote `20260910240400` em
+produção cria o grupo pela identidade interna com `chat.internal.manage` e
+aceita como membros **pessoas da instituição** (conversa contextual com a
+instituição escolhida), não identidades internas. A prova pela UI usou a
+instituição sintética e a pessoa "Criança QA R04" como membro. Pergunta: no
+MVP o Superadmin cria grupos com pessoas de uma instituição (como está) ou
+grupos só entre identidades internas (equipe Coelo)? Se for só internos, a
+variante `240600` (membros = identidades internas) leva cerca de 1 hora.
+Recomendação: manter como está (pessoas da instituição) e registrar o grupo
+interno como pós-MVP.
 
 ## P25 — Instituição e unidade sintéticas em produção (bloqueia CRUD com sessão de 5 famílias)
 
@@ -242,7 +246,9 @@ completos nos JSONs e handoffs de cada grupo):
 - operacoes: chamado `48e02ab0-fa60-4e7c-86b6-78f75565dc57`, telefone
   `11999990000` na pessoa de serviço `007a4ca5-…`, pedido de troca de e-mail
   cancelado e recibos.
-- publicacoes: avisos `[R04-QA]` inativos, circulares/eventos de teste.
+- publicacoes: registros com prefixo `[R04-QA]` em `platform_notices`, `circulars` e `agenda_events` (lista no `publicacoes-agenda.json` rev 30).
+- realm-interno/chat: prefixo `9f040000-` (instituição, pessoas, conversa e grupo); a limpeza está pronta em `packages/coelo_database/scripts/chat-internal-production-cleanup.sql` (arquiva a instituição por FK de `audit_logs` e remove o resto).
+- estrutura: nenhum.
 
 Opções: **(a)** o Owner libera na conversa do coordenador ("P37 aprovado") um
 script único de limpeza por prefixo/ids, provado no espelho antes; **(b)**
