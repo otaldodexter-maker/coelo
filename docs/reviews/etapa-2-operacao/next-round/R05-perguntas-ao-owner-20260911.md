@@ -19,6 +19,7 @@ skills no mesmo turno em que chegarem.
 | --- | --- | --- | --- |
 | G-SUP-R05 — Suporte e Em implantação alinhados como Instituições (16 goldens claros) e `plan_table_light_*` | operacoes | https://claude.ai/code/artifact/7737ccf7-1489-4d67-ba5f-858c051150d2 (cópia em `evidence/etapa-2/r05-operacoes/g-sup/`) | **Respondido às 14:20: "está tudo aprovado, ficou legal"** → `ownerVisualApproval = A` |
 | P33/P34-R05 — calendário da Agenda conforme o iPhone (P33, R) e rodapé do detalhe do evento (P34, A+): 12 goldens `agenda_calendar_*` e `agenda_detail_*` | publicacoes-agenda | https://claude.ai/code/artifact/881e760e-4a7a-456e-9f1e-54fd26be3975 (cópia em `evidence/etapa-2/r05-publicacoes-agenda/duvidas-visuais.html`) | **Respondido às 14:52: "o render atual está perfeito e aprovado"** → `ownerVisualApproval = A` nos 12 goldens |
+| IMP-R05 — Importações: diretório no composto e goldens dentro da shell (`import_hub_*`) | operacoes | https://claude.ai/code/artifact/aafedc26-2673-4f10-8310-37b367dad7f7 | **Respondido às 14:58: "correto e perfeito", exceto `import_hub_wizard_unavailable_light_1440_200` (wizard incorreto e fundo cinza) → A nos demais, A+ nesse |
 
 ## Produto e processo
 

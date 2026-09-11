@@ -1063,6 +1063,13 @@
    "id": "P44",
    "frente": "operacoes",
    "texto": "Catalogo (indice/fingerprints): recomendacao pos-MVP"
+  },
+  {
+   "id": "IMP-R05",
+   "frente": "operacoes",
+   "tipo": "visual",
+   "pagina": "https://claude.ai/code/artifact/aafedc26-2673-4f10-8310-37b367dad7f7",
+   "resposta": "aprovado 14:58 com uma excecao (wizard_unavailable_light_1440_200)"
   }
  ],
  "lote33": {
@@ -1270,5 +1277,6 @@
  },
  "secretsAlterados": "COELO_ALLOWED_ORIGINS regravado as 14:41 com as tres origens coelo.me + localhost/127.0.0.1 nas portas 3000, 3014 e 3020 (pedido da G3: download do XLSX devolvia 403 request_denied por origem); valor anterior nao era legivel (o CLI so mostra o hash)",
  "semRevisaoNovaHa30min1447": "principal-chat-sistema (rev 24 de 14:07): cobrada por mensagem",
- "aprovacaoDoOwner1452": "Agenda P33/P34 (artefato 881e760e): \"o render atual esta perfeito e aprovado\" -> ownerVisualApproval=A nos 12 goldens agenda_calendar_*/agenda_detail_* (G6 registra; coordenador grava no inventario no fechamento)"
+ "aprovacaoDoOwner1452": "Agenda P33/P34 (artefato 881e760e): \"o render atual esta perfeito e aprovado\" -> ownerVisualApproval=A nos 12 goldens agenda_calendar_*/agenda_detail_* (G6 registra; coordenador grava no inventario no fechamento)",
+ "aprovacaoDoOwner1458": "Importacoes (artefato aafedc26, G7): \"correto e perfeito\", exceto import_hub_wizard_unavailable_light_1440_200 (wizard incorreto e fundo cinza) -> A nos demais import_hub_*, A+ nesse; repassado a G7"
 }
