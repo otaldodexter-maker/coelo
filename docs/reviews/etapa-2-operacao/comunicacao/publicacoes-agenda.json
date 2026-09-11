@@ -1,5 +1,5 @@
 {
-  "revision": 24,
+  "revision": 25,
   "round": "E2-R04-20260911",
   "group": "publicacoes-agenda",
   "tool": "Claude Code",
@@ -9,7 +9,7 @@
   "head": "f5d0c284a",
   "base": "origin/dev 98cc0529d",
   "coordinator": "Claude (R04 · Coordenação noturna)",
-  "updatedAt": "2026-09-11T03:08:00-03:00",
+  "updatedAt": "2026-09-11T03:00:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -71,9 +71,9 @@
     "Padrao de defeito repetido nas cadeias historicas: audit_logs.reason_code (^[A-Z][A-Z0-9_]{0,79}$) recebia texto livre/minusculo e derrubava a RPC com SAI_INTERNAL_ERROR. Vale conferir nos outros grupos que passam p_reason ao audit_append_superadmin_internal.",
     "SEGURANCA medida na baseline: tabelas agenda_* com RLS forcado e zero policies, mas SELECT/INSERT concedidos a anon/authenticated; superadmin_agenda_* executaveis por anon/service_role. Fechado no 200300. Recomendo ao coordenador varrer o mesmo padrao nas outras familias (grants default do Supabase em tabelas/funcoes criadas antes do endurecimento).",
     "UI real: balao de chat \"Mensagens\" visivel em /notices/new (criar) — Decisao 7 exige sem chat em criar/editar/publicar; regra do shell, nao da feature. Registrado para o coordenador/principal-chat-sistema.",
-    "CORRIGIDO na rev 24: diretorio de Circulares rele apos excluir/publicar. Permanece: \"Editar circular\" oferecido em Encerrada (servidor recusa).",
+    "CORRIGIDO nas revs 24/25: diretorio de Circulares rele apos excluir/publicar; Editar oculto em Encerrada/Arquivada.",
     "FE bloqueante: em /circulars/new a 1440 o balao de chat cobre inteiramente o botao Publicar (centro 1330x856); a 1024 o rodape empilha e funciona.",
-    "CORRIGIDO na rev 24: diretorio de Circulares rele apos excluir/publicar. Permanece: \"Editar circular\" oferecido em Encerrada (servidor recusa).",
+    "CORRIGIDO nas revs 24/25: diretorio de Circulares rele apos excluir/publicar; Editar oculto em Encerrada/Arquivada.",
     "FE bloqueante: em /circulars/new a 1440 o balao de chat cobre inteiramente o botao Publicar (centro 1330x856); a 1024 o rodape empilha e funciona.",
     "FE agenda.detail: deep link direto apos carga fria fica no spinner ate o calendario carregar; no detalhe apos reload contexto/audiencia mostram UUID da instituicao em vez do nome.",
     "Ambiente: outro processo (frente ou coordenador) passou a dirigir meu Chrome CDP 9333 (pagina foi para localhost:3000); abri o 9334. Sugestao: cada conversa usa porta CDP propria e declara no JSON.",
@@ -274,6 +274,19 @@
         "flutter analyze limpo"
       ],
       "sha": "f326b4fec"
+    },
+    {
+      "screen": "Etapa 2 → apps/superadmin → Circulares → Detalhe → Encerrada/Arquivada → circulars.edit",
+      "actionIds": [
+        "circulars.edit",
+        "circulars.detail"
+      ],
+      "whatChanged": "Detalhe nao oferece Editar quando a Circular esta encerrada ou arquivada (o servidor recusa a edicao); teste novo e pagina 21/21.",
+      "criteria": [
+        "superadmin_circular_pages_test 21/21",
+        "analyze limpo"
+      ],
+      "sha": "6fd4ad64a"
     }
   ],
   "pendingForCoordinator": [
@@ -1150,8 +1163,8 @@
     ]
   },
   "finalizado": {
-    "at": "2026-09-11T02:52:00-03:00",
-    "head": "7d3e0793d",
+    "at": "2026-09-11T03:00:00-03:00",
+    "head": "6fd4ad64a",
     "handoff": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
     "capturas": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/ui/ (49 png)"
   }
