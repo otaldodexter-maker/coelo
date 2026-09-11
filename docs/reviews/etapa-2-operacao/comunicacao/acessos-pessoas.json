@@ -1,7 +1,7 @@
 {
-  "revision": 96,
-  "updated_at": "2026-09-11T01:13:03.665Z",
-  "relogio_local": "Thu Sep 10 2026 22:13:03 GMT-0300 (Horário Padrão de Brasília)",
+  "revision": 97,
+  "updated_at": "2026-09-11T01:49:05.092Z",
+  "relogio_local": "Thu Sep 10 2026 22:49:05 GMT-0300 (Horário Padrão de Brasília)",
   "round": "E2-R04-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
@@ -9,7 +9,7 @@
   "status": "R04_EM_CURSO",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-acessos-pessoas",
   "branch": "work/etapa2-r04-acessos-pessoas",
-  "head": "65a7600cd (rebase sobre origin/dev 836c63215, coordenacao rev 19)",
+  "head": "3bfbe8a47 (publicado) + WIP local: composicao v2 de Seguranca infantil",
   "base_observed": "origin/dev 98cc0529d contem a4af2b198 e o R04-prompts.md; candidatos/acessos-pessoas tem 170900 (retido) e 170750 (obsoleto); lote 4 (170100-170800) em migrations/",
   "recorte": {
     "familias": [
@@ -38,13 +38,17 @@
   ],
   "loop": "/loop 15m agendado na abertura",
   "testes_P_F_B_S_U": "nenhum teste automatizado executado ainda nesta rodada; login real 1 P",
-  "bloqueio": "nenhum bloqueio total; escritas de Pessoas/Perfis/Modelos para o realm interno dependem da decisao acima (gate registrado)",
-  "proximo_passo": "Convites na rota normal (listar/detalhe/criar/reenviar/revogar) com captura; em paralelo escrever candidatos/acessos-pessoas/20260910171000_has_platform_permission_membership_v1.sql + pgTAP e provar no descartavel",
+  "bloqueio": "nenhum total. Gate 'ponte do realm interno' (coordenador) para people.list/create/edit, access-profiles.* e access-models.* escrita e leitura.",
+  "proximo_passo": "rebuild estatico e prova na rota normal de Seguranca infantil (v2), Convites e Usuarios internos; diagnosticar o 'nao autorizado' de Usuarios internos com o DTD; criar convite sintetico (invites.create/resend/revoke) e apagar ao fim",
   "ACK_ao_coordenador": "recebido o aviso do lote 8 (MFA fora do MVP + student_links_read) por mensagem entre sessoes as 22:10; respondido pelo mesmo canal; rebase feito.",
   "ROTA_NORMAL_COM_SESSAO": {
-    "app": "flutter run -d web-server em http://localhost:3000 na worktree, .env.local (URL + chave publicavel), Chrome dedicado dirigido por CDP (porta 9333, perfil isolado); credencial lida do qa-r03.env so no ambiente do processo, nunca impressa",
-    "auth.login": "qa-r03@coelo.me entrou pela tela normal; Home abriu como 'Owner Coelo / Superadmin' (captura pos-login.png no scratchpad da sessao; sera anexada na evidencia da branch)",
-    "observacao_fora_do_recorte": "na tela de login o logo SVG da marca nao renderiza no modo web-server (circulo branco); nao e do meu recorte, registrado para o coordenador"
+    "auth.login": "P (qa-r03 entra pela tela normal, Home como Owner Coelo / Superadmin)",
+    "internal-users.list": "F no cliente: a tela mostra 'Acesso nao autorizado' embora o backend responda 200 tanto em superadmin_internal_user_profiles quanto em superadmin_internal_users_list (chamados por REST com a mesma sessao), e superadmin_auth_bootstrap_context devolva platform.member.read. Causa em investigacao no cliente (candidatos: revisao de cache do repositorio invalidada por notificacao de sessao durante a chamada; ou capability calculada antes do contexto). Lista de producao esta vazia (total 0) — nao ha usuarios internos listaveis alem do proprio realm? a conferir.",
+    "child-safety.list": "F com a composicao de dev: SupabaseChildSafetyRepository (legado, people-based) recebe 42501 'child safety capability required'; superadmin_child_safety_directory_v2 responde ok:true para qa-r03. CORRIGIDO localmente: superadmin_auth_scope.dart passa a compor SupabaseInternalChildSafetyRepository (leituras v2; escritas honestamente indisponiveis ate o pacote de comandos v2). Prova na rota normal pendente do rebuild.",
+    "people.list": "F esperado: superadmin_people_list -> 42501 'people permission denied' (current_person_id nulo para o realm interno). Gate: ponte do realm interno (coordenador).",
+    "access-profiles.list": "F esperado: superadmin_access_profiles_list -> 42501 'profile management permission required' (require_profile_authority usa current_person_id). Gate: ponte do realm interno (coordenador). Corrige a afirmacao da R03 de que a leitura ja funcionava.",
+    "people.links/people.reload": "superadmin_person_detail_v2 responde envelope (SAI_PERMISSION_DENIED para id inexistente); com 1 pessoa em producao e 0 instituicoes, o detalhe real depende de dado sintetico que ainda vou criar quando a ponte permitir criar pessoa; ate la, prova por REST.",
+    "invites.*": "superadmin_invite_directory_v2 -> ok:true, 0 itens. Tela de Convites fica em Comunicacao (nao em Acessos); rota /invites; prova na UI pendente do rebuild."
   },
   "ACHADO_QUE_MUDA_O_PLANO_DE_PESSOAS_E_PERFIS": {
     "fato": "qa-r03 existe SO no realm interno v2 (superadmin_internal_auth_links ativo, membership platform/owner ativa) e NAO tem person_auth_links. app_private.current_person_id() devolve NULL para ele.",
@@ -56,6 +60,24 @@
   "PACOTE_170900": "obsoleto, coberto pela 230021 do coordenador (has_mfa_aal2 aceita aal1). Concordo com a marcacao OBSOLETO.",
   "COMPOSICAO_SEGURANCA_INFANTIL": "superadmin_auth_scope.dart compoe SupabaseChildSafetyRepository (RPCs legadas superadmin_child_safety_directory/get/search_children, que tambem existem em producao) e nao o SupabaseInternalChildSafetyRepository (v2 do lote 4). Vou provar na rota normal qual caminho responde a qa-r03 e ligar a v2 se a legada negar.",
   "PROJETO_DESCARTAVEL": "coelo_acessos em portas 633xx (603xx e 613xx ja estavam ocupadas por outras frentes): baseline + seed + as 44 migrations de migrations/ + 230021 (copiada do commit 3d15d95c3 do coordenador), todas aplicadas sem erro; e a base de prova do P7.",
+  "pacotesProntos": [
+    {
+      "id": "AP-P7-HAS-PLATFORM-PERMISSION-INSTITUTION",
+      "migration": "packages/coelo_database/candidatos/acessos-pessoas/20260910171000_has_platform_permission_institution_membership_v1.sql",
+      "pgTAP": "packages/coelo_database/supabase/tests/has_platform_permission_institution_membership_v1_test.sql - 20/20 PASS no projeto descartavel coelo_acessos (baseline + seed + 44 migrations + 230021 + candidato)",
+      "o_que_faz": "has_platform_permission(text) passa a contar platform_memberships com scope_kind='institution'; nova sobrecarga has_platform_permission(text, uuid) em que a membership de instituicao so vale para a instituicao informada (negativa cross-tenant provada). Deny-by-default e deny>allow preservados; ACL igual a da baseline (authenticated executa, anon nao). Nao toca no realm interno (pacote do coordenador).",
+      "chave_de_composicao": "nenhuma no cliente. Os 188 chamadores e as 69 policies continuam com a assinatura (text).",
+      "commit": "3bfbe8a47",
+      "acoes_afetadas": "nenhuma acao fecha sozinha com ele: e pre-requisito da Decisao 12/P7 para perfis por instituicao; Pessoas/Perfis para o realm interno dependem da ponte do coordenador"
+    }
+  ],
+  "TESTES_P_F": "flutter test (auth scope, sanitizacao, safety, platform_users): 290 P / 8 F. Das 8: 5 goldens (4 de platform_users + child_safety_directory_light_1440) e 3 testes de composicao que ficaram obsoletos quando o coordenador ligou as chaves (esperam UnavailableRoutineRepository, ausencia de SupabaseActivityDirectoryRepository no escopo e de AccessProfileDirectoryPage no router). Estou conferindo na base limpa quais ja falhavam em dev antes da minha alteracao.",
+  "AMBIENTE_DE_PROVA": "flutter run -d web-server nao recarrega a pagina de forma confiavel depois de reiniciar o servidor (pagina em branco por minutos); trocando para build web estatico servido em localhost:3000 por um servidor Node com fallback de SPA, para recarregar rotas (regua 'reload mantem') sem depender do DDC.",
+  "REPASSES_AO_COORDENADOR": [
+    "170900 obsoleto: de acordo.",
+    "Testes obsoletos em test/core/config (superadmin_auth_scope_test 'initializes Supabase...', composition_root_sanitization_test 'Activities roots...' e 'basic Access routes...') refletem chaves que voce ligou; nao sao do meu recorte, mas vao falhar na base conjunta.",
+    "Logo SVG da tela de login nao renderiza no web (circulo branco) — fora do recorte."
+  ],
   "historico_r03": {
     "revision": 94,
     "updated_at": "2026-09-10T19:56:30.537Z",
