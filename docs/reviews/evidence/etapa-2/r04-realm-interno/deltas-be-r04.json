@@ -1,0 +1,44 @@
+[
+  {
+    "action_id": "chat.list",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "R04 realm-interno: cadeia inteira do chat interno v2 reescrita sobre a baseline de producao em candidatos/realm-interno (240000 contrato, 240100 chat v2, 240300 fixar/bandeira); inbox v2 devolve pinned_at/flag com fixadas primeiro; requires_mfa=false e auditoria com 13 argumentos. pgTAP 20/20 + 23/23 + 10/10 no projeto descartavel (baseline + seed + 44 migrations + candidatos). Gate: coordenador aplicar 240000..240300 e prova com qa-r03 (script chat-internal-production-proof.ts).",
+    "evidencia": "comunicacao/realm-interno.json r4; packages/coelo_database/candidatos/realm-interno/README.md; supabase/tests/chat_production_contract_v1_test.sql, superadmin_internal_chat_v2_baseline_test.sql, superadmin_internal_chat_preferences_baseline_test.sql (branch work/etapa2-r04-realm-interno e3f04debe)"
+  },
+  {
+    "action_id": "chat.open",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "R04 realm-interno: superadmin_chat_thread_v2 sobre a baseline (240100) com recibo, edited_at e can_manage projetados (240200); CHAT_NOT_FOUND nao enumera outro tenant. pgTAP 23/23 + 36/36. Gate: aplicacao em producao e prova com qa-r03.",
+    "evidencia": "comunicacao/realm-interno.json r4; supabase/tests/superadmin_internal_chat_v2_baseline_test.sql; superadmin_internal_chat_receipts_edit_revoke_baseline_test.sql (e3f04debe)"
+  },
+  {
+    "action_id": "chat.send",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "R04 realm-interno: superadmin_chat_send_message_v2 sobre a baseline (240100): idempotente por (identidade, request_id), CHAT_REPLAY_MISMATCH, autor interno sem alias de pessoa, auditoria de 13 argumentos, AAL1 envia (MFA fora do MVP). pgTAP 23/23. Gate: aplicacao em producao e prova com qa-r03.",
+    "evidencia": "comunicacao/realm-interno.json r4; supabase/tests/superadmin_internal_chat_v2_baseline_test.sql (e3f04debe)"
+  },
+  {
+    "action_id": "chat.edit",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "R04 realm-interno: superadmin_chat_edit_message_v2 sobre a baseline (240200): chat.internal.manage sem MFA, so o autor interno, janela de 15 min, trilha em app_private, replay idempotente. pgTAP 36/36. Deixa blocked-environment: o bloqueio era o realm interno ausente e a cadeia agora nasce sobre a baseline. Gate: aplicacao em producao.",
+    "evidencia": "comunicacao/realm-interno.json r4; supabase/tests/superadmin_internal_chat_receipts_edit_revoke_baseline_test.sql (e3f04debe)"
+  },
+  {
+    "action_id": "chat.receipts",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "R04 realm-interno: recibo por mensagem calculado no servidor (240200): proprio recibo em mensagem recebida, contagens de destinatarios ativos em mensagem enviada; mark_read persiste em app_private.superadmin_internal_chat_receipts (240100). pgTAP 36/36. Gate: aplicacao em producao.",
+    "evidencia": "comunicacao/realm-interno.json r4; supabase/tests/superadmin_internal_chat_receipts_edit_revoke_baseline_test.sql (e3f04debe)"
+  },
+  {
+    "action_id": "chat.revoke",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "R04 realm-interno: superadmin_chat_revoke_message_v2 sobre a baseline (240200): soft delete auditado, sai da thread e do nao lido, CHAT_ALREADY_REVOKED estavel, outro tenant CHAT_NOT_FOUND. pgTAP 36/36. Gate: aplicacao em producao.",
+    "evidencia": "comunicacao/realm-interno.json r4; supabase/tests/superadmin_internal_chat_receipts_edit_revoke_baseline_test.sql (e3f04debe)"
+  }
+]
