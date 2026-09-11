@@ -130,6 +130,34 @@ rota `/dev`, golden ou teste isolado não comprovam isso.
   exportação por resposta, e sem CSV/ZIP/PDF inventado.
 - Outros import/export do Superadmin: botão visível e honestamente indisponível.
 
+### Regras de integração medidas na Rodada 4 (10→11/09/2026)
+
+- Deltas de estado chegam ao coordenador em
+  `docs/reviews/evidence/etapa-2/<rodada>-<grupo>/deltas-*.json` no formato de
+  `docs/reviews/apply-tracker-delta.cjs`: `{action_id, camada:
+  frontend|backend|integrated, estado_proposto, delta, evidencia,
+  certificacao:{evidence, revision, environment, recordedAt}}`. `camada`
+  "fe"/"e2e", estados fora do enum ("blocked", "in-progress", "sem mudança"),
+  `evidence` com lista de arquivos, sem prefixo `docs/` ou com sufixo " rNN"
+  e `revision` numérica são recusados pelo validador; o coordenador
+  normaliza uma vez e devolve a regra ao grupo.
+- `verified-e2e` exige Front-end `verified` e Back-end `done` na mesma ação;
+  quem propõe E2E propõe as duas camadas com a mesma certificação.
+- Prova de rota real que funcionou: `flutter build web -t
+  test_driver/qa_main.dart --dart-define-from-file=.env.local`, servidor
+  estático com fallback de SPA, Chrome com `--remote-debugging-port` e
+  `--use-angle=swiftshader`, login e cliques por CDP (o `tap` do driver trava
+  no release), capturas por CDP, RPCs conferidas pela aba Network. Um Chrome
+  por conversa; fechar ao terminar.
+- Quando a conversa de um grupo cai, o coordenador preserva o WIP em commit
+  `wip(<grupo>)` na branch do grupo e pode delegar o recorte a subagentes sem
+  Chrome (pacotes SQL, cliente, composto) ou com um Chrome (rota real), em
+  worktree do grupo, escrevendo no JSON do grupo com a identificação
+  "subagente do coordenador".
+- `db query -f` de um arquivo a partir de `candidatos/<grupo>` é o caminho de
+  aplicação; ao integrar branches, o Git pode realocar um candidato novo para
+  `migrations/` por "rename" de diretório: mover de volta antes do preflight.
+
 ## Contrato de abertura
 
 Preservar recorte e autorizações já dados. Não perguntar tempo por padrão nem
