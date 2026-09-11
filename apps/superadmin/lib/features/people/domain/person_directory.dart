@@ -50,6 +50,15 @@ enum PersonDirectorySegment {
 
   const PersonDirectorySegment(this.label);
   final String label;
+
+  /// Valor de `p_segment` em `superadmin_people_list` (pacote 20260911170400).
+  String get databaseValue => switch (this) {
+    PersonDirectorySegment.all => 'all',
+    PersonDirectorySegment.institutionalTeam => 'institutional_team',
+    PersonDirectorySegment.guardians => 'guardians',
+    PersonDirectorySegment.children => 'children',
+    PersonDirectorySegment.dualProfile => 'dual_profile',
+  };
 }
 
 enum PersonDirectoryTableView {

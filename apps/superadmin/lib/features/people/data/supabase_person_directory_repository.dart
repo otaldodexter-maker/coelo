@@ -4,9 +4,13 @@ import '../domain/person_directory.dart';
 import '../domain/person_detail_v2.dart';
 
 final class SupabasePersonDirectoryRepository implements PersonDirectoryRepository {
-  const SupabasePersonDirectoryRepository(this._client);
+  const SupabasePersonDirectoryRepository(this._client, {this.segmentFilterAvailable = false});
 
   final SupabaseClient _client;
+
+  /// Liga `p_segment` (abas no servidor) quando 20260911170400 estiver em
+  /// producao; antes disso a RPC de 12 parametros nao aceita o argumento.
+  final bool segmentFilterAvailable;
 
   @override
   Future<PersonDirectoryPage> fetchPage(PersonDirectoryQuery query) async {
@@ -15,11 +19,7 @@ final class SupabasePersonDirectoryRepository implements PersonDirectoryReposito
         'superadmin_people_list',
         params: {
           'p_search': query.search.trim(),
-          // A aba Criancas e o unico segmento que o servidor filtra hoje (tipo);
-          // Equipe/Responsaveis/Perfil duplo dependem de um p_segment na RPC.
-          'p_types': query.segment == PersonDirectorySegment.children
-              ? const ['child']
-              : query.types.map((item) => item.databaseValue).toList(growable: false),
+          'p_types': query.types.map((item) => item.databaseValue).toList(growable: false),
           'p_statuses': query.statuses.map((item) => item.databaseValue).toList(growable: false),
           'p_institution_ids': query.institutionIds.toList(growable: false),
           'p_unit_ids': query.unitIds.toList(growable: false),
@@ -30,6 +30,8 @@ final class SupabasePersonDirectoryRepository implements PersonDirectoryReposito
           'p_sort_ascending': query.sortAscending,
           'p_offset': query.offset,
           'p_limit': query.pageSize,
+          // Abas do diretorio filtradas no servidor (20260911170400).
+          if (segmentFilterAvailable) 'p_segment': query.segment.databaseValue,
         },
       );
       final payload = Map<String, dynamic>.from(response as Map);

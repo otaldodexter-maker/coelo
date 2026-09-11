@@ -8,7 +8,7 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
-  test('the children segment filters by type on the server', () async {
+  test('the segment tab is sent to the server as p_segment', () async {
     Request? captured;
     final client = SupabaseClient(
       'https://example.supabase.co',
@@ -24,11 +24,12 @@ void main() {
       }),
     );
     addTearDown(client.dispose);
-    await SupabasePersonDirectoryRepository(client).fetchPage(
+    await SupabasePersonDirectoryRepository(client, segmentFilterAvailable: true).fetchPage(
       PersonDirectoryQuery(segment: PersonDirectorySegment.children, types: {PersonType.adult}),
     );
     final body = jsonDecode(captured!.body) as Map<String, dynamic>;
-    expect(body['p_types'], ['child']);
+    expect(body['p_types'], ['adult']);
+    expect(body['p_segment'], 'children');
   });
 
   test('list uses the server-side RPC with the complete authorized filter contract', () async {
