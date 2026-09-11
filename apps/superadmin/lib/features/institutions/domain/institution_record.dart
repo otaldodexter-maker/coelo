@@ -380,7 +380,7 @@ final class InstitutionRecord {
         institutionType['name'],
         fallback: _toString(source['institution_type_name']),
       ),
-      documentType: _toString(source['document_type']),
+      documentType: _toString(source['document_type']).toUpperCase(),
       document: _toString(source['document_ref'], fallback: _toString(source['document'])),
       slug: _toString(source['slug']),
       primaryDomain: _toString(source['primary_domain']),
@@ -455,8 +455,8 @@ final class InstitutionRecord {
       profileLinks: _profileLinksFromRpc(branding['profile_links']),
       websiteUrl: _toString(contact['website_url']),
       whatsappNumber: _toString(contact['whatsapp_number']),
-      legalRepresentatives: const [],
-      administrators: const [],
+      legalRepresentatives: _representativesFromRpc(root['representatives']),
+      administrators: _administratorsFromRpc(root['administrators']),
       version: _toInt(
         source['management_version'],
         fallback: _toInt(
@@ -522,10 +522,9 @@ final class InstitutionRecord {
   final List<InstitutionAdministratorDraft> administrators;
   final int version;
 
-  bool get hasUnsupportedRelations => legalRepresentatives.isNotEmpty || administrators.isNotEmpty;
-
-  bool get hasUnsupportedRemoteData =>
-      hasUnsupportedRelations || secondarySurfaceColor != '#F4F5F5';
+  // Representantes e administradores passaram a ter contrato remoto
+  // (superadmin_institution_contacts_edit_v1, lote 28 da R05).
+  bool get hasUnsupportedRemoteData => secondarySurfaceColor != '#F4F5F5';
 
   InstitutionDirectoryItem get directoryItem => InstitutionDirectoryItem(
     id: id,
@@ -728,3 +727,51 @@ final class InstitutionRecord {
     );
   }
 }
+
+InstitutionPersonDraft _personFromRpc(Map<String, dynamic> row) => InstitutionPersonDraft(
+  firstName: _toString(row['first_name']),
+  lastName: _toString(row['last_name']),
+  displayName: _toString(row['display_name']),
+  // O servidor so devolve contatos mascarados (LGPD); o valor mascarado nunca
+  // volta ao servidor, ver _personPayload no repositorio.
+  email: _toString(row['email_masked']),
+  mobilePhone: _toString(row['mobile_phone_masked']),
+  cpf: _toString(row['cpf_masked']),
+);
+
+List<InstitutionLegalRepresentative> _representativesFromRpc(Object? value) => [
+  if (value is List)
+    for (final row in value.whereType<Map<Object?, Object?>>())
+      InstitutionLegalRepresentative(
+        id: _toString(row['id'], fallback: _toString(row['person_id'])),
+        person: _personFromRpc(Map<String, dynamic>.from(row)),
+        personId: _toString(row['person_id']).isEmpty ? null : _toString(row['person_id']),
+        isPrimary: row['is_primary'] == true,
+      ),
+];
+
+List<InstitutionAdministratorDraft> _administratorsFromRpc(Object? value) => [
+  if (value is List)
+    for (final row in value.whereType<Map<Object?, Object?>>())
+      InstitutionAdministratorDraft(
+        id: _toString(row['membership_id'], fallback: _toString(row['person_id'])),
+        person: _personFromRpc(Map<String, dynamic>.from(row)),
+        personId: _toString(row['person_id']).isEmpty ? null : _toString(row['person_id']),
+        handle: _toString(row['handle']),
+        level: switch (_toString(row['level'])) {
+          'admin_master' => InstitutionAdministratorLevel.adminMaster,
+          'coordinator' => InstitutionAdministratorLevel.coordinator,
+          _ => InstitutionAdministratorLevel.authorizedAdministrator,
+        },
+        invitationStatus: switch (_toString(row['invitation_status'])) {
+          'accepted' => InstitutionInvitationStatus.accepted,
+          'sent' => InstitutionInvitationStatus.sent,
+          'expired' => InstitutionInvitationStatus.expired,
+          _ => InstitutionInvitationStatus.notSent,
+        },
+        invitationHistory: const [],
+        sourceRepresentativeId: _toString(row['source_representative_id']).isEmpty
+            ? null
+            : _toString(row['source_representative_id']),
+      ),
+];

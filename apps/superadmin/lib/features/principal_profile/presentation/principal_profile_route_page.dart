@@ -203,6 +203,7 @@ final class _PrincipalProfileRoutePageState extends State<PrincipalProfileRouteP
       name: _titleFor(context),
       typeLabel: _contextLabel,
       bio: bio.isEmpty ? '' : bio.first,
+      handle: context.handle,
     );
   }
 

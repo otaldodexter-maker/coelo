@@ -1153,7 +1153,7 @@ final class _ContextCard extends StatelessWidget {
                 ),
                 const SizedBox(height: CoeloSpacing.space1),
                 Text(
-                  '${contextData.institutionName}\n${contextData.unitName}\n${contextData.groupName}\nFamílias',
+                  '${contextData.institutionName}\n${contextData.unitName ?? 'Toda a instituição'}\n${contextData.groupName ?? 'Todas as turmas'}\nFamílias',
                 ),
               ],
             ),

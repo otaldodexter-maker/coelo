@@ -608,6 +608,34 @@ void main() {
     expect(governance.value, ActivityGovernance.fixed);
   });
 
+  testWidgets('edit route hydrates the category from the template catalog', (tester) async {
+    // Em producao form_options_v2 nao devolve taxonomia; o catalogo vem de
+    // fetchTemplateOptions e taxonomy_id da v2 pode ser um subtipo da arvore.
+    final repository = _ProductionShapedRepository();
+    await tester.pumpWidget(_app(activityId: 'activity-1', repository: repository));
+    await tester.pumpAndSettle();
+    expect(repository.templateCalls, 1);
+    expect(find.text('Ciências e tecnologia'), findsOneWidget);
+    expect(find.text('Robótica'), findsWidgets);
+  });
+
+  testWidgets('edit route keeps the form usable when the template catalog fails', (
+    tester,
+  ) async {
+    final repository = _ProductionShapedRepository(failCatalog: true);
+    await tester.pumpWidget(_app(activityId: 'activity-1', repository: repository));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('activity-form-name')), findsOneWidget);
+    expect(find.byKey(const Key('activity-catalog-options-state')), findsOneWidget);
+    repository.failCatalog = false;
+    await tester.ensureVisible(find.byKey(const Key('activity-catalog-options-retry')));
+    await tester.tap(find.byKey(const Key('activity-catalog-options-retry')), warnIfMissed: false);
+    await tester.pumpAndSettle();
+    expect(repository.templateCalls, 2);
+    expect(find.byKey(const Key('activity-catalog-options-state')), findsNothing);
+    expect(find.text('Ciências e tecnologia'), findsOneWidget);
+  });
+
   testWidgets('edit route reloads when the activity id changes in place', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -1298,4 +1326,52 @@ final class _DenseOptionsRepository implements ActivityDirectoryRepository {
   @override
   Future<ActivityDirectoryResult> fetchPage(ActivityDirectoryQuery query) =>
       _delegate.fetchPage(query);
+}
+
+/// Forma de producao: form_options_v2 sem taxonomia/modelos, detalhe com
+/// taxonomy_id apontando para um subtipo, catalogo so por template_options.
+final class _ProductionShapedRepository extends FakeActivityDirectoryRepository {
+  _ProductionShapedRepository({this.failCatalog = false});
+
+  bool failCatalog;
+  int templateCalls = 0;
+
+  @override
+  Future<ActivityDetail?> fetchById(String activityId) async {
+    final detail = await super.fetchById(activityId);
+    if (detail == null) return null;
+    return ActivityDetail(
+      item: detail.item,
+      createdAt: detail.createdAt,
+      units: detail.units,
+      groups: detail.groups,
+      taxonomyId: 'subtype-robotics',
+      identity: detail.identity,
+      participants: detail.participants,
+      professionalAssignments: detail.professionalAssignments,
+    );
+  }
+
+  @override
+  Future<ActivityFormOptions> fetchFormOptions({required String institutionId}) async {
+    final options = await super.fetchFormOptions(institutionId: institutionId);
+    return ActivityFormOptions(
+      units: options.units,
+      groups: options.groups,
+      professionals: options.professionals,
+      students: options.students,
+    );
+  }
+
+  @override
+  Future<ActivityTemplateOptions> fetchTemplateOptions({String? institutionId}) async {
+    templateCalls++;
+    if (failCatalog) throw const ActivityDirectoryUnavailableException();
+    final options = await super.fetchFormOptions(institutionId: institutionId ?? 'institution-1');
+    return ActivityTemplateOptions(
+      institutions: options.institutions,
+      taxonomy: options.taxonomy,
+      templates: options.templates,
+    );
+  }
 }

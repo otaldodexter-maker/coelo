@@ -343,7 +343,7 @@ class _ContextTile extends StatelessWidget {
                   style: theme.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
                 ),
                 Text(
-                  '${this.context.unitName} · ${this.context.groupName}',
+                  this.context.scopeLabel,
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -540,7 +540,7 @@ class _MomentPreview extends StatelessWidget {
                     this.context.institutionName,
                     style: theme.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w800),
                   ),
-                  Text(this.context.unitName, style: theme.textTheme.bodySmall),
+                  Text(this.context.unitName ?? 'Toda a instituição', style: theme.textTheme.bodySmall),
                 ],
               ),
             ),

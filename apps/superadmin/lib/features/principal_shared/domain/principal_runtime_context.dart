@@ -10,6 +10,8 @@ final class PrincipalRuntimeContext {
     this.unitName,
     this.groupId,
     this.groupName,
+    this.institutionHandle,
+    this.unitHandle,
   });
 
   final String membershipId;
@@ -22,6 +24,22 @@ final class PrincipalRuntimeContext {
   final String? unitName;
   final String? groupId;
   final String? groupName;
+
+  /// O @ da instituicao (ADR 0034 Decisao 16); null enquanto o servidor nao o
+  /// projetar (pacote 20260911130100).
+  final String? institutionHandle;
+  final String? unitHandle;
+
+  /// O @ mais especifico do contexto, sem o prefixo.
+  String? get handle => unitHandle ?? institutionHandle;
+
+  /// Responsavel e aluno so leem; o resto da hierarquia pode publicar (P28: o
+  /// botao de publicar so aparece para quem pode adicionar algo).
+  bool get isGuardianRole => roleCode == 'guardian' || roleCode == 'student';
+  bool get canPublish => !isGuardianRole;
+
+  /// Nome curto para o seletor de perfil: turma, unidade ou instituicao.
+  String get label => groupName ?? unitName ?? institutionName;
 }
 
 abstract interface class PrincipalRuntimeContextRepository {
@@ -43,4 +61,9 @@ final class PrincipalRuntimeContextUnauthorized implements Exception {
 
 final class PrincipalRuntimeContextUnavailable implements Exception {
   const PrincipalRuntimeContextUnavailable();
+}
+
+extension PrincipalScopeLabel on String {
+  /// Devolve [fallback] quando a string esta vazia.
+  String ifEmpty(String fallback) => isEmpty ? fallback : this;
 }

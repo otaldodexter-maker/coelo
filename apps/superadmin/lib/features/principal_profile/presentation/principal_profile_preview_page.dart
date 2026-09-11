@@ -370,8 +370,10 @@ final class _ProfileHero extends StatelessWidget {
         : wide
         ? 132.0
         : 108.0;
+    // P28 (Owner, 11/09): o circulo do avatar terminava .13*avatarSize abaixo
+    // do Stack e a linha do nome o cortava. O Stack agora contem o avatar.
     return SizedBox(
-      height: coverHeight + avatarSize * .42,
+      height: coverHeight + avatarSize * .55 + CoeloSpacing.space2,
       child: Stack(
         children: [
           Semantics(
@@ -485,6 +487,16 @@ final class _IdentitySection extends StatelessWidget {
             ),
           ],
         ),
+        if (data.handle case final handle?) ...[
+          const SizedBox(height: CoeloSpacing.spaceHalf),
+          Text(
+            '@$handle',
+            key: const Key('principal-profile-handle'),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
         const SizedBox(height: CoeloSpacing.space1),
         DecoratedBox(
           decoration: BoxDecoration(
@@ -770,15 +782,21 @@ final class _LinksSection extends StatelessWidget {
           for (var index = 0; index < links.length; index++)
             Align(
               widthFactor: index == 0 ? 1 : .72,
+              // P28: contorno na cor da superficie (branco no claro, escuro no
+              // escuro) separa os avatares sobrepostos.
               child: CircleAvatar(
-                radius: 22,
-                backgroundColor: Color.lerp(
-                  Theme.of(context).colorScheme.primaryContainer,
-                  Theme.of(context).colorScheme.secondaryContainer,
-                  index / links.length,
+                radius: 24,
+                backgroundColor: Theme.of(context).colorScheme.surface,
+                child: CircleAvatar(
+                  radius: 22,
+                  backgroundColor: Color.lerp(
+                    Theme.of(context).colorScheme.primaryContainer,
+                    Theme.of(context).colorScheme.secondaryContainer,
+                    index / links.length,
+                  ),
+                  foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
+                  child: Text(links[index]),
                 ),
-                foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
-                child: Text(links[index]),
               ),
             ),
           const SizedBox(width: CoeloSpacing.space2),

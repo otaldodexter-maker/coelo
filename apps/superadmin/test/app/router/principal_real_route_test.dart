@@ -132,7 +132,7 @@ void main() {
     }
   });
 
-  testWidgets('real route fails closed when actor has multiple active contexts', (tester) async {
+  testWidgets('real route opens the first context and offers the profile selector (P28)', (tester) async {
     final session = SuperadminSession()..signInForTesting();
     final router = createSuperadminRouter(
       session: session,
@@ -151,8 +151,18 @@ void main() {
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
     await tester.pumpAndSettle();
 
-    expect(find.text('Selecione um contexto'), findsOneWidget);
-    expect(find.byType(PrincipalHappensPreviewPage), findsNothing);
+    // P28 (Owner, 11/09): com mais de um vinculo o Principal abre no primeiro
+    // e mostra o seletor de perfil (ate 5 inline, "Ver todos" em popup).
+    expect(find.byType(PrincipalHappensPreviewPage), findsOneWidget);
+    expect(find.byKey(const Key('principal-context-selector')), findsOneWidget);
+    expect(find.textContaining('Instituição A'), findsWidgets);
+
+    await tester.tap(find.byKey(const Key('principal-context-selector')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('principal-context-membership-b')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('principal-context-membership-b')));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Instituição B'), findsWidgets);
   });
 }
 

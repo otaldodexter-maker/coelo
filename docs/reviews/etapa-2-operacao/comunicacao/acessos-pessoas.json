@@ -1,7 +1,7 @@
 {
-  "revision": 121,
-  "updated_at": "2026-09-11T15:42:02.500Z",
-  "relogio_local": "Fri Sep 11 2026 12:42:02 GMT-0300 (Horário Padrão de Brasília)",
+  "revision": 122,
+  "updated_at": "2026-09-11T15:59:06.400Z",
+  "relogio_local": "Fri Sep 11 2026 12:59:06 GMT-0300 (Horário Padrão de Brasília)",
   "round": "E2-R05-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
@@ -9,7 +9,7 @@
   "status": "em andamento",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-acessos-pessoas",
   "branch": "work/etapa2-r05-acessos-pessoas",
-  "head": "f6067c3c6 (publicado; inclui merge de origin/dev 11c4bfbef)",
+  "head": "56a970279 (publicado; inclui merge de origin/dev fa4014ff4)",
   "base_observed": "origin/dev 2f6a6114f; lotes 8-27 em producao; candidatos/acessos-pessoas so com 170750 e 170900 OBSOLETOS (171600 e 171800 aplicados no lote 25); ordem-de-aplicacao ate lote 27",
   "recorte": {
     "familias": [
@@ -39,7 +39,7 @@
   "loop": "/loop 15m agendado na abertura",
   "testes_P_F_B_S_U": "nenhum ainda nesta rodada",
   "bloqueio": "nenhum total",
-  "proximo_passo": "ligar o @ no cliente de Pessoas (detalhe/edicao: campo Identificador com icone @, disponibilidade enquanto digita, troca com motivo) atras das RPCs do 170100; depois REST de people.create/edit/links e access-models/internal-users; build+Chrome quando a memoria permitir",
+  "proximo_passo": "pedir ao coordenador o 170200 na fila; provar students.* por REST depois; conferir build web se a memoria liberar (rota real de Perfis P31, Pessoas @, Convites); internal-users.create/suspend: gate documentado (sem RPC de criacao; suspender o unico usuario interno de teste derruba a sessao)",
   "ACK_ao_coordenador": "coelo-b5 pediu identificacao as 12:20; respondi por mensagem entre sessoes (G2 R05). Continuo sem esperar ACK.",
   "MEMORIA": "12:20: 0,02-0,3 GB livres (dartaotruntime 800 MB, 28 dart, 25 chrome, flutter_tester de outras frentes). Sem build web, Chrome ou flutter test ate liberar; provas por REST e edicao de codigo/SQL enquanto isso.",
   "INVITES_BE_POR_REST_12h15": {
@@ -52,7 +52,8 @@
     "FE": "formulario refaz fetchOptions com institutionId apos escolher o contexto e exige perfil no passo 0 (linha 201); prova pela UI espera memoria para build+Chrome"
   },
   "dados_sinteticos_r05": [
-    "public.* convite 03e9c9d2-2772-4ee8-863b-2a47c0108ce8 (revoked; destinatario qa-r05-convite@invalid.test, instituicao 9f04...0010) - apagar ao fim da Etapa 2"
+    "convite 03e9c9d2-2772-4ee8-863b-2a47c0108ce8 (revoked; qa-r05-convite@invalid.test; instituicao 9f04...0010) - apagar ao fim da Etapa 2",
+    "person_handles: backfill de todas as pessoas (170100) e @ 'qa_r05_teste' da pessoa ec2a15a2 (+1 linha no ledger) - o backfill e produto, nao lixo; a troca pode ficar"
   ],
   "P31_NO_CLIENTE_12h35": {
     "commit": "3b4aaa5b6 (feat(superadmin): perfis de acesso com modelos do sistema)",
@@ -76,6 +77,25 @@
       "audit.audit_logs (cadeia com hash) nao recebe entrada propria da troca do @; o ledger de identidade e a trilha. Refinar na revisao de seguranca."
     ],
     "suites_vizinhas": "follow_links 24/24 e internal_actor_service_person 17/17 verdes apos o pacote; superadmin_people_directory_test (casos 1 e 3) e superadmin_internal_person_detail_test (caso 11) falham por 'requires MFA' e catalogo de permissoes: pre-existente desde o lote 8 (MFA fora do MVP), nao toca este pacote."
+  },
+  "ARROBA_EM_PRODUCAO_12h58": {
+    "lote_31": "170100 aplicado pelo coordenador (12:52). Provas por REST com qa-r03: superadmin_person_handle_get(ec2a15a2) devolveu o @ gerado pelo backfill 'qar04.pessoasintetica' (display_name sem first/last no draft); availability: '@Coelo' -> reserved, 'qa.r05.teste' -> invalid_format (dois pontos), 'qa_r05_teste' -> ok; set -> 'qa_r05_teste' com can_change_at +30 dias; segunda troca -> 22023 cooldown; id inexistente com people.read -> data null.",
+    "cliente": "677d95682 + c227e531f: secao 'Identificador (@)' no detalhe da pessoa (PersonHandleSection) com icone @, 'Alterar @' (so quando can_edit e fora do cooldown), dialogo com verificacao de disponibilidade enquanto digita (debounce 400 ms), motivo obrigatorio e mensagens de cooldown/tomado/reservado/formato; chave enablePersonHandles ligada em createSuperadminAuthScope. Testes: person_handle_section_test 2/2; suite test/features/people 222 P (goldens abaixo).",
+    "dados_sinteticos": "person_handles de todas as pessoas existentes (backfill do 170100) e a troca do @ da pessoa ec2a15a2 (ledger person_identity_correction_ledger, 1 linha). Ficam ate o fim da Etapa 2."
+  },
+  "DEFEITO_DE_PRODUCAO_D1_12h55": {
+    "achado": "students.link por REST devolveu 21000 'DELETE requires a WHERE clause': app_private.follow_links_sync_child_context (171100, lote 12) faz delete sem WHERE na temp table follow_links_expected; o authenticator do PostgREST carrega pg_safeupdate (session_preload_libraries = supautils, safeupdate) e bloqueia mesmo dentro de security definer. Efeito desde o lote 12: toda insercao/alteracao de child_unit_links e child_group_links pela API falha (vincular/transferir/revogar aluno, cadastro de crianca em unidade/turma; cruza com formularios-cuidado-rotina e estrutura).",
+    "pacote": "AP-FOLLOW-LINKS-SAFEUPDATE-170200: candidatos/acessos-pessoas/20260911170200_follow_links_safeupdate_fix_v1.sql (where true; corpo identico no resto). pgTAP follow_links_safeupdate_fix_v1_test 3/3 com load 'safeupdate' (rodar como supabase_admin; supautils nega load ao postgres), RED reproduzido com o corpo de 171100. Commit ad09813cf. VERDE - PRONTO PARA APLICAR.",
+    "licao_para_as_skills": "pgTAP via psql nao carrega safeupdate: DELETE/UPDATE dentro de funcoes sempre com WHERE (where true em tabela temporaria); incluir um caso com load 'safeupdate' como supabase_admin nos pacotes que apagam/atualizam."
+  },
+  "STUDENTS_12h55": {
+    "students.list (BE)": "superadmin_student_links(child_context d0c4...0004) por REST: can_manage true, vinculo ativo com Unidade QA R04, sem turma (P36 exige turma: o vinculo sintetico da R04 nasceu sem turma).",
+    "students.link/transfer/edit/revoke (BE)": "bloqueados pelo defeito acima ate o 170200 entrar; depois: provar link com unit d0c4...0002 + group 368a5cea (turma sintetica da estrutura, P42), edit, transfer e revoke por REST.",
+    "FE": "tela /students/:id/manage so tem Revogar (R04); vincular/transferir/editar sem UI: pendencia FE registrada, entra apos o BE."
+  },
+  "GOLDENS_12h58": {
+    "regravados": "access_profile_table_{light,dark}_{375,768,1024,1440} (8) e person_directory_table_dark_{375,768,1024,1440} (4) apos o alinhamento das celulas do composto (G-SUP, dev 11c4bfbef); diff conferida em imagem: so alinhamento vertical das celulas (e rodape de paginacao nos escuros, que seguem os claros). SDK 3.44.2.",
+    "retido": "person_form_create_light_375: o golden guardado tem o rodape Continuar/Cancelar em outra posicao (P15 rodape ancorado); pre-existente, nao regravado sem conferir o respiro no fim do conteudo."
   },
   "historico_r04": {
     "revision": 118,

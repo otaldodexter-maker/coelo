@@ -1,15 +1,15 @@
 {
- "revision": 36,
+ "revision": 37,
  "round": "E2-R05-20260911",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5 (Claude, Opus, esforco medio)",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T12:59-03:00",
+ "updatedAt": "2026-09-11T13:29-03:00",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-formularios-cuidado-rotina",
  "branch": "work/etapa2-r05-formularios-cuidado-rotina",
- "head": "30cb982ca (publicado)",
+ "head": "7323c9220 + rev 37 (publicado)",
  "base": "origin/dev 2f6a6114f",
  "scope": {
   "families": [
@@ -40,67 +40,25 @@
   ]
  },
  "currentGate": {
-  "gate": "distribuicao salva em producao (form_save_application/form_save_schedule 200); aguardando o cron coelo-forms-occurrences (*/5) materializar a ocorrencia para provar monitor/responder/respostas; Seguranca infantil e Rotina ligadas no build 3",
-  "screen": "Etapa 2 -> apps/superadmin -> Operacao -> Formularios",
+  "gate": "forms_responses provada ponta a ponta (monitor/respond/responses/response-detail); XLSX bloqueado pelo deploy de form-operations; proximo: Seguranca infantil criar/editar/suspender e Cuidado/Medicacao criar/detalhe/editar na rota real (build 4 ja tem tudo)",
+  "screen": "Etapa 2 -> apps/superadmin -> Acessos -> Seguranca da crianca / Saude e Cuidado",
   "actionIds": [
-   "forms.monitor",
-   "forms.respond",
-   "forms.responses",
-   "forms.response-detail",
    "child-safety.create",
    "child-safety.edit",
    "child-safety.suspend",
-   "daily-routine.create"
+   "health-care.create",
+   "health-care.detail",
+   "health-care.edit",
+   "medication.create",
+   "medication.detail",
+   "medication.edit"
   ]
  },
  "loopAgendado": "/loop 15m, agendado na abertura (12:12)",
  "tests": {},
  "reservedFiles": [],
  "blocking": [],
- "deltaProposals": [
-  {
-   "action_id": "forms.publish",
-   "camada": "frontend",
-   "estado_proposto": "verified",
-   "delta": "rota normal, publicacao pelo repository produtivo, reload mantem"
-  },
-  {
-   "action_id": "forms.publish",
-   "camada": "backend",
-   "estado_proposto": "done",
-   "delta": "form_publish em producao persistiu com auditoria; RLS/negativas pelas suites pgTAP existentes de Formularios (forms_definition 31, forms_internal_provenance_guards 39, operations_read_v2 70)"
-  },
-  {
-   "action_id": "forms.publish",
-   "camada": "integrated",
-   "estado_proposto": "verified-e2e",
-   "delta": "FE verified + BE done na mesma prova"
-  },
-  {
-   "action_id": "forms.overview",
-   "camada": "frontend",
-   "estado_proposto": "verified",
-   "delta": "rota normal, leitura real, reload"
-  },
-  {
-   "action_id": "forms.overview",
-   "camada": "backend",
-   "estado_proposto": "done",
-   "delta": "form_get_overview em producao; leitura autorizada"
-  },
-  {
-   "action_id": "forms.overview",
-   "camada": "integrated",
-   "estado_proposto": "verified-e2e",
-   "delta": "leitura ponta a ponta com sessao qa-r03"
-  },
-  {
-   "action_id": "forms.list",
-   "camada": "frontend",
-   "estado_proposto": "verified",
-   "delta": "card Criar agora aparece em producao (F-R04-FCR-010a); prova na rota real apos o rebuild"
-  }
- ],
+ "deltaProposals": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/deltas-r05-fcr.json (16 entradas; ensaiado com apply-tracker-delta + validate-trackers PASS e revertido)",
  "packages": [
   {
    "arquivo": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260911220000_daily_routine_directory_can_manage_v1.sql",
@@ -108,8 +66,35 @@
     "daily-routine.create",
     "daily-routine.edit"
    ],
-   "estado": "escrito; pgTAP pendente (sera rodado no espelho descartavel do subagente); create or replace de app_private.superadmin_routine_directory com can_manage no topo",
-   "chave_de_composicao": "nenhuma"
+   "estado": "pgTAP em execucao pelo subagente (daily_routine_directory_can_manage_v1_test)",
+   "chave": "nenhuma"
+  },
+  {
+   "arquivo": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260911220100_attendance_superadmin_contract_v1.sql",
+   "action_id": [
+    "attendance.dashboard",
+    "attendance.create",
+    "attendance.mark",
+    "attendance.correct",
+    "attendance.finish"
+   ],
+   "pgtap": "supabase/tests/attendance_superadmin_contract_v1_test.sql 141/141 (espelho coelo_r05_att: baseline + seed + 107 arquivos da ordem de producao + candidato; regressao attendance_authorization 23/0 e dashboard_access 22/0)",
+   "estado": "PRONTO PARA A FILA",
+   "notas": [
+    "attendance.export nao entra no catalogo; export responde EXPORT_UNAVAILABLE (ADR 0034)",
+    "chamada de atividade sem activity_group_participants nasce sem participantes (limite do esquema)",
+    "delta de esquema: attendance_sessions.version/reopen_*, status reopened/corrected, app_private.attendance_bulk_operations, response em attendance_idempotency_reservations"
+   ],
+   "chave": "nenhuma (SupabaseAttendanceRepository ja composto); rota real depois da aplicacao"
+  },
+  {
+   "arquivo": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260911230000_form_media_r2_cleanup_dispatch_v1.sql",
+   "action_id": [
+    "forms.expire-file",
+    "forms.delete-file"
+   ],
+   "estado": "dispatch do cron coelo-form-media-r2-cleanup (*/5) para a form-media; aplicar DEPOIS do deploy da funcao e da criacao do segredo form_media_worker_url no Vault (sem custo; valor = URL da funcao)",
+   "chave": "nenhuma"
   }
  ],
  "commits": [
@@ -140,6 +125,31 @@
    "sha": "30cb982ca",
    "o_que": "feat(rotina): candidato 20260911220000_daily_routine_directory_can_manage_v1 (can_manage no topo do envelope de superadmin_routine_directory, mesmo corpo do lote 2 + a chave) e cliente lendo o topo com fallback por linha; router compoe onCreateEntry/onEdit em /daily-routine (F-R04-FCR-009)",
    "prova": "analyzer limpo; pgTAP do candidato ainda por rodar (espelho do subagente de Assiduidade)"
+  },
+  {
+   "sha": "1f4b02e28",
+   "o_que": "feat(seguranca-infantil): onCreate/onEdit em /safety e /safety/children/:id"
+  },
+  {
+   "sha": "(spec)",
+   "o_que": "docs(specs): 2026-09-11-child-safety-medication-policies-and-notifications-design.md"
+  },
+  {
+   "sha": "(seg)",
+   "o_que": "fix(seguranca-infantil): SupabaseChildSafetyRepository adere a ChildSafetyMutationSupport (o controlador escondia Criar/Gerenciar mesmo com can_create do servidor)",
+   "prova": "test/features/safety 174/174"
+  },
+  {
+   "sha": "7fe204565",
+   "o_que": "merge origin/dev 4bf0cfe51 (sem conflito)"
+  },
+  {
+   "sha": "b7f61b571",
+   "o_que": "feat(assiduidade): candidato 20260911220100_attendance_superadmin_contract_v1 (14 RPCs) + pgTAP attendance_superadmin_contract_v1_test 141/141 no espelho limpo (subagente; baseline + ordem de producao + candidato); corrige wrapper attendance_reserve_idempotency_key"
+  },
+  {
+   "sha": "7323c9220",
+   "o_que": "feat(formularios): Edge Function form-media (ramo question-image em R2 + worker expire/cleanup; answer-image legado) Deno 47/47; candidato 20260911230000_form_media_r2_cleanup_dispatch_v1 (cron); 12 capturas da rota real"
   }
  ],
  "pendenciasRegistradas": [
@@ -157,10 +167,30 @@
    "action_id": "forms.overview",
    "o_que": "balao de chat aparece na visao geral (nao e criar/editar/publicar; conferir com a Decisao 7 se a visao geral conta como tela de publicar)",
    "gate": "decisao de UX"
+  },
+  {
+   "action_id": "forms.respond",
+   "o_que": "titulo do formulario no cabecalho da resposta (hoje uuid) e placeholder \"Secao sem dados disponiveis / integracao indisponivel\" quando a secao nao tem titulo",
+   "gate": "FE"
+  },
+  {
+   "action_id": "forms.upload",
+   "o_que": "cliente Dart do editor ainda usa o fluxo legado por occurrence_id; adaptar ao ramo question-image da form-media (form_id/form_version_id, signed_upload_url, required_headers)",
+   "gate": "FE do grupo, apos deploy da form-media"
+  },
+  {
+   "action_id": "attendance.dashboard",
+   "o_que": "painel fora do composto CoeloAdminDirectory (herdado da R04)",
+   "gate": "FE"
+  },
+  {
+   "action_id": "ambiente",
+   "o_que": "rebuild na mesma pasta servida derruba o app aberto (bundle parcial, tela branca) e o Chrome sob SwiftShader perde o canvas apos navegacoes; usar pasta de build nova por rebuild e reabrir o Chrome com --enable-unsafe-swiftshader",
+   "gate": "harness"
   }
  ],
  "duvidasParaOOwner": [],
- "nextStep": "ocorrencia pelo cron -> monitor/responder/respostas/detalhe na rota real; Seguranca infantil criar/editar/suspender; Cuidado/Medicacao criar/detalhe/editar; XLSX (responses.export) se houver resposta",
+ "nextStep": "Seguranca infantil criar/editar/suspender; Cuidado/Medicacao criar/detalhe/editar; Rotina criar apos pgTAP do 220000; XLSX apos deploy",
  "finalizado": false,
  "historicoR04": {
   "revision": 33,
@@ -1338,8 +1368,32 @@
    "primeira_tentativa": "P0002 form application unavailable (corrigido em b05078dc3)"
   },
   "forms.files": {
-   "resultado": "F",
-   "prova": "/forms/4555ba07.../files: \"Acesso nao autorizado\" (form_list_file_jobs nega a sessao qa-r03); logo depois a sessao foi derrubada para /login (a invalidacao de autorizacao do withFormsAuthorization?). Gate: capacidade de arquivos para a sessao interna (BE) e conferir por que a negativa derruba a sessao (FE)"
+   "resultado": "P leitura",
+   "prova": "21-forms-files.png: lista de jobs pela superadmin_forms_file_jobs_v2 200 (a negativa anterior era da sessao caida)"
+  },
+  "forms.monitor": {
+   "resultado": "P",
+   "prova": "13-forms-monitor.png (4 elegiveis, 0), 20-forms-monitor-reload.png (1 de 4)"
+  },
+  "forms.respond": {
+   "resultado": "P",
+   "prova": "ocorrencia 6b0bd1ef; autosave form_save_response_draft; form_submit_response 200 -> resposta 1f365626 submitted; capturas 14/15/17",
+   "pendencias": [
+    "cabecalho da resposta mostra o uuid do formulario em vez do titulo",
+    "secao sem titulo aparece como \"Secao sem dados disponiveis\" com texto de integracao indisponivel (placeholder vazando em producao)"
+   ]
+  },
+  "forms.responses": {
+   "resultado": "P",
+   "prova": "18-forms-responses.png"
+  },
+  "forms.response-detail": {
+   "resultado": "P",
+   "prova": "19-forms-response-detail.png"
+  },
+  "forms.responses.export": {
+   "resultado": "F (BE ambiente)",
+   "prova": "superadmin_form_request_xlsx_v2 200, job pending; worker responde processed:false (form-operations v11 de 20/08)"
   }
  },
  "notaRelogio": "a rev 35 registrou 12:58 por engano; o relogio da maquina marcava 12:40",
@@ -1362,6 +1416,33 @@
   },
   {
    "nota": "ocorrencias/participacoes geradas pelo cron a partir desta distribuicao"
+  },
+  {
+   "tabela": "public.form_occurrences",
+   "id": "6b0bd1ef-1f2b-43d2-9a70-ac4ee3e3fed9",
+   "nota": "gerada pelo cron; 4 participacoes"
+  },
+  {
+   "tabela": "public.form_responses",
+   "id": "1f365626-27bd-4f2e-b811-8cf7c589c1fd",
+   "nota": "resposta submetida por qa-r03"
+  },
+  {
+   "tabela": "public.form_file_jobs",
+   "id": "09f86ec7-554d-417d-8110-a68d5a02e309",
+   "nota": "job XLSX pending ate o deploy do worker"
+  }
+ ],
+ "edgeFunctions": [
+  {
+   "nome": "form-media",
+   "estado": "commitada em 7323c9220; deploy pelo coordenador",
+   "mapa": "prepare/finalize/resolve/download/delete question-image -> superadmin_form_media_prepare_v2 / authorize_finalize_v2 + form_media_finalize_question_r2_v1 (service_role) / resolve_v2 / delete_v2; expire+cleanup (bearer do worker) -> form_media_expire_question_r2_v1, claim_cleanup, DELETE R2, mark_purged; answer-image legado",
+   "pendente_cliente": "supabase_forms_api.dart ainda chama so o fluxo por occurrence_id; adaptar o cliente para form_id/form_version_id + signed_upload_url/required_headers (forms.upload no editor)"
+  },
+  {
+   "nome": "form-operations",
+   "estado": "BLOQUEIO: implantada v11 de 2026-08-20 sem export_xlsx_r2_v1; deploy a partir de dev destrava forms.responses.export (job 09f86ec7 pending em producao)"
   }
  ]
 }
