@@ -319,6 +319,9 @@ class _ProfilePageState extends State<ProfilePage> {
     currentDestination: 'profile',
     onDestinationSelected: widget.onDestinationSelected,
     activityController: widget.controller.activities,
+    // Decisao 7 do Owner: formulario de edicao sem o balao Mensagens (ele
+    // cobria Salvar alteracoes em 1440x1000 na rota real, R04).
+    showChatLauncher: false,
     child: ListenableBuilder(
       listenable: widget.controller,
       builder: (context, child) {
