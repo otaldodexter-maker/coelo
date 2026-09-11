@@ -1642,7 +1642,7 @@ final class _InstitutionBrandPreview extends StatelessWidget {
                           : controller.text(InstitutionFormField.brandDisplayName),
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
-                    const Text('Prévia institucional do Coelo'),
+                    const Text('Identidade institucional no Coelo'),
                   ],
                 ),
               ),

@@ -1,15 +1,15 @@
 {
-  "revision": 37,
+  "revision": 42,
   "round": "E2-R05-20260911",
   "group": "publicacoes-agenda",
   "tool": "Claude Code",
   "model": "Opus 5 (1M), esforco medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-publicacoes-agenda",
   "branch": "work/etapa2-r05-publicacoes-agenda",
-  "head": "28acbe8c3",
+  "head": "f8f134553",
   "base": "origin/dev 2f6a6114f",
   "coordinator": "Claude (R05 · Coordenacao da tarde, coelo-25)",
-  "updatedAt": "2026-09-11T15:05:00-03:00",
+  "updatedAt": "2026-09-11T15:30:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -61,8 +61,8 @@
     "memoryNote": "R05: maximo dois Chrome por conversa, um flutter test por vez.",
     "closedAt": "03:12: Chrome 9334 e servidor 3006 fechados de novo; nenhum processo meu restante."
   },
-  "firstGate": "Fechamento: mini-revisao ate 15:45; encerrar Chrome/servidor 3006/descartavel.",
-  "status": "em andamento",
+  "firstGate": "nenhum: entrega fechada; responder a revisao final do coordenador as 15:50 no JSON.",
+  "status": "finalizado",
   "findings": [
     "Presença em produção (mapa r03-coordenacao): notices_v2 185008 = 1/16 (só analytics.notice_events); circulars_v2 191921 = 0/14; circulars_media_r2 212000 = 6/6; agenda 183836/193717 presentes (superadmin_agenda_list/get/contexts/save/command/requests/decide_publication em public).",
     "O cliente Superadmin chama somente superadmin_notice_*_v2 (185008), superadmin_circular_*_v2 (191921 + delete) e superadmin_agenda_* v1. A cadeia legada de Avisos people-based (003000, 204824, 212340, 220500) NÃO é chamada pelo app: 185008 é autossuficiente (colunas com if not exists, recibos próprios, auditoria via audit_append_superadmin_internal cuja assinatura de 13 args confere com produção). Decisão: não reentregar a cadeia legada no MVP; worker/pg_cron ficam registrados como pendência de entrega ao Principal (materialização de audiência), não bloqueiam CRUD de Avisos no Superadmin.",
@@ -149,7 +149,7 @@
     "unknown": "bateria completa do app nao repetida (um flutter test por vez); rota real ainda nao exercida nesta rodada"
   },
   "blocked": "nenhum",
-  "next": "Mini-revisao de 10 minutos e resposta ao coordenador as 15:50.",
+  "next": "Proxima rodada: circulars.attach pela tela (filePicker injetado no qa_main), agenda.location pela tela (wizard precisa de seletor de contexto concreto), circulars.respond FE (decisao: so resumo no Superadmin?).",
   "changes": [
     {
       "sha": "5edfccef9",
@@ -231,6 +231,32 @@
       ],
       "what": "Rota real com o build novo (66a52986f): circulars.edit pela tela (reabrir rascunho, editar titulo, Salvar rascunho, recarga completa mantem: ui-32..ui-39); circulars.schedule pela tela (seletor data 25/09 + horario 14:00, validacao honesta de publico, Agendar circular -> Agendada; recarga completa lista 25/09/2026 na aba Agendadas; RPC scheduled: ui-41..ui-46). notices.list: pastilha de tipo com altura propria (achado ui-19 corrigido), goldens communication_directory_* regravados.",
       "tests": "flutter test notices 133/133 + circulars 66/66 apos regravar; analyze limpo"
+    },
+    {
+      "sha": "4b9483148",
+      "actionIds": [
+        "agenda.location",
+        "agenda.create"
+      ],
+      "what": "Wizard de evento ganha o campo \"Qual <nivel>\" (seletor de contexto concreto) quando ha mais de um contexto do nivel; default = primeiro (comportamento anterior). Goldens agenda_create_{light,dark}_{375,768,1440} regravados: campo novo -> A+ pendente do Owner (nao e regressao visual, e conteudo novo). agenda.location FE continua local-green (nao provado pela tela nesta rodada).",
+      "tests": "test/features/agenda 291/291"
+    },
+    {
+      "sha": "002dddd95",
+      "actionIds": [
+        "circulars.create",
+        "circulars.publish"
+      ],
+      "what": "Decisao 7: host produtivo do compositor de Circular suprime o balao de chat desde o carregamento (antes so apos o seletor de instituicao; achado ui-22).",
+      "tests": "test/features/circulars + architecture 68/68"
+    },
+    {
+      "sha": "f8f134553",
+      "actionIds": [
+        "circulars.attach"
+      ],
+      "what": "Gancho de QA SuperadminQaHooks.circularFilePicker (nulo no app real; qa_main entrega PNG sintetico) ligado nos dois hosts do compositor no router: destrava a prova de circulars.attach pela tela na proxima rodada. Nao provado nesta rodada (build web + Chrome nao cabiam antes do corte).",
+      "tests": "analyze limpo (1 warning pre-existente em qa_login); circulars + architecture 68/68"
     }
   ],
   "pendingForCoordinator": [
@@ -269,13 +295,6 @@
     },
     {
       "actionIds": [
-        "circulars.create",
-        "circulars.publish"
-      ],
-      "pending": "O balao de chat \"Mensagens\" aparece sobre o compositor de Circular enquanto carrega o seletor de instituicao (ui-22): a supressao (Decisao 7) so entra com o SuperadminFormFrame apos escolher a instituicao. Dono: principal-chat-sistema/shell."
-    },
-    {
-      "actionIds": [
         "agenda.view",
         "agenda.detail"
       ],
@@ -292,6 +311,19 @@
         "agenda.location"
       ],
       "pending": "FE pela tela: criar evento com contexto de unidade pelo wizard (BE done). Proxima rodada."
+    },
+    {
+      "actionIds": [
+        "agenda.location"
+      ],
+      "pending": "ACHADO de produto no wizard (ui-51/ui-52): \"Contexto principal\" so escolhe o NIVEL (Instituicao/Unidade/Turma/Atividade) e o formulario usa o PRIMEIRO contexto daquele nivel em store.contexts (_selectedContext), sem seletor da unidade/turma concreta; com mais de uma unidade o evento pode ir para a unidade errada. Proposta: seletor de contexto concreto (como o picker de instituicao das Circulares) antes do verified FE. BE done pela RPC."
+    },
+    {
+      "actionIds": [
+        "agenda.create",
+        "agenda.location"
+      ],
+      "pending": "Goldens agenda_create_* regravados com o campo novo \"Qual Instituicao/Unidade/...\": pedir A+ ao Owner (ownerVisualApproval continua o anterior ate ele responder)."
     }
   ],
   "proposedDeltas": [
@@ -304,6 +336,11 @@
       "id": "P33/P34 (R05)",
       "file": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/duvidas-visuais.html",
       "ask": "Aprovar A (render atual) de agenda_calendar_{light,dark}_{375,768,1440} e agenda_detail_{light,dark}_{375,768,1440} apos as correcoes P33/P34; R do calendario e a captura do iPhone. Duvida menor: manter indicador de status do detalhe em 48 px (WCAG) ou voltar ao circulo de 24 px?"
+    },
+    {
+      "id": "agenda_create (R05)",
+      "file": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/duvidas-visuais-agenda-create.html",
+      "ask": "A+ para agenda_create_{light,dark}_{375,768,1440}: campo novo \"Qual Instituicao/Unidade/Turma\" abaixo de Contexto principal (so quando ha mais de um contexto do nivel)."
     }
   ],
   "r03History": {
@@ -676,10 +713,96 @@
   ],
   "productionProof": null,
   "uiRouteProof": null,
-  "finalizado": null,
+  "finalizado": {
+    "at": "2026-09-11T15:08:00-03:00",
+    "head": "ver head (rev 40)",
+    "handoff": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/handoff.md",
+    "deltas": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/deltas-r05-pa.json (16)",
+    "capturas": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/ui/ (39 png)",
+    "ambiente": "Chrome de CDP, servidor 3006 e descartavel coelo_pa_r05 encerrados; build web-qa fica em apps/superadmin/build/web-qa (ignorado pelo Git)"
+  },
   "deliveryValidation": null,
   "skillDeltas": null,
-  "miniRevisao": null,
+  "miniRevisao": {
+    "quando": "2026-09-11T15:08:00-03:00",
+    "destinatario": "coelo-25 (R05 · Coordenacao da tarde)",
+    "shaFinal": "ver head da revisao vigente (branch publicada; status limpo)",
+    "fechouPorActionId": [
+      {
+        "action_id": "agenda.view",
+        "prova": "P33 aplicado (5edfccef9), goldens 3.44.2, rota real ui-02, aprovacao do Owner A"
+      },
+      {
+        "action_id": "agenda.detail",
+        "prova": "P34 aplicado (16651dc88), goldens, aprovacao do Owner A; 2 testes pre-existentes corrigidos (2a982a453)"
+      },
+      {
+        "action_id": "agenda.request",
+        "prova": "BE prova RPC + 190100 em producao; FE ui-05..ui-08 (aprovar pela tela, reload); E2E"
+      },
+      {
+        "action_id": "agenda.permissions",
+        "prova": "FE rota normal (redirect por desenho) + contexts em producao; E2E"
+      },
+      {
+        "action_id": "agenda.location",
+        "prova": "BE done (unit + local, reload; negativa cross-tenant pgTAP)"
+      },
+      {
+        "action_id": "notices.schedule",
+        "prova": "FE ui-13..ui-19 (seletor Coelo, agendada, reload); worker real materializou (+2 min -> active, reach 18); E2E"
+      },
+      {
+        "action_id": "notices.publish",
+        "prova": "E2E: reach>0 pelo worker real (P30 fechado)"
+      },
+      {
+        "action_id": "circulars.respond",
+        "prova": "BE done: 190000 em producao; draft -> submit -> summary 1/1; pgTAP 18/18"
+      },
+      {
+        "action_id": "circulars.attach",
+        "prova": "BE done: 190200 (R2) + 190300 (midia no v2) em producao; prova 34/34 (prepare no R2 coelo-media-prod, finalize, bloco de midia, publish, read, bytes)"
+      },
+      {
+        "action_id": "circulars.edit",
+        "prova": "FE ui-32..ui-39 (editar e reload); BE done; E2E"
+      },
+      {
+        "action_id": "circulars.schedule",
+        "prova": "FE ui-41..ui-46 (picker ligado em 66a52986f, agendada, reload); BE done; E2E"
+      },
+      {
+        "action_id": "notices.list",
+        "prova": "pastilha de tipo corrigida (28acbe8c3), goldens regravados"
+      }
+    ],
+    "abertoComPrimeiroGate": [
+      {
+        "action_id": "circulars.attach",
+        "camada": "frontend",
+        "gate": "provar pela tela com o gancho de QA (rebuild de web-qa + Chrome): Adicionar arquivo -> R2 -> bloco de midia -> publicar -> reload"
+      },
+      {
+        "action_id": "circulars.respond",
+        "camada": "frontend",
+        "gate": "nao ha tela de resposta no Superadmin (fluxo do Principal); decidir se respond no Superadmin = resumo (ja verified)"
+      },
+      {
+        "action_id": "agenda.location",
+        "camada": "frontend",
+        "gate": "wizard sem seletor de contexto concreto (usa o primeiro do nivel): achado de produto"
+      },
+      {
+        "action_id": "agenda.view",
+        "camada": "backend",
+        "gate": "pgTAP historico agenda_internal_realm_compat_v1_test 4/22 apos o lote 29 (dono G4)"
+      }
+    ],
+    "pacotes": "190000/190100/190200/190300 aplicados (lotes 42/43); nenhum candidato pendente",
+    "duvidasAoOwner": "agenda_create_* A+ (pagina duvidas-visuais-agenda-create.html); P33/P34 ja respondidas (A)",
+    "skillDeltas": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/skill-deltas.md"
+  },
   "r04History": {
     "finalRevision": 30,
     "head": "7367370c1",

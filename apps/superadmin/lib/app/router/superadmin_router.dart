@@ -11,6 +11,7 @@ import 'package:coelo_api/coelo_api.dart';
 import 'package:coelo_domain/locations.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
+import '../../core/qa/superadmin_qa_hooks.dart';
 import '../../core/guards/superadmin_session.dart';
 import '../../core/config/superadmin_media_scope.dart';
 import '../../core/config/superadmin_app_config.dart';
@@ -223,6 +224,7 @@ import '../../features/student_tracking/presentation/student_tracking_page.dart'
 import '../../features/units/data/fake_unit_directory_repository.dart';
 import '../../features/units/data/unavailable_unit_composition.dart';
 import '../../features/units/domain/unit_backend_commands.dart';
+import '../../features/units/domain/unit_handle_availability.dart';
 import '../../features/units/domain/unit_directory.dart' hide UnitDirectoryPage;
 import '../../features/units/presentation/unit_directory_page.dart';
 import '../../features/units/presentation/unit_form_page.dart';
@@ -360,6 +362,7 @@ GoRouter createSuperadminRouter({
   PersonHandleRepository? personHandleRepository,
   PersonIdentityRepository personIdentityRepository = const UnavailablePersonIdentityRepository(),
   UnitDirectoryRepository unitDirectoryRepository = const UnavailableUnitDirectoryRepository(),
+  StructureHandleAvailabilityChecker? structureHandleAvailability,
   UnitBackendCommandsGateway unitBackendCommands = const UnavailableUnitBackendCommandsGateway(),
   bool enableStructureMutations = false,
   bool enableActivityLocationCreate = false,
@@ -1751,6 +1754,7 @@ GoRouter createSuperadminRouter({
                   : UnitFormPage(
                       key: ValueKey(session.authorizationInvalidationRevision),
                       repository: unitRepository,
+                      checkHandleAvailability: structureHandleAvailability,
                       locationCatalogReader: locationCatalogReader,
                       locationSessionAvailable:
                           session.isAuthenticated &&
@@ -1813,6 +1817,7 @@ GoRouter createSuperadminRouter({
                   : UnitFormPage(
                       key: ValueKey(session.authorizationInvalidationRevision),
                       repository: unitRepository,
+                      checkHandleAvailability: structureHandleAvailability,
                       unitId: state.pathParameters['unitId'],
                       locationCatalogReader: locationCatalogReader,
                       locationSessionAvailable:
@@ -2244,6 +2249,7 @@ GoRouter createSuperadminRouter({
                 ? blockedProductionMutationPage(context)
                 : ActivityFormPage(
                     repository: activityDirectoryRepository,
+                    checkHandleAvailability: structureHandleAvailability,
                     initialTemplateId: state.uri.queryParameters['templateId'],
                     initialInstitutionId: state.uri.queryParameters['institutionId'],
                     initialUnitId: state.uri.queryParameters['unitId'],
@@ -2433,6 +2439,7 @@ GoRouter createSuperadminRouter({
                         ? ActivityFormStep.pedagogical
                         : null,
                     repository: activityDirectoryRepository,
+                    checkHandleAvailability: structureHandleAvailability,
                     aboutRepository: productionActivityAboutRepository,
                     logout: logout,
                     onCancel: () => state.uri.queryParameters.containsKey('returnTo')
@@ -2635,6 +2642,18 @@ GoRouter createSuperadminRouter({
                 SuperadminRoutes.dailyRoutineEditName,
                 pathParameters: {'modelId': item.id},
                 queryParameters: {'kind': item.kind.name},
+              ),
+              // daily-routine.apply: duplicar e criar rotina a partir do modelo
+              // so existiam no /dev; o editor de producao ja aceita
+              // duplicateFrom/applicationFrom e o servidor revalida o escopo.
+              onDuplicateModel: (item) => context.goNamed(
+                SuperadminRoutes.dailyRoutineCreateName,
+                queryParameters: {'duplicateFrom': item.id},
+              ),
+              onCreateFromModel: (item) => context.goNamed(
+                SuperadminRoutes.dailyRoutineCreateName,
+                queryParameters: {'applicationFrom': item.id},
+                extra: RoutineEntryKind.application,
               ),
               // D7: Lancamentos no MVP e uma tela minima sobre o comando
               // daily-routine.publish, que ja existe. Autoria, capacidade,
@@ -3296,7 +3315,8 @@ GoRouter createSuperadminRouter({
                 // auditor so le. A capacidade vem do contexto autorizado, nunca
                 // do botao (Decisao 12: tudo mediante perfis e permissoes).
                 final canRead = codes.contains('platform.member.read');
-                final canManage = canRead &&
+                final canManage =
+                    canRead &&
                     codes.contains('platform.member.update') &&
                     codes.contains('platform.member.suspend');
                 return PlatformUserDirectoryPage(
@@ -3338,7 +3358,9 @@ GoRouter createSuperadminRouter({
               }
               final id = state.pathParameters['internalUserId']!;
               return PlatformUserFormPage(
-                key: ValueKey('internal-user-edit-$id-${session.authorizationInvalidationRevision}'),
+                key: ValueKey(
+                  'internal-user-edit-$id-${session.authorizationInvalidationRevision}',
+                ),
                 repository: repository,
                 internalUserId: id,
                 capability: PlatformUserCapability.owner,
@@ -3368,7 +3390,8 @@ GoRouter createSuperadminRouter({
                 }
                 final codes = session.authContext?.permissionCodes ?? const <String>{};
                 final canRead = codes.contains('platform.member.read');
-                final canManage = canRead &&
+                final canManage =
+                    canRead &&
                     codes.contains('platform.member.update') &&
                     codes.contains('platform.member.suspend');
                 return PlatformUserDetailPage(
@@ -3436,7 +3459,8 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.personEdit,
             name: SuperadminRoutes.personEditName,
-            builder: (context, state) => !hasAuthoritativeMutationCapability(SuperadminRoutes.personEdit)
+            builder: (context, state) =>
+                !hasAuthoritativeMutationCapability(SuperadminRoutes.personEdit)
                 ? blockedProductionMutationPage(context)
                 : PersonEditRoutePage(
                     personId: state.pathParameters['personId']!,
@@ -5710,6 +5734,7 @@ GoRouter createSuperadminRouter({
               child: ProductionCircularComposerHost(
                 repository: circularRepository,
                 institutionRepository: institutionDirectoryRepository,
+                filePicker: SuperadminQaHooks.circularFilePicker,
                 onCancel: () => context.goNamed(SuperadminRoutes.circularsName),
                 onDone: () => _returnToCircularsRefreshed(context),
               ),
@@ -5767,6 +5792,7 @@ GoRouter createSuperadminRouter({
                 child: ProductionCircularComposerHost(
                   repository: circularRepository,
                   institutionRepository: institutionDirectoryRepository,
+                  filePicker: SuperadminQaHooks.circularFilePicker,
                   circularId: circularId,
                   onCancel: () => context.goNamed(
                     SuperadminRoutes.circularDetailName,
@@ -6316,10 +6342,8 @@ void _closePrincipalViewer(BuildContext context) {
 
 /// Volta ao diretorio de Circulares forcando releitura: o extra (inteiro,
 /// serializavel no historico do navegador) muda a chave do host.
-void _returnToCircularsRefreshed(BuildContext context) => context.goNamed(
-  SuperadminRoutes.circularsName,
-  extra: DateTime.now().millisecondsSinceEpoch,
-);
+void _returnToCircularsRefreshed(BuildContext context) =>
+    context.goNamed(SuperadminRoutes.circularsName, extra: DateTime.now().millisecondsSinceEpoch);
 
 void _returnFromCircularReader(BuildContext context, {required String fallbackRouteName}) {
   if (context.canPop()) {

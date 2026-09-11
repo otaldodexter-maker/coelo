@@ -15,6 +15,7 @@ import '../../institutions/presentation/widgets/institution_logo_picker_stub.dar
     if (dart.library.html) '../../institutions/presentation/widgets/institution_logo_picker_web.dart';
 import '../../support/domain/support_ticket.dart';
 import '../domain/activity_directory.dart';
+import '../../units/domain/unit_handle_availability.dart';
 import '../domain/activity_profile_about_repository.dart';
 import 'activity_form_controller.dart';
 import 'activity_form_draft.dart';
@@ -33,6 +34,7 @@ enum _ActivityFormCommand { saveDraft, submit }
 final class ActivityFormPage extends StatefulWidget {
   const ActivityFormPage({
     required this.repository,
+    this.checkHandleAvailability,
     required this.logout,
     required this.onCancel,
     required this.onSaveDraft,
@@ -59,6 +61,9 @@ final class ActivityFormPage extends StatefulWidget {
   final ActivityFormDraft? initialDraft;
   final ActivityFormStep? initialStep;
   final ActivityDirectoryRepository repository;
+
+  /// Regra do @ (ADR 0034 Decisao 16): disponibilidade do stem enquanto digita.
+  final StructureHandleAvailabilityChecker? checkHandleAvailability;
   final LogoutAction logout;
   final VoidCallback onCancel;
   final ActivityFormSubmit onSaveDraft;
@@ -201,6 +206,7 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
               initialCatalogError: initialCatalogError,
               loadTemplateOptions: (institutionId) =>
                   repository.fetchTemplateOptions(institutionId: institutionId),
+              handleAvailabilityChecker: widget.checkHandleAvailability,
               professionalSearcher: (institutionId, query) =>
                   repository.searchProfessionals(institutionId: institutionId, query: query),
             )
@@ -216,6 +222,7 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
               initialCatalogError: initialCatalogError,
               professionalSearcher: (institutionId, query) =>
                   repository.searchProfessionals(institutionId: institutionId, query: query),
+              handleAvailabilityChecker: widget.checkHandleAvailability,
             );
       if (initialStep case final step?) {
         nextController.goToStep(step.index);

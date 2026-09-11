@@ -55,7 +55,14 @@ final class SupabaseAccountProfileRepository
       mobilePhone: _string(json, 'mobile_phone'),
       avatar: AccountAvatar(
         mode: AccountAvatarMode.initials,
-        initials: _string(avatar, 'initials'),
+        // A projecao deriva a sigla das iniciais e pode trazer digito quando o
+        // sobrenome e numerico (pessoa de servico da ponte): o cliente so aceita
+        // letras, entao deriva a sigla das letras do nome nesse caso (R04).
+        initials: AccountAvatar.lettersOnlyInitials(
+          _string(avatar, 'initials'),
+          _string(json, 'first_name'),
+          _string(json, 'last_name'),
+        ),
         backgroundColor: _color(_string(avatar, 'background_color')),
       ),
       access: AccountAccessSummary(

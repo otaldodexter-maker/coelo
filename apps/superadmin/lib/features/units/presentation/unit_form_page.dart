@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coelo_domain/locations.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
@@ -16,6 +18,7 @@ import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart'
 import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
 import '../../../shared/presentation/widgets/superadmin_location_map_preview.dart';
 import '../domain/unit_directory.dart';
+import '../domain/unit_handle_availability.dart';
 import 'unit_form_controller.dart';
 import 'unit_form_navigation.dart';
 import 'widgets/unit_local_management_section.dart';
@@ -39,6 +42,7 @@ final class UnitFormPage extends StatefulWidget {
     this.locationSessionAvailable = false,
     this.locationContextRevision = 0,
     this.onOpenLocations,
+    this.checkHandleAvailability,
     super.key,
   });
 
@@ -57,6 +61,11 @@ final class UnitFormPage extends StatefulWidget {
   final bool locationSessionAvailable;
   final int locationContextRevision;
   final VoidCallback? onOpenLocations;
+
+  /// Verificacao de disponibilidade do @ enquanto digita (ADR 0034 Decisao
+  /// 16, superadmin_structure_handle_availability_v1). Opcional: sem ela a
+  /// legenda continua explicando o @ gerado pelo servidor.
+  final StructureHandleAvailabilityChecker? checkHandleAvailability;
 
   @override
   State<UnitFormPage> createState() => _UnitFormPageState();
@@ -173,6 +182,35 @@ final class _UnitFormPageState extends State<UnitFormPage> {
       _controllers[field] = TextEditingController(text: _initialValue(field));
       _controllers[field]!.addListener(_markDirty);
     }
+    if (widget.checkHandleAvailability != null) {
+      _controllers['slug']!.addListener(_scheduleHandleCheck);
+    }
+  }
+
+  Timer? _handleCheckTimer;
+  int _handleCheckSequence = 0;
+  UnitHandleAvailability? _handleAvailability;
+  String _handleChecked = '';
+
+  /// Debounce de 300 ms; a resposta so vale se o texto nao mudou no meio.
+  void _scheduleHandleCheck() {
+    final checker = widget.checkHandleAvailability;
+    if (checker == null) return;
+    final value = _controllers['slug']!.text.trim();
+    _handleCheckTimer?.cancel();
+    if (value.isEmpty || value == (_original?.handle ?? '')) {
+      if (_handleAvailability != null) setState(() => _handleAvailability = null);
+      return;
+    }
+    final sequence = ++_handleCheckSequence;
+    _handleCheckTimer = Timer(const Duration(milliseconds: 300), () async {
+      final result = await checker('unit', value, excludeId: _original?.id);
+      if (!mounted || sequence != _handleCheckSequence) return;
+      setState(() {
+        _handleAvailability = result;
+        _handleChecked = value;
+      });
+    });
   }
 
   void _markDirty() {
@@ -219,6 +257,7 @@ final class _UnitFormPageState extends State<UnitFormPage> {
 
   @override
   void dispose() {
+    _handleCheckTimer?.cancel();
     for (final controller in _controllers.values) {
       controller.dispose();
     }
@@ -550,6 +589,33 @@ final class _UnitFormPageState extends State<UnitFormPage> {
   Widget _handleNote() {
     final theme = Theme.of(context);
     final handle = _original?.handle ?? '';
+    final availability = _handleAvailability;
+    if (availability != null && _handleChecked == _controllers['slug']!.text.trim()) {
+      final (liveText, liveColor) = switch (availability.reason) {
+        UnitHandleAvailabilityReason.available => (
+          '@${availability.normalized} está disponível.',
+          theme.colorScheme.primary,
+        ),
+        UnitHandleAvailabilityReason.taken => (
+          '@${availability.normalized} já está em uso. Escolha outro.',
+          theme.colorScheme.error,
+        ),
+        UnitHandleAvailabilityReason.invalid => (
+          'Use letras minúsculas, números, ponto e sublinhado (3 a 50 caracteres).',
+          theme.colorScheme.error,
+        ),
+        UnitHandleAvailabilityReason.empty => ('Informe o @.', theme.colorScheme.error),
+        UnitHandleAvailabilityReason.unavailable => (
+          'Não foi possível verificar a disponibilidade agora; o servidor confere ao salvar.',
+          theme.colorScheme.onSurfaceVariant,
+        ),
+      };
+      return Text(
+        liveText,
+        key: const Key('unit-handle-availability'),
+        style: theme.textTheme.bodySmall?.copyWith(color: liveColor),
+      );
+    }
     final text = _original == null
         ? 'O @ público é gerado pelo servidor ao criar: letras e números do '
               'identificador (sem hífens) mais um sufixo com o código da unidade. '

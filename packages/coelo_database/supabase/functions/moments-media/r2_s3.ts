@@ -28,12 +28,14 @@ function validate(config: MomentsR2Config): MomentsR2Config {
 export function momentsR2Config(
   environment: Record<string, string | undefined>,
 ): MomentsR2Config {
+  // Token unico de midia COELO_R2_* (ADR 0034, Decisao 11) com MOMENTS_R2_*
+  // como sobrescrita local; bucket padrao coelo-media-prod (ADR 0032).
   return validate({
-    endpoint: environment.MOMENTS_R2_ENDPOINT ?? "",
-    region: environment.MOMENTS_R2_REGION ?? "",
-    accessKeyId: environment.MOMENTS_R2_ACCESS_KEY_ID ?? "",
-    secretAccessKey: environment.MOMENTS_R2_SECRET_ACCESS_KEY ?? "",
-    bucket: environment.MOMENTS_R2_BUCKET ?? "",
+    endpoint: environment.MOMENTS_R2_ENDPOINT ?? environment.COELO_R2_ENDPOINT ?? "",
+    region: environment.MOMENTS_R2_REGION ?? environment.COELO_R2_REGION ?? "",
+    accessKeyId: environment.MOMENTS_R2_ACCESS_KEY_ID ?? environment.COELO_R2_ACCESS_KEY_ID ?? "",
+    secretAccessKey: environment.MOMENTS_R2_SECRET_ACCESS_KEY ?? environment.COELO_R2_SECRET_ACCESS_KEY ?? "",
+    bucket: environment.MOMENTS_R2_BUCKET ?? "coelo-media-prod",
   });
 }
 

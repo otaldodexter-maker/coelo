@@ -36,6 +36,7 @@ review_owner: Coelo Owner
 | team | Superadmin / Locais, mapas e agendamentos | [Locais, mapas e agendamentos no Superadmin](team/superadmin-locations-maps-scheduling.md) | validated | `docs/superpowers/specs/2026-09-02-superadmin-locais-mapas-agendamentos-design.md` |
 | admin | Locais, mapas e reservas | [Gestão de locais, mapas e reservas](admin/superadmin-locations-maps-scheduling.md) | validated | `docs/superpowers/specs/2026-09-02-superadmin-locais-mapas-agendamentos-design.md` |
 
+| team | Produto / Identidade | [O @ é a identidade pública de toda entidade](team/coelo-handles.md) | validated | `decisions/0034-mvp-remote-application-and-acceptance-bar.md` |
 | team | Superadmin / Saúde e Cuidado | [Saúde e Cuidado centrados na criança](team/health-care.md) | validated | `specs/020-superadmin-health-care.md` |
 | admin | Saúde e Cuidado | [Operação de Saúde e Cuidado](admin/health-care.md) | validated | `specs/020-superadmin-health-care.md` |
 

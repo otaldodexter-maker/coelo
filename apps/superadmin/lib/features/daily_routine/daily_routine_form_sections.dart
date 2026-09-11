@@ -98,7 +98,7 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
   var _modelOriginScope = RoutineModelOriginScope.institution;
   var _applicationStatus = RoutineApplicationStatus.draft;
   var _applicationInheritance = RoutineInheritanceMode.inherited;
-  var _applicationVisibility = 'institution';
+  var _applicationVisibility = 'authorized_guardians';
   var _canManage = false;
   var _loadGeneration = 0;
   var _commandGeneration = 0;
@@ -307,9 +307,12 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
       if (source.id != applicationModelId) {
         throw const FormatException('O modelo de origem não pôde ser validado.');
       }
+      // O servidor exige o uuid da versao (22P02 medido na rota real com o
+      // rotulo "<id>:v1"); o rotulo fica so como fallback dos repositorios
+      // de desenvolvimento, que nao projetam model_version_id.
       return RoutineApplication(
         id: '',
-        modelVersionId: '${source.id}:v${source.version}',
+        modelVersionId: source.versionId ?? '${source.id}:v${source.version}',
         institutionId: source.institutionId ?? '',
         unitId: source.originUnitId,
         status: RoutineApplicationStatus.draft,
@@ -730,10 +733,13 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
         key: const Key('daily-routine-application-visibility'),
         label: 'Visibilidade',
         value: _applicationVisibility,
-        options: const ['staff_only', 'authorized_guardians'],
+        // Valores do servidor (routine_applications.visibility); 'staff_only'
+        // e 'institution' nao existem no banco (23514 na rota real, R05).
+        options: const ['authorized_guardians', 'institution_staff', 'unit_staff'],
         optionLabel: (value) => switch (value) {
-          'staff_only' => 'Somente equipe',
-          _ => 'Responsaveis autorizados',
+          'institution_staff' => 'Equipe da instituição',
+          'unit_staff' => 'Equipe da unidade',
+          _ => 'Responsáveis autorizados',
         },
         prefixIcon: Icons.visibility_outlined,
         enabled: _canManage && !_saving,

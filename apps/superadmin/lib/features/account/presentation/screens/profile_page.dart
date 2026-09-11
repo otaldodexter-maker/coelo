@@ -319,6 +319,9 @@ class _ProfilePageState extends State<ProfilePage> {
     currentDestination: 'profile',
     onDestinationSelected: widget.onDestinationSelected,
     activityController: widget.controller.activities,
+    // Decisao 7 do Owner: formulario de edicao sem o balao Mensagens (ele
+    // cobria Salvar alteracoes em 1440x1000 na rota real, R04).
+    showChatLauncher: false,
     child: ListenableBuilder(
       listenable: widget.controller,
       builder: (context, child) {
@@ -567,6 +570,9 @@ class _PersonalDataForm extends StatelessWidget {
         labelText: 'Celular',
         prefixIcon: Icons.smartphone_outlined,
         keyboardType: TextInputType.phone,
+        // superadmin_account_profile_save exige 7 a 40 caracteres: validar no
+        // cliente para a mensagem ser honesta em vez do erro generico (R04).
+        validator: _validateMobilePhone,
       ),
       if (emailChange?.status == EmailChangeStatus.pending) ...[
         const SizedBox(height: CoeloSpacing.space2),
@@ -824,6 +830,12 @@ class _FormFooter extends StatelessWidget {
 
 String? _requiredName(String? value) =>
     value == null || value.trim().isEmpty ? 'Campo obrigatório.' : null;
+
+String? _validateMobilePhone(String? value) {
+  final length = value?.trim().length ?? 0;
+  if (length == 0) return 'Informe o celular.';
+  return length < 7 || length > 40 ? 'Use entre 7 e 40 caracteres.' : null;
+}
 
 String? _validateEmail(String? value) {
   final email = value?.trim() ?? '';

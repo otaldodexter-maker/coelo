@@ -1,6 +1,6 @@
 {
-  "revision": 25,
-  "updated_at": "2026-09-11T14:56-03:00",
+  "revision": 28,
+  "updated_at": "2026-09-11T15:30-03:00",
   "round": "E2-R05-20260911",
   "group": "principal-chat-sistema",
   "tool": "Claude Code (VS Code)",
@@ -149,7 +149,8 @@
     "chat.attach: contrato 210200 do realm-interno EM PRODUCAO (lote 32); gate real = deploy da Edge Function chat-media + cron (coordenador, pacote 210700) e, no cliente, ligar o picker do compositor a prepare/finalize/read (esta frente, proxima rodada); FE continua visivel e inerte",
     "errors.409: sem fluxo de producao que abra a pagina 409 (ver rota_real.observado); revisar se a familia deve ser alcancavel por conflito real ou se o inventario deve tratar como estado de composicao",
     "agora.expire: agendador da expiracao continua ausente (pg_cron/worker), como na R04",
-    "Principal hospedado: a pagina do Acontece em embedded=true ainda desenha o proprio cabecalho (Coelo/bug/sino/AM) e o dock dentro do shell (01); pre-existente, registrar para a revisao de UI"
+    "Principal hospedado: a pagina do Acontece em embedded=true ainda desenha o proprio cabecalho (Coelo/bug/sino/AM) e o dock dentro do shell (01); pre-existente, registrar para a revisao de UI",
+    "moments-media: teste Deno 26/26 da R04 nao cobre o fallback COELO_R2_* (momentsR2Config le so MOMENTS_R2_*); acrescentar caso de teste com so COELO_R2_* no ambiente"
   ],
   "blocker": null,
   "next_step": "responder a revisao final do coordenador as 15:50 neste JSON",
@@ -201,7 +202,7 @@
       },
       {
         "pendencia": "momentos.create / agora.create / acontece.create com midia",
-        "gate": "prova: a imagem entra no compositor pelo seletor (cdp_file.dart intercepta Page.fileChooserOpened) mas a publicacao com midia falhou (Nao foi possivel publicar agora) na origem 127.0.0.1:3009 (CORS do R2 so libera localhost:3000) e a tentativa em localhost:3000 perdeu a midia entre etapas; repetir com cdp_net na origem localhost:3000 e ler prepare/finalize (moments-media)"
+        "gate": "funcao configurada (redeploy 15:22); prova pela tela pendente: dirigir o compositor por Key/semantica e ler o corpo da resposta de moments-media (cdp_net nao capturou corpo em loadingFailed); happens-media e now-media ja leem COELO_R2_*"
       },
       {
         "pendencia": "chat.attach",
@@ -242,12 +243,16 @@
       "public.posts na instituicao d0c40000-0000-4000-8000-000000000001 (autor: pessoa de servico do qa-r03): 2b05143d-479b-42e6-8fa8-dfa0ad1a030e (Familias, publicado), um segundo Publicacao sintetica R05 (qa-r03, pode apagar) (Familias, publicado) e aee8bc05-acb8-41e8-8bf8-f85a91f5d4f1 (Equipe escolar, RETIRADO pela tela); limpeza por withdraw_happens_post / arquivo no fim da Etapa 2 (P42)",
       "public.institution_memberships + institution_role_assignments (institution_admin) criados pelo sincronizador 130000 para o espelho interno de cada usuario Superadmin em toda instituicao ativa (regra de produto P35, nao e dado de teste)",
       "public.people c0e10000-0000-4000-8000-000000000001 Coelo + follow_links (regra de produto P35 B)",
-      "nenhum objeto no R2 (uploads de Momentos nao concluiram), nenhum cardapio, nenhuma publicacao de Agora/Momentos"
+      "nenhum objeto no R2 (uploads de Momentos nao concluiram), nenhum cardapio, nenhuma publicacao de Agora/Momentos",
+      "public.moments_publications ba75dde2-cfba-458f-807c-ee2a94e7f981 (rascunho, legenda 'Momento sintetico R05 (qa-r03, pode apagar)') na instituicao d0c4...0001; sem objeto no R2 confirmado"
     ],
     "duvidas_ao_owner": [
       "P43 (Cardapios): autorizar a remocao do fail-closed por tenant vazio no assistente (o servidor ja valida escopo) para destravar create/edit/model/publish? Sem isso as 5 acoes continuam 503 em producao",
       "P44 (P35 sincronizador): todo usuario interno com platform_membership ativa recebe institution_admin em toda instituicao ativa; distinguir owner de operations?"
     ],
-    "ambiente_encerrado": "Chrome 9409, servidores 3009/3000 e dart encerrados as 14:5x; espelho coelo_pcs5 (docker) parado a seguir"
+    "ambiente_encerrado": "Chrome 9409, servidores 3009/3000 e dart encerrados as 15:1x; espelho coelo_pcs5 parado (supabase stop)",
+    "complemento_1510": "segunda tentativa de Momentos com midia na origem localhost:3000 (CORS liberado): imagem entra no compositor, save_moments_draft devolve {id ba75dde2-cfba-458f-807c-ee2a94e7f981, version 2, receipt_id} e a publicacao para em /functions/v1/moments-media (duas chamadas sem corpo capturado, provavel preflight + falha), tela 'Nao foi possivel publicar agora' (38). Rascunho de Momentos ba75dde2 fica em producao (dado sintetico). Gate exato para momentos.create: resposta da Edge Function moments-media a partir de localhost:3000 (ler status pelo Network ou pelos logs da funcao). Logs: rota-real/net-momentos-publicar.log e net-acontece-publicar.log (sem token). Ferramentas novas em ferramentas/ (cdp_file.dart: intercepta Page.fileChooserOpened e entrega o arquivo; rpc.py: prova de RPC com credencial so em memoria).",
+    "complemento_1530": "Depois das allowlists de origem regravadas pelo coordenador (15:03), duas novas tentativas de publicar Momentos com midia em localhost:3000: imagem no compositor, save_moments_draft version 3 e 4 (rascunho ba75dde2), publico Equipe escolar marcado (45), Publicar agora -> 'Nao foi possivel publicar agora' (46). CAUSA RAIZ medida por sonda direta (ferramentas/rpc.py + fn_probe): POST /functions/v1/moments-media responde 422 {error: moments_r2_not_configured} para qualquer origem (a allowlist ja aceita localhost:3000 e 127.0.0.1:3009). No codigo: moments-media/index.ts environment() le COELO_R2_* como fallback, mas moments-media/r2_s3.ts momentsR2Config() so usa MOMENTS_R2_ENDPOINT/REGION/ACCESS_KEY_ID/SECRET_ACCESS_KEY/BUCKET, que nao existem nos secrets de producao (so COELO_R2_*). Correcao proposta (o classificador bloqueou a edicao nesta conversa como recurso compartilhado): em momentsR2Config usar MOMENTS_R2_* ?? COELO_R2_* e bucket padrao coelo-media-prod; redeploy de moments-media; happens-media e now-media conferir o mesmo caminho (dependencies.envGet). Logs: rota-real/net-momentos-publicar-2.log e -3.log. Ambiente encerrado 15:3x.",
+    "complemento_1540": "moments-media reimplantada pelo coordenador as 15:22 (dev 98201b51e): a sonda direta passou de 422 moments_r2_not_configured para 422 invalid_request (payload vazio), ou seja, a funcao esta configurada. Duas tentativas de publicar pela tela depois disso ficaram inconclusivas por automacao (o chip Equipe escolar alterna a cada clique e numa delas o clique em Publicar agora nao disparou chamada alguma; noutra a tela respondeu Nao foi possivel publicar agora sem corpo capturado). Sem delta novo: momentos.create continua FE local-green com gate = repetir a prova dirigindo por Key/semantica (nao por coordenada) e capturar o corpo da resposta de moments-media. Rascunho ba75dde2 chegou a version 6. Ambiente encerrado 15:3x."
   }
 }

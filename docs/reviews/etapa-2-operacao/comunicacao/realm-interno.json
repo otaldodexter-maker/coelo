@@ -1,15 +1,15 @@
 {
   "grupo": "realm-interno",
-  "revision": 32,
+  "revision": 34,
   "round": "E2-R05-20260911",
-  "updatedAt": "2026-09-11T14:52-03:00",
+  "updatedAt": "2026-09-11T15:12-03:00",
   "app": "Claude",
   "modelo": "Opus 5 (esforco medio)",
   "conversa": "R05 · Realm interno e Chat backend",
   "coordenador": "R05 · Coordenação da tarde (coordenacao.json)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-realm-interno",
   "branch": "work/etapa2-r05-realm-interno",
-  "head": "bf0c70c71 (origin/dev 7da3dcf0e mesclada)",
+  "head": "1395e3ac1",
   "upstream": "origin/work/etapa2-r05-realm-interno (push no primeiro commit)",
   "historicoR04": {
     "miniRevisao": {
@@ -341,7 +341,17 @@
       "pgTAP": "chat_attachment_worker_claims_v1_test 3/3; attachments 28/28",
       "dependeDe": "210200",
       "chaveDeComposicao": "nenhuma",
-      "estado": "pronto (baixa prioridade; fecha a pendencia registrada)"
+      "estado": "APLICADO em producao (migrations/ em dev)"
+    },
+    {
+      "ordem": 15,
+      "arquivo": "packages/coelo_database/candidatos/realm-interno/20260911211400_unit_default_handle_fit_v1.sql",
+      "assunto": "correcao do @ padrao de unidade (achado da G2 em producao com 211100: 'unidadeqar05transfer.qa-r04-cu' violava units_handle_normalized_check): sufixo = slug da instituicao so [a-z0-9] (ate 24), segmento da unidade truncado antes do ponto para caber em 30; colisao abre espaco para _xxxx; handle explicito inalterado",
+      "pgTAP": "unit_default_handle_fit_v1_test 5/5 (caso da G2 -> unidadeq.qar04cuidadosintetico); structure_handles_create_payload 18/18",
+      "commit": "1395e3ac1",
+      "dependeDe": "211100 (lote 43)",
+      "chaveDeComposicao": "nenhuma",
+      "estado": "pronto; aplicar (corrige 23514 no create de unidade sem @)"
     }
   ],
   "pendenciasRegistradas": [
@@ -361,7 +371,7 @@
     "child-safety.create/edit, medication.create (P32 alvo)": "backend local-green do complemento (politicas + sino); done apos aplicar"
   },
   "loop": "cron 9ded10f6 a cada 15 min ate 15:45",
-  "status": "finalizado: 13 pacotes em producao, Edge Functions implantadas, mini-revisao final gravada; respondo a revisao das 15:50 no JSON; descartavel coelo_realm_r05 sera parado ao encerrar",
+  "status": "finalizado com correcao 211400 pronta (defeito da G2); aguardando revisao das 15:50",
   "contratoInstitutionContacts": {
     "rpc": "public.superadmin_institution_contacts_edit_v1(p_request_id uuid, p_institution_id uuid, p_expected_version bigint, p_payload jsonb) -> envelope {ok,data,error}",
     "capacidade": "institution.update; platform_role owner|operations; scope institution so a propria instituicao (outro tenant -> SAI_PERMISSION_DENIED, auditado)",
@@ -463,7 +473,7 @@
       "suites pre-existentes": "edit_core (7, MFA), chat_groups (provenance), activity e2e (16, Storage), health_care (1), child_safety_production (schemaname), agenda contexts/production/read_v2 (fixtures antigas)"
     },
     "4_deltasPropostos": "docs/reviews/evidence/etapa-2/r05-realm-interno/deltas-be-r05.json (7 IDs backend local-green, ja aplicados pelo coordenador); nenhum delta FE/E2E",
-    "5_pacotesEChaves": "13 pacotes em producao (lotes 28-44) + 211300 (hardening, pronto); Edge Functions chat-media (nova) e form-media (reconciliada) implantadas pelo coordenador; chave criada por migration: coelo_person_identity_hmac_v1 (Vault); a gravar no deploy do chat: CHAT_MEDIA_WORKER_SECRET, CHAT_MEDIA_ALLOWED_ORIGINS, Vault chat_media_worker_url/secret; Vault forms_media_worker_url ja gravada; COELO_FORMS_MEDIA_PROVIDER so quando o cliente trocar",
+    "5_pacotesEChaves": "13 pacotes em producao (lotes 28-44) + 211300 em producao: 14 pacotes, todos aplicados; Edge Functions chat-media (nova) e form-media (reconciliada) implantadas pelo coordenador; chave criada por migration: coelo_person_identity_hmac_v1 (Vault); a gravar no deploy do chat: CHAT_MEDIA_WORKER_SECRET, CHAT_MEDIA_ALLOWED_ORIGINS, Vault chat_media_worker_url/secret; Vault forms_media_worker_url ja gravada; COELO_FORMS_MEDIA_PROVIDER so quando o cliente trocar",
     "6_duvidasAoOwner": "nenhuma; a raiz da ponte de ator e decisao de coordenacao/produto registrada na revisao profunda",
     "provasRegistradas": "pgTAP 188/188 novos (13 suites) + 3 suites existentes ajustadas (group/unit detail, agenda compat); Deno 51/51 form-media + 5/5 chat-media + 2/2 image_dimensions; prova em producao somente leitura em prova-producao-2026-09-11.md; evidencias em docs/reviews/evidence/etapa-2/r05-realm-interno/",
     "handoff": "docs/reviews/evidence/etapa-2/r05-realm-interno/handoff.md; skills: skills-deltas-r05.md"

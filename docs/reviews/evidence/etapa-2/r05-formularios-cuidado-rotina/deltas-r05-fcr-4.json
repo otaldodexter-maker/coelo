@@ -1,0 +1,67 @@
+[
+ {
+  "action_id": "daily-routine.create",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R05 (15:08): card Criar modelo em /daily-routine (can_manage no topo do envelope) -> /daily-routine/new editavel -> nome + instituicao de origem -> Salvar; o diretorio lista \"Modelo R05 rota real\" e a rota de edicao abre o modelo. Pendencias de UX registradas (rodape sem Cancelar; instituicao por uuid).",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/70-routine-list-com-modelo.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/70-routine-list-com-modelo.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 40",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9421 sob SwiftShader; candidato 20260911220000 aplicado em producao",
+   "recordedAt": "2026-09-11T15:12:00-03:00"
+  }
+ },
+ {
+  "action_id": "daily-routine.create",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "superadmin_routine_save_model 200 (modelo 176882c5, versao 1, version_id 83c48a8e) com request_id uuid (a1ca952cc); superadmin_routine_directory com can_manage (20260911220000); pgTAP 15/15 + foundation/scope_closure sem regressao.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/70-routine-list-com-modelo.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/70-routine-list-com-modelo.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 40",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9421 sob SwiftShader; candidato 20260911220000 aplicado em producao",
+   "recordedAt": "2026-09-11T15:12:00-03:00"
+  }
+ },
+ {
+  "action_id": "daily-routine.create",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "modelo criado pela rota normal, persistido em producao e listado/reaberto apos reload.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/71-routine-edit.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/71-routine-edit.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 40",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9421 sob SwiftShader; candidato 20260911220000 aplicado em producao",
+   "recordedAt": "2026-09-11T15:12:00-03:00"
+  }
+ },
+ {
+  "action_id": "daily-routine.edit",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R05: /daily-routine/:id/edit?kind=model abre o modelo real com Salvar habilitado (superadmin_routine_model_detail 200, can_manage true); o save de edicao usa o mesmo comando ja provado na criacao.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/71-routine-edit.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/71-routine-edit.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 40",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9421 sob SwiftShader; candidato 20260911220000 aplicado em producao",
+   "recordedAt": "2026-09-11T15:12:00-03:00"
+  }
+ },
+ {
+  "action_id": "daily-routine.edit",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "superadmin_routine_model_detail e superadmin_routine_save_model (versionado, expected_version) em producao desde o lote 2; leitura autorizada provada na rota real.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/71-routine-edit.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/71-routine-edit.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 40",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9421 sob SwiftShader; candidato 20260911220000 aplicado em producao",
+   "recordedAt": "2026-09-11T15:12:00-03:00"
+  }
+ }
+]

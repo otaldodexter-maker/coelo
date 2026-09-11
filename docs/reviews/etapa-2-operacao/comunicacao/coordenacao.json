@@ -1,12 +1,12 @@
 {
- "revision": 45,
+ "revision": 46,
  "round": "E2-R05-20260911",
  "role": "Coordenacao da tarde R05 - Claude Opus (C0)",
  "writer": "coordenador-claude",
  "app": "Claude Code (VS Code)",
  "model": "claude-opus-5",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T14:48:00-03:00",
+ "updatedAt": "2026-09-11T15:04:00-03:00",
  "relogio": "relogio da maquina; posse as 12:03 -03:00 de 11/09/2026",
  "posseR04": {
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -235,6 +235,7 @@
   "43": "13:18 lote 36 (P32) em producao apos correcao; espelho reconstruido; deltas de formularios (7) e realm-interno (7) aplicados: FE 71 / BE done 74 / E2E 48; goldens afetados pelo composto atribuidos a G7",
   "44": "14:30 lotes 37-43 em producao (18 pacotes; total da rodada 16 lotes, 32 pacotes); chat-media, form-operations e form-media implantadas; deltas de G1/G2/G3/G7 aplicados (FE 94 / BE done 96 / E2E 67); sessoes renomeadas apos reinicio ~14:10; aprovacao G-SUP do Owner",
   "45": "14:48 lote 44 (seguranca da Agenda); deltas de G2/G6/G3 aplicados (FE 106 / BE done 107 / E2E 78); origens locais liberadas nas Edge Functions; G4 cobrada",
+  "46": "15:04 lotes 45-46; form-export-download implantada; allowlists de origem alinhadas; deltas finais de G1/G3/G4/G6 aplicados (FE 131 / BE done 128 / E2E 99); P47/P48 e IMP-R05 registrados",
   "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina."
  },
  "fechamentoR03": {
@@ -971,7 +972,9 @@
    "lote 41: 190000 (publicacoes)",
    "lote 42: 180000 (estrutura), 130200, 130300 (principal), 200100 (operacoes), 210900, 211000 (realm-interno)",
    "lote 43: 211100 (realm-interno), 190100, 190200, 190300 (publicacoes)",
-   "lote 44: 211200 (realm-interno, seguranca)"
+   "lote 44: 211200 (realm-interno, seguranca)",
+   "lote 45: 211300 (realm-interno)",
+   "lote 46: 170400 (acessos-pessoas)"
   ],
   "proximos": [
    "candidatos verdes das frentes na ordem de chegada"
@@ -1275,8 +1278,39 @@
   "e2eVerified": "78/199",
   "base": "validate-trackers PASS sobre 490294dca"
  },
- "secretsAlterados": "COELO_ALLOWED_ORIGINS regravado as 14:41 com as tres origens coelo.me + localhost/127.0.0.1 nas portas 3000, 3014 e 3020 (pedido da G3: download do XLSX devolvia 403 request_denied por origem); valor anterior nao era legivel (o CLI so mostra o hash)",
+ "secretsAlterados": "COELO_ALLOWED_ORIGINS regravado as 14:41 com as tres origens coelo.me + localhost/127.0.0.1 nas portas 3000, 3014 e 3020 (pedido da G3: download do XLSX devolvia 403 request_denied por origem); valor anterior nao era legivel (o CLI so mostra o hash) | 15:03: *_MEDIA_ALLOWED_ORIGINS (moments, happens, now, circular, chat) e COELO_ALLOWED_ORIGINS alinhadas: tres origens coelo.me + localhost/127.0.0.1:3000/3009/3014/3020 (pedido da G4: 403 origin_not_allowed na publicacao com midia)",
  "semRevisaoNovaHa30min1447": "principal-chat-sistema (rev 24 de 14:07): cobrada por mensagem",
  "aprovacaoDoOwner1452": "Agenda P33/P34 (artefato 881e760e): \"o render atual esta perfeito e aprovado\" -> ownerVisualApproval=A nos 12 goldens agenda_calendar_*/agenda_detail_* (G6 registra; coordenador grava no inventario no fechamento)",
- "aprovacaoDoOwner1458": "Importacoes (artefato aafedc26, G7): \"correto e perfeito\", exceto import_hub_wizard_unavailable_light_1440_200 (wizard incorreto e fundo cinza) -> A nos demais import_hub_*, A+ nesse; repassado a G7"
+ "aprovacaoDoOwner1458": "Importacoes (artefato aafedc26, G7): \"correto e perfeito\", exceto import_hub_wizard_unavailable_light_1440_200 (wizard incorreto e fundo cinza) -> A nos demais import_hub_*, A+ nesse; repassado a G7",
+ "lote45": {
+  "aplicadoEm": "14:55; ledger 211300",
+  "dump": "schema-producao-20260911-lote45.sql",
+  "conteudo": [
+   "realm-interno 211300 chat_attachment_worker_claims_v1 (3/3 + attachments 28/28)"
+  ]
+ },
+ "lote46": {
+  "aplicadoEm": "14:57; ledger 170400",
+  "dump": "schema-producao-20260911-lote46.sql",
+  "conteudo": [
+   "acessos-pessoas 170400 people_list_segment_v1 (p_segment no superadmin_people_list; sobrecarga de 12 args removida; 8/8)"
+  ],
+  "chaveLigada": "SupabasePersonDirectoryRepository(segmentFilterAvailable: true) em superadmin_auth_scope.dart"
+ },
+ "deploys1458": "form-export-download reimplantada a partir de dev (v11 era de 16/08; XLSX download passou 200 na prova da G3)",
+ "metricasParciais1504": {
+  "feVerified": "131/231",
+  "beDone": "128/224",
+  "e2eVerified": "99/199",
+  "base": "validate-trackers PASS sobre 2fa07be8e"
+ },
+ "finalizadosR05": {
+  "estrutura": "rev 46 f62f9a350 (49 deltas)",
+  "acessos-pessoas": "rev 124 80b3a872d + 170400 (lote 46)",
+  "realm-interno": "rev 32 048b00340 (14 pacotes em producao)",
+  "principal-chat-sistema": "rev 26 81a462848 (22 deltas; Cardapios bloqueados por P47)",
+  "publicacoes-agenda": "rev 37 2c676dde4 (16 deltas)",
+  "formularios-cuidado-rotina": "rev 39 79e3810b8 (57 deltas em tres arquivos)",
+  "operacoes": "rev 32 6285d69fd (deltas finais a receber)"
+ }
 }

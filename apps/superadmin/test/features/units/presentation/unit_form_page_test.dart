@@ -10,6 +10,7 @@ import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/institutions/data/fake_institution_directory_repository.dart';
 import 'package:coelo_superadmin/features/units/data/fake_unit_directory_repository.dart';
 import 'package:coelo_superadmin/features/units/domain/unit_directory.dart';
+import 'package:coelo_superadmin/features/units/domain/unit_handle_availability.dart';
 import 'package:coelo_superadmin/features/units/presentation/unit_form_navigation.dart';
 import 'package:coelo_superadmin/features/units/presentation/unit_form_page.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
@@ -869,6 +870,57 @@ void main() {
 
     expect(find.text('Use somente letras minúsculas sem acento, números e hífens.'), findsNothing);
     expect(find.byKey(const Key('superadmin-location-map')), findsOneWidget);
+  });
+
+  testWidgets('identificador verifica a disponibilidade do @ enquanto digita', (tester) async {
+    // ADR 0034 Decisao 16: a legenda responde ao servidor (debounce de 300 ms)
+    // e nunca bloqueia o formulario quando a verificacao falha.
+    await tester.binding.setSurfaceSize(const Size(1024, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final calls = <(String, String, String?)>[];
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: UnitFormPage(
+          repository: FakeUnitDirectoryRepository(FakeInstitutionDirectoryRepository()),
+          logout: () async => const LogoutResult.success(),
+          onCancel: () {},
+          onSaved: (_) {},
+          checkHandleAvailability: (kind, handle, {excludeId}) async {
+            calls.add((kind, handle, excludeId));
+            return UnitHandleAvailability(
+              normalized: handle.toLowerCase(),
+              reason: handle == 'ocupado'
+                  ? UnitHandleAvailabilityReason.taken
+                  : UnitHandleAvailabilityReason.available,
+            );
+          },
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Hierarquia').first);
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byKey(const Key('unit-slug-field')), 'ocupa');
+    await tester.enterText(find.byKey(const Key('unit-slug-field')), 'ocupado');
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(calls, isEmpty, reason: 'debounce: nada antes de 300 ms');
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pumpAndSettle();
+    expect(calls, [('unit', 'ocupado', null)], reason: 'so a ultima digitacao vai ao servidor');
+    expect(
+      tester.widget<Text>(find.byKey(const Key('unit-handle-availability'))).data,
+      '@ocupado já está em uso. Escolha outro.',
+    );
+
+    await tester.enterText(find.byKey(const Key('unit-slug-field')), 'centro.escola');
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<Text>(find.byKey(const Key('unit-handle-availability'))).data,
+      '@centro.escola está disponível.',
+    );
   });
 
   testWidgets('edicao mostra o @ publico final ao lado do identificador', (tester) async {

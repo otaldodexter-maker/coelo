@@ -1,15 +1,15 @@
 {
- "revision": 39,
+ "revision": 43,
  "round": "E2-R05-20260911",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5 (Claude, Opus, esforco medio)",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T15:06-03:00",
+ "updatedAt": "2026-09-11T15:34-03:00",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-formularios-cuidado-rotina",
  "branch": "work/etapa2-r05-formularios-cuidado-rotina",
- "head": "a1ca952cc + rev 39 (publicado)",
+ "head": "0b8ee7a75 de codigo + rev 43 (publicado)",
  "base": "origin/dev 2f6a6114f",
  "scope": {
   "families": [
@@ -40,14 +40,9 @@
   ]
  },
  "currentGate": {
-  "gate": "entrega principal fechada; restam provas na rota real que dependem do build 7 (rotina save) e do harness (XLSX download na origem 3000; Chrome/SwiftShader caindo a cada ~20 min)",
-  "screen": "Etapa 2 -> apps/superadmin -> Formularios / Seguranca infantil / Cuidado / Medicacao / Rotina / Assiduidade",
-  "actionIds": [
-   "daily-routine.create",
-   "forms.download",
-   "medication.create",
-   "attendance.dashboard"
-  ]
+  "gate": "finalizado as 15:34; revisao das 15:50 sera respondida neste JSON; apos 16:00 nao retomo",
+  "screen": "Etapa 2 -> apps/superadmin",
+  "actionIds": []
  },
  "loopAgendado": "/loop 15m, agendado na abertura (12:12)",
  "tests": {},
@@ -56,7 +51,9 @@
  "deltaProposals": [
   "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/deltas-r05-fcr.json (16, rev 37, ja aplicados pelo coordenador)",
   "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/deltas-r05-fcr-2.json (29, rev 38; ensaiado com apply-tracker-delta + validate-trackers PASS e revertido)",
-  "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/deltas-r05-fcr-3.json (16, rev 39: attendance.dashboard/create/mark/finish/correct verified-e2e; forms.responses.export BE done com gate de deploy da form-export-download)"
+  "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/deltas-r05-fcr-3.json (16, rev 39: attendance.dashboard/create/mark/finish/correct verified-e2e; forms.responses.export BE done com gate de deploy da form-export-download)",
+  "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/deltas-r05-fcr-4.json (5, rev 40: daily-routine.create verified-e2e; daily-routine.edit FE verified + BE done)",
+  "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/deltas-r05-fcr-5.json (3, rev 43: daily-routine.apply verified-e2e)"
  ],
  "packages": [
   {
@@ -139,6 +136,25 @@
    "sha": "a1ca952cc",
    "o_que": "fix(rotina): request_id dos comandos do editor vira uuid v4 (22P02 medido na rota real)",
    "prova": "test/features/daily_routine 112 verdes, 1 golden do composto pre-existente (G7 regravou)"
+  },
+  {
+   "sha": "294a88780",
+   "o_que": "feat(rotina): onDuplicateModel/onCreateFromModel na rota de producao (daily-routine.apply)",
+   "prova": "analyzer limpo; daily_routine_routes_test 4/4; build 8 na rota real: os links \"Duplicar modelo\" e \"Criar rotina por este modelo\" aparecem no card (73-routine-card-acoes.png) mas o toque e engolido pelo onPressed do card (abre a edicao)"
+  },
+  {
+   "sha": "b0b622766",
+   "o_que": "docs: handoff da R05 (R04 preservado em evidence/etapa-2/r04-formularios-cuidado-rotina/handoff-r04.md)"
+  },
+  {
+   "sha": "518d15953",
+   "o_que": "fix(rotina): aplicacao criada a partir do modelo envia definition.model_version_id (uuid); o rotulo id:vN era recusado com 22P02 na rota real",
+   "prova": "analyzer limpo; supabase_routine_data_test 6/6 (+1 assercao)"
+  },
+  {
+   "sha": "0b8ee7a75",
+   "o_que": "fix(rotina): visibilidade da rotina aplicada com os valores do servidor (23514 na rota real)",
+   "prova": "analyzer limpo; test/features/daily_routine 112 verdes + golden do composto pre-existente"
   }
  ],
  "pendenciasRegistradas": [
@@ -216,11 +232,26 @@
    "action_id": "attendance.mark",
    "o_que": "primeira tentativa de Salvar mostra \"Alteracao de presenca nao salva\" e a segunda grava (corrida entre reserva de chave e envio)",
    "gate": "FE"
+  },
+  {
+   "action_id": "daily-routine.apply",
+   "o_que": "acoes internas do card do modelo (Duplicar, Criar rotina por este modelo) sao invisiveis a tecnologia assistiva: o CoeloAdminInteractiveCard envolve o conteudo em ExcludeSemantics e expoe so o onTap do card (clique semantico abre a edicao); por ponteiro funcionam. Corrigir a semantica do composto (mergeSemantics ou expor os botoes)",
+   "gate": "FE (composto coelo_ui_admin) / acessibilidade"
+  },
+  {
+   "action_id": "daily-routine.list",
+   "o_que": "abas Rotinas e Lancamentos vazias escondem o card Criar (regra do estado vazio)",
+   "gate": "FE"
+  },
+  {
+   "action_id": "daily-routine.apply",
+   "o_que": "card da aplicacao mostra rotulos crus (institution, inherited) em vez de nome/escopo legiveis",
+   "gate": "FE"
   }
  ],
  "duvidasParaOOwner": [],
- "nextStep": "ate 15:45: provar o save de Rotina no build 7 se o Chrome aguentar; responder a revisao das 15:50 no JSON",
- "finalizado": false,
+ "nextStep": "responder a revisao das 15:50 no JSON",
+ "finalizado": true,
  "historicoR04": {
   "revision": 33,
   "round": "E2-R04-20260911",
@@ -1453,8 +1484,8 @@
    "prova": "etapas 1-2 preenchidas (51/52); seletor de hora nao fecha ao Aplicar e o Chrome caiu; Responsavel sem opcoes"
   },
   "daily-routine.create": {
-   "resultado": "parcial",
-   "prova": "card Criar modelo aparece (57); editor editavel (58/59); save 22P02 -> a1ca952cc; prova do save no build 7"
+   "resultado": "P",
+   "prova": "superadmin_routine_save_model 200 (176882c5) no build 7; lista e edicao reabrem o modelo; 57/58/59/70/71"
   },
   "attendance.dashboard": {
    "resultado": "P",
@@ -1479,6 +1510,14 @@
   "forms.download": {
    "resultado": "P",
    "prova": "form-export-download 200 com download_url presignada do R2 apos origem liberada + redeploy; 69"
+  },
+  "daily-routine.edit": {
+   "resultado": "P (leitura) ",
+   "prova": "edit?kind=model abre com detail 200 e Salvar; save de edicao nao exercitado; 71"
+  },
+  "daily-routine.apply": {
+   "resultado": "P",
+   "prova": "superadmin_routine_save_application 200 (3d9f0a32) no build 10; aba Rotinas lista; 75/76/77"
   }
  },
  "notaRelogio": "a rev 38 registrou 14:58 por engano (relogio da maquina marcava 14:38); a rev 35 idem (12:58 -> 12:40)",
@@ -1536,6 +1575,16 @@
    "tabela": "public.attendance_sessions",
    "id": "d3821901-196d-478d-9ea4-70e1c38e8c38",
    "nota": "chamada da turma 368a5cea em 11/09, corrigida (versao 4); participante a496f56e"
+  },
+  {
+   "tabela": "public.routine_models",
+   "id": "176882c5-e35f-4db9-b763-dc7ffe31b276",
+   "nota": "Modelo R05 rota real (instituicao d0c4...01), rascunho"
+  },
+  {
+   "tabela": "public.routine_applications",
+   "id": "3d9f0a32-a563-4703-b0ab-3ffd95c49332",
+   "nota": "rotina aplicada (instituicao d0c4...01) a partir do modelo 176882c5, rascunho"
   }
  ],
  "edgeFunctions": [
@@ -1549,8 +1598,8 @@
   }
  ],
  "miniRevisao": {
-  "quando": "2026-09-11T14:58-03:00",
-  "sha_final": "a1ca952cc de codigo + este commit de docs (rev 39), publicados; status limpo; sem WIP",
+  "quando": "2026-09-11T15:34-03:00",
+  "sha_final": "0b8ee7a75 (codigo) + este commit (rev 43), branch publicada, status limpo, sem WIP",
   "fechou": [
    "forms.publish, forms.overview (rev 37, ja aplicados: verified-e2e)",
    "forms.monitor, forms.respond, forms.responses, forms.response-detail: verified-e2e (deltas rev 37)",
@@ -1562,19 +1611,24 @@
    "daily-routine.create: card Criar e editor editavel (local-green) apos 220000; save corrigido",
    "form-media em R2 (implantada), spec P32, achado do cron (sem correcao)",
    "attendance.dashboard/create/mark/finish/correct: verified-e2e (deltas-3)",
-   "forms.responses.export e forms.download: verified-e2e (XLSX no R2 privado com URL curta)"
+   "forms.responses.export e forms.download: verified-e2e (XLSX no R2 privado com URL curta)",
+   "daily-routine.create: verified-e2e; daily-routine.edit: FE verified + BE done (deltas-4)",
+   "daily-routine.apply: verified-e2e (deltas-5)"
   ],
   "aberto_primeiro_gate": [
-   "daily-routine.create/edit/apply/publish: prova do save no build 7 (a1ca952cc)",
    "medication.create/detail/edit/evidence: seletor de hora + responsaveis (FE)",
    "forms.location-answer: exige formulario com item Local publicado (220800 em producao); nao exercitado",
-   "forms.upload/resolve-file/expire-file/delete-file: cliente Dart do editor no ramo question-image da form-media (FE) e prova do cron de limpeza"
+   "forms.upload/resolve-file/expire-file/delete-file: cliente Dart do editor no ramo question-image da form-media (FE) e prova do cron de limpeza",
+   "daily-routine.publish: lancamento a partir da aplicacao 3d9f0a32 (aba Lancamentos vazia sem card Criar; comando superadmin_routine_publish_launch presente)"
   ],
   "duvidas_ao_owner": [
    "Medicacao deve ter abas de status como Perfis de cuidado? (herdada da R04)",
    "Detalhe do perfil de cuidado: manter redirecionamento ao editor ou criar tela somente leitura com historico (spec 020)?",
    "Titulos das telas de Formularios sem golden (visao geral, monitor, respostas, arquivos) sao proposta minha (herdada)"
   ],
-  "chaves_criadas": "nenhuma por esta frente (form_media_worker_url foi criada pelo coordenador)"
+  "chaves_criadas": "nenhuma por esta frente (form_media_worker_url foi criada pelo coordenador)",
+  "deltas": "deltas-r05-fcr.json (16) e -2 (29) aplicados; -3 (21), -4 (5) e -5 (3) a aplicar",
+  "pacotes": "20260911220000, 220100, 230000 aplicados pelo coordenador; nenhum candidato pendente",
+  "handoff": "docs/reviews/etapa-2-operacao/comunicacao/formularios-cuidado-rotina-handoff.md"
  }
 }

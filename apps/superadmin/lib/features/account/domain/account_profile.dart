@@ -38,6 +38,24 @@ class AccountAvatar {
     backgroundColor: defaultBackgroundColor,
   );
 
+  /// A projecao do servidor deriva a sigla das iniciais e pode trazer digito
+  /// (sobrenome numerico da pessoa de servico); o cliente aceita so letras e
+  /// deriva das letras do nome nesse caso.
+  static String lettersOnlyInitials(String projected, String firstName, String lastName) {
+    if (validateInitials(projected) == null) return projected.trim();
+    final letters = RegExp(r'[A-Za-zÀ-ÖØ-öø-ÿ]');
+    String first(String value) => letters.firstMatch(value)?.group(0)?.toUpperCase() ?? '';
+    final derived = '${first(firstName)}${first(lastName)}';
+    if (derived.isNotEmpty) return derived;
+    final fromProjection = letters
+        .allMatches(projected)
+        .map((match) => match.group(0)!)
+        .take(2)
+        .join()
+        .toUpperCase();
+    return fromProjection.isNotEmpty ? fromProjection : 'EQ';
+  }
+
   static String? validateInitials(String value) {
     return RegExp(r'^[A-Za-zÀ-ÖØ-öø-ÿ]{1,2}$').hasMatch(value.trim())
         ? null

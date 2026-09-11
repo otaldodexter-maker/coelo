@@ -155,12 +155,18 @@ final class RoutineModel {
     this.institutionId,
     this.originUnitId,
     this.canManage = false,
+    this.versionId,
   });
 
   final String id;
   final String name;
   final String description;
   final int version;
+
+  /// Uuid da versao atual do modelo (routine_model_versions.id), como o
+  /// servidor projeta em definition.model_version_id. Uma aplicacao aponta
+  /// para esta versao; o rotulo `<id>:v<n>` nao e aceito pelo banco (22P02).
+  final String? versionId;
   final RoutineModelStatus status;
   final List<RoutineSection> sections;
   final int expectedVersion;
@@ -209,7 +215,10 @@ final class RoutineApplication {
     this.validUntil,
     this.startsAt,
     this.endsAt,
-    this.visibility = 'institution',
+    // Valores aceitos pelo servidor (routine_applications.visibility):
+    // authorized_guardians | institution_staff | unit_staff. O antigo
+    // 'institution' era recusado com 23514 na rota real (R05).
+    this.visibility = 'authorized_guardians',
     this.assignees = const [],
     this.canManage = false,
   });

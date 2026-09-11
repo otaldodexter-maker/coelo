@@ -190,3 +190,5 @@
 20260911211300_chat_attachment_worker_claims_v1.sql
 # lote 46 (11/09 14:57) - R05 acessos-pessoas: filtro por segmento no diretorio de Pessoas (p_segment)
 20260911170400_people_list_segment_v1.sql
+# lote 47 (11/09 15:15) - R05 realm-interno: @ padrao de unidade cabe em 30 chars sem hifen (defeito achado pela G2)
+20260911211400_unit_default_handle_fit_v1.sql

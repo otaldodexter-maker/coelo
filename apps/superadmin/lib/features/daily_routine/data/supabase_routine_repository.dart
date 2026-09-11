@@ -57,6 +57,7 @@ final class SupabaseRoutineRepository implements RoutineRepository {
       name: payload['name'] as String? ?? '',
       description: payload['description'] as String? ?? '',
       version: _asInt(definition['version']),
+      versionId: definition['model_version_id'] as String?,
       status: _modelStatus(payload['status'] as String?),
       sections: _rows(definition['sections']).map(_section).toList(growable: false),
       expectedVersion: _asInt(payload['management_version']),
@@ -92,7 +93,7 @@ final class SupabaseRoutineRepository implements RoutineRepository {
       validUntil: _optionalDate(payload['valid_until']),
       startsAt: payload['starts_at'] as String?,
       endsAt: payload['ends_at'] as String?,
-      visibility: payload['visibility'] as String? ?? 'institution',
+      visibility: payload['visibility'] as String? ?? 'authorized_guardians',
       assignees: _rows(payload['assignees'])
           .map(
             (row) => RoutineApplicationAssignee(
