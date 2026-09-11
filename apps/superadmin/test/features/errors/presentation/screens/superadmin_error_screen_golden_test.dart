@@ -19,7 +19,10 @@ void main() {
       // Goldens 409 aprovados nominalmente pelo Owner em 11/09/2026 (P26 da
       // Rodada 4, ADR 0034 Decisao 15) a partir das imagens candidatas em
       // docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/.
-      testWidgets('renders ${kind.code} in ${themeCase.name}', (tester) async {
+      // `deferred` compartilha o codigo 503 (recurso adiado por decisao) e
+      // ganha golden proprio para nao sobrescrever o 503 aprovado.
+      final goldenName = kind == SuperadminErrorKind.deferred ? '503_deferred' : kind.code;
+      testWidgets('renders $goldenName in ${themeCase.name}', (tester) async {
         tester.view.physicalSize = const Size(1440, 900);
         tester.view.devicePixelRatio = 1;
         addTearDown(tester.view.resetPhysicalSize);
@@ -35,7 +38,7 @@ void main() {
 
         await expectLater(
           find.byType(SuperadminErrorScreen),
-          matchesGoldenFile('goldens/error_${kind.code}_${themeCase.name}.png'),
+          matchesGoldenFile('goldens/error_${goldenName}_${themeCase.name}.png'),
         );
       });
     }

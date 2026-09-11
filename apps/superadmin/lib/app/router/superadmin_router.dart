@@ -743,6 +743,13 @@ GoRouter createSuperadminRouter({
     actionLabel: 'Voltar ao início',
     onAction: () => context.goNamed(SuperadminRoutes.homeName),
   );
+  // Importar/exportar reais ficam para depois do MVP por decisao (ADR 0034):
+  // a rota diz isso, em vez de "temporariamente indisponivel" (IMP-R05-2).
+  Widget deferredFeaturePage(BuildContext context) => SuperadminErrorScreen(
+    key: const Key('production-mutation-capability-unavailable'),
+    kind: SuperadminErrorKind.deferred,
+    onAction: () => context.goNamed(SuperadminRoutes.homeName),
+  );
   Widget productionMealPlanWizardPage(
     BuildContext context, {
     required String title,
@@ -5343,7 +5350,7 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.importCreateName,
             builder: (context, state) {
               if (!hasAuthoritativeMutationCapability()) {
-                return blockedProductionMutationPage(context);
+                return deferredFeaturePage(context);
               }
               final preset = state.extra is ImportCreationPreset
                   ? state.extra as ImportCreationPreset

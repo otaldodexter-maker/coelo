@@ -244,10 +244,11 @@ Widget _unavailableApp({double textScale = 1}) => MaterialApp(
     title: 'Nova importação',
     subtitle: 'Importação adiada para depois do MVP.',
     currentDestination: 'imports',
+    // R06 (IMP-R05-2): recurso adiado por decisao diz isso, em vez de
+    // "temporariamente indisponivel" (SuperadminErrorKind.deferred).
     child: SuperadminErrorScreen(
       key: const Key('production-mutation-capability-unavailable'),
-      kind: SuperadminErrorKind.unavailable,
-      actionLabel: 'Voltar ao início',
+      kind: SuperadminErrorKind.deferred,
       onAction: () {},
     ),
   ),
