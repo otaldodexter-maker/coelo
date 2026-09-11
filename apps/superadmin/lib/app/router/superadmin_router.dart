@@ -2584,6 +2584,18 @@ GoRouter createSuperadminRouter({
                 pathParameters: {'modelId': item.id},
                 queryParameters: {'kind': item.kind.name},
               ),
+              // daily-routine.apply: duplicar e criar rotina a partir do modelo
+              // so existiam no /dev; o editor de producao ja aceita
+              // duplicateFrom/applicationFrom e o servidor revalida o escopo.
+              onDuplicateModel: (item) => context.goNamed(
+                SuperadminRoutes.dailyRoutineCreateName,
+                queryParameters: {'duplicateFrom': item.id},
+              ),
+              onCreateFromModel: (item) => context.goNamed(
+                SuperadminRoutes.dailyRoutineCreateName,
+                queryParameters: {'applicationFrom': item.id},
+                extra: RoutineEntryKind.application,
+              ),
               // D7: Lancamentos no MVP e uma tela minima sobre o comando
               // daily-routine.publish, que ja existe. Autoria, capacidade,
               // escopo e versao esperada sao recalculados no servidor; aqui so
