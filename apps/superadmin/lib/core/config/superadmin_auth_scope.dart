@@ -384,7 +384,7 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       ),
       assessmentRepository: SupabaseAssessmentRepository(client),
       assessmentMutationsEnabled: enableAssessmentMutations,
-      personDirectoryRepository: SupabasePersonDirectoryRepository(client),
+      personDirectoryRepository: SupabasePersonDirectoryRepository(client, segmentFilterAvailable: true),
       personDetailReader: SupabasePersonDetailReader(client),
       personHandleRepository: enablePersonHandles ? SupabasePersonHandleRepository(client) : null,
       personIdentityRepository: const UnavailablePersonIdentityRepository(),
