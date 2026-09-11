@@ -51,7 +51,6 @@ final class StudentLinkResult {
   final String status;
 }
 
-
 final class StudentGroupLink {
   const StudentGroupLink({
     required this.groupLinkId,
@@ -119,6 +118,30 @@ final class StudentLinks {
   final bool canManage;
   final List<StudentUnitLink> unitLinks;
 }
+
+/// Turma elegível para vincular ou transferir (P36: aluno sempre em turma de
+/// unidade de instituição, nunca solto). A unidade vem junto porque é a
+/// turma que decide a unidade, não o contrário.
+final class StudentGroupOption {
+  const StudentGroupOption({
+    required this.groupId,
+    required this.groupName,
+    required this.unitId,
+    required this.unitName,
+  });
+
+  final String groupId;
+  final String groupName;
+  final String unitId;
+  final String unitName;
+
+  String get label => '$groupName — $unitName';
+}
+
+/// Lê as turmas ativas da instituição da criança. Quem compõe decide a fonte
+/// (diretório de Turmas em produção); sem loader a tela não oferece vincular
+/// nem transferir.
+typedef StudentGroupOptionsLoader = Future<List<StudentGroupOption>> Function(String institutionId);
 
 abstract interface class StudentLinkRepository {
   /// Lê onde a criança está hoje: unidades, turmas e vigências.

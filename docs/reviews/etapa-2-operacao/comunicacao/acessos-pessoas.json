@@ -1,7 +1,7 @@
 {
-  "revision": 122,
-  "updated_at": "2026-09-11T15:59:06.400Z",
-  "relogio_local": "Fri Sep 11 2026 12:59:06 GMT-0300 (Horário Padrão de Brasília)",
+  "revision": 123,
+  "updated_at": "2026-09-11T17:03:00.016Z",
+  "relogio_local": "Fri Sep 11 2026 14:03:00 GMT-0300 (Horário Padrão de Brasília)",
   "round": "E2-R05-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
@@ -9,7 +9,7 @@
   "status": "em andamento",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-acessos-pessoas",
   "branch": "work/etapa2-r05-acessos-pessoas",
-  "head": "56a970279 (publicado; inclui merge de origin/dev fa4014ff4)",
+  "head": "bf9c2f186 (publicado)",
   "base_observed": "origin/dev 2f6a6114f; lotes 8-27 em producao; candidatos/acessos-pessoas so com 170750 e 170900 OBSOLETOS (171600 e 171800 aplicados no lote 25); ordem-de-aplicacao ate lote 27",
   "recorte": {
     "familias": [
@@ -39,7 +39,7 @@
   "loop": "/loop 15m agendado na abertura",
   "testes_P_F_B_S_U": "nenhum ainda nesta rodada",
   "bloqueio": "nenhum total",
-  "proximo_passo": "pedir ao coordenador o 170200 na fila; provar students.* por REST depois; conferir build web se a memoria liberar (rota real de Perfis P31, Pessoas @, Convites); internal-users.create/suspend: gate documentado (sem RPC de criacao; suspender o unico usuario interno de teste derruba a sessao)",
+  "proximo_passo": "invites.* na rota real (criar/detalhe/revogar pela UI), internal-users.list/detail/edit na rota real, access-models.list na rota real; apos o 170300: criar perfil a partir do modelo em producao; mini-revisao as 15:45",
   "ACK_ao_coordenador": "coelo-b5 pediu identificacao as 12:20; respondi por mensagem entre sessoes (G2 R05). Continuo sem esperar ACK.",
   "MEMORIA": "12:20: 0,02-0,3 GB livres (dartaotruntime 800 MB, 28 dart, 25 chrome, flutter_tester de outras frentes). Sem build web, Chrome ou flutter test ate liberar; provas por REST e edicao de codigo/SQL enquanto isso.",
   "INVITES_BE_POR_REST_12h15": {
@@ -52,8 +52,10 @@
     "FE": "formulario refaz fetchOptions com institutionId apos escolher o contexto e exige perfil no passo 0 (linha 201); prova pela UI espera memoria para build+Chrome"
   },
   "dados_sinteticos_r05": [
-    "convite 03e9c9d2-2772-4ee8-863b-2a47c0108ce8 (revoked; qa-r05-convite@invalid.test; instituicao 9f04...0010) - apagar ao fim da Etapa 2",
-    "person_handles: backfill de todas as pessoas (170100) e @ 'qa_r05_teste' da pessoa ec2a15a2 (+1 linha no ledger) - o backfill e produto, nao lixo; a troca pode ficar"
+    "convite 03e9c9d2 (revoked) - apagar ao fim da Etapa 2",
+    "person_handles (backfill 170100) e trocas: ec2a15a2 -> qa_r05_teste; 9f04...0061 -> qa_r05.profissional (ledger)",
+    "child_group_links 8d766ca8 (crianca d0c4...0003 na turma 368a5cea, ends_at 2026-12-15) e vinculo de unidade d0c4...0005 revogado e reativado - ficam",
+    "nenhum perfil Admin criado (23514); nada em institution_roles"
   ],
   "P31_NO_CLIENTE_12h35": {
     "commit": "3b4aaa5b6 (feat(superadmin): perfis de acesso com modelos do sistema)",
@@ -97,6 +99,39 @@
     "regravados": "access_profile_table_{light,dark}_{375,768,1024,1440} (8) e person_directory_table_dark_{375,768,1024,1440} (4) apos o alinhamento das celulas do composto (G-SUP, dev 11c4bfbef); diff conferida em imagem: so alinhamento vertical das celulas (e rodape de paginacao nos escuros, que seguem os claros). SDK 3.44.2.",
     "retido": "person_form_create_light_375: o golden guardado tem o rodape Continuar/Cancelar em outra posicao (P15 rodape ancorado); pre-existente, nao regravado sem conferir o respiro no fim do conteudo."
   },
+  "ROTA_REAL_13h20_14h00": {
+    "ambiente": "build web de qa_main (13:04, com P31 e o @) servido por Node em 127.0.0.1:3000; um Chrome CDP 9411 com SwiftShader; sessao qa-r03 injetada no localStorage (chave coelo.superadmin.auth.session) a partir do login por REST porque a extensao do Flutter Driver (qa_main) emula o teclado e nenhum campo aceita digitacao por CDP; texto entra por window.$flutterDriver enter_text. Chrome lento (30-40 s por tela) com 0,5-0,8 GB livres.",
+    "access-profiles.list": "verified + E2E: aba Superadmin (5 perfis de plataforma) e aba Admin com os 4 modelos de sistema do lote 25 (Predefinido); reload mantem. capturas/access-profiles-list-*.png",
+    "access-profiles.detail": "verified + E2E: card abre o detalhe; modelo de sistema Professor(a) mostra 'Modelo do sistema: nao editavel' + 'Criar a partir deste modelo'. capturas/access-profiles-detail-modelo-sistema.png",
+    "access-profiles.create": "P31 na UI ok (rascunho a partir do modelo com descricao/escopo/permissoes; nome e codigo digitados; revisao), mas superadmin_access_profile_save no dominio institution devolveu 23514 institution_roles_global_system_check: defeito de producao, pacote 170300 abaixo. Nota de UX: na revisao, 'Permissoes adicionadas: nenhuma' porque o rascunho compara com o modelo de origem; ajustar para comparar com o rascunho em branco (pendencia pequena).",
+    "people.list": "verified + E2E: diretorio com pessoas reais; reload mantem. PENDENCIA FE: aba Criancas selecionada nao filtra os cards; clique no card nao navegou ao detalhe na rota real (por URL abre) - investigar onPressed do CoeloAdminInteractiveCard em Pessoas.",
+    "people.links / people.reload": "verified + E2E: detalhe da pessoa com a secao Identificador (@): 'coelo' reservado e 'qa.r05.profissional' formato invalido (dois pontos) enquanto digita; 'qa_r05.profissional' disponivel; salvar com motivo -> superadmin_person_handle_set 200; reload mantem o @ novo e o cooldown (Alterar @ desabilitado, 'nova troca a partir de 11/10/2026'). capturas/people-arroba-*.png"
+  },
+  "PACOTE_170300_13h26": {
+    "id": "AP-INSTITUTION-PROFILE-SYSTEM-MODEL-170300",
+    "migration": "packages/coelo_database/candidatos/acessos-pessoas/20260911170300_institution_profile_system_model_create_v1.sql",
+    "estado": "VERDE - PRONTO PARA APLICAR (commit d3d6a1535)",
+    "pgTAP": "institution_profile_system_model_create_v1_test 8/8; RED reproduzido com o corpo de producao (23514)",
+    "o_que_faz": "access_profile_create_internal: no dominio institution, sem institution_id o perfil nasce modelo do sistema (is_system, P31: so a plataforma cria os padroes); com institution_id (instituicao ativa validada) e perfil proprio da instituicao. superadmin_access_profile_update: modelos de sistema de Admin passam a ser editaveis por quem passa por access_profile_require_mutation('institution') (institution.roles.manage); modelos de plataforma (Owner, Auditor...) continuam protegidos. Sem chave de composicao.",
+    "suites_vizinhas": "access_profile_detail_v3_test 37/37 e institution_role_system_templates_v1_test 7/7 verdes; access_profile_capability_core_hardening_test (4) e access_profiles_internal_read_contract_test (4) ja falhavam antes (contrato antigo de lista/overrides), nao tocam o pacote."
+  },
+  "STUDENTS_BE_14h00": {
+    "students.link": "done: apos 170200 (lote 34) superadmin_student_link(unit d0c4...0002, group 368a5cea) -> active, group_link 8d766ca8",
+    "students.edit": "done: superadmin_student_edit ends_at 2026-12-15 persistido e relido",
+    "students.revoke": "done: revoked (turma inactive); link seguinte reativou o mesmo vinculo (fixture preservada para as outras frentes)",
+    "students.transfer": "so negativa (unidade inexistente -> P0002); a instituicao sintetica d0c4 tem uma unidade so; positivo depende de segunda unidade (estrutura)",
+    "students.list": "done por REST (links + contexto inexistente P0002)",
+    "FE": "bf9c2f186: Vincular a uma turma (turmas ativas da instituicao pelo diretorio de Turmas; a turma decide a unidade, P36), Transferir (turmas de outras unidades + motivo) e Editar vigencia (inicio/fim dd/mm/aaaa); testes 15/15; rota real depende de build novo"
+  },
+  "DELTAS": "docs/reviews/evidence/etapa-2/r05-acessos-pessoas/deltas-r05.json: 26 entradas (invites BE done x4; access-profiles.list/detail FE verified + E2E; access-profiles.create FE/BE local-green com o gate 170300; people.list/links/reload FE verified + BE done + E2E; students.list/link/edit/revoke BE done, transfer local-green, FE link/edit/transfer local-green). Ensaiadas com apply-tracker-delta.cjs + validate-trackers.cjs (PASS: FE 71, BE 77, E2E 48) e revertidas; o coordenador aplica.",
+  "PENDENCIAS_DE_CODE_REVIEW_R05": [
+    "Pessoas: clique no card nao abre o detalhe na rota real (onOpen ligado no router; conferir o CoeloAdminInteractiveCard/semantica).",
+    "Pessoas: abas Todos/Equipe/Responsaveis/Criancas nao filtram os cards na rota real.",
+    "Perfis: revisao do rascunho criado a partir do modelo compara com o modelo (mostra 'nenhuma permissao adicionada'); comparar com o rascunho em branco.",
+    "Alunos: transfer devolve HTTP 500 (P0002) para unidade inexistente; mapear para 404/422 no envelope.",
+    "qa_main: a extensao do Flutter Driver emula o teclado (enableTextEntryEmulation) e impede digitacao real por CDP; usar window.$flutterDriver enter_text nas provas (ou desligar a emulacao no qa_main).",
+    "Skills: pgTAP em psql nao carrega pg_safeupdate; DELETE/UPDATE em funcao sempre com WHERE e um caso com load 'safeupdate' como supabase_admin."
+  ],
   "historico_r04": {
     "revision": 118,
     "updated_at": "2026-09-11T11:31:19.648Z",

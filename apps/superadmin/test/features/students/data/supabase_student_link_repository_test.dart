@@ -154,12 +154,9 @@ void main() {
       addTearDown(client.dispose);
 
       await expectLater(
-        SupabaseStudentLinkRepository(client).revoke(
-          requestId: 'r1',
-          childContextId: 'context-1',
-          unitId: 'unit-1',
-          reason: 'Saída.',
-        ),
+        SupabaseStudentLinkRepository(
+          client,
+        ).revoke(requestId: 'r1', childContextId: 'context-1', unitId: 'unit-1', reason: 'Saída.'),
         throwsA(isA<StudentLinkException>().having((error) => error.kind, 'kind', kind)),
         reason: 'código $code',
       );

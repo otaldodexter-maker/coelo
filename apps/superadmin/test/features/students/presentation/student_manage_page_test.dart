@@ -8,11 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 /// A tela mostra onde a criança está antes de oferecer as ações que mudam
 /// isso, e nunca autoriza nada por conta própria.
 final class _FakeStudentLinkRepository implements StudentLinkRepository {
-  _FakeStudentLinkRepository({
-    this.canManage = true,
-    this.status = 'active',
-    this.failure,
-  });
+  _FakeStudentLinkRepository({this.canManage = true, this.status = 'active', this.failure});
 
   final bool canManage;
   final String status;
@@ -139,9 +135,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('student-revoke-dialog')), findsOneWidget);
 
-    final confirm = tester.widget<FilledButton>(
-      find.byKey(const Key('student-reason-confirm')),
-    );
+    final confirm = tester.widget<FilledButton>(find.byKey(const Key('student-reason-confirm')));
     expect(
       confirm.onPressed,
       isNull,
