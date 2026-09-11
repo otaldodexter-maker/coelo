@@ -151,7 +151,13 @@ final class SupabaseFormsApi
   Future<FormDefinition> saveDraft(FormCommand<FormDefinition> command) => _definitionCommand(
     FormsRpc.saveDraft,
     command,
-    (value) => FormDefinitionDto.fromDomain(value).toJson(),
+    // Status e versao pertencem a projecao de leitura; form_save_draft
+    // (app_private.form_assert_payload_keys) recusa o rascunho com
+    // 22023 "form draft contains unknown keys" quando eles viajam no
+    // payload. A versao esperada vai em p_expected_version.
+    (value) => FormDefinitionDto.fromDomain(value).toJson()
+      ..remove('status')
+      ..remove('management_version'),
   );
 
   @override

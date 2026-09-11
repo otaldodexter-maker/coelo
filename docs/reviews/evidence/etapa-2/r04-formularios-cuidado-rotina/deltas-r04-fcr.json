@@ -1,0 +1,379 @@
+[
+  {
+    "action_id": "health-care.list",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): /health-care/profiles abre na rota normal com o composto completo (busca, 5 filtros, toggle cards/tabela, Arquivos, abas Todos/Ativos/Em Implantacao/Inativos, card \"Criar perfil de cuidado\") e vazio honesto \"Nenhum registro\"; sem fixture nem fail-closed. Sem captura de rede da lista nesta rodada (o coletor subiu depois da carga).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/01-health-care-list.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/01-health-care-list.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
+      "recordedAt": "2026-09-11T03:40:53-03:00"
+    }
+  },
+  {
+    "action_id": "health-care.create",
+    "camada": "backend",
+    "estado_proposto": "blocked",
+    "delta": "R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): Card Criar -> /health-care/profiles/new; a pagina pede as criancas por superadmin_child_context_directory_v2 -> 404 PGRST202 \"Could not find the function public.superadmin_child_context_directory_v2 with parameters p_after_context_id, p_after_name, p_institution_id, p_limit\"; a funcao so existe em packages/coelo_database/migrations-historico/20260908051500 (candidato CHILD-READ01) e nao esta na baseline de producao nem em migrations/. O cliente cai em \"Cadastro indisponivel / Os dados das criancas e o comando de persistencia ainda nao estao disponiveis\" (honesto). superadmin_health_care_save_profile nao chegou a ser chamado.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/02-health-care-create-step1.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/02-health-care-create-step1.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
+      "recordedAt": "2026-09-11T03:40:53-03:00"
+    }
+  },
+  {
+    "action_id": "health-care.detail",
+    "camada": "integrated",
+    "estado_proposto": "not-executed",
+    "delta": "R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): Sem perfil em producao e criacao bloqueada pelo leitor de criancas ausente (ver health-care.create); a rota /health-care/profiles/:id redireciona para /edit e nao foi exercitada.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/02-health-care-create-step1.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/02-health-care-create-step1.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
+      "recordedAt": "2026-09-11T03:40:53-03:00"
+    }
+  },
+  {
+    "action_id": "health-care.edit",
+    "camada": "integrated",
+    "estado_proposto": "not-executed",
+    "delta": "R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): Depende de health-care.create (bloqueada); nao exercitada.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/02-health-care-create-step1.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/02-health-care-create-step1.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
+      "recordedAt": "2026-09-11T03:40:53-03:00"
+    }
+  },
+  {
+    "action_id": "medication.list",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): /health-care/medication-plans abre na rota normal; superadmin_medication_plan_directory -> 200 {\"items\":[],\"total\":0}; composto com busca, filtros Status do plano/Situacao da dose, toggle, Arquivos e card \"Criar plano de medicacao\"; vazio honesto. Sem abas de status (duvida ao Owner mantida da rev 30).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/03-medication-list.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/03-medication-list.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
+      "recordedAt": "2026-09-11T03:40:53-03:00"
+    }
+  },
+  {
+    "action_id": "medication.create",
+    "camada": "backend",
+    "estado_proposto": "blocked",
+    "delta": "R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): Card Criar -> /health-care/medication-plans/new; o seletor \"Crianca\" pede superadmin_child_context_directory_v2 -> 404 PGRST202 \"Could not find the function public.superadmin_child_context_directory_v2 with parameters p_after_context_id, p_after_name, p_institution_id, p_limit\"; a funcao so existe em packages/coelo_database/migrations-historico/20260908051500 (candidato CHILD-READ01) e nao esta na baseline de producao nem em migrations/. A tela mostra \"Nenhuma opcao disponivel\" e Continuar fica desabilitado; superadmin_medication_plan_save nao chegou a ser chamado.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/04-medication-create-step1.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/04-medication-create-step1.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
+      "recordedAt": "2026-09-11T03:40:53-03:00"
+    }
+  },
+  {
+    "action_id": "medication.detail",
+    "camada": "integrated",
+    "estado_proposto": "not-executed",
+    "delta": "R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): Depende de medication.create (bloqueada).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/04-medication-create-step1.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/04-medication-create-step1.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
+      "recordedAt": "2026-09-11T03:40:53-03:00"
+    }
+  },
+  {
+    "action_id": "medication.edit",
+    "camada": "integrated",
+    "estado_proposto": "not-executed",
+    "delta": "R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): Depende de medication.create (bloqueada).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/04-medication-create-step1.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/04-medication-create-step1.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
+      "recordedAt": "2026-09-11T03:40:53-03:00"
+    }
+  },
+  {
+    "action_id": "medication.evidence",
+    "camada": "frontend",
+    "estado_proposto": "blocked",
+    "delta": "R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): Nao existe no cliente: nenhuma tela, botao ou RPC de registro de dose/evidencia em lib/features/health_care (a unica \"Evidencia\" do app e o anexo do dialogo de Bug). A acao precisa de spec de UI antes da prova.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/03-medication-list.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/03-medication-list.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
+      "recordedAt": "2026-09-11T03:40:53-03:00"
+    }
+  },
+  {
+    "action_id": "students.list",
+    "camada": "backend",
+    "estado_proposto": "blocked",
+    "delta": "R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): /students abre o shell e falha na carga: superadmin_child_context_directory_v2 -> 404 PGRST202 \"Could not find the function public.superadmin_child_context_directory_v2 with parameters p_after_context_id, p_after_name, p_institution_id, p_limit\"; a funcao so existe em packages/coelo_database/migrations-historico/20260908051500 (candidato CHILD-READ01) e nao esta na baseline de producao nem em migrations/. Tela mostra \"Nao foi possivel carregar os alunos\" + \"Acompanhamento indisponivel\" (honesto, mas sem o composto do diretorio; pendencia de Fase 0 mantida).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/05-students-list.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/05-students-list.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
+      "recordedAt": "2026-09-11T03:40:53-03:00"
+    }
+  },
+  {
+    "action_id": "students.link",
+    "camada": "frontend",
+    "estado_proposto": "blocked",
+    "delta": "R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): /students/d0c40000-0000-4000-8000-000000000004/manage abre (superadmin_student_links -> 200, can_manage true, vinculo ativo com Unidade QA R04), mas a tela so renderiza \"Revogar vinculo\": vincular, transferir e editar nao tem botao nem seletor de unidade/turma (repositorio e RPCs existem). Sem caminho de UI a partir de /students (cards sem onTap).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/06-students-manage.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/06-students-manage.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
+      "recordedAt": "2026-09-11T03:40:53-03:00"
+    }
+  },
+  {
+    "action_id": "students.transfer",
+    "camada": "frontend",
+    "estado_proposto": "blocked",
+    "delta": "R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): Sem UI (ver students.link).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/06-students-manage.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/06-students-manage.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
+      "recordedAt": "2026-09-11T03:40:53-03:00"
+    }
+  },
+  {
+    "action_id": "students.edit",
+    "camada": "frontend",
+    "estado_proposto": "blocked",
+    "delta": "R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): Sem UI (ver students.link).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/06-students-manage.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/06-students-manage.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
+      "recordedAt": "2026-09-11T03:40:53-03:00"
+    }
+  },
+  {
+    "action_id": "students.revoke",
+    "camada": "backend",
+    "estado_proposto": "blocked",
+    "delta": "R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): Dialogo \"Revogar o vinculo\" com Motivo obrigatorio abre e envia superadmin_student_revoke {child_context_id d0c40000-...-0004, unit_id d0c40000-...-0002, reason \"[R04-QA] prova de revogacao na rota real\"} -> 403 42501 \"people.assign_children required\", enquanto superadmin_student_links devolveu can_manage=true para a mesma sessao. Causa: student_link_require_scope (20260910220200) usa app_private.has_context_permission(institution, people.assign_children, unit, group, ...) e a ponte 220400 so da a qa-r03 platform_membership; a leitura e o comando divergem. Vinculo sintetico permanece ativo (nada mudou em producao).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/15-students-revoke-dialog.png, docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/16-students-revoked.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/15-students-revoke-dialog.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
+      "recordedAt": "2026-09-11T03:40:53-03:00"
+    }
+  },
+  {
+    "action_id": "attendance.dashboard",
+    "camada": "backend",
+    "estado_proposto": "blocked",
+    "delta": "R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): /attendance abre o shell e falha: attendance_dashboard_access -> 404 PGRST202 (funcao so em migrations-historico/20260825171221_attendance_responsive_dashboard.sql; ausente da baseline). Tela \"Nao foi possivel carregar / Confira a conexao\" sem o composto (pendencia de Fase 0 mantida).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/07-attendance-dashboard.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/07-attendance-dashboard.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
+      "recordedAt": "2026-09-11T03:40:53-03:00"
+    }
+  },
+  {
+    "action_id": "attendance.create",
+    "camada": "backend",
+    "estado_proposto": "blocked",
+    "delta": "R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): /attendance/new (so por URL; o painel nao compoe onCreate) falha: superadmin_attendance_context_options {\"p_date\":\"2026-09-11\"} -> 404 PGRST202; a funcao nao existe em migrations/, candidatos/ nem migrations-historico/. Tela \"Nao foi possivel carregar\".",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/08-attendance-create.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/08-attendance-create.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
+      "recordedAt": "2026-09-11T03:40:53-03:00"
+    }
+  },
+  {
+    "action_id": "attendance.mark",
+    "camada": "integrated",
+    "estado_proposto": "not-executed",
+    "delta": "R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): Depende de attendance.create (bloqueada).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/08-attendance-create.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/08-attendance-create.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
+      "recordedAt": "2026-09-11T03:40:53-03:00"
+    }
+  },
+  {
+    "action_id": "attendance.correct",
+    "camada": "integrated",
+    "estado_proposto": "not-executed",
+    "delta": "R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): Depende de attendance.create (bloqueada).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/08-attendance-create.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/08-attendance-create.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
+      "recordedAt": "2026-09-11T03:40:53-03:00"
+    }
+  },
+  {
+    "action_id": "attendance.finish",
+    "camada": "integrated",
+    "estado_proposto": "not-executed",
+    "delta": "R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): Depende de attendance.create (bloqueada).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/08-attendance-create.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/08-attendance-create.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
+      "recordedAt": "2026-09-11T03:40:53-03:00"
+    }
+  },
+  {
+    "action_id": "daily-routine.list",
+    "camada": "frontend",
+    "estado_proposto": "in-progress",
+    "delta": "R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): /daily-routine abre na rota normal; superadmin_routine_directory -> 200 {\"items\":[],\"total\":0}; toggle, Arquivos e abas Modelos/Rotinas/Lancamentos aparecem, mas a tela entra em \"Modo somente leitura\" e nao mostra o card Criar (router passa onCreateEntry/onEdit nulos e canManage = rows.any(can_manage), falso no vazio). Nao cumpre a regra do Owner de card Criar sempre visivel.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/09-daily-routine-list.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/09-daily-routine-list.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
+      "recordedAt": "2026-09-11T03:40:53-03:00"
+    }
+  },
+  {
+    "action_id": "daily-routine.create",
+    "camada": "frontend",
+    "estado_proposto": "blocked",
+    "delta": "R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): /daily-routine/new (so por URL) abre \"Criar modelo\" mas somente leitura: o editor deriva canManage de repository.fetchPage(model, pageSize 1) (daily_routine_form_sections.dart ~322-334), que no diretorio vazio devolve false; \"Adicionar secao\" desabilitado e sem Salvar. superadmin_routine_save_model nao chegou a ser chamado. Correcao: capacidade propria (superadmin_routine_directory nao devolve can_manage no topo; so por item).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/10-daily-routine-create.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/10-daily-routine-create.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
+      "recordedAt": "2026-09-11T03:40:53-03:00"
+    }
+  },
+  {
+    "action_id": "daily-routine.edit",
+    "camada": "integrated",
+    "estado_proposto": "not-executed",
+    "delta": "R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): Depende de daily-routine.create (bloqueada).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/10-daily-routine-create.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/10-daily-routine-create.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
+      "recordedAt": "2026-09-11T03:40:53-03:00"
+    }
+  },
+  {
+    "action_id": "daily-routine.apply",
+    "camada": "integrated",
+    "estado_proposto": "not-executed",
+    "delta": "R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): Depende de daily-routine.create (bloqueada); \"Criar rotina por este modelo\" nao e composto no router.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/10-daily-routine-create.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/10-daily-routine-create.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
+      "recordedAt": "2026-09-11T03:40:53-03:00"
+    }
+  },
+  {
+    "action_id": "daily-routine.publish",
+    "camada": "integrated",
+    "estado_proposto": "not-executed",
+    "delta": "R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): Sem lancamento em rascunho para publicar; onPublishLaunch esta composto.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/09-daily-routine-list.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/09-daily-routine-list.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
+      "recordedAt": "2026-09-11T03:40:53-03:00"
+    }
+  },
+  {
+    "action_id": "forms.list",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): /forms abre na rota normal com cabecalho, Situacao, Periodo, toggle e Arquivos; superadmin_forms_directory_v2 -> 200 vazio antes e, depois da criacao, lista \"[R04-QA] Formulario Local editado\" (management_version 2) apos carga completa. Pendencia: o card \"Criar formulario\" nunca aparece em producao porque FormsDirectoryPage so o exibe com reader == null (router passa formsDirectoryReader); /forms/new so por URL.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/11-forms-list.png, docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/24-forms-list-with-form.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/11-forms-list.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
+      "recordedAt": "2026-09-11T03:40:53-03:00"
+    }
+  },
+  {
+    "action_id": "forms.create",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): /forms/new: instituicao \"QA R04 Cuidado (sintetico)\" (superadmin_forms_context manage/publish true), titulo, contexto, pergunta Texto curto; form_save_draft -> 200 id 4555ba07-e4a4-4971-8ba7-d81a775169cd, \"Rascunho salvo.\"; reload em /forms/4555ba07.../edit -> form_get_editor 200 com o mesmo conteudo. Dois defeitos do cliente corrigidos nesta prova (f80d26909: id \"\" -> null, 22P02; ee4903912: status/management_version fora do payload, 22023 \"form draft contains unknown keys\").",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/14-forms-draft-saved.png, docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/19-forms-edit-reload.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/14-forms-draft-saved.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
+      "recordedAt": "2026-09-11T03:40:53-03:00"
+    }
+  },
+  {
+    "action_id": "forms.edit",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): /forms/4555ba07.../edit: titulo alterado para \"[R04-QA] Formulario Local editado\"; form_save_draft (p_expected_version 1) -> 200 management_version 2; reload -> form_get_editor 200 mantem o titulo; /forms/4555ba07... form_get_overview -> 200.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/20-forms-edit-saved.png, docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/21-forms-edit-reload2.png, docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/22-forms-overview.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/20-forms-edit-saved.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
+      "recordedAt": "2026-09-11T03:40:53-03:00"
+    }
+  },
+  {
+    "action_id": "forms.test",
+    "camada": "integrated",
+    "estado_proposto": "verified",
+    "delta": "R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): /forms/4555ba07.../test abre (form_get_editor -> 200) como pre-visualizacao inerte: \"Teste do formulario\" + faixa \"nenhuma resposta e aberta, salva ou enviada\". Responder nao e provavel: o router monta const FormResponsePage() sem api/occurrenceId (\"Resposta indisponivel\") e nao ha ocorrencia.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/23-forms-test.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/23-forms-test.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
+      "recordedAt": "2026-09-11T03:40:53-03:00"
+    }
+  },
+  {
+    "action_id": "forms.location-question",
+    "camada": "backend",
+    "estado_proposto": "blocked",
+    "delta": "R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): Item Local adicionado pelo catalogo (chave forms-editor-catalog-location; aviso \"Opcoes do catalogo de Locais\"); form_save_draft -> 400 23514 \"location item requires at least one active location\" mesmo com o Local ativo fc446535-100c-4f35-8e30-e43d63176e3f criado na instituicao (superadmin_location_create_v2 200). Causa (F-R04-FCR-005): o pacote 20260910220500 so chama form_apply_location_options_v1 no superadmin_form_replace_draft_definition_v2 (linha 452) e no form_publish (734); a rota de producao usa public.form_save_draft (v1), que valida com validate_form_definition exigindo >=1 opcao no snapshot, logo nenhum rascunho com Local salva por essa rota. Correcao SQL: aplicar o snapshot no caminho v1 antes de validar (ou o editor usar a API v2). Nao aplicado em producao.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/13-forms-editor-local-item.png, docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/14-forms-draft-saved.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/13-forms-editor-local-item.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
+      "recordedAt": "2026-09-11T03:40:53-03:00"
+    }
+  }
+]

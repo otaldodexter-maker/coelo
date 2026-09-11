@@ -442,6 +442,25 @@ void main() {
     );
   });
 
+  test('formulario novo vai ao fio com id nulo, nunca string vazia', () {
+    final novo = FormDefinition(
+      id: '',
+      institutionId: definition.institutionId,
+      kind: definition.kind,
+      identityMode: definition.identityMode,
+      responseUnit: definition.responseUnit,
+      description: definition.description,
+      status: definition.status,
+      managementVersion: 0,
+      title: definition.title,
+      sections: definition.sections,
+    );
+    final json = FormDefinitionDto.fromDomain(novo).toJson();
+    expect(json.containsKey('id'), isTrue);
+    expect(json['id'], isNull);
+    expect(FormDefinitionDto.fromDomain(definition).toJson()['id'], definition.id);
+  });
+
   test('rejects an unknown enum value', () {
     final json = FormDefinitionDto.fromDomain(definition).toJson();
     expect(

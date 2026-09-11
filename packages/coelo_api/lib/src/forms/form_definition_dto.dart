@@ -52,7 +52,10 @@ final class FormDefinitionDto {
   FormDefinition toDomain() => value;
 
   Map<String, Object?> toJson() => {
-    'id': value.id,
+    // Formulario novo nao tem id no dominio (''); no fio o servidor exige
+    // null ou uuid (form_save_draft faz coalesce(id, gen_random_uuid()) e o
+    // validador v2 recusa string vazia com 22P02/SAI_INVALID_ARGUMENT).
+    'id': value.id.isEmpty ? null : value.id,
     'institution_id': value.institutionId,
     'kind': _encodeEnum(value.kind, _formKinds),
     'identity_mode': _encodeEnum(value.identityMode, _identityModes),

@@ -1,16 +1,16 @@
 {
- "revision": 31,
+ "revision": 32,
  "round": "E2-R04-20260911",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5 (Claude, Opus)",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T02:48-03:00",
+ "updatedAt": "2026-09-11T03:40-03:00",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-formularios-cuidado-rotina",
  "branch": "work/etapa2-r04-formularios-cuidado-rotina",
- "head": "da905636d (P16 cliente) sobre 317f37bab (merge de origin/dev 75e4bff16)",
- "base": "origin/dev 75e4bff16 (docs(e2): fechamento da Rodada 3, reconciliacao do Git e prompts da Rodada 4)",
+ "head": "ee4903912 (rota real + 2 correcoes de Formularios) sobre cbbb738db (merge fast-forward de origin/dev)",
+ "base": "origin/dev cbbb738db (docs(e2): rota real de Conta e Suporte, operacoes rev 18)",
  "scope": {
   "families": [
    "forms_authoring",
@@ -35,8 +35,8 @@
   ]
  },
  "currentGate": {
-  "gate": "pacote 20260910220400 (ator do realm interno como pessoa de servico) verde no descartavel e aplicado pelo coordenador; ate la nenhuma acao do recorte passa da regua",
-  "screen": "Etapa 2 -> apps/superadmin -> Saude e Cuidado -> Perfis de cuidado / Medicacao",
+  "gate": "rota real provada em Formularios (list/create/edit/test verified/verified-e2e); demais familias bloqueadas por RPC ausente em producao ou UI inexistente (F-R04-FCR-005..010)",
+  "screen": "Etapa 2 -> apps/superadmin -> Operacao -> Formularios / Saude e Cuidado / Acompanhamento",
   "actionIds": [
    "health-care.list",
    "health-care.create",
@@ -46,9 +46,29 @@
    "medication.create",
    "medication.detail",
    "medication.edit",
-   "medication.evidence"
+   "medication.evidence",
+   "students.list",
+   "students.link",
+   "students.transfer",
+   "students.edit",
+   "students.revoke",
+   "attendance.dashboard",
+   "attendance.create",
+   "attendance.mark",
+   "attendance.correct",
+   "attendance.finish",
+   "daily-routine.list",
+   "daily-routine.create",
+   "daily-routine.edit",
+   "daily-routine.apply",
+   "daily-routine.publish",
+   "forms.list",
+   "forms.create",
+   "forms.edit",
+   "forms.test",
+   "forms.location-question"
   ],
-  "note": "composicao de producao de Cuidado/Medicacao feita no cliente (commit desta revisao); bloqueio remanescente e o ator no servidor (F-R04-FCR-002)."
+  "note": "estados propostos em deltas-r04-fcr.json; so verified/verified-e2e onde houve RPC 200 + reload na rota normal"
  },
  "loopAgendado": "/loop 15m, agendado na abertura",
  "tests": {
@@ -80,6 +100,21 @@
    "prova": "flutter analyze lib test limpo; 6 widget/unit tests novos verdes no superadmin (catalogo com Local; revogada desabilitada e nao gravada; obrigatoria sem opcao bloqueia; opcional nao bloqueia; recusa do servidor inline; mapeamento dos dois codigos); coelo_api 133/133; coelo_domain 41/41",
    "sha": "da905636d",
    "defeito_corrigido_pela_prova": "requireOnlyKeys exige conjunto exato: aceitar as chaves de Local como opcionais quebrou toda opcao de escolha (projecao de resposta original e autosave do editor); corrigido em f0df927e4 aceitando os dois formatos que o servidor projeta"
+  },
+  {
+   "o_que": "fix(formularios): formulario novo vai ao fio com id nulo (FormDefinitionDto.toJson); producao recusava com 22P02 invalid input syntax for type uuid: \"\"",
+   "prova": "coelo_api test/forms/form_definition_dto_test.dart 119/119; rota real: form_save_draft passou do 22P02 para o 22023 seguinte",
+   "sha": "f80d26909"
+  },
+  {
+   "o_que": "fix(formularios): SupabaseFormsApi.saveDraft retira status e management_version do payload (form_assert_payload_keys); producao recusava com 22023 \"form draft contains unknown keys\"",
+   "prova": "superadmin test/features/forms/data/supabase_forms_api_test.dart 50/50; rota real: form_save_draft 200 e reload mantendo",
+   "sha": "ee4903912"
+  },
+  {
+   "o_que": "docs(e2): rota real do grupo (rev 32): deltas por action_id, 25 capturas, findings F-R04-FCR-005..010, dados sinteticos para apagar",
+   "prova": "este JSON e deltas-r04-fcr.json",
+   "sha": "commit de docs desta revisao"
   }
  ],
  "pendenciasRegistradas": [
@@ -115,7 +150,7 @@
   }
  ],
  "duvidasParaOOwner": [],
- "nextStep": "P16: provar na rota real com qa-r03 depois do lote 17 (rascunho com item Local, resposta, revogacao, reload) e levar os goldens do editor ao Owner; demais familias conforme revisao 30",
+ "nextStep": "coordenador: apagar 4555ba07-e4a4-4971-8ba7-d81a775169cd (forms) e fc446535-100c-4f35-8e30-e43d63176e3f (activity_locations) no fechamento; backend do grupo: candidatos para F-R04-FCR-005 (snapshot de Local no v1), 006 (child directory), 007 (attendance) e 008 (alinhar can_manage/revoke); frontend: F-R04-FCR-009/010; depois repetir a rota real de Cuidado, Medicacao, Alunos, Assiduidade, Rotina e Local em Formularios",
  "handoff": "docs/reviews/etapa-2-operacao/comunicacao/formularios-cuidado-rotina-handoff.md",
  "historicoR03": {
   "updatedAt": "2026-09-10T17:10:00-03:00",
@@ -792,6 +827,53 @@
    "evidencia": "1a: 'active MFA people.read capability is required' (SQLSTATE 55000) em 20260910170100; 2a (preflight de MFA removido na copia local): 'people.read role grants do not match the approved detail matrix'. Ambas porque platform_permissions esta vazia no momento da migration.",
    "contorno_local": "copiar supabase/seed.sql para migrations como 20260910000001_seed_catalogo_local.sql (so no descartavel) e desligar [db.seed]; assim o catalogo existe antes de 170100. Nao alterei arquivo do repositorio.",
    "para_o_coordenador": "vale registrar no README ou mover o catalogo para dentro da baseline; senao cada frente vai tropecar aqui."
+  },
+  {
+   "id": "F-R04-FCR-005",
+   "severity": "bloqueia forms.location-question na rota de producao",
+   "titulo": "P16: o snapshot de Locais so e aplicado no salvamento v2 e na publicacao; a rota de producao usa form_save_draft v1 e o validador exige >=1 opcao",
+   "medido": "producao, 11/09 03:20-03:30, form_save_draft -> 400 23514 com Local ativo na instituicao",
+   "evidencia": "packages/coelo_database/migrations/20260910220500_forms_location_question_v1.sql: form_apply_location_options_v1 chamado nas linhas 452 (replace_draft_definition_v2) e 734 (form_publish); validate_form_definition (linha ~634) levanta \"location item requires at least one active location\" quando form_question_options esta vazio; app_private.form_save_draft (baseline) nao chama o snapshot. O router monta FormsEditorPage com api (form_save_draft), nunca FormsEditorPage.authoring (v2).",
+   "acao": "backend do grupo: candidato que aplique form_apply_location_options_v1 no caminho v1 (app_private.form_save_draft, antes de validate_form_definition) com pgTAP; alternativa de cliente: compor o editor com a API v2. Nao aplicado em producao."
+  },
+  {
+   "id": "F-R04-FCR-006",
+   "severity": "bloqueia health-care.create, medication.create e students.list para qualquer sessao",
+   "titulo": "superadmin_child_context_directory_v2 nunca chegou a producao",
+   "medido": "producao, 11/09 03:08, PGRST202 em /health-care/profiles/new, /health-care/medication-plans/new e /students",
+   "evidencia": "funcao so em packages/coelo_database/migrations-historico/20260908051500_superadmin_child_context_directory_v2.sql (candidato CHILD-READ01 com pins de hash de 09/2026); ausente da baseline 20260910000000 e de migrations/",
+   "acao": "backend: reavaliar o candidato sobre a baseline (pins de hash vao divergir) e entrar na fila do coordenador; ate la Cuidado/Medicacao nao criam e Alunos nao lista."
+  },
+  {
+   "id": "F-R04-FCR-007",
+   "severity": "bloqueia toda a familia attendance",
+   "titulo": "RPCs de Assiduidade ausentes em producao: attendance_dashboard_access/read so no historico e superadmin_attendance_context_options inexistente no repositorio",
+   "medido": "producao, 11/09 03:12, PGRST202 em /attendance e /attendance/new",
+   "evidencia": "attendance_dashboard_access: migrations-historico/20260825171221_attendance_responsive_dashboard.sql; superadmin_attendance_context_options e superadmin_attendance_create_call: nenhum arquivo em migrations/, candidatos/ ou migrations-historico/",
+   "acao": "backend: o lote 20260910010200 (Assiduidade) so cobriu escalada e idempotencia; falta o contrato de leitura/contexto/criacao. Sem isso attendance.* nao passa da regua."
+  },
+  {
+   "id": "F-R04-FCR-008",
+   "severity": "bloqueia students.revoke (e link/transfer/edit) para a sessao qa-r03",
+   "titulo": "superadmin_student_links diz can_manage=true e superadmin_student_revoke nega com people.assign_children required",
+   "medido": "producao, 11/09 03:27, 403 42501",
+   "evidencia": "student_link_require_scope (20260910220200) usa app_private.has_context_permission(institution, ...); a ponte 220400 da a qa-r03 platform_membership e has_platform_permission, nao membership contextual na instituicao sintetica",
+   "acao": "backend: alinhar leitura e comando (mesma funcao de capacidade) ou dar a pessoa de servico o contexto institucional; decidir com o coordenador antes de mexer na ponte transversal."
+  },
+  {
+   "id": "F-R04-FCR-009",
+   "severity": "bloqueia daily-routine.create e esconde o card Criar",
+   "titulo": "Rotina diaria deriva canManage das linhas do diretorio (falso no vazio) e o router nao compoe onCreateEntry/onEdit",
+   "medido": "producao, 11/09 03:14, /daily-routine \"Modo somente leitura\", /daily-routine/new sem Salvar",
+   "evidencia": "daily_routine_pages.dart canManage = rows.any(can_manage); daily_routine_form_sections.dart ~322-334 fetchPage(model, pageSize 1).canManage; superadmin_routine_directory devolve can_manage por item, nao no topo",
+   "acao": "frontend: capacidade propria (bootstrap permission_codes routine.* ou can_manage no topo do diretorio) e compor onCreateEntry/onEdit; backend: expor can_manage no envelope do diretorio."
+  },
+  {
+   "id": "F-R04-FCR-010",
+   "severity": "UI, cliente",
+   "titulo": "Tres defeitos de composicao vistos na rota real",
+   "evidencia": "(a) /forms: card \"Criar formulario\" so aparece quando reader == null (forms_directory_page.dart 68-81, 238), logo nunca em producao; (b) /forms/:id/occurrences/:occ/respond monta const FormResponsePage() sem api/occurrenceId (\"Resposta indisponivel\"); (c) o balao flutuante de chat (174x48 em 1321,865) cobre o botao primario \"Criar local\" (99x48 em 1350,856) no formulario de Locais: o clique abriu /communication/conversations (memoria do Owner: chat nao aparece em telas de criar/editar). Tambem o campo Instituicao do editor de Formularios renderiza com 133px de largura e quebra o nome em 6 linhas (captura 14).",
+   "acao": "frontend do grupo (a, b) e do grupo de Estrutura/shell (c)."
   }
  ],
  "pacotesProntos": [
@@ -876,5 +958,53 @@
   ],
   "regra": "cada um em worktree isolada; so a conversa-mae escreve este JSON e faz commit"
  },
- "revisadoPor": "subagente do coordenador (cliente de P16, apos a queda da conversa do grupo no reinicio); sem Chrome, sem flutter run, sem producao; um flutter test por vez"
+ "revisadoPor": "subagente do coordenador (prova na rota real do grupo, apos a queda da conversa do grupo no reinicio); um Chrome (CDP 9411, SwiftShader), build web release em localhost:3011, sessao qa-r03 em producao; nenhum SQL em producao",
+ "AMBIENTE_DE_PROVA": "flutter build web -t test_driver/qa_main.dart --dart-define-from-file=.env.local -o build/web-r04fcr (3 builds: base, + id nulo, + strip de status/management_version) servido por serve.js (Node, fallback de SPA) em http://localhost:3011; Chrome dedicado --remote-debugging-port=9411 --use-angle=swiftshader (perfil isolado); login pelo driver (qa_drive.dart login, credencial de Coelo-backups/qa-r03.env no ambiente do shell, nunca impressa) com Manter sessao aberta; cliques por CDP (cdp.js clickxy/click por semantica), texto por click CDP + enter_text do driver (Input.insertText nao chega aos campos Flutter), RPCs por Network (cdp.js net, com navegacao dentro da coleta). O Chrome caiu uma vez sob SwiftShader (durante o rebuild); reaberto na rota, a sessao persistiu. Encerrados Chrome 9411 e Node 3011 ao final.",
+ "ROTA_REAL_R04": {
+  "deltas": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/deltas-r04-fcr.json (29 entradas, uma por action_id)",
+  "capturas": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/00..24 (25 PNG)",
+  "resultado_por_action_id": {
+   "P": [
+    "health-care.list (verified FE)",
+    "medication.list (verified-e2e)",
+    "forms.list (verified-e2e, card Criar oculto)",
+    "forms.create (verified-e2e)",
+    "forms.edit (verified-e2e)",
+    "forms.test (verified, preview inerte)"
+   ],
+   "F_bloqueadas": [
+    "health-care.create e medication.create e students.list: superadmin_child_context_directory_v2 404 (nunca aplicada)",
+    "students.revoke: 403 42501 people.assign_children required (has_context_permission vs ponte 220400 so de plataforma)",
+    "students.link/transfer/edit: sem UI",
+    "medication.evidence: sem UI",
+    "attendance.dashboard: attendance_dashboard_access 404 (so em migrations-historico)",
+    "attendance.create: superadmin_attendance_context_options 404 (nao existe no repositorio)",
+    "daily-routine.create: editor somente leitura (canManage derivado do diretorio vazio)",
+    "forms.location-question: 23514 location item requires at least one active location (F-R04-FCR-005: snapshot so no v2/publish)"
+   ],
+   "nao_executadas": [
+    "health-care.detail/edit",
+    "medication.detail/edit",
+    "attendance.mark/correct/finish",
+    "daily-routine.edit/apply/publish"
+   ]
+  },
+  "dados_sinteticos_criados_para_apagar": [
+   {
+    "tabela": "public.forms (+ form_versions/form_sections/form_items)",
+    "id": "4555ba07-e4a4-4971-8ba7-d81a775169cd",
+    "nome": "[R04-QA] Formulario Local editado",
+    "instituicao": "d0c40000-0000-4000-8000-000000000001",
+    "nota": "form_command_receipts com request_id b694fc50-bb0d-498d-999f-f9ae9503c2b5 e 69aaa64c-2128-48e5-aa02-d0e1ea0a71e2"
+   },
+   {
+    "tabela": "public.activity_locations",
+    "id": "fc446535-100c-4f35-8e30-e43d63176e3f",
+    "nome": "[R04-QA] Local Sala Azul",
+    "instituicao": "d0c40000-0000-4000-8000-000000000001",
+    "nota": "criado por superadmin_location_create_v2, request f402d987-3234-4d5e-8d14-2657829a99f7"
+   },
+   "students.revoke falhou com 403: o vinculo d0c40000-0000-4000-8000-000000000005 continua ativo; nenhum perfil, plano, chamada ou modelo foi criado"
+  ]
+ }
 }
