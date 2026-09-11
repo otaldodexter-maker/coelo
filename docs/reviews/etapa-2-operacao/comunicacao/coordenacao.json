@@ -1,12 +1,12 @@
 {
- "revision": 49,
+ "revision": 50,
  "round": "E2-R05-20260911",
  "role": "Coordenacao da tarde R05 - Claude Opus (C0)",
  "writer": "coordenador-claude",
  "app": "Claude Code (VS Code)",
  "model": "claude-opus-5",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T16:25:00-03:00",
+ "updatedAt": "2026-09-11T16:55:00-03:00",
  "relogio": "relogio da maquina; posse as 12:03 -03:00 de 11/09/2026",
  "posseR04": {
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -239,7 +239,8 @@
   "47": "15:50 pedido de revisao final as sete frentes; lotes 47-48; moments-media corrigida; todas as frentes finalizadas (FE 138 / BE done 132 / E2E 105)",
   "48": "16:00 FECHAMENTO da R05: sete frentes integradas e worktrees removidas; 21 lotes/34 pacotes; rastreadores, skills, ADR, conhecimento e fechamento publicados; percentuais finais",
   "49": "16:25 artefato de aprovacoes da R05 publicado (17 telas + P43-P50, com Salvar); prompts da R06 (2 h + 30 min, Opus 5 medio) publicados; formato de local-green ajustado a pedido do Owner",
-  "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina."
+  "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina.",
+  "50": "16:55 respostas do Owner ao artefato de aprovacoes (17 telas, IMP-R05-2, P43-P50) anotadas para a R06; familia visual Publicacao aberta na coelo-ui"
  },
  "fechamentoR03": {
   "quando": "2026-09-10T20:30-03:00 (relogio da maquina)",
@@ -1407,5 +1408,162 @@
    "local-green apresentado sobre o que ainda falta",
    "listas de arrobas reservados so no encerramento do MVP"
   ]
+ },
+ "respostasDoOwnerR05": {
+  "fonte": "artefato 2150f92d versao 2, salvo pelo Owner em 11/09/2026 16:45; anotadas para a R06 (nao executadas pela coordenacao da R05)",
+  "visual": {
+   "V-1": {
+    "tela": "Principal — Perfil",
+    "frente": "principal-chat-sistema",
+    "decisao": "A+",
+    "observacao": "Perfil é clicavel para ver o Agora (Stories) caso ele tenha algum Agora, publicado que ainda não foi visto por aquele usuário, ele deve ter um contorno (ou algo proximo) sinalizando, pode ser um contorno laranja em degrade laranja.\nO sombreamento do circulo do perfil ficou ruim, se basear igual do menu flutuante.\n\nAlém disso, o botão Acompanhar sumiu"
+   },
+   "V-2": {
+    "tela": "Principal — Para Você",
+    "frente": "principal-chat-sistema",
+    "decisao": "A+",
+    "observacao": "Dentro de Para Você, onde temos Para voce e uns cards, o degrade está ruim, fica ruim de ler o que tá escrito conflitando com a imagem. Além disso, quando o responsavel clicar, de inicio não  levará para lugar algum (que faremos depois)"
+   },
+   "V-3": {
+    "tela": "Principal — Acontece (feed)",
+    "frente": "principal-chat-sistema",
+    "decisao": "A+",
+    "observacao": "Está bom, mas no mobile o conteiner do Acontece (Feed) não está no padrão de um pequeno espaçamento e pontas arredondas. Além disso tanto no mobile e web, parece que a foto está sendo esticada, perdendo a qualidade.\nTanto no web quanto mobile a separação do Agora para o menu, e do Acontece para os cards do Agora não parecem legal, sinto que tem que ter um capricho. Não sei se estamos usando as fontes do nosso designer system e cores das fontes corretas."
+   },
+   "V-4": {
+    "tela": "Principal — Publicar no Acontece",
+    "frente": "principal-chat-sistema",
+    "decisao": "A+",
+    "observacao": "Reprovado, o estilo de publicação é outro, vou mandar na conversa e pedi para ela salvar a referencia. Ele realmente é um parte diferente na nossa coelo ui, a parte do app principal, não usa essa wizard"
+   },
+   "V-5": {
+    "tela": "Principal — Publicar Momentos",
+    "frente": "principal-chat-sistema",
+    "decisao": "A+",
+    "observacao": "Reprovado, o estilo de publicação é outro, vou mandar na conversa e pedi para ela salvar a referencia. Ele realmente é um parte diferente na nossa coelo ui, a parte do app principal, não usa essa wizard"
+   },
+   "V-6": {
+    "tela": "Principal — Publicar Agora",
+    "frente": "principal-chat-sistema",
+    "decisao": "A+",
+    "observacao": "Reprovado, o estilo de publicação é outro, vou mandar na conversa e pedi para ela salvar a referencia. Ele realmente é um parte diferente na nossa coelo ui, a parte do app principal, não usa essa wizard"
+   },
+   "V-7": {
+    "tela": "Agenda — Criar evento",
+    "frente": "publicacoes-agenda",
+    "decisao": "A+",
+    "observacao": "Melhorar o wizard conforme padrão de instituições e sem fundo cinza"
+   },
+   "V-8": {
+    "tela": "Agenda — Lista",
+    "frente": "publicacoes-agenda",
+    "decisao": "A+",
+    "observacao": "No mobile o botão de calendario e lista ficou melhor que o R, porém o botão de calendário e lista no web ficou melhor no R"
+   },
+   "V-9": {
+    "tela": "Avisos — diretório",
+    "frente": "publicacoes-agenda",
+    "decisao": "A",
+    "observacao": ""
+   },
+   "V-10": {
+    "tela": "Circulares — diretório",
+    "frente": "publicacoes-agenda",
+    "decisao": "A",
+    "observacao": ""
+   },
+   "V-11": {
+    "tela": "Composto — Perfis de acesso",
+    "frente": "acessos-pessoas",
+    "decisao": "A+",
+    "observacao": "no app real, não precisa ter dados de demostração. Além disso, está faltando o card de criar, tanto em card quantos nas table, ele deve aparecer mesmo sem se não tiver dados."
+   },
+   "V-12": {
+    "tela": "Composto — Formulários",
+    "frente": "formularios-cuidado-rotina",
+    "decisao": "A",
+    "observacao": ""
+   },
+   "V-13": {
+    "tela": "Composto — Usuários internos",
+    "frente": "acessos-pessoas",
+    "decisao": "A",
+    "observacao": ""
+   },
+   "V-14": {
+    "tela": "Composto — Pessoas",
+    "frente": "acessos-pessoas",
+    "decisao": "A",
+    "observacao": ""
+   },
+   "V-15": {
+    "tela": "Composto — Rotina diária",
+    "frente": "formularios-cuidado-rotina",
+    "decisao": "A+",
+    "observacao": "Devemos ter o botão (card) de criar novo modelo de rotina e também para rotina, além disso, na tble podemos ter a oção de duplicar, arquivar conforme temos no card de modelo de rotina."
+   },
+   "V-16": {
+    "tela": "Composto — componente base",
+    "frente": "operacoes",
+    "decisao": "A+",
+    "observacao": "Sem fundo cinza, mas ui ainda está pobrinho. mas tudo bem"
+   },
+   "V-17": {
+    "tela": "Instituições — formulário",
+    "frente": "estrutura",
+    "decisao": "A",
+    "observacao": ""
+   }
+  },
+  "IMP-R05-2": {
+   "decisao": "A",
+   "obs": ""
+  },
+  "produto": {
+   "P43": {
+    "opcao": "B",
+    "observacao": ""
+   },
+   "P44": {
+    "opcao": "B",
+    "observacao": ""
+   },
+   "P45": {
+    "opcao": "B",
+    "observacao": "Apenas conforme hierarquia, como owner"
+   },
+   "P46": {
+    "opcao": "A",
+    "observacao": ""
+   },
+   "P47": {
+    "opcao": "A",
+    "observacao": ""
+   },
+   "P48": {
+    "opcao": "A",
+    "observacao": ""
+   },
+   "P49": {
+    "opcao": "A",
+    "observacao": ""
+   },
+   "P50": {
+    "opcao": "B",
+    "observacao": "o Superadmin, mediante a hierarquia, como owner sempre pode tudo"
+   }
+  },
+  "leitura": {
+   "P43": "B: tela minima de Sessoes no MVP (lista + revogar todas) com Edge Function sobre o Admin API do Auth (G7)",
+   "P44": "B: atualizar o Catalogo agora (indice + fingerprints) por uma frente de UI (G7)",
+   "P45": "B com observacao: modelo de sistema criado pelo Superadmin pode ser excluido, conforme hierarquia, como owner (G2)",
+   "P46": "A: usuarios internos tem @ pela pessoa de servico (G2)",
+   "P47": "A: remover o fail-closed de tenant do cliente de Cardapios; servidor valida (G4)",
+   "P48": "A: sincronizador distingue owner -> institution_admin e operations -> leitura (G4/G5)",
+   "P49": "A: abas de estado no Suporte e persistir cards/tabela (G7)",
+   "P50": "B com observacao: o Superadmin, mediante a hierarquia, como owner sempre pode tudo: tela de resposta a circular tambem no Superadmin (G6)",
+   "V-4/V-5/V-6": "REPROVADOS: o estilo de publicacao do Principal e outro (nao usa wizard); familia visual Publicacao registrada na coelo-ui com as referencias do Owner; novas telas em canvas para aprovacao (Agora, Lancar faltas, Acontece, Circulares, Eventos, Momentos)",
+   "estadoVazioComCriar": "V-11 e V-15: o card Criar aparece sempre (cards e tabela), mesmo sem dados; app real sem dados de demonstracao; Rotina com criar modelo/criar rotina e duplicar/arquivar na tabela"
+  }
  }
 }

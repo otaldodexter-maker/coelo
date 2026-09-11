@@ -82,3 +82,75 @@ deduzir uma identidade visual final do Site a partir de Principal ou Superadmin.
 Preservar marca, acessibilidade, isolamento Astro e assets públicos do build/CDN;
 o Site não acessa mídia privada. Uma identidade nova precisa de proposta concreta
 quando ainda não houver decisão do Owner para ela.
+
+
+## Família Publicação (decisão do Owner, 11/09/2026 à tarde)
+
+O Owner reprovou os publicadores do Principal renderizados com o assistente
+(wizard) administrativo (V-4 Acontece, V-5 Momentos, V-6 Agora do artefato de
+aprovações da R05) e definiu que **publicar é uma família visual própria** do
+Coelo (Principal), distinta do diretório administrativo e do wizard de
+formulários. Ela vale para **Agora, Acontece, Momentos, Circulares, Eventos da
+Agenda e Lançar faltas** (lançar chamada também é uma publicação). As quatro
+referências que ele enviou (Agora, Acontece, dois estudos de Momentos) devem
+ser guardadas em `docs/reviews/evidence/etapa-2/referencias/publicacao/`
+(`agora-publicar.png`, `acontece-publicar.png`, `momentos-publicar-1.png`,
+`momentos-publicar-2.png`); até lá esta descrição é a fonte.
+
+Anatomia comum, sobre nossos tokens (fundo branco `neutral0`, texto
+`neutral700`, botão primário `orange500` com texto branco, secundário contornado
+`neutral200`, notas em `orange50`, cantos `md`/`lg`, Nunito Sans):
+
+- **Cabeçalho:** no mobile, fechar (X) à esquerda, logo `coelo` ao centro e
+  ajuda (?) à direita, título "Publicar no/em …" abaixo com uma barra de
+  progresso fina laranja quando há etapas; no desktop, cabeçalho global do
+  Principal (logo, navegação Início · Agora · Acontece · Momentos · … com a
+  aba ativa sublinhada em laranja, sino, avatar) e título com seta de voltar.
+- **Mídia primeiro:** a mídia (vídeo vertical no Agora e Momentos, carrossel
+  de fotos `1/6` no Acontece) é o maior elemento; miniaturas em fila com
+  duração, `+` para adicionar e `Editar capa` sobre a imagem. Vídeo tem um
+  trilho vertical de ferramentas em círculos contornados: **Texto, Música,
+  Cortar, Capa** (ícones de linha, rótulo abaixo).
+- **Blocos em cards contornados** (`neutral200`, raio 12), na ordem:
+  **Legenda** (campo com contador, ex. 0/60 no Agora, 0/220 em Momentos,
+  0/2.200 no Acontece, emoji no canto) → **Público e contexto** (ícone de
+  pessoas laranja, linhas Instituição › Unidade › Turma › audiência, chevron;
+  chips de audiência Famílias · Alunos · Equipe escolar · Somente
+  responsáveis, a ativa em `orange50` com borda laranja) → **Agendamento**
+  (calendário; "Publicar agora ▾" ou toggle "Agendar publicação") →
+  **Opções** ("Salvar como rascunho" com toggle) → **nota** em `orange50`
+  quando houver regra (Agora: "Stories ficam disponíveis por 24 horas";
+  Momentos: "Somente pessoas do contexto selecionado poderão ver").
+- **Prévia:** no desktop, coluna à direita "Prévia do post/momento" com o card
+  como aparecerá no feed (avatar `CO`, contexto, texto, mídia, curtidas e
+  comentários) e a nota "A prévia é uma simulação…"; no mobile a prévia não
+  aparece.
+- **Rodapé:** mobile com ação primária cheia (`Publicar agora` / `Publicar no
+  Acontece`, ícone de enviar) e secundária contornada abaixo (`Salvar
+  rascunho`); desktop com as duas à direita, secundária à esquerda da
+  primária (cancelar/rascunho à esquerda, publicar à direita).
+- **Sem fundo cinza, sem wizard de etapas administrativo, sem balão de chat.**
+
+Aplicações por tela (telas novas propostas no canvas "Publicar no Coelo",
+para o Owner aprovar):
+
+- **Agora:** vídeo 9:16 com duração, trilho Texto/Música/Cortar/Capa, legenda
+  0/60, público, agendar (toggle), nota das 24 horas.
+- **Acontece:** carrossel `1/6`, legenda 0/2.200 com hashtag laranja, público
+  + chips, agendamento "Publicar agora ▾", opções, prévia do post.
+- **Momentos:** vídeo com trilho, "Capa do momento" (miniaturas, a escolhida
+  com contorno laranja), legenda 0/220, público + chips, agendar, nota de
+  contexto, prévia vertical.
+- **Circulares:** título, texto (0/4.000), anexos até 4 (PDF/imagem), público
+  + chips, "Resposta esperada" (Só leitura · Confirmar ciência · Aceitar/
+  recusar), agendamento, opções, prévia da circular com o botão que a família
+  verá.
+- **Eventos (Agenda):** título, data e horário em dois cards, local (catálogo
+  de Locais), descrição, categoria (Evento · Prova · Aniversário · Reunião),
+  público + chips, lembrete, agendamento; prévia como card do calendário.
+- **Lançar faltas (Assiduidade):** card de turma e data, lista de alunos com
+  segmentos P/F/A (presente verde `forest`, falta laranja, atraso âmbar),
+  observação por aluno, "Marcar todos presentes", observação da chamada,
+  nota de que as famílias com falta recebem aviso no sino, rodapé
+  "Concluir chamada" (primária) e "Salvar e continuar depois"; no desktop,
+  coluna de resumo (presentes/faltas/atrasos).

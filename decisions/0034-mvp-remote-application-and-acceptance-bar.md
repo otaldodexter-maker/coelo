@@ -449,6 +449,45 @@ sintéticas, por migration de limpeza com dump prévio.
   `agenda_create_*` em
   `docs/reviews/etapa-2-operacao/next-round/R05-perguntas-ao-owner-20260911.md`.
 
+## Decisão 18 — respostas do Owner ao artefato de aprovações da R05 (11/09/2026, 16:45)
+
+Respondidas na página de aprovações (artefato 2150f92d, versão 2); anotadas
+para a Rodada 6, não executadas pela coordenação da R05. Texto integral em
+`coordenacao.json` → `respostasDoOwnerR05`.
+
+- **Visual:** aprovados Avisos e Circulares (diretórios), Formulários,
+  Usuários internos e Pessoas (composto), formulário de Instituições,
+  Importações (card corrigido). A+ em Perfil do Principal (avatar abre o
+  Agora do perfil com contorno em degradê laranja quando há Agora não visto;
+  sombra do círculo como no menu flutuante; botão Acompanhar de volta), Para
+  Você (degradê dos cards prejudica a leitura; clique do responsável sem
+  destino por ora), Acontece (contêiner do feed sem o espaçamento e os cantos
+  do padrão no mobile; foto esticada; separações sem capricho; conferir
+  fontes e cores do design system), Criar evento (wizard como o de
+  Instituições, sem fundo cinza), Lista da Agenda (toggle novo no mobile; no
+  web volta o do R), Perfis de acesso e Rotina (card Criar sempre presente,
+  inclusive vazio; sem dados de demonstração no app real; Rotina com
+  duplicar e arquivar na tabela), composto base (sem fundo cinza; enriquecer
+  a UI).
+- **Publicadores do Principal reprovados (Acontece, Momentos, Agora):** o
+  estilo de publicação é outro e não usa o wizard administrativo. Nasce a
+  **família visual Publicação** na skill `coelo-ui`
+  (`references/principal-visual-surfaces.md`), com as referências enviadas
+  pelo Owner, cobrindo Agora, Acontece, Momentos, Circulares, Eventos e
+  Lançar faltas; telas novas propostas no canvas "Publicar no Coelo" para
+  aprovação.
+- **Produto:** P43 = B (tela mínima de Sessões no MVP com Edge Function);
+  P44 = B (atualizar o Catálogo agora); P45 = B (modelo de sistema criado pelo
+  Superadmin pode ser excluído, conforme hierarquia, como owner); P46 = A (@
+  para usuários internos); P47 = A (remover o fail-closed de tenant em
+  Cardápios); P48 = A (sincronizador distingue owner e operations); P49 = A
+  (abas de estado no Suporte, persistir cards e tabela); P50 = B (tela de
+  resposta à circular também no Superadmin: "mediante a hierarquia, como
+  owner sempre pode tudo").
+- **Regra reafirmada pelo Owner:** o Superadmin, como owner, pode tudo dentro
+  da hierarquia; o card Criar aparece em todo diretório, em cards e tabela,
+  mesmo sem dados; o app real não carrega dados de demonstração.
+
 ## Consequências
 
 - O replay local com Docker deixa de ser porta obrigatória; continua útil para

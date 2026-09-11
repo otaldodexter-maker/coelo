@@ -1,0 +1,1 @@
+Referencias do Owner (11/09/2026) para a familia visual Publicacao: agora-publicar.png, acontece-publicar.png, momentos-publicar-1.png, momentos-publicar-2.png (o Owner salva os PNG aqui; descricao na skill coelo-ui, references/principal-visual-surfaces.md, secao "Familia Publicacao").
