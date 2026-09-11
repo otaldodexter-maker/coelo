@@ -169,3 +169,36 @@ seis goldens de rotina esperando regravação por conta própria.
 A guarda de alterações não salvas do editor de Rotina já estava ligada e
 provada antes desta decisão (`PopScope` com `canPop: !_isDirty`, confirmação
 também na saída pelo menu, e `daily_routine_dirty_exit_test`).
+
+## Referência do Owner de 2026-09-11 para o calendário da Agenda
+
+Em 11/09/2026 (10:13), ao responder as dúvidas visuais da Rodada 4, o Owner
+enviou uma captura do calendário nativo do iPhone (visão mensal, setembro de
+2026) como **referência de agenda/calendário**. O arquivo deve ser guardado em
+`docs/reviews/evidence/etapa-2/referencias/agenda-calendario-mensal-ios-2026-09-11.png`;
+até lá esta descrição é o registro. O que a referência define, e que a Agenda
+do Coelo (`agenda.view`, `agenda_calendar_*`) segue em todas as larguras:
+
+- **Cabeçalho**: navegação de volta para o ano à esquerda ("< 2026"), ações à
+  direita em um grupo compacto (lista, buscar, criar) e o nome do mês em título
+  grande e pesado abaixo.
+- **Grade mensal**: sete colunas com a inicial do dia da semana (D S T Q Q S S),
+  linhas de altura igual e generosa, separadas por linhas finas; fins de semana
+  em cinza; o dia de hoje em círculo cheio na cor de destaque com o número em
+  branco.
+- **Eventos dentro da célula**: cada evento é uma pastilha com fundo suave na
+  cor da categoria, ícone pequeno à esquerda e o título truncado; várias
+  pastilhas empilhadas na mesma célula, uma por linha, sem reduzir a célula.
+  Isto responde à observação "retângulos muito amassados": as células não
+  encolhem, o texto trunca.
+- **Evento cancelado**: pastilha com fundo hachurado, prefixo "CANCELADO:" e o
+  horário abaixo do título; continua visível no calendário.
+- **Rodapé**: botão "Hoje" à esquerda e, à direita, um grupo com alertas e
+  caixa de entrada com contador; o botão de criar fica no cabeçalho, não no
+  rodapé.
+- No Coelo, as pastilhas usam as cores semânticas do Design System (categoria
+  do evento) e a família Nunito Sans; o composto não replica a barra de status
+  do sistema.
+
+Esta referência prevalece sobre `agenda_calendar_light_375` guardado quando o
+Owner responder P33; a regravação só acontece depois de aplicar o padrão acima.
