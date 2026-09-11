@@ -1,3 +1,4 @@
+import 'activity/context_notification_feed.dart';
 import 'dart:async';
 
 import 'package:coelo_tokens/coelo_tokens.dart';
@@ -181,6 +182,7 @@ class SuperadminApp extends StatefulWidget {
     this.principalHappensFeedRepository,
     this.principalMixedFeedRepository,
     this.principalCircularResponseRepository,
+    this.contextNotificationRepository,
     this.principalCircularMediaRepository,
     this.principalMomentsFeedRepository,
     this.principalMomentsWithdrawalRepository,
@@ -262,6 +264,7 @@ class SuperadminApp extends StatefulWidget {
   final PrincipalHappensFeedRepository? principalHappensFeedRepository;
   final PrincipalMixedFeedRepository? principalMixedFeedRepository;
   final CircularResponseRepository? principalCircularResponseRepository;
+  final ContextNotificationRepository? contextNotificationRepository;
   final CircularMediaRepository? principalCircularMediaRepository;
   final PrincipalMomentsFeedRepository? principalMomentsFeedRepository;
   final PrincipalMomentsWithdrawalRepository? principalMomentsWithdrawalRepository;
@@ -365,6 +368,7 @@ class _SuperadminAppState extends State<SuperadminApp> {
       principalHappensFeedRepository: widget.principalHappensFeedRepository,
       principalMixedFeedRepository: widget.principalMixedFeedRepository,
       principalCircularResponseRepository: widget.principalCircularResponseRepository,
+      contextNotificationRepository: widget.contextNotificationRepository,
       principalCircularMediaRepository: widget.principalCircularMediaRepository,
       principalMomentsFeedRepository: widget.principalMomentsFeedRepository,
       principalMomentsWithdrawalRepository: widget.principalMomentsWithdrawalRepository,

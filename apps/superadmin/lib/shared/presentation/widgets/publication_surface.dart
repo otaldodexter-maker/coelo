@@ -25,6 +25,7 @@ final class PublicationSurface extends StatelessWidget {
     this.scrollKey,
     this.footerKey,
     this.previewMinimumWidth = 1200,
+    this.padding = const EdgeInsets.symmetric(horizontal: CoeloSpacing.space6),
     super.key,
   });
 
@@ -38,6 +39,9 @@ final class PublicationSurface extends StatelessWidget {
   final Key? scrollKey;
   final Key? footerKey;
   final double previewMinimumWidth;
+
+  /// Respiro lateral dentro do conteiner do hospedeiro.
+  final EdgeInsetsGeometry padding;
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +72,7 @@ final class PublicationSurface extends StatelessWidget {
           );
           final content = SingleChildScrollView(
             key: scrollKey,
-            padding: const EdgeInsets.only(bottom: CoeloSpacing.space10),
+            padding: padding.add(const EdgeInsets.only(bottom: CoeloSpacing.space10)),
             child: sidePreview
                 ? Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -94,7 +98,7 @@ final class PublicationSurface extends StatelessWidget {
               Expanded(child: content),
               ?feedback,
               Padding(
-                padding: const EdgeInsets.only(top: CoeloSpacing.space3),
+                padding: padding.add(const EdgeInsets.only(top: CoeloSpacing.space3)),
                 child: SuperadminFormActionFooter(
                   surfaceKey: footerKey,
                   inlineMinimumWidth: 840,

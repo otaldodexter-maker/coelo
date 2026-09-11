@@ -98,7 +98,7 @@ function reply(
     "X-Content-Type-Options": "nosniff",
     "Referrer-Policy": "no-referrer",
     "Vary": "Origin",
-    "Access-Control-Allow-Headers": "authorization, apikey, content-type",
+    "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
   };
   if (origin !== null && origins.has(origin)) {

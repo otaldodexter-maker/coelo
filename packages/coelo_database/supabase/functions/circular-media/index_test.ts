@@ -227,6 +227,14 @@ Deno.test("browser CORS does not advertise the worker secret", async () => {
     ),
     false,
   );
+  // supabase_flutter envia X-Client-Info em functions.invoke; sem ele no
+  // preflight o navegador recusa o POST (net::ERR_FAILED, medido na R06).
+  assertEquals(
+    response.headers.get("access-control-allow-headers")?.includes(
+      "x-client-info",
+    ),
+    true,
+  );
   assertEquals(tracked.clientCalls(), 0);
 });
 
