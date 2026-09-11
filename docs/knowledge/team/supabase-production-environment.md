@@ -4,7 +4,7 @@ knowledge_id: supabase-production-environment
 source: decisions/0034-mvp-remote-application-and-acceptance-bar.md
 status: validated
 generated_at: 2026-09-01
-updated_at: 2026-09-10
+updated_at: 2026-09-11
 audience: team
 surfaces: [supabase, database, auth, storage, edge-functions]
 visibility: internal
@@ -66,3 +66,12 @@ Regras medidas na Rodada 4 (noite de 10→11/09/2026, ADR 0034 Decisões 12 e
   interno v2; as RPCs baseadas em `current_person_id()` só os alcançam pela
   ponte de ator (`20260910220400`: pessoa de serviço + membership espelhada +
   fallback em `current_person_id()`), sem tocar nos guards de realm.
+
+Fechamento da Rodada 4 (11/09/2026, ADR 0034 Decisão 14): produção recebeu 66
+pacotes em 16 lotes numa noite, sempre com pgTAP verde no espelho e dump
+lógico antes de cada lote; o ledger tem 102 versões de 10/09. A ordem real de
+aplicação vive em `packages/coelo_database/migrations/ordem-de-aplicacao-producao.txt`
+e é a única forma de reconstruir o espelho. Candidatos retidos por decisão do
+Owner ficam em `candidatos/<grupo>/` com o sufixo `RETIDO-Pnn` no nome.
+Dados sintéticos das provas (prefixos `[R04-QA]`, `9f040000-`, `d0c40000-`
+e o usuário `qa-r03@coelo.me`) só saem de produção com a limpeza aprovada.

@@ -295,6 +295,34 @@ pertencem e voltam a contar na revisão profunda.
   migrations posteriores, porque `db reset` com `migrations/` inteira falha em
   `20260910170100` (exige o catálogo antes do seed).
 
+## Decisão 14 — Fechamento da Rodada 4 (11/09/2026, coordenação)
+
+- **Produção recebeu 66 pacotes em 16 lotes (8 a 23) numa única noite**, todos
+  provados no espelho reconstruído na ordem real de aplicação e com dump lógico
+  por lote; ledger com 102 versões de 10/09. Nenhum pacote foi aplicado sem
+  pgTAP verde; três candidatos ficaram retidos por decisão de produto (171600
+  P31, 171800 P32) ou por bloqueio de segredo na sessão do coordenador (230023
+  disparo do worker de Avisos, P30).
+- **Primeiros E2E da Etapa 2 (37 ações)** pela rota real com a sessão
+  `qa-r03`: Auth, Chat (6), Avisos, Circulares, Agenda (16), Conta e Suporte
+  (7), Formulários e Medicação (5), Modelos de acesso (1). Aprovação visual
+  continua separada de `verified`.
+- **Ponte de ator (220400) é a regra do MVP** para o realm interno alcançar as
+  RPCs baseadas em `current_person_id()`; pacote novo do Superadmin prefere
+  `require_superadmin_internal_context`. Fica sujeita à confirmação do Owner
+  (P22 respondida pelo pacote; o desenho está na própria migration).
+- **Decisões de coordenação sujeitas ao Owner:** instituição sintética do chat
+  fica arquivada em produção por FK de `audit_logs` (P25/P37); grants CRUD de
+  authenticated sem policy não são revogados antes da demonstração (varredura
+  como pendência de revisão profunda); dados sintéticos das provas ficam até a
+  limpeza aprovada (P37).
+- **Perguntas abertas P22 a P37** em
+  `docs/reviews/etapa-2-operacao/next-round/R04-perguntas-ao-owner-20260911.md`;
+  as visuais (P26, P28, P33, P34) têm página lado a lado.
+- **Regras operacionais registradas nas skills** (memória da máquina, um
+  entrypoint de driver, formato dos deltas, E2E exige FE e BE, prova de rota
+  real por build web + CDP, subagentes do coordenador quando uma conversa cai).
+
 ## Consequências
 
 - O replay local com Docker deixa de ser porta obrigatória; continua útil para
