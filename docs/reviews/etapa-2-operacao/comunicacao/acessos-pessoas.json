@@ -1,7 +1,7 @@
 {
-  "revision": 119,
-  "updated_at": "2026-09-11T15:06:22.407Z",
-  "relogio_local": "Fri Sep 11 2026 12:06:22 GMT-0300 (Horário Padrão de Brasília)",
+  "revision": 120,
+  "updated_at": "2026-09-11T15:17:30.252Z",
+  "relogio_local": "Fri Sep 11 2026 12:17:30 GMT-0300 (Horário Padrão de Brasília)",
   "round": "E2-R05-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
@@ -39,8 +39,21 @@
   "loop": "/loop 15m agendado na abertura",
   "testes_P_F_B_S_U": "nenhum ainda nesta rodada",
   "bloqueio": "nenhum total",
-  "proximo_passo": "conferir em producao (REST, sessao qa-r03) os modelos de sistema do lote 25 (institution_roles) e o que access-profiles.list devolve; em paralelo iniciar o build web de qa_main quando a memoria permitir; depois rota real de Perfis de acesso",
-  "ACK_ao_coordenador": "posse da R05 pela frente acessos-pessoas as 12:15; worktree criada sobre 2f6a6114f",
+  "proximo_passo": "P31 no cliente: cards de Perfis abrem o detalhe; perfil de sistema sem Editar/Excluir (servidor ja nega 'system profile is protected'); Criar perfil oferece 'do zero' ou 'a partir de um modelo'; depois pacote SQL do @ para pessoas/usuarios internos",
+  "ACK_ao_coordenador": "coelo-b5 pediu identificacao as 12:20; respondi por mensagem entre sessoes (G2 R05). Continuo sem esperar ACK.",
+  "MEMORIA": "12:20: 0,02-0,3 GB livres (dartaotruntime 800 MB, 28 dart, 25 chrome, flutter_tester de outras frentes). Sem build web, Chrome ou flutter test ate liberar; provas por REST e edicao de codigo/SQL enquanto isso.",
+  "INVITES_BE_POR_REST_12h15": {
+    "gate_P31": "fechado: lote 25 (171600) semeou 4 institution_roles de sistema; superadmin_invite_options_v2 devolve profiles=[] sem p_institution_id (por contrato) e os 4 perfis com p_institution_id=9f04...0010",
+    "invites.create": "BE done: superadmin_invite_issue_v2 (perfil Administrador da instituicao 13d06367, escopo instituicao 9f04...0010, destinatario qa-r05-convite@invalid.test, canal email, 72 h) devolveu ok:true, convite 03e9c9d2-2772-4ee8-863b-2a47c0108ce8 pending, management_version 1. Regras do contrato conferidas: pessoa alvo XOR e-mail (ambos = 422); perfil com max_scope_kind unit (Professor(a)) em escopo instituicao = 403 (rank de escopo)",
+    "invites.detail": "BE done: superadmin_invite_detail_v2 rele o convite; id inexistente devolve SAI_PERMISSION_DENIED 403 (nao enumeravel)",
+    "invites.resend": "BE done com regra: superadmin_invite_resend_v2 so reenvia convite expirado (ou pending vencido); pending vigente devolve SAI_INVALID_ARGUMENT 422 por desenho. Caminho positivo depende de convite expirado (pgTAP superadmin_internal_invites_v2_test cobre; conferir caso ao ligar E2E)",
+    "invites.revoke": "BE done: superadmin_invite_revoke_v2 (expected_version 1, motivo) devolveu status revoked, timeline com 'Convite revogado'; expected_version errado devolveu SAI_CONCURRENT_CHANGE 409",
+    "invites.list": "BE done: superadmin_invite_directory_v2 lista o convite (pending antes, revoked depois)",
+    "FE": "formulario refaz fetchOptions com institutionId apos escolher o contexto e exige perfil no passo 0 (linha 201); prova pela UI espera memoria para build+Chrome"
+  },
+  "dados_sinteticos_r05": [
+    "public.* convite 03e9c9d2-2772-4ee8-863b-2a47c0108ce8 (revoked; destinatario qa-r05-convite@invalid.test, instituicao 9f04...0010) - apagar ao fim da Etapa 2"
+  ],
   "historico_r04": {
     "revision": 118,
     "updated_at": "2026-09-11T11:31:19.648Z",
