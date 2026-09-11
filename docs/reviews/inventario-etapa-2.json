@@ -1372,16 +1372,24 @@
       "scope": "mvp",
       "done": "Guards de lifecycle, contexto e continuidade local implementados. R01/16h: C01f58ac259 corrige textos MFA nos consumidores;17 testes relatados, revisão pendente. C00 integrou sanitização de transporte, correlação de perfil/modelo e invalidação antes de debounce (00266adb/4074f306/6bd3cac8).",
       "fe": "Recibo confirmado preservado quando navegacao falha;17Pfuncionais e1Pgolden atual. F1herdado resolvido por rebaseline nominal de3renders com sete causas integradas, inspecao anterior e paths/hashes. Continua pending-verification; nao certifica acao.",
-      "be": "R04: superadmin_access_profile_save (update) devolve 23514 'active full-authority MFA replacement required' em producao: a guarda assert_full_authority_remains exige uma membership de plataforma cujo papel conceda TODAS as permissoes ativas e o Owner tem 134/135 (falta child_safety.review, criada no lote 4 sem concessao). Candidato 172000 (grant idempotente ao Owner, pgTAP 4/4) destrava editar/excluir/reatribuir perfis.",
-      "evidence": "evidence/etapa-2/identidade-acessos/2026-09-08-profiles-reader-proposal.md R01/16h: C01r29/f58ac259; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C01/r51; C00288PASS/analyzer34limpo; critérios locais, sem autorização remota certificada; etapa-2-operacao/reports/R01-fechamento-20260909.md; b285a6804; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models-form-receipt/handoff.md; b285a6804; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models-form-receipt/handoff.md;c8c8b0fba;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models-form-receipt/golden-reconciliation.md; coordenacao.json R04 rev 20 (lote8); docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 110, REST + db query somente leitura)",
+      "be": "R04: apos o 172000 (lote 20), superadmin_access_profile_save (update) persistiu descricao e a concessao people.read no perfil sintetico (version 1->2) com o payload capabilities que o cliente passa a enviar (3682673da); detalhe v3 relido devolve selected=[people.read]. pgTAP do pacote 4/4 + governanca historica.",
+      "evidence": "evidence/etapa-2/identidade-acessos/2026-09-08-profiles-reader-proposal.md R01/16h: C01r29/f58ac259; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C01/r51; C00288PASS/analyzer34limpo; critérios locais, sem autorização remota certificada; etapa-2-operacao/reports/R01-fechamento-20260909.md; b285a6804; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models-form-receipt/handoff.md; b285a6804; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models-form-receipt/handoff.md;c8c8b0fba;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models-form-receipt/golden-reconciliation.md; coordenacao.json R04 rev 20 (lote8); docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 110, REST + db query somente leitura); docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 111, REST)",
       "historicalFrontend": "blocked-decision",
       "historicalBackend": "fail-closed",
       "frontendStatus": "pending-verification",
-      "backendStatus": "fail-closed",
+      "backendStatus": "done",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 51,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:35-03:00"
+      "lastEvidenceAt": "2026-09-09T08:22:35-03:00",
+      "certifications": {
+        "backend": {
+          "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+          "revision": "1522e6c28",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST (lote 20 aplicado)",
+          "recordedAt": "2026-09-11T03:11:00-03:00"
+        }
+      }
     },
     {
       "id": "access-profiles.assign",
@@ -1390,15 +1398,23 @@
       "scope": "mvp",
       "done": "Guards de lifecycle, contexto e continuidade local implementados.",
       "fe": "Conferir UI/contrato específico da ação e evidência visual restante; atribuição não deve ser inferida da listagem.",
-      "be": "Conferir reader/detail e comando interno próprios, receipts e capability. Não herdar conclusão dos Modelos.",
-      "evidence": "evidence/etapa-2/identidade-acessos/2026-09-08-profiles-reader-proposal.md",
+      "be": "R04: a atribuicao de perfil no MVP e o profile_id do comando superadmin_internal_user_update (provado em internal-users.edit, version 1->2 com profile_id owner); nao existe RPC de atribuicao separada no cliente.",
+      "evidence": "evidence/etapa-2/identidade-acessos/2026-09-08-profiles-reader-proposal.md; docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 109/111)",
       "historicalFrontend": "blocked-decision",
       "historicalBackend": "fail-closed",
       "frontendStatus": "pending-verification",
-      "backendStatus": "pending-verification",
+      "backendStatus": "done",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 51,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "certifications": {
+        "backend": {
+          "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+          "revision": "1522e6c28",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST (lote 20 aplicado)",
+          "recordedAt": "2026-09-11T03:11:00-03:00"
+        }
+      }
     },
     {
       "id": "access-profiles.delete",
@@ -1407,16 +1423,24 @@
       "scope": "mvp",
       "done": "Guards de lifecycle, contexto e continuidade local implementados. C00 integrou sanitização de transporte, correlação de perfil/modelo e invalidação antes de debounce (00266adb/4074f306/6bd3cac8).",
       "fe": "Conferir UI/contrato específico da ação e evidência visual restante; atribuição não deve ser inferida da listagem.",
-      "be": "Conferir reader/detail e comando interno próprios, receipts e capability. Não herdar conclusão dos Modelos.",
-      "evidence": "evidence/etapa-2/identidade-acessos/2026-09-08-profiles-reader-proposal.md; Fechamento R01 C01/r51; C00288PASS/analyzer34limpo; critérios locais, sem autorização remota certificada; etapa-2-operacao/reports/R01-fechamento-20260909.md",
+      "be": "R04: superadmin_access_profile_delete_and_reassign apagou o perfil sintetico reatribuindo ao owner (reassigned_count 0); detalhe devolve P0002 e a lista nao o traz mais. Guarda de autoridade plena passou (172000).",
+      "evidence": "evidence/etapa-2/identidade-acessos/2026-09-08-profiles-reader-proposal.md; Fechamento R01 C01/r51; C00288PASS/analyzer34limpo; critérios locais, sem autorização remota certificada; etapa-2-operacao/reports/R01-fechamento-20260909.md; docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 111, REST)",
       "historicalFrontend": "blocked-decision",
       "historicalBackend": "fail-closed",
       "frontendStatus": "pending-verification",
-      "backendStatus": "pending-verification",
+      "backendStatus": "done",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 51,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:35-03:00"
+      "lastEvidenceAt": "2026-09-09T08:22:35-03:00",
+      "certifications": {
+        "backend": {
+          "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+          "revision": "1522e6c28",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST (lote 20 aplicado)",
+          "recordedAt": "2026-09-11T03:11:00-03:00"
+        }
+      }
     },
     {
       "id": "access-models.list",
@@ -1551,16 +1575,24 @@
       "scope": "mvp",
       "done": "Envelopes, consumers, draft/conflito, save/duplicate e cache por época de autorização integrados; 24/24 focais registrados para cache/rotas. R01/16h: Candidatos locais04499bc3/4ff02758 alinham helper secundário à política AAL1 vigente, sem aplicação. C00 integrou sanitização de transporte, correlação de perfil/modelo e invalidação antes de debounce (00266adb/4074f306/6bd3cac8).",
       "fe": "Recibo confirmado preservado quando navegacao falha;17Pfuncionais e1Pgolden atual. F1herdado resolvido por rebaseline nominal de3renders com sete causas integradas, inspecao anterior e paths/hashes. Continua pending-verification; nao certifica acao.",
-      "be": "R04: superadmin_access_profile_model_update em producao (171300), pgTAP 32/32.",
-      "evidence": "evidence/etapa-2/identidade-acessos/2026-09-08-model-write-cache-epoch.md; commits21ef243c/990300ef/eb84a01c R01/16h: C01r27;20260908182839_access_profile_models_aal1_phase_policy.sql; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 4ff02758→5f1911a8 e04499bc3→43a900e0;31TAP locais confirmados em log C00;sem remoto. Personas ee05b949/ba9b020b/00297839:31Denooffline;SecretStore/adapterPG/provaunban/cenários pendentes.; R01-delta-1815: C01r38–40:31/31pgTAP local já PASS naI010/log8f45584b, cleanup0; teste34 ffb79806 integradofafce1f6, hash8b45891d, NÃOexecutado. Novo reloadedição literal/controleOwnerinstitution/negaçãoescopo. Docker npipe indisponível18:15, diagnóstico C00; sem nova lease ou remoto. 31PASS não prova tenantA/B nem E2E.; Fechamento R01 C01/r51; C00288PASS/analyzer34limpo; critérios locais, sem autorização remota certificada; etapa-2-operacao/reports/R01-fechamento-20260909.md; b285a6804; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models-form-receipt/handoff.md; 63623e31f/246c9e7e1;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/README.md; b285a6804; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models-form-receipt/handoff.md;c8c8b0fba;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models-form-receipt/golden-reconciliation.md; coordenacao.json R04 rev 20 (lote8); comunicacao/acessos-pessoas.json r103",
+      "be": "R04: superadmin_access_profile_model_update persistiu descricao e capabilities do modelo sintetico (version 1->2, envelope ok) com o payload do cliente.",
+      "evidence": "evidence/etapa-2/identidade-acessos/2026-09-08-model-write-cache-epoch.md; commits21ef243c/990300ef/eb84a01c R01/16h: C01r27;20260908182839_access_profile_models_aal1_phase_policy.sql; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 4ff02758→5f1911a8 e04499bc3→43a900e0;31TAP locais confirmados em log C00;sem remoto. Personas ee05b949/ba9b020b/00297839:31Denooffline;SecretStore/adapterPG/provaunban/cenários pendentes.; R01-delta-1815: C01r38–40:31/31pgTAP local já PASS naI010/log8f45584b, cleanup0; teste34 ffb79806 integradofafce1f6, hash8b45891d, NÃOexecutado. Novo reloadedição literal/controleOwnerinstitution/negaçãoescopo. Docker npipe indisponível18:15, diagnóstico C00; sem nova lease ou remoto. 31PASS não prova tenantA/B nem E2E.; Fechamento R01 C01/r51; C00288PASS/analyzer34limpo; critérios locais, sem autorização remota certificada; etapa-2-operacao/reports/R01-fechamento-20260909.md; b285a6804; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models-form-receipt/handoff.md; 63623e31f/246c9e7e1;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/README.md; b285a6804; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models-form-receipt/handoff.md;c8c8b0fba;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models-form-receipt/golden-reconciliation.md; coordenacao.json R04 rev 20 (lote8); comunicacao/acessos-pessoas.json r103; docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 111, REST)",
       "historicalFrontend": "blocked-decision",
       "historicalBackend": "fail-closed",
       "frontendStatus": "pending-verification",
-      "backendStatus": "local-green",
+      "backendStatus": "done",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 51,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:35-03:00"
+      "lastEvidenceAt": "2026-09-09T08:22:35-03:00",
+      "certifications": {
+        "backend": {
+          "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+          "revision": "1522e6c28",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST (lote 20 aplicado)",
+          "recordedAt": "2026-09-11T03:11:00-03:00"
+        }
+      }
     },
     {
       "id": "access-models.duplicate",
@@ -1569,16 +1601,24 @@
       "scope": "mvp",
       "done": "Envelopes, consumers, draft/conflito, save/duplicate e cache por época de autorização integrados; 24/24 focais registrados para cache/rotas. R01/16h: Candidatos locais04499bc3/4ff02758 alinham helper secundário à política AAL1 vigente, sem aplicação. C00 integrou sanitização de transporte, correlação de perfil/modelo e invalidação antes de debounce (00266adb/4074f306/6bd3cac8). Consolidacao final: Dev d019c109a integra rota normal com Owner global, dominio/capabilities, sessao e revisao; negacao de RPC limpa draft/recibo. Lote integrado Modelos18PASS (9router+9consumer), sem SQLremoto ou certificado integral.",
       "fe": "Duplicacao confirmada sobrevive falha de navegacao sem repetir copia;24P incluindo9provas de rota R02. Recibo exige identidade nova. Sem certificacao E2E.",
-      "be": "R04: superadmin_access_profile_model_duplicate em producao (171300), pgTAP 32/32.",
-      "evidence": "evidence/etapa-2/identidade-acessos/2026-09-08-model-write-cache-epoch.md; commits21ef243c/990300ef/eb84a01c R01/16h: C01r27;20260908182839_access_profile_models_aal1_phase_policy.sql; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 4ff02758→5f1911a8 e04499bc3→43a900e0;31TAP locais confirmados em log C00;sem remoto. Personas ee05b949/ba9b020b/00297839:31Denooffline;SecretStore/adapterPG/provaunban/cenários pendentes.; R01-delta-1815: C01r38–40:31/31pgTAP local já PASS naI010/log8f45584b, cleanup0; teste34 ffb79806 integradofafce1f6, hash8b45891d, NÃOexecutado. Novo reloadedição literal/controleOwnerinstitution/negaçãoescopo. Docker npipe indisponível18:15, diagnóstico C00; sem nova lease ou remoto. 31PASS não prova tenantA/B nem E2E.; Fechamento R01 C01/r51; C00288PASS/analyzer34limpo; critérios locais, sem autorização remota certificada; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/FECHAMENTO-OWNER.md; 9d5ce7317; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/duplicate-receipts.md; 63623e31f/246c9e7e1;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/README.md; comunicacao/acessos-pessoas.json r103",
+      "be": "R04: superadmin_access_profile_model_duplicate criou a copia qa-r04-modelo-sintetico-copia-a2dcc439 (inactive, version 1) a partir do modelo sintetico, envelope ok.",
+      "evidence": "evidence/etapa-2/identidade-acessos/2026-09-08-model-write-cache-epoch.md; commits21ef243c/990300ef/eb84a01c R01/16h: C01r27;20260908182839_access_profile_models_aal1_phase_policy.sql; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 4ff02758→5f1911a8 e04499bc3→43a900e0;31TAP locais confirmados em log C00;sem remoto. Personas ee05b949/ba9b020b/00297839:31Denooffline;SecretStore/adapterPG/provaunban/cenários pendentes.; R01-delta-1815: C01r38–40:31/31pgTAP local já PASS naI010/log8f45584b, cleanup0; teste34 ffb79806 integradofafce1f6, hash8b45891d, NÃOexecutado. Novo reloadedição literal/controleOwnerinstitution/negaçãoescopo. Docker npipe indisponível18:15, diagnóstico C00; sem nova lease ou remoto. 31PASS não prova tenantA/B nem E2E.; Fechamento R01 C01/r51; C00288PASS/analyzer34limpo; critérios locais, sem autorização remota certificada; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/FECHAMENTO-OWNER.md; 9d5ce7317; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/duplicate-receipts.md; 63623e31f/246c9e7e1;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models/README.md; comunicacao/acessos-pessoas.json r103; docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 111, REST)",
       "historicalFrontend": "blocked-decision",
       "historicalBackend": "fail-closed",
       "frontendStatus": "pending-verification",
-      "backendStatus": "local-green",
+      "backendStatus": "done",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 51,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T16:54:21.342597-03:00"
+      "lastEvidenceAt": "2026-09-09T16:54:21.342597-03:00",
+      "certifications": {
+        "backend": {
+          "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+          "revision": "1522e6c28",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST (lote 20 aplicado)",
+          "recordedAt": "2026-09-11T03:11:00-03:00"
+        }
+      }
     },
     {
       "id": "invites.list",
@@ -6298,7 +6338,7 @@
       "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
     }
   ],
-  "updatedAt": "2026-09-11T06:08:33.649Z",
+  "updatedAt": "2026-09-11T06:11:52.675Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,
