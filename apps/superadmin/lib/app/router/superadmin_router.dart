@@ -1012,7 +1012,7 @@ GoRouter createSuperadminRouter({
                       : () => _recentConversations(chatRepository),
                   onBugReportSubmitted: developmentPreview
                       ? developmentSupportController.submitReport
-                      : productionSupportController?.submitReport,
+                      : productionSupportController?.submitReportToBackend,
                   canAccessCapability: (capability) => switch (capability) {
                     'attendance.create' => developmentPreview,
                     'activities.create' => developmentPreview,
@@ -1524,7 +1524,7 @@ GoRouter createSuperadminRouter({
               onCatalogOpen: () =>
                   openConfiguredCatalogExternally(catalogUrl, openExternally: openExternalCatalog),
               onSupportOpen: () => context.goNamed(SuperadminRoutes.supportName),
-              onBugReportSubmitted: productionSupportController?.submitReport,
+              onBugReportSubmitted: productionSupportController?.submitReportToBackend,
               onConversationsOpen: () => context.goNamed(
                 SuperadminRoutes.conversationsName,
                 queryParameters: const {'from': 'institutions'},
@@ -1627,7 +1627,7 @@ GoRouter createSuperadminRouter({
                       pathParameters: {'unitId': id},
                     )
                   : null,
-              onBugReportSubmitted: productionSupportController?.submitReport,
+              onBugReportSubmitted: productionSupportController?.submitReportToBackend,
               onConversationsOpen: () => context.goNamed(
                 SuperadminRoutes.conversationsName,
                 queryParameters: const {'from': 'units'},
@@ -1970,7 +1970,7 @@ GoRouter createSuperadminRouter({
                       pathParameters: {'groupId': id},
                     )
                   : null,
-              onBugReportSubmitted: productionSupportController?.submitReport,
+              onBugReportSubmitted: productionSupportController?.submitReportToBackend,
               onDestinationSelected: (destination) =>
                   _navigateFromPersistentShell(context, destination),
             ),
@@ -1988,7 +1988,7 @@ GoRouter createSuperadminRouter({
                     onCancel: () => _returnToOr(context, state, SuperadminRoutes.groupsName),
                     onSaved: (result) =>
                         _returnToOr(context, state, SuperadminRoutes.groupsName, extra: result),
-                    onBugReportSubmitted: productionSupportController?.submitReport,
+                    onBugReportSubmitted: productionSupportController?.submitReportToBackend,
                     onDestinationSelected: (destination) =>
                         _navigateFromPersistentShell(context, destination),
                   ),
@@ -2005,7 +2005,7 @@ GoRouter createSuperadminRouter({
                     onCancel: () => _returnToOr(context, state, SuperadminRoutes.groupsName),
                     onSaved: (result) =>
                         _returnToOr(context, state, SuperadminRoutes.groupsName, extra: result),
-                    onBugReportSubmitted: productionSupportController?.submitReport,
+                    onBugReportSubmitted: productionSupportController?.submitReportToBackend,
                     onDestinationSelected: (destination) =>
                         _navigateFromPersistentShell(context, destination),
                   ),
@@ -2133,7 +2133,7 @@ GoRouter createSuperadminRouter({
               onImportRequested: null,
               onDestinationSelected: (destination) =>
                   _navigateFromPersistentShell(context, destination),
-              onBugReportSubmitted: productionSupportController?.submitReport,
+              onBugReportSubmitted: productionSupportController?.submitReportToBackend,
             ),
           ),
           GoRoute(
@@ -2215,7 +2215,7 @@ GoRouter createSuperadminRouter({
                         createActivityLocations(draft, activityCommandRepository),
                     onDestinationSelected: (destination) =>
                         _navigateFromPersistentShell(context, destination),
-                    onBugReportSubmitted: productionSupportController?.submitReport,
+                    onBugReportSubmitted: productionSupportController?.submitReportToBackend,
                   ),
           ),
           GoRoute(
@@ -2309,7 +2309,7 @@ GoRouter createSuperadminRouter({
                 ),
                 onDestinationSelected: (destination) =>
                     _navigateFromPersistentShell(context, destination),
-                onBugReportSubmitted: productionSupportController?.submitReport,
+                onBugReportSubmitted: productionSupportController?.submitReportToBackend,
               ),
             ),
           ),
@@ -2359,7 +2359,7 @@ GoRouter createSuperadminRouter({
                         createActivityLocations(draft, activityCommandRepository),
                     onDestinationSelected: (destination) =>
                         _navigateFromPersistentShell(context, destination),
-                    onBugReportSubmitted: productionSupportController?.submitReport,
+                    onBugReportSubmitted: productionSupportController?.submitReportToBackend,
                   ),
           ),
           GoRoute(
@@ -2987,7 +2987,7 @@ GoRouter createSuperadminRouter({
               onEdit: null,
               onDestinationSelected: (destination) =>
                   _navigateFromPersistentShell(context, destination),
-              onBugReportSubmitted: productionSupportController?.submitReport,
+              onBugReportSubmitted: productionSupportController?.submitReportToBackend,
               onConversationsOpen: () => context.goNamed(
                 SuperadminRoutes.conversationsName,
                 queryParameters: const {'from': 'people'},
@@ -3461,7 +3461,7 @@ GoRouter createSuperadminRouter({
               onInstitutionsOpen: () => context.goNamed(SuperadminRoutes.institutionsName),
               onUnitsOpen: () => context.goNamed(SuperadminRoutes.unitsName),
               onSupportOpen: () => context.goNamed(SuperadminRoutes.supportName),
-              onBugReportSubmitted: productionSupportController?.submitReport,
+              onBugReportSubmitted: productionSupportController?.submitReportToBackend,
               onConversationsOpen: () => context.goNamed(
                 SuperadminRoutes.conversationsName,
                 queryParameters: const {'from': 'catalog'},

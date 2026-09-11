@@ -28,6 +28,10 @@ const _collapsedSidebarWidth = CoeloSpacing.space20 + CoeloSpacing.space2;
 const _shellGutter = CoeloSpacing.space3;
 const _coeloMotionCurve = Curves.easeInOut;
 
+/// Envio do relato do botão de Bug. Pode ser síncrono (protótipo local) ou
+/// assíncrono (repositório produtivo); a shell aguarda e avisa o resultado.
+typedef SuperadminBugReportSubmit = FutureOr<void> Function(SupportReportDraft draft);
+
 class SuperadminShell extends StatefulWidget {
   const SuperadminShell({
     required this.logout,
@@ -84,7 +88,7 @@ class SuperadminShell extends StatefulWidget {
 
   /// Conversas recentes autorizadas para a faixa de iniciais do launcher.
   final Future<List<ChatConversationSummary>> Function()? chatRecentConversationsLoader;
-  final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
+  final SuperadminBugReportSubmit? onBugReportSubmitted;
   final bool showChatLauncher;
   final double chatLauncherBottomInset;
   final bool isHost;
@@ -1449,7 +1453,7 @@ class _CompactAppBar extends StatelessWidget implements PreferredSizeWidget {
   final ValueChanged<String>? onDestinationSelected;
   final SuperadminActivityController activityController;
   final String currentScreen;
-  final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
+  final SuperadminBugReportSubmit? onBugReportSubmitted;
 
   @override
   Size get preferredSize => const Size.fromHeight(CoeloSpacing.space16);
@@ -1537,7 +1541,7 @@ class _PageHeader extends StatelessWidget {
   final VoidCallback onLogout;
   final ValueChanged<String>? onDestinationSelected;
   final SuperadminActivityController activityController;
-  final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
+  final SuperadminBugReportSubmit? onBugReportSubmitted;
   final bool compact;
 
   @override
@@ -1736,7 +1740,7 @@ class _HeaderUtilityActions extends StatefulWidget {
 
   final SuperadminActivityController activityController;
   final String currentScreen;
-  final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
+  final SuperadminBugReportSubmit? onBugReportSubmitted;
 
   @override
   State<_HeaderUtilityActions> createState() => _HeaderUtilityActionsState();
@@ -1825,7 +1829,17 @@ class _HeaderUtilityActionsState extends State<_HeaderUtilityActions> {
               );
               return;
             }
-            submit(draft);
+            try {
+              await submit(draft);
+            } on Object {
+              if (!context.mounted || !isCurrent()) return;
+              showSuperadminNotice(
+                context,
+                'Não foi possível enviar o relato. Tente novamente.',
+                icon: Icons.error_outline_rounded,
+              );
+              return;
+            }
             if (!context.mounted || !isCurrent()) return;
             showSuperadminNotice(
               context,

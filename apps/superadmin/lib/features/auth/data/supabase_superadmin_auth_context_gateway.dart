@@ -22,9 +22,6 @@ final class SupabaseSuperadminAuthContextGateway implements SuperadminAuthContex
   Future<SuperadminAuthContext?> bootstrap() async {
     try {
       final response = await _callBootstrap();
-      // TEMP-DIAG (nao commitar)
-      // ignore: avoid_print
-      print('bootstrap-diag: $response');
       if (response is! Map || response['ok'] != true || response['error'] != null) {
         return null;
       }
@@ -66,10 +63,7 @@ final class SupabaseSuperadminAuthContextGateway implements SuperadminAuthContex
         permissionCodes: Set.unmodifiable(permissions),
         aal: aal,
       );
-    } on Exception catch (error) {
-      // TEMP-DIAG (nao commitar)
-      // ignore: avoid_print
-      print('bootstrap-diag-error: $error');
+    } on Exception {
       return null;
     }
   }
