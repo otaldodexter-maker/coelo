@@ -777,6 +777,17 @@ GoRouter createSuperadminRouter({
     if (location.startsWith('/daily-routine')) {
       return routineRepository is! UnavailableRoutineRepository;
     }
+    // Planos: superadmin_plans_list/plan_get/plan_save estao na baseline de
+    // producao e revalidam ator, plan.change e revisao esperada no servidor
+    // (assert_plan_permission); a rota abre quando o catalogo real esta composto.
+    if (location.startsWith(SuperadminRoutes.plans)) {
+      return planCatalogRepository is! UnavailablePlanCatalogRepository;
+    }
+    // Seguranca infantil: /safety/new e .../edit abrem quando o adapter real
+    // esta composto (P32 B); o servidor revalida child_safety.manage.
+    if (location.startsWith('/safety')) {
+      return resolvedChildSafetyController.mutationsEnabled;
+    }
     return false;
   }
 
@@ -1121,8 +1132,9 @@ GoRouter createSuperadminRouter({
                           onCreatePost: () =>
                               context.goNamed(SuperadminRoutes.principalHappensPublishName),
                           onOpenNow: () => context.pushNamed(SuperadminRoutes.principalNowName),
+                          // P28: o "+" adiciona no Acontece.
                           onPublishNow: () =>
-                              context.goNamed(SuperadminRoutes.principalNowPublicationName),
+                              context.goNamed(SuperadminRoutes.principalHappensPublishName),
                           onOpenMessages: () =>
                               context.goNamed(SuperadminRoutes.principalConversationsName),
                         );
@@ -1173,15 +1185,13 @@ GoRouter createSuperadminRouter({
               repository: principalRuntimeContextRepository,
               builder: (context, runtimeContext) {
                 final repository = happensPublicationRepository;
+                // P35: o contexto de instituicao publica para a instituicao
+                // inteira; unidade e turma sao opcionais.
                 final unitId = runtimeContext.unitId;
                 final unitName = runtimeContext.unitName;
                 final groupId = runtimeContext.groupId;
                 final groupName = runtimeContext.groupName;
-                if (repository == null ||
-                    unitId == null ||
-                    unitName == null ||
-                    groupId == null ||
-                    groupName == null) {
+                if (repository == null) {
                   return _unavailableCompositionRootRoute(context);
                 }
                 return PrincipalHappensPublicationPage(
@@ -1238,15 +1248,13 @@ GoRouter createSuperadminRouter({
               repository: principalRuntimeContextRepository,
               builder: (context, runtimeContext) {
                 final repository = nowPublicationRepository;
+                // P35: o contexto de instituicao publica para a instituicao
+                // inteira; unidade e turma sao opcionais.
                 final unitId = runtimeContext.unitId;
                 final unitName = runtimeContext.unitName;
                 final groupId = runtimeContext.groupId;
                 final groupName = runtimeContext.groupName;
-                if (repository == null ||
-                    unitId == null ||
-                    unitName == null ||
-                    groupId == null ||
-                    groupName == null) {
+                if (repository == null) {
                   return _unavailableCompositionRootRoute(context);
                 }
                 return PrincipalNowPublicationPage(
@@ -1277,15 +1285,13 @@ GoRouter createSuperadminRouter({
               repository: principalRuntimeContextRepository,
               builder: (context, runtimeContext) {
                 final repository = momentsPublicationRepository;
+                // P35: o contexto de instituicao publica para a instituicao
+                // inteira; unidade e turma sao opcionais.
                 final unitId = runtimeContext.unitId;
                 final unitName = runtimeContext.unitName;
                 final groupId = runtimeContext.groupId;
                 final groupName = runtimeContext.groupName;
-                if (repository == null ||
-                    unitId == null ||
-                    unitName == null ||
-                    groupId == null ||
-                    groupName == null) {
+                if (repository == null) {
                   return _unavailableCompositionRootRoute(context);
                 }
                 return PrincipalMomentsPublicationRoute(
@@ -1376,8 +1382,9 @@ GoRouter createSuperadminRouter({
                           onOpenHome: () => context.goNamed(SuperadminRoutes.principalHappensName),
                           onCreateMoment: () =>
                               context.goNamed(SuperadminRoutes.principalMomentsPublishName),
+                          // P28: o "+" adiciona no Acontece.
                           onPublishNow: () =>
-                              context.goNamed(SuperadminRoutes.principalNowPublicationName),
+                              context.goNamed(SuperadminRoutes.principalHappensPublishName),
                         );
                       },
                     ),
@@ -1410,7 +1417,8 @@ GoRouter createSuperadminRouter({
                 onOpenHome: () => context.goNamed(SuperadminRoutes.principalHappensName),
                 onOpenForYou: () => context.goNamed(SuperadminRoutes.principalForYouName),
                 onOpenMoments: () => context.pushNamed(SuperadminRoutes.principalMomentsName),
-                onPublishNow: () => context.goNamed(SuperadminRoutes.principalNowPublicationName),
+                // P28: o "+" adiciona no Acontece.
+                onPublishNow: () => context.goNamed(SuperadminRoutes.principalHappensPublishName),
                 onMessage: () => context.goNamed(
                   SuperadminRoutes.principalConversationsName,
                   queryParameters: const {'from': 'profile'},
@@ -5237,10 +5245,18 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.imports,
             name: SuperadminRoutes.importsName,
-            builder: (context, state) => ImportDirectoryPage(
-              repository: importedRepository,
-              onNewImport: (preset) =>
-                  context.goNamed(SuperadminRoutes.importCreateName, extra: preset),
+            // Cabecalho da tela (titulo, Bug, sino, conta) como as demais
+            // telas administrativas (regra MENU do Owner, 10/09/2026).
+            builder: (context, state) => productionOperationalPage(
+              context,
+              title: 'Importações',
+              subtitle: 'Acompanhe as importações de dados da plataforma.',
+              destination: 'imports',
+              child: ImportDirectoryPage(
+                repository: importedRepository,
+                onNewImport: (preset) =>
+                    context.goNamed(SuperadminRoutes.importCreateName, extra: preset),
+              ),
             ),
           ),
           GoRoute(
@@ -6824,7 +6840,7 @@ ActivitySaveCommand _activitySaveCommand(
         : ActivityIdentityKind.icon,
     initials: draft.identityInitials,
     color: draft.identityColor,
-    icon: draft.identityIcon.name,
+    icon: draft.identityIcon.databaseKey,
     preserveExisting:
         activityId != null && draft.identityStorageRef != null && draft.imageBytes == null,
     imageName: draft.imageName,

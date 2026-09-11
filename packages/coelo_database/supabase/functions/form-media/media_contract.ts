@@ -1,3 +1,12 @@
+import {
+  isQuestionImagePayload,
+  parseQuestionImageAccess,
+  parseQuestionImagePrepare,
+  QUESTION_IMAGE_PURPOSE,
+  type QuestionImageAccess,
+  type QuestionImagePrepare,
+} from "./question_image.ts";
+
 export const FORMS_BUCKET = "coelo-forms-private";
 export const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
 export const ALLOWED_IMAGE_TYPES = new Set([
@@ -55,55 +64,24 @@ export type FormMediaRead = {
 
 export type FormMediaEnvelope =
   | { action: "read"; payload: FormMediaRead }
-  | { action: "expire" }
-  | { action: "question_prepare"; request_id: string; payload: QuestionPrepare }
-  | {
-    action: "question_finalize" | "question_resolve" | "question_delete";
-    request_id: string;
-    payload: { asset_id: string };
-  }
+  | QuestionImageEnvelope
+  | WorkerEnvelope
   | LegacyFormMediaEnvelope;
 
-// R05 realm-interno: imagem de pergunta (autoria do Superadmin) no R2.
-export type QuestionPrepare = {
-  form_id: string;
-  form_version_id: string;
-  item_id: string;
-  mime_type: string;
-  byte_length: number;
-  checksum: string;
-};
+/** Ramo R2 (lote 33): imagem de pergunta na autoria do Superadmin. Os nomes
+ * de acao do cliente legado (`prepare`, `finalize`, `download`, `discard`)
+ * continuam validos com `payload.purpose = "question-image"`; `resolve` e
+ * `delete` sao os nomes do contrato e sempre caem neste ramo. */
+export type QuestionImageEnvelope =
+  & { purpose: typeof QUESTION_IMAGE_PURPOSE }
+  & (
+    | { action: "prepare"; request_id: string; payload: QuestionImagePrepare }
+    | { action: "finalize" | "resolve"; payload: QuestionImageAccess }
+    | { action: "delete"; request_id: string; payload: QuestionImageAccess }
+  );
 
-export function parseQuestionPrepare(value: unknown): QuestionPrepare {
-  if (!value || typeof value !== "object" || Array.isArray(value)) {
-    throw new Error("invalid_payload");
-  }
-  const payload = value as Record<string, unknown>;
-  const allowed = new Set([
-    "form_id",
-    "form_version_id",
-    "item_id",
-    "mime_type",
-    "byte_length",
-    "checksum",
-  ]);
-  if (Object.keys(payload).some((key) => !allowed.has(key))) {
-    throw new Error("unknown_key");
-  }
-  if (
-    typeof payload.form_id !== "string" || !UUID.test(payload.form_id) ||
-    typeof payload.form_version_id !== "string" ||
-    !UUID.test(payload.form_version_id) ||
-    typeof payload.item_id !== "string" || !UUID.test(payload.item_id) ||
-    typeof payload.mime_type !== "string" ||
-    !ALLOWED_IMAGE_TYPES.has(payload.mime_type) ||
-    typeof payload.byte_length !== "number" ||
-    !Number.isSafeInteger(payload.byte_length) ||
-    payload.byte_length < 1 || payload.byte_length > 4 * 1024 * 1024 ||
-    typeof payload.checksum !== "string" || !SHA256.test(payload.checksum)
-  ) throw new Error("invalid_payload");
-  return payload as QuestionPrepare;
-}
+/** Chamadas do cron com o bearer do worker: sem JWT de usuario. */
+export type WorkerEnvelope = { action: "expire" | "cleanup" };
 
 type LegacyFormMediaEnvelope =
   & {
@@ -120,12 +98,14 @@ export function parseFormMediaEnvelope(value: unknown): FormMediaEnvelope {
     throw new Error("invalid_envelope");
   }
   const data = value as Record<string, unknown>;
-  if (data.action === "expire") {
+  if (data.action === "expire" || data.action === "cleanup") {
     if (Object.keys(data).some((key) => key !== "action")) {
       throw new Error("invalid_envelope");
     }
-    return { action: "expire" };
+    return { action: data.action };
   }
+  const questionImage = parseQuestionImageEnvelope(data);
+  if (questionImage) return questionImage;
   if (data.action === "read") {
     if (
       Object.keys(data).some((key) => key !== "action" && key !== "payload")
@@ -152,38 +132,6 @@ export function parseFormMediaEnvelope(value: unknown): FormMediaEnvelope {
         asset_id: read.asset_id.toLowerCase(),
         rendition: read.rendition,
       },
-    };
-  }
-  if (
-    data.action === "question_prepare" || data.action === "question_finalize" ||
-    data.action === "question_resolve" || data.action === "question_delete"
-  ) {
-    if (
-      Object.keys(data).some((key) =>
-        key !== "action" && key !== "request_id" && key !== "payload"
-      ) || typeof data.request_id !== "string" || !UUID.test(data.request_id)
-    ) {
-      throw new Error("invalid_envelope");
-    }
-    if (data.action === "question_prepare") {
-      return {
-        action: "question_prepare",
-        request_id: data.request_id,
-        payload: parseQuestionPrepare(data.payload),
-      };
-    }
-    const payload = data.payload as Record<string, unknown> | null;
-    if (
-      !payload || typeof payload !== "object" || Array.isArray(payload) ||
-      Object.keys(payload).some((key) => key !== "asset_id") ||
-      typeof payload.asset_id !== "string" || !UUID.test(payload.asset_id)
-    ) {
-      throw new Error("invalid_payload");
-    }
-    return {
-      action: data.action,
-      request_id: data.request_id,
-      payload: { asset_id: payload.asset_id.toLowerCase() },
     };
   }
   const keys = new Set(["action", "request_id", "expected_version", "payload"]);
@@ -217,6 +165,72 @@ export function parseFormMediaEnvelope(value: unknown): FormMediaEnvelope {
     };
   }
   throw new Error("invalid_envelope");
+}
+
+const questionImageActions: Record<string, QuestionImageEnvelope["action"]> = {
+  prepare: "prepare",
+  finalize: "finalize",
+  download: "resolve",
+  resolve: "resolve",
+  discard: "delete",
+  delete: "delete",
+};
+
+/** Devolve o envelope question-image ou `null` quando o pedido e do fluxo
+ * legado (answer-image). `expected_version` e aceito e ignorado neste ramo:
+ * o catalogo de midia nao versiona junto do rascunho do formulario. */
+function parseQuestionImageEnvelope(
+  data: Record<string, unknown>,
+): QuestionImageEnvelope | null {
+  const action = typeof data.action === "string"
+    ? questionImageActions[data.action]
+    : undefined;
+  if (!action) return null;
+  const explicit = data.action === "resolve" || data.action === "delete";
+  const payloadRecord = data.payload && typeof data.payload === "object" &&
+      !Array.isArray(data.payload)
+    ? data.payload as Record<string, unknown>
+    : null;
+  const flagged = payloadRecord?.purpose === QUESTION_IMAGE_PURPOSE ||
+    (action === "prepare" && isQuestionImagePayload(payloadRecord));
+  if (!explicit && !flagged) return null;
+  const keys = new Set(["action", "request_id", "expected_version", "payload"]);
+  if (Object.keys(data).some((key) => !keys.has(key))) {
+    throw new Error("invalid_envelope");
+  }
+  if (
+    data.expected_version !== undefined &&
+    (typeof data.expected_version !== "number" ||
+      !Number.isSafeInteger(data.expected_version) || data.expected_version < 0)
+  ) throw new Error("invalid_envelope");
+  const requestId = data.request_id;
+  if (
+    requestId !== undefined &&
+    (typeof requestId !== "string" || !UUID.test(requestId))
+  ) throw new Error("invalid_envelope");
+  if (action === "prepare") {
+    if (typeof requestId !== "string") throw new Error("invalid_envelope");
+    return {
+      action,
+      purpose: QUESTION_IMAGE_PURPOSE,
+      request_id: requestId.toLowerCase(),
+      payload: parseQuestionImagePrepare(data.payload),
+    };
+  }
+  if (action === "delete") {
+    if (typeof requestId !== "string") throw new Error("invalid_envelope");
+    return {
+      action,
+      purpose: QUESTION_IMAGE_PURPOSE,
+      request_id: requestId.toLowerCase(),
+      payload: parseQuestionImageAccess(data.payload),
+    };
+  }
+  return {
+    action,
+    purpose: QUESTION_IMAGE_PURPOSE,
+    payload: parseQuestionImageAccess(data.payload),
+  };
 }
 
 function readReceipt(value: unknown): Record<string, unknown> {

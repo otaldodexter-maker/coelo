@@ -378,7 +378,7 @@ void main() {
       'Notificações',
       'Home',
       'Para você',
-      'Publicar no Agora',
+      'Publicar no Acontece',
       'Momentos',
       'Pesquisar',
       'Mensagens',

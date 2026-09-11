@@ -22,8 +22,8 @@ select ok(
 );
 select ok(
   pg_get_function_result('public.list_my_principal_contexts()'::regprocedure) =
-    'TABLE(membership_id uuid, person_id uuid, institution_id uuid, institution_name text, role_code text, scope_kind text, unit_id uuid, unit_name text, group_id uuid, group_name text)',
-  'resolver exposes only the minimum runtime-context projection'
+    'TABLE(membership_id uuid, person_id uuid, institution_id uuid, institution_name text, role_code text, scope_kind text, unit_id uuid, unit_name text, group_id uuid, group_name text, institution_handle text, unit_handle text)',
+  'resolver exposes only the minimum runtime-context projection (institution_handle e unit_handle desde 20260911130100)'
 );
 select ok(
   position('auth.uid()' in pg_get_functiondef(
