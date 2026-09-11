@@ -1,6 +1,6 @@
 {
-  "revision": 28,
-  "updated_at": "2026-09-11T15:30-03:00",
+  "revision": 29,
+  "updated_at": "2026-09-11T15:46-03:00",
   "round": "E2-R05-20260911",
   "group": "principal-chat-sistema",
   "tool": "Claude Code (VS Code)",
@@ -10,7 +10,7 @@
   "branch": "work/etapa2-r05-principal-chat-sistema",
   "base": "origin/dev 2f6a6114f",
   "head": "828b9c69f (+ commit desta rev)",
-  "status": "FINALIZADO (mini-revisao abaixo). Pacotes 130000-130300 em producao (coordenador). Rota real do Principal provada com qa-r03: Acontece feed/create/publish/remove E2E; Agora view, Momentos view, Para voce e Perfil abrem; publicadores de Acontece/Agora/Momentos abrem para o contexto de instituicao. Chrome, servidores e dart encerrados.",
+  "status": "FINALIZADO as 15:45. Revisao final de 10 minutos abaixo (responde ao pedido das 15:50 do coordenador). Nenhum trabalho retomado por conta propria depois das 16:00.",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos, Perfil, Para voce",
     "apps/superadmin -> Chat (attach, create-group E2E)",
@@ -254,5 +254,28 @@
     "complemento_1510": "segunda tentativa de Momentos com midia na origem localhost:3000 (CORS liberado): imagem entra no compositor, save_moments_draft devolve {id ba75dde2-cfba-458f-807c-ee2a94e7f981, version 2, receipt_id} e a publicacao para em /functions/v1/moments-media (duas chamadas sem corpo capturado, provavel preflight + falha), tela 'Nao foi possivel publicar agora' (38). Rascunho de Momentos ba75dde2 fica em producao (dado sintetico). Gate exato para momentos.create: resposta da Edge Function moments-media a partir de localhost:3000 (ler status pelo Network ou pelos logs da funcao). Logs: rota-real/net-momentos-publicar.log e net-acontece-publicar.log (sem token). Ferramentas novas em ferramentas/ (cdp_file.dart: intercepta Page.fileChooserOpened e entrega o arquivo; rpc.py: prova de RPC com credencial so em memoria).",
     "complemento_1530": "Depois das allowlists de origem regravadas pelo coordenador (15:03), duas novas tentativas de publicar Momentos com midia em localhost:3000: imagem no compositor, save_moments_draft version 3 e 4 (rascunho ba75dde2), publico Equipe escolar marcado (45), Publicar agora -> 'Nao foi possivel publicar agora' (46). CAUSA RAIZ medida por sonda direta (ferramentas/rpc.py + fn_probe): POST /functions/v1/moments-media responde 422 {error: moments_r2_not_configured} para qualquer origem (a allowlist ja aceita localhost:3000 e 127.0.0.1:3009). No codigo: moments-media/index.ts environment() le COELO_R2_* como fallback, mas moments-media/r2_s3.ts momentsR2Config() so usa MOMENTS_R2_ENDPOINT/REGION/ACCESS_KEY_ID/SECRET_ACCESS_KEY/BUCKET, que nao existem nos secrets de producao (so COELO_R2_*). Correcao proposta (o classificador bloqueou a edicao nesta conversa como recurso compartilhado): em momentsR2Config usar MOMENTS_R2_* ?? COELO_R2_* e bucket padrao coelo-media-prod; redeploy de moments-media; happens-media e now-media conferir o mesmo caminho (dependencies.envGet). Logs: rota-real/net-momentos-publicar-2.log e -3.log. Ambiente encerrado 15:3x.",
     "complemento_1540": "moments-media reimplantada pelo coordenador as 15:22 (dev 98201b51e): a sonda direta passou de 422 moments_r2_not_configured para 422 invalid_request (payload vazio), ou seja, a funcao esta configurada. Duas tentativas de publicar pela tela depois disso ficaram inconclusivas por automacao (o chip Equipe escolar alterna a cada clique e numa delas o clique em Publicar agora nao disparou chamada alguma; noutra a tela respondeu Nao foi possivel publicar agora sem corpo capturado). Sem delta novo: momentos.create continua FE local-green com gate = repetir a prova dirigindo por Key/semantica (nao por coordenada) e capturar o corpo da resposta de moments-media. Rascunho ba75dde2 chegou a version 6. Ambiente encerrado 15:3x."
+  },
+  "revisao_final_1550": {
+    "voce_entregou_tudo_mesmo": "Sim, no Git: origin/work/etapa2-r05-principal-chat-sistema em 92ae1d024 (+ este commit da rev 29), worktree limpa, sem stash, sem WIP; capturas, logs de rede (sem token), ferramentas, deltas-r05-pcs.json (22) e skills-deltas-r05.md na evidencia r05-principal-chat-sistema/. Quatro pacotes SQL entregues e ja em producao. Chrome, servidores, dart e espelho coelo_pcs5 encerrados.",
+    "o_que_fechou": [
+      "acontece.feed/create/publish/remove verified-e2e",
+      "agora.view e momentos.view FE verified + BE done",
+      "principal.for-you, principal.profile-view, errors.retry FE verified",
+      "agora.create, momentos.create, principal.profile-edit FE local-green",
+      "item 6 (testes de composicao) 19/19",
+      "P28 no Perfil e seletor de perfil; P35 (ponte, Superadmin ve tudo, arrobas reservados, perfil Coelo) em producao"
+    ],
+    "o_que_ficou_aberto": [
+      "meal-plans.create/edit/model-create/model-edit/publish: 503 por authorizedMealPlanTenantId nao injetado (P43)",
+      "publicacao com midia (Momentos/Agora/Acontece): funcao configurada apos o redeploy 15:22; prova pela tela pendente (dirigir por Key)",
+      "chat.attach: picker do cliente sobre 210200 + chat-media; chat.create-group E2E nao retomado",
+      "errors.409 sem fluxo de producao; agora.expire sem agendador; P28 restante (perguntar perfil ao publicar, canPublish no dock hospedado, feed agregado); avatar/capa do perfil Coelo",
+      "testes pre-existentes fora do delta (lista na mini_revisao_final)"
+    ],
+    "duvidas_ao_owner": [
+      "P43 Cardapios (remover o fail-closed por tenant vazio; servidor ja valida)",
+      "P44 sincronizador P35 por papel interno (owner x operations)"
+    ],
+    "dados_sinteticos": "3 posts do Acontece (1 retirado) e o rascunho de Momentos ba75dde2 na instituicao d0c40000-0000-4000-8000-000000000001; pessoa Coelo e memberships/assignments do sincronizador sao regra de produto"
   }
 }
