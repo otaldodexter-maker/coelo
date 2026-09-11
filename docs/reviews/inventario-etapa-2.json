@@ -6188,15 +6188,15 @@
       "family": "locations",
       "screen": "Locais / Agendamento",
       "scope": "mvp",
-      "done": "Reservas preservam intencao, status historico, escopo e correlacao do recibo. Justificativa respeita 1000 codepoints antes de gerar request. Provas historicas 49+2 reutilizadas; novos escritores atomicos retidos.",
-      "fe": "Painel de reservas integrado c1b2a076: 16 testes incluídos no lote integrado de 25 PASS, com tentativa imutável após timeout/reload e invalidação ao editar horário/fuso. Restam injeção na tela real, navegação, estados e aceites completos de reserva/conflito. Preservar os testes aprovados; não tratar painel/motor como ausentes.",
-      "be": "R04: superadmin_location_schedule_set_v2 (230016, 38/38) e reservas (180000) em producao.",
-      "evidence": "codex/e2e-estruturas-pessoas-locais@9e689374; evidence/etapa-2/estruturas/2026-09-08-location-read-adapter.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C04r15–17;f147f6aa/621c2202/728feff9/d8741c60/84a05151;C04I008; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 27236a5a/ae7e8f5f/15516da9 retidos:fundação,capabilities,assertionsrecibos e schedule só disponibilidade semanal. ScratchAuthstub não é replay. Release confirmado;timestamp20:09r20 incoerente. Adapters posteriores observadosC06 sem handoff novo.; etapa-2-operacao/reports/R01-delta-2005.md; R01-locations-integration-manifest.json; Fechamento R01 C04/r61; C04r61/estado47;188cf2ba histórico266Flutter+36DTO; não rerun; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-e9a582a0-4041bd81.json; evidence/etapa-2/r02-d00-integration-20260909/manifest-reservations-profiles-resume.json; evidence/etapa-2/r02-d00-integration-20260909/joint-wrapper-offline-proof.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-location-gateway-integrated.json; evidence/etapa-2/r02-d00-integration-20260909/manifest-reservation-second-integrated.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; e6c25bb94; bf422d4f9; e6c25bb94; bf422d4f9; 7798fe9f1b964209fb89f6e990d2ae2d2f6f2509 historical-reservation-status-manifest.json; e6c25bb94; bf422d4f9; 7798fe9f1b964209fb89f6e990d2ae2d2f6f2509 historical-reservation-status-manifest.json; 44380219d078c17c090f68a1ce3c42919329cba1 reservation-justification-limit-manifest.json; cb817ca10aa1211bf904e5d9aec168b5fa40b759 reservation-justification-ui-manifest.json; docs/reviews/evidence/etapa-2/noturna-estrutura/sql-retained-handoff.json; bindings-candidate-manifest.json; activity-location-candidate-manifest.json; group-location-candidate-manifest.json; coordenacao.json R03 rev 12; evidence/etapa-2/r04-estrutura/handoff.md",
+      "done": "R04 continuacao: rota normal abre, a semana publicada persiste em producao, anonimo/sessao invalida negados por pgTAP e o reload mantem a janela (regua do MVP, ADR 0034).",
+      "fe": "R04 continuacao (11/09 11:15-11:25): no detalhe do local 82e92854 em producao (qa-r03, build release de qa_main + CDP): Ver agenda carrega vazio honesto; Adicionar janela (Segunda 08:00-12:00) e Publicar semana; a secao volta a Ver agenda e ao pedir de novo mostra a janela publicada; reload completo do detalhe (Page.navigate) + Ver agenda mantem a janela. Observacao de ferramental: a roda do mouse via CDP nao rola a lista do detalhe (gesto sintetizado rola); nao reproduzido com mouse real.",
+      "be": "R04 continuacao: superadmin_locations_schedule_v2 (lote 49) em producao alcancado pela sessao interna do qa-r03: semana publicada para activity_locations 82e92854 e lida de volta apos reload. Negativas no espelho de producao: superadmin_locations_schedule_v2_test 38/38 (anonimo nao le nem publica; leitura e publicacao exigem sessao validada; semana canonica com hash igual).",
+      "evidence": "codex/e2e-estruturas-pessoas-locais@9e689374; evidence/etapa-2/estruturas/2026-09-08-location-read-adapter.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C04r15–17;f147f6aa/621c2202/728feff9/d8741c60/84a05151;C04I008; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 27236a5a/ae7e8f5f/15516da9 retidos:fundação,capabilities,assertionsrecibos e schedule só disponibilidade semanal. ScratchAuthstub não é replay. Release confirmado;timestamp20:09r20 incoerente. Adapters posteriores observadosC06 sem handoff novo.; etapa-2-operacao/reports/R01-delta-2005.md; R01-locations-integration-manifest.json; Fechamento R01 C04/r61; C04r61/estado47;188cf2ba histórico266Flutter+36DTO; não rerun; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-e9a582a0-4041bd81.json; evidence/etapa-2/r02-d00-integration-20260909/manifest-reservations-profiles-resume.json; evidence/etapa-2/r02-d00-integration-20260909/joint-wrapper-offline-proof.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-location-gateway-integrated.json; evidence/etapa-2/r02-d00-integration-20260909/manifest-reservation-second-integrated.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; e6c25bb94; bf422d4f9; e6c25bb94; bf422d4f9; 7798fe9f1b964209fb89f6e990d2ae2d2f6f2509 historical-reservation-status-manifest.json; e6c25bb94; bf422d4f9; 7798fe9f1b964209fb89f6e990d2ae2d2f6f2509 historical-reservation-status-manifest.json; 44380219d078c17c090f68a1ce3c42919329cba1 reservation-justification-limit-manifest.json; cb817ca10aa1211bf904e5d9aec168b5fa40b759 reservation-justification-ui-manifest.json; docs/reviews/evidence/etapa-2/noturna-estrutura/sql-retained-handoff.json; bindings-candidate-manifest.json; activity-location-candidate-manifest.json; group-location-candidate-manifest.json; coordenacao.json R03 rev 12; evidence/etapa-2/r04-estrutura/handoff.md; evidence/etapa-2/r04-estrutura/rota-real/locations-schedule-apos-reload.jpg",
       "historicalFrontend": "not-reviewed",
       "historicalBackend": "not-reviewed",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastEvidenceAt": "2026-09-09T16:38:28.742086-03:00",
       "lastHandoffRevision": 61,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
@@ -6212,7 +6212,27 @@
         "productionApplied": false,
         "certificateChanged": false
       },
-      "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
+      "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-estrutura/rota-real/locations-schedule-apos-reload.jpg",
+          "revision": "estrutura.json rev 38",
+          "environment": "Chrome 152 (CDP 9556) contra o build release de test_driver/qa_main.dart servido em localhost:3020 com .env.local de producao; usuario qa-r03@coelo.me | provas: locations-schedule-vazia.jpg; locations-schedule-janela-antes-de-publicar.jpg; locations-schedule-apos-reload.jpg",
+          "recordedAt": "2026-09-11T11:30:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-estrutura/handoff.md",
+          "revision": "estrutura.json rev 38",
+          "environment": "producao coelo (evvbomzejfijozbtgvpt), lote 49 aplicado | provas: rota real 11/09 11:20 (publicacao e releitura da semana); pgTAP superadmin_locations_schedule_v2_test 38/38 no espelho supabase_db_coelo_baseline_estrutura",
+          "recordedAt": "2026-09-11T11:30:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-estrutura/rota-real/locations-schedule-apos-reload.jpg",
+          "revision": "estrutura.json rev 38",
+          "environment": "producao coelo pelo build release de qa_main com qa-r03@coelo.me | provas: locations-schedule-vazia.jpg; locations-schedule-janela-antes-de-publicar.jpg; locations-schedule-apos-reload.jpg; activity_locations 82e92854",
+          "recordedAt": "2026-09-11T11:30:00-03:00"
+        }
+      }
     },
     {
       "id": "circulars.list",
@@ -6624,7 +6644,7 @@
       "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
     }
   ],
-  "updatedAt": "2026-09-11T14:09:23.342Z",
+  "updatedAt": "2026-09-11T14:27:55.690Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,

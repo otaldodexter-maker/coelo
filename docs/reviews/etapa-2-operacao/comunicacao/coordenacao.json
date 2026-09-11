@@ -1,12 +1,12 @@
 {
- "revision": 33,
+ "revision": 34,
  "round": "E2-R04-20260911",
  "role": "Coordenacao noturna R04 - Claude Fable (C0)",
  "writer": "coordenador-claude",
  "app": "Claude Code (VS Code)",
  "model": "claude-fable-5-1",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T14:45:00-03:00",
+ "updatedAt": "2026-09-11T15:15:00-03:00",
  "relogio": "relogio da maquina; posse as 21:42 -03:00 de 10/09/2026",
  "posseR04": {
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -223,6 +223,7 @@
   "31": "08:52 FECHAMENTO da R04: sete frentes integradas e worktrees removidas; lote 23; rastreadores e skills consolidados; percentuais finais",
   "32": "09:55 lote 24 (180360); continuacao da estrutura integrada (primeiro E2E da Estrutura); worktree quebrada da R03 removida; artefato de decisoes publicado",
   "33": "14:45 decisoes do Owner de 11/09 (duas levas) registradas e parcialmente executadas (lotes 25-27, goldens); estrutura revs 34-37 integrada; pendencias da R05 listadas",
+  "34": "15:15 pausa da frente estrutura: revs 37-38 integradas, WIP preservado na branch, 16 deltas aplicados (E2E 43), worktree e processos encerrados, P40-P42 ao Owner",
   "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina."
  },
  "fechamentoR03": {
@@ -711,5 +712,20 @@
   "beDone": "68/224 (30,36%)",
   "e2eVerified": "42/199 (21,11%)",
   "base": "inventario validado (validate-trackers PASS) as 14:40 de 11/09; ambiente repositorio + producao medida nos lotes 8 a 27"
+ },
+ "pausaEstrutura1505": {
+  "fonte": "estrutura.json rev 38 (a125c89c7) e handoff 'Continuacao depois do fechamento'; frente pausada pelo Owner",
+  "integrado": "a12160088, 85f66cd38, a125c89c7 integrados em dev por merge; commit WIP a71d7ff0a (fetchFormOptions/searchProfessionals -> superadmin_activity_form_options_v2, nao verificado) preservado SO na branch work/etapa2-r04-estrutura, fora de dev",
+  "deltas": "deltas-r04-estrutura-continuacao-2.json (16) aplicados; validate PASS; E2E 43/199",
+  "worktree": "e2-r04-estrutura removida; projeto descartavel coelo_baseline_estrutura parado; Chrome 9556 e servidor 3020 fechados",
+  "slugUnidade": "public.units f5284f2f slug=unidade-centro-r04 (conferido em producao, somente leitura)",
+  "dadosSinteticosDaFrente": "groups 368a5cea, institutions 190dd028 (+endereco), units f5284f2f (+endereco/contatos), activity_locations 82e92854 (+semana). NAO removidos: P25 manda perguntar ao Owner antes de apagar, e 190dd028 (qa-r04-escola) recebeu membership owner do qa-r03 no lote 27 e e citada nos prompts da R05. Pergunta ao Owner registrada (P42).",
+  "perguntasNovas": "P40 (icone @ no Identificador), P41 (Identificador vira @ na criacao?), P42 (apagar dados sinteticos da frente estrutura agora ou no fim da Etapa 2?)",
+  "pendenciasR05": [
+   "activities.create/edit pela rota real (ligar fetchFormOptions sobre o commit WIP a71d7ff0a e rebuild)",
+   "institution_contacts_v2 para destravar institutions.edit",
+   "vinculo profissional do qa-r03 para assessments.entry",
+   "3 falhas pre-existentes de outras familias em composition_root_sanitization_test e superadmin_auth_scope_test (principal-chat-sistema / operacoes conferem)"
+  ]
  }
 }

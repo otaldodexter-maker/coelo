@@ -307,6 +307,15 @@ próprio arquivo.
 
 Orientação do Owner na mesma resposta: decisões do artefato são para **anotar** (R05 e md de pendências), não para executar fora do ciclo das frentes. O que já tinha sido executado antes dessa orientação (lotes 25 a 27, goldens P26/G-FORM) fica registrado como feito.
 
+
+### Terceira leva (15:15, pausa da frente estrutura) — aguardam resposta
+
+| Item | Pergunta | Recomendação |
+| --- | --- | --- |
+| P40 (Unidades/Instituições, visual) | O campo Identificador usa o ícone @ mas grava o slug; o @ público é gerado pelo servidor. Trocar o ícone (link/tag) ou manter? | Trocar, porque o @ induz a ler o campo como handle. |
+| P41 (Unidades, produto) | O Identificador digitado deve virar o @ público na criação (exigiria proibir hífen no cliente) ou o @ continua derivado pelo servidor? | Manter derivado até existir a ação "Alterar @" no cliente. |
+| P42 (dados sintéticos) | A frente pediu remover em produção groups 368a5cea, institutions 190dd028 (qa-r04-escola), units f5284f2f e activity_locations 82e92854. A instituição 190dd028 recebeu membership do qa-r03 no lote 27 e é usada nos prompts da R05. Apagar agora ou no fim da Etapa 2, junto com as outras sintéticas (P25)? | No fim da Etapa 2, tudo junto, por migration de limpeza com dump prévio. |
+
 Registro: ADR 0034 Decisão 15; skills coelo-backend, coelo-frontend, coelo-frontend-backend e coelo-ui (baselines aprovadas); coordenacao.json rev 33.
 
 ## Registro
