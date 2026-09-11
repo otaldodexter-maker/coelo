@@ -1,7 +1,7 @@
 {
-  "revision": 131,
-  "updated_at": "2026-09-11T18:23:09.331Z",
-  "relogio_local": "Fri Sep 11 2026 15:23:09 GMT-0300 (Horário Padrão de Brasília)",
+  "revision": 132,
+  "updated_at": "2026-09-11T18:25:59.955Z",
+  "relogio_local": "Fri Sep 11 2026 15:25:59 GMT-0300 (Horário Padrão de Brasília)",
   "round": "E2-R05-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
@@ -194,6 +194,8 @@
     "a_aplicar_pelo_coordenador": "deltas-r05-2.json (7), deltas-r05-3.json (7), deltas-r05-4.json (1); pacote 170400 + chave segmentFilterAvailable; proposta de skills na rev 129; perguntas P43/P44.",
     "nao_retomo": "depois de 16:00 nao retomo por conta propria; respondo a revisao das 15:50 no JSON."
   },
+  "P_SEGMENT_EM_PRODUCAO_15h27": "170400 em producao (lote 46) provado por REST com qa-r03: superadmin_people_list p_segment all=13, children=2, guardians=1, institutional_team=7, dual_profile=0; 'x' -> 22023 invalid segment. Chave segmentFilterAvailable ligada pelo coordenador; prova das abas pela UI depende de build novo. Delta sugerido: people.list BE done ja consta; registrar como evidencia do filtro por aba (sem action_id proprio).",
+  "CONFERENCIA_DO_COORDENADOR_15h25": "rev 131 integrada em dev 6418194db; deltas r05-2/3/4 aplicados; 170400 lote 46; P43/P44 viraram P45/P46; defeito do @ de unidade corrigido pela G5 (lote 47). flutter analyze do app inteiro na branch: 1 aviso pre-existente (test_driver/qa_login.dart strict_raw_type), nada meu.",
   "historico_r04": {
     "revision": 118,
     "updated_at": "2026-09-11T11:31:19.648Z",
