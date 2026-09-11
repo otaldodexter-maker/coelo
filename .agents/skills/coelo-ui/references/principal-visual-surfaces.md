@@ -95,17 +95,35 @@ Agenda e Lançar faltas** (lançar chamada também é uma publicação). As quat
 referências que ele enviou (Agora, Acontece, dois estudos de Momentos) devem
 ser guardadas em `docs/reviews/evidence/etapa-2/referencias/publicacao/`
 (`agora-publicar.png`, `acontece-publicar.png`, `momentos-publicar-1.png`,
-`momentos-publicar-2.png`); até lá esta descrição é a fonte.
+`momentos-publicar-2.png`). **As telas do Coelo derivadas delas foram
+aprovadas pelo Owner em 11/09/2026 às 17:19** (canvas "Publicar no Coelo",
+versão 4, artefato 7d13d4ef) e são a referência vigente da família:
+`docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/`
+(`agora`, `acontece`, `momentos`, `circular`, `evento` e `lancar-chamada`,
+cada uma em `-mobile-375.png` e `-web-1440.png`); a fonte que gera essas
+imagens (`gen.py`, artboards `.dc.html`, recortes do shell) está em
+`../canvas-fonte/`. Golden novo dessas telas é comparado a essas imagens.
 
 Anatomia comum, sobre nossos tokens (fundo branco `neutral0`, texto
 `neutral700`, botão primário `orange500` com texto branco, secundário contornado
 `neutral200`, notas em `orange50`, cantos `md`/`lg`, Nunito Sans):
 
-- **Cabeçalho:** no mobile, fechar (X) à esquerda, logo `coelo` ao centro e
-  ajuda (?) à direita, título "Publicar no/em …" abaixo com uma barra de
-  progresso fina laranja quando há etapas; no desktop, cabeçalho global do
-  Principal (logo, navegação Início · Agora · Acontece · Momentos · … com a
-  aba ativa sublinhada em laranja, sino, avatar) e título com seta de voltar.
+- **Hospedeiro (aprovado 17:19):** no Superadmin web (1440) a tela de
+  publicação vive **dentro do contêiner principal**, com o shell real
+  intacto: menu lateral de 260 px em (12,12) com "Coelo (Principal)" ativo
+  em vinho `#942900` e a subaba (Acontece, Momentos, Agora…) ativa em
+  `orange500`; contêiner em x=284 com 1144 px, borda `neutral200`, raio 16,
+  padding 24; barra "Vendo como · Colégio Coelo · @colegio-coelo", sino e
+  avatar no topo do contêiner; abaixo, título de página "Sua publicação"
+  (22/700) e subtítulo "Publicar no/em …" (16/600); conteúdo em colunas
+  (mídia + trilho | formulário | prévia); rodapé em card contornado dentro
+  do contêiner com `Cancelar` (link laranja, à esquerda) e `Salvar rascunho`
+  (contornado) + primária (`orange500`) à direita. No mobile (375) o
+  cabeçalho é o do Principal (logo Coelo à esquerda, ícones e avatar à
+  direita, 64 px), título "Sua publicação / Publicar no …", conteúdo em uma
+  coluna e rodapé em card com a primária cheia, a secundária contornada
+  abaixo e `Cancelar` como link. Sem cabeçalho próprio de "publicar" e sem
+  wizard.
 - **Mídia primeiro:** a mídia (vídeo vertical no Agora e Momentos, carrossel
   de fotos `1/6` no Acontece) é o maior elemento; miniaturas em fila com
   duração, `+` para adicionar e `Editar capa` sobre a imagem. Vídeo tem um
@@ -131,16 +149,17 @@ Anatomia comum, sobre nossos tokens (fundo branco `neutral0`, texto
   primária (cancelar/rascunho à esquerda, publicar à direita).
 - **Sem fundo cinza, sem wizard de etapas administrativo, sem balão de chat.**
 
-Aplicações por tela (telas novas propostas no canvas "Publicar no Coelo",
-para o Owner aprovar):
+Aplicações por tela (telas aprovadas pelo Owner em 11/09 às 17:19 no canvas
+"Publicar no Coelo"; imagens em `aprovadas-20260911/`):
 
 - **Agora:** vídeo 9:16 com duração, trilho Texto/Música/Cortar/Capa, legenda
   0/60, público, agendar (toggle), nota das 24 horas.
 - **Acontece:** carrossel `1/6`, legenda 0/2.200 com hashtag laranja, público
   + chips, agendamento "Publicar agora ▾", opções, prévia do post.
-- **Momentos:** vídeo com trilho, "Capa do momento" (miniaturas, a escolhida
-  com contorno laranja), legenda 0/220, público + chips, agendar, nota de
-  contexto, prévia vertical.
+- **Momentos:** vídeo 9:16 (300×520 no web, largura cheia com 440 px no
+  mobile) com trilho, "Capa do momento" (miniaturas, a escolhida com
+  contorno laranja), legenda 0/220, público + chips, agendar, nota de
+  contexto, prévia vertical. Mídia sempre com `cover`, nunca esticada.
 - **Circulares:** título, texto (0/4.000), anexos até 4 (PDF/imagem), público
   + chips, "Resposta esperada" (Só leitura · Confirmar ciência · Aceitar/
   recusar), agendamento, opções, prévia da circular com o botão que a família

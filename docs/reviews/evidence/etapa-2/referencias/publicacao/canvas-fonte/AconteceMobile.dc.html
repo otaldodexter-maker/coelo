@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap">
+  <style>
+    body{margin:0;font-family:"Nunito Sans","Segoe UI",system-ui,sans-serif;color:#3F4549;background:#FFFFFF;-webkit-font-smoothing:antialiased}
+    a{color:#D63C00}a:hover{color:#B83300}
+    .card{border:1px solid #DDE0E2;border-radius:12px;background:#FFFFFF}
+    .lbl{font-size:13px;font-weight:700;color:#3F4549}
+    .muted{color:#737B80;font-size:12px}
+    .chip{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:999px;border:1px solid #DDE0E2;font-size:12px;font-weight:600;color:#3F4549;background:#FFFFFF}
+    .chip.on{border-color:#D63C00;color:#D63C00;background:#FFF3EE}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 20px;border-radius:12px;font-size:14px;font-weight:700;border:1px solid transparent;box-sizing:border-box}
+    .btn.primary{background:#D63C00;color:#FFFFFF}
+    .btn.secondary{background:#FFFFFF;color:#3F4549;border-color:#DDE0E2}
+    .tool{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;font-weight:600;color:#3F4549}
+    .tool .ic{width:44px;height:44px;border-radius:999px;border:1px solid #DDE0E2;display:flex;align-items:center;justify-content:center;background:#FFFFFF}
+    .media{border-radius:16px;position:relative;overflow:hidden;background:#F7F8F8}
+    .media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+    .media .tag{position:absolute;left:12px;top:12px;background:rgba(28,32,34,.72);color:#fff;font-size:11px;font-weight:700;padding:4px 8px;border-radius:999px}
+    .thumb{width:48px;height:48px;border-radius:8px;background:#F7F8F8;position:relative;flex:0 0 auto;overflow:hidden}
+    .thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+    .thumb.on{outline:2px solid #D63C00;outline-offset:1px}
+    .thumb span{position:absolute;left:4px;bottom:4px;color:#fff;font-size:10px;font-weight:700}
+    .thumb.add{background:#FFFFFF;border:1px dashed #C4C9CC;display:flex;align-items:center;justify-content:center;color:#737B80;font-size:20px;font-weight:600}
+    .field{border:1px solid #DDE0E2;border-radius:12px;padding:12px;font-size:14px;color:#9DA4A8;min-height:72px;display:flex;flex-direction:column;justify-content:space-between}
+    .field .ct{align-self:flex-end;font-size:11px;color:#737B80}
+    .row{display:flex;align-items:center;gap:12px}
+    .toggle{width:40px;height:22px;border-radius:999px;background:#DDE0E2;position:relative;flex:0 0 auto}
+    .toggle::after{content:"";position:absolute;left:3px;top:3px;width:16px;height:16px;border-radius:999px;background:#fff}
+    .note{background:#FFF3EE;border-radius:12px;padding:12px;font-size:12px;color:#3F4549;display:flex;gap:8px;align-items:flex-start}
+    .avatar{width:32px;height:32px;border-radius:999px;background:#FFC2AD;flex:0 0 auto}
+    .avatar.brand{background:#D63C00;color:#fff;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center}
+    .logo{font-weight:800;color:#D63C00;font-size:22px;letter-spacing:-.02em}
+    .nav a{text-decoration:none;color:#3F4549;font-size:14px;font-weight:600;padding:8px 4px;border-bottom:2px solid transparent}
+    .nav a.on{color:#D63C00;border-bottom-color:#D63C00}
+    .side a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;text-decoration:none;color:#3F4549;font-size:14px;font-weight:600}
+    .side a.on{background:#FFF3EE;color:#D63C00}
+    .list-row{display:flex;align-items:center;gap:12px;padding:10px 12px;border-bottom:1px solid #EEF0F1}
+    .seg{display:flex;border:1px solid #DDE0E2;border-radius:999px;overflow:hidden}
+    .seg span{padding:6px 10px;font-size:11px;font-weight:700;color:#737B80}
+    .seg span.p{background:#F0F9F3;color:#2D8A4E}.seg span.f{background:#FFF3EE;color:#D63C00}.seg span.a{background:#FFF8F5;color:#8A5B00}
+    .step{height:3px;border-radius:2px;background:#EEF0F1;flex:1}
+    .step.on{background:#D63C00}
+  </style>
+</helmet>
+<div style="width:375px;min-height:1200px;background:#FFFFFF;display:flex;flex-direction:column;box-sizing:border-box">
+  <img src="header-375.jpg" style="display:block;width:375px;height:64px">
+  <div style="padding:8px 16px 4px;display:flex;flex-direction:column;gap:2px"><span style="font-size:22px;font-weight:700;color:#1C2022">Sua publicação</span><span style="font-size:17px;font-weight:700;color:#3F4549">Publicar no Acontece</span></div>
+  <div style="display:flex;flex-direction:column;gap:12px;padding:12px 16px 24px"><div class="lbl">Mídia</div>
+  <div class="media" style="width:100%;height:200px"><img src="foto-paisagem.jpg"><span class="tag">1/6</span><span class="tag" style="left:auto;right:12px;top:auto;bottom:12px">Editar capa</span></div>
+  <div class="row" style="gap:8px;overflow:hidden"><div class="thumb add">+</div><div class="thumb"><img src="foto-2.jpg"><span>0:15</span></div><div class="thumb"><img src="foto-3.jpg"><span>0:08</span></div><div class="thumb"><img src="foto-vertical.jpg"><span>0:12</span></div><div class="thumb"><img src="foto-paisagem.jpg"><span>0:10</span></div></div>
+  <div class="lbl">Legenda</div>
+  <div class="field" style="min-height:96px"><span style="color:#3F4549">Aprender juntos é crescer juntos. Momentos que fortalecem laços e constroem o futuro. <span style="color:#D63C00">#coeloacontece</span></span><span class="ct">98/2.200</span></div>
+  <div class="lbl">Público e contexto</div>
+  <div class="card" style="padding:12px;display:flex;align-items:center;gap:12px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D63C00" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4a3.5 3.5 0 0 1 0 7M21.5 20a6.5 6.5 0 0 0-5-6.3"/></svg><div style="flex:1;display:flex;flex-direction:column;gap:2px"><div class="lbl">Público e contexto</div><div style="font-size:13px;color:#3F4549">Colégio Coelo</div><div style="font-size:13px;color:#3F4549">Unidade Higienópolis • 3º ano A</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#737B80" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></div>
+  <div class="row" style="flex-wrap:wrap;gap:8px"><span class="chip on"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D63C00" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4a3.5 3.5 0 0 1 0 7M21.5 20a6.5 6.5 0 0 0-5-6.3"/></svg>Famílias</span><span class="chip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3F4549" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4a3.5 3.5 0 0 1 0 7M21.5 20a6.5 6.5 0 0 0-5-6.3"/></svg>Alunos</span><span class="chip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3F4549" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4a3.5 3.5 0 0 1 0 7M21.5 20a6.5 6.5 0 0 0-5-6.3"/></svg>Equipe escolar</span><span class="chip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3F4549" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4a3.5 3.5 0 0 1 0 7M21.5 20a6.5 6.5 0 0 0-5-6.3"/></svg>Somente responsáveis</span></div>
+  <div class="card" style="padding:12px 14px;display:flex;align-items:center;gap:12px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3F4549" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><div class="lbl" style="flex:1">Agendamento</div><span style="font-size:13px;font-weight:700;color:#D63C00">Publicar agora</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#737B80" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></div>
+  <div style="display:flex;flex-direction:column;gap:8px"><div class="lbl">Opções</div><div class="row" style="justify-content:space-between"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3F4549" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M8 3v6h7"/></svg><span style="flex:1;font-size:13px">Salvar como rascunho</span><div class="toggle"></div></div></div><div class="card" style="padding:16px;display:flex;flex-direction:column;gap:12px;align-items:center;margin-top:8px"><div class="btn primary" style="width:100%">Publicar no Acontece</div><div class="btn secondary" style="width:100%">Salvar rascunho</div><span style="color:#D63C00;font-weight:700;font-size:14px;padding:6px">Cancelar</span></div></div>
+</div>
+</x-dc>
+</body>
+</html>

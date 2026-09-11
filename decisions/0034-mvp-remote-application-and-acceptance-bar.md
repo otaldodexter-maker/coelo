@@ -474,8 +474,11 @@ para a Rodada 6, não executadas pela coordenação da R05. Texto integral em
   **família visual Publicação** na skill `coelo-ui`
   (`references/principal-visual-surfaces.md`), com as referências enviadas
   pelo Owner, cobrindo Agora, Acontece, Momentos, Circulares, Eventos e
-  Lançar faltas; telas novas propostas no canvas "Publicar no Coelo" para
-  aprovação.
+  Lançar faltas; telas novas propostas no canvas "Publicar no Coelo" e
+  **aprovadas pelo Owner às 17:19** (versão 4, com o shell real do
+  Superadmin e a tela dentro do contêiner principal no web); referência em
+  `docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/`.
+  Aprovar a proposta não muda estado de ação; a reconstrução é da R06.
 - **Produto:** P43 = B (tela mínima de Sessões no MVP com Edge Function);
   P44 = B (atualizar o Catálogo agora); P45 = B (modelo de sistema criado pelo
   Superadmin pode ser excluído, conforme hierarquia, como owner); P46 = A (@

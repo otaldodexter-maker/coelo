@@ -1,0 +1,103 @@
+{
+ "artboards": [
+  {
+   "file": "Main.dc.html",
+   "x": 0,
+   "y": 0,
+   "w": 375,
+   "h": 1060,
+   "title": "Agora \u00b7 mobile 375"
+  },
+  {
+   "file": "AgoraDesktop.dc.html",
+   "x": 480,
+   "y": 0,
+   "w": 1440,
+   "h": 900,
+   "title": "Agora \u00b7 desktop 1440"
+  },
+  {
+   "file": "AconteceMobile.dc.html",
+   "x": 0,
+   "y": 1440,
+   "w": 375,
+   "h": 1200,
+   "title": "Acontece \u00b7 mobile 375"
+  },
+  {
+   "file": "AconteceDesktop.dc.html",
+   "x": 480,
+   "y": 1440,
+   "w": 1440,
+   "h": 1160,
+   "title": "Acontece \u00b7 desktop 1440"
+  },
+  {
+   "file": "MomentosMobile.dc.html",
+   "x": 0,
+   "y": 2880,
+   "w": 375,
+   "h": 1260,
+   "title": "Momentos \u00b7 mobile 375"
+  },
+  {
+   "file": "MomentosDesktop.dc.html",
+   "x": 480,
+   "y": 2880,
+   "w": 1440,
+   "h": 1300,
+   "title": "Momentos \u00b7 desktop 1440"
+  },
+  {
+   "file": "CircularMobile.dc.html",
+   "x": 0,
+   "y": 4320,
+   "w": 375,
+   "h": 1300,
+   "title": "Circular \u00b7 mobile 375"
+  },
+  {
+   "file": "CircularDesktop.dc.html",
+   "x": 480,
+   "y": 4320,
+   "w": 1440,
+   "h": 1280,
+   "title": "Circular \u00b7 desktop 1440"
+  },
+  {
+   "file": "EventoMobile.dc.html",
+   "x": 0,
+   "y": 5760,
+   "w": 375,
+   "h": 1320,
+   "title": "Evento \u00b7 mobile 375"
+  },
+  {
+   "file": "EventoDesktop.dc.html",
+   "x": 480,
+   "y": 5760,
+   "w": 1440,
+   "h": 1300,
+   "title": "Evento \u00b7 desktop 1440"
+  },
+  {
+   "file": "FaltasMobile.dc.html",
+   "x": 0,
+   "y": 7220,
+   "w": 375,
+   "h": 1300,
+   "title": "Lan\u00e7ar chamada \u00b7 mobile 375"
+  },
+  {
+   "file": "FaltasDesktop.dc.html",
+   "x": 480,
+   "y": 7220,
+   "w": 1440,
+   "h": 1260,
+   "title": "Lan\u00e7ar chamada \u00b7 desktop 1440"
+  }
+ ],
+ "launch": {
+  "view": "canvas"
+ }
+}

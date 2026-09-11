@@ -78,6 +78,21 @@ Decisões do Owner na tarde (ADR 0034 Decisão 17): usuários sintéticos por
 grupo na R06; listas de arrobas reservados no encerramento do MVP; dados
 sintéticos ficam até o fim da Etapa 2.
 
+Complemento (16:45–17:32): o Owner respondeu tudo o que estava aberto na
+página de aprovações (P43–P50, os 17 cards visuais, IMP-R05-2, A+ da
+Agenda) — anotado em `coordenacao.json` → `respostasDoOwnerR05`, ADR 0034
+Decisão 18 e nos prompts da R06, sem execução nesta rodada. Os publicadores
+do Principal foram reprovados como wizard e nasceu a família visual
+Publicação (`coelo-ui`): as 12 telas novas (Agora, Acontece, Momentos,
+Circular, Evento e Lançar chamada, 375 e 1440, dentro do shell real do
+Superadmin) foram **aprovadas às 17:19** no canvas "Publicar no Coelo"
+(versão 4) e guardadas em
+`docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/`;
+as 13 ações afetadas receberam a anotação no inventário
+(`evidence/etapa-2/r05-coordenacao/deltas-r05-familia-publicacao.json`) sem
+mudança de estado. Continua aberta só a lista de arrobas reservados (fim do
+MVP).
+
 ## Pendências de revisão profunda (não bloqueiam o MVP)
 
 - Raiz da ponte de ator: membership escopada espelhada como

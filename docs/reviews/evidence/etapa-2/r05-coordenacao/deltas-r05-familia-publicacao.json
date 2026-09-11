@@ -1,0 +1,134 @@
+[
+ {
+  "action_id": "acontece.create",
+  "camada": "frontend",
+  "delta": "publicador abre para o contexto de instituicao (unidade/turma opcionais, 1da47a1cc); legenda + publico + Publicar no Acontece pela tela real (02..05, 08, 09); R05 17:19: familia visual Publicacao aprovada pelo Owner (publicador atual reprovado como wizard: V-4/V-5/V-6); reconstruir a tela sobre a familia na R06 (G4) comparando o golden novo com docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/acontece-mobile-375.png e acontece-web-1440.png (no web dentro do conteiner principal do Superadmin); estado funcional mantido pela regua do MVP; aprovacao da proposta nao e ownerVisualApproval",
+  "evidencia": "docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/acontece-mobile-375.png; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/acontece-web-1440.png; coordenacao.json R05 rev 51 (canvasPublicarNoCoelo)",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/05-acontece-revisao.png",
+   "revision": "principal-chat-sistema r25",
+   "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+   "recordedAt": "2026-09-11T14:53-03:00"
+  }
+ },
+ {
+  "action_id": "acontece.publish",
+  "camada": "frontend",
+  "delta": "publicador abre para o contexto de instituicao (unidade/turma opcionais, 1da47a1cc); legenda + publico + Publicar no Acontece pela tela real (02..05, 08, 09); R05 17:19: familia visual Publicacao aprovada pelo Owner (publicador atual reprovado como wizard: V-4/V-5/V-6); reconstruir a tela sobre a familia na R06 (G4) comparando o golden novo com docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/acontece-mobile-375.png e acontece-web-1440.png (no web dentro do conteiner principal do Superadmin); estado funcional mantido pela regua do MVP; aprovacao da proposta nao e ownerVisualApproval",
+  "evidencia": "docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/acontece-mobile-375.png; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/acontece-web-1440.png; coordenacao.json R05 rev 51 (canvasPublicarNoCoelo)",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/05-acontece-revisao.png",
+   "revision": "principal-chat-sistema r25",
+   "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+   "recordedAt": "2026-09-11T14:53-03:00"
+  }
+ },
+ {
+  "action_id": "momentos.create",
+  "camada": "frontend",
+  "delta": "publicador abre (15); imagem sintetica entra no compositor pelo seletor de arquivo (30) e chega a Revisao com publico (32); a publicacao com midia falhou ('Nao foi possivel publicar agora', 33) na origem 127.0.0.1:3009 e a tentativa em localhost:3000 perdeu a midia antes de publicar; gate: repetir com cdp_net na origem liberada no CORS; R05 17:19: familia visual Publicacao aprovada pelo Owner (publicador atual reprovado como wizard: V-4/V-5/V-6); reconstruir a tela sobre a familia na R06 (G4) comparando o golden novo com docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/momentos-mobile-375.png e momentos-web-1440.png (no web dentro do conteiner principal do Superadmin); estado funcional mantido pela regua do MVP; aprovacao da proposta nao e ownerVisualApproval",
+  "evidencia": "docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/momentos-mobile-375.png; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/momentos-web-1440.png; coordenacao.json R05 rev 51 (canvasPublicarNoCoelo)"
+ },
+ {
+  "action_id": "momentos.publish",
+  "camada": "frontend",
+  "delta": "Publicar um Momento passou a sinalizar um refresh compartilhado que faz a leitura recarregar pelo repositorio autorizado, em vez de tratar o recibo do publicador como dado de feed. A prova server-side de publicacao, recibos e midia continua aberta.; R05 17:19: familia visual Publicacao aprovada pelo Owner (publicador atual reprovado como wizard: V-4/V-5/V-6); reconstruir a tela sobre a familia na R06 (G4) comparando o golden novo com docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/momentos-mobile-375.png e momentos-web-1440.png (no web dentro do conteiner principal do Superadmin); estado funcional mantido pela regua do MVP; aprovacao da proposta nao e ownerVisualApproval",
+  "evidencia": "docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/momentos-mobile-375.png; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/momentos-web-1440.png; coordenacao.json R05 rev 51 (canvasPublicarNoCoelo)"
+ },
+ {
+  "action_id": "agora.create",
+  "camada": "frontend",
+  "delta": "publicador do Agora abre na rota real para o contexto de instituicao (28); publicacao com midia nao exercitada (picker via CDP); R05 17:19: familia visual Publicacao aprovada pelo Owner (publicador atual reprovado como wizard: V-4/V-5/V-6); reconstruir a tela sobre a familia na R06 (G4) comparando o golden novo com docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/agora-mobile-375.png e agora-web-1440.png (no web dentro do conteiner principal do Superadmin); estado funcional mantido pela regua do MVP; aprovacao da proposta nao e ownerVisualApproval",
+  "evidencia": "docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/agora-mobile-375.png; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/agora-web-1440.png; coordenacao.json R05 rev 51 (canvasPublicarNoCoelo)"
+ },
+ {
+  "action_id": "agora.publish",
+  "camada": "frontend",
+  "delta": "publish_now tinha o mesmo defeito de publish_happens_post e recebeu a mesma correcao: a chave de idempotencia e do controlador, reapresentada em uma nova tentativa da mesma publicacao e descartada quando a intencao muda ou e aceita. Composicao verificada conforme a regra do coordenador: main.dart compoe o caminho SIM; o router monta a pagina PRODUTIVA SIM, fora de /dev; existe implementacao de producao do repositorio, nao apenas interface, SIM.; R05 17:19: familia visual Publicacao aprovada pelo Owner (publicador atual reprovado como wizard: V-4/V-5/V-6); reconstruir a tela sobre a familia na R06 (G4) comparando o golden novo com docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/agora-mobile-375.png e agora-web-1440.png (no web dentro do conteiner principal do Superadmin); estado funcional mantido pela regua do MVP; aprovacao da proposta nao e ownerVisualApproval",
+  "evidencia": "docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/agora-mobile-375.png; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/agora-web-1440.png; coordenacao.json R05 rev 51 (canvasPublicarNoCoelo)"
+ },
+ {
+  "action_id": "attendance.create",
+  "camada": "frontend",
+  "delta": "R05 (14:44): /attendance/new com contexto real (instituicao/unidade/turma sinteticas via superadmin_attendance_context_options), Lancar chamada -> /attendance/calls/:id com o participante da turma. DEFEITO registrado: o balao de chat cobre \"Lancar chamada\"/\"Concluir chamada\" no rodape (Decisao 7).; R05 17:19: familia visual Publicacao aprovada pelo Owner; reconstruir a tela sobre a familia na R06 (G3) comparando o golden novo com docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/lancar-chamada-mobile-375.png e lancar-chamada-web-1440.png (no web dentro do conteiner principal do Superadmin); estado funcional mantido pela regua do MVP; aprovacao da proposta nao e ownerVisualApproval",
+  "evidencia": "docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/lancar-chamada-mobile-375.png; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/lancar-chamada-web-1440.png; coordenacao.json R05 rev 51 (canvasPublicarNoCoelo)",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/61-attendance-new.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+   "recordedAt": "2026-09-11T15:05:00-03:00"
+  }
+ },
+ {
+  "action_id": "attendance.mark",
+  "camada": "frontend",
+  "delta": "R05: Presente -> Salvar; a primeira tentativa mostrou \"Alteracao de presenca nao salva\" (corrida da reserva de chave) e a segunda gravou; estado exibido \"Presente\".; R05 17:19: familia visual Publicacao aprovada pelo Owner; reconstruir a tela sobre a familia na R06 (G3) comparando o golden novo com docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/lancar-chamada-mobile-375.png e lancar-chamada-web-1440.png (no web dentro do conteiner principal do Superadmin); estado funcional mantido pela regua do MVP; aprovacao da proposta nao e ownerVisualApproval",
+  "evidencia": "docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/lancar-chamada-mobile-375.png; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/lancar-chamada-web-1440.png; coordenacao.json R05 rev 51 (canvasPublicarNoCoelo)",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/63-attendance-marked.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+   "recordedAt": "2026-09-11T15:05:00-03:00"
+  }
+ },
+ {
+  "action_id": "attendance.finish",
+  "camada": "frontend",
+  "delta": "R05: Concluir chamada (clicando acima do balao de chat) -> chamada fechada; reload mostra \"Corrigir chamada\" e \"Desfazer ultimo lote\" desabilitado.; R05 17:19: familia visual Publicacao aprovada pelo Owner; reconstruir a tela sobre a familia na R06 (G3) comparando o golden novo com docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/lancar-chamada-mobile-375.png e lancar-chamada-web-1440.png (no web dentro do conteiner principal do Superadmin); estado funcional mantido pela regua do MVP; aprovacao da proposta nao e ownerVisualApproval",
+  "evidencia": "docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/lancar-chamada-mobile-375.png; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/lancar-chamada-web-1440.png; coordenacao.json R05 rev 51 (canvasPublicarNoCoelo)",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/64-attendance-finished.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+   "recordedAt": "2026-09-11T15:05:00-03:00"
+  }
+ },
+ {
+  "action_id": "circulars.create",
+  "camada": "frontend",
+  "delta": "front-end -> verified (R04 publicacoes-agenda); R05 17:19: familia visual Publicacao aprovada pelo Owner; reconstruir a tela sobre a familia na R06 (G6) comparando o golden novo com docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/circular-mobile-375.png e circular-web-1440.png (no web dentro do conteiner principal do Superadmin); estado funcional mantido pela regua do MVP; aprovacao da proposta nao e ownerVisualApproval",
+  "evidencia": "docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/circular-mobile-375.png; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/circular-web-1440.png; coordenacao.json R05 rev 51 (canvasPublicarNoCoelo)",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+   "revision": "3895238a5 (rev 30)",
+   "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03, rota real pela UI (52 capturas em ui/); aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/)",
+   "recordedAt": "2026-09-11T04:00:00-03:00"
+  }
+ },
+ {
+  "action_id": "circulars.edit",
+  "camada": "frontend",
+  "delta": "R05: rascunho criado pelo compositor real (ui-27/28), reaberto pela aba Rascunhos -> Editar circular (ui-32/33), titulo editado e Salvar rascunho -> \"Rascunho salvo\" (ui-34); apos recarga completa a aba Rascunhos e o detalhe mostram o titulo editado (ui-37, ui-39).; R05 17:19: familia visual Publicacao aprovada pelo Owner; reconstruir a tela sobre a familia na R06 (G6) comparando o golden novo com docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/circular-mobile-375.png e circular-web-1440.png (no web dentro do conteiner principal do Superadmin); estado funcional mantido pela regua do MVP; aprovacao da proposta nao e ownerVisualApproval",
+  "evidencia": "docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/circular-mobile-375.png; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/circular-web-1440.png; coordenacao.json R05 rev 51 (canvasPublicarNoCoelo)",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/ui/ui-39-circular-detail-edited-reload.png",
+   "revision": "28acbe8c3",
+   "environment": "build web profile de test_driver/qa_main.dart (66a52986f) contra producao, sessao qa-r03, Chrome via CDP",
+   "recordedAt": "2026-09-11T15:03:00-03:00"
+  }
+ },
+ {
+  "action_id": "agenda.create",
+  "camada": "frontend",
+  "delta": "front-end -> verified (R04 publicacoes-agenda); R05 17:19: familia visual Publicacao aprovada pelo Owner; reconstruir a tela sobre a familia na R06 (G6) comparando o golden novo com docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/evento-mobile-375.png e evento-web-1440.png (no web dentro do conteiner principal do Superadmin); estado funcional mantido pela regua do MVP; aprovacao da proposta nao e ownerVisualApproval",
+  "evidencia": "docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/evento-mobile-375.png; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/evento-web-1440.png; coordenacao.json R05 rev 51 (canvasPublicarNoCoelo)",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+   "revision": "3895238a5 (rev 30)",
+   "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03, rota real pela UI (52 capturas em ui/); aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/)",
+   "recordedAt": "2026-09-11T04:00:00-03:00"
+  }
+ },
+ {
+  "action_id": "agenda.edit",
+  "camada": "frontend",
+  "delta": "front-end -> verified (R04 publicacoes-agenda); R05 17:19: familia visual Publicacao aprovada pelo Owner; reconstruir a tela sobre a familia na R06 (G6) comparando o golden novo com docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/evento-mobile-375.png e evento-web-1440.png (no web dentro do conteiner principal do Superadmin); estado funcional mantido pela regua do MVP; aprovacao da proposta nao e ownerVisualApproval",
+  "evidencia": "docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/evento-mobile-375.png; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/evento-web-1440.png; coordenacao.json R05 rev 51 (canvasPublicarNoCoelo)",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+   "revision": "3895238a5 (rev 30)",
+   "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03, rota real pela UI (52 capturas em ui/); aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/)",
+   "recordedAt": "2026-09-11T04:00:00-03:00"
+  }
+ }
+]
