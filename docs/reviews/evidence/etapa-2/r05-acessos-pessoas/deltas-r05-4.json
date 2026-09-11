@@ -1,0 +1,15 @@
+[
+  {
+    "action_id": "students.transfer",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R05: superadmin_student_transfer pela sessao qa-r03 em producao moveu a crianca d0c4...0003 da Unidade QA R04 para a unidade sintetica nova cce78909 (Unidade QA R05 Transferencia; vinculo antigo inactive, novo active) e de volta para a unidade/turma originais (link d0c4...0005 reativado com a turma 368a5cea); destino inexistente devolve P0002. Fixture restaurada.",
+    "evidencia": "comunicacao/acessos-pessoas.json rev 128",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+      "revision": "de229be72",
+      "environment": "producao, sessao qa-r03 via PostgREST",
+      "recordedAt": "2026-09-11T15:14:00-03:00"
+    }
+  }
+]
