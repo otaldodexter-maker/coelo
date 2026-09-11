@@ -17,15 +17,24 @@ insert into auth.users(id,aud,role,email,email_confirmed_at,created_at,updated_a
   ('a1000000-0000-4000-8000-000000000002','authenticated','authenticated',
    'actor-people@invalid.test',now(),now(),now(),'{}','{}'),
   ('a1000000-0000-4000-8000-000000000003','authenticated','authenticated',
-   'actor-nobody@invalid.test',now(),now(),now(),'{}','{}');
+   'actor-nobody@invalid.test',now(),now(),now(),'{}','{}'),
+  ('a1000000-0000-4000-8000-00000000000f','authenticated','authenticated',
+   'actor-second-owner@invalid.test',now(),now(),now(),'{}','{}');
 insert into auth.sessions(id,user_id,created_at,updated_at,aal,not_after) values
   ('a2000000-0000-4000-8000-000000000001','a1000000-0000-4000-8000-000000000001',now(),now(),'aal1',now()+interval '1 hour'),
   ('a2000000-0000-4000-8000-000000000002','a1000000-0000-4000-8000-000000000002',now(),now(),'aal1',now()+interval '1 hour'),
   ('a2000000-0000-4000-8000-000000000003','a1000000-0000-4000-8000-000000000003',now(),now(),'aal1',now()+interval '1 hour');
+-- Z e um segundo owner interno (com auth link ativo): existe so para o guard
+-- de "ultimo owner" permitir suspender A mais adiante.
 insert into app_private.superadmin_internal_identities(id) values
-  ('a3000000-0000-4000-8000-000000000001');
+  ('a3000000-0000-4000-8000-000000000001'),
+  ('a3000000-0000-4000-8000-00000000000f');
 insert into app_private.superadmin_internal_auth_links(id,internal_identity_id,auth_user_id) values
-  ('a4000000-0000-4000-8000-000000000001','a3000000-0000-4000-8000-000000000001','a1000000-0000-4000-8000-000000000001');
+  ('a4000000-0000-4000-8000-000000000001','a3000000-0000-4000-8000-000000000001','a1000000-0000-4000-8000-000000000001'),
+  ('a4000000-0000-4000-8000-00000000000f','a3000000-0000-4000-8000-00000000000f','a1000000-0000-4000-8000-00000000000f');
+insert into app_private.superadmin_internal_memberships(id,internal_identity_id,platform_role_id,scope_kind)
+select 'a5000000-0000-4000-8000-00000000000f','a3000000-0000-4000-8000-00000000000f',id,'platform'
+from public.platform_roles where code='owner';
 insert into app_private.superadmin_internal_memberships(id,internal_identity_id,platform_role_id,scope_kind)
 select 'a5000000-0000-4000-8000-000000000001','a3000000-0000-4000-8000-000000000001',id,'platform'
 from public.platform_roles where code='owner';
@@ -132,7 +141,7 @@ select is(current_setting('test.nobody_actor', true), '',
 
 -- 15-16: suspender a membership interna suspende o espelho e a capacidade some
 update app_private.superadmin_internal_memberships
-  set status = 'suspended', suspended_at = now()
+  set status = 'suspended', suspended_at = now(), version = version + 1
   where id = 'a5000000-0000-4000-8000-000000000001';
 select is(
   (select membership.status::text from app_private.superadmin_internal_actor_people actor
@@ -151,11 +160,13 @@ select is(current_setting('test.suspended_hc', true), 'false',
 
 -- 17: reativar devolve a capacidade sem criar segunda pessoa
 update app_private.superadmin_internal_memberships
-  set status = 'active', suspended_at = null
+  set status = 'active', suspended_at = null, version = version + 1
   where id = 'a5000000-0000-4000-8000-000000000001';
 select is(
-  (select count(*)::int from public.people where person_type = 'service'
-     and display_name like 'Operador interno a3000000%'),
+  (select count(*)::int from public.people person_row
+   join app_private.superadmin_internal_actor_people actor on actor.person_id = person_row.id
+   where actor.internal_identity_id = 'a3000000-0000-4000-8000-000000000001'
+     and person_row.person_type = 'service'),
   1, 'reativar nao duplica a pessoa de servico');
 
 select * from finish();
