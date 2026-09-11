@@ -2248,6 +2248,7 @@ GoRouter createSuperadminRouter({
                 ? blockedProductionMutationPage(context)
                 : ActivityFormPage(
                     repository: activityDirectoryRepository,
+                    checkHandleAvailability: structureHandleAvailability,
                     initialTemplateId: state.uri.queryParameters['templateId'],
                     initialInstitutionId: state.uri.queryParameters['institutionId'],
                     initialUnitId: state.uri.queryParameters['unitId'],
@@ -2437,6 +2438,7 @@ GoRouter createSuperadminRouter({
                         ? ActivityFormStep.pedagogical
                         : null,
                     repository: activityDirectoryRepository,
+                    checkHandleAvailability: structureHandleAvailability,
                     aboutRepository: productionActivityAboutRepository,
                     logout: logout,
                     onCancel: () => state.uri.queryParameters.containsKey('returnTo')

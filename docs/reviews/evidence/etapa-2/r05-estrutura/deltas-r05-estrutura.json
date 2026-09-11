@@ -630,5 +630,18 @@
    "environment": "Chrome 152 headless (CDP 9561) contra o build release de qa_main (3983c2443) em 127.0.0.1:3001; usuario qa-r03@coelo.me | provas: units-handle-disponivel.jpg; units-handle-invalido-hifen.jpg; units-handle-reservado-em-uso.jpg",
    "recordedAt": "2026-09-11T15:13:00-03:00"
   }
+ },
+ {
+  "action_id": "activities.edit",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R05 (15:20, complemento da Decisao 16): o campo \"@ da atividade\" verifica a disponibilidade do stem enquanto digita em producao (\"@atividade-r05-estrutura esta disponivel.\" via superadmin_structure_handle_availability_v1 kind activity, excluindo a propria atividade); legenda activity-form-handle-availability. Ainda nao troca o @ por set_v1 (gate).",
+  "evidencia": "evidence/etapa-2/r05-estrutura/rota-real/activities-handle-disponivel.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-estrutura/rota-real/activities-handle-disponivel.jpg",
+   "revision": "estrutura.json rev 49",
+   "environment": "Chrome 152 headless (CDP 9561) contra o build release de qa_main (f3fa4e7fb) em 127.0.0.1:3001; usuario qa-r03@coelo.me | provas: activities-handle-disponivel.jpg",
+   "recordedAt": "2026-09-11T15:21:00-03:00"
+  }
  }
 ]
