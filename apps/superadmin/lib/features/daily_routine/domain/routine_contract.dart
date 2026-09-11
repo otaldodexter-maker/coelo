@@ -215,7 +215,10 @@ final class RoutineApplication {
     this.validUntil,
     this.startsAt,
     this.endsAt,
-    this.visibility = 'institution',
+    // Valores aceitos pelo servidor (routine_applications.visibility):
+    // authorized_guardians | institution_staff | unit_staff. O antigo
+    // 'institution' era recusado com 23514 na rota real (R05).
+    this.visibility = 'authorized_guardians',
     this.assignees = const [],
     this.canManage = false,
   });

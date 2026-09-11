@@ -93,7 +93,7 @@ final class SupabaseRoutineRepository implements RoutineRepository {
       validUntil: _optionalDate(payload['valid_until']),
       startsAt: payload['starts_at'] as String?,
       endsAt: payload['ends_at'] as String?,
-      visibility: payload['visibility'] as String? ?? 'institution',
+      visibility: payload['visibility'] as String? ?? 'authorized_guardians',
       assignees: _rows(payload['assignees'])
           .map(
             (row) => RoutineApplicationAssignee(
