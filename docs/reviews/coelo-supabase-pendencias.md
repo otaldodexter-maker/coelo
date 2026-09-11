@@ -34,9 +34,9 @@ ou gateway). Aprovação visual não é `verified`; SQL em produção não é
 | Camada | Estado |
 | --- | --- |
 | Front-end `verified` | 138/231 (59,74%) |
-| Front-end `local-green` | 23/231 (9,96%) |
+| Front-end `local-green` (das 93 ações ainda não `verified`) | 23/93 (24,73%) |
 | Front-end aprovação visual do Owner | 53/231 (22,94%) |
-| Back-end `local-green` | 46/224 (20,54%) |
+| Back-end `local-green` (das 92 ações ainda não `done`) | 46/92 (50,00%) |
 | Back-end SQL aplicado em produção | 178/224 (79,46%) |
 | Back-end `done` | 132/224 (58,93%) |
 | E2E `verified-e2e` | 105/199 (52,76%) |

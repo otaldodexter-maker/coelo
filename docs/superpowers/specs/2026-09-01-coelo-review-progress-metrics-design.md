@@ -263,3 +263,14 @@ exemplo Supabase, preservando seu histórico sem reescrevê-lo.
 - `0%` estrito permanece visível, mas nunca apaga o progresso local;
 - a conversa de destino recebe a orientação após a validação;
 - os gates de conhecimento e `git diff --check` passam.
+
+## Complemento de 11/09/2026 — como apresentar `local-green` (decisão do Owner)
+
+`local-green` é estado intermediário: a ação sai dele ao virar `verified`
+(Front-end) ou `done` (Back-end), então o numerador cai quando o trabalho
+fecha. Para não parecer regressão, a linha de `local-green` no fechamento é
+apresentada sobre o que ainda falta, e não sobre o total: Front-end
+`local-green / ações ainda não verified` e Back-end
+`local-green / ações ainda não done`, com o denominador escrito na própria
+linha. As linhas de acumulado (`verified`, SQL em produção, `done`, E2E,
+aprovação visual) continuam sobre os denominadores homogêneos (231/224/199).

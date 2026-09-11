@@ -18,9 +18,9 @@ porque as sessões da máquina foram reiniciadas; a máquina não reiniciou).
 | Camada | R04 (11:50) | R05 (fechamento) |
 | --- | --- | --- |
 | Front-end `verified` | 66/231 (28,57%) | 138/231 (59,74%) |
-| Front-end `local-green` | 32/231 (13,85%) | 23/231 (9,96%) |
+| Front-end `local-green` (das ações ainda não `verified`) | 32/165 (19,39%) | 23/93 (24,73%) |
 | Front-end aprovação visual do Owner | 52/231 (22,51%) | 53/231 (22,94%) |
-| Back-end `local-green` | 90/224 (40,18%) | 46/224 (20,54%) |
+| Back-end `local-green` (das ações ainda não `done`) | 90/155 (58,06%) | 46/92 (50,00%) |
 | Back-end SQL aplicado em produção | 133/224 (59,38%) | 178/224 (79,46%) |
 | Back-end `done` | 69/224 (30,80%) | 132/224 (58,93%) |
 | E2E `verified-e2e` | 43/199 (21,61%) | 105/199 (52,76%) |
