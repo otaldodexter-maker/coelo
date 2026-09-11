@@ -224,7 +224,7 @@
       "certifications": {
         "frontend": {
           "evidence": "docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/rota-real-r04b/51-meal-plans.png",
-          "revision": 17,
+          "revision": "31632cd1c (rev 17)",
           "environment": "producao Supabase evvbomzejfijozbtgvpt; app build release de test_driver/qa_main.dart com .env.local em 127.0.0.1:3009; Chrome 152 CDP 9409 swiftshader; sessao qa-r03@coelo.me",
           "recordedAt": "2026-09-11T03:55:00-03:00"
         }
@@ -2855,7 +2855,7 @@
         },
         "frontend": {
           "evidence": "docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/rota-real-r04b/61-chat-criar-grupo-pessoas.png",
-          "revision": 17,
+          "revision": "31632cd1c (rev 17)",
           "environment": "producao Supabase evvbomzejfijozbtgvpt; app build release de test_driver/qa_main.dart com .env.local em 127.0.0.1:3009; Chrome 152 CDP 9409 swiftshader; sessao qa-r03@coelo.me",
           "recordedAt": "2026-09-11T03:55:00-03:00"
         }
@@ -5594,7 +5594,7 @@
       "certifications": {
         "frontend": {
           "evidence": "docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/rota-real-r04b/51-meal-plans.png",
-          "revision": 17,
+          "revision": "31632cd1c (rev 17)",
           "environment": "producao Supabase evvbomzejfijozbtgvpt; app build release de test_driver/qa_main.dart com .env.local em 127.0.0.1:3009; Chrome 152 CDP 9409 swiftshader; sessao qa-r03@coelo.me",
           "recordedAt": "2026-09-11T03:55:00-03:00"
         }
