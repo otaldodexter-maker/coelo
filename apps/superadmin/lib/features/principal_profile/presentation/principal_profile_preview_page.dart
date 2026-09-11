@@ -102,13 +102,26 @@ final class _PrincipalProfilePreviewPageState extends State<PrincipalProfilePrev
           ? null
           : PrincipalGlobalHeader(
               keyPrefix: 'principal-profile',
-              onOpenMenu: () => _runOrPreview(context, widget.showPreviewFeeds, widget.onOpenMenu, 'Menu'),
-              onOpenNotifications: () =>
-                  _runOrPreview(context, widget.showPreviewFeeds, widget.onOpenNotifications, 'Notificações'),
-              onReportProblem: () =>
-                  _runOrPreview(context, widget.showPreviewFeeds, widget.onReportBug, 'Reportar problema'),
-              onOpenProfile: () =>
-                  _runOrPreview(context, widget.showPreviewFeeds, widget.onOpenContext, 'Troca de contexto'),
+              onOpenMenu: () =>
+                  _runOrPreview(context, widget.showPreviewFeeds, widget.onOpenMenu, 'Menu'),
+              onOpenNotifications: () => _runOrPreview(
+                context,
+                widget.showPreviewFeeds,
+                widget.onOpenNotifications,
+                'Notificações',
+              ),
+              onReportProblem: () => _runOrPreview(
+                context,
+                widget.showPreviewFeeds,
+                widget.onReportBug,
+                'Reportar problema',
+              ),
+              onOpenProfile: () => _runOrPreview(
+                context,
+                widget.showPreviewFeeds,
+                widget.onOpenContext,
+                'Troca de contexto',
+              ),
             ),
       body: Stack(
         fit: StackFit.expand,
@@ -169,13 +182,30 @@ final class _PrincipalProfilePreviewPageState extends State<PrincipalProfilePrev
           if (!widget.embedded)
             PrincipalGlobalNavigation(
               selected: PrincipalDestination.home,
-              onHome: () =>
-                  _runOrPreview(context, widget.showPreviewFeeds, widget.onOpenHome ?? widget.onOpenHappens, 'Home'),
-              onForYou: () => _runOrPreview(context, widget.showPreviewFeeds, widget.onOpenForYou, 'Para você'),
-              onPublishNow: () => _runOrPreview(context, widget.showPreviewFeeds, widget.onPublishNow, 'Publicar no Agora'),
-              onMoments: () => _runOrPreview(context, widget.showPreviewFeeds, widget.onOpenMoments, 'Momentos'),
-              onSearch: () => _runOrPreview(context, widget.showPreviewFeeds, widget.onOpenSearch, 'Pesquisar'),
-              onMessages: () => _runOrPreview(context, widget.showPreviewFeeds, widget.onOpenMessages, 'Mensagens'),
+              onHome: () => _runOrPreview(
+                context,
+                widget.showPreviewFeeds,
+                widget.onOpenHome ?? widget.onOpenHappens,
+                'Home',
+              ),
+              onForYou: () =>
+                  _runOrPreview(context, widget.showPreviewFeeds, widget.onOpenForYou, 'Para você'),
+              onPublishNow: () => _runOrPreview(
+                context,
+                widget.showPreviewFeeds,
+                widget.onPublishNow,
+                'Publicar no Agora',
+              ),
+              onMoments: () =>
+                  _runOrPreview(context, widget.showPreviewFeeds, widget.onOpenMoments, 'Momentos'),
+              onSearch: () =>
+                  _runOrPreview(context, widget.showPreviewFeeds, widget.onOpenSearch, 'Pesquisar'),
+              onMessages: () => _runOrPreview(
+                context,
+                widget.showPreviewFeeds,
+                widget.onOpenMessages,
+                'Mensagens',
+              ),
             ),
         ],
       ),
@@ -188,9 +218,11 @@ final class _PrincipalProfilePreviewPageState extends State<PrincipalProfilePrev
       _IdentitySection(
         data: widget.data,
         wide: !compact,
-        onMessage: () => _runOrPreview(context, widget.showPreviewFeeds, widget.onMessage, 'Mensagem'),
+        onMessage: () =>
+            _runOrPreview(context, widget.showPreviewFeeds, widget.onMessage, 'Mensagem'),
         onOpenEdit: widget.onOpenEdit,
-        onOpenBio: () => _runOrPreview(context, widget.showPreviewFeeds, widget.onOpenBio, 'Biografia completa'),
+        onOpenBio: () =>
+            _runOrPreview(context, widget.showPreviewFeeds, widget.onOpenBio, 'Biografia completa'),
       ),
       if (widget.data.metrics.isNotEmpty) ...[
         const SizedBox(height: CoeloSpacing.space4),
@@ -204,7 +236,12 @@ final class _PrincipalProfilePreviewPageState extends State<PrincipalProfilePrev
         const SizedBox(height: CoeloSpacing.space5),
         _LinksSection(
           links: widget.data.links,
-          onOpenAll: () => _runOrPreview(context, widget.showPreviewFeeds, widget.onOpenLinks, 'Todos os vínculos'),
+          onOpenAll: () => _runOrPreview(
+            context,
+            widget.showPreviewFeeds,
+            widget.onOpenLinks,
+            'Todos os vínculos',
+          ),
         ),
       ],
       if (widget.data.nextEvent case final event?) ...[
@@ -254,20 +291,13 @@ void _showUnavailableMessage(BuildContext context, String label, {required bool 
     ..showSnackBar(
       SnackBar(
         content: Text(
-          preview
-              ? '$label ainda não está disponível.'
-              : '$label ainda não está disponível.',
+          preview ? '$label ainda não está disponível.' : '$label ainda não está disponível.',
         ),
       ),
     );
 }
 
-void _runOrPreview(
-  BuildContext context,
-  bool preview,
-  VoidCallback? action,
-  String fallbackLabel,
-) {
+void _runOrPreview(BuildContext context, bool preview, VoidCallback? action, String fallbackLabel) {
   if (action != null) {
     action();
     return;
@@ -492,9 +522,9 @@ final class _IdentitySection extends StatelessWidget {
           Text(
             '@$handle',
             key: const Key('principal-profile-handle'),
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
           ),
         ],
         const SizedBox(height: CoeloSpacing.space1),
@@ -1023,24 +1053,27 @@ final class _TabContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => switch (tab) {
-    _ProfileTab.happens => happensTab ??
-        (showPreviewFeeds
-            ? const _ProfileHappensFeed()
-            : const _PlaceholderContent(
-              key: Key('principal-profile-happens-pending'),
-            icon: Icons.article_outlined,
-            title: 'Acontece ainda não disponível aqui',
-              message: 'A projeção autorizada de publicações ainda não foi ligada a este perfil.',
-            )),
-    _ProfileTab.moments => momentsTab ??
-        (showPreviewFeeds
-            ? const _ProfileMomentsFeed()
-            : const _PlaceholderContent(
-              key: Key('principal-profile-moments-pending'),
-            icon: Icons.play_circle_outline_rounded,
-            title: 'Momentos ainda não disponível aqui',
-              message: 'A projeção autorizada de Momentos ainda não foi ligada a este perfil.',
-            )),
+    _ProfileTab.happens =>
+      happensTab ??
+          (showPreviewFeeds
+              ? const _ProfileHappensFeed()
+              : const _PlaceholderContent(
+                  key: Key('principal-profile-happens-pending'),
+                  icon: Icons.article_outlined,
+                  title: 'Acontece ainda não disponível aqui',
+                  message:
+                      'A projeção autorizada de publicações ainda não foi ligada a este perfil.',
+                )),
+    _ProfileTab.moments =>
+      momentsTab ??
+          (showPreviewFeeds
+              ? const _ProfileMomentsFeed()
+              : const _PlaceholderContent(
+                  key: Key('principal-profile-moments-pending'),
+                  icon: Icons.play_circle_outline_rounded,
+                  title: 'Momentos ainda não disponível aqui',
+                  message: 'A projeção autorizada de Momentos ainda não foi ligada a este perfil.',
+                )),
     _ProfileTab.circulars =>
       circularRepository == null || circularScope == null
           ? const _PlaceholderContent(

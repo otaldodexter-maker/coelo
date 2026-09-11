@@ -238,7 +238,8 @@ final class _ContextSheetState extends State<_ContextSheet> {
                   builder: (dialogContext) => SimpleDialog(
                     title: const Text('Todos os perfis'),
                     children: [
-                      for (final item in visible) _ContextTile(item: item, selected: widget.selected),
+                      for (final item in visible)
+                        _ContextTile(item: item, selected: widget.selected),
                     ],
                   ),
                 );
