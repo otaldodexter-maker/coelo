@@ -164,7 +164,12 @@ final class _SuperadminCircularDetailPageState extends State<SuperadminCircularD
                               icon: const Icon(Icons.lock_outline_rounded),
                               label: const Text('Encerrar respostas'),
                             ),
-                          if (widget.onEdit != null)
+                          // O servidor recusa editar Circular encerrada ou arquivada
+                          // (superadmin_circular_save_draft_v2): o botao so aparece
+                          // quando a edicao e possivel.
+                          if (widget.onEdit != null &&
+                              detail.status != CircularStatus.closed &&
+                              detail.status != CircularStatus.archived)
                             FilledButton.icon(
                               key: const Key('circular-detail-edit'),
                               onPressed: _actionBusy ? null : widget.onEdit,

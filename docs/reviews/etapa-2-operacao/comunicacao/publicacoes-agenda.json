@@ -1,15 +1,15 @@
 {
-  "revision": 23,
+  "revision": 27,
   "round": "E2-R04-20260911",
   "group": "publicacoes-agenda",
   "tool": "Claude Code",
   "model": "Opus 5 (1M)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-publicacoes-agenda",
   "branch": "work/etapa2-r04-publicacoes-agenda",
-  "head": "7d3e0793d",
+  "head": "1b453fc19",
   "base": "origin/dev 98cc0529d",
   "coordinator": "Claude (R04 · Coordenação noturna)",
-  "updatedAt": "2026-09-11T02:52:00-03:00",
+  "updatedAt": "2026-09-11T03:08:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -71,13 +71,13 @@
     "Padrao de defeito repetido nas cadeias historicas: audit_logs.reason_code (^[A-Z][A-Z0-9_]{0,79}$) recebia texto livre/minusculo e derrubava a RPC com SAI_INTERNAL_ERROR. Vale conferir nos outros grupos que passam p_reason ao audit_append_superadmin_internal.",
     "SEGURANCA medida na baseline: tabelas agenda_* com RLS forcado e zero policies, mas SELECT/INSERT concedidos a anon/authenticated; superadmin_agenda_* executaveis por anon/service_role. Fechado no 200300. Recomendo ao coordenador varrer o mesmo padrao nas outras familias (grants default do Supabase em tabelas/funcoes criadas antes do endurecimento).",
     "UI real: balao de chat \"Mensagens\" visivel em /notices/new (criar) — Decisao 7 exige sem chat em criar/editar/publicar; regra do shell, nao da feature. Registrado para o coordenador/principal-chat-sistema.",
-    "FE: diretorio de Circulares nao recarrega apos excluir (mostra o rascunho ate recarregar); \"Editar circular\" oferecido em Encerrada (servidor recusa).",
+    "CORRIGIDO nas revs 24/25: diretorio de Circulares rele apos excluir/publicar; Editar oculto em Encerrada/Arquivada.",
     "FE bloqueante: em /circulars/new a 1440 o balao de chat cobre inteiramente o botao Publicar (centro 1330x856); a 1024 o rodape empilha e funciona.",
-    "FE: diretorio de Circulares nao recarrega apos excluir (mostra o rascunho ate recarregar); \"Editar circular\" oferecido em Encerrada (servidor recusa).",
+    "CORRIGIDO nas revs 24/25: diretorio de Circulares rele apos excluir/publicar; Editar oculto em Encerrada/Arquivada.",
     "FE bloqueante: em /circulars/new a 1440 o balao de chat cobre inteiramente o botao Publicar (centro 1330x856); a 1024 o rodape empilha e funciona.",
-    "FE agenda.detail: deep link direto apos carga fria fica no spinner ate o calendario carregar; no detalhe apos reload contexto/audiencia mostram UUID da instituicao em vez do nome.",
+    "FE agenda.detail: UUID no lugar do nome CORRIGIDO na rev 26 (carrega contextos); permanece: deep link direto apos carga fria fica no spinner ate o calendario carregar (primeiro gate: reproduzir em teste de rota com store real).",
     "Ambiente: outro processo (frente ou coordenador) passou a dirigir meu Chrome CDP 9333 (pagina foi para localhost:3000); abri o 9334. Sugestao: cada conversa usa porta CDP propria e declara no JSON.",
-    "FE agenda.edit: na rota de edicao a etapa Revisao mostra so Continuar (sem Salvar/Publicar) e o clique nao salva; criar pelo mesmo wizard funciona (Publicar/Salvar rascunho presentes)."
+    "FE agenda.edit: NAO reproduzido em teste de widget (sonda: edicao de event-parents chega a Revisao com Publicar e Salvar rascunho); na tela real a sequencia foi dirigida por coordenadas e provavelmente tocou Anterior (y=779 na Revisao). Primeiro gate: reteste pela tela usando as chaves agenda-wizard-continue/agenda-wizard-publish."
   ],
   "packages": [
     {
@@ -260,6 +260,46 @@
         "flutter analyze limpo"
       ],
       "sha": "596bf05ea"
+    },
+    {
+      "screen": "Etapa 2 → apps/superadmin → Circulares → Detalhe → Excluir/Publicar → volta ao diretorio",
+      "actionIds": [
+        "circulars.delete",
+        "circulars.publish",
+        "circulars.list"
+      ],
+      "whatChanged": "Router: ao voltar de publicar (composer onDone) ou excluir (detalhe onDeleted) o diretorio de producao renasce com chave nova e rele o servidor; antes mostrava o rascunho excluido ate recarregar (achado das capturas ui-23/ui-24).",
+      "criteria": [
+        "circular_routes_test 11/11; o teste novo falha sem a correcao",
+        "flutter analyze limpo"
+      ],
+      "sha": "f326b4fec"
+    },
+    {
+      "screen": "Etapa 2 → apps/superadmin → Circulares → Detalhe → Encerrada/Arquivada → circulars.edit",
+      "actionIds": [
+        "circulars.edit",
+        "circulars.detail"
+      ],
+      "whatChanged": "Detalhe nao oferece Editar quando a Circular esta encerrada ou arquivada (o servidor recusa a edicao); teste novo e pagina 21/21.",
+      "criteria": [
+        "superadmin_circular_pages_test 21/21",
+        "analyze limpo"
+      ],
+      "sha": "6fd4ad64a"
+    },
+    {
+      "screen": "Etapa 2 → apps/superadmin → Agenda → Detalhe do evento → link direto → agenda.detail",
+      "actionIds": [
+        "agenda.detail"
+      ],
+      "whatChanged": "Detalhe carrega os contextos quando vazios (link direto/recarga): contexto e audiencia passam a mostrar o nome da instituicao em vez do UUID.",
+      "criteria": [
+        "agenda_event_detail_page_test 6/6 + agenda_management_test 8/8",
+        "analyze limpo",
+        "sem teste proprio: AgendaPrototypeStore e final e loadContexts e no-op"
+      ],
+      "sha": "2e2cf1bfd"
     }
   ],
   "pendingForCoordinator": [
@@ -550,7 +590,7 @@
       "actionId": "circulars.delete",
       "layer": "FE",
       "proposed": "verified",
-      "evidence": "ui-22/ui-23/ui-24; diretorio so atualiza apos reload (achado)"
+      "evidence": "ui-22/ui-23/ui-24; recarga apos excluir corrigida no router (circular_routes_test)"
     },
     {
       "actionId": "circulars.respond",
@@ -664,7 +704,7 @@
       "actionId": "agenda.edit",
       "layer": "FE",
       "proposed": "local-green",
-      "evidence": "ui-44..ui-46: wizard de edicao abre e aceita o titulo, mas a Revisao so mostra Continuar e nao salva (defeito FE, primeiro gate)"
+      "evidence": "ui-44/ui-45: wizard de edicao abre com os dados e aceita o titulo; salvar pela tela nao concluido (provavel erro de coordenada do driver; widget test chega a Revisao com Publicar/Salvar). Gate: reteste pela tela."
     },
     {
       "actionId": "agenda.request",
@@ -1136,8 +1176,8 @@
     ]
   },
   "finalizado": {
-    "at": "2026-09-11T02:52:00-03:00",
-    "head": "7d3e0793d",
+    "at": "2026-09-11T03:08:00-03:00",
+    "head": "1b453fc19",
     "handoff": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
     "capturas": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/ui/ (49 png)"
   }
