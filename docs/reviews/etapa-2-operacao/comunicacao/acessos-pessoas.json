@@ -1,7 +1,7 @@
 {
-  "revision": 126,
-  "updated_at": "2026-09-11T18:03:05.149Z",
-  "relogio_local": "Fri Sep 11 2026 15:03:05 GMT-0300 (Horário Padrão de Brasília)",
+  "revision": 128,
+  "updated_at": "2026-09-11T18:09:37.507Z",
+  "relogio_local": "Fri Sep 11 2026 15:09:37 GMT-0300 (Horário Padrão de Brasília)",
   "round": "E2-R05-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
@@ -9,7 +9,7 @@
   "status": "finalizado",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-acessos-pessoas",
   "branch": "work/etapa2-r05-acessos-pessoas",
-  "head": "0ed15b79f (publicado; inclui merges de origin/dev ate 15:03)",
+  "head": "8ae9792a9 (publicado)",
   "base_observed": "origin/dev 2f6a6114f; lotes 8-27 em producao; candidatos/acessos-pessoas so com 170750 e 170900 OBSOLETOS (171600 e 171800 aplicados no lote 25); ordem-de-aplicacao ate lote 27",
   "recorte": {
     "familias": [
@@ -133,10 +133,7 @@
     "Skills: pgTAP em psql nao carrega pg_safeupdate; DELETE/UPDATE em funcao sempre com WHERE e um caso com load 'safeupdate' como supabase_admin."
   ],
   "MINI_REVISAO_14h40": {
-    "1_sha_final": "0ed15b79f publicado; status limpo; Chrome 9411, servidor 3010 e descartavel coelo_acessos_r05 encerrados as 15:02",
-    "4_deltas": "deltas-r05.json (26, aplicados em dev 530613fb5); deltas-r05-2.json (7) e deltas-r05-3.json (7) a aplicar pelo coordenador",
-    "5_pacotes": "170400 VERDE pendente em candidatos/acessos-pessoas (chave segmentFilterAvailable em superadmin_auth_scope.dart ~387); 170100/170200/170300 aplicados",
-    "commits_desde_a_rev_124": "3d6d7de0a (aba Criancas, superado pelo 170400), 7058176f3 (170400 + cliente gateado), 0aeb9b729 (codigo com hifen), 0ed15b79f (deltas 3)"
+    "1_sha_final": "8ae9792a9 publicado; status limpo; nenhum processo desta frente em execucao"
   },
   "encerramento": "nenhum processo desta frente em execucao; nao retomo por conta propria depois de 16:00; respondo a revisao das 15:50 no JSON.",
   "PACOTE_170400_14h51": {
@@ -155,6 +152,18 @@
     "access-models.edit": "local-green: formulario abre com dados reais; DEFEITO corrigido em 0aeb9b729 (codigo com hifen gerado pelo servidor falhava na validacao do cliente e bloqueava Continuar em perfis e modelos); salvar pela UI depende de build novo",
     "deltas": "docs/reviews/evidence/etapa-2/r05-acessos-pessoas/deltas-r05-3.json (7), ensaiados apply+validate PASS na base com origin/dev e revertidos"
   },
+  "TESTES_DO_RECORTE_15h10": {
+    "suites": "access_profiles, invites, students, platform_users e people rodadas na branch: tudo verde exceto 3 goldens pre-existentes retidos por P15 (rodape ancorado): invite_form_mobile_light, platform_user_create_light_375 e person_form_create_light_375 (o golden guardado tem o rodape em outra posicao; nao regravar sem conferir o respiro do conteudo com o Owner).",
+    "goldens_regravados": "+6 da tabela de Usuarios internos (platform_user_directory_table_{light,dark}_{768,1024,1440}) pelo alinhamento das celulas do composto (G-SUP), diff conferida em imagem (so o chip de status). Total na rodada: 18 (8 Perfis, 4 Pessoas escuros, 6 Usuarios internos)."
+  },
+  "STUDENTS_TRANSFER_15h14": {
+    "students.transfer (BE)": "done: transferencia positiva provada em producao (Unidade QA R04 -> Unidade QA R05 Transferencia cce78909 -> de volta a Unidade QA R04 + turma 368a5cea); deltas-r05-4.json (1) ensaiado e revertido.",
+    "unidade_sintetica_nova": "units cce78909-0745-4b2e-9baf-24681080c22d 'Unidade QA R05 Transferencia' (instituicao d0c4...0001, tipo Outros, @qar05transfer.qar04cuidado) criada por create_unit_for_superadmin - dado sintetico a apagar ao fim da Etapa 2; vinculo 5d00bc95 inactive.",
+    "DEFEITO_PARA_A_ESTRUTURA": "create_unit_for_superadmin sem 'handle' gerou 'unidadeqar05transfer.qa-r04-cu' (truncado em 30 e com hifens do slug da instituicao) e falhou na check constraint de units (23514). O @ padrao de unidade (pacote de estrutura/realm-interno 180000/211100) precisa normalizar o slug da instituicao (sem hifen) e truncar antes do ponto. Com handle explicito funcionou."
+  },
+  "dados_sinteticos_r05_adicional": [
+    "units cce78909 'Unidade QA R05 Transferencia' e child_unit_links 5d00bc95 (inactive)"
+  ],
   "historico_r04": {
     "revision": 118,
     "updated_at": "2026-09-11T11:31:19.648Z",
