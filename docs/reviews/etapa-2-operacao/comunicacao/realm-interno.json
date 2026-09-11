@@ -1,17 +1,17 @@
 {
   "grupo": "realm-interno",
-  "revision": 40,
+  "revision": 41,
   "round": "E2-R06-20260911",
-  "updatedAt": "2026-09-11T20:31-03:00",
+  "updatedAt": "2026-09-11T20:05-03:00",
   "app": "Claude",
   "modelo": "Opus 5 (esforco medio)",
   "conversa": "R06 · Realm interno e segurança",
   "coordenador": "R06 · Coordenação (coordenacao.json rev 52+)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-realm-interno",
   "branch": "work/etapa2-r06-realm-interno",
-  "head": "fc8094553",
+  "head": "(commit desta revisao)",
   "upstream": "origin/work/etapa2-r06-realm-interno (push no primeiro commit)",
-  "t0": "coordenacao.json ainda em rev 51 (sem T0 da R06) as 19:37; assumo T0 = 19:37 (abertura desta conversa); T0+2h = 21:37, revisao ate 21:47; ajusto se o coordenador gravar outro T0",
+  "t0": "coordenacao.json ainda em rev 51 (sem T0 da R06); T0 assumido 19:37 (abertura); T0+2h = 21:37, revisao ate 21:47. Correcao: a rev 40 marcou 20:31 por erro de relogio; a hora real era ~19:45",
   "escopo": {
     "camada": "backend transversal (Supabase/Postgres) da R06",
     "faixaDeCarimbo": "2026091221xxxx em packages/coelo_database/candidatos/realm-interno/",
@@ -26,7 +26,7 @@
     ],
     "foraDoRecorte": "UI, aplicacao em producao (coordenador), Cloudflare com custo, MCP dart"
   },
-  "primeiroGate": "coordenador aplicar 20260912210000 (realm-interno) e 20260912230000 (coordenador, apos criar os auth users qa-r06 pela API do Auth); em seguida (3) 180060",
+  "primeiroGate": "coordenador aplicar candidatos/realm-interno/20260912210000 (preflight no espelho; sync reconcilia 0 linhas) e fechar 180060 sem pacote",
   "provaLocal": "descartavel coelo_realm_r06 (portas 626xx): baseline + seed + as 141 migrations de ordem-de-aplicacao-producao.txt (ate o lote 48) por psql do container + candidatos; pgTAP por psql -qtA",
   "bloqueio": null,
   "pedidosAoCoordenador": [],
@@ -40,28 +40,21 @@
       "commit": "fc8094553",
       "dependeDe": "171000, 220400, 130000, 211200 (todos em producao)",
       "chaveDeComposicao": "nenhuma",
-      "estado": "pronto para o coordenador aplicar (regressao das 201 suites em curso; resultado na proxima revisao)",
+      "estado": "pronto para o coordenador aplicar; regressao das 201 suites: 4753 ok / 231 not ok, e as 66 suites vermelhas sao identicas com as funcoes revertidas (0 regressoes; docs/reviews/evidence/etapa-2/r06-realm-interno/regressao-pgtap-2026-09-11.md)",
       "avisoG4": "P48 (item 6 da G4) muda o MESMO sync do 130000 (owner -> institution_admin, operations -> leitura): o pacote da G4 deve nascer sobre o corpo do 20260912210000 (manter app_private.superadmin_internal_actor_scope_targets() como fonte do escopo) e ser aplicado DEPOIS dele; combinado pelo JSON, nao pelo chat"
-    },
-    {
-      "ordem": 2,
-      "arquivo": "packages/coelo_database/candidatos/coordenador/20260912230000_qa_r06_group_users_seed_v1.sql",
-      "assunto": "semente dos sete usuarios qa-r06-<grupo>@coelo.me: identidade interna + vinculo de auth + membership owner de PLATAFORMA + perfil interno sintetico (padrao 171200); a ponte 220400 espelha por gatilho e o sync do 130000 (com escopo) da owner nas instituicoes ativas; repete o padrao do lote 27 para as qa-r04-*. Idempotente por e-mail; auth user ausente -> NOTICE e no-op (rodar de novo depois de criar pela API do Auth). Sem segredo",
-      "pgTAP": "supabase/tests/qa_r06_group_users_seed_v1_test.sql 12/12 (2 usuarios presentes, 5 ausentes, ponte, memberships, idempotencia, ACL)",
-      "commit": "fc8094553",
-      "dependeDe": "20260912210000 (para o sync com escopo; sem ele a semente tambem funciona, pois os qa-r06 sao de plataforma)",
-      "chaveDeComposicao": "coordenador: criar os sete auth users pela API de administracao do Auth (senha so em Coelo-backups/qa-r06-<grupo>.env) ANTES de aplicar; depois supabase db query --linked -f; a saida NOTICE lista ok/ausente por e-mail",
-      "estado": "escrita para o coordenador (item 2 do meu recorte); ele aplica"
     }
   ],
   "pendenciasRegistradas": [
     "P7 para pessoas do realm people-based: has_platform_permission(text) sem instituicao continua contando membership de instituicao (decisao 12 do Owner); RPC de plataforma que nao filtra por instituicao pode expor outra instituicao a uma pessoa people-based escopada — nao ha pessoa assim em producao; revisao profunda: RPCs de plataforma passarem institution_id (forma de dois argumentos)",
-    "identidade interna escopada, apos o 20260912210000, e negada nas familias people-based que so usam has_platform_permission(text) (Pessoas, Seguranca infantil, Formularios, Suporte, Conta, Perfis, Arquivos, Identidade da instituicao): fail-closed por desenho; ate existir a primeira identidade escopada, decidir com produto se essas familias devem aceitar por contexto (como Rotina e Cuidado ja fazem via has_context_permission)"
+    "identidade interna escopada, apos o 20260912210000, e negada nas familias people-based que so usam has_platform_permission(text) (Pessoas, Seguranca infantil, Formularios, Suporte, Conta, Perfis, Arquivos, Identidade da instituicao): fail-closed por desenho; ate existir a primeira identidade escopada, decidir com produto se essas familias devem aceitar por contexto (como Rotina e Cuidado ja fazem via has_context_permission)",
+    "210500: policy de leitura de unit_care_policies por has_platform_permission de um argumento (P7) e set_v1 com role_code fixo; 211100: unicidade global de @ entre tabelas so por verificacao previa (TOCTOU entre tipos)"
   ],
-  "deltaPropostoBE": {},
+  "deltaPropostoBE": {
+    "seguranca transversal (sem action_id)": "nenhum delta de estado por action_id: o pacote fecha uma exposicao latente (0 identidades escopadas) e nao muda o estado de acoes; se o coordenador quiser, anotar nos tres md como correcao de seguranca da R06 (raiz da ponte de ator)"
+  },
   "loop": "a agendar: /loop 15m",
-  "status": "item (1) e (2) prontos no descartavel; regressao das 201 suites em curso",
-  "proximoPasso": "fechar a regressao (201 suites) e comparar as falhas com o espelho pre-correcao; depois item (3) 180060",
+  "status": "itens (1), (2), (3) e (4) fechados no descartavel; pacote 20260912210000 pronto; regressao 0; handoff e skills-deltas publicados",
+  "proximoPasso": "ate T0+2h: reconferir o pacote (ponytail), responder ao coordenador no JSON se ele gravar T0/ACK; se sobrar tempo, medir em producao (somente leitura) as suites historicas que falham por MFA para a revisao profunda",
   "contratoInstitutionContacts": {
     "rpc": "public.superadmin_institution_contacts_edit_v1(p_request_id uuid, p_institution_id uuid, p_expected_version bigint, p_payload jsonb) -> envelope {ok,data,error}",
     "capacidade": "institution.update; platform_role owner|operations; scope institution so a propria instituicao (outro tenant -> SAI_PERMISSION_DENIED, auditado)",
@@ -581,5 +574,13 @@
       "escopo": "membership de plataforma ve toda conversa; membership de instituicao so ve a propria instituicao (outro tenant responde CHAT_NOT_FOUND). Anexos: so metadados; chat.attach continua dependendo do gateway de midia comum (fora deste recorte).",
       "criarGrupoNoCliente": "sugestao para SupabaseChatRepository: createGroup(ChatCreateGroupCommand{institutionId, title, personIds, unitId?, groupId?, activityId?, idempotencyKey}) -> ChatConversationSummary; o seletor de hierarquia escolhe UMA instituicao e pessoas dela (readers existentes de Pessoas/Unidades/Turmas do Superadmin); grupo entre instituicoes nao existe no modelo (conversations.institution_id NOT NULL)."
     }
-  }
+  },
+  "item2UsuariosSinteticos": "ja feito pelo coordenador: 7 auth users qa-r06-*, 7 vinculos internos e 7 perfis medidos em producao (somente leitura, 19:5x) com a semente dele 20260911230100 no ledger; a semente desta frente (20260912230000) foi removida da branch (commit d6088a1fa) para nao colidir com o teste de mesmo nome",
+  "item3Decisao180060": "sem mudanca de comportamento e sem decisao de produto: activity_group_assignments so recebe instructor em todos os caminhos (baseline assign_activity_professionals, 180080, 180110); activity_admin vive em activity_admin_assignments; producao tem 0 atribuicoes; activity_v2_effective_permission mantem a precedencia da baseline e so insere a camada de acao explicita (modelo v2); unico chamador can_access_attendance_child. Proposta ao coordenador: fechar 180060 como confirmado, sem pacote (opcional pos-MVP: validar o CHECK e reduzi-lo a instructor)",
+  "item4CodeReview": {
+    "210500": "policy unit_care_policies_platform_read com has_platform_permission de um argumento (pessoa people-based escopada le politicas de todas as unidades; identidade interna escopada passa a ser negada pelo 20260912210000) - baixa sensibilidade, registrar; set_v1 restringe por role_code owner|operations alem da capacidade (uniformizar com P23 na revisao profunda); destinatarios/not_tracked/on conflict corretos; sem achado bloqueante",
+    "211100": "structure_handle_in_use e check-then-insert: unicidade dentro da tabela vem do indice, mas entre tabelas (unidade x turma x pessoa) nao ha constraint - concorrencia entre tipos diferentes pode passar; risco baixo no MVP; revisao profunda: tabela unica de handles ou advisory lock por handle normalizado; sem achado bloqueante"
+  },
+  "handoff": "docs/reviews/evidence/etapa-2/r06-realm-interno/handoff.md",
+  "skillsPropostas": "docs/reviews/evidence/etapa-2/r06-realm-interno/skills-deltas-r06.md"
 }
