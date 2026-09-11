@@ -1,8 +1,8 @@
 {
   "grupo": "realm-interno",
-  "revision": 11,
+  "revision": 12,
   "round": "E2-R04-20260911",
-  "updatedAt": "2026-09-10T23:29-03:00",
+  "updatedAt": "2026-09-10T23:32-03:00",
   "app": "Claude",
   "modelo": "Fable 5.1",
   "conversa": "R04 · Realm interno e Chat backend",
@@ -121,7 +121,7 @@
     "escopo": "membership de plataforma ve toda conversa; membership de instituicao so ve a propria instituicao (outro tenant responde CHAT_NOT_FOUND). Anexos: so metadados; chat.attach continua dependendo do gateway de midia comum (fora deste recorte).",
     "criarGrupoNoCliente": "sugestao para SupabaseChatRepository: createGroup(ChatCreateGroupCommand{institutionId, title, personIds, unitId?, groupId?, activityId?, idempotencyKey}) -> ChatConversationSummary; o seletor de hierarquia escolhe UMA instituicao e pessoas dela (readers existentes de Pessoas/Unidades/Turmas do Superadmin); grupo entre instituicoes nao existe no modelo (conversations.institution_id NOT NULL)."
   },
-  "proximoPasso": "nenhum item pendente; responder o que chegar pelo JSON ou por mensagem do coordenador",
+  "proximoPasso": "nenhum",
   "pacotesProntos": [
     {
       "arquivo": "packages/coelo_database/candidatos/realm-interno/20260910240000_chat_production_contract_v1.sql",
@@ -271,5 +271,5 @@
     "provasRegistradas": "pgTAP 141/141 no descartavel (7 suites); prova em producao 18/18 (22:32) e reconferencia somente leitura 5/5 (23:20) com qa-r03; evidencia em docs/reviews/evidence/etapa-2/r04-realm-interno/",
     "handoff": "docs/reviews/evidence/etapa-2/r04-realm-interno/handoff.md"
   },
-  "status": "recorte concluido; disponivel ate 04:20 para perguntas de contrato e ajustes"
+  "status": "finalizado (autorizado pelo coordenador as 23:31); respondo pelo JSON se o principal-chat perguntar contrato ate 04:20"
 }
