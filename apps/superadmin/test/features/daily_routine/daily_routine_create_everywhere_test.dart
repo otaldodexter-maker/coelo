@@ -89,6 +89,7 @@ void main() {
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final fromModel = <RoutineDirectoryItem>[];
     final launched = <RoutineDirectoryItem>[];
+    final archived = <RoutineDirectoryItem>[];
     await tester.pumpWidget(
       MaterialApp(
         theme: CoeloTheme.light,
@@ -100,6 +101,10 @@ void main() {
           onCreateFromModel: fromModel.add,
           onCreateLaunch: (item) async {
             launched.add(item);
+            return true;
+          },
+          onArchive: (item) async {
+            archived.add(item);
             return true;
           },
         ),
@@ -115,6 +120,14 @@ void main() {
     expect(find.byKey(const Key('daily-routine-duplicate-model-1-row')), findsOneWidget);
     await tester.tap(find.byKey(const Key('daily-routine-apply-model-1-row')));
     expect(fromModel.single.id, 'model-1');
+
+    // Arquivar pede confirmacao e so entao chama o save com status archived.
+    await tester.tap(find.byKey(const Key('daily-routine-archive-model-1-row')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('daily-routine-archive-dialog')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('daily-routine-archive-confirm')));
+    await tester.pumpAndSettle();
+    expect(archived.single.id, 'model-1');
 
     // Rotinas: Criar rotina abre o seletor de modelo.
     await tester.tap(find.text('Rotinas'));

@@ -340,6 +340,42 @@ Future<bool> _createRoutineLaunch(
   }
 }
 
+/// V-15: arquivar modelo ou rotina = o mesmo save com status archived; o
+/// servidor revalida escopo, capacidade e expected_version.
+Future<bool> _archiveRoutineEntry(
+  BuildContext context,
+  RoutineRepository repository,
+  RoutineDirectoryItem item,
+) async {
+  try {
+    switch (item.kind) {
+      case RoutineEntryKind.model:
+        final model = await repository.fetchModel(item.id);
+        await repository.saveModel(model.archived(), requestId: newRoutineRequestId());
+      case RoutineEntryKind.application:
+        final application = await repository.fetchApplication(item.id);
+        await repository.saveApplication(application.archived(), requestId: newRoutineRequestId());
+      case RoutineEntryKind.launch:
+        return false;
+    }
+    if (context.mounted) {
+      showSuperadminNotice(context, 'Item arquivado.', icon: Icons.check_circle_outline_rounded);
+    }
+    return true;
+  } on RoutineRepositoryException catch (error) {
+    if (context.mounted) {
+      showSuperadminNotice(context, switch (error.kind) {
+        RoutineRepositoryFailureKind.unauthorized => 'Seu acesso nao permite arquivar este item.',
+        RoutineRepositoryFailureKind.notFound => 'Item indisponivel.',
+        RoutineRepositoryFailureKind.conflict =>
+          'O item mudou desde que a lista foi carregada. Atualize e tente de novo.',
+        RoutineRepositoryFailureKind.unavailable => error.message,
+      }, icon: Icons.error_outline_rounded);
+    }
+    return false;
+  }
+}
+
 Future<bool> _publishRoutineLaunch(
   BuildContext context,
   RoutineRepository repository,
@@ -2708,6 +2744,7 @@ GoRouter createSuperadminRouter({
               onPublishLaunch: (item) =>
                   _publishRoutineLaunch(context, dailyRoutineRepository, item),
               onCreateLaunch: (item) => _createRoutineLaunch(context, dailyRoutineRepository, item),
+              onArchive: (item) => _archiveRoutineEntry(context, dailyRoutineRepository, item),
             ),
           ),
           GoRoute(
