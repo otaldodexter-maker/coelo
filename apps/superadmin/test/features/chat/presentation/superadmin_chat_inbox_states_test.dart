@@ -19,6 +19,9 @@ void main() {
     await _pump(tester, _StatefulRepository(mode: _Mode.empty));
     expect(find.text('Ainda não há conversas'), findsOneWidget);
     expect(find.text('Atualizar'), findsOneWidget);
+    // Criar grupo (P8) precisa estar ao alcance justamente quando nao ha
+    // conversa nenhuma.
+    expect(find.byKey(const Key('superadmin-chat-create-group')), findsOneWidget);
   });
 
   testWidgets('a search with no results offers to clear the search', (tester) async {

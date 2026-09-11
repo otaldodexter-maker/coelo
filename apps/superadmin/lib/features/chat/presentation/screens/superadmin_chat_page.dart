@@ -711,12 +711,21 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
         message: 'Aguarde enquanto buscamos suas conversas.',
         loading: true,
       ),
-      ChatInboxLoadState.empty => CoeloStatePanel(
-        title: 'Ainda n\u00e3o h\u00e1 conversas',
-        message: 'Quando uma conversa autorizada existir, ela aparecera aqui.',
-        icon: Icons.forum_outlined,
-        actionLabel: 'Atualizar',
-        onAction: _loadInbox,
+      // Sem conversa ainda e justamente quando Criar grupo (P8) precisa estar
+      // ao alcance: o cabecalho da inbox acompanha o estado vazio.
+      ChatInboxLoadState.empty => Column(
+        children: [
+          _inboxHeader(),
+          Expanded(
+            child: CoeloStatePanel(
+              title: 'Ainda n\u00e3o h\u00e1 conversas',
+              message: 'Quando uma conversa autorizada existir, ela aparecera aqui.',
+              icon: Icons.forum_outlined,
+              actionLabel: 'Atualizar',
+              onAction: _loadInbox,
+            ),
+          ),
+        ],
       ),
       ChatInboxLoadState.noResults => CoeloStatePanel(
         title: 'Nenhuma conversa encontrada',
@@ -769,38 +778,40 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
     );
   }
 
+  Widget _inboxHeader() => Padding(
+    padding: const EdgeInsets.all(CoeloSpacing.space3),
+    child: Row(
+      children: [
+        Expanded(
+          child: CoeloSearchField(
+            key: const Key('superadmin-chat-search'),
+            controller: _search,
+            onChanged: (_) => _scheduleInboxSearch(),
+            semanticLabel: 'Buscar conversas',
+            hintText: 'Buscar conversas',
+          ),
+        ),
+        const SizedBox(width: CoeloSpacing.space2),
+        IconButton(
+          key: const Key('superadmin-chat-create-group'),
+          tooltip: 'Criar grupo',
+          onPressed: _managing ? null : _createGroup,
+          constraints: const BoxConstraints.tightFor(
+            width: CoeloSize.touchMin,
+            height: CoeloSize.touchMin,
+          ),
+          icon: const Icon(Icons.group_add_outlined),
+        ),
+      ],
+    ),
+  );
+
   Widget _inbox(ChatInboxPage page, {required bool compact}) {
     final colors = Theme.of(context).colorScheme;
     final totalPages = math.max(1, (page.totalCount / _inboxPageSize).ceil());
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.all(CoeloSpacing.space3),
-          child: Row(
-            children: [
-              Expanded(
-                child: CoeloSearchField(
-                  key: const Key('superadmin-chat-search'),
-                  controller: _search,
-                  onChanged: (_) => _scheduleInboxSearch(),
-                  semanticLabel: 'Buscar conversas',
-                  hintText: 'Buscar conversas',
-                ),
-              ),
-              const SizedBox(width: CoeloSpacing.space2),
-              IconButton(
-                key: const Key('superadmin-chat-create-group'),
-                tooltip: 'Criar grupo',
-                onPressed: _managing ? null : _createGroup,
-                constraints: const BoxConstraints.tightFor(
-                  width: CoeloSize.touchMin,
-                  height: CoeloSize.touchMin,
-                ),
-                icon: const Icon(Icons.group_add_outlined),
-              ),
-            ],
-          ),
-        ),
+        _inboxHeader(),
         Expanded(
           child: ListView.separated(
             itemCount: page.items.length,

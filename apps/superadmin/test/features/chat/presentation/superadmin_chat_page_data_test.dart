@@ -38,7 +38,9 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.textContaining('conversas'), findsOneWidget);
+    // O cabecalho com a busca ('Buscar conversas') acompanha o estado vazio
+    // desde Criar grupo (P8); a asserção mira o painel, nao a palavra.
+    expect(find.text('Ainda não há conversas'), findsOneWidget);
     expect(find.text('Atualizar'), findsOneWidget);
   });
 
