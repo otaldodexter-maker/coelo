@@ -582,4 +582,8 @@ final class _TrackingMedicationPlanRepository implements MedicationPlanRepositor
 
   @override
   Future<MedicationPlanDetail> save(MedicationPlanSaveCommand command) async => _unexpectedCall();
+
+  @override
+  Future<MedicationEvidence> recordEvidence(MedicationEvidenceCommand command) async =>
+      _unexpectedCall();
 }

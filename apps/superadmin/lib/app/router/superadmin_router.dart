@@ -3178,6 +3178,16 @@ GoRouter createSuperadminRouter({
                     medicationId: medicationId,
                     childId: draft.childId,
                     initialDraft: draft,
+                    evidence: detail.evidence,
+                    onRecordEvidence: ({required outcome, reason, note}) => plans.recordEvidence(
+                      MedicationEvidenceCommand(
+                        requestId: newHealthCareRequestId(),
+                        planId: medicationId,
+                        outcome: outcome,
+                        reason: reason,
+                        note: note,
+                      ),
+                    ),
                     childOptions: [
                       HealthCareFormChoice(
                         id: draft.childId,
