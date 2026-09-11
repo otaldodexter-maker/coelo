@@ -3,7 +3,7 @@ title: "Pendências Coelo — Back-end"
 source: "AGENTS.md; ADR 0019; ADR 0032; tracker-corrections-2026-09-08.json; inventario-etapa-2.json"
 status: "open"
 generated_at: "2026-09-08"
-updated_at: "2026-09-11T12:30:00-03:00"
+updated_at: "2026-09-11T16:00:00-03:00"
 action_count: 231
 family_count: 39
 active_mvp_action_count: 201
@@ -13,13 +13,67 @@ backend_applicable_action_count: 224
 formal_mvp_gate_action_count: 3
 deferred_post_mvp_action_count: 22
 flutter_only_action_count: 5
-tracker_sync_at: "2026-09-11T12:30:00-03:00"
-tracker_sync_revisions: "R04 fechada: estrutura r32; acessos-pessoas r118; principal-chat-sistema r20; realm-interno r15; publicacoes-agenda r30; operacoes r20; formularios-cuidado-rotina r33; coordenacao r39 (R05 aberta; estrutura R04 r40 integrada)"
+tracker_sync_at: "2026-09-11T16:00:00-03:00"
+tracker_sync_revisions: "R05 fechada: estrutura r49; acessos-pessoas r128; formularios-cuidado-rotina r41; principal-chat-sistema r27; realm-interno r34; publicacoes-agenda r41; operacoes r33; coordenacao r48"
 ---
 
 # Pendências Coelo — Back-end
 
-## Estado vigente — Rodada 4 (E2-R04-20260911) consolidada às 08:50 de 11/09
+## Estado vigente — Rodada 5 (E2-R05-20260911) consolidada às 16:00 de 11/09
+
+Coordenação (Claude Opus, `coelo-b5`/`coelo-25`) abriu a R05 às 12:03 sobre
+`origin/dev` `9bf60463b` e fechou em `dev` `a5b107150 (base integrada; SHA do push final em coordenacao.json rev 48)`. Estado por camada,
+denominadores homogêneos (inventário de 231 ações; 224 com backend aplicável;
+199 com E2E ativo no MVP), base: inventário validado (`validate-trackers.cjs`
+PASS) sobre a base conjunta; ambiente: repositório + produção medida nos lotes
+28 a 47. SQL aplicado em produção = `done` + `local-green` com pacote
+aplicado (na R05 todos os `local-green` têm o SQL em produção; falta rota real
+ou gateway). Aprovação visual não é `verified`; SQL em produção não é
+`done`; nada se soma entre camadas.
+
+| Camada | Estado |
+| --- | --- |
+| Front-end `verified` | 138/231 (59,74%) |
+| Front-end `local-green` | 23/231 (9,96%) |
+| Front-end aprovação visual do Owner | 53/231 (22,94%) |
+| Back-end `local-green` | 46/224 (20,54%) |
+| Back-end SQL aplicado em produção | 178/224 (79,46%) |
+| Back-end `done` | 132/224 (58,93%) |
+| E2E `verified-e2e` | 105/199 (52,76%) |
+
+**Produção em 11/09 (tarde):** 20 lotes (28 a 47) e 37 pacotes aplicados pelo
+coordenador com dump prévio, preflight no espelho reconstruído na ordem real e
+ledger: contatos/documento/representantes da instituição, revoke de grants de
+authenticated sem policy, anexos do chat e arquivos de Formulários no R2, P36 e
+P32 no servidor, @ de pessoas, de estrutura e dos contextos do Principal
+(perfil Coelo, arrobas reservados), ponte de ator do Principal e das
+Circulares, contrato de Assiduidade, escopo de Planos, modelo de sistema de
+perfil Admin, hotfix do `safeupdate` (vínculos de criança), correção de
+segurança cross-tenant da Agenda (latente), filtro por segmento de Pessoas.
+Edge Functions: `chat-media` nova; `form-operations`, `form-media`,
+`form-export-download` e `moments-media` reimplantadas a partir de `dev`.
+Chaves de composição ligadas: `segmentFilterAvailable`, rota de Planos,
+Segurança infantil. Ordem real em
+`packages/coelo_database/migrations/ordem-de-aplicacao-producao.txt`.
+
+**Aprovações visuais do Owner (11/09, tarde):** G-SUP (Suporte/Implantação e
+`plan_table_*`), Agenda P33/P34 (12 goldens) e Importações (com uma exceção
+corrigida) — registradas em `ownerVisualApproval`; aprovação não vira
+`verified`.
+
+**Perguntas abertas ao Owner:** P43 a P48, A+ dos goldens `agenda_create_*`
+e a lista de arrobas reservados no encerramento do MVP, em
+`etapa-2-operacao/next-round/R05-perguntas-ao-owner-20260911.md`.
+
+**Pendências de revisão profunda registradas na R05:** raiz da ponte de ator
+(membership escopada espelhada sem escopo; provar por família), goldens de
+Atividades pré-existentes (9), suítes pré-existentes de `test/app` (18) e
+`test/core/config` (4), balão de chat sobre o rodapé de Assiduidade (Decisão
+7), Cardápios com fail-closed de tenant no cliente (P47), 180060, texto "503"
+para recurso adiado por decisão. Detalhe por action_id nas matrizes abaixo e
+em `next-round/R05-fechamento.md`.
+
+## Estado anterior — Rodada 4 (E2-R04-20260911) consolidada às 08:50 de 11/09
 
 Coordenação (Claude Fable, `coelo-83`/`coelo-04`) abriu a R04 às 21:44 de 10/09 sobre
 `origin/dev` `98cc0529d` e fechou em `dev` `4e57bed03`. Estado por camada,
