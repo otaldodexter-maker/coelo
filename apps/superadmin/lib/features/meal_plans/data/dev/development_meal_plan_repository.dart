@@ -96,7 +96,7 @@ final class DevelopmentMealPlanRepository implements MealPlanRepository {
         : _templates.where((value) => value.id == draft.id).firstOrNull;
     if (draft.id != null && existing == null) throw const MealPlanNotFoundException();
     if (existing != null && existing.version != draft.expectedVersion) {
-      throw const MealPlanConflictException('O modelo foi alterado nesta prévia.');
+      throw const MealPlanConflictException('O modelo foi alterado em outra sessão.');
     }
     final now = DateTime.now();
     final item = MealPlanTemplate(
@@ -140,7 +140,7 @@ final class DevelopmentMealPlanRepository implements MealPlanRepository {
         : _plans.where((value) => value.id == draft.mealPlanId).firstOrNull;
     if (draft.mealPlanId != null && existing == null) throw const MealPlanNotFoundException();
     if (existing != null && existing.revision != draft.expectedRevision) {
-      throw const MealPlanConflictException('O rascunho foi alterado nesta prévia.');
+      throw const MealPlanConflictException('O rascunho foi alterado em outra sessão.');
     }
     final conflicts = _findConflicts(
       scopeId: draft.scopeId,
@@ -218,7 +218,7 @@ final class DevelopmentMealPlanRepository implements MealPlanRepository {
       );
     }
     if (item.revision != expectedRevision) {
-      throw const MealPlanConflictException('O cardápio foi alterado nesta prévia.');
+      throw const MealPlanConflictException('O cardápio foi alterado em outra sessão.');
     }
     final updated = _copy(item, status: status, isDraft: false);
     _plans[index] = updated;

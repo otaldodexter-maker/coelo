@@ -324,7 +324,7 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
     if (callback == null) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Resposta indisponível nesta prévia.')));
+      ).showSnackBar(const SnackBar(content: Text('Resposta ainda não está disponível.')));
       return;
     }
     callback(reply);
@@ -340,7 +340,7 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
     }
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text('Compartilhamento indisponível nesta prévia.')));
+    ).showSnackBar(const SnackBar(content: Text('Compartilhamento ainda não está disponível.')));
   }
 
   void _reloadAfterPublication() => _loadFeed();

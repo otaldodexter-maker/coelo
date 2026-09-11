@@ -283,7 +283,7 @@ class _PrincipalHappensPublicationPageState extends State<PrincipalHappensPublic
   void _prototypeMessage(String label) {
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(SnackBar(content: Text('$label estará disponível na experiência completa.')));
+    ).showSnackBar(SnackBar(content: Text('$label ainda não está disponível.')));
   }
 
   bool _sameContext(HappensPublicationContext a, HappensPublicationContext b) =>

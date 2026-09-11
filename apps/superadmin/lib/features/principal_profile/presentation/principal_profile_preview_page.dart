@@ -255,7 +255,7 @@ void _showUnavailableMessage(BuildContext context, String label, {required bool 
       SnackBar(
         content: Text(
           preview
-              ? '$label estará disponível na experiência completa.'
+              ? '$label ainda não está disponível.'
               : '$label ainda não está disponível.',
         ),
       ),

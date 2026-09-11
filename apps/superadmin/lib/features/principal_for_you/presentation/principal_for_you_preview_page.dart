@@ -85,7 +85,7 @@ final class _PrincipalForYouPreviewPageState extends State<PrincipalForYouPrevie
   void _feedback(String label) {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text('$label estará disponível na experiência completa.')));
+      ..showSnackBar(SnackBar(content: Text('$label ainda não está disponível.')));
   }
 
   void _invoke(VoidCallback? callback, String fallback) =>
