@@ -1,12 +1,12 @@
 {
- "revision": 26,
+ "revision": 27,
  "round": "E2-R04-20260911",
  "role": "Coordenacao noturna R04 - Claude Fable (C0)",
  "writer": "coordenador-claude",
  "app": "Claude Code (VS Code)",
  "model": "claude-fable-5-1",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T02:43:00-03:00",
+ "updatedAt": "2026-09-11T02:52:00-03:00",
  "relogio": "relogio da maquina; posse as 21:42 -03:00 de 10/09/2026",
  "posseR04": {
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -53,7 +53,7 @@
    "ack": true,
    "recebidoEm": "2026-09-10T21:56:00-03:00",
    "resposta": "migration de MFA aplicada (lote 8): people.list/create/edit e escrita de Perfis/Modelos liberadas no backend; 170900 ficou obsoleta, nao precisa conferir; tirar account.mfa/AAL2 do caminho do cliente (router e auth gateway ainda citam aal2)",
-   "estado": "viva (coelo-d1, rev 105 eea3ec504): 32 deltas aplicados; gates: P31 (institution_roles), contrato v3 do detalhe de perfil, resolvedor de identidade em people.create, P32 (revisor em Seguranca infantil)"
+   "estado": "viva (coelo-d1): 171100/171200/171300/171500/171700 em producao; card de Pessoas abre detalhe; 171600 RETIDO (P31); rev 106 as 04:00"
   },
   "formularios-cuidado-rotina": {
    "app": "Claude Opus",
@@ -65,7 +65,7 @@
    "ack": true,
    "recebidoEm": "2026-09-10T21:56:00-03:00",
    "resposta": "220300 student_links_read aplicada em producao (lote 8); Rotina/Assiduidade sem gate de AAL2",
-   "estado": "subagentes do coordenador: P16 backend em producao (lote 17, rev 30 b67f6a505); cliente P16 em curso; rota real de Cuidado/Rotina/Alunos sem conversa"
+   "estado": "subagentes do coordenador: P16 backend (lote 17) e cliente (4d4340376) concluidos; rota real de Cuidado/Rotina/Alunos/Formularios sem conversa (memoria)"
   },
   "principal-chat-sistema": {
    "app": "Claude Opus (coelo-ce)",
@@ -93,7 +93,7 @@
    "rev": 15,
    "head": "cd169f4f8",
    "upd": "22:4x",
-   "estado": "viva (coelo-9f, rev 22 cdb03dd45): 62 deltas aplicados; calendario 375 compacto; 2 duvidas visuais (P33/P34) com pagina lado a lado pedida",
+   "estado": "finalizado (rev 23, c1754be00)",
    "ack": true,
    "recebidoEm": "2026-09-10T22:58:00-03:00"
   },
@@ -103,7 +103,7 @@
    "rev": 14,
    "head": "66f17c323+",
    "upd": "21:47",
-   "estado": "subagentes do coordenador: Suporte no composto (2bcddb469, rev 17); rota real de Conta/Suporte em curso (build web em andamento)",
+   "estado": "subagentes do coordenador: Suporte no composto concluido; rota real de Conta/Suporte em curso",
    "ack": true,
    "recebidoEm": "2026-09-10T22:58:00-03:00"
   }
@@ -120,11 +120,12 @@
    "lote 14: 171200 (acessos-pessoas)",
    "lote 15: 200500 (publicacoes-agenda)",
    "lote 16: 171300, 171500 (acessos-pessoas)",
-   "lote 17: 220500 (formularios, subagente)"
+   "lote 17: 220500 (formularios, subagente)",
+   "lote 18: 171700 (acessos-pessoas)"
   ],
   "proximos": [
    "coordenador: 230023 disparo do worker de Avisos (aguarda P30)",
-   "acessos-pessoas: contrato v3 do detalhe de perfil, se sair"
+   "acessos-pessoas: 171600 papeis de instituicao (aguarda P31)"
   ]
  },
  "receiptsR04": [
@@ -209,6 +210,7 @@
   "24": "02:16 lotes 14 e 15 em producao; ponte de ator provada em producao para qa-r03; P30 (disparo do worker) ao Owner; skills coelo-backend/coelo-frontend com as regras da R04",
   "25": "02:27 lote 16 em producao; 57 deltas de publicacoes aplicados (E2E 17/199); launcher corrigido integrado e novo achado devolvido; estrutura sem retorno",
   "26": "02:43 lote 17 (P16) em producao; deltas de acessos (32), publicacoes (62) e operacoes (Suporte no composto) aplicados: FE verified 37, BE done 38, E2E 22; launcher Decisao 7 resolvido no frame; P32-P34",
+  "27": "02:52 lote 18 em producao; publicacoes finalizada; P16 cliente integrado; subagentes; memoria",
   "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina."
  },
  "fechamentoR03": {
@@ -486,7 +488,7 @@
   "aberto": "disparo do worker (COELO_NOTICE_WORKER_SECRET nos secrets, notices_worker_url/notices_worker_secret no Vault, funcao app_private.notice_dispatch_publication_worker por pg_net e cron.schedule a cada minuto) e deploy da Edge Function: bloqueados pelo classificador da sessao do coordenador -> P30 ao Owner com os comandos prontos"
  },
  "provaDaPonteEmProducao": "02:13, supabase db query --linked somente leitura com request.jwt.claims de qa-r03 (aal1): current_person_id() resolve a pessoa de servico; has_platform_permission true para people.read, units.read, health_care.read, attendance.manage e meal_plans.manage; has_mfa_aal2() true. As familias people-based deixaram de negar o usuario de teste.",
- "semRevisaoNovaHa30min": "as 02:38: estrutura (rev 30, 23:24; coelo-39 sem retorno) e realm-interno (rev 13, 00:24; finalizado)",
+ "semRevisaoNovaHa30min": "as 02:50: estrutura (rev 30 de 23:24; coelo-39 sem retorno desde 02:06) e realm-interno (finalizado)",
  "lote16": {
   "aplicadoEm": "2026-09-11T02:20 -03:00; ledger 93",
   "dump": "schema-producao-20260911-lote16.sql (02:19, 3.698.566 bytes)",
@@ -511,5 +513,24 @@
   "publicacoes-agenda rev 22": "62 deltas (BE done 20, FE verified 14, E2E 14)",
   "operacoes rev 17 (subagente)": "Suporte no composto: FE local-green em table/kanban/detail; 32 goldens support_* divergentes registrados",
   "totais": "FE verified 37/231, BE done 38/224, E2E 22/199; validador PASS; dev 15520d5dc + commits locais 28a792b2f (analyze em curso)"
- }
+ },
+ "lote18": {
+  "aplicadoEm": "2026-09-11T02:49 -03:00; ledger 95",
+  "dump": "schema-producao-20260911-lote18.sql (02:48, 3.761.963 bytes)",
+  "conteudo": [
+   "acessos-pessoas 20260910171700 access_profile_detail_v3_draft_and_matrix (rascunho em branco para id nulo, matriz permissions[]/memberships[] na forma que o cliente le, wrapper publico delega a v3; pgTAP 37/37 + Modelos 32/32). Destrava access-profiles.create/edit/detail sem Dart"
+  ]
+ },
+ "finalizados": {
+  "publicacoes-agenda": "rev 23 c1754be00 (02:50): 6 pacotes em producao, 63 deltas aplicados, 49 capturas, handoff completo; fica ate 04:00 so em correcao pequena (recarregar Circulares apos excluir)",
+  "realm-interno": "rev 13 d217005d1: finalizado desde 00:24"
+ },
+ "subagentesDoCoordenador": {
+  "operacoes Suporte no composto": "concluido 2bcddb469 (analyze limpo; 69 P / 2 F goldens)",
+  "formularios P16 backend": "concluido 8db8e1cd3/b67f6a505 (lote 17)",
+  "formularios P16 cliente": "concluido 4d4340376 (analyze limpo; forms 825 P / 2 F goldens 1440 pre-existentes; +6 testes)",
+  "operacoes rota real de Conta/Suporte": "em curso (build web em andamento)",
+  "publicacoes 200500": "parado por duplicidade (a frente estava viva)"
+ },
+ "memoria0250": "RAM livre 1,5 GB e 46 chrome.exe; nenhum subagente novo com Chrome; estrutura (coelo-39) segue sem retorno e sem rota real nesta rodada salvo resposta"
 }
