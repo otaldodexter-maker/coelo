@@ -5546,7 +5546,6 @@ GoRouter createSuperadminRouter({
                 subtitle: 'Atualize o conteúdo e publique uma nova revisão.',
                 destination: 'circular-create',
                 showChatLauncher: false,
-              showChatLauncher: false,
                 child: ProductionCircularComposerHost(
                   repository: circularRepository,
                   institutionRepository: institutionDirectoryRepository,
@@ -5623,7 +5622,6 @@ GoRouter createSuperadminRouter({
                 subtitle: 'Atualize o conteúdo e publique uma nova revisão.',
                 destination: 'circular-create',
                 showChatLauncher: false,
-              showChatLauncher: false,
                 child: DevelopmentCircularComposerHost(
                   repository: circularPreviewRepository(),
                   circularId: circularId,
