@@ -30,7 +30,7 @@ select ok(
   (select prosecdef from pg_proc
    where oid='public.withdraw_happens_post(uuid,uuid,bigint,text)'::regprocedure)
   and (select prosecdef from pg_proc
-       where oid='public.list_visible_happens_posts(uuid,uuid,uuid,integer,timestamptz,uuid)'::regprocedure),
+       where oid='public.list_visible_happens_posts(uuid,uuid,uuid,integer)'::regprocedure),
   'withdrawal and feed run as security definer'
 );
 
@@ -39,20 +39,20 @@ select ok(
    where oid='public.withdraw_happens_post(uuid,uuid,bigint,text)'::regprocedure)
     @> array['search_path=""']::text[]
   and (select coalesce(proconfig,'{}'::text[]) from pg_proc
-       where oid='public.list_visible_happens_posts(uuid,uuid,uuid,integer,timestamptz,uuid)'::regprocedure)
+       where oid='public.list_visible_happens_posts(uuid,uuid,uuid,integer)'::regprocedure)
     @> array['search_path=""']::text[],
   'withdrawal and feed pin an empty search path'
 );
 
 select ok(
   has_function_privilege('authenticated','public.withdraw_happens_post(uuid,uuid,bigint,text)','execute')
-  and has_function_privilege('authenticated','public.list_visible_happens_posts(uuid,uuid,uuid,integer,timestamptz,uuid)','execute'),
+  and has_function_privilege('authenticated','public.list_visible_happens_posts(uuid,uuid,uuid,integer)','execute'),
   'authenticated actors reach both contracts'
 );
 
 select ok(
   not has_function_privilege('anon','public.withdraw_happens_post(uuid,uuid,bigint,text)','execute')
-  and not has_function_privilege('anon','public.list_visible_happens_posts(uuid,uuid,uuid,integer,timestamptz,uuid)','execute'),
+  and not has_function_privilege('anon','public.list_visible_happens_posts(uuid,uuid,uuid,integer)','execute'),
   'anonymous callers reach neither contract'
 );
 
@@ -127,11 +127,11 @@ insert into public.post_audiences(post_id,audience_kind,institution_id) values
   ('a1400000-0000-4000-8000-000000000004','school_staff','a1200000-0000-4000-8000-000000000002');
 
 insert into public.media_assets(
-  id,institution_id,post_id,owner_person_id,upload_request_id,object_key,
+  id,institution_id,post_id,owner_person_id,upload_request_id,storage_provider,bucket_id,object_key,
   original_name,mime_type,byte_size,status,finalized_at) values
   ('a1500000-0000-4000-8000-000000000001','a1200000-0000-4000-8000-000000000001',
    'a1400000-0000-4000-8000-000000000001','a1100000-0000-4000-8000-000000000001',
-   'fixture-upload-1','a1200000-0000-4000-8000-000000000001/a1400000-0000-4000-8000-000000000001/one',
+   'fixture-upload-1','supabase_mvp','coelo-happens-mvp','a1200000-0000-4000-8000-000000000001/a1400000-0000-4000-8000-000000000001/one',
    'foto.jpg','image/jpeg',2048,'ready',now());
 
 insert into public.media_links(post_id,media_asset_id,display_order) values
@@ -171,7 +171,7 @@ begin
   set local role authenticated;
   return query
     select visible.post_id, visible.management_version, visible.can_withdraw
-    from public.list_visible_happens_posts(p_institution, null, null, 50, null, null) visible;
+    from public.list_visible_happens_posts(p_institution, null, null, 50) visible;
   reset role;
 end
 $fn$;
