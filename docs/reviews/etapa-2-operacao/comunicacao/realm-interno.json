@@ -1,15 +1,15 @@
 {
   "grupo": "realm-interno",
-  "revision": 46,
+  "revision": 47,
   "round": "E2-R06-20260911",
-  "updatedAt": "2026-09-11T20:20-03:00",
+  "updatedAt": "2026-09-11T20:38-03:00",
   "app": "Claude",
   "modelo": "Opus 5 (esforco medio)",
   "conversa": "R06 · Realm interno e segurança",
   "coordenador": "R06 · Coordenação (coordenacao.json rev 52+)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-realm-interno",
   "branch": "work/etapa2-r06-realm-interno",
-  "head": "f80ab6214 (+1 commit do JSON)",
+  "head": "(merge de origin/dev 2a579335e+)",
   "upstream": "origin/work/etapa2-r06-realm-interno (push no primeiro commit)",
   "t0": "T0 = 19:36 (coordenacao rev 52); T0+2h = 21:36 (revisao de 10 min ate 21:46); minha abertura 19:37",
   "escopo": {
@@ -28,7 +28,7 @@
   },
   "primeiroGate": "coordenador aplicar candidatos/realm-interno/20260912210000 (preflight no espelho; sync reconcilia 0 linhas) e fechar 180060 sem pacote",
   "provaLocal": "descartavel coelo_realm_r06 (portas 626xx): baseline + seed + as 141 migrations de ordem-de-aplicacao-producao.txt (ate o lote 48) por psql do container + candidatos; pgTAP por psql -qtA",
-  "bloqueio": "URGENTE ao coordenador: o lote 50 aplicou a VERSAO DA REV 40 do 20260912210000 (escopo so em instituicoes ATIVAS); a reconciliacao desativou em producao 7 memberships de espelho de plataforma na instituicao em rascunho qa-r04-escola (os qa-r06-* do lote 49; medido 20:18, contagens: 7 inactive com revoked_at, 22 ativas). Frentes que usam qa-r04-escola no Principal/estrutura podem ver permissao negada la. Aplicar o hotfix 20260912210100 (abaixo) na sequencia; ele instala a versao final (rev 42) e reativa as 7",
+  "bloqueio": null,
   "pedidosAoCoordenador": [],
   "perguntasParaOOwner": [],
   "pacotesProntos": [
@@ -40,7 +40,7 @@
       "commit": "f80ab6214",
       "dependeDe": "20260912210000 (lote 50)",
       "chaveDeComposicao": "nenhuma; conferir depois: 0 memberships de espelho inactive com revoked_at recente e 22+7 ativas",
-      "estado": "PRONTO; aplicar com urgencia (segurança inalterada: has_platform_permission nao muda)"
+      "estado": "APLICADO em producao pelo coordenador (lote 52, 20:35); conferido por contagem as 20:36: 0 memberships de espelho inactive recentes, 33 ativas (11 espelhos x 3 instituicoes), ledger com 20260912210100"
     },
     {
       "ordem": 1,
@@ -65,8 +65,8 @@
     "seguranca transversal (sem action_id)": "nenhum delta de estado por action_id: o pacote fecha uma exposicao latente (0 identidades escopadas) e nao muda o estado de acoes; se o coordenador quiser, anotar nos tres md como correcao de seguranca da R06 (raiz da ponte de ator)"
   },
   "loop": "a agendar: /loop 15m",
-  "status": "aguardando o coordenador aplicar 20260912210100 (bloqueio da rev 45 continua); nada mais executavel no recorte sem a aplicacao",
-  "proximoPasso": "coordenador aplica 20260912210100; eu confiro por contagem (somente leitura) e registro",
+  "status": "recorte concluido: 20260912210000 (lote 50) + hotfix 20260912210100 (lote 52) em producao; 180060 vai ao Owner como pergunta (decisao do coordenador); code review 210500/211100 registrado; aguardando o pedido de revisao de 10 min em T0+2h (21:36)",
+  "proximoPasso": "em T0+2h responder a revisao de 10 minutos; parar o descartavel coelo_realm_r06 ao encerrar",
   "contratoInstitutionContacts": {
     "rpc": "public.superadmin_institution_contacts_edit_v1(p_request_id uuid, p_institution_id uuid, p_expected_version bigint, p_payload jsonb) -> envelope {ok,data,error}",
     "capacidade": "institution.update; platform_role owner|operations; scope institution so a propria instituicao (outro tenant -> SAI_PERMISSION_DENIED, auditado)",
@@ -595,5 +595,5 @@
   },
   "handoff": "docs/reviews/evidence/etapa-2/r06-realm-interno/handoff.md",
   "skillsPropostas": "docs/reviews/evidence/etapa-2/r06-realm-interno/skills-deltas-r06.md",
-  "recibosDoCoordenador": "ACK rev 40 (20:05) e rev 43 (20:19) lidos em coordenacao rev 53/54; o hotfix da rev 45 ainda nao foi lido: em producao continuam 7 memberships de espelho inactive (medido 20:19, contagens) e o ledger termina em 20260912210000"
+  "recibosDoCoordenador": "ACK rev 40 (20:05) e rev 43 (20:19) lidos em coordenacao rev 53/54; o hotfix da rev 45 ainda nao foi lido: em producao continuam 7 memberships de espelho inactive (medido 20:19, contagens) e o ledger termina em 20260912210000 | 20:35: hotfix aplicado (lote 52) e conferido pelo coordenador e por esta frente"
 }
