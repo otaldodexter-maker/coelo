@@ -1,7 +1,7 @@
 {
-  "revision": 113,
-  "updated_at": "2026-09-11T06:17:40.377Z",
-  "relogio_local": "Fri Sep 11 2026 03:17:40 GMT-0300 (Horário Padrão de Brasília)",
+  "revision": 114,
+  "updated_at": "2026-09-11T06:21:15.745Z",
+  "relogio_local": "Fri Sep 11 2026 03:21:15 GMT-0300 (Horário Padrão de Brasília)",
   "round": "E2-R04-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
@@ -343,6 +343,13 @@
     "invites.create (BE)": "gate P31 confirmado: superadmin_invite_issue_v2 com p_profile_id = papel de plataforma (owner) em contexto de instituicao 9f04...0010, pessoa alvo 9f04...0061 e destinatario qa-r04-convite@invalid.test devolveu {ok:false, error:{code:'SAI_INVALID_ARGUMENT', http_status:422}}. Sem institution_roles em producao nao ha perfil valido para emitir; invites.detail/resend/revoke ficam sem objeto para provar. Pacote retido 171600 (quatro papeis de sistema, pgTAP 7/7) fecha o gate quando o Owner responder P31.",
     "access-models.list filtros (BE)": "verified por REST: superadmin_access_profile_models_cursor com p_query='QA R04' + p_status='active' + p_scope='platform' devolve so o modelo cc322488 (active); com p_status='inactive' devolve so a copia 60fb9586 (inactive). Busca, status e escopo filtram no servidor.",
     "restante_da_janela": "provas por REST ate 04:00; sem build (memoria 1,3-2 GB) e sem Chrome. Rev 108 continua sendo a mini-revisao formal; esta e a ultima trilha de adendos."
+  },
+  "ADENDO_03h25": {
+    "lote_21_recebido": "172100 em producao desde 03:17 (mensagem do coordenador; ledger 98); rev 112 e 45 deltas integrados em dev d1e8ab661.",
+    "child-safety.edit (BE)": "done em producao: child_safety_edit_pending_authorization(p_request_id, p_authorization_id, p_expected_version=1, p_payload) pela sessao qa-r03 devolveu {version:2, decision_status:'pending', lifecycle_status:'inactive'}; leitura direta confirma request_reason 'QA R04 prova sintetica editada apos lote 21' e capacidades pickup+transport. Antes do 172100 toda edicao pendente caia em 42702.",
+    "child-safety.edit (decisao)": "continua P32: decidir exige revisor de unidade (171800 retido com a opcao b).",
+    "deltas": "46 entradas em deltas-r04.json (nova: child-safety.edit backend done).",
+    "nota_de_prova": "a segunda chamada com p_expected_version=1 (desatualizada) ficou pendente de resposta por tempo do PostgREST; nao conta como prova de conflito otimista."
   },
   "historico_r03": {
     "revision": 94,
