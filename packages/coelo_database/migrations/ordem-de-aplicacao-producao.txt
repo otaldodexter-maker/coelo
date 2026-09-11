@@ -147,3 +147,5 @@
 20260911210100_revoke_authenticated_crud_without_policy_v1.sql
 # lote 31 (11/09 12:52) - R05 acessos-pessoas: @ de pessoas (person_handles_v1, Decisao 16)
 20260911170100_person_handles_v1.sql
+# lote 32 (11/09 12:56) - R05 realm-interno: anexos do chat (contrato R2, sem Edge Function ainda)
+20260911210200_superadmin_internal_chat_attachments_v1.sql
