@@ -100,3 +100,6 @@
 20260910180340_superadmin_internal_institution_create_v2.sql
 20260910220400_internal_actor_service_person_v1.sql
 20260910200400_superadmin_circular_save_draft_v2_fix.sql
+# lote 11 (23:33)
+20260910180350_superadmin_assessments_internal_v2.sql
+20260910190900_public_security_definer_revoke_anon_v1.sql
