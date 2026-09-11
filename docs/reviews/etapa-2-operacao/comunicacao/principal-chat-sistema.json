@@ -1,6 +1,6 @@
 {
-  "revision": 21,
-  "updated_at": "2026-09-11T12:05-03:00",
+  "revision": 22,
+  "updated_at": "2026-09-11T12:34-03:00",
   "round": "E2-R05-20260911",
   "group": "principal-chat-sistema",
   "tool": "Claude Code (VS Code)",
@@ -9,8 +9,8 @@
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-principal-chat-sistema",
   "branch": "work/etapa2-r05-principal-chat-sistema",
   "base": "origin/dev 2f6a6114f",
-  "head": "2f6a6114f (abertura)",
-  "status": "ABERTA 12:2x. Leituras feitas: R05-prompts, R04-prompts, rev 20 deste JSON, evidencias r04, respostas P26/P27/P28/P35, matrizes das 7 familias nos tres md, skills. Historico da R04 (revs 8-20) fica no Git em 9bf60463b:docs/reviews/etapa-2-operacao/comunicacao/principal-chat-sistema.json; nao repetido aqui.",
+  "head": "06264f92d",
+  "status": "EM CURSO. Item 1 medido: list_my_principal_contexts devolve [] para qa-r03 em producao (12:10) apesar do lote 27; causa e correcao no pacote abaixo. Build web de qa_main pronto; espelho coelo_pcs5 (623xx) com baseline + 107 migrations na ordem de producao. origin/dev 11c4bfbef mesclado (composto de tabela do G-SUP).",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos, Perfil, Para voce",
     "apps/superadmin -> Chat (attach, create-group E2E)",
@@ -19,24 +19,63 @@
     "composicao/shell: falhas pre-existentes em composition_root_sanitization_test e superadmin_auth_scope_test"
   ],
   "action_ids_status": "35 IDs: acontece 4, agora 4, momentos 4, principal_profile 3, chat 8, meal_plans 6, error_pages 6. Estado de partida (inventario 11:50): chat 6 E2E; chat.create-group FE verified/BE done/E2E pending; chat.attach blocked-environment FE+BE; acontece/agora FE pending-verification BE local-green (SQL em producao); momentos.view FE local-green; principal.for-you e profile-edit blocked-decision (P28/P35 agora respondidos); meal-plans.create/edit/model-*/publish FE pending BE local-green; errors.409 FE local-green (golden aprovado P26); errors.retry pending.",
-  "primeiro_gate": "rota real do Principal com qa-r03 (lote 27 deu membership owner nas tres instituicoes sinteticas): provar acontece.feed/create/publish/remove, agora.*, momentos.* ponta a ponta.",
+  "primeiro_gate": "COORDENADOR: aplicar candidatos/principal-chat-sistema/20260911130000_principal_internal_actor_bridge_v1.sql em producao. Sem ele o Principal inteiro (acontece/agora/momentos/perfil/para voce) continua sem contexto para qa-r03 e as RPCs negam com active_membership_required/happens_permission_denied. Nenhuma chave de composicao: o cliente ja obedece.",
   "ordem_de_trabalho": [
-    "1. acontece.feed/create/publish/remove, agora.view/create/publish/expire, momentos.view/create/publish/remove na rota real com qa-r03 (build web qa_main + servidor 127.0.0.1 + Chrome CDP): EM CURSO",
+    "1. acontece/agora/momentos na rota real: BLOQUEADO ate o coordenador aplicar 20260911130000 (pacote verde entregue); build e espelho prontos",
     "2. principal.profile-view/profile-edit/for-you com P28 (avatar, cabecalho, @, + Agora, filtros por crianca/perfil, hibridos, contorno dos avatares) e P35 B (Superadmin ve tudo; perfil/usuario Coelo, arrobas reservados: pacote candidatos/principal-chat-sistema 2026091113xxxx): A FAZER",
     "3. meal-plans.create/edit/model-create/model-edit/publish + Duplicar icone+menu (P27): A FAZER",
     "4. chat.attach (gate real + pacote proposto) e chat.create-group E2E: A FAZER",
     "5. errors.409 rota real e errors.retry: A FAZER",
     "6. composition_root_sanitization_test e superadmin_auth_scope_test: A FAZER"
   ],
-  "tests": {},
+  "tests": {
+    "pgTAP_20260911130000": "22/22 PASS (13:0x) no coelo_pcs5",
+    "build_web": "flutter build web --release -t test_driver/qa_main.dart --dart-define-from-file=.env.local: OK (12:5x)"
+  },
   "lotes": [],
   "proposta_delta_por_action_id": {},
-  "pacotesProntos": [],
+  "pacotesProntos": [
+    {
+      "grupo": "principal-chat-sistema",
+      "commit": "06264f92d",
+      "arquivo": "packages/coelo_database/candidatos/principal-chat-sistema/20260911130000_principal_internal_actor_bridge_v1.sql",
+      "assunto": "P35: (1) app_private.person_id_for_auth_user(uuid) e as seis funcoes do Principal resolvendo o ator pelo espelho interno (people-based mantem precedencia); (2) app_private.superadmin_internal_actor_institution_access_sync(): membership owner + institution_role_assignment ao papel de sistema institution_admin (P31) para todo espelho interno com platform_membership ativa em toda instituicao ativa, backfill agora e gatilhos em institutions (insert/status active) e superadmin_internal_actor_people. 'Superadmin ve tudo' sem reescrever RPC por familia.",
+      "pgTAP": "supabase/tests/principal_internal_actor_bridge_v1_test.sql 22/22 no descartavel coelo_pcs5 (baseline + 107 migrations na ordem de producao + candidato); regressao: principal_runtime_contexts 13/13, internal_actor_service_person 17/17, happens_post_withdrawal 33/33, happens_mixed_feed 10/10, now_custom_role_audience 13/13, now_publication_mvp 69/70 (1 pre-existente), qa_r03_synthetic_memberships 2/2",
+      "chave_de_composicao": "nenhuma",
+      "depois_de_aplicar": "conferir em producao: select count(*) from public.list_my_principal_contexts() com a sessao qa-r03 = 3 (qa-r04-chat, qa-r04-cuidado-sintetico, qa-r04-escola); a frente prova a rota real em seguida",
+      "risco": "baixo-medio: concede ao espelho interno de cada usuario Superadmin com platform_membership ativa o papel institution_admin em toda instituicao ativa (regra de produto P35 do Owner). Pendencia registrada: refinar por papel interno (operations vs owner) se o Owner quiser distinguir.",
+      "action_ids": [
+        "acontece.feed",
+        "acontece.create",
+        "acontece.publish",
+        "acontece.remove",
+        "agora.view",
+        "agora.create",
+        "agora.publish",
+        "agora.expire",
+        "momentos.view",
+        "momentos.create",
+        "momentos.publish",
+        "momentos.remove",
+        "principal.for-you",
+        "principal.profile-view",
+        "principal.profile-edit"
+      ]
+    }
+  ],
   "perguntas_ao_owner_via_coordenador": [],
-  "pendencias_registradas_sem_bloquear": [],
+  "pendencias_registradas_sem_bloquear": [
+    "testes pgTAP happens_media_private_r2_v1 e now_media_private_r2_v1: helper pg_temp sem EXECUTE para authenticated apos 190900 (pre-existente); corrigir grant no proprio teste",
+    "P35: sincronizador da ponte concede institution_admin a todo espelho interno com platform_membership ativa; distinguir owner de operations fica para decisao do Owner se ele quiser"
+  ],
   "blocker": null,
-  "next_step": "item 1: build web de qa_main e rota real do Principal",
+  "next_step": "enquanto o coordenador aplica: item 2 no cliente (P28 no Perfil: avatar, cabecalho, @, + Agora, filtros, contorno) e pacote do perfil Coelo (2026091113 0100); depois rota real do Principal assim que 130000 estiver em producao",
   "ack": null,
   "loop": "/loop 15m agendado na abertura",
-  "regras_operacionais": "max 2 Chrome, 1 flutter test por vez; nenhum segredo em Git/chat/JSON; credencial de qa-r03 lida de Coelo-backups/qa-r03.env; so este JSON e commits/handoffs proprios; sem chat em criar/editar/publicar nem Agora/Momentos abertos (Decisao 7)."
+  "regras_operacionais": "max 2 Chrome, 1 flutter test por vez; nenhum segredo em Git/chat/JSON; credencial de qa-r03 lida de Coelo-backups/qa-r03.env; so este JSON e commits/handoffs proprios; sem chat em criar/editar/publicar nem Agora/Momentos abertos (Decisao 7).",
+  "achados_para_o_coordenador": [
+    "CAUSA RAIZ (medida 12:10): list_my_principal_contexts (191000), app_private.happens_actor (baseline), now_actor (190300), moments_actor_for_auth_user (230017), redeem_now_media_read_ticket (190600) e redeem_happens_media_read_ticket (190700) resolvem a pessoa por public.person_auth_links; a identidade interna nao tem esse vinculo (guard do realm, ADR 0019) e a ponte 220400 so cobre current_person_id(). Alem disso a membership do lote 27 (role_code owner) nao tem institution_role_assignments, e has_context_permission exige papel: mesmo com contexto, happens_permission_denied.",
+    "PRE-EXISTENTE (nao e deste pacote; igual no espelho do coordenador coelo_baseline): happens_media_private_r2_v1_test 15/18 (+5 erros) e now_media_private_r2_v1_test 21/23 falham por 'permission denied for function happens_asset': o helper pg_temp security definer do teste perdeu o EXECUTE de PUBLIC depois do 190900 (privilegio padrao revogado). Correcao: grant execute no helper pg_temp dentro do teste. Registrar como pendencia de teste, nao de produto.",
+    "Espelho: 'supabase db reset' precisa de 'supabase start' antes (LegacyResetLocalDbNotRunningError); o apply por psql na ordem de producao levou ~9 min; 200300 e 171000 tem guarda forward-only que impede reaplicar."
+  ]
 }
